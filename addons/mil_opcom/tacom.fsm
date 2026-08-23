@@ -99,7 +99,8 @@ class FSM
                 {
                         name = "INIT";
                         itemno = 0;
-                        init = /*%FSM<STATEINIT""">*/"_busy = false;" \n
+                        init = /*%FSM<STATEINIT""">*/"private _profileScope = createProfileScope ""ALiVE TACOM FSM: INIT"";" \n
+                         "_busy = false;" \n
                          "_exitFSM = false;" \n
                          "_TAC_confirmed = false;" \n
                          "_objectiveDeleted = false;" \n
@@ -171,7 +172,8 @@ class FSM
                          "if(_debug) then {" \n
                          "    [""MIL OPCOM - Counting %1 profiles for faction %2"",count _profiles,_factions] call ALIVE_fnc_dumpR;" \n
                          "};" \n
-                         "// debug ---------------------------------------"/*%FSM</STATEINIT""">*/;
+                         "// debug ---------------------------------------" \n
+                         "_profileScope = nil;"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
@@ -197,7 +199,8 @@ class FSM
                 {
                         name = "ANALYZE";
                         itemno = 2;
-                        init = /*%FSM<STATEINIT""">*/"private [""_pos"",""_objective"",""_size"",""_operation"",""_data_operation"",""_data_value"",""_tacom_data"",""_recon"",""_capture"",""_defend"",""_reserve"",""_custom"",""_dataset"",""_transmit"",""_TACOM_ACTION"",""_timeout"",""_section"",""_sectionSupport"",""_event"",""_eventID""];" \n
+                        init = /*%FSM<STATEINIT""">*/"private _profileScope = createProfileScope ""ALiVE TACOM FSM: ANALYZE"";" \n
+                         "private [""_pos"",""_objective"",""_size"",""_operation"",""_data_operation"",""_data_value"",""_tacom_data"",""_recon"",""_capture"",""_defend"",""_reserve"",""_custom"",""_dataset"",""_transmit"",""_TACOM_ACTION"",""_timeout"",""_section"",""_sectionSupport"",""_event"",""_eventID""];" \n
                          "" \n
                          "_busy = true;" \n
                          "_TACOM_status = ""Analysis"";" \n
@@ -486,7 +489,8 @@ class FSM
                          "    _busy = false;" \n
                          "};" \n
                          "" \n
-                         "_lastanalyze = time;"/*%FSM</STATEINIT""">*/;
+                         "_lastanalyze = time;" \n
+                         "_profileScope = nil;"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
@@ -598,7 +602,8 @@ class FSM
                 {
                         name = "ISSUE_ORDERS";
                         itemno = 10;
-                        init = /*%FSM<STATEINIT""">*/"private [""_profiles"",""_data"",""_state"",""_section"",""_pos"",""_objectiveID"",""_turn"",""_objectivesX""];" \n
+                        init = /*%FSM<STATEINIT""">*/"private _profileScope = createProfileScope ""ALiVE TACOM FSM: ISSUE_ORDERS"";" \n
+                         "private [""_profiles"",""_data"",""_state"",""_section"",""_pos"",""_objectiveID"",""_turn"",""_objectivesX""];" \n
                          "" \n
                          "_TACOM_status = ""Order"";" \n
                          "_timestamp = time;" \n
@@ -608,6 +613,7 @@ class FSM
                          "    _data = [_objective, [""objective deleted""]];" \n
                          "    " \n
                          "    _busy = false;" \n
+                         "    _profileScope = nil;" \n
                          "};" \n
                          "" \n
                          "//Get all profileIDs and objectives" \n
@@ -786,7 +792,8 @@ class FSM
                          "    case (""custom"") : {};" \n
                          "    " \n
                          "    default {};" \n
-                         "};"/*%FSM</STATEINIT""">*/;
+                         "};" \n
+                         "_profileScope = nil;"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
@@ -831,10 +838,11 @@ class FSM
                 {
                         name = "INITIALIZE";
                         itemno = 15;
-                        init = /*%FSM<STATEINIT""">*/"// debug ---------------------------------------" \n
+                        init = /*%FSM<STATEINIT""">*/"private _profileScope = createProfileScope ""ALiVE TACOM FSM: INITIALIZE"";" \n
+                         "// debug ---------------------------------------" \n
                          "if(_debug) then { [""TACOM initialized, %1!"",true] call ALIVE_fnc_dumpR; };" \n
                          "// debug ---------------------------------------" \n
-                         ""/*%FSM</STATEINIT""">*/;
+                         "_profileScope = nil;"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
@@ -858,7 +866,9 @@ class FSM
                 {
                         name = "TRANSMIT_TO_OPCO";
                         itemno = 17;
-                        init = /*%FSM<STATEINIT""">*/"_OPCOM_FSM setFSMVariable [""_OPCOM_DATA"",[""confirmed"",[true,_data]]];"/*%FSM</STATEINIT""">*/;
+                        init = /*%FSM<STATEINIT""">*/"private _profileScope = createProfileScope ""ALiVE TACOM FSM: TRANSMIT_TO_OPCO"";" \n
+                         "_OPCOM_FSM setFSMVariable [""_OPCOM_DATA"",[""confirmed"",[true,_data]]];" \n
+                         "_profileScope = nil;"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
@@ -893,7 +903,9 @@ class FSM
                 {
                         name = "TRANSMIT_TO_OPCO_1";
                         itemno = 18;
-                        init = /*%FSM<STATEINIT""">*/"_OPCOM_FSM setFSMVariable [""_OPCOM_DATA"",[""confirmed"",[false,_data]]];"/*%FSM</STATEINIT""">*/;
+                        init = /*%FSM<STATEINIT""">*/"private _profileScope = createProfileScope ""ALiVE TACOM FSM: TRANSMIT_TO_OPCO_1"";" \n
+                         "_OPCOM_FSM setFSMVariable [""_OPCOM_DATA"",[""confirmed"",[false,_data]]];" \n
+                         "_profileScope = nil;"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
@@ -928,11 +940,13 @@ class FSM
                 {
                         name = "COLLECT_TO_QUEUE";
                         itemno = 20;
-                        init = /*%FSM<STATEINIT""">*/"_TACOM_status = ""collect data to queue"";" \n
+                        init = /*%FSM<STATEINIT""">*/"private _profileScope = createProfileScope ""ALiVE TACOM FSM: COLLECT_TO_QUEUE"";" \n
+                         "_TACOM_status = ""collect data to queue"";" \n
                          "_timestamp = time;" \n
                          "" \n
                          "_TACOM_QUEUE pushback _TACOM_DATA;" \n
-                         "_TACOM_DATA = nil;"/*%FSM</STATEINIT""">*/;
+                         "_TACOM_DATA = nil;" \n
+                         "_profileScope = nil;"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
@@ -966,7 +980,8 @@ class FSM
                 {
                         name = "SELECT_SECTION";
                         itemno = 23;
-                        init = /*%FSM<STATEINIT""">*/"private [""_objective"",""_section"",""_size"",""_sectionAssist"",""_operation"",""_hdl"",""_taskTypes""];" \n
+                        init = /*%FSM<STATEINIT""">*/"private _profileScope = createProfileScope ""ALiVE TACOM FSM: SELECT_SECTION"";" \n
+                         "private [""_objective"",""_section"",""_size"",""_sectionAssist"",""_operation"",""_hdl"",""_taskTypes""];" \n
                          "" \n
                          "_TACOM_status = ""Select section"";" \n
                          "_timestamp = time;" \n
@@ -1033,7 +1048,8 @@ class FSM
                          "    };" \n
                          "} else {" \n
                          "    _hdl = [] spawn {true};" \n
-                         "};"/*%FSM</STATEINIT""">*/;
+                         "};" \n
+                         "_profileScope = nil;"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
@@ -1067,9 +1083,10 @@ class FSM
                 {
                         name = "PREPARE_ORDERS";
                         itemno = 25;
-                        init = /*%FSM<STATEINIT""">*/"terminate _hdl;" \n
+                        init = /*%FSM<STATEINIT""">*/"private _profileScope = createProfileScope ""ALiVE TACOM FSM: PREPARE_ORDERS"";" \n
+                         "terminate _hdl;" \n
                          "" \n
-                         "if ([_objective,""deleted"",false] call ALiVE_fnc_HashGet) exitwith {};" \n
+                         "if ([_objective,""deleted"",false] call ALiVE_fnc_HashGet) exitwith {_profileScope = nil};" \n
                          "" \n
                          "private [""_sectionAssist""];" \n
                          "_sectionAssist = [_objective,""sectionAssist"",[]] call AliVE_fnc_HashGet;" \n
@@ -1095,7 +1112,8 @@ class FSM
                          "    } foreach _section;" \n
                          "};" \n
                          "" \n
-                         "_section = [_objective,""section"",[]] call AliVE_fnc_HashGet;"/*%FSM</STATEINIT""">*/;
+                         "_section = [_objective,""section"",[]] call AliVE_fnc_HashGet;" \n
+                         "_profileScope = nil;"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
@@ -1118,7 +1136,9 @@ class FSM
                 {
                         name = "END";
                         itemno = 28;
-                        init = /*%FSM<STATEINIT""">*/"[_OPCOM_HANDLER,""TACOM_FSM""] call ALiVE_fnc_HashRem;"/*%FSM</STATEINIT""">*/;
+                        init = /*%FSM<STATEINIT""">*/"private _profileScope = createProfileScope ""ALiVE TACOM FSM: END"";" \n
+                         "[_OPCOM_HANDLER,""TACOM_FSM""] call ALiVE_fnc_HashRem;" \n
+                         "_profileScope = nil;"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {

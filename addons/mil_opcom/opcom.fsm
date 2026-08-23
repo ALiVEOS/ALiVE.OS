@@ -126,7 +126,8 @@ class FSM
                 {
                         name = "INIT";
                         itemno = 0;
-                        init = /*%FSM<STATEINIT""">*/"private _OPCOM_status = ""PreInit"";" \n
+                        init = /*%FSM<STATEINIT""">*/"private _profileScope = createProfileScope ""ALiVE OPCOM FSM: INIT"";" \n
+                         "private _OPCOM_status = ""PreInit"";" \n
                          "" \n
                          "private _busy = false;" \n
                          "private _exitFSM = false;" \n
@@ -218,7 +219,8 @@ class FSM
                          "    //_objectives call ALIVE_fnc_inspectHash; // bugged??" \n
                          "    //[] call ALIVE_fnc_timer;" \n
                          "};" \n
-                         "// debug ---------------------------------------"/*%FSM</STATEINIT""">*/;
+                         "// debug ---------------------------------------" \n
+                         "_profileScope = nil;"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
@@ -242,7 +244,8 @@ class FSM
                 {
                         name = "ANALYZE";
                         itemno = 2;
-                        init = /*%FSM<STATEINIT""">*/"_OPCOM_status = ""switch"";" \n
+                        init = /*%FSM<STATEINIT""">*/"private _profileScope = createProfileScope ""ALiVE OPCOM FSM: ANALYZE"";" \n
+                         "_OPCOM_status = ""switch"";" \n
                          "_timestamp = time;" \n
                          "" \n
                          "private [""_target"",""_targetId"",""_obj"",""_attack"",""_defend"",""_reserve"",""_custom"",""_qrf"",""_recon"",""_oca"",""_operation"",""_priorities"",""_data_operation"",""_data_value"",""_targetsWithState"",""_OPCOM_ACTION"",""_targetOccupation"",""_analyze"",""_data""];" \n
@@ -517,7 +520,7 @@ class FSM
                          "};" \n
                          "" \n
                          "_lastAnalyze = time;" \n
-                         ""/*%FSM</STATEINIT""">*/;
+                         "_profileScope = nil;"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
@@ -682,7 +685,8 @@ class FSM
                 {
                         name = "ORDER_TACOM";
                         itemno = 11;
-                        init = /*%FSM<STATEINIT""">*/"_OPCOM_status = ""order"";" \n
+                        init = /*%FSM<STATEINIT""">*/"private _profileScope = createProfileScope ""ALiVE OPCOM FSM: ORDER_TACOM"";" \n
+                         "_OPCOM_status = ""order"";" \n
                          "_timestamp = time;" \n
                          "" \n
                          "_operation = nil;" \n
@@ -700,7 +704,8 @@ class FSM
                          "        case (""reserve""):   { _TACOM_FSM setFSMVariable [""_TACOM_DATA"",[""analyze"",_reserve]] };" \n
                          "        case (""custom""):    {};" \n
                          "        default {};" \n
-                         "};"/*%FSM</STATEINIT""">*/;
+                         "};" \n
+                         "_profileScope = nil;"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
@@ -734,9 +739,11 @@ class FSM
                 {
                         name = "INITIALIZE";
                         itemno = 17;
-                        init = /*%FSM<STATEINIT""">*/"_OPCOM_status = ""Init"";" \n
+                        init = /*%FSM<STATEINIT""">*/"private _profileScope = createProfileScope ""ALiVE OPCOM FSM: INITIALIZE"";" \n
+                         "_OPCOM_status = ""Init"";" \n
                          "" \n
-                         "_OPCOM_DATA = [""init"",true];"/*%FSM</STATEINIT""">*/;
+                         "_OPCOM_DATA = [""init"",true];" \n
+                         "_profileScope = nil;"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
@@ -769,10 +776,12 @@ class FSM
                 {
                         name = "NOT_BUSY";
                         itemno = 18;
-                        init = /*%FSM<STATEINIT""">*/"_OPCOM_status = ""reset"";" \n
+                        init = /*%FSM<STATEINIT""">*/"private _profileScope = createProfileScope ""ALiVE OPCOM FSM: NOT_BUSY"";" \n
+                         "_OPCOM_status = ""reset"";" \n
                          "_timestamp = time;" \n
                          "" \n
-                         "_busy = false;"/*%FSM</STATEINIT""">*/;
+                         "_busy = false;" \n
+                         "_profileScope = nil;"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
@@ -816,10 +825,12 @@ class FSM
                 {
                         name = "NOT_BUSY_1";
                         itemno = 19;
-                        init = /*%FSM<STATEINIT""">*/"_OPCOM_status = ""reset"";" \n
+                        init = /*%FSM<STATEINIT""">*/"private _profileScope = createProfileScope ""ALiVE OPCOM FSM: NOT_BUSY_1"";" \n
+                         "_OPCOM_status = ""reset"";" \n
                          "_timestamp = time;" \n
                          "" \n
-                         "_busy = false;"/*%FSM</STATEINIT""">*/;
+                         "_busy = false;" \n
+                         "_profileScope = nil;"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
@@ -863,13 +874,15 @@ class FSM
                 {
                         name = "COLLECT_TO_QUEUE";
                         itemno = 20;
-                        init = /*%FSM<STATEINIT""">*/"_OPCOM_status = ""collect data to queue"";" \n
+                        init = /*%FSM<STATEINIT""">*/"private _profileScope = createProfileScope ""ALiVE OPCOM FSM: COLLECT_TO_QUEUE"";" \n
+                         "_OPCOM_status = ""collect data to queue"";" \n
                          "_timestamp = time;" \n
                          "" \n
                          "if !(isnil ""_OPCOM_DATA"") then {" \n
                          "	_OPCOM_QUEUE pushback _OPCOM_DATA;" \n
                          "	_OPCOM_DATA = nil;" \n
-                         "};"/*%FSM</STATEINIT""">*/;
+                         "};" \n
+                         "_profileScope = nil;"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
@@ -913,7 +926,8 @@ class FSM
                 {
                         name = "PERFORM_ANALYSIS";
                         itemno = 23;
-                        init = /*%FSM<STATEINIT""">*/"private [""_clusterOccupationAnalysis"",""_troopsAnalysis"",""_enemyScan""];" \n
+                        init = /*%FSM<STATEINIT""">*/"private _profileScope = createProfileScope ""ALiVE OPCOM FSM: PERFORM_ANALYSIS"";" \n
+                         "private [""_clusterOccupationAnalysis"",""_troopsAnalysis"",""_enemyScan""];" \n
                          "" \n
                          "switch (_analyze) do {" \n
                          "    case (""analysis"") : {" \n
@@ -921,7 +935,8 @@ class FSM
                          "        _troopsAnalysis = [_OPCOM_HANDLER,""scantroops""] spawn ALiVE_fnc_OPCOM;" \n
                          "        _enemyScan = [_OPCOM_HANDLER,""scanFriendliesForNearEnemies""] spawn ALIVE_fnc_OPCOM;" \n
                          "	};" \n
-                         "};"/*%FSM</STATEINIT""">*/;
+                         "};" \n
+                         "_profileScope = nil;"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
@@ -957,7 +972,8 @@ class FSM
                 {
                         name = "RESET";
                         itemno = 25;
-                        init = /*%FSM<STATEINIT""">*/"_OPCOM_status = ""reset"";" \n
+                        init = /*%FSM<STATEINIT""">*/"private _profileScope = createProfileScope ""ALiVE OPCOM FSM: RESET"";" \n
+                         "_OPCOM_status = ""reset"";" \n
                          "_timestamp = time;" \n
                          "" \n
                          "if (_debug) then {" \n
@@ -995,7 +1011,7 @@ class FSM
                          "_OPCOM_SKIP_OBJECTIVES = [];" \n
                          "_OPCOM_DATA = [""analyze"", nil];" \n
                          "_busy = false;" \n
-                         ""/*%FSM</STATEINIT""">*/;
+                         "_profileScope = nil;"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
@@ -1028,7 +1044,8 @@ class FSM
                 {
                         name = "PERFORM_CLEANUP";
                         itemno = 26;
-                        init = /*%FSM<STATEINIT""">*/"_OPCOM_status = ""analysis"";" \n
+                        init = /*%FSM<STATEINIT""">*/"private _profileScope = createProfileScope ""ALiVE OPCOM FSM: PERFORM_CLEANUP"";" \n
+                         "_OPCOM_status = ""analysis"";" \n
                          "" \n
                          "if (_debug) then {" \n
                          "    [""---------------------""] call ALIVE_fnc_dump;" \n
@@ -1038,7 +1055,8 @@ class FSM
                          "" \n
                          "private _cleanup = [_OPCOM_HANDLER] spawn {" \n
                          "    [_this select 0,""cleanupduplicatesections""] call ALiVE_fnc_OPCOM;" \n
-                         "};"/*%FSM</STATEINIT""">*/;
+                         "};" \n
+                         "_profileScope = nil;"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
@@ -1061,7 +1079,9 @@ class FSM
                 {
                         name = "END";
                         itemno = 29;
-                        init = /*%FSM<STATEINIT""">*/"[_OPCOM_HANDLER,""OPCOM_FSM""] call ALiVE_fnc_HashRem;"/*%FSM</STATEINIT""">*/;
+                        init = /*%FSM<STATEINIT""">*/"private _profileScope = createProfileScope ""ALiVE OPCOM FSM: END"";" \n
+                         "[_OPCOM_HANDLER,""OPCOM_FSM""] call ALiVE_fnc_HashRem;" \n
+                         "_profileScope = nil;"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
@@ -1073,7 +1093,8 @@ class FSM
                 {
                         name = "REQUEST_REEINFOR";
                         itemno = 31;
-                        init = /*%FSM<STATEINIT""">*/"_OPCOM_status = ""reinforce"";" \n
+                        init = /*%FSM<STATEINIT""">*/"private _profileScope = createProfileScope ""ALiVE OPCOM FSM: REQUEST_REEINFOR"";" \n
+                         "_OPCOM_status = ""reinforce"";" \n
                          "_timestamp = time;" \n
                          "" \n
                          "if ([""ALiVE_MIL_LOGISTICS""] call ALiVE_fnc_isModuleAvailable) then {" \n
@@ -1203,7 +1224,8 @@ class FSM
                          "    };" \n
                          "};" \n
                          "" \n
-                         "_OPCOM_DATA= [""analyze"",nil]; _reinforce = nil; _busy = false;"/*%FSM</STATEINIT""">*/;
+                         "_OPCOM_DATA= [""analyze"",nil]; _reinforce = nil; _busy = false;" \n
+                         "_profileScope = nil;"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
@@ -1236,7 +1258,8 @@ class FSM
                 {
                         name = "PERFORM_POSTANAL";
                         itemno = 33;
-                        init = /*%FSM<STATEINIT""">*/"private [""_reinforce""];" \n
+                        init = /*%FSM<STATEINIT""">*/"private _profileScope = createProfileScope ""ALiVE OPCOM FSM: PERFORM_POSTANAL"";" \n
+                         "private [""_reinforce""];" \n
                          "" \n
                          "//Analyze Forces State" \n
                          "_startForcesStrength = [_OPCOM_HANDLER,""startForceStrength"",[]] call ALiVE_fnc_HashGet;" \n
@@ -1277,7 +1300,8 @@ class FSM
                          "      " \n
                          "    if ((_currentCount / _startCount) < _reinforcementRatio) then {_reinforce = +_diff};" \n
                          "  };" \n
-                         "};"/*%FSM</STATEINIT""">*/;
+                         "};" \n
+                         "_profileScope = nil;"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
@@ -1300,7 +1324,8 @@ class FSM
                 {
                         name = "REQUEST_QRF";
                         itemno = 36;
-                        init = /*%FSM<STATEINIT""">*/"_OPCOM_status = ""request qrf"";" \n
+                        init = /*%FSM<STATEINIT""">*/"private _profileScope = createProfileScope ""ALiVE OPCOM FSM: REQUEST_QRF"";" \n
+                         "_OPCOM_status = ""request qrf"";" \n
                          "_timestamp = time;" \n
                          "" \n
                          "private _QRFtype = _qrf select 0;" \n
@@ -1387,7 +1412,8 @@ class FSM
                          "	_attackers = [_OPCOM_HANDLER, ""attackentity"",[_target,1,_QRFtype]] call ALIVE_fnc_OPCOM;" \n
                          "};" \n
                          "" \n
-                         "_OPCOM_DATA= [""analyze"",nil]; _qrf = nil; _busy = false;"/*%FSM</STATEINIT""">*/;
+                         "_OPCOM_DATA= [""analyze"",nil]; _qrf = nil; _busy = false;" \n
+                         "_profileScope = nil;"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
@@ -1420,7 +1446,8 @@ class FSM
                 {
                         name = "REQUEST_RECON";
                         itemno = 38;
-                        init = /*%FSM<STATEINIT""">*/"_OPCOM_status = ""request recon"";" \n
+                        init = /*%FSM<STATEINIT""">*/"private _profileScope = createProfileScope ""ALiVE OPCOM FSM: REQUEST_RECON"";" \n
+                         "_OPCOM_status = ""request recon"";" \n
                          "_timestamp = time;" \n
                          "" \n
                          "private _RECONtype = _recon select 0;" \n
@@ -1484,7 +1511,8 @@ class FSM
                          "	};" \n
                          "};" \n
                          "" \n
-                         "_OPCOM_DATA= [""analyze"",nil]; _recon = nil; _busy = false;"/*%FSM</STATEINIT""">*/;
+                         "_OPCOM_DATA= [""analyze"",nil]; _recon = nil; _busy = false;" \n
+                         "_profileScope = nil;"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
@@ -1517,7 +1545,8 @@ class FSM
                 {
                         name = "REQUEST_OCA";
                         itemno = 40;
-                        init = /*%FSM<STATEINIT""">*/"_OPCOM_status = ""request oca"";" \n
+                        init = /*%FSM<STATEINIT""">*/"private _profileScope = createProfileScope ""ALiVE OPCOM FSM: REQUEST_OCA"";" \n
+                         "_OPCOM_status = ""request oca"";" \n
                          "_timestamp = time;" \n
                          "" \n
                          "private _OCAtype = _oca select 0;" \n
@@ -1574,7 +1603,8 @@ class FSM
                          "	};" \n
                          "};" \n
                          "" \n
-                         "_OPCOM_DATA= [""analyze"",nil]; _oca = nil; _busy = false;"/*%FSM</STATEINIT""">*/;
+                         "_OPCOM_DATA= [""analyze"",nil]; _oca = nil; _busy = false;" \n
+                         "_profileScope = nil;"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {

@@ -73,6 +73,7 @@ if !(_operation in _blackOps) then {
 
 switch (_operation) do {
     case "create": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: create";
         private ["_logic"];
 
         _logic = (createGroup sideLogic) createUnit [QUOTE(ADDON), [0,0], [], 0, "NONE"];
@@ -87,6 +88,7 @@ switch (_operation) do {
     };
 
     case "init": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: init";
         if (isServer) then {
             _logic setVariable ["super", SUPERCLASS];
             _logic setVariable ["class", MAINCLASS];
@@ -108,6 +110,7 @@ switch (_operation) do {
     };
 
     case "start": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: start";
         if (!isServer) exitwith {};
 
         // parse module parameters
@@ -595,6 +598,7 @@ switch (_operation) do {
     };
 
     case "listen": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: listen";
         private _G2 = [_logic,"G2"] call ALiVE_fnc_hashGet;
         if (isnil "_G2") exitwith {};
     
@@ -606,6 +610,7 @@ switch (_operation) do {
     };
 
     case "handleEvent": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: handleEvent";
         private _event = _args;
 
         private _eventData = [_event,"data"] call ALiVE_fnc_hashGet;
@@ -637,6 +642,7 @@ switch (_operation) do {
     };
 
     case "createSpotrepForProfiles": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: createSpotrepForProfiles";
         private _profiles = _args;
 
         private _G2 = [_logic,"G2"] call ALiVE_fnc_hashGet;
@@ -651,6 +657,7 @@ switch (_operation) do {
     };
 
     case "getModuleObjectives": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: getModuleObjectives";
         private _module = _args;
         private _moduleType = typeof _module;
 
@@ -730,6 +737,7 @@ switch (_operation) do {
     // Find any active objectives where the assigned profiles have no waypoints
     // and reset their state so it can be reconsidered for new orders
     case "cleanupduplicatesections": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: cleanupduplicatesections";
         private _objectives = [_logic,"objectives",[]] call ALiVE_fnc_HashGet;
         private _pending_orders = [_logic,"pendingorders",[]] call ALiVE_fnc_HashGet;
         private _size_reserve = [_logic,"sectionsamount_reserve",1] call ALiVE_fnc_HashGet;
@@ -762,6 +770,7 @@ switch (_operation) do {
     };
 
     case "NearestAvailableSection": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: NearestAvailableSection";
 
         //private _id = time; [true, "ALiVE OPCOM composing section!", format["OPCOM_nearestSection_%1",_id]] call ALIVE_fnc_timer;
 
@@ -855,6 +864,7 @@ switch (_operation) do {
     ///////////////////////////////////////////////////
 
     case "findProfilesNearPosition": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: findProfilesNearPosition";
         _args params ["_pos","_sides","_requireVisibility"];
         _pos = [_pos select 0, _pos select 1, 0];
 
@@ -886,6 +896,7 @@ switch (_operation) do {
     };
 
     case "attackentity": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: attackentity";
         ASSERT_TRUE(typeName _args == "ARRAY",str _args);
 
         private ["_target","_reserved","_sides","_size","_type","_proIDs","_knownE","_attackedE","_pos","_profiles","_profileIDs","_profile","_section","_profileID","_i","_waypoints","_posAttacker","_dist","_rtb","_fireSupport","_vehicleProfile","_vehicleType","_ATOtype"];
@@ -1205,8 +1216,10 @@ switch (_operation) do {
     ///////////////////////////////////////////////////
 
     case "setorders": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: setorders";
         _args params ["_pos","_profileID","_objectiveID","_orders"];
 
+        private _objectiveScanScope = createProfileScope "ALiVE OPCOM setorders: objective scan";
         private _TACOM_FSM = [_logic,"TACOM_FSM"] call ALiVE_fnc_HashGet;
         private _objectives = [_logic,"objectives"] call ALiVE_fnc_HashGet;
 
@@ -1218,15 +1231,19 @@ switch (_operation) do {
                 [_logic,"resetProfileOrders",_profileID] call ALiVE_fnc_OPCOM;
             };
         } foreach _objectives;
+        _objectiveScanScope = nil;
 
+        private _pendingOrderScope = createProfileScope "ALiVE OPCOM setorders: pending-order cleanup";
         private _pendingOrders = [_logic,"pendingorders",[]] call ALiVE_fnc_HashGet;
 
         // remove any existing pending orders for this profile
 
         [_pendingOrders, { (_x select 1) == _profileID }] call ALiVE_fnc_deleteIf;
+        _pendingOrderScope = nil;
 
         // add new waypoint to profile
 
+        private _waypointMutationScope = createProfileScope "ALiVE OPCOM setorders: waypoint mutation";
         private _profile = [ALIVE_profileHandler, "getProfile", _profileID] call ALIVE_fnc_profileHandler;
 
         [_profile,"clearWaypoints"] call ALIVE_fnc_profileEntity;
@@ -1241,6 +1258,7 @@ switch (_operation) do {
         [_profileWaypoint,"speed", "NORMAL"] call ALIVE_fnc_hashSet;
 
         [_profile,"addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
+        _waypointMutationScope = nil;
 
         _pendingOrders pushback [_pos,_ProfileID,_objectiveID,time];
 
@@ -1255,6 +1273,7 @@ switch (_operation) do {
     ///////////////////////////////////////////////////
 
     case "synchronizeorders": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: synchronizeorders";
         private _ProfileIDInput = _args;
         private _pendingOrders = [_logic,"pendingorders", []] call ALiVE_fnc_HashGet;
         private _synchronized = false;
@@ -1315,6 +1334,7 @@ switch (_operation) do {
     */
     case "resetorders";
     case "resetProfileOrders": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: resetProfileOrders";
         private _profileID = _args;
 
         // reset reserve queue if there is an entry for the entitiy
@@ -1361,6 +1381,7 @@ switch (_operation) do {
 
     case "getOPCOMbyid";
     case "getOPCOMByID": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: getOPCOMByID";
         ASSERT_TRUE(_args isequaltype "", str _args);
 
         private _opcomIndex = OPCOM_instances findIf { ([_x,"opcomID",""] call ALiVE_fnc_HashGet) == _args };
@@ -1372,6 +1393,7 @@ switch (_operation) do {
 
     case "getobjectivebyid";
     case "getObjectiveByID": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: getObjectiveByID";
         private _id = _args;
 
         if (!isnil "_logic" && {_logic isequaltype []} && {_logic isnotequalto []}) then {
@@ -1394,6 +1416,7 @@ switch (_operation) do {
     };
 
     case "sortObjectives": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: sortObjectives";
         if(isnil "_args") then {
             _args = [_logic,"objectives"] call ALIVE_fnc_hashGet;
         } else {
@@ -1558,6 +1581,7 @@ switch (_operation) do {
     };
 
     case "resetObjective": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: resetObjective";
         if (!isnil "_args") then {
             private _objectiveID = _args;
 
@@ -1595,6 +1619,7 @@ switch (_operation) do {
     };
 
     case "initObjective": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: initObjective";
         if(isnil "_args") then {
                 _args = [_logic,"objectives",[]] call ALIVE_fnc_hashGet;
         } else {
@@ -1733,6 +1758,7 @@ switch (_operation) do {
     };
 
     case "removeObjective": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: removeObjective";
         if !(isServer) exitwith {[_logic,_operation,_args] remoteExec ["ALiVE_fnc_OPCOM",2]};
 
         if (isnil "_args") then {
@@ -1785,6 +1811,7 @@ switch (_operation) do {
     };
 
     case "reorderObjective": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: reorderObjective";
         if !(isServer) exitwith {[_logic,_operation,_args] remoteExec ["ALiVE_fnc_OPCOM",2]};
 
         _args params [
@@ -1816,6 +1843,7 @@ switch (_operation) do {
     };
 
     case "findReinforcementBase": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: findReinforcementBase";
             _AO = [];
             _FOB = [];
             {
@@ -1843,6 +1871,7 @@ switch (_operation) do {
     };
 
     case "addTask": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: addTask";
         _operation = _args select 0;
         _pos = _args select 1;
         _section = _args select 2;
@@ -1875,6 +1904,7 @@ switch (_operation) do {
     };
 
     case "pause": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: pause";
         if(isNil "_args") then {
             // if no new value was provided return current setting
             _args = [_logic,"pause",objNull,false] call ALIVE_fnc_OOsimpleOperation;
@@ -1904,6 +1934,7 @@ switch (_operation) do {
     };
 
     case "stop": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: stop";
         private ["_opcomID","_opcomFSM","_tacomFSM"];
 
         _opcomID = [_logic,"opcomID",""] call ALiVE_fnc_HashGet;
@@ -1927,6 +1958,7 @@ switch (_operation) do {
     };
 
     case "createhashobject": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: createhashobject";
         if (isServer) then {
             _result = [] call ALIVE_fnc_hashCreate;
             [_result,"super"] call ALIVE_fnc_hashRem;
@@ -1935,6 +1967,7 @@ switch (_operation) do {
     };
 
     case "parseTaskProfileCountOverrides": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: parseTaskProfileCountOverrides";
         private _overrides = [] call ALIVE_fnc_hashCreate;
 
         if (isNil "_args") exitWith {
@@ -1977,6 +2010,7 @@ switch (_operation) do {
     };
 
     case "parseTaskProfileTypeOverrides": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: parseTaskProfileTypeOverrides";
         private _overrides = [] call ALIVE_fnc_hashCreate;
 
         if (isNil "_args") exitWith {
@@ -2042,6 +2076,7 @@ switch (_operation) do {
     };
 
     case "normalizeAsymmetricInstallationType": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: normalizeAsymmetricInstallationType";
         if (isNil "_args" || {!(_args isEqualType "")}) exitWith {
             _result = "";
         };
@@ -2063,6 +2098,7 @@ switch (_operation) do {
     };
 
     case "parseAsymmetricInstallationCountOverrides": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: parseAsymmetricInstallationCountOverrides";
         private _overrides = [] call ALIVE_fnc_hashCreate;
 
         if (isNil "_args") exitWith {
@@ -2108,6 +2144,7 @@ switch (_operation) do {
     };
 
     case "createAsymmetricInstallation": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: createAsymmetricInstallation";
         if !(isServer) exitWith {
             _result = false;
         };
@@ -2362,6 +2399,7 @@ switch (_operation) do {
     };
 
     case "seedAsymmetricInstallations": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: seedAsymmetricInstallations";
         if (isNil "_args") then {
             _args = [_logic, "objectives", []] call ALiVE_fnc_HashGet;
         };
@@ -2423,6 +2461,7 @@ switch (_operation) do {
     };
 
     case "getTaskProfileCount": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: getTaskProfileCount";
         _args params [
             ["_task","",[""]],
             ["_default",0,[0]],
@@ -2446,6 +2485,7 @@ switch (_operation) do {
     };
 
     case "getTaskProfileTypes": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: getTaskProfileTypes";
         _args params [
             ["_task","",[""]],
             ["_default",[],[[]]],
@@ -2475,6 +2515,7 @@ switch (_operation) do {
     };
 
     case "convertObject": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: convertObject";
         private ["_object"];
 
         if !(isNil "_args") then {
@@ -2501,6 +2542,7 @@ switch (_operation) do {
     };
 
     case "saveData": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: saveData";
         private ["_objectives","_exportObjectives","_objective","_objectiveID","_exportObjective","_objectivesGlobal","_save","_messages","_message","_saveResult"];
 
         if (isServer && {!isNil "ALIVE_sys_data"} && {!ALIVE_sys_data_DISABLED}) then {
@@ -2624,6 +2666,7 @@ switch (_operation) do {
     };
 
     case "loadData": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: loadData";
         private ["_stopped","_result"];
 
         if !(isServer && {!(isNil "ALIVE_sys_data")} && {!(ALIVE_sys_data_DISABLED)}) exitwith {["LOAD OPCOM DATA FROM DB NOT POSSIBLE! NO SYS DATA MODULE AVAILABLE OR NOT DEDICATED!"] call ALiVE_fnc_dumpR};
@@ -2677,6 +2720,7 @@ switch (_operation) do {
     };
 
     case "loadObjectivesDB": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: loadObjectivesDB";
         private _opcomID = [_logic,"opcomID",""] call ALiVE_fnc_HashGet;
         private _objectives = [];
 
@@ -2841,6 +2885,7 @@ switch (_operation) do {
     };
 
     case "objectives": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: objectives";
         if (isnil "_args") then {
             _result = [_logic,"objectives", []] call ALIVE_fnc_hashGet;
         } else {
@@ -2852,6 +2897,7 @@ switch (_operation) do {
     };
 
     case "findOPCOMByAllegiance": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: findOPCOMByAllegiance";
         if (_args isequaltype "") then {
             private _identifier = tolower _args;
 
@@ -2869,6 +2915,7 @@ switch (_operation) do {
     };
 
     case "addObjective": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: addObjective";
         // allow users to pass side or faction classname for _logic
         _logic = if (_logic isequaltype "") then {
             private _identifier = _logic;
@@ -2945,6 +2992,7 @@ switch (_operation) do {
 
     case "createObjectives";
     case "createobjectives": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: createobjectives";
         if (isnil "_args") exitwith {
             _result = [_logic,"objectives"] call ALIVE_fnc_hashGet;
         };
@@ -3008,6 +3056,7 @@ switch (_operation) do {
     };
 
     case "createObjectiveDebugMarkers": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: createObjectiveDebugMarkers";
         private _objectives = if (_args isequaltype []) then { _args } else { [_logic,"objectives"] call ALiVE_fnc_HashGet };
         private _fullObjectiveIDList = ([_logic,"objectives"] call ALiVE_fnc_HashGet) apply { [_x,"objectiveID"] call ALiVE_fnc_HashGet };
 
@@ -3051,6 +3100,7 @@ switch (_operation) do {
     };
 
     case "nearestObjectives": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: nearestObjectives";
         ASSERT_TRUE(typeName _args == "ARRAY" && {count _args >= 1},str _args);
 
         private ["_state","_pos","_objectives","_tmp"];
@@ -3069,6 +3119,7 @@ switch (_operation) do {
     };
 
     case "nearestEntity": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: nearestEntity";
         ASSERT_TRUE(typeName _args == "ARRAY" && {count _args >= 1},str _args);
 
         private ["_objectives","_state"];
@@ -3093,6 +3144,7 @@ switch (_operation) do {
     };
 
     case "joinObjectiveClient": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: joinObjectiveClient";
         ASSERT_TRUE(typeName _args == "ARRAY",str _args);
 
         private ["_positions","_pos"];
@@ -3161,6 +3213,7 @@ switch (_operation) do {
     };
 
     case "joinObjectiveServer": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: joinObjectiveServer";
         ASSERT_TRUE(typeName _args == "ARRAY",str _args);
 
         private ["_section","_entityID","_profile","_error","_players"];
@@ -3220,6 +3273,7 @@ switch (_operation) do {
     ///////////////////////////////////////////////////
 
     case "analyzeclusteroccupation": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: analyzeclusteroccupation";
         _args params ["_sidesFriendly","_sidesEnemy"];
 
         private _objectives = [_logic,"objectives", []] call ALiVE_fnc_HashGet;
@@ -3315,6 +3369,7 @@ switch (_operation) do {
     ///////////////////////////////////////////////////
 
     case "scanForNearEnemies": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: scanForNearEnemies";
         _args params ["_position",["_requireVisibility", true]];
 
         private _sidesEnemy = [_logic,"sidesenemy", ["EAST"]] call ALiVE_fnc_HashGet;
@@ -3329,6 +3384,7 @@ switch (_operation) do {
     ///////////////////////////////////////////////////
 
     case "scanFriendliesForNearEnemies": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: scanFriendliesForNearEnemies";
 
         private _factions = [_logic,"factions",[]] call ALiVE_fnc_HashGet;
 
@@ -3366,6 +3422,8 @@ switch (_operation) do {
     };
 
     case "scantroops" : {
+        private _profileScope = createProfileScope "ALiVE OPCOM: scantroops";
+
 
         private ["_inf","_mot","_mech","_arm","_air","_sea","_profileIDs","_artilleryClasses","_AAA","_AAAClasses"];
 
@@ -3499,6 +3557,7 @@ switch (_operation) do {
     ///////////////////////////////////////////////////
 
     case "setstatebyclusteroccupation": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: setstatebyclusteroccupation";
         _args params ["_objectives","_operation"];
 
         private _idleStates = switch (_operation) do {
@@ -3528,6 +3587,7 @@ switch (_operation) do {
     ///////////////////////////////////////////////////
 
     case "selectordersbystate": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: selectordersbystate";
         private _state = _args;
 
         private _module = [_logic,"module"] call ALiVE_fnc_HashGet;
@@ -3562,6 +3622,7 @@ switch (_operation) do {
     };
 
     case "sectionsamount_attack": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: sectionsamount_attack";
         if !(_args isequaltype 0) then {
             _result = [_logic, "sectionsamount_attack"] call ALiVE_fnc_HashGet;
         } else {
@@ -3573,6 +3634,7 @@ switch (_operation) do {
     };
 
     case "sectionsamount_reserve": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: sectionsamount_reserve";
         if !(_args isequaltype 0) then {
             _result = [_logic,"sectionsamount_reserve"] call ALiVE_fnc_HashGet;
         } else {
@@ -3584,6 +3646,7 @@ switch (_operation) do {
     };
 
     case "sectionsamount_defend": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: sectionsamount_defend";
         if !(_args isequaltype 0) then {
             _result = [_logic,"sectionsamount_defend"] call ALiVE_fnc_HashGet;
         } else {
@@ -3596,6 +3659,7 @@ switch (_operation) do {
 
 
     case "destroy": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: destroy";
         if (_logic isequaltype objnull) then {
             _logic = _logic getVariable "handler";
         };
@@ -3621,6 +3685,7 @@ switch (_operation) do {
     };
 
     case "debug": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: debug";
         if !(_args isequaltype true) then {
             _args = [_logic,"debug"] call ALIVE_fnc_hashGet;
         } else {
@@ -3631,6 +3696,7 @@ switch (_operation) do {
     };
 
     case "OPCOM_monitor": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: OPCOM_monitor";
         ASSERT_TRUE(_args isequaltype true, str _args);
 
         private _enableMonitor = _args;
@@ -3724,6 +3790,7 @@ switch (_operation) do {
     };
 
     case "changeControlType": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: changeControlType";
         // Execute on Server only — OPCOM state (FSM handles, objectives,
         // controltype) lives in a server-local hash, so a client-side call
         // would tear down nothing and misreport "startup not complete".
@@ -3809,6 +3876,7 @@ switch (_operation) do {
     };
 
     case "state": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: state";
         if (_args isequaltype []) then {
             // Restore state
 
@@ -3842,6 +3910,7 @@ switch (_operation) do {
     };
 
     case "validateStartupState": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: validateStartupState";
         // Taken off the commander itself, the way everything else below is. This used to be read
         // from the arguments of the call, and the one place that makes the call passes none, so
         // it was always nothing at all. Asking nothing what it is synchronised to answers with an
@@ -4036,9 +4105,13 @@ switch (_operation) do {
     };
 
     // keep operation for backwards compat
-    case "convert": { _result = [_args] call ALiVE_fnc_parseArrayFromString };
+    case "convert": {
+        private _profileScope = createProfileScope "ALiVE OPCOM: convert";
+        _result = [_args] call ALiVE_fnc_parseArrayFromString;
+    };
 
     default {
+        private _profileScope = createProfileScope "ALiVE OPCOM: default";
         _result = [_logic, _operation, _args] call SUPERCLASS;
     };
 };
