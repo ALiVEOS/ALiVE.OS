@@ -145,6 +145,7 @@ class FSM
                          "private _controltype = [_OPCOM_HANDLER, ""controltype"",""invasion""] call ALiVE_fnc_HashGet;" \n
                          "private _simultanObjectives = [_OPCOM_HANDLER, ""simultanobjectives"",10] call ALiVE_fnc_HashGet;" \n
                          "private _reinforcementRatio = [_OPCOM_HANDLER, ""reinforcements"",0.9] call ALiVE_fnc_HashGet;" \n
+                         "private _reconBuildingTypes = (ALiVE_militaryBuildingTypes + ALIVE_militaryHQBuildingTypes + ALIVE_civilianPopulationBuildingTypes + ALIVE_militaryParkingBuildingTypes + ALIVE_civilianHQBuildingTypes + ALIVE_civilianCommsBuildingTypes + ALIVE_civilianFuelBuildingTypes) apply {toLower _x};" \n
                          "" \n
                          "private _pause = false;" \n
                          "" \n
@@ -1452,35 +1453,43 @@ class FSM
                          "" \n
                          "private _RECONtype = _recon select 0;" \n
                          "private _target = _recon select 1;" \n
-                         "private _objectives = [_OPCOM_HANDLER,""objectives"",[]] call ALiVE_fnc_HashGet;" \n
+                         "private _objectiveResolutionScope = createProfileScope ""ALiVE OPCOM REQUEST_RECON: objective resolution"";" \n
+                         "private _objective = [_OPCOM_HANDLER,""getobjectivebyid"",_target] call ALiVE_fnc_OPCOM;" \n
+                         "_objectiveResolutionScope = nil;" \n
                          "" \n
                          "// Passed Target is an objective" \n
-                         "if ({_target == (_x select 2 select 0)} count _objectives > 0) then {" \n
-                         "" \n
-                         "	private _objective = [_OPCOM_HANDLER,""getobjectivebyid"",_target] call ALiVE_fnc_OPCOM;" \n
-                         "	if (isnil ""_objective"" || {[_objective,""deleted"",false] call ALiVE_fnc_HashGet}) exitWith {};" \n
+                         "if !(isnil ""_objective"" || {[_objective,""deleted"",false] call ALiVE_fnc_HashGet}) then {" \n
                          "" \n
                          "	private _center = [_objective,""center""] call ALiVE_fnc_HashGet;" \n
                          "	private _size = [_objective,""size"",100] call ALiVE_fnc_HashGet;" \n
                          "" \n
                          "	// Only send recce if enemies are near (OPCOM doesn't know this but avoids sending recce's to friendly territory)" \n
-                         "	private _enemyterritory = [_center, _side, 1000, true] call ALIVE_fnc_isEnemyNear;" \n
+                         "	private _enemyProximityScope = createProfileScope ""ALiVE OPCOM REQUEST_RECON: enemy proximity"";" \n
+                         "	private _enemyterritory = count ([_center, 1000, [_sidesEnemy, ""entity""]] call ALiVE_fnc_getNearProfiles) > 0;" \n
+                         "	_enemyProximityScope = nil;" \n
                          "" \n
                          "	if (_enemyTerritory && _size > 150) then {" \n
                          "		// Get objective buildings and filter for ALiVE types" \n
+                         "   		private _nearestObjectsScope = createProfileScope ""ALiVE OPCOM REQUEST_RECON: nearestObjects"";" \n
                          "   		private _buildings = nearestObjects [_center, [""House_F""], _size];" \n
-                         "   		{	" \n
-                         "			 private _blg = typeof _x;" \n
-                         "     			 if ( {(tolower _blg) find (tolower _x) != -1} count (ALiVE_militaryBuildingTypes + ALIVE_militaryHQBuildingTypes + ALIVE_civilianPopulationBuildingTypes + ALIVE_militaryParkingBuildingTypes + ALIVE_civilianHQBuildingTypes + ALIVE_civilianCommsBuildingTypes + ALIVE_civilianFuelBuildingTypes) == 0) then {" \n
-                         "      			_buildings set [_forEachIndex, -1];" \n
-                         "      		};" \n
-                         "   		} foreach _buildings;" \n
-                         "   		_buildings = _buildings - [-1];" \n
+                         "   		_nearestObjectsScope = nil;" \n
+                         "   		private _buildingFilterScope = createProfileScope ""ALiVE OPCOM REQUEST_RECON: building filter"";" \n
+                         "   		private _candidateMatchingScope = createProfileScope ""ALiVE OPCOM REQUEST_RECON: building candidate matching"";" \n
+                         "   		_buildings = _buildings select {" \n
+                         "			private _buildingType = toLower typeOf _x;" \n
+                         "			(_reconBuildingTypes findIf {_buildingType find _x != -1}) != -1" \n
+                         "		};" \n
+                         "   		_candidateMatchingScope = nil;" \n
+                         "   		_buildingFilterScope = nil;" \n
                          "" \n
                          "		if (count _buildings > 0) then {" \n
                          "			private _building = selectRandom _buildings;" \n
                          "" \n
-                         "			if ([""ALiVE_mil_ATO""] call ALiVE_fnc_IsModuleAvailable) then {" \n
+                         "			private _atoDispatchScope = createProfileScope ""ALiVE OPCOM REQUEST_RECON: ATO dispatch"";" \n
+                         "			private _atoAvailabilityScope = createProfileScope ""ALiVE OPCOM REQUEST_RECON: ATO availability"";" \n
+                         "			private _atoAvailable = [""ALiVE_mil_ATO""] call ALiVE_fnc_IsModuleAvailable;" \n
+                         "			_atoAvailabilityScope = nil;" \n
+                         "			if (_atoAvailable) then {" \n
                          "" \n
                          "				// debug ---------------------------------------" \n
                          "				if(_debug) then { [""OPCOM requesting recce on objective %3 building %2!"",_RECONtype,_building,_target] call ALIVE_fnc_dumpR; };" \n
@@ -1488,8 +1497,11 @@ class FSM
                          "                    " \n
                          "				// [""Calling ATO event""] call ALiVE_fnc_DumpR;" \n
                          "" \n
+                         "				private _atoInitialisationScope = createProfileScope ""ALiVE OPCOM REQUEST_RECON: ATO initialisation wait"";" \n
                          "				waitUntil {[""ALiVE_mil_ATO""] call ALiVE_fnc_isModuleInitialised};" \n
+                         "				_atoInitialisationScope = nil;" \n
                          "" \n
+                         "				private _atoEventCreationScope = createProfileScope ""ALiVE OPCOM REQUEST_RECON: ATO event creation"";" \n
                          "				_args = [" \n
                          "					""GREEN"",	// ROE" \n
                          "					1200,		// Height" \n
@@ -1501,12 +1513,16 @@ class FSM
                          "					[_building]  // TARGETS either profile or unit" \n
                          "				];" \n
                          "				_event = ['ATO_REQUEST', [""Recce"", [_side] call ALiVE_fnc_sideTextToObject, _factions select 0, position _building, _args],""OPCOM""] call ALIVE_fnc_event;" \n
+                         "				_atoEventCreationScope = nil;" \n
+                         "				private _atoEventLoggingScope = createProfileScope ""ALiVE OPCOM REQUEST_RECON: ATO event logging"";" \n
                          "				_eventID = [ALIVE_eventLog, ""addEvent"",_event] call ALIVE_fnc_eventLog;" \n
+                         "				_atoEventLoggingScope = nil;" \n
                          "   			} else {" \n
                          "				// debug ---------------------------------------" \n
                          "				if(_debug) then { [""OPCOM request for recce on objective %3 building %2 not possible! No ATO available!"",_RECONtype,_building,_target] call ALIVE_fnc_dumpR; };" \n
                          "				// debug ---------------------------------------" \n
                          "			};" \n
+                         "			_atoDispatchScope = nil;" \n
                          "		};" \n
                          "	};" \n
                          "};" \n
