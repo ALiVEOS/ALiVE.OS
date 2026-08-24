@@ -861,6 +861,33 @@ if (count _found == 0 && {_preference in ["auto", "helipad"]} && {_isHeli || _is
         // now correctly falls through to the registry + footprint + occupied-pad checks below and
         // deconflicts onto a distinct pad.
         if (_padPos distance2D _centerPos < 3 && {!isNull _ownVeh} && {alive _ownVeh} && {_ownVeh distance2D _padPos < 5}) exitWith { _found = [_padPos, _padDir]; };
+        // An ATO-stamped pad is one aircraft's slot marker, not shared parking, so it is offered only
+        // when it is near the spot being asked for. The measured failure was an Apache being handed a
+        // stray pad 88m away that a gunship had left behind on 5-degree grass, abandoning the real
+        // helipad it already held.
+        //
+        // The threshold is bracketed by two measurements rather than borrowed from a constant:
+        //
+        //   ~0m    an aircraft's own pad - the profile position IS the pad
+        //   30.08m the ADJACENT pad on a Stratis airfield, legitimately wanted after a pad swap
+        //   88m    the measured harm - an Apache dragged onto a gunship's abandoned pad
+        //
+        // 60m sits clear of both. 30m was tried first and refused a helicopter the neighbouring pad by
+        // eight centimetres, sending it 104m to an apron disc, because real pad spacing lands exactly on
+        // that line. 5m was tried before that and was worse still: ATO deliberately leaves an AI landing
+        // up to 30m off its slot (fnc_ATO.sqf:8407-8408 skips the reposition inside 30m), the aircraft
+        // despawns where it stands, and its next respawn searches from THERE rather than from startPos.
+        //
+        // Deliberately a distance test and not an ownership one. An owner id has to be released when an
+        // aircraft is lost or replaced, and nothing here ever deletes a pad or clears a tag; an identity
+        // scheme was tried and reverted after it blacklisted replacements, then let siblings steal pads,
+        // then overrode physical occupancy. Distance needs no lifecycle at all.
+        //
+        // Note the own-airframe fast path above does NOT rescue this case: the only caller passing a
+        // live hull is _fnc_safeReposition, and its callers pass the stored slot while the hull is
+        // elsewhere, so it is never within 5m of the pad under test. This distance rule is what keeps
+        // an aircraft its own pad, not that exemption. A terrain-authored pad carries no mark.
+        if ((_x getVariable ["ALiVE_atoStamped", false]) && {_padPos distance2D _centerPos > 60}) then { continue };
         if !([_padPos, _minSeparation] call _fnc_registryClear) then { continue };
         // Filter the helipad object itself (and any host building it
         // sits on, picked up via 2 m proximity) out of the obstacle

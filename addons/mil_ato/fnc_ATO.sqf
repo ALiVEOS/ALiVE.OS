@@ -1648,6 +1648,14 @@ switch(_operation) do {
                         // point so the stored helipad field matches startPos exactly. Only ever moves the
                         // freshly-created invisible pad, never a real HeliH (that branch is skipped).
                         _helipad setPosATL [_padPos select 0, _padPos select 1, 0];
+                        // Mark it as ATO's own slot marker rather than shared parking. This pad exists
+                        // only so this asset has a helipad field; it was put wherever the validator could
+                        // find, which for a wide airframe that fits nowhere is open ground far from the
+                        // airfield, measured in game at up to 22 degrees of slope. The pad search has no
+                        // slope test because it assumes a pad is deliberately-placed flat ground - true of
+                        // a terrain-authored HeliH, false of this. A plain flag is enough: the rule that
+                        // reads it turns on DISTANCE, so nothing ever has to clear or transfer it.
+                        _helipad setVariable ["ALiVE_atoStamped", true, true];
                     };
                     [_asset,"helipad", position _helipad] call ALiVE_fnc_hashSet;
 
@@ -2897,7 +2905,11 @@ switch(_operation) do {
 
                                     } else {
                                         // add a bloody helipad TODO: improve placement
-                                        "Land_HelipadEmpty_F" createVehicle _flatPos;
+                                        // Marked like the primary stamp site: this is ATO's own slot marker for a
+                                        // base with no pads of its own, not shared parking. The return value was
+                                        // being discarded, so the object could not be marked without capturing it.
+                                        private _compPad = "Land_HelipadEmpty_F" createVehicle _flatPos;
+                                        _compPad setVariable ["ALiVE_atoStamped", true, true];
                                     };
 
                                     private _vehicleClass = selectRandom _heliClasses;
@@ -3489,6 +3501,12 @@ switch(_operation) do {
                                     private _tmp = _helipadPos nearObjects ["HeliH", 5];
                                     if (count _tmp == 0) then {
                                         private _helipad = "Land_HelipadEmpty_F" createvehicle _helipadPos;
+                                        // Same mark as the primary stamp site: this is ATO rebuilding its OWN slot
+                                        // marker from the save, so it must not come back as ordinary parking. The
+                                        // helipad position survives the save even though an object setVariable does
+                                        // not, so without this line every stray pad is faithfully restored as
+                                        // attractive parking and the fault returns in every loaded session.
+                                        _helipad setVariable ["ALiVE_atoStamped", true, true];
                                         [_vehicle,"helipad",position _helipad] call ALiVE_fnc_hashSet;
                                     } else {
                                         [_vehicle,"helipad",position (_tmp select 0)] call ALiVE_fnc_hashSet;
