@@ -1249,7 +1249,7 @@ switch (_operation) do {
         private _profileIDs = keys _ordersByProfileID;
 
         private _assignmentScope = createProfileScope "ALiVE OPCOM setSectionOrders: assignment reconciliation";
-        private _objectivesByID = [_logic,"objectivesByID",createHashMap] call ALiVE_fnc_HashGet;
+        private _objectivesByID = [_logic,"objectivesByID"] call ALiVE_fnc_HashGet;
 
         if (_targetObjective isEqualTo []) then {
             _targetObjective = _objectivesByID get _objectiveID;
@@ -1311,8 +1311,8 @@ switch (_operation) do {
 
         private _reassignedProfileIDs = [];
         private _emptiedObjectiveIDs = [];
-        private _objectivesByID = [_logic,"objectivesByID",createHashMap] call ALiVE_fnc_HashGet;
-        private _profileObjectiveAssignment = [_logic,"profileObjectiveAssignment",createHashMap] call ALiVE_fnc_HashGet;
+        private _objectivesByID = [_logic,"objectivesByID"] call ALiVE_fnc_HashGet;
+        private _profileObjectiveAssignment = [_logic,"profileObjectiveAssignment"] call ALiVE_fnc_HashGet;
 
         _objectivesByID set [_objectiveID,_objective];
 
@@ -1462,8 +1462,8 @@ switch (_operation) do {
         // Remove the profile directly from its assigned objective. The fallback
         // scan repairs legacy or externally-mutated section data without keeping
         // the linear search on the normal order-reset path.
-        private _objectivesByID = [_logic,"objectivesByID",createHashMap] call ALiVE_fnc_HashGet;
-        private _profileObjectiveAssignment = [_logic,"profileObjectiveAssignment",createHashMap] call ALiVE_fnc_HashGet;
+        private _objectivesByID = [_logic,"objectivesByID"] call ALiVE_fnc_HashGet;
+        private _profileObjectiveAssignment = [_logic,"profileObjectiveAssignment"] call ALiVE_fnc_HashGet;
         private _assignedObjectiveID = _profileObjectiveAssignment get _profileID;
         private _assignmentRemoved = false;
 
@@ -1539,11 +1539,11 @@ switch (_operation) do {
         private _id = _args;
 
         if (!isnil "_logic" && {_logic isequaltype []} && {_logic isnotequalto []}) then {
-            private _objectivesByID = [_logic,"objectivesByID",createHashMap] call ALiVE_fnc_HashGet;
+            private _objectivesByID = [_logic,"objectivesByID"] call ALiVE_fnc_HashGet;
             _result = _objectivesByID get _id;
         } else {
             {
-                private _objectivesByID = [_x,"objectivesByID",createHashMap] call ALiVE_fnc_HashGet;
+                private _objectivesByID = [_x,"objectivesByID"] call ALiVE_fnc_HashGet;
                 private _objective = _objectivesByID get _id;
                 if !(isNil "_objective") exitWith {
                     _result = _objective;
@@ -1594,11 +1594,11 @@ switch (_operation) do {
             };
         } forEach _objectives;
 
-        [_logic,"objectivesByID",_objectivesByID] call ALiVE_fnc_HashSet;
-        [_logic,"profileObjectiveAssignment",_profileObjectiveAssignment] call ALiVE_fnc_HashSet;
+        [_logic,"objectivesByID", _objectivesByID] call ALiVE_fnc_HashSet;
+        [_logic,"profileObjectiveAssignment", _profileObjectiveAssignment] call ALiVE_fnc_HashSet;
 
         {
-            [_logic,"resetObjective",_x] call MAINCLASS;
+            [_logic,"resetObjective", _x] call MAINCLASS;
         } forEach _objectivesEmptiedByRepair;
 
         _result = [_objectivesByID,_profileObjectiveAssignment];
@@ -1958,7 +1958,7 @@ switch (_operation) do {
             private _objectiveID = _args;
 
             private _objectives = [_logic,"objectives", []] call ALiVE_fnc_HashGet;
-            private _objectivesByID = [_logic,"objectivesByID",createHashMap] call ALiVE_fnc_HashGet;
+            private _objectivesByID = [_logic,"objectivesByID"] call ALiVE_fnc_HashGet;
             private _objective = _objectivesByID get _objectiveID;
             private _objectiveIndex = if (isNil "_objective") then {
                 -1
@@ -2015,7 +2015,7 @@ switch (_operation) do {
         ];
 
         private _objectives = [_logic,"objectives", []] call ALiVE_fnc_HashGet;
-        private _objectivesByID = [_logic,"objectivesByID",createHashMap] call ALiVE_fnc_HashGet;
+        private _objectivesByID = [_logic,"objectivesByID"] call ALiVE_fnc_HashGet;
         private _objective = _objectivesByID get _objectiveID;
         private _objectiveIndex = if (isNil "_objective") then {
             -1
@@ -3188,7 +3188,7 @@ switch (_operation) do {
             _objectives pushback _objective;
         };
 
-        private _objectivesByID = [_logic,"objectivesByID",createHashMap] call ALiVE_fnc_HashGet;
+        private _objectivesByID = [_logic,"objectivesByID"] call ALiVE_fnc_HashGet;
         _objectivesByID set [_id,_objective];
 
         _result = _objective;

@@ -295,7 +295,7 @@ class FSM
                          "        };" \n
                          "" \n
                          "        case (""analyze"") : {" \n
-                         "            private[""_orders"",""_result"",""_targetsWithState""];" \n
+                         "            private[""_selectedState"",""_selectedObjective""];" \n
                          "" \n
                          "            //Check TACOMs Data value (starting attack if you pass nil to it, see below)" \n
                          "            if !(isnil ""_DATA_VALUE"") then {" \n
@@ -330,11 +330,10 @@ class FSM
                          "            _at = [];" \n
                          "            _def = [];" \n
                          "            _res = [];" \n
-                         "            _idl = [];" \n
                          "            _active = 0;" \n
                          "" \n
                          "            {" \n
-                         "                private _objectiveID = [_x, ""objectiveID""] call AliVE_fnc_HashGet;" \n
+                         "                private _objectiveID = _x select 2 select 0;" \n
                          "" \n
                          "                if !(_objectiveID in _OPCOM_SKIP_OBJECTIVES) then {" \n
                          "                    private [""_state""];" \n
@@ -342,11 +341,10 @@ class FSM
                          "                    _state = _x select 2 select 5;" \n
                          "" \n
                          "                    switch (_state) do {" \n
-                         "                        case (""unassigned"") : {_un pushback _x};" \n
-                         "                        case (""attack"") : {_at pushback _x};" \n
-                         "                        case (""defend"") : {_def pushback _x};" \n
-                         "                        case (""reserve"") : {_res pushback _x};" \n
-                         "                        case (""idle"") : {_idl pushback _x};" \n
+                         "                        case (""unassigned"") : {if (_un isEqualTo []) then {_un pushBack _x}};" \n
+                         "                        case (""attack"") : {if (_at isEqualTo []) then {_at pushBack _x}};" \n
+                         "                        case (""defend"") : {if (_def isEqualTo []) then {_def pushBack _x}};" \n
+                         "                        case (""reserve"") : {if (_res isEqualTo []) then {_res pushBack _x}};" \n
                          "                    };" \n
                          "" \n
                          "                    if (_state in [""attacking"",""defending""]) then {_active = _active + 1};" \n
@@ -378,33 +376,48 @@ class FSM
                          "" \n
                          "                {" \n
                          "                    if (_x select 0) exitwith {" \n
-                         "                        _targetsWithState = (_x select 1);" \n
+                         "                        _selectedState = (_x select 1);" \n
                          "                    };" \n
                          "                } foreach _priorities;" \n
                          "" \n
                          "            //Select orders and execute" \n
-                         "            if !(isnil ""_targetsWithState"") then {" \n
-                         "                _orders = [_OPCOM_HANDLER,""selectordersbystate"",_targetsWithState] call ALiVE_fnc_OPCOM;" \n
-                         "                " \n
-                         "                if !(isnil ""_orders"") then {" \n
-                         "                    private [""_o""];" \n
+                         "            if !(isnil ""_selectedState"") then {" \n
+                         "                _selectedObjective = switch (_selectedState) do {" \n
+                         "                    case (""unassigned"") : {_un select 0};" \n
+                         "                    case (""attack"") : {_at select 0};" \n
+                         "                    case (""defend"") : {_def select 0};" \n
+                         "                    case (""reserve"") : {_res select 0};" \n
+                         "                };" \n
                          "" \n
-                         "                    _o = _orders select 1;" \n
-                         "                    _operation = [_o,""opcom_orders""] call AliVE_fnc_HashGet;" \n
+                         "                private _selectionAllowed = true;" \n
+                         "                if (_selectedState in [""attack"",""unassigned""]) then {" \n
+                         "                    private _module = [_OPCOM_HANDLER,""module""] call ALiVE_fnc_HashGet;" \n
+                         "                    _selectionAllowed = {((typeof _x) == ""EmptyDetector"") && {!(triggerActivated _x)}} count (synchronizedObjects _module) == 0;" \n
+                         "                };" \n
+                         "" \n
+                         "                if (_selectionAllowed) then {" \n
+                         "                    _operation = switch (_selectedState) do {" \n
+                         "                        case (""unassigned"") : {""attack""};" \n
+                         "                        case (""attack"") : {""attack""};" \n
+                         "                        case (""defend"") : {""defend""};" \n
+                         "                        case (""reserve"") : {""reserve""};" \n
+                         "                    };" \n
+                         "" \n
+                         "                    [_selectedObjective,""opcom_orders"",_operation] call AliVE_fnc_HashSet;" \n
                          "" \n
                          "                    switch (_operation) do {" \n
                          "                        case (""attack"") : {" \n
-                         "                            _attack = _o;" \n
+                         "                            _attack = _selectedObjective;" \n
                          "                        };" \n
                          "                        case (""defend"") : {" \n
-                         "                            _defend = _o;" \n
+                         "                            _defend = _selectedObjective;" \n
                          "                        };" \n
                          "                        case (""reserve"") : {" \n
-                         "                            _reserve = _o;" \n
+                         "                            _reserve = _selectedObjective;" \n
                          "                        };" \n
                          "                        //Custom" \n
                          "                    };" \n
-                         "                    if(_debug) then { [""OPCOM orders TACOM to %1 target %2"",([_o,""opcom_orders""] call AliVE_fnc_HashGet),([_o,""objectiveID""] call AliVE_fnc_HashGet)] call ALIVE_fnc_dumpR; };" \n
+                         "                    if(_debug) then { [""OPCOM orders TACOM to %1 target %2"",_operation,([_selectedObjective,""objectiveID""] call AliVE_fnc_HashGet)] call ALIVE_fnc_dumpR; };" \n
                          "                } else {" \n
                          "                    _busy = false;" \n
                          "                };" \n
@@ -1331,13 +1344,10 @@ class FSM
                          "" \n
                          "private _QRFtype = _qrf select 0;" \n
                          "private _target = _qrf select 1;" \n
-                         "private _objectives = [_OPCOM_HANDLER,""objectives"",[]] call ALiVE_fnc_HashGet;" \n
+                         "private _objective = [_OPCOM_HANDLER,""getobjectivebyid"",_target] call ALiVE_fnc_OPCOM;" \n
                          "" \n
                          "// Passed Target is an objective" \n
-                         "if ({_target == (_x select 2 select 0)} count _objectives > 0) then {" \n
-                         "" \n
-                         "	private _objective = [_OPCOM_HANDLER,""getobjectivebyid"",_target] call ALiVE_fnc_OPCOM;" \n
-                         "	if (isnil ""_objective"" || {[_objective,""deleted"",false] call ALiVE_fnc_HashGet}) exitWith {};" \n
+                         "if !(isnil ""_objective"" || {[_objective,""deleted"",false] call ALiVE_fnc_HashGet}) then {" \n
                          "" \n
                          "	private _center = [_objective,""center""] call ALiVE_fnc_HashGet;" \n
                          "	private _size = [_objective,""size"",100] call ALiVE_fnc_HashGet;" \n
@@ -1567,13 +1577,10 @@ class FSM
                          "" \n
                          "private _OCAtype = _oca select 0;" \n
                          "private _target = _oca select 1;" \n
-                         "private _objectives = [_OPCOM_HANDLER,""objectives"",[]] call ALiVE_fnc_HashGet;" \n
+                         "private _objective = [_OPCOM_HANDLER,""getobjectivebyid"",_target] call ALiVE_fnc_OPCOM;" \n
                          "" \n
                          "// Passed Target is an objective" \n
-                         "if ({_target == (_x select 2 select 0)} count _objectives > 0) then {" \n
-                         "" \n
-                         "	private _objective = [_OPCOM_HANDLER,""getobjectivebyid"",_target] call ALiVE_fnc_OPCOM;" \n
-                         "	if (isnil ""_objective"" || {[_objective,""deleted"",false] call ALiVE_fnc_HashGet}) exitWith {};" \n
+                         "if !(isnil ""_objective"" || {[_objective,""deleted"",false] call ALiVE_fnc_HashGet}) then {" \n
                          "" \n
                          "	private _center = [_objective,""center""] call ALiVE_fnc_HashGet;" \n
                          "	private _size = [_objective,""size"",100] call ALiVE_fnc_HashGet; " \n
