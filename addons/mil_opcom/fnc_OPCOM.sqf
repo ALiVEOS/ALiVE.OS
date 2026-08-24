@@ -745,7 +745,7 @@ switch (_operation) do {
     case "cleanupduplicatesections": {
         private _profileScope = createProfileScope "ALiVE OPCOM: cleanupduplicatesections";
         private _objectives = [_logic,"objectives",[]] call ALiVE_fnc_HashGet;
-        private _pending_orders = [_logic,"pendingorders",[]] call ALiVE_fnc_HashGet;
+        private _profilesByID = [ALiVE_profileHandler,"profilesById"] call ALiVE_fnc_hashGet;
         private _size_reserve = [_logic,"sectionsamount_reserve",1] call ALiVE_fnc_HashGet;
         private _factions = [_logic,"factions"] call ALiVE_fnc_HashGet;
 
@@ -757,7 +757,7 @@ switch (_operation) do {
 
             private _sectionWaypoints = 0;
             {
-                private _profile = [ALiVE_ProfileHandler,"getProfile", _x] call ALiVE_fnc_ProfileHandler;
+                private _profile = _profilesByID get _x;
 
                 if !(isnil "_profile") then {
                     private _profileWaypoints = _profile select 2 select 16;
@@ -773,6 +773,24 @@ switch (_operation) do {
                 [_logic,"resetObjective", ([_objective,"objectiveID"] call ALiVE_fnc_HashGet)] call ALiVE_fnc_OPCOM;
             };
         } foreach _objectives;
+
+        private _pendingOrderCleanupScope = createProfileScope "ALiVE OPCOM cleanupduplicatesections: pending order cleanup";
+        private _pendingOrders = [_logic,"pendingorders",[]] call ALiVE_fnc_HashGet;
+        private _ordersToRemove = [];
+
+        {
+            _x params ["","_profileID","","_orderTime"];
+
+            private _dead = isNil { _profilesByID get _profileID };
+            private _timeout = (time - _orderTime) > 3600;
+
+            if (_dead || {_timeout}) then {
+                _ordersToRemove pushBack _forEachIndex;
+            };
+        } forEach _pendingOrders;
+
+        [_pendingOrders,_ordersToRemove] call ALiVE_fnc_deleteAtMany;
+        _pendingOrderCleanupScope = nil;
     };
 
     case "NearestAvailableSection": {
@@ -1267,11 +1285,12 @@ switch (_operation) do {
         _pendingOrderScope = nil;
 
         private _waypointMutationScope = createProfileScope "ALiVE OPCOM setSectionOrders: waypoint mutation";
+        private _profilesByID = [ALiVE_profileHandler,"profilesById"] call ALiVE_fnc_hashGet;
         private _profileWaypoints = [];
 
         {
             _x params ["_pos","_profileID"];
-            private _profile = [ALIVE_profileHandler,"getProfile",_profileID] call ALIVE_fnc_profileHandler;
+            private _profile = _profilesByID get _profileID;
 
             if !(isNil "_profile") then {
                 [_profile,"clearWaypoints"] call ALIVE_fnc_profileEntity;
@@ -1383,61 +1402,43 @@ switch (_operation) do {
     // for that order remain
     ///////////////////////////////////////////////////
 
-    case "synchronizeorders": {
+    case "synchronizeorders";
+    case "synchronizeOrders": {
         private _profileScope = createProfileScope "ALiVE OPCOM: synchronizeorders";
-        private _ProfileIDInput = _args;
+        private _profileIDInput = _args;
         private _pendingOrders = [_logic,"pendingorders", []] call ALiVE_fnc_HashGet;
-        private _synchronized = false;
+        private _locateOrderScope = createProfileScope "ALiVE OPCOM synchronizeorders: locate completed order";
+        private _profilePendingOrderIndex = _pendingOrders findIf { (_x select 1) == _profileIDInput };
+        _locateOrderScope = nil;
 
-        // private _profilePendingOrderIndex = _pendingOrders findIf { (_x select 1) == _ProfileIDInput };
-        // if (_profilePendingOrderIndex == -1) exitwith {};
+        if (_profilePendingOrderIndex == -1) exitWith {
+            _result = false;
+        };
 
-        // private _profilePendingOrder = _pendingOrders deleteat _profilePendingOrderIndex;
-        // private _objective = _profilePendingOrder select 2;
-        // private _remainingOrders = [];
+        private _profilePendingOrder = _pendingOrders deleteAt _profilePendingOrderIndex;
+        private _objectiveIDToCheck = _profilePendingOrder select 2;
 
-        // {
-        //     _x params ["_pos","_profileID","_objectiveID","_time"];
+        private _objectiveOrderScope = createProfileScope "ALiVE OPCOM synchronizeorders: validate objective orders";
+        private _profilesByID = [ALiVE_profileHandler,"profilesById"] call ALiVE_fnc_hashGet;
+        private _hasRemainingOrders = false;
 
-        //     if (_objectiveID == _objective) then {
-        //         private _dead = isnil { [ALiVE_profileHandler,"getProfile", _profileID] call ALiVE_fnc_profileHandler };
-        //         private _timeout = (time - _time) > 3600;
-        //     };
-        // } foreach _pendingOrders;
-
-        private _ordersToRemove = [];
-        private _objectiveIDsToCheck = [];
         {
-            _x params ["_pos","_profileID","_objectiveID","_time"];
+            _x params ["","_profileID","_objectiveID","_orderTime"];
 
-            private _dead = isnil { [ALiVE_profileHandler,"getProfile", _profileID] call ALiVE_fnc_profileHandler };
-            private _timeout = (time - _time) > 3600;
+            if (_objectiveID == _objectiveIDToCheck) then {
+                private _dead = isNil { _profilesByID get _profileID };
+                private _timeout = (time - _orderTime) > 3600;
 
-            if (_dead || { _timeout } || { _ProfileID == _ProfileIDInput }) then {
-                _ordersToRemove pushback _foreachindex;
-                _objectiveIDsToCheck pushback _objectiveID;
+                if (_dead || {_timeout}) then {
+                    _pendingOrders deleteAt _forEachIndex;
+                } else {
+                    _hasRemainingOrders = true;
+                };
             };
-        } foreach _pendingOrders;
+        } forEachReversed _pendingOrders;
 
-        [_pendingOrders, _ordersToRemove] call ALiVE_fnc_deleteAtMany;
-
-        //We have to check for any additional orders for the given
-        // objectives *after deleting from the array*,
-        // otherwise findIf just finds the exact same order
-        // that we were already looking at above (in "_x")
-        // and _synchronized is never set to true.
-
-        //Get rid of any duplicate objective IDs in the array
-        _objectiveIDsToCheck = _objectiveIDsToCheck arrayIntersect _objectiveIDsToCheck;
-        {
-            private _objectiveId = _x;
-            private _objectiveFound = _pendingOrders findIf { _objectiveID == (_x select 2) };
-            if (_objectiveFound == -1) then {
-                _synchronized = true; 
-            };
-        } forEach _objectiveIDsToCheck;
-        
-        _result = _synchronized;
+        _result = !_hasRemainingOrders;
+        _objectiveOrderScope = nil;
     };
 
     /*
@@ -1454,7 +1455,10 @@ switch (_operation) do {
 
         // reset pending orders if there is an entry for the entitiy
         private _pendingOrders = [_logic,"pendingorders", []] call ALiVE_fnc_HashGet;
-        _pendingOrders deleteat (_pendingOrders findif { (_x select 1) == _profileID });
+        private _pendingOrderIndex = _pendingOrders findIf { (_x select 1) == _profileID };
+        if (_pendingOrderIndex != -1) then {
+            _pendingOrders deleteAt _pendingOrderIndex;
+        };
 
         // if entity is assigned to objective, remove it
         // if objective then has no profiles assigned, reset objective

@@ -237,6 +237,7 @@ class FSM
                          "    switch (_DATA_OPERATION) do {" \n
                          "" \n
                          "        case (""analyze_internal"") : {" \n
+                         "            private _internalAnalysisScope = createProfileScope ""ALiVE TACOM ANALYZE: internal analysis"";" \n
                          "            // Scan for enemies when inactive more than 60 seconds" \n
                          "            //[""Analyze internal | %1 | %2"",time,_lastEnemyScan] call ALiVE_fnc_DumpR;" \n
                          "" \n
@@ -278,23 +279,27 @@ class FSM
                          "                        " \n
                          "                _lastEnemyScan = time;" \n
                          "            };" \n
+                         "            _internalAnalysisScope = nil;" \n
                          "        };" \n
                          "        " \n
                          "        //Analyze sent data" \n
                          "        case (""analyze"") : {" \n
                          "            private [""_targets"",""_targetID"",""_target"",""_vehicle""];" \n
+                         "            private _orderDecodeScope = createProfileScope ""ALiVE TACOM ANALYZE: order decode"";" \n
                          "    " \n
                          "            _objective = _DATA_VALUE;" \n
-                         "            if (isnil ""_objective"") exitwith {};" \n
+                         "            if (isnil ""_objective"") exitwith {_orderDecodeScope = nil};" \n
                          "            _objectiveDeleted = [_objective,""deleted"",false] call ALiVE_fnc_HashGet;" \n
-                         "            if (_objectiveDeleted) exitwith {};" \n
+                         "            if (_objectiveDeleted) exitwith {_orderDecodeScope = nil};" \n
                          "" \n
                          "            _pos = [_objective,""center""] call AliVE_fnc_HashGet;" \n
                          "            _opcom_orders = [_objective,""opcom_orders""] call AliVE_fnc_HashGet;" \n
                          "            _state = [_objective,""opcom_state""] call AliVE_fnc_HashGet;" \n
                          "            _playertasks = [_OPCOM_HANDLER,""playertasks"",[]] call ALiVE_fnc_HashGet;" \n
+                         "            _orderDecodeScope = nil;" \n
                          "" \n
                          "            //select internal TACOM orders by global OPCOM order and set appropriate conditions for execution" \n
+                         "            private _orderDecisionScope = createProfileScope ""ALiVE TACOM ANALYZE: order decision"";" \n
                          "            switch (_opcom_orders) do {" \n
                          "" \n
                          "                case (""attack"") : {" \n
@@ -349,11 +354,13 @@ class FSM
                          "                case (""custom"") : {};" \n
                          "                default {};" \n
                          "            };" \n
+                         "            _orderDecisionScope = nil;" \n
                          "        };" \n
                          "" \n
                          "        //handle internal order completion by TACOM order state" \n
                          "        case (""completed"") : {" \n
                          "            private [""_ProfileID"",""_profile""];" \n
+                         "            private _completionSetupScope = createProfileScope ""ALiVE TACOM ANALYZE: completion setup"";" \n
                          "" \n
                          "            _ProfileID = _DATA_VALUE select 0;" \n
                          "            _objectiveID = _DATA_VALUE select 1;" \n
@@ -367,11 +374,12 @@ class FSM
                          "                [_OPCOM_HANDLER,""resetProfileOrders"",_ProfileID] call ALiVE_fnc_OPCOM;" \n
                          "                _TACOM_DATA = nil;" \n
                          "                _busy = false;" \n
+                         "                _completionSetupScope = nil;" \n
                          "            };" \n
                          "" \n
                          "            _profile = [ALiVE_ProfileHandler,""getProfile"",_profileID] call ALiVE_fnc_ProfileHandler;" \n
                          "" \n
-                         "            if (isnil ""_profile"") exitwith {_TACOM_DATA = [""analyze"",_objective]; _busy = false};" \n
+                         "            if (isnil ""_profile"") exitwith {_TACOM_DATA = [""analyze"",_objective]; _busy = false; _completionSetupScope = nil};" \n
                          "" \n
                          "            _posP = [_profile,""position""] call ALiVE_fnc_HashGet;" \n
                          "            _section = [_objective,""section""] call AliVE_fnc_HashGet;" \n
@@ -383,7 +391,9 @@ class FSM
                          "            private _opcomOrderCompleteArgs = [];" \n
                          "            " \n
                          "            private _success = true;" \n
+                         "            _completionSetupScope = nil;" \n
                          "" \n
+                         "            private _completionStateScope = createProfileScope ""ALiVE TACOM ANALYZE: completion state handling"";" \n
                          "            switch (_state) do {" \n
                          "                case (""recon"") : {" \n
                          "                    if !([_OPCOM_HANDLER,""synchronizeorders"",_ProfileID] call ALiVE_fnc_OPCOM) exitwith {" \n
@@ -474,13 +484,18 @@ class FSM
                          "" \n
                          "                default {_dataset = {}};" \n
                          "            };" \n
+                         "            _completionStateScope = nil;" \n
                          "" \n
+                         "            private _completionEventScope = createProfileScope ""ALiVE TACOM ANALYZE: completion event"";" \n
                          "            if (_success) then {" \n
                          "                private _event = ['TACOM_ORDER_COMPLETE', [_opcomID,_objective,_state,_side,_factions, _success, _opcomOrderCompleteArgs], ""TACOM""] call ALIVE_fnc_event;" \n
                          "                [ALIVE_eventLog, ""addEvent"",_event] call ALIVE_fnc_eventLog;" \n
                          "            };" \n
+                         "            _completionEventScope = nil;" \n
                          "            " \n
+                         "            private _datasetTransmissionScope = createProfileScope ""ALiVE TACOM ANALYZE: dataset transmission"";" \n
                          "            if !(isnil ""_dataset"") then {if (_transmit) then {call _dataset}};" \n
+                         "            _datasetTransmissionScope = nil;" \n
                          "        };" \n
                          "        default {};" \n
                          "    };" \n
