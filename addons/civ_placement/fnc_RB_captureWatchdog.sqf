@@ -175,6 +175,24 @@ private _handle = [{
         ({isPlayer _x} count _members) > 0
     };
 
+    // Which faction an attacker belongs to, judged by who is INSIDE a vehicle rather than by the
+    // vehicle itself. faction on a hull returns the vehicle class's config faction, so an RHS
+    // truck crewed by a CSAT squad tallied as the truck's faction, and the block could be
+    // garrisoned by a faction that never attacked it. Same kind of fault as reading
+    // effectiveCommander on a dismounted man: the property is right, the object is wrong.
+    //
+    // Only faction needs this. side already reports a crewed vehicle by its crew, which is why
+    // the attacker and defender tests above are correct as they stand.
+    private _fnc_attackerFaction = {
+        params ["_u"];
+        if (_u isKindOf "CAManBase") exitWith { faction _u };
+        private _c = crew _u;
+        // An empty hull among the attackers has nothing better to go on than its own config.
+        if (_c isEqualTo []) exitWith { faction _u };
+        private _cmd = effectiveCommander _u;
+        faction (if (isNull _cmd) then { _c select 0 } else { _cmd })
+    };
+
     // Defenders: same side as current owner, NOT player-driven (so a
     // friendly player passing through doesn't suppress capture).
     // Deliberately NOT the group predicate below: an AI squadmate of a player IS
@@ -228,7 +246,7 @@ private _handle = [{
                     private _factionCounts = createHashMap;
                     {
                         if (!([_x] call _fnc_playerDriven)) then {
-                            private _f = faction _x;
+                            private _f = [_x] call _fnc_attackerFaction;
                             _factionCounts set [
                                 _f,
                                 (_factionCounts getOrDefault [_f, 0]) + 1
