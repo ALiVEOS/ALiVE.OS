@@ -218,6 +218,87 @@ private _classObstacles = [
 ];
 
 // ------------------------------------------------------------------------
+// Obstacles big enough that their body reaches ground their origin does not.
+//
+// Both engine queries above match on an object ORIGIN, not on its extent, so
+// an obstacle is only seen once its own reference point falls inside the search
+// radius. Many structures carry their origin at a corner or a front edge rather
+// than the middle - _fnc_hangarBayCentre further down exists for exactly that
+// reason - so a tent hangar is invisible to this check until the aircraft is
+// already most of the way inside it. Measured on Stratis: two airframes parked
+// with their hulls three and two metres INSIDE hangar walls, both passing the
+// footprint check, because both hangar origins sat just beyond its radius.
+//
+// So the things whose bodies are big enough to matter get a second, wider look
+// that measures the real footprint instead of the origin. Vegetation and the
+// small clutter props are deliberately left out of it: their bodies are soft or
+// tiny, the origin pass already catches them, and treating tree canopies as
+// solid is what refused nearly every camp site on a jungle map before a37e8954.
+// ------------------------------------------------------------------------
+private _reachTerrainTypes = [
+    "BUILDING", "BUNKER", "BUSSTOP", "CHAPEL", "CHURCH", "FENCE", "FORTRESS",
+    "FUELSTATION", "HIDE", "HOSPITAL", "HOUSE", "LIGHTHOUSE",
+    "POWERSOLAR", "POWERWAVE", "POWERWIND", "QUAY", "RAILWAY",
+    "RUIN", "SHIPWRECK", "STACK", "TOURISM", "TRANSMITTER", "VIEW-TOWER",
+    "WALL", "WATERTOWER", "Wreck_Base"
+];
+private _reachClassObstacles = ["Wall", "House"];
+// Rocks and other aircraft are measured too, but without the courtesy margin - see the
+// second half of the body pass. A rock and a parked neighbour are things not to be ON,
+// not things to stand politely back from, and both carry their origin under their own
+// bulk so the margin buys nothing. Power lines are left out altogether: a pylon stands
+// over its own origin, and on terrains that bake the wire span into the model the box is
+// mostly air, which would sterilise a long band of apron for geometry ten metres up.
+private _reachTightTerrainTypes = ["ROCK", "ROCKS"];
+// How far past the clearance disc to go looking for those bodies. 25m is measured, not
+// borrowed: the biggest hangars in the base game run about 25m from origin to far wall.
+// fnc_findCompositionSpawnPosition uses +15 with a 25 floor for its buildings and +25 for
+// its rocks, so this sits inside the range both of those settled on. Wider costs more than
+// it catches, the returned set growing with the square of the radius until the filtering
+// is the expense. Anything reaching further than this from its own origin - a fifty metre
+// A2 service hangar with the origin at one end - is still measured the old way.
+private _reachPad = 25;
+
+// True when this object's real footprint comes within _radius of _pos.
+//
+// Puts the spot into the object's own frame and clamps it to the model bounding
+// box, which gives the exact distance from the spot to the object's true rotated
+// rectangle. Same test fnc_findCompositionSpawnPosition uses on buildings, so a
+// long hangar approached end-on is refused while the same hangar pointing away is
+// correctly accepted. No blanket radius, so widening the search does not start
+// refusing ground that is genuinely clear.
+private _fnc_bodyReaches = {
+    params ["_obj", "_pos", "_radius"];
+    private _bbox = boundingBoxReal _obj;
+    _bbox params ["_bMin", "_bMax"];
+    // Flat things are ground, not obstacles. Measured on the Stratis apron: the paving is laid as
+    // invisibleroadway_square_f.p3d, twenty metre squares that exist so vehicles roll on them
+    // properly, and they carry a terrain tag that puts them in the query. Measuring their bodies
+    // correctly turned the entire apron solid and refused ninety four percent of the parking a UAV
+    // could previously use. Runway edge lights and helipads come back the same way, and a helipad is
+    // the last thing that should stop an aircraft parking.
+    //
+    // Height separates them cleanly with nothing borderline in between: a hangar stands eight metres,
+    // a wall two, while paving, painted pads and lights are flat or very nearly. Volume would not do
+    // it - a long thin wall is only a few cubic metres and has to keep counting.
+    if (((_bMax select 2) - (_bMin select 2)) < 1) exitWith { false };
+    // Test at the object's OWN height, not at whatever height the caller happened to
+    // carry. Callers here mix position, getPos and capsule sample points, so the third
+    // component is sometimes ground height and sometimes height above ground. Feeding
+    // that difference through the rotation of a tilted object - a rock, a shed on a
+    // slope - would push the answer sideways by metres. Levelling with the object removes
+    // that. What is left is second order and only on genuinely tilted objects, which the
+    // buildings this runs against are not.
+    private _flat = [_pos select 0, _pos select 1, (position _obj) select 2];
+    private _local = _obj worldToModel _flat;
+    private _cx = (((_local select 0) max (_bMin select 0)) min (_bMax select 0));
+    private _cy = (((_local select 1) max (_bMin select 1)) min (_bMax select 1));
+    private _dx = (_local select 0) - _cx;
+    private _dy = (_local select 1) - _cy;
+    sqrt ((_dx * _dx) + (_dy * _dy)) < _radius
+};
+
+// ------------------------------------------------------------------------
 // Session registry. Mission-scope, prevents same-cluster races by
 // memoising recently-chosen positions for ~60 s.
 // ------------------------------------------------------------------------
@@ -296,11 +377,48 @@ private _fnc_footprintClear = {
     // sit with visible room around them.
     private _clearRadius = _hazardRadius + _clearMargin;
 
+    // Origin pass. Cheap, covers every listed type, and rejects on the object
+    // reference point exactly as before. It stays first and stays unchanged, so any
+    // candidate it can refuse costs exactly what it always did.
     private _terrainHits = (nearestTerrainObjects [_pos, _staticTerrainTypes, _clearRadius, false, true]) - _ignore;
     if !(_terrainHits isEqualTo []) exitWith { false };
 
     private _classHits = (nearestObjects [_pos, _classObstacles, _clearRadius]) - _ignore;
     if !(_classHits isEqualTo []) exitWith { false };
+
+    // Body pass. Both queries above are blind to anything whose origin sits outside
+    // the disc, however far its walls reach in, which is how airframes ended up
+    // parked inside hangars. Look further out for the big stuff and measure the real
+    // footprint. Both halves of the sweep get this: terrain-authored structures are
+    // the worse offender of the two, since they are the largest objects on any map
+    // and on terrains with no hangar data they are all that stands between the
+    // aircraft and a building.
+    //
+    // What this costs. Candidates the origin pass already threw out skip it entirely.
+    // But do not read that as free: on the pad tier the exemptions below deliberately
+    // excuse the surrounding structures, and on the apron and field tiers the candidate
+    // has already been shown to be flat open ground, so at those three sites the origin
+    // pass usually accepts and this runs on most candidates that reach it. Each half
+    // stops at the first hit rather than gathering all four sets.
+    private _reachRadius = _clearRadius + _reachPad;
+    private _hits = (nearestTerrainObjects [_pos, _reachTerrainTypes, _reachRadius, false, true]) - _ignore;
+    if (_hits findIf { [_x, _pos, _clearRadius] call _fnc_bodyReaches } >= 0) exitWith { false };
+
+    _hits = (nearestObjects [_pos, _reachClassObstacles, _reachRadius]) - _ignore;
+    if (_hits findIf { [_x, _pos, _clearRadius] call _fnc_bodyReaches } >= 0) exitWith { false };
+
+    // Rocks and other aircraft are measured against the hull alone, with no courtesy
+    // margin. The margin exists so a parked aircraft is not left a hand's breadth off a
+    // hangar wall; applied to a neighbour it refuses ground nobody is on. Stratis pads sit
+    // 30.08m apart, and a transport on the next pad reaches its hull to within about 15m,
+    // so charging the margin against it would refuse an aircraft the pad beside its own
+    // and send it to open ground. Overlap is still refused, which is all that is wanted.
+    private _tightRadius = _hazardRadius + _reachPad;
+    _hits = (nearestObjects [_pos, ["AllVehicles"], _tightRadius]) - _ignore;
+    if (_hits findIf { [_x, _pos, _hazardRadius] call _fnc_bodyReaches } >= 0) exitWith { false };
+
+    _hits = (nearestTerrainObjects [_pos, _reachTightTerrainTypes, _tightRadius, false, true]) - _ignore;
+    if (_hits findIf { [_x, _pos, _hazardRadius] call _fnc_bodyReaches } >= 0) exitWith { false };
 
     true
 };
@@ -768,10 +886,32 @@ if (count _found == 0 && {_preference in ["auto", "helipad"]} && {_isHeli || _is
         // objNull (a fresh placement) adds nothing, so a SIBLING parked on the pad is still rejected.
         private _ignore = [_x];
         if (!isNull _ownVeh) then { _ignore pushBack _ownVeh };
+        // The structure exemptions reach as far as the sweep does, margin plus the body
+        // pad. They have to move together: the moment the sweep starts seeing a hangar by
+        // its walls rather than its origin, an exemption still measured from the origin
+        // stops covering it, and every pad deliberately tucked against a tower or a hangar
+        // is refused on the very building it belongs to. That is the fault cb3776ae was
+        // written to clear, and it would come straight back.
+        private _padIgnoreRadius = _hazardRadius + _clearMargin + _reachPad;
         _ignore = _ignore
-            + (nearestObjects [_padPos, ["House", "Building"], (_hazardRadius + _clearMargin)])
+            + (nearestObjects [_padPos, ["House", "Building"], _padIgnoreRadius])
+            // Two terrain queries rather than one wide one. Only the reach list can be a
+            // hit beyond the disc, so asking for the full list out there would drag every
+            // tree in a wooded clearing into the ignore array and make every later
+            // subtraction walk them for nothing.
             + (nearestTerrainObjects [_padPos, _staticTerrainTypes, (_hazardRadius + _clearMargin), false, true])
-            + ((nearestObjects [_padPos, (_classObstacles - ["AllVehicles"]), (_hazardRadius + _clearMargin)]) select { (_padPos distance2D _x) > _hazardRadius });
+            + (nearestTerrainObjects [_padPos, _reachTerrainTypes, _padIgnoreRadius, false, true])
+            // Clutter is excused only where it cannot be under the aircraft. That used to
+            // be judged on the prop origin, which let a pile whose middle stood at twenty
+            // metres off a nineteen metre disc be excused while its body sat six metres
+            // inside the rotors. Judge it on the body, the same way the sweep now does.
+            //
+            // This query reaches as far as the sweep does as well. It is the only exemption
+            // covering runtime-spawned Wall-class barriers, and the sweep now finds those by
+            // their bodies out to the same distance. Left at the old radius, a camp pad ringed
+            // by barrier segments would be refused on its own set-dressing, which is exactly
+            // what cb3776ae was written to stop.
+            + ((nearestObjects [_padPos, (_classObstacles - ["AllVehicles"]), _padIgnoreRadius]) select { !([_x, _padPos, _hazardRadius] call _fnc_bodyReaches) });
         if !([_padPos, _padDir, _ignore] call _fnc_footprintClear) then { continue };
         _found = [_padPos, _padDir];
     } forEach _candidates;
@@ -1027,6 +1167,7 @@ if (count _found == 0 && {_preference in ["auto", "field"]}) then {
         _found = [_pos, _dir];
     };
 };
+
 
 // Reserve the chosen position in the session registry.
 if (count _found > 0) then {
