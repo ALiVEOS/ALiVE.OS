@@ -553,6 +553,7 @@ switch(_operation) do {
     };
 
     case "addWaypoint": {
+      private _addWaypointScope = createProfileScope "ALiVE profileEntity: addWaypoint";
       private _waypoint = _args;
       private _isSPE = [_logic, "isSPE", false] call ALIVE_fnc_hashGet;
       if (isNil "_isSPE") then { _isSPE = false; };
@@ -563,12 +564,17 @@ switch(_operation) do {
 
         private _pathfindingEnabled = [MOD(profileSystem),"pathfinding"] call ALiVE_fnc_hashGet;
         if (!_pathfindingEnabled) then {
+            private _dispatchScope = createProfileScope "ALiVE profileEntity addWaypoint: direct dispatch";
             [{ [_logic,"addWaypointInternal", _waypoint] call MAINCLASS }, []] call CBA_fnc_directCall;
+            _dispatchScope = nil;
         } else {
+            private _dispatchScope = createProfileScope "ALiVE profileEntity addWaypoint: pathfinding dispatch";
             [{ [_logic,"addPendingWaypoint", ["addWaypoint",_waypoint]] call MAINCLASS }, []] call CBA_fnc_directCall;
+            _dispatchScope = nil;
         };
 			};
         _result = _waypoint;
+        _addWaypointScope = nil;
     };
 
     case "addPendingWaypoint": {
@@ -757,6 +763,7 @@ switch(_operation) do {
     };
 
     case "addWaypointInternal": {
+      private _mutationScope = createProfileScope "ALiVE profileEntity: addWaypointInternal";
       private _isSPE = [_logic, "isSPE", false] call ALIVE_fnc_hashGet;
     	if (isNil "_isSPE") then { _isSPE = false; };
       if (typeName _isSPE != "BOOL") then { _isSPE = false; };
@@ -775,11 +782,14 @@ switch(_operation) do {
             [_logic,"profileWaypointToWaypoint", _waypoint] call MAINCLASS;
         };
      };
+      _mutationScope = nil;
     };
 
     case "clearWaypoints": {
-        [_logic,"waypoints", []] call ALIVE_fnc_hashSet;
-        [_logic,"waypointsCompleted", []] call ALIVE_fnc_hashSet;
+        [_logic, [
+            ["waypoints", []],
+            ["waypointsCompleted", []]
+        ]] call ALiVE_fnc_hashSetMany;
 
         private _active = _logic select 2 select 1; //[_logic,"active"] call ALIVE_fnc_hashGet
         if (_active) then {
@@ -836,8 +846,8 @@ switch(_operation) do {
         if (!(isnil "_type") && {_type == "entity"}) then {
             private _activeCommands = _logic select 2 select 26; //[_logic,"vehicleAssignments"] call ALIVE_fnc_hashGet;
 
-            if(count _activeCommands > 0) then {
-                [ALIVE_commandRouter, "deactivate", _logic] call ALIVE_fnc_commandRouter;
+            if (_activeCommands isnotequalto []) then {
+                [ALIVE_commandRouter,"deactivate", _logic] call ALIVE_fnc_commandRouter;
                 [_logic,"activeCommands",[]] call ALIVE_fnc_hashSet;
             };
         };

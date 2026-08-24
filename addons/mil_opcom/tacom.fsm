@@ -657,6 +657,7 @@ class FSM
                          "                private _profile = _profilesByID get _profileID;" \n
                          "                if !(isNil ""_profile"") then {" \n
                          "" \n
+                         "                    private _positionScope = createProfileScope ""ALiVE TACOM ISSUE_ORDERS: recon position generation"";" \n
                          "                    //Select recon postion in angle to objectve" \n
                          "                    _posP = _profile select 2 select 2;" \n
                          "                    _direction = (_pos getDir _posP);" \n
@@ -681,6 +682,7 @@ class FSM
                          "                        ] call BIS_fnc_findSafePos;" \n
                          "                        _safePositionScope = nil;" \n
                          "                    };" \n
+                         "                    _positionScope = nil;" \n
                          "" \n
                          "                    _posWP = [_newPosition,50] call CBA_fnc_Randpos;" \n
                          "" \n

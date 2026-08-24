@@ -1271,18 +1271,20 @@ switch (_operation) do {
             _ordersByProfileID set [_x select 1, _x];
         } forEach _orderBatch;
         _orderBatch = values _ordersByProfileID;
-        private _assignmentScope = createProfileScope "ALiVE OPCOM setSectionOrders: assignment reconciliation";
-        private _objectivesByID = [_logic,"objectivesByID"] call ALiVE_fnc_HashGet;
-
+        // TACOM supplies the objective after PREPARE_ORDERS has already updated
+        // its section through setObjectiveSection. Legacy setorders callers do
+        // not supply it, so retain defensive assignment reconciliation for them.
         if (_targetObjective isEqualTo []) then {
+            private _assignmentScope = createProfileScope "ALiVE OPCOM setSectionOrders: assignment reconciliation";
+            private _objectivesByID = [_logic,"objectivesByID"] call ALiVE_fnc_HashGet;
             _targetObjective = _objectivesByID get _objectiveID;
-        };
 
-        if !(isNil "_targetObjective") then {
-            private _section = [_targetObjective,"section",[]] call ALiVE_fnc_HashGet;
-            [_logic,"setObjectiveSection",[_targetObjective,_section]] call MAINCLASS;
+            if !(isNil "_targetObjective") then {
+                private _section = [_targetObjective,"section",[]] call ALiVE_fnc_HashGet;
+                [_logic,"setObjectiveSection", [_targetObjective,_section]] call MAINCLASS;
+            };
+            _assignmentScope = nil;
         };
-        _assignmentScope = nil;
 
         private _pendingOrderScope = createProfileScope "ALiVE OPCOM setSectionOrders: pending-order cleanup";
         private _pendingOrders = [_logic,"pendingorders",[]] call ALiVE_fnc_HashGet;
@@ -1308,9 +1310,11 @@ switch (_operation) do {
                 private _profileWaypoint = [_pos,15] call ALIVE_fnc_createProfileWaypoint;
                 private _var = ["_TACOM_DATA",["completed",[_profileID,_objectiveID,_orders]]];
                 private _statements = format ["[{%1 setFSMVariable %2}, [], 1 + (random 9)] call CBA_fnc_waitAndExecute",_TACOM_FSM,_var];
-                [_profileWaypoint,"statements",["true",_statements]] call ALIVE_fnc_hashSet;
-                [_profileWaypoint,"behaviour","AWARE"] call ALIVE_fnc_hashSet;
-                [_profileWaypoint,"speed","NORMAL"] call ALIVE_fnc_hashSet;
+                [_profileWaypoint, [
+                    ["statements",["true",_statements]],
+                    ["behaviour","AWARE"],
+                    ["speed","NORMAL"]
+                ]] call ALiVE_fnc_hashSetMany;
 
                 [_profile,"addWaypoint",_profileWaypoint] call ALIVE_fnc_profileEntity;
                 _pendingOrders pushBack [_pos,_profileID,_objectiveID,time];
