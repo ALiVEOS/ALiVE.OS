@@ -1239,11 +1239,18 @@ switch (_operation) do {
     // Sets var on TACOM to signal completion once WP is reached
     ///////////////////////////////////////////////////
 
-    case "setorders": {
+    case "setorders";
+    case "setOrders": {
         private _profileScope = createProfileScope "ALiVE OPCOM: setorders";
         _args params ["_pos","_profileID","_objectiveID","_orders"];
 
-        private _profileWaypoints = [_logic,"setSectionOrders",[[],_objectiveID,_orders,[[_pos,_profileID]]]] call MAINCLASS;
+        private _profileWaypoints = [_logic,"setSectionOrders",
+            [
+                [],
+                _objectiveID,
+                _orders,
+                [[_pos,_profileID]]
+            ]] call MAINCLASS;
         _result = _profileWaypoints param [0,[]];
     };
 
@@ -1264,8 +1271,6 @@ switch (_operation) do {
             _ordersByProfileID set [_x select 1, _x];
         } forEach _orderBatch;
         _orderBatch = values _ordersByProfileID;
-        private _profileIDs = keys _ordersByProfileID;
-
         private _assignmentScope = createProfileScope "ALiVE OPCOM setSectionOrders: assignment reconciliation";
         private _objectivesByID = [_logic,"objectivesByID"] call ALiVE_fnc_HashGet;
 
@@ -1281,7 +1286,11 @@ switch (_operation) do {
 
         private _pendingOrderScope = createProfileScope "ALiVE OPCOM setSectionOrders: pending-order cleanup";
         private _pendingOrders = [_logic,"pendingorders",[]] call ALiVE_fnc_HashGet;
-        [_pendingOrders, { (_x select 1) in _profileIDs }] call ALiVE_fnc_deleteIf;
+        {
+            if !(isNil {_ordersByProfileID get (_x select 1)}) then {
+                _pendingOrders deleteAt _forEachIndex;
+            };
+        } forEachReversed _pendingOrders;
         _pendingOrderScope = nil;
 
         private _waypointMutationScope = createProfileScope "ALiVE OPCOM setSectionOrders: waypoint mutation";

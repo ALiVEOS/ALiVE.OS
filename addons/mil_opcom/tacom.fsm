@@ -618,7 +618,7 @@ class FSM
                         name = "ISSUE_ORDERS";
                         itemno = 10;
                         init = /*%FSM<STATEINIT""">*/"private _profileScope = createProfileScope ""ALiVE TACOM FSM: ISSUE_ORDERS"";" \n
-                         "private [""_profiles"",""_data"",""_state"",""_section"",""_pos"",""_objectiveID"",""_turn"",""_objectivesX"",""_orderBatch""];" \n
+                         "private [""_profilesByID"",""_data"",""_state"",""_section"",""_pos"",""_objectiveID"",""_turn"",""_orderBatch""];" \n
                          "" \n
                          "_TACOM_status = ""Order"";" \n
                          "_timestamp = time;" \n
@@ -631,14 +631,15 @@ class FSM
                          "    _profileScope = nil;" \n
                          "};" \n
                          "" \n
-                         "//Get all profileIDs and objectives" \n
-                         "_profiles = ([ALIVE_profileHandler, ""getProfiles"", ""entity""] call ALIVE_fnc_profileHandler) select 1;" \n
-                         "_objectives = [_OPCOM_HANDLER,""objectives""] call ALiVE_fnc_HashGet;" \n
+                         "private _contextScope = createProfileScope ""ALiVE TACOM ISSUE_ORDERS: context lookup"";" \n
+                         "//Get profiles by ID and objective data" \n
+                         "_profilesByID = [ALIVE_profileHandler, ""profilesById""] call ALIVE_fnc_HashGet;" \n
                          "_section = [_objective,""section"",[]] call AliVE_fnc_HashGet;" \n
                          "_state = [_objective,""opcom_state"",""unassigned""] call ALiVE_fnc_HashGet;" \n
                          "_pos = [_objective,""center""] call AliVE_fnc_HashGet;" \n
                          "_objectiveID = [_objective,""objectiveID""] call AliVE_fnc_HashGet;" \n
                          "_orderBatch = [];" \n
+                         "_contextScope = nil;" \n
                          "" \n
                          "//set orders by type" \n
                          "switch (_operation) do {" \n
@@ -649,14 +650,15 @@ class FSM
                          "        if (count _section >= _sectionsamount_attack) then {" \n
                          "            [_objective,""tacom_state"",""recon""] call AliVE_fnc_HashSet;" \n
                          "" \n
+                         "            private _batchScope = createProfileScope ""ALiVE TACOM ISSUE_ORDERS: recon batch construction"";" \n
                          "            {" \n
                          "                _profileID = _x;" \n
                          "" \n
-                         "                if (_profileID in _profiles) then {" \n
-                         "                    _profile = [ALIVE_profileHandler, ""getProfile"", _profileID] call ALIVE_fnc_profileHandler;" \n
+                         "                private _profile = _profilesByID get _profileID;" \n
+                         "                if !(isNil ""_profile"") then {" \n
                          "" \n
                          "                    //Select recon postion in angle to objectve" \n
-                         "                    _posP = [_profile, ""position""] call ALIVE_fnc_profileEntity;" \n
+                         "                    _posP = _profile select 2 select 2;" \n
                          "                    _direction = (_pos getDir _posP);" \n
                          "                    _newPosition = (_pos getPos [500, _direction]);" \n
                          "                    " \n
@@ -665,6 +667,7 @@ class FSM
                          "                    _newPosition = (_newPosition getPos [150, _direction]);" \n
                          "" \n
                          "                    if (surfaceIsWater _newPosition) then {" \n
+                         "                        private _safePositionScope = createProfileScope ""ALiVE TACOM ISSUE_ORDERS: recon findSafePos"";" \n
                          "                        _newPosition = [" \n
                          "                            _newPosition, " \n
                          "                            0, " \n
@@ -676,6 +679,7 @@ class FSM
                          "                            [], " \n
                          "                            [_newPosition]" \n
                          "                        ] call BIS_fnc_findSafePos;" \n
+                         "                        _safePositionScope = nil;" \n
                          "                    };" \n
                          "" \n
                          "                    _posWP = [_newPosition,50] call CBA_fnc_Randpos;" \n
@@ -683,6 +687,7 @@ class FSM
                          "                    _orderBatch pushBack [_posWP,_profileID];" \n
                          "                };" \n
                          "            } foreach _section;" \n
+                         "            _batchScope = nil;" \n
                          "            [_OPCOM_HANDLER,""setSectionOrders"",[_objective,_objectiveID,_operation,_orderBatch]] call ALiVE_fnc_OPCOM;" \n
                          "" \n
                          "            private _opcomID = [_OPCOM_HANDLER,""opcomID""] call ALiVE_fnc_hashGet;" \n
@@ -696,29 +701,45 @@ class FSM
                          "                _recon set [1,[""no groups available""]];" \n
                          "                _TAC_confirmed = false;" \n
                          "            } else {" \n
+                         "                private _regroupScope = createProfileScope ""ALiVE TACOM ISSUE_ORDERS: recon regroup fallback"";" \n
+                         "                private _objectives = [_OPCOM_HANDLER,""objectives""] call ALiVE_fnc_HashGet;" \n
+                         "                private _candidateScope = createProfileScope ""ALiVE TACOM ISSUE_ORDERS: recon regroup candidate filtering"";" \n
+                         "                private _idleObjectives = _objectives select {" \n
+                         "                    ([_x,""opcom_state""] call ALiVE_fnc_HashGet) == ""idle""" \n
+                         "                };" \n
+                         "                _candidateScope = nil;" \n
+                         "" \n
                          "                {" \n
                          "                    _profileID = _x;" \n
                          "" \n
-                         "                    if (_profileID in _profiles) then {" \n
-                         "                        _profile = [ALIVE_profileHandler, ""getProfile"", _profileID] call ALIVE_fnc_profileHandler;" \n
+                         "                    private _profile = _profilesByID get _profileID;" \n
+                         "                    if !(isNil ""_profile"") then {" \n
                          "" \n
+                         "                        private _selectionScope = createProfileScope ""ALiVE TACOM ISSUE_ORDERS: recon regroup objective selection"";" \n
                          "                        //Select nearest taken objective to regroup" \n
-                         "                        _posP = [_profile, ""position""] call ALIVE_fnc_profileEntity;" \n
-                         "                        _objectivesX = [_objectives,[],{_posP distance (_x select 2 select 1)},""ASCEND""] call ALiVE_fnc_SortBy;" \n
-                         "                        " \n
+                         "                        _posP = _profile select 2 select 2;" \n
+                         "                        private _nearestObjective = [];" \n
+                         "                        private _nearestDistance = 1e10;" \n
+                         "" \n
                          "                        {" \n
-                         "                            _state = [_x,""opcom_state""] call ALivE_fnc_HashGet;" \n
-                         "                            " \n
-                         "                            if (_state == ""idle"") exitwith {" \n
-                         "                                _objectiveID = [_x,""objectiveID""] call ALiVE_fnc_HashGet;" \n
-                         "                                _posWP = [_x,""center""] call ALiVE_fnc_HashGet;" \n
-                         "                                [_profile, ""clearWaypoints""] call ALIVE_fnc_profileEntity;" \n
-                         "                                _profileWaypoint = [_posWP, 50] call ALIVE_fnc_createProfileWaypoint;" \n
-                         "                                [_profile, ""addWaypoint"", _profileWaypoint] call ALIVE_fnc_profileEntity;" \n
+                         "                            private _distance = _posP distance (_x select 2 select 1);" \n
+                         "                            if (_distance < _nearestDistance) then {" \n
+                         "                                _nearestObjective = _x;" \n
+                         "                                _nearestDistance = _distance;" \n
                          "                            };" \n
-                         "                        } foreach _objectivesX;" \n
+                         "                        } foreach _idleObjectives;" \n
+                         "" \n
+                         "                        if !(_nearestObjective isEqualTo []) then {" \n
+                         "                            _objectiveID = [_nearestObjective,""objectiveID""] call ALiVE_fnc_HashGet;" \n
+                         "                            _posWP = [_nearestObjective,""center""] call ALiVE_fnc_HashGet;" \n
+                         "                            [_profile, ""clearWaypoints""] call ALIVE_fnc_profileEntity;" \n
+                         "                            _profileWaypoint = [_posWP, 50] call ALIVE_fnc_createProfileWaypoint;" \n
+                         "                            [_profile, ""addWaypoint"", _profileWaypoint] call ALIVE_fnc_profileEntity;" \n
+                         "                        };" \n
+                         "                        _selectionScope = nil;" \n
                          "                    };" \n
                          "                } foreach _section;" \n
+                         "                _regroupScope = nil;" \n
                          "" \n
                          "                _recon set [1,[""not enough groups to build a section, regrouping...""]];" \n
                          "                _TAC_confirmed = false;" \n
@@ -732,13 +753,15 @@ class FSM
                          "        if (count _section > 0) then {" \n
                          "            [_objective,""tacom_state"",""capture""] call AliVE_fnc_HashSet;" \n
                          "" \n
+                         "            private _batchScope = createProfileScope ""ALiVE TACOM ISSUE_ORDERS: capture batch construction"";" \n
                          "            {" \n
                          "                private _profileID = _x;" \n
                          "" \n
-                         "                if (_profileID in _profiles) then {" \n
+                         "                if !(isNil {_profilesByID get _profileID}) then {" \n
                          "                    _orderBatch pushBack [([_pos,50] call CBA_fnc_RandPos),_profileID];" \n
                          "                };" \n
                          "            } foreach _section;" \n
+                         "            _batchScope = nil;" \n
                          "            [_OPCOM_HANDLER,""setSectionOrders"",[_objective,_objectiveID,_operation,_orderBatch]] call ALiVE_fnc_OPCOM;" \n
                          "" \n
                          "            private _opcomID = [_OPCOM_HANDLER,""opcomID""] call ALiVE_fnc_hashGet;" \n
@@ -759,13 +782,15 @@ class FSM
                          "        if (count _section > 0) then {" \n
                          "            [_objective,""tacom_state"",""defend""] call AliVE_fnc_HashSet;" \n
                          "" \n
+                         "            private _batchScope = createProfileScope ""ALiVE TACOM ISSUE_ORDERS: defend batch construction"";" \n
                          "            {" \n
                          "                private _profileID = _x;" \n
                          "" \n
-                         "                if (_profileID in _profiles) then {" \n
+                         "                if !(isNil {_profilesByID get _profileID}) then {" \n
                          "                    _orderBatch pushBack [([_pos,50] call CBA_fnc_RandPos),_profileID];" \n
                          "                };" \n
                          "            } foreach _section;" \n
+                         "            _batchScope = nil;" \n
                          "            [_OPCOM_HANDLER,""setSectionOrders"",[_objective,_objectiveID,_operation,_orderBatch]] call ALiVE_fnc_OPCOM;" \n
                          "            " \n
                          "            private _opcomID = [_OPCOM_HANDLER,""opcomID""] call ALiVE_fnc_hashGet;" \n
@@ -786,13 +811,15 @@ class FSM
                          "        if (count _section > 0) then {" \n
                          "            [_objective,""tacom_state"",""reserve""] call AliVE_fnc_HashSet;" \n
                          "" \n
+                         "            private _batchScope = createProfileScope ""ALiVE TACOM ISSUE_ORDERS: reserve batch construction"";" \n
                          "            {" \n
                          "                private _profileID = _x;" \n
                          "" \n
-                         "                if (_profileID in _profiles) then {" \n
+                         "                if !(isNil {_profilesByID get _profileID}) then {" \n
                          "                    _orderBatch pushBack [([_pos,15] call CBA_fnc_RandPos),_profileID];" \n
                          "                };" \n
                          "            } foreach _section;" \n
+                         "            _batchScope = nil;" \n
                          "            [_OPCOM_HANDLER,""setSectionOrders"",[_objective,_objectiveID,_operation,_orderBatch]] call ALiVE_fnc_OPCOM;" \n
                          "            " \n
                          "            private _opcomID = [_OPCOM_HANDLER,""opcomID""] call ALiVE_fnc_hashGet;" \n
