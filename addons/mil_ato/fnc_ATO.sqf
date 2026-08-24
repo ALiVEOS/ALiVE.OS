@@ -3157,14 +3157,34 @@ switch(_operation) do {
                                             //["Cannot find hangar or taxiway, looking for safe place to put aircraft %1", _vehicleClass] call ALiVE_fnc_dump;
                                             _availablePlane = false;
 
-                                            If !(_vehicleClass isKindOf "VTOL_Base_F") then {
-                                                // Find a vtol aircraft,
+                                            if !(_vehicleClass isKindOf "VTOL_Base_F") then {
+                                                // Find a vtol aircraft, which can use a pad or open ground where a
+                                                // runway-bound plane could not be placed at all. The outer guard is real work,
+                                                // not a formality: a VTOL is itself a Plane by config, so the random draw above
+                                                // can hand us one already and there would be nothing to substitute.
+                                                //
+                                                // This block had never executed. The inner test repeated the outer one instead of
+                                                // testing the candidate: inside "the chosen class is NOT a VTOL" it asked whether
+                                                // that same class WAS a VTOL, which cannot be true. It also assigned to
+                                                // _vehiclesClass, a name used nowhere else, so even a true branch would have
+                                                // substituted nothing. _availablePlane therefore stayed false, and creation below
+                                                // is gated on that flag, so a plane that fitted nowhere was quietly dropped
+                                                // rather than replaced.
                                                 {
-                                                    if (_vehicleClass isKindOf "VTOL_Base_F") then {
-                                                        _vehiclesClass = _x;
+                                                    if (_x isKindOf "VTOL_Base_F") exitWith {
+                                                        _vehicleClass = _x;
                                                         _availablePlane = true;
                                                     };
                                                 } forEach _airClasses;
+                                                // Newly reachable: report the first firing so the substitution can be
+                                                // judged in game rather than assumed.
+                                                if (_debug) then {
+                                                    if (_availablePlane) then {
+                                                        ["ATO %1 - no placement for the plane, substituted VTOL %2", _logic, _vehicleClass] call ALiVE_fnc_dump;
+                                                    } else {
+                                                        ["ATO %1 - no placement for the plane and no VTOL available in %2 classes; aircraft dropped", _logic, count _airClasses] call ALiVE_fnc_dump;
+                                                    };
+                                                };
                                             };
 
                                             _posi = [position _x, 5, 200, 30, 0, 0.2, 0] call BIS_fnc_findSafePos;
