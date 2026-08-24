@@ -1234,7 +1234,7 @@ class FSM
                          "_dead = []; {private [""_profile""]; _profile = [ALIVE_profileHandler, ""getProfile"", _x] call ALIVE_fnc_profileHandler; if (isnil ""_profile"") then {_dead pushback _x}} foreach _section;" \n
                          "" \n
                          "// Remove dead profiles from system" \n
-                         "if (count _dead > 0) then {_section = _section - _dead; _troopsBusy = _troopsBusy - _dead; _OPCOM_FSM setFSMvariable [_var,(_OPCOM_FSM getFSMvariable _var) - _dead]; [_objective,""section"",_section] call ALiVE_fnc_HashSet};" \n
+                         "if (count _dead > 0) then {_section = _section - _dead; _troopsBusy = _troopsBusy - _dead; _OPCOM_FSM setFSMvariable [_var,(_OPCOM_FSM getFSMvariable _var) - _dead]; [_OPCOM_HANDLER,""setObjectiveSection"",[_objective,_section]] call ALiVE_fnc_OPCOM};" \n
                          "" \n
                          "// Collect section" \n
                          "if (_groupSize > 0) then {" \n
@@ -1251,7 +1251,7 @@ class FSM
                          "    " \n
                          "        // Add section" \n
                          "        if ((count _section) >= ceil(_sizeSection/3)) then {" \n
-                         "            [_objective,""section"",_section] call ALiVE_fnc_HashSet;" \n
+                         "            [_OPCOM_HANDLER,""setObjectiveSection"",[_objective,_section]] call ALiVE_fnc_OPCOM;" \n
                          "            [_objective,""opcom_state"",_state] call ALiVE_fnc_HashSet;" \n
                          "            [_objective,""tacom_state"",_orders] call AliVE_fnc_HashSet;" \n
                          "            " \n
@@ -1260,7 +1260,7 @@ class FSM
                          "    " \n
                          "        // Remove section" \n
                          "        } else {" \n
-                         "            [_objective,""section""] call ALiVE_fnc_HashRem;" \n
+                         "            [_OPCOM_HANDLER,""setObjectiveSection"",[_objective,[]]] call ALiVE_fnc_OPCOM;" \n
                          "            [_objective,""opcom_state"",""unassigned""] call ALiVE_fnc_HashSet;" \n
                          "    " \n
                          "            {[[ALIVE_profileHandler, ""getProfile"", _x] call ALIVE_fnc_profileHandler,""busy"",false] call ALiVE_fnc_HashSet} foreach _section;" \n
@@ -1668,7 +1668,7 @@ class FSM
                          "[_objective,""code""] call ALiVE_fnc_HashRem;" \n
                          "[_objective,""storage""] call ALiVE_fnc_HashRem;" \n
                          "[_objective,""actions""] call ALiVE_fnc_HashRem;" \n
-                         "[_objective,""section""] call ALiVE_fnc_HashRem;" \n
+                         "[_OPCOM_HANDLER,""setObjectiveSection"",[_objective,[]]] call ALiVE_fnc_OPCOM;" \n
                          "[_objective,""opcom_orders"",""none""] call ALiVE_fnc_HashSet;" \n
                          "[_objective,""opcom_state"",""unassigned""] call ALiVE_fnc_HashSet;" \n
                          "" \n

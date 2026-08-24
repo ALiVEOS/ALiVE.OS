@@ -603,7 +603,7 @@ class FSM
                         name = "ISSUE_ORDERS";
                         itemno = 10;
                         init = /*%FSM<STATEINIT""">*/"private _profileScope = createProfileScope ""ALiVE TACOM FSM: ISSUE_ORDERS"";" \n
-                         "private [""_profiles"",""_data"",""_state"",""_section"",""_pos"",""_objectiveID"",""_turn"",""_objectivesX""];" \n
+                         "private [""_profiles"",""_data"",""_state"",""_section"",""_pos"",""_objectiveID"",""_turn"",""_objectivesX"",""_orderBatch""];" \n
                          "" \n
                          "_TACOM_status = ""Order"";" \n
                          "_timestamp = time;" \n
@@ -623,6 +623,7 @@ class FSM
                          "_state = [_objective,""opcom_state"",""unassigned""] call ALiVE_fnc_HashGet;" \n
                          "_pos = [_objective,""center""] call AliVE_fnc_HashGet;" \n
                          "_objectiveID = [_objective,""objectiveID""] call AliVE_fnc_HashGet;" \n
+                         "_orderBatch = [];" \n
                          "" \n
                          "//set orders by type" \n
                          "switch (_operation) do {" \n
@@ -664,9 +665,10 @@ class FSM
                          "" \n
                          "                    _posWP = [_newPosition,50] call CBA_fnc_Randpos;" \n
                          "" \n
-                         "                    [_OPCOM_HANDLER,""setorders"",[_posWP,_profileID,_objectiveID,_operation]] call ALiVE_fnc_OPCOM;" \n
+                         "                    _orderBatch pushBack [_posWP,_profileID];" \n
                          "                };" \n
                          "            } foreach _section;" \n
+                         "            [_OPCOM_HANDLER,""setSectionOrders"",[_objective,_objectiveID,_operation,_orderBatch]] call ALiVE_fnc_OPCOM;" \n
                          "" \n
                          "            private _opcomID = [_OPCOM_HANDLER,""opcomID""] call ALiVE_fnc_hashGet;" \n
                          "            private _event = ['TACOM_ORDER_ISSUED', [_opcomID, _objective, _operation, _side, _factions, []], ""TACOM""] call ALIVE_fnc_event;" \n
@@ -719,9 +721,10 @@ class FSM
                          "                private _profileID = _x;" \n
                          "" \n
                          "                if (_profileID in _profiles) then {" \n
-                         "                    [_OPCOM_HANDLER,""setorders"",[([_pos,50] call CBA_fnc_RandPos),_profileID,_objectiveID,_operation]] call ALiVE_fnc_OPCOM;" \n
+                         "                    _orderBatch pushBack [([_pos,50] call CBA_fnc_RandPos),_profileID];" \n
                          "                };" \n
                          "            } foreach _section;" \n
+                         "            [_OPCOM_HANDLER,""setSectionOrders"",[_objective,_objectiveID,_operation,_orderBatch]] call ALiVE_fnc_OPCOM;" \n
                          "" \n
                          "            private _opcomID = [_OPCOM_HANDLER,""opcomID""] call ALiVE_fnc_hashGet;" \n
                          "            private _event = ['TACOM_ORDER_ISSUED', [_opcomID, _objective, _operation, _side, _factions, []], ""TACOM""] call ALIVE_fnc_event;" \n
@@ -745,9 +748,10 @@ class FSM
                          "                private _profileID = _x;" \n
                          "" \n
                          "                if (_profileID in _profiles) then {" \n
-                         "                    [_OPCOM_HANDLER,""setorders"",[([_pos,50] call CBA_fnc_RandPos),_profileID,_objectiveID,_operation]] call ALiVE_fnc_OPCOM;" \n
+                         "                    _orderBatch pushBack [([_pos,50] call CBA_fnc_RandPos),_profileID];" \n
                          "                };" \n
                          "            } foreach _section;" \n
+                         "            [_OPCOM_HANDLER,""setSectionOrders"",[_objective,_objectiveID,_operation,_orderBatch]] call ALiVE_fnc_OPCOM;" \n
                          "            " \n
                          "            private _opcomID = [_OPCOM_HANDLER,""opcomID""] call ALiVE_fnc_hashGet;" \n
                          "            private _event = ['TACOM_ORDER_ISSUED', [_opcomID, _objective, _operation, _side, _factions, []], ""TACOM""] call ALIVE_fnc_event;" \n
@@ -771,9 +775,10 @@ class FSM
                          "                private _profileID = _x;" \n
                          "" \n
                          "                if (_profileID in _profiles) then {" \n
-                         "                    [_OPCOM_HANDLER,""setorders"",[([_pos,15] call CBA_fnc_RandPos),_profileID,_objectiveID,_operation]] call ALiVE_fnc_OPCOM;" \n
+                         "                    _orderBatch pushBack [([_pos,15] call CBA_fnc_RandPos),_profileID];" \n
                          "                };" \n
                          "            } foreach _section;" \n
+                         "            [_OPCOM_HANDLER,""setSectionOrders"",[_objective,_objectiveID,_operation,_orderBatch]] call ALiVE_fnc_OPCOM;" \n
                          "            " \n
                          "            private _opcomID = [_OPCOM_HANDLER,""opcomID""] call ALiVE_fnc_hashGet;" \n
                          "            private _event = ['TACOM_ORDER_ISSUED', [_opcomID, _objective, _operation, _side, _factions, []], ""TACOM""] call ALIVE_fnc_event;" \n
@@ -1099,7 +1104,7 @@ class FSM
                          "" \n
                          "        _section pushback (_sectionAssist select _i);" \n
                          "    };" \n
-                         "    [_objective,""section"",_section] call AliVE_fnc_HashSet;" \n
+                         "    [_OPCOM_HANDLER,""setObjectiveSection"",[_objective,_section]] call ALiVE_fnc_OPCOM;" \n
                          "};" \n
                          "" \n
                          "//Remove groups" \n
