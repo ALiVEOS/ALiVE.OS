@@ -148,11 +148,12 @@ class FSM
                          "_air = [_OPCOM_HANDLER,""air"",[]] call ALiVE_fnc_HashGet;" \n
                          "_sea = [_OPCOM_HANDLER,""sea"",[]] call ALiVE_fnc_HashGet;" \n
                          "_profiles = _inf + _mot + _mech + _armored + _artillery + _AAA + _air + _sea;" \n
+                         "_profilesByID = [ALiVE_ProfileHandler,""profilesById""] call ALiVE_fnc_HashGet;" \n
                          "" \n
                          "" \n
                          "//Reset ambient movement on all owned vehicles profiles without waypoints" \n
                          "{" \n
-                         "    _profile = [ALiVE_ProfileHandler,""getProfile"",_x] call ALiVE_fnc_ProfileHandler;" \n
+                         "    _profile = _profilesByID get _x;" \n
                          "" \n
                          "	if !(isNil ""_profile"") then {" \n
                          "" \n
