@@ -61,6 +61,17 @@
 // Set automated tests
 // #define AUTOMATED_TESTS QUOTE(MAIN),QUOTE(SYS_LOGISTICS),QUOTE(SYS_GC),QUOTE(MIL_CQB),QUOTE(MIL_OPCOM)
 
+// Enable context zones for the Arma Script Profiler.
+#define ALIVE_SCRIPT_PROFILING
+
+#ifdef ALIVE_SCRIPT_PROFILING
+    #define PROFILE_SCOPE(NAME,ID) private DOUBLES(_aliveProfileScope,ID) = createProfileScope NAME
+    #define PROFILE_SCOPE_END(ID) DOUBLES(_aliveProfileScope,ID) = nil
+#else
+    #define PROFILE_SCOPE(NAME,ID)
+    #define PROFILE_SCOPE_END(ID)
+#endif
+
 #define MOD(var1) GVARMAIN(var1)
 #define QMOD(var1) QUOTE(GVARMAIN(var1))
 #ifdef RECOMPILE
