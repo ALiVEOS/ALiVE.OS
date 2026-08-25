@@ -5,9 +5,9 @@ SCRIPT(profileActivatorAirCombat);
 Function: ALiVE_fnc_profileActivatorAirCombat
 
 Description:
-Optional air-combat profile activator. It incrementally scans operational
-aircraft and anti-air vehicles globally, and ordinary vehicles around
-airborne player aircraft.
+Optional air-combat profile activator. While a living player occupies a live
+plane or helicopter, it incrementally scans operational aircraft and anti-air
+vehicles globally, and ordinary vehicles around airborne player aircraft.
 
 Parameters:
 HashMap - Activator instance, or nil for create
@@ -53,6 +53,7 @@ switch (_operation) do {
             ["implementation", MAINCLASS],
             ["iteration", 0],
             ["iterationActive", false],
+            ["playerAirVehiclePresent", false],
             ["scanPhase", 0],
             ["candidateIDs", []],
             ["candidateIDIndex", 0],
@@ -70,6 +71,63 @@ switch (_operation) do {
     };
 
     case "tick": {
+        private _iteration = _logic get "iteration";
+        private _iterationActive = _logic get "iterationActive";
+        private _previousPlayerAirVehiclePresent =
+            _logic get "playerAirVehiclePresent";
+
+        private _playerAirVehiclePresent = (allPlayers findIf {
+            alive _x && {
+                private _vehicle = vehicle _x;
+
+                alive _vehicle &&
+                {
+                    _vehicle isKindOf "Plane" ||
+                    {_vehicle isKindOf "Helicopter"}
+                }
+            }
+        }) >= 0;
+
+        private _releaseAirCombatClaims =
+            _previousPlayerAirVehiclePresent ||
+            {_iterationActive};
+
+        if (!_playerAirVehiclePresent) exitWith {
+            _iteration = _iteration + 1;
+            _logic set ["iteration", _iteration];
+
+            // Only reset state once, when transitioning from active to idle.
+            if (_releaseAirCombatClaims) then {
+                (_logic get "candidateIDs") resize 0;
+                (_logic get "rangeSources") resize 0;
+                (_logic get "rangeProfiles") resize 0;
+                (_logic get "cargoClaimQueue") resize 0;
+
+                _logic set ["iterationActive", false];
+                _logic set ["playerAirVehiclePresent", false];
+                _logic set ["scanPhase", 0];
+                _logic set ["candidateIDIndex", 0];
+                _logic set ["rangeScanStarted", false];
+                _logic set ["rangeSourceIndex", 0];
+                _logic set ["rangeProfileIndex", 0];
+                _logic set ["rangeProfilesReady", false];
+                _logic set ["rangeSeenProfileIDs", createHashMap];
+            };
+
+            _result = [
+                _logic get "id",
+                _iteration,
+                true,
+                [],
+                _releaseAirCombatClaims
+            ];
+        };
+
+        // Store only the idle-to-active transition.
+        if (!_previousPlayerAirVehiclePresent) then {
+            _logic set ["playerAirVehiclePresent", true];
+        };
+
         private _profilesById = [MOD(profileHandler),"profilesById"] call ALIVE_fnc_hashGet;
         private _scanPhase = _logic get "scanPhase";
         private _candidateIDs = _logic get "candidateIDs";
@@ -84,9 +142,7 @@ switch (_operation) do {
         private _rangeSeenProfileIDs = _logic get "rangeSeenProfileIDs";
         private _cargoClaimQueue = _logic get "cargoClaimQueue";
 
-        private _iteration = _logic get "iteration";
-
-        if !(_logic get "iterationActive") then {
+        if (!_iterationActive) then {
             _iteration = _iteration + 1;
             _logic set ["iteration",_iteration];
             _scanPhase = 0;
@@ -447,6 +503,7 @@ switch (_operation) do {
         (_logic get "rangeProfiles") resize 0;
         (_logic get "cargoClaimQueue") resize 0;
         _logic set ["iterationActive",false];
+        _logic set ["playerAirVehiclePresent",false];
         _logic set ["rangeScanStarted",false];
         _logic set ["scanPhase",0];
         _logic set ["candidateIDIndex",0];
