@@ -8,7 +8,7 @@ Description:
 Main class for creating and using a uniform grid for spacial queries.
 
 Parameters:
-    Logic - Nil or Object
+    HashMap - Spatial grid instance, or nil for create
     Operation - String
     Arguments - Any
 
@@ -23,8 +23,6 @@ Author:
 SpyderBlack723
 ---------------------------------------------------------------------------- */
 
-#define MAINCLASS ALiVE_fnc_spacialGrid
-
 private _logic = _this select 0;
 private _operation = _this select 1;
 private _args = _this select 2;
@@ -36,9 +34,9 @@ private _pos2cord = {
     private _argX = _this select 1;
     private _argY = _this select 2;
 
-    private _gridOrigin = _logic select 2 select 0;
-    private _sectorSize = _logic select 2 select 1;
-    private _maxSector = _logic select 2 select 4;
+    private _gridOrigin = _logic get "origin";
+    private _sectorSize = _logic get "sectorSize";
+    private _maxSector = _logic get "maxSector";
 
     private _originX = _gridOrigin select 0;
     private _originY = _gridOrigin select 1;
@@ -83,67 +81,43 @@ switch (_operation) do {
             };
         };
 
-        _result = [
-            [
-                ["origin", _origin],            // select 2 select 0
-                ["sectorSize", _sectorSize],    // select 2 select 1
-                ["gridSize", _gridSize],        // select 2 select 2
-                ["minSector", [0,0]],           // select 2 select 3
-                ["maxSector", [_gridSectorLength,_gridSectorLength]],   // select 2 select 4
-                ["sectors", _sectors]           // select 2 select 5
-            ]
-        ] call ALiVE_fnc_hashCreate;
+        _result = createHashMapFromArray [
+            ["origin", _origin],
+            ["sectorSize", _sectorSize],
+            ["gridSize", _gridSize],
+            ["minSector", [0,0]],
+            ["maxSector", [_gridSectorLength,_gridSectorLength]],
+            ["sectors", _sectors]
+        ];
 
     };
 
     case "posToCoords": {
-
-        private _argX = _args select 0;
-        private _argY = _args select 1;
-
-        private _gridOrigin = _logic select 2 select 0;
-        private _sectorSize = _logic select 2 select 1;
-        private _maxSector = _logic select 2 select 4;
-
-        private _originX = _gridOrigin select 0;
-        private _originY = _gridOrigin select 1;
-
-        if (
-            _argX >= _originX &&
-            {_argY >= _originY} &&
-            {_argX < (_originX + (_sectorSize * (_maxSector select 0)))} &&
-            {_argY < (_originY + (_sectorSize * (_maxSector select 1)))}
-        ) then {
-            // offset position to accomodate negative values
-            _argX = _argX + (abs _originX);
-            _argY = _argY + (abs _originY);
-
-            _result = [floor (_argX / _sectorSize), floor (_argY / _sectorSize)];
-        } else {
-            _result = [-1,-1];
-        };
-
+        _result = [_logic, _args select 0, _args select 1] call _pos2cord;
     };
 
     case "coordsToSector": {
-
         if !(_args isEqualTo [-1,-1]) then {
-            private _sectorsInColumn = (_logic select 2 select 4) select 0;
+            private _sectorsInColumn = (_logic get "maxSector") select 0;
             private _index = (_args select 0) + ((_args select 1) * _sectorsInColumn);
-            _result = (_logic select 2 select 5) select _index;
+            _result = (_logic get "sectors") select _index;
         };
-
     };
 
     case "insert": {
 
         private _points = _args;
+        private _sectorsInColumn = (_logic get "maxSector") select 0;
+        private _sectors = _logic get "sectors";
 
         {
-            private _coords = [_logic,"posToCoords", _x select 0] call MAINCLASS;
+            private _point = _x;
+            private _position = _point select 0;
+            private _coords = [_logic, _position select 0, _position select 1] call _pos2cord;
 
             if !(_coords isEqualTo [-1,-1]) then {
-                ([_logic,"coordsToSector", _coords] call MAINCLASS) pushback _x;
+                private _sectorIndex = (_coords select 0) + ((_coords select 1) * _sectorsInColumn);
+                (_sectors select _sectorIndex) pushBack _point;
             };
         } foreach _points;
 
@@ -155,14 +129,17 @@ switch (_operation) do {
 
         _result = false;
 
-        private _coords = [_logic,"posToCoords", _point select 0] call MAINCLASS;
+        private _position = _point select 0;
+        private _coords = [_logic, _position select 0, _position select 1] call _pos2cord;
 
         if !(_coords isEqualTo [-1,-1]) then {
-            private _sector = [_logic,"coordsToSector", _coords] call MAINCLASS;
+            private _sectorsInColumn = (_logic get "maxSector") select 0;
+            private _sectorIndex = (_coords select 0) + ((_coords select 1) * _sectorsInColumn);
+            private _sector = (_logic get "sectors") select _sectorIndex;
             private _index = _sector find _point;
 
             if (_index != -1) then {
-                _sector deleteAt (_sector find _point);
+                _sector deleteAt _index;
                 _result = true;
             };
 
@@ -176,15 +153,46 @@ switch (_operation) do {
         private _newPos = _args select 1;
         private _data = _args select 2;
 
-        if ([_logic,"remove", [_oldPos,_data]] call MAINCLASS) then {
-            [_logic,"insert", [[_newPos,_data]]] call MAINCLASS;
+        private _oldCoords = [_logic, _oldPos select 0, _oldPos select 1] call _pos2cord;
+        private _newCoords = [_logic, _newPos select 0, _newPos select 1] call _pos2cord;
+        private _sectorsInColumn = (_logic get "maxSector") select 0;
+        private _sectors = _logic get "sectors";
+
+        if (_oldCoords isEqualTo _newCoords) then {
+            if !(_oldCoords isEqualTo [-1,-1]) then {
+                private _sectorIndex = (_oldCoords select 0) + ((_oldCoords select 1) * _sectorsInColumn);
+                private _sector = _sectors select _sectorIndex;
+                private _index = _sector find [_oldPos,_data];
+
+                if (_index != -1) then {
+                    _sector set [_index, [_newPos,_data]];
+                };
+            };
+        } else {
+            private _removed = _oldCoords isEqualTo [-1,-1];
+
+            if (!_removed) then {
+                private _oldSectorIndex = (_oldCoords select 0) + ((_oldCoords select 1) * _sectorsInColumn);
+                private _oldSector = _sectors select _oldSectorIndex;
+                private _index = _oldSector find [_oldPos,_data];
+
+                if (_index != -1) then {
+                    _oldSector deleteAt _index;
+                    _removed = true;
+                };
+            };
+
+            if (_removed && {!(_newCoords isEqualTo [-1,-1])}) then {
+                private _newSectorIndex = (_newCoords select 0) + ((_newCoords select 1) * _sectorsInColumn);
+                (_sectors select _newSectorIndex) pushBack [_newPos,_data];
+            };
         };
 
     };
 
     case "clear": {
 
-        private _sectors = _logic select 2 select 5;
+        private _sectors = _logic get "sectors";
         {
             _x = [];
         } foreach _sectors;
@@ -199,10 +207,10 @@ switch (_operation) do {
         private _returnItem = _args param [3, false];
         private _preciseDistance = _args param [4, true];
 
-        private _gridOrigin = _logic select 2 select 0;
-        private _sectorSize = _logic select 2 select 1;
-        private _maxSector = _logic select 2 select 4;
-        private _sectors = _logic select 2 select 5;
+        private _gridOrigin = _logic get "origin";
+        private _sectorSize = _logic get "sectorSize";
+        private _maxSector = _logic get "maxSector";
+        private _sectors = _logic get "sectors";
 
         // Clamp the search-box corners to grid bounds BEFORE passing to
         // _pos2cord. _pos2cord returns the sentinel [-1,-1] for any position
@@ -261,84 +269,6 @@ switch (_operation) do {
         };
 
     };
-
-    /*
-    case "findNearest": {
-
-        private _center = _args select 0;
-        private _maxRadius = _args param [1, 0];
-        private _filter2D = _args param [2, false];
-
-        private _centerCoords = [_logic,"posToCoords", _center] call MAINCLASS;
-
-        if !(_centerCoords isEqualTo [-1,-1]) then {
-            // phase one:
-            // search inwards-out till points are found
-            // or grid bounds are all covered
-
-            private _sectorsInColumn = (_logic select 2 select 4) select 0;
-            private _maxSector = _logic select 2 select 4;
-            private _sectors = _logic select 2 select 5;
-
-            private _points = [];
-            private _layer = 1;
-            private _sectorsLeft = true; // results in a lot of unnecessary indexchecking
-
-            while {_points isEqualTo [] && _sectorsLeft} do {
-                private _neighborCoords = [
-                    // top row
-                    [(_centerCoords select 0) - _layer, (_centerCoords select 1) - _layer],
-                    [(_centerCoords select 0), (_centerCoords select 1) - _layer],
-                    [(_centerCoords select 0) + _layer, (_centerCoords select 1) - _layer],
-
-                    // middle row
-                    [(_centerCoords select 0) - _layer, (_centerCoords select 1)],
-                    [(_centerCoords select 0) + _layer, (_centerCoords select 1)],
-
-                    // bottom row
-                    [(_centerCoords select 0) - _layer, (_centerCoords select 1) + _layer],
-                    [(_centerCoords select 0), (_centerCoords select 1) + _layer],
-                    [(_centerCoords select 0) + _layer, (_centerCoords select 1) + _layer]
-                ];
-
-                {
-                    if (
-                        (_x select 0) >= 0 && {(_x select 0) <= (_maxSector select 0)} &&
-                        {(_x select 1) >= 0} && {(_x select 1) <= (_maxSector select 1)}
-                    ) then {
-                        _sectors append (_sectors select ((_x select 0) + ((_x select 1) * _sectorsInColumn)));
-                        _sectorsLeft = true;
-                    };
-                } foreach _neighborCoords;
-
-                _layer = _layer + 1;
-            };
-
-            // phase two:
-            // sort points by distance
-            // select closest
-
-            if !(_points isEqualTo []) then {
-                private _min = [999999, -1];
-
-                if (!_filter2D) then {
-                    {
-                        private _dist = _x distance _center;
-                        if (_dist < (_min select 0)) then {_min = [_dist,_foreachindex]};
-                    } foreach _points;
-                } else {
-                    {
-                        private _dist = _x distance2D _center;
-                        if (_dist < (_min select 0)) then {_min = [_dist,_foreachindex]};
-                    } foreach _points;
-                };
-
-                _result = _points select (_min select 1);
-            };
-        };
-
-    };
-    */
 
 };
 

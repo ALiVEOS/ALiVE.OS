@@ -289,6 +289,7 @@ switch(_operation) do {
             };
 
             if !(((_args select 0) + (_args select 1)) == 0) then {
+                private _positionUpdateScope = createProfileScope "ALiVE profileEntity: position update";
                 private _spacialGrid = [ALiVE_profileSystem,"spacialGridProfiles"] call ALiVE_fnc_hashGet;
 
                 private _currPos = _logic select 2 select 2;
@@ -310,6 +311,7 @@ switch(_operation) do {
                 // store position on handler position index
                 private _profileID = [_logic,"profileID"] call ALIVE_fnc_hashGet;
                 [ALIVE_profileHandler,"setPosition", [_profileID, _args]] call ALIVE_fnc_profileHandler;
+                _positionUpdateScope = nil;
             };
         } else {
             _result = _logic select 2 select 2;
@@ -897,6 +899,7 @@ switch(_operation) do {
             [_logic,"mergePositions"] call ALiVE_fnc_profileVehicle;
         };
 
+        private _mergePositionsScope = createProfileScope "ALiVE profileEntity: mergePositions";
         private _position = _logic select 2 select 2; //[_logic,"position"] call ALIVE_fnc_hashGet;
         private _unitCount = [_logic,"unitCount"] call MAINCLASS;
         private _positions = _logic select 2 select 18; //[_logic,"positions"] call ALIVE_fnc_hashGet;
@@ -920,6 +923,7 @@ switch(_operation) do {
         for "_i" from 0 to _unitCount - 1 do {
             _positions set [_i, _position];
         };
+        _mergePositionsScope = nil;
     };
 
     case "addUnit": {
@@ -1106,24 +1110,19 @@ switch(_operation) do {
 
     case "setPosition": {
         if (_args isEqualType []) then {
-            private _spacialGrid = [ALiVE_profileSystem,"spacialGridProfiles"] call ALiVE_fnc_hashGet;
+            if (count _args == 2) then {
+                _args pushBack 0;
+            };
 
-            private _currPos = _logic select 2 select 2;
-            [_spacialGrid,"move", [_currPos, _args, _logic]] call ALiVE_fnc_spacialGrid;
+            if !(((_args select 0) + (_args select 1)) == 0) then {
+                [_logic,"position", _args] call MAINCLASS;
 
-            [_logic,"position",_args] call ALIVE_fnc_hashSet;
-
-            //["ENTITY %1 setPosition: %2",_logic select 2 select 4,_args] call ALIVE_fnc_dump;
-
-            private _active = _logic select 2 select 1; //[_profile, "active"] call ALIVE_fnc_hashGet;
-            if(_active) then {
-
-                private _group = _logic select 2 select 13;
-
-                {
-                    _x setPos _args;
-                } forEach (units _group);
-
+                if (_logic select 2 select 1) then {
+                    private _group = _logic select 2 select 13;
+                    {
+                        _x setPos _args;
+                    } forEach (units _group);
+                };
             };
         };
     };
