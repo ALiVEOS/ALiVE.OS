@@ -369,8 +369,15 @@ switch(_operation) do {
                                         _tasks = DEFAULT_TRANSPORT_TASKS;
                                     };
 
-                                    _transportArray = [_position,_direction,_type, _callsign,_tasks,_code,_height,_slingloading, _containers,_transportLogistics,_transportLogisticsSource];
-                                    _transportArrays pushback _transportArray;
+                                    if (isClass (configFile >> "CfgVehicles" >> _type)) then {
+                                        _transportArray = [_position,_direction,_type, _callsign,_tasks,_code,_height,_slingloading, _containers,_transportLogistics,_transportLogisticsSource];
+                                        _transportArrays pushback _transportArray;
+                                    } else {
+                                        [
+                                            "COMBAT SUPPORT - Transport %1 ignored: vehicle class '%2' is unavailable. Load its required mod or select an available vehicle.",
+                                            _callsign, _type
+                                        ] call ALiVE_fnc_dump;
+                                    };
                                 };
                                 case ("ALiVE_sup_artillery") : {
                                     private ["_position","_callsign","_type"];

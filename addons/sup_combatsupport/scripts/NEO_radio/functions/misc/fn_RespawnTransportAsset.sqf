@@ -47,12 +47,25 @@ TRANS_RESPAWN_LIMIT = TRANS_RESPAWN_LIMIT - 1;
     private ["_sideArray","_sideIn"];
     _sideIn = _x;
     _sideArray = NEO_radioLogic getVariable [format["NEO_radioTrasportArray_%1", _sideIn],[]];
+
+    // Remove backwards so deleting an entry cannot invalidate a later index.
+    // Also purge malformed or sparse entries left by older cleanup passes.
     {
-        if (isnull (_x select 0) || {((_x select 0) == _veh)}) then {
-            _sideArray set [_foreachIndex, -1];
-            _sideArray = _sideArray - [-1];
+        if (isNil "_x") then {
+            _sideArray deleteAt _forEachIndex;
+        } else {
+            private _entry = _x;
+            if !(_entry isEqualType []) then {
+                _sideArray deleteAt _forEachIndex;
+            } else {
+                private _entryVehicle = _entry param [0, objNull, [objNull]];
+                if (isNull _entryVehicle || {_entryVehicle == _veh}) then {
+                    _sideArray deleteAt _forEachIndex;
+                };
+            };
         };
-    } foreach _sideArray;
+    } forEachReversed _sideArray;
+
     NEO_radioLogic setVariable [format["NEO_radioTrasportArray_%1", _sideIn], _sideArray, true];
 } foreach _sides;
 
