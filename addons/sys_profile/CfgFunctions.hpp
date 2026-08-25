@@ -11,6 +11,11 @@ class cfgFunctions {
                 file = "\x\alive\addons\sys_profile\fnc_profileSystem.sqf";
                 RECOMPILE;
             };
+            class profileSpacialGrid {
+                description = "Profile-aware spatial grid";
+                file = "\x\alive\addons\sys_profile\fnc_profileSpacialGrid.sqf";
+                RECOMPILE;
+            };
             class profileHandler {
                 description = "profileHandler";
                 file = "\x\alive\addons\sys_profile\fnc_profileHandler.sqf";

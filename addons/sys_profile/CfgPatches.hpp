@@ -4,7 +4,7 @@ class CfgPatches {
         units[] = {"ALiVE_ModuleVirtualise"};
         weapons[] = {};
         requiredVersion = REQUIRED_VERSION;
-        requiredAddons[] = {"ALIVE_main","ALIVE_sys_factioncompiler"};
+        requiredAddons[] = {"ALIVE_main","ALIVE_x_lib","ALIVE_sys_factioncompiler"};
         versionDesc = "ALiVE";
         //versionAct = "['SYS_PROFILE',_this] execVM '\x\alive\addons\main\about.sqf';";
         VERSION_CONFIG;

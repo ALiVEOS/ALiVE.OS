@@ -293,7 +293,7 @@ switch(_operation) do {
                 private _spacialGrid = [ALiVE_profileSystem,"spacialGridProfiles"] call ALiVE_fnc_hashGet;
 
                 private _currPos = _logic select 2 select 2;
-                [_spacialGrid,"move", [_currPos, _args, _logic]] call ALiVE_fnc_spacialGrid;
+                _spacialGrid call ["move", [_currPos, _args, _logic]];
 
                 [_logic,"position", _args] call ALIVE_fnc_hashSet;
 

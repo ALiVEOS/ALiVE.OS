@@ -329,7 +329,7 @@ switch(_operation) do {
 
             // insert into spacial grid
             private _spacialGrid = [ALiVE_profileSystem,"spacialGridProfiles"] call ALiVE_fnc_hashGet;
-            [_spacialGrid,"insert", [[_profilePosition,_profile]]] call ALiVE_fnc_spacialGrid;
+            _spacialGrid call ["insert", [[_profilePosition,_profile]]];
 
             private _profilesCatagorisedSide = [_profilesCatagorised, _profileSide] call ALIVE_fnc_hashGet;
 
@@ -516,7 +516,7 @@ switch(_operation) do {
 
             // remove from spacial grid
             private _spacialGrid = [ALiVE_profileSystem,"spacialGridProfiles"] call ALiVE_fnc_hashGet;
-            [_spacialGrid,"remove", [_profilePosition,_profile]] call ALiVE_fnc_spacialGrid;
+            _spacialGrid call ["remove", [_profilePosition,_profile]];
 
             private _profilesCatagorisedSide = [_profilesCatagorised, _profileSide] call ALIVE_fnc_hashGet;
             private _profilesCatagorisedTypes = [_profilesCatagorisedSide, "type"] call ALIVE_fnc_hashGet;

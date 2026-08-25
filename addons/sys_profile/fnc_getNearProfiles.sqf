@@ -38,7 +38,7 @@ params [
 ];
 
 private _spacialGrid = [ALiVE_profileSystem,"spacialGridProfiles"] call ALiVE_fnc_hashGet;
-private _near = [_spacialGrid,"findInRange", [_position,_radius,_filter2D,true,_preciseDistance]] call ALiVE_fnc_spacialGrid;
+private _near = _spacialGrid call ["findInRange", [_position,_radius,_filter2D,true,_preciseDistance]];
 
 if (_categorySelector isEqualTo []) then {
     _near select {(_x select 2 select 5) == "entity"};

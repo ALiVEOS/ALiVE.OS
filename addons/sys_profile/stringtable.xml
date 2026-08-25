@@ -91,7 +91,7 @@
     <Chinesesimp>空中战斗</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_AIR_COMBAT_SPAWNING_COMMENT">
-    <English>Enables specialized spawning behavior. Aircraft and AAA profiles are always spawned.</English>
+    <English>Enables specialized spawning behavior for players in air vehicles. Aircraft and AAA profiles are spawned globally, with land vehicles spawned around airborne player aircraft at increased ranges.</English>
     <Chinesesimp>启用专用生成行为。飞机和AAA配置文件始终会生成。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PROFILE_ACTIVATORS">

@@ -99,7 +99,7 @@ switch(_operation) do {
 
             // create spacial grid
             private _worldSize = [ALiVE_mapBounds,worldname, worldsize] call ALiVE_fnc_hashGet;
-            private _spacialGridProfiles = [nil,"create", [[-3000,-3000], _worldSize + 6000, 1000]] call ALiVE_fnc_spacialGrid;
+            private _spacialGridProfiles = [nil,"create", [[-3000,-3000], _worldSize + 6000, 1000]] call ALiVE_fnc_profileSpacialGrid;
             [_logic,"spacialGridProfiles", _spacialGridProfiles] call ALiVE_fnc_hashSet;
         };
     };

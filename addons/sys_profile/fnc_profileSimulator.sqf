@@ -176,19 +176,7 @@ if (!_simAttacks) then {
                         private _combatScanScope = createProfileScope "ALiVE profileSimulator: combat proximity scan";
                         private _nearEnemies = [];
                         if !(_sidesEnemy isEqualTo []) then {
-                            private _nearProfiles = [_spacialGridProfiles,"findInRange", [_profilePosition,_combatRange,true,true,true]] call ALiVE_fnc_spacialGrid;
-
-                            {
-                                private _nearProfileData = _x select 2;
-                                if (
-                                    (_nearProfileData select 3) in _sidesEnemy
-                                    && {(_nearProfileData select 5) == "entity"}
-                                    && {!(_nearProfileData select 1)}
-                                    && {!(_nearProfileData select 30)}
-                                ) then {
-                                    _nearEnemies pushBack (_nearProfileData select 4);
-                                };
-                            } foreach _nearProfiles;
+                            _nearEnemies = _spacialGridProfiles call ["findCombatTargets", [_profilePosition,_combatRange,_sidesEnemy]];
                         };
                         _combatScanScope = nil;
 
