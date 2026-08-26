@@ -4,6 +4,8 @@
 
 #define LOG_LEVELS ["info", "notice", "warning", "error", "critical"]
 
+//#define DEBUG_ENABLED_X_LIB 1
+
 #ifdef DEBUG_ENABLED_X_LIB
     #define DEBUG_MODE_FULL
 #endif
