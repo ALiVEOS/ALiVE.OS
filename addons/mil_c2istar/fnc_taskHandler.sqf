@@ -423,6 +423,33 @@ switch (_operation) do {
             if (_debug) then {
                 ["Task Handler - automatic player tasks are turned off, task not generated"] call ALiVE_fnc_dump;
             };
+
+            // A commander request claims its objective BEFORE raising this event, and carries the
+            // key it claimed at index 12. Dropping the event without handing that back left the
+            // objective claimed with nothing in existence to ever release it. The commander then
+            // asks again next cycle, claims the next objective, and loses that one too, so leaving
+            // this switch off long enough quietly works through every objective on the map until
+            // none can be handed out even after it is turned back on.
+            //
+            // Payloads that never claimed anything arrive with no key at all and are untouched, and
+            // a find miss is a harmless no-op.
+            private _droppedType = _eventData param [4, ""];
+            private _droppedKey = _eventData param [12, []];
+            private _hasDroppedKey = switch (typeName _droppedKey) do {
+                case "STRING": {_droppedKey != ""};
+                case "ARRAY": {!(_droppedKey isEqualTo [])};
+                default {false};
+            };
+
+            if (_hasDroppedKey && {_droppedType != ""} && {!isNil QGVAR(playerRequests)}) then {
+                private _heldTargets = [GVAR(playerRequests), _droppedType, []] call ALiVE_fnc_hashGet;
+                private _heldIndex = _heldTargets find _droppedKey;
+
+                if (_heldIndex > -1) then {
+                    _heldTargets deleteAt _heldIndex;
+                    [GVAR(playerRequests), _droppedType, _heldTargets] call ALiVE_fnc_hashSet;
+                };
+            };
         };
 
         // DEBUG -------------------------------------------------------------------------------------
@@ -647,6 +674,9 @@ switch (_operation) do {
             private _hasStrategicObjectivePosition = false;
             private _strategicReservationKey = [];
             private _hasStrategicReservationKey = false;
+            // Captured before anything below can re-pick _taskType, so a failed generation hands
+            // the reservation back under the type it was claimed for rather than another one.
+            private _reservationTaskType = _taskType;
 
             if (_taskType in ["CaptureObjective", "MilDefence"]) then {
                 private _taskTargets = _taskData param [11, []];
@@ -693,6 +723,25 @@ switch (_operation) do {
                         _strategicReservationKey = _reservationKey;
                         _hasStrategicReservationKey = true;
                     };
+                };
+
+                // Prefer the key the request actually reserved, carried at index 12 by
+                // fnc_taskRequest. The derivation above starts from the raw target and cannot
+                // see an objectiveID when that target is a profile, so it produces a position
+                // that release will never find. Storing the carried value means release deletes
+                // exactly what the request wrote, whatever shape it is. Payloads with no index
+                // 12, which is the tablet route and every automatic non-commander source, keep
+                // the derived behaviour untouched.
+                private _carriedReservationKey = _taskData param [12, []];
+                private _hasCarriedReservationKey = switch (typeName _carriedReservationKey) do {
+                    case "STRING": {_carriedReservationKey != ""};
+                    case "ARRAY": {!(_carriedReservationKey isEqualTo [])};
+                    default {false};
+                };
+
+                if (_hasCarriedReservationKey) then {
+                    _strategicReservationKey = _carriedReservationKey;
+                    _hasStrategicReservationKey = true;
                 };
             };
 
@@ -773,6 +822,21 @@ switch (_operation) do {
 					[_logic, "updateTaskState", _x] call MAINCLASS;
 				} forEach (_taskSet select 0);
             } else {
+                // Generation produced nothing, so give the reservation back. Without this the
+                // objective stayed claimed with no task in existence to ever release it, and
+                // every later request for it was refused. A find miss is a harmless no-op, and
+                // payloads that reserved nothing arrive here with no key at all. The tablet
+                // route unwinds its own reservation in fnc_playerOrders and is unaffected.
+                if (_hasStrategicReservationKey && {!isNil QGVAR(playerRequests)}) then {
+                    private _heldTargets = [GVAR(playerRequests), _reservationTaskType, []] call ALiVE_fnc_hashGet;
+                    private _heldIndex = _heldTargets find _strategicReservationKey;
+
+                    if (_heldIndex > -1) then {
+                        _heldTargets deleteAt _heldIndex;
+                        [GVAR(playerRequests), _reservationTaskType, _heldTargets] call ALiVE_fnc_hashSet;
+                    };
+                };
+
                 private _autoGenerateSides = [_logic, "autoGenerateSides"] call ALIVE_fnc_hashGet;
                 private _sideAutoGeneration = [_autoGenerateSides, _taskSide] call ALIVE_fnc_hashGet;
 

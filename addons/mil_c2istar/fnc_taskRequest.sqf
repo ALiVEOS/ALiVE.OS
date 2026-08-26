@@ -1,4 +1,4 @@
-#include "\x\alive\addons\x_lib\script_component.hpp"
+#include "\x\alive\addons\mil_c2istar\script_component.hpp"
 SCRIPT(taskRequest);
 
 /* ----------------------------------------------------------------------------
@@ -28,6 +28,7 @@ See Also:
 
 Author:
 Tupolov
+Jman
 
 Peer reviewed:
 nil
@@ -263,6 +264,25 @@ if (_autoGenerateStrategicTasks) then {
             private _targetArray = [_target];
 
             private _taskData = [_requestID,_requestPlayerID,_side,_taskFaction,_type,"Map",_destination,_taskPlayers,_enemyFaction,_current,_apply,_targetArray];
+
+            // Carry the key this request actually reserved inside the payload, so generation
+            // stores the same value rather than working it out again. generateTask re-derives
+            // from the raw target, and on the commander route that target is a PROFILE, not an
+            // objective. A profile carries no objectiveID, so the re-derivation falls through to
+            // a bare position while this store holds the objectiveID resolved through OPCOM just
+            // above. Release then looks for a position among ID strings and never matches, which
+            // would leave that objective claimed for the rest of the mission.
+            //
+            // The mismatch is provable from source. The stranded claim it implies has NOT been
+            // observed in play: on every session measured the store was empty when checked,
+            // because the routes that deliver most tasks never reserve anything in the first
+            // place. Treat this as closing a hole rather than as repairing a reported fault.
+            //
+            // Appended only for the two types that reserve anything. Index 12 already means
+            // something else to other tasks: CAS reads friendly units there, CSAR a crew id.
+            if (_type in ["CaptureObjective", "MilDefence"] && {!isNil "_targetReservationKey"}) then {
+                _taskData pushBack _targetReservationKey;
+            };
 
             [GVAR(playerRequests), _type, _currentTargets] call ALiVE_fnc_hashSet;
 
