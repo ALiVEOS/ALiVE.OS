@@ -98,6 +98,8 @@ if (isServer && {isNil "ALiVE_REQUIRE_INITIALISED"} && {_output isEqualType ""})
     };
 };
 
-player sidechat _output;
+if (hasInterface && { !(isNull player) }) then {
+    player sidechat _output;
+};
 
 _this call ALIVE_fnc_dump;

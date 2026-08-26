@@ -23,4 +23,7 @@ See Also:
 Author:
 ARJay, Highhead
 ---------------------------------------------------------------------------- */
-player sidechat (_this select 0);
+
+if (hasInterface && { !(isNull player) }) then {
+    player sidechat (_this select 0);
+};
