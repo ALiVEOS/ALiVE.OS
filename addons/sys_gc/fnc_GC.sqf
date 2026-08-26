@@ -195,11 +195,6 @@ switch(_operation) do {
         PROFILE_SCOPE_END(GCDESTROY)
     };
 
-    /*
-    DRIVER - invoked by the per-frame handler registered in "start". Slices
-    the collector's work onto the caller; each slice is delegated to a normal
-    operation so the profiler sees one named zone per concern.
-    */
     case "tick": {
         PROFILE_SCOPE(GCTICK, "ALiVE GC: tick")
 
@@ -224,9 +219,9 @@ switch(_operation) do {
     };
 
     /*
-    Drain a fixed number of queued entries: expired objects near no player,
-    empty groups, and stale references are removed; everything else stays
-    queued and is revisited when the cursor wraps.
+        Drain a fixed number of queued entries: expired objects near no player,
+        empty groups, and stale references are removed; everything else stays
+        queued and is revisited when the cursor wraps.
     */
     case "processDeletionQueue": {
         PROFILE_SCOPE(GCPROCESSDELETIONQUEUE, "ALiVE GC: processDeletionQueue")
@@ -248,11 +243,8 @@ switch(_operation) do {
 
         if (!(_queue isEqualTo [])) then {
 
-            // Instant mode is evaluated per tick rather than once per cycle: the moment allDead
-            // crosses the threshold the queue drains instantly regardless of expiry
-            // and player proximity, which is exactly when the server most needs the
-            // corpses gone. Same behaviour as the FSM passing _instant = true to
-            // process, just more responsive to load spikes.
+            // the moment allDead crosses the threshold the queue drains
+            // instantly regardless of expiry and player proximity
             private _instant = (count allDead) >= (_logic getVariable ["gcThreshold", 50]);
 
             // Player list cached once per tick; only fetched when it will be used,
@@ -322,36 +314,46 @@ switch(_operation) do {
     };
 
     /*
-    Begin a collection sweep: capture the synchronised-object exclusion list
-    and reset the stage walk. Sources themselves are snapshotted lazily by
-    scanCandidates as it enters each stage.
+        Begin a collection sweep: capture every candidate source once, capture the
+        synchronised-object exclusion list, and reset the stage walk.
     */
     case "beginCandidateScan": {
         PROFILE_SCOPE(GCBEGINCANDIDATESCAN, "ALiVE GC: beginCandidateScan")
 
+        private _individual = _logic getVariable ["ALiVE_GC_INDIVIDUALTYPES", []];
+        private _sources = [
+            allDead,
+            allGroups,
+            if (_individual isEqualTo []) then { [] } else { entities [_individual, [], true, false] }
+        ];
+
         _logic setVariable ["gcPhase", "scanning"];
         _logic setVariable ["gcSweepStage", 0];
         _logic setVariable ["gcSweepIndex", 0];
+        _logic setVariable ["gcSweepSources", _sources];
         _logic setVariable ["gcSweepSync", synchronizedObjects _logic];
         _logic setVariable ["gcDeletedCount", 0];
         _logic setVariable ["gcSweepStartTime", diag_tickTime];
+
+        if (_logic getVariable ["debug", false]) then {
+            {
+                ["GC scanCandidates %1 stage starting with %2 items", ["allDead", "allGroups", "entities"] select _forEachIndex, count _x] call ALiVE_fnc_dump;
+            } forEach _sources;
+        };
 
         PROFILE_SCOPE_END(GCBEGINCANDIDATESCAN)
     };
 
     /*
-    Inspect a fixed number of candidates from the current sweep stage,
-    enqueueing qualifying ones through "trashIt".
+        Inspect a fixed number of candidates from the current sweep stage,
+        enqueueing qualifying ones through "trashIt".
 
-    Sources are snapshotted once when the walk enters a stage rather than
-    being fetched every tick: allMissionObjects in particular builds a fresh
-    array of everything on the map, and re-fetching it across a walk lasting
-    thousands of ticks would cost more than the inspection budget it feeds.
-    A snapshot per stage costs one array copy per stage per sweep. The
-    staleness this introduces matches what the FSM did - it also snapshotted
-    its candidate lists once per collect - so anything that dies mid-sweep
-    waits for the next sweep, exactly as it always has. Entries that other
-    systems delete out from under the sweep resolve to null and are skipped.
+        Candidate sources are snapshotted by beginCandidateScan. This operation
+        only advances through those existing arrays, inspecting at most the frame
+        budget on each call. The staleness matches what the FSM did - it also
+        snapshotted its candidate lists once per collect - so anything that dies
+        mid-sweep waits for the next sweep. Entries deleted by other systems while
+        the sweep is active resolve to null and are skipped.
     */
     case "scanCandidates": {
         PROFILE_SCOPE(GCSCANCANDIDATES, "ALiVE GC: scanCandidates")
@@ -360,8 +362,8 @@ switch(_operation) do {
         private _idx = _logic getVariable ["gcSweepIndex", 0];
         private _sync = _logic getVariable ["gcSweepSync", []];
         private _individual = _logic getVariable ["ALiVE_GC_INDIVIDUALTYPES", []];
-        private _source = _logic getVariable ["gcSweepSource", []];
-        private _sourceStage = _logic getVariable ["gcSweepSourceStage", -1];
+        private _sources = _logic getVariable ["gcSweepSources", [[], [], []]];
+        private _queue = _logic getVariable ["queue", []];
 
         private _inspected = 0;
 
@@ -370,25 +372,10 @@ switch(_operation) do {
             if (_stage > 2) exitWith {
                 _logic setVariable ["gcPhase", "idle"];
                 _logic setVariable ["nextCollectTime", time + (_logic getVariable ["gcInterval", 300])];
-
+                _logic setVariable ["gcSweepSources", nil];
             };
 
-            if (_sourceStage != _stage) then {
-                _source = switch (_stage) do {
-                    case 0: { allDead };
-                    case 1: { allGroups };
-                    case 2: { if ((count _individual) > 0) then { allMissionObjects "" } else { [] } };
-                    default { [] };
-                };
-                _sourceStage = _stage;
-                _logic setVariable ["gcSweepSource", _source];
-                _logic setVariable ["gcSweepSourceStage", _stage];
-
-                if (_logic getVariable ["debug", false]) then {
-                    private _sourceName = ["allDead", "allGroups", "allMissionObjects"] select _stage;
-                    ["GC scanCandidates %1 stage starting with %2 items", _sourceName, count _source] call ALiVE_fnc_dump;
-                };
-            };
+            private _source = _sources select _stage;
 
             if (_idx >= (count _source)) then {
                 _stage = _stage + 1;
@@ -408,21 +395,21 @@ switch(_operation) do {
                         if (!(isNull _candidate)
                             && { !(_candidate in _sync) }
                             && { !(_candidate getVariable [QGVAR(IGNORE), false]) }
-                            && { !(_candidate in (_logic getVariable ["queue", []])) }) then {
+                            && { _queue isEqualTo [] || { !(_candidate in _queue) } }) then {
                             [_logic,"trashIt", _candidate] call MAINCLASS;
                         };
                     };
 
                     case 1: {
                         if (((count units _candidate) == 0)
-                            && { !(_candidate in (_logic getVariable ["queue", []])) }) then {
+                            && { _queue isEqualTo [] || { !(_candidate in _queue) } }) then {
                             [_logic,"trashIt", _candidate] call MAINCLASS;
                         };
                     };
 
                     case 2: {
                         if (((typeOf _candidate) in _individual)
-                            && { !(_candidate in (_logic getVariable ["queue", []])) }) then {
+                            && { _queue isEqualTo [] || { !(_candidate in _queue) } }) then {
                             [_logic,"trashIt", _candidate] call MAINCLASS;
                         };
                     };
@@ -442,9 +429,9 @@ switch(_operation) do {
     };
 
     /*
-    Enqueue an object or group for deletion once its expiry has passed.
-    Called externally by other systems (the profile simulator virtualising
-    entities) as well as by scanCandidates.
+        Enqueue an object or group for deletion once its expiry has passed.
+        Called externally by other systems (the profile simulator virtualising
+        entities) as well as by scanCandidates.
     */
     case "trashIt": {
         PROFILE_SCOPE(GCTRASHIT, "ALiVE GC: trashIt")
