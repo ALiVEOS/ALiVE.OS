@@ -1,4 +1,5 @@
 #include "\x\alive\addons\x_lib\script_component.hpp"
+#include "\x\cba\addons\hashes\script_hashes.hpp"
 SCRIPT(event);
 
 /* ----------------------------------------------------------------------------
@@ -29,6 +30,8 @@ Peer reviewed:
 nil
 ---------------------------------------------------------------------------- */
 
+PROFILE_SCOPE(EVENTCREATE, "ALiVE event: create")
+
 params [
 	"_type",
 	["_data", []],
@@ -36,12 +39,4 @@ params [
 	["_message",""]
 ];
 
-[
-	[
-		["type", _type],
-		["data", _data],
-		["from", _from],
-		["message", _message],
-		["id", 0]
-	]
-] call ALIVE_fnc_hashCreate
+[TYPE_HASH, ["type","data","from","message","id"], [_type,_data,_from,_message,0], nil]

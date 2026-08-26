@@ -201,7 +201,7 @@ class FSM
                         name = "ANALYZE";
                         itemno = 2;
                         init = /*%FSM<STATEINIT""">*/"private _profileScope = createProfileScope ""ALiVE TACOM FSM: ANALYZE"";" \n
-                         "private [""_pos"",""_objective"",""_size"",""_operation"",""_data_operation"",""_data_value"",""_tacom_data"",""_recon"",""_capture"",""_defend"",""_reserve"",""_custom"",""_dataset"",""_transmit"",""_TACOM_ACTION"",""_timeout"",""_section"",""_sectionSupport"",""_event"",""_eventID""];" \n
+                         "private [""_pos"",""_objective"",""_size"",""_operation"",""_data_operation"",""_data_value"",""_tacom_data"",""_recon"",""_capture"",""_defend"",""_reserve"",""_custom"",""_dataset"",""_transmit"",""_TACOM_ACTION"",""_timeout"",""_section"",""_sectionSupport"",""_event""];" \n
                          "" \n
                          "_busy = true;" \n
                          "_TACOM_status = ""Analysis"";" \n
@@ -390,6 +390,7 @@ class FSM
                          "            " \n
                          "            private _opcomID = [_OPCOM_HANDLER,""opcomID""] call ALiVE_fnc_hashGet;" \n
                          "            private _opcomOrderCompleteArgs = [];" \n
+                         "            private _events = [];" \n
                          "            " \n
                          "            private _success = true;" \n
                          "            _completionSetupScope = nil;" \n
@@ -419,8 +420,7 @@ class FSM
                          "                    //analyse as recon is completed" \n
                          "                    _dataset = {_TACOM_DATA = [""analyze"",_objective]};" \n
                          "" \n
-                         "                    _event = ['OPCOM_RECON', [_side,_objective],""OPCOM""] call ALIVE_fnc_event;" \n
-                         "                    _eventID = [ALIVE_eventLog, ""addEvent"",_event] call ALIVE_fnc_eventLog;" \n
+                         "                    _events pushBack (['OPCOM_RECON', [_side,_objective],""OPCOM""] call ALIVE_fnc_event);" \n
                          "                    " \n
                          "                    _opcomOrderCompleteArgs = [_danger];" \n
                          "                };" \n
@@ -435,8 +435,7 @@ class FSM
                          "                    [_objective,""opcom_orders"",""reserve""] call AliVE_fnc_HashSet;" \n
                          "                    _dataset = {_TACOM_DATA = [""analyze"",_objective]};" \n
                          "                    " \n
-                         "                    _event = ['OPCOM_CAPTURE', [_side,_objective],""OPCOM""] call ALIVE_fnc_event;" \n
-                         "                    _eventID = [ALIVE_eventLog, ""addEvent"",_event] call ALIVE_fnc_eventLog;" \n
+                         "                    _events pushBack (['OPCOM_CAPTURE', [_side,_objective],""OPCOM""] call ALIVE_fnc_event);" \n
                          "                };" \n
                          "                case (""defend"") : {" \n
                          "                    if !([_OPCOM_HANDLER,""synchronizeorders"",_ProfileID] call ALiVE_fnc_OPCOM) exitwith {" \n
@@ -449,8 +448,7 @@ class FSM
                          "                    //analyse" \n
                          "                    _dataset = {_TACOM_DATA = [""analyze"",_objective]};" \n
                          "" \n
-                         "                    _event = ['OPCOM_DEFEND', [_side,_objective],""OPCOM""] call ALIVE_fnc_event;" \n
-                         "                    _eventID = [ALIVE_eventLog, ""addEvent"",_event] call ALIVE_fnc_eventLog;" \n
+                         "                    _events pushBack (['OPCOM_DEFEND', [_side,_objective],""OPCOM""] call ALIVE_fnc_event);" \n
                          "                };" \n
                          "                case (""reserve"") : {" \n
                          "                    _ProfilesReserve = [_OPCOM_HANDLER,""ProfileIDsReserve"",[]] call ALiVE_fnc_HashGet;" \n
@@ -478,8 +476,7 @@ class FSM
                          "                    [_objective,""opcom_orders"",""none""] call AliVE_fnc_HashSet;" \n
                          "                    if (_debug) then {format [""ALiVE_OPCOM_%1"",[_objective,""objectiveID""] call AliVE_fnc_HashGet] setMarkerColor _colorside};" \n
                          "" \n
-                         "                    _event = ['OPCOM_RESERVE', [_side,_objective],""OPCOM""] call ALIVE_fnc_event;" \n
-                         "                    _eventID = [ALIVE_eventLog, ""addEvent"",_event] call ALIVE_fnc_eventLog;" \n
+                         "                    _events pushBack (['OPCOM_RESERVE', [_side,_objective],""OPCOM""] call ALIVE_fnc_event);" \n
                          "                };" \n
                          "                " \n
                          "" \n
@@ -489,8 +486,10 @@ class FSM
                          "" \n
                          "            private _completionEventScope = createProfileScope ""ALiVE TACOM ANALYZE: completion event"";" \n
                          "            if (_success) then {" \n
-                         "                private _event = ['TACOM_ORDER_COMPLETE', [_opcomID,_objective,_state,_side,_factions, _success, _opcomOrderCompleteArgs], ""TACOM""] call ALIVE_fnc_event;" \n
-                         "                [ALIVE_eventLog, ""addEvent"",_event] call ALIVE_fnc_eventLog;" \n
+                         "                _events pushBack (['TACOM_ORDER_COMPLETE', [_opcomID,_objective,_state,_side,_factions, _success, _opcomOrderCompleteArgs], ""TACOM""] call ALIVE_fnc_event);" \n
+                         "            };" \n
+                         "            if (_events isNotEqualTo []) then {" \n
+                         "                [ALIVE_eventLog, ""addEvents"", _events] call ALIVE_fnc_eventLog;" \n
                          "            };" \n
                          "            _completionEventScope = nil;" \n
                          "            " \n

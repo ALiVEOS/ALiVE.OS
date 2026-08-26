@@ -38,6 +38,7 @@ nil
 #define MAINCLASS   ALIVE_fnc_eventLog
 
 #define MTEMPLATE   "ALiVE_EVENT_%1"
+#define DISPATCH_EVENTS_PER_FRAME 4
 
 TRACE_1("event log - input", _this);
 
@@ -54,12 +55,19 @@ switch(_operation) do {
             _logic setvariable ["debug", false];
             _logic setvariable ["listenerCount", 0];
             _logic setvariable ["eventCount", 0];
-            _logic setvariable ["firstEvent", 0];
-            _logic setvariable ["maxEvents", 5];
-            _logic setvariable ["events", createHashMap];
-            _logic setvariable ["eventsByType", createHashMap];
             _logic setvariable ["listeners", createHashMap];
             _logic setvariable ["listenersByFilter", createHashMap];
+            _logic setvariable ["dispatchQueue", []];
+            _logic setvariable ["listenerDispatchStates", createHashMap];
+            _logic setvariable ["destroyed", false];
+
+            private _dispatchPFH = [{
+                _this params ["_logic"];
+
+                [_logic,"dispatchEvents"] call MAINCLASS;
+            }, 0, _logic] call CBA_fnc_addPerFrameHandler;
+
+            _logic setvariable ["dispatchPFH", _dispatchPFH];
         };
     };
 
@@ -67,6 +75,22 @@ switch(_operation) do {
         [_logic,"debug", false] call MAINCLASS;
 
         if (isServer) then {
+            _logic setvariable ["destroyed", true];
+
+            private _dispatchPFH = _logic getvariable ["dispatchPFH", -1];
+            if (_dispatchPFH >= 0) then {
+                [_dispatchPFH] call CBA_fnc_removePerFrameHandler;
+            };
+
+            (_logic getvariable ["dispatchQueue", []]) resize 0;
+
+            {
+                (_y select 1) resize 0;
+            } foreach (_logic getvariable ["listenerDispatchStates", createHashMap]);
+
+            _logic setvariable ["dispatchPFH", -1];
+            _logic setvariable ["listenerDispatchStates", createHashMap];
+
             _logic setvariable ["super", nil];
             _logic setvariable ["class", nil];
 
@@ -76,9 +100,9 @@ switch(_operation) do {
 
     case "debug": {
         if(!isnil "_args") then {
-            _result = _logic getvariable "debug";
-        } else {
             _logic setvariable ["debug", _args];
+        } else {
+            _result = _logic getvariable "debug";
         };
     };
 
@@ -90,16 +114,27 @@ switch(_operation) do {
         private _filteredListeners = _logic getvariable "listenersByFilter";
 
         private _listenerID = [_logic,"getNextListenerInsertID"] call MAINCLASS;
+        private _class = if (_listener isEqualType objNull) then {
+            _listener getVariable "class"
+        } else {
+            [_listener,"class"] call ALIVE_fnc_hashGet
+        };
+
+        if (_class isEqualType "") then {
+            _class = missionnamespace getvariable _class;
+        };
+
+        private _resolvedListener = [_listener, _class];
 
         // store the listener in a hash by filter type
 
         {
             if !(_x in _filteredListeners) then {
                 _filteredListeners set [_x, createHashMapFromArray [
-                    [_listenerID, _args]
+                    [_listenerID, _resolvedListener]
                 ]];
             }else{
-                (_filteredListeners get _x) set [_listenerID, _args];
+                (_filteredListeners get _x) set [_listenerID, _resolvedListener];
             };
         } forEach _filters;
 
@@ -121,6 +156,10 @@ switch(_operation) do {
         private _filteredListeners = _logic getvariable "listenersByFilter";
 
         private _listener = _listeners get _listenerID;
+        if (isnil "_listener") exitwith {
+            _result = false;
+        };
+
         private _filters = _listener select 1;
 
         {
@@ -146,134 +185,184 @@ switch(_operation) do {
         _result = _filteredListeners get _filter;
     };
 
-    case "maxEvents": {
-        if (!isnil "_args") then {
-            _logic setvariable ["maxEvents", _args];
-        } else {
-            _logic getvariable "maxEvents";
-        };
-    };
-
-    case "addEvent": {
-        private _event = _args;
+    case "addEvent";
+    case "addEvents": {
+        PROFILE_SCOPE(EVENTLOGADDEVENT, "ALiVE eventLog: addEvent")
+        PROFILE_SCOPE(EVENTLOGBOOKKEEPING, "ALiVE eventLog addEvent: bookkeeping")
 
         private _debug = _logic getvariable "debug";
-        private _events = _logic getvariable "events";
-        private _eventsByType = _logic getvariable "eventsByType";
-        private _maxEvents = _logic getvariable "maxEvents";
+        private _isSingleEvent = _args isEqualType [] && { _args isnotequalto [] } && { (_args select 0) isequalto "#CBA_HASH#" };
 
-        private _eventID = [_logic,"getNextEventInsertID"] call MAINCLASS;
+        private _events = if (_isSingleEvent) then {[_args]} else {_args};
+        private _eventIDs = [];
 
-        [_event,"id", _eventID] call ALIVE_fnc_hashSet;
+        private _eventID = _logic getvariable "eventCount";
 
-        private _type = [_event,"type"] call ALIVE_fnc_hashGet;
+        {
+            [_x,"id", _eventID] call ALIVE_fnc_hashSet;
+            _eventIDs pushback _eventID;
+            _eventID = _eventID + 1;
 
-        // store the event in a hash by type
+            if (_debug) then {
+                _x call ALIVE_fnc_inspectHash;
+            };
+        } foreach _events;
 
-        if !(_type in _eventsByType) then {
-            _eventsByType set [_type, createHashMapFromArray [
-                [_eventID, _event]
-            ]];
+        _logic setvariable ["eventCount", _eventID];
+        (_logic getvariable "dispatchQueue") append _events;
+
+        PROFILE_SCOPE_END(EVENTLOGBOOKKEEPING)
+
+        _result = if (_operation isEqualTo "addEvent") then {
+            _eventIDs param [0, -1]
         } else {
-            (_eventsByType get _type) set [_eventID, _event];
+            _eventIDs
         };
 
-        // remove first event if over the max limit
+        PROFILE_SCOPE_END(EVENTLOGADDEVENT)
+    };
 
-        if (count _events > _maxEvents) then {
-            private _firstEvent = _logic getvariable "firstEvent";
-            [_logic,"removeEvent", format ["event_%1",_firstEvent]] call MAINCLASS;
-            _firstEvent = _firstEvent + 1;
-            _logic setvariable ["firstEvent", _firstEvent];
-        };
+    case "dispatchEvents": {
+        PROFILE_SCOPE(EVENTLOGDISPATCH, "ALiVE eventLog: per-frame dispatch")
 
-        // store the event in the main hash
-
-        _events set [_eventID, _event];
-
-        if (_debug) then {
-            _event call ALIVE_fnc_inspectHash;
-            //_events call ALIVE_fnc_inspectHash;
-            //_eventsByType call ALIVE_fnc_inspectHash;
-        };
-
-        // dispatch event
-
+        private _dispatchQueue = _logic getvariable "dispatchQueue";
         private _filteredListeners = _logic getvariable "listenersByFilter";
-        private _typeListeners = _filteredListeners getOrDefault [_type, []];
-        private _globalListeners = _filteredListeners getOrDefault ["ALL", []];
+        private _dispatchStates = _logic getvariable "listenerDispatchStates";
+        private _batchSize = DISPATCH_EVENTS_PER_FRAME min count _dispatchQueue;
 
-        private _listeners = [];
+        #ifdef DEBUG_MODE_FULL
+        private _queuedAtStart = count _dispatchQueue;
+        private _dispatchStartedAt = diag_tickTime;
+        private _listenerDeliveries = 0;
+        private _workersStarted = 0;
+        #endif
 
-        {
-            private _listener = _y select 0;
+        if (_batchSize > 0) then {
+            private _batch = _dispatchQueue select [0, _batchSize];
+            private _remainingCount = count _dispatchQueue - _batchSize;
+            _logic setvariable ["dispatchQueue", _dispatchQueue select [_batchSize, _remainingCount]];
 
-            private _class = if (_listener isEqualType objNull) then {
-                _listeners pushback [_listener, _listener getVariable "class"];
-            } else {
-                _listeners pushback [_listener, [_listener,"class"] call ALIVE_fnc_hashGet];
-            };
-        } foreach _typeListeners;
+            private _enqueueForListener = {
+                params ["_listenerID","_resolvedListener","_event"];
 
-        {
-            private _listener = _y select 0;
-
-            private _class = if (_listener isEqualType objNull) then {
-                _listeners pushback [_listener, _listener getVariable "class"];
-            } else {
-                _listeners pushback [_listener, [_listener,"class"] call ALIVE_fnc_hashGet];
-            };
-        } foreach _globalListeners;
-
-        [_event, _listeners] spawn {
-            params ["_event","_listeners"];
-
-            {
-                _x params ["_listener","_class"];
-
-                if (_class isEqualType "") then {
-                    _class = missionnamespace getvariable _class;
+                private _state = _dispatchStates get _listenerID;
+                if (isnil "_state") then {
+                    _state = [_resolvedListener, [], false, scriptNull];
+                    _dispatchStates set [_listenerID, _state];
                 };
 
-                [_listener,"handleEvent", _event] call _class;
-            } foreach _listeners;
+                (_state select 1) pushback _event;
+
+                #ifdef DEBUG_MODE_FULL
+                _listenerDeliveries = _listenerDeliveries + 1;
+                #endif
+            };
+
+            {
+                private _event = _x;
+                private _type = [_event,"type"] call ALIVE_fnc_hashGet;
+                private _typeListeners = _filteredListeners getOrDefault [_type, []];
+                private _globalListeners = _filteredListeners getOrDefault ["ALL", []];
+
+                {
+                    [_x, _y, _event] call _enqueueForListener;
+                } foreach _typeListeners;
+
+                {
+                    if !(_x in _typeListeners) then {
+                        [_x, _y, _event] call _enqueueForListener;
+                    };
+                } foreach _globalListeners;
+            } foreach _batch;
         };
 
-        _result = _eventID;
-    };
+        private _listeners = _logic getvariable "listeners";
+        private _statesToRemove = [];
 
-    case "removeEvent": {
-        private _eventID = _args;
+        {
+            private _listenerID = _x;
+            private _state = _y;
+            _state params ["_resolvedListener","_listenerQueue","_running","_worker"];
 
-        private _events = _logic getvariable "events";
-        private _event = _events get _eventID;
-        if (isnil "_event") exitwith {};
+            if (_running && {scriptDone _worker}) then {
+                _running = false;
+                _state set [2, false];
+            };
 
-        private _type = [_event,"type"] call ALIVE_fnc_hashGet;
+            if (!_running && {_listenerQueue isNotEqualTo []}) then {
+                _state set [2, true];
 
-        private _eventsByType = _logic getvariable "eventsByType";
-        private _eventsForType = _eventsByType get _type;
-        if (!isnil "_eventsForType") then {
-            _eventsForType deleteat _eventID;
+                #ifdef DEBUG_MODE_FULL
+                _workersStarted = _workersStarted + 1;
+                #endif
+
+                private _worker = [_logic, _listenerID, _state] spawn {
+                    PROFILE_SCOPE(EVENTLOGLISTENERWORKER, "ALiVE eventLog: listener worker")
+
+                    params ["_logic","_listenerID","_state"];
+                    _state params ["_resolvedListener","_listenerQueue"];
+                    _resolvedListener params ["_listener","_class"];
+
+                    #ifdef DEBUG_MODE_FULL
+                    private _queuedAtStart = count _listenerQueue;
+                    private _processedEvents = 0;
+                    private _workerStartedAt = diag_tickTime;
+                    #endif
+
+                    while {
+                        !(_logic getvariable ["destroyed", true]) && {
+                            _listenerQueue isNotEqualTo []
+                        }
+                    } do {
+                        private _listenerBatch = +_listenerQueue;
+                        _listenerQueue resize 0;
+
+                        #ifdef DEBUG_MODE_FULL
+                        _processedEvents = _processedEvents + count _listenerBatch;
+                        #endif
+
+                        {
+                            [_listener,"handleEvent", _x] call _class;
+                        } foreach _listenerBatch;
+                    };
+
+                    _state set [2, false];
+
+                    #ifdef DEBUG_MODE_FULL
+                    private _workerElapsed = diag_tickTime - _workerStartedAt;
+                    TRACE_4("eventLog listener drain: listener ID, initially queued events, processed events, elapsed seconds",_listenerID,_queuedAtStart,_processedEvents,_workerElapsed);
+                    #endif
+
+                    PROFILE_SCOPE_END(EVENTLOGLISTENERWORKER)
+                };
+
+                _state set [3, _worker];
+            };
+
+            if (
+                !_running && {
+                    _listenerQueue isEqualTo [] && {
+                        isnil {_listeners get _listenerID}
+                    }
+                }
+            ) then {
+                _statesToRemove pushback _listenerID;
+            };
+        } foreach _dispatchStates;
+
+        {
+            _dispatchStates deleteat _x;
+        } foreach _statesToRemove;
+
+        #ifdef DEBUG_MODE_FULL
+        if (_batchSize > 0) then {
+            private _remainingEvents = count (_logic getvariable "dispatchQueue");
+            private _dispatchElapsed = diag_tickTime - _dispatchStartedAt;
+            TRACE_6("eventLog PFH drain: initially queued events, routed events, remaining events, listener deliveries, workers started, elapsed seconds",_queuedAtStart,_batchSize,_remainingEvents,_listenerDeliveries,_workersStarted,_dispatchElapsed);
         };
-        
-        _events deleteat _eventID;
-    };
+        #endif
 
-    case "getEventsByType": {
-        private _type = _args;
-        private _eventsByType = _logic getvariable "eventsByType";
-
-        _result = _eventsByType get _type;
-    };
-
-    case "getEvents": {
-        _result = _logic getvariable "events";
-    };
-
-    case "clearEvents": {
-        _logic setvariable ["events", createHashMap];
-        _logic setvariable ["eventsByType", createHashMap];
+        PROFILE_SCOPE_END(EVENTLOGDISPATCH)
     };
 
     case "getNextListenerInsertID": {
@@ -283,13 +372,6 @@ switch(_operation) do {
         _logic setvariable ["listenerCount", _listenerCount + 1];
     };
 
-    case "getNextEventInsertID": {
-        private _eventCount = _logic getvariable "eventCount";
-        _result = format ["event_%1", _eventCount];
-
-        _logic setvariable ["eventCount", _eventCount + 1];
-    };
-    
     default {
         _result = _this call SUPERCLASS;
     };

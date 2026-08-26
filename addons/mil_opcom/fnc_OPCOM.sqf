@@ -997,6 +997,7 @@ switch (_operation) do {
             private _artySideObj = [_side] call ALiVE_fnc_sideTextToObject;
             private _artyFaction = _factions select 0;
             private _artyFired = 0;
+            private _artyEvents = [];
             {
                 if (_artyFired >= _artyMax) exitWith {};
                 if (!isnil "_x" && {_x isEqualType []} && {count _x > 0}) then {
@@ -1016,13 +1017,16 @@ switch (_operation) do {
                                 }
                             } count _knownE);
                             private _aE = ['ARTY_REQUEST', [_cID, _cPos, _cContacts, _artySideObj, _artyFaction, _artyAsym],"OPCOM"] call ALIVE_fnc_event;
-                            [ALIVE_eventLog, "addEvent",_aE] call ALIVE_fnc_eventLog;
+                            _artyEvents pushBack _aE;
                             _artyReq pushBack [_cID, time];
                             _artyFired = _artyFired + 1;
                         };
                     };
                 };
             } forEach _knownE;
+            if (_artyEvents isNotEqualTo []) then {
+                [ALIVE_eventLog, "addEvents", _artyEvents] call ALIVE_fnc_eventLog;
+            };
             [_logic,"artyRequestedEntities",_artyReq] call ALiVE_fnc_HashSet;
         };
 

@@ -1980,6 +1980,7 @@ ALIVE_fnc_INS_buildingKilledEH = {
     // TODO: cba events should be fired from core event loop, not here
 
     private _hostilityUpdates = [];
+    private _events = [];
 
     {
         _x params ["_objectiveKey", "_installationVar", "_disabledVar", "_actionKey", "_id"];
@@ -1988,7 +1989,7 @@ ALIVE_fnc_INS_buildingKilledEH = {
         ["ASYMM_INSTALLATION_DESTROYED", [_installationType,_building,_killer]] call CBA_fnc_globalEvent;
 
         private _event = ['ASYMM_INSTALLATION_DESTROYED', [_installationType,_building,_killer],"OPCOM"] call ALIVE_fnc_event;
-        [ALiVE_eventLog, "addEvent", _event] call ALiVE_fnc_eventLog;
+        _events pushBack _event;
 
         private _objective = [[],"getobjectivebyid",_id] call ALiVE_fnc_OPCOM;
         if ([_objective] call ALIVE_fnc_isHash) then {
@@ -2009,6 +2010,8 @@ ALIVE_fnc_INS_buildingKilledEH = {
         _building setVariable [_installationVar, nil, true];
         _building setVariable [_disabledVar, true, true];
     } forEach _installations;
+
+    [ALiVE_eventLog, "addEvents", _events] call ALiVE_fnc_eventLog;
 
     {
         _x setVariable [QGVAR(INSTALLATION_ACTIONS_ADDED), [], true];
