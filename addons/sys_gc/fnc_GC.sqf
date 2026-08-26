@@ -314,39 +314,39 @@ switch(_operation) do {
     };
 
     /*
-        Begin a collection sweep: capture every candidate source once, capture the
-        synchronised-object exclusion list, and reset the stage walk.
+        Begin a collection sweep: capture every tagged candidate source once and
+        capture the synchronised-object exclusion list.
     */
     case "beginCandidateScan": {
         PROFILE_SCOPE(GCBEGINCANDIDATESCAN, "ALiVE GC: beginCandidateScan")
 
         private _individual = _logic getVariable ["ALiVE_GC_INDIVIDUALTYPES", []];
-        private _sources = [
-            allDead,
-            allGroups,
-            if (_individual isEqualTo []) then { [] } else { entities [_individual, [], true, false] }
+        private _work = [
+            ["allDead", allDead],
+            ["allGroups", allGroups],
+            ["entities", if (_individual isEqualTo []) then { [] } else { entities [_individual, [], true, false] }]
         ];
 
         _logic setVariable ["gcPhase", "scanning"];
-        _logic setVariable ["gcSweepStage", 0];
-        _logic setVariable ["gcSweepIndex", 0];
-        _logic setVariable ["gcSweepSources", _sources];
+        _logic setVariable ["gcSweepWork", _work];
         _logic setVariable ["gcSweepSync", synchronizedObjects _logic];
         _logic setVariable ["gcDeletedCount", 0];
         _logic setVariable ["gcSweepStartTime", diag_tickTime];
 
         if (_logic getVariable ["debug", false]) then {
             {
-                ["GC scanCandidates %1 stage starting with %2 items", ["allDead", "allGroups", "entities"] select _forEachIndex, count _x] call ALiVE_fnc_dump;
-            } forEach _sources;
+                _x params ["_kind", "_candidates"];
+                ["GC scanCandidates %1 stage starting with %2 items", _kind, count _candidates] call ALiVE_fnc_dump;
+            } forEach _work;
         };
 
         PROFILE_SCOPE_END(GCBEGINCANDIDATESCAN)
     };
 
     /*
-        Inspect a fixed number of candidates from the current sweep stage,
-        enqueueing qualifying ones through "trashIt".
+        Inspect a fixed number of candidates from the tagged work buckets,
+        enqueueing qualifying ones through "trashIt". Each loop iteration either
+        removes an empty bucket or consumes one candidate, guaranteeing progress.
 
         Candidate sources are snapshotted by beginCandidateScan. This operation
         only advances through those existing arrays, inspecting at most the frame
@@ -358,56 +358,44 @@ switch(_operation) do {
     case "scanCandidates": {
         PROFILE_SCOPE(GCSCANCANDIDATES, "ALiVE GC: scanCandidates")
 
-        private _stage = _logic getVariable ["gcSweepStage", 0];
-        private _idx = _logic getVariable ["gcSweepIndex", 0];
         private _sync = _logic getVariable ["gcSweepSync", []];
         private _individual = _logic getVariable ["ALiVE_GC_INDIVIDUALTYPES", []];
-        private _sources = _logic getVariable ["gcSweepSources", [[], [], []]];
+        private _work = _logic getVariable ["gcSweepWork", []];
         private _queue = _logic getVariable ["queue", []];
 
         private _inspected = 0;
 
-        while { true } do {
+        while { (_inspected < GC_BUDGET_PER_FRAME) && { !(_work isEqualTo []) } } do {
+            (_work select 0) params ["_kind", "_candidates"];
 
-            if (_stage > 2) exitWith {
-                _logic setVariable ["gcPhase", "idle"];
-                _logic setVariable ["nextCollectTime", time + (_logic getVariable ["gcInterval", 300])];
-                _logic setVariable ["gcSweepSources", nil];
-            };
-
-            private _source = _sources select _stage;
-
-            if (_idx >= (count _source)) then {
-                _stage = _stage + 1;
-                _idx = 0;
+            if (_candidates isEqualTo []) then {
+                _work deleteAt 0;
             } else {
-                if (_inspected >= GC_BUDGET_PER_FRAME) exitWith {};
-
-                private _candidate = _source select _idx;
-                _idx = _idx + 1;
+                private _candidate = _candidates deleteAt ((count _candidates) - 1);
                 _inspected = _inspected + 1;
 
-                switch (_stage) do {
-                    case 0: {
+                switch (_kind) do {
+                    case "allDead": {
                         // Bodies can be deleted by other systems between the
                         // snapshot and this inspection; a stale reference is
                         // simply skipped.
-                        if (!(isNull _candidate)
-                            && { !(_candidate in _sync) }
-                            && { !(_candidate getVariable [QGVAR(IGNORE), false]) }
-                            && { _queue isEqualTo [] || { !(_candidate in _queue) } }) then {
+                        if (
+                            !(isNull _candidate) &&
+                            { !(_candidate in _sync) } &&
+                            { !(_candidate getVariable [QGVAR(IGNORE), false]) } &&
+                            { _queue isEqualTo [] || { !(_candidate in _queue) } }
+                        ) then {
                             [_logic,"trashIt", _candidate] call MAINCLASS;
                         };
                     };
 
-                    case 1: {
-                        if (((count units _candidate) == 0)
-                            && { _queue isEqualTo [] || { !(_candidate in _queue) } }) then {
+                    case "allGroups": {
+                        if (((units _candidate) isequalto []) && { _queue isEqualTo [] || { !(_candidate in _queue) } }) then {
                             [_logic,"trashIt", _candidate] call MAINCLASS;
                         };
                     };
 
-                    case 2: {
+                    case "entities": {
                         if (((typeOf _candidate) in _individual)
                             && { _queue isEqualTo [] || { !(_candidate in _queue) } }) then {
                             [_logic,"trashIt", _candidate] call MAINCLASS;
@@ -417,12 +405,17 @@ switch(_operation) do {
             };
         };
 
-        _logic setVariable ["gcSweepStage", _stage];
-        _logic setVariable ["gcSweepIndex", _idx];
+        _logic setVariable ["gcSweepWork", _work];
 
-        if ((_stage > 2) && { _logic getVariable ["debug", false] }) then {
-            private _startTime = _logic getVariable ["gcSweepStartTime", diag_tickTime];
-            ["GC scanCandidates finished in %1 seconds", diag_tickTime - _startTime] call ALiVE_fnc_dump;
+        if (_work isEqualTo []) then {
+            _logic setVariable ["gcPhase", "idle"];
+            _logic setVariable ["nextCollectTime", time + (_logic getVariable ["gcInterval", 300])];
+            _logic setVariable ["gcSweepWork", nil];
+
+            if (_logic getVariable ["debug", false]) then {
+                private _startTime = _logic getVariable ["gcSweepStartTime", diag_tickTime];
+                ["GC scanCandidates finished in %1 seconds", diag_tickTime - _startTime] call ALiVE_fnc_dump;
+            };
         };
 
         PROFILE_SCOPE_END(GCSCANCANDIDATES)
