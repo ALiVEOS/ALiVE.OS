@@ -30,6 +30,14 @@ private ["_vehicle","_positions","_class","_turretEmptyCount","_playerTurretEmpt
 
 _vehicle = _this select 0;
 
+if (isNil "ALiVE_configVehicleEmptyPositionsCache") then {
+    ALiVE_configVehicleEmptyPositionsCache = createHashMap;
+};
+
+if (_vehicle in ALiVE_configVehicleEmptyPositionsCache) exitWith {
+    +(ALiVE_configVehicleEmptyPositionsCache get _vehicle)
+};
+
 _positions = [0,0,0,0,0,0];
 _class = (configFile >> "CfgVehicles" >> _vehicle);
 
@@ -88,5 +96,7 @@ if (_vehicleKind == "StaticWeapon") then {
 _positions set [3, _turretEmptyCount];
 _positions set [4, getNumber(_class >> "transportSoldier")];
 _positions set [5, _playerTurretEmptyCount];
+
+ALiVE_configVehicleEmptyPositionsCache set [_vehicle, +_positions];
 
 _positions;

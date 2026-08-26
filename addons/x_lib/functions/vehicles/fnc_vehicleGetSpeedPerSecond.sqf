@@ -24,16 +24,27 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_vehicle","_result","_maxSpeed","_speedPerSecond"];
+private ["_vehicle","_maxSpeed","_speedPerSecond","_result"];
 
 _vehicle = _this;
-_result = [];
+
+if (isNil "ALiVE_vehicleSpeedPerSecondCache") then {
+    ALiVE_vehicleSpeedPerSecondCache = createHashMap;
+};
+
+if (_vehicle in ALiVE_vehicleSpeedPerSecondCache) exitWith {
+    +(ALiVE_vehicleSpeedPerSecondCache get _vehicle)
+};
 
 _maxSpeed = call ALIVE_fnc_configGetVehicleMaxSpeed;
 _speedPerSecond = (_maxSpeed * 1000) / 3600;
 
-_result set [0, floor(_speedPerSecond * 0.33)];
-_result set [1, floor(_speedPerSecond * 0.66)];
-_result set [2, floor(_speedPerSecond)];
+_result = [
+    floor (_speedPerSecond * 0.33),
+    floor (_speedPerSecond * 0.66),
+    floor (_speedPerSecond)
+];
+
+ALiVE_vehicleSpeedPerSecondCache set [_vehicle, _result];
 
 _result

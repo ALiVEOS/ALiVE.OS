@@ -29,6 +29,16 @@ private ["_type","_result"];
 
 _type = _this;
 
+if (isNil "ALiVE_configVehicleCrewCache") then {
+    ALiVE_configVehicleCrewCache = createHashMap;
+};
+
+if (_type in ALiVE_configVehicleCrewCache) exitWith {
+    ALiVE_configVehicleCrewCache get _type
+};
+
 _result = getText(configFile >> "CfgVehicles" >> _type >> "crew");
+
+ALiVE_configVehicleCrewCache set [_type, _result];
 
 _result;

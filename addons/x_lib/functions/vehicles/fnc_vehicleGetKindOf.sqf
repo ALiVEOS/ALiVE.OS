@@ -25,9 +25,19 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_vehicle","_result"];
+private ["_vehicle","_vehicleClass","_result"];
 
 _vehicle = _this;
+_vehicleClass = if (_vehicle isEqualType "") then {_vehicle} else {typeOf _vehicle};
+
+if (isNil "ALiVE_vehicleKindOfCache") then {
+    ALiVE_vehicleKindOfCache = createHashMap;
+};
+
+if (_vehicleClass in ALiVE_vehicleKindOfCache) exitWith {
+    ALiVE_vehicleKindOfCache get _vehicleClass
+};
+
 _result = "Vehicle";
 
 if(_vehicle isKindOf "Car") then {
@@ -54,5 +64,7 @@ if(_vehicle isKindOf "Plane") then {
 if(_vehicle isKindOf "StaticWeapon") then {
     _result = "StaticWeapon";
 };
+
+ALiVE_vehicleKindOfCache set [_vehicleClass, _result];
 
 _result
