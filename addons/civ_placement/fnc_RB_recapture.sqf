@@ -88,7 +88,7 @@ if (_debug) then {
 // them the moment the contested-hold timer flipped ownership. Deferred
 // spawn waits until no player is within 300m of the anchor (or a
 // safety timeout fires) before instantiating the profile. The capture
-// state has already flipped on the anchor state vars above, so the
+// state flips on the anchor state vars at the end of this function, so the
 // debug marker / watchdog reflect the new ownership immediately - only
 // the visible unit spawn is delayed.
 //
@@ -119,6 +119,33 @@ if (_debug) then {
     if ((_a getVariable ["ALiVE_RB_currentFaction", ""]) != _f) exitWith {
         if (_d) then { ["ALIVE_RB_recapture: %1 ownership flipped before deferred spawn, abandoning", _f] call ALiVE_fnc_dump };
     };
+    // Only manufacture a garrison for a faction some ALiVE commander actually runs.
+    // Nothing would ever move, reinforce or remove these guards otherwise, and they are
+    // registered stationary below, so an uncommanded faction leaves permanent troops on
+    // the block. Squads led through High Command and any AI from an uncommanded side both
+    // arrive here, because neither is caught by the player-group test in the watchdog.
+    //
+    // A mission with NO commander at all is left alone: there, nothing is managed by
+    // design, so refusing the garrison would just stop roadblocks changing hands properly.
+    //
+    // Compared case-insensitively. faction returns the config-declared case while the
+    // OPCOM list is whatever was typed into the module, and findOPCOMByAllegiance
+    // (mil_opcom/fnc_OPCOM.sqf) already normalises for exactly this reason.
+    private _opcoms  = missionNamespace getVariable ["OPCOM_instances", []];
+    private _fLower  = toLower _f;
+    private _managed = (count _opcoms == 0) || {
+        (_opcoms findIf {
+            (_x isEqualType []) && {
+                _fLower in (([_x, "factions", []] call ALiVE_fnc_hashGet) apply {toLower _x})
+            }
+        }) != -1
+    };
+    if (!_managed) exitWith {
+        if (_d) then {
+            ["ALIVE_RB_recapture: no ALiVE commander runs %1, block changes hands with no garrison", _f] call ALiVE_fnc_dump;
+        };
+    };
+
 
     if !(isnil "ALiVE_ProfileHandler") then {
         private _group = ["Infantry", _f] call ALIVE_fnc_configGetRandomGroup;

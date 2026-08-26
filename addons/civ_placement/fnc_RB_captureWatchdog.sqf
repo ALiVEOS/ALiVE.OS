@@ -148,8 +148,56 @@ private _handle = [{
         }
     };
 
+    // A unit counts as player-driven if a player commands its vehicle OR any member of
+    // its group is a player.
+    //
+    // effectiveCommander on its own is not enough. For a dismounted man it returns the
+    // unit itself, so an AI squadmate walking beside a player read as AI-driven. That is
+    // how a player-led assault could still seed a garrison of the players own faction at
+    // a captured checkpoint: #928 excluded the human players, not the AI standing next to
+    // them. With no commander for that side the garrison is then permanent, because
+    // recapture marks it ALIVE_profileStationary so nothing ever drains or manages it.
+    private _fnc_playerDriven = {
+        params ["_u"];
+        if (isPlayer (effectiveCommander _u)) exitWith { true };
+        // The list holds VEHICLES as well as men (nearEntities above asks for Car, Tank
+        // and Truck_F), and a vehicle belongs to no group, so units group returns nothing
+        // for it. Judge a vehicle by the groups of whoever is crewing it instead, or an
+        // AI squadmate driving the players Hunter up to the checkpoint tallies as BLU_F
+        // and spawns a NATO garrison, which is the reported bug arriving by a second route.
+        private _members = if (_u isKindOf "CAManBase") then {
+            units group _u
+        } else {
+            private _g = [];
+            { _g append (units group _x) } forEach (crew _u);
+            _g
+        };
+        ({isPlayer _x} count _members) > 0
+    };
+
+    // Which faction an attacker belongs to, judged by who is INSIDE a vehicle rather than by the
+    // vehicle itself. faction on a hull returns the vehicle class's config faction, so an RHS
+    // truck crewed by a CSAT squad tallied as the truck's faction, and the block could be
+    // garrisoned by a faction that never attacked it. Same kind of fault as reading
+    // effectiveCommander on a dismounted man: the property is right, the object is wrong.
+    //
+    // Only faction needs this. side already reports a crewed vehicle by its crew, which is why
+    // the attacker and defender tests above are correct as they stand.
+    private _fnc_attackerFaction = {
+        params ["_u"];
+        if (_u isKindOf "CAManBase") exitWith { faction _u };
+        private _c = crew _u;
+        // An empty hull among the attackers has nothing better to go on than its own config.
+        if (_c isEqualTo []) exitWith { faction _u };
+        private _cmd = effectiveCommander _u;
+        faction (if (isNull _cmd) then { _c select 0 } else { _cmd })
+    };
+
     // Defenders: same side as current owner, NOT player-driven (so a
     // friendly player passing through doesn't suppress capture).
+    // Deliberately NOT the group predicate below: an AI squadmate of a player IS
+    // defending the block and should keep suppressing capture. Only the faction tally
+    // needs the wider test, because that decides who GARRISONS, not who is present.
     private _defenders = _liveCombatants select {
         ((side _x) == _currentSide) && {!isPlayer (effectiveCommander _x)}
     };
@@ -192,13 +240,13 @@ private _handle = [{
                     // Pick dominant attacker faction. Tie-break: first
                     // hit wins by virtue of insertion order in the hash.
                     // #928: tally the dominant attacker faction from AI attackers
-                    // only -- a player-driven assault (incl. player-led AI) must NOT
+                    // only. A player-driven assault, including the AI in a player group, must NOT
                     // seed a garrison, else it spawns the players' own faction at the
                     // captured checkpoint even with no commander for that side.
                     private _factionCounts = createHashMap;
                     {
-                        if (!isPlayer (effectiveCommander _x)) then {
-                            private _f = faction _x;
+                        if (!([_x] call _fnc_playerDriven)) then {
+                            private _f = [_x] call _fnc_attackerFaction;
                             _factionCounts set [
                                 _f,
                                 (_factionCounts getOrDefault [_f, 0]) + 1
