@@ -423,7 +423,7 @@ class FSM
                          "            };" \n
                          "" \n
                          "            _faction = selectRandom _factions;" \n
-                         "            _enemySide = selectRandom _sidesEnemy;" \n
+                         "            // Every enemy side is asked about at once below. Picking one at random lost every request that drew a side with no units on the map." \n
                          "" \n
                          "            _operation = [_target,""opcom_orders""] call AliVE_fnc_HashGet;" \n
                          "            _pos = [_target,""center""] call AliVE_fnc_HashGet;" \n
@@ -436,7 +436,7 @@ class FSM
                          "                        if (_debug) then {format [""ALiVE_OPCOM_%1"",[_target,""objectiveID""] call ALiVE_fnc_HashGet] setMarkerColor ""ColorRed""};" \n
                          "" \n
                          "                        if ([_side,[""attacking""]] call ALIVE_fnc_OPCOMgetHighestPrioObjective == _targetId) then {" \n
-                         "                            _targets = [_pos, 300, [_enemySide,""entity""],true] call ALIVE_fnc_getNearProfiles;" \n
+                         "                            _targets = [_pos, 300, [_sidesEnemy,""entity""],true] call ALIVE_fnc_getNearProfiles;" \n
                          "                            [_side,_faction,""CaptureObjective"",_targets,""OPCOM"",true] call ALiVE_fnc_taskRequest;" \n
                          "                        };" \n
                          "" \n
