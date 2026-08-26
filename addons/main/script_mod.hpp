@@ -65,10 +65,10 @@
 #define ALIVE_SCRIPT_PROFILING
 
 #ifdef ALIVE_SCRIPT_PROFILING
-    #define PROFILE_SCOPE(NAME,ID) private DOUBLES(_aliveProfileScope,ID) = createProfileScope NAME
-    #define PROFILE_SCOPE_END(ID) DOUBLES(_aliveProfileScope,ID) = nil
+    #define PROFILE_SCOPE(ID,NAME) private _aliveProfileScope_##ID = createProfileScope NAME;
+    #define PROFILE_SCOPE_END(ID) _aliveProfileScope_##ID = nil;
 #else
-    #define PROFILE_SCOPE(NAME,ID)
+    #define PROFILE_SCOPE(ID,NAME)
     #define PROFILE_SCOPE_END(ID)
 #endif
 
