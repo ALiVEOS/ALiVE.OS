@@ -61,11 +61,11 @@ params [
     ["_args", objNull, [objNull,grpNull,[],"",0,true,false]]
 ];
 
+PROFILE_SCOPE(OPERATION, _operation)
+
 switch(_operation) do {
 
     case "create": {
-        PROFILE_SCOPE(GCCREATE, "ALiVE GC: create")
-
         if (isServer) then {
             // Ensure only one module is used
             if !(isNil QMOD(SYS_GC)) then {
@@ -91,13 +91,9 @@ switch(_operation) do {
         MOD(SYS_GC) setVariable ["class", QUOTE(MAINCLASS)];
 
         _result = MOD(SYS_GC);
-
-        PROFILE_SCOPE_END(GCCREATE)
     };
 
     case "init": {
-        PROFILE_SCOPE(GCINIT, "ALiVE GC: init")
-
         if (isServer) then {
             _logic setVariable ["super", SUPERCLASS];
             _logic setVariable ["class", MAINCLASS];
@@ -110,13 +106,9 @@ switch(_operation) do {
 
         };
         _logic setVariable ["bis_fnc_initModules_activate",true];
-
-        PROFILE_SCOPE_END(GCINIT)
     };
 
     case "start": {
-        PROFILE_SCOPE(GCSTAR, "ALiVE GC: start")
-
         if (!isServer) exitwith { PROFILE_SCOPE_END(GCSTAR) };
 
         ALiVE_GC = _logic;
@@ -160,13 +152,9 @@ switch(_operation) do {
         ];
 
         _logic setVariable ["startupComplete", true];
-
-        PROFILE_SCOPE_END(GCSTAR)
     };
 
     case "destroy": {
-        PROFILE_SCOPE(GCDESTROY, "ALiVE GC: destroy")
-
         MOD(SYS_GC) = _logic;
 
         //Delete class
@@ -191,13 +179,9 @@ switch(_operation) do {
             deleteVehicle _logic;
             deleteGroup (group _logic);
         };
-
-        PROFILE_SCOPE_END(GCDESTROY)
     };
 
     case "tick": {
-        PROFILE_SCOPE(GCTICK, "ALiVE GC: tick")
-
         [_logic,"processDeletionQueue"] call MAINCLASS;
 
         private _phase = _logic getVariable ["gcPhase", "idle"];
@@ -214,8 +198,6 @@ switch(_operation) do {
         if ((_logic getVariable ["gcPhase", "idle"]) == "scanning") then {
             [_logic,"scanCandidates"] call MAINCLASS;
         };
-
-        PROFILE_SCOPE_END(GCTICK)
     };
 
     /*
@@ -224,8 +206,6 @@ switch(_operation) do {
         queued and is revisited when the cursor wraps.
     */
     case "processDeletionQueue": {
-        PROFILE_SCOPE(GCPROCESSDELETIONQUEUE, "ALiVE GC: processDeletionQueue")
-
         private _queue = _logic getVariable ["queue", []];
         private _queueCountBefore = count _queue;
         private _handled = 0;
@@ -309,8 +289,6 @@ switch(_operation) do {
             ["GC processDeletionQueue finished in %1 seconds", diag_tickTime - _startTime] call ALiVE_fnc_dump;
             _logic setVariable ["gcQueueProcessStartTime", nil];
         };
-
-        PROFILE_SCOPE_END(GCPROCESSDELETIONQUEUE)
     };
 
     /*
@@ -318,8 +296,6 @@ switch(_operation) do {
         capture the synchronised-object exclusion list.
     */
     case "beginCandidateScan": {
-        PROFILE_SCOPE(GCBEGINCANDIDATESCAN, "ALiVE GC: beginCandidateScan")
-
         private _individual = _logic getVariable ["ALiVE_GC_INDIVIDUALTYPES", []];
         private _work = [
             ["allDead", allDead],
@@ -339,8 +315,6 @@ switch(_operation) do {
                 ["GC scanCandidates %1 stage starting with %2 items", _kind, count _candidates] call ALiVE_fnc_dump;
             } forEach _work;
         };
-
-        PROFILE_SCOPE_END(GCBEGINCANDIDATESCAN)
     };
 
     /*
@@ -356,8 +330,6 @@ switch(_operation) do {
         the sweep is active resolve to null and are skipped.
     */
     case "scanCandidates": {
-        PROFILE_SCOPE(GCSCANCANDIDATES, "ALiVE GC: scanCandidates")
-
         private _sync = _logic getVariable ["gcSweepSync", []];
         private _individual = _logic getVariable ["ALiVE_GC_INDIVIDUALTYPES", []];
         private _work = _logic getVariable ["gcSweepWork", []];
@@ -417,8 +389,6 @@ switch(_operation) do {
                 ["GC scanCandidates finished in %1 seconds", diag_tickTime - _startTime] call ALiVE_fnc_dump;
             };
         };
-
-        PROFILE_SCOPE_END(GCSCANCANDIDATES)
     };
 
     /*
@@ -427,8 +397,6 @@ switch(_operation) do {
         entities) as well as by scanCandidates.
     */
     case "trashIt": {
-        PROFILE_SCOPE(GCTRASHIT, "ALiVE GC: trashIt")
-
         if (isNil "_args") exitWith {debugLog "Log: [trashIt] There should be 1 mandatory parameter!"; false};
 
         private ["_object", "_queue", "_timeToDie"];
@@ -469,31 +437,23 @@ switch(_operation) do {
         _queue pushback _object;
 
         _logic setVariable ["queue", _queue];
-
-        PROFILE_SCOPE_END(GCTRASHIT)
     };
 
     case "debug": {
-        PROFILE_SCOPE(GCDEBUG, "ALiVE GC: debug")
-
         if (_args isequaltype true) then {
             _result = _logic getvariable "debug";
         } else {
             _logic setvariable ["debug", _args];
             _result = _args;
         };
-
-        PROFILE_SCOPE_END(GCDEBUG)
     };
 
     default {
-        PROFILE_SCOPE(GCSUPER, "ALiVE GC: superclass")
-
         _result = [_logic, _operation, _args] call SUPERCLASS;
-
-        PROFILE_SCOPE_END(GCSUPER)
     };
 };
+
+PROFILE_SCOPE_END(OPERATION)
 
 TRACE_1("GC - output",_result);
 
