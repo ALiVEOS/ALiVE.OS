@@ -104,58 +104,40 @@ _result = true;
 switch (_operation) do {
 
     case "init": {
-        /*
-        MODEL - no visual just reference data
-        - nodes
-        - center
-        - size
-        */
-
         if (isServer) then {
-            // if server, initialise module game logic
-            // nil these out they add a lot of code to the hash..
             [_logic,"super"] call ALIVE_fnc_hashRem;
             [_logic,"class"] call ALIVE_fnc_hashRem;
-            //TRACE_1("After module init",_logic);
 
-            // init the super class
-            [_logic, "init"] call SUPERCLASS;
+            [_logic,"init"] call SUPERCLASS;
 
-            // set defaults
-            [_logic,"type","vehicle"] call ALIVE_fnc_hashSet;
-            [_logic,"entitiesInCommandOf",[]] call ALIVE_fnc_hashSet;   // select 2 select 8
-            [_logic,"entitiesInCargoOf",[]] call ALIVE_fnc_hashSet;     // select 2 select 9
-            [_logic,"vehicle",objNull] call ALIVE_fnc_hashSet;          // select 2 select 10
-            [_logic,"vehicleClass",""] call ALIVE_fnc_hashSet;          // select 2 select 11
-            [_logic,"direction",""] call ALIVE_fnc_hashSet;             // select 2 select 12
-            [_logic,"fuel",1] call ALIVE_fnc_hashSet;                   // select 2 select 13
-            [_logic,"ammo",[]] call ALIVE_fnc_hashSet;                  // select 2 select 14
-            [_logic,"engineOn",false] call ALIVE_fnc_hashSet;           // select 2 select 15
-            [_logic,"damage",[]] call ALIVE_fnc_hashSet;                // select 2 select 16
-            [_logic,"canMove",true] call ALIVE_fnc_hashSet;             // select 2 select 17
-            [_logic,"canFire",true] call ALIVE_fnc_hashSet;             // select 2 select 18
-            [_logic,"needReload",0] call ALIVE_fnc_hashSet;             // select 2 select 19
-            [_logic,"despawnPosition",[0,0]] call ALIVE_fnc_hashSet;    // select 2 select 20
-            [_logic,"hasSimulated",false] call ALIVE_fnc_hashSet;       // select 2 select 21
-            [_logic,"spawnType",[]] call ALIVE_fnc_hashSet;             // select 2 select 22
-            [_logic,"faction",""] call ALIVE_fnc_hashSet;               // select 2 select 23
-            [_logic,"_rev",""] call ALIVE_fnc_hashSet;                  // select 2 select 24
-            [_logic,"_id",""] call ALIVE_fnc_hashSet;                   // select 2 select 25
-            [_logic,"busy",false] call ALIVE_fnc_hashSet;               // select 2 select 26
-            [_logic,"cargo",[]] call ALIVE_fnc_hashSet;                 // select 2 select 27
-            [_logic,"slingload",[]] call ALIVE_fnc_hashSet;             // select 2 select 28
-            [_logic,"slung",[]] call ALIVE_fnc_hashSet;                 // select 2 select 29
-            [_logic,"isSPE",false] call ALIVE_fnc_hashSet;              // select 2 select 30
-            [_logic,"aiBehaviour","AWARE"] call ALIVE_fnc_hashSet;      // select 2 select 31
+            [_logic, [
+                ["type", "vehicle"],                    // select 2 select 5
+                ["entitiesInCommandOf", []],            // select 2 select 8
+                ["entitiesInCargoOf", []],              // select 2 select 9
+                ["vehicle", objNull],                   // select 2 select 10
+                ["vehicleClass", ""],                   // select 2 select 11
+                ["direction", ""],                      // select 2 select 12
+                ["fuel", 1],                            // select 2 select 13
+                ["ammo", []],                           // select 2 select 14
+                ["engineOn", false],                    // select 2 select 15
+                ["damage", []],                         // select 2 select 16
+                ["canMove", true],                      // select 2 select 17
+                ["canFire", true],                      // select 2 select 18
+                ["needReload", 0],                      // select 2 select 19
+                ["despawnPosition", [0,0]],             // select 2 select 20
+                ["hasSimulated", false],                // select 2 select 21
+                ["spawnType", []],                      // select 2 select 22
+                ["faction", ""],                        // select 2 select 23
+                ["_rev", ""],                           // select 2 select 24
+                ["_id", ""],                            // select 2 select 25
+                ["busy", false],                        // select 2 select 26
+                ["cargo", []],                          // select 2 select 27
+                ["slingload", []],                      // select 2 select 28
+                ["slung", []],                          // select 2 select 29
+                ["isSPE", false],                       // select 2 select 30
+                ["aiBehaviour", "AWARE"]                // select 2 select 31
+            ]] call ALiVE_fnc_hashSetMany;
         };
-
-        /*
-        VIEW - purely visual
-        */
-
-        /*
-        CONTROLLER  - coordination
-        */
     };
 
     case "debug": {
@@ -243,10 +225,6 @@ switch (_operation) do {
                 };
 
                 //["VEHICLE %1 position: %2",_logic select 2 select 4,_args] call ALIVE_fnc_dump;
-
-                // store position on handler position index
-                _profileID = _logic select 2 select 4; //[_logic,"profileID"] call ALIVE_fnc_hashGet;
-                [ALIVE_profileHandler, "setPosition", [_profileID, _args]] call ALIVE_fnc_profileHandler;
 
             };
         } else {

@@ -51,25 +51,11 @@ switch(_operation) do {
 
     case "init": {
 
-        /*
-        MODEL - no visual just reference data
-        - nodes
-        - center
-        - size
-        */
-
         if (isServer) then {
-            // if server, initialise module game logic
-            // nil these out they add a lot of code to the hash..
-            [_logic,"super"] call ALIVE_fnc_hashRem;
-            [_logic,"class"] call ALIVE_fnc_hashRem;
-            //TRACE_1("After module init",_logic);
+            [_logic,"super"] call ALiVE_fnc_hashRem;
+            [_logic,"class"] call ALiVE_fnc_hashRem;
 
-            // at this point we've got a blank hash
-            // we can safely create a new hash with a more efficient method
-            // than setting each value to the existing one
-
-            private _fields = [
+            [_logic, [
                 ["debug", false],       // select 2 select 0
                 ["active", false],      // select 2 select 1
                 ["position", [0,0]],    // select 2 select 2
@@ -77,41 +63,13 @@ switch(_operation) do {
                 ["profileID", ""],      // select 2 select 4
                 ["type", "entity"],     // select 2 select 5
                 ["objectType", "inf"],  // select 2 select 6
-                ["vehicleAssignments", [] call ALIVE_fnc_hashCreate] // select 2 select 7
-            ];
-
-            {
-                (_logic select 1) pushback (_x select 0);
-                (_logic select 2) pushback (_x select 1);
-            } foreach _fields;
+                ["vehicleAssignments", [] call ALiVE_fnc_hashCreate] // select 2 select 7
+            ]] call ALiVE_fnc_hashSetMany;
         };
-
-        /*
-        VIEW - purely visual
-        */
-
-        /*
-        CONTROLLER  - coordination
-        */
 
     };
 
     case "destroy": {
-
-        // Debug marker cleanup is intentionally NOT invoked here.
-        // MAINCLASS at this point resolves to ALiVE_fnc_profile (the base),
-        // which has no case "debug" -- a dispatch via MAINCLASS would fall
-        // through to the default branch below and trigger the "FIX THIS
-        // SHIT" diagnostic, followed by a harmless-but-noisy "class does
-        // not support operation" error from baseClassHash.
-        //
-        // Debug cleanup is already handled earlier in the destroy flow:
-        // fnc_profileEntity / fnc_profileVehicle both call
-        // ALIVE_profileHandler "unregisterProfile" before cascading here
-        // (see fnc_profileHandler.sqf:538-551), which dispatches
-        // [_profile, "debug", false] through the correct child class and
-        // removes markers. By the time we reach this SUPERCLASS destroy,
-        // debug=false is already set and markers are already gone.
 
         if (isServer) then {
             [_logic, "destroy"] call SUPERCLASS;

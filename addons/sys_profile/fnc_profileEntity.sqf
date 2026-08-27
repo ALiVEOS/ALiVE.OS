@@ -140,6 +140,8 @@ nil
 #define SUPERCLASS ALIVE_fnc_profile
 #define MAINCLASS ALIVE_fnc_profileEntity
 
+#define MTEMPLATE "ALiVE_PROFILEENTITY_%1"
+
 TRACE_1("profileEntity - input",_this);
 
 params [
@@ -150,66 +152,52 @@ params [
 
 private _result = true;
 
-#define MTEMPLATE "ALiVE_PROFILEENTITY_%1"
+PROFILE_SCOPE(OPERATION, _operation)
 
 switch(_operation) do {
 
     case "init": {
-        /*
-        MODEL - no visual just reference data
-        - nodes
-        - center
-        - size
-        */
-
         if (isServer) then {
-            // if server, initialise module game logic
-            // nil these out they add a lot of code to the hash..
             [_logic,"super"] call ALIVE_fnc_hashRem;
             [_logic,"class"] call ALIVE_fnc_hashRem;
-            //TRACE_1("After module init",_logic);
 
-            // init the super class
-            [_logic, "init"] call SUPERCLASS;
+            [_logic,"init"] call SUPERCLASS;
 
-            // set defaults
-            [_logic,"type","entity"] call ALIVE_fnc_hashSet;            // select 2 select 5
-            [_logic,"vehiclesInCommandOf",[]] call ALIVE_fnc_hashSet;   // select 2 select 8
-            [_logic,"vehiclesInCargoOf",[]] call ALIVE_fnc_hashSet;     // select 2 select 9
-            [_logic,"leader",objNull] call ALIVE_fnc_hashSet;           // select 2 select 10
-            [_logic,"unitClasses",[]] call ALIVE_fnc_hashSet;           // select 2 select 11
-            [_logic,"unitCount",0] call ALIVE_fnc_hashSet;              // select 2 select 12
-            [_logic,"group",grpNull] call ALIVE_fnc_hashSet;            // select 2 select 13
-            [_logic,"companyID",""] call ALIVE_fnc_hashSet;             // select 2 select 14
-            [_logic,"groupID",""] call ALIVE_fnc_hashSet;               // select 2 select 15
-            [_logic,"waypoints",[]] call ALIVE_fnc_hashSet;             // select 2 select 16
-            [_logic,"waypointsCompleted",[]] call ALIVE_fnc_hashSet;    // select 2 select 17
-            [_logic,"positions",[]] call ALIVE_fnc_hashSet;             // select 2 select 18
-            [_logic,"damages",[]] call ALIVE_fnc_hashSet;               // select 2 select 19
-            [_logic,"ranks",[]] call ALIVE_fnc_hashSet;                 // select 2 select 20
-            [_logic,"units",[]] call ALIVE_fnc_hashSet;                 // select 2 select 21
-            [_logic,"speedPerSecond","Man" call ALIVE_fnc_vehicleGetSpeedPerSecond] call ALIVE_fnc_hashSet; // select 2 select 22
-            [_logic,"despawnPosition",[0,0]] call ALIVE_fnc_hashSet;    // select 2 select 23
-            [_logic,"hasSimulated",false] call ALIVE_fnc_hashSet;       // select 2 select 24
-            [_logic,"isCycling",false] call ALIVE_fnc_hashSet;          // select 2 select 25
-            [_logic,"activeCommands",[]] call ALIVE_fnc_hashSet;        // select 2 select 26
-            [_logic,"inactiveCommands",[]] call ALIVE_fnc_hashSet;      // select 2 select 27
-            [_logic,"spawnType",[]] call ALIVE_fnc_hashSet;             // select 2 select 28
-            [_logic,"faction",[]] call ALIVE_fnc_hashSet;               // select 2 select 29
-            [_logic,"isPlayer",false] call ALIVE_fnc_hashSet;           // select 2 select 30
-            [_logic,"_rev",""] call ALIVE_fnc_hashSet;                  // select 2 select 31
-            [_logic,"_id",""] call ALIVE_fnc_hashSet;                   // select 2 select 32
-            [_logic,"busy",false] call ALIVE_fnc_hashSet;               // select 2 select 33
-            [_logic,"pendingWaypointPaths", []] call ALiVE_fnc_hashSet; // select 2 select 34
-            [_logic,"isSPE",false] call ALIVE_fnc_hashSet;              // select 2 select 35
-            [_logic,"aiBehaviour","SAFE"] call ALIVE_fnc_hashSet;       // select 2 select 36
-            [_logic,"onEachSpawn",""] call ALIVE_fnc_hashSet;             // select 2 select 37
-            [_logic,"onEachSpawnOnce",true] call ALIVE_fnc_hashSet;       // select 2 select 38
+            [_logic, [
+                ["type", "entity"],                                                   // select 2 select 5
+                ["vehiclesInCommandOf", []],                                         // select 2 select 8
+                ["vehiclesInCargoOf", []],                                           // select 2 select 9
+                ["leader", objNull],                                                 // select 2 select 10
+                ["unitClasses", []],                                                 // select 2 select 11
+                ["unitCount", 0],                                                    // select 2 select 12
+                ["group", grpNull],                                                  // select 2 select 13
+                ["companyID", ""],                                                   // select 2 select 14
+                ["groupID", ""],                                                     // select 2 select 15
+                ["waypoints", []],                                                   // select 2 select 16
+                ["waypointsCompleted", []],                                          // select 2 select 17
+                ["positions", []],                                                   // select 2 select 18
+                ["damages", []],                                                     // select 2 select 19
+                ["ranks", []],                                                       // select 2 select 20
+                ["units", []],                                                       // select 2 select 21
+                ["speedPerSecond", "Man" call ALIVE_fnc_vehicleGetSpeedPerSecond],   // select 2 select 22
+                ["despawnPosition", [0,0]],                                          // select 2 select 23
+                ["hasSimulated", false],                                             // select 2 select 24
+                ["isCycling", false],                                                // select 2 select 25
+                ["activeCommands", []],                                              // select 2 select 26
+                ["inactiveCommands", []],                                            // select 2 select 27
+                ["spawnType", []],                                                   // select 2 select 28
+                ["faction", []],                                                     // select 2 select 29
+                ["isPlayer", false],                                                 // select 2 select 30
+                ["_rev", ""],                                                        // select 2 select 31
+                ["_id", ""],                                                         // select 2 select 32
+                ["busy", false],                                                     // select 2 select 33
+                ["pendingWaypointPaths", []],                                        // select 2 select 34
+                ["isSPE", false],                                                    // select 2 select 35
+                ["aiBehaviour", "SAFE"],                                             // select 2 select 36
+                ["onEachSpawn", ""],                                                 // select 2 select 37
+                ["onEachSpawnOnce", true]                                            // select 2 select 38
+            ]] call ALiVE_fnc_hashSetMany;
         };
-
-        /*
-        CONTROLLER  - coordination
-        */
     };
 
     case "debug": {
@@ -284,16 +272,18 @@ switch(_operation) do {
 
     case "position": {
         if (_args isEqualType []) then {
-            if (count _args == 2) then  {
-                _args pushback 0;
-            };
+            if (_args isnotequalto [0,0]) then {
+                if (count _args == 2) then  {
+                    _args pushback 0;
+                };
 
-            if !(((_args select 0) + (_args select 1)) == 0) then {
-                private _positionUpdateScope = createProfileScope "ALiVE profileEntity: position update";
+                PROFILE_SCOPE(ENTITYSETPOS, "ALiVE profileEntity: position update")
                 private _spacialGrid = [ALiVE_profileSystem,"spacialGridProfiles"] call ALiVE_fnc_hashGet;
 
                 private _currPos = _logic select 2 select 2;
+                PROFILE_SCOPE(SPACIALGRIDMOVE, "ALiVE profileEntity: spacial grid move")
                 _spacialGrid call ["move", [_currPos, _args, _logic]];
+                PROFILE_SCOPE_END(SPACIALGRIDMOVE)
 
                 [_logic,"position", _args] call ALIVE_fnc_hashSet;
 
@@ -303,15 +293,12 @@ switch(_operation) do {
                     // the debug path rebuilds markers per frame and tanks FPS (issue #838).
                     private _last = [_logic,"debugMarkerLastRefresh",0] call ALIVE_fnc_hashGet;
                     if (diag_tickTime - _last >= 2) then {
-                        [_logic,"debugMarkerLastRefresh",diag_tickTime] call ALIVE_fnc_hashSet;
+                        [_logic,"debugMarkerLastRefresh", diag_tickTime] call ALIVE_fnc_hashSet;
                         [_logic,"debug", true] call MAINCLASS;
                     };
                 };
 
-                // store position on handler position index
-                private _profileID = [_logic,"profileID"] call ALIVE_fnc_hashGet;
-                [ALIVE_profileHandler,"setPosition", [_profileID, _args]] call ALIVE_fnc_profileHandler;
-                _positionUpdateScope = nil;
+                PROFILE_SCOPE_END(ENTITYSETPOS)
             };
         } else {
             _result = _logic select 2 select 2;
@@ -899,9 +886,8 @@ switch(_operation) do {
             [_logic,"mergePositions"] call ALiVE_fnc_profileVehicle;
         };
 
-        private _mergePositionsScope = createProfileScope "ALiVE profileEntity: mergePositions";
         private _position = _logic select 2 select 2; //[_logic,"position"] call ALIVE_fnc_hashGet;
-        private _unitCount = [_logic,"unitCount"] call MAINCLASS;
+        //private _unitCount = [_logic,"unitCount"] call MAINCLASS;
         private _positions = _logic select 2 select 18; //[_logic,"positions"] call ALIVE_fnc_hashGet;
 
         // Repair a malformed entity profile defensively. This keeps one bad
@@ -920,10 +906,9 @@ switch(_operation) do {
 
         //["ENTITY %1 mergePosition: %2",_logic select 2 select 4,_position] call ALIVE_fnc_dump;
 
-        for "_i" from 0 to _unitCount - 1 do {
+        for "_i" from 0 to (count _positions) - 1 do {
             _positions set [_i, _position];
         };
-        _mergePositionsScope = nil;
     };
 
     case "addUnit": {
@@ -1221,23 +1206,22 @@ switch(_operation) do {
                         if (_rank isEqualTo "") then {_rank = "PRIVATE"};
                     };
 
-                    private "_unit";
+                    private _unit = _group createUnit [_x, _unitPosition, [], 0 , "CAN_COLLIDE"];
+                    private _leader = false;
                     if (_forEachIndex == 0) then {
-
-                        _unit = _group createUnit [_x, _unitPosition, [], 0 , "NONE"];
+                        _leader = true;
 
                         // select a random formation, must be at least one unit in group for formation to stick
                         _group setFormation _formation;
                         _group selectLeader _unit;
-
                     } else {
-                        _unit = _group createUnit [_x, _unitPosition, [], 0 , "FORM"];
-
                         // sadly still needed, even though "FORM" is used above :(
                         // Guard against formationPosition returning [] when the group
                         // formation has not fully registered yet (race condition on spawn).
                         private _fPos = formationPosition _unit;
-                        if (count _fPos == 3) then { _unit setpos _fPos; };
+                        if (_fPos isnotequalto []) then {
+                            _unit setpos _fPos;
+                        };
                     };
 
                     _unit allowDamage false; // allow all units to spawn first so profile isn't corrupted
@@ -1246,7 +1230,9 @@ switch(_operation) do {
                     //_unit setVehicleVarName format["%1_%2",_profileID, _unitCount];
 
                     // Set damages and rank on all units including leader and reset position
-                    _unit setposATL _unitPosition;
+                    if (_leader || {_unitPosition isnotequalto _position}) then {
+                        _unit setposATL _unitPosition;
+                    };
                     _unit setDamage _damage;
                     _unit setRank _rank;
 
@@ -1726,6 +1712,7 @@ switch(_operation) do {
     };
 
 };
+PROFILE_SCOPE_END(OPERATION)
 
 TRACE_1("profileEntity - output",_result);
 
