@@ -79,39 +79,29 @@ switch(_operation) do {
 
     case "state": {
 
-        if (_args isEqualType []) then {
+        if !(_args isEqualType []) then {
             // Save state
 
             private _state = [] call ALIVE_fnc_hashCreate;
 
-            // BaseClassHash CHANGE
-            // loop the class hash and set vars on the state hash
             {
-                if(!(_x == "super") && !(_x == "class")) then {
-                    [_state,_x,[_logic,_x] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
+                if (!(_x == "super") && !(_x == "class")) then {
+                    [_state,_x, [_logic,_x] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
                 };
             } forEach (_logic select 1);
 
             _result = _state;
         } else {
-            ASSERT_TRUE(_args isEqualType [], str typeName _args);
-
             // Restore state
 
-            // BaseClassHash CHANGE
-            // loop the passed hash and set vars on the class hash
             {
-                [_logic,_x,[_args,_x] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
+                [_logic,_x, [_args,_x] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
             } forEach (_args select 1);
         };
 
     };
 
     default {
-        // Any operation not handled here falls through to baseClassHash,
-        // which itself logs a "class does not support operation" message
-        // if nothing there matches either. No need for a bespoke
-        // diagnostic in this class.
         _result = [_logic, _operation, _args] call SUPERCLASS;
     };
 
