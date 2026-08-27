@@ -302,7 +302,7 @@ class FSM
                          "_clusterCasualties = ["""",[],[],""""];" \n
                          "" \n
                          "// Use a unique FSM variable key for pending profiles and read it directly rather than call-compiling the objective ID." \n
-                         "_var = format[""_pending_%1"",_id]; private _varValue = _OPCOM_FSM getFSMvariable _var; if (isNil ""_varValue"") then {_OPCOM_FSM setFSMvariable [_var,[]]};" \n
+                         "if (isNil ""_OPCOM_FSM"") then {_OPCOM_FSM = [_OPCOM_HANDLER,""OPCOM_FSM""] call ALiVE_fnc_HashGet}; _var = format[""_pending_%1"",_id]; private _varValue = _OPCOM_FSM getFSMvariable _var; if (isNil ""_varValue"") then {_OPCOM_FSM setFSMvariable [_var,[]]};" \n
                          "" \n
                          "// default section size determined by objective size" \n
                          "_sizeSection = ceil(_size/150);" \n
@@ -1234,7 +1234,7 @@ class FSM
                          "_dead = []; {private [""_profile""]; _profile = [ALIVE_profileHandler, ""getProfile"", _x] call ALIVE_fnc_profileHandler; if (isnil ""_profile"") then {_dead pushback _x}} foreach _section;" \n
                          "" \n
                          "// Remove dead profiles from system" \n
-                         "if (count _dead > 0) then {_section = _section - _dead; _troopsBusy = _troopsBusy - _dead; _OPCOM_FSM setFSMvariable [_var,(_OPCOM_FSM getFSMvariable _var) - _dead]; [_objective,""section"",_section] call ALiVE_fnc_HashSet};" \n
+                         "if (isNil ""_OPCOM_FSM"") then {_OPCOM_FSM = [_OPCOM_HANDLER,""OPCOM_FSM""] call ALiVE_fnc_HashGet}; if (count _dead > 0) then {_section = _section - _dead; _troopsBusy = _troopsBusy - _dead; _OPCOM_FSM setFSMvariable [_var,(_OPCOM_FSM getFSMvariable _var) - _dead]; [_objective,""section"",_section] call ALiVE_fnc_HashSet};" \n
                          "" \n
                          "// Collect section" \n
                          "if (_groupSize > 0) then {" \n
@@ -1336,7 +1336,7 @@ class FSM
                          "_command = _actions select 6 select 2 select 0;" \n
                          "_commandParams = _actions select 6 select 2 select 1;" \n
                          "" \n
-                         "_pending = _OPCOM_FSM getFSMvariable _var;" \n
+                         "if (isNil ""_OPCOM_FSM"") then {_OPCOM_FSM = [_OPCOM_HANDLER,""OPCOM_FSM""] call ALiVE_fnc_HashGet}; _pending = _OPCOM_FSM getFSMvariable _var;" \n
                          "_count = {!isnil {[ALiVE_profileHandler, ""getProfile"", _x] call ALIVE_fnc_profileHandler}} count _pending;" \n
                          "" \n
                          "{" \n
@@ -1449,7 +1449,7 @@ class FSM
                                         to="EXECUTE_ACTIONS";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/"private [""_ready""];" \n
                                          "" \n
-                                         "_pending = _OPCOM_FSM getFSMvariable _var;" \n
+                                         "if (isNil ""_OPCOM_FSM"") then {_OPCOM_FSM = [_OPCOM_HANDLER,""OPCOM_FSM""] call ALiVE_fnc_HashGet}; _pending = _OPCOM_FSM getFSMvariable _var;" \n
                                          "_count = {!isnil {[ALiVE_profileHandler, ""getProfile"", _x] call ALIVE_fnc_profileHandler}} count _pending;" \n
                                          "" \n
                                          "_troopCount = {" \n
@@ -1664,7 +1664,7 @@ class FSM
                          "_simultan = _simultan - [_id];" \n
                          "" \n
                          "// Reset" \n
-                         "_OPCOM_FSM setFSMvariable [_var,nil];" \n
+                         "if (isNil ""_OPCOM_FSM"") then {_OPCOM_FSM = [_OPCOM_HANDLER,""OPCOM_FSM""] call ALiVE_fnc_HashGet}; _OPCOM_FSM setFSMvariable [_var,nil];" \n
                          "[_objective,""code""] call ALiVE_fnc_HashRem;" \n
                          "[_objective,""storage""] call ALiVE_fnc_HashRem;" \n
                          "[_objective,""actions""] call ALiVE_fnc_HashRem;" \n
