@@ -11,8 +11,10 @@ spawn-time substitution: when an inferred-faction spawn uses a vanilla
 faction's group definition, each vanilla unit gets classified into a
 role and a role-equivalent mod unit is substituted.
 
-Cheap (config lookups only). Caller (substituteFactionUnit) caches a
-per-faction role pool of unit -> role to avoid recomputing per spawn.
+Results are cached per unit classname because CfgVehicles and CfgWeapons
+are static for the mission session. This complements substituteFactionUnit's
+per-faction role-pool cache: the pool caches target candidates, while this
+cache avoids reclassifying both source and target classnames.
 
 Heuristic priority order (first match wins):
   1. Officer    - displayName / classname patterns
@@ -50,6 +52,15 @@ Jman
 private _unit = _this;
 if (typeName _unit != "STRING" || {_unit == ""}) exitWith { "" };
 
+if (isNil "ALiVE_inferUnitRoleCache") then {
+    ALiVE_inferUnitRoleCache = createHashMap;
+};
+
+if (_unit in ALiVE_inferUnitRoleCache) exitWith {
+    ALiVE_inferUnitRoleCache get _unit
+};
+
+private _result = call {
 private _cfg = configFile >> "CfgVehicles" >> _unit;
 if !(isClass _cfg) exitWith { "" };
 if !(_unit isKindOf "Man") exitWith { "" };
@@ -156,3 +167,10 @@ if (
 
 // 9. Rifleman (default)
 "Rifleman"
+};
+
+// Cache empty results too. Invalid and non-Man classnames are just as static
+// as valid unit definitions and may otherwise be rejected repeatedly.
+ALiVE_inferUnitRoleCache set [_unit, _result];
+
+_result
