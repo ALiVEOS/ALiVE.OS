@@ -698,6 +698,18 @@ switch(_operation) do {
                         if (_t != "") then { _compClasses pushBackUnique _t };
                     } forEach ([_compForParse, ","] call CBA_fnc_split);
 
+                    // A picker with nothing chosen still hands over its filter prefix, so the
+                    // attribute reads as something like [F:0,0,0,0] rather than an empty string
+                    // and the check above lets it through. The parse then leaves no classes at
+                    // all. Without this the tier sweep runs looking for somewhere to put
+                    // nothing, and ends by warning that none of zero compositions could be
+                    // placed, which reads like a fault when it is simply an empty picker.
+                    if (_compClasses isEqualTo []) exitWith {
+                        if (_debug) then {
+                            ["CMP [%1] - No compositions selected, nothing to place", _faction] call ALiVE_fnc_dump;
+                        };
+                    };
+
                     // Multi-class fitment search. When the picker has multiple
                     // selections the validator tries each candidate at each
                     // tier and picks the FIRST that fits, so a tight terrain
