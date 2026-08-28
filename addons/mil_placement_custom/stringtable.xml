@@ -5,38 +5,47 @@
 <Key ID="STR_ALIVE_CMP">
     <English>Military Placement (Cust. Obj.)</English>
     <Chinesesimp>军事布局</Chinesesimp>
+    <Spanish>Colocación militar (obj. personalizado)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_CMP_COMMENT">
     <English>Custom Military Objective</English>
     <Chinesesimp>自定义军事目标</Chinesesimp>
+    <Spanish>Objetivo militar personalizado</Spanish>
 </Key>
 <Key ID="STR_ALIVE_CMP_DEBUG">
     <English>Enable Debug:</English>
     <Chinesesimp>启用测试</Chinesesimp>
+    <Spanish>Activar depuración:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_CMP_DEBUG_COMMENT">
     <English>Enables CMP Module Debug</English>
     <Chinesesimp>启用CMP模块调试</Chinesesimp>
+    <Spanish>Activa la depuración del módulo CMP</Spanish>
 </Key>
 <Key ID="STR_ALIVE_CMP_FACTION">
     <English>Force Faction:</English>
     <Chinesesimp>武力势力</Chinesesimp>
+    <Spanish>Facción de la fuerza:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_CMP_FACTION_COMMENT">
     <English>Faction of the units to be placed (BLU_F, OPF_F, IND_F, BLU_G_F)</English>
     <Chinesesimp>待放置单元的系数(BLU_F、OPF_F、IND_F、BLU_G_F)</Chinesesimp>
+    <Spanish>Facción de las unidades que se van a colocar (BLU_F, OPF_F, IND_F, BLU_G_F)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_CMP_PRIORITY">
     <English>Objective priority:</English>
     <Chinesesimp>目标优先级</Chinesesimp>
+    <Spanish>Prioridad del objetivo:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_CMP_PRIORITY_COMMENT">
     <English>Priority of the custom objective. Used by OPCOM and others for target evaluation</English>
     <Chinesesimp>自定义目标的优先级,用于OPCOM和其他目标评估</Chinesesimp>
+    <Spanish>Prioridad del objetivo personalizado. La usan OPCOM y otros para evaluar objetivos</Spanish>
 </Key>
 <Key ID="STR_ALIVE_CMP_SIZE">
     <English>Objective size:</English>
     <Chinesesimp>目标大小</Chinesesimp>
+    <Spanish>Tamaño del objetivo:</Spanish>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CMP_SIZE_COMMENT">
@@ -51,34 +60,42 @@
 <Key ID="STR_ALIVE_CMP_CUSTOM_INFANTRY_COUNT">
     <English>Infantry Count:</English>
     <Chinesesimp>步兵计数</Chinesesimp>
+    <Spanish>Cantidad de infantería:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_CMP_CUSTOM_INFANTRY_COUNT_COMMENT">
     <English>Set count of Infantry groups to be spawned, set to 0 for none</English>
     <Chinesesimp>设置要生成的步兵组计数,如果没有则设置为0</Chinesesimp>
+    <Spanish>Define cuántos grupos de infantería se generan; 0 para ninguno</Spanish>
 </Key>
 <Key ID="STR_ALIVE_CMP_CUSTOM_MOTORISED_COUNT">
     <English>Motorised Count:</English>
     <Chinesesimp>摩托化小组计数</Chinesesimp>
+    <Spanish>Cantidad de motorizados:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_CMP_CUSTOM_MOTORISED_COUNT_COMMENT">
     <English>Set count of Motorised groups to be spawned, set to 0 for none</English>
     <Chinesesimp>设置要生成的摩托化小组的计数,如果没有,则设置为0</Chinesesimp>
+    <Spanish>Define cuántos grupos motorizados se generan; 0 para ninguno</Spanish>
 </Key>
 <Key ID="STR_ALIVE_CMP_CUSTOM_MECHANISED_COUNT">
     <English>Mechanised Count:</English>
     <Chinesesimp>机械化小组计数</Chinesesimp>
+    <Spanish>Cantidad de mecanizados:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_CMP_CUSTOM_MECHANISED_COUNT_COMMENT">
     <English>Set count of Mechanised groups to be spawned, set to 0 for none</English>
     <Chinesesimp>设置要生成的机械化小组的计数,如果没有,则设置为0</Chinesesimp>
+    <Spanish>Define cuántos grupos mecanizados se generan; 0 para ninguno</Spanish>
 </Key>
 <Key ID="STR_ALIVE_CMP_CUSTOM_ARMOUR_COUNT">
     <English>Armour Count:</English>
     <Chinesesimp>装甲小组计数</Chinesesimp>
+    <Spanish>Cantidad de blindados:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_CMP_CUSTOM_ARMOUR_COUNT_COMMENT">
     <English>Set count of Armour groups to be spawned, set to 0 for none</English>
     <Chinesesimp>设置要生成的装甲小组计数,如果没有则设置为0</Chinesesimp>
+    <Spanish>Define cuántos grupos blindados se generan; 0 para ninguno</Spanish>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CMP_CUSTOM_ARTILLERY_COUNT">
@@ -163,10 +180,12 @@
 <Key ID="STR_ALIVE_CMP_CUSTOM_SPECOPS_COUNT">
     <English>SpecOps Count:</English>
     <Chinesesimp>特战小组计数</Chinesesimp>
+    <Spanish>Cantidad de fuerzas especiales:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_CMP_CUSTOM_SPECOPS_COUNT_COMMENT">
     <English>Set count of SpecOps groups to be spawned, set to 0 for none</English>
     <Chinesesimp>设置要生成的特战小组计数,如果没有则设置为0</Chinesesimp>
+    <Spanish>Define cuántos grupos de fuerzas especiales se generan; 0 para ninguno</Spanish>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CMP_HDR_ANTIAIR">
@@ -261,42 +280,52 @@
 <Key ID="STR_ALIVE_CMP_COMPOSITION">
     <English>Spawn Composition:</English>
     <Chinesesimp>平民放置</Chinesesimp>
+    <Spanish>Composición a generar:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_CMP_COMPOSITION_COMMENT">
     <English>Multi-select listbox of compositions valid for the module's faction (Military for WEST/EAST, Guerrilla for RESISTANCE). At spawn time the validator tries the ticked compositions in shuffled order at three search tiers (50m / 150m / 300m) and uses the first that fits the surrounding terrain, so a tight site can still get a spawn from an alternative pick in the pool. The Override field accepts free-text class names for mod compositions the listbox doesn't surface. Empty selection = no composition spawn. Multi-select: Ctrl+click toggles individual rows, Shift+click selects a range, plain click replaces with just that one row.</English>
     <Chinesesimp>输入组合的类型(总部,要塞,直升机机场等)或者组合类名</Chinesesimp>
+    <Spanish>Lista de selección múltiple con las composiciones válidas para la facción del módulo (militares para WEST/EAST, guerrilla para RESISTANCE). Al generar, el validador prueba las composiciones marcadas en orden aleatorio con tres niveles de búsqueda (50 m / 150 m / 300 m) y usa la primera que encaje en el terreno circundante, de modo que un emplazamiento estrecho todavía puede recibir una alternativa del conjunto. El campo de anulación acepta texto libre con classnames de composiciones de mods que la lista no muestre. Sin selección = no se genera composición. Selección múltiple: Ctrl+clic activa o desactiva filas concretas, Mayús+clic selecciona un rango y un clic normal deja seleccionada solo esa fila.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_CMP_COMPOSITION_BIS_A">
     <English>BIS - Camp Audacity</English>
     <Chinesesimp>BIS-Audacity营地</Chinesesimp>
+    <Spanish>BIS - Campamento Audacity</Spanish>
 </Key>
 <Key ID="STR_ALIVE_CMP_COMPOSITION_BIS_B">
     <English>BIS - Camp Bravery</English>
     <Chinesesimp>BIS-Bravery营地</Chinesesimp>
+    <Spanish>BIS - Campamento Bravery</Spanish>
 </Key>
 <Key ID="STR_ALIVE_CMP_COMPOSITION_BIS_C">
     <English>BIS - Camp Courage</English>
     <Chinesesimp>BIS-Courage营地</Chinesesimp>
+    <Spanish>BIS - Campamento Courage</Spanish>
 </Key>
 <Key ID="STR_ALIVE_CMP_COMPOSITION_BIS_D">
     <English>BIS - Camp Defiance</English>
     <Chinesesimp>BIS-Defiance营地</Chinesesimp>
+    <Spanish>BIS - Campamento Defiance</Spanish>
 </Key>
 <Key ID="STR_ALIVE_CMP_COMPOSITION_BIS_E">
     <English>BIS - Camp Endurance</English>
     <Chinesesimp>BIS-Endurance营地</Chinesesimp>
+    <Spanish>BIS - Campamento Endurance</Spanish>
 </Key>
 <Key ID="STR_ALIVE_CMP_COMPOSITION_BIS_F">
     <English>BIS - Camp Fortitude</English>
     <Chinesesimp>BIS-Fortitude营地</Chinesesimp>
+    <Spanish>BIS - Campamento Fortitude</Spanish>
 </Key>
 <Key ID="STR_ALIVE_CMP_CREATE_HQ">
     <English>Create as HQ:</English>
     <Chinesesimp>创建为总部</Chinesesimp>
+    <Spanish>Crear como HQ:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_CMP_CREATE_HQ_COMMENT">
     <English>Selects HQ objective close to the module or if unavailable spawns an HQ composition at the module position</English>
     <Chinesesimp>选择模块附近的总部目标,或者如果不可用,则在模块位置生成总部合成</Chinesesimp>
+    <Spanish>Selecciona un objetivo de HQ cercano al módulo o, si no hay ninguno disponible, genera una composición de HQ en la posición del módulo</Spanish>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CMP_CREATE_FIELD_HQ">
@@ -330,17 +359,21 @@
 <Key ID="STR_ALIVE_CMP_READINESS_LEVEL">
     <English>Readiness:</English>
     <Chinesesimp>准备就绪:</Chinesesimp>
+    <Spanish>Nivel de alerta:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_CMP_READINESS_LEVEL_COMMENT">
     <English>The amount of troops that will be on duty and patrolling</English>
     <Chinesesimp>即将执勤和巡逻的部队数量</Chinesesimp>
+    <Spanish>Cantidad de tropas que estarán de servicio y patrullando</Spanish>
 </Key>
 <Key ID="STR_ALIVE_CMP_ALLOW_PLAYER_TASK">
     <English>Allow player tasking:</English>
     <Chinesesimp>允许玩家任务:</Chinesesimp>
+    <Spanish>Permitir tareas de jugador:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_CMP_ALLOW_PLAYER_TASK_COMMENT">
     <English>MilAssault/MilDefend C2ISTAR tasks</English>
     <Chinesesimp>C2ISTAR军事进攻/军事防御任务</Chinesesimp>
+    <Spanish>Tareas C2ISTAR MilAssault/MilDefend</Spanish>
 </Key>
 </Container></Package></Project>

@@ -4,212 +4,282 @@
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_COMP_VN_MilitaryJungle">
     <English>Military (Jungle)</English>
+    <Spanish>Militar (jungla)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_AirportsLarge">
     <English>Airports (Large)</English>
+    <Spanish>Aeropuertos (grandes)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_AirportsMedium">
     <English>Airports (Medium)</English>
+    <Spanish>Aeropuertos (medianos)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_AirportsSmall">
     <English>Airports (Small)</English>
+    <Spanish>Aeropuertos (pequeños)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_CampsLarge">
     <English>Camps (Large)</English>
+    <Spanish>Campamentos (grandes)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_CampsMedium">
     <English>Camps (Medium)</English>
+    <Spanish>Campamentos (medianos)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_CampsSmall">
     <English>Camps (Small)</English>
+    <Spanish>Campamentos (pequeños)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_CheckpointsBarricadesLarge">
     <English>Checkpoints &amp; Barricades (Large)</English>
+    <Spanish>Controles y barricadas (grandes)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_CheckpointsBarricadesMedium">
     <English>Checkpoints &amp; Barricades (Medium)</English>
+    <Spanish>Controles y barricadas (medianos)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_CheckpointsBarricadesSmall">
     <English>Checkpoints &amp; Barricades (Small)</English>
+    <Spanish>Controles y barricadas (pequeños)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_CommunicationsLarge">
     <English>Communications (Large)</English>
+    <Spanish>Comunicaciones (grandes)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_CommunicationsMedium">
     <English>Communications (Medium)</English>
+    <Spanish>Comunicaciones (medianas)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_CommunicationsSmall">
     <English>Communications (Small)</English>
+    <Spanish>Comunicaciones (pequeñas)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_ConstructionLarge">
     <English>Construction (Large)</English>
+    <Spanish>Construcción (grande)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_ConstructionMedium">
     <English>Construction (Medium)</English>
+    <Spanish>Construcción (mediana)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_ConstructionSmall">
     <English>Construction (Small)</English>
+    <Spanish>Construcción (pequeña)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_ConstructionSuppliesLarge">
     <English>Construction Supplies (Large)</English>
+    <Spanish>Suministros de construcción (grandes)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_ConstructionSuppliesMedium">
     <English>Construction Supplies (Medium)</English>
+    <Spanish>Suministros de construcción (medianos)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_ConstructionSuppliesSmall">
     <English>Construction Supplies (Small)</English>
+    <Spanish>Suministros de construcción (pequeños)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_CrashsitesLarge">
     <English>Crash Sites (Large)</English>
+    <Spanish>Zonas de accidente (grandes)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_CrashsitesMedium">
     <English>Crash Sites (Medium)</English>
+    <Spanish>Zonas de accidente (medianas)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_CrashsitesSmall">
     <English>Crash Sites (Small)</English>
+    <Spanish>Zonas de accidente (pequeñas)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_FieldHQLarge">
     <English>Field HQ (Large)</English>
+    <Spanish>HQ de campaña (grande)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_FieldHQMedium">
     <English>Field HQ (Medium)</English>
+    <Spanish>HQ de campaña (mediano)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_FieldHQSmall">
     <English>Field HQ (Small)</English>
+    <Spanish>HQ de campaña (pequeño)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_FortLarge">
     <English>Fortifications &amp; Bunkers (Large)</English>
+    <Spanish>Fortificaciones y búnkeres (grandes)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_FortMedium">
     <English>Fortifications &amp; Bunkers (Medium)</English>
+    <Spanish>Fortificaciones y búnkeres (medianos)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_FortSmall">
     <English>Fortifications &amp; Bunkers (Small)</English>
+    <Spanish>Fortificaciones y búnkeres (pequeños)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_FuelLarge">
     <English>Fuel (Large)</English>
+    <Spanish>Combustible (grande)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_FuelMedium">
     <English>Fuel (Medium)</English>
+    <Spanish>Combustible (mediano)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_FuelSmall">
     <English>Fuel (Small)</English>
+    <Spanish>Combustible (pequeño)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_GeneralLarge">
     <English>General (Large)</English>
+    <Spanish>General (grande)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_GeneralMedium">
     <English>General (Medium)</English>
+    <Spanish>General (mediano)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_GeneralSmall">
     <English>General (Small)</English>
+    <Spanish>General (pequeño)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_HeliportsLarge">
     <English>Heliports (Large)</English>
+    <Spanish>Helipuertos (grandes)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_HeliportsMedium">
     <English>Heliports (Medium)</English>
+    <Spanish>Helipuertos (medianos)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_HeliportsSmall">
     <English>Heliports (Small)</English>
+    <Spanish>Helipuertos (pequeños)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_HqLarge">
     <English>HQ (Large)</English>
+    <Spanish>HQ (grande)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_HqMedium">
     <English>HQ (Medium)</English>
+    <Spanish>HQ (mediano)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_HqSmall">
     <English>HQ (Small)</English>
+    <Spanish>HQ (pequeño)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_IndustrialLarge">
     <English>Industrial (Large)</English>
+    <Spanish>Industrial (grande)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_IndustrialMedium">
     <English>Industrial (Medium)</English>
+    <Spanish>Industrial (mediano)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_IndustrialSmall">
     <English>Industrial (Small)</English>
+    <Spanish>Industrial (pequeño)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_MarineLarge">
     <English>Marine (Large)</English>
+    <Spanish>Marítimo (grande)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_MarineMedium">
     <English>Marine (Medium)</English>
+    <Spanish>Marítimo (mediano)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_MarineSmall">
     <English>Marine (Small)</English>
+    <Spanish>Marítimo (pequeño)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_MedicalLarge">
     <English>Medical (Large)</English>
+    <Spanish>Sanitario (grande)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_MedicalMedium">
     <English>Medical (Medium)</English>
+    <Spanish>Sanitario (mediano)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_MedicalSmall">
     <English>Medical (Small)</English>
+    <Spanish>Sanitario (pequeño)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_MiningOilLarge">
     <English>Mining, Refining &amp; Oil (Large)</English>
+    <Spanish>Minería, refinado y petróleo (grandes)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_MiningOilMedium">
     <English>Mining, Refining &amp; Oil (Medium)</English>
+    <Spanish>Minería, refinado y petróleo (medianos)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_MiningOilSmall">
     <English>Mining, Refining &amp; Oil (Small)</English>
+    <Spanish>Minería, refinado y petróleo (pequeños)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_OutpostsLarge">
     <English>Outposts (Large)</English>
+    <Spanish>Puestos avanzados (grandes)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_OutpostsMedium">
     <English>Outposts (Medium)</English>
+    <Spanish>Puestos avanzados (medianos)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_OutpostsSmall">
     <English>Outposts (Small)</English>
+    <Spanish>Puestos avanzados (pequeños)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_PowerLarge">
     <English>Power (Large)</English>
+    <Spanish>Energía (grande)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_PowerMedium">
     <English>Power (Medium)</English>
+    <Spanish>Energía (mediana)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_PowerSmall">
     <English>Power (Small)</English>
+    <Spanish>Energía (pequeña)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_RailLarge">
     <English>Rail (Large)</English>
+    <Spanish>Ferrocarril (grande)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_RailMedium">
     <English>Rail (Medium)</English>
+    <Spanish>Ferrocarril (mediano)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_RailSmall">
     <English>Rail (Small)</English>
+    <Spanish>Ferrocarril (pequeño)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_SettlementsLarge">
     <English>Settlements (Large)</English>
+    <Spanish>Asentamientos (grandes)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_SettlementsMedium">
     <English>Settlements (Medium)</English>
+    <Spanish>Asentamientos (medianos)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_SettlementsSmall">
     <English>Settlements (Small)</English>
+    <Spanish>Asentamientos (pequeños)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_SuppliesLarge">
     <English>Supplies &amp; Storage (Large)</English>
+    <Spanish>Suministros y almacenamiento (grandes)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_SuppliesMedium">
     <English>Supplies &amp; Storage (Medium)</English>
+    <Spanish>Suministros y almacenamiento (medianos)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_SuppliesSmall">
     <English>Supplies &amp; Storage (Small)</English>
+    <Spanish>Suministros y almacenamiento (pequeños)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_SupportsLarge">
     <English>Support (Large)</English>
+    <Spanish>Apoyo (grande)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_SupportsMedium">
     <English>Support (Medium)</English>
+    <Spanish>Apoyo (mediano)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_VN_SupportsSmall">
     <English>Support (Small)</English>
+    <Spanish>Apoyo (pequeño)</Spanish>
 </Key>
 </Container></Package></Project>

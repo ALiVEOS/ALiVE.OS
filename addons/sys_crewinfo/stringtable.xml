@@ -5,25 +5,31 @@
 <Key ID="STR_ALIVE_CREWINFO">
     <English>Crew Info</English>
     <Chinesesimp>乘员信息</Chinesesimp>
+    <Spanish>Info de tripulación</Spanish>
 </Key>
 <Key ID="STR_ALIVE_CREWINFO_DEBUG">
     <English>Enable Debug:</English>
     <Chinesesimp>启用调试:</Chinesesimp>
+    <Spanish>Activar depuración:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_CREWINFO_DEBUG_COMMENT">
     <English>Enables Crew Info Module Debug</English>
     <Chinesesimp>启用乘员信息模块调试</Chinesesimp>
+    <Spanish>Activa la depuración del módulo de info de tripulación</Spanish>
 </Key>
 <Key ID="STR_ALIVE_CREWINFO_UI">
     <English>Crew Info (Position):</English>
     <Chinesesimp>乘员信息(位置):</Chinesesimp>
+    <Spanish>Info de tripulación (posición):</Spanish>
 </Key>
 <Key ID="STR_ALIVE_CREWINFO_UI_COMMENT">
     <English>Crew Info Interface Location - select none to turn off</English>
     <Chinesesimp>乘员信息界面位置-选择none关闭</Chinesesimp>
+    <Spanish>Ubicación de la interfaz de info de tripulación; selecciona «ninguna» para desactivarla</Spanish>
 </Key>
 <Key ID="STR_ALIVE_CREWINFO_ERROR1">
     <English>Only one crew info module can be used</English>
     <Chinesesimp>只能使用一个乘员信息模块</Chinesesimp>
+    <Spanish>Solo se puede usar un módulo de info de tripulación</Spanish>
 </Key>
 </Container></Package></Project>

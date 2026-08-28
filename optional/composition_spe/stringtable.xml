@@ -4,98 +4,130 @@
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_COMP_SPE_MilitaryBocage">
     <English>Military (Bocage)</English>
+    <Spanish>Militar (bocage)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_SPE_GuerrillaBocage">
     <English>Guerrilla (Bocage)</English>
+    <Spanish>Guerrilla (bocage)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_SPE_AirportsSmall">
     <English>Airports (Small)</English>
+    <Spanish>Aeropuertos (pequeños)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_SPE_AirportsMedium">
     <English>Airports (Medium)</English>
+    <Spanish>Aeropuertos (medianos)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_SPE_AirportsLarge">
     <English>Airports (Large)</English>
+    <Spanish>Aeropuertos (grandes)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_SPE_CheckpointsBarricadesSmall">
     <English>Checkpoints &amp; Barricades (Small)</English>
+    <Spanish>Controles y barricadas (pequeños)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_SPE_CheckpointsBarricadesMedium">
     <English>Checkpoints &amp; Barricades (Medium)</English>
+    <Spanish>Controles y barricadas (medianos)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_SPE_CheckpointsBarricadesLarge">
     <English>Checkpoints &amp; Barricades (Large)</English>
+    <Spanish>Controles y barricadas (grandes)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_SPE_HqSmall">
     <English>HeadQuarters (Small)</English>
+    <Spanish>Cuartel general (pequeño)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_SPE_HqMedium">
     <English>HeadQuarters (Medium)</English>
+    <Spanish>Cuartel general (mediano)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_SPE_HqLarge">
     <English>HeadQuarters (Large)</English>
+    <Spanish>Cuartel general (grande)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_SPE_SupportsSmall">
     <English>Support (Small)</English>
+    <Spanish>Apoyo (pequeño)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_SPE_SupportsMedium">
     <English>Support (Medium)</English>
+    <Spanish>Apoyo (mediano)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_SPE_SupportsLarge">
     <English>Support (Large)</English>
+    <Spanish>Apoyo (grande)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_SPE_CrashsitesSmall">
     <English>Crashsites (Small)</English>
+    <Spanish>Zonas de accidente (pequeñas)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_SPE_CrashsitesMedium">
     <English>Crashsites (Medium)</English>
+    <Spanish>Zonas de accidente (medianas)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_SPE_CrashsitesLarge">
     <English>Crashsites (Large)</English>
+    <Spanish>Zonas de accidente (grandes)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_SPE_FortSmall">
     <English>Fortifications (Small)</English>
+    <Spanish>Fortificaciones (pequeñas)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_SPE_FortMedium">
     <English>Fortifications (Medium)</English>
+    <Spanish>Fortificaciones (medianas)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_SPE_FortLarge">
     <English>Fortifications (Large)</English>
+    <Spanish>Fortificaciones (grandes)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_SPE_CampsLarge">
     <English>Camps (Large)</English>
+    <Spanish>Campamentos (grandes)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_SPE_CampsMedium">
     <English>Camps (Medium)</English>
+    <Spanish>Campamentos (medianos)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_SPE_CampsSmall">
     <English>Camps (Small)</English>
+    <Spanish>Campamentos (pequeños)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_SPE_CommunicationsLarge">
     <English>Communications (Large)</English>
+    <Spanish>Comunicaciones (grandes)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_SPE_CommunicationsMedium">
     <English>Communications (Medium)</English>
+    <Spanish>Comunicaciones (medianas)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_SPE_CommunicationsSmall">
     <English>Communications (Small)</English>
+    <Spanish>Comunicaciones (pequeñas)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_SPE_FuelLarge">
     <English>Fuel (Large)</English>
+    <Spanish>Combustible (grande)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_SPE_FuelMedium">
     <English>Fuel (Medium)</English>
+    <Spanish>Combustible (mediano)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_SPE_FuelSmall">
     <English>Fuel (Small)</English>
+    <Spanish>Combustible (pequeño)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_SPE_FieldHQLarge">
     <English>Field HQ (Large)</English>
+    <Spanish>HQ de campaña (grande)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_SPE_FieldHQMedium">
     <English>Field HQ (Medium)</English>
+    <Spanish>HQ de campaña (mediano)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_COMP_SPE_FieldHQSmall">
     <English>Field HQ (Small)</English>
+    <Spanish>HQ de campaña (pequeño)</Spanish>
 </Key>
 </Container></Package></Project>

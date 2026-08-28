@@ -5,10 +5,12 @@
 <Key ID="STR_ALIVE_PROFILE_SYSTEM">
     <English>ALiVE Virtual AI System</English>
     <Chinesesimp>ALiVE虚拟人工智能系统</Chinesesimp>
+    <Spanish>Sistema de IA virtual de ALiVE</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_COMMENT">
     <English>Virtual AI System (Profiles)</English>
     <Chinesesimp>虚拟人工智能系统（配置文件）</Chinesesimp>
+    <Spanish>Sistema de IA virtual (perfiles)</Spanish>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_DEBUG">
@@ -33,178 +35,222 @@
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PERSISTENT">
     <English>Persistent:</English>
     <Chinesesimp>持久性:</Chinesesimp>
+    <Spanish>Persistente:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PERSISTENT_COMMENT">
     <English>Enables external Database persistence for Virtual AI</English>
     <Chinesesimp>为虚拟AI启用外部数据库持久化</Chinesesimp>
+    <Spanish>Activa la persistencia en base de datos externa para la IA virtual</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PLOT_SECTORS">
     <English>Sector Colouring:</English>
     <Chinesesimp>扇区着色：</Chinesesimp>
+    <Spanish>Coloreado de sectores:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PLOT_SECTORS_COMMENT">
     <English>Enables sector colouring according to units presence</English>
     <Chinesesimp>根据单位存在启用扇区着色</Chinesesimp>
+    <Spanish>Activa el coloreado de sectores según la presencia de unidades</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SYNC">
     <English>Synchronisation Options:</English>
     <Chinesesimp>同步选项：</Chinesesimp>
+    <Spanish>Opciones de sincronización:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SYNC_COMMENT">
     <English>Modify synced units behaviour</English>
     <Chinesesimp>修改同步单位行为</Chinesesimp>
+    <Spanish>Modifica el comportamiento de las unidades sincronizadas</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SYNC_ADD">
     <English>Only virtualize synced units</English>
     <Chinesesimp>仅虚拟化同步单位</Chinesesimp>
+    <Spanish>Virtualizar solo las unidades sincronizadas</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SYNC_IGNORE">
     <English>Virtualize all editor placed units except synced units</English>
     <Chinesesimp>虚拟化除同步单位外的所有编辑器放置单位</Chinesesimp>
+    <Spanish>Virtualizar todas las unidades colocadas en el editor salvo las sincronizadas</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SPAWN_RADIUS">
     <English>Spawn Radius (m):</English>
     <Chinesesimp>生成半径:</Chinesesimp>
+    <Spanish>Radio de aparición (m):</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SPAWN_RADIUS_COMMENT">
     <English>Sets the distance from players to spawn AI units</English>
     <Chinesesimp>设置玩家与AI单位生成的距离</Chinesesimp>
+    <Spanish>Define a qué distancia de los jugadores aparecen las unidades de IA</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_ACTIVE_LIMITER">
     <English>Active Limiter:</English>
     <Chinesesimp>活动限制:</Chinesesimp>
+    <Spanish>Limitador de activos:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_ACTIVE_LIMITER_COMMENT">
     <English>Sets the max number of virtualized AI *groups* to spawn at any one time</English>
     <Chinesesimp>设置任何时候要生成的虚拟化AI*组*的最大数量</Chinesesimp>
+    <Spanish>Define el número máximo de *grupos* de IA virtualizada que pueden aparecer a la vez</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_ZEUSSPAWN">
     <English>Zeus Spawn Virtual Groups:</English>
     <Chinesesimp>宙斯生成虚拟组：</Chinesesimp>
+    <Spanish>Zeus genera grupos virtuales:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_ZEUSSPAWN_COMMENT">
     <English>If enabled, active zeus entities will spawn virtual groups when in range</English>
     <Chinesesimp>如果启用,活动的宙斯实体将在范围内生成虚拟组</Chinesesimp>
+    <Spanish>Si se activa, las entidades de Zeus activas harán aparecer grupos virtuales cuando estén en rango</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_AIR_COMBAT_SPAWNING">
     <English>Air Combat</English>
     <Chinesesimp>空中战斗</Chinesesimp>
+    <Spanish>Combate aéreo</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_AIR_COMBAT_SPAWNING_COMMENT">
     <English>Enables specialized spawning behavior. Aircraft and AAA profiles are always spawned.</English>
     <Chinesesimp>启用专用生成行为。飞机和AAA配置文件始终会生成。</Chinesesimp>
+    <Spanish>Activa un comportamiento de aparición especializado. Los perfiles de aeronaves y de artillería antiaérea siempre aparecen.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PROFILE_ACTIVATORS">
     <English>Modes</English>
     <Chinesesimp>模式</Chinesesimp>
+    <Spanish>Modos</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PROFILE_ACTIVATORS_COMMENT">
     <English>Choose which profile spawn modes are enabled and configure the selected mode's settings. Proximity is enabled by default; Air Combat is disabled by default.</English>
     <Chinesesimp>选择启用的配置文件生成模式并配置当前模式。接近模式默认启用；空中战斗模式默认禁用。</Chinesesimp>
+    <Spanish>Elige qué modos de aparición de perfiles están activos y configura los ajustes del modo seleccionado. Proximidad está activo por defecto; Combate aéreo está desactivado por defecto.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PROXIMITY_SPAWNING">
     <English>Proximity</English>
     <Chinesesimp>接近</Chinesesimp>
+    <Spanish>Proximidad</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PROXIMITY_SPAWNING_COMMENT">
     <English>Proximity Spawn activates profiles in a radius around the player. The spawn radius can be adjusted based on the type of vehicle a player is in. This cannot be disabled.</English>
     <Chinesesimp>接近生成会在玩家周围半径内激活配置文件。生成半径可根据玩家所乘载具类型调整。此功能无法禁用。</Chinesesimp>
+    <Spanish>La aparición por proximidad activa los perfiles en un radio alrededor del jugador. El radio se puede ajustar según el tipo de vehículo en el que vaya el jugador. No se puede desactivar.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PROXIMITY_SETTINGS">
     <English>Proximity Spawn</English>
     <Chinesesimp>接近生成</Chinesesimp>
+    <Spanish>Aparición por proximidad</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_AIR_COMBAT_SETTINGS">
     <English>Air Combat Spawn</English>
     <Chinesesimp>空战生成</Chinesesimp>
+    <Spanish>Aparición por combate aéreo</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_AIR_COMBAT_PLANE_RADIUS">
     <English>Plane Vehicle Radius (m):</English>
     <Chinesesimp>飞机载具半径 (米):</Chinesesimp>
+    <Spanish>Radio de vehículos para aviones (m):</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_AIR_COMBAT_PLANE_RADIUS_COMMENT">
     <English>Distance around a player-controlled plane that ground vehicles spawn. Set to 0 to disable.</English>
     <Chinesesimp>玩家控制的飞机周围生成地面载具的距离。设为0可禁用。</Chinesesimp>
+    <Spanish>Distancia alrededor de un avión controlado por un jugador a la que aparecen los vehículos terrestres. Ponlo a 0 para desactivarlo.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_AIR_COMBAT_HELI_RADIUS">
     <English>Helicopter Vehicle Radius (m):</English>
     <Chinesesimp>直升机载具半径 (米):</Chinesesimp>
+    <Spanish>Radio de vehículos para helicópteros (m):</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_AIR_COMBAT_HELI_RADIUS_COMMENT">
     <English>Distance around a player-controlled helicopter that ground vehicles spawn. Set to 0 to disable.</English>
     <Chinesesimp>玩家控制的直升机周围生成地面载具的距离。设为0可禁用。</Chinesesimp>
+    <Spanish>Distancia alrededor de un helicóptero controlado por un jugador a la que aparecen los vehículos terrestres. Ponlo a 0 para desactivarlo.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SPAWN_JET_RADIUS">
     <English>Spawn Planes Radius (m):</English>
     <Chinesesimp>平面生成半径</Chinesesimp>
+    <Spanish>Radio de aparición en avión (m):</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SPAWN_JET_RADIUS_COMMENT">
     <English>The radius around player in planes to spawn AI. Set to 0 to disable spawning while in planes</English>
     <Chinesesimp>玩家在平面上生成AI的半径。设置为0可禁用在平面中生成</Chinesesimp>
+    <Spanish>Radio alrededor del jugador en avión en el que aparece la IA. Ponlo a 0 para desactivar la aparición mientras se vuela en avión</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SPAWN_HELI_RADIUS">
     <English>Spawn Heli Radius (m):</English>
     <Chinesesimp>直升机生成半径:</Chinesesimp>
+    <Spanish>Radio de aparición en helicóptero (m):</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SPAWN_HELI_RADIUS_COMMENT">
     <English>The radius around player in helicopters to spawn AI. Set to 0 to disable spawning while in helicopters</English>
     <Chinesesimp>玩家在直升机上生成人工智能的半径。设置为0可在直升机中禁用生成</Chinesesimp>
+    <Spanish>Radio alrededor del jugador en helicóptero en el que aparece la IA. Ponlo a 0 para desactivar la aparición mientras se vuela en helicóptero</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SPAWN_UAV_RADIUS">
     <English>Spawn UAV Radius (m):</English>
     <Chinesesimp>无人机生成半径:</Chinesesimp>
+    <Spanish>Radio de aparición con UAV (m):</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SPAWN_UAV_RADIUS_COMMENT">
     <English>The radius around player controlled UAV to spawn AI. Set to 0 to disable spawning while controlling UAVs. Set to -1 to default to (Infantry) Spawn Radius + 800.</English>
     <Chinesesimp>玩家控制的无人机周围的半径生产出AI。设置为0禁用生成时控制无人机。设置为-1默认为(步兵)生成半径 + 800.</Chinesesimp>
+    <Spanish>Radio alrededor del UAV controlado por el jugador en el que aparece la IA. Ponlo a 0 para desactivar la aparición mientras se controla un UAV. Ponlo a -1 para usar por defecto el radio de aparición (de infantería) + 800.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SPEED_MODIFIER">
     <English>Virtual Unit Speed:</English>
     <Chinesesimp>虚拟单位速度:</Chinesesimp>
+    <Spanish>Velocidad de las unidades virtuales:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SPEED_MODIFIER_COMMENT">
     <English>Alters how fast virtual AI move across the map. 0.25 means 25% of a unit's normal speed</English>
     <Chinesesimp>改变虚拟AI在地图上移动的速度。25%是指单位正常速度的25%</Chinesesimp>
+    <Spanish>Modifica la rapidez con la que la IA virtual se desplaza por el mapa. 0.25 significa el 25 % de la velocidad normal de una unidad</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_ERROR1">
     <English>Only one Virtual AI System module can be used</English>
     <Chinesesimp>只能使用一个虚拟AI系统模块</Chinesesimp>
+    <Spanish>Solo se puede usar un módulo de sistema de IA virtual</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_DEBUG_ENABLE">
     <English>Activate Profiles Debug</English>
     <Chinesesimp>激活配置文件调试</Chinesesimp>
+    <Spanish>Activar depuración de perfiles</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_DEBUG_DISABLE">
     <English>Deactivate Profiles Debug</English>
     <Chinesesimp>关闭配置文件调试</Chinesesimp>
+    <Spanish>Desactivar depuración de perfiles</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_DEBUG1_COMMENT">
     <English>Toggle debug mode on the profile system</English>
     <Chinesesimp>切换配置文件系统上的调试模式</Chinesesimp>
+    <Spanish>Activa o desactiva el modo de depuración del sistema de perfiles</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_VIRTUAL_COMBAT_SPEED_MODIFIER">
     <English>Virtual Combat Speed:</English>
     <Chinesesimp>虚拟作战速度：</Chinesesimp>
+    <Spanish>Velocidad del combate virtual:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_VIRTUAL_COMBAT_SPEED_MODIFIER_COMMENT">
     <English>Sets the pace of virtual combat. Fastest combat resolves twice as quickly as regular.</English>
     <Chinesesimp>设置虚拟战斗的节奏.最快的战斗解决速度是普通战斗的两倍.</Chinesesimp>
+    <Spanish>Define el ritmo del combate virtual. El más rápido resuelve el combate el doble de rápido que el normal.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_VIRTUAL_COMBAT_RANGE_MODIFIER">
     <English>Virtual Combat Range:</English>
     <Chinesesimp>虚拟单位战斗距离</Chinesesimp>
+    <Spanish>Alcance del combate virtual:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_VIRTUAL_COMBAT_RANGE_MODIFIER_COMMENT">
     <English>Sets the range of virtual combat in metres.</English>
     <Chinesesimp>以米为单位设置虚拟战斗的范围</Chinesesimp>
+    <Spanish>Define el alcance del combate virtual en metros.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PATHFINDING">
     <English>Pathfinding:</English>
     <Chinesesimp>实验路径查找：</Chinesesimp>
+    <Spanish>Búsqueda de rutas:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_COMMENT">
     <English>Profiles use intelligent pathing to reach their destinations, routing around terrain, water and dense areas instead of travelling in straight lines.\nEnabled by default. Set to No to fall back to straight-line movement if you prefer, or if you encounter an issue.</English>
     <Chinesesimp>实验的!\n这项功能是高度实验性的,可能会破坏任务.\n如果发现任何问题,请禁用.\n配置文件将使用智能路径到达目的地.</Chinesesimp>
+    <Spanish>Los perfiles usan rutas inteligentes para llegar a su destino, rodeando el terreno, el agua y las zonas densas en lugar de ir en línea recta.\nActivado por defecto. Ponlo en No para volver al movimiento en línea recta si lo prefieres o si encuentras algún problema.</Spanish>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_GRID">
@@ -219,6 +265,7 @@
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_GRID_COMMENT">
     <English>Controls the resolution of the pathfinding grid.\n\nAuto (recommended) sizes the grid to this map automatically - no need to match a map size by hand. High detail / Balanced / Performance trade path accuracy against server load. (An exact grid size can still be forced from init.sqf if ever needed.)</English>
     <Chinesesimp>实验的!\n这项功能是高度实验性的,可能会破坏任务.\n如果发现任何问题,请禁用.\n配置文件将使用智能路径到达目的地.</Chinesesimp>
+    <Spanish>Controla la resolución de la cuadrícula de búsqueda de rutas.\n\nAutomática (recomendada) ajusta la cuadrícula a este mapa por sí sola, sin necesidad de igualar a mano el tamaño del mapa. Detalle alto / Equilibrado / Rendimiento equilibran la precisión de las rutas frente a la carga del servidor. (Si alguna vez hiciera falta, todavía se puede forzar un tamaño de cuadrícula exacto desde init.sqf.)</Spanish>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_DRAWGRID">
@@ -303,6 +350,7 @@
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SEATRANSPORT">
     <English>Infantry Sea Transport:</English>
     <Chinesesimp>步兵海上运输：</Chinesesimp>
+    <Spanish>Transporte marítimo de infantería:</Spanish>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SEATRANSPORT_COMMENT">
@@ -317,10 +365,12 @@
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SMOOTHSPAWN">
     <English>Smooth Spawn:</English>
     <Chinesesimp>丝滑生成</Chinesesimp>
+    <Spanish>Aparición progresiva:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SMOOTHSPAWN_COMMENT">
     <English>Sleep values between spawning units to not overload engine</English>
     <Chinesesimp>生成单位之间的睡眠值不会使引擎过载</Chinesesimp>
+    <Spanish>Tiempos de espera entre la aparición de unidades para no sobrecargar el motor</Spanish>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_VEH_SETTLE">
@@ -484,20 +534,26 @@
 </Key>
 <Key ID="STR_ALIVE_PROFILE_VIRTUALISE">
     <English>Virtualise Groups In Radius</English>
+    <Spanish>Virtualizar grupos en un radio</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_VIRTUALISE_PROMPT">
     <English>Virtualise unprofiled AI groups in this area.</English>
+    <Spanish>Virtualiza los grupos de IA sin perfil de esta zona.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_VIRTUALISE_RADIUS">
     <English>Radius (m):</English>
+    <Spanish>Radio (m):</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_VIRTUALISE_INVALID_RADIUS">
     <English>Enter a radius greater than zero.</English>
+    <Spanish>Introduce un radio mayor que cero.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_VIRTUALISE_NO_PROFILE_SYSTEM">
     <English>Virtual AI System is not running.</English>
+    <Spanish>El sistema de IA virtual no está en funcionamiento.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_VIRTUALISE_COMPLETE">
     <English>ALiVE: Virtualised %1 group(s) and %2 vehicle(s).</English>
+    <Spanish>ALiVE: virtualizados %1 grupo(s) y %2 vehículo(s).</Spanish>
 </Key>
 </Container></Package></Project>
