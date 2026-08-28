@@ -49,6 +49,12 @@ private _result = true;
 
 switch(_operation) do {
 
+    case "create": {
+
+        _result = [] call ALiVE_fnc_hashCreate;
+
+    };
+
     case "init": {
 
         if (isServer) then {

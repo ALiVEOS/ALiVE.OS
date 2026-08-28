@@ -147,7 +147,7 @@ TRACE_1("profileEntity - input",_this);
 params [
     ["_logic", objNull, [objNull,[]]],
     ["_operation", "", [""]],
-    ["_args", objNull, [objNull,[],"",0,true,false]]
+    ["_args", objNull, [objNull,grpNull,[],"",0,true,false]]
 ];
 
 private _result = true;
@@ -158,9 +158,6 @@ switch(_operation) do {
 
     case "init": {
         if (isServer) then {
-            [_logic,"super"] call ALIVE_fnc_hashRem;
-            [_logic,"class"] call ALIVE_fnc_hashRem;
-
             [_logic,"init"] call SUPERCLASS;
 
             [_logic, [
@@ -346,7 +343,7 @@ switch(_operation) do {
     };
 
     case "group": {
-        if (_args isEqualType objnull) then {
+        if (_args isEqualType grpNull) then {
             [_logic,"group", _args] call ALIVE_fnc_hashSet;
         } else {
             _result = [_logic,"group"] call ALIVE_fnc_hashGet;
