@@ -1303,7 +1303,7 @@ switch(_operation) do {
 
     case "delGroup": {
         if(!isNil "_args") then {
-            ASSERT_TRUE(typeName _args == "GROUP",str typeName _args,_leader);
+            ASSERT_TRUE(typeName _args == "GROUP",str typeName _args);
             private ["_grp","_house"];
             _grp = _args;
             _leader = leader _grp;
