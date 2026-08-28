@@ -14,6 +14,7 @@ string - type of task
 array - targets (can be objects or string representing profile ID)
 string - module or playerID making request
 boolean - integrate with C2ISTAR auto task generation
+string - OPTIONAL objectiveID the caller has already decided to act on
 
 Returns:
 Boolean - if request was sent
@@ -41,6 +42,9 @@ private _type = _args select 2; // Type of task
 private _targets = _args select 3; // array of objects or profile IDs
 private _playerID = _args select 4; // module name or player ID
 private _strategic = _args select 5; // If this should integrate with C2ISTAR auto task generation functionality
+// The objective the caller has already committed to, when it knows one. Optional seventh
+// argument, so existing six argument calls are unaffected.
+private _callerObjectiveID = _args param [6, "", [""]];
 
 // Check faction has strategic tasks turned on
 private _autoGenerateStrategicTasks = false;
@@ -142,6 +146,15 @@ if (_autoGenerateStrategicTasks) then {
         private _reservationKey = [_target, _destination] call _getObjectiveReservationKey;
 
         if !(_taskType in ["CaptureObjective", "MilDefence"]) exitWith {_reservationKey};
+
+        // Use the objective the caller actually chose, rather than working it back out from
+        // where the enemy happens to be standing. The derivation below asks which attacking
+        // objective is nearest the target, which ties the claim to the search radius the
+        // caller used: widen that radius and a target can be nearest a DIFFERENT attacking
+        // objective, claiming the wrong one and sending players to the edge of somewhere
+        // else. Callers that do not know their objective pass nothing and keep the old path.
+        if !(_callerObjectiveID isEqualTo "") exitWith {_callerObjectiveID};
+
         if (_destination isEqualTo []) exitWith {_reservationKey};
 
         private _objectiveState = switch (_taskType) do {

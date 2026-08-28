@@ -5,18 +5,22 @@
 <Key ID="STR_ALIVE_MODULE">
     <English>ALiVE Modules</English>
     <Chinesesimp>ALiVE 模块</Chinesesimp>
+    <Spanish>Módulos ALiVE</Spanish>
 </Key>
 <Key ID="STR_ALIVE_SYSTEM">
     <English>ALiVE System</English>
     <Chinesesimp>ALiVE 系统</Chinesesimp>
+    <Spanish>Sistema ALiVE</Spanish>
 </Key>
 <Key ID="STR_ALIVE_DEBUG">
     <English>Enable Debug:</English>
     <Chinesesimp>启用调试:</Chinesesimp>
+    <Spanish>Activar depuración:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_DEBUG_COMMENT">
     <English>Enables Debug for ALiVE Base Systems</English>
     <Chinesesimp>对ALiVE基础系统启用调试</Chinesesimp>
+    <Spanish>Activa la depuración de los sistemas base de ALiVE</Spanish>
 </Key>
 <Key ID="STR_ALIVE_REQUIRES_ALIVE">
     <English>ALiVE (Required)</English>
@@ -33,70 +37,87 @@
 <Key ID="STR_ALIVE_REQUIRES_ALIVE_VERSIONING">
     <English>ALiVE Versioning:</English>
     <Chinesesimp>ALiVE 的版本:</Chinesesimp>
+    <Spanish>Control de versión de ALiVE:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_REQUIRES_ALIVE_VERSIONING_COMMENT">
     <English>Will output a warning or kick players on version mismatch.</English>
     <Chinesesimp>在版本不匹配时输出错误报告或将玩家踢出。</Chinesesimp>
+    <Spanish>Muestra un aviso o expulsa a los jugadores si la versión no coincide.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_DISABLESAVE">
     <English>Disable Default SP Save:</English>
     <Chinesesimp>禁用默认SP(偏好设定?)保存:</Chinesesimp>
+    <Spanish>Desactivar guardado SP por defecto:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_DISABLESAVE_COMMENT">
     <English>Default SP saving can cause out memory crashes.  Use local saving in ALiVE Data instead.</English>
     <Chinesesimp>默认SP保存可能会导致内存崩溃。使用本地保存ALiVE数据代替前者。</Chinesesimp>
+    <Spanish>El guardado SP por defecto puede provocar cierres por falta de memoria. Usa en su lugar el guardado local del módulo ALiVE Data.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_DISABLEMARKERS">
     <English>Disable Adv Markers:</English>
     <Chinesesimp>禁用高级标记:</Chinesesimp>
+    <Spanish>Desactivar marcadores avanzados:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_DISABLEMARKERS_COMMENT">
     <English>Disable persistent advanced Markers.</English>
     <Chinesesimp>禁用持久的高级标记。</Chinesesimp>
+    <Spanish>Desactiva los marcadores avanzados persistentes.</Spanish>
 </Key>
 <Key ID="STR_ALiVE_PAUSEMODULES">
     <English>Auto Pause:</English>
     <Chinesesimp>自动暂停:</Chinesesimp>
+    <Spanish>Pausa automática:</Spanish>
 </Key>
 <Key ID="STR_ALiVE_PAUSEMODULES_COMMENT">
     <English>Auto pauses vAI, AI Commander, CQB and Amb Civs if no players are on server.</English>
     <Chinesesimp>当没有玩家存在时,将自动暂停vAI、AI指挥官、CQB和Amb Civs。</Chinesesimp>
+    <Spanish>Pausa automáticamente la IA virtual, el Comandante IA, CQB y los civiles ambientales si no hay jugadores en el servidor.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_DISABLEADMINACTIONS">
     <English>Disable Admin Actions:</English>
     <Chinesesimp>禁用管理动作(Actions):</Chinesesimp>
+    <Spanish>Desactivar acciones de administrador:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_DISABLEADMINACTIONS_COMMENT">
     <English>Disable the ALiVE Admin Action functions.</English>
     <Chinesesimp>禁用ALiVE管理动作功能。</Chinesesimp>
+    <Spanish>Desactiva las funciones de acciones de administrador de ALiVE.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_DISABLEPLAYERLOG">
     <English>Disable Player Logistics:</English>
     <Chinesesimp>禁用玩家后勤:</Chinesesimp>
+    <Spanish>Desactivar logística de jugador:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_DISABLEPLAYERLOG_COMMENT">
     <English>Disable player logistics, such as pickup and move crates, objects etc.</English>
     <Chinesesimp>禁用玩家后勤,如拾取和移动板条箱,物品等。</Chinesesimp>
+    <Spanish>Desactiva la logística de jugador, como recoger y mover cajas, objetos, etc.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_REQUIRES_ALIVE_AI_DISTRIBUTION">
     <English>AI Distribution:</English>
     <Chinesesimp>AI智能分布:</Chinesesimp>
+    <Spanish>Distribución de IA:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_REQUIRES_ALIVE_AI_DISTRIBUTION_COMMENT">
     <English>Activates dynamic AI distribution of all AI to any available headless clients.</English>
     <Chinesesimp>激活动态AI分布,对于所有AI到任何可用的无头客户端。</Chinesesimp>
+    <Spanish>Activa la distribución dinámica de toda la IA entre los headless clients disponibles.</Spanish>
 </Key>
 <Key ID="STR_ALiVE_TABLET_MODEL">
     <English>ALiVE Tablet Model</English>
     <Chinesesimp>ALiVE 平板模型</Chinesesimp>
+    <Spanish>Modelo de tableta ALiVE</Spanish>
 </Key>
 <Key ID="STR_ALiVE_TABLET_MODEL_COMMENT">
     <English>Model used for the ALiVE Tablet Background.</English>
     <Chinesesimp>用于ALiVE平板的背景。</Chinesesimp>
+    <Spanish>Modelo usado como fondo de la tableta ALiVE.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_REQUIRES_USAGE">
     <English>Simply place ALiVE (Required) in the editor and choose the settings as desired. Do not sync it to anything.</English>
     <Chinesesimp>只需在编辑器中放置ALiVE (必需)并根据需要选择设置。不要将它同步到任何东西。</Chinesesimp>
+    <Spanish>Simplemente coloca ALiVE (Requerido) en el editor y elige los ajustes que desees. No lo sincronices con nada.</Spanish>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_MOD_LAUNCHER_ACTION">

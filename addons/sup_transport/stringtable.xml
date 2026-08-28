@@ -5,10 +5,12 @@
 <Key ID="STR_ALIVE_TRANSPORT">
     <English>Player Combat Support (Transport)</English>
     <Chinesesimp>玩家战斗支援(运输)</Chinesesimp>
+    <Spanish>Apoyo de combate para jugadores (transporte)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_TRANSPORT_COMMENT">
     <English>Transport Module for ALiVE Combat Support</English>
     <Chinesesimp>用于ALiVE战斗支援的运输模块</Chinesesimp>
+    <Spanish>Módulo de transporte para el apoyo de combate de ALiVE</Spanish>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_TRANSPORT_USAGE">
@@ -23,14 +25,17 @@
 <Key ID="STR_ALIVE_TRANSPORT_CALLSIGN">
     <English>Callsign</English>
     <Chinesesimp>呼号</Chinesesimp>
+    <Spanish>Indicativo</Spanish>
 </Key>
 <Key ID="STR_ALIVE_TRANSPORT_CALLSIGN_DESC">
     <English>Enter the Callsign, ensure that it is unique</English>
     <Chinesesimp>输入呼号,确保它是唯一的</Chinesesimp>
+    <Spanish>Introduce el indicativo; asegúrate de que sea único</Spanish>
 </Key>
 <Key ID="STR_ALIVE_TRANSPORT_TYPE">
     <English>Transport Vehicle Type</English>
     <Chinesesimp>运输车辆类型</Chinesesimp>
+    <Spanish>Tipo de vehículo de transporte</Spanish>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_TRANSPORT_TYPE_DESC">
@@ -85,6 +90,7 @@
 <Key ID="STR_ALIVE_TRANSPORT_CODE">
     <English>Code</English>
     <Chinesesimp>代码</Chinesesimp>
+    <Spanish>Código</Spanish>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_TRANSPORT_CODE_DESC">
@@ -99,6 +105,7 @@
 <Key ID="STR_ALIVE_TRANSPORT_SLINGLOADING">
     <English>Slingloading</English>
     <Chinesesimp>绳索吊装</Chinesesimp>
+    <Spanish>Carga suspendida</Spanish>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_TRANSPORT_SLINGLOADING_DESC">

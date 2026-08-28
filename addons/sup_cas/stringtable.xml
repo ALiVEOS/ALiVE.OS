@@ -5,10 +5,12 @@
 <Key ID="STR_ALIVE_CAS">
     <English>Player Combat Support (CAS)</English>
     <Chinesesimp>玩家战斗支援 (CAS)</Chinesesimp>
+    <Spanish>Apoyo de combate para jugadores (CAS)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_CAS_COMMENT">
     <English>CAS Module for ALiVE Combat Support</English>
     <Chinesesimp>CAS模块用于实时战斗支援</Chinesesimp>
+    <Spanish>Módulo CAS para el apoyo de combate de ALiVE</Spanish>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CAS_USAGE">
@@ -23,14 +25,17 @@
 <Key ID="STR_ALIVE_CAS_CALLSIGN">
     <English>Callsign</English>
     <Chinesesimp>呼号</Chinesesimp>
+    <Spanish>Indicativo</Spanish>
 </Key>
 <Key ID="STR_ALIVE_CAS_CALLSIGN_DESC">
     <English>Enter the Callsign, ensure that it is unique</English>
     <Chinesesimp>输入呼号，确保它是唯一的</Chinesesimp>
+    <Spanish>Introduce el indicativo; asegúrate de que sea único</Spanish>
 </Key>
 <Key ID="STR_ALIVE_CAS_TYPE">
     <English>CAS Vehicle Type</English>
     <Chinesesimp>CAS 载具类型</Chinesesimp>
+    <Spanish>Tipo de vehículo CAS</Spanish>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CAS_TYPE_DESC">
@@ -85,6 +90,7 @@
 <Key ID="STR_ALIVE_CAS_CODE">
     <English>Code</English>
     <Chinesesimp>代码</Chinesesimp>
+    <Spanish>Código</Spanish>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CAS_CODE_DESC">

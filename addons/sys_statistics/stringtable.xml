@@ -5,26 +5,32 @@
 <Key ID="STR_ALIVE_STATISTICS">
     <English>Statistics</English>
     <Chinesesimp>统计数据</Chinesesimp>
+    <Spanish>Estadísticas</Spanish>
 </Key>
 <Key ID="STR_ALIVE_DISABLE_STATISTICS">
     <English>Disable Statistics</English>
     <Chinesesimp>禁用统计数据</Chinesesimp>
+    <Spanish>Desactivar estadísticas</Spanish>
 </Key>
 <Key ID="STR_ALIVE_STATISTICS_COMMENT">
     <English>Disable MP Statistics recorded to ALiVE web service</English>
     <Chinesesimp>禁用记录到ALiVE web服务的MP统计信息</Chinesesimp>
+    <Spanish>Desactiva el registro de estadísticas multijugador en el servicio web de ALiVE</Spanish>
 </Key>
 <Key ID="STR_ALIVE_STATISTICS_ENABLE">
     <English>Enable Statistics</English>
     <Chinesesimp>启用统计数据</Chinesesimp>
+    <Spanish>Activar estadísticas</Spanish>
 </Key>
 <Key ID="STR_ALIVE_STATISTICS_ENABLE_COMMENT">
     <English>Enable/Disable events/statistics recording to the ALiVE web service</English>
     <Chinesesimp>启用/禁用ALiVE web服务的事件/统计记录</Chinesesimp>
+    <Spanish>Activa o desactiva el registro de eventos y estadísticas en el servicio web de ALiVE</Spanish>
 </Key>
 <Key ID="STR_ALIVE_STATISTICS_ERROR1">
     <English>Only one statistics module can be used</English>
     <Chinesesimp>只能使用一个统计模块</Chinesesimp>
+    <Spanish>Solo se puede usar un módulo de estadísticas</Spanish>
 </Key>
 
 </Container></Package></Project>

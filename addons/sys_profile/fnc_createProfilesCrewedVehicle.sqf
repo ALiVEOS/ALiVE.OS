@@ -86,7 +86,11 @@ private ["_entityID","_side","_profileEntity","_classes","_positions","_damages"
 _profileEntity = [nil, "create"] call ALIVE_fnc_profileEntity;
 [_profileEntity, "init"] call ALIVE_fnc_profileEntity;
 [_profileEntity, "profileID", format["%1-%2",_prefix,_entityID]] call ALIVE_fnc_profileEntity;
-[_profileEntity, "position", _position] call ALIVE_fnc_profileEntity;
+// Each profile gets its own copy. The crew spawn path deliberately flattens the height
+// of the position it holds, to stop a passenger falling to its death, and with one
+// shared array that also flattened the vehicle position. A module placed on a roof
+// then created its vehicle on the terrain underneath, inside the building (#1020).
+[_profileEntity, "position", +_position] call ALIVE_fnc_profileEntity;
 [_profileEntity, "side", _side] call ALIVE_fnc_profileEntity;
 [_profileEntity, "faction", _faction] call ALIVE_fnc_profileEntity;
 [_profileEntity, "busy", _busy] call ALIVE_fnc_profileEntity;
@@ -94,7 +98,7 @@ _profileEntity = [nil, "create"] call ALIVE_fnc_profileEntity;
 [_profileEntity, "aiBehaviour", "SAFE"] call ALIVE_fnc_profileEntity;
 
 if!(_spawnGoodPosition) then {
-    [_profileEntity, "despawnPosition", _position] call ALIVE_fnc_profileEntity;
+    [_profileEntity, "despawnPosition", +_position] call ALIVE_fnc_profileEntity;
 };
 
 _groupProfiles pushback _profileEntity;
@@ -110,7 +114,7 @@ _profileVehicle = [nil, "create"] call ALIVE_fnc_profileVehicle;
 [_profileVehicle, "init"] call ALIVE_fnc_profileVehicle;
 [_profileVehicle, "profileID", format["%1-%2",_prefix,_vehicleID]] call ALIVE_fnc_profileVehicle;
 [_profileVehicle, "vehicleClass", _vehicleClass] call ALIVE_fnc_profileVehicle;
-[_profileVehicle, "position", _position] call ALIVE_fnc_profileVehicle;
+[_profileVehicle, "position", +_position] call ALIVE_fnc_profileVehicle;
 [_profileVehicle, "direction", _direction] call ALIVE_fnc_profileVehicle;
 [_profileVehicle, "side", _side] call ALIVE_fnc_profileVehicle;
 [_profileVehicle, "faction", _faction] call ALIVE_fnc_profileVehicle;
@@ -140,7 +144,7 @@ if(_vehicleKind == "Plane" || _vehicleKind == "Helicopter") then {
 };*/
 
 if!(_spawnGoodPosition) then {
-    [_profileVehicle, "despawnPosition", _position] call ALIVE_fnc_profileVehicle;
+    [_profileVehicle, "despawnPosition", +_position] call ALIVE_fnc_profileVehicle;
 };
 
 if(_engineOn) then {

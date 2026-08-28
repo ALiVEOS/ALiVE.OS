@@ -53,7 +53,7 @@ if (_args isEqualType []) then {
     if !(_cbaRadius isEqualType 0) then { _cbaRadius = 300; };
     _profileType = _args param [3, ""];
     _profileCount = _args param [4, 0];
-    _guardPatrolPercentage = _args param [5, 50];
+    _guardPatrolPercentage = _args param [5, 50, [0]];
     // Patrol disposition for the garrison building-patrol leg. Defaults
     // preserve every existing caller (incl. roadblocks) that pass a
     // 6-element args array.
@@ -83,7 +83,14 @@ if (count _waypoints > 0) then {
 	[_profile, "clearWaypoints"] call ALiVE_fnc_profileEntity;
 };
 
-[_profile,_radius/3] call ALiVE_fnc_ambientMovement;
+// Garrison Building Patrol set to None means the guard should hold its post, so it is not
+// given anywhere to wander either. Until now these waypoints were laid whatever the module
+// said, and a garrison told not to patrol still walked the objective, both while virtual and
+// once spawned. Callers that do not pass the setting keep the default of 50 and are
+// unaffected, and the roadblock and reserve paths pass 1 deliberately.
+if (_guardPatrolPercentage > 0) then {
+    [_profile,_radius/3] call ALiVE_fnc_ambientMovement;
+};
 
 waituntil {
     sleep 0.5;

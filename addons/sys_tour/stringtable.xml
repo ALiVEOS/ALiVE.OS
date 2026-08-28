@@ -5,17 +5,21 @@
 <Key ID="STR_ALIVE_TOUR">
     <English>ALiVE Tour</English>
     <Chinesesimp>ALiVE Tour(观战)</Chinesesimp> 
+    <Spanish>Visita guiada de ALiVE</Spanish>
 </Key>
 <Key ID="STR_ALIVE_TOUR_COMMENT">
     <English>Drop on a mission to enable a tour for players</English>
     <Chinesesimp>进入到一个任务中,以供玩家观战</Chinesesimp>
+    <Spanish>Colócalo en una misión para ofrecer una visita guiada a los jugadores</Spanish>
 </Key>
 <Key ID="STR_ALIVE_TOUR_DEBUG">
     <English>Enable Debug:</English>
     <Chinesesimp>启用调试：</Chinesesimp> 
+    <Spanish>Activar depuración:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_TOUR_DEBUG_COMMENT">
     <English>Enables Tour Module Debug</English>
     <Chinesesimp>启用Tour模块调试</Chinesesimp>
+    <Spanish>Activa la depuración del módulo de visita guiada</Spanish>
 </Key>
 </Container></Package></Project>

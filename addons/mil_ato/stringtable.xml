@@ -5,211 +5,271 @@
 <Key ID="STR_ALIVE_ATO">
     <English>Military Air Component Commander</English>
     <Chinesesimp>军事空军部队指挥官</Chinesesimp>
+    <Spanish>Comandante del componente aéreo militar</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_COMMENT">
     <English>Joint Forces Air Component Commander</English>
     <Chinesesimp>联合部队空中部队指挥官</Chinesesimp>
+    <Spanish>Comandante del componente aéreo de fuerzas conjuntas</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_DEBUG">
     <English>Enable Debug:</English>
     <Chinesesimp>启用调试</Chinesesimp>
+    <Spanish>Activar depuración:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_DEBUG_COMMENT">
     <English>Verbose logging to the RPT file, plus map markers at the HQ, field HQ and hangar positions this module picks. Those markers are global - every player sees them, not just admins - and are never removed, so leave this off for live missions.</English>
+    <Spanish>Registro detallado en el archivo RPT, además de marcadores en el mapa en las posiciones del HQ, el HQ de campaña y el hangar que elija este módulo. Esos marcadores son globales (los ve todo el mundo, no solo los administradores) y no se eliminan nunca, así que déjalo desactivado en misiones reales.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_PERSISTENT">
     <English>Persistent:</English>
     <Chinesesimp>持久的</Chinesesimp>
+    <Spanish>Persistente:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_PERSISTENT_COMMENT">
     <English>Saves this module's aircraft roster - which aircraft exist and which airspace each belongs to - to the ALiVE database between sessions. Turning it on for any one MACC saves the roster for all of them. The HQ, runway overrides and any tasking in progress are never saved and are worked out fresh on every load.</English>
+    <Spanish>Guarda en la base de datos de ALiVE la lista de aeronaves de este módulo (qué aeronaves existen y a qué espacio aéreo pertenece cada una) entre sesiones. Activarlo en un solo MACC guarda la lista de todos. El HQ, las anulaciones de pista y cualquier asignación en curso no se guardan nunca y se recalculan en cada carga.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_BROADCASTONRADIO">
     <English>Radio Messages:</English>
     <Chinesesimp>无线电信息</Chinesesimp>
+    <Spanish>Mensajes de radio:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_BROADCASTONRADIO_COMMENT">
     <English>HQ radio traffic, heard only by players on this module's own side: mission acknowledged or denied, aircraft lost, and base compromised. No silences all of it except the one-off 'forward airbase established' call at mission start, which always plays.</English>
+    <Spanish>Tráfico de radio del HQ, oído solo por los jugadores del bando de este módulo: misión aceptada o denegada, aeronave perdida y base comprometida. «No» lo silencia todo salvo la llamada única de «base aérea avanzada establecida» al inicio de la misión, que siempre suena.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_DRONE_TYPES">
     <English>Drone Types:</English>
+    <Spanish>Tipos de dron:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_DRONE_TYPES_COMMENT">
     <English>Tick the drones this commander may place. Ctrl-click to select more than one. Leave everything unticked to use whatever drones the faction itself lists, which is the usual choice. Worth setting when a faction has none of its own, which is common even where the mod provides them. The list covers every drone the loaded content offers.</English>
+    <Spanish>Marca los drones que este comandante puede colocar. Ctrl+clic para seleccionar más de uno. Deja todo sin marcar para usar los drones que indique la propia facción, que es lo habitual. Conviene ajustarlo cuando una facción no tiene ninguno propio, algo frecuente incluso cuando el mod los proporciona. La lista incluye todos los drones que ofrece el contenido cargado.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_PLACE_DRONES">
     <English>Place Drones:</English>
+    <Spanish>Colocar drones:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_PLACE_DRONES_COMMENT">
     <English>Places one of the faction's drones at the base at mission start, on a helipad if there is one. Separate from Place Air Assets, so an air component can consist of drones alone. Unarmed reconnaissance drones count - they are the ones most worth having. Does nothing if Use Drones is set to No.</English>
+    <Spanish>Coloca uno de los drones de la facción en la base al inicio de la misión, en un helipuerto si lo hay. Es independiente de «Colocar medios aéreos», así que un componente aéreo puede estar formado solo por drones. Los drones de reconocimiento desarmados cuentan: son los más útiles. No hace nada si «Usar drones» está en No.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_USE_UAVS">
     <English>Use Drones:</English>
+    <Spanish>Usar drones:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_USE_UAVS_COMMENT">
     <English>Whether this commander may fly unmanned aircraft. They are adopted from the airspace like any other aircraft and need no aircrew, so a reconnaissance drone can be tasked while every pilot is busy. Set to No and drones in this airspace are left alone entirely, for anyone else to use.</English>
+    <Spanish>Si este comandante puede operar aeronaves no tripuladas. Se adoptan del espacio aéreo como cualquier otra aeronave y no necesitan tripulación, así que se puede asignar un dron de reconocimiento aunque todos los pilotos estén ocupados. Con No, los drones de este espacio aéreo se dejan intactos para que los use cualquier otro.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_SORTIE_DURATION">
     <English>Sortie Duration:</English>
+    <Spanish>Duración de la salida:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_SORTIE_DURATION_COMMENT">
     <English>Minutes a sortie is allowed to run before the aircraft is recalled, in whole minutes. This also sets how long an aircraft waits for its pilot and how long it loiters on task. Leave blank to use whatever the requesting commander asks for, which is usually 10.</English>
+    <Spanish>Minutos que puede durar una salida antes de que se llame de vuelta a la aeronave, en minutos enteros. También define cuánto espera una aeronave a su piloto y cuánto permanece en órbita sobre el objetivo. Déjalo en blanco para usar lo que pida el comandante solicitante, que suele ser 10.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_MIN_ASSETS">
     <English>Minimum Aircraft For Offensive Missions:</English>
+    <Spanish>Aeronaves mínimas para misiones ofensivas:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_MIN_ASSETS_COMMENT">
     <English>Once this many aircraft or fewer remain, the commander stops flying offensive missions and keeps only Combat Air Patrol and Defensive Counter-Air until numbers recover. Leave blank for the default, which is 4 aircraft when the roster was restored from a save and 2 otherwise.</English>
+    <Spanish>Cuando queden estas aeronaves o menos, el comandante deja de volar misiones ofensivas y mantiene solo patrulla aérea de combate y contraofensiva aérea defensiva hasta que se recuperen los efectivos. Déjalo en blanco para el valor por defecto: 4 aeronaves si la lista se restauró de un guardado y 2 en caso contrario.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_MAX_CONCURRENT_SORTIES">
     <English>Maximum Concurrent Offensive Sorties:</English>
+    <Spanish>Máximo de salidas ofensivas simultáneas:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_MAX_CONCURRENT_SORTIES_COMMENT">
     <English>How many offensive missions (Strike, Reconnaissance, CAS, OCA, SEAD) this commander may have running at once. Each offensive mission keeps its target present in the world until the mission ends, so this limit also bounds how many of those targets exist at any time. Requests beyond the limit are turned down and the requesting commander simply asks again later. Combat Air Patrol and Defensive Counter-Air are never limited. Leave blank for no limit.</English>
+    <Spanish>Cuántas misiones ofensivas (ataque, reconocimiento, CAS, OCA, SEAD) puede tener este comandante en curso a la vez. Cada misión ofensiva mantiene su objetivo presente en el mundo hasta que termina, así que este límite también acota cuántos de esos objetivos existen en cada momento. Las peticiones que superen el límite se rechazan y el comandante solicitante simplemente vuelve a pedirlo más tarde. La patrulla aérea de combate y la contraofensiva aérea defensiva no se limitan nunca. Déjalo en blanco para no poner límite.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_PILOTBUILDING">
     <English>Pilot Ready Room:</English>
     <Chinesesimp>飞行员准备室</Chinesesimp>
+    <Spanish>Sala de pilotos:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_PILOTBUILDING_COMMENT">
     <English>Classname of a building within 50 m of this module where replacement aircrew appear, for example Land_Cargo_House_V3_F. Leave blank to pick a nearby building automatically. A classname that matches nothing within 50 m puts the crew out in the open at the module's own position, which is worse than leaving it blank.</English>
+    <Spanish>Classname de un edificio situado a menos de 50 m de este módulo donde aparecerá la tripulación de reemplazo, por ejemplo Land_Cargo_House_V3_F. Déjalo en blanco para elegir automáticamente un edificio cercano. Un classname que no coincida con nada en 50 m deja a la tripulación a la intemperie en la posición del módulo, lo cual es peor que dejarlo en blanco.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_RUNWAYSTARTPOS">
     <English>Runway start position:</English>
     <Chinesesimp>跑道起始位置:</Chinesesimp>
+    <Spanish>Posición inicial de la pista:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_RUNWAYSTARTPOS_COMMENT">
     <English>Advanced override. One end of the runway centreline, format [x,y,z]. Stops other ALiVE systems placing compositions on the runway - it does not affect where aircraft take off or land. Leave blank: ALiVE detects real runways and taxiways on its own.</English>
+    <Spanish>Anulación avanzada. Un extremo del eje de pista, en formato [x,y,z]. Impide que otros sistemas de ALiVE coloquen composiciones sobre la pista; no afecta a dónde despegan o aterrizan las aeronaves. Déjalo en blanco: ALiVE detecta por sí solo las pistas y calles de rodaje reales.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_RUNWAYENDPOS">
     <English>Runway end position:</English>
     <Chinesesimp>跑道终点位置:</Chinesesimp>
+    <Spanish>Posición final de la pista:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_RUNWAYENDPOS_COMMENT">
     <English>Advanced override. The other end of the runway centreline, format [x,y,z]. Pairs with Runway start position - see that tooltip. Only drawn on the map when Debug is on.</English>
+    <Spanish>Anulación avanzada. El otro extremo del eje de pista, en formato [x,y,z]. Va emparejado con «Posición inicial de la pista»; consulta esa descripción. Solo se dibuja en el mapa con la depuración activada.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_RUNWAYWIDTH">
     <English>Runway width:</English>
     <Chinesesimp>跑道宽度:</Chinesesimp>
+    <Spanish>Anchura de la pista:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_RUNWAYWIDTH_COMMENT">
     <English>Advanced override. Width in metres of the no-placement zone around the centreline above. Leave blank if start and end position are blank. If those are set and this is not, a 24 m zone is used - the same as a vanilla runway.</English>
+    <Spanish>Anulación avanzada. Anchura en metros de la zona sin colocación alrededor del eje anterior. Déjalo en blanco si las posiciones inicial y final están en blanco. Si esas sí están definidas y esta no, se usa una zona de 24 m, la misma que una pista original del juego.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_FACTION">
     <English>Faction:</English>
     <Chinesesimp>阵营</Chinesesimp>
+    <Spanish>Facción:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_FACTION_COMMENT">
     <English>Seeds this module's aircraft list and permanently fixes its side, e.g. OPF_F. Factions from synced AI Commanders are added automatically, but only from Commanders whose side is friendly to this one; the rest are dropped without warning. An unrecognised classname does not error, it falls back to EAST. A synced Faction Compiler overrides this.</English>
+    <Spanish>Inicializa la lista de aeronaves de este módulo y fija de forma permanente su bando, p. ej. OPF_F. Las facciones de los Comandantes IA sincronizados se añaden automáticamente, pero solo las de Comandantes cuyo bando sea aliado de este; el resto se descartan sin aviso. Un classname no reconocido no da error, sino que recurre a EAST. Un Compilador de facciones sincronizado tiene prioridad sobre esto.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_TYPES">
     <English>Available ATOs:</English>
     <Chinesesimp>可用的ATO</Chinesesimp>
+    <Spanish>ATO disponibles:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_TYPES_COMMENT">
     <English>Tick the air missions this commander may fly. Ctrl-click to select more than one. Suppression of Enemy Air Defences only detects anti-air sites - turn on Generate SEAD Tasks to have anything done about them. When few aircraft remain, the list is narrowed to Combat Air Patrol and Defensive Counter-Air on its own until numbers recover.</English>
+    <Spanish>Marca las misiones aéreas que puede volar este comandante. Ctrl+clic para seleccionar más de una. La supresión de defensas antiaéreas enemigas solo detecta emplazamientos antiaéreos; activa «Generar tareas SEAD» para que se haga algo con ellos. Cuando quedan pocas aeronaves, la lista se reduce solo a patrulla aérea de combate y contraofensiva aérea defensiva hasta que se recuperen los efectivos.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_AIRSPACE">
     <English>Airspace Markers:</English>
     <Chinesesimp>空域标记</Chinesesimp>
+    <Spanish>Marcadores de espacio aéreo:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_AIRSPACE_COMMENT">
     <English>Marker names bounding this module's airspace, comma-separated, no spaces or quotes, e.g. marker1,marker2. Aircraft are never synced to this module: any armed aircraft of a managed faction already sitting inside one of these markers is adopted. Leave blank for the whole map. If none of the names match a real marker the module silently fails to start, so check the spelling.</English>
+    <Spanish>Nombres de los marcadores que delimitan el espacio aéreo de este módulo, separados por comas, sin espacios ni comillas, p. ej. marker1,marker2. Las aeronaves nunca se sincronizan con este módulo: se adopta cualquier aeronave armada de una facción gestionada que ya se encuentre dentro de uno de estos marcadores. Déjalo en blanco para todo el mapa. Si ninguno de los nombres corresponde a un marcador real, el módulo no arranca y no avisa, así que revisa la ortografía.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_USAGE">
     <English>Place a MACC module to provide Combat Air Patrol and Defensive Counter-Air over your airspace. Sync it to an AI Commander module to enable Recce, Strike, Close Air Support and OCA requests. A Military AI Commander module must be present somewhere in the mission or MACC will not start.</English>
+    <Spanish>Coloca un módulo MACC para proporcionar patrulla aérea de combate y contraofensiva aérea defensiva sobre tu espacio aéreo. Sincronízalo con un módulo de Comandante IA para habilitar peticiones de reconocimiento, ataque, apoyo aéreo cercano y OCA. Debe haber un módulo de Comandante IA militar en algún punto de la misión o MACC no arrancará.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_CREATE_HQ">
     <English>Build HQ If Needed:</English>
+    <Spanish>Construir HQ si hace falta:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_CREATE_HQ_COMMENT">
     <English>MACC always takes a military or headquarters building within 750 m of the module as its command post. This only decides what happens when there is none: Yes spawns a garrisoned field HQ composition, No falls back to a building at the nearest airbase with no garrison. A carrier-based MACC always uses the fallback. Either way air tasking stops while the enemy holds the ground around the HQ, and stops for good if it is destroyed.</English>
+    <Spanish>MACC siempre toma como puesto de mando un edificio militar o de cuartel general situado a menos de 750 m del módulo. Esto solo decide qué pasa cuando no hay ninguno: «Sí» genera una composición de HQ de campaña con guarnición; «No» recurre a un edificio de la base aérea más cercana sin guarnición. Un MACC embarcado siempre usa la alternativa. En cualquier caso, la asignación aérea se detiene mientras el enemigo domine el terreno alrededor del HQ, y se detiene definitivamente si este es destruido.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_PLACE_AIR">
     <English>Place Air Assets:</English>
     <Chinesesimp>放置飞行载具</Chinesesimp>
+    <Spanish>Colocar medios aéreos:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_PLACE_AIR_COMMENT">
     <English>If fewer than two armed aircraft start inside this module's airspace, extra ones are placed at the nearest airbase or helipad. Startup only - replacing later losses is what Resupply does. Has no effect on a carrier. Beware: with this off and no armed aircraft at all in the airspace, MACC never starts and nothing is tasked for the whole mission.</English>
+    <Spanish>Si al inicio hay menos de dos aeronaves armadas dentro del espacio aéreo de este módulo, se colocan más en la base aérea o helipuerto más cercano. Solo al arrancar; reponer pérdidas posteriores es cosa del Reabastecimiento. No tiene efecto en un portaaviones. Atención: con esto desactivado y sin ninguna aeronave armada en el espacio aéreo, MACC no arranca nunca y no se asigna nada en toda la misión.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_GENERATE_TASKS">
     <English>Generate Player Tasks:</English>
     <Chinesesimp>生成玩家任务</Chinesesimp>
+    <Spanish>Generar tareas de jugador:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_GENERATE_TASKS_COMMENT">
     <English>Hands air missions to players as tasks, using the C2ISTAR module: search and rescue for downed aircrew, a backup interception call when several hostiles appear, and any mission with no free AI aircraft - that last only when a player is already flying the right type. AI tasking is unaffected either way; with No these are simply dropped, not held for later.</English>
+    <Spanish>Entrega misiones aéreas a los jugadores como tareas, usando el módulo C2ISTAR: búsqueda y rescate de tripulaciones derribadas, una llamada de interceptación de respaldo cuando aparecen varios hostiles, y cualquier misión sin aeronaves de IA libres (esto último solo si un jugador ya está volando el tipo adecuado). La asignación a la IA no se ve afectada en ningún caso; con «No» estas simplemente se descartan, no se guardan para después.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_GENERATE_SEADTASKS">
     <English>Generate SEAD Tasks:</English>
+    <Spanish>Generar tareas SEAD:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_GENERATE_SEADTASKS_COMMENT">
     <English>MACC does not send AI aircraft against detected anti-air sites. This only creates a player Air Tasking Order for them, and needs the C2ISTAR module. Leave this off and detected anti-air is recorded but never engaged.</English>
+    <Spanish>MACC no envía aeronaves de IA contra los emplazamientos antiaéreos detectados. Esto solo crea una orden de misión aérea para jugadores, y requiere el módulo C2ISTAR. Si lo dejas desactivado, la defensa antiaérea detectada se registra pero nunca se ataca.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_RESUPPLY">
     <English>Resupply:</English>
     <Chinesesimp>重新补给</Chinesesimp>
+    <Spanish>Reabastecimiento:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_RESUPPLY_COMMENT">
     <English>Replaces lost aircraft. If a Logistics Commander for the same faction is anywhere in the mission it flies the replacement in; otherwise MACC creates one itself at the original parking spot. Either way the new aircraft sits out a few minutes of maintenance before it can be tasked. With No, losses are permanent and the roster only ever shrinks.</English>
+    <Spanish>Repone las aeronaves perdidas. Si hay un Comandante de logística de la misma facción en cualquier punto de la misión, este trae el reemplazo por aire; si no, MACC lo crea él mismo en la plaza de estacionamiento original. En ambos casos la nueva aeronave pasa unos minutos en mantenimiento antes de poder ser asignada. Con «No», las pérdidas son permanentes y la lista solo se reduce.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_NOT_ESTABLISHED">
     <English>All callsigns, this is %1, %2 forward airbase has not been established. No air assets available for tasking. Out.</English>
     <Chinesesimp>所有呼号,这是%1,%2前方空军基地尚未建立。没有可用于任务的飞行载具。完毕。</Chinesesimp>
+    <Spanish>A todos los indicativos, aquí %1, la base aérea avanzada %2 no ha sido establecida. No hay medios aéreos disponibles para asignación. Corto.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_ESTABLISHED">
     <English>All callsigns, this is %1, %2 forward airbase established at grid %3, Air Tasking Orders to follow. Out.</English>
     <Chinesesimp>所有呼号,这是%1,%2前方空军基地,在网格%3建立,空中任务命令如下。完毕。</Chinesesimp>
+    <Spanish>A todos los indicativos, aquí %1, base aérea avanzada %2 establecida en la cuadrícula %3, a la espera de órdenes de misión aérea. Corto.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_UNDER_ATTACK">
     <English>All callsigns, this is %1, %2 forward airbase at grid %3 is under attack by enemy forces, request immediate support. Out.</English>
     <Chinesesimp>所有呼号,这里是%1,位于网格%3的%2前方空军基地正受到敌军的攻击,请求立即支援。完毕。</Chinesesimp>
+    <Spanish>A todos los indicativos, aquí %1, la base aérea avanzada %2 en la cuadrícula %3 está siendo atacada por fuerzas enemigas, solicitamos apoyo inmediato. Corto.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_OVERRUN">
     <English>All callsigns, this is %1, %2 forward airbase at grid %3 is compromised. Relocating to alternate. Air combat operations unavailable until further notice. Out.</English>
     <Chinesesimp>所有呼号,这是%1,位于网格%3的%2前方空军基地已被攻破。重新定位到备用位置。空战行动在另行通知前不可用。完毕。</Chinesesimp>
+    <Spanish>A todos los indicativos, aquí %1, la base aérea avanzada %2 en la cuadrícula %3 está comprometida. Nos reubicamos a la alternativa. Operaciones aéreas de combate no disponibles hasta nuevo aviso. Corto.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_REQUEST_ACKNOWLEDGED">
     <English>All callsigns, this is %1, %2 has requested %3 at grid %4. Air Tasking Order to follow. Out.</English>
     <Chinesesimp>所有呼号，这是%1, %2 已在网格 %4 请求 %3。执行空中任务命令。完毕。</Chinesesimp>
+    <Spanish>A todos los indicativos, aquí %1, %2 ha solicitado %3 en la cuadrícula %4. A la espera de la orden de misión aérea. Corto.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_UNAVAILABLE">
     <English>All callsigns, this is %1, aircraft unavailable, air combat operations suspended. Requesting replen. Out.</English>
     <Chinesesimp>所有呼号，这里是 %1 ,飞机无法使用,空战行动暂停。请求重新规划。完毕。</Chinesesimp>
+    <Spanish>A todos los indicativos, aquí %1, no hay aeronaves disponibles, operaciones aéreas de combate suspendidas. Solicitando reposición. Corto.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_REQUEST_DENIED">
     <English>All callsigns, this is %1, request for %2 at grid %3 denied. Aircraft not available. Out.</English>
     <Chinesesimp>所有呼号,这是%1,对网格%3上的%2的请求被拒绝。飞机不可用。完毕。</Chinesesimp>
+    <Spanish>A todos los indicativos, aquí %1, petición de %2 en la cuadrícula %3 denegada. No hay aeronaves disponibles. Corto.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_START">
     <English>All callsigns, this is %1, scrambling %2 on ATO %3 at grid %4. Out.</English>
     <Chinesesimp>所有呼号,这是 %1 ,正在对网格 %4 处的ATO %3 上的 %2 进行抢夺。完毕。</Chinesesimp>
+    <Spanish>A todos los indicativos, aquí %1, despegue inmediato de %2 en la ATO %3, cuadrícula %4. Corto.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_AIRCRAFT_LOST">
     <English>All callsigns, this is %1, we've lost radar contact with a %2 on %3. Out.</English>
     <Chinesesimp>所有呼号，这里是%1,我们与 %3 上的 %2 失去雷达联系。完毕。</Chinesesimp>
+    <Spanish>A todos los indicativos, aquí %1, hemos perdido el contacto por radar con un %2 en %3. Corto.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_ON_STATION">
     <English>All callsigns, this is %1, %2 on station at grid %3. Commencing %4 now. Out.</English>
     <Chinesesimp>所有呼号,我是%1,%2,位于网格%3上的电台。现在开始%4。完毕。</Chinesesimp>
+    <Spanish>A todos los indicativos, aquí %1, %2 en posición en la cuadrícula %3. Iniciando %4 ahora. Corto.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_RETURN">
     <English>on %1. Air tasking complete, I am RTB. Out.</English>
     <Chinesesimp>%1。空中任务完成,这里是RTB。完毕</Chinesesimp>
+    <Spanish>en %1. Misión aérea completada, regreso a base. Corto.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_RETURN_FUEL">
     <English>Bingo fuel, I am RTB. Out.</English>
     <Chinesesimp>油量已达最低限度,这里RTB。完毕。</Chinesesimp>
+    <Spanish>Combustible mínimo, regreso a base. Corto.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_RETURN_AMMO">
     <English>Winchester, I am RTB. Out.</English>
     <Chinesesimp>温彻斯特,这里是RTB,完毕。</Chinesesimp>
+    <Spanish>Sin munición, regreso a base. Corto.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_RETURN_DAMAGE">
     <English>We've been hit, critical damage sustained, I am RTB. Out.</English>
     <Chinesesimp>我们被击中了,受到严重伤害,我是RTB。完毕。</Chinesesimp>
+    <Spanish>Nos han alcanzado, daños críticos, regreso a base. Corto.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_MISSION_COMPLETE">
     <English>All callsigns, this is %1, %2 is back at base, %3 mission complete. Out.</English>
     <Chinesesimp>所有呼号,这是 %1 , %2 已返回基地, %3 任务完成。完毕。</Chinesesimp>
+    <Spanish>A todos los indicativos, aquí %1, %2 ha regresado a la base, misión %3 completada. Corto.</Spanish>
 </Key>
 </Container></Package></Project>

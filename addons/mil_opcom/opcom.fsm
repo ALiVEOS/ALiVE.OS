@@ -453,8 +453,10 @@ class FSM
                          "                        if (_debug) then {format [""ALiVE_OPCOM_%1"",[_target,""objectiveID""] call ALiVE_fnc_HashGet] setMarkerColor ""ColorRed""};" \n
                          "" \n
                          "                        if ([_side,[""attacking""]] call ALIVE_fnc_OPCOMgetHighestPrioObjective == _targetId) then {" \n
-                         "                            _targets = [_pos, 300, [_sidesEnemy,""entity""],true] call ALIVE_fnc_getNearProfiles;" \n
-                         "                            [_side,_faction,""CaptureObjective"",_targets,""OPCOM"",true] call ALiVE_fnc_taskRequest;" \n
+                         "                            // Match the radius the capture task verifies with, see fnc_taskCaptureObjective.sqf." \n
+                         "                            _targets = [_pos, (([_target,""size"",150] call AliVE_fnc_HashGet) min 500) max 200, [_sidesEnemy,""entity""],true] call ALIVE_fnc_getNearProfiles;" \n
+                         "                            if (!isNil ""ALiVE_c2istar_taskDiag"" && {ALiVE_c2istar_taskDiag}) then {[""[OPCOM REQ] obj=%1 radius=%2 sides=%3 targets=%4"", _targetId, ((([_target,""size"",150] call AliVE_fnc_HashGet) min 500) max 200), _sidesEnemy, count _targets] call ALiVE_fnc_dump}; // DIAG-STRIP (order rate measurement)" \n
+                         "                            [_side,_faction,""CaptureObjective"",_targets,""OPCOM"",true,_targetId] call ALiVE_fnc_taskRequest;" \n
                          "                        };" \n
                          "" \n
                          "                        //Assist TACOM by sending air recon after TACOMs attack confirmation" \n

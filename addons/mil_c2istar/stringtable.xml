@@ -125,9 +125,11 @@
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_AUTO_PLAYER_TASKS">
     <English>Automatic Player Tasks:</English>
+    <Spanish>Tareas automáticas de jugador:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_AUTO_PLAYER_TASKS_COMMENT">
     <English>Whether players are given tasks they did not ask for. Set to No and nothing arrives unprompted from anywhere in ALiVE: no rescues, air taskings, counter battery, convoy protection or commander orders. Orders a player requests from the tablet still work. Each module keeps its own setting for silencing just that source; this one covers them all, including anything added later. Can also be turned on and off during a mission from the commander menu.</English>
+    <Spanish>Si los jugadores reciben tareas que no han pedido. Con «No» no llega nada sin solicitar desde ninguna parte de ALiVE: ni rescates, ni asignaciones aéreas, ni contrabatería, ni protección de convoyes, ni órdenes del comandante. Las órdenes que un jugador pida desde la tableta siguen funcionando. Cada módulo mantiene su propio ajuste para silenciar solo esa fuente; este los cubre todos, incluidos los que se añadan en el futuro. También se puede activar y desactivar durante la misión desde el menú del comandante.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_AUTOGEN_BLUFOR">
     <English>Auto Task BLU:</English>
@@ -460,21 +462,27 @@
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_SCOM_OPS_ALLOW_PLAYER_OBJECTIVES">
     <English>Allow Player Objectives:</English>
+    <Spanish>Permitir objetivos de jugador:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_SCOM_OPS_ALLOW_PLAYER_OBJECTIVES_COMMENT">
     <English>Allow players to designate, cancel and reprioritise commander objectives from the Operations tablet view</English>
+    <Spanish>Permite a los jugadores designar, cancelar y repriorizar objetivos del comandante desde la vista de Operaciones de la tableta</Spanish>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_SCOM_OPS_OBJECTIVE_COOLDOWN">
     <English>Player Objective Cooldown:</English>
+    <Spanish>Espera entre objetivos de jugador:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_SCOM_OPS_OBJECTIVE_COOLDOWN_COMMENT">
     <English>Seconds a player must wait between designating objectives</English>
+    <Spanish>Segundos que un jugador debe esperar entre designaciones de objetivos</Spanish>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_SCOM_OPS_MAX_PLAYER_OBJECTIVES">
     <English>Max Player Objectives:</English>
+    <Spanish>Máx. objetivos de jugador:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_SCOM_OPS_MAX_PLAYER_OBJECTIVES_COMMENT">
     <English>Maximum simultaneous player-designated objectives per side</English>
+    <Spanish>Número máximo de objetivos designados por jugadores simultáneos por bando</Spanish>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_SCOM_INTEL_LIMIT">

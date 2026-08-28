@@ -314,6 +314,11 @@ switch(_operation) do {
 						private _sideObject = [_side] call ALIVE_fnc_sideTextToObject;
             private _countProfiles = 0;
             private _position = position _logic;
+            // position is measured from the surface underneath, so a module placed on a roof
+            // reports zero and the height is lost before anything is created. Everything
+            // downstream then puts the unit on the terrain, inside the building. Take the
+            // height above terrain instead, which is what the profile system stores.
+            _position set [2, (getPosATL _logic) select 2];
             private _direction =  getDir _logic;
             private _allowPlayerTasking = [_logic, "allowPlayerTasking"] call MAINCLASS;
             private _speVehicleEmpty = [_logic, "speVehicleEmpty"] call MAINCLASS; 

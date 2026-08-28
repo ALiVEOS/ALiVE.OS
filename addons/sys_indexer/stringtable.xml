@@ -5,54 +5,67 @@
 <Key ID="STR_ALIVE_INDEXER">
     <English>Map Indexer</English>
     <Chinesesimp>地图索引器</Chinesesimp>
+    <Spanish>Indexador de mapas</Spanish>
 </Key>
 <Key ID="STR_ALIVE_INDEXER_COMMENT">
     <English>Index the current map</English>
     <Chinesesimp>为当前映射建立索引</Chinesesimp>
+    <Spanish>Indexa el mapa actual</Spanish>
 </Key>
 <Key ID="STR_ALIVE_INDEXER_STATICDATA">
     <English>Object Categorization:</English>
     <Chinesesimp>对象分类:</Chinesesimp>
+    <Spanish>Categorización de objetos:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_INDEXER_STATICDATA_COMMENT">
     <English>If enabled, each unique object on the map will need to be categorised</English>
     <Chinesesimp>如果启用，地图上的每个唯一对象都需要分类</Chinesesimp>
+    <Spanish>Si se activa, habrá que categorizar cada objeto único del mapa</Spanish>
 </Key>
 <Key ID="STR_ALIVE_INDEXER_MAPPATH">
     <English>Map PBO file path:</English>
     <Chinesesimp>地图PBO文件路径:</Chinesesimp>
+    <Spanish>Ruta del archivo PBO del mapa:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_INDEXER_MAPPATH_COMMENT">
     <English>Enter the path and filename of the map pbo relative to Arma 3 root directory.</English>
     <Chinesesimp>输入映射pbo相对于Arma 3根目录的路径和文件名。</Chinesesimp>
+    <Spanish>Introduce la ruta y el nombre del PBO del mapa relativos al directorio raíz de Arma 3.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_INDEXER_MAPBOUND">
     <English>Custom MapBound:</English>
     <Chinesesimp>自定义MapBound:</Chinesesimp>
+    <Spanish>Límite de mapa personalizado:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_INDEXER_MAPBOUND_COMMENT">
     <English>Map bound value must cover the entire map and be rounded up to nearest 1000. By default uses worldSize/mapSize</English>
     <Chinesesimp>地图绑定值必须覆盖整个地图,并四舍五入到最接近1000。默认使用worldSize/mapSize</Chinesesimp>
+    <Spanish>El valor del límite de mapa debe cubrir todo el mapa y redondearse al alza al millar más próximo. Por defecto usa worldSize/mapSize</Spanish>
 </Key>
 <Key ID="STR_ALIVE_INDEXER_ERROR1">
     <English>Only one Map Indexer module can be used</English>
     <Chinesesimp>只能使用一个地图索引器模块</Chinesesimp>
+    <Spanish>Solo se puede usar un módulo de indexador de mapas</Spanish>
 </Key>
 <Key ID="STR_ALIVE_INDEXER_OS">
     <English>Operating System:</English>
     <Chinesesimp>操作系统:</Chinesesimp>
+    <Spanish>Sistema operativo:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_INDEXER_OS_COMMENT">
     <English>If map indexer crashes, try changing the operating system selection here.</English>
     <Chinesesimp>如果映射索引器崩溃，请尝试在这里更改操作系统选择。</Chinesesimp>
+    <Spanish>Si el indexador de mapas falla, prueba a cambiar aquí la selección de sistema operativo.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_INDEXER_ENVIRONMENT">
     <English>Composition Environment:</English>
     <Chinesesimp>阵地布局环境:</Chinesesimp>
+    <Spanish>Entorno de composiciones:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_INDEXER_ENVIRONMENT_COMMENT">
     <English>Environment used to select ALiVE compositions on this map. Written to the exported static data, so it no longer needs to be added by hand after indexing.</English>
     <Chinesesimp>用于在此地图上选择ALiVE阵地布局的环境。会写入导出的静态数据，索引后无需再手动添加。</Chinesesimp>
+    <Spanish>Entorno usado para elegir las composiciones de ALiVE en este mapa. Se escribe en los datos estáticos exportados, así que ya no hay que añadirlo a mano después de indexar.</Spanish>
 </Key>
 
 </Container></Package></Project>

@@ -175,6 +175,22 @@ if (_patrolBuildings isEqualTo [] && {count _buildings > 0} && {ALiVE_SYS_PROFIL
     ["ALIVE_fnc_groupGarrison - no patrol-capable props, garrison fully static"] call ALiVE_fnc_dump;
 };
 
+// DEBUG -------------------------------------------------------------------------------------
+// Men to seat against places to put them. An earlier version of this line reported the guard
+// group count under a label that read as men seated, which is how a garrison holding twelve
+// props came to look like one seating two men out of ten. Ring-scatter props carry no engine
+// positions but do take men, so they are counted the way the seating loop will count them.
+if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
+    private _seatSupply = 0;
+    {
+        private _engine = count (_x buildingPos -1);
+        _seatSupply = _seatSupply + (if (_engine > 0) then {_engine} else {([_x] call _fnc_ringParams) select 1});
+    } forEach _buildings;
+    ["ALIVE_fnc_groupGarrison - %1 of %2 men still to seat, %3 candidate buildings offering %4 places, radius %5",
+     count _units, count (units _group), count _buildings, _seatSupply, _radius] call ALiVE_fnc_dump;
+};
+// DEBUG -------------------------------------------------------------------------------------
+
 
 
 if ((count _buildings == 0) && !(isNil "_profile") && ([_profile,"isCycling"] call ALiVE_fnc_HashGet)) exitwith {
@@ -196,6 +212,10 @@ if ((count _buildings == 0) && !(isNil "_profile") && ([_profile,"isCycling"] ca
 	 	 [_group, [_position, _radius, _radius, 0, false]] call CBA_fnc_taskSearchArea;
 };
 
+private _seatDemand = count _units;
+private _claimed = 0;
+private _claimDenied = 0;
+
 { // forEach _buildings
 	
     if (count _units == 0) exitWith {};
@@ -204,29 +224,71 @@ if ((count _buildings == 0) && !(isNil "_profile") && ([_profile,"isCycling"] ca
     private _buildingClaimed = [_building, _group] call ALiVE_fnc_claimGarrisonBuilding;
 
     if (_buildingClaimed) then {
-        private _buildingPositions = _building buildingPos -1;
+        _claimed = _claimed + 1;
+
+        // GarrisonPositions.hpp names the positions in each class actually worth standing in:
+        // three of a cargo tower's sixteen, nine of a cave's fifty odd. Nothing had ever read
+        // those lists, so men were placed in whatever slot the model happened to carry,
+        // including the ones the curation exists to avoid. The uncurated slots are kept as
+        // overflow rather than dropped, so a large group still fits where it used to.
+        //
+        // The lists are written best first rather than as a plain set - a cargo tower reads
+        // [15,12,8] and a cave leads with 53,54 before running up from 4 - so that order is
+        // carried through rather than sorted over the top of.
+        private _all = _building buildingPos -1;
+        private _authored = [ALIVE_garrisonPositions, typeOf _building, []] call ALiVE_fnc_hashGet;
+        if (isNil "_authored" || {!(_authored isEqualType [])}) then {_authored = []};
+
+        private _takenIdx = [];
+        private _preferred = [];
+        private _overflow = [];
+        {
+            // An index the model no longer carries is skipped rather than trusted. These
+            // lists date from 2016 and BIS has renumbered position data underneath them.
+            if (_x isEqualType 0 && {_x >= 0} && {_x < count _all} && {!(_x in _takenIdx)}) then {
+                private _p = _all select _x;
+                if !(_p isEqualTo [0,0,0]) then {
+                    _takenIdx pushBack _x;
+                    _preferred pushBack _p;
+                };
+            };
+        } forEach _authored;
+        {
+            // A position that reads as the world origin is not a place to stand; seating a
+            // man there puts him at the corner of the map.
+            if (!(_forEachIndex in _takenIdx) && {!(_x isEqualTo [0,0,0])}) then {
+                _overflow pushBack _x;
+            };
+        } forEach _all;
 
         // composition props (tents, camo nets, shelters) carry no engine
         // buildingPos data - synthesise standing positions on a ring just
         // outside the prop's bounding box so the whitelist can seat units.
         // Engine-positioned buildings never reach this branch
-        if (_buildingPositions isEqualTo []) then {
+        if (_preferred isEqualTo [] && {_overflow isEqualTo []}) then {
             ([_building] call _fnc_ringParams) params ["_ringRadius","_ringCount"];
             for "_i" from 0 to (_ringCount - 1) do {
                 private _rp = _building getPos [_ringRadius, _i * (360 / _ringCount)];
-                _buildingPositions pushBack [_rp select 0, _rp select 1, 0];
+                _overflow pushBack [_rp select 0, _rp select 1, 0];
             };
             if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
                 ["ALIVE_fnc_groupGarrison - ring-scatter %1 positions around %2 (no buildingPos)", _ringCount, typeOf _building] call ALiVE_fnc_dump;
             };
         };
-        [_buildingPositions, true] call CBA_fnc_Shuffle;
-            
-        // sort based on height
-        _buildingPositions = [_buildingPositions, [], { _x select 2 }, "DESCEND"] call BIS_fnc_sortBy;
+
+        // The curated positions keep the order they were written in. Everything else keeps
+        // the old treatment, shuffled so repeat visits differ and then highest first.
+        [_overflow, true] call CBA_fnc_Shuffle;
+        _overflow = [_overflow, [], { _x select 2 }, "DESCEND"] call BIS_fnc_sortBy;
+        private _preferredCount = count _preferred;
+        private _buildingPositions = _preferred + _overflow;
         
         if (ALiVE_SYS_PROFILE_DEBUG_ON) then {     
-         ["ALIVE_fnc_groupgarrison - class: %1 count positions: %2, count _units: %3", typeOf _building, count _buildingPositions, count units _group] call ALiVE_fnc_dump;
+         // A non-empty authored list that matches nothing means the curation has gone stale
+         // against the model. Without this the change would fail silently and look identical
+         // to having no list at all. The third figure was labelled as the men left to seat
+         // but has always been the whole group, so it is named for what it actually is.
+         ["ALIVE_fnc_groupgarrison - class: %1, %2 positions, group of %3, %4 of %5 authored positions matched", typeOf _building, count _buildingPositions, count units _group, _preferredCount, count _authored] call ALiVE_fnc_dump;
         };
 
         { // foreach _buildingPositions
@@ -235,6 +297,14 @@ if ((count _buildings == 0) && !(isNil "_profile") && ([_profile,"isCycling"] ca
 
             private _unit = _units select 0;
             private _position = _x;
+
+            // A patroller leaves its position for good and nobody refills it, so the quota
+            // is taken from the uncurated seats first. Handing it the curated ones emptied
+            // the firing ports of a bunker within a minute of the garrison forming. Where a
+            // building offers nothing but curated seats its men can still patrol, otherwise
+            // a fully curated objective would field none at all.
+            private _seatIsCurated = _forEachIndex < _preferredCount;
+            private _mayPatrol = !_seatIsCurated || {_overflow isEqualTo []};
 
             if (_moveInstantly) then {
                 _unit setposATL _position;
@@ -245,7 +315,7 @@ if ((count _buildings == 0) && !(isNil "_profile") && ([_profile,"isCycling"] ca
             };
             
             if (_guardPatrolPercentage > 0) then {
-            	 if (_unitPercentCount > 0 && {count _patrolBuildings > 0}) then {
+            	 if (_mayPatrol && {_unitPercentCount > 0} && {count _patrolBuildings > 0}) then {
                  // Patrol the position-bearing buildings only - ring-scatter
                  // props would feed the FSM empty position lists
                  if (!_patrolWaypointsCleared) then {
@@ -260,11 +330,22 @@ if ((count _buildings == 0) && !(isNil "_profile") && ([_profile,"isCycling"] ca
             _units deleteAt 0;
         } foreach _buildingPositions;
     } else {
+        _claimDenied = _claimDenied + 1;
         if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
             ["ALIVE_fnc_groupGarrison - _buildingClaimed: %3, count _buildings: %1, _buildings: %2", count _buildings, _buildings, _buildingClaimed] call ALiVE_fnc_dump;
         };
     };
 } forEach _buildings;
+
+// DEBUG -------------------------------------------------------------------------------------
+if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
+    // With _moveInstantly false nobody has moved yet - the men are only given somewhere to
+    // walk to, and whether they arrive is decided after this function returns.
+    private _verb = if (_moveInstantly) then {"seated"} else {"given positions to walk to"};
+    ["ALIVE_fnc_groupGarrison - %1 %2 of %3 men across %4 buildings, %5 refused as already claimed by another group",
+     _verb, _seatDemand - (count _units), _seatDemand, _claimed, _claimDenied] call ALiVE_fnc_dump;
+};
+// DEBUG -------------------------------------------------------------------------------------
 
 [_group, _movementAssignments] call _fnc_startMovement;
 
