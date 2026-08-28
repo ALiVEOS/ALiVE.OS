@@ -58,7 +58,7 @@ private _civilianVehicle = [nil, "create"] call ALIVE_fnc_civilianVehicle;
 [_civilianVehicle, "direction", _direction] call ALIVE_fnc_civilianVehicle;
 [_civilianVehicle, "side", _side] call ALIVE_fnc_civilianVehicle;
 [_civilianVehicle, "faction", _faction] call ALIVE_fnc_civilianVehicle;
-[_civilianVehicle, "damage", 0] call ALIVE_fnc_civilianVehicle;
+[_civilianVehicle, "damage", []] call ALIVE_fnc_civilianVehicle;
 [_civilianVehicle, "fuel", 1] call ALIVE_fnc_civilianVehicle;
 [_civilianVehicle, "homeCluster", _clusterID] call ALIVE_fnc_civilianVehicle;
 [_civilianVehicle, "homePosition", _buildingPosition] call ALIVE_fnc_civilianVehicle;

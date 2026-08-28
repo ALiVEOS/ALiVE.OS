@@ -102,7 +102,7 @@ _profile3 = [nil, "create"] call ALIVE_fnc_profileVehicle;
 [_profile3, "vehicleClass", "B_MRAP_01_hmg_F"] call ALIVE_fnc_profileVehicle;
 [_profile3, "position", ((getPos player) getPos [20, 180])] call ALIVE_fnc_profileVehicle;
 [_profile3, "direction", 180] call ALIVE_fnc_profileVehicle;
-[_profile3, "damage", 0] call ALIVE_fnc_profileVehicle;
+[_profile3, "damage", []] call ALIVE_fnc_profileVehicle;
 [_profile3, "fuel", 1] call ALIVE_fnc_profileVehicle;
 [_profile3, "side", "WEST"] call ALIVE_fnc_profileVehicle;
 [_profile3, "faction", "BLU_F"] call ALIVE_fnc_profileEntity;

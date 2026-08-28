@@ -266,7 +266,7 @@ if(count _config > 0) then {
         [_profileVehicle, "direction", 0] call ALIVE_fnc_profileVehicle;
         [_profileVehicle, "side", _side] call ALIVE_fnc_profileVehicle;
         [_profileVehicle, "faction", _groupFaction] call ALIVE_fnc_profileVehicle;
-        [_profileVehicle, "damage", 0] call ALIVE_fnc_profileVehicle;
+        [_profileVehicle, "damage", []] call ALIVE_fnc_profileVehicle;
         [_profileVehicle, "fuel", 1] call ALIVE_fnc_profileVehicle;
         [_profileVehicle, "busy", _busy] call ALIVE_fnc_profileVehicle;
 

@@ -60,7 +60,7 @@ private _profileVehicle = [nil, "create"] call ALIVE_fnc_profileVehicle;
     ["direction", _direction],
     ["side", _side],
     ["faction", _faction],
-    ["damage", 0],
+    ["damage", []],
     ["fuel", 1],
     ["isSPE", _isSPE],
     ["cargo", _cargo]

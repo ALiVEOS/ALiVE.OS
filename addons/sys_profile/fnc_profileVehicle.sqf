@@ -88,6 +88,8 @@ nil
 #define SUPERCLASS ALIVE_fnc_profile
 #define MAINCLASS ALIVE_fnc_profileVehicle
 
+#define MTEMPLATE "ALiVE_PROFILEVEHICLE_%1"
+
 private ["_result","_deleteMarkers","_createMarkers"];
 
 TRACE_1("profileVehicle - input",_this);
@@ -99,7 +101,7 @@ params [
 ];
 _result = true;
 
-#define MTEMPLATE "ALiVE_PROFILEVEHICLE_%1"
+PROFILE_SCOPE(OPERATION, _operation)
 
 switch (_operation) do {
 
@@ -1229,7 +1231,7 @@ switch (_operation) do {
     };
 
     case "handleDeath": {
-        [_logic,"damage",1] call ALIVE_fnc_hashSet;
+        [_logic,"damage",[]] call ALIVE_fnc_hashSet;
 
         // remove all assignments for this vehicle
         [_logic] call ALIVE_fnc_removeProfileVehicleAssignments;
@@ -1346,6 +1348,7 @@ switch (_operation) do {
 
 };
 
+PROFILE_SCOPE_END(OPERATION)
 TRACE_1("profileVehicle - output", _result);
 
 _result

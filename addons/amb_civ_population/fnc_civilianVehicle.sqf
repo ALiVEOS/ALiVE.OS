@@ -530,7 +530,7 @@ switch(_operation) do {
 
     case "handleDeath": {
 
-        [_logic,"damage",1] call ALIVE_fnc_hashSet;
+        [_logic,"damage",[]] call ALIVE_fnc_hashSet;
 
     };
 
