@@ -30,6 +30,7 @@ if (isNil "ALiVE_profileSpacialGridClass") then {
         ["#flags", ["sealed"]],
 
         ["combatSectors", []],
+        ["profileSectors", []],
 
         ["#create", {
             private _combatSectors = [];
@@ -39,6 +40,7 @@ if (isNil "ALiVE_profileSpacialGridClass") then {
             };
 
             _self set ["combatSectors", _combatSectors];
+            _self set ["profileSectors", createHashMap];
             (_self get "queryState") pushBack _combatSectors;
         }],
 
@@ -51,10 +53,15 @@ if (isNil "ALiVE_profileSpacialGridClass") then {
                 private _position = _x select 0;
                 private _profile = _x select 1;
                 private _profileData = _profile select 2;
+                private _coords = _self call ["posToCoords", _position];
+
+                if !(_coords isEqualTo [-1,-1]) then {
+                    private _sectorsInColumn = (_self get "maxSector") select 0;
+                    private _sectorIndex = (_coords select 0) + ((_coords select 1) * _sectorsInColumn);
+                    (_self get "profileSectors") set [_profileData select 4, _sectorIndex];
+                };
 
                 if ((_profileData select 5) == "entity" && {!(_profileData select 30)}) then {
-                    private _coords = _self call ["posToCoords", _position];
-
                     if !(_coords isEqualTo [-1,-1]) then {
                         private _sideIndex = switch (_profileData select 3) do {
                             case "EAST": {0};
@@ -80,11 +87,19 @@ if (isNil "ALiVE_profileSpacialGridClass") then {
             private _position = _this select 0;
             private _profile = _this select 1;
             private _profileData = _profile select 2;
+            private _mappedSectorIndex = _this param [2, -1];
 
             if ((_profileData select 5) == "entity" && {!(_profileData select 30)}) then {
-                private _coords = _self call ["posToCoords", _position];
+                if (_mappedSectorIndex == -1 && {count _this < 3}) then {
+                    private _coords = _self call ["posToCoords", _position];
 
-                if !(_coords isEqualTo [-1,-1]) then {
+                    if !(_coords isEqualTo [-1,-1]) then {
+                        private _sectorsInColumn = (_self get "maxSector") select 0;
+                        _mappedSectorIndex = (_coords select 0) + ((_coords select 1) * _sectorsInColumn);
+                    };
+                };
+
+                if (_mappedSectorIndex != -1) then {
                     private _sideIndex = switch (_profileData select 3) do {
                         case "EAST": {0};
                         case "WEST": {1};
@@ -93,9 +108,7 @@ if (isNil "ALiVE_profileSpacialGridClass") then {
                     };
 
                     if (_sideIndex != -1) then {
-                        private _sectorsInColumn = (_self get "maxSector") select 0;
-                        private _sectorIndex = (_coords select 0) + ((_coords select 1) * _sectorsInColumn);
-                        private _combatSector = ((_self get "combatSectors") select _sectorIndex) select _sideIndex;
+                        private _combatSector = ((_self get "combatSectors") select _mappedSectorIndex) select _sideIndex;
                         private _profileID = _profileData select 4;
                         private _combatIndex = _combatSector findIf {(_x select 1) == _profileID};
 
@@ -114,6 +127,8 @@ if (isNil "ALiVE_profileSpacialGridClass") then {
             private _updated = _this select 3;
             private _oldCoords = _this select 4;
             private _newCoords = _this select 5;
+            private _oldSectorIndex = _this param [6, -1];
+            private _newSectorIndex = _this param [7, -1];
 
             if (!_updated) exitWith {};
 
@@ -133,10 +148,19 @@ if (isNil "ALiVE_profileSpacialGridClass") then {
             private _combatSectors = _self get "combatSectors";
             private _profileID = _profileData select 4;
 
-            if (_oldCoords isEqualTo _newCoords) then {
-                if !(_oldCoords isEqualTo [-1,-1]) then {
-                    private _sectorIndex = (_oldCoords select 0) + ((_oldCoords select 1) * _sectorsInColumn);
-                    private _combatSector = (_combatSectors select _sectorIndex) select _sideIndex;
+            if (count _this < 8) then {
+                if (_oldSectorIndex == -1 && {!(_oldCoords isEqualTo [-1,-1])}) then {
+                    _oldSectorIndex = (_oldCoords select 0) + ((_oldCoords select 1) * _sectorsInColumn);
+                };
+
+                if (_newSectorIndex == -1 && {!(_newCoords isEqualTo [-1,-1])}) then {
+                    _newSectorIndex = (_newCoords select 0) + ((_newCoords select 1) * _sectorsInColumn);
+                };
+            };
+
+            if (_oldSectorIndex == _newSectorIndex) then {
+                if (_oldSectorIndex != -1) then {
+                    private _combatSector = (_combatSectors select _oldSectorIndex) select _sideIndex;
                     private _combatIndex = _combatSector findIf {(_x select 1) == _profileID};
 
                     if (_combatIndex != -1) then {
@@ -144,8 +168,7 @@ if (isNil "ALiVE_profileSpacialGridClass") then {
                     };
                 };
             } else {
-                if !(_oldCoords isEqualTo [-1,-1]) then {
-                    private _oldSectorIndex = (_oldCoords select 0) + ((_oldCoords select 1) * _sectorsInColumn);
+                if (_oldSectorIndex != -1) then {
                     private _oldCombatSector = (_combatSectors select _oldSectorIndex) select _sideIndex;
                     private _combatIndex = _oldCombatSector findIf {(_x select 1) == _profileID};
 
@@ -154,10 +177,85 @@ if (isNil "ALiVE_profileSpacialGridClass") then {
                     };
                 };
 
-                if !(_newCoords isEqualTo [-1,-1]) then {
-                    private _newSectorIndex = (_newCoords select 0) + ((_newCoords select 1) * _sectorsInColumn);
+                if (_newSectorIndex != -1) then {
                     ((_combatSectors select _newSectorIndex) select _sideIndex) pushBack [_newPos,_profileID,_profile];
                 };
+            };
+        }],
+
+        ["remove", {
+            private _point = _this;
+            private _profile = _point select 1;
+            private _profileID = _profile select 2 select 4;
+            private _profileSectors = _self get "profileSectors";
+            private _sectorIndex = _profileSectors getOrDefault [_profileID, -1];
+            private _result = false;
+
+            if (_sectorIndex != -1) then {
+                private _sector = (_self get "sectors") select _sectorIndex;
+                private _index = _sector findIf {((_x select 1) select 2 select 4) == _profileID};
+
+                if (_index != -1) then {
+                    _sector deleteAt _index;
+                    _result = true;
+                };
+            };
+
+            if ("onRemove" in _self) then {
+                _self call ["onRemove", [_point select 0, _profile, _sectorIndex]];
+            };
+
+            _profileSectors deleteAt _profileID;
+            _result
+        }],
+
+        ["move", {
+            private _oldPos = _this select 0;
+            private _newPos = _this select 1;
+            private _profile = _this select 2;
+            private _profileID = _profile select 2 select 4;
+            private _profileSectors = _self get "profileSectors";
+            private _oldSectorIndex = _profileSectors getOrDefault [_profileID, -1];
+
+            if (_oldSectorIndex == -1) exitWith {};
+
+            private _newCoords = _self call ["posToCoords", _newPos];
+            private _newSectorIndex = -1;
+            private _updated = false;
+
+            if !(_newCoords isEqualTo [-1,-1]) then {
+                private _sectorsInColumn = (_self get "maxSector") select 0;
+                _newSectorIndex = (_newCoords select 0) + ((_newCoords select 1) * _sectorsInColumn);
+            };
+
+            if (_oldSectorIndex == _newSectorIndex) then {
+                private _sector = (_self get "sectors") select _oldSectorIndex;
+                private _index = _sector findIf {((_x select 1) select 2 select 4) == _profileID};
+
+                if (_index != -1) then {
+                    _sector set [_index, [_newPos,_profile]];
+                    _updated = true;
+                };
+            } else {
+                private _oldSector = (_self get "sectors") select _oldSectorIndex;
+                private _index = _oldSector findIf {((_x select 1) select 2 select 4) == _profileID};
+
+                if (_index != -1) then {
+                    _oldSector deleteAt _index;
+
+                    if (_newSectorIndex != -1) then {
+                        ((_self get "sectors") select _newSectorIndex) pushBack [_newPos,_profile];
+                        _profileSectors set [_profileID, _newSectorIndex];
+                    } else {
+                        _profileSectors deleteAt _profileID;
+                    };
+
+                    _updated = true;
+                };
+            };
+
+            if ("onMove" in _self) then {
+                _self call ["onMove", [_oldPos,_newPos,_profile,_updated,[-1,-1],_newCoords,_oldSectorIndex,_newSectorIndex]];
             };
         }],
 
@@ -167,6 +265,8 @@ if (isNil "ALiVE_profileSpacialGridClass") then {
                     _x resize 0;
                 } forEach _x;
             } forEach (_self get "combatSectors");
+
+            _self set ["profileSectors", createHashMap];
         }],
 
         ["findCombatTargets", {
