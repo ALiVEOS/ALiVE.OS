@@ -710,6 +710,7 @@ if (!_simAttacks) then {
 } else {
 
     // Simulate attacks
+    PROFILE_SCOPE(VIRTUALCOMBAT, "ALiVE profileSimulator: virtual combat")
 
     ([MOD(profileCombatHandler), ["combatRate","attacksByID"]] call ALiVE_fnc_hashGetMany) params [
         "_combatRate",
@@ -1079,4 +1080,5 @@ if (!_simAttacks) then {
 
     };
 
+    PROFILE_SCOPE_END(VIRTUALCOMBAT)
 };
