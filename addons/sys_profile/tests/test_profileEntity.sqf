@@ -143,8 +143,11 @@ ASSERT_TRUE(typeName _result == "BOOL", _err);
 
 STAT("Add unit");
 _result = [_logic, "addUnit", ["B_Soldier_F",getPos player,0]] call ALIVE_fnc_profileEntity;
-_err = "merge positions";
+_err = "add unit";
 ASSERT_TRUE(typeName _result == "BOOL", _err);
+_result = [_logic, "unitCount"] call ALIVE_fnc_hashGet;
+_err = "add unit updates stored unit count";
+ASSERT_TRUE(_result == 3, _err);
 
 
 STAT("Get state");

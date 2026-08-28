@@ -36,13 +36,11 @@ _entityClasses = _this select 0;
 _side = _this select 1;
 _faction = _this select 2;
 _position = _this select 3;
-_direction = if(count _this > 4) then {_this select 4} else {0};
-_prefix = if(count _this > 5) then {_this select 5} else {""};
-_busy = if(count _this > 6) then {_this select 6} else {false};
+_direction = _this param [4, 0];
+_prefix = _this param [5, ""];
+_busy = _this param [6, false];
 
-// get counts of current profiles
-
-_entityID = [ALIVE_profileHandler, "getNextInsertEntityID"] call ALIVE_fnc_profileHandler;
+_entityID = [ALIVE_profileHandler,"getNextInsertEntityID"] call ALIVE_fnc_profileHandler;
 
 // create the profile for the entity
 
@@ -58,22 +56,22 @@ _damages = [];
     _damages pushback 0;
 } foreach _entityClasses;
 
-_profileEntity = [nil, "create"] call ALIVE_fnc_profileEntity;
-[_profileEntity, "init"] call ALIVE_fnc_profileEntity;
-[_profileEntity, "profileID", _entityID] call ALIVE_fnc_profileEntity;
-[_profileEntity, "unitClasses", _entityClasses] call ALIVE_fnc_profileEntity;
-[_profileEntity, "position", _position] call ALIVE_fnc_profileEntity;
-[_profileEntity, "despawnPosition", _position] call ALIVE_fnc_profileEntity;
-[_profileEntity, "positions", _positions] call ALIVE_fnc_profileEntity;
-[_profileEntity, "damages", _damages] call ALIVE_fnc_profileEntity;
-[_profileEntity, "ranks", _ranks] call ALIVE_fnc_profileEntity;
-[_profileEntity, "side", _side] call ALIVE_fnc_profileEntity;
-[_profileEntity, "faction", _faction] call ALIVE_fnc_profileEntity;
-[_profileEntity, "isPlayer", false] call ALIVE_fnc_profileEntity;
-[_profileEntity, "busy", _busy] call ALIVE_fnc_profileEntity;
-[_profileEntity, "isSPE", false] call ALIVE_fnc_profileEntity;
-[_profileEntity, "aiBehaviour", "SAFE"] call ALIVE_fnc_profileEntity;
+_profileEntity = [nil,"create"] call ALIVE_fnc_profileEntity;
+[_profileEntity,"init"] call ALIVE_fnc_profileEntity;
+[_profileEntity,"profileID", _entityID] call ALIVE_fnc_profileEntity;
+[_profileEntity,"unitClasses", _entityClasses] call ALIVE_fnc_profileEntity;
+[_profileEntity,"position", _position] call ALIVE_fnc_profileEntity;
+[_profileEntity,"despawnPosition", _position] call ALIVE_fnc_profileEntity;
+[_profileEntity,"positions", _positions] call ALIVE_fnc_profileEntity;
+[_profileEntity,"damages", _damages] call ALIVE_fnc_profileEntity;
+[_profileEntity,"ranks", _ranks] call ALIVE_fnc_profileEntity;
+[_profileEntity,"side", _side] call ALIVE_fnc_profileEntity;
+[_profileEntity,"faction", _faction] call ALIVE_fnc_profileEntity;
+[_profileEntity,"isPlayer", false] call ALIVE_fnc_profileEntity;
+[_profileEntity,"busy", _busy] call ALIVE_fnc_profileEntity;
+[_profileEntity,"isSPE", false] call ALIVE_fnc_profileEntity;
+[_profileEntity,"aiBehaviour", "SAFE"] call ALIVE_fnc_profileEntity;
 
-[ALIVE_profileHandler, "registerProfile", _profileEntity] call ALIVE_fnc_profileHandler;
+[ALIVE_profileHandler,"registerProfile", _profileEntity] call ALIVE_fnc_profileHandler;
 
 _profileEntity

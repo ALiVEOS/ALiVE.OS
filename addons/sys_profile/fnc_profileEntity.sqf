@@ -936,6 +936,7 @@ switch(_operation) do {
             _positions pushback _position;
             _damages pushback _damage;
             _ranks pushback _rank;
+            [_logic,"unitCount", count _unitClasses] call ALiVE_fnc_hashSet;
         } else {
             // DIAG-STRIP: only the malformed-profile case (args ok, _logic bad). Log the
             // offender's type + identity + element-2 type ONCE to point at the caller.

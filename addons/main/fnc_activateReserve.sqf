@@ -313,16 +313,8 @@ if (_entryType == "VEHICLE") then {
             };
         };
 
-        // Sync unitCount + (re)create vehicle assignment. profileEntity's
-        // `addUnit` case appends to unitClasses but doesn't update
-        // `unitCount`, and the empty-vehicle profile was created with
-        // an empty vehicle assignment. Without these two steps, the
-        // entity's spawn flow ignores the new crew (unitIndexes is
-        // derived from unitCount, vehicle assignment maps unitIndexes
-        // to seats) and the crew materialises next to the truck on
-        // foot instead of inside it.
+        // Create the vehicle assignment after all deferred units have been added
         private _unitClasses = [_profileEntity, "unitClasses"] call ALiVE_fnc_hashGet;
-        [_profileEntity, "unitCount", count _unitClasses] call ALiVE_fnc_hashSet;
         [_profileEntity, _profileVehicle] call ALiVE_fnc_createProfileVehicleAssignment;
 
         if (_debug) then {
