@@ -225,6 +225,14 @@ if(isServer) then {
     private _smoothSpawn = parseNumber (_logic getVariable ["smoothSpawn", "0.3"]);
     private _vehicleSpawnSettleSeconds = parseNumber (_logic getVariable ["vehicleSpawnSettleSeconds", "15"]);
 
+    // Despawn Linger. These four were defined on the module and read by the despawn paths,
+    // but nothing ever carried them from the module to the system, so the defaults below
+    // were all anyone ever got however the module was set (#1019).
+    private _playerOccupantGrace = parseNumber (_logic getVariable ["playerOccupantGrace", "300"]);
+    private _postDeathGrace      = parseNumber (_logic getVariable ["postDeathGrace", "120"]);
+    private _postDeathRadius     = parseNumber (_logic getVariable ["postDeathRadius", "500"]);
+    private _midCombatExtension  = parseNumber (_logic getVariable ["midCombatExtension", "60"]);
+
     //Ensure Event Log is loaded
     if (isnil "ALIVE_eventLog") then {
         ALIVE_eventLog = [nil, "create"] call ALIVE_fnc_eventLog;
@@ -258,6 +266,10 @@ if(isServer) then {
     [ALIVE_profileSystem, "seaTransport", _seaTransport] call ALIVE_fnc_profileSystem;
     [ALIVE_profileSystem, "smoothSpawn", _smoothSpawn] call ALIVE_fnc_profileSystem;
     [ALIVE_profileSystem, "vehicleSpawnSettleSeconds", _vehicleSpawnSettleSeconds] call ALIVE_fnc_profileSystem;
+    [ALIVE_profileSystem, "playerOccupantGrace", _playerOccupantGrace] call ALIVE_fnc_profileSystem;
+    [ALIVE_profileSystem, "postDeathGrace", _postDeathGrace] call ALIVE_fnc_profileSystem;
+    [ALIVE_profileSystem, "postDeathRadius", _postDeathRadius] call ALIVE_fnc_profileSystem;
+    [ALIVE_profileSystem, "midCombatExtension", _midCombatExtension] call ALIVE_fnc_profileSystem;
 
     _logic setVariable ["handler",ALIVE_profileSystem];
     [ALIVE_profileSystem,"handler",_logic] call ALiVE_fnc_HashSet;
