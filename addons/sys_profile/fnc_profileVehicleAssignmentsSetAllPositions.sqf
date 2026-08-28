@@ -31,27 +31,20 @@ private ["_assignments","_position","_entity","_entityProfile","_drivers","_comm
 _assignments = _this select 0;
 _position = _this select 1;
 
+private _profilesByID = [ALIVE_profileHandler,"profilesById"] call ALiVE_fnc_hashGet;
+
 {
     _entity = _x select 1;
-    _entityProfile = [ALIVE_profileHandler, "getProfile", _entity] call ALIVE_fnc_profileHandler;
-
-    //["ENTITY %1 setAllPositions: %2",_entityProfile select 2 select 4,_position] call ALIVE_fnc_dump;
+    _entityProfile = _profilesByID get _entity;
 
     if !(isnil "_entityProfile") then {
-        // A vehicle assignment's entity slot (select 1) must resolve to an ENTITY profile
-        // (the crew), never a vehicle. A vehicle-typed profile here is a malformed /
-        // self-referential assignment (e.g. an ATO airframe whose crewID was its own vehicle
-        // id). Feeding such a profile to profileEntity "mergePositions" re-routes back into
-        // profileVehicle "mergePositions" -> setAllPositions -> here again, an unbounded
-        // recursion that hard-freezes the sim thread. Only merge genuine entity profiles; skip
-        // anything else (log once, keyed on profile id, sharing the profileEntity dedup set).
-        // Mirrors the slot-1-must-be-entity guard in fnc_profileVehicleAssignmentToVehicleAssignment.
-        // Note: this sits inside forEach, so it must be if/else, not exitWith (which would abort
-        // the whole loop and skip a legitimate crew entry queued after a bad one).
         if ((_entityProfile select 2 select 5) == "entity") then {
             [_entityProfile,"position",_position] call ALIVE_fnc_profileEntity;
             [_entityProfile,"mergePositions"] call ALIVE_fnc_profileEntity;
         } else {
+            // assignments must be entities
+            // this branch handles bad data that has been seen in the past
+            // log for investigation
             private _badID = _entityProfile select 2 select 4;
             private _logged = missionNamespace getVariable ["ALIVE_profileMergePositionsLoggedIDs", []];
             if !(_badID in _logged) then {
