@@ -38,9 +38,9 @@ SpyderBlack723
 Jman
 ---------------------------------------------------------------------------- */
 
-if (ALiVE_simulationTimeHandler get "paused") exitWith {};
+if (ALiVE_isGamePaused) exitWith {};
 
-private _simulationTime = ALiVE_simulationTimeHandler get "tickTime";
+private _simulationTime = ALiVE_simulationTime;
 
 // parse CBA perFrameHandler arguments
 //_this = _this select 0;

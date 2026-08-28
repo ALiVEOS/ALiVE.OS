@@ -133,7 +133,7 @@ switch(_operation) do {
         _logic setVariable ["gcEnabled", _interval >= 1];
         _logic setVariable ["gcInterval", _interval];
         _logic setVariable ["gcThreshold", _threshold];
-        _logic setVariable ["nextCollectTime", time + _interval];
+        _logic setVariable ["nextCollectTime", ALiVE_simulationTime + _interval];
         _logic setVariable ["ALiVE_GC_PFH", -1];
 
         if (_interval < 1) exitwith {
@@ -188,7 +188,7 @@ switch(_operation) do {
 
         if (_phase != "scanning") then {
             private _nextCollectTime = _logic getVariable ["nextCollectTime", 0];
-            if ((_logic getVariable ["auto", false]) && { time >= _nextCollectTime }) then {
+            if ((_logic getVariable ["auto", false]) && { ALiVE_simulationTime >= _nextCollectTime }) then {
                 [_logic,"beginCandidateScan"] call MAINCLASS;
             };
         };
@@ -243,7 +243,7 @@ switch(_operation) do {
                 } else {
                     private _timeToDie = _object getVariable ["timeToDie", 0];
 
-                    if ((_timeToDie <= time) || { _instant }) then {
+                    if ((_timeToDie <= ALiVE_simulationTime) || { _instant }) then {
                         switch (typeName _object) do {
 
                             case (typeName objNull): {
@@ -381,7 +381,7 @@ switch(_operation) do {
 
         if (_work isEqualTo []) then {
             _logic setVariable ["gcPhase", "idle"];
-            _logic setVariable ["nextCollectTime", time + (_logic getVariable ["gcInterval", 300])];
+            _logic setVariable ["nextCollectTime", ALiVE_simulationTime + (_logic getVariable ["gcInterval", 300])];
             _logic setVariable ["gcSweepWork", nil];
 
             if (_logic getVariable ["debug", false]) then {
@@ -418,18 +418,18 @@ switch(_operation) do {
         switch (typeName _object) do {
             case (typeName objNull): {
                 if (alive _object) then {
-                    _timeToDie = time + 30;
+                    _timeToDie = ALiVE_simulationTime + 30;
                 } else {
-                    _timeToDie = time + 60;
+                    _timeToDie = ALiVE_simulationTime + 60;
                 };
             };
 
             case (typeName grpNull): {
-                _timeToDie = time + 60;
+                _timeToDie = ALiVE_simulationTime + 60;
             };
 
             default {
-                _timeToDie = time;
+                _timeToDie = ALiVE_simulationTime;
             };
         };
 
