@@ -551,6 +551,7 @@ switch(_operation) do {
             };
 
             waituntil {!(isnil "ALiVE_ProfileHandler") && {[ALiVE_ProfileSystem,"startupComplete",false] call ALIVE_fnc_hashGet}};
+            ["waited for the profile system"] call _fnc_mpDiagMark;
 
             // Apply per-faction custom-class overrides to the static-data
             // registries. Each attribute is a canonical string in the
@@ -570,6 +571,8 @@ switch(_operation) do {
                 ["MP - Custom static data: mode=%1 supportsTouched=%2 suppliesTouched=%3",
                     _customMode, _touchedSupports, _touchedSupplies] call ALiVE_fnc_dump;
             };
+
+            ["applied custom static data"] call _fnc_mpDiagMark;
 
             [_logic,"start"] call MAINCLASS;
 
@@ -597,26 +600,50 @@ switch(_operation) do {
             };
             // DEBUG -------------------------------------------------------------------------------------
 
+            // Whichever module instance gets here first compiles the terrain cluster index and the
+            // rest wait on its flag, so the two readings below separate the one that paid for it
+            // from the ones that only queued. An index runs from a few thousand lines to tens of
+            // thousands depending on the terrain, and nobody has measured what compiling one costs.
+            private _compiledClusters = false;
             if(isNil "ALIVE_clustersMil" && isNil "ALIVE_loadedMilClusters") then {
                 _worldName = toLower(worldName);
                 _file = format["x\alive\addons\mil_placement\clusters\clusters.%1_mil.sqf", _worldName];
                 call compile preprocessFileLineNumbers _file;
                 ALIVE_loadedMilClusters = true;
+                _compiledClusters = true;
             };
+            if (_compiledClusters) then {
+                // The index is an ALiVE hash, so the cluster count is the length of its key
+                // list rather than the length of the hash itself, which is always three.
+                private _clusterCount = -1;
+                if (!isNil "ALIVE_clustersMil" && {ALIVE_clustersMil isEqualType []} && {count ALIVE_clustersMil > 1}) then {
+                    _clusterCount = count (ALIVE_clustersMil select 1);
+                };
+                ["compiled the terrain cluster index", format ["%1, %2 clusters", _file, _clusterCount]] call _fnc_mpDiagMark;
+            } else {
+                ["another instance is compiling the cluster index"] call _fnc_mpDiagMark;
+            };
+
             waituntil {!(isnil "ALIVE_loadedMilClusters") && {ALIVE_loadedMilClusters}};
             waituntil {!(isnil "ALIVE_profileSystemInit")};
+            ["waited for the cluster index and the profile system"] call _fnc_mpDiagMark;
 
             // all MP modules execute at the same time
             // ALIVE_groupConfig is created, but not 100% filled
             // before the rest of the modules start creating their profiles
 
             // instantiate static vehicle position data
+            private _builtGroupConfig = false;
             if(isNil "ALIVE_groupConfig") then {
                 [] call ALIVE_fnc_groupGenerateConfigData;
+                _builtGroupConfig = true;
+            };
+            if (_builtGroupConfig) then {
+                ["built the group config data"] call _fnc_mpDiagMark;
             };
 
             waitUntil {!isnil "ALiVE_GROUP_CONFIG_DATA_GENERATED"};
-            ["waited for profile system, clusters and group config"] call _fnc_mpDiagMark;
+            ["waited for the group config data"] call _fnc_mpDiagMark;
 
             //Only spawn warning on version mismatch since map index changes were reduced
             //uncomment //_error = true; below for exit
