@@ -45,6 +45,8 @@ if (isNil "ALiVE_profileSpacialGridClass") then {
         }],
 
         ["onInsert", {
+            PROFILE_SCOPE(ONINSERT, "ALiVE_sys_profile_fnc_profileSpacialGrid: onInsert")
+
             private _points = _this;
             private _sectorsInColumn = (_self get "maxSector") select 0;
             private _combatSectors = _self get "combatSectors";
@@ -81,9 +83,13 @@ if (isNil "ALiVE_profileSpacialGridClass") then {
                     };
                 };
             } forEach _points;
+
+            PROFILE_SCOPE_END(OPERATION)
         }],
 
         ["onRemove", {
+            PROFILE_SCOPE(ONREMOVE, "ALiVE_sys_profile_fnc_profileSpacialGrid: onRemove")
+
             private _position = _this select 0;
             private _profile = _this select 1;
             private _profileData = _profile select 2;
@@ -118,9 +124,13 @@ if (isNil "ALiVE_profileSpacialGridClass") then {
                     };
                 };
             };
+
+            PROFILE_SCOPE_END(ONREMOVE)
         }],
 
         ["onMove", {
+            PROFILE_SCOPE(ONMOVE, "ALiVE_sys_profile_fnc_profileSpacialGrid: onMove")
+
             private _oldPos = _this select 0;
             private _newPos = _this select 1;
             private _profile = _this select 2;
@@ -181,9 +191,13 @@ if (isNil "ALiVE_profileSpacialGridClass") then {
                     ((_combatSectors select _newSectorIndex) select _sideIndex) pushBack [_newPos,_profileID,_profile];
                 };
             };
+
+            PROFILE_SCOPE_END(ONMOVE)
         }],
 
         ["remove", {
+            PROFILE_SCOPE(REMOVE, "ALiVE_sys_profile_fnc_profileSpacialGrid: remove")
+
             private _point = _this;
             private _profile = _point select 1;
             private _profileID = _profile select 2 select 4;
@@ -206,10 +220,15 @@ if (isNil "ALiVE_profileSpacialGridClass") then {
             };
 
             _profileSectors deleteAt _profileID;
+
+            PROFILE_SCOPE_END(REMOVE)
+            
             _result
         }],
 
         ["move", {
+            PROFILE_SCOPE(MOVEOP, "ALiVE_sys_profile_fnc_profileSpacialGrid: move")
+
             private _oldPos = _this select 0;
             private _newPos = _this select 1;
             private _profile = _this select 2;
@@ -257,9 +276,13 @@ if (isNil "ALiVE_profileSpacialGridClass") then {
             if ("onMove" in _self) then {
                 _self call ["onMove", [_oldPos,_newPos,_profile,_updated,[-1,-1],_newCoords,_oldSectorIndex,_newSectorIndex]];
             };
+
+            PROFILE_SCOPE_END(MOVEOP)
         }],
 
         ["onClear", {
+            PROFILE_SCOPE(ONCLEAR, "ALiVE_sys_profile_fnc_profileSpacialGrid: onClear")
+
             {
                 {
                     _x resize 0;
@@ -267,9 +290,13 @@ if (isNil "ALiVE_profileSpacialGridClass") then {
             } forEach (_self get "combatSectors");
 
             _self set ["profileSectors", createHashMap];
+
+            PROFILE_SCOPE_END(ONCLEAR)
         }],
 
         ["findCombatTargets", {
+            PROFILE_SCOPE(FINDCOMBATTARGETS, "ALiVE_sys_profile_fnc_profileSpacialGrid: findCombatTargets")
+
             private _center = _this select 0;
             private _radius = _this select 1;
             private _enemySides = _this select 2;
@@ -334,6 +361,9 @@ if (isNil "ALiVE_profileSpacialGridClass") then {
             };
 
             private _result = _targets apply {_x select 1};
+
+            PROFILE_SCOPE_END(FINDCOMBATTARGETS)
+
             _result
         }]
     ];
