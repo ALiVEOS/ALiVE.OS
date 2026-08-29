@@ -108,7 +108,7 @@ if (isNil "ALiVE_spacialGridClass") then {
 
             private _sectorsInColumn = (_self get "maxSector") select 0;
             private _index = (_this select 0) + ((_this select 1) * _sectorsInColumn);
-            private _result = (_self get "sectors") select _index
+            private _result = (_self get "sectors") select _index;
 
             PROFILE_SCOPE_END(COORDSTOSECTOR)
 
