@@ -70,6 +70,8 @@ if (isNil "ALiVE_spacialGridClass") then {
         }],
 
         ["posToCoords", {
+            PROFILE_SCOPE(POSTOCOORDS, "ALiVE_fnc_spacialGrid: posToCoords")
+
             private _argX = _this select 0;
             private _argY = _this select 1;
 
@@ -80,7 +82,7 @@ if (isNil "ALiVE_spacialGridClass") then {
             private _originX = _gridOrigin select 0;
             private _originY = _gridOrigin select 1;
 
-            if (
+            private _result = if (
                 _argX >= _originX &&
                 {_argY >= _originY} &&
                 {_argX < (_originX + (_sectorSize * (_maxSector select 0)))} &&
@@ -93,17 +95,29 @@ if (isNil "ALiVE_spacialGridClass") then {
             } else {
                 [-1,-1]
             };
+
+            PROFILE_SCOPE_END(POSTOCOORDS)
+
+            _result
         }],
 
         ["coordsToSector", {
+            PROFILE_SCOPE(COORDSTOSECTOR, "ALiVE_fnc_spacialGrid: coordsToSector")
+
             if (_this isEqualTo [-1,-1]) exitWith {nil};
 
             private _sectorsInColumn = (_self get "maxSector") select 0;
             private _index = (_this select 0) + ((_this select 1) * _sectorsInColumn);
-            (_self get "sectors") select _index
+            private _result = (_self get "sectors") select _index;
+
+            PROFILE_SCOPE_END(COORDSTOSECTOR)
+
+            _result
         }],
 
         ["insert", {
+            PROFILE_SCOPE(INSERT, "ALiVE_fnc_spacialGrid: insert")
+
             private _points = _this;
             private _sectorsInColumn = (_self get "maxSector") select 0;
             private _sectors = _self get "sectors";
@@ -122,9 +136,13 @@ if (isNil "ALiVE_spacialGridClass") then {
             if ("onInsert" in _self) then {
                 _self call ["onInsert", _points];
             };
+
+            PROFILE_SCOPE_END(INSERT)
         }],
 
         ["remove", {
+            PROFILE_SCOPE(REMOVE, "ALiVE_fnc_spacialGrid: remove")
+
             private _point = _this;
             private _result = false;
             private _position = _point select 0;
@@ -146,10 +164,14 @@ if (isNil "ALiVE_spacialGridClass") then {
                 _self call ["onRemove", _point];
             };
 
+            PROFILE_SCOPE_END(REMOVE)
+
             _result
         }],
 
         ["move", {
+            PROFILE_SCOPE(MOVEOP, "ALiVE_fnc_spacialGrid: move")
+
             private _oldPos = _this select 0;
             private _newPos = _this select 1;
             private _data = _this select 2;
@@ -198,6 +220,8 @@ if (isNil "ALiVE_spacialGridClass") then {
             if ("onMove" in _self) then {
                 _self call ["onMove", [_oldPos,_newPos,_data,_updated,_oldCoords,_newCoords]];
             };
+
+            PROFILE_SCOPE_END(MOVEOP)
         }],
 
         ["clear", {
@@ -212,6 +236,8 @@ if (isNil "ALiVE_spacialGridClass") then {
         }],
 
         ["findInRange", {
+            PROFILE_SCOPE(FINDINRANGE, "ALiVE_fnc_spacialGrid: findInRange")
+
             private _center = _this select 0;
             private _radius = _this select 1;
             private _filter2D = _this param [2, false];
@@ -267,6 +293,8 @@ if (isNil "ALiVE_spacialGridClass") then {
                     _result = _result apply {_x select 1};
                 };
             };
+
+            PROFILE_SCOPE_END(FINDINRANGE)
 
             _result
         }]

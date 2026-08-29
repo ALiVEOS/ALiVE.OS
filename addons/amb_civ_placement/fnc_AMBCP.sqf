@@ -937,6 +937,8 @@ switch(_operation) do {
                     ALiVE_AMBCP_animalHandlerAttached = true;
 
                     ALiVE_AMBCP_fnc_animalUpdate = {
+                        PROFILE_SCOPE(ANIMALUPDATE,"ALiVE_AMBCP_fnc_animalUpdate")
+
                         {
                             _x params ["_pos", "_class", "_count", "_units", "_kind"];
                             private _activate   = ((allPlayers - entities "HeadlessClient_F") findIf { alive _x && {(_x distance _pos) < 1500} }) >= 0;
@@ -963,9 +965,12 @@ switch(_operation) do {
                                 _x set [3, []];
                             };
                         } forEach ALiVE_AMBCP_animalRegistry;
+
+                        PROFILE_SCOPE_END(ANIMALUPDATE)
                     };
 
                     [] call ALiVE_AMBCP_fnc_animalUpdate;
+
                     [ALiVE_AMBCP_fnc_animalUpdate, 30] call CBA_fnc_addPerFrameHandler;
                 };
 
