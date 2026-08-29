@@ -539,7 +539,6 @@ switch(_operation) do {
     };
 
     case "addWaypoint": {
-      private _addWaypointScope = createProfileScope "ALiVE profileEntity: addWaypoint";
       private _waypoint = _args;
       private _isSPE = [_logic, "isSPE", false] call ALIVE_fnc_hashGet;
       if (isNil "_isSPE") then { _isSPE = false; };
@@ -550,17 +549,12 @@ switch(_operation) do {
 
         private _pathfindingEnabled = [MOD(profileSystem),"pathfinding"] call ALiVE_fnc_hashGet;
         if (!_pathfindingEnabled) then {
-            private _dispatchScope = createProfileScope "ALiVE profileEntity addWaypoint: direct dispatch";
             [{ [_logic,"addWaypointInternal", _waypoint] call MAINCLASS }, []] call CBA_fnc_directCall;
-            _dispatchScope = nil;
         } else {
-            private _dispatchScope = createProfileScope "ALiVE profileEntity addWaypoint: pathfinding dispatch";
             [{ [_logic,"addPendingWaypoint", ["addWaypoint",_waypoint]] call MAINCLASS }, []] call CBA_fnc_directCall;
-            _dispatchScope = nil;
         };
 			};
         _result = _waypoint;
-        _addWaypointScope = nil;
     };
 
     case "addPendingWaypoint": {
@@ -749,7 +743,6 @@ switch(_operation) do {
     };
 
     case "addWaypointInternal": {
-      private _mutationScope = createProfileScope "ALiVE profileEntity: addWaypointInternal";
       private _isSPE = [_logic, "isSPE", false] call ALIVE_fnc_hashGet;
     	if (isNil "_isSPE") then { _isSPE = false; };
       if (typeName _isSPE != "BOOL") then { _isSPE = false; };
@@ -768,7 +761,6 @@ switch(_operation) do {
             [_logic,"profileWaypointToWaypoint", _waypoint] call MAINCLASS;
         };
      };
-      _mutationScope = nil;
     };
 
     case "clearWaypoints": {

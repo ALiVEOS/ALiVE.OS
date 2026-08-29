@@ -104,7 +104,6 @@ if (!_simAttacks) then {
         };
 
         if (!isnil "_profile") then {
-            private _simulatedProfileScope = createProfileScope "ALiVE profileSimulator: simulated profile";
 
             if (!_profileSystemPaused) then {
                 // begin sim
@@ -173,12 +172,10 @@ if (!_simAttacks) then {
                         // find and attack enemy profiles in-range
                         // only attack non-player, inactive entities
 
-                        private _combatScanScope = createProfileScope "ALiVE profileSimulator: combat proximity scan";
                         private _nearEnemies = [];
                         if !(_sidesEnemy isEqualTo []) then {
                             _nearEnemies = _spacialGridProfiles call ["findCombatTargets", [_profilePosition,_combatRange,_sidesEnemy]];
                         };
-                        _combatScanScope = nil;
 
                         if !(_nearEnemies isEqualTo []) then {
 
@@ -207,7 +204,6 @@ if (!_simAttacks) then {
 
                             private _active = _profile select 2 select 1;
                             if (!_active) then {
-                                private _inactiveMovementScope = createProfileScope "ALiVE profileSimulator: inactive movement";
 
                                 // profile is not spawned, simulate movement
 
@@ -307,7 +303,6 @@ if (!_simAttacks) then {
                                     };
 
                                     if (_vehicleCommander) then {
-                                        private _vehicleCommanderScope = createProfileScope "ALiVE profileSimulator: vehicle commander movement";
                                         // move vehicles that profile is in
                                         [_profile,"hasSimulated", true] call ALiVE_fnc_hashSet;
 
@@ -330,7 +325,6 @@ if (!_simAttacks) then {
 
                                                 private _boat = [_profile,"boat"] call ALiVE_fnc_hashGet;
                                                 if (_boatsEnabled && {!isnil "_boat"} && {!surfaceIsWater _profilePosition}) then {
-                                                    private _seaTransportRemovalScope = createProfileScope "ALiVE profileSimulator: sea transport removal";
                                                     private _boatProfileID = _boat select 0;
                                                     private _boatProfile = _profilesById get _boatProfileID;
 
@@ -349,11 +343,9 @@ if (!_simAttacks) then {
                                                     };
 
                                                     [_profile,"boat"] call ALiVE_fnc_hashRem;
-                                                    _seaTransportRemovalScope = nil;
                                                 };
                                             };
                                         } forEach _vehiclesInCommandOf;
-                                        _vehicleCommanderScope = nil;
                                     } else {
                                         // assign a boat to entities if on water
 
@@ -394,7 +386,6 @@ if (!_simAttacks) then {
                                                 };
 
                                                 if (_boatType != "") then {
-                                                    private _seaTransportCreationScope = createProfileScope "ALiVE profileSimulator: sea transport creation";
                                                     if (_debug) then {["Profile Simulator is adding a %1 boat to entity profile %2",_boatType,_profileID] call ALiVE_fnc_dump};
                                                     private _boatProfile = [_boatType,_side,_faction,_newPosition,0,false,_faction,[]] call ALiVE_fnc_createProfileVehicle;
                                                     [_profile,_boatProfile] call ALiVE_fnc_createProfileVehicleAssignment;
@@ -407,7 +398,6 @@ if (!_simAttacks) then {
                                                     };
 
                                                     [_profile, "boat", [[_boatProfile,"profileID"] call ALiVE_fnc_HashGet, _newPosition]] call ALiVE_fnc_hashSet;
-                                                    _seaTransportCreationScope = nil;
                                                 };
                                             };
                                         } else {
@@ -416,7 +406,6 @@ if (!_simAttacks) then {
 
                                             private _boat = [_profile,"boat"] call ALiVE_fnc_hashGet;
                                             if (_boatsEnabled && {!isnil "_boat"}) then {
-                                                private _seaTransportRemovalScope = createProfileScope "ALiVE profileSimulator: sea transport removal";
                                                 private _boatProfileID = _boat select 0;
                                                 private _boatProfile = _profilesById get _boatProfileID;
 
@@ -435,7 +424,6 @@ if (!_simAttacks) then {
                                                 };
 
                                                 [_profile,"boat"] call ALiVE_fnc_hashRem;
-                                                _seaTransportRemovalScope = nil;
                                             };
                                         };
 
@@ -457,7 +445,6 @@ if (!_simAttacks) then {
                                 } else {
                                     if (_debug) then {["Profile-Simulator profile movement stopped for profile %1: currentPosition: %2 destination: %3", [_profile,"profileID","no-ID"] call ALiVE_fnc_hashGet, _profilePosition, _destination] call ALiVE_fnc_dump};
                                 };
-                                _inactiveMovementScope = nil;
 
                             } else {
 
@@ -478,7 +465,6 @@ if (!_simAttacks) then {
 
                                     if (_moveDistance > 10 || {_nearDestination}) then {
                                         if (_vehicleCommander) then {
-                                            private _vehicleCommanderScope = createProfileScope "ALiVE profileSimulator: vehicle commander movement";
 
                                             // move all entities within the vehicle
                                             // set the vehicle position and merge all assigned entities positions
@@ -499,7 +485,6 @@ if (!_simAttacks) then {
 
                                             private _boat = [_profile,"boat"] call ALiVE_fnc_hashGet;
                                             if (_boatsEnabled && {((_newPosition) select 2) < 4} && {_nearDestination} && {!isnil "_boat"}) then {
-                                                private _seaTransportRemovalScope = createProfileScope "ALiVE profileSimulator: sea transport removal";
                                                 private _boatProfileID = _boat select 0;
                                                 private _creation = ([_profile,"boat"] call ALiVE_fnc_hashGet) select 1;
                                                 private _boatProfile = _profilesById get _boatProfileID;
@@ -525,9 +510,7 @@ if (!_simAttacks) then {
                                                 };
 
                                                 [_profile,"boat"] call ALiVE_fnc_hashRem;
-                                                _seaTransportRemovalScope = nil;
                                             };
-                                            _vehicleCommanderScope = nil;
 
                                         } else {
 
@@ -549,7 +532,6 @@ if (!_simAttacks) then {
                                             // Assign a boat to entities if on water
                                             if (_boatsEnabled && {surfaceIsWater _profilePosition} && {surfaceIsWater _newPosition} && {_deepEnough} && {call _isSeaTravel}) then {
                                                 if (isnil {[_profile,"boat"] call ALiVE_fnc_hashGet}) then {
-                                                    private _seaTransportCreationScope = createProfileScope "ALiVE profileSimulator: sea transport creation";
 
                                                     if (_debug) then {["Profile Simulator is adding a boat to entity profile (LIVE) %1",_profileID] call ALiVE_fnc_dump};
 
@@ -574,7 +556,6 @@ if (!_simAttacks) then {
                                                     };
 
                                                     [_profile,"boat", [[_boatProfile,"profileID"] call ALiVE_fnc_HashGet, _newPosition]] call ALiVE_fnc_hashSet;
-                                                    _seaTransportCreationScope = nil;
                                                 };
                                             };
 
@@ -607,7 +588,6 @@ if (!_simAttacks) then {
 
                                         if (_moveDistance > 10) then {
                                             if (_vehicleCommander) then {
-                                                private _vehicleCommanderScope = createProfileScope "ALiVE profileSimulator: vehicle commander movement";
                                                 // if in command of vehicle move all entities within the vehicle
                                                 // set the vehicle position and merge all assigned entities positions
 
@@ -620,7 +600,6 @@ if (!_simAttacks) then {
                                                         [_vehicleProfile,"mergePositions"] call ALiVE_fnc_profileVehicle;
                                                     };
                                                 } forEach _vehiclesInCommandOf;
-                                                _vehicleCommanderScope = nil;
                                             } else {
                                                 // set the entity position and merge all unit positions to group position
                                                 [_profile,"position", _newPosition] call ALiVE_fnc_profileEntity;
@@ -635,7 +614,6 @@ if (!_simAttacks) then {
 
                             // remove any ambient sea transport if no waypoint is assigned (should not happen - failsafe)
                             if (_boatsEnabled && {_vehicleCommander} && {!isnil {[_profile,"boat"] call ALiVE_fnc_hashGet}}) then {
-                                private _seaTransportRemovalScope = createProfileScope "ALiVE profileSimulator: sea transport removal";
                                 private _boatProfileID = ([_profile,"boat"] call ALiVE_fnc_hashGet) select 0;
                                 private _boatProfile = _profilesById get _boatProfileID;
 
@@ -652,7 +630,6 @@ if (!_simAttacks) then {
                                 };
 
                                 [_profile,"boat"] call ALiVE_fnc_hashRem;
-                                _seaTransportRemovalScope = nil;
                             };
                         };
                     };
@@ -668,7 +645,6 @@ if (!_simAttacks) then {
 
                             if (_moveDistance > 10) then {
                                 if (_vehicleCommander) then {
-                                    private _vehicleCommanderScope = createProfileScope "ALiVE profileSimulator: vehicle commander movement";
                                     // if in command of vehicle move all entities within the vehicle
                                     // set the vehicle position and merge all assigned entities positions
 
@@ -682,7 +658,6 @@ if (!_simAttacks) then {
                                             [_vehicleProfile,"mergePositions"] call ALiVE_fnc_profileVehicle;
                                         };
                                     } forEach _vehiclesInCommandOf;
-                                    _vehicleCommanderScope = nil;
                                 } else {
                                     _newPosition = getPosATL _leader;
 
@@ -703,7 +678,6 @@ if (!_simAttacks) then {
             };
 
             [_profile,"timeLastSim", _simulationTime] call ALiVE_fnc_hashSet;
-            _simulatedProfileScope = nil;
         };
     };
 
