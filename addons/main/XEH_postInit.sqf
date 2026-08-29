@@ -6,19 +6,16 @@
     private _now = diag_tickTime;
 
     if (isGamePaused) then {
-        ALiVE_simulationTimeHandler set ["paused", true];
+        ALiVE_isGamePaused = true;
     } else {
-        private _wasPaused = ALiVE_simulationTimeHandler get "paused";
-        if (!_wasPaused) then {
-            private _timeLastUpdate = ALiVE_simulationTimeHandler get "timeLastUpdate";
-            private _simulationTime = ALiVE_simulationTimeHandler get "tickTime";
-            ALiVE_simulationTimeHandler set ["tickTime", _simulationTime + (_now - _timeLastUpdate)];
+        if (!ALiVE_isGamePaused) then {
+            ALiVE_simulationTime = ALiVE_simulationTime + (_now - ALiVE_simulationTimeLastUpdate);
         };
 
-        ALiVE_simulationTimeHandler set ["paused", false];
+        ALiVE_isGamePaused = false;
     };
 
-    ALiVE_simulationTimeHandler set ["timeLastUpdate", _now];
+    ALiVE_simulationTimeLastUpdate = _now;
 }, 0, []] call CBA_fnc_addPerFrameHandler;
 
 //To be enabled when ZEUS is stable

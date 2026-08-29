@@ -66,11 +66,9 @@ ALiVE_airsideCacheReady = false;
 
 // Shared clock for ALiVE systems which doesn't count time spent in pause menu
 private _simulationTimeNow = diag_tickTime;
-ALiVE_simulationTimeHandler = createHashMapFromArray [
-    ["paused", isGamePaused],
-    ["tickTime", _simulationTimeNow],
-    ["timeLastUpdate", _simulationTimeNow]
-];
+ALiVE_isGamePaused = isGamePaused;
+ALiVE_simulationTime = _simulationTimeNow;
+ALiVE_simulationTimeLastUpdate = _simulationTimeNow;
 
 //Set ALiVE Interaction menu on custom userkey 20 and if none is defined fallback to 221 App key
 if ((count ActionKeys "User20") > 0) then {

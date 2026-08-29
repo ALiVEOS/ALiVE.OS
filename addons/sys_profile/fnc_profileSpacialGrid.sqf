@@ -270,7 +270,6 @@ if (isNil "ALiVE_profileSpacialGridClass") then {
         }],
 
         ["findCombatTargets", {
-            private _findCombatTargetsScope = createProfileScope "ALiVE spacialGrid: findCombatTargets";
             private _center = _this select 0;
             private _radius = _this select 1;
             private _enemySides = _this select 2;
@@ -335,7 +334,6 @@ if (isNil "ALiVE_profileSpacialGridClass") then {
             };
 
             private _result = _targets apply {_x select 1};
-            _findCombatTargetsScope = nil;
             _result
         }]
     ];

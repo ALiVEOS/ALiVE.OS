@@ -212,7 +212,6 @@ if (isNil "ALiVE_spacialGridClass") then {
         }],
 
         ["findInRange", {
-            private _findInRangeScope = createProfileScope "ALiVE spacialGrid: findInRange";
             private _center = _this select 0;
             private _radius = _this select 1;
             private _filter2D = _this param [2, false];
@@ -269,7 +268,6 @@ if (isNil "ALiVE_spacialGridClass") then {
                 };
             };
 
-            _findInRangeScope = nil;
             _result
         }]
     ];

@@ -99,7 +99,7 @@ class FSM
                 {
                         name = "INIT";
                         itemno = 0;
-                        init = /*%FSM<STATEINIT""">*/"private _profileScope = createProfileScope ""ALiVE TACOM FSM: INIT"";" \n
+                        init = /*%FSM<STATEINIT""">*/"" \n
                          "_busy = false;" \n
                          "_exitFSM = false;" \n
                          "_TAC_confirmed = false;" \n
@@ -174,7 +174,7 @@ class FSM
                          "    [""MIL OPCOM - Counting %1 profiles for faction %2"",count _profiles,_factions] call ALIVE_fnc_dumpR;" \n
                          "};" \n
                          "// debug ---------------------------------------" \n
-                         "_profileScope = nil;"/*%FSM</STATEINIT""">*/;
+                         ""/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
@@ -200,7 +200,7 @@ class FSM
                 {
                         name = "ANALYZE";
                         itemno = 2;
-                        init = /*%FSM<STATEINIT""">*/"private _profileScope = createProfileScope ""ALiVE TACOM FSM: ANALYZE"";" \n
+                        init = /*%FSM<STATEINIT""">*/"" \n
                          "private [""_pos"",""_objective"",""_size"",""_operation"",""_data_operation"",""_data_value"",""_tacom_data"",""_recon"",""_capture"",""_defend"",""_reserve"",""_custom"",""_dataset"",""_transmit"",""_TACOM_ACTION"",""_timeout"",""_section"",""_sectionSupport"",""_event""];" \n
                          "" \n
                          "_busy = true;" \n
@@ -238,7 +238,6 @@ class FSM
                          "    switch (_DATA_OPERATION) do {" \n
                          "" \n
                          "        case (""analyze_internal"") : {" \n
-                         "            private _internalAnalysisScope = createProfileScope ""ALiVE TACOM ANALYZE: internal analysis"";" \n
                          "            // Scan for enemies when inactive more than 60 seconds" \n
                          "            //[""Analyze internal | %1 | %2"",time,_lastEnemyScan] call ALiVE_fnc_DumpR;" \n
                          "" \n
@@ -280,27 +279,23 @@ class FSM
                          "                        " \n
                          "                _lastEnemyScan = time;" \n
                          "            };" \n
-                         "            _internalAnalysisScope = nil;" \n
                          "        };" \n
                          "        " \n
                          "        //Analyze sent data" \n
                          "        case (""analyze"") : {" \n
                          "            private [""_targets"",""_targetID"",""_target"",""_vehicle""];" \n
-                         "            private _orderDecodeScope = createProfileScope ""ALiVE TACOM ANALYZE: order decode"";" \n
                          "    " \n
                          "            _objective = _DATA_VALUE;" \n
-                         "            if (isnil ""_objective"") exitwith {_orderDecodeScope = nil};" \n
+                         "            if (isnil ""_objective"") exitwith {};" \n
                          "            _objectiveDeleted = [_objective,""deleted"",false] call ALiVE_fnc_HashGet;" \n
-                         "            if (_objectiveDeleted) exitwith {_orderDecodeScope = nil};" \n
+                         "            if (_objectiveDeleted) exitwith {};" \n
                          "" \n
                          "            _pos = [_objective,""center""] call AliVE_fnc_HashGet;" \n
                          "            _opcom_orders = [_objective,""opcom_orders""] call AliVE_fnc_HashGet;" \n
                          "            _state = [_objective,""opcom_state""] call AliVE_fnc_HashGet;" \n
                          "            _playertasks = [_OPCOM_HANDLER,""playertasks"",[]] call ALiVE_fnc_HashGet;" \n
-                         "            _orderDecodeScope = nil;" \n
                          "" \n
                          "            //select internal TACOM orders by global OPCOM order and set appropriate conditions for execution" \n
-                         "            private _orderDecisionScope = createProfileScope ""ALiVE TACOM ANALYZE: order decision"";" \n
                          "            switch (_opcom_orders) do {" \n
                          "" \n
                          "                case (""attack"") : {" \n
@@ -355,13 +350,11 @@ class FSM
                          "                case (""custom"") : {};" \n
                          "                default {};" \n
                          "            };" \n
-                         "            _orderDecisionScope = nil;" \n
                          "        };" \n
                          "" \n
                          "        //handle internal order completion by TACOM order state" \n
                          "        case (""completed"") : {" \n
                          "            private [""_ProfileID"",""_profile""];" \n
-                         "            private _completionSetupScope = createProfileScope ""ALiVE TACOM ANALYZE: completion setup"";" \n
                          "" \n
                          "            _ProfileID = _DATA_VALUE select 0;" \n
                          "            _objectiveID = _DATA_VALUE select 1;" \n
@@ -375,12 +368,11 @@ class FSM
                          "                [_OPCOM_HANDLER,""resetProfileOrders"",_ProfileID] call ALiVE_fnc_OPCOM;" \n
                          "                _TACOM_DATA = nil;" \n
                          "                _busy = false;" \n
-                         "                _completionSetupScope = nil;" \n
                          "            };" \n
                          "" \n
                          "            _profile = [ALiVE_ProfileHandler,""getProfile"",_profileID] call ALiVE_fnc_ProfileHandler;" \n
                          "" \n
-                         "            if (isnil ""_profile"") exitwith {_TACOM_DATA = [""analyze"",_objective]; _busy = false; _completionSetupScope = nil};" \n
+                         "            if (isnil ""_profile"") exitwith {_TACOM_DATA = [""analyze"",_objective]; _busy = false};" \n
                          "" \n
                          "            _posP = [_profile,""position""] call ALiVE_fnc_HashGet;" \n
                          "            _section = [_objective,""section""] call AliVE_fnc_HashGet;" \n
@@ -393,9 +385,7 @@ class FSM
                          "            private _events = [];" \n
                          "            " \n
                          "            private _success = true;" \n
-                         "            _completionSetupScope = nil;" \n
                          "" \n
-                         "            private _completionStateScope = createProfileScope ""ALiVE TACOM ANALYZE: completion state handling"";" \n
                          "            switch (_state) do {" \n
                          "                case (""recon"") : {" \n
                          "                    if !([_OPCOM_HANDLER,""synchronizeorders"",_ProfileID] call ALiVE_fnc_OPCOM) exitwith {" \n
@@ -482,20 +472,15 @@ class FSM
                          "" \n
                          "                default {_dataset = {}};" \n
                          "            };" \n
-                         "            _completionStateScope = nil;" \n
                          "" \n
-                         "            private _completionEventScope = createProfileScope ""ALiVE TACOM ANALYZE: completion event"";" \n
                          "            if (_success) then {" \n
                          "                _events pushBack (['TACOM_ORDER_COMPLETE', [_opcomID,_objective,_state,_side,_factions, _success, _opcomOrderCompleteArgs], ""TACOM""] call ALIVE_fnc_event);" \n
                          "            };" \n
                          "            if (_events isNotEqualTo []) then {" \n
                          "                [ALIVE_eventLog, ""addEvents"", _events] call ALIVE_fnc_eventLog;" \n
                          "            };" \n
-                         "            _completionEventScope = nil;" \n
                          "            " \n
-                         "            private _datasetTransmissionScope = createProfileScope ""ALiVE TACOM ANALYZE: dataset transmission"";" \n
                          "            if !(isnil ""_dataset"") then {if (_transmit) then {call _dataset}};" \n
-                         "            _datasetTransmissionScope = nil;" \n
                          "        };" \n
                          "        default {};" \n
                          "    };" \n
@@ -505,7 +490,7 @@ class FSM
                          "};" \n
                          "" \n
                          "_lastanalyze = time;" \n
-                         "_profileScope = nil;"/*%FSM</STATEINIT""">*/;
+                         ""/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
@@ -617,7 +602,7 @@ class FSM
                 {
                         name = "ISSUE_ORDERS";
                         itemno = 10;
-                        init = /*%FSM<STATEINIT""">*/"private _profileScope = createProfileScope ""ALiVE TACOM FSM: ISSUE_ORDERS"";" \n
+                        init = /*%FSM<STATEINIT""">*/"" \n
                          "private [""_profilesByID"",""_data"",""_state"",""_section"",""_pos"",""_objectiveID"",""_turn"",""_orderBatch""];" \n
                          "" \n
                          "_TACOM_status = ""Order"";" \n
@@ -628,10 +613,8 @@ class FSM
                          "    _data = [_objective, [""objective deleted""]];" \n
                          "    " \n
                          "    _busy = false;" \n
-                         "    _profileScope = nil;" \n
                          "};" \n
                          "" \n
-                         "private _contextScope = createProfileScope ""ALiVE TACOM ISSUE_ORDERS: context lookup"";" \n
                          "//Get profiles by ID and objective data" \n
                          "_profilesByID = [ALIVE_profileHandler, ""profilesById""] call ALIVE_fnc_HashGet;" \n
                          "_section = [_objective,""section"",[]] call AliVE_fnc_HashGet;" \n
@@ -639,7 +622,6 @@ class FSM
                          "_pos = [_objective,""center""] call AliVE_fnc_HashGet;" \n
                          "_objectiveID = [_objective,""objectiveID""] call AliVE_fnc_HashGet;" \n
                          "_orderBatch = [];" \n
-                         "_contextScope = nil;" \n
                          "" \n
                          "//set orders by type" \n
                          "switch (_operation) do {" \n
@@ -650,14 +632,12 @@ class FSM
                          "        if (count _section >= _sectionsamount_attack) then {" \n
                          "            [_objective,""tacom_state"",""recon""] call AliVE_fnc_HashSet;" \n
                          "" \n
-                         "            private _batchScope = createProfileScope ""ALiVE TACOM ISSUE_ORDERS: recon batch construction"";" \n
                          "            {" \n
                          "                _profileID = _x;" \n
                          "" \n
                          "                private _profile = _profilesByID get _profileID;" \n
                          "                if !(isNil ""_profile"") then {" \n
                          "" \n
-                         "                    private _positionScope = createProfileScope ""ALiVE TACOM ISSUE_ORDERS: recon position generation"";" \n
                          "                    //Select recon postion in angle to objectve" \n
                          "                    _posP = _profile select 2 select 2;" \n
                          "                    _direction = (_pos getDir _posP);" \n
@@ -668,7 +648,6 @@ class FSM
                          "                    _newPosition = (_newPosition getPos [150, _direction]);" \n
                          "" \n
                          "                    if (surfaceIsWater _newPosition) then {" \n
-                         "                        private _safePositionScope = createProfileScope ""ALiVE TACOM ISSUE_ORDERS: recon findSafePos"";" \n
                          "                        _newPosition = [" \n
                          "                            _newPosition, " \n
                          "                            0, " \n
@@ -680,16 +659,13 @@ class FSM
                          "                            [], " \n
                          "                            [_newPosition]" \n
                          "                        ] call BIS_fnc_findSafePos;" \n
-                         "                        _safePositionScope = nil;" \n
                          "                    };" \n
-                         "                    _positionScope = nil;" \n
                          "" \n
                          "                    _posWP = [_newPosition,50] call CBA_fnc_Randpos;" \n
                          "" \n
                          "                    _orderBatch pushBack [_posWP,_profileID];" \n
                          "                };" \n
                          "            } foreach _section;" \n
-                         "            _batchScope = nil;" \n
                          "            [_OPCOM_HANDLER,""setSectionOrders"",[_objective,_objectiveID,_operation,_orderBatch]] call ALiVE_fnc_OPCOM;" \n
                          "" \n
                          "            private _opcomID = [_OPCOM_HANDLER,""opcomID""] call ALiVE_fnc_hashGet;" \n
@@ -703,13 +679,10 @@ class FSM
                          "                _recon set [1,[""no groups available""]];" \n
                          "                _TAC_confirmed = false;" \n
                          "            } else {" \n
-                         "                private _regroupScope = createProfileScope ""ALiVE TACOM ISSUE_ORDERS: recon regroup fallback"";" \n
                          "                private _objectives = [_OPCOM_HANDLER,""objectives""] call ALiVE_fnc_HashGet;" \n
-                         "                private _candidateScope = createProfileScope ""ALiVE TACOM ISSUE_ORDERS: recon regroup candidate filtering"";" \n
                          "                private _idleObjectives = _objectives select {" \n
                          "                    ([_x,""opcom_state""] call ALiVE_fnc_HashGet) == ""idle""" \n
                          "                };" \n
-                         "                _candidateScope = nil;" \n
                          "" \n
                          "                {" \n
                          "                    _profileID = _x;" \n
@@ -717,7 +690,6 @@ class FSM
                          "                    private _profile = _profilesByID get _profileID;" \n
                          "                    if !(isNil ""_profile"") then {" \n
                          "" \n
-                         "                        private _selectionScope = createProfileScope ""ALiVE TACOM ISSUE_ORDERS: recon regroup objective selection"";" \n
                          "                        //Select nearest taken objective to regroup" \n
                          "                        _posP = _profile select 2 select 2;" \n
                          "                        private _nearestObjective = [];" \n
@@ -738,10 +710,8 @@ class FSM
                          "                            _profileWaypoint = [_posWP, 50] call ALIVE_fnc_createProfileWaypoint;" \n
                          "                            [_profile, ""addWaypoint"", _profileWaypoint] call ALIVE_fnc_profileEntity;" \n
                          "                        };" \n
-                         "                        _selectionScope = nil;" \n
                          "                    };" \n
                          "                } foreach _section;" \n
-                         "                _regroupScope = nil;" \n
                          "" \n
                          "                _recon set [1,[""not enough groups to build a section, regrouping...""]];" \n
                          "                _TAC_confirmed = false;" \n
@@ -755,7 +725,6 @@ class FSM
                          "        if (count _section > 0) then {" \n
                          "            [_objective,""tacom_state"",""capture""] call AliVE_fnc_HashSet;" \n
                          "" \n
-                         "            private _batchScope = createProfileScope ""ALiVE TACOM ISSUE_ORDERS: capture batch construction"";" \n
                          "            {" \n
                          "                private _profileID = _x;" \n
                          "" \n
@@ -763,7 +732,6 @@ class FSM
                          "                    _orderBatch pushBack [([_pos,50] call CBA_fnc_RandPos),_profileID];" \n
                          "                };" \n
                          "            } foreach _section;" \n
-                         "            _batchScope = nil;" \n
                          "            [_OPCOM_HANDLER,""setSectionOrders"",[_objective,_objectiveID,_operation,_orderBatch]] call ALiVE_fnc_OPCOM;" \n
                          "" \n
                          "            private _opcomID = [_OPCOM_HANDLER,""opcomID""] call ALiVE_fnc_hashGet;" \n
@@ -784,7 +752,6 @@ class FSM
                          "        if (count _section > 0) then {" \n
                          "            [_objective,""tacom_state"",""defend""] call AliVE_fnc_HashSet;" \n
                          "" \n
-                         "            private _batchScope = createProfileScope ""ALiVE TACOM ISSUE_ORDERS: defend batch construction"";" \n
                          "            {" \n
                          "                private _profileID = _x;" \n
                          "" \n
@@ -792,7 +759,6 @@ class FSM
                          "                    _orderBatch pushBack [([_pos,50] call CBA_fnc_RandPos),_profileID];" \n
                          "                };" \n
                          "            } foreach _section;" \n
-                         "            _batchScope = nil;" \n
                          "            [_OPCOM_HANDLER,""setSectionOrders"",[_objective,_objectiveID,_operation,_orderBatch]] call ALiVE_fnc_OPCOM;" \n
                          "            " \n
                          "            private _opcomID = [_OPCOM_HANDLER,""opcomID""] call ALiVE_fnc_hashGet;" \n
@@ -813,7 +779,6 @@ class FSM
                          "        if (count _section > 0) then {" \n
                          "            [_objective,""tacom_state"",""reserve""] call AliVE_fnc_HashSet;" \n
                          "" \n
-                         "            private _batchScope = createProfileScope ""ALiVE TACOM ISSUE_ORDERS: reserve batch construction"";" \n
                          "            {" \n
                          "                private _profileID = _x;" \n
                          "" \n
@@ -821,7 +786,6 @@ class FSM
                          "                    _orderBatch pushBack [([_pos,15] call CBA_fnc_RandPos),_profileID];" \n
                          "                };" \n
                          "            } foreach _section;" \n
-                         "            _batchScope = nil;" \n
                          "            [_OPCOM_HANDLER,""setSectionOrders"",[_objective,_objectiveID,_operation,_orderBatch]] call ALiVE_fnc_OPCOM;" \n
                          "            " \n
                          "            private _opcomID = [_OPCOM_HANDLER,""opcomID""] call ALiVE_fnc_hashGet;" \n
@@ -842,7 +806,7 @@ class FSM
                          "    " \n
                          "    default {};" \n
                          "};" \n
-                         "_profileScope = nil;"/*%FSM</STATEINIT""">*/;
+                         ""/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
@@ -887,11 +851,11 @@ class FSM
                 {
                         name = "INITIALIZE";
                         itemno = 15;
-                        init = /*%FSM<STATEINIT""">*/"private _profileScope = createProfileScope ""ALiVE TACOM FSM: INITIALIZE"";" \n
+                        init = /*%FSM<STATEINIT""">*/"" \n
                          "// debug ---------------------------------------" \n
                          "if(_debug) then { [""TACOM initialized, %1!"",true] call ALIVE_fnc_dumpR; };" \n
                          "// debug ---------------------------------------" \n
-                         "_profileScope = nil;"/*%FSM</STATEINIT""">*/;
+                         ""/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
@@ -915,9 +879,9 @@ class FSM
                 {
                         name = "TRANSMIT_TO_OPCO";
                         itemno = 17;
-                        init = /*%FSM<STATEINIT""">*/"private _profileScope = createProfileScope ""ALiVE TACOM FSM: TRANSMIT_TO_OPCO"";" \n
+                        init = /*%FSM<STATEINIT""">*/"" \n
                          "_OPCOM_FSM setFSMVariable [""_OPCOM_DATA"",[""confirmed"",[true,_data]]];" \n
-                         "_profileScope = nil;"/*%FSM</STATEINIT""">*/;
+                         ""/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
@@ -952,9 +916,9 @@ class FSM
                 {
                         name = "TRANSMIT_TO_OPCO_1";
                         itemno = 18;
-                        init = /*%FSM<STATEINIT""">*/"private _profileScope = createProfileScope ""ALiVE TACOM FSM: TRANSMIT_TO_OPCO_1"";" \n
+                        init = /*%FSM<STATEINIT""">*/"" \n
                          "_OPCOM_FSM setFSMVariable [""_OPCOM_DATA"",[""confirmed"",[false,_data]]];" \n
-                         "_profileScope = nil;"/*%FSM</STATEINIT""">*/;
+                         ""/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
@@ -989,13 +953,13 @@ class FSM
                 {
                         name = "COLLECT_TO_QUEUE";
                         itemno = 20;
-                        init = /*%FSM<STATEINIT""">*/"private _profileScope = createProfileScope ""ALiVE TACOM FSM: COLLECT_TO_QUEUE"";" \n
+                        init = /*%FSM<STATEINIT""">*/"" \n
                          "_TACOM_status = ""collect data to queue"";" \n
                          "_timestamp = time;" \n
                          "" \n
                          "_TACOM_QUEUE pushback _TACOM_DATA;" \n
                          "_TACOM_DATA = nil;" \n
-                         "_profileScope = nil;"/*%FSM</STATEINIT""">*/;
+                         ""/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
@@ -1029,7 +993,7 @@ class FSM
                 {
                         name = "SELECT_SECTION";
                         itemno = 23;
-                        init = /*%FSM<STATEINIT""">*/"private _profileScope = createProfileScope ""ALiVE TACOM FSM: SELECT_SECTION"";" \n
+                        init = /*%FSM<STATEINIT""">*/"" \n
                          "private [""_objective"",""_section"",""_size"",""_sectionAssist"",""_operation"",""_hdl"",""_taskTypes""];" \n
                          "" \n
                          "_TACOM_status = ""Select section"";" \n
@@ -1098,7 +1062,7 @@ class FSM
                          "} else {" \n
                          "    _hdl = [] spawn {true};" \n
                          "};" \n
-                         "_profileScope = nil;"/*%FSM</STATEINIT""">*/;
+                         ""/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
@@ -1132,10 +1096,10 @@ class FSM
                 {
                         name = "PREPARE_ORDERS";
                         itemno = 25;
-                        init = /*%FSM<STATEINIT""">*/"private _profileScope = createProfileScope ""ALiVE TACOM FSM: PREPARE_ORDERS"";" \n
+                        init = /*%FSM<STATEINIT""">*/"" \n
                          "terminate _hdl;" \n
                          "" \n
-                         "if ([_objective,""deleted"",false] call ALiVE_fnc_HashGet) exitwith {_profileScope = nil};" \n
+                         "if ([_objective,""deleted"",false] call ALiVE_fnc_HashGet) exitwith {};" \n
                          "" \n
                          "private [""_sectionAssist""];" \n
                          "_sectionAssist = [_objective,""sectionAssist"",[]] call AliVE_fnc_HashGet;" \n
@@ -1162,7 +1126,7 @@ class FSM
                          "};" \n
                          "" \n
                          "_section = [_objective,""section"",[]] call AliVE_fnc_HashGet;" \n
-                         "_profileScope = nil;"/*%FSM</STATEINIT""">*/;
+                         ""/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
@@ -1185,9 +1149,9 @@ class FSM
                 {
                         name = "END";
                         itemno = 28;
-                        init = /*%FSM<STATEINIT""">*/"private _profileScope = createProfileScope ""ALiVE TACOM FSM: END"";" \n
+                        init = /*%FSM<STATEINIT""">*/"" \n
                          "[_OPCOM_HANDLER,""TACOM_FSM""] call ALiVE_fnc_HashRem;" \n
-                         "_profileScope = nil;"/*%FSM</STATEINIT""">*/;
+                         ""/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
