@@ -476,6 +476,10 @@ switch(_operation) do {
             if(isNil "ALIVE_clustersCiv" && isNil "ALIVE_loadedCivClusters") then {
                 _worldName = toLower(worldName);
                 _file = format["x\alive\addons\civ_placement\clusters\clusters.%1_civ.sqf", _worldName];
+                // Claimed before the compile, not after. The compile yields to the scheduler all the way
+                // through, so a flag raised only at the end let every concurrent instance pass the test
+                // above and compile the same file over again. The wait below demands true, not merely set.
+                ALIVE_loadedCIVClusters = false;
                 call compile preprocessFileLineNumbers _file;
                 ALIVE_loadedCIVClusters = true;
                 _compiledClusters = true;

@@ -113,6 +113,10 @@ if (isNil "ALIVE_clustersCiv" && isNil "ALIVE_loadedCIVClusters") then {
     if (_debug) then {
         ["ALIVE IED - no other module has loaded the terrain's clusters, loading them here"] call ALiVE_fnc_dump;
     };
+    // Claimed before the compile, not after. The compile yields to the scheduler all the way
+    // through, so a flag raised only at the end let every concurrent instance pass the test
+    // above and compile the same file over again. The wait below demands true, not merely set.
+    ALIVE_loadedCIVClusters = false;
     call compile preprocessFileLineNumbers _clusterFile;
     ALIVE_loadedCIVClusters = true;
 };
