@@ -21,7 +21,7 @@ source behavior. “Inference” is explicitly labelled.
 INIT
   └─ (both FSM handles exist and are > 0) ─► INITIALIZE
                                              │
-                                             │ incoming _TACOM_DATA, ! _pause
+                                             │ queued or nonempty legacy data, ! _pause
                                              ▼
                                       COLLECT_TO_QUEUE
                                              │ queue nonempty, idle, >0.5 s
@@ -64,18 +64,23 @@ stop responsiveness depends on reaching their successor; the stop routine in
 
 2. **Mailbox wait — `INITIALIZE` then `COLLECT_TO_QUEUE`.** `INITIALIZE` is
    intentionally almost empty (debug logging only). Its receive condition
-   *assigns* `_TACOM_status = "waiting for data"`, then requires non-nil
-   `_TACOM_DATA` and `!_pause`. This is an observed assignment expression, not
-   a comparison-only status guard. `COLLECT_TO_QUEUE` appends that payload,
-   clears the mailbox, and waits for an idle TACOM and a 0.5-second analysis
+   *assigns* `_TACOM_status = "waiting for data"`, then requires a nonempty
+   `_TACOM_DATA` legacy slot or queued work and `!_pause`. This is an observed
+   assignment expression, not a comparison-only status guard. The legacy slot
+   is initialized to `[]`; `COLLECT_TO_QUEUE` appends a nonempty payload, resets
+   the slot to `[]`, and waits for an idle TACOM and a 0.5-second analysis
    throttle.
 
 3. **Decision and completion — `ANALYZE`.** The queue is FIFO: one entry is
    removed with `deleteAt 0`. After 15 seconds with no entry it synthesizes
-   `analyze_internal`. Ordinary `['analyze', objective]` work converts the
-   OPCOM order into a tactical descriptor. A completed waypoint returns as
-   `['completed', [profileID, objectiveID, orders]]`; TACOM synchronizes the
-   objective’s pending orders and then advances its objective/profile state.
+   `analyze_internal`; a due internal enemy scan publishes its completed result
+   back as `['enemy_scan_complete', [generation, targets]]`. TACOM owns one
+   generation/worker/deadline at a time and publishes the shared contact snapshot
+   only after accepting that active generation. Ordinary `['analyze', objective]`
+   work converts the OPCOM order into a tactical descriptor. A completed
+   waypoint returns as `['completed', [profileID, objectiveID, orders]]`; TACOM
+   synchronizes the objective’s pending orders and then advances its
+   objective/profile state.
 
 4. **Composition — `SELECT_SECTION` and `PREPARE_ORDERS`.** The selection
    state validates existing section IDs, starts an asynchronous nearest-force
@@ -101,14 +106,14 @@ stop responsiveness depends on reaching their successor; the stop routine in
 |---|---|---|
 | `INIT` | Initializes local state/config/profile cache; waits for paired handles; then `INITIALIZE`. | Missing handles wait indefinitely. Missing profile IDs are logged; category duplicates are processed more than once. |
 | `INITIALIZE` | Debug-only setup; waits for mailbox and goes to `COLLECT_TO_QUEUE`. | No timeout or exit edge; pause/no data can retain it. |
-| `COLLECT_TO_QUEUE` | Enqueues one payload and clears `_TACOM_DATA`; then `ANALYZE` when idle/throttled. | Priority-99 exit discards queued work by ending. |
-| `ANALYZE` | Consumes one action, decides an operation or handles a completion; routes to section selection, order issue, itself, or mailbox receive. | Deleted objective goes directly to `ISSUE_ORDERS`; malformed action payloads are not shape-checked. |
+| `COLLECT_TO_QUEUE` | Enqueues a nonempty legacy payload and resets `_TACOM_DATA` to `[]`; then `ANALYZE` when idle/throttled. | Priority-99 exit discards queued work by ending. |
+| `ANALYZE` | Consumes one action, owns/version-checks internal enemy scans, handles waypoint completion, or decides an operation; routes to section selection, order issue, itself, or mailbox receive. | Deleted objective goes directly to `ISSUE_ORDERS`; malformed ordinary action payloads are not shape-checked. Failed/timed-out scans release ownership and late generations cannot react. |
 | `SELECT_SECTION` | Repairs dead IDs and asynchronously finds eligible candidates; then `PREPARE_ORDERS` when `_hdl` completes. | `_exitFSM` can end it while the spawned lookup is still live. |
 | `PREPARE_ORDERS` | Commits/trim section membership, then always enters `ISSUE_ORDERS`. | A deleted objective exits only the state init; `ISSUE_ORDERS` performs the final deleted-objective response. |
-| `ISSUE_ORDERS` | Builds waypoints, changes `tacom_state`, logs issuance, and chooses confirmation transport. | Deleted/no-group/undersized outcomes are negative; capture intentionally sends a negative preparation acknowledgement while attack remains in progress. |
-| `TRANSMIT_TO_OPCO` | Writes `['confirmed',[true,_data]]` to OPCOM. | Remains to receive next data unless stopping; no acknowledgement/retry validation. |
-| `TRANSMIT_TO_OPCO_1` | Writes `['confirmed',[false,_data]]` to OPCOM. | Same receive wait; the upstream 30-second condition is only an entry fallback. |
-| `END` | Removes handler key `TACOM_FSM` and terminates. | Does not terminate a selection worker or clean operational state. |
+| `ISSUE_ORDERS` | Resets result scratch state, builds waypoints, changes `tacom_state`, logs only a nonempty issued batch, and chooses confirmation transport. | Deleted/no-group/undersized/zero-issued-waypoint outcomes are negative; capture intentionally sends a negative preparation acknowledgement while attack remains in progress. |
+| `TRANSMIT_TO_OPCO` | Queues `['confirmed',[true,_data,orderID,confirmedAt]]` to OPCOM. | Remains to receive next data unless stopping; no acknowledgement/retry validation. |
+| `TRANSMIT_TO_OPCO_1` | Queues `['confirmed',[false,_data,orderID,confirmedAt]]` to OPCOM. | Same receive wait; the upstream 30-second condition is only an entry fallback. |
+| `END` | Terminates an owned enemy-scan worker, removes handler key `TACOM_FSM`, and terminates. | Does not terminate a section-selection worker or clean other operational state. |
 
 ## Data and mailbox contract
 
@@ -116,12 +121,12 @@ stop responsiveness depends on reaching their successor; the stop routine in
 
 | Name | Meaning / owner |
 |---|---|
-| `_TACOM_DATA` | Single-slot inbound mailbox. OPCOM and profile-waypoint statements write it; the collect state consumes and clears it. |
-| `_TACOM_QUEUE` | FIFO buffer of mailbox payloads. No capacity/back-pressure is implemented. |
+| `_TACOM_DATA` | Legacy single-slot inbound mailbox initialized/reset to `[]`; the collect state appends a nonempty value to the queue. |
+| `_TACOM_QUEUE` | Authoritative FIFO buffer. OPCOM, internal TACOM work, `addTask`, and profile-waypoint callbacks append to it. No capacity/back-pressure is implemented. |
 | `_busy`, `_lastanalyze`, `_timestamp` | Serialization and timing. Analysis clears `_busy` and stamps `_lastanalyze`; collection requires 0.5 seconds since it. |
 | `_pause`, `_exitFSM` | External control flags. Receive links require not paused; several states test exit at priority 99. |
 | `_recon`, `_capture`, `_defend`, `_reserve`, `_custom` | One-operation scratch descriptors, conventionally `[objective, requestedSize]`, selected by `ANALYZE` and consumed by selection/order issue. |
-| `_TAC_confirmed`, `_data` | Result-routing boolean and payload. `ISSUE_ORDERS` determines them; a transport wraps `_data` for OPCOM. |
+| `_TAC_confirmed`, `_data`, `_orderID` | Result-routing boolean, payload, and OPCOM correlation ID. `ISSUE_ORDERS` determines the result; a transport wraps it for OPCOM. |
 
 ### Handler/objective contract
 
@@ -140,11 +145,12 @@ The main shared mutable structures are:
 - handler keys: `pendingorders` (records `[position, profileID, objectiveID,
   time]`), `ProfileIDsReserve`, `profileObjectiveAssignment`, `objectivesByID`,
   `knownentities`;
-- cross-FSM mailboxes: TACOM writes `_OPCOM_FSM` variable `_OPCOM_DATA` and
-  OPCOM/profile waypoint statements write TACOM `_TACOM_DATA`.
+- cross-FSM queues: TACOM appends to OPCOM's `_OPCOM_QUEUE`, while OPCOM and
+  profile-waypoint statements append to `_TACOM_QUEUE`; `_OPCOM_DATA` and
+  `_TACOM_DATA` remain supported legacy ingress slots.
 
-The confirmation payload must be `['confirmed', [boolean, [objective,
-details]]]`. `opcom.fsm` dereferences that structure in its confirmed handler:
+The internal correlated confirmation payload is `['confirmed', [boolean, [objective,
+details], orderID, confirmedAt]]`. `opcom.fsm` also accepts the legacy shape without an ID:
 positive results advance conventional OPCOM objective states; false results
 skip/clear the order and resume OPCOM analysis. Neither transport validates the
 shape, so nil or malformed `_data` is a protocol failure risk.
@@ -155,16 +161,11 @@ shape, so nil or malformed `_data` is a protocol failure risk.
 
 In `ANALYZE`, an OPCOM `attack` order chooses recon while `danger < 0`, then
 capture once danger is known. A danger value above zero requests OCA via
-`_OPCOM_DATA`. A `defend` order uses `findProfilesNearPosition`: enemies select
+`_OPCOM_QUEUE`, using the objective ID read from the current objective. A
+`defend` order uses `findProfilesNearPosition`: enemies select
 defend (and may request one air attacker); no enemies select reserve and log a
 defend-complete event. `reserve` selects reserve. `custom` has no implemented
 decision/order body in this FSM.
-
-**Observed caveat:** the attack/OCA branch uses `_objectiveID` without assigning
-it in that branch. The completion payload does assign that variable, but this
-is not a reliable local precondition. It is therefore likely (inference) that
-an OCA request can carry nil/stale objective identity unless other FSM-scope
-state happens to provide it.
 
 ### Section selection and assignment
 
@@ -191,10 +192,12 @@ records and restores ambient movement for suitable inactive profiles.
 
 `setSectionOrders` clears existing waypoints/active commands, creates
 aware/normal profile waypoints, appends `pendingorders`, and gives each waypoint
-a 1–10 second delayed callback that sets `_TACOM_DATA` to `completed`.
-Stale profile IDs are skipped. Therefore a nonempty `section` can produce an
-empty order batch; `ISSUE_ORDERS` does not check the helper’s returned batch
-before logging/confirming in some branches.
+a 1–10 second delayed callback that appends `completed` to `_TACOM_QUEUE`.
+Stale profile IDs are skipped. `ISSUE_ORDERS` checks the returned waypoint
+batch: an empty result is reported as no valid groups, returns `tacom_state` to
+`none`, emits no order-issued event, and cannot produce a positive
+confirmation. Result scratch variables are reset on every entry so custom or
+unknown operations cannot inherit a previous outcome.
 
 On each completion, `ANALYZE` calls `synchronizeorders`. Until all objective
 profiles finish, it defers downstream effects. The last completion:
@@ -215,16 +218,17 @@ completion is suppressed for an objective whose `opcom_state` was `internal`.
 - There is no sleep in the FSM states. FSM link conditions are repeatedly
   evaluated; `_lastanalyze` governs the 0.5-second collection gate and the
   15-second internal-analysis feeder.
-- Internal enemy scanning is throttled to 60 seconds. It is spawned and TACOM
-  immediately reads `knownentities`, so the read can observe the prior scan’s
-  data (observed asynchronous race).
+- Internal enemy scanning is throttled to 60 seconds. It remains asynchronous,
+  but the worker enqueues `enemy_scan_complete` with its returned targets and
+  TACOM reacts only when that completion entry is consumed; it no longer reads
+  the previous `knownentities` snapshot immediately after spawning.
 - `SELECT_SECTION` progresses only after `scriptDone _hdl`; no explicit
   timeout exists. The selector is bounded, but stop can bypass the later
   `terminate _hdl` in `PREPARE_ORDERS`.
-- `ISSUE_ORDERS` has a 30-second negative-confirmation fallback. The paired
-  OPCOM `ORDER_TACOM` wait has its own, separate timeout.
+- `ISSUE_ORDERS` has a 30-second negative-confirmation fallback. OPCOM tracks
+  each dispatched request with its own, separate absolute deadline.
 - Missing/deleted objective on a completion invokes `resetProfileOrders` and
-  clears the mailbox. Missing completion profile requeues an `analyze` action.
+  resets the legacy slot to `[]`. Missing completion profiles request a new OPCOM analysis turn.
   `synchronizeorders` is also responsible for dead/aged pending-order cleanup.
 - `END` only becomes reachable in the states that carry an exit link. This is
   why a paused/no-data `INITIALIZE` and an ongoing state init are lifecycle
@@ -235,10 +239,9 @@ completion is suppressed for an objective whose `opcom_state` was `internal`.
 
 1. `fnc_OPCOM` launches/publishes both FSM handles for conventional control;
    TACOM `INIT` waits on that publication.
-2. OPCOM’s `ORDER_TACOM` sends `['analyze', objective]` through TACOM’s
-   mailbox. `addTask` and `setSectionOrders` are other observed mailbox
-   producers.
-3. TACOM requests OPCOM-level QRF and OCA by setting `_OPCOM_DATA`; it also
+2. OPCOM’s `ORDER_TACOM` appends `['analyze_order', [orderID, operation, objective]]` to TACOM’s queue. This correlated envelope is the only conventional order shape TACOM accepts; TACOM does not infer the operation from the objective's `opcom_orders` field.
+   `addTask` and `setSectionOrders` are other observed queue producers.
+3. TACOM requests OPCOM-level QRF and OCA through `_OPCOM_QUEUE`; it also
    invokes shared helpers for attack entities, candidate selection, section
    assignment, scans, and reset/synchronization.
 4. TACOM sends `confirmed` responses. OPCOM converts a true response into its

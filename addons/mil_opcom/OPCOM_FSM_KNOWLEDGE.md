@@ -18,9 +18,8 @@ INIT -- paired handles ready --> INITIALIZE --> COLLECT_TO_QUEUE
        |             |              |        |                        |
        |             |              |        +-- order --> ORDER_TACOM
        |             |              |                       |      |
-       |             |              |                   reject    confirm
-       |             |              |                       |      |
-       |             |              |                  NOT_BUSY  NOT_BUSY_1
+       |             |              |                       |
+       |             |              |                  NOT_BUSY_1
        |             |              |                       |      |
        |             |              +-- analysis --> PERFORM_CLEANUP
        |             |                                  -> PERFORM_ANALYSIS
@@ -41,16 +40,16 @@ Request states and `RESET` publish `["analyze",nil]`; the common receiver and co
 | `INITIALIZE` | Writes `["init",true]`, then receiver → collector. | Pause blocks receiver. |
 | `COLLECT_TO_QUEUE` | Consumes one mailbox item into FIFO, then `ANALYZE`. | Self-receives additional items; no direct END edge. |
 | `ANALYZE` | Consumes one action; dispatches ordering, analysis, reinforcement, or air requests. | Priority-99 exit → END. |
-| `ORDER_TACOM` | Sends TACOM an attack/defend/reserve analysis request. | Confirm → `NOT_BUSY_1`; reject or 10 s timeout → `NOT_BUSY`. |
-| `NOT_BUSY` | Idle/reset after reject, timeout, or skipped objective. | Exit → END; receiver failsafe after cycle time. |
-| `NOT_BUSY_1` | Same gate after positive confirmation. | Exit → END; same receiver behavior. |
+| `ORDER_TACOM` | Registers and queues a correlated TACOM attack/defend/reserve request, then returns immediately. | Always → `NOT_BUSY_1`; confirmation and expiry are later ordinary queue work. |
+| `NOT_BUSY` | Idle/reset after a skipped objective. | Exit → END; receiver failsafe after cycle time. |
+| `NOT_BUSY_1` | Idle gate after dispatch. | Exit → END; same receiver behavior. |
 | `PERFORM_CLEANUP` | Spawns duplicate-section cleanup → `PERFORM_ANALYSIS`. | No timeout/exit link. |
 | `PERFORM_ANALYSIS` | Spawns 3 analyses → post-analysis after all `scriptDone`. | Exit → END; completion results are not checked. |
 | `PERFORM_POSTANAL` | Calculates force deficit → `RESET`. | Always continues; no direct logistics call. |
 | `RESET` | Clears skip set, primes analysis → collector. | Pause can hold it; no direct END edge. |
 | `REQUEST_REEINFOR` | Starts detached LOGCOM waves → collector. | Missing base/logistics drops request. |
 | `REQUEST_QRF` | Best-effort strike/profile attack → collector. | Missing target/assets silently returns to analysis. |
-| `REQUEST_RECON` | Best-effort ATO Recce request → collector. | ATO initialization wait is unbounded. |
+| `REQUEST_RECON` | Best-effort ATO Recce request → collector. | ATO initialization is given 30 seconds; timeout/stop skips dispatch and returns to analysis. |
 | `REQUEST_OCA` | Best-effort ATO OCA request → collector. | Missing target/building/ATO silently returns. |
 | `END` | Removes handler `OPCOM_FSM` and terminates. | No outgoing links; does not cancel child scripts/orders. |
 
@@ -66,11 +65,11 @@ The sole INIT transition re-reads handler keys `OPCOM_FSM` and `TACOM_FSM`; both
 
 ### Mailbox and queue
 
-`_OPCOM_DATA` is a single-slot inter-FSM mailbox with observed tags `init`, `analyze`, `confirmed`, `QRF`, `RECON`, `OCA`, and `custom`. `COLLECT_TO_QUEUE` appends at most one non-nil mailbox item to the unbounded `_OPCOM_QUEUE` FIFO then clears the mailbox. `ANALYZE` removes one entry using `deleteAt 0`.
+`_OPCOM_QUEUE` is the authoritative internal FIFO with observed tags `init`, `analyze`, `expire_order`, `confirmed`, `QRF`, `RECON`, `OCA`, and `custom`. `_OPCOM_DATA` is a legacy single-slot ingress initialized to `[]`. Each receiver iteration checks both sources; `COLLECT_TO_QUEUE` appends a nonempty legacy entry and resets the slot to `[]`. `ANALYZE` removes one queued entry using `deleteAt 0`.
 
-This makes later processing FIFO *after* collection. It does not protect simultaneous writers before collection: a writer can overwrite the single mailbox. Payload shape is not validated.
+Internal producers append directly to the FIFO. Legacy code can still overwrite the single `_OPCOM_DATA` slot if it writes more than once before collection; payload shape is not validated.
 
-The shared `OPCOM_RECEIVER` link appears from initialization, both not-busy states, reset, all request states, and on the collector itself. Its precondition computes `_failsafe = (time - _timestamp) > _cycleTime`; INIT sets the cycle default to 300 seconds. It accepts non-nil data, queued data, `_orderFailed`, or fail-safe expiry only when `!_pause`. On error/fail-safe, it clears flags, manufactures `["analyze",nil]`, and makes `_busy=false`. Its condition assigns `_OPCOM_status="waiting for data"`, so status changes while evaluating the predicate.
+The shared `OPCOM_RECEIVER` link appears from initialization, both not-busy states, reset, all request states, and on the collector itself. Its precondition computes `_failsafe = (time - _timestamp) > _cycleTime`; INIT sets the cycle default to 300 seconds. It accepts a nonempty legacy slot, queued data, `_orderFailed`, or fail-safe expiry only when `!_pause`. On error/fail-safe, it clears flags, queues `["analyze",nil]`, and makes `_busy=false`. Its condition assigns `_OPCOM_status="waiting for data"`, so status changes while evaluating the predicate.
 
 The collector sends work to ANALYZE if the queue is nonempty (or a cycle elapsed), at least 0.5 seconds have passed since `_lastAnalyze`, and `_busy` is false. This edge does not inspect `_pause`, unlike the receiver. Thus queued/periodic work can still reach ANALYZE while pause blocks receiver transitions. ANALYZE also self-feeds if `time - _lastAnalyze > _cycleTime`.
 
@@ -82,7 +81,7 @@ The collector sends work to ANALYZE if the queue is nonempty (or a cycle elapsed
 2. `scantroops`
 3. `scanFriendliesForNearEnemies`
 
-These are concurrent scheduled scripts, not independent CPU threads. There is no timeout or result validation: a script that terminates early/erroring is not distinguished from a successful completion. The order handshake, by contrast, uses 10 seconds measured from ORDER_TACOM entry.
+These are concurrent scheduled scripts, not independent CPU threads. There is no timeout or result validation: a script that terminates early/erroring is not distinguished from a successful completion. Each TACOM order record has its own 10-second absolute confirmation deadline.
 
 ### Stop
 
@@ -115,7 +114,9 @@ Objective hashes must preserve the positional layout used by ANALYZE (documented
 
 | Variable | Contract |
 | --- | --- |
-| `_OPCOM_DATA` / `_OPCOM_QUEUE` | Single mailbox and unbounded FIFO work queue. |
+| `_OPCOM_DATA` / `_OPCOM_QUEUE` | Legacy single-slot ingress initialized/reset to `[]`, and authoritative unbounded FIFO work queue. |
+| `_unconfirmedOrders` | In-flight TACOM requests as `[orderID, operation, objective, expiresAt]`; selection excludes their objectives until confirmation or expiry. |
+| `_nextOrderID`, `_orderConfirmationTimeout` | Monotonic correlation source and per-order acknowledgement deadline. |
 | `_busy` | ANALYZE sets true; reset/request/receiver paths clear it. Collector requires false. |
 | `_timestamp`, `_lastAnalyze`, `_cycleTime` | Receiver watchdog and analysis scheduling (default cycle 300). |
 | `_pause`, `_exitFSM`, `_orderFailed`, `_failsafe` | Pause/stop/recovery controls. |
@@ -141,7 +142,7 @@ An unassigned selection becomes an attack order. Attack/unassigned selection is 
 
 ### TACOM boundary
 
-ORDER_TACOM writes `_TACOM_DATA = ["analyze", objective]` for attack, defend, or reserve. TACOM produces `_OPCOM_DATA = ["confirmed",[boolean,[target,return]]]` from its confirmation paths in `addons/mil_opcom/tacom.fsm`. Positive and negative results use separate not-busy states, but both queue the confirmation for the next ANALYZE turn.
+ORDER_TACOM allocates an ID, stores `[orderID, operation, objective, expiresAt]`, appends `["analyze_order",[orderID,operation,objective]]` to `_TACOM_QUEUE`, and immediately resumes ordinary work. TACOM uses the immutable request operation instead of rereading the objective's mutable `opcom_orders` field, then appends `["confirmed",[boolean,[target,return],orderID,confirmedAt]]` to `_OPCOM_QUEUE`. `ANALYZE` consumes confirmations in FIFO order and removes only the record matching both ID and objective. Expiry is also queued as `expire_order`, preserving FIFO, while `confirmedAt` prevents a late reply from being accepted merely because expiry processing was backlogged. Legacy confirmations without an ID can still match by objective for compatibility.
 
 On confirmation, ANALYZE:
 
@@ -152,7 +153,7 @@ On confirmation, ANALYZE:
 
 The task-request return is not checked. A failed confirmation adds the ID to the cycle-local skip list, sets `opcom_orders="none"`, primes analysis, and routes to NOT_BUSY. RESET clears the skip list.
 
-`custom` reaches ORDER_TACOM but has no implementation in that state, so it sends no TACOM payload and normally reaches the 10-second timeout. No defensive checks validate an FSM handle or confirmation/payload shape.
+`custom` reaches ORDER_TACOM but has no implementation in that state, so it sends no TACOM payload. No defensive checks validate an FSM handle or confirmation/payload shape.
 
 ## Profile analysis and operations
 
@@ -163,7 +164,7 @@ The task-request return is not checked. A failed confirmation adds the ID to the
 `PERFORM_ANALYSIS` then launches:
 
 - `analyzeclusteroccupation`: for each objective, uses a 500-m nearby-profile query, writes `clusteroccupation`, and for both conventional modes maps friendly/enemy/contested results to reserve/attack/defend through `setstatebyclusteroccupation`.
-- `scantroops`: classifies controlled profiles into infantry, motorized, mechanized, armored, air, sea, artillery, and AAA; refreshes current force and initializes start force only if absent.
+- `scantroops`: classifies controlled profiles into infantry, motorized, mechanized, armored, air, sea, artillery, and AAA; refreshes current force (including an explicit zero vector for no profiles) and initializes start force only from a nonempty first snapshot.
 - `scanFriendliesForNearEnemies`: scans friendly profiles, performs profile-grid and visibility work, writes `knownentities`, and can create G2 spot reports.
 
 PERFORM_POSTANAL compares start/current vectors, clamps per-category deficit to zero, and prepares `_reinforce` only if both totals are nonzero, LOGCOM is available, and `current / start < _reinforcementRatio`. It always proceeds to RESET and makes no logistics event itself.
@@ -181,10 +182,10 @@ Observed interface caveat: SCANTROOPS uses an eight-slot vector containing sea, 
 All three air-support states clear their pending variable, set `["analyze",nil]`, clear busy, and return via collector. They do not wait for an acknowledgement.
 
 - REQUEST_QRF resolves objective ID first. Objective targets select a recognized building and make a hard-coded ATO Strike request. Otherwise it treats the target as a profile ID and calls `attackentity` for one section. That helper may request CAS, select profile sections/waypoints, and request artillery; an empty candidate set simply returns.
-- REQUEST_RECON requires a live objective, an enemy entity within 1,000 m, size greater than 150, and a matching building. It waits for ATO initialisation and sends a Recce request.
+- REQUEST_RECON requires a live objective, an enemy entity within 1,000 m, size greater than 150, and a matching building. If ATO is available, it waits up to 30 seconds for initialization; successful initialization sends Recce, while timeout or `_exitFSM` skips the event.
 - REQUEST_OCA resolves an objective, filters for hangar/radar/airport/control-tower buildings, and sends an OCA request. The event position is one randomly selected building while the full filtered building list is the target array.
 
-ATO event processing is asynchronous through `ALIVE_eventLog`. ATO can reject a request for faction, asset, HQ, type, or sortie-limit reasons with no feedback into this FSM. QRF/OCA skip absent ATO; recon's available-but-never-initialized ATO wait has no timeout.
+ATO event processing is asynchronous through `ALIVE_eventLog`. ATO can reject a request for faction, asset, HQ, type, or sortie-limit reasons with no feedback into this FSM. QRF/OCA skip absent ATO; recon also skips dispatch when an available ATO does not initialize within 30 seconds.
 
 ## Invariants, recovery, and failure boundaries
 
@@ -192,9 +193,9 @@ ATO event processing is asynchronous through `ALIVE_eventLog`. ATO can reject a 
 - One ANALYZE turn prepares at most one ordinary objective order; successive turns drain FIFO actions.
 - Collector dispatch requires `_busy=false`. ANALYZE sets it true; the early analysis path and reset/request/receiver paths clear it.
 - Deleted objectives are ignored in confirmation and air-support paths. Empty objectives do not stop scheduling, but produce no candidate order.
-- Negative confirmation/10-second order watchdog and 300-second receiver failsafe recover by injecting new analysis work. Pause blocks receiver-driven recovery, including failsafe; it does not block collector dispatch.
-- No timeout covers INIT readiness, cleanup, spawned analysis, or recon's ATO initialization wait.
-- Post-analysis intentionally requires nonzero current force, so complete force loss does not produce a reinforcement request. When no profiles exist, `scantroops` returns before refreshing its force-strength handler keys; earlier values can remain stale or be absent.
+- Negative confirmations and per-record expiry inject new analysis work; the 300-second receiver failsafe remains separate. Pause blocks receiver-driven recovery, including failsafe; it does not block collector dispatch.
+- No timeout covers INIT readiness, cleanup, or spawned analysis. Recon's ATO initialization wait is bounded to 30 seconds and observes `_exitFSM`.
+- Post-analysis intentionally requires nonzero current force, so complete force loss does not produce a reinforcement request. When no profiles exist, `scantroops` now clears all category arrays and publishes zero current strength, while leaving `startForceStrength` available as the historical baseline.
 - A cleanup/analysis script failure can look like success to the `scriptDone` gate. This is a direct consequence of the gate; no state-level result channel exists.
 
 ## Descriptive hot paths

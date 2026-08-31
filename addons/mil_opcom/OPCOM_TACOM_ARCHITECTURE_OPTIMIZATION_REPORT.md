@@ -24,12 +24,12 @@ OPCOM and TACOM already have a useful high-level division:
 
 The expensive behavior does not primarily come from having two FSMs. It comes from four implementation characteristics:
 
-1. Cross-FSM and waypoint traffic first enters a single mutable mailbox slot, so bursts can overwrite work before the FIFO collector sees it.
+1. Legacy scalar ingress remains a single mutable mailbox slot, but current internal cross-FSM and waypoint traffic appends directly to the existing FIFO queues.
 2. Derived facts are repeatedly rediscovered from canonical arrays: objective-state candidates, pending-order membership, eligible profiles, nearby occupation, and building candidates.
 3. Heavy work is often `spawn`ed but not divided into bounded units. It is asynchronous from the FSM, yet can still consume a large scheduler slice and compete with other spawned analysis jobs.
-4. Scheduling uses “time since any analysis action” for multiple meanings. Frequent messages can postpone periodic world analysis, while some spawned work is read before it completes or has no timeout.
+4. Scheduling uses “time since any analysis action” for multiple meanings. Frequent messages can postpone periodic world analysis, while several spawned jobs still have no timeout or validated result channel.
 
-The recommended architecture keeps the current public interface as a façade and adds one deep runtime module behind it. That module should own reliable inboxes, derived indexes, work cursors, transaction state, validation, and compatibility adaptation. The FSMs should decide *what happens next*; the runtime implementation should hide *how queues, indexes, and multi-frame jobs are maintained*.
+The recommended architecture keeps the current public interface as a façade and improves the implementation in stages. The first stage is deliberately small: make the existing `_OPCOM_QUEUE` and `_TACOM_QUEUE` arrays the authoritative internal inboxes and have internal producers append their existing two-element messages directly. Broader runtime indexes, jobs, and validation seams remain later proposals rather than prerequisites for reliable messaging.
 
 ## Compatibility ledger
 
@@ -40,7 +40,7 @@ The following are constraints, not suggested migration targets.
 - Handler keys and values already consumed externally, including `objectives`, `pendingorders`, `ProfileIDsReserve`, profile category arrays, `clusteroccupation`, `knownentities`, `OPCOM_FSM`, and `TACOM_FSM`.
 - Objective hashes and their fields. In particular, the positional layout used by `opcom.fsm` must not be reordered.
 - Existing `ALiVE_fnc_OPCOM` operation names, aliases, accepted arguments, synchronous/asynchronous behavior visible to callers, and return shapes.
-- Existing confirmation, completion, ATO, LOGCOM, task, and event-log payloads.
+- Existing public confirmation, completion, ATO, LOGCOM, task, and event-log payloads. The private OPCOM/TACOM confirmation envelope may append a correlation ID while retaining legacy input support.
 - `pendingorders` records as `[position, profileID, objectiveID, time]`.
 - The `objectives` array as the authoritative ordered priority list.
 - Save/load compatibility. Derived runtime state must not be persisted as canonical mission state.
@@ -51,7 +51,7 @@ The following are constraints, not suggested migration targets.
 - New optional handler keys, provided old keys remain authoritative and state extraction excludes ephemeral data.
 - New internal operations or helper functions used only by OPCOM/TACOM.
 - Shadow indexes that can always be rebuilt from public arrays/hashes.
-- Additional fields at the end of internal envelopes, provided legacy payloads are unwrapped before existing consumers see them.
+- New internal metadata, provided it is introduced only after a demonstrated need and existing consumers continue to receive the current payload shapes.
 - New FSM states that preserve the old externally observable lifecycle and outcomes.
 
 ### Changes to avoid
@@ -64,68 +64,66 @@ The following are constraints, not suggested migration targets.
 
 ## Recommended internal seam
 
-Keep `ALiVE_fnc_OPCOM` as the public façade. Behind it, introduce an internal OPCOM runtime module with a small interface used by both FSMs:
+Keep `ALiVE_fnc_OPCOM` as the public façade. For the first change, do not add a handler `runtime` object or a new queue abstraction. Reuse the two queues already owned by the FSMs:
 
 ```text
-enqueue(destination, legacyMessage, metadata)
-nextWork(destination, now)
-commitMutation(mutation)
-stepJob(jobID, timeBudget)
-rebuildDerivedState(reason)
-validateDerivedState(level)
+_OPCOM_QUEUE = [[operation, payload], ...]
+_TACOM_QUEUE = [[operation, payload], ...]
 ```
 
-This is intended as a deep module: callers should not know queue layout, index layout, compaction rules, transaction IDs, job cursors, or repair strategy. Those details belong in its implementation. The public façade remains the external seam; this runtime module is an internal seam shared by the two FSMs and their tests.
+Internal producers obtain the destination queue and `pushBack` the unchanged legacy-shaped entry. The destination FSM removes entries in FIFO order and dispatches them through its existing logic. `_OPCOM_DATA` and `_TACOM_DATA` remain compatibility ingress for code that still writes the scalar variables. Both are initialized to `[]`; on each receiver iteration, a nonempty legacy value wakes the FSM, and `COLLECT_TO_QUEUE` appends it to the corresponding queue before resetting the slot to `[]`.
 
-Store its rebuildable state under one optional handler key such as `runtime`. Add that key to the exclusion list used by the `state` operation. A possible internal layout is:
+Conceptually, an internal write becomes:
 
-```text
-runtime
-├─ schemaVersion
-├─ opcomInbox: [items, head]
-├─ tacomInbox: [items, head]
-├─ nextMessageSequence
-├─ transactionsByID
-├─ pendingOrderByProfileID
-├─ pendingCountByObjectiveID
-├─ objectiveIDsByState
-├─ activeObjectiveCount
-├─ eligibleProfileIDsByType
-├─ objectiveBuildingCandidates
-├─ analysisJob
-└─ diagnostics
+```sqf
+(_TACOM_FSM getFSMVariable "_TACOM_QUEUE") pushBack ["analyze_order", [_orderID, _operation, _objective]];
 ```
 
-`objectives`, `pendingorders`, objective `section`, and the current indexes remain canonical. Runtime structures are shadows: rebuild on start, load, control-type change, detected inconsistency, and developer request.
+The queues must therefore be initialized before their FSM handles are published to producers, as they are today. A small internal helper may later centralize destination lookup and diagnostics, but it is not necessary to establish the queue contract.
+
+This seam is intentionally narrow. It fixes the overwrite hazard without changing handler state, save data, operation payloads, or return values. A deeper runtime module may still become useful for derived indexes and multi-frame jobs, but it should be introduced independently and only where its leverage justifies the added structure.
 
 ## Prioritized findings and improvements
 
 ### P0 — Replace internal single-slot writes with reliable enqueue
 
-#### Observed problem
+#### Baseline problem, addressed for internal producers
 
-`_OPCOM_DATA` and `_TACOM_DATA` are single mutable slots. Collection into FIFO occurs later and only in states that expose a receiver link. Internal producers include both FSMs and every issued profile waypoint. Several profile completions can therefore write `_TACOM_DATA` before TACOM reaches `COLLECT_TO_QUEUE`; only the latest value is guaranteed to remain. OPCOM confirmations, QRF, OCA, and analysis messages have the same structural risk.
+`_OPCOM_DATA` and `_TACOM_DATA` were the single mutable path used by internal producers. Collection into FIFO occurred later and only in states that exposed a receiver link. Several profile completions could therefore write `_TACOM_DATA` before TACOM reached `COLLECT_TO_QUEUE`; only the latest value was guaranteed to remain. OPCOM confirmations, QRF, OCA, and analysis messages had the same structural risk.
 
-This is both a correctness problem and a performance problem. Lost completion messages leave `pendingorders` alive until another completion, repair, death, or the one-hour stale cleanup. The system then performs extra synchronization and cleanup work around an order that already completed.
+This was both a correctness problem and a performance problem. Lost completion messages could leave `pendingorders` alive until another completion, repair, death, or the one-hour stale cleanup, causing extra synchronization and cleanup around an order that had already completed.
 
-#### Recommended flow
+#### Implemented flow
 
-- Change all *internal* producers to call `enqueue` directly instead of setting the scalar FSM variable.
-- Give every internal message a monotonically increasing sequence and enqueue timestamp.
-- Give order request/confirmation pairs a correlation ID stored only in the runtime envelope.
-- Store inboxes as append-only arrays plus a head index. Do not use `deleteAt 0` on every dequeue; compact occasionally when the head passes a threshold.
-- Preserve `_OPCOM_DATA` and `_TACOM_DATA` as legacy ingress. A compatibility adapter checks them, enqueues the legacy two-element payload, then clears the slot.
-- Unwrap internal metadata before invoking the existing dispatch logic, so current payload shapes and events remain unchanged.
+- `_OPCOM_QUEUE` and `_TACOM_QUEUE` are the authoritative internal inboxes.
+- Internal producers `pushBack` `[operation, payload]` entries onto the destination queue. Correlated OPCOM orders use the internal `analyze_order` envelope described below.
+- `_OPCOM_DATA` and `_TACOM_DATA` remain legacy single-slot ingress initialized to `[]`. Each receiver iteration tests whether the slot is nonempty; `COLLECT_TO_QUEUE` appends that entry, resets the slot to `[]`, and then proceeds with any work already present in the queue.
+- Receiver/wake conditions test queue depth as well as whether the legacy scalar contains a nonempty array, so queue-only work wakes TACOM while `_TACOM_DATA` is `[]`.
+- OPCOM's `ORDER_TACOM` registers an in-flight record, queues the request, and immediately returns to normal dispatch.
+- Ordinary consumption retains the existing FIFO behavior, including `deleteAt 0`.
+- Confirmations are ordinary queued messages and are correlated when `ANALYZE` reaches them.
 
-Legacy external writers can still overwrite each other before adaptation, but converting all internal high-volume writers removes the dominant risk without breaking compatibility.
+Legacy external writers can still overwrite each other if they write the same scalar slot repeatedly before collection. That residual behavior preserves legacy access without adding a compatibility layer; converting all internal high-volume writers removes the dominant risk.
+
+The initial producer conversion includes:
+
+- OPCOM order transmission to TACOM (`analyze_order` with order ID, operation, and objective);
+- TACOM confirmation, QRF, and OCA transmission to OPCOM;
+- waypoint completion callbacks writing `completed` messages to TACOM;
+- OPCOM/TACOM initialization, request, reset, and other self-messages;
+- `addTask` and any other internal caller currently writing either scalar slot.
 
 #### Queue policy
 
-- Never coalesce `confirmed` or `completed` messages.
-- Coalesce duplicate maintenance `analyze` requests when no payload depends on them.
-- QRF/OCA/RECON may only be coalesced by identical target and operation.
-- Process confirmations/completions ahead of maintenance, but guarantee a periodic analysis turn after a bounded number of tactical messages.
-- Record maximum depth and oldest-message age; do not silently drop on overflow.
+- Ordinary dispatch remains strict FIFO.
+- Multiple tactical requests may be in flight. OPCOM stores each as `[orderID, operation, objective, expiresAt]` and excludes that objective from reselection until the record is confirmed or expires.
+- `ORDER_TACOM` sends `['analyze_order',[orderID,operation,objective]]`; TACOM uses that immutable operation snapshot and returns `['confirmed',[boolean,[objective,details],orderID,confirmedAt]]`.
+- Confirmation dispatch removes only the record matching both order ID and objective. Late or duplicate confirmations are ignored and cannot resolve a newer retry for the same objective.
+- A delayed callback queues `expire_order` at each deadline. Expiry therefore observes FIFO order, and the confirmation timestamp distinguishes an on-time reply delayed by backlog from a reply actually produced after its deadline.
+- No coalescing, ordinary-message reordering, priority lanes, overflow dropping, or backpressure in the first patch.
+- No head cursor or compaction policy in the first patch; optimize dequeue mechanics only if profiling shows meaningful queue-shift cost.
+
+This policy makes the correction easy to audit: every internal write becomes one append, ordinary work dispatches in insertion order, and order lifecycle state is isolated in the in-flight registry rather than encoded in the FSM's current state.
 
 ### P0 — Separate activity time from world-analysis deadlines
 
@@ -153,7 +151,7 @@ This change can be added internally while retaining `_lastAnalyze` for monitor c
 
 `PERFORM_ANALYSIS` launches occupation, troop, and enemy scans together and waits only for `scriptDone`. The scripts publish separate handler keys as they finish. Consumers can therefore see values produced from different moments. Script termination is treated like success because there is no result channel.
 
-`scantroops` also returns early when no profiles exist without clearing the previously published category and force-strength keys. TACOM's internal enemy scan is spawned and `knownentities` is read immediately, so it can deliberately consume the prior snapshot.
+The current tree already closes two independent stale-publication cases: `scantroops` publishes empty categories and zero current force strength when no profiles exist, and TACOM reacts to an `enemy_scan_complete` queue entry instead of reading `knownentities` immediately after spawn. The broader analysis pass still publishes occupation, troop, and enemy fields independently, so consumers can observe mixed-generation data.
 
 #### Recommendation
 
@@ -169,13 +167,14 @@ Zero profiles must commit empty profile categories and a zero `currentForceStren
 
 ### P0 — Add bounded waits and owned-child cleanup
 
-The following waits have no effective failure bound:
+The following waits still have no effective failure bound:
 
 - paired-handle readiness in both `INIT` states;
 - OPCOM cleanup and analysis job waits;
 - TACOM section-selection wait;
-- recon waiting for ATO initialization;
 - `stop`, load, and control-type change waiting for FSM-key removal.
+
+Recon's ATO initialization wait is now bounded to 30 seconds and observes `_exitFSM`; the remaining waits should receive job-specific deadlines rather than inheriting that value.
 
 Add a deadline and explicit recovery result to every job. New recovery states should cancel child handles owned by the job, clear only their tentative data, emit diagnostics, and return to a known queue state. `END` should terminate registered child jobs before removing its FSM key. `stop` should have a bounded fallback that records which state failed to acknowledge shutdown.
 
@@ -183,16 +182,36 @@ Do not use one universal timeout. For example, order acknowledgement may remain 
 
 ### P0 — Correct narrow observed hazards before measuring performance
 
-These are small, high-confidence fixes with disproportionate debugging value:
+These small, high-confidence fixes are implemented in the current tree:
 
-- TACOM's attack/OCA branch must derive the objective ID from the current objective before sending OCA; it currently reads `_objectiveID` without establishing it in that branch.
-- Reset `_TAC_confirmed` and `_data` at `ISSUE_ORDERS` entry so custom/unknown operations cannot inherit stale state.
-- Treat an empty `setSectionOrders` result as no issued order even if `section` was nonempty but all profile IDs were stale.
-- Publish empty troop arrays/zero force strength on a zero-profile scan.
-- Bound the ATO initialization wait and fail best-effort recon cleanly.
-- On TACOM internal scan, wait for the scan result or consume an explicitly versioned last-known snapshot rather than assuming the spawned scan is current.
+- TACOM's attack/OCA branch derives the objective ID from the current objective before sending OCA.
+- `ISSUE_ORDERS` resets `_TAC_confirmed` and `_data` on entry so custom/unknown operations cannot inherit stale state.
+- An empty `setSectionOrders` result is treated as no issued order even if `section` was nonempty but all profile IDs were stale.
+- A zero-profile scan publishes empty troop arrays and zero current force strength.
+- Recon bounds ATO initialization to 30 seconds and skips best-effort dispatch on timeout or stop.
+- TACOM internal scans enqueue their completed result; TACOM no longer assumes a newly spawned scan has already updated `knownentities`.
 
 These preserve public shapes and should precede deeper optimization so profiling reflects valid state.
+
+### P0 — Track multiple in-flight tactical orders
+
+#### Implemented correction
+
+`ORDER_TACOM` no longer blocks the OPCOM FSM waiting for one target. It allocates a monotonic order ID, records the objective and absolute deadline, queues the correlated TACOM request, and resumes strategic dispatch. This allows unrelated objectives and queued messages to progress while TACOM works serially through its inbox.
+
+TACOM echoes the order ID in its positive or negative confirmation. Confirmations remain ordinary FIFO entries; OPCOM handles them only when dequeued and accepts one only when ID and objective both match a live record. Records expire independently, and a scheduled wake ensures an idle OPCOM eventually performs the expiry check. Late, duplicate, or mismatched confirmations are ignored.
+
+The legacy scalar ingress and legacy confirmation shape remain accepted. A confirmation without an ID falls back to objective matching, while all current internal order traffic uses the unambiguous correlated envelope. TACOM-generated lifecycle follow-up analysis is returned to OPCOM so the next tactical request is registered through the same path.
+
+### P0 — Own TACOM enemy-scan lifetime and ordering
+
+#### Implemented correction
+
+TACOM now owns one enemy-scan worker with an in-flight flag, active generation, script handle, and 120-second deadline. `_lastEnemyScan` is a committed-scan timestamp: it advances only after TACOM accepts the active generation, so an active worker cannot be duplicated merely because it runs longer than the normal 60-second interval.
+
+Internal completion payloads carry their generation. TACOM accepts a completion only when it is still running, owns that generation, and remains within its deadline. Timed-out or failed workers release ownership; late/superseded completions are ignored; `END` terminates a live owned worker. The scan operation's existing public behavior remains the default, while TACOM uses an internal no-publish option and commits `knownentities` plus spot reports only after accepting the generation. Thus a discarded worker cannot publish shared scan state or cause QRF/infantry reactions.
+
+The later single-producer analysis design should absorb this ownership model so OPCOM and TACOM can join the same versioned scan rather than independently repeating the expensive profile/visibility walk.
 
 ## Derived data structures
 
@@ -277,7 +296,7 @@ For reinforcement, use a request cooldown/in-flight record even for a single wav
 - Yield with the established CBA scheduling mechanism or an FSM wait state.
 - Store cursor, partial results, source generation, deadline, and last progress time in the runtime job.
 - Commit only when complete and validated.
-- Allow high-priority completion/confirmation messages between batches.
+- Check the destination queue between batches so ordinary FIFO messages are not delayed for the full duration of a multi-frame job.
 
 Engine commands such as `nearestObjects`, terrain intersection, pathfinder calls, or a single spatial query may remain atomic. The surrounding iteration and sorting can still be split, cached, or reduced.
 
@@ -327,9 +346,9 @@ timeout/deletion/stop -> ORDER_RECOVER
 
 ### Make inbox collection state-independent
 
-Once producers enqueue into the runtime module, receiving no longer depends on whether the current FSM state has a receiver link. The FSM only needs a `DEQUEUE_WORK` decision state. This eliminates duplicated receiver predicates and allows stop/urgent completions to be observed while a multi-frame job is between batches.
+Once producers append to the existing FSM queues, receiver transitions must inspect queue depth directly rather than depend on a scalar write. A later `DEQUEUE_WORK` decision state could centralize the duplicated receiver predicates, but it is not required for the initial correction.
 
-Keep legacy scalar ingestion in the existing receiver-compatible paths and in `DEQUEUE_WORK`.
+Keep legacy scalar ingestion in `COLLECT_TO_QUEUE` and any existing receiver-compatible paths. If `DEQUEUE_WORK` is introduced later, it must retain that adapter.
 
 ### Separate plan, side effects, and completion
 
@@ -341,11 +360,11 @@ The current `ANALYZE` and `ISSUE_ORDERS` states mix decision logic, mutation, ex
 4. Perform side effects through adapters (waypoints, events, ATO, LOGCOM).
 5. Record and transmit the existing result shape.
 
-This deepens the runtime module and gives tests a stable seam: a plan can be checked without spawning profiles or requiring a live event log.
+This creates a focused internal planning seam and gives tests a stable target: a plan can be checked without spawning profiles or requiring a live event log.
 
 ### Use one enemy-scan producer
 
-OPCOM and TACOM both initiate friendly-near-enemy scanning. Maintain one versioned snapshot with `startedAt`, `committedAt`, `inProgress`, and consumer freshness requirements. TACOM can accept the last snapshot for low-priority internal reaction or join an in-flight refresh; it should not launch a duplicate scan and immediately read the old key.
+OPCOM and TACOM both initiate friendly-near-enemy scanning. Maintain one versioned snapshot with `generation`, `startedAt`, `committedAt`, `inProgress`, owner/worker handle, deadline, and consumer freshness requirements. TACOM can accept the last snapshot for low-priority internal reaction or join an in-flight refresh. Only the active generation may publish or cause a tactical reaction; late generations are discarded.
 
 ### Keep support requests best-effort but observable
 
@@ -360,7 +379,7 @@ This avoids adding public callbacks while making repeated failures and wasted bu
 
 ### Improve stop as a control message
 
-Enqueue a high-priority internal stop token and set `_exitFSM` for legacy behavior. Each multi-frame state checks the token between batches, cancels owned children, and enters END. END removes the same handler FSM key as today. The public `stop` operation retains its result, but its internal wait becomes bounded and diagnostic.
+Keep `_exitFSM` as the stop signal so shutdown does not require queue priority. Each multi-frame state checks it between batches, cancels owned children, and enters END. END removes the same handler FSM key as today. The public `stop` operation retains its result, but its internal wait becomes bounded and diagnostic.
 
 ## Simple improvements with low implementation risk
 
@@ -368,7 +387,7 @@ These can be performed before the larger runtime work, provided parity tests exi
 
 1. Cache synchronized attack-gate triggers during initialization instead of rescanning all synchronized objects on each attack/unassigned selection.
 2. Cache lowercase building-type lists and per-objective candidates.
-3. Use a head index for both FSM FIFO arrays to avoid `deleteAt 0` shifting backlog entries.
+3. Profile FIFO dequeue cost after reliable append is deployed; add a head index only if `deleteAt 0` shifting is material at observed queue depths.
 4. Convert troop/category arrays to local membership sets inside `NearestAvailableSection`, even before persistent eligibility sets exist.
 5. Track `seenProfileIDs` across expanding radius queries.
 6. Stop radius expansion when `count candidates >= requestedSize` rather than requiring more candidates than requested.
@@ -410,11 +429,21 @@ Test through the preserved public interface and observable event/profile outcome
 
 - Deliver many waypoint completions in one frame; every profile must be synchronized exactly once.
 - Interleave confirmation, QRF, OCA, and analysis messages; no message may be overwritten.
+- Verify internal messages are dispatched in the same order they were appended.
+- Queue unrelated OPCOM work before a TACOM confirmation; all entries must remain FIFO and the confirmation must be processed only on its ordinary turn.
+- Dispatch several different objectives before confirmations arrive; each must have an independent ID and deadline, and none may be selected again while in flight.
+- Expire an order, retry the same objective, then deliver the old confirmation; the old ID must not remove or resolve the retry.
+- Exercise positive, negative, duplicate, mismatched, legacy, and timeout outcomes.
+- Verify `_OPCOM_DATA` and `_TACOM_DATA` initialize to `[]`.
+- Write a legacy entry through each scalar slot; every nonempty entry must be appended, reset to `[]`, and dispatched without disturbing entries already queued.
+- Verify both FSMs wake and drain work when their scalar data slot is `[]` but their queue is nonempty.
 - Remove an objective/profile during section selection and order issue.
 - Stop during every FSM state and every new batch state.
 - Simulate a child-job error and timeout; last good snapshot must remain visible.
 - Transition from nonzero profiles to zero profiles; category arrays and current strength must become empty/zero.
 - Verify OCA always carries the current objective ID.
+- Delay an enemy scan beyond its normal interval; no overlapping TACOM scan may start, and only the active generation may cause one reaction.
+- Deliver enemy-scan completions out of order and after stop/timeout; superseded results must be ignored and failed workers must eventually release scan ownership.
 - Rebuild every derived index from canonical data and compare equality.
 
 ### Invariant checks
@@ -446,18 +475,21 @@ Use percentiles and worst-frame cost, not only total scheduled-script duration.
 ### Phase 0 — Establish correctness and measurement
 
 - Add parity/invariant tests and lightweight counters.
-- Fix OCA objective identity, stale issue state, zero-profile publication, stale immediate enemy read, and unbounded recon initialization wait.
+- Completed: fix OCA objective identity, stale issue state, empty issued batches, zero-profile publication, stale immediate enemy reads, and unbounded recon initialization wait.
+- Completed: replace the single blocking `_orderTarget` handshake with correlated in-flight records, per-order deadlines, and ordinary queued confirmations.
+- Completed: own TACOM enemy scans by generation/handle/deadline, defer publication until acceptance, and ignore late completions.
 - Add explicit job outcomes and diagnostics around current spawned analysis/selection.
 
-### Phase 1 — Reliable runtime messaging
+### Phase 1 — Reliable FIFO messaging
 
-- Introduce the runtime module and exclude it from saved state.
-- Convert internal OPCOM/TACOM/waypoint writers to reliable enqueue.
-- Add queue head indexes, sequence IDs, correlation, and legacy scalar adapters.
-- Add pending-order shadow indexes.
+- Completed: make the existing queues authoritative, convert internal writers to direct append, wake on queue-only work, and process correlated TACOM confirmations as ordinary FIFO messages.
+- Completed: retain `_OPCOM_DATA` and `_TACOM_DATA` as scalar legacy ingress initialized/reset to `[]`, without introducing a separate compatibility layer.
+- Completed: preserve FIFO ordinary dispatch and the current `deleteAt 0` dequeue behavior.
+- Remaining: add burst, FIFO-order, queue-only wake, and legacy-ingress runtime tests.
 
 ### Phase 2 — Cheap derived indexes and caches
 
+- Add pending-order shadow indexes if profiling or invariant checks justify them.
 - Add objective-state buckets/active count.
 - Add profile eligibility sets.
 - Cache trigger lists and building candidates.
@@ -480,7 +512,7 @@ Use percentiles and worst-frame cost, not only total scheduled-script duration.
 
 The target shape retains the familiar OPCOM/TACOM public interface and mission behavior while changing the implementation underneath:
 
-- messages are lossless and correlated;
+- internal messages are queued instead of overwritten; tactical requests and replies carry private correlation IDs while legacy shapes remain accepted;
 - canonical arrays/hashes remain compatible;
 - repeated selections use rebuildable indexes;
 - analysis publishes coherent versioned snapshots;
