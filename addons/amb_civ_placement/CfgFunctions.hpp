@@ -11,6 +11,16 @@ class cfgFunctions {
                                 file = "\x\alive\addons\amb_civ_placement\fnc_AMBCPInit.sqf";
                                 RECOMPILE;
                         };
+                        class AMBCPSpawnAnimalGroups {
+                                description = "Spawn the supplied ambient animal groups";
+                                file = "\x\alive\addons\amb_civ_placement\fnc_AMBCPSpawnAnimalGroups.sqf";
+                                RECOMPILE;
+                        };
+                        class AMBCPDespawnAnimalGroups {
+                                description = "Despawn the supplied ambient animal groups";
+                                file = "\x\alive\addons\amb_civ_placement\fnc_AMBCPDespawnAnimalGroups.sqf";
+                                RECOMPILE;
+                        };
                 };
         };
 };

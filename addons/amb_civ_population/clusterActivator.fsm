@@ -365,6 +365,14 @@ class FSM
        "" \n
        "    [ALIVE_clusterHandler, ""setActive"", [_clusterID, _cluster]] call ALIVE_fnc_clusterHandler;" \n
        "" \n
+       "    // Ambient animal groups share the civilian cluster lifecycle. The AMBCP index may not exist yet when this FSM starts, so this intentionally no-ops until animal placement has registered it." \n
+       "    if (!isNil ""ALiVE_AMBCP_animalGroupsByCluster"" && {!isNil ""ALiVE_fnc_AMBCPSpawnAnimalGroups""}) then {" \n
+       "        private _animalGroups = [ALiVE_AMBCP_animalGroupsByCluster, _clusterID, []] call ALIVE_fnc_hashGet;" \n
+       "        if (count _animalGroups > 0) then {" \n
+       "            [_animalGroups] call ALiVE_fnc_AMBCPSpawnAnimalGroups;" \n
+       "        };" \n
+       "    };" \n
+       "" \n
        "    _clusterAgents = [ALIVE_agentHandler, ""getAgentsByCluster"", _clusterID] call ALIVE_fnc_agentHandler;" \n
        "" \n
        "    if!(isNil ""_clusterAgents"") then {" \n
@@ -1117,6 +1125,13 @@ class FSM
        "    };" \n
        "" \n
        "    [ALIVE_clusterHandler, ""setInActive"", [_clusterID, _cluster]] call ALIVE_fnc_clusterHandler;" \n
+       "" \n
+       "    if (!isNil ""ALiVE_AMBCP_animalGroupsByCluster"" && {!isNil ""ALiVE_fnc_AMBCPDespawnAnimalGroups""}) then {" \n
+       "        private _animalGroups = [ALiVE_AMBCP_animalGroupsByCluster, _clusterID, []] call ALIVE_fnc_hashGet;" \n
+       "        if (count _animalGroups > 0) then {" \n
+       "            [_animalGroups] call ALiVE_fnc_AMBCPDespawnAnimalGroups;" \n
+       "        };" \n
+       "    };" \n
        "};" \n
        "" \n
        "_despawnCount = _despawnCount + 1;"/*%FSM</STATEINIT""">*/;

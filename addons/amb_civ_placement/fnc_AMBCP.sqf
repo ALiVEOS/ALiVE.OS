@@ -802,14 +802,18 @@ switch(_operation) do {
                 private _countPoultry = 0;
                 private _countHerd = 0;
 
-                // Mission-scope registry. Each entry:
-                //   [pos, class, groupSize, units, kind]
-                // Spawning is deferred to a player-proximity handler
-                // attached at the bottom of this block - keeping
-                // hundreds of always-on animal units across the map
-                // costs the server ~40 server FPS.
-                if (isNil "ALiVE_AMBCP_animalRegistry") then {
-                    ALiVE_AMBCP_animalRegistry = [];
+                if (isNil "ALiVE_AMBCP_animalGroupsByCluster") then {
+                    ALiVE_AMBCP_animalGroupsByCluster = [] call ALIVE_fnc_hashCreate;
+                };
+                private _fnc_registerAnimalGroup = {
+                    params ["_clusterID", "_animalGroup"];
+
+                    private _clusterGroups = [ALiVE_AMBCP_animalGroupsByCluster, _clusterID, []] call ALIVE_fnc_hashGet;
+                    if (_clusterGroups isequalto []) then {
+                        [ALiVE_AMBCP_animalGroupsByCluster, _clusterID, _clusterGroups] call ALIVE_fnc_hashSet;
+                    };
+
+                    _clusterGroups pushBack _animalGroup;
                 };
 
                 // ---- Poultry near civilian buildings ----
@@ -823,6 +827,7 @@ switch(_operation) do {
                 if (count _poultryPool > 0) then {
                     private _poultryChance = 0.08 * _ambientAnimalAmount;
                     {
+                        private _clusterID = [_x, "clusterID"] call ALIVE_fnc_hashGet;
                         private _nodes = [_x, "nodes"] call ALIVE_fnc_hashGet;
                         private _buildings = [_nodes, _civilianPopulationBuildingTypes] call ALIVE_fnc_findBuildingsInClusterNodes;
                         {
@@ -830,7 +835,7 @@ switch(_operation) do {
                                 private _basePos = _x getRelPos [3 + random 8, random 360];
                                 private _animalClass = selectRandom _poultryPool;
                                 private _groupSize = 1 + floor (random (1 + _ambientAnimalAmount * 2));
-                                ALiVE_AMBCP_animalRegistry pushBack [_basePos, _animalClass, _groupSize, [], "poultry"];
+                                [_clusterID, [_basePos, _animalClass, _groupSize, [], "poultry"]] call _fnc_registerAnimalGroup;
                                 _countPoultry = _countPoultry + _groupSize;
                             };
                         } forEach _buildings;
@@ -851,6 +856,7 @@ switch(_operation) do {
                     private _herdsTried = 0;
                     private _herdsPlaced = 0;
                     {
+                        private _clusterID = [_x, "clusterID"] call ALIVE_fnc_hashGet;
                         private _center = [_x, "center"] call ALIVE_fnc_hashGet;
                         private _clusterSize = [_x, "size"] call ALIVE_fnc_hashGet;
                         if (isNil "_clusterSize" || {_clusterSize isEqualType ""}) then { _clusterSize = 200 };
@@ -896,7 +902,7 @@ switch(_operation) do {
                                 //   MEDIUM (0.6): 2-3 / herd
                                 //   HIGH   (1.0): 2-5 / herd
                                 private _groupSize = 1 + floor (random (1 + _ambientAnimalAmount * 4));
-                                ALiVE_AMBCP_animalRegistry pushBack [_herdPos, _animalClass, _groupSize, [], "herd"];
+                                [_clusterID, [_herdPos, _animalClass, _groupSize, [], "herd"]] call _fnc_registerAnimalGroup;
                                 _countHerd = _countHerd + _groupSize;
                                 _herdsPlaced = _herdsPlaced + 1;
 
@@ -922,64 +928,14 @@ switch(_operation) do {
                     };
                 };
 
-                // Player-proximity spawn / despawn handler. Walks the
-                // registry every 30 s. For each entry:
-                //   - any player within 1500 m AND empty -> spawn
-                //   - no player within 2000 m AND populated -> delete
-                // The 500 m hysteresis avoids flicker at the boundary.
-                // Server-only; clients see the spawned units via the
-                // engine's normal network replication.
-                //
-                // Guard prevents the handler from being attached
-                // twice if the start case fires more than once
-                // (mission load, debug re-init, etc).
-                if (isNil "ALiVE_AMBCP_animalHandlerAttached") then {
-                    ALiVE_AMBCP_animalHandlerAttached = true;
-
-                    ALiVE_AMBCP_fnc_animalUpdate = {
-                        PROFILE_SCOPE(ANIMALUPDATE,"ALiVE_AMBCP_fnc_animalUpdate")
-
-                        {
-                            _x params ["_pos", "_class", "_count", "_units", "_kind"];
-                            private _activate   = ((allPlayers - entities "HeadlessClient_F") findIf { alive _x && {(_x distance _pos) < 1500} }) >= 0;
-                            private _deactivate = ((allPlayers - entities "HeadlessClient_F") findIf { alive _x && {(_x distance _pos) < 2000} }) <  0;
-
-                            if (_activate && {count _units == 0}) then {
-                                // createAgent is lighter than createUnit:
-                                // no group attachment, no group AI tick.
-                                // Animals (Animal_Base_F subclasses) are
-                                // CAManBase-ancestor types so createAgent
-                                // works on them.
-                                private _spread = if (_kind == "herd") then { 12 } else { 4 };
-                                private _half = _spread / 2;
-                                private _newUnits = [];
-                                for "_i" from 1 to _count do {
-                                    private _offset = _pos vectorAdd [(random _spread) - _half, (random _spread) - _half, 0];
-                                    _newUnits pushBack (createAgent [_class, _offset, [], 0, "CAN_COLLIDE"]);
-                                };
-                                _x set [3, _newUnits];
-                            };
-
-                            if (_deactivate && {count _units > 0}) then {
-                                { deleteVehicle _x } forEach _units;
-                                _x set [3, []];
-                            };
-                        } forEach ALiVE_AMBCP_animalRegistry;
-
-                        PROFILE_SCOPE_END(ANIMALUPDATE)
-                    };
-
-                    [] call ALiVE_AMBCP_fnc_animalUpdate;
-
-                    [ALiVE_AMBCP_fnc_animalUpdate, 30] call CBA_fnc_addPerFrameHandler;
-                };
-
                 if (_debug) then {
                     ["AMBCP - Placed %1 ambient animals (poultry: %2, herds: %3, amount: %4)", _countPoultry + _countHerd, _countPoultry, _countHerd, _ambientAnimalAmount] call ALiVE_fnc_dump;
                 };
             };
 
             // Place ambient civilians
+
+            PROFILE_SCOPE(CIVILIANPLACEMENT, "ALiVE AMBCP: civilian placement")
 
             // Scope bump for known civilian factions whose generic Man units
             // have scope = 1 (BI internal) but need to appear in the spawn
@@ -989,7 +945,9 @@ switch(_operation) do {
             private _minScope = 1;
             if (_faction == "CIV_F" || _faction == "C_VIET" || _faction == "SPE_CIV") then {_minScope = 2};
 
+            PROFILE_SCOPE(CIVILIANCLASSRESOLVE, "ALiVE AMBCP: resolve civilian classes")
             private _civClasses = [0,_faction,"Man",false,_minScope] call ALiVE_fnc_findVehicleType;
+            PROFILE_SCOPE_END(CIVILIANCLASSRESOLVE)
 
             private _countCivilianUnits = 0;
 
@@ -1008,7 +966,9 @@ switch(_operation) do {
 
                     //["NODES: %1",_nodes] call ALIVE_fnc_dump;
 
+                    PROFILE_SCOPE(CIVILIANBUILDINGRESOLVE, "ALiVE AMBCP: resolve civilian buildings")
                     private _buildings = [_nodes, _civilianPopulationBuildingTypes] call ALIVE_fnc_findBuildingsInClusterNodes;
+                    PROFILE_SCOPE_END(CIVILIANBUILDINGRESOLVE)
 
                     //["BUILDINGS: %1",_buildings] call ALIVE_fnc_dump;
 
@@ -1025,9 +985,12 @@ switch(_operation) do {
                             private _unitClass = selectRandom _civClasses;
                             private _agentID = format["agent_%1",[ALIVE_agentHandler, "getNextInsertID"] call ALIVE_fnc_agentHandler];
 
+                            PROFILE_SCOPE(CIVILIANINDOORPOSITION, "ALiVE AMBCP: find civilian indoor position")
                             private _buildingPositions = [getPosATL _building,15] call ALIVE_fnc_findIndoorHousePositions;
                             private _buildingPosition = if (count _buildingPositions > 0) then {selectRandom _buildingPositions} else {getPosATL _building};
+                            PROFILE_SCOPE_END(CIVILIANINDOORPOSITION)
 
+                            PROFILE_SCOPE(CIVILIANAGENTINIT, "ALiVE AMBCP: create civilian agent")
                             private _agent = [nil, "create"] call ALIVE_fnc_civilianAgent;
                             [_agent, "init"] call ALIVE_fnc_civilianAgent;
                             [_agent, "agentID", _agentID] call ALIVE_fnc_civilianAgent;
@@ -1037,6 +1000,7 @@ switch(_operation) do {
                             [_agent, "faction", _faction] call ALIVE_fnc_civilianAgent;
                             [_agent, "homeCluster", _clusterID] call ALIVE_fnc_civilianAgent;
                             [_agent, "homePosition", _buildingPosition] call ALIVE_fnc_civilianAgent;
+                            PROFILE_SCOPE_END(CIVILIANAGENTINIT)
 
                             // Add persistent name to civ. Defensive path:
                             // genericNames may be defined as either text (class
@@ -1046,6 +1010,7 @@ switch(_operation) do {
                             // sub-config or empty FirstNames / LastNames lists
                             // so non-conforming factions don't silently assign
                             // empty names.
+                            PROFILE_SCOPE(CIVILIANNAMES, "ALiVE AMBCP: resolve civilian name")
                             private _genNamesProperty = configFile >> "CfgVehicles" >> _unitClass >> "genericNames";
                             private _genName = "";
                             if (isText _genNamesProperty) then {
@@ -1071,6 +1036,7 @@ switch(_operation) do {
 
                             [_agent, "firstName", _firstName] call ALIVE_fnc_civilianAgent;
                             [_agent, "lastName", _lastName] call ALIVE_fnc_civilianAgent;
+                            PROFILE_SCOPE_END(CIVILIANNAMES)
 
                             if (count _ambientCivilianRoles > 0 && {random 1 > 0.5}) then {
                                 private _role = selectRandom _ambientCivilianRoles;
@@ -1079,9 +1045,13 @@ switch(_operation) do {
                                 [_agent, _role, true] call ALIVE_fnc_HashSet;
                             };
 
+                            PROFILE_SCOPE(CIVILIANCOMMAND, "ALiVE AMBCP: select civilian command")
                             [_agent] call ALIVE_fnc_selectCivilianCommand;
+                            PROFILE_SCOPE_END(CIVILIANCOMMAND)
 
+                            PROFILE_SCOPE(CIVILIANREGISTER, "ALiVE AMBCP: register civilian agent")
                             [ALIVE_agentHandler, "registerAgent", _agent] call ALIVE_fnc_agentHandler;
+                            PROFILE_SCOPE_END(CIVILIANREGISTER)
 
                             _countCivilianUnits = _countCivilianUnits + 1;
                         };
@@ -1090,6 +1060,8 @@ switch(_operation) do {
 
                 } forEach _clusters;
             };
+
+            PROFILE_SCOPE_END(CIVILIANPLACEMENT)
 
             ["AMBCP [%1] - Ambient land vehicles placed: %2",_faction,_countLandUnits] call ALiVE_fnc_dump;
             ["AMBCP [%1] - Ambient civilian units placed: %2",_faction,_countCivilianUnits] call ALiVE_fnc_dump;
