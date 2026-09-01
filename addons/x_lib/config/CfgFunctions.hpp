@@ -956,6 +956,13 @@ class checkStaticDataMapping
 	RECOMPILE;
 };
 
+class classPicker
+{
+	file = "\x\alive\addons\x_lib\functions\diagnostics\fnc_classPicker.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
 class cursorTargetInfo
 {
 	file = "\x\alive\addons\x_lib\functions\diagnostics\fnc_cursorTargetInfo.sqf";
