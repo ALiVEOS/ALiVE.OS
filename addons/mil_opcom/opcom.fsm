@@ -3,46 +3,67 @@
 /*
 item0[] = {"INIT",0,250,-717.630066,-1005.371277,-627.630066,-955.371338,0.000000,"INIT"};
 item1[] = {"INIT_COMPLETE",4,218,-720.395935,-937.944458,-630.395935,-887.944458,0.000000,"INIT" \n "COMPLETE"};
-item2[] = {"ANALYZE",2,250,-915.210754,-306.293610,-417.475098,-258.428986,0.000000,"ANALYZE"};
-item3[] = {"OPCOM_FEEDER",4,218,-711.187256,-222.682648,-621.187195,-172.682648,1.000000,"OPCOM" \n "FEEDER"};
-item4[] = {"ATTACK_Condition",4,218,-891.552124,-203.731567,-801.552002,-153.731567,5.000000,"ATTACK" \n "Conditions"};
-item5[] = {"",7,210,-341.155090,36.380066,-333.155060,44.380096,0.000000,""};
-item6[] = {"",7,210,-347.610199,-817.749023,-339.610168,-809.749023,0.000000,""};
-item7[] = {"DEFEND_condition",4,218,-787.492737,-203.595917,-697.492737,-153.595917,4.000000,"DEFEND" \n "conditions"};
-item8[] = {"RESERVE_conditio",4,218,-642.570801,-201.616302,-552.570740,-151.616302,3.000000,"RESERVE" \n "conditions"};
+item2[] = {"ANALYZE",2,250,-918.179488,-306.293610,-420.443832,-258.428986,0.000000,"ANALYZE"};
+item3[] = {"OPCOM_FEEDER",4,218,-840.569983,-457.907338,-750.569922,-407.907338,1.000000,"OPCOM" \n "FEEDER"};
+
+
+
+item7[] = {"DEFEND_condition",4,218,-631.578612,-199.530726,-541.578612,-149.530726,4.000000,"TACOM" \n
+ "ORDER"};
+
 item9[] = {"OPCOM_RECEIVER",4,218,-717.074463,-838.579346,-627.074646,-788.579346,1.000000,"OPCOM" \n "RECEIVER"};
-item10[] = {"CUSTOM_condition",4,218,-502.155029,-201.889679,-412.155121,-151.889679,2.000000,"CUSTOM" \n "conditions"};
-item11[] = {"ORDER_TACOM",2,250,-924.860840,-94.510040,-425.593536,-50.306946,0.000000,"ORDER" \n "TACOM"};
-item12[] = {"TACOM_CONFIRM",4,218,-651.682068,14.823029,-561.682068,64.823029,0.000000,"TACOM" \n "CONFIRM"};
-item13[] = {"TACOM_NOT_CONFIR",4,218,-767.100525,23.245697,-677.100647,73.245697,0.000000,"TACOM" \n "NOT CONFIRM"};
-item14[] = {"",7,210,-1031.257935,34.909210,-1023.257385,42.909210,0.000000,""};
+
+item11[] = {"ORDER_TACOM",2,250,-750.814326,-99.383388,-422.614767,-55.180294,0.000000,"ORDER" \n "TACOM"};
+item12[] = {"TACOM_CONFIRM",4,218,-629.874648,-0.359354,-539.874648,49.640646,0.000000,"TACOM" \n "CONFIRM"};
+
+
 item15[] = {"_",-1,250,-433.177032,51.216019,-430.091949,51.216019,0.000000,""};
-item16[] = {"",7,210,-1032.922607,-816.473755,-1024.922607,-808.473755,0.000000,""};
+item16[] = {"",7,210,-1372.547188,-811.779171,-1364.547188,-803.779171,0.000000,""};
 item17[] = {"INITIALIZE",2,250,-721.197266,-875.105042,-625.643738,-851.020447,0.000000,"INITIALIZE"};
-item18[] = {"NOT_BUSY",2,250,-926.275818,15.184509,-836.275818,65.184509,0.000000,"NOT BUSY"};
-item19[] = {"NOT_BUSY_1",2,250,-520.941284,16.271149,-430.941254,66.271149,0.000000,"NOT BUSY"};
-item20[] = {"COLLECT_TO_QUEUE",2,250,-599.758545,-647.769531,-509.758667,-597.769531,0.000000,"COLLECT" \n "TO QUEUE"};
-item21[] = {"ENTRIES_IN_QUEUE",4,218,-598.921387,-529.275208,-508.921387,-479.275299,2.000000,"ENTRIES" \n "IN QUEUE"};
-item22[] = {"ANALYZE_Conditio",4,218,-1203.018188,-310.200287,-1113.017944,-260.200104,0.000000,"ANALYZE" \n "Conditions"};
-item23[] = {"PERFORM_ANALYSIS",2,250,-1205.917603,-535.859314,-1115.917603,-485.859314,0.000000,"PERFORM" \n "ANALYSIS"};
-item24[] = {"ANALYSIS_DONE",4,218,-1209.427368,-599.538696,-1119.427368,-549.538696,0.000000,"ANALYSIS" \n "DONE"};
-item25[] = {"RESET",2,250,-1210.631958,-838.320801,-1120.631958,-788.320801,0.000000,"RESET"};
-item26[] = {"PERFORM_CLEANUP",2,250,-1201.964966,-382.972961,-1111.964966,-332.972961,0.000000,"PERFORM" \n "CLEANUP"};
-item27[] = {"CLEANUP_DONE",4,218,-1201.899536,-463.712677,-1111.899536,-413.712738,0.000000,"CLEANUP" \n "DONE"};
-item28[] = {"EXIT",4,218,-712.073486,100.377136,-622.073486,150.377090,99.000000,"EXIT"};
-item29[] = {"END",1,250,-712.089600,226.488464,-622.089539,276.488434,0.000000,"END"};
-item30[] = {"REEINFORCE_Condi",4,218,-269.226440,-306.737396,-179.226395,-256.737396,0.000000,"REEINFORCE" \n "Conditions"};
-item31[] = {"REQUEST_REEINFOR",2,250,-269.835327,-838.042908,-179.835312,-788.042908,0.000000,"REQUEST" \n "REEINFORCEMENTS"};
-item32[] = {"",7,210,-1164.081909,36.036972,-1156.081909,44.036972,0.000000,""};
-item33[] = {"PERFORM_POSTANAL",2,4346,-1209.788086,-683.964172,-1119.788086,-633.964172,0.000000,"PERFORM" \n "POSTANALYSIS"};
-item34[] = {"POST_ANALYSIS_DO",4,218,-1208.969116,-760.668579,-1118.969116,-710.668579,0.000000,"POST" \n "ANALYSIS" \n "DONE"};
-item35[] = {"QRF_Conditions",4,218,-133.845856,-306.268250,-43.845856,-256.268250,0.000000,"QRF" \n "Conditions"};
-item36[] = {"REQUEST_QRF",2,250,-133.738892,-834.303589,-43.738892,-784.303650,0.000000,"REQUEST" \n "QRF"};
-item37[] = {"RECON_Conditions",4,218,9.105785,-308.301544,99.105774,-258.301483,0.000000,"RECON" \n "Conditions"};
-item38[] = {"REQUEST_RECON",2,250,10.006296,-836.706787,100.006363,-786.706909,0.000000,"REQUEST" \n "RECON"};
-item39[] = {"OCA_Conditions",4,218,150.274902,-304.513031,240.274811,-254.513000,0.000000,"OCA" \n "Conditions"};
-item40[] = {"REQUEST_OCA",2,250,150.634949,-836.432495,240.634949,-786.432495,0.000000,"REQUEST" \n "OCA"};
-item41[] = {"Skip_Objective",4,218,-994.924133,-204.559387,-904.923767,-154.559387,0.000000,"Skip" \n "Objective"};
+
+item19[] = {"NOT_BUSY_1",2,250,-934.477801,138.472197,-844.477771,188.472197,0.000000,"RESET"};
+item20[] = {"COLLECT_TO_QUEUE",2,250,-600.740949,-647.769531,-510.741071,-597.769531,0.000000,"COLLECT" \n "TO QUEUE"};
+item21[] = {"ENTRIES_IN_QUEUE",4,218,-598.091358,-524.295032,-508.091358,-474.295123,2.000000,"ENTRIES" \n "IN QUEUE"};
+item22[] = {"ANALYZE_Conditio",4,218,-1135.388022,-196.474834,-1045.387778,-146.474651,0.000000,"ANALYZE" \n "Conditions"};
+item23[] = {"PERFORM_ANALYSIS",2,250,-1136.163519,51.499811,-1046.163519,101.499811,0.000000,"PERFORM" \n "ANALYSIS"};
+item24[] = {"ANALYSIS_DONE",4,218,-1137.549366,138.618593,-1047.549366,188.618593,0.000000,"ANALYSIS" \n "DONE"};
+item25[] = {"RESET",2,250,-1136.630037,392.585420,-1046.630037,442.585420,0.000000,"RESET"};
+item26[] = {"PERFORM_CLEANUP",2,250,-1135.396758,-117.387384,-1045.396758,-67.387384,0.000000,"PERFORM" \n "CLEANUP"};
+item27[] = {"CLEANUP_DONE",4,218,-1136.393287,-34.585429,-1046.393287,15.414510,0.000000,"CLEANUP" \n "DONE"};
+item28[] = {"EXIT",4,218,-717.647737,719.175244,-627.647737,769.175198,99.000000,"EXIT"};
+item29[] = {"END",1,250,-716.444959,818.523734,-626.444898,868.523704,0.000000,"END"};
+item30[] = {"REEINFORCE_Condi",4,218,145.176463,-201.314324,235.176508,-151.314324,0.000000,"REEINFORCE" \n "Conditions"};
+item31[] = {"REQUEST_REEINFOR",2,250,144.948654,-86.781166,274.519178,-33.117230,0.000000,"REQUEST" \n "REEINFORCEMENTS"};
+
+item33[] = {"PERFORM_POSTANAL",2,4346,-1137.910084,220.920665,-1047.910084,270.920665,0.000000,"PERFORM" \n "POSTANALYSIS"};
+item34[] = {"POST_ANALYSIS_DO",4,218,-1138.153072,305.634012,-1048.153072,355.634012,0.000000,"POST" \n "ANALYSIS" \n "DONE"};
+item35[] = {"QRF_Conditions",4,218,-119.875976,-197.262868,-29.875976,-147.262868,0.000000,"QRF" \n "Conditions"};
+item36[] = {"REQUEST_QRF",2,250,-118.409612,-82.632414,-28.409612,-32.632475,0.000000,"REQUEST" \n "QRF"};
+item37[] = {"RECON_Conditions",4,218,-251.794759,-195.056292,-161.794770,-145.056231,0.000000,"RECON" \n "Conditions"};
+item38[] = {"REQUEST_RECON",2,250,-250.356350,-82.336675,-160.356283,-32.336797,0.000000,"REQUEST" \n "RECON"};
+item39[] = {"OCA_Conditions",4,218,14.381691,-200.935843,104.381600,-150.935812,0.000000,"OCA" \n "Conditions"};
+item40[] = {"REQUEST_OCA",2,250,13.594360,-84.032647,103.594360,-34.032647,0.000000,"REQUEST" \n "OCA"};
+item41[] = {"Skip_Objective",4,218,-933.721831,-198.496584,-836.279477,-147.190235,0.000000,"Skip" \n "Objective"};
+item42[] = {"",7,210,-6.717426,57.584488,1.282574,65.584488,0.000000,""};
+item43[] = {"",7,210,-3.907896,594.985151,4.092104,602.985151,0.000000,""};
+item44[] = {"",7,210,-11.259617,-283.300147,-3.259617,-275.300147,0.000000,""};
+item45[] = {"",7,210,-275.515996,596.670021,-267.515996,604.670021,0.000000,""};
+item46[] = {"____FAKE____",9,0,0.000000,0.000000,0.000000,0.000000,0.000000,"____FAKE____"};
+
+item48[] = {"",7,210,-280.833702,-285.133212,-272.833702,-277.133212,0.000000,""};
+item49[] = {"",7,210,-1372.688077,607.367706,-1364.688077,615.367706,0.000000,""};
+item50[] = {"",7,210,-678.103438,602.873784,-670.103438,610.873784,0.000000,""};
+item51[] = {"",7,210,-991.872834,603.384851,-983.872834,611.384851,0.000000,""};
+
+
+
+
+
+
+
+
+
+
 version=1;
 class LayoutItems
 {
@@ -59,60 +80,120 @@ class LayoutItems
 link0[] = {0,1};
 link1[] = {1,17};
 link2[] = {2,3};
-link3[] = {2,4};
+
 link4[] = {2,7};
-link5[] = {2,8};
+
 link6[] = {2,9};
-link7[] = {2,10};
+
 link8[] = {2,22};
-link9[] = {2,28};
-link10[] = {2,30};
-link11[] = {2,35};
-link12[] = {2,37};
-link13[] = {2,39};
+
+
+
+
+
 link14[] = {2,41};
 link15[] = {3,2};
-link16[] = {4,11};
-link17[] = {5,6};
-link18[] = {5,28};
-link19[] = {6,9};
+
+
+
+
 link20[] = {7,11};
-link21[] = {8,11};
+
 link22[] = {9,20};
-link23[] = {10,11};
+
 link24[] = {11,12};
-link25[] = {11,13};
+
 link26[] = {12,19};
-link27[] = {13,18};
-link28[] = {14,16};
-link29[] = {14,28};
+
+
+
 link30[] = {16,9};
 link31[] = {17,9};
-link32[] = {18,14};
-link33[] = {19,5};
+
+
 link34[] = {20,9};
 link35[] = {20,21};
 link36[] = {21,2};
 link37[] = {22,26};
 link38[] = {23,24};
-link39[] = {23,32};
+
 link40[] = {24,33};
-link41[] = {25,16};
+
 link42[] = {26,27};
 link43[] = {27,23};
 link44[] = {28,29};
 link45[] = {30,31};
-link46[] = {31,6};
-link47[] = {32,28};
+
+
 link48[] = {33,34};
 link49[] = {34,25};
 link50[] = {35,36};
-link51[] = {36,6};
+
 link52[] = {37,38};
-link53[] = {38,6};
+
 link54[] = {39,40};
-link55[] = {40,6};
-link56[] = {41,18};
+
+
+link57[] = {31,42};
+link58[] = {36,42};
+link59[] = {38,42};
+link60[] = {40,42};
+link61[] = {42,43};
+
+
+link64[] = {44,30};
+link65[] = {44,35};
+link66[] = {44,37};
+link67[] = {44,39};
+
+link69[] = {45,28};
+
+
+link72[] = {41,19};
+
+
+link75[] = {2,48};
+link76[] = {48,44};
+link77[] = {48,45};
+
+link79[] = {49,16};
+
+link81[] = {19,50};
+link82[] = {50,28};
+link83[] = {25,50};
+link84[] = {50,51};
+link85[] = {51,49};
+link86[] = {43,45};
+link87[] = {45,50};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 globals[] = {0.000000,0,0,0,0,640,480,1,97,6316128,1,-1296.222168,-411.687134,-19.027405,-873.655518,597,572,1};
 window[] = {2,-1,-1,-32000,-32000,892,104,1490,104,3,615};
 *//*%FSM</HEAD>*/
@@ -149,12 +230,16 @@ class FSM
                          "" \n
                          "private _pause = false;" \n
                          "" \n
+                         "private _OPCOM_DATA = [];" \n
                          "private _OPCOM_QUEUE = [];" \n
                          "private _targets = [];" \n
                          "private _cycleTime = 300;" \n
                          "private _timestamp = time;" \n
                          "private _lastanalyze = 0;" \n
                          "private _orderFailed = false;" \n
+                         "private _orderConfirmationTimeout = 10;" \n
+                         "private _nextOrderID = 0;" \n
+                         "private _unconfirmedOrders = [];" \n
                          "private _colorside = ""ColorRed"";" \n
                          "private _reinforcementsInProgress = false;" \n
                          "" \n
@@ -287,7 +372,7 @@ class FSM
                          "                [_OPCOM_HANDLER,""OPCOM_monitor"",true] call AliVE_fnc_OPCOM;" \n
                          "            };" \n
                          "" \n
-                         "            _OPCOM_DATA= [""analyze"",nil];" \n
+                         "            _OPCOM_QUEUE pushBack [""analyze"",nil];" \n
                          "" \n
                          "            if(_debug) then { [""OPCOM initialized, %1!"",_DATA_VALUE] call ALIVE_fnc_dumpR; };" \n
                          "" \n
@@ -330,12 +415,15 @@ class FSM
                          "            _at = [];" \n
                          "            _def = [];" \n
                          "            _res = [];" \n
-                         "            _active = 0;" \n
+                         "            // Pending attack requests already consume a simultaneous-objective slot." \n
+                         "            _active = {((_x select 1) isEqualTo ""attack"")} count _unconfirmedOrders;" \n
                          "" \n
                          "            {" \n
+                         "                private _candidateObjective = _x;" \n
                          "                private _objectiveID = _x select 2 select 0;" \n
+                         "                private _orderInFlight = (_unconfirmedOrders findIf {((_x select 2) isEqualRef _candidateObjective)}) >= 0;" \n
                          "" \n
-                         "                if !(_objectiveID in _OPCOM_SKIP_OBJECTIVES) then {" \n
+                         "                if (!(_objectiveID in _OPCOM_SKIP_OBJECTIVES) && {!_orderInFlight}) then {" \n
                          "                    private [""_state""];" \n
                          "" \n
                          "                    _state = _x select 2 select 5;" \n
@@ -359,7 +447,7 @@ class FSM
                          "                        _priorities = [" \n
                          "                            [(count _res > 0),""reserve""]," \n
                          "                            [(count _un > 0),""unassigned""]," \n
-                         "                            [(count _at > 0) && (_active <= _simultanObjectives),""attack""]," \n
+                         "                            [(count _at > 0) && (_active < _simultanObjectives),""attack""]," \n
                          "                            [(count _def > 0),""defend""]" \n
                          "                        ];" \n
                          "                    };" \n
@@ -426,23 +514,97 @@ class FSM
                          "            };" \n
                          "        };" \n
                          "" \n
+                         "        case (""completed"") : {" \n
+                         "            _DATA_VALUE params [[""_completedOperation"",""""],[""_completedObjective"",[]]];" \n
+                         "            private _nextOperation = switch (_completedOperation) do {" \n
+                         "                case (""recon"") : {""attack""};" \n
+                         "                case (""capture"") : {""reserve""};" \n
+                         "                case (""defend"") : {""defend""};" \n
+                         "                default {""""};" \n
+                         "            };" \n
+                         "            private _followUpInFlight = (_unconfirmedOrders findIf {((_x select 2) isEqualRef _completedObjective)}) >= 0;" \n
+                         "            if (" \n
+                         "                _nextOperation isEqualTo """"" \n
+                         "                || {_completedObjective isEqualTo []}" \n
+                         "                || {_followUpInFlight}" \n
+                         "                || {[_completedObjective,""deleted"",false] call ALiVE_fnc_HashGet}" \n
+                         "            ) exitwith {_busy = false};" \n
+                         "" \n
+                         "            [_completedObjective,""opcom_orders"",_nextOperation] call ALiVE_fnc_HashSet;" \n
+                         "            switch (_nextOperation) do {" \n
+                         "                case (""attack"") : {_attack = _completedObjective};" \n
+                         "                case (""defend"") : {_defend = _completedObjective};" \n
+                         "                case (""reserve"") : {_reserve = _completedObjective};" \n
+                         "            };" \n
+                         "        };" \n
+                         "" \n
+                         "        case (""expire_order"") : {" \n
+                         "            private _orderID = _DATA_VALUE;" \n
+                         "            private _unconfirmedOrderIndex = _unconfirmedOrders findIf {((_x select 0) isEqualTo _orderID)};" \n
+                         "            if (_unconfirmedOrderIndex >= 0) then {" \n
+                         "                private _unconfirmedOrder = _unconfirmedOrders select _unconfirmedOrderIndex;" \n
+                         "                if (time >= (_unconfirmedOrder select 3)) then {" \n
+                         "                    if (_debug) then {" \n
+                         "                        [""OPCOM %1 expired unconfirmed TACOM order %2 for objective %3"",_side,_orderID,[(_unconfirmedOrder select 2),""objectiveID"",""unknown""] call ALiVE_fnc_HashGet] call ALiVE_fnc_DumpR;" \n
+                         "                    };" \n
+                         "                    _unconfirmedOrders deleteAt _unconfirmedOrderIndex;" \n
+                         "                    _OPCOM_QUEUE pushBack [""analyze"",nil];" \n
+                         "                };" \n
+                         "            };" \n
+                         "            _busy = false;" \n
+                         "        };" \n
+                         "" \n
                          "        //Handle TACOM confirmation by state" \n
                          "        case (""confirmed"") : {" \n
+                         "            if !(_DATA_VALUE isEqualType [] && {(count _DATA_VALUE) isEqualTo 4}) exitwith {" \n
+                         "                if (_debug) then {[""OPCOM %1 ignored malformed TACOM confirmation"",_side] call ALiVE_fnc_DumpR};" \n
+                         "                _busy = false;" \n
+                         "            };" \n
                          "            _confirmed = _DATA_VALUE select 0;" \n
                          "            _information = _DATA_VALUE select 1;" \n
+                         "            private _orderID = _DATA_VALUE select 2;" \n
+                         "            private _confirmedAt = _DATA_VALUE select 3;" \n
+                         "            if !(" \n
+                         "                _confirmed isEqualType true" \n
+                         "                && {_information isEqualType []}" \n
+                         "                && {(count _information) >= 2}" \n
+                         "                && {_orderID isEqualType 0}" \n
+                         "                && {_orderID > 0}" \n
+                         "                && {_confirmedAt isEqualType 0}" \n
+                         "                && {(_information select 0) isEqualType []}" \n
+                         "            ) exitwith {" \n
+                         "                if (_debug) then {[""OPCOM %1 ignored malformed TACOM confirmation"",_side] call ALiVE_fnc_DumpR};" \n
+                         "                _busy = false;" \n
+                         "            };" \n
                          "" \n
                          "            _target = _information select 0;" \n
                          "            _return = _information select 1;" \n
                          "" \n
+                         "            private _unconfirmedOrderIndex = _unconfirmedOrders findIf {" \n
+                         "                ((_x select 0) isEqualTo _orderID) && {((_x select 2) isEqualRef _target)}" \n
+                         "            };" \n
+                         "            if (_unconfirmedOrderIndex < 0) exitwith {" \n
+                         "                if (_debug) then {[""OPCOM %1 ignored stale confirmation for order %2, objective %3"",_side,_orderID,[_target,""objectiveID"",""unknown""] call ALiVE_fnc_HashGet] call ALiVE_fnc_DumpR};" \n
+                         "                _busy = false;" \n
+                         "            };" \n
+                         "            private _unconfirmedOrder = _unconfirmedOrders select _unconfirmedOrderIndex;" \n
+                         "            if (_confirmedAt >= (_unconfirmedOrder select 3)) exitwith {" \n
+                         "                if (_debug) then {[""OPCOM %1 ignored late confirmation for expired order %2"",_side,_orderID] call ALiVE_fnc_DumpR};" \n
+                         "                _unconfirmedOrders deleteAt _unconfirmedOrderIndex;" \n
+                         "                _OPCOM_QUEUE pushBack [""analyze"",nil];" \n
+                         "                _busy = false;" \n
+                         "            };" \n
+                         "            _unconfirmedOrders deleteAt _unconfirmedOrderIndex;" \n
+                         "" \n
                          "            if ([_target,""deleted"",false] call ALiVE_fnc_HashGet) exitwith {" \n
-                         "                _OPCOM_DATA = [""analyze"",nil];" \n
+                         "                _OPCOM_QUEUE pushBack [""analyze"",nil];" \n
                          "                _busy = false;" \n
                          "            };" \n
                          "" \n
                          "            _faction = selectRandom _factions;" \n
                          "            // Every enemy side is asked about at once below. Picking one at random lost every request that drew a side with no units on the map." \n
                          "" \n
-                         "            _operation = [_target,""opcom_orders""] call AliVE_fnc_HashGet;" \n
+                         "            _operation = _unconfirmedOrder select 1;" \n
                          "            _pos = [_target,""center""] call AliVE_fnc_HashGet;" \n
                          "            _targetId = [_target,""objectiveID""] call AliVE_fnc_HashGet;" \n
                          "" \n
@@ -460,25 +622,25 @@ class FSM
                          "                        };" \n
                          "" \n
                          "                        //Assist TACOM by sending air recon after TACOMs attack confirmation" \n
-                         "                        _OPCOM_DATA = [""RECON"",[[_target,""objectiveID"",""""] call AliVE_fnc_HashGet]];" \n
+                         "                        _OPCOM_QUEUE pushBack [""RECON"",[[_target,""objectiveID"",""""] call AliVE_fnc_HashGet]];" \n
                          "                    };" \n
                          "                    case (""defend"") : {" \n
                          "                        [_target,""opcom_state"",""defending""] call AliVE_fnc_HashSet;" \n
                          "                        if (_debug) then {format [""ALiVE_OPCOM_%1"",[_target,""objectiveID""] call ALiVE_fnc_HashGet] setMarkerColor ""ColorBlue""};" \n
                          "" \n
                          "                        //Trigger new OPCOM analysis after TACOM confirmation including TACOMs answer" \n
-                         "                        _OPCOM_DATA = [""analyze"",nil];" \n
+                         "                        _OPCOM_QUEUE pushBack [""analyze"",nil];" \n
                          "                    };" \n
                          "                    case (""reserve"") : {" \n
                          "                        [_target,""opcom_state"",""reserving""] call AliVE_fnc_HashSet;" \n
                          "                        if (_debug) then {format [""ALiVE_OPCOM_%1"",[_target,""objectiveID""] call ALiVE_fnc_HashGet] setMarkerColor ""ColorGreen""};" \n
                          "" \n
                          "                        //Trigger new OPCOM analysis after TACOM confirmation including TACOMs answer" \n
-                         "                        _OPCOM_DATA = [""analyze"",nil];" \n
+                         "                        _OPCOM_QUEUE pushBack [""analyze"",nil];" \n
                          "                    };" \n
                          "                    default {" \n
                          "                        //Trigger new OPCOM analysis after TACOM confirmation including TACOMs answer" \n
-                         "                        _OPCOM_DATA = [""analyze"",nil];" \n
+                         "                        _OPCOM_QUEUE pushBack [""analyze"",nil];" \n
                          "                    };" \n
                          "                };" \n
                          "				" \n
@@ -490,7 +652,7 @@ class FSM
                          "" \n
                          "            }  else {" \n
                          "                _OPCOM_SKIP_OBJECTIVES pushBack ([_target, ""objectiveID""] call AliVE_fnc_HashGet);" \n
-                         "                _OPCOM_DATA = [""analyze"", nil];" \n
+                         "                _OPCOM_QUEUE pushBack [""analyze"", nil];" \n
                          "                _skipObjective = true;" \n
                          "" \n
                          "                [_target,""opcom_orders"",""none""] call ALiVE_fnc_HashSet;" \n
@@ -540,28 +702,8 @@ class FSM
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
-                                /*%FSM<LINK "EXIT">*/
-                                class EXIT
-                                {
-                                        itemno = 28;
-                                        priority = 99.000000;
-                                        to="END";
-                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"_exitFSM"/*%FSM</CONDITION""">*/;
-                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
-                                };
-                                /*%FSM</LINK>*/
-                                /*%FSM<LINK "ATTACK_Condition">*/
-                                class ATTACK_Condition
-                                {
-                                        itemno = 4;
-                                        priority = 5.000000;
-                                        to="ORDER_TACOM";
-                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"!(isnil ""_attack"");"/*%FSM</CONDITION""">*/;
-                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
-                                };
-                                /*%FSM</LINK>*/
+
+
                                 /*%FSM<LINK "DEFEND_condition">*/
                                 class DEFEND_condition
                                 {
@@ -569,32 +711,12 @@ class FSM
                                         priority = 4.000000;
                                         to="ORDER_TACOM";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"!(isnil ""_defend"");"/*%FSM</CONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"!(isnil ""_defend"") || !(isnil ""_attack"") || !(isnil ""_reserve"") || !(isnil ""_custom"");"/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
-                                /*%FSM<LINK "RESERVE_conditio">*/
-                                class RESERVE_conditio
-                                {
-                                        itemno = 8;
-                                        priority = 3.000000;
-                                        to="ORDER_TACOM";
-                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"!(isnil ""_reserve"");"/*%FSM</CONDITION""">*/;
-                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
-                                };
-                                /*%FSM</LINK>*/
-                                /*%FSM<LINK "CUSTOM_condition">*/
-                                class CUSTOM_condition
-                                {
-                                        itemno = 10;
-                                        priority = 2.000000;
-                                        to="ORDER_TACOM";
-                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"!(isnil ""_custom"");"/*%FSM</CONDITION""">*/;
-                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
-                                };
-                                /*%FSM</LINK>*/
+
+
                                 /*%FSM<LINK "OPCOM_FEEDER">*/
                                 class OPCOM_FEEDER
                                 {
@@ -606,27 +728,7 @@ class FSM
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
-                                /*%FSM<LINK "OPCOM_RECEIVER">*/
-                                class OPCOM_RECEIVER
-                                {
-                                        itemno = 9;
-                                        priority = 1.000000;
-                                        to="COLLECT_TO_QUEUE";
-                                        precondition = /*%FSM<CONDPRECONDITION""">*/"_failsafe = false; _failsafe = (time - _timestamp) > _cycleTime;" \n
-                                         ""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"_OPCOM_status = ""waiting for data""; " \n
-                                         "" \n
-                                         "//See PreCondition and Action for _failsafe and _pause" \n
-                                         "(!(isnil ""_OPCOM_DATA"") || {isnil ""_OPCOM_DATA"" && {count _OPCOM_QUEUE > 0}} || {_orderFailed} || {_failsafe}) && {!_pause};"/*%FSM</CONDITION""">*/;
-                                        action=/*%FSM<ACTION""">*/"if (_orderFailed || {_failsafe}) then {" \n
-                                         "	_orderFailed = false;" \n
-                                         "	_failsafe = false;" \n
-                                         "	_OPCOM_DATA = [""analyze"",nil];" \n
-                                         "};" \n
-                                         "" \n
-                                         "_busy = false;"/*%FSM</ACTION""">*/;
-                                };
-                                /*%FSM</LINK>*/
+
                                 /*%FSM<LINK "ANALYZE_Conditio">*/
                                 class ANALYZE_Conditio
                                 {
@@ -682,15 +784,57 @@ class FSM
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
+
+
+
                                 /*%FSM<LINK "Skip_Objective">*/
                                 class Skip_Objective
                                 {
                                         itemno = 41;
                                         priority = 0.000000;
-                                        to="NOT_BUSY";
+                                        to="NOT_BUSY_1";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
                                         condition=/*%FSM<CONDITION""">*/"_skipObjective"/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+
+
+
+
+
+
+                                /*%FSM<LINK "EXIT">*/
+                                class EXIT
+                                {
+                                        itemno = 28;
+                                        priority = 99.000000;
+                                        to="END";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"_exitFSM"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+
+                                /*%FSM<LINK "OPCOM_RECEIVER">*/
+                                class OPCOM_RECEIVER
+                                {
+                                        itemno = 9;
+                                        priority = 1.000000;
+                                        to="COLLECT_TO_QUEUE";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/"_failsafe = false; _failsafe = (time - _timestamp) > _cycleTime;" \n
+                                         ""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"_OPCOM_status = ""waiting for data""; " \n
+                                         "" \n
+                                         "//See PreCondition and Action for _failsafe and _pause" \n
+                                         "((_OPCOM_DATA isnotequalto []) || {count _OPCOM_QUEUE > 0} || {_orderFailed} || {_failsafe}) && {!_pause};"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/"if (_orderFailed || {_failsafe}) then {" \n
+                                         "	_orderFailed = false;" \n
+                                         "	_failsafe = false;" \n
+                                         "	_OPCOM_QUEUE pushBack [""analyze"",nil];" \n
+                                         "};" \n
+                                         "" \n
+                                         "_busy = false;"/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
                         };
@@ -713,29 +857,39 @@ class FSM
                          "if !(isnil ""_reserve"") then {_operation = ""reserve""};" \n
                          "if !(isnil ""_custom"") then {_operation = ""custom""};" \n
                          "" \n
-                         "//transmit" \n
-                         "switch (_operation) do {" \n
-                         "        case ( ""attack""):   { _TACOM_FSM setFSMVariable [""_TACOM_DATA"",[""analyze"",_attack]] };" \n
-                         "        case (""defend""):    { _TACOM_FSM setFSMVariable [""_TACOM_DATA"",[""analyze"",_defend]] };" \n
-                         "        case (""reserve""):   { _TACOM_FSM setFSMVariable [""_TACOM_DATA"",[""analyze"",_reserve]] };" \n
-                         "        case (""custom""):    {};" \n
-                         "        default {};" \n
+                         "// Register the request and return immediately; confirmations are ordinary FIFO work." \n
+                         "private _orderTarget = switch (_operation) do {" \n
+                         "    case (""attack"") : {_attack};" \n
+                         "    case (""defend"") : {_defend};" \n
+                         "    case (""reserve"") : {_reserve};" \n
+                         "    default {nil};" \n
+                         "};" \n
+                         "if !(isNil ""_orderTarget"") then {" \n
+                         "    _nextOrderID = _nextOrderID + 1;" \n
+                         "    private _orderID = _nextOrderID;" \n
+                         "    private _orderDeadline = time + _orderConfirmationTimeout;" \n
+                         "    _unconfirmedOrders pushBack [_orderID,_operation,_orderTarget,_orderDeadline];" \n
+                         "    private _queue = _TACOM_FSM getFSMVariable [""_TACOM_QUEUE"",[]];" \n
+                         "    _queue pushBack [""analyze_order"",[_orderID,_operation,_orderTarget,_orderDeadline]];" \n
+                         "    _TACOM_FSM setFSMVariable [""_TACOM_QUEUE"",_queue];" \n
+                         "    _OPCOM_QUEUE pushBack [""analyze"",nil];" \n
+                         "    [{" \n
+                         "        params [""_opcomFSM"",""_orderID""];" \n
+                         "        if !(_opcomFSM getFSMVariable [""_exitFSM"",true]) then {" \n
+                         "            private _orders = _opcomFSM getFSMVariable [""_unconfirmedOrders"",[]];" \n
+                         "            if ((_orders findIf {((_x select 0) isEqualTo _orderID)}) >= 0) then {" \n
+                         "                private _opcomQueue = _opcomFSM getFSMVariable [""_OPCOM_QUEUE"",[]];" \n
+                         "                _opcomQueue pushBack [""expire_order"",_orderID];" \n
+                         "                _opcomFSM setFSMVariable [""_OPCOM_QUEUE"",_opcomQueue];" \n
+                         "            };" \n
+                         "        };" \n
+                         "    },[_OPCOM_FSM,_orderID],_orderConfirmationTimeout] call CBA_fnc_waitAndExecute;" \n
                          "};" \n
                          ""/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
-                                /*%FSM<LINK "TACOM_NOT_CONFIR">*/
-                                class TACOM_NOT_CONFIR
-                                {
-                                        itemno = 13;
-                                        priority = 0.000000;
-                                        to="NOT_BUSY";
-                                        precondition = /*%FSM<CONDPRECONDITION""">*/"_orderFailed = false; _orderFailed = (time - _timestamp) > 10;"/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"(!(isnil ""_OPCOM_DATA"") && {(_OPCOM_DATA select 0) == ""confirmed""} && {!((_OPCOM_DATA select 1) select 0)}) || {_orderFailed}"/*%FSM</CONDITION""">*/;
-                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
-                                };
-                                /*%FSM</LINK>*/
+
                                 /*%FSM<LINK "TACOM_CONFIRM">*/
                                 class TACOM_CONFIRM
                                 {
@@ -743,7 +897,7 @@ class FSM
                                         priority = 0.000000;
                                         to="NOT_BUSY_1";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"!(isnil ""_OPCOM_DATA"") && {(_OPCOM_DATA select 0) == ""confirmed""} && {(_OPCOM_DATA select 1) select 0};"/*%FSM</CONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"true"/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
@@ -758,11 +912,19 @@ class FSM
                         init = /*%FSM<STATEINIT""">*/"" \n
                          "_OPCOM_status = ""Init"";" \n
                          "" \n
-                         "_OPCOM_DATA = [""init"",true];" \n
+                         "_OPCOM_QUEUE pushBack [""init"",true];" \n
                          ""/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
+
+
+
+
+
+
+
+
                                 /*%FSM<LINK "OPCOM_RECEIVER">*/
                                 class OPCOM_RECEIVER
                                 {
@@ -774,11 +936,11 @@ class FSM
                                         condition=/*%FSM<CONDITION""">*/"_OPCOM_status = ""waiting for data""; " \n
                                          "" \n
                                          "//See PreCondition and Action for _failsafe and _pause" \n
-                                         "(!(isnil ""_OPCOM_DATA"") || {isnil ""_OPCOM_DATA"" && {count _OPCOM_QUEUE > 0}} || {_orderFailed} || {_failsafe}) && {!_pause};"/*%FSM</CONDITION""">*/;
+                                         "((_OPCOM_DATA isnotequalto []) || {count _OPCOM_QUEUE > 0} || {_orderFailed} || {_failsafe}) && {!_pause};"/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/"if (_orderFailed || {_failsafe}) then {" \n
                                          "	_orderFailed = false;" \n
                                          "	_failsafe = false;" \n
-                                         "	_OPCOM_DATA = [""analyze"",nil];" \n
+                                         "	_OPCOM_QUEUE pushBack [""analyze"",nil];" \n
                                          "};" \n
                                          "" \n
                                          "_busy = false;"/*%FSM</ACTION""">*/;
@@ -787,55 +949,7 @@ class FSM
                         };
                 };
                 /*%FSM</STATE>*/
-                /*%FSM<STATE "NOT_BUSY">*/
-                class NOT_BUSY
-                {
-                        name = "NOT_BUSY";
-                        itemno = 18;
-                        init = /*%FSM<STATEINIT""">*/"" \n
-                         "_OPCOM_status = ""reset"";" \n
-                         "_timestamp = time;" \n
-                         "" \n
-                         "_busy = false;" \n
-                         ""/*%FSM</STATEINIT""">*/;
-                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
-                        class Links
-                        {
-                                /*%FSM<LINK "EXIT">*/
-                                class EXIT
-                                {
-                                        itemno = 28;
-                                        priority = 99.000000;
-                                        to="END";
-                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"_exitFSM"/*%FSM</CONDITION""">*/;
-                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
-                                };
-                                /*%FSM</LINK>*/
-                                /*%FSM<LINK "OPCOM_RECEIVER">*/
-                                class OPCOM_RECEIVER
-                                {
-                                        itemno = 9;
-                                        priority = 1.000000;
-                                        to="COLLECT_TO_QUEUE";
-                                        precondition = /*%FSM<CONDPRECONDITION""">*/"_failsafe = false; _failsafe = (time - _timestamp) > _cycleTime;" \n
-                                         ""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"_OPCOM_status = ""waiting for data""; " \n
-                                         "" \n
-                                         "//See PreCondition and Action for _failsafe and _pause" \n
-                                         "(!(isnil ""_OPCOM_DATA"") || {isnil ""_OPCOM_DATA"" && {count _OPCOM_QUEUE > 0}} || {_orderFailed} || {_failsafe}) && {!_pause};"/*%FSM</CONDITION""">*/;
-                                        action=/*%FSM<ACTION""">*/"if (_orderFailed || {_failsafe}) then {" \n
-                                         "	_orderFailed = false;" \n
-                                         "	_failsafe = false;" \n
-                                         "	_OPCOM_DATA = [""analyze"",nil];" \n
-                                         "};" \n
-                                         "" \n
-                                         "_busy = false;"/*%FSM</ACTION""">*/;
-                                };
-                                /*%FSM</LINK>*/
-                        };
-                };
-                /*%FSM</STATE>*/
+
                 /*%FSM<STATE "NOT_BUSY_1">*/
                 class NOT_BUSY_1
                 {
@@ -850,6 +964,16 @@ class FSM
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
+
+
+
+
+
+
+
+
+
+
                                 /*%FSM<LINK "EXIT">*/
                                 class EXIT
                                 {
@@ -861,6 +985,7 @@ class FSM
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
+
                                 /*%FSM<LINK "OPCOM_RECEIVER">*/
                                 class OPCOM_RECEIVER
                                 {
@@ -872,11 +997,11 @@ class FSM
                                         condition=/*%FSM<CONDITION""">*/"_OPCOM_status = ""waiting for data""; " \n
                                          "" \n
                                          "//See PreCondition and Action for _failsafe and _pause" \n
-                                         "(!(isnil ""_OPCOM_DATA"") || {isnil ""_OPCOM_DATA"" && {count _OPCOM_QUEUE > 0}} || {_orderFailed} || {_failsafe}) && {!_pause};"/*%FSM</CONDITION""">*/;
+                                         "((_OPCOM_DATA isnotequalto []) || {count _OPCOM_QUEUE > 0} || {_orderFailed} || {_failsafe}) && {!_pause};"/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/"if (_orderFailed || {_failsafe}) then {" \n
                                          "	_orderFailed = false;" \n
                                          "	_failsafe = false;" \n
-                                         "	_OPCOM_DATA = [""analyze"",nil];" \n
+                                         "	_OPCOM_QUEUE pushBack [""analyze"",nil];" \n
                                          "};" \n
                                          "" \n
                                          "_busy = false;"/*%FSM</ACTION""">*/;
@@ -894,9 +1019,9 @@ class FSM
                          "_OPCOM_status = ""collect data to queue"";" \n
                          "_timestamp = time;" \n
                          "" \n
-                         "if !(isnil ""_OPCOM_DATA"") then {" \n
+                         "if (_OPCOM_DATA isNotEqualTo []) then {" \n
                          "	_OPCOM_QUEUE pushback _OPCOM_DATA;" \n
-                         "	_OPCOM_DATA = nil;" \n
+                         "	_OPCOM_DATA = [];" \n
                          "};" \n
                          ""/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
@@ -913,6 +1038,14 @@ class FSM
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
+
+
+
+
+
+
+
+
                                 /*%FSM<LINK "OPCOM_RECEIVER">*/
                                 class OPCOM_RECEIVER
                                 {
@@ -924,11 +1057,11 @@ class FSM
                                         condition=/*%FSM<CONDITION""">*/"_OPCOM_status = ""waiting for data""; " \n
                                          "" \n
                                          "//See PreCondition and Action for _failsafe and _pause" \n
-                                         "(!(isnil ""_OPCOM_DATA"") || {isnil ""_OPCOM_DATA"" && {count _OPCOM_QUEUE > 0}} || {_orderFailed} || {_failsafe}) && {!_pause};"/*%FSM</CONDITION""">*/;
+                                         "((_OPCOM_DATA isnotequalto []) || {count _OPCOM_QUEUE > 0} || {_orderFailed} || {_failsafe}) && {!_pause};"/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/"if (_orderFailed || {_failsafe}) then {" \n
                                          "	_orderFailed = false;" \n
                                          "	_failsafe = false;" \n
-                                         "	_OPCOM_DATA = [""analyze"",nil];" \n
+                                         "	_OPCOM_QUEUE pushBack [""analyze"",nil];" \n
                                          "};" \n
                                          "" \n
                                          "_busy = false;"/*%FSM</ACTION""">*/;
@@ -956,17 +1089,7 @@ class FSM
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
-                                /*%FSM<LINK "EXIT">*/
-                                class EXIT
-                                {
-                                        itemno = 28;
-                                        priority = 99.000000;
-                                        to="END";
-                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"_exitFSM"/*%FSM</CONDITION""">*/;
-                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
-                                };
-                                /*%FSM</LINK>*/
+
                                 /*%FSM<LINK "ANALYSIS_DONE">*/
                                 class ANALYSIS_DONE
                                 {
@@ -1025,12 +1148,32 @@ class FSM
                          "};" \n
                          "" \n
                          "_OPCOM_SKIP_OBJECTIVES = [];" \n
-                         "_OPCOM_DATA = [""analyze"", nil];" \n
+                         "_OPCOM_QUEUE pushBack [""analyze"", nil];" \n
                          "_busy = false;" \n
                          ""/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
+
+
+
+
+
+
+
+
+                                /*%FSM<LINK "EXIT">*/
+                                class EXIT
+                                {
+                                        itemno = 28;
+                                        priority = 99.000000;
+                                        to="END";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"_exitFSM"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+
                                 /*%FSM<LINK "OPCOM_RECEIVER">*/
                                 class OPCOM_RECEIVER
                                 {
@@ -1042,11 +1185,11 @@ class FSM
                                         condition=/*%FSM<CONDITION""">*/"_OPCOM_status = ""waiting for data""; " \n
                                          "" \n
                                          "//See PreCondition and Action for _failsafe and _pause" \n
-                                         "(!(isnil ""_OPCOM_DATA"") || {isnil ""_OPCOM_DATA"" && {count _OPCOM_QUEUE > 0}} || {_orderFailed} || {_failsafe}) && {!_pause};"/*%FSM</CONDITION""">*/;
+                                         "((_OPCOM_DATA isnotequalto []) || {count _OPCOM_QUEUE > 0} || {_orderFailed} || {_failsafe}) && {!_pause};"/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/"if (_orderFailed || {_failsafe}) then {" \n
                                          "	_orderFailed = false;" \n
                                          "	_failsafe = false;" \n
-                                         "	_OPCOM_DATA = [""analyze"",nil];" \n
+                                         "	_OPCOM_QUEUE pushBack [""analyze"",nil];" \n
                                          "};" \n
                                          "" \n
                                          "_busy = false;"/*%FSM</ACTION""">*/;
@@ -1240,11 +1383,26 @@ class FSM
                          "    };" \n
                          "};" \n
                          "" \n
-                         "_OPCOM_DATA= [""analyze"",nil]; _reinforce = nil; _busy = false;" \n
+                         "_OPCOM_QUEUE pushBack [""analyze"",nil]; _reinforce = nil; _busy = false;" \n
                          ""/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
+
+
+
+
+                                /*%FSM<LINK "EXIT">*/
+                                class EXIT
+                                {
+                                        itemno = 28;
+                                        priority = 99.000000;
+                                        to="END";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"_exitFSM"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
                                 /*%FSM<LINK "OPCOM_RECEIVER">*/
                                 class OPCOM_RECEIVER
                                 {
@@ -1256,11 +1414,11 @@ class FSM
                                         condition=/*%FSM<CONDITION""">*/"_OPCOM_status = ""waiting for data""; " \n
                                          "" \n
                                          "//See PreCondition and Action for _failsafe and _pause" \n
-                                         "(!(isnil ""_OPCOM_DATA"") || {isnil ""_OPCOM_DATA"" && {count _OPCOM_QUEUE > 0}} || {_orderFailed} || {_failsafe}) && {!_pause};"/*%FSM</CONDITION""">*/;
+                                         "((_OPCOM_DATA isnotequalto []) || {count _OPCOM_QUEUE > 0} || {_orderFailed} || {_failsafe}) && {!_pause};"/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/"if (_orderFailed || {_failsafe}) then {" \n
                                          "	_orderFailed = false;" \n
                                          "	_failsafe = false;" \n
-                                         "	_OPCOM_DATA = [""analyze"",nil];" \n
+                                         "	_OPCOM_QUEUE pushBack [""analyze"",nil];" \n
                                          "};" \n
                                          "" \n
                                          "_busy = false;"/*%FSM</ACTION""">*/;
@@ -1425,11 +1583,26 @@ class FSM
                          "	_attackers = [_OPCOM_HANDLER, ""attackentity"",[_target,1,_QRFtype]] call ALIVE_fnc_OPCOM;" \n
                          "};" \n
                          "" \n
-                         "_OPCOM_DATA= [""analyze"",nil]; _qrf = nil; _busy = false;" \n
+                         "_OPCOM_QUEUE pushBack [""analyze"",nil]; _qrf = nil; _busy = false;" \n
                          ""/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
+
+
+
+
+                                /*%FSM<LINK "EXIT">*/
+                                class EXIT
+                                {
+                                        itemno = 28;
+                                        priority = 99.000000;
+                                        to="END";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"_exitFSM"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
                                 /*%FSM<LINK "OPCOM_RECEIVER">*/
                                 class OPCOM_RECEIVER
                                 {
@@ -1441,11 +1614,11 @@ class FSM
                                         condition=/*%FSM<CONDITION""">*/"_OPCOM_status = ""waiting for data""; " \n
                                          "" \n
                                          "//See PreCondition and Action for _failsafe and _pause" \n
-                                         "(!(isnil ""_OPCOM_DATA"") || {isnil ""_OPCOM_DATA"" && {count _OPCOM_QUEUE > 0}} || {_orderFailed} || {_failsafe}) && {!_pause};"/*%FSM</CONDITION""">*/;
+                                         "((_OPCOM_DATA isnotequalto []) || {count _OPCOM_QUEUE > 0} || {_orderFailed} || {_failsafe}) && {!_pause};"/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/"if (_orderFailed || {_failsafe}) then {" \n
                                          "	_orderFailed = false;" \n
                                          "	_failsafe = false;" \n
-                                         "	_OPCOM_DATA = [""analyze"",nil];" \n
+                                         "	_OPCOM_QUEUE pushBack [""analyze"",nil];" \n
                                          "};" \n
                                          "" \n
                                          "_busy = false;"/*%FSM</ACTION""">*/;
@@ -1496,8 +1669,13 @@ class FSM
                          "                    " \n
                          "				// [""Calling ATO event""] call ALiVE_fnc_DumpR;" \n
                          "" \n
-                         "				waitUntil {[""ALiVE_mil_ATO""] call ALiVE_fnc_isModuleInitialised};" \n
+                         "				private _atoInitializationDeadline = time + 30;" \n
+                         "				waitUntil {" \n
+                         "                    sleep 1;" \n
+                         "                    _exitFSM || {[""ALiVE_mil_ATO""] call ALiVE_fnc_isModuleInitialised} || {time >= _atoInitializationDeadline}" \n
+                         "                };" \n
                          "" \n
+                         "                if (!_exitFSM && {[""ALiVE_mil_ATO""] call ALiVE_fnc_isModuleInitialised}) then {" \n
                          "				_args = [" \n
                          "					""GREEN"",	// ROE" \n
                          "					1200,		// Height" \n
@@ -1510,6 +1688,11 @@ class FSM
                          "				];" \n
                          "				_event = ['ATO_REQUEST', [""Recce"", [_side] call ALiVE_fnc_sideTextToObject, _factions select 0, position _building, _args],""OPCOM""] call ALIVE_fnc_event;" \n
                          "				_eventID = [ALIVE_eventLog, ""addEvent"",_event] call ALIVE_fnc_eventLog;" \n
+                         "                } else {" \n
+                         "                    if (_debug && {!_exitFSM}) then {" \n
+                         "                        [""OPCOM request for recce on objective %1 expired while waiting for ATO initialization"",_target] call ALIVE_fnc_dumpR;" \n
+                         "                    };" \n
+                         "                };" \n
                          "   			} else {" \n
                          "				// debug ---------------------------------------" \n
                          "				if(_debug) then { [""OPCOM request for recce on objective %3 building %2 not possible! No ATO available!"",_RECONtype,_building,_target] call ALIVE_fnc_dumpR; };" \n
@@ -1519,11 +1702,26 @@ class FSM
                          "	};" \n
                          "};" \n
                          "" \n
-                         "_OPCOM_DATA= [""analyze"",nil]; _recon = nil; _busy = false;" \n
+                         "_OPCOM_QUEUE pushBack [""analyze"",nil]; _recon = nil; _busy = false;" \n
                          ""/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
+
+
+
+
+                                /*%FSM<LINK "EXIT">*/
+                                class EXIT
+                                {
+                                        itemno = 28;
+                                        priority = 99.000000;
+                                        to="END";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"_exitFSM"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
                                 /*%FSM<LINK "OPCOM_RECEIVER">*/
                                 class OPCOM_RECEIVER
                                 {
@@ -1535,11 +1733,11 @@ class FSM
                                         condition=/*%FSM<CONDITION""">*/"_OPCOM_status = ""waiting for data""; " \n
                                          "" \n
                                          "//See PreCondition and Action for _failsafe and _pause" \n
-                                         "(!(isnil ""_OPCOM_DATA"") || {isnil ""_OPCOM_DATA"" && {count _OPCOM_QUEUE > 0}} || {_orderFailed} || {_failsafe}) && {!_pause};"/*%FSM</CONDITION""">*/;
+                                         "((_OPCOM_DATA isnotequalto []) || {count _OPCOM_QUEUE > 0} || {_orderFailed} || {_failsafe}) && {!_pause};"/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/"if (_orderFailed || {_failsafe}) then {" \n
                                          "	_orderFailed = false;" \n
                                          "	_failsafe = false;" \n
-                                         "	_OPCOM_DATA = [""analyze"",nil];" \n
+                                         "	_OPCOM_QUEUE pushBack [""analyze"",nil];" \n
                                          "};" \n
                                          "" \n
                                          "_busy = false;"/*%FSM</ACTION""">*/;
@@ -1608,11 +1806,26 @@ class FSM
                          "	};" \n
                          "};" \n
                          "" \n
-                         "_OPCOM_DATA= [""analyze"",nil]; _oca = nil; _busy = false;" \n
+                         "_OPCOM_QUEUE pushBack [""analyze"",nil]; _oca = nil; _busy = false;" \n
                          ""/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
+
+
+
+
+                                /*%FSM<LINK "EXIT">*/
+                                class EXIT
+                                {
+                                        itemno = 28;
+                                        priority = 99.000000;
+                                        to="END";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"_exitFSM"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
                                 /*%FSM<LINK "OPCOM_RECEIVER">*/
                                 class OPCOM_RECEIVER
                                 {
@@ -1624,16 +1837,29 @@ class FSM
                                         condition=/*%FSM<CONDITION""">*/"_OPCOM_status = ""waiting for data""; " \n
                                          "" \n
                                          "//See PreCondition and Action for _failsafe and _pause" \n
-                                         "(!(isnil ""_OPCOM_DATA"") || {isnil ""_OPCOM_DATA"" && {count _OPCOM_QUEUE > 0}} || {_orderFailed} || {_failsafe}) && {!_pause};"/*%FSM</CONDITION""">*/;
+                                         "((_OPCOM_DATA isnotequalto []) || {count _OPCOM_QUEUE > 0} || {_orderFailed} || {_failsafe}) && {!_pause};"/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/"if (_orderFailed || {_failsafe}) then {" \n
                                          "	_orderFailed = false;" \n
                                          "	_failsafe = false;" \n
-                                         "	_OPCOM_DATA = [""analyze"",nil];" \n
+                                         "	_OPCOM_QUEUE pushBack [""analyze"",nil];" \n
                                          "};" \n
                                          "" \n
                                          "_busy = false;"/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "____FAKE____">*/
+                class ____FAKE____
+                {
+                        name = "____FAKE____";
+                        itemno = 46;
+                        init = /*%FSM<STATEINIT""">*/""/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+
                         };
                 };
                 /*%FSM</STATE>*/

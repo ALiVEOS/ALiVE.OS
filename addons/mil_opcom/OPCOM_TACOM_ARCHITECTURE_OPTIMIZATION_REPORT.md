@@ -76,7 +76,7 @@ Internal producers obtain the destination queue and `pushBack` the unchanged leg
 Conceptually, an internal write becomes:
 
 ```sqf
-(_TACOM_FSM getFSMVariable "_TACOM_QUEUE") pushBack ["analyze_order", [_orderID, _operation, _objective]];
+(_TACOM_FSM getFSMVariable "_TACOM_QUEUE") pushBack ["analyze_order", [_orderID, _operation, _objective, _expiresAt]];
 ```
 
 The queues must therefore be initialized before their FSM handles are published to producers, as they are today. A small internal helper may later centralize destination lookup and diagnostics, but it is not necessary to establish the queue contract.
@@ -107,19 +107,22 @@ Legacy external writers can still overwrite each other if they write the same sc
 
 The initial producer conversion includes:
 
-- OPCOM order transmission to TACOM (`analyze_order` with order ID, operation, and objective);
+- OPCOM order transmission to TACOM (`analyze_order` with order ID, operation, objective, and absolute deadline);
 - TACOM confirmation, QRF, and OCA transmission to OPCOM;
 - waypoint completion callbacks writing `completed` messages to TACOM;
 - OPCOM/TACOM initialization, request, reset, and other self-messages;
-- `addTask` and any other internal caller currently writing either scalar slot.
+- exact-profile `addTask` transmission (`manual_order` with operation, transient objective, and supplied profile IDs), plus the remaining internal initialization, reset, and self-message producers.
 
 #### Queue policy
 
 - Ordinary dispatch remains strict FIFO.
 - Multiple tactical requests may be in flight. OPCOM stores each as `[orderID, operation, objective, expiresAt]` and excludes that objective from reselection until the record is confirmed or expires.
-- `ORDER_TACOM` sends `['analyze_order',[orderID,operation,objective]]`; TACOM uses that immutable operation snapshot and returns `['confirmed',[boolean,[objective,details],orderID,confirmedAt]]`.
+- `ORDER_TACOM` sends `['analyze_order',[orderID,operation,objective,expiresAt]]`; TACOM uses the immutable operation/deadline snapshot, rejects expired work before tactical issue, and returns `['confirmed',[boolean,[objective,details],orderID,confirmedAt]]`.
 - Confirmation dispatch removes only the record matching both order ID and objective. Late or duplicate confirmations are ignored and cannot resolve a newer retry for the same objective.
 - A delayed callback queues `expire_order` at each deadline. Expiry therefore observes FIFO order, and the confirmation timestamp distinguishes an on-time reply delayed by backlog from a reply actually produced after its deadline.
+- Unconfirmed attack requests consume `simultanobjectives` capacity immediately. New attack selection requires the combined confirmed-active and pending-attack count to remain strictly below the configured limit.
+- TACOM queues `completed` with the completed tactical operation and objective. OPCOM owns the lifecycle mapping, deduplicates the resulting follow-up against live records, and sends it through the normal correlated order path, preserving recon→attack, capture→reserve, and defend reassessment without relying on generic objective selection.
+- `addTask` queues a self-contained `manual_order` carrying operation, transient internal objective, and an exact deduplicated profile-ID list. TACOM never supplements that list, suppresses normal correlated confirmation/continuation, and removes the transient objective after failure or final completion.
 - No coalescing, ordinary-message reordering, priority lanes, overflow dropping, or backpressure in the first patch.
 - No head cursor or compaction policy in the first patch; optimize dequeue mechanics only if profiling shows meaningful queue-shift cost.
 
@@ -197,11 +200,11 @@ These preserve public shapes and should precede deeper optimization so profiling
 
 #### Implemented correction
 
-`ORDER_TACOM` no longer blocks the OPCOM FSM waiting for one target. It allocates a monotonic order ID, records the objective and absolute deadline, queues the correlated TACOM request, and resumes strategic dispatch. This allows unrelated objectives and queued messages to progress while TACOM works serially through its inbox.
+`ORDER_TACOM` no longer blocks the OPCOM FSM waiting for one target. It allocates a monotonic order ID, records the objective and absolute deadline, includes that deadline in the correlated TACOM request, and resumes strategic dispatch. TACOM rejects requests that expired in its queue and rechecks the deadline after section planning and before issue. This allows unrelated objectives and queued messages to progress while TACOM works serially through its inbox without stale requests producing tactical side effects.
 
 TACOM echoes the order ID in its positive or negative confirmation. Confirmations remain ordinary FIFO entries; OPCOM handles them only when dequeued and accepts one only when ID and objective both match a live record. Records expire independently, and a scheduled wake ensures an idle OPCOM eventually performs the expiry check. Late, duplicate, or mismatched confirmations are ignored.
 
-The legacy scalar ingress and legacy confirmation shape remain accepted. A confirmation without an ID falls back to objective matching, while all current internal order traffic uses the unambiguous correlated envelope. TACOM-generated lifecycle follow-up analysis is returned to OPCOM so the next tactical request is registered through the same path.
+The legacy scalar ingress remains accepted, but confirmations require the full correlated envelope. Confirmations without an ID, malformed payloads, and ID/objective mismatches are ignored. TACOM reports lifecycle completion to OPCOM so the next tactical request is registered through the same path.
 
 ### P0 — Own TACOM enemy-scan lifetime and ordering
 
@@ -433,7 +436,7 @@ Test through the preserved public interface and observable event/profile outcome
 - Queue unrelated OPCOM work before a TACOM confirmation; all entries must remain FIFO and the confirmation must be processed only on its ordinary turn.
 - Dispatch several different objectives before confirmations arrive; each must have an independent ID and deadline, and none may be selected again while in flight.
 - Expire an order, retry the same objective, then deliver the old confirmation; the old ID must not remove or resolve the retry.
-- Exercise positive, negative, duplicate, mismatched, legacy, and timeout outcomes.
+- Exercise positive, negative, duplicate, mismatched, malformed/ID-less, and timeout outcomes.
 - Verify `_OPCOM_DATA` and `_TACOM_DATA` initialize to `[]`.
 - Write a legacy entry through each scalar slot; every nonempty entry must be appended, reset to `[]`, and dispatched without disturbing entries already queued.
 - Verify both FSMs wake and drain work when their scalar data slot is `[]` but their queue is nonempty.

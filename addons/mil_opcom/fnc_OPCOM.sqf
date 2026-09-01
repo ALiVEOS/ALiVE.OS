@@ -1297,8 +1297,8 @@ switch (_operation) do {
                 [_profile,"clearActiveCommands"] call ALIVE_fnc_profileEntity;
 
                 private _profileWaypoint = [_pos,15] call ALIVE_fnc_createProfileWaypoint;
-                private _var = ["_TACOM_DATA",["completed",[_profileID,_objectiveID,_orders]]];
-                private _statements = format ["[{%1 setFSMVariable %2}, [], 1 + (random 9)] call CBA_fnc_waitAndExecute",_TACOM_FSM,_var];
+                private _message = ["completed",[_profileID,_objectiveID,_orders]];
+                private _statements = format ["[{private _queue = %1 getFSMVariable [""_TACOM_QUEUE"",[]]; _queue pushBack %2; %1 setFSMVariable [""_TACOM_QUEUE"",_queue];}, [], 1 + (random 9)] call CBA_fnc_waitAndExecute",_TACOM_FSM,_message];
                 [_profileWaypoint, [
                     ["statements",["true",_statements]],
                     ["behaviour","AWARE"],
@@ -1959,14 +1959,24 @@ switch (_operation) do {
 
             if (_objectiveIndex != -1) then {
                 private _section = [_objective,"section",[]] call ALiVE_fnc_HashGet;
+                private _manualTask = [_objective,"manualTask",false] call ALiVE_fnc_HashGet;
 
                 [_objective,"deleted", true] call ALiVE_fnc_hashSet;
 
-                { [_logic,"resetProfileOrders", _x] call ALiVE_fnc_OPCOM } forEach (+_section);
-                [_logic,"resetObjective", _objectiveID] call ALiVE_fnc_OPCOM;
+                if (_manualTask) then {
+                    // Remove transient objectives from the indexes first so
+                    // profile cleanup cannot reset them and emit a second,
+                    // contradictory completion event.
+                    _objectives deleteAt _objectiveIndex;
+                    _objectivesByID deleteAt _objectiveID;
+                    { [_logic,"resetProfileOrders", _x] call ALiVE_fnc_OPCOM } forEach (+_section);
+                } else {
+                    { [_logic,"resetProfileOrders", _x] call ALiVE_fnc_OPCOM } forEach (+_section);
+                    [_logic,"resetObjective", _objectiveID] call ALiVE_fnc_OPCOM;
 
-                _objectives deleteAt _objectiveIndex;
-                _objectivesByID deleteAt _objectiveID;
+                    _objectives deleteAt _objectiveIndex;
+                    _objectivesByID deleteAt _objectiveID;
+                };
             };
 
             // clean up markers
@@ -2061,35 +2071,48 @@ switch (_operation) do {
     };
 
     case "addTask": {
-        _operation = _args select 0;
-        _pos = _args select 1;
-        _section = _args select 2;
-        _TACOM_FSM = [_logic,"TACOM_FSM"] call ALiVE_fnc_HashGet;
+        _args params [
+            ["_operation", "", [""]],
+            ["_pos", [], [[]]],
+            ["_section", [], [[]]]
+        ];
 
-        _objective = [_logic,"addObjective",[_pos,100,"internal"]] call ALiVE_fnc_OPCOM;
-        [_logic,"setObjectiveSection",[_objective,_section]] call MAINCLASS;
-
-        _TACOM_FSM setFSMVariable ["_busy",false];
-        _TACOM_FSM setFSMVariable ["_TACOM_DATA",["true",nil]];
-
-        switch (_operation) do {
-            case ("recon") : {
-                _recon = [_objective,_section];
-                _TACOM_FSM setFSMVariable ["_recon",_recon];
-            };
-            case ("capture") : {
-                _capture = [_objective,_section];
-                _TACOM_FSM setFSMVariable ["_capture",_capture];
-            };
-            case ("defend") : {
-                _defend = [_objective,_section];
-                _TACOM_FSM setFSMVariable ["_defend",_defend];
-            };
-            case ("reserve") : {
-                _reserve = [_objective,_section];
-                _TACOM_FSM setFSMVariable ["_reserve",_reserve];
-            };
+        if !(_operation in ["recon","capture","defend","reserve"]) exitWith {
+            ["OPCOM addTask ignored unsupported operation %1",_operation] call ALiVE_fnc_Dump;
         };
+        if ((count _pos) < 2) exitWith {
+            ["OPCOM addTask ignored invalid position %1",_pos] call ALiVE_fnc_Dump;
+        };
+
+        // Manual orders own exactly the supplied profile IDs. Invalid entries are
+        // discarded and duplicate IDs are collapsed before the request is queued.
+        _section = (_section select {_x isEqualType ""}) arrayIntersect _section;
+
+        _TACOM_FSM = [_logic,"TACOM_FSM"] call ALiVE_fnc_HashGet;
+        if (isNil "_TACOM_FSM" || {_TACOM_FSM <= 0} || {completedFSM _TACOM_FSM}) exitWith {
+            ["OPCOM addTask ignored because TACOM is unavailable"] call ALiVE_fnc_Dump;
+        };
+
+        private _objectivesByID = [_logic,"objectivesByID"] call ALiVE_fnc_HashGet;
+        private _manualTaskSequence = [_logic,"manualTaskSequence",0] call ALiVE_fnc_HashGet;
+        private _manualObjectiveID = "";
+        while {
+            _manualTaskSequence = _manualTaskSequence + 1;
+            _manualObjectiveID = format ["%1_manual_%2",[_logic,"opcomID","OPCOM"] call ALiVE_fnc_HashGet,_manualTaskSequence];
+            !(isNil {_objectivesByID get _manualObjectiveID})
+        } do {};
+        [_logic,"manualTaskSequence",_manualTaskSequence] call ALiVE_fnc_HashSet;
+
+        _objective = [_logic,"addObjective",[_manualObjectiveID,_pos,100,"internal",100,"internal"]] call ALiVE_fnc_OPCOM;
+        [_objective,"manualTask",true] call ALiVE_fnc_HashSet;
+
+        // The request is self-contained. TACOM assigns the supplied section only
+        // when this FIFO entry reaches the head of its queue.
+        private _tacomQueue = _TACOM_FSM getFSMVariable ["_TACOM_QUEUE",[]];
+        _tacomQueue pushBack ["manual_order",[_operation,_objective,+_section]];
+        _TACOM_FSM setFSMVariable ["_TACOM_QUEUE",_tacomQueue];
+
+        _result = _objective;
     };
 
     case "pause": {
@@ -3555,18 +3578,21 @@ switch (_operation) do {
 
     case "scanFriendliesForNearEnemies": {
 
-        private _factions = [_logic,"factions",[]] call ALiVE_fnc_HashGet;
+        // Internal TACOM workers defer publication until their generation is accepted.
+        private _publishResult = if (_args isEqualType []) then {_args param [0,true]} else {true};
 
-        // private _duration = time; ["TACOM Trigger enemyscan for %1 at %2",_factions,_duration] call ALiVE_fnc_DumpR;
+        private _factions = [_logic,"factions",[]] call ALiVE_fnc_HashGet;
 
         private _controlledProfileIDs = [];
         {
             _controlledProfileIDs append ([ALiVE_ProfileHandler,"getProfilesByFaction",_x] call ALiVE_fnc_ProfileHandler);
         } foreach _factions;
 
+        private _profilesById = [ALiVE_ProfileHandler,"profilesById"] call ALiVE_fnc_hashGet;
+
         private _knownEntities = [];
         {
-            private _profile = [ALiVE_ProfileHandler,"getProfile", _x] call ALiVE_fnc_ProfileHandler;
+            private _profile = _profilesById get _x;
 
             if (!isnil "_profile") then {
                 private _pos = [_profile,"position"] call ALiVE_fnc_HashGet;
@@ -3578,21 +3604,18 @@ switch (_operation) do {
             };
         } foreach _controlledProfileIDs;
 
-        _knownEntitiesIds = _knownEntities apply { _x select 0};
-
-        [_logic,"createSpotrepForProfiles", _knownEntitiesIds] call MAINCLASS;
-
-        [_logic,"knownentities", _knownEntities] call ALiVE_fnc_HashSet;
-
-        // ["TACOM enemyscan for %1 finished in %2 seconds",_factions, time - _duration] call ALiVE_fnc_DumpR;
+        if (_publishResult) then {
+            private _knownEntitiesIds = _knownEntities apply {_x select 0};
+            [_logic,"createSpotrepForProfiles",_knownEntitiesIds] call MAINCLASS;
+            [_logic,"knownentities",_knownEntities] call ALiVE_fnc_HashSet;
+        };
 
         _result = _knownEntities;
 
     };
 
-    case "scantroops" : {
-
-
+    case "scantroops";
+    case "scanTroops" : {
         private ["_inf","_mot","_mech","_arm","_air","_sea","_profileIDs","_artilleryClasses","_AAA","_AAAClasses"];
 
         _factions = [_logic,"factions"] call ALiVE_fnc_HashGet;
@@ -3600,7 +3623,7 @@ switch (_operation) do {
 
         _profileIDs = [];
         {
-            _profileIDs = _profileIDs + ([ALIVE_profileHandler, "getProfilesByFaction",_x] call ALIVE_fnc_profileHandler);
+            _profileIDs append +([ALIVE_profileHandler,"getProfilesByFaction", _x] call ALIVE_fnc_profileHandler);
         } foreach _factions;
 
         _inf = [];
@@ -3612,7 +3635,19 @@ switch (_operation) do {
         _mech = [];
         _arty = [];
 
-        if (isnil "_profileIDs" || {count _profileIDs == 0}) exitwith {_result = [_inf,_mot,_mech,_arm,_air,_sea,_arty,_AAA]};
+        if (isnil "_profileIDs" || {count _profileIDs == 0}) exitwith {
+            [_logic,"infantry",_inf] call ALiVE_fnc_HashSet;
+            [_logic,"motorized",_mot] call ALiVE_fnc_HashSet;
+            [_logic,"mechanized",_mech] call ALiVE_fnc_HashSet;
+            [_logic,"armored",_arm] call ALiVE_fnc_HashSet;
+            [_logic,"artillery",_arty] call ALiVE_fnc_HashSet;
+            [_logic,"AAA",_AAA] call ALiVE_fnc_HashSet;
+            [_logic,"air",_air] call ALiVE_fnc_HashSet;
+            [_logic,"sea",_sea] call ALiVE_fnc_HashSet;
+            [_logic,"currentForceStrength",[0,0,0,0,0,0,0,0]] call ALiVE_fnc_HashSet;
+
+            _result = [_inf,_mot,_mech,_arm,_air,_sea,_arty,_AAA];
+        };
 
         {
             private ["_profile","_assignments","_type","_objectType","_vehicleClass","_busy"];
@@ -3689,14 +3724,14 @@ switch (_operation) do {
             };
         } foreach _profileIDs;
 
-        [_logic,"infantry",_inf] call ALiVE_fnc_HashSet;
-        [_logic,"motorized",_mot] call ALiVE_fnc_HashSet;
-        [_logic,"mechanized",_mech] call ALiVE_fnc_HashSet;
-        [_logic,"armored",_arm] call ALiVE_fnc_HashSet;
-        [_logic,"artillery",_arty] call ALiVE_fnc_HashSet;
-        [_logic,"AAA",_AAA] call ALiVE_fnc_HashSet;
-        [_logic,"air",_air] call ALiVE_fnc_HashSet;
-        [_logic,"sea",_sea] call ALiVE_fnc_HashSet;
+        [_logic,"infantry", _inf] call ALiVE_fnc_HashSet;
+        [_logic,"motorized", _mot] call ALiVE_fnc_HashSet;
+        [_logic,"mechanized", _mech] call ALiVE_fnc_HashSet;
+        [_logic,"armored", _arm] call ALiVE_fnc_HashSet;
+        [_logic,"artillery", _arty] call ALiVE_fnc_HashSet;
+        [_logic,"AAA", _AAA] call ALiVE_fnc_HashSet;
+        [_logic,"air", _air] call ALiVE_fnc_HashSet;
+        [_logic,"sea", _sea] call ALiVE_fnc_HashSet;
 
         _count = [
             count _inf,
@@ -3710,7 +3745,7 @@ switch (_operation) do {
         ];
 
         if (isnil {[_logic,"startForceStrength"] call ALiVE_fnc_HashGet}) then {
-            [_logic,"startForceStrength",+_count] call ALiVE_fnc_HashSet
+            [_logic,"startForceStrength", +_count] call ALiVE_fnc_HashSet
         };
         _currentForceStrength = [_logic,"currentForceStrength",_count] call ALiVE_fnc_HashSet;
 
@@ -3891,7 +3926,7 @@ switch (_operation) do {
                     private _side = _FSM_OPCOM getfsmvariable "_side";
                     private _cycleTime = _FSM_OPCOM getfsmvariable "_cycleTime";
                     private _timestamp = floor(time - (_FSM_OPCOM getfsmvariable "_timestamp"));
-                    private _OPC_DATA = _FSM_OPCOM getfsmvariable ["_OPCOM_DATA","nil"];
+                    private _OPC_DATA = _FSM_OPCOM getfsmvariable ["_OPCOM_DATA",[]];
                     private _OPC_QUEUE = _FSM_OPCOM getfsmvariable ["_OPCOM_QUEUE",[]];
                     private _state_TACOM = _FSM_TACOM getfsmvariable "_TACOM_status";
                     private _TACOM_busy = _FSM_TACOM getfsmvariable "_busy";
@@ -3933,7 +3968,7 @@ switch (_operation) do {
                             hintsilent _message;
 
                             if (_timestamp > 900) then {
-                                _FSM_OPCOM setfsmvariable ["_OPCOM_DATA",nil];
+                                _FSM_OPCOM setfsmvariable ["_OPCOM_DATA",[]];
                                 _FSM_OPCOM setfsmvariable ["_busy",false];
                             };
                         };

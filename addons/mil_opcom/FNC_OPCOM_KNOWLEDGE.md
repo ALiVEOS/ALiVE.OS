@@ -2,13 +2,13 @@
 
 ## Scope and method
 
-This is a direct, dispatcher-focused analysis of `addons/mil_opcom/fnc_OPCOM.sqf` (lines 1-4283), based on one isolated review for each public operation body plus a final cross-check of the dispatcher. There are **63 in-scope operation bodies** and **69 in-scope case labels**: six bodies have two case-label aliases. The requested exclusions are deliberately omitted: `create` (80-93), `init` (94-114), and `validateStartupState` (4076-4270). This map records direct calls only; a listed callee is not recursively expanded in the caller's entry.
+This is a direct, dispatcher-focused analysis of `addons/mil_opcom/fnc_OPCOM.sqf` (lines 1-4318), based on one isolated review for each public operation body plus a final cross-check of the dispatcher. There are **63 in-scope operation bodies** and **69 in-scope case labels**: six bodies have two case-label aliases. The requested exclusions are deliberately omitted: `create` (80-93), `init` (94-114), and `validateStartupState` (4111-4305). This map records direct calls only; a listed callee is not recursively expanded in the caller's entry.
 
 ## Dispatcher conventions
 
 Every call arrives as `[_logic, _operation, _args]`, parsed at 57-61. `_logic` defaults to `objNull` but is normally the OPCOM handler hash; some public paths accept the module object or an identifier string. `_operation` is a string. `_args` defaults to `objNull` and is broadly type-permitted by the outer dispatcher, so each case's actual shape guards matter.
 
-`MAINCLASS` is `ALIVE_fnc_OPCOM` (52-53). `_result` starts as `nil` (62); the epilogue returns `_result` only when defined, otherwise `nil` (4280-4283). Several mutators intentionally do not assign `_result`. Server-only cases commonly forward clients with `remoteExec ["ALiVE_fnc_OPCOM",2]`; that remote request does not return the server's value to the caller. Hash fields are read/written through the ALiVE hash helpers unless a native `HashMap` is explicitly noted.
+`MAINCLASS` is `ALIVE_fnc_OPCOM` (52-53). `_result` starts as `nil` (62); the epilogue returns `_result` only when defined, otherwise `nil` (4315-4318). Several mutators intentionally do not assign `_result`. Server-only cases commonly forward clients with `remoteExec ["ALiVE_fnc_OPCOM",2]`; that remote request does not return the server's value to the caller. Hash fields are read/written through the ALiVE hash helpers unless a native `HashMap` is explicitly noted.
 
 ## Operation index
 
@@ -34,49 +34,49 @@ Every call arrives as `[_logic, _operation, _args]`, parsed at 57-61. `_logic` d
 | sortObjectives | 1602-1766 | Sort and asymmetrically seed objectives |
 | resetObjective | 1767-1802 | Clear/reset one objective |
 | initObjective | 1803-1940 | Initialize asymmetric objective assets |
-| removeObjective | 1941-1998 | Delete objective and cleanup |
-| reorderObjective | 1999-2035 | Reorder objective array |
-| findReinforcementBase | 2036-2062 | Choose reserve FOB |
-| addTask | 2063-2096 | Queue TACOM task |
-| pause | 2097-2125 | Set/query controller pause |
-| stop | 2126-2148 | Stop controller FSMs |
-| createhashobject | 2149-2156 | Server fresh hash factory |
-| parseTaskProfileCountOverrides | 2157-2198 | Parse count overrides |
-| parseTaskProfileTypeOverrides | 2199-2263 | Parse type overrides |
-| normalizeAsymmetricInstallationType | 2264-2284 | Normalize installation alias |
-| parseAsymmetricInstallationCountOverrides | 2285-2329 | Parse installation-count overrides |
-| createAsymmetricInstallation | 2330-2583 | Place one asymmetric installation |
-| seedAsymmetricInstallations | 2584-2644 | Apply per-source installation overrides |
-| getTaskProfileCount | 2645-2667 | Resolve count override |
-| getTaskProfileTypes | 2668-2696 | Resolve type override |
-| convertObject | 2697-2722 | Serialize/resolve object reference |
-| saveData | 2723-2845 | Persist objectives |
-| loadData | 2846-2899 | Reload/restart controller state |
-| loadObjectivesDB | 2900-3065 | Reconstruct persisted objectives |
-| objectives | 3066-3077 | Objective getter/setter |
-| findOPCOMByAllegiance | 3078-3094 | Find handler by side/faction |
-| addObjective | 3095-3172 | Create/index one objective |
-| createObjectives / createobjectives | 3173-3236 | Build/sort objective set |
-| createObjectiveDebugMarkers | 3237-3279 | Render objective markers |
-| nearestObjectives | 3280-3297 | Find state-matching objectives |
-| nearestEntity | 3298-3321 | Find a profile in nearest objective |
-| joinObjectiveClient | 3322-3389 | Client map selection UI |
-| joinObjectiveServer | 3390-3448 | Server profile/group join |
-| analyzeclusteroccupation | 3449-3543 | Classify objective occupation |
-| scanForNearEnemies | 3544-3557 | Delegate enemy spatial scan |
-| scanFriendliesForNearEnemies | 3558-3592 | Collect contacts/spot reports |
-| scanTroops | 3593-3726 | Categorize controlled profiles |
-| setstatebyclusteroccupation | 3727-3755 | Apply occupation priority state |
-| selectordersbystate | 3756-3789 | Select objective/order by state |
-| sectionsamount_attack | 3790-3800 | Attack section size getter/setter |
-| sectionsamount_reserve | 3801-3811 | Reserve section size getter/setter |
-| sectionsamount_defend | 3812-3823 | Defend section size getter/setter |
-| destroy | 3824-3848 | Dispose instance/module |
-| debug | 3849-3858 | Debug flag getter/setter |
-| OPCOM_monitor | 3859-3951 | Start/stop diagnostic monitor |
-| changeControlType | 3952-4036 | Rebuild for another mode |
-| state | 4037-4075 | Export/restore handler state |
-| convert | 4271-4274 | Backward-compatible array parser |
+| removeObjective | 1941-2008 | Delete objective and cleanup |
+| reorderObjective | 2009-2045 | Reorder objective array |
+| findReinforcementBase | 2046-2072 | Choose reserve FOB |
+| addTask | 2073-2117 | Queue an exact-profile manual TACOM task |
+| pause | 2118-2146 | Set/query controller pause |
+| stop | 2147-2169 | Stop controller FSMs |
+| createhashobject | 2170-2177 | Server fresh hash factory |
+| parseTaskProfileCountOverrides | 2178-2219 | Parse count overrides |
+| parseTaskProfileTypeOverrides | 2220-2284 | Parse type overrides |
+| normalizeAsymmetricInstallationType | 2285-2305 | Normalize installation alias |
+| parseAsymmetricInstallationCountOverrides | 2306-2350 | Parse installation-count overrides |
+| createAsymmetricInstallation | 2351-2604 | Place one asymmetric installation |
+| seedAsymmetricInstallations | 2605-2665 | Apply per-source installation overrides |
+| getTaskProfileCount | 2666-2688 | Resolve count override |
+| getTaskProfileTypes | 2689-2717 | Resolve type override |
+| convertObject | 2718-2743 | Serialize/resolve object reference |
+| saveData | 2744-2866 | Persist objectives |
+| loadData | 2867-2920 | Reload/restart controller state |
+| loadObjectivesDB | 2921-3086 | Reconstruct persisted objectives |
+| objectives | 3087-3098 | Objective getter/setter |
+| findOPCOMByAllegiance | 3099-3115 | Find handler by side/faction |
+| addObjective | 3116-3193 | Create/index one objective |
+| createObjectives / createobjectives | 3194-3257 | Build/sort objective set |
+| createObjectiveDebugMarkers | 3258-3300 | Render objective markers |
+| nearestObjectives | 3301-3318 | Find state-matching objectives |
+| nearestEntity | 3319-3342 | Find a profile in nearest objective |
+| joinObjectiveClient | 3343-3410 | Client map selection UI |
+| joinObjectiveServer | 3411-3469 | Server profile/group join |
+| analyzeclusteroccupation | 3470-3564 | Classify objective occupation |
+| scanForNearEnemies | 3565-3578 | Delegate enemy spatial scan |
+| scanFriendliesForNearEnemies | 3579-3616 | Collect contacts/spot reports |
+| scanTroops | 3617-3761 | Categorize controlled profiles |
+| setstatebyclusteroccupation | 3762-3790 | Apply occupation priority state |
+| selectordersbystate | 3791-3824 | Select objective/order by state |
+| sectionsamount_attack | 3825-3835 | Attack section size getter/setter |
+| sectionsamount_reserve | 3836-3846 | Reserve section size getter/setter |
+| sectionsamount_defend | 3847-3858 | Defend section size getter/setter |
+| destroy | 3859-3883 | Dispose instance/module |
+| debug | 3884-3893 | Debug flag getter/setter |
+| OPCOM_monitor | 3894-3986 | Start/stop diagnostic monitor |
+| changeControlType | 3987-4071 | Rebuild for another mode |
+| state | 4072-4110 | Export/restore handler state |
+| convert | 4306-4308 | Backward-compatible array parser |
 
 ## Per-operation contracts
 
@@ -160,175 +160,175 @@ Takes objective ID; nil/missing yields current objectives unchanged. It calls `g
 
 Nil args returns objectives; otherwise asserts string ID, resolves it with `getObjectiveByID`, converts configured assets with `convertObject`, sets objective `agents`/`objectiveType`, and spawns asymmetric factory/recruit/depot/roadblock/IED/ambush/sabotage/suicide helpers for live modules. Returns objectives, not the objective. Missing objective/assets can fail or skip; repeated calls duplicate spawns/actions.
 
-### removeObjective (1941-1998)
+### removeObjective (1941-2008)
 
-Clients remote-forward; server nil args is getter, otherwise requires string ID. It finds canonical indexed objective by reference in `objectives`, calls `resetProfileOrders` for copied section and `resetObjective`, marks `deleted`, removes it/its index, and deletes relevant markers; returns live objectives. Missing/stale ID is marker-cleanup/no-op. A stale index whose object is absent from array leaves assignment/index state orphaned.
+Clients remote-forward; server nil args is getter, otherwise requires string ID. It finds the canonical indexed objective by reference in `objectives`, marks it `deleted`, and deletes relevant markers. Normal objectives reset copied section profiles, call `resetObjective`, and then leave the array/index. Transient objectives marked `manualTask` leave the array/index first and then reset copied profiles, skipping `resetObjective` so manual cleanup cannot publish a second, contradictory completion. It returns the remaining live objectives. A missing/stale ID is marker-cleanup/no-op; a stale index whose object is absent from the array leaves assignment/index state orphaned.
 
-### reorderObjective (1999-2035)
+### reorderObjective (2009-2045)
 
 Clients remote-forward; server args `[objectiveID,newIndex]` default to `""`/0. It reads objective array/index map, reference-finds the object, clamps destination, deletes/inserts it in place, and returns array. Missing/stale ID returns unchanged; no map/marker update occurs. The two-step mutation exposes a transient absent array entry to interleaved work.
 
-### findReinforcementBase (2036-2062)
+### findReinforcementBase (2046-2072)
 
 Ignores args and returns nearest reserve/reserving/idle FOB candidate relative to first attack/defend order objective, first unsorted FOB if no active objective, or nil. It reads objective `opcom_orders`, `opcom_state`, `center` and only calls HashGet/SortBy; no writes/scheduling.
 
-### addTask (2063-2096)
+### addTask (2073-2117)
 
-Args `[operation,position,section]`. It creates an internal objective via `addObjective`, calls `setObjectiveSection`, sets TACOM `_busy=false`, appends wake row to `_TACOM_QUEUE`, and stores `[objective,section]` in operation-specific FSM scratch state; returns nil. Unsupported operation still creates/wakes but no descriptor is set; bad args/FSM fail and concurrent calls can overwrite scratch slots.
+Args `[operation,position,profileIDs]`, where operation is `recon`, `capture`, `defend`, or `reserve`. It validates the request, removes non-string and duplicate profile IDs, creates a uniquely identified transient objective with internal state, and appends `['manual_order',[operation,objective,profileIDs]]` to `_TACOM_QUEUE`. The queued payload is authoritative: no TACOM scratch state or section assignment is mutated before dequeue. TACOM uses only those profile IDs, never recruits replacements, suppresses correlated OPCOM confirmation/continuation, and removes the transient objective on failure or final completion. The operation returns the created objective.
 
-### pause (2097-2125)
+### pause (2118-2146)
 
 Intended bool setter/query: it reads/writes handler `pause`, waits for startup/FSM readiness, and sets both FSM `_pause` flags, returning requested/current bool (the already-paused early exit can return nil). Omitted `_args` is outer-default `objNull`, so it incorrectly hits bool assertion instead of query. No server guard, unbounded wait, and asymmetric `TACOM_FSM` absence can fail.
 
-### stop (2126-2148)
+### stop (2147-2169)
 
 Ignores args, reads FSM handles, sets `_exitFSM=true`/`_busy=false`, waits until TACOM then OPCOM handler keys disappear, logs, and returns true. Missing handles are successful no-ops; stale/nonterminating FSM keys stall indefinitely. `loadData` directly calls it.
 
-### createhashobject (2149-2156)
+### createhashobject (2170-2177)
 
 Server creates an empty ALiVE hash, removes inherited `super`/`class`, and returns it. Clients return nil. It ignores logic/args and has no other state writes; `loadObjectivesDB` calls it.
 
-### parseTaskProfileCountOverrides (2157-2198)
+### parseTaskProfileCountOverrides (2178-2219)
 
 Accepts array or SQF string; string is `call compile`d. It returns a new hash keyed by lowercased task names with nonnegative floored numeric counts; invalid entries/parse failures leave an empty/partial hash, duplicates overwrite. No persistent writes. Compile is executable configuration, not data-only parsing.
 
-### parseTaskProfileTypeOverrides (2199-2263)
+### parseTaskProfileTypeOverrides (2220-2284)
 
 Accepts array or compiled string and returns hash of lowercased task keys to canonicalized/deduplicated allowed type arrays. Empty explicit arrays are preserved; malformed input/token-only arrays are rejected. No writes/internal edges; whitespace is not trimmed and compile carries executable-input risk.
 
-### normalizeAsymmetricInstallationType (2264-2284)
+### normalizeAsymmetricInstallationType (2285-2305)
 
 Accepts a string, lowercases it, and returns canonical `HQ`, `depot`, `factory`, `ied`, or `roadblocks`; aliases include recruit/recruitmentHQ, IED factory, and singular roadblock. Non-string/unknown returns `""`; no reads/writes/scheduling.
 
-### parseAsymmetricInstallationCountOverrides (2285-2329)
+### parseAsymmetricInstallationCountOverrides (2306-2350)
 
 Array/compiled-string parser equivalent to count overrides but normalizes installation aliases first. Returns hash of canonical installation type to floored nonnegative count; invalid/unknown entries skip and later duplicates overwrite. No persistent writes; `call compile` is the material trust boundary.
 
-### createAsymmetricInstallation (2330-2583)
+### createAsymmetricInstallation (2351-2604)
 
 Args select objective/type/position context and validate objective/profile/feature availability. It resolves/stamps installation object/hash fields and starts relevant INS modules (factory, depot, HQ, IED, roadblocks), returning success/failure. It reads objectives, side/factions, buildings/roads and existing installations; side effects include spawned INS processes, marker/action/world state. Direct internal edge: `getObjectiveByID`, `convertObject` where used. Invalid type/objective, no viable building/road, disabled feature, or client locality are failure/no-op paths.
 
-### seedAsymmetricInstallations (2584-2644)
+### seedAsymmetricInstallations (2605-2665)
 
 Reads objective override hashes/source keys, groups objectives by source, invokes `createAsymmetricInstallation` up to requested counts, logs under-placement, and returns handled objective IDs. It writes no direct handler fields. A failed override still marks its group handled, so later normal seeding excludes it; source-key collisions reuse the first group's override map.
 
-### getTaskProfileCount (2645-2667)
+### getTaskProfileCount (2666-2688)
 
 Args `[task,default,fallbackTask]`; reads handler `taskProfileCountOverrides`, tries lowercased task then fallback, and returns numeric override else default. No writes/scheduling; malformed/nonhash override safely preserves default.
 
-### getTaskProfileTypes (2668-2696)
+### getTaskProfileTypes (2689-2717)
 
 Args `[task,defaultArray,fallbackTask]`; reads `taskProfileTypeOverrides`, returns a shallow copy of matching task/fallback array or default. No writes/scheduling; nonhash/invalid values are no-op fallback.
 
-### convertObject (2697-2722)
+### convertObject (2718-2743)
 
 Accepts a live object or `[position,class]` serialized reference. It returns object, serialized form, `[]`, `objNull`, or nil according to liveness/proximity resolution; no persistent writes. Used by asymmetric asset paths. Malformed/unsupported args return default/undefined rather than a stable error.
 
-### saveData (2723-2845)
+### saveData (2744-2866)
 
 Server/data-module-gated; ignores args, throttles using global `OBJECTIVES_DB_SAVE`, serializes persistent non-player-created objectives and optional force state, lazily creates/configures data handler, invokes synchronous `Data.bulkSave`, and returns save result/messages when it runs. Writes cache globals and database records; missing/disabled data, throttle, or empty data return nil after diagnostics. External edges are Data/hash/CBA helpers.
 
-### loadData (2846-2899)
+### loadData (2867-2920)
 
 Server/data-module-gated reload: calls `stop`, `loadObjectivesDB`, replaces objectives/rebuilds indexes, sets control-specific FSM handles, and returns its result (normally nil). It assumes loaded objectives are an array; failed DB load can write false before restart. Unknown control type leaves the instance stopped.
 
-### loadObjectivesDB (2900-3065)
+### loadObjectivesDB (2921-3086)
 
 Server/data-module-gated and cached at 300 seconds. It bulk-loads `mil_opcom`, filters by handler `opcomID`, recreates cleaned objective hashes, writes/rebuilds objective indexes, clears profile orders, and calls `resetObjective` or asymmetric `initObjective`; returns reconstructed objective array/false. It can emit events/spawn INS work during restoration; bad DB shapes/stale cached data remain gaps.
 
-### objectives (3066-3077)
+### objectives (3087-3098)
 
 Nil `_args` returns `objectives`; array `_args` writes it, calls `rebuildObjectiveIndexes`, returns it; other non-nil types return nil without mutation. No copy/server guard; its direct internal edge is `rebuildObjectiveIndexes`.
 
-### findOPCOMByAllegiance (3078-3094)
+### findOPCOMByAllegiance (3099-3115)
 
 Requires string identifier, lowercases it, scans global `OPCOM_instances`, and returns first handler whose `side` equals it or whose `factions` contains it. No writes/scheduling; non-string/no match returns nil and undefined/malformed global state fails.
 
-### addObjective (3095-3172)
+### addObjective (3116-3193)
 
-Accepts handler or side/faction string resolved through `findOPCOMByAllegiance`, then an objective argument tuple with defaults. It creates objective hash (`objectiveID`, center/size/type/priority/state/cluster/opcom metadata, deleted/revision/player-created), appends/inserts into `objectives`, writes `objectivesByID`, optionally renders debug markers, and returns objective. Invalid logic/args return nil. Duplicate IDs overwrite index but leave older array entry; legacy `addTask`'s short argument shape is incompatible with this positional contract.
+Accepts handler or side/faction string resolved through `findOPCOMByAllegiance`, then an objective argument tuple with defaults. It creates objective hash (`objectiveID`, center/size/type/priority/state/cluster/opcom metadata, deleted/revision/player-created), appends/inserts into `objectives`, writes `objectivesByID`, optionally renders debug markers, and returns objective. Invalid logic/args return nil. Duplicate IDs overwrite index but leave older array entry; callers must allocate unique IDs, as `addTask` now does for transient manual objectives.
 
-### createObjectives / createobjectives (3173-3236)
+### createObjectives / createobjectives (3194-3257)
 
 Nil args returns existing objectives; otherwise args `[sourceObjectives,sortStrategy]` generate IDs and call `addObjective` for each, copy asymmetric override metadata, then call `sortObjectives`, returning objectives. It extends rather than clears existing state; source/objective malformed fields fail. Direct edges: `addObjective`, `sortObjectives`.
 
-### createObjectiveDebugMarkers (3237-3279)
+### createObjectiveDebugMarkers (3258-3300)
 
 Optional array args selects objectives, otherwise reads all. It deletes/recreates global `ALiVE_OPCOM_<objectiveID>` markers using side/color/index/type, returning nil. It mutates marker world state only. Center array is modified with offset in-place, a possible accumulated-position/stale-marker risk; duplicate/empty IDs collide.
 
-### nearestObjectives (3280-3297)
+### nearestObjectives (3301-3318)
 
 Args `[position,[opcomState,"attacking"]]`; reads objectives, filters exact `opcom_state`, SortBy distance to `center`, returns shallow sorted array, with `[]` for no objectives. No writes/scheduling; malformed positions/centers can fail.
 
-### nearestEntity (3298-3321)
+### nearestEntity (3319-3342)
 
 Args `[unit,[state,"attacking"]]`; gets unit position, calls `nearestObjectives`, reads each section and profile map, returns first live profile ID or nil. No writes/scheduling. Direct edge: `nearestObjectives([getPosATL unit,state])`; malformed unit/profile map fails.
 
-### joinObjectiveClient (3322-3389)
+### joinObjectiveClient (3343-3410)
 
 Args default `[player,[],"COLORYELLOW"]`. In interface context it creates local area markers, opens map, waits indefinitely for click global, sorts clicked-nearest objective, calls `joinObjectiveServer`, closes/deletes markers, returns nil. Empty objectives hints/no-ops. Non-interface remote branch references `_unit` before argument unpacking; marker names based on positions can collide.
 
-### joinObjectiveServer (3390-3448)
+### joinObjectiveServer (3411-3469)
 
 Args `[unit,objective]`; clients remote-forward. Server validates target/caller profiles, fades player UI, sleeps/waits, teleports/joinGroups/formations or vehicle cargo, copies target waypoints, fades back, returns nil. It mutates world position, group membership, profile waypoints, and UI; destroyed/missing profiles hint/dump/exit, and unready profiles/unit groups can wait/fail.
 
-### analyzeclusteroccupation (3449-3543)
+### analyzeclusteroccupation (3470-3564)
 
 Args `[friendlySides,enemySides]`; reads objectives/controltype, resets empty-section objective state, queries all entity profiles within 500 m, builds friendly/enemy/contested triples, writes `clusteroccupation=[friendly,enemy,contested,time]`, calls `setstatebyclusteroccupation` for reserve/attack/defend, returns tuple. Unknown controltype leaves priority mapping undefined; snapshots and profile side layouts can be stale/malformed.
 
-### scanForNearEnemies (3544-3557)
+### scanForNearEnemies (3565-3578)
 
 Args `[position,[requireVisibility,true]]`; reads `sidesenemy` and directly calls `findProfilesNearPosition([position,sidesenemy,requireVisibility])`, returning that result. No writes/scheduling. Default finder behavior is 800 m query / 500 m LOS acceptance.
 
-### scanFriendliesForNearEnemies (3558-3592)
+### scanFriendliesForNearEnemies (3579-3616)
 
 Optional args are `[[publishResult,true]]`. The operation reads factions and ProfileHandler faction profiles, calls `scanForNearEnemies` for each valid friendly profile, deduplicates contacts, and returns pairs. By default it calls `createSpotrepForProfiles(contactIDs)` and writes `knownentities`; TACOM passes `false` so its worker returns a private result that is published only after the FSM accepts the active scan generation. Missing profiles/no factions gives `[]`; with publication enabled this clears `knownentities`. Direct edges are the two named operations.
 
-### scanTroops (3593-3726)
+### scanTroops (3617-3761)
 
 Ignores args; gathers faction profiles, categorizes valid non-player assets into infantry/motorized/mechanized/armored/air/sea/artillery/AAA, writes all category keys and `currentForceStrength`, initializes `startForceStrength` only from a nonempty first snapshot, and returns eight arrays in that order. No profiles publishes all eight categories as empty plus a zero `currentForceStrength` vector, preventing a prior snapshot from remaining visible; helicopter/plane categorization is commented so air remains empty.
 
-### setstatebyclusteroccupation (3727-3755)
+### setstatebyclusteroccupation (3762-3790)
 
 Args `[objectiveEntries,operation]`; resolves each ID via `getObjectiveByID`, skips nil/deleted, compares state against protected states, and writes `opcom_state` when eligible; returns nil. Unknown operation uses default protected list but writes unknown string. Direct edge: `getObjectiveByID(id)`.
 
-### selectordersbystate (3756-3789)
+### selectordersbystate (3791-3824)
 
 Takes requested state, reads ordered objectives, OPCOM FSM `_OPCOM_SKIP_OBJECTIVES`, module EmptyDetector triggers, selects first eligible matching state, maps unassigned to attack, writes objective `opcom_orders`, returns `["execute",objective]`; no selection returns nil. Attack/unassigned are trigger-gated, defend/reserve are not. Missing FSM/module/hash state fails.
 
-### sectionsamount_attack (3790-3800)
+### sectionsamount_attack (3825-3835)
 
 Non-scalar args get handler `sectionsamount_attack`; scalar args write it and TACOM FSM `_sectionsamount_attack`, returning nil. No range/integer/FSM existence validation; conventional initialization supplies defaults then profile-count normalization.
 
-### sectionsamount_reserve (3801-3811)
+### sectionsamount_reserve (3836-3846)
 
 Same getter/setter pattern for `sectionsamount_reserve` and TACOM `_sectionsamount_reserve`; omitted default `objNull` is getter. No validation; setter returns nil and assumes TACOM FSM.
 
-### sectionsamount_defend (3812-3823)
+### sectionsamount_defend (3847-3858)
 
 Same getter/setter pattern for `sectionsamount_defend` and TACOM `_sectionsamount_defend`; no value or FSM validation and setter returns nil.
 
-### destroy (3824-3848)
+### destroy (3859-3883)
 
 Accepts module object or handler, reads FSM/module keys, sets both `_exitFSM`, removes handler from global `OPCOM_instances`, clears module superclass/class, deletes module/group, returns nil. It does not remove mission namespace/intel/listener state. Missing asymmetric TACOM handle can error before cleanup; no idempotence/validation.
 
-### debug (3849-3858)
+### debug (3884-3893)
 
 Boolean `_args` writes handler debug flag and returns it; all other args read flag default false. No scheduling/external effects beyond hash write.
 
-### OPCOM_monitor (3859-3951)
+### OPCOM_monitor (3894-3986)
 
 Requires boolean enable. It reads/writes handler `monitor`, spawns/stores a once-per-second diagnostic loop or terminates existing handle, returning handle. Loop reads FSM states/data/queues/objectives and can hint/log; after severe debug timeout it resets `_OPCOM_DATA` to `[]` and clears busy. Re-enabling duplicates monitors; disabling with default false/no handle falls through to start; malformed/nonexistent FSM data can fail.
 
-### changeControlType (3952-4036)
+### changeControlType (3987-4071)
 
 Clients remote-forward; server args `[newControlType]` must be invasion/occupation/asymmetric and handler startup must be complete. It stops FSMs with unbounded waits, removes all objectives via `removeObjective`, recreates/sorts them via `createObjectives`, clears `pendingorders`, writes controltype, starts appropriate FSM(s), returns true; invalid/not-ready/same type returns false. It does not rerun analysis/scans/listener/cache and stale FSM end keys block indefinitely.
 
-### state (4037-4075)
+### state (4072-4110)
 
 Array `_args` means restore: requires ALiVE hash, writes every supplied key except `objectivesByID`/`profileObjectiveAssignment`, calls `rebuildObjectiveIndexes`, returns nil. Non-array extracts a new hash of all handler keys except `super`, `class`, and those two indexes, returning it. Restore does not delete omitted existing keys and can write supplied `super`/`class`; direct edge: `rebuildObjectiveIndexes`.
 
-### convert (4271-4274)
+### convert (4306-4308)
 
 Backward-compatibility alias only: passes `[_args]` to `ALiVE_fnc_parseArrayFromString` and returns that value. It has no handler/global writes, scheduling, or direct OPCOM edge; malformed parsing behavior belongs to the external helper.
 
@@ -354,8 +354,8 @@ sortObjectives -> convertObject, seedAsymmetricInstallations,
                   createObjectiveDebugMarkers
 resetObjective -> getObjectiveByID, setObjectiveSection
 initObjective -> getObjectiveByID, convertObject
-removeObjective -> resetProfileOrders, resetObjective
-addTask -> addObjective, setObjectiveSection
+removeObjective -> resetProfileOrders, resetObjective [non-manual objectives]
+addTask -> addObjective
 parseAsymmetricInstallationCountOverrides ->
     normalizeAsymmetricInstallationType
 createAsymmetricInstallation -> normalizeAsymmetricInstallationType,
@@ -388,14 +388,14 @@ Important direct external-edge families are: ALiVE hash APIs; ProfileHandler/pro
 | Handler | `profileObjectiveAssignment` | Native map profile ID -> objective ID; section/reset/index repair own it. |
 | Handler | `pendingorders` | `[position,profileID,objectiveID,time]` rows written by section orders, consumed by synchronize/reset/cleanup/control switch. |
 | Handler | `OPCOM_FSM`, `TACOM_FSM` | Controller handles (`TACOM_FSM=-1` asymmetric); start/load/control/stop/destroy/pause use them. |
-| Handler | `startupComplete`, `controltype`, `pause`, `monitor` | Lifecycle/control flags. |
+| Handler | `startupComplete`, `controltype`, `pause`, `monitor`, `manualTaskSequence` | Lifecycle/control flags plus the monotonic suffix used to allocate unique transient manual-objective IDs. |
 | Handler | `factions`, `side`, `sidesenemy`, `sidesfriendly`, `position`, `opcomID` | Identity and query context established at startup. |
 | Handler | troop category keys and force keys | `infantry`, `motorized`, `mechanized`, `armored`, `air`, `sea`, `artillery`, `AAA`, `startForceStrength`, `currentForceStrength`; scanTroops writes. |
 | Handler | `knownentities`, `attackedentities`, `artyRequestedEntities`, `clusteroccupation` | Contact/attack/occupation snapshots. |
 | Objective | `objectiveID`, `center`, `size`, `objectiveType`, `priority`, `clusterID` | Core identity/geometry/source fields. |
-| Objective | `section`, `sectionAssist`, `opcom_state`, `opcom_orders`, `tacom_state`, `danger`, `deleted` | Assignment/controller lifecycle state. |
+| Objective | `section`, `sectionAssist`, `opcom_state`, `opcom_orders`, `tacom_state`, `danger`, `deleted`, `manualTask` | Assignment/controller lifecycle state; `manualTask` identifies transient exact-profile objectives whose cleanup bypasses normal completion publication. |
 | Globals | `OPCOM_instances`, `OPCOM_<n>`, `OBJECTIVES_DB_SAVE`, `OPCOM_INSTANCES` | Instance registry/persistence cache; capitalization use is inconsistent and should be validated. |
-| FSM | `_OPCOM_SKIP_OBJECTIVES`, `_unconfirmedOrders`, `_OPCOM_DATA`, `_TACOM_DATA`, `_OPCOM_QUEUE`, `_TACOM_QUEUE`, `_busy`, `_exitFSM`, `_pause` | FSM-local coordination slots. `_unconfirmedOrders` holds `[orderID, operation, objective, expiresAt]`; data slots are legacy ingress initialized/reset to `[]`; queues are authoritative internal inboxes written through handle `setFSMVariable`. |
+| FSM | `_OPCOM_SKIP_OBJECTIVES`, `_unconfirmedOrders`, `_manualOrder`, `_OPCOM_DATA`, `_TACOM_DATA`, `_OPCOM_QUEUE`, `_TACOM_QUEUE`, `_busy`, `_exitFSM`, `_pause` | FSM-local coordination slots. `_unconfirmedOrders` holds `[orderID, operation, objective, expiresAt]`; `_manualOrder` prevents TACOM from recruiting/substituting profiles or transmitting conventional confirmations; data slots are legacy ingress initialized/reset to `[]`; queues are authoritative internal inboxes written through handle `setFSMVariable`. |
 
 ## Cross-operation workflows
 
@@ -403,6 +403,7 @@ Important direct external-edge families are: ALiVE hash APIs; ProfileHandler/pro
 2. **Conventional command loop:** `scanTroops` and `analyzeclusteroccupation` update pools/state; `selectordersbystate` selects an objective; TACOM uses section-size values/`NearestAvailableSection`; `setSectionOrders` emits delayed completion into `_TACOM_QUEUE`; `synchronizeOrders` declares the objective ready for terminal completion.
 3. **Contact/intelligence loop:** `scanFriendliesForNearEnemies` -> `scanForNearEnemies` -> `findProfilesNearPosition`, writes `knownentities`, then `createSpotrepForProfiles`; event listener `handleEvent` does the same for profile attack start and removes G2 reports at attack end.
 4. **Persistence/control transition:** `saveData` exports persistent non-player objectives; `loadData` stops FSMs, reloads/reindexes/resets/initializes objectives, then launches mode-appropriate FSMs. `changeControlType` similarly stops, removes, recreates/sorts, clears pending orders, and restarts controllers.
+5. **Exact-profile manual task:** `addTask` validates the operation and supplied IDs, creates a uniquely named `manualTask` objective, and queues one self-contained `manual_order`. TACOM uses only the supplied profiles, suppresses the conventional correlation/continuation path, and calls `removeObjective` after failure or final waypoint completion. Manual removal drops the transient objective from indexes before profile reset so reset callbacks cannot turn cleanup into a second completion.
 
 ## Invariants and recurring failure patterns
 
@@ -417,9 +418,8 @@ Important direct external-edge families are: ALiVE hash APIs; ProfileHandler/pro
 ## Ambiguities and validation gaps
 
 - The public dispatcher header documents only a subset of later labels (20-34 versus actual cases), so documentation is incomplete.
-- `convert` at 4271-4274 is only `parseArrayFromString`; it should not be confused with data-layer conversion functions of the same name elsewhere.
+- `convert` at 4306-4308 is only `parseArrayFromString`; it should not be confused with data-layer conversion functions of the same name elsewhere.
 - `OPCOM_instances` is written at 339-347/3836, while global objective fallback reads `OPCOM_INSTANCES` at 1541; confirm whether a compatibility alias is initialized elsewhere.
-- `addTask` calls `addObjective` with `[position,100,"internal"]` (2068), while the current `addObjective` positional interface begins with ID (3098 onward); validate legacy compatibility before relying on task creation.
 - `joinObjectiveClient` references `_unit` in its non-interface remote branch before `params` assigns it (3324-3328).
 - `OPCOM_monitor` disable false/no-handle path starts a monitor rather than remaining stopped (3864-3872); validate intended toggle semantics.
 - Roadblock viability/placement in `createAsymmetricInstallation` should be reviewed around 2533-2550: candidate filtering and selected-road use do not clearly align.

@@ -65,7 +65,7 @@ The sole INIT transition re-reads handler keys `OPCOM_FSM` and `TACOM_FSM`; both
 
 ### Mailbox and queue
 
-`_OPCOM_QUEUE` is the authoritative internal FIFO with observed tags `init`, `analyze`, `expire_order`, `confirmed`, `QRF`, `RECON`, `OCA`, and `custom`. `_OPCOM_DATA` is a legacy single-slot ingress initialized to `[]`. Each receiver iteration checks both sources; `COLLECT_TO_QUEUE` appends a nonempty legacy entry and resets the slot to `[]`. `ANALYZE` removes one queued entry using `deleteAt 0`.
+`_OPCOM_QUEUE` is the authoritative internal FIFO with observed tags `init`, `analyze`, `completed`, `expire_order`, `confirmed`, `QRF`, `RECON`, `OCA`, and `custom`. `_OPCOM_DATA` is a legacy single-slot ingress initialized to `[]`. Each receiver iteration checks both sources; `COLLECT_TO_QUEUE` appends a nonempty legacy entry and resets the slot to `[]`. `ANALYZE` removes one queued entry using `deleteAt 0`.
 
 Internal producers append directly to the FIFO. Legacy code can still overwrite the single `_OPCOM_DATA` slot if it writes more than once before collection; payload shape is not validated.
 
@@ -131,18 +131,20 @@ Objective hashes must preserve the positional layout used by ANALYZE (documented
 
 On an `analyze` action, ANALYZE first requests a refresh when `clusteroccupation` is empty/stale or when TACOM asked for `analysis`. This clears busy and routes through cleanup; no order is selected in that turn. A pending reinforcement also pre-empts ordinary selection when no reinforcement is already in progress.
 
-Otherwise ANALYZE walks every non-skipped objective. It retains only the first item in each of the `unassigned`, `attack`, `defend`, and `reserve` buckets, while counting every `attacking`/ `defending` objective as active. Objective-array order is therefore the tiebreaker.
+Otherwise ANALYZE seeds the active count with every unconfirmed attack request, then walks every non-skipped objective. It retains only the first item in each of the `unassigned`, `attack`, `defend`, and `reserve` buckets, while adding every `attacking`/`defending` objective to the active count. An objective with any unconfirmed request is excluded from the scan, preventing its pending attack from being counted twice. Objective-array order is therefore the tiebreaker.
 
 | Control type | First eligible priority |
 | --- | --- |
-| Invasion | reserve → unassigned/attack → existing attack when active count is at most `simultanobjectives` → defend |
+| Invasion | reserve → unassigned/attack → existing attack when active plus unconfirmed attacks is below `simultanobjectives` → defend |
 | Occupation | reserve → defend → attack → unassigned/attack |
 
 An unassigned selection becomes an attack order. Attack/unassigned selection is suppressed if a synchronized `EmptyDetector` trigger on the module is inactive; defend and reserve bypass this gate. The selected hash receives `opcom_orders` before TACOM handoff.
 
 ### TACOM boundary
 
-ORDER_TACOM allocates an ID, stores `[orderID, operation, objective, expiresAt]`, appends `["analyze_order",[orderID,operation,objective]]` to `_TACOM_QUEUE`, and immediately resumes ordinary work. TACOM uses the immutable request operation instead of rereading the objective's mutable `opcom_orders` field, then appends `["confirmed",[boolean,[target,return],orderID,confirmedAt]]` to `_OPCOM_QUEUE`. `ANALYZE` consumes confirmations in FIFO order and removes only the record matching both ID and objective. Expiry is also queued as `expire_order`, preserving FIFO, while `confirmedAt` prevents a late reply from being accepted merely because expiry processing was backlogged. Legacy confirmations without an ID can still match by objective for compatibility.
+ORDER_TACOM allocates an ID, stores `[orderID, operation, objective, expiresAt]`, appends `["analyze_order",[orderID,operation,objective,expiresAt]]` to `_TACOM_QUEUE`, and immediately resumes ordinary work. TACOM uses the immutable request operation and deadline instead of rereading mutable objective state. It rejects work already expired at dequeue and rechecks the deadline after section planning and before issuing orders, then appends `["confirmed",[boolean,[target,return],orderID,confirmedAt]]` to `_OPCOM_QUEUE`. `ANALYZE` requires that exact correlated confirmation shape and removes only the record matching both ID and objective; malformed, ID-less, stale, and mismatched confirmations are ignored. Expiry is also queued as `expire_order`, preserving FIFO, while `confirmedAt` prevents a late reply from being accepted merely because expiry processing was backlogged.
+
+TACOM reports lifecycle completion with `completed` and `[completedOperation, objective]`. OPCOM owns the lifecycle mapping: recon continues as attack, capture continues as reserve, and defend continues as defend for tactical reassessment. OPCOM rejects deleted objectives and duplicate in-flight follow-ups, then routes accepted follow-ups through the same `ORDER_TACOM` registration path as newly selected work.
 
 On confirmation, ANALYZE:
 
