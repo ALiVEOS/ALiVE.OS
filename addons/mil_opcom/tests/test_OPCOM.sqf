@@ -470,6 +470,52 @@ private _candidateRegistered = [{
 _err = "Attack was not registered after simultanObjectives capacity was released";
 ASSERT_TRUE(_candidateRegistered, _err);
 
+// The cap also applies when an unassigned objective is promoted to attack,
+// and for both attack-producing priorities in occupation mode.
+{
+    _x params ["_controlType", "_candidateState", "_pendingOrderID"];
+    private _capacityCandidate = [format ["runtime-%1-%2", _controlType, _candidateState], _candidateState] call _makeRuntimeObjective;
+    private _capacityPending = [format ["runtime-pending-%1-%2", _controlType, _candidateState], "attack"] call _makeRuntimeObjective;
+    [_runtimeHandler, "controltype", _controlType] call ALiVE_fnc_HashSet;
+    [_runtimeHandler, "objectives", [_capacityCandidate]] call ALiVE_fnc_HashSet;
+    _runtimeOPCOM setFSMVariable ["_unconfirmedOrders", [[_pendingOrderID, "attack", _capacityPending, time + 60]]];
+    _runtimeOPCOM setFSMVariable ["_OPCOM_QUEUE", []];
+    _runtimeTACOM setFSMVariable ["_TACOM_QUEUE", []];
+    [_runtimeOPCOM, "_OPCOM_QUEUE", ["analyze", nil]] call _enqueueRuntimeMessage;
+
+    private _capacityAnalysisFinished = [{
+        ((_runtimeOPCOM getFSMVariable ["_OPCOM_QUEUE", []]) findIf {(_x param [0, ""]) == "analyze"}) < 0
+        && {!(_runtimeOPCOM getFSMVariable ["_busy", true])}
+    }, 3] call _waitForRuntimeCondition;
+    _err = format ["%1 %2 capacity-capped analysis did not finish", _controlType, _candidateState];
+    ASSERT_TRUE(_capacityAnalysisFinished, _err);
+
+    private _capacityOrders = _runtimeOPCOM getFSMVariable ["_unconfirmedOrders", []];
+    _err = format ["%1 %2 bypassed simultanObjectives capacity", _controlType, _candidateState];
+    ASSERT_TRUE((count _capacityOrders) == 1 && {((_capacityOrders select 0) select 0) == _pendingOrderID}, _err);
+} forEach [
+    ["invasion", "unassigned", 900101],
+    ["occupation", "attack", 900102],
+    ["occupation", "unassigned", 900103]
+];
+
+// Defending objectives do not consume capacity reserved for new attacks.
+private _attackCandidate = ["runtime-attack-after-defend", "attack"] call _makeRuntimeObjective;
+private _defendingObjective = ["runtime-defending", "defending"] call _makeRuntimeObjective;
+[_runtimeHandler, "controltype", "invasion"] call ALiVE_fnc_HashSet;
+[_runtimeHandler, "objectives", [_attackCandidate, _defendingObjective]] call ALiVE_fnc_HashSet;
+_runtimeOPCOM setFSMVariable ["_unconfirmedOrders", []];
+_runtimeOPCOM setFSMVariable ["_OPCOM_QUEUE", []];
+_runtimeTACOM setFSMVariable ["_TACOM_QUEUE", []];
+[_runtimeOPCOM, "_OPCOM_QUEUE", ["analyze", nil]] call _enqueueRuntimeMessage;
+private _attackAfterDefendRegistered = [{
+    private _orders = _runtimeOPCOM getFSMVariable ["_unconfirmedOrders", []];
+    (count _orders) == 1 && {((_orders select 0) select 2) isEqualRef _attackCandidate}
+    && {!(_runtimeOPCOM getFSMVariable ["_busy", true])}
+}, 3] call _waitForRuntimeCondition;
+_err = "Defending objective incorrectly consumed simultanObjectives capacity";
+ASSERT_TRUE(_attackAfterDefendRegistered, _err);
+
 // Stop the isolated FSM pair before continuing with the existing integration test.
 _runtimeTACOM setFSMVariable ["_pause", false];
 _runtimeTACOM setFSMVariable ["_exitFSM", true];

@@ -435,9 +435,12 @@ class FSM
                          "                        case (""reserve"") : {if (_res isEqualTo []) then {_res pushBack _x}};" \n
                          "                    };" \n
                          "" \n
-                         "                    if (_state in [""attacking"",""defending""]) then {_active = _active + 1};" \n
+                         "                    if (_state isEqualTo ""attacking"") then {_active = _active + 1};" \n
                          "                };" \n
                          "            } foreach _obj;" \n
+                         "" \n
+                         "            // Unassigned objectives become attack orders, so they share this capacity." \n
+                         "            private _attackCapacityAvailable = _active < _simultanObjectives;" \n
                          "" \n
                          "            //AnalyzeResults - prepare orders" \n
                          "" \n
@@ -446,8 +449,8 @@ class FSM
                          "" \n
                          "                        _priorities = [" \n
                          "                            [(count _res > 0),""reserve""]," \n
-                         "                            [(count _un > 0),""unassigned""]," \n
-                         "                            [(count _at > 0) && (_active < _simultanObjectives),""attack""]," \n
+                         "                            [(count _un > 0) && _attackCapacityAvailable,""unassigned""]," \n
+                         "                            [(count _at > 0) && _attackCapacityAvailable,""attack""]," \n
                          "                            [(count _def > 0),""defend""]" \n
                          "                        ];" \n
                          "                    };" \n
@@ -456,8 +459,8 @@ class FSM
                          "                        _priorities = [" \n
                          "                            [(count _res > 0),""reserve""]," \n
                          "                            [(count _def > 0),""defend""]," \n
-                         "                            [(count _at > 0),""attack""]," \n
-                         "                            [(count _un > 0),""unassigned""]" \n
+                         "                            [(count _at > 0) && _attackCapacityAvailable,""attack""]," \n
+                         "                            [(count _un > 0) && _attackCapacityAvailable,""unassigned""]" \n
                          "                        ];" \n
                          "                    };" \n
                          "                };" \n

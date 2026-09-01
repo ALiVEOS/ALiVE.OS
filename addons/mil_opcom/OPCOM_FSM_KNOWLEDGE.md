@@ -131,12 +131,12 @@ Objective hashes must preserve the positional layout used by ANALYZE (documented
 
 On an `analyze` action, ANALYZE first requests a refresh when `clusteroccupation` is empty/stale or when TACOM asked for `analysis`. This clears busy and routes through cleanup; no order is selected in that turn. A pending reinforcement also pre-empts ordinary selection when no reinforcement is already in progress.
 
-Otherwise ANALYZE seeds the active count with every unconfirmed attack request, then walks every non-skipped objective. It retains only the first item in each of the `unassigned`, `attack`, `defend`, and `reserve` buckets, while adding every `attacking`/`defending` objective to the active count. An objective with any unconfirmed request is excluded from the scan, preventing its pending attack from being counted twice. Objective-array order is therefore the tiebreaker.
+Otherwise ANALYZE seeds the active count with every unconfirmed attack request, then walks every non-skipped objective. It retains only the first item in each of the `unassigned`, `attack`, `defend`, and `reserve` buckets, while adding every `attacking` objective to the active count. An objective with any unconfirmed request is excluded from the scan, preventing its pending attack from being counted twice. A shared capacity check gates both `attack` and `unassigned` selections, because an unassigned objective is issued as an attack. Defend and reserve selection remain unrestricted. Objective-array order is therefore the tiebreaker.
 
 | Control type | First eligible priority |
 | --- | --- |
-| Invasion | reserve → unassigned/attack → existing attack when active plus unconfirmed attacks is below `simultanobjectives` → defend |
-| Occupation | reserve → defend → attack → unassigned/attack |
+| Invasion | reserve → unassigned/attack when active plus unconfirmed attacks is below `simultanobjectives` → defend |
+| Occupation | reserve → defend → attack/unassigned when active plus unconfirmed attacks is below `simultanobjectives` |
 
 An unassigned selection becomes an attack order. Attack/unassigned selection is suppressed if a synchronized `EmptyDetector` trigger on the module is inactive; defend and reserve bypass this gate. The selected hash receives `opcom_orders` before TACOM handoff.
 
