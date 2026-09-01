@@ -35,7 +35,7 @@ there is otherwise nothing to aim at.
 
 Parameters:
     _operation : STRING - "start", "stop", "toggleTarget", "toggleIndex",
-                          "render", "copy", "clear"
+                          "takeAllIndices", "render", "copy", "clear"
     _args      : ANY    - per operation, see below
 
     "start"  - [_kinds, _radius, _wantIndices], all optional.
@@ -151,14 +151,33 @@ switch (toLower _operation) do {
                 // twice drawn label is visibly bolder than its neighbours.
                 _found = _found arrayIntersect _found;
 
+                // Where the modules being picked for actually work. Set by the
+                // picker module from what it is synced to; empty means no limit,
+                // which is what an unsynced picker or a console start gets.
+                private _taor = missionNamespace getVariable ["ALIVE_classPicker_taor", []];
+
                 _candidates = [];
                 {
-                    // The declared spelling, not the spelling this object happens
-                    // to have been created with, so the label matches what gets
-                    // collected and the green highlight below can find it.
-                    private _cfg = configFile >> "CfgVehicles" >> typeOf _x;
-                    if (isClass _cfg) then {
-                        _candidates pushBack [_x, configName _cfg, (((boundingBoxReal _x) select 1 select 2) max 1.5) + 0.4];
+                    private _obj = _x;
+
+                    private _inArea = true;
+                    if !(_taor isEqualTo []) then {
+                        _inArea = false;
+                        { if (_obj inArea _x) exitWith { _inArea = true } } forEach _taor;
+                    };
+
+                    // A building with nowhere to stand cannot be garrisoned, so
+                    // labelling it only offers something that would do nothing if
+                    // it were picked. Vehicles and men have no positions and are
+                    // not judged on this.
+                    if (_inArea && {!(_obj isKindOf "House") || {((_obj buildingPos -1) findIf {!(_x isEqualTo [0,0,0])}) >= 0}}) then {
+                        // The declared spelling, not the spelling this object happens
+                        // to have been created with, so the label matches what gets
+                        // collected and the green highlight below can find it.
+                        private _cfg = configFile >> "CfgVehicles" >> typeOf _obj;
+                        if (isClass _cfg) then {
+                            _candidates pushBack [_obj, configName _cfg, (((boundingBoxReal _obj) select 1 select 2) max 1.5) + 0.4];
+                        };
                     };
                 } forEach _found;
 
@@ -249,8 +268,11 @@ switch (toLower _operation) do {
 
         // The list outlives the drawing on purpose, so stopping and then copying
         // works, and so does stopping to walk somewhere and starting again.
+        // Taken off the screen rather than replaced with a parting message. The
+        // panel is a running readout of what is being picked, and one left up
+        // after stopping reads as though the picker is still going.
         ["ALIVE_fnc_classPicker - stopped, %1 class(es) still held", _held] call ALiVE_fnc_dump;
-        hintSilent format ["ALiVE class picker\n\nStopped. %1 class(es) still held.\n\n[""copy"", ""flat""] call ALIVE_fnc_classPicker", _held];
+        hintSilent "";
     };
 
     // Where the crosshair is pointing. cursorObject is the geometric lookup and
@@ -298,6 +320,15 @@ switch (toLower _operation) do {
         };
         private _class = configName _cfg;
 
+        // Refused as well as unlabelled, because the crosshair can still find a
+        // building the labels left out. Collecting one would put a class in the
+        // list that names no positions, which the garrison setting then drops
+        // anyway, so it would look collected and do nothing.
+        if (_target isKindOf "House" && {((_target buildingPos -1) findIf {!(_x isEqualTo [0,0,0])}) < 0}) exitWith {
+            ["ALIVE_fnc_classPicker - %1 has nowhere to stand inside it, so it cannot be garrisoned and was not collected", _class] call ALiVE_fnc_dump;
+            hintSilent format ["ALiVE class picker\n\n%1\nhas no positions inside it, so nothing can be garrisoned there.", _class];
+        };
+
         if (_class in ALIVE_classPicker_classes) then {
             ALIVE_classPicker_classes deleteAt (ALIVE_classPicker_classes find _class);
             [ALIVE_classPicker_indices, _class, []] call ALiVE_fnc_hashSet;
@@ -312,19 +343,20 @@ switch (toLower _operation) do {
         ["review"] call ALIVE_fnc_classPicker;
     };
 
-    case "toggleindex": {
+    // Which numbered position is being looked at. Whichever number is nearest the
+    // middle of the screen is the one being read, so that is the one meant.
+    // Aiming at the label is the selection.
+    //
+    // Asked by the toggle and by the menu, which needs to know whether pressing
+    // it would take a position or give one back before it can say which.
+    case "hoverindex": {
+
+        _result = -1;
 
         private _target = ["hover"] call ALIVE_fnc_classPicker;
         if (isNull _target) then { _target = ALIVE_classPicker_lastHover };
         if (isNull _target || {!(_target isKindOf "House")}) exitWith {};
 
-        private _cfg = configFile >> "CfgVehicles" >> typeOf _target;
-        if !(isClass _cfg) exitWith {};
-        private _class = configName _cfg;
-
-        // Whichever number is nearest the middle of the screen is the one being
-        // read, so that is the one taken. Aiming at the label is the selection.
-        private _all = _target buildingPos -1;
         private _best = -1;
         private _bestDist = 1e9;
         {
@@ -337,7 +369,59 @@ switch (toLower _operation) do {
                     if (_d < _bestDist) then { _bestDist = _d; _best = _forEachIndex };
                 };
             };
-        } forEach _all;
+        } forEach (_target buildingPos -1);
+
+        _result = _best;
+    };
+
+    // What is under the crosshair and what is already held for it, so a menu can
+    // say whether it would take a thing or give it back.
+    // Returns [class, classIsHeld, positionIndex, positionIsHeld, everyPositionHeld].
+    case "hoverinfo": {
+
+        private _class = "";
+        private _collected = false;
+        private _index = -1;
+        private _indexHeld = false;
+        private _allHeld = false;
+
+        private _target = ["hover"] call ALIVE_fnc_classPicker;
+        if (isNull _target) then { _target = ALIVE_classPicker_lastHover };
+
+        if !(isNull _target) then {
+            private _cfg = configFile >> "CfgVehicles" >> typeOf _target;
+            if (isClass _cfg) then {
+                _class = configName _cfg;
+                _collected = _class in ALIVE_classPicker_classes;
+
+                if (_target isKindOf "House") then {
+                    private _picked = [ALIVE_classPicker_indices, _class, []] call ALiVE_fnc_hashGet;
+                    if (isNil "_picked" || {!(_picked isEqualType [])}) then { _picked = [] };
+
+                    _index = ["hoverIndex"] call ALIVE_fnc_classPicker;
+                    if (_index >= 0) then { _indexHeld = _index in _picked };
+
+                    private _usable = [];
+                    { if !(_x isEqualTo [0,0,0]) then { _usable pushBack _forEachIndex } } forEach (_target buildingPos -1);
+                    _allHeld = !(_usable isEqualTo []) && {(_usable findIf {!(_x in _picked)}) < 0};
+                };
+            };
+        };
+
+        _result = [_class, _collected, _index, _indexHeld, _allHeld];
+    };
+
+    case "toggleindex": {
+
+        private _target = ["hover"] call ALIVE_fnc_classPicker;
+        if (isNull _target) then { _target = ALIVE_classPicker_lastHover };
+        if (isNull _target || {!(_target isKindOf "House")}) exitWith {};
+
+        private _cfg = configFile >> "CfgVehicles" >> typeOf _target;
+        if !(isClass _cfg) exitWith {};
+        private _class = configName _cfg;
+
+        private _best = ["hoverIndex"] call ALIVE_fnc_classPicker;
 
         if (_best < 0) exitWith {
             hintSilent "ALiVE class picker\n\nNo position in view.\nLook at one of the numbers.";
@@ -359,6 +443,60 @@ switch (toLower _operation) do {
             _picked pushBack _best;
         };
         [ALIVE_classPicker_indices, _class, _picked] call ALiVE_fnc_hashSet;
+
+        ["review"] call ALIVE_fnc_classPicker;
+    };
+
+    // Every position in the building at once, for when the whole building is
+    // wanted and aiming at each number in turn is just work.
+    case "takeallindices": {
+
+        private _target = ["hover"] call ALIVE_fnc_classPicker;
+        if (isNull _target) then { _target = ALIVE_classPicker_lastHover };
+        if (isNull _target || {!(_target isKindOf "House")}) exitWith {};
+
+        private _cfg = configFile >> "CfgVehicles" >> typeOf _target;
+        if !(isClass _cfg) exitWith {};
+        private _class = configName _cfg;
+
+        // The seating code will not stand a man at the world origin, so a position
+        // reading as one is not offered here.
+        private _usable = [];
+        { if !(_x isEqualTo [0,0,0]) then { _usable pushBack _forEachIndex } } forEach (_target buildingPos -1);
+
+        if (_usable isEqualTo []) exitWith {
+            hintSilent "ALiVE class picker\n\nThat building has no positions to take.";
+        };
+
+        private _picked = [ALIVE_classPicker_indices, _class, []] call ALiVE_fnc_hashGet;
+        if (isNil "_picked" || {!(_picked isEqualType [])}) then { _picked = [] };
+        _picked = +_picked;
+
+        // A toggle, like the other two. With the lot already held the only useful
+        // thing left to do is give them back, and an entry that says take when it
+        // would take nothing is a dead control.
+        if ((_usable findIf {!(_x in _picked)}) < 0) then {
+
+            _picked = _picked select {!(_x in _usable)};
+            [ALIVE_classPicker_indices, _class, _picked] call ALiVE_fnc_hashSet;
+
+            ["ALIVE_fnc_classPicker - gave back all %1 position(s) on %2", count _usable, _class] call ALiVE_fnc_dump;
+
+        } else {
+
+            // Anything already taken keeps the rank it was given, and the rest are
+            // added after it. Taking the lot should not throw away an order that
+            // was deliberately set by hand.
+            private _added = 0;
+            {
+                if !(_x in _picked) then { _picked pushBack _x; _added = _added + 1 };
+            } forEach _usable;
+
+            if !(_class in ALIVE_classPicker_classes) then { ALIVE_classPicker_classes pushBack _class };
+            [ALIVE_classPicker_indices, _class, _picked] call ALiVE_fnc_hashSet;
+
+            ["ALIVE_fnc_classPicker - took %1 more position(s) on %2, %3 in total", _added, _class, count _picked] call ALiVE_fnc_dump;
+        };
 
         ["review"] call ALIVE_fnc_classPicker;
     };
@@ -427,12 +565,29 @@ switch (toLower _operation) do {
             };
         } forEach ALIVE_classPicker_classes;
 
+        // Left where the editor can still reach it after the preview has ended.
+        // A mission cannot write an Eden attribute, and SQF cannot read the
+        // clipboard, so this is what lets the editor put the list into a module
+        // without anybody retyping it. uiNamespace survives the trip back; the
+        // mission namespace does not.
+        uiNamespace setVariable ["ALIVE_classPicker_stash", [
+            ["render", "classIndexPairs"] call ALIVE_fnc_classPicker,
+            ["render", "flat"] call ALIVE_fnc_classPicker,
+            ["render", "sqfArray"] call ALIVE_fnc_classPicker,
+            ["render", "groups"] call ALIVE_fnc_classPicker
+        ]];
+
         private _body = if (_lines isEqualTo []) then { "nothing taken yet" } else { _lines joinString "\n" };
         private _groups = if (ALIVE_classPicker_groups isEqualTo []) then { "" } else {
             format ["\n\ngroups\n%1", ALIVE_classPicker_groups joinString "\n"]
         };
 
-        hintSilent format ["ALiVE class picker\n\n%1%2\n\nHome  take what you are looking at\nEnd   take the position you are looking at", _body, _groups];
+        // Only while the picker is actually running. The readout describes what is
+        // being picked right now, and the keys it names do nothing once stopped,
+        // so showing it then would be describing a state that is not true.
+        if !(isNil "ALIVE_classPicker_EH_Draw3D") then {
+            hintSilent format ["ALiVE class picker\n\n%1%2\n\nHome  take what you are looking at\nEnd   take the position you are looking at", _body, _groups];
+        };
     };
 
     case "render": {
@@ -459,6 +614,93 @@ switch (toLower _operation) do {
             case "sqfarray": { str ALIVE_classPicker_classes };
             default          { ALIVE_classPicker_classes joinString "," };
         };
+    };
+
+    // Take an existing garrison setting into the collection, so that picking
+    // carries on from what a module already holds rather than starting empty.
+    // Buildings already listed come up green on the first frame, and a position
+    // already chosen shows as chosen, so the list can be adjusted rather than
+    // rebuilt from nothing every time.
+    case "load": {
+
+        private _string = if (_args isEqualType "") then { _args } else { "" };
+        if (_string == "") exitWith {};
+
+        // Parsed by the same code that reads the setting for real, so anything
+        // the seating accepts is understood here and anything it rejects is
+        // rejected here too.
+        private _hash = [_string] call ALIVE_fnc_resolvePreferredGarrisonPositions;
+        private _keys = _hash select 1;
+
+        private _loaded = 0;
+        {
+            // The resolver folds its keys, and the collection holds the config's
+            // own spelling, so the class is looked up again on the way in.
+            private _cfg = configFile >> "CfgVehicles" >> _x;
+            if (isClass _cfg) then {
+                private _class = configName _cfg;
+                private _idx = [_hash, _x, []] call ALiVE_fnc_hashGet;
+                if (isNil "_idx" || {!(_idx isEqualType [])}) then { _idx = [] };
+
+                if !(_class in ALIVE_classPicker_classes) then { ALIVE_classPicker_classes pushBack _class };
+
+                private _have = [ALIVE_classPicker_indices, _class, []] call ALiVE_fnc_hashGet;
+                if (isNil "_have" || {!(_have isEqualType [])}) then { _have = [] };
+                _have = +_have;
+                { if !(_x in _have) then { _have pushBack _x } } forEach _idx;
+                [ALIVE_classPicker_indices, _class, _have] call ALiVE_fnc_hashSet;
+
+                _loaded = _loaded + 1;
+            };
+        } forEach _keys;
+
+        if (_loaded > 0) then {
+            // Noted so that writing back replaces rather than appends. Appending
+            // to a field the list was read out of would list every class twice.
+            ALIVE_classPicker_preloaded = true;
+            uiNamespace setVariable ["ALiVE_classPicker_preloaded", true];
+            ["ALIVE_fnc_classPicker - loaded %1 class(es) from a setting already filled in", _loaded] call ALiVE_fnc_dump;
+        };
+
+        ["review"] call ALIVE_fnc_classPicker;
+    };
+
+    // Copy for a named destination rather than for a named format. A mission
+    // maker knows they want a military placement garrison list; they should not
+    // also have to know that the format for it is called classIndexPairs.
+    //
+    // The destination is remembered with the text, so that applying it in the
+    // editor afterwards knows which setting it was meant for and can say so when
+    // it is put on the wrong kind of module.
+    case "copyfor": {
+
+        private _dest = if (_args isEqualType "") then { toLower _args } else { "" };
+
+        private _mode = switch (_dest) do {
+            case "milgarrison":      { "classIndexPairs" };
+            case "civgarrison":      { "classIndexPairs" };
+            case "vehicleblacklist": { "sqfArray" };
+            case "unitblacklist":    { "sqfArray" };
+            case "groupblacklist":   { "groups" };
+            default                  { "flat" };
+        };
+
+        private _string = ["copy", _mode] call ALIVE_fnc_classPicker;
+
+        uiNamespace setVariable ["ALIVE_classPicker_destination", [_dest, _string]];
+
+        // Whose side the list was picked on, so the editor can put it on that
+        // side's modules and leave the other side's alone. The module can name a
+        // side outright; otherwise it is whoever is playing. The order matches
+        // CfgFactionClasses, where east is 0 and west is 1, not the order the
+        // sides are usually written in.
+        private _side = uiNamespace getVariable ["ALiVE_classPicker_sideOverride", -1];
+        if (_side < 0) then { _side = [east, west, resistance, civilian] find (side player) };
+        uiNamespace setVariable ["ALiVE_classPicker_side", _side];
+
+        ["ALIVE_fnc_classPicker - copied for %1, picked as side %2", _dest, side player] call ALiVE_fnc_dump;
+
+        _result = _string;
     };
 
     case "copy": {
@@ -491,6 +733,13 @@ switch (toLower _operation) do {
         ALIVE_classPicker_classes = [];
         ALIVE_classPicker_groups = [];
         ALIVE_classPicker_indices = [] call ALiVE_fnc_hashCreate;
+
+        // The list no longer holds what any module holds, so writing back must go
+        // back to adding rather than replacing. Left set, emptying the list and
+        // picking one building would wipe every other building a module already
+        // had.
+        ALIVE_classPicker_preloaded = false;
+        uiNamespace setVariable ["ALiVE_classPicker_preloaded", false];
         ["ALIVE_fnc_classPicker - list emptied"] call ALiVE_fnc_dump;
         ["review"] call ALIVE_fnc_classPicker;
     };
