@@ -26,7 +26,7 @@ ARJay, Highhead, Jman
 // other garrison groups.
 if (!isServer) exitWith {};
 
-params ["_group","_position","_radius","_moveInstantly", ["_onlyProfiled", false], ["_profileCount",0], ["_profileID",nil], ["_guardPatrolPercentage",50], ["_patrolBehaviour","SAFE"], ["_patrolSpeed","LIMITED"]];
+params ["_group","_position","_radius","_moveInstantly", ["_onlyProfiled", false], ["_profileCount",0], ["_profileID",nil], ["_guardPatrolPercentage",50], ["_patrolBehaviour","SAFE"], ["_patrolSpeed","LIMITED"], ["_preferredGarrison","",[""]]];
 
 private _units = units _group;
 private _unitPercentCount = ((count _units) * _guardPatrolPercentage) / 100;
@@ -138,7 +138,46 @@ if (count _units == 0) exitwith {
     [_group, _movementAssignments] call _fnc_startMovement;
 };
 
+// The module's preferred garrison setting arrives as its canonical string and is parsed
+// here, so a profile's stored command carries one short string rather than a copy of the
+// parsed table. Keys come back folded to lower case and every lookup folds the same way,
+// because classnames are case insensitive everywhere else in Arma and the capitalisation
+// somebody happens to type must not decide whether their setting works (#1016).
+private _preferredHash = [_preferredGarrison] call ALIVE_fnc_resolvePreferredGarrisonPositions;
+private _preferredClasses = _preferredHash select 1;
+
+// Exact class matches only. nearestObjects also returns children of a listed class, and the
+// written indices belong to the exact model rather than its relatives. A child worth listing
+// gets its own entry.
+private _preferredBuildings = [];
+if !(_preferredClasses isEqualTo []) then {
+    // The keys are folded to lower case so the lookup can fold too, but nearestObjects
+    // matches its type list case sensitively, so a folded name finds nothing. Config
+    // lookup is case insensitive and configName gives back the declared spelling, so the
+    // sweep asks with the real classname and the filter still compares folded.
+    private _sweepClasses = [];
+    {
+        private _cfg = configFile >> "CfgVehicles" >> _x;
+        if (isClass _cfg) then { _sweepClasses pushBack (configName _cfg) };
+    } forEach _preferredClasses;
+
+    if !(_sweepClasses isEqualTo []) then {
+        _preferredBuildings = (nearestObjects [_position, _sweepClasses, _radius]) select { (toLower typeOf _x) in _preferredClasses };
+    };
+
+};
+
+// The curated sweep is deliberately NOT narrowed by the setting. Cutting a listed class out
+// of the filter would also hide that class children from nearestObjects, and buildings that
+// are garrisoned today would quietly stop being garrisoned. A listed class is bypassed at
+// lookup time instead, where the setting table answers before the curated one, and
+// subtracting the objects already booked keeps any one building out of both ranks.
 private _buildings = nearestObjects [_position,ALIVE_garrisonPositions select 1,_radius];
+_buildings = _buildings - _preferredBuildings;
+
+// The trigger below keys on the curated count alone. Where the curated sweep finds nothing,
+// the enterable houses are the whole seat supply, and one listed building must not switch
+// them off; turning the setting on has to be able to add seats, never remove them.
 if (count _buildings == 0 || _profileCount > 3) then {
 	 // DEBUG -------------------------------------------------------------------------------------
 	 if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
@@ -149,13 +188,23 @@ if (count _buildings == 0 || _profileCount > 3) then {
     // left camp and composition structures unmanned whenever the guard count
     // exceeded 3 - the load-spreading intent only needs MORE seats, not fewer
     private _houses = [_position, floor(_radius/2)] call ALIVE_fnc_getEnterableHouses;
-    _buildings = _buildings + (_houses - _buildings);
+    _buildings = _buildings + (_houses - _buildings - _preferredBuildings);
 };
 
-// seat nearest structures first - without this the whitelist sweep (full
-// radius) always outranks enterable houses (half radius) and a prop-rich
-// objective empties its houses into the props
+// Seat nearest structures first, but only within each rank. One flat sort across the lot
+// would let a close curated building outrank a farther listed one, which is the opposite of
+// what the setting promises. Without a setting there is only one rank and this is the sort
+// that has always run: the whitelist sweep covers the full radius while enterable houses
+// cover half, so unsorted a prop-rich objective empties its houses into the props.
+_preferredBuildings = [_preferredBuildings, [], { _x distance2D _position }, "ASCEND"] call BIS_fnc_sortBy;
 _buildings = [_buildings, [], { _x distance2D _position }, "ASCEND"] call BIS_fnc_sortBy;
+private _preferredTierCount = count _preferredBuildings;
+_buildings = _preferredBuildings + _buildings;
+
+// Two passes only when the mission asked for them. With no setting configured this stays
+// false and the seating loop below takes exactly the path it takes today, so a mission that
+// never touches the attribute sees no change at all.
+private _twoPass = !(_preferredClasses isEqualTo []);
 
 // shared ring geometry for props without engine positions - keep in sync
 // with the seat estimators in mil_placement / mil_placement_custom
@@ -216,9 +265,20 @@ private _seatDemand = count _units;
 private _claimed = 0;
 private _claimDenied = 0;
 
+// Second pass state. Only filled when the mission configured the setting; without one
+// these stay empty and nothing below them runs.
+private _overflowQueues = [];
+private _bankedOverflow = 0;
+private _authoredPatrolCandidates = [];
+
 { // forEach _buildings
 	
-    if (count _units == 0) exitWith {};
+    // Stop claiming once the men still unseated would all fit on overflow already banked;
+    // further claims would only fence buildings off from other garrison groups. Buildings
+    // the mission listed are exempt, so every one of them is claimed and its written seats
+    // filled before this economy applies. Without that exemption the surplus lands on the
+    // very slots the setting exists to avoid while listed buildings stand empty.
+    if (count _units == 0 || {_twoPass && {_forEachIndex >= _preferredTierCount} && {_bankedOverflow >= count _units}}) exitWith {};
 
     private _building = _x;
     private _buildingClaimed = [_building, _group] call ALiVE_fnc_claimGarrisonBuilding;
@@ -236,8 +296,14 @@ private _claimDenied = 0;
         // [15,12,8] and a cave leads with 53,54 before running up from 4 - so that order is
         // carried through rather than sorted over the top of.
         private _all = _building buildingPos -1;
-        private _authored = [ALIVE_garrisonPositions, typeOf _building, []] call ALiVE_fnc_hashGet;
+        // The module's own setting answers first, on the folded classname. A class it does
+        // not name falls back to the curated list, whose keys are exact case by construction.
+        private _authored = [_preferredHash, toLower typeOf _building, []] call ALiVE_fnc_hashGet;
         if (isNil "_authored" || {!(_authored isEqualType [])}) then {_authored = []};
+        if (_authored isEqualTo []) then {
+            _authored = [ALIVE_garrisonPositions, typeOf _building, []] call ALiVE_fnc_hashGet;
+            if (isNil "_authored" || {!(_authored isEqualType [])}) then {_authored = []};
+        };
 
         private _takenIdx = [];
         private _preferred = [];
@@ -280,55 +346,83 @@ private _claimDenied = 0;
         // the old treatment, shuffled so repeat visits differ and then highest first.
         [_overflow, true] call CBA_fnc_Shuffle;
         _overflow = [_overflow, [], { _x select 2 }, "DESCEND"] call BIS_fnc_sortBy;
-        private _preferredCount = count _preferred;
-        private _buildingPositions = _preferred + _overflow;
-        
-        if (ALiVE_SYS_PROFILE_DEBUG_ON) then {     
+        if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
          // A non-empty authored list that matches nothing means the curation has gone stale
          // against the model. Without this the change would fail silently and look identical
          // to having no list at all. The third figure was labelled as the men left to seat
          // but has always been the whole group, so it is named for what it actually is.
-         ["ALIVE_fnc_groupgarrison - class: %1, %2 positions, group of %3, %4 of %5 authored positions matched", typeOf _building, count _buildingPositions, count units _group, _preferredCount, count _authored] call ALiVE_fnc_dump;
+        ["ALIVE_fnc_groupgarrison - class: %1, %2 positions, group of %3, %4 of %5 authored positions matched", typeOf _building, (count _preferred) + (count _overflow), count units _group, count _preferred, count _authored] call ALiVE_fnc_dump;
         };
 
-        { // foreach _buildingPositions
+        if (_twoPass) then {
+            // Authored seats fill now, in the order written, and never take the patrol quota
+            // here. A patroller leaves its seat for good and nobody refills it, and handing the
+            // quota to these seats emptied a bunker firing ports within a minute. Men in a
+            // building offering nothing but authored seats are remembered instead, and get
+            // whatever quota the overflow seats did not use.
+            private _authoredOnly = _overflow isEqualTo [];
+            {
+                if (count _units == 0) exitWith {};
+                private _seated = _units deleteAt 0;
+                if (_moveInstantly) then {
+                    _seated setposATL _x;
+                    _seated setdir ((_seated getRelDir _building)-180);
+                    dostop _seated;
+                } else {
+                    _movementAssignments pushBack [_seated, _x];
+                };
+                if (_authoredOnly) then { _authoredPatrolCandidates pushBack _seated };
+            } forEach _preferred;
 
-            if (count _units == 0) exitWith {};
-
-            private _unit = _units select 0;
-            private _position = _x;
-
-            // A patroller leaves its position for good and nobody refills it, so the quota
-            // is taken from the uncurated seats first. Handing it the curated ones emptied
-            // the firing ports of a bunker within a minute of the garrison forming. Where a
-            // building offers nothing but curated seats its men can still patrol, otherwise
-            // a fully curated objective would field none at all.
-            private _seatIsCurated = _forEachIndex < _preferredCount;
-            private _mayPatrol = !_seatIsCurated || {_overflow isEqualTo []};
-
-            if (_moveInstantly) then {
-                _unit setposATL _position;
-                _unit setdir ((_unit getRelDir _building)-180);
-                dostop _unit;
-            } else {
-                _movementAssignments pushBack [_unit, _position];
+            // Uncurated seats are banked rather than filled, so the second pass can spread the
+            // rest of the group across them instead of packing the first building solid.
+            if !(_overflow isEqualTo []) then {
+                _overflowQueues pushBack [_building, _overflow];
+                _bankedOverflow = _bankedOverflow + count _overflow;
             };
+        } else {
+            private _preferredCount = count _preferred;
+            private _buildingPositions = _preferred + _overflow;
+        
+            { // foreach _buildingPositions
+
+                if (count _units == 0) exitWith {};
+
+                private _unit = _units select 0;
+                private _position = _x;
+
+                // A patroller leaves its position for good and nobody refills it, so the quota
+                // is taken from the uncurated seats first. Handing it the curated ones emptied
+                // the firing ports of a bunker within a minute of the garrison forming. Where a
+                // building offers nothing but curated seats its men can still patrol, otherwise
+                // a fully curated objective would field none at all.
+                private _seatIsCurated = _forEachIndex < _preferredCount;
+                private _mayPatrol = !_seatIsCurated || {_overflow isEqualTo []};
+
+                if (_moveInstantly) then {
+                    _unit setposATL _position;
+                    _unit setdir ((_unit getRelDir _building)-180);
+                    dostop _unit;
+                } else {
+                    _movementAssignments pushBack [_unit, _position];
+                };
             
-            if (_guardPatrolPercentage > 0) then {
-            	 if (_mayPatrol && {_unitPercentCount > 0} && {count _patrolBuildings > 0}) then {
-                 // Patrol the position-bearing buildings only - ring-scatter
-                 // props would feed the FSM empty position lists
-                 if (!_patrolWaypointsCleared) then {
-                     [_profile,"clearWaypoints"] call ALIVE_fnc_profileEntity;
-                     _patrolWaypointsCleared = true;
-                 };
-                 [_group, _unit, _patrolBuildings, ALiVE_SYS_PROFILE_DEBUG_ON, _patrolBehaviour, _patrolSpeed] execFSM "\x\alive\addons\mil_command\buildingPatrol.fsm";
-                 _unitPercentCount = _unitPercentCount -1;
-               };
-            };
+                if (_guardPatrolPercentage > 0) then {
+                	 if (_mayPatrol && {_unitPercentCount > 0} && {count _patrolBuildings > 0}) then {
+                     // Patrol the position-bearing buildings only - ring-scatter
+                     // props would feed the FSM empty position lists
+                     if (!_patrolWaypointsCleared) then {
+                         [_profile,"clearWaypoints"] call ALIVE_fnc_profileEntity;
+                         _patrolWaypointsCleared = true;
+                     };
+                     [_group, _unit, _patrolBuildings, ALiVE_SYS_PROFILE_DEBUG_ON, _patrolBehaviour, _patrolSpeed] execFSM "\x\alive\addons\mil_command\buildingPatrol.fsm";
+                     _unitPercentCount = _unitPercentCount -1;
+                   };
+                };
             
-            _units deleteAt 0;
-        } foreach _buildingPositions;
+                _units deleteAt 0;
+            } foreach _buildingPositions;
+        };
     } else {
         _claimDenied = _claimDenied + 1;
         if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
@@ -337,6 +431,51 @@ private _claimDenied = 0;
     };
 } forEach _buildings;
 
+// Second pass. Whoever is left is dealt one seat per building per cycle, in the same
+// listed-then-curated, nearest-first order the claims were made in. Dealing from the far
+// end would top up the least preferred buildings first whenever the surplus is small.
+// Overflow seats were always the patrol pool, so these men are patrol eligible as before.
+while {_twoPass && {count _units > 0} && {!(_overflowQueues isEqualTo [])}} do {
+    {
+        if (count _units == 0) exitWith {};
+        _x params ["_queueBuilding", "_queuePositions"];
+        private _seated = _units deleteAt 0;
+        private _seatPos = _queuePositions deleteAt 0;
+
+        if (_moveInstantly) then {
+            _seated setposATL _seatPos;
+            _seated setdir ((_seated getRelDir _queueBuilding)-180);
+            dostop _seated;
+        } else {
+            _movementAssignments pushBack [_seated, _seatPos];
+        };
+
+        if (_guardPatrolPercentage > 0 && {_unitPercentCount > 0} && {count _patrolBuildings > 0}) then {
+            if (!_patrolWaypointsCleared) then {
+                [_profile,"clearWaypoints"] call ALIVE_fnc_profileEntity;
+                _patrolWaypointsCleared = true;
+            };
+            [_group, _seated, _patrolBuildings, ALiVE_SYS_PROFILE_DEBUG_ON, _patrolBehaviour, _patrolSpeed] execFSM "\x\alive\addons\mil_command\buildingPatrol.fsm";
+            _unitPercentCount = _unitPercentCount - 1;
+        };
+    } forEach _overflowQueues;
+    _overflowQueues = _overflowQueues select { !((_x select 1) isEqualTo []) };
+};
+
+// Whatever quota the overflow seats did not use goes last to men in authored-only
+// buildings, the same men who are allowed to patrol today when their building offers
+// nothing else.
+if (_twoPass && {_guardPatrolPercentage > 0} && {count _patrolBuildings > 0}) then {
+    {
+        if (_unitPercentCount <= 0) exitWith {};
+        if (!_patrolWaypointsCleared) then {
+            [_profile,"clearWaypoints"] call ALIVE_fnc_profileEntity;
+            _patrolWaypointsCleared = true;
+        };
+        [_group, _x, _patrolBuildings, ALiVE_SYS_PROFILE_DEBUG_ON, _patrolBehaviour, _patrolSpeed] execFSM "\x\alive\addons\mil_command\buildingPatrol.fsm";
+        _unitPercentCount = _unitPercentCount - 1;
+    } forEach _authoredPatrolCandidates;
+};
 // DEBUG -------------------------------------------------------------------------------------
 if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
     // With _moveInstantly false nobody has moved yet - the men are only given somewhere to

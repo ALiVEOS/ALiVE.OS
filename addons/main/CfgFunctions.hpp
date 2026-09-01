@@ -234,6 +234,11 @@ class cfgFunctions {
                 file = "\x\alive\addons\main\fnc_edenFactionStaticDataSave.sqf";
                 RECOMPILE;
             };
+            class resolvePreferredGarrisonPositions {
+                description = "Garrison resolver: parses canonical Class=index,index string into a hash of preferred building positions";
+                file = "\x\alive\addons\main\fnc_resolvePreferredGarrisonPositions.sqf";
+                RECOMPILE;
+            };
             class resolveFactionStaticChoice {
                 description = "Module-init resolver: parses canonical FACTION=class string and merges into target static-data registry hash";
                 file = "\x\alive\addons\main\fnc_resolveFactionStaticChoice.sqf";

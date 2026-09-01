@@ -24,7 +24,7 @@ Author:
 Highhead, Jman
 ---------------------------------------------------------------------------- */
 
-private ["_type","_waypoints","_unit","_profile","_active","_args","_pos","_radius","_onlyProfiles","_assignments","_group","_profileType","_profileCount","_guardPatrolPercentage","_patrolBehaviour","_patrolSpeed","_cbaRadius"];
+private ["_type","_waypoints","_unit","_profile","_active","_args","_pos","_radius","_onlyProfiles","_assignments","_group","_profileType","_profileCount","_guardPatrolPercentage","_patrolBehaviour","_patrolSpeed","_cbaRadius","_preferredGarrison"];
 
 _profile = _this param [0, ["",[],[],nil], [[]]];
 _args = _this param [1, 200, [-1,[]]];
@@ -40,6 +40,7 @@ _profileCount = 0;
 _guardPatrolPercentage = 50;
 _patrolBehaviour = "SAFE";
 _patrolSpeed = "LIMITED";
+_preferredGarrison = "";
 // SPE garrison: radius to sweep for CBA AI Building Positions (the objective's Size). (#945)
 _cbaRadius = 300;
 
@@ -59,6 +60,10 @@ if (_args isEqualType []) then {
     // 6-element args array.
     _patrolBehaviour = _args param [6, "SAFE", [""]];
     _patrolSpeed = _args param [7, "LIMITED", [""]];
+    // The preferred garrison buildings setting from the module that issued this
+    // command, still in its canonical Class=idx,idx;... string form. Empty means no
+    // override, which is what every caller passing a shorter array falls to.
+    _preferredGarrison = _args param [8, "", [""]];
     // DEBUG -------------------------------------------------------------------------------------
     if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
      ["ALIVE_fnc_garrison - _profileType: %1, _profileCount: %2, _guardPatrolPercentage: %3", _profileType, _profileCount, _guardPatrolPercentage] call ALiVE_fnc_dump;
@@ -115,7 +120,7 @@ if (_type == "entity" && {count (_assignments select 1) == 0}) then {
        ["ALIVE_fnc_garrison - calling ALIVE_fnc_groupGarrison - _radius: %4,  _profileID: %3, _profileType: %1, _group: %2, _guardPatrolPercentage: %5", _profileType, _group, _id, _radius, _guardPatrolPercentage] call ALiVE_fnc_dump;
       };
       // DEBUG -------------------------------------------------------------------------------------
-     [_group, _pos, _radius, true, _onlyProfiles, _profileCount, _id, _guardPatrolPercentage, _patrolBehaviour, _patrolSpeed] call ALIVE_fnc_groupGarrison;
+     [_group, _pos, _radius, true, _onlyProfiles, _profileCount, _id, _guardPatrolPercentage, _patrolBehaviour, _patrolSpeed, _preferredGarrison] call ALIVE_fnc_groupGarrison;
     };
 
 };

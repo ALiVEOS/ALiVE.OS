@@ -883,6 +883,12 @@
     <Portuguese>Velocidade de movimento dos grupos de guarnição que patrulham entre edifícios quando não há inimigos à vista. Predefinição: Limitada (a andar).</Portuguese>
     <Russian>Скорость передвижения гарнизонных групп, патрулирующих между зданиями, когда враг не виден. По умолчанию — «Ограниченная» (шагом).</Russian>
 </Key>
+<Key ID="STR_ALIVE_CP_PREFERRED_GARRISON_POSITIONS">
+    <English>Preferred Garrison Buildings:</English>
+</Key>
+<Key ID="STR_ALIVE_CP_PREFERRED_GARRISON_POSITIONS_COMMENT">
+    <English>Buildings and positions to garrison first. One entry per building class, on its own line or separated by semicolons: Classname=position indices, in the order you want them filled. Example: Land_vn_hut_01=1,2,3;Land_vn_bunker_01=0,4 Buildings listed here fill before any others, and a class listed here uses your indices instead of the built-in list. Classnames match in any capitalisation but must be exact: a subclass of a listed class does not match. Indices are the building's buildingPos numbers. To list them, aim at a building and run this in the debug console: {systemChat format ['%1 = %2', _forEachIndex, _x]} forEach (cursorObject buildingPos -1) Applies to objective garrisons and reserve reinforcements, not roadblocks.</English>
+</Key>
 <Key ID="STR_ALIVE_CP_CUSTOM_PATROL_PERCENT_NONE">
     <English>None</English>
     <Chinese>無</Chinese>

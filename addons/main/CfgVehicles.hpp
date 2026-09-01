@@ -70,6 +70,7 @@ class Cfg3DEN
         {
         };
 
+
         class Combo; // Forward declaration of BI Combo attribute control
 
         // ctrlControlsGroupNoScrollbars / ctrlListBox / ctrlStatic forward

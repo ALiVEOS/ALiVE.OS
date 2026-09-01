@@ -290,6 +290,13 @@ class CfgVehicles {
                                     class Full { name = "Full (run)"; value = "FULL"; };
                                 };
                         };
+                        class preferredGarrisonPositions : ALiVE_EditMultilineSQF
+                        {
+                                property = "ALiVE_civ_placement_preferredGarrisonPositions";
+                                displayName = "$STR_ALIVE_CP_PREFERRED_GARRISON_POSITIONS";
+                                tooltip = "$STR_ALIVE_CP_PREFERRED_GARRISON_POSITIONS_COMMENT";
+                                defaultValue = """""";
+                        };
 
                         // ---- Roadblocks -----------------------------------------------------
                         class HDR_ROADBLOCKS : ALiVE_ModuleSubTitle { property = "ALiVE_civ_placement_HDR_ROADBLOCKS"; displayName = "$STR_ALIVE_CP_HDR_ROADBLOCKS"; };

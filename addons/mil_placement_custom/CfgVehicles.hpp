@@ -208,6 +208,13 @@ class CfgVehicles {
                                     class Full { name = "Full (run)"; value = "FULL"; };
                                 };
                         };
+                        class preferredGarrisonPositions : ALiVE_EditMultilineSQF
+                        {
+                                property = "ALiVE_mil_placement_custom_preferredGarrisonPositions";
+                                displayName = "$STR_ALIVE_MP_PREFERRED_GARRISON_POSITIONS";
+                                tooltip = "$STR_ALIVE_MP_PREFERRED_GARRISON_POSITIONS_COMMENT";
+                                defaultValue = """""";
+                        };
                         class garrisonCompositions : Combo { property = "ALiVE_mil_placement_custom_garrisonCompositions"; displayName = "$STR_ALIVE_CMP_GARRISON_COMPOSITIONS"; tooltip = "$STR_ALIVE_CMP_GARRISON_COMPOSITIONS_COMMENT"; defaultValue = """true"""; class Values { class Yes{name="Yes";value="true";default=1;}; class No{name="No";value="false";}; }; };
                         class composition
                         {

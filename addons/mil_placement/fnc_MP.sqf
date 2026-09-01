@@ -194,6 +194,9 @@ switch(_operation) do {
     case "garrisonPatrolBehaviour": {
         _result = [_logic,_operation,_args,"SAFE"] call ALIVE_fnc_OOsimpleOperation;
     };
+    case "preferredGarrisonPositions": {
+        _result = [_logic,_operation,_args,""] call ALIVE_fnc_OOsimpleOperation;
+    };
     case "garrisonPatrolSpeed": {
         _result = [_logic,_operation,_args,"LIMITED"] call ALIVE_fnc_OOsimpleOperation;
     };
@@ -930,6 +933,13 @@ switch(_operation) do {
             "_customArmourCount","_customSpecOpsCount","_countVehicleClusters","_createHQ","_createFieldHQ","_file",
             "_aaCount","_aaBehaviour","_aaClasses"];
 
+            // The HQ and Field HQ garrisons below are placed from this case, which is a
+            // different scope from the guard garrisons, so the setting is resolved again
+            // here. These two run first and claim an objective best building, so leaving
+            // them out meant the setting could never reach the HQ at all.
+            private _preferredGarrisonPositions = [_logic, "preferredGarrisonPositions"] call MAINCLASS;
+            if (isNil "_preferredGarrisonPositions" || {!(_preferredGarrisonPositions isEqualType "")}) then { _preferredGarrisonPositions = "" };
+
 
             _debug = [_logic, "debug"] call MAINCLASS;
 
@@ -1111,7 +1121,7 @@ switch(_operation) do {
 
 	                        {
 	                            if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
-	                               [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[30,"false",[0,0,0],"",1, 1]]] call ALIVE_fnc_profileEntity;
+	                               [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[30,"false",[0,0,0],"",1, 1, "SAFE", "LIMITED", _preferredGarrisonPositions]]] call ALIVE_fnc_profileEntity;
 	                            };
 	                        } foreach _profiles;
                          };
@@ -1222,7 +1232,7 @@ switch(_operation) do {
 
                             {
                                 if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
-                                    [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[30,"false",[0,0,0],"",1, 1]]] call ALIVE_fnc_profileEntity;
+                                    [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[30,"false",[0,0,0],"",1, 1, "SAFE", "LIMITED", _preferredGarrisonPositions]]] call ALIVE_fnc_profileEntity;
                                     if (_garrisonCompositions) then {
                                         // Field HQ garrison holds its post like
                                         // other composition garrisons
@@ -2870,6 +2880,12 @@ switch(_operation) do {
                     private _guardRadius = parseNumber([_logic, "guardRadius"] call MAINCLASS);
                     private _guardPatrolPercentage = parseNumber([_logic, "guardPatrolPercentage"] call MAINCLASS);
                     private _garrisonPatrolBehaviour = toUpper ([_logic, "garrisonPatrolBehaviour"] call MAINCLASS);
+                    // Preferred garrison buildings, still in the canonical Class=idx,idx;... string the
+                    // attribute holds. Read once here beside the other garrison settings and threaded to
+                    // each garrison command below; the seating code parses it. Empty means no override,
+                    // which is what a mission that never touches the setting gets.
+                    private _preferredGarrisonPositions = [_logic, "preferredGarrisonPositions"] call MAINCLASS;
+                    if (isNil "_preferredGarrisonPositions" || {!(_preferredGarrisonPositions isEqualType "")}) then { _preferredGarrisonPositions = "" };
                     private _garrisonPatrolSpeed = toUpper ([_logic, "garrisonPatrolSpeed"] call MAINCLASS);
                 		private _guardDistance = _size;
 
@@ -2930,7 +2946,7 @@ switch(_operation) do {
                         // Garrison & Patrols instead of the static garrison.
                         {
                             if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
-                              [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[_thisRadius,"true",[0,0,0],"",_guardProbabilityCount, _guardPatrolPercentage, _garrisonPatrolBehaviour, _garrisonPatrolSpeed]]] call ALIVE_fnc_profileEntity;
+                              [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[_thisRadius,"true",[0,0,0],"",_guardProbabilityCount, _guardPatrolPercentage, _garrisonPatrolBehaviour, _garrisonPatrolSpeed, _preferredGarrisonPositions]]] call ALIVE_fnc_profileEntity;
                               if (_pinStationary) then {
                                   // composition garrisons hold their posts - the
                                   // same pin roadblock guards use, honoured at
@@ -3049,7 +3065,7 @@ switch(_operation) do {
                                         if (_infantryActivePlacedCount < _garrisonCount) then {
                                             _command = "ALIVE_fnc_garrison";
                                             _garrisonPos = [_center, 50] call CBA_fnc_RandPos;
-                                            _radius = [_guardRadius,"true",[0,0,0],"",_guardProbabilityCount, _guardPatrolPercentage, _garrisonPatrolBehaviour, _garrisonPatrolSpeed];
+                                            _radius = [_guardRadius,"true",[0,0,0],"",_guardProbabilityCount, _guardPatrolPercentage, _garrisonPatrolBehaviour, _garrisonPatrolSpeed, _preferredGarrisonPositions];
                                         } else {
                                             _command = "ALIVE_fnc_ambientMovement";
                                             _radius = [_guardRadius,"SAFE",[0,0,0]];
@@ -3204,7 +3220,7 @@ switch(_operation) do {
                                     if (_infantryActivePlacedCount < _garrisonCount) then {
                                         _command = "ALIVE_fnc_garrison";
                                         _garrisonPos = [_center, 50] call CBA_fnc_RandPos;
-                                        _radius = [_guardRadius,"true",[0,0,0],"",_guardProbabilityCount, _guardPatrolPercentage, _garrisonPatrolBehaviour, _garrisonPatrolSpeed];
+                                        _radius = [_guardRadius,"true",[0,0,0],"",_guardProbabilityCount, _guardPatrolPercentage, _garrisonPatrolBehaviour, _garrisonPatrolSpeed, _preferredGarrisonPositions];
                                     } else {
                                         _command = "ALIVE_fnc_ambientMovement";
                                         _radius = [_guardRadius,"SAFE",[0,0,0]];
