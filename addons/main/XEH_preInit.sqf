@@ -117,6 +117,62 @@ if (is3DEN) then {
         ALIVE_fnc_edenArtilleryDependencyCheck = compile preprocessFileLineNumbers "\x\alive\addons\main\fnc_edenArtilleryDependencyCheck.sqf";
     };
 
+    // Class picker write back. Compiled here rather than reached through
+    // CfgFunctions because that phase does not run in the editor, so a function
+    // registered that way is simply never defined and calling it does nothing at
+    // all, silently.
+    ALIVE_fnc_edenApplyGarrisonList = compile preprocessFileLineNumbers "\x\alive\addons\sys_classpicker\fnc_edenApplyGarrisonList.sqf";
+
+    // What to do with a list when the preview ends is the picker module's own
+    // setting, left in uiNamespace by the module because the mission namespace
+    // does not survive the trip back to the editor.
+    add3DENEventHandler ["OnMissionPreviewEnd", {
+        // The wiki is explicit that entities cannot be manipulated during this
+        // event without letting it settle first.
+        [] spawn {
+            uiSleep 1;
+
+            // Every way out of here says which way it went. Without that, a
+            // handler that did nothing on purpose and one that never fired at
+            // all leave exactly the same trace, which is none.
+            private _mode = uiNamespace getVariable ["ALIVE_classPicker_onReturn", ""];
+
+            if (_mode == "") exitWith {
+                ["ALiVE class picker - preview ended, but no picker module ran, so there is nothing to put anywhere"] call ALiVE_fnc_dump;
+            };
+            if (_mode == "off") exitWith {
+                ["ALiVE class picker - preview ended, the module is set to do nothing on return"] call ALiVE_fnc_dump;
+            };
+
+            private _dest = uiNamespace getVariable ["ALIVE_classPicker_destination", []];
+            private _stash = uiNamespace getVariable ["ALIVE_classPicker_stash", []];
+            private _list = "";
+            if (_dest isEqualType [] && {count _dest > 1}) then { _list = _dest select 1 };
+            if (_list == "" && {_stash isEqualType []} && {count _stash > 0}) then { _list = _stash select 0 };
+
+            if (_list == "" || {!("=" in _list)}) exitWith {
+                ["ALiVE class picker - preview ended with nothing collected to apply"] call ALiVE_fnc_dump;
+            };
+
+            if (_mode == "apply") then {
+                // This event has been seen to fire twice a second apart, and
+                // applying twice would write the list in twice wherever the field
+                // is being added to rather than replaced.
+                private _last = uiNamespace getVariable ["ALiVE_classPicker_lastAutoApply", -1e9];
+                if (diag_tickTime - _last < 5) exitWith {
+                    ["ALiVE class picker - preview ended again within a few seconds, already applied, doing nothing"] call ALiVE_fnc_dump;
+                };
+                uiNamespace setVariable ["ALiVE_classPicker_lastAutoApply", diag_tickTime];
+
+                ["ALiVE class picker - preview ended, applying to the synced modules: %1", _list] call ALiVE_fnc_dump;
+                [[], true] call ALIVE_fnc_edenApplyGarrisonList;
+            } else {
+                ["ALiVE class picker - preview ended, reminding rather than applying: %1", _list] call ALiVE_fnc_dump;
+                [format ["ALiVE class picker: %1 -- select a placement module, right click it and choose Apply Picked Garrison List under Log.", _list], 1, 60] call BIS_fnc_3DENNotification;
+            };
+        };
+    }];
+
     // Viability Eden chain. Inline-compile the helper functions
     // the assessor reaches transitively, plus the assessor itself,
     // so the full M1-M5 score block + notification can render in Eden.
