@@ -278,11 +278,10 @@ switch(_operation) do {
                 private _spacialGrid = [ALiVE_profileSystem,"spacialGridProfiles"] call ALiVE_fnc_hashGet;
 
                 private _currPos = _logic select 2 select 2;
+                [_logic,"position", _args] call ALIVE_fnc_hashSet;
                 PROFILE_SCOPE(SPACIALGRIDMOVE, "ALiVE profileEntity: spacial grid move")
                 _spacialGrid call ["move", [_currPos, _args, _logic]];
                 PROFILE_SCOPE_END(SPACIALGRIDMOVE)
-
-                [_logic,"position", _args] call ALIVE_fnc_hashSet;
 
                 if ([_logic,"debug"] call ALIVE_fnc_hashGet) then {
                     // Throttle marker refreshes to at most once every 2s per profile.
