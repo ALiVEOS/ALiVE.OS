@@ -24,7 +24,7 @@ Author:
 Highhead, Jman
 ---------------------------------------------------------------------------- */
 
-private ["_type","_waypoints","_unit","_profile","_active","_args","_pos","_radius","_onlyProfiles","_assignments","_group","_profileType","_profileCount","_guardPatrolPercentage","_patrolBehaviour","_patrolSpeed","_cbaRadius","_preferredGarrison"];
+private ["_type","_waypoints","_unit","_profile","_active","_args","_pos","_radius","_onlyProfiles","_assignments","_group","_profileType","_profileCount","_guardPatrolPercentage","_patrolBehaviour","_patrolSpeed","_cbaRadius","_preferredGarrison","_fillShortfall","_hadModuleSetting","_preferredIndicesOnly"];
 
 _profile = _this param [0, ["",[],[],nil], [[]]];
 _args = _this param [1, 200, [-1,[]]];
@@ -41,6 +41,9 @@ _guardPatrolPercentage = 50;
 _patrolBehaviour = "SAFE";
 _patrolSpeed = "LIMITED";
 _preferredGarrison = "";
+_fillShortfall = true;
+_hadModuleSetting = false;
+_preferredIndicesOnly = false;
 // SPE garrison: radius to sweep for CBA AI Building Positions (the objective's Size). (#945)
 _cbaRadius = 300;
 
@@ -61,14 +64,54 @@ if (_args isEqualType []) then {
     _patrolBehaviour = _args param [6, "SAFE", [""]];
     _patrolSpeed = _args param [7, "LIMITED", [""]];
     // The preferred garrison buildings setting from the module that issued this
-    // command, still in its canonical Class=idx,idx;... string form. Empty means no
-    // override, which is what every caller passing a shorter array falls to.
+    // command, still in its canonical Class=idx,idx;... string form. A module left
+    // blank sends an empty string and means it, so what marks a caller as having had
+    // a module to ask is whether the slot is there at all, not what is in it.
     _preferredGarrison = _args param [8, "", [""]];
+    _hadModuleSetting = count _args > 8;
+    // Whether this garrison may look past the curated props when they cannot seat the
+    // group. On unless a caller says otherwise. The commander re-garrisoning a captured
+    // objective, the insurgency guards and the airbase guards all arrive here with the
+    // short array their FSMs have always sent, and while this was off by default a
+    // platoon of twenty three men sent at fourteen curated seats filled the bunkers and
+    // handed the other sixteen to ambient movement.
+    _fillShortfall = (_args param [9, true, [false]]);
     // DEBUG -------------------------------------------------------------------------------------
     if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
      ["ALIVE_fnc_garrison - _profileType: %1, _profileCount: %2, _guardPatrolPercentage: %3", _profileType, _profileCount, _guardPatrolPercentage] call ALiVE_fnc_dump;
     };
     // DEBUG -------------------------------------------------------------------------------------
+};
+
+// A caller with no placement module behind it is given the mission's list. The
+// commander ordering a garrison from tacom, the insurgency guards and the airbase
+// guards reach here with the short array their FSM has always sent, and an FSM has
+// no module logic to read the setting off. Eden writes the attribute onto each
+// placement module at load, so the modules are read directly rather than made to
+// announce themselves, which also picks up any module that gains the attribute
+// later.
+//
+// A module that was left blank is NOT given anybody else's list. Its garrisons
+// would otherwise sweep for another module's classes out to the full guard radius
+// and seat men in them ahead of the objective's own props, which is the opposite
+// of what leaving the field empty asks for.
+if (!_hadModuleSetting) then {
+    // Gathered once and kept. The answer cannot change after mission start, and
+    // without this every garrison in the mission would sweep the entity list again.
+    if (isNil "ALiVE_preferredGarrisonPositions") then {
+        ALiVE_preferredGarrisonPositions = (((entities "Module_F") apply {
+            _x getVariable ["preferredGarrisonPositions", ""]
+        }) select {
+            // Only a segment carrying an "=" can name a class, so a field holding
+            // nothing but a stray space or line break is not pooled as one.
+            _x isEqualType "" && {(_x find "=") > -1}
+        }) joinString ";";
+    };
+    _preferredGarrison = ALiVE_preferredGarrisonPositions;
+    if !(_preferredGarrison isEqualType "") then { _preferredGarrison = "" };
+    // Taken, not chosen: these classes supply the positions worth standing in, but must
+    // not become buildings this garrison walks to ahead of the ones it is already at.
+    _preferredIndicesOnly = true;
 };
 
 
@@ -120,7 +163,7 @@ if (_type == "entity" && {count (_assignments select 1) == 0}) then {
        ["ALIVE_fnc_garrison - calling ALIVE_fnc_groupGarrison - _radius: %4,  _profileID: %3, _profileType: %1, _group: %2, _guardPatrolPercentage: %5", _profileType, _group, _id, _radius, _guardPatrolPercentage] call ALiVE_fnc_dump;
       };
       // DEBUG -------------------------------------------------------------------------------------
-     [_group, _pos, _radius, true, _onlyProfiles, _profileCount, _id, _guardPatrolPercentage, _patrolBehaviour, _patrolSpeed, _preferredGarrison] call ALIVE_fnc_groupGarrison;
+     [_group, _pos, _radius, true, _onlyProfiles, _profileCount, _id, _guardPatrolPercentage, _patrolBehaviour, _patrolSpeed, _preferredGarrison, _fillShortfall, _preferredIndicesOnly] call ALIVE_fnc_groupGarrison;
     };
 
 };

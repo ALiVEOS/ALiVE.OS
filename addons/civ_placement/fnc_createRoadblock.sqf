@@ -408,7 +408,12 @@ for "_j" from 1 to (count _roadpoints) do {
 
         {
             if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
-                [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[30,"false",[0,0,0],"",1, 1]]] call ALIVE_fnc_profileEntity;
+                // The empty ninth slot says this caller has a list and it is empty, which
+                // keeps the checkpoint guards off the mission's pooled one. A listed house
+                // class near the road would otherwise outrank the roadblock itself, and
+                // these guards are registered stationary below, so nothing would ever move
+                // them back and the checkpoint would stand empty for the rest of the run.
+                [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[30,"false",[0,0,0],"",1, 1, "SAFE", "LIMITED", ""]]] call ALIVE_fnc_profileEntity;
                 [_x,"busy",true] call ALIVE_fnc_hashSet;
                 // Hold the roadblock: register the guard "stationary" so
                 // OPCOM/TACOM never drains it (busy alone doesn't cover the QRF path).

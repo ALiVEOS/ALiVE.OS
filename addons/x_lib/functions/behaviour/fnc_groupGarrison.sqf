@@ -10,6 +10,13 @@ Array - position
 Scalar - radius
 Boolean - move to position instantly (no animation)
 Boolean - optional, only profiled vehicles (to avoid garrisoning player vehicles)
+Scalar - optional, number of guard groups at this objective
+String - optional, profile ID
+Scalar - optional, percentage of the group that patrols
+String - optional, patrol behaviour
+String - optional, patrol speed
+String - optional, preferred garrison buildings, Class=idx,idx;...
+Boolean - optional, look past the curated props when they cannot seat the group (default true)
 Returns:
 Examples:
 (begin example)
@@ -26,7 +33,7 @@ ARJay, Highhead, Jman
 // other garrison groups.
 if (!isServer) exitWith {};
 
-params ["_group","_position","_radius","_moveInstantly", ["_onlyProfiled", false], ["_profileCount",0], ["_profileID",nil], ["_guardPatrolPercentage",50], ["_patrolBehaviour","SAFE"], ["_patrolSpeed","LIMITED"], ["_preferredGarrison","",[""]]];
+params ["_group","_position","_radius","_moveInstantly", ["_onlyProfiled", false], ["_profileCount",0], ["_profileID",nil], ["_guardPatrolPercentage",50], ["_patrolBehaviour","SAFE"], ["_patrolSpeed","LIMITED"], ["_preferredGarrison","",[""]], ["_fillShortfall",true,[false]], ["_preferredIndicesOnly",false,[false]]];
 
 private _units = units _group;
 private _unitPercentCount = ((count _units) * _guardPatrolPercentage) / 100;
@@ -149,8 +156,14 @@ private _preferredClasses = _preferredHash select 1;
 // Exact class matches only. nearestObjects also returns children of a listed class, and the
 // written indices belong to the exact model rather than its relatives. A child worth listing
 // gets its own entry.
+// A list the caller inherited rather than set says which positions in a building class
+// are worth standing in. It does not say that those classes are worth walking to. Only a
+// module that named them for its own objectives gets the sweep below, which ranks them
+// above everything else and exempts them from the claim economy; a garrison the commander
+// ordered would otherwise leave the bunkers it was standing beside for a listed hut at the
+// far edge of a two hundred metre radius.
 private _preferredBuildings = [];
-if !(_preferredClasses isEqualTo []) then {
+if !((_preferredClasses isEqualTo []) || _preferredIndicesOnly) then {
     // The keys are folded to lower case so the lookup can fold too, but nearestObjects
     // matches its type list case sensitively, so a folded name finds nothing. Config
     // lookup is case insensitive and configName gives back the declared spelling, so the
@@ -172,40 +185,6 @@ if !(_preferredClasses isEqualTo []) then {
 // are garrisoned today would quietly stop being garrisoned. A listed class is bypassed at
 // lookup time instead, where the setting table answers before the curated one, and
 // subtracting the objects already booked keeps any one building out of both ranks.
-private _buildings = nearestObjects [_position,ALIVE_garrisonPositions select 1,_radius];
-_buildings = _buildings - _preferredBuildings;
-
-// The trigger below keys on the curated count alone. Where the curated sweep finds nothing,
-// the enterable houses are the whole seat supply, and one listed building must not switch
-// them off; turning the setting on has to be able to add seats, never remove them.
-if (count _buildings == 0 || _profileCount > 3) then {
-	 // DEBUG -------------------------------------------------------------------------------------
-	 if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
-	  ["ALIVE_fnc_groupGarrison - _profileCount: %1, Getting ALIVE_fnc_getEnterableHouses()", _profileCount] call ALiVE_fnc_dump;
-	 };
-	 // DEBUG -------------------------------------------------------------------------------------
-    // append rather than replace: discarding the curated garrison props here
-    // left camp and composition structures unmanned whenever the guard count
-    // exceeded 3 - the load-spreading intent only needs MORE seats, not fewer
-    private _houses = [_position, floor(_radius/2)] call ALIVE_fnc_getEnterableHouses;
-    _buildings = _buildings + (_houses - _buildings - _preferredBuildings);
-};
-
-// Seat nearest structures first, but only within each rank. One flat sort across the lot
-// would let a close curated building outrank a farther listed one, which is the opposite of
-// what the setting promises. Without a setting there is only one rank and this is the sort
-// that has always run: the whitelist sweep covers the full radius while enterable houses
-// cover half, so unsorted a prop-rich objective empties its houses into the props.
-_preferredBuildings = [_preferredBuildings, [], { _x distance2D _position }, "ASCEND"] call BIS_fnc_sortBy;
-_buildings = [_buildings, [], { _x distance2D _position }, "ASCEND"] call BIS_fnc_sortBy;
-private _preferredTierCount = count _preferredBuildings;
-_buildings = _preferredBuildings + _buildings;
-
-// Two passes only when the mission asked for them. With no setting configured this stays
-// false and the seating loop below takes exactly the path it takes today, so a mission that
-// never touches the attribute sees no change at all.
-private _twoPass = !(_preferredClasses isEqualTo []);
-
 // shared ring geometry for props without engine positions - keep in sync
 // with the seat estimators in mil_placement / mil_placement_custom
 private _fnc_ringParams = {
@@ -215,6 +194,103 @@ private _fnc_ringParams = {
     private _ringRadius = _bRadius + 1;
     [_ringRadius, 2 max (floor ((2 * pi * _ringRadius) / 4)) min 6]
 };
+
+// Whether the seating loop below would be allowed to take this building. A building
+// another group already owns is refused there, so counting its seats as supply makes
+// a group look better provided for than it is. Read only: the bucket is fetched
+// without the insert flag, so asking does not claim anything.
+private _fnc_claimable = {
+    params ["_obj"];
+    if (isNil "ALiVE_garrisonBuildingOccupancyIndex") exitWith {true};
+    private _bucket = ALiVE_garrisonBuildingOccupancyIndex getOrDefault [hashValue _obj, []];
+    private _held = _bucket findIf {(_x select 0) isEqualTo _obj};
+    _held < 0 || {((_bucket select _held) select 1) isEqualTo _group}
+};
+
+// How many men a set of buildings can actually hold. Ring-scatter props carry no
+// engine positions but do take men, so they count the way the seating loop counts
+// them rather than as nothing. Buildings held by another group count as nothing,
+// because this group cannot have them: with several groups garrisoning one
+// objective, every group after the first was reading the whole objective's supply,
+// deciding it was well provided for, then being refused building after building and
+// handing its leftovers to ambient movement.
+private _fnc_seatSupply = {
+    params ["_list"];
+    private _seats = 0;
+    {
+        if ([_x] call _fnc_claimable) then {
+            private _engine = count (_x buildingPos -1);
+            _seats = _seats + (if (_engine > 0) then {_engine} else {([_x] call _fnc_ringParams) select 1});
+        };
+    } forEach _list;
+    _seats
+};
+
+private _buildings = nearestObjects [_position,ALIVE_garrisonPositions select 1,_radius];
+_buildings = _buildings - _preferredBuildings;
+
+// Whether the curated props can seat this group at all.
+//
+// The two triggers below it were the only ones for years, and neither looks at
+// how many men need a place. _profileCount is the number of guard GROUPS at the
+// objective, not men, and it has to exceed three; the module default of 0.2 tops
+// out at two groups and 0.4 at three, so on any default mission that trigger can
+// never fire. The other needs the curated sweep to find nothing at all. So a
+// group of twelve standing beside one bunker was offered that one bunker, seated
+// two or three men in it, and handed the rest to ambient movement, which is why
+// they were found wandering in the open next to buildings they could have used.
+private _curatedSeats = [_buildings + _preferredBuildings] call _fnc_seatSupply;
+private _shortOfSeats = _fillShortfall && {_curatedSeats < count _units};
+
+// Houses found for the shortfall reason are kept apart, because they must rank
+// BELOW the curated props rather than being sorted in among them. Sorted together,
+// a hut twenty metres away outranks a bunker at eighty and the firing positions
+// the curated list exists to fill are left empty.
+private _houseRank = [];
+
+// Every house the widening turns up, whichever rank it ends up in. The two paths below
+// put them in different lists, and without keeping the set the log calls a house curated
+// on the path that merges them into the curated list.
+private _houseFound = [];
+
+if (count _buildings == 0 || _profileCount > 3 || _shortOfSeats) then {
+	 // DEBUG -------------------------------------------------------------------------------------
+	 if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
+	  ["ALIVE_fnc_groupGarrison - %4: looking beyond the curated props: %1 curated seat(s) for %2 men, guard groups %3", _curatedSeats, count _units, _profileCount, _group] call ALiVE_fnc_dump;
+	 };
+	 // DEBUG -------------------------------------------------------------------------------------
+    private _houses = [_position, floor(_radius/2)] call ALIVE_fnc_getEnterableHouses;
+    private _extra = _houses - _buildings - _preferredBuildings;
+    _houseFound = _extra;
+
+    if (count _buildings == 0 || _profileCount > 3) then {
+        // append rather than replace: discarding the curated garrison props here
+        // left camp and composition structures unmanned whenever the guard count
+        // exceeded 3 - the load-spreading intent only needs MORE seats, not fewer
+        _buildings = _buildings + _extra;
+    } else {
+        _houseRank = _extra;
+    };
+};
+
+// Seat nearest structures first, but only within each rank. One flat sort across the lot
+// would let a close curated building outrank a farther listed one, which is the opposite of
+// what the setting promises. Without a setting there is only one rank and this is the sort
+// that has always run: the whitelist sweep covers the full radius while enterable houses
+// cover half, so unsorted a prop-rich objective empties its houses into the props.
+_preferredBuildings = [_preferredBuildings, [], { _x distance2D _position }, "ASCEND"] call BIS_fnc_sortBy;
+_buildings = [_buildings, [], { _x distance2D _position }, "ASCEND"] call BIS_fnc_sortBy;
+_houseRank = [_houseRank, [], { _x distance2D _position }, "ASCEND"] call BIS_fnc_sortBy;
+private _preferredTierCount = count _preferredBuildings;
+
+// Ordinary houses last. They are only here because the curated props could not
+// seat everybody, so they take the men left over rather than the first ones.
+_buildings = _preferredBuildings + _buildings + _houseRank;
+
+// Two passes only when the mission asked for them. With no setting configured this stays
+// false and the seating loop below takes exactly the path it takes today, so a mission that
+// never touches the attribute sees no change at all.
+private _twoPass = !((_preferredClasses isEqualTo []) || _preferredIndicesOnly);
 
 // props without engine positions cannot host buildingPatrol.fsm circuits
 // (the FSM selectRandoms buildingPos) - patrol only position-bearing props
@@ -230,13 +306,9 @@ if (_patrolBuildings isEqualTo [] && {count _buildings > 0} && {ALiVE_SYS_PROFIL
 // props came to look like one seating two men out of ten. Ring-scatter props carry no engine
 // positions but do take men, so they are counted the way the seating loop will count them.
 if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
-    private _seatSupply = 0;
-    {
-        private _engine = count (_x buildingPos -1);
-        _seatSupply = _seatSupply + (if (_engine > 0) then {_engine} else {([_x] call _fnc_ringParams) select 1});
-    } forEach _buildings;
-    ["ALIVE_fnc_groupGarrison - %1 of %2 men still to seat, %3 candidate buildings offering %4 places, radius %5",
-     count _units, count (units _group), count _buildings, _seatSupply, _radius] call ALiVE_fnc_dump;
+    ["ALIVE_fnc_groupGarrison - %8: %1 of %2 men still to seat, %3 candidate buildings offering %4 places; %5 curated seat(s) free to us, %6 house(s) added, radius %7",
+     count _units, count (units _group), count _buildings, [_buildings] call _fnc_seatSupply,
+     _curatedSeats, count _houseFound, _radius, _group] call ALiVE_fnc_dump;
 };
 // DEBUG -------------------------------------------------------------------------------------
 
@@ -347,11 +419,17 @@ private _authoredPatrolCandidates = [];
         [_overflow, true] call CBA_fnc_Shuffle;
         _overflow = [_overflow, [], { _x select 2 }, "DESCEND"] call BIS_fnc_sortBy;
         if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
-         // A non-empty authored list that matches nothing means the curation has gone stale
-         // against the model. Without this the change would fail silently and look identical
-         // to having no list at all. The third figure was labelled as the men left to seat
-         // but has always been the whole group, so it is named for what it actually is.
-        ["ALIVE_fnc_groupgarrison - class: %1, %2 positions, group of %3, %4 of %5 authored positions matched", typeOf _building, (count _preferred) + (count _overflow), count units _group, count _preferred, count _authored] call ALiVE_fnc_dump;
+            // A non-empty authored list that matches nothing means the curation has gone stale
+            // against the model. Without this the change would fail silently and look identical
+            // to having no list at all. The third figure was labelled as the men left to seat
+            // but has always been the whole group, so it is named for what it actually is.
+            //
+            // The group and the rank are named because several garrisons at one objective run
+            // at the same time and their lines interleave. Without the group there is no way to
+            // tell which garrison a line belongs to, and without the rank no way to tell a house
+            // taken because the curated props were full from a house taken instead of them.
+            private _rank = if (_building in _houseFound) then {"house"} else {"curated"};
+            ["ALIVE_fnc_groupgarrison - %7: class: %1 (%6), %2 positions, group of %3, %4 of %5 authored positions matched", typeOf _building, (count _preferred) + (count _overflow), count units _group, count _preferred, count _authored, _rank, _group] call ALiVE_fnc_dump;
         };
 
         if (_twoPass) then {
@@ -426,7 +504,7 @@ private _authoredPatrolCandidates = [];
     } else {
         _claimDenied = _claimDenied + 1;
         if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
-            ["ALIVE_fnc_groupGarrison - _buildingClaimed: %3, count _buildings: %1, _buildings: %2", count _buildings, _buildings, _buildingClaimed] call ALiVE_fnc_dump;
+            ["ALIVE_fnc_groupGarrison - %4: %1 already claimed by another group, %2 of %3 candidates tried", typeOf _building, _forEachIndex + 1, count _buildings, _group] call ALiVE_fnc_dump;
         };
     };
 } forEach _buildings;
@@ -481,8 +559,8 @@ if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
     // With _moveInstantly false nobody has moved yet - the men are only given somewhere to
     // walk to, and whether they arrive is decided after this function returns.
     private _verb = if (_moveInstantly) then {"seated"} else {"given positions to walk to"};
-    ["ALIVE_fnc_groupGarrison - %1 %2 of %3 men across %4 buildings, %5 refused as already claimed by another group",
-     _verb, _seatDemand - (count _units), _seatDemand, _claimed, _claimDenied] call ALiVE_fnc_dump;
+    ["ALIVE_fnc_groupGarrison - %6: %1 %2 of %3 men across %4 buildings, %5 refused as already claimed by another group",
+     _verb, _seatDemand - (count _units), _seatDemand, _claimed, _claimDenied, _group] call ALiVE_fnc_dump;
 };
 // DEBUG -------------------------------------------------------------------------------------
 
@@ -491,7 +569,7 @@ if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
 // If any units could not be garrisoned, fall back to ambient movement once.
 if (count _units > 0 && {!(isNil "_profile")}) then {
     if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
-        ["ALIVE_fnc_groupGarrison - %1 units remain ungarrisoned, calling ALIVE_fnc_ambientMovement", count _units] call ALiVE_fnc_dump;
+        ["ALIVE_fnc_groupGarrison - %2: %1 units remain ungarrisoned, calling ALIVE_fnc_ambientMovement", count _units, _group] call ALiVE_fnc_dump;
     };
     [_profile,"clearWaypoints"] call ALIVE_fnc_profileEntity;
     [_profile, [200,"SAFE"]] call ALIVE_fnc_ambientMovement;

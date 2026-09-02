@@ -157,7 +157,10 @@ if (_debug) then {
                     [
                         _x,
                         "setActiveCommand",
-                        ["ALIVE_fnc_garrison", "spawn", [30, "false", [0,0,0], "", 1, 1]]
+                        // Empty ninth slot, for the same reason as the roadblock these
+                        // guards are retaking: they must man the checkpoint, not a house
+                        // the mission happens to have listed nearby.
+                        ["ALIVE_fnc_garrison", "spawn", [30, "false", [0,0,0], "", 1, 1, "SAFE", "LIMITED", ""]]
                     ] call ALIVE_fnc_profileEntity;
                     [_x, "busy", true] call ALIVE_fnc_hashSet;
                     // Hold the captured block: register the guard "stationary" so

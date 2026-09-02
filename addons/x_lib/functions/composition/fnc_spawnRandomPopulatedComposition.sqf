@@ -141,7 +141,12 @@ if(_groupCount > 0) then {
 
         {
             if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
-                [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[100,"false",[0,0,0]]]] call ALIVE_fnc_profileEntity;
+                // These guards defend the composition they were spawned with, so the
+                // empty ninth slot keeps them off the mission's pooled list. The middle
+                // arguments are the values this call has always fallen to; only the last
+                // one is new. Tasks that send a player to clear a camp would otherwise
+                // find its defenders in a village up to a hundred metres away.
+                [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[100,"false",[0,0,0],"",0, 50, "SAFE", "LIMITED", ""]]] call ALIVE_fnc_profileEntity;
             };
         } foreach _guards;
     };
