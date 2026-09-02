@@ -123,6 +123,14 @@ if (is3DEN) then {
     // all, silently.
     ALIVE_fnc_edenApplyGarrisonList = compile preprocessFileLineNumbers "\x\alive\addons\sys_classpicker\fnc_edenApplyGarrisonList.sqf";
 
+    // The faction classes entry in the editor's right click menu, for the same
+    // reason. It has been in the menu for years reaching a function that is not
+    // defined while the editor is open, so clicking it has been doing nothing.
+    // Guarded, because in a mission the CfgFunctions copy is compileFinal.
+    if (isNil "ALIVE_fnc_copyFactionClasses") then {
+        ALIVE_fnc_copyFactionClasses = compile preprocessFileLineNumbers "\x\alive\addons\ui\fnc_copyFactionClasses.sqf";
+    };
+
     // What to do with a list when the preview ends is the picker module's own
     // setting, left in uiNamespace by the module because the mission namespace
     // does not survive the trip back to the editor.
