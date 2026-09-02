@@ -5389,7 +5389,7 @@ switch(_operation) do {
                 if (count _eventFriendlyProfiles > 0) then {
                     private _reapAircraftID = _eventFriendlyProfiles select 0;
                     private _reapAircraft = [_assets, _reapAircraftID] call ALiVE_fnc_hashGet;
-                    if (!isNil "_reapAircraft" && {([_reapAircraft,"currentOp",""] call ALiVE_fnc_hashGet) == _eventID}) then {
+                    if (!isNil "_reapAircraft" && {([_reapAircraft,"currentOp",""] call ALiVE_fnc_hashGet) isEqualTo _eventID}) then {
                         [_reapAircraft,"currentOp",""] call ALiVE_fnc_hashSet;
                         [_reapAircraft,"ready",false] call ALiVE_fnc_hashSet;
                         [_reapAircraft,"maintenance",time] call ALiVE_fnc_hashSet;
@@ -5659,7 +5659,7 @@ switch(_operation) do {
 
                                     if (!isNil "ALiVE_fnc_isAirfieldPosition"
                                         && {!_liveObjMissing}
-                                        && {_currentOp == ""}
+                                        && {_currentOp isEqualTo ""}
                                         && {!_playerOccupied}
                                         && {_position distance _currentPosition > 250}) then {
 
@@ -5765,7 +5765,7 @@ switch(_operation) do {
                                     if (_crewAvailable && !_playerOccupied && !_returnHome) then {
 
                                         // Get active event type
-                                        if (_currentOp != "") then {
+                                        if !(_currentOp isEqualTo "") then {
                                             //Retrieve event data
                                             private _currentEvent = [_eventQueue, _currentOp,[]] call ALIVE_fnc_hashGet;
                                             private _currentOpState = [_currentEvent, "state",""] call ALIVE_fnc_hashGet;
@@ -5781,14 +5781,21 @@ switch(_operation) do {
                                         if !([_aircraft,"reroute", false] call ALiVE_fnc_hashGet) then {
 
                                             // If parked and not doing anything add, if on CAP and request is DCA,CAS,SEAD then reroute, if its CAS and currently on CAS don't reroute - make sure aircraft is fit for purpose
-                                            if ( ( ((_position distance _currentPosition < 15) && _currentOp == "") || (_currentOp == "CAP" && _eventType in ["DCA","CAS","SEAD"]) || (_currentOp != "CAS" && _eventType == "CAS") ) && (_fuel > _eventMinFuel && _ammo > _eventMinWeap && _damage < 0.5)) then {
+                                            // currentOp is an event id number until the block above
+                                            // turns it into an op type, and it stays a number when
+                                            // the aircraft is starting or landing. Read it as a
+                                            // string here so a busy airframe reads as busy instead
+                                            // of throwing, which is what stopped this whole pass.
+                                            private _currentOpType = if (_currentOp isEqualType "") then {_currentOp} else {"-"};
+
+                                            if ( ( ((_position distance _currentPosition < 15) && _currentOpType == "") || (_currentOpType == "CAP" && _eventType in ["DCA","CAS","SEAD"]) || (_currentOpType != "CAS" && _eventType == "CAS") ) && (_fuel > _eventMinFuel && _ammo > _eventMinWeap && _damage < 0.5)) then {
 
                                                 [_aircraft,"currentPos",_currentPosition] call ALiVE_fnc_hashSet;
                                                 [_aircraft,"profileID",_x] call ALiVE_fnc_hashSet;
                                                 _selectedAsset pushback _aircraft;
 
                                                 // If the aircraft is on a CAP and not in the process of landing, send it to intercept
-                                                if (_currentOp == "CAP" && _eventType == "DCA") then {
+                                                if (_currentOpType == "CAP" && _eventType == "DCA") then {
                                                     _selectedAsset = [_aircraft];
                                                     _exit = true;
                                                 };
@@ -5990,7 +5997,7 @@ switch(_operation) do {
                         // Set current op for asset
 
                         // Check for existing OP?
-                        if (_currentOp != "") then {
+                        if !(_currentOp isEqualTo "") then {
 
                             //
                             if (_debug) then {
