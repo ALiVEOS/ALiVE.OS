@@ -202,6 +202,13 @@ class CfgVehicles {
                                 tooltip = "$STR_ALIVE_MP_PREFERRED_GARRISON_POSITIONS_COMMENT";
                                 defaultValue = """""";
                         };
+                        class garrisonBuildingBlacklist : ALiVE_EditMultilineSQF
+                        {
+                                property = "ALiVE_mil_placement_garrisonBuildingBlacklist";
+                                displayName = "$STR_ALIVE_MP_GARRISON_BUILDING_BLACKLIST";
+                                tooltip = "$STR_ALIVE_MP_GARRISON_BUILDING_BLACKLIST_COMMENT";
+                                defaultValue = """""";
+                        };
                         class garrisonCompositions : Combo { property = "ALiVE_mil_placement_garrisonCompositions"; displayName = "$STR_ALIVE_MP_GARRISON_COMPOSITIONS"; tooltip = "$STR_ALIVE_MP_GARRISON_COMPOSITIONS_COMMENT"; defaultValue = """true"""; class Values { class Yes{name="Yes";value="true";default=1;}; class No{name="No";value="false";}; }; };
                         class createHQ : Combo { property = "ALiVE_mil_placement_createHQ"; displayName = "$STR_ALIVE_MP_CREATE_HQ"; tooltip = "$STR_ALIVE_MP_CREATE_HQ_COMMENT"; defaultValue = """true"""; class Values { class Yes{name="Yes";value=true;default=1;}; class No{name="No";value=false;}; }; };
                         class createFieldHQ : Combo { property = "ALiVE_mil_placement_createFieldHQ"; displayName = "$STR_ALIVE_MP_CREATE_FIELDHQ"; tooltip = "$STR_ALIVE_MP_CREATE_FIELDHQ_COMMENT"; defaultValue = """true"""; class Values { class Yes{name="Yes";value=true;default=1;}; class No{name="No";value=false;}; }; };

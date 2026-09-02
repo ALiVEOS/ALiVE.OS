@@ -826,7 +826,9 @@ switch(_operation) do {
                         // many groups to divert into the composition. Ring
                         // geometry mirrors x_lib fnc_groupGarrison - keep in sync
                         {
-                            private _bp = count (_x buildingPos -1);
+                            // Only the positions the seating loop will offer. It drops any reading as the
+                                        // world origin, so counting them here sizes a garrison for seats it will refuse.
+                                        private _bp = count ((_x buildingPos -1) select {!(_x isEqualTo [0,0,0])});
                             if (_bp > 0) then {
                                 _compositionSeats = _compositionSeats + _bp;
                             } else {
@@ -834,7 +836,7 @@ switch(_operation) do {
                                 private _ringRadius = 0.5 * (((_bMax select 0) - (_bMin select 0)) max ((_bMax select 1) - (_bMin select 1))) + 1;
                                 _compositionSeats = _compositionSeats + (2 max (floor ((2 * pi * _ringRadius) / 4)) min 6);
                             };
-                        } forEach (nearestObjects [_spawnedSafePos, ALIVE_garrisonPositions select 1, _compositionEnvelope]);
+                        } forEach ([nearestObjects [_spawnedSafePos, ALIVE_garrisonPositions select 1, _compositionEnvelope]] call ALIVE_fnc_garrisonAllowedBuildings);
                         {
                             _compositionSeats = _compositionSeats + ([_x] call ALIVE_fnc_vehicleCountEmptyPositions);
                         } forEach (nearestObjects [_spawnedSafePos, ["StaticWeapon"], _compositionEnvelope]);
@@ -1562,7 +1564,9 @@ switch(_operation) do {
                     // seat estimate - ring geometry mirrors x_lib
                     // fnc_groupGarrison, keep in sync
                     {
-                        private _bp = count (_x buildingPos -1);
+                        // Only the positions the seating loop will offer. It drops any reading as the
+                                        // world origin, so counting them here sizes a garrison for seats it will refuse.
+                                        private _bp = count ((_x buildingPos -1) select {!(_x isEqualTo [0,0,0])});
                         if (_bp > 0) then {
                             _fieldHQSeats = _fieldHQSeats + _bp;
                         } else {
@@ -1570,7 +1574,7 @@ switch(_operation) do {
                             private _ringRadius = 0.5 * (((_bMax select 0) - (_bMin select 0)) max ((_bMax select 1) - (_bMin select 1))) + 1;
                             _fieldHQSeats = _fieldHQSeats + (2 max (floor ((2 * pi * _ringRadius) / 4)) min 6);
                         };
-                    } forEach (nearestObjects [_fieldHQSafePos, ALIVE_garrisonPositions select 1, _fieldHQEnvelope]);
+                    } forEach ([nearestObjects [_fieldHQSafePos, ALIVE_garrisonPositions select 1, _fieldHQEnvelope]] call ALIVE_fnc_garrisonAllowedBuildings);
                     {
                         _fieldHQSeats = _fieldHQSeats + ([_x] call ALIVE_fnc_vehicleCountEmptyPositions);
                     } forEach (nearestObjects [_fieldHQSafePos, ["StaticWeapon"], _fieldHQEnvelope]);

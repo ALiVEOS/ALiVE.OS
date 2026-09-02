@@ -139,6 +139,20 @@ class uErase
 	RECOMPILE;
 };
 
+class garrisonAllowedBuildings
+{
+	file = "\x\alive\addons\x_lib\functions\behaviour\fnc_garrisonAllowedBuildings.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
+class garrisonBuildingBlacklist
+{
+	file = "\x\alive\addons\x_lib\functions\behaviour\fnc_garrisonBuildingBlacklist.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
 class groupGarrison
 {
 	file = "\x\alive\addons\x_lib\functions\behaviour\fnc_groupGarrison.sqf";

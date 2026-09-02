@@ -153,6 +153,32 @@ if (count _units == 0) exitwith {
 private _preferredHash = [_preferredGarrison] call ALIVE_fnc_resolvePreferredGarrisonPositions;
 private _preferredClasses = _preferredHash select 1;
 
+// Classes no garrison may use, from every placement module and from the mission's own
+// init.sqf list. Worked out once for the mission and kept, so the ordinary case of no
+// blacklist at all costs one variable read. Everything below tests the flag rather than
+// the array, because filtering asks for the classname of every object a sweep returned
+// and that is real work to do for a filter that can never reject anything.
+private _blacklist = call ALIVE_fnc_garrisonBuildingBlacklist;
+private _excluding = !(_blacklist isEqualTo []);
+// The buildings the blacklist withheld at this objective, held as objects rather
+// than counted as they are found. The curated sweep and the house sweep overlap,
+// and the curated one is filtered before the subtraction that would have removed
+// the duplicate, so counting each sweep separately reports some buildings twice.
+private _excludedSet = [];
+
+// Folded in at source rather than filtered after the sweep, so a class named in both
+// settings is never swept for. The blacklist wins over the preferred list: it is the
+// stronger statement of the two and the only one that can say "never".
+// How many classes the blacklist took out of the listed set, kept apart from the
+// count of buildings withheld below: one is a setting the author wrote, the other
+// is what stands at this objective, and adding them gives a figure that is neither.
+private _excludedClasses = 0;
+if (_excluding) then {
+    private _before = count _preferredClasses;
+    _preferredClasses = _preferredClasses select { !(_x in _blacklist) };
+    _excludedClasses = _before - (count _preferredClasses);
+};
+
 // Exact class matches only. nearestObjects also returns children of a listed class, and the
 // written indices belong to the exact model rather than its relatives. A child worth listing
 // gets its own entry.
@@ -218,15 +244,26 @@ private _fnc_seatSupply = {
     params ["_list"];
     private _seats = 0;
     {
-        if ([_x] call _fnc_claimable) then {
-            private _engine = count (_x buildingPos -1);
-            _seats = _seats + (if (_engine > 0) then {_engine} else {([_x] call _fnc_ringParams) select 1});
+        private _obj = _x;
+        if ([_obj] call _fnc_claimable) then {
+            // Only the positions the seating loop will actually offer. It throws away any
+            // that read as the world origin, because seating a man there puts him at the
+            // corner of the map, and counting them here made a garrison look better
+            // provided for than it was: the supply said there was room, the loop then
+            // found there was not, and the men left over went to ambient movement.
+            private _engine = count ((_obj buildingPos -1) select {!(_x isEqualTo [0,0,0])});
+            _seats = _seats + (if (_engine > 0) then {_engine} else {([_obj] call _fnc_ringParams) select 1});
         };
     } forEach _list;
     _seats
 };
 
 private _buildings = nearestObjects [_position,ALIVE_garrisonPositions select 1,_radius];
+if (_excluding) then {
+    private _kept = _buildings select { !((toLower typeOf _x) in _blacklist) };
+    { _excludedSet pushBackUnique _x } forEach (_buildings - _kept);
+    _buildings = _kept;
+};
 _buildings = _buildings - _preferredBuildings;
 
 // Whether the curated props can seat this group at all.
@@ -253,14 +290,26 @@ private _houseRank = [];
 // on the path that merges them into the curated list.
 private _houseFound = [];
 
-if (count _buildings == 0 || _profileCount > 3 || _shortOfSeats) then {
+// Named, because the second round below only runs when this one did not: a garrison that
+// already fetched the houses gains nothing from fetching them again.
+private _lookedBeyond = count _buildings == 0 || _profileCount > 3 || _shortOfSeats;
+
+if (_lookedBeyond) then {
 	 // DEBUG -------------------------------------------------------------------------------------
 	 if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
 	  ["ALIVE_fnc_groupGarrison - %4: looking beyond the curated props: %1 curated seat(s) for %2 men, guard groups %3", _curatedSeats, count _units, _profileCount, _group] call ALiVE_fnc_dump;
 	 };
 	 // DEBUG -------------------------------------------------------------------------------------
     private _houses = [_position, floor(_radius/2)] call ALIVE_fnc_getEnterableHouses;
+    // Filtered after the subtraction so the houses this rank offers are the ones that
+    // survive it. A building the curated sweep already withheld can still turn up
+    // here, which is why the count above is a set rather than a running total.
     private _extra = _houses - _buildings - _preferredBuildings;
+    if (_excluding) then {
+        private _kept = _extra select { !((toLower typeOf _x) in _blacklist) };
+        { _excludedSet pushBackUnique _x } forEach (_extra - _kept);
+        _extra = _kept;
+    };
     _houseFound = _extra;
 
     if (count _buildings == 0 || _profileCount > 3) then {
@@ -292,6 +341,28 @@ _buildings = _preferredBuildings + _buildings + _houseRank;
 // never touches the attribute sees no change at all.
 private _twoPass = !((_preferredClasses isEqualTo []) || _preferredIndicesOnly);
 
+// Named for the log. Three states reach this point and two of them leave the same
+// variables behind, so the log has to say which one happened outright. The inherited
+// case prints the tier count rather than implying it: a working guard swept no listed
+// buildings, and a broken one would say so here instead of looking identical to a
+// garrison that simply had no list. The inheritance flag is tested before the empty
+// test, because a pooled list that resolved to nothing is still the inherited path.
+private _preferredState = call {
+    if (_preferredIndicesOnly && {_preferredClasses isEqualTo []}) exitWith {
+        "list inherited, but the mission pool held nothing"
+    };
+    if (_preferredIndicesOnly) exitWith {
+        format ["list inherited: %1 class(es), positions borrowed, %2 listed building(s) swept for it",
+                count _preferredClasses, _preferredTierCount]
+    };
+    if (_preferredClasses isEqualTo [] && {_excludedClasses > 0}) exitWith {
+        format ["a list was set but the blacklist excluded all %1 of its classes", _excludedClasses]
+    };
+    if (_preferredClasses isEqualTo []) exitWith { "no preferred list" };
+    format ["list set here: %1 class(es), %2 listed building(s) swept",
+            count _preferredClasses, _preferredTierCount]
+};
+
 // props without engine positions cannot host buildingPatrol.fsm circuits
 // (the FSM selectRandoms buildingPos) - patrol only position-bearing props
 private _patrolBuildings = _buildings select { !((_x buildingPos -1) isEqualTo []) };
@@ -306,9 +377,9 @@ if (_patrolBuildings isEqualTo [] && {count _buildings > 0} && {ALiVE_SYS_PROFIL
 // props came to look like one seating two men out of ten. Ring-scatter props carry no engine
 // positions but do take men, so they are counted the way the seating loop will count them.
 if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
-    ["ALIVE_fnc_groupGarrison - %8: %1 of %2 men still to seat, %3 candidate buildings offering %4 places; %5 curated seat(s) free to us, %6 house(s) added, radius %7",
+    ["ALIVE_fnc_groupGarrison - %8: %1 of %2 men still to seat, %3 candidate buildings offering %4 places; %5 curated seat(s) free to us, %6 house(s) added, %10 building(s) withheld by the blacklist, radius %7; %9",
      count _units, count (units _group), count _buildings, [_buildings] call _fnc_seatSupply,
-     _curatedSeats, count _houseFound, _radius, _group] call ALiVE_fnc_dump;
+     _curatedSeats, count _houseFound, _radius, _group, _preferredState, count _excludedSet] call ALiVE_fnc_dump;
 };
 // DEBUG -------------------------------------------------------------------------------------
 
@@ -343,7 +414,18 @@ private _overflowQueues = [];
 private _bankedOverflow = 0;
 private _authoredPatrolCandidates = [];
 
-{ // forEach _buildings
+// One round of claims over one list of candidates. This is a block rather than a bare
+// loop so it can run a second time, over houses fetched after the first round, without a
+// second copy of the seating rules. The forEach is the whole block, so the early exit
+// inside it still ends the walk exactly as it did.
+//
+// _twoPass arrives as a parameter because a second round has no listed tier of its own:
+// with it false the exit asks only whether men remain, and every building seats directly
+// rather than banking overflow the drain below has already dealt out.
+private _fnc_claimRound = {
+    params ["_candidates", "_twoPass"];
+
+{ // forEach _candidates
 	
     // Stop claiming once the men still unseated would all fit on overflow already banked;
     // further claims would only fence buildings off from other garrison groups. Buildings
@@ -429,7 +511,14 @@ private _authoredPatrolCandidates = [];
             // tell which garrison a line belongs to, and without the rank no way to tell a house
             // taken because the curated props were full from a house taken instead of them.
             private _rank = if (_building in _houseFound) then {"house"} else {"curated"};
-            ["ALIVE_fnc_groupgarrison - %7: class: %1 (%6), %2 positions, group of %3, %4 of %5 authored positions matched", typeOf _building, (count _preferred) + (count _overflow), count units _group, count _preferred, count _authored, _rank, _group] call ALiVE_fnc_dump;
+            // Where the seats came from, which is the half the rank cannot show. A
+            // building can be curated and still be seated on positions the mission named.
+            private _from = if (_authored isEqualTo []) then {"no named positions"} else {
+                if (_preferredTierCount > 0 && {_building in _preferredBuildings}) then {"listed tier"} else {
+                    if ((toLower typeOf _building) in _preferredClasses) then {"positions from the setting"} else {"built-in positions"}
+                }
+            };
+            ["ALIVE_fnc_groupgarrison - %7: class: %1 (%6, %8), %2 positions, group of %3, %4 of %5 authored positions matched", typeOf _building, (count _preferred) + (count _overflow), count units _group, count _preferred, count _authored, _rank, _group, _from] call ALiVE_fnc_dump;
         };
 
         if (_twoPass) then {
@@ -490,7 +579,11 @@ private _authoredPatrolCandidates = [];
                      // Patrol the position-bearing buildings only - ring-scatter
                      // props would feed the FSM empty position lists
                      if (!_patrolWaypointsCleared) then {
-                         [_profile,"clearWaypoints"] call ALIVE_fnc_profileEntity;
+                         // The roadblock callers garrison a group that has no profile, so
+                         // there is nothing to clear waypoints on. Asking anyway threw.
+                         if !(isNil "_profile") then {
+                             [_profile,"clearWaypoints"] call ALIVE_fnc_profileEntity;
+                         };
                          _patrolWaypointsCleared = true;
                      };
                      [_group, _unit, _patrolBuildings, ALiVE_SYS_PROFILE_DEBUG_ON, _patrolBehaviour, _patrolSpeed] execFSM "\x\alive\addons\mil_command\buildingPatrol.fsm";
@@ -504,10 +597,13 @@ private _authoredPatrolCandidates = [];
     } else {
         _claimDenied = _claimDenied + 1;
         if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
-            ["ALIVE_fnc_groupGarrison - %4: %1 already claimed by another group, %2 of %3 candidates tried", typeOf _building, _forEachIndex + 1, count _buildings, _group] call ALiVE_fnc_dump;
+            ["ALIVE_fnc_groupGarrison - %4: %1 already claimed by another group, %2 of %3 candidates tried", typeOf _building, _forEachIndex + 1, count _candidates, _group] call ALiVE_fnc_dump;
         };
     };
-} forEach _buildings;
+} forEach _candidates;
+};
+
+[_buildings, _twoPass] call _fnc_claimRound;
 
 // Second pass. Whoever is left is dealt one seat per building per cycle, in the same
 // listed-then-curated, nearest-first order the claims were made in. Dealing from the far
@@ -530,7 +626,9 @@ while {_twoPass && {count _units > 0} && {!(_overflowQueues isEqualTo [])}} do {
 
         if (_guardPatrolPercentage > 0 && {_unitPercentCount > 0} && {count _patrolBuildings > 0}) then {
             if (!_patrolWaypointsCleared) then {
-                [_profile,"clearWaypoints"] call ALIVE_fnc_profileEntity;
+                if !(isNil "_profile") then {
+                    [_profile,"clearWaypoints"] call ALIVE_fnc_profileEntity;
+                };
                 _patrolWaypointsCleared = true;
             };
             [_group, _seated, _patrolBuildings, ALiVE_SYS_PROFILE_DEBUG_ON, _patrolBehaviour, _patrolSpeed] execFSM "\x\alive\addons\mil_command\buildingPatrol.fsm";
@@ -540,6 +638,46 @@ while {_twoPass && {count _units > 0} && {!(_overflowQueues isEqualTo [])}} do {
     _overflowQueues = _overflowQueues select { !((_x select 1) isEqualTo []) };
 };
 
+// A second look, on the evidence of men still standing. The supply was counted before
+// the first claim was made, and several groups garrison one objective at once from their
+// own threads, so a group that read the objective as well provided for can find every
+// building taken by the time its turn comes. Having never thought itself short it never
+// looked for houses, and its leftovers went to ambient movement. They are fetched now
+// instead, and walked after everything already tried. A caller that was told not to look
+// past the curated props still does not, and a garrison that already looked gains nothing
+// from looking twice.
+//
+// This bounds the race to one retry rather than removing it: two groups arriving here
+// together can still both sweep the same houses. The refusal count is logged so a
+// residual collision reads as one in the RPT rather than as the fix having failed.
+if (count _units > 0 && {_fillShortfall} && {!_lookedBeyond}) then {
+    private _claimedBefore = _claimed;
+    private _deniedBefore = _claimDenied;
+    private _stillToSeat = count _units;
+
+    private _evidence = ([_position, floor(_radius/2)] call ALIVE_fnc_getEnterableHouses) - _buildings;
+    if (_excluding) then {
+        _evidence = _evidence select { !((toLower typeOf _x) in _blacklist) };
+    };
+    _evidence = [_evidence, [], { _x distance2D _position }, "ASCEND"] call BIS_fnc_sortBy;
+    _houseFound = _houseFound + _evidence;
+
+    // A new array rather than the old one grown, so patrol circuits already handed out
+    // keep the list they were given.
+    _patrolBuildings = _patrolBuildings + (_evidence select { !((_x buildingPos -1) isEqualTo []) });
+
+    // Round two has no listed tier of its own, so it seats directly rather than banking
+    // overflow the drain above has already finished with.
+    [_evidence, false] call _fnc_claimRound;
+
+    if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
+        ["ALIVE_fnc_groupGarrison - %7: second look: %1 men still to seat after %2 refusal(s) against an estimate of %3 seat(s), %4 house(s) fetched, %5 claimed, %6 still standing",
+         _stillToSeat, _deniedBefore, _curatedSeats, count _evidence,
+         _claimed - _claimedBefore, count _units, _group] call ALiVE_fnc_dump;
+    };
+};
+
+
 // Whatever quota the overflow seats did not use goes last to men in authored-only
 // buildings, the same men who are allowed to patrol today when their building offers
 // nothing else.
@@ -547,7 +685,9 @@ if (_twoPass && {_guardPatrolPercentage > 0} && {count _patrolBuildings > 0}) th
     {
         if (_unitPercentCount <= 0) exitWith {};
         if (!_patrolWaypointsCleared) then {
-            [_profile,"clearWaypoints"] call ALIVE_fnc_profileEntity;
+            if !(isNil "_profile") then {
+                [_profile,"clearWaypoints"] call ALIVE_fnc_profileEntity;
+            };
             _patrolWaypointsCleared = true;
         };
         [_group, _x, _patrolBuildings, ALiVE_SYS_PROFILE_DEBUG_ON, _patrolBehaviour, _patrolSpeed] execFSM "\x\alive\addons\mil_command\buildingPatrol.fsm";

@@ -1356,7 +1356,9 @@ switch(_operation) do {
                                 private _campEnvelope = _envelope max 30;
                                 private _campSeats = 0;
                                 {
-                                    private _bp = count (_x buildingPos -1);
+                                    // Only the positions the seating loop will offer. It drops any reading as the
+                                        // world origin, so counting them here sizes a garrison for seats it will refuse.
+                                        private _bp = count ((_x buildingPos -1) select {!(_x isEqualTo [0,0,0])});
                                     if (_bp > 0) then {
                                         _campSeats = _campSeats + _bp;
                                     } else {
@@ -1364,7 +1366,7 @@ switch(_operation) do {
                                         private _ringRadius = 0.5 * (((_bMax select 0) - (_bMin select 0)) max ((_bMax select 1) - (_bMin select 1))) + 1;
                                         _campSeats = _campSeats + (2 max (floor ((2 * pi * _ringRadius) / 4)) min 6);
                                     };
-                                } forEach (nearestObjects [_safePos, ALIVE_garrisonPositions select 1, _campEnvelope]);
+                                } forEach ([nearestObjects [_safePos, ALIVE_garrisonPositions select 1, _campEnvelope]] call ALIVE_fnc_garrisonAllowedBuildings);
                                 {
                                     _campSeats = _campSeats + ([_x] call ALIVE_fnc_vehicleCountEmptyPositions);
                                 } forEach (nearestObjects [_safePos, ["StaticWeapon"], _campEnvelope]);

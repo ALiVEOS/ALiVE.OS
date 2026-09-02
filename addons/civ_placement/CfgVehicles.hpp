@@ -297,6 +297,13 @@ class CfgVehicles {
                                 tooltip = "$STR_ALIVE_CP_PREFERRED_GARRISON_POSITIONS_COMMENT";
                                 defaultValue = """""";
                         };
+                        class garrisonBuildingBlacklist : ALiVE_EditMultilineSQF
+                        {
+                                property = "ALiVE_civ_placement_garrisonBuildingBlacklist";
+                                displayName = "$STR_ALIVE_CP_GARRISON_BUILDING_BLACKLIST";
+                                tooltip = "$STR_ALIVE_CP_GARRISON_BUILDING_BLACKLIST_COMMENT";
+                                defaultValue = """""";
+                        };
 
                         // ---- Roadblocks -----------------------------------------------------
                         class HDR_ROADBLOCKS : ALiVE_ModuleSubTitle { property = "ALiVE_civ_placement_HDR_ROADBLOCKS"; displayName = "$STR_ALIVE_CP_HDR_ROADBLOCKS"; };
