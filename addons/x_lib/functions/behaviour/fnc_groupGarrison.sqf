@@ -377,9 +377,18 @@ if (_patrolBuildings isEqualTo [] && {count _buildings > 0} && {ALiVE_SYS_PROFIL
 // props came to look like one seating two men out of ten. Ring-scatter props carry no engine
 // positions but do take men, so they are counted the way the seating loop will count them.
 if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
-    ["ALIVE_fnc_groupGarrison - %8: %1 of %2 men still to seat, %3 candidate buildings offering %4 places; %5 curated seat(s) free to us, %6 house(s) added, %10 building(s) withheld by the blacklist, radius %7; %9",
+    // Named, not just counted. A number on its own cannot answer the only question
+    // worth asking of it, which is whether the class the author meant to exclude is
+    // the one that actually got refused.
+    private _excludedNote = if (_excludedSet isEqualTo []) then { "0 buildings withheld by the blacklist" } else {
+        private _names = [];
+        { _names pushBackUnique (typeOf _x) } forEach _excludedSet;
+        format ["%1 building(s) withheld by the blacklist (%2)", count _excludedSet, _names joinString ", "]
+    };
+
+    ["ALIVE_fnc_groupGarrison - %8: %1 of %2 men still to seat, %3 candidate buildings offering %4 places; %5 curated seat(s) free to us, %6 house(s) added, %10, radius %7; %9",
      count _units, count (units _group), count _buildings, [_buildings] call _fnc_seatSupply,
-     _curatedSeats, count _houseFound, _radius, _group, _preferredState, count _excludedSet] call ALiVE_fnc_dump;
+     _curatedSeats, count _houseFound, _radius, _group, _preferredState, _excludedNote] call ALiVE_fnc_dump;
 };
 // DEBUG -------------------------------------------------------------------------------------
 
