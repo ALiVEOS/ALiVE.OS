@@ -150,7 +150,7 @@ switch (toLower _operation) do {
         private _kinds     = _logic getVariable ["pickerKinds", "buildings"];
         private _radius    = parseNumber (_logic getVariable ["pickerRadius", "75"]);
         private _indices   = (_logic getVariable ["pickerIndices", "true"]) == "true";
-        private _autoStart = (_logic getVariable ["pickerAutoStart", "true"]) == "true";
+        private _autoStart = (_logic getVariable ["pickerAutoStart", "false"]) == "true";
 
         if (_radius <= 0) then { _radius = 75 };
 
@@ -195,10 +195,19 @@ switch (toLower _operation) do {
         // one instead of starting from nothing. The variable is the attribute's
         // own name, which is where the module framework puts the value.
         uiNamespace setVariable ["ALiVE_classPicker_preloaded", false];
+        uiNamespace setVariable ["ALiVE_classPicker_blacklistPreloaded", false];
+        ALIVE_classPicker_blacklistPreloaded = false;
         {
             private _existing = _x getVariable ["preferredGarrisonPositions", ""];
             if (_existing isEqualType "" && {_existing != ""}) then {
                 ["load", _existing] call ALIVE_fnc_classPicker;
+            };
+
+            // The exclusions too, for the same reason: so a second visit carries on
+            // from the last one rather than adding a second copy of it.
+            private _excluded = _x getVariable ["garrisonBuildingBlacklist", ""];
+            if (_excluded isEqualType "" && {_excluded != ""}) then {
+                ["loadBlacklist", _excluded] call ALIVE_fnc_classPicker;
             };
         } forEach (synchronizedObjects _logic);
 

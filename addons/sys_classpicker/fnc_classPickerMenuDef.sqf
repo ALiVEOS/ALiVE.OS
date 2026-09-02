@@ -58,6 +58,9 @@ if (typeName _params == typeName []) then {
 private _opts = missionNamespace getVariable ["ALIVE_classPicker_moduleOpts", ["buildings", 75, true]];
 private _running = !isNil "ALIVE_classPicker_EH_Draw3D";
 private _held = count (missionNamespace getVariable ["ALIVE_classPicker_classes", []]);
+// Counted separately, because the two lists mean opposite things and a menu that
+// added them together would say nothing useful about either.
+private _excluded = count (missionNamespace getVariable ["ALIVE_classPicker_blacklist", []]);
 
 // What the module is synced to decides which settings are worth offering. A
 // picker wired only to military placement has no business offering to fill in a
@@ -73,12 +76,14 @@ private _hoverHeld = false;
 private _hoverIndex = -1;
 private _hoverIndexHeld = false;
 private _hoverAllHeld = false;
+private _hoverExcluded = false;
 if (_running) then {
-    (["hoverInfo"] call ALIVE_fnc_classPicker) params ["_hClass", "_hHeld", "_hIndex", "_hIndexHeld", "_hAllHeld"];
+    (["hoverInfo"] call ALIVE_fnc_classPicker) params ["_hClass", "_hHeld", "_hIndex", "_hIndexHeld", "_hAllHeld", ["_hExcluded", false]];
     _hoverHeld = _hHeld;
     _hoverIndex = _hIndex;
     _hoverIndexHeld = _hIndexHeld;
     _hoverAllHeld = _hAllHeld;
+    _hoverExcluded = _hExcluded;
 };
 private _showMil = (_syncedMil > 0) || {_syncedMil + _syncedCiv == 0};
 private _showCiv = (_syncedCiv > 0) || {_syncedMil + _syncedCiv == 0};
@@ -129,6 +134,11 @@ if (_menuName == "classpicker") then {
                 "", localize "STR_ALIVE_CLASSPICKER_MENU_TAKEALLPOS_COMMENT",
                 "", -1, 1, _running
             ],
+            [if (_hoverExcluded) then { localize "STR_ALIVE_CLASSPICKER_MENU_UNEXCLUDE" } else { localize "STR_ALIVE_CLASSPICKER_MENU_EXCLUDE" },
+                {["toggleBlacklist"] call ALIVE_fnc_classPicker},
+                "", localize "STR_ALIVE_CLASSPICKER_MENU_EXCLUDE_COMMENT",
+                "", -1, 1, _running
+            ],
             [format [localize "STR_ALIVE_CLASSPICKER_MENU_COPYFOR", _held],
                 {},
                 "", localize "STR_ALIVE_CLASSPICKER_MENU_COPYFOR_COMMENT",
@@ -160,6 +170,11 @@ if (_menuName == "classpickercopy") then {
                 {["copyFor", "civGarrison"] call ALIVE_fnc_classPicker},
                 "", localize "STR_ALIVE_CLASSPICKER_DEST_CIVGARRISON_COMMENT",
                 "", -1, 1, _showCiv
+            ],
+            [if (_excluded > 0) then { format [localize "STR_ALIVE_CLASSPICKER_DEST_GARRISONBLACKLIST_N", _excluded] } else { localize "STR_ALIVE_CLASSPICKER_DEST_GARRISONBLACKLIST" },
+                {["copyFor", "garrisonBlacklist"] call ALIVE_fnc_classPicker},
+                "", localize "STR_ALIVE_CLASSPICKER_DEST_GARRISONBLACKLIST_COMMENT",
+                "", -1, 1, true
             ],
             [localize "STR_ALIVE_CLASSPICKER_DEST_VEHICLEBLACKLIST",
                 {["copyFor", "vehicleBlacklist"] call ALIVE_fnc_classPicker},

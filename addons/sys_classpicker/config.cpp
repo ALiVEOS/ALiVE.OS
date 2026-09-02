@@ -27,13 +27,22 @@ class display3DEN {
                 text = "ALiVE";
                 value = 0;
                 conditionShow = "selectedLogicModule";
-                items[] = {"ALIVE_ApplyGarrisonList"};
+                items[] = {"ALIVE_ApplyGarrisonList", "ALIVE_ApplyBlacklist"};
             };
 
             class ALIVE_ApplyGarrisonList {
                 text = "Apply Picked Garrison List";
                 conditionShow = "selectedLogicModule";
                 action = "[get3DENSelected 'logic'] call ALIVE_fnc_edenApplyGarrisonList;";
+            };
+
+            // The same fallback the positions list has. Without it an author who
+            // excluded some buildings and found the field empty has no way to ask
+            // for them again short of previewing a second time.
+            class ALIVE_ApplyBlacklist {
+                text = "Apply Picked Blacklist";
+                conditionShow = "selectedLogicModule";
+                action = "[get3DENSelected 'logic', false, 'blacklist'] call ALIVE_fnc_edenApplyGarrisonList;";
             };
         };
     };

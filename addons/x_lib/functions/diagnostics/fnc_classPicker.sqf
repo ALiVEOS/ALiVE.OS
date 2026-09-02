@@ -34,7 +34,7 @@ spawned from, for the group blacklists, since no world object is a group and
 there is otherwise nothing to aim at.
 
 Parameters:
-    _operation : STRING - "start", "stop", "toggleTarget", "toggleIndex",
+    _operation : STRING - "start", "stop", "toggleTarget", "toggleIndex", "toggleBlacklist",
                           "takeAllIndices", "render", "copy", "clear"
     _args      : ANY    - per operation, see below
 
@@ -77,6 +77,12 @@ private _result = nil;
 // before anything has been started answers with an empty list instead of an
 // undefined variable. A preview restart clears these along with everything else.
 if (isNil "ALIVE_classPicker_classes") then { ALIVE_classPicker_classes = [] };
+// Kept apart from the collection above rather than sharing it. The two say opposite
+// things: one names buildings to fill first, the other buildings never to use. The
+// picker seeds the first from a module's existing setting, so sharing one array would
+// export the buildings a mission asked to be garrisoned as the ones to keep men out
+// of, and the blacklist wins, so the setting would quietly cancel itself.
+if (isNil "ALIVE_classPicker_blacklist") then { ALIVE_classPicker_blacklist = [] };
 if (isNil "ALIVE_classPicker_groups")  then { ALIVE_classPicker_groups  = [] };
 if (isNil "ALIVE_classPicker_indices") then { ALIVE_classPicker_indices = [] call ALiVE_fnc_hashCreate };
 if (isNil "ALIVE_classPicker_lastHover") then { ALIVE_classPicker_lastHover = objNull };
@@ -170,7 +176,13 @@ switch (toLower _operation) do {
                     // labelling it only offers something that would do nothing if
                     // it were picked. Vehicles and men have no positions and are
                     // not judged on this.
-                    if (_inArea && {!(_obj isKindOf "House") || {((_obj buildingPos -1) findIf {!(_x isEqualTo [0,0,0])}) >= 0}}) then {
+                    // A House with nowhere to stand inside it is still labelled once
+                    // something has been excluded, because that is the state in which
+                    // the author is hunting for exactly those props: men gather in a
+                    // ring around them and Delete is the only thing that stops it.
+                    // Until then they stay hidden, so picking positions is not
+                    // cluttered with buildings that can hold none.
+                    if (_inArea && {!(_obj isKindOf "House") || {((_obj buildingPos -1) findIf {!(_x isEqualTo [0,0,0])}) >= 0} || {!(ALIVE_classPicker_blacklist isEqualTo [])}}) then {
                         // The declared spelling, not the spelling this object happens
                         // to have been created with, so the label matches what gets
                         // collected and the green highlight below can find it.
@@ -202,6 +214,9 @@ switch (toLower _operation) do {
                 if !((worldToScreen _pos) isEqualTo []) then {
                     private _color = [1, 1, 1, 1];
                     if (_class in ALIVE_classPicker_classes) then { _color = [0.3, 1, 0.3, 1] };
+                    // Red beats green: a class in both lists is excluded, because the
+                    // blacklist wins wherever the two disagree.
+                    if (_class in ALIVE_classPicker_blacklist) then { _color = [1, 0.35, 0.3, 1] };
                     if (_obj isEqualTo _hover) then { _color = [1, 0.8, 0, 1] };
 
                     drawIcon3D ["", _color, _pos, 0, 0, 0, _class, 2, ALIVE_classPicker_labelSize, ALIVE_classPicker_font];
@@ -234,6 +249,7 @@ switch (toLower _operation) do {
             switch (_this select 1) do {
                 case 199: { ["toggleTarget"] call ALIVE_fnc_classPicker; true };  // Home
                 case 207: { ["toggleIndex"]  call ALIVE_fnc_classPicker; true };  // End
+                case 211: { ["toggleBlacklist"] call ALIVE_fnc_classPicker; true };  // Delete
                 default  { false };
             };
         }] call CBA_fnc_addDisplayHandler;
@@ -343,6 +359,40 @@ switch (toLower _operation) do {
         ["review"] call ALIVE_fnc_classPicker;
     };
 
+    // Collect a building to keep men OUT of. Deliberately not the same operation as
+    // toggleTarget: that one refuses a building with nowhere to stand inside it,
+    // because naming such a class in the positions setting achieves nothing. Here it
+    // is the whole point. Men are scattered in a ring around props that carry no
+    // positions at all, and a latrine or a fuel bladder is exactly the thing an
+    // author wants to stop them gathering at.
+    case "toggleblacklist": {
+
+        // The same resolution the positions key uses, so both keys act on the thing
+        // the labels say they will. Only the refusal of a building with nowhere to
+        // stand inside it is dropped, and that is the whole point of this key.
+        private _target = ["hover"] call ALIVE_fnc_classPicker;
+        if (isNull _target) then { _target = ALIVE_classPicker_lastHover };
+        if (isNull _target) exitWith {};
+
+        private _cfg = configFile >> "CfgVehicles" >> typeOf _target;
+        if !(isClass _cfg) exitWith {
+            ["ALIVE_fnc_classPicker - %1 is not a CfgVehicles class, nothing to exclude", typeOf _target] call ALiVE_fnc_dump;
+        };
+        private _class = configName _cfg;
+
+        if (_class in ALIVE_classPicker_blacklist) then {
+            ALIVE_classPicker_blacklist deleteAt (ALIVE_classPicker_blacklist find _class);
+            hintSilent format ["ALiVE class picker\n\n%1\nis no longer excluded.\n\n%2 excluded.", _class, count ALIVE_classPicker_blacklist];
+        } else {
+            ALIVE_classPicker_blacklist pushBack _class;
+            hintSilent format ["ALiVE class picker\n\n%1\nwill be kept empty of garrisons.\n\n%2 excluded.", _class, count ALIVE_classPicker_blacklist];
+        };
+
+        ["ALIVE_fnc_classPicker - blacklist now holds %1 class(es): %2", count ALIVE_classPicker_blacklist, ALIVE_classPicker_blacklist] call ALiVE_fnc_dump;
+
+        ["review"] call ALIVE_fnc_classPicker;
+    };
+
     // Which numbered position is being looked at. Whichever number is nearest the
     // middle of the screen is the one being read, so that is the one meant.
     // Aiming at the label is the selection.
@@ -384,6 +434,7 @@ switch (toLower _operation) do {
         private _index = -1;
         private _indexHeld = false;
         private _allHeld = false;
+        private _excluded = false;
 
         private _target = ["hover"] call ALIVE_fnc_classPicker;
         if (isNull _target) then { _target = ALIVE_classPicker_lastHover };
@@ -393,6 +444,7 @@ switch (toLower _operation) do {
             if (isClass _cfg) then {
                 _class = configName _cfg;
                 _collected = _class in ALIVE_classPicker_classes;
+                _excluded = _class in ALIVE_classPicker_blacklist;
 
                 if (_target isKindOf "House") then {
                     private _picked = [ALIVE_classPicker_indices, _class, []] call ALiVE_fnc_hashGet;
@@ -408,7 +460,7 @@ switch (toLower _operation) do {
             };
         };
 
-        _result = [_class, _collected, _index, _indexHeld, _allHeld];
+        _result = [_class, _collected, _index, _indexHeld, _allHeld, _excluded];
     };
 
     case "toggleindex": {
@@ -574,19 +626,29 @@ switch (toLower _operation) do {
             ["render", "classIndexPairs"] call ALIVE_fnc_classPicker,
             ["render", "flat"] call ALIVE_fnc_classPicker,
             ["render", "sqfArray"] call ALIVE_fnc_classPicker,
-            ["render", "groups"] call ALIVE_fnc_classPicker
+            ["render", "groups"] call ALIVE_fnc_classPicker,
+            // The exclusions travel with the rest. Without this they exist only in
+            // the mission that is about to end, so anything excluded and not copied
+            // for a setting is gone by the time the editor could write it anywhere.
+            ["render", "blacklist"] call ALIVE_fnc_classPicker
         ]];
 
         private _body = if (_lines isEqualTo []) then { "nothing taken yet" } else { _lines joinString "\n" };
         private _groups = if (ALIVE_classPicker_groups isEqualTo []) then { "" } else {
             format ["\n\ngroups\n%1", ALIVE_classPicker_groups joinString "\n"]
         };
+        // Shown separately because it means the opposite of the list above it, and
+        // because this panel is redrawn over the top of the hint each toggle puts up,
+        // so without it pressing Delete leaves nothing on screen to say it worked.
+        private _excluded = if (ALIVE_classPicker_blacklist isEqualTo []) then { "" } else {
+            format ["\n\nkeep garrisons out of\n%1", ALIVE_classPicker_blacklist joinString "\n"]
+        };
 
         // Only while the picker is actually running. The readout describes what is
         // being picked right now, and the keys it names do nothing once stopped,
         // so showing it then would be describing a state that is not true.
         if !(isNil "ALIVE_classPicker_EH_Draw3D") then {
-            hintSilent format ["ALiVE class picker\n\n%1%2\n\nHome  take what you are looking at\nEnd   take the position you are looking at", _body, _groups];
+            hintSilent format ["ALiVE class picker\n\n%1%2%3\n\nHome    take what you are looking at\nEnd     take the position you are looking at\nDelete  keep garrisons out of what you are looking at", _body, _groups, _excluded];
         };
     };
 
@@ -610,6 +672,7 @@ switch (toLower _operation) do {
                 _parts joinString ";"
             };
 
+            case "blacklist": { ALIVE_classPicker_blacklist joinString ";" };
             case "groups":   { str ALIVE_classPicker_groups };
             case "sqfarray": { str ALIVE_classPicker_classes };
             default          { ALIVE_classPicker_classes joinString "," };
@@ -621,6 +684,43 @@ switch (toLower _operation) do {
     // Buildings already listed come up green on the first frame, and a position
     // already chosen shows as chosen, so the list can be adjusted rather than
     // rebuilt from nothing every time.
+    // The exclusions a module already holds, brought in the same way the positions
+    // are. Without this the picker cannot tell an exclusion it made this session from
+    // one the field already carried, so writing back appends the whole list again and
+    // the field doubles on every visit.
+    case "loadblacklist": {
+
+        private _string = if (_args isEqualType "") then { _args } else { "" };
+        if (_string == "") exitWith {};
+
+        private _loaded = 0;
+        {
+            private _entry = _x;
+            { _entry = (_entry splitString _x) joinString ""; } forEach ["[", "]", """", "'", " "];
+            if (_entry != "") then {
+                // The field holds whatever spelling somebody typed; the collection holds
+                // the config's own, so that a class taken by looking at it and one read
+                // out of the field are the same entry rather than two.
+                private _cfg = configFile >> "CfgVehicles" >> _entry;
+                if (isClass _cfg) then {
+                    private _class = configName _cfg;
+                    if !(_class in ALIVE_classPicker_blacklist) then {
+                        ALIVE_classPicker_blacklist pushBack _class;
+                        _loaded = _loaded + 1;
+                    };
+                };
+            };
+        } forEach (((_string splitString toString [13,10]) joinString ";") splitString ";,");
+
+        if (_loaded > 0) then {
+            ALIVE_classPicker_blacklistPreloaded = true;
+            uiNamespace setVariable ["ALiVE_classPicker_blacklistPreloaded", true];
+            ["ALIVE_fnc_classPicker - loaded %1 excluded class(es) from a setting already filled in", _loaded] call ALiVE_fnc_dump;
+        };
+
+        ["review"] call ALIVE_fnc_classPicker;
+    };
+
     case "load": {
 
         private _string = if (_args isEqualType "") then { _args } else { "" };
@@ -679,6 +779,7 @@ switch (toLower _operation) do {
         private _mode = switch (_dest) do {
             case "milgarrison":      { "classIndexPairs" };
             case "civgarrison":      { "classIndexPairs" };
+            case "garrisonblacklist": { "blacklist" };
             case "vehicleblacklist": { "sqfArray" };
             case "unitblacklist":    { "sqfArray" };
             case "groupblacklist":   { "groups" };
@@ -709,7 +810,11 @@ switch (toLower _operation) do {
         copyToClipboard _string;
 
         private _mode = if (_args isEqualType "") then { toLower _args } else { "flat" };
-        private _count = if (_mode == "groups") then { count ALIVE_classPicker_groups } else { count ALIVE_classPicker_classes };
+        private _count = switch (_mode) do {
+            case "groups":    { count ALIVE_classPicker_groups };
+            case "blacklist": { count ALIVE_classPicker_blacklist };
+            default           { count ALIVE_classPicker_classes };
+        };
 
         private _note = "";
         if (_mode == "classindexpairs") then {
@@ -731,6 +836,9 @@ switch (toLower _operation) do {
 
     case "clear": {
         ALIVE_classPicker_classes = [];
+        ALIVE_classPicker_blacklist = [];
+        ALIVE_classPicker_blacklistPreloaded = false;
+        uiNamespace setVariable ["ALiVE_classPicker_blacklistPreloaded", false];
         ALIVE_classPicker_groups = [];
         ALIVE_classPicker_indices = [] call ALiVE_fnc_hashCreate;
 

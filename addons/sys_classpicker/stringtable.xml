@@ -37,7 +37,7 @@ Collect classnames for settings that ask for them, by looking at things instead 
     <English>Start on preview:</English>
 </Key>
 <Key ID="STR_ALIVE_CLASSPICKER_AUTOSTART_COMMENT">
-    <English>Start labelling as soon as the preview begins. Set to No to start it yourself from the ALiVE menu instead.</English>
+    <English>Whether labelling begins the moment the preview starts. No by default, so nothing is drawn until you ask for it from the ALiVE menu, which keeps the labels out of the way when you are previewing for some other reason. Set to Yes to have it start on its own.</English>
 </Key>
 <Key ID="STR_ALIVE_CLASSPICKER_ONRETURN">
     <English>On returning to the editor:</English>
@@ -128,6 +128,24 @@ Collect classnames for settings that ask for them, by looking at things instead 
 </Key>
 <Key ID="STR_ALIVE_CLASSPICKER_DEST_CIVGARRISON_COMMENT">
     <English>Preferred Garrison Buildings on a civilian placement module. Back in the editor, select the module and apply it from the right click menu.</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_MENU_EXCLUDE">
+    <English>Keep garrisons out of this building</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_MENU_UNEXCLUDE">
+    <English>Let garrisons use this building again</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_MENU_EXCLUDE_COMMENT">
+    <English>Adds the building you are looking at to the garrison blacklist, or takes it off again if it is already on. Same as pressing Delete. The blacklist is kept apart from the buildings you take with Home, so excluding something never disturbs the positions you picked.</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_DEST_GARRISONBLACKLIST_N">
+    <English>Garrison building blacklist (%1)</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_DEST_GARRISONBLACKLIST">
+    <English>Garrison building blacklist</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_DEST_GARRISONBLACKLIST_COMMENT">
+    <English>Buildings no garrison should ever put men in. Look at a building and press Delete to collect it, then choose this to copy the list. Delete keeps its own list, separate from the buildings collected with Home, so excluding something never disturbs the positions you picked. Applying it in the editor puts the classes into every placement module's Garrison Building Blacklist. Positions are not needed here, so any you collected are ignored.</English>
 </Key>
 <Key ID="STR_ALIVE_CLASSPICKER_DEST_VEHICLEBLACKLIST">
     <English>Vehicle blacklist</English>

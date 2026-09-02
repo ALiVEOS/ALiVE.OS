@@ -73,11 +73,11 @@ class CfgVehicles {
                 tooltip      = "$STR_ALIVE_CLASSPICKER_AUTOSTART_COMMENT";
                 typeName     = "STRING";
                 expression   = "_this setVariable ['pickerAutoStart', _value];";
-                defaultValue = """true""";
+                defaultValue = """false""";
                 class Values
                 {
-                    class Yes { name = "Yes"; value = "true"; default = 1; };
-                    class No  { name = "No";  value = "false"; };
+                    class Yes { name = "Yes"; value = "true"; };
+                    class No  { name = "No";  value = "false"; default = 1; };
                 };
             };
 

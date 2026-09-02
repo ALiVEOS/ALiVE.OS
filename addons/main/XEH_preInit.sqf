@@ -156,9 +156,31 @@ if (is3DEN) then {
             private _stash = uiNamespace getVariable ["ALIVE_classPicker_stash", []];
             private _list = "";
             if (_dest isEqualType [] && {count _dest > 1}) then { _list = _dest select 1 };
-            if (_list == "" && {_stash isEqualType []} && {count _stash > 0}) then { _list = _stash select 0 };
+            // The stash holds the positions render. Falling back to it when a blacklist
+            // was asked for and nothing was collected would write a Class=1,2 list into
+            // the blacklist field, so that fallback is for the positions path only.
+            private _destKeyEarly = "";
+            if (_dest isEqualType [] && {count _dest > 0}) then { _destKeyEarly = toLower (_dest select 0) };
+            if (_list == "" && {_destKeyEarly != "garrisonblacklist"} && {_stash isEqualType []} && {count _stash > 0}) then { _list = _stash select 0 };
 
-            if (_list == "" || {!("=" in _list)}) exitWith {
+            // Buildings excluded during the preview, which the picker stashes whether or
+            // not anybody copied them for a setting. Pressing Delete a few times and then
+            // Escape is the ordinary way this feature gets used, and without this the
+            // return finds an empty positions list and decides nothing was picked at all.
+            private _blacklistStash = "";
+            if (_stash isEqualType [] && {count _stash > 4}) then {
+                private _b = _stash select 4;
+                if (!isNil "_b" && {_b isEqualType ""}) then { _blacklistStash = _b };
+            };
+
+            // A blacklist is bare class names, so the "=" a positions list always carries
+            // is not a test it can pass.
+            private _haveSomething =
+                (_blacklistStash != "")
+                || {_destKeyEarly == "garrisonblacklist" && {_list != ""}}
+                || {_list != "" && {"=" in _list}};
+
+            if !(_haveSomething) exitWith {
                 ["ALiVE class picker - preview ended with nothing collected to apply"] call ALiVE_fnc_dump;
             };
 
@@ -172,11 +194,35 @@ if (is3DEN) then {
                 };
                 uiNamespace setVariable ["ALiVE_classPicker_lastAutoApply", diag_tickTime];
 
-                ["ALiVE class picker - preview ended, applying to the synced modules: %1", _list] call ALiVE_fnc_dump;
-                [[], true] call ALIVE_fnc_edenApplyGarrisonList;
+                // Positions and exclusions are separate settings and a session can have
+                // produced both, so each is applied to its own field. Which ones were
+                // picked is read from what was collected rather than from what was last
+                // copied: asking what was copied meant that copying the exclusions threw
+                // away a positions list picked in the same session.
+                private _positionsStash = "";
+                if (_stash isEqualType [] && {count _stash > 0}) then {
+                    private _p = _stash select 0;
+                    if (!isNil "_p" && {_p isEqualType ""}) then { _positionsStash = _p };
+                };
+                private _wantPositions = _positionsStash != "" && {"=" in _positionsStash};
+
+                if (_wantPositions) then {
+                    ["ALiVE class picker - preview ended, applying positions to the synced modules: %1", _positionsStash] call ALiVE_fnc_dump;
+                    [[], true, "positions"] call ALIVE_fnc_edenApplyGarrisonList;
+                };
+
+                if (_blacklistStash != "") then {
+                    ["ALiVE class picker - preview ended, applying exclusions to the synced modules: %1", _blacklistStash] call ALiVE_fnc_dump;
+                    [[], true, "blacklist"] call ALIVE_fnc_edenApplyGarrisonList;
+                };
+
+                if (!_wantPositions && {_blacklistStash == ""}) then {
+                    ["ALiVE class picker - preview ended, applying to the synced modules: %1", _list] call ALiVE_fnc_dump;
+                    [[], true] call ALIVE_fnc_edenApplyGarrisonList;
+                };
             } else {
                 ["ALiVE class picker - preview ended, reminding rather than applying: %1", _list] call ALiVE_fnc_dump;
-                [format ["ALiVE class picker: %1 -- select a placement module, right click it and choose Apply Picked Garrison List under Log.", _list], 1, 60] call BIS_fnc_3DENNotification;
+                [format ["ALiVE class picker: %1 -- select a placement module, right click it and choose Apply Picked Garrison List, or Apply Picked Blacklist, under ALiVE.", _list], 1, 60] call BIS_fnc_3DENNotification;
             };
         };
     }];
