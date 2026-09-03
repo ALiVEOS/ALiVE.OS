@@ -156,6 +156,12 @@ PROFILE_SCOPE(OPERATION, _operation)
 
 switch(_operation) do {
 
+    case "create": {
+
+        _result = [] call ALiVE_fnc_hashCreate;
+
+    };
+
     case "init": {
         if (isServer) then {
             [_logic,"init"] call SUPERCLASS;
@@ -192,7 +198,8 @@ switch(_operation) do {
                 ["isSPE", false],                                                    // select 2 select 35
                 ["aiBehaviour", "SAFE"],                                             // select 2 select 36
                 ["onEachSpawn", ""],                                                 // select 2 select 37
-                ["onEachSpawnOnce", true]                                            // select 2 select 38
+                ["onEachSpawnOnce", true],                                           // select 2 select 38
+                ["combatScanPending", true]                                         // select 2 select 39
             ]] call ALiVE_fnc_hashSetMany;
         };
     };
@@ -1470,6 +1477,7 @@ switch(_operation) do {
 
             if !(_despawnPrevented) then {
                 [_logic,"active", false] call ALIVE_fnc_hashSet;
+                [_logic,"combatScanPending", true] call ALIVE_fnc_hashSet;
 
                 // update profile waypoints before despawn
                 [_logic,"clearWaypoints"] call MAINCLASS;

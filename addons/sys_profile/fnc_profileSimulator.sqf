@@ -72,6 +72,7 @@ if (_profilesToSim isEqualTo []) then {
 };
 
 if (!_simAttacks) then {
+    PROFILE_SCOPE(PROFILEMOVEMENT, "ALiVE profileSimulator: profile movement")
 
     ([MOD(profileSystem), [
         "speedModifier",
@@ -96,14 +97,17 @@ if (!_simAttacks) then {
 
         if (_profilesToSim isEqualTo []) exitwith {};
 
+        PROFILE_SCOPE(PROFILERETRIEVE, "Retrieve Profile")
         private "_profile";
 
         while {isnil "_profile" && !(_profilesToSim isEqualTo [])} do {
             _profile = _profilesById get (_profilesToSim select 0);
             _profilesToSim deleteat 0;
         };
+        PROFILE_SCOPE_END(PROFILERETRIEVE)
 
         if (!isnil "_profile") then {
+            PROFILE_SCOPE(PROFILESIM, "ALiVE profileSimulator: profile simulation")
 
             if (!_profileSystemPaused) then {
                 // begin sim
@@ -125,6 +129,8 @@ if (!_simAttacks) then {
 
                     private _profilePosition = _profile select 2 select 2;
                     private _isPlayer = _profile select 2 select 30;
+                    private _combatScanPending = _profile select 2 select 39;
+                    private _profileMoved = false;
 
                     // determine if entity occupies a vehicle
                     private _vehiclesInCommandOf = _profile select 2 select 8;
@@ -133,6 +139,7 @@ if (!_simAttacks) then {
                     private _vehicleCommander = false;
                     private _isAir = false;
 
+                    PROFILE_SCOPE(VEHICLECOMMANDCHECK, "Determine profile vehicle commander status")
                     if !(_vehiclesInCommandOf isEqualTo []) then {
                         _vehicleCommander = true;
 
@@ -146,66 +153,77 @@ if (!_simAttacks) then {
                             };
                         } foreach _vehiclesInCommandOf;
                     };
+                    PROFILE_SCOPE_END(VEHICLECOMMANDCHECK)
 
-                    // determine if entity is cargo of vehicle
+                    private _vehicleCargo = _vehiclesInCargoOf isNotEqualTo [];
 
-                    private _vehicleCargo = false;
-                    if !(_vehiclesInCargoOf isEqualTo []) then {
-                        _vehicleCargo = true;
-                    };
+                    // Scan for virtual combat only after an inactive profile has moved.
+                    // Position setters update the spatial grid, so this sees the new location.
+                    PROFILE_SCOPE(SCANFORCOMBATDEFINITION, "Defining _scanForCombat")
+                    private _scanForCombat = {
+                        PROFILE_SCOPE(COMBATSCAN, "ALiVE profileSimulator: combat scan")
+                        if (!_vehicleCargo && !_isPlayer && !_isAir && !_combat) then {
+                            // get enemy sides
+                            private _side = _profile select 2 select 3;
+                            private _sidesEnemy = _enemySidesBySide getOrDefaultCall [_side, {
+                                private _sideObj = [_side] call ALiVE_fnc_sideTextToObject;
+                                private _computedEnemySides = [];
 
-                    // check for combat opportunities
-                    if (!_vehicleCargo && !_isPlayer && !_isAir && !_combat) then {
-                        // get enemy sides
-                        private _side = _profile select 2 select 3;
-                        private _sidesEnemy = _enemySidesBySide getOrDefaultCall [_side, {
-                            private _sideObj = [_side] call ALiVE_fnc_sideTextToObject;
-                            private _computedEnemySides = [];
+                                if (_sideObj getfriend east < 0.6) then {_computedEnemySides pushback "EAST"};
+                                if (_sideObj getfriend west < 0.6) then {_computedEnemySides pushback "WEST"};
+                                if (_sideObj getfriend resistance < 0.6) then {_computedEnemySides pushback "GUER"};
 
-                            if (_sideObj getfriend east < 0.6) then {_computedEnemySides pushback "EAST"};
-                            if (_sideObj getfriend west < 0.6) then {_computedEnemySides pushback "WEST"};
-                            if (_sideObj getfriend resistance < 0.6) then {_computedEnemySides pushback "GUER"};
+                                _computedEnemySides
+                            }, true];
 
-                            _computedEnemySides
-                        }, true];
+                            private _nearEnemies = [];
+                            if !(_sidesEnemy isEqualTo []) then {
+                                private _combatPosition = _profile select 2 select 2;
+                                _nearEnemies = _spacialGridProfiles call ["findCombatTargets", [_combatPosition,_combatRange,_sidesEnemy]];
+                            };
 
-                        // find and attack enemy profiles in-range
-                        // only attack non-player, inactive entities
+                            if !(_nearEnemies isEqualTo []) then {
+                                private _profileID = _profile select 2 select 4;
 
-                        private _nearEnemies = [];
-                        if !(_sidesEnemy isEqualTo []) then {
-                            _nearEnemies = _spacialGridProfiles call ["findCombatTargets", [_profilePosition,_combatRange,_sidesEnemy]];
-                        };
+                                private _profileAttack = [nil,"create", [(_profile select 2 select 2),_profileID,_nearEnemies,_side]] call ALiVE_fnc_profileAttack;
+                                private _attackID = [MOD(profileCombatHandler),"addAttack", _profileAttack] call ALiVE_fnc_profileCombatHandler;
 
-                        if !(_nearEnemies isEqualTo []) then {
+                                if (!isnil "_attackID") then {
+                                    //["%1 begins attacking %2", _profileID, _nearEnemies] call ALiVE_fnc_Dump;
+                                    _combat = true;
+                                    [_profile, [
+                                        ["combat", true],
+                                        ["attackID", _attackID]
+                                    ]] call ALiVE_fnc_hashSetMany;
 
-                            private _profileID = _profile select 2 select 4;
-
-                            private _profileAttack = [nil,"create", [_profilePosition,_profileID,_nearEnemies,_side]] call ALiVE_fnc_profileAttack;
-                            private _attackID = [MOD(profileCombatHandler),"addAttack", _profileAttack] call ALiVE_fnc_profileCombatHandler;
-
-                            if (!isnil "_attackID") then {
-                                //["%1 begins attacking %2", _profileID, _nearEnemies] call ALiVE_fnc_Dump;
-                                _combat = true;
-                                [_profile, [
-                                    ["combat", true],
-                                    ["attackID", _attackID]
-                                ]] call ALiVE_fnc_hashSetMany;
+                                    // Queue a scan for each found profile instead of creating an
+                                    // immediate reciprocal attack. It will decide whether to attack
+                                    // when its own scheduled profile simulation runs.
+                                    {
+                                        private _foundProfile = _profilesById get _x;
+                                        if (!isnil "_foundProfile") then {
+                                            [_foundProfile,"combatScanPending",true] call ALiVE_fnc_hashSet;
+                                        };
+                                    } forEach _nearEnemies;
+                                };
                             };
                         };
+                        PROFILE_SCOPE_END(COMBATSCAN)
                     };
-
+                    PROFILE_SCOPE_END(SCANFORCOMBATDEFINITION)
 
                     private _waypoints = _profile select 2 select 16;
-
+                    
                     if (!_isPlayer && !_vehicleCargo && !_combat) then {
                         if (!(_waypoints isEqualTo [])) then {
                             // profile has waypoints
 
                             private _active = _profile select 2 select 1;
                             if (!_active) then {
+                                PROFILE_SCOPE(INACTIVEWAYPOINT, "ALiVE profileSimulator: inactive waypoint")
 
                                 // profile is not spawned, simulate movement
+                                PROFILE_SCOPE(INACTIVEWAYPOINTPLAN, "ALiVE profileSimulator: inactive waypoint planning")
 
                                 private _activeWaypoint = _waypoints select 0;
                                 ([_activeWaypoint, [
@@ -301,8 +319,8 @@ if (!_simAttacks) then {
                                             if (count _statements > 0) then {_executeStatements = true;}; // Fix for "empty string" error below - only works if _statements was set to "" or []
                                         };
                                     };
-
                                     if (_vehicleCommander) then {
+                                        PROFILE_SCOPE(INACTIVEVEHICLEMOVE, "ALiVE profileSimulator: inactive vehicle movement")
                                         // move vehicles that profile is in
                                         [_profile,"hasSimulated", true] call ALiVE_fnc_hashSet;
 
@@ -316,9 +334,12 @@ if (!_simAttacks) then {
 
                                                 [_vehicleProfile,"hasSimulated", true] call ALiVE_fnc_hashSet;
                                                 [_vehicleProfile,"engineOn", true] call ALiVE_fnc_profileVehicle;
-                                                [_vehicleProfile,"position", _newPosition] call ALiVE_fnc_profileVehicle;
+                                                if !((_vehicleProfile select 2 select 2) isEqualTo _newPosition) then {
+                                                    [_vehicleProfile,"position", _newPosition] call ALiVE_fnc_profileVehicle;
+                                                    [_vehicleProfile,"mergePositions"] call ALiVE_fnc_profileVehicle;
+                                                    _profileMoved = true;
+                                                };
                                                 [_vehicleProfile,"direction", _direction] call ALiVE_fnc_profileVehicle;
-                                                [_vehicleProfile,"mergePositions"] call ALiVE_fnc_profileVehicle;
 
                                                 // if profile is in boat, and is no longer on water
                                                 // remove boat
@@ -346,7 +367,9 @@ if (!_simAttacks) then {
                                                 };
                                             };
                                         } forEach _vehiclesInCommandOf;
+                                        PROFILE_SCOPE_END(INACTIVEVEHICLEMOVE)
                                     } else {
+                                        PROFILE_SCOPE(INACTIVEENTITYMOVE, "ALiVE profileSimulator: inactive entity movement")
                                         // assign a boat to entities if on water
 
                                         private _isSeaTravel = if (_pathfindingEnabled) then {
@@ -429,8 +452,12 @@ if (!_simAttacks) then {
 
                                         // set the profile position and merge all unit positions to group position
                                         [_profile,"hasSimulated", true] call ALiVE_fnc_hashSet;
-                                        [_profile,"position", _newPosition] call ALiVE_fnc_profileEntity;
-                                        [_profile,"mergePositions"] call ALiVE_fnc_profileEntity;
+                                        if !(_profilePosition isEqualTo _newPosition) then {
+                                            [_profile,"position", _newPosition] call ALiVE_fnc_profileEntity;
+                                            [_profile,"mergePositions"] call ALiVE_fnc_profileEntity;
+                                            _profileMoved = true;
+                                        };
+                                        PROFILE_SCOPE_END(INACTIVEENTITYMOVE)
                                     };
 
                                     // Execute statements at the end, needs review of any variables in hashes
@@ -446,9 +473,14 @@ if (!_simAttacks) then {
                                     if (_debug) then {["Profile-Simulator profile movement stopped for profile %1: currentPosition: %2 destination: %3", [_profile,"profileID","no-ID"] call ALiVE_fnc_hashGet, _profilePosition, _destination] call ALiVE_fnc_dump};
                                 };
 
+                                PROFILE_SCOPE_END(INACTIVEWAYPOINTPLAN)
+                                PROFILE_SCOPE_END(INACTIVEWAYPOINT)
+
                             } else {
+                                PROFILE_SCOPE(ACTIVEWAYPOINT, "ALiVE profileSimulator: active waypoint")
 
                                 // profile is spawned, update positions
+                                PROFILE_SCOPE(ACTIVEWAYPOINTUPDATE, "ALiVE profileSimulator: active waypoint update")
 
                                 private _group = _profile select 2 select 13;
                                 private _leader = leader _group;
@@ -569,12 +601,16 @@ if (!_simAttacks) then {
                                     if (_debug) then {["Profile-Simulator corrupted spawned profile detected %1: _newPosition %2 _profilePosition %3",_profileID,_newPosition,_profilePosition] call ALiVE_fnc_dump};
                                 };
 
+                                PROFILE_SCOPE_END(ACTIVEWAYPOINTUPDATE)
+                                PROFILE_SCOPE_END(ACTIVEWAYPOINT)
                             };
                         } else {
                             // profile has no waypoints
+                            PROFILE_SCOPE(NOWAYPOINT, "ALiVE profileSimulator: no waypoints")
 
                             private _active = _profile select 2 select 1;
                             if (_active) then {
+                                PROFILE_SCOPE(NOWAYPOINTUPDATE, "ALiVE profileSimulator: no-waypoint update")
                                 private _group = _profile select 2 select 13;
                                 private _leader = _profile select 2 select 10;
                                 private _currentWaypoint = currentWaypoint _group;
@@ -610,6 +646,7 @@ if (!_simAttacks) then {
                                         if (_debug) then {["Profile-Simulator corrupted profile detected %1: _newPosition %2 _profilePosition %3",_profileID,_newPosition,_profilePosition] call ALiVE_fnc_dump};
                                     };
                                 };
+                                PROFILE_SCOPE_END(NOWAYPOINTUPDATE)
                             };
 
                             // remove any ambient sea transport if no waypoint is assigned (should not happen - failsafe)
@@ -631,16 +668,27 @@ if (!_simAttacks) then {
 
                                 [_profile,"boat"] call ALiVE_fnc_hashRem;
                             };
+                            PROFILE_SCOPE_END(NOWAYPOINT)
                         };
                     };
 
+                    // A newly created or just-despawned inactive profile gets one scan even
+                    // when it has no waypoints. Moved profiles scan here as well.
+                    PROFILE_SCOPE(COMBATSCAN, "Scan for combat")
+                    if (!_isPlayer && !_vehicleCargo && !_combat && {!(_profile select 2 select 1)} && {(_profileMoved || _combatScanPending)}) then {
+                        call _scanForCombat;
+                        [_profile,"combatScanPending", false] call ALiVE_fnc_hashSet;
+                    };
+                    PROFILE_SCOPE_END(COMBATSCAN)
+
                     if (_isPlayer) then {
+                        PROFILE_SCOPE(PLAYERPROFILESIM, "Simulate Player Profile")
                         private _leader = _profile select 2 select 10;
                         private _newPosition = getPosATL _leader;
 
                         // verify that position is valid
 
-                        if (!isnil "_newPosition" && {str _newPosition != "[0,0,0]"} && {!isnil "_profilePosition"} && {str _profilePosition != "[0,0,0]"}) then {
+                        if (!isnil "_newPosition" && {_newPosition isnotequalto [0,0,0]} && {!isnil "_profilePosition"} && {_profilePosition isnotequalto [0,0,0]}) then {
                             private _moveDistance = _newPosition distance _profilePosition;
 
                             if (_moveDistance > 10) then {
@@ -672,15 +720,19 @@ if (!_simAttacks) then {
 
                             ["DISCONNECT"] call ALiVE_fnc_createProfilesFromPlayers;
                         };
+                        PROFILE_SCOPE_END(PLAYERPROFILESIM)
                     };
                 };
 
             };
 
-            [_profile,"timeLastSim", _simulationTime] call ALiVE_fnc_hashSet;
+            //[_profile,"timeLastSim", _simulationTime] call ALiVE_fnc_hashSet;
+            [_profile, [["timeLastSim", _simulationTime]]] call ALiVE_fnc_hashSetMany;
+            PROFILE_SCOPE_END(PROFILESIM)
         };
     };
 
+    PROFILE_SCOPE_END(PROFILEMOVEMENT)
 } else {
 
     // Simulate attacks
@@ -715,6 +767,7 @@ if (!_simAttacks) then {
             _attacksToSim deleteat 0;
 
             if (!isnil "_attack") then {
+                PROFILE_SCOPE(ATTACKSIM, "ALiVE profileSimulator: attack simulation")
 
                 if (!_profileSystemPaused) then {
 
@@ -749,6 +802,7 @@ if (!_simAttacks) then {
                                 private _targetPos = _target select 2 select 2;                         // [_target,"position"] call ALiVE_fnc_hashGet;
 
                                 if (_attackerPos distance2D _targetPos <= _combatRange) then {
+                                    PROFILE_SCOPE(ATTACKDAMAGE, "ALiVE profileSimulator: attack damage")
                                     private "_targetToAttack";
                                     private _targetComponentsRemaining = 0;
                                     private _targetVehiclesInCommandOf = _target select 2 select 8;
@@ -956,6 +1010,7 @@ if (!_simAttacks) then {
                                     if (_targetComponentsRemaining > 0) then {
                                         _active = true;
                                     };
+                                    PROFILE_SCOPE_END(ATTACKDAMAGE)
                                 };
                             };
                         };
@@ -972,6 +1027,7 @@ if (!_simAttacks) then {
                 };
 
                 _attack set ["timeLastSim", _simulationTime];
+                PROFILE_SCOPE_END(ATTACKSIM)
             };
         };
 
