@@ -173,11 +173,11 @@ switch(_operation) do {
         private _debug = [_logic,"debug"] call ALIVE_fnc_hashGet;
 
         if (_args isequaltype []) then {
-            private _job = [
+            private _job = [[
                 ["args", _args],
                 ["lastRun", time],
                 ["runCount", 0]
-            ] call ALIVE_fnc_hashCreate;
+            ]] call ALIVE_fnc_hashCreate;
 
             private _analysisJobs = [_logic,"analysisJobs"] call ALIVE_fnc_hashGet;
             private _jobID = _args select 3;
