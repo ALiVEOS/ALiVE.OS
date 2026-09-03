@@ -34,22 +34,21 @@ ARJay
 Jman
 ---------------------------------------------------------------------------- */
 
-private ["_vehicleClass","_side","_faction","_rank","_direction","_spawnGoodPosition","_prefix","_engineOn","_busy","_cargo","_position",
-"_groupProfiles","_groupUnits","_groupVehicles","_class","_rank","_vehicle","_vehicleType","_vehicleID","_entityID","_isSPE"];
-
-_vehicleClass = _this select 0;
-_side = _this select 1;
-_faction = _this select 2;
-_rank = _this select 3;
-_position = _this select 4;
-_direction = if(count _this > 5) then {_this select 5} else {0};
-_spawnGoodPosition = if(count _this > 6) then {_this select 6} else {true};
-_prefix = if(count _this > 7) then {_this select 7} else {""};
-_engineOn = if(count _this > 8) then {_this select 8} else {false};
-_busy = if(count _this > 9) then {_this select 9} else {false};
-_cargo = if(count _this > 10) then {_this select 10} else {[]};
-_slingload = if(count _this > 11) then {_this select 11} else {[]};
-_isSPE = if(count _this > 12) then {_this select 12} else {false};
+params [
+    "_vehicleClass",
+    "_side",
+    "_faction",
+    "_rank",
+    "_position",
+    ["_direction", 0],
+    ["_spawnGoodPosition", true],
+    ["_prefix", ""],
+    ["_engineOn", false],
+    ["_busy", false],
+    ["_cargo", []],
+    ["_slingload", []],
+    ["_isSPE", false]
+];
 
 // Phase 3c.2b: vehicle/static substitution for inferred-faction redirects.
 // Callers (mil_placement, mil_placement_spe, mil_logistics, mil_c2istar,
@@ -66,117 +65,34 @@ _isSPE = if(count _this > 12) then {_this select 12} else {false};
 // needed at this hook point.
 if (!isNil "ALIVE_factionCustomMappings" && {_faction in (ALIVE_factionCustomMappings select 1)}) then {
     private _customMappings = [ALIVE_factionCustomMappings, _faction] call ALIVE_fnc_hashGet;
-    if ([_customMappings, "Inferred", false] call ALIVE_fnc_hashGet) then {
+    if ([_customMappings,"Inferred", false] call ALIVE_fnc_hashGet) then {
         _vehicleClass = [_vehicleClass, _faction] call ALiVE_fnc_substituteFactionVehicle;
     };
 };
 
-// get counts of current profiles
+private _vehiclePositions = [_vehicleClass] call ALIVE_fnc_configGetVehicleEmptyPositions;
+private _vehicleKind = _vehicleClass call ALIVE_fnc_vehicleGetKindOf;
+private _crewCountPositions =  if (_vehicleKind != "StaticWeapon") then { count _vehiclePositions - 3 } else { count _vehiclePositions };
 
-_vehicleID = [ALIVE_profileHandler, "getNextInsertVehicleID"] call ALIVE_fnc_profileHandler;
-_entityID = [ALIVE_profileHandler, "getNextInsertEntityID"] call ALIVE_fnc_profileHandler;
-
-
-// create the entity profile
-
-_groupProfiles = [];
-
-private ["_entityID","_side","_profileEntity","_classes","_positions","_damages","_ranks","_unit"];
-
-_profileEntity = [nil, "create"] call ALIVE_fnc_profileEntity;
-[_profileEntity, "init"] call ALIVE_fnc_profileEntity;
-[_profileEntity, "profileID", format["%1-%2",_prefix,_entityID]] call ALIVE_fnc_profileEntity;
-// Each profile gets its own copy. The crew spawn path deliberately flattens the height
-// of the position it holds, to stop a passenger falling to its death, and with one
-// shared array that also flattened the vehicle position. A module placed on a roof
-// then created its vehicle on the terrain underneath, inside the building (#1020).
-[_profileEntity, "position", +_position] call ALIVE_fnc_profileEntity;
-[_profileEntity, "side", _side] call ALIVE_fnc_profileEntity;
-[_profileEntity, "faction", _faction] call ALIVE_fnc_profileEntity;
-[_profileEntity, "busy", _busy] call ALIVE_fnc_profileEntity;
-[_profileEntity, "isSPE", false] call ALIVE_fnc_profileEntity;
-[_profileEntity, "aiBehaviour", "SAFE"] call ALIVE_fnc_profileEntity;
-
-if!(_spawnGoodPosition) then {
-    [_profileEntity, "despawnPosition", +_position] call ALIVE_fnc_profileEntity;
-};
-
-_groupProfiles pushback _profileEntity;
-[ALIVE_profileHandler, "registerProfile", _profileEntity] call ALIVE_fnc_profileHandler;
-
-private ["_vehicleKind","_vehicleID","_vehicleClass","_crew","_profileVehicle","_vehiclePositions","_countCrewPositions","_crewCountPositions"];
-
-_vehicleKind = _vehicleClass call ALIVE_fnc_vehicleGetKindOf;
-
-// create the profile for the vehicle
-
-_profileVehicle = [nil, "create"] call ALIVE_fnc_profileVehicle;
-[_profileVehicle, "init"] call ALIVE_fnc_profileVehicle;
-[_profileVehicle, "profileID", format["%1-%2",_prefix,_vehicleID]] call ALIVE_fnc_profileVehicle;
-[_profileVehicle, "vehicleClass", _vehicleClass] call ALIVE_fnc_profileVehicle;
-[_profileVehicle, "position", +_position] call ALIVE_fnc_profileVehicle;
-[_profileVehicle, "direction", _direction] call ALIVE_fnc_profileVehicle;
-[_profileVehicle, "side", _side] call ALIVE_fnc_profileVehicle;
-[_profileVehicle, "faction", _faction] call ALIVE_fnc_profileVehicle;
-[_profileVehicle, "damage", []] call ALIVE_fnc_profileVehicle;
-[_profileVehicle, "fuel", 1] call ALIVE_fnc_profileVehicle;
-[_profileVehicle, "busy", _busy] call ALIVE_fnc_profileVehicle;
-
-if(count _cargo > 0) then {
-    [_profileVehicle, "cargo", _cargo] call ALIVE_fnc_profileVehicle;
-};
-
-if(count _slingload > 0) then {
-    [_profileVehicle, "slingload", _slingload] call ALIVE_fnc_profileVehicle;
-};
-
-if(_isSPE) then {
-    [_profileVehicle, "isSPE", _isSPE] call ALIVE_fnc_profileVehicle;
-};
-
-
-[_profileVehicle, "aiBehaviour", "AWARE"] call ALIVE_fnc_profileVehicle;
-
-
-/*
-if(_vehicleKind == "Plane" || _vehicleKind == "Helicopter") then {
-    [_profileVehicle, "spawnType", ["preventDespawn"]] call ALIVE_fnc_profileVehicle;
-};*/
-
-if!(_spawnGoodPosition) then {
-    [_profileVehicle, "despawnPosition", +_position] call ALIVE_fnc_profileVehicle;
-};
-
-if(_engineOn) then {
-    [_profileVehicle, "engineOn", true] call ALIVE_fnc_profileVehicle;
-};
-
-_groupProfiles pushback _profileVehicle;
-[ALIVE_profileHandler, "registerProfile", _profileVehicle] call ALIVE_fnc_profileHandler;
-
-// create crew members for the vehicle
-
-_crew = _vehicleClass call ALIVE_fnc_configGetVehicleCrew;
-_vehiclePositions = [_vehicleClass] call ALIVE_fnc_configGetVehicleEmptyPositions;
-_countCrewPositions = 0;
-
-
-// count all non cargo positions except "StaticWeapon"
-_crewCountPositions = count _vehiclePositions;
- if (_vehicleKind != "StaticWeapon") then {
- 	_crewCountPositions = count _vehiclePositions -3;
- };
-
-for "_i" from 0 to _crewCountPositions -1  do {
+ private _countCrewPositions = 0;
+for "_i" from 0 to _crewCountPositions - 1  do {
     _countCrewPositions = _countCrewPositions + (_vehiclePositions select _i);
 };
 
-// for all crew positions add units to the entity group
-for "_i" from 0 to _countCrewPositions -1 do {
-    [_profileEntity, "addUnit", [_crew,_position,0,_rank]] call ALIVE_fnc_profileEntity;
+// get crew classes
+
+private _crew = _vehicleClass call ALIVE_fnc_configGetVehicleCrew;
+private _crewClasses = [];
+private _crewPositions = [];
+for "_i" from 0 to _countCrewPositions - 1 do {
+    _crewClasses pushBack _crew;
+    _crewPositions pushBack +_position;
 };
 
-[_profileEntity,_profileVehicle] call ALIVE_fnc_createProfileVehicleAssignment;
+private _profileEntity = [_crewClasses, _side, _faction, +_position, 0, "", _busy, _prefix, _spawnGoodPosition, _rank, _crewPositions, false, "SAFE"] call ALIVE_fnc_createProfileEntity;
+private _profileVehicle = [_vehicleClass, _side, _faction, +_position, _direction,_spawnGoodPosition, _prefix, _cargo, _isSPE, _engineOn, _slingload,_busy, "AWARE"] call ALIVE_fnc_createProfileVehicle;
+
+[_profileEntity, _profileVehicle] call ALIVE_fnc_createProfileVehicleAssignment;
 
 
-_groupProfiles
+[_profileEntity, _profileVehicle]
