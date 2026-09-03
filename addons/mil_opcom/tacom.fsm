@@ -575,7 +575,12 @@ class FSM
                          "" \n
                          "                    //Command to garrison" \n
                          "                    [_profile, ""clearActiveCommands""] call ALIVE_fnc_profileEntity;" \n
-                         "                    [_profile, ""setActiveCommand"", [""ALIVE_fnc_garrison"",""spawn"",[200,""true"",[0,0,0]]]] call ALIVE_fnc_profileEntity;" \n
+                         "                    //The objective this reserve was ordered to hold. The seating searches from its" \n
+                         "                    //centre rather than from wherever the group happened to stand, which is what" \n
+                         "                    //left men in the open at one side of a large objective. There is no size to" \n
+                         "                    //hand it here, so the 200 m below is still the reach." \n
+                         "                    _objCentre = [_objective,""center"",[0,0,0]] call AliVE_fnc_HashGet;" \n
+                         "                    [_profile, ""setActiveCommand"", [""ALIVE_fnc_garrison"",""spawn"",[200,""true"",_objCentre]]] call ALIVE_fnc_profileEntity;" \n
                          "" \n
                          "                    //transmit to OPCOM as objective was completed" \n
                          "                    [_objective,""opcom_state"",""idle""] call AliVE_fnc_HashSet;" \n
