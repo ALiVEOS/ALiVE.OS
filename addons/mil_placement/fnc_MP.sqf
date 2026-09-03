@@ -2889,7 +2889,11 @@ switch(_operation) do {
                     private _preferredGarrisonPositions = [_logic, "preferredGarrisonPositions"] call MAINCLASS;
                     if (isNil "_preferredGarrisonPositions" || {!(_preferredGarrisonPositions isEqualType "")}) then { _preferredGarrisonPositions = "" };
                     private _garrisonPatrolSpeed = toUpper ([_logic, "garrisonPatrolSpeed"] call MAINCLASS);
-                		private _guardDistance = _size;
+                		// Capped to match the search, which fnc_garrison holds at 700 m however
+                		// large the objective. Military clusters barely reach that today, but a
+                		// group scattered further than its garrison can sweep would sit outside
+                		// its own search disc, and the two figures should not drift apart (#1016).
+                		private _guardDistance = _size min 700;
 
                     // divert a share of the guard groups INTO the camp
                     // composition when this cluster spawned one - camps
@@ -2916,15 +2920,32 @@ switch(_operation) do {
                         _guardGroup = (selectRandom _infantryGroups);
                         // camp-diverted iterations anchor at the composition
                         // with a tight jitter and command radius; the rest
-                        // keep today's cluster-centre behaviour
+                        // scatter across the cluster.
+                        //
+                        // The garrison searches the objective it was sent to
+                        // hold, from that objective's centre and sized to it,
+                        // rather than a guard radius around wherever it landed
+                        // within it. A cluster's size is the distance from its
+                        // centre to its farthest building, and the scatter just
+                        // below uses that same figure, so a group could be put
+                        // beyond reach of every building the objective has and
+                        // on the largest ones some were. The guard radius is
+                        // still passed and stays the floor of the search, and
+                        // seats are still handed out nearest the group (#1016).
                         private _guardAnchor = _center;
                         private _guardJitter = _guardDistance;
                         private _thisRadius = _guardRadius;
+                        private _thisSearchCentre = _center;
+                        private _thisObjectiveSize = _size;
                         private _pinStationary = false;
                         if (_i < _compGuardCount) then {
                             _guardAnchor = _campPos;
                             _guardJitter = _campEnvelope * 0.5;
                             _thisRadius = _campEnvelope max 50;
+                            // The camp is the objective for this leg: its
+                            // structures are what the diverted guards man.
+                            _thisSearchCentre = _campPos;
+                            _thisObjectiveSize = _campEnvelope;
                             _pinStationary = true;
                         };
                         // Water-aware random pick around the anchor.
@@ -2941,14 +2962,14 @@ switch(_operation) do {
 
                         // DEBUG -------------------------------------------------------------------------------------
                         if(_debug) then {
-                          ["MP [%1] - Placing Garrison Guards - %2", _faction, _guardGroup] call ALiVE_fnc_dump;
+                          ["MP [%1] - Placing Garrison Guards - %2 at %3, %4 m from the objective centre (guard radius %5, objective size %6)", _faction, _guardGroup, mapGridPosition _guardPos, round (_guardPos distance2D _thisSearchCentre), round _thisRadius, round _thisObjectiveSize] call ALiVE_fnc_dump;
                         };
                         // DEBUG -------------------------------------------------------------------------------------
 
                         // Garrison & Patrols instead of the static garrison.
                         {
                             if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
-                              [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[_thisRadius,"true",[0,0,0],"",_guardProbabilityCount, _guardPatrolPercentage, _garrisonPatrolBehaviour, _garrisonPatrolSpeed, _preferredGarrisonPositions, true]]] call ALIVE_fnc_profileEntity;
+                              [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[_thisRadius,"true",_thisSearchCentre,"",_guardProbabilityCount, _guardPatrolPercentage, _garrisonPatrolBehaviour, _garrisonPatrolSpeed, _preferredGarrisonPositions, true, _thisObjectiveSize]]] call ALIVE_fnc_profileEntity;
                               if (_pinStationary) then {
                                   // composition garrisons hold their posts - the
                                   // same pin roadblock guards use, honoured at
@@ -3067,7 +3088,7 @@ switch(_operation) do {
                                         if (_infantryActivePlacedCount < _garrisonCount) then {
                                             _command = "ALIVE_fnc_garrison";
                                             _garrisonPos = [_center, 50] call CBA_fnc_RandPos;
-                                            _radius = [_guardRadius,"true",[0,0,0],"",_guardProbabilityCount, _guardPatrolPercentage, _garrisonPatrolBehaviour, _garrisonPatrolSpeed, _preferredGarrisonPositions, true];
+                                            _radius = [_guardRadius,"true",_center,"",_guardProbabilityCount, _guardPatrolPercentage, _garrisonPatrolBehaviour, _garrisonPatrolSpeed, _preferredGarrisonPositions, true, _size];
                                         } else {
                                             _command = "ALIVE_fnc_ambientMovement";
                                             _radius = [_guardRadius,"SAFE",[0,0,0]];
@@ -3222,7 +3243,7 @@ switch(_operation) do {
                                     if (_infantryActivePlacedCount < _garrisonCount) then {
                                         _command = "ALIVE_fnc_garrison";
                                         _garrisonPos = [_center, 50] call CBA_fnc_RandPos;
-                                        _radius = [_guardRadius,"true",[0,0,0],"",_guardProbabilityCount, _guardPatrolPercentage, _garrisonPatrolBehaviour, _garrisonPatrolSpeed, _preferredGarrisonPositions, true];
+                                        _radius = [_guardRadius,"true",_center,"",_guardProbabilityCount, _guardPatrolPercentage, _garrisonPatrolBehaviour, _garrisonPatrolSpeed, _preferredGarrisonPositions, true, _size];
                                     } else {
                                         _command = "ALIVE_fnc_ambientMovement";
                                         _radius = [_guardRadius,"SAFE",[0,0,0]];

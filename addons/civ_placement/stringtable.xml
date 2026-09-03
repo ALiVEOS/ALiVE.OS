@@ -819,7 +819,7 @@
     <Russian>Радиус пехоты гарнизона (м):</Russian>
 </Key>
 <Key ID="STR_ALIVE_CP_CUSTOM_GUARD_RADIUS_COMMENT">
-    <English>Radius in metres within which garrison groups search for enterable buildings to occupy. Increase for large spread-out objectives.</English>
+    <English>Smallest radius in metres within which a garrison group searches for buildings to occupy. A garrison placed at an objective searches the whole objective when that is larger than this, so guards scattered across a big airfield still reach the buildings in the middle of it. Raise this to let a garrison reach buildings beyond its objective; lowering it no longer narrows a garrison below its own objective. It still sets how far guards wander when they have somewhere to patrol, and how far they look for ordinary houses once the good positions are taken.</English>
     <Chinese>駐防組搜索可進入建築物以佔領的半徑（米）。對於大型分散目標應增大。</Chinese>
     <Chinesesimp>驻防组搜索可进入建筑物以占领的半径（米）。对于大型分散目标应增大。</Chinesesimp>
     <Spanish>Radio en metros dentro del cual los grupos de guarnición buscan edificios accesibles para ocupar. Aumenta el valor para objetivos grandes y dispersos.</Spanish>

@@ -1557,7 +1557,12 @@ switch(_operation) do {
                 private _preferredGarrisonPositions = [_logic, "preferredGarrisonPositions"] call MAINCLASS;
                 if (isNil "_preferredGarrisonPositions" || {!(_preferredGarrisonPositions isEqualType "")}) then { _preferredGarrisonPositions = "" };
                 private _garrisonPatrolSpeed = toUpper ([_logic, "garrisonPatrolSpeed"] call MAINCLASS);
-                private _guardDistance = _size;
+                // Capped to match the search. fnc_garrison caps a garrison's search at 700 m
+                // however large the objective, and some civilian clusters run past 1400, so
+                // scattering by the raw size would put a group outside the very disc its
+                // garrison sweeps and leave it further from every candidate than the sweep
+                // can reach (#1016).
+                private _guardDistance = _size min 700;
 
                 // Capture cluster ref - inner profile foreaches shadow _x.
                 private _cluster = _x;
@@ -1586,14 +1591,20 @@ switch(_operation) do {
 
                     // DEBUG -------------------------------------------------------------------------------------
                     if(_debug) then {
-                      ["CP [%1] - Placing Garrison Guards - %2", _faction, _guardGroup] call ALiVE_fnc_dump;
+                      ["CP [%1] - Placing Garrison Guards - %2 at %3, %4 m from the objective centre (guard radius %5, objective size %6)", _faction, _guardGroup, mapGridPosition _guardPos, round (_guardPos distance2D _center), round _guardRadius, round _size] call ALiVE_fnc_dump;
                     };
                     // DEBUG -------------------------------------------------------------------------------------
 
                     // Garrison & Patrols instead of the static garrison.
                     {
                         if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
-                          [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[_guardRadius,"true",[0,0,0],"",_guardProbabilityCount, _guardPatrolPercentage, _garrisonPatrolBehaviour, _garrisonPatrolSpeed, _preferredGarrisonPositions, true]]] call ALIVE_fnc_profileEntity;
+                          // The garrison searches the objective it was sent to hold, from that objective's
+                          // centre and sized to it, rather than a guard radius around wherever it was
+                          // scattered to within it. A cluster's size is the distance from its centre to its
+                          // farthest building, so a group scattered by that and told to look only a guard
+                          // radius around its own spot could stand beyond reach of every building the
+                          // objective has. The guard radius is still passed and remains the floor (#1016).
+                          [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[_guardRadius,"true",_center,"",_guardProbabilityCount, _guardPatrolPercentage, _garrisonPatrolBehaviour, _garrisonPatrolSpeed, _preferredGarrisonPositions, true, _size]]] call ALIVE_fnc_profileEntity;
                         };
                     } forEach _guards;
                     _countProfiles = _countProfiles + count _guards;
@@ -1670,7 +1681,7 @@ switch(_operation) do {
                                 if (_isInfantry && {_infantryActivePlacedCount < _garrisonCount}) then {
                                     _command = "ALIVE_fnc_garrison";
                                     _garrisonPos = [_center, 50] call CBA_fnc_RandPos;
-                                    _radius = [_guardRadius,"true",[0,0,0],"",_guardProbabilityCount, _guardPatrolPercentage, _garrisonPatrolBehaviour, _garrisonPatrolSpeed, _preferredGarrisonPositions, true];
+                                    _radius = [_guardRadius,"true",_center,"",_guardProbabilityCount, _guardPatrolPercentage, _garrisonPatrolBehaviour, _garrisonPatrolSpeed, _preferredGarrisonPositions, true, _size];
                                 } else {
                                     _command = "ALIVE_fnc_ambientMovement";
                                     _radius = [_guardRadius,"SAFE",[0,0,0]];

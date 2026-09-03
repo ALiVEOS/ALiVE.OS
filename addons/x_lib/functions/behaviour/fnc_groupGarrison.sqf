@@ -6,8 +6,9 @@ Description:
 Garrisons units in defensible structures and static weapons
 Parameters:
 Group - group
-Array - position
-Scalar - radius
+Array - centre of the area to search. For a placed garrison this is the objective,
+        not where the group stands.
+Scalar - how far from that centre to search
 Boolean - move to position instantly (no animation)
 Boolean - optional, only profiled vehicles (to avoid garrisoning player vehicles)
 Scalar - optional, number of guard groups at this objective
@@ -17,6 +18,11 @@ String - optional, patrol behaviour
 String - optional, patrol speed
 String - optional, preferred garrison buildings, Class=idx,idx;...
 Boolean - optional, look past the curated props when they cannot seat the group (default true)
+Boolean - optional, the list was inherited rather than set here, so it supplies positions only
+Array - optional, where the group stands. Candidates are handed out nearest to it, and the
+        house fallback and patrol circuits are drawn around it. Defaults to the search centre.
+Scalar - optional, how far the fallback and the patrol circuits reach from the group.
+        Defaults to the search radius, which is what every caller had before.
 Returns:
 Examples:
 (begin example)
@@ -33,7 +39,20 @@ ARJay, Highhead, Jman
 // other garrison groups.
 if (!isServer) exitWith {};
 
-params ["_group","_position","_radius","_moveInstantly", ["_onlyProfiled", false], ["_profileCount",0], ["_profileID",nil], ["_guardPatrolPercentage",50], ["_patrolBehaviour","SAFE"], ["_patrolSpeed","LIMITED"], ["_preferredGarrison","",[""]], ["_fillShortfall",true,[false]], ["_preferredIndicesOnly",false,[false]]];
+params ["_group","_position","_radius","_moveInstantly", ["_onlyProfiled", false], ["_profileCount",0], ["_profileID",nil], ["_guardPatrolPercentage",50], ["_patrolBehaviour","SAFE"], ["_patrolSpeed","LIMITED"], ["_preferredGarrison","",[""]], ["_fillShortfall",true,[false]], ["_preferredIndicesOnly",false,[false]], ["_groupPosition",[],[[]]], ["_fallbackRadius",0,[0]]];
+
+// Two anchors, kept apart on purpose. The SEARCH, which decides what candidates exist
+// at all, is centred on _position and reaches _radius: for a placed garrison that is the
+// objective and its size, so a group scattered to the rim of a large objective still sees
+// the buildings in the middle of it. The ORDER, which decides which of those this group
+// takes, and the FALLBACK, where it looks once they run out, are anchored on
+// _groupPosition and reach _fallbackRadius. Ordered from the objective centre instead,
+// every group would walk to the same buildings in the same order, the middle would fill
+// while the edges stood empty, and the scatter that spreads guards across an objective
+// would count for nothing. A caller that gives neither is searching from where the group
+// stands, which is what every caller did before these existed (#1016).
+if (_groupPosition isEqualTo []) then { _groupPosition = _position };
+if (_fallbackRadius <= 0) then { _fallbackRadius = _radius };
 
 private _units = units _group;
 private _unitPercentCount = ((count _units) * _guardPatrolPercentage) / 100;
@@ -73,6 +92,22 @@ private _staticWeapons = nearestObjects [_position, ["StaticWeapon"], _radius];
     };
 } foreach (nearestObjects [_position, ["Car"], _radius]);
 
+// The sweep covers the objective, but the guns are taken nearest the group, the same rule
+// the buildings follow below. There is no claim economy for weapons and a man is moved
+// straight into one, so an unsorted list swept from the objective centre would put the
+// first man of a group at the east rim into a gun at the west rim.
+//
+// Guns beyond the group's own reach are dropped outright, with no fallback to the wider
+// set. A fallback would restore exactly the teleport this exists to stop, and unlike the
+// buildings there is nothing gentler it could do: the man is moved into the gunner seat
+// at once. A group with no gun near it simply mans none and takes buildings instead,
+// which is what it did before the search widened.
+//
+// Sorting also merges the vehicles appended above back into the nearest-first order the
+// sweep had before the pushBack broke it.
+_staticWeapons = [_staticWeapons, [], { _x distance2D _groupPosition }, "ASCEND"] call BIS_fnc_sortBy;
+_staticWeapons = _staticWeapons select { (_x distance2D _groupPosition) <= _fallbackRadius };
+
 if (count _staticWeapons > 0) then
 {
     {
@@ -102,7 +137,7 @@ if (count _units == 0) exitwith {};
 // e.g. trench slots) -- the vanilla buildingPos below does not return them, so prefer these
 // explicitly-placed positions over the auto-picked building slots. Consumes only the units it
 // fills (mutates _units), so a mission with no CBA positions is unaffected. (#945)
-private _movementAssignments = [_units, _position, _radius, _moveInstantly] call ALIVE_fnc_garrisonUnitsOnCBAPositions;
+private _movementAssignments = [_units, _position, _radius, _moveInstantly, _groupPosition] call ALIVE_fnc_garrisonUnitsOnCBAPositions;
 
 private _fnc_startMovement = {
     params ["_movementGroup", "_assignments"];
@@ -300,7 +335,12 @@ if (_lookedBeyond) then {
 	  ["ALIVE_fnc_groupGarrison - %4: looking beyond the curated props: %1 curated seat(s) for %2 men, guard groups %3", _curatedSeats, count _units, _profileCount, _group] call ALiVE_fnc_dump;
 	 };
 	 // DEBUG -------------------------------------------------------------------------------------
-    private _houses = [_position, floor(_radius/2)] call ALIVE_fnc_getEnterableHouses;
+    // Houses are the safety net for men the curated props could not seat, so they are
+    // swept around the men rather than around the objective. Swept from the centre at half
+    // the objective, a group at the rim would be offered houses hundreds of metres away
+    // while the shed beside it went unlisted. The radius is the caller's own guard radius,
+    // not the objective-sized search, so this sweep costs what it always cost.
+    private _houses = [_groupPosition, floor(_fallbackRadius/2)] call ALIVE_fnc_getEnterableHouses;
     // Filtered after the subtraction so the houses this rank offers are the ones that
     // survive it. A building the curated sweep already withheld can still turn up
     // here, which is why the count above is a set rather than a running total.
@@ -327,9 +367,9 @@ if (_lookedBeyond) then {
 // what the setting promises. Without a setting there is only one rank and this is the sort
 // that has always run: the whitelist sweep covers the full radius while enterable houses
 // cover half, so unsorted a prop-rich objective empties its houses into the props.
-_preferredBuildings = [_preferredBuildings, [], { _x distance2D _position }, "ASCEND"] call BIS_fnc_sortBy;
-_buildings = [_buildings, [], { _x distance2D _position }, "ASCEND"] call BIS_fnc_sortBy;
-_houseRank = [_houseRank, [], { _x distance2D _position }, "ASCEND"] call BIS_fnc_sortBy;
+_preferredBuildings = [_preferredBuildings, [], { _x distance2D _groupPosition }, "ASCEND"] call BIS_fnc_sortBy;
+_buildings = [_buildings, [], { _x distance2D _groupPosition }, "ASCEND"] call BIS_fnc_sortBy;
+_houseRank = [_houseRank, [], { _x distance2D _groupPosition }, "ASCEND"] call BIS_fnc_sortBy;
 private _preferredTierCount = count _preferredBuildings;
 
 // Ordinary houses last. They are only here because the curated props could not
@@ -365,7 +405,19 @@ private _preferredState = call {
 
 // props without engine positions cannot host buildingPatrol.fsm circuits
 // (the FSM selectRandoms buildingPos) - patrol only position-bearing props
+// Patrol circuits are a destination, not a search, so they are kept near where the group
+// started. Left as the whole objective a guard would walk the length of a large airfield
+// between two buildings and spend the mission in transit.
+//
+// The reach is measured from where the group stood before seating, not from the seat it
+// ends up in, so a man seated far across the objective can still draw a circuit near the
+// group's old spot. Accepted rather than fixed: the seats are handed out nearest the
+// group anyway, so the two are usually the same place, and the alternative is rebuilding
+// this list after every claim. When nothing at all is close enough the full set is used,
+// which is the behaviour every garrison had before the search widened.
 private _patrolBuildings = _buildings select { !((_x buildingPos -1) isEqualTo []) };
+private _patrolInReach = _patrolBuildings select { (_x distance2D _groupPosition) <= _fallbackRadius };
+if !(_patrolInReach isEqualTo []) then { _patrolBuildings = _patrolInReach };
 private _patrolWaypointsCleared = false;
 if (_patrolBuildings isEqualTo [] && {count _buildings > 0} && {ALiVE_SYS_PROFILE_DEBUG_ON}) then {
     ["ALIVE_fnc_groupGarrison - no patrol-capable props, garrison fully static"] call ALiVE_fnc_dump;
@@ -407,10 +459,12 @@ if ((count _buildings == 0) && !(isNil "_profile") && ([_profile,"isCycling"] ca
 	   [_profile, "clearActiveCommands"] call ALIVE_fnc_profileEntity;
 	   // DEBUG -------------------------------------------------------------------------------------
 	   if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
-      ["ALIVE_fnc_groupGarrison - No enterable buildings found!. Calling CBA_fnc_taskSearchArea on: group: %1, profileID: %2, _radius %3", _group, _id, _radius] call ALiVE_fnc_dump;
+      ["ALIVE_fnc_groupGarrison - No enterable buildings found!. Calling CBA_fnc_taskSearchArea on: group: %1, profileID: %2, searched %3 m from the objective, tasking %4 m around the men", _group, _id, round _radius, round _fallbackRadius] call ALiVE_fnc_dump;
 	   }; 
 	 	 // DEBUG ------------------------------------------------------------------------------------- 
-	 	 [_group, [_position, _radius, _radius, 0, false]] call CBA_fnc_taskSearchArea;
+	 	 // The area to search on foot is drawn around the men at the guard radius, which is
+	 	 // what this call received before the search widened to the objective.
+	 	 [_group, [_groupPosition, _fallbackRadius, _fallbackRadius, 0, false]] call CBA_fnc_taskSearchArea;
 };
 
 private _seatDemand = count _units;
@@ -664,16 +718,19 @@ if (count _units > 0 && {_fillShortfall} && {!_lookedBeyond}) then {
     private _deniedBefore = _claimDenied;
     private _stillToSeat = count _units;
 
-    private _evidence = ([_position, floor(_radius/2)] call ALIVE_fnc_getEnterableHouses) - _buildings;
+    // Around the men at the guard radius, for the reason given at the first house sweep.
+    private _swept = [_groupPosition, floor(_fallbackRadius/2)] call ALIVE_fnc_getEnterableHouses;
+    private _evidence = _swept - _buildings;
     if (_excluding) then {
         _evidence = _evidence select { !((toLower typeOf _x) in _blacklist) };
     };
-    _evidence = [_evidence, [], { _x distance2D _position }, "ASCEND"] call BIS_fnc_sortBy;
+    _evidence = [_evidence, [], { _x distance2D _groupPosition }, "ASCEND"] call BIS_fnc_sortBy;
     _houseFound = _houseFound + _evidence;
 
     // A new array rather than the old one grown, so patrol circuits already handed out
     // keep the list they were given.
     _patrolBuildings = _patrolBuildings + (_evidence select { !((_x buildingPos -1) isEqualTo []) });
+    _patrolBuildings = _patrolBuildings arrayIntersect _patrolBuildings;
 
     // Round two has no listed tier of its own, so it seats directly rather than banking
     // overflow the drain above has already finished with.

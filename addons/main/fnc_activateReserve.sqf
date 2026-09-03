@@ -233,7 +233,10 @@ private _fnc_activateAsInfantry = {
             // the candidate building waiting for OPCOM. OPCOM tasks
             // on its own cadence (busy=false at activation), so the
             // patrol stage is just "stay useful in the meantime".
-            [_x, "setActiveCommand", ["ALIVE_fnc_garrison", "spawn", [_guardRadius, "true", [0,0,0], "", 1, 1, _garrisonPatrolBehaviour, _garrisonPatrolSpeed, _preferredGarrisonPositions, true]]] call ALIVE_fnc_profileEntity;
+            // Reinforcements spawn beside one building but search the whole objective,
+            // sized to it, the way the first garrison does. The guard radius stays the
+            // floor of that search (#1016).
+            [_x, "setActiveCommand", ["ALIVE_fnc_garrison", "spawn", [_guardRadius, "true", _center, "", 1, 1, _garrisonPatrolBehaviour, _garrisonPatrolSpeed, _preferredGarrisonPositions, true, _size]]] call ALIVE_fnc_profileEntity;
             [_x, "homeCluster", _cluster] call ALiVE_fnc_hashSet;
             _activeIDs pushBack ([_x, "profileID"] call ALiVE_fnc_hashGet);
         };
