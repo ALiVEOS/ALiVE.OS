@@ -23,6 +23,14 @@ Array - optional, where the group stands. Candidates are handed out nearest to i
         house fallback and patrol circuits are drawn around it. Defaults to the search centre.
 Scalar - optional, how far the fallback and the patrol circuits reach from the group.
         Defaults to the search radius, which is what every caller had before.
+
+The most men one building may take is NOT a parameter. It is read off the placement
+modules by ALIVE_fnc_garrisonOccupancyLimit, so no caller has to know about it. Each
+group's own figure is raised above the setting where its share of the free buildings
+could not otherwise seat it, and a caller that passes no guard-group count is assumed
+to be sharing the objective with one other group. Nothing here can leave a man outside
+who would have had a place without the setting.
+
 Returns:
 Examples:
 (begin example)
@@ -195,6 +203,12 @@ private _preferredClasses = _preferredHash select 1;
 // and that is real work to do for a filter that can never reject anything.
 private _blacklist = call ALIVE_fnc_garrisonBuildingBlacklist;
 private _excluding = !(_blacklist isEqualTo []);
+
+// The most men any one building may take, from the placement modules, worked out once
+// for the mission the way the blacklist is. Read here rather than passed, so no caller
+// anywhere has to know about it (#1016).
+private _cap = call ALIVE_fnc_garrisonOccupancyLimit;
+private _capped = _cap > 0;
 // The buildings the blacklist withheld at this objective, held as objects rather
 // than counted as they are found. The curated sweep and the house sweep overlap,
 // and the curated one is filtered before the subtraction that would have removed
@@ -268,6 +282,27 @@ private _fnc_claimable = {
     _held < 0 || {((_bucket select _held) select 1) isEqualTo _group}
 };
 
+// How many OTHER groups already hold buildings among a candidate list. Used only to
+// work out how many groups are still to come, so a limit does not let the first group
+// fence off buildings the rest of the objective's guards still need. Read only, the
+// same bucket lookup as above. This group's own claims were released before it got
+// here, so they never count.
+private _fnc_otherHolders = {
+    params ["_list"];
+    if (isNil "ALiVE_garrisonBuildingOccupancyIndex") exitWith {0};
+    private _holders = [];
+    {
+        private _obj = _x;
+        private _bucket = ALiVE_garrisonBuildingOccupancyIndex getOrDefault [hashValue _obj, []];
+        private _held = _bucket findIf {(_x select 0) isEqualTo _obj};
+        if (_held >= 0) then {
+            private _owner = (_bucket select _held) select 1;
+            if !(_owner isEqualTo _group) then { _holders pushBackUnique _owner };
+        };
+    } forEach _list;
+    count _holders
+};
+
 // How many men a set of buildings can actually hold. Ring-scatter props carry no
 // engine positions but do take men, so they count the way the seating loop counts
 // them rather than as nothing. Buildings held by another group count as nothing,
@@ -276,7 +311,7 @@ private _fnc_claimable = {
 // deciding it was well provided for, then being refused building after building and
 // handing its leftovers to ambient movement.
 private _fnc_seatSupply = {
-    params ["_list"];
+    params ["_list", ["_perBuilding", 0]];
     private _seats = 0;
     {
         private _obj = _x;
@@ -287,7 +322,12 @@ private _fnc_seatSupply = {
             // provided for than it was: the supply said there was room, the loop then
             // found there was not, and the men left over went to ambient movement.
             private _engine = count ((_obj buildingPos -1) select {!(_x isEqualTo [0,0,0])});
-            _seats = _seats + (if (_engine > 0) then {_engine} else {([_obj] call _fnc_ringParams) select 1});
+            private _places = if (_engine > 0) then {_engine} else {([_obj] call _fnc_ringParams) select 1};
+            // Only what the limit will let this group take out of the building. Left
+            // uncapped, a group told it had plenty would never sweep for houses and
+            // would then hit the limit with nowhere left to go.
+            if (_perBuilding > 0) then { _places = _places min _perBuilding };
+            _seats = _seats + _places;
         };
     } forEach _list;
     _seats
@@ -311,7 +351,7 @@ _buildings = _buildings - _preferredBuildings;
 // group of twelve standing beside one bunker was offered that one bunker, seated
 // two or three men in it, and handed the rest to ambient movement, which is why
 // they were found wandering in the open next to buildings they could have used.
-private _curatedSeats = [_buildings + _preferredBuildings] call _fnc_seatSupply;
+private _curatedSeats = [_buildings + _preferredBuildings, _cap] call _fnc_seatSupply;
 private _shortOfSeats = _fillShortfall && {_curatedSeats < count _units};
 
 // Houses found for the shortfall reason are kept apart, because they must rank
@@ -376,6 +416,43 @@ private _preferredTierCount = count _preferredBuildings;
 // seat everybody, so they take the men left over rather than the first ones.
 _buildings = _preferredBuildings + _buildings + _houseRank;
 
+// The limit, bounded by this group's share of the objective.
+//
+// Buildings are claimed whole and for good: the first man a group seats in one takes
+// the entire building, and nothing hands it back while the group lives. So a limit
+// that made every group claim ceil(men / limit) buildings would let the early groups
+// fence off buildings they barely use, and the groups behind them would find every
+// building refused and end up in the open. That is the same fault the objective-wide
+// search was written to cure, so the limit must not reintroduce it (#1016).
+//
+// Rather than stopping a group when it has claimed its share, its own limit is RAISED
+// until its share can seat it. Where buildings are plentiful the figure is the limit
+// as written. Where they are scarce it climbs back towards filling each building, which
+// is exactly today's behaviour, so the limit can never leave a man outside who would
+// have had a seat without it. Yielding by arithmetic rather than by a stop also means
+// there is no case left where the group has run out of buildings and still has men.
+//
+// The expected share of groups counts those still to come, not those already served:
+// the first of five groups divides by five, the last divides by one and may take what
+// is left. A caller that gives no guard count at all (the commander, reserves,
+// roadblocks) assumes two, so it leaves at least half of what it found for whoever
+// follows rather than assuming it is alone.
+private _groupCap = _cap;
+private _freeCount = 0;
+private _othersHolding = 0;
+private _expected = 1;
+if (_capped) then {
+    _freeCount = count (_buildings select { [_x] call _fnc_claimable });
+    _othersHolding = [_buildings] call _fnc_otherHolders;
+    _expected = if (_profileCount > 1 && {_othersHolding < _profileCount}) then {_profileCount - _othersHolding} else {2};
+    private _share = 1 max floor (_freeCount / _expected);
+    _groupCap = _cap max ceil ((count _units) / _share);
+    if (_groupCap > _cap && {ALiVE_SYS_PROFILE_DEBUG_ON}) then {
+        ["ALIVE_fnc_groupGarrison - %1: limit raised from %2 to %3 for this group: %4 free building(s) to share among %5 group(s) still expected (%6 guard group(s), %7 other group(s) already holding buildings here), share %8",
+         _group, _cap, _groupCap, _freeCount, _expected, _profileCount, _othersHolding, _share] call ALiVE_fnc_dump;
+    };
+};
+
 // Two passes only when the mission asked for them. With no setting configured this stays
 // false and the seating loop below takes exactly the path it takes today, so a mission that
 // never touches the attribute sees no change at all.
@@ -438,9 +515,13 @@ if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
         format ["%1 building(s) withheld by the blacklist (%2)", count _excludedSet, _names joinString ", "]
     };
 
-    ["ALIVE_fnc_groupGarrison - %8: %1 of %2 men still to seat, %3 candidate buildings offering %4 places; %5 curated seat(s) free to us, %6 house(s) added, %10, radius %7; %9",
+    // The places figure is asked for uncapped so it stays comparable between a run with
+    // a limit and one without; the limit in force is named separately.
+    private _limitState = if (_capped) then { format ["limit %1 per building", _groupCap] } else { "no occupancy limit" };
+
+    ["ALIVE_fnc_groupGarrison - %8: %1 of %2 men still to seat, %3 candidate buildings offering %4 places; %5 curated seat(s) free to us, %6 house(s) added, %10, radius %7; %9; %11",
      count _units, count (units _group), count _buildings, [_buildings] call _fnc_seatSupply,
-     _curatedSeats, count _houseFound, _radius, _group, _preferredState, _excludedNote] call ALiVE_fnc_dump;
+     _curatedSeats, count _houseFound, _radius, _group, _preferredState, _excludedNote, _limitState] call ALiVE_fnc_dump;
 };
 // DEBUG -------------------------------------------------------------------------------------
 
@@ -476,6 +557,13 @@ private _claimDenied = 0;
 private _overflowQueues = [];
 private _bankedOverflow = 0;
 private _authoredPatrolCandidates = [];
+
+// How many men ended up in each building this group claimed, in claim order, so the log
+// can say so outright rather than leaving it to be reconstructed from the class lines.
+// Filled whichever seating branch runs.
+private _occupancy = [];
+// Men who got the patrol quota from where they stood rather than from a seat.
+private _patrolFromStart = 0;
 
 // One round of claims over one list of candidates. This is a block rather than a bare
 // loop so it can run a second time, over houses fetched after the first round, without a
@@ -563,6 +651,23 @@ private _fnc_claimRound = {
         // the old treatment, shuffled so repeat visits differ and then highest first.
         [_overflow, true] call CBA_fnc_Shuffle;
         _overflow = [_overflow, [], { _x select 2 }, "DESCEND"] call BIS_fnc_sortBy;
+
+        // What this building may take. A class the MISSION named carries the positions the
+        // mission wrote for it whatever the limit: naming three ports in a bunker is itself
+        // a statement about how many men belong there, and the setting already promises
+        // those positions fill first and in that order. _preferredClasses holds only the
+        // mission's own list, never the built-in curated keys, so a building with a built-in
+        // list stays under the limit. A listed class whose indices matched nothing falls
+        // through to the limit rather than to a budget of nothing.
+        private _listed = (toLower typeOf _building) in _preferredClasses;
+        private _budget = if (_capped) then {
+            if (_listed && {count _preferred > 0}) then { count _preferred } else { _groupCap }
+        } else {
+            (count _preferred) + (count _overflow)
+        };
+        private _occIdx = count _occupancy;
+        _occupancy pushBack [_building, 0];
+        private _seatedHere = 0;
         if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
             // A non-empty authored list that matches nothing means the curation has gone stale
             // against the model. Without this the change would fail silently and look identical
@@ -581,7 +686,10 @@ private _fnc_claimRound = {
                     if ((toLower typeOf _building) in _preferredClasses) then {"positions from the setting"} else {"built-in positions"}
                 }
             };
-            ["ALIVE_fnc_groupgarrison - %7: class: %1 (%6, %8), %2 positions, group of %3, %4 of %5 authored positions matched", typeOf _building, (count _preferred) + (count _overflow), count units _group, count _preferred, count _authored, _rank, _group, _from] call ALiVE_fnc_dump;
+            private _budgetNote = if (_capped) then {
+                format [", seating up to %1%2", _budget, if (_listed && {count _preferred > 0}) then {" (the positions listed)"} else {""}]
+            } else { "" };
+            ["ALIVE_fnc_groupgarrison - %7: class: %1 (%6, %8), %2 positions, group of %3, %4 of %5 authored positions matched%9", typeOf _building, (count _preferred) + (count _overflow), count units _group, count _preferred, count _authored, _rank, _group, _from, _budgetNote] call ALiVE_fnc_dump;
         };
 
         if (_twoPass) then {
@@ -592,7 +700,7 @@ private _fnc_claimRound = {
             // whatever quota the overflow seats did not use.
             private _authoredOnly = _overflow isEqualTo [];
             {
-                if (count _units == 0) exitWith {};
+                if (count _units == 0 || {_seatedHere >= _budget}) exitWith {};
                 private _seated = _units deleteAt 0;
                 if (_moveInstantly) then {
                     _seated setposATL _x;
@@ -601,20 +709,40 @@ private _fnc_claimRound = {
                 } else {
                     _movementAssignments pushBack [_seated, _x];
                 };
-                if (_authoredOnly) then { _authoredPatrolCandidates pushBack _seated };
+                _seatedHere = _seatedHere + 1;
+                // With a limit in force a man in a curated seat may still patrol, because
+                // the budget can stop the overflow seats being reached at all and a fully
+                // curated objective would otherwise field no patrols whatsoever.
+                if (_authoredOnly || _capped) then { _authoredPatrolCandidates pushBack _seated };
             } forEach _preferred;
+
+            (_occupancy select _occIdx) set [1, _seatedHere];
 
             // Uncurated seats are banked rather than filled, so the second pass can spread the
             // rest of the group across them instead of packing the first building solid.
-            if !(_overflow isEqualTo []) then {
-                _overflowQueues pushBack [_building, _overflow];
-                _bankedOverflow = _bankedOverflow + count _overflow;
+            //
+            // Under a limit the authored seats the budget did not reach head the banked list,
+            // so the drain uses the positions the mission named before any ordinary one, and
+            // only the budget's worth counts towards the claim economy below. Banking the whole
+            // building's worth is what let one house satisfy the early stop on its own and hand
+            // the round-robin a single building to spread twelve men across (#1016).
+            private _leftover = if (_capped) then { (_preferred select [_seatedHere]) + _overflow } else { _overflow };
+            if !(_leftover isEqualTo []) then {
+                _overflowQueues pushBack [_building, _leftover, _occIdx, (count _preferred) - _seatedHere, _budget];
+                _bankedOverflow = _bankedOverflow + (if (_capped) then { ((_budget - _seatedHere) max 0) min (count _leftover) } else { count _overflow });
             };
         } else {
             private _preferredCount = count _preferred;
             private _buildingPositions = _preferred + _overflow;
-        
-            { // foreach _buildingPositions
+
+            // Only the budget's worth is offered. The men above it are NOT banked as
+            // unseated: leaving them in _units keeps the candidate walk going to the next
+            // building, which is what stops one rich building absorbing a whole group
+            // before any other is tried (#1016). A prefix, so the curated test below still
+            // holds.
+            private _offered = if (_capped) then { _buildingPositions select [0, _budget] } else { _buildingPositions };
+
+            { // foreach _offered
 
                 if (count _units == 0) exitWith {};
 
@@ -654,8 +782,24 @@ private _fnc_claimRound = {
                    };
                 };
             
+                // A man the budget kept out of an overflow seat can still be given the
+                // quota later from where he stands, so he is remembered rather than lost.
+                if (_capped && {!_mayPatrol}) then { _authoredPatrolCandidates pushBack _unit };
+
                 _units deleteAt 0;
-            } foreach _buildingPositions;
+                _seatedHere = _seatedHere + 1;
+            } foreach _offered;
+
+            (_occupancy select _occIdx) set [1, _seatedHere];
+
+            // What the budget left behind, for the relaxation to fall back on if every
+            // building this group can reach ends up at its limit.
+            if (_capped) then {
+                private _leftover = _buildingPositions select [_seatedHere];
+                if !(_leftover isEqualTo []) then {
+                    _overflowQueues pushBack [_building, _leftover, _occIdx, (_preferredCount - _seatedHere) max 0, _budget];
+                };
+            };
         };
     } else {
         _claimDenied = _claimDenied + 1;
@@ -666,39 +810,83 @@ private _fnc_claimRound = {
 } forEach _candidates;
 };
 
+// Deals whoever is left one seat per building per cycle, in the same listed-then-curated,
+// nearest-first order the claims were made in. Dealing from the far end would top up the
+// least preferred buildings first whenever the surplus is small.
+//
+// Called twice under a limit. The first pass respects each building's budget, so the men
+// spread across the buildings the group holds without any going over. The second is the
+// relaxation, called only when every building is at its budget and men are still standing,
+// and it ignores the budget so the last men take real places rather than being sent to
+// ambient movement. Without a limit the first call behaves exactly as the loop that stood
+// here before: nothing has a budget to respect and every entry is dealable.
+private _fnc_drain = {
+    params ["_respectBudget"];
+    private _dealt = 0;
+    private _cycles = 0;
+
+    private _fnc_dealable = {
+        _overflowQueues select {
+            !((_x select 1) isEqualTo []) && {!_respectBudget || {((_occupancy select (_x select 2)) select 1) < (_x select 4)}}
+        }
+    };
+
+    private _dealable = call _fnc_dealable;
+    while {count _units > 0 && {!(_dealable isEqualTo [])}} do {
+        {
+            if (count _units == 0) exitWith {};
+            private _entry = _x;
+            _entry params ["_queueBuilding", "_queuePositions", "_qOccIdx", "_curatedLeft"];
+            private _seated = _units deleteAt 0;
+            private _seatPos = _queuePositions deleteAt 0;
+
+            if (_moveInstantly) then {
+                _seated setposATL _seatPos;
+                _seated setdir ((_seated getRelDir _queueBuilding)-180);
+                dostop _seated;
+            } else {
+                _movementAssignments pushBack [_seated, _seatPos];
+            };
+
+            (_occupancy select _qOccIdx) set [1, ((_occupancy select _qOccIdx) select 1) + 1];
+            _dealt = _dealt + 1;
+
+            // Authored seats the budget did not reach head the queue, and they keep the
+            // exemption they have in the first pass: a patroller abandons his position for
+            // good, and the mission named those positions because it wanted them held.
+            private _mayPatrol = _curatedLeft <= 0;
+            if (_curatedLeft > 0) then { _entry set [3, _curatedLeft - 1] };
+
+            if (_mayPatrol && {_guardPatrolPercentage > 0} && {_unitPercentCount > 0} && {count _patrolBuildings > 0}) then {
+                if (!_patrolWaypointsCleared) then {
+                    if !(isNil "_profile") then {
+                        [_profile,"clearWaypoints"] call ALIVE_fnc_profileEntity;
+                    };
+                    _patrolWaypointsCleared = true;
+                };
+                [_group, _seated, _patrolBuildings, ALiVE_SYS_PROFILE_DEBUG_ON, _patrolBehaviour, _patrolSpeed] execFSM "\x\alive\addons\mil_command\buildingPatrol.fsm";
+                _unitPercentCount = _unitPercentCount - 1;
+            };
+        } forEach _dealable;
+        _cycles = _cycles + 1;
+        _dealable = call _fnc_dealable;
+    };
+
+    _overflowQueues = _overflowQueues select { !((_x select 1) isEqualTo []) };
+    [_dealt, _cycles]
+};
+
 [_buildings, _twoPass] call _fnc_claimRound;
 
-// Second pass. Whoever is left is dealt one seat per building per cycle, in the same
-// listed-then-curated, nearest-first order the claims were made in. Dealing from the far
-// end would top up the least preferred buildings first whenever the surplus is small.
-// Overflow seats were always the patrol pool, so these men are patrol eligible as before.
-while {_twoPass && {count _units > 0} && {!(_overflowQueues isEqualTo [])}} do {
-    {
-        if (count _units == 0) exitWith {};
-        _x params ["_queueBuilding", "_queuePositions"];
-        private _seated = _units deleteAt 0;
-        private _seatPos = _queuePositions deleteAt 0;
-
-        if (_moveInstantly) then {
-            _seated setposATL _seatPos;
-            _seated setdir ((_seated getRelDir _queueBuilding)-180);
-            dostop _seated;
-        } else {
-            _movementAssignments pushBack [_seated, _seatPos];
-        };
-
-        if (_guardPatrolPercentage > 0 && {_unitPercentCount > 0} && {count _patrolBuildings > 0}) then {
-            if (!_patrolWaypointsCleared) then {
-                if !(isNil "_profile") then {
-                    [_profile,"clearWaypoints"] call ALIVE_fnc_profileEntity;
-                };
-                _patrolWaypointsCleared = true;
-            };
-            [_group, _seated, _patrolBuildings, ALiVE_SYS_PROFILE_DEBUG_ON, _patrolBehaviour, _patrolSpeed] execFSM "\x\alive\addons\mil_command\buildingPatrol.fsm";
-            _unitPercentCount = _unitPercentCount - 1;
-        };
-    } forEach _overflowQueues;
-    _overflowQueues = _overflowQueues select { !((_x select 1) isEqualTo []) };
+// Second pass. Overflow seats were always the patrol pool, so these men are patrol
+// eligible as before. Only the two-pass path banks anything: without a list every claimed
+// building was already filled to its budget as it was claimed, so a budget-respecting
+// deal would find nothing left to give out.
+if (_twoPass) then {
+    ([_capped] call _fnc_drain) params ["_dealt", "_cycles"];
+    if (ALiVE_SYS_PROFILE_DEBUG_ON && {_dealt > 0}) then {
+        ["ALIVE_fnc_groupGarrison - %1: dealt %2 men round-robin across %3 building(s) with places left in %4 cycle(s), %5 still to seat", _group, _dealt, count _overflowQueues, _cycles, count _units] call ALiVE_fnc_dump;
+    };
 };
 
 // A second look, on the evidence of men still standing. The supply was counted before
@@ -744,10 +932,54 @@ if (count _units > 0 && {_fillShortfall} && {!_lookedBeyond}) then {
 };
 
 
+
+// Under a limit, whoever is still standing after every building has been tried.
+//
+// This is what makes the limit a preference rather than a fence, and it is the whole
+// reason the limit is safe to ship: a man reaches ambient movement below only when every
+// place in every building this group holds is occupied, which is the same condition as
+// before the limit existed.
+if (_capped && {count _units > 0}) then {
+
+    // The patrol quota first. A patroller never needed a seat: today he is given one and
+    // then walks away from it for good, so spending the quota on men who have no seat
+    // recovers waste rather than costing anyone a place.
+    if (_guardPatrolPercentage > 0 && {_unitPercentCount > 0} && {count _patrolBuildings > 0}) then {
+        while {_unitPercentCount > 0 && {count _units > 0}} do {
+            private _walker = _units deleteAt 0;
+            if (!_patrolWaypointsCleared) then {
+                if !(isNil "_profile") then {
+                    [_profile,"clearWaypoints"] call ALIVE_fnc_profileEntity;
+                };
+                _patrolWaypointsCleared = true;
+            };
+            [_group, _walker, _patrolBuildings, ALiVE_SYS_PROFILE_DEBUG_ON, _patrolBehaviour, _patrolSpeed] execFSM "\x\alive\addons\mil_command\buildingPatrol.fsm";
+            _unitPercentCount = _unitPercentCount - 1;
+            _patrolFromStart = _patrolFromStart + 1;
+        };
+        if (ALiVE_SYS_PROFILE_DEBUG_ON && {_patrolFromStart > 0}) then {
+            ["ALIVE_fnc_groupGarrison - %1: %2 man/men left over given the unused patrol quota from where they stood, %3 still to seat", _group, _patrolFromStart, count _units] call ALiVE_fnc_dump;
+        };
+    };
+
+    // Then the limit gives way. Every building held is at its budget and men are still
+    // standing, so the budget is dropped and the same round-robin deals them into the
+    // places left over, one per building per cycle so no single building takes them all.
+    if (count _units > 0 && {(_overflowQueues findIf {!((_x select 1) isEqualTo [])}) > -1}) then {
+        private _left = 0;
+        { _left = _left + count (_x select 1) } forEach _overflowQueues;
+        if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
+            ["ALIVE_fnc_groupGarrison - %1: limit of %2 per building reached in all %3 building(s) held, %4 still to seat, dealing them into the %5 place(s) left over", _group, _groupCap, count _occupancy, count _units, _left] call ALiVE_fnc_dump;
+        };
+        [false] call _fnc_drain;
+    };
+};
+
 // Whatever quota the overflow seats did not use goes last to men in authored-only
 // buildings, the same men who are allowed to patrol today when their building offers
-// nothing else.
-if (_twoPass && {_guardPatrolPercentage > 0} && {count _patrolBuildings > 0}) then {
+// nothing else. With a limit in force the pool also holds men the budget kept out of an
+// overflow seat, who would otherwise never be considered.
+if ((_twoPass || _capped) && {_guardPatrolPercentage > 0} && {count _patrolBuildings > 0}) then {
     {
         if (_unitPercentCount <= 0) exitWith {};
         if (!_patrolWaypointsCleared) then {
@@ -765,8 +997,13 @@ if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
     // With _moveInstantly false nobody has moved yet - the men are only given somewhere to
     // walk to, and whether they arrive is decided after this function returns.
     private _verb = if (_moveInstantly) then {"seated"} else {"given positions to walk to"};
-    ["ALIVE_fnc_groupGarrison - %6: %1 %2 of %3 men across %4 buildings, %5 refused as already claimed by another group",
-     _verb, _seatDemand - (count _units), _seatDemand, _claimed, _claimDenied, _group] call ALiVE_fnc_dump;
+    // How the men actually landed, building by building, in claim order. Reconstructing
+    // this from the class lines by hand is how the packing was found in the first place.
+    private _perBuilding = if (_occupancy isEqualTo []) then {"none"} else {(_occupancy apply {_x select 1}) joinString "/"};
+    private _limitNote = if (_capped) then {_groupCap} else {"none"};
+    private _patrolNote = if (_patrolFromStart > 0) then {format [", %1 of them patrolling from where they stood", _patrolFromStart]} else {""};
+    ["ALIVE_fnc_groupGarrison - %6: %1 %2 of %3 men across %4 buildings (%7 per building, limit %8)%9, %5 refused as already claimed by another group",
+     _verb, _seatDemand - (count _units), _seatDemand, _claimed, _claimDenied, _group, _perBuilding, _limitNote, _patrolNote] call ALiVE_fnc_dump;
 };
 // DEBUG -------------------------------------------------------------------------------------
 

@@ -153,6 +153,13 @@ class garrisonBuildingBlacklist
 	RECOMPILE;
 };
 
+class garrisonOccupancyLimit
+{
+	file = "\x\alive\addons\x_lib\functions\behaviour\fnc_garrisonOccupancyLimit.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
 class groupGarrison
 {
 	file = "\x\alive\addons\x_lib\functions\behaviour\fnc_groupGarrison.sqf";

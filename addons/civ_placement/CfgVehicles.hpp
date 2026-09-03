@@ -304,6 +304,7 @@ class CfgVehicles {
                                 tooltip = "$STR_ALIVE_CP_GARRISON_BUILDING_BLACKLIST_COMMENT";
                                 defaultValue = """""";
                         };
+                        class garrisonOccupancyLimit : Edit { property = "ALiVE_civ_placement_garrisonOccupancyLimit"; displayName = "$STR_ALIVE_CP_GARRISON_OCCUPANCY_LIMIT"; tooltip = "$STR_ALIVE_CP_GARRISON_OCCUPANCY_LIMIT_COMMENT"; defaultValue = """"""; };
 
                         // ---- Roadblocks -----------------------------------------------------
                         class HDR_ROADBLOCKS : ALiVE_ModuleSubTitle { property = "ALiVE_civ_placement_HDR_ROADBLOCKS"; displayName = "$STR_ALIVE_CP_HDR_ROADBLOCKS"; };
