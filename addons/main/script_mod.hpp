@@ -58,6 +58,15 @@
 //    #define DEBUG_ENABLED_mil_ied
 //    #define DEBUG_ENABLED_mil_ato
 
+// Enable debug-only assertions across every component. ASSERT_DEBUG expands to
+// nothing in normal builds, so neither its condition nor message is evaluated.
+// #define ALIVE_DEBUG_ASSERTS
+#ifdef ALIVE_DEBUG_ASSERTS
+    #define ASSERT_DEBUG(CONDITION,MESSAGE) ASSERT_TRUE(CONDITION,MESSAGE)
+#else
+    #define ASSERT_DEBUG(CONDITION,MESSAGE)
+#endif
+
 // Set automated tests
 // #define AUTOMATED_TESTS QUOTE(MAIN),QUOTE(SYS_LOGISTICS),QUOTE(SYS_GC),QUOTE(MIL_CQB),QUOTE(MIL_OPCOM)
 
