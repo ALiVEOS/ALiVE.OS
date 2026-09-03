@@ -1029,7 +1029,7 @@ switch (_operation) do {
         if ({!(isnil "_x") && {_x select 0 == _target}} count _attackedE < 1) then {
             ([_logic, ["infantry","motorized","mechanized","armored","artillery","AAA","air"]] call ALiVE_fnc_hashGetMany) params [
                 "_infantry","_motorized","_mechanized","_armored","_artillery","_AAA","_air"
-            ]
+            ];
 
             switch (_type) do {
                 case ("infantry") : {
