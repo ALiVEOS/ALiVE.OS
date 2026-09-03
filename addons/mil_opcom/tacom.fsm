@@ -1184,9 +1184,10 @@ class FSM
                          "    default {_attackSectionTypes};" \n
                          "};" \n
                          "_section = [_objective, ""section"",[]] call ALiVE_fnc_HashGet;" \n
+                         "private _profilesById = [ALiVE_profileHandler,""profilesById""] call ALiVE_fnc_hashGet;" \n
                          "{" \n
                          "    private [""_profile""];" \n
-                         "    _profile = [ALiVE_ProfileHandler,""getProfile"",_x] call ALiVE_fnc_ProfileHandler;" \n
+                         "    _profile = _profilesById get _x;" \n
                          "" \n
                          "    if (isnil ""_profile"") then {" \n
                          "        [_OPCOM_HANDLER,""resetorders"",_x] call ALiVE_fnc_OPCOM;" \n

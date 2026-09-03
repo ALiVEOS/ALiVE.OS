@@ -912,8 +912,9 @@ switch (_operation) do {
         _result = _nearEnemies;
     };
 
-    case "attackentity": {
-        ASSERT_TRUE(typeName _args == "ARRAY",str _args);
+    case "attackentity";
+    case "attackEntity": {
+        ASSERT_TRUE(_args isequaltype [],str _args);
 
         private ["_target","_reserved","_sides","_size","_type","_proIDs","_knownE","_attackedE","_pos","_profiles","_profileIDs","_profile","_section","_profileID","_i","_waypoints","_posAttacker","_dist","_rtb","_fireSupport","_vehicleProfile","_vehicleType","_ATOtype"];
 
@@ -925,10 +926,11 @@ switch (_operation) do {
         _profileIDs = [];
         _profiles = [];
         _dist = 1000;
+
+        private _profilesById = [ALiVE_ProfileHandler,"profilesById"] call ALiVE_fnc_hashGet;
         
-        _profile = [ALiVE_ProfileHandler,"getProfile",_target] call ALiVE_fnc_ProfileHandler;
-        //Attempt to solve the error resulting from the race condition between the profile death and this call
-        if (isnil "_profile") exitwith {_result = _section}; //Exit early
+        _profile = _profilesById get _target;
+        if (isnil "_profile") exitwith {_result = []}; //Exit early
         
         _side = [_logic,"side"] call ALiVE_fnc_HashGet;
         _factions = [_logic,"factions"] call ALiVE_fnc_HashGet;
@@ -940,7 +942,7 @@ switch (_operation) do {
 
         _vehicles = ([_profile,"vehicleAssignments",[[],[]]] call ALIVE_fnc_hashGet) select 1;
         if (count _vehicles > 0) then {
-            _vehicleProfile = [ALiVE_ProfileHandler,"getProfile",_vehicles select 0] call ALiVE_fnc_ProfileHandler;
+            _vehicleProfile = _profilesById get (_vehicles select 0);
         };
 
 
@@ -995,7 +997,7 @@ switch (_operation) do {
                 if (!isnil "_x" && {_x isEqualType []} && {count _x > 0}) then {
                     private _cID = _x select 0;
                     if (({!(isnil "_x") && {_x isEqualType []} && {(_x select 0) == _cID}} count _artyReq) < 1) then {
-                        private _cProfile = [ALiVE_ProfileHandler,"getProfile",_cID] call ALiVE_fnc_ProfileHandler;
+                        private _cProfile = _profilesById get _cID;
                         if (!isnil "_cProfile") then {
                             private _cPos = [_cProfile,"position"] call ALiVE_fnc_HashGet;
                             // _cID is still a member of _knownE (unlike the #887
@@ -1004,7 +1006,7 @@ switch (_operation) do {
                             // the weight would run one high and relax selectivity.
                             private _cContacts = ({
                                 !isnil "_x" && {_x isEqualType []} && {count _x > 0} && {
-                                    private _kP = [ALiVE_ProfileHandler,"getProfile",_x select 0] call ALiVE_fnc_ProfileHandler;
+                                    private _kP = _profilesById get (_x select 0);
                                     !isnil "_kP" && {([_kP,"position"] call ALiVE_fnc_HashGet) distance2D _cPos < 200}
                                 }
                             } count _knownE);
@@ -1016,21 +1018,18 @@ switch (_operation) do {
                     };
                 };
             } forEach _knownE;
+
             if (_artyEvents isNotEqualTo []) then {
-                [ALIVE_eventLog, "addEvents", _artyEvents] call ALIVE_fnc_eventLog;
+                [ALIVE_eventLog,"addEvents", _artyEvents] call ALIVE_fnc_eventLog;
             };
-            [_logic,"artyRequestedEntities",_artyReq] call ALiVE_fnc_HashSet;
+
+            [_logic,"artyRequestedEntities", _artyReq] call ALiVE_fnc_HashSet;
         };
 
         if ({!(isnil "_x") && {_x select 0 == _target}} count _attackedE < 1) then {
-
-            private _infantry = [_logic,"infantry",[]] call ALiVE_fnc_HashGet;
-            private _motorized = [_logic,"motorized",[]] call ALiVE_fnc_HashGet;
-            private _mechanized = [_logic,"mechanized",[]] call ALiVE_fnc_HashGet;
-            private _armored = [_logic,"armored",[]] call ALiVE_fnc_HashGet;
-            private _artillery = [_logic,"artillery",[]] call ALiVE_fnc_HashGet;
-            private _AAA = [_logic,"AAA",[]] call ALiVE_fnc_HashGet;
-            private _air = [_logic,"air",[]] call ALiVE_fnc_HashGet;
+            ([_logic, ["infantry","motorized","mechanized","armored","artillery","AAA","air"]] call ALiVE_fnc_hashGetMany) params [
+                "_infantry","_motorized","_mechanized","_armored","_artillery","_AAA","_air"
+            ]
 
             switch (_type) do {
                 case ("infantry") : {
@@ -1069,7 +1068,6 @@ switch (_operation) do {
 
 
             if (!isnil "_rtb" && {["ALiVE_mil_ATO"] call ALiVE_fnc_IsModuleAvailable}) exitwith {
-
                 _ATOtype = "CAS";
 
                 // ["Calling ATO event"] call ALiVE_fnc_DumpR;
@@ -1085,10 +1083,10 @@ switch (_operation) do {
                     [_target]  // TARGETS either profile or unit
                 ];
                 _event = ['ATO_REQUEST', [_ATOtype, [_side] call ALiVE_fnc_sideTextToObject, _factions select 0, _pos, _args],"OPCOM"] call ALIVE_fnc_event;
-                _eventID = [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
+                _eventID = [ALIVE_eventLog,"addEvent", _event] call ALIVE_fnc_eventLog;
 
                 _attackedE pushback [_target,_pos,_section,time];
-                [_logic,"attackedentities",_attackedE] call ALiVE_fnc_HashSet;
+                [_logic,"attackedentities", _attackedE] call ALiVE_fnc_HashSet;
             };
 
             // #887 - with the AI artillery module present, every contact
@@ -1101,8 +1099,7 @@ switch (_operation) do {
             // battery actually answers, so asking costs nothing when the
             // guns are busy, dry or out of range
             if (["ALiVE_mil_artillery"] call ALiVE_fnc_IsModuleAvailable) then {
-
-                private _targetProfile = [ALiVE_ProfileHandler,"getProfile",_target] call ALiVE_fnc_ProfileHandler;
+                private _targetProfile = _profilesById get _target;
                 if (!isnil "_targetProfile") then {
                     private _targetPos = [_targetProfile,"position"] call ALiVE_fnc_HashGet;
 
@@ -1113,7 +1110,7 @@ switch (_operation) do {
                     private _contacts = 1;
                     {
                         if (!isnil "_x" && {_x isEqualType []} && {count _x > 0}) then {
-                            private _kProfile = [ALiVE_ProfileHandler,"getProfile",_x select 0] call ALiVE_fnc_ProfileHandler;
+                            private _kProfile = _profilesById get (_x select 0);
                             if (!isnil "_kProfile") then {
                                 if (([_kProfile,"position"] call ALiVE_fnc_HashGet) distance2D _targetPos < 200) then {
                                     _contacts = _contacts + 1;
@@ -1125,7 +1122,7 @@ switch (_operation) do {
                     private _asym = ([_logic,"controltype",""] call ALiVE_fnc_HashGet) == "asymmetric";
 
                     private _aEvent = ['ARTY_REQUEST', [_target, _targetPos, _contacts, [_side] call ALiVE_fnc_sideTextToObject, _factions select 0, _asym],"OPCOM"] call ALIVE_fnc_event;
-                    [ALIVE_eventLog, "addEvent",_aEvent] call ALIVE_fnc_eventLog;
+                    [ALIVE_eventLog,"addEvent", _aEvent] call ALIVE_fnc_eventLog;
                 };
             };
 
@@ -1133,12 +1130,12 @@ switch (_operation) do {
             // fire missions instead of driving at the enemy like line units
             if (!isnil "_fireSupport") exitwith {
                 _attackedE pushback [_target,_pos,_section,time];
-                [_logic,"attackedentities",_attackedE] call ALiVE_fnc_HashSet;
+                [_logic,"attackedentities", _attackedE] call ALiVE_fnc_HashSet;
             };
 
             if (count _profiles == 0) then {
                 {
-                    if (count _x > 0) exitwith {
+                    if (_x isnotequalto []) exitwith {
                         _profiles = _x;
                         _rtb = nil;
                     };
@@ -1147,73 +1144,79 @@ switch (_operation) do {
 
             if (count _profiles > 0) then {
 
-                _profilesUnsorted = _profiles;
-                _profiles = [_profilesUnsorted,[_pos],{if !(isnil "_x") then {_p = nil; _p = [ALiVE_ProfileHandler,"getProfile",_x] call ALiVE_fnc_ProfileHandler; if !(isnil "_p") then {([_p,"position",_Input0] call ALiVE_fnc_HashGet) distance _Input0} else {[0,0,0] distance _Input0}} else {[0,0,0] distance _Input0}},"ASCEND"] call ALiVE_fnc_SortBy;
+                // A QRF only needs _size sections (normally one or two). Query
+                // the profile spatial grid instead of sorting every section in
+                // the force, then keep a distance-ordered bounded candidate set.
+                private _eligibleProfileIDs = createHashMap;
+                {_eligibleProfileIDs set [_x, true]} forEach _profiles;
+                private _nearProfiles = [_pos, _dist, [_side,"entity"]] call ALiVE_fnc_getNearProfiles;
+                private _candidates = [];
+                {
+                    private _candidateProfile = _x;
+                    private _profileID = [_candidateProfile,"profileID",""] call ALiVE_fnc_HashGet;
 
-                _i = 0;
-                while {count _section < _size} do {
-                    private ["_profileWaypoint","_profileID"];
-
-                    if (_i >= count _profiles) exitwith {};
-
-                        _profileID = (_profiles select _i);
-                    _profile = ([ALiVE_ProfileHandler,"getProfile",_profileID] call ALiVE_fnc_profileHandler);
-
-                    if !(isnil "_profile") then {
-                            _posAttacker = [_profile, "position"] call ALiVE_fnc_HashGet;
-
-                        // Static AA gate (see "nearestSection" case for
-                        // rationale). Static AA never gets pulled into a
-                        // QRF response - stays at its emplaced spawn.
+                    if (!isnil "_candidateProfile" && {_eligibleProfileIDs getOrDefault [_profileID, false]}) then {
+                        private _candidatePos = [_candidateProfile, "position"] call ALiVE_fnc_HashGet;
                         private _aaBehVal = if (!isNil "ALIVE_aaProfileBehaviour") then {
                             [ALIVE_aaProfileBehaviour, _profileID] call ALIVE_fnc_hashGet
                         } else { nil };
                         private _isStaticAA = !isNil "_aaBehVal" && {typeName _aaBehVal == "STRING"} && {_aaBehVal == "static"};
 
-                        if (!(isnil "_profile") && {_pos distance _posAttacker < _dist} && {!(_profileID in _reserved)} && {!_isStaticAA} && {!(!isNil "ALIVE_profileStationary" && {[ALIVE_profileStationary, _profileID, false] call ALIVE_fnc_hashGet})}) then {
+                        private _candidateDistance = _pos distance _candidatePos;
+                        if (_candidateDistance < _dist && {!(_profileID in _reserved)} && {!_isStaticAA} && {!(!isNil "ALIVE_profileStationary" && {[ALIVE_profileStationary, _profileID, false] call ALIVE_fnc_hashGet})}) then {
+                            private _candidateWaypoints = [_candidateProfile,"waypoints"] call ALIVE_fnc_hashGet;
 
-                            _waypoints = [_profile,"waypoints"] call ALIVE_fnc_hashGet;
-
-                            if (({!(isnil "_x") && {_profileID in (_x select 2)}} count _attackedE) < 1 && {count _waypoints <= 2}) then {
-                                if (!isnil "_rtb") then {
-                                    _profileWaypoint = [_posAttacker, 50] call ALIVE_fnc_createProfileWaypoint;
-                                    [_profileWaypoint,"statements",["true",
-                                        format["
-                                            if !(isServer) exitwith {};
-
-                                            _profile = [ALiVE_ProfileHandler,'getProfile',%1] call ALiVE_fnc_profileHandler;
-                                            _active = [_profile,'active',false] call ALiVE_fnc_HashGet;
-
-                                            if (_active) then {
-                                                _group = _profile select 2 select 13;
-                                                _group setSpeedmode 'LIMITED';
-                                                {(vehicle _x) land 'LAND'} foreach (units _group);
-                                            } else {
-                                                _vehicleProfiles = [_profile,'vehiclesInCommandOf',[]] call ALIVE_fnc_hashGet;
-
-                                                {
-                                                    _vehicleProfile = [ALiVE_ProfileHandler,'getProfile',_x] call ALiVE_fnc_ProfileHandler;
-                                                    [_vehicleProfile,'engineOn',false] call ALIVE_fnc_HashSet;
-                                                } foreach _vehicleProfiles;
-                                            };
-                                        ",str(_profileID)]
-                                    ]] call ALIVE_fnc_hashSet;
-
-                                    [_profile,"insertWaypoint",_profileWaypoint] call ALIVE_fnc_profileEntity;
+                            if (({!(isnil "_x") && {_profileID in (_x select 2)}} count _attackedE) < 1 && {count _candidateWaypoints <= 2}) then {
+                                private _candidate = [_candidateDistance, _profileID, _candidateProfile, _candidatePos];
+                                private _insertAt = _candidates findIf {(_candidate select 0) < (_x select 0)};
+                                if (_insertAt < 0) then {
+                                    _candidates pushBack _candidate;
+                                } else {
+                                    _candidates insert [_insertAt, [_candidate]];
                                 };
-
-                                _profileWaypoint = [_pos, 50, "MOVE", "FULL", 50, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
-                                [_profile,"insertWaypoint",_profileWaypoint] call ALIVE_fnc_profileEntity;
-
-                                _section pushback _profileID;
-                            } else {
-                                //player sidechat format["Entity %1 is already on attack mission...!",_profileID];
+                                if (count _candidates > _size) then {
+                                    _candidates deleteAt _size;
+                                };
                             };
                         };
                     };
+                } forEach _nearProfiles;
 
-                    _i = _i + 1;
-                };
+                {
+                    _x params ["_candidateDistance", "_profileID", "_profile", "_posAttacker"];
+                    private _profileWaypoint = [];
+
+                    if (!isnil "_rtb") then {
+                        _profileWaypoint = [_posAttacker, 50] call ALIVE_fnc_createProfileWaypoint;
+                        [_profileWaypoint,"statements",["true",
+                            format["
+                                if !(isServer) exitwith {};
+
+                                _profile = [ALiVE_ProfileHandler,'getProfile',%1] call ALiVE_fnc_profileHandler;
+                                _active = [_profile,'active',false] call ALiVE_fnc_HashGet;
+
+                                if (_active) then {
+                                    _group = _profile select 2 select 13;
+                                    _group setSpeedmode 'LIMITED';
+                                    {(vehicle _x) land 'LAND'} foreach (units _group);
+                                } else {
+                                    _vehicleProfiles = [_profile,'vehiclesInCommandOf',[]] call ALIVE_fnc_hashGet;
+
+                                    {
+                                        _vehicleProfile = [ALiVE_ProfileHandler,'getProfile',_x] call ALiVE_fnc_ProfileHandler;
+                                        [_vehicleProfile,'engineOn',false] call ALIVE_fnc_HashSet;
+                                    } foreach _vehicleProfiles;
+                                };
+                            ",str(_profileID)]
+                        ]] call ALIVE_fnc_hashSet;
+
+                        [_profile,"insertWaypoint",_profileWaypoint] call ALIVE_fnc_profileEntity;
+                    };
+
+                    _profileWaypoint = [_pos, 50, "MOVE", "FULL", 50, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
+                    [_profile,"insertWaypoint",_profileWaypoint] call ALIVE_fnc_profileEntity;
+                    _section pushBack _profileID;
+                } forEach _candidates;
 
                 if (count _section > 0) then {
                     _attackedE pushback [_target,_pos,_section,time];
@@ -3317,27 +3320,22 @@ switch (_operation) do {
     };
 
     case "nearestEntity": {
-        ASSERT_TRUE(typeName _args == "ARRAY" && {count _args >= 1},str _args);
+        ASSERT_TRUE(_args isequaltype [] && {count _args >= 1},str _args);
 
         private ["_objectives","_state"];
 
-        _unit = _args select 0;
-        _state = _args select 1; if (isnil "_state") then {_state = "attacking"};
+        _args params ["_unit", ["_state","attacking"]];
 
-        _pos = getposATL _unit;
-        _faction = faction _unit;
+        private _pos = getposATL _unit;
+        private _faction = faction _unit;
 
-        _objectives = [_logic,"nearestObjectives",[_pos,_state]] call ALiVE_fnc_OPCOM;
+        private _objectives = [_logic,"nearestObjectives", [_pos,_state]] call ALiVE_fnc_OPCOM;
+        if (_objectives isequalto []) exitwith {};
 
-        if (count _objectives == 0) exitwith {};
-
+        private _profilesById = [ALiVE_profileHandler,"profilesById"] call ALiVE_fnc_hashGet;
         {
-            private ["_profile"];
-
-            _profile = [ALiVE_ProfileHandler,"getProfile",_x] call ALiVE_fnc_ProfileHandler;
-
-            if !(isnil "_profile") exitwith {_result = _x}
-        } foreach ([_objectives select 0,"section",[]] call ALiVE_fnc_HashGet);
+            if !(isnil {_profilesById get _x}) exitwith {_result = _x}
+        } foreach ([_objectives select 0,"section"] call ALiVE_fnc_HashGet);
     };
 
     case "joinObjectiveClient": {
@@ -3421,9 +3419,16 @@ switch (_operation) do {
             ["_objective", [], [[]]]
         ];
 
-        _section = ([_objective,"section",[]] call ALiVE_fnc_HashGet) - [_unit getvariable ["profileID",""]]; if (count _section <= 0) then {_error = "OPCOM responds that the select section is destroyed!"};
-        _profile = [ALiVE_ProfileHandler,"getProfile",_section select 0] call ALiVE_fnc_ProfileHandler; if (isnil "_profile") then {_error = "OPCOM reports that the assigned group is already dead!"};
-        _profileUnit = [ALiVE_ProfileHandler,"getProfile",_unit getvariable ["profileID",""]] call ALiVE_fnc_ProfileHandler; if (isnil "_profileUnit") then {_error = "OPCOM reports that players group cannot be assigned!"};
+        _section = ([_objective,"section",[]] call ALiVE_fnc_HashGet) - [_unit getvariable ["profileID",""]];
+        if (count _section <= 0) then {_error = "OPCOM responds that the select section is destroyed!"};
+
+        private _profilesById = [ALiVE_profileHandler,"profilesById"] call ALiVE_fnc_hashGet;
+
+        _profile = _profilesById get (_section select 0);
+        if (isnil "_profile") then {_error = "OPCOM reports that the assigned group is already dead!"};
+        
+        _profileUnit = _profilesById get (_unit getvariable ["profileID",""]);
+        if (isnil "_profileUnit") then {_error = "OPCOM reports that players group cannot be assigned!"};
 
         if !(isnil "_error") exitwith {hint _error; ["%1",_error] call ALiVE_fnc_Dump};
 
@@ -3649,10 +3654,12 @@ switch (_operation) do {
             _result = [_inf,_mot,_mech,_arm,_air,_sea,_arty,_AAA];
         };
 
+        private _profilesById = [ALiVE_profileHandler,"profilesById"] call ALiVE_fnc_hashGet;
+
         {
             private ["_profile","_assignments","_type","_objectType","_vehicleClass","_busy"];
 
-            _profile = [ALIVE_profileHandler, "getProfile",_x] call ALIVE_fnc_profileHandler;
+            _profile = _profilesById get _x;
 
             if !(isnil "_profile") then {
 
