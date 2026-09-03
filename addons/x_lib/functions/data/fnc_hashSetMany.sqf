@@ -41,7 +41,7 @@ private _hasDefault = !isnil "_defaultValue";
 {
     _x params ["_key","_value"];
 
-    private _isDefault = _hasDefault && { _value isequalto _defaultValue };
+    private _isDefault = (!_hasDefault && {isNil "_value"}) || {_hasDefault && {!isNil "_value"} && {_value isEqualTo _defaultValue}};
 
     private _keyIndex = _keys find _key;
     if (_keyIndex != -1) then {
@@ -52,7 +52,7 @@ private _hasDefault = !isnil "_defaultValue";
             _values set [_keyIndex, _value];
         }
     } else {
-        if (!_isDefault) then {
+        if (!_isDefault && {!isNil "_value"}) then {
             _keys pushBack _key;
             _values pushBack _value;
         };
