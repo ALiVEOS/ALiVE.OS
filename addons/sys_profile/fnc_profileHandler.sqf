@@ -74,6 +74,8 @@ nil
 #define SUPERCLASS ALIVE_fnc_baseClassHash
 #define MAINCLASS ALIVE_fnc_profileHandler
 
+#define MTEMPLATE "ALiVE_PROFILEHANDLER_%1"
+
 private ["_result"];
 
 TRACE_1("profileHandler - input",_this);
@@ -85,7 +87,7 @@ params [
 ];
 //_result = true;
 
-#define MTEMPLATE "ALiVE_PROFILEHANDLER_%1"
+PROFILE_SCOPE(OPERATION,_operation)
 
 switch(_operation) do {
 
@@ -319,14 +321,12 @@ switch(_operation) do {
         if (_args isEqualType []) then {
             private _profile = _args;
 
-            private _profiles = [_logic,"profiles"] call ALIVE_fnc_hashGet;
-            private _profilesByType = [_logic,"profilesByType"] call ALIVE_fnc_hashGet;
-            private _profilesCatagorised = [_logic,"profilesCatagorised"] call ALIVE_fnc_hashGet;
+            ([_logic, ["profiles","profilesByType","profilesCatagorised","profilesById"]] call ALiVE_fnc_hashGetMany) params ["_profiles","_profilesByType","_profilesCatagorised","_profilesById"];
 
-            private _profileSide = [_profile,"side"] call ALIVE_fnc_hashGet;
-            private _profileID = [_profile,"profileID"] call ALIVE_fnc_hashGet;
-            private _profileType = [_profile,"type"] call ALIVE_fnc_hashGet;
-            private _profilePosition = [_profile,"position"] call ALIVE_fnc_hashGet;
+            private _profileSide = _profile select 2 select 3;
+            private _profileID = _profile select 2 select 4;
+            private _profileType = _profile select 2 select 5;
+            private _profilePosition = _profile select 2 select 2;
 
             // insert into spacial grid
             private _spacialGrid = [ALiVE_profileSystem,"spacialGridProfiles"] call ALiVE_fnc_hashGet;
@@ -340,7 +340,6 @@ switch(_operation) do {
             [_profiles, _profileID, _profile] call ALIVE_fnc_hashSet;
 
             // Maintain the native profile-ID index.
-            private _profilesById = [_logic,"profilesById"] call ALIVE_fnc_hashGet;
             _profilesById set [_profileID, _profile];
 
             // store reference to main profile on by type hash
@@ -348,14 +347,13 @@ switch(_operation) do {
             _profilesType pushback _profileID;
 
             // store reference to main profile on by catagorised type hash
-            private _profilesCatagorisedTypes = [_profilesCatagorisedSide, "type"] call ALIVE_fnc_hashGet;
-            _profilesCatagorisedType = [_profilesCatagorisedTypes, _profileType] call ALIVE_fnc_hashGet;
+            private _profilesCatagorisedTypes = [_profilesCatagorisedSide,"type"] call ALIVE_fnc_hashGet;
+            _profilesCatagorisedType = [_profilesCatagorisedTypes,_profileType] call ALIVE_fnc_hashGet;
             _profilesCatagorisedType pushback _profileID;
 
 
-            // DEBUG -------------------------------------------------------------------------------------
-            if([_logic,"debug"] call ALIVE_fnc_hashGet) then {
-                switch(_profileType) do {
+            if ([_logic,"debug"] call ALIVE_fnc_hashGet) then {
+                switch (_profileType) do {
                     case "entity": {
                         [_profile,"debug", true] call ALIVE_fnc_profileEntity;
                     };
@@ -364,13 +362,9 @@ switch(_operation) do {
                     };
                 };
                 ["Profile Handler - Register Profile [%1]",_profileID] call ALiVE_fnc_dump;
-                //_profile call ALIVE_fnc_inspectHash;
             };
-            // DEBUG -------------------------------------------------------------------------------------
 
-
-            if (_profileType in ["entity","vehicle","civ"]) then {
-
+            if (_profileType in ["entity","vehicle"]) then {
                 // store reference to main profile on by side hash
                 private _profilesBySide = [_logic,"profilesBySide"] call ALIVE_fnc_hashGet;
                 private _profilesSide = [_profilesBySide, _profileSide] call ALIVE_fnc_hashGet;
@@ -381,24 +375,22 @@ switch(_operation) do {
                 private _profilesSideFull = [_profilesBySideFull, _profileSide] call ALIVE_fnc_hashGet;
                 [_profilesSideFull, _profileID, _profile] call ALIVE_fnc_hashSet;
 
-                private ["_profilesFactionType","_profilesFactionVehicleType"];
-
                 // store reference to main profile on by faction hash
+
+                ([_logic, ["profilesByFaction","profilesByFactionByType","profilesByFactionByVehicleType"]] call ALiVE_fnc_hashGetMany) params ["_profilesByFaction","_profilesByFactionByType","_profilesByFactionByVehicleType"];
 
                 private _profileFaction = [_profile,"faction"] call ALIVE_fnc_hashGet;
 
-                private _profilesByFaction = [_logic,"profilesByFaction"] call ALIVE_fnc_hashGet;
                 private _profilesFaction = [_profilesByFaction, _profileFaction] call ALIVE_fnc_hashGet;
 
-                private _profilesByFactionByType = [_logic,"profilesByFactionByType"] call ALIVE_fnc_hashGet;
-                private _profilesByFactionByVehicleType = [_logic,"profilesByFactionByVehicleType"] call ALIVE_fnc_hashGet;
+                private ["_profilesFactionType","_profilesFactionVehicleType"];
 
                 if (!isnil "_profilesFaction") then {
-                    _profilesFactionType = [_profilesByFactionByType, _profileFaction] call ALIVE_fnc_hashGet;
-                    _profilesFactionVehicleType = [_profilesByFactionByVehicleType, _profileFaction] call ALIVE_fnc_hashGet;
+                    _profilesFactionType = [_profilesByFactionByType,_profileFaction] call ALIVE_fnc_hashGet;
+                    _profilesFactionVehicleType = [_profilesByFactionByVehicleType,_profileFaction] call ALIVE_fnc_hashGet;
                 } else {
                     _profilesFaction = [];
-                    [_profilesByFaction, _profileFaction, _profilesFaction] call ALIVE_fnc_hashSet;
+                    [_profilesByFaction,_profileFaction, _profilesFaction] call ALIVE_fnc_hashSet;
 
                     _profilesFactionType = [
                         [
@@ -406,7 +398,7 @@ switch(_operation) do {
                             ["vehicle", []]
                         ]
                     ] call ALIVE_fnc_hashCreate;
-                    [_profilesByFactionByType, _profileFaction, _profilesFactionType] call ALIVE_fnc_hashSet;
+                    [_profilesByFactionByType,_profileFaction, _profilesFactionType] call ALIVE_fnc_hashSet;
 
                     _profilesFactionVehicleType = [
                         [
@@ -421,7 +413,7 @@ switch(_operation) do {
                             ["Vehicle", []]
                         ]
                     ] call ALIVE_fnc_hashCreate;
-                    [_profilesByFactionByVehicleType, _profileFaction, _profilesFactionVehicleType] call ALIVE_fnc_hashSet;
+                    [_profilesByFactionByVehicleType,_profileFaction, _profilesFactionVehicleType] call ALIVE_fnc_hashSet;
                 };
 
                 _profilesFaction pushback _profileID;
@@ -429,36 +421,33 @@ switch(_operation) do {
                 private _profileFactionType = [_profilesFactionType, _profileType] call ALIVE_fnc_hashGet;
                 _profileFactionType pushback _profileID;
 
-                if ([_profile, "active"] call ALIVE_fnc_hashGet) then {
-                    private _profilesActive = [_logic,"profilesActive"] call ALIVE_fnc_hashGet;
+                if ([_profile,"active"] call ALIVE_fnc_hashGet) then {
+                    ([_logic, ["profilesActive","profilesActiveBySide","entitiesActive"]] call ALiVE_fnc_hashGetMany) params ["_profilesActive","_profilesActiveBySide","_entityProfilesActive"];
+
                     _profilesActive pushback _profileID;
 
                     // store profile on side hash
-                    private _profilesActiveBySide = [_logic,"profilesActiveBySide"] call ALIVE_fnc_hashGet;
                     private _profilesActiveSide = [_profilesActiveBySide, _profileSide] call ALIVE_fnc_hashGet;
                     [_profilesActiveSide, _profileID, _profile] call ALIVE_fnc_hashSet;
 
                     if (_profileType == "entity") then {
-                        private _entityProfilesActive = [_logic,"entitiesActive"] call ALIVE_fnc_hashGet;
                         _entityProfilesActive pushback _profileID;
                     };
                 } else {
-                    private _profilesInActive = [_logic,"profilesInActive"] call ALIVE_fnc_hashGet;
+                    ([_logic, ["profilesInActive","profilesInActiveBySide","entitiesInActive"]] call ALiVE_fnc_hashGetMany) params ["_profilesInActive","_profilesInActiveBySide","_entityProfilesInActive"];
+
                     _profilesInActive pushback _profileID;
 
                     // store profile on side hash
-                    private _profilesInActiveBySide = [_logic,"profilesInActiveBySide"] call ALIVE_fnc_hashGet;
                     private _profilesInActiveSide = [_profilesInActiveBySide, _profileSide] call ALIVE_fnc_hashGet;
                     [_profilesInActiveSide, _profileID, _profile] call ALIVE_fnc_hashSet;
 
                     if (_profileType == "entity") then {
-                        private _entityProfilesInActive = [_logic,"entitiesInActive"] call ALIVE_fnc_hashGet;
                         _entityProfilesInActive pushback _profileID;
                     };
                 };
 
                 if (_profileType != "vehicle") then {
-
                     // if player entity
                     if ([_profile,"isPlayer"] call ALIVE_fnc_hashGet) then {
                         private _playerEntities = [_logic,"playerEntities"] call ALIVE_fnc_hashGet;
@@ -556,7 +545,7 @@ switch(_operation) do {
             };
             // DEBUG -------------------------------------------------------------------------------------
 
-            if (_profileType in ["entity","vehicle","mil"]) then {
+            if (_profileType in ["entity","vehicle"]) then {
                 private _profileFaction = [_profile,"faction"] call ALIVE_fnc_hashGet;
                 private _profilesBySide = [_logic,"profilesBySide"] call ALIVE_fnc_hashGet;
 
@@ -1537,6 +1526,7 @@ switch(_operation) do {
 
 };
 
+PROFILE_SCOPE_END(OPERATION)
 TRACE_1("profileHandler - output",_result);
 
 if !(isnil "_result") then {_result} else {nil};
