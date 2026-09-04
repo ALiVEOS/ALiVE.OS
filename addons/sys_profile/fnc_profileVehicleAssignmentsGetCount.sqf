@@ -24,19 +24,15 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_assignments","_result","_assignment"];
+private _assignments = _this;
 
-_assignments = _this;
-
-_result = 0;
+private _result = 0;
 
 {
-    _assignment = _x select 2;
+    private _assignment = _x select 2;
 
     {
-        if((count _x) > 0) then {
-            _result = _result + count(_x);
-        };
+        _result = _result + count _x;
     } forEach _assignment;
 } forEach (_assignments select 2);
 

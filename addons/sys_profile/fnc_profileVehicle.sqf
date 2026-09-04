@@ -392,16 +392,19 @@ switch (_operation) do {
 
     case "clearVehicleAssignments": {
         // remove this vehicle from referenced entities
-        private _entitiesInCommandOf = [_logic,"entitiesInCommandOf",[]] call ALIVE_fnc_hashGet;
-        private _entitiesInCargoOf = [_logic,"entitiesInCargoOf",[]] call ALIVE_fnc_hashGet;
+        private _entitiesInCommandOf = [_logic,"entitiesInCommandOf"] call ALIVE_fnc_hashGet;
+        private _entitiesInCargoOf = [_logic,"entitiesInCargoOf"] call ALIVE_fnc_hashGet;
 
+        private _profilesById = [ALiVE_profileHandler,"profilesById"] call ALiVE_fnc_hashGet;
         {
-            private _entityProfile = [ALiVE_ProfileHandler,"getProfile", _x] call ALIVE_fnc_ProfileHandler;
+            {
+                private _entityProfile = _profilesById get _x;
 
-            if (!isnil "_entityProfile") then {
-                [_entityProfile,_logic] call ALIVE_fnc_removeProfileVehicleAssignment;
-            };
-        } foreach (_entitiesInCommandOf + _entitiesInCargoOf);
+                if (!isnil "_entityProfile") then {
+                    [_entityProfile,_logic] call ALIVE_fnc_removeProfileVehicleAssignment;
+                };
+            } foreach _x;
+        } foreach [_entitiesInCommandOf, _entitiesInCargoOf];
 
         // reset data
         [_logic,"vehicleAssignments", [] call ALIVE_fnc_hashCreate] call ALIVE_fnc_hashSet;
@@ -416,55 +419,53 @@ switch (_operation) do {
 
         //["VEHICLE %1 mergePosition: %2",_logic select 2 select 4,_position] call ALIVE_fnc_dump;
 
-        if (count (_assignments select 1) > 0) then {
+        if ((_assignments select 1) isnotequalto []) then {
             [_assignments,_position] call ALIVE_fnc_profileVehicleAssignmentsSetAllPositions;
         };
     };
 
     case "spawn": {
-        private ["_debug","_side","_vehicleClass","_vehicleType","_position","_side","_direction","_damage",
-        "_fuel","_ammo","_engineOn","_profileID","_active","_vehicleAssignments","_cargo","_cargoItems","_special","_vehicle","_eventID",
-        "_speed","_velocity","_paraDrop","_parachute","_soundFlyover","_locked","_slingload","_slinging"];
+        private [
+            "_debug","_side","_vehicleClass","_vehicleType","_position","_side","_direction","_damage",
+            "_fuel","_ammo","_engineOn","_profileID","_active","_vehicleAssignments","_cargo","_cargoItems",
+            "_special","_vehicle","_eventID","_speed","_velocity","_paraDrop","_parachute","_soundFlyover",
+            "_locked","_slingload","_slinging"
+        ];
 
-        _debug = _logic select 2 select 0; //[_logic,"debug"] call ALIVE_fnc_hashGet;
-        _vehicleClass = _logic select 2 select 11; //[_logic,"vehicleClass"] call ALIVE_fnc_hashGet;
-        _vehicleType = _logic select 2 select 6; //[_logic,"objectType"] call ALIVE_fnc_hashGet;
-        _position = _logic select 2 select 2; //[_logic,"position"] call ALIVE_fnc_hashGet;
-        _side = _logic select 2 select 3; //[_logic,"side"] call ALIVE_fnc_hashGet;
-        _direction = _logic select 2 select 12; //[_logic,"direction"] call ALIVE_fnc_hashGet;
-        _damage = _logic select 2 select 16; //[_logic,"damage"] call ALIVE_fnc_hashGet;
-        _fuel = _logic select 2 select 13; //[_logic,"fuel"] call ALIVE_fnc_hashGet;
-        _ammo = _logic select 2 select 14; //[_logic,"ammo"] call ALIVE_fnc_hashGet;
-        _engineOn = _logic select 2 select 15; //[_logic,"engineOn"] call ALIVE_fnc_hashGet;
-        _profileID = _logic select 2 select 4; //[_logic,"profileID"] call ALIVE_fnc_hashGet;
-        _active = _logic select 2 select 1; //[_logic,"active"] call ALIVE_fnc_hashGet;
+        _debug = _logic select 2 select 0;              //[_logic,"debug"] call ALIVE_fnc_hashGet;
+        _vehicleClass = _logic select 2 select 11;      //[_logic,"vehicleClass"] call ALIVE_fnc_hashGet;
+        _vehicleType = _logic select 2 select 6;        //[_logic,"objectType"] call ALIVE_fnc_hashGet;
+        _position = _logic select 2 select 2;           //[_logic,"position"] call ALIVE_fnc_hashGet;
+        _side = _logic select 2 select 3;               //[_logic,"side"] call ALIVE_fnc_hashGet;
+        _direction = _logic select 2 select 12;         //[_logic,"direction"] call ALIVE_fnc_hashGet;
+        _damage = _logic select 2 select 16;            //[_logic,"damage"] call ALIVE_fnc_hashGet;
+        _fuel = _logic select 2 select 13;              //[_logic,"fuel"] call ALIVE_fnc_hashGet;
+        _ammo = _logic select 2 select 14;              //[_logic,"ammo"] call ALIVE_fnc_hashGet;
+        _engineOn = _logic select 2 select 15;          //[_logic,"engineOn"] call ALIVE_fnc_hashGet;
+        _profileID = _logic select 2 select 4;          //[_logic,"profileID"] call ALIVE_fnc_hashGet;
+        _active = _logic select 2 select 1;             //[_logic,"active"] call ALIVE_fnc_hashGet;
         _vehicleAssignments = _logic select 2 select 7; //[_logic,"vehicleAssignments"] call ALIVE_fnc_hashGet;
-        _cargo = _logic select 2 select 27; //[_logic,"cargo"] call ALIVE_fnc_hashGet;
+        _cargo = _logic select 2 select 27;             //[_logic,"cargo"] call ALIVE_fnc_hashGet;
 
-        _slingload = [_logic, "slingload", []] call ALIVE_fnc_HashGet; //unindexed: _slingload = _logic select 2 select 28;
-        _slung = [_logic, "slung", []] call ALIVE_fnc_HashGet; //unindexed: _slung = _logic select 2 select 29;
-        _isSPE = [_logic, "isSPE", false] call ALIVE_fnc_HashGet; //unindexed: _isSPE = _logic select 2 select 30;
-        _aiBehaviour = [_logic, "aiBehaviour", false] call ALIVE_fnc_HashGet; //unindexed: _aiBehaviour = _logic select 2 select 31;
-        
-        
+        _slingload = _logic select 2 select 28;     // [_logic, "slingload", []] call ALIVE_fnc_HashGet;
+        _slung = _logic select 2 select 29;         // [_logic, "slung", []] call ALIVE_fnc_HashGet;
+        _isSPE = _logic select 2 select 30;         // [_logic, "isSPE", false] call ALIVE_fnc_HashGet;
+        _aiBehaviour = _logic select 2 select 31;   // [_logic, "aiBehaviour", false] call ALIVE_fnc_HashGet;
         
         _paraDrop = false;
 
-        _locked = [_logic, "locked",false] call ALIVE_fnc_HashGet;
+        _locked = [_logic,"locked", false] call ALIVE_fnc_HashGet;
 
         // not already active and spawning has not yet been triggered
         if (!_active && {!_locked}) then {
 
             //Indicate spawn has been triggered and lock profile during spawn in case it is an asynchronous call
-            [_logic, "locked",true] call ALIVE_fnc_HashSet;
+            [_logic,"locked", true] call ALIVE_fnc_HashSet;
 
             // determine a suitable spawn position
-            //["Profile [%1] Spawn - Get good spawn position",_profileID] call ALIVE_fnc_dump;
-            //[true] call ALIVE_fnc_timer;
             [_logic] call ALIVE_fnc_profileGetGoodSpawnPosition;
             _position = _logic select 2 select 2; //[_entityProfile,"position"] call ALIVE_fnc_hashGet;
             _special = "NONE";
-            //[] call ALIVE_fnc_timer;
 
             //["SPAWN VEHICLE [%1] pos: %2",_profileID,_position] call ALIVE_fnc_dump;
 
@@ -1175,16 +1176,18 @@ switch (_operation) do {
                 private _vehicle = _logic select 2 select 10;
 
                 [_logic,"position", getposATL _vehicle] call MAINCLASS;
-                [_logic,"despawnPosition", getposATL _vehicle] call ALIVE_fnc_hashSet;
-                [_logic,"direction", getDir _vehicle] call ALIVE_fnc_hashSet;
-                [_logic,"damage", _vehicle call ALIVE_fnc_vehicleGetDamage] call ALIVE_fnc_hashSet;
-                [_logic,"fuel", fuel _vehicle] call ALIVE_fnc_hashSet;
-                [_logic,"ammo", _vehicle call ALIVE_fnc_vehicleGetAmmo] call ALIVE_fnc_hashSet;
-                [_logic,"engineOn", isEngineOn _vehicle] call ALIVE_fnc_hashSet;
-                [_logic,"canFire", canFire _vehicle] call ALIVE_fnc_hashSet;
-                [_logic,"canMove", canMove _vehicle] call ALIVE_fnc_hashSet;
-                [_logic,"needReload", needReload _vehicle] call ALIVE_fnc_hashSet;
-                [_logic,"vehicle",objNull] call ALIVE_fnc_hashSet;
+                [_logic, [
+                    ["despawnPosition", getposATL _vehicle],
+                    ["direction", getDir _vehicle],
+                    ["damage", _vehicle call ALIVE_fnc_vehicleGetDamage],
+                    ["fuel", fuel _vehicle],
+                    ["ammo", _vehicle call ALIVE_fnc_vehicleGetAmmo],
+                    ["engineOn", isEngineOn _vehicle],
+                    ["canFire", canFire _vehicle],
+                    ["canMove", canMove _vehicle],
+                    ["needReload", needReload _vehicle],
+                    ["vehicle", objNull]
+                ]] call ALIVE_fnc_hashSetMany;
 
                 private _cargo = _logic select 2 select 27;
                 if (count _cargo > 0) then {
@@ -1230,7 +1233,7 @@ switch (_operation) do {
     };
 
     case "handleDeath": {
-        [_logic,"damage",[]] call ALIVE_fnc_hashSet;
+        [_logic,"damage", []] call ALIVE_fnc_hashSet;
 
         // remove all assignments for this vehicle
         [_logic] call ALIVE_fnc_removeProfileVehicleAssignments;

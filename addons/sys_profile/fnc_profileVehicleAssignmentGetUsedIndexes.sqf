@@ -25,22 +25,18 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_vehicleAssignments","_usedIndexes","_indexes","_indexesCurrentPosition"];
+private _vehicleAssignments = _this;
 
-_vehicleAssignments = _this;
+private _usedIndexes = [];
 
-_usedIndexes = [];
-
-// if the group already has assignments
-if(count (_vehicleAssignments select 1) > 0) then {
+if ((_vehicleAssignments select 1) isnotequalto []) then {
     {
-        _indexes = _x select 2;
-        // record indexs of units that are already assigned to other vehicles
-        for "_i" from 0 to (count _indexes)-1 do {
-            _indexesCurrentPosition = _indexes select _i;
-            _usedIndexes = _usedIndexes + _indexesCurrentPosition;
-        };
+        private _indexes = _x select 2;
 
+        // record indexes of units that are already assigned to other vehicles
+        {
+            _usedIndexes append _x;
+        } forEach _indexes;
     } forEach (_vehicleAssignments select 2);
 };
 

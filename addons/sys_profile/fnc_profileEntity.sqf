@@ -167,7 +167,7 @@ switch(_operation) do {
             [_logic,"init"] call SUPERCLASS;
 
             [_logic, [
-                ["type", "entity"],                                                   // select 2 select 5
+                ["type", "entity"],                                                  // select 2 select 5
                 ["vehiclesInCommandOf", []],                                         // select 2 select 8
                 ["vehiclesInCargoOf", []],                                           // select 2 select 9
                 ["leader", objNull],                                                 // select 2 select 10
@@ -199,7 +199,7 @@ switch(_operation) do {
                 ["aiBehaviour", "SAFE"],                                             // select 2 select 36
                 ["onEachSpawn", ""],                                                 // select 2 select 37
                 ["onEachSpawnOnce", true],                                           // select 2 select 38
-                ["combatScanPending", true]                                         // select 2 select 39
+                ["combatScanPending", true]                                          // select 2 select 39
             ]] call ALiVE_fnc_hashSetMany;
         };
     };
@@ -461,8 +461,8 @@ switch(_operation) do {
 
             _assignment params ["_vehicleID","_entityID","_assignmentData"];
 
-            private _assignments = [_logic,"vehicleAssignments"] call ALIVE_fnc_hashGet; //[_logic,"vehicleAssignments"] call ALIVE_fnc_hashGet;
-            [_assignments, _vehicleID, _args] call ALIVE_fnc_hashSet;
+            private _assignments = _logic select 2 select 7; //[_logic,"vehicleAssignments"] call ALIVE_fnc_hashGet;
+            [_assignments,_vehicleID, _args] call ALIVE_fnc_hashSet;
 
             // take assignments and determine if this entity is in command of any of them
             private _vehiclesInCommandOf = [_assignments,_logic] call ALIVE_fnc_profileVehicleAssignmentsGetInCommand;

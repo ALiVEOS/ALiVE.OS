@@ -27,33 +27,30 @@ ARJay
 
 params ["_profileEntity","_profileVehicle",["_deleteAssignment", true]];
 
-private _entityID = [_profileEntity, "profileID"] call ALIVE_fnc_hashGet;
-private _vehicleID = [_profileVehicle, "profileID"] call ALIVE_fnc_hashGet;
+private _entityID = _profileEntity select 2 select 4;
+private _vehicleID = _profileVehicle select 2 select 4;
 
-private _entityAssignments = [_profileEntity,"vehicleAssignments", ["",[],[],""]] call ALIVE_fnc_hashGet;
-private _vehicleAssignments = [_profileVehicle,"vehicleAssignments", ["",[],[],""]] call ALIVE_fnc_hashGet;
+private _entityAssignments = _profileEntity select 2 select 7;
+private _vehicleAssignments = _profileVehicle select 2 select 7;
 
-if(_entityID in (_vehicleAssignments select 1)) then {
+if (_entityID in (_vehicleAssignments select 1)) then {
     // if spawned make the units get out
 
-    private _profileActive = [_profileEntity,"active"] call ALIVE_fnc_hashGet;
+    private _profileActive = _profileEntity select 2 select 1;
     if (_profileActive) then {
         // Entity-side and vehicle-side assignment records can drift out of
-        // sync during profile destruction: we are in this branch because
-        // the vehicle-side record still references _entityID, but the
-        // matching entry on the entity-side may already be gone. In that
-        // case hashGet returns nil and the downstream call into
-        // fnc_profileVehicleAssignmentIndexesToUnits crashes with
-        // "Undefined variable _indexes" / "Undefined variable _assignment"
-        // (pre-existing ALiVE core error chain). Skip the dismount when
+        // sync during profile destruction: The vehicle-side record may still
+        // reference _entityID, but the matching entry on the entity-side may
+        // already be gone. In that case hashGet returns nil and the downstream call into
+        // fnc_profileVehicleAssignmentIndexesToUnits errors. Skip the dismount when
         // the entity-side record is missing; the cleanup block below still
         // runs and prunes the vehicle-side record to restore consistency.
         private _assignment = [_entityAssignments,_vehicleID] call ALIVE_fnc_hashGet;
         if (!isNil "_assignment") then {
-            private _units = [_profileEntity,"units"] call ALIVE_fnc_hashGet;
-            private _vehicleAssignment = [_assignment,_units] call ALIVE_fnc_profileVehicleAssignmentIndexesToUnits;
-            private _vehicle = [_profileVehicle,"vehicle"] call ALIVE_fnc_hashGet;
+            private _units = _profileEntity select 2 select 21;
+            private _vehicle = _profileVehicle select 2 select 10;
 
+            private _vehicleAssignment = [_assignment,_units] call ALIVE_fnc_profileVehicleAssignmentIndexesToUnits;
             [_vehicleAssignment, _vehicle] call ALIVE_fnc_vehicleDismount;
         } else {
             [
@@ -66,8 +63,8 @@ if(_entityID in (_vehicleAssignments select 1)) then {
     // remove the assignments from the entity and vehicle profile
 
     if (_deleteAssignment) then {
-        [_entityAssignments, _vehicleID] call ALIVE_fnc_hashRem;
-        [_vehicleAssignments, _entityID] call ALIVE_fnc_hashRem;
+        [_entityAssignments,_vehicleID, nil] call ALIVE_fnc_hashSet;
+        [_vehicleAssignments,_entityID, nil] call ALIVE_fnc_hashSet;
     };
 
     // remove keys from in cargo arrays

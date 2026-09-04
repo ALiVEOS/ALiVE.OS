@@ -24,40 +24,24 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_assignments","_profile","_profileType","_result","_entity","_assignment","_drivers","_commander","_inCargoVehicle"];
+private ["_entity"];
 
-_assignments = _this select 0;
-_profile = _this select 1;
+params ["_assignments","_profile"];
 
-_profileType = _profile select 2 select 5; //[_profile,"type"] call ALIVE_fnc_hashGet;
+private _result = [];
 
-_result = [];
+private _profileType = _profile select 2 select 5; //[_profile,"type"] call ALIVE_fnc_hashGet;
+private _entityIndex = if (_profileType == "vehicle") then { 1 } else { 0 };
 
 {
-    if(_profileType == "vehicle") then {
-        _entity = _x select 1;
-    }else{
-        _entity = _x select 0;
+    private _assignment = _x select 2;
+    private _drivers = _assignment select 0;
+    private _commander = _assignment select 2;
+
+    private _inVehicleCargo = _drivers isequalto [] && _commander isequalto [];
+    if (_inVehicleCargo) then {
+        _result pushback (_x select _entityIndex);
     };
-
-    _assignment = _x select 2;
-    _drivers = count(_assignment select 0);
-    _commander = count(_assignment select 2);
-
-    _inCargoVehicle = true;
-
-    if(_drivers > 0) then {
-        _inCargoVehicle = false;
-    };
-
-    if(_commander > 0) then {
-        _inCargoVehicle = false;
-    };
-
-    if(_inCargoVehicle) then {
-        _result pushback _entity
-    };
-
 } forEach (_assignments select 2);
 
 _result

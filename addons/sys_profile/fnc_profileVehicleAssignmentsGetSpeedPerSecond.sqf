@@ -25,55 +25,37 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_assignments","_profile","_result","_vehiclesInCommandOf","_manSpeedArray","_countAssignedUnits","_unitCount","_speeds","_vehicleProfile","_vehicleClass","_speedArray","_getAverageSpeed","_sortedSpeeds"];
+params ["_assignments","_profile"];
 
-_assignments = _this select 0;
-_profile = _this select 1;
+private _manSpeedArray = "Man" call ALIVE_fnc_vehicleGetSpeedPerSecond;
 
-_vehiclesInCommandOf = _profile select 2 select 8; //[_profile,"vehiclesInCommandOf"] call ALIVE_fnc_hashGet;
-_manSpeedArray = "Man" call ALIVE_fnc_vehicleGetSpeedPerSecond;
-_countAssignedUnits = _assignments call ALIVE_fnc_profileVehicleAssignmentsGetCount;
-_unitCount = [_profile,"unitCount"] call ALIVE_fnc_profileEntity;
+private _vehiclesInCommandOf = _profile select 2 select 8;
+if (_vehiclesInCommandOf isequalto []) exitwith {
+    _manSpeedArray
+};
 
-/*
-["MAN SPEED: %1",_manSpeedArray] call ALIVE_fnc_dump;
-["COUNT ASSIGNED: %1",_countAssignedUnits] call ALIVE_fnc_dump;
-["UNIT COUNT: %1",_unitCount] call ALIVE_fnc_dump;
-*/
-
+private _unitCount = _profile select 2 select 12;
+private _countAssignedUnits = _assignments call ALIVE_fnc_profileVehicleAssignmentsGetCount;
 
 // if there are some non mounted units return walking speed
-if(_countAssignedUnits < _unitCount || count(_vehiclesInCommandOf) == 0) then {
-    _result = _manSpeedArray;
-}else{
-    // get the lowest speed from all assigned vehicles
-    _speeds = [];
+if (_countAssignedUnits < _unitCount) then {
+    _manSpeedArray;
+} else {
+    private _profilesById = [ALiVE_profileHandler,"profilesById"] call ALiVE_fnc_hashGet;
+
+    _result = [];
     {
-        _vehicleProfile = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+        private _vehicleProfile = _profilesById get _x;
 
         if !(isnil "_vehicleProfile") then {
-            _vehicleClass = _vehicleProfile select 2 select 11; //[_vehicleProfile,"vehicleClass"] call ALIVE_fnc_hashGet;
-            _speedArray = _vehicleClass call ALIVE_fnc_vehicleGetSpeedPerSecond;
-            _speeds pushback _speedArray;
+            private _vehicleClass = _vehicleProfile select 2 select 11; //[_vehicleProfile,"vehicleClass"] call ALIVE_fnc_hashGet;
+            private _speedArray = _vehicleClass call ALIVE_fnc_vehicleGetSpeedPerSecond;
+
+            if (_result isEqualTo [] || {(_speedArray select 0) < (_result select 0)}) then {
+                _result = _speedArray;
+            };
         };
     } forEach _vehiclesInCommandOf;
 
-    //["SPEEDS: %1",_speeds] call ALIVE_fnc_dump;
-
-    _getAverageSpeed = {
-        private ["_speeds","_speed"];
-        _speeds = _this select 0;
-        _speed = _speeds select 0;
-        _speed
-    };
-
-    _sortedSpeeds = [_speeds, {
-        ([_this] call _getAverageSpeed)
-    }] call ALIVE_fnc_shellSort;
-
-    //["SORTED SPEEDS: %1",_sortedSpeeds] call ALIVE_fnc_dump;
-
-    _result = _sortedSpeeds select 0;
-};
-
-_result
+    _result
+}

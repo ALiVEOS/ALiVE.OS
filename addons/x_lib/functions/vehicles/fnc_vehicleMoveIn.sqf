@@ -26,20 +26,10 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_assignments","_vehicle","_driver","_gunners","_commander","_cargo","_turret","_turrets","_unit","_turretPath"];
-
-_assignments = _this select 0;
-_vehicle = _this select 1;
-
-/*
-["VEHICLE MOVE IN : %1",_vehicle] call ALIVE_fnc_dump;
-["VEHICLE MOVE IN ASSIGNMENTS %1",_vehicle] call ALIVE_fnc_dump;
-_assignments call ALIVE_fnc_inspectArray;
-*/
+params ["_assignments","_vehicle"];
 
 // driver
-_driver = _assignments select 0;
-
+private _driver = _assignments select 0;
 {
     if !(isnil "_x") then {
         _x assignAsDriver _vehicle;
@@ -48,8 +38,7 @@ _driver = _assignments select 0;
 } forEach _driver;
 
 // gunner
-_gunners = _assignments select 1;
-
+private _gunners = _assignments select 1;
 {
     if !(isnil "_x") then {
         _x assignAsGunner _vehicle;
@@ -58,8 +47,7 @@ _gunners = _assignments select 1;
 } forEach _gunners;
 
 // commander
-_commander = _assignments select 2;
-
+private _commander = _assignments select 2;
 {
     if !(isnil "_x") then {
         _x assignAsCommander _vehicle;
@@ -68,36 +56,23 @@ _commander = _assignments select 2;
 } forEach _commander;
 
 // turrets
-_turret = _assignments select 3;
+private _turret = _assignments select 3;
 
-/*
-["VEHICLE MOVE IN ASSIGNED TURRETS %1",_vehicle] call ALIVE_fnc_dump;
-_turret call ALIVE_fnc_inspectArray;
-*/
-
-if(count _turret > 0) then {
+if (count _turret > 0) then {
     // get turrets for this class ignoring gunner and commander turrets
-    _turrets = [typeOf _vehicle, true, true, true] call ALIVE_fnc_configGetVehicleTurretPositions;
+    private _turrets = [typeOf _vehicle, true, true, true] call ALIVE_fnc_configGetVehicleTurretPositions;
 
-    /*
-    ["VEHICLE MOVE IN TURRET POSITIONS %1",_vehicle] call ALIVE_fnc_dump;
-    _turrets call ALIVE_fnc_inspectArray;
-    */
+    {
+        if (_turrets isEqualTo []) exitWith {};
 
-    for "_i" from 0 to (count _turret)-1 do {
-        _unit = _turret select _i;
-
-        if(count _turrets > 0) then {
-            _turretPath = _turrets call BIS_fnc_arrayPop;
-            _unit assignAsTurret [_vehicle, _turretPath];
-            _unit moveInTurret [_vehicle, _turretPath];
-        };
-    };
+        private _turretPath = _turrets deleteAt ((count _turrets) - 1);
+        _x assignAsTurret [_vehicle, _turretPath];
+        _x moveInTurret [_vehicle, _turretPath];
+    } forEach _turret;
 };
 
 // cargo
-_cargo = _assignments select 4;
-
+private _cargo = _assignments select 4;
 {
     if !(isnil "_x") then {
         _x assignAsCargo _vehicle;
@@ -108,27 +83,15 @@ _cargo = _assignments select 4;
 // player turrets
 _turret = _assignments select 5;
 
-/*
-["VEHICLE MOVE IN ASSIGNED PLAYER TURRETS %1",_vehicle] call ALIVE_fnc_dump;
-_turret call ALIVE_fnc_inspectArray;
-*/
-
-if(count _turret > 0) then {
+if (count _turret > 0) then {
     // get turrets for this class ignoring gunner and commander turrets
-    _turrets = [typeOf _vehicle, true, true, false, true, true] call ALIVE_fnc_configGetVehicleTurretPositions;
+    private _turrets = [typeOf _vehicle, true, true, false, true, true] call ALIVE_fnc_configGetVehicleTurretPositions;
 
-    /*
-    ["VEHICLE MOVE IN PLAYER TURRET POSITIONS %1",_vehicle] call ALIVE_fnc_dump;
-    _turrets call ALIVE_fnc_inspectArray;
-    */
+    {
+        if (_turrets isEqualTo []) exitWith {};
 
-    for "_i" from 0 to (count _turret)-1 do {
-        _unit = _turret select _i;
-
-        if(count _turrets > 0) then {
-            _turretPath = _turrets call BIS_fnc_arrayPop;
-            _unit assignAsTurret [_vehicle, _turretPath];
-            _unit moveInTurret [_vehicle, _turretPath];
-        };
-    };
+        private _turretPath = _turrets deleteAt ((count _turrets) - 1);
+        _x assignAsTurret [_vehicle, _turretPath];
+        _x moveInTurret [_vehicle, _turretPath];
+    } forEach _turret;
 };

@@ -32,28 +32,24 @@ params ["_profile"];
 private _profileType = [_profile,"type"] call ALIVE_fnc_hashGet;
 private _vehicleAssignments = [_profile,"vehicleAssignments"] call ALIVE_fnc_hashGet;
 
+private _profilesById = [ALIVE_profileHandler,"profilesById"] call ALiVE_fnc_hashGet;
+
 private _assignedIDs = _vehicleAssignments select 1;
 
 if (_profileType == "vehicle") then {
-
     {
-        private _entityID = _x;
-        private _profileEntity = [ALIVE_profileHandler, "getProfile", _entityID] call ALIVE_fnc_profileHandler;
+        private _profileEntity = _profilesById get _x;
 
         if !(isnil "_profileEntity") then {
-            [_profileEntity,_profile,true] call ALIVE_fnc_removeProfileVehicleAssignment;
+            [_profileEntity, _profile, true] call ALIVE_fnc_removeProfileVehicleAssignment;
         };
     } forEach _assignedIDs;
-
 } else {
-
     {
-        private _vehicleID = _x;
-        private _profileVehicle = [ALIVE_profileHandler, "getProfile", _vehicleID] call ALIVE_fnc_profileHandler;
+        private _profileVehicle = _profilesById get _x;
 
         if !(isnil "_profileVehicle") then {
-            [_profile,_profileVehicle,true] call ALIVE_fnc_removeProfileVehicleAssignment;
+            [_profile, _profileVehicle, true] call ALIVE_fnc_removeProfileVehicleAssignment;
         };
     } forEach _assignedIDs;
-
 };

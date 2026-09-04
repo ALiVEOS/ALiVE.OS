@@ -25,28 +25,20 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_indexes","_units","_index","_assignments","_assignment"];
+private _indexes = (_this select 0) select 2;
+private _units = _this select 1;
 
-_indexes = (_this select 0) select 2;
-_units = _this select 1;
+private _unitCount = count _units;
+private _assignments = [[],[],[],[],[],[]];
 
-//["indexes:%1",_indexes] call ALIVE_fnc_dump;
-//["units:%1",_units] call ALIVE_fnc_dump;
+{
+    private _assignment = _assignments select _forEachIndex;
 
-_assignments = [[],[],[],[],[],[]];
-
-for "_i" from 0 to (count _indexes)-1 do {
-    _assignment = _assignments select _i;
     {
-        /*
-        ["units: %1 x: %2",count _units,_x] call ALIVE_fnc_dump;
-        ["units: %1",count _units] call ALIVE_fnc_dump;
-        */
-
-        if(count _units > _x) then {
+        if (_unitCount > _x) then {
             _assignment pushback (_units select _x);
         };
-    } forEach (_indexes select _i);
-};
+    } forEach _x;
+} forEach _indexes;
 
 _assignments

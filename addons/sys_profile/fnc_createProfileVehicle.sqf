@@ -60,7 +60,7 @@ private _vehicleKind = _vehicleClass call ALIVE_fnc_vehicleGetKindOf;
 
 // create the profile for the vehicle
 
-private _profileVehicle = [nil, "create"] call ALIVE_fnc_profileVehicle;
+private _profileVehicle = [nil,"create"] call ALIVE_fnc_profileVehicle;
 [_profileVehicle,"init"] call ALIVE_fnc_profileVehicle;
 [_profileVehicle,"vehicleClass", _vehicleClass] call ALIVE_fnc_profileVehicle;
 

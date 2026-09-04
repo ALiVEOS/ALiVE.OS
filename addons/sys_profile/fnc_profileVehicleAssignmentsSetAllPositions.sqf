@@ -26,20 +26,17 @@ ARJay
 Jman
 ---------------------------------------------------------------------------- */
 
-private ["_assignments","_position","_entity","_entityProfile","_drivers","_commander","_inControlVehicle"];
-
-_assignments = _this select 0;
-_position = _this select 1;
+params ["_assignments","_position"];
 
 private _profilesByID = [ALIVE_profileHandler,"profilesById"] call ALiVE_fnc_hashGet;
 
 {
-    _entity = _x select 1;
-    _entityProfile = _profilesByID get _entity;
+    private _entity = _x select 1;
+    private _entityProfile = _profilesByID get _entity;
 
     if !(isnil "_entityProfile") then {
         if ((_entityProfile select 2 select 5) == "entity") then {
-            [_entityProfile,"position",_position] call ALIVE_fnc_profileEntity;
+            [_entityProfile,"position", _position] call ALIVE_fnc_profileEntity;
             [_entityProfile,"mergePositions"] call ALIVE_fnc_profileEntity;
         } else {
             // assignments must be entities

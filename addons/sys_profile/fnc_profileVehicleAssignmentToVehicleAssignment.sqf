@@ -29,35 +29,31 @@ ARJay
 Jman
 ---------------------------------------------------------------------------- */
 
-private ["_vehicleAssignment","_profile","_orderGetIn","_profileType","_vehicle","_entityProfileID","_entityProfile",
-"_entityProfileActive","_units","_unitAssignments","_vehicleProfileID","_vehicleProfile","_vehicleProfileActive"];
+params [
+    "_vehicleAssignment",
+    "_profile",
+    ["_orderGetIn", false]
+];
 
-_vehicleAssignment = _this select 0;
-_profile = _this select 1;
-_orderGetIn = if(count _this > 2) then {_this select 2} else {false};
+private _profilesById = [ALIVE_profileHandler,"profilesById"] call ALiVE_fnc_hashGet;
 
-_profileType = _profile select 2 select 5; //[_profile,"type"] call ALIVE_fnc_hashGet;
+private _profileType = _profile select 2 select 5; //[_profile,"type"] call ALIVE_fnc_hashGet;
 
-if(_profileType == "vehicle") then {
+if (_profileType == "vehicle") then {
 
-    _vehicle = _profile select 2 select 10; //[_profile,"vehicle"] call ALIVE_fnc_hashGet;
-    _entityProfileID = _vehicleAssignment select 1;
-    _entityProfile = [ALIVE_profileHandler, "getProfile", _entityProfileID] call ALIVE_fnc_profileHandler;
+    private _vehicle = _profile select 2 select 10; //[_profile,"vehicle"] call ALIVE_fnc_hashGet;
+    private _entityProfileID = _vehicleAssignment select 1;
+    private _entityProfile = _profilesById get _entityProfileID;
 
     if !(isnil "_entityProfile") then {
-
-        // Assignment slot 1 must resolve to an ENTITY profile. If it resolves to a
-        // vehicle (or anything else), entity-spawn and the units read below would
-        // misread the vehicle schema (slot 18 canFire, slot 21 hasSimulated...) and
-        // crash; log the mis-dispatch and skip rather than take the wrong schema.
         if ((_entityProfile select 2 select 5) == "entity") then {
-            _entityProfileActive = _entityProfile select 2 select 1; //[_entityProfile,"active"] call ALIVE_fnc_hashGet;
+            private _entityProfileActive = _entityProfile select 2 select 1; //[_entityProfile,"active"] call ALIVE_fnc_hashGet;
 
-            if!(_entityProfileActive) then {
+            if !(_entityProfileActive) then {
                 [_entityProfile,"spawn"] call ALIVE_fnc_profileEntity;
             } else {
-                _units = _entityProfile select 2 select 21; //[_entityProfile,"units"] call ALIVE_fnc_hashGet;
-                _unitAssignments = [_vehicleAssignment, _units] call ALIVE_fnc_profileVehicleAssignmentIndexesToUnits;
+                private _units = _entityProfile select 2 select 21; //[_entityProfile,"units"] call ALIVE_fnc_hashGet;
+                private _unitAssignments = [_vehicleAssignment, _units] call ALIVE_fnc_profileVehicleAssignmentIndexesToUnits;
                 if (_orderGetIn) then {
                     [_unitAssignments, _vehicle] call ALIVE_fnc_vehicleMount;
                 } else {
@@ -70,22 +66,20 @@ if(_profileType == "vehicle") then {
     };
 
 } else {
-    _units = _profile select 2 select 21; //[_profile,"units"] call ALIVE_fnc_hashGet;
-    _vehicleProfileID = _vehicleAssignment select 0;
-    _vehicleProfile = [ALIVE_profileHandler, "getProfile", _vehicleProfileID] call ALIVE_fnc_profileHandler;
+    private _units = _profile select 2 select 21; //[_profile,"units"] call ALIVE_fnc_hashGet;
+    private _vehicleProfileID = _vehicleAssignment select 0;
+
+    private _vehicleProfile = _profilesById get _vehicleProfileID;
 
     if !(isnil "_vehicleProfile") then {
-
-        // Symmetric guard: assignment slot 0 must resolve to a VEHICLE profile, or
-        // vehicle-spawn would misread the entity schema. Log and skip otherwise.
         if ((_vehicleProfile select 2 select 5) == "vehicle") then {
-            _vehicleProfileActive =  _vehicleProfile select 2 select 1; //[_vehicleProfile,"active"] call ALIVE_fnc_hashGet;
+            private _vehicleProfileActive =  _vehicleProfile select 2 select 1; //[_vehicleProfile,"active"] call ALIVE_fnc_hashGet;
 
-            if!(_vehicleProfileActive) then {
+            if !(_vehicleProfileActive) then {
                 [_vehicleProfile,"spawn"] call ALIVE_fnc_profileVehicle;
             } else {
-                _vehicle = _vehicleProfile select 2 select 10; //[_vehicleProfile,"vehicle"] call ALIVE_fnc_hashGet;
-                _unitAssignments = [_vehicleAssignment, _units] call ALIVE_fnc_profileVehicleAssignmentIndexesToUnits;
+                private _vehicle = _vehicleProfile select 2 select 10; //[_vehicleProfile,"vehicle"] call ALIVE_fnc_hashGet;
+                private _unitAssignments = [_vehicleAssignment, _units] call ALIVE_fnc_profileVehicleAssignmentIndexesToUnits;
                 if (_orderGetIn) then {
                     [_unitAssignments, _vehicle] call ALIVE_fnc_vehicleMount;
                 } else {

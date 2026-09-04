@@ -58,9 +58,6 @@ switch(_operation) do {
     case "init": {
 
         if (isServer) then {
-            [_logic,"super"] call ALiVE_fnc_hashRem;
-            [_logic,"class"] call ALiVE_fnc_hashRem;
-
             [_logic, [
                 ["debug", false],       // select 2 select 0
                 ["active", false],      // select 2 select 1
@@ -78,7 +75,7 @@ switch(_operation) do {
     case "destroy": {
 
         if (isServer) then {
-            [_logic, "destroy"] call SUPERCLASS;
+            [_logic,"destroy"] call SUPERCLASS;
         };
 
     };
