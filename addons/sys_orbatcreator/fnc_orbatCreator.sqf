@@ -94,7 +94,13 @@ switch(_operation) do {
 
         [_logic,"debug", _debug] call MAINCLASS;
 
-        private _background = ((_logic getVariable ["background", "true"]) == "true");
+        private _background = _logic getVariable ["background", true];
+        if (_background isEqualType "") then {
+            _background = toLower _background == "true";
+        };
+        if !(_background isEqualType true) then {
+            _background = true;
+        };
 
         [_logic,"background", _background] call MAINCLASS;
 
@@ -3281,13 +3287,17 @@ switch(_operation) do {
 
         private ["_groupCategory","_groupCategoryConfigName","_groupCategoryDataSource"];
 
-        private _faction = _args;
+        private _factionData = _args;
 
-        if (_faction isEqualType "") then {
-            _faction = [_logic,"getFactionData", _faction] call MAINCLASS;
+        if (_factionData isEqualType "") then {
+            _factionData = [_logic,"getFactionData", _factionData] call MAINCLASS;
         };
 
-        private _factionGroupCategories = [_faction,"groupCategories"] call ALiVE_fnc_hashGet;
+        if (isNil "_factionData") exitWith {
+            _result = [];
+        };
+
+        private _factionGroupCategories = [_factionData,"groupCategories"] call ALiVE_fnc_hashGet;
 
         private _compatibleGroupCategories = [];
         private _incompatibleGroupCategories = [];
@@ -3918,8 +3928,11 @@ switch(_operation) do {
             0 fadeSound 0;
 
             // init background
-            private _background = createVehicle ["HeliHEmpty",[0,0,0],[],0,"none"];
+            // Keep an invisible object as the background lifecycle marker when
+            // the visual Sphere backdrop is disabled.
+            private _background = createVehicle ["Land_HelipadEmpty_F",[0,0,0],[],0,"CAN_COLLIDE"];
             if ([_logic,"background"] call MAINCLASS) then {
+                deleteVehicle _background;
                 _background = createVehicle ["Sphere_3DEN",[0,0,0],[],0,"none"];
                 _pos set [2,500];
             };
