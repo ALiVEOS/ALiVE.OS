@@ -59,6 +59,25 @@ ALiVE_indexViabilityScore    = nil;
 ALiVE_indexViabilityTier     = nil;
 
 private _worldLower = toLower worldName;
+
+// Some worlds are not terrain and never will be. Virtual Reality is an empty grey
+// plane with no towns, no buildings and nothing an index could describe, so telling
+// somebody their index is missing there reports a fault that does not exist.
+//
+// It was read as one. A player building an ORBAT on Virtual Reality took the red
+// banner for the reason the ORBAT Creator would not open for him, and spent a while
+// on it before being told the two were unrelated.
+//
+// A list rather than a single test, so a mod adding its own empty workspace can be
+// added without touching this file.
+if (isNil "ALiVE_INDEX_VIABILITY_SKIP_WORLDS") then {
+    ALiVE_INDEX_VIABILITY_SKIP_WORLDS = ["vr"];
+};
+
+if (_worldLower in ALiVE_INDEX_VIABILITY_SKIP_WORLDS) exitWith {
+    ["ALiVE Eden Viability check: '%1' is not a terrain to index, no notification raised.", worldName] call ALiVE_fnc_dump;
+};
+
 private _filePath = format ["\x\alive\addons\fnc_analysis\data\data.%1.sqf", _worldLower];
 
 ["ALiVE Eden Viability check: entered. worldName='%1', loading file '%2'.", worldName, _filePath] call ALiVE_fnc_dump;

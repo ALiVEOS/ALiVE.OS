@@ -195,6 +195,9 @@ switch(_operation) do {
     case "garrisonPatrolBehaviour": {
         _result = [_logic,_operation,_args,"SAFE"] call ALIVE_fnc_OOsimpleOperation;
     };
+    case "preferredGarrisonPositions": {
+        _result = [_logic,_operation,_args,""] call ALIVE_fnc_OOsimpleOperation;
+    };
     case "garrisonPatrolSpeed": {
         _result = [_logic,_operation,_args,"LIMITED"] call ALIVE_fnc_OOsimpleOperation;
     };
@@ -408,12 +411,39 @@ switch(_operation) do {
             [_logic, "taor", _logic getVariable ["taor", DEFAULT_TAOR]] call MAINCLASS;
             [_logic, "blacklist", _logic getVariable ["blacklist", DEFAULT_TAOR]] call MAINCLASS;
 
+            // Startup stage marks, the same shape as the ones in mil_placement and mil_cqb. This
+            // module sits on the nine module gate that holds the loading screen, and until now it
+            // reported one total with nothing inside it, so there was no way to tell time spent
+            // working from time spent waiting on another module.
+            //
+            // Set ALiVE_CP_STARTUP_DIAG to true on the server before the mission starts to get these
+            // lines. Off by default, so a normal run pays nothing. The clock advances whether or not
+            // a line is written, so switching it on part way through still gives truthful stage times.
+            //
+            // One line per stage per module instance. Never inside a placement loop: inline timing in
+            // that path once took mil_placement from fifty seconds to never finishing.
+            private _cpDiagT0 = diag_tickTime;
+            private _cpDiagLast = _cpDiagT0;
+            private _fnc_cpDiagMark = {
+                params ["_stage", ["_detail", ""]];
+                private _now = diag_tickTime;
+                if (!isNil "ALiVE_CP_STARTUP_DIAG" && {ALiVE_CP_STARTUP_DIAG}) then {
+                    ["DIAG-STRIP CP DIAG - %1: %2s for this stage, %3s since init began%4",
+                        _stage,
+                        (round ((_now - _cpDiagLast) * 100)) / 100,
+                        (round ((_now - _cpDiagT0) * 100)) / 100,
+                        if (_detail == "") then {""} else {"   " + _detail}] call ALiVE_fnc_dump;
+                };
+                _cpDiagLast = _now;
+            };
+
             if !(["ALiVE_sys_profile"] call ALiVE_fnc_isModuleAvailable) exitwith {
                 ["Profile System module not placed! Exiting..."] call ALiVE_fnc_DumpR;
                 _logic setVariable ["startupComplete", true];
             };
 
             waituntil {!(isnil "ALiVE_ProfileHandler") && {[ALiVE_ProfileSystem,"startupComplete",false] call ALIVE_fnc_hashGet}};
+            ["waited for the profile system"] call _fnc_cpDiagMark;
 
             [_logic,"start"] call MAINCLASS;
         } else {
@@ -441,18 +471,46 @@ switch(_operation) do {
             };
 
 
+            // Whichever instance gets here first compiles the terrain cluster index and the rest wait
+            // on its flag, so the readings below separate the one that paid for it from the ones that
+            // only queued. The civilian index is the larger of the two by a wide margin: on Cam Lao
+            // Nam it is thirty five thousand lines against the military index seven thousand.
+            private _compiledClusters = false;
             if(isNil "ALIVE_clustersCiv" && isNil "ALIVE_loadedCivClusters") then {
                 _worldName = toLower(worldName);
                 _file = format["x\alive\addons\civ_placement\clusters\clusters.%1_civ.sqf", _worldName];
+                // Claimed before the compile, not after. The compile yields to the scheduler all the way
+                // through, so a flag raised only at the end let every concurrent instance pass the test
+                // above and compile the same file over again. The wait below demands true, not merely set.
+                ALIVE_loadedCIVClusters = false;
                 call compile preprocessFileLineNumbers _file;
                 ALIVE_loadedCIVClusters = true;
+                _compiledClusters = true;
             };
+            if (_compiledClusters) then {
+                // The index is an ALiVE hash, so the cluster count is the length of its key list
+                // rather than the length of the hash itself, which is always three.
+                private _clusterCount = -1;
+                if (!isNil "ALIVE_clustersCiv" && {ALIVE_clustersCiv isEqualType []} && {count ALIVE_clustersCiv > 1}) then {
+                    _clusterCount = count (ALIVE_clustersCiv select 1);
+                };
+                ["compiled the terrain cluster index", format ["%1, %2 clusters", _file, _clusterCount]] call _fnc_cpDiagMark;
+            } else {
+                ["another instance is compiling the cluster index"] call _fnc_cpDiagMark;
+            };
+
             waituntil {!(isnil "ALIVE_loadedCIVClusters") && {ALIVE_loadedCIVClusters}};
             waituntil {!(isnil "ALIVE_profileSystemInit")};
+            ["waited for the cluster index and the profile system"] call _fnc_cpDiagMark;
 
             // instantiate static vehicle position data
+            private _builtGroupConfig = false;
             if(isNil "ALIVE_groupConfig") then {
                 [] call ALIVE_fnc_groupGenerateConfigData;
+                _builtGroupConfig = true;
+            };
+            if (_builtGroupConfig) then {
+                ["built the group config data"] call _fnc_cpDiagMark;
             };
 
             // all CMP modules execute at the same time
@@ -460,6 +518,7 @@ switch(_operation) do {
             // before the rest of the modules start creating their profiles
 
             waitUntil {!isnil "ALiVE_GROUP_CONFIG_DATA_GENERATED"};
+            ["waited for the group config data"] call _fnc_cpDiagMark;
 
             //Only spawn warning on version mismatch since map index changes were reduced
             //uncomment //_error = true; below for exit
@@ -1491,8 +1550,19 @@ switch(_operation) do {
                 private _guardRadius = parseNumber([_logic, "guardRadius"] call MAINCLASS);
                 private _guardPatrolPercentage = parseNumber([_logic, "guardPatrolPercentage"] call MAINCLASS);
                 private _garrisonPatrolBehaviour = toUpper ([_logic, "garrisonPatrolBehaviour"] call MAINCLASS);
+                // Preferred garrison buildings, still in the canonical Class=idx,idx;... string the
+                // attribute holds. Read once here beside the other garrison settings and threaded to
+                // each garrison command below; the seating code parses it. Empty means no override,
+                // which is what a mission that never touches the setting gets.
+                private _preferredGarrisonPositions = [_logic, "preferredGarrisonPositions"] call MAINCLASS;
+                if (isNil "_preferredGarrisonPositions" || {!(_preferredGarrisonPositions isEqualType "")}) then { _preferredGarrisonPositions = "" };
                 private _garrisonPatrolSpeed = toUpper ([_logic, "garrisonPatrolSpeed"] call MAINCLASS);
-                private _guardDistance = _size;
+                // Capped to match the search. fnc_garrison caps a garrison's search at 700 m
+                // however large the objective, and some civilian clusters run past 1400, so
+                // scattering by the raw size would put a group outside the very disc its
+                // garrison sweeps and leave it further from every candidate than the sweep
+                // can reach (#1016).
+                private _guardDistance = _size min 700;
 
                 // Capture cluster ref - inner profile foreaches shadow _x.
                 private _cluster = _x;
@@ -1521,14 +1591,20 @@ switch(_operation) do {
 
                     // DEBUG -------------------------------------------------------------------------------------
                     if(_debug) then {
-                      ["CP [%1] - Placing Garrison Guards - %2", _faction, _guardGroup] call ALiVE_fnc_dump;
+                      ["CP [%1] - Placing Garrison Guards - %2 at %3, %4 m from the objective centre (guard radius %5, objective size %6)", _faction, _guardGroup, mapGridPosition _guardPos, round (_guardPos distance2D _center), round _guardRadius, round _size] call ALiVE_fnc_dump;
                     };
                     // DEBUG -------------------------------------------------------------------------------------
 
                     // Garrison & Patrols instead of the static garrison.
                     {
                         if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
-                          [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[_guardRadius,"true",[0,0,0],"",_guardProbabilityCount, _guardPatrolPercentage, _garrisonPatrolBehaviour, _garrisonPatrolSpeed]]] call ALIVE_fnc_profileEntity;
+                          // The garrison searches the objective it was sent to hold, from that objective's
+                          // centre and sized to it, rather than a guard radius around wherever it was
+                          // scattered to within it. A cluster's size is the distance from its centre to its
+                          // farthest building, so a group scattered by that and told to look only a guard
+                          // radius around its own spot could stand beyond reach of every building the
+                          // objective has. The guard radius is still passed and remains the floor (#1016).
+                          [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[_guardRadius,"true",_center,"",_guardProbabilityCount, _guardPatrolPercentage, _garrisonPatrolBehaviour, _garrisonPatrolSpeed, _preferredGarrisonPositions, true, _size]]] call ALIVE_fnc_profileEntity;
                         };
                     } forEach _guards;
                     _countProfiles = _countProfiles + count _guards;
@@ -1605,7 +1681,7 @@ switch(_operation) do {
                                 if (_isInfantry && {_infantryActivePlacedCount < _garrisonCount}) then {
                                     _command = "ALIVE_fnc_garrison";
                                     _garrisonPos = [_center, 50] call CBA_fnc_RandPos;
-                                    _radius = [_guardRadius,"true",[0,0,0],"",_guardProbabilityCount, _guardPatrolPercentage, _garrisonPatrolBehaviour, _garrisonPatrolSpeed];
+                                    _radius = [_guardRadius,"true",_center,"",_guardProbabilityCount, _guardPatrolPercentage, _garrisonPatrolBehaviour, _garrisonPatrolSpeed, _preferredGarrisonPositions, true, _size];
                                 } else {
                                     _command = "ALIVE_fnc_ambientMovement";
                                     _radius = [_guardRadius,"SAFE",[0,0,0]];
@@ -1742,6 +1818,10 @@ switch(_operation) do {
             };
 
             [_faction] call ALiVE_fnc_initFindVehicleTypeCache;
+
+            // Closing mark. If these stages fall well short of the module own reported INIT COMPLETE
+            // TIME then the rest of the cost sits somewhere this instrumentation does not reach.
+            ["placement complete"] call _fnc_cpDiagMark;
 
             // set module as started
             _logic setVariable ["startupComplete", true];

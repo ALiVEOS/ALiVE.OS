@@ -194,6 +194,9 @@ switch(_operation) do {
     case "garrisonPatrolBehaviour": {
         _result = [_logic,_operation,_args,"SAFE"] call ALIVE_fnc_OOsimpleOperation;
     };
+    case "preferredGarrisonPositions": {
+        _result = [_logic,_operation,_args,""] call ALIVE_fnc_OOsimpleOperation;
+    };
     case "garrisonPatrolSpeed": {
         _result = [_logic,_operation,_args,"LIMITED"] call ALIVE_fnc_OOsimpleOperation;
     };
@@ -551,6 +554,7 @@ switch(_operation) do {
             };
 
             waituntil {!(isnil "ALiVE_ProfileHandler") && {[ALiVE_ProfileSystem,"startupComplete",false] call ALIVE_fnc_hashGet}};
+            ["waited for the profile system"] call _fnc_mpDiagMark;
 
             // Apply per-faction custom-class overrides to the static-data
             // registries. Each attribute is a canonical string in the
@@ -570,6 +574,8 @@ switch(_operation) do {
                 ["MP - Custom static data: mode=%1 supportsTouched=%2 suppliesTouched=%3",
                     _customMode, _touchedSupports, _touchedSupplies] call ALiVE_fnc_dump;
             };
+
+            ["applied custom static data"] call _fnc_mpDiagMark;
 
             [_logic,"start"] call MAINCLASS;
 
@@ -597,26 +603,54 @@ switch(_operation) do {
             };
             // DEBUG -------------------------------------------------------------------------------------
 
+            // Whichever module instance gets here first compiles the terrain cluster index and the
+            // rest wait on its flag, so the two readings below separate the one that paid for it
+            // from the ones that only queued. An index runs from a few thousand lines to tens of
+            // thousands depending on the terrain, and nobody has measured what compiling one costs.
+            private _compiledClusters = false;
             if(isNil "ALIVE_clustersMil" && isNil "ALIVE_loadedMilClusters") then {
                 _worldName = toLower(worldName);
                 _file = format["x\alive\addons\mil_placement\clusters\clusters.%1_mil.sqf", _worldName];
+                // Claimed before the compile, not after. The compile yields to the scheduler all the way
+                // through, so a flag raised only at the end let every concurrent instance pass the test
+                // above and compile the same file over again. The wait below demands true, not merely set.
+                ALIVE_loadedMilClusters = false;
                 call compile preprocessFileLineNumbers _file;
                 ALIVE_loadedMilClusters = true;
+                _compiledClusters = true;
             };
+            if (_compiledClusters) then {
+                // The index is an ALiVE hash, so the cluster count is the length of its key
+                // list rather than the length of the hash itself, which is always three.
+                private _clusterCount = -1;
+                if (!isNil "ALIVE_clustersMil" && {ALIVE_clustersMil isEqualType []} && {count ALIVE_clustersMil > 1}) then {
+                    _clusterCount = count (ALIVE_clustersMil select 1);
+                };
+                ["compiled the terrain cluster index", format ["%1, %2 clusters", _file, _clusterCount]] call _fnc_mpDiagMark;
+            } else {
+                ["another instance is compiling the cluster index"] call _fnc_mpDiagMark;
+            };
+
             waituntil {!(isnil "ALIVE_loadedMilClusters") && {ALIVE_loadedMilClusters}};
             waituntil {!(isnil "ALIVE_profileSystemInit")};
+            ["waited for the cluster index and the profile system"] call _fnc_mpDiagMark;
 
             // all MP modules execute at the same time
             // ALIVE_groupConfig is created, but not 100% filled
             // before the rest of the modules start creating their profiles
 
             // instantiate static vehicle position data
+            private _builtGroupConfig = false;
             if(isNil "ALIVE_groupConfig") then {
                 [] call ALIVE_fnc_groupGenerateConfigData;
+                _builtGroupConfig = true;
+            };
+            if (_builtGroupConfig) then {
+                ["built the group config data"] call _fnc_mpDiagMark;
             };
 
             waitUntil {!isnil "ALiVE_GROUP_CONFIG_DATA_GENERATED"};
-            ["waited for profile system, clusters and group config"] call _fnc_mpDiagMark;
+            ["waited for the group config data"] call _fnc_mpDiagMark;
 
             //Only spawn warning on version mismatch since map index changes were reduced
             //uncomment //_error = true; below for exit
@@ -899,6 +933,13 @@ switch(_operation) do {
             "_customArmourCount","_customSpecOpsCount","_countVehicleClusters","_createHQ","_createFieldHQ","_file",
             "_aaCount","_aaBehaviour","_aaClasses"];
 
+            // The HQ and Field HQ garrisons below are placed from this case, which is a
+            // different scope from the guard garrisons, so the setting is resolved again
+            // here. These two run first and claim an objective best building, so leaving
+            // them out meant the setting could never reach the HQ at all.
+            private _preferredGarrisonPositions = [_logic, "preferredGarrisonPositions"] call MAINCLASS;
+            if (isNil "_preferredGarrisonPositions" || {!(_preferredGarrisonPositions isEqualType "")}) then { _preferredGarrisonPositions = "" };
+
 
             _debug = [_logic, "debug"] call MAINCLASS;
 
@@ -1080,7 +1121,7 @@ switch(_operation) do {
 
 	                        {
 	                            if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
-	                               [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[30,"false",[0,0,0],"",1, 1]]] call ALIVE_fnc_profileEntity;
+	                               [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[30,"false",[0,0,0],"",1, 1, "SAFE", "LIMITED", _preferredGarrisonPositions, true]]] call ALIVE_fnc_profileEntity;
 	                            };
 	                        } foreach _profiles;
                          };
@@ -1191,7 +1232,7 @@ switch(_operation) do {
 
                             {
                                 if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
-                                    [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[30,"false",[0,0,0],"",1, 1]]] call ALIVE_fnc_profileEntity;
+                                    [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[30,"false",[0,0,0],"",1, 1, "SAFE", "LIMITED", _preferredGarrisonPositions, true]]] call ALIVE_fnc_profileEntity;
                                     if (_garrisonCompositions) then {
                                         // Field HQ garrison holds its post like
                                         // other composition garrisons
@@ -1315,7 +1356,9 @@ switch(_operation) do {
                                 private _campEnvelope = _envelope max 30;
                                 private _campSeats = 0;
                                 {
-                                    private _bp = count (_x buildingPos -1);
+                                    // Only the positions the seating loop will offer. It drops any reading as the
+                                        // world origin, so counting them here sizes a garrison for seats it will refuse.
+                                        private _bp = count ((_x buildingPos -1) select {!(_x isEqualTo [0,0,0])});
                                     if (_bp > 0) then {
                                         _campSeats = _campSeats + _bp;
                                     } else {
@@ -1323,7 +1366,7 @@ switch(_operation) do {
                                         private _ringRadius = 0.5 * (((_bMax select 0) - (_bMin select 0)) max ((_bMax select 1) - (_bMin select 1))) + 1;
                                         _campSeats = _campSeats + (2 max (floor ((2 * pi * _ringRadius) / 4)) min 6);
                                     };
-                                } forEach (nearestObjects [_safePos, ALIVE_garrisonPositions select 1, _campEnvelope]);
+                                } forEach ([nearestObjects [_safePos, ALIVE_garrisonPositions select 1, _campEnvelope]] call ALIVE_fnc_garrisonAllowedBuildings);
                                 {
                                     _campSeats = _campSeats + ([_x] call ALIVE_fnc_vehicleCountEmptyPositions);
                                 } forEach (nearestObjects [_safePos, ["StaticWeapon"], _campEnvelope]);
@@ -2839,8 +2882,18 @@ switch(_operation) do {
                     private _guardRadius = parseNumber([_logic, "guardRadius"] call MAINCLASS);
                     private _guardPatrolPercentage = parseNumber([_logic, "guardPatrolPercentage"] call MAINCLASS);
                     private _garrisonPatrolBehaviour = toUpper ([_logic, "garrisonPatrolBehaviour"] call MAINCLASS);
+                    // Preferred garrison buildings, still in the canonical Class=idx,idx;... string the
+                    // attribute holds. Read once here beside the other garrison settings and threaded to
+                    // each garrison command below; the seating code parses it. Empty means no override,
+                    // which is what a mission that never touches the setting gets.
+                    private _preferredGarrisonPositions = [_logic, "preferredGarrisonPositions"] call MAINCLASS;
+                    if (isNil "_preferredGarrisonPositions" || {!(_preferredGarrisonPositions isEqualType "")}) then { _preferredGarrisonPositions = "" };
                     private _garrisonPatrolSpeed = toUpper ([_logic, "garrisonPatrolSpeed"] call MAINCLASS);
-                		private _guardDistance = _size;
+                		// Capped to match the search, which fnc_garrison holds at 700 m however
+                		// large the objective. Military clusters barely reach that today, but a
+                		// group scattered further than its garrison can sweep would sit outside
+                		// its own search disc, and the two figures should not drift apart (#1016).
+                		private _guardDistance = _size min 700;
 
                     // divert a share of the guard groups INTO the camp
                     // composition when this cluster spawned one - camps
@@ -2867,15 +2920,32 @@ switch(_operation) do {
                         _guardGroup = (selectRandom _infantryGroups);
                         // camp-diverted iterations anchor at the composition
                         // with a tight jitter and command radius; the rest
-                        // keep today's cluster-centre behaviour
+                        // scatter across the cluster.
+                        //
+                        // The garrison searches the objective it was sent to
+                        // hold, from that objective's centre and sized to it,
+                        // rather than a guard radius around wherever it landed
+                        // within it. A cluster's size is the distance from its
+                        // centre to its farthest building, and the scatter just
+                        // below uses that same figure, so a group could be put
+                        // beyond reach of every building the objective has and
+                        // on the largest ones some were. The guard radius is
+                        // still passed and stays the floor of the search, and
+                        // seats are still handed out nearest the group (#1016).
                         private _guardAnchor = _center;
                         private _guardJitter = _guardDistance;
                         private _thisRadius = _guardRadius;
+                        private _thisSearchCentre = _center;
+                        private _thisObjectiveSize = _size;
                         private _pinStationary = false;
                         if (_i < _compGuardCount) then {
                             _guardAnchor = _campPos;
                             _guardJitter = _campEnvelope * 0.5;
                             _thisRadius = _campEnvelope max 50;
+                            // The camp is the objective for this leg: its
+                            // structures are what the diverted guards man.
+                            _thisSearchCentre = _campPos;
+                            _thisObjectiveSize = _campEnvelope;
                             _pinStationary = true;
                         };
                         // Water-aware random pick around the anchor.
@@ -2892,14 +2962,14 @@ switch(_operation) do {
 
                         // DEBUG -------------------------------------------------------------------------------------
                         if(_debug) then {
-                          ["MP [%1] - Placing Garrison Guards - %2", _faction, _guardGroup] call ALiVE_fnc_dump;
+                          ["MP [%1] - Placing Garrison Guards - %2 at %3, %4 m from the objective centre (guard radius %5, objective size %6)", _faction, _guardGroup, mapGridPosition _guardPos, round (_guardPos distance2D _thisSearchCentre), round _thisRadius, round _thisObjectiveSize] call ALiVE_fnc_dump;
                         };
                         // DEBUG -------------------------------------------------------------------------------------
 
                         // Garrison & Patrols instead of the static garrison.
                         {
                             if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
-                              [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[_thisRadius,"true",[0,0,0],"",_guardProbabilityCount, _guardPatrolPercentage, _garrisonPatrolBehaviour, _garrisonPatrolSpeed]]] call ALIVE_fnc_profileEntity;
+                              [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[_thisRadius,"true",_thisSearchCentre,"",_guardProbabilityCount, _guardPatrolPercentage, _garrisonPatrolBehaviour, _garrisonPatrolSpeed, _preferredGarrisonPositions, true, _thisObjectiveSize]]] call ALIVE_fnc_profileEntity;
                               if (_pinStationary) then {
                                   // composition garrisons hold their posts - the
                                   // same pin roadblock guards use, honoured at
@@ -3018,7 +3088,7 @@ switch(_operation) do {
                                         if (_infantryActivePlacedCount < _garrisonCount) then {
                                             _command = "ALIVE_fnc_garrison";
                                             _garrisonPos = [_center, 50] call CBA_fnc_RandPos;
-                                            _radius = [_guardRadius,"true",[0,0,0],"",_guardProbabilityCount, _guardPatrolPercentage, _garrisonPatrolBehaviour, _garrisonPatrolSpeed];
+                                            _radius = [_guardRadius,"true",_center,"",_guardProbabilityCount, _guardPatrolPercentage, _garrisonPatrolBehaviour, _garrisonPatrolSpeed, _preferredGarrisonPositions, true, _size];
                                         } else {
                                             _command = "ALIVE_fnc_ambientMovement";
                                             _radius = [_guardRadius,"SAFE",[0,0,0]];
@@ -3173,7 +3243,7 @@ switch(_operation) do {
                                     if (_infantryActivePlacedCount < _garrisonCount) then {
                                         _command = "ALIVE_fnc_garrison";
                                         _garrisonPos = [_center, 50] call CBA_fnc_RandPos;
-                                        _radius = [_guardRadius,"true",[0,0,0],"",_guardProbabilityCount, _guardPatrolPercentage, _garrisonPatrolBehaviour, _garrisonPatrolSpeed];
+                                        _radius = [_guardRadius,"true",_center,"",_guardProbabilityCount, _guardPatrolPercentage, _garrisonPatrolBehaviour, _garrisonPatrolSpeed, _preferredGarrisonPositions, true, _size];
                                     } else {
                                         _command = "ALIVE_fnc_ambientMovement";
                                         _radius = [_guardRadius,"SAFE",[0,0,0]];

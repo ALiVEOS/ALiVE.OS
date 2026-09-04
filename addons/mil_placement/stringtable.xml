@@ -1076,7 +1076,7 @@
     <Russian>Радиус пехоты гарнизона (м):</Russian>
 </Key>
 <Key ID="STR_ALIVE_MP_AMBIENT_GUARD_RADIUS_COMMENT">
-    <English>Radius in metres within which garrison groups search for enterable buildings to occupy. Increase for large spread-out objectives.</English>
+    <English>Smallest radius in metres within which a garrison group searches for buildings to occupy. A garrison placed at an objective searches the whole objective when that is larger than this, so guards scattered across a big airfield still reach the buildings in the middle of it. Raise this to let a garrison reach buildings beyond its objective; lowering it no longer narrows a garrison below its own objective. It still sets how far guards wander when they have somewhere to patrol, and how far they look for ordinary houses once the good positions are taken.</English>
     <Chinese>駐防組搜索可進入建築物以佔領的半徑（米）。對於大型分散目標應增大。</Chinese>
     <Chinesesimp>驻防组搜索可进入建筑物以占领的半径（米）。对于大型分散目标应增大。</Chinesesimp>
     <Spanish>Radio en metros dentro del cual los grupos de guarnición buscan edificios accesibles para ocupar. Aumenta el valor para objetivos grandes y dispersos.</Spanish>
@@ -1139,6 +1139,24 @@
     <French>Vitesse de déplacement des groupes de garnison patrouillant entre les bâtiments lorsqu'aucun ennemi n'est en vue. Par défaut: Limitée (marche).</French>
     <Portuguese>Velocidade de movimento dos grupos de guarnição que patrulham entre edifícios quando não há inimigos à vista. Predefinição: Limitada (a andar).</Portuguese>
     <Russian>Скорость передвижения гарнизонных групп, патрулирующих между зданиями, когда враг не виден. По умолчанию — «Ограниченная» (шагом).</Russian>
+</Key>
+<Key ID="STR_ALIVE_MP_PREFERRED_GARRISON_POSITIONS">
+    <English>Preferred Garrison Buildings:</English>
+</Key>
+<Key ID="STR_ALIVE_MP_PREFERRED_GARRISON_POSITIONS_COMMENT">
+    <English>Buildings and positions to garrison first. One entry per building class, on its own line or separated by semicolons: Classname=position indices, in the order you want them filled. Example: Land_vn_hut_01=1,2,3;Land_vn_bunker_01=0,4 Buildings listed here fill before any others, and a class listed here uses your indices instead of the built-in list. Classnames match in any capitalisation but must be exact: a subclass of a listed class does not match. Indices are the building's buildingPos numbers. Rather than typing this out, preview the mission and run ["start"] call ALIVE_fnc_classPicker in the debug console: buildings around you are labelled with their class, Home collects the one you are looking at, End collects the numbered position you are looking at, and ["copy", "classIndexPairs"] call ALIVE_fnc_classPicker puts the finished line on the clipboard to paste here. Applies to this module's objective garrisons and reserve reinforcements. Garrisons the commander orders during play, and the guards at captured airbases, have no module to read this from, so they borrow the positions from every placement module's list. They only borrow which positions to stand in: a class listed here never pulls them away from the objective they were sent to hold. Roadblock and task camp guards are left out entirely, because they have a structure of their own to man. Leaving this empty keeps the built-in list for this module's own garrisons.</English>
+</Key>
+<Key ID="STR_ALIVE_MP_GARRISON_BUILDING_BLACKLIST">
+    <English>Garrison Building Blacklist:</English>
+</Key>
+<Key ID="STR_ALIVE_MP_GARRISON_BUILDING_BLACKLIST_COMMENT">
+    <English>Buildings no garrison may ever use. One class name per line, or separated by semicolons or commas: Land_vn_latrine_01;Land_vn_shed_01 A class listed here is skipped when a garrison picks buildings, and is also left out when an objective is measured to decide how big a garrison it can hold, so a camp is no longer sized to fill buildings its guards will refuse. It covers garrisons only: units that occupy houses by other means, such as the CQB module, are not affected by it. Class names match in any capitalisation but must be exact: a subclass of a listed class is not excluded. The blacklist wins over Preferred Garrison Buildings, so a class named in both is skipped. Lists from every placement module apply to the whole mission, as does an ALIVE_Building_Blacklist array set from the mission's init.sqf, which is how this was done before there was a setting. Rather than typing class names out, place a Class Picker module, preview the mission, look at a building you want excluded and press Delete, then choose Garrison building blacklist from the ALiVE menu. On returning to the editor the classes are written into this field for you. Delete is used rather than Home because a building with nowhere to stand inside it can still gather men around it, and those are exactly the ones worth excluding.</English>
+</Key>
+<Key ID="STR_ALIVE_MP_GARRISON_OCCUPANCY_LIMIT">
+    <English>Garrison Building Occupancy Limit:</English>
+</Key>
+<Key ID="STR_ALIVE_MP_GARRISON_OCCUPANCY_LIMIT_COMMENT">
+    <English>Most men a garrison puts in any one building. A whole number. Leave it empty for no limit, which fills each building before moving to the next, as before. With a limit a group takes that many places in a building and moves on to the next, nearest first, so twelve men with a limit of 2 spread across six buildings instead of filling one. A building whose class you named in Preferred Garrison Buildings takes the positions you wrote there whatever the limit; the limit governs every building you did not name, including those carrying a built-in position list. Where several groups garrison one objective each takes its share of the buildings, and a group whose share cannot seat it at the limit is allowed more men per building rather than left standing outside, which the log reports when it happens. Once a group has taken every building it can reach, men left over are given any unused Garrison Building Patrol quota and the rest are dealt back into those buildings one at a time. Static weapons and CBA building positions take one man each and do not count towards it. Applies to every garrison in the mission, including the ones the commander orders during play, reserve reinforcements and roadblock guards; where two modules set different limits the smallest applies. Anything that is not a whole number is ignored and reported in the log.</English>
 </Key>
 <Key ID="STR_ALIVE_MP_AMBIENT_PATROL_PERCENT_NONE">
     <English>None</English>

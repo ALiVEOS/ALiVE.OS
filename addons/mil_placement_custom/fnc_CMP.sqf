@@ -219,6 +219,9 @@ switch(_operation) do {
     case "garrisonPatrolBehaviour": {
         _result = [_logic,_operation,_args,"SAFE"] call ALIVE_fnc_OOsimpleOperation;
     };
+    case "preferredGarrisonPositions": {
+        _result = [_logic,_operation,_args,""] call ALIVE_fnc_OOsimpleOperation;
+    };
     case "garrisonPatrolSpeed": {
         _result = [_logic,_operation,_args,"LIMITED"] call ALIVE_fnc_OOsimpleOperation;
     };
@@ -823,7 +826,9 @@ switch(_operation) do {
                         // many groups to divert into the composition. Ring
                         // geometry mirrors x_lib fnc_groupGarrison - keep in sync
                         {
-                            private _bp = count (_x buildingPos -1);
+                            // Only the positions the seating loop will offer. It drops any reading as the
+                                        // world origin, so counting them here sizes a garrison for seats it will refuse.
+                                        private _bp = count ((_x buildingPos -1) select {!(_x isEqualTo [0,0,0])});
                             if (_bp > 0) then {
                                 _compositionSeats = _compositionSeats + _bp;
                             } else {
@@ -831,7 +836,7 @@ switch(_operation) do {
                                 private _ringRadius = 0.5 * (((_bMax select 0) - (_bMin select 0)) max ((_bMax select 1) - (_bMin select 1))) + 1;
                                 _compositionSeats = _compositionSeats + (2 max (floor ((2 * pi * _ringRadius) / 4)) min 6);
                             };
-                        } forEach (nearestObjects [_spawnedSafePos, ALIVE_garrisonPositions select 1, _compositionEnvelope]);
+                        } forEach ([nearestObjects [_spawnedSafePos, ALIVE_garrisonPositions select 1, _compositionEnvelope]] call ALIVE_fnc_garrisonAllowedBuildings);
                         {
                             _compositionSeats = _compositionSeats + ([_x] call ALIVE_fnc_vehicleCountEmptyPositions);
                         } forEach (nearestObjects [_spawnedSafePos, ["StaticWeapon"], _compositionEnvelope]);
@@ -1132,6 +1137,12 @@ switch(_operation) do {
             private _guardRadius = parseNumber([_logic, "guardRadius"] call MAINCLASS);
             private _guardPatrolPercentage = parseNumber([_logic, "guardPatrolPercentage"] call MAINCLASS);
             private _garrisonPatrolBehaviour = toUpper ([_logic, "garrisonPatrolBehaviour"] call MAINCLASS);
+            // Preferred garrison buildings, still in the canonical Class=idx,idx;... string the
+            // attribute holds. Read once here beside the other garrison settings and threaded to
+            // each garrison command below; the seating code parses it. Empty means no override,
+            // which is what a mission that never touches the setting gets.
+            private _preferredGarrisonPositions = [_logic, "preferredGarrisonPositions"] call MAINCLASS;
+            if (isNil "_preferredGarrisonPositions" || {!(_preferredGarrisonPositions isEqualType "")}) then { _preferredGarrisonPositions = "" };
             private _garrisonPatrolSpeed = toUpper ([_logic, "garrisonPatrolSpeed"] call MAINCLASS);
             private _guardDistance = parseNumber([_logic, "size"] call MAINCLASS);
 
@@ -1183,14 +1194,28 @@ switch(_operation) do {
                             _guardEntry params ["_guardGroup", "_guardFaction"];
                             // composition-diverted iterations anchor at the
                             // composition with tight jitter and command radius
+                            // The garrison searches the objective it was sent to hold,
+                            // from its centre and sized to it, rather than a guard radius
+                            // around wherever it landed within it. The scatter below uses
+                            // the objective's own size, so a group could be put beyond
+                            // reach of every building it was meant to man. The guard
+                            // radius is still passed and stays the floor of the search.
+                            // Size defaults to 300 here against a guard radius of 200, so
+                            // a mission that touched neither now searches the objective it
+                            // drew rather than two thirds of it (#1016).
                             private _guardAnchor = _position;
                             private _guardJitter = _guardDistance;
                             private _thisRadius = _guardRadius;
+                            private _thisSearchCentre = _position;
+                            private _thisObjectiveSize = _guardDistance;
                             private _pinStationary = false;
                             if (_i < _compGuardCount) then {
                                 _guardAnchor = _compositionSafePos;
                                 _guardJitter = _compositionEnvelope * 0.5;
                                 _thisRadius = _compositionEnvelope max 50;
+                                // The composition is the objective for this leg.
+                                _thisSearchCentre = _compositionSafePos;
+                                _thisObjectiveSize = _compositionEnvelope;
                                 _pinStationary = true;
                             };
                             // Water-aware random pick - up to 10 retries to
@@ -1212,7 +1237,7 @@ switch(_operation) do {
                             // Garrison & Patrols instead of the static garrison.
                             {
                                 if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
-                                    [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[_thisRadius,"true",[0,0,0],"",_guardProbabilityCount, _guardPatrolPercentage, _garrisonPatrolBehaviour, _garrisonPatrolSpeed]]] call ALIVE_fnc_profileEntity;
+                                    [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[_thisRadius,"true",_thisSearchCentre,"",_guardProbabilityCount, _guardPatrolPercentage, _garrisonPatrolBehaviour, _garrisonPatrolSpeed, _preferredGarrisonPositions, true, _thisObjectiveSize]]] call ALIVE_fnc_profileEntity;
                                     if (_pinStationary) then {
                                         // composition garrisons hold their posts -
                                         // the same pin roadblock guards use
@@ -1394,11 +1419,17 @@ switch(_operation) do {
                         } else {
                             if (_infantryActivePlacedCount < _garrisonCount) then {
                                 _command = "ALIVE_fnc_garrison";
-                                _radius = [_guardRadius,"true",[0,0,0],"",_guardProbabilityCount, _guardPatrolPercentage, _garrisonPatrolBehaviour, _garrisonPatrolSpeed];
                                 // garrison legs anchor at the spawned composition
                                 // when there is one - its structures are the
-                                // defensible positions this leg is meant to man
+                                // defensible positions this leg is meant to man.
+                                // The search is centred there too and sized to it, so a
+                                // man dropped at the edge of the composition still sees
+                                // the whole of it rather than a guard radius around his
+                                // own boots (#1016). Worked out before the command is
+                                // built, because the command now carries it.
                                 private _garrisonAnchor = if (_garrisonCompositions && {_compositionSpawned}) then { _compositionSafePos } else { position _logic };
+                                private _garrisonAnchorSize = if (_garrisonCompositions && {_compositionSpawned}) then { _compositionEnvelope } else { _size };
+                                _radius = [_guardRadius,"true",_garrisonAnchor,"",_guardProbabilityCount, _guardPatrolPercentage, _garrisonPatrolBehaviour, _garrisonPatrolSpeed, _preferredGarrisonPositions, true, _garrisonAnchorSize];
                                 _position = [_garrisonAnchor, 30] call CBA_fnc_RandPos;
                             } else {
                                 _command = "ALIVE_fnc_ambientMovement";
@@ -1553,7 +1584,9 @@ switch(_operation) do {
                     // seat estimate - ring geometry mirrors x_lib
                     // fnc_groupGarrison, keep in sync
                     {
-                        private _bp = count (_x buildingPos -1);
+                        // Only the positions the seating loop will offer. It drops any reading as the
+                                        // world origin, so counting them here sizes a garrison for seats it will refuse.
+                                        private _bp = count ((_x buildingPos -1) select {!(_x isEqualTo [0,0,0])});
                         if (_bp > 0) then {
                             _fieldHQSeats = _fieldHQSeats + _bp;
                         } else {
@@ -1561,7 +1594,7 @@ switch(_operation) do {
                             private _ringRadius = 0.5 * (((_bMax select 0) - (_bMin select 0)) max ((_bMax select 1) - (_bMin select 1))) + 1;
                             _fieldHQSeats = _fieldHQSeats + (2 max (floor ((2 * pi * _ringRadius) / 4)) min 6);
                         };
-                    } forEach (nearestObjects [_fieldHQSafePos, ALIVE_garrisonPositions select 1, _fieldHQEnvelope]);
+                    } forEach ([nearestObjects [_fieldHQSafePos, ALIVE_garrisonPositions select 1, _fieldHQEnvelope]] call ALIVE_fnc_garrisonAllowedBuildings);
                     {
                         _fieldHQSeats = _fieldHQSeats + ([_x] call ALIVE_fnc_vehicleCountEmptyPositions);
                     } forEach (nearestObjects [_fieldHQSafePos, ["StaticWeapon"], _fieldHQEnvelope]);
@@ -1577,11 +1610,20 @@ switch(_operation) do {
                     private _guardAnchor = _position;
                     private _guardJitter = _guardDistance;
                     private _thisRadius = _guardRadius;
+                    // The module's own anchor. The placement loop above declares its own
+                    // _position and writes only that, so the outer one still holds this,
+                    // but naming it outright keeps the search centre and the scatter anchor
+                    // visibly the same thing.
+                    private _thisSearchCentre = position _logic;
+                    private _thisObjectiveSize = _guardDistance;
                     private _pinStationary = false;
                     if (_forEachIndex < _hqGuardCount) then {
                         _guardAnchor = _fieldHQSafePos;
                         _guardJitter = _fieldHQEnvelope * 0.5;
                         _thisRadius = _fieldHQEnvelope max 50;
+                        // The field HQ is the objective for these guards.
+                        _thisSearchCentre = _fieldHQSafePos;
+                        _thisObjectiveSize = _fieldHQEnvelope;
                         _pinStationary = true;
                     };
                     private _guardPos = _guardAnchor;
@@ -1592,7 +1634,7 @@ switch(_operation) do {
                     private _dGuards = [_guardGroup, _guardPos, random(360), true, _guardFaction, false, false, "STEALTH", _onEachSpawn, _onEachSpawnOnce] call ALIVE_fnc_createProfilesFromGroupConfig;
                     {
                         if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
-                            [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[_thisRadius,"true",[0,0,0],"",_guardProbabilityCount, _guardPatrolPercentage, _garrisonPatrolBehaviour, _garrisonPatrolSpeed]]] call ALIVE_fnc_profileEntity;
+                            [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[_thisRadius,"true",_thisSearchCentre,"",_guardProbabilityCount, _guardPatrolPercentage, _garrisonPatrolBehaviour, _garrisonPatrolSpeed, _preferredGarrisonPositions, true, _thisObjectiveSize]]] call ALIVE_fnc_profileEntity;
                             if (_pinStationary) then {
                                 // composition garrisons hold their posts - the
                                 // same pin roadblock guards use

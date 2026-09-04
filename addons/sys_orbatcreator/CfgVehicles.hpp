@@ -63,6 +63,18 @@ class CfgVehicles {
                                 class No { name = "No"; value = false; default = 1; };
                             };
                     };
+                    class disableRandomization : Combo
+                    {
+                            property = "ALiVE_sys_orbatcreator_disableRandomization";
+                            displayName = "$STR_ALIVE_ORBATCREATOR_DISABLE_RANDOMIZATION";
+                            tooltip = "$STR_ALIVE_ORBATCREATOR_DISABLE_RANDOMIZATION_COMMENT";
+                            defaultValue = """true""";
+                            class Values
+                            {
+                                class Yes { name = "Yes"; value = true; default = 1; };
+                                class No { name = "No"; value = false; };
+                            };
+                    };
                     class arsenalType
                     {
                             property = "ALiVE_sys_orbatcreator_arsenalType";

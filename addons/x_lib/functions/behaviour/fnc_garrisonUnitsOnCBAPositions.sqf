@@ -19,6 +19,8 @@ Array   - units still to place; MUTATED in place (filled units are removed)
 Array   - centre position to search from
 Number  - search radius for CBA_buildingPos objects
 Boolean - optional, teleport (true, default) vs move-order (false)
+Array   - optional, where the group stands; slots are handed out nearest to it.
+          Defaults to the search centre, which is what every caller sent before.
 
 Returns:
 Array - non-instant movement assignments in the form [unit, ATL position, direction]
@@ -32,10 +34,16 @@ Author:
 Jman
 ---------------------------------------------------------------------------- */
 
-params ["_units", "_position", "_radius", ["_moveInstantly", true]];
+params ["_units", "_position", "_radius", ["_moveInstantly", true], ["_sortFrom", [], [[]]]];
 
 private _movementAssignments = [];
+// The sweep covers the area asked for, which for a placed garrison is the whole
+// objective, but the slots are handed out nearest the men. nearestObjects returns them
+// ordered from the sweep centre, so without this the first man of a group at the rim
+// takes a trench slot on the far side of the objective (#1016).
+if (_sortFrom isEqualTo []) then { _sortFrom = _position };
 private _cbaObjects = nearestObjects [_position, ["CBA_buildingPos"], _radius];
+_cbaObjects = [_cbaObjects, [], { _x distance2D _sortFrom }, "ASCEND"] call BIS_fnc_sortBy;
 
 {
     if (count _units == 0) exitWith {};

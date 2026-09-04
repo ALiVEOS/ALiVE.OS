@@ -117,6 +117,116 @@ if (is3DEN) then {
         ALIVE_fnc_edenArtilleryDependencyCheck = compile preprocessFileLineNumbers "\x\alive\addons\main\fnc_edenArtilleryDependencyCheck.sqf";
     };
 
+    // Class picker write back. Compiled here rather than reached through
+    // CfgFunctions because that phase does not run in the editor, so a function
+    // registered that way is simply never defined and calling it does nothing at
+    // all, silently.
+    ALIVE_fnc_edenApplyGarrisonList = compile preprocessFileLineNumbers "\x\alive\addons\sys_classpicker\fnc_edenApplyGarrisonList.sqf";
+
+    // The faction classes entry in the editor's right click menu, for the same
+    // reason. It has been in the menu for years reaching a function that is not
+    // defined while the editor is open, so clicking it has been doing nothing.
+    // Guarded, because in a mission the CfgFunctions copy is compileFinal.
+    if (isNil "ALIVE_fnc_copyFactionClasses") then {
+        ALIVE_fnc_copyFactionClasses = compile preprocessFileLineNumbers "\x\alive\addons\ui\fnc_copyFactionClasses.sqf";
+    };
+
+    // What to do with a list when the preview ends is the picker module's own
+    // setting, left in uiNamespace by the module because the mission namespace
+    // does not survive the trip back to the editor.
+    add3DENEventHandler ["OnMissionPreviewEnd", {
+        // The wiki is explicit that entities cannot be manipulated during this
+        // event without letting it settle first.
+        [] spawn {
+            uiSleep 1;
+
+            // Every way out of here says which way it went. Without that, a
+            // handler that did nothing on purpose and one that never fired at
+            // all leave exactly the same trace, which is none.
+            private _mode = uiNamespace getVariable ["ALIVE_classPicker_onReturn", ""];
+
+            if (_mode == "") exitWith {
+                ["ALiVE class picker - preview ended, but no picker module ran, so there is nothing to put anywhere"] call ALiVE_fnc_dump;
+            };
+            if (_mode == "off") exitWith {
+                ["ALiVE class picker - preview ended, the module is set to do nothing on return"] call ALiVE_fnc_dump;
+            };
+
+            private _dest = uiNamespace getVariable ["ALIVE_classPicker_destination", []];
+            private _stash = uiNamespace getVariable ["ALIVE_classPicker_stash", []];
+            private _list = "";
+            if (_dest isEqualType [] && {count _dest > 1}) then { _list = _dest select 1 };
+            // The stash holds the positions render. Falling back to it when a blacklist
+            // was asked for and nothing was collected would write a Class=1,2 list into
+            // the blacklist field, so that fallback is for the positions path only.
+            private _destKeyEarly = "";
+            if (_dest isEqualType [] && {count _dest > 0}) then { _destKeyEarly = toLower (_dest select 0) };
+            if (_list == "" && {_destKeyEarly != "garrisonblacklist"} && {_stash isEqualType []} && {count _stash > 0}) then { _list = _stash select 0 };
+
+            // Buildings excluded during the preview, which the picker stashes whether or
+            // not anybody copied them for a setting. Pressing Delete a few times and then
+            // Escape is the ordinary way this feature gets used, and without this the
+            // return finds an empty positions list and decides nothing was picked at all.
+            private _blacklistStash = "";
+            if (_stash isEqualType [] && {count _stash > 4}) then {
+                private _b = _stash select 4;
+                if (!isNil "_b" && {_b isEqualType ""}) then { _blacklistStash = _b };
+            };
+
+            // A blacklist is bare class names, so the "=" a positions list always carries
+            // is not a test it can pass.
+            private _haveSomething =
+                (_blacklistStash != "")
+                || {_destKeyEarly == "garrisonblacklist" && {_list != ""}}
+                || {_list != "" && {"=" in _list}};
+
+            if !(_haveSomething) exitWith {
+                ["ALiVE class picker - preview ended with nothing collected to apply"] call ALiVE_fnc_dump;
+            };
+
+            if (_mode == "apply") then {
+                // This event has been seen to fire twice a second apart, and
+                // applying twice would write the list in twice wherever the field
+                // is being added to rather than replaced.
+                private _last = uiNamespace getVariable ["ALiVE_classPicker_lastAutoApply", -1e9];
+                if (diag_tickTime - _last < 5) exitWith {
+                    ["ALiVE class picker - preview ended again within a few seconds, already applied, doing nothing"] call ALiVE_fnc_dump;
+                };
+                uiNamespace setVariable ["ALiVE_classPicker_lastAutoApply", diag_tickTime];
+
+                // Positions and exclusions are separate settings and a session can have
+                // produced both, so each is applied to its own field. Which ones were
+                // picked is read from what was collected rather than from what was last
+                // copied: asking what was copied meant that copying the exclusions threw
+                // away a positions list picked in the same session.
+                private _positionsStash = "";
+                if (_stash isEqualType [] && {count _stash > 0}) then {
+                    private _p = _stash select 0;
+                    if (!isNil "_p" && {_p isEqualType ""}) then { _positionsStash = _p };
+                };
+                private _wantPositions = _positionsStash != "" && {"=" in _positionsStash};
+
+                if (_wantPositions) then {
+                    ["ALiVE class picker - preview ended, applying positions to the synced modules: %1", _positionsStash] call ALiVE_fnc_dump;
+                    [[], true, "positions"] call ALIVE_fnc_edenApplyGarrisonList;
+                };
+
+                if (_blacklistStash != "") then {
+                    ["ALiVE class picker - preview ended, applying exclusions to the synced modules: %1", _blacklistStash] call ALiVE_fnc_dump;
+                    [[], true, "blacklist"] call ALIVE_fnc_edenApplyGarrisonList;
+                };
+
+                if (!_wantPositions && {_blacklistStash == ""}) then {
+                    ["ALiVE class picker - preview ended, applying to the synced modules: %1", _list] call ALiVE_fnc_dump;
+                    [[], true] call ALIVE_fnc_edenApplyGarrisonList;
+                };
+            } else {
+                ["ALiVE class picker - preview ended, reminding rather than applying: %1", _list] call ALiVE_fnc_dump;
+                [format ["ALiVE class picker: %1 -- select a placement module, right click it and choose Apply Picked Garrison List, or Apply Picked Blacklist, under ALiVE.", _list], 1, 60] call BIS_fnc_3DENNotification;
+            };
+        };
+    }];
+
     // Viability Eden chain. Inline-compile the helper functions
     // the assessor reaches transitively, plus the assessor itself,
     // so the full M1-M5 score block + notification can render in Eden.

@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Project name="Arma3">
+<Package name="ALiVE">
+<Container name="STR_DN">
+<Key ID="STR_ALIVE_CLASSPICKER">
+    <English>Class Picker</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_COMMENT">
+    <English>Collect building, vehicle and unit classnames by looking at them. Sync it to the placement modules it is picking for. Editor preview only.</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_DESC">
+    <English>SYNC THIS MODULE TO THE PLACEMENT MODULES IT IS PICKING FOR. The sync lines are what tell it which modules to fill in, and what it offers you in game follows them: sync it to military placement and it offers to fill military garrisons, and leaves civilian ones out. Sync it to as many as you like. Without any sync it still works, but nothing can be written back on its own, and the list has to be applied by hand to a module you select.
+
+LEAVE IT IN THE MISSION WHEN YOU ARE DONE. It works only when previewing from the editor, and hosted and dedicated sessions ignore it entirely, so a released mission is unaffected and players are never given the picker keys. Keeping it placed means its settings and its sync lines are still there the next time you want to change what gets garrisoned, instead of having to wire it all up again.
+
+Collect classnames for settings that ask for them, by looking at things instead of typing them. Every object of the chosen kind near you is labelled with its class. Home collects the one under the crosshair. On a building, End also collects the numbered position under the crosshair, so a garrison list can be built by looking at the windows you want filled. Come back to the editor and what you picked goes into the modules this one is synced to.</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_KINDS">
+    <English>Collect:</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_KINDS_COMMENT">
+    <English>What to label and collect. Buildings for garrison positions and strategic house lists, Vehicles and Units for the blacklists. Aiming at a soldier also picks up the group he was spawned from.</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_RADIUS">
+    <English>Range:</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_RADIUS_COMMENT">
+    <English>How far around YOU to look, in metres. Nothing further away than this is labelled, however you are standing. Larger ranges label more at once and cost more to draw in a dense town, so 75 is a good starting point and walking to the next street is cheaper than raising it. This is not what decides which buildings count: when the picker is synced to placement modules, only buildings inside those modules' areas are labelled, however close to you anything else is.</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_INDICES">
+    <English>Show position numbers:</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_INDICES_COMMENT">
+    <English>Number the standing positions inside the building under the crosshair, so a position can be chosen by looking at it. Turn off when collecting classnames only.</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_AUTOSTART">
+    <English>Start on preview:</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_AUTOSTART_COMMENT">
+    <English>Whether labelling begins the moment the preview starts. No by default, so nothing is drawn until you ask for it from the ALiVE menu, which keeps the labels out of the way when you are previewing for some other reason. Set to Yes to have it start on its own.</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_ONRETURN">
+    <English>On returning to the editor:</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_ONRETURN_COMMENT">
+    <English>What to do with what you picked when the preview ends. Apply to synced modules writes it straight into the placement modules this picker is synced to, which is usually what you want. Remind me says what was collected and leaves it to you. Either way you can always apply it by hand from the right click menu, and Ctrl+Z takes it back.</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_LABELSIZE">
+    <English>Classname size:</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_LABELSIZE_COMMENT">
+    <English>Height of the classname labels. Raise it if they are hard to read against a bright sky.</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_INDEXSIZE">
+    <English>Position number size:</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_INDEXSIZE_COMMENT">
+    <English>Height of the position numbers. Larger than the classnames by default, since these are aimed at rather than only read.</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_FONT">
+    <English>Label font:</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_FONT_COMMENT">
+    <English>Font the labels are drawn in. PuristaBold reads well against both sky and ground. Any font from CfgFontFamilies works.</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_MENU_START">
+    <English>Start picking %1</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_MENU_START_COMMENT">
+    <English>Label everything of the chosen kind nearby</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_MENU_STOP">
+    <English>Stop picking</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_MENU_STOP_COMMENT">
+    <English>Remove the labels. What has been collected is kept, so it can still be copied.</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_MENU_TAKE">
+    <English>Take what I am looking at</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_MENU_DROP">
+    <English>Remove what I am looking at</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_MENU_DROPPOS">
+    <English>Remove position %1</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_MENU_TAKE_COMMENT">
+    <English>Same as pressing Home. Takes what you are looking at, or gives it back if it is already held.</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_MENU_TAKEPOS">
+    <English>Take the position I am looking at</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_MENU_TAKEPOS_COMMENT">
+    <English>Same as pressing End. Takes the numbered position you are looking at, or gives it back if it is already held. The order positions are taken in is the order they get filled in.</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_MENU_TAKEALLPOS">
+    <English>Take every position in this building</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_MENU_DROPALLPOS">
+    <English>Remove every position in this building</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_MENU_TAKEALLPOS_COMMENT">
+    <English>Take all the numbered positions in the building you are looking at, or give them all back if you already hold every one. Positions already taken keep the order you gave them and the rest are added after.</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_MENU_COPYFOR">
+    <English>Copy for a setting (%1) &gt;</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_MENU_COPYFOR_COMMENT">
+    <English>Put what you have collected on the clipboard, in the form the setting you name wants it in</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_MENU_COPYFOR_TITLE">
+    <English>Copy for</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_DEST_MILGARRISON">
+    <English>Military Placement garrisons</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_DEST_MILGARRISON_SYNCED">
+    <English>Military Placement garrisons (%1 synced)</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_DEST_CIVGARRISON_SYNCED">
+    <English>Civilian Placement garrisons (%1 synced)</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_DEST_MILGARRISON_COMMENT">
+    <English>Preferred Garrison Buildings on a military placement module. Back in the editor, select the module and apply it from the right click menu.</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_DEST_CIVGARRISON">
+    <English>Civilian Placement garrisons</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_DEST_CIVGARRISON_COMMENT">
+    <English>Preferred Garrison Buildings on a civilian placement module. Back in the editor, select the module and apply it from the right click menu.</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_MENU_EXCLUDE">
+    <English>Keep garrisons out of this building</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_MENU_UNEXCLUDE">
+    <English>Let garrisons use this building again</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_MENU_EXCLUDE_COMMENT">
+    <English>Adds the building you are looking at to the garrison blacklist, or takes it off again if it is already on. Same as pressing Delete. The blacklist is kept apart from the buildings you take with Home, so excluding something never disturbs the positions you picked.</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_DEST_GARRISONBLACKLIST_N">
+    <English>Garrison building blacklist (%1)</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_DEST_GARRISONBLACKLIST">
+    <English>Garrison building blacklist</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_DEST_GARRISONBLACKLIST_COMMENT">
+    <English>Buildings no garrison should ever put men in. Look at a building and press Delete to collect it, then choose this to copy the list. Delete keeps its own list, separate from the buildings collected with Home, so excluding something never disturbs the positions you picked. Applying it in the editor puts the classes into every placement module's Garrison Building Blacklist. Positions are not needed here, so any you collected are ignored.</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_DEST_VEHICLEBLACKLIST">
+    <English>Vehicle blacklist</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_DEST_VEHICLEBLACKLIST_COMMENT">
+    <English>ALiVE_PLACEMENT_CUSTOM_VEHICLEBLACKLIST, pasted into the mission's init.sqf</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_DEST_UNITBLACKLIST">
+    <English>Unit blacklist</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_DEST_UNITBLACKLIST_COMMENT">
+    <English>ALiVE_PLACEMENT_CUSTOM_UNITBLACKLIST, pasted into the mission's init.sqf</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_DEST_GROUPBLACKLIST">
+    <English>Group blacklist</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_DEST_GROUPBLACKLIST_COMMENT">
+    <English>ALiVE_PLACEMENT_CUSTOM_GROUPBLACKLIST, pasted into the mission's init.sqf. Uses the groups picked up from soldiers.</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_MENU_COPYPAIRS">
+    <English>Copy for garrison positions (%1)</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_MENU_COPYPAIRS_COMMENT">
+    <English>Class=1,2,3;Class2=0,4 ready to paste into Preferred Garrison Buildings. Buildings with no positions taken are left out.</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_MENU_COPYFLAT">
+    <English>Copy as a plain list</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_MENU_COPYFLAT_COMMENT">
+    <English>Class1,Class2 ready to paste into a text field in the editor</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_MENU_COPYARRAY">
+    <English>Copy as an array</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_MENU_COPYARRAY_COMMENT">
+    <English>["Class1","Class2"] ready to paste into a setting in init.sqf</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_MENU_COPYGROUPS">
+    <English>Copy the groups</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_MENU_COPYGROUPS_COMMENT">
+    <English>The group classes picked up from soldiers, ready for a group blacklist</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_MENU_CLEAR">
+    <English>Clear everything collected</English>
+</Key>
+<Key ID="STR_ALIVE_CLASSPICKER_MENU_CLEAR_COMMENT">
+    <English>Empty the list and start again</English>
+</Key>
+</Container>
+</Package>
+</Project>
