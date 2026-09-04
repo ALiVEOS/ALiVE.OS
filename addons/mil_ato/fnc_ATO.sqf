@@ -2371,6 +2371,10 @@ switch(_operation) do {
 
                         {
                             if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
+                                // No objective centre. These guards were placed to man the airbase HQ building, and the 50 m
+                                // below reaches it from where they stand. Handing them an objective centre would
+                                // widen the search to the whole objective and draw them off the thing they are
+                                // here for, so this slot stays [0,0,0] deliberately (#1016).
                                 [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[50,"false",[0,0,0]]]] call ALIVE_fnc_profileEntity;
                             };
                         } forEach _profiles;
@@ -2455,6 +2459,10 @@ switch(_operation) do {
 
                         {
                             if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
+                                // No objective centre. These guards were placed to man the airbase HQ building, and the 50 m
+                                // below reaches it from where they stand. Handing them an objective centre would
+                                // widen the search to the whole objective and draw them off the thing they are
+                                // here for, so this slot stays [0,0,0] deliberately (#1016).
                                 [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[50,"false",[0,0,0]]]] call ALIVE_fnc_profileEntity;
                             };
                         } forEach _profiles;

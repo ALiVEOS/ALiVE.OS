@@ -1121,6 +1121,10 @@ switch(_operation) do {
 
 	                        {
 	                            if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
+	                               // No objective centre. These guards were placed to man the objective HQ composition,
+	                               // and the 30 m below reaches it from where they stand. Handing them an objective
+	                               // centre would widen the search to the whole objective and draw them off the thing
+	                               // they are here for, so this slot stays [0,0,0] deliberately (#1016).
 	                               [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[30,"false",[0,0,0],"",1, 1, "SAFE", "LIMITED", _preferredGarrisonPositions, true]]] call ALIVE_fnc_profileEntity;
 	                            };
 	                        } foreach _profiles;
@@ -1232,6 +1236,10 @@ switch(_operation) do {
 
                             {
                                 if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
+                                    // No objective centre. These guards were placed to man the field HQ composition,
+                                    // and the 30 m below reaches it from where they stand. Handing them an objective
+                                    // centre would widen the search to the whole objective and draw them off the thing
+                                    // they are here for, so this slot stays [0,0,0] deliberately (#1016).
                                     [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[30,"false",[0,0,0],"",1, 1, "SAFE", "LIMITED", _preferredGarrisonPositions, true]]] call ALIVE_fnc_profileEntity;
                                     if (_garrisonCompositions) then {
                                         // Field HQ garrison holds its post like

@@ -413,6 +413,8 @@ for "_j" from 1 to (count _roadpoints) do {
                 // class near the road would otherwise outrank the roadblock itself, and
                 // these guards are registered stationary below, so nothing would ever move
                 // them back and the checkpoint would stand empty for the rest of the run.
+                // The [0,0,0] centre is the same argument: the checkpoint is what these men
+                // hold, not the objective around it, so the 30 m stays drawn on them (#1016).
                 [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[30,"false",[0,0,0],"",1, 1, "SAFE", "LIMITED", ""]]] call ALIVE_fnc_profileEntity;
                 [_x,"busy",true] call ALIVE_fnc_hashSet;
                 // Hold the roadblock: register the guard "stationary" so

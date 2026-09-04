@@ -146,6 +146,8 @@ if(_groupCount > 0) then {
                 // arguments are the values this call has always fallen to; only the last
                 // one is new. Tasks that send a player to clear a camp would otherwise
                 // find its defenders in a village up to a hundred metres away.
+                // The [0,0,0] centre keeps that true: the composition is what these men hold,
+                // so the 100 m is drawn on them and not on any objective nearby (#1016).
                 [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[100,"false",[0,0,0],"",0, 50, "SAFE", "LIMITED", ""]]] call ALIVE_fnc_profileEntity;
             };
         } foreach _guards;

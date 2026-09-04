@@ -160,6 +160,8 @@ if (_debug) then {
                         // Empty ninth slot, for the same reason as the roadblock these
                         // guards are retaking: they must man the checkpoint, not a house
                         // the mission happens to have listed nearby.
+                        // The [0,0,0] centre says the same thing: the checkpoint is what they hold, so
+                        // the 30 m stays drawn on them rather than on an objective (#1016).
                         ["ALIVE_fnc_garrison", "spawn", [30, "false", [0,0,0], "", 1, 1, "SAFE", "LIMITED", ""]]
                     ] call ALIVE_fnc_profileEntity;
                     [_x, "busy", true] call ALIVE_fnc_hashSet;
