@@ -102,6 +102,16 @@ switch(_operation) do {
 
         [_logic,"prefix", _prefix] call MAINCLASS;
 
+        private _disableRandomization = _logic getVariable ["disableRandomization", "true"];
+        if (_disableRandomization isEqualType "") then {
+            _disableRandomization = _disableRandomization == "true";
+        };
+        if !(_disableRandomization isEqualType true) then {
+            _disableRandomization = true;
+        };
+
+        [_logic,"disableRandomization", _disableRandomization] call MAINCLASS;
+
         private _arsenalType = _logic getVariable ["arsenalType", "BIS"];
         if !(_arsenalType isEqualType "") then {
             _arsenalType = "BIS";
@@ -301,6 +311,16 @@ switch(_operation) do {
             _result = _args;
         } else {
             _result = _logic getVariable [_operation, false];
+        };
+
+    };
+    case "disableRandomization": {
+
+        if (_args isEqualType true) then {
+            _logic setVariable [_operation, _args];
+            _result = _args;
+        } else {
+            _result = _logic getVariable [_operation, true];
         };
 
     };
@@ -2309,6 +2329,13 @@ switch(_operation) do {
         // which leaves the second pointing at a name that has gone.
         if (isNil "_unitData") exitWith {_result = _unit};
 
+        // Faction copies preserve the source class before their generated class name
+        // replaces it. Prefer that concrete class over the mutable inheritance chain.
+        private _copiedFrom = [_unitData,"copiedFrom",""] call ALiVE_fnc_hashGet;
+        if (_copiedFrom isEqualType "" && {_copiedFrom != ""} && {isClass (_cfgVehicles >> _copiedFrom)}) exitWith {
+            _result = [_logic,"stripOCImportSuffix", _copiedFrom] call MAINCLASS;
+        };
+
         if (isClass (_cfgVehicles >> _unit) && {(isnil "_unitData" || {getNumber(_cfgVehicles >> _unit >> "ALiVE_orbatCreator_owned") == 1} || {configname (inheritsFrom (_cfgVehicles >> _unit)) == ([_unitData,"inheritsFrom"] call ALiVE_fnc_hashGet)})}) exitWith {
             _result = _unit;
         };
@@ -2400,6 +2427,11 @@ switch(_operation) do {
             };
 
             _activeUnit = (createGroup _sideObject) createUnit [_vehicle, [0,0,0], [], 0, "NONE"];
+            if ([_logic,"disableRandomization"] call MAINCLASS) then {
+                // The preview is spawned from the source class, so it needs the
+                // same guard as the exported class before its saved loadout is read.
+                _activeUnit setVariable ["BIS_enableRandomization", false];
+            };
             _activeUnit setPos _pos;
             _activeUnit enableSimulation false;
             _activeUnit setDir 0;
@@ -2410,6 +2442,24 @@ switch(_operation) do {
 
             if (count _loadout > 0) then {
                 _activeUnit setUnitLoadout _loadout;
+
+                // Source-class init handlers can run after createUnit and overwrite
+                // goggles/headgear. Reapply after five frames so the preview matches
+                // the Arsenal without using a scheduled spawned script.
+                private _applyLoadoutAfterFrames = {
+                    params ["_unit","_savedLoadout","_framesRemaining","_callback"];
+
+                    if (isNull _unit) exitWith {};
+                    if (_framesRemaining == 0) exitWith {
+                        _unit setUnitLoadout _savedLoadout;
+                    };
+
+                    [{
+                        params ["_unit","_savedLoadout","_framesRemaining","_callback"];
+                        [_unit,_savedLoadout,_framesRemaining - 1,_callback] call _callback;
+                    }, [_unit,_savedLoadout,_framesRemaining,_callback]] call CBA_fnc_execNextFrame;
+                };
+                [_activeUnit,+_loadout,5,_applyLoadoutAfterFrames] call _applyLoadoutAfterFrames;
             };
 
             _cam camSetRelPos [-0.05,1,0.15];
@@ -2502,6 +2552,9 @@ switch(_operation) do {
         } foreach (_customUnits select 2);
 
         // Anything built from this unit is still pointing at the name it had a moment ago.
+        // Do not update the unit being renamed: faction copying temporarily stores a
+        // source unit under its original classname, so updating itself here would
+        // make the renamed unit inherit from itself.
         // Renaming rewrites the group and turret references but used to leave those parents
         // behind, so a unit that inherited from this one was left naming a class that no
         // longer exists. Exporting then walked up from that name looking for a real config
@@ -2510,7 +2563,9 @@ switch(_operation) do {
         {
             private _parent = [_x,"inheritsFrom"] call ALiVE_fnc_hashGet;
 
-            if (!isNil "_parent" && {_parent == _unitClassname}) then {
+            private _childClassname = [_x,"configName"] call ALiVE_fnc_hashGet;
+
+            if (_childClassname != _unitClassname && {!isNil "_parent" && {_parent == _unitClassname}}) then {
                 [_x,"inheritsFrom", _classname] call ALiVE_fnc_hashSet;
             };
         } foreach (_customUnits select 2);
@@ -3392,9 +3447,13 @@ switch(_operation) do {
         private _tree = OC_getControl( OC_DISPLAY_FACTIONEDITOR , OC_FACTIONEDITOR_TREE_GROUPS );
         tvClear _tree;
 
-        private _factionDataSources = [_logic,"getFactionGroupsDataSources", _factionData] call MAINCLASS;
+        private _factionDataSources = [_logic,"getFactionGroupsDataSources", _faction] call MAINCLASS;
 
         [_logic,"treeAddDataSourcesArray", [_tree,_factionDataSources]] call MAINCLASS;
+
+        // expand compatible and incompatible group layers
+        _tree tvExpand [0];
+        _tree tvExpand [1];
 
     };
 
@@ -4014,7 +4073,7 @@ switch(_operation) do {
         private _unitListbutton5 = OC_getControl( OC_DISPLAY_UNITEDITOR , OC_UNITEDITOR_CLASSLIST_BUTTON_FIVE );
         _unitListbutton5 ctrlEnable true;
 
-        if (_realUnitClassname isKindOf "Man") then {
+        if (_realUnitClassname isKindOf "Man" || {!isNull _activeUnit && {_activeUnit isKindOf "Man"}}) then {
 
             _unitListbutton2 ctrlSetText "Edit Loadout";
             _unitListbutton2 ctrlSetTooltip "Edit selected unit in the arsenal";
@@ -4134,7 +4193,7 @@ switch(_operation) do {
                     _ctrlButtonOK ctrlShow true;
                     _ctrlButtonOK ctrlEnable true;
                     _ctrlButtonOK ctrlSetText "Save Changes";
-                    _ctrlButtonOK buttonSetAction "['onUnitEditorArsenalClosed', true] call ALiVE_fnc_orbatCreatorOnAction";
+                    _ctrlButtonOK buttonSetAction "['onUnitEditorArsenalClosed', true] call ALiVE_fnc_orbatCreatorOnAction; (ctrlParent (_this select 0)) closeDisplay 1";
 
                     // hide unneeded buttons
 
@@ -5803,7 +5862,7 @@ switch(_operation) do {
             [_logic,"addCustomUnit", _newUnit] call MAINCLASS;
         };
 
-        [_logic,"openInterface", ["Unit_Editor"]] call MAINCLASS;
+        [_logic,"openInterface", ["Unit_Editor", true]] call MAINCLASS;
 
         [_state,"unitEditor_unitToSelect", _unit] call ALiVE_fnc_hashSet;
 
@@ -6634,9 +6693,16 @@ switch(_operation) do {
 
         private _unitsToExport = [];
         private _unitsToForwardDeclare = [];
+        private _unitsBeingGathered = [];
 
         private _gatherRequiredUnitsToExport = {
             private _unitConfigName = _this;
+
+            // A malformed custom inheritance graph must not lock the UI in a
+            // recursive export walk. The exporter can still emit the current unit.
+            if (_unitConfigName in _unitsToExport || {_unitConfigName in _unitsBeingGathered}) exitWith {};
+            _unitsBeingGathered pushBack _unitConfigName;
+
             private _unit = [_customUnits,_unitConfigName] call ALiVE_fnc_hashGet;
             private _unitParentConfigName = [_unit,"inheritsFrom"] call ALiVE_fnc_hashGet;
 
@@ -6652,6 +6718,7 @@ switch(_operation) do {
                 };
             };
 
+            _unitsBeingGathered deleteAt (_unitsBeingGathered find _unitConfigName);
             _unitsToExport pushbackunique _unitConfigName;
         };
 
@@ -6761,6 +6828,14 @@ switch(_operation) do {
 
         private _unitParent = [_unit,"inheritsFrom"] call ALiVE_fnc_hashGet;
         private _unitConfigName = [_unit,"configName"] call ALiVE_fnc_hashGet;
+        if (_unitParent == _unitConfigName) then {
+            // Recover factions copied before the self-parenting fix. The copy flow
+            // retains the original config classname specifically for this purpose.
+            private _copiedFrom = [_unit,"copiedFrom",""] call ALiVE_fnc_hashGet;
+            if (_copiedFrom isEqualType "" && {_copiedFrom != ""} && {isClass (configFile >> "CfgVehicles" >> _copiedFrom)}) then {
+                _unitParent = _copiedFrom;
+            };
+        };
         private _unitDisplayName = [_unit,"displayName"] call ALiVE_fnc_hashGet;
         private _unitSide = [_unit,"side"] call ALiVE_fnc_hashGet;
         private _unitFaction = [_unit,"faction"] call ALiVE_fnc_hashGet;
@@ -6920,6 +6995,9 @@ switch(_operation) do {
         private _loadoutString = [str _unitLoadout,"""","'"] call CBA_fnc_replace;
 
         private _initEventHandler = [_eventHandlers,"init",""] call ALiVE_fnc_hashGet;
+        if ([_logic,"disableRandomization"] call MAINCLASS) then {
+            _initEventHandler = _initEventHandler + "(_this select 0) setVariable ['BIS_enableRandomization',false];";
+        };
         _initEventHandler = _initEventHandler + "if (local (_this select 0)) then {";
         _initEventHandler = _initEventHandler + "_onSpawn = {_this = _this select 0;";
         _initEventHandler = _initEventHandler + "sleep 0.2; _backpack = gettext(configfile >> 'cfgvehicles' >> (typeof _this) >> 'backpack'); waituntil {sleep 0.2; backpack _this == _backpack};";

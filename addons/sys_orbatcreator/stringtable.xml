@@ -52,6 +52,12 @@
     <Chinesesimp>高级用法-如果要复制现有单位的父本,而不是现有类,请选择是.默认情况下为否.</Chinesesimp>
     <Spanish>Uso avanzado: si quieres copiar la clase padre de las unidades existentes en lugar de la clase actual, selecciona Sí. No por defecto.</Spanish>
 </Key>
+<Key ID="STR_ALIVE_ORBATCREATOR_DISABLE_RANDOMIZATION">
+    <English>Disable Unit Randomization:</English>
+</Key>
+<Key ID="STR_ALIVE_ORBATCREATOR_DISABLE_RANDOMIZATION_COMMENT">
+    <English>Prevents exported infantry units from inheriting the parent unit's gear randomization. Yes by default.</English>
+</Key>
 <Key ID="STR_ALIVE_ORBATCREATOR_ARSENAL_TYPE">
     <English>Arsenal Type:</English>
     <Chinesesimp>军械库类型:</Chinesesimp>
