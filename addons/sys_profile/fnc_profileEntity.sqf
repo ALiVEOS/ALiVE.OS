@@ -673,8 +673,22 @@ switch(_operation) do {
                 [_waypointTemplate,"type", "MOVE"] call ALiVE_fnc_hashSet;
                 [_waypointTemplate,"description", ""] call ALiVE_fnc_hashSet;
                 [_waypointTemplate,"attachVehicle", ""] call ALiVE_fnc_hashSet;
-                [_waypointTemplate,"statements", ""] call ALiVE_fnc_hashSet;
-
+                // The template blanks statements because a terminal's completion statement, such
+                // as the commander's "completed" callback, must fire once at the end of the route
+                // and not at every node along it.
+                //
+                // One entry is not a statement though. Ambient movement and sea patrols mark every
+                // waypoint they lay with a disableSimulation entry, and that mark is what the
+                // despawn recapture reads to leave a filler wander behind rather than carry it into
+                // virtual movement. Blanking it here let a whole ambient route through that filter
+                // as ordinary move waypoints, so a group despawned mid-wander walked the leftover
+                // path while virtual, which is what was reported (#1017). It only showed with
+                // pathfinding on, because that is the only path that expands a waypoint into nodes.
+                private _terminalStatements = [_waypoint,"statements",""] call ALiVE_fnc_hashGet;
+                private _spawnedOnly = _terminalStatements isEqualType []
+                    && {count _terminalStatements > 1}
+                    && {(_terminalStatements select 1) == "_disableSimulation = true;"};
+                [_waypointTemplate,"statements", if (_spawnedOnly) then {["true","_disableSimulation = true;"]} else {""}] call ALiVE_fnc_hashSet;
 
                 if (count _path > 0) then {
                     _path = _path apply {
@@ -1474,6 +1488,28 @@ switch(_operation) do {
 
                 // update profile waypoints before despawn
                 [_logic,"clearWaypoints"] call MAINCLASS;
+
+                // A route still being pathfound when the group despawns would be laid onto the
+                // profile anyway: the pathfinder's callback runs later and drains into the waypoint
+                // list whether or not the profile is still active. For a filler wander that means the
+                // virtual profile laps the loop until its next spawn, which is the same fault the tag
+                // in advancePendingWaypoints prevents, arriving by a different door.
+                //
+                // Only spawned-only routes are dropped. A commander's order still being computed must
+                // go on being laid, exactly as it does today. Done before the recapture so the entries
+                // it re-adds are not queued behind an abandoned job.
+                private _pending = [_logic,"pendingWaypointPaths",[]] call ALiVE_fnc_hashGet;
+                private _cancelled = 0;
+                if !(_pending isEqualTo []) then {
+                    private _kept = _pending select {
+                        private _s = [_x select 3,"statements",""] call ALiVE_fnc_hashGet;
+                        !(_s isEqualType [] && {count _s > 1} && {(_s select 1) == "_disableSimulation = true;"})
+                    };
+                    _cancelled = (count _pending) - (count _kept);
+                    if (_cancelled > 0) then {
+                        [_logic,"pendingWaypointPaths",_kept] call ALiVE_fnc_hashSet;
+                    };
+                };
                 [_logic,_group] call ALIVE_fnc_waypointsToProfileWaypoints;
 
                 [_logic] call ALIVE_fnc_vehicleAssignmentsToProfileVehicleAssignments;
