@@ -32,7 +32,15 @@
 [vn_veh_seahorse01] call vn_ms_fnc_addRopeAttachEH;
 [] call vn_ms_fnc_enableSOGTraits;
 
-
+ALiVE_CQB_STARTUP_DIAG = false;
+ALiVE_SEARCH_STARTUP_DIAG = false;
+ALiVE_ATO_debug = false;
+ALiVE_airsideGateAudit = false;
+ALiVE_airSpawn_diag = false;
+ALiVE_c2istar_taskDiag = false;
+ALiVE_SYS_PROFILE_DEBUG_ON = false;
+ALiVE_MP_STARTUP_DIAG = false;
+ALiVE_CP_STARTUP_DIAG = false;
 
 if (isServer) then {
 
