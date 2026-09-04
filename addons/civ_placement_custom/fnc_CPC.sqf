@@ -392,6 +392,11 @@ switch (_operation) do {
                         private _debug = [_logic, "debug"] call MAINCLASS;
                         // Picker pool threaded into each createRoadblock call -
                         // see civ_placement/fnc_CP.sqf for the pattern.
+                        // The checkpoint guards take the module's own Garrison Building Patrol, bounded to at
+                        // least one so nothing changes for a mission that left the setting alone. Read here
+                        // beside the composition pool because the module's own copy is declared further down,
+                        // in a different block (#1017).
+                        private _roadblockGuardPatrol = (parseNumber ([_logic,"guardPatrolPercentage"] call MAINCLASS)) min 1;
                         private _roadblockComps = [_logic, "roadblockCompositions"] call MAINCLASS;
                         private _maxRoadblockSpawnAttempts = 10;
                         private _lastRoadblockDebug = -30;
@@ -417,7 +422,7 @@ switch (_operation) do {
                                     if (_spawn) then {
                                         _spawnChecks = _spawnChecks + 1;
 
-                                        private _roadblockResult = [_position, _size + 150, ceil(_roadBlocks / 30), _debug, _roadblockComps] call ALiVE_fnc_createRoadblock;
+                                        private _roadblockResult = [_position, _size + 150, ceil(_roadBlocks / 30), _debug, _roadblockComps, _roadblockGuardPatrol] call ALiVE_fnc_createRoadblock;
                                         private _roadblockLocation = [_position, _size];
 
                                         if (count _roadblockResult > 0) then {

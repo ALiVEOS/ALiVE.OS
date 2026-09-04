@@ -828,6 +828,11 @@ switch(_operation) do {
                             // ticked pool per spawn instead of relying on
                             // the legacy ALiVE_compositions_roadblocks
                             // global / category fallback.
+                            // The checkpoint guards take the module's own Garrison Building Patrol, bounded to at
+                            // least one so nothing changes for a mission that left the setting alone. Read here
+                            // beside the composition pool because the module's own copy is declared further down,
+                            // in a different block (#1017).
+                            private _roadblockGuardPatrol = (parseNumber ([_logic,"guardPatrolPercentage"] call MAINCLASS)) min 1;
                             private _roadblockComps = [_logic, "roadblockCompositions"] call MAINCLASS;
                             _maxRoadblockSpawnAttempts = 10;
                             _lastRoadblockDebug = -30;
@@ -861,7 +866,7 @@ switch(_operation) do {
 
                                             if (_spawn) then {
                                                 _spawnChecks = _spawnChecks + 1;
-                                                _thisroadblockResult = [_position, _size + 150, ceil(_roadBlocks / 30), _debug, _roadblockComps] call ALiVE_fnc_createRoadblock;
+                                                _thisroadblockResult = [_position, _size + 150, ceil(_roadBlocks / 30), _debug, _roadblockComps, _roadblockGuardPatrol] call ALiVE_fnc_createRoadblock;
                                                 if (_debug) then { ["_thisroadblockResult: %1, count: %2", _thisroadblockResult, count _thisroadblockResult] call ALiVE_fnc_dump };
                                                  if (count _thisroadblockResult > 0)  then {
                                                    GVAR(ROADBLOCK_LOCATIONS) set [_foreachIndex, -1];

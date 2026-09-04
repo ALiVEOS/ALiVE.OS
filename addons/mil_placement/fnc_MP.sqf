@@ -940,6 +940,13 @@ switch(_operation) do {
             private _preferredGarrisonPositions = [_logic, "preferredGarrisonPositions"] call MAINCLASS;
             if (isNil "_preferredGarrisonPositions" || {!(_preferredGarrisonPositions isEqualType "")}) then { _preferredGarrisonPositions = "" };
 
+            // What the HQ posts below pass for building patrol. Bounded to at least one so a
+            // mission that changed nothing is unaffected: the setting defaults to fifty, and fifty
+            // bounded to one is the single man these thirty metre posts have always had. Set it to
+            // None and they hold the post instead, with nobody wandering, which is what the setting
+            // says and what these guards were placed to do (#1017).
+            private _hqGuardPatrolPercentage = (parseNumber ([_logic,"guardPatrolPercentage"] call MAINCLASS)) min 1;
+
 
             _debug = [_logic, "debug"] call MAINCLASS;
 
@@ -1125,7 +1132,7 @@ switch(_operation) do {
 	                               // and the 30 m below reaches it from where they stand. Handing them an objective
 	                               // centre would widen the search to the whole objective and draw them off the thing
 	                               // they are here for, so this slot stays [0,0,0] deliberately (#1016).
-	                               [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[30,"false",[0,0,0],"",1, 1, "SAFE", "LIMITED", _preferredGarrisonPositions, true]]] call ALIVE_fnc_profileEntity;
+	                               [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[30,"false",[0,0,0],"",1, _hqGuardPatrolPercentage, "SAFE", "LIMITED", _preferredGarrisonPositions, true]]] call ALIVE_fnc_profileEntity;
 	                            };
 	                        } foreach _profiles;
                          };
@@ -1240,7 +1247,7 @@ switch(_operation) do {
                                     // and the 30 m below reaches it from where they stand. Handing them an objective
                                     // centre would widen the search to the whole objective and draw them off the thing
                                     // they are here for, so this slot stays [0,0,0] deliberately (#1016).
-                                    [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[30,"false",[0,0,0],"",1, 1, "SAFE", "LIMITED", _preferredGarrisonPositions, true]]] call ALIVE_fnc_profileEntity;
+                                    [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[30,"false",[0,0,0],"",1, _hqGuardPatrolPercentage, "SAFE", "LIMITED", _preferredGarrisonPositions, true]]] call ALIVE_fnc_profileEntity;
                                     if (_garrisonCompositions) then {
                                         // Field HQ garrison holds its post like
                                         // other composition garrisons

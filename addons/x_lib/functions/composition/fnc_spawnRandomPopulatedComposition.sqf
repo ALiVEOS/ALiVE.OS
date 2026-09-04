@@ -36,7 +36,7 @@ _result = [_position, "Military", "Fort", "OPF_F", "Small", 2] call ALIVE_fnc_sp
 See Also:
 
 Author:
-ARJay
+ARJay, Jman
 ---------------------------------------------------------------------------- */
 
 params [
@@ -138,17 +138,25 @@ if(_groupCount > 0) then {
     if(count _infantryGroups > 0) then {
         private _guardGroup = selectRandom _infantryGroups;
         private _guards = [_guardGroup, _position, random(360), true, _faction, true] call ALIVE_fnc_createProfilesFromGroupConfig;
+        // The mission's own Garrisoned Building Patrol setting, read off the placement
+        // modules the way the occupancy limit is. A task has no module to ask, and until
+        // now these guards patrolled at fifty whatever the mission said.
+        private _guardPatrolPercentage = call ALIVE_fnc_guardPatrolPercentage;
 
         {
             if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
                 // These guards defend the composition they were spawned with, so the
-                // empty ninth slot keeps them off the mission's pooled list. The middle
-                // arguments are the values this call has always fallen to; only the last
-                // one is new. Tasks that send a player to clear a camp would otherwise
-                // find its defenders in a village up to a hundred metres away.
-                // The [0,0,0] centre keeps that true: the composition is what these men hold,
-                // so the 100 m is drawn on them and not on any objective nearby (#1016).
-                [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[100,"false",[0,0,0],"",0, 50, "SAFE", "LIMITED", ""]]] call ALIVE_fnc_profileEntity;
+                // empty ninth slot keeps them off the mission's pooled list. Tasks that
+                // send a player to clear a camp would otherwise find its defenders in a
+                // village up to a hundred metres away. The [0,0,0] centre keeps that true:
+                // the composition is what these men hold, so the 100 m is drawn on them
+                // and not on any objective nearby (#1016). The patrol share is the
+                // mission's own, read above; at High or All every man in the camp walks
+                // between its buildings rather than holding a post, which is what the
+                // setting says. That slot has to be sent because the ninth is, and
+                // fnc_garrison only falls back for a caller that sends fewer than six.
+                // The rest are the values this call has always fallen to.
+                [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[100,"false",[0,0,0],"",0, _guardPatrolPercentage, "SAFE", "LIMITED", ""]]] call ALIVE_fnc_profileEntity;
             };
         } foreach _guards;
     };

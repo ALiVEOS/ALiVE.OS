@@ -73,6 +73,8 @@ private _pos         = _anchor getVariable ["ALiVE_RB_anchorPos", getPosATL _anc
 private _oldFaction  = _anchor getVariable ["ALiVE_RB_currentFaction", ""];
 private _oldSide     = _anchor getVariable ["ALiVE_RB_currentSide", civilian];
 private _debug       = _anchor getVariable ["ALiVE_RB_debug", false];
+// Raised the way the checkpoint was raised originally. One when the anchor predates this.
+private _guardPatrolPercentage = _anchor getVariable ["ALiVE_RB_guardPatrolPercentage", 1];
 private _newSide     = _newFaction call ALiVE_fnc_factionSide;
 
 if (_debug) then {
@@ -96,8 +98,11 @@ if (_debug) then {
 //   - anchor deleted (mission cleanup)
 //   - currentFaction changed (faction flipped again under us before
 //     our garrison materialised - the new owner will spawn its own)
-[_anchor, _newFaction, _pos, _newSide, _debug] spawn {
-    params ["_a", "_f", "_p", "_s", "_d"];
+// Spawned, so everything the block needs is passed in: a spawn does not inherit the
+// scope it was started from, and a missing patrol value would silently fall back to the
+// function default rather than the checkpoint's own setting.
+[_anchor, _newFaction, _pos, _newSide, _debug, _guardPatrolPercentage] spawn {
+    params ["_a", "_f", "_p", "_s", "_d", "_guardPatrolPercentage"];
     private _safetyTimeout = diag_tickTime + 600;  // 10 min cap
 
     // Short-circuit `||` with code blocks: stops at the first true and
@@ -162,7 +167,7 @@ if (_debug) then {
                         // the mission happens to have listed nearby.
                         // The [0,0,0] centre says the same thing: the checkpoint is what they hold, so
                         // the 30 m stays drawn on them rather than on an objective (#1016).
-                        ["ALIVE_fnc_garrison", "spawn", [30, "false", [0,0,0], "", 1, 1, "SAFE", "LIMITED", ""]]
+                        ["ALIVE_fnc_garrison", "spawn", [30, "false", [0,0,0], "", 1, _guardPatrolPercentage, "SAFE", "LIMITED", ""]]
                     ] call ALIVE_fnc_profileEntity;
                     [_x, "busy", true] call ALIVE_fnc_hashSet;
                     // Hold the captured block: register the guard "stationary" so
@@ -186,7 +191,7 @@ if (_debug) then {
     } else {
         private _blockers = [_p, _s, "Infantry", _f] call ALiVE_fnc_randomGroupByType;
         sleep 1;
-        [_blockers, _p, 100, true, false, 1, nil, 50] call ALIVE_fnc_groupGarrison;
+        [_blockers, _p, 100, true, false, 1, nil, _guardPatrolPercentage] call ALIVE_fnc_groupGarrison;
         if (_d) then {
             ["ALIVE_RB_recapture: deferred real-AI spawn for faction %1", _f] call ALiVE_fnc_dump;
         };

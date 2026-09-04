@@ -78,7 +78,9 @@ params [
     ["_originalFaction", "", [""]],
     ["_compClass", "", [""]],
     ["_envelope", 30, [0]],
-    ["_debug", false, [true]]
+    ["_debug", false, [true]],
+    // Carried so a recaptured checkpoint raises its guards the way the original did.
+    ["_guardPatrolPercentage", 1, [0]]
 ];
 
 if (count _pos < 2) exitWith {
@@ -119,6 +121,7 @@ _anchor setVariable ["ALiVE_RB_state", "defended"];
 _anchor setVariable ["ALiVE_RB_compClass", _compClass];
 _anchor setVariable ["ALiVE_RB_lastFlap", diag_tickTime];
 _anchor setVariable ["ALiVE_RB_debug", _debug];
+_anchor setVariable ["ALiVE_RB_guardPatrolPercentage", _guardPatrolPercentage];
 
 private _handle = [{
     params ["_args", "_h"];

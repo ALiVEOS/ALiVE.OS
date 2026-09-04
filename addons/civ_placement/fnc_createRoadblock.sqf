@@ -68,7 +68,11 @@ params [
     ["_radius", 500, [-1]],
     ["_num", 1, [-1]],
     ["_debug", false, [true]],
-    ["_compClasses", "", [""]]
+    ["_compClasses", "", [""]],
+    // The module's Garrison Building Patrol, already bounded to at least one by the caller.
+    // Defaults to one, which is what this call passed before the setting reached it, so a
+    // caller that does not supply it behaves exactly as it did (#1017).
+    ["_guardPatrolPercentage", 1, [0]]
 ];
 
 private _result = [];
@@ -415,7 +419,7 @@ for "_j" from 1 to (count _roadpoints) do {
                 // them back and the checkpoint would stand empty for the rest of the run.
                 // The [0,0,0] centre is the same argument: the checkpoint is what these men
                 // hold, not the objective around it, so the 30 m stays drawn on them (#1016).
-                [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[30,"false",[0,0,0],"",1, 1, "SAFE", "LIMITED", ""]]] call ALIVE_fnc_profileEntity;
+                [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[30,"false",[0,0,0],"",1, _guardPatrolPercentage, "SAFE", "LIMITED", ""]]] call ALIVE_fnc_profileEntity;
                 [_x,"busy",true] call ALIVE_fnc_hashSet;
                 // Hold the roadblock: register the guard "stationary" so
                 // OPCOM/TACOM never drains it (busy alone doesn't cover the QRF path).
@@ -430,12 +434,15 @@ for "_j" from 1 to (count _roadpoints) do {
 
     // else spawn real AI and get them to defend
     } else {
-        [_vehicle, _spawnedSafePos, _fac] spawn {
-            private["_roadpos","_fac","_vehicle","_side","_blockers"];
+        // Passed in: a spawn does not inherit the scope it was started from, and without it
+        // these guards patrolled at fifty whatever the module said.
+        [_vehicle, _spawnedSafePos, _fac, _guardPatrolPercentage] spawn {
+            private["_roadpos","_fac","_vehicle","_side","_blockers","_guardPatrolPercentage"];
 
             _vehicle = _this select 0;
             _roadpos = _this select 1;
             _fac = _this select 2;
+            _guardPatrolPercentage = _this select 3;
             _side = _fac call ALiVE_fnc_factionSide;
 
             // Spawn group and get them to defend
@@ -448,7 +455,7 @@ for "_j" from 1 to (count _roadpoints) do {
 
             ["ALIVE_fnc_createRoadBlock [%1] - Calling ALIVE_fnc_groupGarrison", _fac] call ALiVE_fnc_dump;
 
-            [_blockers, _roadpos, 100, true, false, 1, nil, 50] call ALIVE_fnc_groupGarrison;
+            [_blockers, _roadpos, 100, true, false, 1, nil, _guardPatrolPercentage] call ALIVE_fnc_groupGarrison;
         };
     };
 
@@ -457,7 +464,7 @@ for "_j" from 1 to (count _roadpoints) do {
     // for 30s, dominant attacker faction takes over via fnc_RB_recapture.
     // Anchor state stored on an invisible Logic object at the spawn pos.
     private _watchdogEnv = ([_spawnedComp] call ALiVE_fnc_getCompositionRadius) max 15;
-    [_spawnedSafePos, _fac, _spawnedClass, _watchdogEnv, _debug]
+    [_spawnedSafePos, _fac, _spawnedClass, _watchdogEnv, _debug, _guardPatrolPercentage]
         call ALIVE_fnc_RB_captureWatchdog;
 
     };
