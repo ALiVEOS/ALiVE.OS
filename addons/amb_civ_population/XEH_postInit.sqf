@@ -291,6 +291,7 @@ if (isServer) then {
 
     // Catch-all initialization loop for late-spawning units
     [{
+        PROFILE_SCOPE(ADVCIVLATEINIT, "ALiVE AdvCiv Late Init Handler")
         if (!ALiVE_advciv_enabled) exitWith {};
         {
             if (alive _x && {!isPlayer _x}) then {
@@ -345,6 +346,7 @@ if (hasInterface) then {
     // guard), so re-calling it is a cheap no-op once a civ is handled. 60 m keeps it light --
     // you only ever interact up close. ACE mode owns interaction through its own menu, skip.
     [{
+        PROFILE_SCOPE(ADDCIVINTERACT, "ALiVE Add Civ Interact Action Handler")
         if (isNil "ALiVE_civInteractHandler") exitWith {};
         if (isNull player || {!alive player}) exitWith {};
         if ((missionNamespace getVariable ["ALiVE_amb_civ_population_UIMode", "AUTO"]) == "ACE") exitWith {};
@@ -392,6 +394,7 @@ if (hasInterface) then {
     // doStop halts any in-flight pathing animation that disableAI "MOVE"
     // alone leaves running until the next AI tick.
     [{
+        PROFILE_SCOPE(STOPNEARBYCIV, "ALiVE Stop Nearby Civ Handler")
         if (isNull player || {!alive player}) exitWith {};
         if ((missionNamespace getVariable ["ALiVE_amb_civ_population_UIMode", "AUTO"]) == "CLASSIC") exitWith {};
 
@@ -477,95 +480,114 @@ if (hasInterface) then {
     // authoritative). Bucket varies by the civ's hostility: Friendly
     // shrugs, Neutral / Wary surrender, Defiant / Hostile flee.
     [{
-        if (isNull player || {!alive player}) exitWith {};
+        PROFILE_SCOPE(CIVPRESSURE, "ALiVE Civ Pressure Handler")
 
-        private _aimRange = missionNamespace getVariable ["ALiVE_amb_civ_population_WeaponAimRange", 15];
-        private _aimHoldTime = missionNamespace getVariable ["ALiVE_amb_civ_population_WeaponAimHoldTime", 2];
-        private _aimHoldDynamic = missionNamespace getVariable ["ALiVE_amb_civ_population_WeaponAimHoldTimeDynamic", false];
-        if (_aimRange <= 0) exitWith {};
-        if (vehicle player != player) exitWith {};
-        if (currentWeapon player == "") exitWith {};
-        if (weaponLowered player) exitWith {};
+        if (ALiVE_isGamePaused) exitwith {};
 
-        private _nearby = nearestObjects [player, ["CAManBase"], _aimRange];
-        private _civsInRange = _nearby select {
-            alive _x &&
-            {_x != player} &&
-            {!isPlayer _x} &&
-            {(getNumber (configFile >> "CfgVehicles" >> typeOf _x >> "side")) == 3} &&
-            {!(_x getVariable ["ALiVE_advciv_blacklist", false])}
-        };
+        params ["_args"];
+        private _tracked = _args select 0;
 
-        {
-            private _civ = _x;
+        // These gates only skip aim detection; pending cleanup always runs.
+        call {
+            if (isNull player || {!alive player}) exitWith {};
+
+            private _aimRange = missionNamespace getVariable ["ALiVE_amb_civ_population_WeaponAimRange", 15];
+            if (
+                (_aimRange <= 0) ||
+                {vehicle player != player} ||
+                {currentWeapon player == ""} ||
+                {weaponLowered player}
+            ) exitWith {};
+
+            private _civ = cursorObject;
+            if (
+                isNull _civ ||
+                {!(_civ isKindOf "CAManBase")} ||
+                {!alive _civ} ||
+                {isPlayer _civ} ||
+                {(player distance _civ) > _aimRange} ||
+                {(getNumber (configFile >> "CfgVehicles" >> typeOf _civ >> "side")) != 3} ||
+                {_civ getVariable ["ALiVE_advciv_blacklist", false]}
+            ) exitWith {};
+
+            if (lineIntersects [eyePos _civ, eyePos player, _civ, player]) exitWith {};
+
+            // A reaction blocks another dispatch, not continued aim tracking.
+            // Keep the timestamp fresh while the player still aims at a civ
+            // who has surrendered or entered PANIC/HIDING.
+            _tracked pushBackUnique _civ;
+            _civ setVariable ["ALiVE_advciv_lastAimTick", time, true];
+
             private _state = _civ getVariable ["ALiVE_advciv_state", "CALM"];
             private _order = _civ getVariable ["ALiVE_advciv_order", "NONE"];
-            if ((_state in ["PANIC", "HIDING"]) || {_order == "HANDSUP"}) then {
-                // Skip - civ already in a target state.
-            } else {
-                private _aimingAt = (cursorObject == _civ);
-                private _civCanSeePlayer = false;
-                if (_aimingAt) then {
-                    _civCanSeePlayer = !(lineIntersects [eyePos _civ, eyePos player, _civ, player]);
-                };
+            if ((_state in ["PANIC", "HIDING"]) || {_order == "HANDSUP"}) exitWith {};
 
-                if (_aimingAt && _civCanSeePlayer) then {
-                    _civ setVariable ["ALiVE_advciv_lastAimTick", time, true];
+            private _aimHoldTime = missionNamespace getVariable ["ALiVE_amb_civ_population_WeaponAimHoldTime", 2];
+            private _aimHoldDynamic = missionNamespace getVariable ["ALiVE_amb_civ_population_WeaponAimHoldTimeDynamic", false];
 
-                    private _sinceVar = _civ getVariable ["ALiVE_advciv_aimedAtSince", -1];
-                    if (_sinceVar < 0) then {
-                        _civ setVariable ["ALiVE_advciv_aimedAtSince", time, true];
-                    };
-                    private _heldFor = time - (_civ getVariable ["ALiVE_advciv_aimedAtSince", time]);
-                    // Dynamic mode: scale the hold time by the civ's
-                    // hostility (compliant civs stop quickly, defiant
-                    // civs hold out) plus a stable per-civ +/-20% roll
-                    // so individuals differ. Jitter is broadcast once
-                    // and deliberately never cleaned up - it is the
-                    // civ's "personality" and must match across
-                    // clients and re-aims.
-                    private _holdThreshold = _aimHoldTime;
-                    if (_aimHoldDynamic) then {
-                        private _jitter = _civ getVariable "ALiVE_advciv_aimHoldJitter";
-                        if (isNil "_jitter") then {
-                            _jitter = 0.8 + random 0.4;
-                            _civ setVariable ["ALiVE_advciv_aimHoldJitter", _jitter, true];
-                        };
-                        private _holdHostility = _civ getVariable ["ALiVE_CivPop_Hostility", 30];
-                        private _holdFactor = switch (true) do {
-                            case (_holdHostility < 20):  { 0.75 };
-                            case (_holdHostility < 40):  { 1 };
-                            case (_holdHostility < 60):  { 1.5 };
-                            case (_holdHostility < 80):  { 2 };
-                            default                      { 2.5 };
-                        };
-                        _holdThreshold = _aimHoldTime * _holdFactor * _jitter;
-                    };
-                    if (_heldFor >= _holdThreshold && {isNil {_civ getVariable "ALiVE_advciv_aimReactFired"}}) then {
-                        private _hostility = _civ getVariable ["ALiVE_CivPop_Hostility", 30];
-                        private _bucket = switch (true) do {
-                            case (_hostility < 20):  { "Friendly" };
-                            case (_hostility < 40):  { "Neutral" };
-                            case (_hostility < 60):  { "Wary" };
-                            case (_hostility < 80):  { "Defiant" };
-                            default                  { "Hostile" };
-                        };
-                        _civ setVariable ["ALiVE_advciv_aimReactFired", true, true];
-                        [_civ, _bucket, player] remoteExec ["ALIVE_fnc_advciv_civAimReact", 2];
-                    };
-                } else {
-                    private _lastSeen = _civ getVariable ["ALiVE_advciv_lastAimTick", -10];
-                    if (time - _lastSeen > 1) then {
-                        if !(isNil {_civ getVariable "ALiVE_advciv_aimedAtSince"}) then {
-                            _civ setVariable ["ALiVE_advciv_aimedAtSince", nil, true];
-                            _civ setVariable ["ALiVE_advciv_aimReactFired", nil, true];
-                            _civ setVariable ["ALiVE_advciv_lastAimTick", nil, true];
-                        };
-                    };
-                };
+            private _sinceVar = _civ getVariable ["ALiVE_advciv_aimedAtSince", -1];
+            if (_sinceVar < 0) then {
+                _civ setVariable ["ALiVE_advciv_aimedAtSince", time, true];
             };
-        } forEach _civsInRange;
-    }, 0.25, []] call CBA_fnc_addPerFrameHandler;
+            private _heldFor = time - (_civ getVariable ["ALiVE_advciv_aimedAtSince", time]);
+            // Dynamic mode: scale the hold time by the civ's
+            // hostility (compliant civs stop quickly, defiant
+            // civs hold out) plus a stable per-civ +/-20% roll
+            // so individuals differ. Jitter is broadcast once
+            // and deliberately never cleaned up - it is the
+            // civ's "personality" and must match across
+            // clients and re-aims.
+            private _holdThreshold = _aimHoldTime;
+            if (_aimHoldDynamic) then {
+                private _jitter = _civ getVariable "ALiVE_advciv_aimHoldJitter";
+                if (isNil "_jitter") then {
+                    _jitter = 0.8 + random 0.4;
+                    _civ setVariable ["ALiVE_advciv_aimHoldJitter", _jitter, true];
+                };
+                private _holdHostility = _civ getVariable ["ALiVE_CivPop_Hostility", 30];
+                private _holdFactor = switch (true) do {
+                    case (_holdHostility < 20):  { 0.75 };
+                    case (_holdHostility < 40):  { 1 };
+                    case (_holdHostility < 60):  { 1.5 };
+                    case (_holdHostility < 80):  { 2 };
+                    default                      { 2.5 };
+                };
+                _holdThreshold = _aimHoldTime * _holdFactor * _jitter;
+            };
+            if (_heldFor >= _holdThreshold && {isNil {_civ getVariable "ALiVE_advciv_aimReactFired"}}) then {
+                private _hostility = _civ getVariable ["ALiVE_CivPop_Hostility", 30];
+                private _bucket = switch (true) do {
+                    case (_hostility < 20):  { "Friendly" };
+                    case (_hostility < 40):  { "Neutral" };
+                    case (_hostility < 60):  { "Wary" };
+                    case (_hostility < 80):  { "Defiant" };
+                    default                  { "Hostile" };
+                };
+                _civ setVariable ["ALiVE_advciv_aimReactFired", true, true];
+                [_civ, _bucket, player] remoteExecCall ["ALIVE_fnc_advciv_civAimReact", 2];
+            };
+        };
+
+        // Refresh the current target first, then expire only tracked civs.
+        // Cleanup continues outside range and during reaction states
+        _args set [0, _tracked select {
+            private _civ = _x;
+            if (isNull _civ) exitWith {false};
+
+            private _lastSeen = _civ getVariable ["ALiVE_advciv_lastAimTick", -10];
+            if (time - _lastSeen > 1) then {
+                {
+                    if !(isNil {_civ getVariable _x}) then {
+                        _civ setVariable [_x, nil, true];
+                    };
+                } forEach ["ALiVE_advciv_aimedAtSince", "ALiVE_advciv_aimReactFired", "ALiVE_advciv_lastAimTick"];
+            };
+
+            !(isNil {_civ getVariable "ALiVE_advciv_aimedAtSince"}) ||
+            {!(isNil {_civ getVariable "ALiVE_advciv_aimReactFired"})} ||
+            {!(isNil {_civ getVariable "ALiVE_advciv_lastAimTick"})}
+        }];
+    }, 0.25, [[]]] call CBA_fnc_addPerFrameHandler;
 
     // Civilian vehicle stop on player weapon-aim or stop gesture. When
     // the local player aims a raised weapon at a civ-driven vehicle OR
@@ -595,6 +617,7 @@ if (hasInterface) then {
     // Per-frame at 0.5 s - vehicles move slower than pedestrians so the
     // tighter 0.25 s tick of the aim-pressure handler is unnecessary.
     [{
+        PROFILE_SCOPE(CIVAIMAT, "ALiVE Civ Aim At Handler")
         if (isNull player || {!alive player}) exitWith {};
 
         if (!(missionNamespace getVariable ["ALiVE_amb_civ_population_VehicleStopOnAim", true])) exitWith {};
