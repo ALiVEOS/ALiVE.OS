@@ -53,6 +53,8 @@ private _prevState    = _unit getVariable ["ALiVE_advciv_prevState", ""];
 private _stateChanged = (_state != _prevState);
 if (_stateChanged) then {
     _unit setVariable ["ALiVE_advciv_prevState", _state, true];
+    // Open-ground retries belong to the current panic episode only.
+    _unit setVariable ["ALiVE_advciv_openFleeRetryAt", nil];
 };
 
 // Update the 3D debug label visible when ALiVE_advciv_debug is enabled
@@ -187,8 +189,8 @@ if (_state == "ORDERED") exitWith {
                     // 15 s (e.g. the unit clips through geometry), force moveIn directly
                     [_unit, _veh] spawn {
                         params ["_u", "_v"];
-                        private _timeout = time + 15;
-                        waitUntil { sleep 0.5; !alive _u || vehicle _u == _v || time > _timeout };
+                        private _timeout = ALiVE_simulationTime + 15;
+                        waitUntil { sleep 0.5; !alive _u || vehicle _u == _v || ALiVE_simulationTime > _timeout };
 
                         if (alive _u && {vehicle _u != _v} && {_u distance _v < 12}) then {
                             if (isNull driver _v) then {
@@ -271,7 +273,7 @@ switch (_state) do {
                 // clearing for the unit to actually face / track the threat.
                 _unit switchMove "";
             };
-            _unit setVariable ["ALiVE_advciv_stateTimer", time + 8 + random 12];
+            _unit setVariable ["ALiVE_advciv_stateTimer", ALiVE_simulationTime + 8 + random 12];
             _unit setVariable ["ALiVE_advciv_vehicleEscapeTried", false];
             private _source = _unit getVariable ["ALiVE_advciv_panicSource", [0,0,0]];
             if !(_source isEqualTo [0,0,0]) then { _unit doWatch _source; };
@@ -279,14 +281,14 @@ switch (_state) do {
         };
 
         private _alertTimer = _unit getVariable ["ALiVE_advciv_stateTimer", 0];
-        if (_alertTimer > 0 && {time > _alertTimer}) then {
+        if (_alertTimer > 0 && {ALiVE_simulationTime > _alertTimer}) then {
             private _lastShot = _unit getVariable ["ALiVE_advciv_lastShotTime", 0];
             private _shots    = _unit getVariable ["ALiVE_advciv_nearShots", 0];
 
             // Only escalate to PANIC if: shot memory is fresh AND stress is high
             // AND a unit that actually fired at a civilian (or has low rating) is nearby
             private _realThreat = false;
-            if ((time - _lastShot) < ALiVE_advciv_shotMemoryTime && {_shots > 5}) then {
+            if ((ALiVE_simulationTime - _lastShot) < ALiVE_advciv_shotMemoryTime && {_shots > 5}) then {
                 private _hostiles = _unit nearEntities ["CAManBase", ALiVE_advciv_reactionRadius];
                 _hostiles = _hostiles select {
                     alive _x
@@ -300,7 +302,7 @@ switch (_state) do {
                     // single AI fire event keeping civs in HIDING for the
                     // rest of the mission) can't recur.
                     private _firedAt = _x getVariable ["ALiVE_advciv_firedAtCivTime", -1];
-                    (_firedAt > 0 && {time - _firedAt < ALiVE_advciv_shotMemoryTime}) || {rating _x < -500}
+                    (_firedAt > 0 && {ALiVE_simulationTime - _firedAt < ALiVE_advciv_shotMemoryTime}) || {rating _x < -500}
                 }
                 };
                 _realThreat = (count _hostiles > 0);
@@ -392,11 +394,11 @@ switch (_state) do {
                     // independently of the brain tick to avoid tick interference
                     [_unit, _veh] spawn {
                         params ["_u", "_v"];
-                        private _timeout = time + 25;
-                        waitUntil { sleep 0.5; !alive _u || _u distance _v < 6 || time > _timeout };
+                        private _timeout = ALiVE_simulationTime + 25;
+                        waitUntil { sleep 0.5; !alive _u || _u distance _v < 6 || ALiVE_simulationTime > _timeout };
 
                         // Abort if unit died or took too long to reach the vehicle
-                        if (!alive _u || time > _timeout) exitWith {
+                        if (!alive _u || ALiVE_simulationTime > _timeout) exitWith {
                             if (alive _u) then {
                                 _u setVariable ["ALiVE_advciv_vehicleEscaping", false, true];
                                 _u setVariable ["ALiVE_advciv_boarding", false, true];
@@ -408,8 +410,8 @@ switch (_state) do {
                             _u assignAsDriver _v;
                             [_u] orderGetIn true;
 
-                            private _boardTimeout = time + 12;
-                            waitUntil { sleep 0.5; !alive _u || vehicle _u == _v || time > _boardTimeout };
+                            private _boardTimeout = ALiVE_simulationTime + 12;
+                            waitUntil { sleep 0.5; !alive _u || vehicle _u == _v || ALiVE_simulationTime > _boardTimeout };
 
                             // Fallback direct seat assignment if animation failed
                             if (alive _u && {vehicle _u != _v} && {_u distance _v < 15} && {isNull driver _v}) then {
@@ -445,7 +447,7 @@ switch (_state) do {
                         _wp setWaypointBehaviour "CARELESS";
                         _wp setWaypointCompletionRadius 50;
 
-                        private _driveStart   = time;
+                        private _driveStart   = ALiVE_simulationTime;
                         private _lastDrivePos = getPos _u;
                         private _stuckCount   = 0;
                         private _minDriveTime = 15;   // Don't exit the vehicle too soon
@@ -457,7 +459,7 @@ switch (_state) do {
                             if (!alive _u || vehicle _u != _v) exitWith { true };
                             if (!canMove _v || fuel _v <= 0) exitWith { true };
 
-                            private _elapsed = time - _driveStart;
+                            private _elapsed = ALiVE_simulationTime - _driveStart;
 
                             if (_u distance _lastDrivePos < 3) then {
                                 _stuckCount = _stuckCount + 1;
@@ -505,10 +507,40 @@ switch (_state) do {
         private _hidingPos = _unit getVariable ["ALiVE_advciv_hidingPos", []];
 
         if (_hidingPos isEqualTo []) then {
+            // Keep the original flee destination until the retry is due. The
+            // brain owns this deadline, so no delayed callbacks can accumulate
+            // or change a civilian after another state takes control.
+            private _retryAt = _unit getVariable ["ALiVE_advciv_openFleeRetryAt", -1];
+            if (_retryAt >= 0) exitWith {
+                if (ALiVE_simulationTime < _retryAt) exitWith {};
+                _unit setVariable ["ALiVE_advciv_openFleeRetryAt", nil];
 
-            // Local function: flee in the open (no building found or not preferred)
+                // Retry once from the civilian's NEW position after at least
+                // 25 seconds of fleeing, then shelter or hide in place.
+                private _retryHouse = [_unit] call ALiVE_fnc_advciv_findHouseProgressive;
+                private _retryBld   = _retryHouse select 0;
+                private _retryPos   = _retryHouse select 1;
+                if (!isNull _retryBld && {count _retryPos > 0}) then {
+                    private _targetPos = selectRandom _retryPos;
+                    _unit setVariable ["ALiVE_advciv_hidingPos", _targetPos, true];
+                    _unit setVariable ["ALiVE_advciv_hidingBuilding", _retryBld, true];
+                    _unit setVariable ["ALiVE_advciv_panicRunStart", 0];
+                    _unit doMove _targetPos;
+                    _unit setSpeedMode "FULL";
+                    _unit forceSpeed -1;
+                    if (ALiVE_advciv_debug) then { ["[ALiVE Hide DEBUG] fleeOpen-25s civ=%1 retry FOUND building dist=%2 - retargeting", name _unit, _unit distance _retryBld] call ALiVE_fnc_dump; };
+                } else {
+                    _unit setUnitPos "DOWN";
+                    _unit setVariable ["ALiVE_advciv_state", "HIDING", true];
+                    _unit setVariable ["ALiVE_advciv_stateTimer", ALiVE_simulationTime + ALiVE_advciv_hideTimeMin + random (ALiVE_advciv_hideTimeMax - ALiVE_advciv_hideTimeMin)];
+                    if (ALiVE_advciv_debug) then { ["[ALiVE Hide DEBUG] fleeOpen-25s civ=%1 retry FOUND NOTHING - HIDING in place at %2", name _unit, getPos _unit] call ALiVE_fnc_dump; };
+                };
+            };
+
+            // Flee once when no building was found (or buildings are not preferred).
             private _fnc_fleeOpen = {
                 params ["_u"];
+                _u setVariable ["ALiVE_advciv_openFleeRetryAt", ALiVE_simulationTime + 25];
                 private _source = _u getVariable ["ALiVE_advciv_panicSource", [0,0,0]];
                 // Run away from source with random spread; random direction if no source
                 private _dir = if !(_source isEqualTo [0,0,0]) then {
@@ -519,36 +551,6 @@ switch (_state) do {
                 _u doMove _fleePos;
                 _u forceSpeed -1;
                 [_u, "GUNFIRE"] call ALiVE_fnc_advciv_react;
-
-                // After ~25 s of running, re-attempt to find a building near the
-                // unit's NEW position before dropping to HIDING in place. The flee
-                // movement may have brought the unit into range of cover that
-                // wasn't reachable from the original spawn position. If no
-                // building is in range now either, fall back to HIDING wherever
-                // the unit ended up (legacy behaviour, prevents civs running forever).
-                [{
-                    params ["_u2"];
-                    if (alive _u2 && {_u2 getVariable ["ALiVE_advciv_state", "CALM"] == "PANIC"}) then {
-                        private _retryHouse = [_u2] call ALiVE_fnc_advciv_findHouseProgressive;
-                        private _retryBld   = _retryHouse select 0;
-                        private _retryPos   = _retryHouse select 1;
-                        if (!isNull _retryBld && {count _retryPos > 0}) then {
-                            private _targetPos = selectRandom _retryPos;
-                            _u2 setVariable ["ALiVE_advciv_hidingPos", _targetPos, true];
-                            _u2 setVariable ["ALiVE_advciv_hidingBuilding", _retryBld, true];
-                            _u2 setVariable ["ALiVE_advciv_panicRunStart", 0];
-                            _u2 doMove _targetPos;
-                            _u2 setSpeedMode "FULL";
-                            _u2 forceSpeed -1;
-                            if (ALiVE_advciv_debug) then { ["[ALiVE Hide DEBUG] fleeOpen-25s civ=%1 retry FOUND building dist=%2 - retargeting", name _u2, _u2 distance _retryBld] call ALiVE_fnc_dump; };
-                        } else {
-                            if (vehicle _u2 == _u2) then { _u2 setUnitPos "DOWN"; };
-                            _u2 setVariable ["ALiVE_advciv_state", "HIDING", true];
-                            _u2 setVariable ["ALiVE_advciv_stateTimer", time + ALiVE_advciv_hideTimeMin + random (ALiVE_advciv_hideTimeMax - ALiVE_advciv_hideTimeMin)];
-                            if (ALiVE_advciv_debug) then { ["[ALiVE Hide DEBUG] fleeOpen-25s civ=%1 retry FOUND NOTHING - HIDING in place at %2", name _u2, getPos _u2] call ALiVE_fnc_dump; };
-                        };
-                    };
-                }, [_u], 25] call CBA_fnc_waitAndExecute;
             };
 
             if (ALiVE_advciv_preferBuildings) then {
@@ -572,6 +574,7 @@ switch (_state) do {
             };
 
         } else {
+            _unit setVariable ["ALiVE_advciv_openFleeRetryAt", nil];
             // A hiding destination is already set — track progress toward it
             private _dist = 999;
             if (typeName _hidingPos == "ARRAY" && {count _hidingPos >= 2}) then {
@@ -582,7 +585,7 @@ switch (_state) do {
                 // Arrived at hiding spot — transition to HIDING
                 _unit setVariable ["ALiVE_advciv_state", "HIDING", true];
                 _unit setVariable ["ALiVE_advciv_hidingPos", [], true];
-                _unit setVariable ["ALiVE_advciv_stateTimer", time + ALiVE_advciv_hideTimeMin + random (ALiVE_advciv_hideTimeMax - ALiVE_advciv_hideTimeMin)];
+                _unit setVariable ["ALiVE_advciv_stateTimer", ALiVE_simulationTime + ALiVE_advciv_hideTimeMin + random (ALiVE_advciv_hideTimeMax - ALiVE_advciv_hideTimeMin)];
             } else {
                 // Still en route — nudge if speed dropped (e.g. AI re-routed itself)
                 if (_dist < 999 && {speed _unit < 1}) then {
@@ -593,7 +596,7 @@ switch (_state) do {
 
                 // Start panic-run timer on first movement tick
                 if (_unit getVariable ["ALiVE_advciv_panicRunStart", 0] == 0) then {
-                    _unit setVariable ["ALiVE_advciv_panicRunStart", time];
+                    _unit setVariable ["ALiVE_advciv_panicRunStart", ALiVE_simulationTime];
                 };
 
                 // If the unit has been running for 30 s without arriving, re-attempt
@@ -601,7 +604,7 @@ switch (_state) do {
                 // run may have brought a closer building into range, so try one more
                 // time. If still nothing usable, drop into HIDING in place per the
                 // legacy give-up behaviour.
-                if (time - (_unit getVariable ["ALiVE_advciv_panicRunStart", time]) > 30) then {
+                if (ALiVE_simulationTime - (_unit getVariable ["ALiVE_advciv_panicRunStart", ALiVE_simulationTime]) > 30) then {
                     private _retryHouse = [_unit] call ALiVE_fnc_advciv_findHouseProgressive;
                     private _retryBld   = _retryHouse select 0;
                     private _retryPos   = _retryHouse select 1;
@@ -620,7 +623,7 @@ switch (_state) do {
                         _unit setVariable ["ALiVE_advciv_hidingBuilding", objNull, true];
                         if (vehicle _unit == _unit) then { _unit setUnitPos "DOWN"; };
                         _unit setVariable ["ALiVE_advciv_state", "HIDING", true];
-                        _unit setVariable ["ALiVE_advciv_stateTimer", time + 60 + random 60];
+                        _unit setVariable ["ALiVE_advciv_stateTimer", ALiVE_simulationTime + 60 + random 60];
                         if (ALiVE_advciv_debug) then { ["[ALiVE Hide DEBUG] panicRun-30s-timeout civ=%1 retry FOUND NOTHING - HIDING in place at %2", name _unit, getPos _unit] call ALiVE_fnc_dump; };
                     };
                 };
@@ -631,7 +634,7 @@ switch (_state) do {
     // HIT_REACT: the reaction animation (managed in initUnit's Hit EH) plays for
     // up to 20 s; after that, escalate to PANIC
     case "HIT_REACT": {
-        if (time - (_unit getVariable ["ALiVE_advciv_hitReactStart", time]) > 20) then {
+        if (ALiVE_simulationTime - (_unit getVariable ["ALiVE_advciv_hitReactStart", ALiVE_simulationTime]) > 20) then {
             _unit setVariable ["ALiVE_advciv_state", "PANIC", true];
             _unit setVariable ["ALiVE_advciv_hitReacting", false, true];
             _unit setVariable ["ALiVE_advciv_hitReactStart", 0];
@@ -662,12 +665,12 @@ switch (_state) do {
 
         // Occasional ambient hiding voice — low chance, long cooldown
         private _lastVoice = _unit getVariable ["ALiVE_advciv_lastVoice", 0];
-        if (ALiVE_advciv_voiceEnabled && {time - _lastVoice > 20} && {random 1 < 0.15}) then {
+        if (ALiVE_advciv_voiceEnabled && {ALiVE_simulationTime - _lastVoice > 20} && {random 1 < 0.15}) then {
             [_unit, selectRandom ALiVE_advciv_voiceLines_hiding] remoteExec ["say3D", 0];
-            _unit setVariable ["ALiVE_advciv_lastVoice", time];
+            _unit setVariable ["ALiVE_advciv_lastVoice", ALiVE_simulationTime];
         };
 
-        if (_timer > 0 && {time > _timer}) then {
+        if (_timer > 0 && {ALiVE_simulationTime > _timer}) then {
             private _lastShot = _unit getVariable ["ALiVE_advciv_lastShotTime", 0];
 
             // Count confirmed threats still within reaction radius
@@ -683,18 +686,18 @@ switch (_state) do {
                     // single AI fire event keeping civs in HIDING for the
                     // rest of the mission) can't recur.
                     private _firedAt = _x getVariable ["ALiVE_advciv_firedAtCivTime", -1];
-                    (_firedAt > 0 && {time - _firedAt < ALiVE_advciv_shotMemoryTime}) || {rating _x < -500}
+                    (_firedAt > 0 && {ALiVE_simulationTime - _firedAt < ALiVE_advciv_shotMemoryTime}) || {rating _x < -500}
                 }
             } count (_unit nearEntities ["CAManBase", ALiVE_advciv_reactionRadius]);
 
             if (ALiVE_advciv_debug) then {
-                ["[ALiVE Threat DEBUG] HIDING-exit-check civ=%1 hostileNear=%2 lastShot=%3 elapsedSinceLastShot=%4 shotMemoryTime=%5", name _unit, _hostileNear, _lastShot, (time - _lastShot), ALiVE_advciv_shotMemoryTime] call ALiVE_fnc_dump;
-                {["[ALiVE Threat DEBUG]   nearby unit=%1 side=%2 firedAt=%3 elapsedSinceFire=%4 rating=%5", name _x, side _x, _x getVariable ["ALiVE_advciv_firedAtCivTime", -1], (if ((_x getVariable ["ALiVE_advciv_firedAtCivTime", -1]) > 0) then {time - (_x getVariable ["ALiVE_advciv_firedAtCivTime", -1])} else {-1}), rating _x] call ALiVE_fnc_dump} forEach (_unit nearEntities ["CAManBase", ALiVE_advciv_reactionRadius]);
+                ["[ALiVE Threat DEBUG] HIDING-exit-check civ=%1 hostileNear=%2 lastShot=%3 elapsedSinceLastShot=%4 shotMemoryTime=%5", name _unit, _hostileNear, _lastShot, (ALiVE_simulationTime - _lastShot), ALiVE_advciv_shotMemoryTime] call ALiVE_fnc_dump;
+                {["[ALiVE Threat DEBUG]   nearby unit=%1 side=%2 firedAt=%3 elapsedSinceFire=%4 rating=%5", name _x, side _x, _x getVariable ["ALiVE_advciv_firedAtCivTime", -1], (if ((_x getVariable ["ALiVE_advciv_firedAtCivTime", -1]) > 0) then {ALiVE_simulationTime - (_x getVariable ["ALiVE_advciv_firedAtCivTime", -1])} else {-1}), rating _x] call ALiVE_fnc_dump} forEach (_unit nearEntities ["CAManBase", ALiVE_advciv_reactionRadius]);
             };
-            if (_hostileNear > 0 && {(time - _lastShot) < ALiVE_advciv_shotMemoryTime}) then {
+            if (_hostileNear > 0 && {(ALiVE_simulationTime - _lastShot) < ALiVE_advciv_shotMemoryTime}) then {
                 if (ALiVE_advciv_debug) then { ["[ALiVE Threat DEBUG] civ=%1 EXTENDING hide timer (still threatened)", name _unit] call ALiVE_fnc_dump; };
                 // Still dangerous — extend the hide timer and keep hiding
-                _unit setVariable ["ALiVE_advciv_stateTimer", time + ALiVE_advciv_hideTimeMin + random (ALiVE_advciv_hideTimeMax - ALiVE_advciv_hideTimeMin)];
+                _unit setVariable ["ALiVE_advciv_stateTimer", ALiVE_simulationTime + ALiVE_advciv_hideTimeMin + random (ALiVE_advciv_hideTimeMax - ALiVE_advciv_hideTimeMin)];
             } else {
                 if (ALiVE_advciv_debug) then { ["[ALiVE Threat DEBUG] civ=%1 RELEASING HIDING -> ALERT (cooldown clear)", name _unit] call ALiVE_fnc_dump; };
                 // Safe — transition back to ALERT for a brief observation window
