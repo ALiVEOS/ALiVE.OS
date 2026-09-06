@@ -2379,7 +2379,7 @@ switch(_operation) do {
             if!(isNil "_CQBModule") then {
 
                 _factions = _CQBModule getVariable "factions";
-                _houses = _CQBModule getVariable "houses";
+                _houses = (values (_CQBModule getVariable "houses") select {_x select 1}) apply {_x select 0};
 
                 {
 

@@ -4,11 +4,13 @@ SCRIPT(addCQBpositions);
 /* ----------------------------------------------------------------------------
 Function: ALIVE_fnc_addCQBpositions
 Description:
-Creates the server side object to store settings
+Enables registered CQB houses in a radius around a given position for the
+passed CQB handlers.
 
 Parameters:
 _this select 0: ARRAY - position of center in [0,0,0] format
 _this select 1: NUMBER - radius
+_this select 2: ARRAY - optional CQB handlers
 
 Returns:
 Nil
@@ -22,48 +24,23 @@ Peer Reviewed:
 nil
 ---------------------------------------------------------------------------- */
 
-private ["_pos","_logics","_radius","_types","_instances"];
+if (isNil "ALiVE_CQB") exitWith {};
 
-if (isnil "ALiVE_CQB") exitwith {};
+params ["_pos", "_radius"];
+private _instances = _this param [2, ALiVE_CQB getVariable ["instances", []]];
 
-PARAMS_3(_pos,_radius,_logics);
+{
+    private _instance = _x;
+    if ((_instance getVariable ["instancetype", "regular"]) in ["regular", "strategic"]) then {
+        private _debug = [_instance, "debug"] call ALiVE_fnc_CQB;
+        if (_debug) then {[_instance, "debug", false] call ALiVE_fnc_CQB};
 
-_types = ["regular","strategic"];
+        private _registry = [_instance, "houses"] call ALiVE_fnc_CQB;
+        private _grid = [_instance, "positionGrid"] call ALiVE_fnc_CQB;
+        private _candidates = _grid call ["findInRange", [_pos, _radius, false, true, true]];
+        private _entries = _candidates apply { [(_registry get _x) select 0, true] };
+        [_instance,"setHousesEnabled", _entries] call ALiVE_fnc_CQB;
 
-if (!isnil "_logics") then {_instances = _logics} else {_instances = ALiVE_CQB getvariable ["instances",[]]};
-
-if (count _instances > 0) then {
-    
-    //["_this %1",_this] call ALiVE_fnc_DumpR;
-
-    {
-        {
-	        private _instance = _x;
-	        private _filtered = [];
-	
-	        private _instanceType = _x getvariable ["instancetype","regular"];
-	        private _houses = +(_instance getvariable ["houses",[]]);
-	        private _housesPending = +(_instance getvariable ["houses_pending",[]]);
-	        private _debug = [_instance,"debug"] call ALiVE_fnc_CQB;
-	        _houses = _houses - _housesPending;
-	        _housesPending = _housesPending - _houses;
-	        private _housesTotal = _housesPending + _houses;
-	        
-	        //["mod %1 _type %2 _active %3 _inactive %4 total 5",_x,_instanceType,count _houses, count _housesPending, count _housesTotal] call ALiVE_fnc_DumpR;
-	
-	        [_instance,"debug",false] call ALiVE_fnc_CQB;
-	
-	        {
-	            if (_instanceType in _types && {_pos distance _x < _radius}) then {
-	                _filtered pushback _x;
-	            };
-	        } foreach _housesPending;
-	
-	        _instance setvariable ["houses",_houses + _filtered];
-	        _instance setvariable ["houses_pending",_housesPending - _filtered];
-	
-	        [_instance,"debug",_debug] call ALiVE_fnc_CQB;
-        } call CBA_fnc_DirectCall;
-    } foreach _instances;
-};
-
+        if (_debug) then {[_instance,"debug", true] call ALiVE_fnc_CQB};
+    };
+} forEach _instances;

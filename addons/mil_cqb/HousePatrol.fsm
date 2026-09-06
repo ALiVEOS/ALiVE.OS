@@ -263,7 +263,7 @@ class FSM
           priority = 0.000000;
           to="Move_home";
           precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-          condition=/*%FSM<CONDITION""">*/"!([_posDespawn, (_spawn + _staticRange)*1.2, _spawnJet*1.2, _spawnHeli*1.2] call ALiVE_fnc_anyPlayersInRangeIncludeAir);"/*%FSM</CONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"isNil {_logic getVariable ""spawnPFH""} && {!([_posDespawn, (_spawn + _staticRange)*1.2, _spawnJet*1.2, _spawnHeli*1.2] call ALiVE_fnc_anyPlayersInRangeIncludeAir)}"/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
         };
         /*%FSM</LINK>*/
@@ -384,7 +384,7 @@ class FSM
           priority = 0.000000;
           to="Move_home";
           precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-          condition=/*%FSM<CONDITION""">*/"!([_posDespawn, (_spawn + _staticRange)*1.2, _spawnJet*1.2, _spawnHeli*1.2] call ALiVE_fnc_anyPlayersInRangeIncludeAir);"/*%FSM</CONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"isNil {_logic getVariable ""spawnPFH""} && {!([_posDespawn, (_spawn + _staticRange)*1.2, _spawnJet*1.2, _spawnHeli*1.2] call ALiVE_fnc_anyPlayersInRangeIncludeAir)}"/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
         };
         /*%FSM</LINK>*/
@@ -446,7 +446,7 @@ class FSM
           priority = 0.000000;
           to="Move_home";
           precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-          condition=/*%FSM<CONDITION""">*/"!([_posDespawn, (_spawn + _staticRange)*1.2, _spawnJet*1.2, _spawnHeli*1.2] call ALiVE_fnc_anyPlayersInRangeIncludeAir);"/*%FSM</CONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"isNil {_logic getVariable ""spawnPFH""} && {!([_posDespawn, (_spawn + _staticRange)*1.2, _spawnJet*1.2, _spawnHeli*1.2] call ALiVE_fnc_anyPlayersInRangeIncludeAir)}"/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
         };
         /*%FSM</LINK>*/
@@ -547,7 +547,7 @@ class FSM
           priority = 3.000000;
           to="End_delete_group";
           precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-          condition=/*%FSM<CONDITION""">*/"!([_posDespawn, (_spawn + _staticRange)*2.5, _spawnJet*2, _spawnHeli*2] call ALiVE_fnc_anyPlayersInRangeIncludeAir) && {({alive _x} count (units _grp) > 0)}"/*%FSM</CONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"isNil {_logic getVariable ""spawnPFH""} && {!([_posDespawn, (_spawn + _staticRange)*2.5, _spawnJet*2, _spawnHeli*2] call ALiVE_fnc_anyPlayersInRangeIncludeAir) && {({alive _x} count (units _grp) > 0)}}"/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
         };
         /*%FSM</LINK>*/
@@ -557,7 +557,7 @@ class FSM
           priority = 2.000000;
           to="End_delete_group";
           precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-          condition=/*%FSM<CONDITION""">*/"{alive _x && (_x distance (_x getvariable ""HousePos"") > 4)} count (units _grp) < 2"/*%FSM</CONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"isNil {_logic getVariable ""spawnPFH""} && {{alive _x && (_x distance (_x getvariable ""HousePos"") > 4)} count (units _grp) < 2}"/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
         };
         /*%FSM</LINK>*/
@@ -567,7 +567,7 @@ class FSM
           priority = 0.000000;
           to="Select_floors";
           precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-          condition=/*%FSM<CONDITION""">*/"([_posDespawn, (_spawn + _staticRange), spawnJet,_spawnHeli] call ALiVE_fnc_anyPlayersInRangeIncludeAir);"/*%FSM</CONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"isNil {_logic getVariable ""spawnPFH""} && {([_posDespawn, (_spawn + _staticRange), spawnJet,_spawnHeli] call ALiVE_fnc_anyPlayersInRangeIncludeAir)}"/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
         };
         /*%FSM</LINK>*/

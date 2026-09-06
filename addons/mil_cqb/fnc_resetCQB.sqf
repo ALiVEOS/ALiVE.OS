@@ -4,11 +4,11 @@ SCRIPT(resetCQB);
 /* ----------------------------------------------------------------------------
 Function: ALIVE_fnc_resetCQB
 Description:
-Creates the server side object to store settings
+Disables every registered house for the passed CQB handlers. Registration and
+the position grid are retained so houses can be enabled again later.
 
 Parameters:
-_this select 0: ARRAY - position of center
-_this select 1: NUMBER - radius
+_this select 0: ARRAY - optional CQB handlers
 
 Returns:
 Nil
@@ -22,40 +22,20 @@ Peer Reviewed:
 nil
 ---------------------------------------------------------------------------- */
 
-private ["_logics","_types","_instances","_houses"];
+if (isNil "ALiVE_CQB") exitWith {};
 
-if (isnil "ALiVE_CQB") exitwith {};
+private _instances = _this param [0, ALiVE_CQB getVariable ["instances", []]];
 
-PARAMS_1(_logics);
+{
+    private _instance = _x;
+    if ((_instance getVariable ["instancetype", "regular"]) in ["regular", "strategic"]) then {
+        private _debug = [_instance, "debug"] call ALiVE_fnc_CQB;
+        if (_debug) then {[_instance, "debug", false] call ALiVE_fnc_CQB};
 
-_types = ["regular","strategic"];
+        private _registry = [_instance, "houses"] call ALiVE_fnc_CQB;
+        [_instance, "setHousesEnabled", (values _registry) apply {[_x select 0, false]}] call ALiVE_fnc_CQB;
 
-if (!isnil "_logics") then {_instances = _logics} else {_instances = ALiVE_CQB getvariable ["instances",[]]};
-
-if (count _instances > 0) then {
-
-    {
-        _instance = _x;
-        _filtered = [];
-
-        _instanceType = _x getvariable ["instancetype","regular"];
-        _houses = _instance getvariable ["houses",[]];
-        _housesPending = _instance getvariable ["houses_pending",[]];
-        _debug = [_instance,"debug"] call ALiVE_fnc_CQB;
-          _houses = _houses - _housesPending;
-        _housesPending = _housesPending - _houses;
-        _housesTotal = _housesPending + _houses;
-
-        [_instance,"active",false] call ALiVE_fnc_CQB;
-        [_instance,"debug",false] call ALiVE_fnc_CQB;
-
-        waituntil {_script = _instance getvariable "process"; isnil "_script" || {scriptDone _script} || {time <= 0}};
-
-        _instance setvariable ["houses",[]];
-        _instance setvariable ["houses_pending",_housesTotal];
-
-        [_instance,"active",true] call ALiVE_fnc_CQB;
-        [_instance,"debug",_debug] call ALiVE_fnc_CQB;
-    } foreach _instances;
-};
+        if (_debug) then {[_instance, "debug", true] call ALiVE_fnc_CQB};
+    };
+} forEach _instances;
 
