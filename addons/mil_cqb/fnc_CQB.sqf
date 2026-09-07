@@ -1827,7 +1827,8 @@ switch(_operation) do {
         } else {
             if (_vehicle isKindOf "Plane") then {_jetRange} else {_heliRange}
         };
-        private _maximumRetentionRange = (_vehicleRange max 0) * 3;
+        // Keep a 20% margin beyond activation, matching profile proximity retention.
+        private _maximumRetentionRange = (_vehicleRange max 0) * 1.2;
         PROFILE_SCOPE_END(CQBCLAIMSOURCESETUP)
         if (_maximumRetentionRange <= 0) exitWith {};
 
@@ -1884,7 +1885,7 @@ switch(_operation) do {
                         } else {
                             _vehicleRange
                         };
-                        if (_activationRange > 0 && {_distance <= (_activationRange * 3)}) then {
+                        if (_activationRange > 0 && {_distance <= (_activationRange * 1.2)}) then {
 #ifdef ALIVE_SCRIPT_PROFILING
                             _profileRetained = _profileRetained + 1;
 #endif

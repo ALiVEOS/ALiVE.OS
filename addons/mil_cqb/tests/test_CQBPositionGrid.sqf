@@ -94,14 +94,14 @@ _lead setVariable ["house", _house];
 private _houseEntry = _points select 4;
 private _houseGridEntry = [_houseEntry select 0, hashValue _house];
 _grid call ["insert", [_houseGridEntry]];
-private _nearHouse = [_logic, "positionsInRange", [_grid,2100,3600,0,0,[_ground]]] call ALiVE_fnc_CQB;
+private _nearHouse = [_logic, "positionsInRange", [_grid,840,1440,0,0,[_ground]]] call ALiVE_fnc_CQB;
 [(hashValue _house) in _nearHouse, "house retained for patrol"] call _check;
 _lead setPosATL ((getPosATL _ground) vectorAdd [100,0,0]);
-private _nearHouseAfterMove = [_logic, "positionsInRange", [_grid,2100,3600,0,0,[_ground]]] call ALiVE_fnc_CQB;
+private _nearHouseAfterMove = [_logic, "positionsInRange", [_grid,840,1440,0,0,[_ground]]] call ALiVE_fnc_CQB;
 [(hashValue _house) in _nearHouseAfterMove, "moved patrol still follows house"] call _check;
 [(_nearHouse get (hashValue _house)) isEqualTo (_nearHouseAfterMove get (hashValue _house)), "leader movement does not change house query"] call _check;
 _grid call ["remove", _houseGridEntry];
-[count ([_logic, "positionsInRange", [_grid,2100,3600,0,0,[_ground]]] call ALiVE_fnc_CQB) == 0, "cleared patrol house removed"] call _check;
+[count ([_logic, "positionsInRange", [_grid,840,1440,0,0,[_ground]]] call ALiVE_fnc_CQB) == 0, "cleared patrol house removed"] call _check;
 
 // Differential claim oracle: use the unchanged range query twice, then apply
 // the former per-house lifecycle rules to its activation and retention sets.
@@ -115,17 +115,17 @@ private _claimHouses = [];
     _claimHouses pushBack ([_class, _claimBase vectorAdd _offset] call _makeObject);
 } forEach [
     [[60,80,0]],             // exact 3D activation boundary at 100 m
-    [[0,0,300]],             // exact retention boundary at 3x100 m
+    [[0,0,120]],             // exact retention boundary at 1.2x100 m
     [[200,0,0]],             // static activation boundary
-    [[301,0,0]],             // outside ground retention
+    [[121,0,0]],             // outside ground retention
     [[40,0,0]],              // disabled
     [[30,0,0], "Land_CargoBox_V1_F"], // dead
-    [[140,0,0]],             // queued
-    [[150,0,0]],             // spawning
-    [[160,0,0]],             // active lifecycle
-    [[170,0,0]],             // despawnQueued
-    [[180,0,0]],             // idle retention only
-    [[190,0,0]],             // real group
+    [[105,0,0]],             // queued
+    [[107,0,0]],             // spawning
+    [[109,0,0]],             // active lifecycle
+    [[111,0,0]],             // despawnQueued
+    [[113,0,0]],             // idle retention only
+    [[115,0,0]],             // real group
     [[20,0,0]],              // cooldown
     [[80,0,0]]               // moved after grid insertion
 ];
@@ -164,6 +164,8 @@ private _resetClaimState = {
         private _record = _y;
         private _index = _claimHouses find (_record select 0);
         private _lifecycle = switch _index do {
+            case 1: {"active"};
+            case 3: {"active"};
             case 6: {"queued"};
             case 7: {"spawning"};
             case 8: {"active"};
@@ -182,7 +184,7 @@ private _checkClaimCase = {
     _claimLogic setVariable ["spawnDistanceJet", _jetRange];
     _claimLogic setVariable ["spawnDistanceHeli", _heliRange];
     private _activation = [_claimLogic, "positionsInRange", [_claimGrid,_groundRange,_staticRange,_jetRange,_heliRange,[_source]]] call ALiVE_fnc_CQB;
-    private _retention = [_claimLogic, "positionsInRange", [_claimGrid,_groundRange*3,_staticRange*3,_jetRange*3,_heliRange*3,[_source]]] call ALiVE_fnc_CQB;
+    private _retention = [_claimLogic, "positionsInRange", [_claimGrid,_groundRange*1.2,_staticRange*1.2,_jetRange*1.2,_heliRange*1.2,[_source]]] call ALiVE_fnc_CQB;
     private _expectedClaims = [];
     private _expectedQueue = [];
     {
@@ -209,6 +211,8 @@ private _checkClaimCase = {
     [{(((_claimLogic getVariable "claims") get _x) select 1) == (_claimLogic getVariable "claimCycle")} count _actualClaims == count _actualClaims, format ["claim cycle %1", _name]] call _check;
     [{((_claimRegistry get (hashValue _x)) param [2, "idle"]) == "queued"} count _expectedQueue == count _expectedQueue, format ["queued lifecycle %1", _name]] call _check;
     if (_name == "ground/static boundaries") then {
+        [(hashValue (_claimHouses select 1)) in _actualClaims, "active house retained at exactly 1.2x range"] call _check;
+        [!((hashValue (_claimHouses select 3)) in _actualClaims), "active house outside 1.2x range is not retained"] call _check;
         [(hashValue _cachedHouse) in _actualClaims, "claim uses cached grid position after house moves"] call _check;
     };
 };

@@ -19,7 +19,7 @@ private _sourceA = ["Land_HelipadEmpty_F", _base] call _makeObject;
 private _sourceB = ["Land_HelipadEmpty_F", _base vectorAdd [500,0,0]] call _makeObject;
 private _houseA = ["Land_HelipadEmpty_F", _base vectorAdd [50,0,0]] call _makeObject;
 private _houseB = ["Land_HelipadEmpty_F", _base vectorAdd [550,0,0]] call _makeObject;
-private _outer = ["Land_HelipadEmpty_F", _base vectorAdd [250,0,0]] call _makeObject;
+private _outer = ["Land_HelipadEmpty_F", _base vectorAdd [110,0,0]] call _makeObject;
 private _static = ["Land_HelipadEmpty_F", _base vectorAdd [150,0,0]] call _makeObject;
 _static setVariable ["staticWeapons", []];
 private _logic = ["Land_HelipadEmpty_F", [0,0,0]] call _makeObject;
