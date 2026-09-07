@@ -22,7 +22,7 @@ private _boundary = [_base vectorAdd [100,0,0]] call _makeObject;
 private _far = [_base vectorAdd [150,0,0]] call _makeObject;
 private _registry = createHashMap;
 {
-    _registry set [hashValue _x, [_x, true]];
+    _registry set [hashValue _x, [_x, true, "idle"]];
 } forEach [_near, _boundary, _far];
 _logic setVariable ["houses", _registry];
 _logic setVariable ["claims", createHashMap];
@@ -57,11 +57,12 @@ private _afterDisable = [_logic, "houses"] call ALiVE_fnc_CQB;
 [count (_grid call ["findInRange", [_base, 200]]) == 3, "disable retains every grid entry"] call _check;
 
 private _batch = [[_near, true], [_far, false], [_boundary, false]];
-[[_logic, "setHousesEnabled", _batch] call ALiVE_fnc_CQB, "mixed batch reports change"] call _check;
+[_logic, "setHousesEnabled", _batch] call ALiVE_fnc_CQB;
 [(_afterDisable get (hashValue _near)) select 1, "mixed batch enables house"] call _check;
 [!((_afterDisable get (hashValue _far)) select 1), "mixed batch disables house"] call _check;
-[!([_logic, "setHousesEnabled", _batch] call ALiVE_fnc_CQB), "unchanged batch reports no change"] call _check;
-[!([_logic, "setHousesEnabled", []] call ALiVE_fnc_CQB), "empty batch reports no change"] call _check;
+[_logic, "setHousesEnabled", _batch] call ALiVE_fnc_CQB;
+[(_afterDisable get (hashValue _near)) select 1 && {!((_afterDisable get (hashValue _far)) select 1)}, "reapplying batch preserves flags"] call _check;
+[_logic, "setHousesEnabled", []] call ALiVE_fnc_CQB;
 [_logic, "setHousesEnabled", [[_far, true]]] call ALiVE_fnc_CQB;
 
 [_base, 100, [_logic]] call ALiVE_fnc_addCQBpositions;
@@ -82,15 +83,19 @@ private _nearID = hashValue _near;
 private _claims = createHashMapFromArray [[_nearID, [_near, 7]]];
 _logic setVariable ["claims", _claims];
 _logic setVariable ["spawnQueue", [_near]];
-_near setVariable ["group", "preinit"];
+((_logic getVariable "houses") get _nearID) set [2, "queued"];
 [_logic, "setHousesEnabled", [[_near, false]]] call ALiVE_fnc_CQB;
-[!(_nearID in _claims), "disable invalidates claim"] call _check;
+[!(((_logic getVariable "houses") get _nearID) select 1), "disable updates queued house flag"] call _check;
+[_logic, "processSpawnQueue"] call ALiVE_fnc_CQB;
+[_nearID in _claims, "disable leaves claim for normal cycle expiry"] call _check;
 [count (_logic getVariable "spawnQueue") == 0, "disable cancels queued spawn"] call _check;
-[isNil {_near getVariable "group"}, "disable releases queued reservation"] call _check;
+[(((_logic getVariable "houses") get _nearID) select 2) == "idle", "disable releases queued lifecycle"] call _check;
+[isNil {_near getVariable "group"}, "queued house does not use group sentinel"] call _check;
 
-[[_logic, "removeHouse", _boundary] call ALiVE_fnc_CQB, "permanent removal reports change"] call _check;
+[_logic, "removeHouse", _boundary] call ALiVE_fnc_CQB;
 [!((hashValue _boundary) in ([_logic, "houses"] call ALiVE_fnc_CQB)), "permanent removal deletes registry record"] call _check;
-[!([_logic, "setHousesEnabled", [[_boundary, true]]] call ALiVE_fnc_CQB), "removed house cannot be re-enabled"] call _check;
+[_logic, "setHousesEnabled", [[_boundary, true]]] call ALiVE_fnc_CQB;
+[!((hashValue _boundary) in ([_logic, "houses"] call ALiVE_fnc_CQB)), "removed house cannot be re-enabled"] call _check;
 [count (_grid call ["findInRange", [getPosATL _boundary, 1]]) == 0, "permanent removal deletes grid entry"] call _check;
 
 [[_logic]] call ALiVE_fnc_resetCQB;

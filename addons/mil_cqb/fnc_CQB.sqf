@@ -538,6 +538,9 @@ switch(_operation) do {
                 - Start CQB Controller on Server
                 */
 
+                // Finish faction indexing before the PFH can consume its class lists.
+                [_factions] call ALiVE_fnc_initFindVehicleTypeCache;
+
                 // Initial positions and any persisted state are now populated.
                 [_logic, "positionGrid"] call ALiVE_fnc_CQB;
                 [_logic, "GarbageCollecting", true] call ALiVE_fnc_CQB;
@@ -545,8 +548,6 @@ switch(_operation) do {
 
                 //Indicate startup is done on server for that instance
                 ["started the controller"] call _fnc_cqbDiagMark;
-
-                [_factions] call ALiVE_fnc_initFindVehicleTypeCache;
 
                 _logic setVariable ["init",true,true];
                 _logic setVariable ["startupComplete",true,true];
@@ -1163,6 +1164,8 @@ switch(_operation) do {
 
             private _oldRegistry = _logic getVariable ["houses", createHashMap];
             private _registry = createHashMap;
+            // Registry record: [house, enabled, lifecycle]. Lifecycle is local
+            // runtime coordination state and is deliberately not persisted.
 
             if (_debug) then {
                 { // forEach
@@ -1202,7 +1205,13 @@ switch(_operation) do {
                     if (!isNil "_sectorID" && !isNil "_subSectorID") then {
                         if (!(_sectorID in _cleared) && !(_subSectorID in _cleared)) then {
                             _x setVariable ["sectorID", _subSectorID];
-                            _registry set [hashValue _x, [_x, true]];
+                            private _houseID = hashValue _x;
+                            private _oldRecord = _oldRegistry get _houseID;
+                            if (isNil "_oldRecord") then {
+                                _registry set [_houseID, [_x, true, "idle"]];
+                            } else {
+                                _registry set [_houseID, [_x, true, _oldRecord param [2, "idle"]]];
+                            };
                         };
                     };
                 };
@@ -1247,7 +1256,8 @@ switch(_operation) do {
             private _houseID = hashValue _house;
 
             if !(_houseID in _registry) then {
-                _registry set [_houseID, [_house, true]];
+                // Registry record: [house, enabled, lifecycle].
+                _registry set [_houseID, [_house, true, "idle"]];
 
                 private _positionGrid = _logic getVariable "positionGrid";
                 _positionGrid call ["insert", [[getPosATL _house, _houseID]]];
@@ -1284,18 +1294,15 @@ switch(_operation) do {
         private _houseID = hashValue _house;
 
         if (_houseID in _registry) then {
-            if (_house isEqualTo (_logic getVariable ["spawningHouse", objNull]) && {!(_house isEqualTo (_logic getVariable ["clearingHouse", objNull]))}) then {
-                private _process = _logic getVariable "process";
-                if (!isNil "_process") then {
-                    terminate _process;
-                };
-
-                [_logic,"finishSpawn", true] call ALiVE_fnc_CQB;
+            private _spawnContext = _logic getVariable "spawnContext";
+            private _spawnQueue = _logic getVariable ["spawnQueue", []];
+            if (!isNil "_spawnContext" && {_spawnQueue isNotEqualTo []} && {(_spawnQueue select 0) isEqualTo _house}) then {
+                [_logic, "cleanupSpawnContext", [_house, _spawnContext]] call ALiVE_fnc_CQB;
+                _logic setVariable ["spawnContext", nil];
             };
 
-            if ((_house getVariable ["group", grpNull]) isEqualType "") then {
-                _house setVariable ["group", nil, true];
-            };
+            _logic setVariable ["spawnQueue", _spawnQueue - [_house]];
+            _logic setVariable ["despawnQueue", (_logic getVariable ["despawnQueue", []]) - [_house]];
 
             private _positionGrid = _logic getVariable "positionGrid";
             _positionGrid call ["remove", [getPosATL _house, _houseID]];
@@ -1320,7 +1327,7 @@ switch(_operation) do {
             ) then {
                 // Remove group from list but dont delete bodies (done by GC)
 
-                [_logic,"groups",[_grp],true,true] call BIS_fnc_variableSpaceRemove;
+                _logic setVariable ["groups", (_logic getVariable ["groups", []]) - [_grp], true];
 
                 if (_debug) then {
                     ["CQB Population: Removing group %1...", _grp] call ALiVE_fnc_Dump;
@@ -1334,11 +1341,7 @@ switch(_operation) do {
                 [_logic,"delGroup", _grp] call ALiVE_fnc_CQB;
             };
 
-            // clearHouse may run inside the current spawn worker. Mark that path so
-            // removeHouse does not terminate the script before registry cleanup completes.
-            _logic setVariable ["clearingHouse", _house];
             [_logic, "removeHouse", _house] call ALiVE_fnc_CQB;
-            _logic setVariable ["clearingHouse", nil];
 
             private _parentSectorID = ((_sectorID splitString "_") select [0, 2]) joinString "_";
             private _parentCount = 0;
@@ -1390,6 +1393,46 @@ switch(_operation) do {
         };
     };
 
+    case "initializeGroupMetadata": {
+        _args params ["_grp", ["_house", objNull]];
+        if (isNull _grp || {!local _grp}) exitWith {};
+
+        if (isNull _house) then {
+            private _leader = leader _grp;
+            _house = _leader getVariable ["house", _grp getVariable ["house", objNull]];
+        };
+        if (isNull _house) exitWith {};
+
+        _grp setVariable ["house", _house];
+        _grp setVariable ["ALIVE_profileIgnore", true];
+        {
+            if (isNil {_x getVariable "house"}) then {
+                _x setVariable ["house", _house];
+                _x setVariable ["ALIVE_profileIgnore", true];
+            };
+        } forEach units _grp;
+
+        if (isNil {_grp getVariable "ALIVE_CQB_metadataEventHandlers"}) then {
+            private _joinedHandler = _grp addEventHandler ["UnitJoined", {
+                params ["_grp", "_unit"];
+                if (local _grp && {isNil {_unit getVariable "house"}}) then {
+                    private _house = _grp getVariable ["house", objNull];
+                    if (!isNull _house) then {
+                        _unit setVariable ["house", _house];
+                        _unit setVariable ["ALIVE_profileIgnore", true];
+                    };
+                };
+            }];
+            private _localHandler = _grp addEventHandler ["Local", {
+                params ["_grp", "_isLocal"];
+                if (_isLocal) then {
+                    [objNull, "initializeGroupMetadata", [_grp]] call ALiVE_fnc_CQB;
+                };
+            }];
+            _grp setVariable ["ALIVE_CQB_metadataEventHandlers", [_joinedHandler, _localHandler]];
+        };
+    };
+
     case "groups": {
         if(isNil "_args") then {
             // if no new groups list was provided return current setting
@@ -1397,7 +1440,19 @@ switch(_operation) do {
         } else {
                 // if a new groups list was provided set groups list
                 ASSERT_TRUE(typeName _args == "ARRAY",str typeName _args);
+                {
+                    if (!isNull _x) then {
+                        private _handlers = _x getVariable "ALIVE_CQB_metadataEventHandlers";
+                        if (!isNil "_handlers") then {
+                            _handlers params ["_joinedHandler", "_localHandler"];
+                            _x removeEventHandler ["UnitJoined", _joinedHandler];
+                            _x removeEventHandler ["Local", _localHandler];
+                            _x setVariable ["ALIVE_CQB_metadataEventHandlers", nil];
+                        };
+                    };
+                } forEach ((_logic getVariable ["groups", []]) - _args);
                 _logic setVariable ["groups", _args, true];
+                {[_logic, "initializeGroupMetadata", [_x]] call ALiVE_fnc_CQB} forEach _args;
         };
         _args;
     };
@@ -1422,18 +1477,25 @@ switch(_operation) do {
             };
 
             //Add group to main groups data
-            [_logic,"groups",[_grp],true,true] call BIS_fnc_variableSpaceAdd;
+            private _groups = +(_logic getVariable ["groups", []]);
+            _groups pushBackUnique _grp;
+            _logic setVariable ["groups", _groups, true];
 
             //Set group on house (globally with public flag so all localities know about it)
             _house setVariable ["group", _grp, true];
 
+            private _record = (_logic getVariable ["houses", createHashMap]) get (hashValue _house);
+            if (!isNil "_record") then {
+                _record set [2, "active"];
+            };
+
             //Set house and ALiVE_profileIgnore on all single units locally without public flag to save PVs
             {_x setVariable ["house",_house]; _x setVariable ["ALIVE_profileIgnore",true]} foreach (units _grp);
 
-            //Only public flag leader with house and AliVE_profileIgnore information to save PVs (and groups cant carry public flag on setvariable either way)
-            //See the "active" operation for setting the variables on the group
+            // Publish leader metadata for other machines; group metadata remains local.
             _leader setVariable ["house",_house, true];
             _leader setvariable ["ALIVE_profileIgnore",true,true];
+            [_logic, "initializeGroupMetadata", [_grp, _house]] call ALiVE_fnc_CQB;
 
             if (_logic getVariable ["debug", false]) then {
                 ["CQB Population: Group %1 created on %2", _grp, owner _leader] call ALiVE_fnc_Dump;
@@ -1455,6 +1517,10 @@ switch(_operation) do {
         if (!isnil "_house") then {
             _house setVariable ["group", nil, true];
             (format [MTEMPLATE, _house]) setMarkerType "mil_Dot";
+            private _record = (_logic getVariable ["houses", createHashMap]) get (hashValue _house);
+            if (!isNil "_record") then {
+                _record set [2, "idle"];
+            };
         };
 
         if (isnil "_grp") exitwith {
@@ -1498,10 +1564,6 @@ switch(_operation) do {
 
             private ["_side","_units"];
 
-            // Action: spawn AI
-            // this just flags the house as beginning spawning
-            // and will be over-written in addHouse
-
             _units = _house getVariable ["unittypes", []];
             _houseFaction = _house getVariable ["faction", (selectRandom _factions)];
 
@@ -1540,18 +1602,13 @@ switch(_operation) do {
             //["CQB spawning %1 AI",count _units] call ALiVE_fnc_DumpH;
             //_grp = [getPosATL _house,_side, _units] call BIS_fnc_spawnGroup;
 
-            // Publish the partial group atomically so stopping the worker can
-            // always delete it, even before the first unit has been created.
-            _grp = {
-                private _created = createGroup _side;
-                _created setVariable ["house", _house];
-                if (_house isEqualTo (_logic getVariable ["spawningHouse", objNull])) then {
-                    _logic setVariable ["spawningGroup", _created];
-                };
-                _created
-            } call CBA_fnc_DirectCall;
+            // Compatibility path for direct callers. The controller uses
+            // ALiVE_fnc_CQBSpawnStep so normal CQB spawning remains incremental.
+            _grp = createGroup _side;
+            _grp setVariable ["house", _house];
+            _house setVariable ["group", _grp];
 
-            {if !(isnil "_x") then {_unit = _grp createUnit [_x, getPosATL _house, [], 0 , "NONE"]}; sleep MOD(smoothSpawn)} foreach _units;
+            {if !(isnil "_x") then {_unit = _grp createUnit [_x, getPosATL _house, [], 0 , "NONE"]}} foreach _units;
 
             if (count units _grp == 0) exitWith {
                 if (_debug) then {
@@ -1657,7 +1714,7 @@ switch(_operation) do {
                     };
                 };
                 "
-                , [_CQB_patrolMinWaitTime, _CQB_patrolMidWaitTime, _CQB_patrolMaxWaitTime]] call CBA_fnc_taskPatrol;
+                , [_CQB_patrolMinWaitTime, _CQB_patrolMidWaitTime, _CQB_patrolMaxWaitTime]] call ALIVE_fnc_taskPatrol;
             } else { 
                 _fsm = "\x\alive\addons\mil_cqb\HousePatrol.fsm";
                 _hdl = [_logic,(leader _grp), 50, true, 60] execFSM _fsm;
@@ -1755,109 +1812,165 @@ switch(_operation) do {
     };
 
     case "claimHouses": {
-        // Precise activation and retention queries share the same source/range rules.
         private _source = _args;
         if (isNull _source) exitWith {};
+
+        PROFILE_SCOPE(CQBCLAIMSOURCESETUP, "CQB claim: source/range setup")
         private _groundRange = _logic getVariable ["spawnDistance", 700];
         private _staticRange = _logic getVariable ["spawnDistanceStatic", 1200];
         private _jetRange = _logic getVariable ["spawnDistanceJet", 0];
         private _heliRange = _logic getVariable ["spawnDistanceHeli", 0];
+        private _vehicle = vehicle _source;
+        private _ground = !(_vehicle isKindOf "Plane") && {!(_vehicle isKindOf "Helicopter")};
+        private _vehicleRange = if (_ground) then {
+            _groundRange max _staticRange
+        } else {
+            if (_vehicle isKindOf "Plane") then {_jetRange} else {_heliRange}
+        };
+        private _maximumRetentionRange = (_vehicleRange max 0) * 3;
+        PROFILE_SCOPE_END(CQBCLAIMSOURCESETUP)
+        if (_maximumRetentionRange <= 0) exitWith {};
+
+        PROFILE_SCOPE(CQBCLAIMCANDIDATEQUERY, "CQB claim: candidate query")
+        private _sourcePosition = getPosATL _source;
         private _grid = [_logic, "positionGrid"] call ALiVE_fnc_CQB;
-        private _activation = [_logic, "positionsInRange", [_grid, _groundRange, _staticRange, _jetRange, _heliRange, [_source]]] call ALiVE_fnc_CQB;
-        private _retention = [_logic, "positionsInRange", [_grid, _groundRange * 3, _staticRange * 3, _jetRange * 3, _heliRange * 3, [_source]]] call ALiVE_fnc_CQB;
+        private _candidates = _grid call ["findInRange", [_sourcePosition, _maximumRetentionRange, false, false, false]];
+        PROFILE_SCOPE_END(CQBCLAIMCANDIDATEQUERY)
+
+#ifdef ALIVE_SCRIPT_PROFILING
+        // Aggregate the rejection funnel once per scan; avoid per-candidate timing scopes.
+        private _profileInSphere = 0;
+        private _profileRegistered = 0;
+        private _profileDisabled = 0;
+        private _profileEligible = 0;
+        private _profileRetained = 0;
+        private _profileInActivation = 0;
+        private _profileRefreshed = 0;
+        private _profileEnqueued = 0;
+#endif
+
+        PROFILE_SCOPE(CQBCLAIMCANDIDATEPROCESSING, "CQB claim: candidate processing")
         private _claims = _logic getVariable "claims";
         private _cycle = _logic getVariable "claimCycle";
         private _queue = _logic getVariable "spawnQueue";
         private _registry = _logic getVariable ["houses", createHashMap];
+        private _debugCurator = _logic getVariable ["debug", false] && {_source in allCurators};
         {
-            private _houseID = _x;
-            private _house = (_registry get _houseID) select 0;
-            if (alive _house) then {
-                private _inActivation = _houseID in _activation;
-                private _existing = _house getVariable "group";
-                private _spawning = _house isEqualTo (_logic getVariable ["spawningHouse", objNull]);
-                if (_inActivation || {!isNil "_existing"} || {_spawning}) then {
-                    _claims set [_houseID, [_house, _cycle]];
-                    if (_inActivation && {isNil "_existing"} && {!_spawning} && {time >= (_house getVariable ["ALIVE_CQB_nextDetect", 0])}) then {
-                        _house setVariable ["group", "preinit", true];
-                        _queue pushBack _house;
-                        if (_logic getVariable ["debug", false] && {_source in allCurators}) then {
-                            ["CQB Population: Zeus curator claimed house at %1", getPosATL _house] call ALiVE_fnc_Dump;
+            _x params ["_housePosition", "_houseID"];
+            private _distance = _housePosition distance _sourcePosition;
+            if (_distance <= _maximumRetentionRange) then {
+#ifdef ALIVE_SCRIPT_PROFILING
+                _profileInSphere = _profileInSphere + 1;
+#endif
+                private _record = _registry get _houseID;
+                if (!isNil "_record") then {
+#ifdef ALIVE_SCRIPT_PROFILING
+                    _profileRegistered = _profileRegistered + 1;
+#endif
+                    _record params ["_house", "_enabled"];
+#ifdef ALIVE_SCRIPT_PROFILING
+                    if (!_enabled) then {_profileDisabled = _profileDisabled + 1};
+#endif
+                    if (_enabled && {alive _house}) then {
+#ifdef ALIVE_SCRIPT_PROFILING
+                        _profileEligible = _profileEligible + 1;
+#endif
+                        private _activationRange = if (_ground) then {
+                            if (!isNil {_house getVariable "staticWeapons"}) then {
+                                _groundRange max _staticRange
+                            } else {
+                                _groundRange
+                            }
+                        } else {
+                            _vehicleRange
+                        };
+                        if (_activationRange > 0 && {_distance <= (_activationRange * 3)}) then {
+#ifdef ALIVE_SCRIPT_PROFILING
+                            _profileRetained = _profileRetained + 1;
+#endif
+                            PROFILE_SCOPE(CQBCLAIMLIFECYCLE, "CQB claim: retained lifecycle/group evaluation")
+                            private _inActivation = _distance <= _activationRange;
+#ifdef ALIVE_SCRIPT_PROFILING
+                            if (_inActivation) then {_profileInActivation = _profileInActivation + 1};
+#endif
+                            private _lifecycle = _record param [2, "idle"];
+                            private _existing = _house getVariable ["group", grpNull];
+                            private _hasGroup = _existing isEqualType grpNull && {!isNull _existing};
+                            PROFILE_SCOPE_END(CQBCLAIMLIFECYCLE)
+                            if (_inActivation || {_hasGroup} || {_lifecycle in ["queued", "spawning", "active", "despawnQueued"]}) then {
+                                PROFILE_SCOPE(CQBCLAIMREFRESH, "CQB claim: refresh claim")
+                                _claims set [_houseID, [_house, _cycle]];
+#ifdef ALIVE_SCRIPT_PROFILING
+                                _profileRefreshed = _profileRefreshed + 1;
+#endif
+                                PROFILE_SCOPE_END(CQBCLAIMREFRESH)
+                                if (_inActivation && {!_hasGroup} && {_lifecycle isEqualTo "idle"} && {time >= (_house getVariable ["ALIVE_CQB_nextDetect", 0])}) then {
+                                    PROFILE_SCOPE(CQBCLAIMENQUEUE, "CQB claim: enqueue spawn")
+                                    _record set [2, "queued"];
+                                    _queue pushBackUnique _house;
+#ifdef ALIVE_SCRIPT_PROFILING
+                                    _profileEnqueued = _profileEnqueued + 1;
+#endif
+                                    PROFILE_SCOPE_END(CQBCLAIMENQUEUE)
+                                    if (_debugCurator) then {
+                                        ["CQB Population: Zeus curator claimed house at %1", getPosATL _house] call ALiVE_fnc_Dump;
+                                    };
+                                };
+                            };
                         };
                     };
                 };
             };
-        } forEach (keys _retention);
+        } forEach _candidates;
+        PROFILE_SCOPE_END(CQBCLAIMCANDIDATEPROCESSING)
+#ifdef ALIVE_SCRIPT_PROFILING
+        // Counts live in a separate trace label, not in the stable timing-zone names.
+        // Rejections are mutually exclusive; activation/refresh/enqueue are outcome counts.
+        private _profileCountsLabel = format ["CQB claim counts: type=%1 radius=%2 candidates=%3 outsideSphere=%4 missing=%5 disabled=%6 dead=%7 outsideTypeRange=%8 inactive=%9 activation=%10 refreshed=%11 enqueued=%12 queue=%13", if (_ground) then {"ground"} else {if (_vehicle isKindOf "Plane") then {"plane"} else {"heli"}}, _maximumRetentionRange, count _candidates, (count _candidates) - _profileInSphere, _profileInSphere - _profileRegistered, _profileDisabled, _profileRegistered - _profileDisabled - _profileEligible, _profileEligible - _profileRetained, _profileRetained - _profileRefreshed, _profileInActivation, _profileRefreshed, _profileEnqueued, count _queue];
+        PROFILE_SCOPE(CQBCLAIMCOUNTS, _profileCountsLabel)
+        PROFILE_SCOPE_END(CQBCLAIMCOUNTS)
+#endif
     };
 
-    case "spawnHouse": {
-        // Scheduled worker: faction detection and spawnGroup may suspend.
-        private _house = _args;
-        private _houseID = hashValue _house;
-        private _registry = _logic getVariable ["houses", createHashMap];
-        private _record = _registry get _houseID;
-        if (isNil "_record" || {!(_record select 1)}) exitWith {};
-        private _faction = nil;
-        private _range = _logic getVariable ["spawnDistance", 700];
-        if (!isNil {_house getVariable "staticWeapons"}) then {
-            _range = _range max (_logic getVariable ["spawnDistanceStatic", 1200]);
+    case "cleanupSpawnContext": {
+        _args params ["_house", "_context"];
+        private _createdStatics = _context getOrDefault ["createdStatics", []];
+        if (!isNull _house && {_createdStatics isNotEqualTo []}) then {
+            private _statics = _house getVariable ["staticWeapons", []];
+            _house setVariable ["staticWeapons", _statics - _createdStatics, true];
         };
-        if (_logic getVariable ["CQB_UseDominantFaction", false]) then {
-            if (time >= (_house getVariable ["ALIVE_CQB_nextDetect", 0])) then {
-                _faction = [getPosATL _house, 250, true] call ALiVE_fnc_getDominantFaction;
-                if (isNil "_faction") then {
-                    _faction = [getPosATL _house, 250 max _range, true] call ALiVE_fnc_getDominantFaction;
-                };
-            };
-        } else {
-            _faction = selectRandom (_logic getVariable ["factions", DEFAULT_FACTIONS]);
-        };
-        _record = (_logic getVariable ["houses", createHashMap]) get _houseID;
-        if (!isNil "_faction" && {_logic getVariable ["active", false]} && {_houseID in (_logic getVariable "claims")} && {!isNil "_record"} && {_record select 1}) then {
-            [_logic,"spawnGroup", [_house, _faction]] call ALiVE_fnc_CQB;
+        {
+            if (!isNull _x) then {deleteVehicle _x};
+        } forEach _createdStatics;
+        private _grp = _context getOrDefault ["group", _house getVariable ["group", grpNull]];
+        if (_grp isEqualType grpNull && {!isNull _grp}) then {
+            [_logic, "delGroup", _grp] call ALiVE_fnc_CQB;
         };
     };
 
     case "finishSpawn": {
-        private _force = if (!isNil "_args") then {_args} else {false};
-
-        private _house = _logic getVariable ["spawningHouse", objNull];
-        private _grp = _logic getVariable ["spawningGroup", grpNull];
-        private _registered = _house getVariable ["group", "preinit"];
-
-        private _registry = _logic getVariable "houses";
+        _args params ["_house", "_result"];
+        private _registry = _logic getVariable ["houses", createHashMap];
         private _record = _registry get (hashValue _house);
-        private _houseEnabled = !isNil "_record" && {_record select 1};
 
-        if (
-            _force ||
-            { !_houseEnabled } ||
-            { !((hashValue _house) in _registry) } ||
-            { !alive _house } ||
-            { !(_registered isEqualType grpNull) } ||
-            { isNull _grp } ||
-            { count units _grp == 0 }
-        ) then {
-            if (!isNull _grp) then {
-                [_logic,"delGroup", _grp] call ALiVE_fnc_CQB;
+        if (_result isEqualTo "complete") then {
+            if (!isNil "_record") then {
+                _record set [2, "active"];
             };
-
-            if (!isNull _house) then {
-                _house setVariable ["group", nil, true];
-
-                // Back off failures, but allow immediate retries after cancellation.
-                if (!_force && {_houseEnabled} && {(hashValue _house) in (_logic getVariable ["claims", createHashMap])} && {alive _house}) then {
+        } else {
+            private _context = _logic getVariable ["spawnContext", createHashMap];
+            [_logic, "cleanupSpawnContext", [_house, _context]] call ALiVE_fnc_CQB;
+            if (!isNil "_record") then {
+                _record set [2, "idle"];
+                if (alive _house) then {
                     _house setVariable ["ALIVE_CQB_nextDetect", time + 30];
                 };
             };
         };
 
-        _logic setVariable ["spawningHouse", nil];
-        _logic setVariable ["spawningGroup", nil];
-        _logic setVariable ["process", nil];
-
+        _logic setVariable ["spawnContext", nil];
         private _queue = _logic getVariable ["spawnQueue", []];
-        if (_queue isnotequalto [] && {(_queue select 0) isEqualTo _house}) then {
+        if (_queue isNotEqualTo [] && {(_queue select 0) isEqualTo _house}) then {
             _queue deleteAt 0;
         };
     };
@@ -1871,11 +1984,34 @@ switch(_operation) do {
         private _claims = _logic getVariable "claims";
         switch (_logic getVariable ["spawnStage", "snapshot"]) do {
             case "snapshot": {
+                if (diag_tickTime < (_logic getVariable ["nextClaimCycleAt", 0])) exitWith {};
+                _logic setVariable ["nextClaimCycleAt", diag_tickTime + 1];
+
                 private _sources = allPlayers - entities "HeadlessClient_F";
                 if (!isNil "ALIVE_profileSystem" && {[ALIVE_profileSystem, "zeusSpawn"] call ALiVE_fnc_hashGet}) then {
                     {_sources pushBackUnique _x} forEach allCurators;
                 };
-                _logic setVariable ["spawnSources", _sources];
+
+                private _deduplicatedSources = [];
+                private _retainedPositions = [[], [], []];
+                {
+                    private _source = _x;
+                    private _sourcePosition = getPosATL _source;
+                    private _sourceVehicle = vehicle _source;
+                    private _sourceCategory = if (_sourceVehicle isKindOf "Plane") then {
+                        1
+                    } else {
+                        if (_sourceVehicle isKindOf "Helicopter") then {2} else {0}
+                    };
+                    private _categoryPositions = _retainedPositions select _sourceCategory;
+                    private _nearRetainedSource = _categoryPositions findIf {_x distanceSqr _sourcePosition <= 900};
+                    if (_nearRetainedSource < 0) then {
+                        _deduplicatedSources pushBack _source;
+                        _categoryPositions pushBack _sourcePosition;
+                    };
+                } forEach _sources;
+
+                _logic setVariable ["spawnSources", _deduplicatedSources];
                 _logic setVariable ["spawnSourceIndex", 0];
                 _logic setVariable ["claimCycle", (_logic getVariable ["claimCycle", 0]) + 1];
                 _logic setVariable ["spawnStage", "sources"];
@@ -1894,12 +2030,13 @@ switch(_operation) do {
                         (_claims get _x) params ["_house", "_claimedCycle"];
                         if (_claimedCycle != _cycle) then {
                             _claims deleteAt _x;
-                            private _group = _house getVariable ["group", grpNull];
-                            if (_group isEqualType grpNull && {!isNull _group}) then {
+                            private _record = (_logic getVariable ["houses", createHashMap]) get _x;
+                            private _lifecycle = if (isNil "_record") then {"idle"} else {_record param [2, "idle"]};
+                            if (_lifecycle in ["active", "spawning"]) then {
                                 (_logic getVariable "despawnQueue") pushBackUnique _house;
-                            };
-                            if ((_house getVariable ["group", grpNull]) isEqualType "") then {
-                                _house setVariable ["group", nil, true];
+                                if (_lifecycle isEqualTo "active") then {
+                                    _record set [2, "despawnQueued"];
+                                };
                             };
                         };
                     } forEach (keys _claims);
@@ -1916,94 +2053,125 @@ switch(_operation) do {
                 if (_index < count _groups) then {
                     private _grp = _groups select _index;
                     _logic setVariable ["checkedGroupIndex", _index + 1];
-                    if (!isNull _grp && {!(_grp isEqualTo (_logic getVariable ["spawningGroup", grpNull]))}) then {
+                    if (!isNull _grp) then {
                         private _leader = leader _grp;
                         private _house = _leader getVariable ["house", _grp getVariable ["house", objNull]];
                         if (local _grp) then {
                             if (isNull _house) then {
                                 [_logic, "delGroup", _grp] call ALiVE_fnc_CQB;
                             } else {
-                                {
-                                    if (isNil {_x getVariable "house"}) then {
-                                        _x setVariable ["house", _house];
-                                        _x setVariable ["ALIVE_profileIgnore", true];
-                                    };
-                                } forEach units _grp;
-                                _grp setVariable ["house", _house];
-                                _grp setVariable ["ALIVE_profileIgnore", true];
-                                if (({alive _x} count units _grp) == 0 || {!alive _house}) then {
+                                private _groupHouse = _grp getVariable ["house", objNull];
+                                if (isNil {_grp getVariable "ALIVE_CQB_metadataEventHandlers"} || {!(_house isEqualTo _groupHouse)}) then {
+                                    [_logic, "initializeGroupMetadata", [_grp, _house]] call ALiVE_fnc_CQB;
+                                };
+                                if (((units _grp) findIf {alive _x}) < 0 || {!alive _house}) then {
                                     (_logic getVariable "despawnQueue") pushBackUnique _house;
+                                    private _record = (_logic getVariable ["houses", createHashMap]) get (hashValue _house);
+                                    if (!isNil "_record") then {_record set [2, "despawnQueued"]};
                                 } else {
                                     if (!((hashValue _house) in _claims) && {_logic getVariable ["GarbageCollecting", true]}) then {
                                         (_logic getVariable "despawnQueue") pushBackUnique _house;
+                                        private _record = (_logic getVariable ["houses", createHashMap]) get (hashValue _house);
+                                        if (!isNil "_record") then {_record set [2, "despawnQueued"]};
                                     };
                                 };
                             };
                         };
                     };
                 } else {
-                    _logic setVariable ["groups", (_logic getVariable ["groups", []]) - [grpNull]];
+                    private _registeredGroups = _logic getVariable ["groups", []];
+                    if (grpNull in _registeredGroups) then {
+                        _logic setVariable ["groups", _registeredGroups - [grpNull]];
+                    };
                     _logic setVariable ["spawnStage", "snapshot"];
                 };
             };
         };
 
-        [_logic,"processDespawnQueue"] call ALiVE_fnc_CQB;
-        [_logic,"processSpawnQueue"] call ALiVE_fnc_CQB;
+        if ((_logic getVariable ["despawnQueue", []]) isNotEqualTo []) then {
+            [_logic,"processDespawnQueue"] call ALiVE_fnc_CQB;
+        };
+        if ((_logic getVariable ["spawnQueue", []]) isNotEqualTo []) then {
+            [_logic,"processSpawnQueue"] call ALiVE_fnc_CQB;
+        };
     };
 
     case "processSpawnQueue": {
         private _queue = _logic getVariable ["spawnQueue", []];
-        if (_queue isequalto []) exitWith {};
+        if (_queue isEqualTo []) exitWith {};
 
         private _house = _queue select 0;
-        private _process = _logic getVariable "process";
-        if (!isNil "_process") then {
-            // spawn in progress
-            if (scriptDone _process) then {
-                [_logic,"finishSpawn"] call ALiVE_fnc_CQB;
-            };
-        } else {
-            // start spawn process
-            private _houses = _logic getVariable "houses";
-            private _houseEntry = _houses get (hashValue _house);
+        private _context = _logic getVariable "spawnContext";
+
+        if (isNil "_context") then {
+            private _registry = _logic getVariable ["houses", createHashMap];
+            private _record = _registry get (hashValue _house);
+            private _grp = _house getVariable ["group", grpNull];
+            private _otherInstanceSpawning = (MOD(CQB) getVariable ["instances", []]) findIf {
+                private _other = _x;
+                if (_other isEqualTo _logic) then {false} else {
+                    private _otherContext = _other getVariable "spawnContext";
+                    private _otherQueue = _other getVariable ["spawnQueue", []];
+                    !isNil "_otherContext" && {_otherQueue isNotEqualTo []} && {(_otherQueue select 0) isEqualTo _house}
+                };
+            } >= 0;
+
+            if (_otherInstanceSpawning) exitWith {};
 
             if (
-                !isnil "_houseEntry" && 
-                { (hashValue _house) in (_logic getVariable "claims") } &&
-                { _record select 1 } &&
-                {(_house getVariable ["group", grpNull]) isEqualType ""}
-            ) then {
-                _logic setVariable ["spawningHouse", _house];
-                private _worker = [_logic, _house] spawn {
-                    params ["_logic", "_house"];
-                    [_logic,"spawnHouse", _house] call ALiVE_fnc_CQB;
-                };
-                _logic setVariable ["process", _worker];
-            } else {
+                isNull _house ||
+                {isNil "_record"} ||
+                {!(_record select 1)} ||
+                {!((hashValue _house) in (_logic getVariable ["claims", createHashMap]))} ||
+                {!alive _house} ||
+                {!(_grp isEqualType grpNull)} ||
+                {!isNull _grp} ||
+                {time < (_house getVariable ["ALIVE_CQB_nextDetect", 0])}
+            ) exitWith {
                 _queue deleteAt 0;
-                if (!isNull _house) then {
-                    _house setVariable ["group", nil, true];
-                };
+                if (!isNil "_record") then {_record set [2, "idle"]};
+            };
+
+            _context = createHashMapFromArray [["phase", "faction"]];
+            _logic setVariable ["spawnContext", _context];
+            _record set [2, "spawning"];
+        };
+
+        if (isNil "_context") exitWith {};
+        if (isNull _house || {!alive _house}) exitWith {
+            [_logic,"finishSpawn", [_house, "failed"]] call ALiVE_fnc_CQB;
+        };
+
+        private _result = [_logic, _house, _context] call ALiVE_fnc_CQBSpawnStep;
+        if (_result in ["complete", "failed"]) then {
+            private _currentQueue = _logic getVariable ["spawnQueue", []];
+            if (_currentQueue isNotEqualTo [] && {(_currentQueue select 0) isEqualTo _house} && {!isNil {_logic getVariable "spawnContext"}}) then {
+                [_logic,"finishSpawn", [_house, _result]] call ALiVE_fnc_CQB;
             };
         };
     };
 
     case "processDespawnQueue": {
         private _queue = _logic getVariable ["despawnQueue", []];
-        if (_queue isequalto []) exitWith {};
+        if (_queue isEqualTo []) exitWith {};
 
         private _house = _queue deleteAt 0;
+        if (isNull _house) exitWith {};
 
-        // finishSpawn validates the current worker's claims and cleans partial groups.
-        if (isNull _house || {_house isEqualTo (_logic getVariable ["spawningHouse", objNull])}) exitWith {};
+        private _spawnQueue = _logic getVariable ["spawnQueue", []];
+        if (!isNil {_logic getVariable "spawnContext"} && {_spawnQueue isNotEqualTo []} && {(_spawnQueue select 0) isEqualTo _house}) exitWith {
+            _queue pushBackUnique _house;
+        };
 
         private _grp = _house getVariable ["group", grpNull];
         if (
             !(_grp isEqualType grpNull) ||
             {isNull _grp} ||
             {!local _grp}
-        ) exitWith {};
+        ) exitWith {
+            private _record = (_logic getVariable ["houses", createHashMap]) get (hashValue _house);
+            if (!isNil "_record") then {_record set [2, "idle"]};
+        };
 
         if (
             ({alive _x} count units _grp) == 0 ||
@@ -2011,9 +2179,11 @@ switch(_operation) do {
         ) then {
             [_logic,"clearHouse", _house] call ALiVE_fnc_CQB;
         } else {
-            // Revalidate: another source may have reclaimed this house while it waited.
-            if (!((hashValue _house) in (_logic getVariable "claims")) && {_logic getVariable ["GarbageCollecting", true]}) then {
+            if (_logic getVariable ["GarbageCollecting", true]) then {
                 [_logic,"delGroup", _grp] call ALiVE_fnc_CQB;
+            } else {
+                private _record = (_logic getVariable ["houses", createHashMap]) get (hashValue _house);
+                if (!isNil "_record") then {_record set [2, "active"]};
             };
         };
     };
@@ -2025,7 +2195,7 @@ switch(_operation) do {
 
         ASSERT_TRUE(_args isequaltype true, str _args);
 
-        private _valueChanged = (_args isNotEqualTo (_logic getVariable "active"));
+        private _valueChanged = _args isNotEqualTo (_logic getVariable ["active", false]);
         _logic setVariable ["active", _args];
 
         if (_valueChanged) then {
@@ -2035,9 +2205,23 @@ switch(_operation) do {
                 _logic setVariable ["claims", createHashMap];
                 _logic setVariable ["spawnQueue", []];
                 _logic setVariable ["despawnQueue", []];
+                _logic setVariable ["spawnContext", nil];
                 _logic setVariable ["spawnSources", []];
                 _logic setVariable ["spawnStage", "snapshot"];
                 _logic setVariable ["claimCycle", 0];
+                _logic setVariable ["nextClaimCycleAt", 0];
+
+                {
+                    private _record = _y;
+                    private _house = _record select 0;
+                    private _grp = _house getVariable ["group", grpNull];
+                    if (_grp isEqualType grpNull) then {
+                        _record set [2, if (isNull _grp) then {"idle"} else {"active"}];
+                    } else {
+                        _house setVariable ["group", nil, true];
+                        _record set [2, "idle"];
+                    };
+                } forEach (_logic getVariable ["houses", createHashMap]);
 
                 private _pfh = [{
                     params ["_logic", "_handle"];
@@ -2050,20 +2234,26 @@ switch(_operation) do {
                 [_pfh] call CBA_fnc_removePerFrameHandler;
                 _logic setVariable ["spawnPFH", nil];
 
-                private _process = _logic getVariable "process";
-                if (!isNil "_process") then {
-                    terminate _process;
-                    [_logic,"finishSpawn", true] call ALiVE_fnc_CQB;
+                private _spawnQueue = _logic getVariable ["spawnQueue", []];
+                if (!isNil {_logic getVariable "spawnContext"} && {_spawnQueue isNotEqualTo []}) then {
+                    private _house = _spawnQueue select 0;
+                    private _context = _logic getVariable "spawnContext";
+                    [_logic, "cleanupSpawnContext", [_house, _context]] call ALiVE_fnc_CQB;
                 };
 
                 {
-                    if ((_x getVariable ["group", grpNull]) isEqualType "") then {
-                        _x setVariable ["group", nil, true];
+                    private _record = _y;
+                    if ((_record param [2, "idle"]) in ["queued", "spawning"]) then {
+                        _record set [2, "idle"];
                     };
-                } forEach (_logic getVariable ["spawnQueue", []]);
+                    if ((_record param [2, "idle"]) isEqualTo "despawnQueued") then {
+                        _record set [2, "active"];
+                    };
+                } forEach (_logic getVariable ["houses", createHashMap]);
 
                 _logic setVariable ["spawnQueue", []];
                 _logic setVariable ["despawnQueue", []];
+                _logic setVariable ["spawnContext", nil];
                 _logic setVariable ["spawnSources", []];
                 _logic setVariable ["claims", createHashMap];
             };

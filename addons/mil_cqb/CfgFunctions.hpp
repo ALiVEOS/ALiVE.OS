@@ -11,6 +11,11 @@ class cfgFunctions {
                                 file = "\x\alive\addons\mil_cqb\fnc_CQBInit.sqf";
                                 RECOMPILE;
                         };
+                        class CQBSpawnStep {
+                                description = "Advances one incremental step of an unscheduled CQB house spawn";
+                                file = "\x\alive\addons\mil_cqb\fnc_CQBSpawnStep.sqf";
+                                RECOMPILE;
+                        };
                         class CQBsortStrategicHouses {
                                 description = "The CQB blacklist function";
                                 file = "\x\alive\addons\mil_cqb\fnc_CQBsortStrategicHouses.sqf";

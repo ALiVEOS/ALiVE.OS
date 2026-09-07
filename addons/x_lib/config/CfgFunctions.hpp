@@ -1201,6 +1201,13 @@ class randomGroup
 	RECOMPILE;
 };
 
+class taskPatrol
+{
+	file = "\x\alive\addons\x_lib\functions\groups\fnc_taskPatrol.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
 class randomGroupByType
 {
 	file = "\x\alive\addons\x_lib\functions\groups\fnc_randomGroupByType.sqf";

@@ -103,6 +103,154 @@ private _nearHouseAfterMove = [_logic, "positionsInRange", [_grid,2100,3600,0,0,
 _grid call ["remove", _houseGridEntry];
 [count ([_logic, "positionsInRange", [_grid,2100,3600,0,0,[_ground]]] call ALiVE_fnc_CQB) == 0, "cleared patrol house removed"] call _check;
 
+// Differential claim oracle: use the unchanged range query twice, then apply
+// the former per-house lifecycle rules to its activation and retention sets.
+private _claimBase = (getPosATL _ground) vectorAdd [5000,5000,0];
+private _claimSource = ["Land_HelipadEmpty_F", _claimBase] call _makeObject;
+private _claimPlane = ["B_Plane_CAS_01_F", _claimBase] call _makeObject;
+private _claimHeli = ["B_Heli_Light_01_F", _claimBase] call _makeObject;
+private _claimHouses = [];
+{
+    _x params ["_offset", ["_class", "Land_HelipadEmpty_F"]];
+    _claimHouses pushBack ([_class, _claimBase vectorAdd _offset] call _makeObject);
+} forEach [
+    [[60,80,0]],             // exact 3D activation boundary at 100 m
+    [[0,0,300]],             // exact retention boundary at 3x100 m
+    [[200,0,0]],             // static activation boundary
+    [[301,0,0]],             // outside ground retention
+    [[40,0,0]],              // disabled
+    [[30,0,0], "Land_CargoBox_V1_F"], // dead
+    [[140,0,0]],             // queued
+    [[150,0,0]],             // spawning
+    [[160,0,0]],             // active lifecycle
+    [[170,0,0]],             // despawnQueued
+    [[180,0,0]],             // idle retention only
+    [[190,0,0]],             // real group
+    [[20,0,0]],              // cooldown
+    [[80,0,0]]               // moved after grid insertion
+];
+private _claimStatic = _claimHouses select 2;
+_claimStatic setVariable ["staticWeapons", []];
+private _claimDead = _claimHouses select 5;
+_claimDead setDamage 1;
+private _claimLogic = ["Land_HelipadEmpty_F", [0,0,0]] call _makeObject;
+private _claimRegistry = createHashMap;
+{
+    _claimRegistry set [hashValue _x, [_x, true, "idle"]];
+} forEach _claimHouses;
+(_claimRegistry get (hashValue (_claimHouses select 4))) set [1, false];
+(_claimRegistry get (hashValue (_claimHouses select 6))) set [2, "queued"];
+(_claimRegistry get (hashValue (_claimHouses select 7))) set [2, "spawning"];
+(_claimRegistry get (hashValue (_claimHouses select 8))) set [2, "active"];
+(_claimRegistry get (hashValue (_claimHouses select 9))) set [2, "despawnQueued"];
+private _claimGroup = createGroup west;
+private _claimUnit = _claimGroup createUnit ["B_Soldier_F", getPosATL (_claimHouses select 11), [], 0, "NONE"];
+_claimGroup setVariable ["house", _claimHouses select 11];
+(_claimHouses select 11) setVariable ["group", _claimGroup];
+(_claimHouses select 12) setVariable ["ALIVE_CQB_nextDetect", time + 60];
+_claimLogic setVariable ["houses", _claimRegistry];
+_claimLogic setVariable ["claims", createHashMap];
+_claimLogic setVariable ["claimCycle", 9];
+_claimLogic setVariable ["spawnQueue", []];
+_claimLogic setVariable ["debug", false];
+private _claimGrid = [_claimLogic, "positionGrid"] call ALiVE_fnc_CQB;
+private _cachedHouse = _claimHouses select 13;
+_cachedHouse setPosATL (_claimBase vectorAdd [2000,0,0]);
+
+private _resetClaimState = {
+    _claimLogic setVariable ["claims", createHashMap];
+    _claimLogic setVariable ["spawnQueue", []];
+    {
+        private _record = _y;
+        private _index = _claimHouses find (_record select 0);
+        private _lifecycle = switch _index do {
+            case 6: {"queued"};
+            case 7: {"spawning"};
+            case 8: {"active"};
+            case 9: {"despawnQueued"};
+            default {"idle"};
+        };
+        _record set [2, _lifecycle];
+    } forEach _claimRegistry;
+};
+private _checkClaimCase = {
+    params ["_name", "_source", "_ranges"];
+    call _resetClaimState;
+    _ranges params ["_groundRange", "_staticRange", "_jetRange", "_heliRange"];
+    _claimLogic setVariable ["spawnDistance", _groundRange];
+    _claimLogic setVariable ["spawnDistanceStatic", _staticRange];
+    _claimLogic setVariable ["spawnDistanceJet", _jetRange];
+    _claimLogic setVariable ["spawnDistanceHeli", _heliRange];
+    private _activation = [_claimLogic, "positionsInRange", [_claimGrid,_groundRange,_staticRange,_jetRange,_heliRange,[_source]]] call ALiVE_fnc_CQB;
+    private _retention = [_claimLogic, "positionsInRange", [_claimGrid,_groundRange*3,_staticRange*3,_jetRange*3,_heliRange*3,[_source]]] call ALiVE_fnc_CQB;
+    private _expectedClaims = [];
+    private _expectedQueue = [];
+    {
+        private _record = _claimRegistry get _x;
+        _record params ["_candidate"];
+        if (alive _candidate) then {
+            private _lifecycle = _record param [2, "idle"];
+            private _group = _candidate getVariable ["group", grpNull];
+            private _hasGroup = _group isEqualType grpNull && {!isNull _group};
+            private _activated = _x in _activation;
+            if (_activated || {_hasGroup} || {_lifecycle in ["queued","spawning","active","despawnQueued"]}) then {
+                _expectedClaims pushBack _x;
+                if (_activated && {!_hasGroup} && {_lifecycle == "idle"} && {time >= (_candidate getVariable ["ALIVE_CQB_nextDetect", 0])}) then {
+                    _expectedQueue pushBack _candidate;
+                };
+            };
+        };
+    } forEach keys _retention;
+    [_claimLogic, "claimHouses", _source] call ALiVE_fnc_CQB;
+    private _actualClaims = keys (_claimLogic getVariable "claims");
+    private _actualQueue = _claimLogic getVariable "spawnQueue";
+    [(_actualClaims - _expectedClaims) isEqualTo [] && {(_expectedClaims - _actualClaims) isEqualTo []}, format ["claim oracle %1", _name]] call _check;
+    [(_actualQueue - _expectedQueue) isEqualTo [] && {(_expectedQueue - _actualQueue) isEqualTo []}, format ["queue oracle %1", _name]] call _check;
+    [{(((_claimLogic getVariable "claims") get _x) select 1) == (_claimLogic getVariable "claimCycle")} count _actualClaims == count _actualClaims, format ["claim cycle %1", _name]] call _check;
+    [{((_claimRegistry get (hashValue _x)) param [2, "idle"]) == "queued"} count _expectedQueue == count _expectedQueue, format ["queued lifecycle %1", _name]] call _check;
+    if (_name == "ground/static boundaries") then {
+        [(hashValue _cachedHouse) in _actualClaims, "claim uses cached grid position after house moves"] call _check;
+    };
+};
+{
+    _x call _checkClaimCase;
+} forEach [
+    ["ground/static boundaries", _claimSource, [100,200,0,0]],
+    ["ground dominates smaller static", _claimSource, [200,50,0,0]],
+    ["static only with zero ground", _claimSource, [0,200,0,0]],
+    ["static only with negative ground", _claimSource, [-10,200,0,0]],
+    ["zero ranges", _claimSource, [0,0,0,0]],
+    ["negative ranges", _claimSource, [-10,-20,0,0]],
+    ["plane enabled", _claimPlane, [0,0,100,0]],
+    ["plane disabled", _claimPlane, [500,800,0,500]],
+    ["helicopter enabled", _claimHeli, [0,0,0,100]],
+    ["helicopter disabled", _claimHeli, [500,800,500,0]]
+];
+[!alive _claimDead && {!((hashValue _claimDead) in (_claimLogic getVariable "claims"))}, "dead house never claimed"] call _check;
+[!((hashValue (_claimHouses select 4)) in (_claimLogic getVariable "claims")), "disabled house never claimed"] call _check;
+
+// Repeating a source and adding an overlapping source refreshes claims without
+// duplicating queued houses during the same cycle.
+call _resetClaimState;
+_claimLogic setVariable ["spawnDistance", 200];
+_claimLogic setVariable ["spawnDistanceStatic", 200];
+[_claimLogic, "claimHouses", _claimSource] call ALiVE_fnc_CQB;
+private _firstQueue = +(_claimLogic getVariable "spawnQueue");
+[_claimLogic, "claimHouses", _claimSource] call ALiVE_fnc_CQB;
+[(_claimLogic getVariable "spawnQueue") isEqualTo _firstQueue, "repeated source does not duplicate queue"] call _check;
+private _overlapSource = ["Land_HelipadEmpty_F", _claimBase vectorAdd [50,0,0]] call _makeObject;
+[_claimLogic, "claimHouses", _overlapSource] call ALiVE_fnc_CQB;
+private _overlapQueue = +(_claimLogic getVariable ["spawnQueue", []]);
+[count _overlapQueue == count (_overlapQueue arrayIntersect _overlapQueue), "overlapping sources keep queue unique"] call _check;
+[(((_claimLogic getVariable "claims") getOrDefault [hashValue (_claimHouses select 0), [objNull,-1]]) select 1) == 9, "multi-source claim stores current cycle"] call _check;
+_claimLogic setVariable ["claimCycle", 10];
+[_claimLogic, "claimHouses", _claimSource] call ALiVE_fnc_CQB;
+[(_claimLogic getVariable "spawnQueue") isEqualTo _overlapQueue, "next cycle refresh preserves queue uniqueness"] call _check;
+[(((_claimLogic getVariable "claims") getOrDefault [hashValue (_claimHouses select 0), [objNull,-1]]) select 1) == 10, "next cycle refreshes claim record"] call _check;
+
+{deleteVehicle _x} forEach units _claimGroup;
+deleteGroup _claimGroup;
+
 {deleteVehicle _x} forEach _fixtures;
 diag_log format ["CQB grid tests complete: %1 failures", count _failures];
 _failures
