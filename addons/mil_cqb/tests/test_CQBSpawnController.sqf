@@ -119,7 +119,7 @@ private _makeGroup = {
     _logic setVariable ["nextClaimCycleAt", _acceptedAt - 1];
     [_logic, "onFrame"] call ALiVE_fnc_CQB;
     [(_logic getVariable "claimCycle") == 5 && {(_logic getVariable "spawnStage") == "sources"}, "expired gate accepts exactly one snapshot"] call _check;
-    [(_logic getVariable "nextClaimCycleAt") >= _acceptedAt + 1, "accepted snapshot schedules next cycle one second later"] call _check;
+    [(_logic getVariable "nextClaimCycleAt") >= _acceptedAt + 2, "accepted snapshot schedules next cycle two seconds later"] call _check;
     private _expectedSources = allPlayers - entities "HeadlessClient_F";
     if (!isNil "ALIVE_profileSystem" && {[ALIVE_profileSystem,"zeusSpawn"] call ALiVE_fnc_hashGet}) then {
         {_expectedSources pushBackUnique _x} forEach allCurators;

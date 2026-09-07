@@ -106,13 +106,14 @@ class FSM
        "//     wait time 600 sec between positions" \n
        "// 0 = [this, 50, true, 600] execVM ""scripts\crb_scripts\crB_HousePos.sqf"";" \n
        "//////////////////////////////////////////////////////////////////" \n
-       "private [""_pos"",""_debug"",""_abort"",""_pat"",""_wait"",""_guardpost"",""_markers"",""_staticWeapons""];" \n
+       "private [""_pos"",""_debug"",""_abort"",""_pat"",""_wait"",""_guardpost"",""_markers"",""_staticWeapons"",""_nextEnemyCheck""];" \n
        "" \n
        "" \n
        "_debug = false;" \n
        "_abort = false;" \n
        "_pat = false;" \n
        "_wait = 0;" \n
+       "_nextEnemyCheck = 0;" \n
        "_guardpost = 0;" \n
        "_markers = [];" \n
        "" \n
@@ -195,10 +196,13 @@ class FSM
           priority = 5.000000;
           to="Wait_while_Enemy";
           precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-          condition=/*%FSM<CONDITION""">*/"{" \n
-           "        (_leader knowsAbout _x > 1.4)  &&" \n
+          condition=/*%FSM<CONDITION""">*/"diag_tickTime >= _nextEnemyCheck && {" \n
+           "    _nextEnemyCheck = diag_tickTime + 3;" \n
+           "    (allUnits findIf {" \n
+           "        (_leader knowsAbout _x > 1.4) &&" \n
            "        {side _leader getFriend side _x < 0.6}" \n
-           "} count allUnits != 0"/*%FSM</CONDITION""">*/;
+           "    }) != -1" \n
+           "}"/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
         };
         /*%FSM</LINK>*/
@@ -371,10 +375,13 @@ class FSM
           priority = 5.000000;
           to="Wait_while_Enemy";
           precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-          condition=/*%FSM<CONDITION""">*/"{" \n
-           "        (_leader knowsAbout _x > 1.4)  &&" \n
+          condition=/*%FSM<CONDITION""">*/"diag_tickTime >= _nextEnemyCheck && {" \n
+           "    _nextEnemyCheck = diag_tickTime + 3;" \n
+           "    (allUnits findIf {" \n
+           "        (_leader knowsAbout _x > 1.4) &&" \n
            "        {side _leader getFriend side _x < 0.6}" \n
-           "} count allUnits != 0"/*%FSM</CONDITION""">*/;
+           "    }) != -1" \n
+           "}"/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
         };
         /*%FSM</LINK>*/
@@ -486,7 +493,7 @@ class FSM
        "        _leaderNew = leader _grp;" \n
        "    _fsm = ""\x\alive\addons\mil_cqb\HousePatrol.fsm"";" \n
        "    _hdl = [_logic,_leaderNew, 50, true, 60] execFSM _fsm;" \n
-       "    _leader setVariable [""FSM"", [_hdl,_fsm], true];" \n
+       "    _leaderNew setVariable [""FSM"", [_hdl,_fsm], true];" \n
        "" \n
        "    if(_debug) then {" \n
        "        [""%1 killed - Passing Simple House Patrol FSM to %2"",  _leader,_leaderNew] call ALiVE_fnc_dump;" \n

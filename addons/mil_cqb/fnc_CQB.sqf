@@ -1102,7 +1102,8 @@ switch(_operation) do {
             private _entries = [];
             {
                 private _house = _y select 0;
-                _entries pushBack [getPosATL _house, _x];
+                // Keep the registry record by reference so enabled/lifecycle updates are shared.
+                _entries pushBack [getPosATL _house, _y];
             } forEach _registry;
             _grid call ["insert", _entries];
 
@@ -1123,7 +1124,6 @@ switch(_operation) do {
         };
 
         private _near = createHashMap;
-        private _registry = _logic getVariable "houses";
         {
             private _source = _x;
             private _vehicle = vehicle _source;
@@ -1141,10 +1141,9 @@ switch(_operation) do {
                 if (_radius > 0) then {
                     private _candidates = _grid call ["findInRange", [getPosATL _source, _radius, false, true, true]];
                     {
-                        private _houseID = _x;
-                        (_registry get _houseID) params ["_house", "_enabled"];
+                        _x params ["_house", "_enabled"];
                         if (_enabled && {!isNull _house} && {!_staticOnly || {!isNil {_house getVariable "staticWeapons"}}}) then {
-                            private _nearSources = _near getOrDefault [_houseID, [], true];
+                            private _nearSources = _near getOrDefault [hashValue _house, [], true];
                             _nearSources pushBackUnique _source;
                         };
                     } forEach _candidates;
@@ -1210,7 +1209,9 @@ switch(_operation) do {
                             if (isNil "_oldRecord") then {
                                 _registry set [_houseID, [_x, true, "idle"]];
                             } else {
-                                _registry set [_houseID, [_x, true, _oldRecord param [2, "idle"]]];
+                                // Existing grid entries reference this record; preserve its identity.
+                                _oldRecord set [1, true];
+                                _registry set [_houseID, _oldRecord];
                             };
                         };
                     };
@@ -1232,7 +1233,7 @@ switch(_operation) do {
                 {
                     if !(_x in _oldIDs) then {
                         private _house = (_registry get _x) select 0;
-                        _added pushBack [getPosATL _house, _x];
+                        _added pushBack [getPosATL _house, _registry get _x];
                     };
                 } forEach (keys _registry);
                 _grid call ["insert", _added];
@@ -1257,10 +1258,11 @@ switch(_operation) do {
 
             if !(_houseID in _registry) then {
                 // Registry record: [house, enabled, lifecycle].
-                _registry set [_houseID, [_house, true, "idle"]];
+                private _record = [_house, true, "idle"];
+                _registry set [_houseID, _record];
 
                 private _positionGrid = _logic getVariable "positionGrid";
-                _positionGrid call ["insert", [[getPosATL _house, _houseID]]];
+                _positionGrid call ["insert", [[getPosATL _house, _record]]];
             };
 
             if (_logic getVariable "debug") then {
@@ -1305,7 +1307,10 @@ switch(_operation) do {
             _logic setVariable ["despawnQueue", (_logic getVariable ["despawnQueue", []]) - [_house]];
 
             private _positionGrid = _logic getVariable "positionGrid";
-            _positionGrid call ["remove", [getPosATL _house, _houseID]];
+            private _record = _registry get _houseID;
+            _positionGrid call ["remove", [getPosATL _house, _record]];
+            // A cached query must not keep a removed house eligible for claiming.
+            _record set [1, false];
 
             _registry deleteAt _houseID;
         };
@@ -1854,16 +1859,14 @@ switch(_operation) do {
         private _claims = _logic getVariable "claims";
         private _cycle = _logic getVariable "claimCycle";
         private _queue = _logic getVariable "spawnQueue";
-        private _registry = _logic getVariable ["houses", createHashMap];
         private _debugCurator = _logic getVariable ["debug", false] && {_source in allCurators};
         {
-            _x params ["_housePosition", "_houseID"];
+            _x params ["_housePosition", "_record"];
             private _distance = _housePosition distance _sourcePosition;
             if (_distance <= _maximumRetentionRange) then {
 #ifdef ALIVE_SCRIPT_PROFILING
                 _profileInSphere = _profileInSphere + 1;
 #endif
-                private _record = _registry get _houseID;
                 if (!isNil "_record") then {
 #ifdef ALIVE_SCRIPT_PROFILING
                     _profileRegistered = _profileRegistered + 1;
@@ -1900,7 +1903,13 @@ switch(_operation) do {
                             PROFILE_SCOPE_END(CQBCLAIMLIFECYCLE)
                             if (_inActivation || {_hasGroup} || {_lifecycle in ["queued", "spawning", "active", "despawnQueued"]}) then {
                                 PROFILE_SCOPE(CQBCLAIMREFRESH, "CQB claim: refresh claim")
-                                _claims set [_houseID, [_house, _cycle]];
+                                private _houseID = hashValue _house;
+                                private _claim = _claims get _houseID;
+                                if (isNil "_claim") then {
+                                    _claims set [_houseID, [_house, _cycle]];
+                                } else {
+                                    _claim set [1, _cycle];
+                                };
 #ifdef ALIVE_SCRIPT_PROFILING
                                 _profileRefreshed = _profileRefreshed + 1;
 #endif
@@ -1986,7 +1995,7 @@ switch(_operation) do {
         switch (_logic getVariable ["spawnStage", "snapshot"]) do {
             case "snapshot": {
                 if (diag_tickTime < (_logic getVariable ["nextClaimCycleAt", 0])) exitWith {};
-                _logic setVariable ["nextClaimCycleAt", diag_tickTime + 1];
+                _logic setVariable ["nextClaimCycleAt", diag_tickTime + 2];
 
                 private _sources = allPlayers - entities "HeadlessClient_F";
                 if (!isNil "ALIVE_profileSystem" && {[ALIVE_profileSystem, "zeusSpawn"] call ALiVE_fnc_hashGet}) then {
