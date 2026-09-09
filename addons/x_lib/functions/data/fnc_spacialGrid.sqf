@@ -217,7 +217,7 @@ if (isNil "ALiVE_spacialGridClass") then {
                 };
             };
 
-            if ("onMove" in _self) then {
+            if (_updated && {"onMove" in _self}) then {
                 _self call ["onMove", [_oldPos,_newPos,_data,_updated,_oldCoords,_newCoords]];
             };
 
