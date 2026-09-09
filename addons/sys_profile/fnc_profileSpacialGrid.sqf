@@ -249,7 +249,8 @@ if (isNil "ALiVE_profileSpacialGridClass") then {
                 _updated = true;
             };
 
-            if ("onMove" in _self) then {
+            // The caller already updated live profile position; only cell changes need membership callbacks.
+            if (_updated && {"onMove" in _self}) then {
                 _self call ["onMove", [_oldPos,_newPos,_profile,_updated,[-1,-1],_newCoords,_oldSectorIndex,_newSectorIndex]];
             };
 
