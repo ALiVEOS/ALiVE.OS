@@ -557,16 +557,30 @@ switch (_operation) do {
         ///////////
 
         private _isValid = [_handler,"validateStartupState"] call MAINCLASS;
+
         if (!_isValid) exitwith {};
 
         ///////////
         //Startup
         ///////////
 
-
         // Perform initial cluster occupation and troops analysis as MP modules are finished
-        private _clusterOccupationAnalysis = [_handler,"analyzeclusteroccupation", [_sidesFriendly, _sidesEnemy]] call MAINCLASS;
-        private _forcesInit = [_handler,"scantroops"] call MAINCLASS;
+        private _clusterOccupationAnalysis = if (isnil QMOD(REQUIRE_INITIALISED)) then {
+            [{
+                params ["_handler","_sidesFriendly","_sidesEnemy"];
+                [_handler,"analyzeclusteroccupation", [_sidesFriendly, _sidesEnemy]] call MAINCLASS;
+            }, [_handler,_sidesFriendly,_sidesEnemy]] call CBA_fnc_directCall;
+        } else {
+            [_handler,"analyzeclusteroccupation", [_sidesFriendly, _sidesEnemy]] call MAINCLASS;
+        };
+
+        private _forcesInit = if (isnil QMOD(REQUIRE_INITIALISED)) then {
+            [{
+                [_this select 0, "scantroops"] call ALiVE_fnc_OPCOM
+            }, [_handler]] call CBA_fnc_directCall;
+        } else {
+            [_handler, "scantroops"] call ALiVE_fnc_OPCOM;
+        };
 
         ["OPCOM %1 Initial analysis done...", _side] call ALiVE_fnc_dump;
         ["OPCOM and TACOM %1 starting...",_side] call ALiVE_fnc_Dump;
@@ -600,6 +614,7 @@ switch (_operation) do {
         [_factions] call ALiVE_fnc_initFindVehicleTypeCache;
 
         [_handler,"startupComplete", true] call ALiVE_fnc_HashSet;
+
     };
 
     case "listen": {
@@ -3477,6 +3492,8 @@ switch (_operation) do {
 
         private _objectives = [_logic,"objectives", []] call ALiVE_fnc_HashGet;
 
+        private _occupationGrid = [ALiVE_profileSystem,"spacialGridProfiles"] call ALiVE_fnc_hashGet;
+
         private _friendlyObjectives = [];
         private _enemyObjectives = [];
         private _contestedObjectives = [];
@@ -3488,27 +3505,30 @@ switch (_operation) do {
 
             private _section = [_objective,"section", []] call ALiVE_fnc_HashGet;
             if (_section isequalto []) then {
-                [_objective,"opcom_state", "unassigned"] call ALiVE_fnc_HashSet;
-                [_objective,"opcom_orders", "none"] call ALiVE_fnc_HashSet;
-                [_objective,"danger", -1] call ALiVE_fnc_HashSet;
+                [_objective, [
+                    ["opcom_state", "unassigned"],
+                    ["opcom_orders", "none"],
+                    ["danger", -1]
+                ]] call ALiVE_fnc_hashSetMany;
             };
 
-            // find nearby friendly/enemy entities
-
-            private _nearEntities = [_pos, 500, ["all","entity"]] call ALIVE_fnc_getNearProfiles;
-
+            private _candidates = _occupationGrid call ["findInRange", [_pos, 500, false, true, false]];
             private _nearFriendlies = [];
             private _nearEnemies = [];
             {
-                private _side = _x select 2 select 3;
-                if (_side in _sidesFriendly) then {
-                    _nearFriendlies pushback _x;
-                } else {
-                    if (_side in _sidesEnemy) then {
-                        _nearEnemies pushback _x;
+                private _values = _x select 2;
+                if ((_values select 5) == "entity") then {
+                    private _side = _values select 3;
+                    private _friendly = _side in _sidesFriendly;
+                    if ((_friendly || {_side in _sidesEnemy}) && {((_values select 2) distance _pos) <= 500}) then {
+                        if (_friendly) then {
+                            _nearFriendlies pushBack _x;
+                        } else {
+                            _nearEnemies pushBack _x;
+                        };
                     };
                 };
-            } foreach _nearEntities;
+            } forEach _candidates;
 
             // determine objective state from near entities
 
@@ -3623,38 +3643,55 @@ switch (_operation) do {
     case "scanTroops" : {
         private ["_inf","_mot","_mech","_arm","_air","_sea","_profileIDs","_artilleryClasses","_AAA","_AAAClasses"];
 
-        _factions = [_logic,"factions"] call ALiVE_fnc_HashGet;
-        _duration = time;
+        private _factions = [_logic,"factions"] call ALiVE_fnc_HashGet;
 
-        _profileIDs = [];
+        private _profileIDs = [];
         {
             _profileIDs append +([ALIVE_profileHandler,"getProfilesByFaction", _x] call ALIVE_fnc_profileHandler);
         } foreach _factions;
 
-        _inf = [];
-        _mot = [];
-        _AAA = [];
-        _arm = [];
-        _air = [];
-        _sea = [];
-        _mech = [];
-        _arty = [];
+        private _inf = [];
+        private _mot = [];
+        private _AAA = [];
+        private _arm = [];
+        private _air = [];
+        private _sea = [];
+        private _mech = [];
+        private _arty = [];
 
         if (isnil "_profileIDs" || {count _profileIDs == 0}) exitwith {
-            [_logic,"infantry",_inf] call ALiVE_fnc_HashSet;
-            [_logic,"motorized",_mot] call ALiVE_fnc_HashSet;
-            [_logic,"mechanized",_mech] call ALiVE_fnc_HashSet;
-            [_logic,"armored",_arm] call ALiVE_fnc_HashSet;
-            [_logic,"artillery",_arty] call ALiVE_fnc_HashSet;
-            [_logic,"AAA",_AAA] call ALiVE_fnc_HashSet;
-            [_logic,"air",_air] call ALiVE_fnc_HashSet;
-            [_logic,"sea",_sea] call ALiVE_fnc_HashSet;
-            [_logic,"currentForceStrength",[0,0,0,0,0,0,0,0]] call ALiVE_fnc_HashSet;
+            [_logic, [
+                ["infantry", _inf],
+                ["motorized", _mot],
+                ["mechanized", _mech],
+                ["armored", _arm],
+                ["artillery", _arty],
+                ["AAA", _AAA],
+                ["air", _air],
+                ["sea", _sea],
+                ["currentForceStrength", [0,0,0,0,0,0,0,0]],
+            ]] call ALiVE_fnc_HashSetMany;
 
             _result = [_inf,_mot,_mech,_arm,_air,_sea,_arty,_AAA];
         };
 
         private _profilesById = [ALiVE_profileHandler,"profilesById"] call ALiVE_fnc_hashGet;
+
+        private _playerProfileIDs = allPlayers apply { _x getVariable ["profileID", ""] };
+        private _vehicleRoleCache = createHashMap;
+        private _pilotClassCache = createHashMap;
+        private _hasPilotClass = {
+            params ["_classes"];
+            private _hasPilot = (_classes findIf {
+                private _cachedPilot = _pilotClassCache get _x;
+                if (isNil "_cachedPilot") then {
+                    _cachedPilot = [toLower _x, "pilot"] call CBA_fnc_find != -1;
+                    _pilotClassCache set [_x, _cachedPilot];
+                };
+                _cachedPilot
+            }) >= 0;
+            _hasPilot
+        };
 
         {
             private ["_profile","_assignments","_type","_objectType","_vehicleClass","_busy"];
@@ -3674,32 +3711,40 @@ switch (_operation) do {
                         if ((count (_assignments)) > 0) then {
 
                             // Dont collect vehicles with player profiles assigned
-                            if ({(_x getvariable ["profileID",""]) in _assignments} count allPlayers > 0) exitwith {};
+                            if ((_playerProfileIDs findIf {_x in _assignments}) >= 0) exitwith {};
 
                             // artillery and AA hold and fire regardless of
                             // chassis - wheeled launchers and SPGs (BM-21,
                             // DANA, CAESAR) carry objectType car/truck and
                             // must not be waypointed at the enemy as QRF
-                            if ([_vehicleClass] call ALiVE_fnc_isArtillery || {[_vehicleClass] call ALiVE_fnc_isAA}) exitwith {
-                                if ([_vehicleClass] call ALiVE_fnc_isArtillery) then {{if !(_x in _arty) then {_arty pushback _x}} foreach _assignments};
-                                if ([_vehicleClass] call ALiVE_fnc_isAA) then {{if !(_x in _AAA) then {_AAA pushback _x}} foreach _assignments};
+                            private _vehicleRoles = _vehicleRoleCache get _vehicleClass;
+                            if (isNil "_vehicleRoles") then {
+                                _vehicleRoles = [
+                                    [_vehicleClass] call ALiVE_fnc_isArtillery,
+                                    [_vehicleClass] call ALiVE_fnc_isAA
+                                ];
+                                _vehicleRoleCache set [_vehicleClass, _vehicleRoles];
+                            };
+                            if ((_vehicleRoles select 0) || {_vehicleRoles select 1}) exitwith {
+                                if (_vehicleRoles select 0) then {{if !(_x in _arty) then {_arty pushback _x}} foreach _assignments};
+                                if (_vehicleRoles select 1) then {{if !(_x in _AAA) then {_AAA pushback _x}} foreach _assignments};
                             };
 
                             switch (tolower _objectType) do {
                                 case "car": {
-                                    {if !(_x in _mot) then {_mot pushback _x}} foreach _assignments;
+                                    { _mot pushbackunique _x } foreach _assignments;
                                 };
                                 case "tank": {
-                                    {if !(_x in _arm) then {_arm pushback _x}} foreach _assignments;
+                                    { _arm pushbackunique _x } foreach _assignments;
                                 };
                                 case "armored": {
-                                    {if !(_x in _mech) then {_mech pushback _x}} foreach _assignments;
+                                    { _mech pushbackunique _x } foreach _assignments;
                                 };
                                 case "truck": {
-                                    {if !(_x in _mot) then {_mot pushback _x}} foreach _assignments;
+                                    { _mot pushbackunique _x } foreach _assignments;
                                 };
                                 case "ship": {
-                                    {if !(_x in _sea) then {_sea pushback _x}} foreach _assignments;
+                                    { _sea pushbackunique _x } foreach _assignments;
                                 };
 
                                 /* // Since ATO is in place do not control air assets and pilots
@@ -3721,7 +3766,7 @@ switch (_operation) do {
                         if (
                             count _assignments == 0 && // entity is not assigned to a vehicle
                             {!([_profile,"isPlayer",false] call ALIVE_fnc_hashGet)} && // not a player
-                            {{[toLower _x, "pilot"] call CBA_fnc_find != -1} count _unitClasses == 0} && // no pilots in entity
+                            {!([_unitClasses] call _hasPilotClass)} && // no pilots in entity
                             {!(!isNil "ALIVE_profileStationary" && {[ALIVE_profileStationary, _x, false] call ALIVE_fnc_hashGet})} // not a held roadblock / stationary garrison
                             ) then {
                             _inf pushback _x;
@@ -3731,14 +3776,16 @@ switch (_operation) do {
             };
         } foreach _profileIDs;
 
-        [_logic,"infantry", _inf] call ALiVE_fnc_HashSet;
-        [_logic,"motorized", _mot] call ALiVE_fnc_HashSet;
-        [_logic,"mechanized", _mech] call ALiVE_fnc_HashSet;
-        [_logic,"armored", _arm] call ALiVE_fnc_HashSet;
-        [_logic,"artillery", _arty] call ALiVE_fnc_HashSet;
-        [_logic,"AAA", _AAA] call ALiVE_fnc_HashSet;
-        [_logic,"air", _air] call ALiVE_fnc_HashSet;
-        [_logic,"sea", _sea] call ALiVE_fnc_HashSet;
+        [_logic, [
+            ["infantry", _inf],
+            ["motorized", _mot],
+            ["mechanized", _mech],
+            ["armored", _arm],
+            ["artillery", _arty],
+            ["AAA", _AAA],
+            ["air", _air],
+            ["sea", _sea]
+        ]] call ALiVE_fnc_HashSetMany;
 
         _count = [
             count _inf,
@@ -3756,8 +3803,6 @@ switch (_operation) do {
         };
         _currentForceStrength = [_logic,"currentForceStrength",_count] call ALiVE_fnc_HashSet;
 
-        _duration = time - _duration;
-        //["Scantroops time taken: %1 sec.",_duration] call ALiVE_fnc_DumpH;
         _result = [_inf,_mot,_mech,_arm,_air,_sea,_arty,_AAA];
     };
 
