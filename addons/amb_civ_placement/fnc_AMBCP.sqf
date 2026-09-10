@@ -242,7 +242,6 @@ switch(_operation) do {
         _result = [_logic,_operation,_args,DEFAULT_AMBIENT_ANIMAL_AMOUNT] call ALIVE_fnc_OOsimpleOperation;
     };
 
-
     // Ambient vehicle Initial Damage
     case "initialdamage": {
         if (_args isEqualType true) then {
@@ -258,7 +257,6 @@ switch(_operation) do {
 
         _result = _args;
     };
-
 
     // Return the objectives as an array of clusters
     case "objectives": {
@@ -470,7 +468,6 @@ switch(_operation) do {
                 };
                 // DEBUG -------------------------------------------------------------------------------------
 
-
                 _clusters = [_logic, "objectives"] call MAINCLASS;
 
                 if(count _clusters > 0) then {
@@ -550,7 +547,6 @@ switch(_operation) do {
             };
             // DEBUG -------------------------------------------------------------------------------------
 
-
             //waituntil {sleep 5; (!(isnil {([_logic, "objectives"] call MAINCLASS)}) && {count ([_logic, "objectives"] call MAINCLASS) > 0})};
 
             private _clusters = [_logic, "objectives"] call MAINCLASS;
@@ -570,13 +566,11 @@ switch(_operation) do {
             // side-effect call: primes the civilian-population global posture
             [] call ALIVE_fnc_getGlobalPosture;
 
-
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
                 ["AMBCP [%1] SideNum: %2 Side: %3 Faction: %4",_faction,_factionSideNumber,_side,_faction] call ALiVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------
-
 
             // Load static data
             call ALiVE_fnc_staticDataHandler;
@@ -604,6 +598,22 @@ switch(_operation) do {
                 };
             };
 
+            // This placement pass uses one fixed cluster order and building-type filter.
+            // Resolve lazily so disabled passes do no extra work. Empty lists are cached too.
+            // Consumers only iterate the lists; keep them local to avoid stale later placements.
+            private _ambBuildingsByCluster = [];
+            _ambBuildingsByCluster resize (count _clusters);
+            private _ambResolveBuildings = {
+                params ["_clusterIndex", "_clusterNodes"];
+                private _cachedBuildings = _ambBuildingsByCluster select _clusterIndex;
+                if (!isNil "_cachedBuildings") exitWith {
+                    _cachedBuildings
+                };
+                private _resolvedBuildings = [_clusterNodes, _civilianPopulationBuildingTypes] call ALIVE_fnc_findBuildingsInClusterNodes;
+                _ambBuildingsByCluster set [_clusterIndex, _resolvedBuildings];
+                _resolvedBuildings
+            };
+
             // Place ambient vehicles
 
             private ["_vehicleClass"];
@@ -616,7 +626,6 @@ switch(_operation) do {
                 private _landClasses = _carClasses - ALiVE_PLACEMENT_VEHICLEBLACKLIST;
 
                 private _supportClasses = [ALIVE_factionDefaultSupports,_ambientVehicleFaction,[]] call ALIVE_fnc_hashGet;
-                
 
                 //["SUPPORT CLASSES: %1",_supportClasses] call ALIVE_fnc_dump;
 
@@ -644,7 +653,7 @@ switch(_operation) do {
 
                         //["NODES: %1",_nodes] call ALIVE_fnc_dump;
 
-                        private _buildings = [_nodes, _civilianPopulationBuildingTypes] call ALIVE_fnc_findBuildingsInClusterNodes;
+                        private _buildings = [_forEachIndex, _nodes] call _ambResolveBuildings;
 
                         //["BUILDINGS: %1",_buildings] call ALIVE_fnc_dump;
 
@@ -833,7 +842,7 @@ switch(_operation) do {
                     {
                         private _clusterID = [_x, "clusterID"] call ALIVE_fnc_hashGet;
                         private _nodes = [_x, "nodes"] call ALIVE_fnc_hashGet;
-                        private _buildings = [_nodes, _civilianPopulationBuildingTypes] call ALIVE_fnc_findBuildingsInClusterNodes;
+                        private _buildings = [_forEachIndex, _nodes] call _ambResolveBuildings;
                         {
                             if (random 1 < _poultryChance) then {
                                 private _basePos = _x getRelPos [3 + random 8, random 360];
@@ -939,8 +948,6 @@ switch(_operation) do {
 
             // Place ambient civilians
 
-            PROFILE_SCOPE(CIVILIANPLACEMENT, "ALiVE AMBCP: civilian placement")
-
             // Scope bump for known civilian factions whose generic Man units
             // have scope = 1 (BI internal) but need to appear in the spawn
             // class list. Kept as defensive guard even though the original
@@ -949,9 +956,7 @@ switch(_operation) do {
             private _minScope = 1;
             if (_faction == "CIV_F" || _faction == "C_VIET" || _faction == "SPE_CIV") then {_minScope = 2};
 
-            PROFILE_SCOPE(CIVILIANCLASSRESOLVE, "ALiVE AMBCP: resolve civilian classes")
             private _civClasses = [0,_faction,"Man",false,_minScope] call ALiVE_fnc_findVehicleType;
-            PROFILE_SCOPE_END(CIVILIANCLASSRESOLVE)
 
             private _countCivilianUnits = 0;
 
@@ -964,15 +969,14 @@ switch(_operation) do {
             if(count _civClasses > 0) then {
 
                 {
+                    private _clusterAgents = [];
                     private _clusterID = [_x, "clusterID"] call ALIVE_fnc_hashGet;
                     private _nodes = [_x, "nodes"] call ALIVE_fnc_hashGet;
                     private _ambientCivilianRoles = [ALIVE_civilianPopulationSystem, "ambientCivilianRoles",[]] call ALiVE_fnc_HashGet;
 
                     //["NODES: %1",_nodes] call ALIVE_fnc_dump;
 
-                    PROFILE_SCOPE(CIVILIANBUILDINGRESOLVE, "ALiVE AMBCP: resolve civilian buildings")
-                    private _buildings = [_nodes, _civilianPopulationBuildingTypes] call ALIVE_fnc_findBuildingsInClusterNodes;
-                    PROFILE_SCOPE_END(CIVILIANBUILDINGRESOLVE)
+                    private _buildings = [_forEachIndex, _nodes] call _ambResolveBuildings;
 
                     //["BUILDINGS: %1",_buildings] call ALIVE_fnc_dump;
 
@@ -989,22 +993,21 @@ switch(_operation) do {
                             private _unitClass = selectRandom _civClasses;
                             private _agentID = format["agent_%1",[ALIVE_agentHandler, "getNextInsertID"] call ALIVE_fnc_agentHandler];
 
-                            PROFILE_SCOPE(CIVILIANINDOORPOSITION, "ALiVE AMBCP: find civilian indoor position")
                             private _buildingPositions = [getPosATL _building,15] call ALIVE_fnc_findIndoorHousePositions;
                             private _buildingPosition = if (count _buildingPositions > 0) then {selectRandom _buildingPositions} else {getPosATL _building};
-                            PROFILE_SCOPE_END(CIVILIANINDOORPOSITION)
 
-                            PROFILE_SCOPE(CIVILIANAGENTINIT, "ALiVE AMBCP: create civilian agent")
                             private _agent = [nil, "create"] call ALIVE_fnc_civilianAgent;
                             [_agent, "init"] call ALIVE_fnc_civilianAgent;
+                            // These setters only store their string values; their return values are unused.
+                            // Use stable per-key setters to avoid any hashSetMany payload parsing edge cases.
                             [_agent, "agentID", _agentID] call ALIVE_fnc_civilianAgent;
                             [_agent, "agentClass", _unitClass] call ALIVE_fnc_civilianAgent;
-                            [_agent, "position", _buildingPosition] call ALIVE_fnc_civilianAgent;
                             [_agent, "side", _side] call ALIVE_fnc_civilianAgent;
                             [_agent, "faction", _faction] call ALIVE_fnc_civilianAgent;
                             [_agent, "homeCluster", _clusterID] call ALIVE_fnc_civilianAgent;
+                            // Preserve position normalization and the position setter's debug refresh.
+                            [_agent, "position", _buildingPosition] call ALIVE_fnc_civilianAgent;
                             [_agent, "homePosition", _buildingPosition] call ALIVE_fnc_civilianAgent;
-                            PROFILE_SCOPE_END(CIVILIANAGENTINIT)
 
                             // Add persistent name to civ. Defensive path:
                             // genericNames may be defined as either text (class
@@ -1014,7 +1017,6 @@ switch(_operation) do {
                             // sub-config or empty FirstNames / LastNames lists
                             // so non-conforming factions don't silently assign
                             // empty names.
-                            PROFILE_SCOPE(CIVILIANNAMES, "ALiVE AMBCP: resolve civilian name")
                             private _genNamesProperty = configFile >> "CfgVehicles" >> _unitClass >> "genericNames";
                             private _genName = "";
                             if (isText _genNamesProperty) then {
@@ -1040,7 +1042,6 @@ switch(_operation) do {
 
                             [_agent, "firstName", _firstName] call ALIVE_fnc_civilianAgent;
                             [_agent, "lastName", _lastName] call ALIVE_fnc_civilianAgent;
-                            PROFILE_SCOPE_END(CIVILIANNAMES)
 
                             if (count _ambientCivilianRoles > 0 && {random 1 > 0.5}) then {
                                 private _role = selectRandom _ambientCivilianRoles;
@@ -1049,23 +1050,22 @@ switch(_operation) do {
                                 [_agent, _role, true] call ALIVE_fnc_HashSet;
                             };
 
-                            PROFILE_SCOPE(CIVILIANCOMMAND, "ALiVE AMBCP: select civilian command")
                             [_agent] call ALIVE_fnc_selectCivilianCommand;
-                            PROFILE_SCOPE_END(CIVILIANCOMMAND)
 
-                            PROFILE_SCOPE(CIVILIANREGISTER, "ALiVE AMBCP: register civilian agent")
-                            [ALIVE_agentHandler, "registerAgent", _agent] call ALIVE_fnc_agentHandler;
-                            PROFILE_SCOPE_END(CIVILIANREGISTER)
+                            _clusterAgents pushBack _agent;
 
                             _countCivilianUnits = _countCivilianUnits + 1;
                         };
 
                     } forEach _buildings;
 
+                    // Publish completed agents per cluster; IDs were allocated during creation.
+                    if (count _clusterAgents > 0) then {
+                        [ALIVE_agentHandler, "registerAgents", _clusterAgents] call ALIVE_fnc_agentHandler;
+                    };
+
                 } forEach _clusters;
             };
-
-            PROFILE_SCOPE_END(CIVILIANPLACEMENT)
 
             ["AMBCP [%1] - Ambient land vehicles placed: %2",_faction,_countLandUnits] call ALiVE_fnc_dump;
             ["AMBCP [%1] - Ambient civilian units placed: %2",_faction,_countCivilianUnits] call ALiVE_fnc_dump;

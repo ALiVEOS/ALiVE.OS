@@ -177,10 +177,12 @@ switch(_operation) do {
 
     };
 
+    // registerAgents accepts an array of agent hashes; registerAgent keeps its existing API.
+    case "registerAgents";
     case "registerAgent": {
 
         if(_args isEqualType []) then {
-            private _agent = _args;
+            private _batch = if (_operation == "registerAgent") then {[_args]} else {_args};
 
             private _agents = [_logic, "agents"] call ALIVE_fnc_hashGet;
             private _agentsByCluster = [_logic, "agentsByCluster"] call ALIVE_fnc_hashGet;
@@ -188,45 +190,47 @@ switch(_operation) do {
             private _agentsInActive = [_logic, "agentsInActive"] call ALIVE_fnc_hashGet;
             private _activeAgents = [_logic, "activeAgents"] call ALIVE_fnc_hashGet;
 
-            private _agentSide = [_agent, "side"] call ALIVE_fnc_hashGet;
-            private _agentType = [_agent, "type"] call ALIVE_fnc_hashGet;
-            private _agentID = [_agent, "agentID"] call ALIVE_fnc_hashGet;
-            private _agentCluster = [_agent, "homeCluster"] call ALIVE_fnc_hashGet;
-            private _agentPosition = [_agent, "position"] call ALIVE_fnc_hashGet;
-            private _agentActive = [_agent, "active"] call ALIVE_fnc_hashGet;
+            private ["_lastCluster", "_agentsCluster"];
+            {
+                private _agent = _x;
+                private _agentType = [_agent, "type"] call ALIVE_fnc_hashGet;
+                private _agentID = [_agent, "agentID"] call ALIVE_fnc_hashGet;
+                private _agentCluster = [_agent, "homeCluster"] call ALIVE_fnc_hashGet;
+                private _agentActive = [_agent, "active"] call ALIVE_fnc_hashGet;
 
-            // store on main agent hash
-            [_agents, _agentID, _agent] call ALIVE_fnc_hashSet;
+                // store on main agent hash
+                [_agents, _agentID, _agent] call ALIVE_fnc_hashSet;
 
-            // DEBUG -------------------------------------------------------------------------------------
-            if([_logic,"debug"] call ALIVE_fnc_hashGet) then {
-                [_agent, "debug", true] call ALIVE_fnc_civilianAgent;
-                ["Agent Handler"] call ALiVE_fnc_dump;
-                ["Register Agent [%1]",_agentID] call ALIVE_fnc_dump;
-                _agent call ALIVE_fnc_inspectHash;
-            };
-            // DEBUG -------------------------------------------------------------------------------------
-
-            private ["_agentsCluster"];
-
-            // store reference to main agent on by cluster hash
-            if(_agentCluster in (_agentsByCluster select 1)) then {
-                _agentsCluster = [_agentsByCluster, _agentCluster] call ALIVE_fnc_hashGet;
-            }else{
-                [_agentsByCluster, _agentCluster, [] call ALIVE_fnc_hashCreate] call ALIVE_fnc_hashSet;
-                _agentsCluster = [_agentsByCluster, _agentCluster] call ALIVE_fnc_hashGet;
-            };
-
-            [_agentsCluster, _agentID, _agent] call ALIVE_fnc_hashSet;
-
-            if(_agentActive) then {
-                if(_agentType == "agent") then {
-                    _activeAgents pushback _agentID;
+                // DEBUG -------------------------------------------------------------------------------------
+                if([_logic,"debug"] call ALIVE_fnc_hashGet) then {
+                    [_agent, "debug", true] call ALIVE_fnc_civilianAgent;
+                    ["Agent Handler"] call ALiVE_fnc_dump;
+                    ["Register Agent [%1]",_agentID] call ALIVE_fnc_dump;
+                    _agent call ALIVE_fnc_inspectHash;
                 };
-                [_agentsActive, _agentID, _agent] call ALIVE_fnc_hashSet;
-            }else{
-                [_agentsInActive, _agentID, _agent] call ALIVE_fnc_hashSet;
-            };
+                // DEBUG -------------------------------------------------------------------------------------
+
+                // Adjacent agents from one cluster reuse its registration hash.
+                if (isNil "_lastCluster" || {!(_agentCluster isEqualTo _lastCluster)}) then {
+                    _agentsCluster = [_agentsByCluster, _agentCluster] call ALIVE_fnc_hashGet;
+                    if (isNil "_agentsCluster") then {
+                        _agentsCluster = [] call ALIVE_fnc_hashCreate;
+                        [_agentsByCluster, _agentCluster, _agentsCluster] call ALIVE_fnc_hashSet;
+                    };
+                    _lastCluster = _agentCluster;
+                };
+
+                [_agentsCluster, _agentID, _agent] call ALIVE_fnc_hashSet;
+
+                if(_agentActive) then {
+                    if(_agentType == "agent") then {
+                        _activeAgents pushback _agentID;
+                    };
+                    [_agentsActive, _agentID, _agent] call ALIVE_fnc_hashSet;
+                }else{
+                    [_agentsInActive, _agentID, _agent] call ALIVE_fnc_hashSet;
+                };
+            } forEach _batch;
         };
 
     };

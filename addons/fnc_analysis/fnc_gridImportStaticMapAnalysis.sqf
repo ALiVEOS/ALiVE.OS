@@ -28,13 +28,13 @@ ARJay
 Jman
 ---------------------------------------------------------------------------- */
 
-private ["_grid","_worldName","_sectors","_staticMapAnalysis","_sector","_sectorID","_file"];
+private ["_staticMapAnalysis","_sector","_sectorID"];
 
-_grid = _this select 0;
+private _grid = _this select 0;
 
-_sectors = [_grid, "sectors"] call ALIVE_fnc_sectorGrid;
+private _sectors = [_grid, "sectors"] call ALIVE_fnc_sectorGrid;
 
-_worldName = [worldName] call CBA_fnc_capitalize;
+private _worldName = [worldName] call CBA_fnc_capitalize;
 
 // Track where the static index came from so the load-time
 // viability assessor (`fnc_assessIndexViability`) can report it.
@@ -43,9 +43,9 @@ _worldName = [worldName] call CBA_fnc_capitalize;
 // data file under fnc_analysis/data/ filled it in), or "none"
 // (no data file for this world -- dummy sector data is used and
 // runtime will fall back to expensive engine queries).
-if(isNil "ALIVE_gridData") then {
+if (isNil "ALIVE_gridData") then {
     _worldName = toLower(worldName);
-    _file = format["x\alive\addons\fnc_analysis\data\data.%1.sqf", _worldName];
+    private _file = format["x\alive\addons\fnc_analysis\data\data.%1.sqf", _worldName];
     call compile preprocessFileLineNumbers _file;
 
     if (isNil "ALIVE_gridData") then {
@@ -61,11 +61,11 @@ if (isNil "ALIVE_gridData") exitWith {
     // Create dummy sector data
     {
         private _sector = _x;
-        private _sectorID = [_sector, "id"] call ALIVE_fnc_sector;
+        private _sectorID = [_sector,"id"] call ALIVE_fnc_sector;
 
         private _sectorData = [] call ALIVE_fnc_sectorDataDummy;
 
-        [_sector, "data", _sectorData] call ALIVE_fnc_hashSet;
+        [_sector,"data", _sectorData] call ALIVE_fnc_hashSet;
     } forEach _sectors;
 
     // Run the viability assessor even on the no-index path so the
@@ -79,10 +79,12 @@ if (isNil "ALIVE_gridData") exitWith {
 };
 
 {
-    _sector = _x;
-    _sectorID = [_sector, "id"] call ALIVE_fnc_sector;
-    [_sector, "data", [ALIVE_gridData, _sectorID] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
+    private _sector = _x;
+    
+    private _sectorID = [_sector,"id"] call ALIVE_fnc_sector;
+    private _sectorGridData = [ALIVE_gridData, _sectorID] call ALIVE_fnc_hashGet;
 
+    [_sector,"data", _sectorGridData] call ALIVE_fnc_hashSet;
 } forEach _sectors;
 
 // Index loaded successfully -- assess and log the viability score

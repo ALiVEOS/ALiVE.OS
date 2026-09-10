@@ -83,28 +83,28 @@ switch(_operation) do {
     case "init": {
 
         if (isServer) then {
-            // if server, initialise module game logic
-            // nil these out they add a lot of code to the hash..
+            // Remove constructor metadata before defaults: consumers use fixed value indices.
+            // In particular, unit must remain at index 5 rather than being shifted by class.
             [_logic,"super"] call ALIVE_fnc_hashRem;
             [_logic,"class"] call ALIVE_fnc_hashRem;
-            //TRACE_1("After module init",_logic);
 
-            // set defaults
-            [_logic,"debug",false] call ALIVE_fnc_hashSet; // select 2 select 0
-            [_logic,"active",false] call ALIVE_fnc_hashSet; // select 2 select 1
-            [_logic,"position",[0,0]] call ALIVE_fnc_hashSet; // select 2 select 2
-            [_logic,"agentID",""] call ALIVE_fnc_hashSet; // select 2 select 3
-            [_logic,"type","agent"] call ALIVE_fnc_hashSet; // select 2 select 4
-            [_logic,"unit",objNull] call ALIVE_fnc_hashSet; // select 2 select 5
-            [_logic,"agentClass",""] call ALIVE_fnc_hashSet; // select 2 select 6
-            [_logic,"faction",""] call ALIVE_fnc_hashSet; // select 2 select 7
-            [_logic,"side",""] call ALIVE_fnc_hashSet; // select 2 select 8
-            [_logic,"homeCluster",""] call ALIVE_fnc_hashSet; // select 2 select 9
-            [_logic,"homePosition",[0,0]] call ALIVE_fnc_hashSet; // select 2 select 10
-            [_logic,"activeCommands",[]] call ALIVE_fnc_hashSet; // select 2 select 11
-            [_logic,"posture",0] call ALIVE_fnc_hashSet; // select 2 select 12
-            [_logic,"firstName","John"] call ALIVE_fnc_hashSet; // select 2 select 13
-            [_logic,"lastName","Smith"] call ALIVE_fnc_hashSet; // select 2 select 14
+            [_logic, [
+                ["debug", false], // select 2 select 0
+                ["active", false], // select 2 select 1
+                ["position", [0,0]], // select 2 select 2
+                ["agentID", ""], // select 2 select 3
+                ["type", "agent"], // select 2 select 4
+                ["unit", objNull], // select 2 select 5
+                ["agentClass", ""], // select 2 select 6
+                ["faction", ""], // select 2 select 7
+                ["side", ""], // select 2 select 8
+                ["homeCluster", ""], // select 2 select 9
+                ["homePosition", [0,0]], // select 2 select 10
+                ["activeCommands", []], // select 2 select 11
+                ["posture", 0], // select 2 select 12
+                ["firstName", "John"], // select 2 select 13
+                ["lastName", "Smith"] // select 2 select 14
+            ]] call ALiVE_fnc_hashSetMany;
         };
 
     };
