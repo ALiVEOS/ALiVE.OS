@@ -3669,7 +3669,7 @@ switch (_operation) do {
                 ["AAA", _AAA],
                 ["air", _air],
                 ["sea", _sea],
-                ["currentForceStrength", [0,0,0,0,0,0,0,0]],
+                ["currentForceStrength", [0,0,0,0,0,0,0,0]]
             ]] call ALiVE_fnc_HashSetMany;
 
             _result = [_inf,_mot,_mech,_arm,_air,_sea,_arty,_AAA];
