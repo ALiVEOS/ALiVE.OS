@@ -8,8 +8,8 @@ Description:
     Reduces every airfield on the terrain to cached arithmetic, once, so that
     asking "is this position on airfield surface" later costs no engine query.
 
-    Runs on the server, spreads its work one airfield per frame, and broadcasts
-    the result. Everything it produces is consumed by ALiVE_fnc_isAirside,
+    Runs on the server and broadcasts the result. By default it processes one
+    airfield per frame; startup callers can request an immediate build. Everything it produces is consumed by ALiVE_fnc_isAirside,
     ALiVE_fnc_airsideClear and ALiVE_fnc_airsideLegBypass.
 
     WHAT IT PRODUCES
@@ -39,7 +39,9 @@ Description:
     then short-circuits on a single array comparison forever.
 
 Parameters:
-    None.
+    _this select 0: BOOL - true builds all airfields before returning; default
+                          false registers a per-frame build. Invoke the immediate
+                          mode via CBA_fnc_directCall when unscheduled work is required.
 
 Returns:
     Nothing. Sets and broadcasts ALiVE_airsideBounds and ALiVE_airsideCapsules.
@@ -57,6 +59,8 @@ Author:
     Jman
 ---------------------------------------------------------------------------- */
 
+params [["_immediate", false, [false]]];
+
 if (!isServer) exitWith {};
 // Guards against a second call racing the first. It is cleared on both the
 // success and the no-candidates paths, but a run that dies partway leaves it
@@ -65,6 +69,10 @@ if (!isNil "ALiVE_airsideCacheBuilding") exitWith {
     diag_log "ALiVE airside: build already in progress or left flagged by a failed run, skipping";
 };
 ALiVE_airsideCacheBuilding = true;
+ALiVE_airsideCacheReady = false;
+// Registration coverage is independent of discovered/truncated pathfinding capsules.
+// Publish together with ready only after all candidate surveys complete.
+ALiVE_airsideRegisteredBounds = [];
 
 // Tunables, all named so a mission can override them from init.sqf without a
 // rebuild. Every one of these is reasoned rather than measured, so they are
@@ -85,7 +93,7 @@ if (isNil "ALiVE_airsideDebug") then { ALiVE_airsideDebug = false };
 private _candidates = [];
 
 private _fnc_addCandidate = {
-    params ["_pos"];
+    params ["_pos", ["_registeredRadius", 0]];
     if (count _pos < 2) exitWith {};
     private _p = [_pos select 0, _pos select 1, 0];
     // A terrain with no airfield still answers the config read, it just answers with
@@ -96,6 +104,8 @@ private _fnc_addCandidate = {
     private _py = _p select 1;
     if (_px < 50 && {_py < 50}) exitWith {};
     if (_px < 0 || {_py < 0} || {_px > worldSize} || {_py > worldSize}) exitWith {};
+    // Keep every registration's coverage even when its survey is deduplicated.
+    ALiVE_airsideRegisteredBounds pushBack [_p, (_registeredRadius max ALiVE_airsideSearchRadius) max 1500];
     // 600 m dedupe. Two config entries for the same field are common, and
     // building it twice would double every object sweep.
     if ((_candidates findIf {(_x distance2D _p) < 600}) < 0) then {
@@ -125,7 +135,9 @@ private _locTypes = ["Airport", "NameAirportArea"] select {
 };
 if (count _locTypes > 0) then {
     {
-        [position _x] call _fnc_addCandidate;
+        private _extents = size _x;
+        private _extentRadius = sqrt (((_extents select 0) ^ 2) + ((_extents select 1) ^ 2));
+        [position _x, _extentRadius] call _fnc_addCandidate;
     } forEach (nearestLocations [[worldSize / 2, worldSize / 2, 0], _locTypes, worldSize]);
 };
 
@@ -153,7 +165,9 @@ if (count _locTypes > 0) then {
                 ((_startArr select 0) + (_endArr select 0)) / 2,
                 ((_startArr select 1) + (_endArr select 1)) / 2,
                 0
-            ]] call _fnc_addCandidate;
+            ], ((_startArr distance2D _endArr) / 2)
+                + ((parseNumber (_x getVariable ["runwaywidth", ""])) max 24) / 2
+                + ALiVE_airsideRunwayMargin + ALiVE_airsideThresholdLength] call _fnc_addCandidate;
         };
     };
 } forEach (entities "ALiVE_mil_ATO");
@@ -161,6 +175,9 @@ if (count _locTypes > 0) then {
 if (count _candidates == 0) exitWith {
     ALiVE_airsideBounds = [];
     ALiVE_airsideCapsules = [];
+    ALiVE_airsideSurveyed = [];
+    publicVariable "ALiVE_airsideSurveyed";
+    publicVariable "ALiVE_airsideRegisteredBounds";
     publicVariable "ALiVE_airsideBounds";
     publicVariable "ALiVE_airsideCapsules";
     // Finished, having looked at nowhere. Ready says the build is over; the empty list of
@@ -204,7 +221,10 @@ private _fnc_buildOne = {
         // Ask for runways and taxiways only. The broad no-go zones this can also work out
         // are the most expensive part of the survey and nothing here reads them, so they
         // were being found and thrown away on every airfield of every mission.
-        private _geom = [_centre, ALiVE_airsideSearchRadius, false] call ALiVE_fnc_getAirfieldGeometry;
+        // Retain matching static terrain objects and exact survey coverage for later
+        // geometry queries. Infrastructure classification and broad zones remain
+        // skipped for this builder call.
+        private _geom = [_centre, ALiVE_airsideSearchRadius, false, true] call ALiVE_fnc_getAirfieldGeometry;
         // Take the swept object list back as well and reuse it below. The survey has just
         // looked at everything within a mile and a half of the field, and this was then
         // sweeping exactly the same area again for parking and hangars, doubling the single
@@ -369,6 +389,15 @@ private _fnc_buildOne = {
         } forEach _near;
 
         // ----------------------------------------------------------------
+        // Expand coverage using ALL capsule endpoints, before dedupe or truncation.
+        private _registeredRadius = ALiVE_airsideSearchRadius max 1500;
+        for "_c" from 0 to ((count _caps) - 8) step 8 do {
+            private _r = _caps select (_c + 4);
+            _registeredRadius = _registeredRadius max ((_centre distance2D [_caps select _c, _caps select (_c + 1)]) + _r);
+            _registeredRadius = _registeredRadius max ((_centre distance2D [_caps select (_c + 2), _caps select (_c + 3)]) + _r);
+        };
+        ALiVE_airsideRegisteredBounds pushBack [+_centre, _registeredRadius];
+
         // Trim and pack.
         // ----------------------------------------------------------------
         // Terrain runway and taxiway pieces arrive as one object each, so a
@@ -442,12 +471,8 @@ private _fnc_buildOne = {
 
 };
 
-// Drive the build one airfield per frame, in the unscheduled environment. A
-// spawn would sit in the scheduler queue behind everything else initialising at
-// mission start and not run for a minute or more, which was measured at ~110s
-// on the first attempt. A per-frame handler is immune to that starvation and
-// still spreads the object sweeps across frames, so the exclusion data is ready
-// almost immediately rather than two minutes in.
+// Startup can build immediately; later callers retain the per-frame path.
+// Both paths share the same geometry construction and publication code.
 private _bounds = [];
 private _allCaps = [];
 private _sweeps = [];
@@ -458,29 +483,43 @@ private _sweeps = [];
 private _recordRadius = if (ALiVE_airsideSearchRadius isEqualType 0) then {
     ALiVE_airsideSearchRadius max 1500
 } else { 1500 };
+private _fnc_publish = {
+    params ["_bounds", "_allCaps", "_sweeps"];
+    ALiVE_airsideBounds = _bounds;
+    ALiVE_airsideCapsules = _allCaps;
+    ALiVE_airsideSurveyed = _sweeps;
+    publicVariable "ALiVE_airsideBounds";
+    publicVariable "ALiVE_airsideCapsules";
+    publicVariable "ALiVE_airsideSurveyed";
+    publicVariable "ALiVE_airsideRegisteredBounds";
+    ALiVE_airsideCacheReady = true;
+    publicVariable "ALiVE_airsideCacheReady";
+    ALiVE_airsideCacheBuilding = nil;
+    ["ALiVE airside: cache ready, %1 airfield(s) on %2", (count _bounds) / 4, worldName] call ALiVE_fnc_dump;
+    // The places searched, which is what the composition search reasons about and is not
+    // the same as the airfields found: a field is reported at the centre of the pieces
+    // kept for it, and these are the points it was looked for from. Without this a
+    // narrowing cannot be traced back to the place that allowed it.
+    ["ALiVE airside: searched %1 place(s), as x, y, radius: %2", (count _sweeps) / 3, _sweeps] call ALiVE_fnc_dump;
+};
+
+if (_immediate) exitWith {
+    {
+        _sweeps append [_x select 0, _x select 1, _recordRadius];
+        [_x, _bounds, _allCaps, _fnc_pushCapsule] call _fnc_buildOne;
+    } forEach _candidates;
+    [_bounds, _allCaps, _sweeps] call _fnc_publish;
+};
+
 private _idxRef = [0];
 
 [{
     params ["_args", "_handle"];
-    _args params ["_candidates", "_idxRef", "_bounds", "_allCaps", "_fnc_buildOne", "_fnc_pushCapsule", "_sweeps", "_recordRadius"];
+    _args params ["_candidates", "_idxRef", "_bounds", "_allCaps", "_fnc_buildOne", "_fnc_pushCapsule", "_sweeps", "_recordRadius", "_fnc_publish"];
     private _idx = _idxRef select 0;
 
     if (_idx >= count _candidates) exitWith {
-        ALiVE_airsideBounds = _bounds;
-        ALiVE_airsideCapsules = _allCaps;
-        ALiVE_airsideSurveyed = _sweeps;
-        publicVariable "ALiVE_airsideBounds";
-        publicVariable "ALiVE_airsideCapsules";
-        publicVariable "ALiVE_airsideSurveyed";
-        ALiVE_airsideCacheReady = true;
-        publicVariable "ALiVE_airsideCacheReady";
-        ALiVE_airsideCacheBuilding = nil;
-        ["ALiVE airside: cache ready, %1 airfield(s) on %2", (count _bounds) / 4, worldName] call ALiVE_fnc_dump;
-        // The places searched, which is what the composition search reasons about and is not
-        // the same as the airfields found: a field is reported at the centre of the pieces
-        // kept for it, and these are the points it was looked for from. Without this a
-        // narrowing cannot be traced back to the place that allowed it.
-        ["ALiVE airside: searched %1 place(s), as x, y, radius: %2", (count _sweeps) / 3, _sweeps] call ALiVE_fnc_dump;
+        [_bounds, _allCaps, _sweeps] call _fnc_publish;
         _handle call CBA_fnc_removePerFrameHandler;
     };
 
@@ -502,4 +541,4 @@ private _idxRef = [0];
     // candidate into a list that grew without limit.
     _idxRef set [0, _idx + 1];
     [_cand, _bounds, _allCaps, _fnc_pushCapsule] call _fnc_buildOne;
-}, 0, [_candidates, _idxRef, _bounds, _allCaps, _fnc_buildOne, _fnc_pushCapsule, _sweeps, _recordRadius]] call CBA_fnc_addPerFrameHandler;
+}, 0, [_candidates, _idxRef, _bounds, _allCaps, _fnc_buildOne, _fnc_pushCapsule, _sweeps, _recordRadius, _fnc_publish]] call CBA_fnc_addPerFrameHandler;

@@ -722,11 +722,70 @@ if (isServer) then {
     // once, at the moment placement is known to be finished. The survey is the widest
     // sweep in the mod and reads the name of every object it finds, so whether callers
     // repeat themselves decides whether caching it is worth anything at all.
-    if (_searchDiag && {!isNil "ALiVE_airfieldGeomCalls"}) then {
+    private _mpSurveyDiag = !isNil "ALiVE_MP_STARTUP_DIAG" && {ALiVE_MP_STARTUP_DIAG};
+    if ((_searchDiag || _mpSurveyDiag) && {!isNil "ALiVE_airfieldGeomCalls"}) then {
         ["ALiVE airfield survey: %1 request(s) during startup, %2 answered from the last identical one, %3 full sweep(s)",
             ALiVE_airfieldGeomCalls,
             ALiVE_airfieldGeomHits,
             ALiVE_airfieldGeomCalls - ALiVE_airfieldGeomHits] call ALiVE_fnc_dump;
+        ["ALiVE airfield survey: %1 actual object scan(s), %2 overlapping object scan(s) avoided (cumulative since counters initialized)",
+            missionNamespace getVariable ["ALiVE_airfieldGeomObjectScans",0],
+            missionNamespace getVariable ["ALiVE_airfieldGeomScansAvoided",0]] call ALiVE_fnc_dump;
+        if (!isNil "ALiVE_campAirfieldGateStats") then {
+            ["ALiVE camp airfield gate: skipped=%1 nearby=%2 cache unavailable=%3; registered airfields authoritative; ordinary obstacle checks unchanged",
+                ALiVE_campAirfieldGateStats select 0, ALiVE_campAirfieldGateStats select 1,
+                ALiVE_campAirfieldGateStats select 2] call ALiVE_fnc_dump;
+        };
+        if (!isNil "ALiVE_airfieldRetainedStats") then {
+            ALiVE_airfieldRetainedStats params ["_covered", "_fallback", "_terrainMatches"];
+            ["ALiVE airfield retained surveys: surveys=%1 covered queries=%2 fallback queries=%3 terrain matches=%4; match counts include overlap between surveys",
+                count ALiVE_airfieldRetainedSurveys, _covered, _fallback, _terrainMatches] call ALiVE_fnc_dump;
+        };
+        if (!isNil "ALiVE_airfieldTerrainPathMetrics") then {
+            {
+                _x params ["_calls", "_terrainTime", "_geometryTime", "_objects", "_candidates"];
+                if (_calls > 0) then {
+                    ["ALiVE airfield terrain path [%1]: calls=%2 terrain=%3s elapsed mean=%4ms/call geometry total=%5s elapsed live object visits=%6 retained candidate visits=%7",
+                        ["builder", "covered", "fallback"] select _forEachIndex,
+                        _calls, round (_terrainTime * 1000) / 1000,
+                        round (_terrainTime * 1000000 / _calls) / 1000,
+                        round (_geometryTime * 1000) / 1000, _objects, _candidates] call ALiVE_fnc_dump;
+                };
+            } forEach ALiVE_airfieldTerrainPathMetrics;
+        };
+        if (!isNil "ALiVE_airfieldOverlapMetrics") then {
+            {
+                _x params ["_calls", "_terrainTime", "_objects"];
+                ["ALiVE airfield fallback overlap [%1]: calls=%2 terrain=%3s elapsed object visits=%4; relative to fallback surveys completed before query entry",
+                    ["contained", "partial only", "none"] select _forEachIndex,
+                    _calls, round (_terrainTime * 1000) / 1000, _objects] call ALiVE_fnc_dump;
+            } forEach ALiVE_airfieldOverlapMetrics;
+            ["ALiVE airfield fallback overlap: comparisons=%1 measurement=%2s elapsed; containment is in one prior 3D survey, partial overlap does not establish reusable coverage",
+                ALiVE_airfieldOverlapComparisons, round (ALiVE_airfieldOverlapElapsed * 1000) / 1000] call ALiVE_fnc_dump;
+        };
+        // Startup-only diagnostic history; do not accumulate query pairs at runtime.
+        ALiVE_airfieldOverlapDone = true;
+        ALiVE_airfieldFallbackHistory = [];
+        if (!isNil "ALiVE_airfieldGeomPhaseMetrics") then {
+            private _geomPhaseNames = ["module attributes and segments", "nearestObjects", "radius filtering",
+                "tag classification and segments", "terrain classification and segments", "nearestLocations",
+                "infrastructure classification", "zone construction"];
+            {
+                private _mode = ["narrow", "full"] select _forEachIndex;
+                _x params ["_calls", "_elapsed", "_times", "_surveyed", "_tagged", "_infra"];
+                if (_calls > 0) then {
+                    private _phaseSum = 0;
+                    { _phaseSum = _phaseSum + _x } forEach _times;
+                    ["ALiVE airfield geometry DETAIL [%1]: calls=%2; total=%3s elapsed; remainder=%4s; object visits surveyed=%5 tagged=%6 infrastructure=%7",
+                        _mode, _calls, round (_elapsed * 1000) / 1000, round ((_elapsed - _phaseSum) * 1000) / 1000,
+                        _surveyed, _tagged, _infra] call ALiVE_fnc_dump;
+                    {
+                        ["ALiVE airfield geometry DETAIL [%1] - %2: %3s elapsed",
+                            _mode, _x, round ((_times select _forEachIndex) * 1000) / 1000] call ALiVE_fnc_dump;
+                    } forEach _geomPhaseNames;
+                };
+            } forEach ALiVE_airfieldGeomPhaseMetrics;
+        };
         // How many searches got the narrow survey because no place the build searched was
         // anywhere near them. This is the figure that says whether the check earns anything,
         // and it should be most of them. With the audit switched on it should read the same,

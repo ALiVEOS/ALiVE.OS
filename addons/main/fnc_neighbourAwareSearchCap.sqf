@@ -37,6 +37,10 @@ Parameters:
                           Pass _ceiling here for expand-up-to semantic.
     _floor     : SCALAR - never return less than this
     _ceiling   : SCALAR - never return more than this
+    _neighbours: ARRAY  - optional caller-owned module snapshot. An explicit
+                          empty array means no neighbours; omission scans live
+                          modules. Positions are read afresh for every call.
+                          Modules added after a snapshot require a new snapshot.
 
 Returns:
     NUMBER - clamped search radius
@@ -50,18 +54,27 @@ params [
     ["_centerPos", [0,0,0], [[]], [2,3]],
     ["_baseRadius", 300, [0]],
     ["_floor", 50, [0]],
-    ["_ceiling", 800, [0]]
+    ["_ceiling", 800, [0]],
+    "_neighbours"
 ];
 
-private _searchRadius = _baseRadius;
-private _neighbours = [];
-{
-    _neighbours = _neighbours + (allMissionObjects _x);
-} forEach ["ALiVE_mil_placement", "ALiVE_mil_placement_custom",
-           "ALiVE_mil_placement_spe", "ALiVE_civ_placement",
-           "ALiVE_civ_placement_custom", "ALiVE_mil_ato"];
+if (isnil "_neighbours") then {
+    _neighbours = [];
+    {
+        _neighbours append (allMissionObjects _x);
+    } forEach [
+        "ALiVE_mil_placement",
+        "ALiVE_mil_placement_custom",
+        "ALiVE_mil_placement_spe",
+        "ALiVE_civ_placement",
+        "ALiVE_civ_placement_custom",
+        "ALiVE_mil_ato"
+    ];
+};
+
 _neighbours = _neighbours - [_logic];
 
+private _searchRadius = _baseRadius;
 {
     private _gap = (position _x) distance2D _centerPos;
     if (_gap > 0 && {_gap / 2 < _searchRadius}) then {

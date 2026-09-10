@@ -67,6 +67,10 @@ Parameters:
     _this select 4: NUMBER  - preferred direction in degrees [0, 360].
                               -1 (default) = random. Used at Stage 1 only;
                               roadblock mode overrides with road heading.
+    _this select 7: ARRAY   - optional 14-slot startup timing accumulator, owned
+                              by the caller. Omit for normal use. Slot layout is
+                              documented in _fnc_profDone below. Elapsed times
+                              include scheduler delays; geometry is part of setup.
     _this select 5: BOOL    - caller-side debug flag. OR'd with the global
                               `ALiVE_compSpawn_debug`. Lets a module pass
                               its own debug attribute through without
@@ -107,7 +111,11 @@ params [
     ["_mode",       "military", [""]],
     ["_preferredDir", -1,    [0]],
     ["_callerDebug", false, [false]],
-    ["_runwayClearanceMul", 1.0, [0]]
+    ["_runwayClearanceMul", 1.0, [0]],
+    // Optional caller-owned accumulator; avoids mixing concurrent module totals.
+    ["_startupMetrics", [], [[]]],
+    // Camp opt-in: registered airfields define coverage; other callers retain discovery.
+    ["_registeredAirfieldsOnly", false, [true]]
 ];
 
 // _runwayClearanceMul scales the runway/taxiway rejection radius. Default
@@ -199,15 +207,24 @@ if (isNil "ALiVE_compSpawnProfile" || {count ALiVE_compSpawnProfile < 18}) then 
 // read that way.
 // Worth having because the order is not free: the obstacle check sweeps every object
 // nearby and measures the bulk of each one, while the water, slope and surface checks
-// behind it are single engine reads. Every candidate those cheap rules would have
-// refused pays for the object sweep first. The verdict is an AND of rules that do not
-// depend on each other, so putting the cheap ones first cannot change which positions
-// pass, only which rule gets the credit - and these totals say what that is worth.
+// now run before those object sweeps. The verdict is an AND of independent rules,
+// so this order preserves the acceptance conditions while changing which rule gets
+// credit when several would reject the same candidate. Compare rejection totals
+// only between runs using the same check order.
 if (isNil "ALiVE_compSpawnRejectTotals" || {count ALiVE_compSpawnRejectTotals < 12}) then {
     ALiVE_compSpawnRejectTotals = [0,0,0,0,0,0,0,0,0,0,0,0];
 };
+private _profWinAttempt = -1;
+private _profGeometrySeconds = 0;
+private _profSetupSeconds = 0;
+private _profCenterSeconds = 0;
+private _profSearchSeconds = 0;
+private _profSearchAttempts = 0;
+private _profOutcome = 9; // early return, before random sampling
+private _collectStartupMetrics = count _startupMetrics == 14;
 private _fnc_profFound = {
     params ["_attempt"];
+    _profWinAttempt = _attempt;
     private _slot = switch (true) do {
         case (_attempt <= 0):   {2};
         case (_attempt <= 10):  {3};
@@ -229,6 +246,21 @@ private _profPre = -1;
 private _fnc_profDone = {
     ALiVE_compSpawnProfile set [0, (ALiVE_compSpawnProfile select 0) + 1];
     ALiVE_compSpawnProfile set [1, (ALiVE_compSpawnProfile select 1) + (diag_tickTime - _profT0)];
+    if (_collectStartupMetrics) then {
+        // Slots: calls,total,geometry,setup,center,search,centerHits,
+        // sampledHits,sampledFailures,earlyReturns,attempts,maxAttemptsUsed,
+        // successfulSearchSeconds,failedSearchSeconds.
+        private _values = [1, diag_tickTime - _profT0, _profGeometrySeconds,
+            _profSetupSeconds, _profCenterSeconds, _profSearchSeconds];
+        { _startupMetrics set [_forEachIndex, (_startupMetrics select _forEachIndex) + _x] } forEach _values;
+        _startupMetrics set [_profOutcome, (_startupMetrics select _profOutcome) + 1];
+        _startupMetrics set [10, (_startupMetrics select 10) + _profSearchAttempts];
+        _startupMetrics set [11, (_startupMetrics select 11) max _profSearchAttempts];
+        if (_profOutcome in [7,8]) then {
+            private _timeSlot = if (_profOutcome == 7) then {12} else {13};
+            _startupMetrics set [_timeSlot, (_startupMetrics select _timeSlot) + _profSearchSeconds];
+        };
+    };
 };
 
 if (count _centerPos < 2) exitWith {
@@ -297,43 +329,36 @@ private _maxAttempts       = if (_mode == "roadblock") then { 12 } else {
 // Airfield geometry - runway / taxiway segments to reject. Cached per
 // call (callers usually feed the same _centerPos for one camp/HQ pick).
 // ------------------------------------------------------------------------
-// Whether this search needs the wide half of the airfield survey. Measured over three
-// Khe Sanh runs, most of the time spent before a single candidate was tried went into
-// this call, and the rule it feeds turned away nothing at all. The widest part of it is
-// the zone work, which sweeps further than the rest and reads the name of every object it
-// finds, and most searches are nowhere near an airfield.
-//
-// The survey is NEVER skipped outright, and that is the whole design. What can be proved
-// here is narrower than it first looks: the places recorded during the build are the
-// places the build was SEEDED from, and seeding sees config airports, map locations and
-// module-drawn strips only. A runway found from a tagged object, or from the name of a
-// terrain piece, seeds nothing at all. So being out of reach of every recorded place is
-// no evidence that there is no runway here, and skipping on it would put a composition on
-// a runway with nothing in the log to say so.
-//
-// What it does prove is that no airport LOCATION is within reach, because those are a
-// seeding source and the arithmetic matches. That is exactly what the zone work looks for,
-// so that is the part which can go. Runways and taxiways are still found on every single
-// search, which makes the bad outcome impossible rather than unlikely.
-//
-// Reach is the furthest any tier looks. The module-drawn runway test compares a midpoint
-// at twice the radius it is handed, the airport-location query looks 500 beyond that
-// radius, and neither is always the wider: they cross at a caller radius of 300. Whichever
-// is larger covers both, and the ground each place was searched over is added on top.
-// The zones are read in exactly two places further down and both sit behind this flag,
-// so a mode that does not exclude airfield area never looks at them and should not pay to
-// find them. Air tasking is that mode: its guns and launchers go on the airfield on
-// purpose. Those searches sit on top of the module that seeded the place, so on geometry
-// alone they could never narrow, and they were paying the widest sweep for an answer they
-// then threw away.
+// Camps may treat completed registered-airfield bounds as authoritative. Outside
+// those bounds plus search/clearance reach, skip airfield discovery altogether.
+// Other callers keep the existing conservative zone-only narrowing and audit.
 private _excludeAirfieldArea = !(_mode in ["ato"]);
 private _needZones = _excludeAirfieldArea;
 
 // Held apart from _needZones so the count reported at the end still means "no place the
 // build searched was within reach", rather than being quietly padded by every air task.
 private _narrowedByReach = false;
+private _skipCampAirfield = false;
+if (_registeredAirfieldsOnly && {_mode == "field"}) then {
+    if (isNil "ALiVE_campAirfieldGateStats") then { ALiVE_campAirfieldGateStats = [0,0,0] };
+    private _gateStatus = 2; // skipped / nearby / cache unavailable
+    if ((missionNamespace getVariable ["ALiVE_airsideCacheReady",false])
+        && {!isNil "ALiVE_airsideRegisteredBounds"}) then {
+        private _halfEnvelope = _envelope / 2;
+        private _clearance = (_halfEnvelope + ((5 max (_halfEnvelope * 0.5)) min 10)) * _runwayClearanceMul;
+        // Include the whole search and clearance, and preserve the reach of the
+        // existing module-midpoint/location queries for nearby registered airports.
+        private _reach = ((_radius + _clearance) max (2 * (_radius + 200))) max (_radius + 700);
+        _skipCampAirfield = (ALiVE_airsideRegisteredBounds findIf {
+            (_centerPos distance2D (_x select 0)) <= ((_x select 1) + _reach)
+        }) < 0;
+        _gateStatus = if (_skipCampAirfield) then {0} else {1};
+    };
+    ALiVE_campAirfieldGateStats set [_gateStatus, (ALiVE_campAirfieldGateStats select _gateStatus) + 1];
+};
 
-if (_needZones && {!isNil "ALiVE_airsideCacheReady"} && {ALiVE_airsideCacheReady}
+
+if (!_registeredAirfieldsOnly && {_needZones} && {!isNil "ALiVE_airsideCacheReady"} && {ALiVE_airsideCacheReady}
     && {!isNil "ALiVE_airsideSurveyed"} && {count ALiVE_airsideSurveyed > 0}) then {
     private _reach = (2 * (_radius + 200)) max (_radius + 700);
     private _sw = ALiVE_airsideSurveyed;
@@ -350,7 +375,15 @@ if (_needZones && {!isNil "ALiVE_airsideCacheReady"} && {ALiVE_airsideCacheReady
     _narrowedByReach = !_needZones;
 };
 
-private _airfield = [_centerPos, _radius + 200, _needZones] call ALiVE_fnc_getAirfieldGeometry;
+private _profGeometryT0 = if (_collectStartupMetrics) then {diag_tickTime} else {0};
+PROFILE_SCOPE(COMPAIRSURVEY, "ALiVE composition validation: airfield geometry")
+private _airfield = if (_skipCampAirfield) then {
+    // Ordinary building, vegetation, rock, road and helipad checks below have
+    // their own queries; none depend on this function's returned object list.
+    [[],[],[],[]]
+} else {
+    [_centerPos, _radius + 200, _needZones] call ALiVE_fnc_getAirfieldGeometry
+};
 
 if (_narrowedByReach) then {
     ALiVE_airfieldGeomNarrowed = (if (isNil "ALiVE_airfieldGeomNarrowed") then {0} else {ALiVE_airfieldGeomNarrowed}) + 1;
@@ -397,6 +430,8 @@ if (_narrowedByReach) then {
         };
     };
 };
+PROFILE_SCOPE_END(COMPAIRSURVEY)
+if (_collectStartupMetrics) then { _profGeometrySeconds = diag_tickTime - _profGeometryT0 };
 _airfield params ["_runwaySegments", "_taxiwaySegments", ["_airfieldZones", []]];
 
 // Airfield-area exclusion: reject candidates inside ANY of the
@@ -536,131 +571,9 @@ private _candidateClear = {
         false
     };
 
-    // External-feature exclusions (1-3 below) keep things like runways and
-    // roads clear of the composition's outermost objects, so they measure
-    // against `_clearReach` - how far those objects actually reach - rather
-    // than the envelope, which is a diameter. See the note where _clearReach
-    // is worked out for why the earlier full-envelope version rejected almost
-    // everything. Internal samples (slope, water perimeter) keep using
-    // _envHalf, because those test the inside of the footprint.
-    //
-    // 1. Runway / taxiway exclusion. Caller can scale the rejection
-    // radius via `_runwayClearanceMul` - default 1.0 (strict);
-    // mil_ato AA passes ~0.6 to allow placement on tight airfields where
-    // the strict rule would skip the spawn entirely.
-    if (_excludeRunways && {[_p, _clearReach * _runwayClearanceMul] call _onAirfieldSurface}) exitWith {
-        if (_debug) then { ["[ALiVE CompSpawn]   reject %1: airfield surface (clearance=%2m, mul=%3)", _p, _clearReach * _runwayClearanceMul, _runwayClearanceMul] call ALiVE_fnc_dump };
-        _rejectCounts set [1, (_rejectCounts select 1) + 1];
-        false
-    };
-
-    // 2. Helipad exclusion (any HeliH within envelope)
-    if (_excludeHelipads && {count (_p nearObjects ["HeliH", _clearReach + 10]) > 0}) exitWith {
-        if (_debug) then { ["[ALiVE CompSpawn]   reject %1: helipad nearby", _p] call ALiVE_fnc_dump };
-        _rejectCounts set [2, (_rejectCounts select 2) + 1];
-        false
-    };
-
-    // 3. Road exclusion (field mode only)
-    if (_excludeRoads && {count (_p nearRoads (_clearReach + 5)) > 0}) exitWith {
-        if (_debug) then { ["[ALiVE CompSpawn]   reject %1: road nearby (field mode)", _p] call ALiVE_fnc_dump };
-        _rejectCounts set [3, (_rejectCounts select 3) + 1];
-        false
-    };
-
-    // 4. Solid obstacle inside envelope - bbox-aware on ALL nearby objects.
-    //    Class-hierarchy matching (`nearestObjects` with type list) is
-    //    unreliable for stock A3 buildings - Land_MilOffices_V1_F doesn't
-    //    isKindOf "House" / "Building" / "Static" - and the terrain-type
-    //    tag set doesn't reliably cover military structures either. Empty
-    //    type filter mirrors the working pattern in
-    //    ALiVE_fnc_findNearObjectsByType: get all objects, then filter by
-    //    bbox volume (>30 m^3 keeps real blockers - buildings 100+ m^3,
-    //    walls 30-200 m^3 - while letting small clutter through: signs,
-    //    posts, lamps, ammo boxes, single fence segments 5-20 m^3,
-    //    scrub 1-10 m^3). The original 8 m^3 threshold rejected so much
-    //    clutter that obstacle-dense terrain like Stratis around Kamino
-    //    couldn't fit any composition - 200-1000 attempts at 750m radius
-    //    found zero clear positions despite visible open fields. Living
-    //    things (Man) are excluded since they don't physically block
-    //    spawn and get repositioned downstream anyway.
-    //
-    //    Note on flow: `exitWith` exits the IMMEDIATE enclosing scope, so
-    //    `if (X) then { exitWith {false} }` only exits the then-block, not
-    //    the function. We compute _buildingIntruders inside the then-block
-    //    and check it at function-top-level so the exitWith-at-true-scope
-    //    actually returns false from _candidateClear.
-    private _buildingIntruders = [];
-    // Roadblock mode normally skips this check (urban tolerance - see the
-    // _excludeBuildings note above), but a road point sitting under a building
-    // footprint spawns the checkpoint inside the building. So roadblock runs a
-    // narrowed version: only actual buildings (House class), and only when their
-    // footprint covers the composition core (a tight radius), so flanking
-    // buildings lining the street are still tolerated.
-    private _isRoadblock = (_mode == "roadblock");
-    if (_excludeBuildings || _isRoadblock) then {
-        // Same reasoning as the runway / helipad exclusions above: measure
-        // against how far the composition's objects actually reach. The +15
-        // padding on the search radius catches objects whose centres sit
-        // outside that reach but whose bulk extends inside it.
-        // Roadblock narrows the intrusion radius to the composition core but
-        // searches a fixed 35m so large buildings whose footprint reaches the
-        // road point are still caught.
-        private _intrudeRadius       = if (_isRoadblock) then { 6 } else { _clearReach };
-        private _buildingCheckRadius = if (_isRoadblock) then { 35 } else { (_clearReach + 15) max 25 };
-        private _allHits = nearestObjects [_p, [], _buildingCheckRadius];
-
-        // Trees and undergrowth do not block a composition, because the
-        // spawner clears them: it hides the vegetation and scenery categories
-        // across the footprint as it builds. Counting them as obstacles meant
-        // refusing perfectly good ground on account of trees that were about
-        // to be removed anyway, and on a jungle map that is nearly all ground.
-        // Measured on Cam Lao Nam at a rejected site: of 280 objects within
-        // range, every one cleared the size test below and 277 were vegetation.
-        // Taking them out left three.
-        //
-        // The list is deliberately the same one the spawner hides, so the two
-        // cannot drift apart: exempt exactly what will be cleared, nothing more.
-        // Rocks are NOT exempted even though the spawner hides those too. That
-        // asymmetry is on purpose. Hiding a boulder field reads far worse than
-        // hiding trees, and AI pathing was found reaching into rock the spawner
-        // had removed, so rocks keep rejecting the position outright further
-        // down rather than being quietly deleted.
-        private _vegExempt = nearestTerrainObjects [_p, ["TREE","SMALL TREE","BUSH","FOREST BORDER","FOREST SQUARE","FOREST TRIANGLE","FOREST"], _buildingCheckRadius, false];
-        if (count _vegExempt > 0) then { _allHits = _allHits - _vegExempt };
-
-        _buildingIntruders = _allHits select {
-            // Avoid exitWith inside a select-predicate code block - in some
-            // SQF versions exitWith aborts the entire select (returns Bool
-            // instead of the filtered Array, causing `count` downstream to
-            // throw "Type Bool, expected Array"). Use if-then-else instead.
-            if (_x isKindOf "Man") then { false } else {
-                private _bbox = boundingBoxReal _x;
-                _bbox params ["_bMin", "_bMax"];
-                private _w = (_bMax select 0) - (_bMin select 0);
-                private _l = (_bMax select 1) - (_bMin select 1);
-                private _h = (_bMax select 2) - (_bMin select 2);
-                // Non-roadblock: any solid object over 30 m3. Roadblock: only
-                // actual buildings (House), so street walls / fences / clutter
-                // don't reject an otherwise-good urban checkpoint.
-                private _qualifies = if (_isRoadblock) then { _x isKindOf "House" } else { (_w * _l * _h) > 30 };
-                _qualifies && {
-                    private _pLocal = _x worldToModel _p;
-                    private _cx = ((_pLocal select 0) max (_bMin select 0)) min (_bMax select 0);
-                    private _cy = ((_pLocal select 1) max (_bMin select 1)) min (_bMax select 1);
-                    private _dx = (_pLocal select 0) - _cx;
-                    private _dy = (_pLocal select 1) - _cy;
-                    sqrt ((_dx * _dx) + (_dy * _dy)) < _intrudeRadius
-                }
-            }
-        };
-    };
-    if (count _buildingIntruders > 0) exitWith {
-        if (_debug) then { ["[ALiVE CompSpawn]   reject %1: %2 obstacle bbox(s) intersect envelope: first=%3", _p, count _buildingIntruders, typeOf (_buildingIntruders select 0)] call ALiVE_fnc_dump };
-        _rejectCounts set [4, (_rejectCounts select 4) + 1];
-        false
-    };
-
+    // Reject unsuitable terrain before any nearby-object searches. The numeric
+    // rule IDs remain stable for diagnostics; only the first reported failure
+    // changes when a candidate violates several rules.
     // 5. Water exclusion - any water within envelope.
     //    Same flow note as check 4: the inner exitWiths only abort the
     //    then-block, so we capture rejection state in a flag and exitWith
@@ -769,6 +682,140 @@ private _candidateClear = {
     if (_surface in ["#GdtBeach", "#GdtMud", "#GdtSeabed", "#GdtStratisBeach", "#GdtStratisMud", "#GdtStratisSeabed"]) exitWith {
         if (_debug) then { ["[ALiVE CompSpawn]   reject %1: surface %2", _p, _surface] call ALiVE_fnc_dump };
         _rejectCounts set [10, (_rejectCounts select 10) + 1];
+        false
+    };
+
+    // External-feature exclusions (1-3 below) keep things like runways and
+    // roads clear of the composition's outermost objects, so they measure
+    // against `_clearReach` - how far those objects actually reach - rather
+    // than the envelope, which is a diameter. See the note where _clearReach
+    // is worked out for why the earlier full-envelope version rejected almost
+    // everything. Internal samples (slope, water perimeter) keep using
+    // _envHalf, because those test the inside of the footprint.
+    //
+    // 1. Runway / taxiway exclusion. Caller can scale the rejection
+    // radius via `_runwayClearanceMul` - default 1.0 (strict);
+    // mil_ato AA passes ~0.6 to allow placement on tight airfields where
+    // the strict rule would skip the spawn entirely.
+    if (_excludeRunways && {[_p, _clearReach * _runwayClearanceMul] call _onAirfieldSurface}) exitWith {
+        if (_debug) then { ["[ALiVE CompSpawn]   reject %1: airfield surface (clearance=%2m, mul=%3)", _p, _clearReach * _runwayClearanceMul, _runwayClearanceMul] call ALiVE_fnc_dump };
+        _rejectCounts set [1, (_rejectCounts select 1) + 1];
+        false
+    };
+
+    // 2. Helipad exclusion (any HeliH within envelope)
+    if (_excludeHelipads && {count (_p nearObjects ["HeliH", _clearReach + 10]) > 0}) exitWith {
+        if (_debug) then { ["[ALiVE CompSpawn]   reject %1: helipad nearby", _p] call ALiVE_fnc_dump };
+        _rejectCounts set [2, (_rejectCounts select 2) + 1];
+        false
+    };
+
+    // 3. Road exclusion (field mode only)
+    if (_excludeRoads && {count (_p nearRoads (_clearReach + 5)) > 0}) exitWith {
+        if (_debug) then { ["[ALiVE CompSpawn]   reject %1: road nearby (field mode)", _p] call ALiVE_fnc_dump };
+        _rejectCounts set [3, (_rejectCounts select 3) + 1];
+        false
+    };
+
+    // 4. Solid obstacle inside envelope - bbox-aware on ALL nearby objects.
+    //    Class-hierarchy matching (`nearestObjects` with type list) is
+    //    unreliable for stock A3 buildings - Land_MilOffices_V1_F doesn't
+    //    isKindOf "House" / "Building" / "Static" - and the terrain-type
+    //    tag set doesn't reliably cover military structures either. Empty
+    //    type filter mirrors the working pattern in
+    //    ALiVE_fnc_findNearObjectsByType: get all objects, then filter by
+    //    bbox volume (>30 m^3 keeps real blockers - buildings 100+ m^3,
+    //    walls 30-200 m^3 - while letting small clutter through: signs,
+    //    posts, lamps, ammo boxes, single fence segments 5-20 m^3,
+    //    scrub 1-10 m^3). The original 8 m^3 threshold rejected so much
+    //    clutter that obstacle-dense terrain like Stratis around Kamino
+    //    couldn't fit any composition - 200-1000 attempts at 750m radius
+    //    found zero clear positions despite visible open fields. Living
+    //    things (Man) are excluded since they don't physically block
+    //    spawn and get repositioned downstream anyway.
+    //
+    //    Note on flow: `exitWith` exits the IMMEDIATE enclosing scope, so
+    //    `if (X) then { exitWith {false} }` only exits the then-block, not
+    //    the function. We compute _buildingBlocked inside the then-block
+    //    and check it at function-top-level so the exitWith-at-true-scope
+    //    actually returns false from _candidateClear.
+    private _buildingIntruders = [];
+    private _buildingBlocked = false;
+    // Roadblock mode normally skips this check (urban tolerance - see the
+    // _excludeBuildings note above), but a road point sitting under a building
+    // footprint spawns the checkpoint inside the building. So roadblock runs a
+    // narrowed version: only actual buildings (House class), and only when their
+    // footprint covers the composition core (a tight radius), so flanking
+    // buildings lining the street are still tolerated.
+    private _isRoadblock = (_mode == "roadblock");
+    if (_excludeBuildings || _isRoadblock) then {
+        // Same reasoning as the runway / helipad exclusions above: measure
+        // against how far the composition's objects actually reach. The +15
+        // padding on the search radius catches objects whose centres sit
+        // outside that reach but whose bulk extends inside it.
+        // Roadblock narrows the intrusion radius to the composition core but
+        // searches a fixed 35m so large buildings whose footprint reaches the
+        // road point are still caught.
+        private _intrudeRadius       = if (_isRoadblock) then { 6 } else { _clearReach };
+        private _buildingCheckRadius = if (_isRoadblock) then { 35 } else { (_clearReach + 15) max 25 };
+        private _allHits = nearestObjects [_p, [], _buildingCheckRadius];
+
+        // Trees and undergrowth do not block a composition, because the
+        // spawner clears them: it hides the vegetation and scenery categories
+        // across the footprint as it builds. Counting them as obstacles meant
+        // refusing perfectly good ground on account of trees that were about
+        // to be removed anyway, and on a jungle map that is nearly all ground.
+        // Measured on Cam Lao Nam at a rejected site: of 280 objects within
+        // range, every one cleared the size test below and 277 were vegetation.
+        // Taking them out left three.
+        //
+        // The list is deliberately the same one the spawner hides, so the two
+        // cannot drift apart: exempt exactly what will be cleared, nothing more.
+        // Rocks are NOT exempted even though the spawner hides those too. That
+        // asymmetry is on purpose. Hiding a boulder field reads far worse than
+        // hiding trees, and AI pathing was found reaching into rock the spawner
+        // had removed, so rocks keep rejecting the position outright further
+        // down rather than being quietly deleted.
+        private _vegExempt = nearestTerrainObjects [_p, ["TREE","SMALL TREE","BUSH","FOREST BORDER","FOREST SQUARE","FOREST TRIANGLE","FOREST"], _buildingCheckRadius, false];
+        if (count _vegExempt > 0) then { _allHits = _allHits - _vegExempt };
+
+        private _isBuildingIntruder = {
+            // Avoid exitWith inside a select-predicate code block - in some
+            // SQF versions exitWith aborts the entire select (returns Bool
+            // instead of the filtered Array, causing `count` downstream to
+            // throw "Type Bool, expected Array"). Use if-then-else instead.
+            if (_x isKindOf "Man") then { false } else {
+                private _bbox = boundingBoxReal _x;
+                _bbox params ["_bMin", "_bMax"];
+                private _w = (_bMax select 0) - (_bMin select 0);
+                private _l = (_bMax select 1) - (_bMin select 1);
+                private _h = (_bMax select 2) - (_bMin select 2);
+                // Non-roadblock: any solid object over 30 m3. Roadblock: only
+                // actual buildings (House), so street walls / fences / clutter
+                // don't reject an otherwise-good urban checkpoint.
+                private _qualifies = if (_isRoadblock) then { _x isKindOf "House" } else { (_w * _l * _h) > 30 };
+                _qualifies && {
+                    private _pLocal = _x worldToModel _p;
+                    private _cx = ((_pLocal select 0) max (_bMin select 0)) min (_bMax select 0);
+                    private _cy = ((_pLocal select 1) max (_bMin select 1)) min (_bMax select 1);
+                    private _dx = (_pLocal select 0) - _cx;
+                    private _dy = (_pLocal select 1) - _cy;
+                    sqrt ((_dx * _dx) + (_dy * _dy)) < _intrudeRadius
+                }
+            }
+        };
+        if (_debug) then {
+            // Detailed diagnostics retain the full blocker count and first object.
+            _buildingIntruders = _allHits select _isBuildingIntruder;
+            _buildingBlocked = count _buildingIntruders > 0;
+        } else {
+            // Placement needs only one blocker; avoid evaluating all remaining hits.
+            _buildingBlocked = (_allHits findIf _isBuildingIntruder) >= 0;
+        };
+    };
+    if (_buildingBlocked) exitWith {
+        if (_debug) then { ["[ALiVE CompSpawn]   reject %1: %2 obstacle bbox(s) intersect envelope: first=%3", _p, count _buildingIntruders, typeOf (_buildingIntruders select 0)] call ALiVE_fnc_dump };
+        _rejectCounts set [4, (_rejectCounts select 4) + 1];
         false
     };
 
@@ -882,6 +929,7 @@ if (_mode != "roadblock" && _excludeRunways) then {
     } forEach _testable;
 };
 
+if (_collectStartupMetrics) then { _profSetupSeconds = diag_tickTime - _profT0 };
 if (_swallowed) exitWith {
     call _fnc_profDone;
     // Counted apart from the fruitless searches below. It found nothing, but it found
@@ -901,9 +949,15 @@ if (_swallowed) exitWith {
 // ------------------------------------------------------------------------
 // Stage 1: try the centre position itself.
 // ------------------------------------------------------------------------
-if (_mode != "roadblock" && {[_centerPos, _envelope] call _candidateClear}) exitWith {
-    call _fnc_profDone;
+private _profCenterT0 = if (_collectStartupMetrics) then {diag_tickTime} else {0};
+PROFILE_SCOPE(COMPCENTERCHECK, "ALiVE composition validation: center check")
+private _centerClear = _mode != "roadblock" && {[_centerPos, _envelope] call _candidateClear};
+PROFILE_SCOPE_END(COMPCENTERCHECK)
+if (_collectStartupMetrics) then { _profCenterSeconds = diag_tickTime - _profCenterT0 };
+if (_centerClear) exitWith {
+    _profOutcome = 6;
     [0] call _fnc_profFound;
+    call _fnc_profDone;
     private _dir = if (_preferredDir >= 0) then { _preferredDir } else { random 360 };
     if (_debug) then { ["[ALiVE CompSpawn] placed (mode %1) at %2", _mode, _centerPos] call ALiVE_fnc_dump };
     [_centerPos, _dir]
@@ -1010,6 +1064,7 @@ if (_mode == "roadblock") exitWith {
 // pays for and no change to the sampling could recover.
 _profPre = diag_tickTime - _profT0;
 
+PROFILE_SCOPE(COMPCANDIDATESEARCH, "ALiVE composition validation: candidate search")
 private _result = [];
 for "_i" from 1 to _maxAttempts do {
     private _angle = random 360;
@@ -1027,7 +1082,11 @@ for "_i" from 1 to _maxAttempts do {
 // up with its time and its outcome measured a moment apart. Taken here rather than at
 // the bottom of the file so the reason breakdown just below, which only a failed search
 // pays for, is not billed as search cost.
+PROFILE_SCOPE_END(COMPCANDIDATESEARCH)
 private _profElapsed = diag_tickTime - _profT0;
+_profSearchSeconds = _profElapsed - _profPre;
+_profSearchAttempts = if (_profWinAttempt > 0) then {_profWinAttempt} else {_maxAttempts};
+_profOutcome = if (count _result > 0) then {7} else {8};
 // One pass over the tally does both jobs: the exact number of candidates this search
 // turned away, and the running per-rule total across the whole startup.
 private _turnedAway = 0;

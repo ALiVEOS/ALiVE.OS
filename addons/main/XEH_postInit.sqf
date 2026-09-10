@@ -73,6 +73,11 @@ if (isServer) then {
         if (((entities "Module_F") findIf {_x isKindOf "ModuleAliveBase"}) < 0) exitWith {
             diag_log "ALiVE airside: no ALiVE module placed, skipping the airfield survey";
         };
+        
+        // some external callers build the cache before this code is reached
+        // gracefully exit if this has happened
+        if (missionNamespace getVariable ["ALiVE_airsideCacheReady", false]) exitWith {};
+        if (!isNil "ALiVE_airsideCacheBuilding") exitWith {};
         [] call ALiVE_fnc_buildAirsideCache;
     };
 };
