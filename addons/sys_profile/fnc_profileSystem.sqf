@@ -52,47 +52,46 @@ _result = true;
 switch(_operation) do {
     case "init": {
         if (isServer) then {
-            // if server, initialise module game logic
-            [_logic,"super",SUPERCLASS] call ALIVE_fnc_hashSet;
-            [_logic,"class",MAINCLASS] call ALIVE_fnc_hashSet;
-            [_logic,"moduleType","ALIVE_profileHandler"] call ALIVE_fnc_hashSet;
-            [_logic,"startupComplete",false] call ALIVE_fnc_hashSet;
-            //TRACE_1("After module init",_logic);
+            [_logic, [
+                ["super", SUPERCLASS],
+                ["class", MAINCLASS],
+                ["moduleType", "ALIVE_profileHandler"],
+                ["startupComplete", false],
 
-            [_logic,"debug",false] call ALIVE_fnc_hashSet;
-            [_logic,"persistent",false] call ALIVE_fnc_hashSet;
-            [_logic,"plotSectors",false] call ALIVE_fnc_hashSet;
-            [_logic,"syncMode","ADD"] call ALIVE_fnc_hashSet;
-            [_logic,"syncedUnits",[]] call ALIVE_fnc_hashSet;
-            [_logic,"spawnRadius",1000] call ALIVE_fnc_hashSet;
-            [_logic,"spawnTypeJetRadius",1000] call ALIVE_fnc_hashSet;
-            [_logic,"spawnTypeHeliRadius",1000] call ALIVE_fnc_hashSet;
-            [_logic,"spawnRadiusUAV", 1000] call ALiVE_fnc_hashSet;
-            [_logic,"proximitySpawning", true] call ALIVE_fnc_hashSet;
-            // Despawn linger defaults. See "start" case for the global publishing.
-            [_logic,"playerOccupantGrace", 300] call ALIVE_fnc_hashSet;
-            [_logic,"postDeathGrace", 120] call ALIVE_fnc_hashSet;
-            [_logic,"postDeathRadius", 500] call ALIVE_fnc_hashSet;
-            [_logic,"midCombatExtension", 60] call ALIVE_fnc_hashSet;
-            [_logic,"activeLimiter",30] call ALIVE_fnc_hashSet;
-            [_logic,"zeusSpawn",true] call ALIVE_fnc_hashSet;
-            [_logic,"spawnCycleTime",1] call ALIVE_fnc_hashSet;
-            [_logic,"despawnCycleTime",1] call ALIVE_fnc_hashSet;
-            [_logic,"speedModifier",1] call ALIVE_fnc_hashSet;
+                ["debug", false],
+                ["persistent", false],
+                ["plotSectors", false],
+                ["syncMode", "ADD"],
+                ["syncedUnits", []],
+                ["spawnRadius", 1000],
+                ["spawnTypeJetRadius", 1000],
+                ["spawnTypeHeliRadius", 1000],
+                ["spawnRadiusUAV", 1000],
+                ["proximitySpawning", true],
 
-            [_logic,"paused", false] call ALiVE_fnc_hashSet;
+                // Despawn linger defaults. See "start" case for the global publishing
+                ["playerOccupantGrace", 300],
+                ["postDeathGrace", 120],
+                ["postDeathRadius", 500],
+                ["midCombatExtension", 60],
+                ["activeLimiter", 30],
+                ["zeusSpawn", true],
+                ["spawnCycleTime", 1],
+                ["despawnCycleTime", 1],
+                ["speedModifier", 1],
 
-            [_logic,"profilesToSim", []] call ALiVE_fnc_hashSet;
-
-            [_logic,"profileAttacksToSim", []] call ALiVE_fnc_hashSet;
-            [_logic,"simulatingAttacks", false] call ALiVE_fnc_hashSet;
+                ["paused", false],
+                ["profilesToSim", []],
+                ["profileAttacksToSim", []],
+                ["simulatingAttacks", false]
+            ]] call ALiVE_fnc_hashSetMany;
 
             private _profileActivationCoordinator = [nil,"create"] call ALiVE_fnc_profileActivationCoordinator;
 
-            private _playerProximityActivator = [nil,"create",[_logic]] call ALiVE_fnc_profileActivatorPlayerProximity;
-            [_profileActivationCoordinator,"registerActivator",_playerProximityActivator] call ALiVE_fnc_profileActivationCoordinator;
+            private _playerProximityActivator = [nil,"create", [_logic]] call ALiVE_fnc_profileActivatorPlayerProximity;
+            [_profileActivationCoordinator,"registerActivator", _playerProximityActivator] call ALiVE_fnc_profileActivationCoordinator;
 
-            [_logic,"profileActivationCoordinator",_profileActivationCoordinator] call ALiVE_fnc_hashSet;
+            [_logic,"profileActivationCoordinator", _profileActivationCoordinator] call ALiVE_fnc_hashSet;
 
             // load static data
             call ALiVE_fnc_staticDataHandler;
@@ -106,175 +105,170 @@ switch(_operation) do {
 
     case "start": {
 
-        private["_debug","_persistent","_plotSectors","_syncMode","_syncedUnits","_spawnRadius","_spawnTypeJetRadius","_spawnTypeHeliRadius",
-        "_activeLimiter","_spawnCycleTime","_despawnCycleTime","_combatRate","_combatRange","_profileSimulatorFSM",
-        "_sectors","_persistent","_file","_pathfinding"];
+        private ["_profileSimulatorFSM","_sectors","_file"];
 
-        if (isServer) then {
+        if (!isServer) exitwith {};
 
-            _debug = [_logic,"debug",false] call ALIVE_fnc_hashGet;
-            _persistent = [_logic,"persistent",false] call ALIVE_fnc_hashGet;
-            _plotSectors = [_logic,"plotSectors",false] call ALIVE_fnc_hashGet;
-            _syncMode = [_logic,"syncMode","ADD"] call ALIVE_fnc_hashGet;
-            _syncedUnits = [_logic,"syncedUnits",[]] call ALIVE_fnc_hashGet;
-            _spawnRadius = [_logic,"spawnRadius"] call ALIVE_fnc_hashGet;
-            _spawnTypeJetRadius = [_logic,"spawnTypeJetRadius"] call ALIVE_fnc_hashGet;
-            _spawnTypeHeliRadius = [_logic,"spawnTypeHeliRadius"] call ALIVE_fnc_hashGet;
-            _spawnTypeUAVRadius = [_logic,"spawnRadiusUAV"] call ALiVE_fnc_hashGet;
-            _activeLimiter = [_logic,"activeLimiter"] call ALIVE_fnc_hashGet;
-            _spawnCycleTime = [_logic,"spawnCycleTime"] call ALIVE_fnc_hashGet;
-            _despawnCycleTime = [_logic,"despawnCycleTime"] call ALIVE_fnc_hashGet;
-            _combatRate = [_logic,"combatRate"] call ALIVE_fnc_hashGet;
-            _combatRange = [_logic,"combatRange"] call ALIVE_fnc_hashGet;
-            _smoothSpawn = [_logic,"smoothSpawn"] call ALIVE_fnc_hashGet;
-            _pathfinding = [_logic,"pathfinding"] call ALiVE_fnc_hashGet;
+        ([_logic, [
+            "debug","persistent","plotSectors","syncMode","syncedUnits","spawnRadius",
+            "spawnTypeJetRadius","spawnTypeHeliRadius","spawnRadiusUAV","activeLimiter",
+            "spawnCycleTime","despawnCycleTime","combatRate","combatRange","smoothSpawn","pathfinding",
+            "playerOccupantGrace","postDeathGrace","postDeathRadius","midCombatExtension"
+        ]] call ALiVE_fnc_hashGetMany) params [
+            ["_debug", false],
+            ["_persistent", false],
+            ["_plotSectors", false],
+            ["_syncMode", "ADD"],
+            ["_syncedUnits", []],
+            "_spawnRadius",
+            "_spawnTypeJetRadius",
+            "_spawnTypeHeliRadius",
+            "_spawnTypeUAVRadius",
+            "_activeLimiter",
+            "_spawnCycleTime",
+            "_despawnCycleTime",
+            "_combatRate",
+            "_combatRange",
+            "_smoothSpawn",
+            "_pathfinding",
 
-            // set smoothSpawn value
-            ALiVE_smoothSpawn = _smoothSpawn;
+            "_playerOccupantGrace",
+            "_postDeathGrace",
+            "_postDeathRadius",
+            "_midCombatExtension"
+        ];
 
-            // Publish linger-config as globals so the despawn hot path and the
-            // server-side player-killed EH can read them without going through
-            // the module hash every tick.
-            ALIVE_playerOccupantGrace = [_logic,"playerOccupantGrace", 300] call ALIVE_fnc_hashGet;
-            ALIVE_postDeathGrace      = [_logic,"postDeathGrace", 120]     call ALIVE_fnc_hashGet;
-            ALIVE_postDeathRadius     = [_logic,"postDeathRadius", 500]    call ALIVE_fnc_hashGet;
-            ALIVE_midCombatExtension  = [_logic,"midCombatExtension", 60]  call ALIVE_fnc_hashGet;
+        ALiVE_smoothSpawn = _smoothSpawn;
 
-            // set global profiles persistent var
-            ALIVE_loadProfilesPersistent = _persistent;
-            ALIVE_saveProfilesPersistent = _persistent;
+        // Publish linger-config as globals so the despawn hot path and the
+        // server-side player-killed EH can read them without going through
+        // the module hash every tick.
+        ALIVE_playerOccupantGrace = _playerOccupantGrace;
+        ALIVE_postDeathGrace      = _postDeathGrace;
+        ALIVE_postDeathRadius     = _postDeathRadius;
+        ALIVE_midCombatExtension  = _midCombatExtension;
 
-            // DEBUG -------------------------------------------------------------------------------------
-            if(_debug) then {
-                ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                ["ProfileSystem - Startup"] call ALiVE_fnc_dump;
-            };
-            // DEBUG -------------------------------------------------------------------------------------
+        ALIVE_loadProfilesPersistent = _persistent;
+        ALIVE_saveProfilesPersistent = _persistent;
 
-            // load static data
-            call ALiVE_fnc_staticDataHandler;
-
-            // global server flag
-            ALIVE_profileSystemDataLoaded = true;
-
-            // create pathfinder
-
-            if (_pathfinding) then {
-                [{
-                    alive_pathfinder = [nil,"create"] call ALiVE_fnc_pathfinder;
-                },[]] call CBA_fnc_directCall;
-
-                // Apply the Eden debug-draw toggles once the pathfinder exists.
-                // Both default No; drawn routes are coloured per the requesting
-                // profile's side. The admin menu can flip the toggles live.
-                private _drawGrid  = [_logic,"pathfindingDrawGrid"]  call ALIVE_fnc_profileSystem;
-                private _drawPaths = [_logic,"pathfindingDrawPaths"] call ALIVE_fnc_profileSystem;
-                if (_drawPaths) then { [alive_pathfinder,"setDrawPaths",true] call ALiVE_fnc_pathfinder; };
-                if (_drawGrid)  then { [alive_pathfinder,"setDrawGrid", true] call ALiVE_fnc_pathfinder; };
-            };
-
-            // create the profile handler
-            ALIVE_profileHandler = [nil, "create"] call ALIVE_fnc_profileHandler;
-            [ALIVE_profileHandler, "init"] call ALIVE_fnc_profileHandler;
-
-            // create profile combat handler
-            ALIVE_profileCombatHandler = [nil,"create"] call ALIVE_fnc_profileCombatHandler;
-            [ALIVE_profileCombatHandler,"init"] call ALIVE_fnc_profileCombatHandler;
-            [ALIVE_profileCombatHandler,"debug", _debug] call ALIVE_fnc_profileCombatHandler;
-            [ALIVE_profileCombatHandler,"combatRate", _combatRate] call ALIVE_fnc_profileCombatHandler;
-            [ALIVE_profileCombatHandler,"combatRange", _combatRange] call ALIVE_fnc_profileCombatHandler;
-            // create sector grid
-            ALIVE_sectorGrid = [nil, "create"] call ALIVE_fnc_sectorGrid;
-            [ALIVE_sectorGrid, "init"] call ALIVE_fnc_sectorGrid;
-            [ALIVE_sectorGrid, "createGrid"] call ALIVE_fnc_sectorGrid;
-
-            // create sector plotter
-            ALIVE_sectorPlotter = [nil, "create"] call ALIVE_fnc_plotSectors;
-            [ALIVE_sectorPlotter, "init"] call ALIVE_fnc_plotSectors;
-
-            // import static map analysis to the grid
-            [ALIVE_sectorGrid] call ALIVE_fnc_gridImportStaticMapAnalysis;
-
-            // create live analysis
-            ALIVE_liveAnalysis = [nil, "create"] call ALIVE_fnc_liveAnalysis;
-            [ALIVE_liveAnalysis, "init"] call ALIVE_fnc_liveAnalysis;
-            [ALIVE_liveAnalysis, "debug", false] call ALIVE_fnc_liveAnalysis;
-
-            // create battlefield analysis
-            ALIVE_battlefieldAnalysis = [nil, "create"] call ALIVE_fnc_battlefieldAnalysis;
-            [ALIVE_battlefieldAnalysis, "init"] call ALIVE_fnc_battlefieldAnalysis;
-            [ALIVE_battlefieldAnalysis, "debug", false] call ALIVE_fnc_battlefieldAnalysis;
-
-            // create profiles for all players that dont have profiles
-            ["INIT"] call ALIVE_fnc_createProfilesFromPlayers;
-
-            // create profiles for all map units that dont have profiles
-            [_syncMode, _syncedUnits, false] call ALIVE_fnc_createProfilesFromUnits;
-
-            // turn on debug again to see the state of the profile handler, and set debug on all a profiles
-            [ALIVE_profileHandler, "debug", _debug] call ALIVE_fnc_profileHandler;
-
-            // create array block stepper
-            ALIVE_arrayBlockHandler = [nil, "create"] call ALIVE_fnc_arrayBlockHandler;
-            [ALIVE_arrayBlockHandler, "init"] call ALIVE_fnc_arrayBlockHandler;
-
-            // create command router
-            ALIVE_commandRouter = [nil, "create"] call ALIVE_fnc_commandRouter;
-            [ALIVE_commandRouter, "init"] call ALIVE_fnc_commandRouter;
-            [ALIVE_commandRouter, "debug", false] call ALIVE_fnc_commandRouter;
-
-            // DEBUG -------------------------------------------------------------------------------------
-            if(_debug) then {
-                ["ProfileSystem - Startup completed"] call ALiVE_fnc_dump;
-                ["Sector grid created"] call ALiVE_fnc_dump;
-                ["Profile handler created"] call ALiVE_fnc_dump;
-                ["Map units converted to profiles"] call ALiVE_fnc_dump;
-                ["Simulation controller created"] call ALiVE_fnc_dump;
-                ["Spawn controller created"] call ALiVE_fnc_dump;
-                ["Active Limit: %1", _activeLimiter] call ALiVE_fnc_dump;
-                ["Spawn Radius: %1", _spawnRadius] call ALiVE_fnc_dump;
-                ["Spawn in Jet Radius: %1",_spawnTypeJetRadius] call ALiVE_fnc_dump;
-                ["Spawn in Heli Radius: %1",_spawnTypeHeliRadius] call ALiVE_fnc_dump;
-                ["Spawn in UAV Radius: %1",_spawnTypeUAVRadius] call ALiVE_fnc_dump;
-                ["Spawn Cycle Time: %1", _spawnCycleTime] call ALiVE_fnc_dump;
-                ["Persistent: %1",_persistent] call ALiVE_fnc_dump;
-                ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-            };
-            // DEBUG -------------------------------------------------------------------------------------
-
-            // start the profile simulator
-            private _profileSimPerFrameID = [ALiVE_fnc_profileSimulator, 0, []] call CBA_fnc_addPerFrameHandler;
-
-            // Start the profile activation pipeline.
-            ALiVE_SpawnSources = [];
-            private _profileActivationCoordinator = [_logic,"profileActivationCoordinator"] call ALiVE_fnc_hashGet;
-            private _profileActivationPerFrameID = [ALiVE_fnc_profileActivationTick,0,[_profileActivationCoordinator]] call CBA_fnc_addPerFrameHandler;
-
-            [_logic,"profileSimulatorPerFrameID", _profileSimPerFrameID] call ALiVE_fnc_hashSet;
-            [_logic,"profileActivationPerFrameID",_profileActivationPerFrameID] call ALiVE_fnc_hashSet;
-
-            // if persistent load data
-            if(ALIVE_loadProfilesPersistent) then {
-                call ALIVE_fnc_profilesLoadData;
-            };
-
-            // global server flag
-            ALIVE_profileSystemInit = true;
-
-            // set modules as started
-            [_logic,"startupComplete",true] call ALIVE_fnc_hashSet;
-
-            // register profile entity analysis job on the live analysis
-            // analysis job will run every 90 seconds and has no run count limit
-            [ALIVE_liveAnalysis, "registerAnalysisJob", [90, 0, "gridProfileEntity", "gridProfileEntity", [_plotSectors]]] call ALIVE_fnc_liveAnalysis;
-
-            // register player analysis job on the live analysis
-            // analysis job will run every 10 seconds and has no run count limit
-            [ALIVE_liveAnalysis, "registerAnalysisJob", [15, 0, "activeSectors", "activeSectors", [_plotSectors]]] call ALIVE_fnc_liveAnalysis;
-
-            // start analysis jobs
-            [ALIVE_liveAnalysis, "start"] call ALIVE_fnc_liveAnalysis;
+        if (_debug) then {
+            ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
+            ["ProfileSystem - Startup"] call ALiVE_fnc_dump;
         };
+
+        call ALiVE_fnc_staticDataHandler;
+
+        ALIVE_profileSystemDataLoaded = true;
+
+        if (_pathfinding) then {
+            [{
+                alive_pathfinder = [nil,"create"] call ALiVE_fnc_pathfinder;
+            },[]] call CBA_fnc_directCall;
+
+            // Apply the Eden debug-draw toggles once the pathfinder exists.
+            // Both default No; drawn routes are coloured per the requesting
+            // profile's side. The admin menu can flip the toggles live.
+            private _drawGrid  = [_logic,"pathfindingDrawGrid"]  call ALIVE_fnc_profileSystem;
+            private _drawPaths = [_logic,"pathfindingDrawPaths"] call ALIVE_fnc_profileSystem;
+            if (_drawPaths) then { [alive_pathfinder,"setDrawPaths", true] call ALiVE_fnc_pathfinder; };
+            if (_drawGrid)  then { [alive_pathfinder,"setDrawGrid", true] call ALiVE_fnc_pathfinder; };
+        };
+
+        // create the profile handler
+        ALIVE_profileHandler = [nil,"create"] call ALIVE_fnc_profileHandler;
+        [ALIVE_profileHandler,"init"] call ALIVE_fnc_profileHandler;
+
+        // create profile combat handler
+        ALIVE_profileCombatHandler = [nil,"create"] call ALIVE_fnc_profileCombatHandler;
+        [ALIVE_profileCombatHandler,"init"] call ALIVE_fnc_profileCombatHandler;
+        [ALIVE_profileCombatHandler,"debug", _debug] call ALIVE_fnc_profileCombatHandler;
+        [ALIVE_profileCombatHandler,"combatRate", _combatRate] call ALIVE_fnc_profileCombatHandler;
+        [ALIVE_profileCombatHandler,"combatRange", _combatRange] call ALIVE_fnc_profileCombatHandler;
+
+        // create sector grid
+        ALIVE_sectorGrid = [nil,"create"] call ALIVE_fnc_sectorGrid;
+        [ALIVE_sectorGrid,"init"] call ALIVE_fnc_sectorGrid;
+        [ALIVE_sectorGrid,"createGrid"] call ALIVE_fnc_sectorGrid;
+
+        // create sector plotter
+        ALIVE_sectorPlotter = [nil,"create"] call ALIVE_fnc_plotSectors;
+        [ALIVE_sectorPlotter,"init"] call ALIVE_fnc_plotSectors;
+
+        // import static map analysis to the grid
+        [ALIVE_sectorGrid] call ALIVE_fnc_gridImportStaticMapAnalysis;
+
+        // create live analysis
+        ALIVE_liveAnalysis = [nil,"create"] call ALIVE_fnc_liveAnalysis;
+        [ALIVE_liveAnalysis,"init"] call ALIVE_fnc_liveAnalysis;
+        [ALIVE_liveAnalysis,"debug", false] call ALIVE_fnc_liveAnalysis;
+
+        // create battlefield analysis
+        ALIVE_battlefieldAnalysis = [nil,"create"] call ALIVE_fnc_battlefieldAnalysis;
+        [ALIVE_battlefieldAnalysis,"init"] call ALIVE_fnc_battlefieldAnalysis;
+        [ALIVE_battlefieldAnalysis,"debug", false] call ALIVE_fnc_battlefieldAnalysis;
+
+        // create profiles for all players that dont have profiles
+        ["INIT"] call ALIVE_fnc_createProfilesFromPlayers;
+
+        // create profiles for all map units that dont have profiles
+        [_syncMode, _syncedUnits, false] call ALIVE_fnc_createProfilesFromUnits;
+
+        // turn on debug again to see the state of the profile handler, and set debug on all a profiles
+        [ALIVE_profileHandler,"debug", _debug] call ALIVE_fnc_profileHandler;
+
+        // create array block stepper
+        ALIVE_arrayBlockHandler = [nil,"create"] call ALIVE_fnc_arrayBlockHandler;
+        [ALIVE_arrayBlockHandler,"init"] call ALIVE_fnc_arrayBlockHandler;
+
+        // create command router
+        ALIVE_commandRouter = [nil,"create"] call ALIVE_fnc_commandRouter;
+        [ALIVE_commandRouter,"init"] call ALIVE_fnc_commandRouter;
+        [ALIVE_commandRouter,"debug", false] call ALIVE_fnc_commandRouter;
+
+        if (_debug) then {
+            ["ProfileSystem - Startup completed"] call ALiVE_fnc_dump;
+            ["Sector grid created"] call ALiVE_fnc_dump;
+            ["Profile handler created"] call ALiVE_fnc_dump;
+            ["Map units converted to profiles"] call ALiVE_fnc_dump;
+            ["Simulation controller created"] call ALiVE_fnc_dump;
+            ["Spawn controller created"] call ALiVE_fnc_dump;
+            ["Active Limit: %1", _activeLimiter] call ALiVE_fnc_dump;
+            ["Spawn Radius: %1", _spawnRadius] call ALiVE_fnc_dump;
+            ["Spawn in Jet Radius: %1",_spawnTypeJetRadius] call ALiVE_fnc_dump;
+            ["Spawn in Heli Radius: %1",_spawnTypeHeliRadius] call ALiVE_fnc_dump;
+            ["Spawn in UAV Radius: %1",_spawnTypeUAVRadius] call ALiVE_fnc_dump;
+            ["Spawn Cycle Time: %1", _spawnCycleTime] call ALiVE_fnc_dump;
+            ["Persistent: %1",_persistent] call ALiVE_fnc_dump;
+            ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
+        };
+
+        // start the profile simulator
+        private _profileSimPerFrameID = [ALiVE_fnc_profileSimulator, 0, []] call CBA_fnc_addPerFrameHandler;
+
+        // Start the profile activation pipeline.
+        ALiVE_SpawnSources = [];
+        private _profileActivationCoordinator = [_logic,"profileActivationCoordinator"] call ALiVE_fnc_hashGet;
+        private _profileActivationPerFrameID = [ALiVE_fnc_profileActivationTick,0,[_profileActivationCoordinator]] call CBA_fnc_addPerFrameHandler;
+
+        [_logic,"profileSimulatorPerFrameID", _profileSimPerFrameID] call ALiVE_fnc_hashSet;
+        [_logic,"profileActivationPerFrameID",_profileActivationPerFrameID] call ALiVE_fnc_hashSet;
+
+        // if persistent load data
+        if (ALIVE_loadProfilesPersistent) then {
+            call ALIVE_fnc_profilesLoadData;
+        };
+
+        // global server flag
+        ALIVE_profileSystemInit = true;
+
+        // set modules as started
+        [_logic,"startupComplete" ,true] call ALIVE_fnc_hashSet;
+
+        [ALIVE_liveAnalysis,"registerAnalysisJob", [90, 0, "gridProfileEntity", "gridProfileEntity", [_plotSectors]]] call ALIVE_fnc_liveAnalysis;
+        [ALIVE_liveAnalysis,"registerAnalysisJob", [15, 0, "activeSectors", "activeSectors", [_plotSectors]]] call ALIVE_fnc_liveAnalysis;
+
+        [ALIVE_liveAnalysis,"start"] call ALIVE_fnc_liveAnalysis;
+
     };
 
     case "destroy": {
