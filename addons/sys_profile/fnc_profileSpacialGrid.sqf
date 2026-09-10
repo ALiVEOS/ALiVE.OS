@@ -113,7 +113,7 @@ if (isNil "ALiVE_profileSpacialGridClass") then {
                 };
             } forEach _points;
 
-            PROFILE_SCOPE_END(OPERATION)
+            PROFILE_SCOPE_END(ONINSERT)
         }],
 
         ["onRemove", {
