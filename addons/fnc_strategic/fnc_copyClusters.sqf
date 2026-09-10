@@ -47,23 +47,25 @@ _clustersCopy = [];
     // ended up holding clusters with center [] (upstream #812).
     _size = [_x,"size"] call ALIVE_fnc_cluster;
     // If (greater than size filter OR less than inverse size filter) AND greater than priority filter
-    if((((_sizeFilter>=0)&&(_size >= _sizeFilter))||((_sizeFilter<0)&&(_size <= -1*_sizeFilter))) && (_priority >= _priorityFilter)) then {
-        _cluster = [nil, "create"] call ALIVE_fnc_cluster;
-
+    if (
+        (
+            ((_sizeFilter > =0) && (_size >= _sizeFilter)) || ((_sizeFilter < 0) && (_size <= -1 * _sizeFilter))
+        ) &&
+        (_priority >= _priorityFilter)
+    ) then {
         _nodes = [_x,"nodes"] call ALIVE_fnc_hashGet;
-        _newNodes = [];
-        {
-            _newNodes pushback _x;
-        } forEach _nodes;
 
-        [_cluster,"nodes",_newNodes] call ALIVE_fnc_hashSet;
+        _cluster = [nil,"create"] call ALIVE_fnc_cluster;
+        [_cluster, [
+            ["nodes", +_nodes],
+            ["clusterID", [_x,"clusterID"] call ALIVE_fnc_hashGet],
+            ["center", [_x,"center"] call ALIVE_fnc_cluster],
+            ["size", _size],
+            ["type", [_x,"type"] call ALIVE_fnc_hashGet],
+            ["priority", _priority],
+            ["debugColor", [_x,"debugColor"] call ALIVE_fnc_hashGet]
+        ]] call ALIVE_fnc_hashSetMany;
 
-        [_cluster,"clusterID",[_x,"clusterID"] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
-        [_cluster,"center",[_x,"center"] call ALIVE_fnc_cluster] call ALIVE_fnc_hashSet;
-        [_cluster,"size",_size] call ALIVE_fnc_hashSet;
-        [_cluster,"type",[_x,"type"] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
-        [_cluster,"priority",_priority] call ALIVE_fnc_hashSet;
-        [_cluster,"debugColor",[_x,"debugColor"] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
         _clustersCopy pushback _cluster;
     };
 } forEach _clusters;

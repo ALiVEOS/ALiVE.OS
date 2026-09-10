@@ -37,14 +37,14 @@ params [
 
 _markerClusters = [];
 
-if(count _markers > 0) then {
+if (count _markers > 0) then {
     {
         _marker =_x;
-        if(_marker call ALIVE_fnc_markerExists) then {
+        if (_marker call ALIVE_fnc_markerExists) then {
             _marker setMarkerAlpha 0;
             {
                 _center = [_x,"center"] call ALIVE_fnc_hashGet;
-                if([_center,_marker] call ALiVE_fnc_inArea) then {
+                if ([_center,_marker] call ALiVE_fnc_inArea) then {
                     _markerClusters pushback _x;
                 };
             } forEach _clusters;
