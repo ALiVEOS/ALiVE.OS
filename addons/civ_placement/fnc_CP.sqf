@@ -410,39 +410,12 @@ switch(_operation) do {
             [_logic, "taor", _logic getVariable ["taor", DEFAULT_TAOR]] call MAINCLASS;
             [_logic, "blacklist", _logic getVariable ["blacklist", DEFAULT_TAOR]] call MAINCLASS;
 
-            // Startup stage marks, the same shape as the ones in mil_placement and mil_cqb. This
-            // module sits on the nine module gate that holds the loading screen, and until now it
-            // reported one total with nothing inside it, so there was no way to tell time spent
-            // working from time spent waiting on another module.
-            //
-            // Set ALiVE_CP_STARTUP_DIAG to true on the server before the mission starts to get these
-            // lines. Off by default, so a normal run pays nothing. The clock advances whether or not
-            // a line is written, so switching it on part way through still gives truthful stage times.
-            //
-            // One line per stage per module instance. Never inside a placement loop: inline timing in
-            // that path once took mil_placement from fifty seconds to never finishing.
-            private _cpDiagT0 = diag_tickTime;
-            private _cpDiagLast = _cpDiagT0;
-            private _fnc_cpDiagMark = {
-                params ["_stage", ["_detail", ""]];
-                private _now = diag_tickTime;
-                if (!isNil "ALiVE_CP_STARTUP_DIAG" && {ALiVE_CP_STARTUP_DIAG}) then {
-                    ["DIAG-STRIP CP DIAG - %1: %2s for this stage, %3s since init began%4",
-                        _stage,
-                        (round ((_now - _cpDiagLast) * 100)) / 100,
-                        (round ((_now - _cpDiagT0) * 100)) / 100,
-                        if (_detail == "") then {""} else {"   " + _detail}] call ALiVE_fnc_dump;
-                };
-                _cpDiagLast = _now;
-            };
-
             if !(["ALiVE_sys_profile"] call ALiVE_fnc_isModuleAvailable) exitwith {
                 ["Profile System module not placed! Exiting..."] call ALiVE_fnc_DumpR;
                 _logic setVariable ["startupComplete", true];
             };
 
             waituntil {!(isnil "ALiVE_ProfileHandler") && {[ALiVE_ProfileSystem,"startupComplete",false] call ALIVE_fnc_hashGet}};
-            ["waited for the profile system"] call _fnc_cpDiagMark;
 
             [_logic] spawn {
                 params ["_module"];
@@ -479,13 +452,11 @@ switch(_operation) do {
         if (_debug) then {
             ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
             ["CP - Startup"] call ALiVE_fnc_dump;
-            [true] call ALIVE_fnc_timer;
         };
 
 
         [_logic,"loadCivClusters"] call MAINCLASS;
 
-        ["waited for the cluster index and the profile system"] call _fnc_cpDiagMark;
 
         // instantiate static vehicle position data
         [{
@@ -718,7 +689,6 @@ switch(_operation) do {
                 ["CP %2 - Comms clusters %1",count (ALIVE_clustersCivComms select 2), _faction] call ALiVE_fnc_dump;
                 ["CP %2 - Construction clusters %1",count (ALIVE_clustersCivConstruction select 2), _faction] call ALiVE_fnc_dump;
 
-                [] call ALIVE_fnc_timer;
             };
             // DEBUG -------------------------------------------------------------------------------------
 
@@ -910,7 +880,6 @@ switch(_operation) do {
             if(_debug) then {
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
                 ["CP - Placement"] call ALiVE_fnc_dump;
-                [true] call ALIVE_fnc_timer;
             };
             // DEBUG -------------------------------------------------------------------------------------
 
@@ -1183,7 +1152,6 @@ switch(_operation) do {
                             private _cPos = [_cluster, "center"] call ALIVE_fnc_hashGet;
                             if (isNil "_cPos" || {typeName _cPos != "ARRAY"}) then { _cPos = [0,0,0] };
 
-                            ALiVE_DIAG_artyWanted = ALiVE_DIAG_artyWanted + _sectionSize;
                             private _gunsPlaced = 0;
                             for "_g" from 1 to _sectionSize do {
                                 private _safePos = [];
@@ -1205,7 +1173,6 @@ switch(_operation) do {
                                     [_artyClass, _side, _artySourceFaction, "PRIVATE", _safePos, _safeDir, false, _artySourceFaction] call ALIVE_fnc_createProfilesCrewedVehicle;
                                     _countProfiles = _countProfiles + 2;
                                     _gunsPlaced = _gunsPlaced + 1;
-                                    ALiVE_DIAG_artyPlaced = ALiVE_DIAG_artyPlaced + 1;
                                 };
                             };
 
@@ -1253,33 +1220,9 @@ switch(_operation) do {
                 };
             };
 
-            // DIAG-STRIP (load time): a run of this mission spent seventeen seconds and
-            // more between the artillery line above and the sea patrol line below with
-            // nothing written in between, so the log could not say where it went. These
-            // two brackets close that gap. They fire ONCE per civ_placement instance,
-            // never per lookup: the group lookup they are timing is called from seventy
-            // places across the mod including live task and air tasking paths, and the
-            // dump function writes to the log whether or not anyone asked, so timing it
-            // at the call site here is the only way to get a number without writing to
-            // every log forever.
-            // DIAG-STRIP (load time): this fallback is nearly the whole of the module startup
-            // cost, and it swings from four seconds to thirty between instances doing much the
-            // same work. That spread says some guns are found a home straight away while others
-            // are searched for and never placed at all. Counting what was asked for, what was
-            // placed, and how many searches it took tells the two apart. There is no other way
-            // to see it: the search reports its failures only for wide searches, and these are
-            // narrow ones.
-            ALiVE_DIAG_artyCalls = 0;
-            ALiVE_DIAG_artyWanted = 0;
-            ALiVE_DIAG_artyPlaced = 0;
-
-            private _diagT0 = diag_tickTime;
-
             // place any batteries the group pull could not provide
             call _fnc_placeFallbackArtillery;
 
-            private _diagArty = diag_tickTime - _diagT0;
-            private _diagT1 = diag_tickTime;
 
             if(_countMotorized > 0) then {
 
@@ -1334,29 +1277,6 @@ switch(_operation) do {
                 if!(_group == "FALSE") then {
                     _groups pushback _group;
                 };
-            };
-
-            // DIAG-STRIP (load time): closing bracket for the note above. Reports how
-            // long picking the groups took and how many picks that was, so the cost per
-            // lookup can be worked out rather than guessed at. Motorized is listed twice
-            // when the first pass found nothing and the fallback ran, so the lookup count
-            // is a floor rather than an exact figure.
-            private _diagGroups = diag_tickTime - _diagT1;
-            private _diagPicks = _countMotorized + _countInfantry + _countAir + _countSpecOps;
-            if (!isNil "_debug" && {_debug}) then {
-                ["DIAG-STRIP CP DIAG [%1] - group selection %2s over %3+ lookups (motor %4, inf %5, air %6, spec %7) = %8s each; fallback artillery %9s",
-                    _faction,
-                    (round (_diagGroups * 100)) / 100,
-                    _diagPicks,
-                    _countMotorized, _countInfantry, _countAir, _countSpecOps,
-                    if (_diagPicks > 0) then { (round ((_diagGroups / _diagPicks) * 1000)) / 1000 } else { 0 },
-                    (round (_diagArty * 100)) / 100] call ALiVE_fnc_dump;
-            };
-
-            if (!isNil "_debug" && {_debug}) then {
-                ["DIAG-STRIP CP DIAG [%1] - artillery: %2 guns wanted, %3 placed, %4 searches run (%5 per gun placed)",
-                    _faction, ALiVE_DIAG_artyWanted, ALiVE_DIAG_artyPlaced, ALiVE_DIAG_artyCalls,
-                    if (ALiVE_DIAG_artyPlaced > 0) then { round (ALiVE_DIAG_artyCalls / ALiVE_DIAG_artyPlaced) } else { -1 }] call ALiVE_fnc_dump;
             };
 
             _groups = _groups - ALiVE_PLACEMENT_GROUPBLACKLIST;
@@ -1783,7 +1703,6 @@ switch(_operation) do {
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
                 ["CP - Placement completed"] call ALiVE_fnc_dump;
-                [] call ALIVE_fnc_timer;
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------
@@ -1805,7 +1724,6 @@ switch(_operation) do {
 
             // Closing mark. If these stages fall well short of the module own reported INIT COMPLETE
             // TIME then the rest of the cost sits somewhere this instrumentation does not reach.
-            ["placement complete"] call _fnc_cpDiagMark;
 
             // set module as started
             _logic setVariable ["startupComplete", true];
