@@ -198,7 +198,7 @@ switch(_operation) do {
 
         private _debug = [_logic,"debug"] call ALIVE_fnc_hashGet;
 
-        if (_args isequaltype "") then {
+        if (_args isEqualType "" || {_args isEqualType 0}) then {
             private _jobID = _args;
 
             private _analysisJobs = [_logic,"analysisJobs"] call ALIVE_fnc_hashGet;
@@ -828,7 +828,7 @@ switch(_operation) do {
             _faction = _intelItem select 1;
             _side = _intelItem select 2;
 
-            private ["_markers","_alpha","_marker","_color","_dir","_icon","_profiles","_m"];
+            private ["_markers","_alpha","_marker","_color","_dir","_icon","_m"];
 
             // on the first run create all the markers
             if(_runCount == 0) then {
@@ -872,7 +872,6 @@ switch(_operation) do {
             } else {
 
                 _markers = _jobArgs select 1 select 0;
-                _profiles = _jobArgs select 1 select 1;
 
                 // set alpha based on age of intel item
                 if(_runCount <= 1) then {
@@ -934,7 +933,7 @@ switch(_operation) do {
 
     case "runAgentKIAIntelligenceItemAnalysis": {
 
-        private ["_jobID","_jobArgs","_runCount","_debug","_intelItem","_position","_faction","_m","_profiles"];
+        private ["_jobID","_jobArgs","_runCount","_debug","_intelItem","_position","_faction","_m"];
 
         if(typeName _args == "ARRAY") then {
 
@@ -983,7 +982,6 @@ switch(_operation) do {
             } else {
 
                 _markers = _jobArgs select 1 select 0;
-                _profiles = _jobArgs select 1 select 1;
 
                 // set alpha based on age of intel item
                 if(_runCount <= 1) then {
