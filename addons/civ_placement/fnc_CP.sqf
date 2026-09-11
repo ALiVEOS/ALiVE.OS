@@ -377,7 +377,7 @@ switch(_operation) do {
     case "roadblockCompositions": {
         _result = [_logic,_operation,_args,""] call ALIVE_fnc_OOsimpleOperation;
     };
-    // Main process
+
     case "init": {
 
         // Put the module's own areas out of sight on every machine that has a screen.
@@ -400,7 +400,6 @@ switch(_operation) do {
         };
 
         if (isServer) then {
-
             // if server, initialise module game logic
             _logic setVariable ["super", SUPERCLASS];
             _logic setVariable ["class", MAINCLASS];
@@ -445,150 +444,137 @@ switch(_operation) do {
             waituntil {!(isnil "ALiVE_ProfileHandler") && {[ALiVE_ProfileSystem,"startupComplete",false] call ALIVE_fnc_hashGet}};
             ["waited for the profile system"] call _fnc_cpDiagMark;
 
-            [_logic,"start"] call MAINCLASS;
+            [_logic] spawn {
+                params ["_module"];
+                waituntil {!(isnil "ALIVE_profileSystemInit")};
+
+                if (isnil QMOD(REQUIRE_INITIALISED)) then {
+                    [{
+                        params ["_module"];
+                        [_module,"start"] call MAINCLASS;
+                    }, [_module]] call CBA_fnc_directCall;
+                } else {
+                    [_module,"start"] call MAINCLASS;
+                };
+            };
         } else {
             [_logic, "taor", _logic getVariable ["taor", DEFAULT_TAOR]] call MAINCLASS;
             [_logic, "blacklist", _logic getVariable ["blacklist", DEFAULT_TAOR]] call MAINCLASS;
         };
     };
+
     case "start": {
-        if (isServer) then {
+        if (!isServer) exitwith {};
 
-            private [
-                "_debug","_clusterType","_placement","_worldName","_file","_clusters","_cluster","_taor","_taorClusters","_blacklist",
-                "_sizeFilter","_priorityFilter","_placeSeaPatrols","_blacklistClusters","_center","_faction","_error"
-            ];
+        private [
+            "_clusterType","_placement","_worldName","_file","_clusters","_cluster","_taor","_taorClusters","_blacklist",
+            "_sizeFilter","_priorityFilter","_placeSeaPatrols","_blacklistClusters","_center","_error"
+        ];
 
-            _debug = [_logic, "debug"] call MAINCLASS;
-            _faction = [_logic, "faction"] call MAINCLASS;
-            private _onEachSpawn = [_logic, "onEachSpawn"] call MAINCLASS;
-            private _onEachSpawnOnce = [_logic, "onEachSpawnOnce"] call MAINCLASS;
+        private _debug = [_logic,"debug"] call MAINCLASS;
+        private _faction = [_logic,"faction"] call MAINCLASS;
+        private _onEachSpawn = [_logic,"onEachSpawn"] call MAINCLASS;
+        private _onEachSpawnOnce = [_logic,"onEachSpawnOnce"] call MAINCLASS;
 
-            if(_debug) then {
-                ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                ["CP - Startup"] call ALiVE_fnc_dump;
-                [true] call ALIVE_fnc_timer;
+        if (_debug) then {
+            ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
+            ["CP - Startup"] call ALiVE_fnc_dump;
+            [true] call ALIVE_fnc_timer;
+        };
+
+
+        [_logic,"loadCivClusters"] call MAINCLASS;
+
+        ["waited for the cluster index and the profile system"] call _fnc_cpDiagMark;
+
+        // instantiate static vehicle position data
+        [{
+            [] call ALIVE_fnc_groupGenerateConfigData;
+        }] call CBA_fnc_directCall;
+
+        //Only spawn warning on version mismatch since map index changes were reduced
+        //uncomment //_error = true; below for exit
+        _error = false;
+        if!(isNil "ALIVE_clusterBuild") then {
+            private ["_clusterVersion","_clusterBuild","_clusterType","_version","_build","_message"];
+
+            _clusterVersion = ALIVE_clusterBuild select 2;
+            _clusterBuild = ALIVE_clusterBuild select 3;
+            _clusterType = ALIVE_clusterBuild select 4;
+            _version = productVersion select 2;
+            _build = productVersion select 3;
+
+            if!(_clusterType == 'Stable') then {
+                _message = "Warning ALiVE requires the STABLE game build";
+                [_message] call ALIVE_fnc_dump;
+                //_error = true;
             };
 
-
-            // Whichever instance gets here first compiles the terrain cluster index and the rest wait
-            // on its flag, so the readings below separate the one that paid for it from the ones that
-            // only queued. The civilian index is the larger of the two by a wide margin: on Cam Lao
-            // Nam it is thirty five thousand lines against the military index seven thousand.
-            private _compiledClusters = false;
-            if(isNil "ALIVE_clustersCiv" && isNil "ALIVE_loadedCivClusters") then {
-                _worldName = toLower(worldName);
-                _file = format["x\alive\addons\civ_placement\clusters\clusters.%1_civ.sqf", _worldName];
-                // Claimed before the compile, not after. The compile yields to the scheduler all the way
-                // through, so a flag raised only at the end let every concurrent instance pass the test
-                // above and compile the same file over again. The wait below demands true, not merely set.
-                ALIVE_loadedCIVClusters = false;
-                call compile preprocessFileLineNumbers _file;
-                ALIVE_loadedCIVClusters = true;
-                _compiledClusters = true;
+            if(!(_clusterVersion == _version) || !(_clusterBuild == _build)) then {
+                _message = format["Warning: This version of ALiVE is build for A3 version: %1.%2. The server is running version: %3.%4. Please contact your server administrator and update to the latest ALiVE release version.",_clusterVersion, _clusterBuild, _version, _build];
+                [_message] call ALIVE_fnc_dump;
+                //_error = true;
             };
-            if (_compiledClusters) then {
-                // The index is an ALiVE hash, so the cluster count is the length of its key list
-                // rather than the length of the hash itself, which is always three.
-                private _clusterCount = -1;
-                if (!isNil "ALIVE_clustersCiv" && {ALIVE_clustersCiv isEqualType []} && {count ALIVE_clustersCiv > 1}) then {
-                    _clusterCount = count (ALIVE_clustersCiv select 1);
-                };
-                ["compiled the terrain cluster index", format ["%1, %2 clusters", _file, _clusterCount]] call _fnc_cpDiagMark;
-            } else {
-                ["another instance is compiling the cluster index"] call _fnc_cpDiagMark;
-            };
+        };
 
-            waituntil {!(isnil "ALIVE_loadedCIVClusters") && {ALIVE_loadedCIVClusters}};
-            waituntil {!(isnil "ALIVE_profileSystemInit")};
-            ["waited for the cluster index and the profile system"] call _fnc_cpDiagMark;
+        if !(_error) then {
+            _clusterType = [_logic, "clusterType"] call MAINCLASS;
+            _placement = [_logic, "withPlacement"] call MAINCLASS;
+            _taor = [_logic, "taor"] call MAINCLASS;
+            _blacklist = [_logic, "blacklist"] call MAINCLASS;
+            _sizeFilter = parseNumber([_logic, "sizeFilter"] call MAINCLASS);
+            _priorityFilter = parseNumber([_logic, "priorityFilter"] call MAINCLASS);
+            _placeSeaPatrols = [_logic, "placeSeaPatrols"] call MAINCLASS;
 
-            // instantiate static vehicle position data
-            private _builtGroupConfig = false;
-            if(isNil "ALIVE_groupConfig") then {
-                [] call ALIVE_fnc_groupGenerateConfigData;
-                _builtGroupConfig = true;
-            };
-            if (_builtGroupConfig) then {
-                ["built the group config data"] call _fnc_cpDiagMark;
+
+            // check markers for existance
+            private ["_marker","_counter"];
+
+            if(count _taor > 0) then {
+                _counter = 0;
+                {
+                    _marker =_x;
+                    if!(_marker call ALIVE_fnc_markerExists) then {
+                        _taor = _taor - [_taor select _counter];
+                    }else{
+                        _counter = _counter + 1;
+                    };
+                } forEach _taor;
             };
 
-            // all CMP modules execute at the same time
-            // ALIVE_groupConfig is created, but not 100% filled
-            // before the rest of the modules start creating their profiles
-
-            waitUntil {!isnil "ALiVE_GROUP_CONFIG_DATA_GENERATED"};
-            ["waited for the group config data"] call _fnc_cpDiagMark;
-
-            //Only spawn warning on version mismatch since map index changes were reduced
-            //uncomment //_error = true; below for exit
-            _error = false;
-            if!(isNil "ALIVE_clusterBuild") then {
-                private ["_clusterVersion","_clusterBuild","_clusterType","_version","_build","_message"];
-
-                _clusterVersion = ALIVE_clusterBuild select 2;
-                _clusterBuild = ALIVE_clusterBuild select 3;
-                _clusterType = ALIVE_clusterBuild select 4;
-                _version = productVersion select 2;
-                _build = productVersion select 3;
-
-                if!(_clusterType == 'Stable') then {
-                    _message = "Warning ALiVE requires the STABLE game build";
-                    [_message] call ALIVE_fnc_dump;
-                    //_error = true;
-                };
-
-                if(!(_clusterVersion == _version) || !(_clusterBuild == _build)) then {
-                    _message = format["Warning: This version of ALiVE is build for A3 version: %1.%2. The server is running version: %3.%4. Please contact your server administrator and update to the latest ALiVE release version.",_clusterVersion, _clusterBuild, _version, _build];
-                    [_message] call ALIVE_fnc_dump;
-                    //_error = true;
-                };
+            if(count _blacklist > 0) then {
+                _counter = 0;
+                {
+                    _marker =_x;
+                    if!(_marker call ALIVE_fnc_markerExists) then {
+                        _blacklist = _blacklist - [_blacklist select _counter];
+                    }else{
+                        _counter = _counter + 1;
+                    };
+                } forEach _blacklist;
             };
 
-            if!(_error) then {
-                _clusterType = [_logic, "clusterType"] call MAINCLASS;
-                _placement = [_logic, "withPlacement"] call MAINCLASS;
-                _taor = [_logic, "taor"] call MAINCLASS;
-                _blacklist = [_logic, "blacklist"] call MAINCLASS;
-                _sizeFilter = parseNumber([_logic, "sizeFilter"] call MAINCLASS);
-                _priorityFilter = parseNumber([_logic, "priorityFilter"] call MAINCLASS);
-                _placeSeaPatrols = [_logic, "placeSeaPatrols"] call MAINCLASS;
+            private ["_clusters"];
 
+            _clusters = DEFAULT_OBJECTIVES;
 
-                // check markers for existance
-                private ["_marker","_counter"];
-
-                if(count _taor > 0) then {
-                    _counter = 0;
+            switch(_clusterType) do {
+                case "All": {
+                    _clusters = ALIVE_clustersCiv select 2;
+                    _clusters = [_clusters,_sizeFilter,_priorityFilter] call ALIVE_fnc_copyClusters;
+                    _clusters = [_clusters, _taor] call ALIVE_fnc_clustersInsideMarker;
+                    _clusters = [_clusters, _blacklist] call ALIVE_fnc_clustersOutsideMarker;
                     {
-                        _marker =_x;
-                        if!(_marker call ALIVE_fnc_markerExists) then {
-                            _taor = _taor - [_taor select _counter];
-                        }else{
-                            _counter = _counter + 1;
-                        };
-                    } forEach _taor;
+                        [_x, "debug", [_logic, "debug"] call MAINCLASS] call ALIVE_fnc_cluster;
+                    } forEach _clusters;
+                    [_logic, "objectives", _clusters] call MAINCLASS;
                 };
-
-                if(count _blacklist > 0) then {
-                    _counter = 0;
-                    {
-                        _marker =_x;
-                        if!(_marker call ALIVE_fnc_markerExists) then {
-                            _blacklist = _blacklist - [_blacklist select _counter];
-                        }else{
-                            _counter = _counter + 1;
+                case "HQ": {
+                    if !(isnil "ALIVE_clustersCivHQ") then {
+                        if(_sizeFilter == 160) then {
+                            _sizeFilter = 0;
                         };
-                    } forEach _blacklist;
-                };
-
-                private ["_clusters"];
-
-                _clusters = DEFAULT_OBJECTIVES;
-
-                switch(_clusterType) do {
-                    case "All": {
-                        _clusters = ALIVE_clustersCiv select 2;
+                        _clusters = ALIVE_clustersCivHQ select 2;
                         _clusters = [_clusters,_sizeFilter,_priorityFilter] call ALIVE_fnc_copyClusters;
                         _clusters = [_clusters, _taor] call ALIVE_fnc_clustersInsideMarker;
                         _clusters = [_clusters, _blacklist] call ALIVE_fnc_clustersOutsideMarker;
@@ -597,319 +583,317 @@ switch(_operation) do {
                         } forEach _clusters;
                         [_logic, "objectives", _clusters] call MAINCLASS;
                     };
-                    case "HQ": {
-                        if !(isnil "ALIVE_clustersCivHQ") then {
-                            if(_sizeFilter == 160) then {
-                                _sizeFilter = 0;
-                            };
-                            _clusters = ALIVE_clustersCivHQ select 2;
-                            _clusters = [_clusters,_sizeFilter,_priorityFilter] call ALIVE_fnc_copyClusters;
-                            _clusters = [_clusters, _taor] call ALIVE_fnc_clustersInsideMarker;
-                            _clusters = [_clusters, _blacklist] call ALIVE_fnc_clustersOutsideMarker;
-                            {
-                                [_x, "debug", [_logic, "debug"] call MAINCLASS] call ALIVE_fnc_cluster;
-                            } forEach _clusters;
-                            [_logic, "objectives", _clusters] call MAINCLASS;
-                        };
-                    };
-                    case "Power": {
-                        if !(isnil "ALIVE_clustersCivPower") then {
-                            if(_sizeFilter == 160) then {
-                                _sizeFilter = 0;
-                            };
-                            _clusters = ALIVE_clustersCivPower select 2;
-                            _clusters = [_clusters,_sizeFilter,_priorityFilter] call ALIVE_fnc_copyClusters;
-                            _clusters = [_clusters, _taor] call ALIVE_fnc_clustersInsideMarker;
-                            _clusters = [_clusters, _blacklist] call ALIVE_fnc_clustersOutsideMarker;
-                            {
-                                [_x, "debug", [_logic, "debug"] call MAINCLASS] call ALIVE_fnc_cluster;
-                            } forEach _clusters;
-                            [_logic, "objectives", _clusters] call MAINCLASS;
-                        };
-                    };
-                    case "Comms": {
-                        if !(isnil "ALIVE_clustersCivComms") then {
-                            if(_sizeFilter == 160) then {
-                                _sizeFilter = 0;
-                            };
-                            _clusters = ALIVE_clustersCivComms select 2;
-                            _clusters = [_clusters,_sizeFilter,_priorityFilter] call ALIVE_fnc_copyClusters;
-                            _clusters = [_clusters, _taor] call ALIVE_fnc_clustersInsideMarker;
-                            _clusters = [_clusters, _blacklist] call ALIVE_fnc_clustersOutsideMarker;
-                            {
-                                [_x, "debug", [_logic, "debug"] call MAINCLASS] call ALIVE_fnc_cluster;
-                            } forEach _clusters;
-                            [_logic, "objectives", _clusters] call MAINCLASS;
-                        };
-                    };
-                    case "Marine": {
-
+                };
+                case "Power": {
+                    if !(isnil "ALIVE_clustersCivPower") then {
                         if(_sizeFilter == 160) then {
                             _sizeFilter = 0;
                         };
-                        if !(isnil "ALIVE_clustersCivMarine") then {
-                            _clusters = ALIVE_clustersCivMarine select 2;
-                            _clusters = [_clusters,_sizeFilter,_priorityFilter] call ALIVE_fnc_copyClusters;
-                            _clusters = [_clusters, _taor] call ALIVE_fnc_clustersInsideMarker;
-                            _clusters = [_clusters, _blacklist] call ALIVE_fnc_clustersOutsideMarker;
-                            {
-                                [_x, "debug", [_logic, "debug"] call MAINCLASS] call ALIVE_fnc_cluster;
-                            } forEach _clusters;
-                            [_logic, "objectives", _clusters] call MAINCLASS;
-                        };
-                    };
-                    case "Rail": {
-                        if(_sizeFilter == 160) then {
-                            _sizeFilter = 0;
-                        };
-                        if !(isnil "ALIVE_clustersCivRail") then {
-                            _clusters = ALIVE_clustersCivRail select 2;
-                            _clusters = [_clusters,_sizeFilter,_priorityFilter] call ALIVE_fnc_copyClusters;
-                            _clusters = [_clusters, _taor] call ALIVE_fnc_clustersInsideMarker;
-                            _clusters = [_clusters, _blacklist] call ALIVE_fnc_clustersOutsideMarker;
-                            {
-                                [_x, "debug", [_logic, "debug"] call MAINCLASS] call ALIVE_fnc_cluster;
-                            } forEach _clusters;
-                            [_logic, "objectives", _clusters] call MAINCLASS;
-                        };
-                    };
-                    case "Fuel": {
-                        if(_sizeFilter == 160) then {
-                            _sizeFilter = 0;
-                        };
-                        if !(isnil "ALIVE_clustersCivFuel") then {
-                            _clusters = ALIVE_clustersCivFuel select 2;
-                            _clusters = [_clusters,_sizeFilter,_priorityFilter] call ALIVE_fnc_copyClusters;
-                            _clusters = [_clusters, _taor] call ALIVE_fnc_clustersInsideMarker;
-                            _clusters = [_clusters, _blacklist] call ALIVE_fnc_clustersOutsideMarker;
-                            {
-                                [_x, "debug", [_logic, "debug"] call MAINCLASS] call ALIVE_fnc_cluster;
-                            } forEach _clusters;
-                            [_logic, "objectives", _clusters] call MAINCLASS;
-                        };
-                    };
-                    case "Construction": {
-                        if(_sizeFilter == 160) then {
-                            _sizeFilter = 0;
-                        };
-                        if !(isnil "ALIVE_clustersCivConstruction") then {
-                            _clusters = ALIVE_clustersCivConstruction select 2;
-                            _clusters = [_clusters,_sizeFilter,_priorityFilter] call ALIVE_fnc_copyClusters;
-                            _clusters = [_clusters, _taor] call ALIVE_fnc_clustersInsideMarker;
-                            _clusters = [_clusters, _blacklist] call ALIVE_fnc_clustersOutsideMarker;
-                            {
-                                [_x, "debug", [_logic, "debug"] call MAINCLASS] call ALIVE_fnc_cluster;
-                            } forEach _clusters;
-                            [_logic, "objectives", _clusters] call MAINCLASS;
-                        };
-                    };
-                    case "Settlement": {
-                        if !(isnil "ALIVE_clustersCivSettlement") then {
-                             _clusters = ALIVE_clustersCivSettlement select 2;
-                             _clusters = [_clusters,_sizeFilter,_priorityFilter] call ALIVE_fnc_copyClusters;
-                             _clusters = [_clusters, _taor] call ALIVE_fnc_clustersInsideMarker;
-                             _clusters = [_clusters, _blacklist] call ALIVE_fnc_clustersOutsideMarker;
-                             {
-                                  [_x, "debug", [_logic, "debug"] call MAINCLASS] call ALIVE_fnc_cluster;
-                             } forEach _clusters;
-                             [_logic, "objectives", _clusters] call MAINCLASS;
-                          };
+                        _clusters = ALIVE_clustersCivPower select 2;
+                        _clusters = [_clusters,_sizeFilter,_priorityFilter] call ALIVE_fnc_copyClusters;
+                        _clusters = [_clusters, _taor] call ALIVE_fnc_clustersInsideMarker;
+                        _clusters = [_clusters, _blacklist] call ALIVE_fnc_clustersOutsideMarker;
+                        {
+                            [_x, "debug", [_logic, "debug"] call MAINCLASS] call ALIVE_fnc_cluster;
+                        } forEach _clusters;
+                        [_logic, "objectives", _clusters] call MAINCLASS;
                     };
                 };
+                case "Comms": {
+                    if !(isnil "ALIVE_clustersCivComms") then {
+                        if(_sizeFilter == 160) then {
+                            _sizeFilter = 0;
+                        };
+                        _clusters = ALIVE_clustersCivComms select 2;
+                        _clusters = [_clusters,_sizeFilter,_priorityFilter] call ALIVE_fnc_copyClusters;
+                        _clusters = [_clusters, _taor] call ALIVE_fnc_clustersInsideMarker;
+                        _clusters = [_clusters, _blacklist] call ALIVE_fnc_clustersOutsideMarker;
+                        {
+                            [_x, "debug", [_logic, "debug"] call MAINCLASS] call ALIVE_fnc_cluster;
+                        } forEach _clusters;
+                        [_logic, "objectives", _clusters] call MAINCLASS;
+                    };
+                };
+                case "Marine": {
 
-                // If sea patrols are to be placed, store the marine objectives.
-                if (_placeSeaPatrols > 0) then {
-
+                    if(_sizeFilter == 160) then {
+                        _sizeFilter = 0;
+                    };
                     if !(isnil "ALIVE_clustersCivMarine") then {
-                        private _marineClusters = ALIVE_clustersCivMarine select 2;
-
-                        _marineClusters = [_marineClusters,0,_priorityFilter] call ALIVE_fnc_copyClusters;
-                        _marineClusters = [_marineClusters, _taor] call ALIVE_fnc_clustersInsideMarker;
-                        _marineClusters = [_marineClusters, _blacklist] call ALIVE_fnc_clustersOutsideMarker;
-
-                        [_logic, "objectivesMarine", _marineClusters] call MAINCLASS;
+                        _clusters = ALIVE_clustersCivMarine select 2;
+                        _clusters = [_clusters,_sizeFilter,_priorityFilter] call ALIVE_fnc_copyClusters;
+                        _clusters = [_clusters, _taor] call ALIVE_fnc_clustersInsideMarker;
+                        _clusters = [_clusters, _blacklist] call ALIVE_fnc_clustersOutsideMarker;
+                        {
+                            [_x, "debug", [_logic, "debug"] call MAINCLASS] call ALIVE_fnc_cluster;
+                        } forEach _clusters;
+                        [_logic, "objectives", _clusters] call MAINCLASS;
                     };
                 };
-
-
-                // DEBUG -------------------------------------------------------------------------------------
-                if(_debug) then {
-                    ["CP %1 - Startup completed", _faction] call ALiVE_fnc_dump;
-                    ["CP %2 - Filtered Civ clusters %1",count _clusters, _faction] call ALiVE_fnc_dump;
-                    ["CP %2 - All Civilian clusters %1", count (ALIVE_clustersCiv select 2), _faction] call ALiVE_fnc_dump;
-                    ["CP %2 - Settlement clusters %1", count (ALIVE_clustersCivSettlement select 2), _faction] call ALiVE_fnc_dump;
-                    ["CP %2 - HQ clusters %1",count (ALIVE_clustersCivHQ select 2), _faction] call ALiVE_fnc_dump;
-                    ["CP %2 - Marine clusters %1",count (ALIVE_clustersCivMarine select 2), _faction] call ALiVE_fnc_dump;
-                    ["CP %2 - Rail clusters %1",count (ALIVE_clustersCivRail select 2), _faction] call ALiVE_fnc_dump;
-                    ["CP %2 - Fuel clusters %1",count (ALIVE_clustersCivFuel select 2), _faction] call ALiVE_fnc_dump;
-                    ["CP %2 - Power clusters %1",count (ALIVE_clustersCivPower select 2), _faction] call ALiVE_fnc_dump;
-                    ["CP %2 - Comms clusters %1",count (ALIVE_clustersCivComms select 2), _faction] call ALiVE_fnc_dump;
-                    ["CP %2 - Construction clusters %1",count (ALIVE_clustersCivConstruction select 2), _faction] call ALiVE_fnc_dump;
-
-                    [] call ALIVE_fnc_timer;
+                case "Rail": {
+                    if(_sizeFilter == 160) then {
+                        _sizeFilter = 0;
+                    };
+                    if !(isnil "ALIVE_clustersCivRail") then {
+                        _clusters = ALIVE_clustersCivRail select 2;
+                        _clusters = [_clusters,_sizeFilter,_priorityFilter] call ALIVE_fnc_copyClusters;
+                        _clusters = [_clusters, _taor] call ALIVE_fnc_clustersInsideMarker;
+                        _clusters = [_clusters, _blacklist] call ALIVE_fnc_clustersOutsideMarker;
+                        {
+                            [_x, "debug", [_logic, "debug"] call MAINCLASS] call ALIVE_fnc_cluster;
+                        } forEach _clusters;
+                        [_logic, "objectives", _clusters] call MAINCLASS;
+                    };
                 };
-                // DEBUG -------------------------------------------------------------------------------------
-
-                if(_placement) then {
-
-                    if!(ALIVE_loadProfilesPersistent) then {
-
-                        if(count _clusters > 0) then {
-                            // start placement
-                            [_logic, "placement"] call MAINCLASS;
-                        }else{
-                            ["CP [%1] - Warning no locations found for placement, you need to inclcude civilian locations within the TAOR marker: %2",_faction, _taor] call ALiVE_fnc_dumpR;
-
-                            // set module as started
-                            _logic setVariable ["startupComplete", true];
-                        };
-
-                    }else{
-
-                        // Persistent load: "placement" is skipped (profiles were
-                        // restored elsewhere) so GVAR(ROADBLOCK_LOCATIONS) - which
-                        // the spawn loop below iterates unconditionally - is left
-                        // undefined and the loop crashes. Mirror the pattern in
-                        // civ_placement_custom (fnc_CPC.sqf ~250-281): seed the
-                        // queue from the persisted ALIVE_CIV_PLACEMENT_ROADBLOCK_LOCATIONS
-                        // cache by intersecting it with this module's objectives.
-                        // Fixes #494.
-                        if (isNil QGVAR(ROADBLOCK_LOCATIONS)) then {
-                            GVAR(ROADBLOCK_LOCATIONS) = [];
-                        };
-
-                        private _roadBlocks = parseNumber([_logic, "roadBlocks"] call MAINCLASS);
-                        if (_roadBlocks > 0 && isNil QMOD(COMPOSITIONS_LOADED)) then {
-                            // #922: when COMPOSITIONS_LOADED is set, sys_data has already restored these roadblocks this load - re-seeding here would duplicate them. (The queue inited above stays [], so the spawn loop is still safe.)
-                            private _restoredRoadblocks = 0;
-                            private _savedRoadblockLocations = if (isNil "ALIVE_CIV_PLACEMENT_ROADBLOCK_LOCATIONS") then {[]} else {+ALIVE_CIV_PLACEMENT_ROADBLOCK_LOCATIONS};
-
+                case "Fuel": {
+                    if(_sizeFilter == 160) then {
+                        _sizeFilter = 0;
+                    };
+                    if !(isnil "ALIVE_clustersCivFuel") then {
+                        _clusters = ALIVE_clustersCivFuel select 2;
+                        _clusters = [_clusters,_sizeFilter,_priorityFilter] call ALIVE_fnc_copyClusters;
+                        _clusters = [_clusters, _taor] call ALIVE_fnc_clustersInsideMarker;
+                        _clusters = [_clusters, _blacklist] call ALIVE_fnc_clustersOutsideMarker;
+                        {
+                            [_x, "debug", [_logic, "debug"] call MAINCLASS] call ALIVE_fnc_cluster;
+                        } forEach _clusters;
+                        [_logic, "objectives", _clusters] call MAINCLASS;
+                    };
+                };
+                case "Construction": {
+                    if(_sizeFilter == 160) then {
+                        _sizeFilter = 0;
+                    };
+                    if !(isnil "ALIVE_clustersCivConstruction") then {
+                        _clusters = ALIVE_clustersCivConstruction select 2;
+                        _clusters = [_clusters,_sizeFilter,_priorityFilter] call ALIVE_fnc_copyClusters;
+                        _clusters = [_clusters, _taor] call ALIVE_fnc_clustersInsideMarker;
+                        _clusters = [_clusters, _blacklist] call ALIVE_fnc_clustersOutsideMarker;
+                        {
+                            [_x, "debug", [_logic, "debug"] call MAINCLASS] call ALIVE_fnc_cluster;
+                        } forEach _clusters;
+                        [_logic, "objectives", _clusters] call MAINCLASS;
+                    };
+                };
+                case "Settlement": {
+                    if !(isnil "ALIVE_clustersCivSettlement") then {
+                            _clusters = ALIVE_clustersCivSettlement select 2;
+                            _clusters = [_clusters,_sizeFilter,_priorityFilter] call ALIVE_fnc_copyClusters;
+                            _clusters = [_clusters, _taor] call ALIVE_fnc_clustersInsideMarker;
+                            _clusters = [_clusters, _blacklist] call ALIVE_fnc_clustersOutsideMarker;
                             {
-                                private _center = [_x, "center"] call ALIVE_fnc_hashGet;
-                                private _clusterSize = [_x, "size"] call ALIVE_fnc_hashGet;
-                                private _roadblockLocation = [_center, _clusterSize];
-
-                                if ((_savedRoadblockLocations findIf {_x isEqualTo _roadblockLocation}) >= 0 && {(GVAR(ROADBLOCK_LOCATIONS) findIf {_x isEqualTo _roadblockLocation}) < 0}) then {
-                                    GVAR(ROADBLOCK_LOCATIONS) pushBack _roadblockLocation;
-                                    _restoredRoadblocks = _restoredRoadblocks + 1;
-                                };
-                            } forEach ([_logic, "objectives"] call MAINCLASS);
-
-                            if (_debug) then {
-                                ["CP - Restored %1 deferred roadblock locations for persistent load", _restoredRoadblocks] call ALiVE_fnc_dump;
-                            };
+                                [_x, "debug", [_logic, "debug"] call MAINCLASS] call ALIVE_fnc_cluster;
+                            } forEach _clusters;
+                            [_logic, "objectives", _clusters] call MAINCLASS;
                         };
+                };
+            };
 
-                        // DEBUG -------------------------------------------------------------------------------------
-                        if(_debug) then { ["CP - Profiles are persistent, no creation of profiles"] call ALiVE_fnc_dump; };
-                        // DEBUG -------------------------------------------------------------------------------------
+            // If sea patrols are to be placed, store the marine objectives.
+            if (_placeSeaPatrols > 0) then {
+
+                if !(isnil "ALIVE_clustersCivMarine") then {
+                    private _marineClusters = ALIVE_clustersCivMarine select 2;
+
+                    _marineClusters = [_marineClusters,0,_priorityFilter] call ALIVE_fnc_copyClusters;
+                    _marineClusters = [_marineClusters, _taor] call ALIVE_fnc_clustersInsideMarker;
+                    _marineClusters = [_marineClusters, _blacklist] call ALIVE_fnc_clustersOutsideMarker;
+
+                    [_logic, "objectivesMarine", _marineClusters] call MAINCLASS;
+                };
+            };
+
+
+            // DEBUG -------------------------------------------------------------------------------------
+            if(_debug) then {
+                ["CP %1 - Startup completed", _faction] call ALiVE_fnc_dump;
+                ["CP %2 - Filtered Civ clusters %1",count _clusters, _faction] call ALiVE_fnc_dump;
+                ["CP %2 - All Civilian clusters %1", count (ALIVE_clustersCiv select 2), _faction] call ALiVE_fnc_dump;
+                ["CP %2 - Settlement clusters %1", count (ALIVE_clustersCivSettlement select 2), _faction] call ALiVE_fnc_dump;
+                ["CP %2 - HQ clusters %1",count (ALIVE_clustersCivHQ select 2), _faction] call ALiVE_fnc_dump;
+                ["CP %2 - Marine clusters %1",count (ALIVE_clustersCivMarine select 2), _faction] call ALiVE_fnc_dump;
+                ["CP %2 - Rail clusters %1",count (ALIVE_clustersCivRail select 2), _faction] call ALiVE_fnc_dump;
+                ["CP %2 - Fuel clusters %1",count (ALIVE_clustersCivFuel select 2), _faction] call ALiVE_fnc_dump;
+                ["CP %2 - Power clusters %1",count (ALIVE_clustersCivPower select 2), _faction] call ALiVE_fnc_dump;
+                ["CP %2 - Comms clusters %1",count (ALIVE_clustersCivComms select 2), _faction] call ALiVE_fnc_dump;
+                ["CP %2 - Construction clusters %1",count (ALIVE_clustersCivConstruction select 2), _faction] call ALiVE_fnc_dump;
+
+                [] call ALIVE_fnc_timer;
+            };
+            // DEBUG -------------------------------------------------------------------------------------
+
+            if(_placement) then {
+
+                if!(ALIVE_loadProfilesPersistent) then {
+
+                    if(count _clusters > 0) then {
+                        // start placement
+                        [_logic, "placement"] call MAINCLASS;
+                    }else{
+                        ["CP [%1] - Warning no locations found for placement, you need to inclcude civilian locations within the TAOR marker: %2",_faction, _taor] call ALiVE_fnc_dumpR;
 
                         // set module as started
                         _logic setVariable ["startupComplete", true];
-
-                    };
-
-                    // Start Roadblock spawn checker
-                    if (parsenumber([_logic, "roadBlocks"] call MAINCLASS) > 0) then {
-                        [_logic] spawn {
-
-                            private ["_logic","_roadBlocks","_debug","_maxRoadblockSpawnAttempts","_lastRoadblockDebug"];
-
-                            _logic = _this select 0;
-
-                            _roadBlocks = parsenumber([_logic, "roadBlocks"] call MAINCLASS);
-                            _debug = [_logic, "debug"] call MAINCLASS;
-                            // Read once outside the spawn loop. The picker
-                            // value is a static SQM string (multi-class CSV
-                            // with optional [F:..] filter prefix that
-                            // createRoadblock strips). Threaded into each
-                            // createRoadblock call so the validator's
-                            // multi-class fitment search can sample the
-                            // ticked pool per spawn instead of relying on
-                            // the legacy ALiVE_compositions_roadblocks
-                            // global / category fallback.
-                            private _roadblockComps = [_logic, "roadblockCompositions"] call MAINCLASS;
-                            _maxRoadblockSpawnAttempts = 10;
-                            _lastRoadblockDebug = -30;
-
-                            if (_debug) then { ["TOTAL VAR(ROADBLOCK_LOCATIONS): %1, count: %2", GVAR(ROADBLOCK_LOCATIONS), count GVAR(ROADBLOCK_LOCATIONS)] call ALiVE_fnc_dump };
-											  
-                            while {count GVAR(ROADBLOCK_LOCATIONS) > 0} do {
-                                private ["_timer","_spawnChecks"];
-
-                                _timer = time;
-                                _spawnChecks = 0;
-
-                                {
-                                    private ["_position","_size","_spawn","_attempts","_thisroadblockResult"];
-
-                                    if (!isnil "_x") then {
-
-                                        if (typeName _x == "ARRAY") then {
-                                            _position  = _x select 0;
-                                            _size = _x select 1;
-
-                                            _spawn = false;
-
-                                            if ([_position, ALIVE_spawnRadius,ALIVE_spawnRadiusJet,ALIVE_spawnRadiusHeli] call ALiVE_fnc_anyPlayersInRangeIncludeAir) then {
-                                                _spawn = true;
-                                            } else {
-                                                if ([_position, ALIVE_spawnRadiusJet] call ALiVE_fnc_anyAutonomousInRange > 0) then {
-                                                    _spawn = true;
-                                                };
-                                            };
-
-                                            if (_spawn) then {
-                                                _spawnChecks = _spawnChecks + 1;
-                                                _thisroadblockResult = [_position, _size + 150, ceil(_roadBlocks / 30), _debug, _roadblockComps] call ALiVE_fnc_createRoadblock;
-                                                if (_debug) then { ["_thisroadblockResult: %1, count: %2", _thisroadblockResult, count _thisroadblockResult] call ALiVE_fnc_dump };
-                                                 if (count _thisroadblockResult > 0)  then {
-                                                   GVAR(ROADBLOCK_LOCATIONS) set [_foreachIndex, -1];
-                                                 } else {
-                                                   _attempts = if (count _x > 2) then {_x select 2} else {0};
-                                                   _attempts = _attempts + 1;
-
-                                                   if (_attempts >= _maxRoadblockSpawnAttempts) then {
-                                                       GVAR(ROADBLOCK_LOCATIONS) set [_foreachIndex, -1];
-                                                       if (_debug) then { ["Roadblock at %1 failed to spawn after %2 attempts; removing from queue", _position, _attempts] call ALiVE_fnc_dump };
-                                                   } else {
-                                                       GVAR(ROADBLOCK_LOCATIONS) set [_foreachIndex, [_position, _size, _attempts]];
-                                                   };
-                                                };
-                                                if (_debug) then { ["VAR(ROADBLOCK_LOCATIONS): %1, count: %2", GVAR(ROADBLOCK_LOCATIONS), count GVAR(ROADBLOCK_LOCATIONS)] call ALiVE_fnc_dump };
-                                            };
-                                        };
-                                    };
-                                } foreach GVAR(ROADBLOCK_LOCATIONS);
-
-                                GVAR(ROADBLOCK_LOCATIONS) = GVAR(ROADBLOCK_LOCATIONS) - [-1];
-
-                                if (_debug && {(_spawnChecks > 0) || {time - _lastRoadblockDebug > 30}}) then {
-                                    ["Roadblock iteration time: %1 secs for %2 entries...", time - _timer, count GVAR(ROADBLOCK_LOCATIONS)] call ALiVE_fnc_dump;
-                                    _lastRoadblockDebug = time;
-                                };
-
-                                sleep 1;
-                            };
-                        };
                     };
 
                 }else{
 
+                    // Persistent load: "placement" is skipped (profiles were
+                    // restored elsewhere) so GVAR(ROADBLOCK_LOCATIONS) - which
+                    // the spawn loop below iterates unconditionally - is left
+                    // undefined and the loop crashes. Mirror the pattern in
+                    // civ_placement_custom (fnc_CPC.sqf ~250-281): seed the
+                    // queue from the persisted ALIVE_CIV_PLACEMENT_ROADBLOCK_LOCATIONS
+                    // cache by intersecting it with this module's objectives.
+                    // Fixes #494.
+                    if (isNil QGVAR(ROADBLOCK_LOCATIONS)) then {
+                        GVAR(ROADBLOCK_LOCATIONS) = [];
+                    };
+
+                    private _roadBlocks = parseNumber([_logic, "roadBlocks"] call MAINCLASS);
+                    if (_roadBlocks > 0 && isNil QMOD(COMPOSITIONS_LOADED)) then {
+                        // #922: when COMPOSITIONS_LOADED is set, sys_data has already restored these roadblocks this load - re-seeding here would duplicate them. (The queue inited above stays [], so the spawn loop is still safe.)
+                        private _restoredRoadblocks = 0;
+                        private _savedRoadblockLocations = if (isNil "ALIVE_CIV_PLACEMENT_ROADBLOCK_LOCATIONS") then {[]} else {+ALIVE_CIV_PLACEMENT_ROADBLOCK_LOCATIONS};
+
+                        {
+                            private _center = [_x, "center"] call ALIVE_fnc_hashGet;
+                            private _clusterSize = [_x, "size"] call ALIVE_fnc_hashGet;
+                            private _roadblockLocation = [_center, _clusterSize];
+
+                            if ((_savedRoadblockLocations findIf {_x isEqualTo _roadblockLocation}) >= 0 && {(GVAR(ROADBLOCK_LOCATIONS) findIf {_x isEqualTo _roadblockLocation}) < 0}) then {
+                                GVAR(ROADBLOCK_LOCATIONS) pushBack _roadblockLocation;
+                                _restoredRoadblocks = _restoredRoadblocks + 1;
+                            };
+                        } forEach ([_logic, "objectives"] call MAINCLASS);
+
+                        if (_debug) then {
+                            ["CP - Restored %1 deferred roadblock locations for persistent load", _restoredRoadblocks] call ALiVE_fnc_dump;
+                        };
+                    };
+
                     // DEBUG -------------------------------------------------------------------------------------
-                    if(_debug) then { ["CP - Objectives Only"] call ALiVE_fnc_dump; };
+                    if(_debug) then { ["CP - Profiles are persistent, no creation of profiles"] call ALiVE_fnc_dump; };
                     // DEBUG -------------------------------------------------------------------------------------
 
                     // set module as started
                     _logic setVariable ["startupComplete", true];
 
                 };
+
+                // Start Roadblock spawn checker
+                if (parsenumber([_logic, "roadBlocks"] call MAINCLASS) > 0) then {
+                    [_logic] spawn {
+
+                        private ["_logic","_roadBlocks","_debug","_maxRoadblockSpawnAttempts","_lastRoadblockDebug"];
+
+                        _logic = _this select 0;
+
+                        _roadBlocks = parsenumber([_logic, "roadBlocks"] call MAINCLASS);
+                        _debug = [_logic, "debug"] call MAINCLASS;
+                        // Read once outside the spawn loop. The picker
+                        // value is a static SQM string (multi-class CSV
+                        // with optional [F:..] filter prefix that
+                        // createRoadblock strips). Threaded into each
+                        // createRoadblock call so the validator's
+                        // multi-class fitment search can sample the
+                        // ticked pool per spawn instead of relying on
+                        // the legacy ALiVE_compositions_roadblocks
+                        // global / category fallback.
+                        private _roadblockComps = [_logic, "roadblockCompositions"] call MAINCLASS;
+                        _maxRoadblockSpawnAttempts = 10;
+                        _lastRoadblockDebug = -30;
+
+                        if (_debug) then { ["TOTAL VAR(ROADBLOCK_LOCATIONS): %1, count: %2", GVAR(ROADBLOCK_LOCATIONS), count GVAR(ROADBLOCK_LOCATIONS)] call ALiVE_fnc_dump };
+                                            
+                        while {count GVAR(ROADBLOCK_LOCATIONS) > 0} do {
+                            private ["_timer","_spawnChecks"];
+
+                            _timer = time;
+                            _spawnChecks = 0;
+
+                            {
+                                private ["_position","_size","_spawn","_attempts","_thisroadblockResult"];
+
+                                if (!isnil "_x") then {
+
+                                    if (typeName _x == "ARRAY") then {
+                                        _position  = _x select 0;
+                                        _size = _x select 1;
+
+                                        _spawn = false;
+
+                                        if ([_position, ALIVE_spawnRadius,ALIVE_spawnRadiusJet,ALIVE_spawnRadiusHeli] call ALiVE_fnc_anyPlayersInRangeIncludeAir) then {
+                                            _spawn = true;
+                                        } else {
+                                            if ([_position, ALIVE_spawnRadiusJet] call ALiVE_fnc_anyAutonomousInRange > 0) then {
+                                                _spawn = true;
+                                            };
+                                        };
+
+                                        if (_spawn) then {
+                                            _spawnChecks = _spawnChecks + 1;
+                                            _thisroadblockResult = [_position, _size + 150, ceil(_roadBlocks / 30), _debug, _roadblockComps] call ALiVE_fnc_createRoadblock;
+                                            if (_debug) then { ["_thisroadblockResult: %1, count: %2", _thisroadblockResult, count _thisroadblockResult] call ALiVE_fnc_dump };
+                                                if (count _thisroadblockResult > 0)  then {
+                                                GVAR(ROADBLOCK_LOCATIONS) set [_foreachIndex, -1];
+                                                } else {
+                                                _attempts = if (count _x > 2) then {_x select 2} else {0};
+                                                _attempts = _attempts + 1;
+
+                                                if (_attempts >= _maxRoadblockSpawnAttempts) then {
+                                                    GVAR(ROADBLOCK_LOCATIONS) set [_foreachIndex, -1];
+                                                    if (_debug) then { ["Roadblock at %1 failed to spawn after %2 attempts; removing from queue", _position, _attempts] call ALiVE_fnc_dump };
+                                                } else {
+                                                    GVAR(ROADBLOCK_LOCATIONS) set [_foreachIndex, [_position, _size, _attempts]];
+                                                };
+                                            };
+                                            if (_debug) then { ["VAR(ROADBLOCK_LOCATIONS): %1, count: %2", GVAR(ROADBLOCK_LOCATIONS), count GVAR(ROADBLOCK_LOCATIONS)] call ALiVE_fnc_dump };
+                                        };
+                                    };
+                                };
+                            } foreach GVAR(ROADBLOCK_LOCATIONS);
+
+                            GVAR(ROADBLOCK_LOCATIONS) = GVAR(ROADBLOCK_LOCATIONS) - [-1];
+
+                            if (_debug && {(_spawnChecks > 0) || {time - _lastRoadblockDebug > 30}}) then {
+                                ["Roadblock iteration time: %1 secs for %2 entries...", time - _timer, count GVAR(ROADBLOCK_LOCATIONS)] call ALiVE_fnc_dump;
+                                _lastRoadblockDebug = time;
+                            };
+
+                            sleep 1;
+                        };
+                    };
+                };
+
             }else{
-                // errors
+
+                // DEBUG -------------------------------------------------------------------------------------
+                if(_debug) then { ["CP - Objectives Only"] call ALiVE_fnc_dump; };
+                // DEBUG -------------------------------------------------------------------------------------
+
+                // set module as started
                 _logic setVariable ["startupComplete", true];
+
             };
+        }else{
+            // errors
+            _logic setVariable ["startupComplete", true];
         };
     };
+
+    case "loadCivClusters": {
+        [{
+            if (isNil "ALIVE_clustersCiv" && isNil "ALIVE_loadedCivClusters") then {
+                private _worldName = toLower worldName;
+                private _file = format ["x\alive\addons\civ_placement\clusters\clusters.%1_civ.sqf", _worldName];
+
+                call compile preprocessFileLineNumbers _file;
+                ALIVE_loadedCIVClusters = true;
+            };
+        }] call CBA_fnc_directCall;
+    };
+
     // Placement
     case "placement": {
         if (isServer) then {
