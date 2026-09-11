@@ -367,11 +367,28 @@ switch (toLower _operation) do {
     // author wants to stop them gathering at.
     case "toggleblacklist": {
 
-        // The same resolution the positions key uses, so both keys act on the thing
-        // the labels say they will. Only the refusal of a building with nowhere to
-        // stand inside it is dropped, and that is the whole point of this key.
-        private _target = ["hover"] call ALIVE_fnc_classPicker;
+        // Resolved here rather than through "hover", which answers only for the kinds
+        // the picker was started on. In buildings mode that is House, and the props this
+        // key exists for are frequently not houses at all: a garrison scatters men in a
+        // ring around anything carrying no positions inside it, so a fuel bladder, a
+        // camo net or a latrine block is exactly what an author wants to name here and
+        // exactly what House would refuse. Asking "hover" gave back nothing for those and
+        // the key did nothing at all, with no line to say why.
+        //
+        // Men and vehicles are still refused. Naming them would put a class in a list
+        // that only ever filters buildings, so it would read as collected and do nothing.
+        private _target = cursorObject;
+        if (isNull _target) then { _target = cursorTarget };
         if (isNull _target) then { _target = ALIVE_classPicker_lastHover };
+        if (isNull _target) exitWith {};
+
+        {
+            if (_target isKindOf _x) exitWith {
+                ["ALIVE_fnc_classPicker - %1 is a %2, and the garrison blacklist only excludes buildings", typeOf _target, _x] call ALiVE_fnc_dump;
+                hintSilent format ["ALiVE class picker\n\n%1\nis not a building, so it cannot be excluded from garrisons.", typeOf _target];
+                _target = objNull;
+            };
+        } forEach ["CAManBase", "LandVehicle", "Air", "Ship"];
         if (isNull _target) exitWith {};
 
         private _cfg = configFile >> "CfgVehicles" >> typeOf _target;

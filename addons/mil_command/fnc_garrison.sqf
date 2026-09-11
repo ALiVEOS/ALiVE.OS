@@ -92,11 +92,6 @@ if (_args isEqualType []) then {
     // The objective's own size, so the search can cover it rather than a fixed radius from
     // wherever the group was scattered to within it.
     _objectiveSize = _args param [10, 0, [0]];
-    // DEBUG -------------------------------------------------------------------------------------
-    if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
-     ["ALIVE_fnc_garrison - _profileType: %1, _profileCount: %2, _guardPatrolPercentage: %3", _profileType, _profileCount, _guardPatrolPercentage] call ALiVE_fnc_dump;
-    };
-    // DEBUG -------------------------------------------------------------------------------------
 };
 
 // A caller with no placement module behind it is given the mission's list. The
@@ -130,6 +125,30 @@ if (!_hadModuleSetting) then {
     _preferredIndicesOnly = true;
 };
 
+// The patrol setting is the same story. The same callers reach here without slot [5] and
+// fell to fifty whatever the mission's modules said, so a commander's reserve garrison, an
+// insurgent cell's guards and the airbase guards all patrolled with the setting at None.
+// Where the slot is absent the mission's own setting applies, read off the placement
+// modules by ALIVE_fnc_guardPatrolPercentage the way the occupancy limit is, military
+// modules first because every caller that lands here commands soldiers. The garrisons
+// Military Logistics manages, which never come through here, and the guards a task spawns
+// with its camp, which come through with the slot filled, ask it the same question. A
+// caller that passes the slot keeps what it passed, so every placement module and
+// roadblock is exactly as it was.
+if (!(_args isEqualType []) || {count _args <= 5}) then {
+    _guardPatrolPercentage = call ALIVE_fnc_guardPatrolPercentage;
+};
+
+// Reported here rather than where the arguments are read, because the setting is not
+// settled until the fallback above has run. Logged any earlier it names the number the
+// caller sent, not the one the garrison uses, and a caller that sent nothing reads as
+// fifty while the mission's own value is what actually applies.
+// DEBUG -------------------------------------------------------------------------------------
+if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
+    ["ALIVE_fnc_garrison - _profileType: %1, _profileCount: %2, _guardPatrolPercentage: %3", _profileType, _profileCount, _guardPatrolPercentage] call ALiVE_fnc_dump;
+};
+// DEBUG -------------------------------------------------------------------------------------
+
 
 if (isnil "_profile") exitWith {};
 _id = [_profile,"profileID","error"] call ALiVE_fnc_HashGet;
@@ -162,8 +181,15 @@ if (count _waypoints > 0) then {
 // Garrison Building Patrol set to None means the guard should hold its post, so it is not
 // given anywhere to wander either. Until now these waypoints were laid whatever the module
 // said, and a garrison told not to patrol still walked the objective, both while virtual and
-// once spawned. Callers that do not pass the setting keep the default of 50 and are
-// unaffected, and the roadblock and reserve paths pass 1 deliberately.
+// once spawned. Callers that do not pass the setting take the mission's own, read off the
+// placement modules above. The tight posts, the objective and field HQ guards, roadblock and
+// recapture guards and reserve infantry, pass their module's own setting bounded to
+// at least one: None holds the post with nobody wandering, and every other level
+// keeps the single man those thirty metre posts have always had.
+//
+// Note also that the clear just above runs at every spawn, so an order a virtual
+// garrison guard was carrying, a commander's counterattack route for instance, is
+// wiped the moment it spawns. That is pre-existing and not changed here.
 if (_guardPatrolPercentage > 0) then {
     // A third of the module's own guard radius, deliberately not of the search radius. Tied
     // to the search it would scale with the objective, and a guard told to hold a 700 m

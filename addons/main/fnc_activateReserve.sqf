@@ -228,15 +228,16 @@ private _fnc_activateAsInfantry = {
 
     {
         if (([_x, "type"] call ALiVE_fnc_hashGet) == "entity") then {
-            // Force patrolPercentage = 1 so newly-activated reserve
-            // infantry patrol the cluster instead of standing inside
-            // the candidate building waiting for OPCOM. OPCOM tasks
-            // on its own cadence (busy=false at activation), so the
-            // patrol stage is just "stay useful in the meantime".
+            // Capped at one. The setting is a percentage of the group, so an
+            // uncapped MEDIUM would send half these reinforcements walking; the cap
+            // keeps the single patroller this call has always had. None still holds
+            // everyone in place, because zero survives the cap. OPCOM tasks on its
+            // own cadence (busy=false at activation), so that one man is "stay useful
+            // in the meantime" while the rest hold the building.
             // Reinforcements spawn beside one building but search the whole objective,
             // sized to it, the way the first garrison does. The guard radius stays the
             // floor of that search (#1016).
-            [_x, "setActiveCommand", ["ALIVE_fnc_garrison", "spawn", [_guardRadius, "true", _center, "", 1, 1, _garrisonPatrolBehaviour, _garrisonPatrolSpeed, _preferredGarrisonPositions, true, _size]]] call ALIVE_fnc_profileEntity;
+            [_x, "setActiveCommand", ["ALIVE_fnc_garrison", "spawn", [_guardRadius, "true", _center, "", 1, (_guardPatrolPercentage min 1), _garrisonPatrolBehaviour, _garrisonPatrolSpeed, _preferredGarrisonPositions, true, _size]]] call ALIVE_fnc_profileEntity;
             [_x, "homeCluster", _cluster] call ALiVE_fnc_hashSet;
             _activeIDs pushBack ([_x, "profileID"] call ALiVE_fnc_hashGet);
         };

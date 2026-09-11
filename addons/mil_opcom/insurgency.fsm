@@ -152,6 +152,8 @@ class FSM
                          "    if !(isnil ""_profile"") then {" \n
                          "        _commands = [_profile,""activeCommands"",[]] call ALiVE_fnc_HashGet;" \n
                          "" \n
+                         "            //No objective centre here either, for the same reason as the garrison order" \n
+                         "            //further down: the cell holds the spot it was raised in, not an objective (#1016)." \n
                          "        if ({(_x select 0) == ""ALIVE_fnc_garrison""} count _commands == 0) then {[_profile, ""setActiveCommand"", [""ALIVE_fnc_ambientMovement"",""spawn"",[300,""STEALTH"",[0,0,0]]]] call ALIVE_fnc_profileEntity};" \n
                          "    };" \n
                          "} foreach _all;" \n
@@ -1593,6 +1595,9 @@ class FSM
                          "            [_profile,""busy"",true] call ALiVE_fnc_HashSet;" \n
                          "            [_profile, ""clearWaypoints""] call ALIVE_fnc_profileEntity;" \n
                          "            [_profile, ""clearActiveCommands""] call ALIVE_fnc_profileEntity;" \n
+                         "            //No objective centre. An insurgent cell garrisons where it was raised, and the" \n
+                         "            //30 m below reaches that from where the men stand. An objective centre would" \n
+                         "            //widen the search to the whole settlement and pull them off it (#1016)." \n
                          "            [_profile, ""setActiveCommand"", [""ALIVE_fnc_garrison"",""spawn"",[30,""true"",[0,0,0]]]] call ALIVE_fnc_profileEntity;" \n
                          "" \n
                          "            _guards pushback  _profileID;" \n

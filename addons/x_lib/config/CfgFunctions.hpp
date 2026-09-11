@@ -160,6 +160,13 @@ class garrisonOccupancyLimit
 	RECOMPILE;
 };
 
+class guardPatrolPercentage
+{
+	file = "\x\alive\addons\x_lib\functions\behaviour\fnc_guardPatrolPercentage.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
 class groupGarrison
 {
 	file = "\x\alive\addons\x_lib\functions\behaviour\fnc_groupGarrison.sqf";

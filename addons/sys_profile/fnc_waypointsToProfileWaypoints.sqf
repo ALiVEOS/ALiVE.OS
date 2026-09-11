@@ -39,6 +39,12 @@ private _convertAndAddWaypoint = {
     private _waypointPosition = [_profileWaypoint,"position"] call ALIVE_fnc_hashGet;
     private _waypointStatements = [_profileWaypoint,"statements"] call ALIVE_fnc_hashGet;
 
+    // The disableSimulation entry is not a statement to run. It is the mark ambient movement
+    // and sea patrols put on the waypoints they lay, and this is the only place that reads it:
+    // a filler wander is left behind here rather than carried into virtual movement, so a group
+    // that despawns mid-wander does not go on walking it while nobody is watching. The
+    // pathfinding branch expands a waypoint into nodes elsewhere, and that expansion keeps the
+    // mark for the same reason.
     if (_pathfindingEnabled) then {
         private _waypointName = [_profileWaypoint,"name"] call ALiVE_fnc_hashGet;
         private _waypointReady = _waypointName == "pathfound";

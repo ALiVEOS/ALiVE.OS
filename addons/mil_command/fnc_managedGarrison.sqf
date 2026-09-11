@@ -21,7 +21,7 @@ Examples:
 See Also:
 
 Author:
-ARJay
+ARJay, Jman
 ---------------------------------------------------------------------------- */
 
 private ["_profile","_commandState","_commandName","_args","_state","_debug","_profileID","_leader","_group",
@@ -94,7 +94,11 @@ switch (_state) do {
         // garrison units
 
         // [_group,_garrisonPosition,_garrisonRadius,false] call ALIVE_fnc_groupGarrison;
-        [_group,_garrisonPosition,_garrisonRadius,false, false,_profileCount,_profileID] call ALIVE_fnc_groupGarrison;
+        // Military Logistics sends this command without a patrol share, so the mission's
+        // own is read off the placement modules the way the occupancy limit is. Until now
+        // the slot was left empty and fell to fifty whatever the mission said.
+        private _guardPatrolPercentage = call ALIVE_fnc_guardPatrolPercentage;
+        [_group,_garrisonPosition,_garrisonRadius,false, false,_profileCount,_profileID,_guardPatrolPercentage] call ALIVE_fnc_groupGarrison;
 
         _nextState = "complete";
         _nextStateArgs = [];
