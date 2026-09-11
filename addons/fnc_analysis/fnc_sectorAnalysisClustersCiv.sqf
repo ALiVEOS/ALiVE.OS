@@ -33,18 +33,21 @@ _sectors = _this select 0;
 _err = format["sector analysis units requires an array of sectors - %1",_sectors];
 ASSERT_TRUE(typeName _sectors == "ARRAY",_err);
 
-if(isNil "ALIVE_clustersCiv" && isNil "ALIVE_loadedCivClusters") then {
-    //["LOADING MO DATA"] call ALIVE_fnc_dump;
-    //[true] call ALIVE_fnc_timer;
+// Keep the load guard, index compilation and completion flag in one unscheduled call.
+[{
+    if(isNil "ALIVE_clustersCiv" && isNil "ALIVE_loadedCivClusters") then {
+        //["LOADING MO DATA"] call ALIVE_fnc_dump;
+        //[true] call ALIVE_fnc_timer;
 
-    _worldName = toLower(worldName);
-    _file = format["\x\alive\addons\civ_placement\clusters\clusters.%1_civ.sqf", _worldName];
-    call compile preprocessFileLineNumbers _file;
-    ALIVE_loadedCivClusters = true;
+        _worldName = toLower(worldName);
+        _file = format["\x\alive\addons\civ_placement\clusters\clusters.%1_civ.sqf", _worldName];
+        call compile preprocessFileLineNumbers _file;
+        ALIVE_loadedCivClusters = true;
 
-    //[] call ALIVE_fnc_timer;
-    //["MO DATA LOADED"] call ALIVE_fnc_dump;
-};
+        //[] call ALIVE_fnc_timer;
+        //["MO DATA LOADED"] call ALIVE_fnc_dump;
+    };
+}] call CBA_fnc_directCall;
 
 {
     _sector = _x;

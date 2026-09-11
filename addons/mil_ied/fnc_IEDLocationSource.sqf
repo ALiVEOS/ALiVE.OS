@@ -97,29 +97,21 @@ private _fnc_toTuples = {
 // ---------------------------------------------------------------------------
 // 1. The settlement clusters that ship with the terrain.
 // ---------------------------------------------------------------------------
-// Loading is the same handshake civilian placement uses, copied deliberately
-// rather than improved on. Whoever gets here first loads the file and raises
-// the flag; everyone else waits for it. Because the flag is raised whether or
-// not the file turned out to exist, the wait always ends, and because this
-// module raises it too when nobody else has, waiting here cannot strand the
-// mission. Reading the settlements without that wait is the real hazard: the
-// file is large enough to be interrupted part way through, and the settlement
-// list exists long before it is finished being filled, so an unsynchronised
-// read gets a fraction of the towns and no indication anything is missing.
+// Load the shared terrain index atomically, as the placement modules do.
 private _worldName = toLower worldName;
 private _clusterFile = format ["x\alive\addons\civ_placement\clusters\clusters.%1_civ.sqf", _worldName];
 
-if (isNil "ALIVE_clustersCiv" && isNil "ALIVE_loadedCIVClusters") then {
-    if (_debug) then {
-        ["ALIVE IED - no other module has loaded the terrain's clusters, loading them here"] call ALiVE_fnc_dump;
+// Keep the load guard, index compilation and completion flag in one unscheduled call.
+[{
+    if (isNil "ALIVE_clustersCiv" && isNil "ALIVE_loadedCIVClusters") then {
+        if (_debug) then {
+            ["ALIVE IED - no other module has loaded the terrain's clusters, loading them here"] call ALiVE_fnc_dump;
+        };
+        ALIVE_loadedCIVClusters = false;
+        call compile preprocessFileLineNumbers _clusterFile;
+        ALIVE_loadedCIVClusters = true;
     };
-    // Claimed before the compile, not after. The compile yields to the scheduler all the way
-    // through, so a flag raised only at the end let every concurrent instance pass the test
-    // above and compile the same file over again. The wait below demands true, not merely set.
-    ALIVE_loadedCIVClusters = false;
-    call compile preprocessFileLineNumbers _clusterFile;
-    ALIVE_loadedCIVClusters = true;
-};
+}] call CBA_fnc_directCall;
 
 waitUntil {!(isNil "ALIVE_loadedCIVClusters") && {ALIVE_loadedCIVClusters}};
 

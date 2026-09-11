@@ -564,19 +564,8 @@ switch(_operation) do {
             PROFILE_SCOPE_END(MPSTATICOVERRIDES)
 
 
-            [_logic] spawn {
-                params ["_module"];
-                waituntil {!(isnil "ALIVE_profileSystemInit")};
-
-                if (isnil QMOD(REQUIRE_INITIALISED)) then {
-                    [{
-                        params ["_module"];
-                        [_module,"start"] call MAINCLASS;
-                    }, [_module]] call CBA_fnc_directCall;
-                } else {
-                    [_module,"start"] call MAINCLASS;
-                };
-            };
+            waituntil {!(isnil "ALIVE_profileSystemInit")};
+            [_logic,"start"] call MAINCLASS;
 
             PROFILE_SCOPE_END(MPSTARTUP)
 

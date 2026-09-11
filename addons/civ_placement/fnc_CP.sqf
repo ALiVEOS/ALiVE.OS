@@ -417,19 +417,8 @@ switch(_operation) do {
 
             waituntil {!(isnil "ALiVE_ProfileHandler") && {[ALiVE_ProfileSystem,"startupComplete",false] call ALIVE_fnc_hashGet}};
 
-            [_logic] spawn {
-                params ["_module"];
-                waituntil {!(isnil "ALIVE_profileSystemInit")};
-
-                if (isnil QMOD(REQUIRE_INITIALISED)) then {
-                    [{
-                        params ["_module"];
-                        [_module,"start"] call MAINCLASS;
-                    }, [_module]] call CBA_fnc_directCall;
-                } else {
-                    [_module,"start"] call MAINCLASS;
-                };
-            };
+            waituntil {!(isnil "ALIVE_profileSystemInit")};
+            [_logic,"start"] call MAINCLASS;
         } else {
             [_logic, "taor", _logic getVariable ["taor", DEFAULT_TAOR]] call MAINCLASS;
             [_logic, "blacklist", _logic getVariable ["blacklist", DEFAULT_TAOR]] call MAINCLASS;

@@ -3235,29 +3235,29 @@ switch(_operation) do {
             waituntil {!(isnil "ALiVE_ProfileHandler") && {[ALiVE_ProfileSystem,"startupComplete",false] call ALIVE_fnc_hashGet}};
 
             // if civ cluster data not loaded, load it
-            if(isNil "ALIVE_clustersCiv" && isNil "ALIVE_loadedCivClusters") then {
-                _worldName = toLower(worldName);
-                _file = format["x\alive\addons\civ_placement\clusters\clusters.%1_civ.sqf", _worldName];
-                // Claimed before the compile, not after. The compile yields to the scheduler all the way
-                // through, so a flag raised only at the end let every concurrent instance pass the test
-                // above and compile the same file over again. The wait below demands true, not merely set.
-                ALIVE_loadedCIVClusters = false;
-                call compile preprocessFileLineNumbers _file;
-                ALIVE_loadedCIVClusters = true;
-            };
+            // Keep the load guard, index compilation and completion flag in one unscheduled call.
+            [{
+                if(isNil "ALIVE_clustersCiv" && isNil "ALIVE_loadedCivClusters") then {
+                    _worldName = toLower(worldName);
+                    _file = format["x\alive\addons\civ_placement\clusters\clusters.%1_civ.sqf", _worldName];
+                    ALIVE_loadedCIVClusters = false;
+                    call compile preprocessFileLineNumbers _file;
+                    ALIVE_loadedCIVClusters = true;
+                };
+            }] call CBA_fnc_directCall;
             waituntil {!(isnil "ALIVE_loadedCIVClusters") && {ALIVE_loadedCIVClusters}};
 
             // if mil cluster data not loaded, load it
-            if(isNil "ALIVE_clustersMil" && isNil "ALIVE_loadedMilClusters") then {
-                _worldName = toLower(worldName);
-                _file = format["x\alive\addons\mil_placement\clusters\clusters.%1_mil.sqf", _worldName];
-                // Claimed before the compile, not after. The compile yields to the scheduler all the way
-                // through, so a flag raised only at the end let every concurrent instance pass the test
-                // above and compile the same file over again. The wait below demands true, not merely set.
-                ALIVE_loadedMilClusters = false;
-                call compile preprocessFileLineNumbers _file;
-                ALIVE_loadedMilClusters = true;
-            };
+            // Keep the load guard, index compilation and completion flag in one unscheduled call.
+            [{
+                if(isNil "ALIVE_clustersMil" && isNil "ALIVE_loadedMilClusters") then {
+                    _worldName = toLower(worldName);
+                    _file = format["x\alive\addons\mil_placement\clusters\clusters.%1_mil.sqf", _worldName];
+                    ALIVE_loadedMilClusters = false;
+                    call compile preprocessFileLineNumbers _file;
+                    ALIVE_loadedMilClusters = true;
+                };
+            }] call CBA_fnc_directCall;
             waituntil {!(isnil "ALIVE_loadedMilClusters") && {ALIVE_loadedMilClusters}};
 
             // get all synced modules
