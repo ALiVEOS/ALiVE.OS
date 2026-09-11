@@ -60,7 +60,7 @@
 
 // Enable debug-only assertions across every component. ASSERT_DEBUG expands to
 // nothing in normal builds, so neither its condition nor message is evaluated.
-#define ALIVE_DEBUG_ASSERTS
+//#define ALIVE_DEBUG_ASSERTS
 
 #ifdef ALIVE_DEBUG_ASSERTS
     #define ASSERT_DEBUG(CONDITION,MESSAGE) ASSERT_TRUE(CONDITION,MESSAGE);
@@ -72,7 +72,7 @@
 // #define AUTOMATED_TESTS QUOTE(MAIN),QUOTE(SYS_LOGISTICS),QUOTE(SYS_GC),QUOTE(MIL_CQB),QUOTE(MIL_OPCOM)
 
 // Enable context zones for the Arma Script Profiler.
-#define ALIVE_SCRIPT_PROFILING
+//#define ALIVE_SCRIPT_PROFILING
 
 #ifdef ALIVE_SCRIPT_PROFILING
     #define PROFILE_SCOPE(ID,NAME) private _aliveProfileScope_##ID = createProfileScope NAME;
