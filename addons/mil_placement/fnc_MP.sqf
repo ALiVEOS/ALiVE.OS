@@ -632,7 +632,20 @@ switch(_operation) do {
 
             ["applied custom static data"] call _fnc_mpDiagMark;
 
-            [_logic,"start"] call MAINCLASS;
+            [_logic] spawn {
+                params ["_module"];
+                waituntil {!(isnil "ALIVE_profileSystemInit")};
+
+                if (isnil QMOD(REQUIRE_INITIALISED)) then {
+                    [{
+                        params ["_module"];
+                        [_module,"start"] call MAINCLASS;
+                    }, [_module]] call CBA_fnc_directCall;
+                } else {
+                    [_module,"start"] call MAINCLASS;
+                };
+            };
+
             PROFILE_SCOPE_END(MPSTARTUP)
 
         } else {
@@ -661,31 +674,14 @@ switch(_operation) do {
             [_logic,"loadMilClusters"] call MAINCLASS;
 
             PROFILE_SCOPE(MPINDEXWAIT, "ALiVE MP startup: wait for cluster index and profile system")
-            waituntil {!(isnil "ALIVE_profileSystemInit")};
+            //waituntil {!(isnil "ALIVE_profileSystemInit")};
             PROFILE_SCOPE_END(MPINDEXWAIT)
             ["waited for the cluster index and the profile system"] call _fnc_mpDiagMark;
 
-            // all MP modules execute at the same time
-            // ALIVE_groupConfig is created, but not 100% filled
-            // before the rest of the modules start creating their profiles
-
             // instantiate static vehicle position data
-            private _builtGroupConfig = false;
-            if (isNil "ALIVE_groupConfig") then {
-                PROFILE_SCOPE(MPGROUPCONFIG, "ALiVE MP startup: build group config")
+            [{
                 [] call ALIVE_fnc_groupGenerateConfigData;
-                PROFILE_SCOPE_END(MPGROUPCONFIG)
-                _builtGroupConfig = true;
-            };
-
-            if (_builtGroupConfig) then {
-                ["built the group config data"] call _fnc_mpDiagMark;
-            };
-
-            PROFILE_SCOPE(MPGROUPWAIT, "ALiVE MP startup: wait for group config")
-            waitUntil {!isnil "ALiVE_GROUP_CONFIG_DATA_GENERATED"};
-            PROFILE_SCOPE_END(MPGROUPWAIT)
-            ["waited for the group config data"] call _fnc_mpDiagMark;
+            }] call CBA_fnc_directCall;
 
             //Only spawn warning on version mismatch since map index changes were reduced
             //uncomment //_error = true; below for exit
@@ -714,12 +710,12 @@ switch(_operation) do {
 
             if !(_error) then {
                 PROFILE_SCOPE(MPCLUSTERS, "ALiVE MP startup: gather and filter clusters")
-                _placement = [_logic, "withPlacement"] call MAINCLASS;
-                _taor = [_logic, "taor"] call MAINCLASS;
-                _blacklist = [_logic, "blacklist"] call MAINCLASS;
-                _sizeFilter = parseNumber ([_logic, "sizeFilter"] call MAINCLASS);
-                _priorityFilter = parseNumber ([_logic, "priorityFilter"] call MAINCLASS);
-                _randomCampsMil = parseNumber ([_logic, "randomCamps"] call MAINCLASS);
+                _placement = [_logic,"withPlacement"] call MAINCLASS;
+                _taor = [_logic,"taor"] call MAINCLASS;
+                _blacklist = [_logic,"blacklist"] call MAINCLASS;
+                _sizeFilter = parseNumber ([_logic,"sizeFilter"] call MAINCLASS);
+                _priorityFilter = parseNumber ([_logic,"priorityFilter"] call MAINCLASS);
+                _randomCampsMil = parseNumber ([_logic,"randomCamps"] call MAINCLASS);
 
                 _taor = _taor select { [_x] call ALIVE_fnc_markerExists };
                 _blacklist = _blacklist select { [_x] call ALIVE_fnc_markerExists };
@@ -734,13 +730,39 @@ switch(_operation) do {
                 _landClusters = DEFAULT_OBJECTIVES_LAND;
 
                 if (_randomCampsMil > 0) then {
+                    private _mpCampLoadReady = !isNil "ALIVE_clustersMilLand" && {ALIVE_clustersMilLand isEqualType []};
+                    private _mpCampLoadT0 = if (_mpStartupDiag) then {diag_tickTime} else {0};
+                    private _mpCampLoadFrame = if (_mpStartupDiag) then {diag_frameNo} else {0};
                     [_logic,"loadMilLandClusters", [_randomCampsMil, _clusters]] call MAINCLASS;
+                    private _mpCampLoadSeconds = if (_mpStartupDiag) then {diag_tickTime - _mpCampLoadT0} else {0};
+                    private _mpCampLoadFrames = if (_mpStartupDiag) then {diag_frameNo - _mpCampLoadFrame} else {0};
+                    private _mpCampFilterTimes = [];
+                    private _mpCampFilterFrames = [];
+                    private _mpCampFilterCounts = [];
+                    private _mpCampStepT0 = 0;
+                    private _mpCampStepFrame = 0;
 
                     PROFILE_SCOPE(MPCAMPFILTER, "ALiVE MP startup: filter and copy camp clusters")
 
                     _landClusters = ALIVE_clustersMilLand select 2;
+                    if (_mpStartupDiag) then { _mpCampStepT0 = diag_tickTime; _mpCampStepFrame = diag_frameNo };
+                    PROFILE_SCOPE(MPCAMPTAOR, "ALiVE MP startup: camp TAOR filtering")
                     _landClusters = [_landClusters, _taor] call ALIVE_fnc_clustersInsideMarker;
+                    PROFILE_SCOPE_END(MPCAMPTAOR)
+                    if (_mpStartupDiag) then {
+                        _mpCampFilterTimes pushBack (diag_tickTime - _mpCampStepT0);
+                        _mpCampFilterFrames pushBack (diag_frameNo - _mpCampStepFrame);
+                        _mpCampFilterCounts pushBack (count _landClusters);
+                    };
+                    if (_mpStartupDiag) then { _mpCampStepT0 = diag_tickTime; _mpCampStepFrame = diag_frameNo };
+                    PROFILE_SCOPE(MPCAMPBLACKLIST, "ALiVE MP startup: camp blacklist filtering")
                     _landClusters = [_landClusters, _blacklist] call ALIVE_fnc_clustersOutsideMarker;
+                    PROFILE_SCOPE_END(MPCAMPBLACKLIST)
+                    if (_mpStartupDiag) then {
+                        _mpCampFilterTimes pushBack (diag_tickTime - _mpCampStepT0);
+                        _mpCampFilterFrames pushBack (diag_frameNo - _mpCampStepFrame);
+                        _mpCampFilterCounts pushBack (count _landClusters);
+                    };
 
                     // Take our own copy, as every other cluster list here already does.
                     //
@@ -760,8 +782,24 @@ switch(_operation) do {
                     // rather than a lower one. Priority is documented as any integer, so its
                     // floor is set far below any real value rather than at zero, which would
                     // drop a cluster somebody had deliberately given a negative one.
+                    if (_mpStartupDiag) then { _mpCampStepT0 = diag_tickTime; _mpCampStepFrame = diag_frameNo };
+                    PROFILE_SCOPE(MPCAMPCOPY, "ALiVE MP startup: camp cluster copying")
                     _landClusters = [_landClusters, 0, -999999] call ALIVE_fnc_copyClusters;
+                    PROFILE_SCOPE_END(MPCAMPCOPY)
+                    if (_mpStartupDiag) then {
+                        _mpCampFilterTimes pushBack (diag_tickTime - _mpCampStepT0);
+                        _mpCampFilterFrames pushBack (diag_frameNo - _mpCampStepFrame);
+                        _mpCampFilterCounts pushBack (count _landClusters);
+                    };
                     PROFILE_SCOPE_END(MPCAMPFILTER)
+                    if (_mpStartupDiag) then {
+                        ["shared camp cluster load call", _mpCampLoadSeconds,
+                            format ["alreadyReady=%1; frames=%2; canSuspend=%3; sharedClusters=%4", _mpCampLoadReady, _mpCampLoadFrames, canSuspend, count (ALIVE_clustersMilLand select 2)]] call _fnc_mpDiagReport;
+                        {
+                            [_x, _mpCampFilterTimes select _forEachIndex,
+                                format ["frames=%1; outputClusters=%2; canSuspend=%3", _mpCampFilterFrames select _forEachIndex, _mpCampFilterCounts select _forEachIndex, canSuspend]] call _fnc_mpDiagReport;
+                        } forEach ["camp TAOR filtering", "camp blacklist filtering", "camp cluster copying"];
+                    };
                 };
 
                 PROFILE_SCOPE(MPMILFILTER, "ALiVE MP startup: filter military and special clusters")
@@ -822,19 +860,29 @@ switch(_operation) do {
                     [] call ALIVE_fnc_timer;
                 };
 
-                if(_placement) then {
-
-                    if(count _clusters > 0) then {
-                        // start placement
-                        [_logic, "placement"] call MAINCLASS;
-                    }else{
+                if (_placement) then {
+                    if (count _clusters > 0) then {
+                        // Time the complete operation, including early returns.
+                        private _placementDiag = missionNamespace getVariable ["ALiVE_MP_STARTUP_DIAG", false];
+                        private _placementStarted = if (_placementDiag) then {diag_tickTime} else {0};
+                        private _placementFrame = if (_placementDiag) then {diag_frameNo} else {0};
+                        PROFILE_SCOPE(MPPLACEMENTTOTAL, "ALiVE MP startup: complete placement operation")
+                        [_logic,"placement"] call MAINCLASS;
+                        PROFILE_SCOPE_END(MPPLACEMENTTOTAL)
+                        if (_placementDiag) then {
+                            private _placementElapsed = diag_tickTime - _placementStarted;
+                            private _placementFrames = diag_frameNo - _placementFrame;
+                            ["DIAG-STRIP MP PLACEMENT TOTAL [%1 / %2] - elapsed=%3s; frames=%4; canSuspend=%5; startupComplete=%6",
+                                _logic, _faction, _placementElapsed, _placementFrames, canSuspend,
+                                _logic getVariable ["startupComplete", false]] call ALiVE_fnc_dump;
+                        };
+                    } else{
                         ["MP [%1] - Warning no locations found for placement, you need to include military locations within the TAOR marker: %2",_faction, _taor] call ALiVE_fnc_dumpR;
 
                         // set module as started
                         _logic setVariable ["startupComplete", true];
                     };
-
-                }else{
+                } else {
 
                     if (_debug) then { ["MP - Objectives Only"] call ALiVE_fnc_dump };
 
@@ -869,6 +917,16 @@ switch(_operation) do {
             if (isnil "ALIVE_clustersMilLand") then {
                 ALIVE_clustersMilLand = "loading";
                 PROFILE_SCOPE(MPCAMPGENERATE, "ALiVE MP startup: generate camp clusters")
+                private _campDiag = missionNamespace getVariable ["ALiVE_MP_STARTUP_DIAG", false];
+                private _campT0 = if (_campDiag) then {diag_tickTime} else {0};
+                private _campFrame0 = if (_campDiag) then {diag_frameNo} else {0};
+                private _campStepT0 = 0;
+                private _campSpacingSeconds = 0;
+                private _campFlatSeconds = 0;
+                private _campNodesSeconds = 0;
+                private _campCreateSeconds = 0;
+                private _campCandidates = 0;
+                private _campNodeCount = 0;
 
                 _args params ["_randomCampsMil","_clusters"];
 
@@ -892,14 +950,33 @@ switch(_operation) do {
                     {
                         private _candidatePos = _x;
 
+                        // Accumulate per-candidate timings; emit only once after generation.
+                        if (_campDiag) then { _campCandidates = _campCandidates + 1; _campStepT0 = diag_tickTime };
                         private _tooClose = ((_campSpacingCenters findIf {_x distance _candidatePos < _randomCampsMil}) > -1);
+                        if (_campDiag) then { _campSpacingSeconds = _campSpacingSeconds + (diag_tickTime - _campStepT0) };
                         if (!_tooClose) then {
+                            if (_campDiag) then { _campStepT0 = diag_tickTime };
+                            PROFILE_SCOPE(MPCAMPFLATAREA, "ALiVE MP camp generation: findFlatArea")
                             private _campCenter = [_candidatePos, 500] call ALiVE_fnc_findFlatArea;
+                            PROFILE_SCOPE_END(MPCAMPFLATAREA)
+                            if (_campDiag) then {
+                                _campFlatSeconds = _campFlatSeconds + (diag_tickTime - _campStepT0);
+                                _campStepT0 = diag_tickTime;
+                            };
                             private _campId = format["c_%1_%2", floor (_campCenter select 0), floor (_campCenter select 1)];
 
                             private _campCluster = [nil, "create"] call ALIVE_fnc_cluster;
+                            if (_campDiag) then { _campCreateSeconds = _campCreateSeconds + (diag_tickTime - _campStepT0); _campStepT0 = diag_tickTime };
+                            PROFILE_SCOPE(MPCAMPSTATICNODES, "ALiVE MP camp generation: nearest static objects")
+                            private _campNodes = nearestObjects [_campCenter, ["static"], 50];
+                            PROFILE_SCOPE_END(MPCAMPSTATICNODES)
+                            if (_campDiag) then {
+                                _campNodesSeconds = _campNodesSeconds + (diag_tickTime - _campStepT0);
+                                _campNodeCount = _campNodeCount + count _campNodes;
+                                _campStepT0 = diag_tickTime;
+                            };
                             [_campCluster, [
-                                ["nodes", nearestObjects [_campCenter, ["static"], 50]],
+                                ["nodes", _campNodes],
                                 ["clusterID", _campId],
                                 ["center", _campCenter],
                                 ["size", 100],
@@ -909,12 +986,26 @@ switch(_operation) do {
 
                             _campClusters pushback [_campId, _campCluster];
                             _campSpacingCenters pushBack _campCenter;
+                            if (_campDiag) then { _campCreateSeconds = _campCreateSeconds + (diag_tickTime - _campStepT0) };
                         };
                     } foreach _flatEmpty;
                 } foreach _sectors;
 
+                if (_campDiag) then { _campStepT0 = diag_tickTime };
                 ["CREATING ALIVE_CLUSTERSMILLAND: %1", _campClusters] call ALiVE_fnc_Dump;
+                private _campDumpSeconds = if (_campDiag) then {diag_tickTime - _campStepT0} else {0};
+                if (_campDiag) then { _campStepT0 = diag_tickTime };
                 ALIVE_clustersMilLand = [_campClusters] call ALiVE_fnc_HashCreate;
+                private _campPublishSeconds = if (_campDiag) then {diag_tickTime - _campStepT0} else {0};
+                PROFILE_SCOPE_END(MPCAMPGENERATE)
+                if (_campDiag) then {
+                    private _campElapsed = diag_tickTime - _campT0;
+                    ["DIAG-STRIP MP CAMP GENERATION - total=%1s; frames=%2; canSuspend=%3; sectors=%4; candidates=%5; initialCenters=%6; generated=%7; nodes=%8",
+                        _campElapsed, diag_frameNo - _campFrame0, canSuspend, count _sectors, _campCandidates, count _clusters, count _campClusters, _campNodeCount] call ALiVE_fnc_dump;
+                    ["DIAG-STRIP MP CAMP GENERATION - spacing=%1s; findFlatArea=%2s; nearestObjects=%3s; clusterCreation=%4s; existingDump=%5s; publish=%6s; remainder=%7s",
+                        _campSpacingSeconds, _campFlatSeconds, _campNodesSeconds, _campCreateSeconds, _campDumpSeconds, _campPublishSeconds,
+                        _campElapsed - _campSpacingSeconds - _campFlatSeconds - _campNodesSeconds - _campCreateSeconds - _campDumpSeconds - _campPublishSeconds] call ALiVE_fnc_dump;
+                };
             };
         }] call CBA_fnc_directCall;
     };
@@ -922,7 +1013,6 @@ switch(_operation) do {
     // Placement
     case "placement": {
         if (isServer) then {
-
             PROFILE_SCOPE(MPPLACEMENTSETUP, "ALiVE MP startup: placement settings and static data")
             private ["_debug","_clusters","_cluster","_HQClusters","_airClusters","_heliClusters","_vehicleClusters",
             "_countHQClusters","_countAirClusters","_countHeliClusters","_size","_type","_faction","_ambientVehicleAmount",
@@ -936,11 +1026,11 @@ switch(_operation) do {
             // different scope from the guard garrisons, so the setting is resolved again
             // here. These two run first and claim an objective best building, so leaving
             // them out meant the setting could never reach the HQ at all.
-            private _preferredGarrisonPositions = [_logic, "preferredGarrisonPositions"] call MAINCLASS;
+            private _preferredGarrisonPositions = [_logic,"preferredGarrisonPositions"] call MAINCLASS;
             if (isNil "_preferredGarrisonPositions" || {!(_preferredGarrisonPositions isEqualType "")}) then { _preferredGarrisonPositions = "" };
 
 
-            _debug = [_logic, "debug"] call MAINCLASS;
+            _debug = [_logic,"debug"] call MAINCLASS;
 
             if (_debug) then {
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
@@ -948,12 +1038,12 @@ switch(_operation) do {
                 [true] call ALIVE_fnc_timer;
             };
 
-            _clusters = [_logic, "objectives"] call MAINCLASS;
-            _LandClusters = [_logic, "objectivesLand"] call MAINCLASS;
-            _HQClusters = [_logic, "objectivesHQ"] call MAINCLASS;
-            _airClusters = [_logic, "objectivesAir"] call MAINCLASS;
-            _heliClusters = [_logic, "objectivesHeli"] call MAINCLASS;
-            _vehicleClusters = [_logic, "objectivesVehicle"] call MAINCLASS;
+            _clusters = [_logic,"objectives"] call MAINCLASS;
+            _LandClusters = [_logic,"objectivesLand"] call MAINCLASS;
+            _HQClusters = [_logic,"objectivesHQ"] call MAINCLASS;
+            _airClusters = [_logic,"objectivesAir"] call MAINCLASS;
+            _heliClusters = [_logic,"objectivesHeli"] call MAINCLASS;
+            _vehicleClusters = [_logic,"objectivesVehicle"] call MAINCLASS;
 
 
             _customInfantryCount = [_logic,"customInfantryCount"] call MAINCLASS;
@@ -1025,7 +1115,7 @@ switch(_operation) do {
             };
 
 
-            if(_debug) then {
+            if (_debug) then {
                 ["MP [%1] - Size: %2 Type: %3 SideNum: %4 Side: %5 Faction: %6",_faction,_size,_type,_factionSideNumber,_side,_faction] call ALiVE_fnc_dump;
                 ["MP [%1] - Ambient Vehicles: %2 Create HQ: %3 Create Field HQ: %4 Place Helis: %5 Place Supplies: %6 Place Planes: %7",_faction,_ambientVehicleAmount,_createHQ,_createFieldHQ,_placeHelis,_placeSupplies,_placePlanes] call ALiVE_fnc_dump;
             };
@@ -1695,11 +1785,9 @@ switch(_operation) do {
             PROFILE_SCOPE_END(MPHELICOPTERS)
             ["helicopters"] call _fnc_mpDiagMark;
 
-            // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
                 ["MP [%1] - Heli units placed: crewed:%2 uncrewed:%3",_faction,_countCrewedHelis,_countUncrewedHelis] call ALiVE_fnc_dump;
             };
-            // DEBUG -------------------------------------------------------------------------------------
 
 
             PROFILE_SCOPE(MPAIRCRAFT, "ALiVE MP startup: aircraft")
@@ -1709,7 +1797,7 @@ switch(_operation) do {
             _countCrewedAir = 0;
             _countUncrewedAir = 0;
 
-            if(_placePlanes) then {
+            if (_placePlanes) then {
 
                 _airClasses = [0,_faction,"Plane"] call ALiVE_fnc_findVehicleType;
                 _airClasses = _airClasses - ALiVE_PLACEMENT_VEHICLEBLACKLIST;
@@ -1915,11 +2003,9 @@ switch(_operation) do {
             ["aircraft"] call _fnc_mpDiagMark;
 
 
-            // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
                 ["MP [%1] - Air units placed: crewed:%2 uncrewed:%3",_faction,_countCrewedAir,_countUncrewedAir] call ALiVE_fnc_dump;
             };
-            // DEBUG -------------------------------------------------------------------------------------
 
 
             PROFILE_SCOPE(MPANTIAIR, "ALiVE MP startup: anti-air")
@@ -2538,18 +2624,16 @@ switch(_operation) do {
 
           
             private _guardProbabilityCount = [_countInfantry,[_logic, "guardProbability"] call MAINCLASS] call ALIVE_fnc_infantryGuardProbabilityCount;
-            // DEBUG -------------------------------------------------------------------------------------
+
             if(_debug) then {
 	            ["MP [%1] - Garrison _guardProbabilityCount: %2", _faction, _guardProbabilityCount] call ALIVE_fnc_dump;
             };
-            // DEBUG -------------------------------------------------------------------------------------
             
             if (_guardProbabilityCount > 0) then {
               _countInfantry = _countInfantry - _guardProbabilityCount;
             };
 
-            // DEBUG -------------------------------------------------------------------------------------
-            if(_debug) then {
+            if (_debug) then {
                 ["MP [%1] - Main force creation ",_faction] call ALiVE_fnc_dump;
                 ["Count Armor: %1",_countArmored] call ALIVE_fnc_dump;
                 ["Count Artillery: %1",_countArtillery] call ALIVE_fnc_dump;
@@ -2560,7 +2644,6 @@ switch(_operation) do {
                 ["Count Garrison Infantry: %1",_guardProbabilityCount] call ALIVE_fnc_dump;
                 ["Count Spec Ops: %1",_countSpecOps] call ALIVE_fnc_dump;
             };
-            // DEBUG -------------------------------------------------------------------------------------
 
 
             // Assign groups
@@ -2953,11 +3036,9 @@ switch(_operation) do {
                     [_x, "reserveModuleClass", MAINCLASS] call ALiVE_fnc_hashSet;
                     
 
-                    // DEBUG -------------------------------------------------------------------------------------
                     if(_debug) then {
                       ["MP [%1] - Garrison _guardProbabilityCount: %2", _faction, _guardProbabilityCount] call ALiVE_fnc_dump;           
                     };
-                    // DEBUG -------------------------------------------------------------------------------------
             
                     private _guardRadius = parseNumber([_logic, "guardRadius"] call MAINCLASS);
                     private _guardPatrolPercentage = parseNumber([_logic, "guardPatrolPercentage"] call MAINCLASS);
@@ -3480,14 +3561,12 @@ switch(_operation) do {
             ["MP %2 - Total profiles created: %1",_countProfiles, _faction] call ALiVE_fnc_dump;
             ["garrisons, guards and reserves", format ["%1 profiles in total", _countProfiles]] call _fnc_mpDiagMark;
 
-            // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
                 //["MP - Total profiles created: %1",_countProfiles] call ALiVE_fnc_dump;
                 ["MP - Placement completed"] call ALiVE_fnc_dump;
                 [] call ALIVE_fnc_timer;
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
             };
-            // DEBUG -------------------------------------------------------------------------------------
 
             PROFILE_SCOPE(MPVEHICLECACHE, "ALiVE MP startup: vehicle type cache")
             [_faction] call ALiVE_fnc_initFindVehicleTypeCache;

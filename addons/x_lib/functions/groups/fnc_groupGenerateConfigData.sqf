@@ -5,7 +5,7 @@ SCRIPT(groupGenerateConfigData);
 Function: ALIVE_fnc_groupGenerateConfigData
 
 Description:
-Generates a config group hash to store path to config by group name and faction
+Generates a hash of group config references keyed by faction and group name
 
 Parameters:
 
@@ -34,43 +34,32 @@ ARJay
 // waiters test that flag for nil alone. Setting it to false to mean in flight would let
 // every one of them through on a config that is not built yet.
 if (!isNil "ALiVE_GROUP_CONFIG_BUILDING") exitWith {
-    waitUntil {!isNil "ALiVE_GROUP_CONFIG_DATA_GENERATED"};
+    if (isnil "ALiVE_GROUP_CONFIG_DATA_GENERATED") then {
+        waitUntil {!isNil "ALiVE_GROUP_CONFIG_DATA_GENERATED"};
+    };
 };
 ALiVE_GROUP_CONFIG_BUILDING = true;
 
 ALIVE_groupConfig = [] call ALIVE_fnc_hashCreate;
 
-private _findRecurse = {
-    private _root = (_this select 0);
-    private _path = +(_this select 1);
-
-    for "_i" from 0 to count _root -1 do {
-
-        private _class = _root select _i;
-
-        if (isClass _class) then {
-            private _currentPath = _path + [_i];
-            private _className = configName _class;
-
-            if(count _currentPath == 4) then {
-                // Hack to add support for factions
-                private _configHierarchy = configHierarchy _class;
-                private _faction = configname (_configHierarchy select 3);
-                _className = format ["%1_%2", _faction, _className];
-                [ALIVE_groupConfig, _className, [_configHierarchy select 0,_currentPath]] call ALIVE_fnc_hashSet;
-            } else {
-                // CfgGroups nests side, faction, category, group, and a path of four is the
-                // group itself. Below it sit the group's own unit entries, which the walk used
-                // to descend into and then discard one at a time, since only a path of four is
-                // ever stored. A squad carries four to sixteen of those, so most of the walk was
-                // spent visiting classes that could never be kept.
-                [_class, _currentPath] call _findRecurse;
-            };
-        };
-    };
-};
-
-[missionConfigFile >> "CfgGroups", []] call _findRecurse;
-[configFile >> "CfgGroups", []] call _findRecurse;
+// Preserve traversal order: engine groups overwrite duplicate mission keys.
+// Visit only side/faction/category/group classes and retain the config directly.
+{
+    private _root = _x;
+    {
+        private _sideConfig = _x;
+        {
+            private _factionConfig = _x;
+            private _faction = configName _factionConfig;
+            {
+                private _categoryConfig = _x;
+                {
+                    private _key = format ["%1_%2", _faction, configName _x];
+                    [ALIVE_groupConfig, _key, _x] call ALIVE_fnc_hashSet;
+                } forEach ("true" configClasses _categoryConfig);
+            } forEach ("true" configClasses _factionConfig);
+        } forEach ("true" configClasses _sideConfig);
+    } forEach ("true" configClasses (_root >> "CfgGroups"));
+} forEach [missionConfigFile, configFile];
 
 ALiVE_GROUP_CONFIG_DATA_GENERATED = true;

@@ -11353,17 +11353,19 @@ switch(_operation) do {
                                             };
                                         };
                                         private _key = format ["%1_%2", _groupFaction, _group];
-                                        private _value = [ALIVE_groupConfig, _key] call ALIVE_fnc_hashGet;
-                                        private _side = (_value select 1) select 0;
-                                        private _faction = (_value select 1) select 1;
-                                        private _category = (_value select 1) select 2;
-                                        private _configPath = ((((configFile >> "CfgGroups") select _side) select _faction) select _category) >> "aliveCategory";
+                                        private _groupConfig = [ALIVE_groupConfig, _key, configNull] call ALIVE_fnc_hashGet;
+                                        private _categoryConfig = configNull;
+                                        if (!isNull _groupConfig) then {
+                                            private _hierarchy = configHierarchy _groupConfig;
+                                            _categoryConfig = _hierarchy select ((count _hierarchy) - 2);
+                                        };
+                                        private _configPath = _categoryConfig >> "aliveCategory";
 
                                         if (isText _configPath) then {
                                             _itemCategory = getText _configPath;
                                         } else {
                                             // Try the icon...
-                                            private _iconText = getText(((((configFile >> "CfgGroups") select _side) select _faction) select _category) >> _group >> "icon");
+                                            private _iconText = getText (_groupConfig >> "icon");
                                             switch (true) do {
                                                 case ([_iconText,"_air"] call CBA_fnc_find != -1): {
                                                     _itemCategory = "Air";
