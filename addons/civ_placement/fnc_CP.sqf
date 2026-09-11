@@ -1534,7 +1534,6 @@ switch(_operation) do {
                         if (_isReserve) then {
                             private _reservePool = [_cluster, "reservePool"] call ALiVE_fnc_hashGet;
                             if (_isVehicleReserve) then {
-                                private _t0 = diag_tickTime;
                                 private _parking = [_vehicleReserveClass, _center, _size] call _fnc_findVehicleParkingPos;
                                 private _vehiclePos = _parking select 0;
                                 private _vehicleDir = _parking select 1;
@@ -1543,7 +1542,6 @@ switch(_operation) do {
                                 };
                                 if ((!isNil "ALiVE_civ_placement_debug" && {ALiVE_civ_placement_debug})
                                     && {!isNil "ALiVE_vehicleSpawn_debug" && {ALiVE_vehicleSpawn_debug}}) then {
-                                    ["[ALiVE Reserve DEBUG] CP-VEHICLE-RESERVE faction=%1 totalCount=%2 group=%3 class=%4 pos=%5 elapsed=%6ms", _faction, _totalCount, _group, _vehicleReserveClass, _vehiclePos, round ((diag_tickTime - _t0) * 1000)] call ALiVE_fnc_dump;
                                 };
 
                                 private _emptyProfiles = [_vehicleReserveClass, _sideCP, _faction, _vehiclePos, _vehicleDir, false, _faction] call ALIVE_fnc_createProfilesUnCrewedVehicle;
@@ -1570,7 +1568,6 @@ switch(_operation) do {
                             // Active placement. Vehicles always patrol (ambientMovement);
                             // only infantry participates in the garrison budget.
                             private _activeDir = random 360;
-                            private _activeT0 = diag_tickTime;
                             private _activeVehClass = "";
                             if (_isVehicle) then {
                                 _command = "ALIVE_fnc_ambientMovement";
@@ -1606,7 +1603,6 @@ switch(_operation) do {
                                 if (_isVehicle
                                     && {!isNil "ALiVE_civ_placement_debug" && {ALiVE_civ_placement_debug}}
                                     && {!isNil "ALiVE_vehicleSpawn_debug" && {ALiVE_vehicleSpawn_debug}}) then {
-                                    ["[ALiVE Reserve DEBUG] CP-VEHICLE-ACTIVE faction=%1 totalCount=%2 group=%3 class=%4 pos=%5 elapsed=%6ms", _faction, _totalCount, _group, _activeVehClass, _position, round ((diag_tickTime - _activeT0) * 1000)] call ALiVE_fnc_dump;
                                 };
 
                                 {

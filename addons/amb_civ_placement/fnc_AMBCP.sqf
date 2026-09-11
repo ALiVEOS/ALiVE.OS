@@ -337,7 +337,6 @@ switch(_operation) do {
             if(_debug) then {
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
                 ["AMBCP - Startup"] call ALiVE_fnc_dump;
-                [true] call ALIVE_fnc_timer;
             };
 
             waituntil {!(isnil "ALiVE_ProfileHandler") && {[ALiVE_ProfileSystem,"startupComplete",false] call ALIVE_fnc_hashGet}};
@@ -464,7 +463,6 @@ switch(_operation) do {
                     if (_includeCustomObjectives) then {
                         ["AMBCP - Custom civilian objective clusters available: %1", _customClusterCount] call ALiVE_fnc_dump;
                     };
-                    [] call ALIVE_fnc_timer;
                 };
                 // DEBUG -------------------------------------------------------------------------------------
 
@@ -499,7 +497,6 @@ switch(_operation) do {
             if(_debug) then {
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
                 ["AMBCP - Registration"] call ALiVE_fnc_dump;
-                [true] call ALIVE_fnc_timer;
             };
             // DEBUG -------------------------------------------------------------------------------------
 
@@ -519,7 +516,6 @@ switch(_operation) do {
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
                 ["AMBCP - Registration Completed"] call ALiVE_fnc_dump;
-                [] call ALIVE_fnc_timer;
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------
@@ -543,7 +539,6 @@ switch(_operation) do {
             if(_debug) then {
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
                 ["AMBCP - Placement"] call ALiVE_fnc_dump;
-                [true] call ALIVE_fnc_timer;
             };
             // DEBUG -------------------------------------------------------------------------------------
 
@@ -1073,7 +1068,6 @@ switch(_operation) do {
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
                 ["AMBCP - Placement completed"] call ALiVE_fnc_dump;
-                [] call ALIVE_fnc_timer;
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------

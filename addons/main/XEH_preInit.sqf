@@ -64,15 +64,7 @@ ALiVE_airsideSurveyed = [];
 // has run as it does on a map with no airfields, and those two need opposite answers.
 // Local classification data belongs to this mission; never broadcast object identities.
 ALiVE_airfieldRetainedSurveys = [];
-ALiVE_airfieldRetainedStats = [0,0,0];
-ALiVE_airfieldTerrainPathMetrics = [[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]];
-ALiVE_airfieldFallbackHistory = [];
-ALiVE_airfieldOverlapMetrics = [[0,0,0],[0,0,0],[0,0,0]];
-ALiVE_airfieldOverlapComparisons = 0;
-ALiVE_airfieldOverlapElapsed = 0;
-ALiVE_airfieldOverlapDone = false;
 ALiVE_airsideRegisteredBounds = nil;
-ALiVE_campAirfieldGateStats = [0,0,0];
 ALiVE_airsideCacheReady = false;
 ALiVE_airsideCacheBuilding = nil;
 

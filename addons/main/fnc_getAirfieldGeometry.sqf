@@ -105,35 +105,13 @@ _retainSurvey = _retainSurvey && {!_needZones};
 // ------------------------------------------------------------------------
 if (isNil "ALiVE_airfieldGeomCache") then {
     ALiVE_airfieldGeomCache = createHashMap;
-    // Counted so the cache can be judged on evidence rather than on the assumption
-    // that callers repeat themselves. Two additions per call, at the top of the
-    // function and nowhere near the sweeps, and the totals are reported in one line
-    // when ALiVE finishes starting up. Timing anything INSIDE the searches is off the
-    // table: six operations added per iteration once took placement from 50 seconds
-    // to never finishing.
-    ALiVE_airfieldGeomCalls = 0;
-    ALiVE_airfieldGeomHits  = 0;
 };
-// Initialized separately so file-patched missions with an existing cache can
-// start counting actual object queries without discarding cached geometry.
-if (isNil "ALiVE_airfieldGeomObjectScans") then { ALiVE_airfieldGeomObjectScans = 0 };
-if (isNil "ALiVE_airfieldGeomScansAvoided") then { ALiVE_airfieldGeomScansAvoided = 0 };
-ALiVE_airfieldGeomCalls = ALiVE_airfieldGeomCalls + 1;
 private _cacheKey = format ["%1|%2|%3|%4", _centerPos select 0, _centerPos select 1, _radius, _needZones];
 private _cached = ALiVE_airfieldGeomCache get _cacheKey;
 if (!_retainSurvey && {!isNil "_cached"}) exitWith {
-    ALiVE_airfieldGeomHits = ALiVE_airfieldGeomHits + 1;
     _cached
 };
 
-// Measure whole phases only: no timers inside object loops.
-// Retained-survey counters are updated per query, never per examined object.
-// Cache hits return above; narrow and full surveys are accumulated separately.
-private _geomDiag = (missionNamespace getVariable ["ALiVE_MP_STARTUP_DIAG",false])
-    || {missionNamespace getVariable ["ALiVE_SEARCH_STARTUP_DIAG",false]};
-private _geomT0 = if (_geomDiag) then {diag_tickTime} else {0};
-private _geomPhaseT0 = 0;
-private _geomPhaseTimes = if (_geomDiag) then {[0,0,0,0,0,0,0,0]} else {[]};
 PROFILE_SCOPE(AIRGEOMMISS, "ALiVE airfield geometry: cache miss")
 
 // Bounded, because each entry holds every object the sweep found and a long mission
@@ -143,7 +121,6 @@ PROFILE_SCOPE(AIRGEOMMISS, "ALiVE airfield geometry: cache miss")
 if (count ALiVE_airfieldGeomCache > 256) then { ALiVE_airfieldGeomCache = createHashMap };
 
 if (isNil "ALiVE_airfieldRetainedSurveys") then { ALiVE_airfieldRetainedSurveys = [] };
-if (isNil "ALiVE_airfieldRetainedStats") then { ALiVE_airfieldRetainedStats = [0,0,0] };
 private _retainedTerrain = [];
 private _retainedSurvey = [];
 private _queryASL = AGLToASL [_centerPos select 0, _centerPos select 1, _centerPos param [2,0]];
@@ -157,15 +134,12 @@ if (!_retainSurvey) then {
     if (_covered >= 0) then {
         _retainedSurvey = ALiVE_airfieldRetainedSurveys select _covered;
     };
-    private _stat = if (_covered >= 0) then {0} else {1};
-    ALiVE_airfieldRetainedStats set [_stat, (ALiVE_airfieldRetainedStats select _stat) + 1];
 };
 private _runways       = [];
 private _taxiways      = [];
 private _airfieldZones = [];
 
 PROFILE_SCOPE(AIRGEOMMODULES, "ALiVE airfield geometry: module attributes and segments")
-if (_geomDiag) then { _geomPhaseT0 = diag_tickTime };
 // ------------------------------------------------------------------------
 // Tier 1 - mil_ato module logic attributes
 // ------------------------------------------------------------------------
@@ -196,7 +170,6 @@ if (_geomDiag) then { _geomPhaseT0 = diag_tickTime };
     };
 } forEach (entities "ALiVE_mil_ATO");
 
-if (_geomDiag) then { _geomPhaseTimes set [0, diag_tickTime - _geomPhaseT0] };
 PROFILE_SCOPE_END(AIRGEOMMODULES)
 
 // ------------------------------------------------------------------------
@@ -207,14 +180,10 @@ PROFILE_SCOPE_END(AIRGEOMMODULES)
 // filtering so terrain elevation and object origin offsets are respected.
 private _surveyRadius = if (_needZones) then { _radius + 200 } else { _radius };
 PROFILE_SCOPE(AIRGEOMSCAN, "ALiVE airfield geometry: nearestObjects")
-if (_geomDiag) then { _geomPhaseT0 = diag_tickTime };
 private _surveyObjs = nearestObjects [_centerPos, [], _surveyRadius];
-if (_geomDiag) then { _geomPhaseTimes set [1, diag_tickTime - _geomPhaseT0] };
 PROFILE_SCOPE_END(AIRGEOMSCAN)
 
-ALiVE_airfieldGeomObjectScans = ALiVE_airfieldGeomObjectScans + 1;
 PROFILE_SCOPE(AIRGEOMFILTER, "ALiVE airfield geometry: radius filtering")
-if (_geomDiag) then { _geomPhaseT0 = diag_tickTime };
 private _taggedObjs = _surveyObjs;
 if (_needZones) then {
     private _centerAGL = [_centerPos select 0, _centerPos select 1, _centerPos param [2,0]];
@@ -222,13 +191,10 @@ if (_needZones) then {
     _taggedObjs = _surveyObjs select {
         (_centerASL vectorDistance (AGLToASL (_x modelToWorld [0,0,0]))) <= _radius
     };
-    ALiVE_airfieldGeomScansAvoided = ALiVE_airfieldGeomScansAvoided + 1;
 };
-if (_geomDiag) then { _geomPhaseTimes set [2, diag_tickTime - _geomPhaseT0] };
 PROFILE_SCOPE_END(AIRGEOMFILTER)
 
 PROFILE_SCOPE(AIRGEOMTAGS, "ALiVE airfield geometry: tag classification and segments")
-if (_geomDiag) then { _geomPhaseT0 = diag_tickTime };
 {
     if (_x getVariable ["ALiVE_runway", false]) then {
         // Tagged objects are treated as point-segments at the object position
@@ -246,11 +212,9 @@ if (_geomDiag) then { _geomPhaseT0 = diag_tickTime };
     };
 } forEach _taggedObjs;
 
-if (_geomDiag) then { _geomPhaseTimes set [3, diag_tickTime - _geomPhaseT0] };
 PROFILE_SCOPE_END(AIRGEOMTAGS)
 
 PROFILE_SCOPE(AIRGEOMTERRAIN, "ALiVE airfield geometry: terrain classification and segments")
-if (_geomDiag) then { _geomPhaseT0 = diag_tickTime };
 // ------------------------------------------------------------------------
 // Tier 3 - BI substring matches on indexed terrain objects.
 // `nearestObjects [_centerPos, [], _radius]` returns terrain plus regular
@@ -308,7 +272,6 @@ if (count _retainedSurvey > 0) then {
     PROFILE_SCOPE_END(AIRGEOMCLASSIFY)
 };
 
-if (_geomDiag) then { _geomPhaseTimes set [4, diag_tickTime - _geomPhaseT0] };
 PROFILE_SCOPE_END(AIRGEOMTERRAIN)
 
 // ------------------------------------------------------------------------
@@ -328,12 +291,10 @@ PROFILE_SCOPE_END(AIRGEOMTERRAIN)
 // over the rectangular footprint but cheap and reliable.
 // ------------------------------------------------------------------------
 PROFILE_SCOPE(AIRGEOMLOCS, "ALiVE airfield geometry: nearestLocations")
-if (_geomDiag) then { _geomPhaseT0 = diag_tickTime };
 private _airportLocs = if (_needZones) then {
     nearestLocations [_centerPos, ["Airport"], _radius + 500]
 } else { [] };
 
-if (_geomDiag) then { _geomPhaseTimes set [5, diag_tickTime - _geomPhaseT0] };
 PROFILE_SCOPE_END(AIRGEOMLOCS)
 
 // Tier 4b - object-class detection for airfield infrastructure. Some
@@ -347,7 +308,6 @@ PROFILE_SCOPE_END(AIRGEOMLOCS)
 // of airfield infrastructure produces one larger no-go area rather
 // than dozens of overlapping small ones.
 PROFILE_SCOPE(AIRGEOMINFRA, "ALiVE airfield geometry: infrastructure classification")
-if (_geomDiag) then { _geomPhaseT0 = diag_tickTime };
 // Infrastructure stays live for all full queries. Builder/narrow queries skip it.
 private _airfieldInfraObjects = if (_needZones) then {
     // Reuse the wider survey; runway/taxiway detection and the returned object
@@ -358,11 +318,9 @@ private _airfieldInfraObjects = if (_needZones) then {
         count ((str _x) regexFind ["papi|runwaylight|runway_edge|airport|hangar|tower_small|controltower/i"]) > 0
     }
 } else { [] };
-if (_geomDiag) then { _geomPhaseTimes set [6, diag_tickTime - _geomPhaseT0] };
 PROFILE_SCOPE_END(AIRGEOMINFRA)
 
 PROFILE_SCOPE(AIRGEOMZONES, "ALiVE airfield geometry: zone construction")
-if (_geomDiag) then { _geomPhaseT0 = diag_tickTime };
 if (count _airfieldInfraObjects > 0) then {
     // Find bbox of detected infrastructure to size the no-go zone
     private _xs = _airfieldInfraObjects apply { (getPosATL _x) select 0 };
@@ -389,7 +347,6 @@ if (count _airfieldInfraObjects > 0) then {
     };
 } forEach _airportLocs;
 
-if (_geomDiag) then { _geomPhaseTimes set [7, diag_tickTime - _geomPhaseT0] };
 PROFILE_SCOPE_END(AIRGEOMZONES)
 
 // The list of everything found around the field is handed back as well. Sweeping a
@@ -399,81 +356,9 @@ PROFILE_SCOPE_END(AIRGEOMZONES)
 if (_retainSurvey) then {
     // Publish only a completed survey, including a valid empty match list.
     ALiVE_airfieldRetainedSurveys pushBack [_queryASL, _radius, _retainedTerrain];
-    ALiVE_airfieldRetainedStats set [2, (ALiVE_airfieldRetainedStats select 2) + count _retainedTerrain];
 };
 private _result = [_runways, _taxiways, _airfieldZones, _taggedObjs];
 ALiVE_airfieldGeomCache set [_cacheKey, _result];
 PROFILE_SCOPE_END(AIRGEOMMISS)
-if (_geomDiag) then {
-    private _geomElapsed = diag_tickTime - _geomT0;
-    // One sample per survey, outside all object loops. Elapsed includes scheduling.
-    // Rows: builder, covered, fallback. Columns: calls, terrain seconds, whole
-    // geometry seconds, live objects in terrain radius, retained candidates visited.
-    if (isNil "ALiVE_airfieldTerrainPathMetrics") then {
-        ALiVE_airfieldTerrainPathMetrics = [[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]];
-    };
-    private _terrainPath = if (_retainSurvey) then {0} else {
-        if (count _retainedSurvey > 0) then {1} else {2}
-    };
-    private _pathMetrics = ALiVE_airfieldTerrainPathMetrics select _terrainPath;
-    _pathMetrics set [0, (_pathMetrics select 0) + 1];
-    _pathMetrics set [1, (_pathMetrics select 1) + (_geomPhaseTimes select 4)];
-    _pathMetrics set [2, (_pathMetrics select 2) + _geomElapsed];
-    _pathMetrics set [3, (_pathMetrics select 3) + count _taggedObjs];
-    if (_terrainPath == 1) then {
-        _pathMetrics set [4, (_pathMetrics select 4) + count (_retainedSurvey select 2)];
-    };
-
-    // Observe fallback reuse opportunities without changing classification or scans.
-    // Compare against completed earlier fallback surveys only. A survey finishing
-    // during this call could not have supplied retained data when this call began.
-    if (_terrainPath == 2 && {!(missionNamespace getVariable ["ALiVE_airfieldOverlapDone",false])}) then {
-        PROFILE_SCOPE(AIRGEOMOVERLAP, "ALiVE airfield diagnostics: fallback survey overlap")
-        private _overlapT0 = diag_tickTime;
-        if (isNil "ALiVE_airfieldFallbackHistory") then { ALiVE_airfieldFallbackHistory = [] };
-        if (isNil "ALiVE_airfieldOverlapMetrics") then {
-            ALiVE_airfieldOverlapMetrics = [[0,0,0],[0,0,0],[0,0,0]];
-            ALiVE_airfieldOverlapComparisons = 0;
-            ALiVE_airfieldOverlapElapsed = 0;
-        };
-        // Mutually exclusive: fully contained in one prior fallback / overlap only / none.
-        private _overlapKind = 2;
-        private _overlapComparisons = 0;
-        {
-            if ((_x select 2) <= _geomT0) then {
-                _overlapComparisons = _overlapComparisons + 1;
-                private _distance = _queryASL vectorDistance (_x select 0);
-                private _priorRadius = _x select 1;
-                if (_distance + _queryRadius <= _priorRadius) exitWith { _overlapKind = 0 };
-                if (_distance < _queryRadius + _priorRadius) then { _overlapKind = 1 };
-            };
-            if (_overlapKind == 0) exitWith {};
-        } forEach ALiVE_airfieldFallbackHistory;
-        private _overlapMetrics = ALiVE_airfieldOverlapMetrics select _overlapKind;
-        _overlapMetrics set [0, (_overlapMetrics select 0) + 1];
-        _overlapMetrics set [1, (_overlapMetrics select 1) + (_geomPhaseTimes select 4)];
-        _overlapMetrics set [2, (_overlapMetrics select 2) + count _taggedObjs];
-        ALiVE_airfieldFallbackHistory pushBack [+_queryASL, _queryRadius, diag_tickTime];
-        ALiVE_airfieldOverlapComparisons = ALiVE_airfieldOverlapComparisons + _overlapComparisons;
-        ALiVE_airfieldOverlapElapsed = ALiVE_airfieldOverlapElapsed + (diag_tickTime - _overlapT0);
-        PROFILE_SCOPE_END(AIRGEOMOVERLAP)
-    };
-
-    if (isNil "ALiVE_airfieldGeomPhaseMetrics") then {
-        // Each mode: calls, elapsed, phase times, surveyed/tagged/infrastructure counts.
-        ALiVE_airfieldGeomPhaseMetrics = [
-            [0,0,[0,0,0,0,0,0,0,0],0,0,0],
-            [0,0,[0,0,0,0,0,0,0,0],0,0,0]
-        ];
-    };
-    private _geomMetrics = ALiVE_airfieldGeomPhaseMetrics select (if (_needZones) then {1} else {0});
-    _geomMetrics set [0, (_geomMetrics select 0) + 1];
-    _geomMetrics set [1, (_geomMetrics select 1) + _geomElapsed];
-    private _geomTotals = _geomMetrics select 2;
-    { _geomTotals set [_forEachIndex, (_geomTotals select _forEachIndex) + _x] } forEach _geomPhaseTimes;
-    _geomMetrics set [3, (_geomMetrics select 3) + count _surveyObjs];
-    _geomMetrics set [4, (_geomMetrics select 4) + count _taggedObjs];
-    _geomMetrics set [5, (_geomMetrics select 5) + count _airfieldInfraObjects];
-};
 
 _result

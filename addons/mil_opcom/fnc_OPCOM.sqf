@@ -423,14 +423,12 @@ switch (_operation) do {
         ];
 
         // find synced CQB modules, wait for their init to finish, store them
-        private _startTime = diag_ticktime;
         private _syncedCQBModules = (synchronizedObjects _logic) select {typeof _x == "ALiVE_mil_cqb"};
         {
             waituntil { _x getVariable ["startupComplete", false] };
         } foreach _syncedCQBModules;
 
         [_handler,"CQB", _syncedCQBModules] call ALiVE_fnc_HashSet;
-        ["ALiVE_fnc_OPCOM - %1: %2 seconds spent waiting for CQB module init", _customName, diag_ticktime - _startTime] call ALiVE_fnc_Dump;
 
         //Set dynamic data depending on type, like section sizes
         switch (_type) do {
@@ -887,7 +885,6 @@ switch (_operation) do {
 
         _result = _section;
 
-        //[false, "ALiVE OPCOM composing section!", format["OPCOM_nearestSection_%1",_id]] call ALIVE_fnc_timer;
     };
 
     ///////////////////////////////////////////////////
@@ -2973,9 +2970,7 @@ switch (_operation) do {
                     [GVAR(DATAHANDLER),"storeType",true] call ALIVE_fnc_Data;
                 };
 
-                [true] call ALIVE_fnc_timer;
                 GVAR(OBJECTIVES_DB_LOAD) = [[GVAR(DATAHANDLER), "bulkLoad", ["mil_opcom", _missionName, _async]] call ALIVE_fnc_Data,time];
-                [] call ALIVE_fnc_timer;
 
                 //Exit if no loaded data
                 if (((typeName (GVAR(OBJECTIVES_DB_LOAD) select 0)) == "BOOL") && {!(GVAR(OBJECTIVES_DB_LOAD) select 0)}) exitwith {};
