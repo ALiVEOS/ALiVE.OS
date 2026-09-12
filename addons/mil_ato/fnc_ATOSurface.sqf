@@ -89,23 +89,51 @@ switch(_operation) do {
         if (count _ships == 0) exitWith { _result = "terrain" };
 
         private _ship = _ships select 0;
-        private _parts = _ship getVariable ["multiStructureParts", []];
-        if (_parts isEqualTo []) then { _parts = [_ship] };
+
+        // What counts as part of this ship, by CLASS.
+        //
+        // A carrier is a composite: the hull is one object and the deck, the
+        // island and the catapults are separate objects beside it. The config
+        // lists their classes, which is how the old module found them. This
+        // read the list off a VARIABLE on the ship instead, and nothing
+        // anywhere sets that variable, so the list was always empty and the
+        // test fell back to the hull alone. A trace that hit the deck rather
+        // than the hull answered "terrain", which is every trace on a carrier.
+        private _partClasses = getArray (configFile >> "CfgVehicles" >> typeOf _ship >> "multiStructureParts");
+        // Kept as well, in case something stamps the objects one day.
+        private _partObjects = _ship getVariable ["multiStructureParts", []];
+        if !(_partObjects isEqualType []) then { _partObjects = [] };
 
         // Straight down through the point. A deck is a surface you could stand
         // on, so ask whether one is there rather than inferring it.
-        // Both ends built in ASL directly: getTerrainHeightASL already returns
-        // ASL, so converting again would put the probe 50 m into the wrong place.
+        //
+        // Traced from above the WATER, not from above the sea bed. This started
+        // at the terrain height plus fifty, and over water the terrain height
+        // IS the sea bed. A carrier deck sits about fifteen metres above the
+        // waterline, so anywhere the water is deeper than about thirty-five
+        // metres the trace began underneath the deck and went further down, and
+        // could never hit it. Measured: a carrier two and a half kilometres off
+        // Stratis classified as terrain at every offset, its own deck included.
+        //
+        // Sea level or the terrain, whichever is higher, works in both places:
+        // over land it is the old behaviour, over water it is above the
+        // waterline, which is where a deck is.
         private _groundASL = getTerrainHeightASL _pos;
-        private _from = [_pos select 0, _pos select 1, _groundASL + 50];
-        private _to   = [_pos select 0, _pos select 1, _groundASL - 50];
+        private _from = [_pos select 0, _pos select 1, (0 max _groundASL) + 80];
+        private _to   = [_pos select 0, _pos select 1, (_groundASL min 0) - 5];
+        // More than one hit wanted: the first thing a trace meets over a deck
+        // may be an aircraft, a crate or a railing, and the deck is under it.
         private _hits = lineIntersectsSurfaces [
-            _from, _to, objNull, objNull, true, 1, "GEOM", "NONE"
+            _from, _to, objNull, objNull, true, 8, "GEOM", "NONE"
         ];
 
         {
             private _obj = _x select 2;
-            if (!isNull _obj && {(_parts findIf {_x isEqualTo _obj}) > -1 || {_obj isEqualTo _ship}}) exitWith {
+            if (!isNull _obj
+                && {(_obj isEqualTo _ship)
+                    || {_obj isKindOf "StaticShip"}
+                    || {(typeOf _obj) in _partClasses}
+                    || {(_partObjects findIf {_x isEqualTo _obj}) > -1}}) exitWith {
                 _result = "deck";
             };
         } forEach _hits;
