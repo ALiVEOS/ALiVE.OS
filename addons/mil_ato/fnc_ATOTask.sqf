@@ -519,11 +519,24 @@ switch(_operation) do {
             _result = ["denied", format ["a %1 is already up over %2", _type, _zone]];
         };
 
+        // Where the sortie is aimed, as a POSITION. The detail list is
+        // whatever the air picture saw, which is aircraft and air defences
+        // rather than coordinates, and putting one of those in a field the
+        // planner reads as a position only worked by accident: distance2D
+        // happens to accept an object. A profile id accepts nothing, so it
+        // would have scored every airframe against a nonsense distance.
+        private _first = _detail param [0, [0,0,0]];
+        private _at = switch (true) do {
+            case (_first isEqualType []): { _first };
+            case (_first isEqualType objNull): { getPosATL _first };
+            default { [0,0,0] };
+        };
+
         private _request = [[
             ["id", format ["%1_%2_%3", _type, _zone, _now]],
             ["type", _type],
             ["airspace", _zone],
-            ["targetPos", _detail param [0, [0,0,0]]],
+            ["targetPos", _at],
             ["targets", _detail],
             ["requester", [[["kind","ATO"]]] call ALIVE_fnc_hashCreate],
             ["receivedAt", _now],
