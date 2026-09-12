@@ -128,6 +128,18 @@ switch(_operation) do {
             _result = [];
         };
 
+        // Spots this surface has already promised to somebody count as taken,
+        // whether or not the caller remembered to pass them.
+        //
+        // Reservations were only ever read from the argument, so a caller that
+        // wanted them honoured had to fetch the instance's own list and hand it
+        // back in, which means reaching inside another piece to work out what
+        // that piece already knows. Unioned here instead.
+        private _held = [_logic, "reservations", []] call ALIVE_fnc_hashGet;
+        {
+            if (!(_x in _reserved)) then { _reserved pushBack _x };
+        } forEach _held;
+
         // Span is HALF the longest dimension plus courtesy room, with a floor,
         // not the full dimension. Using the full length doubles every clearance
         // test and the search then finds almost nowhere on a real airfield.

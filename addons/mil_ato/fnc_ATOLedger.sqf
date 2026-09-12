@@ -174,6 +174,22 @@ switch(_operation) do {
         _result = true;
     };
 
+    // A record whose aircraft cannot be put anywhere. Kept, not dropped: the
+    // save is monotone and may only lose what the session positively saw lost,
+    // and a stand that is unusable today may be usable next mission. Without
+    // this there was no status for it, so a restore that could not place a
+    // record had nowhere to write that down and the reason lived only in a log
+    // line.
+    case "markUnplaceable": {
+        _args params [["_tail","",[""]], ["_reason","",[""]]];
+        private _records = [_logic,"records"] call ALIVE_fnc_hashGet;
+        private _record = [_records,_tail,[]] call ALIVE_fnc_hashGet;
+        if (_record isEqualTo []) exitWith { _result = false };
+        [_record,"status","unplaceable"] call ALIVE_fnc_hashSet;
+        [_record,"unplaceableReason",_reason] call ALIVE_fnc_hashSet;
+        _result = true;
+    };
+
     case "markLost": {
         private _records = [_logic,"records"] call ALIVE_fnc_hashGet;
         private _record = [_records,_args,[]] call ALIVE_fnc_hashGet;
