@@ -48,7 +48,7 @@ params [
     ["_kinds", [1,2,3], [[]]]
 ];
 
-if (ALiVE_airsideBounds isEqualTo []) exitWith { _position };
+if (ALiVE_airsideFields isEqualTo []) exitWith { _position };
 if (count _position < 2) exitWith { _position };
 
 private _z = if (count _position > 2) then { _position select 2 } else { 0 };
@@ -71,29 +71,28 @@ while {_passes < 4 && {[[_px, _py], 0, _kinds] call ALiVE_fnc_isAirside}} do {
     private _bestR  = 0;
     private _bestPerp = [];
 
-    private _fieldCount = (count ALiVE_airsideBounds) / 4;
+    private _fieldCount = count ALiVE_airsideFields;
 
     for "_i" from 0 to (_fieldCount - 1) do {
-        private _b = _i * 4;
-        private _dx = _px - (ALiVE_airsideBounds select _b);
-        private _dy = _py - (ALiVE_airsideBounds select (_b + 1));
-        private _br = ALiVE_airsideBounds select (_b + 2);
+        private _field = ALiVE_airsideFields select _i;
+        private _dx = _px - ((_field select 0) select 0);
+        private _dy = _py - ((_field select 0) select 1);
+        private _br = _field select 1;
 
         if (((_dx * _dx) + (_dy * _dy)) <= (_br * _br)) then {
-            private _caps = ALiVE_airsideCapsules param [_i, []];
-            private _capCount = (count _caps) / 8;
+            private _caps = _field select 3;
 
-            for "_j" from 0 to (_capCount - 1) do {
-                private _c = _j * 8;
+            {
+                private _cap = _x;
 
-                if ((_caps select (_c + 7)) in _kinds) then {
-                    private _ax  = _caps select _c;
-                    private _ay  = _caps select (_c + 1);
-                    private _r   = _caps select (_c + 4);
-                    private _inv = _caps select (_c + 6);
+                if ((_cap select 7) in _kinds) then {
+                    private _ax  = _cap select 0;
+                    private _ay  = _cap select 1;
+                    private _r   = _cap select 4;
+                    private _inv = _cap select 6;
 
-                    private _vx = (_caps select (_c + 2)) - _ax;
-                    private _vy = (_caps select (_c + 3)) - _ay;
+                    private _vx = (_cap select 2) - _ax;
+                    private _vy = (_cap select 3) - _ay;
                     private _wx = _px - _ax;
                     private _wy = _py - _ay;
 
@@ -124,7 +123,7 @@ while {_passes < 4 && {[[_px, _py], 0, _kinds] call ALiVE_fnc_isAirside}} do {
                         };
                     };
                 };
-            };
+            } forEach _caps;
         };
     };
 

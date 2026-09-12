@@ -702,17 +702,16 @@ _airfieldGeom params ["_runwaySegments", "_taxiwaySegments"];
 // pieces. Capsule kind 1 is that axis and it is already in memory on every machine,
 // so reading it costs a lookup rather than another survey of the field.
 private _runwayHeading = -1;
-if (!isNil "ALiVE_airsideBounds" && {!(ALiVE_airsideBounds isEqualTo [])}
-    && {!isNil "ALiVE_airsideCapsules"}) then {
+if (!isNil "ALiVE_airsideFields" && {!(ALiVE_airsideFields isEqualTo [])}) then {
     private _px = _centerPos select 0;
     private _py = _centerPos select 1;
     private _nearest = -1;
     private _nearestDist = 1e10;
-    private _fieldCount = (count ALiVE_airsideBounds) / 4;
+    private _fieldCount = count ALiVE_airsideFields;
     for "_f" from 0 to (_fieldCount - 1) do {
-        private _b = _f * 4;
-        private _dx = _px - (ALiVE_airsideBounds select _b);
-        private _dy = _py - (ALiVE_airsideBounds select (_b + 1));
+        private _field = ALiVE_airsideFields select _f;
+        private _dx = _px - ((_field select 0) select 0);
+        private _dy = _py - ((_field select 0) select 1);
         // Squared, because this only ever gets compared against another of its own.
         private _d = (_dx * _dx) + (_dy * _dy);
         // Only a field this position actually sits on gets to speak for its runway.
@@ -720,24 +719,23 @@ if (!isNil "ALiVE_airsideBounds" && {!(ALiVE_airsideBounds isEqualTo [])}
         // its heading from an airport kilometres away and look confidently wrong,
         // where falling through to the segments below reads the real one. Twice the
         // stored radius, so a dispersal pad just outside the survey circle still
-        // counts. The squared radius is already in the cache at offset 3.
-        if (_d < _nearestDist && {_d <= (ALiVE_airsideBounds select (_b + 3)) * 4}) then {
+        // counts. The squared radius is already in the cache at record index 2.
+        if (_d < _nearestDist && {_d <= (_field select 2) * 4}) then {
             _nearestDist = _d; _nearest = _f;
         };
     };
-    if (_nearest >= 0 && {_nearest < count ALiVE_airsideCapsules}) then {
-        private _caps = ALiVE_airsideCapsules select _nearest;
-        private _capCount = (count _caps) / 8;
-        for "_j" from 0 to (_capCount - 1) do {
-            private _c = _j * 8;
+    if (_nearest >= 0 && {_nearest < count ALiVE_airsideFields}) then {
+        private _caps = (ALiVE_airsideFields select _nearest) select 3;
+        {
+            private _cap = _x;
             // Kind 1 is the runway. Its inverse squared length is 0 when the capsule
             // collapsed to a disc, which means the cache could not find an axis for
             // this field either, so there is no bearing to take from it.
-            if ((_caps select (_c + 7)) == 1 && {(_caps select (_c + 6)) > 0}) exitWith {
-                _runwayHeading = [_caps select _c, _caps select (_c + 1), 0]
-                          getDir [_caps select (_c + 2), _caps select (_c + 3), 0];
+            if ((_cap select 7) == 1 && {(_cap select 6) > 0}) exitWith {
+                _runwayHeading = [_cap select 0, _cap select 1, 0]
+                          getDir [_cap select 2, _cap select 3, 0];
             };
-        };
+        } forEach _caps;
     };
 };
 
@@ -795,7 +793,7 @@ private _fnc_clearOfRoad = {
     if (!_onRoad) exitWith { true };
 
     !isNil "ALiVE_fnc_isAirside"
-        && {!(ALiVE_airsideBounds isEqualTo [])}
+        && {!(ALiVE_airsideFields isEqualTo [])}
         && {[_pos, 0, [3]] call ALiVE_fnc_isAirside}
 };
 
@@ -820,7 +818,7 @@ private _fnc_clearOfRunwayTaxiway = {
     // exitWith inside a then-block would exit only that block and the function
     // would carry on and return true, silently ignoring the answer.
     if (!isNil "ALiVE_fnc_isAirside"
-        && {!(ALiVE_airsideBounds isEqualTo [])}
+        && {!(ALiVE_airsideFields isEqualTo [])}
         && {[_pos, _hw + 8, [1,2]] call ALiVE_fnc_isAirside}) exitWith { false };
 
     if (_taxiwaySegments findIf {
@@ -1094,19 +1092,18 @@ if (count _found == 0 && {_preference in ["auto", "apron"]}) then {
     // terrain hit), or a taxi tail that is really a runway hold point on a
     // kind-2 taxiway. The registry check deconflicts sibling VTOLs, one airframe
     // per parking spot.
-    if (!isNil "ALiVE_airsideCapsules" && {!(ALiVE_airsideCapsules isEqualTo [])}) then {
+    if (!isNil "ALiVE_airsideFields" && {!(ALiVE_airsideFields isEqualTo [])}) then {
         private _parkDir = if (_runwayHeading >= 0) then { _runwayHeading } else { random 360 };
         {
             if (count _found > 0) exitWith {};
-            private _caps = _x;
-            private _capCount = (count _caps) / 8;
-            for "_j" from 0 to (_capCount - 1) do {
+            private _caps = _x select 3;
+            {
+                private _cap = _x;
                 if (count _found > 0) exitWith {};
-                private _c = _j * 8;
-                if ((_caps select (_c + 7)) == 3) then {
-                    private _pCentre = [_caps select _c, _caps select (_c + 1), 0];
+                if ((_cap select 7) == 3) then {
+                    private _pCentre = [_cap select 0, _cap select 1, 0];
                     if ((_pCentre distance2D _centerPos) <= _maxDistance) then {
-                        private _r = _caps select (_c + 4);
+                        private _r = _cap select 4;
                         private _cands = [_pCentre];
                         if (_r > (_hazardRadius + 4)) then {
                             private _ring = (_r - _hazardRadius) min (_r * 0.6);
@@ -1121,8 +1118,8 @@ if (count _found == 0 && {_preference in ["auto", "apron"]}) then {
                         } forEach _cands;
                     };
                 };
-            };
-        } forEach ALiVE_airsideCapsules;
+            } forEach _caps;
+        } forEach ALiVE_airsideFields;
     };
 
     // Paved-surface match by SUBSTRING, case-insensitive. An exact-name list

@@ -11,8 +11,8 @@ Description:
 
     THIS IS A HOT PATH. It is called from the pathfinder's node expansion, so it
     does no engine spatial queries or config reads. Every
-    airfield is reduced once at mission start to a bounding circle and a flat
-    list of capsules, and this walks that cached arithmetic.
+    airfield is reduced once at mission start to a bounding circle and an array
+    of capsule records, and this walks that cached arithmetic.
 
     The first thing it does is compare against an empty array. On a terrain with
     no airfield the cache stays empty and every caller costs exactly that one
@@ -20,16 +20,17 @@ Description:
 
     Shape of the cache, both built by ALiVE_fnc_buildAirsideCache:
 
-    ALiVE_airsideBounds    flat, stride 4 per airfield:
-                           cx, cy, radius, radius squared
-    ALiVE_airsideCapsules  element i is a flat stride 8 array for airfield i:
+    ALiVE_airsideFields   one record per airfield:
+                           [[cx, cy], radius, radius squared, capsules]
+    capsules             array of capsule records:
                            ax, ay, bx, by, radius, radius squared,
-                           inverse squared length (0 when degenerate), kind
+                           inverse squared length (0 when degenerate), kind, rectangle
+                           rectangle: [midpoint, halfLength, heading]
 
-    A capsule is a line segment with a thickness, which suits every shape here.
-    A runway is a long thin one, a parking area is a degenerate one that
-    collapses to a disc. Testing a point means clamping its projection onto the
-    segment and comparing squared distances, so no square root is needed.
+    Classification uses each capsule's enclosing rotated rectangle directly,
+    within the airfield bounding circle. Rounded capsule ends are approximated
+    by square corners; degenerate parking discs become squares. Other geometry
+    consumers still retain the original capsule data.
 
 Parameters:
     _position : ARRAY  - position to test, [x,y] or [x,y,z]. Z is ignored.
@@ -63,71 +64,38 @@ params [
     ["_kinds", [1,2,3], [[]]]
 ];
 
-// No airfield anywhere on this terrain, or the build has not run yet. This is
-// the common case on most maps and it must stay a single comparison.
-if (ALiVE_airsideBounds isEqualTo []) exitWith { false };
-if (count _position < 2) exitWith { false };
+if (ALiVE_airsideFields isEqualTo [] || { count _position < 2 }) exitWith { false };
 
-private _px = _position select 0;
-private _py = _position select 1;
 private _hit = false;
 private _allKinds = _kinds isEqualTo [1,2,3];
 
-private _fieldCount = (count ALiVE_airsideBounds) / 4;
+{
+    private _field = _x;
 
-for "_i" from 0 to (_fieldCount - 1) do {
-    private _b = _i * 4;
-
-    // Reject distant airfields before testing individual capsules. Native 2D
-    // distance measured faster than manual squared-distance arithmetic in SQF.
-    // Abs preserves the former squared-radius behavior for negative margins.
-    private _insideBounds = (_position distance2D [
-        ALiVE_airsideBounds select _b,
-        ALiVE_airsideBounds select (_b + 1)
-    ]) <= abs ((ALiVE_airsideBounds select (_b + 2)) + _margin);
+    // Reject distant airfields before testing individual capsules
+    private _insideBounds = (_position distance2D (_field select 0)) <= abs ((_field select 1) + _margin);
 
     if (_insideBounds) then {
+        private _caps = _field select 3;
 
-        private _caps = ALiVE_airsideCapsules param [_i, []];
-        private _capCount = (count _caps) / 8;
+        {
+            private _cap = _x;
 
-        for "_j" from 0 to (_capCount - 1) do {
-            private _c = _j * 8;
-
-            if (_allKinds || {(_caps select (_c + 7)) in _kinds}) then {
-                private _ax  = _caps select _c;
-                private _ay  = _caps select (_c + 1);
-                private _inv = _caps select (_c + 6);
-
-                private _vx = (_caps select (_c + 2)) - _ax;
-                private _vy = (_caps select (_c + 3)) - _ay;
-                private _wx = _px - _ax;
-                private _wy = _py - _ay;
-
-                // Clamped projection onto the segment. A degenerate capsule has
-                // inv 0 and collapses to a disc around its start point, which is
-                // exactly what a parking area is.
-                private _t = if (_inv <= 0) then { 0 } else {
-                    ((((_wx * _vx) + (_wy * _vy)) * _inv) max 0) min 1
-                };
-
-                private _ex = _wx - (_t * _vx);
-                private _ey = _wy - (_t * _vy);
-                private _radius2 = if (_margin == 0) then {
-                    _caps select (_c + 5)
-                } else {
-                    private _r = (_caps select (_c + 4)) + _margin;
-                    _r * _r
-                };
-
-                if (((_ex * _ex) + (_ey * _ey)) <= _radius2) then { _hit = true };
+            if (_allKinds || {(_cap select 7) in _kinds}) then {
+                private _rectangle = _cap select 8;
+                private _extent = abs ((_cap select 4) + _margin);
+                _hit = _position inArea [
+                    _rectangle select 0, _extent,
+                    (_rectangle select 1) + _extent,
+                    _rectangle select 2, true, -1
+                ];
             };
-            // Exit the capsule loop, outside the kind-filter scope.
+            
             if (_hit) exitWith {};
-        };
+        } forEach _caps;
     };
 
     if (_hit) exitWith {};
-};
+} forEach ALiVE_airsideFields;
 
 _hit
