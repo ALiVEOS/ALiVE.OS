@@ -91,7 +91,7 @@ switch(_operation) do {
             {
                 [_o, _x, false] call ALIVE_fnc_hashSet;
             } forEach ["local","remote","airborne","atHome","nearHome","landed","touchingGround",
-                       "crewGroupLive","driverPresent","playerControl","playerPassenger",
+                       "crewGroupLive","driverPresent","crewSeated","playerControl","playerPassenger",
                        "anyPlayerAboard","uavControlled","onStation","targetsGone","lockHeld"];
             {
                 [_o, _x, 0] call ALIVE_fnc_hashSet;
@@ -136,6 +136,10 @@ switch(_operation) do {
         ["aliveCrew", count _aliveCrew] call _fnc_set;
         ["crewGroupLive", count _aliveCrew > 0] call _fnc_set;
         ["driverPresent", !isNull _driver && {alive _driver}] call _fnc_set;
+        // Ready to fly: somebody alive is actually at the controls. The state
+        // table waits on this before it will launch, so an aircraft with a crew
+        // standing beside it rather than sitting in it is not ready.
+        ["crewSeated", !isNull _driver && {alive _driver}] call _fnc_set;
         ["crewLoss", count _aliveCrew == 0] call _fnc_set;
         ["anyPlayerAboard", count _players > 0] call _fnc_set;
 

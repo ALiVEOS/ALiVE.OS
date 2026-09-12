@@ -61,11 +61,11 @@ Jman
 
 // Effects that only work where the object lives. On a hull owned elsewhere these
 // do nothing at all, so they are refused and reported instead.
-#define LOCAL_ONLY ["engineOn","engineOff","airborneStart","forceLaunch","placeOnSlot","forceLanded","spawnAtHome","seatCrew","recrewInPlace","standDownCrew","issueOrders","clearOrders","land","taxiTo"]
+#define LOCAL_ONLY ["engineOn","engineOff","airborneStart","forceLaunch","placeOnSlot","forceLanded","spawnAtHome","seatCrew","recrewInPlace","standDownCrew","issueOrders","clearOrders","land","taxiTo","revealTargets","releaseTargets"]
 
 // Not built in this pass. Named so a caller reaching one is told, rather than
 // finding that nothing happened.
-#define NOT_BUILT ["catapult","tailhook","deckLaunch","deckRecover","decoyLasers","addThreatHandlers","revealTargets","holdTargets","releaseTargets","unquiesce","sweepTaxiPath","siren","deleteWreckNear","rehome","unshield"]
+#define NOT_BUILT ["catapult","tailhook","deckLaunch","deckRecover","decoyLasers","addThreatHandlers","holdTargets","unquiesce","sweepTaxiPath","siren","deleteWreckNear","rehome","unshield"]
 
 private ["_result"];
 
@@ -88,6 +88,7 @@ switch(_operation) do {
     case "vocabulary": {
         _result = ["spawnAtHome","airborneStart","mintCrew","mintDroneCrew","seatCrew","recrewInPlace",
                    "standDownCrew","takeOwnership","engineOn","engineOff","issueOrders","clearOrders",
+                   "revealTargets","releaseTargets",
                    "taxiTo","land","forceLaunch","forceLanded","placeOnSlot","shield","broadcast"];
     };
 
@@ -238,8 +239,13 @@ switch(_operation) do {
                 // An order list for an aircraft in the air that does not end in
                 // a hold is an aircraft that runs out of things to do, and that
                 // was four seconds from the ground.
+                //
+                // Landing is the exception, and the only one: an approach is
+                // MEANT to end, because the aircraft finishes it on the ground.
+                // Requiring a hold there refused every approach the moment one
+                // was ordered, and the aircraft circled with nothing accepted.
                 private _lastType = (_chain select (count _chain - 1)) param [0, ""];
-                if (_airborne && {!(_lastType isEqualTo "LOITER")}) exitWith {
+                if (_airborne && {!(_lastType in ["LOITER","LAND","GETOUT"])}) exitWith {
                     ["ALIVE_fnc_ATOEffect - orders refused for %1: an airborne chain must end in a hold", typeOf _obj] call ALiVE_fnc_dump;
                     _status = "refused"; _detail = "no terminal hold";
                 };
@@ -261,6 +267,34 @@ switch(_operation) do {
                     private _wp = _grp addWaypoint [_pos, 0];
                     _wp setWaypointType _type;
                 } forEach _chain;
+
+                // Point the group back at the FIRST of the new orders. Emptying
+                // the list and refilling it does not move the group's place in
+                // it: a group that had finished order one carries on from order
+                // two, so a fresh set of orders was joined halfway through. That
+                // is how an aircraft told to fly eight kilometres to a target
+                // instead flew to the end of its takeoff and circled there.
+                //
+                // The index this command counts in is NOT the one `waypoints`
+                // and `currentWaypoint` report: for this command zero means the
+                // group's own starting position, so it is asked for the entry
+                // AFTER that. The result is checked rather than assumed, and the
+                // aircraft is told directly where to go as well, because a plan
+                // it is not currently reading is not a plan.
+                _grp setCurrentWaypoint [_grp, 1];
+                // Only worth saying when the group is reading past the orders
+                // it was just given. The two commands count differently, so
+                // landing on the first real order is the expected answer here,
+                // not a fault.
+                private _landed = currentWaypoint _grp;
+                if (_landed >= count (waypoints _grp)) then {
+                    ["ALIVE_fnc_ATOEffect - new orders given but the group reads %1 of %2, past the end",
+                        _landed, count (waypoints _grp)] call ALiVE_fnc_dump;
+                };
+                (_chain select 0) params ["", ["_firstPos",[0,0,0],[[]]]];
+                _obj doMove _firstPos;
+                (driver _obj) doMove _firstPos;
+
                 _grp setVariable ["ALiVE_mil_ato_orders", _signature, false];
                 _detail = str (count _chain);
             };
@@ -271,12 +305,61 @@ switch(_operation) do {
                     _matched = true;
                 } else {
                     private _wps = waypoints _grp;
-                    if (count _wps == 0) then {
+                    // Forget what was last issued, as well as deleting it.
+                    // issueOrders refuses a chain whose signature matches the
+                    // one on the group, so a signature left behind here meant
+                    // the next identical chain was reported "unchanged" against
+                    // an EMPTY waypoint list, and the aircraft sat doing nothing
+                    // until a deadline forced it. Reachable in one step: two
+                    // launch timeouts, recovery, parked, assigned, and the same
+                    // takeoff chain comes round again.
+                    private _sig = _grp getVariable ["ALiVE_mil_ato_orders", ""];
+                    if (count _wps == 0 && {_sig isEqualTo ""}) then {
                         _matched = true;
                     } else {
                         for "_i" from (count _wps - 1) to 0 step -1 do { deleteWaypoint [_grp, _i] };
+                        _grp setVariable ["ALiVE_mil_ato_orders", nil, false];
                     };
                 };
+            };
+
+            // ---- what the aircraft is allowed to know ------------------------
+            // A gunship that has not been told where the enemy is orbits its
+            // station and never fires. Knowledge is handed over deliberately on
+            // arrival and taken back on the way out, so an aircraft does not
+            // carry a target list home and shoot at it in passing.
+            case "revealTargets": {
+                private _targets = (_extra param [0, [], [[]]]) select { !isNull _x && {alive _x} };
+                private _grp = group (driver _obj);
+                if (isNull _grp) exitWith { _status = "refused"; _detail = "no group" };
+                if (count _targets == 0) exitWith { _matched = true; _detail = "nothing to reveal" };
+
+                private _held = _grp getVariable ["ALiVE_mil_ato_revealed", []];
+                if (_held isEqualTo _targets) exitWith { _matched = true; _detail = "unchanged" };
+
+                {
+                    // Four is certainty. Anything less and the crew goes hunting
+                    // for a contact it has already been handed.
+                    _grp reveal [_x, 4];
+                    (units _grp) doTarget _x;
+                } forEach _targets;
+                _grp setVariable ["ALiVE_mil_ato_revealed", _targets, false];
+                _detail = str (count _targets);
+            };
+
+            case "releaseTargets": {
+                private _grp = group (driver _obj);
+                if (isNull _grp) exitWith { _status = "refused"; _detail = "no group" };
+                private _held = _grp getVariable ["ALiVE_mil_ato_revealed", []];
+                if (count _held == 0) exitWith { _matched = true; _detail = "nothing held" };
+
+                {
+                    private _t = _x;
+                    if (!isNull _t) then { { _x forgetTarget _t } forEach (units _grp) };
+                } forEach _held;
+                (units _grp) doTarget objNull;
+                _grp setVariable ["ALiVE_mil_ato_revealed", nil, false];
+                _detail = str (count _held);
             };
 
             // ---- putting it places -------------------------------------------
@@ -334,6 +417,40 @@ switch(_operation) do {
             };
 
             case "taxiTo": { _detail = "taxi not modelled in this pass"; };
+
+            // Everything a landing needs, kept simple for a helicopter: tell it
+            // to come down. Planes and decks get their own handling later.
+            case "landingPlan": {
+                private _grp = group (driver _obj);
+                if (isNull _grp) then { _status = "refused"; _detail = "no group" }
+                else { _obj land "LAND"; _detail = "land" };
+            };
+            case "retryLanding": {
+                _obj land "NONE";
+                _obj land "LAND";
+                _detail = "retry";
+            };
+            case "emergencyLanding": {
+                _obj land "LAND";
+                _detail = "emergency";
+            };
+
+            // Back on the ground and ready to go again.
+            case "turnaround": {
+                if (!isEngineOn _obj && {(damage _obj) < 0.01} && {(fuel _obj) > 0.99}) then {
+                    _matched = true;
+                } else {
+                    _obj engineOn false;
+                    _obj setDamage 0;
+                    _obj setFuel 1;
+                };
+            };
+
+            // One broadcast effect, named by what it is announcing.
+            case "broadcastStart";
+            case "broadcastOnStation";
+            case "broadcastReturn";
+            case "broadcastLost": { _detail = _effect; };
 
             // ---- protecting it -----------------------------------------------
             // An aircraft this module owns carries no profile, so nothing that

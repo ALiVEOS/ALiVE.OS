@@ -139,13 +139,30 @@ switch(_operation) do {
 
         // Rings and step kept as they are: this search is stricter than the
         // replacements that were tried for it, and it is the rung that works.
-        // Apron first, then field. Never "auto": that tier animates hangar doors
-        // on every candidate it looks at and takes an anti-race reservation,
-        // neither of which belongs in a parking decision. It also hands back a
-        // heading pointing at the runway, which beats facing along a taxiway.
+        // A real pad first for anything with rotors, then apron, then field.
+        // Never "auto": that tier animates hangar doors on every candidate it
+        // looks at and takes an anti-race reservation, neither of which belongs
+        // in a parking decision. It also hands back a heading pointing at the
+        // runway, which beats facing along a taxiway.
+        //
+        // The pad rung matters for more than tidiness. The engine puts a
+        // helicopter down on a pad whether or not that is where it was sent, so
+        // a home chosen anywhere else is a home the aircraft will not land on,
+        // and it then reads as away-from-home for the rest of its life. Asking
+        // for a pad first makes the module's choice and the engine's choice the
+        // same place. Asking for "apron" skipped the pad tier entirely, because
+        // these rungs are selected by name (fnc_findAirSpawnPosition.sqf:844):
+        // the airfield the aircraft kept landing on was never on offer.
+        //
+        // No class test needed here. That tier gates itself on rotary and
+        // refuses drones by design, so a plane or a UAV gets [] back and falls
+        // through to apron at the cost of one call.
         private _air = [];
         if (!isNil "ALiVE_fnc_findAirSpawnPosition") then {
-            _air = [_class, _anchor, 400, "apron"] call ALiVE_fnc_findAirSpawnPosition;
+            _air = [_class, _anchor, 400, "helipad"] call ALiVE_fnc_findAirSpawnPosition;
+            if (count _air < 2) then {
+                _air = [_class, _anchor, 400, "apron"] call ALiVE_fnc_findAirSpawnPosition;
+            };
             if (count _air < 2) then {
                 _air = [_class, _anchor, 400, "field"] call ALiVE_fnc_findAirSpawnPosition;
             };
@@ -162,13 +179,22 @@ switch(_operation) do {
             };
         };
 
+        // Take the airfield answer if there is one. This used to say
+        //     if (!_taken) exitWith { _result = [...] };
+        // and exitWith leaves the INNERMOST block, which here is the then-block
+        // of the test above rather than this case. So the airfield position was
+        // computed, assigned, and then thrown away by the ring search below,
+        // every single time. Every home this function has ever returned was a
+        // ring spot. Written as a plain flag now: no exitWith, nothing to get
+        // wrong a second time.
+        private _found = [];
         if (count _air >= 2) then {
             private _p = +(_air select 0);
             _p set [2, 0];
             private _taken = (_reserved findIf {
                 (_p distance2D (_x select 0)) < (_span + ((_x select 1) max 0))
             }) > -1;
-            if (!_taken) exitWith { _result = [_p, _air select 1, "terrain"] };
+            if (!_taken) then { _found = [_p, _air select 1, "terrain"] };
         };
 
         private _rings = if (_wide) then { [60,100,150,220,300,400,500,600] } else { [60,100,150,220] };
@@ -176,7 +202,9 @@ switch(_operation) do {
 
         {
             private _ring = _x;
-            if (count _spot == 0) then {
+            // Skipped entirely when the airfield search already answered. Each
+            // ring asks spotIsClear twelve times and that is not a cheap call.
+            if (count _found == 0 && {count _spot == 0}) then {
                 for "_a" from 0 to 330 step 30 do {
                     if (count _spot == 0) then {
                         private _p = _anchor getPos [_ring, _a];
@@ -196,10 +224,14 @@ switch(_operation) do {
             };
         } forEach _rings;
 
-        if (count _spot == 0) then {
-            _result = [];
+        if (count _found > 0) then {
+            _result = _found;
         } else {
-            _result = [_spot, random 360, "terrain"];
+            if (count _spot == 0) then {
+                _result = [];
+            } else {
+                _result = [_spot, random 360, "terrain"];
+            };
         };
     };
 
@@ -212,9 +244,16 @@ switch(_operation) do {
         // it, because the aircraft is an Air object inside the footprint.
         _args params [["_p",[0,0,0],[[]]], ["_span",12,[0]], ["_ignore",[],[[]]]];
 
+        // Kinds are 1 runway, 2 taxiway, 3 parking (fnc_isAirside.sqf:40-41).
+        // This asked for all three, so it refused the airfield's own parking
+        // areas: the one surface an aircraft is supposed to sit on. Between that
+        // and the discarded airfield result above, a home could only ever come
+        // out as open terrain well away from the airfield, which is exactly what
+        // it did. Runways and taxiways stay excluded, because parking on those
+        // blocks departures.
         private _airside = false;
         if (!isNil "ALiVE_fnc_isAirside") then {
-            _airside = [_p, _span, [1,2,3]] call ALiVE_fnc_isAirside;
+            _airside = [_p, _span, [1,2]] call ALiVE_fnc_isAirside;
         };
 
         // Test the footprint, not just the centre: a wingtip over the
@@ -226,7 +265,10 @@ switch(_operation) do {
             && {!_onRoad}
             && {!surfaceIsWater _p}
             && {(count (_p isFlatEmpty [-1, -1, 0.3, _span, 0, false, objNull])) > 0}
-            && {(count (nearestObjects [_p, ["House","Building"], _span])) == 0}
+            // A landing pad is a surface to park on, not something to stand
+            // clear of, and pads classify as buildings. Anything else built
+            // inside the footprint still refuses the spot.
+            && {(nearestObjects [_p, ["House","Building"], _span]) findIf {!(_x isKindOf "HeliH")} == -1}
             && {(count (nearestTerrainObjects [_p, CLUTTER, _span, false, true])) == 0}
             && {((nearestObjects [_p, ["Air"], _span + 6]) select {
                     private _cand = _x;

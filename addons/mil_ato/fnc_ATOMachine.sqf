@@ -271,17 +271,27 @@ switch(_operation) do {
                                     _effects pushBack "placeOnSlot";
                                     _next = "PARKED";
                                 } else {
-                                    if ("nearHome" call _fnc_o && {"lockHeld" call _fnc_o}) then {
-                                        _next = "LANDING";
-                                    } else {
-                                        if ("nearHome" call _fnc_o && {("fuel" call _fnc_n) < 0.1}) then {
+                                    private _near = "nearHome" call _fnc_o;
+                                    switch (true) do {
+                                        // Runway in hand: go and land on it.
+                                        case (_near && {"lockHeld" call _fnc_o}): { _next = "LANDING" };
+
+                                        // Almost dry. Land regardless, and say so.
+                                        case (_near && {("fuel" call _fnc_n) < 0.1}): {
                                             _effects pushBack "emergencyLanding";
                                             _next = "LANDING";
-                                        } else {
-                                            if (_expired) then {
-                                                [_row,"attempts",([_row,"attempts",0] call ALIVE_fnc_hashGet) + 1] call ALIVE_fnc_hashSet;
-                                                _next = "RECOVERING";
-                                            };
+                                        };
+
+                                        // Close to home with no runway yet: ASK for
+                                        // one and hold off a tick. Only checking
+                                        // whether it already had one meant it never
+                                        // got one, and it circled until its time
+                                        // ran out.
+                                        case (_near): { _effects pushBack "lock" };
+
+                                        case (_expired): {
+                                            [_row,"attempts",([_row,"attempts",0] call ALIVE_fnc_hashGet) + 1] call ALIVE_fnc_hashSet;
+                                            _next = "RECOVERING";
                                         };
                                     };
                                 };
@@ -289,8 +299,22 @@ switch(_operation) do {
 
                             case "LANDING": {
                                 if ("landed" call _fnc_o) then {
-                                    _effects append ["turnaround","unlock"];
-                                    _next = "PARKED";
+                                    // Wheels down is not the same as home. An
+                                    // aircraft that put itself on the grass short
+                                    // of the field is not parked, and calling it
+                                    // parked leaves the stand empty and the
+                                    // airframe in that field for the rest of the
+                                    // campaign. Recovery already owns the problem
+                                    // of a landed aircraft in the wrong place, so
+                                    // it is handed there rather than solved twice.
+                                    // Both destinations release the runway on
+                                    // entry, so this does not release it itself.
+                                    if (_atHome) then {
+                                        _effects pushBack "turnaround";
+                                        _next = "PARKED";
+                                    } else {
+                                        _next = "RECOVERING";
+                                    };
                                 } else {
                                     if (_expired) then {
                                         private _a = [_row,"attempts",0] call ALIVE_fnc_hashGet;
@@ -377,9 +401,21 @@ switch(_operation) do {
                 };
                 case "PLAYER_FLOWN": { _effects append ["unlock","releaseTargets","sortiePlayerControl"]; };
                 case "LOST":         { _effects append ["unlock","releaseTargets","broadcastLost","markLost","onLost"]; };
-                case "RECOVERING":   { _effects append ["unlock","clearOrders"]; };
+                case "RECOVERING":   {
+                    _effects append ["unlock","clearOrders"];
+                    // An aircraft recovering ON THE GROUND is one that came down
+                    // somewhere it does not belong, and it will not stay down on
+                    // its own: a crewed helicopter with a running engine and an
+                    // empty waypoint list lifts off again, which is how one flew
+                    // three circuits of the airfield after landing correctly.
+                    // PARKED has always stopped the engine; this state never did.
+                    // Not applied in the air, where recovering means still flying.
+                    if (!_airborne) then { _effects pushBack "engineOff" };
+                };
                 case "ASSIGNED":     { _effects append ["mintCrew","seatCrew","lock"]; };
-                case "LAUNCHING":    { _effects pushBack "broadcastStart"; };
+                // Start the engine as well as saying it is going. Announcing a
+                // departure does not make one happen.
+                case "LAUNCHING":    { _effects append ["engineOn","broadcastStart"]; };
                 case "ON_STATION":   { _effects append ["broadcastOnStation","revealTargets","sortieArrived"]; };
                 case "RTB":          { _effects append ["broadcastReturn","releaseTargets","sortieReturning"]; };
                 case "LANDING":      { _effects pushBack "landingPlan"; };

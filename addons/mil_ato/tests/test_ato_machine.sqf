@@ -125,8 +125,10 @@ observation sequences, because those are what the table exists to prevent.
                         _badOrders = _badOrders + 1;
                     };
 
-                    // Promise: the runway is only ever taken on the way out.
-                    if (("lock" in _effects) && {!(_next isEqualTo "ASSIGNED")}) then {
+                    // Promise: the runway is asked for only when leaving and when
+                    // coming back to land. Anywhere else means something is
+                    // holding a runway it has no use for.
+                    if (("lock" in _effects) && {!(_next in ["ASSIGNED","RTB"])}) then {
                         _badLock = _badLock + 1;
                     };
 
@@ -151,7 +153,7 @@ observation sequences, because those are what the table exists to prevent.
     ["every input lands on a state in the table", _badState == 0] call _fnc_check;
     ["only resting states have no deadline", _badDeadline == 0] call _fnc_check;
     ["every flying state carries orders", _badOrders == 0] call _fnc_check;
-    ["the runway is only taken on the way out, and a player is never teleported", _badLock == 0] call _fnc_check;
+    ["the runway is only taken leaving or landing, and a player is never teleported", _badLock == 0] call _fnc_check;
     ["step never edits the row it was given", _mutated == 0] call _fnc_check;
 
     // ---- the measured incidents, replayed ------------------------------------
