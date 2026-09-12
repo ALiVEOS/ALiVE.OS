@@ -194,7 +194,25 @@ switch(_operation) do {
             private _taken = (_reserved findIf {
                 (_p distance2D (_x select 0)) < (_span + ((_x select 1) max 0))
             }) > -1;
-            if (!_taken) then { _found = [_p, _air select 1, "terrain"] };
+            // Asked the SAME question the ring search below is asked.
+            //
+            // The shared air-spawn search has its own idea of admissible, built
+            // from the engine's airport data, and this piece has another, and
+            // where they disagree the cascade was handing back a home that its
+            // own predicate refused the moment anything asked again. The
+            // surface test asserts exactly that they agree, on the grounds that
+            // a spot which cannot answer for itself twice was never a spot, and
+            // it was failing INTERMITTENTLY, which is worse than failing: the
+            // ring and spiral searches place spots differently each run, so a
+            // green run proved nothing.
+            //
+            // Validating here makes the promise structural instead of hopeful.
+            // It is only safe to do now that the predicate waives its road test
+            // on an airfield; before that, enforcing it here would have pushed
+            // every home back off the field, which is the fault 480ae281 fixed.
+            if (!_taken && {[_logic, "spotIsClear", [_p, _span]] call MAINCLASS}) then {
+                _found = [_p, _air select 1, "terrain"];
+            };
         };
 
         private _rings = if (_wide) then { [60,100,150,220,300,400,500,600] } else { [60,100,150,220] };
@@ -260,6 +278,94 @@ switch(_operation) do {
         // carriageway is still parked on the road.
         private _onRoad = isOnRoad _p
             || {[0,90,180,270] findIf {isOnRoad (_p getPos [_span, _x])} > -1};
+
+        // A taxiway, an apron and a runway are all ROAD segments, and they are
+        // also the only surfaces an aircraft belongs on. So being on a road
+        // disqualifies a spot only when that spot is not part of an airfield.
+        //
+        // Without this the predicate refused the airfield and the cascade's own
+        // airfield rungs handed back spots it then rejected: measured, eight
+        // homes from one anchor on Stratis and three refused for being on a
+        // road, all three of them on the apron.
+        //
+        // The airfield is read from the TERRAIN, not from ALiVE's airfield
+        // survey, because the survey only exists once a module is placed and
+        // this has to answer the same way without one. ilsTaxiIn and ilsTaxiOff
+        // are the taxi polylines and ilsPosition the runway threshold, all of
+        // them plain config. Measured on Stratis: every apron home lies within
+        // 150 m of that geometry, a village road 3 km off lies 2155 m from it
+        // and open ground 2 km east 1974 m, so the two cases are nowhere near
+        // each other.
+        //
+        // Three things this gets right that the obvious alternatives do not.
+        // nearestLocations ["Airport"] is EMPTY on Stratis, so locations are no
+        // use. Road class and width are no use either: the apron's segments
+        // report a blank class and width 0 while a real road 2 km away reports
+        // 10. And the distance has to be to the nearest SEGMENT rather than the
+        // nearest listed point, because the polyline is sparse: two consecutive
+        // Stratis taxi points are 905 m apart, so the middle of that stretch is
+        // 450 m from either end and a point test would call the runway open
+        // country.
+        if (_onRoad) then {
+            // Cached per world. This is pure terrain config, identical for
+            // every instance and every call, and one cascade asks this dozens
+            // of times.
+            if (isNil "ALiVE_ATO_airfieldGeometry"
+                || {!((ALiVE_ATO_airfieldGeometry param [0,""]) isEqualTo worldName)}) then {
+                private _segs = [];
+                private _pts = [];
+                private _fnc_line = {
+                    params ["_flat"];
+                    private _prev = [];
+                    for "_i" from 0 to ((count _flat) - 2) step 2 do {
+                        private _q = [_flat select _i, _flat select (_i + 1), 0];
+                        if (count _prev > 0) then { _segs pushBack [_prev, _q] };
+                        _prev = _q;
+                    };
+                };
+                private _fnc_field = {
+                    params ["_cfg"];
+                    [getArray (_cfg >> "ilsTaxiIn")] call _fnc_line;
+                    [getArray (_cfg >> "ilsTaxiOff")] call _fnc_line;
+                    private _ils = getArray (_cfg >> "ilsPosition");
+                    if (count _ils >= 2) then {
+                        _pts pushBack [_ils select 0, _ils select 1, 0];
+                    };
+                };
+                private _world = configFile >> "CfgWorlds" >> worldName;
+                [_world] call _fnc_field;
+                // Every airfield, not just the main one. Stratis has no
+                // secondary airports; Altis and most large terrains do, and
+                // their taxi geometry lives under their own entries.
+                private _secondary = _world >> "SecondaryAirports";
+                for "_i" from 0 to ((count _secondary) - 1) do {
+                    [_secondary select _i] call _fnc_field;
+                };
+                ALiVE_ATO_airfieldGeometry = [worldName, _segs, _pts];
+            };
+
+            private _segs = ALiVE_ATO_airfieldGeometry select 1;
+            private _pts = ALiVE_ATO_airfieldGeometry select 2;
+            private _reach = 200;
+            private _fnc_toSeg = {
+                params ["_q", "_a", "_b"];
+                private _ax = _a select 0;
+                private _ay = _a select 1;
+                private _dx = (_b select 0) - _ax;
+                private _dy = (_b select 1) - _ay;
+                private _len2 = (_dx * _dx) + (_dy * _dy);
+                if (_len2 <= 0) exitWith { _q distance2D _a };
+                private _t = ((((_q select 0) - _ax) * _dx) + (((_q select 1) - _ay) * _dy)) / _len2;
+                _t = (_t max 0) min 1;
+                _q distance2D [_ax + (_t * _dx), _ay + (_t * _dy), 0]
+            };
+
+            private _onField = (_pts findIf { (_p distance2D _x) < _reach }) > -1;
+            if (!_onField) then {
+                _onField = (_segs findIf { ([_p, _x select 0, _x select 1] call _fnc_toSeg) < _reach }) > -1;
+            };
+            if (_onField) then { _onRoad = false };
+        };
 
         _result = !_airside
             && {!_onRoad}
