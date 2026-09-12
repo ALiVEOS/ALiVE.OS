@@ -275,22 +275,41 @@ switch(_operation) do {
                 // is how an aircraft told to fly eight kilometres to a target
                 // instead flew to the end of its takeoff and circled there.
                 //
-                // The index this command counts in is NOT the one `waypoints`
-                // and `currentWaypoint` report: for this command zero means the
-                // group's own starting position, so it is asked for the entry
-                // AFTER that. The result is checked rather than assumed, and the
-                // aircraft is told directly where to go as well, because a plan
-                // it is not currently reading is not a plan.
-                _grp setCurrentWaypoint [_grp, 1];
+                // Index ZERO is the first of the new orders, and asking for
+                // one skipped it.
+                //
+                // A fresh group does carry an automatic waypoint at index 0 for
+                // its own starting position, which is where the belief that one
+                // is the first real order came from. But deleteWaypoint removes
+                // that one too, so after the list is emptied the first ADDED
+                // waypoint IS index 0. Measured: after clearing and adding two,
+                // addWaypoint returned [grp,0] and [grp,1], and a group set to
+                // one walked to the SECOND order's position while the first went
+                // unvisited. Every two-item chain this module issues was losing
+                // its first order that way.
+                _grp setCurrentWaypoint [_grp, 0];
                 // Only worth saying when the group is reading past the orders
-                // it was just given. The two commands count differently, so
-                // landing on the first real order is the expected answer here,
-                // not a fault.
+                // it was just given, which now means something has gone wrong
+                // rather than being the expected answer.
                 private _landed = currentWaypoint _grp;
                 if (_landed >= count (waypoints _grp)) then {
                     ["ALIVE_fnc_ATOEffect - new orders given but the group reads %1 of %2, past the end",
                         _landed, count (waypoints _grp)] call ALiVE_fnc_dump;
                 };
+                // Told directly where to go as well as by the plan.
+                //
+                // This was added to paper over the index fault above: the group
+                // was reading the wrong entry, so the plan alone sent it to the
+                // wrong place and a direct order was the only thing that worked.
+                // The index is right now, so this is no longer load-bearing.
+                //
+                // It stays because it aims at the SAME place as the first order,
+                // so the two agree rather than compete, and because a direct
+                // command is what actually gets a parked aircraft moving. It
+                // would be wrong to point it anywhere else: a pending doMove
+                // outranks the plan, and that is exactly how an approach was
+                // lost earlier, with the aircraft orbiting a stale move
+                // destination while its landing order was discarded.
                 (_chain select 0) params ["", ["_firstPos",[0,0,0],[[]]]];
                 _obj doMove _firstPos;
                 (driver _obj) doMove _firstPos;
