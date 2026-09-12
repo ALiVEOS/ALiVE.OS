@@ -263,8 +263,24 @@ open, which is also a fair statement of what the kernel will have to own.
     // for re-aiming, which is the correct behaviour.
     diag_log format ["  info  aimed at its pad %1 time(s) over the approach",
         {_x isEqualTo "landAtPad"} count _applied];
-    ["and the approach was given back afterwards",
-        "releaseApproach" in _applied] call _fnc_check;
+    // Only when it actually flew an approach.
+    //
+    // With nobody within a kilometre of home the table deliberately places a
+    // returning aircraft on its slot rather than flying it in, so LANDING is
+    // never entered, nothing is ever aimed at a pad and there is no approach to
+    // give back. That is the design, not a fault, and asserting the release
+    // unconditionally failed every run on a dedicated server.
+    //
+    // So the two paths are checked separately, and the one that was not taken
+    // is named rather than passed over in silence.
+    if ("LANDING" in _seen) then {
+        ["and the approach was given back afterwards",
+            "releaseApproach" in _applied] call _fnc_check;
+    } else {
+        diag_log "  skip  and the approach was given back afterwards  (it was placed on its slot, which needs no approach)";
+        ["it was placed on its slot instead, which is what happens with nobody watching",
+            "placeOnSlot" in _applied] call _fnc_check;
+    };
 
     ["nothing was refused unexpectedly", count _refusals == 0] call _fnc_check;
     if (count _refusals > 0) then {
