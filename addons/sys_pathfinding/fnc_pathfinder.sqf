@@ -1,3 +1,5 @@
+#include "\x\alive\addons\sys_pathfinding\script_component.hpp"
+
 #define MAINCLASS alive_fnc_pathfinder
 
 params [
@@ -7,6 +9,8 @@ params [
 ];
 
 private "_result";
+
+PROFILE_SCOPE(PFOPERATION, ("ALiVE pathfinder: " + _operation))
 
 switch (_operation) do {
 
@@ -207,7 +211,7 @@ switch (_operation) do {
         private _airsideActive =
             ALiVE_pathfinding_airsideWeight != 1
             && {!(((_procedure select 1) select 4))}
-            && {!(ALiVE_airsideBounds isEqualTo [])};
+            && {!(ALiVE_airsideFields isEqualTo [])};
         private _airsideCanDiscount = _airsideActive && {ALiVE_pathfinding_airsideWeight < 1};
         private _startSector = [_terrainGrid,"positionToSector", _startPos] call ALiVE_fnc_pathfindingGrid;
         private _goalSector = [_terrainGrid,"positionToSector", _endPos] call ALiVE_fnc_pathfindingGrid;
@@ -234,6 +238,7 @@ switch (_operation) do {
 
         call {
             while {!_layer1Complete && _sectorIterations < _maxIterations} do {
+                PROFILE_SCOPE(PFSEACHECK, "ALiVE pathfinder: sea-check expansion")
                 _sectorIterations = _sectorIterations + 1;
 
                 private _currentSector = [_frontierLayer1, _costSoFarMapLayer1] call ALiVE_fnc_pathfinderPriorityPullFresh;
@@ -263,12 +268,30 @@ switch (_operation) do {
                         || {_airsideCanDiscount}
                         || {_baseCostCanImprove}
                     ) then {
-                        private _traversal = [_procedure, _neighSector, _currentSector, _sectorSize, _waterEdgeCache] call ALiVE_fnc_pathfinderCanTraverse;
+                        // Only finalize candidates that survived the cheap base-cost filter.
+                        // Mandatory goal/failure traversal checks still run without improvement.
+                        if (_airsideActive && {_baseCostCanImprove || {_airsideCanDiscount}}) then {
+                            // Classified cells need only the cached flag and current weight.
+                            // Keep first-time classification in the helper.
+                            if (count _neighSector > 5) then {
+                                if (_neighSector select 5) then {
+                                    _moveCost = _moveCost * ALiVE_pathfinding_airsideWeight;
+                                };
+                            } else {
+                                _moveCost = [_neighSector, _sectorSize, _moveCost] call ALiVE_fnc_pathfinderGetFinalMovementCost;
+                            };
+                        };
+                        private _newCostSoFar = _moveCost + _currentCost;
+                        private _finalCostCanImprove = isNil "_knownCost" || {_newCostSoFar < _knownCost};
+                        private _traversal = 0;
+                        if (_mustCheckTraversal || {_finalCostCanImprove}) then {
+                            _traversal = [_procedure, _neighSector, _currentSector, _sectorSize, _waterEdgeCache] call ALiVE_fnc_pathfinderCanTraverse;
+                        };
                         if (_traversal > 0) then {
-                            if (_baseCostCanImprove || {_airsideCanDiscount}) then {
+                            if (_finalCostCanImprove) then {
                                 private _distanceToGoal = _centerPos distance (_goalSector select 2);
                                 private _heuristicParams = [_neighSector,_currentSector,_procedure, _distanceToGoal,_sectorSize,_traversal == 2];
-                                [_cameFromMapLayer1, _costSoFarMapLayer1, _frontierLayer1, _neighSector, _currentSector, _distanceToGoal, _heuristicParams, _moveCost, _airsideActive] call ALiVE_fnc_pathfinderSetNode;
+                                [_cameFromMapLayer1, _costSoFarMapLayer1, _frontierLayer1, _neighSector, _currentSector, _distanceToGoal, _heuristicParams, _moveCost, false, _newCostSoFar] call ALiVE_fnc_pathfinderSetNode;
                             };
                         } else {
                             if (_mustCheckTraversal) exitwith {
@@ -369,6 +392,98 @@ switch (_operation) do {
         _result;
     };
 
+    // A search terminal queues reconstruction; the next frame owns the work.
+    // Keep layer flags false until refinement and consolidation have finished.
+    case "beginLayerPath": {
+        _args params ["_layerIndex", "_start", "_goal", "_cameFrom", "_path", "_size", ["_retarget", false]];
+        private _jobData = _logic get "currentJobData";
+        // Coarse reconstruction changes the guidance route; discard its cached length.
+        if (_layerIndex == 1) then {(_jobData select 2) set [5, -1]};
+        _jobData set [8, [_layerIndex, _start, _goal, _cameFrom, _path, _size, _retarget, 0, 1]];
+        private _jobs = _logic getOrDefault ["pathJobs", []];
+        if (count _jobs > 0) then {
+            private _work = (_jobs select 0) param [10, createHashMap];
+            _work set [format ["reconstruction%1", _layerIndex], [diag_tickTime, diag_frameNo, 0, 0, 0, false]];
+        };
+    };
+
+    case "stepLayerPath": {
+        _args params ["_procedure", "_state"];
+        _state params ["_layerIndex", "_start", "_current", "_cameFrom", "_path", "_size", "_retarget", "_phase", "_index"];
+        // Yield between complete steps. Cheap reversal/consolidation work can
+        // share an update instead of holding the queue for four steps at a time.
+        // Compare elapsed time, rather than a rounded absolute deadline, and
+        // guarantee progress even when diag_tickTime precision is coarse.
+        // A single refinement query may overshoot; the work cap also bounds
+        // updates where the timer does not advance. Zero disables time limiting.
+        private _reconstructionBudgetMs = missionNamespace getVariable ["ALiVE_pathfinding_reconstructionBudgetMs", 1];
+        if !(_reconstructionBudgetMs isEqualType 0) then {_reconstructionBudgetMs = 1};
+        private _reconstructionStarted = diag_tickTime;
+        private _steps = 0;
+        while {
+            _phase < 3 && {_steps < 32}
+            && {
+                _steps == 0
+                || {_reconstructionBudgetMs <= 0}
+                || {1000 * (diag_tickTime - _reconstructionStarted) < _reconstructionBudgetMs}
+            }
+        } do {
+            _steps = _steps + 1;
+            switch (_phase) do {
+                case 0: {
+                    PROFILE_SCOPE(PFRECONSTRUCT, "ALiVE pathfinder: reconstruct step")
+                    if ((_current select 0) isEqualTo (_start select 0)) then {
+                        if (_path isEqualTo []) then {_path pushBack (_start select 2)};
+                        _phase = 1;
+                    } else {
+                        private _next = _cameFrom get (_current select 0);
+                        if (_path isEqualTo []) then {
+                            _path pushBack (_current select 2);
+                        } else {
+                            private _previousPos = _path select (count _path - 1);
+                            _path pushBack ([nil, "findOptimalPos", [_current, _size, _procedure, _next select 2, _previousPos]] call MAINCLASS);
+                        };
+                        _current = _next;
+                    };
+                };
+                case 1: {
+                    PROFILE_SCOPE(PFREVERSE, "ALiVE pathfinder: reverse route")
+                    reverse _path;
+                    _phase = if (_size < 200 && {count _path > 3}) then {2} else {3};
+                };
+                case 2: {
+                    PROFILE_SCOPE(PFCONSOLIDATE, "ALiVE pathfinder: consolidate step")
+                    if (_index < (count _path - 2)) then {
+                        private _currentDir = (_path select (_index - 1)) getDir (_path select _index);
+                        private _nextDir = (_path select _index) getDir (_path select (_index + 1));
+                        if (abs (_nextDir - _currentDir) < 15) then {
+                            _path deleteAt _index;
+                        } else {
+                            _index = _index + 1;
+                        };
+                    } else {
+                        _phase = 3;
+                    };
+                };
+            };
+        };
+        _state set [2, _current];
+        _state set [7, _phase];
+        _state set [8, _index];
+        private _jobs = _logic getOrDefault ["pathJobs", []];
+        if (count _jobs > 0) then {
+            private _work = (_jobs select 0) param [10, createHashMap];
+            private _timing = _work getOrDefault [format ["reconstruction%1", _layerIndex], []];
+            if (count _timing == 6 && {!(_timing select 5)}) then {
+                _timing set [2, (_timing select 2) + 1];
+                _timing set [3, 1000 * (diag_tickTime - (_timing select 0))];
+                _timing set [4, diag_frameNo - (_timing select 1)];
+                _timing set [5, _phase == 3];
+            };
+        };
+        _result = _phase == 3;
+    };
+
     case "getLayerPath": {
 
         _args params ["_procedure","_startSector","_goalSector","_cameFromMap","_pathLayer", "_sectorSize"];
@@ -440,13 +555,137 @@ switch (_operation) do {
         _args params ["_startPos","_procedure","_waypoint","_previousWaypoint","_callbackArgs","_callback"];
         
         private _pathJobs = _logic get "pathJobs";
-        private _newJob = _args;
+        // Copy only the outer array for timing metadata. Waypoints and callback
+        // arguments must keep their shared references: the callback marks the
+        // profile's original pending-path record ready. Unary + deep-copies it.
+        private _newJob = _args + [];
+        private _jobId = (_logic getOrDefault ["timingJobId", 0]) + 1;
+        _logic set ["timingJobId", _jobId];
+        // [enqueue time, enqueue frame, jobs ahead, id, start time, start frame]
+        _newJob set [6, [diag_tickTime, diag_frameNo, count _pathJobs, _jobId]];
         
         _pathJobs pushback _newJob;
             // [": findPath args %1 ",str _args] call Alive_fnc_Dump;
         
         if (count _pathJobs == 1) then {
             [_logic,"loadCurrentJobData"] call MAINCLASS;
+        };
+    };
+
+    // Read on demand from the debug console; no per-frame or per-job I/O.
+    // Samples are circular and can be ordered by their monotonically increasing id.
+    // Return scalars only: optional visited maps remain private to the active job.
+    case "getSearchStats": {
+        private _stats = _args param [7, []];
+        _result = createHashMap;
+        if (count _stats == 10) then {
+            _result = createHashMapFromArray [
+                ["coarseExpansions", _stats select 0], ["fineExpansions", _stats select 1],
+                ["searchFrames", _stats select 2],
+                ["coarseReason", _stats select 3], ["fineReason", _stats select 4],
+                ["uniqueTracking", _stats select 5],
+                ["coarseUnique", if (_stats select 5) then {count (_stats select 6)} else {-1}],
+                ["fineUnique", if (_stats select 5) then {count (_stats select 7)} else {-1}],
+                ["completeCoverage", _stats select 9]
+            ];
+        };
+        private _work = _args param [10, createHashMap];
+        private _workSnapshot = createHashMap;
+        {_workSnapshot set [_x, if (_y isEqualType []) then {+_y} else {_y}]} forEach _work;
+        _result set ["requestWork", _workSnapshot];
+        private _diagnostics = _args param [9, createHashMap];
+        // Snapshot scalars/arrays only; do not expose the live diagnostic map.
+        private _diagnosticSnapshot = createHashMap;
+        {_diagnosticSnapshot set [_x, if (_y isEqualType []) then {+_y} else {_y}]} forEach _diagnostics;
+        // Inspect the active heap only when a report is requested, never per expansion.
+        private _activeData = _logic getOrDefault ["currentJobData", []];
+        private _jobsForSnapshot = _logic getOrDefault ["pathJobs", []];
+        if (count _diagnostics > 0 && {count _stats == 10} && {(_stats select 1) > 0} && {count _activeData >= 8} && {count _jobsForSnapshot > 0} && {_args isEqualRef (_jobsForSnapshot select 0)}) then {
+            private _fineData = _activeData select 3;
+            private _goalIndex = (_activeData select 7) select 0;
+            private _goalEntries = [];
+            {
+                if (((_x select 1) select 0) isEqualTo _goalIndex && {count _goalEntries < 8}) then {
+                    _goalEntries pushBack [_x select 0, _x param [2, -1]];
+                };
+            } forEach (_fineData select 2);
+            _diagnosticSnapshot set ["goalFrontierEntries", _goalEntries];
+            _diagnosticSnapshot set ["goalBestCost", (_fineData select 1) getOrDefault [_goalIndex, -1]];
+        };
+        _result set ["diagnostics", _diagnosticSnapshot];
+        private _phaseData = _args param [8, []];
+        if (count _phaseData == 2) then {
+            private _times = _phaseData select 0;
+            _result set ["phaseMs", createHashMapFromArray [
+                ["initialization", _times select 0], ["frameSetup", _times select 1],
+                ["coarseSearch", _times select 2], ["fineSearch", _times select 3],
+                ["coarseReconstruction", _times select 4], ["fineReconstruction", _times select 5],
+                ["finalizeBeforeCallback", _times select 6]
+            ]];
+            _result set ["phaseTimingCompleteCoverage", _phaseData select 1];
+        };
+    };
+
+    case "getPathTimings": {
+        private _jobs = _logic get "pathJobs";
+        private _now = diag_tickTime;
+        private _activeMs = 0;
+        private _oldestWaitMs = 0;
+        if (count _jobs > 0) then {
+            private _timing = (_jobs select 0) param [6, []];
+            if (count _timing == 6) then {_activeMs = 1000 * (_now - (_timing select 4))};
+        };
+        if (count _jobs > 1) then {
+            private _timing = (_jobs select 1) param [6, []];
+            if (count _timing >= 4) then {_oldestWaitMs = 1000 * (_now - (_timing select 0))};
+        };
+        private _activeSearch = if (count _jobs > 0) then {
+            [_logic, "getSearchStats", _jobs select 0] call MAINCLASS
+        } else {createHashMap};
+        if (count _jobs > 0) then {
+            _activeSearch set ["id", ((_jobs select 0) param [6, []]) param [3, -1]];
+            _activeSearch set ["procedure", ((_jobs select 0) select 1) select 0];
+        };
+        _result = createHashMapFromArray [
+            ["activeSearch", _activeSearch],
+            ["samples", +(_logic getOrDefault ["pathTimingSamples", []])],
+            ["sampleFields", ["id", "procedure", "queueMs", "activeMs", "totalMs", "queueFrames", "totalFrames", "jobsAhead", "remaining", "nodes", "searchStats"]],
+            ["queuedJobs", ((count _jobs) - 1) max 0],
+            ["activeJobMs", _activeMs],
+            ["oldestQueuedJobMs", _oldestWaitMs]
+        ];
+    };
+
+    case "recordPathTiming": {
+        _args params ["_job", "_pathNodes"];
+        private _finishedAt = diag_tickTime;
+        private _finishedFrame = diag_frameNo;
+        private _timing = _job param [6, []];
+        // Jobs queued before a live recompile have no timing baseline.
+        if (count _timing != 6) exitWith {};
+        _timing params ["_queuedAt", "_queuedFrame", "_jobsAhead", "_jobId", "_startedAt", "_startedFrame"];
+        private _queueMs = 1000 * (_startedAt - _queuedAt);
+        private _activeMs = 1000 * (_finishedAt - _startedAt);
+        private _totalMs = 1000 * (_finishedAt - _queuedAt);
+        private _queueFrames = _startedFrame - _queuedFrame;
+        private _totalFrames = _finishedFrame - _queuedFrame;
+        private _remaining = ((count (_logic get "pathJobs")) - 1) max 0;
+        // Milliseconds are wall elapsed time, including frames spent waiting.
+        // Completion means the route is ready, before callback scheduling/logging.
+        // Bounded circular history: [id, procedure, queueMs, activeMs, totalMs,
+        // queueFrames, totalFrames, jobsAhead, remainingJobs, pathNodes].
+        private _samples = _logic getOrDefault ["pathTimingSamples", []];
+        private _cursor = _logic getOrDefault ["pathTimingCursor", 0];
+        private _procedureName = (_job select 1) select 0;
+        private _searchSummary = [_logic, "getSearchStats", _job] call MAINCLASS;
+        _samples set [_cursor, [_jobId, _procedureName, _queueMs, _activeMs, _totalMs, _queueFrames, _totalFrames, _jobsAhead, _remaining, _pathNodes, _searchSummary]];
+        _logic set ["pathTimingSamples", _samples];
+        _logic set ["pathTimingCursor", (_cursor + 1) mod 256];
+        // Dump output is retained in the RPT and captured by Script Profiler.
+        // Disable logging independently of the bounded in-memory measurements.
+        if (missionNamespace getVariable ["ALiVE_pathfinding_logTimings", false]) then {
+            ["PATH_TIMING id=%1 procedure=%2 queueMs=%3 activeMs=%4 totalMs=%5 queueFrames=%6 totalFrames=%7 jobsAhead=%8 remaining=%9 nodes=%10 search=%11",
+                _jobId, _procedureName, _queueMs, _activeMs, _totalMs, _queueFrames, _totalFrames, _jobsAhead, _remaining, _pathNodes, _searchSummary] call ALiVE_fnc_dump;
         };
     };
 
@@ -457,6 +696,22 @@ switch (_operation) do {
         // load next job data
         if (count _pathJobs > 0) then {
             private _nextJob = _pathJobs select 0;
+            private _initializationStarted = diag_tickTime;
+            private _phaseTimes = [0,0,0,0,0,0,0];
+            _nextJob set [8, [_phaseTimes, true]];
+            // Diagnostics begin when this job starts, not while waiting in queue.
+            // [coarse expansions, fine expansions, search frames, coarse reason,
+            // fine reason, track unique, coarse visited, fine visited, last frame, complete]
+            private _trackUnique = missionNamespace getVariable ["ALiVE_pathfinding_trackUnique", true];
+            _nextJob set [7, [0,0,0,"not_started","not_started",_trackUnique,
+                if (_trackUnique) then {createHashMap} else {[]},
+                if (_trackUnique) then {createHashMap} else {[]}, -1, true]];
+
+            private _timing = _nextJob param [6, []];
+            if (count _timing == 4) then {
+                _timing pushBack diag_tickTime;
+                _timing pushBack diag_frameNo;
+            };
             _nextJob params ["_startPos","_procedure","_waypoint","_previousWaypoint","_callbackArgs","_callback"];
             // [": findPath nextJob %1 ",str _nextJob] call Alive_fnc_Dump;
 
@@ -501,6 +756,34 @@ switch (_operation) do {
             private _goalSector = [_terrainGrid,"positionToSector", _endPos] call ALiVE_fnc_pathfindingGrid;
             private _startSubSector = [_terrainGrid,"positionToSubSector", _startPos] call ALiVE_fnc_pathfindingGrid;
             private _goalSubSector = [_terrainGrid,"positionToSubSector", _endPos] call ALiVE_fnc_pathfindingGrid;
+            // Lightweight identity and reconstruction timing, independent of detailed diagnostics.
+            _nextJob set [10, createHashMapFromArray [
+                ["profileId", _callbackArgs param [0, "unknown"]],
+                ["procedure", +_procedure],
+                ["startIndex", +(_startSubSector select 0)],
+                ["goalIndex", +(_goalSubSector select 0)],
+                ["gridSizes", [_terrainGrid get "sectorSize", _terrainGrid get "subSectorSize"]],
+                ["waterSettings", [ALiVE_pathfinding_seaLevel, ALiVE_pathfinding_waterMargin]],
+                ["airsideWeight", missionNamespace getVariable ["ALiVE_pathfinding_airsideWeight", 1]],
+                ["initialDistance", (_startSubSector select 2) distance (_goalSubSector select 2)]
+            ]];
+            // Temporary failure investigation, bounded to eight rejected edges/job.
+            // Disable with ALiVE_pathfinding_diagnoseRequests=false.
+            private _diagnostics = createHashMap;
+            if (missionNamespace getVariable ["ALiVE_pathfinding_diagnoseRequests", true]) then {
+                _diagnostics = createHashMapFromArray [
+                    ["profileId", _callbackArgs param [0, "unknown"]],
+                    ["procedure", +_procedure],
+                    ["start", +(_startSubSector select [0,5])],
+                    ["goal", +(_goalSubSector select [0,5])],
+                    ["initialDistance", (_startSubSector select 2) distance (_goalSubSector select 2)],
+                    ["closestDistance", (_startSubSector select 2) distance (_goalSubSector select 2)],
+                    ["closestPosition", +(_startSubSector select 2)],
+                    ["lastProgressExpansion", 0], ["frontierSize", 1],
+                    ["knownCells", 1], ["rejectedEdges", []], ["traversalChecks", 0]
+                ];
+            };
+            _nextJob set [9, _diagnostics];
 
             // Single-subsector early-out (#pathfinding-opt, candidate E): when start
             // and goal land in the same subsector, the A* only ever yields a 1-node
@@ -514,6 +797,10 @@ switch (_operation) do {
             // re-read above is final - no false early-out from a stale queued start.
             // (Leaves onFrame's line-745 check as a now-redundant safety net.)
             if (_startSubSector isEqualTo _goalSubSector) exitWith {
+                (_nextJob select 7) set [3, "same_cell"];
+                (_nextJob select 7) set [4, "same_cell"];
+                _phaseTimes set [0, 1000 * (diag_tickTime - _initializationStarted)];
+                [_logic, "recordPathTiming", [_nextJob, 1]] call MAINCLASS;
                 [_callbackArgs, [_goalSubSector select 2]] spawn _callback;
                 _pathJobs deleteAt 0;
                 [_logic,"loadCurrentJobData"] call MAINCLASS;
@@ -539,13 +826,15 @@ switch (_operation) do {
             _costSoFarMapLayer1 set [_startSector select 0, 0];
             _costSoFarMapLayer2 set [_startSubSector select 0, 0];
 
-            private _layer1Data = [_cameFromMapLayer1, _costSoFarMapLayer1, _frontierLayer1, _pathLayer1, _closestSector];
+            // Slot 5 caches the coarse-route tail distance; -1 means not calculated.
+            private _layer1Data = [_cameFromMapLayer1, _costSoFarMapLayer1, _frontierLayer1, _pathLayer1, _closestSector, -1];
             private _layer2Data = [_cameFromMapLayer2, _costSoFarMapLayer2, _frontierLayer2, _pathLayer2, _closestSubSector, _itersSinceClosest];
 
-            _currentJobData = [false, [false,false,false], _layer1Data, _layer2Data, _startSector, _goalSector, _startSubSector, _goalSubSector];   
+            _currentJobData = [false, [false,false,false], _layer1Data, _layer2Data, _startSector, _goalSector, _startSubSector, _goalSubSector, []];
             // [": findPath currentJobData %1 ",str _currentJobData] call Alive_fnc_Dump;
 
             _logic set ["currentJobData", _currentJobData];
+            _phaseTimes set [0, 1000 * (diag_tickTime - _initializationStarted)];
         } else {
             _logic set ["currentJobData", []];
         };
@@ -579,21 +868,62 @@ switch (_operation) do {
         if (_isActive) exitwith {};
         _currentJobData set [0,true];
 
-        private _terrainGrid = _logic get "terrainGrid";
-        private _sectorSize = _terrainGrid get "sectorSize";
-        private _subSectorSize = _terrainGrid get "subSectorSize";
-        private _sectorWaterEdgeCache = [_terrainGrid, _sectorSize] call ALiVE_fnc_pathfinderGetWaterEdgeCache;
-        private _subSectorWaterEdgeCache = [_terrainGrid, _subSectorSize] call ALiVE_fnc_pathfinderGetWaterEdgeCache;
-        private _airsideActive =
-            ALiVE_pathfinding_airsideWeight != 1
-            && {!((_capabilities select 4))}
-            && {!(ALiVE_airsideBounds isEqualTo [])};
-        private _airsideCanDiscount = _airsideActive && {ALiVE_pathfinding_airsideWeight < 1};
+        // A live recompile can encounter an already-running job: count from now
+        // but explicitly mark that record incomplete rather than inventing totals.
+        private _searchStats = _currentJob param [7, []];
+        if (count _searchStats != 10) then {
+            _searchStats = [0,0,0,"unknown","unknown",false,[],[],-1,false];
+            _currentJob set [7, _searchStats];
+        };
+        // Accumulate execution-slice elapsed time, excluding gaps between frames.
+        // diag_tickTime has finite resolution; these are approximate milliseconds,
+        // not CPU-cycle measurements. Reconstruction includes refinement/consolidation.
+        private _requestDiagnostics = _currentJob param [9, createHashMap];
+        private _diagnoseRequest = count _requestDiagnostics > 0;
+        private _phaseData = _currentJob param [8, []];
+        if (count _phaseData != 2) then {
+            _phaseData = [[0,0,0,0,0,0,0], false];
+            _currentJob set [8, _phaseData];
+        };
+        private _phaseTimes = _phaseData select 0;
+        private _phaseIndex = 1;
+        private _phaseStarted = diag_tickTime;
         private _jobComplete = false;
 
         scopename "main";
 
         call {
+
+            private _completion = _currentJobData param [8, []];
+            if !(_completion isEqualTo []) then {
+                private _phaseNow = diag_tickTime;
+                _phaseTimes set [_phaseIndex, (_phaseTimes select _phaseIndex) + 1000 * (_phaseNow - _phaseStarted)];
+                _phaseIndex = if ((_completion select 0) == 1) then {4} else {5};
+                _phaseStarted = _phaseNow;
+                if ([_logic, "stepLayerPath", [_procedure, _completion]] call MAINCLASS) then {
+                    _completion params ["_completedLayer", "_start", "_end", "_cameFrom", "_path", "_size", "_retarget"];
+                    if (_retarget && {count _path > 0}) then {
+                        [_waypoint, "position", _path select (count _path - 1)] call ALiVE_fnc_hashSet;
+                    };
+                    _jobDataFlags set [_completedLayer, true];
+                    _layer1Complete = _jobDataFlags select 1;
+                    _layer2Complete = _jobDataFlags select 2;
+                    _currentJobData set [8, []];
+                };
+                // Never combine reconstruction with another search slice.
+                breakTo "main";
+            };
+
+            private _terrainGrid = _logic get "terrainGrid";
+            private _sectorSize = _terrainGrid get "sectorSize";
+            private _subSectorSize = _terrainGrid get "subSectorSize";
+            private _sectorWaterEdgeCache = [_terrainGrid, _sectorSize] call ALiVE_fnc_pathfinderGetWaterEdgeCache;
+            private _subSectorWaterEdgeCache = [_terrainGrid, _subSectorSize] call ALiVE_fnc_pathfinderGetWaterEdgeCache;
+            private _airsideActive =
+                ALiVE_pathfinding_airsideWeight != 1
+                && {!((_capabilities select 4))}
+                && {!(ALiVE_airsideFields isEqualTo [])};
+            private _airsideCanDiscount = _airsideActive && {ALiVE_pathfinding_airsideWeight < 1};
 
             if (!_initComplete) then {
 
@@ -602,6 +932,8 @@ switch (_operation) do {
                     && {_limits isEqualTo [0,0]}
                     && {_weights isEqualTo [0,0,0,0]};
                 if (_nonBiasProcedure) then {
+                    _searchStats set [3, "unrestricted"];
+                    _searchStats set [4, "unrestricted"];
                     _result = [_goalSubSector select 2];
                     _jobComplete = true;
                     breakto "main";
@@ -609,6 +941,8 @@ switch (_operation) do {
 
                 private _sameSubSector = (_startSubSector isEqualTo _goalSubSector);
                 if (_sameSubSector) then {
+                    _searchStats set [3, "same_cell"];
+                    _searchStats set [4, "same_cell"];
                     _result = [_goalSubSector select 2];
                     _jobComplete = true;
                     breakto "main";
@@ -635,10 +969,20 @@ switch (_operation) do {
             };
 
             ////// LAYER 1 PATHFINDING
-            // only check 1 sector per frame
+            // Coarse search resumes from its saved frontier after three expansions.
             private _sectorIterations = 0;
 
-            while {!(_layer1Complete) && _sectorIterations < 11} do {
+            private _phaseNow = diag_tickTime;
+            _phaseTimes set [_phaseIndex, (_phaseTimes select _phaseIndex) + 1000 * (_phaseNow - _phaseStarted)];
+            _phaseIndex = 2;
+            _phaseStarted = _phaseNow;
+            while {!(_layer1Complete) && _sectorIterations < 3} do {
+                PROFILE_SCOPE(PFCOARSE, "ALiVE pathfinder: coarse expansion")
+                if ((_searchStats select 8) != diag_frameNo) then {
+                    _searchStats set [2, (_searchStats select 2) + 1];
+                    _searchStats set [8, diag_frameNo];
+                };
+                _searchStats set [3, "searching"];
                 _sectorIterations = _sectorIterations + 1;
                 _layer1 params ["_cameFromMapLayer1", "_costSoFarMapLayer1", "_frontierLayer1", "_pathLayer1", "_closestSector"];
 
@@ -646,11 +990,13 @@ switch (_operation) do {
                 if (isNil "_currentSector") exitWith {
                     // Filtering consumed the last queued entries because every one
                     // had already been superseded by a cheaper route.
-                    _layer1Complete = [_logic,"getLayerPath", [_procedure, _startSector, (_closestSector select 1), _cameFromMapLayer1, _pathLayer1, _sectorSize]] call MAINCLASS;
-                    _jobDataFlags set [1,_layer1Complete];
+                    _searchStats set [3, "frontier_exhausted"];
+                    [_logic,"beginLayerPath", [1, _startSector, (_closestSector select 1), _cameFromMapLayer1, _pathLayer1, _sectorSize, false]] call MAINCLASS;
                     breakTo "main";
                 };
                 _currentSector params ["_indxCS", "_posCS", "_centerPosCS", "_typeCS", "_modifiersCS"];
+                _searchStats set [0, (_searchStats select 0) + 1];
+                if (_searchStats select 5) then {(_searchStats select 6) set [_indxCS, true]};
                 private _currentCost = _costSoFarMapLayer1 get _indxCS;
 
                 // ////////////////////////////////////////////////////
@@ -663,13 +1009,14 @@ switch (_operation) do {
                 // ////////////////////////////////////////////////////
 
                 if ((_currentSector select 0) isequalto (_goalSector select 0)) exitwith {
-                    _layer1Complete = [_logic,"getLayerPath", [_procedure, _startSector, _goalSector ,_cameFromMapLayer1, _pathLayer1, _sectorSize ]] call MAINCLASS;
-                    _jobDataFlags set [1,_layer1Complete];
+                    _searchStats set [3, "goal_reached"];
+                    [_logic,"beginLayerPath", [1, _startSector, _goalSector ,_cameFromMapLayer1, _pathLayer1, _sectorSize, false]] call MAINCLASS;
                     breakto "main";
                 };
 
-                if ((_centerPosCS distance (_goalSector select 2)) < (_closestSector select 0)) then {
-                    _closestSector set [0, _centerPosCS distance (_goalSector select 2)];
+                private _currentDistanceToGoal = _centerPosCS distance (_goalSector select 2);
+                if (_currentDistanceToGoal < (_closestSector select 0)) then {
+                    _closestSector set [0, _currentDistanceToGoal];
                     _closestSector set [1, _currentSector];
                 };
 
@@ -690,23 +1037,41 @@ switch (_operation) do {
                         || {_airsideCanDiscount}
                         || {_baseCostCanImprove}
                     ) then {
-                        private _traversal = [_procedure, _neighSector, _currentSector, _sectorSize, _sectorWaterEdgeCache] call ALiVE_fnc_pathfinderCanTraverse;
+                        // Only finalize candidates that survived the cheap base-cost filter.
+                        // Mandatory goal/failure traversal checks still run without improvement.
+                        if (_airsideActive && {_baseCostCanImprove || {_airsideCanDiscount}}) then {
+                            // Classified cells need only the cached flag and current weight.
+                            // Keep first-time classification in the helper.
+                            if (count _neighSector > 5) then {
+                                if (_neighSector select 5) then {
+                                    _moveCost = _moveCost * ALiVE_pathfinding_airsideWeight;
+                                };
+                            } else {
+                                _moveCost = [_neighSector, _sectorSize, _moveCost] call ALiVE_fnc_pathfinderGetFinalMovementCost;
+                            };
+                        };
+                        private _newCostSoFar = _moveCost + _currentCost;
+                        private _finalCostCanImprove = isNil "_knownCost" || {_newCostSoFar < _knownCost};
+                        private _traversal = 0;
+                        if (_mustCheckTraversal || {_finalCostCanImprove}) then {
+                            _traversal = [_procedure, _neighSector, _currentSector, _sectorSize, _sectorWaterEdgeCache] call ALiVE_fnc_pathfinderCanTraverse;
+                        };
                         if (_traversal > 0) then {
-                            if (_baseCostCanImprove || {_airsideCanDiscount}) then {
+                            if (_finalCostCanImprove) then {
                                 private _heuristicParams = [_neighSector,_currentSector,_procedure, _distanceToGoal,_sectorSize,_traversal == 2];
-                                [_cameFromMapLayer1, _costSoFarMapLayer1, _frontierLayer1, _neighSector, _currentSector, _distanceToGoal, _heuristicParams, _moveCost, _airsideActive] call ALiVE_fnc_pathfinderSetNode;
+                                [_cameFromMapLayer1, _costSoFarMapLayer1, _frontierLayer1, _neighSector, _currentSector, _distanceToGoal, _heuristicParams, _moveCost, false, _newCostSoFar] call ALiVE_fnc_pathfinderSetNode;
                             };
                             if (_distanceToGoal > (_closestSector select 0)*5) exitwith {
                                 // Unable to complete path to goal
-                                _layer1Complete = [_logic,"getLayerPath", [_procedure, _startSector, (_closestSector select 1),_cameFromMapLayer1, _pathLayer1, _sectorSize ]] call MAINCLASS;
-                                _jobDataFlags set [1,_layer1Complete];
+                                _searchStats set [3, "distance_limit"];
+                                [_logic,"beginLayerPath", [1, _startSector, (_closestSector select 1),_cameFromMapLayer1, _pathLayer1, _sectorSize, false]] call MAINCLASS;
                                 breakto "main";
                             };
                          } else {
                             if (_neighSector isEqualTo _goalSector) exitwith {
                                 // Unable to complete path to goal
-                                _layer1Complete = [_logic,"getLayerPath", [_procedure, _startSector, (_closestSector select 1),_cameFromMapLayer1, _pathLayer1, _sectorSize ]] call MAINCLASS;
-                                _jobDataFlags set [1,_layer1Complete];
+                                _searchStats set [3, "goal_blocked"];
+                                [_logic,"beginLayerPath", [1, _startSector, (_closestSector select 1),_cameFromMapLayer1, _pathLayer1, _sectorSize, false]] call MAINCLASS;
                                 breakto "main";
                             };
                         };
@@ -715,28 +1080,72 @@ switch (_operation) do {
 
                 if (count _frontierLayer1 == 0) exitwith {
                     // Unable to complete path to goal
-                    _layer1Complete = [_logic,"getLayerPath", [_procedure, _startSector, (_closestSector select 1) ,_cameFromMapLayer1, _pathLayer1, _sectorSize ]] call MAINCLASS;
-                    _jobDataFlags set [1,_layer1Complete];
+                    _searchStats set [3, "frontier_exhausted"];
+                    [_logic,"beginLayerPath", [1, _startSector, (_closestSector select 1) ,_cameFromMapLayer1, _pathLayer1, _sectorSize, false]] call MAINCLASS;
                     breakto "main";
                 };
             };
 
-            while {(_layer1Complete) && !(_layer2Complete)  && _sectorIterations < 6} do {
+            private _phaseNow = diag_tickTime;
+            _phaseTimes set [_phaseIndex, (_phaseTimes select _phaseIndex) + 1000 * (_phaseNow - _phaseStarted)];
+            _phaseIndex = 3;
+            _phaseStarted = _phaseNow;
+            // Yield between complete expansions; never interrupt an edge update.
+            // At least one expansion avoids starvation when diag_tickTime has
+            // coarse precision at long uptime. The existing work cap also bounds
+            // frames where the timer does not advance. Zero disables the budget.
+            private _fineBudgetMs = missionNamespace getVariable ["ALiVE_pathfinding_fineBudgetMs", 3];
+            if !(_fineBudgetMs isEqualType 0) then {_fineBudgetMs = 3};
+            private _fineBudgetStarted = diag_tickTime;
+            private _fineExpansionsThisFrame = 0;
+            while {
+                (_layer1Complete) && {!(_layer2Complete)} && {_sectorIterations < 6}
+                && {
+                    _fineExpansionsThisFrame == 0
+                    || {_fineBudgetMs <= 0}
+                    || {1000 * (diag_tickTime - _fineBudgetStarted) < _fineBudgetMs}
+                }
+            } do {
+                _fineExpansionsThisFrame = _fineExpansionsThisFrame + 1;
+                PROFILE_SCOPE(PFFINE, "ALiVE pathfinder: fine expansion")
+                if ((_searchStats select 8) != diag_frameNo) then {
+                    _searchStats set [2, (_searchStats select 2) + 1];
+                    _searchStats set [8, diag_frameNo];
+                };
+                _searchStats set [4, "searching"];
                 _sectorIterations = _sectorIterations + 1;
                 _layer2 params ["_cameFromMapLayer2", "_costSoFarMapLayer2", "_frontierLayer2", "_pathLayer2", "_closestSubSector", "_itersSinceClosest"];
                 _layer2 set [5, _itersSinceClosest + 1];
                 private _pathLayer1 = _layer1 select 3;
                 private _currentSubSector = [_frontierLayer2, _costSoFarMapLayer2] call ALiVE_fnc_pathfinderPriorityPullFresh;
                 if (isNil "_currentSubSector") exitWith {
-                    [_logic,"getLayerPath", [_procedure, _startSubSector, (_closestSubSector select 1), _cameFromMapLayer2, _pathLayer2, _subSectorSize]] call MAINCLASS;
-                    if (count _pathLayer2 > 0) then {
-                        [_waypoint,"position",_pathLayer2 select (count _pathLayer2 - 1)] call ALiVE_fnc_hashSet;
-                    };
-                    _jobDataFlags set [2,true];
+                    _searchStats set [4, "frontier_exhausted"];
+                    [_logic,"beginLayerPath", [2, _startSubSector, (_closestSubSector select 1), _cameFromMapLayer2, _pathLayer2, _subSectorSize, true]] call MAINCLASS;
                     breakTo "main";
                 };
                 _currentSubSector params ["_indxCS", "_posCS", "_centerPosCS", "_typeCS", "_modifiersCS"];
+                _searchStats set [1, (_searchStats select 1) + 1];
+                if (_searchStats select 5) then {(_searchStats select 7) set [_indxCS, true]};
                 private _currentCost = _costSoFarMapLayer2 get _indxCS;
+                // Keep only the first eight expansions and the latest one. Deep-copy
+                // positions/indices: grid cells and the guidance route are shared.
+                private _traceExpansion = _diagnoseRequest && {(_searchStats select 1) <= 8};
+                if (_diagnoseRequest) then {
+                    private _expansionSnapshot = [_searchStats select 1, +_indxCS, +_centerPosCS, _currentCost];
+                    _requestDiagnostics set ["lastExpansion", _expansionSnapshot];
+                    if (_traceExpansion) then {
+                        if (isNil {_requestDiagnostics get "initialCoarseRoute"}) then {
+                            _requestDiagnostics set ["initialCoarseRoute", +_pathLayer1];
+                            _requestDiagnostics set ["traceStartExpansion", _searchStats select 1];
+                        };
+                        private _expansionTrace = _requestDiagnostics getOrDefault ["firstExpansions", []];
+                        _expansionTrace pushBack _expansionSnapshot;
+                        _requestDiagnostics set ["firstExpansions", _expansionTrace];
+                    };
+                    if (_indxCS isEqualTo (_goalSubSector select 0)) then {
+                        _requestDiagnostics set ["goalPulledExpansion", _searchStats select 1];
+                    };
+                };
 
                 ////////////////////////////////////////////////////
                 // _m = createMarker [str str str str _centerPosCS, _centerPosCS];
@@ -748,102 +1157,188 @@ switch (_operation) do {
                 ////////////////////////////////////////////////////
 
                 if ((_currentSubSector select 0) isequalto (_goalSubSector select 0)) exitwith {
-                    [_logic,"getLayerPath", [_procedure, _startSubSector, _goalSubSector ,_cameFromMapLayer2, _pathLayer2, _subSectorSize]] call MAINCLASS;
-                    _jobDataFlags set [2,true];
+                    _searchStats set [4, "goal_reached"];
+                    [_logic,"beginLayerPath", [2, _startSubSector, _goalSubSector ,_cameFromMapLayer2, _pathLayer2, _subSectorSize, false]] call MAINCLASS;
                     breakto "main";
                 };
 
-                if ((_centerPosCS distance (_goalSubSector select 2)) < (_closestSubSector select 0)) then {
-                    _closestSubSector set [0, _centerPosCS distance (_goalSubSector select 2)];
+                private _currentDistanceToGoal = _centerPosCS distance (_goalSubSector select 2);
+                if (_currentDistanceToGoal < (_closestSubSector select 0)) then {
+                    _closestSubSector set [0, _currentDistanceToGoal];
                     _closestSubSector set [1, _currentSubSector];
+                    if (_diagnoseRequest) then {
+                        _requestDiagnostics set ["closestDistance", _currentDistanceToGoal];
+                        _requestDiagnostics set ["closestPosition", +_centerPosCS];
+                        _requestDiagnostics set ["lastProgressExpansion", _searchStats select 1];
+                    };
                     _itersSinceClosest = 0;
                     _layer2 set [5,0];
                 };
                 
                 if ((count _pathLayer1 > 0) && ((_centerPosCS distance (_pathLayer1 select 0)) < _sectorSize)) then {
                     _pathLayer1 deleteat 0;
+                    _layer1 set [5, -1];
                 };
 
-                // Every neighbor uses the same remaining Layer 1 route after its
-                // first waypoint. The first traversable neighbor lazily sums that
-                // invariant tail; later neighbors reuse it. The old helper walked
-                // the whole path again for each of up to eight neighbors.
+                // Cache the route tail across expansions and frames in this job.
+                // Recompute lazily after coarse reconstruction or waypoint removal,
+                // preserving the original forward summation order. Any future edit
+                // to coarse waypoint positions must also invalidate layer1 slot 5.
                 private _pathLayer1Count = count _pathLayer1;
                 private _pathLayer1First = if (_pathLayer1Count > 0) then { _pathLayer1 select 0 } else { [] };
-                private _pathLayer1TailDistance = 0;
-                private _pathLayer1TailReady = _pathLayer1Count < 2;
+                private _pathLayer1TailDistance = _layer1 param [5, -1];
+                private _pathLayer1TailReady = _pathLayer1TailDistance >= 0;
 
+                // Base distances depend only on immutable grid topology and size.
+                // Clear this cache with subSectorNeighborCache if either changes.
+                private _neighborCostCache = _terrainGrid get "subSectorNeighborCostCache";
+                if (isNil "_neighborCostCache") then {
+                    _neighborCostCache = createHashMap;
+                    _terrainGrid set ["subSectorNeighborCostCache", _neighborCostCache];
+                };
+                private _fineNeighborData = _neighborCostCache get _indxCS;
+                if (isNil "_fineNeighborData") then {
+                    private _neighbors = [_terrainGrid, "getNeighborSubSectors", _indxCS] call Alive_fnc_pathfindingGrid;
+                    private _ix = _indxCS select 0;
+                    private _iy = _indxCS select 1;
+                    private _costs = _neighbors apply {
+                        private _index = _x select 0;
+                        if (_ix != (_index select 0) && {_iy != (_index select 1)}) then {
+                            1.414 * _subSectorSize
+                        } else {
+                            1.0 * _subSectorSize
+                        }
+                    };
+                    _fineNeighborData = [_neighbors, _costs];
+                    _neighborCostCache set [_indxCS, _fineNeighborData];
+                };
+                _fineNeighborData params ["_fineNeighbors", "_fineNeighborCosts"];
+                if (_traceExpansion) then {
+                    private _neighborTrace = _requestDiagnostics getOrDefault ["firstNeighborLists", []];
+                    _neighborTrace pushBack [_searchStats select 1, +_indxCS, _fineNeighbors apply {+(_x select 0)}, +_pathLayer1First, _pathLayer1Count];
+                    _requestDiagnostics set ["firstNeighborLists", _neighborTrace];
+                };
                 // determine which neighbor is the best path
                 {
                     private _neighSubSector = _x;
                     if (isNil "_neighSubSector") exitwith {};
 
                     private _centerPos = _neighSubSector select 2;
-                    private _moveCost = [_currentSubSector, _neighSubSector, _subSectorSize] call ALiVE_fnc_pathfinderGetMovementCost;
+                    private _isGoalNeighbor = (_neighSubSector select 0) isEqualTo (_goalSubSector select 0);
+                    private _traceGoal = _diagnoseRequest && {_isGoalNeighbor};
+                    if (_traceGoal) then {
+                        _requestDiagnostics set ["goalNeighborEncounters", 1 + (_requestDiagnostics getOrDefault ["goalNeighborEncounters", 0])];
+                        _requestDiagnostics set ["goalIndexMatches", _isGoalNeighbor];
+                    };
+                    private _moveCost = _fineNeighborCosts select _forEachIndex;
                     private _knownCost = _costSoFarMapLayer2 get (_neighSubSector select 0);
                     private _baseCostCanImprove = isNil "_knownCost" || {_currentCost + _moveCost < _knownCost};
                     private _mustCheckTraversal =
-                        _neighSubSector isEqualTo _goalSubSector
+                        _isGoalNeighbor
                         || {_itersSinceClosest > 500};
                     if (
                         _mustCheckTraversal
                         || {_airsideCanDiscount}
                         || {_baseCostCanImprove}
                     ) then {
-                        private _traversal = [_procedure, _neighSubSector, _currentSubSector, _subSectorSize, _subSectorWaterEdgeCache] call ALiVE_fnc_pathfinderCanTraverse;
+                        // Only finalize candidates that survived the cheap base-cost filter.
+                        // Mandatory goal/failure traversal checks still run without improvement.
+                        if (_airsideActive && {_baseCostCanImprove || {_airsideCanDiscount}}) then {
+                            // Classified cells need only the cached flag and current weight.
+                            // Keep first-time classification in the helper.
+                            if (count _neighSubSector > 5) then {
+                                if (_neighSubSector select 5) then {
+                                    _moveCost = _moveCost * ALiVE_pathfinding_airsideWeight;
+                                };
+                            } else {
+                                _moveCost = [_neighSubSector, _subSectorSize, _moveCost] call ALiVE_fnc_pathfinderGetFinalMovementCost;
+                            };
+                        };
+                        private _newCostSoFar = _moveCost + _currentCost;
+                        private _finalCostCanImprove = isNil "_knownCost" || {_newCostSoFar < _knownCost};
+                        private _traversal = 0;
+                        if (_mustCheckTraversal || {_finalCostCanImprove}) then {
+                            _traversal = [_procedure, _neighSubSector, _currentSubSector, _subSectorSize, _subSectorWaterEdgeCache, _requestDiagnostics] call ALiVE_fnc_pathfinderCanTraverse;
+                        };
 
+                        if (_traceGoal) then {
+                            private _goalEvents = _requestDiagnostics getOrDefault ["goalEvents", []];
+                            if (count _goalEvents < 8) then {
+                                _goalEvents pushBack [_searchStats select 1, +_indxCS, _traversal, _finalCostCanImprove, _newCostSoFar, +_pathLayer1First, _pathLayer1Count];
+                                _requestDiagnostics set ["goalEvents", _goalEvents];
+                            };
+                        };
                         if (_traversal > 0) then {
-                            if (_baseCostCanImprove || {_airsideCanDiscount}) then {
-                                private _distanceToGoal = _centerPos distance (_goalSubSector select 2);
+                            if (_finalCostCanImprove) then {
+                                private "_distanceToGoal";
                                 if (_pathLayer1Count > 0) then {
                                     if (!_pathLayer1TailReady) then {
+                                        PROFILE_SCOPE(PFTAIL, "ALiVE pathfinder: recompute route tail")
+                                        _pathLayer1TailDistance = 0;
                                         private _i = 1;
                                         while {_i < _pathLayer1Count} do {
                                             _pathLayer1TailDistance = _pathLayer1TailDistance
                                                 + ((_pathLayer1 select (_i - 1)) distance (_pathLayer1 select _i));
                                             _i = _i + 1;
                                         };
+                                        _layer1 set [5, _pathLayer1TailDistance];
                                         _pathLayer1TailReady = true;
                                     };
                                     _distanceToGoal = (_centerPos distance _pathLayer1First) + _pathLayer1TailDistance;
+                                } else {
+                                    _distanceToGoal = _centerPos distance (_goalSubSector select 2);
                                 };
-                                private _heuristicParams = [_neighSubSector,_currentSubSector,_procedure,_distanceToGoal,_subSectorSize,_traversal == 2];
-                                [_cameFromMapLayer2, _costSoFarMapLayer2, _frontierLayer2, _neighSubSector, _currentSubSector, _distanceToGoal, _heuristicParams, _moveCost, _airsideActive] call ALiVE_fnc_pathfinderSetNode;
+                                // Internal insertion: traversal and strict cost improvement have
+                                // already passed. Keep SetNode's priority arithmetic and write order.
+                                private _priority = [_neighSubSector,_currentSubSector,_procedure,_distanceToGoal,_subSectorSize,_traversal == 2] call ALiVE_fnc_pathfinderHeuristic;
+                                private _neighborIndex = _neighSubSector select 0;
+                                _costSoFarMapLayer2 set [_neighborIndex, _newCostSoFar];
+                                [_frontierLayer2, _distanceToGoal + _priority + _moveCost, _neighSubSector, _newCostSoFar] call ALiVE_fnc_pathfinderPriorityAdd;
+                                _cameFromMapLayer2 set [_neighborIndex, _currentSubSector];
+                                if (_traceGoal) then {
+                                    _requestDiagnostics set ["goalLastQueuedExpansion", _searchStats select 1];
+                                    _requestDiagnostics set ["goalGuidanceDistance", _distanceToGoal];
+                                };
                             };
                             if (/*(_distanceToGoal > (_closestSubSector select 0)*4) ||*/ (_itersSinceClosest > 500)) exitwith {
                                 // Unable to complete path to goal - spent too much time looking
-                                [_logic,"getLayerPath", [_procedure, _startSubSector, (_closestSubSector select 1),_cameFromMapLayer2, _pathLayer2, _subSectorSize ]] call MAINCLASS;
-                                if (count _pathLayer2 > 0) then { //set destination as last known good position
-                                    [_waypoint,"position",_pathLayer2 select (count _pathLayer2 -1)] call ALiVE_fnc_hashSet;
-                                };
-                                _jobDataFlags set [2,true];
+                                _searchStats set [4, "no_progress"];
+                                [_logic,"beginLayerPath", [2, _startSubSector, (_closestSubSector select 1),_cameFromMapLayer2, _pathLayer2, _subSectorSize, true]] call MAINCLASS;
                                 breakto "main";
                             };
                         } else {
-                            if (_neighSubSector isEqualTo _goalSubSector) exitwith {
+                            if (_isGoalNeighbor) exitwith {
                                 // Unable to complete path to goal because goal sector untraversable
-                                [_logic,"getLayerPath", [_procedure, _startSubSector, (_closestSubSector select 1),_cameFromMapLayer2, _pathLayer2, _subSectorSize ]] call MAINCLASS;
-                                if (count _pathLayer2 > 0) then { //set destination as last known good position
-                                    [_waypoint,"position",_pathLayer2 select (count _pathLayer2 -1)] call ALiVE_fnc_hashSet;
-                                };
-                                _jobDataFlags set [2,true];
+                                _searchStats set [4, "goal_blocked"];
+                                [_logic,"beginLayerPath", [2, _startSubSector, (_closestSubSector select 1),_cameFromMapLayer2, _pathLayer2, _subSectorSize, true]] call MAINCLASS;
                                 breakto "main";
                             };
                         };
                     };
-                } foreach ([_terrainGrid, "getNeighborSubSectors", _indxCS] call Alive_fnc_pathfindingGrid);
+                } foreach _fineNeighbors;
 
                 if (count _frontierLayer2 == 0) exitwith {
                     // Unable to complete path to goal - ran out of sectors to check
-                    [_logic,"getLayerPath", [_procedure, _startSubSector, (_closestSubSector select 1), _cameFromMapLayer2, _pathLayer2, _subSectorSize ]] call MAINCLASS;
-                    if (count _pathLayer2 > 0) then { //set destination as last known good position
-                        [_waypoint,"position",_pathLayer2 select (count _pathLayer2 -1)] call ALiVE_fnc_hashSet;
-                    };
-                    _jobDataFlags set [2,true];
+                    _searchStats set [4, "frontier_exhausted"];
+                    [_logic,"beginLayerPath", [2, _startSubSector, (_closestSubSector select 1), _cameFromMapLayer2, _pathLayer2, _subSectorSize, true]] call MAINCLASS;
                     breakto "main";
                 };
             };
         };
+
+        if (_diagnoseRequest) then {
+            _requestDiagnostics set ["frontierSize", count (_layer2 select 2)];
+            _requestDiagnostics set ["knownCells", count (_layer2 select 1)];
+            _requestDiagnostics set ["iterationsSinceClosest", _layer2 select 5];
+            private _fineFrontier = _layer2 select 2;
+            _requestDiagnostics set ["frontierHead", if (count _fineFrontier > 0) then {
+                private _head = _fineFrontier select 0;
+                [_head select 0, +((_head select 1) select 0), _head param [2, -1]]
+            } else {[]}];
+        };
+        // breakTo exits the inner search block; settle the current slice here so
+        // goal, exhausted-frontier, and other early exits are all included.
+        _phaseTimes set [_phaseIndex, (_phaseTimes select _phaseIndex) + 1000 * (diag_tickTime - _phaseStarted)];
 
         if (_layer1Complete && _layer2Complete) then {
             _jobComplete = true;
@@ -851,6 +1346,8 @@ switch (_operation) do {
         };
 
         if (_jobComplete) then {
+            PROFILE_SCOPE(PFFINISH, "ALiVE pathfinder: finish job")
+            private _finalizeStarted = diag_tickTime;
             if (isNil {_result select 0;}) then {["Error - Undefined value in path: %1 \n%2", _layer2, _result] call Alive_fnc_Dump;};
 
             // Optional debug draw of the final computed route (gated by the
@@ -863,6 +1360,7 @@ switch (_operation) do {
             // and goal share a subsector (len 0) - drawing it leaves an orphaned dot
             // with no line, and it's the bulk of completed paths (log noise too).
             if (missionNamespace getVariable ["ALiVE_pathfinding_drawPaths", false] && {_result isEqualType []} && {count _result > 1}) then {
+                PROFILE_SCOPE(PFDRAW, "ALiVE pathfinder: draw route")
                 private _pathMarkers = _logic get "pathDrawMarkers";
                 // Colour the route by the requesting profile's side (threaded as
                 // the 3rd callbackArgs element from fnc_profileEntity's findPath
@@ -905,15 +1403,21 @@ switch (_operation) do {
                 _logic set ["pathDrawMarkers", _pathMarkers];
             };
 
+            _phaseTimes set [6, (_phaseTimes select 6) + 1000 * (diag_tickTime - _finalizeStarted)];
+            PROFILE_SCOPE(PFCALLBACK, "ALiVE pathfinder: timing and callback dispatch")
+            [_logic, "recordPathTiming", [_currentJob, count _result]] call MAINCLASS;
             [_callbackArgs,_result] spawn _callback;
+            PROFILE_SCOPE_END(PFCALLBACK)
 
             // remove job from queue and clean up the mess we made. The cost /
             // came-from HashMaps are released by garbage collection once the job
             // data holding them is cleared below - no explicit delete needed
             // (unlike the CBA namespaces these replaced). (#pathfinding-opt)
+            PROFILE_SCOPE(PFCLEANUP, "ALiVE pathfinder: release completed job")
             _pathJobs deleteat 0;
             _currentJobData resize 0;
             _currentJob resize 0;
+            PROFILE_SCOPE_END(PFCLEANUP)
             // {deleteMarker _x} foreach _debugMarkers;
             // _debugMarkers resize 0;
             // load next job data
@@ -924,5 +1428,7 @@ switch (_operation) do {
     };
 
 };
+
+PROFILE_SCOPE_END(PFOPERATION)
 
 if (isnil "_result") then {nil} else {_result};

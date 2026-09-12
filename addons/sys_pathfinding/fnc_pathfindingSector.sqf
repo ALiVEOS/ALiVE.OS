@@ -252,7 +252,8 @@ switch (_operation) do {
 
         /////// ROUGHNESS ANALYSIS ///////
         private _sumDensityModifier = 0;
-        private _densitySizeAdjust = (_subSectorSize * _subSectorSize) / 2500; // default procedure values are based on 50 x 50 sub grid - this adjusts for different subSector area size
+        // Normalize object counts to the 50 m sampling area used by procedure density limits.
+        private _densitySizeAdjust = 2500 / (_subSize * _subSize);
         private _searchArray = ["tree","rock","house","building","fence","wall"];
         {
             private _subSector = _x select 1;

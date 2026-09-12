@@ -42,6 +42,9 @@ switch (_operation) do {
         _logic = createHashMapFromArray [
             ["sectors", createHashMapFromArray _sectors],
             ["subSectors", createHashMapFromArray _subSectors],
+            // Neighbor lists are built only for expanded cells, separately per layer.
+            ["sectorNeighborCache", createHashMap],
+            ["subSectorNeighborCache", createHashMap],
             ["sectorSize", _sectorSize],
             ["sectorRadius", _sectorSize/2],
             ["subSectorSize", _subSectorSize],
@@ -184,6 +187,18 @@ switch (_operation) do {
         // + direct hash-gets per fetch instead of ~10 dispatches.
         private _sectorIndex = _args;
         if (isNil "_sectorIndex") exitWith { _result = []; };
+        // The grid topology is immutable after creation. Return the cached list
+        // directly: callers iterate it without changing membership or order.
+        // Recreating the grid creates fresh caches. Clear this layer cache if
+        // future code replaces cells, changes layer size, or changes offsets.
+        private _neighborCache = _logic get "sectorNeighborCache";
+        // Also support a grid created before this function was recompiled.
+        if (isNil "_neighborCache") then {
+            _neighborCache = createHashMap;
+            _logic set ["sectorNeighborCache", _neighborCache];
+        };
+        private _cachedNeighbors = _neighborCache get _sectorIndex;
+        if (!isNil "_cachedNeighbors") exitWith { _result = _cachedNeighbors; };
         private _sectors = _logic get "sectors";
         private "_sectorSize";
         private "_sectorRadius";
@@ -212,6 +227,7 @@ switch (_operation) do {
                 _neighbors pushBack _sector;
             };
         } forEach ALiVE_pathfinding_neighborOffsets;
+        _neighborCache set [_sectorIndex, _neighbors];
         _result = _neighbors;
     };
 
@@ -219,6 +235,18 @@ switch (_operation) do {
         // CANDIDATE A/C: fold getNeighborIndices + getSubSector in here.
         private _sectorIndex = _args;
         if (isNil "_sectorIndex") exitWith { _result = []; };
+        // The grid topology is immutable after creation. Return the cached list
+        // directly: callers iterate it without changing membership or order.
+        // Recreating the grid creates fresh caches. Clear this layer cache if
+        // future code replaces cells, changes layer size, or changes offsets.
+        private _neighborCache = _logic get "subSectorNeighborCache";
+        // Also support a grid created before this function was recompiled.
+        if (isNil "_neighborCache") then {
+            _neighborCache = createHashMap;
+            _logic set ["subSectorNeighborCache", _neighborCache];
+        };
+        private _cachedNeighbors = _neighborCache get _sectorIndex;
+        if (!isNil "_cachedNeighbors") exitWith { _result = _cachedNeighbors; };
         private _subSectors = _logic get "subSectors";
         private "_subSectorSize";
         private "_subSectorRadius";
@@ -245,6 +273,7 @@ switch (_operation) do {
                 _neighbors pushBack _subSector;
             };
         } forEach ALiVE_pathfinding_neighborOffsets;
+        _neighborCache set [_sectorIndex, _neighbors];
         _result = _neighbors;
     };
 
