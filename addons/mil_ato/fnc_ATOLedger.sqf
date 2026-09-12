@@ -54,6 +54,19 @@ Jman
 // the count of "aircraft" grows by two every time a document round-trips.
 #define HOUSEKEEPING ["_id","_rev","rev","meta"]
 
+// Is this the real data backend, or a plain hash somebody handed in for a test.
+//
+// Both are hashes, so the question cannot be answered by asking whether it is
+// one. The backend records its own identity in its class key when it is built
+// (sys_data/fnc_Data.sqf sets class to ALIVE_fnc_Data), and nothing else does,
+// so that is the discriminator. Getting this wrong is silent and expensive: a
+// save into a hash looks exactly like a save that worked.
+private _fnc_isBackend = {
+    private _store = _this;
+    if !([_store] call ALIVE_fnc_isHash) exitWith { false };
+    (([_store, "class", ""] call ALIVE_fnc_hashGet) isEqualTo "ALIVE_fnc_Data")
+};
+
 private ["_result"];
 
 TRACE_1("ATO Ledger - input",_this);
@@ -340,7 +353,13 @@ switch(_operation) do {
             _result = false;
         };
         private _snapshot = [_logic,"snapshot"] call MAINCLASS;
-        if ([_store] call ALIVE_fnc_isHash) then {
+        // A test store and the real backend are BOTH hashes, so asking whether
+        // this is a hash cannot tell them apart, and it used to answer "test
+        // store" for the real one. That meant a live save wrote into memory and
+        // never reached the disk, while every assertion about persistence
+        // passed. The backend says what it is in its own class key, so that is
+        // what is asked.
+        if (!([_store] call _fnc_isBackend)) then {
             // Injected store, for exercising this without a backend.
             [_store,_key,_snapshot] call ALIVE_fnc_hashSet;
             _result = true;
@@ -357,7 +376,7 @@ switch(_operation) do {
         _args params [["_store",[],[[],""]], ["_key","",[""]], ["_legacyKey","",[""]]];
         private _loaded = [];
 
-        if ([_store] call ALIVE_fnc_isHash) then {
+        if (!([_store] call _fnc_isBackend)) then {
             _loaded = [_store,_key,[]] call ALIVE_fnc_hashGet;
         } else {
             _loaded = [_store, "bulkLoad", ["mil_ato", _key, false]] call ALIVE_fnc_Data;
@@ -370,7 +389,7 @@ switch(_operation) do {
         if (_legacyKey isEqualTo "") exitWith { _result = [0,[],[]] };
 
         private _legacy = [];
-        if ([_store] call ALIVE_fnc_isHash) then {
+        if (!([_store] call _fnc_isBackend)) then {
             _legacy = [_store,_legacyKey,[]] call ALIVE_fnc_hashGet;
         } else {
             _legacy = [_store, "bulkLoad", ["mil_ato", _legacyKey, false]] call ALIVE_fnc_Data;

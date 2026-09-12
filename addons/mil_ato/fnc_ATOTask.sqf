@@ -588,6 +588,144 @@ switch(_operation) do {
         _result = true;
     };
 
+    // ---- what the kernel needs to drive a sortie ---------------------------
+    // These exist so the driver never has to reach into this piece's own
+    // records. A caller that reads `sorties` directly becomes a second writer
+    // of them, and then no single place decides what a sortie is doing.
+
+    // Sorties waiting for an airframe. A queued one becomes plannable the
+    // moment placement has had its first look round, which is the same rule
+    // submit applies when it decides which state to start in.
+    case "pending": {
+        private _now = _args;
+        if !(_now isEqualType 0) then { _now = 0 };
+        private _firstPass = [_logic, "firstPassDone", false] call ALIVE_fnc_hashGet;
+        private _sorties = [_logic, "sorties", []] call ALIVE_fnc_hashGet;
+        private _out = [];
+        {
+            private _s = [_sorties, _x, []] call ALIVE_fnc_hashGet;
+            if (count _s > 0) then {
+                private _state = [_s, "state", ""] call ALIVE_fnc_hashGet;
+                if (_state isEqualTo "planning") then { _out pushBack _x };
+                if (_state isEqualTo "queued" && {_firstPass}) then {
+                    [_s, "state", "planning"] call ALIVE_fnc_hashSet;
+                    _out pushBack _x;
+                };
+            };
+        } forEach (_sorties select 1);
+        _result = _out;
+    };
+
+    // A copy, not the record. A caller that edits what it is handed edits the
+    // stored request, and a request is the one thing here that must read the
+    // same on the second look as on the first.
+    case "request": {
+        private _id = _args;
+        if !(_id isEqualType "") then { _id = "" };
+        private _req = [[_logic, "requests", []] call ALIVE_fnc_hashGet, _id, []] call ALIVE_fnc_hashGet;
+        _result = if (_req isEqualTo []) then { [] } else { [_req] call ALIVE_fnc_hashCopy };
+    };
+
+    case "sortie": {
+        private _id = _args;
+        if !(_id isEqualType "") then { _id = "" };
+        private _s = [[_logic, "sorties", []] call ALIVE_fnc_hashGet, _id, []] call ALIVE_fnc_hashGet;
+        _result = if (_s isEqualTo []) then { [] } else { [_s] call ALIVE_fnc_hashCopy };
+    };
+
+    // The airframes a plan chose are written down here rather than by the
+    // driver, so the sortie and its aircraft cannot disagree.
+    case "dispatch": {
+        _args params [["_sortieId","",[""]], ["_tails",[],[[]]]];
+        private _s = [[_logic, "sorties", []] call ALIVE_fnc_hashGet, _sortieId, []] call ALIVE_fnc_hashGet;
+        if (_s isEqualTo []) exitWith { _result = false };
+        if (count _tails == 0) exitWith { _result = false };
+        [_s, "tails", _tails] call ALIVE_fnc_hashSet;
+        [_s, "state", "assigned"] call ALIVE_fnc_hashSet;
+        _result = true;
+    };
+
+    // A sortie that was planned and then could not be flown. Uses the same
+    // rate limit as every other denial, because a denial repeated every tick
+    // buries the one that mattered.
+    case "deny": {
+        _args params [["_sortieId","",[""]], ["_reason","",[""]], ["_now",0,[0]]];
+        private _s = [[_logic, "sorties", []] call ALIVE_fnc_hashGet, _sortieId, []] call ALIVE_fnc_hashGet;
+        if (_s isEqualTo []) exitWith { _result = ["denied", "no such sortie"] };
+        [_s, "state", "denied"] call ALIVE_fnc_hashSet;
+        [_s, "reason", _reason] call ALIVE_fnc_hashSet;
+        private _quiet = [_logic, "lastDenial", []] call ALIVE_fnc_hashGet;
+        private _last = [_quiet, _reason, -99999] call ALIVE_fnc_hashGet;
+        if (_now - _last > DENIAL_QUIET) then {
+            [_quiet, _reason, _now] call ALIVE_fnc_hashSet;
+            ["ALIVE_fnc_ATOTask - sortie %1 denied: %2", _sortieId, _reason] call ALiVE_fnc_dump;
+        };
+        _result = ["denied", _reason];
+    };
+
+    // Finished. Every sortie has to reach this or a denial, or the airspace it
+    // was flying over counts as busy for the rest of the mission and nothing
+    // else is ever raised for it.
+    case "complete": {
+        _args params [["_sortieId","",[""]], ["_reason","",[""]]];
+        private _s = [[_logic, "sorties", []] call ALIVE_fnc_hashGet, _sortieId, []] call ALIVE_fnc_hashGet;
+        if (_s isEqualTo []) exitWith { _result = false };
+        [_s, "state", "complete"] call ALIVE_fnc_hashSet;
+        if !(_reason isEqualTo "") then { [_s, "reason", _reason] call ALIVE_fnc_hashSet };
+        _result = true;
+    };
+
+    // A request held for want of aircraft, which has now waited longer than the
+    // sortie it was asking for would have taken. Denied stale rather than left
+    // queued, because answering it late is worse than answering it no.
+    case "expireQueued": {
+        private _now = _args;
+        if !(_now isEqualType 0) then { _now = 0 };
+        private _sorties = [_logic, "sorties", []] call ALIVE_fnc_hashGet;
+        private _requests = [_logic, "requests", []] call ALIVE_fnc_hashGet;
+        private _stale = [];
+        {
+            private _s = [_sorties, _x, []] call ALIVE_fnc_hashGet;
+            if (count _s > 0 && {([_s, "state", ""] call ALIVE_fnc_hashGet) isEqualTo "queued"}) then {
+                private _req = [_requests, [_s, "requestId", ""] call ALIVE_fnc_hashGet, []] call ALIVE_fnc_hashGet;
+                private _span = [_req, "duration", 0] call ALIVE_fnc_hashGet;
+                if (_span <= 0) then { _span = [_logic, "waitFor", [_s, "type", ""] call ALIVE_fnc_hashGet] call MAINCLASS };
+                if ((_now - ([_s, "receivedAt", 0] call ALIVE_fnc_hashGet)) > _span) then {
+                    _stale pushBack _x;
+                };
+            };
+        } forEach (_sorties select 1);
+        { [_logic, "deny", [_x, "waited longer than the sortie would have taken", _now]] call MAINCLASS } forEach _stale;
+        _result = _stale;
+    };
+
+    // Every clock this piece keeps, moved by the same amount.
+    //
+    // Needed because the module can be paused. Mission time goes on running
+    // while it is, so on the first tick after un-pausing every deadline this
+    // piece holds would be long past and every sortie would expire at once.
+    case "shiftClocks": {
+        private _delta = _args;
+        if !(_delta isEqualType 0) exitWith { _result = 0 };
+        private _moved = 0;
+        private _sorties = [_logic, "sorties", []] call ALIVE_fnc_hashGet;
+        {
+            private _s = [_sorties, _x, []] call ALIVE_fnc_hashGet;
+            if (count _s > 0) then {
+                [_s, "receivedAt", ([_s, "receivedAt", 0] call ALIVE_fnc_hashGet) + _delta] call ALIVE_fnc_hashSet;
+                _moved = _moved + 1;
+            };
+        } forEach (_sorties select 1);
+        private _requests = [_logic, "requests", []] call ALIVE_fnc_hashGet;
+        {
+            private _r = [_requests, _x, []] call ALIVE_fnc_hashGet;
+            if (count _r > 0) then {
+                [_r, "receivedAt", ([_r, "receivedAt", 0] call ALIVE_fnc_hashGet) + _delta] call ALIVE_fnc_hashSet;
+            };
+        } forEach (_requests select 1);
+        _result = _moved;
+    };
+
     // Settings arrive as pairs rather than as a fixed argument list, so the
     // Kernel can push whatever the module's attributes gave it without this
     // piece having to know which attributes exist.

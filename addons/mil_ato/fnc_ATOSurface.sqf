@@ -572,6 +572,28 @@ switch(_operation) do {
         _result = true;
     };
 
+    // Every runway booking, moved by the same amount.
+    //
+    // A lock expires by comparing its own time against the mission clock, and
+    // that clock keeps running while the module is paused. Without this, the
+    // first tick after un-pausing finds every lock long expired and hands the
+    // runway to whoever asks next, while the aircraft that actually holds it is
+    // still sitting on it.
+    case "shiftLocks": {
+        private _delta = _args;
+        if !(_delta isEqualType 0) exitWith { _result = 0 };
+        private _locks = [_logic,"locks"] call ALIVE_fnc_hashGet;
+        private _moved = 0;
+        {
+            private _lock = [_locks, _x, []] call ALIVE_fnc_hashGet;
+            if (count _lock > 1) then {
+                [_locks, _x, [_lock select 0, (_lock select 1) + _delta]] call ALIVE_fnc_hashSet;
+                _moved = _moved + 1;
+            };
+        } forEach (_locks select 1);
+        _result = _moved;
+    };
+
     case "holder": {
         private _locks = [_logic,"locks"] call ALIVE_fnc_hashGet;
         private _held = [_locks,_args,[]] call ALIVE_fnc_hashGet;

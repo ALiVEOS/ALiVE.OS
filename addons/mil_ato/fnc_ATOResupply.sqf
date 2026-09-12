@@ -496,6 +496,27 @@ switch(_operation) do {
         };
     };
 
+    // Every delivery clock, moved by the same amount, for the same reason the
+    // other pieces have one: mission time runs on while the module is paused,
+    // and without this every outstanding delivery is declared never-arriving on
+    // the first tick after un-pausing.
+    case "shiftClocks": {
+        private _delta = _args;
+        if !(_delta isEqualType 0) exitWith { _result = 0 };
+        private _pending = [_logic, "pending", []] call ALIVE_fnc_hashGet;
+        private _moved = 0;
+        {
+            private _entry = [_pending, _x, []] call ALIVE_fnc_hashGet;
+            if (count _entry > 1) then {
+                private _next = +_entry;
+                _next set [1, (_entry select 1) + _delta];
+                [_pending, _x, _next] call ALIVE_fnc_hashSet;
+                _moved = _moved + 1;
+            };
+        } forEach (_pending select 1);
+        _result = _moved;
+    };
+
     case "status": {
         private _pendingNow = [_logic, "pending", []] call ALIVE_fnc_hashGet;
         _result = [
