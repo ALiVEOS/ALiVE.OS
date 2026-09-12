@@ -164,52 +164,93 @@ switch(_type) do {
                         [_vehicleProfile,"position",_spawnPosition] call ALIVE_fnc_profileVehicle;
                         [_vehicleProfile,"mergePositions"] call ALIVE_fnc_profileVehicle;
 
-                        //["LEAD POS: %1",_spawnPosition] call ALIVE_fnc_dump;
-                        //[_spawnPosition,"LEAD",_profileID] call _createMarker;
+                        // #1024 - every vehicle BEHIND the lead one was put 20m out on a
+                        // single random bearing with no check of any kind, while the lead
+                        // got a validated position and aircraft got findFilteredSafePos.
+                        // In a river channel narrower than 40m most bearings are the bank,
+                        // which is how one boat of a pair floated and the other did not.
+                        //
+                        // Steer rather than guess, for boats only. The lead vehicle's
+                        // stored direction is its last simulated travel bearing, and a
+                        // virtual boat travels the water route, so on a river that bearing
+                        // runs along the channel. Try astern of the lead first, then a fan
+                        // of bearings around it, then one ring further out, and take the
+                        // first sample that is wet, no shallower than the water the lead
+                        // boat is already floating in, and not on top of a boat placed
+                        // earlier in this pass. The common case is one surfaceIsWater and
+                        // one getTerrainHeightASL: no object queries, no findSafePos, so
+                        // it stays inside the budget the spawn path was optimised to.
+                        //
+                        // Ground vehicles keep the plain offset deliberately. profileVehicle
+                        // runs the unified spawn-position validator on them at spawn time,
+                        // which is why they never showed this.
+                        private _leadDirection = _vehicleProfile select 2 select 12;
+                        private _minDepth = 0.5;
+                        private _placed = [_spawnPosition];
+                        if (_inShip) then {
+                            // The lead boat is floating by definition, so its own water is
+                            // the yardstick. A fixed 2m would reject every position in a
+                            // shallow delta and fall through to the unchecked offset.
+                            _minDepth = ((-(getTerrainHeightASL _spawnPosition)) min 2) max 0.5;
+                        };
+                        private _fnc_shipFloats = {
+                            params ["_p"];
+                            (surfaceIsWater _p)
+                                && {(getTerrainHeightASL _p) <= -_minDepth}
+                                && {_placed findIf { (_p distance2D _x) < 15 } < 0}
+                        };
 
                         _vehicles deleteAt 0;
 
                         {
-
                             private _vehicleProfile = _x;
+                            private _index = _forEachIndex + 1;
+                            // Named, rather than assigning to the _position declared at the
+                            // top of this function. That assignment clobbered the profile's
+                            // own position for the rest of the call.
+                            private _followerPosition = [];
+                            private _followerDirection = _direction;
 
                             if (_inAir) then {
-                                _position = _spawnPosition getPos [(100 * ((_forEachIndex)+1)), _direction];
+                                _followerPosition = _spawnPosition getPos [(100 * _index), _direction];
                                 //group of vehicles being paradropped?
-                                _position = [_position,0,50,20,0,0.5,0,[],[_position], _vehicleProfile select 2 select 6] call ALIVE_fnc_findFilteredSafePos;
+                                _followerPosition = [_followerPosition,0,50,20,0,0.5,0,[],[_followerPosition], _vehicleProfile select 2 select 6] call ALIVE_fnc_findFilteredSafePos;
                             } else {
-                                //_position = _spawnPosition getPos [(20 * ((_forEachIndex)+1)), _direction];
-                                _position = _spawnPosition getPos [(20 * ((_forEachIndex)+1)), _direction];
-                                //_position = [_intendedPos,0,100,10,0,0.5,0,[],[_intendedPos]] call ALIVE_fnc_findFilteredSafePos;
+                                if ((tolower (_vehicleProfile select 2 select 6)) == "ship") then {
+                                    private _astern = 20 * _index;
+                                    private _tried = 0;
+                                    {
+                                        private _distance = _x;
+                                        {
+                                            _tried = _tried + 1;
+                                            private _sample = _spawnPosition getPos [_distance, _leadDirection + _x];
+                                            if ([_sample] call _fnc_shipFloats) exitWith { _followerPosition = _sample };
+                                        } forEach [180, 0, 150, 210, 30, 330, 120, 240, 60, 300, 90, 270];
+                                        if !(_followerPosition isEqualTo []) exitWith {};
+                                    } forEach [_astern, _astern + 30];
 
+                                    // Nothing floats on either ring. Anchor it astern anyway
+                                    // and let the shallow-water search in profileVehicle take
+                                    // over from there, which is a better starting point than a
+                                    // random bearing was.
+                                    if (_followerPosition isEqualTo []) then {
+                                        _followerPosition = _spawnPosition getPos [_astern, _leadDirection + 180];
+                                    };
+                                    _placed pushBack _followerPosition;
+                                    _followerDirection = _leadDirection;
+
+                                    if (_profileData select 0) then {
+                                        ["ALIVE_fnc_profileGetGoodSpawnPosition - boat follower for %1: lead %2 bearing %3 minDepth %4 -> %5 after %6 samples (wet %7)",
+                                            _profileData select 4, _spawnPosition, _leadDirection, _minDepth,
+                                            _followerPosition, _tried, surfaceIsWater _followerPosition] call ALIVE_fnc_dump;
+                                    };
+                                } else {
+                                    _followerPosition = _spawnPosition getPos [(20 * _index), _direction];
+                                };
                             };
 
-                            //["GROUP POS: %1",_position] call ALIVE_fnc_dump;
-                            //[_position,"GROUP",_profileID] call _createMarker;
-
-                            /*
-
-                            _isFlat = _position isflatempty [
-                                3,                                //--- Minimal distance from another object
-                                0,                                //--- If 0, just check position. If >0, select new one
-                                0.7,                            //--- Max gradient
-                                5,                                //--- Gradient area
-                                0,                                //--- 0 for restricted water, 2 for required water,
-                                false                            //--- True if some water can be in 25m radius
-                            ];
-
-                            if !(count _isFlat > 0) then {_position = [_position, 0, 50, 5, 0, 5 , 0, [], [_position]] call BIS_fnc_findSafePos};
-
-							*/
-
-                            
-                            //_position = [_position,0,20,10,0,0.5,0,[],[_position]] call ALIVE_fnc_findFilteredSafePos;
-
-                            //["GROUP POS FINAL: %1",_position] call ALIVE_fnc_dump;
-                            //[_position,"GROUP FINAL",_profileID] call _createMarker;
-
-                            [_vehicleProfile,"direction",_direction] call ALIVE_fnc_profileVehicle;
-                            [_vehicleProfile,"position",_position] call ALIVE_fnc_profileVehicle;
+                            [_vehicleProfile,"direction",_followerDirection] call ALIVE_fnc_profileVehicle;
+                            [_vehicleProfile,"position",_followerPosition] call ALIVE_fnc_profileVehicle;
                             [_vehicleProfile,"mergePositions"] call ALIVE_fnc_profileVehicle;
 
                         } forEach _vehicles;
