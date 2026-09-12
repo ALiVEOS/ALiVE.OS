@@ -79,7 +79,16 @@ Runs spawned to match the other tests, though nothing here needs a tick.
     [_rows, "t4", ["ON_STATION", "CAP"] call _fnc_row] call ALIVE_fnc_hashSet;
     [_rows, "t5", ["PLAYER_FLOWN"] call _fnc_row] call ALIVE_fnc_hashSet;
 
+    // Nearer to the target than anything else, parked, out of its turnaround,
+    // and nearly dry. It exists so the fuel minimum is tested against an
+    // aircraft that would otherwise win, rather than against a threshold no
+    // aircraft could meet, which is what the first version of this test did and
+    // why it proved nothing.
+    [_records, "t6", ["B_Heli_Attack_01_F", [4995, 4995, 0]] call _fnc_record] call ALIVE_fnc_hashSet;
+    [_rows, "t6", ["PARKED"] call _fnc_row] call ALIVE_fnc_hashSet;
+
     { [_obs, _x, [] call _fnc_obs] call ALIVE_fnc_hashSet } forEach ["t1","t2","t3","t4","t5"];
+    [_obs, "t6", [0.1] call _fnc_obs] call ALIVE_fnc_hashSet;
 
     private _fnc_request = {
         params ["_type", ["_zone", "AS1"], ["_minFuel", 0.5]];
@@ -128,9 +137,15 @@ Runs spawned to match the other tests, though nothing here needs a tick.
     private _sead = [_t, "plan", [["SEAD"] call _fnc_request, _records, _rows, _obs, []]] call ALIVE_fnc_ATOTask;
     ["a suppression sortie goes as a pair", count (_sead param [0, []]) == 2] call _fnc_check;
 
-    // Nothing with enough fuel.
-    private _thirsty = [_t, "plan", [["CAS", "AS1", 0.99] call _fnc_request, _records, _rows, _obs, []]] call ALIVE_fnc_ATOTask;
-    ["a fuel minimum nothing meets is refused, with a reason",
+    // The nearly dry aircraft is nearer than anything else, so the only reason
+    // it can lose is the fuel minimum.
+    ["an aircraft too low on fuel is passed over even though it is the nearest",
+        !("t6" in _tails)] call _fnc_check;
+
+    // And with a minimum no aircraft on the field can meet, the whole fleet is
+    // filtered and the request is refused rather than answered with nothing.
+    private _thirsty = [_t, "plan", [["CAS", "AS1", 1.01] call _fnc_request, _records, _rows, _obs, []]] call ALIVE_fnc_ATOTask;
+    ["a minimum no aircraft can meet is refused, with a reason",
         (_thirsty param [0, ""]) isEqualTo "denied" && {!((_thirsty param [1, ""]) isEqualTo "")}] call _fnc_check;
 
     // Exclusions are how a retry reaches a different aircraft.

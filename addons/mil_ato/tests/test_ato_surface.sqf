@@ -37,7 +37,10 @@ rather than guess, which is the property that lets the two land separately.
     diag_log "=== ATO Surface test (scene a: land airfield) ===";
 
     private _surface = [nil, "create"] call ALIVE_fnc_ATOSurface;
-    private _anchor = getPosATL player;
+    // Anchored on the player when there is one and on the Agia Marina strip
+    // when there is not, so this runs on the headless rig as well as in front
+    // of somebody. A dedicated server has no player at all.
+    private _anchor = if (isNull player) then {[1839.76, 5750.47, 0]} else {getPosATL player};
     private _class = "B_Plane_CAS_01_F";
     private _spawned = [];
     private _pads = [];

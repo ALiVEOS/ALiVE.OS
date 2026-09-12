@@ -83,6 +83,10 @@ observation sequences, because those are what the table exists to prevent.
     private _badState = 0;
     private _badDeadline = 0;
     private _badOrders = 0;
+    // A count alone says only that something is wrong. This records WHICH
+    // combination broke the promise, which is the difference between a red
+    // light and a diagnosis.
+    private _whyOrders = [];
     private _badLock = 0;
     private _mutated = 0;
     private _combos = 0;
@@ -116,9 +120,56 @@ observation sequences, because those are what the table exists to prevent.
                     if (!(_next in _rest) && {_dl <= 0}) then { _badDeadline = _badDeadline + 1 };
                     if ((_next in _rest) && {_dl != 0}) then { _badDeadline = _badDeadline + 1 };
 
-                    // Promise: an aircraft that is not resting always has orders.
-                    if (!(_next in ["LOST","PLAYER_FLOWN","PARKED"]) && {count _orders == 0}) then {
+                    // Promise: an aircraft that is not resting always has
+                    // orders, EXCEPT while it is landing.
+                    //
+                    // Landing cannot be expressed as an order, because the
+                    // engine has no landing waypoint type: setWaypointType
+                    // "LAND" is accepted and silently does nothing, leaving a
+                    // waypoint with no type, which is no order at all. So
+                    // LANDING issues none and carries the landing out as an
+                    // effect. The promise below holds it to that, and this one
+                    // stops asking it for the impossible.
+                    if (!(_next in ["LOST","PLAYER_FLOWN","PARKED","LANDING"]) && {count _orders == 0}) then {
                         _badOrders = _badOrders + 1;
+                        if (count _whyOrders < 6) then {
+                            _whyOrders pushBack format ["%1 +%2 (%3%4) -> %5, no orders, effects %6",
+                                _state, _cmd, _profileName,
+                                if (_expired) then {", expired"} else {""},
+                                _next, _effects];
+                        };
+                    };
+                    // Promise: landing issues no orders, and while the aircraft
+                    // is still up it always asks for the approach. A run was
+                    // lost to an aircraft sitting in this state with neither,
+                    // hovering for five minutes until a deadline put it down.
+                    //
+                    // Only when it was ALREADY landing: the step that merely
+                    // arrives in the state emits nothing on entry, by design.
+                    if ((_state isEqualTo "LANDING") && {_next isEqualTo "LANDING"}) then {
+                        if (count _orders > 0) then {
+                            _badOrders = _badOrders + 1;
+                            if (count _whyOrders < 6) then {
+                                _whyOrders pushBack format ["LANDING +%1 (%2) issued orders %3",
+                                    _cmd, _profileName, _orders];
+                            };
+                        };
+                        // Not for a hull this machine does not own: every
+                        // effect but taking ownership is stripped for those,
+                        // deliberately, because nothing local may be done to
+                        // one. Asking for the approach there would be asking
+                        // the table to break its own rule.
+                        if (!([_obs,"landed",false] call ALIVE_fnc_hashGet)
+                            && {!([_obs,"remote",false] call ALIVE_fnc_hashGet)}
+                            && {!("landAtPad" in _effects)}) then {
+                            _badOrders = _badOrders + 1;
+                            if (count _whyOrders < 6) then {
+                                _whyOrders pushBack format ["LANDING +%1 (%2%3) up and never asked for the approach, effects %4",
+                                    _cmd, _profileName,
+                                    if (_expired) then {", expired"} else {""},
+                                    _effects];
+                            };
+                        };
                     };
                     // Promise: a player flying it is given nothing.
                     if ((_next isEqualTo "PLAYER_FLOWN") && {count _orders > 0}) then {
@@ -152,6 +203,7 @@ observation sequences, because those are what the table exists to prevent.
     diag_log format ["  info  enumerated %1 combinations", _combos];
     ["every input lands on a state in the table", _badState == 0] call _fnc_check;
     ["only resting states have no deadline", _badDeadline == 0] call _fnc_check;
+    { diag_log format ["  info  orders promise broken by: %1", _x] } forEach _whyOrders;
     ["every flying state carries orders", _badOrders == 0] call _fnc_check;
     ["the runway is only taken leaving or landing, and a player is never teleported", _badLock == 0] call _fnc_check;
     ["step never edits the row it was given", _mutated == 0] call _fnc_check;

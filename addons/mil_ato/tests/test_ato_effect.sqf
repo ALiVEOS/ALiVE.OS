@@ -34,12 +34,26 @@ nothing changed and it said so.
         };
     };
 
+    // Some checks here need a real player to sit in the aircraft, and a
+    // dedicated server has none. Those are skipped rather than failed, and the
+    // skip is printed and counted so the run says what it did not cover.
+    private _skipped = [];
+    private _fnc_skip = {
+        _skipped pushBack _this;
+        diag_log format ["  skip  %1  (needs a player at a keyboard)", _this];
+    };
+
     diag_log "=== ATO Effector test ===";
 
     private _e = [nil, "create"] call ALIVE_fnc_ATOEffect;
     private _s = [nil, "create"] call ALIVE_fnc_ATOSurface;
 
-    private _spot = (getPosATL player) getPos [45, getDir player];
+    // Anchored on the player when there is one and on the Agia Marina strip
+    // when there is not, so this runs on the headless rig as well as in front
+    // of somebody. A dedicated server has no player at all.
+    private _from = if (isNull player) then {[1839.76, 5750.47, 0]} else {getPosATL player};
+    private _bearing = if (isNull player) then {0} else {getDir player};
+    private _spot = _from getPos [45, _bearing];
     private _home = [[_spot select 0, _spot select 1, 0], 0, "terrain"];
     private _veh = createVehicle ["B_Heli_Transport_01_F", _spot, [], 0, "CAN_COLLIDE"];
     _veh setPosATL [_spot select 0, _spot select 1, 0];
@@ -107,16 +121,22 @@ nothing changed and it said so.
     // --- refusals with a player aboard ---------------------------------------
     // Nothing may move the aircraft, and nothing may take its crew, while
     // somebody is sitting in it.
-    player moveInCargo _veh;
-    sleep 2;
-    {
-        private _eff = _x;
-        (([_e, "apply", [_eff, _veh, _home, [_s]]] call ALIVE_fnc_ATOEffect)) params ["_stx", "_mx", "_dx"];
-        [format ["%1 is refused with a player aboard", _eff],
-            _stx isEqualTo "refused" && {_dx isEqualTo "player aboard"}] call _fnc_check;
-    } forEach ["placeOnSlot", "forceLanded", "airborneStart", "forceLaunch", "standDownCrew"];
-    moveOut player;
-    sleep 1;
+    if (isNull player) then {
+        {
+            format ["%1 is refused with a player aboard", _x] call _fnc_skip;
+        } forEach ["placeOnSlot", "forceLanded", "airborneStart", "forceLaunch", "standDownCrew"];
+    } else {
+        player moveInCargo _veh;
+        sleep 2;
+        {
+            private _eff = _x;
+            (([_e, "apply", [_eff, _veh, _home, [_s]]] call ALIVE_fnc_ATOEffect)) params ["_stx", "_mx", "_dx"];
+            [format ["%1 is refused with a player aboard", _eff],
+                _stx isEqualTo "refused" && {_dx isEqualTo "player aboard"}] call _fnc_check;
+        } forEach ["placeOnSlot", "forceLanded", "airborneStart", "forceLaunch", "standDownCrew"];
+        moveOut player;
+        sleep 1;
+    };
 
     // --- putting it on its slot ----------------------------------------------
     _veh setPosATL [(_spot select 0) + 60, (_spot select 1) + 60, 0];
@@ -140,9 +160,13 @@ nothing changed and it said so.
     // --- standing the crew down ------------------------------------------------
     // A player is within 300 m (the tester), so they should be dismissed rather
     // than deleted in front of them.
-    (["standDownCrew"] call _fnc_apply) params ["_st18", "_m18", "_d18"];
-    ["the crew is dismissed rather than vanished while watched",
-        _st18 isEqualTo "ok" && {_d18 isEqualTo "dismissed"}] call _fnc_check;
+    if (isNull player) then {
+        "the crew is dismissed rather than vanished while watched" call _fnc_skip;
+    } else {
+        (["standDownCrew"] call _fnc_apply) params ["_st18", "_m18", "_d18"];
+        ["the crew is dismissed rather than vanished while watched",
+            _st18 isEqualTo "ok" && {_d18 isEqualTo "dismissed"}] call _fnc_check;
+    };
 
     // --- re-crewing an aircraft whose crew was killed ---------------------------
     // Bodies stay in their seats, and crew creation only fills empty ones, so
@@ -180,8 +204,19 @@ nothing changed and it said so.
     deleteVehicle _veh;
 
     diag_log format ["  info  %1 assertions", _checked];
+    // The skips are named in the verdict, not just counted. A run that says
+    // ALL PASS while quietly leaving five checks out is worse than one that
+    // fails, because nobody goes looking.
+    if (count _skipped > 0) then {
+        diag_log format ["  info  %1 check(s) skipped for want of a player: %2",
+            count _skipped, _skipped];
+    };
     if (count _fails == 0) then {
-        diag_log "=== ATO Effector test: ALL PASS ===";
+        if (count _skipped == 0) then {
+            diag_log "=== ATO Effector test: ALL PASS ===";
+        } else {
+            diag_log format ["=== ATO Effector test: ALL PASS, %1 SKIPPED ===", count _skipped];
+        };
     } else {
         diag_log format ["=== ATO Effector test: %1 FAILURE(S): %2 ===", count _fails, _fails];
     };

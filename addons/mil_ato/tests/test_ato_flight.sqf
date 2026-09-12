@@ -47,7 +47,14 @@ open, which is also a fair statement of what the kernel will have to own.
     private _s = [nil, "create"] call ALIVE_fnc_ATOSurface;
 
     // --- the aircraft and its home -------------------------------------------
-    private _anchor = getPosATL player;
+    // Anchored on the player when there is one, and on the Agia Marina strip
+    // when there is not. A dedicated server has no player, and this test is
+    // now run headless on one: the server recompiles every function as the
+    // mission loads, so a function edit is picked up by relaunching the
+    // server rather than by asking somebody to restart a mission. The fixed
+    // position is where the test mission puts the player, so a headless run
+    // and a run in front of somebody are measuring the same airfield.
+    private _anchor = if (isNull player) then {[1839.76, 5750.47, 0]} else {getPosATL player};
     private _class = "B_Heli_Attack_01_F";
     private _home = [_s, "cascade", ["terrain", _class, _anchor, []]] call ALIVE_fnc_ATOSurface;
     ["a home was found for the aircraft", count _home == 3] call _fnc_check;
@@ -94,9 +101,6 @@ open, which is also a fair statement of what the kernel will have to own.
                 // with a running engine and no waypoints does not sit still, which
                 // is why one lifted off a minute after it had landed.
                 case "HOLD":          { _out pushBack ["HOLD", getPosATL _veh] };
-                // A landing order, not a move to the same place: the engine has
-                // a waypoint type for coming down, and a MOVE just flies there.
-                case "LAND":          { _out pushBack ["LAND", _home select 0] };
                 default               { };
             };
         } forEach _orders;
@@ -106,6 +110,8 @@ open, which is also a fair statement of what the kernel will have to own.
     // --- one tick --------------------------------------------------------------
     private _seen = [];
     private _refusals = [];
+    private _applied = [];
+    private _ticks = 0;
     private _fnc_tick = {
         params [["_cmd", ""]];
 
@@ -118,12 +124,20 @@ open, which is also a fair statement of what the kernel will have to own.
         _row = _newRow;
 
         private _state = [_row, "state", ""] call ALIVE_fnc_hashGet;
-        if (count _seen == 0 || {!((_seen select (count _seen - 1)) isEqualTo _state)}) then {
+        private _changedState = count _seen == 0 || {!((_seen select (count _seen - 1)) isEqualTo _state)};
+        if (_changedState) then {
             _seen pushBack _state;
             diag_log format ["  info  %1  (alt %2 m, fuel %3)", _state,
                 round ([_obs,"altAGL",0] call ALIVE_fnc_hashGet),
                 ([_obs,"fuel",0] call ALIVE_fnc_hashGet) toFixed 2];
         };
+
+        // Every effect the table asked for, kept for the assertions. A run has
+        // already passed every check while the aircraft was put down by the
+        // deadline safety net rather than landing, and nothing in the results
+        // could tell the difference.
+        { _applied pushBack _x } forEach _effects;
+        _ticks = _ticks + 1;
 
         // Effects the table asked for. The extras each one needs are supplied
         // here; the table names the effect and never the arguments.
@@ -133,6 +147,10 @@ open, which is also a fair statement of what the kernel will have to own.
                 case "forceLanded":  { [_s] };
                 // The only thing out there to shoot at.
                 case "revealTargets":{ [[_truck]] };
+                // Landing needs somewhere to land ON, and giving the pad back
+                // needs to know whose it was.
+                case "landAtPad":       { [_s, "BLU_F_0"] };
+                case "releaseApproach": { [_s, "BLU_F_0"] };
                 case "lock":         { [] };
                 case "unlock":       { [] };
                 default              { [] };
@@ -153,15 +171,43 @@ open, which is also a fair statement of what the kernel will have to own.
                     if ((_r select 0) isEqualTo "refused") then {
                         _refusals pushBack [_x, _r select 2];
                     };
+                    // The approach is the only thing here that takes minutes and
+                    // reports its progress in its own answer, and reading that
+                    // answer has needed a probe pasted into a live window three
+                    // times tonight. Every tenth second is enough to watch it
+                    // without burying the log.
+                    if (_x isEqualTo "landAtPad" && {_ticks mod 5 == 0}) then {
+                        diag_log format ["  info  approach: %1 | alt %2 spd %3 | cmd %4",
+                            _r, round ((getPosATL _veh) select 2), round (speed _veh),
+                            currentCommand (driver _veh)];
+                    };
                 };
             };
         } forEach _effects;
 
         // Orders, resolved and issued.
+        //
+        // The result is logged on a state change, not just when refused. A run
+        // was lost to an aircraft that hovered for five minutes with no orders
+        // while the only evidence sat in a variable printed after it was over,
+        // and the waypoint list is the thing that says whether an order chain
+        // actually reached the group or only appeared to.
         if (count _orders > 0) then {
             private _chain = [_orders] call _fnc_resolve;
             if (count _chain > 0) then {
-                [_e, "apply", ["issueOrders", _veh, _home, [_chain]]] call ALIVE_fnc_ATOEffect;
+                private _r = [_e, "apply", ["issueOrders", _veh, _home, [_chain]]] call ALIVE_fnc_ATOEffect;
+                if (_changedState) then {
+                    private _grp = group (driver _veh);
+                    diag_log format ["  info  orders for %1: %2 -> %3 | group now has %4 waypoint(s) %5, on %6",
+                        _state, _orders, _r,
+                        count (waypoints _grp),
+                        (waypoints _grp) apply {waypointType _x},
+                        currentWaypoint _grp];
+                };
+            } else {
+                if (_changedState) then {
+                    diag_log format ["  info  %1 asked for %2 and the resolver produced nothing", _state, _orders];
+                };
             };
         };
         _state
@@ -205,6 +251,21 @@ open, which is also a fair statement of what the kernel will have to own.
     ["it was never lost", !("LOST" in _seen)] call _fnc_check;
     ["it is alive at the end", alive _veh] call _fnc_check;
     ["it is back at its stand", [_s, "atHome", [_veh, _home]] call ALIVE_fnc_ATOSurface] call _fnc_check;
+    // The one that caught a false pass. Every other check here is satisfied by
+    // an aircraft the deadline put on the ground: it ends parked, at its home,
+    // alive, with the runway released. Only this says it FLEW the approach.
+    ["it landed rather than being put down by the deadline",
+        !("forceLanded" in _applied)] call _fnc_check;
+    // No assertion on HOW MANY times it was aimed. A landing order is advisory
+    // and has to be re-issued while the aircraft is still up, so counting the
+    // aims measures the length of the approach rather than its success. That was
+    // my mistake, not the module's: the first version of this check failed a run
+    // for re-aiming, which is the correct behaviour.
+    diag_log format ["  info  aimed at its pad %1 time(s) over the approach",
+        {_x isEqualTo "landAtPad"} count _applied];
+    ["and the approach was given back afterwards",
+        "releaseApproach" in _applied] call _fnc_check;
+
     ["nothing was refused unexpectedly", count _refusals == 0] call _fnc_check;
     if (count _refusals > 0) then {
         diag_log format ["  info  refusals: %1", _refusals];
