@@ -17,9 +17,18 @@ where an airframe lives. Everything else, the airport it belongs to, the pad
 object, the taxi point, is worked out from it on read rather than stored beside
 it, because six stored copies of one home is what let them drift apart.
 
-This pass carries CLASSIFY and the TERRAIN half. Deck operations refuse and say
-so; nothing above this is wired to a carrier until the deck half passes its own
-scene test.
+A DECK home carries three more entries: [position, direction, "deck", carrier,
+offset, relativeDirection]. The position and direction are the world values as
+they stood when the home was chosen, so anything reading the first three
+entries of any home still gets an answer. The last three are what makes a deck
+home survive: the carrier it belongs to, the offset within that carrier in the
+ship's own model space, and the heading relative to the ship's. The world
+position is derived from those on read, because a stored world position on a
+ship is a position that is right until the ship is somewhere else.
+
+Deck positions are ASL. Terrain positions are above terrain level with the
+height zeroed. The two cannot be mixed: above water, terrain level is the SEA
+BED, so a deck height read as a terrain height is about forty metres wrong.
 
 Parameters:
 Nil or Array - If Nil, return a new instance. If a hash, reference an existing one.
@@ -54,7 +63,49 @@ Jman
 // actually runs into. The object sweep does not see terrain-placed clutter.
 #define CLUTTER ["TREE","SMALL TREE","BUSH","FOREST","FOREST BORDER","ROCK","ROCKS","WALL","FENCE","BUILDING","HOUSE","RUIN","POWER LINES"]
 
+// Deck geometry. Measured on a USS Freedom placed by the editor, 2.5 km off
+// Stratis: the flight deck is 23.6 m above the waterline, the hull runs from
+// model y -190 to +190 and x -45 to +45, the island stands at model [-30, 105]
+// and rises 25 m above the deck, and the landing and taxi lines live on the
+// DynamicAirport_01_F the carrier carries at model [0, -1, 24] rather than on
+// the hull's own config, which has no ils entries at all.
+//
+// Nothing here is per-class. The deck is found by tracing, its level is read
+// off the ship, and the lines to keep clear of come from the airport object's
+// config, so a carrier from a mod is handled the same way as this one.
+#define DECK_BAND 4           // above or below the deck's own level and still deck
+// Half widths, so the strip kept clear is forty metres across and a taxi lane
+// twenty. Both are wider than the real markings, which is the point: an
+// aircraft parked a little outside the paint is still in the way of a hook and
+// wire recovery. Sixty and twenty-eight were tried first and left room for
+// only six airframes on a ship that should hold eight comfortably, because
+// between them they took most of a ninety metre deck.
+#define DECK_LAND_CLEAR 20    // half width of the landing strip kept clear
+#define DECK_TAXI_CLEAR 10    // half width of the taxi lanes kept clear
+#define DECK_STEP_X 5
+#define DECK_STEP_Y 10
+#define DECK_REACH_X 45
+#define DECK_REACH_Y 190
+
 private ["_result"];
+
+// Distance from a point to a SEGMENT, in two dimensions. Wanted in three
+// places, and the reason it is a segment rather than the nearest listed point
+// is that every polyline this file reads is sparse: two consecutive Stratis
+// taxi points are 905 m apart, so the middle of that stretch is 450 m from
+// either end and a point test would call the runway open country.
+private _fnc_segDist = {
+    params ["_q", "_a", "_b"];
+    private _ax = _a select 0;
+    private _ay = _a select 1;
+    private _dx = (_b select 0) - _ax;
+    private _dy = (_b select 1) - _ay;
+    private _len2 = (_dx * _dx) + (_dy * _dy);
+    if (_len2 <= 0) exitWith { _q distance2D [_ax, _ay, 0] };
+    private _t = ((((_q select 0) - _ax) * _dx) + (((_q select 1) - _ay) * _dy)) / _len2;
+    _t = (_t max 0) min 1;
+    _q distance2D [_ax + (_t * _dx), _ay + (_t * _dy), 0]
+};
 
 TRACE_1("ATO Surface - input",_this);
 
@@ -73,6 +124,9 @@ switch(_operation) do {
             ["class", MAINCLASS],
             ["locks", [] call ALIVE_fnc_hashCreate],
             ["pads", [] call ALIVE_fnc_hashCreate],
+            // Per carrier, worked out once. A deck does not change shape, and
+            // the sweep that finds its parking costs hundreds of traces.
+            ["decks", [] call ALIVE_fnc_hashCreate],
             ["reservations", []]
         ]] call ALIVE_fnc_hashCreate;
     };
@@ -99,7 +153,14 @@ switch(_operation) do {
         // anywhere sets that variable, so the list was always empty and the
         // test fell back to the hull alone. A trace that hit the deck rather
         // than the hull answered "terrain", which is every trace on a carrier.
-        private _partClasses = getArray (configFile >> "CfgVehicles" >> typeOf _ship >> "multiStructureParts");
+        // Each config entry is a PAIR, [class, memory point on the hull], not a
+        // bare class name, so the list has to be reduced to its class names
+        // before a class can be looked for in it. Measured on a USS Freedom:
+        // twenty pairs, entry zero
+        // ["Land_Carrier_01_hull_01_F", "pos_hull_1"].
+        private _partClasses = (getArray (configFile >> "CfgVehicles" >> typeOf _ship >> "multiStructureParts")) apply {
+            if (_x isEqualType []) then { _x param [0, ""] } else { _x }
+        };
         // Kept as well, in case something stamps the objects one day.
         private _partObjects = _ship getVariable ["multiStructureParts", []];
         if !(_partObjects isEqualType []) then { _partObjects = [] };
@@ -143,6 +204,299 @@ switch(_operation) do {
     // clashing with anything already reserved this pass. An empty return is a
     // refusal and is load bearing: the caller must handle "nowhere" rather than
     // be handed a position that was never checked.
+    // ---- the deck ---------------------------------------------------------
+    // A carrier is referred to by a HANDLE rather than by the object, because
+    // an object reference does not survive a save and a net id does not
+    // survive a restart. The handle carries all three: the net id for the
+    // exact answer now, and the class and position for the answer after a
+    // reload. A StaticShip does not move, so where it was recorded is where it
+    // still is.
+    // The ship a point belongs to. On its own so that nothing outside this
+    // file has to know the class or the radius a carrier is found by.
+    case "shipAt": {
+        _result = (nearestObjects [_args, ["StaticShip"], SHIP_SEARCH]) param [0, objNull];
+    };
+
+    case "carrierHandle": {
+        private _ship = _args;
+        _result = [];
+        if (!isNull _ship) then {
+            _result = [typeOf _ship, getPosASL _ship, netId _ship];
+        };
+    };
+
+    case "carrierFor": {
+        private _h = _args;
+        _result = objNull;
+        if (_h isEqualType objNull) then {
+            _result = _h;
+        } else {
+            if (_h isEqualType []) then {
+                _h params [["_cls","",[""]], ["_pos",[0,0,0],[[]]], ["_net","",[""]]];
+                private _o = objNull;
+                if !(_net isEqualTo "") then {
+                    private _try = objectFromNetId _net;
+                    if (!isNull _try && {_try isKindOf "StaticShip"}) then { _o = _try };
+                };
+                if (isNull _o && {count _pos > 1}) then {
+                    _o = (nearestObjects [_pos, [_cls], SHIP_SEARCH]) param [0, objNull];
+                    if (isNull _o) then {
+                        _o = (nearestObjects [_pos, ["StaticShip"], SHIP_SEARCH]) param [0, objNull];
+                    };
+                };
+                _result = _o;
+            };
+        };
+    };
+
+    // The first solid thing under a point, looking down from above anything a
+    // carrier carries, and what that thing is. Objects in the ignore list are
+    // looked through, which is what lets a spot pass its own re-check while the
+    // airframe that lives on it is parked there.
+    case "deckTop": {
+        _args params [["_p",[0,0,0],[[]]], ["_ignore",[],[[]]]];
+        private _hits = lineIntersectsSurfaces [
+            [_p select 0, _p select 1, 200],
+            [_p select 0, _p select 1, -5],
+            objNull, objNull, true, 12, "GEOM", "NONE"
+        ];
+        private _z = -9999;
+        private _hit = objNull;
+        {
+            private _cand = _x select 2;
+            if (_z < -9000
+                && {!isNull _cand}
+                && {(_ignore findIf {_x isEqualTo _cand}) == -1}) then {
+                _z = (_x select 0) select 2;
+                _hit = _cand;
+            };
+        } forEach _hits;
+        _result = [_z, _hit];
+    };
+
+    // Everything about one carrier's deck, worked out once and kept.
+    //
+    // Returns [deckLevelASL, landFrom, landTo, taxiSegments, spots, partClasses]
+    // where the land and taxi geometry and the spots are all in the SHIP's own
+    // model space, so every later test happens in one frame.
+    //
+    // The spots are ordered by how far they are from the landing strip, the
+    // farthest first. That is where aircraft are actually parked on a carrier,
+    // and it means the order is the same on every run: the ring search on land
+    // places spots differently each time, which is what made an intermittent
+    // failure there impossible to read.
+    case "deckGeometry": {
+        private _ship = _args;
+        _result = [];
+        if (!isNull _ship) then {
+            private _decks = [_logic, "decks", []] call ALIVE_fnc_hashGet;
+            if !([_decks] call ALIVE_fnc_isHash) then {
+                _decks = [] call ALIVE_fnc_hashCreate;
+                [_logic, "decks", _decks] call ALIVE_fnc_hashSet;
+            };
+            private _key = netId _ship;
+            private _got = [_decks, _key, []] call ALIVE_fnc_hashGet;
+            if (_got isEqualType [] && {count _got > 4}) then {
+                _result = _got;
+            } else {
+                private _began = diag_tickTime;
+                // Each config entry is a PAIR, [class, memory point], so the
+                // list has to be reduced to class names before a class can be
+                // looked for in it.
+                private _partClasses = (getArray (configFile >> "CfgVehicles" >> typeOf _ship >> "multiStructureParts")) apply {
+                    if (_x isEqualType []) then { _x param [0, ""] } else { _x }
+                };
+
+                // Deck level, read off the ship. Five samples down the middle
+                // and the middle one taken, so an aircraft or a crate standing
+                // on one of them cannot move the answer.
+                private _zs = [];
+                {
+                    private _w = _ship modelToWorld [_x select 0, _x select 1, 0];
+                    private _t = ([_logic, "deckTop", [[_w select 0, _w select 1, 0], []]] call MAINCLASS) select 0;
+                    if (_t > -9000) then { _zs pushBack _t };
+                } forEach [[0,0],[0,-60],[0,60],[18,-20],[-18,20]];
+                _zs sort true;
+                private _deckZ = -9999;
+                if (count _zs > 0) then { _deckZ = _zs select (floor ((count _zs) / 2)) };
+
+                // The lines to keep clear of come from the airport object the
+                // carrier carries, because the hull's own config has no ils
+                // entries. Measured on a USS Freedom: ilsPosition [3, 125] and
+                // ilsDirection [-0.1392, 0.052336, 0.9903], which is the
+                // angled deck, eight degrees off the ship's axis, and two taxi
+                // polylines of four and six points.
+                private _airObj = (nearestObjects [getPosASL _ship, ["AirportBase"], SHIP_SEARCH]) param [0, objNull];
+                private _landA = [];
+                private _landB = [];
+                private _taxi = [];
+                if (!isNull _airObj) then {
+                    private _ac = configFile >> "CfgVehicles" >> typeOf _airObj;
+                    // The airport object has its own model space. Converted
+                    // into the ship's through the world, rather than assumed
+                    // to be the same frame: it sits a metre off the hull
+                    // centre and a mod's could sit anywhere.
+                    private _fnc_toShip = {
+                        params ["_mx", "_my"];
+                        private _w = _airObj modelToWorld [_mx, _my, 0];
+                        private _m = _ship worldToModel [_w select 0, _w select 1, _w select 2];
+                        [_m select 0, _m select 1, 0]
+                    };
+                    private _ils = getArray (_ac >> "ilsPosition");
+                    private _idir = getArray (_ac >> "ilsDirection");
+                    if (count _ils > 1 && {count _idir > 2}) then {
+                        // ilsDirection is [x, up, y]. Extended four hundred
+                        // metres either way from the threshold so the segment
+                        // covers the whole deck whichever end the threshold
+                        // sits at.
+                        private _dx = _idir select 0;
+                        private _dy = _idir select 2;
+                        _landA = [(_ils select 0) - (_dx * 400), (_ils select 1) - (_dy * 400)] call _fnc_toShip;
+                        _landB = [(_ils select 0) + (_dx * 400), (_ils select 1) + (_dy * 400)] call _fnc_toShip;
+                    };
+                    {
+                        private _flat = getArray (_ac >> _x);
+                        private _prev = [];
+                        for "_i" from 0 to ((count _flat) - 2) step 2 do {
+                            private _q = [_flat select _i, _flat select (_i + 1)] call _fnc_toShip;
+                            if (count _prev > 0) then { _taxi pushBack [_prev, _q] };
+                            _prev = _q;
+                        };
+                    } forEach ["ilsTaxiIn", "ilsTaxiOff", "ilsTaxiOn"];
+                };
+
+                // The sweep. Every offset on the ship's own footprint is asked
+                // whether the deck is under it at the deck's own level, which
+                // is what rules out the island, the deck edge and the hangar
+                // roof without any of them being named.
+                private _ranked = [];
+                if (_deckZ > -9000) then {
+                    for "_mx" from -DECK_REACH_X to DECK_REACH_X step DECK_STEP_X do {
+                        for "_my" from -DECK_REACH_Y to DECK_REACH_Y step DECK_STEP_Y do {
+                            private _w = _ship modelToWorld [_mx, _my, 0];
+                            private _flat = [_w select 0, _w select 1, 0];
+                            ([_logic, "deckTop", [_flat, []]] call MAINCLASS) params ["_tz", "_to"];
+                            private _isDeck = _tz > -9000
+                                && {(abs (_tz - _deckZ)) <= DECK_BAND}
+                                && {!isNull _to}
+                                && {(_to isEqualTo _ship)
+                                    || {(typeOf _to) in _partClasses}
+                                    || {_to isKindOf "StaticShip"}};
+                            if (_isDeck) then {
+                                private _q = [_mx, _my, 0];
+                                private _dLand = 9999;
+                                if (count _landA > 1) then {
+                                    _dLand = [_q, _landA, _landB] call _fnc_segDist;
+                                };
+                                private _dTaxi = 9999;
+                                {
+                                    private _d = [_q, _x select 0, _x select 1] call _fnc_segDist;
+                                    if (_d < _dTaxi) then { _dTaxi = _d };
+                                } forEach _taxi;
+                                if (_dLand >= DECK_LAND_CLEAR && {_dTaxi >= DECK_TAXI_CLEAR}) then {
+                                    // Farthest from the strip first, as a
+                                    // plain array so the engine's own sort
+                                    // does the ordering.
+                                    _ranked pushBack [-_dLand, _mx, _my];
+                                };
+                            };
+                        };
+                    };
+                };
+                _ranked sort true;
+                private _spots = _ranked apply { [_x select 1, _x select 2] };
+
+                // Timed because this is hundreds of traces in one go and a
+                // caller may be unscheduled, in which case they all land in
+                // one frame. It happens once per ship and the answer is kept.
+                ["ALIVE_fnc_ATOSurface - %1: deck at %2 m, %3 parking offsets, %4 taxi segments, worked out in %5 ms",
+                    typeOf _ship, round _deckZ, count _spots, count _taxi,
+                    round (((diag_tickTime - _began) * 1000))] call ALiVE_fnc_dump;
+
+                _result = [_deckZ, _landA, _landB, _taxi, _spots, _partClasses];
+                [_decks, _key, _result] call ALIVE_fnc_hashSet;
+            };
+        };
+    };
+
+    // The deck's acceptance test, and deliberately NOT the terrain one. Every
+    // clause of spotIsClear is wrong over a ship: the deck is over water, the
+    // deck edge is a road segment, isFlatEmpty answers about the sea bed forty
+    // metres below, and the island and the hangar are Buildings that the test
+    // would either refuse the whole ship for or walk straight through.
+    //
+    // What replaces them is geometry. Nine rays over the footprint all have to
+    // find the deck at the deck's own level: over the edge there is nothing, on
+    // the island the first thing they meet is twenty-five metres too high, and
+    // under a parked aircraft it is a parked aircraft.
+    case "deckSpotIsClear": {
+        _args params [
+            ["_p",[0,0,0],[[]]],
+            ["_span",12,[0]],
+            ["_ignore",[],[[]]],
+            ["_ship",objNull,[objNull]]
+        ];
+        _result = false;
+        if (isNull _ship) then {
+            _ship = (nearestObjects [_p, ["StaticShip"], SHIP_SEARCH]) param [0, objNull];
+        };
+        if (!isNull _ship) then {
+            private _geom = [_logic, "deckGeometry", _ship] call MAINCLASS;
+            if (_geom isEqualType [] && {count _geom > 5}) then {
+                _geom params ["_deckZ", "_landA", "_landB", "_taxi", "_spots", "_partClasses"];
+                private _ok = _deckZ > -9000;
+                private _diag = (_span * 0.7);
+                private _rays = [
+                    [0,0],
+                    [_span,0], [0,_span], [-_span,0], [0,-_span],
+                    [_diag,_diag], [_diag,-_diag], [-_diag,_diag], [-_diag,-_diag]
+                ];
+                {
+                    if (_ok) then {
+                        private _q = [(_p select 0) + (_x select 0), (_p select 1) + (_x select 1), 0];
+                        ([_logic, "deckTop", [_q, _ignore]] call MAINCLASS) params ["_tz", "_to"];
+                        if (_tz < -9000
+                            || {(abs (_tz - _deckZ)) > DECK_BAND}
+                            || {isNull _to}
+                            || {!((_to isEqualTo _ship)
+                                  || {(typeOf _to) in _partClasses}
+                                  || {_to isKindOf "StaticShip"})}) then {
+                            _ok = false;
+                        };
+                    };
+                } forEach _rays;
+
+                // Off the strip and off the taxi lanes, asked in the ship's
+                // model space where the geometry lives.
+                if (_ok) then {
+                    private _m = _ship worldToModel [_p select 0, _p select 1, _p select 2];
+                    private _q = [_m select 0, _m select 1, 0];
+                    if (count _landA > 1 && {([_q, _landA, _landB] call _fnc_segDist) < DECK_LAND_CLEAR}) then {
+                        _ok = false;
+                    };
+                    if (_ok) then {
+                        {
+                            if (_ok && {([_q, _x select 0, _x select 1] call _fnc_segDist) < DECK_TAXI_CLEAR}) then {
+                                _ok = false;
+                            };
+                        } forEach _taxi;
+                    };
+                };
+
+                // And nothing standing there that nine rays slipped between.
+                if (_ok) then {
+                    private _busy = (nearestObjects [_p, ["Air","LandVehicle","Man"], _span]) select {
+                        private _cand = _x;
+                        alive _cand && {(_ignore findIf {_x isEqualTo _cand}) == -1}
+                    };
+                    if (count _busy > 0) then { _ok = false };
+                };
+
+                _result = _ok;
+            };
+        };
+    };
+
     case "cascade": {
         _args params [
             ["_surface","terrain",[""]],
@@ -151,9 +505,67 @@ switch(_operation) do {
             ["_reserved",[],[[]]]
         ];
 
+        // A deck has no rings and no tiers. The parking offsets are already
+        // worked out and ranked for the ship, so the search is a walk down that
+        // list taking the first one nothing has claimed.
         if (_surface isEqualTo "deck") exitWith {
-            ["ALIVE_fnc_ATOSurface - deck cascade is not built yet, refusing rather than guessing"] call ALiVE_fnc_dump;
-            _result = [];
+            private _ship = (nearestObjects [_anchor, ["StaticShip"], SHIP_SEARCH]) param [0, objNull];
+            if (isNull _ship) then {
+                ["ALIVE_fnc_ATOSurface - a deck home was asked for at %1 and there is no ship within %2 m",
+                    _anchor, SHIP_SEARCH] call ALiVE_fnc_dump;
+                _result = [];
+            } else {
+                // Same union as the terrain half: spots this surface has
+                // already promised count as taken whether or not the caller
+                // remembered to pass them.
+                private _held = [_logic, "reservations", []] call ALIVE_fnc_hashGet;
+                {
+                    if (!(_x in _reserved)) then { _reserved pushBack _x };
+                } forEach _held;
+
+                private _bb = [_class] call ALiVE_fnc_getVehicleBoundingBox;
+                private _span = ((((_bb select 0) max (_bb select 1)) / 2) + 4) max 12;
+
+                private _geom = [_logic, "deckGeometry", _ship] call MAINCLASS;
+                private _deckZ = _geom param [0, -9999];
+                private _spots = _geom param [4, []];
+                private _handle = [_logic, "carrierHandle", _ship] call MAINCLASS;
+
+                // No deck level, no home. Every position below is built on
+                // that number, and writing a home at minus nine thousand
+                // metres would be worse than answering with nothing.
+                if (_deckZ < -9000) then {
+                    ["ALIVE_fnc_ATOSurface - %1 is a ship whose deck level could not be read; no home given",
+                        typeOf _ship] call ALiVE_fnc_dump;
+                    _spots = [];
+                };
+
+                private _found = [];
+                {
+                    private _spot = _x;
+                    if (count _found == 0) then {
+                        private _w = _ship modelToWorld [_spot select 0, _spot select 1, 0];
+                        private _p = [_w select 0, _w select 1, _deckZ];
+                        private _clashes = (_reserved findIf {
+                            (_p distance2D (_x select 0)) < (_span + ((_x select 1) max 0))
+                        }) > -1;
+                        if (!_clashes && {[_logic, "deckSpotIsClear", [_p, _span, [], _ship]] call MAINCLASS}) then {
+                            // The offset is what makes this home survive. The
+                            // world position beside it is the value as it
+                            // stands now, kept so that anything reading the
+                            // first three entries of a home still works.
+                            _found = [_p, getDir _ship, "deck", _handle,
+                                [_spot select 0, _spot select 1, 0], 0];
+                        };
+                    };
+                } forEach _spots;
+
+                if (count _found == 0) then {
+                    ["ALIVE_fnc_ATOSurface - no room on %1 for a %2: %3 offsets tried",
+                        typeOf _ship, _class, count _spots] call ALiVE_fnc_dump;
+                };
+                _result = _found;
+            };
         };
 
         // Spots this surface has already promised to somebody count as taken,
@@ -432,7 +844,34 @@ switch(_operation) do {
         ];
 
         if (count _home < 3) exitWith { _result = [false, "no home"] };
-        if ((_home select 2) isEqualTo "deck") exitWith { _result = [false, "deck validate is not built yet"] };
+        // The deck answers the same three ways the terrain half does, so a
+        // caller can tell "find another home" from "wait", and adds a fourth
+        // that only a ship can give: the ship itself is gone.
+        if ((_home select 2) isEqualTo "deck") exitWith {
+            private _ship = [_logic, "carrierFor", _home param [3, []]] call MAINCLASS;
+            if (isNull _ship) then {
+                _result = [false, "carrier gone"];
+            } else {
+                private _pos = ([_logic, "resolve", _home] call MAINCLASS) select 0;
+                private _bbD = [_class] call ALiVE_fnc_getVehicleBoundingBox;
+                private _spanD = ((((_bbD select 0) max (_bbD select 1)) / 2) + 4) max 12;
+                private _ownD = [_ownObj];
+                if (!isNull _ownObj) then { _ownD append (crew _ownObj) };
+                private _intrudersD = (nearestObjects [_pos, ["Air","LandVehicle","Man"], _spanD]) select {
+                    private _cand = _x;
+                    alive _cand && {(_ownD findIf {_x isEqualTo _cand}) == -1}
+                };
+                if (count _intrudersD > 0) then {
+                    _result = [false, "occupied"];
+                } else {
+                    if ([_logic, "deckSpotIsClear", [_pos, _spanD, _ownD, _ship]] call MAINCLASS) then {
+                        _result = [true, ""];
+                    } else {
+                        _result = [false, "geometry"];
+                    };
+                };
+            };
+        };
 
         private _pos = _home select 0;
         private _bb = [_class] call ALiVE_fnc_getVehicleBoundingBox;
@@ -465,9 +904,33 @@ switch(_operation) do {
     case "resolve": {
         private _home = _args;
         if (count _home < 3) exitWith { _result = [[0,0,0], 0] };
+        // A deck position is WORKED OUT, never read back. The offset and the
+        // relative heading are what the record holds; where that is in the
+        // world depends on where the ship is, and the whole reason the old
+        // module could not put an aircraft back on a carrier after a reload is
+        // that it stored the world position and trusted it.
+        //
+        // The height is the deck's own level rather than a fresh trace,
+        // because a trace at the spot hits whatever is parked there and would
+        // answer with the roof of an aircraft.
         if ((_home select 2) isEqualTo "deck") exitWith {
-            ["ALIVE_fnc_ATOSurface - deck resolve is not built yet"] call ALiVE_fnc_dump;
-            _result = [[0,0,0], 0];
+            private _ship = [_logic, "carrierFor", _home param [3, []]] call MAINCLASS;
+            if (isNull _ship) then {
+                ["ALIVE_fnc_ATOSurface - the carrier a deck home belongs to is not here, so it has no position"] call ALiVE_fnc_dump;
+                _result = [[0,0,0], 0];
+            } else {
+                private _off = _home param [4, [0,0,0]];
+                private _rel = _home param [5, 0];
+                if !(_off isEqualType []) then { _off = [0,0,0] };
+                if !(_rel isEqualType 0) then { _rel = 0 };
+                private _w = _ship modelToWorld [_off param [0,0], _off param [1,0], 0];
+                private _z = ([_logic, "deckGeometry", _ship] call MAINCLASS) param [0, -9999];
+                if (_z < -9000) then {
+                    _z = ([_logic, "deckTop", [[_w select 0, _w select 1, 0], []]] call MAINCLASS) select 0;
+                };
+                if (_z < -9000) then { _z = 0 };
+                _result = [[_w select 0, _w select 1, _z], ((getDir _ship) + _rel) mod 360];
+            };
         };
         // Terrain homes are above terrain level, and a copy, so a caller cannot
         // edit the home by editing what it was handed.
@@ -479,8 +942,14 @@ switch(_operation) do {
         if (isNull _obj || {count _home < 3}) exitWith { _result = false };
         // A helicopter is home anywhere on its pad; a plane has to be on its
         // spot. The wider figure is what another module calibrates against.
+        // A deck home's world position is derived, not read: the stored one was
+        // right when the home was chosen.
+        private _at = _home select 0;
+        if ((_home select 2) isEqualTo "deck") then {
+            _at = ([_logic, "resolve", _home] call MAINCLASS) select 0;
+        };
         private _tolerance = if (_obj isKindOf "Plane") then { 15 } else { 30 };
-        _result = (_obj distance2D (_home select 0)) < _tolerance;
+        _result = (_obj distance2D _at) < _tolerance;
     };
 
     // Put an airframe on its home and make sure it survives arriving there.
@@ -499,8 +968,60 @@ switch(_operation) do {
             _result = false;
         };
         if ((_home select 2) isEqualTo "deck") exitWith {
-            ["ALIVE_fnc_ATOSurface - deck place is not built yet"] call ALiVE_fnc_dump;
-            _result = false;
+            private _ship = [_logic, "carrierFor", _home param [3, []]] call MAINCLASS;
+            if (isNull _ship) then {
+                ["ALIVE_fnc_ATOSurface - %1 cannot be put on a deck: its carrier is not here", typeOf _obj] call ALiVE_fnc_dump;
+                _result = false;
+            } else {
+                ([_logic, "resolve", _home] call MAINCLASS) params ["_targetD", "_dirD"];
+                private _mineD = [_obj] + (crew _obj);
+                private _reachD = 12;
+                private _bbD = [typeOf _obj] call ALiVE_fnc_getVehicleBoundingBox;
+                if (count _bbD > 1) then {
+                    _reachD = (((((_bbD select 0) max (_bbD select 1)) / 2) + 4) max 12);
+                };
+                private _blockedD = (nearestObjects [_targetD, ["Air"], _reachD]) select {
+                    private _cand = _x;
+                    (_mineD findIf {_x isEqualTo _cand}) == -1 && {alive _cand}
+                };
+                if (count _blockedD > 0) then {
+                    ["ALIVE_fnc_ATOSurface - place refused for %1: %2 is already on that deck spot",
+                        typeOf _obj, typeOf (_blockedD select 0)] call ALiVE_fnc_dump;
+                    _result = false;
+                } else {
+                    _obj allowDamage false;
+                    if (_dirD >= 0) then { _obj setDir _dirD };
+                    // ASL, and a hand's breadth clear of the plating.
+                    // setPosATL over water measures from the SEA BED, which on
+                    // the scene this was measured against is forty metres
+                    // down, so the terrain half's write would drop an airframe
+                    // through the ship and into the sea.
+                    _obj setPosASL [_targetD select 0, _targetD select 1, (_targetD select 2) + 0.4];
+                    _obj setVectorUp [0,0,1];
+                    _obj setVelocity [0,0,0];
+
+                    // Damage stays off until it has settled, and on a deck
+                    // "settled" is measured against the deck rather than
+                    // against terrain level: over water terrain level is the
+                    // sea bed and every airframe would read as forty metres up.
+                    [_obj, _targetD] spawn {
+                        params ["_v", "_tgt"];
+                        sleep 8;
+                        if (isNull _v || {!alive _v}) exitWith {};
+                        private _off = ((getPosASL _v) select 2) - (_tgt select 2);
+                        if (_off < -3 || {_off > 3.5}) then {
+                            _v allowDamage false;
+                            ["ALIVE_fnc_ATOSurface - %1 settled %2 m off its deck spot, damage left off",
+                                typeOf _v, round _off] call ALiVE_fnc_dump;
+                        } else {
+                            _v allowDamage true;
+                            _v setDamage 0;
+                        };
+                    };
+
+                    _result = true;
+                };
+            };
         };
 
         // A COPY. One caller used to hand in the stored home itself, and the

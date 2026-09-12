@@ -9,9 +9,10 @@ Smallest mission: put a player on Stratis near the airfield, run this from the
 debug console. It spawns itself because placing an airframe and letting it
 settle takes time, and the console runs unscheduled.
 
-Covers classify and the terrain half. The deck scenes are separate and the deck
-half is not built yet; the assertions here prove the deck operations REFUSE
-rather than guess, which is the property that lets the two land separately.
+Covers classify and the terrain half. The deck is its own scene, in
+test_ato_deck, because it needs a carrier in the mission; what the deck
+assertions here hold is that asking for a deck where there is no ship is
+refused rather than guessed at.
 ---------------------------------------------------------------------------- */
 
 [] spawn {
@@ -235,11 +236,14 @@ rather than guess, which is the property that lets the two land separately.
     ["the entry has the four elements the search expects",
         count (ALiVE_airSpawnRegistry select (count ALiVE_airSpawnRegistry - 1)) == 4] call _fnc_check;
 
-    // --- the deck half must refuse, not guess -------------------------------
-    ["deck cascade refuses while unbuilt",
+    // --- a deck where there is no ship must refuse, not guess ---------------
+    ["asking for a deck home on an airfield finds nothing",
         ([_surface, "cascade", ["deck", _class, _anchor, []]] call ALIVE_fnc_ATOSurface) isEqualTo []] call _fnc_check;
     (([_surface, "validate", [[[0,0,0],0,"deck"], _class, objNull]] call ALIVE_fnc_ATOSurface)) params ["_ok3", "_why3"];
-    ["deck validate refuses while unbuilt", !_ok3] call _fnc_check;
+    ["and a deck home with no carrier behind it is refused, with a reason",
+        !_ok3 && {_why3 isEqualTo "carrier gone"}] call _fnc_check;
+    ["nothing on land is mistaken for a ship",
+        isNull ([_surface, "shipAt", _anchor] call ALIVE_fnc_ATOSurface)] call _fnc_check;
 
     // --- tidy ---------------------------------------------------------------
     { deleteVehicle _x } forEach _spawned;

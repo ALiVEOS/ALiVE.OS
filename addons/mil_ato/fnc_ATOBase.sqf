@@ -711,6 +711,20 @@ switch(_operation) do {
             [_logic, "clusterID", _clusterID] call ALIVE_fnc_hashSet;
             [_logic, "isCarrier", _isCarrier] call ALIVE_fnc_hashSet;
             [_logic, "carrier", _carrier] call ALIVE_fnc_hashSet;
+
+            // The deck is worked out NOW, here, where heavy work belongs.
+            //
+            // Surface sweeps a carrier's whole footprint the first time
+            // anything asks where an airframe may park on it, and measured on
+            // a USS Freedom that is 721 ms of tracing. It is done once per
+            // ship and the answer is kept, but the first ask can come from an
+            // unscheduled caller, and then the whole 721 ms lands in one
+            // frame. Asked from here it happens while the base is still being
+            // built, in a spawned step that is allowed to take its time, and
+            // every later ask reads the cached answer.
+            if (_isCarrier && {!isNull _carrier} && {[_surface] call ALIVE_fnc_isHash}) then {
+                [_surface, "deckGeometry", _carrier] call ALIVE_fnc_ATOSurface;
+            };
         };
 
         // ---- B11 the enemy ----------------------------------------------

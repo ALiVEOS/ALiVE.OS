@@ -433,6 +433,35 @@ switch(_operation) do {
                             private _startDir = [_asset,"startDir",0] call ALIVE_fnc_hashGet;
                             private _onCarrier = [_asset,"isOnCarrier",false] call ALIVE_fnc_hashGet;
 
+                            // A carrier aircraft's home has to be turned into
+                            // an offset within its ship, here, once.
+                            //
+                            // The old module stored a world position and a
+                            // flag, and a world position on a ship is right
+                            // only until the ship is somewhere else, which is
+                            // why an imported carrier aircraft came back in
+                            // the sea. Whether it WAS on a carrier is the old
+                            // module's own answer rather than a fresh reading,
+                            // because at import that answer is the only record
+                            // of where the aircraft lived.
+                            private _home = [];
+                            if !(_startPos isEqualTo []) then {
+                                _home = [_startPos, _startDir, "terrain"];
+                                if (_onCarrier) then {
+                                    private _ship = (nearestObjects [_startPos, ["StaticShip"], 400]) param [0, objNull];
+                                    if (isNull _ship) then {
+                                        ["ALIVE_fnc_ATOLedger - %1 was recorded on a carrier and there is no ship near %2; imported as terrain",
+                                            _tail, _startPos] call ALiVE_fnc_dump;
+                                    } else {
+                                        private _m = _ship worldToModel _startPos;
+                                        _home = [_startPos, _startDir, "deck",
+                                            [typeOf _ship, getPosASL _ship, netId _ship],
+                                            [_m select 0, _m select 1, 0],
+                                            (_startDir - (getDir _ship)) mod 360];
+                                    };
+                                };
+                            };
+
                             private _record = [[
                                 ["tail", _tail],
                                 ["vehicleClass", _class],
@@ -444,7 +473,7 @@ switch(_operation) do {
                                 // airportID and helipad are deliberately dropped:
                                 // both are derived from the position, and keeping
                                 // them is how one home came to live in six places.
-                                ["home", if (_startPos isEqualTo []) then {[]} else {[_startPos, _startDir, if (_onCarrier) then {"deck"} else {"terrain"}]}],
+                                ["home", _home],
                                 ["status", "present"],
                                 ["lossCount", 0],
                                 ["replacement", ""],

@@ -296,9 +296,13 @@ private _fnc_pairOf = {
 
 // A home for this class near an anchor, or []. The anchor itself is tried
 // first, so an aircraft standing on a clear spot keeps that spot and a real
-// pad is accepted as itself, and only then is the cascade asked. Deck is
-// refused outright: every deck op in Surface refuses today, and nothing above
-// Surface is wired to a carrier until the deck scene passes.
+// pad is accepted as itself, and only then is the cascade asked.
+//
+// Deck and terrain both come through here. Which one an anchor is, is Surface's
+// answer and nobody else's, and the answer decides the SHAPE of the candidate
+// as well as which search runs: a deck candidate is an offset within a ship,
+// because a world position on a ship is right only until the ship is somewhere
+// else.
 //
 // The cascade is handed an EMPTY reserved list on purpose. It unions its
 // argument with the surface's own reservations, so everything this instance
@@ -311,14 +315,26 @@ private _fnc_homeFor = {
     if (count _anchor < 2 || {_class isEqualTo ""}) exitWith { [] };
     private _flat = [_anchor select 0, _anchor select 1, 0];
     private _kind = [_surface, "classify", _flat] call ALIVE_fnc_ATOSurface;
-    if (_kind isEqualTo "deck") exitWith {
-        ["ALIVE_fnc_ATOPlace - no home for %1: the anchor is a deck and the deck half is not built", _class] call ALiVE_fnc_dump;
-        []
-    };
     private _cand = [_flat, _dir, "terrain"];
+    if (_kind isEqualTo "deck") then {
+        private _ship = [_surface, "shipAt", _flat] call ALIVE_fnc_ATOSurface;
+        if (isNull _ship) then {
+            // Surface says deck and there is no ship to hang it on, which
+            // should not happen: the same radius decided both. Left as a
+            // terrain candidate, which then fails its own validate over water
+            // and falls through to the cascade.
+            ["ALIVE_fnc_ATOPlace - %1 is on a deck at %2 and no ship was found to attach it to", _class, _flat] call ALiVE_fnc_dump;
+        } else {
+            private _m = _ship worldToModel _flat;
+            _cand = [_flat, _dir, "deck",
+                [_surface, "carrierHandle", _ship] call ALIVE_fnc_ATOSurface,
+                [_m select 0, _m select 1, 0],
+                (_dir - (getDir _ship)) mod 360];
+        };
+    };
     private _ok = ([_surface, "validate", [_cand, _class, _ownObj]] call ALIVE_fnc_ATOSurface) param [0, false];
     if (_ok) exitWith { _cand };
-    [_surface, "cascade", ["terrain", _class, _flat, []]] call ALIVE_fnc_ATOSurface
+    [_surface, "cascade", [_kind, _class, _flat, []]] call ALIVE_fnc_ATOSurface
 };
 
 // Build a hull at a home. Returns objNull when it could not, and the caller
@@ -344,7 +360,11 @@ private _fnc_createHull = {
         objNull
     };
     private _pos = +(_home select 0);
-    _pos set [2, 0];
+    // Terrain level for a terrain home: a hangar-parked airframe stores the
+    // building's own elevated origin and creating at that height puts it in
+    // the roof. A DECK home's height is the deck itself, and zeroing it over
+    // water creates the airframe at the waterline under the ship.
+    if !((_home select 2) isEqualTo "deck") then { _pos set [2, 0] };
     private _obj = createVehicle [_class, _pos, [], 0, "CAN_COLLIDE"];
     if (isNull _obj) exitWith {
         ["ALIVE_fnc_ATOPlace - createVehicle returned nothing for %1 at %2", _class, _pos] call ALiVE_fnc_dump;
@@ -1788,11 +1808,6 @@ switch(_operation) do {
         private _home = [_record, "home", []] call ALIVE_fnc_hashGet;
         if (count _home < 3) exitWith { _result = [] };
         private _class = [_record, "vehicleClass", ""] call ALIVE_fnc_hashGet;
-        if ((_home select 2) isEqualTo "deck") exitWith {
-            ["ALIVE_fnc_ATOPlace - rehome refused for %1: deck homes are not built", _tail] call ALiVE_fnc_dump;
-            _result = [];
-        };
-
         // May be null or away; passed as the own object so it never blocks
         // itself, and named in the log for what stood on the stand.
         private _obj = [_logic, "objFor", _tail] call MAINCLASS;
@@ -1800,7 +1815,15 @@ switch(_operation) do {
             [_home, _class, _obj] call _fnc_intruderName] call ALiVE_fnc_dump;
 
         [_logic] call _fnc_reserveHomes;
-        private _new = [_surface, "cascade", ["terrain", _class, _home select 0, []]] call ALIVE_fnc_ATOSurface;
+        // Asked on the home's OWN surface, and from where that home actually
+        // is rather than from what it stored: a deck home's world position is
+        // the value it had when it was chosen.
+        private _kind = _home select 2;
+        private _from = _home select 0;
+        if (_kind isEqualTo "deck") then {
+            _from = ([_surface, "resolve", _home] call ALIVE_fnc_ATOSurface) select 0;
+        };
+        private _new = [_surface, "cascade", [_kind, _class, _from, []]] call ALIVE_fnc_ATOSurface;
         if !(_new isEqualType []) then { _new = [] };
 
         // Logged once per tail. The row stays RECOVERING and the Kernel asks
