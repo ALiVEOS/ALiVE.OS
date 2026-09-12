@@ -76,6 +76,11 @@ class cfgFunctions {
                                 file = "\x\alive\addons\mil_ato\fnc_ATOBase.sqf";
                                 RECOMPILE;
                         };
+                        class ATOKernel {
+                                description = "The kernel and the bus: owns the logic, wires the pieces, drives them";
+                                file = "\x\alive\addons\mil_ato\fnc_ATOKernel.sqf";
+                                RECOMPILE;
+                        };
                 };
         };
 };
