@@ -107,7 +107,20 @@ switch(_operation) do {
             ["minAssetsForOffensive", 0],
             ["sortieDuration", 0],
             ["factions", []],
-            ["airspaces", []]
+            ["airspaces", []],
+            // Who this module is. Needed by the player-task payloads, and
+            // pushed in rather than read off a logic so the planner and the
+            // task builders stay testable with no mission at all.
+            ["side", ""],
+            ["faction", ""],
+            ["enemySides", []],
+            // Whether the module may hand work to players at all. Off means no
+            // task is raised by any route, which is how a mission runs air
+            // support without generating anybody a task.
+            ["generateTasks", false],
+            // The chance a downed crew is offered as a rescue rather than
+            // written off.
+            ["chanceOfRescue", 0.5]
         ]] call ALIVE_fnc_hashCreate;
     };
 
@@ -184,6 +197,12 @@ switch(_operation) do {
         private _now     = [_request, "receivedAt", 0] call ALIVE_fnc_hashGet;
         private _minFuel = [_request, "minFuel", 0.5] call ALIVE_fnc_hashGet;
 
+        // A request about ONE named airframe rather than about the best one
+        // available. A ferry is the only thing that asks this way: it exists to
+        // bring a particular hull home, so the second-best aircraft on the
+        // field is not a worse answer, it is the wrong answer.
+        private _onlyTail = [_request, "onlyTail", ""] call ALIVE_fnc_hashGet;
+
         // Roles this type will accept, widest last. x_lib names them Recon,
         // Attack, Fighter and CAS.
         private _wantRoles = switch (true) do {
@@ -203,7 +222,10 @@ switch(_operation) do {
             private _rec  = [_records, _tail, []] call ALIVE_fnc_hashGet;
             private _row  = [_rows, _tail, []] call ALIVE_fnc_hashGet;
 
-            if (count _rec > 0 && {count _row > 0} && {!(_tail in _excluded)}) then {
+            if (count _rec > 0
+                && {count _row > 0}
+                && {!(_tail in _excluded)}
+                && {_onlyTail isEqualTo "" || {_tail isEqualTo _onlyTail}}) then {
                 private _state   = [_row, "state", ""] call ALIVE_fnc_hashGet;
                 private _readyAt = [_rec, "readyAt", 0] call ALIVE_fnc_hashGet;
                 private _recFac  = [_rec, "faction", ""] call ALIVE_fnc_hashGet;
@@ -553,14 +575,286 @@ switch(_operation) do {
         _result = true;
     };
 
-    // Not built in this pass, and named so a caller reaching one is told rather
-    // than finding that nothing happened. The player-task half needs the task
-    // payload shape and belongs with that work, not with selection.
-    case "csar";
-    case "openFerry";
+    // Settings arrive as pairs rather than as a fixed argument list, so the
+    // Kernel can push whatever the module's attributes gave it without this
+    // piece having to know which attributes exist.
+    case "configure": {
+        private _pairs = _args;
+        if !(_pairs isEqualType []) then { _pairs = [] };
+        {
+            if (_x isEqualType [] && {count _x > 1}) then {
+                [_logic, _x select 0, _x select 1] call ALIVE_fnc_hashSet;
+            };
+        } forEach _pairs;
+        _result = true;
+    };
+
+    // ---- who a task can be offered to (M3) ---------------------------------
+    // Everyone on the side who is still taking orders they did not ask for.
+    //
+    // A group that has opted out of automatic orders was still being handed air
+    // tasks, because these are raised here rather than through the commander and
+    // the opt-out was only ever read on the commander's own routes. Opting out is
+    // meant to stop tasks arriving unasked, whichever part of ALiVE raises them.
+    //
+    // Falls back to the plain side list when C2ISTAR is absent, because the
+    // opt-out cannot exist without it and the work should still be offered. The
+    // shape is [names, ids] and the fallback source answers in the other order,
+    // which is why it is swapped.
+    case "sidePlayers": {
+        private _side = [_logic, "side", ""] call ALIVE_fnc_hashGet;
+        private _players = [];
+        if (["ALiVE_mil_c2istar"] call ALiVE_fnc_isModuleAvailable) then {
+            _players = ["getAutoOrderSidePlayers", [_side]] call ALiVE_fnc_playerOrders;
+        };
+        if (isNil "_players" || {!(_players isEqualType [])} || {count _players < 2}) then {
+            private _src = [_side] call ALiVE_fnc_getPlayersDataSource;
+            if (_src isEqualType [] && {count _src > 1}) then {
+                _players = [_src select 1, _src select 0];
+            } else {
+                _players = [[],[]];
+            };
+        };
+        _result = _players;
+    };
+
+    // ---- handing an opportunity to players (M1) ----------------------------
+    // The module has found something it cannot or should not deal with itself,
+    // so it offers it to whoever is on the side.
+    //
+    // Deduped per type against the public registry, because the same air
+    // defence is spotted on every scan and each sighting would otherwise become
+    // another identical task.
     case "playerTask": {
-        ["ALIVE_fnc_ATOTask - %1 is not built yet", _operation] call ALiVE_fnc_dump;
-        _result = ["denied", "not built"];
+        _args params [["_type","",[""]], ["_targets",[],[[]]], ["_extra",""]];
+
+        if !([_logic, "generateTasks", false] call ALIVE_fnc_hashGet) exitWith {
+            _result = ["denied", "task generation off"];
+        };
+        if (_type isEqualTo "") exitWith { _result = ["denied", "no type"] };
+
+        private _wanted = +_targets;
+
+        // The first target is the one the module is dealing with itself, so
+        // players are offered the rest. The three types below are different:
+        // nothing of ours is going after them, so the primary stays.
+        if !(_type in ["SEAD","DefendHQ","Laze"]) then {
+            _wanted = _wanted select [1, (count _wanted) max 0];
+        };
+
+        // Laze pairs to the sortie's PRIMARY target only. Letting the dedupe
+        // below fall through to a secondary slot could hand out a null one,
+        // resolved from a dead profile, and the task would succeed the instant
+        // it was created.
+        if (_type isEqualTo "Laze") then {
+            _wanted = (_wanted select [0,1]) select { !isNull _x && {alive _x} };
+        };
+
+        if (count _wanted == 0) exitWith { _result = ["denied", "no target left for players"] };
+
+        if (isNil QGVAR(playerRequests)) then {
+            GVAR(playerRequests) = [] call ALiVE_fnc_hashCreate;
+        };
+        private _already = [GVAR(playerRequests), _type, []] call ALiVE_fnc_hashGet;
+        private _target = nil;
+        { if !(_x in _already) exitWith { _target = _x } } forEach _wanted;
+        if (isNil "_target") exitWith { _result = ["denied", "already offered"] };
+
+        // Where the task points, and whose it is. A target is either a profile
+        // id or a live object, and only one of those answers to position.
+        private _destination = [];
+        private _enemyFaction = "OPF_F";
+        if (_target isEqualType "") then {
+            // Guarded, because the handler is a global that only exists once
+            // sys_profile has started. Reading it without this throws rather
+            // than answering, and a target that cannot be resolved should be
+            // refused politely below instead.
+            private _profile = nil;
+            if (!isNil "ALiVE_profileHandler") then {
+                _profile = [ALiVE_profileHandler, "getProfile", _target] call ALiVE_fnc_ProfileHandler;
+            };
+            if !(isNil "_profile") then {
+                _destination = [_profile, "position", []] call ALiVE_fnc_hashGet;
+                _enemyFaction = [_profile, "faction", "OPF_F"] call ALiVE_fnc_hashGet;
+            };
+        } else {
+            if !(isNull _target) then {
+                _destination = position _target;
+                _enemyFaction = faction _target;
+            };
+        };
+
+        // A building carries no usable faction, so fall back to whoever holds
+        // the ground, and only when they are actually hostile: a friendly or
+        // civilian dominant faction would mis-colour the task and, under
+        // constant auto-tasking, poison the side's enemy-faction config.
+        if (_type isEqualTo "Laze" && {_enemyFaction in ["","Default"]}) then {
+            _enemyFaction = "OPF_F";
+            private _dom = [_destination, 3000] call ALiVE_fnc_getDominantFaction;
+            if (!isNil "_dom" && {!(_dom isEqualTo "")}) then {
+                private _sideObj = [[_logic, "side", ""] call ALIVE_fnc_hashGet] call ALIVE_fnc_sideTextToObject;
+                private _domSide = _dom call ALiVE_fnc_factionSide;
+                if (!(_domSide isEqualTo civilian) && {(_sideObj getFriend _domSide) < 0.6}) then {
+                    _enemyFaction = _dom;
+                };
+            };
+        };
+
+        if (count _destination == 0) exitWith { _result = ["denied", "target has no position"] };
+
+        private _players = [_logic, "sidePlayers"] call MAINCLASS;
+        if ((_players param [0, []]) isEqualTo []) exitWith {
+            _result = ["denied", "nobody on the side is taking orders"];
+        };
+
+        private _side = [_logic, "side", ""] call ALIVE_fnc_hashGet;
+        private _faction = [_logic, "faction", ""] call ALIVE_fnc_hashGet;
+
+        // C2ISTAR's vocabulary differs from the commander's for two of these.
+        private _taskType = switch (_type) do {
+            case "DefendHQ": { "MilDefence" };
+            case "Strike":   { "DestroyBuilding" };
+            default          { _type };
+        };
+
+        // OCA hands over every target it was given, because the point of it is
+        // the whole airfield rather than one aircraft standing on it.
+        private _targetArray = if (_type isEqualTo "OCA") then { _wanted } else { [_target] };
+
+        private _taskData = [
+            format ["%1_%2", _faction, floor time],
+            "ATO", _side, _faction, _taskType, "NULL",
+            _destination, _players, _enemyFaction, "Y", "Side", _targetArray
+        ];
+
+        // Index 12, and only these two types carry one. CAS names the friendly
+        // the strike is supporting; Laze carries this sortie's own decoy lasers,
+        // which the player scan must ignore, and the strike window in seconds.
+        if (_type isEqualTo "CAS") then { _taskData pushBack _extra };
+        if (_type isEqualTo "Laze") then {
+            _taskData pushBack (if (_extra isEqualType []) then {_extra} else {[[], 900]});
+        };
+
+        private _event = ["TASK_GENERATE", _taskData, "ATO"] call ALIVE_fnc_event;
+        [ALIVE_eventLog, "addEvent", _event] call ALIVE_fnc_eventLog;
+
+        _already pushBack _target;
+        [GVAR(playerRequests), _type, _already] call ALiVE_fnc_hashSet;
+        _result = ["raised", _taskData select 0, _taskType];
+    };
+
+    // ---- offering a downed crew as a rescue (M2) ---------------------------
+    // Every gate here is a refusal with a reason rather than a silent no-op, so
+    // a mission that never sees a rescue can be told which gate closed.
+    //
+    // There is no crew profile to find any more. An adopted airframe is not a
+    // sys_profile profile (decision 6), so the old module's branch that read the
+    // crew's profile, pinned it with a waypoint and skipped the chance roll on
+    // the grounds they were demonstrably alive has nothing left to read. Every
+    // rescue now goes through the chance roll.
+    case "csar": {
+        _args params [["_tail","",[""]], ["_class","",[""]], ["_pos",[],[[]]]];
+
+        if !([_logic, "generateTasks", false] call ALIVE_fnc_hashGet) exitWith {
+            _result = ["denied", "task generation off"];
+        };
+        // Re-checked per call rather than cached at start-up: a mission can
+        // load C2ISTAR late, and the old module decided this once and was then
+        // wrong for the rest of the mission.
+        if !(["ALiVE_mil_c2istar"] call ALiVE_fnc_isModuleAvailable) exitWith {
+            _result = ["denied", "no c2istar"];
+        };
+        if (count _pos < 2) exitWith { _result = ["denied", "no position"] };
+
+        private _players = [_logic, "sidePlayers"] call MAINCLASS;
+        if ((_players param [0, []]) isEqualTo []) exitWith {
+            _result = ["denied", "nobody on the side is taking orders"];
+        };
+
+        private _side = [_logic, "side", ""] call ALIVE_fnc_hashGet;
+        private _faction = [_logic, "faction", ""] call ALIVE_fnc_hashGet;
+
+        // Rescue where the wreck is, if the wreck is somewhere anybody can
+        // reach. A hull that went into the sea leaves its last known position
+        // as the only thing worth pointing at.
+        private _destination = +_pos;
+        _destination set [2, 0];
+        if !(_class isEqualTo "") then {
+            private _wrecks = (entities _class) select { !alive _x };
+            if (count _wrecks > 0) then {
+                private _sorted = [_wrecks, [_destination], {_input0 distance _x}, "ASCEND"] call ALiVE_fnc_SortBy;
+                private _wreck = _sorted select 0;
+                if !(surfaceIsWater (position _wreck)) then {
+                    _destination = position _wreck;
+                    _destination set [2, 0];
+                };
+                deleteVehicle _wreck;
+            };
+        };
+
+        // Nothing to be rescued FROM is not a rescue. Kept from the old module:
+        // a crash on friendly ground with nobody near it is a recovery the side
+        // can manage without being asked.
+        private _enemyNear = [_destination, _side, 3000, true] call ALiVE_fnc_isEnemyNear;
+        private _enemyFaction = [_destination, 3000] call ALiVE_fnc_getDominantFaction;
+        private _enemyGround = false;
+        if (!isNil "_enemyFaction" && {!(_enemyFaction isEqualTo "")}) then {
+            _enemyGround = (([_side] call ALIVE_fnc_sideTextToObject) getFriend (_enemyFaction call ALIVE_fnc_factionSide)) < 0.6;
+        } else {
+            _enemyFaction = "OPF_F";
+        };
+        if (!_enemyNear && {!_enemyGround}) exitWith {
+            _result = ["denied", "crew is not in danger"];
+        };
+
+        if (random 1 >= ([_logic, "chanceOfRescue", 0.5] call ALIVE_fnc_hashGet)) exitWith {
+            _result = ["denied", "no rescue this time"];
+        };
+
+        // Class at index 11, where another task carries its targets, and nothing
+        // at 12. The old module appended the crew's profile id there; an adopted
+        // airframe has no profile, so there is no id to append and anything
+        // reading index 12 would be reading a stale value.
+        private _taskData = [
+            format ["%1_%2", _faction, floor time],
+            "ATO", _side, _faction, "CSAR", "NULL",
+            _destination, _players, _enemyFaction, "Y", "Side", _class
+        ];
+
+        private _event = ["TASK_GENERATE", _taskData, "ATO"] call ALIVE_fnc_event;
+        [ALIVE_eventLog, "addEvent", _event] call ALIVE_fnc_eventLog;
+        ["ALIVE_fnc_ATOTask - rescue offered for %1 (%2) at %3", _tail, _class, _destination] call ALiVE_fnc_dump;
+        _result = ["raised", _taskData select 0, "CSAR"];
+    };
+
+    // ---- moving an airframe for its own sake -------------------------------
+    // A FERRY is the module flying one of its own aircraft somewhere rather
+    // than flying it AT something. That is why it is the one type a commander
+    // cannot ask for and the one that never counts against the sortie cap: it
+    // is how a hull that came down away from home gets back without being
+    // teleported in front of somebody.
+    case "openFerry": {
+        _args params [["_tail","",[""]], ["_to",[],[[]]]];
+        if (_tail isEqualTo "") exitWith { _result = ["denied", "no tail"] };
+
+        private _request = [[
+            ["id", format ["ferry_%1_%2", _tail, floor time]],
+            ["type", "FERRY"],
+            ["side", [_logic, "side", ""] call ALIVE_fnc_hashGet],
+            ["faction", [_logic, "faction", ""] call ALIVE_fnc_hashGet],
+            ["airspace", ""],
+            ["targetPos", _to],
+            ["targets", []],
+            ["roe", "NEVER"],
+            ["requester", [[["kind","ATO"]]] call ALIVE_fnc_hashCreate],
+            ["receivedAt", time],
+            ["duration", [_logic, "waitFor", "FERRY"] call MAINCLASS],
+            // The one airframe this is about. Nothing else will do, so the
+            // planner is told not to look further.
+            ["onlyTail", _tail]
+        ]] call ALIVE_fnc_hashCreate;
+
+        _result = [_logic, "submit", _request] call MAINCLASS;
     };
 
     default {

@@ -266,12 +266,117 @@ Runs spawned to match the other tests, though nothing here needs a tick.
     ["and an airspace nobody is over reports nothing active",
         ([_t7, "activeInZone", ["AS2", []]] call ALIVE_fnc_ATOTask) isEqualTo []] call _fnc_check;
 
-    // --- the half that is not built -----------------------------------------
-    {
-        private _r = [_t7, _x, []] call ALIVE_fnc_ATOTask;
-        [format ["%1 refuses out loud rather than doing nothing quietly", _x],
-            (_r param [0, ""]) isEqualTo "denied" && {(_r param [1, ""]) isEqualTo "not built"}] call _fnc_check;
-    } forEach ["csar", "openFerry", "playerTask"];
+    // --- handing work to players --------------------------------------------
+    // These raise C2ISTAR tasks, and every gate is a refusal with a reason
+    // rather than a silent no-op, so what follows checks the reasons.
+    //
+    // The positive paths cannot run here and are skipped by name. Raising a
+    // task needs somebody on the side to raise it TO, and this test has no
+    // mission and no players; the last gate before the raise is exactly that
+    // list, so on a dedicated server every one of them stops there. What IS
+    // reachable is every gate in front of it, which is where the logic lives.
+    private _tp = [nil, "create"] call ALIVE_fnc_ATOTask;
+
+    // Off by default, deliberately: a mission should be able to run air support
+    // without generating anybody a task.
+    ["task generation is off until it is asked for",
+        ([_tp, "csar", ["t1", "B_Heli_Attack_01_F", [100,100,0]]] call ALIVE_fnc_ATOTask)
+            isEqualTo ["denied", "task generation off"]] call _fnc_check;
+    ["and a player task is refused for the same reason",
+        ([_tp, "playerTask", ["SEAD", ["someProfileId"]]] call ALIVE_fnc_ATOTask)
+            isEqualTo ["denied", "task generation off"]] call _fnc_check;
+
+    [_tp, "configure", [["generateTasks", true], ["side", "WEST"], ["faction", "BLU_F"]]] call ALIVE_fnc_ATOTask;
+    ["settings can be pushed in as pairs",
+        ([_tp, "generateTasks", false] call ALIVE_fnc_hashGet)
+        && {([_tp, "faction", ""] call ALIVE_fnc_hashGet) isEqualTo "BLU_F"}] call _fnc_check;
+
+    // A rescue with no rescuers is not a rescue. C2ISTAR owns the task system,
+    // so without it there is nowhere for one to go, and this is re-asked on
+    // every call because a mission can load it late.
+    private _csarNoC2 = [_tp, "csar", ["t1", "B_Heli_Attack_01_F", [100,100,0]]] call ALIVE_fnc_ATOTask;
+    ["a rescue is refused when there is no task system to carry it",
+        (_csarNoC2 param [1, ""]) in ["no c2istar", "nobody on the side is taking orders"]] call _fnc_check;
+    diag_log format ["  info  rescue without c2istar refused: %1", _csarNoC2];
+
+    ["a rescue with no position is refused rather than pointing at nowhere",
+        (([_tp, "csar", ["t1", "B_Heli_Attack_01_F", []]] call ALIVE_fnc_ATOTask) param [1, ""])
+            in ["no position", "no c2istar"]] call _fnc_check;
+
+    ["a player task with no type is refused",
+        ([_tp, "playerTask", ["", ["x"]]] call ALIVE_fnc_ATOTask)
+            isEqualTo ["denied", "no type"]] call _fnc_check;
+
+    // The primary target is the module's own business; players are offered the
+    // rest. One target and a type that hands over its leftovers means there is
+    // nothing left to hand over.
+    ["a CAS task with only the primary target leaves players nothing",
+        ([_tp, "playerTask", ["CAS", ["theOneTheModuleIsTaking"]]] call ALIVE_fnc_ATOTask)
+            isEqualTo ["denied", "no target left for players"]] call _fnc_check;
+
+    // SEAD, DefendHQ and Laze are the three where nothing of ours is going
+    // after the target, so the primary is kept and the request gets as far as
+    // resolving where the target is.
+    private _seadOne = [_tp, "playerTask", ["SEAD", ["anUnknownProfileId"]]] call ALIVE_fnc_ATOTask;
+    ["a SEAD task keeps its primary target and gets past the hand-over rule",
+        !((_seadOne param [1, ""]) isEqualTo "no target left for players")] call _fnc_check;
+    diag_log format ["  info  SEAD with one target answered: %1", _seadOne];
+
+    ["an unresolvable target is refused rather than becoming a task pointing at nothing",
+        (_seadOne param [1, ""]) in ["target has no position", "nobody on the side is taking orders"]] call _fnc_check;
+
+    diag_log "  skip  a raised task carries the 13-field payload  (needs a player on the side to raise it to)";
+    diag_log "  skip  the same target is never offered twice  (the registry is only written on a successful raise)";
+
+    // --- moving an airframe for its own sake --------------------------------
+    private _tf = [nil, "create"] call ALIVE_fnc_ATOTask;
+    [_tf, "configure", [["side", "WEST"], ["faction", "BLU_F"], ["factions", ["BLU_F"]]]] call ALIVE_fnc_ATOTask;
+    [_tf, "firstPassDone"] call ALIVE_fnc_ATOTask;
+
+    ["a ferry with no airframe named is refused",
+        ([_tf, "openFerry", []] call ALIVE_fnc_ATOTask) isEqualTo ["denied", "no tail"]] call _fnc_check;
+
+    private _ferry = [_tf, "openFerry", ["t2", [200,200,0]]] call ALIVE_fnc_ATOTask;
+    ["a ferry is accepted as a sortie", _ferry isEqualType ""] call _fnc_check;
+    diag_log format ["  info  ferry answered: %1", _ferry];
+
+    // A ferry is the module moving its own aircraft, not an operation against
+    // anything, so it must not eat the sortie cap that limits real missions.
+    private _tc = [nil, "create"] call ALIVE_fnc_ATOTask;
+    [_tc, "configure", [["side", "WEST"], ["faction", "BLU_F"], ["maxConcurrentSorties", 1]]] call ALIVE_fnc_ATOTask;
+    [_tc, "firstPassDone"] call ALIVE_fnc_ATOTask;
+    [_tc, "openFerry", ["t2", [200,200,0]]] call ALIVE_fnc_ATOTask;
+    private _afterFerry = [_tc, "submit", [[
+        ["id", "r_cap"], ["type", "CAS"], ["faction", "BLU_F"],
+        ["targetPos", [500,500,0]], ["receivedAt", 2000]
+    ]] call ALIVE_fnc_hashCreate] call ALIVE_fnc_ATOTask;
+    ["a ferry does not use up the sortie cap",
+        !((_afterFerry param [0, ""]) isEqualTo "denied")
+        || {!((_afterFerry param [1, ""]) isEqualTo "sortie cap reached")}] call _fnc_check;
+    diag_log format ["  info  an operation after a ferry answered: %1", _afterFerry];
+
+    // The planner is told to bring ONE named hull home, so the nearest
+    // available aircraft is not a better answer, it is the wrong answer.
+    private _ferryReq = [[
+        ["id", "r_ferry"], ["type", "FERRY"], ["faction", "BLU_F"],
+        ["targetPos", _target], ["receivedAt", _now], ["onlyTail", "t2"]
+    ]] call ALIVE_fnc_hashCreate;
+    private _ferryPlan = [_t, "plan", [_ferryReq, _records, _rows, _obs, []]] call ALIVE_fnc_ATOTask;
+    ["a ferry plans onto the airframe it names and no other",
+        (_ferryPlan param [0, []]) isEqualTo ["t2"]] call _fnc_check;
+    diag_log format ["  info  ferry plan: %1", _ferryPlan];
+
+    // And naming one that cannot fly is refused outright rather than quietly
+    // substituting another. A ferry for a hull a player has taken is not a
+    // ferry for the next aircraft along.
+    private _ferryBadReq = [[
+        ["id", "r_ferry2"], ["type", "FERRY"], ["faction", "BLU_F"],
+        ["targetPos", _target], ["receivedAt", _now], ["onlyTail", "t5"]
+    ]] call ALIVE_fnc_hashCreate;
+    private _ferryBadPlan = [_t, "plan", [_ferryBadReq, _records, _rows, _obs, []]] call ALIVE_fnc_ATOTask;
+    diag_log format ["  info  ferry plan naming a player-flown airframe: %1", _ferryBadPlan];
+    ["naming an airframe a player is flying is refused, not substituted",
+        _ferryBadPlan isEqualTo ["denied", "no candidate airframe"]] call _fnc_check;
 
     diag_log format ["  info  %1 assertions", _checked];
     if (count _fails == 0) then {
