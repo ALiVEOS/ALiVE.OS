@@ -337,11 +337,36 @@ switch(_operation) do {
         // Sort the delivery by what each profile IS, not by the order they
         // arrived in. The old handler read slot zero as the vehicle and slot
         // one as the crew, and logistics does not promise that.
+        // The delivered list is NESTED: each entry is its own [entity, vehicle]
+        // pair, not a flat list of ids. Logistics builds it as
+        // `_planeProfiles + _heliProfiles` and releases it with two nested
+        // forEach loops, and its own comment beside the payload says each entry
+        // is a pair. Walking one level and requiring a string skipped every
+        // entry, because every entry is an array, so both ids stayed empty and
+        // EVERY real delivery fell through to being built here instead.
+        //
+        // Flattened first, and a flat list is still accepted: the other places
+        // that raise this event carry different shapes and none of them is
+        // worth throwing over.
+        private _flat = [];
+        {
+            if (_x isEqualType "") then {
+                _flat pushBack _x;
+            } else {
+                if (_x isEqualType []) then {
+                    { if (_x isEqualType "") then { _flat pushBack _x } } forEach _x;
+                };
+            };
+        } forEach _ids;
+
+        // Sorted by what each profile IS rather than by where it sat in the
+        // list. The pairs are built crew first, but that is logistics' own
+        // business and not a promise worth relying on.
         private _vehId = "";
         private _entId = "";
         {
             private _id = _x;
-            if (_id isEqualType "" && {!isNil "ALiVE_profileHandler"}) then {
+            if (!isNil "ALiVE_profileHandler") then {
                 private _got = [ALiVE_profileHandler, "getProfile", _id] call ALiVE_fnc_ProfileHandler;
                 if (!isNil "_got" && {_got isEqualType []}) then {
                     switch ([_got, "type", ""] call ALIVE_fnc_hashGet) do {
@@ -350,7 +375,9 @@ switch(_operation) do {
                     };
                 };
             };
-        } forEach _ids;
+        } forEach _flat;
+        ["ALIVE_fnc_ATOResupply - delivery %1 carried %2 id(s): vehicle '%3', crew '%4'",
+            _eventId, count _flat, _vehId, _entId] call ALiVE_fnc_dump;
 
         // Nobody left to give it to. Let the crew go so logistics stops holding
         // them, and leave the vehicle alone.
@@ -384,15 +411,32 @@ switch(_operation) do {
             _result = false;
         };
 
-        // Tell logistics' own fuel watchdog to stand down before the profile is
-        // taken apart, or it goes on managing an aircraft that no longer has a
-        // profile to manage.
-        if (!(_entId isEqualTo "") && {!isNil "ALiVE_profileHandler"}) then {
-            private _ent = [ALiVE_profileHandler, "getProfile", _entId] call ALiVE_fnc_ProfileHandler;
-            if (!isNil "_ent" && {_ent isEqualType []}) then {
-                [_ent, "alive_ml_releaseWatchdog", true] call ALIVE_fnc_hashSet;
+        // Two things have to be handed over before the pair can be taken on.
+        //
+        // The fuel watchdog is told to stand down, or it goes on managing an
+        // aircraft that no longer has a profile to manage.
+        //
+        // And the busy flag is cleared on BOTH halves, which is ours to do and
+        // nobody else's. Logistics deliberately does NOT release a delivery
+        // raised by this module: it creates the profiles busy and, when the
+        // requester is the air commander, skips the release outright, saying in
+        // its own comment that holding them closes the window in which the
+        // ground commander could claim the airframe first. So the flag is left
+        // for us. Adoption refuses a busy profile, so leaving it set means
+        // every single delivery is refused and a duplicate built instead, which
+        // is exactly what happened. The old module cleared it on its own
+        // release paths for the same reason.
+        {
+            if (!(_x isEqualTo "") && {!isNil "ALiVE_profileHandler"}) then {
+                private _prof = [ALiVE_profileHandler, "getProfile", _x] call ALiVE_fnc_ProfileHandler;
+                if (!isNil "_prof" && {_prof isEqualType []}) then {
+                    [_prof, "busy", false] call ALIVE_fnc_hashSet;
+                    if (_x isEqualTo _entId) then {
+                        [_prof, "alive_ml_releaseWatchdog", true] call ALIVE_fnc_hashSet;
+                    };
+                };
             };
-        };
+        } forEach [_vehId, _entId];
 
         // Into the SAME record. The tail, the callsign and the roles are the
         // ones the campaign already knows; only the home is re-checked, because
@@ -412,10 +456,38 @@ switch(_operation) do {
         private _taken = [_place, "adoptPair", [_vehId, _entId, _hint, _tail]] call ALIVE_fnc_ATOPlace;
 
         if (_taken isEqualType "" && {_taken isEqualTo _tail}) then {
-            [_ledger, "setReplacement", [_tail, ""]] call ALIVE_fnc_ATOLedger;
-            [_logic, "delivered", ([_logic, "delivered", 0] call ALIVE_fnc_hashGet) + 1] call ALIVE_fnc_hashSet;
-            ["ALIVE_fnc_ATOResupply - %1 is back, delivered", _tail] call ALiVE_fnc_dump;
-            _result = true;
+            // Named, but is it actually HERE.
+            //
+            // Adoption answers with the tail once it has taken the profile,
+            // which it has, but the hull can still be owned by another machine
+            // at that moment: a delivery whose crew lives on a headless client
+            // comes back remote, and placement holds it and retries the
+            // takeover on its own passes.
+            //
+            // Booking that as delivered is a dead end. The record would be
+            // cleared of its order while still marked lost, and nothing looks
+            // at a lost record with no order: the sweep only picks records that
+            // want one, and a restore only walks records that are present. The
+            // aircraft would never come back at all.
+            private _hull = [_place, "objFor", _tail] call ALIVE_fnc_ATOPlace;
+            private _waiting = [_place, "deferredTails"] call ALIVE_fnc_ATOPlace;
+            if !(_waiting isEqualType []) then { _waiting = [] };
+
+            if (!isNull _hull && {!(_tail in _waiting)}) then {
+                [_ledger, "setReplacement", [_tail, ""]] call ALIVE_fnc_ATOLedger;
+                [_logic, "delivered", ([_logic, "delivered", 0] call ALIVE_fnc_hashGet) + 1] call ALIVE_fnc_hashSet;
+                ["ALIVE_fnc_ATOResupply - %1 is back, delivered", _tail] call ALiVE_fnc_dump;
+                _result = true;
+            } else {
+                // Arrived but not ours yet. The order stays open under its own
+                // key, so nothing asks for a second one, and so the clock above
+                // eventually gives up and builds one if the takeover never
+                // completes.
+                [_pending, format ["attaching_%1", _tail], [_tail, time, _tries, true]] call ALIVE_fnc_hashSet;
+                [_ledger, "setReplacement", [_tail, "delivered:attaching"]] call ALIVE_fnc_ATOLedger;
+                ["ALIVE_fnc_ATOResupply - %1 arrived but is not ours yet; placement is still taking it over", _tail] call ALiVE_fnc_dump;
+                _result = true;
+            };
         } else {
             ["ALIVE_fnc_ATOResupply - the delivery for %1 could not be taken on (%2), building one instead",
                 _tail, _taken] call ALiVE_fnc_dump;

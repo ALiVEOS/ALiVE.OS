@@ -125,10 +125,35 @@ rather than guess, which is the property that lets the two land separately.
     private _allAlive = ({alive _x} count _spawned) == count _spawned;
     ["every placed airframe is still alive after settling", _allAlive] call _fnc_check;
 
+    // Named and measured when it fails, not just counted.
+    //
+    // This fails about one run in three, and a count alone cannot say why. The
+    // suspicion is crowding: eight airframes are placed from ONE anchor, which
+    // the note above says is not how the real caller works, and two homes only
+    // have to be a span apart while atHome allows thirty metres, so neighbours
+    // can shove each other past their own radius. The distances below are what
+    // settles it.
     private _allHome = true;
+    private _strays = [];
     {
-        if !([_surface, "atHome", [_x, _homes select _forEachIndex]] call ALIVE_fnc_ATOSurface) then { _allHome = false };
+        private _mine = _x;
+        private _home = _homes select _forEachIndex;
+        if !([_surface, "atHome", [_mine, _home]] call ALIVE_fnc_ATOSurface) then {
+            _allHome = false;
+            private _nearest = 99999;
+            {
+                if (!(_x isEqualTo _mine) && {(_x distance2D _mine) < _nearest}) then {
+                    _nearest = _x distance2D _mine;
+                };
+            } forEach _spawned;
+            _strays pushBack format ["%1 (%2) is %3 m from its home, kind %4, nearest neighbour %5 m",
+                _forEachIndex, typeOf _mine, round (_mine distance2D (_home select 0)),
+                _home select 2, round _nearest];
+        };
     } forEach _spawned;
+    if (count _strays > 0) then {
+        { diag_log format ["  info  stray: %1", _x] } forEach _strays;
+    };
     ["every placed airframe is at its home", _allHome] call _fnc_check;
 
     // Damage must be back ON once settled, or a parked aircraft is invulnerable
