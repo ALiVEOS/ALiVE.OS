@@ -10,7 +10,7 @@ Description:
     aircraft parking area.
 
     THIS IS A HOT PATH. It is called from the pathfinder's node expansion, so it
-    does no engine spatial queries, no config reads and no square roots. Every
+    does no engine spatial queries or config reads. Every
     airfield is reduced once at mission start to a bounding circle and a flat
     list of capsules, and this walks that cached arithmetic.
 
@@ -78,17 +78,13 @@ private _fieldCount = (count ALiVE_airsideBounds) / 4;
 for "_i" from 0 to (_fieldCount - 1) do {
     private _b = _i * 4;
 
-    // Bounding circle first. Nearly every position in a mission is nowhere near
-    // an airfield, and this rejects those in five arithmetic operations.
-    private _dx = _px - (ALiVE_airsideBounds select _b);
-    private _dy = _py - (ALiVE_airsideBounds select (_b + 1));
-    private _distance2 = (_dx * _dx) + (_dy * _dy);
-    private _insideBounds = if (_margin == 0) then {
-        _distance2 <= (ALiVE_airsideBounds select (_b + 3))
-    } else {
-        private _br = (ALiVE_airsideBounds select (_b + 2)) + _margin;
-        _distance2 <= (_br * _br)
-    };
+    // Reject distant airfields before testing individual capsules. Native 2D
+    // distance measured faster than manual squared-distance arithmetic in SQF.
+    // Abs preserves the former squared-radius behavior for negative margins.
+    private _insideBounds = (_position distance2D [
+        ALiVE_airsideBounds select _b,
+        ALiVE_airsideBounds select (_b + 1)
+    ]) <= abs ((ALiVE_airsideBounds select (_b + 2)) + _margin);
 
     if (_insideBounds) then {
 
@@ -124,8 +120,10 @@ for "_i" from 0 to (_fieldCount - 1) do {
                     _r * _r
                 };
 
-                if (((_ex * _ex) + (_ey * _ey)) <= _radius2) exitWith { _hit = true };
+                if (((_ex * _ex) + (_ey * _ey)) <= _radius2) then { _hit = true };
             };
+            // Exit the capsule loop, outside the kind-filter scope.
+            if (_hit) exitWith {};
         };
     };
 
