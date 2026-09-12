@@ -234,11 +234,16 @@ switch(_operation) do {
             // A stamp with nothing behind it is a leftover, not an owner. Worth
             // saying out loud, because it means something stamped this hull and
             // did not clean up, but it does not put the aircraft at risk.
-            private _profile = objNull;
+            // Held as an ARRAY, not an object. getProfile answers with the
+            // profile hash, which is an array, and isNull has no array form:
+            // asking it threw on exactly the case this is here to report, a
+            // hull carrying a profile id that still resolves to a profile.
+            private _profile = [];
             if (!isNil "ALiVE_ProfileHandler") then {
-                _profile = [ALiVE_ProfileHandler, "getProfile", _pid] call ALiVE_fnc_profileHandler;
+                private _got = [ALiVE_ProfileHandler, "getProfile", _pid] call ALiVE_fnc_profileHandler;
+                if (!isNil "_got" && {_got isEqualType []}) then { _profile = _got };
             };
-            if (isNil "_profile" || {isNull _profile}) then {
+            if (_profile isEqualTo []) then {
                 ["ALIVE_fnc_ATOObserve - %1 carries a stale profile id %2 with no profile behind it", typeOf _obj, _pid] call ALiVE_fnc_dump;
             } else {
                 _reasons pushBack "profileID";

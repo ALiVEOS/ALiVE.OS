@@ -99,9 +99,21 @@ switch(_operation) do {
         // it again is how one airframe becomes two.
         if (_vehId in _claimed) exitWith { _result = [false, "already claimed by a record"] };
 
-        private _profile = [ALIVE_profileHandler, "getProfile", _vehId] call ALIVE_fnc_profileHandler;
-        if (isNil "_profile") exitWith { _result = [false, "no such profile"] };
-        if (isNull _profile) exitWith { _result = [false, "no such profile"] };
+        // getProfile answers with the profile HASH, which is an ARRAY, or with
+        // nothing at all when the id is unknown. isNull has no array form, so
+        // the line that was meant to catch a missing profile instead threw on
+        // every lookup that SUCCEEDED. Nothing had executed this path yet,
+        // because the placement test does not exist, which is how it survived
+        // being committed.
+        //
+        // The handler itself is a global that only exists once profiles have
+        // started, so reading it is guarded too.
+        private _profile = [];
+        if (!isNil "ALIVE_profileHandler") then {
+            private _got = [ALIVE_profileHandler, "getProfile", _vehId] call ALIVE_fnc_profileHandler;
+            if (!isNil "_got" && {_got isEqualType []}) then { _profile = _got };
+        };
+        if (_profile isEqualTo []) exitWith { _result = [false, "no such profile"] };
 
         private _type = [_profile, "type", ""] call ALIVE_fnc_hashGet;
         if !(_type isEqualTo "vehicle") exitWith { _result = [false, "not a vehicle profile"] };
