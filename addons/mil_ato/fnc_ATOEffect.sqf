@@ -85,11 +85,31 @@ switch(_operation) do {
         _result = [[["class", MAINCLASS]]] call ALIVE_fnc_hashCreate;
     };
 
+    // The name the HQ speaks under, for a caller assembling radio arguments.
+    //
+    // Here rather than in every caller because the keys want it in different
+    // places and each caller would otherwise have to know how to look it up,
+    // which is how two of them end up disagreeing. An HQ with no identity still
+    // has a voice, it just has no name.
+    case "hqName": {
+        private _hqClass = _args;
+        if !(_hqClass isEqualType "") then { _hqClass = "" };
+        _result = "HQ";
+        if !(_hqClass isEqualTo "") then {
+            private _fromConfig = getText (configFile >> "CfgHQIdentities" >> _hqClass >> "name");
+            if !(_fromConfig isEqualTo "") then { _result = _fromConfig };
+        };
+    };
+
     case "vocabulary": {
         _result = ["spawnAtHome","airborneStart","mintCrew","mintDroneCrew","seatCrew","recrewInPlace",
                    "standDownCrew","takeOwnership","engineOn","engineOff","issueOrders","clearOrders",
                    "revealTargets","releaseTargets","landAtPad","releaseApproach",
-                   "taxiTo","land","forceLaunch","forceLanded","placeOnSlot","shield","broadcast"];
+                   "taxiTo","land","forceLaunch","forceLanded","placeOnSlot","shield",
+                   "broadcast","broadcastStart","broadcastOnStation","broadcastReturn",
+                   "broadcastLost","retryLanding","emergencyLanding","turnaround",
+                   "mintDroneCrew","recrewInPlace","takeOwnership","engineOn","engineOff",
+                   "seatCrew","standDownCrew","clearOrders","airborneStart"];
     };
 
     case "apply": {
@@ -740,10 +760,6 @@ switch(_operation) do {
             };
 
             // One broadcast effect, named by what it is announcing.
-            case "broadcastStart";
-            case "broadcastOnStation";
-            case "broadcastReturn";
-            case "broadcastLost": { _detail = _effect; };
 
             // ---- protecting it -----------------------------------------------
             // An aircraft this module owns carries no profile, so nothing that
@@ -766,10 +782,116 @@ switch(_operation) do {
                 _status = "refused"; _detail = "creation belongs to placement";
             };
 
+            // ---- the commander's voice (N1) -----------------------------------
+            // Says something to everybody on the side, as their HQ.
+            //
+            // This used to validate the key and then say nothing at all, so
+            // every announcement the module makes was silently dropped: the
+            // establishment notice, the acknowledgements, the returns, the
+            // losses. Fifteen runtime keys, none of them ever heard, and the
+            // state table has been asking for four of them since it was
+            // written.
+            //
+            // The extras are [key, args, sideText, hqClass, onRadio]:
+            //
+            //   key       a stringtable key, spoken through localize
+            //   args      whatever that key's %1..%n need, IN ORDER and
+            //             COMPLETE, including the HQ name where the key wants
+            //             it (see below)
+            //   sideText  "WEST" / "EAST" / "GUER" / "CIV", whose players hear
+            //   hqClass   a CfgHQIdentities class, so the voice has a name
+            //   onRadio   false keeps it silent, which is a mission maker's
+            //             setting and not a failure
+            //
+            // The caller supplies every argument rather than having the HQ name
+            // prepended here, because the keys do not agree about where it
+            // goes: most open with it, and STR_ALIVE_ATO_RETURN is "on %1. Air
+            // tasking complete" where %1 is the sortie. Prepending it would
+            // have put the HQ's name in place of the mission on that one. Ask
+            // "hqName" for the name and put it where the key wants it.
             case "broadcast": {
                 private _key = _extra param [0, ""];
-                if (_key isEqualTo "") then { _status = "refused"; _detail = "no key" }
-                else { _detail = _key };
+                private _say = _extra param [1, []];
+                private _sideText = _extra param [2, ""];
+                private _hqClass = _extra param [3, ""];
+                private _onRadio = _extra param [4, true];
+                if !(_say isEqualType []) then { _say = [_say] };
+
+                if (_key isEqualTo "") exitWith { _status = "refused"; _detail = "no key" };
+
+                // Silence is a setting, so it reports what it would have said
+                // and sends nothing.
+                if !(_onRadio) exitWith { _matched = true; _detail = format ["%1 (radio off)", _key] };
+
+                if (isNil "ALIVE_fnc_radioBroadcastToSide") exitWith {
+                    _status = "refused"; _detail = "no radio";
+                };
+
+                // A key with no text behind it answers EMPTY, measured, not
+                // with the key as the documentation suggests. Both are checked,
+                // because the empty answer is the dangerous one: it passes a
+                // key-name test, needs no arguments, and sends a blank
+                // transmission that looks like a working radio saying nothing.
+                private _template = localize _key;
+                if (_template isEqualTo "" || {_template isEqualTo _key}) exitWith {
+                    ["ALIVE_fnc_ATOEffect - no text for radio key %1, saying nothing", _key] call ALiVE_fnc_dump;
+                    _status = "refused"; _detail = "no text for that key";
+                };
+
+                // How many arguments the text actually wants, read from the
+                // text rather than written down here, so adding a %5 to a
+                // translation cannot leave this out of step.
+                //
+                // Worth checking rather than trusting: format leaves a literal
+                // %2 in the message when an argument is missing, and players
+                // would read it out loud on the radio.
+                private _needed = 0;
+                {
+                    if ((_template find format ["%1%2", "%", _x]) > -1) then { _needed = _x };
+                } forEach [1,2,3,4,5,6,7,8,9];
+                if (count _say < _needed) exitWith {
+                    ["ALIVE_fnc_ATOEffect - radio key %1 wants %2 argument(s) and was given %3, saying nothing",
+                        _key, _needed, count _say] call ALiVE_fnc_dump;
+                    _status = "refused"; _detail = "not enough to say it with";
+                };
+
+                // format takes the template and its arguments as ONE array, and
+                // the count varies by key, so the array is built.
+                private _message = format ([_template] + _say);
+
+                private _sideObject = objNull;
+                if (!isNil "ALIVE_fnc_sideTextToObject" && {!(_sideText isEqualTo "")}) then {
+                    _sideObject = [_sideText] call ALIVE_fnc_sideTextToObject;
+                };
+
+                [_sideText, [objNull, _message, "side", _sideObject, false, false, false, true, _hqClass]] call ALIVE_fnc_radioBroadcastToSide;
+                _detail = _message;
+            };
+
+            // The four the state table names, each one of the keys above with
+            // its key already chosen. The table says what to announce and never
+            // how to say it, which is why these exist at all; the words still
+            // come from the caller, because only the caller knows the callsign,
+            // the grid and the mission.
+            case "broadcastStart";
+            case "broadcastOnStation";
+            case "broadcastReturn";
+            case "broadcastLost": {
+                private _key = switch (_effect) do {
+                    case "broadcastStart":     { "STR_ALIVE_ATO_START" };
+                    case "broadcastOnStation": { "STR_ALIVE_ATO_ON_STATION" };
+                    case "broadcastReturn":    { "STR_ALIVE_ATO_RETURN" };
+                    default                    { "STR_ALIVE_ATO_AIRCRAFT_LOST" };
+                };
+                // Its answer is taken apart rather than passed through.
+                // _result is assembled from these three AFTER the switch, so
+                // assigning _result here would be thrown away, which is the
+                // same trap that once made three refusals report success.
+                private _r = [_logic, "apply", ["broadcast", _obj, _home,
+                    [_key] + (_extra select [0, 4])]] call MAINCLASS;
+                _status = _r param [0, "ok"];
+                _matched = _r param [1, false];
+                _detail = _r param [2, ""];
             };
 
             default {
