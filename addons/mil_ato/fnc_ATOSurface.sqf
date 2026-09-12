@@ -365,6 +365,35 @@ switch(_operation) do {
         // elevated origin, and placing at that height puts it in the roof.
         _target set [2, 0];
 
+        // Is the stand already occupied?
+        //
+        // Nothing asked, and nothing needed to while one aircraft was being
+        // tested. With several sharing an airfield this puts one hull inside
+        // another and destroys both, which is a recorded fault of the module
+        // being replaced. Asked here rather than at the caller because every
+        // path that moves an airframe onto its home comes through this one.
+        //
+        // Only occupancy, not the full clearance test: the home was already
+        // judged for geometry when it was chosen, and re-running that here
+        // would refuse a perfectly good stand for a reason that has not
+        // changed since. The aircraft being placed and its own crew are not
+        // obstacles to themselves.
+        private _mine = [_obj] + (crew _obj);
+        private _reach = 12;
+        private _bb = [typeOf _obj] call ALiVE_fnc_getVehicleBoundingBox;
+        if (count _bb > 1) then {
+            _reach = (((((_bb select 0) max (_bb select 1)) / 2) + 4) max 12);
+        };
+        private _blocked = (nearestObjects [_target, ["Air"], _reach]) select {
+            private _cand = _x;
+            (_mine findIf {_x isEqualTo _cand}) == -1 && {alive _cand}
+        };
+        if (count _blocked > 0) exitWith {
+            ["ALIVE_fnc_ATOSurface - place refused for %1: %2 is already on that stand",
+                typeOf _obj, typeOf (_blocked select 0)] call ALiVE_fnc_dump;
+            _result = false;
+        };
+
         private _dir = _home select 1;
 
         _obj allowDamage false;
@@ -470,6 +499,43 @@ switch(_operation) do {
         _pad setVariable ["ALiVE_atoStamped", true, true];
         [_pads,_tail,_pad] call ALIVE_fnc_hashSet;
         _result = _pad;
+    };
+
+    // The object an aircraft is told to land on.
+    //
+    // A helicopter cannot be sent to a coordinate to land. There is no landing
+    // waypoint type in this engine, which cost a week of runs to establish:
+    // setWaypointType "LAND" is accepted and silently does nothing, leaving a
+    // waypoint with no type, which is no order at all, and the aircraft hovers
+    // until something else puts it down. The only working idiom is landAt, and
+    // landAt takes an OBJECT. Logistics lands every one of its helicopters this
+    // way, at forty-two call sites, and never once with a waypoint.
+    //
+    // Preferring the terrain's own pad was tried first, to avoid creating
+    // objects at all, and it is the paragraph below that replaced it. The
+    // reasoning is kept because the conclusion is not obvious: the tidier
+    // idiom is the one that does not work.
+    case "padFor": {
+        _args params [["_home",[],[[]]], ["_tail","",[""]]];
+        if (count _home < 3) exitWith { _result = objNull };
+
+        // ALWAYS our own pad, never the map's.
+        //
+        // This used to prefer a real HeliH within three metres of the home, to
+        // avoid creating objects. It does avoid that, and it does not work:
+        // handed one of the terrain's own pads, landAt issues no command at all
+        // (measured, currentCommand empty for the whole descent) and the
+        // aircraft simply sinks wherever its last order left it, 26 to 38 m
+        // from the pad it was aimed at. Every landing that looked like it was
+        // working was the height floor letting it down, not the landing order
+        // placing it.
+        //
+        // Logistics lands helicopters at forty-two sites and creates a fresh
+        // Land_HelipadEmpty_F at every one of them, never passing a map object.
+        // That is the only idiom in this codebase demonstrated to work, so do
+        // that. The pad is deleted by releaseApproach when the approach ends,
+        // whatever ended it, so it cannot outlive the state that needed it.
+        _result = [_logic, "stampPad", [_home, _tail]] call MAINCLASS;
     };
 
     case "unstampPad": {

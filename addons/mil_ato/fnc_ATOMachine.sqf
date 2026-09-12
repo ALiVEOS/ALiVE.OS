@@ -309,17 +309,63 @@ switch(_operation) do {
                                     // it is handed there rather than solved twice.
                                     // Both destinations release the runway on
                                     // entry, so this does not release it itself.
-                                    if (_atHome) then {
+                                    // Whether it CAN be tidied is asked before whether it is close
+                                    // enough to leave alone. Asked the other way round, a touchdown
+                                    // 26 m out satisfied atHome, took the branch that only turns the
+                                    // aircraft round, and was never put on its stand, so the fleet
+                                    // drifted a little further off its pads with every sortie.
+                                    // placeOnSlot itself now decides what counts as already on the
+                                    // slot, so all this has to settle is whether tidying is allowed.
+                                    //
+                                    // The tidying is deliberate and it replaces a long argument with
+                                    // the engine. The aim of this state is that the aircraft ends up
+                                    // on its stand, not that a particular engine command does the
+                                    // placing, and landAt has been measured issuing no command at
+                                    // all: every descent so far was the height floor letting it sink
+                                    // wherever its last order left it, 26 to 38 m out. Moving a
+                                    // stopped aircraft thirty metres across an apron is also a far
+                                    // smaller thing to see than the mid-air repositioning this
+                                    // module used to do.
+                                    //
+                                    // Landing somewhere else entirely is still recovery's problem.
+                                    private _canTidy = ("nearHome" call _fnc_o)
+                                        && {("playersWithin300" call _fnc_n) == 0}
+                                        && {!_playerPassenger};
+                                    if (_canTidy) then {
+                                        _effects pushBack "placeOnSlot";
                                         _effects pushBack "turnaround";
                                         _next = "PARKED";
                                     } else {
-                                        _next = "RECOVERING";
+                                        if (_atHome) then {
+                                            // Down at its own field with somebody watching or
+                                            // riding. A crooked park is a smaller thing to see
+                                            // than an aircraft sliding sideways across the apron,
+                                            // so it keeps the spot it chose.
+                                            _effects pushBack "turnaround";
+                                            _next = "PARKED";
+                                        } else {
+                                            _next = "RECOVERING";
+                                        };
                                     };
                                 } else {
+                                    // Re-aimed EVERY tick while it is still up.
+                                    // A landing order is advisory: the engine
+                                    // drifts an aircraft back to its cruise
+                                    // height and evasive AI can discard the
+                                    // order outright minutes after it was
+                                    // given, so issuing it once on entry is not
+                                    // enough. This is what logistics does at
+                                    // each of its own landings and why.
+                                    _effects pushBack "landAtPad";
                                     if (_expired) then {
                                         private _a = [_row,"attempts",0] call ALIVE_fnc_hashGet;
                                         if (_a < 1) then {
-                                            _effects pushBack "retryLanding";
+                                            // The aim is already re-issued
+                                            // every tick above, so a deadline
+                                            // here means the approach is not
+                                            // working rather than that it was
+                                            // forgotten. Count it and let the
+                                            // next expiry put it down.
                                             [_row,"attempts",_a + 1] call ALIVE_fnc_hashSet;
                                         } else {
                                             if (_playerPassenger) then {
@@ -382,6 +428,15 @@ switch(_operation) do {
         private _changed = !(_next isEqualTo _state);
 
         if (_changed) then {
+            // Exit effects: what the state being LEFT has to give back. The
+            // only one so far is the approach, which may have had a landing pad
+            // minted for it, and that object must not outlive the state that
+            // needed it. Fires on EVERY way out of LANDING, including the ones
+            // that are not a landing at all, because an aircraft that is lost
+            // or taken over by a player on final is still an approach that
+            // ended.
+            if (_state isEqualTo "LANDING") then { _effects pushBack "releaseApproach" };
+
             [_row,"state",_next] call ALIVE_fnc_hashSet;
             [_row,"enteredAt",_now] call ALIVE_fnc_hashSet;
             if (!(_reason isEqualTo "")) then { [_row,"reason",_reason] call ALIVE_fnc_hashSet };
@@ -418,7 +473,23 @@ switch(_operation) do {
                 case "LAUNCHING":    { _effects append ["engineOn","broadcastStart"]; };
                 case "ON_STATION":   { _effects append ["broadcastOnStation","revealTargets","sortieArrived"]; };
                 case "RTB":          { _effects append ["broadcastReturn","releaseTargets","sortieReturning"]; };
-                case "LANDING":      { _effects pushBack "landingPlan"; };
+                // Nothing on entry. The standing order for this state is a
+                // landing waypoint at the home pad, and that is the engine
+                // feature for "fly there and come down".
+                //
+                // This used to also emit landingPlan, which issues land "LAND".
+                // That is an IMMEDIATE order meaning descend where you are, and
+                // it overrides the waypoint that was taking the aircraft to the
+                // pad. Measured: issued at 117 m and a kilometre short, over the
+                // sea, the helicopter stopped dead and hovered over water for
+                // the rest of the run, because it cannot land there and it was
+                // no longer navigating to anywhere it could.
+                //
+                // The effect is kept for retryLanding and emergencyLanding,
+                // which fire when the aircraft is already low and near, and
+                // where landing on the spot is the whole intention.
+                // Nothing on entry: the state re-aims every tick instead.
+                case "LANDING":      { };
                 case "ENROUTE":      { };
             };
         };
@@ -468,7 +539,12 @@ switch(_operation) do {
             case "ENROUTE":    { ["MOVE_STATION","LOITER"] };
             case "ON_STATION": { ["EXECUTE","LOITER"] };
             case "RTB":        { ["MOVE_APPROACH","LOITER"] };
-            case "LANDING":    { ["LAND"] };
+            // Nothing. There is no landing waypoint type in this engine, so a
+            // chain cannot express "come down here" and the attempt produced a
+            // typeless waypoint, which is no order at all. The landAtPad effect
+            // on entry owns this state, and a competing chain would only fight
+            // it the way a pending move already did.
+            case "LANDING":    { [] };
             case "LAUNCHING":  { ["TAKEOFF"] };
             case "ASSIGNED":   { ["HOLD"] };
             case "RECOVERING": { ["HOLD"] };

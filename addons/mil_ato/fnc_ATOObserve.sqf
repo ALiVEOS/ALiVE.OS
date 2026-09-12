@@ -115,7 +115,13 @@ switch(_operation) do {
 
         // Landed is not simply "on the ground": an aircraft rolling out at
         // 140 km/h is touching the ground and is not down yet.
-        ["landed", (isTouchingGround _obj) && {(speed _obj) < 5} && {_agl < 5}] call _fnc_set;
+        // Two metres, not five, and all three tests. The old module recorded why:
+        // being low is not being down, and counting a helicopter as landed while
+        // the engine was still flying it through the last of its descent meant
+        // everything that follows a landing ran early, and the airframe was put
+        // back where it launched from. Anyone watching the pad saw it jump
+        // sideways out of its own approach.
+        ["landed", (isTouchingGround _obj) && {(speed _obj) < 5} && {_agl < 2}] call _fnc_set;
 
         // ---- whose is it --------------------------------------------------
         // A hull this machine does not own cannot be told anything local, so
