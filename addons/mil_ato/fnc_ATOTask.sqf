@@ -4,18 +4,570 @@ SCRIPT(task);
 /* ----------------------------------------------------------------------------
 Function: ALIVE_fnc_ATOTask
 Description:
-Placeholder. Registered ahead of its build so the whole rewrite takes one PBO
-rebuild rather than one per piece. See contract.md section 5 for what this owns.
+Who flies what. Turns a request into a sortie, or says why not.
+
+It decides and it records; it does not touch the world. Choosing an airframe
+reads the campaign records and the state rows it is handed, never a profile, a
+distance to home, or a despawn flag. That was deliberate: the old module picked
+aircraft by asking the world questions whose answers changed under it mid-pick,
+and a selection that cannot be replayed cannot be tested.
+
+The planner is pure. Hand it the same request, records, rows and exclusions and
+it returns the same plan, which is why its test needs no mission at all.
+
+Parameters:
+Nil or Array - If Nil, return a new instance. If a hash, reference an existing one.
+String - The selected function
+Array - The selected parameters
 
 Returns:
-Nil - and says so in the log, so a caller reaching it early is not silent.
+Any - The new instance or the result of the selected function
+
+Examples:
+(begin example)
+_t = [nil, "create"] call ALIVE_fnc_ATOTask;
+_id = [_t, "submit", [_request]] call ALIVE_fnc_ATOTask;
+_plan = [_t, "plan", [_request, _records, _rows, _obs, []]] call ALIVE_fnc_ATOTask;
+
+(end)
+
+See Also:
+<ALIVE_fnc_ATOLedger>, <ALIVE_fnc_ATOMachine>, <ALIVE_fnc_ATOSurface>
 
 Author:
 Jman
 ---------------------------------------------------------------------------- */
 
-params [["_logic", objNull, [objNull,[]]], ["_operation", "", [""]]];
+#define SUPERCLASS ALIVE_fnc_baseClassHash
+#define MAINCLASS ALIVE_fnc_ATOTask
 
-["ALIVE_fnc_ATOTask - not built yet, called with operation %1", _operation] call ALiVE_fnc_dump;
+// The seven types a commander can ask for, plus the one the module raises for
+// itself when an airframe has to be moved rather than used.
+#define ATO_TYPES ["CAP","DCA","SEAD","CAS","Strike","Recce","OCA","FERRY"]
 
-nil
+// Only these count against the sortie cap and only these lease targets. A
+// standing patrol is not an operation against anything, so capping it would
+// mean a busy airfield stops defending itself.
+#define OFFENSIVE_TYPES ["SEAD","CAS","Strike","Recce","OCA"]
+
+// How long a request waits for a better airframe before taking what it has.
+// The old table had a malformed `case default` that never matched, so OCA and
+// anything unrecognised silently kept the initialiser instead of the intended
+// default. Written as a hash lookup with a real default.
+#define WAIT_TIMES [["CAS",10],["DCA",30],["CAP",60],["SEAD",60],["Strike",90],["Recce",90]]
+#define WAIT_DEFAULT 60
+
+// A denial that repeats every tick is noise that hides the one that matters.
+#define DENIAL_QUIET 300
+
+// Three goes at finding an airframe, then the request is refused. Each failure
+// excludes the tail that failed, so three attempts means three different
+// aircraft rather than the same one three times.
+#define MAX_ATTEMPTS 3
+
+private ["_result"];
+
+TRACE_1("ATO Task - input",_this);
+
+params [
+    ["_logic", objNull, [objNull,[]]],
+    ["_operation", "", [""]],
+    ["_args", objNull, [objNull,[],"",0,true,false]]
+];
+
+_result = true;
+
+switch(_operation) do {
+
+    case "create": {
+        _result = [[
+            ["class", MAINCLASS],
+            // requestId -> the typed request record
+            ["requests", [] call ALIVE_fnc_hashCreate],
+            // sortieId -> {requestId, type, zone, tails[], state, attempts, excluded[]}
+            ["sorties", [] call ALIVE_fnc_hashCreate],
+            // type -> the last time a denial of that kind was written down
+            ["lastDenial", [] call ALIVE_fnc_hashCreate],
+            ["nextId", 1],
+            // Nothing is denied for want of aircraft until placement has had
+            // its first look round. Before that "no assets" means "not yet",
+            // and refusing then taught the commander there was no air support
+            // for the whole mission.
+            ["firstPassDone", false],
+            // How many airframes the module currently holds. Pushed in by
+            // Placement rather than fetched, so nothing in here reaches into
+            // another piece to make a decision. -1 means nobody has said yet,
+            // and an unknown count never denies anything.
+            ["assetCount", -1],
+            // Set by Base when there is no airbase to fly from. Every request
+            // is refused with that reason rather than silently queued.
+            ["baseFailed", false],
+            ["baseFailedReason", ""],
+            ["maxConcurrentSorties", 0],
+            ["minAssetsForOffensive", 0],
+            ["sortieDuration", 0],
+            ["factions", []],
+            ["airspaces", []]
+        ]] call ALIVE_fnc_hashCreate;
+    };
+
+    // ---- the standing table, pure -----------------------------------------
+    // What a sortie of this type flies in this state, as order NAMES. The
+    // kernel turns a name into a place; this never sees a coordinate.
+    //
+    // Every name here is one the resolver already handles. That is a rule, not
+    // an accident: an order name nobody resolves produces an empty chain and
+    // the aircraft is left with no orders at all, which is how one sat on a
+    // runway with its engine running. Richer patterns per type (a racetrack for
+    // a patrol, a vector for an intercept) each need a new verb and a resolver
+    // to match, so they are a later change and not smuggled in here.
+    case "ordersFor": {
+        _args params [["_type","",[""]], ["_state","",[""]]];
+
+        private _station = switch (true) do {
+            // Something to attack, then hold over it.
+            case (_type in ["CAS","Strike","SEAD","OCA"]): { ["EXECUTE","LOITER"] };
+            // A reconnaissance aircraft does its job by being there and looking.
+            case (_type isEqualTo "Recce"): { ["MOVE_STATION","LOITER"] };
+            // A patrol and an interception are both a hold over the airspace
+            // until something enters it.
+            case (_type in ["CAP","DCA"]): { ["LOITER"] };
+            // A ferry has no station. It is in the air to be somewhere else.
+            default { ["LOITER"] };
+        };
+
+        _result = switch (_state) do {
+            case "LAUNCHING":    { ["TAKEOFF"] };
+            case "ENROUTE":      { ["MOVE_STATION","LOITER"] };
+            case "ON_STATION":   { _station };
+            case "RTB":          { ["MOVE_APPROACH","LOITER"] };
+            case "LANDING":      { ["LAND"] };
+            // Stay exactly where you are. Both of these are stationary states
+            // and both of them used to hand back nothing.
+            case "ASSIGNED":     { ["HOLD"] };
+            case "RECOVERING":   { ["HOLD"] };
+            // Parked, flown by somebody else, or gone. Not ours to order.
+            case "PARKED":       { [] };
+            case "PLAYER_FLOWN": { [] };
+            case "LOST":         { [] };
+            default              { ["HOLD"] };
+        };
+    };
+
+    case "waitFor": {
+        private _type = _args;
+        private _found = WAIT_TIMES findIf { (_x select 0) isEqualTo _type };
+        _result = if (_found > -1) then { (WAIT_TIMES select _found) select 1 } else { WAIT_DEFAULT };
+    };
+
+    // ---- choosing an airframe, pure ----------------------------------------
+    // plan(request, records, rowStates, obsMap, excludedTails)
+    //
+    // records  : tail -> campaign record (class, home, side, faction, readyAt)
+    // rowStates: tail -> the state table's row for it (state, sortieId)
+    // obsMap   : tail -> what the observer last said (fuel, ammo, damage)
+    //
+    // Everything it needs arrives as an argument, so the same inputs always
+    // give the same plan and the test can fabricate all three.
+    case "plan": {
+        _args params [
+            ["_request", [], [[]]],
+            ["_records", [], [[]]],
+            ["_rows", [], [[]]],
+            ["_obs", [], [[]]],
+            ["_excluded", [], [[]]]
+        ];
+
+        private _type    = [_request, "type", ""] call ALIVE_fnc_hashGet;
+        private _faction = [_request, "faction", ""] call ALIVE_fnc_hashGet;
+        private _target  = [_request, "targetPos", [0,0,0]] call ALIVE_fnc_hashGet;
+        private _now     = [_request, "receivedAt", 0] call ALIVE_fnc_hashGet;
+        private _minFuel = [_request, "minFuel", 0.5] call ALIVE_fnc_hashGet;
+
+        // Roles this type will accept, widest last. x_lib names them Recon,
+        // Attack, Fighter and CAS.
+        private _wantRoles = switch (true) do {
+            case (_type in ["CAP","DCA"]): { ["Fighter"] };
+            case (_type isEqualTo "Recce"): { ["Recon"] };
+            default { ["Attack","CAS"] };
+        };
+
+        // A candidate is a tail we could send right now. Two shapes qualify:
+        // parked and out of its turnaround, or already up on a patrol that can
+        // be turned onto something more urgent.
+        private _reroutable = _type in ["DCA","CAS","SEAD"];
+        private _candidates = [];
+
+        {
+            private _tail = _x;
+            private _rec  = [_records, _tail, []] call ALIVE_fnc_hashGet;
+            private _row  = [_rows, _tail, []] call ALIVE_fnc_hashGet;
+
+            if (count _rec > 0 && {count _row > 0} && {!(_tail in _excluded)}) then {
+                private _state   = [_row, "state", ""] call ALIVE_fnc_hashGet;
+                private _readyAt = [_rec, "readyAt", 0] call ALIVE_fnc_hashGet;
+                private _recFac  = [_rec, "faction", ""] call ALIVE_fnc_hashGet;
+                private _class   = [_rec, "class", ""] call ALIVE_fnc_hashGet;
+                private _rowType = [_row, "sortieType", ""] call ALIVE_fnc_hashGet;
+
+                private _available = switch (true) do {
+                    case (_state isEqualTo "PARKED"): { _now >= _readyAt };
+                    case (_reroutable && {_state isEqualTo "ON_STATION"} && {_rowType isEqualTo "CAP"}): { true };
+                    default { false };
+                };
+
+                // A faction the module does not own is somebody else's aircraft.
+                if (_available && {_faction isEqualTo "" || {_recFac isEqualTo _faction}}) then {
+                    private _o = [_obs, _tail, []] call ALIVE_fnc_hashGet;
+                    private _fuel   = [_o, "fuel", 1] call ALIVE_fnc_hashGet;
+                    private _ammo   = [_o, "ammo", 1] call ALIVE_fnc_hashGet;
+                    private _damage = [_o, "damage", 0] call ALIVE_fnc_hashGet;
+
+                    // A ferry is a reposition, so it needs neither ammunition
+                    // nor a healthy airframe, only enough fuel to get there.
+                    private _needsTeeth = !(_type isEqualTo "FERRY");
+
+                    if (_fuel >= _minFuel
+                        && {_damage < 0.6}
+                        && {!_needsTeeth || {_ammo > 0}}) then {
+                        _candidates pushBack [_tail, _class, _rec, _state];
+                    };
+                };
+            };
+        } forEach (_records select 1);
+
+        if (count _candidates == 0) exitWith {
+            _result = ["denied", "no candidate airframe"];
+        };
+
+        // Role is a FILTER, not a preference. A transport helicopter is not a
+        // near-miss for an interception, it simply cannot do it, and as a
+        // preference it would be chosen anyway whenever it happened to be the
+        // closest thing to the target.
+        //
+        // The fallback exists for aircraft whose roles cannot be read at all,
+        // which is the normal case for a modded faction: if nothing has a role
+        // that fits, everything flyable is admitted rather than the commander
+        // being told it has no aircraft. So an unroled fleet still flies, and a
+        // roled one is never mismatched.
+        private _withRoles = _candidates apply {
+            _x params ["_tail", "_class", "_rec", "_state"];
+            private _roles = [];
+            if (!isNil "ALiVE_fnc_getAircraftRoles") then {
+                _roles = [_class] call ALiVE_fnc_getAircraftRoles;
+            };
+            if !(_roles isEqualType []) then { _roles = [] };
+            [_tail, _class, _rec, _state, _roles]
+        };
+
+        private _fit = _withRoles select { !((_wantRoles arrayIntersect (_x select 4)) isEqualTo []) };
+        if (count _fit == 0) then { _fit = _withRoles };
+
+        // Score, then rank. Penalty dominates distance by a margin no real
+        // distance can close, so a better-suited aircraft far away still beats
+        // a worse one on the doorstep.
+        private _scored = [];
+        {
+            _x params ["_tail", "_class", "_rec", "_state", "_roles"];
+
+            private _penalty = 0;
+            // A fighter sent to hit a ground target is a fighter not defending
+            // the airspace, and it is usually carrying the wrong stores for it.
+            if (_type in ["CAS","Strike","OCA"] && {"Fighter" in _roles}) then {
+                _penalty = _penalty + 2;
+            };
+            // Turning a patrol onto a new job costs the patrol. Worth it for an
+            // interception, which is what the patrol was there for; grudging
+            // for anything else.
+            if (_state isEqualTo "ON_STATION" && {!(_type isEqualTo "DCA")}) then {
+                _penalty = _penalty + 1;
+            };
+
+            private _home = [_rec, "home", []] call ALIVE_fnc_hashGet;
+            private _from = if (count _home > 0) then { _home select 0 } else { [0,0,0] };
+            _scored pushBack [(_penalty * 1e6) + (_from distance2D _target), _tail];
+        } forEach _fit;
+
+        _scored sort true;
+
+        // A suppression sortie goes as a pair when a pair is available, because
+        // one aircraft against a defended site is a loss rather than a sortie.
+        private _wanted = if (_type isEqualTo "SEAD") then { 2 } else { 1 };
+        private _tails = [];
+        {
+            if (count _tails < _wanted) then { _tails pushBack (_x select 1) };
+        } forEach _scored;
+
+        _result = [_tails, _type, [_request, "airspace", ""] call ALIVE_fnc_hashGet];
+    };
+
+    // ---- what is already flying over a zone --------------------------------
+    case "activeInZone": {
+        _args params [["_zone","",[""]], ["_types",[],[[]]]];
+        private _sorties = [_logic, "sorties", []] call ALIVE_fnc_hashGet;
+        private _out = [];
+        {
+            private _s = [_sorties, _x, []] call ALIVE_fnc_hashGet;
+            if (count _s > 0) then {
+                private _state = [_s, "state", ""] call ALIVE_fnc_hashGet;
+                private _type  = [_s, "type", ""] call ALIVE_fnc_hashGet;
+                private _z     = [_s, "zone", ""] call ALIVE_fnc_hashGet;
+                if (!(_state in ["complete","denied"])
+                    && {_z isEqualTo _zone}
+                    && {count _types == 0 || {_type in _types}}) then {
+                    _out pushBack _x;
+                };
+            };
+        } forEach (_sorties select 1);
+        _result = _out;
+    };
+
+    // ---- admission ---------------------------------------------------------
+    // Every gate below is a flat guard at this level on purpose. A guard nested
+    // one block deeper exits only that block, and that has already cost this
+    // module two bugs: a refusal that reported success, and an airfield
+    // position that was computed and then silently thrown away.
+    case "submit": {
+        private _request = _args;
+        if !(_request isEqualType []) then { _request = [] };
+
+        private _type    = [_request, "type", ""] call ALIVE_fnc_hashGet;
+        private _faction = [_request, "faction", ""] call ALIVE_fnc_hashGet;
+        private _now     = [_request, "receivedAt", 0] call ALIVE_fnc_hashGet;
+        private _reqId   = [_request, "id", ""] call ALIVE_fnc_hashGet;
+
+        private _fnc_deny = {
+            params ["_reason"];
+            // Rate limited per reason. A denial repeated every tick buries the
+            // one that mattered, and the cap reason fires as often as the
+            // commander asks for another sortie.
+            private _quiet = [_logic, "lastDenial", []] call ALIVE_fnc_hashGet;
+            private _last = [_quiet, _reason, -99999] call ALIVE_fnc_hashGet;
+            if (_now - _last > DENIAL_QUIET) then {
+                [_quiet, _reason, _now] call ALIVE_fnc_hashSet;
+                ["ALIVE_fnc_ATOTask - request %1 (%2) denied: %3", _reqId, _type, _reason] call ALiVE_fnc_dump;
+            };
+            ["denied", _reason]
+        };
+
+        if !(_type in ATO_TYPES) exitWith { _result = ["unsupported type"] call _fnc_deny };
+
+        // No airbase to fly from. Refused with the reason rather than queueing
+        // requests that can never be met.
+        if ([_logic, "baseFailed", false] call ALIVE_fnc_hashGet) exitWith {
+            _result = [[_logic, "baseFailedReason", "no airbase"] call ALIVE_fnc_hashGet] call _fnc_deny;
+        };
+
+        private _factions = [_logic, "factions", []] call ALIVE_fnc_hashGet;
+        if (count _factions > 0 && {!(_faction isEqualTo "")} && {!(_faction in _factions)}) exitWith {
+            _result = ["faction not ours"] call _fnc_deny;
+        };
+
+        // The cap counts operations against something. A standing patrol is not
+        // one of those, so counting it would stop an airfield defending itself.
+        private _cap = [_logic, "maxConcurrentSorties", 0] call ALIVE_fnc_hashGet;
+        private _live = 0;
+        if (_cap > 0 && {_type in OFFENSIVE_TYPES}) then {
+            private _sorties = [_logic, "sorties", []] call ALIVE_fnc_hashGet;
+            {
+                private _s = [_sorties, _x, []] call ALIVE_fnc_hashGet;
+                private _st = [_s, "state", ""] call ALIVE_fnc_hashGet;
+                private _ty = [_s, "type", ""] call ALIVE_fnc_hashGet;
+                if (_ty in OFFENSIVE_TYPES && {!(_st in ["complete","denied"])}) then { _live = _live + 1 };
+            } forEach (_sorties select 1);
+        };
+        if (_cap > 0 && {_type in OFFENSIVE_TYPES} && {_live >= _cap}) exitWith {
+            _result = ["sortie cap reached"] call _fnc_deny;
+        };
+
+        // Not enough aircraft to mount an operation, but only once placement has
+        // actually looked. Before the first pass "none" means "not yet", and
+        // denying then told the commander there was no air support at all for
+        // the rest of the mission.
+        private _minAssets = [_logic, "minAssetsForOffensive", 0] call ALIVE_fnc_hashGet;
+        private _have = [_logic, "assetCount", -1] call ALIVE_fnc_hashGet;
+        private _firstPass = [_logic, "firstPassDone", false] call ALIVE_fnc_hashGet;
+        if (_firstPass
+            && {_have > -1}
+            && {_minAssets > 0}
+            && {_type in OFFENSIVE_TYPES}
+            && {_have < _minAssets}) exitWith {
+            _result = ["not enough aircraft for an operation"] call _fnc_deny;
+        };
+
+        // A duration set on the module overrides whatever was asked for.
+        private _override = [_logic, "sortieDuration", 0] call ALIVE_fnc_hashGet;
+        if (_override > 0) then { [_request, "duration", _override] call ALIVE_fnc_hashSet };
+
+        private _next = [_logic, "nextId", 1] call ALIVE_fnc_hashGet;
+        [_logic, "nextId", _next + 1] call ALIVE_fnc_hashSet;
+        private _sortieId = format ["ato_%1", _next];
+
+        private _sortie = [[
+            ["sortieId", _sortieId],
+            ["requestId", _reqId],
+            ["type", _type],
+            ["zone", [_request, "airspace", ""] call ALIVE_fnc_hashGet],
+            ["tails", []],
+            // Held, not refused, until placement has finished its first pass.
+            ["state", if (_firstPass) then {"planning"} else {"queued"}],
+            ["attempts", 0],
+            ["excluded", []],
+            ["receivedAt", _now]
+        ]] call ALIVE_fnc_hashCreate;
+
+        [([_logic, "sorties", []] call ALIVE_fnc_hashGet), _sortieId, _sortie] call ALIVE_fnc_hashSet;
+        [([_logic, "requests", []] call ALIVE_fnc_hashGet), _reqId, _request] call ALIVE_fnc_hashSet;
+
+        _result = _sortieId;
+    };
+
+    // ---- a dispatch came back ----------------------------------------------
+    case "onRowEvent": {
+        _args params [["_sortieId","",[""]], ["_tail","",[""]], ["_event","",[""]], ["_now",0,[0]]];
+        private _sorties = [_logic, "sorties", []] call ALIVE_fnc_hashGet;
+        private _s = [_sorties, _sortieId, []] call ALIVE_fnc_hashGet;
+
+        if (count _s == 0) exitWith {
+            ["ALIVE_fnc_ATOTask - event %1 for unknown sortie %2", _event, _sortieId] call ALiVE_fnc_dump;
+            _result = false;
+        };
+
+        switch (_event) do {
+            // The airframe could not take the job. Put the request back with
+            // that tail excluded, so the next attempt reaches a different
+            // aircraft rather than the same one three times.
+            case "assignFailed": {
+                private _attempts = ([_s, "attempts", 0] call ALIVE_fnc_hashGet) + 1;
+                private _excluded = [_s, "excluded", []] call ALIVE_fnc_hashGet;
+                if !(_tail isEqualTo "") then { _excluded pushBackUnique _tail };
+                [_s, "attempts", _attempts] call ALIVE_fnc_hashSet;
+                [_s, "excluded", _excluded] call ALIVE_fnc_hashSet;
+                [_s, "tails", []] call ALIVE_fnc_hashSet;
+                if (_attempts >= MAX_ATTEMPTS) then {
+                    [_s, "state", "denied"] call ALIVE_fnc_hashSet;
+                    [_s, "reason", "no airframe took the job"] call ALIVE_fnc_hashSet;
+                } else {
+                    [_s, "state", "planning"] call ALIVE_fnc_hashSet;
+                };
+                _result = [_s, "state", ""] call ALIVE_fnc_hashGet;
+            };
+
+            // A sortie whose every aircraft is gone, or has been taken over by
+            // a player, is finished whatever it was sent to do. Recorded with
+            // the reason so the record explains itself later.
+            case "onLost";
+            case "sortiePlayerControl": {
+                private _tails = [_s, "tails", []] call ALIVE_fnc_hashGet;
+                _tails = _tails - [_tail];
+                [_s, "tails", _tails] call ALIVE_fnc_hashSet;
+                if (count _tails == 0) then {
+                    [_s, "state", "complete"] call ALIVE_fnc_hashSet;
+                    private _why = if (_event isEqualTo "onLost") then {"every aircraft lost"} else {"taken over by a player"};
+                    [_s, "reason", _why] call ALIVE_fnc_hashSet;
+                };
+                _result = [_s, "state", ""] call ALIVE_fnc_hashGet;
+            };
+
+            case "sortieArrived":   { [_s, "state", "onStation"] call ALIVE_fnc_hashSet; _result = "onStation" };
+            case "sortieReturning": { [_s, "state", "returning"] call ALIVE_fnc_hashSet; _result = "returning" };
+
+            default {
+                ["ALIVE_fnc_ATOTask - sortie %1 ignored unknown event %2", _sortieId, _event] call ALiVE_fnc_dump;
+                _result = false;
+            };
+        };
+    };
+
+    // ---- the three the air picture raises ----------------------------------
+    // Each is refused while something of its own kind is already up over that
+    // airspace, so a repeated call does not stack sorties on one zone.
+    case "scheduleCAP";
+    case "scrambleDCA";
+    case "raiseSEAD": {
+        _args params [["_zone","",[""]], ["_detail",[],[[]]], ["_now",0,[0]]];
+        private _type = switch (_operation) do {
+            case "scheduleCAP": { "CAP" };
+            case "scrambleDCA": { "DCA" };
+            default { "SEAD" };
+        };
+
+        private _busy = [_logic, "activeInZone", [_zone, [_type]]] call MAINCLASS;
+        if (count _busy > 0) exitWith {
+            _result = ["denied", format ["a %1 is already up over %2", _type, _zone]];
+        };
+
+        private _request = [[
+            ["id", format ["%1_%2_%3", _type, _zone, _now]],
+            ["type", _type],
+            ["airspace", _zone],
+            ["targetPos", _detail param [0, [0,0,0]]],
+            ["targets", _detail],
+            ["requester", [[["kind","ATO"]]] call ALIVE_fnc_hashCreate],
+            ["receivedAt", _now],
+            ["duration", [_logic, "waitFor", _type] call MAINCLASS]
+        ]] call ALIVE_fnc_hashCreate;
+
+        _result = [_logic, "submit", _request] call MAINCLASS;
+    };
+
+    case "status": {
+        private _reqId = _args;
+        private _sorties = [_logic, "sorties", []] call ALIVE_fnc_hashGet;
+        private _out = [];
+        {
+            private _s = [_sorties, _x, []] call ALIVE_fnc_hashGet;
+            if (([_s, "requestId", ""] call ALIVE_fnc_hashGet) isEqualTo _reqId) then {
+                _out = [_x,
+                        [_s, "state", ""] call ALIVE_fnc_hashGet,
+                        [_s, "tails", []] call ALIVE_fnc_hashGet];
+            };
+        } forEach (_sorties select 1);
+        _result = _out;
+    };
+
+    case "cancel": {
+        private _reqId = _args;
+        private _sorties = [_logic, "sorties", []] call ALIVE_fnc_hashGet;
+        private _hit = false;
+        {
+            private _s = [_sorties, _x, []] call ALIVE_fnc_hashGet;
+            private _st = [_s, "state", ""] call ALIVE_fnc_hashGet;
+            if (([_s, "requestId", ""] call ALIVE_fnc_hashGet) isEqualTo _reqId
+                && {!(_st in ["complete","denied"])}) then {
+                [_s, "state", "complete"] call ALIVE_fnc_hashSet;
+                [_s, "reason", "cancelled"] call ALIVE_fnc_hashSet;
+                _hit = true;
+            };
+        } forEach (_sorties select 1);
+        _result = _hit;
+    };
+
+    // Placement and Base push their state in rather than being asked for it.
+    case "firstPassDone": { [_logic, "firstPassDone", true] call ALIVE_fnc_hashSet; _result = true };
+    case "assetCount":    { [_logic, "assetCount", _args] call ALIVE_fnc_hashSet; _result = true };
+    case "baseFailed": {
+        _args params [["_failed",true,[true]], ["_reason","no airbase",[""]]];
+        [_logic, "baseFailed", _failed] call ALIVE_fnc_hashSet;
+        [_logic, "baseFailedReason", _reason] call ALIVE_fnc_hashSet;
+        _result = true;
+    };
+
+    // Not built in this pass, and named so a caller reaching one is told rather
+    // than finding that nothing happened. The player-task half needs the task
+    // payload shape and belongs with that work, not with selection.
+    case "csar";
+    case "openFerry";
+    case "playerTask": {
+        ["ALIVE_fnc_ATOTask - %1 is not built yet", _operation] call ALiVE_fnc_dump;
+        _result = ["denied", "not built"];
+    };
+
+    default {
+        _result = [_logic, _operation, _args] call SUPERCLASS;
+    };
+};
+
+TRACE_1("ATO Task - output",_result);
+
+_result;
