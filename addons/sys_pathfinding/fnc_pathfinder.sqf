@@ -293,13 +293,8 @@ switch (_operation) do {
                                 private _heuristicParams = [_neighSector,_currentSector,_procedure, _distanceToGoal,_sectorSize,_traversal == 2];
                                 [_cameFromMapLayer1, _costSoFarMapLayer1, _frontierLayer1, _neighSector, _currentSector, _distanceToGoal, _heuristicParams, _moveCost, false, _newCostSoFar] call ALiVE_fnc_pathfinderSetNode;
                             };
-                        } else {
-                            if (_mustCheckTraversal) exitwith {
-                                // Goal sector itself is untraversable by land -> genuine sea travel
-                                _genuinelyBlocked = true;
-                                breakTo "Main"
-                            };
                         };
+                        // A rejected edge into the goal does not rule out other approaches.
                     };
                 } foreach ([_terrainGrid, "getNeighborSectors", _indxCS] call Alive_fnc_pathfindingGrid);
 
@@ -968,6 +963,31 @@ switch (_operation) do {
                 // ////////////////////////////////////////////////////
             };
 
+            // Destination-only failures cannot be repaired by another approach.
+            // Preserve unrestricted air and same-cell behavior. Do not infer a
+            // destination failure from slope or water-span checks on one edge.
+            private _goalCaps = _procedure select 1;
+            private _invalidGoal = false;
+            if (!(_goalCaps select 4) && {!((_startSubSector select 0) isEqualTo (_goalSubSector select 0))}) then {
+                _invalidGoal = if (_goalCaps select 0) then {
+                    (((_goalSubSector select 4) select 1) select 2)
+                        < (ALiVE_pathfinding_seaLevel - ALiVE_pathfinding_waterMargin)
+                } else {
+                    (_goalCaps select 3) && {!(_goalCaps select 1)} && {!(_goalCaps select 2)}
+                        && {(_goalSubSector select 3) == "LAND"}
+                };
+            };
+            if (_invalidGoal) exitWith {
+                _searchStats set [4, "goal_invalid_destination"];
+                if (!_layer1Complete) then {
+                    _searchStats set [3, "skipped_invalid_destination"];
+                    _layer1Complete = true;
+                    _jobDataFlags set [1, true];
+                };
+                [_logic,"beginLayerPath", [2, _startSubSector, ((_layer2 select 4) select 1), _layer2 select 0, _layer2 select 3, _subSectorSize, true]] call MAINCLASS;
+                breakTo "main";
+            };
+
             ////// LAYER 1 PATHFINDING
             // Coarse search resumes from its saved frontier after three expansions.
             private _sectorIterations = 0;
@@ -1067,14 +1087,8 @@ switch (_operation) do {
                                 [_logic,"beginLayerPath", [1, _startSector, (_closestSector select 1),_cameFromMapLayer1, _pathLayer1, _sectorSize, false]] call MAINCLASS;
                                 breakto "main";
                             };
-                         } else {
-                            if (_neighSector isEqualTo _goalSector) exitwith {
-                                // Unable to complete path to goal
-                                _searchStats set [3, "goal_blocked"];
-                                [_logic,"beginLayerPath", [1, _startSector, (_closestSector select 1),_cameFromMapLayer1, _pathLayer1, _sectorSize, false]] call MAINCLASS;
-                                breakto "main";
-                            };
                         };
+                        // A rejected edge into the goal does not rule out other approaches.
                     };
                 } foreach ([_terrainGrid, "getNeighborSectors", _indxCS] call Alive_fnc_pathfindingGrid);
 
@@ -1096,6 +1110,14 @@ switch (_operation) do {
             // frames where the timer does not advance. Zero disables the budget.
             private _fineBudgetMs = missionNamespace getVariable ["ALiVE_pathfinding_fineBudgetMs", 3];
             if !(_fineBudgetMs isEqualType 0) then {_fineBudgetMs = 3};
+            // Request-local evidence. Refresh if procedure/water settings change.
+            // No traversal checks are added; collect failures from normal search.
+            private _goalEvidenceKey = [_procedure, ALiVE_pathfinding_seaLevel, ALiVE_pathfinding_waterMargin];
+            private _goalEvidence = _layer2 param [6, []];
+            if (_goalEvidence isEqualTo [] || {!((_goalEvidence select 0) isEqualTo _goalEvidenceKey)}) then {
+                _goalEvidence = [+_goalEvidenceKey, [], []];
+                _layer2 set [6, _goalEvidence];
+            };
             private _fineBudgetStarted = diag_tickTime;
             private _fineExpansionsThisFrame = 0;
             while {
@@ -1269,24 +1291,35 @@ switch (_operation) do {
                             };
                         };
                         if (_traversal > 0) then {
+                            if (_isGoalNeighbor) then {
+                                private _failedApproaches = _goalEvidence select 2;
+                                private _failedIndex = _failedApproaches find _indxCS;
+                                if (_failedIndex >= 0) then {_failedApproaches deleteAt _failedIndex};
+                            };
                             if (_finalCostCanImprove) then {
                                 private "_distanceToGoal";
-                                if (_pathLayer1Count > 0) then {
-                                    if (!_pathLayer1TailReady) then {
-                                        PROFILE_SCOPE(PFTAIL, "ALiVE pathfinder: recompute route tail")
-                                        _pathLayer1TailDistance = 0;
-                                        private _i = 1;
-                                        while {_i < _pathLayer1Count} do {
-                                            _pathLayer1TailDistance = _pathLayer1TailDistance
-                                                + ((_pathLayer1 select (_i - 1)) distance (_pathLayer1 select _i));
-                                            _i = _i + 1;
-                                        };
-                                        _layer1 set [5, _pathLayer1TailDistance];
-                                        _pathLayer1TailReady = true;
-                                    };
-                                    _distanceToGoal = (_centerPos distance _pathLayer1First) + _pathLayer1TailDistance;
+                                // The destination has no remaining journey, even while coarse
+                                // guidance still contains waypoints beyond this valid approach.
+                                if (_isGoalNeighbor) then {
+                                    _distanceToGoal = 0;
                                 } else {
-                                    _distanceToGoal = _centerPos distance (_goalSubSector select 2);
+                                    if (_pathLayer1Count > 0) then {
+                                        if (!_pathLayer1TailReady) then {
+                                            PROFILE_SCOPE(PFTAIL, "ALiVE pathfinder: recompute route tail")
+                                            _pathLayer1TailDistance = 0;
+                                            private _i = 1;
+                                            while {_i < _pathLayer1Count} do {
+                                                _pathLayer1TailDistance = _pathLayer1TailDistance
+                                                    + ((_pathLayer1 select (_i - 1)) distance (_pathLayer1 select _i));
+                                                _i = _i + 1;
+                                            };
+                                            _layer1 set [5, _pathLayer1TailDistance];
+                                            _pathLayer1TailReady = true;
+                                        };
+                                        _distanceToGoal = (_centerPos distance _pathLayer1First) + _pathLayer1TailDistance;
+                                    } else {
+                                        _distanceToGoal = _centerPos distance (_goalSubSector select 2);
+                                    };
                                 };
                                 // Internal insertion: traversal and strict cost improvement have
                                 // already passed. Keep SetNode's priority arithmetic and write order.
@@ -1306,12 +1339,20 @@ switch (_operation) do {
                                 [_logic,"beginLayerPath", [2, _startSubSector, (_closestSubSector select 1),_cameFromMapLayer2, _pathLayer2, _subSectorSize, true]] call MAINCLASS;
                                 breakto "main";
                             };
-                        } else {
-                            if (_isGoalNeighbor) exitwith {
-                                // Unable to complete path to goal because goal sector untraversable
-                                _searchStats set [4, "goal_blocked"];
-                                [_logic,"beginLayerPath", [2, _startSubSector, (_closestSubSector select 1),_cameFromMapLayer2, _pathLayer2, _subSectorSize, true]] call MAINCLASS;
-                                breakto "main";
+                        };
+                        // Only an actual traversal rejection counts as evidence.
+                        if (_isGoalNeighbor && {_traversal == 0}) then {
+                            private _goalIncoming = _goalEvidence select 1;
+                            if (_goalIncoming isEqualTo []) then {
+                                _goalIncoming = ([_terrainGrid, "getNeighborSubSectors", _goalSubSector select 0] call ALiVE_fnc_pathfindingGrid) apply {+(_x select 0)};
+                                _goalEvidence set [1, _goalIncoming];
+                            };
+                            private _failedApproaches = _goalEvidence select 2;
+                            if (_indxCS in _goalIncoming) then {_failedApproaches pushBackUnique (+_indxCS)};
+                            if (count _goalIncoming > 0 && {count _failedApproaches == count _goalIncoming}) exitWith {
+                                _searchStats set [4, "goal_all_approaches_blocked"];
+                                [_logic,"beginLayerPath", [2, _startSubSector, (_closestSubSector select 1), _cameFromMapLayer2, _pathLayer2, _subSectorSize, true]] call MAINCLASS;
+                                breakTo "main";
                             };
                         };
                     };
