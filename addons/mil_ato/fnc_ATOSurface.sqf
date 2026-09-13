@@ -87,6 +87,25 @@ Jman
 #define DECK_REACH_X 45
 #define DECK_REACH_Y 190
 
+// The catapults. A USS Freedom has four, declared as a Catapults class on the
+// PART that carries each one (two hull parts carry one each, a third carries
+// two), each with the memory point the shuttle sits at, the launch heading's
+// offset from the part's own, and the deflector animations behind it.
+//
+// Two of the four are never offered. The old module found that a plane shot
+// off the outer pair (pos_catapult_01 and pos_catapult_04) tends to crash on
+// the way out, and that is not being re-measured here.
+#define CATAPULT_EXCLUDED ["pos_catapult_01","pos_catapult_04"]
+// A plane's centre within this of the launch point means the catapult is
+// taken. The engine's own launch action uses the same figure; the old
+// module's three metres missed a jet standing a fuselage off the point.
+// How close something has to be to a catapult to be standing on it. Ten,
+// matching the clearance deck parking is held to: the catapults sit on the
+// taxi centrelines and a parked airframe is kept ten metres clear of those, so
+// anything nearer than that is on the catapult rather than beside it. Fifteen
+// counted a neighbour on its own stand as occupying the wire.
+#define CATAPULT_BUSY 10
+
 private ["_result"];
 
 // Distance from a point to a SEGMENT, in two dimensions. Wanted in three
@@ -127,6 +146,9 @@ switch(_operation) do {
             // Per carrier, worked out once. A deck does not change shape, and
             // the sweep that finds its parking costs hundreds of traces.
             ["decks", [] call ALIVE_fnc_hashCreate],
+            // Per carrier as well: which parts carry a catapult and where on
+            // them it is. The parts do not move relative to the ship.
+            ["catapults", [] call ALIVE_fnc_hashCreate],
             ["reservations", []]
         ]] call ALIVE_fnc_hashCreate;
     };
@@ -416,6 +438,163 @@ switch(_operation) do {
                 _result = [_deckZ, _landA, _landB, _taxi, _spots, _partClasses];
                 [_decks, _key, _result] call ALIVE_fnc_hashSet;
             };
+        };
+    };
+
+    // ---- the catapults ----------------------------------------------------
+    // Every catapult on one carrier, as [part, memoryPoint, dirOffset,
+    // animations] entries, worked out once per ship and kept beside the deck.
+    //
+    // Walks the part CLASSES the deck geometry already reduced from the
+    // config pairs, and for each class that declares a Catapults class finds
+    // the live part object near the ship and reads each catapult off it by
+    // index. The old module read the same config through a text property
+    // walk and saw an empty dirOffset; getNumber is the read that fits a
+    // number. Expected on a USS Freedom: two entries once the outer pair is
+    // dropped, Catapult1 on Land_Carrier_01_hull_04_1_F (pos_catapult_02) and
+    // Catapult3 on Land_Carrier_01_hull_07_1_F (pos_catapult_03).
+    //
+    // An empty answer is NOT cached. The parts are spawned by the hull's own
+    // init and a question asked before they exist would otherwise be the
+    // answer for the rest of the mission.
+    case "catapults": {
+        private _ship = _args;
+        _result = [];
+        if (!isNull _ship) then {
+            private _cats = [_logic, "catapults", []] call ALIVE_fnc_hashGet;
+            if !([_cats] call ALIVE_fnc_isHash) then {
+                _cats = [] call ALIVE_fnc_hashCreate;
+                [_logic, "catapults", _cats] call ALIVE_fnc_hashSet;
+            };
+            private _key = netId _ship;
+            private _got = [_cats, _key, []] call ALIVE_fnc_hashGet;
+            if (_got isEqualType [] && {count _got > 0}) then {
+                _result = _got;
+            } else {
+                private _geom = [_logic, "deckGeometry", _ship] call MAINCLASS;
+                private _partClasses = _geom param [5, []];
+                if !(_partClasses isEqualType []) then { _partClasses = [] };
+                // Each class once. A part class listed twice would otherwise
+                // hand back its catapults twice.
+                private _classes = [];
+                { if (_x isEqualType "") then { _classes pushBackUnique _x } } forEach _partClasses;
+
+                private _found = [];
+                {
+                    private _cls = _x;
+                    private _catCfg = configFile >> "CfgVehicles" >> _cls >> "Catapults";
+                    if (isClass _catCfg) then {
+                        private _part = (nearestObjects [getPosASL _ship, [_cls], SHIP_SEARCH]) param [0, objNull];
+                        if (!isNull _part) then {
+                            for "_i" from 0 to ((count _catCfg) - 1) do {
+                                private _c = _catCfg select _i;
+                                if (isClass _c) then {
+                                    private _mem = getText (_c >> "memoryPoint");
+                                    if (!(_mem isEqualTo "") && {!(_mem in CATAPULT_EXCLUDED)}) then {
+                                        _found pushBack [
+                                            _part,
+                                            _mem,
+                                            getNumber (_c >> "dirOffset"),
+                                            getArray (_c >> "animations")
+                                        ];
+                                    };
+                                };
+                            };
+                        };
+                    };
+                } forEach _classes;
+
+                if (count _found > 0) then {
+                    [_cats, _key, _found] call ALIVE_fnc_hashSet;
+                    ["ALIVE_fnc_ATOSurface - %1: %2 catapult(s) offered: %3",
+                        typeOf _ship, count _found, _found apply { _x select 1 }] call ALiVE_fnc_dump;
+                };
+                _result = _found;
+            };
+        };
+    };
+
+    // Where a catapult's shuttle is in the world, ASL. Worked out fresh from
+    // the part every time and never cached, for the same reason a deck home
+    // resolves rather than reads: a ship that has moved between a save and a
+    // reload must not hand back where its catapult used to be. The read is
+    // the engine's own (fn_carrier01catapultid.sqf).
+    case "catapultPos": {
+        private _entry = _args;
+        _result = [0,0,0];
+        if (_entry isEqualType [] && {count _entry > 1}) then {
+            private _part = _entry select 0;
+            private _mem = _entry select 1;
+            if (!isNull _part && {_mem isEqualType ""}) then {
+                _result = _part modelToWorldWorld (_part selectionPosition _mem);
+            };
+        };
+    };
+
+    // The nearest catapult to a point that nothing is standing on, as the
+    // entry with its world position appended: [part, memoryPoint, dirOffset,
+    // animations, positionASL]. Empty when every catapult is taken.
+    //
+    // Occupancy is physical and current rather than a claim table. The
+    // runway lock already makes launches one at a time per commander, and the
+    // effect puts the aircraft on the catapult in the same call that chose
+    // it, so the next question sees it there. What this catches is the other
+    // thing: a player's aircraft sitting on a catapult. The aircraft asking
+    // is passed in the ignore list so its own catapult counts as free.
+    case "freeCatapult": {
+        _args params [
+            ["_ship",objNull,[objNull]],
+            ["_from",[0,0,0],[[]]],
+            ["_ignore",[],[[]]]
+        ];
+        _result = [];
+        if (!isNull _ship) then {
+            private _entries = [_logic, "catapults", _ship] call MAINCLASS;
+            // Ranked by distance and read back by index, as plain numbers,
+            // so the engine's own sort does the ordering and never has to
+            // compare two entries that carry objects.
+            private _ranked = [];
+            {
+                private _pos = [_logic, "catapultPos", _x] call MAINCLASS;
+                _ranked pushBack [_from distance2D _pos, _forEachIndex];
+            } forEach _entries;
+            _ranked sort true;
+            {
+                if (count _result == 0) then {
+                    private _entry = _entries select (_x select 1);
+                    private _mem = _entry param [1, ""];
+                    private _pos = [_logic, "catapultPos", _entry] call MAINCLASS;
+                    private _busy = (nearestObjects [_pos, ["Plane"], CATAPULT_BUSY]) select {
+                        private _cand = _x;
+                        alive _cand && {(_ignore findIf {_x isEqualTo _cand}) == -1}
+                    };
+
+                    // And anything that has CLAIMED this catapult but has not
+                    // reached it yet.
+                    //
+                    // Standing on it is not the only way to be using it. An
+                    // aircraft is towed to the wire over as much as thirty
+                    // seconds, and for all of that time it is still back on its
+                    // stand with nothing near the catapult, so asking only what
+                    // is standing there told a second aircraft the same wire was
+                    // free. The claim lives on the aircraft, stamped the moment
+                    // the wire is chosen and cleared when the launch ends or
+                    // stands down, so there is no separate list to keep in step
+                    // with reality.
+                    if (count _busy == 0) then {
+                        private _claimed = (nearestObjects [getPosASL _ship, ["Plane"], SHIP_SEARCH]) select {
+                            private _cand = _x;
+                            alive _cand
+                            && {(_ignore findIf {_x isEqualTo _cand}) == -1}
+                            && {(_cand getVariable ["ALiVE_mil_ato_catapult", ""]) isEqualTo _mem}
+                            && {time < (_cand getVariable ["ALiVE_mil_ato_catapultUntil", -99999])}
+                        };
+                        if (count _claimed > 0) then { _busy = _claimed };
+                    };
+
+                    if (count _busy == 0) then { _result = _entry + [_pos] };
+                };
+            } forEach _ranked;
         };
     };
 

@@ -56,16 +56,61 @@ Jman
 #define MAINCLASS ALIVE_fnc_ATOEffect
 
 // Anything that moves the aircraft, plus taking its crew away. Refused outright
-// while a player is in it, from any state, by any path.
-#define PLAYER_UNSAFE ["airborneStart","forceLaunch","placeOnSlot","forceLanded","spawnAtHome","standDownCrew","takeOwnership"]
+// while a player is in it, from any state, by any path. A catapult tows the
+// aircraft onto the wire before it fires, so it belongs here with the rest.
+#define PLAYER_UNSAFE ["airborneStart","forceLaunch","placeOnSlot","forceLanded","spawnAtHome","standDownCrew","takeOwnership","catapult"]
 
 // Effects that only work where the object lives. On a hull owned elsewhere these
 // do nothing at all, so they are refused and reported instead.
-#define LOCAL_ONLY ["engineOn","engineOff","airborneStart","forceLaunch","placeOnSlot","forceLanded","spawnAtHome","seatCrew","recrewInPlace","standDownCrew","issueOrders","clearOrders","land","taxiTo","revealTargets","releaseTargets"]
+#define LOCAL_ONLY ["engineOn","engineOff","airborneStart","forceLaunch","placeOnSlot","forceLanded","spawnAtHome","seatCrew","recrewInPlace","standDownCrew","issueOrders","clearOrders","land","taxiTo","revealTargets","releaseTargets","catapult","tailhook","deckRecover","landOnRunway"]
 
 // Not built in this pass. Named so a caller reaching one is told, rather than
-// finding that nothing happened.
-#define NOT_BUILT ["catapult","tailhook","deckLaunch","deckRecover","decoyLasers","addThreatHandlers","holdTargets","unquiesce","sweepTaxiPath","siren","deleteWreckNear","rehome","unshield"]
+// finding that nothing happened. deckLaunch stays here on purpose: it would be
+// a second name for catapult, and two names for one thing is how two callers
+// come to disagree.
+#define NOT_BUILT ["deckLaunch","decoyLasers","addThreatHandlers","holdTargets","unquiesce","sweepTaxiPath","siren","deleteWreckNear","rehome","unshield"]
+
+// The catapult, in numbers.
+//
+// How long one launch is allowed to own the aircraft. A second ask inside
+// this window is answered "matched" rather than started on top of the first:
+// the tow takes up to eight seconds, the pin six, the launch itself a couple,
+// and the deflectors come down four seconds after that.
+// One launch owns its aircraft for this long. The arithmetic has to hold or
+// the state table's own deadline lands inside a running sequence: up to 30 s of
+// tow, 6 s pinned, and about 7 s for the shot and the kick is 43, so 60 leaves
+// room without letting a wedged attempt hold an aircraft for long.
+#define CATAPULT_WINDOW 60
+
+// How far an aircraft may be towed to reach a catapult, and how long that may
+// take. The distance is a REFUSAL, not a cap on the time: capping the time
+// while letting the distance grow is what dragged a jet three kilometres
+// across the sea in eight seconds. A hundred and fifty metres reaches any
+// stand on this deck, and at the engine's own five metres a second that is
+// thirty seconds of visible movement.
+#define CATAPULT_TOW_REACH 150
+// The tow onto the wire, in metres a second and degrees a second, and the
+// longest it may take. These are the engine's own figures for a player's
+// aircraft (fn_carrier01catapultlockto.sqf), so an AI jet crosses the deck
+// at the same pace a player's does.
+#define CATAPULT_TOW_SPEED 5
+#define CATAPULT_TOW_TURN 15
+#define CATAPULT_TOW_MAX 30
+// Held on the wire this long before the shot, engine running, so the
+// engine's own launch finds a settled aircraft. The old module waited three
+// seconds for the deflectors and six pinned; the deflectors take one, so the
+// pin covers both.
+#define CATAPULT_PIN 6
+
+// How long to leave a plane alone once it has been sent to the airport.
+//
+// Measured from three kilometres out at three hundred metres: a jet took 106
+// seconds to fly the circuit and touch down, and a VTOL 126. Re-issuing the
+// order restarts the circuit, so re-aiming on the thirty-five second interval
+// the pad approach uses would restart it three times and it would never land.
+// Three minutes is longer than any circuit measured and still short enough to
+// rescue an approach the engine has quietly dropped.
+#define RUNWAY_REAIM 180
 
 private ["_result"];
 
@@ -109,7 +154,8 @@ switch(_operation) do {
                    "broadcast","broadcastStart","broadcastOnStation","broadcastReturn",
                    "broadcastLost","retryLanding","emergencyLanding","turnaround",
                    "mintDroneCrew","recrewInPlace","takeOwnership","engineOn","engineOff",
-                   "seatCrew","standDownCrew","clearOrders","airborneStart"];
+                   "seatCrew","standDownCrew","clearOrders","airborneStart",
+                   "catapult","tailhook","deckRecover","landOnRunway"];
     };
 
     case "apply": {
@@ -145,6 +191,23 @@ switch(_operation) do {
         if (_effect in NOT_BUILT) exitWith {
             ["ALIVE_fnc_ATOEffect - %1 is not built yet, refusing rather than doing nothing quietly", _effect] call ALiVE_fnc_dump;
             _result = ["refused", false, "not built"];
+        };
+
+        // How far up the aircraft is, measured against what is UNDER it. On a
+        // deck that is getPos: getPosATL measures from the terrain, and over
+        // water the terrain is the sea bed forty metres down, so an aircraft
+        // standing on a carrier read as sixty-odd metres airborne. That made
+        // orders for a parked jet refuse as "an airborne chain must end in a
+        // hold", and forceLaunch answer "matched" and do nothing. The
+        // observer makes the same choice for the same reason; terrain homes
+        // keep getPosATL so nothing on land changes.
+        private _fnc_up = {
+            params ["_o", "_h"];
+            if (count _h > 2 && {(_h select 2) isEqualTo "deck"}) then {
+                (getPos _o) select 2
+            } else {
+                (getPosATL _o) select 2
+            }
         };
 
         switch (_effect) do {
@@ -252,7 +315,7 @@ switch(_operation) do {
             // know what the sortie is, and that is not this piece's business.
             case "issueOrders": {
                 private _chain = _extra param [0, []];
-                private _airborne = ((getPosATL _obj) select 2) > 50;
+                private _airborne = ([_obj, _home] call _fnc_up) > 50;
 
                 if (count _chain == 0) exitWith { _status = "refused"; _detail = "empty chain" };
 
@@ -444,7 +507,7 @@ switch(_operation) do {
             };
 
             case "airborneStart": {
-                if (((getPosATL _obj) select 2) > 50) then {
+                if (([_obj, _home] call _fnc_up) > 50) then {
                     _matched = true;
                 } else {
                     private _alt = _extra param [0, 300];
@@ -456,7 +519,7 @@ switch(_operation) do {
             };
 
             case "forceLaunch": {
-                if (((getPosATL _obj) select 2) > 50) then {
+                if (([_obj, _home] call _fnc_up) > 50) then {
                     _matched = true;
                 } else {
                     private _p = getPosATL _obj;
@@ -464,6 +527,479 @@ switch(_operation) do {
                     _obj engineOn true;
                     _obj setVelocity [(sin (getDir _obj)) * 120, (cos (getDir _obj)) * 120, 0];
                 };
+            };
+
+            // ---- the catapult -----------------------------------------------
+            // Finds a free catapult on the aircraft's own ship, tows the
+            // aircraft onto it and shoots it off. One effect rather than three
+            // because the three are one sequence with one window in which a
+            // second ask must do nothing, and split up the table would have
+            // three things that can each be half done.
+            //
+            // What happens synchronously, before this answers: the pilot's
+            // MOVE AI is switched off so the pending takeoff order cannot
+            // taxi the aircraft out from under the tow, damage is switched
+            // off, and the launch is stamped on the hull. Everything that
+            // takes time is spawned. The stamp is a local variable and is
+            // never saved, so a reload cannot resurrect a launch.
+            case "catapult": {
+                private _surface = _extra param [0, []];
+                private _tail = _extra param [1, ""];
+                if (_surface isEqualTo []) exitWith { _status = "refused"; _detail = "no surface" };
+
+                // A launch already under way owns the aircraft until its stamp
+                // runs out. The stamp carries its own expiry rather than a
+                // start time, so the length of the window lives here, beside
+                // the sequence that owns it, and the observer can read the same
+                // variable without agreeing a number with this file.
+                private _until = _obj getVariable ["ALiVE_mil_ato_catapultUntil", -99999];
+                if !(_until isEqualType 0) then { _until = -99999 };
+                if (time < _until) exitWith { _matched = true; _detail = "launch in progress" };
+
+                // The MOVE AI toggle needs somebody at the controls. The table
+                // only asks this with the crew seated, so a refusal here is
+                // something worth reading.
+                private _pilot = driver _obj;
+                if (isNull _pilot || {!alive _pilot}) exitWith { _status = "refused"; _detail = "no pilot" };
+
+                private _ship = [_surface, "carrierFor", _home param [3, []]] call ALIVE_fnc_ATOSurface;
+                if (isNull _ship) exitWith { _status = "refused"; _detail = "no carrier" };
+
+                // IS IT ON THE DECK. Asked before anything else is touched,
+                // and the reason it has to be asked is worth writing down.
+                //
+                // The table asks for a launch on every tick while the aircraft
+                // is not airborne, and airborne means fifty metres up. The
+                // engine's own shot leaves a jet at about twenty four, which is
+                // airborne and under the gate, so the state stays in LAUNCHING
+                // and this is asked again. With no test for where the aircraft
+                // actually is, the next attempt found its catapult empty, said
+                // free, and towed a jet that was by then kilometres away and
+                // flying back across the sea, pinned it above the plating where
+                // the engine's launch cannot fire, and released it to fall. A
+                // jet that had rolled off the bow into the water was pinned
+                // inside the hull instead.
+                //
+                // Both go away if the question is asked. Near the ship, and at
+                // the height of its deck.
+                private _deckZ = ([_surface, "deckGeometry", _ship] call ALIVE_fnc_ATOSurface) param [0, -9999];
+                if (_deckZ < -9000) exitWith { _status = "refused"; _detail = "the deck level is not known" };
+                private _dShip = _obj distance2D _ship;
+                private _dDeck = abs (((getPosASL _obj) select 2) - _deckZ);
+                if (_dShip > CATAPULT_TOW_REACH + 100 || {_dDeck > 6}) exitWith {
+                    _status = "refused";
+                    _detail = format ["not on the deck (%1 m from the ship, %2 m off deck level)",
+                        round _dShip, round _dDeck];
+                };
+
+                private _free = [_surface, "freeCatapult", [_ship, getPosASL _obj, [_obj]]] call ALIVE_fnc_ATOSurface;
+                if !(_free isEqualType [] && {count _free > 4}) exitWith { _status = "refused"; _detail = "no free catapult" };
+                _free params ["_part", "_mem", "_dirOffset", "_anims", "_catPos"];
+
+                // Too far to tow is a refusal, not a faster tow. Capping the
+                // TIME while letting the distance grow is what turned a long
+                // tow into a three kilometre drag at three hundred and
+                // seventy five metres a second.
+                // The height the aircraft is held at is TRACED, not taken
+                // from the catapult's own memory point.
+                //
+                // The memory point sits at 23.70 on this ship and the plating
+                // traces at 23.48, and setPosWorld at the memory point slid the
+                // aircraft seven metres off the wire where setPosASL at the
+                // traced height put it on it to the metre. Measured, five
+                // placements side by side.
+                private _catTop = ([_surface, "deckTop", [[_catPos select 0, _catPos select 1, 0], []]] call ALIVE_fnc_ATOSurface) select 0;
+                if (_catTop < -9000) then { _catTop = _catPos select 2 };
+
+                private _towDist = _obj distance2D _catPos;
+                if (_towDist > CATAPULT_TOW_REACH) exitWith {
+                    _status = "refused";
+                    _detail = format ["%1 m is too far to tow to %2", round _towDist, _mem];
+                };
+
+                // The launch heading. The part's own heading less the
+                // catapult's offset, brought back into 0 to 360 because SQF's
+                // remainder keeps the sign.
+                //
+                // NOT less a further 180, which the engine's own carrier
+                // functions do and which is where that came from. Those orient
+                // an aircraft to LOCK ON to the shuttle, and it faces the other
+                // way to do that; it is not the direction it leaves in.
+                //
+                // Measured, both ways, on the test carrier with its bow at
+                // model y plus 190 and the catapult at y minus 63:
+                //
+                //   with the extra 180, heading 178   thrown down the deck
+                //                                     towards the STERN, ends at
+                //                                     model y minus 199, twelve
+                //                                     metres above the sea doing
+                //                                     nothing
+                //   without it, heading 358           409 km/h at 104 m four
+                //                                     seconds out, climbing
+                //                                     away, 1980 m from the
+                //                                     ship at 434 km/h, alive
+                private _launchDir = ((((getDir _part) - _dirOffset) % 360) + 360) % 360;
+
+                _pilot disableAI "MOVE";
+                _obj allowDamage false;
+                // Stamped NOW, so the catapult is claimed from this moment
+                // rather than from whenever the tow happens to arrive. Without
+                // that there was a window of up to thirty seconds in which the
+                // aircraft was still on its stand, nothing was near the
+                // catapult, and a second aircraft was told the same catapult
+                // was free.
+                _obj setVariable ["ALiVE_mil_ato_catapultUntil", time + CATAPULT_WINDOW, false];
+                _obj setVariable ["ALiVE_mil_ato_catapult", _mem, false];
+
+                ["ALIVE_fnc_ATOEffect - %1 (%2) towed to %3 on %4, launch heading %5",
+                    typeOf _obj, _tail, _mem, typeOf _part, round _launchDir] call ALiVE_fnc_dump;
+
+                // The sequence. It is the old module's launch, which worked,
+                // with two things in front of it: the wings are unfolded,
+                // because the engine's own catapult refuses a folded aircraft
+                // and it costs nothing on one without folding wings, and the
+                // aircraft is TOWED to the wire rather than set on it. A jet
+                // on its stand is twenty to sixty metres from a catapult, so
+                // at the engine's five metres a second that is four to twelve
+                // seconds of visible movement rather than a jump, and it is
+                // the same loop the pin needs anyway.
+                [_obj, _pilot, _part, _anims, _catPos, _launchDir, _deckZ, _catTop] spawn {
+                    params ["_obj", "_pilot", "_part", "_anims", "_catPos", "_launchDir", "_deckZ", "_catTop"];
+
+                    // Why the sequence may no longer proceed, asked at every
+                    // step rather than once at the start.
+                    //
+                    // This used to ask only whether the hull was dead, and the
+                    // three absolute refusals in front of the effect are
+                    // evaluated ONCE. Everything that matters here happens over
+                    // the next half minute. So a player who took a seat two
+                    // seconds in was towed across the deck, pinned for six
+                    // seconds where he could neither fly nor get out, and shot
+                    // off the bow with his damage turned off. The table had
+                    // already stopped asking; the running thread did not care.
+                    // Teleporting an aircraft out from under somebody is the
+                    // thing this module exists to stop.
+                    private _fnc_stop = {
+                        if (isNull _obj) exitWith { "the hull is gone" };
+                        if (!alive _obj) exitWith { "the hull is dead" };
+                        if (!local _obj) exitWith { "the hull moved to another machine" };
+                        if (({alive _x && {isPlayer _x}} count (crew _obj)) > 0) exitWith { "somebody got in" };
+                        if (isNull _pilot || {!alive _pilot}) exitWith { "the pilot is gone" };
+                        ""
+                    };
+
+                    // And one way out, reached from every check, which puts
+                    // back everything the sequence changed. The deflectors
+                    // especially: they used to come down on the success path
+                    // only, so a hull that died while pinned left that
+                    // catapult's blast deflector standing up for the rest of
+                    // the mission, and the next aircraft towed onto it was
+                    // pinned inside raised geometry.
+                    private _fnc_standDown = {
+                        params ["_why"];
+                        [_part, _anims, 0] call BIS_fnc_Carrier01AnimateDeflectors;
+                        if (!isNull _obj) then {
+                            _obj allowDamage true;
+                            _obj setVariable ["ALiVE_mil_ato_catapultUntil", nil, false];
+                            _obj setVariable ["ALiVE_mil_ato_catapult", nil, false];
+                        };
+                        if (!isNull _pilot && {alive _pilot}) then { _pilot enableAI "MOVE" };
+                        ["ALIVE_fnc_ATOEffect - the launch stood down: %1", _why] call ALiVE_fnc_dump;
+                    };
+                    private _fnc_gone = { !(([] call _fnc_stop) isEqualTo "") };
+
+                    private _aas = configFile >> "CfgVehicles" >> typeOf _obj >> "AircraftAutomatedSystems";
+                    private _unfolded = getNumber (_aas >> "wingStateUnFolded");
+                    { _obj animate [_x, _unfolded] } forEach (getArray (_aas >> "wingFoldAnimations"));
+
+                    // The tow. Straight line at the aircraft's OWN height, so
+                    // the frame the aircraft is standing in is the frame it
+                    // arrives in: the deck is level and the catapult is on
+                    // it. Position and heading each take as long as they
+                    // need at the engine's pace, capped, and the aircraft is
+                    // held level throughout because the surface normal over
+                    // water answers about the sea.
+                    // Above sea level, at the height the plating traces at,
+                    // and set with setPosASL rather than setPosWorld.
+                    //
+                    // Taking the height from the AIRCRAFT was tried, and it
+                    // meant an attempt on an aircraft that was not on the deck
+                    // pinned it at its own altitude over the catapult, where
+                    // the engine's launch, which fires only under a metre up,
+                    // did nothing and the aircraft was released in mid-air.
+                    private _startW = getPosASL _obj;
+                    private _target = [_catPos select 0, _catPos select 1, _catTop];
+                    private _height = _catTop;
+                    private _dist = (_startW distance2D _target) max 0.1;
+                    private _dirStart = (getDir _obj) % 360;
+                    private _dirDelta = (_launchDir - _dirStart) % 360;
+                    if (_dirDelta < -180) then { _dirDelta = _dirDelta + 360 };
+                    if (_dirDelta > 180) then { _dirDelta = _dirDelta - 360 };
+                    private _tMove = (_dist / CATAPULT_TOW_SPEED) min CATAPULT_TOW_MAX;
+                    private _tTurn = ((abs _dirDelta) / CATAPULT_TOW_TURN) min CATAPULT_TOW_MAX;
+                    private _t0 = time;
+                    private _towing = true;
+                    while { _towing && {!(call _fnc_gone)} } do {
+                        private _dt = time - _t0;
+                        _obj setVectorUp [0,0,1];
+                        if (_dt >= _tMove) then {
+                            _obj setPosASL _target;
+                        } else {
+                            private _f = _dt / _tMove;
+                            _obj setPosASL [
+                                (_startW select 0) + (((_target select 0) - (_startW select 0)) * _f),
+                                (_startW select 1) + (((_target select 1) - (_startW select 1)) * _f),
+                                _height
+                            ];
+                        };
+                        if (_dt >= _tTurn) then {
+                            _obj setDir _launchDir;
+                        } else {
+                            _obj setDir (_dirStart + (_dirDelta * (_dt / _tTurn)));
+                        };
+                        _towing = (_dt < _tMove) || {_dt < _tTurn};
+                        sleep 0.01;
+                    };
+                    private _why = [] call _fnc_stop;
+                    if !(_why isEqualTo "") exitWith { [_why] call _fnc_standDown };
+                    _obj setVelocity [0,0,0];
+
+                    // From here on it is the old module's sequence, which is
+                    // the one measured to work: deflectors up, then the
+                    // aircraft pinned to the wire with its engine running,
+                    // then the engine's own launch, then a kick if the
+                    // engine's launch left it low, then the deflectors down
+                    // and damage back on.
+                    [_part, _anims, 10] call BIS_fnc_Carrier01AnimateDeflectors;
+
+                    _obj setFuel 1;
+                    _obj engineOn true;
+                    private _until = time + CATAPULT_PIN;
+                    waitUntil {
+                        if (!(call _fnc_gone)) then {
+                            _obj setPosASL _target;
+                            _obj setDir _launchDir;
+                        };
+                        (time >= _until) || {call _fnc_gone}
+                    };
+                    _why = [] call _fnc_stop;
+                    if !(_why isEqualTo "") exitWith { [_why] call _fnc_standDown };
+
+                    // The pilot is given the controls back and pointed
+                    // straight ahead AND UP.
+                    //
+                    // The height is the whole of it. This was first written
+                    // aiming two thousand metres out at the height the aircraft
+                    // was standing at, which on a deck is about zero, so the
+                    // point was on the water: the jet flew level off the bow at
+                    // the sea, stayed under the fifty metres that counts as
+                    // airborne, and so never left LAUNCHING, which let the
+                    // whole launch be asked for again from scratch.
+                    //
+                    // Issuing NOTHING was then tried, on the grounds that the
+                    // old module issued nothing and relied on the take-off
+                    // order already sitting on the group. Measured: with no
+                    // sortie behind it there is no such order, and the jet left
+                    // the wire with nowhere to go, coasted off the bow and was
+                    // in the sea twenty seconds later, 243 m out at eleven
+                    // metres above sea level doing nothing. Relying on an order
+                    // that may or may not be there is the fault in both
+                    // directions.
+                    //
+                    // So the point is built here, explicitly: two thousand
+                    // metres down the launch heading at three hundred metres
+                    // above the surface. That is an above-surface height
+                    // because doMove takes one, and over water above-surface
+                    // and above-sea-level are the same number. ENROUTE
+                    // replaces it a tick or two later on a real sortie.
+                    if (!isNull _pilot && {alive _pilot}) then {
+                        _pilot enableAI "MOVE";
+                        private _ahead = _obj getPos [2000, _launchDir];
+                        _ahead set [2, 300];
+                        _obj doMove _ahead;
+                        _pilot doMove _ahead;
+                    };
+
+                    // Spawned, because it sleeps. It refuses a hull that is not
+                    // local, which the LOCAL_ONLY refusal above already ruled out.
+                    [_obj, _launchDir] spawn BIS_fnc_AircraftCatapultLaunch;
+
+                    // Eight tenths of a second, not two and two tenths.
+                    //
+                    // The catapults sit at model y minus sixty three and the
+                    // bow is at plus a hundred and ninety, so an aircraft shot
+                    // from one travels about two hundred and fifty metres ALONG
+                    // the deck before it clears the ship. Measured at the old
+                    // two and two tenths: twenty four metres above sea level
+                    // against a deck at twenty three and a half, so it had
+                    // spent that whole time flying half a metre above the
+                    // plating at nearly five hundred kilometres an hour. The
+                    // climb was arriving after the part of the launch that
+                    // needed it, which is why the same code put a jet 1595 m
+                    // clear on one run and in the sea on the next.
+                    sleep 0.8;
+                    _why = [] call _fnc_stop;
+                    if !(_why isEqualTo "") exitWith { [_why] call _fnc_standDown };
+                    // Not going fast enough to fly after the shot: the
+                    // measured kick, seventy forward and fifty up, exactly as
+                    // the old module gave it.
+                    //
+                    // The gate is height, and the height is well clear of the
+                    // deck. The vertical half of the kick is what makes the
+                    // difference: the engine's shot gives real forward speed
+                    // and almost no climb, so a jet that is not helped upward
+                    // leaves the bow level at deck height and is in the water
+                    // seconds later.
+                    //
+                    // Measured three ways. With the kick: 409 km/h at 104
+                    // metres four seconds out, 1980 m from the ship at 434
+                    // km/h, alive. Gated on airspeed instead, so that a jet
+                    // already doing over two hundred was NOT helped: in the sea
+                    // 349 m out, destroyed. Gated on the old module's twenty
+                    // four metres above sea level: a coin toss, because this
+                    // deck is at twenty three and a half and the aircraft
+                    // starts on it.
+                    //
+                    // Sixty is the figure because it is far enough above any
+                    // deck that the deck cannot sit on the line, and low enough
+                    // that an aircraft which is genuinely climbing away is left
+                    // alone. The second clause catches one that is high but
+                    // sinking.
+                    private _aslNow = (getPosASL _obj) select 2;
+                    private _velNow = velocity _obj;
+                    if (_aslNow < 60 || {(_velNow select 2) < 2}) then {
+                        // ADDED to what the aircraft already has, which is the
+                        // old module's measured kick and is kept for a reason.
+                        //
+                        // Setting the velocity outright was tried instead, on
+                        // the grounds that it removes the run to run variance
+                        // in what the engine's launch gives. It made things
+                        // worse, nought out of three, and the diagnostic said
+                        // why: the aircraft was already doing 294 km/h at
+                        // twenty four metres with a rate of plus one, which is
+                        // a sound launch, and an absolute set to a twelve metre
+                        // climb replaced a fifty metre one. Fifty metres a
+                        // second of climb, even for a second, is what buys the
+                        // altitude to clear the water while the pilot takes
+                        // over. That is the whole point of it.
+                        private _dir = direction _obj;
+                        private _vel = velocity _obj;
+                        _obj setVelocity [
+                            (_vel select 0) + (sin _dir * 70),
+                            (_vel select 1) + (cos _dir * 70),
+                            (_vel select 2) + 50
+                        ];
+                        ["ALIVE_fnc_ATOEffect - %1 off the wire was %2 m up at %3 km/h, rate %4; set to a climb",
+                            typeOf _obj, round _aslNow, round (speed _obj), round (_velNow select 2)] call ALiVE_fnc_dump;
+                    } else {
+                        ["ALIVE_fnc_ATOEffect - %1 off the wire was %2 m up at %3 km/h, rate %4; left alone",
+                            typeOf _obj, round _aslNow, round (speed _obj), round (_velNow select 2)] call ALiVE_fnc_dump;
+                    };
+
+                    // Damage stays off until the aircraft is actually flying,
+                    // not for a fixed four seconds.
+                    //
+                    // A jet dips towards the water after the shot before it
+                    // starts climbing, and with damage back on a graze kills
+                    // it. On a fixed timer that made the whole launch a coin
+                    // toss: the same code flew to 1401 m at 467 km/h on one run
+                    // and was in the sea 476 m out on the next. The module
+                    // already does it this way when it sets an aircraft down on
+                    // a stand, and for the same reason.
+                    //
+                    // Clear means a hundred metres up and moving like an
+                    // aircraft. If it never gets there, the deflectors still
+                    // come down and the catapult is still released, but damage
+                    // is left off and that is said out loud, exactly as the
+                    // placing does.
+                    private _clearBy = time + 25;
+                    private _flying = false;
+                    while { !_flying && {time < _clearBy} && {!(call _fnc_gone)} } do {
+                        sleep 1;
+                        _flying = ((getPosASL _obj) select 2) > 100 && {(speed _obj) > 250};
+                    };
+                    _why = [] call _fnc_stop;
+                    if !(_why isEqualTo "") exitWith { [_why] call _fnc_standDown };
+
+                    if (_flying) then {
+                        // The same stand-down as every failure path, because a
+                        // finished launch and an abandoned one have to leave
+                        // the catapult in the same state.
+                        ["the launch finished"] call _fnc_standDown;
+                    } else {
+                        [_part, _anims, 0] call BIS_fnc_Carrier01AnimateDeflectors;
+                        _obj setVariable ["ALiVE_mil_ato_catapultUntil", nil, false];
+                        _obj setVariable ["ALiVE_mil_ato_catapult", nil, false];
+                        ["ALIVE_fnc_ATOEffect - %1 never got established after its launch (%2 m up, %3 km/h); damage left off",
+                            typeOf _obj, round ((getPosASL _obj) select 2), round (speed _obj)] call ALiVE_fnc_dump;
+                    };
+                };
+
+                _detail = _mem;
+            };
+
+            // ---- the hook ---------------------------------------------------
+            // Drops the arrestor hook and hands the arrest to the engine, which
+            // waits until the aircraft is on the deck and within reach of the
+            // wire and then slows it. Idempotent against itself through the
+            // flag, and against the aircraft's own config landing handler
+            // (vanilla jets drop the hook themselves on an airport approach)
+            // because animating a hook that is already down moves nothing.
+            //
+            // The engine's wait has no timeout: it ends when the hook is
+            // raised, the hull dies, or the aircraft touches down. So
+            // releaseApproach raises a hook this put out, which is what ends
+            // that thread on an approach that never landed.
+            case "tailhook": {
+                private _cfg = configFile >> "CfgVehicles" >> typeOf _obj;
+                if (getNumber (_cfg >> "tailHook") == 0) exitWith {
+                    _status = "refused"; _detail = "no hook on this aircraft";
+                };
+                private _list = getArray (_cfg >> "CarrierOpsCompatability" >> "ArrestHookAnimationList");
+                private _states = getArray (_cfg >> "CarrierOpsCompatability" >> "ArrestHookAnimationStates");
+                if (count _list == 0) exitWith {
+                    _status = "refused"; _detail = "this aircraft has no hook to animate";
+                };
+                // States are [down, caught, up], the engine's own order.
+                private _down = _states param [0, 0];
+                private _first = _list param [0, ""];
+
+                // Is the hook DOWN, asked of the hook.
+                //
+                // This used to read a flag this module had set, and the engine
+                // raises the hook on its own in three places: when an aircraft
+                // touches down with no wire in reach, which is a bolter; at the
+                // end of every arrest; and through the aircraft's own
+                // landing-cancelled handler. After a bolter the flag still said
+                // out, so every following tick answered "nothing to do" and the
+                // go-around was flown hook up with the wire never catching. The
+                // observer's own rule applies here: nothing downstream should
+                // have to trust a flag somebody set earlier and forgot to clear.
+                //
+                // The phase is the engine's own test for this.
+                if ((_obj animationPhase _first) < ((_down + 0.1) max 0.1)) exitWith {
+                    _matched = true; _detail = "hook already down";
+                };
+
+                { _obj animate [_x, _down] } forEach _list;
+
+                // The arrest thread is only started when the aircraft does not
+                // already start one for itself. A vanilla jet carries a landing
+                // event handler that spawns the engine's arrest on any
+                // engine-driven approach, which is exactly what this module's
+                // own landing order produces. Two threads then run the same
+                // deceleration loop on one hull, and the first arrest slows it
+                // at twice the rate the config asks for.
+                private _ownHandler = getText (_cfg >> "EventHandlers" >> "landing");
+                if (_ownHandler isEqualTo "") then {
+                    [_obj] spawn BIS_fnc_aircraftTailhook;
+                };
+
+                // The flag is kept, but only to record that THIS module put the
+                // hook out, so the approach being given back knows to raise it.
+                // It is never read as "is the hook down" again.
+                _obj setVariable ["ALiVE_mil_ato_hookOut", true, false];
+                _detail = if (_ownHandler isEqualTo "") then { "hook out" } else { "hook out, the aircraft arrests itself" };
             };
 
             case "land": {
@@ -482,6 +1018,87 @@ switch(_operation) do {
             // object because this engine has no landing waypoint type. Both
             // together are what the old module used and what logistics still
             // uses at every one of its landing sites.
+            // Brings a PLANE down, which the pad approach cannot do.
+            //
+            // Every aircraft used to be aimed at its own parking stand, and a
+            // stand is twelve metres across. Measured on Stratis, all three
+            // given the same approach from 900 m out at 120 m, the order
+            // re-issued every two seconds exactly as the table does it:
+            //
+            //   helicopter   came down 2 m from its stand, alive
+            //   jet          overflew at 24 m, climbed away, DESTROYED 1649 m out
+            //   VTOL         139 km/h at three metres, DESTROYED
+            //
+            // So every fixed-wing aircraft this module owned was destroyed on
+            // its way home, and nothing caught it because the landing checks
+            // only ever flew a helicopter.
+            //
+            // The engine has a primitive for this and it works. The same two
+            // airframes given the airport flew the circuit and came down on the
+            // runway alive, in 106 and 126 seconds. It is exactly wrong for a
+            // helicopter, which under the same order hovered at 116 m, two
+            // kilometres out, indefinitely: the two kinds need opposite orders
+            // and each one's correct order is the other's failure.
+            case "landOnRunway": {
+                private _surface = _extra param [0, []];
+                private _tail = _extra param [1, ""];
+
+                private _grp = group (driver _obj);
+                if (isNull _grp) exitWith { _status = "refused"; _detail = "no group" };
+
+                // The airport is taken from the HOME, not from where the
+                // aircraft happens to be: a jet that wandered on its way back
+                // should come home, not to whatever field it drifted over.
+                private _from = _home param [0, []];
+                if (!(_from isEqualType []) || {count _from < 2}) then { _from = getPosATL _obj };
+                private _airportID = -1;
+                if (!isNil "ALiVE_fnc_getNearestAirportID") then {
+                    private _got = [_from] call ALiVE_fnc_getNearestAirportID;
+                    if (_got isEqualType 0) then { _airportID = _got };
+                };
+                if (_airportID < 0) exitWith { _status = "refused"; _detail = "no airport to land at" };
+
+                private _aimedAt = _grp getVariable ["ALiVE_mil_ato_runwayAimedAt", -1];
+                if !(_aimedAt isEqualType 0) then { _aimedAt = -1 };
+
+                if (_aimedAt < 0) then {
+                    // The chain goes first. A pending waypoint outranks a
+                    // landing order, which is how an approach was lost before.
+                    private _wps = waypoints _grp;
+                    for "_i" from (count _wps - 1) to 0 step -1 do { deleteWaypoint [_grp, _i] };
+                    _grp setVariable ["ALiVE_mil_ato_orders", nil, false];
+                    _grp setVariable ["ALiVE_mil_ato_landing", true, false];
+                };
+
+                if (_aimedAt < 0 || {(time - _aimedAt) > RUNWAY_REAIM}) then {
+                    // Quiesced for the same reason the pad approach is: a pilot
+                    // with evasion and targeting live ignores a landing order
+                    // outright, and this aircraft has just spent its sortie on a
+                    // search and destroy waypoint, so it is in combat behaviour
+                    // by definition.
+                    _grp setBehaviour "CARELESS";
+                    _grp allowFleeing 0;
+                    _grp setCombatMode "BLUE";
+                    {
+                        _x disableAI "AUTOTARGET";
+                        _x disableAI "TARGET";
+                        _x setSkill ["courage", 1];
+                    } forEach (units _grp);
+
+                    // "NONE" first, to clear any standing landing order, then
+                    // the airport. This is the pair that was measured working;
+                    // land "LAND" is the helicopter's order and it is what
+                    // destroyed these aircraft.
+                    _obj land "NONE";
+                    _obj landAt _airportID;
+                    _grp setVariable ["ALiVE_mil_ato_runwayAimedAt", time, false];
+                    _detail = format ["sent to airport %1", _airportID];
+                } else {
+                    _detail = format ["on the circuit for airport %1, %2 s",
+                        _airportID, round (time - _aimedAt)];
+                };
+            };
+
             case "landAtPad": {
                 private _surface = _extra param [0, []];
                 private _tail = _extra param [1, ""];
@@ -695,14 +1312,131 @@ switch(_operation) do {
                 };
             };
 
+            // ---- a plane coming back to a ship --------------------------------
+            // The plane's equivalent of landAtPad, re-issued every tick by the
+            // table. A jet cannot be brought down on a pad: landAtPad's arrival
+            // gate wants it under forty km/h, which a jet cannot do in the air.
+            // Its approach is the engine's own, aimed at the airport object the
+            // carrier carries, and its arrival is the wire.
+            //
+            // Nothing here slows it or sets a height. A jet held to a landing
+            // pace stalls, and the engine flies a carrier approach on its own
+            // once it has been told where the airport is. Both landing orders
+            // are given, in this order, because that is what the old module
+            // did for carriers: land "LAND" is the intent to come down, landAt
+            // names where, in the object form so no airport id arithmetic is
+            // needed. Re-issued every thirty-five seconds rather than every
+            // tick, for landAtPad's reason: re-issuing restarts the approach.
+            case "deckRecover": {
+                private _surface = _extra param [0, []];
+                private _tail = _extra param [1, ""];
+                if (_surface isEqualTo []) exitWith { _status = "refused"; _detail = "no surface" };
+
+                private _grp = group (driver _obj);
+                if (isNull _grp) exitWith { _status = "refused"; _detail = "no group" };
+
+                private _ship = [_surface, "carrierFor", _home param [3, []]] call ALIVE_fnc_ATOSurface;
+                if (isNull _ship) exitWith { _status = "refused"; _detail = "no carrier" };
+
+                // The DynamicAirport_01_F the carrier carries. The hull's own
+                // config has no landing data at all; deckGeometry finds the
+                // lines to keep clear the same way.
+                private _airObj = (nearestObjects [getPosASL _ship, ["AirportBase"], 400]) param [0, objNull];
+                if (isNull _airObj) exitWith { _status = "refused"; _detail = "carrier has no airport" };
+
+                private _committed = _grp getVariable ["ALiVE_mil_ato_landing", false];
+                if (!_committed) then {
+                    // Clear the chain first, as landAtPad does: a pending
+                    // waypoint or move competes with the landing and wins.
+                    private _wps = waypoints _grp;
+                    for "_i" from (count _wps - 1) to 0 step -1 do { deleteWaypoint [_grp, _i] };
+                    _grp setVariable ["ALiVE_mil_ato_orders", nil, false];
+                    // Any standing landing order is cleared by the aim below
+                    // rather than here. Clearing it here as well meant it was
+                    // issued and then contradicted twenty lines later in the
+                    // same call, so the "start clean" step did nothing.
+                    _grp setVariable ["ALiVE_mil_ato_landing", true, false];
+                    _grp setVariable ["ALiVE_mil_ato_landingAimedAt", -1, false];
+                };
+
+                private _dShip = _obj distance2D _ship;
+                private _up = [_obj, _home] call _fnc_up;
+                private _aimedAt = _grp getVariable ["ALiVE_mil_ato_landingAimedAt", -1];
+                if !(_aimedAt isEqualType 0) then { _aimedAt = -1 };
+
+                // Once, and then left alone for three minutes.
+                //
+                // Two things were wrong here and both are measured. The
+                // interval was thirty five seconds, which is right for a
+                // helicopter being re-centred over a pad and wrong for an
+                // aircraft flying a circuit: a jet takes 106 seconds to fly one
+                // and a VTOL 126, and re-issuing the order starts the circuit
+                // again, so at thirty five seconds it was restarted three times
+                // over and never completed.
+                //
+                // And it issued land "LAND" together with landAt. This file
+                // already records, eighty lines above, that the two issued in
+                // the same breath fight and come out worse than either alone.
+                // Worse than that, land "LAND" means come down HERE and it is
+                // the helicopter's order: given to a plane it destroyed every
+                // one it was given, at the airfield and presumably at sea. The
+                // pair that was measured landing a plane is land "NONE" to
+                // clear any standing order, then the airport.
+                if (_aimedAt < 0 || {(time - _aimedAt) > RUNWAY_REAIM}) then {
+                    // The same quiesce as landAtPad, for the same reason: a
+                    // pilot with evasion and targeting live ignores a landing
+                    // order outright, and the engine turns evasion back on by
+                    // itself, so it is re-done with every re-aim.
+                    _grp setBehaviour "CARELESS";
+                    _grp allowFleeing 0;
+                    _grp setCombatMode "BLUE";
+                    {
+                        _x disableAI "AUTOTARGET";
+                        _x disableAI "TARGET";
+                        _x setSkill ["courage", 1];
+                    } forEach (units _grp);
+                    _obj land "NONE";
+                    _obj landAt _airObj;
+                    _grp setVariable ["ALiVE_mil_ato_landingAimedAt", time, false];
+                    ["ALIVE_fnc_ATOEffect - %1 (%2) sent to %3's deck, %4 m out",
+                        typeOf _obj, _tail, typeOf _ship, round _dShip] call ALiVE_fnc_dump;
+                };
+
+                // The hook, every tick. Its answer is taken apart rather than
+                // passed through: _result is assembled AFTER the switch, so
+                // assigning it here would be thrown away, the trap that once
+                // made three refusals report success.
+                private _h = [_logic, "apply", ["tailhook", _obj, _home, []]] call MAINCLASS;
+                private _hook = _h param [2, ""];
+                _detail = format ["approach %1 m out, %2 m up, %3", round _dShip, round _up, _hook];
+            };
+
             // The approach is over, however it ended. Gives back a pad this
             // surface minted and leaves a real one alone, so the object cannot
             // outlive the state that needed it.
             case "releaseApproach": {
+                // The runway approach is let go here as well, so an aircraft
+                // that leaves LANDING and comes back is sent round again rather
+                // than being told it is already on a circuit it has abandoned.
+                private _grpR = group (driver _obj);
+                if (!isNull _grpR) then {
+                    _grpR setVariable ["ALiVE_mil_ato_runwayAimedAt", nil, false];
+                };
                 private _surface = _extra param [0, []];
                 private _tail = _extra param [1, ""];
                 if (_surface isEqualTo []) exitWith { _status = "refused"; _detail = "no surface" };
                 [_surface, "unstampPad", _tail] call ALIVE_fnc_ATOSurface;
+                // A hook this module put out is raised again. That is what
+                // ends the engine's arrest thread on an approach that never
+                // touched the deck, and a jet flying its next sortie with the
+                // hook down is a jet that snags the first wire it crosses.
+                if (_obj getVariable ["ALiVE_mil_ato_hookOut", false]) then {
+                    private _cfg = configFile >> "CfgVehicles" >> typeOf _obj;
+                    private _list = getArray (_cfg >> "CarrierOpsCompatability" >> "ArrestHookAnimationList");
+                    private _up = (getArray (_cfg >> "CarrierOpsCompatability" >> "ArrestHookAnimationStates")) param [2, 1];
+                    { _obj animate [_x, _up] } forEach _list;
+                    _obj setVariable ["ALiVE_mil_ato_hookOut", nil, false];
+                };
                 // And forget that a landing was committed to, or the next
                 // approach starts already believing it is on finals.
                 private _grp = group (driver _obj);

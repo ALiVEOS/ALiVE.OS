@@ -186,11 +186,13 @@ nothing changed and it said so.
     deleteVehicle _dead;
 
     // --- things this pass does not do ------------------------------------------
+    // catapult and tailhook used to be here; they are built now and have their
+    // own test on a carrier scene, so the names that stay unbuilt stand in.
     {
         (([_e, "apply", [_x, _veh, _home, []]] call ALIVE_fnc_ATOEffect)) params ["_sty", "_my", "_dy"];
         [format ["%1 refuses rather than doing nothing quietly", _x],
             _sty isEqualTo "refused" && {_dy isEqualTo "not built"}] call _fnc_check;
-    } forEach ["catapult", "tailhook", "holdTargets"];
+    } forEach ["deckLaunch", "sweepTaxiPath", "holdTargets"];
 
     (([_e, "apply", ["somethingNobodyWrote", _veh, _home, []]] call ALIVE_fnc_ATOEffect)) params ["_st19", "_m19", "_d19"];
     ["an effect it has never heard of is refused",

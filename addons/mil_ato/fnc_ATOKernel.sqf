@@ -460,7 +460,25 @@ private _fnc_resolveOrders = {
     private _homeDir = if (count _home > 1 && {(_home select 1) isEqualType 0}) then { _home select 1 } else { getDir _obj };
     private _hasTarget = count _tuple > 1 && {(_tuple select 1) isEqualType []} && {count (_tuple select 1) >= 2};
     private _targetPos = if (_hasTarget) then { +(_tuple select 1) } else { _homePos getPos [1200, _homeDir] };
-    private _airborne = (_here select 2) > 50;
+
+    // Height above the DECK when the home is a deck, above the terrain
+    // otherwise. This is the one remaining thing here that reads a height, and
+    // it is the thing that decides whether an order is a hold on the ground or
+    // an orbit in the air, so reading it in the wrong frame is not a detail.
+    //
+    // Above water, terrain level is the SEA BED. Measured on the test carrier:
+    // an aircraft parked on the plating reads 27.9 m above terrain level and
+    // minus a tenth of a metre above the deck, and in deeper water the terrain
+    // figure is nearer sixty. So every parked deck aircraft read as airborne
+    // here, and a jet that had just landed on the carrier was handed an orbit
+    // over its own position at sea level with its engine ordered off. It then
+    // started rolling for a takeoff it could not make on a ninety metre deck,
+    // and kept at it for the whole recovery deadline.
+    private _airborne = if (count _home > 2 && {(_home select 2) isEqualTo "deck"}) then {
+        ((getPos _obj) select 2) > 50
+    } else {
+        (_here select 2) > 50
+    };
 
     {
         switch (_x) do {
@@ -979,6 +997,11 @@ private _fnc_routeEffects = {
                     private _extra = switch (true) do {
                         case (_name in ["placeOnSlot","forceLanded"]): { [_surface] };
                         case (_name in ["landAtPad","releaseApproach"]): { [_surface, _tail] };
+                        // The carrier pieces need the surface for the same
+                        // reason the pad ones do: it holds the deck cache and
+                        // resolves a carrier handle, and an effect reaches it
+                        // through this switch and nowhere else.
+                        case (_name in ["catapult","deckRecover","landOnRunway"]): { [_surface, _tail] };
                         case (_name isEqualTo "revealTargets"): {
                             private _targets = if (count _tuple > 5 && {(_tuple select 5) isEqualType []}) then { _tuple select 5 } else { [] };
                             [[_targets] call _fnc_objectsOf]

@@ -254,10 +254,18 @@ private _fnc_needsPad = {
 // Up, or moving without the ground under it. A hull parked on a pad reads a
 // metre or so above terrain and touching, so the height alone is not enough
 // and the speed test is not enough on its own either.
+//
+// Over water the height is read against what is UNDER the hull rather than
+// against the terrain, because there the terrain is the sea bed: a jet
+// standing on a carrier deck is 23.6 m above the waterline and about 64 m
+// above the sea bed, and read from the terrain every carrier aircraft was
+// "airborne" and could not be attached. There is no home to hand at this
+// point, so the water underneath is the test, which is what the deck is over.
 private _fnc_airborne = {
     params [["_obj", objNull, [objNull]]];
     if (isNull _obj) exitWith { false };
-    ((getPosATL _obj) select 2) > 5 || {!(isTouchingGround _obj) && {(abs (speed _obj)) > 5}}
+    private _up = if (surfaceIsWater (getPos _obj)) then { (getPos _obj) select 2 } else { (getPosATL _obj) select 2 };
+    (_up > 5) || {!(isTouchingGround _obj) && {(abs (speed _obj)) > 5}}
 };
 
 // A player in a seat, or a player flying it from a terminal. A drone under
@@ -1480,7 +1488,6 @@ switch(_operation) do {
             };
         } else {
             if (_why isEqualTo "" && {count _home < 3}) then { _why = "no home" };
-            if (_why isEqualTo "" && {(_home select 2) isEqualTo "deck"}) then { _why = "deck not built" };
             if (_why isEqualTo "" && {_class isEqualTo ""}) then { _why = "no vehicle class" };
         };
 
@@ -1881,9 +1888,6 @@ switch(_operation) do {
             ["ALIVE_fnc_ATOPlace - placeInitial refused: no base"] call ALiVE_fnc_dump;
         };
         if !([_logic, "placeAir", false] call ALIVE_fnc_hashGet) exitWith { _result = [] };
-        if ([_base, "isCarrier", false] call ALIVE_fnc_hashGet) exitWith {
-            ["ALIVE_fnc_ATOPlace - placeInitial skipped: the base is a carrier and the deck half is not built"] call ALiVE_fnc_dump;
-        };
 
         // The gate counts armed, crewed aircraft on the books. A drone or an
         // unarmed airframe is not what the gate is asking about.
@@ -2087,10 +2091,6 @@ switch(_operation) do {
         if (count _home < 3) exitWith {
             ["ALIVE_fnc_ATOPlace - createReplacement refused for %1: no home", _tail] call ALiVE_fnc_dump;
         };
-        if ((_home select 2) isEqualTo "deck") exitWith {
-            ["ALIVE_fnc_ATOPlace - createReplacement refused for %1: deck homes are not built", _tail] call ALiVE_fnc_dump;
-        };
-
         // Reservations are ADDED here and never cleared, which is the one
         // way this op differs from the three passes. It runs from Resupply's
         // own thread with no pass interlock, and it suspends inside attach
@@ -2254,7 +2254,13 @@ switch(_operation) do {
                             if !(_vObj isEqualType objNull) then { _vObj = objNull };
                             private _vDir = 0;
                             if (!isNull _vObj) then { _vDir = getDir _vObj };
-                            if (count _home >= 3 && {!((_home select 2) isEqualTo "deck")}) then {
+                            // A deck home is offered back the same way a
+                            // terrain one is. The home finder classifies the
+                            // anchor it is handed, so a deck position comes
+                            // back as a deck candidate with its ship and its
+                            // offset, which is what it could not do before the
+                            // deck half existed.
+                            if (count _home >= 3) then {
                                 _h = [_logic, _class, _home select 0, _home select 1, _vObj] call _fnc_homeFor;
                             };
                             if (count _h < 3) then {
@@ -2315,7 +2321,6 @@ switch(_operation) do {
                 // Create at the home.
                 if (!_skip && {_why isEqualTo ""} && {_done isEqualTo ""}) then {
                     if (count _home < 3) then { _why = "no home" };
-                    if (_why isEqualTo "" && {(_home select 2) isEqualTo "deck"}) then { _why = "deck home cannot be placed" };
                     if (_why isEqualTo "") then {
                         [_home, _class] call _fnc_clearWreck;
                         private _v = [_surface, "validate", [_home, _class, objNull]] call ALIVE_fnc_ATOSurface;

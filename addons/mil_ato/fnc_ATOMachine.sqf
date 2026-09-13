@@ -60,8 +60,10 @@ Jman
 #define ALL_STATES ["PARKED","PLAYER_FLOWN","ASSIGNED","LAUNCHING","ENROUTE","ON_STATION","RTB","LANDING","RECOVERING","LOST"]
 
 // Effects that move an aircraft. None of them may be applied with a player in
-// it, whether they are flying it or just aboard.
-#define TELEPORTS ["airborneStart","forceLaunch","placeOnSlot","forceLanded","quickPark"]
+// it, whether they are flying it or just aboard. A catapult tows the aircraft
+// onto the wire before it fires, so it moves the aircraft as surely as any of
+// the others.
+#define TELEPORTS ["airborneStart","forceLaunch","placeOnSlot","forceLanded","quickPark","catapult"]
 
 private ["_result"];
 
@@ -134,6 +136,26 @@ switch(_operation) do {
         private _remote = "remote" call _fnc_o;
         private _airborne = "airborne" call _fnc_o;
         private _atHome = "atHome" call _fnc_o;
+        // A fixed wing aircraft whose home is a ship. It cannot take off down
+        // a runway and cannot come down on a pad, so it launches off a
+        // catapult and recovers onto the wire. A helicopter on the same ship
+        // is lifted and landed the way it is anywhere else, and a VTOL is a
+        // helicopter here. Both facts come from the observation, because
+        // this table reads no config and never looks at a home's shape.
+        private _deckPlane = ("deckHome" call _fnc_o) && {"fixedWing" call _fnc_o};
+
+        // Whether this aircraft needs a RUNWAY to come back to, which is not
+        // the same question as whether it can be catapulted off one. A VTOL is
+        // never shot off a wire and still cannot land on a parking stand:
+        // measured, it was doing 139 km/h at three metres when it was
+        // destroyed. So the landing branch asks this and the launch branch asks
+        // about fixed wing.
+        private _needsRunway = "needsRunway" call _fnc_o;
+
+        // And whether a launch this module started is still running on the
+        // hull. The table cannot read a variable off an object, so the observer
+        // reads the stamp and reports it.
+        private _launching = "launchInProgress" call _fnc_o;
         private _expired = ([_row,"deadlineAt",0] call ALIVE_fnc_hashGet) > 0
                         && {_now >= ([_row,"deadlineAt",0] call ALIVE_fnc_hashGet)};
 
@@ -229,12 +251,43 @@ switch(_operation) do {
                                     _effects pushBack "unlock";
                                     _next = "ENROUTE";
                                 } else {
-                                    if (_expired) then {
+                                    // A deadline that falls due inside a running
+                                    // launch waits for it.
+                                    //
+                                    // The launch owns the aircraft for a minute
+                                    // and the deadline is three minutes, so they
+                                    // can overlap. When they did, the table
+                                    // teleported the aircraft six hundred metres
+                                    // up while the sequence was still pinning it
+                                    // to the deck: the two fought frame by frame,
+                                    // the sequence won, and the table had already
+                                    // given up on a launch that then completed
+                                    // underneath it.
+                                    if (_expired && {!_launching}) then {
                                         if (([_row,"attempts",0] call ALIVE_fnc_hashGet) < 1 && {!_playerPassenger}) then {
                                             _effects pushBack "forceLaunch";
                                             [_row,"attempts",1] call ALIVE_fnc_hashSet;
                                         } else {
                                             _next = "RECOVERING";
+                                        };
+                                    } else {
+                                        // Asked for EVERY tick it is still on the
+                                        // deck, the way the approach is re-aimed
+                                        // every tick. A refusal (no free catapult,
+                                        // the ship's parts not found) is retried
+                                        // next tick rather than lost, and while a
+                                        // launch is under way the effect answers
+                                        // "matched" and does not start a second
+                                        // one underneath it. The deadline above
+                                        // is the backstop, and forceLaunch keeps
+                                        // its job as the last resort.
+                                        // Not with somebody aboard. The filter
+                                        // below strips a teleport in that case
+                                        // and notes a refusal, so asking anyway
+                                        // put one refusal in the log every two
+                                        // seconds until the deadline.
+                                        if (_deckPlane && {!_playerPassenger}) then {
+                                            _effects pushBack "catapult";
                                         };
                                     };
                                 };
@@ -328,8 +381,33 @@ switch(_operation) do {
                                     // module used to do.
                                     //
                                     // Landing somewhere else entirely is still recovery's problem.
+                                    // On a DECK the player count is the wrong
+                                    // question, and leaving it in place meant a
+                                    // jet that had just landed correctly was
+                                    // never moved.
+                                    //
+                                    // On a carrier the players are ON the ship,
+                                    // so "nobody within three hundred metres" is
+                                    // false essentially always, and an arrested
+                                    // jet stops on the landing area tens of
+                                    // metres from its stand, so being at home is
+                                    // false too. The row fell through to recovery
+                                    // and stood on the wire for the whole ten
+                                    // minute deadline, and deck parking is kept
+                                    // clear of that strip precisely because an
+                                    // airframe on it blocks a hook and wire
+                                    // recovery. So the next jet back had the wire
+                                    // blocked by the last one.
+                                    //
+                                    // The trade is deliberate and it is the
+                                    // opposite of the one made for wrecks: a
+                                    // wreck that vanishes in front of somebody
+                                    // costs more than a wreck that stays, but an
+                                    // aircraft that stays on the wire costs every
+                                    // later recovery. So it is moved, and being
+                                    // seen to move is the cheaper price.
                                     private _canTidy = ("nearHome" call _fnc_o)
-                                        && {("playersWithin300" call _fnc_n) == 0}
+                                        && {(("playersWithin300" call _fnc_n) == 0) || {"deckHome" call _fnc_o}}
                                         && {!_playerPassenger};
                                     if (_canTidy) then {
                                         _effects pushBack "placeOnSlot";
@@ -356,7 +434,33 @@ switch(_operation) do {
                                     // given, so issuing it once on entry is not
                                     // enough. This is what logistics does at
                                     // each of its own landings and why.
-                                    _effects pushBack "landAtPad";
+                                    //
+                                    // A plane coming back to a ship is asked for
+                                    // the deck recovery instead: a pad approach
+                                    // is a helicopter's, with an arrival gate a
+                                    // jet cannot satisfy. A helicopter on the same
+                                    // ship keeps the pad path.
+                                    //
+                                    // And a plane coming back to LAND is asked
+                                    // for the runway, which is the fault this
+                                    // branch exists to fix. Every aircraft used
+                                    // to be aimed at its own parking stand, and
+                                    // a stand is twelve metres across. Measured
+                                    // on Stratis from 900 m out: the helicopter
+                                    // came down two metres from its stand and
+                                    // lived; the jet overflew at twenty four
+                                    // metres, climbed away and was destroyed
+                                    // 1649 m out; the VTOL was doing 139 km/h
+                                    // at three metres when it was destroyed.
+                                    // Every fixed-wing aircraft this module
+                                    // owned was being destroyed on its way home,
+                                    // and nothing caught it because the landing
+                                    // checks only ever flew a helicopter.
+                                    switch (true) do {
+                                        case (_deckPlane): { _effects pushBack "deckRecover" };
+                                        case (_needsRunway): { _effects pushBack "landOnRunway" };
+                                        default { _effects pushBack "landAtPad" };
+                                    };
                                     if (_expired) then {
                                         private _a = [_row,"attempts",0] call ALIVE_fnc_hashGet;
                                         if (_a < 1) then {
@@ -470,7 +574,16 @@ switch(_operation) do {
                 case "ASSIGNED":     { _effects append ["mintCrew","seatCrew","lock"]; };
                 // Start the engine as well as saying it is going. Announcing a
                 // departure does not make one happen.
-                case "LAUNCHING":    { _effects append ["engineOn","broadcastStart"]; };
+                //
+                // A plane on a ship is shot off a catapult, and the engine is
+                // started FIRST so the launch sequence finds one running.
+                case "LAUNCHING":    {
+                    if (_deckPlane) then {
+                        _effects append ["engineOn","catapult","broadcastStart"];
+                    } else {
+                        _effects append ["engineOn","broadcastStart"];
+                    };
+                };
                 case "ON_STATION":   { _effects append ["broadcastOnStation","revealTargets","sortieArrived"]; };
                 case "RTB":          { _effects append ["broadcastReturn","releaseTargets","sortieReturning"]; };
                 // Nothing on entry. The standing order for this state is a

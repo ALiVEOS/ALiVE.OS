@@ -92,7 +92,8 @@ switch(_operation) do {
                 [_o, _x, false] call ALIVE_fnc_hashSet;
             } forEach ["local","remote","airborne","atHome","nearHome","landed","touchingGround",
                        "crewGroupLive","driverPresent","crewSeated","playerControl","playerPassenger",
-                       "anyPlayerAboard","uavControlled","onStation","targetsGone","lockHeld"];
+                       "anyPlayerAboard","uavControlled","onStation","targetsGone","lockHeld",
+                       "deckHome","fixedWing","needsRunway","launchInProgress"];
             {
                 [_o, _x, 0] call ALIVE_fnc_hashSet;
             } forEach ["altAGL","altASL","speed","fuel","ammo","damage","wpRemaining","aliveCrew",
@@ -103,9 +104,65 @@ switch(_operation) do {
             _result = _o;
         };
 
+        // ---- what kind of aircraft, and what kind of home --------------------
+        // The table needs both to choose between a runway launch, a catapult
+        // launch and a helicopter lift, and it may not read config or a home's
+        // shape itself. A VTOL is a helicopter for every purpose here: it is
+        // lifted, not shot off a wire.
+        private _deckHome = count _home > 2 && {(_home select 2) isEqualTo "deck"};
+        private _fixedWing = (_obj isKindOf "Plane")
+            && {getNumber (configFile >> "CfgVehicles" >> typeOf _obj >> "vtol") == 0};
+        ["deckHome", _deckHome] call _fnc_set;
+        ["fixedWing", _fixedWing] call _fnc_set;
+
+        // And separately, whether it needs a RUNWAY to come back to. This is
+        // NOT the same question as fixedWing, and the difference is measured.
+        //
+        // A VTOL is a Plane whose vtol rating is not zero, so fixedWing is
+        // false for it and it is never shot off a catapult, which is right: it
+        // does not need one. But it dies exactly like a jet when it is aimed
+        // at a parking stand. Measured on Stratis, all three given the same
+        // approach from 900 m out at 120 m: the helicopter came down 2 m from
+        // its stand and lived, the jet overflew at 24 m, climbed away and was
+        // destroyed 1649 m out, and the VTOL was doing 139 km/h at three
+        // metres when it was destroyed. The same two airframes given the
+        // airport instead came down on the runway and lived.
+        //
+        // So anything that is a Plane at all comes back to a runway, and only
+        // a non-VTOL plane is catapulted off one.
+        ["needsRunway", _obj isKindOf "Plane"] call _fnc_set;
+
+        // Whether a launch this module started is still running on this hull.
+        //
+        // The table cannot read a variable off an object, and it needs to know
+        // this one: its own launch deadline can fall due while the catapult
+        // sequence is still towing, and it would then teleport the aircraft
+        // into the air from under a thread that is pinning it to the deck. The
+        // two fight, the teleport wins for a frame, the tow drags it back, and
+        // the state gives up on a launch that then completes underneath it.
+        //
+        // The stamp carries its own expiry rather than a time to compare
+        // against a window, so the length of the window lives in one place,
+        // beside the sequence that owns it, instead of being a number two
+        // files have to agree about.
+        private _catUntil = _obj getVariable ["ALiVE_mil_ato_catapultUntil", -99999];
+        if !(_catUntil isEqualType 0) then { _catUntil = -99999 };
+        ["launchInProgress", time < _catUntil] call _fnc_set;
+
         // ---- where and how fast -------------------------------------------
         private _pos = getPosATL _obj;
-        private _agl = _pos select 2;
+        // Height above whatever is UNDER the aircraft, which on a ship is the
+        // deck. getPosATL measures from the terrain, and over water the
+        // terrain is the sea bed: the flight deck of a USS Freedom is 23.6 m
+        // above the waterline and the sea bed about 40 m below it, so an
+        // aircraft standing on the deck read as roughly 64 m up. That made
+        // it airborne the moment it was told to launch, so it went to
+        // ENROUTE without launching, and it could never read as landed, so an
+        // approach ran to its deadline with the aircraft already stopped on
+        // the deck. getPos is the engine's own measure for this: its catapult
+        // and tailhook functions both gate on getPos being under a metre.
+        // Terrain homes keep getPosATL, so nothing on land changes.
+        private _agl = if (_deckHome) then { (getPos _obj) select 2 } else { _pos select 2 };
         ["pos", + _pos] call _fnc_set;
         ["altAGL", _agl] call _fnc_set;
         ["altASL", (getPosASL _obj) select 2] call _fnc_set;
@@ -121,7 +178,42 @@ switch(_operation) do {
         // everything that follows a landing ran early, and the airframe was put
         // back where it launched from. Anyone watching the pad saw it jump
         // sideways out of its own approach.
-        ["landed", (isTouchingGround _obj) && {(speed _obj) < 5} && {_agl < 2}] call _fnc_set;
+        //
+        // The ground test is isTouchingGround and nothing else, on a deck as
+        // much as on land.
+        //
+        // A deck clause was tried here, "or the home is a deck and it is under
+        // a metre up", because whether isTouchingGround answers for a hull
+        // resting on a ship had not been measured. It has been now, and it
+        // does: a jet parked on the test carrier's plating reads touching, at
+        // minus a tenth of a metre above the deck. So the clause was not
+        // needed, and it was actively wrong.
+        //
+        // What was wrong with it: over water, height is measured from the sea
+        // SURFACE, so a jet that missed its approach and ditched astern reads
+        // about zero and slows below five, and the clause called that landed.
+        // The landed branch then tidies an aircraft, which teleports it onto
+        // its deck stand and sets its damage to zero and its fuel to full. A
+        // jet that went in the sea would have reappeared on the deck good as
+        // new. Guarding the clause with surfaceIsWater does not help either:
+        // the sea is still underneath a carrier, so that reads true on the
+        // deck as well and would have disabled the clause everywhere.
+        // And how slow counts as stopped depends on what it is.
+        //
+        // Five is right for a helicopter: it comes to a stop on its pad. A
+        // plane does not. Measured: the engine lands a jet on the runway and
+        // then TAXIS it, and it was still doing eighteen to twenty kilometres
+        // an hour a minute later, a hundred metres or so from the field. At a
+        // five kilometre threshold it would never once have read as landed, so
+        // the approach would have run to its deadline with the aircraft
+        // already down and rolling.
+        //
+        // Forty is the figure because a plane cannot fly at forty. Anything
+        // touching the ground below it is on the ground for good, which is the
+        // question being asked; where it then ends up is the placing's job.
+        private _onGround = isTouchingGround _obj;
+        private _stopped = (speed _obj) < (if (_obj isKindOf "Plane") then { 40 } else { 5 });
+        ["landed", _onGround && {_stopped} && {_agl < 2}] call _fnc_set;
 
         // ---- whose is it --------------------------------------------------
         // A hull this machine does not own cannot be told anything local, so
