@@ -788,14 +788,64 @@ switch(_operation) do {
         // No class test needed here. That tier gates itself on rotary and
         // refuses drones by design, so a plane or a UAV gets [] back and falls
         // through to apron at the cost of one call.
+        // Does getting there mean crossing the runway.
+        //
+        // The search has no idea which side of the field the commander is on,
+        // so it could hand back a stand across the active runway from the
+        // hangars. An aircraft then crossed the runway to reach its own
+        // parking, and crossed it again on every departure, which is the one
+        // thing parking is supposed to keep clear of.
+        //
+        // Asked by walking the straight line from the commander to the
+        // candidate and asking the shared airside test whether any point on it
+        // is runway. Kind 1 only: a taxiway is meant to be crossed.
+        private _fnc_crossesRunway = {
+            params ["_to"];
+            private _crosses = false;
+            if (!isNil "ALiVE_fnc_isAirside") then {
+                private _len = _anchor distance2D _to;
+                if (_len > 20) then {
+                    private _steps = (round (_len / 20)) min 40;
+                    for "_i" from 1 to (_steps - 1) do {
+                        if (!_crosses) then {
+                            private _f = _i / _steps;
+                            private _q = [
+                                (_anchor select 0) + (((_to select 0) - (_anchor select 0)) * _f),
+                                (_anchor select 1) + (((_to select 1) - (_anchor select 1)) * _f),
+                                0
+                            ];
+                            if ([_q, 4, [1]] call ALiVE_fnc_isAirside) then { _crosses = true };
+                        };
+                    };
+                };
+            };
+            _crosses
+        };
+
         private _air = [];
         if (!isNil "ALiVE_fnc_findAirSpawnPosition") then {
-            _air = [_class, _anchor, 400, "helipad"] call ALiVE_fnc_findAirSpawnPosition;
-            if (count _air < 2) then {
-                _air = [_class, _anchor, 400, "apron"] call ALiVE_fnc_findAirSpawnPosition;
-            };
-            if (count _air < 2) then {
-                _air = [_class, _anchor, 400, "field"] call ALiVE_fnc_findAirSpawnPosition;
+            // The rungs in their own order, and the first answer that does not
+            // cross the runway wins. The first answer of all is kept as the
+            // fallback, so nothing is lost when every rung is on the far side.
+            private _fallback = [];
+            {
+                if (count _air < 2) then {
+                    private _try = [_class, _anchor, 400, _x] call ALiVE_fnc_findAirSpawnPosition;
+                    if (count _try >= 2) then {
+                        if (count _fallback < 2) then { _fallback = _try };
+                        if !([_try select 0] call _fnc_crossesRunway) then {
+                            _air = _try;
+                        } else {
+                            ["ALIVE_fnc_ATOSurface - the %1 stand for %2 is across the runway from the commander; trying further out",
+                                _x, _class] call ALiVE_fnc_dump;
+                        };
+                    };
+                };
+            } forEach ["helipad", "apron", "field"];
+            if (count _air < 2 && {count _fallback >= 2}) then {
+                ["ALIVE_fnc_ATOSurface - every stand found for %1 is across the runway; taking the nearest one anyway",
+                    _class] call ALiVE_fnc_dump;
+                _air = _fallback;
             };
             // A wide airframe fails both tiers on a cramped field and used to
             // fall through to a search that parks on a TAXIWAY, blocking every

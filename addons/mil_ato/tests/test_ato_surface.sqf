@@ -137,6 +137,37 @@ refused rather than guessed at.
             if ([_x select 0, _span, [3]] call ALiVE_fnc_isAirside) then { _onStands = _onStands + 1 };
         } forEach _homes;
         diag_log format ["  info  %1 of %2 homes are on the airfield's own parking", _onStands, count _homes];
+
+        // Getting to your own parking must not mean crossing the active
+        // runway. The search has no idea which side of the field the commander
+        // is on, so it could hand back a stand across the runway from the
+        // hangars, and an aircraft then crossed it to park and crossed it again
+        // on every departure.
+        private _crossers = [];
+        {
+            private _to = _x select 0;
+            private _len = _anchor distance2D _to;
+            private _crosses = false;
+            if (_len > 20) then {
+                private _steps = (round (_len / 20)) min 40;
+                for "_i" from 1 to (_steps - 1) do {
+                    if (!_crosses) then {
+                        private _f = _i / _steps;
+                        private _q = [
+                            (_anchor select 0) + (((_to select 0) - (_anchor select 0)) * _f),
+                            (_anchor select 1) + (((_to select 1) - (_anchor select 1)) * _f),
+                            0
+                        ];
+                        if ([_q, 4, [1]] call ALiVE_fnc_isAirside) then { _crosses = true };
+                    };
+                };
+            };
+            if (_crosses) then { _crossers pushBack [_forEachIndex, [round (_to select 0), round (_to select 1)]] };
+        } forEach _homes;
+        ["no home is reached by crossing the runway", count _crossers == 0] call _fnc_check;
+        if (count _crossers > 0) then {
+            diag_log format ["  info  reached across the runway: %1", _crossers];
+        };
     };
 
     // --- place --------------------------------------------------------------
