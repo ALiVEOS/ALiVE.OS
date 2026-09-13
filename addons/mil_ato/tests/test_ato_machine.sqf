@@ -57,6 +57,10 @@ observation sequences, because those are what the table exists to prevent.
             ["atHome", true], ["crewLoss", false], ["crewSeated", false],
             ["lockHeld", false], ["onStation", false], ["landed", false],
             ["targetsGone", false], ["nearHome", false],
+            // What kind of aircraft and what kind of home. All false is a
+            // helicopter on land, which is what every case here used to be.
+            ["deckHome", false], ["fixedWing", false], ["needsRunway", false],
+            ["launchInProgress", false],
             ["fuel", 1], ["ammo", 1], ["damage", 0],
             ["playersWithin1000Home", 0], ["playersWithin1000Hull", 0]
         ]] call ALIVE_fnc_hashCreate;
@@ -77,7 +81,18 @@ observation sequences, because those are what the table exists to prevent.
         ["low on fuel airborne",  [["airborne",true],["atHome",false],["fuel",0.05]]],
         ["over the target",       [["airborne",true],["atHome",false],["onStation",true]]],
         ["wheels down",           [["landed",true]]],
-        ["people watching",       [["airborne",true],["atHome",false],["playersWithin1000Hull",3],["playersWithin1000Home",3]]]
+        ["people watching",       [["airborne",true],["atHome",false],["playersWithin1000Hull",3],["playersWithin1000Home",3]]],
+        // The three kinds of aircraft the table now branches on, so that every
+        // state is stepped for each of them rather than only for a helicopter
+        // on land. These need no mission, which is why they belong here and not
+        // in the carrier scene.
+        ["a plane on land",       [["needsRunway",true]]],
+        ["a plane on land, up",   [["needsRunway",true],["airborne",true],["atHome",false]]],
+        ["a plane on a deck",     [["deckHome",true],["fixedWing",true],["needsRunway",true]]],
+        ["a plane on a deck, up", [["deckHome",true],["fixedWing",true],["needsRunway",true],["airborne",true],["atHome",false]]],
+        ["a plane mid launch",    [["deckHome",true],["fixedWing",true],["needsRunway",true],["launchInProgress",true],["crewSeated",true],["lockHeld",true]]],
+        ["a helicopter on a deck",[["deckHome",true]]],
+        ["a VTOL on land",        [["needsRunway",true],["airborne",true],["atHome",false]]]
     ];
 
     private _badState = 0;
@@ -161,10 +176,12 @@ observation sequences, because those are what the table exists to prevent.
                         // the table to break its own rule.
                         if (!([_obs,"landed",false] call ALIVE_fnc_hashGet)
                             && {!([_obs,"remote",false] call ALIVE_fnc_hashGet)}
-                            && {!("landAtPad" in _effects)}) then {
+                            && {!("landAtPad" in _effects)}
+                            && {!("landOnRunway" in _effects)}
+                            && {!("deckRecover" in _effects)}) then {
                             _badOrders = _badOrders + 1;
                             if (count _whyOrders < 6) then {
-                                _whyOrders pushBack format ["LANDING +%1 (%2%3) up and never asked for the approach, effects %4",
+                                _whyOrders pushBack format ["LANDING +%1 (%2%3) up and never asked for ANY of the three approaches, effects %4",
                                     _cmd, _profileName,
                                     if (_expired) then {", expired"} else {""},
                                     _effects];
