@@ -1422,6 +1422,11 @@ switch(_operation) do {
                 if (!isNull _grpR) then {
                     _grpR setVariable ["ALiVE_mil_ato_runwayAimedAt", nil, false];
                 };
+                // And the landing order itself is cancelled, not just the note
+                // that one was given. Giving the approach back and leaving the
+                // aircraft under orders to land means it goes on trying to
+                // land while whatever asked for it to stop has moved on.
+                _obj land "NONE";
                 private _surface = _extra param [0, []];
                 private _tail = _extra param [1, ""];
                 if (_surface isEqualTo []) exitWith { _status = "refused"; _detail = "no surface" };
