@@ -112,6 +112,14 @@ Jman
 // rescue an approach the engine has quietly dropped.
 #define RUNWAY_REAIM 180
 
+// How long a returned aircraft waits for a supply truck before it is serviced
+// where it stands. The old module made every aircraft wait between three and
+// thirteen minutes after landing before it could be tasked again, for no
+// reason anybody wrote down, so three minutes of waiting for a real truck
+// costs nothing against what it used to do and buys a truck that is actually
+// driving there.
+#define SERVICE_WAIT 180
+
 private ["_result"];
 
 TRACE_1("ATO Effect - input",_this);
@@ -1488,13 +1496,109 @@ switch(_operation) do {
             };
 
             // Back on the ground and ready to go again.
+            // Refuelled, REARMED and repaired, by a truck that drives to it
+            // where there is a logistics commander to send one.
+            //
+            // This used to do it instantly and in place, and despite its own
+            // comment saying rearm it never did: there is no ammo restore
+            // anywhere in the module this replaced either. So an aircraft came
+            // back repaired and refuelled and still carrying whatever ordnance
+            // was left, and its next sortie went out half armed or dry.
+            //
+            // The truck is the logistics commander's own resupply dispatch,
+            // raised as the event it already listens for, rather than a second
+            // copy of that machinery living here. It already knows how to
+            // handle an aircraft: its own handler defers a ground truck while
+            // the target is airborne or moving and sends it once the aircraft
+            // is parked and still.
+            //
+            // With no logistics commander placed, the aircraft is serviced
+            // where it stands exactly as before, so a mission without one is
+            // unchanged.
             case "turnaround": {
-                if (!isEngineOn _obj && {(damage _obj) < 0.01} && {(fuel _obj) > 0.99}) then {
-                    _matched = true;
+                private _tail = _extra param [0, ""];
+
+                // Already done. The flag is what distinguishes "serviced" from
+                // "happens to be undamaged and full", because an aircraft that
+                // flew a sortie without being shot at reads the same as a
+                // serviced one on damage and fuel alone and would never be
+                // rearmed.
+                if (_obj getVariable ["ALiVE_mil_ato_serviced", false]) exitWith {
+                    _matched = true; _detail = "already serviced";
+                };
+
+                _obj engineOn false;
+
+                // Asked for once. The state table asks for this on arrival and
+                // not again, so the waiting and the falling back belong to a
+                // thread of its own rather than to a later tick that never
+                // comes.
+                if (_obj getVariable ["ALiVE_mil_ato_serviceAsked", false]) exitWith {
+                    _matched = true; _detail = "service already asked for";
+                };
+                _obj setVariable ["ALiVE_mil_ato_serviceAsked", true, false];
+
+                private _hasLogcom = (count (allMissionObjects "ALiVE_mil_logistics")) > 0;
+                private _side = "";
+                private _grpT = group (driver _obj);
+                if (!isNull _grpT) then { _side = str (side _grpT) };
+
+                if (_hasLogcom && {!isNil "ALIVE_fnc_event"} && {!isNil "ALIVE_eventLog"}) then {
+                    // All three are asked for. An aircraft back from a sortie
+                    // wants fuel, ordnance and whatever it collected on the
+                    // way, and they are one visit rather than three.
+                    private _data = [
+                        getPos _obj, _side, typeOf _obj,
+                        if (_tail isEqualTo "") then { typeOf _obj } else { _tail },
+                        0, [true, true, true], _obj
+                    ];
+                    private _ev = ["LOGCOM_RESUPPLY", _data, "ATO"] call ALIVE_fnc_event;
+                    [ALIVE_eventLog, "addEvent", _ev] call ALIVE_fnc_eventLog;
+                    _detail = "a truck has been asked for";
+                    ["ALIVE_fnc_ATOEffect - a supply truck asked for %1 (%2) at %3",
+                        _tail, typeOf _obj, getPos _obj] call ALiVE_fnc_dump;
                 } else {
-                    _obj engineOn false;
-                    _obj setDamage 0;
-                    _obj setFuel 1;
+                    _detail = "no logistics commander, servicing it here";
+                };
+
+                [_obj, _tail, _hasLogcom] spawn {
+                    params ["_v", "_tail", "_waited"];
+                    // Given time to be serviced properly, then done here.
+                    private _until = time + (if (_waited) then { SERVICE_WAIT } else { 0 });
+                    // Waiting ends on the truck finishing, on it giving up, or
+                    // on running out of patience. Giving up is worth its own
+                    // exit: a dispatch that failed or was cancelled is never
+                    // going to arrive, so making the aircraft stand there for
+                    // the rest of the three minutes would be waiting for
+                    // nothing.
+                    waitUntil {
+                        sleep 5;
+                        private _state = _v getVariable ["ALIVE_resupply_state", ""];
+                        if !(_state isEqualType "") then { _state = "" };
+                        isNull _v
+                        || {!alive _v}
+                        || {time >= _until}
+                        || {_state isEqualTo "complete"}
+                        || {_state in ["failed", "cancelled"]}
+                    };
+                    if (isNull _v || {!alive _v}) exitWith {};
+
+                    private _endState = _v getVariable ["ALIVE_resupply_state", ""];
+                    if !(_endState isEqualType "") then { _endState = "" };
+                    private _byTruck = _endState isEqualTo "complete";
+                    if (!_byTruck) then {
+                        // Where it stands. This is the old behaviour, plus the
+                        // rearm it always said it did.
+                        _v setDamage 0;
+                        _v setFuel 1;
+                        _v setVehicleAmmo 1;
+                    };
+                    _v setVariable ["ALiVE_mil_ato_serviced", true, false];
+                    _v setVariable ["ALiVE_mil_ato_serviceAsked", nil, false];
+                    ["ALIVE_fnc_ATOEffect - %1 is serviced%2", _tail,
+                        if (_byTruck) then { " by a truck" } else {
+                            format [" where it stands (the truck said '%1')", _endState]
+                        }] call ALiVE_fnc_dump;
                 };
             };
 

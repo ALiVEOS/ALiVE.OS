@@ -998,6 +998,9 @@ private _fnc_routeEffects = {
                         // resolves a carrier handle, and an effect reaches it
                         // through this switch and nowhere else.
                         case (_name in ["catapult","deckRecover","landOnRunway"]): { [_surface, _tail] };
+                        // The tail is the aircraft's name on the radio, and the
+                        // supply truck's dispatch carries a callsign.
+                        case (_name isEqualTo "turnaround"): { [_tail] };
                         case (_name isEqualTo "revealTargets"): {
                             private _targets = if (count _tuple > 5 && {(_tuple select 5) isEqualType []}) then { _tuple select 5 } else { [] };
                             [[_targets] call _fnc_objectsOf]
