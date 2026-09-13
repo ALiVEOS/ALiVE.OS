@@ -57,6 +57,16 @@ Jman
 #define WAIT_TIMES [["CAS",10],["DCA",30],["CAP",60],["SEAD",60],["Strike",90],["Recce",90]]
 #define WAIT_DEFAULT 60
 
+// How long a target that was offered to players stays off the list.
+//
+// It used to stay off forever. A target was pushed onto a per-type list and
+// nothing ever took it off, so a strike a player did not complete blocked that
+// building for the rest of the mission, and the list itself grew without
+// limit. Half an hour is long enough that players are not pestered with the
+// same target repeatedly and short enough that a failed one comes back within
+// a session.
+#define PLAYER_TASK_QUIET 1800
+
 // A denial that repeats every tick is noise that hides the one that matters.
 #define DENIAL_QUIET 300
 
@@ -776,6 +786,21 @@ switch(_operation) do {
     // Deduped per type against the public registry, because the same air
     // defence is spotted on every scan and each sighting would otherwise become
     // another identical task.
+    // A name for something this commander raises, that cannot collide with
+    // another raised in the same second.
+    //
+    // All three of these used the faction (or the tail) plus the floored
+    // mission time, and the planner raises a player task for more than one
+    // sortie type on a single pass, so two in one second shared a name and the
+    // second was indistinguishable from the first. A count of how many this
+    // commander has raised is added: unique however coarse the clock is, and
+    // still reads as the same kind of name.
+    case "nextTaskId": {
+        private _seq = ([_logic, "raisedCount", 0] call ALIVE_fnc_hashGet) + 1;
+        [_logic, "raisedCount", _seq] call ALIVE_fnc_hashSet;
+        _result = format ["%1_%2_%3", if (_args isEqualType "") then {_args} else {"ATO"}, floor time, _seq];
+    };
+
     case "playerTask": {
         _args params [["_type","",[""]], ["_targets",[],[[]]], ["_extra",""]];
 
@@ -806,9 +831,47 @@ switch(_operation) do {
         if (isNil QGVAR(playerRequests)) then {
             GVAR(playerRequests) = [] call ALiVE_fnc_hashCreate;
         };
+        // What has already been offered, and for how long.
+        //
+        // Each entry is [target, whenItWasOffered]. It used to be the bare
+        // target, so nothing could ever expire and nothing was ever removed: a
+        // target offered once was off the list for good, whether the player
+        // completed the task, failed it, or never looked at it. A bare target
+        // is still read correctly, because a mission saved before this carries
+        // the old shape and refusing to read it would offer every target again
+        // at once.
+        private _now = time;
         private _already = [GVAR(playerRequests), _type, []] call ALiVE_fnc_hashGet;
+        if !(_already isEqualType []) then { _already = [] };
+
+        // Pruned on the way past: anything whose quiet period has run out, and
+        // anything that is simply not there any more. A live object that has
+        // been deleted or killed cannot be attacked by anybody, so holding its
+        // place on the list only makes the list longer.
+        private _kept = [];
+        {
+            private _entry = _x;
+            private _who = _entry;
+            private _when = _now;
+            if (_entry isEqualType [] && {count _entry > 1}) then {
+                _who = _entry select 0;
+                _when = _entry select 1;
+                if !(_when isEqualType 0) then { _when = _now };
+            };
+            private _stillThere = true;
+            if (_who isEqualType objNull) then { _stillThere = !isNull _who && {alive _who} };
+            if (_stillThere && {(_now - _when) < PLAYER_TASK_QUIET}) then {
+                _kept pushBack [_who, _when];
+            };
+        } forEach _already;
+        if !((count _kept) isEqualTo (count _already)) then {
+            [GVAR(playerRequests), _type, _kept] call ALiVE_fnc_hashSet;
+        };
+        _already = _kept;
+
+        private _offered = _already apply { _x select 0 };
         private _target = nil;
-        { if !(_x in _already) exitWith { _target = _x } } forEach _wanted;
+        { if !(_x in _offered) exitWith { _target = _x } } forEach _wanted;
         if (isNil "_target") exitWith { _result = ["denied", "already offered"] };
 
         // Where the task points, and whose it is. A target is either a profile
@@ -873,7 +936,7 @@ switch(_operation) do {
         private _targetArray = if (_type isEqualTo "OCA") then { _wanted } else { [_target] };
 
         private _taskData = [
-            format ["%1_%2", _faction, floor time],
+            [_logic, "nextTaskId", _faction] call MAINCLASS,
             "ATO", _side, _faction, _taskType, "NULL",
             _destination, _players, _enemyFaction, "Y", "Side", _targetArray
         ];
@@ -889,7 +952,7 @@ switch(_operation) do {
         private _event = ["TASK_GENERATE", _taskData, "ATO"] call ALIVE_fnc_event;
         [ALIVE_eventLog, "addEvent", _event] call ALIVE_fnc_eventLog;
 
-        _already pushBack _target;
+        _already pushBack [_target, _now];
         [GVAR(playerRequests), _type, _already] call ALiVE_fnc_hashSet;
         _result = ["raised", _taskData select 0, _taskType];
     };
@@ -967,7 +1030,7 @@ switch(_operation) do {
         // airframe has no profile, so there is no id to append and anything
         // reading index 12 would be reading a stale value.
         private _taskData = [
-            format ["%1_%2", _faction, floor time],
+            [_logic, "nextTaskId", _faction] call MAINCLASS,
             "ATO", _side, _faction, "CSAR", "NULL",
             _destination, _players, _enemyFaction, "Y", "Side", _class
         ];
@@ -989,7 +1052,7 @@ switch(_operation) do {
         if (_tail isEqualTo "") exitWith { _result = ["denied", "no tail"] };
 
         private _request = [[
-            ["id", format ["ferry_%1_%2", _tail, floor time]],
+            ["id", [_logic, "nextTaskId", format ["ferry_%1", _tail]] call MAINCLASS],
             ["type", "FERRY"],
             ["side", [_logic, "side", ""] call ALIVE_fnc_hashGet],
             ["faction", [_logic, "faction", ""] call ALIVE_fnc_hashGet],
