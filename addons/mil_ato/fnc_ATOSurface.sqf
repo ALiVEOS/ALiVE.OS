@@ -1391,8 +1391,34 @@ switch(_operation) do {
         private _existing = [_pads,_tail,objNull] call ALIVE_fnc_hashGet;
         if (!isNull _existing) exitWith { _result = _existing };
 
-        private _pad = createVehicle ["Land_HelipadEmpty_F", _home select 0, [], 0, "CAN_COLLIDE"];
-        _pad setPosATL [(_home select 0) select 0, (_home select 0) select 1, 0];
+        // Where the pad goes. A deck home's world position is worked out from
+        // its ship rather than read back, the same as everywhere else that
+        // uses one.
+        private _at = _home select 0;
+        private _onDeck = (_home select 2) isEqualTo "deck";
+        if (_onDeck) then {
+            _at = ([_logic, "resolve", _home] call MAINCLASS) select 0;
+        };
+
+        private _pad = createVehicle ["Land_HelipadEmpty_F", _at, [], 0, "CAN_COLLIDE"];
+        if (_onDeck) then {
+            // ON THE PLATING, above sea level.
+            //
+            // setPosATL measures from the terrain and over water the terrain is
+            // the SEA BED, so a pad stamped the land way sat about forty metres
+            // underneath the ship. A helicopter told to land on its pad was
+            // being aimed at the sea floor, and the whole point of stamping a
+            // pad is that the engine puts a helicopter down on one whether or
+            // not that is where it was sent.
+            //
+            // A deck home already carries its position above sea level, which
+            // is the frame the deck half works in throughout.
+            _pad setPosASL [_at select 0, _at select 1, _at select 2];
+        } else {
+            // Terrain level. A hangar-parked airframe stores the building's own
+            // elevated origin, and a pad at that height is a pad in the roof.
+            _pad setPosATL [_at select 0, _at select 1, 0];
+        };
         // Stamped so the shared air-spawn search knows the spot is spoken for.
         _pad setVariable ["ALiVE_atoStamped", true, true];
         [_pads,_tail,_pad] call ALIVE_fnc_hashSet;
