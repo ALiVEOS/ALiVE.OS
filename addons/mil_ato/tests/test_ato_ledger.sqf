@@ -163,6 +163,32 @@ private _anyLegacyID = false;
 ["old profile id kept so the first session recognises the aircraft", _anyLegacyID] call _fnc_check;
 
 // --- result ---------------------------------------------------------------
+// ---- reading one field ------------------------------------------------------
+// The cheap read the kernel uses several times per aircraft per tick. What has
+// to hold is that it answers the same as fetching the whole record, that it
+// answers the default for a record or a field that is not there, and that an
+// array it hands back is a COPY: handing out the record's own array would let a
+// caller change the record by changing what it was given.
+private _lf = [nil, "create"] call ALIVE_fnc_ATOLedger;
+[_lf, "setInstance", ["BLU_F_0", "BLU_F"]] call ALIVE_fnc_ATOLedger;
+private _tailF = [_lf, "createRecord", ["B_Heli_Attack_01_F", "BLU_F", [], [["CAS"], []]]] call ALIVE_fnc_ATOLedger;
+[_lf, "setHome", [_tailF, [[100,200,0], 45, "terrain"]]] call ALIVE_fnc_ATOLedger;
+
+["a field reads the same as the whole record",
+    ([_lf, "field", [_tailF, "vehicleClass", ""]] call ALIVE_fnc_ATOLedger) isEqualTo "B_Heli_Attack_01_F"] call _fnc_check;
+["a field that is not there answers the default",
+    ([_lf, "field", [_tailF, "notAKey", "fallback"]] call ALIVE_fnc_ATOLedger) isEqualTo "fallback"] call _fnc_check;
+["a record that is not there answers the default",
+    ([_lf, "field", ["NO_SUCH_TAIL", "vehicleClass", "fallback"]] call ALIVE_fnc_ATOLedger) isEqualTo "fallback"] call _fnc_check;
+
+private _homeF = [_lf, "field", [_tailF, "home", []]] call ALIVE_fnc_ATOLedger;
+["a field reads an array value",
+    _homeF isEqualType [] && {count _homeF == 3} && {(_homeF select 1) isEqualTo 45}] call _fnc_check;
+_homeF set [1, 999];
+private _homeAgain = [_lf, "field", [_tailF, "home", []]] call ALIVE_fnc_ATOLedger;
+["and editing what it handed back does not change the record",
+    (_homeAgain select 1) isEqualTo 45] call _fnc_check;
+
 if (count _fails == 0) then {
     diag_log "=== ATO Ledger test: ALL PASS ===";
 } else {

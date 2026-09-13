@@ -375,24 +375,20 @@ private _fnc_isDrone = {
 // A campaign record as a COPY, or []. The ledger's get already copies; this
 // only adds the type test so a missing record is [] rather than something a
 // hashGet would refuse.
-private _fnc_recordOf = {
-    params [["_logic", objNull, [objNull]], ["_tail", "", [""]]];
-    private _rec = [];
-    private _ledger = [_logic, "ledger"] call _fnc_piece;
-    if (!(_ledger isEqualTo []) && {!(_tail isEqualTo "")}) then {
-        private _got = [_ledger, "get", _tail] call ALIVE_fnc_ATOLedger;
-        if (!isNil "_got" && {[_got] call ALIVE_fnc_isHash}) then { _rec = _got };
-    };
-    _rec
-};
-
 // One field of a record, with a default, safe on a missing record.
+//
+// Asked of the ledger as a field rather than fetched as a record and then
+// indexed. Fetching the record copies all of it, and this is called several
+// times per aircraft per tick: the class and the callsign for every effect
+// routed, and the home in three separate places. At the fast roster rate with
+// twenty aircraft that was around thirty whole record copies a second to read
+// a few strings.
 private _fnc_recField = {
     params [["_logic", objNull, [objNull]], ["_tail", "", [""]], ["_key", "", [""]], "_default"];
-    private _rec = [_logic, _tail] call _fnc_recordOf;
+    private _ledger = [_logic, "ledger"] call _fnc_piece;
     private _out = _default;
-    if !(_rec isEqualTo []) then {
-        private _got = [_rec, _key, _default] call ALIVE_fnc_hashGet;
+    if (!(_ledger isEqualTo []) && {!(_tail isEqualTo "")}) then {
+        private _got = [_ledger, "field", [_tail, _key, _default]] call ALIVE_fnc_ATOLedger;
         if (!isNil "_got") then { _out = _got };
     };
     _out

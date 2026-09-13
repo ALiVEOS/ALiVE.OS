@@ -153,6 +153,29 @@ switch(_operation) do {
         };
     };
 
+    // One field of one record, without copying the record.
+    //
+    // "get" hands back a copy of the whole record, which is right for a caller
+    // that wants the record and wasteful for one that wants a string out of it.
+    // The kernel wants a string out of it several times per aircraft per tick.
+    //
+    // An ARRAY value is still copied, because handing out the record's own
+    // array would let a caller change the record by changing what it was given,
+    // and a home that creeps because somebody edited the thing they were handed
+    // is a fault this module has already had once.
+    case "field": {
+        _args params [["_tail","",[""]], ["_key","",[""]], ["_default",nil]];
+        private _records = [_logic,"records"] call ALIVE_fnc_hashGet;
+        private _record = [_records,_tail,[]] call ALIVE_fnc_hashGet;
+        _result = _default;
+        if !(_record isEqualTo []) then {
+            private _got = [_record,_key,_default] call ALIVE_fnc_hashGet;
+            if (!isNil "_got") then {
+                _result = if (_got isEqualType []) then { +_got } else { _got };
+            };
+        };
+    };
+
     case "view": {
         _result = [[_logic,"records"] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashCopy;
     };
