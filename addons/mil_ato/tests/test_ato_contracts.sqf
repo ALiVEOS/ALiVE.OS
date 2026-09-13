@@ -12,9 +12,10 @@ apart: the raw variables other modules read off the logic, the events the ground
 commander and logistics raise, the pause the mission maker can press, and the
 names the four older scripts call.
 
-It drives the kernel DIRECTLY rather than through the module's own init, because
-the module has not been pointed at the kernel yet. That is deliberate: this has
-to pass before the switch is thrown, not after.
+It drives ALIVE_fnc_ATO, which is the name every other addon calls and which
+is now a forwarder onto the kernel. Driving the kernel directly would prove the
+kernel; driving the name proves the thing that ships, including that calling it
+is what defines the seven file-scope helpers other addons reach for.
 
 Smallest mission: a player on Stratis near the airfield with the profile system
 placed, and this run from the debug console. It creates its own commander, so no
@@ -51,11 +52,38 @@ Jman
 
     diag_log "=== ATO Contracts test ===";
 
-    // --- the kernel has to exist at all -------------------------------------
-    ["the kernel is compiled and callable",
+    // --- both names have to exist at all ------------------------------------
+    ["the commander's own name is compiled and callable",
+        !isNil "ALIVE_fnc_ATO"] call _fnc_check;
+    ["and so is the kernel behind it",
         !isNil "ALIVE_fnc_ATOKernel"] call _fnc_check;
-    if (isNil "ALIVE_fnc_ATOKernel") exitWith {
-        diag_log "=== ATO Contracts test: the kernel is not in this build, nothing else can run ===";
+    if (isNil "ALIVE_fnc_ATOKernel" || {isNil "ALIVE_fnc_ATO"}) exitWith {
+        diag_log "=== ATO Contracts test: the commander is not in this build, nothing else can run ===";
+    };
+
+    // The seven helper names are defined BY CALLING the commander, which is
+    // the first thing the module's own init does. Asserted in that order,
+    // because the observer asks for one of them behind a guard: if calling it
+    // did not define them, the air defence scan would go blind silently
+    // instead of loudly, and nothing would ever say so.
+    private _helpers = ["ALiVE_fnc_catapultLaunch", "ALiVE_fnc_getAirportTaxiPos",
+        "ALiVE_fnc_getNearestCatapult", "ALiVE_fnc_isVTOL", "ALiVE_fnc_isAntiAir",
+        "ALiVE_fnc_DrawRunwayBlacklistMarkers", "ALiVE_fnc_CheckSpawnInMarkerArea"];
+    private _before = 0;
+    { if !(isNil _x) then { _before = _before + 1 } } forEach _helpers;
+    diag_log format ["  info  %1 of %2 helper names were already defined before anything called the commander",
+        _before, count _helpers];
+
+    // Any operation at all defines them; a read of a default is the cheapest.
+    [objNull, "debug"] call ALIVE_fnc_ATO;
+    private _after = 0;
+    { if !(isNil _x) then { _after = _after + 1 } } forEach _helpers;
+    ["calling the commander defines the seven names other addons reach for",
+        _after == count _helpers] call _fnc_check;
+    if (_after < count _helpers) then {
+        private _lostNames = [];
+        { if (isNil _x) then { _lostNames pushBack _x } } forEach _helpers;
+        diag_log format ["  info  still undefined: %1", _lostNames];
     };
 
     private _anchor = if (isNull player) then {[1839.76, 5750.47, 0]} else {getPosATL player};
@@ -92,7 +120,7 @@ Jman
     // --- start-up -----------------------------------------------------------
     private _logic = [_anchor, [_zone]] call _fnc_logic;
     private _t0 = time;
-    [_logic, "init"] call ALIVE_fnc_ATOKernel;
+    [_logic, "init"] call ALIVE_fnc_ATO;
 
     // Readiness is the promise the ground commander waits on, and it is
     // supposed to be true before the heavy start-up has finished, not after.
@@ -134,7 +162,7 @@ Jman
     private _wrong = [];
     {
         _x params ["_op", "_want"];
-        private _got = [_logic, _op] call ALIVE_fnc_ATOKernel;
+        private _got = [_logic, _op] call ALIVE_fnc_ATO;
         if !(_got isEqualTo _want) then { _wrong pushBack [_op, _got, _want] };
     } forEach [
         ["faction", "BLU_F"], ["side", "WEST"], ["createHQ", true], ["placeAir", false],
@@ -148,16 +176,16 @@ Jman
         diag_log format ["  info  wrong answers: %1", _wrong];
     };
 
-    private _types = [_logic, "types"] call ALIVE_fnc_ATOKernel;
+    private _types = [_logic, "types"] call ALIVE_fnc_ATO;
     ["the sortie types come back as the list they always were",
         _types isEqualType [] && {"CAP" in _types} && {"CAS" in _types}] call _fnc_check;
-    private _assets = [_logic, "assets"] call ALIVE_fnc_ATOKernel;
+    private _assets = [_logic, "assets"] call ALIVE_fnc_ATO;
     ["the asset list is readable and is a hash",
         [_assets] call ALIVE_fnc_isHash] call _fnc_check;
 
     // A name that was dropped must fall through to the base class and be
     // logged, not throw. That is what keeps an old caller alive.
-    private _dropped = [_logic, "scanAirspace"] call ALIVE_fnc_ATOKernel;
+    private _dropped = [_logic, "scanAirspace"] call ALIVE_fnc_ATO;
     ["an operation that no longer exists is logged rather than thrown",
         !isNil "_dropped"] call _fnc_check;
 
@@ -166,7 +194,7 @@ Jman
     // so this waits for the base to finish. Readiness is deliberately earlier
     // than that: the ground commander must not have to wait for a garrison to
     // be built before it can ask for air support.
-    private _kWait = [_logic, "kernel"] call ALIVE_fnc_ATOKernel;
+    private _kWait = [_logic, "kernel"] call ALIVE_fnc_ATO;
     private _baseW = if ([_kWait] call ALIVE_fnc_isHash) then { [_kWait, "base", []] call ALIVE_fnc_hashGet } else { [] };
     private _waited = 0;
     waitUntil {
@@ -179,7 +207,7 @@ Jman
     ["the base finishes building rather than hanging",
         _basePhase isEqualTo "established"] call _fnc_check;
 
-    private _side = [_logic, "side"] call ALIVE_fnc_ATOKernel;
+    private _side = [_logic, "side"] call ALIVE_fnc_ATO;
     private _availName = format ["ALIVE_MIL_ATO_AVAIL_%1", _side];
     if (isNil "ALiVE_require") then {
         // The holder those flags live on belongs to the required-modules
@@ -210,7 +238,7 @@ Jman
             };
         } forEach _pair;
         diag_log format ["  info  handing over profile '%1'", _registered];
-        private _answer = [_logic, "registerProfile", [_registered, _zone]] call ALIVE_fnc_ATOKernel;
+        private _answer = [_logic, "registerProfile", [_registered, _zone]] call ALIVE_fnc_ATO;
         diag_log format ["  info  registerProfile answered %1", _answer];
         ["an aircraft can be handed to the commander by profile",
             _answer isEqualType [] && {(_answer param [0, ""]) isEqualTo "spawned"}] call _fnc_check;
@@ -220,7 +248,7 @@ Jman
         waitUntil {
             sleep 2;
             _spin2 = _spin2 + 2;
-            private _kk = [_logic, "kernel"] call ALIVE_fnc_ATOKernel;
+            private _kk = [_logic, "kernel"] call ALIVE_fnc_ATO;
             if ([_kk] call ALIVE_fnc_isHash) then {
                 private _rr = [_kk, "rows", []] call ALIVE_fnc_hashGet;
                 if ([_rr] call ALIVE_fnc_isHash) then { _onBooks = count (_rr select 1) > 0 };
@@ -229,7 +257,7 @@ Jman
         };
         diag_log format ["  info  it reached the roster after %1 s", _spin2];
         ["and it turns up on the roster", _onBooks] call _fnc_check;
-        private _seenAssets = [_logic, "assets"] call ALIVE_fnc_ATOKernel;
+        private _seenAssets = [_logic, "assets"] call ALIVE_fnc_ATO;
         ["and in the asset list other modules read",
             ([_seenAssets] call ALIVE_fnc_isHash) && {count (_seenAssets select 1) > 0}] call _fnc_check;
     } else {
@@ -270,7 +298,7 @@ Jman
         sleep 14;
     };
     if (_raised) then {
-        private _task = [[_logic, "kernel"] call ALIVE_fnc_ATOKernel, "task", []] call ALIVE_fnc_hashGet;
+        private _task = [[_logic, "kernel"] call ALIVE_fnc_ATO, "task", []] call ALIVE_fnc_hashGet;
         private _seen = false;
         if !(_task isEqualTo []) then {
             private _sorties = [_task, "sorties", []] call ALIVE_fnc_hashGet;
@@ -288,7 +316,7 @@ Jman
     // neither may throw.
     private _threw = false;
     {
-        private _r = [_logic, "LOGISTICS_COMPLETE", _x] call ALIVE_fnc_ATOKernel;
+        private _r = [_logic, "LOGISTICS_COMPLETE", _x] call ALIVE_fnc_ATO;
         if (isNil "_r") then { _threw = true };
     } forEach [
         ["LOGISTICS_COMPLETE", [], "LOGCOM", 4242, "", [["no_such_entity", "no_such_vehicle"]]],
@@ -302,7 +330,7 @@ Jman
     // listening for it is the event log's business, not this module's.
     private _threwAsk = false;
     {
-        private _r = [_logic, _x select 0, _x select 1] call ALIVE_fnc_ATOKernel;
+        private _r = [_logic, _x select 0, _x select 1] call ALIVE_fnc_ATO;
         if (isNil "_r") then { _threwAsk = true };
     } forEach [
         ["ATO_STATUS_REQUEST", ["BLU_F", "WEST", "no_such_request", "1"]],
@@ -314,7 +342,7 @@ Jman
     // --- the pause the mission maker can press ------------------------------
     // Pressed through the shared module pause, which resolves the class off
     // the logic, so this also proves the class variable is the right one.
-    private _k = [_logic, "kernel"] call ALIVE_fnc_ATOKernel;
+    private _k = [_logic, "kernel"] call ALIVE_fnc_ATO;
     ["the kernel offers itself for reading",
         [_k] call ALIVE_fnc_isHash] call _fnc_check;
 
@@ -336,7 +364,7 @@ Jman
     // the shared one reach the right code is the class variable on the logic,
     // and that is asserted above.
     if (true) then {
-        [_logic, "pause", true] call ALIVE_fnc_ATOKernel;
+        [_logic, "pause", true] call ALIVE_fnc_ATO;
         sleep 1;
         ["the commander reports itself paused",
             [_k, "paused", false] call ALIVE_fnc_hashGet] call _fnc_check;
@@ -355,7 +383,7 @@ Jman
         ["nothing moves while it is paused", count _drifted == 0] call _fnc_check;
 
         if (true) then {
-            [_logic, "pause", false] call ALIVE_fnc_ATOKernel;
+            [_logic, "pause", false] call ALIVE_fnc_ATO;
             sleep 1;
             ["and it reports itself running again",
                 !([_k, "paused", true] call ALIVE_fnc_hashGet)] call _fnc_check;
@@ -409,9 +437,9 @@ Jman
     _markers pushBack _zone2;
 
     private _logicB = [_anchor getPos [2200, 90], [_zone2], "BLU_F", "true"] call _fnc_logic;
-    [_logicB, "init"] call ALIVE_fnc_ATOKernel;
+    [_logicB, "init"] call ALIVE_fnc_ATO;
     sleep 3;
-    private _kB = [_logicB, "kernel"] call ALIVE_fnc_ATOKernel;
+    private _kB = [_logicB, "kernel"] call ALIVE_fnc_ATO;
     private _keyA = [_k, "instanceKey", ""] call ALIVE_fnc_hashGet;
     private _keyB = if ([_kB] call ALIVE_fnc_isHash) then { [_kB, "instanceKey", ""] call ALIVE_fnc_hashGet } else { "" };
     diag_log format ["  info  the two keys are '%1' and '%2'", _keyA, _keyB];
@@ -429,12 +457,27 @@ Jman
     // A commander has to be able to stop: the drivers are spawned and would
     // otherwise outlive the test and answer the next one's events.
     {
-        private _r = [_x, "destroy"] call ALIVE_fnc_ATOKernel;
+        private _r = [_x, "destroy"] call ALIVE_fnc_ATO;
         diag_log format ["  info  destroy answered %1", _r];
     } forEach _logics;
     sleep 3;
     ["a commander can be stopped, and afterwards has nothing left to read",
-        ([_logic, "kernel"] call ALIVE_fnc_ATOKernel) isEqualTo []] call _fnc_check;
+        ([_logic, "kernel"] call ALIVE_fnc_ATO) isEqualTo []] call _fnc_check;
+
+    // --- saving and loading -------------------------------------------------
+    // The save button calls this and wants a pair back on every path,
+    // whatever the answer is. Nothing here is persistent, so the answer is
+    // "no", and the shape is what is being asserted.
+    private _saveAnswer = [] call ALiVE_fnc_ATOSaveData;
+    diag_log format ["  info  the save answered %1", _saveAnswer];
+    ["the save answers a pair on every path, as the save button expects",
+        _saveAnswer isEqualType [] && {count _saveAnswer == 2}
+        && {(_saveAnswer select 0) isEqualType false} && {(_saveAnswer select 1) isEqualType []}] call _fnc_check;
+
+    private _loadAnswer = [] call ALiVE_fnc_ATOLoadData;
+    diag_log format ["  info  the load answered %1", if (_loadAnswer isEqualType []) then {"a store"} else {str _loadAnswer}];
+    ["and the load answers a store or a plain no",
+        (_loadAnswer isEqualType []) || {_loadAnswer isEqualType false}] call _fnc_check;
 
     // --- tidy up -------------------------------------------------------------
     { deleteMarker _x } forEach _markers;

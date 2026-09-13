@@ -61,6 +61,8 @@ switch(_operation) do {
             [_logic,"modules",[] call ALIVE_fnc_hashCreate] call ALIVE_fnc_hashSet;
             [_logic,"persistenceLoaded",false] call ALIVE_fnc_hashSet;
 
+            // The argument is still accepted and still ignored on purpose: the
+            // callers pass it and it costs nothing to keep the shape.
             private _persistent = _args;
 
             // set the global ATO
@@ -68,34 +70,18 @@ switch(_operation) do {
                 ALIVE_globalATO = [] call ALIVE_fnc_hashCreate;
             };
 
-            // If any module is persistent, then load data and store
-            if (_persistent && !([_logic,"persistenceLoaded",false] call ALIVE_fnc_hashGet)) then {
-
-                // DEBUG -------------------------------------------------------------------------------------
-                if(_debug) then {
-                    ["ATO Global registry loading persistent ATOs."] call ALIVE_fnc_dump;
-                };
-                // DEBUG -------------------------------------------------------------------------------------
-
-                _data = call ALIVE_fnc_ATOLoadData;
-
-                if(typeName _data == "ARRAY") then {
-
-                    GVAR(STORE) = _data;
-
-                    // DEBUG -------------------------------------------------------------------------------------
-                    // if(_debug) then {
-                        ["ATO Global registry persistent data loaded:"] call ALIVE_fnc_dump;
-                        GVAR(STORE) call ALIVE_fnc_inspectHash;
-                    // };
-                    // DEBUG -------------------------------------------------------------------------------------
-
-                    [_logic,"persistenceLoaded",true] call ALIVE_fnc_hashSet;
-
-                } else {
-                    [_logic,"persistenceLoaded",false] call ALIVE_fnc_hashSet;
-                };
-            };
+            // Loading belongs to each commander now, not here.
+            //
+            // This read one shared blob of every faction's aircraft and kept
+            // it, and the register step below then published that blob INSTEAD
+            // of what the commander registering actually had. With two
+            // commanders of one faction, whichever registered second had its
+            // own aircraft replaced by the first one's, and a commander that
+            // was not persistent could have its aircraft replaced by a
+            // neighbour that was. Each commander now reads its own records
+            // under its own key as it starts up, so there is nothing for this
+            // to do.
+            [_logic,"persistenceLoaded",false] call ALIVE_fnc_hashSet;
 
         };
     };
@@ -139,20 +125,14 @@ switch(_operation) do {
         _persistent = [_module, "persistent"] call ALIVE_fnc_ATO;
         _assets = [_module, "assets"] call ALIVE_fnc_ATO;
 
-        // For persistent ATO, just overwrite ATO state
-        if(_persistent && ([_logic,"persistenceLoaded",false] call ALIVE_fnc_hashGet)) then {
-
-                // DEBUG -------------------------------------------------------------------------------------
-                if(_debug) then {
-                    ["ATO Global registry adding persistent ATOs."] call ALIVE_fnc_dump;
-                };
-                // DEBUG -------------------------------------------------------------------------------------
-
-                // TODO only register this modules assets rather than overwriting globalATO (would allow mix of persistent/non persistence ATO modules)
-                ALIVE_globalATO = GVAR(STORE);
-        } else {
-            [_logic,"updateGlobalATO",[_moduleID,_assets]] call MAINCLASS;
-        };
+        // What this commander has, published under this commander's entry.
+        //
+        // There used to be a branch here that replaced the whole published
+        // state with the shared store instead, for any persistent commander.
+        // Its own note said it should only register its own aircraft; that is
+        // now the only thing it does, which is what lets persistent and
+        // non-persistent commanders stand side by side.
+        [_logic,"updateGlobalATO",[_moduleID,_assets]] call MAINCLASS;
     };
     case "updateGlobalATO": {
         private["_moduleID","_state","_debug","_modules","_moduleIndex","_module","_moduleFactions","_factions"];

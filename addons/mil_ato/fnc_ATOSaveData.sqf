@@ -5,99 +5,72 @@ SCRIPT(ATOSaveData);
 Function: ALIVE_fnc_ATOSaveData
 
 Description:
-Save mil air tasking orders persistence state via sys_data
+Save the air commanders' campaign state.
+
+Called by the save-and-exit button, which wants [wasItSaved, whatHappened] and
+nothing else. Every air commander in the mission is asked to save its own
+records under its own key; one that is not persistent says so and is skipped.
+
+This used to hold the saving itself: it walked the ground commanders to find
+out whether ANY air commander was persistent, and then wrote one shared blob
+of every faction's aircraft. That is why two commanders of one faction wrote
+over each other, and why a commander that was not persistent could still have
+its aircraft saved by a neighbour that was.
 
 Parameters:
+Nil
 
 Returns:
-Boolean
+Array - [Boolean, Array of message strings]
 
 Examples:
 (begin example)
-// save air tasking orders data
-_result = call ALIVE_fnc_ATOSaveData;
+_result = [] call ALIVE_fnc_ATOSaveData;
 (end)
 
 See Also:
 ALIVE_fnc_ATOLoadData
+ALIVE_fnc_ATOKernel
 
 Author:
-ARJay
+ARJay, Jman
 ---------------------------------------------------------------------------- */
 
-private ["_result","_data","_async","_missionName","_message","_messages","_saveResult"];
+private _messages = [];
 
-if !(isServer && {!(isNil "ALIVE_sys_data")} && {!(ALIVE_sys_data_DISABLED)}) exitwith {false};
+// Answered the same way on every path, so the caller never has to test the
+// shape of what it got back.
+if !(isServer) exitWith { [false, ["ALiVE Military air tasking orders - not the server"]] };
+if (isNil "ALIVE_sys_data" || {isNil "ALIVE_sys_data_DISABLED"} || {ALIVE_sys_data_DISABLED}) exitWith {
+    [false, ["ALiVE Military air tasking orders - persistence is off"]]
+};
+if (isNil "ALIVE_fnc_ATOKernel") exitWith {
+    [false, ["ALiVE Military air tasking orders - the commander's kernel is missing"]]
+};
 
-if(ALiVE_SYS_DATA_DEBUG_ON) then {
+if (!isNil "ALiVE_SYS_DATA_DEBUG_ON" && {ALiVE_SYS_DATA_DEBUG_ON}) then {
     [true, "ALiVE MIL air tasking orders - Saving data", "atoper"] call ALIVE_fnc_timer;
 };
 
-_async = false;
-_missionName = [missionName, "%20","-"] call CBA_fnc_replace;
-_missionName = format["%1_%2_ATO", ALIVE_sys_data_GROUP_ID, _missionName];
+private _modules = (entities "Module_F") select { (typeOf _x) isEqualTo "ALiVE_mil_ato" };
+if (count _modules == 0) exitWith {
+    [false, ["ALiVE Military air tasking orders - no air commander in this mission"]]
+};
 
-_data = ALIVE_globalATO;
-
-private _isPersistent = false;
-
+private _saved = 0;
 {
-    private _opcom = _x;
-    private _module = [_opcom, "module"] call CBA_fnc_hashGet;
+    private _logic = _x;
+    ([_logic, "save"] call ALIVE_fnc_ATOKernel) params [["_ok", false, [false]], ["_why", "", [""]]];
+    if (_ok) then { _saved = _saved + 1 };
+    _messages pushBack format ["ALiVE Military air tasking orders - %1: %2",
+        if (_ok) then { "saved" } else { "not saved" }, _why];
+} forEach _modules;
 
-    {
-        private _object = _x;
+private _result = [_saved > 0, _messages];
 
-        if (_object isKindOf "alive_mil_ato") then {
-            private _persistent = [_object, "persistent"] call ALiVE_fnc_ATO;
-
-            if (_persistent) exitWith {
-                _isPersistent = true;
-            };
-        };
-    } forEach (synchronizedObjects _module);
-
-    if (_isPersistent) exitWith {};
-} forEach OPCOM_instances;
-
-if (!_isPersistent || count (_data select 1) == 0) exitwith {
-    //[["ALiVE_LOADINGSCREEN"],"BIS_fnc_endLoadingScreen",true,false] call BIS_fnc_MP;
-    _result = [false,[]];
-};
-
-_result = [false,[]];
-
-_message = format["ALiVE Military air tasking orders - Preparing to save ATO data for %1 factions ..",count(_data select 1)];
-_messages = _result select 1;
-_messages set [count _messages,_message];
-
-if(ALiVE_SYS_DATA_DEBUG_ON) then {
-    ["SAVE MIL air tasking orders DATA NOW - MISSION NAME: %1! PLEASE WAIT...",_missionName] call ALiVE_fnc_dump;
-    _data call ALIVE_fnc_inspectHash;
-};
-
-
-if (isNil QGVAR(DATAHANDLER)) then {
-
-    if(ALiVE_SYS_DATA_DEBUG_ON) then {
-        ["SAVE MIL air tasking orders, CREATE DATA HANDLER!"] call ALIVE_fnc_dump;
-    };
-
-    GVAR(DATAHANDLER) = [nil, "create"] call ALIVE_fnc_Data;
-    [GVAR(DATAHANDLER),"storeType",true] call ALIVE_fnc_Data;
-};
-
-_saveResult = [GVAR(DATAHANDLER), "bulkSave", ["mil_ato", _data, _missionName, _async]] call ALIVE_fnc_Data;
-_result set [0,_saveResult];
-
-_message = format["ALiVE Military air tasking orders - Save Result: %1",_saveResult];
-_messages = _result select 1;
-_messages set [count _messages,_message];
-
-
-if(ALiVE_SYS_DATA_DEBUG_ON) then {
-    [false, "ALiVE MIL air tasking orders - Save data complete","atoper"] call ALIVE_fnc_timer;
-    ["MIL air tasking orders SAVE DATA RESULT: %1",_saveResult] call ALiVE_fnc_dump;
+if (!isNil "ALiVE_SYS_DATA_DEBUG_ON" && {ALiVE_SYS_DATA_DEBUG_ON}) then {
+    [false, "ALiVE MIL air tasking orders - Save data complete", "atoper"] call ALIVE_fnc_timer;
+    ["MIL air tasking orders SAVE DATA RESULT: %1", _result] call ALiVE_fnc_dump;
 };
 
 _result
