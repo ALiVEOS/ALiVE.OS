@@ -1526,6 +1526,88 @@ switch(_operation) do {
 
     // What one aircraft is doing: [state, seconds in it, seconds to its
     // deadline or -1, sortie id, protected, home, seconds until ready].
+    // The air picture, for anything outside this module that wants to report
+    // it to a player.
+    //
+    // Read only, and it draws nothing. The design for the reporting splits it
+    // on purpose: losses and ground attacks belong in the situation report's
+    // diary, the periodic state belongs on a common operational picture layer,
+    // and the settings that turn any of it on belong to the tasking module.
+    // This module's share is to be able to answer the question.
+    //
+    // Ours is counted off the state table's own flying states. The design brief
+    // flagged that the obvious signal for this is wrong because it is a
+    // launch-preparation latch rather than a statement about being in the air;
+    // that cannot happen here, because a state says where an aircraft is.
+    //
+    // Theirs is counted fresh rather than remembered, so a contact that has
+    // left is not still on the books.
+    case "airPicture": {
+        private _k = [_logic] call _fnc_kernel;
+        private _out = [[
+            ["side", [_logic, "side"] call MAINCLASS],
+            ["faction", [_logic, "faction"] call MAINCLASS],
+            ["ours", 0],
+            ["oursAirborne", 0],
+            ["theirs", 0],
+            ["zones", []],
+            ["state", "unknown"],
+            ["at", time]
+        ]] call ALIVE_fnc_hashCreate;
+
+        if !(_k isEqualTo []) then {
+            private _rows = [_k, "rows", []] call ALIVE_fnc_hashGet;
+            private _ours = 0;
+            private _up = 0;
+            if ([_rows] call ALIVE_fnc_isHash) then {
+                {
+                    private _row = [_rows, _x, []] call ALIVE_fnc_hashGet;
+                    if ([_row] call ALIVE_fnc_isHash) then {
+                        _ours = _ours + 1;
+                        if (([_row, "state", ""] call ALIVE_fnc_hashGet) in FLYING_STATES) then {
+                            _up = _up + 1;
+                        };
+                    };
+                } forEach (_rows select 1);
+            };
+            [_out, "ours", _ours] call ALIVE_fnc_hashSet;
+            [_out, "oursAirborne", _up] call ALIVE_fnc_hashSet;
+
+            private _theirs = 0;
+            private _zones = [];
+            private _watch = [_logic, "watch"] call _fnc_piece;
+            if !(_watch isEqualTo []) then {
+                private _found = [_watch, "scanBogeys"] call ALIVE_fnc_ATOWatch;
+                if ([_found] call ALIVE_fnc_isHash) then {
+                    {
+                        private _inZone = [_found, _x, []] call ALIVE_fnc_hashGet;
+                        if (_inZone isEqualType [] && {count _inZone > 0}) then {
+                            _theirs = _theirs + (count _inZone);
+                            _zones pushBack [_x, count _inZone];
+                        };
+                    } forEach (_found select 1);
+                };
+            };
+            [_out, "theirs", _theirs] call ALIVE_fnc_hashSet;
+            [_out, "zones", _zones] call ALIVE_fnc_hashSet;
+
+            // Contested means both sides have something in the air over our
+            // own airspaces. Inferiority means they do and we do not, which is
+            // the one worth telling a player about. And with nothing of theirs
+            // up, having something of ours up is superiority while having
+            // nothing up is simply quiet: an empty sky is not a victory.
+            private _state = switch (true) do {
+                case (_theirs > 0 && {_up > 0}): { "contested" };
+                case (_theirs > 0):              { "inferiority" };
+                case (_up > 0):                  { "superiority" };
+                default                          { "quiet" };
+            };
+            [_out, "state", _state] call ALIVE_fnc_hashSet;
+        };
+
+        _result = _out;
+    };
+
     case "state": {
         _result = [];
         private _k = [_logic] call _fnc_kernel;

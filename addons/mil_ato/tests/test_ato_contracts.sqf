@@ -426,6 +426,32 @@ Jman
         };
     };
 
+    // --- the air picture ----------------------------------------------------
+    // What anything outside this module reads to report the enemy half of the
+    // air picture to a player. Read only: this answers the question and draws
+    // nothing, which is what the design for that work asks of this module.
+    private _pic = [_logic, "airPicture"] call ALIVE_fnc_ATO;
+    diag_log format ["  info  the air picture: %1", _pic];
+    ["the air picture can be asked for", [_pic] call ALIVE_fnc_isHash] call _fnc_check;
+    ["and it says whose it is",
+        ([_pic, "side", ""] call ALIVE_fnc_hashGet) isEqualTo ([_logic, "side"] call ALIVE_fnc_ATO)] call _fnc_check;
+    ["and how many aircraft we have and how many are up",
+        (([_pic, "ours", -1] call ALIVE_fnc_hashGet) >= 0)
+        && {([_pic, "oursAirborne", -1] call ALIVE_fnc_hashGet) >= 0}
+        && {([_pic, "oursAirborne", 99] call ALIVE_fnc_hashGet) <= ([_pic, "ours", 0] call ALIVE_fnc_hashGet)}] call _fnc_check;
+    ["and how many of theirs are over our airspaces",
+        ([_pic, "theirs", -1] call ALIVE_fnc_hashGet) >= 0] call _fnc_check;
+    ["and reaches one of the four states it can be in",
+        ([_pic, "state", ""] call ALIVE_fnc_hashGet) in ["superiority","inferiority","contested","quiet"]] call _fnc_check;
+    // An empty sky is not a victory, which is the distinction that makes the
+    // report worth reading rather than noise.
+    if (([_pic, "theirs", 0] call ALIVE_fnc_hashGet) == 0 && {([_pic, "oursAirborne", 0] call ALIVE_fnc_hashGet) == 0}) then {
+        ["with nothing of either side up it says quiet, not superiority",
+            ([_pic, "state", ""] call ALIVE_fnc_hashGet) isEqualTo "quiet"] call _fnc_check;
+    } else {
+        "with nothing of either side up it says quiet, not superiority" call _fnc_skip;
+    };
+
     // --- two commanders of one faction --------------------------------------
     // Both persistent, neither named, same faction: their campaign stores must
     // not be filed under one key or each would write over the other.
@@ -463,6 +489,20 @@ Jman
     sleep 3;
     ["a commander can be stopped, and afterwards has nothing left to read",
         ([_logic, "kernel"] call ALIVE_fnc_ATO) isEqualTo []] call _fnc_check;
+
+    // A stopped commander still answers, with nothing in it.
+    //
+    // This is where the air picture checks used to sit, and they were asking a
+    // commander that had just been stopped: it answered its empty shape with
+    // default values, which is right, and proved nothing about the live one.
+    // Kept as its own check, because answering an empty shape rather than
+    // throwing is what lets anything outside this module read it without
+    // having to know whether the commander is running.
+    private _picOff = [_logic, "airPicture"] call ALIVE_fnc_ATO;
+    ["a stopped commander still answers for the air picture, with nothing in it",
+        ([_picOff] call ALIVE_fnc_isHash)
+        && {([_picOff, "ours", -1] call ALIVE_fnc_hashGet) isEqualTo 0}
+        && {([_picOff, "state", ""] call ALIVE_fnc_hashGet) isEqualTo "unknown"}] call _fnc_check;
 
     // --- saving and loading -------------------------------------------------
     // The save button calls this and wants a pair back on every path,
