@@ -63,6 +63,12 @@ Jman
 // it, whether they are flying it or just aboard. A catapult tows the aircraft
 // onto the wire before it fires, so it moves the aircraft as surely as any of
 // the others.
+// The kinds of sortie that are supposed to shoot. A patrol and an
+// interception do their job by being present and reconnaissance by looking, so
+// none of those three firing anything is the expected outcome rather than a
+// stalled sortie.
+#define PROSECUTING_TYPES ["SEAD","CAS","Strike","OCA"]
+
 #define TELEPORTS ["airborneStart","forceLaunch","placeOnSlot","forceLanded","quickPark","catapult"]
 
 private ["_result"];
@@ -103,6 +109,10 @@ switch(_operation) do {
             ["playerFreeSince", -1],
             ["attempts", 0],
             ["sortie", []],
+            // How much ordnance the aircraft had when it reached its station,
+            // so that whether it has used any can be answered. Minus one means
+            // it has not reached one.
+            ["ammoAt", -1],
             ["reason", ""]
         ]] call ALIVE_fnc_hashCreate;
     };
@@ -306,7 +316,42 @@ switch(_operation) do {
                             };
 
                             case "ON_STATION": {
+                                // Has it actually done anything.
+                                //
+                                // An aircraft that reaches its station and then
+                                // never prosecutes used to sit there until its
+                                // ordinary sortie clock ran out, which was
+                                // recorded against a drone that held over its
+                                // target and did nothing for the whole
+                                // operation. Nothing noticed, because being on
+                                // station is what it was asked to do.
+                                //
+                                // Only for the kinds of sortie that are
+                                // supposed to shoot. A patrol and an
+                                // interception are doing their job by being
+                                // there, and reconnaissance by looking, so
+                                // firing nothing is the expected outcome for
+                                // all three and bringing them home early would
+                                // be the fault rather than the fix.
+                                //
+                                // Judged on the round COUNT, not on the "has it
+                                // any" flag: that one is one or nothing, so an
+                                // aircraft with half its ordnance left still
+                                // reads as full and nothing could ever be told
+                                // apart.
+                                private _sortieNow = [_row,"sortie",[]] call ALIVE_fnc_hashGet;
+                                private _kindNow = if (count _sortieNow > 0 && {(_sortieNow select 0) isEqualType ""}) then { _sortieNow select 0 } else { "" };
+                                private _lenNow = if (count _sortieNow > 2 && {(_sortieNow select 2) isEqualType 0}) then { _sortieNow select 2 } else { 600 };
+                                private _hadAmmo = [_row,"ammoAt",-1] call ALIVE_fnc_hashGet;
+                                private _onStationFor = _now - ([_row,"enteredAt",_now] call ALIVE_fnc_hashGet);
+                                private _stalled = (_kindNow in PROSECUTING_TYPES)
+                                    && {_hadAmmo > 0}
+                                    && {("ammoCount" call _fnc_n) >= _hadAmmo}
+                                    && {!("targetsGone" call _fnc_o)}
+                                    && {_onStationFor > ((_lenNow * 0.6) max 120)};
+
                                 switch (true) do {
+                                    case (_stalled): { _next = "RTB"; _reason = "RETURN"; };
                                     case (("fuel" call _fnc_n) < 0.2):   { _next = "RTB"; _reason = "RETURN_FUEL"; };
                                     case (("ammo" call _fnc_n) < 0.1):   { _next = "RTB"; _reason = "RETURN_AMMO"; };
                                     case (("damage" call _fnc_n) > 0.5): { _next = "RTB"; _reason = "RETURN_DAMAGE"; };
@@ -584,7 +629,10 @@ switch(_operation) do {
                         _effects append ["engineOn","broadcastStart"];
                     };
                 };
-                case "ON_STATION":   { _effects append ["broadcastOnStation","revealTargets","sortieArrived"]; };
+                case "ON_STATION":   {
+                    _effects append ["broadcastOnStation","revealTargets","sortieArrived"];
+                    [_row,"ammoAt", "ammoCount" call _fnc_n] call ALIVE_fnc_hashSet;
+                };
                 case "RTB":          { _effects append ["broadcastReturn","releaseTargets","sortieReturning"]; };
                 // Nothing on entry. The standing order for this state is a
                 // landing waypoint at the home pad, and that is the engine

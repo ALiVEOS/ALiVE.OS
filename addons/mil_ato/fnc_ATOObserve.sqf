@@ -97,6 +97,7 @@ switch(_operation) do {
             {
                 [_o, _x, 0] call ALIVE_fnc_hashSet;
             } forEach ["altAGL","altASL","speed","fuel","ammo","damage","wpRemaining","aliveCrew",
+                       "ammoCount",
                        "playersWithin300","playersWithin1000Hull","playersWithin1000Home",
                        "playersWithin1500Home"];
             // Nobody is aboard a hull that is gone, so nothing is holding it.
@@ -260,13 +261,23 @@ switch(_operation) do {
         ["damage", damage _obj] call _fnc_set;
 
         private _ammo = 1;
+        private _total = 0;
         private _mags = magazinesAmmo _obj;
         if (count _mags > 0) then {
-            private _total = 0;
             { _total = _total + (_x select 1) } forEach _mags;
             _ammo = if (_total > 0) then { 1 } else { 0 };
         };
         ["ammo", _ammo] call _fnc_set;
+        // And the count, which is a different question.
+        //
+        // The line above is one or nothing by design, and the table compares it
+        // against a tenth to decide whether an aircraft is out. That makes it
+        // useless for asking whether an aircraft has FIRED, which is what
+        // telling a stalled sortie from a working one needs: an aircraft that
+        // has spent half its ordnance still reports one. The raw count is
+        // already worked out above, so it costs nothing to report it as well,
+        // and adding it leaves what the existing key means alone.
+        ["ammoCount", _total] call _fnc_set;
 
         private _grp = group _driver;
         private _wp = 0;

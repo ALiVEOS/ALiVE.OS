@@ -61,7 +61,7 @@ observation sequences, because those are what the table exists to prevent.
             // helicopter on land, which is what every case here used to be.
             ["deckHome", false], ["fixedWing", false], ["needsRunway", false],
             ["launchInProgress", false],
-            ["fuel", 1], ["ammo", 1], ["damage", 0],
+            ["fuel", 1], ["ammo", 1], ["ammoCount", 8], ["damage", 0],
             ["playersWithin1000Home", 0], ["playersWithin1000Hull", 0]
         ]] call ALIVE_fnc_hashCreate;
         { [_o, _x select 0, _x select 1] call ALIVE_fnc_hashSet } forEach _flags;
@@ -317,6 +317,49 @@ observation sequences, because those are what the table exists to prevent.
 
     // ---- result --------------------------------------------------------------
     diag_log format ["  info  %1 assertions", _checked];
+    // ---- a sortie that reaches its station and never prosecutes ------------
+    // Brought home early, so the aircraft is available again instead of
+    // holding over a target it is not attacking until its clock runs out.
+    private _fnc_onStation = {
+        params ["_type", "_ammoNow", "_since"];
+        private _row = [_m, "newRow", ["BLU_F_0", [[100,100,0], 0, "terrain"]]] call ALIVE_fnc_ATOMachine;
+        [_row, "state", "ON_STATION"] call ALIVE_fnc_hashSet;
+        [_row, "enteredAt", 1000 - _since] call ALIVE_fnc_hashSet;
+        [_row, "deadlineAt", 9999] call ALIVE_fnc_hashSet;
+        // A sortie of this type, six hundred seconds long.
+        [_row, "sortie", [_type, [100,100,0], 600, 2000, "s1", [], ""]] call ALIVE_fnc_hashSet;
+        [_row, "ammoAt", 8] call ALIVE_fnc_hashSet;
+        private _obs = [[["airborne", true], ["atHome", false], ["onStation", true],
+            ["ammoCount", _ammoNow]]] call _fnc_obs;
+        ([_m, "step", [_row, _obs, "", 1000]] call ALIVE_fnc_ATOMachine) select 0
+    };
+
+    private _stalledRow = ["Strike", 8, 500] call _fnc_onStation;
+    diag_log format ["  info  a strike that fired nothing for 500 s of 600 went to %1",
+        [_stalledRow, "state", ""] call ALIVE_fnc_hashGet];
+    ["a strike sortie that never fires is brought home",
+        ([_stalledRow, "state", ""] call ALIVE_fnc_hashGet) isEqualTo "RTB"] call _fnc_check;
+
+    private _firedRow = ["Strike", 3, 500] call _fnc_onStation;
+    ["but one that has been firing is left to it",
+        ([_firedRow, "state", ""] call ALIVE_fnc_hashGet) isEqualTo "ON_STATION"] call _fnc_check;
+
+    private _earlyRow = ["Strike", 8, 60] call _fnc_onStation;
+    ["and one that has only just arrived is given time",
+        ([_earlyRow, "state", ""] call ALIVE_fnc_hashGet) isEqualTo "ON_STATION"] call _fnc_check;
+
+    // The one that matters. A patrol does its job by being there, so firing
+    // nothing is the expected outcome and bringing it home would be the fault
+    // rather than the fix.
+    private _capRow = ["CAP", 8, 500] call _fnc_onStation;
+    diag_log format ["  info  a patrol that fired nothing for 500 s of 600 stayed %1",
+        [_capRow, "state", ""] call ALIVE_fnc_hashGet];
+    ["a patrol that fires nothing is NOT brought home",
+        ([_capRow, "state", ""] call ALIVE_fnc_hashGet) isEqualTo "ON_STATION"] call _fnc_check;
+    private _recceRow = ["Recce", 8, 500] call _fnc_onStation;
+    ["and neither is a reconnaissance sortie",
+        ([_recceRow, "state", ""] call ALIVE_fnc_hashGet) isEqualTo "ON_STATION"] call _fnc_check;
+
     if (count _fails == 0) then {
         diag_log "=== ATO Machine test: ALL PASS ===";
     } else {
