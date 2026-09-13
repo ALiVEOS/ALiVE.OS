@@ -105,11 +105,38 @@ refused rather than guessed at.
     } forEach _homes;
     ["homes are distinct", _distinct] call _fnc_check;
 
-    // Never airside: an aircraft parked on the runway blocks every other one.
-    private _anyAirside = false;
+    // Never on a runway or a taxiway, because an aircraft parked on either
+    // blocks every other one. PARKING is deliberately allowed, and that is the
+    // difference between this and what it used to ask.
+    //
+    // The kinds are 1 runway, 2 taxiway, 3 parking, and this asked about all
+    // three. It passed for years because it was passing for the wrong reason:
+    // the airfield rungs of the search were handing back a spot and it was
+    // being discarded further down, so every home came out on open ground well
+    // away from the airfield and could not be airside of any kind. With the
+    // airfield working, a home on the apron IS kind 3, so this began failing
+    // on the runs where the airfield answered and passing on the runs where it
+    // did not, which read as an intermittent fault in the code and was an
+    // assertion describing behaviour that had been deliberately replaced.
+    private _airside = [];
     if (!isNil "ALiVE_fnc_isAirside") then {
-        { if ([_x select 0, _span, [1,2,3]] call ALiVE_fnc_isAirside) then { _anyAirside = true } } forEach _homes;
-        ["no home is on a movement surface", !_anyAirside] call _fnc_check;
+        {
+            if ([_x select 0, _span, [1,2]] call ALiVE_fnc_isAirside) then {
+                _airside pushBack [_forEachIndex, _x select 0];
+            };
+        } forEach _homes;
+        ["no home is on a runway or a taxiway", count _airside == 0] call _fnc_check;
+        if (count _airside > 0) then {
+            diag_log format ["  info  on a movement surface: %1", _airside];
+        };
+        // Reported rather than asserted: how many of the homes are on real
+        // parking is worth watching, because a run where none of them are is a
+        // run where the airfield search answered for none of them.
+        private _onStands = 0;
+        {
+            if ([_x select 0, _span, [3]] call ALiVE_fnc_isAirside) then { _onStands = _onStands + 1 };
+        } forEach _homes;
+        diag_log format ["  info  %1 of %2 homes are on the airfield's own parking", _onStands, count _homes];
     };
 
     // --- place --------------------------------------------------------------

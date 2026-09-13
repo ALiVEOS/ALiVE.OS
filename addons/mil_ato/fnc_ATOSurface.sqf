@@ -997,6 +997,9 @@ switch(_operation) do {
                     // down, so the terrain half's write would drop an airframe
                     // through the ship and into the sea.
                     _obj setPosASL [_targetD select 0, _targetD select 1, (_targetD select 2) + 0.4];
+                    // Level, and here that is right: plating is level, and the
+                    // surface normal over water answers about the sea rather
+                    // than about the ship standing on it.
                     _obj setVectorUp [0,0,1];
                     _obj setVelocity [0,0,0];
 
@@ -1066,7 +1069,34 @@ switch(_operation) do {
         _obj allowDamage false;
         if (_dir >= 0) then { _obj setDir _dir };
         _obj setPosATL _target;
-        _obj setVectorUp [0,0,1];
+        // Seated on the ground it is standing on, not forced level.
+        //
+        // A level hull on sloping ground is an attitude the ground disagrees
+        // with: one side of the undercarriage ends up buried and the other in
+        // the air, and the engine settles the argument by pushing the aircraft
+        // out of the ground. It then slides until it reaches somewhere the
+        // wrong attitude happens to fit.
+        //
+        // Measured at [1893, 6146] on Stratis, a shoulder with about ten
+        // degrees of tilt and nothing at all in the way: forced level it was
+        // doing 11 km/h within one second and came to rest 11.5 m away, twice
+        // out of two tries, its attitude visibly drifting onto the real slope
+        // as it went. Seated on the surface it stayed at 0.6 m and never moved,
+        // twice out of two. On the airfield itself the same spot could throw an
+        // aircraft 16 m.
+        //
+        // Past 15 m a plane reads as away from its home, and a home an
+        // aircraft is never at is a home it spends the rest of the mission
+        // trying to return to. That is the fault this whole piece exists to
+        // prevent, and it was the last failing check in the set: it looked
+        // intermittent only because the search reaches ground like this for
+        // the eighth aircraft and rarely for the first.
+        //
+        // The steepness is not the measure, by the way. A spot with 5.8 m of
+        // fall across the same footprint did not move an aircraft at all.
+        // What matters is whether the attitude being forced disagrees with
+        // the ground, not how steep the ground is.
+        _obj setVectorUp (surfaceNormal [_target select 0, _target select 1, 0]);
         _obj setVelocity [0,0,0];
 
         // Damage stays off until the airframe has actually settled. Re-arming

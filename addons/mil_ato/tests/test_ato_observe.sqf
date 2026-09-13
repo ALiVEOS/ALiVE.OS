@@ -20,6 +20,7 @@ console `call` would run the whole thing inside one frame.
 [] spawn {
 
     private _fails = [];
+    private _skips = [];
     private _checked = 0;
     private _fnc_check = {
         params ["_name", ["_ok", nil, [true]]];
@@ -34,6 +35,13 @@ console `call` would run the whole thing inside one frame.
             _fails pushBack _name;
             diag_log format ["  FAIL  %1", _name];
         };
+    };
+    // What a dedicated server cannot answer. There is no player on one at all,
+    // so every assertion about somebody being at the controls is unanswerable
+    // rather than false, and calling it a failure hides the real ones.
+    private _fnc_skip = {
+        _skips pushBack _this;
+        diag_log format ["  skip  %1  (no player on this machine)", _this];
     };
 
     diag_log "=== ATO Observer test ===";
@@ -73,6 +81,18 @@ console `call` would run the whole thing inside one frame.
     ["reports full fuel", ([_obs,"fuel"] call _fnc_get) > 0.9] call _fnc_check;
 
     // --- the player flies it -------------------------------------------------
+    if (isNull player) then {
+        {
+            _x call _fnc_skip;
+        } forEach [
+            "a player at the controls is flying it",
+            "and is not merely a passenger",
+            "and somebody is aboard",
+            "and the crew is not reported lost",
+            "with an AI at the controls the player is a passenger",
+            "and is still counted as aboard"
+        ];
+    } else {
     player moveInDriver _veh;
     sleep 2;
     _obs = [_veh, _home] call _fnc_obs;
@@ -107,6 +127,7 @@ console `call` would run the whole thing inside one frame.
     moveOut player;
     deleteVehicle _ai;
     deleteGroup _grp;
+    };
     sleep 2;
     _obs = [_veh, _home] call _fnc_obs;
     ["an empty hull reports its crew lost", [_obs,"crewLoss"] call _fnc_get] call _fnc_check;
@@ -155,6 +176,7 @@ console `call` would run the whole thing inside one frame.
     ["without throwing", !isNil "_obs"] call _fnc_check;
 
     diag_log format ["  info  %1 assertions", _checked];
+    diag_log format ["  info  %1 check(s) skipped for want of a player", count _skips];
     if (count _fails == 0) then {
         diag_log "=== ATO Observer test: ALL PASS ===";
     } else {
