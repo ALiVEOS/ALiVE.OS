@@ -65,7 +65,17 @@ console `call` would run the whole thing inside one frame.
     ["and reports nobody aboard it", [_dead,"crewLoss"] call _fnc_get] call _fnc_check;
 
     // --- a real hull ---------------------------------------------------------
-    private _spot = (getPosATL player) getPos [40, getDir player];
+    // Nobody at a keyboard means no player to stand beside, and a position
+    // derived from a null player is the map corner: aircraft created there
+    // sink, and a hull that has drowned answers every question with the
+    // defaults for a hull that is gone. Measured: a jet read its full load on
+    // the first look and nothing at all two seconds later. The airfield
+    // fallback is the one the other checks in this suite already use.
+    private _spot = if (isNull player) then {
+        [1839.76, 5750.47, 0]
+    } else {
+        (getPosATL player) getPos [40, getDir player]
+    };
     private _veh = createVehicle ["B_Heli_Transport_01_F", _spot, [], 0, "CAN_COLLIDE"];
     _veh setPosATL [_spot select 0, _spot select 1, 0];
     private _home = [[_spot select 0, _spot select 1, 0], 0, "terrain"];
@@ -80,7 +90,7 @@ console `call` would run the whole thing inside one frame.
     ["and nobody flying it", !([_obs,"playerControl"] call _fnc_get)] call _fnc_check;
     ["reports full fuel", ([_obs,"fuel"] call _fnc_get) > 0.9] call _fnc_check;
     ["counts its rounds rather than only saying it has some",
-        ([_obs,"ammoCount"] call _fnc_get) isEqualType 0] call _fnc_check;
+        ([_obs,"ordnance"] call _fnc_get) isEqualType 0] call _fnc_check;
     ["and reports a climb rate, which is nothing while it is parked",
         (abs ([_obs,"climbRate"] call _fnc_get)) < 2] call _fnc_check;
 
@@ -171,6 +181,58 @@ console `call` would run the whole thing inside one frame.
 
     private _aa = [_o, "scanAirDefences", [_zones, side player]] call ALIVE_fnc_ATOObserve;
     ["the air defence scan answers with a list", _aa isEqualType []] call _fnc_check;
+
+    // --- what counts as ammunition -------------------------------------------
+    // The reading counts ordnance and nothing else, which is the whole of the
+    // fault it replaced: every magazine was counted, and a CAS jet carries a
+    // hundred and twenty flares and a designator round beside its bombs, so an
+    // aircraft with everything spent still read as armed and never came home.
+    //
+    // Three airframes, because the cases have to be told apart: one that
+    // carries ordnance, the same one with its ordnance gone and its flares
+    // still aboard, and one that carries no ordnance at all on a full load.
+    private _fnc_ord = {
+        params ["_class"];
+        private _v = createVehicle [_class, [(_spot select 0) + 60, _spot select 1, 0], [], 0, "CAN_COLLIDE"];
+        _v setVariable ["ALIVE_profileIgnore", true, true];
+        _v setPosATL [(_spot select 0) + 60, _spot select 1, 0];
+        sleep 1;
+        private _obs2 = [_v, _home] call _fnc_obs;
+        private _out = [([_obs2,"ordnance"] call _fnc_get), ([_obs2,"armed"] call _fnc_get), _v];
+        _out
+    };
+
+    (["B_Plane_CAS_01_F"] call _fnc_ord) params ["_jetRounds", "_jetArmed", "_jet"];
+    diag_log format ["  info  a full CAS jet reads %1 rounds of ordnance, armed %2", _jetRounds, _jetArmed];
+    ["a jet with a full load reports ordnance", _jetRounds > 0] call _fnc_check;
+    ["and reports itself armed", _jetArmed isEqualTo true] call _fnc_check;
+
+    // Everything that can hurt something, emptied, and the flares left alone.
+    {
+        private _w = _x;
+        private _mags = getArray (configFile >> "CfgWeapons" >> _w >> "magazines");
+        private _keep = (_mags findIf {"CMFlare" in _x || {"Chaff" in _x}}) > -1;
+        if (!_keep) then { _jet setAmmo [_w, 0] };
+    } forEach (_jet weaponsTurret [-1]);
+    sleep 1;
+    private _spent = [_jet, _home] call _fnc_obs;
+    diag_log format ["  info  with its ordnance emptied it reads %1 rounds, armed %2, and %3 magazines are still aboard",
+        [_spent,"ordnance"] call _fnc_get, [_spent,"armed"] call _fnc_get, count (magazinesAmmo _jet)];
+    ["with its ordnance gone it reports none, though its flares are still aboard",
+        ([_spent,"ordnance"] call _fnc_get) == 0] call _fnc_check;
+    ["and is still an armed aircraft, so it is sent home rather than left there",
+        ([_spent,"armed"] call _fnc_get) isEqualTo true] call _fnc_check;
+    deleteVehicle _jet;
+    sleep 1;
+
+    (["B_T_VTOL_01_infantry_F"] call _fnc_ord) params ["_vtolRounds", "_vtolArmed", "_vtol"];
+    diag_log format ["  info  a full VTOL transport reads %1 rounds of ordnance, armed %2", _vtolRounds, _vtolArmed];
+    ["a transport that carries only flares and a designator reports no ordnance",
+        _vtolRounds == 0] call _fnc_check;
+    ["and is not an armed aircraft, so having none is not grounds for anything",
+        _vtolArmed isEqualTo false] call _fnc_check;
+    deleteVehicle _vtol;
+    sleep 1;
 
     // --- the hull is destroyed ------------------------------------------------
     deleteVehicle _veh;

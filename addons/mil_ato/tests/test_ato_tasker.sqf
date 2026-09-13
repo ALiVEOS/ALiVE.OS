@@ -59,7 +59,7 @@ Runs spawned to match the other tests, though nothing here needs a tick.
     };
     private _fnc_obs = {
         params [["_fuel", 1], ["_ammo", 1], ["_damage", 0]];
-        [[["fuel", _fuel], ["ammo", _ammo], ["damage", _damage]]] call ALIVE_fnc_hashCreate
+        [[["fuel", _fuel], ["ordnance", _ammo], ["damage", _damage]]] call ALIVE_fnc_hashCreate
     };
 
     private _records = [] call ALIVE_fnc_hashCreate;

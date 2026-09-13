@@ -145,23 +145,22 @@ private _fnc_segDist = {
 // the middle of the runway and from both thresholds, and 39 m or more from
 // every stand the search chooses, so it discriminates where the other does
 // not.
+//
+// Asked afresh each time rather than remembered here. The answer depends on
+// where it is asked from, so one answer kept for the whole terrain was wrong:
+// the first position this was asked about decided it for the rest of the
+// mission, and one far from the field made every refusal below refuse nothing.
+// The derivation keeps its own answer per area, so asking is cheap.
 private _fnc_offRunway = {
     params ["_q"];
-    if (isNil "ALiVE_ATO_runwayLine"
-        || {!((ALiVE_ATO_runwayLine param [0,""]) isEqualTo worldName)}) then {
-        private _line = [];
-        if (!isNil "ALiVE_fnc_getRunwayCentreline") then {
-            _line = [_q] call ALiVE_fnc_getRunwayCentreline;
-        };
-        if (_line isEqualType [] && {count _line > 1}
-            && {(_line select 0) isEqualType []} && {count (_line select 0) > 1}) then {
-            ALiVE_ATO_runwayLine = [worldName, _line select 0, _line select 1, _line param [2, 12]];
-        } else {
-            ALiVE_ATO_runwayLine = [worldName, [], [], 0];
-        };
+    private _line = [];
+    if (!isNil "ALiVE_fnc_getRunwayCentreline") then {
+        _line = [_q] call ALiVE_fnc_getRunwayCentreline;
     };
-    private _a = ALiVE_ATO_runwayLine param [1, []];
-    private _b = ALiVE_ATO_runwayLine param [2, []];
+    if (!(_line isEqualType []) || {count _line < 2}) exitWith { 1e8 };
+    private _a = _line select 0;
+    private _b = _line select 1;
+    if (!(_a isEqualType []) || {!(_b isEqualType [])}) exitWith { 1e8 };
     if (count _a < 2 || {count _b < 2}) exitWith { 1e8 };
     private _ax = _a select 0;
     private _ay = _a select 1;

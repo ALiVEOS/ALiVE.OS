@@ -394,7 +394,7 @@ Jman
             ["playerControl", false], ["playerPassenger", false], ["anyPlayerAboard", false],
             ["onStation", false], ["targetsGone", false], ["lockHeld", true],
             ["deckHome", true], ["fixedWing", true],
-            ["fuel", 1], ["ammo", 1], ["damage", 0],
+            ["fuel", 1], ["armed", true], ["ordnance", 8], ["damage", 0],
             ["playersWithin300", 0], ["playersWithin1000Home", 0], ["playersWithin1000Hull", 0]
         ];
         { [_o, _x select 0, _x select 1] call ALIVE_fnc_hashSet } forEach _flags;

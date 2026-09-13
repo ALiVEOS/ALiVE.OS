@@ -252,16 +252,26 @@ switch(_operation) do {
                 if (_available && {_faction isEqualTo "" || {_recFac isEqualTo _faction}}) then {
                     private _o = [_obs, _tail, []] call ALIVE_fnc_hashGet;
                     private _fuel   = [_o, "fuel", 1] call ALIVE_fnc_hashGet;
-                    private _ammo   = [_o, "ammo", 1] call ALIVE_fnc_hashGet;
+                    private _ordnance = [_o, "ordnance", 1] call ALIVE_fnc_hashGet;
                     private _damage = [_o, "damage", 0] call ALIVE_fnc_hashGet;
 
                     // A ferry is a reposition, so it needs neither ammunition
                     // nor a healthy airframe, only enough fuel to get there.
-                    private _needsTeeth = !(_type isEqualTo "FERRY");
+                    // Reconnaissance is looking, and the scout that does it
+                    // best carries a designator and nothing else, so it does
+                    // not need ammunition either.
+                    //
+                    // Both exemptions matter now that the reading counts
+                    // ordnance rather than every magazine. It used to count the
+                    // countermeasures, so this test passed for everything
+                    // including an aircraft with no weapons at all, and asking
+                    // it of an unarmed scout would have started rejecting the
+                    // aircraft the reading was finally able to see.
+                    private _needsTeeth = !(_type in ["FERRY","Recce"]);
 
                     if (_fuel >= _minFuel
                         && {_damage < 0.6}
-                        && {!_needsTeeth || {_ammo > 0}}) then {
+                        && {!_needsTeeth || {_ordnance > 0}}) then {
                         _candidates pushBack [_tail, _class, _rec, _state];
                     };
                 };

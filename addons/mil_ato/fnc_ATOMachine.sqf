@@ -112,7 +112,7 @@ switch(_operation) do {
             // How much ordnance the aircraft had when it reached its station,
             // so that whether it has used any can be answered. Minus one means
             // it has not reached one.
-            ["ammoAt", -1],
+            ["ordnanceAt", -1],
             ["reason", ""]
         ]] call ALIVE_fnc_hashCreate;
     };
@@ -334,26 +334,31 @@ switch(_operation) do {
                                 // all three and bringing them home early would
                                 // be the fault rather than the fix.
                                 //
-                                // Judged on the round COUNT, not on the "has it
-                                // any" flag: that one is one or nothing, so an
-                                // aircraft with half its ordnance left still
-                                // reads as full and nothing could ever be told
-                                // apart.
+                                // Judged on the round count, and on ORDNANCE
+                                // rounds only. Counting everything aboard
+                                // counted the countermeasures, so an aircraft
+                                // that had dropped flares and fired nothing
+                                // read as having been in the fight.
                                 private _sortieNow = [_row,"sortie",[]] call ALIVE_fnc_hashGet;
                                 private _kindNow = if (count _sortieNow > 0 && {(_sortieNow select 0) isEqualType ""}) then { _sortieNow select 0 } else { "" };
                                 private _lenNow = if (count _sortieNow > 2 && {(_sortieNow select 2) isEqualType 0}) then { _sortieNow select 2 } else { 600 };
-                                private _hadAmmo = [_row,"ammoAt",-1] call ALIVE_fnc_hashGet;
+                                private _hadOrdnance = [_row,"ordnanceAt",-1] call ALIVE_fnc_hashGet;
                                 private _onStationFor = _now - ([_row,"enteredAt",_now] call ALIVE_fnc_hashGet);
                                 private _stalled = (_kindNow in PROSECUTING_TYPES)
-                                    && {_hadAmmo > 0}
-                                    && {("ammoCount" call _fnc_n) >= _hadAmmo}
+                                    && {_hadOrdnance > 0}
+                                    && {("ordnance" call _fnc_n) >= _hadOrdnance}
                                     && {!("targetsGone" call _fnc_o)}
                                     && {_onStationFor > ((_lenNow * 0.6) max 120)};
 
                                 switch (true) do {
                                     case (_stalled): { _next = "RTB"; _reason = "RETURN"; };
                                     case (("fuel" call _fnc_n) < 0.2):   { _next = "RTB"; _reason = "RETURN_FUEL"; };
-                                    case (("ammo" call _fnc_n) < 0.1):   { _next = "RTB"; _reason = "RETURN_AMMO"; };
+                                    // Out of ordnance, and it had some to
+                                    // be out of. Both halves are needed: a
+                                    // transport and a scout carry none on a
+                                    // full load, so the second half is what
+                                    // keeps them on station.
+                                    case (("armed" call _fnc_o) && {("ordnance" call _fnc_n) <= 0}): { _next = "RTB"; _reason = "RETURN_AMMO"; };
                                     case (("damage" call _fnc_n) > 0.5): { _next = "RTB"; _reason = "RETURN_DAMAGE"; };
                                     case ("targetsGone" call _fnc_o):    { _next = "RTB"; _reason = "RETURN"; };
                                     case (_expired):                     { _next = "RTB"; _reason = "RETURN"; };
@@ -649,7 +654,7 @@ switch(_operation) do {
                 };
                 case "ON_STATION":   {
                     _effects append ["broadcastOnStation","revealTargets","sortieArrived"];
-                    [_row,"ammoAt", "ammoCount" call _fnc_n] call ALIVE_fnc_hashSet;
+                    [_row,"ordnanceAt", "ordnance" call _fnc_n] call ALIVE_fnc_hashSet;
                 };
                 case "RTB":          { _effects append ["broadcastReturn","releaseTargets","sortieReturning"]; };
                 // Nothing on entry. The standing order for this state is a

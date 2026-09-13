@@ -61,7 +61,7 @@ observation sequences, because those are what the table exists to prevent.
             // helicopter on land, which is what every case here used to be.
             ["deckHome", false], ["fixedWing", false], ["needsRunway", false],
             ["launchInProgress", false], ["onRunway", false],
-            ["fuel", 1], ["ammo", 1], ["ammoCount", 8], ["damage", 0],
+            ["fuel", 1], ["armed", true], ["ordnance", 8], ["damage", 0],
             ["playersWithin1000Home", 0], ["playersWithin1000Hull", 0]
         ]] call ALIVE_fnc_hashCreate;
         { [_o, _x select 0, _x select 1] call ALIVE_fnc_hashSet } forEach _flags;
@@ -358,9 +358,9 @@ observation sequences, because those are what the table exists to prevent.
         [_row, "deadlineAt", 9999] call ALIVE_fnc_hashSet;
         // A sortie of this type, six hundred seconds long.
         [_row, "sortie", [_type, [100,100,0], 600, 2000, "s1", [], ""]] call ALIVE_fnc_hashSet;
-        [_row, "ammoAt", 8] call ALIVE_fnc_hashSet;
+        [_row, "ordnanceAt", 8] call ALIVE_fnc_hashSet;
         private _obs = [[["airborne", true], ["atHome", false], ["onStation", true],
-            ["ammoCount", _ammoNow]]] call _fnc_obs;
+            ["ordnance", _ammoNow]]] call _fnc_obs;
         ([_m, "step", [_row, _obs, "", 1000]] call ALIVE_fnc_ATOMachine) select 0
     };
 
@@ -389,6 +389,35 @@ observation sequences, because those are what the table exists to prevent.
     private _recceRow = ["Recce", 8, 500] call _fnc_onStation;
     ["and neither is a reconnaissance sortie",
         ([_recceRow, "state", ""] call ALIVE_fnc_hashGet) isEqualTo "ON_STATION"] call _fnc_check;
+
+    // ---- out of ordnance, and never had any -------------------------------
+    // These two look identical in the reading and must not be treated alike.
+    // An armed aircraft with nothing left comes home; a transport or a scout
+    // carries nothing on a full load and has to be allowed to stay.
+    private _fnc_dry = {
+        params ["_armed", "_rounds"];
+        private _row = [_m, "newRow", ["BLU_F_0", [[100,100,0], 0, "terrain"]]] call ALIVE_fnc_ATOMachine;
+        [_row, "state", "ON_STATION"] call ALIVE_fnc_hashSet;
+        [_row, "enteredAt", 990] call ALIVE_fnc_hashSet;
+        [_row, "deadlineAt", 9999] call ALIVE_fnc_hashSet;
+        [_row, "sortie", ["CAS", [100,100,0], 600, 2000, "s1", [], ""]] call ALIVE_fnc_hashSet;
+        // Arrived with nothing recorded, so the stall test cannot fire and
+        // only the ordnance test can be what moves it.
+        [_row, "ordnanceAt", -1] call ALIVE_fnc_hashSet;
+        private _obs = [[["airborne", true], ["atHome", false], ["onStation", true],
+            ["armed", _armed], ["ordnance", _rounds]]] call _fnc_obs;
+        private _out = [_m, "step", [_row, _obs, "", 1000]] call ALIVE_fnc_ATOMachine;
+        [([(_out select 0), "state", ""] call ALIVE_fnc_hashGet),
+         ([(_out select 0), "reason", ""] call ALIVE_fnc_hashGet)]
+    };
+
+    ([true, 0] call _fnc_dry) params ["_dryState", "_dryReason"];
+    ["an armed aircraft out of ordnance comes home",
+        _dryState isEqualTo "RTB" && {_dryReason isEqualTo "RETURN_AMMO"}] call _fnc_check;
+    ["an unarmed aircraft carrying none is left on station",
+        (([false, 0] call _fnc_dry) select 0) isEqualTo "ON_STATION"] call _fnc_check;
+    ["and an armed one with rounds left is left on station",
+        (([true, 6] call _fnc_dry) select 0) isEqualTo "ON_STATION"] call _fnc_check;
 
     if (count _fails == 0) then {
         diag_log "=== ATO Machine test: ALL PASS ===";

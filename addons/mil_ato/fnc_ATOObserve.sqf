@@ -93,11 +93,11 @@ switch(_operation) do {
             } forEach ["local","remote","airborne","atHome","nearHome","landed","touchingGround",
                        "crewGroupLive","driverPresent","crewSeated","playerControl","playerPassenger",
                        "anyPlayerAboard","uavControlled","onStation","targetsGone","lockHeld",
-                       "deckHome","fixedWing","needsRunway","launchInProgress","onRunway"];
+                       "deckHome","fixedWing","needsRunway","launchInProgress","onRunway","armed"];
             {
                 [_o, _x, 0] call ALIVE_fnc_hashSet;
-            } forEach ["altAGL","altASL","speed","fuel","ammo","damage","wpRemaining","aliveCrew",
-                       "ammoCount","climbRate",
+            } forEach ["altAGL","altASL","speed","fuel","damage","wpRemaining","aliveCrew",
+                       "ordnance","climbRate",
                        "playersWithin300","playersWithin1000Hull","playersWithin1000Home",
                        "playersWithin1500Home"];
             // Nobody is aboard a hull that is gone, so nothing is holding it.
@@ -200,24 +200,23 @@ switch(_operation) do {
         // and blocking the runway is the harm worth acting on.
         //
         // Only asked of something on the ground.
+        //
+        // Asked of the derivation each time rather than remembered here. The
+        // answer depends on where it is asked from, so keeping one for the
+        // whole terrain let the first aircraft seen decide it for every
+        // aircraft after: one seen far from the field answered "no runway on
+        // this terrain" and nothing was ever recognised as standing on it
+        // again. The derivation keeps its own answer per area.
         private _onRunway = false;
         if (_agl < 5) then {
-            if (isNil "ALiVE_ATO_runwayLine"
-                || {!((ALiVE_ATO_runwayLine param [0,""]) isEqualTo worldName)}) then {
-                private _line = [];
-                if (!isNil "ALiVE_fnc_getRunwayCentreline") then {
-                    _line = [_pos] call ALiVE_fnc_getRunwayCentreline;
-                };
-                if (_line isEqualType [] && {count _line > 1}
-                    && {(_line select 0) isEqualType []} && {count (_line select 0) > 1}) then {
-                    ALiVE_ATO_runwayLine = [worldName, _line select 0, _line select 1, _line param [2, 12]];
-                } else {
-                    ALiVE_ATO_runwayLine = [worldName, [], [], 0];
-                };
+            private _line = [];
+            if (!isNil "ALiVE_fnc_getRunwayCentreline") then {
+                _line = [_pos] call ALiVE_fnc_getRunwayCentreline;
             };
-            private _ra = ALiVE_ATO_runwayLine param [1, []];
-            private _rb = ALiVE_ATO_runwayLine param [2, []];
-            if (count _ra > 1 && {count _rb > 1}) then {
+            private _ra = if (_line isEqualType [] && {count _line > 1}) then { _line select 0 } else { [] };
+            private _rb = if (_line isEqualType [] && {count _line > 1}) then { _line select 1 } else { [] };
+            if (_ra isEqualType [] && {_rb isEqualType []}
+                && {count _ra > 1} && {count _rb > 1}) then {
                 private _ax = _ra select 0;
                 private _ay = _ra select 1;
                 private _dx = (_rb select 0) - _ax;
@@ -322,24 +321,82 @@ switch(_operation) do {
         ["fuel", fuel _obj] call _fnc_set;
         ["damage", damage _obj] call _fnc_set;
 
-        private _ammo = 1;
-        private _total = 0;
-        private _mags = magazinesAmmo _obj;
-        if (count _mags > 0) then {
-            { _total = _total + (_x select 1) } forEach _mags;
-            _ammo = if (_total > 0) then { 1 } else { 0 };
-        };
-        ["ammo", _ammo] call _fnc_set;
-        // And the count, which is a different question.
+        // How many rounds it has left to fight with.
         //
-        // The line above is one or nothing by design, and the table compares it
-        // against a tenth to decide whether an aircraft is out. That makes it
-        // useless for asking whether an aircraft has FIRED, which is what
-        // telling a stalled sortie from a working one needs: an aircraft that
-        // has spent half its ordnance still reports one. The raw count is
-        // already worked out above, so it costs nothing to report it as well,
-        // and adding it leaves what the existing key means alone.
-        ["ammoCount", _total] call _fnc_set;
+        // ORDNANCE only. This counted every magazine aboard, and a CAS jet
+        // carries a hundred and twenty flares and a designator round beside its
+        // four bombs, so one with every bomb, rocket and missile spent still
+        // reported a thousand and twenty one rounds and read as fully armed.
+        // The table's return test compared a one-or-nothing flag against a
+        // tenth, so it could only ever fire once the FLARES were gone as well,
+        // which does not happen on a sortie. An aircraft out of ordnance stayed
+        // on station indefinitely.
+        //
+        // The separation cannot come from the damage figures. Measured: a flare
+        // reports hit 1, and the laser designator reports hit 500, which is
+        // more than a rocket. Nor from the ammunition's class tree, because the
+        // flare round descends from BulletBase exactly as a cannon shell does.
+        // The simulation is the field that tells them apart. Anything with an
+        // unrecognised simulation that does damage is counted as ordnance, so
+        // modded stores err towards staying on station rather than coming home
+        // early.
+        //
+        // Cached, because it is pure config and a jet is asked eight times a
+        // tick. Cached per MAGAZINE rather than per aircraft type, so a
+        // refitted pylon is judged on what is actually hanging off it.
+        if (isNil "ALiVE_ATO_magIsOrdnance") then {
+            ALiVE_ATO_magIsOrdnance = [] call ALIVE_fnc_hashCreate;
+        };
+        private _rounds = 0;
+        {
+            private _mag = _x select 0;
+            private _isOrd = [ALiVE_ATO_magIsOrdnance, _mag, -1] call ALIVE_fnc_hashGet;
+            if (_isOrd isEqualTo -1) then {
+                private _ammoCls = getText (configFile >> "CfgMagazines" >> _mag >> "ammo");
+                private _aCfg = configFile >> "CfgAmmo" >> _ammoCls;
+                private _sim = toLower getText (_aCfg >> "simulation");
+                // A dispenser does its harm through its submunitions and can
+                // carry no damage figures of its own, so it counts on the
+                // simulation alone.
+                private _harms = (getNumber (_aCfg >> "hit") > 0)
+                    || {getNumber (_aCfg >> "indirectHit") > 0}
+                    || {_sim isEqualTo "shotsubmunitions"};
+                _isOrd = _harms && {!(_sim in ["shotcm","laserdesignate","shotilluminating","shotsmoke"])};
+                [ALiVE_ATO_magIsOrdnance, _mag, _isOrd] call ALIVE_fnc_hashSet;
+            };
+            if (_isOrd isEqualTo true) then { _rounds = _rounds + (_x select 1) };
+        } forEach (magazinesAmmo _obj);
+        ["ordnance", _rounds] call _fnc_set;
+
+        // Whether it carries offensive stores AT ALL, which is a different
+        // question from whether it has any left, and the reason the reading
+        // above could not simply be believed.
+        //
+        // Measured: the VTOL transport carries two hundred and forty flares, a
+        // designator and no ordnance whatsoever, and the reconnaissance drone
+        // carries only a designator. Both read zero rounds on a full load, so
+        // sending an aircraft home for having none would have grounded every
+        // transport and every scout the moment it arrived.
+        //
+        // Asked of the config through the shared capability derivation, which
+        // already summarises this, because an expended magazine is REMOVED: a
+        // jet that has spent everything looks identical to one that was never
+        // armed. Cached per type, since it is a config walk. Anything with
+        // ordnance actually aboard counts as armed whatever the config says,
+        // which covers a pylon refitted to carry more than its default.
+        if (isNil "ALiVE_ATO_typeArmed") then {
+            ALiVE_ATO_typeArmed = [] call ALIVE_fnc_hashCreate;
+        };
+        private _hullType = typeOf _obj;
+        private _cfgArmed = [ALiVE_ATO_typeArmed, _hullType, -1] call ALIVE_fnc_hashGet;
+        if (_cfgArmed isEqualTo -1) then {
+            _cfgArmed = false;
+            if (!isNil "ALiVE_fnc_getAircraftCapabilities") then {
+                _cfgArmed = "armed" in ([_hullType] call ALiVE_fnc_getAircraftCapabilities);
+            };
+            [ALiVE_ATO_typeArmed, _hullType, _cfgArmed] call ALIVE_fnc_hashSet;
+        };
+        ["armed", (_cfgArmed isEqualTo true) || {_rounds > 0}] call _fnc_set;
 
         private _grp = group _driver;
         private _wp = 0;
