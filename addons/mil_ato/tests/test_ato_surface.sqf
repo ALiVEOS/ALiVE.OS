@@ -126,6 +126,37 @@ refused rather than guessed at.
             };
         } forEach _homes;
         ["no home is on a runway or a taxiway", count _airside == 0] call _fnc_check;
+
+    // And asked of the terrain's own geometry as well, because the test above
+    // rests on the shared airside test and that answers false everywhere on
+    // this map. Measured before this check existed: the parking predicate
+    // returned TRUE in the middle of the runway and at a threshold.
+    private _onRunway = [];
+    {
+        if ([_surface, "onRunway", _x select 0] call ALIVE_fnc_ATOSurface) then {
+            _onRunway pushBack [_forEachIndex, [round ((_x select 0) select 0), round ((_x select 0) select 1)]];
+        };
+    } forEach _homes;
+    ["and none of them is on the runway itself", count _onRunway == 0] call _fnc_check;
+    if (count _onRunway > 0) then {
+        diag_log format ["  info  on the runway: %1", _onRunway];
+    };
+    // The check that the check works: the middle of the runway has to be
+    // refused, or the two above pass for want of an answer.
+    private _rwLine = [_surface, "runwayDistance", _anchor] call ALIVE_fnc_ATOSurface;
+    diag_log format ["  info  the commander's anchor is %1 m from the runway", round _rwLine];
+    if (!isNil "ALiVE_fnc_getRunwayCentreline") then {
+        private _l = [_anchor] call ALiVE_fnc_getRunwayCentreline;
+        if (_l isEqualType [] && {count _l > 1}) then {
+            private _ra = _l select 0;
+            private _rb = _l select 1;
+            private _rmid = [((_ra select 0) + (_rb select 0)) / 2, ((_ra select 1) + (_rb select 1)) / 2, 0];
+            ["the middle of the runway is recognised as the runway",
+                [_surface, "onRunway", _rmid] call ALIVE_fnc_ATOSurface] call _fnc_check;
+            ["and is refused as a place to park",
+                !([_surface, "spotIsClear", [_rmid, 13]] call ALIVE_fnc_ATOSurface)] call _fnc_check;
+        };
+    };
         if (count _airside > 0) then {
             diag_log format ["  info  on a movement surface: %1", _airside];
         };
@@ -158,15 +189,44 @@ refused rather than guessed at.
                             (_anchor select 1) + (((_to select 1) - (_anchor select 1)) * _f),
                             0
                         ];
-                        if ([_q, 4, [1]] call ALiVE_fnc_isAirside) then { _crosses = true };
+                        // Asked of the surface, which measures against the
+                        // terrain's own centreline. Asking the shared airside
+                        // test here made this check vacuous: it answers false
+                        // everywhere on this map, so it could never find a
+                        // crossing and the check passed for want of an answer
+                        // rather than because nothing crossed.
+                        if ([_surface, "onRunway", _q] call ALIVE_fnc_ATOSurface) then { _crosses = true };
                     };
                 };
             };
             if (_crosses) then { _crossers pushBack [_forEachIndex, [round (_to select 0), round (_to select 1)]] };
         } forEach _homes;
-        ["no home is reached by crossing the runway", count _crossers == 0] call _fnc_check;
+        // REPORTED, not asserted, and the reason is this airfield.
+        //
+        // The commander's anchor sits about a hundred metres off one side of
+        // the runway and every stand the search can reach is on the other, so
+        // on Stratis there is no non-crossing choice to prefer and the search
+        // correctly takes one across the runway rather than putting aircraft
+        // in a field. Asserting that none crosses would be asserting something
+        // about the terrain rather than about the module. What IS asserted is
+        // that none of them is ON the runway, below.
+        //
+        // Which side each one is on is reported too, because that is what
+        // makes the count meaningful rather than mysterious.
+        private _fnc_sideOf = {
+            params ["_q"];
+            private _l = [_anchor] call ALiVE_fnc_getRunwayCentreline;
+            if (!(_l isEqualType []) || {count _l < 2}) exitWith { 0 };
+            private _ra = _l select 0;
+            private _rb = _l select 1;
+            private _cross = (((_rb select 0) - (_ra select 0)) * ((_q select 1) - (_ra select 1)))
+                - (((_rb select 1) - (_ra select 1)) * ((_q select 0) - (_ra select 0)));
+            if (_cross > 0) then { 1 } else { -1 }
+        };
+        diag_log format ["  info  %1 of %2 homes are reached across the runway; the commander is on side %3",
+            count _crossers, count _homes, [_anchor] call _fnc_sideOf];
         if (count _crossers > 0) then {
-            diag_log format ["  info  reached across the runway: %1", _crossers];
+            diag_log format ["  info  across the runway: %1", _crossers];
         };
     };
 

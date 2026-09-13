@@ -451,8 +451,26 @@ switch(_operation) do {
                                     // aircraft that stays on the wire costs every
                                     // later recovery. So it is moved, and being
                                     // seen to move is the cheaper price.
+                                    // Standing on the runway counts the same
+                                    // way a deck does, and for the same reason.
+                                    //
+                                    // An aircraft that has stopped on it blocks
+                                    // every aircraft behind it, and
+                                    // waiting for nobody to be within three
+                                    // hundred metres of a working airfield is
+                                    // waiting for something that does not
+                                    // happen. So it is moved, and being seen to
+                                    // move is the cheaper price.
+                                    //
+                                    // This is what is left of the stuck-taxi
+                                    // problem. The rest of it was about
+                                    // recovering an aircraft stuck taxiing OUT,
+                                    // and aircraft are no longer taxied out at
+                                    // all.
                                     private _canTidy = ("nearHome" call _fnc_o)
-                                        && {(("playersWithin300" call _fnc_n) == 0) || {"deckHome" call _fnc_o}}
+                                        && {(("playersWithin300" call _fnc_n) == 0)
+                                            || {"deckHome" call _fnc_o}
+                                            || {"onRunway" call _fnc_o}}
                                         && {!_playerPassenger};
                                     if (_canTidy) then {
                                         _effects pushBack "placeOnSlot";

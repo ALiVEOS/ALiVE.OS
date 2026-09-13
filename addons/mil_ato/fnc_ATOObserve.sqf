@@ -93,7 +93,7 @@ switch(_operation) do {
             } forEach ["local","remote","airborne","atHome","nearHome","landed","touchingGround",
                        "crewGroupLive","driverPresent","crewSeated","playerControl","playerPassenger",
                        "anyPlayerAboard","uavControlled","onStation","targetsGone","lockHeld",
-                       "deckHome","fixedWing","needsRunway","launchInProgress"];
+                       "deckHome","fixedWing","needsRunway","launchInProgress","onRunway"];
             {
                 [_o, _x, 0] call ALIVE_fnc_hashSet;
             } forEach ["altAGL","altASL","speed","fuel","ammo","damage","wpRemaining","aliveCrew",
@@ -179,6 +179,59 @@ switch(_operation) do {
         ["climbRate", (velocity _obj) select 2] call _fnc_set;
         ["airborne", _agl > AIRBORNE_AGL] call _fnc_set;
         ["touchingGround", isTouchingGround _obj] call _fnc_set;
+
+        // Is it standing on the runway.
+        //
+        // The table cannot ask the world, and it needs to know, because an
+        // aircraft stopped on the runway blocks every aircraft behind it.
+        //
+        // Measured against the terrain's own centreline rather than the shared
+        // airside test. That test answers false everywhere on this map even
+        // with its cache built, so an aircraft stopped in the middle of the
+        // runway read as standing nowhere in particular: false on its stand,
+        // false on the runway, false in the air over the runway. The
+        // centreline reads nothing at the middle of the runway and at both
+        // thresholds, and thirty nine metres or more at every stand the search
+        // chooses.
+        //
+        // The RUNWAY only, and not taxiways, which the other test also covered
+        // in name. A taxiway is narrower and the stands sit close enough to
+        // the taxi lines that including them would flag legitimate parking,
+        // and blocking the runway is the harm worth acting on.
+        //
+        // Only asked of something on the ground.
+        private _onRunway = false;
+        if (_agl < 5) then {
+            if (isNil "ALiVE_ATO_runwayLine"
+                || {!((ALiVE_ATO_runwayLine param [0,""]) isEqualTo worldName)}) then {
+                private _line = [];
+                if (!isNil "ALiVE_fnc_getRunwayCentreline") then {
+                    _line = [_pos] call ALiVE_fnc_getRunwayCentreline;
+                };
+                if (_line isEqualType [] && {count _line > 1}
+                    && {(_line select 0) isEqualType []} && {count (_line select 0) > 1}) then {
+                    ALiVE_ATO_runwayLine = [worldName, _line select 0, _line select 1, _line param [2, 12]];
+                } else {
+                    ALiVE_ATO_runwayLine = [worldName, [], [], 0];
+                };
+            };
+            private _ra = ALiVE_ATO_runwayLine param [1, []];
+            private _rb = ALiVE_ATO_runwayLine param [2, []];
+            if (count _ra > 1 && {count _rb > 1}) then {
+                private _ax = _ra select 0;
+                private _ay = _ra select 1;
+                private _dx = (_rb select 0) - _ax;
+                private _dy = (_rb select 1) - _ay;
+                private _len2 = (_dx * _dx) + (_dy * _dy);
+                if (_len2 > 0) then {
+                    private _t = ((((_pos select 0) - _ax) * _dx) + (((_pos select 1) - _ay) * _dy)) / _len2;
+                    _t = (_t max 0) min 1;
+                    private _d = _pos distance2D [_ax + (_t * _dx), _ay + (_t * _dy), 0];
+                    _onRunway = _d < 25;
+                };
+            };
+        };
+        ["onRunway", _onRunway] call _fnc_set;
 
         // Landed is not simply "on the ground": an aircraft rolling out at
         // 140 km/h is touching the ground and is not down yet.

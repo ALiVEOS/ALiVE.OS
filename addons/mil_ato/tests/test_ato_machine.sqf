@@ -60,7 +60,7 @@ observation sequences, because those are what the table exists to prevent.
             // What kind of aircraft and what kind of home. All false is a
             // helicopter on land, which is what every case here used to be.
             ["deckHome", false], ["fixedWing", false], ["needsRunway", false],
-            ["launchInProgress", false],
+            ["launchInProgress", false], ["onRunway", false],
             ["fuel", 1], ["ammo", 1], ["ammoCount", 8], ["damage", 0],
             ["playersWithin1000Home", 0], ["playersWithin1000Hull", 0]
         ]] call ALIVE_fnc_hashCreate;
@@ -92,7 +92,8 @@ observation sequences, because those are what the table exists to prevent.
         ["a plane on a deck, up", [["deckHome",true],["fixedWing",true],["needsRunway",true],["airborne",true],["atHome",false]]],
         ["a plane mid launch",    [["deckHome",true],["fixedWing",true],["needsRunway",true],["launchInProgress",true],["crewSeated",true],["lockHeld",true]]],
         ["a helicopter on a deck",[["deckHome",true]]],
-        ["a VTOL on land",        [["needsRunway",true],["airborne",true],["atHome",false]]]
+        ["a VTOL on land",        [["needsRunway",true],["airborne",true],["atHome",false]]],
+        ["stopped on the runway",  [["needsRunway",true],["landed",true],["nearHome",true],["atHome",false],["onRunway",true],["playersWithin300",4]]]
     ];
 
     private _badState = 0;
@@ -317,6 +318,35 @@ observation sequences, because those are what the table exists to prevent.
 
     // ---- result --------------------------------------------------------------
     diag_log format ["  info  %1 assertions", _checked];
+    // ---- an aircraft stopped where others need to be ----------------------
+    // Moved off, whoever is watching. An aircraft that has stopped on a runway
+    // or a taxiway blocks every aircraft behind it, and waiting for nobody to
+    // be within three hundred metres of a working airfield is waiting for
+    // something that does not happen.
+    private _fnc_landedAt = {
+        params ["_flags"];
+        private _row = [_m, "newRow", ["BLU_F_0", [[100,100,0], 0, "terrain"]]] call ALIVE_fnc_ATOMachine;
+        [_row, "state", "LANDING"] call ALIVE_fnc_hashSet;
+        [_row, "enteredAt", 900] call ALIVE_fnc_hashSet;
+        [_row, "deadlineAt", 9999] call ALIVE_fnc_hashSet;
+        private _base = [["landed", true], ["nearHome", true], ["atHome", false]];
+        ([_m, "step", [_row, [_base + _flags] call _fnc_obs, "", 1000]] call ALIVE_fnc_ATOMachine)
+    };
+
+    (([[["onRunway", true], ["playersWithin300", 4]]] call _fnc_landedAt)) params ["_rwRow", "_rwOrd", "_rwEff"];
+    diag_log format ["  info  stopped on the runway with people watching went to %1, effects %2",
+        [_rwRow, "state", ""] call ALIVE_fnc_hashGet, _rwEff];
+    ["an aircraft stopped on the runway is moved off it even with people watching",
+        "placeOnSlot" in _rwEff] call _fnc_check;
+
+    (([[["onRunway", false], ["playersWithin300", 4]]] call _fnc_landedAt)) params ["_offRow", "_offOrd", "_offEff"];
+    ["but one stopped clear of it with people watching is left alone",
+        !("placeOnSlot" in _offEff)] call _fnc_check;
+
+    (([[["onRunway", false], ["playersWithin300", 0]]] call _fnc_landedAt)) params ["_qRow", "_qOrd", "_qEff"];
+    ["and one stopped clear of it with nobody about is tidied as before",
+        "placeOnSlot" in _qEff] call _fnc_check;
+
     // ---- a sortie that reaches its station and never prosecutes ------------
     // Brought home early, so the aircraft is available again instead of
     // holding over a target it is not attacking until its clock runs out.

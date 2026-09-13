@@ -106,6 +106,12 @@ Jman
 // counted a neighbour on its own stand as occupying the wire.
 #define CATAPULT_BUSY 10
 
+// How close to the runway centreline counts as ON the runway. Its half width
+// plus a margin: measured, the runway reads 0 m and the nearest stand the
+// search chooses reads 39 m, so twenty five separates them with room to spare
+// and refuses no stand.
+#define RUNWAY_CLEAR 25
+
 private ["_result"];
 
 // Distance from a point to a SEGMENT, in two dimensions. Wanted in three
@@ -115,6 +121,48 @@ private ["_result"];
 // either end and a point test would call the runway open country.
 private _fnc_segDist = {
     params ["_q", "_a", "_b"];
+    private _ax = _a select 0;
+    private _ay = _a select 1;
+    private _dx = (_b select 0) - _ax;
+    private _dy = (_b select 1) - _ay;
+    private _len2 = (_dx * _dx) + (_dy * _dy);
+    if (_len2 <= 0) exitWith { _q distance2D [_ax, _ay, 0] };
+    private _t = ((((_q select 0) - _ax) * _dx) + (((_q select 1) - _ay) * _dy)) / _len2;
+    _t = (_t max 0) min 1;
+    _q distance2D [_ax + (_t * _dx), _ay + (_t * _dy), 0]
+};
+
+// The runway, and how far a point is from it.
+//
+// Cached per world, because it is pure terrain config and identical for every
+// instance and every call. Answers a large number when the terrain has no
+// runway at all, so a caller that cannot find one simply never refuses
+// anything for being on it.
+//
+// This exists because the shared airside test does not answer on every map.
+// Measured on Stratis with its cache built: false at the middle of the runway,
+// at radius thirty, for every kind. The terrain's own centreline is 0 m from
+// the middle of the runway and from both thresholds, and 39 m or more from
+// every stand the search chooses, so it discriminates where the other does
+// not.
+private _fnc_offRunway = {
+    params ["_q"];
+    if (isNil "ALiVE_ATO_runwayLine"
+        || {!((ALiVE_ATO_runwayLine param [0,""]) isEqualTo worldName)}) then {
+        private _line = [];
+        if (!isNil "ALiVE_fnc_getRunwayCentreline") then {
+            _line = [_q] call ALiVE_fnc_getRunwayCentreline;
+        };
+        if (_line isEqualType [] && {count _line > 1}
+            && {(_line select 0) isEqualType []} && {count (_line select 0) > 1}) then {
+            ALiVE_ATO_runwayLine = [worldName, _line select 0, _line select 1, _line param [2, 12]];
+        } else {
+            ALiVE_ATO_runwayLine = [worldName, [], [], 0];
+        };
+    };
+    private _a = ALiVE_ATO_runwayLine param [1, []];
+    private _b = ALiVE_ATO_runwayLine param [2, []];
+    if (count _a < 2 || {count _b < 2}) exitWith { 1e8 };
     private _ax = _a select 0;
     private _ay = _a select 1;
     private _dx = (_b select 0) - _ax;
@@ -235,6 +283,17 @@ switch(_operation) do {
     // still is.
     // The ship a point belongs to. On its own so that nothing outside this
     // file has to know the class or the radius a carrier is found by.
+    // How far a point is from the runway, and whether that is close enough to
+    // count as standing on it. On its own so that nothing outside this file
+    // has to know that the shared airside test cannot be relied on.
+    case "runwayDistance": {
+        _result = [_args] call _fnc_offRunway;
+    };
+
+    case "onRunway": {
+        _result = ([_args] call _fnc_offRunway) < RUNWAY_CLEAR;
+    };
+
     case "shipAt": {
         _result = (nearestObjects [_args, ["StaticShip"], SHIP_SEARCH]) param [0, objNull];
     };
@@ -802,20 +861,23 @@ switch(_operation) do {
         private _fnc_crossesRunway = {
             params ["_to"];
             private _crosses = false;
-            if (!isNil "ALiVE_fnc_isAirside") then {
-                private _len = _anchor distance2D _to;
-                if (_len > 20) then {
-                    private _steps = (round (_len / 20)) min 40;
-                    for "_i" from 1 to (_steps - 1) do {
-                        if (!_crosses) then {
-                            private _f = _i / _steps;
-                            private _q = [
-                                (_anchor select 0) + (((_to select 0) - (_anchor select 0)) * _f),
-                                (_anchor select 1) + (((_to select 1) - (_anchor select 1)) * _f),
-                                0
-                            ];
-                            if ([_q, 4, [1]] call ALiVE_fnc_isAirside) then { _crosses = true };
-                        };
+            private _len = _anchor distance2D _to;
+            if (_len > 20) then {
+                private _steps = (round (_len / 20)) min 40;
+                for "_i" from 1 to (_steps - 1) do {
+                    if (!_crosses) then {
+                        private _f = _i / _steps;
+                        private _q = [
+                            (_anchor select 0) + (((_to select 0) - (_anchor select 0)) * _f),
+                            (_anchor select 1) + (((_to select 1) - (_anchor select 1)) * _f),
+                            0
+                        ];
+                        // The terrain's own centreline, not the shared airside
+                        // test. That test answers false everywhere on this map,
+                        // so asking it made this whole preference inert: it
+                        // could never find a crossing and so never preferred
+                        // anything.
+                        if (([_q] call _fnc_offRunway) < RUNWAY_CLEAR) then { _crosses = true };
                     };
                 };
             };
@@ -1048,7 +1110,16 @@ switch(_operation) do {
             if (_onField) then { _onRoad = false };
         };
 
+        // Never ON the runway, whatever else is true.
+        //
+        // This is the one the airside test was supposed to do and does not on
+        // every map. Measured before this line existed: the predicate answered
+        // TRUE in the middle of the runway and at a threshold, so a stand could
+        // be chosen there and nothing would have stopped it.
+        private _onRunway = ([_p] call _fnc_offRunway) < RUNWAY_CLEAR;
+
         _result = !_airside
+            && {!_onRunway}
             && {!_onRoad}
             && {!surfaceIsWater _p}
             && {(count (_p isFlatEmpty [-1, -1, 0.3, _span, 0, false, objNull])) > 0}
