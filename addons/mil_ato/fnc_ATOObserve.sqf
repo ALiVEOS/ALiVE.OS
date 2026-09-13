@@ -97,7 +97,7 @@ switch(_operation) do {
             {
                 [_o, _x, 0] call ALIVE_fnc_hashSet;
             } forEach ["altAGL","altASL","speed","fuel","ammo","damage","wpRemaining","aliveCrew",
-                       "ammoCount",
+                       "ammoCount","climbRate",
                        "playersWithin300","playersWithin1000Hull","playersWithin1000Home",
                        "playersWithin1500Home"];
             // Nobody is aboard a hull that is gone, so nothing is holding it.
@@ -168,6 +168,15 @@ switch(_operation) do {
         ["altAGL", _agl] call _fnc_set;
         ["altASL", (getPosASL _obj) select 2] call _fnc_set;
         ["speed", speed _obj] call _fnc_set;
+        // How fast it is going UP or down, which speed does not say.
+        //
+        // Asked for so that an aircraft climbing away endlessly can be told
+        // from one flying level, which is what the original request for this
+        // was chasing: a reconnaissance flight that kept climbing and nothing
+        // could say so, because every reading available described where it was
+        // rather than where it was going. Every deadline in the table would
+        // eventually catch it; this makes it visible while it is happening.
+        ["climbRate", (velocity _obj) select 2] call _fnc_set;
         ["airborne", _agl > AIRBORNE_AGL] call _fnc_set;
         ["touchingGround", isTouchingGround _obj] call _fnc_set;
 

@@ -79,6 +79,10 @@ console `call` would run the whole thing inside one frame.
     ["reports no crew", [_obs,"crewLoss"] call _fnc_get] call _fnc_check;
     ["and nobody flying it", !([_obs,"playerControl"] call _fnc_get)] call _fnc_check;
     ["reports full fuel", ([_obs,"fuel"] call _fnc_get) > 0.9] call _fnc_check;
+    ["counts its rounds rather than only saying it has some",
+        ([_obs,"ammoCount"] call _fnc_get) isEqualType 0] call _fnc_check;
+    ["and reports a climb rate, which is nothing while it is parked",
+        (abs ([_obs,"climbRate"] call _fnc_get)) < 2] call _fnc_check;
 
     // --- the player flies it -------------------------------------------------
     if (isNull player) then {
