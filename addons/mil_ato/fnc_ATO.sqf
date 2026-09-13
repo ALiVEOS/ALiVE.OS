@@ -300,12 +300,12 @@ ALiVE_fnc_DrawRunwayBlacklistMarkers = {
     	  ["_color", "COLORRED", [""]]
     ];
 
-	  private ["_airportID","_markerExists","_markerList","_alpha","_height","_runwayStartPos","_runwayEndPos","_mkrname","_marker"];
+	  private ["_airportID","_markerExists","_markerList","_alpha","_runwayWidth","_runwayStartPos","_runwayEndPos","_mkrname","_marker"];
     _markerList = []; 
     
     _runwayStartPos = [_logic, "runwaystartpos"] call MAINCLASS;
     _runwayEndPos = [_logic, "runwayendpos"] call MAINCLASS;
-    _height = [_logic, "runwaywidth"] call MAINCLASS;
+    _runwayWidth = [_logic, "runwaywidth"] call MAINCLASS;
     
     if (isNil "_runwayStartPos") then {
 	     // DEBUG -------------------------------------------------------------------------------------
@@ -316,12 +316,12 @@ ALiVE_fnc_DrawRunwayBlacklistMarkers = {
     } else {
 	    _runwayStartPos = call compile _runwayStartPos;
 	    _runwayEndPos = call compile _runwayEndPos;
-	    _height = parseNumber _height;
+	    _runwayWidth = parseNumber _runwayWidth;
 	    if !(isNil "_runwayStartPos") then {
-			    if ((count _runwayStartPos > 0) && (count _runwayEndPos > 0) && (_height > 0)) then {
+			    if ((count _runwayStartPos > 0) && (count _runwayEndPos > 0) && (_runwayWidth > 0)) then {
 			       // DEBUG -------------------------------------------------------------------------------------
 			       if(_debug) then {
-			         ["ATO - Runway Start Position: %1(%4), Runway End Position: %2(%5), Runway Width: %3(%6)", _runwayStartPos, _runwayEndPos, _height, typeName _runwayStartPos, typeName _runwayEndPos, typeName _height] call ALiVE_fnc_dump;
+			         ["ATO - Runway Start Position: %1(%4), Runway End Position: %2(%5), Runway Width: %3(%6)", _runwayStartPos, _runwayEndPos, _runwayWidth, typeName _runwayStartPos, typeName _runwayEndPos, typeName _runwayWidth] call ALiVE_fnc_dump;
 			       };
 			       // DEBUG ------------------------------------------------------------------------------------- 
 			       if(_debug) then {_alpha = 0.5;} else {_alpha = 0;};
@@ -331,7 +331,7 @@ ALiVE_fnc_DrawRunwayBlacklistMarkers = {
 			       if (_markerExists) then {
 			        _marker = _mkrname;
 			       } else {
-			        _marker = [_mkrname, _runwayStartPos, _runwayEndPos, _height, _color, _alpha] call ALIVE_fnc_createLineMarker;
+			        _marker = [_mkrname, _runwayStartPos, _runwayEndPos, _runwayWidth, _color, _alpha] call ALIVE_fnc_createLineMarker;
 					   };
 					   _markerList pushback _marker;
 				     // DEBUG -------------------------------------------------------------------------------------
