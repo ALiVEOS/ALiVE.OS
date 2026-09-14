@@ -1331,8 +1331,19 @@ switch(_operation) do {
             private _factionName = getText ((_faction call ALiVE_fnc_configGetFactionClass) >> "displayName");
             if (_factionName isEqualTo "") then { _factionName = _faction };
 
-            private _key = "STR_ALIVE_ATO_ESTABLISHED";
-            private _say = [_hqName, _factionName, mapGridPosition (if (isNull _hq) then { _basePos } else { getPosATL _hq })];
+            // The grid of the BASE for a commander with no airfield, and the
+            // HQ's for every other one.
+            //
+            // Heard on the radio in a test: "forward airbase established at
+            // grid 019057" when the aircraft were at grid 018006, five
+            // kilometres away and out at sea. An ordinary base and its HQ stand
+            // in the same place so the two agree; a base with no airfield does
+            // not, because its HQ is a building found near the MODULE while its
+            // base is the ingress marker. Different words too: nothing has been
+            // established at an ingress point, aircraft simply fly from it.
+            private _key = if (_isVirtual) then { "STR_ALIVE_ATO_ESTABLISHED_INGRESS" } else { "STR_ALIVE_ATO_ESTABLISHED" };
+            private _sayAt = if (_isVirtual || {isNull _hq}) then { _basePos } else { getPosATL _hq };
+            private _say = [_hqName, _factionName, mapGridPosition _sayAt];
             if (!(_failed isEqualTo "") || {_assets == 0}) then {
                 if (_failed isEqualTo "") then {
                     ["ALIVE_fnc_ATOBase - no air assets found within the airspace for %1. Requests will be refused until aircraft are available. Check this module's faction, its airspace markers, and that armed aircraft of that faction start inside them.", _faction] call ALiVE_fnc_dumpR;

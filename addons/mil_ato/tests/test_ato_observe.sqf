@@ -234,6 +234,64 @@ console `call` would run the whole thing inside one frame.
     deleteVehicle _vtol;
     sleep 1;
 
+    // --- are the targets still there -----------------------------------------
+    // This reading was declared false and never worked out, so the exit from
+    // being on station when the targets are gone could never fire and an
+    // aircraft held over a target somebody else had destroyed stayed for its
+    // whole clock. The dangerous direction is the other one: answering TRUE
+    // wrongly brings every sortie home, so the cases that must stay false are
+    // checked as carefully as the one that must go true.
+    private _hi = [(_spot select 0) + 120, _spot select 1, 300];
+    private _jet = createVehicle ["B_Plane_CAS_01_F", _hi, [], 0, "FLY"];
+    _jet setVariable ["ALIVE_profileIgnore", true, true];
+    _jet setPosATL _hi;
+    sleep 2;
+    private _station = [_hi select 0, _hi select 1, 0];
+
+    // A sortie on station over its target, with one live thing to attack.
+    private _victim = createVehicle ["Land_BagFence_Long_F", [(_hi select 0) + 30, _hi select 1, 0], [], 0, "CAN_COLLIDE"];
+    private _fnc_tg = {
+        params ["_targets"];
+        private _sortie = ["CAS", _station, 600, 2000, "s_test", _targets, ""];
+        private _o2 = [nil, "create"] call ALIVE_fnc_ATOObserve;
+        private _obs2 = [_o2, "observe", [_jet, _home, false, _sortie, time]] call ALIVE_fnc_ATOObserve;
+        [([_obs2, "onStation", false] call ALIVE_fnc_hashGet),
+         ([_obs2, "targetsGone", "MISSING"] call ALIVE_fnc_hashGet)]
+    };
+
+    ([[_victim]] call _fnc_tg) params ["_onSt", "_goneLive"];
+    diag_log format ["  info  on station %1, and with a live target it reads gone %2", _onSt, _goneLive];
+    ["an aircraft over its target reads as on station", _onSt] call _fnc_check;
+    ["and with its target still standing, the targets are NOT gone",
+        _goneLive isEqualTo false] call _fnc_check;
+
+    // The case that matters most: no targets at all. Every patrol is raised
+    // this way, and answering true here would send them all home on arrival.
+    ["a sortie with no targets never reports them gone",
+        (([[]] call _fnc_tg) select 1) isEqualTo false] call _fnc_check;
+
+    // A profile id nothing knows about. A killed profile is unregistered from
+    // the handler, so this is what a destroyed target looks like.
+    ["a target the profile system has never heard of counts as gone",
+        (([["NOT_A_REAL_PROFILE_ID"]] call _fnc_tg) select 1) isEqualTo true] call _fnc_check;
+
+    // And the real case: the thing it was sent to attack is destroyed.
+    deleteVehicle _victim;
+    sleep 1;
+    ["a target that has been destroyed counts as gone",
+        (([[_victim]] call _fnc_tg) select 1) isEqualTo true] call _fnc_check;
+
+    // Away from its station it is not asked at all, because nothing reads it
+    // there and it costs a lookup for every target.
+    _jet setPosATL [(_spot select 0) + 4000, _spot select 1, 300];
+    sleep 2;
+    ["and away from its station the question is not asked",
+        (([["NOT_A_REAL_PROFILE_ID"]] call _fnc_tg) select 1) isEqualTo false] call _fnc_check;
+
+    { deleteVehicle _x } forEach (crew _jet);
+    deleteVehicle _jet;
+    sleep 1;
+
     // --- the hull is destroyed ------------------------------------------------
     deleteVehicle _veh;
     sleep 1;

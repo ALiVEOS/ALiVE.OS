@@ -1373,6 +1373,12 @@ switch(_operation) do {
         // No settle thread and no damage handed back. There is nothing to settle
         // onto, and an aircraft held above the sea that is allowed to be damaged
         // is an aircraft that drowns the moment anything goes wrong.
+        //
+        // And no wreck clearing, which a stand on an airfield does need. A
+        // wreck ends up where the aircraft died rather than where it lived, so
+        // there is never one at a hold point. Confirmed by watching one: an
+        // aircraft shot down on station left its wreck out over the airspace
+        // and its replacement took the hold point cleanly.
         if ((_home select 2) isEqualTo "virtual") exitWith {
             ([_logic, "resolve", _home] call MAINCLASS) params ["_targetV", "_dirV"];
             _obj allowDamage false;

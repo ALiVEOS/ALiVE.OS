@@ -442,6 +442,48 @@ switch(_operation) do {
             private _d = _obj distance2D _target;
             _onStation = _d < (_range * 1.2) && {_agl > AIRBORNE_AGL};
         };
+
+        // Are the things this sortie was sent for still there.
+        //
+        // This was declared false and never worked out, and two decisions
+        // rested on it: the exit from ON_STATION when the targets are gone,
+        // which therefore could never fire, and the stalled-sortie test, whose
+        // guard against it was permanently satisfied. So an aircraft holding
+        // over a target somebody else had already destroyed held on until its
+        // clock ran out, which for a patrol is a full hour.
+        //
+        // Asked of the sortie's OWN targets, which it carries, rather than by
+        // sweeping the area. A target is either a live object or a profile the
+        // profile system still knows about, and the profile half is the
+        // important one: a virtualised enemy is NOT an object, so asking the
+        // world for objects would report every target far from a player as
+        // gone and bring every sortie home. A killed profile is unregistered
+        // from the handler, so asking it tells "dead" from "far away", which
+        // nothing else here can do.
+        //
+        // An empty target list answers FALSE, never true. A sortie raised
+        // without targets, which is every patrol, cannot have lost them, and
+        // answering true there would send every patrol home on arrival.
+        //
+        // Only asked of an aircraft actually on station, because that is the
+        // only state that reads it, and it costs a lookup per target.
+        if (_onStation && {count _sortie > 5} && {(_sortie select 5) isEqualType []}) then {
+            private _targets = _sortie select 5;
+            if (count _targets > 0) then {
+                private _standing = 0;
+                {
+                    if (_x isEqualType objNull) then {
+                        if (!isNull _x && {alive _x}) then { _standing = _standing + 1 };
+                    };
+                    if (_x isEqualType "" && {!(_x isEqualTo "")} && {!isNil "ALIVE_profileHandler"}) then {
+                        private _p = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+                        if (!isNil "_p" && {[_p] call ALIVE_fnc_isHash}) then { _standing = _standing + 1 };
+                    };
+                } forEach _targets;
+                _targetsGone = _standing == 0;
+            };
+        };
+
         ["onStation", _onStation] call _fnc_set;
         ["targetsGone", _targetsGone] call _fnc_set;
 
