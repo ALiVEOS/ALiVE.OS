@@ -775,7 +775,13 @@ switch(_operation) do {
         } forEach _pairs;
 
         {
-            if (_x isEqualType "" && {(markerType _x) isEqualTo ""}) then {
+            // markerShape, not markerType. markerType is the ICON a marker
+            // draws and an area marker has none, so asking that reported every
+            // correctly drawn airspace as missing: the warning fired on a
+            // mission whose marker the commander had just used to find its
+            // base. An airspace is always an area, so ELLIPSE or RECTANGLE is
+            // what proves it is there.
+            if (_x isEqualType "" && {(markerShape _x) isEqualTo ""}) then {
                 ["ALIVE_fnc_ATOPlace - airspace %1 is not a marker; candidates inside it will never be found", _x] call ALiVE_fnc_dump;
             };
         } forEach ([_logic, "airspaces", []] call ALIVE_fnc_hashGet);
