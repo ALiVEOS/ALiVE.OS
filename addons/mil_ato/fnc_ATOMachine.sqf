@@ -765,7 +765,11 @@ switch(_operation) do {
             // on entry owns this state, and a competing chain would only fight
             // it the way a pending move already did.
             case "LANDING":    { [] };
-            case "LAUNCHING":  { ["TAKEOFF"] };
+            // Ending in a hold, for the reason the tasker's own list gives:
+            // a launch that is a teleport rather than a roll is already in the
+            // air by the time orders are issued, and an airborne chain that
+            // does not end in a hold is refused.
+            case "LAUNCHING":  { ["TAKEOFF","LOITER"] };
             case "ASSIGNED":   { ["HOLD"] };
             case "RECOVERING": { ["HOLD"] };
             case "PARKED":     { [] };

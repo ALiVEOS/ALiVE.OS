@@ -160,7 +160,14 @@ switch(_operation) do {
         };
 
         _result = switch (_state) do {
-            case "LAUNCHING":    { ["TAKEOFF"] };
+            // Ending in a hold, because a launch that is a teleport rather than
+            // a roll has already put the aircraft in the air by the time these
+            // are issued: effects are routed first. An airborne chain that does
+            // not end in a hold is refused, so a catapult shot, a forced launch
+            // and a release from a virtual base each wrote a refusal into the
+            // log on every launch. The hold is transient in every case, since
+            // ENROUTE issues its own orders as soon as the aircraft is up.
+            case "LAUNCHING":    { ["TAKEOFF","LOITER"] };
             case "ENROUTE":      { ["MOVE_STATION","LOITER"] };
             case "ON_STATION":   { _station };
             case "RTB":          { ["MOVE_APPROACH","LOITER"] };
