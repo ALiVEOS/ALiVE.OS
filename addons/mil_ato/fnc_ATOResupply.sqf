@@ -95,6 +95,7 @@ switch(_operation) do {
 
             // No delivery to a carrier. Logistics drives there.
             ["isCarrier", false],
+            ["isVirtual", false],
 
             // Event id to [tail, orderedAt, tries, forceSelfCreate]. Keyed by
             // the event because that is all a completion tells us, and kept
@@ -231,8 +232,13 @@ switch(_operation) do {
         // on, and it has to be wanted rather than already given up on.
         private _hqPos = [_logic, "hqPos", []] call ALIVE_fnc_hashGet;
         private _haveLogistics = ["ALiVE_mil_logistics"] call ALiVE_fnc_isModuleAvailable;
+        // Not to a carrier, and not to a base with no airfield. A truck cannot
+        // drive to either, and an aircraft delivered to an ingress point could
+        // never be flown from it: one that already exists can never be put into
+        // the air. Both build their own replacements instead.
         private _canDeliver = _haveLogistics
             && {!([_logic, "isCarrier", false] call ALIVE_fnc_hashGet)}
+            && {!([_logic, "isVirtual", false] call ALIVE_fnc_hashGet)}
             && {count _hqPos > 1}
             && {_pickWants isEqualTo "wanted"};
 

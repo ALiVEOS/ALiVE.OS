@@ -76,6 +76,12 @@ Jman
 ---------------------------------------------------------------------------- */
 
 #define SUPERCLASS ALIVE_fnc_baseClassHash
+
+// How big a base with no airfield is taken to be. The hold points sit on a ring
+// of about ninety metres, so this is that with room around it. Used for the
+// same things a cluster's own size is: how far out to look for what belongs to
+// this base.
+#define VIRTUAL_BASE_SIZE 150
 #define MAINCLASS ALIVE_fnc_ATOBase
 
 // How long the base waits for a synced ground commander to finish starting,
@@ -335,6 +341,14 @@ switch(_operation) do {
             ["isCarrier", false],
             ["carrier", objNull],
 
+            // A base with no airfield: the marker its aircraft fly from, how
+            // many to create there, and whether that is what this one is.
+            // Blank marker means the fallback is off, which is how an
+            // untouched mission behaves exactly as before.
+            ["ingressMarker", ""],
+            ["virtualSlots", 0],
+            ["isVirtual", false],
+
             // The HQ, and how it came to be one: building (a suitable one
             // stood nearby), composition (a field HQ was built), nominal
             // (the first cluster object, so something always answers), none.
@@ -494,6 +508,25 @@ switch(_operation) do {
 
             [_logic, "airspaces", _valid] call ALIVE_fnc_hashSet;
             [_logic, "airspaceCreated", _created] call ALIVE_fnc_hashSet;
+
+            // Where to fly from when there is no airfield to fly from.
+            //
+            // Read but not acted on here: whether it is NEEDED is not known
+            // until the cluster search has run and found nothing, and a
+            // commander with a perfectly good airfield must carry on using it
+            // whatever this says. Blank is the default and means off.
+            private _ingress = _module getVariable ["ingressMarker", ""];
+            if !(_ingress isEqualType "") then { _ingress = "" };
+            _ingress = [_ingress, " ", ""] call CBA_fnc_replace;
+            [_logic, "ingressMarker", _ingress] call ALIVE_fnc_hashSet;
+
+            private _slotsRaw = _module getVariable ["virtualSlots", "6"];
+            private _slots = 6;
+            if (_slotsRaw isEqualType 0) then { _slots = round _slotsRaw };
+            if (_slotsRaw isEqualType "" && {!(_slotsRaw isEqualTo "")}) then {
+                _slots = round (parseNumber _slotsRaw);
+            };
+            [_logic, "virtualSlots", ((_slots max 1) min 12)] call ALIVE_fnc_hashSet;
             // Written back as the list, so whoever reads the setting later
             // gets marker names rather than the text the mission maker typed.
             _module setVariable ["airspace", +_valid];
@@ -688,6 +721,31 @@ switch(_operation) do {
             };
         };
 
+        // ---- B3a no airfield anywhere, and somewhere to fly from instead --
+        // Placed here, after BOTH ways the search can fail, because they fail
+        // in different places: a terrain with no cluster data at all fails
+        // before the block above opens, and an airspace with no usable
+        // buildings fails inside it. A rescue in either one would only ever
+        // catch the other.
+        //
+        // A carrier is never rescued. It has a deck, which is an airbase, and
+        // a commander that found one is not a commander with nowhere to fly
+        // from.
+        private _isVirtual = false;
+        private _ingressPos = [0,0,0];
+        private _ingress = [_logic, "ingressMarker", ""] call ALIVE_fnc_hashGet;
+        if (!(_failed isEqualTo "") && {!_isCarrier} && {!(_ingress isEqualTo "")}) then {
+            if ((markerShape _ingress) isEqualTo "") then {
+                ["ALIVE_fnc_ATOBase - %1 has no airfield and its ingress marker %2 does not exist, so there is nowhere to fall back to. Check the spelling in this module's Ingress Marker setting.", _faction, _ingress] call ALiVE_fnc_dumpR;
+            } else {
+                _ingressPos = getMarkerPos _ingress;
+                _isVirtual = true;
+                ["ALIVE_fnc_ATOBase - %1 has no airfield (%2) and will fly from %3 at %4 instead",
+                    _faction, _failed, _ingress, _ingressPos] call ALiVE_fnc_dump;
+                _failed = "";
+            };
+        };
+
         // What the base is, in plain fields. The centre is flattened to
         // terrain level and the size floored, so a cluster whose stored
         // values are missing still yields a place to search around.
@@ -696,15 +754,26 @@ switch(_operation) do {
         private _nodes = [];
         private _clusterID = "";
         if (_failed isEqualTo "") then {
-            private _c = [_cluster, "center"] call ALIVE_fnc_cluster;
-            if (!isNil "_c" && {_c isEqualType []} && {count _c >= 2}) then { _basePos = [_c select 0, _c select 1, 0] };
-            private _s = [_cluster, "size"] call ALIVE_fnc_cluster;
-            if (!isNil "_s" && {_s isEqualType 0} && {_s > 0}) then { _baseSize = _s };
-            private _n = [_cluster, "nodes", []] call ALIVE_fnc_hashGet;
-            if (_n isEqualType []) then { _nodes = _n select { _x isEqualType objNull } };
-            private _id = [_cluster, "clusterID", ""] call ALIVE_fnc_hashGet;
-            _clusterID = if (_id isEqualType "") then { _id } else { str _id };
+            if (_isVirtual) then {
+                // The marker IS the base. There is no cluster to read a centre,
+                // a size or a node list out of, and asking one of a thing that
+                // is not a cluster is how this used to throw.
+                _basePos = [_ingressPos select 0, _ingressPos select 1, 0];
+                _baseSize = VIRTUAL_BASE_SIZE;
+                _nodes = [];
+                _clusterID = "";
+            } else {
+                private _c = [_cluster, "center"] call ALIVE_fnc_cluster;
+                if (!isNil "_c" && {_c isEqualType []} && {count _c >= 2}) then { _basePos = [_c select 0, _c select 1, 0] };
+                private _s = [_cluster, "size"] call ALIVE_fnc_cluster;
+                if (!isNil "_s" && {_s isEqualType 0} && {_s > 0}) then { _baseSize = _s };
+                private _n = [_cluster, "nodes", []] call ALIVE_fnc_hashGet;
+                if (_n isEqualType []) then { _nodes = _n select { _x isEqualType objNull } };
+                private _id = [_cluster, "clusterID", ""] call ALIVE_fnc_hashGet;
+                _clusterID = if (_id isEqualType "") then { _id } else { str _id };
+            };
 
+            [_logic, "isVirtual", _isVirtual] call ALIVE_fnc_hashSet;
             [_logic, "basePos", +_basePos] call ALIVE_fnc_hashSet;
             [_logic, "baseSize", _baseSize] call ALIVE_fnc_hashSet;
             [_logic, "baseNodes", +_nodes] call ALIVE_fnc_hashSet;
@@ -847,7 +916,13 @@ switch(_operation) do {
                 _hq = _buildings select 0;
                 _hqKind = "building";
             } else {
-                if (!_isCarrier && {_createHQ}) then {
+                // Not at a base with no ground, for the reason a carrier is
+                // excluded: the composition is put down at the BASE, and the
+                // base here is a point in the air that may be over open water
+                // or off the map entirely. An existing building near the module
+                // is still taken above, so a commander flying from a marker
+                // keeps a real headquarters where the mission maker put it.
+                if (!_isCarrier && {!_isVirtual} && {_createHQ}) then {
                     // ---- a field HQ -----------------------------------
                     private _compType = if ((_faction call ALiVE_fnc_factionSide) isEqualTo RESISTANCE) then { "Guerrilla" } else { "Military" };
                     private _comps = [_compType, ["Airports", "Heliports"], [], _faction] call ALiVE_fnc_getCompositions;
@@ -988,6 +1063,8 @@ switch(_operation) do {
                 ["nodes", +_nodes],
                 ["hq", _hq],
                 ["isCarrier", _isCarrier],
+                ["isVirtual", _isVirtual],
+                ["virtualSlots", [_logic, "virtualSlots", 6] call ALIVE_fnc_hashGet],
                 ["airspace", _airspaces param [0, ""]]
             ]] call ALIVE_fnc_hashCreate;
             [_logic, "place", [
@@ -1179,7 +1256,9 @@ switch(_operation) do {
         // objective, so its ground forces hold it. Not on a carrier, which
         // no ground force can hold. The answer is the objective hash, or
         // nothing when the commander could not be found.
-        if (_failed isEqualTo "" && {!_isCarrier} && {count _opcomHandlers > 0}) then {
+        // Nor a base with no ground, for the same reason: ground forces cannot
+        // hold a point in the air any more than they can hold a ship.
+        if (_failed isEqualTo "" && {!_isCarrier} && {!_isVirtual} && {count _opcomHandlers > 0}) then {
             [_logic] call _fnc_waitUnpaused;
             private _opcom = selectRandom _opcomHandlers;
             private _opcomID = [_opcom, "opcomID", ""] call ALIVE_fnc_hashGet;
@@ -1204,7 +1283,10 @@ switch(_operation) do {
         // first two as text. Skipped on a carrier: the helper places on
         // land only and would spend its two hundred attempts per object
         // finding none.
-        if (_failed isEqualTo "" && {!_isCarrier}) then {
+        // Skipped at a base with no ground as well, and for exactly the reason
+        // given above: the helper places on land only and would spend its two
+        // hundred attempts per object finding none.
+        if (_failed isEqualTo "" && {!_isCarrier} && {!_isVirtual}) then {
             private _countRaw = _module getVariable ["objectiveObjectsCount", "0"];
             private _count = switch (true) do {
                 case (_countRaw isEqualType 0): { _countRaw };

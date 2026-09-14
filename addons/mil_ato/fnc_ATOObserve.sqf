@@ -93,7 +93,7 @@ switch(_operation) do {
             } forEach ["local","remote","airborne","atHome","nearHome","landed","touchingGround",
                        "crewGroupLive","driverPresent","crewSeated","playerControl","playerPassenger",
                        "anyPlayerAboard","uavControlled","onStation","targetsGone","lockHeld",
-                       "deckHome","fixedWing","needsRunway","launchInProgress","onRunway","armed"];
+                       "deckHome","fixedWing","needsRunway","launchInProgress","onRunway","armed","virtualHome"];
             {
                 [_o, _x, 0] call ALIVE_fnc_hashSet;
             } forEach ["altAGL","altASL","speed","fuel","damage","wpRemaining","aliveCrew",
@@ -111,9 +111,15 @@ switch(_operation) do {
         // shape itself. A VTOL is a helicopter for every purpose here: it is
         // lifted, not shot off a wire.
         private _deckHome = count _home > 2 && {(_home select 2) isEqualTo "deck"};
+        // A commander with no airfield holds its aircraft at a point in the
+        // air. Kept apart from a deck home deliberately: the two share how
+        // their height is measured and nothing else, and reporting one as the
+        // other would have a virtual aircraft shot off a catapult.
+        private _virtualHome = count _home > 2 && {(_home select 2) isEqualTo "virtual"};
         private _fixedWing = (_obj isKindOf "Plane")
             && {getNumber (configFile >> "CfgVehicles" >> typeOf _obj >> "vtol") == 0};
         ["deckHome", _deckHome] call _fnc_set;
+        ["virtualHome", _virtualHome] call _fnc_set;
         ["fixedWing", _fixedWing] call _fnc_set;
 
         // And separately, whether it needs a RUNWAY to come back to. This is
@@ -163,7 +169,12 @@ switch(_operation) do {
         // the deck. getPos is the engine's own measure for this: its catapult
         // and tailhook functions both gate on getPos being under a metre.
         // Terrain homes keep getPosATL, so nothing on land changes.
-        private _agl = if (_deckHome) then { (getPos _obj) select 2 } else { _pos select 2 };
+        // A held aircraft is measured the same way, and for the same reason.
+        // Over water terrain level is the sea bed, so one held half a metre
+        // above the waves reads fifty five metres up over deep water and is
+        // judged to be flying with nobody aboard. Measured at 54 m of water:
+        // 54.9 the terrain way, 0.7 this way.
+        private _agl = if (_deckHome || _virtualHome) then { (getPos _obj) select 2 } else { _pos select 2 };
         ["pos", + _pos] call _fnc_set;
         ["altAGL", _agl] call _fnc_set;
         ["altASL", (getPosASL _obj) select 2] call _fnc_set;

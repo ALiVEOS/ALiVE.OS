@@ -145,6 +145,13 @@ Jman
 // within the mission rather than after it.
 #define LATCH_STALE 120
 
+// How high an aircraft bound for a virtual base is created. The engine's flying
+// start ignores the height it is handed and an aircraft born in flight at sea
+// level has nowhere to go but down, so it is born well clear and brought down
+// to its hold point at once. Matches the floor sys_profile uses for the same
+// reason.
+#define VIRTUAL_BIRTH 300
+
 private ["_result"];
 
 TRACE_1("ATO Place - input",_this);
@@ -322,6 +329,19 @@ private _fnc_homeFor = {
     if !([_surface] call ALIVE_fnc_isHash) exitWith { [] };
     if (count _anchor < 2 || {_class isEqualTo ""}) exitWith { [] };
     private _flat = [_anchor select 0, _anchor select 1, 0];
+
+    // A base with no airfield holds its aircraft at a ring of points around its
+    // ingress marker, and there is no "the spot you asked for" to try first:
+    // every hold point is equal and the search simply takes a free one. The
+    // kind is DECLARED by the base rather than read off the ground, because
+    // classify derives its answer from what is underneath a point and can only
+    // ever say terrain or deck.
+    private _baseHere = [_logic, "base", []] call ALIVE_fnc_hashGet;
+    if ([_baseHere] call ALIVE_fnc_isHash
+        && {[_baseHere, "isVirtual", false] call ALIVE_fnc_hashGet}) exitWith {
+        [_surface, "cascade", ["virtual", _class, _flat, []]] call ALIVE_fnc_ATOSurface
+    };
+
     private _kind = [_surface, "classify", _flat] call ALIVE_fnc_ATOSurface;
     private _cand = [_flat, _dir, "terrain"];
     if (_kind isEqualTo "deck") then {
@@ -368,12 +388,36 @@ private _fnc_createHull = {
         objNull
     };
     private _pos = +(_home select 0);
+    private _kind = _home select 2;
     // Terrain level for a terrain home: a hangar-parked airframe stores the
     // building's own elevated origin and creating at that height puts it in
     // the roof. A DECK home's height is the deck itself, and zeroing it over
-    // water creates the airframe at the waterline under the ship.
-    if !((_home select 2) isEqualTo "deck") then { _pos set [2, 0] };
-    private _obj = createVehicle [_class, _pos, [], 0, "CAN_COLLIDE"];
+    // water creates the airframe at the waterline under the ship. A VIRTUAL
+    // home's height is the hold point, for the same reason.
+    if !(_kind in ["deck", "virtual"]) then { _pos set [2, 0] };
+
+    // An aircraft that lives at a virtual base is born FLYING, and then held.
+    //
+    // This is what makes a base with no airfield possible at all. Measured: a
+    // helicopter created the ordinary way can never afterwards be put into the
+    // air. Teleported up with its engine running it was dead in fifteen seconds
+    // and on the sea bed in thirty, and that held whether it had been frozen
+    // first or not, with a forward push or without one, with somewhere to go or
+    // nowhere at all. One created with the engine's own flying start survives
+    // being held and let go, over and over: a jet and a gunship each flew two
+    // sorties out to several kilometres and were holding their point in
+    // between.
+    //
+    // Created high and brought straight down to its hold point by the surface,
+    // because the flying start ignores the height it is given and an aircraft
+    // born at sea level in flight has nowhere to go but down.
+    private _special = "CAN_COLLIDE";
+    private _birth = _pos;
+    if (_kind isEqualTo "virtual") then {
+        _special = "FLY";
+        _birth = [_pos select 0, _pos select 1, VIRTUAL_BIRTH];
+    };
+    private _obj = createVehicle [_class, _birth, [], 0, _special];
     if (isNull _obj) exitWith {
         ["ALIVE_fnc_ATOPlace - createVehicle returned nothing for %1 at %2", _class, _pos] call ALiVE_fnc_dump;
         objNull
@@ -1157,6 +1201,24 @@ switch(_operation) do {
         private _base = [_logic, "base", []] call ALIVE_fnc_hashGet;
         private _consuming = [_logic, "consuming", []] call ALIVE_fnc_hashGet;
 
+        // An aircraft that already exists cannot join a base with no airfield,
+        // and this is measured rather than cautious. A helicopter created the
+        // ordinary way can NEVER afterwards be put into the air: teleported up
+        // with its engine running it was dead in fifteen seconds, frozen first
+        // or not, pushed or not, with somewhere to go or nowhere at all. The
+        // fleet at an ingress point is created in flight for that reason, so an
+        // aircraft taken over off the ground would hold its point perfectly
+        // well and then drown the first time it was asked to fly.
+        //
+        // Left exactly as it was found, which is what refusing here means. That
+        // includes a replacement flown in by logistics, and the resupply half
+        // knows it: a commander like this builds its own replacements instead
+        // of asking for one to be delivered.
+        if ([_base] call ALIVE_fnc_isHash
+            && {[_base, "isVirtual", false] call ALIVE_fnc_hashGet}) exitWith {
+            _result = ["refused", "this commander flies from an ingress point and can only use aircraft created there"];
+        };
+
         // The record a delivery is going into, if there is one.
         private _target = [];
         private _why = "";
@@ -1931,9 +1993,58 @@ switch(_operation) do {
                 && {!([_x] call _fnc_isDroneClass)}
         };
 
-        // ---- D2 helicopters ------------------------------------------------
-        private _helis = (([0, _faction, "Helicopter"] call ALiVE_fnc_findVehicleType) - _blacklist) select _fnc_flyable;
+        // ---- a base with no airfield ---------------------------------------
+        // Every aircraft is asked for at the marker itself. The cascade hands
+        // back a different hold point each time, because each home is reserved
+        // as it is taken, so nothing here has to know about the ring or how big
+        // it is.
+        //
+        // Split between planes and helicopters rather than all of one kind: a
+        // commander with nowhere to fly from still has to cover the sorties
+        // that want speed and the ones that want to loiter. Whichever of the
+        // two the faction actually has is what it gets.
+        // Declared out here rather than inside the airfield branch: the tail
+        // below reads all three whichever branch ran, and scoped to the branch
+        // they are undefined the moment a base with no airfield takes the other
+        // one.
+        private _helis = [];
+        private _planes = [];
         private _heliPlaced = 0;
+
+        private _virtual = [_base, "isVirtual", false] call ALIVE_fnc_hashGet;
+        private _slots = [_base, "virtualSlots", 6] call ALIVE_fnc_hashGet;
+        if !(_slots isEqualType 0) then { _slots = 6 };
+        _slots = (round _slots) max 1;
+
+        if (_virtual) then {
+            _helis = (([0, _faction, "Helicopter"] call ALiVE_fnc_findVehicleType) - _blacklist) select _fnc_flyable;
+            _planes = (([0, _faction, "Plane"] call ALiVE_fnc_findVehicleType) - _blacklist) select _fnc_flyable;
+            private _heliList = _helis;
+            private _planeList = _planes;
+            private _mix = [];
+            if (count _planeList > 0 && {count _heliList > 0}) then {
+                for "_i" from 1 to _slots do {
+                    _mix pushBack (if (_i % 2 == 1) then { selectRandom _planeList } else { selectRandom _heliList });
+                };
+            } else {
+                private _only = if (count _planeList > 0) then { _planeList } else { _heliList };
+                if (count _only > 0) then {
+                    for "_i" from 1 to _slots do { _mix pushBack (selectRandom _only) };
+                };
+            };
+            if (count _mix == 0) then {
+                ["ALIVE_fnc_ATOPlace - %1 has no armed aircraft this commander can fly, so its ingress point stays empty", _faction] call ALiVE_fnc_dumpR;
+            };
+            {
+                private _tail = [_logic, _x, _center, 0, _airspaceName] call _fnc_placeNew;
+                if !(_tail isEqualTo "") then { _tails pushBack _tail };
+            } forEach _mix;
+            ["ALIVE_fnc_ATOPlace - %1 of the %2 aircraft asked for are held at the ingress point",
+                count _tails, _slots] call ALiVE_fnc_dump;
+        } else {
+
+        // ---- D2 helicopters ------------------------------------------------
+        _helis = (([0, _faction, "Helicopter"] call ALiVE_fnc_findVehicleType) - _blacklist) select _fnc_flyable;
         if (count _helis > 0) then {
             // Every pad in the cluster: the nodes that are pads, plus the
             // nearest pad to each node that is not. The nearest-pad lookup
@@ -1971,7 +2082,7 @@ switch(_operation) do {
         // shared apron search accepts no list of spots already handed out, so
         // asked repeatedly at one anchor it returns the same spot, finds it
         // reserved, and falls to a ring search that exhausts.
-        private _planes = (([0, _faction, "Plane"] call ALiVE_fnc_findVehicleType) - _blacklist) select _fnc_flyable;
+        _planes = (([0, _faction, "Plane"] call ALiVE_fnc_findVehicleType) - _blacklist) select _fnc_flyable;
         if (count _planes > 0) then {
             private _anchors = [];
             if (!isNil "ALIVE_airBuildingTypes" && {!isNil "ALIVE_militaryAirBuildingTypes"} && {count _nodes > 0}) then {
@@ -1995,6 +2106,10 @@ switch(_operation) do {
                 };
                 _first = false;
             } forEach _anchors;
+        };
+
+        // The end of the airfield rungs, which a base with no airfield takes
+        // the branch above instead of.
         };
 
         // ---- D12 one drone -------------------------------------------------

@@ -26,9 +26,16 @@ ship's own model space, and the heading relative to the ship's. The world
 position is derived from those on read, because a stored world position on a
 ship is a position that is right until the ship is somewhere else.
 
-Deck positions are ASL. Terrain positions are above terrain level with the
-height zeroed. The two cannot be mixed: above water, terrain level is the SEA
-BED, so a deck height read as a terrain height is about forty metres wrong.
+A VIRTUAL home is three entries like a terrain one, [position, direction,
+"virtual"], and needs no more: it is a point in the air at an ingress marker,
+where a commander with no airfield holds its aircraft between sorties. Nothing
+underneath it is read, so there is nothing to derive on read and nothing to go
+stale. Its position is ASL.
+
+Deck and virtual positions are ASL. Terrain positions are above terrain level
+with the height zeroed. They cannot be mixed: above water, terrain level is the
+SEA BED, so a height read the terrain way is about forty metres wrong, and over
+deep water a held aircraft read that way is judged to be flying.
 
 Parameters:
 Nil or Array - If Nil, return a new instance. If a hash, reference an existing one.
@@ -111,6 +118,19 @@ Jman
 // search chooses reads 39 m, so twenty five separates them with room to spare
 // and refuses no stand.
 #define RUNWAY_CLEAR 25
+
+// A base with no airfield. The hold points are a ring around the ingress
+// marker: as many as any commander could want, since how many aircraft are
+// actually created is the commander's own setting and not this file's business.
+// The spacing is comfortably more than the widest airframe, because there is no
+// ground here to be short of and nothing is gained by crowding.
+#define VIRTUAL_SLOTS 12
+#define VIRTUAL_SPACING 45
+// How far above whatever is underneath an aircraft is held. Half a metre, and
+// measured: a hull frozen there over open water does not move at all. Taken
+// from sea level rather than terrain level so that a marker over deep water
+// does not hold its fleet on the sea bed.
+#define VIRTUAL_HOLD 0.5
 
 private ["_result"];
 
@@ -742,6 +762,60 @@ switch(_operation) do {
             ["_reserved",[],[[]]]
         ];
 
+        // A virtual base has no ground to search, so there are no rings, no
+        // tiers and no terrain tests: the only question a hold point can fail
+        // is whether this commander has already promised it to somebody.
+        if (_surface isEqualTo "virtual") exitWith {
+            // The same union as the other two halves: points this surface has
+            // already promised count as taken whether or not the caller
+            // remembered to pass them.
+            private _heldV = [_logic, "reservations", []] call ALIVE_fnc_hashGet;
+            {
+                if (!(_x in _reserved)) then { _reserved pushBack _x };
+            } forEach _heldV;
+
+            private _bbV = [_class] call ALiVE_fnc_getVehicleBoundingBox;
+            private _spanV = 12;
+            if (count _bbV > 1) then {
+                _spanV = ((((_bbV select 0) max (_bbV select 1)) / 2) + 4) max 12;
+            };
+
+            // Spaced around a circle rather than along a line, so no aircraft
+            // is ever behind another and the ring grows with the slot count
+            // instead of the spacing shrinking.
+            private _radiusV = VIRTUAL_SPACING max ((VIRTUAL_SPACING * VIRTUAL_SLOTS) / 6.2832);
+            private _foundV = [];
+            for "_i" from 0 to (VIRTUAL_SLOTS - 1) do {
+                if (_foundV isEqualTo []) then {
+                    private _bearing = (360 / VIRTUAL_SLOTS) * _i;
+                    private _pV = [
+                        (_anchor select 0) + ((sin _bearing) * _radiusV),
+                        (_anchor select 1) + ((cos _bearing) * _radiusV),
+                        0
+                    ];
+                    private _clashV = (_reserved findIf {
+                        (_pV distance2D (_x select 0)) < (_spanV + ((_x select 1) max 0))
+                    }) > -1;
+                    if (!_clashV) then {
+                        // Above the sea, or above the ground when the marker is
+                        // on dry land, whichever is higher. Terrain level is
+                        // NEGATIVE over water and holding at it would be
+                        // holding on the sea bed.
+                        private _floorV = ((getTerrainHeightASL _pV) max 0) + VIRTUAL_HOLD;
+                        // Facing out from the marker, so a fleet released
+                        // together does not fly through itself.
+                        _foundV = [[_pV select 0, _pV select 1, _floorV], _bearing, "virtual"];
+                    };
+                };
+            };
+
+            if (_foundV isEqualTo []) then {
+                ["ALIVE_fnc_ATOSurface - all %1 hold points at %2 are taken; no home given",
+                    VIRTUAL_SLOTS, _anchor] call ALiVE_fnc_dump;
+            };
+            _result = _foundV;
+        };
+
         // A deck has no rings and no tiers. The parking offsets are already
         // worked out and ranked for the ship, so the search is a walk down that
         // list taking the first one nothing has claimed.
@@ -1143,6 +1217,31 @@ switch(_operation) do {
         ];
 
         if (count _home < 3) exitWith { _result = [false, "no home"] };
+
+        // A hold point can only be occupied. There is no ground to be unsuitable
+        // and no geometry to be wrong, and it must NOT fall through to the
+        // terrain test below, which refuses every point over water outright and
+        // would therefore refuse every hold point a sea marker has.
+        if ((_home select 2) isEqualTo "virtual") exitWith {
+            private _posV = _home select 0;
+            private _bbV = [_class] call ALiVE_fnc_getVehicleBoundingBox;
+            private _spanV = 12;
+            if (count _bbV > 1) then {
+                _spanV = ((((_bbV select 0) max (_bbV select 1)) / 2) + 4) max 12;
+            };
+            private _ownV = [_ownObj];
+            if (!isNull _ownObj) then { _ownV append (crew _ownObj) };
+            private _intrudersV = (nearestObjects [_posV, ["Air","LandVehicle","Man"], _spanV]) select {
+                private _cand = _x;
+                alive _cand && {(_ownV findIf {_x isEqualTo _cand}) == -1}
+            };
+            if (count _intrudersV > 0) then {
+                _result = [false, "occupied"];
+            } else {
+                _result = [true, ""];
+            };
+        };
+
         // The deck answers the same three ways the terrain half does, so a
         // caller can tell "find another home" from "wait", and adds a fourth
         // that only a ship can give: the ship itself is gone.
@@ -1266,6 +1365,26 @@ switch(_operation) do {
             ["ALIVE_fnc_ATOSurface - place refused for %1: object is not local", typeOf _obj] call ALiVE_fnc_dump;
             _result = false;
         };
+        // Held: put exactly where it belongs, stopped, hidden, and with its
+        // simulation off so it stays there. Measured: a hull frozen this way
+        // over open water reads the same position thirty seconds later, still
+        // takes a crew, and still accepts the servicing writes.
+        //
+        // No settle thread and no damage handed back. There is nothing to settle
+        // onto, and an aircraft held above the sea that is allowed to be damaged
+        // is an aircraft that drowns the moment anything goes wrong.
+        if ((_home select 2) isEqualTo "virtual") exitWith {
+            ([_logic, "resolve", _home] call MAINCLASS) params ["_targetV", "_dirV"];
+            _obj allowDamage false;
+            if (_dirV >= 0) then { _obj setDir _dirV };
+            _obj setPosASL [_targetV select 0, _targetV select 1, _targetV select 2];
+            _obj setVectorUp [0,0,1];
+            _obj setVelocity [0,0,0];
+            _obj hideObjectGlobal true;
+            _obj enableSimulationGlobal false;
+            _result = true;
+        };
+
         if ((_home select 2) isEqualTo "deck") exitWith {
             private _ship = [_logic, "carrierFor", _home param [3, []]] call MAINCLASS;
             if (isNull _ship) then {
@@ -1503,6 +1622,22 @@ switch(_operation) do {
 
     // ---- pads and reservations ------------------------------------------
 
+    // Let a held aircraft go. The exact inverse of what place does to one at a
+    // virtual home, kept here because this file owns what "held" means.
+    //
+    // Answers false for anything that is not actually held, so a caller may ask
+    // without knowing.
+    case "release": {
+        private _obj = _args;
+        _result = false;
+        if (!(_obj isEqualType objNull) || {isNull _obj}) exitWith {};
+        if (simulationEnabled _obj && {!(isObjectHidden _obj)}) exitWith {};
+        _obj enableSimulationGlobal true;
+        _obj hideObjectGlobal false;
+        _obj allowDamage true;
+        _result = true;
+    };
+
     case "stampPad": {
         _args params [["_home",[],[[]]], ["_tail","",[""]]];
         if (count _home < 3) exitWith { _result = objNull };
@@ -1510,6 +1645,11 @@ switch(_operation) do {
 
         private _existing = [_pads,_tail,objNull] call ALIVE_fnc_hashGet;
         if (!isNull _existing) exitWith { _result = _existing };
+
+        // Nothing to stamp a pad onto. A pad written the terrain way at a point
+        // over water lands on the sea bed, and a virtual home never lands an
+        // aircraft on a pad anyway: it is put back where it belongs instead.
+        if ((_home select 2) isEqualTo "virtual") exitWith { _result = objNull };
 
         // Where the pad goes. A deck home's world position is worked out from
         // its ship rather than read back, the same as everywhere else that

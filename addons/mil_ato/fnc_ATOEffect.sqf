@@ -58,11 +58,11 @@ Jman
 // Anything that moves the aircraft, plus taking its crew away. Refused outright
 // while a player is in it, from any state, by any path. A catapult tows the
 // aircraft onto the wire before it fires, so it belongs here with the rest.
-#define PLAYER_UNSAFE ["airborneStart","forceLaunch","placeOnSlot","forceLanded","spawnAtHome","standDownCrew","takeOwnership","catapult"]
+#define PLAYER_UNSAFE ["airborneStart","forceLaunch","virtualLaunch","placeOnSlot","forceLanded","spawnAtHome","standDownCrew","takeOwnership","catapult"]
 
 // Effects that only work where the object lives. On a hull owned elsewhere these
 // do nothing at all, so they are refused and reported instead.
-#define LOCAL_ONLY ["engineOn","engineOff","airborneStart","forceLaunch","placeOnSlot","forceLanded","spawnAtHome","seatCrew","recrewInPlace","standDownCrew","issueOrders","clearOrders","land","taxiTo","revealTargets","releaseTargets","catapult","tailhook","deckRecover","landOnRunway"]
+#define LOCAL_ONLY ["engineOn","engineOff","airborneStart","forceLaunch","virtualLaunch","placeOnSlot","forceLanded","spawnAtHome","seatCrew","recrewInPlace","standDownCrew","issueOrders","clearOrders","land","taxiTo","revealTargets","releaseTargets","catapult","tailhook","deckRecover","landOnRunway"]
 
 // Not built in this pass. Named so a caller reaching one is told, rather than
 // finding that nothing happened. deckLaunch stays here on purpose: it would be
@@ -119,6 +119,11 @@ Jman
 // costs nothing against what it used to do and buys a truck that is actually
 // driving there.
 #define SERVICE_WAIT 180
+
+// How high a held aircraft is lifted to when it is let go. Measured: both a jet
+// and a gunship released from here flew on under their own power and levelled
+// off around a hundred and twenty metres.
+#define VIRTUAL_LAUNCH_ALT 300
 
 private ["_result"];
 
@@ -211,7 +216,11 @@ switch(_operation) do {
         // keep getPosATL so nothing on land changes.
         private _fnc_up = {
             params ["_o", "_h"];
-            if (count _h > 2 && {(_h select 2) isEqualTo "deck"}) then {
+            // A deck and a hold point are both measured from what is
+            // underneath rather than from terrain level, because over water
+            // terrain level is the SEA BED and everything above it reads as
+            // tens of metres up.
+            if (count _h > 2 && {(_h select 2) in ["deck","virtual"]}) then {
                 (getPos _o) select 2
             } else {
                 (getPosATL _o) select 2
@@ -523,6 +532,39 @@ switch(_operation) do {
                     _obj setPosATL [_p select 0, _p select 1, _alt];
                     _obj engineOn true;
                     _obj setVelocity [(sin (getDir _obj)) * 90, (cos (getDir _obj)) * 90, 0];
+                };
+            };
+
+            // Let a held aircraft go and put it into the air. The whole of a
+            // launch from a base with no airfield.
+            //
+            // The order is measured and it matters. It is let go first, then
+            // lifted, then given its engine, and only a PLANE is pushed: a
+            // hundred and twenty metres a second is past a helicopter's top
+            // speed. Both airframes flew two sorties each this way and were
+            // holding their point in between.
+            //
+            // What makes this possible at all is not here: an aircraft that
+            // lives at a virtual base is CREATED in flight (see placement), and
+            // one created the ordinary way can never afterwards be put into the
+            // air. Measured on a gunship, every way round: teleported up with
+            // its engine running it was dead in fifteen seconds, frozen first
+            // or not, pushed or not, with somewhere to go or nowhere.
+            case "virtualLaunch": {
+                if (([_obj, _home] call _fnc_up) > 50) then {
+                    _matched = true;
+                } else {
+                    private _surfaceV = _extra param [0, []];
+                    if ([_surfaceV] call ALIVE_fnc_isHash) then {
+                        [_surfaceV, "release", _obj] call ALIVE_fnc_ATOSurface;
+                    };
+                    private _pV = getPosASL _obj;
+                    _obj setPosASL [_pV select 0, _pV select 1, VIRTUAL_LAUNCH_ALT];
+                    _obj setVectorUp [0,0,1];
+                    _obj engineOn true;
+                    if (_obj isKindOf "Plane") then {
+                        _obj setVelocity [(sin (getDir _obj)) * 120, (cos (getDir _obj)) * 120, 0];
+                    };
                 };
             };
 

@@ -997,7 +997,7 @@ private _fnc_routeEffects = {
                         // reason the pad ones do: it holds the deck cache and
                         // resolves a carrier handle, and an effect reaches it
                         // through this switch and nowhere else.
-                        case (_name in ["catapult","deckRecover","landOnRunway"]): { [_surface, _tail] };
+                        case (_name in ["catapult","deckRecover","landOnRunway","virtualLaunch"]): { [_surface, _tail] };
                         // The tail is the aircraft's name on the radio, and the
                         // supply truck's dispatch carries a callsign.
                         case (_name isEqualTo "turnaround"): { [_tail] };
@@ -2910,6 +2910,7 @@ switch(_operation) do {
                     [_resupply, "configure", [
                         ["hqPos", +_hqPos],
                         ["isCarrier", [_v, "isCarrier", false] call ALIVE_fnc_hashGet],
+                        ["isVirtual", [_v, "isVirtual", false] call ALIVE_fnc_hashGet],
                         ["factions", +_merged]
                     ]] call ALIVE_fnc_ATOResupply;
                 };

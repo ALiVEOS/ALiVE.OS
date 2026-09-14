@@ -305,6 +305,20 @@ class CfgVehicles
                 // that detection falls short. They feed composition and parking exclusion -
                 // they do NOT decide where aircraft take off and land.
                 class HDR_RUNWAY : ALiVE_ModuleSubTitle { property = "ALiVE_mil_ato_HDR_RUNWAY"; displayName = "ADVANCED - AIRFIELD OVERRIDES"; };
+                class ingressMarker : Edit
+                {
+                        property = "ALiVE_mil_ato_ingressMarker";
+                        displayName = "$STR_ALIVE_ATO_INGRESSMARKER";
+                        tooltip = "$STR_ALIVE_ATO_INGRESSMARKER_COMMENT";
+                        defaultValue = """""";
+                };
+                class virtualSlots : Edit
+                {
+                        property = "ALiVE_mil_ato_virtualSlots";
+                        displayName = "$STR_ALIVE_ATO_VIRTUALSLOTS";
+                        tooltip = "$STR_ALIVE_ATO_VIRTUALSLOTS_COMMENT";
+                        defaultValue = """6""";
+                };
                 class runwaystartpos : Edit
                 {
                         property = "ALiVE_mil_ato_runwaystartpos";

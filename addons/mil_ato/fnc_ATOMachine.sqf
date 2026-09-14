@@ -69,7 +69,7 @@ Jman
 // stalled sortie.
 #define PROSECUTING_TYPES ["SEAD","CAS","Strike","OCA"]
 
-#define TELEPORTS ["airborneStart","forceLaunch","placeOnSlot","forceLanded","quickPark","catapult"]
+#define TELEPORTS ["airborneStart","forceLaunch","virtualLaunch","placeOnSlot","forceLanded","quickPark","catapult"]
 
 private ["_result"];
 
@@ -153,6 +153,10 @@ switch(_operation) do {
         // helicopter here. Both facts come from the observation, because
         // this table reads no config and never looks at a home's shape.
         private _deckPlane = ("deckHome" call _fnc_o) && {"fixedWing" call _fnc_o};
+        // A commander with no airfield. Its aircraft are held at a point in the
+        // air, so there is no runway to take, no pad to come down on and no
+        // deck to be shot off: they are let go, and they are put back.
+        private _virtualHome = "virtualHome" call _fnc_o;
 
         // Whether this aircraft needs a RUNWAY to come back to, which is not
         // the same question as whether it can be catapulted off one. A VTOL is
@@ -299,6 +303,16 @@ switch(_operation) do {
                                         if (_deckPlane && {!_playerPassenger}) then {
                                             _effects pushBack "catapult";
                                         };
+                                        // Asked again every tick, for the same
+                                        // reason: a refusal is retried rather
+                                        // than lost, and once it is up the
+                                        // effect answers matched and does
+                                        // nothing. Not with somebody aboard, or
+                                        // the filter below notes a refused
+                                        // teleport every two seconds.
+                                        if (_virtualHome && {!_playerPassenger}) then {
+                                            _effects pushBack "virtualLaunch";
+                                        };
                                     };
                                 };
                             };
@@ -370,7 +384,20 @@ switch(_operation) do {
                                 // there is nothing to see: put it on its slot
                                 // and skip the approach entirely. No lock is
                                 // taken, because no runway is used.
-                                if (("playersWithin1000Home" call _fnc_n) == 0 && {!_playerPassenger}) then {
+                                // Nobody to see it go. For a virtual home that
+                                // is asked of the AIRCRAFT rather than of home:
+                                // there is no approach and no landing to watch,
+                                // so the only way back is to be put there, and
+                                // the standing orders have already turned it
+                                // away from the target. Waiting until nobody is
+                                // near an empty point in the sea would be
+                                // waiting on a question nothing ever answers
+                                // differently.
+                                private _unseen = ("playersWithin1000Home" call _fnc_n) == 0;
+                                if (_virtualHome) then {
+                                    _unseen = ("playersWithin1000Hull" call _fnc_n) == 0;
+                                };
+                                if (_unseen && {!_playerPassenger}) then {
                                     _effects pushBack "placeOnSlot";
                                     _next = "PARKED";
                                 } else {
@@ -568,7 +595,16 @@ switch(_operation) do {
                                                 [_row,"attempts",([_row,"attempts",0] call ALIVE_fnc_hashGet) + 1] call ALIVE_fnc_hashSet;
                                                 _next = "RTB"; _reason = "RETURN";
                                             } else {
-                                                _effects pushBack "forceLanded";
+                                                // A held aircraft is put back
+                                                // where it lives. forceLanded
+                                                // sets it down on the terrain,
+                                                // and over water the terrain is
+                                                // the sea bed.
+                                                if (_virtualHome) then {
+                                                    _effects pushBack "placeOnSlot";
+                                                } else {
+                                                    _effects pushBack "forceLanded";
+                                                };
                                                 _next = "PARKED";
                                             };
                                         };
@@ -646,10 +682,10 @@ switch(_operation) do {
                 // A plane on a ship is shot off a catapult, and the engine is
                 // started FIRST so the launch sequence finds one running.
                 case "LAUNCHING":    {
-                    if (_deckPlane) then {
-                        _effects append ["engineOn","catapult","broadcastStart"];
-                    } else {
-                        _effects append ["engineOn","broadcastStart"];
+                    switch (true) do {
+                        case (_deckPlane): { _effects append ["engineOn","catapult","broadcastStart"]; };
+                        case (_virtualHome): { _effects append ["engineOn","virtualLaunch","broadcastStart"]; };
+                        default { _effects append ["engineOn","broadcastStart"]; };
                     };
                 };
                 case "ON_STATION":   {
