@@ -183,6 +183,22 @@ Jman
     ["the asset list is readable and is a hash",
         [_assets] call ALIVE_fnc_isHash] call _fnc_check;
 
+    // And it cannot be written, which is the whole of a reported fault where a
+    // commander covering two factions lost track of its aircraft after a load.
+    // The sortie path used to read the campaign store's record for the faction
+    // it was working with and write it back over the commander's roster, so the
+    // list became whichever faction flew last and anything added or lost in
+    // between was gone. The roster is worked out from the records on every read
+    // now, so there is nothing to write over and a write is refused outright.
+    private _forged = [] call ALIVE_fnc_hashCreate;
+    [_forged, "NOT_A_REAL_TAIL", [[["vehicleClass", "B_Plane_CAS_01_F"]]] call ALIVE_fnc_hashCreate] call ALIVE_fnc_hashSet;
+    [_logic, "assets", _forged] call ALIVE_fnc_ATO;
+    private _afterWrite = [_logic, "assets"] call ALIVE_fnc_ATO;
+    ["the roster refuses to be written over",
+        ([_afterWrite, "NOT_A_REAL_TAIL", []] call ALIVE_fnc_hashGet) isEqualTo []] call _fnc_check;
+    ["and reading it again gives the same answer as before",
+        count (_afterWrite select 1) == count (_assets select 1)] call _fnc_check;
+
     // A name that was dropped must fall through to the base class and be
     // logged, not throw. That is what keeps an old caller alive.
     private _dropped = [_logic, "scanAirspace"] call ALIVE_fnc_ATO;

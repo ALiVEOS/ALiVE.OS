@@ -106,6 +106,94 @@ _loadResult params ["_kept", "_unplaceable", "_unknown"];
 ["restored record is unattached",
     !([_fresh, "markLost", _tails select 0] call ALIVE_fnc_ATOLedger)] call _fnc_check;
 
+// --- a commander covering two factions, saved and loaded ------------------
+// The reported fault: after a load, such a commander's list of aircraft became
+// whichever faction most recently flew a sortie, so an aircraft destroyed and
+// cleaned up came back onto the books and a replacement delivered for the other
+// faction went missing. The cause named was each faction coming back as its own
+// saved record with the sortie path treating the current one as the whole list.
+//
+// Driven here as the sequence that was reported: both factions on one
+// commander, each flying in turn, one aircraft lost on each side, a replacement
+// minted for the other faction while the first was the one flying, then a save
+// and a load into a commander that knows nothing.
+private _macc = [nil, "create"] call ALIVE_fnc_ATOLedger;
+[_macc, "setInstance", ["MACC_two_factions", "BLU_F"]] call ALIVE_fnc_ATOLedger;
+
+private _bluTails = [];
+{
+    _bluTails pushBack ([_macc, "createRecord",
+        [_x, "BLU_F", ["airspace_1"], [["CAS","Strike"], ["guided"]]]] call ALIVE_fnc_ATOLedger);
+} forEach ["B_Plane_CAS_01_F", "B_Heli_Attack_01_F"];
+
+private _indTails = [];
+{
+    _indTails pushBack ([_macc, "createRecord",
+        [_x, "IND_F", ["airspace_1"], [["CAS"], ["guided"]]]] call ALIVE_fnc_ATOLedger);
+} forEach ["I_Plane_Fighter_03_CAS_F", "I_Heli_light_03_F"];
+
+["one ledger holds both factions", count (([_macc,"records"] call ALIVE_fnc_hashGet) select 1) == 4] call _fnc_check;
+["and their tails are told apart by faction",
+    ((_bluTails select 0) find "BLU_F") == 0 && {((_indTails select 0) find "IND_F") == 0}] call _fnc_check;
+
+// The first faction flies. One of its aircraft is lost and a replacement is
+// named for it, which is the aircraft logistics would deliver.
+[_macc, "markPresent", _bluTails select 0] call ALIVE_fnc_ATOLedger;
+[_macc, "markLost", _bluTails select 0] call ALIVE_fnc_ATOLedger;
+[_macc, "setReplacement", [_bluTails select 0, "pending_BLU"]] call ALIVE_fnc_ATOLedger;
+
+// The other faction flies. Under the reported fault this is the point where the
+// list switched and the first faction's changes stopped being there.
+[_macc, "markPresent", _indTails select 1] call ALIVE_fnc_ATOLedger;
+[_macc, "markLost", _indTails select 1] call ALIVE_fnc_ATOLedger;
+
+// And an aircraft added while the second faction was the one flying, which is
+// the replacement the report says goes missing.
+private _lateTail = [_macc, "createRecord",
+    ["I_Plane_Fighter_03_CAS_F", "IND_F", ["airspace_1"], [["CAS"], ["guided"]]]] call ALIVE_fnc_ATOLedger;
+
+private _maccStore = [] call ALIVE_fnc_hashCreate;
+[_macc, "save", [_maccStore, "MACC_two_factions"]] call ALIVE_fnc_ATOLedger;
+
+// One commander, one document. The fault needs a record per faction to switch
+// between, so this is the half of it that cannot happen any more.
+["both factions are saved under one key", count (_maccStore select 1) == 1] call _fnc_check;
+
+private _reloaded = [nil, "create"] call ALIVE_fnc_ATOLedger;
+([_reloaded, "load", [_maccStore, "MACC_two_factions", ""]] call ALIVE_fnc_ATOLedger) params ["_maccKept"];
+
+["a load restores every aircraft of both factions", _maccKept == 5] call _fnc_check;
+
+private _backBlu = 0;
+private _backInd = 0;
+{
+    private _f = [[_reloaded, "get", _x] call ALIVE_fnc_ATOLedger, "faction", ""] call ALIVE_fnc_hashGet;
+    if (_f isEqualTo "BLU_F") then { _backBlu = _backBlu + 1 };
+    if (_f isEqualTo "IND_F") then { _backInd = _backInd + 1 };
+} forEach (([_reloaded,"records"] call ALIVE_fnc_hashGet) select 1);
+diag_log format ["  info  after the load the commander holds %1 of one faction and %2 of the other", _backBlu, _backInd];
+["neither faction was replaced by the other", _backBlu == 2 && {_backInd == 3}] call _fnc_check;
+
+// The reported symptom itself: an aircraft destroyed and cleaned up coming back
+// onto the books, which is what lets the commander ask for it to be replaced
+// twice.
+private _wasLost = [_reloaded, "get", _bluTails select 0] call ALIVE_fnc_ATOLedger;
+["an aircraft lost before the save is still lost after the load",
+    ([_wasLost,"status",""] call ALIVE_fnc_hashGet) isEqualTo "lost"] call _fnc_check;
+["and it still has its loss counted",
+    ([_wasLost,"lossCount",0] call ALIVE_fnc_hashGet) == 1] call _fnc_check;
+["and the replacement named for it survived",
+    ([_wasLost,"replacement",""] call ALIVE_fnc_hashGet) isEqualTo "pending_BLU"] call _fnc_check;
+
+// The other reported symptom: a replacement for one faction going missing
+// because the other faction was the one flying when it arrived.
+["an aircraft added while the other faction was flying is still there",
+    count ([_reloaded, "get", _lateTail] call ALIVE_fnc_ATOLedger) > 0] call _fnc_check;
+
+private _lostOther = [_reloaded, "get", _indTails select 1] call ALIVE_fnc_ATOLedger;
+["and the second faction's own loss was not undone by the first",
+    ([_lostOther,"status",""] call ALIVE_fnc_hashGet) isEqualTo "lost"] call _fnc_check;
+
 // --- housekeeping keys must never become fields ---------------------------
 private _dirty = [] call ALIVE_fnc_hashCreate;
 private _dirtyRec = [[
