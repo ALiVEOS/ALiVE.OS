@@ -1,12 +1,9 @@
-    // CANDIDATE B: binary min-heap insert (sift-up), O(log n) - replaces the old
-    // linear scan + array insert (O(n)). The frontier is now heap-ordered (root = min),
-    // not fully sorted; priorityPull still returns the minimum. Push the new node at the
-    // tail, then walk it up while it outranks its parent (smaller priority = higher).
+    // Binary min-heap insertion: append at the tail and sift toward the root.
     private _args = _this;
     _args params ["_queue","_priority","_item", ["_costSnapshot", objNull]];
     // The cost snapshot lets internal searches recognize an older entry after a
     // better cost for the same sector has been queued. External three-argument
-    // callers receive a non-number sentinel and retain the original behavior.
+    // callers receive a non-number sentinel and skip stale-cost validation.
     private _node = [_priority, _item, _costSnapshot];
     _queue pushBack _node;
     private _i = (count _queue) - 1;

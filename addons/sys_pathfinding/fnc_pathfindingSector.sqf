@@ -16,7 +16,7 @@ private _fnc_getRoadModifier = {
     private _subRoads = [];
     private _subHasBridge = false;
     
-    // Not sure if there is a better way but, will set focus on MAIN ROADS if two comparison sectors have different types of roads.
+    // Prefer main roads when a cell contains multiple road types.
     private _subRoadModifierList = [false,false,false,false]; // basically [has main road, has road, has track, has Trail]
     {
         private _info = getRoadInfo _x;
@@ -58,15 +58,6 @@ private _fnc_getRoadModifier = {
     _subRoads pushback _subRoadModifier;
     (_subSector select 4) pushback _subRoads;
 
-    //// DEBUG MARKING
-    // if (_subHasBridge) then {
-    //     _m = createMarker [str str _sPos, _sPos];
-    //     _m setMarkerShape "ICON";
-    //     _m setMarkerType "hd_dot";
-    //     _m setMarkerSize [0.5,0.5];
-    //     _m setMarkerColor "ColorYellow";
-    //     _m setMarkerAlpha 0.6;
-    // };
 
     [_subRoadModifier,_subHasRoads,_subHasTrails,_subHasBridge];
 };
@@ -91,12 +82,8 @@ private _fnc_getHeightWaterModifier = {
             (_sPos select 0) + ((_x select 0 ) * _sOffset),
             (_sPos select 1) + ((_x select 1 ) * _sOffset)
             ];
-        // Water = terrain below the map's sea level (getTerrainInfo[4], cached at
-        // pathfinder create). Heightmap-based, so reliable during this one-time
-        // grid classification - unlike surfaceIsWater, which only sees inland pond
-        // OBJECTS once loaded in view distance and so missed distant ponds at create.
-        // Threshold at sea level (was -0.3m) catches the shore shallows that routed
-        // infantry into the water edge, while keeping flats at/above sea level walkable.
+        // Classify water from terrain height relative to sea level; this is independent
+        // of whether distant pond objects are loaded.
         if (getTerrainHeightASL _testPos < _seaLevel) then {_subHasWater = true;_subWaterModifier = _subWaterModifier + 1;} else {_subIsEntirelyWater = false;};
 
     } foreach _sPositions;
@@ -104,7 +91,7 @@ private _fnc_getHeightWaterModifier = {
     _subWaterModifier = _subWaterModifier / 8;
     _subWater pushback _subHasWater;
     _subWater pushback _subWaterModifier;
-    _subWater pushback _subHeightASL;   // CANDIDATE C2: centre height, so the water guard reads it instead of a per-step terrain lookup
+    _subWater pushback _subHeightASL;   // Cached centre height for deep-water rejection.
     (_subSector select 4) pushback _subWater;
     (_subSector select 4) pushback _subHeightASL;
     private _hasBridge = (((_subSector select 4) select 0) select 2);
@@ -122,15 +109,6 @@ private _fnc_getHeightWaterModifier = {
     };
     
 
-    //// DEBUG MARKING
-    // if (_subHasWater) then {
-    //     _m = createMarker [str _sPos, _sPos];
-    //     _m setMarkerShape "ICON";
-    //     _m setMarkerType "hd_dot";
-    //     _m setMarkerSize [0.3,0.3];
-    //     _m setMarkerColor "ColorBlue";
-    //     _m setMarkerAlpha 0.6;
-    // };
 
     [_subIsEntirelyWater, _subWaterModifier, _subHeightASL];
 
@@ -164,38 +142,6 @@ switch (_operation) do {
         private _type = "LAND";  // Can be "LAND" , "WATER", "COAST" (for coastline or rivers - basically a mix), or "BRIDGE"
         private _modifiers = [];
 
-        ///////////////// THIS SECTION REMOVED - Caused too much bloat and general performance suffered - have to do it 'on the fly'
-        /////// GET NEIGHBORS LAYER 1 ///////
-        // private _neighRelArray = [[-1,-1],[0,-1],[1,-1],[-1,0],[0,0],[1,0],[-1,1],[0,1],[1,1]];   
-        // {
-        //     // Create Neighbor Index 
-        //     private _a = (_index select 0) + (_x select 0);
-        //     private _b = (_index select 1) + (_x select 1);
-        //     private _neighIndex = [_a,_b];
-        //     private _outOfBoundsX = (_a < 0) || (_a >= _gridWidth);
-        //     private _outOfBoundsY = (_b < 0) || (_b >= _gridWidth);
-        //     if (!(_x isEqualTo [0,0]) && !_outOfBoundsX && !_outOfBoundsY) then { // skipCenter and outer boundries
-        //         _neighbors pushback _neighIndex;  
-        //     };
-        // } foreach _neighRelArray;
-        
-        /////// GET NEIGHBORS LAYER 2 ///////
-        // {
-        //     private _subSector = _x select 1;
-        //     {
-        //         // Create Neighbor Index 
-        //         private _a = ((_subSector select 0) select 0) + (_x select 0);
-        //         private _b = ((_subSector select 0) select 1) + (_x select 1);
-        //         private _subNeighIndex = [_a,_b];
-        //         private _outOfBoundsX = (_a < 0) || (_a == (_gridWidth*_inc)+1);
-        //         private _outOfBoundsY = (_b < 0) || (_b == (_gridWidth*_inc)+1);
-        //         if (!(_x isEqualTo [0,0]) && !_outOfBoundsX && !_outOfBoundsY) then { // skipCenter and outer boundries
-        //             (_subSector select 4) pushback _subNeighIndex;  
-        //         };
-        //     } foreach _neighRelArray;
-        // } foreach _subSectors;
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
         ////// ROAD ANALYSIS //////
         private _roadModifier = 0;
         private _hasRoads = false;
@@ -221,7 +167,7 @@ switch (_operation) do {
         private _isEntirelyWater = true;
 
         //// WATER - Grid Compression - use single array ref for 'Water' sectors to compress memory
-        _waterSectorArray = [[-1,-1], [-1,-1], [-1,-1], "WATER",[[false,false,false,0],[true,1,-99],-99,0]];   // water sub 3rd = centre height (CANDIDATE C2): -99 = always deep
+        _waterSectorArray = [[-1,-1], [-1,-1], [-1,-1], "WATER",[[false,false,false,0],[true,1,-99],-99,0]];   // water sub 3rd = centre height: -99 = always deep
         ////
 
         {
@@ -246,7 +192,7 @@ switch (_operation) do {
         // for compression
         if (_isEntirelyWater) exitwith { _sector = [_index,_waterSectorArray]; _result = [_sector, _subSectors]; };
  
-        private _waterModData = [_hasWater, _sumWaterModifier/_numWaterAreas, getTerrainHeightASL _posCenter];   // 3rd = sector centre height (CANDIDATE C2: water guard)
+        private _waterModData = [_hasWater, _sumWaterModifier/_numWaterAreas, getTerrainHeightASL _posCenter];   // 3rd = sector centre height
         _modifiers pushback _waterModData;
         _modifiers pushback (_sumHeightASL/(count _subsectors)); //Height Data
 

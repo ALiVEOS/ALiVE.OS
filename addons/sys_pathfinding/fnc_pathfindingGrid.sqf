@@ -22,7 +22,6 @@ switch (_operation) do {
     case "create": {
         ALiVE_pathfinding_neighborOffsets = [[-1,-1],[0,-1],[1,-1],[-1,0],[1,0],[-1,1],[0,1],[1,1]];
 
-        _start = diag_tickTime;
         _args params ["_sectorSize","_subSectorSize"];
 
         // create sector grid - layer 1
@@ -55,8 +54,6 @@ switch (_operation) do {
             ["waterEdgeCaches", createHashMap],
             ["debugMarkers", []]
         ];
-        _stop = diag_tickTime;
-        ["Pathfinding Grid Creation Time:%1",_stop-_start] call Alive_fnc_Dump;
         _result = _logic;
 
     };
@@ -183,8 +180,6 @@ switch (_operation) do {
     };
 
     case "getNeighborSectors": {
-        // CANDIDATE A/C: fold getNeighborIndices + getSector in here - one dispatch
-        // + direct hash-gets per fetch instead of ~10 dispatches.
         private _sectorIndex = _args;
         if (isNil "_sectorIndex") exitWith { _result = []; };
         // The grid topology is immutable after creation. Return the cached list
@@ -232,7 +227,6 @@ switch (_operation) do {
     };
 
     case "getNeighborSubSectors": {
-        // CANDIDATE A/C: fold getNeighborIndices + getSubSector in here.
         private _sectorIndex = _args;
         if (isNil "_sectorIndex") exitWith { _result = []; };
         // The grid topology is immutable after creation. Return the cached list
@@ -281,9 +275,7 @@ switch (_operation) do {
         _args params ["_enable"];
         private _debugMarkers = _logic get "debugMarkers";
 
-        // Enable: if not already drawn, build the coloured sector overlay and
-        // store the created marker names. (sectors is a HashMap, so forEach gives
-        // key=_x, value=_y - pass the sector value _y to the marker builder.)
+        // Draw each sector once and retain its marker names for removal.
         if (_enable) exitwith {
             if (count _debugMarkers > 0) exitWith { _result = true; };   // already drawn
             private _sectors = _logic get "sectors";
@@ -293,9 +285,7 @@ switch (_operation) do {
             _result = true;
         };
 
-        // Disable: delete every drawn marker and clear the store so a later
-        // enable will redraw (the previous version left stale names in the store,
-        // which blocked re-enabling).
+        // Clear marker names so the overlay can be enabled again.
         { deleteMarker _x } forEach _debugMarkers;
         _logic set ["debugMarkers", []];
         _result = false;

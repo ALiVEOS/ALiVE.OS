@@ -1,26 +1,9 @@
 #include "\x\alive\addons\sys_pathfinding\script_component.hpp"
 
-params ["_procedure", "_sectorTo", "_sectorFrom", "_size", "_waterEdgeCache", ["_diagnostics", createHashMap]];
+params ["_procedure", "_sectorTo", "_sectorFrom", "_size", "_waterEdgeCache"];
 
 PROFILE_SCOPE(PFTRSETUP, "ALiVE pathfinder traversal: setup and early rejection")
 
-PROFILE_SCOPE(PFTRDIAGSETUP, "ALiVE pathfinder traversal: diagnostic setup")
-
-// Optional per-request diagnostics. A maximum of eight samples bounds memory.
-private _diagnose = count _diagnostics > 0;
-private _recordTraversal = {
-    params ["_result", "_reason"];
-    _diagnostics set ["traversalChecks", (_diagnostics get "traversalChecks") + 1];
-    _diagnostics set [_reason, (_diagnostics getOrDefault [_reason, 0]) + 1];
-    if (_result == 0) then {
-        private _samples = _diagnostics get "rejectedEdges";
-        if (count _samples < 8) then {
-            _samples pushBack [_reason, +(_sectorFrom select 0), +(_sectorTo select [0,5])];
-        };
-    };
-};
-
-PROFILE_SCOPE_END(PFTRDIAGSETUP)
 PROFILE_SCOPE(PFTRCAPS, "ALiVE pathfinder traversal: capabilities and air-naval exits")
 
 private _capabilities = _procedure select 1;
@@ -31,7 +14,7 @@ private _canTraverseWater = _capabilities select 3;
 private _canTraverseAir = _capabilities select 4;
 
 // Air procedures are unrestricted. Exit before unpacking either sector.
-if (_canTraverseAir) exitWith {if (_diagnose) then {[1,"accepted_air"] call _recordTraversal}; 1};
+if (_canTraverseAir) exitWith {1};
 
 private _typeTo = _sectorTo select 3;
 
@@ -44,7 +27,6 @@ if (
     && {!_canTraverseRoads}
 ) exitWith {
     private _answer = if (_typeTo == "LAND") then {0} else {2};
-    if (_diagnose) then {[_answer, if (_answer == 0) then {"naval_land"} else {"accepted_water"}] call _recordTraversal};
     _answer
 };
 
@@ -60,7 +42,7 @@ private _centreHeightTo = _water select 2;
 if (
     _canTraverseLand
     && {_centreHeightTo < (ALiVE_pathfinding_seaLevel - ALiVE_pathfinding_waterMargin)}
-) exitWith {if (_diagnose) then {[0,"deep_water_destination"] call _recordTraversal}; 0};
+) exitWith {0};
 
 PROFILE_SCOPE_END(PFTRDEST)
 PROFILE_SCOPE(PFTRUNPACK, "ALiVE pathfinder traversal: edge context setup")
@@ -188,17 +170,5 @@ if (!_isWaterCrossing) then {
 
 PROFILE_SCOPE_END(PFTRTERRAIN)
 
-if (_diagnose) then {
-    private _reason = if (_canTraverse) then {
-        if (_isWaterCrossing) then {"accepted_water"} else {"accepted_land"}
-    } else {
-        if (_isWaterCrossing) then {
-            if (!_canTraverseWater) then {"water_capability"} else {"water_span_limit"}
-        } else {
-            if (_typeTo == "WATER") then {"water_cell"} else {"terrain_or_capability"}
-        }
-    };
-    [if (_canTraverse) then {1} else {0}, _reason] call _recordTraversal;
-};
 if (!_canTraverse) exitWith {0};
 if (_isWaterCrossing) then {2} else {1}
