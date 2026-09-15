@@ -36,6 +36,13 @@ Predicate (three conjunctive checks):
      virtualised looks "empty" to nearEntities, the predicate falsely
      passes, and HELI_INSERT routes reinforcements straight into hostile
      territory (mil_logistics #fix 2026-05-01).
+     ENEMY means hostile, not "not ours". Both halves take their sides from
+     ALiVE_fnc_getSideAllegiances, the mod's own 0.6 friendliness test and
+     what mil_OPCOM and the air commander already ask, so an allied faction
+     standing on an objective no longer makes it read as lost. Counting
+     every other side made a true answer unreachable on any mission with a
+     friendly second faction: the allies never leave, so the objective
+     stayed unheld for the rest of the mission.
 
 The 3-enemy threshold is the same value mil_logistics has used since
 2026-05-01; raising it makes the predicate stricter (treats objectives
@@ -44,7 +51,8 @@ as lost on a single enemy scout).
 Parameters:
     0: HASH   - OPCOM objective hash (the entries pushed onto `objectives`
                 by ALiVE_fnc_OPCOM `case "createobjective"`).
-    1: STRING - Friendly side text: "WEST" / "EAST" / "GUER".
+    1: STRING - Friendly side text: "WEST" / "EAST" / "GUER". Case is not
+                significant. Anything else is refused.
     2: NUMBER - Optional. Enemy-presence radius in metres. Default 300.
     3: BOOL   - Optional. Require tacom_state "reserve" (check 1). Default
                 true (strict reserve-anchor predicate). Pass false for
@@ -70,7 +78,27 @@ params [
     ["_requireReserve", true, [true]]
 ];
 
-if (isNil "_obj") exitWith { false };
+// What this replaces tested isNil, which the params block above had already
+// made impossible: a missing argument arrives as objNull, never as nil. So
+// anything that was not an objective hash reached the body and threw, in one of
+// two places depending on the mode: on (_obj select 1) below in strict mode, or
+// on the section count once hashGet had turned the non-hash away, in controlled
+// mode. Said out loud rather than refused quietly, because a silent false paints
+// an objective as not held with nothing in the log to explain it.
+if !([_obj] call ALIVE_fnc_isHash) exitWith {
+    ["ALiVE_fnc_isHeldObjective - not an objective hash: %1", _obj] call ALiVE_fnc_dump;
+    false
+};
+
+// The side is settled before anything reads it. getSideAllegiances uppercases
+// its own input, but the spawned-unit half does not, and the list subtraction
+// this used to do left "WEST" in the enemy list when handed "West", so a side's
+// own virtualised profiles were counted against it.
+_side = toUpper _side;
+if !(_side in ["WEST", "EAST", "GUER"]) exitWith {
+    ["ALiVE_fnc_isHeldObjective - %1 is not a side this can answer for", _side] call ALiVE_fnc_dump;
+    false
+};
 
 // ----- Check 1: tacom_state == "reserve" (skipped in controlled mode) --------
 // Strict (default): the objective must be an OPCOM-designated reserve anchor —
@@ -109,21 +137,31 @@ if (!_hasAliveProfiles) exitWith { false };
 // objective whose attackers are virtualised reads as empty and the predicate
 // falsely passes.
 private _objPos = [_obj, "center"] call ALIVE_fnc_hashGet;
-private _sideObj = [_side] call ALIVE_fnc_sideTextToObject;
+
+// Who is hostile, asked once and used by both halves, so the two cannot drift
+// apart. The helper answers in side TEXT, which is what getNearProfiles wants;
+// the same answer mapped to side objects is what nearEntities wants. Civilians
+// need no special case: the helper only ever reports the three combatant sides,
+// so civilian cannot appear in either list. A renegade is named separately,
+// being hostile to everyone and a member of no side.
+([_side] call ALiVE_fnc_getSideAllegiances) params [["_enemySides", [], [[]]]];
+private _enemySideObjs = _enemySides apply { [_x] call ALiVE_fnc_sideTextToObject };
 
 private _nearUnits = _objPos nearEntities [["Man","Car","Tank"], _enemyRadius];
-private _enemyNear = _nearUnits select { side _x != _sideObj && side _x != civilian };
+private _enemyNear = _nearUnits select {
+    private _s = side _x;
+    (_s in _enemySideObjs) || {_s isEqualTo sideEnemy}
+};
 
-// getNearProfiles' categorySide takes side text strings ("EAST"/"WEST"/"GUER"),
-// not side objects.
-private _enemySides = ["EAST","WEST","GUER"] - [_side];
+// An empty hostile list is the right answer on a mission where nobody else is
+// hostile, and it behaves: the side filter still engages for an empty array
+// (only "all" switches it off) and then matches nothing rather than everything.
 private _enemyProfiles = [_objPos, _enemyRadius, [_enemySides, "entity"], true] call ALIVE_fnc_getNearProfiles;
 
-// Filter out civilian-side profiles defensively in case a faction registry
-// quirk leaves a civ profile flagged with a non-friendly side.
-_enemyProfiles = _enemyProfiles select {
-    ((_x select 2 select 3) != "CIV") && {(_x select 2 select 3) != "CIVILIAN"}
-};
+// There was a filter here stripping civilian-side profiles, against a faction
+// registry leaving a civilian flagged with a non-friendly side. It cannot fire
+// any more and so has gone: the profile search now matches only sides this
+// helper named, and it names none but the three combatant ones.
 
 private _enemyTotal = (count _enemyNear) + (count _enemyProfiles);
 if (_enemyTotal >= 3) exitWith { false };

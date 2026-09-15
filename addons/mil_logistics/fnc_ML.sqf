@@ -973,15 +973,25 @@ switch(_operation) do {
                     private _priorityScore = (_cappedPriority / _priorityCap) * 50;
 
                     // Count friendly and enemy units near the objective
+                    // An allied faction counts as friendly presence, not as enemy
+                    // presence. Reading every other side as hostile did both halves
+                    // of this harm at once: three allies skipped the objective as
+                    // enemy-held, and one or two left it scoring as though nobody
+                    // were there at all, so a position an ally already holds looked
+                    // like the emptiest place to send reinforcements to.
                     private _sideObj = [_side] call ALIVE_fnc_sideTextToObject;
+                    ([_side] call ALiVE_fnc_getSideAllegiances) params [["_objEnemySides", [], [[]]], ["_objFriendlySides", [], [[]]]];
+                    private _objEnemySideObjs = _objEnemySides apply { [_x] call ALIVE_fnc_sideTextToObject };
+                    private _objFriendlySideObjs = _objFriendlySides apply { [_x] call ALIVE_fnc_sideTextToObject };
                     private _friendlyCount = 0;
                     private _enemyCount = 0;
                     private _nearUnits = _objPos nearEntities [["Man","Car","Tank"], _presenceCheckRadius];
                     {
-                        if (side _x == _sideObj) then {
+                        private _s = side _x;
+                        if ((_s isEqualTo _sideObj) || {_s in _objFriendlySideObjs}) then {
                             _friendlyCount = _friendlyCount + 1;
                         } else {
-                            if (side _x != civilian) then {
+                            if ((_s in _objEnemySideObjs) || {_s isEqualTo sideEnemy}) then {
                                 _enemyCount = _enemyCount + 1;
                             };
                         };
@@ -6452,15 +6462,24 @@ switch(_operation) do {
                                         // units AND virtual profiles instead (same two-source idiom
                                         // as ALiVE_fnc_isHeldObjective). Also covers the <=2 held
                                         // objectives path where scoring never runs.
-                                        private _sideObjDZ = [_side] call ALIVE_fnc_sideTextToObject;
+                                        // Hostile, not "not ours", the same way the held test asks
+                                        // it: an ally garrisoning the destination is no reason to
+                                        // parachute onto it. Counting every other side here undid
+                                        // the held test entirely on a mission with a friendly
+                                        // second faction, turning a landing into a combat drop
+                                        // over friendly ground and naming the allies as enemy in
+                                        // the log.
+                                        ([_side] call ALiVE_fnc_getSideAllegiances) params [["_dzEnemySides", [], [[]]]];
+                                        private _dzEnemySideObjs = _dzEnemySides apply { [_x] call ALIVE_fnc_sideTextToObject };
                                         private _dzNearUnits = _destPos nearEntities [["Man","Car","Tank"], 500];
-                                        private _dzEnemyNear = _dzNearUnits select { side _x != _sideObjDZ && side _x != civilian };
-                                        // getNearProfiles' categorySide takes side text strings ("EAST"/"WEST"/"GUER"), not side objects.
-                                        private _dzEnemySides = ["EAST","WEST","GUER"] - [_side];
-                                        private _dzEnemyProfiles = [_destPos, 500, [_dzEnemySides, "entity"], true] call ALIVE_fnc_getNearProfiles;
-                                        _dzEnemyProfiles = _dzEnemyProfiles select {
-                                            ((_x select 2 select 3) != "CIV") && {(_x select 2 select 3) != "CIVILIAN"}
+                                        private _dzEnemyNear = _dzNearUnits select {
+                                            private _s = side _x;
+                                            (_s in _dzEnemySideObjs) || {_s isEqualTo sideEnemy}
                                         };
+                                        // No civilian filter below any more: the profile search
+                                        // matches only the sides named above, and those are never
+                                        // civilian.
+                                        private _dzEnemyProfiles = [_destPos, 500, [_dzEnemySides, "entity"], true] call ALIVE_fnc_getNearProfiles;
                                         private _dzEnemyCount = (count _dzEnemyNear) + (count _dzEnemyProfiles);
 
                                         if (_scoredEnemyCount > 0 || _dzEnemyCount > 0) then {
