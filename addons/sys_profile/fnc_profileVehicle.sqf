@@ -668,7 +668,40 @@ switch (_operation) do {
             };
 
             _vehicle = createVehicle [_vehicleClass, _position, [], 0, _special];
+
             _vehicle allowDamage false;
+
+            // #1024 - a hull created over water can arrive below the surface. Profile
+            // positions are ATL, and over water ATL zero is the BED rather than the
+            // waterline, which is why profileSimulator converts a moved water position
+            // with ASLtoATL before storing it. Any position that reached here without
+            // that conversion, including the two-element results of the searches above,
+            // creates the boat on the bottom. Deep water hid it because the hull floats
+            // back up; a two metre river channel does not, and the hull stays wedged in
+            // the terrain. That is the "underwater or immobile" that was reported.
+            //
+            // Corrected AFTER creation on purpose: reading the position back off the
+            // object means this needs no assumption about how createVehicle interprets
+            // the z it was handed, which is the one thing here that could not be
+            // established from source.
+            //
+            // Only lifts a hull RESTING ON THE BOTTOM, never one merely under the
+            // surface, so a diver vehicle under way between the bed and the waterline is
+            // left alone. And it never lowers anything, so a boat carried on a deck or a
+            // trailer above the water keeps its height.
+            if (tolower _vehicleType == "ship") then {
+                private _createdASL = getPosASL _vehicle;
+                private _bed = getTerrainHeightASL _createdASL;
+                if (surfaceIsWater _createdASL
+                    && {(_createdASL select 2) < -0.5}
+                    && {((_createdASL select 2) - _bed) < 0.5}) then {
+                    _vehicle setPosASL [_createdASL select 0, _createdASL select 1, 0];
+                    if (_debug) then {
+                        ["Profile [%1] ship lifted off the bottom: was %2 ASL over bed %3, now at the waterline",
+                            _profileID, _createdASL select 2, _bed] call ALIVE_fnc_dump;
+                    };
+                };
+            };
             _vehicle setDir _direction;
             _vehicle setFuel _fuel;
             _vehicle engineOn _engineOn;

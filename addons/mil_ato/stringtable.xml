@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <Project name="Arma3">
 <Package name="ALiVE">
 <Container name="STR_DN">
@@ -96,7 +96,22 @@
     <English>Classname of a building within 50 m of this module where replacement aircrew appear, for example Land_Cargo_House_V3_F. Leave blank to pick a nearby building automatically. A classname that matches nothing within 50 m puts the crew out in the open at the module's own position, which is worse than leaving it blank.</English>
     <Spanish>Classname de un edificio situado a menos de 50 m de este módulo donde aparecerá la tripulación de reemplazo, por ejemplo Land_Cargo_House_V3_F. Déjalo en blanco para elegir automáticamente un edificio cercano. Un classname que no coincida con nada en 50 m deja a la tripulación a la intemperie en la posición del módulo, lo cual es peor que dejarlo en blanco.</Spanish>
 </Key>
-<Key ID="STR_ALIVE_ATO_RUNWAYSTARTPOS">
+<Key ID="STR_ALIVE_ATO_ESTABLISHED_INGRESS">
+            <English>All callsigns, this is %1, %2 air support is flying from grid %3. No forward airbase. Air Tasking Orders to follow. Out.</English>
+        </Key>
+        <Key ID="STR_ALIVE_ATO_INGRESSMARKER">
+            <English>Ingress Marker</English>
+        </Key>
+        <Key ID="STR_ALIVE_ATO_INGRESSMARKER_COMMENT">
+            <English>Name of a map marker to fly from when this commander has no airfield it can use. Leave blank for no fallback, which is what an existing mission does today: a commander with no airfield inside its airspace simply does not start. Name a marker and it will instead hold its aircraft at that point and fly them from there, which is how to give air support on a terrain with no airstrip. The marker may be anywhere, including out at sea or off the edge of the map. It is ignored entirely when a usable airfield or a carrier is found. Aircraft waiting at the marker cannot be seen or flown by players: they are out of sight and stopped until they launch, so put the marker somewhere nobody expects to walk up to an aircraft.</English>
+        </Key>
+        <Key ID="STR_ALIVE_ATO_VIRTUALSLOTS">
+            <English>Ingress Aircraft</English>
+        </Key>
+        <Key ID="STR_ALIVE_ATO_VIRTUALSLOTS_COMMENT">
+            <English>How many aircraft to fly from the Ingress Marker, from 1 to 12. Only used when that marker is named and this commander has no airfield. Has no effect on a commander flying from a real airfield or a carrier.</English>
+        </Key>
+        <Key ID="STR_ALIVE_ATO_RUNWAYSTARTPOS">
     <English>Runway start position:</English>
     <Chinesesimp>跑道起始位置:</Chinesesimp>
     <Spanish>Posición inicial de la pista:</Spanish>

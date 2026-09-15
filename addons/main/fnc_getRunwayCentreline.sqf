@@ -68,6 +68,29 @@ params [
     ["_radius", 1500, [0]]
 ];
 
+// ------------------------------------------------------------------------
+// Cached per terrain, per search radius, and per one-kilometre cell of the
+// search position.
+//
+// The answer depends on where it is asked from, because the survey only looks
+// within the radius: measured on Stratis, the apron answers a full centreline
+// and the map corner answers nothing. So a single answer per terrain cannot be
+// cached, and a consumer that cached one had the first position it happened to
+// ask about decide the answer for the rest of the mission.
+//
+// A per-cell answer is not an approximation of a per-terrain one. "No runway
+// within the radius of here" is the true answer for a point here, and a
+// terrain with several airfields gets each one's line in its own cells instead
+// of the first one found standing in for all of them. A negative cannot be
+// cached for a cell that contains runway either: two points in a cell are at
+// most 1414 m apart, which is inside the default radius, so a runway close
+// enough to matter to any point in the cell is found from every point in it.
+//
+// Handed out as a copy, so a caller that sorts or trims what it gets back
+// cannot corrupt what the next caller is told.
+// ------------------------------------------------------------------------
+private _fnc_derive = {
+
 // Runways only, so skip the wider survey of the airfield area.
 private _geom = [_position, _radius, false] call ALiVE_fnc_getAirfieldGeometry;
 if (isNil "_geom" || {!(_geom isEqualType [])} || {count _geom == 0}) exitWith { [] };
@@ -154,3 +177,16 @@ private _halfWidth = 12;
 } forEach _runways;
 
 [_bestA, _bestB, _halfWidth]
+
+};
+
+private _cell = format ["%1_%2_%3_%4", worldName, _radius,
+    floor ((_position select 0) / 1000), floor ((_position select 1) / 1000)];
+if (isNil "ALiVE_runwayCentrelineCache") then { ALiVE_runwayCentrelineCache = [] };
+private _known = ALiVE_runwayCentrelineCache findIf { (_x select 0) isEqualTo _cell };
+if (_known > -1) exitWith { +((ALiVE_runwayCentrelineCache select _known) select 1) };
+
+private _line = call _fnc_derive;
+if (isNil "_line" || {!(_line isEqualType [])}) then { _line = [] };
+ALiVE_runwayCentrelineCache pushBack [_cell, +_line];
+_line
