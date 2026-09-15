@@ -1462,7 +1462,18 @@ switch(_operation) do {
             private _say = [_hqName, _factionName, mapGridPosition _sayAt];
             if (!(_failed isEqualTo "") || {_assets == 0}) then {
                 if (_failed isEqualTo "") then {
-                    ["ALIVE_fnc_ATOBase - no air assets found within the airspace for %1. Requests will be refused until aircraft are available. Check this module's faction, its airspace markers, and that armed aircraft of that faction start inside them.", _faction] call ALiVE_fnc_dumpR;
+                    // Two different things to check, because a commander with no
+                    // airfield has nothing to find inside an airspace: its
+                    // aircraft are created for it at its marker, and it refuses
+                    // every one that already exists, so the only way it ends with
+                    // none is the faction having none this module can fly.
+                    private _advice = if (_isVirtual) then {
+                        "no aircraft could be held at its ingress point. Check that this module's faction has armed aircraft of its own."
+                    } else {
+                        "no air assets were found inside its airspace. Check this module's faction, its airspace markers, that armed aircraft of that faction start inside them, and Place Air Assets if this commander should add its own."
+                    };
+                    ["ALIVE_fnc_ATOBase - %1 (%2): %3 Requests will be refused until aircraft are available.",
+                        _faction, _side, _advice] call ALiVE_fnc_dumpR;
                 };
                 _key = "STR_ALIVE_ATO_NOT_ESTABLISHED";
                 _say = [_hqName, _factionName];

@@ -12,7 +12,9 @@ taken from the sea bed, so an aircraft held half a metre above the waves reads
 tens of metres up and is judged to be flying with nobody aboard.
 
 What it does NOT cover: the commander end to end. That needs a mission with no
-airfield in the airspace, which this terrain is not.
+airfield in the airspace, which this terrain is not. The last section is the
+nearest thing to it: placement is driven directly, with the base declared to
+have no airfield.
 
 Author:
 Jman
@@ -187,6 +189,43 @@ Jman
 
     { deleteVehicle _x } forEach (crew _v);
     deleteVehicle _v;
+
+    // --- the setting that cannot mean no -----------------------------------
+    // Place Air Assets is off by default, and a base with no airfield has no
+    // other source of aircraft at all: it refuses every one that already
+    // exists. So initial placement stocks it whatever that setting says. This
+    // is the guard for that carve-out, because putting the gate back reads
+    // like an obvious tidy-up to anybody who has not met this case.
+    private _ledgerV = [nil, "create"] call ALIVE_fnc_ATOLedger;
+    private _placeV = [nil, "create"] call ALIVE_fnc_ATOPlace;
+    private _asked = 2;
+    [_placeV, "configure", [
+        ["ledger", _ledgerV], ["surface", _surface],
+        ["effect", [nil, "create"] call ALIVE_fnc_ATOEffect],
+        ["side", "WEST"], ["faction", "BLU_F"], ["factions", ["BLU_F"]],
+        ["base", [[
+            ["center", _best], ["isCarrier", false], ["isVirtual", true],
+            ["virtualSlots", _asked], ["airspace", ""]
+        ]] call ALIVE_fnc_hashCreate]
+    ]] call ALIVE_fnc_ATOPlace;
+    // placeAir is deliberately NOT configured, so it keeps the create-time
+    // default of false: what a mission with the setting untouched carries.
+    private _stocked = [_placeV, "placeInitial", []] call ALIVE_fnc_ATOPlace;
+    diag_log format ["  info  placement with Place Air Assets off answered %1", _stocked];
+    ["a base with no airfield is stocked even with Place Air Assets off",
+        _stocked isEqualType [] && {count _stocked > 0}] call _fnc_check;
+    ["and it holds no more than Ingress Aircraft asked for",
+        _stocked isEqualType [] && {count _stocked <= _asked}] call _fnc_check;
+
+    if (_stocked isEqualType []) then {
+        {
+            private _h = [_placeV, "objFor", _x] call ALIVE_fnc_ATOPlace;
+            if (!isNull _h) then {
+                { deleteVehicle _x } forEach (crew _h);
+                deleteVehicle _h;
+            };
+        } forEach _stocked;
+    };
 
     if (count _fails == 0) then {
         diag_log "=== ATO Virtual base test: ALL PASS ===";

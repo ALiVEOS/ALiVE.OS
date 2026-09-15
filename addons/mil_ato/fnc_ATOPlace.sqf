@@ -1923,9 +1923,9 @@ switch(_operation) do {
     };
 
     // ---- initial placement --------------------------------------------------
-    // placeInitial() -> tails. Runs only when placing aircraft is on, the base
-    // is not a carrier, and the sweep yielded fewer than two ARMED present
-    // records. D2 helicopters on the field's pads, D3 planes one per hangar
+    // placeInitial() -> tails. Runs when the sweep yielded fewer than two ARMED
+    // present records, and when either placing aircraft is on or the base has
+    // no airfield. D2 helicopters on the field's pads, D3 planes one per hangar
     // building up to the cap, D12 one drone, each hull created directly at a
     // cascade home.
     //
@@ -1955,7 +1955,20 @@ switch(_operation) do {
         if !([_base] call ALIVE_fnc_isHash) exitWith {
             ["ALIVE_fnc_ATOPlace - placeInitial refused: no base"] call ALiVE_fnc_dump;
         };
-        if !([_logic, "placeAir", false] call ALIVE_fnc_hashGet) exitWith { _result = [] };
+        // Place Air Assets decides whether a commander is given aircraft of
+        // its own, and a base with no airfield is the one case where the answer
+        // cannot be no. Such a base refuses every aircraft that already exists,
+        // deliberately and for a measured reason (see adoptPair), so the
+        // setting left at its default does not mean "fly what is already here",
+        // it means this commander flies nothing at all for the whole mission
+        // and reports on the radio that it was never established. There is no
+        // way to ask for the other reading either: Ingress Aircraft is clamped
+        // to one or more, so nobody can ask for a marker with no aircraft. The
+        // marker being named is taken as the answer, and the override is said
+        // out loud below rather than done quietly.
+        private _virtual = [_base, "isVirtual", false] call ALIVE_fnc_hashGet;
+        private _placeAir = [_logic, "placeAir", false] call ALIVE_fnc_hashGet;
+        if (!_placeAir && {!_virtual}) exitWith { _result = [] };
 
         // The gate counts armed, crewed aircraft on the books. A drone or an
         // unarmed airframe is not what the gate is asking about.
@@ -1971,6 +1984,14 @@ switch(_operation) do {
                 && {!([_cls] call _fnc_isDroneClass)}) then { _armed = _armed + 1 };
         } forEach (_view select 1);
         if (_armed >= 2) exitWith { _result = [] };
+
+        // Said only where it changed the outcome: after the count above, so a
+        // base that already has its fleet does not announce an override that
+        // did nothing.
+        if (_virtual && {!_placeAir}) then {
+            ["ALIVE_fnc_ATOPlace - %1 has no airfield and cannot take over an aircraft that already exists, so it is given its own at its ingress point even though Place Air Assets is off. Nothing else can give this commander aircraft.",
+                _faction] call ALiVE_fnc_dumpR;
+        };
 
         private _busy = [_logic] call _fnc_passRunning;
         if !(_busy isEqualTo "") exitWith {
@@ -2017,36 +2038,47 @@ switch(_operation) do {
         private _planes = [];
         private _heliPlaced = 0;
 
-        private _virtual = [_base, "isVirtual", false] call ALIVE_fnc_hashGet;
         private _slots = [_base, "virtualSlots", 6] call ALIVE_fnc_hashGet;
         if !(_slots isEqualType 0) then { _slots = 6 };
         _slots = (round _slots) max 1;
 
         if (_virtual) then {
+            // Ingress Aircraft is how many aircraft fly from the point, not how
+            // many to add to whatever is there. A fleet that came back from a
+            // save is counted by the gate above and has to be counted here too,
+            // or a base restored with one aircraft ends up holding one more
+            // than the figure the mission maker typed.
+            private _want = (_slots - _armed) max 0;
             _helis = (([0, _faction, "Helicopter"] call ALiVE_fnc_findVehicleType) - _blacklist) select _fnc_flyable;
             _planes = (([0, _faction, "Plane"] call ALiVE_fnc_findVehicleType) - _blacklist) select _fnc_flyable;
             private _heliList = _helis;
             private _planeList = _planes;
             private _mix = [];
             if (count _planeList > 0 && {count _heliList > 0}) then {
-                for "_i" from 1 to _slots do {
+                for "_i" from 1 to _want do {
                     _mix pushBack (if (_i % 2 == 1) then { selectRandom _planeList } else { selectRandom _heliList });
                 };
             } else {
                 private _only = if (count _planeList > 0) then { _planeList } else { _heliList };
                 if (count _only > 0) then {
-                    for "_i" from 1 to _slots do { _mix pushBack (selectRandom _only) };
+                    for "_i" from 1 to _want do { _mix pushBack (selectRandom _only) };
                 };
             };
-            if (count _mix == 0) then {
+            if (_want > 0 && {count _mix == 0}) then {
                 ["ALIVE_fnc_ATOPlace - %1 has no armed aircraft this commander can fly, so its ingress point stays empty", _faction] call ALiVE_fnc_dumpR;
             };
             {
                 private _tail = [_logic, _x, _center, 0, _airspaceName] call _fnc_placeNew;
-                if !(_tail isEqualTo "") then { _tails pushBack _tail };
+                if !(_tail isEqualTo "") then {
+                    _tails pushBack _tail;
+                    // Counted here as well as on the airfield rungs, or the
+                    // summary line below reports none: it placed a plane and a
+                    // helicopter and said nought helicopters.
+                    if (_x in _helis) then { _heliPlaced = _heliPlaced + 1 };
+                };
             } forEach _mix;
             ["ALIVE_fnc_ATOPlace - %1 of the %2 aircraft asked for are held at the ingress point",
-                count _tails, _slots] call ALiVE_fnc_dump;
+                count _tails, _want] call ALiVE_fnc_dump;
         } else {
 
         // ---- D2 helicopters ------------------------------------------------
