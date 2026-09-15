@@ -719,6 +719,122 @@ switch(_operation) do {
             if !([_cluster] call ALIVE_fnc_isHash) then {
                 _failed = format ["no usable military buildings within airspace %1", _airspaces];
             };
+
+            // Say so when the field we just took sits inside ground somebody
+            // hostile has drawn for itself. REPORTED, NOT ENFORCED, and the
+            // distinction is deliberate.
+            //
+            // Ownership is not consulted above: the search is geometry, so a
+            // commander will stand its HQ, its guards and its aircraft up on an
+            // enemy-held airfield and fly from there. Two designs for refusing
+            // that were built and both were abandoned, for reasons worth
+            // keeping so nobody spends the week again.
+            //
+            // The first asked who was physically there, through
+            // getDominantFaction. It cannot work: ALiVE never garrisons AIR
+            // clusters, so the vote can only reach a neighbouring ground
+            // cluster and 122 of 640 indexed air clusters have none, the
+            // aircraft placement does put on a field are uncrewed and cast no
+            // vote at all, and the grid it reads is only filled once every
+            // placement module has finished, which would have moved the base
+            // choice behind a wait on all of them.
+            //
+            // The second asked whose TAOR covers it, which is what this reads.
+            // As a REFUSAL it fails too: a TAOR restricts placement rather than
+            // claiming ground, its own tooltip says so, and blank means the
+            // whole map and blank is the default, so the ordinary enemy that
+            // garrisons everything is invisible to it. Worse, the mission maker
+            // already has an exact control for this and it is the airspace
+            // marker above: an airfield they do not want this commander using
+            // is one they leave outside it.
+            //
+            // So the honest thing this signal can do is tell them. A line they
+            // can act on, no start-up cost, and no mission changes behaviour.
+            // Refusing properly needs the live answer after the ground
+            // commander has analysed occupation, which is the fall-forward work
+            // (#961) and is a re-base operation this module does not have.
+            if (_failed isEqualTo "" && {!_isCarrier} && {[_cluster] call ALIVE_fnc_isHash}) then {
+                private _centre = [_cluster, "center", []] call ALIVE_fnc_hashGet;
+                if (_centre isEqualType [] && {count _centre >= 2}) then {
+                    private _claims = [];
+                    {
+                        // allMissionObjects by class, which is how placement
+                        // finds its own neighbours. Not an entities "Module_F"
+                        // scan: Logic is the PARENT of Module_F, so that scan
+                        // cannot see a bare Logic and is a trap in a test.
+                        {
+                            private _m = _x;
+                            private _theirFaction = _m getVariable ["faction", ""];
+                            // Resolved the same way this module resolves its
+                            // own above, because a faction the compiler built
+                            // is stored under the compiler's name and would
+                            // otherwise fail the class test below and be
+                            // skipped in silence.
+                            if (!isNil "ALiVE_fnc_factionCompilerResolveForModule") then {
+                                private _r = [_m] call ALiVE_fnc_factionCompilerResolveForModule;
+                                if (!isNil "_r" && {_r isEqualType ""} && {!(_r isEqualTo "")}) then {
+                                    _theirFaction = _r;
+                                };
+                            };
+                            // factionSide answers EAST for a faction it does
+                            // not know, so an unresolvable one is skipped
+                            // rather than reported as hostile.
+                            if (_theirFaction isEqualType ""
+                                && {!(_theirFaction isEqualTo "")}
+                                && {isClass (_theirFaction call ALiVE_fnc_configGetFactionClass)}) then {
+                                private _theirSide = _theirFaction call ALiVE_fnc_factionSide;
+                                private _ourSideObj = [_side] call ALiVE_fnc_sideTextToObject;
+                                // The module's own hostility idiom, the same
+                                // one the observer and the tasker use.
+                                if (!(_theirSide isEqualTo civilian)
+                                    && {(_ourSideObj getFriend _theirSide) < 0.6}) then {
+                                    private _taor = [_m getVariable ["taor", ""]] call _fnc_parseAirspace;
+                                    _taor = _taor select { [_x] call ALIVE_fnc_markerExists };
+                                    // Drawn means an area, not an icon. The
+                                    // markerShape lesson from dd690cea.
+                                    private _covers = _taor findIf {
+                                        (markerShape _x) in ["ELLIPSE", "RECTANGLE"]
+                                        && {[_centre, _x] call ALiVE_fnc_inArea}
+                                    } > -1;
+                                    if (_covers) then {
+                                        // A blacklist cancels the claim, because
+                                        // placement subtracts it from the very
+                                        // clusters this mirrors.
+                                        private _black = [_m getVariable ["blacklist", ""]] call _fnc_parseAirspace;
+                                        _black = _black select { [_x] call ALIVE_fnc_markerExists };
+                                        private _excluded = _black findIf {
+                                            (markerShape _x) in ["ELLIPSE", "RECTANGLE"]
+                                            && {[_centre, _x] call ALiVE_fnc_inArea}
+                                        } > -1;
+                                        if (!_excluded) then {
+                                            _claims pushBackUnique _theirFaction;
+                                        };
+                                    };
+                                };
+                            };
+                        } forEach (allMissionObjects _x);
+                    } forEach ["ALiVE_mil_placement", "ALiVE_civ_placement"];
+
+                    if (count _claims > 0) then {
+                        // The remedy has to name something the mission maker
+                        // can actually edit. With the Airspace setting left
+                        // blank, which is the DEFAULT, this module has already
+                        // generated a hidden whole-map rectangle of its own
+                        // and named the airspace after it, so printing that
+                        // name would send them hunting for a marker they
+                        // cannot see and did not make.
+                        private _generated = [_logic, "airspaceCreated", ""] call ALIVE_fnc_hashGet;
+                        private _remedy = if (_generated isEqualType ""
+                            && {!(_generated isEqualTo "")}) then {
+                            "give this commander an Airspace Marker that leaves that airfield out, because its airspace is currently the whole map"
+                        } else {
+                            format ["leave that airfield outside airspace %1", _airspaces]
+                        };
+                        ["ALIVE_fnc_ATOBase - %1 (%2) is basing on an airfield inside ground drawn for %3. Ownership is not checked when a base is chosen, so this is allowed: if it is not wanted, %4, or name an Ingress Marker so the commander flies from a point instead.",
+                            _faction, _side, _claims, _remedy] call ALiVE_fnc_dumpR;
+                    };
+                };
+            };
         };
 
         // ---- B3a no airfield anywhere, and somewhere to fly from instead --
