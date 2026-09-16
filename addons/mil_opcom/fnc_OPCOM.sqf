@@ -823,11 +823,16 @@ switch (_operation) do {
         // If great amount of troops is requested reroute profiles if needed
         _troops = if (_size >= 5) then { _troops - _reserved } else { _troops - (_busy + _reserved) };
 
+        // Read shared search settings once per section request.
+        private _searchSide = [_logic,"side","EAST"] call ALiVE_fnc_HashGet;
+        private _pathfindingEnabled = [Alive_profileSystem,"pathfinding"] call ALiVE_fnc_hashGet;
+        private _seaProfileIDs = [_logic,"sea",[]] call ALiVE_fnc_HashGet;
+
         // Filter troops
         _radius = 2000;
         while
         {
-            private _nearProfiles = [_pos, _radius, [([_logic,"side","EAST"] call ALiVE_fnc_HashGet),"entity"]] call ALIVE_fnc_getNearProfiles;
+            private _nearProfiles = [_pos, _radius, [_searchSide,"entity"]] call ALIVE_fnc_getNearProfiles;
 
             _troopsUnsorted = [];
 
@@ -839,7 +844,6 @@ switch (_operation) do {
                     private _profileID = [_profile,"profileID",""] call ALiVE_fnc_HashGet;
                     private _commander = (count ([_profile,"vehiclesInCommandOf",[]] call ALIVE_fnc_hashGet) > 0);
                     private _busy = ([_profile,"busy",false] call ALiVE_fnc_HashGet);
-                    private _pathfindingEnabled = [Alive_profileSystem,"pathfinding"] call ALiVE_fnc_hashGet;
                     private _isSeaTravel = if (_pathfindingEnabled) then { //Use new pathfinding function instead of straight line check
                         {[Alive_pathfinder,"layer1SeaTravelCheck",[[_profile,"position",[0,0,0]] call ALiVE_fnc_HashGet,_pos]] call Alive_fnc_pathfinder;}
                     } else {
@@ -857,13 +861,14 @@ switch (_operation) do {
                         [ALIVE_aaProfileBehaviour, _profileID] call ALIVE_fnc_hashGet
                     } else { nil };
                     private _isStaticAA = !isNil "_aaBehVal" && {typeName _aaBehVal == "STRING"} && {_aaBehVal == "static"};
-                    private _valid = !_busy && {_profileID in _troops} && {!_commander || {if (_profileID in ([_logic,"sea",[]] call ALiVE_fnc_HashGet)) then {call _isSeaTravel} else {!(call _isSeaTravel)}}} && {!_isStaticAA} && {!(!isNil "ALIVE_profileStationary" && {[ALIVE_profileStationary, _profileID, false] call ALIVE_fnc_hashGet})};
+                    private _valid = !_busy && {_profileID in _troops} && {!_commander || {if (_profileID in _seaProfileIDs) then {call _isSeaTravel} else {!(call _isSeaTravel)}}} && {!_isStaticAA} && {!(!isNil "ALIVE_profileStationary" && {[ALIVE_profileStationary, _profileID, false] call ALIVE_fnc_hashGet})};
 
                     if (_valid) then {_troopsUnsorted pushBack _profile};
                 };
             } foreach _nearProfiles;
 
-            ((count _troopsUnsorted <= _size) && {_radius < 15000});
+            // Expand only while the current radius cannot fill the section.
+            ((count _troopsUnsorted < _size) && {_radius < 15000});
         } do {
             _radius = _radius + 2000;
         };

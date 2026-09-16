@@ -1,8 +1,5 @@
-    // CANDIDATE B: binary min-heap extract-min (sift-down), O(log n) - replaces the old
-    // deleteAt 0 (O(n) shift of the whole queue). Remove the root, move the tail
-    // into the root hole, then walk it down past the smaller of its two children until
-    // the heap order is restored. Return the complete heap node so internal
-    // callers can inspect its queued cost snapshot.
+    // Remove the minimum node, replace it with the tail, and sift down.
+    // Return the complete node, including its queued cost snapshot.
     private _queue = _this;
     private "_result";
     private _n = count _queue;

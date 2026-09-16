@@ -47,8 +47,7 @@ private _builtFor = [CLUSTERBUILD];
 //
 // Empty means no airfield, and every consumer short-circuits on that one
 // comparison. See ALiVE_fnc_buildAirsideCache for the shapes.
-ALiVE_airsideBounds   = [];
-ALiVE_airsideCapsules = [];
+ALiVE_airsideFields   = [];
 
 // Where the airfield search actually looked, and how far, recorded per place it looked
 // at rather than per airfield it found. Stride 3: x, y, radius searched.

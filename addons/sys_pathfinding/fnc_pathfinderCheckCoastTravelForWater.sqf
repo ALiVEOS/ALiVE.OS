@@ -20,14 +20,6 @@
             _waterDistance = _waterDistance + _stepDistance;
         };
 
-        // // _debugMarkers = _logic get "pathDebugMarkers";
-        // _m = createMarker [str str str str str str str  [(_sectorAPos select 0) + (_a*_i),(_sectorAPos select 1) + (_b*_i)], [(_sectorAPos select 0) + (_a*_i),(_sectorAPos select 1) + (_b*_i)]];
-        // // _debugMarkers pushback  str str str str str str str [(_sectorAPos select 0) + (_a*_i),(_sectorAPos select 1) + (_b*_i)];
-        // _m setMarkerShape "ICON";
-        // _m setMarkerType "hd_dot";
-        // _m setMarkerSize [0.3,0.3];
-        // _m setMarkerAlpha 0.5;
-        // _m setMarkerColor "ColorBlue";
     };
     
     [_waterTravel,_waterDistance];

@@ -26,6 +26,12 @@ class CfgFunctions {
                 RECOMPILE;
             };
 
+            class pathfinderGetFinalMovementCost {
+                description = "";
+                file = "\x\alive\addons\sys_pathfinding\fnc_pathfinderGetFinalMovementCost.sqf";
+                RECOMPILE;
+            };
+
             class pathfinderPriorityAdd {
                 description = "";
                 file = "\x\alive\addons\sys_pathfinding\fnc_pathfinderPriorityAdd.sqf";

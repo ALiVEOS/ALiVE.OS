@@ -55,7 +55,7 @@ params [
     ["_kinds", [1,3], [[]]]
 ];
 
-if (ALiVE_airsideBounds isEqualTo []) exitWith { [] };
+if (ALiVE_airsideFields isEqualTo []) exitWith { [] };
 if (count _from < 2 || {count _to < 2}) exitWith { [] };
 
 private _fx = _from select 0;  private _fy = _from select 1;
@@ -120,31 +120,30 @@ private _fnc_segSeg = {
 private _bestT = 2;
 private _hit = [];
 
-private _fieldCount = (count ALiVE_airsideBounds) / 4;
+private _fieldCount = count ALiVE_airsideFields;
 
 for "_i" from 0 to (_fieldCount - 1) do {
-    private _b = _i * 4;
-    private _cx = ALiVE_airsideBounds select _b;
-    private _cy = ALiVE_airsideBounds select (_b + 1);
-    private _br = ALiVE_airsideBounds select (_b + 2);
+    private _field = ALiVE_airsideFields select _i;
+    private _cx = (_field select 0) select 0;
+    private _cy = (_field select 0) select 1;
+    private _br = _field select 1;
 
     // Reject the whole airfield against the leg first. This is what makes the
     // function affordable to call on every leg of every route in the mission.
     private _res = [_cx, _cy, _fx, _fy, _tx, _ty] call _fnc_ptSeg;
     if ((_res select 0) <= (_br * _br)) then {
 
-        private _caps = ALiVE_airsideCapsules param [_i, []];
-        private _capCount = (count _caps) / 8;
+        private _caps = _field select 3;
 
-        for "_j" from 0 to (_capCount - 1) do {
-            private _c = _j * 8;
+        {
+            private _cap = _x;
 
-            if ((_caps select (_c + 7)) in _kinds) then {
-                private _ax = _caps select _c;
-                private _ay = _caps select (_c + 1);
-                private _bx = _caps select (_c + 2);
-                private _by = _caps select (_c + 3);
-                private _r  = _caps select (_c + 4);
+            if ((_cap select 7) in _kinds) then {
+                private _ax = _cap select 0;
+                private _ay = _cap select 1;
+                private _bx = _cap select 2;
+                private _by = _cap select 3;
+                private _r  = _cap select 4;
 
                 private _d2 = [_fx,_fy,_tx,_ty,_ax,_ay,_bx,_by] call _fnc_segSeg;
 
@@ -159,7 +158,7 @@ for "_i" from 0 to (_fieldCount - 1) do {
                     };
                 };
             };
-        };
+        } forEach _caps;
     };
 };
 

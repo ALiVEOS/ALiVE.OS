@@ -14,9 +14,11 @@ Description:
 
     WHAT IT PRODUCES
 
-    ALiVE_airsideBounds    flat, stride 4 per airfield: cx, cy, radius, radius^2
-    ALiVE_airsideCapsules  element i is a flat stride 8 array for airfield i:
-                           ax, ay, bx, by, radius, radius^2, 1/len^2, kind
+    ALiVE_airsideFields   one record per airfield:
+                           [[cx, cy], radius, radius^2, capsules]
+    capsules             array of capsule records:
+                           ax, ay, bx, by, radius, radius^2, 1/len^2, kind, rectangle
+                           rectangle: [midpoint, halfLength, heading]
 
     Kinds are 1 runway and its approach strips, 2 taxiway, 3 parking. Callers
     choose which ones apply: a garrison must not sit on a runway but may sit
@@ -44,7 +46,7 @@ Parameters:
                           mode via CBA_fnc_directCall when unscheduled work is required.
 
 Returns:
-    Nothing. Sets and broadcasts ALiVE_airsideBounds and ALiVE_airsideCapsules.
+    Nothing. Sets and broadcasts ALiVE_airsideFields.
 
 Examples:
     (begin example)
@@ -173,13 +175,11 @@ if (count _locTypes > 0) then {
 } forEach (entities "ALiVE_mil_ATO");
 
 if (count _candidates == 0) exitWith {
-    ALiVE_airsideBounds = [];
-    ALiVE_airsideCapsules = [];
+    ALiVE_airsideFields = [];
     ALiVE_airsideSurveyed = [];
     publicVariable "ALiVE_airsideSurveyed";
     publicVariable "ALiVE_airsideRegisteredBounds";
-    publicVariable "ALiVE_airsideBounds";
-    publicVariable "ALiVE_airsideCapsules";
+    publicVariable "ALiVE_airsideFields";
     // Finished, having looked at nowhere. Ready says the build is over; the empty list of
     // places searched is what stops anything treating that as "no airfields here", because
     // seeding only sees config entries, map locations and module-drawn strips, and a field
@@ -202,13 +202,20 @@ private _fnc_pushCapsule = {
     // Inverse squared length is precomputed so the query side never divides.
     // A degenerate capsule stores 0 and collapses to a disc.
     private _inv = if (_len2 > 0.0001) then { 1 / _len2 } else { 0 };
-    _arr append [_ax, _ay, _bx, _by, _r, (_r * _r), _inv, _kind];
+    // inArea uses half-width on X and half-length on Y, rotated clockwise
+    // from north. Match the exact test's degenerate-disc handling.
+    private _rectangle = if (_inv == 0) then {
+        [[_ax, _ay], 0, 0]
+    } else {
+        [[(_ax + _bx) / 2, (_ay + _by) / 2], (sqrt _len2) / 2, [_ax, _ay] getDir [_bx, _by]]
+    };
+    _arr pushBack [_ax, _ay, _bx, _by, _r, (_r * _r), _inv, _kind, _rectangle];
 };
 
 // Build one airfield and push its capsules onto the shared accumulators. Called
 // once per frame from the per-frame handler below, one airfield at a time.
 private _fnc_buildOne = {
-        params ["_centre", "_bounds", "_allCaps", "_fnc_pushCapsule"];
+        params ["_centre", "_fields", "_fnc_pushCapsule"];
         private _caps = [];
         private _gotRunway = false;
         private _nTaxi = 0;
@@ -391,11 +398,12 @@ private _fnc_buildOne = {
         // ----------------------------------------------------------------
         // Expand coverage using ALL capsule endpoints, before dedupe or truncation.
         private _registeredRadius = ALiVE_airsideSearchRadius max 1500;
-        for "_c" from 0 to ((count _caps) - 8) step 8 do {
-            private _r = _caps select (_c + 4);
-            _registeredRadius = _registeredRadius max ((_centre distance2D [_caps select _c, _caps select (_c + 1)]) + _r);
-            _registeredRadius = _registeredRadius max ((_centre distance2D [_caps select (_c + 2), _caps select (_c + 3)]) + _r);
-        };
+        {
+            private _cap = _x;
+            private _r = _cap select 4;
+            _registeredRadius = _registeredRadius max ((_centre distance2D [_cap select 0, _cap select 1]) + _r);
+            _registeredRadius = _registeredRadius max ((_centre distance2D [_cap select 2, _cap select 3]) + _r);
+        } forEach _caps;
         ALiVE_airsideRegisteredBounds pushBack [+_centre, _registeredRadius];
 
         // Trim and pack.
@@ -412,25 +420,24 @@ private _fnc_buildOne = {
         // A lookup table answers the same question in one step regardless of size.
         private _seen = createHashMap;
         private _packed = [];
-        private _capCount = (count _caps) / 8;
-        for "_j" from 0 to (_capCount - 1) do {
-            private _c = _j * 8;
+        {
+            private _cap = _x;
             private _key = format ["%1_%2_%3_%4",
-                round ((_caps select _c) / 25),
-                round ((_caps select (_c + 1)) / 25),
-                round ((_caps select (_c + 2)) / 25),
-                round ((_caps select (_c + 3)) / 25)];
+                round ((_cap select 0) / 25),
+                round ((_cap select 1) / 25),
+                round ((_cap select 2) / 25),
+                round ((_cap select 3) / 25)];
             if !(_key in _seen) then {
                 _seen set [_key, true];
-                _packed append (_caps select [_c, 8]);
+                _packed pushBack _cap;
             };
-        };
+        } forEach _caps;
 
-        private _packedCount = (count _packed) / 8;
+        private _packedCount = count _packed;
         private _truncated = 0;
         if (_packedCount > ALiVE_airsideMaxCapsules) then {
             _truncated = _packedCount - ALiVE_airsideMaxCapsules;
-            _packed resize (ALiVE_airsideMaxCapsules * 8);
+            _packed resize ALiVE_airsideMaxCapsules;
             _packedCount = ALiVE_airsideMaxCapsules;
         };
 
@@ -441,23 +448,22 @@ private _fnc_buildOne = {
             private _minX = 1e12; private _maxX = -1e12;
             private _minY = 1e12; private _maxY = -1e12;
             private _maxR = 0;
-            for "_j" from 0 to (_packedCount - 1) do {
-                private _c = _j * 8;
+            {
+                private _cap = _x;
                 {
-                    private _px = _packed select (_c + (_x * 2));
-                    private _py = _packed select (_c + (_x * 2) + 1);
+                    private _px = _cap select (_x * 2);
+                    private _py = _cap select ((_x * 2) + 1);
                     if (_px < _minX) then {_minX = _px}; if (_px > _maxX) then {_maxX = _px};
                     if (_py < _minY) then {_minY = _py}; if (_py > _maxY) then {_maxY = _py};
                 } forEach [0, 1];
-                private _r = _packed select (_c + 4);
+                private _r = _cap select 4;
                 if (_r > _maxR) then {_maxR = _r};
-            };
+            } forEach _packed;
             private _cx = (_minX + _maxX) / 2;
             private _cy = (_minY + _maxY) / 2;
             private _br = (sqrt ((((_maxX - _minX) / 2) ^ 2) + (((_maxY - _minY) / 2) ^ 2))) + _maxR + 5;
 
-            _bounds append [_cx, _cy, _br, (_br * _br)];
-            _allCaps pushBack _packed;
+            _fields pushBack [[_cx, _cy], _br, (_br * _br), _packed];
 
             // The only way a terrain-dependent gap becomes visible. Parking in
             // particular is inferred and will be empty on some maps.
@@ -473,8 +479,7 @@ private _fnc_buildOne = {
 
 // Startup can build immediately; later callers retain the per-frame path.
 // Both paths share the same geometry construction and publication code.
-private _bounds = [];
-private _allCaps = [];
+private _fields = [];
 private _sweeps = [];
 // Read once and checked here rather than inside the handler. A mission sets this from its
 // own init and nothing obliges it to hand over a number, and a throw inside the handler
@@ -484,18 +489,16 @@ private _recordRadius = if (ALiVE_airsideSearchRadius isEqualType 0) then {
     ALiVE_airsideSearchRadius max 1500
 } else { 1500 };
 private _fnc_publish = {
-    params ["_bounds", "_allCaps", "_sweeps"];
-    ALiVE_airsideBounds = _bounds;
-    ALiVE_airsideCapsules = _allCaps;
+    params ["_fields", "_sweeps"];
+    ALiVE_airsideFields = _fields;
     ALiVE_airsideSurveyed = _sweeps;
-    publicVariable "ALiVE_airsideBounds";
-    publicVariable "ALiVE_airsideCapsules";
+    publicVariable "ALiVE_airsideFields";
     publicVariable "ALiVE_airsideSurveyed";
     publicVariable "ALiVE_airsideRegisteredBounds";
     ALiVE_airsideCacheReady = true;
     publicVariable "ALiVE_airsideCacheReady";
     ALiVE_airsideCacheBuilding = nil;
-    ["ALiVE airside: cache ready, %1 airfield(s) on %2", (count _bounds) / 4, worldName] call ALiVE_fnc_dump;
+    ["ALiVE airside: cache ready, %1 airfield(s) on %2", count _fields, worldName] call ALiVE_fnc_dump;
     // The places searched, which is what the composition search reasons about and is not
     // the same as the airfields found: a field is reported at the centre of the pieces
     // kept for it, and these are the points it was looked for from. Without this a
@@ -506,20 +509,20 @@ private _fnc_publish = {
 if (_immediate) exitWith {
     {
         _sweeps append [_x select 0, _x select 1, _recordRadius];
-        [_x, _bounds, _allCaps, _fnc_pushCapsule] call _fnc_buildOne;
+        [_x, _fields, _fnc_pushCapsule] call _fnc_buildOne;
     } forEach _candidates;
-    [_bounds, _allCaps, _sweeps] call _fnc_publish;
+    [_fields, _sweeps] call _fnc_publish;
 };
 
 private _idxRef = [0];
 
 [{
     params ["_args", "_handle"];
-    _args params ["_candidates", "_idxRef", "_bounds", "_allCaps", "_fnc_buildOne", "_fnc_pushCapsule", "_sweeps", "_recordRadius", "_fnc_publish"];
+    _args params ["_candidates", "_idxRef", "_fields", "_fnc_buildOne", "_fnc_pushCapsule", "_sweeps", "_recordRadius", "_fnc_publish"];
     private _idx = _idxRef select 0;
 
     if (_idx >= count _candidates) exitWith {
-        [_bounds, _allCaps, _sweeps] call _fnc_publish;
+        [_fields, _sweeps] call _fnc_publish;
         _handle call CBA_fnc_removePerFrameHandler;
     };
 
@@ -540,5 +543,5 @@ private _idxRef = [0];
     // retrying the same place every frame, and with the record above that turned a stuck
     // candidate into a list that grew without limit.
     _idxRef set [0, _idx + 1];
-    [_cand, _bounds, _allCaps, _fnc_pushCapsule] call _fnc_buildOne;
-}, 0, [_candidates, _idxRef, _bounds, _allCaps, _fnc_buildOne, _fnc_pushCapsule, _sweeps, _recordRadius, _fnc_publish]] call CBA_fnc_addPerFrameHandler;
+    [_cand, _fields, _fnc_pushCapsule] call _fnc_buildOne;
+}, 0, [_candidates, _idxRef, _fields, _fnc_buildOne, _fnc_pushCapsule, _sweeps, _recordRadius, _fnc_publish]] call CBA_fnc_addPerFrameHandler;

@@ -22,7 +22,6 @@ switch (_operation) do {
     case "create": {
         ALiVE_pathfinding_neighborOffsets = [[-1,-1],[0,-1],[1,-1],[-1,0],[1,0],[-1,1],[0,1],[1,1]];
 
-        _start = diag_tickTime;
         _args params ["_sectorSize","_subSectorSize"];
 
         // create sector grid - layer 1
@@ -42,6 +41,9 @@ switch (_operation) do {
         _logic = createHashMapFromArray [
             ["sectors", createHashMapFromArray _sectors],
             ["subSectors", createHashMapFromArray _subSectors],
+            // Neighbor lists are built only for expanded cells, separately per layer.
+            ["sectorNeighborCache", createHashMap],
+            ["subSectorNeighborCache", createHashMap],
             ["sectorSize", _sectorSize],
             ["sectorRadius", _sectorSize/2],
             ["subSectorSize", _subSectorSize],
@@ -52,8 +54,6 @@ switch (_operation) do {
             ["waterEdgeCaches", createHashMap],
             ["debugMarkers", []]
         ];
-        _stop = diag_tickTime;
-        ["Pathfinding Grid Creation Time:%1",_stop-_start] call Alive_fnc_Dump;
         _result = _logic;
 
     };
@@ -180,10 +180,20 @@ switch (_operation) do {
     };
 
     case "getNeighborSectors": {
-        // CANDIDATE A/C: fold getNeighborIndices + getSector in here - one dispatch
-        // + direct hash-gets per fetch instead of ~10 dispatches.
         private _sectorIndex = _args;
         if (isNil "_sectorIndex") exitWith { _result = []; };
+        // The grid topology is immutable after creation. Return the cached list
+        // directly: callers iterate it without changing membership or order.
+        // Recreating the grid creates fresh caches. Clear this layer cache if
+        // future code replaces cells, changes layer size, or changes offsets.
+        private _neighborCache = _logic get "sectorNeighborCache";
+        // Also support a grid created before this function was recompiled.
+        if (isNil "_neighborCache") then {
+            _neighborCache = createHashMap;
+            _logic set ["sectorNeighborCache", _neighborCache];
+        };
+        private _cachedNeighbors = _neighborCache get _sectorIndex;
+        if (!isNil "_cachedNeighbors") exitWith { _result = _cachedNeighbors; };
         private _sectors = _logic get "sectors";
         private "_sectorSize";
         private "_sectorRadius";
@@ -212,13 +222,25 @@ switch (_operation) do {
                 _neighbors pushBack _sector;
             };
         } forEach ALiVE_pathfinding_neighborOffsets;
+        _neighborCache set [_sectorIndex, _neighbors];
         _result = _neighbors;
     };
 
     case "getNeighborSubSectors": {
-        // CANDIDATE A/C: fold getNeighborIndices + getSubSector in here.
         private _sectorIndex = _args;
         if (isNil "_sectorIndex") exitWith { _result = []; };
+        // The grid topology is immutable after creation. Return the cached list
+        // directly: callers iterate it without changing membership or order.
+        // Recreating the grid creates fresh caches. Clear this layer cache if
+        // future code replaces cells, changes layer size, or changes offsets.
+        private _neighborCache = _logic get "subSectorNeighborCache";
+        // Also support a grid created before this function was recompiled.
+        if (isNil "_neighborCache") then {
+            _neighborCache = createHashMap;
+            _logic set ["subSectorNeighborCache", _neighborCache];
+        };
+        private _cachedNeighbors = _neighborCache get _sectorIndex;
+        if (!isNil "_cachedNeighbors") exitWith { _result = _cachedNeighbors; };
         private _subSectors = _logic get "subSectors";
         private "_subSectorSize";
         private "_subSectorRadius";
@@ -245,6 +267,7 @@ switch (_operation) do {
                 _neighbors pushBack _subSector;
             };
         } forEach ALiVE_pathfinding_neighborOffsets;
+        _neighborCache set [_sectorIndex, _neighbors];
         _result = _neighbors;
     };
 
@@ -252,9 +275,7 @@ switch (_operation) do {
         _args params ["_enable"];
         private _debugMarkers = _logic get "debugMarkers";
 
-        // Enable: if not already drawn, build the coloured sector overlay and
-        // store the created marker names. (sectors is a HashMap, so forEach gives
-        // key=_x, value=_y - pass the sector value _y to the marker builder.)
+        // Draw each sector once and retain its marker names for removal.
         if (_enable) exitwith {
             if (count _debugMarkers > 0) exitWith { _result = true; };   // already drawn
             private _sectors = _logic get "sectors";
@@ -264,9 +285,7 @@ switch (_operation) do {
             _result = true;
         };
 
-        // Disable: delete every drawn marker and clear the store so a later
-        // enable will redraw (the previous version left stale names in the store,
-        // which blocked re-enabling).
+        // Clear marker names so the overlay can be enabled again.
         { deleteMarker _x } forEach _debugMarkers;
         _logic set ["debugMarkers", []];
         _result = false;

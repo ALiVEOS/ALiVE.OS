@@ -19,4 +19,6 @@
         };
     };
 
-    _result
+    // Empty queues and queues containing only stale entries have no result.
+    // Return nil without evaluating an undefined local; callers test isNil.
+    if (isNil "_result") then {nil} else {_result}
