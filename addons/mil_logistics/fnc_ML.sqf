@@ -3332,6 +3332,25 @@ switch(_operation) do {
                 // Register side with clients
                 MOD(Require) setVariable [format["ALIVE_MIL_LOG_AVAIL_%1", _moduleSide], true, true];
 
+                // Two settings that each read as sensible on their own and cancel
+                // each other out together. A Dynamic pool sizes itself from the
+                // objectives a commander is recorded as HOLDING, and an objective
+                // is only recorded as held once its reserve section has somebody
+                // standing in it, so zeroing the commander's reserve task count
+                // leaves nothing ever marked held and the pool falls to nothing:
+                // reinforcements stop and not one line anywhere says why. A
+                // mission maker hit exactly this and read the emptier battlefield
+                // as the Dynamic pool doing its job. Reading the count with a
+                // default of 1 means an unread handler says nothing rather than
+                // warning wrongly.
+                if (([_logic, "forcePoolType"] call MAINCLASS) isEqualTo "DYNAMIC") then {
+                    private _reserveCount = [_module, "sectionsamount_reserve", 1] call ALiVE_fnc_HashGet;
+                    if (_reserveCount isEqualType 0 && {_reserveCount <= 0}) then {
+                        ["ALIVE_fnc_ML - the %1 AI Commander has its reserve task count set to 0 and this module's Force Pool is Dynamic. A Dynamic pool is sized from the objectives that commander is recorded as holding, and an objective is only recorded as held once its reserve section has somebody in it, so with the count at 0 nothing is ever recorded and the pool falls to nothing. Reinforcements will stop. Put the reserve count back to 1, or choose a fixed Force Pool instead.",
+                            _moduleSide] call ALiVE_fnc_dumpR;
+                    };
+                };
+
                 _moduleFactions = [_module,"factions"] call ALiVE_fnc_HashGet;
 
                 // store side
