@@ -1490,12 +1490,30 @@ switch(_operation) do {
                 // a marker somebody drew in the editor, and this reads who is
                 // standing there.
                 if (!isNil "ALiVE_fnc_isHeldObjective") then {
-                    private _ours = [_obj, _side, 300, false] call ALiVE_fnc_isHeldObjective;
+                    // How far to look. 300 m is the shared default and it is the
+                    // right question for a parking spot, which is what the other
+                    // callers ask about. An airfield is nothing like that size:
+                    // these objectives run 500 to 700 m across, and placement
+                    // puts a garrison within 50 m of the centre while every other
+                    // group goes on a ring from half the size out to half the size
+                    // plus 500. So a 300 m disc can only ever see the garrison,
+                    // and a field held by a full enemy placement reads as ours.
+                    // Asking across the objective's own footprint is the honest
+                    // question, floored at the shared default so a small objective
+                    // still asks a sensible one. No ceiling, and that is from the
+                    // data rather than laziness: across Stratis and Altis the
+                    // military clusters run 150 to 701 m with a median of 150, so
+                    // the floor covers almost all of them unchanged and the few
+                    // that reach past it are the airfields this is here for.
+                    private _radius = 300;
+                    private _objSize = [_obj, "size", 0] call ALIVE_fnc_hashGet;
+                    if (_objSize isEqualType 0 && {_objSize > _radius}) then { _radius = _objSize };
+                    private _ours = [_obj, _side, _radius, false] call ALiVE_fnc_isHeldObjective;
                     if (_ours) then {
-                        ["ALIVE_fnc_ATOBase - %1 (%2) is based on an airfield its own side holds", _faction, _side] call ALiVE_fnc_dump;
+                        ["ALIVE_fnc_ATOBase - %1 (%2) is based on an airfield its own side holds, with no hostile force within %3 m of it", _faction, _side, round _radius] call ALiVE_fnc_dump;
                     } else {
-                        ["ALIVE_fnc_ATOBase - %1 (%2) is based on an airfield its own side does NOT hold: hostile forces are standing within 300 m of it. The commander will still fly from there, because a base is chosen before anyone knows who holds it. If that is not wanted, draw this module's Airspace Marker to leave that airfield out, or name an Ingress Marker so it flies from a point instead.",
-                            _faction, _side] call ALiVE_fnc_dumpR;
+                        ["ALIVE_fnc_ATOBase - %1 (%2) is based on an airfield its own side does NOT hold: hostile forces are standing within %3 m of it. The commander will still fly from there, because a base is chosen before anyone knows who holds it. If that is not wanted, draw this module's Airspace Marker to leave that airfield out, or name an Ingress Marker so it flies from a point instead.",
+                            _faction, _side, round _radius] call ALiVE_fnc_dumpR;
                     };
                 };
             };
