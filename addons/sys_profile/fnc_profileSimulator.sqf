@@ -129,7 +129,16 @@ if (!_simAttacks) then {
 
                     private _profilePosition = _profile select 2 select 2;
                     private _isPlayer = _profile select 2 select 30;
-                    private _combatScanPending = _profile select 2 select 39;
+                    // A profile restored from a save made before this field
+                    // existed is shorter than one created now, so reading the
+                    // field by its position throws and takes the rest of the
+                    // tick with it. Reported from a running mission as
+                    // "38 elements provided, 40 expected". Absent counts as
+                    // pending, which is what a fresh profile starts as, so an
+                    // old one gets its scan rather than quietly losing it.
+                    private _combatScanPending = if (count (_profile select 2) > 39) then {
+                        _profile select 2 select 39
+                    } else { true };
                     private _profileMoved = false;
 
                     // determine if entity occupies a vehicle
