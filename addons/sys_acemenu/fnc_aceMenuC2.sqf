@@ -26,22 +26,37 @@ Peer reviewed:
 nil
 ---------------------------------------------------------------------------- */
 
-// Define a global var with c2 items once instead of calling the function each time the menu condition is evaluated //
-// Includes the legacy ALIVE_Tablet sentinel and any classnames from the
-// optional Custom Access Items Eden attribute (free-text CSV). The condition
-// below substring-matches each entry against the player's inventory string.
-MOD(MIL_C2ISTAR_Items) = [([MOD(MIL_C2ISTAR), "c2_item"] call ALIVE_fnc_C2ISTAR), "ALIVE_Tablet"];
-private _customCsv = [MOD(MIL_C2ISTAR), "c2_item_custom"] call ALIVE_fnc_C2ISTAR;
-if (_customCsv isEqualType "" && {_customCsv != ""}) then {
-    MOD(MIL_C2ISTAR_Items) pushBack _customCsv;
-};
+// Access is asked through the shared gate, which is the same pool and the same
+// matcher the flexiMenu, the tablet, Combat Support and Player Resupply all use,
+// so none of them can disagree about whether a player may open C2ISTAR.
+//
+// What this replaces built its own list and then substring-matched each entry
+// against the player's inventory as text. Two faults came out of that. The
+// setting holds CATEGORY KEYS, so the default of LaserDesignators was compared
+// against inventory that contains Laserdesignator and never matched, and on ACE
+// the whole C2ISTAR entry then vanished, because ACE hides a parent whose
+// children all read false. And the Custom Access Items field was pushed in whole,
+// so a list of two classnames was compared as one literal string and could only
+// ever match nothing. Reported by a tester on the dev build, who had the Resupply
+// menu and no C2ISTAR menu: Resupply already went through the shared gate.
+//
+// The gate reads the settings itself when ACE evaluates it, which is also why
+// there is no list to keep: ACE runs these conditions long after the code around
+// them has gone out of scope, and a changed attribute or a picked-up item now
+// takes effect on the next menu open rather than needing a restart.
 
 // Define local menu vars //
 private _menu = "ALiVE_C2ISTAR";
 private _menupath = +GVAR(MenuRoot);
 
 // Condition code for C2 menu items //
-private _c2Cond = {({([(toLower(str((assignedItems player) + (uniformItems player) + (backpackItems player) + (vestItems player)))), toLower(_x)] call CBA_fnc_find) > -1} count MOD(MIL_C2ISTAR_Items)) > 0};
+private _c2Cond = {
+    [
+        [MOD(MIL_C2ISTAR), "c2_item"] call ALIVE_fnc_C2ISTAR,
+        [MOD(MIL_C2ISTAR), "c2_item_custom"] call ALIVE_fnc_C2ISTAR,
+        ["ALIVE_Tablet"]
+    ] call ALIVE_fnc_playerHasAccessItems
+};
 
 
 // Add "ALiVE_C2ISTAR" parent //
@@ -101,12 +116,14 @@ private _action = [
 // tester reported after the first fix.
 //
 // Self-contained on purpose. ACE evaluates this long after everything around it
-// has gone out of scope, which is the same reason the Command View condition
-// below repeats its own item check rather than borrowing _c2Cond.
+// has gone out of scope, so it asks the shared gate itself rather than borrowing
+// _c2Cond, as the Command View condition below also does.
 private _opsCond = {
-    private _hasItem = ({
-        ([(toLower(str((assignedItems player) + (uniformItems player) + (backpackItems player) + (vestItems player)))), toLower(_x)] call CBA_fnc_find) > -1
-    } count MOD(MIL_C2ISTAR_Items)) > 0;
+    private _hasItem = [
+        [MOD(MIL_C2ISTAR), "c2_item"] call ALIVE_fnc_C2ISTAR,
+        [MOD(MIL_C2ISTAR), "c2_item_custom"] call ALIVE_fnc_C2ISTAR,
+        ["ALIVE_Tablet"]
+    ] call ALIVE_fnc_playerHasAccessItems;
 
     private _joinActive = false;
     if (!isNil "ALIVE_SUP_COMMAND") then {
@@ -133,15 +150,17 @@ private _action = [
 // Command View toggle item — only surfaces when the mission-maker opted
 // in via copCommandViewEnabled AND the player carries a c2_item. The
 // in-game HUD label rendered by COPRender provides ON/OFF feedback so a
-// static menu label is sufficient. Condition inlines the c2_item check
-// rather than re-using `_c2Cond` because the latter goes out of scope
-// before ACE evaluates the condition.
+// static menu label is sufficient. Condition asks the shared gate itself
+// rather than re-using `_c2Cond`, which goes out of scope before ACE
+// evaluates the condition.
 private _cvCond = {
     (missionNamespace getVariable ["ALIVE_COP_CommandViewEnabled", false])
     && {
-        ({
-            ([(toLower(str((assignedItems player) + (uniformItems player) + (backpackItems player) + (vestItems player)))), toLower(_x)] call CBA_fnc_find) > -1
-        } count MOD(MIL_C2ISTAR_Items)) > 0
+        [
+            [MOD(MIL_C2ISTAR), "c2_item"] call ALIVE_fnc_C2ISTAR,
+            [MOD(MIL_C2ISTAR), "c2_item_custom"] call ALIVE_fnc_C2ISTAR,
+            ["ALIVE_Tablet"]
+        ] call ALIVE_fnc_playerHasAccessItems
     }
 };
 private _action = [
