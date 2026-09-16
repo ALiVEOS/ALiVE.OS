@@ -129,16 +129,59 @@ if (!_simAttacks) then {
 
                     private _profilePosition = _profile select 2 select 2;
                     private _isPlayer = _profile select 2 select 30;
-                    // A profile restored from a save made before this field
-                    // existed is shorter than one created now, so reading the
-                    // field by its position throws and takes the rest of the
-                    // tick with it. Reported from a running mission as
-                    // "38 elements provided, 40 expected". Absent counts as
-                    // pending, which is what a fresh profile starts as, so an
-                    // old one gets its scan rather than quietly losing it.
-                    private _combatScanPending = if (count (_profile select 2) > 39) then {
-                        _profile select 2 select 39
-                    } else { true };
+                    // Some profiles are SHORTER than one built today, and reading
+                    // this field by its position then runs off the end of the
+                    // array and takes the rest of the tick with it. Reported from
+                    // a running mission as "38 elements provided, 40 expected",
+                    // on a load after a scheduled dedicated restart. Absent counts
+                    // as pending, which is what a fresh profile starts as, so a
+                    // short one gets its scan rather than quietly losing it.
+                    //
+                    // WHERE THE SHORT ONE COMES FROM IS NOT KNOWN. Every path that
+                    // builds a profile goes through profileEntity init, which sets
+                    // the full list, and the persistence import rebuilds that way
+                    // too rather than registering the saved hash. A vehicle profile
+                    // is a different length again. So rather than guess, this says
+                    // what it found: the id, what it thinks it is, how long it
+                    // actually is and the last keys it carries, which together name
+                    // the missing fields and point at whatever made it. Once per
+                    // profile, so a mission with many of them says so once each.
+                    //
+                    // All of that sits inside the short branch. The cost on the
+                    // normal path is one count and one string compare.
+                    private _values = _profile select 2;
+                    // The test is the KEY at that position, not the length, because
+                    // a length check is not safe here. A hashSet of a field the array
+                    // does not carry APPENDS it, and this function writes two that a
+                    // short profile is missing: combatScanPending below, and
+                    // timeLastSim, which is not in the declared field list at all and
+                    // so gets appended to every entity profile on its first tick. A
+                    // 38-value profile therefore climbs to exactly 40 during tick one
+                    // with combatScanPending at 38 and timeLastSim at 39. From tick
+                    // two a length check waves it through, reads index 39, and gets a
+                    // number, which is where "Error ||: Type Number, expected Bool"
+                    // further down this function came from. Measured: 347 of those in
+                    // 40 seconds from one short profile, none once this reads the key.
+                    private _keys = _profile select 1;
+                    private _combatScanPending = if (count _keys > 39
+                        && {(_keys select 39) isEqualTo "combatScanPending"}) then {
+                        _values select 39
+                    } else {
+                        if (isNil "ALiVE_profileShortReported") then {
+                            ALiVE_profileShortReported = createHashMap;
+                        };
+                        private _pid = [_profile, "profileID", "(none)"] call ALiVE_fnc_hashGet;
+                        if !(_pid in ALiVE_profileShortReported) then {
+                            ALiVE_profileShortReported set [_pid, true];
+                            private _tail = [];
+                            for "_i" from ((count _keys) - 4) to ((count _keys) - 1) do {
+                                if (_i >= 0) then { _tail pushBack (_keys select _i) };
+                            };
+                            ["SYS PROFILE - profile %1 does not carry combatScanPending where it is expected: %2 values, type %3, last keys %4. Its combat scan is treated as pending. Please report this line, it names what built it.",
+                                _pid, count _values, [_profile, "type", "(none)"] call ALiVE_fnc_hashGet, _tail] call ALiVE_fnc_dump;
+                        };
+                        true
+                    };
                     private _profileMoved = false;
 
                     // determine if entity occupies a vehicle
