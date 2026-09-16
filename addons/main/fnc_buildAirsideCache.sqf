@@ -253,7 +253,49 @@ private _fnc_buildOne = {
             };
         } forEach _runways;
 
-        // Otherwise synthesise one from the ILS touchdown point and heading.
+        // Then fit a line through the runway pieces the survey found. Farthest
+        // pair wins: on a long thin cluster of concrete that pair lies along the
+        // centreline. Same approach and same 200 m minimum span as
+        // getRunwayCentreline, over the same points, so the two agree by
+        // construction rather than by being kept in step by hand.
+        //
+        // This used to sit BELOW the ILS synthesis and so never ran on any
+        // terrain that has an ILS, which is very nearly all of them. Measured on
+        // Stratis: the synthesised strip lay on a road at 1 of 13 samples and
+        // ran off the end of the field into the sea bed, while this fit answers
+        // 1080 m of concrete at 13 of 13. The synthesis is a guess about
+        // direction; this is the ground.
+        if (_rwA isEqualTo [] && {count _runways > 1}) then {
+            private _pts = [];
+            { _pts pushBack (_x select 0); _pts pushBack (_x select 1); } forEach _runways;
+            private _bestSpan = 0;
+            {
+                private _p = _x;
+                private _pi = _forEachIndex;
+                {
+                    if (_forEachIndex > _pi) then {
+                        private _d = _p distance2D _x;
+                        if (_d > _bestSpan) then { _bestSpan = _d; _rwA = _p; _rwB = _x; };
+                    };
+                } forEach _pts;
+            } forEach _pts;
+            if (_bestSpan < 200) then { _rwA = []; _rwB = []; };
+        };
+
+        // Last resort, for a field whose survey found no runway pieces at all:
+        // synthesise an axis about the ILS touchdown point. Without this such a
+        // field gets no runway capsule and nothing keeps ground movement off its
+        // strip, which is the fault this whole cache exists to prevent.
+        //
+        // Laid SYMMETRICALLY about the touchdown point rather than 1200 m in the
+        // direction ilsDirection gives. That direction was read as pointing along
+        // the runway from the threshold, and on Stratis it points off the field
+        // and out over the water, so the strip was almost entirely wrong. Which
+        // way it really points is not established, and this tier only runs where
+        // there is no concrete to measure against, so the honest shape is one
+        // that cannot be wholly wrong either way: 600 m each side of a touchdown
+        // point that sits near one end of a real runway covers that runway's near
+        // half and its overrun.
         if (_rwA isEqualTo []) then {
             private _bestCfg = configNull;
             private _bestD = 1e9;
@@ -271,37 +313,47 @@ private _fnc_buildOne = {
                 private _dir = getArray (_bestCfg >> "ilsDirection");
                 if (count _dir >= 3) then {
                     private _p = [_ils select 0, _ils select 1, 0];
-                    // ilsDirection is a vector along the approach. The touchdown
-                    // point sits near one end, so lay the axis out ahead of it.
                     private _ux = _dir select 0;
                     private _uy = _dir select 2;
                     private _ul = sqrt ((_ux * _ux) + (_uy * _uy));
                     if (_ul > 0.01) then {
-                        _rwA = _p;
-                        _rwB = [(_p select 0) + (_ux / _ul * 1200), (_p select 1) + (_uy / _ul * 1200), 0];
+                        private _sA = [(_p select 0) - (_ux / _ul * 600), (_p select 1) - (_uy / _ul * 600), 0];
+                        private _sB = [(_p select 0) + (_ux / _ul * 600), (_p select 1) + (_uy / _ul * 600), 0];
+
+                        // The guess checks itself against the ground before it
+                        // is believed. A runway, a taxiway and an apron are all
+                        // road segments, so a synthesised strip that touches no
+                        // road anywhere along its whole length is not lying on a
+                        // runway: the field has an instrument approach recorded
+                        // but no strip this can find. Measured on Altis, where
+                        // one of the six fields answers nothing on road over
+                        // 1200 m of dead ground, while the four real secondary
+                        // strips answer on road repeatedly.
+                        //
+                        // Nine samples and a threshold of zero, deliberately.
+                        // Zero is the one threshold that is a principle rather
+                        // than a number tuned on the handful of fields to hand:
+                        // it rejects only a strip with no road under it at all.
+                        private _onRoad = 0;
+                        for "_i" from 0 to 8 do {
+                            private _f = _i / 8;
+                            if (isOnRoad [
+                                (_sA select 0) + (((_sB select 0) - (_sA select 0)) * _f),
+                                (_sA select 1) + (((_sB select 1) - (_sA select 1)) * _f),
+                                0
+                            ]) then { _onRoad = _onRoad + 1 };
+                        };
+
+                        if (_onRoad > 0) then {
+                            _rwA = _sA;
+                            _rwB = _sB;
+                        } else {
+                            ["ALiVE airside: field at %1 has an approach recorded but no runway under it, so none is marked",
+                                [round (_centre select 0), round (_centre select 1)]] call ALiVE_fnc_dump;
+                        };
                     };
                 };
             };
-        };
-
-        // Last resort, fit a line through whatever runway pieces were found.
-        // Same farthest pair approach and same 200 m minimum span that
-        // getRunwayCentreline uses, duplicated here to avoid a second sweep.
-        if (_rwA isEqualTo [] && {count _runways > 1}) then {
-            private _pts = [];
-            { _pts pushBack (_x select 0); _pts pushBack (_x select 1); } forEach _runways;
-            private _bestSpan = 0;
-            {
-                private _p = _x;
-                private _pi = _forEachIndex;
-                {
-                    if (_forEachIndex > _pi) then {
-                        private _d = _p distance2D _x;
-                        if (_d > _bestSpan) then { _bestSpan = _d; _rwA = _p; _rwB = _x; };
-                    };
-                } forEach _pts;
-            } forEach _pts;
-            if (_bestSpan < 200) then { _rwA = []; _rwB = []; };
         };
 
         if !(_rwA isEqualTo []) then {
