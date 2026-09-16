@@ -1389,6 +1389,29 @@ switch(_operation) do {
                 ["ALIVE_fnc_ATOBase - the airfield objective could not be registered with AI Commander %1", _opcomID] call ALiVE_fnc_dumpR;
             } else {
                 [_logic, "objectiveId", _objId] call ALIVE_fnc_hashSet;
+
+                // Who actually holds the field, asked now that there is a real
+                // objective to ask about. This is the one moment the question
+                // can be answered: the airfield only becomes an objective here,
+                // and the ground commanders have already finished, so the
+                // profile grid this rests on is filled.
+                //
+                // Ownership is NOT consulted when the base is chosen, which
+                // happens long before any of that is knowable, so a commander
+                // can and does stand up on a field the enemy is sitting on.
+                // This does not change that. It says so, which the existing
+                // notice about drawn ground could only guess at: that one reads
+                // a marker somebody drew in the editor, and this reads who is
+                // standing there.
+                if (!isNil "ALiVE_fnc_isHeldObjective") then {
+                    private _ours = [_obj, _side, 300, false] call ALiVE_fnc_isHeldObjective;
+                    if (_ours) then {
+                        ["ALIVE_fnc_ATOBase - %1 (%2) is based on an airfield its own side holds", _faction, _side] call ALiVE_fnc_dump;
+                    } else {
+                        ["ALIVE_fnc_ATOBase - %1 (%2) is based on an airfield its own side does NOT hold: hostile forces are standing within 300 m of it. The commander will still fly from there, because a base is chosen before anyone knows who holds it. If that is not wanted, draw this module's Airspace Marker to leave that airfield out, or name an Ingress Marker so it flies from a point instead.",
+                            _faction, _side] call ALiVE_fnc_dumpR;
+                    };
+                };
             };
         };
 

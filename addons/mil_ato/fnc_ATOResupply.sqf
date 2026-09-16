@@ -102,6 +102,14 @@ switch(_operation) do {
             // because logistics never says a delivery failed.
             ["pending", [] call ALIVE_fnc_hashCreate],
 
+            // Tails held back because hostile forces are standing on the stand
+            // the replacement would go to. Session only and deliberately not
+            // persisted: it is a fact about where the enemy is right now, not
+            // about the aircraft, and a save reloaded an hour later should ask
+            // again rather than trust it. Exists only so the refusal is said
+            // once rather than on every sweep.
+            ["heldOff", [] call ALIVE_fnc_hashCreate],
+
             // Every tail ever ordered for, append only, so a mission can be
             // asked what it has replaced.
             ["ordered", []],
@@ -226,6 +234,56 @@ switch(_operation) do {
         private _rec = [_view, _pick, []] call ALIVE_fnc_hashGet;
         private _class = [_rec, "vehicleClass", ""] call ALIVE_fnc_hashGet;
         private _tries = [_rec, "lossCount", 1] call ALIVE_fnc_hashGet;
+
+        // ---- not into a position the enemy is standing on -------------------
+        // A replacement goes to the stand the last one had. Nothing asked
+        // whether that stand is still ours, so a commander whose field has been
+        // overrun did not lose its aircraft once: it rebuilt them into the
+        // enemy position every pass, for the rest of the mission, spending the
+        // logistics force pool where a Logistics Commander exists. There is no
+        // ceiling on that either, because the one that exists is only reached
+        // when a build FAILS, and these builds succeed.
+        //
+        // Asked of the stand rather than of the loss, because where the last
+        // one died says nothing about whether this one can stand here. Asked
+        // every time rather than after a count, because it costs one look at
+        // the ground on a loss and it is the whole question.
+        //
+        // Refusing leaves the record wanting a replacement, so the next sweep
+        // asks again and it resumes on its own once the field is clear. Nothing
+        // is given up and nothing needs resetting.
+        // Routed through a sentinel so the refusal below is a FUNCTION level
+        // exit. Written the obvious way, with the exit inside the block that
+        // asks the question, it would have left that block and gone straight on
+        // to order the replacement: a refusal logged and then ignored. That
+        // mistake has been made four times in this codebase already.
+        private _home = [_rec, "home", []] call ALIVE_fnc_hashGet;
+        private _heldOff = [_logic, "heldOff", []] call ALIVE_fnc_hashGet;
+        private _standIsOurs = true;
+        if (!isNil "ALiVE_fnc_isHeldObjective"
+            && {_home isEqualType []} && {count _home > 2}
+            && {(_home select 2) isEqualTo "terrain"}) then {
+            private _side = [_logic, "side", ""] call ALIVE_fnc_hashGet;
+            private _at = [[["objectiveID", format ["ATO_STAND_%1", _pick]], ["center", +(_home select 0)]]] call ALIVE_fnc_hashCreate;
+            _standIsOurs = [_at, _side, 300, false] call ALiVE_fnc_isHeldObjective;
+        };
+
+        if (!_standIsOurs) exitWith {
+            // Said once per tail, not once per sweep.
+            if (([_heldOff, _pick, 0] call ALIVE_fnc_hashGet) == 0) then {
+                [_heldOff, _pick, _now] call ALIVE_fnc_hashSet;
+                ["ALIVE_fnc_ATOResupply - not replacing %1 (%2) while hostile forces are standing on its stand. It stays on the books and is replaced once the ground around it is clear.",
+                    _pick, _class] call ALiVE_fnc_dumpR;
+            };
+            _result = "";
+        };
+
+        // Clear once the stand is ours again, so a later overrun is reported
+        // rather than swallowed by the first one.
+        if (([_heldOff, _pick, 0] call ALIVE_fnc_hashGet) > 0) then {
+            [_heldOff, _pick] call ALIVE_fnc_hashRem;
+            ["ALIVE_fnc_ATOResupply - %1's stand is clear again, replacing it", _pick] call ALiVE_fnc_dump;
+        };
 
         // ---- which route ----------------------------------------------------
         // A delivery has to have somewhere to come from and something to drive
