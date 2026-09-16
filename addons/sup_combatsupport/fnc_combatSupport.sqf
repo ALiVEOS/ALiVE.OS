@@ -287,6 +287,24 @@ switch(_operation) do {
                                         _artyArray = [_position,_class, _callsign,3,_ordnance,_code];
                                         _artyArrays pushback _artyArray;
                                     };
+                                    default {
+                                        // A vehicle synced here that is not an
+                                        // aircraft can only be artillery, and
+                                        // CS_TYPE defaults to CAS, so a gun
+                                        // synced without the variable set lands
+                                        // in this switch carrying "cas", matches
+                                        // nothing, and used to be dropped without
+                                        // a word. The mission maker sees a synced
+                                        // vehicle that never appears on the
+                                        // tablet and nothing anywhere saying why.
+                                        // Single quotes throughout. SQF escapes a
+                                        // double quote by doubling it, not with a
+                                        // backslash, and a backslash here is a
+                                        // parse error that takes the whole file
+                                        // with it. Single quotes need no escaping.
+                                        ["ALIVE_fnc_combatSupport - %1 is synced to Combat Support as a ground vehicle but its CS_TYPE is '%2', and the only value a ground vehicle can take is 'arty', so it has been ignored. Put this in its init field: this setVariable ['CS_TYPE', 'arty'];",
+                                            typeOf _entry, _type] call ALiVE_fnc_dumpR;
+                                    };
                                 };
                             };
 
