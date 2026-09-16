@@ -467,6 +467,19 @@ switch(_operation) do {
             _logic setVariable ["pr_audio", _prAudio];
         };
 
+        // The Trigger Item attributes are put on the module by the Eden expression,
+        // which runs on the server and does not broadcast. The menu gates read them
+        // off the module on the machine they run on, so on a dedicated server a
+        // client never receives them and falls back to the LaserDesignators default,
+        // quietly ignoring whatever the mission asked for. The host is the server, so
+        // the host alone gets the real value, which reads in game as "only the host
+        // can call resupply". Broadcast them, the way Combat Support already does for
+        // its own pair. (#958, which was only fixed in Combat Support)
+        if (isServer) then {
+            _logic setVariable ["pr_item", _logic getVariable ["pr_item", DEFAULT_PR_ITEM], true];
+            _logic setVariable ["pr_item_custom", _logic getVariable ["pr_item_custom", DEFAULT_PR_ITEM_CUSTOM], true];
+        };
+
         // load static data
         call ALiVE_fnc_staticDataHandler;
 

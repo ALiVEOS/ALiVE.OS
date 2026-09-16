@@ -1139,6 +1139,18 @@ if (isServer) then { publicVariable "ALiVE_c2istar_autoPlayerTasks" };
 ALiVE_c2istar_orderRepeatBlock = [_logic, "orderRepeatBlock"] call MAINCLASS;
 if (isServer) then { publicVariable "ALiVE_c2istar_orderRepeatBlock" };
 
+// The Access Item attributes are put on the module by the Eden expression, which runs
+// on the server and does not broadcast. The tablet and ACE gates read them off the
+// module on the machine they run on, so on a dedicated server a client never receives
+// them and falls back to the LaserDesignators default, quietly ignoring whatever the
+// mission asked for. The host is the server, so the host alone gets the real value,
+// which reads in game as "only the host has the tablet". Broadcast them, the way
+// Combat Support already does for its own pair. (#958, which was only fixed there)
+if (isServer) then {
+    _logic setVariable ["c2_item", _logic getVariable ["c2_item", DEFAULT_C2_ITEM], true];
+    _logic setVariable ["c2_item_custom", _logic getVariable ["c2_item_custom", DEFAULT_C2_ITEM_CUSTOM], true];
+};
+
         private _taskMinDistance = [_logic, "taskMinDistance"] call MAINCLASS;
         private _vipPanicTimeout = [_logic, "vipPanicTimeout"] call MAINCLASS;
         private _filterEnemyFactions = [_logic, "filterEnemyFactions"] call MAINCLASS;
