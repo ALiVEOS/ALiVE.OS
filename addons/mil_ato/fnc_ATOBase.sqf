@@ -1376,19 +1376,105 @@ switch(_operation) do {
         // hold a point in the air any more than they can hold a ship.
         if (_failed isEqualTo "" && {!_isCarrier} && {!_isVirtual} && {count _opcomHandlers > 0}) then {
             [_logic] call _fnc_waitUnpaused;
-            private _opcom = selectRandom _opcomHandlers;
-            private _opcomID = [_opcom, "opcomID", ""] call ALIVE_fnc_hashGet;
-            if !(_opcomID isEqualType "") then { _opcomID = "" };
-            private _objId = format ["OPCOM_%1_objective_ATO_%2", _opcomID, ceil (random 1000)];
-            // The commander id is left off when unknown, so the commander
-            // fills in its own rather than being handed an empty one.
-            private _objArgs = [_objId, +_basePos, _baseSize, "strategic", OBJECTIVE_PRIORITY, "unassigned", _clusterID];
-            if !(_opcomID isEqualTo "") then { _objArgs pushBack _opcomID };
-            private _obj = [_opcom, "addObjective", _objArgs] call ALiVE_fnc_OPCOM;
-            if (isNil "_obj" || {!(_obj isEqualType [])}) then {
+
+            // An airfield that is already an objective is reused rather than
+            // registered a second time. This runs again every session, so a
+            // persistent campaign used to put a fresh objective on the same
+            // ground each reload and hand the commander the same airfield
+            // several times over, once per session it had ever run. Every
+            // commander is searched rather than only the one picked below,
+            // because that pick is random and a later session can land on a
+            // different commander than the one holding the objective from the
+            // session before. Two questions are asked of every objective,
+            // because either one alone misses a real case: whether it carries
+            // this cluster's id, and whether it already sits on this ground.
+            // No exitWith anywhere below. Inside a forEach whose body is
+            // already nested, an exitWith leaves the block it sits in rather
+            // than the loop, so the search would carry on and the LAST match
+            // would win instead of the first. A sentinel does the same job and
+            // cannot be read the wrong way. Inside findIf, _x is the objective
+            // and shadows the handler, which is why the handler is captured
+            // first.
+            private _obj = [];
+            private _opcom = [];
+            {
+                if (_obj isEqualTo []) then {
+                    private _here = _x;
+                    private _objs = [_here, "objectives", []] call ALIVE_fnc_hashGet;
+                    if (_objs isEqualType []) then {
+                        private _found = _objs findIf {
+                            private _o = _x;
+                            private _ok = false;
+                            if (_o isEqualType [] && {!([_o, "deleted", false] call ALIVE_fnc_hashGet)}) then {
+                                private _cid = [_o, "clusterID", ""] call ALIVE_fnc_hashGet;
+                                if (!(_clusterID isEqualTo "") && {_cid isEqualType ""} && {_cid isEqualTo _clusterID}) then {
+                                    _ok = true;
+                                };
+                                // The id on its own is not enough, and this is
+                                // the case that matters. Cluster generation
+                                // MERGES the air clusters into the military
+                                // list before consolidating it, and that merged
+                                // list is what placement hands the commander as
+                                // its objectives. So an airfield inside a
+                                // placement area is ALREADY an objective, under
+                                // the military cluster's id and centre, while
+                                // the base here was chosen from the separate
+                                // pre-consolidation air copy and carries a
+                                // different id and a centre some way off. On
+                                // Stratis those two sit 249 m apart. Asking
+                                // about the ground as well as the id is what
+                                // actually catches it.
+                                if (!_ok) then {
+                                    private _c = [_o, "center", []] call ALIVE_fnc_hashGet;
+                                    if (_c isEqualType [] && {count _c > 1}) then {
+                                        private _dx = (_c select 0) - (_basePos select 0);
+                                        private _dy = (_c select 1) - (_basePos select 1);
+                                        _ok = ((_dx * _dx) + (_dy * _dy)) < (_baseSize * _baseSize);
+                                    };
+                                };
+                            };
+                            _ok
+                        };
+                        if (_found > -1) then { _obj = _objs select _found; _opcom = _here; };
+                    };
+                };
+            } forEach _opcomHandlers;
+
+            private _reused = !(_obj isEqualTo []);
+            private _opcomID = "";
+
+            if (_reused) then {
+                _opcomID = [_opcom, "opcomID", ""] call ALIVE_fnc_hashGet;
+                if !(_opcomID isEqualType "") then { _opcomID = "" };
+                ["ALIVE_fnc_ATOBase - this airfield is already an objective for AI Commander %1, so that one is reused rather than a second being registered on the same ground", _opcomID] call ALiVE_fnc_dump;
+            } else {
+                _opcom = selectRandom _opcomHandlers;
+                _opcomID = [_opcom, "opcomID", ""] call ALIVE_fnc_hashGet;
+                if !(_opcomID isEqualType "") then { _opcomID = "" };
+                private _objId = format ["OPCOM_%1_objective_ATO_%2", _opcomID, ceil (random 1000)];
+                private _objArgs = [_objId, +_basePos, _baseSize, "strategic", OBJECTIVE_PRIORITY, "unassigned", _clusterID];
+                // The last three are the commander id, whether a player asked
+                // for this objective, and where it goes in the list. The id is
+                // read the same way the commander would have read its own, so
+                // passing it changes nothing except that the two arguments
+                // after it become reachable.
+                //
+                // THE FRONT IS THE POINT. A commander takes the FIRST match in
+                // array order within a state, with no sort by priority, so an
+                // objective added to the back of a long list is one it may
+                // never reach: the airfield was registered and then ignored.
+                // This only reorders within the unassigned group. The order the
+                // states themselves are considered in is untouched.
+                _objArgs pushBack _opcomID;
+                _objArgs pushBack false;
+                _objArgs pushBack true;
+                _obj = [_opcom, "addObjective", _objArgs] call ALiVE_fnc_OPCOM;
+            };
+
+            if (isNil "_obj" || {!(_obj isEqualType [])} || {_obj isEqualTo []}) then {
                 ["ALIVE_fnc_ATOBase - the airfield objective could not be registered with AI Commander %1", _opcomID] call ALiVE_fnc_dumpR;
             } else {
-                [_logic, "objectiveId", _objId] call ALIVE_fnc_hashSet;
+                [_logic, "objectiveId", [_obj, "objectiveID", ""] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
 
                 // Who actually holds the field, asked now that there is a real
                 // objective to ask about. This is the one moment the question
