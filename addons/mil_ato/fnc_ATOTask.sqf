@@ -276,9 +276,26 @@ switch(_operation) do {
                     // aircraft the reading was finally able to see.
                     private _needsTeeth = !(_type in ["FERRY","Recce"]);
 
+                    // Patrol work is air to air and belongs to fixed wing.
+                    // Nothing used to say so: this filter asked about state,
+                    // readiness, faction, fuel, damage and ordnance, and never
+                    // about what kind of aircraft it was. An Apache was
+                    // therefore a legal choice for a Combat Air Patrol, and
+                    // with the jets unavailable it flew one, orbiting its
+                    // station at 60 m.
+                    //
+                    // CAP and DCA only. Close air support and reconnaissance
+                    // are proper helicopter jobs and are left alone.
+                    //
+                    // A commander with no fixed wing now flies no patrols
+                    // rather than sending a helicopter to do it, which is the
+                    // intended reading of the rule.
+                    private _patrol = _type in ["CAP","DCA"];
+
                     if (_fuel >= _minFuel
                         && {_damage < 0.6}
-                        && {!_needsTeeth || {_ordnance > 0}}) then {
+                        && {!_needsTeeth || {_ordnance > 0}}
+                        && {!_patrol || {_class isKindOf "Plane"}}) then {
                         _candidates pushBack [_tail, _class, _rec, _state];
                     };
                 };
