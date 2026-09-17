@@ -560,7 +560,7 @@ class FSM
                          "        //Handle TACOM confirmation by state" \n
                          "        case (""confirmed"") : {" \n
                          "            if !(_DATA_VALUE isEqualType [] && {(count _DATA_VALUE) isEqualTo 4}) exitwith {" \n
-                         "                if (_debug) then {[""OPCOM %1 ignored malformed TACOM confirmation"",_side] call ALiVE_fnc_DumpR};" \n
+                         "                if (_debug) then {[""OPCOM %1 ignored malformed TACOM confirmation: expected an array of 4, got %2 of %3"",_side,typeName _DATA_VALUE,(if (_DATA_VALUE isEqualType []) then {str (count _DATA_VALUE)} else {""n/a""})] call ALiVE_fnc_DumpR};" \n
                          "                _busy = false;" \n
                          "            };" \n
                          "            _confirmed = _DATA_VALUE select 0;" \n
@@ -576,7 +576,7 @@ class FSM
                          "                && {_confirmedAt isEqualType 0}" \n
                          "                && {(_information select 0) isEqualType []}" \n
                          "            ) exitwith {" \n
-                         "                if (_debug) then {[""OPCOM %1 ignored malformed TACOM confirmation"",_side] call ALiVE_fnc_DumpR};" \n
+                         "                if (_debug) then {[""OPCOM %1 ignored malformed TACOM confirmation: confirmed=%2 information=%3 count=%4 information0=%5 orderID=%6 %7 confirmedAt=%8"",_side,typeName _confirmed,typeName _information,(if (_information isEqualType []) then {str (count _information)} else {""n/a""}),(if (_information isEqualType [] && {(count _information) > 0}) then {typeName (_information select 0)} else {""n/a""}),typeName _orderID,str _orderID,typeName _confirmedAt] call ALiVE_fnc_DumpR};" \n
                          "                _busy = false;" \n
                          "            };" \n
                          "" \n
