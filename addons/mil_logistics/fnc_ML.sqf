@@ -5534,9 +5534,15 @@ switch(_operation) do {
                     // request being denied. One line behind the module's own debug
                     // flag makes the sum inspectable, which is what anybody
                     // diagnosing a dry pool actually needs.
+                    //
+                    // Two arguments, not three. The accessor only treats a third
+                    // argument as a default when it is objNull; anything else is a
+                    // SET. Writing [_logic, "side", "?"] here to mean "read it, or
+                    // show ? if unset" overwrote the module's side with ? instead,
+                    // which the first run of this caught.
                     if (_debug) then {
                         ["ML - Dynamic force pool for %1: %2, from %3 objective(s) held at a priority total of %4",
-                            [_logic, "side", "?"] call MAINCLASS, _forcePool, count _reserve, _priorityTotal] call ALiVE_fnc_dump;
+                            [_logic, "side"] call MAINCLASS, _forcePool, count _reserve, _priorityTotal] call ALiVE_fnc_dump;
                     };
 
                     // update the global force pool
