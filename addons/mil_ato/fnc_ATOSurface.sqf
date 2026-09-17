@@ -902,11 +902,27 @@ switch(_operation) do {
 
         // Rings and step kept as they are: this search is stricter than the
         // replacements that were tried for it, and it is the rung that works.
-        // A real pad first for anything with rotors, then apron, then field.
-        // Never "auto": that tier animates hangar doors on every candidate it
-        // looks at and takes an anti-race reservation, neither of which belongs
-        // in a parking decision. It also hands back a heading pointing at the
-        // runway, which beats facing along a taxiway.
+        // A real pad first for anything with rotors, then a hangar, then apron,
+        // then field.
+        //
+        // The hangar rung was missing from the day this function took parking
+        // over, and the search has no other way to reach it: the hangar tier is
+        // offered only to "auto" or "hangar" and the old code got there by
+        // asking for "auto". So every plane came down the rungs below it,
+        // failed the pad tier for having no rotors, found no apron, and was
+        // parked on grass by the field fallback with the hangars standing empty
+        // beside it.
+        //
+        // Still not "auto", which would reach the hangar tier but bring the
+        // whole cascade with it and hand back its own choice of rung. Named
+        // instead, so the order here stays the order that runs.
+        //
+        // It does animate the doors of hangars it inspects and then rejects, so
+        // a hangar can be left open with nothing in it. Cosmetic, and the
+        // alternative is aircraft on the grass. The anti-race reservation the
+        // old comment here also objected to is not the hangar tier's doing: it
+        // is taken on any successful find (fnc_findAirSpawnPosition.sqf:1198),
+        // so the apron and field rungs have always taken one too.
         //
         // The pad rung matters for more than tidiness. The engine puts a
         // helicopter down on a pad whether or not that is where it was sent, so
@@ -917,9 +933,10 @@ switch(_operation) do {
         // these rungs are selected by name (fnc_findAirSpawnPosition.sqf:844):
         // the airfield the aircraft kept landing on was never on offer.
         //
-        // No class test needed here. That tier gates itself on rotary and
-        // refuses drones by design, so a plane or a UAV gets [] back and falls
-        // through to apron at the cost of one call.
+        // No class test needed on either of the first two rungs. The pad tier
+        // gates itself on rotary and refuses drones, and the hangar tier takes
+        // manned planes only, so each hands back [] for anything it does not
+        // want and the next rung gets it, at the cost of one call.
         // Does getting there mean crossing the runway.
         //
         // The search has no idea which side of the field the commander is on,
@@ -976,7 +993,7 @@ switch(_operation) do {
                         };
                     };
                 };
-            } forEach ["helipad", "apron", "field"];
+            } forEach ["helipad", "hangar", "apron", "field"];
             if (count _air < 2 && {count _fallback >= 2}) then {
                 ["ALIVE_fnc_ATOSurface - every stand found for %1 is across the runway; taking the nearest one anyway",
                     _class] call ALiVE_fnc_dump;

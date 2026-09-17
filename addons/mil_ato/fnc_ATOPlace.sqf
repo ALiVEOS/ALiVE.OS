@@ -360,6 +360,46 @@ private _fnc_homeFor = {
                 (_dir - (getDir _ship)) mod 360];
         };
     };
+    // A hangar beats a spot that is merely acceptable.
+    //
+    // Before the rewrite, a profile that was not yet live always got a search,
+    // and it asked for "auto", which reaches the hangar tier. So every manned
+    // plane was offered a hangar whether or not the ground it was standing on
+    // would have done. Validating first and searching only on failure undid
+    // that quietly: open flat concrete passes validate perfectly well, so the
+    // planes stayed where they were put and the hangars stood empty beside
+    // them.
+    //
+    // Only the hangar rung is asked for, not the whole cascade. Apron and field
+    // would move aircraft that are already somewhere sensible, and that is not
+    // what was missing.
+    //
+    // Fresh placements only. A live hull is left where it stands, which is what
+    // stopped aircraft visibly teleporting, and the old code gated on the same
+    // thing.
+    //
+    // The answer is deliberately NOT put through validate. That check ends in
+    // spotIsClear, and a hangar reports itself as an obstacle, so it could
+    // refuse the bay it had just been given. The hangar tier does that work
+    // itself: it turns down a bay with a vehicle or a wreck in it, turns down
+    // one whose doors will not open, and takes a reservation so two aircraft
+    // are never sent to the same bay. Answers from the cascade below are used
+    // unvalidated for the same reason.
+    private _bayHome = [];
+    if (isNull _ownObj
+        && {_kind isEqualTo "terrain"}
+        && {_class isKindOf "Plane"}
+        && {getNumber (configFile >> "CfgVehicles" >> _class >> "isUav") == 0}
+    ) then {
+        private _bay = [_class, _flat, 400, "hangar"] call ALiVE_fnc_findAirSpawnPosition;
+        if (count _bay >= 2) then {
+            private _bp = _bay select 0;
+            // z dropped, as every other home on terrain is stored flat
+            _bayHome = [[_bp select 0, _bp select 1, 0], _bay select 1, "terrain"];
+        };
+    };
+    if (count _bayHome > 0) exitWith { _bayHome };
+
     private _ok = ([_surface, "validate", [_cand, _class, _ownObj]] call ALIVE_fnc_ATOSurface) param [0, false];
     if (_ok) exitWith { _cand };
     [_surface, "cascade", [_kind, _class, _flat, []]] call ALIVE_fnc_ATOSurface
