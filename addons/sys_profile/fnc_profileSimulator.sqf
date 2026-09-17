@@ -115,8 +115,18 @@ if (!_simAttacks) then {
                 ([_profile, ["locked","combat","timeLastSim"]] call ALiVE_fnc_hashGetMany) params [
                     ["_locked", false],
                     ["_combat", false],
-                    ["_timeLastSim", _simulationTime - 0.001]
+                    ["_timeLastSim", -1]
                 ];
+
+                // -1 is a profile that has never been simulated: either freshly
+                // created, or out of a save written before the field was declared.
+                // Anything that is not a sane number lands here too, deliberately.
+                // Its first step has to be worth almost nothing rather than the whole
+                // elapsed mission, because the difference below drives how far a
+                // profile moves and how much damage it takes.
+                if (!(_timeLastSim isEqualType 0) || {_timeLastSim < 0}) then {
+                    _timeLastSim = _simulationTime - 0.001;
+                };
 
                 // only sim if profile is not locked or in combat
                 // locked entities could be spawning/despawning or other

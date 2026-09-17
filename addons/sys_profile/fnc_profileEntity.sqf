@@ -199,7 +199,20 @@ switch(_operation) do {
                 ["aiBehaviour", "SAFE"],                                             // select 2 select 36
                 ["onEachSpawn", ""],                                                 // select 2 select 37
                 ["onEachSpawnOnce", true],                                           // select 2 select 38
-                ["combatScanPending", true]                                          // select 2 select 39
+                ["combatScanPending", true],                                         // select 2 select 39
+                // The simulator writes this on every tick. It was missing from this
+                // list, so the first write APPENDED it and every entity profile ran
+                // 41 values long while the list here said 40. Nothing read past 39 so
+                // nothing broke, but the declared layout was untrue and the next field
+                // added at 40 would have landed on top of it.
+                //
+                // -1 means never simulated, and it has to be a sentinel rather than a
+                // real time: init runs before the simulator, so ALiVE_simulationTime
+                // may not exist yet. It must not be 0 either. The reader turns this
+                // into the seconds elapsed since the last tick, which drives move
+                // distance and combat damage, so a profile created ten minutes into a
+                // mission would take a single step worth ten minutes.
+                ["timeLastSim", -1]                                                  // select 2 select 40
             ]] call ALiVE_fnc_hashSetMany;
         };
     };
