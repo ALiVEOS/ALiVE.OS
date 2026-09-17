@@ -102,6 +102,33 @@ if(_createMode == "IGNORE") then {
     _vehicles = _vehicles - _createModeVehicles;
 };
 
+// Anything already marked to be left alone is left alone, whichever mode this is.
+// ALIVE_profileIgnore is honoured by every virtualisation pass that runs DURING a
+// mission, and it was the one thing this pass ignored: it only ever subtracted
+// what was synced to the module, so a group a mission marked for itself got
+// taken anyway. The marker works everywhere except at the one moment a mission
+// maker would reach for it.
+//
+// A mission's init.sqf has run by the time this does. The static analysis loader
+// called a few lines earlier in profileSystem distinguishes a "mission" data
+// source precisely because init.sqf can have populated the variable before it,
+// so anything set there is visible here.
+private _markedGroups = _groups select {
+    !isNull _x && {_x getVariable ["ALIVE_profileIgnore", false]}
+};
+if (count _markedGroups > 0) then {
+    _groups = _groups - _markedGroups;
+    ["ALIVE_fnc_createProfilesFromUnits - %1 group(s) carry ALIVE_profileIgnore and have been left as live AI", count _markedGroups] call ALiVE_fnc_dump;
+};
+
+private _markedVehicles = _vehicles select {
+    !isNull _x && {_x getVariable ["ALIVE_profileIgnore", false]}
+};
+if (count _markedVehicles > 0) then {
+    _vehicles = _vehicles - _markedVehicles;
+    ["ALIVE_fnc_createProfilesFromUnits - %1 vehicle(s) carry ALIVE_profileIgnore and have been left as live AI", count _markedVehicles] call ALiVE_fnc_dump;
+};
+
 //["Create Mode Groups: %1",_groups] call ALIVE_fnc_dump;
 //["Create Mode Vehicles: %1",_vehicles] call ALIVE_fnc_dump;
 
