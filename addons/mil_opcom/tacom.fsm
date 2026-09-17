@@ -103,7 +103,7 @@ class FSM
                          "_busy = false;" \n
                          "_exitFSM = false;" \n
                          "_TAC_confirmed = false;" \n
-                         "_orderID = -1;" \n
+                         "_orderID = -1; _orderDeadline = -1;" \n
                          "_manualOrder = false;" \n
                          "_objectiveDeleted = false;" \n
                          "" \n
@@ -248,8 +248,8 @@ class FSM
                          "if (count _TACOM_QUEUE > 0) then {" \n
                          "    _TACOM_ACTION = _TACOM_QUEUE deleteat 0;" \n
                          "};" \n
-                         "_orderID = -1;" \n
-                         "_orderDeadline = -1;" \n
+                         "if !(isnil ""_TACOM_ACTION"") then {_orderID = -1};" \n
+                         "if !(isnil ""_TACOM_ACTION"") then {_orderDeadline = -1};" \n
                          "" \n
                          "_timeout = ((isnil ""_TACOM_ACTION"") && {(time - _lastAnalyze) >= 15});" \n
                          "if (_timeout) then {_TACOM_ACTION = [""analyze_internal"",nil]};" \n
@@ -368,7 +368,7 @@ class FSM
                          "                if (_debug) then {[""TACOM %1 ignored malformed correlated order"",_side] call ALiVE_fnc_DumpR};" \n
                          "                _busy = false;" \n
                          "            };" \n
-                         "            _DATA_VALUE params [""_orderID"",""_opcom_orders"",""_objective"",""_orderDeadline""];" \n
+                         "            _orderID = _DATA_VALUE select 0; _opcom_orders = _DATA_VALUE select 1; _objective = _DATA_VALUE select 2; _orderDeadline = _DATA_VALUE select 3;" \n
                          "            if !(" \n
                          "                _orderID isEqualType 0" \n
                          "                && {_orderID > 0}" \n
