@@ -34,6 +34,41 @@ private _claimCounts = _claimState select 2;
 private _profilesById = [MOD(profileHandler),"profilesById"] call ALiVE_fnc_hashGet;
 
 ///////////////////////////////////////
+//     Report Discarded Profiles
+///////////////////////////////////////
+
+// A group that reaches the front of the spawn queue while the Active Limiter is
+// full is thrown away rather than held back, which used to happen in silence.
+// Anyone tuning placement density had no way to tell a group that was discarded
+// from one that simply never came.
+//
+// Said here rather than where it happens, because this function is entered every
+// frame whether or not anything was discarded, and the discard branch is not: it
+// fires in a burst and then stops. Waiting a couple of seconds lets the burst
+// finish so the count is the real one, and ten seconds between reports keeps
+// sustained pressure readable instead of filling the log with itself.
+private _discardedPending = _coordinator getOrDefault ["limiterDiscarded",0];
+
+if (_discardedPending > 0) then {
+    private _firstDiscard = _coordinator getOrDefault ["limiterFirstDiscard",time];
+    private _lastReport = _coordinator getOrDefault ["limiterLastReport",-100000];
+
+    if (time - _firstDiscard >= 2 && {time - _lastReport >= 10}) then {
+        // The limit and the count, not how many are active right now. This runs a
+        // couple of seconds after the fact, by which time the active count may
+        // have fallen back under the limit, and a line that says "full" beside a
+        // number below the limit reads like a fault in the message itself.
+        private _limit = [MOD(profileSystem),"activeLimiter"] call ALiVE_fnc_profileSystem;
+
+        ["ALIVE_fnc_profileSpawner - the Active Limiter filled up at %1 group(s), so %2 group(s) that were due to spawn have been thrown away. They are gone rather than delayed, and they will not come back. Raise the Active Limiter on the Virtual AI System module, or place fewer groups so fewer of them try to spawn at once.",
+            _limit, _discardedPending] call ALiVE_fnc_dump;
+
+        _coordinator set ["limiterDiscarded",0];
+        _coordinator set ["limiterLastReport",time];
+    };
+};
+
+///////////////////////////////////////
 //          Despawn Profiles
 ///////////////////////////////////////
 
@@ -197,6 +232,23 @@ if (
                 } forEach (_profileData select 8);
 
                 [MOD(profileHandler),"unregisterProfile",_profile] call ALiVE_fnc_profileHandler;
+
+                // That group has just been thrown away, along with any vehicle it
+                // was commanding. It is not held back for later: the spawn queue is
+                // refilled from the profile handler, and it is no longer in there.
+                //
+                // Only counted here. Saying it here instead would undercount badly,
+                // because this branch leaves lastSpawnTime alone and so runs again
+                // on the very next frame: a queue of twelve goes in a fifth of a
+                // second, and the line would name the first one and swallow the
+                // other eleven. The count is reported at the top of this function.
+                private _discarded = _coordinator getOrDefault ["limiterDiscarded",0];
+
+                if (_discarded isEqualTo 0) then {
+                    _coordinator set ["limiterFirstDiscard",time];
+                };
+
+                _coordinator set ["limiterDiscarded",_discarded + 1];
             };
         };
     };
