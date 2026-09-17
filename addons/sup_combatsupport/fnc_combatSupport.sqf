@@ -297,13 +297,27 @@ switch(_operation) do {
                                         // a word. The mission maker sees a synced
                                         // vehicle that never appears on the
                                         // tablet and nothing anywhere saying why.
+                                        //
+                                        // A SUPPORT SUB-MODULE IS NOT THAT CASE and
+                                        // must stay silent. The switch below this one
+                                        // picks up ALiVE_sup_cas, ALiVE_sup_transport
+                                        // and ALiVE_sup_artillery by their own type;
+                                        // they only reach HERE because `vehicle` on a
+                                        // module logic returns the logic itself, which
+                                        // is not air, so they fall through this switch
+                                        // by design. Warning about them announced that
+                                        // something had been ignored while it carried
+                                        // on working, which is what a tester reported
+                                        // the day this warning shipped.
                                         // Single quotes throughout. SQF escapes a
                                         // double quote by doubling it, not with a
                                         // backslash, and a backslash here is a
                                         // parse error that takes the whole file
                                         // with it. Single quotes need no escaping.
-                                        ["ALIVE_fnc_combatSupport - %1 is synced to Combat Support as a ground vehicle but its CS_TYPE is '%2', and the only value a ground vehicle can take is 'arty', so it has been ignored. Put this in its init field: this setVariable ['CS_TYPE', 'arty'];",
-                                            typeOf _entry, _type] call ALiVE_fnc_dumpR;
+                                        if !(_entry isKindOf "Logic") then {
+                                            ["ALIVE_fnc_combatSupport - %1 is synced to Combat Support as a ground vehicle but its CS_TYPE is '%2', and the only value a ground vehicle can take is 'arty', so it has been ignored. Put this in its init field: this setVariable ['CS_TYPE', 'arty'];",
+                                                typeOf _entry, _type] call ALiVE_fnc_dumpR;
+                                        };
                                     };
                                 };
                             };
