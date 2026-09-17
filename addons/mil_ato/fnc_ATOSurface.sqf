@@ -1093,7 +1093,10 @@ switch(_operation) do {
         // _ignore is the airframe that already lives here, and its crew. Without
         // it a home fails its own re-check the moment its aircraft is parked on
         // it, because the aircraft is an Air object inside the footprint.
-        _args params [["_p",[0,0,0],[[]]], ["_span",12,[0]], ["_ignore",[],[[]]]];
+        // The class is optional and only the shelter test uses it. Without it a
+        // hangar is an obstruction as it always was, which is what the deck
+        // callers want: there are no hangars on a ship.
+        _args params [["_p",[0,0,0],[[]]], ["_span",12,[0]], ["_ignore",[],[[]]], ["_class","",[""]]];
 
         // Kinds are 1 runway, 2 taxiway, 3 parking (fnc_isAirside.sqf:40-41).
         // This asked for all three, so it refused the airfield's own parking
@@ -1122,15 +1125,32 @@ switch(_operation) do {
         // spot is a real obstruction and still refuses it, which is why this
         // measures the bounding box in the building's own axes rather than
         // taking whatever happens to be nearest.
+        // AND the aircraft has to fit in it. The first version of this asked only
+        // whether the point was inside a hangar, which told a V-44 at 38 m across
+        // that a spot in a 21 m tent hangar was fine. The fit below is the same
+        // one the hangar search applies before it ever awards a bay: longest
+        // against longest, shortest against shortest, and the roof against the
+        // tail. Without it this excuses hangars the aircraft could never use.
         private _shelter = [];
-        if (!isNil "ALIVE_airBuildingTypes") then {
+        if (!isNil "ALIVE_airBuildingTypes" && {!(_class isEqualTo "")}) then {
+            ([_class] call ALiVE_fnc_getVehicleBoundingBox) params [["_vLen", 0], ["_vWid", 0], ["_vHt", 0]];
+            private _vLong  = _vLen max _vWid;
+            private _vShort = _vLen min _vWid;
             {
-                (boundingBoxReal _x) params ["_bmin", "_bmax"];
-                private _m = _x worldToModel _p;
+                private _hh = _x;
+                (boundingBoxReal _hh) params ["_bmin", "_bmax"];
+                private _m = _hh worldToModel _p;
                 if ((_m select 0) > (_bmin select 0) && {(_m select 0) < (_bmax select 0)}
                     && {(_m select 1) > (_bmin select 1)} && {(_m select 1) < (_bmax select 1)}
                 ) then {
-                    _shelter pushBack _x;
+                    private _hd = _hh call BIS_fnc_boundingBoxDimensions;
+                    private _hLong  = (_hd select 0) max (_hd select 1);
+                    private _hShort = (_hd select 0) min (_hd select 1);
+                    private _tooLow = (count _hd >= 3)
+                        && {(_hd select 2) > 0 && {(_hd select 2) < _vHt}};
+                    if (_hLong >= _vLong && {_hShort >= _vShort} && {!_tooLow}) then {
+                        _shelter pushBack _hh;
+                    };
                 };
             } forEach ((nearestObjects [_p, ["House","Building"], _span]) select {
                 private _t = toLower (typeOf _x);
@@ -1342,13 +1362,28 @@ switch(_operation) do {
         // home, occupied means wait, or move whatever is in the way.
         // The candidate is held in its own name: the findIf below rebinds _x,
         // so comparing against _x inside it would compare a thing with itself.
+        // A WRECK counts, which it used to not. This filter asked for alive, so a
+        // wrecked hull was invisible here and the spot fell through to the
+        // geometry test below, whose Air sweep does not ask about alive and so
+        // refused it. The caller then read "geometry" and evicted the aircraft
+        // from its own home, when the comment above says exactly what should
+        // have happened: something is in the way, so wait for it to be moved.
+        // fnc_ATOPlace's clearWreck is the thing that moves it, once no player
+        // is within 300 m of it.
+        //
+        // Still alive-only for a Man. A body is not something the wreck clearer
+        // will take away, and nothing in this file has ever refused a spot for
+        // one, so counting them here would strand aircraft over corpses.
         private _intruders = (nearestObjects [_pos, ["Air","LandVehicle","Man"], _span]) select {
             private _cand = _x;
-            alive _cand && {(_own findIf {_x isEqualTo _cand}) == -1}
+            (_own findIf {_x isEqualTo _cand}) == -1
+                && {alive _cand || {!(_cand isKindOf "Man")}}
         };
         if (count _intruders > 0) exitWith { _result = [false, "occupied"] };
 
-        if !([_logic, "spotIsClear", [_pos, _span, _own]] call MAINCLASS) exitWith {
+        // The class goes with it, so the shelter test can ask whether this
+        // airframe actually fits the hangar it is standing in.
+        if !([_logic, "spotIsClear", [_pos, _span, _own, _class]] call MAINCLASS) exitWith {
             _result = [false, "geometry"];
         };
 

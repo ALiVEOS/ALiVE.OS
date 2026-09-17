@@ -266,6 +266,17 @@ switch(_operation) do {
                         // recognisable as ours when they are stood down.
                         { _x setVariable ["ALiVE_mil_ato_crew", true, true] } forEach (units _grp);
                         _detail = str (count (units _grp));
+                        // Aircraft have been turning up with an empty cockpit,
+                        // which stops any order reaching them: issueOrders and
+                        // landAtPad both refuse with "no group", and one
+                        // helicopter finished a patrol and then hung over the
+                        // airfield because it could not be told to land. Nothing
+                        // in here recorded a crew being built or taken away, so
+                        // the sequence could never be read off a log. Both ends
+                        // say so now.
+                        ["ALIVE_fnc_ATOEffect - crew of %1 built for %2 (%3)",
+                            count (units _grp), typeOf _obj,
+                            _obj getVariable ["ALiVE_mil_ato_tail", "no tail"]] call ALiVE_fnc_dump;
                     };
                 };
             };
@@ -316,10 +327,20 @@ switch(_operation) do {
                         _detail = "deleted";
                     } else {
                         { moveOut _x; [_x] orderGetIn false } forEach _ours;
-                        [_ours] spawn {
-                            params ["_units"];
+                        private _tailNow = _obj getVariable ["ALiVE_mil_ato_tail", "no tail"];
+                        ["ALIVE_fnc_ATOEffect - crew of %1 dismissed from %2 (%3), deleted in 120 s",
+                            count _ours, typeOf _obj, _tailNow] call ALiVE_fnc_dump;
+                        [_ours, _obj, _tailNow] spawn {
+                            params ["_units", "_hull", "_tailNow"];
                             sleep 120;
-                            { if (!isNull _x && {alive _x}) then { deleteVehicle _x } } forEach _units;
+                            private _left = _units select { !isNull _x && {alive _x} };
+                            // Said at the moment of deletion, because the thing
+                            // worth knowing is whether this timer ever fires
+                            // while the hull it came from is flying.
+                            ["ALIVE_fnc_ATOEffect - %1 dismissed crew of %2 deleted, hull now has %3 aboard",
+                                count _left, _tailNow,
+                                if (isNull _hull) then {"a dead hull"} else {str (count (crew _hull))}] call ALiVE_fnc_dump;
+                            { deleteVehicle _x } forEach _left;
                         };
                         _detail = "dismissed";
                     };

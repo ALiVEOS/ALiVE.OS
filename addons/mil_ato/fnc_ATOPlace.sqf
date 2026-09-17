@@ -508,11 +508,20 @@ private _fnc_intruderName = {
     if (count _home < 1) exitWith { "" };
     private _mine = [_own];
     if (!isNull _own) then { _mine append (crew _own) };
+    // Wrecks included, to match what actually refuses a home. Asking for alive
+    // here is why every eviction line read "evicted from X by " with nothing
+    // after it: the thing in the way was a wrecked hull, this filtered it out,
+    // and the message named nothing. That blank sent me looking for a phantom
+    // intruder more than once.
     private _found = (nearestObjects [_home select 0, ["Air","LandVehicle","Man"], [_class] call _fnc_span]) select {
         private _cand = _x;
-        alive _cand && {(_mine findIf {_x isEqualTo _cand}) == -1}
+        (_mine findIf {_x isEqualTo _cand}) == -1
+            && {alive _cand || {!(_cand isKindOf "Man")}}
     };
-    if (count _found == 0) then { "" } else { typeOf (_found select 0) }
+    if (count _found == 0) then { "" } else {
+        private _who = _found select 0;
+        if (alive _who) then { typeOf _who } else { format ["a wrecked %1", typeOf _who] }
+    }
 };
 
 // Re-announce every recorded home to the surface as reserved. Surface's
