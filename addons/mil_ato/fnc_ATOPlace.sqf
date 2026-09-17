@@ -324,7 +324,8 @@ private _fnc_pairOf = {
 // has reserved this pass is already honoured without reaching into that piece
 // to fetch the list and hand it back.
 private _fnc_homeFor = {
-    params ["_logic", ["_class", "", [""]], ["_anchor", [0,0,0], [[]]], ["_dir", 0, [0]], ["_ownObj", objNull, [objNull]]];
+    params ["_logic", ["_class", "", [""]], ["_anchor", [0,0,0], [[]]], ["_dir", 0, [0]], ["_ownObj", objNull, [objNull]],
+        ["_preferAirfield", false, [false]]];
     private _surface = [_logic, "surface", []] call ALIVE_fnc_hashGet;
     if !([_surface] call ALIVE_fnc_isHash) exitWith { [] };
     if (count _anchor < 2 || {_class isEqualTo ""}) exitWith { [] };
@@ -400,8 +401,14 @@ private _fnc_homeFor = {
     };
     if (count _bayHome > 0) exitWith { _bayHome };
 
+    // Accepting the anchor because it happens to be clear is only right when
+    // something actually chose it: a home hint, or a home the record already
+    // carries. When the anchor is the commander's airfield, put there because
+    // nothing said where this aircraft belongs, there is no such choice to
+    // respect and the bare centre of an airfield is not parking. Straight to
+    // the cascade, which knows about pads, bays and aprons.
     private _ok = ([_surface, "validate", [_cand, _class, _ownObj]] call ALIVE_fnc_ATOSurface) param [0, false];
-    if (_ok) exitWith { _cand };
+    if (_ok && {!_preferAirfield}) exitWith { _cand };
     [_surface, "cascade", [_kind, _class, _flat, []]] call ALIVE_fnc_ATOSurface
 };
 
@@ -1330,15 +1337,47 @@ switch(_operation) do {
         // home's is an array, a position's is a number.
         private _live = _active && {!isNull _obj};
         private _anchor = [];
+        // Whether anybody actually said where this aircraft belongs. A hint and
+        // a stored home are instructions and are obeyed; the aircraft's own
+        // position is not, it is just where it happens to be standing.
+        private _chosen = false;
         if (count _homeHint >= 3 && {(_homeHint select 0) isEqualType []}) then {
             _anchor = +(_homeHint select 0);
+            _chosen = true;
         } else {
-            if (count _homeHint >= 2 && {(_homeHint select 0) isEqualType 0}) then { _anchor = +_homeHint };
+            if (count _homeHint >= 2 && {(_homeHint select 0) isEqualType 0}) then {
+                _anchor = +_homeHint;
+                _chosen = true;
+            };
         };
         if (count _anchor < 2 && {!(_target isEqualTo [])}) then {
             private _recHome = [_target, "home", []] call ALIVE_fnc_hashGet;
-            if (count _recHome >= 3) then { _anchor = _recHome select 0 };
+            if (count _recHome >= 3) then { _anchor = _recHome select 0; _chosen = true };
         };
+
+        // Nothing said where it belongs, so it belongs at its commander's
+        // airfield. Parking used to be searched for around the aircraft itself,
+        // which is why an Apache that spawned 590 m from the field was parked on
+        // the shoreline: the search reaches 400 m, so every pad on the airfield
+        // was 190 m outside it and an empty one was never even a candidate.
+        //
+        // The airfield only. A commander with no airfield holds its aircraft at a
+        // ring of points around its ingress marker and the cascade handles that
+        // already, so a virtual base is left alone.
+        private _preferAirfield = false;
+        if (!_chosen) then {
+            private _baseHash = [_logic, "base", []] call ALIVE_fnc_hashGet;
+            if ([_baseHash] call ALIVE_fnc_isHash
+                && {!([_baseHash, "isVirtual", false] call ALIVE_fnc_hashGet)}
+            ) then {
+                private _bp = [_baseHash, "basePos", [0,0,0]] call ALIVE_fnc_hashGet;
+                if (_bp isEqualType [] && {count _bp >= 2} && {!(_bp isEqualTo [0,0,0])}) then {
+                    _anchor = [_bp select 0, _bp select 1, 0];
+                    _preferAirfield = true;
+                };
+            };
+        };
+
         if (count _anchor < 2 && {_live}) then { _anchor = getPosATL _obj };
         if (count _anchor < 2) then { _anchor = [_veh, "position", [0,0,0]] call ALIVE_fnc_hashGet };
         private _dir = 0;
@@ -1347,7 +1386,7 @@ switch(_operation) do {
             if (_stored isEqualType 0) then { _dir = _stored };
         };
         private _own = if (_live) then { _obj } else { objNull };
-        private _home = [_logic, _class, _anchor, _dir, _own] call _fnc_homeFor;
+        private _home = [_logic, _class, _anchor, _dir, _own, _preferAirfield] call _fnc_homeFor;
         if (count _home < 3) exitWith {
             [_consuming, _vehId] call ALIVE_fnc_hashRem;
             _result = ["refused", "no home"];

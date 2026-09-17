@@ -1107,6 +1107,38 @@ switch(_operation) do {
             _airside = [_p, _span, [1,2]] call ALiVE_fnc_isAirside;
         };
 
+        // A hangar the point is INSIDE is shelter, for the same reason a pad is:
+        // it is somewhere to park, not something to stand clear of.
+        //
+        // Three separate conditions below refused a bay, and the aircraft was
+        // evicted to the next ring because the caller reads any of them as
+        // "geometry" rather than "occupied". Measured at a Stratis tent hangar:
+        // the paving under it answers isOnRoad, the hangar answers the building
+        // sweep, and it answers the clutter sweep as a terrain object too. Every
+        // plane that won a bay was thrown out of it within seconds, and all five
+        // ended up in a state where no order could be given to them.
+        //
+        // Only a hangar the point is actually within. One standing beside the
+        // spot is a real obstruction and still refuses it, which is why this
+        // measures the bounding box in the building's own axes rather than
+        // taking whatever happens to be nearest.
+        private _shelter = [];
+        if (!isNil "ALIVE_airBuildingTypes") then {
+            {
+                (boundingBoxReal _x) params ["_bmin", "_bmax"];
+                private _m = _x worldToModel _p;
+                if ((_m select 0) > (_bmin select 0) && {(_m select 0) < (_bmax select 0)}
+                    && {(_m select 1) > (_bmin select 1)} && {(_m select 1) < (_bmax select 1)}
+                ) then {
+                    _shelter pushBack _x;
+                };
+            } forEach ((nearestObjects [_p, ["House","Building"], _span]) select {
+                private _t = toLower (typeOf _x);
+                ALIVE_airBuildingTypes findIf { [_t, _x] call CBA_fnc_find != -1 } >= 0
+            });
+        };
+        private _sheltered = count _shelter > 0;
+
         // Test the footprint, not just the centre: a wingtip over the
         // carriageway is still parked on the road.
         private _onRoad = isOnRoad _p
@@ -1208,6 +1240,11 @@ switch(_operation) do {
         // be chosen there and nothing would have stopped it.
         private _onRunway = ([_p] call _fnc_offRunway) < RUNWAY_CLEAR;
 
+        // The airfield test above works off the runway and taxi lines, and a
+        // hangar apron sits off to the side of those, so it does not reach a
+        // bay. Being under a hangar says the same thing about the paving.
+        if (_sheltered) then { _onRoad = false };
+
         _result = !_airside
             && {!_onRunway}
             && {!_onRoad}
@@ -1216,8 +1253,10 @@ switch(_operation) do {
             // A landing pad is a surface to park on, not something to stand
             // clear of, and pads classify as buildings. Anything else built
             // inside the footprint still refuses the spot.
-            && {(nearestObjects [_p, ["House","Building"], _span]) findIf {!(_x isKindOf "HeliH")} == -1}
-            && {(count (nearestTerrainObjects [_p, CLUTTER, _span, false, true])) == 0}
+            && {(nearestObjects [_p, ["House","Building"], _span]) findIf {
+                    !(_x isKindOf "HeliH") && {!(_x in _shelter)}
+                } == -1}
+            && {((nearestTerrainObjects [_p, CLUTTER, _span, false, true]) - _shelter) isEqualTo []}
             && {((nearestObjects [_p, ["Air"], _span + 6]) select {
                     private _cand = _x;
                     (_ignore findIf {_x isEqualTo _cand}) == -1

@@ -833,6 +833,89 @@ private _fnc_clearOfRunwayTaxiway = {
 };
 
 // ------------------------------------------------------------------------
+// Hangar doorways.
+// ------------------------------------------------------------------------
+// A doorway is invisible to every clearance test above it. The mouth is open
+// space, so an aircraft parked squarely in front of one overlaps nothing and
+// passes the origin sweep, the body sweep and the tight sweep alike. Measured
+// in game: V-44 gunships lined up across the front of three Stratis tent
+// hangars, nothing else able to get in or out.
+//
+// Only the approach is refused, not the building. Parking alongside a hangar
+// stays legal, because refusing the whole footprint would sterilise most of a
+// cramped apron and push a wide airframe out into the hills.
+//
+// Worked out once here rather than per candidate. The open-end test needs a
+// raycast, the field tier walks a lot of candidates, and the answer is the same
+// for all of them.
+//
+// Both ends are tested. A Stratis tent hangar is open at each end, so picking
+// one the way the orient helper does would leave the other doorway blocked. A
+// one-ended hangar answers false for its back wall and keeps that ground.
+private _mouths = [];
+if (_preference in ["auto", "apron", "field"] && {!isNil "ALIVE_airBuildingTypes"}) then {
+    private _nearHangars = (nearestObjects [_centerPos, [], _maxDistance]) select {
+        private _t = toLower (typeOf _x);
+        ALIVE_airBuildingTypes findIf { [_t, _x] call CBA_fnc_find != -1 } >= 0
+    };
+    {
+        private _h = _x;
+        private _bb = boundingBoxReal _h;
+        _bb params ["_bmin", "_bmax"];
+        private _ex = ((_bmax select 0) - (_bmin select 0)) / 2;
+        private _ey = ((_bmax select 1) - (_bmin select 1)) / 2;
+        // The doors are at the ends of the LONG axis: that is the way a hangar
+        // is driven into, and the short axis runs into the side walls.
+        private _axisIsY = _ey >= _ex;
+        private _half = _ex max _ey;         // to the end wall
+        private _halfWide = _ex min _ey;     // to a side wall, so the door width
+        private _cx = ((_bmin select 0) + (_bmax select 0)) / 2;
+        private _cy = ((_bmin select 1) + (_bmax select 1)) / 2;
+        {
+            private _sign = _x;
+            // Start just inside the end and fire outwards. Clearing the whole
+            // ray means the end is open; hitting something at once means a wall.
+            private _inner = if (_axisIsY) then {
+                [_cx, _cy + (_sign * (_half - 1)), 1.5]
+            } else {
+                [_cx + (_sign * (_half - 1)), _cy, 1.5]
+            };
+            private _outer = if (_axisIsY) then {
+                [_cx, _cy + (_sign * (_half + 4)), 1.5]
+            } else {
+                [_cx + (_sign * (_half + 4)), _cy, 1.5]
+            };
+            private _hits = lineIntersectsSurfaces [
+                ATLToASL (_h modelToWorld _inner), ATLToASL (_h modelToWorld _outer),
+                objNull, objNull, true, 1, "GEOM", "NONE"
+            ];
+            if (count _hits == 0) then {
+                _mouths pushBack [_h, _axisIsY, _sign, _half, _halfWide];
+            };
+        } forEach [1, -1];
+    } forEach _nearHangars;
+};
+
+// Depth scales with the aircraft, so a gunship is held further off a doorway
+// than a light plane, and neither is measured by a number picked in advance.
+private _mouthDepth = _vehLen max _vehWid;
+
+private _fnc_clearOfHangarMouth = {
+    params ["_p"];
+    private _clear = true;
+    {
+        _x params ["_h", "_axisIsY", "_sign", "_half", "_halfWide"];
+        private _m = _h worldToModel _p;
+        private _along = if (_axisIsY) then { (_m select 1) * _sign } else { (_m select 0) * _sign };
+        private _across = if (_axisIsY) then { abs (_m select 0) } else { abs (_m select 1) };
+        if (_along > _half && {_along < _half + _mouthDepth} && {_across <= _halfWide}) exitWith {
+            _clear = false;
+        };
+    } forEach _mouths;
+    _clear
+};
+
+// ------------------------------------------------------------------------
 // Cascade.
 // ------------------------------------------------------------------------
 private _found = [];
@@ -1066,6 +1149,8 @@ if (count _found == 0 && _wideAirframe && {_preference in ["auto", "apron", "fie
         // test but not this), plus sibling deconfliction and the full
         // obstacle / water / building footprint sweep the other tiers apply.
         if !([_pos] call _fnc_clearOfRunwayTaxiway) then { continue };
+        // A doorway is open space, so nothing above this can see it.
+        if !([_pos] call _fnc_clearOfHangarMouth) then { continue };
         if !([_pos, _minSeparation] call _fnc_registryClear) then { continue };
         if !([_pos, _openDir] call _fnc_footprintClear) then { continue };
         _found = [_pos, _openDir];
@@ -1112,7 +1197,7 @@ if (count _found == 0 && {_preference in ["auto", "apron"]}) then {
                         {
                             if (count _found > 0) exitWith {};
                             private _pos = _x;
-                            if ([_pos] call _fnc_clearOfRoad && {[_pos] call _fnc_clearOfRunwayTaxiway} && {[_pos, _minSeparation] call _fnc_registryClear} && {[_pos, _parkDir] call _fnc_footprintClear}) then {
+                            if ([_pos] call _fnc_clearOfRoad && {[_pos] call _fnc_clearOfRunwayTaxiway} && {[_pos, _minSeparation] call _fnc_registryClear} && {[_pos, _parkDir] call _fnc_footprintClear} && {[_pos] call _fnc_clearOfHangarMouth}) then {
                                 _found = [_pos, _parkDir];
                             };
                         } forEach _cands;
@@ -1145,6 +1230,8 @@ if (count _found == 0 && {_preference in ["auto", "apron"]}) then {
         if (_isPlane && {[_pos] call _fnc_onNarrowStrip}) then { continue };
         if !([_pos] call _fnc_clearOfRoad) then { continue };
         if !([_pos] call _fnc_clearOfRunwayTaxiway) then { continue };
+        // A doorway is open space, so nothing above this can see it.
+        if !([_pos] call _fnc_clearOfHangarMouth) then { continue };
         if !([_pos, _minSeparation] call _fnc_registryClear) then { continue };
         // Aircraft on apron: orient roughly toward the runway if we
         // know one, otherwise random. Aircraft will be repositioned
@@ -1185,6 +1272,8 @@ if (count _found == 0 && {_preference in ["auto", "field"]}) then {
         // never want to drop an aircraft on an active path even by
         // random luck.
         if !([_pos] call _fnc_clearOfRunwayTaxiway) then { continue };
+        // A doorway is open space, so nothing above this can see it.
+        if !([_pos] call _fnc_clearOfHangarMouth) then { continue };
         if !([_pos, _minSeparation] call _fnc_registryClear) then { continue };
         private _dir = random 360;
         if !([_pos, _dir] call _fnc_footprintClear) then { continue };
