@@ -248,8 +248,8 @@ class FSM
                          "if (count _TACOM_QUEUE > 0) then {" \n
                          "    _TACOM_ACTION = _TACOM_QUEUE deleteat 0;" \n
                          "};" \n
-                         "if !(isnil ""_TACOM_ACTION"") then {_orderID = -1};" \n
-                         "if !(isnil ""_TACOM_ACTION"") then {_orderDeadline = -1};" \n
+                         "_orderID = -1;" \n
+                         "_orderDeadline = -1;" \n
                          "" \n
                          "_timeout = ((isnil ""_TACOM_ACTION"") && {(time - _lastAnalyze) >= 15});" \n
                          "if (_timeout) then {_TACOM_ACTION = [""analyze_internal"",nil]};" \n
