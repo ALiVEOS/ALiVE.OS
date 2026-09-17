@@ -5430,23 +5430,42 @@ switch(_operation) do {
 
                 // sort OPCOM objective states to find
                 // reserved objectives
+                // Held means this ground is ours, and TWO states say so. tacom_state
+                // reads "reserve" once a garrison has actually been ordered onto the
+                // objective. opcom_state reads "reserve" as soon as the commander has
+                // classified it friendly-only from the entity counts, with nobody
+                // needing to stand there.
+                //
+                // Only the first was read, which quietly tied this pool to the reserve
+                // TASK COUNT. tacom_state is written inside the branch that needs a
+                // non-empty reserve section, so a commander with that count set to 0
+                // never recorded one objective as held, the total came to nothing, and
+                // reinforcements stopped. dfdbac5b could only warn about it.
+                //
+                // Reading the classification too is the better question anyway: ground
+                // with nobody hostile on it is ground you hold, whether or not you sent
+                // anyone to stand on it. This module already asks opcom_state the same
+                // way when it looks for somewhere to insert.
                 {
                     _tacom_state = '';
                     if("tacom_state" in (_x select 1)) then {
                         _tacom_state = [_x,"tacom_state","none"] call ALIVE_fnc_hashGet;
                     };
 
-                    switch(_tacom_state) do {
-                        case "reserve":{
+                    private _held = (_tacom_state isEqualTo "reserve");
+                    if (!_held && {"opcom_state" in (_x select 1)}) then {
+                        _held = ([_x,"opcom_state","none"] call ALIVE_fnc_hashGet) isEqualTo "reserve";
+                    };
 
-                            // increase the priority count by adding
-                            // all held objective priorities
-                            _priority = [_x,"priority"] call ALIVE_fnc_hashGet;
-                            _priorityTotal = _priorityTotal + _priority;
+                    if (_held) then {
 
-                            // store the objective
-                            _reserve pushback _x;
-                        };
+                        // increase the priority count by adding
+                        // all held objective priorities
+                        _priority = [_x,"priority"] call ALIVE_fnc_hashGet;
+                        _priorityTotal = _priorityTotal + _priority;
+
+                        // store the objective
+                        _reserve pushback _x;
                     };
 
                 } forEach _objectives;
@@ -5506,6 +5525,18 @@ switch(_operation) do {
                         // current total
                         _forcePool = _priorityTotal;
 
+                    };
+
+                    // Say what it worked out. Every line in this block was
+                    // commented out, so a Dynamic pool was a number nobody could
+                    // see: when it collapsed, the only symptom was reinforcements
+                    // quietly stopping, and the only log came later from the
+                    // request being denied. One line behind the module's own debug
+                    // flag makes the sum inspectable, which is what anybody
+                    // diagnosing a dry pool actually needs.
+                    if (_debug) then {
+                        ["ML - Dynamic force pool for %1: %2, from %3 objective(s) held at a priority total of %4",
+                            [_logic, "side", "?"] call MAINCLASS, _forcePool, count _reserve, _priorityTotal] call ALiVE_fnc_dump;
                     };
 
                     // update the global force pool
