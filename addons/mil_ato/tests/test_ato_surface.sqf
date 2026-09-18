@@ -81,11 +81,36 @@ refused rather than guessed at.
     // Every home must still pass the acceptance test when it is asked again.
     // A spot that cannot answer for itself a second time was never a spot.
     // Run BEFORE anything is placed, so nothing of ours is standing on a home.
+    // Asked with the class, as the cascade and every later validation ask it:
+    // without it no hangar is shelter, and a jet in a hangar bay is refused by
+    // the hangar's own walls.
     private _allClear = true;
     {
-        if !([_surface, "spotIsClear", [_x select 0, _span]] call ALIVE_fnc_ATOSurface) then { _allClear = false };
+        if !([_surface, "spotIsClear", [_x select 0, _span, [], _class]] call ALIVE_fnc_ATOSurface) then { _allClear = false };
     } forEach _homes;
     ["every home passes the predicate re-run as an oracle", _allClear] call _fnc_check;
+
+    // A stand between two tent hangars. Measured on Stratis: an Apache was
+    // given this spot by the ring search, with the hangars' origins 17 and 20 m
+    // away and their walls 4.5 and 7.2 m away, and it lost its rotors to one of
+    // them as it started up. Their origins are what the old test measured.
+    if (worldName == "Stratis") then {
+        private _heli = "B_Heli_Attack_01_dynamicLoadout_F";
+        private _hbb = [_heli] call ALiVE_fnc_getVehicleBoundingBox;
+        private _hspan = ((((_hbb select 0) max (_hbb select 1)) / 2) + 4) max 12;
+        ["a stand with a hangar wall inside the rotor's reach is refused",
+            !([_surface, "spotIsClear", [[1727.89, 5213.25, 0], _hspan, [], _heli, false]] call ALIVE_fnc_ATOSurface)] call _fnc_check;
+        ["and so is the same stand asked without the class",
+            !([_surface, "spotIsClear", [[1727.89, 5213.25, 0], _hspan]] call ALIVE_fnc_ATOSurface)] call _fnc_check;
+        // The anchor it was placed from: the pad a Combat Support transport
+        // started on, 597 m from the nearest of the field's own pads. The
+        // search for a pad now reaches the rest of the field.
+        private _hhome = [_surface, "cascade", ["terrain", _heli, [1727.89, 5153.25, 0], []]] call ALIVE_fnc_ATOSurface;
+        diag_log format ["  info  a helicopter anchored at the south pad was given %1", _hhome];
+        ["a helicopter anchored 600 m from the nearest free pad is still given a pad",
+            count _hhome == 3 && {!((nearestObjects [_hhome select 0, ["HeliH"], 5]) isEqualTo [])}] call _fnc_check;
+        ALiVE_airSpawnRegistry = [];
+    };
 
     // Pairwise separation: a reserved list that is not respected shows up here.
     private _tooClose = false;

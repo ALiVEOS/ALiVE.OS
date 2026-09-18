@@ -70,6 +70,22 @@ Jman
 // actually runs into. The object sweep does not see terrain-placed clutter.
 #define CLUTTER ["TREE","SMALL TREE","BUSH","FOREST","FOREST BORDER","ROCK","ROCKS","WALL","FENCE","BUILDING","HOUSE","RUIN","POWER LINES"]
 
+// Built things big enough that their walls reach ground their origin does not,
+// measured by their real footprint rather than by where their origin is. The
+// same list the shared stand search uses for its body pass
+// (fnc_findAirSpawnPosition.sqf), and the same distance past the aircraft's own
+// reach to go looking for them.
+#define BODY_TYPES ["BUILDING","BUNKER","BUSSTOP","CHAPEL","CHURCH","FENCE","FORTRESS","FUELSTATION","HIDE","HOSPITAL","HOUSE","LIGHTHOUSE","POWERSOLAR","POWERWAVE","POWERWIND","QUAY","RAILWAY","RUIN","SHIPWRECK","STACK","TOURISM","TRANSMITTER","VIEW-TOWER","WALL","WATERTOWER","Wreck_Base"]
+#define BODY_PAD 25
+
+// How far a helicopter looks for a free pad. The other rungs look 400 m from
+// their anchor, and a helicopter's anchor is a pad, so when that pad was taken
+// the search could not see the rest of the airfield's pads. Measured on Stratis:
+// an Apache anchored on a pad a Combat Support UH-1Y was already standing on
+// found nothing within 400 m, while the airfield's free pads stood 597 and 754 m
+// away, and it was parked against a hangar instead.
+#define PAD_REACH 1000
+
 // Deck geometry. Measured on a USS Freedom placed by the editor, 2.5 km off
 // Stratis: the flight deck is 23.6 m above the waterline, the hull runs from
 // model y -190 to +190 and x -45 to +45, the island stands at model [-30, 105]
@@ -982,7 +998,7 @@ switch(_operation) do {
             private _fallback = [];
             {
                 if (count _air < 2) then {
-                    private _try = [_class, _anchor, 400, _x] call ALiVE_fnc_findAirSpawnPosition;
+                    private _try = [_class, _anchor, if (_x isEqualTo "helipad") then { PAD_REACH } else { 400 }, _x] call ALiVE_fnc_findAirSpawnPosition;
                     if (count _try >= 2) then {
                         if (count _fallback < 2) then { _fallback = _try };
                         if !([_try select 0] call _fnc_crossesRunway) then {
@@ -1043,7 +1059,10 @@ switch(_operation) do {
             // It is only safe to do now that the predicate waives its road test
             // on an airfield; before that, enforcing it here would have pushed
             // every home back off the field, which is the fault 480ae281 fixed.
-            if (!_taken && {[_logic, "spotIsClear", [_p, _span]] call MAINCLASS}) then {
+            // With the class, so a hangar bay the shared search chose is
+            // judged as shelter, the way the home is judged every time it is
+            // validated afterwards.
+            if (!_taken && {[_logic, "spotIsClear", [_p, _span, [], _class]] call MAINCLASS}) then {
                 _found = [_p, _air select 1, "terrain"];
             };
         };
@@ -1067,7 +1086,11 @@ switch(_operation) do {
                             (_p distance2D (_x select 0)) < (_span + ((_x select 1) max 0))
                         }) > -1;
 
-                        if (!_clashes && {[_logic, "spotIsClear", [_p, _span]] call MAINCLASS}) then {
+                        // With the class, for the aircraft's real reach, but
+                        // no hangar counts as shelter here: a ring spot is
+                        // parked at a random heading, and a jet turned across
+                        // a tent hangar has its wings through the walls.
+                        if (!_clashes && {[_logic, "spotIsClear", [_p, _span, [], _class, false]] call MAINCLASS}) then {
                             _spot = _p;
                         };
                     };
@@ -1093,10 +1116,13 @@ switch(_operation) do {
         // _ignore is the airframe that already lives here, and its crew. Without
         // it a home fails its own re-check the moment its aircraft is parked on
         // it, because the aircraft is an Air object inside the footprint.
-        // The class is optional and only the shelter test uses it. Without it a
-        // hangar is an obstruction as it always was, which is what the deck
-        // callers want: there are no hangars on a ship.
-        _args params [["_p",[0,0,0],[[]]], ["_span",12,[0]], ["_ignore",[],[[]]], ["_class","",[""]]];
+        // The class is optional. The shelter test uses it, and so does the
+        // measure of how far the aircraft reaches. Without it a hangar is an
+        // obstruction as it always was, which is what the deck callers want:
+        // there are no hangars on a ship. _shelterOk false keeps a hangar an
+        // obstruction even with the class, for a caller that does not line the
+        // aircraft up with the hangar.
+        _args params [["_p",[0,0,0],[[]]], ["_span",12,[0]], ["_ignore",[],[[]]], ["_class","",[""]], ["_shelterOk",true,[true]]];
 
         // Kinds are 1 runway, 2 taxiway, 3 parking (fnc_isAirside.sqf:40-41).
         // This asked for all three, so it refused the airfield's own parking
@@ -1132,10 +1158,16 @@ switch(_operation) do {
         // against longest, shortest against shortest, and the roof against the
         // tail. Without it this excuses hangars the aircraft could never use.
         private _shelter = [];
-        if (!isNil "ALIVE_airBuildingTypes" && {!(_class isEqualTo "")}) then {
+        if (!isNil "ALIVE_airBuildingTypes" && {!(_class isEqualTo "")} && {_shelterOk}) then {
             ([_class] call ALiVE_fnc_getVehicleBoundingBox) params [["_vLen", 0], ["_vWid", 0], ["_vHt", 0]];
             private _vLong  = _vLen max _vWid;
             private _vShort = _vLen min _vWid;
+            // Hangars are looked for as far out as the walls test below looks,
+            // because a tent hangar's origin is at its edge: one with a jet in
+            // the middle of its bay can have its origin further off than the
+            // span, and then its own walls would refuse the bay it was chosen
+            // for. Being inside is decided by the box, so looking wider finds
+            // more hangars to ask and excuses nothing new.
             {
                 private _hh = _x;
                 (boundingBoxReal _hh) params ["_bmin", "_bmax"];
@@ -1152,12 +1184,65 @@ switch(_operation) do {
                         _shelter pushBack _hh;
                     };
                 };
-            } forEach ((nearestObjects [_p, ["House","Building"], _span]) select {
+            } forEach ((nearestObjects [_p, ["House","Building"], _span + BODY_PAD]) select {
                 private _t = toLower (typeOf _x);
                 ALIVE_airBuildingTypes findIf { [_t, _x] call CBA_fnc_find != -1 } >= 0
             });
         };
         private _sheltered = count _shelter > 0;
+
+        // Anything built whose WALLS come within the aircraft's reach,
+        // wherever its origin is.
+        //
+        // The building tests below ask for objects whose origin lies within the
+        // span, and a tent hangar's origin sits at one edge of it, not in the
+        // middle. Measured at the stand an Apache was given on Stratis: two tent
+        // hangars with their origins 17 and 20 m away, both outside the span,
+        // and their walls 4.5 and 7.2 m from the spot. The rotor reaches about
+        // seven, so it was parked with its blades over one of them, and they
+        // came off when it started up. The shared stand search found the same
+        // blind spot first and measures a building's real rotated footprint;
+        // this does the same, at the aircraft's own reach and with no courtesy
+        // margin, so no stand that search chose is refused here.
+        //
+        // The reach is that search's too: a rotor disc is a little wider than
+        // the longest side, a wing is the longest side. Without a class it is
+        // the span without its courtesy room.
+        //
+        // Not for the hangar it is sheltered in, not for anything flat (paving,
+        // painted pads, lights), and not on a pad at all: a pad is there to be
+        // landed on, and the stand search has already judged what stands round
+        // it. Asked last, because it is the dearest test here.
+        private _reach = (_span - 4) max 1;
+        if !(_class isEqualTo "") then {
+            ([_class] call ALiVE_fnc_getVehicleBoundingBox) params [["_rLen", 0], ["_rWid", 0]];
+            _reach = if (_class isKindOf "Helicopter") then {
+                (_rLen max _rWid) * 0.55
+            } else {
+                ((_rLen max _rWid) * 0.5) + 0.5
+            };
+        };
+        private _fnc_walled = {
+            if !((nearestObjects [_p, ["HeliH"], 5]) isEqualTo []) exitWith { false };
+            private _near = ((nearestObjects [_p, ["House","Building","Wall"], _reach + BODY_PAD])
+                + (nearestTerrainObjects [_p, BODY_TYPES, _reach + BODY_PAD, false, true]))
+                select { !(_x isKindOf "HeliH") && {!(_x in _shelter)} };
+            (_near findIf {
+                private _o = _x;
+                (boundingBoxReal _o) params ["_bMin", "_bMax"];
+                // Flat is ground, not an obstacle.
+                if (((_bMax select 2) - (_bMin select 2)) < 1) then {
+                    false
+                } else {
+                    // The spot in the object's own frame, clamped to its box:
+                    // the distance to its true rotated rectangle.
+                    private _l = _o worldToModel [_p select 0, _p select 1, (position _o) select 2];
+                    private _dx = (_l select 0) - (((_l select 0) max (_bMin select 0)) min (_bMax select 0));
+                    private _dy = (_l select 1) - (((_l select 1) max (_bMin select 1)) min (_bMax select 1));
+                    ((_dx * _dx) + (_dy * _dy)) < (_reach * _reach)
+                };
+            }) > -1
+        };
 
         // Test the footprint, not just the centre: a wingtip over the
         // carriageway is still parked on the road.
@@ -1280,7 +1365,8 @@ switch(_operation) do {
             && {((nearestObjects [_p, ["Air"], _span + 6]) select {
                     private _cand = _x;
                     (_ignore findIf {_x isEqualTo _cand}) == -1
-                }) isEqualTo []};
+                }) isEqualTo []}
+            && {!(call _fnc_walled)};
     };
 
     // Geometry re-run as an oracle, plus occupancy: the spot may have been fine
