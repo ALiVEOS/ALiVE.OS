@@ -997,7 +997,9 @@ private _fnc_routeEffects = {
                         // reason the pad ones do: it holds the deck cache and
                         // resolves a carrier handle, and an effect reaches it
                         // through this switch and nowhere else.
-                        case (_name in ["catapult","deckRecover","landOnRunway","virtualLaunch"]): { [_surface, _tail] };
+                        // A land launch needs it too, to set the aircraft down
+                        // on its taxi route the way a stand is set down.
+                        case (_name in ["catapult","deckRecover","landOnRunway","virtualLaunch","taxiOut"]): { [_surface, _tail] };
                         // The tail is the aircraft's name on the radio, and the
                         // supply truck's dispatch carries a callsign.
                         case (_name isEqualTo "turnaround"): { [_tail] };

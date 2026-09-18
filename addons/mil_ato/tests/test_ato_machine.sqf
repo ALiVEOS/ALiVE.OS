@@ -203,7 +203,7 @@ observation sequences, because those are what the table exists to prevent.
 
                     // Promise: a player in the aircraft is never teleported.
                     if (("playerPassenger" call {[_obs,_this,false] call ALIVE_fnc_hashGet})
-                        && {({_x in ["airborneStart","forceLaunch","placeOnSlot","forceLanded","quickPark"]} count _effects) > 0}) then {
+                        && {({_x in ["airborneStart","forceLaunch","taxiOut","placeOnSlot","forceLanded","quickPark"]} count _effects) > 0}) then {
                         _badLock = _badLock + 1;
                     };
 
@@ -418,6 +418,43 @@ observation sequences, because those are what the table exists to prevent.
         (([false, 0] call _fnc_dry) select 0) isEqualTo "ON_STATION"] call _fnc_check;
     ["and an armed one with rounds left is left on station",
         (([true, 6] call _fnc_dry) select 0) isEqualTo "ON_STATION"] call _fnc_check;
+
+    // ---- the launch from land ----------------------------------------------
+    // A plane on land is stood on its airport's taxi route as it launches,
+    // because left on its stand a jet in a tent hangar never got out of the
+    // door. Only a plane, only on land, only on the way in, and never with
+    // somebody aboard.
+    private _fnc_launchFrom = {
+        params ["_flags", ["_state", "ASSIGNED"]];
+        private _row = [_m, "newRow", ["BLU_F_0", [[100,100,0], 0, "terrain"]]] call ALIVE_fnc_ATOMachine;
+        [_row, "state", _state] call ALIVE_fnc_hashSet;
+        [_row, "enteredAt", 990] call ALIVE_fnc_hashSet;
+        [_row, "deadlineAt", 9999] call ALIVE_fnc_hashSet;
+        [_row, "sortie", ["CAS", [100,100,0], 600, 2000, "s1", [], ""]] call ALIVE_fnc_hashSet;
+        private _obs = [[["crewSeated", true], ["lockHeld", true]] + _flags] call _fnc_obs;
+        private _out = [_m, "step", [_row, _obs, "", 1000]] call ALIVE_fnc_ATOMachine;
+        [([(_out select 0), "state", ""] call ALIVE_fnc_hashGet), _out select 2]
+    };
+
+    ([[["fixedWing", true], ["needsRunway", true]]] call _fnc_launchFrom) params ["_lpState", "_lpEff"];
+    diag_log format ["  info  a plane on land launching went to %1, effects %2", _lpState, _lpEff];
+    ["a plane on land launches from its taxi route",
+        _lpState isEqualTo "LAUNCHING" && {"taxiOut" in _lpEff}] call _fnc_check;
+    ["and it is put there before its engine is started",
+        (_lpEff find "taxiOut") > -1 && {(_lpEff find "taxiOut") < (_lpEff find "engineOn")}] call _fnc_check;
+    ["a helicopter lifts from where it stands",
+        !("taxiOut" in (([[]] call _fnc_launchFrom) select 1))] call _fnc_check;
+    ["and so does a VTOL",
+        !("taxiOut" in (([[["needsRunway", true]]] call _fnc_launchFrom) select 1))] call _fnc_check;
+    private _deckEff = ([[["deckHome", true], ["fixedWing", true], ["needsRunway", true]]] call _fnc_launchFrom) select 1;
+    ["a plane on a deck is catapulted instead",
+        ("catapult" in _deckEff) && {!("taxiOut" in _deckEff)}] call _fnc_check;
+    private _riddenEff = ([[["fixedWing", true], ["needsRunway", true], ["playerPassenger", true], ["anyPlayerAboard", true]]] call _fnc_launchFrom) select 1;
+    ["a plane with a player aboard is not moved to the taxi route",
+        !("taxiOut" in _riddenEff) && {"refusedTeleportPlayerAboard" in _riddenEff}] call _fnc_check;
+    ([[["fixedWing", true], ["needsRunway", true]], "LAUNCHING"] call _fnc_launchFrom) params ["_lpState2", "_lpEff2"];
+    ["and a plane already launching is never put back at the start of its taxi",
+        _lpState2 isEqualTo "LAUNCHING" && {!("taxiOut" in _lpEff2)}] call _fnc_check;
 
     if (count _fails == 0) then {
         diag_log "=== ATO Machine test: ALL PASS ===";

@@ -69,7 +69,7 @@ Jman
 // stalled sortie.
 #define PROSECUTING_TYPES ["SEAD","CAS","Strike","OCA"]
 
-#define TELEPORTS ["airborneStart","forceLaunch","virtualLaunch","placeOnSlot","forceLanded","quickPark","catapult"]
+#define TELEPORTS ["airborneStart","forceLaunch","virtualLaunch","taxiOut","placeOnSlot","forceLanded","quickPark","catapult"]
 
 private ["_result"];
 
@@ -516,8 +516,10 @@ switch(_operation) do {
                                     // This is what is left of the stuck-taxi
                                     // problem. The rest of it was about
                                     // recovering an aircraft stuck taxiing OUT,
-                                    // and aircraft are no longer taxied out at
-                                    // all.
+                                    // and a plane now starts its taxi on the
+                                    // airport's own route rather than from its
+                                    // stand, with the launch deadline behind it
+                                    // if it stalls there.
                                     private _canTidy = ("nearHome" call _fnc_o)
                                         && {(("playersWithin300" call _fnc_n) == 0)
                                             || {"deckHome" call _fnc_o}
@@ -700,10 +702,21 @@ switch(_operation) do {
                 //
                 // A plane on a ship is shot off a catapult, and the engine is
                 // started FIRST so the launch sequence finds one running.
+                //
+                // A plane on land is stood on its airport's taxi route first,
+                // pointing along it, and the engine taxis it out from there.
+                // Left on its stand it had to drive itself out, and a jet in a
+                // tent hangar never got past the doorway. Asked here, on the
+                // way in, and never again for the same launch: asked on a later
+                // tick it would pull an aircraft already taxiing back to the
+                // start of its taxi. The runway is held by now, so no other
+                // aircraft of this commander is taking off; anything else on
+                // the route is the effect's to look for.
                 case "LAUNCHING":    {
                     switch (true) do {
                         case (_deckPlane): { _effects append ["engineOn","catapult","broadcastStart"]; };
                         case (_virtualHome): { _effects append ["engineOn","virtualLaunch","broadcastStart"]; };
+                        case ("fixedWing" call _fnc_o): { _effects append ["taxiOut","engineOn","broadcastStart"]; };
                         default { _effects append ["engineOn","broadcastStart"]; };
                     };
                 };

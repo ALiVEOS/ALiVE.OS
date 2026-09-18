@@ -124,7 +124,7 @@ nothing changed and it said so.
     if (isNull player) then {
         {
             format ["%1 is refused with a player aboard", _x] call _fnc_skip;
-        } forEach ["placeOnSlot", "forceLanded", "airborneStart", "forceLaunch", "standDownCrew"];
+        } forEach ["placeOnSlot", "forceLanded", "airborneStart", "forceLaunch", "taxiOut", "standDownCrew"];
     } else {
         player moveInCargo _veh;
         sleep 2;
@@ -133,7 +133,7 @@ nothing changed and it said so.
             (([_e, "apply", [_eff, _veh, _home, [_s]]] call ALIVE_fnc_ATOEffect)) params ["_stx", "_mx", "_dx"];
             [format ["%1 is refused with a player aboard", _eff],
                 _stx isEqualTo "refused" && {_dx isEqualTo "player aboard"}] call _fnc_check;
-        } forEach ["placeOnSlot", "forceLanded", "airborneStart", "forceLaunch", "standDownCrew"];
+        } forEach ["placeOnSlot", "forceLanded", "airborneStart", "forceLaunch", "taxiOut", "standDownCrew"];
         moveOut player;
         sleep 1;
     };
@@ -184,6 +184,128 @@ nothing changed and it said so.
         _stR isEqualTo "ok" && {({alive _x} count (crew _dead)) > 0}] call _fnc_check;
     { deleteVehicle _x } forEach (crew _dead);
     deleteVehicle _dead;
+
+    // --- the taxi out ------------------------------------------------------------
+    // A plane is stood on its airport's taxi route, pointing along it, and a
+    // helicopter is left where it is. The route is read from this terrain's own
+    // config, so the expected spot is worked out here rather than written in.
+    // A stand just BEHIND the head of the route has its nearest point on the
+    // first leg at the head itself, which is the case the old module handled.
+    private _w = configFile >> "CfgWorlds" >> worldName;
+    private _in = getArray (_w >> "ilsTaxiIn");
+    private _ils = getArray (_w >> "ilsPosition");
+    if (count _in < 4 || {count _ils < 2} || {(count (_w >> "SecondaryAirports")) > 0}) then {
+        diag_log format ["  info  taxi out not checked: %1 has no single airport with a taxi route", worldName];
+    } else {
+        (["taxiOut", [_s]] call _fnc_apply) params ["_stT0", "_mT0", "_dT0"];
+        ["a helicopter is not put on a taxi route", _stT0 isEqualTo "ok" && {_mT0}] call _fnc_check;
+        // On the rig that helicopter's stand is on the first leg of the route,
+        // 36 m down it. Moved well clear, so the cases below are the scenes
+        // they describe and nothing else is in the way.
+        private _vehWas = getPosATL _veh;
+        _veh setPosATL [(_vehWas select 0) - 300, _vehWas select 1, 0];
+        sleep 1;
+
+        if (isClass (configFile >> "CfgVehicles" >> "B_T_VTOL_01_infantry_F")) then {
+            private _vtol = createVehicle ["B_T_VTOL_01_infantry_F", [1000, 5500, 500], [], 0, "FLY"];
+            (([_e, "apply", ["taxiOut", _vtol, [[1000, 5500, 0], 0, "terrain"], [_s]]] call ALIVE_fnc_ATOEffect)) params ["_stV", "_mV", "_dV"];
+            ["a VTOL is not put on a taxi route", _stV isEqualTo "ok" && {_mV} && {(_dV find "VTOL") > -1}] call _fnc_check;
+            deleteVehicle _vtol;
+        } else {
+            diag_log "  info  no V-44 on this install, the VTOL check was not run";
+        };
+
+        private _headT = [_in select 0, _in select 1, 0];
+        private _nextT = [_in select 2, _in select 3, 0];
+        private _hdgT = _headT getDir _nextT;
+        private _standT = _headT getPos [40, _hdgT + 180];
+        _standT set [2, 0];
+        private _homeT = [_standT, _hdgT, "terrain"];
+
+        // How far apart two headings are, either way round.
+        private _fnc_turn = { params ["_h1", "_h2"]; abs ((((_h1 - _h2) + 540) % 360) - 180) };
+
+        private _jet = createVehicle ["B_Plane_CAS_01_F", _standT, [], 0, "CAN_COLLIDE"];
+        _jet setPosATL _standT;
+        sleep 2;
+        (([_e, "apply", ["taxiOut", _jet, _homeT, [_s]]] call ALIVE_fnc_ATOEffect)) params ["_stT1", "_mT1", "_dT1"];
+        sleep 1;
+        diag_log format ["  info  taxi out said %1, %2; the plane is %3 m from the head, heading %4 against %5",
+            _stT1, _dT1, round (_jet distance2D _headT), round (getDir _jet), round _hdgT];
+        ["a plane is stood at the head of its taxi route", _stT1 isEqualTo "ok" && {!_mT1} && {(_jet distance2D _headT) < 3}] call _fnc_check;
+        ["pointing along it", ([getDir _jet, _hdgT] call _fnc_turn) < 5] call _fnc_check;
+        (([_e, "apply", ["taxiOut", _jet, _homeT, [_s]]] call ALIVE_fnc_ATOEffect)) params ["_stT2", "_mT2"];
+        ["asking again while it stands there changes nothing", _stT2 isEqualTo "ok" && {_mT2} && {(_jet distance2D _headT) < 3}] call _fnc_check;
+
+        // A second one while the first is still on the head goes further down
+        // the leg, ahead of it and clear of it, never on top of it. Clear
+        // means further apart than their two half spans put together.
+        private _stand2 = _standT getPos [30, _hdgT + 90];
+        _stand2 set [2, 0];
+        private _jet2 = createVehicle ["B_Plane_CAS_01_F", _stand2, [], 0, "CAN_COLLIDE"];
+        _jet2 setPosATL _stand2;
+        sleep 2;
+        (([_e, "apply", ["taxiOut", _jet2, _homeT, [_s]]] call ALIVE_fnc_ATOEffect)) params ["_stT3", "_mT3", "_dT3"];
+        sleep 1;
+        private _fnc_halfT = {
+            (boundingBoxReal _this) params ["_lo", "_hi"];
+            ((abs ((_hi select 0) - (_lo select 0))) max (abs ((_hi select 1) - (_lo select 1)))) / 2
+        };
+        private _needT = (_jet call _fnc_halfT) + (_jet2 call _fnc_halfT);
+        private _gapT = _jet2 distance2D _jet;
+        private _p2 = getPosATL _jet2;
+        private _offLineT = abs ((((_p2 select 0) - (_headT select 0)) * (cos _hdgT)) - (((_p2 select 1) - (_headT select 1)) * (sin _hdgT)));
+        diag_log format ["  info  second plane: %1, %2; %3 m from the first (needs %4), %5 m down the leg, %6 m off its line",
+            _stT3, _dT3, round _gapT, round _needT, round (_jet2 distance2D _headT), round _offLineT];
+        ["a second plane is not stood on top of the first", _stT3 isEqualTo "ok" && {_gapT > _needT}] call _fnc_check;
+        ["it goes AHEAD of it, down the leg", ([_headT getDir _jet2, _hdgT] call _fnc_turn) < 5] call _fnc_check;
+        ["and on the route, not beside it", _offLineT < 3] call _fnc_check;
+
+        // A deck or a held aircraft has its own launch and is never moved here.
+        (([_e, "apply", ["taxiOut", _jet2, [_standT, 0, "deck"], [_s]]] call ALIVE_fnc_ATOEffect)) params ["_stT4", "_mT4"];
+        ["a plane living on a deck is left for the catapult", _stT4 isEqualTo "ok" && {_mT4}] call _fnc_check;
+        (([_e, "apply", ["taxiOut", _jet2, [_standT, 0, "virtual"], [_s]]] call ALIVE_fnc_ATOEffect)) params ["_stT5", "_mT5"];
+        ["and so is a held one", _stT5 isEqualTo "ok" && {_mT5}] call _fnc_check;
+
+        deleteVehicle _jet;
+        deleteVehicle _jet2;
+        sleep 1;
+
+        // Traffic coming down the leg is never stood in front of. A crewed jet
+        // is set taxiing from the head, and a second one whose stand is beside
+        // the leg 300 m further down is asked to launch into its path.
+        private _destM = _headT getPos [1200, 60];
+        private _mover = createVehicle ["B_Plane_CAS_01_F", _headT, [], 0, "CAN_COLLIDE"];
+        _mover setDir _hdgT;
+        _mover setPosATL _headT;
+        createVehicleCrew _mover;
+        _mover engineOn true;
+        private _grpM = group (driver _mover);
+        (_grpM addWaypoint [_destM, 0]) setWaypointType "MOVE";
+        _grpM setCurrentWaypoint [_grpM, 0];
+        _mover doMove _destM;
+        (driver _mover) doMove _destM;
+        private _byM = time + 25;
+        waitUntil { sleep 0.5; (speed _mover) > 20 || {time > _byM} };
+        diag_log format ["  info  the taxiing jet is doing %1 km/h, %2 m down the leg",
+            round (speed _mover), round (_mover distance2D _headT)];
+        ["FIXTURE: a jet is taxiing down the leg", (speed _mover) > 5] call _fnc_check;
+
+        private _standAhead = (_headT getPos [300, _hdgT]) getPos [60, _hdgT + 90];
+        _standAhead set [2, 0];
+        private _jet3 = createVehicle ["B_Plane_CAS_01_F", _standAhead, [], 0, "CAN_COLLIDE"];
+        _jet3 setPosATL _standAhead;
+        sleep 1;
+        private _jet3Was = getPosATL _jet3;
+        (([_e, "apply", ["taxiOut", _jet3, [_standAhead, _hdgT, "terrain"], [_s]]] call ALIVE_fnc_ATOEffect)) params ["_stT6", "_mT6", "_dT6"];
+        diag_log format ["  info  with a jet taxiing towards its spot: %1, %2", _stT6, _dT6];
+        ["a plane is not stood in front of one taxiing towards it",
+            _stT6 isEqualTo "refused" && {(_dT6 find "moving") > -1} && {(_jet3 distance2D _jet3Was) < 3}] call _fnc_check;
+
+        { deleteVehicle _x } forEach (crew _mover);
+        deleteVehicle _mover;
+        deleteVehicle _jet3;
+    };
 
     // --- things this pass does not do ------------------------------------------
     // catapult and tailhook used to be here; they are built now and have their

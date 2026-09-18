@@ -58,11 +58,11 @@ Jman
 // Anything that moves the aircraft, plus taking its crew away. Refused outright
 // while a player is in it, from any state, by any path. A catapult tows the
 // aircraft onto the wire before it fires, so it belongs here with the rest.
-#define PLAYER_UNSAFE ["airborneStart","forceLaunch","virtualLaunch","placeOnSlot","forceLanded","spawnAtHome","standDownCrew","takeOwnership","catapult"]
+#define PLAYER_UNSAFE ["airborneStart","forceLaunch","virtualLaunch","taxiOut","placeOnSlot","forceLanded","spawnAtHome","standDownCrew","takeOwnership","catapult"]
 
 // Effects that only work where the object lives. On a hull owned elsewhere these
 // do nothing at all, so they are refused and reported instead.
-#define LOCAL_ONLY ["engineOn","engineOff","airborneStart","forceLaunch","virtualLaunch","placeOnSlot","forceLanded","spawnAtHome","seatCrew","recrewInPlace","standDownCrew","issueOrders","clearOrders","land","taxiTo","revealTargets","releaseTargets","catapult","tailhook","deckRecover","landOnRunway"]
+#define LOCAL_ONLY ["engineOn","engineOff","airborneStart","forceLaunch","virtualLaunch","taxiOut","placeOnSlot","forceLanded","spawnAtHome","seatCrew","recrewInPlace","standDownCrew","issueOrders","clearOrders","land","taxiTo","revealTargets","releaseTargets","catapult","tailhook","deckRecover","landOnRunway"]
 
 // Not built in this pass. Named so a caller reaching one is told, rather than
 // finding that nothing happened. deckLaunch stays here on purpose: it would be
@@ -125,6 +125,12 @@ Jman
 // off around a hundred and twenty metres.
 #define VIRTUAL_LAUNCH_ALT 300
 
+// How far from its stand a plane may be moved to start its taxi. The furthest
+// stand on Stratis is 792 m from the head of the taxi route. A route starting
+// further off than this belongs to some other field, and following it would be
+// moving the aircraft across the map rather than out of its hangar.
+#define TAXI_REACH 3000
+
 private ["_result"];
 
 TRACE_1("ATO Effect - input",_this);
@@ -163,7 +169,7 @@ switch(_operation) do {
         _result = ["spawnAtHome","airborneStart","mintCrew","mintDroneCrew","seatCrew","recrewInPlace",
                    "standDownCrew","takeOwnership","engineOn","engineOff","issueOrders","clearOrders",
                    "revealTargets","releaseTargets","landAtPad","releaseApproach",
-                   "taxiTo","land","forceLaunch","forceLanded","placeOnSlot","shield",
+                   "taxiTo","taxiOut","land","forceLaunch","forceLanded","placeOnSlot","shield",
                    "broadcast","broadcastStart","broadcastOnStation","broadcastReturn",
                    "broadcastLost","retryLanding","emergencyLanding","turnaround",
                    "mintDroneCrew","recrewInPlace","takeOwnership","engineOn","engineOff",
@@ -598,6 +604,230 @@ switch(_operation) do {
                     _obj engineOn true;
                     _obj setVelocity [(sin (getDir _obj)) * 120, (cos (getDir _obj)) * 120, 0];
                 };
+            };
+
+            // ---- the taxi out ---------------------------------------------
+            // Stands a plane on its airport's taxi route, pointing along it,
+            // and leaves the engine to taxi it to the runway and take off.
+            //
+            // Nothing moved a land plane at launch before this. The launch was
+            // the engine and a radio call, so the engine had to drive the
+            // aircraft out from wherever it was parked, and a jet in a Stratis
+            // tent hangar cannot: they stalled in the doorway or never moved,
+            // and reached the air only when the launch deadline threw them six
+            // hundred metres up.
+            //
+            // The route is the airport's ilsTaxiIn, which runs from the apron to
+            // the runway threshold and is the path the engine's own taxi
+            // follows. The module this one replaced started every departure on
+            // its first point, facing the second. Measured on Stratis with
+            // nothing else running: an A-164 stood there taxied the 908 m to the
+            // threshold by itself and was fifty metres up 101 seconds later,
+            // well inside the three minutes a launch is given.
+            //
+            // Not always on the first point, though. The engine joins the route
+            // wherever the aircraft stands on it and carries on towards the
+            // runway: an F/A-181 stood 45 m down the first leg, with a jet
+            // parked on the head behind it, drove on to the threshold, took off
+            // in 99 seconds and never came back towards the head. So the
+            // aircraft goes to the point on the first leg nearest its own
+            // stand. A jet in a hangar beside the far end of the taxiway is
+            // moved a hundred metres onto it, rather than eight hundred back up
+            // to the head, and has less of the taxiway to drive.
+            //
+            // Nothing is put on top of anything. Another aircraft, a vehicle,
+            // somebody on foot or a wreck on the spot moves it further down the
+            // leg, which keeps it AHEAD of whatever is in the way, as measured
+            // with a parked one. Something MOVING on the leg behind the spot is
+            // different: that is traffic coming this way, a player taxiing out
+            // or another commander's launch on a shared field, and a jet stood
+            // in front of it gets run into. Either that, or nothing clear
+            // before the end of the leg within a hundred metres or so, is a
+            // refusal, and the aircraft keeps the old launch from its stand.
+            //
+            // Fixed wing planes on land. A helicopter or a VTOL lifts where it
+            // stands, and a deck plane or a held one has its own launch. The
+            // table asks for this once, on the way into the launch: asked again
+            // after the aircraft has rolled, it would pull it back to where it
+            // started.
+            case "taxiOut": {
+                if !(_obj isKindOf "Plane") exitWith { _matched = true; _detail = "not a plane" };
+                if (getNumber (configFile >> "CfgVehicles" >> typeOf _obj >> "vtol") != 0) exitWith {
+                    _matched = true; _detail = "a VTOL lifts where it stands";
+                };
+                if (count _home > 2 && {(_home select 2) in ["deck","virtual"]}) exitWith {
+                    _matched = true; _detail = "not a land home";
+                };
+                if (([_obj, _home] call _fnc_up) > 5) exitWith { _matched = true; _detail = "not on the ground" };
+                if ((speed _obj) > 40) exitWith { _matched = true; _detail = "already rolling" };
+                private _surfaceT = _extra param [0, []];
+                if (_surfaceT isEqualTo []) exitWith { _status = "refused"; _detail = "no surface" };
+
+                // The airport nearest the home, as for a landing: a plane that
+                // has drifted from its stand still leaves from its own field.
+                // Only the terrain's own airports. The shared lookup counts
+                // carriers as well, and a land plane is not taxiing out along
+                // a ship.
+                private _from = _home param [0, []];
+                if (!(_from isEqualType []) || {count _from < 2}) then { _from = getPosATL _obj };
+                private _w = configFile >> "CfgWorlds" >> worldName;
+                private _secondary = _w >> "SecondaryAirports";
+                private _airportID = -1;
+                private _nearest = 1e10;
+                private _ilsMain = getArray (_w >> "ilsPosition");
+                if (count _ilsMain >= 2) then { _airportID = 0; _nearest = _from distance2D _ilsMain };
+                for "_i" from 0 to ((count _secondary) - 1) do {
+                    private _ils = getArray ((_secondary select _i) >> "ilsPosition");
+                    if (count _ils >= 2 && {(_from distance2D _ils) < _nearest}) then {
+                        _nearest = _from distance2D _ils;
+                        _airportID = _i + 1;
+                    };
+                };
+
+                // The route, read from the terrain's config here rather than
+                // through the shared taxi helper, which is only defined once
+                // the module has been initialised and which also knows carriers.
+                private _in = [];
+                if (_airportID == 0) then { _in = getArray (_w >> "ilsTaxiIn") };
+                if (_airportID > 0) then { _in = getArray ((_secondary select (_airportID - 1)) >> "ilsTaxiIn") };
+                private _route = [];
+                for "_i" from 0 to ((count _in) - 2) step 2 do {
+                    _route pushBack [_in select _i, _in select (_i + 1), 0];
+                };
+                if (count _route > 1 && {(_from distance2D (_route select 0)) > TAXI_REACH}) then { _route = [] };
+
+                // A terrain with no route in its config: the runway on the
+                // ground by the stand instead, from the nearer end and pointing
+                // down it, which is what the old module fell back on. That leg
+                // IS the runway, so the aircraft goes to its end and is never
+                // stood part way along it.
+                private _alongLeg = true;
+                if (count _route < 2) then {
+                    _route = [];
+                    _alongLeg = false;
+                    private _cl = [];
+                    if (!isNil "ALiVE_fnc_getRunwayCentreline") then { _cl = [_from, 1500] call ALiVE_fnc_getRunwayCentreline };
+                    if (_cl isEqualType [] && {count _cl > 1}) then {
+                        private _ca = _cl select 0;
+                        private _cb = _cl select 1;
+                        if ((_from distance2D _cb) < (_from distance2D _ca)) then {
+                            private _swap = _ca; _ca = _cb; _cb = _swap;
+                        };
+                        _route = [[_ca select 0, _ca select 1, 0], [_cb select 0, _cb select 1, 0]];
+                    };
+                };
+                if (count _route < 2) exitWith { _status = "refused"; _detail = "no taxi route or runway near its stand" };
+
+                private _a = _route select 0;
+                private _b = _route select 1;
+                private _dir = _a getDir _b;
+                private _dx = (_b select 0) - (_a select 0);
+                private _dy = (_b select 1) - (_a select 1);
+                private _leg = _a distance2D _b;
+                if (_leg < 1) exitWith { _status = "refused"; _detail = "the taxi route has no first leg" };
+
+                // How far a thing reaches from its centre, the larger of its
+                // length and width halved. Two things are in each other's way
+                // when their centres are closer than their two reaches together.
+                // Asking only whether something's CENTRE is within this
+                // aircraft's own reach, the way a stand is checked, would let two
+                // jets be stood thirteen metres apart with their wings through
+                // each other.
+                private _fnc_halfSpan = {
+                    (boundingBoxReal _this) params ["_lo", "_hi"];
+                    ((abs ((_hi select 0) - (_lo select 0))) max (abs ((_hi select 1) - (_lo select 1)))) / 2
+                };
+                private _half = _obj call _fnc_halfSpan;
+
+                // Whatever is standing on a spot. A wreck counts, as it does for
+                // parking: driving into one is no better than driving into a
+                // live one. A body on the ground does not, and nor does anyone
+                // sitting in a vehicle, who is found as the vehicle, and nor does
+                // a helicopter passing overhead. This aircraft is not in its own
+                // way. Never closer than the stand's own check allows either, so
+                // the placing below does not then refuse a spot passed here.
+                private _fnc_standing = {
+                    params ["_at"];
+                    ((nearestObjects [_at, ["Air","LandVehicle","CAManBase"], _half + 60]) select {
+                        !(_x isEqualTo _obj) && {isNull (objectParent _x)}
+                        && {alive _x || {!(_x isKindOf "CAManBase")}}
+                        && {((getPosATL _x) select 2) < 5}
+                        && {(_x distance2D _at) < ((_half + (_x call _fnc_halfSpan) + 3) max ((_half + 4) max 12))}
+                    }) param [0, objNull]
+                };
+
+                // Where on the first leg, as a distance from its start. The
+                // nearest point to the stand, and never within an aircraft's
+                // length of the turn at the far end, which is left for the engine
+                // to take. On the runway itself only its end will do: anywhere
+                // further along is a shorter run to take off in.
+                private _last = if (_alongLeg) then { (_leg - (2 * _half) - 10) max 0 } else { 0 };
+                private _along = 0;
+                if (_alongLeg && {_leg > 0}) then {
+                    _along = ((((_from select 0) - (_a select 0)) * _dx) + (((_from select 1) - (_a select 1)) * _dy)) / _leg;
+                    _along = (_along max 0) min _last;
+                };
+
+                // Down the leg from there, a few metres at a time, for about a
+                // hundred metres at most. Further than that and whatever is in
+                // the way is more than a parked aircraft.
+                private _spot = [];
+                private _first = objNull;
+                private _d = _along;
+                private _tries = 0;
+                while { count _spot == 0 && {_d <= _last} && {_tries < 12} } do {
+                    private _p = _a getPos [_d, _dir];
+                    _p set [2, 0];
+                    private _there = [_p] call _fnc_standing;
+                    if (isNull _there) then { _spot = _p } else { if (isNull _first) then { _first = _there } };
+                    _d = _d + (_half max 5);
+                    _tries = _tries + 1;
+                };
+                if (count _spot == 0) exitWith {
+                    _status = "refused";
+                    _detail = format ["the taxi route is blocked by %1", if (isNull _first) then {"nothing it could name"} else {typeOf _first}];
+                };
+
+                // Traffic coming this way. Anything on the ground and moving,
+                // between a little before the start of the leg and the spot,
+                // within forty metres of the line of it.
+                private _upTo = _a distance2D _spot;
+                private _coming = objNull;
+                {
+                    private _c = _x;
+                    if (isNull _coming && {!(_c isEqualTo _obj)} && {alive _c} && {(speed _c) > 5}
+                        && {((getPosATL _c) select 2) < 5}) then {
+                        private _rx = ((getPosATL _c) select 0) - (_a select 0);
+                        private _ry = ((getPosATL _c) select 1) - (_a select 1);
+                        private _t = ((_rx * _dx) + (_ry * _dy)) / _leg;
+                        private _off = abs (((_rx * _dy) - (_ry * _dx)) / _leg);
+                        if (_t > -50 && {_t < _upTo} && {_off < 40}) then { _coming = _c };
+                    };
+                } forEach (nearestObjects [_a getPos [_upTo / 2, _dir], ["Air","LandVehicle"], (_upTo / 2) + 70]);
+                if (!isNull _coming) exitWith {
+                    _status = "refused";
+                    _detail = format ["%1 is moving on the taxi route behind that spot", typeOf _coming];
+                };
+
+                // Already there. A second ask while it still stands where it was
+                // put changes nothing; one after it has rolled would move it
+                // back, which is why the table only asks once.
+                if ((_obj distance2D _spot) < 5) exitWith { _matched = true; _detail = "already on the taxi route" };
+
+                private _moved = round (_obj distance2D _spot);
+                if !([_surfaceT, "place", [_obj, [_spot, _dir, "taxi"]]] call ALIVE_fnc_ATOSurface) exitWith {
+                    _status = "refused"; _detail = "the surface refused the placement";
+                };
+                _detail = format ["moved %1 m to the taxi route", _moved];
+                // Said out loud, because a detail is only ever written down when
+                // an effect is refused, and moving an aircraft hundreds of
+                // metres is worth a line whether or not anything went wrong.
+                ["ALIVE_fnc_ATOEffect - %1 (%2) moved %3 m onto the taxi route of airport %4, %5 m down its first leg, heading %6%7",
+                    typeOf _obj, _obj getVariable ["ALiVE_mil_ato_tail", "no tail"], _moved,
+                    if (_alongLeg) then {str _airportID} else {"none, the runway itself"},
+                    round (_a distance2D _spot), round _dir,
+                    if (isNull _first) then {""} else {format [", further down because %1 was in the way", typeOf _first]}
+                ] call ALiVE_fnc_dump;
             };
 
             // ---- the catapult -----------------------------------------------
