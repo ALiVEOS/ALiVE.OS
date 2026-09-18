@@ -1382,7 +1382,6 @@ switch(_operation) do {
                                         // matching comment in sys_profile/fnc_profileEntity.sqf
                                         // case "createDebugMarkers".
                                         _marker = [_profile, "createDebugMarkers", [true]] call ALIVE_fnc_profileEntity;
-                                        systemchat "creating debug markers";
                                         _markers append _marker;
                                         _profiles pushback (_profile select 2 select 4);
                                     };
