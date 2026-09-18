@@ -3790,7 +3790,11 @@ switch(_operation) do {
 
             private _distance = _sourcePos distance2D _targetPos;
             private _resupplySpeedMPS = 45 / 3.6;  // 45 km/h in m/s.
-            private _timeout = (_distance / _resupplySpeedMPS) * 1.5;
+            // Never under two minutes. Straight-line distance at road speed gave
+            // 27 s across an airfield, less than a truck needs to start moving
+            // and drive round by road, so every short delivery timed out and was
+            // done by hand instead. The artillery truck has had a floor all along.
+            private _timeout = ((_distance / _resupplySpeedMPS) * 1.5) max 120;
 
             // Check route for water obstacles (existing ML pattern).
             private _waterBlocked = false;
