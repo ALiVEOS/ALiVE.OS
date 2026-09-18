@@ -24,6 +24,7 @@ Returns:
 
 Author:
     Goldwep
+    Jman
 ---------------------------------------------------------------------------- */
 
 params ["_veh"];
@@ -49,9 +50,10 @@ if (_isArty) then {
         if (_v != _x && {!(_v in _batteryVehicles)}) then { _batteryVehicles pushBack _v };
     } forEach (units (group _leader));
 
+    // Topped up to half a tank, never drained to it, the same as below.
     {
         _x setVehicleAmmo 1;
-        _x setFuel 0.5;
+        _x setFuel ((fuel _x) max 0.5);
         _x setDamage 0;
     } forEach _batteryVehicles;
 
@@ -67,8 +69,11 @@ if (_isArty) then {
 } else {
     // Transport or CAS: _veh IS the vehicle.
     _veh setVehicleAmmo 1;
-    _veh setFuel 0.5;
+    // Topped up to half a tank, never drained to it. Setting 0.5 outright took
+    // an aircraft that came back with 0.97 and sent it out on its next sortie
+    // with 0.50.
+    _veh setFuel ((fuel _veh) max 0.5);
     _veh setDamage 0;
     _veh setVariable ["ALIVE_resupply_needsService", false, true];
-    ["ALIVE Resupply Service: Vehicle %1 serviced (ammo, fuel 0.5, damage 0)", _veh] call ALiVE_fnc_dump;
+    ["ALIVE Resupply Service: Vehicle %1 serviced (ammo, fuel %2, damage 0)", _veh, (fuel _veh) toFixed 2] call ALiVE_fnc_dump;
 };
