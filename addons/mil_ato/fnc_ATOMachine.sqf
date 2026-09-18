@@ -753,7 +753,7 @@ switch(_operation) do {
                     switch (true) do {
                         case (_deckPlane): { _effects append ["engineOn","catapult","broadcastStart"]; };
                         case (_virtualHome): { _effects append ["engineOn","virtualLaunch","broadcastStart"]; };
-                        case ("fixedWing" call _fnc_o): { _effects append ["taxiOut","engineOn","broadcastStart"]; };
+                        case ("fixedWing" call _fnc_o): { _effects append ["taxiOut","sweepTaxiPath","engineOn","broadcastStart"]; };
                         default { _effects append ["engineOn","broadcastStart"]; };
                     };
                 };

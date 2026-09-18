@@ -70,7 +70,7 @@ Jman
 // finding that nothing happened. deckLaunch stays here on purpose: it would be
 // a second name for catapult, and two names for one thing is how two callers
 // come to disagree.
-#define NOT_BUILT ["deckLaunch","decoyLasers","addThreatHandlers","holdTargets","unquiesce","sweepTaxiPath","siren","deleteWreckNear","rehome","unshield"]
+#define NOT_BUILT ["deckLaunch","decoyLasers","addThreatHandlers","holdTargets","unquiesce","siren","deleteWreckNear","rehome","unshield"]
 
 // The catapult, in numbers.
 //
@@ -133,6 +133,11 @@ Jman
 // moving the aircraft across the map rather than out of its hangar.
 #define TAXI_REACH 3000
 
+// How long the path ahead of a launching plane is kept clear, at most. Launches
+// measured from the taxi route took 67 to 302 seconds to reach fifty metres; the
+// sweep stops as soon as the aircraft does.
+#define SWEEP_SPAN 300
+
 private ["_result"];
 
 TRACE_1("ATO Effect - input",_this);
@@ -176,7 +181,8 @@ switch(_operation) do {
                    "broadcastLost","retryLanding","emergencyLanding","turnaround",
                    "mintDroneCrew","recrewInPlace","takeOwnership","engineOn","engineOff",
                    "seatCrew","standDownCrew","clearOrders","airborneStart",
-                   "catapult","tailhook","deckRecover","landOnRunway","holdOnStand","releaseHold"];
+                   "catapult","tailhook","deckRecover","landOnRunway","holdOnStand","releaseHold",
+                   "sweepTaxiPath"];
     };
 
     case "apply": {
@@ -906,6 +912,141 @@ switch(_operation) do {
                     round (_a distance2D _spot), round _dir,
                     if (isNull _first) then {""} else {format [", further down because %1 was in the way", typeOf _first]}
                 ] call ALiVE_fnc_dump;
+            };
+
+            // ---- keeping the taxi path clear ----------------------------------
+            // Anything in a plane's path as it taxis out, up to 120 m ahead and
+            // within thirty metres of its line, is moved aside, from the moment it
+            // is stood on its route until it is fifty metres up.
+            //
+            // The module this one replaced did this, and the rewrite had it only
+            // as a name nobody had built. An empty civilian van left where the
+            // taxiway joins the runway held a jet on the ground until a player
+            // moved it by hand.
+            //
+            // Soldiers and crewed vehicles are told to move first and put there
+            // if they have not gone five seconds later, as the old watch did. An
+            // EMPTY vehicle cannot move itself, so a civilian one is put aside at
+            // once. An empty military vehicle is left where it is: somebody put
+            // it there. Nothing a player is in or leads, a player on foot, or
+            // this aircraft's own crew is touched. Aside is seventy metres off
+            // the aircraft's line, on the side further from the runway, never
+            // into the sea, on the nearest clear spot for a vehicle.
+            //
+            // Civilian is asked of the vehicle's FACTION, not its side: an empty
+            // vehicle reads as civilian side whatever it belongs to.
+            case "sweepTaxiPath": {
+                if !(_obj isKindOf "Plane") exitWith { _matched = true; _detail = "not a plane" };
+                if (([_obj, _home] call _fnc_up) > 5) exitWith { _matched = true; _detail = "not on the ground" };
+                private _sweeping = _obj getVariable ["ALiVE_mil_ato_sweepUntil", -1];
+                if (_sweeping isEqualType 0 && {time < _sweeping}) exitWith { _matched = true; _detail = "already sweeping" };
+                _obj setVariable ["ALiVE_mil_ato_sweepUntil", time + SWEEP_SPAN, false];
+
+                [_obj, _obj getVariable ["ALiVE_mil_ato_tail", "no tail"]] spawn {
+                    params ["_jet", "_tail"];
+                    private _stop = time + SWEEP_SPAN;
+
+                    // The runway's line, to pick the side away from it.
+                    private _cl = [];
+                    if (!isNil "ALiVE_fnc_getRunwayCentreline") then { _cl = [getPosATL _jet, 1500] call ALiVE_fnc_getRunwayCentreline };
+                    private _fnc_fromRunway = {
+                        params ["_p"];
+                        if !(_cl isEqualType [] && {count _cl > 1}) exitWith { 1e9 };
+                        private _ra = _cl select 0;
+                        private _rb = _cl select 1;
+                        private _dx = (_rb select 0) - (_ra select 0);
+                        private _dy = (_rb select 1) - (_ra select 1);
+                        private _l2 = (_dx * _dx) + (_dy * _dy);
+                        if (_l2 <= 0) exitWith { 1e9 };
+                        private _t = ((((_p select 0) - (_ra select 0)) * _dx) + (((_p select 1) - (_ra select 1)) * _dy)) / _l2;
+                        _t = (_t max 0) min 1;
+                        _p distance2D [(_ra select 0) + (_t * _dx), (_ra select 1) + (_t * _dy), 0]
+                    };
+                    private _fnc_aside = {
+                        params ["_u", "_heading"];
+                        private _a = _u getPos [70, _heading + 90];
+                        private _b = _u getPos [70, _heading - 90];
+                        private _to = if (([_a] call _fnc_fromRunway) >= ([_b] call _fnc_fromRunway)) then { _a } else { _b };
+                        if (surfaceIsWater _to) then { _to = if (_to isEqualTo _a) then { _b } else { _a } };
+                        if !(_u isKindOf "CAManBase") then {
+                            private _clear = _to findEmptyPosition [0, 30, typeOf _u];
+                            if (count _clear > 1) then { _to = _clear };
+                        };
+                        _to set [2, 0];
+                        _to
+                    };
+                    private _fnc_putAside = {
+                        params ["_u", "_to", "_how"];
+                        private _was = getPosATL _u;
+                        _u setVelocity [0,0,0];
+                        _u setPosATL _to;
+                        ["ALIVE_fnc_ATOEffect - %1 %2 put %3 m aside from the taxi path of %4 (%5)",
+                            _how, typeOf _u, round (_was distance2D _to), _tail, typeOf _jet] call ALiVE_fnc_dump;
+                    };
+
+                    while { !isNull _jet && {alive _jet} && {((getPosATL _jet) select 2) < 50} && {time < _stop} } do {
+                        private _pos = getPosATL _jet;
+                        private _heading = getDir _jet;
+                        private _hx = sin _heading;
+                        private _hy = cos _heading;
+                        {
+                            private _u = _x;
+                            // In the aircraft's PATH: ahead of it and within thirty
+                            // metres of its line, not merely in front of it. The old
+                            // watch swept a sixty degree cone, which at a hundred
+                            // metres is a hundred metres either side, so a pickup
+                            // moved seventy metres aside was still inside it and was
+                            // moved again the next second.
+                            private _rx = ((getPosATL _u) select 0) - (_pos select 0);
+                            private _ry = ((getPosATL _u) select 1) - (_pos select 1);
+                            private _ahead = (_rx * _hx) + (_ry * _hy);
+                            private _lateral = abs ((_rx * _hy) - (_ry * _hx));
+                            private _isMan = _u isKindOf "CAManBase";
+                            private _aboard = if (_isMan) then { [] } else { (crew _u) select { alive _x } };
+                            private _players = if (_isMan) then {
+                                isPlayer _u || {isPlayer (leader (group _u))}
+                            } else {
+                                (_aboard findIf { isPlayer _x || {isPlayer (leader (group _x))} }) > -1
+                            };
+                            private _civilianEmpty = !_isMan && {count _aboard == 0}
+                                && {getNumber (configFile >> "CfgFactionClasses" >> (faction _u) >> "side") == 3};
+                            if (alive _u && {!(_u isEqualTo _jet)} && {isNull (objectParent _u)} && {!_players}
+                                && {!(_u getVariable ["ALiVE_mil_ato_crew", false])}
+                                && {_isMan || {count _aboard > 0} || {_civilianEmpty}}
+                                && {_ahead > 0} && {_lateral < 30}) then {
+                                if (_civilianEmpty) then {
+                                    [_u, [_u, _heading] call _fnc_aside, "an empty"] call _fnc_putAside;
+                                } else {
+                                    private _warned = _u getVariable ["ALiVE_mil_ato_sweepAt", -1];
+                                    if (_warned < 0) then {
+                                        private _to = [_u, _heading] call _fnc_aside;
+                                        _u setVariable ["ALiVE_mil_ato_sweepAt", time, false];
+                                        _u setVariable ["ALiVE_mil_ato_sweepFrom", getPosATL _u, false];
+                                        _u setVariable ["ALiVE_mil_ato_sweepTo", _to, false];
+                                        private _mover = if (_isMan) then { _u } else {
+                                            if (!isNull (driver _u)) then { driver _u } else { effectiveCommander _u }
+                                        };
+                                        if (!isNull _mover) then { _mover doMove _to };
+                                    } else {
+                                        private _from = _u getVariable ["ALiVE_mil_ato_sweepFrom", getPosATL _u];
+                                        if ((_u distance2D _from) > 10) then {
+                                            // Gone of its own accord. Warned afresh if it wanders back.
+                                            _u setVariable ["ALiVE_mil_ato_sweepAt", -1, false];
+                                        } else {
+                                            if ((time - _warned) > 5) then {
+                                                [_u, _u getVariable ["ALiVE_mil_ato_sweepTo", [_u, _heading] call _fnc_aside], "a"] call _fnc_putAside;
+                                                _u setVariable ["ALiVE_mil_ato_sweepAt", -1, false];
+                                            };
+                                        };
+                                    };
+                                };
+                            };
+                        } forEach (nearestObjects [_pos, ["CAManBase","LandVehicle"], 120]);
+                        sleep 1;
+                    };
+                    if (!isNull _jet) then { _jet setVariable ["ALiVE_mil_ato_sweepUntil", nil, false] };
+                };
+                _detail = "sweeping";
             };
 
             // ---- the catapult -----------------------------------------------

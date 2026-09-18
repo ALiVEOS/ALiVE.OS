@@ -483,6 +483,7 @@ observation sequences, because those are what the table exists to prevent.
     diag_log format ["  info  a plane on land launching went to %1, effects %2", _lpState, _lpEff];
     ["a plane on land launches from its taxi route",
         _lpState isEqualTo "LAUNCHING" && {"taxiOut" in _lpEff}] call _fnc_check;
+    ["and the path ahead of it is kept clear", "sweepTaxiPath" in _lpEff] call _fnc_check;
     ["and it is put there before its engine is started",
         (_lpEff find "taxiOut") > -1 && {(_lpEff find "taxiOut") < (_lpEff find "engineOn")}] call _fnc_check;
     ["and its fuel is given back before that",
