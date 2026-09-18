@@ -123,7 +123,7 @@ switch(_operation) do {
                 waitUntil {!isNil QUOTE(ADDON) && {ADDON getVariable ["init", false]}};
 
                 // Defaults
-                playertags_debug = (_logic getvariable ["debug","false"]) == "true";
+                playertags_debug = (_logic getvariable ["playertags_debug_setting","false"]) == "true";
                 playertags_group = (_logic getvariable ["playertags_displaygroup_setting","true"]) == "true";
                 playertags_rank = (_logic getvariable ["playertags_displayrank_setting","true"]) == "true";
                 playertags_invehicle = (_logic getvariable ["playertags_invehicle_setting","false"]) == "true";
@@ -140,7 +140,7 @@ switch(_operation) do {
 
                 GVAR(RADIUS) = _logic getvariable ["playertags_distance_setting",20];
                 GVAR(STYLE) = _logic getvariable ["playertags_style_setting","default"];
-                GVAR(DEBUG) = (_logic getvariable ["debug","false"]) == "true";
+                GVAR(DEBUG) = (_logic getvariable ["playertags_debug_setting","false"]) == "true";
                 GVAR(ONVIEW) = (_logic getvariable ["playertags_onview_setting","false"]) == "true";
 
                 // select method
