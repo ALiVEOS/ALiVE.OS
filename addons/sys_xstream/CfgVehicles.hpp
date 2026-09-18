@@ -22,7 +22,7 @@ class CfgVehicles {
         class ModuleDescription { description = "$STR_ALIVE_XSTREAM_COMMENT"; };
         class Attributes : AttributesBase
         {
-            class debug : Combo { property = "ALiVE_sys_xstream_debug"; displayName = "$STR_ALIVE_XSTREAM_DEBUG"; tooltip = "$STR_ALIVE_XSTREAM_COMMENT"; defaultValue = """1"""; class Values { class Yes{name="Yes";value=1;default=1;}; class No{name="No";value=0;}; }; };
+            class debug : Combo { property = "ALiVE_sys_xstream_debug"; displayName = "$STR_ALIVE_XSTREAM_DEBUG"; tooltip = "$STR_ALIVE_XSTREAM_COMMENT"; defaultValue = """0"""; class Values { class Yes{name="Yes";value=1;}; class No {name="No";value=0;default=1;}; }; };
             class enabletwitch : Combo { property = "ALiVE_sys_xstream_enabletwitch"; displayName = "$STR_ALIVE_XSTREAM_enabletwitch"; tooltip = "$STR_ALIVE_XSTREAM_enabletwitch_COMMENT"; defaultValue = """1"""; class Values { class Yes{name="Yes";value=1;default=1;}; class No{name="No";value=0;}; }; };
             class enableLiveMap : Combo { property = "ALiVE_sys_xstream_enableLiveMap"; displayName = "$STR_ALIVE_XSTREAM_enableLiveMap"; tooltip = "$STR_ALIVE_XSTREAM_enableLiveMap_COMMENT"; defaultValue = """1"""; class Values { class Yes{name="Yes";value=1;default=1;}; class No{name="No";value=0;}; }; };
             class enableCamera : Combo { property = "ALiVE_sys_xstream_enableCamera"; displayName = "$STR_ALIVE_XSTREAM_enableCamera"; tooltip = "$STR_ALIVE_XSTREAM_enableCamera_COMMENT"; defaultValue = """1"""; class Values { class Yes{name="Yes";value=1;default=1;}; class No{name="No";value=0;}; }; };

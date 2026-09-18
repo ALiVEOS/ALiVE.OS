@@ -25,11 +25,11 @@ class CfgVehicles {
                     property = "ALiVE_sys_tour_debug";
                     displayName = "$STR_ALIVE_TOUR_DEBUG";
                     tooltip = "$STR_ALIVE_TOUR_DEBUG_COMMENT";
-                    defaultValue = """true""";
+                    defaultValue = """false""";
                     class Values
                     {
-                        class Yes { name = "Yes"; value = true; default = 1; };
-                        class No { name = "No"; value = false; };
+                        class Yes { name = "Yes"; value = true; };
+                        class No { name = "No"; value = false; default = 1;};
                     };
             };
             class ModuleDescription : ModuleDescription {};
