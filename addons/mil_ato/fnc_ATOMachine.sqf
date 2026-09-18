@@ -247,7 +247,14 @@ switch(_operation) do {
                             };
 
                             case "ASSIGNED": {
-                                if ("crewSeated" call _fnc_o && {"lockHeld" call _fnc_o}) then {
+                                // Only an aircraft that uses the runway waits for it.
+                                // A helicopter lifts off from its own pad and lands
+                                // on it again, and queueing it behind the jets cost
+                                // both ways: an Apache that could not get down held
+                                // the runway through five minutes of hovering while a
+                                // jet behind it ran out of time on NO_LOCK.
+                                private _lockOk = !_needsRunway || {"lockHeld" call _fnc_o};
+                                if ("crewSeated" call _fnc_o && {_lockOk}) then {
                                     _next = "LAUNCHING";
                                 } else {
                                     if (_expired) then {
@@ -274,7 +281,7 @@ switch(_operation) do {
                                         // could not say whether for want of a pilot or of
                                         // the runway lock, which need different fixes.
                                         _reason = switch (true) do {
-                                            case (!("crewSeated" call _fnc_o) && {!("lockHeld" call _fnc_o)}): { "NO_PILOT_NO_LOCK" };
+                                            case (!("crewSeated" call _fnc_o) && {!_lockOk}): { "NO_PILOT_NO_LOCK" };
                                             case (!("crewSeated" call _fnc_o)): { "NO_PILOT" };
                                             default { "NO_LOCK" };
                                         };
@@ -287,7 +294,7 @@ switch(_operation) do {
                                         // back to being parked. The landing approach learnt
                                         // the same lesson. Asked only while it is not held,
                                         // so a lock already won is never extended.
-                                        if !("lockHeld" call _fnc_o) then { _effects pushBack "lock" };
+                                        if (!_lockOk) then { _effects pushBack "lock" };
                                     };
                                 };
                             };
@@ -435,8 +442,10 @@ switch(_operation) do {
                                 } else {
                                     private _near = "nearHome" call _fnc_o;
                                     switch (true) do {
-                                        // Runway in hand: go and land on it.
-                                        case (_near && {"lockHeld" call _fnc_o}): { _next = "LANDING" };
+                                        // Runway in hand: go and land on it. A
+                                        // helicopter comes down on its own pad and
+                                        // never needs the runway to do it.
+                                        case (_near && {!_needsRunway || {"lockHeld" call _fnc_o}}): { _next = "LANDING" };
 
                                         // Almost dry. Land regardless, and say so.
                                         case (_near && {("fuel" call _fnc_n) < 0.1}): {
@@ -721,7 +730,9 @@ switch(_operation) do {
                     if (("needsRunway" call _fnc_o) && {!("deckHome" call _fnc_o)} && {!_virtualHome}) then {
                         _effects pushBack "holdOnStand";
                     };
-                    _effects append ["mintCrew","seatCrew","lock"];
+                    _effects append ["mintCrew","seatCrew"];
+                    // The runway only for something that uses it.
+                    if (_needsRunway) then { _effects pushBack "lock" };
                 };
                 // Start the engine as well as saying it is going. Announcing a
                 // departure does not make one happen.

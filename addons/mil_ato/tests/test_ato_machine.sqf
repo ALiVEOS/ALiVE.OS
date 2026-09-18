@@ -541,10 +541,47 @@ observation sequences, because those are what the table exists to prevent.
     ["an assignment that runs out in the air is recovered, not parked",
         _upState isEqualTo "RECOVERING" && {!("standDownCrew" in _upEff)} && {!("engineOff" in _upEff)}] call _fnc_check;
     ["and the tasker is still told it failed", "assignFailed" in _upEff] call _fnc_check;
-    private _gndOut = [_m, "step", [_upRow, [[["crewSeated", true], ["lockHeld", false]]] call _fnc_obs, "", 1000]] call ALIVE_fnc_ATOMachine;
+    // A plane, because only a plane waits for the runway: a helicopter with its
+    // pilot seated would simply launch.
+    private _gndOut = [_m, "step", [_upRow, [[["crewSeated", true], ["lockHeld", false],
+        ["fixedWing", true], ["needsRunway", true]]] call _fnc_obs, "", 1000]] call ALIVE_fnc_ATOMachine;
     ["one that runs out on the ground is still parked and stood down, as before",
         (([(_gndOut select 0), "state", ""] call ALIVE_fnc_hashGet) isEqualTo "PARKED")
         && {"standDownCrew" in (_gndOut select 2)}] call _fnc_check;
+
+    // ---- the runway is for what uses it ------------------------------------
+    // A helicopter lifts from its own pad and lands on it again. An Apache that
+    // could not get down held the runway through five minutes of hovering while
+    // a jet behind it ran out of time, so a helicopter neither waits for the
+    // runway nor holds it.
+    ([[["lockHeld", false]]] call _fnc_launchFrom) params ["_hState", "_hEff"];
+    ["a helicopter with its pilot seated launches without the runway",
+        _hState isEqualTo "LAUNCHING" && {!("lock" in _hEff)}] call _fnc_check;
+    ([[["lockHeld", false], ["fixedWing", true], ["needsRunway", true]]] call _fnc_launchFrom) params ["_pState", "_pEff"];
+    ["a plane still waits for the runway and asks for it",
+        _pState isEqualTo "ASSIGNED" && {"lock" in _pEff}] call _fnc_check;
+    ["a helicopter's assignment does not ask for the runway",
+        !("lock" in (([[]] call _fnc_assign) select 1))] call _fnc_check;
+    ["a plane's does",
+        "lock" in (([[["fixedWing", true], ["needsRunway", true]]] call _fnc_assign) select 1)] call _fnc_check;
+
+    private _fnc_rtbNear = {
+        params ["_flags"];
+        private _row = [_m, "newRow", ["BLU_F_0", [[100,100,0], 0, "terrain"]]] call ALIVE_fnc_ATOMachine;
+        [_row, "state", "RTB"] call ALIVE_fnc_hashSet;
+        [_row, "deadlineAt", 9999] call ALIVE_fnc_hashSet;
+        [_row, "sortie", ["CAS", [100,100,0], 600, 2000, "s1", [], ""]] call ALIVE_fnc_hashSet;
+        private _obs = [[["airborne", true], ["atHome", false], ["nearHome", true],
+            ["playersWithin1000Home", 2], ["lockHeld", false]] + _flags] call _fnc_obs;
+        private _out = [_m, "step", [_row, _obs, "", 1000]] call ALIVE_fnc_ATOMachine;
+        [([(_out select 0), "state", ""] call ALIVE_fnc_hashGet), _out select 2]
+    };
+    ([[]] call _fnc_rtbNear) params ["_hrState", "_hrEff"];
+    ["a helicopter near home goes in to land without the runway",
+        _hrState isEqualTo "LANDING" && {!("lock" in _hrEff)}] call _fnc_check;
+    ([[["fixedWing", true], ["needsRunway", true]]] call _fnc_rtbNear) params ["_prState", "_prEff"];
+    ["a plane near home asks for the runway first, as before",
+        _prState isEqualTo "RTB" && {"lock" in _prEff}] call _fnc_check;
 
     if (count _fails == 0) then {
         diag_log "=== ATO Machine test: ALL PASS ===";
