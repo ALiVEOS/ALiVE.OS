@@ -26,6 +26,8 @@ objectives
 analyzeclusteroccupation
 setorders
 setSectionOrders
+confirmOrder
+releaseOrder
 setObjectiveSection
 rebuildObjectiveIndexes
 synchronizeorders
@@ -1270,7 +1272,7 @@ switch (_operation) do {
     };
 
     case "setSectionOrders": {
-        _args params ["_targetObjective","_objectiveID","_orders","_orderBatch"];
+        _args params ["_targetObjective","_objectiveID","_orders","_orderBatch",["_orderID",-1]];
 
         if (_orderBatch isEqualTo []) exitWith {
             _result = [];
@@ -1326,12 +1328,69 @@ switch (_operation) do {
                 ]] call ALiVE_fnc_hashSetMany;
 
                 [_profile,"addWaypoint",_profileWaypoint] call ALIVE_fnc_profileEntity;
-                _pendingOrders pushBack [_pos,_profileID,_objectiveID,time];
+                _pendingOrders pushBack [_pos,_profileID,_objectiveID,time,_orderID];
                 _profileWaypoints pushBack _profileWaypoint;
             };
         } forEach _orderBatch;
 
         _result = _profileWaypoints;
+    };
+
+    case "confirmOrder": {
+        // An accepted order's groups are OPCOM's to track from here. Taking the order ID
+        // off their pending entries means a duplicate or stale confirmation that turns up
+        // later can never release groups that are legitimately on an accepted order.
+        private _orderID = _args;
+        _result = 0;
+
+        if !(_orderID isEqualType 0 && {_orderID > 0}) exitWith {};
+
+        {
+            if ((_x param [4,-1]) isEqualTo _orderID) then {
+                _x set [4,-1];
+                _result = _result + 1;
+            };
+        } forEach ([_logic,"pendingorders",[]] call ALiVE_fnc_HashGet);
+    };
+
+    case "releaseOrder": {
+        // TACOM hands out the waypoints and marks the groups busy before it confirms, so
+        // an order OPCOM then rejects (expired, late or stale) left its groups walking to
+        // a dead objective and kept out of new sections until the one hour sweep in
+        // cleanupduplicatesections. Release exactly the groups this order stamped.
+        // Manual and legacy orders stamp -1 and are never released here.
+        private _orderID = _args;
+        _result = [];
+
+        if !(_orderID isEqualType 0 && {_orderID > 0}) exitWith {};
+
+        // collect first: resetProfileOrders deletes from pendingorders as it goes
+        private _profileIDs = [];
+        {
+            if ((_x param [4,-1]) isEqualTo _orderID) then {_profileIDs pushBack (_x select 1)};
+        } forEach ([_logic,"pendingorders",[]] call ALiVE_fnc_HashGet);
+
+        if (_profileIDs isEqualTo []) exitWith {};
+
+        private _profilesByID = [ALiVE_profileHandler,"profilesById"] call ALiVE_fnc_hashGet;
+        {
+            private _profile = _profilesByID get _x;
+            if !(isNil "_profile") then {
+                // the waypoint carries a "completed" statement for this order, so leaving it
+                // would have the group report a completion for an order that no longer
+                // exists when it arrives
+                [_profile,"clearWaypoints"] call ALIVE_fnc_profileEntity;
+                [_profile,"clearActiveCommands"] call ALIVE_fnc_profileEntity;
+            };
+            [_logic,"resetProfileOrders",_x] call MAINCLASS;
+        } forEach _profileIDs;
+
+        if ([_logic,"debug",false] call ALiVE_fnc_HashGet) then {
+            ["OPCOM %1 released %2 group(s) from dead order %3: %4",
+                [_logic,"side","EAST"] call ALiVE_fnc_HashGet, count _profileIDs, _orderID, _profileIDs] call ALiVE_fnc_dump;
+        };
+
+        _result = _profileIDs;
     };
 
     case "setObjectiveSection": {

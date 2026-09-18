@@ -798,7 +798,7 @@ class FSM
                          "            } foreach _section;" \n
                          "            if (call _orderExpired) exitwith {_recon set [1,[""order expired before issue""]]};" \n
                          "            [_objective,""tacom_state"",""recon""] call AliVE_fnc_HashSet;" \n
-                         "            _issuedWaypoints = [_OPCOM_HANDLER,""setSectionOrders"",[_objective,_objectiveID,_operation,_orderBatch]] call ALiVE_fnc_OPCOM;" \n
+                         "            _issuedWaypoints = [_OPCOM_HANDLER,""setSectionOrders"",[_objective,_objectiveID,_operation,_orderBatch,_orderID]] call ALiVE_fnc_OPCOM;" \n
                          "            if (_issuedWaypoints isEqualTo []) then {" \n
                          "                [_objective,""tacom_state"",""none""] call AliVE_fnc_HashSet;" \n
                          "                _recon set [1,[""no valid groups available""]];" \n
@@ -869,7 +869,7 @@ class FSM
                          "            } foreach _section;" \n
                          "            if (call _orderExpired) exitwith {_capture set [1,[""order expired before issue""]]};" \n
                          "            [_objective,""tacom_state"",""capture""] call AliVE_fnc_HashSet;" \n
-                         "            _issuedWaypoints = [_OPCOM_HANDLER,""setSectionOrders"",[_objective,_objectiveID,_operation,_orderBatch]] call ALiVE_fnc_OPCOM;" \n
+                         "            _issuedWaypoints = [_OPCOM_HANDLER,""setSectionOrders"",[_objective,_objectiveID,_operation,_orderBatch,_orderID]] call ALiVE_fnc_OPCOM;" \n
                          "            if (_issuedWaypoints isEqualTo []) then {" \n
                          "                [_objective,""tacom_state"",""none""] call AliVE_fnc_HashSet;" \n
                          "                _capture set [1,[""no valid groups available""]];" \n
@@ -900,7 +900,7 @@ class FSM
                          "            } foreach _section;" \n
                          "            if (call _orderExpired) exitwith {_defend set [1,[""order expired before issue""]]};" \n
                          "            [_objective,""tacom_state"",""defend""] call AliVE_fnc_HashSet;" \n
-                         "            _issuedWaypoints = [_OPCOM_HANDLER,""setSectionOrders"",[_objective,_objectiveID,_operation,_orderBatch]] call ALiVE_fnc_OPCOM;" \n
+                         "            _issuedWaypoints = [_OPCOM_HANDLER,""setSectionOrders"",[_objective,_objectiveID,_operation,_orderBatch,_orderID]] call ALiVE_fnc_OPCOM;" \n
                          "            if (_issuedWaypoints isEqualTo []) then {" \n
                          "                [_objective,""tacom_state"",""none""] call AliVE_fnc_HashSet;" \n
                          "                _defend set [1,[""no valid groups available""]];" \n
@@ -931,7 +931,7 @@ class FSM
                          "            } foreach _section;" \n
                          "            if (call _orderExpired) exitwith {_reserve set [1,[""order expired before issue""]]};" \n
                          "            [_objective,""tacom_state"",""reserve""] call AliVE_fnc_HashSet;" \n
-                         "            _issuedWaypoints = [_OPCOM_HANDLER,""setSectionOrders"",[_objective,_objectiveID,_operation,_orderBatch]] call ALiVE_fnc_OPCOM;" \n
+                         "            _issuedWaypoints = [_OPCOM_HANDLER,""setSectionOrders"",[_objective,_objectiveID,_operation,_orderBatch,_orderID]] call ALiVE_fnc_OPCOM;" \n
                          "            if (_issuedWaypoints isEqualTo []) then {" \n
                          "                [_objective,""tacom_state"",""none""] call AliVE_fnc_HashSet;" \n
                          "                _reserve set [1,[""no valid groups available""]];" \n

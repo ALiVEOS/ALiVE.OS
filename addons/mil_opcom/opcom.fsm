@@ -551,6 +551,7 @@ class FSM
                          "                        [""OPCOM %1 expired unconfirmed TACOM order %2 for objective %3"",_side,_orderID,[(_unconfirmedOrder select 2),""objectiveID"",""unknown""] call ALiVE_fnc_HashGet] call ALiVE_fnc_DumpR;" \n
                          "                    };" \n
                          "                    _unconfirmedOrders deleteAt _unconfirmedOrderIndex;" \n
+                         "                    [_OPCOM_HANDLER,""releaseOrder"",_orderID] call ALiVE_fnc_OPCOM;" \n
                          "                    _OPCOM_QUEUE pushBack [""analyze"",nil];" \n
                          "                };" \n
                          "            };" \n
@@ -588,16 +589,19 @@ class FSM
                          "            };" \n
                          "            if (_unconfirmedOrderIndex < 0) exitwith {" \n
                          "                if (_debug) then {[""OPCOM %1 ignored stale confirmation for order %2, objective %3"",_side,_orderID,[_target,""objectiveID"",""unknown""] call ALiVE_fnc_HashGet] call ALiVE_fnc_DumpR};" \n
+                         "                [_OPCOM_HANDLER,""releaseOrder"",_orderID] call ALiVE_fnc_OPCOM;" \n
                          "                _busy = false;" \n
                          "            };" \n
                          "            private _unconfirmedOrder = _unconfirmedOrders select _unconfirmedOrderIndex;" \n
                          "            if (_confirmedAt >= (_unconfirmedOrder select 3)) exitwith {" \n
                          "                if (_debug) then {[""OPCOM %1 ignored late confirmation for expired order %2"",_side,_orderID] call ALiVE_fnc_DumpR};" \n
                          "                _unconfirmedOrders deleteAt _unconfirmedOrderIndex;" \n
+                         "                [_OPCOM_HANDLER,""releaseOrder"",_orderID] call ALiVE_fnc_OPCOM;" \n
                          "                _OPCOM_QUEUE pushBack [""analyze"",nil];" \n
                          "                _busy = false;" \n
                          "            };" \n
                          "            _unconfirmedOrders deleteAt _unconfirmedOrderIndex;" \n
+                         "            [_OPCOM_HANDLER,""confirmOrder"",_orderID] call ALiVE_fnc_OPCOM;" \n
                          "" \n
                          "            if ([_target,""deleted"",false] call ALiVE_fnc_HashGet) exitwith {" \n
                          "                _OPCOM_QUEUE pushBack [""analyze"",nil];" \n
