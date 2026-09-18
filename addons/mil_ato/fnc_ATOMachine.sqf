@@ -305,57 +305,98 @@ switch(_operation) do {
                             };
 
                             case "LAUNCHING": {
-                                if (_airborne) then {
-                                    _effects pushBack "unlock";
-                                    _next = "ENROUTE";
-                                } else {
-                                    // A deadline that falls due inside a running
-                                    // launch waits for it.
-                                    //
-                                    // The launch owns the aircraft for a minute
-                                    // and the deadline is three minutes, so they
-                                    // can overlap. When they did, the table
-                                    // teleported the aircraft six hundred metres
-                                    // up while the sequence was still pinning it
-                                    // to the deck: the two fought frame by frame,
-                                    // the sequence won, and the table had already
-                                    // given up on a launch that then completed
-                                    // underneath it.
-                                    if (_expired && {!_launching}) then {
-                                        if (([_row,"attempts",0] call ALIVE_fnc_hashGet) < 1 && {!_playerPassenger}) then {
-                                            _effects pushBack "forceLaunch";
-                                            [_row,"attempts",1] call ALIVE_fnc_hashSet;
-                                        } else {
+                                // An aircraft that cannot fly is not launched.
+                                //
+                                // An Apache parked against a hangar lost its
+                                // rotors to the hangar as it started up, sat out
+                                // its launch, and was then thrown six hundred
+                                // metres up by the deadline below with no rotors
+                                // and fell. Damage did not warn anybody: measured,
+                                // a helicopter with its main rotor, tail rotor or
+                                // engine destroyed reads damage 0 and canMove
+                                // false.
+                                //
+                                // canMove is false with an empty tank as well, and
+                                // a plane waits for the runway with its tank empty
+                                // and gets the fuel back on the way into this
+                                // state. So a launch is called off at once only
+                                // with fuel aboard, which is a broken aircraft,
+                                // and otherwise at the deadline, where the only
+                                // alternative was throwing it into the air. Never
+                                // under a catapult shot that is still running.
+                                //
+                                // Called off, it is put back on its stand and
+                                // serviced, which repairs it, and kept off the rota
+                                // while that happens. The job goes back to be given
+                                // to another aircraft.
+                                private _cannotFly = !([_obs, "canMove", true] call ALIVE_fnc_hashGet)
+                                    && {!_launching}
+                                    && {(("fuel" call _fnc_n) > 0) || {_expired}};
+                                switch (true) do {
+                                    case (_airborne): {
+                                        _effects pushBack "unlock";
+                                        _next = "ENROUTE";
+                                    };
+                                    case (_cannotFly): {
+                                        if (_playerPassenger) then {
+                                            _effects append ["unlock","assignFailed"];
                                             _next = "RECOVERING";
+                                        } else {
+                                            _effects append ["placeOnSlot","turnaround","unlock","assignFailed"];
+                                            [_row,"readyAt",_now + 300] call ALIVE_fnc_hashSet;
+                                            _next = "PARKED";
                                         };
-                                    } else {
-                                        // Asked for EVERY tick it is still on the
-                                        // deck, the way the approach is re-aimed
-                                        // every tick. A refusal (no free catapult,
-                                        // the ship's parts not found) is retried
-                                        // next tick rather than lost, and while a
-                                        // launch is under way the effect answers
-                                        // "matched" and does not start a second
-                                        // one underneath it. The deadline above
-                                        // is the backstop, and forceLaunch keeps
-                                        // its job as the last resort.
-                                        // Not with somebody aboard. The filter
-                                        // below strips a teleport in that case
-                                        // and notes a refusal, so asking anyway
-                                        // put one refusal in the log every two
-                                        // seconds until the deadline.
-                                        if (_deckPlane && {!_playerPassenger}) then {
-                                            _effects pushBack "catapult";
-                                        };
-                                        // Asked again every tick, for the same
-                                        // reason: a refusal is retried rather
-                                        // than lost, and once it is up the
-                                        // effect answers matched and does
-                                        // nothing. Not with somebody aboard, or
-                                        // the filter below notes a refused
-                                        // teleport every two seconds.
-                                        if (_virtualHome && {!_playerPassenger}) then {
-                                            _effects pushBack "virtualLaunch";
+                                        _reason = "CANNOT_FLY";
+                                    };
+                                    default {
+                                        // A deadline that falls due inside a running
+                                        // launch waits for it.
+                                        //
+                                        // The launch owns the aircraft for a minute
+                                        // and the deadline is three minutes, so they
+                                        // can overlap. When they did, the table
+                                        // teleported the aircraft six hundred metres
+                                        // up while the sequence was still pinning it
+                                        // to the deck: the two fought frame by frame,
+                                        // the sequence won, and the table had already
+                                        // given up on a launch that then completed
+                                        // underneath it.
+                                        if (_expired && {!_launching}) then {
+                                            if (([_row,"attempts",0] call ALIVE_fnc_hashGet) < 1 && {!_playerPassenger}) then {
+                                                _effects pushBack "forceLaunch";
+                                                [_row,"attempts",1] call ALIVE_fnc_hashSet;
+                                            } else {
+                                                _next = "RECOVERING";
+                                            };
+                                        } else {
+                                            // Asked for EVERY tick it is still on the
+                                            // deck, the way the approach is re-aimed
+                                            // every tick. A refusal (no free catapult,
+                                            // the ship's parts not found) is retried
+                                            // next tick rather than lost, and while a
+                                            // launch is under way the effect answers
+                                            // "matched" and does not start a second
+                                            // one underneath it. The deadline above
+                                            // is the backstop, and forceLaunch keeps
+                                            // its job as the last resort.
+                                            // Not with somebody aboard. The filter
+                                            // below strips a teleport in that case
+                                            // and notes a refusal, so asking anyway
+                                            // put one refusal in the log every two
+                                            // seconds until the deadline.
+                                            if (_deckPlane && {!_playerPassenger}) then {
+                                                _effects pushBack "catapult";
+                                            };
+                                            // Asked again every tick, for the same
+                                            // reason: a refusal is retried rather
+                                            // than lost, and once it is up the
+                                            // effect answers matched and does
+                                            // nothing. Not with somebody aboard, or
+                                            // the filter below notes a refused
+                                            // teleport every two seconds.
+                                            if (_virtualHome && {!_playerPassenger}) then {
+                                                _effects pushBack "virtualLaunch";
+                                            };
                                         };
                                     };
                                 };

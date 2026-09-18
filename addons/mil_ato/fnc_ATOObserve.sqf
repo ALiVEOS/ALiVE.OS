@@ -94,7 +94,7 @@ switch(_operation) do {
                        "crewGroupLive","driverPresent","crewSeated","playerControl","playerPassenger",
                        "anyPlayerAboard","uavControlled","onStation","targetsGone","lockHeld",
                        "deckHome","fixedWing","needsRunway","launchInProgress","onRunway","armed","virtualHome",
-                       "atTaxiOffEnd"];
+                       "atTaxiOffEnd","canMove"];
             {
                 [_o, _x, 0] call ALIVE_fnc_hashSet;
             } forEach ["altAGL","altASL","speed","fuel","damage","wpRemaining","aliveCrew",
@@ -371,6 +371,11 @@ switch(_operation) do {
         // ---- condition -----------------------------------------------------
         ["fuel", fuel _obj] call _fnc_set;
         ["damage", damage _obj] call _fnc_set;
+        // Whether it can move at all, which damage does not say. Measured: a
+        // helicopter with its main rotor, its tail rotor or its engine destroyed
+        // reads damage 0 and canMove false. So does any aircraft with an empty
+        // tank, which is why the table asks about fuel beside it.
+        ["canMove", canMove _obj] call _fnc_set;
 
         // How many rounds it has left to fight with.
         //

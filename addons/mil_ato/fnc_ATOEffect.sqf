@@ -679,14 +679,22 @@ switch(_operation) do {
                 };
             };
 
+            // Never an aircraft that cannot move. An Apache with its rotors
+            // broken off against a hangar was thrown six hundred metres up by
+            // this and fell. The table no longer asks for it then; this holds
+            // whoever asks.
             case "forceLaunch": {
                 if (([_obj, _home] call _fnc_up) > 50) then {
                     _matched = true;
                 } else {
-                    private _p = getPosATL _obj;
-                    _obj setPosATL [_p select 0, _p select 1, 600];
-                    _obj engineOn true;
-                    _obj setVelocity [(sin (getDir _obj)) * 120, (cos (getDir _obj)) * 120, 0];
+                    if !(canMove _obj) then {
+                        _status = "refused"; _detail = "it cannot fly";
+                    } else {
+                        private _p = getPosATL _obj;
+                        _obj setPosATL [_p select 0, _p select 1, 600];
+                        _obj engineOn true;
+                        _obj setVelocity [(sin (getDir _obj)) * 120, (cos (getDir _obj)) * 120, 0];
+                    };
                 };
             };
 

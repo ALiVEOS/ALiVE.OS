@@ -202,6 +202,23 @@ nothing changed and it said so.
     { deleteVehicle _x } forEach (crew _dead);
     deleteVehicle _dead;
 
+    // --- never thrown into the air when it cannot fly ---------------------------
+    // An Apache with its rotors broken off against a hangar was forced six
+    // hundred metres up and fell. A destroyed rotor reads damage 0.
+    private _broken = createVehicle ["B_Heli_Transport_01_F", _spot getPos [120, 90], [], 0, "CAN_COLLIDE"];
+    _broken setPosATL [((_spot getPos [120, 90]) select 0), ((_spot getPos [120, 90]) select 1), 0];
+    createVehicleCrew _broken;
+    sleep 1;
+    _broken setHitPointDamage ["HitHRotor", 1];
+    sleep 1;
+    (([_e, "apply", ["forceLaunch", _broken, [getPosATL _broken, 0, "terrain"], []]] call ALIVE_fnc_ATOEffect)) params ["_stF", "_mF", "_dF"];
+    sleep 1;
+    diag_log format ["  info  forceLaunch on a helicopter with no rotor said %1 %2, it stands %3 m up", _stF, _dF, round ((getPosATL _broken) select 2)];
+    ["a helicopter with its rotor gone is not forced into the air",
+        _stF isEqualTo "refused" && {((getPosATL _broken) select 2) < 5}] call _fnc_check;
+    { deleteVehicle _x } forEach (crew _broken);
+    deleteVehicle _broken;
+
     // --- held on the stand -------------------------------------------------------
     // An empty tank while it waits, and exactly what it had given back after.
     private _held = createVehicle ["B_Plane_CAS_01_F", _spot getPos [60, 270], [], 0, "CAN_COLLIDE"];

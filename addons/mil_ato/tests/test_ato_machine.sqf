@@ -94,7 +94,9 @@ observation sequences, because those are what the table exists to prevent.
         ["a helicopter on a deck",[["deckHome",true]]],
         ["a VTOL on land",        [["needsRunway",true],["airborne",true],["atHome",false]]],
         ["stopped on the runway",  [["needsRunway",true],["landed",true],["nearHome",true],["atHome",false],["onRunway",true],["playersWithin300",4]]],
-        ["a plane taxiing off",    [["needsRunway",true],["fixedWing",true],["landed",true],["touchingGround",true],["speed",20],["nearHome",true],["atHome",false],["playersWithin300",4]]]
+        ["a plane taxiing off",    [["needsRunway",true],["fixedWing",true],["landed",true],["touchingGround",true],["speed",20],["nearHome",true],["atHome",false],["playersWithin300",4]]],
+        ["broken on the ground",   [["canMove",false]]],
+        ["an empty tank",          [["canMove",false],["fuel",0]]]
     ];
 
     private _badState = 0;
@@ -668,6 +670,44 @@ observation sequences, because those are what the table exists to prevent.
     ([[["fixedWing", true], ["needsRunway", true]]] call _fnc_rtbNear) params ["_prState", "_prEff"];
     ["a plane near home asks for the runway first, as before",
         _prState isEqualTo "RTB" && {"lock" in _prEff}] call _fnc_check;
+
+    // ---- a launch that cannot happen ----------------------------------------
+    // An Apache's rotors broke off against a hangar as it started up, and the
+    // launch deadline then threw it six hundred metres up and it fell. A broken
+    // aircraft reads canMove false with damage 0; so does an empty tank.
+    private _fnc_launching = {
+        params ["_flags", ["_deadline", 9999]];
+        private _row = [_m, "newRow", ["BLU_F_0", [[100,100,0], 0, "terrain"]]] call ALIVE_fnc_ATOMachine;
+        [_row, "state", "LAUNCHING"] call ALIVE_fnc_hashSet;
+        [_row, "enteredAt", 800] call ALIVE_fnc_hashSet;
+        [_row, "deadlineAt", _deadline] call ALIVE_fnc_hashSet;
+        [_row, "sortie", ["CAS", [100,100,0], 600, 2000, "s1", [], ""]] call ALIVE_fnc_hashSet;
+        private _out = [_m, "step", [_row, [[["crewSeated", true]] + _flags] call _fnc_obs, "", 1000]] call ALIVE_fnc_ATOMachine;
+        [([(_out select 0), "state", ""] call ALIVE_fnc_hashGet), _out select 2, ([(_out select 0), "readyAt", 0] call ALIVE_fnc_hashGet)]
+    };
+    ([[["canMove", false]]] call _fnc_launching) params ["_bkState", "_bkEff", "_bkReady"];
+    diag_log format ["  info  a broken helicopter launching went to %1, effects %2", _bkState, _bkEff];
+    ["a broken aircraft's launch is called off at once, not forced",
+        _bkState isEqualTo "PARKED" && {!("forceLaunch" in _bkEff)}] call _fnc_check;
+    ["and it is put back on its stand and serviced",
+        "placeOnSlot" in _bkEff && {"turnaround" in _bkEff}] call _fnc_check;
+    ["and the job goes to another aircraft while it is off the rota",
+        "assignFailed" in _bkEff && {_bkReady >= 1300}] call _fnc_check;
+    ([[["canMove", false], ["fuel", 0]]] call _fnc_launching) params ["_etState", "_etEff"];
+    ["one that only has an empty tank is left to its launch, since a held plane gets its fuel back on the way in",
+        _etState isEqualTo "LAUNCHING" && {!("placeOnSlot" in _etEff)}] call _fnc_check;
+    ([[["canMove", false], ["fuel", 0]], 900] call _fnc_launching) params ["_edState", "_edEff"];
+    ["but at the deadline it is called off rather than thrown into the air",
+        _edState isEqualTo "PARKED" && {!("forceLaunch" in _edEff)}] call _fnc_check;
+    ([[], 900] call _fnc_launching) params ["_okState", "_okEff"];
+    ["a sound aircraft still stuck at the deadline is forced up, as before",
+        "forceLaunch" in _okEff] call _fnc_check;
+    ([[["canMove", false], ["playerPassenger", true], ["anyPlayerAboard", true]]] call _fnc_launching) params ["_bpState", "_bpEff"];
+    ["with a player aboard it is recovered where it is, never moved",
+        _bpState isEqualTo "RECOVERING" && {!("placeOnSlot" in _bpEff)}] call _fnc_check;
+    ([[["canMove", false], ["launchInProgress", true], ["deckHome", true], ["fixedWing", true], ["needsRunway", true]]] call _fnc_launching) params ["_bcState", "_bcEff"];
+    ["and a catapult shot already running is left to finish",
+        _bcState isEqualTo "LAUNCHING" && {!("placeOnSlot" in _bcEff)}] call _fnc_check;
 
     if (count _fails == 0) then {
         diag_log "=== ATO Machine test: ALL PASS ===";
