@@ -702,9 +702,11 @@ observation sequences, because those are what the table exists to prevent.
     ([[], 900] call _fnc_launching) params ["_okState", "_okEff"];
     ["a sound aircraft still stuck at the deadline is forced up, as before",
         "forceLaunch" in _okEff] call _fnc_check;
-    ([[["canMove", false], ["playerPassenger", true], ["anyPlayerAboard", true]]] call _fnc_launching) params ["_bpState", "_bpEff"];
+    ([[["canMove", false], ["playerPassenger", true], ["anyPlayerAboard", true]]] call _fnc_launching) params ["_bpState", "_bpEff", "_bpReady"];
     ["with a player aboard it is recovered where it is, never moved",
         _bpState isEqualTo "RECOVERING" && {!("placeOnSlot" in _bpEff)}] call _fnc_check;
+    ["and it is kept off the rota all the same, or it is offered every job and fails each one",
+        _bpReady >= 1300] call _fnc_check;
     ([[["canMove", false], ["launchInProgress", true], ["deckHome", true], ["fixedWing", true], ["needsRunway", true]]] call _fnc_launching) params ["_bcState", "_bcEff"];
     ["and a catapult shot already running is left to finish",
         _bcState isEqualTo "LAUNCHING" && {!("placeOnSlot" in _bcEff)}] call _fnc_check;

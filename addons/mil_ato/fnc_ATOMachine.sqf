@@ -338,12 +338,18 @@ switch(_operation) do {
                                         _next = "ENROUTE";
                                     };
                                     case (_cannotFly): {
+                                        // Off the rota either way. With somebody
+                                        // aboard it is not repaired, and without
+                                        // this it was offered the next job at once,
+                                        // failed it at once, and did that again
+                                        // every few seconds with a radio call each
+                                        // time.
+                                        [_row,"readyAt",_now + 300] call ALIVE_fnc_hashSet;
                                         if (_playerPassenger) then {
                                             _effects append ["unlock","assignFailed"];
                                             _next = "RECOVERING";
                                         } else {
                                             _effects append ["placeOnSlot","turnaround","unlock","assignFailed"];
-                                            [_row,"readyAt",_now + 300] call ALIVE_fnc_hashSet;
                                             _next = "PARKED";
                                         };
                                         _reason = "CANNOT_FLY";
