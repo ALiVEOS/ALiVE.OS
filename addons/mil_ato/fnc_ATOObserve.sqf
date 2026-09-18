@@ -93,7 +93,8 @@ switch(_operation) do {
             } forEach ["local","remote","airborne","atHome","nearHome","landed","touchingGround",
                        "crewGroupLive","driverPresent","crewSeated","playerControl","playerPassenger",
                        "anyPlayerAboard","uavControlled","onStation","targetsGone","lockHeld",
-                       "deckHome","fixedWing","needsRunway","launchInProgress","onRunway","armed","virtualHome"];
+                       "deckHome","fixedWing","needsRunway","launchInProgress","onRunway","armed","virtualHome",
+                       "atTaxiOffEnd"];
             {
                 [_o, _x, 0] call ALIVE_fnc_hashSet;
             } forEach ["altAGL","altASL","speed","fuel","damage","wpRemaining","aliveCrew",
@@ -242,6 +243,45 @@ switch(_operation) do {
             };
         };
         ["onRunway", _onRunway] call _fnc_set;
+
+        // Has a plane that landed finished taxiing off: is it within eighty
+        // metres of the END of its airport's taxi-off route.
+        //
+        // The table needs this because stopping is the wrong sign for a jet.
+        // Measured on Stratis with the ATO's own landing order: an A-164 touched
+        // down, rolled out, taxied the taxi-off route to its end in 81 seconds,
+        // and never stopped at all. It went straight round onto the take-off
+        // route and flew again. So the moment it reaches the end of the taxi-off
+        // is the moment it has come home.
+        //
+        // The airport is the one nearest the home, read from the terrain's own
+        // config the same way the taxi out reads it. Only a plane on land, and
+        // only near the ground.
+        private _atTaxiOffEnd = false;
+        if ((_obj isKindOf "Plane") && {!_deckHome} && {!_virtualHome} && {_agl < 5}) then {
+            private _w = configFile >> "CfgWorlds" >> worldName;
+            private _secondary = _w >> "SecondaryAirports";
+            private _from = if (count _home > 0 && {(_home select 0) isEqualType []}) then { _home select 0 } else { _pos };
+            private _airportID = -1;
+            private _nearest = 1e10;
+            private _ilsMain = getArray (_w >> "ilsPosition");
+            if (count _ilsMain >= 2) then { _airportID = 0; _nearest = _from distance2D _ilsMain };
+            for "_i" from 0 to ((count _secondary) - 1) do {
+                private _ils = getArray ((_secondary select _i) >> "ilsPosition");
+                if (count _ils >= 2 && {(_from distance2D _ils) < _nearest}) then {
+                    _nearest = _from distance2D _ils;
+                    _airportID = _i + 1;
+                };
+            };
+            private _off = [];
+            if (_airportID == 0) then { _off = getArray (_w >> "ilsTaxiOff") };
+            if (_airportID > 0) then { _off = getArray ((_secondary select (_airportID - 1)) >> "ilsTaxiOff") };
+            if (count _off >= 2) then {
+                private _end = [_off select ((count _off) - 2), _off select ((count _off) - 1), 0];
+                _atTaxiOffEnd = (_obj distance2D _end) < 80;
+            };
+        };
+        ["atTaxiOffEnd", _atTaxiOffEnd] call _fnc_set;
 
         // Landed is not simply "on the ground": an aircraft rolling out at
         // 140 km/h is touching the ground and is not down yet.

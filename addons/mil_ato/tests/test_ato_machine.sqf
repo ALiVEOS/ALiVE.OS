@@ -93,7 +93,8 @@ observation sequences, because those are what the table exists to prevent.
         ["a plane mid launch",    [["deckHome",true],["fixedWing",true],["needsRunway",true],["launchInProgress",true],["crewSeated",true],["lockHeld",true]]],
         ["a helicopter on a deck",[["deckHome",true]]],
         ["a VTOL on land",        [["needsRunway",true],["airborne",true],["atHome",false]]],
-        ["stopped on the runway",  [["needsRunway",true],["landed",true],["nearHome",true],["atHome",false],["onRunway",true],["playersWithin300",4]]]
+        ["stopped on the runway",  [["needsRunway",true],["landed",true],["nearHome",true],["atHome",false],["onRunway",true],["playersWithin300",4]]],
+        ["a plane taxiing off",    [["needsRunway",true],["fixedWing",true],["landed",true],["touchingGround",true],["speed",20],["nearHome",true],["atHome",false],["playersWithin300",4]]]
     ];
 
     private _badState = 0;
@@ -179,8 +180,11 @@ observation sequences, because those are what the table exists to prevent.
                         // deliberately, because nothing local may be done to
                         // one. Asking for the approach there would be asking
                         // the table to break its own rule.
+                        // Nor for a plane already down and rolling, which is
+                        // taxiing off and must not be sent round again.
                         if (!([_obs,"landed",false] call ALIVE_fnc_hashGet)
                             && {!([_obs,"remote",false] call ALIVE_fnc_hashGet)}
+                            && {!([_obs,"touchingGround",false] call ALIVE_fnc_hashGet)}
                             && {!("landAtPad" in _effects)}
                             && {!("landOnRunway" in _effects)}
                             && {!("deckRecover" in _effects)}) then {
@@ -377,10 +381,41 @@ observation sequences, because those are what the table exists to prevent.
     };
 
     (([[["onRunway", true], ["playersWithin300", 4]]] call _fnc_landedAt)) params ["_rwRow", "_rwOrd", "_rwEff"];
-    diag_log format ["  info  stopped on the runway with people watching went to %1, effects %2",
+    diag_log format ["  info  just stopped on the runway with people watching went to %1, effects %2",
         [_rwRow, "state", ""] call ALIVE_fnc_hashGet, _rwEff];
-    ["an aircraft stopped on the runway is moved off it even with people watching",
-        "placeOnSlot" in _rwEff] call _fnc_check;
+    ["an aircraft that has just stopped on the runway is given time to be seen to land",
+        (([_rwRow, "state", ""] call ALIVE_fnc_hashGet) isEqualTo "LANDING") && {!("placeOnSlot" in _rwEff)}] call _fnc_check;
+    private _rwOut2 = [_m, "step", [_rwRow, [[["landed", true], ["nearHome", true], ["atHome", false],
+        ["onRunway", true], ["playersWithin300", 4]]] call _fnc_obs, "", 1031]] call ALIVE_fnc_ATOMachine;
+    ["and is moved off it after thirty seconds, even with people watching",
+        "placeOnSlot" in (_rwOut2 select 2)] call _fnc_check;
+
+    // ---- a plane that has landed taxis off first ----------------------------
+    // It has come home when it reaches the end of the taxi-off route. Measured,
+    // a jet never stops on the way: it taxied to the end and flew again.
+    private _fnc_rolling = {
+        params ["_flags"];
+        private _row = [_m, "newRow", ["BLU_F_0", [[100,100,0], 0, "terrain"]]] call ALIVE_fnc_ATOMachine;
+        [_row, "state", "LANDING"] call ALIVE_fnc_hashSet;
+        [_row, "enteredAt", 900] call ALIVE_fnc_hashSet;
+        [_row, "deadlineAt", 9999] call ALIVE_fnc_hashSet;
+        private _obs = [[["touchingGround", true], ["altAGL", 0], ["landed", false], ["nearHome", true],
+            ["atHome", false], ["fixedWing", true], ["needsRunway", true], ["playersWithin300", 4]] + _flags] call _fnc_obs;
+        private _out = [_m, "step", [_row, _obs, "", 1000]] call ALIVE_fnc_ATOMachine;
+        [([(_out select 0), "state", ""] call ALIVE_fnc_hashGet), _out select 2]
+    };
+    ([[]] call _fnc_rolling) params ["_rlState", "_rlEff"];
+    ["a jet rolling out after it lands is left to taxi off, and not sent round again",
+        _rlState isEqualTo "LANDING" && {!("landOnRunway" in _rlEff)} && {!("placeOnSlot" in _rlEff)}] call _fnc_check;
+    ([[["atTaxiOffEnd", true]]] call _fnc_rolling) params ["_teState", "_teEff"];
+    ["at the end of the taxi-off route it is put on its stand, whoever is watching",
+        _teState isEqualTo "PARKED" && {"placeOnSlot" in _teEff} && {"turnaround" in _teEff}] call _fnc_check;
+    ([[["atTaxiOffEnd", true], ["playerPassenger", true], ["anyPlayerAboard", true]]] call _fnc_rolling) params ["_tpState", "_tpEff"];
+    ["but never with a player aboard: held where it is instead",
+        _tpState isEqualTo "RECOVERING" && {!("placeOnSlot" in _tpEff)}] call _fnc_check;
+    ([[["touchingGround", false], ["altAGL", 150], ["airborne", true]]] call _fnc_rolling) params ["_raState", "_raEff"];
+    ["one still in the air is aimed at the runway as before",
+        _raState isEqualTo "LANDING" && {"landOnRunway" in _raEff}] call _fnc_check;
 
     (([[["onRunway", false], ["playersWithin300", 4]]] call _fnc_landedAt)) params ["_offRow", "_offOrd", "_offEff"];
     ["but one stopped clear of it with people watching is left alone",
@@ -389,6 +424,56 @@ observation sequences, because those are what the table exists to prevent.
     (([[["onRunway", false], ["playersWithin300", 0]]] call _fnc_landedAt)) params ["_qRow", "_qOrd", "_qEff"];
     ["and one stopped clear of it with nobody about is tidied as before",
         "placeOnSlot" in _qEff] call _fnc_check;
+
+    // ---- a plane taxiing off, as the observer really reports it -------------
+    // For a plane, landed means under forty km/h on the ground, which is true
+    // for the whole taxi. So a jet taxiing off at twenty reads landed, and the
+    // cases above that only set rolling out fast would never have caught one.
+    private _fnc_landingRow = {
+        private _row = [_m, "newRow", ["BLU_F_0", [[100,100,0], 0, "terrain"]]] call ALIVE_fnc_ATOMachine;
+        [_row, "state", "LANDING"] call ALIVE_fnc_hashSet;
+        [_row, "enteredAt", 900] call ALIVE_fnc_hashSet;
+        [_row, "deadlineAt", 9999] call ALIVE_fnc_hashSet;
+        _row
+    };
+    private _fnc_taxi = {
+        params ["_row", "_flags", "_now"];
+        private _obs = [[["touchingGround", true], ["altAGL", 0], ["landed", true], ["speed", 20],
+            ["nearHome", true], ["atHome", false], ["fixedWing", true], ["needsRunway", true],
+            ["playersWithin300", 4]] + _flags] call _fnc_obs;
+        private _out = [_m, "step", [_row, _obs, "", _now]] call ALIVE_fnc_ATOMachine;
+        [_out select 0, [(_out select 0), "state", ""] call ALIVE_fnc_hashGet, _out select 2]
+    };
+    ([call _fnc_landingRow, [], 1000] call _fnc_taxi) params ["_txRow", "_txState", "_txEff"];
+    ["a jet taxiing off at twenty km/h is left to taxi while people watch",
+        _txState isEqualTo "LANDING" && {!("placeOnSlot" in _txEff)} && {!("landOnRunway" in _txEff)}] call _fnc_check;
+    ([call _fnc_landingRow, [["playersWithin300", 0]], 1000] call _fnc_taxi) params ["_tqRow", "_tqState", "_tqEff"];
+    ["with nobody about it is put away at once, as a landing always was",
+        _tqState isEqualTo "PARKED" && {"placeOnSlot" in _tqEff}] call _fnc_check;
+    ([call _fnc_landingRow, [["atTaxiOffEnd", true]], 1000] call _fnc_taxi) params ["_tzRow", "_tzState", "_tzEff"];
+    ["at the end of the taxi-off route it is put on its stand while still moving",
+        _tzState isEqualTo "PARKED" && {"placeOnSlot" in _tzEff} && {"turnaround" in _tzEff}] call _fnc_check;
+    private _lateRow = call _fnc_landingRow;
+    [_lateRow, "deadlineAt", 950] call ALIVE_fnc_hashSet;
+    ([_lateRow, [], 1000] call _fnc_taxi) params ["_tlRow", "_tlState", "_tlEff"];
+    ["one still taxiing when its time runs out is put away rather than left to fly again",
+        _tlState isEqualTo "PARKED" && {"placeOnSlot" in _tlEff}] call _fnc_check;
+
+    // Stopped on its way off: it may only be pausing.
+    ([call _fnc_landingRow, [["speed", 0]], 1000] call _fnc_taxi) params ["_ps1", "_psState1", "_psEff1"];
+    ["a jet that stops on the taxiway with people watching is waited for",
+        _psState1 isEqualTo "LANDING" && {!("placeOnSlot" in _psEff1)}] call _fnc_check;
+    ([_ps1, [], 1015] call _fnc_taxi) params ["_ps2", "_psState2", "_psEff2"];
+    ([_ps2, [["speed", 0]], 1035] call _fnc_taxi) params ["_ps3", "_psState3", "_psEff3"];
+    ["and the wait starts over when it moves on",
+        _psState2 isEqualTo "LANDING" && {_psState3 isEqualTo "LANDING"}] call _fnc_check;
+    ([_ps3, [["speed", 0]], 1066] call _fnc_taxi) params ["_ps4", "_psState4", "_psEff4"];
+    ["but after thirty seconds at rest off the runway it goes to recovery",
+        _psState4 isEqualTo "RECOVERING" && {!("placeOnSlot" in _psEff4)}] call _fnc_check;
+    ([call _fnc_landingRow, [["speed", 0], ["onRunway", true]], 1000] call _fnc_taxi) params ["_pr1", "_prState1", "_prEff1"];
+    ([_pr1, [["speed", 0], ["onRunway", true]], 1031] call _fnc_taxi) params ["_pr2", "_prState2", "_prEff2"];
+    ["and one at rest on the runway for thirty seconds is moved off it",
+        _prState1 isEqualTo "LANDING" && {_prState2 isEqualTo "PARKED"} && {"placeOnSlot" in _prEff2}] call _fnc_check;
 
     // ---- a sortie that reaches its station and never prosecutes ------------
     // Brought home early, so the aircraft is available again instead of

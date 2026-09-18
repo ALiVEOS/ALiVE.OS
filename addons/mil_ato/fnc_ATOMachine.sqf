@@ -113,6 +113,11 @@ switch(_operation) do {
             // so that whether it has used any can be answered. Minus one means
             // it has not reached one.
             ["ordnanceAt", -1],
+            // When it came to rest after landing, on the runway or anywhere a
+            // plane may only be pausing on its way off, so that it can be seen
+            // to land before anything is done with it. Minus one while it is
+            // not at rest.
+            ["stoppedSince", -1],
             ["reason", ""]
         ]] call ALIVE_fnc_hashCreate;
     };
@@ -469,7 +474,18 @@ switch(_operation) do {
                             };
 
                             case "LANDING": {
-                                if ("landed" call _fnc_o) then {
+                                // A plane down on land is still landing while it
+                                // rolls out and taxis off, however slowly it goes,
+                                // and it has come home when it reaches the end of
+                                // its airport's taxi-off route. Landed alone cannot
+                                // say so: for a plane it means under forty km/h on
+                                // the ground, which is true for the whole taxi.
+                                private _planeDown = _needsRunway && {!("deckHome" call _fnc_o)} && {!_virtualHome}
+                                    && {"touchingGround" call _fnc_o} && {("altAGL" call _fnc_n) < 2};
+                                private _rolling = _planeDown && {!("landed" call _fnc_o)
+                                    || {(abs ("speed" call _fnc_n)) >= 5}
+                                    || {"atTaxiOffEnd" call _fnc_o}};
+                                if (("landed" call _fnc_o) && {!_rolling}) then {
                                     // Wheels down is not the same as home. An
                                     // aircraft that put itself on the grass short
                                     // of the field is not parked, and calling it
@@ -542,10 +558,41 @@ switch(_operation) do {
                                     // airport's own route rather than from its
                                     // stand, with the launch deadline behind it
                                     // if it stalls there.
+                                    //
+                                    // Not the moment it comes to rest on the
+                                    // runway, though: that put a Blackfish back on
+                                    // its stand the instant it touched down, in
+                                    // front of the player watching it land. It is
+                                    // given thirty seconds. It will not clear the
+                                    // runway by itself in that time or any other:
+                                    // measured, a VTOL landed on the centreline and
+                                    // sat there with its engine running for five
+                                    // minutes without moving. So thirty seconds is
+                                    // for being seen to land, and then it is moved.
+                                    //
+                                    // A plane stopped anywhere else on its way off
+                                    // is given the same thirty seconds before it is
+                                    // handed to recovery, because it may only be
+                                    // pausing. Recovery stops the engine, so a jet
+                                    // that paused for something on the taxiway
+                                    // would have been left standing there.
+                                    private _onTheRunway = "onRunway" call _fnc_o;
+                                    private _mayWait = _onTheRunway || {_planeDown};
+                                    private _waited = false;
+                                    if (_mayWait) then {
+                                        private _since = [_row,"stoppedSince",-1] call ALIVE_fnc_hashGet;
+                                        if (_since < 0) then {
+                                            [_row,"stoppedSince",_now] call ALIVE_fnc_hashSet;
+                                        } else {
+                                            _waited = (_now - _since) >= 30;
+                                        };
+                                    } else {
+                                        [_row,"stoppedSince",-1] call ALIVE_fnc_hashSet;
+                                    };
                                     private _canTidy = ("nearHome" call _fnc_o)
                                         && {(("playersWithin300" call _fnc_n) == 0)
                                             || {"deckHome" call _fnc_o}
-                                            || {"onRunway" call _fnc_o}}
+                                            || {_onTheRunway && {_waited}}}
                                         && {!_playerPassenger};
                                     if (_canTidy) then {
                                         _effects pushBack "placeOnSlot";
@@ -560,7 +607,11 @@ switch(_operation) do {
                                             _effects pushBack "turnaround";
                                             _next = "PARKED";
                                         } else {
-                                            _next = "RECOVERING";
+                                            // Still inside its thirty seconds: it
+                                            // stays landing, rather than being
+                                            // handed to recovery, which would leave
+                                            // it there for ten minutes.
+                                            if (!_mayWait || {_waited} || {_playerPassenger}) then { _next = "RECOVERING" };
                                         };
                                     };
                                 } else {
@@ -594,12 +645,59 @@ switch(_operation) do {
                                     // owned was being destroyed on its way home,
                                     // and nothing caught it because the landing
                                     // checks only ever flew a helicopter.
-                                    switch (true) do {
-                                        case (_deckPlane): { _effects pushBack "deckRecover" };
-                                        case (_needsRunway): { _effects pushBack "landOnRunway" };
-                                        default { _effects pushBack "landAtPad" };
+                                    //
+                                    // Except for a plane that is already down on
+                                    // land and rolling. It has landed and is
+                                    // taxiing off, and it has come home when it
+                                    // reaches the end of the taxi-off route, which
+                                    // is where it is put on its stand, whoever is
+                                    // watching. Stopping is the wrong sign for a
+                                    // jet: measured, one touched down, taxied off
+                                    // to the end of the route in 81 seconds, never
+                                    // stopped, and went straight round onto the
+                                    // take-off route and flew again. The landing
+                                    // order is not given again once it is down,
+                                    // either, or it would be sent round a circuit
+                                    // from the taxiway.
+                                    if (_rolling) then {
+                                        // Moving again, so any wait for it to
+                                        // come to rest starts over.
+                                        [_row,"stoppedSince",-1] call ALIVE_fnc_hashSet;
+                                        switch (true) do {
+                                            // At the end of the route, or out of
+                                            // time, which is how one that never
+                                            // finds the end is still put away.
+                                            case (("atTaxiOffEnd" call _fnc_o) || {_expired}): {
+                                                if (_playerPassenger) then {
+                                                    // Never moved with somebody in it:
+                                                    // held where it is instead, before
+                                                    // it can take off again.
+                                                    _next = "RECOVERING";
+                                                } else {
+                                                    _effects pushBack "placeOnSlot";
+                                                    _effects pushBack "turnaround";
+                                                    _next = "PARKED";
+                                                };
+                                            };
+                                            // Nobody about to see it: put away as
+                                            // soon as it is down to taxiing speed,
+                                            // as a landing always was.
+                                            case (("landed" call _fnc_o) && {"nearHome" call _fnc_o}
+                                                && {("playersWithin300" call _fnc_n) == 0} && {!_playerPassenger}): {
+                                                _effects pushBack "placeOnSlot";
+                                                _effects pushBack "turnaround";
+                                                _next = "PARKED";
+                                            };
+                                            default { };
+                                        };
+                                    } else {
+                                        switch (true) do {
+                                            case (_deckPlane): { _effects pushBack "deckRecover" };
+                                            case (_needsRunway): { _effects pushBack "landOnRunway" };
+                                            default { _effects pushBack "landAtPad" };
+                                        };
                                     };
-                                    if (_expired) then {
+                                    if (_expired && {_next isEqualTo "LANDING"}) then {
                                         private _a = [_row,"attempts",0] call ALIVE_fnc_hashGet;
                                         if (_a < 1) then {
                                             // The aim is already re-issued
@@ -702,6 +800,9 @@ switch(_operation) do {
             };
             if !(_next isEqualTo "PLAYER_FLOWN") then {
                 [_row,"playerFreeSince",-1] call ALIVE_fnc_hashSet;
+            };
+            if !(_next isEqualTo "LANDING") then {
+                [_row,"stoppedSince",-1] call ALIVE_fnc_hashSet;
             };
 
             switch (_next) do {
