@@ -467,20 +467,34 @@ switch(_operation) do {
         //
         // Only asked of an aircraft actually on station, because that is the
         // only state that reads it, and it costs a lookup per target.
+        //
+        // And a list of nothing but POSITIONS answers false as well. A patrol is
+        // raised with the centre of its zone as its one "target", and a
+        // suppression sortie with the positions of the defences it was sent
+        // at, because that is somewhere to aim. Neither is a thing that can be
+        // destroyed, so counting them as targets that are no longer standing
+        // sent every patrol home within three seconds of reaching its station.
+        // Only objects and profile ids are targets; everything else is where to
+        // go.
         if (_onStation && {count _sortie > 5} && {(_sortie select 5) isEqualType []}) then {
             private _targets = _sortie select 5;
             if (count _targets > 0) then {
+                private _named = 0;
                 private _standing = 0;
                 {
                     if (_x isEqualType objNull) then {
+                        _named = _named + 1;
                         if (!isNull _x && {alive _x}) then { _standing = _standing + 1 };
                     };
-                    if (_x isEqualType "" && {!(_x isEqualTo "")} && {!isNil "ALIVE_profileHandler"}) then {
-                        private _p = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
-                        if (!isNil "_p" && {[_p] call ALIVE_fnc_isHash}) then { _standing = _standing + 1 };
+                    if (_x isEqualType "" && {!(_x isEqualTo "")}) then {
+                        _named = _named + 1;
+                        if (!isNil "ALIVE_profileHandler") then {
+                            private _p = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+                            if (!isNil "_p" && {[_p] call ALIVE_fnc_isHash}) then { _standing = _standing + 1 };
+                        };
                     };
                 } forEach _targets;
-                _targetsGone = _standing == 0;
+                _targetsGone = _named > 0 && {_standing == 0};
             };
         };
 

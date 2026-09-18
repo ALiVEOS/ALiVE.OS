@@ -754,6 +754,29 @@ private _fnc_transition = {
     ["ALIVE_fnc_ATOKernel - %1: %2 -> %3 (%4, alt %5 m, fuel %6)", _tail, _from, _to,
         [_row2, "reason", ""] call ALIVE_fnc_hashGet, round _alt, _fuel toFixed 2] call ALiVE_fnc_dump;
 
+    // Why it is coming home, when the answer is that its targets are gone. The
+    // reason alone reads RETURN for that, for a clock that ran out and for a
+    // stalled attack alike, and close support sorties were seen turning for home
+    // within three seconds of arriving with nothing to say which it was. Each
+    // target is named with what was found for it.
+    if (_to isEqualTo "RTB" && {[_obs] call ALIVE_fnc_isHash} && {[_obs, "targetsGone", false] call ALIVE_fnc_hashGet}) then {
+        private _list = if (count _tuple > 5 && {(_tuple select 5) isEqualType []}) then { _tuple select 5 } else { [] };
+        private _found = _list apply {
+            private _t = _x;
+            switch (true) do {
+                case (_t isEqualType objNull): {
+                    format ["%1 %2", if (isNull _t) then {"a deleted object"} else {typeOf _t}, if (!isNull _t && {alive _t}) then {"alive"} else {"dead"}]
+                };
+                case (_t isEqualType ""): {
+                    private _p = if (isNil "ALIVE_profileHandler") then { nil } else { [ALIVE_profileHandler, "getProfile", _t] call ALIVE_fnc_profileHandler };
+                    format ["%1 %2", _t, if (!isNil "_p" && {[_p] call ALIVE_fnc_isHash}) then {"registered"} else {"not registered"}]
+                };
+                default { format ["a %1", typeName _t] };
+            }
+        };
+        ["ALIVE_fnc_ATOKernel - %1 turns for home because its targets are gone: %2", _tail, _found] call ALiVE_fnc_dump;
+    };
+
     switch (_to) do {
         case "PARKED": {
             // ---- the stand ----------------------------------------------
