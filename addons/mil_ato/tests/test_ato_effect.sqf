@@ -115,6 +115,20 @@ nothing changed and it said so.
     private _good = [["MOVE", _spot getPos [500, 0]], ["LOITER", _spot getPos [600, 0]]];
     (([_e, "apply", ["issueOrders", _flyer, _home, [_good]]] call ALIVE_fnc_ATOEffect)) params ["_st13"];
     ["the same orders ending in a hold are accepted", _st13 isEqualTo "ok"] call _fnc_check;
+
+    // --- nothing takes the crew or the engine of an aircraft in the air ---------
+    // Whoever asks. A gunship that lifted off while it waited for the runway was
+    // parked at 199 m, and parking took its crew and stopped its engine there.
+    { _x setVariable ["ALiVE_mil_ato_crew", true, true] } forEach (crew _flyer);
+    diag_log format ["  info  the flyer is %1 m up with %2 aboard, engine %3",
+        round ((getPosATL _flyer) select 2), count (crew _flyer), isEngineOn _flyer];
+    (([_e, "apply", ["standDownCrew", _flyer, _home, []]] call ALIVE_fnc_ATOEffect)) params ["_stA1", "_mA1", "_dA1"];
+    ["an aircraft in the air keeps its crew",
+        _stA1 isEqualTo "refused" && {_dA1 isEqualTo "in the air"} && {({alive _x} count (crew _flyer)) > 0}] call _fnc_check;
+    (([_e, "apply", ["engineOff", _flyer, _home, []]] call ALIVE_fnc_ATOEffect)) params ["_stA2", "_mA2", "_dA2"];
+    ["and keeps its engine",
+        _stA2 isEqualTo "refused" && {_dA2 isEqualTo "in the air"} && {isEngineOn _flyer}] call _fnc_check;
+
     { deleteVehicle _x } forEach (crew _flyer);
     deleteVehicle _flyer;
 

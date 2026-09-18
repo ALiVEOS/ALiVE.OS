@@ -104,6 +104,8 @@ observation sequences, because those are what the table exists to prevent.
     // light and a diagnosis.
     private _whyOrders = [];
     private _badLock = 0;
+    private _badAir = 0;
+    private _whyAir = [];
     private _mutated = 0;
     private _combos = 0;
 
@@ -207,6 +209,30 @@ observation sequences, because those are what the table exists to prevent.
                         _badLock = _badLock + 1;
                     };
 
+                    // Promise: an aircraft in the air is never stood down and
+                    // never has its engine switched off, unless the same step
+                    // first puts it on the ground. A gunship that lifted off
+                    // while it waited for the runway was parked at 199 m, and
+                    // parking took its crew and stopped its engine up there.
+                    if ([_obs,"airborne",false] call ALIVE_fnc_hashGet) then {
+                        private _grounded = 1e9;
+                        {
+                            private _at = _effects find _x;
+                            if (_at > -1 && {_at < _grounded}) then { _grounded = _at };
+                        } forEach ["placeOnSlot","forceLanded"];
+                        {
+                            private _at = _effects find _x;
+                            if (_at > -1 && {_at < _grounded}) then {
+                                _badAir = _badAir + 1;
+                                if (count _whyAir < 6) then {
+                                    _whyAir pushBack format ["%1 +%2 (%3%4) -> %5, effects %6",
+                                        _state, _cmd, _profileName,
+                                        if (_expired) then {", expired"} else {""}, _next, _effects];
+                                };
+                            };
+                        } forEach ["standDownCrew","engineOff"];
+                    };
+
                     // Promise: the row handed in is not the row handed back.
                     if !(([_before,"state",""] call ALIVE_fnc_hashGet) isEqualTo ([_row,"state",""] call ALIVE_fnc_hashGet)) then {
                         _mutated = _mutated + 1;
@@ -224,6 +250,8 @@ observation sequences, because those are what the table exists to prevent.
     { diag_log format ["  info  orders promise broken by: %1", _x] } forEach _whyOrders;
     ["every flying state carries orders", _badOrders == 0] call _fnc_check;
     ["the runway is only taken leaving or landing, and a player is never teleported", _badLock == 0] call _fnc_check;
+    { diag_log format ["  info  in-the-air promise broken by: %1", _x] } forEach _whyAir;
+    ["an aircraft in the air keeps its crew and its engine", _badAir == 0] call _fnc_check;
     ["step never edits the row it was given", _mutated == 0] call _fnc_check;
 
     // ---- the measured incidents, replayed ------------------------------------
@@ -455,6 +483,28 @@ observation sequences, because those are what the table exists to prevent.
     ([[["fixedWing", true], ["needsRunway", true]], "LAUNCHING"] call _fnc_launchFrom) params ["_lpState2", "_lpEff2"];
     ["and a plane already launching is never put back at the start of its taxi",
         _lpState2 isEqualTo "LAUNCHING" && {!("taxiOut" in _lpEff2)}] call _fnc_check;
+
+    // ---- an assignment that runs out with the aircraft already up ------------
+    // It lifted off by itself while it waited for the runway. Recovered, with
+    // its crew and its engine; never parked in the air.
+    private _upRow = [_m, "newRow", ["BLU_F_0", [[100,100,0], 0, "terrain"]]] call ALIVE_fnc_ATOMachine;
+    [_upRow, "state", "ASSIGNED"] call ALIVE_fnc_hashSet;
+    [_upRow, "enteredAt", 800] call ALIVE_fnc_hashSet;
+    [_upRow, "deadlineAt", 920] call ALIVE_fnc_hashSet;
+    [_upRow, "sortie", ["CAS", [100,100,0], 600, 2000, "s1", [], ""]] call ALIVE_fnc_hashSet;
+    private _upOut = [_m, "step", [_upRow,
+        [[["crewSeated", true], ["lockHeld", false], ["airborne", true], ["atHome", false], ["needsRunway", true]]] call _fnc_obs,
+        "", 1000]] call ALIVE_fnc_ATOMachine;
+    private _upState = [(_upOut select 0), "state", ""] call ALIVE_fnc_hashGet;
+    private _upEff = _upOut select 2;
+    diag_log format ["  info  an assignment run out in the air went to %1, effects %2", _upState, _upEff];
+    ["an assignment that runs out in the air is recovered, not parked",
+        _upState isEqualTo "RECOVERING" && {!("standDownCrew" in _upEff)} && {!("engineOff" in _upEff)}] call _fnc_check;
+    ["and the tasker is still told it failed", "assignFailed" in _upEff] call _fnc_check;
+    private _gndOut = [_m, "step", [_upRow, [[["crewSeated", true], ["lockHeld", false]]] call _fnc_obs, "", 1000]] call ALIVE_fnc_ATOMachine;
+    ["one that runs out on the ground is still parked and stood down, as before",
+        (([(_gndOut select 0), "state", ""] call ALIVE_fnc_hashGet) isEqualTo "PARKED")
+        && {"standDownCrew" in (_gndOut select 2)}] call _fnc_check;
 
     if (count _fails == 0) then {
         diag_log "=== ATO Machine test: ALL PASS ===";

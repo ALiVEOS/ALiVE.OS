@@ -251,11 +251,24 @@ switch(_operation) do {
                                     _next = "LAUNCHING";
                                 } else {
                                     if (_expired) then {
-                                        // The hull never moved, so it simply
-                                        // goes back to being parked and the
-                                        // request is handed back to be re-let.
-                                        _effects append ["standDownCrew","unlock","assignFailed"];
-                                        _next = "PARKED";
+                                        // Normally the hull never moved, so it
+                                        // simply goes back to being parked and
+                                        // the request is handed back to be re-let.
+                                        //
+                                        // Not when it is in the air. A gunship
+                                        // lifted off by itself while it waited
+                                        // for the runway, ran out of time 199 m
+                                        // up, and was parked there: its crew was
+                                        // taken off and its engine stopped at
+                                        // height. It is recovered instead, which
+                                        // brings it home with its crew aboard.
+                                        if (_airborne) then {
+                                            _effects append ["unlock","assignFailed"];
+                                            _next = "RECOVERING";
+                                        } else {
+                                            _effects append ["standDownCrew","unlock","assignFailed"];
+                                            _next = "PARKED";
+                                        };
                                         // Which half of the gate it never passed. Half of
                                         // all assignments were expiring here and the log
                                         // could not say whether for want of a pilot or of

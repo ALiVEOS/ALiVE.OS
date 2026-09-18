@@ -240,6 +240,11 @@ switch(_operation) do {
                 if (isEngineOn _obj) then { _matched = true } else { _obj engineOn true };
             };
             case "engineOff": {
+                // Never in the air, whoever asks. A gunship that lifted off on its
+                // own while it waited for the runway was parked at 199 m, and
+                // parking switches the engine off. A stopped engine at height is
+                // a crash.
+                if (([_obj, _home] call _fnc_up) > 5) exitWith { _status = "refused"; _detail = "in the air" };
                 if (!isEngineOn _obj) then { _matched = true } else { _obj engineOn false };
             };
 
@@ -319,7 +324,10 @@ switch(_operation) do {
             };
 
             case "standDownCrew": {
+                // Never in the air, whoever asks: the crew is the pilot.
+                if (([_obj, _home] call _fnc_up) > 5) exitWith { _status = "refused"; _detail = "in the air" };
                 private _ours = (crew _obj) select { _x getVariable ["ALiVE_mil_ato_crew", false] };
+                private _tailNow = _obj getVariable ["ALiVE_mil_ato_tail", "no tail"];
                 if (count _ours == 0) then {
                     _matched = true;
                 } else {
@@ -330,23 +338,50 @@ switch(_operation) do {
                     private _watched = (allPlayers select { alive _x && {(_x distance2D _obj) < 300} });
                     if (count _watched == 0) then {
                         { deleteVehicle _x } forEach _ours;
+                        ["ALIVE_fnc_ATOEffect - crew of %1 deleted from %2 (%3)",
+                            count _ours, typeOf _obj, _tailNow] call ALiVE_fnc_dump;
                         _detail = "deleted";
                     } else {
-                        { moveOut _x; [_x] orderGetIn false } forEach _ours;
-                        private _tailNow = _obj getVariable ["ALiVE_mil_ato_tail", "no tail"];
+                        // Let go of properly, so nothing can order them back in.
+                        //
+                        // Getting out and being told not to get in left the group
+                        // still owning the aircraft. A gunship parked this way
+                        // was 62 m up again 55 seconds later, and when the timer
+                        // below fired its pilot was one of the men it had
+                        // dismissed. A vanilla crew with no enemy about stayed out
+                        // either way, so what sent them back is not known; this
+                        // closes every way back in rather than guessing which.
+                        { moveOut _x; unassignVehicle _x } forEach _ours;
+                        _ours allowGetIn false;
+                        _ours orderGetIn false;
+                        private _groupsOut = [];
+                        { _groupsOut pushBackUnique (group _x) } forEach _ours;
+                        { if (!isNull _x) then { _x leaveVehicle _obj } } forEach _groupsOut;
                         ["ALIVE_fnc_ATOEffect - crew of %1 dismissed from %2 (%3), deleted in 120 s",
                             count _ours, typeOf _obj, _tailNow] call ALiVE_fnc_dump;
                         [_ours, _obj, _tailNow] spawn {
                             params ["_units", "_hull", "_tailNow"];
                             sleep 120;
                             private _left = _units select { !isNull _x && {alive _x} };
+                            // Anybody sitting in an aircraft that is off the ground
+                            // is left alone, whoever put him there.
+                            //
+                            // This timer deleted the four men of that gunship while
+                            // it was flying, its pilot among them, and it crashed
+                            // seven seconds later. Deleting a man who is flying
+                            // something is never what this timer is for.
+                            private _flying = _left select {
+                                private _v = objectParent _x;
+                                !isNull _v && {((getPos _v) select 2) > 5}
+                            };
+                            private _gone = _left - _flying;
                             // Said at the moment of deletion, because the thing
                             // worth knowing is whether this timer ever fires
                             // while the hull it came from is flying.
-                            ["ALIVE_fnc_ATOEffect - %1 dismissed crew of %2 deleted, hull now has %3 aboard",
-                                count _left, _tailNow,
+                            ["ALIVE_fnc_ATOEffect - %1 dismissed crew of %2 deleted, %3 left alone in an aircraft in the air, hull now has %4 aboard",
+                                count _gone, _tailNow, count _flying,
                                 if (isNull _hull) then {"a dead hull"} else {str (count (crew _hull))}] call ALiVE_fnc_dump;
-                            { deleteVehicle _x } forEach _left;
+                            { deleteVehicle _x } forEach _gone;
                         };
                         _detail = "dismissed";
                     };
