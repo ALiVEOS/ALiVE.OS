@@ -1783,7 +1783,7 @@ switch(_operation) do {
         if !(_place isEqualTo []) then { _obj = [_place, "objFor", _tail] call ALIVE_fnc_ATOPlace };
 
         if (!isNull _obj && {!(_effect isEqualTo [])}) then {
-            { [_effect, "apply", [_x, _obj, _home, []]] call ALIVE_fnc_ATOEffect } forEach ["standDownCrew","clearOrders","engineOff"];
+            { [_effect, "apply", [_x, _obj, _home, []]] call ALIVE_fnc_ATOEffect } forEach ["releaseHold","standDownCrew","clearOrders","engineOff"];
             // The effector has no unshield yet, so the stamp is cleared by
             // hand. Left on, the hull would be refused by every sweep as
             // spoken for, for the rest of the mission.

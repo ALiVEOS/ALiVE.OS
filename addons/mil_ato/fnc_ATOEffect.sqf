@@ -58,11 +58,13 @@ Jman
 // Anything that moves the aircraft, plus taking its crew away. Refused outright
 // while a player is in it, from any state, by any path. A catapult tows the
 // aircraft onto the wire before it fires, so it belongs here with the rest.
-#define PLAYER_UNSAFE ["airborneStart","forceLaunch","virtualLaunch","taxiOut","placeOnSlot","forceLanded","spawnAtHome","standDownCrew","takeOwnership","catapult"]
+#define PLAYER_UNSAFE ["airborneStart","forceLaunch","virtualLaunch","taxiOut","placeOnSlot","forceLanded","spawnAtHome","standDownCrew","takeOwnership","catapult","holdOnStand"]
 
 // Effects that only work where the object lives. On a hull owned elsewhere these
-// do nothing at all, so they are refused and reported instead.
-#define LOCAL_ONLY ["engineOn","engineOff","airborneStart","forceLaunch","virtualLaunch","taxiOut","placeOnSlot","forceLanded","spawnAtHome","seatCrew","recrewInPlace","standDownCrew","issueOrders","clearOrders","land","taxiTo","revealTargets","releaseTargets","catapult","tailhook","deckRecover","landOnRunway"]
+// do nothing at all, so they are refused and reported instead. releaseHold is not
+// here on purpose: it sets the tank wherever the hull lives, so a player who took
+// the aircraft is never left with it empty.
+#define LOCAL_ONLY ["engineOn","engineOff","airborneStart","forceLaunch","virtualLaunch","taxiOut","placeOnSlot","forceLanded","spawnAtHome","seatCrew","recrewInPlace","standDownCrew","issueOrders","clearOrders","land","taxiTo","revealTargets","releaseTargets","catapult","tailhook","deckRecover","landOnRunway","holdOnStand"]
 
 // Not built in this pass. Named so a caller reaching one is told, rather than
 // finding that nothing happened. deckLaunch stays here on purpose: it would be
@@ -174,7 +176,7 @@ switch(_operation) do {
                    "broadcastLost","retryLanding","emergencyLanding","turnaround",
                    "mintDroneCrew","recrewInPlace","takeOwnership","engineOn","engineOff",
                    "seatCrew","standDownCrew","clearOrders","airborneStart",
-                   "catapult","tailhook","deckRecover","landOnRunway"];
+                   "catapult","tailhook","deckRecover","landOnRunway","holdOnStand","releaseHold"];
     };
 
     case "apply": {
@@ -386,6 +388,47 @@ switch(_operation) do {
                         _detail = "dismissed";
                     };
                 };
+            };
+
+            // ---- holding a crewed aircraft on its stand ------------------------
+            // A plane given its crew starts its engine within a second and rolls
+            // on idle thrust, about fourteen metres at up to nine kilometres an
+            // hour, orders or none. In a tent hangar that puts its nose through
+            // the door while it waits for the runway, and a gunship waiting the
+            // same way lifted off altogether. Measured in one hangar bay, a minute
+            // each: switching the pilot's movement off still rolled it 13.7 m;
+            // switching the engine off as well still rolled it 13.8 m, because
+            // the pilot starts it again; an empty tank held it at 0 m with the
+            // engine never starting. So the tank is emptied before the crew is
+            // made, and what was in it is kept on the hull and given back when
+            // the wait ends, whichever way it ends. Given back and launched, the
+            // same jet was fifty metres up 101 seconds later.
+            //
+            // Nothing here is saved: a restored aircraft is a fresh hull with a
+            // full tank, so a hold cannot outlive a save.
+            case "holdOnStand": {
+                if (([_obj, _home] call _fnc_up) > 5) exitWith { _status = "refused"; _detail = "in the air" };
+                private _kept = _obj getVariable ["ALiVE_mil_ato_heldFuel", -1];
+                if (_kept isEqualType 0 && {_kept >= 0}) exitWith { _matched = true; _detail = "already held" };
+                _obj setVariable ["ALiVE_mil_ato_heldFuel", fuel _obj, true];
+                _obj engineOn false;
+                _obj setFuel 0;
+                _detail = "held";
+            };
+
+            // Given back on every way out of the wait. The hull may be on another
+            // machine by then, a player's for one, and a tank set from here would
+            // simply not change, so it is set where the hull lives.
+            case "releaseHold": {
+                private _kept = _obj getVariable ["ALiVE_mil_ato_heldFuel", -1];
+                if (!(_kept isEqualType 0) || {_kept < 0}) exitWith { _matched = true; _detail = "not held" };
+                if (local _obj) then {
+                    _obj setFuel _kept;
+                } else {
+                    [_obj, _kept] remoteExec ["setFuel", _obj];
+                };
+                _obj setVariable ["ALiVE_mil_ato_heldFuel", nil, true];
+                _detail = format ["fuel back to %1", _kept toFixed 2];
             };
 
             // ---- orders ------------------------------------------------------

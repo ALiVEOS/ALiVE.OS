@@ -678,6 +678,10 @@ switch(_operation) do {
             // or taken over by a player on final is still an approach that
             // ended.
             if (_state isEqualTo "LANDING") then { _effects pushBack "releaseApproach" };
+            // And the wait for the runway gives back the fuel it held, on every
+            // way out of it: launched, timed out, taken by a player, or lost. It
+            // is harmless on anything that was never held.
+            if (_state isEqualTo "ASSIGNED") then { _effects pushBack "releaseHold" };
 
             [_row,"state",_next] call ALIVE_fnc_hashSet;
             [_row,"enteredAt",_now] call ALIVE_fnc_hashSet;
@@ -709,7 +713,16 @@ switch(_operation) do {
                     // Not applied in the air, where recovering means still flying.
                     if (!_airborne) then { _effects pushBack "engineOff" };
                 };
-                case "ASSIGNED":     { _effects append ["mintCrew","seatCrew","lock"]; };
+                // A plane on land is held on its stand with an empty tank while
+                // it waits, BEFORE its crew is made: a crewed plane starts its
+                // engine and rolls, and one rolled half out of its hangar door
+                // while it waited. The tank is given back on the way out.
+                case "ASSIGNED":     {
+                    if (("needsRunway" call _fnc_o) && {!("deckHome" call _fnc_o)} && {!_virtualHome}) then {
+                        _effects pushBack "holdOnStand";
+                    };
+                    _effects append ["mintCrew","seatCrew","lock"];
+                };
                 // Start the engine as well as saying it is going. Announcing a
                 // departure does not make one happen.
                 //
@@ -769,9 +782,11 @@ switch(_operation) do {
                 _effects pushBack "refusedTeleportPlayerAboard";
             };
         };
-        // Nothing local may be done to a hull this machine does not own.
+        // Nothing local may be done to a hull this machine does not own. Giving a
+        // held tank back is the exception: it is set wherever the hull lives, and
+        // a player who took an aircraft mid-wait must not be left with it empty.
         if (_remote) then {
-            _effects = _effects select { _x in ["takeOwnership","unlock"] };
+            _effects = _effects select { _x in ["takeOwnership","unlock","releaseHold"] };
         };
 
         // ---- deadline and orders ------------------------------------------

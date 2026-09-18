@@ -128,6 +128,9 @@ nothing changed and it said so.
     (([_e, "apply", ["engineOff", _flyer, _home, []]] call ALIVE_fnc_ATOEffect)) params ["_stA2", "_mA2", "_dA2"];
     ["and keeps its engine",
         _stA2 isEqualTo "refused" && {_dA2 isEqualTo "in the air"} && {isEngineOn _flyer}] call _fnc_check;
+    (([_e, "apply", ["holdOnStand", _flyer, _home, []]] call ALIVE_fnc_ATOEffect)) params ["_stA3", "_mA3", "_dA3"];
+    ["and its fuel",
+        _stA3 isEqualTo "refused" && {_dA3 isEqualTo "in the air"} && {(fuel _flyer) > 0}] call _fnc_check;
 
     { deleteVehicle _x } forEach (crew _flyer);
     deleteVehicle _flyer;
@@ -198,6 +201,25 @@ nothing changed and it said so.
         _stR isEqualTo "ok" && {({alive _x} count (crew _dead)) > 0}] call _fnc_check;
     { deleteVehicle _x } forEach (crew _dead);
     deleteVehicle _dead;
+
+    // --- held on the stand -------------------------------------------------------
+    // An empty tank while it waits, and exactly what it had given back after.
+    private _held = createVehicle ["B_Plane_CAS_01_F", _spot getPos [60, 270], [], 0, "CAN_COLLIDE"];
+    _held setPosATL [((_spot getPos [60, 270]) select 0), ((_spot getPos [60, 270]) select 1), 0];
+    _held setFuel 0.7;
+    sleep 1;
+    private _heldHome = [getPosATL _held, 0, "terrain"];
+    (([_e, "apply", ["holdOnStand", _held, _heldHome, []]] call ALIVE_fnc_ATOEffect)) params ["_stH1", "_mH1", "_dH1"];
+    diag_log format ["  info  hold said %1 %2, the tank reads %3", _stH1, _dH1, fuel _held];
+    ["a plane held on its stand has an empty tank", _stH1 isEqualTo "ok" && {!_mH1} && {(fuel _held) == 0}] call _fnc_check;
+    (([_e, "apply", ["holdOnStand", _held, _heldHome, []]] call ALIVE_fnc_ATOEffect)) params ["_stH2", "_mH2"];
+    ["holding it again changes nothing and says so", _stH2 isEqualTo "ok" && {_mH2} && {(fuel _held) == 0}] call _fnc_check;
+    (([_e, "apply", ["releaseHold", _held, _heldHome, []]] call ALIVE_fnc_ATOEffect)) params ["_stH3", "_mH3", "_dH3"];
+    diag_log format ["  info  release said %1 %2, the tank reads %3", _stH3, _dH3, fuel _held];
+    ["let go, it has exactly the fuel it had", _stH3 isEqualTo "ok" && {!_mH3} && {abs ((fuel _held) - 0.7) < 0.01}] call _fnc_check;
+    (([_e, "apply", ["releaseHold", _held, _heldHome, []]] call ALIVE_fnc_ATOEffect)) params ["_stH4", "_mH4"];
+    ["letting go again changes nothing and says so", _stH4 isEqualTo "ok" && {_mH4} && {abs ((fuel _held) - 0.7) < 0.01}] call _fnc_check;
+    deleteVehicle _held;
 
     // --- the taxi out ------------------------------------------------------------
     // A plane is stood on its airport's taxi route, pointing along it, and a

@@ -106,6 +106,8 @@ observation sequences, because those are what the table exists to prevent.
     private _badLock = 0;
     private _badAir = 0;
     private _whyAir = [];
+    private _badHold = 0;
+    private _whyHold = [];
     private _mutated = 0;
     private _combos = 0;
 
@@ -233,6 +235,17 @@ observation sequences, because those are what the table exists to prevent.
                         } forEach ["standDownCrew","engineOff"];
                     };
 
+                    // Promise: nothing leaves the wait for the runway without
+                    // giving back the fuel the wait held, whichever way it
+                    // leaves, the hull's owner included.
+                    if ((_state isEqualTo "ASSIGNED") && {!(_next isEqualTo "ASSIGNED")} && {!("releaseHold" in _effects)}) then {
+                        _badHold = _badHold + 1;
+                        if (count _whyHold < 6) then {
+                            _whyHold pushBack format ["ASSIGNED +%1 (%2%3) -> %4, effects %5",
+                                _cmd, _profileName, if (_expired) then {", expired"} else {""}, _next, _effects];
+                        };
+                    };
+
                     // Promise: the row handed in is not the row handed back.
                     if !(([_before,"state",""] call ALIVE_fnc_hashGet) isEqualTo ([_row,"state",""] call ALIVE_fnc_hashGet)) then {
                         _mutated = _mutated + 1;
@@ -252,6 +265,8 @@ observation sequences, because those are what the table exists to prevent.
     ["the runway is only taken leaving or landing, and a player is never teleported", _badLock == 0] call _fnc_check;
     { diag_log format ["  info  in-the-air promise broken by: %1", _x] } forEach _whyAir;
     ["an aircraft in the air keeps its crew and its engine", _badAir == 0] call _fnc_check;
+    { diag_log format ["  info  fuel-back promise broken by: %1", _x] } forEach _whyHold;
+    ["every way out of the wait for the runway gives the fuel back", _badHold == 0] call _fnc_check;
     ["step never edits the row it was given", _mutated == 0] call _fnc_check;
 
     // ---- the measured incidents, replayed ------------------------------------
@@ -470,6 +485,31 @@ observation sequences, because those are what the table exists to prevent.
         _lpState isEqualTo "LAUNCHING" && {"taxiOut" in _lpEff}] call _fnc_check;
     ["and it is put there before its engine is started",
         (_lpEff find "taxiOut") > -1 && {(_lpEff find "taxiOut") < (_lpEff find "engineOn")}] call _fnc_check;
+    ["and its fuel is given back before that",
+        (_lpEff find "releaseHold") > -1 && {(_lpEff find "releaseHold") < (_lpEff find "engineOn")}] call _fnc_check;
+
+    // Held on the stand with an empty tank while it waits, before its crew is
+    // made. A plane on land only.
+    private _fnc_assign = {
+        params ["_flags"];
+        private _row = [_m, "newRow", ["BLU_F_0", [[100,100,0], 0, "terrain"]]] call ALIVE_fnc_ATOMachine;
+        [_row, "state", "PARKED"] call ALIVE_fnc_hashSet;
+        [_row, "readyAt", 0] call ALIVE_fnc_hashSet;
+        [_row, "sortie", ["CAS", [100,100,0], 600, 2000, "s1", [], ""]] call ALIVE_fnc_hashSet;
+        private _out = [_m, "step", [_row, [_flags] call _fnc_obs, "ASSIGN", 1000]] call ALIVE_fnc_ATOMachine;
+        [([(_out select 0), "state", ""] call ALIVE_fnc_hashGet), _out select 2]
+    };
+    ([[["fixedWing", true], ["needsRunway", true]]] call _fnc_assign) params ["_asState", "_asEff"];
+    diag_log format ["  info  a plane on land assigned went to %1, effects %2", _asState, _asEff];
+    ["a plane on land is held on its stand before its crew is made",
+        _asState isEqualTo "ASSIGNED" && {(_asEff find "holdOnStand") > -1}
+        && {(_asEff find "holdOnStand") < (_asEff find "mintCrew")}] call _fnc_check;
+    ["and so is a VTOL on land",
+        "holdOnStand" in (([[["needsRunway", true]]] call _fnc_assign) select 1)] call _fnc_check;
+    ["a helicopter is not held",
+        !("holdOnStand" in (([[]] call _fnc_assign) select 1))] call _fnc_check;
+    ["nor is a plane on a deck",
+        !("holdOnStand" in (([[["deckHome", true], ["fixedWing", true], ["needsRunway", true]]] call _fnc_assign) select 1))] call _fnc_check;
     ["a helicopter lifts from where it stands",
         !("taxiOut" in (([[]] call _fnc_launchFrom) select 1))] call _fnc_check;
     ["and so does a VTOL",
