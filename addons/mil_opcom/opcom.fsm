@@ -1672,12 +1672,9 @@ class FSM
                          "                    " \n
                          "				// [""Calling ATO event""] call ALiVE_fnc_DumpR;" \n
                          "" \n
-                         "				private _atoInitializationDeadline = time + 30;" \n
-                         "				waitUntil {" \n
-                         "                    sleep 1;" \n
-                         "                    _exitFSM || {[""ALiVE_mil_ATO""] call ALiVE_fnc_isModuleInitialised} || {time >= _atoInitializationDeadline}" \n
-                         "                };" \n
-                         "" \n
+                         "				// Never wait here. FSM state code cannot suspend, so a sleep throws on every pass," \n
+                         "				// and a wait that could block would stall the whole of OPCOM. If ATO is not up yet," \n
+                         "				// this recce is skipped and the next cycle asks again." \n
                          "                if (!_exitFSM && {[""ALiVE_mil_ATO""] call ALiVE_fnc_isModuleInitialised}) then {" \n
                          "				_args = [" \n
                          "					""GREEN"",	// ROE" \n
@@ -1693,7 +1690,7 @@ class FSM
                          "				_eventID = [ALIVE_eventLog, ""addEvent"",_event] call ALIVE_fnc_eventLog;" \n
                          "                } else {" \n
                          "                    if (_debug && {!_exitFSM}) then {" \n
-                         "                        [""OPCOM request for recce on objective %1 expired while waiting for ATO initialization"",_target] call ALIVE_fnc_dumpR;" \n
+                         "                        [""OPCOM request for recce on objective %1 skipped, ATO is not initialised yet"",_target] call ALIVE_fnc_dumpR;" \n
                          "                    };" \n
                          "                };" \n
                          "   			} else {" \n
