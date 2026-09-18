@@ -104,10 +104,16 @@ switch(_operation) do {
         } else {
             _args = _logic getVariable ["debug", false];
         };
-        // FIXME - what is the requirement for STRING input also?
-        // Check "typeName" in https://community.bistudio.com/wiki/Arma_3_Module_Framework
+        // The Eden Combo declares Yes as value = 1, so the attribute arrives as the
+        // STRING "1" and never as "true". Testing for "true" meant the checkbox could
+        // not turn debug on at all. A binarised build hands the same attribute over as
+        // a SCALAR, so take that too.
         if (typeName _args == "STRING") then {
-            if(_args == "true") then {_args = true;} else {_args = false;};
+            _args = (_args in ["1","true"]);
+            _logic setVariable ["debug", _args];
+        };
+        if (typeName _args == "SCALAR") then {
+            _args = _args > 0;
             _logic setVariable ["debug", _args];
         };
         ASSERT_TRUE(typeName _args == "BOOL",str _args);
