@@ -1889,12 +1889,22 @@ switch(_operation) do {
             case "turnaround": {
                 private _tail = _extra param [0, ""];
 
-                // Already done. The flag is what distinguishes "serviced" from
+                // Already done. The stamp is what distinguishes "serviced" from
                 // "happens to be undamaged and full", because an aircraft that
                 // flew a sortie without being shot at reads the same as a
                 // serviced one on damage and fuel alone and would never be
                 // rearmed.
-                if (_obj getVariable ["ALiVE_mil_ato_serviced", false]) exitWith {
+                //
+                // Done for THIS landing, that is. It was a flag that was set
+                // after the first service and never cleared, so every later
+                // landing answered "already serviced" and nothing was refuelled
+                // or rearmed again for the rest of the mission: an A-10 back
+                // with 0.44 of a tank asked for no truck at all. A time answers
+                // the one question the guard is for, a second ask for the same
+                // arrival, and lets the next landing be serviced.
+                private _servicedAt = _obj getVariable ["ALiVE_mil_ato_servicedAt", -1e9];
+                if (!(_servicedAt isEqualType 0)) then { _servicedAt = -1e9 };
+                if ((time - _servicedAt) < 60) exitWith {
                     _matched = true; _detail = "already serviced";
                 };
 
@@ -1964,7 +1974,7 @@ switch(_operation) do {
                         _v setFuel 1;
                         _v setVehicleAmmo 1;
                     };
-                    _v setVariable ["ALiVE_mil_ato_serviced", true, false];
+                    _v setVariable ["ALiVE_mil_ato_servicedAt", time, false];
                     _v setVariable ["ALiVE_mil_ato_serviceAsked", nil, false];
                     ["ALIVE_fnc_ATOEffect - %1 is serviced%2", _tail,
                         if (_byTruck) then { " by a truck" } else {
