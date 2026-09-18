@@ -256,6 +256,25 @@ switch(_operation) do {
                                         // request is handed back to be re-let.
                                         _effects append ["standDownCrew","unlock","assignFailed"];
                                         _next = "PARKED";
+                                        // Which half of the gate it never passed. Half of
+                                        // all assignments were expiring here and the log
+                                        // could not say whether for want of a pilot or of
+                                        // the runway lock, which need different fixes.
+                                        _reason = switch (true) do {
+                                            case (!("crewSeated" call _fnc_o) && {!("lockHeld" call _fnc_o)}): { "NO_PILOT_NO_LOCK" };
+                                            case (!("crewSeated" call _fnc_o)): { "NO_PILOT" };
+                                            default { "NO_LOCK" };
+                                        };
+                                    } else {
+                                        // No runway yet: ask again. The lock is requested
+                                        // once on the way into this state, so an aircraft
+                                        // assigned a second after another one lost that race
+                                        // and never asked again. It sat out its two minutes
+                                        // with the runway free for most of them and went
+                                        // back to being parked. The landing approach learnt
+                                        // the same lesson. Asked only while it is not held,
+                                        // so a lock already won is never extended.
+                                        if !("lockHeld" call _fnc_o) then { _effects pushBack "lock" };
                                     };
                                 };
                             };
