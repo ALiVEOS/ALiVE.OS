@@ -1213,6 +1213,28 @@ switch(_operation) do {
         // painted pads, lights), and not on a pad at all: a pad is there to be
         // landed on, and the stand search has already judged what stands round
         // it. Asked last, because it is the dearest test here.
+        // Inside a hangar the shared search chose, it is not asked at all. A
+        // disc round the aircraft reaches straight through the hangar's own
+        // walls to whatever stands outside them, and the bay was vetted when it
+        // was given. On a LAN run an RHS F-22 was evicted from a Stratis tent
+        // hangar bay the moment it parked, a bay that passed before this test
+        // existed. Not where the caller will not line the aircraft up with the
+        // hangar (_shelterOk false): there the hangar is a wall like any other.
+        private _inHangar = false;
+        if (_shelterOk) then {
+            private _hangarTypes = (if (isNil "ALIVE_airBuildingTypes") then {[]} else {ALIVE_airBuildingTypes})
+                + (if (isNil "ALIVE_militaryAirBuildingTypes") then {[]} else {ALIVE_militaryAirBuildingTypes});
+            _inHangar = ((nearestObjects [_p, ["House","Building"], _span + BODY_PAD]) findIf {
+                private _hh = _x;
+                private _t = toLower (typeOf _hh);
+                ((_hangarTypes findIf { [_t, _x] call CBA_fnc_find != -1 }) >= 0) && {
+                    (boundingBoxReal _hh) params ["_hmin", "_hmax"];
+                    private _m = _hh worldToModel _p;
+                    (_m select 0) > (_hmin select 0) && {(_m select 0) < (_hmax select 0)}
+                        && {(_m select 1) > (_hmin select 1)} && {(_m select 1) < (_hmax select 1)}
+                }
+            }) > -1;
+        };
         private _reach = (_span - 4) max 1;
         if !(_class isEqualTo "") then {
             ([_class] call ALiVE_fnc_getVehicleBoundingBox) params [["_rLen", 0], ["_rWid", 0]];
@@ -1223,6 +1245,7 @@ switch(_operation) do {
             };
         };
         private _fnc_walled = {
+            if (_inHangar) exitWith { false };
             if !((nearestObjects [_p, ["HeliH"], 5]) isEqualTo []) exitWith { false };
             private _near = ((nearestObjects [_p, ["House","Building","Wall"], _reach + BODY_PAD])
                 + (nearestTerrainObjects [_p, BODY_TYPES, _reach + BODY_PAD, false, true]))
@@ -1931,8 +1954,13 @@ switch(_operation) do {
         _args params [["_home",[],[[]]], ["_tail","",[""]]];
         if (count _home < 3) exitWith { _result = false };
         if (isNil "ALiVE_airSpawnRegistry") then { ALiVE_airSpawnRegistry = [] };
-        // Four elements, matching what the search itself writes and prunes.
-        ALiVE_airSpawnRegistry pushBack [+(_home select 0), _tail, time, _tail];
+        // Four elements, matching what the search itself writes and prunes,
+        // and stamped on the same clock it prunes by. This wrote mission time,
+        // and the search prunes by diag_tickTime, which counts from when the
+        // game started: on any server that had run for a minute before its
+        // mission, every entry was already expired when it was written, so the
+        // spot of an aircraft away flying read as free to every search.
+        ALiVE_airSpawnRegistry pushBack [+(_home select 0), _tail, diag_tickTime, _tail];
         _result = true;
     };
 
