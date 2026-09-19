@@ -32,7 +32,9 @@ Parameters:
 
 Returns:
     ARRAY of role strings, any of: "Recon", "Attack", "Fighter", "CAS". Empty
-    when the airframe has no tasking use.
+    when the airframe has no tasking use. A fighter needs a radar as well as
+    air-to-air missiles, a fighter armed only with its cannon is not given the
+    ground roles, and the Blackfish and Xi'an families resolve to Recon only.
 
 Examples:
     (begin example)
@@ -58,7 +60,7 @@ params [
 if (_class isEqualType objNull) then {_class = typeof _class};
 
 // Attack aircraft have air to surface capability
-// Fighter aircraft have air to air capability
+// Fighter aircraft have air to air capability and a radar to use it with
 // Recon aircraft can actually find things - see the sensor note below
 // Multi-role aircraft have both attack and fighter
 //
@@ -97,23 +99,45 @@ if (_canObserve && {"armed" in _caps || _isDrone}) then {
     _result pushBack "Recon";
 };
 
-// Anything that can hit a ground target can be sent against one. Note that
-// a gun counts: a gun-only aircraft could previously never be selected for
-// anything at all, because the role it was given was never requested.
-if (["gun", "agGuided", "agUnguided"] findIf {_x in _caps} > -1) then {
+// A fighter needs more than air-to-air missiles: a radar to find its target
+// with, and fixed wing (the dispatcher keeps counter-air for planes
+// regardless, so granting it to helicopters only produced candidates that
+// were then filtered out). Attack jets carry a pair of missiles for their own
+// defence, and reading those as a fighter marked the A-10 down for close air
+// support and made it a candidate for patrols. Measured on the LAN mod set:
+// the A-10, A-164, To-199 and Su-25 carry no radar; the F-22, MiG-29, T-50
+// and every vanilla fighter do. An airframe that declares no sensors at all
+// keeps the old reading, so an older or modded fleet keeps its fighters.
+private _fighter = ("aa" in _caps) && {_class isKindOf "Plane"}
+    && {("radar" in _caps) || {"sensorsUnknown" in _caps}};
+
+// A fighter whose only ground weapon is its cannon is not sent at ground
+// targets. The F-22, MiG-29 and T-50 carry nothing else for them.
+private _gunOnlyFighter = _fighter && {"gun" in _caps}
+    && {!("agGuided" in _caps)} && {!("agUnguided" in _caps)};
+
+// Anything else that can hit a ground target can be sent against one. Note
+// that a gun counts: a gun-only aircraft could previously never be selected
+// for anything at all, because the role it was given was never requested.
+if (((["gun", "agGuided", "agUnguided"] findIf {_x in _caps}) > -1) && {!_gunOnlyFighter}) then {
     _result pushBack "Attack";
 };
 
-// Air-to-air, and only for fixed wing - the dispatcher restricts counter-air
-// tasking to planes regardless, so granting it to helicopters only produced
-// candidates that were then filtered out.
-if ("aa" in _caps && {_class isKindOf "Plane"}) then {
+if (_fighter) then {
     _result pushBack "Fighter";
 };
 
 // Retained for anything reading the stored roles. The dispatcher does not
 // request "CAS" - gun-armed aircraft reach close air support through
 // "Attack" above.
-if ("gun" in _caps) then { _result pushBack "CAS" };
+if (("gun" in _caps) && {!_gunOnlyFighter}) then { _result pushBack "CAS" };
+
+// The Blackfish and Xi'an families are transports with guns, flown for
+// reconnaissance and nothing else: Recon only, and only when the scan found
+// something to observe with. Their unarmed variants already resolve to no
+// role at all, which leaves them to the parts of ALiVE that fly transports.
+if ((_class isKindOf "VTOL_01_base_F") || {_class isKindOf "VTOL_02_base_F"}) then {
+    _result = _result arrayIntersect ["Recon"];
+};
 
 _result

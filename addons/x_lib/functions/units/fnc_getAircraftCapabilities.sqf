@@ -37,6 +37,8 @@ Returns:
       "aa"             - air-to-air missiles
       "antiRadiation"  - anti-radar missiles, the one capability SEAD needs
       "sensors"        - target-acquisition sensors (IR / visual / laser)
+      "radar"          - an active radar, what an interceptor finds its
+                         targets with
       "sensorsUnknown" - the airframe declares no sensor component at all, so
                          nothing can be concluded either way. Callers should
                          treat this as permission to fall back, NOT as "no
@@ -101,6 +103,13 @@ if (isClass _sensors) then {
         if (isClass (_sensors >> _x)) exitWith { _found = true; };
     } forEach ["IRSensorComponent", "VisualSensorComponent", "LaserSensorComponent"];
     if (_found) then { _caps pushBack "sensors" };
+    // An active radar, what an interceptor finds its targets with. Read by the
+    // component's type rather than its class name, because a mod may name the
+    // class anything. Measured on the LAN mod set: the A-10, A-164, To-199 and
+    // Su-25 carry none; the F-22, MiG-29, T-50 and every vanilla fighter do.
+    if ((("true" configClasses _sensors) findIf { (getText (_x >> "componentType")) isEqualTo "ActiveRadarSensorComponent" }) > -1) then {
+        _caps pushBack "radar";
+    };
 } else {
     _caps pushBack "sensorsUnknown";
 };
