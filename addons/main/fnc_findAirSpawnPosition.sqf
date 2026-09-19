@@ -1149,11 +1149,21 @@ if (count _found == 0 && {_preference in ["auto", "hangar"]} && _isPlane && !_is
 // the tiers below run unchanged as the fallback. Scoped to wide PLANES only, so
 // every heli taking a real pad at tier 1 and every normal plane on the apron are
 // untouched.
+// Nearest first. The distance used to be picked at random each try and the first
+// spot that passed was taken, so an answer 20 m away and one 380 m away were
+// equally likely and the aircraft usually ended up somewhere in between. That is
+// how a Blackfish came to stand 80 to 380 m from the airfield with open ground
+// much closer, and why a wide aircraft moved every time it was respawned: this
+// same search runs at the aircraft's own position and answers somewhere else.
+// The distance now grows with the attempt: the anchor itself first, then steadily
+// wider, out to the same limit as before. Same 500 tries, same tests in the same
+// order, same stop on the first hit; only the order of distances changes.
 if (count _found == 0 && _wideAirframe && {_preference in ["auto", "apron", "field"]}) then {
     private _openDir = if (_runwayHeading >= 0) then { _runwayHeading } else { random 360 };
     for "_i" from 1 to 500 do {
         if (count _found > 0) exitWith {};
-        private _pos = _centerPos getPos [random _maxDistance, random 360];
+        private _radius = (_maxDistance * ((_i - 1) / 499)) min _maxDistance;
+        private _pos = _centerPos getPos [_radius, random 360];
         // Whole footprint off pavement and off road - the decisive test.
         if !([_pos] call _fnc_footprintOffPavement) then { continue };
         // Slope / clear-around, identical to the field tier so behaviour matches.
