@@ -436,6 +436,120 @@ Runs spawned to match the other tests, though nothing here needs a tick.
     ["naming an airframe a player is flying is refused, not substituted",
         _ferryBadPlan isEqualTo ["denied", "no candidate airframe"]] call _fnc_check;
 
+    // --- what each airframe can be asked to do --------------------------------
+    // A fighter needs a radar as well as air-to-air missiles, a fighter armed
+    // only with its cannon is not sent at the ground, and the Blackfish and
+    // Xi'an families fly reconnaissance only. Measured on the rig with the LAN
+    // mod set; repeated here for the classes every install has.
+    if (_rolesWork) then {
+        private _fnc_roles = { [_this] call ALiVE_fnc_getAircraftRoles };
+        private _fnc_caps = { [_this] call ALiVE_fnc_getAircraftCapabilities };
+        ["the Black Wasp has a radar and is a fighter",
+            ("radar" in ("B_Plane_Fighter_01_F" call _fnc_caps)) && {"Fighter" in ("B_Plane_Fighter_01_F" call _fnc_roles)}] call _fnc_check;
+        ["the A-164 has no radar, is not a fighter and still attacks",
+            !("radar" in ("B_Plane_CAS_01_dynamicLoadout_F" call _fnc_caps))
+            && {!("Fighter" in ("B_Plane_CAS_01_dynamicLoadout_F" call _fnc_roles))}
+            && {"Attack" in ("B_Plane_CAS_01_dynamicLoadout_F" call _fnc_roles)}] call _fnc_check;
+        ["nor is the To-199 a fighter", !("Fighter" in ("O_Plane_CAS_02_dynamicLoadout_F" call _fnc_roles))] call _fnc_check;
+        ["the Gryphon is a fighter", "Fighter" in ("I_Plane_Fighter_04_F" call _fnc_roles)] call _fnc_check;
+        ["the armed Blackfish flies reconnaissance only",
+            ("B_T_VTOL_01_armed_F" call _fnc_roles) isEqualTo ["Recon"]] call _fnc_check;
+        ["the troop Blackfish has no role at all",
+            ("B_T_VTOL_01_infantry_F" call _fnc_roles) isEqualTo []] call _fnc_check;
+        ["the Xi'an flies reconnaissance only",
+            ("O_T_VTOL_02_infantry_dynamicLoadout_F" call _fnc_roles) isEqualTo ["Recon"]] call _fnc_check;
+        ["an attack helicopter keeps attack and close support and is not a fighter",
+            (({_x in ("B_Heli_Attack_01_F" call _fnc_roles)} count ["Attack","CAS"]) == 2)
+            && {!("Fighter" in ("B_Heli_Attack_01_F" call _fnc_roles))}] call _fnc_check;
+        // The LAN set's airframes, when those mods are loaded.
+        {
+            _x params ["_cls", "_want", "_notWant", "_label"];
+            if (isClass (configFile >> "CfgVehicles" >> _cls)) then {
+                private _r = _cls call _fnc_roles;
+                diag_log format ["  info  %1 reads %2", _cls, _r];
+                [_label, (({_x in _r} count _want) == count _want) && {({_x in _r} count _notWant) == 0}] call _fnc_check;
+            } else {
+                diag_log format ["  SKIP  %1 (%2 is not loaded)", _label, _cls];
+            };
+        } forEach [
+            ["RHS_A10", ["Attack","CAS"], ["Fighter"], "the RHS A-10 attacks and is not a fighter"],
+            ["rhsusf_f22", ["Fighter"], ["Attack","CAS"], "the RHS F-22 is a fighter and is not sent at the ground"],
+            ["rhs_mig29s_vvsc", ["Fighter"], ["Attack","CAS"], "nor is the MiG-29"],
+            ["DAO_Gunship_B", ["Recon"], ["Attack","CAS","Fighter"], "Drongo's Blackfish gunship flies reconnaissance only"]
+        ];
+
+        // --- nothing that fits is not an answer -------------------------------
+        // With no free aircraft that has the role a job needs, the request
+        // waits; whatever is nearest is not sent in its place.
+        private _recsJ = [] call ALIVE_fnc_hashCreate;
+        private _rowsJ = [] call ALIVE_fnc_hashCreate;
+        private _obsJ = [] call ALIVE_fnc_hashCreate;
+        [_recsJ, "j1", ["B_Plane_CAS_01_dynamicLoadout_F", [4900, 4900, 0]] call _fnc_record] call ALIVE_fnc_hashSet;
+        [_recsJ, "j3", ["B_T_VTOL_01_armed_F", [4990, 4990, 0]] call _fnc_record] call ALIVE_fnc_hashSet;
+        { [_rowsJ, _x, ["PARKED"] call _fnc_row] call ALIVE_fnc_hashSet; [_obsJ, _x, [] call _fnc_obs] call ALIVE_fnc_hashSet } forEach ["j1", "j3"];
+        private _dcaJ = [_t, "plan", [["DCA"] call _fnc_request, _recsJ, _rowsJ, _obsJ, []]] call ALIVE_fnc_ATOTask;
+        diag_log format ["  info  an interception with only an attack jet and a Blackfish free answered: %1", _dcaJ];
+        ["an interception with only an attack jet free is refused, not flown by it",
+            (_dcaJ param [0, ""]) isEqualTo "denied"] call _fnc_check;
+        private _casJ = [_t, "plan", [["CAS"] call _fnc_request, _recsJ, _rowsJ, _obsJ, []]] call ALIVE_fnc_ATOTask;
+        ["close air support takes the attack jet, not the nearer Blackfish",
+            (_casJ param [0, []]) isEqualTo ["j1"]] call _fnc_check;
+        private _recsK = [] call ALIVE_fnc_hashCreate;
+        private _rowsK = [] call ALIVE_fnc_hashCreate;
+        private _obsK = [] call ALIVE_fnc_hashCreate;
+        [_recsK, "k1", ["B_T_VTOL_01_armed_F", [4990, 4990, 0]] call _fnc_record] call ALIVE_fnc_hashSet;
+        [_rowsK, "k1", ["PARKED"] call _fnc_row] call ALIVE_fnc_hashSet;
+        [_obsK, "k1", [] call _fnc_obs] call ALIVE_fnc_hashSet;
+        private _casK = [_t, "plan", [["CAS"] call _fnc_request, _recsK, _rowsK, _obsK, []]] call ALIVE_fnc_ATOTask;
+        ["with only a Blackfish free, close air support waits rather than sending it",
+            (_casK param [0, ""]) isEqualTo "denied"] call _fnc_check;
+        // An airframe whose roles cannot be read at all is still let through,
+        // so a modded fleet the scan knows nothing about still flies.
+        [_recsK, "k2", ["ALIVE_test_no_such_plane", [4000, 4000, 0]] call _fnc_record] call ALIVE_fnc_hashSet;
+        [_rowsK, "k2", ["PARKED"] call _fnc_row] call ALIVE_fnc_hashSet;
+        [_obsK, "k2", [] call _fnc_obs] call ALIVE_fnc_hashSet;
+        private _casK2 = [_t, "plan", [["CAS"] call _fnc_request, _recsK, _rowsK, _obsK, []]] call ALIVE_fnc_ATOTask;
+        ["an aircraft whose roles cannot be read is still sent, never the Blackfish",
+            (_casK2 param [0, []]) isEqualTo ["k2"]] call _fnc_check;
+        // The roles on the record come first, both ways. Two armed Blackfish,
+        // whose class reads reconnaissance only, one of them recorded with
+        // Attack: only the recorded roles can make it the answer, and read
+        // from the class both would be refused.
+        private _recsR = [] call ALIVE_fnc_hashCreate;
+        private _rowsR = [] call ALIVE_fnc_hashCreate;
+        private _obsR = [] call ALIVE_fnc_hashCreate;
+        [_recsR, "r1", [[["class", "B_T_VTOL_01_armed_F"], ["home", [[4000, 4000, 0], 0, "terrain"]],
+            ["faction", "BLU_F"], ["readyAt", 0], ["roles", ["Attack"]]]] call ALIVE_fnc_hashCreate] call ALIVE_fnc_hashSet;
+        [_recsR, "r2", ["B_T_VTOL_01_armed_F", [4990, 4990, 0]] call _fnc_record] call ALIVE_fnc_hashSet;
+        { [_rowsR, _x, ["PARKED"] call _fnc_row] call ALIVE_fnc_hashSet; [_obsR, _x, [] call _fnc_obs] call ALIVE_fnc_hashSet } forEach ["r1", "r2"];
+        private _casR = [_t, "plan", [["CAS"] call _fnc_request, _recsR, _rowsR, _obsR, []]] call ALIVE_fnc_ATOTask;
+        ["the roles on an aircraft's record are the ones it is picked on",
+            (_casR param [0, []]) isEqualTo ["r1"]] call _fnc_check;
+        // And an attack jet recorded with reconnaissance only is not sent on
+        // close air support, though its class alone would be.
+        private _recsS = [] call ALIVE_fnc_hashCreate;
+        private _rowsS = [] call ALIVE_fnc_hashCreate;
+        private _obsS = [] call ALIVE_fnc_hashCreate;
+        [_recsS, "s1", [[["class", "B_Plane_CAS_01_dynamicLoadout_F"], ["home", [[4000, 4000, 0], 0, "terrain"]],
+            ["faction", "BLU_F"], ["readyAt", 0], ["roles", ["Recon"]]]] call ALIVE_fnc_hashCreate] call ALIVE_fnc_hashSet;
+        [_rowsS, "s1", ["PARKED"] call _fnc_row] call ALIVE_fnc_hashSet;
+        [_obsS, "s1", [] call _fnc_obs] call ALIVE_fnc_hashSet;
+        private _casS = [_t, "plan", [["CAS"] call _fnc_request, _recsS, _rowsS, _obsS, []]] call ALIVE_fnc_ATOTask;
+        ["and roles on the record that do not fit keep it off the job, whatever its class",
+            (_casS param [0, ""]) isEqualTo "denied"] call _fnc_check;
+        // A ferry is about one named hull: a Blackfish that came down away from
+        // home is still brought back, whatever its roles.
+        private _ferryK = [[
+            ["id", "r_ferry3"], ["type", "FERRY"], ["faction", "BLU_F"],
+            ["targetPos", _target], ["receivedAt", _now], ["onlyTail", "k1"]
+        ]] call ALIVE_fnc_hashCreate;
+        private _ferryKPlan = [_t, "plan", [_ferryK, _recsK, _rowsK, _obsK, []]] call ALIVE_fnc_ATOTask;
+        ["a ferry still brings home an aircraft whose roles fit no job",
+            (_ferryKPlan param [0, []]) isEqualTo ["k1"]] call _fnc_check;
+    } else {
+        diag_log "  SKIP  the role rules and the narrowed fallback (roles do not resolve here)";
+    };
+
     diag_log format ["  info  %1 assertions", _checked];
     if (count _fails == 0) then {
         diag_log "=== ATO Tasker test: ALL PASS ===";

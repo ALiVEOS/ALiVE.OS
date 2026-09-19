@@ -312,22 +312,39 @@ switch(_operation) do {
         // closest thing to the target.
         //
         // The fallback exists for aircraft whose roles cannot be read at all,
-        // which is the normal case for a modded faction: if nothing has a role
-        // that fits, everything flyable is admitted rather than the commander
-        // being told it has no aircraft. So an unroled fleet still flies, and a
-        // roled one is never mismatched.
+        // which is the normal case for a modded faction: those are let through
+        // unjudged rather than the commander being told it has no aircraft. So
+        // an unroled fleet still flies, and a roled one is never mismatched.
         private _withRoles = _candidates apply {
             _x params ["_tail", "_class", "_rec", "_state"];
-            private _roles = [];
-            if (!isNil "ALiVE_fnc_getAircraftRoles") then {
-                _roles = [_class] call ALiVE_fnc_getAircraftRoles;
+            // The roles on the record come first. They are read for the hull
+            // actually standing there, with the pylons it was adopted or
+            // delivered with, so a fighter refitted with bombs is picked for
+            // the ground work it was armed for. The class alone is read only
+            // when the record carries none.
+            private _roles = [_rec, "roles", []] call ALIVE_fnc_hashGet;
+            if (!(_roles isEqualType []) || {_roles isEqualTo []}) then {
+                _roles = [];
+                if (!isNil "ALiVE_fnc_getAircraftRoles") then {
+                    _roles = [_class] call ALiVE_fnc_getAircraftRoles;
+                };
             };
             if !(_roles isEqualType []) then { _roles = [] };
             [_tail, _class, _rec, _state, _roles]
         };
 
         private _fit = _withRoles select { !((_wantRoles arrayIntersect (_x select 4)) isEqualTo []) };
-        if (count _fit == 0) then { _fit = _withRoles };
+        // A ferry is about one named hull and asks nothing of its roles: a
+        // fighter that came down away from home still has to be brought back.
+        if (_type isEqualTo "FERRY" || {!(_onlyTail isEqualTo "")}) then { _fit = _withRoles };
+        // Only aircraft whose roles could not be read at all are let through
+        // unjudged. "Nothing fits" used to admit everything available, which
+        // would send a Blackfish on close air support, or an attack jet on an
+        // interception, whenever the right aircraft were busy.
+        if (count _fit == 0) then { _fit = _withRoles select { (_x select 4) isEqualTo [] } };
+        if (count _fit == 0) exitWith {
+            _result = ["denied", format ["no free airframe with a role for %1", _type]];
+        };
 
         // Score, then rank. Penalty dominates distance by a margin no real
         // distance can close, so a better-suited aircraft far away still beats

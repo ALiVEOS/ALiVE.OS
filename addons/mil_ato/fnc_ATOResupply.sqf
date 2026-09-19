@@ -16,8 +16,9 @@ ordered another, because nothing on the record said an order was already out.
 Two routes. Where logistics is running it asks for a delivery, which flies a
 replacement in and is the better story. Where it is not, or the delivery never
 arrives, it creates one at the record's own stand. Either way the airframe ends
-up attached to the record that lost it, keeping its callsign and its roles,
-because to a commander it is the same aircraft coming back.
+up attached to the record that lost it, keeping its callsign, because to a
+commander it is the same aircraft coming back. Its roles are read again from
+the aircraft that arrives.
 
 Parameters:
 Nil or Array - If Nil, return a new instance. If a hash, reference an existing one.
@@ -502,10 +503,10 @@ switch(_operation) do {
             };
         } forEach [_vehId, _entId];
 
-        // Into the SAME record. The tail, the callsign and the roles are the
-        // ones the campaign already knows; only the home is re-checked, because
-        // the aircraft is standing at the delivery point rather than on its
-        // stand.
+        // Into the SAME record. The tail and the callsign are the ones the
+        // campaign already knows; the roles are read from the delivered
+        // aircraft, and the home is re-checked, because the aircraft is
+        // standing at the delivery point rather than on its stand.
         //
         // The hint adoptPair takes is a bare POSITION, so the record's home is
         // unpacked here rather than handed over whole. The first version of

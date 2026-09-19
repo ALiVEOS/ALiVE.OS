@@ -1473,8 +1473,12 @@ switch(_operation) do {
                 [_airspaceName], [_roles, _caps]]] call ALIVE_fnc_ATOLedger;
             [_ledger, "setHome", [_tail, _home]] call ALIVE_fnc_ATOLedger;
         } else {
-            // Inherited record: roles and callsign stay. The home is written
-            // only when the re-validation moved it.
+            // Inherited record: the callsign stays. The roles are the delivered
+            // aircraft's, read with its own pylons: the record's may have been
+            // read from a different loadout, or under older rules in a saved
+            // campaign, and the tasker reads a record's roles first. The home is
+            // written only when the re-validation moved it.
+            [_ledger, "setAdmission", [_tail, _roles, _caps]] call ALIVE_fnc_ATOLedger;
             if !(([_target, "home", []] call ALIVE_fnc_hashGet) isEqualTo _home) then {
                 [_ledger, "setHome", [_tail, _home]] call ALIVE_fnc_ATOLedger;
             };
@@ -2324,9 +2328,9 @@ switch(_operation) do {
     // no live hull: anything else is either a record somebody closed on
     // purpose, which a hull must not reopen, or a record that already has its
     // aircraft. The stand is swept of the old wreck and re-validated; a bad
-    // slot is fixed once here, through rehome, and never bequeathed. Roles,
-    // callsign and tail are inherited by construction, and the status flip
-    // happens in attach.
+    // slot is fixed once here, through rehome, and never bequeathed. The
+    // callsign and tail are inherited by construction, the roles are read again
+    // for the hull actually built, and the status flip happens in attach.
     case "createReplacement": {
         private _tail = _args;
         if !(_tail isEqualType "") then { _tail = "" };
@@ -2392,6 +2396,13 @@ switch(_operation) do {
             ["ALIVE_fnc_ATOPlace - createReplacement for %1 found no home", _tail] call ALiVE_fnc_dump;
         };
 
+        // Built with its class's own loadout, so it is given its class's roles,
+        // none if the class answers none. The record's may have been read from
+        // a refitted aircraft, or under older rules in a saved campaign, and
+        // the tasker reads them first.
+        ([_logic, _class, []] call _fnc_admit) params ["", "", "_rolesR", "_capsR"];
+        [_ledger, "setAdmission", [_tail, _rolesR, _capsR]] call ALIVE_fnc_ATOLedger;
+
         private _r = [_logic, _tail, _class, _home, []] call _fnc_placeHull;
         // Only a hull attach actually took is reported as built, the rule
         // the sweep applies. A deferred hull is on the books through
@@ -2420,10 +2431,11 @@ switch(_operation) do {
     // Admission at load marks, never removes. A class the game no longer has,
     // or that no longer resolves to a role, makes the record unplaceable with
     // the reason; the record stays. A class that fails class-only admission
-    // but whose record carries roles from its adoption keeps them: the record
-    // does not store the loadout it was admitted with, and an aircraft whose
-    // roles came from a refit would otherwise be marked unplaceable for
-    // missing magazines it will be given back when created.
+    // but whose record carries roles from its adoption is kept placeable: the
+    // record does not store the loadout it was admitted with, and an aircraft
+    // whose roles came from a refit would otherwise be marked unplaceable. It
+    // is rebuilt with its class's own loadout, though, so the roles written
+    // back are the class's, and the tasker judges it by what it now carries.
     //
     // Legacy: a record carrying a profile id from the old store, whose
     // profile is back in the registry, is consumed into that record so the
@@ -2473,6 +2485,17 @@ switch(_operation) do {
             private _rec = _values select _forEachIndex;
             private _status = [_rec, "status", ""] call ALIVE_fnc_hashGet;
 
+            // A lost record is not placed, but its replacement inherits it, so
+            // its roles are read again under the rules of this build: a
+            // campaign saved under older ones would otherwise hand them on.
+            if (_status isEqualTo "lost") then {
+                private _lostClass = [_rec, "vehicleClass", ""] call ALIVE_fnc_hashGet;
+                if (_lostClass isEqualType "" && {!(_lostClass isEqualTo "")}) then {
+                    ([_logic, _lostClass, []] call _fnc_admit) params ["", "", "_rolesL", "_capsL"];
+                    [_ledger, "setAdmission", [_tail, _rolesL, _capsL]] call ALIVE_fnc_ATOLedger;
+                };
+            };
+
             if (_status in ["present", "unplaceable"]) then {
                 private _why = "";
                 private _skip = false;
@@ -2498,8 +2521,9 @@ switch(_operation) do {
                     } else {
                         private _saved = [_rec, "roles", []] call ALIVE_fnc_hashGet;
                         if (_saved isEqualType [] && {count _saved > 0}) then {
-                            ["ALIVE_fnc_ATOPlace - %1 (%2) fails class-only admission (%3) but carries roles %4 from its adoption; kept",
-                                _tail, _class, _admitWhy, _saved] call ALiVE_fnc_dump;
+                            ["ALIVE_fnc_ATOPlace - %1 (%2) fails class-only admission (%3) but carries roles %4 from its adoption; kept, with its class's roles %5",
+                                _tail, _class, _admitWhy, _saved, _roles] call ALiVE_fnc_dump;
+                            [_ledger, "setAdmission", [_tail, _roles, _caps]] call ALIVE_fnc_ATOLedger;
                         } else {
                             _why = format ["no longer admissible: %1", _admitWhy];
                         };

@@ -313,6 +313,43 @@ can be made to say anything; a profile that is still registered cannot.
         } forEach ((_restored select 0) + (_restored select 1) + (_restored select 2));
     };
 
+    // --- a lost record's roles are read again ---------------------------------
+    // Its replacement inherits them, and the tasker reads a record's roles
+    // before its class, so a campaign saved under older role rules must not
+    // hand those on. Seeded with roles its class never had, a lost record has
+    // its class's roles after a restore, and so does one given a replacement.
+    private _classRoles = ["B_Heli_Attack_01_F"] call ALiVE_fnc_getAircraftRoles;
+    // Lost the way the ledger allows: seen this session, then lost. "get"
+    // hands back a copy, so setting the status on that changes nothing.
+    private _lost1 = [_ledger3, "createRecord", ["B_Heli_Attack_01_F", "BLU_F", [""], [["Fighter"], []]]] call ALIVE_fnc_ATOLedger;
+    [_ledger3, "markPresent", _lost1] call ALIVE_fnc_ATOLedger;
+    [_ledger3, "markLost", _lost1] call ALIVE_fnc_ATOLedger;
+    ["FIXTURE: the seeded record reads lost",
+        ([[_ledger3, "get", _lost1] call ALIVE_fnc_ATOLedger, "status", ""] call ALIVE_fnc_hashGet) isEqualTo "lost"] call _fnc_check;
+    [_place3, "restoreAll", []] call ALIVE_fnc_ATOPlace;
+    private _lostRoles = [[_ledger3, "get", _lost1] call ALIVE_fnc_ATOLedger, "roles", []] call ALIVE_fnc_hashGet;
+    diag_log format ["  info  a lost record seeded with Fighter reads %1 after a restore; its class reads %2", _lostRoles, _classRoles];
+    ["a lost record's roles are its class's after a restore", _lostRoles isEqualTo _classRoles] call _fnc_check;
+    if (count _goodHome > 2) then {
+        private _lost2 = [_ledger3, "createRecord", ["B_Heli_Attack_01_F", "BLU_F", [""], [["Fighter"], []]]] call ALIVE_fnc_ATOLedger;
+        private _lost2Home = [_surface, "cascade", ["terrain", "B_Heli_Attack_01_F", _anchor, [[_goodHome select 0, 20]]]] call ALIVE_fnc_ATOSurface;
+        if (count _lost2Home > 2) then {
+            [_ledger3, "setHome", [_lost2, _lost2Home]] call ALIVE_fnc_ATOLedger;
+            [_ledger3, "markPresent", _lost2] call ALIVE_fnc_ATOLedger;
+            [_ledger3, "markLost", _lost2] call ALIVE_fnc_ATOLedger;
+            [_place3, "createReplacement", _lost2] call ALIVE_fnc_ATOPlace;
+            private _repRoles = [[_ledger3, "get", _lost2] call ALIVE_fnc_ATOLedger, "roles", []] call ALIVE_fnc_hashGet;
+            diag_log format ["  info  a replacement built for a record seeded with Fighter reads %1", _repRoles];
+            ["a replacement built at its stand has its class's roles", _repRoles isEqualTo _classRoles] call _fnc_check;
+            private _repObj = [_place3, "objFor", _lost2] call ALIVE_fnc_ATOPlace;
+            if (!isNull _repObj) then { _made pushBack _repObj };
+        } else {
+            "a replacement built at its stand has its class's roles  (no second stand found)" call _fnc_skip;
+        };
+    } else {
+        "a replacement built at its stand has its class's roles  (no stand found)" call _fnc_skip;
+    };
+
     // --- cleanup -------------------------------------------------------------
     {
         if (!isNull _x) then {
