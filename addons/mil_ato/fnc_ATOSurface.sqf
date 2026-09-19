@@ -1416,7 +1416,8 @@ switch(_operation) do {
             };
             private _ownV = [_ownObj];
             if (!isNull _ownObj) then { _ownV append (crew _ownObj) };
-            private _intrudersV = (nearestObjects [_posV, ["Air","LandVehicle","Man"], _spanV]) select {
+            // No men, for the reason the terrain half below gives.
+            private _intrudersV = (nearestObjects [_posV, ["Air","LandVehicle"], _spanV]) select {
                 private _cand = _x;
                 alive _cand && {(_ownV findIf {_x isEqualTo _cand}) == -1}
             };
@@ -1440,7 +1441,9 @@ switch(_operation) do {
                 private _spanD = ((((_bbD select 0) max (_bbD select 1)) / 2) + 4) max 12;
                 private _ownD = [_ownObj];
                 if (!isNull _ownObj) then { _ownD append (crew _ownObj) };
-                private _intrudersD = (nearestObjects [_pos, ["Air","LandVehicle","Man"], _spanD]) select {
+                // No men: the deck crew and the players walk the plating all the
+                // time, and the terrain half below says why a man is not in the way.
+                private _intrudersD = (nearestObjects [_pos, ["Air","LandVehicle"], _spanD]) select {
                     private _cand = _x;
                     alive _cand && {(_ownD findIf {_x isEqualTo _cand}) == -1}
                 };
@@ -1480,13 +1483,20 @@ switch(_operation) do {
         // fnc_ATOPlace's clearWreck is the thing that moves it, once no player
         // is within 300 m of it.
         //
-        // Still alive-only for a Man. A body is not something the wreck clearer
-        // will take away, and nothing in this file has ever refused a spot for
-        // one, so counting them here would strand aircraft over corpses.
-        private _intruders = (nearestObjects [_pos, ["Air","LandVehicle","Man"], _span]) select {
+        // Men are not asked about at all. Measured: an aircraft put down on
+        // four soldiers standing on its spot did not move, and every one of them
+        // was alive, pushed a few metres; an empty truck under the same aircraft
+        // threw it three hundred metres into the air. And men move, so a spot a
+        // man stands on now is clear in a minute. Counting them took a Blackfish
+        // off its stand the moment it landed, for a soldier walking over it, and
+        // the search that followed handed it a spot it was thrown off within
+        // three seconds, by every measurement since from a vehicle standing on
+        // it at the time. It also covers the aircraft's own crew once they have
+        // been let out: they stand on the stand for a while, and are no longer
+        // in it.
+        private _intruders = (nearestObjects [_pos, ["Air","LandVehicle"], _span]) select {
             private _cand = _x;
             (_own findIf {_x isEqualTo _cand}) == -1
-                && {alive _cand || {!(_cand isKindOf "Man")}}
         };
         if (count _intruders > 0) exitWith { _result = [false, "occupied"] };
 

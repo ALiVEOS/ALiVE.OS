@@ -335,6 +335,19 @@ refused rather than guessed at.
     ["and the reason says occupied", _why2 isEqualTo "occupied"] call _fnc_check;
     deleteVehicle _truck;
 
+    // A man on a stand does not occupy it. Measured: an aircraft put down on
+    // four soldiers did not move and every one of them was alive, pushed a few
+    // metres. Counting them took a Blackfish off its stand the moment it landed
+    // for a soldier walking over it.
+    private _walker = (createGroup west) createUnit ["B_Soldier_F", _victim select 0, [], 0, "CAN_COLLIDE"];
+    sleep 1;
+    diag_log format ["  info  a soldier stands %1 m from the home centre", round (_walker distance2D (_victim select 0))];
+    (([_surface, "validate", [_victim, _class, objNull]] call ALIVE_fnc_ATOSurface)) params ["_ok3", "_why3"];
+    ["a soldier standing on a home does not occupy it", _ok3 && {_why3 isEqualTo ""}] call _fnc_check;
+    private _walkerGroup = group _walker;
+    deleteVehicle _walker;
+    deleteGroup _walkerGroup;
+
     // --- locks --------------------------------------------------------------
     ["a free lock is taken",
         [_surface, "lock", ["rwy_1", "BLU_F_0", time + 60]] call ALIVE_fnc_ATOSurface] call _fnc_check;

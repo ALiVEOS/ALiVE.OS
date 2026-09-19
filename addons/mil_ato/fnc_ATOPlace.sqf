@@ -502,7 +502,8 @@ private _fnc_clearWreck = {
 };
 
 // What is standing on a home, for the eviction log: the type of the first
-// live thing inside the span that is not the airframe or its crew.
+// aircraft or vehicle inside the span that is not the airframe itself. Men are
+// left out because Surface's validate no longer counts them.
 private _fnc_intruderName = {
     params [["_home", [], [[]]], ["_class", "", [""]], ["_own", objNull, [objNull]]];
     if (count _home < 1) exitWith { "" };
@@ -513,10 +514,9 @@ private _fnc_intruderName = {
     // after it: the thing in the way was a wrecked hull, this filtered it out,
     // and the message named nothing. That blank sent me looking for a phantom
     // intruder more than once.
-    private _found = (nearestObjects [_home select 0, ["Air","LandVehicle","Man"], [_class] call _fnc_span]) select {
+    private _found = (nearestObjects [_home select 0, ["Air","LandVehicle"], [_class] call _fnc_span]) select {
         private _cand = _x;
         (_mine findIf {_x isEqualTo _cand}) == -1
-            && {alive _cand || {!(_cand isKindOf "Man")}}
     };
     if (count _found == 0) then { "" } else {
         private _who = _found select 0;
