@@ -252,9 +252,8 @@ switch(_operation) do {
         // How far a point is from a runway's centre line, and which side of it
         // it is on: [distance, side]. Two points with the same side can be
         // joined without crossing the runway. [1e9, 0] with no runway known.
-        // Shared by the taxi sweep, which moves things off an aircraft's path to
-        // the side away from the runway, and the crew walk-off, which must not
-        // send men across it.
+        // Used by the taxi sweep, which moves things off an aircraft's path to
+        // the side away from the runway.
         private _fnc_offRunway = {
             params ["_p", "_cl"];
             if !(_cl isEqualType [] && {count _cl > 1}) exitWith { [1e9, 0] };
@@ -578,153 +577,33 @@ switch(_operation) do {
                 if (count _ours == 0) then {
                     _matched = true;
                 } else {
-                    // Deleted outright only when nobody is close enough to see
-                    // it happen. Otherwise they get out and are removed once
-                    // they have walked off, because people vanishing in front of
-                    // you is worse than a few extra men standing about. Watching
-                    // through a Zeus camera counts, the same as the observer's.
-                    private _watched = [nil, "playersNear", [getPosATL _obj, 300]] call ALIVE_fnc_ATOObserve;
-                    if (_watched == 0) then {
-                        { deleteVehicle _x } forEach _ours;
-                        ["ALIVE_fnc_ATOEffect - crew of %1 deleted from %2 (%3)",
-                            count _ours, typeOf _obj, _tailNow] call ALiVE_fnc_dump;
-                        _detail = "deleted";
-                    } else {
-                        // Let go of properly, so nothing can order them back in.
-                        //
-                        // Getting out and being told not to get in left the group
-                        // still owning the aircraft. A gunship parked this way
-                        // was 62 m up again 55 seconds later, and when the timer
-                        // below fired its pilot was one of the men it had
-                        // dismissed. A vanilla crew with no enemy about stayed out
-                        // either way, so what sent them back is not known; this
-                        // closes every way back in rather than guessing which.
-                        { moveOut _x; unassignVehicle _x } forEach _ours;
-                        _ours allowGetIn false;
-                        _ours orderGetIn false;
-                        private _groupsOut = [];
-                        { _groupsOut pushBackUnique (group _x) } forEach _ours;
-                        { if (!isNull _x) then { _x leaveVehicle _obj } } forEach _groupsOut;
-
-                        // And somewhere to go. Measured on LAN: four men let out
-                        // of a parked Blackfish stood beside it for the whole two
-                        // minutes, because nothing gave them anywhere to be.
-                        //
-                        // The nearest building within 250 m that can be walked
-                        // into, is not a hangar, is off the stand, and stands on
-                        // the SAME side of the runway as the aircraft and at least
-                        // 60 m from its line. Otherwise seventy metres off to the
-                        // side further from the runway, never into the sea, which
-                        // is the taxi sweep's own rule. The runway matters because
-                        // these men carry the crew mark, so the sweep leaves them
-                        // alone, and a landing jet does not stop for them: on
-                        // Stratis the control tower is 188 m off the runway's line,
-                        // within reach of stands on both sides of it.
-                        //
-                        // Nowhere on a deck or at a hold point. There is no runway
-                        // line and no building, and seventy metres off a carrier
-                        // is the sea, so there they stand where they got out.
-                        private _dest = [];
-                        if !(count _home > 2 && {(_home select 2) in ["deck","virtual"]}) then {
-                            private _at = getPosATL _obj;
-                            private _cl = [];
-                            if (!isNil "ALiVE_fnc_getRunwayCentreline") then { _cl = [_at, 1500] call ALiVE_fnc_getRunwayCentreline };
-                            private _mine = [_at, _cl] call _fnc_offRunway;
-                            private _hangars = (if (isNil "ALIVE_airBuildingTypes") then {[]} else {ALIVE_airBuildingTypes})
-                                + (if (isNil "ALIVE_militaryAirBuildingTypes") then {[]} else {ALIVE_militaryAirBuildingTypes});
-                            private _near = (nearestObjects [_at, ["House"], 250]) select {
-                                private _b = _x;
-                                private _t = toLower (typeOf _b);
-                                private _off = [getPosATL _b, _cl] call _fnc_offRunway;
-                                (count (_b buildingPos -1) > 0)
-                                    && {(_hangars findIf { [_t, _x] call CBA_fnc_find != -1 }) == -1}
-                                    && {(_b distance2D _at) > 25}
-                                    && {(_off select 0) >= 60}
-                                    && {((_off select 1) == (_mine select 1)) || {(_mine select 1) == 0}}
-                            };
-                            _dest = if (count _near > 0) then {
-                                getPosATL (_near select 0)
-                            } else {
-                                [_ours select 0, getDir _obj, _cl] call _fnc_aside
-                            };
-                        };
-                        if (count _dest > 1) then {
-                            {
-                                private _g = _x;
-                                if (!isNull _g) then {
-                                    // The sortie's orders go first. A crew let out
-                                    // with a search and destroy still set walks off
-                                    // after it, as a landing aircraft would.
-                                    for "_i" from ((count (waypoints _g)) - 1) to 0 step -1 do { deleteWaypoint [_g, _i] };
-                                    _g setVariable ["ALiVE_mil_ato_orders", nil, false];
-                                    _g setBehaviour "SAFE";
-                                    _g setCombatMode "BLUE";
-                                    _g setSpeedMode "LIMITED";
-                                    _g move _dest;
-                                };
-                            } forEach _groupsOut;
-                        };
-                        ["ALIVE_fnc_ATOEffect - crew of %1 dismissed from %2 (%3), %4, deleted once nobody is near them",
-                            count _ours, typeOf _obj, _tailNow,
-                            if (count _dest > 1) then { format ["walking to %1", _dest apply { round _x }] } else { "let out where they stand" }] call ALiVE_fnc_dump;
-                        [_ours, _obj, _tailNow] spawn {
-                            params ["_units", "_hull", "_tailNow"];
-                            // Two minutes to walk off, then each man goes as soon as
-                            // nobody is near enough to see it happen, bodies and Zeus
-                            // cameras both, and everyone left goes at ten minutes.
-                            // It used to be all of them at two minutes wherever
-                            // they were, in front of whoever was there.
-                            //
-                            // Anybody sitting in an aircraft that is off the ground
-                            // is left alone at every step, whoever put him there.
-                            // This timer deleted the four men of a gunship while it
-                            // was flying, its pilot among them, and it crashed seven
-                            // seconds later. Deleting a man who is flying something
-                            // is never what this timer is for.
-                            sleep 120;
-                            private _elapsed = 120;
-                            private _left = _units;
-                            private _gone = 0;
-                            private _flying = 0;
-                            while { true } do {
-                                _left = _left select { !isNull _x && {alive _x} };
-                                private _keep = [];
-                                _flying = 0;
-                                {
-                                    private _v = objectParent _x;
-                                    if (!isNull _v && {((getPos _v) select 2) > 5}) then {
-                                        _flying = _flying + 1;
-                                        _keep pushBack _x;
-                                    } else {
-                                        if (_elapsed >= 600 || {([nil, "playersNear", [getPosATL _x, 300]] call ALIVE_fnc_ATOObserve) == 0}) then {
-                                            deleteVehicle _x;
-                                            _gone = _gone + 1;
-                                        } else {
-                                            _keep pushBack _x;
-                                        };
-                                    };
-                                } forEach _left;
-                                _left = _keep;
-                                if ((count _left) == _flying || {_elapsed >= 600}) exitWith {};
-                                sleep 15;
-                                _elapsed = _elapsed + 15;
-                            };
-                            // Said once, at the end, because the thing worth knowing
-                            // is whether anyone was deleted while the hull they came
-                            // from was flying.
-                            // The hull's own state last. It used to read "hull now has
-                            // a dead hull aboard" when the aircraft had been destroyed
-                            // and cleared away before its crew went.
-                            ["ALIVE_fnc_ATOEffect - %1 dismissed crew of %2 deleted by %3 s, %4 left alone in an aircraft in the air, %5",
-                                _gone, _tailNow, _elapsed, _flying,
-                                switch (true) do {
-                                    case (isNull _hull): { "the aircraft is gone" };
-                                    case (!alive _hull): { "the aircraft was destroyed" };
-                                    default { format ["hull now has %1 aboard", count (crew _hull)] };
-                                }] call ALiVE_fnc_dump;
-                        };
-                        _detail = "dismissed";
+                    // Deleted from the aircraft, whoever is watching.
+                    //
+                    // With a player or a Zeus camera within 300 m they used to be
+                    // let out to walk to a building and be deleted later, on the
+                    // grounds that men vanishing in front of somebody is worse
+                    // than a few extra men standing about. The walk-off cost more
+                    // than it bought. A gunship parked that way was 62 m up again
+                    // 55 seconds later with one of the men it had let out as its
+                    // pilot, and the timer that came back for them deleted the four
+                    // men of a gunship while it was flying: it crashed seven
+                    // seconds later. Men leaving a parked aircraft from inside its
+                    // cockpit are hard to see.
+                    private _groupsOut = [];
+                    { _groupsOut pushBackUnique (group _x) } forEach _ours;
+                    { deleteVehicle _x } forEach _ours;
+                    // Their group goes too once it is empty. Every sortie is crewed
+                    // with a new group, and one left behind counts against the
+                    // side's group limit for the rest of the mission. Looked at a
+                    // second later, once the men are gone.
+                    [_groupsOut] spawn {
+                        params ["_groups"];
+                        sleep 1;
+                        { if (!isNull _x && {(count (units _x)) == 0}) then { _x call ALiVE_fnc_DeleteGroupRemote } } forEach _groups;
                     };
+                    ["ALIVE_fnc_ATOEffect - crew of %1 deleted from %2 (%3)",
+                        count _ours, typeOf _obj, _tailNow] call ALiVE_fnc_dump;
+                    _detail = "deleted";
                 };
             };
 

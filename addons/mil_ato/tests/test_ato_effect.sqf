@@ -192,15 +192,21 @@ nothing changed and it said so.
     deleteGroup _curGroup;
 
     // --- standing the crew down ------------------------------------------------
-    // A player is within 300 m (the tester), so they should be dismissed rather
-    // than deleted in front of them.
-    if (isNull player) then {
-        "the crew is dismissed rather than vanished while watched" call _fnc_skip;
-    } else {
-        (["standDownCrew"] call _fnc_apply) params ["_st18", "_m18", "_d18"];
-        ["the crew is dismissed rather than vanished while watched",
-            _st18 isEqualTo "ok" && {_d18 isEqualTo "dismissed"}] call _fnc_check;
-    };
+    // Deleted from the aircraft, with the tester in view when there is one: a
+    // crew let out to walk off was ordered back in and flew, and the timer that
+    // came back for them deleted a pilot in the air. Their empty group goes too.
+    private _men18 = +(crew _veh);
+    private _grp18 = group (driver _veh);
+    ["FIXTURE: the aircraft has a crew and a group to stand down", count _men18 > 0 && {!isNull _grp18}] call _fnc_check;
+    (["standDownCrew"] call _fnc_apply) params ["_st18", "_m18", "_d18"];
+    // Read a few seconds later: a deleted man can still read as there in the
+    // frame he is deleted in.
+    sleep 3;
+    ["the crew is deleted from the aircraft, whoever is watching",
+        _st18 isEqualTo "ok" && {_d18 isEqualTo "deleted"}
+        && {({!isNull _x} count _men18) == 0} && {count (crew _veh) == 0}] call _fnc_check;
+    diag_log format ["  info  the crew's group 3 s after the stand-down: %1", _grp18];
+    ["and its empty group is deleted with it", isNull _grp18] call _fnc_check;
 
     // --- a crew kept aboard while its aircraft is held down -------------------
     // Not let out beside a hull put down from the air that is still being held:
