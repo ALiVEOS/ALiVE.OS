@@ -324,6 +324,40 @@ switch(_operation) do {
                 (vectorMagnitude (angularVelocity _o)) toFixed 2]
         };
 
+        // A crew told to come home and land: no targeting, no evasion, no
+        // running away. Applied again on every tick of an approach, because
+        // the engine turns evasion back on by itself; logistics does the same
+        // to its helicopters for the same reason.
+        private _fnc_quiesce = {
+            params ["_g"];
+            if (isNull _g) exitWith {};
+            _g setBehaviour "CARELESS";
+            _g allowFleeing 0;
+            _g setCombatMode "BLUE";
+            {
+                _x disableAI "AUTOTARGET";
+                _x disableAI "TARGET";
+                _x setSkill ["courage", 1];
+            } forEach (units _g);
+        };
+
+        // Said once per approach, two minutes after the aircraft was first
+        // told to land, counted from the first approach tick rather than from
+        // the moment it was over its pad: the Apaches that circled on LAN
+        // never got over it, so a clock started there never started. Healthy
+        // landings from 2 km are down in 75 to 90 s, so a minute would speak
+        // for a good one.
+        private _fnc_stallSay = {
+            params ["_g", "_o", "_stand", "_tail", "_step"];
+            private _since = _g getVariable ["ALiVE_mil_ato_landingSince", -1];
+            if (_since >= 0 && {(time - _since) >= 120} && {((getPosATL _o) select 2) > 5}
+                && {!(_g getVariable ["ALiVE_mil_ato_landingStallSaid", false])}) then {
+                _g setVariable ["ALiVE_mil_ato_landingStallSaid", true, false];
+                ["ALIVE_fnc_ATOEffect - %1 (%2) told to land %3 s ago and not down: %4; last step '%5'",
+                    typeOf _o, _tail, round (time - _since), [_o, _stand] call _fnc_landingState, _step] call ALiVE_fnc_dump;
+            };
+        };
+
         // Seventy metres off to one side of a heading, the side further from the
         // runway, never into the sea, and for anything bigger than a man on the
         // nearest spot it fits.
@@ -1865,10 +1899,10 @@ switch(_operation) do {
                 //   by arriving rather than by being cancelled, so nothing is
                 //   left pending to outrank the landing.
                 //
-                // Thirty-five metres counts as overhead: loose enough that a
-                // hovering aircraft reaches it, tight enough that landAt has
-                // almost nothing left to do. Whatever it does leave is what
-                // placeOnSlot tidies once the wheels are down.
+                // What counts as overhead is set below, loose enough that an
+                // aircraft circling its pad reaches it. landAt closes what is
+                // left, and whatever it still leaves is what placeOnSlot tidies
+                // once the wheels are down.
                 private _stand = _home select 0;
                 private _dPad = _obj distance2D _stand;
                 private _agl = (getPosATL _obj) select 2;
@@ -1887,11 +1921,25 @@ switch(_operation) do {
                 // command throughout, which is what landAt does when the pad is
                 // not underneath the aircraft.
                 //
-                // Sixty metres and forty km/h are loose on purpose. A helicopter
-                // holding a height of thirty sits a little above it and never
-                // stops moving entirely, and a gate it cannot satisfy is worse
-                // than one that lets it commit slightly early.
-                private _overhead = _dPad < 60 && {_agl < 60} && {_spd < 40};
+                // Loose on purpose, because a gate the aircraft cannot satisfy is
+                // worse than one that lets it commit early. It was sixty metres
+                // out, sixty up and forty km/h, and an RHS AH-64D sent home came
+                // in too fast, flared 300 m up over its pad and then looped it 21
+                // to 257 m out at 34 to 109 km/h, never inside all three on the
+                // same tick, for as long as it was let; capping its speed on the
+                // way in did not slow it. Committed within 150 m and under 150 m
+                // up, the landing below (land "LAND", then landAt the stand's own
+                // helipad) took it straight down: four Apache approaches down in
+                // 73 to 87 s, 2 to 4 m off, two Blackfoot in 79 and 91 s, 6 and
+                // 1 m off, committing at 72 to 93 km/h. Held under 120 km/h all
+                // the same, for the overflight above that committed at 199.
+                // A helicopter coming back to a deck keeps the gate it had: the
+                // looser one was measured on land stands only.
+                private _overhead = if (count _home > 2 && {(_home select 2) isEqualTo "deck"}) then {
+                    _dPad < 60 && {_agl < 60} && {_spd < 40}
+                } else {
+                    _dPad < 150 && {_agl < 150} && {_spd < 120}
+                };
 
                 // ---- transit ---------------------------------------------
                 // Still on the way in, so fly to the stand and say nothing about
@@ -1901,6 +1949,15 @@ switch(_operation) do {
                 // anything in between. Arriving fast is also what made it
                 // overshoot the stand.
                 if (!_committed && {!_overhead}) exitWith {
+                    // The clock for the stall line starts here, at the first
+                    // approach tick.
+                    if ((_grp getVariable ["ALiVE_mil_ato_landingSince", -1]) < 0) then {
+                        _grp setVariable ["ALiVE_mil_ato_landingSince", time, false];
+                    };
+                    // Quiesced on the way in, not only once it is over the
+                    // stand: the return chain leaves the crew aware and ready
+                    // to turn and fight on the way in.
+                    [_grp] call _fnc_quiesce;
                     // Come down ON THE WAY IN rather than arriving at cruise
                     // height and then diving. Tapered early because it closes
                     // the last three hundred metres in four seconds: setting a
@@ -1918,6 +1975,7 @@ switch(_operation) do {
                     (driver _obj) doMove _stand;
                     _detail = format ["inbound %1 m, %2 m up, %3 km/h",
                         round _dPad, round _agl, round _spd];
+                    [_grp, _obj, _stand, _tail, _detail] call _fnc_stallSay;
                 };
 
                 // ---- overhead --------------------------------------------
@@ -1946,8 +2004,12 @@ switch(_operation) do {
                 if (!_committed) then {
                     _grp setVariable ["ALiVE_mil_ato_landing", true, false];
                     _grp setVariable ["ALiVE_mil_ato_landingAimedAt", -1, false];
-                    _grp setVariable ["ALiVE_mil_ato_landingSince", time, false];
-                    _grp setVariable ["ALiVE_mil_ato_landingStallSaid", nil, false];
+                    // Kept from the first approach tick when there was one, and
+                    // the stall line is not re-armed here: releaseApproach and
+                    // retryLanding clear both at the end of every approach.
+                    if ((_grp getVariable ["ALiVE_mil_ato_landingSince", -1]) < 0) then {
+                        _grp setVariable ["ALiVE_mil_ato_landingSince", time, false];
+                    };
                 };
 
                 // Quiesce and aim, on a timer rather than every tick.
@@ -1967,14 +2029,7 @@ switch(_operation) do {
                 private _aimedAt = _grp getVariable ["ALiVE_mil_ato_landingAimedAt", -1];
                 private _held = _grp getVariable ["ALiVE_mil_ato_landingHeld", false];
                 if (_aimedAt < 0 || {(time - _aimedAt) > 35}) then {
-                    _grp setBehaviour "CARELESS";
-                    _grp allowFleeing 0;
-                    _grp setCombatMode "BLUE";
-                    {
-                        _x disableAI "AUTOTARGET";
-                        _x disableAI "TARGET";
-                        _x setSkill ["courage", 1];
-                    } forEach (units _grp);
+                    [_grp] call _fnc_quiesce;
                     // Both orders, in this order, and the order matters.
                     //
                     // land "LAND" is the one that actually brings a helicopter
@@ -2025,23 +2080,15 @@ switch(_operation) do {
                     };
                 };
 
-                // Still up a minute after it was over its stand and told to come
-                // down: said once, with everything that could be holding it. On
-                // the test server these landings were down 12 to 22 seconds after
-                // that point, so this only speaks for a stuck one.
-                private _since = _grp getVariable ["ALiVE_mil_ato_landingSince", -1];
-                if (_since >= 0 && {(time - _since) >= 60} && {_agl > 5}
-                    && {!(_grp getVariable ["ALiVE_mil_ato_landingStallSaid", false])}) then {
-                    _grp setVariable ["ALiVE_mil_ato_landingStallSaid", true, false];
-                    ["ALIVE_fnc_ATOEffect - %1 (%2) told to land %3 s ago and not down: %4; last step '%5'",
-                        typeOf _obj, _tail, round (time - _since), [_obj, _stand] call _fnc_landingState, _detail] call ALiVE_fnc_dump;
-                };
+                // Still up two minutes after it was first told to land: said
+                // once, with everything that could be holding it.
+                [_grp, _obj, _stand, _tail, _detail] call _fnc_stallSay;
             };
 
             // ---- a plane coming back to a ship --------------------------------
             // The plane's equivalent of landAtPad, re-issued every tick by the
             // table. A jet cannot be brought down on a pad: landAtPad's arrival
-            // gate wants it under forty km/h, which a jet cannot do in the air.
+            // gate wants it slow and low over the pad, which a jet cannot be.
             // Its approach is the engine's own, aimed at the airport object the
             // carrier carries, and its arrival is the wire.
             //
@@ -2113,14 +2160,7 @@ switch(_operation) do {
                     // pilot with evasion and targeting live ignores a landing
                     // order outright, and the engine turns evasion back on by
                     // itself, so it is re-done with every re-aim.
-                    _grp setBehaviour "CARELESS";
-                    _grp allowFleeing 0;
-                    _grp setCombatMode "BLUE";
-                    {
-                        _x disableAI "AUTOTARGET";
-                        _x disableAI "TARGET";
-                        _x setSkill ["courage", 1];
-                    } forEach (units _grp);
+                    [_grp] call _fnc_quiesce;
                     _obj land "NONE";
                     _obj landAt _airObj;
                     _grp setVariable ["ALiVE_mil_ato_landingAimedAt", time, false];

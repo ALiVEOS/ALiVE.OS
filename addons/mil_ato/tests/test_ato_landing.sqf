@@ -81,18 +81,28 @@ whether it came down.
     };
     _veh setPosATL [_start select 0, _start select 1, 120];
     _veh setVelocity [(sin 20) * 60, (cos 20) * 60, 0];
+    // Home the way the table sends it: the return chain first, a move to an
+    // approach fix and a loiter, so the approach starts from the legs a real
+    // return leaves behind rather than from a clean run-in. On LAN three Apaches
+    // with that chain behind them circled their pads for five minutes.
+    [_e, "apply", ["issueOrders", _veh, _home, [[["MOVE", _stand getPos [800, 200]], ["LOITER", _stand getPos [600, 90]]]]]] call ALIVE_fnc_ATOEffect;
+    sleep 4;
 
     // --- the approach ---------------------------------------------------------
     private _down = false;
     private _elapsed = 0;
     private _closest = 9999;
     private _everSteered = false;
+    private _quietSeen = "";
     for "_i" from 1 to 75 do {
         private _r = [_e, "apply", ["landAtPad", _veh, _home, [_s, _tail]]] call ALIVE_fnc_ATOEffect;
         private _p = getPosATL _veh;
         private _d = _veh distance2D _stand;
         if (_d < _closest) then { _closest = _d };
-        if (((_r select 2) select [0, 7]) isEqualTo "inbound") then { _everSteered = true };
+        if (((_r select 2) select [0, 7]) isEqualTo "inbound") then {
+            _everSteered = true;
+            if (_quietSeen isEqualTo "") then { _quietSeen = behaviour (driver _veh) };
+        };
 
         // Every fourth tick. Enough to see the shape of the descent without
         // burying the log in a run that is mostly uneventful.
@@ -115,6 +125,7 @@ whether it came down.
         if (_down) then {"down"} else {"STILL UP"}, _elapsed, round _finalDist];
 
     ["it was steered in rather than starting on finals", _everSteered] call _fnc_check;
+    ["and its crew was quiesced from the first approach tick", _quietSeen isEqualTo "CARELESS"] call _fnc_check;
     ["it reached its stand on the way in", _closest < 60] call _fnc_check;
     ["it came down", _down] call _fnc_check;
     // The number that matters. Measured at 2 m twice; ten gives room for the
@@ -122,12 +133,20 @@ whether it came down.
     ["and it came down ON its stand", _down && {_finalDist < 10}] call _fnc_check;
 
     // --- and then the tidy ----------------------------------------------------
-    // Already there, so this must say so and move nothing.
+    // On the slot is within 5 m, and there this must say so and move nothing.
+    // The approach commits within 150 m now, and its landings end 1 to 6 m off,
+    // so one a little further out is slid the last few metres instead.
+    private _offBy = _veh distance2D _stand;
     (([_e, "apply", ["placeOnSlot", _veh, _home, [_s]]] call ALIVE_fnc_ATOEffect)) params ["_stT", "_mT"];
     sleep 2;
-    ["the tidy finds it already on its stand and leaves it alone",
-        _stT isEqualTo "ok" && {_mT}] call _fnc_check;
-    ["and it did not move", (_veh distance2D _stand) < 10] call _fnc_check;
+    if (_offBy < 5) then {
+        ["the tidy finds it already on its stand and leaves it alone",
+            _stT isEqualTo "ok" && {_mT}] call _fnc_check;
+    } else {
+        ["the tidy slides it the last few metres onto its stand",
+            _stT isEqualTo "ok" && {!_mT} && {(_veh distance2D _stand) < 5}] call _fnc_check;
+    };
+    ["and it ends on its stand", (_veh distance2D _stand) < 10] call _fnc_check;
 
     // --- giving the approach back ---------------------------------------------
     private _grp = group (driver _veh);
