@@ -1813,6 +1813,24 @@ switch(_operation) do {
                     for "_i" from (count _wps - 1) to 0 step -1 do { deleteWaypoint [_grp, _i] };
                     _grp setVariable ["ALiVE_mil_ato_orders", nil, false];
                     _grp setVariable ["ALiVE_mil_ato_landing", true, false];
+                    // And the direct move that came with it. Every chain is given
+                    // as a doMove to its first point as well as waypoints, and
+                    // deleting the waypoints leaves the move standing. A VTOL
+                    // lands with it still pending and flies off to finish it:
+                    // measured on Stratis, a Blackfish given the return chain
+                    // and then this landing touched down, still under MOVE to
+                    // the approach fix, and was 176 and 240 m up again within a
+                    // minute and a half, one of them 7.5 km away. On LAN one was
+                    // put down 48 km out. doStop on the pilot first, and both
+                    // Blackfish types stayed down (53 and 56 m of roll).
+                    private _pilot = driver _obj;
+                    private _wasCmd = currentCommand _pilot;
+                    if !(_wasCmd isEqualTo "") then {
+                        private _wasTo = (expectedDestination _pilot) param [0, []];
+                        doStop _pilot;
+                        ["ALIVE_fnc_ATOEffect - %1 (%2) landing on the runway, its '%3' order to %4 cancelled first",
+                            typeOf _obj, _tail, _wasCmd, if (_wasTo isEqualType [] && {count _wasTo > 1}) then { _wasTo apply { round _x } } else { "nowhere" }] call ALiVE_fnc_dump;
+                    };
                 };
 
                 // Quiesced on every tick, not only when the order is given: a
