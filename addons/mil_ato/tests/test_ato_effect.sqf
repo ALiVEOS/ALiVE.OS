@@ -216,6 +216,43 @@ nothing changed and it said so.
     diag_log format ["  info  forceLaunch on a helicopter with no rotor said %1 %2, it stands %3 m up", _stF, _dF, round ((getPosATL _broken) select 2)];
     ["a helicopter with its rotor gone is not forced into the air",
         _stF isEqualTo "refused" && {((getPosATL _broken) select 2) < 5}] call _fnc_check;
+
+    // --- repaired after a break, however recently it was serviced ---------------
+    // The launch call-off asks for a service. Two things stopped it repairing a
+    // hull broken inside a minute of its last service: the "already serviced"
+    // answer, and a truck's old "complete" still written on the hull, which the
+    // wait reads as the truck having done the job. Both are put here on purpose.
+    // With a logistics commander placed the effect waits for a truck instead,
+    // three minutes, so the steps are skipped rather than failed.
+    private _brokenLabels = ["a helicopter with its rotor gone is repaired where it stands",
+        "broken again inside the minute, with a truck's old answer still on it, it is repaired again",
+        "a sound aircraft serviced a moment ago is not serviced twice"];
+    if ((count (allMissionObjects "ALiVE_mil_logistics")) > 0) then {
+        {
+            _skipped pushBack _x;
+            diag_log format ["  skip  %1  (a logistics commander is placed, so this would wait for a truck)", _x];
+        } forEach _brokenLabels;
+    } else {
+        private _brokenHome = [getPosATL _broken, 0, "terrain"];
+        (([_e, "apply", ["turnaround", _broken, _brokenHome, ["TEST_BROKEN"]]] call ALIVE_fnc_ATOEffect)) params ["_stT1", "_mT1", "_dT1"];
+        sleep 7;
+        diag_log format ["  info  first service said %1 %2; the rotor reads %3, canMove %4",
+            _stT1, _dT1, _broken getHitPointDamage "HitHRotor", canMove _broken];
+        [_brokenLabels select 0, _stT1 isEqualTo "ok" && {!_mT1} && {canMove _broken}
+            && {(_broken getHitPointDamage "HitHRotor") == 0}] call _fnc_check;
+        _broken setHitPointDamage ["HitHRotor", 1];
+        _broken setVariable ["ALIVE_resupply_state", "complete", true];
+        sleep 1;
+        diag_log format ["  info  broken again %1 s after that service, canMove %2",
+            round (time - (_broken getVariable ["ALiVE_mil_ato_servicedAt", time])), canMove _broken];
+        (([_e, "apply", ["turnaround", _broken, _brokenHome, ["TEST_BROKEN"]]] call ALIVE_fnc_ATOEffect)) params ["_stT2", "_mT2", "_dT2"];
+        sleep 7;
+        diag_log format ["  info  second service said %1 %2; the rotor reads %3, canMove %4",
+            _stT2, _dT2, _broken getHitPointDamage "HitHRotor", canMove _broken];
+        [_brokenLabels select 1, _stT2 isEqualTo "ok" && {!_mT2} && {canMove _broken}] call _fnc_check;
+        (([_e, "apply", ["turnaround", _broken, _brokenHome, ["TEST_BROKEN"]]] call ALIVE_fnc_ATOEffect)) params ["_stT3", "_mT3", "_dT3"];
+        [_brokenLabels select 2, _stT3 isEqualTo "ok" && {_mT3} && {_dT3 isEqualTo "already serviced"}] call _fnc_check;
+    };
     { deleteVehicle _x } forEach (crew _broken);
     deleteVehicle _broken;
 

@@ -2053,7 +2053,15 @@ switch(_operation) do {
                 // arrival, and lets the next landing be serviced.
                 private _servicedAt = _obj getVariable ["ALiVE_mil_ato_servicedAt", -1e9];
                 if (!(_servicedAt isEqualType 0)) then { _servicedAt = -1e9 };
-                if ((time - _servicedAt) < 60) exitWith {
+                // Not for an aircraft that cannot move. A launch called off for a
+                // break on start-up asks for this too, and a helicopter that lost
+                // its rotors inside a minute of its last service would have been
+                // answered "already serviced", sat out its five minutes off the
+                // rota, been offered the next job and been called off again. A
+                // hull that cannot move has nothing to be "already" about.
+                // canMove also reads false on an empty tank, which is serviced
+                // either way.
+                if ((time - _servicedAt) < 60 && {canMove _obj}) exitWith {
                     _matched = true; _detail = "already serviced";
                 };
 
@@ -2067,6 +2075,15 @@ switch(_operation) do {
                     _matched = true; _detail = "service already asked for";
                 };
                 _obj setVariable ["ALiVE_mil_ato_serviceAsked", true, false];
+
+                // The last visit's answer is cleared before this one is asked for.
+                // The logistics commander writes "complete" on the hull when its
+                // truck is done and nothing ever clears it, and the wait below
+                // reads that word as "a truck did it" and skips the repair. So a
+                // second service of the same aircraft could read the previous
+                // truck's "complete" at its first look and stamp the hull serviced
+                // with its rotors still off. Public, as the logistics side writes it.
+                _obj setVariable ["ALIVE_resupply_state", "", true];
 
                 private _hasLogcom = (count (allMissionObjects "ALiVE_mil_logistics")) > 0;
                 private _side = "";
