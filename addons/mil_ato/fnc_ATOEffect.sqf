@@ -241,6 +241,48 @@ switch(_operation) do {
             }
         };
 
+        // How far a point is from a runway's centre line, and which side of it
+        // it is on: [distance, side]. Two points with the same side can be
+        // joined without crossing the runway. [1e9, 0] with no runway known.
+        // Shared by the taxi sweep, which moves things off an aircraft's path to
+        // the side away from the runway, and the crew walk-off, which must not
+        // send men across it.
+        private _fnc_offRunway = {
+            params ["_p", "_cl"];
+            if !(_cl isEqualType [] && {count _cl > 1}) exitWith { [1e9, 0] };
+            private _ra = _cl select 0;
+            private _rb = _cl select 1;
+            private _dx = (_rb select 0) - (_ra select 0);
+            private _dy = (_rb select 1) - (_ra select 1);
+            private _l2 = (_dx * _dx) + (_dy * _dy);
+            if (_l2 <= 0) exitWith { [1e9, 0] };
+            private _px = (_p select 0) - (_ra select 0);
+            private _py = (_p select 1) - (_ra select 1);
+            private _t = ((_px * _dx) + (_py * _dy)) / _l2;
+            _t = (_t max 0) min 1;
+            // SQF has no sign command; this is the sign of the cross product.
+            private _cross = (_dx * _py) - (_dy * _px);
+            private _side = if (_cross > 0) then { 1 } else { if (_cross < 0) then { -1 } else { 0 } };
+            [_p distance2D [(_ra select 0) + (_t * _dx), (_ra select 1) + (_t * _dy), 0], _side]
+        };
+
+        // Seventy metres off to one side of a heading, the side further from the
+        // runway, never into the sea, and for anything bigger than a man on the
+        // nearest spot it fits.
+        private _fnc_aside = {
+            params ["_u", "_heading", "_cl"];
+            private _a = _u getPos [70, _heading + 90];
+            private _b = _u getPos [70, _heading - 90];
+            private _to = if ((([_a, _cl] call _fnc_offRunway) select 0) >= (([_b, _cl] call _fnc_offRunway) select 0)) then { _a } else { _b };
+            if (surfaceIsWater _to) then { _to = if (_to isEqualTo _a) then { _b } else { _a } };
+            if !(_u isKindOf "CAManBase") then {
+                private _clear = _to findEmptyPosition [0, 30, typeOf _u];
+                if (count _clear > 1) then { _to = _clear };
+            };
+            _to set [2, 0];
+            _to
+        };
+
         switch (_effect) do {
 
             // ---- engine ---------------------------------------------------
@@ -366,31 +408,116 @@ switch(_operation) do {
                         private _groupsOut = [];
                         { _groupsOut pushBackUnique (group _x) } forEach _ours;
                         { if (!isNull _x) then { _x leaveVehicle _obj } } forEach _groupsOut;
-                        ["ALIVE_fnc_ATOEffect - crew of %1 dismissed from %2 (%3), deleted in 120 s",
-                            count _ours, typeOf _obj, _tailNow] call ALiVE_fnc_dump;
+
+                        // And somewhere to go. Measured on LAN: four men let out
+                        // of a parked Blackfish stood beside it for the whole two
+                        // minutes, because nothing gave them anywhere to be.
+                        //
+                        // The nearest building within 250 m that can be walked
+                        // into, is not a hangar, is off the stand, and stands on
+                        // the SAME side of the runway as the aircraft and at least
+                        // 60 m from its line. Otherwise seventy metres off to the
+                        // side further from the runway, never into the sea, which
+                        // is the taxi sweep's own rule. The runway matters because
+                        // these men carry the crew mark, so the sweep leaves them
+                        // alone, and a landing jet does not stop for them: on
+                        // Stratis the control tower is 188 m off the runway's line,
+                        // within reach of stands on both sides of it.
+                        //
+                        // Nowhere on a deck or at a hold point. There is no runway
+                        // line and no building, and seventy metres off a carrier
+                        // is the sea, so there they stand where they got out.
+                        private _dest = [];
+                        if !(count _home > 2 && {(_home select 2) in ["deck","virtual"]}) then {
+                            private _at = getPosATL _obj;
+                            private _cl = [];
+                            if (!isNil "ALiVE_fnc_getRunwayCentreline") then { _cl = [_at, 1500] call ALiVE_fnc_getRunwayCentreline };
+                            private _mine = [_at, _cl] call _fnc_offRunway;
+                            private _hangars = (if (isNil "ALIVE_airBuildingTypes") then {[]} else {ALIVE_airBuildingTypes})
+                                + (if (isNil "ALIVE_militaryAirBuildingTypes") then {[]} else {ALIVE_militaryAirBuildingTypes});
+                            private _near = (nearestObjects [_at, ["House"], 250]) select {
+                                private _b = _x;
+                                private _t = toLower (typeOf _b);
+                                private _off = [getPosATL _b, _cl] call _fnc_offRunway;
+                                (count (_b buildingPos -1) > 0)
+                                    && {(_hangars findIf { [_t, _x] call CBA_fnc_find != -1 }) == -1}
+                                    && {(_b distance2D _at) > 25}
+                                    && {(_off select 0) >= 60}
+                                    && {((_off select 1) == (_mine select 1)) || {(_mine select 1) == 0}}
+                            };
+                            _dest = if (count _near > 0) then {
+                                getPosATL (_near select 0)
+                            } else {
+                                [_ours select 0, getDir _obj, _cl] call _fnc_aside
+                            };
+                        };
+                        if (count _dest > 1) then {
+                            {
+                                private _g = _x;
+                                if (!isNull _g) then {
+                                    // The sortie's orders go first. A crew let out
+                                    // with a search and destroy still set walks off
+                                    // after it, as a landing aircraft would.
+                                    for "_i" from ((count (waypoints _g)) - 1) to 0 step -1 do { deleteWaypoint [_g, _i] };
+                                    _g setVariable ["ALiVE_mil_ato_orders", nil, false];
+                                    _g setBehaviour "SAFE";
+                                    _g setCombatMode "BLUE";
+                                    _g setSpeedMode "LIMITED";
+                                    _g move _dest;
+                                };
+                            } forEach _groupsOut;
+                        };
+                        ["ALIVE_fnc_ATOEffect - crew of %1 dismissed from %2 (%3), %4, deleted once nobody is near them",
+                            count _ours, typeOf _obj, _tailNow,
+                            if (count _dest > 1) then { format ["walking to %1", _dest apply { round _x }] } else { "let out where they stand" }] call ALiVE_fnc_dump;
                         [_ours, _obj, _tailNow] spawn {
                             params ["_units", "_hull", "_tailNow"];
-                            sleep 120;
-                            private _left = _units select { !isNull _x && {alive _x} };
-                            // Anybody sitting in an aircraft that is off the ground
-                            // is left alone, whoever put him there.
+                            // Two minutes to walk off, then each man goes as soon as
+                            // nobody is near enough to see it happen, bodies and Zeus
+                            // cameras both, and everyone left goes at ten minutes.
+                            // It used to be all of them at two minutes wherever
+                            // they were, in front of whoever was there.
                             //
-                            // This timer deleted the four men of that gunship while
-                            // it was flying, its pilot among them, and it crashed
-                            // seven seconds later. Deleting a man who is flying
-                            // something is never what this timer is for.
-                            private _flying = _left select {
-                                private _v = objectParent _x;
-                                !isNull _v && {((getPos _v) select 2) > 5}
+                            // Anybody sitting in an aircraft that is off the ground
+                            // is left alone at every step, whoever put him there.
+                            // This timer deleted the four men of a gunship while it
+                            // was flying, its pilot among them, and it crashed seven
+                            // seconds later. Deleting a man who is flying something
+                            // is never what this timer is for.
+                            sleep 120;
+                            private _elapsed = 120;
+                            private _left = _units;
+                            private _gone = 0;
+                            private _flying = 0;
+                            while { true } do {
+                                _left = _left select { !isNull _x && {alive _x} };
+                                private _keep = [];
+                                _flying = 0;
+                                {
+                                    private _v = objectParent _x;
+                                    if (!isNull _v && {((getPos _v) select 2) > 5}) then {
+                                        _flying = _flying + 1;
+                                        _keep pushBack _x;
+                                    } else {
+                                        if (_elapsed >= 600 || {([nil, "playersNear", [getPosATL _x, 300]] call ALIVE_fnc_ATOObserve) == 0}) then {
+                                            deleteVehicle _x;
+                                            _gone = _gone + 1;
+                                        } else {
+                                            _keep pushBack _x;
+                                        };
+                                    };
+                                } forEach _left;
+                                _left = _keep;
+                                if ((count _left) == _flying || {_elapsed >= 600}) exitWith {};
+                                sleep 15;
+                                _elapsed = _elapsed + 15;
                             };
-                            private _gone = _left - _flying;
-                            // Said at the moment of deletion, because the thing
-                            // worth knowing is whether this timer ever fires
-                            // while the hull it came from is flying.
-                            ["ALIVE_fnc_ATOEffect - %1 dismissed crew of %2 deleted, %3 left alone in an aircraft in the air, hull now has %4 aboard",
-                                count _gone, _tailNow, count _flying,
+                            // Said once, at the end, because the thing worth knowing
+                            // is whether anyone was deleted while the hull they came
+                            // from was flying.
+                            ["ALIVE_fnc_ATOEffect - %1 dismissed crew of %2 deleted by %3 s, %4 left alone in an aircraft in the air, hull now has %5 aboard",
+                                _gone, _tailNow, _elapsed, _flying,
                                 if (isNull _hull) then {"a dead hull"} else {str (count (crew _hull))}] call ALiVE_fnc_dump;
-                            { deleteVehicle _x } forEach _gone;
                         };
                         _detail = "dismissed";
                     };
@@ -956,39 +1083,15 @@ switch(_operation) do {
                 if (_sweeping isEqualType 0 && {time < _sweeping}) exitWith { _matched = true; _detail = "already sweeping" };
                 _obj setVariable ["ALiVE_mil_ato_sweepUntil", time + SWEEP_SPAN, false];
 
-                [_obj, _obj getVariable ["ALiVE_mil_ato_tail", "no tail"]] spawn {
-                    params ["_jet", "_tail"];
+                // The side helpers go in with it: a spawned thread does not see
+                // the privates of the scope that started it.
+                [_obj, _obj getVariable ["ALiVE_mil_ato_tail", "no tail"], _fnc_offRunway, _fnc_aside] spawn {
+                    params ["_jet", "_tail", "_fnc_offRunway", "_fnc_aside"];
                     private _stop = time + SWEEP_SPAN;
 
                     // The runway's line, to pick the side away from it.
                     private _cl = [];
                     if (!isNil "ALiVE_fnc_getRunwayCentreline") then { _cl = [getPosATL _jet, 1500] call ALiVE_fnc_getRunwayCentreline };
-                    private _fnc_fromRunway = {
-                        params ["_p"];
-                        if !(_cl isEqualType [] && {count _cl > 1}) exitWith { 1e9 };
-                        private _ra = _cl select 0;
-                        private _rb = _cl select 1;
-                        private _dx = (_rb select 0) - (_ra select 0);
-                        private _dy = (_rb select 1) - (_ra select 1);
-                        private _l2 = (_dx * _dx) + (_dy * _dy);
-                        if (_l2 <= 0) exitWith { 1e9 };
-                        private _t = ((((_p select 0) - (_ra select 0)) * _dx) + (((_p select 1) - (_ra select 1)) * _dy)) / _l2;
-                        _t = (_t max 0) min 1;
-                        _p distance2D [(_ra select 0) + (_t * _dx), (_ra select 1) + (_t * _dy), 0]
-                    };
-                    private _fnc_aside = {
-                        params ["_u", "_heading"];
-                        private _a = _u getPos [70, _heading + 90];
-                        private _b = _u getPos [70, _heading - 90];
-                        private _to = if (([_a] call _fnc_fromRunway) >= ([_b] call _fnc_fromRunway)) then { _a } else { _b };
-                        if (surfaceIsWater _to) then { _to = if (_to isEqualTo _a) then { _b } else { _a } };
-                        if !(_u isKindOf "CAManBase") then {
-                            private _clear = _to findEmptyPosition [0, 30, typeOf _u];
-                            if (count _clear > 1) then { _to = _clear };
-                        };
-                        _to set [2, 0];
-                        _to
-                    };
                     private _fnc_putAside = {
                         params ["_u", "_to", "_how"];
                         private _was = getPosATL _u;
@@ -1029,11 +1132,11 @@ switch(_operation) do {
                                 && {_isMan || {count _aboard > 0} || {_civilianEmpty}}
                                 && {_ahead > 0} && {_lateral < 30}) then {
                                 if (_civilianEmpty) then {
-                                    [_u, [_u, _heading] call _fnc_aside, "an empty"] call _fnc_putAside;
+                                    [_u, [_u, _heading, _cl] call _fnc_aside, "an empty"] call _fnc_putAside;
                                 } else {
                                     private _warned = _u getVariable ["ALiVE_mil_ato_sweepAt", -1];
                                     if (_warned < 0) then {
-                                        private _to = [_u, _heading] call _fnc_aside;
+                                        private _to = [_u, _heading, _cl] call _fnc_aside;
                                         _u setVariable ["ALiVE_mil_ato_sweepAt", time, false];
                                         _u setVariable ["ALiVE_mil_ato_sweepFrom", getPosATL _u, false];
                                         _u setVariable ["ALiVE_mil_ato_sweepTo", _to, false];
@@ -1048,7 +1151,7 @@ switch(_operation) do {
                                             _u setVariable ["ALiVE_mil_ato_sweepAt", -1, false];
                                         } else {
                                             if ((time - _warned) > 5) then {
-                                                [_u, _u getVariable ["ALiVE_mil_ato_sweepTo", [_u, _heading] call _fnc_aside], "a"] call _fnc_putAside;
+                                                [_u, _u getVariable ["ALiVE_mil_ato_sweepTo", [_u, _heading, _cl] call _fnc_aside], "a"] call _fnc_putAside;
                                                 _u setVariable ["ALiVE_mil_ato_sweepAt", -1, false];
                                             };
                                         };
