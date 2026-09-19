@@ -752,6 +752,72 @@ observation sequences, because those are what the table exists to prevent.
     ["and a catapult shot already running is left to finish",
         _bcState isEqualTo "LAUNCHING" && {!("placeOnSlot" in _bcEff)}] call _fnc_check;
 
+    // ---- a landing on final is not cut off -----------------------------------
+    // On LAN a Blackfish hit its five minute landing deadline 94 m up, 1750 m
+    // out and descending, twenty or thirty seconds from touchdown, and was put
+    // down from there. One still flying and plainly coming down gets three more
+    // minutes, once; anything else is put down as before.
+    private _fnc_landingExpiry = {
+        params ["_flags", ["_attempts", 0], ["_extended", false], ["_now", 1000], ["_row", []]];
+        if (_row isEqualTo []) then {
+            _row = [_m, "newRow", ["BLU_F_0", [[100,100,0], 0, "terrain"]]] call ALIVE_fnc_ATOMachine;
+            [_row, "state", "LANDING"] call ALIVE_fnc_hashSet;
+            [_row, "enteredAt", 650] call ALIVE_fnc_hashSet;
+            [_row, "deadlineAt", 950] call ALIVE_fnc_hashSet;
+            [_row, "attempts", _attempts] call ALIVE_fnc_hashSet;
+            [_row, "landingExtended", _extended] call ALIVE_fnc_hashSet;
+            [_row, "sortie", ["CAS", [100,100,0], 600, 2000, "s1", [], ""]] call ALIVE_fnc_hashSet;
+        };
+        private _obs = [[["airborne", true], ["atHome", false], ["nearHome", true], ["needsRunway", true],
+            ["fixedWing", true], ["playersWithin1000Hull", 4], ["playersWithin1000Home", 4]] + _flags] call _fnc_obs;
+        private _out = [_m, "step", [_row, _obs, "", _now]] call ALIVE_fnc_ATOMachine;
+        [_out select 0, [(_out select 0), "state", ""] call ALIVE_fnc_hashGet, _out select 2]
+    };
+    private _finalFlags = [["altAGL", 94], ["climbRate", -2.9]];
+    ([_finalFlags] call _fnc_landingExpiry) params ["_lx1", "_lxState1", "_lxEff1"];
+    diag_log format ["  info  a plane on final at its deadline went to %1, effects %2, deadline %3",
+        _lxState1, _lxEff1, [_lx1, "deadlineAt", 0] call ALIVE_fnc_hashGet];
+    ["a plane on final at its deadline is given more time, not put down",
+        _lxState1 isEqualTo "LANDING" && {"landingExtended" in _lxEff1} && {!("forceLanded" in _lxEff1)}
+        && {([_lx1, "landingExtended", false] call ALIVE_fnc_hashGet)}
+        && {([_lx1, "deadlineAt", 0] call ALIVE_fnc_hashGet) == 1180}] call _fnc_check;
+    ["and it goes on flying its approach", "landOnRunway" in _lxEff1] call _fnc_check;
+    ([_finalFlags, 0, false, 1181, _lx1] call _fnc_landingExpiry) params ["_lx2", "_lxState2", "_lxEff2"];
+    ["but only once: at the end of the extra time it is put down",
+        _lxState2 isEqualTo "PARKED" && {"forceLanded" in _lxEff2} && {!("landingExtended" in _lxEff2)}] call _fnc_check;
+    ([[["altAGL", 800], ["climbRate", 6]]] call _fnc_landingExpiry) params ["", "_lxState3", "_lxEff3"];
+    ["one climbing away is put down at once, as before",
+        _lxState3 isEqualTo "PARKED" && {"forceLanded" in _lxEff3}] call _fnc_check;
+    ([[["altAGL", 7000], ["climbRate", 0]]] call _fnc_landingExpiry) params ["", "_lxState4", "_lxEff4"];
+    ["and so is a jet level at seven kilometres, which is not coming down",
+        _lxState4 isEqualTo "PARKED" && {!("landingExtended" in _lxEff4)}] call _fnc_check;
+    ([[["needsRunway", false], ["fixedWing", false], ["altAGL", 57]]] call _fnc_landingExpiry) params ["", "_lxState5", "_lxEff5"];
+    ["a helicopter low over its pad gets the extra time too",
+        _lxState5 isEqualTo "LANDING" && {"landingExtended" in _lxEff5} && {"landAtPad" in _lxEff5}] call _fnc_check;
+    ([_finalFlags, 2] call _fnc_landingExpiry) params ["", "_lxState6", "_lxEff6"];
+    ["one that came round through recovery gets it as well",
+        _lxState6 isEqualTo "LANDING" && {"landingExtended" in _lxEff6}] call _fnc_check;
+    ([[["airborne", false], ["landed", true], ["touchingGround", true], ["onRunway", true], ["altAGL", 0]]] call _fnc_landingExpiry) params ["", "_lxState7", "_lxEff7"];
+    ["one on the ground is not extended: it is holding the runway",
+        !("landingExtended" in _lxEff7)] call _fnc_check;
+    // A helicopter holding 30 m over a pad it cannot get onto reads as not in
+    // the air (the observer's airborne height is higher), and it is put down.
+    ([[["needsRunway", false], ["fixedWing", false], ["airborne", false], ["altAGL", 30]]] call _fnc_landingExpiry) params ["", "_lxState9", "_lxEff9"];
+    ["a helicopter hovering low over a blocked pad is put down, not given more time",
+        _lxState9 isEqualTo "PARKED" && {"forceLanded" in _lxEff9} && {!("landingExtended" in _lxEff9)}] call _fnc_check;
+    ([_finalFlags + [["playerPassenger", true], ["anyPlayerAboard", true]], 0, true] call _fnc_landingExpiry) params ["", "_lxState8", "_lxEff8"];
+    ["with a player aboard, after its extra time it is sent round again rather than put down",
+        _lxState8 isEqualTo "LANDING" && {"retryLanding" in _lxEff8} && {!("forceLanded" in _lxEff8)}] call _fnc_check;
+    private _rtbX = [_m, "newRow", ["BLU_F_0", [[100,100,0], 0, "terrain"]]] call ALIVE_fnc_ATOMachine;
+    [_rtbX, "state", "RTB"] call ALIVE_fnc_hashSet;
+    [_rtbX, "deadlineAt", 9999] call ALIVE_fnc_hashSet;
+    [_rtbX, "landingExtended", true] call ALIVE_fnc_hashSet;
+    private _rtbXOut = [_m, "step", [_rtbX, [[["airborne", true], ["atHome", false], ["nearHome", true],
+        ["playersWithin1000Home", 2]]] call _fnc_obs, "", 1000]] call ALIVE_fnc_ATOMachine;
+    ["each landing gets its own extension: the mark is cleared on the way in",
+        (([(_rtbXOut select 0), "state", ""] call ALIVE_fnc_hashGet) isEqualTo "LANDING")
+        && {!([(_rtbXOut select 0), "landingExtended", true] call ALIVE_fnc_hashGet)}] call _fnc_check;
+
     if (count _fails == 0) then {
         diag_log "=== ATO Machine test: ALL PASS ===";
     } else {

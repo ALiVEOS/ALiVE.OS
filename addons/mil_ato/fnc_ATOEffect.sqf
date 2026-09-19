@@ -114,6 +114,14 @@ Jman
 // rescue an approach the engine has quietly dropped.
 #define RUNWAY_REAIM 180
 
+// The same for a runway landing, which is longer. A circuit entered high or far
+// out runs past three minutes (on LAN an F-22 that began its landing 6953 m up
+// was down 256 s later, an A-10 from 3694 m 229 s later), and both Blackfish
+// landings there took about 300 s (302 and 319), which is what a re-aim at 180 s
+// followed by the 126 s VTOL circuit makes. The deck keeps RUNWAY_REAIM, which
+// was measured for the wire.
+#define RUNWAY_CIRCUIT_REAIM 360
+
 // How long a returned aircraft waits for a supply truck before it is serviced
 // where it stands. The old module made every aircraft wait between three and
 // thirteen minutes after landing before it could be tasked again, for no
@@ -1928,21 +1936,20 @@ switch(_operation) do {
                     _grp setVariable ["ALiVE_mil_ato_landing", true, false];
                 };
 
-                if (_aimedAt < 0 || {(time - _aimedAt) > RUNWAY_REAIM}) then {
-                    // Quiesced for the same reason the pad approach is: a pilot
-                    // with evasion and targeting live ignores a landing order
-                    // outright, and this aircraft has just spent its sortie on a
-                    // search and destroy waypoint, so it is in combat behaviour
-                    // by definition.
-                    _grp setBehaviour "CARELESS";
-                    _grp allowFleeing 0;
-                    _grp setCombatMode "BLUE";
-                    {
-                        _x disableAI "AUTOTARGET";
-                        _x disableAI "TARGET";
-                        _x setSkill ["courage", 1];
-                    } forEach (units _grp);
+                // Quiesced on every tick, not only when the order is given: a
+                // pilot with evasion and targeting live ignores a landing order
+                // outright, this aircraft has just spent its sortie on a search
+                // and destroy waypoint, and the engine turns evasion back on by
+                // itself over a circuit that can run four minutes.
+                [_grp] call _fnc_quiesce;
 
+                // Never re-aimed while it is low and coming down: that is the
+                // final approach, and a re-aim there sends it round again inside
+                // the extension it was given for being on final. A plane still
+                // high when the time is up has dropped its circuit and is sent
+                // again as before.
+                private _onFinal = (((getPosATL _obj) select 2) < 300) && {((velocity _obj) select 2) < 0};
+                if (_aimedAt < 0 || {((time - _aimedAt) > RUNWAY_CIRCUIT_REAIM) && {!_onFinal}}) then {
                     // "NONE" first, to clear any standing landing order, then
                     // the airport. This is the pair that was measured working;
                     // land "LAND" is the helicopter's order and it is what

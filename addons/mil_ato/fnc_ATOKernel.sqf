@@ -1046,6 +1046,14 @@ private _fnc_routeEffects = {
                 [_logic, _key, _say] call _fnc_radio;
             };
 
+            // Not debug-gated: at most once per landing, and it is the evidence
+            // for whether the extension was enough.
+            case (_name isEqualTo "landingExtended"): {
+                ["ALIVE_fnc_ATOKernel - %1 given %2 s more to finish its landing, %3 m up",
+                    _tail, round (([_row2, "deadlineAt", 0] call ALIVE_fnc_hashGet) - _now),
+                    round ([_obs, "altAGL", 0] call ALIVE_fnc_hashGet)] call ALiVE_fnc_dump;
+            };
+
             case (_name isEqualTo "refusedTeleportPlayerAboard"): {
                 if (_debug) then { ["ALIVE_fnc_ATOKernel - %1 not moved: a player is aboard", _tail] call ALiVE_fnc_dump };
             };

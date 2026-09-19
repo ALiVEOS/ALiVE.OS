@@ -69,6 +69,13 @@ Jman
 // stalled sortie.
 #define PROSECUTING_TYPES ["SEAD","CAS","Strike","OCA"]
 
+// The one extension a landing gets at its deadline when it is still flying and
+// plainly coming down: how long, and what counts as coming down (below the low
+// height, or a plane below the circuit height and descending).
+#define LANDING_EXTENSION 180
+#define LANDING_LOW_AGL 300
+#define LANDING_CIRCUIT_AGL 1500
+
 #define TELEPORTS ["airborneStart","forceLaunch","virtualLaunch","taxiOut","placeOnSlot","forceLanded","quickPark","catapult"]
 
 private ["_result"];
@@ -118,6 +125,11 @@ switch(_operation) do {
             // to land before anything is done with it. Minus one while it is
             // not at rest.
             ["stoppedSince", -1],
+            // Whether this landing has had its one extension. Its own field
+            // rather than attempts: an aircraft that came round through
+            // recovery reaches LANDING with attempts already counted, and would
+            // never have been given the time. Cleared on entry to LANDING.
+            ["landingExtended", false],
             ["reason", ""]
         ]] call ALIVE_fnc_hashCreate;
     };
@@ -780,15 +792,33 @@ switch(_operation) do {
                                         };
                                     };
                                     if (_expired && {_next isEqualTo "LANDING"}) then {
-                                        private _a = [_row,"attempts",0] call ALIVE_fnc_hashGet;
-                                        if (_a < 1) then {
-                                            // The aim is already re-issued
-                                            // every tick above, so a deadline
-                                            // here means the approach is not
-                                            // working rather than that it was
-                                            // forgotten. Count it and let the
-                                            // next expiry put it down.
-                                            [_row,"attempts",_a + 1] call ALIVE_fnc_hashSet;
+                                        // Three more minutes, once, when it is still
+                                        // flying and plainly coming down: below 300 m,
+                                        // or a plane below 1500 m and descending (a
+                                        // circuit has level legs, and a jet level at
+                                        // seven kilometres is not coming down). Below
+                                        // 300 m includes a go-around, which is still
+                                        // in the circuit that ends on the runway. On LAN
+                                        // a Blackfish hit this deadline 94 m up, 1750 m
+                                        // out and descending at 2.9 m/s, twenty or
+                                        // thirty seconds from touchdown, and was put
+                                        // down from there. Not on the ground: a plane
+                                        // stopped on the runway is holding it, and the
+                                        // landed branch above has its own waits.
+                                        //
+                                        // This replaces a count on attempts that gave
+                                        // one more tick and nothing else. The runway
+                                        // order above can share this tick with the
+                                        // put-down below; the Kernel applies effects in
+                                        // order and the put-down moves the hull last.
+                                        private _comingDown = _airborne && {
+                                            (("altAGL" call _fnc_n) < LANDING_LOW_AGL)
+                                            || {_needsRunway && {("altAGL" call _fnc_n) < LANDING_CIRCUIT_AGL} && {("climbRate" call _fnc_n) < 0}}
+                                        };
+                                        if (_comingDown && {!([_row,"landingExtended",false] call ALIVE_fnc_hashGet)}) then {
+                                            [_row,"landingExtended",true] call ALIVE_fnc_hashSet;
+                                            [_row,"deadlineAt",_now + LANDING_EXTENSION] call ALIVE_fnc_hashSet;
+                                            _effects pushBack "landingExtended";
                                         } else {
                                             if (_playerPassenger) then {
                                                 // Never put a hull on the ground
@@ -885,6 +915,9 @@ switch(_operation) do {
             };
             if !(_next isEqualTo "LANDING") then {
                 [_row,"stoppedSince",-1] call ALIVE_fnc_hashSet;
+            };
+            if (_next isEqualTo "LANDING") then {
+                [_row,"landingExtended",false] call ALIVE_fnc_hashSet;
             };
 
             switch (_next) do {
