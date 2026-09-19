@@ -265,6 +265,29 @@ switch(_operation) do {
             private _side = if (_cross > 0) then { 1 } else { if (_cross < 0) then { -1 } else { 0 } };
             [_p distance2D [(_ra select 0) + (_t * _dx), (_ra select 1) + (_t * _dy), 0], _side]
         };
+        // Kept off Drongo's Air Operations when that mod is loaded, so there is
+        // one air commander per aircraft. That mod takes over every crewed
+        // vehicle it sees, two seconds after the crew appears. Measured with it
+        // loaded: a plane the ATO crewed on its stand went from AWARE and YELLOW
+        // to CARELESS and BLUE, weapons held, within six seconds, and it takes
+        // an aircraft only the first time it is crewed, so that is the crew the
+        // first sortie flies with. The mod's own way to be left alone is its
+        // daoIgnore list, read before anything else it does to an aircraft, and
+        // a daoExclude mark it also reads: the hull goes on the list before its
+        // crew exists, so there is no window, and the group as soon as there is
+        // one. Put on the list that way, the same plane stayed AWARE and YELLOW.
+        // Nothing happens without the mod.
+        private _fnc_keepOffAirOps = {
+            params ["_o", ["_g", grpNull, [grpNull]]];
+            if (isNil "daoIgnore" || {!(daoIgnore isEqualType [])}) exitWith { false };
+            daoIgnore pushBackUnique _o;
+            _o setVariable ["daoExclude", true, true];
+            if (!isNull _g) then {
+                daoIgnore pushBackUnique _g;
+                _g setVariable ["daoExclude", true, true];
+            };
+            true
+        };
 
         // What an aircraft that has been told to land is actually doing, for the
         // log. An RHS Apache on LAN hovered over its stand until the five minute
@@ -350,10 +373,12 @@ switch(_operation) do {
                 if (count (crew _obj) > 0) then {
                     _matched = true;
                 } else {
+                    [_obj] call _fnc_keepOffAirOps;
                     private _grp = createVehicleCrew _obj;
                     if (isNull _grp) then {
                         _status = "refused"; _detail = "crew could not be created";
                     } else {
+                        [_obj, _grp] call _fnc_keepOffAirOps;
                         // Marked so nothing else adopts them, and so they are
                         // recognisable as ours when they are stood down.
                         { _x setVariable ["ALiVE_mil_ato_crew", true, true] } forEach (units _grp);
@@ -377,7 +402,8 @@ switch(_operation) do {
                 if (count (crew _obj) > 0) then {
                     _matched = true;
                 } else {
-                    createVehicleCrew _obj;
+                    [_obj] call _fnc_keepOffAirOps;
+                    [_obj, createVehicleCrew _obj] call _fnc_keepOffAirOps;
                     // A drone flown by nobody is still meant to be operable from
                     // a terminal, so the crew must not be treated as pilots.
                     { _x setVariable ["ALiVE_mil_ato_crew", true, true] } forEach (crew _obj);
@@ -394,7 +420,8 @@ switch(_operation) do {
                     // be handed no replacement at all and fly on with nobody in
                     // it. That is the exact failure this effect exists to undo.
                     { deleteVehicle _x } forEach (crew _obj);
-                    createVehicleCrew _obj;
+                    [_obj] call _fnc_keepOffAirOps;
+                    [_obj, createVehicleCrew _obj] call _fnc_keepOffAirOps;
                     { _x setVariable ["ALiVE_mil_ato_crew", true, true] } forEach (crew _obj);
                     _detail = "recrewed";
                 };
