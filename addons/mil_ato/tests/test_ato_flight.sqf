@@ -84,7 +84,7 @@ open, which is also a fair statement of what the kernel will have to own.
     // --- turning order names into places --------------------------------------
     // The kernel's job, done here so it is visible.
     private _fnc_resolve = {
-        params ["_orders"];
+        params ["_orders", ["_state", ""]];
         private _out = [];
         {
             switch (_x) do {
@@ -94,7 +94,18 @@ open, which is also a fair statement of what the kernel will have to own.
                 case "MOVE_STATION":  { _out pushBack ["MOVE", _targetPos] };
                 case "EXECUTE":       { _out pushBack ["SAD", _targetPos] };
                 case "MOVE_APPROACH": { _out pushBack ["MOVE", (_home select 0) getPos [800, 0]] };
-                case "LOITER":        { _out pushBack ["LOITER", (_home select 0) getPos [600, 90]] };
+                // Over the target while it is out there, as the kernel has it.
+                // Near home for everything else. Near home in every state, a
+                // helicopter whose move ended 650 m short of the target, as
+                // the engine's move sometimes does, flew home without ever
+                // counting as on station, and the run failed on that alone.
+                case "LOITER":        {
+                    if (_state in ["ENROUTE","ON_STATION"]) then {
+                        _out pushBack ["LOITER", _targetPos];
+                    } else {
+                        _out pushBack ["LOITER", (_home select 0) getPos [600, 90]];
+                    };
+                };
                 // Stay where you are. The table asks for this in ASSIGNED and in
                 // RECOVERING, and it went unresolved, so those two states cleared
                 // the waypoint list and put nothing back. An aircraft on the ground
@@ -198,7 +209,7 @@ open, which is also a fair statement of what the kernel will have to own.
         // and the waypoint list is the thing that says whether an order chain
         // actually reached the group or only appeared to.
         if (count _orders > 0) then {
-            private _chain = [_orders] call _fnc_resolve;
+            private _chain = [_orders, _state] call _fnc_resolve;
             if (count _chain > 0) then {
                 private _r = [_e, "apply", ["issueOrders", _veh, _home, [_chain]]] call ALIVE_fnc_ATOEffect;
                 if (_changedState) then {
