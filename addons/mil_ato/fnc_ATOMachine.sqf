@@ -81,6 +81,20 @@ Jman
 // several kilometres out and still coming down.
 #define LANDING_EXTENSION_REACH 5000
 
+// A plane on land leaves along its airport's taxi route. Once it is stood on it,
+// it has at least this long to get into the air: the wait for the route to clear
+// no longer eats the time it needs to taxi and take off.
+#define LAUNCH_TAXI_WINDOW 180
+// While the route is blocked it waits on its stand, tank empty, this long at a
+// time and this many times, and then it leaves from its stand as it did before
+// there was a taxi out, with the launch deadline behind it.
+#define LAUNCH_TAXI_WAIT 60
+#define LAUNCH_TAXI_WAITS 3
+// A plane still rolling down the runway when its time runs out is given this
+// much more, once, rather than being thrown into the air mid take-off run. Above
+// this speed on the runway it is rolling, below it stopped there.
+#define LAUNCH_ROLL_EXTENSION 90
+#define LAUNCH_ROLL_SPEED 10
 
 // How long a launch waits each time its runway is held by another of our
 // aircraft, and how many times it may wait before it gives up. Six covers the
@@ -148,6 +162,13 @@ switch(_operation) do {
             // LAUNCHING's one forced launch is counted on attempts and a wait
             // would have spent it. Cleared on entry to ASSIGNED.
             ["runwayWaits", 0],
+            // When this launch was stood on its taxi route, minus one before
+            // then; how many times it has waited on its stand for the route to
+            // clear; and whether it has had its one extension for a take-off
+            // run. All three cleared on entry to LAUNCHING.
+            ["taxiedOutAt", -1],
+            ["taxiWaits", 0],
+            ["launchExtended", false],
             ["reason", ""]
         ]] call ALIVE_fnc_hashCreate;
     };
@@ -207,6 +228,9 @@ switch(_operation) do {
         // behind it for a runway it never used. A plane on a ship still takes
         // it.
         private _takesRunway = _needsRunway && {"fixedWing" call _fnc_o};
+        // A plane that leaves along a taxi route: fixed wing, on land, not held
+        // at a point in the air.
+        private _landPlane = ("fixedWing" call _fnc_o) && {!("deckHome" call _fnc_o)} && {!_virtualHome};
 
         // And whether a launch this module started is still running on the
         // hull. The table cannot read a variable off an object, so the observer
@@ -374,11 +398,12 @@ switch(_operation) do {
                                 // false.
                                 //
                                 // canMove is false with an empty tank as well, and
-                                // a plane waits for the runway with its tank empty
-                                // and gets the fuel back on the way into this
-                                // state. So a launch is called off at once only
-                                // with fuel aboard, which is a broken aircraft,
-                                // and otherwise at the deadline, where the only
+                                // a plane on land keeps its tank empty here until
+                                // it has been stood on its taxi route (below). So
+                                // a plane this module is holding is never taken for
+                                // a broken one, and otherwise a launch is called off
+                                // at once only with fuel aboard, which is a broken
+                                // aircraft, and at the deadline, where the only
                                 // alternative was throwing it into the air. Never
                                 // under a catapult shot that is still running.
                                 //
@@ -386,9 +411,21 @@ switch(_operation) do {
                                 // serviced, which repairs it, and kept off the rota
                                 // while that happens. The job goes back to be given
                                 // to another aircraft.
+                                private _held = "heldOnStand" call _fnc_o;
                                 private _cannotFly = !([_obs, "canMove", true] call ALIVE_fnc_hashGet)
-                                    && {!_launching}
+                                    && {!_launching} && {!_held}
                                     && {(("fuel" call _fnc_n) > 0) || {_expired}};
+                                // On its way for THIS launch: stood on its taxi route
+                                // (the stamp from an earlier launch is older than this
+                                // state's entry, so it never counts), or not held on
+                                // its stand at all, which is a plane that goes from
+                                // where it is. Only a held plane is ever asked to be
+                                // stood on its route, so one already rolling is never
+                                // pulled back to it.
+                                private _taxiedOut = _landPlane
+                                    && {(([_obs, "taxiOutAt", -1] call ALIVE_fnc_hashGet) >= ([_row,"enteredAt",0] call ALIVE_fnc_hashGet))
+                                        || {!_held}};
+                                private _onRunwayNow = "onRunway" call _fnc_o;
                                 switch (true) do {
                                     case (_airborne): {
                                         _effects pushBack "unlock";
@@ -412,6 +449,94 @@ switch(_operation) do {
                                         _reason = "CANNOT_FLY";
                                     };
                                     default {
+                                        private _deadline = [_row,"deadlineAt",0] call ALIVE_fnc_hashGet;
+
+                                        // ---- a plane leaving along its taxi route ----
+                                        // It is held on its stand with its tank empty
+                                        // until it has been stood on the route, and
+                                        // asked for that every tick rather than once.
+                                        // On LAN the one ask was refused while a supply
+                                        // truck drove along the route; nothing asked
+                                        // again, the A-10 was given its fuel anyway,
+                                        // drove itself into its tent hangar's doorway
+                                        // and sat there with its engine running until
+                                        // the deadline threw it 588 m into the air.
+                                        // Only an empty tank holds a crewed plane.
+                                        //
+                                        // With somebody aboard it is not held (see the
+                                        // way out of ASSIGNED) and nothing here moves it.
+                                        if (_landPlane && {_playerPassenger}) then { _effects pushBack "releaseHold" };
+                                        if (_landPlane && {!_playerPassenger}) then {
+                                            if (_taxiedOut || {_onRunwayNow}) then {
+                                                // On its route: its tank back, its
+                                                // engine, the path ahead kept clear, and
+                                                // the runway kept while it goes. Each
+                                                // answers "done" once done.
+                                                _effects append ["releaseHold","engineOn","sweepTaxiPath","lock"];
+                                                if (([_row,"taxiedOutAt",-1] call ALIVE_fnc_hashGet) < 0) then {
+                                                    [_row,"taxiedOutAt",_now] call ALIVE_fnc_hashSet;
+                                                    _deadline = _deadline max (_now + LAUNCH_TAXI_WINDOW);
+                                                    [_row,"deadlineAt",_deadline] call ALIVE_fnc_hashSet;
+                                                };
+                                                // Rolling down the runway when its time
+                                                // is up: more time, once. On LAN an A-10
+                                                // was thrown 597 m up at its deadline
+                                                // just as it began its take-off run.
+                                                if (_now >= _deadline && {!_launching} && {_onRunwayNow}
+                                                    && {("speed" call _fnc_n) > LAUNCH_ROLL_SPEED}
+                                                    && {!([_row,"launchExtended",false] call ALIVE_fnc_hashGet)}) then {
+                                                    [_row,"launchExtended",true] call ALIVE_fnc_hashSet;
+                                                    _deadline = _now + LAUNCH_ROLL_EXTENSION;
+                                                    [_row,"deadlineAt",_deadline] call ALIVE_fnc_hashSet;
+                                                    _effects pushBack "launchExtended";
+                                                };
+                                            } else {
+                                                // Not on its route yet: asked again every
+                                                // tick, and at its deadline it waits a
+                                                // little longer while it has waits left.
+                                                //
+                                                // The runway is not kept for it from its
+                                                // stand. It is taken when the plane is
+                                                // stood on its route, by the kernel along
+                                                // with the taxi out, so one whose route
+                                                // stays blocked lets it lapse and an
+                                                // aircraft of ours coming home can land.
+                                                // Kept here every tick, a jet shut in its
+                                                // hangar kept a returning one circling for
+                                                // the whole of its wait.
+                                                //
+                                                // Nor is it stood on its route, or let go,
+                                                // while another of ours has the runway: it
+                                                // would be heading for a runway somebody is
+                                                // landing on. That wait is not counted
+                                                // against it.
+                                                //
+                                                // Blocked through every wait, it leaves
+                                                // from its stand as it did before there was
+                                                // a taxi out, taking the runway as it goes:
+                                                // its hold is let go here, so next tick it
+                                                // counts as on its way. Handing the job back
+                                                // instead left an apron whose route stayed
+                                                // blocked, by a wreck or a parked vehicle,
+                                                // unable ever to launch.
+                                                private _busy = "lockBusy" call _fnc_o;
+                                                private _leaves = false;
+                                                if (_now >= _deadline) then {
+                                                    private _waits = [_row,"taxiWaits",0] call ALIVE_fnc_hashGet;
+                                                    if (_busy || {_waits < LAUNCH_TAXI_WAITS}) then {
+                                                        if (!_busy) then { [_row,"taxiWaits",_waits + 1] call ALIVE_fnc_hashSet };
+                                                        _effects pushBack "waitingForTaxiRoute";
+                                                    } else {
+                                                        _leaves = true;
+                                                        _effects append ["lock","releaseHold","leavesFromStand"];
+                                                    };
+                                                    _deadline = _now + (if (_leaves) then { LAUNCH_TAXI_WINDOW } else { LAUNCH_TAXI_WAIT });
+                                                    [_row,"deadlineAt",_deadline] call ALIVE_fnc_hashSet;
+                                                };
+                                                if (!_leaves && {!_busy}) then { _effects pushBack "taxiOut" };
+                                            };
+                                        };
+
                                         // A deadline that falls due inside a running
                                         // launch waits for it.
                                         //
@@ -424,7 +549,8 @@ switch(_operation) do {
                                         // the sequence won, and the table had already
                                         // given up on a launch that then completed
                                         // underneath it.
-                                        if (_expired && {!_launching}) then {
+                                        private _expiredNow = (_deadline > 0) && {_now >= _deadline};
+                                        if (_expiredNow && {!_launching}) then {
                                             if (([_row,"attempts",0] call ALIVE_fnc_hashGet) < 1 && {!_playerPassenger}) then {
                                                 _effects pushBack "forceLaunch";
                                                 [_row,"attempts",1] call ALIVE_fnc_hashSet;
@@ -947,7 +1073,15 @@ switch(_operation) do {
             // And the wait for the runway gives back the fuel it held, on every
             // way out of it: launched, timed out, taken by a player, or lost. It
             // is harmless on anything that was never held.
-            if (_state isEqualTo "ASSIGNED") then { _effects pushBack "releaseHold" };
+            //
+            // Except a plane on land going on to launch, which is kept held
+            // until it has been stood on its taxi route, and so is given its
+            // fuel back on every way out of LAUNCHING instead.
+            if (_state isEqualTo "ASSIGNED"
+                && {!(_next isEqualTo "LAUNCHING" && {_landPlane} && {!_playerPassenger})}) then {
+                _effects pushBack "releaseHold";
+            };
+            if (_state isEqualTo "LAUNCHING") then { _effects pushBack "releaseHold" };
 
             [_row,"state",_next] call ALIVE_fnc_hashSet;
             [_row,"enteredAt",_now] call ALIVE_fnc_hashSet;
@@ -970,6 +1104,11 @@ switch(_operation) do {
             };
             if (_next isEqualTo "ASSIGNED") then {
                 [_row,"runwayWaits",0] call ALIVE_fnc_hashSet;
+            };
+            if (_next isEqualTo "LAUNCHING") then {
+                [_row,"taxiedOutAt",-1] call ALIVE_fnc_hashSet;
+                [_row,"taxiWaits",0] call ALIVE_fnc_hashSet;
+                [_row,"launchExtended",false] call ALIVE_fnc_hashSet;
             };
 
             switch (_next) do {
@@ -995,7 +1134,9 @@ switch(_operation) do {
                 // engine and rolls, and one rolled half out of its hangar door
                 // while it waited. The tank is given back on the way out.
                 case "ASSIGNED":     {
-                    if (("needsRunway" call _fnc_o) && {!("deckHome" call _fnc_o)} && {!_virtualHome}) then {
+                    // Fixed wing only: a VTOL lifts where it stands, so it is
+                    // neither held nor given the runway.
+                    if (_landPlane) then {
                         _effects pushBack "holdOnStand";
                     };
                     _effects append ["mintCrew","seatCrew"];
@@ -1021,7 +1162,17 @@ switch(_operation) do {
                     switch (true) do {
                         case (_deckPlane): { _effects append ["engineOn","catapult","broadcastStart"]; };
                         case (_virtualHome): { _effects append ["engineOn","virtualLaunch","broadcastStart"]; };
-                        case ("fixedWing" call _fnc_o): { _effects append ["taxiOut","sweepTaxiPath","engineOn","broadcastStart"]; };
+                        // Held, tank empty, until it stands on its route: the
+                        // engine, the sweep of its path and its fuel follow in
+                        // the state's own rules once it does. With somebody
+                        // aboard it is not held and goes as before.
+                        case ("fixedWing" call _fnc_o): {
+                            if (_playerPassenger) then {
+                                _effects append ["taxiOut","sweepTaxiPath","engineOn","broadcastStart"];
+                            } else {
+                                _effects append ["taxiOut","broadcastStart"];
+                            };
+                        };
                         default { _effects append ["engineOn","broadcastStart"]; };
                     };
                 };

@@ -1147,6 +1147,32 @@ private _fnc_routeEffects = {
                     round ([_obs, "altAGL", 0] call ALIVE_fnc_hashGet),
                     round ([_obs, "distHome", 0] call ALIVE_fnc_hashGet)] call ALiVE_fnc_dump;
             };
+            // A launch given more time for its take-off run, once, and a launch
+            // waiting on its stand for its taxi route to clear. Neither is
+            // debug-gated: each happens a few times a launch at most.
+            case (_name isEqualTo "launchExtended"): {
+                ["ALIVE_fnc_ATOKernel - %1 given %2 s more for its take-off run, %3 km/h on the runway",
+                    _tail, round (([_row2, "deadlineAt", 0] call ALIVE_fnc_hashGet) - _now),
+                    round ([_obs, "speed", 0] call ALIVE_fnc_hashGet)] call ALiVE_fnc_dump;
+            };
+            case (_name isEqualTo "waitingForTaxiRoute"): {
+                private _seenW = [_k, "refusalsSeen", []] call ALIVE_fnc_hashGet;
+                private _holderT = if (_surface isEqualTo []) then { "" } else { [_surface, "holder", _lockKey] call ALIVE_fnc_ATOSurface };
+                if (!(_holderT isEqualTo "") && {!(_holderT isEqualTo _tail)}) then {
+                    ["ALIVE_fnc_ATOKernel - %1 waits on its stand while %2 has the runway", _tail, _holderT] call ALiVE_fnc_dump;
+                } else {
+                    ["ALIVE_fnc_ATOKernel - %1 waits on its stand for its taxi route (wait %2): %3",
+                        _tail, [_row2, "taxiWaits", 0] call ALIVE_fnc_hashGet,
+                        [_seenW, format ["%1|taxiOut", _tail], "refused"] call ALIVE_fnc_hashGet] call ALiVE_fnc_dump;
+                };
+            };
+            // Its route stayed blocked through every wait, so it goes from its stand.
+            case (_name isEqualTo "leavesFromStand"): {
+                private _seenL = [_k, "refusalsSeen", []] call ALIVE_fnc_hashGet;
+                ["ALIVE_fnc_ATOKernel - %1 gives up waiting for its taxi route after %2 s and leaves from its stand (last refused: %3)",
+                    _tail, round (_now - ([_row2, "enteredAt", _now] call ALIVE_fnc_hashGet)),
+                    [_seenL, format ["%1|taxiOut", _tail], "nothing said"] call ALIVE_fnc_hashGet] call ALiVE_fnc_dump;
+            };
             // Not debug-gated either: at most a handful per launch, two minutes
             // apart, and they are what shows a launch waited rather than failed.
             case (_name isEqualTo "waitingForRunway"): {
@@ -1199,9 +1225,26 @@ private _fnc_routeEffects = {
                         case (_name isEqualTo "shield"): { [_tail] };
                         default { [] };
                     };
+                    private _stampWas = if (_name isEqualTo "taxiOut") then { _obj getVariable ["ALiVE_mil_ato_taxiOutAt", -1] } else { -1 };
                     private _r = [_effect, "apply", [_name, _obj, _home, _extra]] call ALIVE_fnc_ATOEffect;
                     if !(_r isEqualType []) then { _r = ["refused", false, "no answer"] };
                     [_logic, _tail, _name, _r, _state] call _fnc_noteRefusal;
+                    // Stood on its route, a plane takes the runway there and then.
+                    // The table does not keep it for a plane still on its stand, so
+                    // one whose route stayed blocked has let it go; taken here,
+                    // before any other aircraft is looked at, nothing is let in to
+                    // land between the plane being stood on its route and its roll.
+                    // The stamp moving is what says the taxi out is done: stood on
+                    // the route, found already there, or left to go from its stand.
+                    if (_name isEqualTo "taxiOut" && {!(_surface isEqualTo [])}
+                        && {[_obs, "needsRunway", false] call ALIVE_fnc_hashGet}
+                        && {!((_obj getVariable ["ALiVE_mil_ato_taxiOutAt", -1]) isEqualTo _stampWas)}) then {
+                        private _spanT = if (isNil "ALiVE_ATO_runwayLockTimeout") then { RUNWAY_LOCK_TIMEOUT } else { ALiVE_ATO_runwayLockTimeout };
+                        if !([_surface, "lock", [_lockKey, _tail, _now + _spanT]] call ALIVE_fnc_ATOSurface) then {
+                            ["ALIVE_fnc_ATOKernel - %1 is on its taxi route but %2 has the runway", _tail,
+                                [_surface, "holder", _lockKey] call ALIVE_fnc_ATOSurface] call ALiVE_fnc_dump;
+                        };
+                    };
                 };
                 };
             };

@@ -657,6 +657,9 @@ switch(_operation) do {
             // Nothing here is saved: a restored aircraft is a fresh hull with a
             // full tank, so a hold cannot outlive a save.
             case "holdOnStand": {
+                // A new launch: the time the last one began waiting for its taxi
+                // route is not this one's.
+                _obj setVariable ["ALiVE_mil_ato_taxiRefusedAt", nil, false];
                 // A hull still held down after it was put down from the air may
                 // be bouncing, and that hold already keeps its tank empty, so it
                 // is not refused as being in the air. The fuel that hold keeps
@@ -1012,22 +1015,31 @@ switch(_operation) do {
             // refusal, and the aircraft keeps the old launch from its stand.
             //
             // Fixed wing planes on land. A helicopter or a VTOL lifts where it
-            // stands, and a deck plane or a held one has its own launch. The
-            // table asks for this once, on the way into the launch: asked again
-            // after the aircraft has rolled, it would pull it back to where it
-            // started.
+            // stands, and a deck plane or a held one has its own launch.
+            //
+            // The table asks for this every tick while the plane is held on its
+            // stand, and stops asking once the hull carries the stamp this sets
+            // (ALiVE_mil_ato_taxiOutAt): when it has been stood on its route,
+            // when it is found there already, and when there is no route to
+            // stand it on, which leaves it to leave from its stand as it always
+            // did. A refusal that can clear, something standing on the route or
+            // moving along it, sets no stamp, so it is asked again next tick. A
+            // plane that has rolled is never pulled back: the stamp stops the
+            // asking, and a plane moving over 40 km/h answers here without
+            // being moved.
             case "taxiOut": {
-                if !(_obj isKindOf "Plane") exitWith { _matched = true; _detail = "not a plane" };
+                private _fnc_taxiDone = { _obj setVariable ["ALiVE_mil_ato_taxiOutAt", time, false] };
+                if !(_obj isKindOf "Plane") exitWith { call _fnc_taxiDone; _matched = true; _detail = "not a plane" };
                 if (getNumber (configFile >> "CfgVehicles" >> typeOf _obj >> "vtol") != 0) exitWith {
-                    _matched = true; _detail = "a VTOL lifts where it stands";
+                    call _fnc_taxiDone; _matched = true; _detail = "a VTOL lifts where it stands";
                 };
                 if (count _home > 2 && {(_home select 2) in ["deck","virtual"]}) exitWith {
-                    _matched = true; _detail = "not a land home";
+                    call _fnc_taxiDone; _matched = true; _detail = "not a land home";
                 };
-                if (([_obj, _home] call _fnc_up) > 5) exitWith { _matched = true; _detail = "not on the ground" };
-                if ((speed _obj) > 40) exitWith { _matched = true; _detail = "already rolling" };
+                if (([_obj, _home] call _fnc_up) > 5) exitWith { call _fnc_taxiDone; _matched = true; _detail = "not on the ground" };
+                if ((speed _obj) > 40) exitWith { call _fnc_taxiDone; _matched = true; _detail = "already rolling" };
                 private _surfaceT = _extra param [0, []];
-                if (_surfaceT isEqualTo []) exitWith { _status = "refused"; _detail = "no surface" };
+                if (_surfaceT isEqualTo []) exitWith { call _fnc_taxiDone; _status = "refused"; _detail = "no surface" };
 
                 // The airport nearest the home, as for a landing: a plane that
                 // has drifted from its stand still leaves from its own field.
@@ -1082,7 +1094,7 @@ switch(_operation) do {
                         _route = [[_ca select 0, _ca select 1, 0], [_cb select 0, _cb select 1, 0]];
                     };
                 };
-                if (count _route < 2) exitWith { _status = "refused"; _detail = "no taxi route or runway near its stand" };
+                if (count _route < 2) exitWith { call _fnc_taxiDone; _status = "refused"; _detail = "no taxi route or runway near its stand, so it leaves from its stand" };
 
                 private _a = _route select 0;
                 private _b = _route select 1;
@@ -1090,7 +1102,7 @@ switch(_operation) do {
                 private _dx = (_b select 0) - (_a select 0);
                 private _dy = (_b select 1) - (_a select 1);
                 private _leg = _a distance2D _b;
-                if (_leg < 1) exitWith { _status = "refused"; _detail = "the taxi route has no first leg" };
+                if (_leg < 1) exitWith { call _fnc_taxiDone; _status = "refused"; _detail = "the taxi route has no first leg, so it leaves from its stand" };
 
                 // How far a thing reaches from its centre, the larger of its
                 // length and width halved. Two things are in each other's way
@@ -1150,6 +1162,7 @@ switch(_operation) do {
                     _tries = _tries + 1;
                 };
                 if (count _spot == 0) exitWith {
+                    if ((_obj getVariable ["ALiVE_mil_ato_taxiRefusedAt", -1]) < 0) then { _obj setVariable ["ALiVE_mil_ato_taxiRefusedAt", time, false] };
                     _status = "refused";
                     _detail = format ["the taxi route is blocked by %1", if (isNull _first) then {"nothing it could name"} else {typeOf _first}];
                 };
@@ -1171,6 +1184,7 @@ switch(_operation) do {
                     };
                 } forEach (nearestObjects [_a getPos [_upTo / 2, _dir], ["Air","LandVehicle"], (_upTo / 2) + 70]);
                 if (!isNull _coming) exitWith {
+                    if ((_obj getVariable ["ALiVE_mil_ato_taxiRefusedAt", -1]) < 0) then { _obj setVariable ["ALiVE_mil_ato_taxiRefusedAt", time, false] };
                     _status = "refused";
                     _detail = format ["%1 is moving on the taxi route behind that spot", typeOf _coming];
                 };
@@ -1178,21 +1192,31 @@ switch(_operation) do {
                 // Already there. A second ask while it still stands where it was
                 // put changes nothing; one after it has rolled would move it
                 // back, which is why the table only asks once.
-                if ((_obj distance2D _spot) < 5) exitWith { _matched = true; _detail = "already on the taxi route" };
+                if ((_obj distance2D _spot) < 5) exitWith { call _fnc_taxiDone; _matched = true; _detail = "already on the taxi route" };
 
                 private _moved = round (_obj distance2D _spot);
                 if !([_surfaceT, "place", [_obj, [_spot, _dir, "taxi"]]] call ALIVE_fnc_ATOSurface) exitWith {
+                    if ((_obj getVariable ["ALiVE_mil_ato_taxiRefusedAt", -1]) < 0) then { _obj setVariable ["ALiVE_mil_ato_taxiRefusedAt", time, false] };
                     _status = "refused"; _detail = "the surface refused the placement";
                 };
+                call _fnc_taxiDone;
+                // Its orders given again, now that it stands where it will go from.
+                // They were given while it waited on its stand and are unchanged,
+                // so without this no fresh move would reach it.
+                private _grpT = group (driver _obj);
+                if (!isNull _grpT) then { _grpT setVariable ["ALiVE_mil_ato_orders", nil, false] };
+                private _refusedAt = _obj getVariable ["ALiVE_mil_ato_taxiRefusedAt", -1];
+                _obj setVariable ["ALiVE_mil_ato_taxiRefusedAt", nil, false];
                 _detail = format ["moved %1 m to the taxi route", _moved];
                 // Said out loud, because a detail is only ever written down when
                 // an effect is refused, and moving an aircraft hundreds of
                 // metres is worth a line whether or not anything went wrong.
-                ["ALIVE_fnc_ATOEffect - %1 (%2) moved %3 m onto the taxi route of airport %4, %5 m down its first leg, heading %6%7",
+                ["ALIVE_fnc_ATOEffect - %1 (%2) moved %3 m onto the taxi route of airport %4, %5 m down its first leg, heading %6%7%8",
                     typeOf _obj, _obj getVariable ["ALiVE_mil_ato_tail", "no tail"], _moved,
                     if (_alongLeg) then {str _airportID} else {"none, the runway itself"},
                     round (_a distance2D _spot), round _dir,
-                    if (isNull _first) then {""} else {format [", further down because %1 was in the way", typeOf _first]}
+                    if (isNull _first) then {""} else {format [", further down because %1 was in the way", typeOf _first]},
+                    if (_refusedAt isEqualType 0 && {_refusedAt >= 0}) then {format [", after %1 s waiting for the route to clear", round (time - _refusedAt)]} else {""}
                 ] call ALiVE_fnc_dump;
             };
 
@@ -1219,6 +1243,9 @@ switch(_operation) do {
             // LAN one servicing an A-10 on its stand was in the path of another
             // A-10 stuck in its hangar and was put aside into a building. The
             // aircraft it serves names it, and the sweep leaves it alone.
+            //
+            // The table only asks for this once the plane is stood on its taxi
+            // route, so a plane still in its hangar never sweeps the apron.
             //
             // Civilian is asked of the vehicle's FACTION, not its side: an empty
             // vehicle reads as civilian side whatever it belongs to.

@@ -128,11 +128,11 @@ switch(_operation) do {
                        "crewGroupLive","driverPresent","crewSeated","playerControl","playerPassenger",
                        "anyPlayerAboard","uavControlled","onStation","targetsGone","lockHeld","lockBusy",
                        "deckHome","fixedWing","needsRunway","launchInProgress","onRunway","armed","virtualHome",
-                       "atTaxiOffEnd","canMove","onTaxiway","nearStand"];
+                       "atTaxiOffEnd","canMove","onTaxiway","nearStand","heldOnStand"];
             {
                 [_o, _x, 0] call ALIVE_fnc_hashSet;
             } forEach ["altAGL","altASL","speed","fuel","damage","wpRemaining","aliveCrew",
-                       "ordnance","climbRate","distHome",
+                       "ordnance","climbRate","distHome","taxiOutAt",
                        "playersWithin300","playersWithin1000Hull","playersWithin1000Home",
                        "playersWithin1500Home"];
             // Nobody is aboard a hull that is gone, so nothing is holding it.
@@ -200,6 +200,21 @@ switch(_operation) do {
         private _catUntil = _obj getVariable ["ALiVE_mil_ato_catapultUntil", -99999];
         if !(_catUntil isEqualType 0) then { _catUntil = -99999 };
         ["launchInProgress", time < _catUntil] call _fnc_set;
+
+        // Held on its stand by this module, with its tank kept empty so a
+        // crewed plane cannot roll while it waits. The table has to know,
+        // because an empty tank also makes an aircraft read as one that cannot
+        // move, and a plane waiting for its taxi route is not a broken one.
+        private _heldFuel = _obj getVariable ["ALiVE_mil_ato_heldFuel", -1];
+        ["heldOnStand", (_heldFuel isEqualType 0) && {_heldFuel >= 0}] call _fnc_set;
+
+        // When its taxi out last finished: stood on its airport's route, found
+        // already standing on it, or with no route there to be stood on, which
+        // leaves it to leave from its stand as before. The table compares this
+        // with the moment its launch began, so a stamp left from an earlier
+        // launch never counts and nothing has to clear it. -1 for never.
+        private _taxiAt = _obj getVariable ["ALiVE_mil_ato_taxiOutAt", -1];
+        ["taxiOutAt", if (_taxiAt isEqualType 0) then { _taxiAt } else { -1 }] call _fnc_set;
 
         // ---- where and how fast -------------------------------------------
         private _pos = getPosATL _obj;

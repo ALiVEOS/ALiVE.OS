@@ -102,7 +102,15 @@ observation sequences, because those are what the table exists to prevent.
         ["stopped on a taxiway",   [["needsRunway",true],["fixedWing",true],["landed",true],["nearHome",true],["atHome",false],["onTaxiway",true],["playersWithin1000Hull",4]]],
         ["broken on the ground",   [["canMove",false]]],
         ["a plane waiting on a busy runway", [["needsRunway",true],["fixedWing",true],["crewSeated",true],["lockBusy",true]]],
-        ["an empty tank",          [["canMove",false],["fuel",0]]]
+        ["an empty tank",          [["canMove",false],["fuel",0]]],
+        // A plane on land through its launch: cleared to go, held on its stand
+        // with its tank empty, stood on its route, rolling down the runway, and
+        // with somebody riding in it.
+        ["a plane on land, cleared",   [["needsRunway",true],["fixedWing",true],["crewSeated",true],["lockHeld",true]]],
+        ["a plane held on its stand",  [["needsRunway",true],["fixedWing",true],["crewSeated",true],["lockHeld",true],["heldOnStand",true],["canMove",false],["fuel",0]]],
+        ["a plane on its taxi route",  [["needsRunway",true],["fixedWing",true],["crewSeated",true],["taxiOutAt",1e6]]],
+        ["a plane rolling for take-off", [["needsRunway",true],["fixedWing",true],["crewSeated",true],["taxiOutAt",1e6],["onRunway",true],["speed",60]]],
+        ["a plane on land, player riding", [["needsRunway",true],["fixedWing",true],["crewSeated",true],["lockHeld",true],["playerPassenger",true],["anyPlayerAboard",true]]]
     ];
 
     private _badState = 0;
@@ -212,8 +220,10 @@ observation sequences, because those are what the table exists to prevent.
 
                     // Promise: the runway is asked for only when leaving and when
                     // coming back to land. Anywhere else means something is
-                    // holding a runway it has no use for.
-                    if (("lock" in _effects) && {!(_next in ["ASSIGNED","RTB"])}) then {
+                    // holding a runway it has no use for. A plane launching from
+                    // land keeps it while it goes, so a landing cannot be let in
+                    // on top of a take-off run.
+                    if (("lock" in _effects) && {!(_next in ["ASSIGNED","LAUNCHING","RTB"])}) then {
                         _badLock = _badLock + 1;
                     };
 
@@ -249,12 +259,20 @@ observation sequences, because those are what the table exists to prevent.
 
                     // Promise: nothing leaves the wait for the runway without
                     // giving back the fuel the wait held, whichever way it
-                    // leaves, the hull's owner included.
-                    if ((_state isEqualTo "ASSIGNED") && {!(_next isEqualTo "ASSIGNED")} && {!("releaseHold" in _effects)}) then {
+                    // leaves, the hull's owner included. A plane on land going on
+                    // to launch keeps its hold until it stands on its taxi route,
+                    // so for it the same promise is made of every way out of
+                    // LAUNCHING instead.
+                    private _landPlaneP = ([_obs,"fixedWing",false] call ALIVE_fnc_hashGet)
+                        && {!([_obs,"deckHome",false] call ALIVE_fnc_hashGet)}
+                        && {!([_obs,"virtualHome",false] call ALIVE_fnc_hashGet)}
+                        && {!([_obs,"playerPassenger",false] call ALIVE_fnc_hashGet)};
+                    private _keptHeld = (_state isEqualTo "ASSIGNED") && {_next isEqualTo "LAUNCHING"} && {_landPlaneP};
+                    if ((_state in ["ASSIGNED","LAUNCHING"]) && {!(_next isEqualTo _state)} && {!_keptHeld} && {!("releaseHold" in _effects)}) then {
                         _badHold = _badHold + 1;
                         if (count _whyHold < 6) then {
-                            _whyHold pushBack format ["ASSIGNED +%1 (%2%3) -> %4, effects %5",
-                                _cmd, _profileName, if (_expired) then {", expired"} else {""}, _next, _effects];
+                            _whyHold pushBack format ["%1 +%2 (%3%4) -> %5, effects %6",
+                                _state, _cmd, _profileName, if (_expired) then {", expired"} else {""}, _next, _effects];
                         };
                     };
 
@@ -278,7 +296,7 @@ observation sequences, because those are what the table exists to prevent.
     { diag_log format ["  info  in-the-air promise broken by: %1", _x] } forEach _whyAir;
     ["an aircraft in the air keeps its crew and its engine", _badAir == 0] call _fnc_check;
     { diag_log format ["  info  fuel-back promise broken by: %1", _x] } forEach _whyHold;
-    ["every way out of the wait for the runway gives the fuel back", _badHold == 0] call _fnc_check;
+    ["every way out of the wait for the runway, or of a launch held for its taxi route, gives the fuel back", _badHold == 0] call _fnc_check;
     ["step never edits the row it was given", _mutated == 0] call _fnc_check;
 
     // ---- the measured incidents, replayed ------------------------------------
@@ -616,11 +634,11 @@ observation sequences, because those are what the table exists to prevent.
     diag_log format ["  info  a plane on land launching went to %1, effects %2", _lpState, _lpEff];
     ["a plane on land launches from its taxi route",
         _lpState isEqualTo "LAUNCHING" && {"taxiOut" in _lpEff}] call _fnc_check;
-    ["and the path ahead of it is kept clear", "sweepTaxiPath" in _lpEff] call _fnc_check;
-    ["and it is put there before its engine is started",
-        (_lpEff find "taxiOut") > -1 && {(_lpEff find "taxiOut") < (_lpEff find "engineOn")}] call _fnc_check;
-    ["and its fuel is given back before that",
-        (_lpEff find "releaseHold") > -1 && {(_lpEff find "releaseHold") < (_lpEff find "engineOn")}] call _fnc_check;
+    // Held until it stands there: on LAN a refused taxi out was never asked
+    // again, the A-10 was given its fuel and engine anyway and drove itself
+    // into its hangar's doorway.
+    ["and it stays held until it stands there: no fuel back, no engine, no sweep yet",
+        !("releaseHold" in _lpEff) && {!("engineOn" in _lpEff)} && {!("sweepTaxiPath" in _lpEff)}] call _fnc_check;
 
     // Held on the stand with an empty tank while it waits, before its crew is
     // made. A plane on land only.
@@ -654,9 +672,32 @@ observation sequences, because those are what the table exists to prevent.
     private _riddenEff = ([[["fixedWing", true], ["needsRunway", true], ["playerPassenger", true], ["anyPlayerAboard", true]]] call _fnc_launchFrom) select 1;
     ["a plane with a player aboard is not moved to the taxi route",
         !("taxiOut" in _riddenEff) && {"refusedTeleportPlayerAboard" in _riddenEff}] call _fnc_check;
-    ([[["fixedWing", true], ["needsRunway", true]], "LAUNCHING"] call _fnc_launchFrom) params ["_lpState2", "_lpEff2"];
-    ["and a plane already launching is never put back at the start of its taxi",
-        _lpState2 isEqualTo "LAUNCHING" && {!("taxiOut" in _lpEff2)}] call _fnc_check;
+    private _heldNow = [["fixedWing", true], ["needsRunway", true], ["heldOnStand", true], ["canMove", false], ["fuel", 0]];
+    ([_heldNow, "LAUNCHING"] call _fnc_launchFrom) params ["_lpState2", "_lpEff2"];
+    // The runway is not kept for it from its stand: the kernel takes it when the
+    // plane is stood on its route, so a plane whose route stays blocked lets it
+    // lapse and one of ours coming home can land.
+    ["a plane held on its stand and not yet on its route is asked again every tick, and the runway is not kept for it",
+        _lpState2 isEqualTo "LAUNCHING" && {"taxiOut" in _lpEff2} && {!("lock" in _lpEff2)} && {!("engineOn" in _lpEff2)}] call _fnc_check;
+    ([_heldNow + [["lockHeld", false], ["lockBusy", true]], "LAUNCHING"] call _fnc_launchFrom) params ["_lpStateB", "_lpEffB"];
+    ["and while another of ours has the runway it is not stood on its route at all",
+        _lpStateB isEqualTo "LAUNCHING" && {!("taxiOut" in _lpEffB)} && {!("lock" in _lpEffB)}
+        && {!("releaseHold" in _lpEffB)} && {!("engineOn" in _lpEffB)}] call _fnc_check;
+    // Not held, it is on its way from wherever it is, and is never stood back on
+    // the start of its route: a plane whose hold was let go for a passenger who
+    // has since got out may be rolling.
+    ([[["fixedWing", true], ["needsRunway", true]], "LAUNCHING"] call _fnc_launchFrom) params ["_lpStateN", "_lpEffN"];
+    ["a plane that is not held is never asked to be stood on its route",
+        _lpStateN isEqualTo "LAUNCHING" && {!("taxiOut" in _lpEffN)} && {"engineOn" in _lpEffN}] call _fnc_check;
+    ([[["fixedWing", true], ["needsRunway", true], ["taxiOutAt", 995]], "LAUNCHING"] call _fnc_launchFrom) params ["_lpState3", "_lpEff3"];
+    diag_log format ["  info  a plane stood on its route went to %1, effects %2", _lpState3, _lpEff3];
+    ["and one already stood on its route is never pulled back: its fuel, engine and sweep follow",
+        _lpState3 isEqualTo "LAUNCHING" && {!("taxiOut" in _lpEff3)} && {"releaseHold" in _lpEff3}
+        && {"engineOn" in _lpEff3} && {"sweepTaxiPath" in _lpEff3}
+        && {(_lpEff3 find "releaseHold") < (_lpEff3 find "engineOn")}] call _fnc_check;
+    ([_heldNow + [["taxiOutAt", 500]], "LAUNCHING"] call _fnc_launchFrom) params ["", "_lpEff4"];
+    ["and a stamp from an earlier launch does not count",
+        "taxiOut" in _lpEff4] call _fnc_check;
 
     // ---- an assignment that runs out with the aircraft already up ------------
     // It lifted off by itself while it waited for the runway. Recovered, with
@@ -756,6 +797,87 @@ observation sequences, because those are what the table exists to prevent.
     ([[["canMove", false], ["launchInProgress", true], ["deckHome", true], ["fixedWing", true], ["needsRunway", true]]] call _fnc_launching) params ["_bcState", "_bcEff"];
     ["and a catapult shot already running is left to finish",
         _bcState isEqualTo "LAUNCHING" && {!("placeOnSlot" in _bcEff)}] call _fnc_check;
+
+    // ---- a plane waiting on its stand for its taxi route ---------------------
+    // Its tank is held empty, so it reads as unable to move. That is the hold,
+    // not a fault: it is asked again, waits at its deadline, and only after its
+    // waits is the job given back. Never thrown into the air from its stand.
+    private _heldFlags = [["fixedWing", true], ["needsRunway", true], ["heldOnStand", true], ["canMove", false], ["fuel", 0]];
+    ([_heldFlags] call _fnc_launching) params ["_hdState", "_hdEff"];
+    ["a plane held for its taxi route is asked again, not called off as broken",
+        _hdState isEqualTo "LAUNCHING" && {"taxiOut" in _hdEff} && {!("placeOnSlot" in _hdEff)} && {!("assignFailed" in _hdEff)}] call _fnc_check;
+    private _fnc_heldAt = {
+        params ["_waits", "_flags"];
+        private _row = [_m, "newRow", ["BLU_F_0", [[100,100,0], 0, "terrain"]]] call ALIVE_fnc_ATOMachine;
+        [_row, "state", "LAUNCHING"] call ALIVE_fnc_hashSet;
+        [_row, "enteredAt", 800] call ALIVE_fnc_hashSet;
+        [_row, "deadlineAt", 900] call ALIVE_fnc_hashSet;
+        [_row, "taxiWaits", _waits] call ALIVE_fnc_hashSet;
+        [_row, "sortie", ["CAS", [100,100,0], 600, 2000, "s1", [], ""]] call ALIVE_fnc_hashSet;
+        private _out = [_m, "step", [_row, [[["crewSeated", true]] + _flags] call _fnc_obs, "", 1000]] call ALIVE_fnc_ATOMachine;
+        [_out select 0, [(_out select 0), "state", ""] call ALIVE_fnc_hashGet, _out select 2, [(_out select 0), "reason", ""] call ALIVE_fnc_hashGet]
+    };
+    ([0, _heldFlags] call _fnc_heldAt) params ["_hw1", "_hwState1", "_hwEff1"];
+    diag_log format ["  info  a held plane at its deadline went to %1, effects %2, deadline %3", _hwState1, _hwEff1, [_hw1, "deadlineAt", 0] call ALIVE_fnc_hashGet];
+    ["at its deadline it waits a minute more on its stand, still asking",
+        _hwState1 isEqualTo "LAUNCHING" && {"waitingForTaxiRoute" in _hwEff1} && {"taxiOut" in _hwEff1}
+        && {!("forceLaunch" in _hwEff1)} && {([_hw1, "taxiWaits", 0] call ALIVE_fnc_hashGet) == 1}
+        && {([_hw1, "deadlineAt", 0] call ALIVE_fnc_hashGet) == 1060}] call _fnc_check;
+    ([3, _heldFlags] call _fnc_heldAt) params ["_hw2", "_hwState2", "_hwEff2", "_hwWhy2"];
+    diag_log format ["  info  a held plane out of waits went to %1, effects %2, deadline %3", _hwState2, _hwEff2, [_hw2, "deadlineAt", 0] call ALIVE_fnc_hashGet];
+    // Not handed back: an apron whose route stayed blocked, by a wreck or a parked
+    // vehicle, would then never launch at all.
+    ["after its waits it leaves from its stand as before: its hold let go, not thrown into the air and not handed back",
+        _hwState2 isEqualTo "LAUNCHING" && {"releaseHold" in _hwEff2} && {"leavesFromStand" in _hwEff2}
+        && {!("taxiOut" in _hwEff2)} && {!("forceLaunch" in _hwEff2)} && {!("assignFailed" in _hwEff2)}
+        && {([_hw2, "deadlineAt", 0] call ALIVE_fnc_hashGet) == 1180}] call _fnc_check;
+    ["and it takes the runway as it goes, before its hold is let go",
+        ("lock" in _hwEff2) && {(_hwEff2 find "lock") < (_hwEff2 find "releaseHold")}] call _fnc_check;
+    // Another of ours on the runway: it waits that out, whatever its count, and
+    // the wait is not counted against it.
+    ([3, _heldFlags + [["lockBusy", true]]] call _fnc_heldAt) params ["_hwB", "_hwStateB", "_hwEffB"];
+    diag_log format ["  info  a held plane out of waits with the runway busy went to %1, effects %2, deadline %3", _hwStateB, _hwEffB, [_hwB, "deadlineAt", 0] call ALIVE_fnc_hashGet];
+    ["out of waits while another of ours has the runway, it waits a minute more rather than leaving",
+        _hwStateB isEqualTo "LAUNCHING" && {"waitingForTaxiRoute" in _hwEffB} && {!("leavesFromStand" in _hwEffB)}
+        && {!("releaseHold" in _hwEffB)} && {!("taxiOut" in _hwEffB)} && {!("lock" in _hwEffB)}
+        && {([_hwB, "deadlineAt", 0] call ALIVE_fnc_hashGet) == 1060}] call _fnc_check;
+    ([0, _heldFlags + [["lockBusy", true]]] call _fnc_heldAt) params ["_hwB0"];
+    ["and a wait spent on the runway does not use up one of its three",
+        ([_hwB0, "taxiWaits", -1] call ALIVE_fnc_hashGet) == 0] call _fnc_check;
+    // Stood on its route, it is given its time from then: the wait does not eat it.
+    ([0, [["fixedWing", true], ["needsRunway", true], ["taxiOutAt", 990]]] call _fnc_heldAt) params ["_fw", "_fwState", "_fwEff"];
+    ["stood on its route late, it has three minutes from then, not what was left",
+        _fwState isEqualTo "LAUNCHING" && {!("forceLaunch" in _fwEff)} && {"engineOn" in _fwEff}
+        && {([_fw, "deadlineAt", 0] call ALIVE_fnc_hashGet) == 1180}
+        && {([_fw, "taxiedOutAt", -1] call ALIVE_fnc_hashGet) == 1000}] call _fnc_check;
+    // Rolling down the runway at its deadline: once, more time.
+    private _fnc_rollAt = {
+        params ["_speed", "_extended", ["_now", 1000], ["_onRunway", true]];
+        private _row = [_m, "newRow", ["BLU_F_0", [[100,100,0], 0, "terrain"]]] call ALIVE_fnc_ATOMachine;
+        [_row, "state", "LAUNCHING"] call ALIVE_fnc_hashSet;
+        [_row, "enteredAt", 800] call ALIVE_fnc_hashSet;
+        [_row, "deadlineAt", 900] call ALIVE_fnc_hashSet;
+        [_row, "taxiedOutAt", 850] call ALIVE_fnc_hashSet;
+        [_row, "launchExtended", _extended] call ALIVE_fnc_hashSet;
+        [_row, "sortie", ["CAS", [100,100,0], 600, 2000, "s1", [], ""]] call ALIVE_fnc_hashSet;
+        private _out = [_m, "step", [_row, [[["crewSeated", true], ["fixedWing", true], ["needsRunway", true], ["taxiOutAt", 850],
+            ["onRunway", _onRunway], ["speed", _speed]]] call _fnc_obs, "", _now]] call ALIVE_fnc_ATOMachine;
+        [_out select 0, [(_out select 0), "state", ""] call ALIVE_fnc_hashGet, _out select 2]
+    };
+    ([60, false] call _fnc_rollAt) params ["_rl1", "_rlState1", "_rlEff1"];
+    ["a plane rolling down the runway at its deadline is given more time, not thrown up",
+        _rlState1 isEqualTo "LAUNCHING" && {"launchExtended" in _rlEff1} && {!("forceLaunch" in _rlEff1)}
+        && {([_rl1, "deadlineAt", 0] call ALIVE_fnc_hashGet) == 1090}] call _fnc_check;
+    ([60, true] call _fnc_rollAt) params ["", "", "_rlEff2"];
+    ["but only once", "forceLaunch" in _rlEff2 && {!("launchExtended" in _rlEff2)}] call _fnc_check;
+    ([0, false] call _fnc_rollAt) params ["", "", "_rlEff3"];
+    ["and one stopped on the runway is still forced up", "forceLaunch" in _rlEff3] call _fnc_check;
+    ([60, false, 1000, false] call _fnc_rollAt) params ["", "", "_rlEff4"];
+    ["as is one taxiing off the runway", "forceLaunch" in _rlEff4] call _fnc_check;
+    ([[["fixedWing", true], ["needsRunway", true], ["heldOnStand", true], ["canMove", false], ["fuel", 0],
+        ["playerPassenger", true], ["anyPlayerAboard", true]]] call _fnc_launching) params ["", "_ppEff"];
+    ["a player riding a held plane gets its fuel back at once and is never moved",
+        "releaseHold" in _ppEff && {!("taxiOut" in _ppEff)}] call _fnc_check;
 
     // ---- a landing on final is not cut off -----------------------------------
     // On LAN a Blackfish hit its five minute landing deadline 94 m up, 1750 m
@@ -890,8 +1012,10 @@ observation sequences, because those are what the table exists to prevent.
     ["a launch that waited for the runway still launches when it gets it",
         _lwState3 isEqualTo "LAUNCHING" && {([_lw3, "attempts", 0] call ALIVE_fnc_hashGet) == 0}] call _fnc_check;
     private _lwDeadline = [_lw3, "deadlineAt", 0] call ALIVE_fnc_hashGet;
+    // On its route since before its deadline, so it has had its fresh window.
+    [_lw3, "taxiedOutAt", 1160] call ALIVE_fnc_hashSet;
     private _lwOut = [_m, "step", [_lw3, [[["crewSeated", true], ["lockHeld", true], ["needsRunway", true],
-        ["fixedWing", true], ["launchInProgress", false]]] call _fnc_obs, "", _lwDeadline + 1]] call ALIVE_fnc_ATOMachine;
+        ["fixedWing", true], ["launchInProgress", false], ["taxiOutAt", 1160]]] call _fnc_obs, "", _lwDeadline + 1]] call ALIVE_fnc_ATOMachine;
     ["and is still forced up if its take-off stalls, the waits having cost it nothing",
         "forceLaunch" in (_lwOut select 2)] call _fnc_check;
     private _pk = [_m, "newRow", ["BLU_F_0", [[100,100,0], 0, "terrain"]]] call ALIVE_fnc_ATOMachine;
