@@ -170,6 +170,20 @@ class CfgVehicles
                             class No { name = "No"; value = false; };
                         };
                 };
+                // Defaults to Yes, as it always was. No services a landed aircraft
+                // where it stands at once, with no truck driving out to it.
+                class showSupportTrucks : Combo
+                {
+                        property = "ALiVE_mil_ato_showSupportTrucks";
+                        displayName = "$STR_ALIVE_ATO_SHOW_SUPPORT_TRUCKS";
+                        tooltip = "$STR_ALIVE_ATO_SHOW_SUPPORT_TRUCKS_COMMENT";
+                        defaultValue = """true""";
+                        class Values
+                        {
+                            class Yes { name = "Yes"; value = true; default = 1; };
+                            class No { name = "No"; value = false; };
+                        };
+                };
                 class broadcastOnRadio : Combo
                 {
                         property = "ALiVE_mil_ato_broadcastOnRadio";
@@ -255,6 +269,31 @@ class CfgVehicles
                         property = "ALiVE_mil_ato_pilotbuilding";
                         displayName = "$STR_ALIVE_ATO_PILOTBUILDING";
                         tooltip = "$STR_ALIVE_ATO_PILOTBUILDING_COMMENT";
+                        defaultValue = """""";
+                        typeName = "STRING";
+                };
+                // ---- Player interaction ------------------------------------------------
+                class HDR_PLAYERS : ALiVE_ModuleSubTitle { property = "ALiVE_mil_ato_HDR_PLAYERS"; displayName = "PLAYER INTERACTION"; };
+                // Defaults to Yes, as it always was. No locks this commander's aircraft
+                // to players only: AI crews are not affected.
+                class playersCanUseAircraft : Combo
+                {
+                        property = "ALiVE_mil_ato_playersCanUseAircraft";
+                        displayName = "$STR_ALIVE_ATO_PLAYERS_CAN_USE";
+                        tooltip = "$STR_ALIVE_ATO_PLAYERS_CAN_USE_COMMENT";
+                        defaultValue = """true""";
+                        class Values
+                        {
+                            class Yes { name = "Yes"; value = true; default = 1; };
+                            class No { name = "No"; value = false; };
+                        };
+                };
+                // Blank by default, and blank keeps the profile system's own figure.
+                class returnToATOAfter : Edit
+                {
+                        property = "ALiVE_mil_ato_returnToATOAfter";
+                        displayName = "$STR_ALIVE_ATO_RETURN_AFTER";
+                        tooltip = "$STR_ALIVE_ATO_RETURN_AFTER_COMMENT";
                         defaultValue = """""";
                         typeName = "STRING";
                 };

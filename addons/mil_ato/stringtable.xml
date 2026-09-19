@@ -212,6 +212,24 @@
     <English>Replaces lost aircraft. If a Logistics Commander for the same faction is anywhere in the mission it flies the replacement in; otherwise MACC creates one itself at the original parking spot. Either way the new aircraft sits out a few minutes of maintenance before it can be tasked. With No, losses are permanent and the roster only ever shrinks.</English>
     <Spanish>Repone las aeronaves perdidas. Si hay un Comandante de logística de la misma facción en cualquier punto de la misión, este trae el reemplazo por aire; si no, MACC lo crea él mismo en la plaza de estacionamiento original. En ambos casos la nueva aeronave pasa unos minutos en mantenimiento antes de poder ser asignada. Con «No», las pérdidas son permanentes y la lista solo se reduce.</Spanish>
 </Key>
+<Key ID="STR_ALIVE_ATO_SHOW_SUPPORT_TRUCKS">
+    <English>Show Support Trucks:</English>
+</Key>
+<Key ID="STR_ALIVE_ATO_SHOW_SUPPORT_TRUCKS_COMMENT">
+    <English>When an aircraft lands, a supply truck from the Logistics Commander drives out to it and refuels, rearms and repairs it. With No, no truck is sent and the aircraft is serviced where it stands straight away. Without a Logistics Commander in the mission, aircraft are always serviced where they stand.</English>
+</Key>
+<Key ID="STR_ALIVE_ATO_PLAYERS_CAN_USE">
+    <English>Players Can Use ATO Aircraft:</English>
+</Key>
+<Key ID="STR_ALIVE_ATO_PLAYERS_CAN_USE_COMMENT">
+    <English>With Yes, players can get into this commander's aircraft and fly them, and an aircraft goes back to the commander once they have got out. With No, every aircraft of this commander is locked to players. AI crews are not affected.</English>
+</Key>
+<Key ID="STR_ALIVE_ATO_RETURN_AFTER">
+    <English>Return To ATO After (s):</English>
+</Key>
+<Key ID="STR_ALIVE_ATO_RETURN_AFTER_COMMENT">
+    <English>How long an aircraft waits after a player gets out of it on the ground before the commander takes it back, in seconds. Leave blank to use the Profile System's setting, 5 minutes unless changed there. 0 takes it back at once. An aircraft a player leaves in the air is taken back at once whatever this says.</English>
+</Key>
 <Key ID="STR_ALIVE_ATO_NOT_ESTABLISHED">
     <English>All callsigns, this is %1, %2 forward airbase has not been established. No air assets available for tasking. Out.</English>
     <Chinesesimp>所有呼号,这是%1,%2前方空军基地尚未建立。没有可用于任务的飞行载具。完毕。</Chinesesimp>

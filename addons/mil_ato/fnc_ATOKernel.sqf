@@ -1235,7 +1235,9 @@ private _fnc_routeEffects = {
                         case (_name in ["catapult","deckRecover","landOnRunway","virtualLaunch","taxiOut"]): { [_surface, _tail] };
                         // The tail is the aircraft's name on the radio, and the
                         // supply truck's dispatch carries a callsign.
-                        case (_name isEqualTo "turnaround"): { [_tail] };
+                        case (_name isEqualTo "turnaround"): { [_tail, [_logic, "showSupportTrucks"] call MAINCLASS] };
+                        // Whether players may use the aircraft, the module's setting.
+                        case (_name isEqualTo "playerLock"): { [[_logic, "playersCanUseAircraft"] call MAINCLASS] };
                         case (_name isEqualTo "revealTargets"): {
                             private _targets = if (count _tuple > 5 && {(_tuple select 5) isEqualType []}) then { _tuple select 5 } else { [] };
                             [[_targets] call _fnc_objectsOf]
@@ -1542,6 +1544,60 @@ switch(_operation) do {
 
     case "persistent": {
         _result = [_logic, "persistent", _args, false] call _fnc_boolAttr;
+    };
+
+    // Whether an aircraft back from a sortie is met by a supply truck, as it
+    // always was, or serviced where it stands at once with no truck sent.
+    case "showSupportTrucks": {
+        _result = [_logic, "showSupportTrucks", _args, true] call _fnc_boolAttr;
+    };
+
+    // Whether players may get into this commander's aircraft. No locks every one
+    // of them to players, lock state 3, which leaves AI crews and scripted
+    // seating alone. Set while running, it is applied to every aircraft at once.
+    case "playersCanUseAircraft": {
+        private _set = _args isEqualType true;
+        _result = [_logic, "playersCanUseAircraft", _args, true] call _fnc_boolAttr;
+        if (_set) then {
+            private _placeL = [_logic, "place"] call _fnc_piece;
+            private _effectL = [_logic, "effect"] call _fnc_piece;
+            if (!(_placeL isEqualTo []) && {!(_effectL isEqualTo [])}) then {
+                private _tailsL = [_placeL, "attachedTails"] call ALIVE_fnc_ATOPlace;
+                if !(_tailsL isEqualType []) then { _tailsL = [] };
+                {
+                    private _oL = [_placeL, "objFor", _x] call ALIVE_fnc_ATOPlace;
+                    if (!isNull _oL) then {
+                        [_effectL, "apply", ["playerLock", _oL, [_logic, _x] call _fnc_homeOf, [_result]]] call ALIVE_fnc_ATOEffect;
+                    };
+                } forEach _tailsL;
+            };
+        };
+    };
+
+    // How long an aircraft a player has got out of, on the ground, waits before
+    // it goes back to the commander, in seconds. Blank keeps the profile
+    // system's own figure (ALIVE_playerOccupantGrace), 0 is at once. Stored as a
+    // number, minus one for blank.
+    case "returnToATOAfter": {
+        if (_args isEqualType 0) then { _logic setVariable ["returnToATOAfter", _args] };
+        private _grace = _logic getVariable ["returnToATOAfter", ""];
+        if (_grace isEqualType "") then {
+            // A number of seconds, or blank. Anything else, "none" or "off" or
+            // "60s", is taken as blank and said so: parseNumber reads all of
+            // them as 0, which here means at once.
+            private _digits = count ((toArray _grace) select { _x >= 48 && {_x <= 57} });
+            private _number = _digits > 0 && {(_grace splitString "0123456789. ") isEqualTo []};
+            if (!_number && {!((_grace splitString " ") isEqualTo [])}) then {
+                ["ALIVE_fnc_ATOKernel - Return To ATO After '%1' is not a number of seconds, so the profile system's own wait is used", _grace] call ALiVE_fnc_dump;
+            };
+            _grace = if (_number) then { (parseNumber _grace) max 0 } else { -1 };
+            _logic setVariable ["returnToATOAfter", _grace];
+        };
+        if !(_grace isEqualType 0) then {
+            _grace = -1;
+            _logic setVariable ["returnToATOAfter", _grace];
+        };
+        _result = _grace;
     };
 
     case "placeDrones": {
@@ -2016,7 +2072,9 @@ switch(_operation) do {
         if !(_place isEqualTo []) then { _obj = [_place, "objFor", _tail] call ALIVE_fnc_ATOPlace };
 
         if (!isNull _obj && {!(_effect isEqualTo [])}) then {
-            { [_effect, "apply", [_x, _obj, _home, []]] call ALIVE_fnc_ATOEffect } forEach ["releaseHold","standDownCrew","clearOrders","engineOff"];
+            // playerLock with no setting given lets go of a lock this module put on,
+            // so an aircraft it no longer owns is not left locked to players.
+            { [_effect, "apply", [_x, _obj, _home, []]] call ALIVE_fnc_ATOEffect } forEach ["releaseHold","standDownCrew","clearOrders","engineOff","playerLock"];
             // The effector has no unshield yet, so the stamp is cleared by
             // hand. Left on, the hull would be refused by every sweep as
             // spoken for, for the rest of the mission.
@@ -2617,6 +2675,7 @@ switch(_operation) do {
             {
                 [_logic, _x] call MAINCLASS;
             } forEach ["persistent","createHQ","placeAir","generateTasks","generateSEADTasks","resupply","broadcastOnRadio",
+                       "showSupportTrucks","playersCanUseAircraft","returnToATOAfter",
                        "placeDrones","useUAVs","droneTypes","sortieDuration","minAssetsForOffensive","maxConcurrentSorties",
                        "pilotbuilding","runwaystartpos","runwayendpos","runwaywidth","objectiveObjects","objectiveObjectsCount",
                        "objectiveObjectsChance","objectiveObjectsBehaviour"];
@@ -2887,6 +2946,13 @@ switch(_operation) do {
                 [_rows, _x, _row] call ALIVE_fnc_hashSet;
                 [_sortieOf, _x, ""] call ALIVE_fnc_hashSet;
                 ["ALIVE_fnc_ATOKernel - row opened for %1", _x] call ALiVE_fnc_dump;
+                if !([_logic, "playersCanUseAircraft"] call MAINCLASS) then {
+                    private _oR = [_place, "objFor", _x] call ALIVE_fnc_ATOPlace;
+                    private _effectR = [_logic, "effect"] call _fnc_piece;
+                    if (!isNull _oR && {!(_effectR isEqualTo [])}) then {
+                        [_effectR, "apply", ["playerLock", _oR, [_logic, _x] call _fnc_homeOf, [false]]] call ALIVE_fnc_ATOEffect;
+                    };
+                };
             };
         } forEach _attached;
 
@@ -2898,6 +2964,9 @@ switch(_operation) do {
         // collected here.
         private _stepped = [];
         private _tails = +(_rows select 1);
+        // The module's own figure for handing an aircraft back after a player
+        // got out, read once a tick. Minus one when it has none.
+        private _playerGrace = [_logic, "returnToATOAfter"] call MAINCLASS;
         {
             private _tail = _x;
             isNil {
@@ -2931,7 +3000,7 @@ switch(_operation) do {
                         [_rowIn, "sortie", +(_pend select 1)] call ALIVE_fnc_hashSet;
                     };
 
-                    private _obs = [_observe, "observe", [_obj, _home, _lockHeld, [_rowIn] call _fnc_tupleOf, _now, _lockBusy]] call ALIVE_fnc_ATOObserve;
+                    private _obs = [_observe, "observe", [_obj, _home, _lockHeld, [_rowIn] call _fnc_tupleOf, _now, _lockBusy, _playerGrace]] call ALIVE_fnc_ATOObserve;
                     if !([_obs] call ALIVE_fnc_isHash) then { _obs = [] call ALIVE_fnc_hashCreate };
                     [_lastObs, _tail, _obs] call ALIVE_fnc_hashSet;
                     if ([_obs, "objectLive", false] call ALIVE_fnc_hashGet) then {

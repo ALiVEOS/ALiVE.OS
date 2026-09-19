@@ -190,7 +190,7 @@ switch(_operation) do {
                    "mintDroneCrew","recrewInPlace","takeOwnership","engineOn","engineOff",
                    "seatCrew","standDownCrew","clearOrders","airborneStart",
                    "catapult","tailhook","deckRecover","landOnRunway","holdOnStand","releaseHold",
-                   "sweepTaxiPath"];
+                   "sweepTaxiPath","playerLock"];
     };
 
     case "apply": {
@@ -2491,7 +2491,12 @@ switch(_operation) do {
                 // with its rotors still off. Public, as the logistics side writes it.
                 _obj setVariable ["ALIVE_resupply_state", "", true];
 
-                private _hasLogcom = (count (allMissionObjects "ALiVE_mil_logistics")) > 0;
+                // A truck only when the module shows them and there is a
+                // logistics commander to send one. Otherwise serviced here, at
+                // once, as it always was with no logistics commander placed.
+                private _showTrucks = _extra param [1, true];
+                if !(_showTrucks isEqualType true) then { _showTrucks = true };
+                private _hasLogcom = _showTrucks && {(count (allMissionObjects "ALiVE_mil_logistics")) > 0};
                 private _side = "";
                 private _grpT = group (driver _obj);
                 if (!isNull _grpT) then { _side = str (side _grpT) };
@@ -2511,7 +2516,7 @@ switch(_operation) do {
                     ["ALIVE_fnc_ATOEffect - a supply truck asked for %1 (%2) at %3",
                         _tail, typeOf _obj, getPos _obj] call ALiVE_fnc_dump;
                 } else {
-                    _detail = "no logistics commander, servicing it here";
+                    _detail = if (_showTrucks) then { "no logistics commander, servicing it here" } else { "support trucks are off, servicing it here" };
                 };
 
                 [_obj, _tail, _hasLogcom] spawn {
@@ -2595,6 +2600,38 @@ switch(_operation) do {
                     _obj setVariable ["profileID", nil, true];
                     _obj setVariable ["profileIndex", nil, true];
                     _obj setVariable ["runtimeProfiled", nil, true];
+                };
+            };
+
+            // Locked to players, or given back to them. Lock state 3 is locked for
+            // players only: AI crews and scripted seating are not affected (BIKI,
+            // lock). An aircraft somebody else has locked is left alone, and only a
+            // lock this module put on is ever taken off, back to whatever it was
+            // before. lock has to run where the aircraft is local, so a remote one
+            // is sent to its owner.
+            case "playerLock": {
+                private _allow = _extra param [0, true];
+                if !(_allow isEqualType true) then { _allow = true };
+                private _ours = _obj getVariable ["ALiVE_mil_ato_playerLocked", false];
+                if (_allow) then {
+                    if (!_ours) exitWith { _matched = true; _detail = "not locked by this module" };
+                    // Back to what it was before this module locked it.
+                    private _was = _obj getVariable ["ALiVE_mil_ato_playerLockFrom", 0];
+                    if !(_was isEqualType 0) then { _was = 0 };
+                    if (local _obj) then { _obj lock _was } else { [_obj, _was] remoteExec ["lock", _obj] };
+                    _obj setVariable ["ALiVE_mil_ato_playerLocked", nil, true];
+                    _obj setVariable ["ALiVE_mil_ato_playerLockFrom", nil, true];
+                    _detail = "unlocked for players";
+                } else {
+                    if (_ours) exitWith { _matched = true; _detail = "already locked to players" };
+                    // Locked already by somebody else, as tightly or more: left as it is.
+                    if ((locked _obj) >= 2) exitWith { _matched = true; _detail = "already locked" };
+                    // Never with somebody already aboard: locked in, they could not get out.
+                    if (({isPlayer _x} count (crew _obj)) > 0) exitWith { _status = "refused"; _detail = "a player is aboard" };
+                    _obj setVariable ["ALiVE_mil_ato_playerLockFrom", locked _obj, true];
+                    if (local _obj) then { _obj lock 3 } else { [_obj, 3] remoteExec ["lock", _obj] };
+                    _obj setVariable ["ALiVE_mil_ato_playerLocked", true, true];
+                    _detail = "locked to players";
                 };
             };
 

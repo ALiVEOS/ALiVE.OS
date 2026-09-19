@@ -441,6 +441,28 @@ nothing changed and it said so.
     };
     deleteVehicle _held;
 
+    // --- locked to players, and given back -----------------------------------------
+    // The module's Players Can Use Aircraft set to No: lock state 3, which keeps
+    // players out and leaves AI crews alone. Given back, the aircraft goes back to
+    // whatever it was before, and a lock somebody else put on is left as it is.
+    private _lk = createVehicle ["B_Plane_CAS_01_F", _spot getPos [60, 320], [], 0, "CAN_COLLIDE"];
+    _lk setPosATL [((_spot getPos [60, 320]) select 0), ((_spot getPos [60, 320]) select 1), 0];
+    sleep 1;
+    private _lkHome = [getPosATL _lk, 0, "terrain"];
+    private _lkWas = locked _lk;
+    (([_e, "apply", ["playerLock", _lk, _lkHome, [false]]] call ALIVE_fnc_ATOEffect)) params ["_stL1", "_mL1", "_dL1"];
+    diag_log format ["  info  playerLock No said %1 %2; locked was %3, now %4", _stL1, _dL1, _lkWas, locked _lk];
+    ["set to No, a parked aircraft is locked to players", _stL1 isEqualTo "ok" && {!_mL1} && {(locked _lk) == 3}] call _fnc_check;
+    (([_e, "apply", ["playerLock", _lk, _lkHome, [false]]] call ALIVE_fnc_ATOEffect)) params ["_stL2", "_mL2"];
+    ["asked again it changes nothing and says so", _stL2 isEqualTo "ok" && {_mL2} && {(locked _lk) == 3}] call _fnc_check;
+    (([_e, "apply", ["playerLock", _lk, _lkHome, [true]]] call ALIVE_fnc_ATOEffect)) params ["_stL3", "_mL3"];
+    ["set back to Yes, it is as it was before", _stL3 isEqualTo "ok" && {!_mL3} && {(locked _lk) == _lkWas}] call _fnc_check;
+    _lk lock 2;
+    (([_e, "apply", ["playerLock", _lk, _lkHome, [false]]] call ALIVE_fnc_ATOEffect)) params ["_stL4", "_mL4"];
+    (([_e, "apply", ["playerLock", _lk, _lkHome, [true]]] call ALIVE_fnc_ATOEffect)) params ["_stL5", "_mL5"];
+    ["a lock somebody else put on is left alone both ways", _mL4 && {_mL5} && {(locked _lk) == 2}] call _fnc_check;
+    deleteVehicle _lk;
+
     // --- the taxi out ------------------------------------------------------------
     // A plane is stood on its airport's taxi route, pointing along it, and a
     // helicopter is left where it is. The route is read from this terrain's own

@@ -298,7 +298,12 @@ switch(_operation) do {
                                         _next = "RECOVERING";
                                     } else {
                                         private _since = [_row,"playerFreeSince",-1] call ALIVE_fnc_hashGet;
-                                        private _grace = if (isNil "ALIVE_playerOccupantGrace") then {300} else {ALIVE_playerOccupantGrace};
+                                        // The module's own figure when it has one (0 is at
+                                        // once), else the profile system's, as before.
+                                        private _graceSet = [_obs, "playerGrace", -1] call ALIVE_fnc_hashGet;
+                                        private _grace = if (_graceSet isEqualType 0 && {_graceSet >= 0}) then { _graceSet } else {
+                                            if (isNil "ALIVE_playerOccupantGrace") then {300} else {ALIVE_playerOccupantGrace}
+                                        };
                                         if (_since < 0) then {
                                             [_row,"playerFreeSince",_now] call ALIVE_fnc_hashSet;
                                         } else {
@@ -1134,6 +1139,10 @@ switch(_operation) do {
                 case "PARKED": {
                     _effects append ["unlock","engineOff","clearOrders"];
                     if (!_playerPassenger) then { _effects pushBack "standDownCrew" };
+                    // Locked to players again, or left open, as the module says. The
+                    // lock is asked at every parking so one refused while somebody
+                    // sat in the aircraft is put on once they have gone.
+                    _effects pushBack "playerLock";
                 };
                 case "PLAYER_FLOWN": { _effects append ["unlock","releaseTargets","sortiePlayerControl"]; };
                 case "LOST":         { _effects append ["unlock","releaseTargets","broadcastLost","markLost","onLost"]; };

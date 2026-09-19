@@ -31,7 +31,7 @@ Any - The new instance or the result of the selected function
 
 Examples:
 (begin example)
-_obs = [_o, "observe", [_obj, _home, _lockHeld, _sortie, _now, _lockBusy]] call ALIVE_fnc_ATOObserve;
+_obs = [_o, "observe", [_obj, _home, _lockHeld, _sortie, _now, _lockBusy, _playerGrace]] call ALIVE_fnc_ATOObserve;
 
 (end)
 
@@ -106,7 +106,12 @@ switch(_operation) do {
             ["_now", 0, [0]],
             // Whether the runway is held by another aircraft of ours. Optional,
             // so every caller that passes five arguments keeps working.
-            ["_lockBusy", false, [false]]
+            ["_lockBusy", false, [false]],
+            // The module's own wait before an aircraft a player got out of goes
+            // back to it, in seconds, or minus one for none. A setting rather
+            // than something seen, carried here because the table reads only
+            // the observation. Optional, as above.
+            ["_playerGrace", -1, [0]]
         ];
 
         private _o = [] call ALIVE_fnc_hashCreate;
@@ -137,6 +142,7 @@ switch(_operation) do {
                        "playersWithin1500Home"];
             // Nobody is aboard a hull that is gone, so nothing is holding it.
             ["crewLoss", true] call _fnc_set;
+            ["playerGrace", _playerGrace] call _fnc_set;
             _result = _o;
         };
 
@@ -637,6 +643,7 @@ switch(_operation) do {
         ["targetsGone", _targetsGone] call _fnc_set;
 
         ["lockHeld", _lockHeld] call _fnc_set;
+        ["playerGrace", _playerGrace] call _fnc_set;
         // Held by another of ours: a launch waiting for it waits rather than
         // giving up while one of our aircraft is landing on it.
         ["lockBusy", _lockBusy] call _fnc_set;

@@ -345,6 +345,20 @@ observation sequences, because those are what the table exists to prevent.
     ([_r8, [["atHome",true]], "", 100 + 400] call _fnc_step) params ["_r9","_o9","_e9"];
     ["but it is taken back once they have plainly gone",
         ([_r9,"state",""] call ALIVE_fnc_hashGet) isEqualTo "PARKED"] call _fnc_check;
+    // The module's own wait when it has one: 0 is at once, a number is seconds,
+    // and none leaves the profile system's figure as above.
+    private _rg = [_m, "newRow", ["BLU_F_4", [[100,100,0],0,"terrain"]]] call ALIVE_fnc_ATOMachine;
+    [_rg,"state","PLAYER_FLOWN"] call ALIVE_fnc_hashSet;
+    ([_rg, [["atHome",true],["playerGrace",0]], "", 100] call _fnc_step) params ["_rg1"];
+    ([_rg1, [["atHome",true],["playerGrace",0]], "", 102] call _fnc_step) params ["_rg2"];
+    ["with Return To ATO After at 0 it is taken back at once",
+        ([_rg2,"state",""] call ALIVE_fnc_hashGet) isEqualTo "PARKED"] call _fnc_check;
+    ([_rg, [["atHome",true],["playerGrace",45]], "", 100] call _fnc_step) params ["_rg3"];
+    ([_rg3, [["atHome",true],["playerGrace",45]], "", 140] call _fnc_step) params ["_rg4"];
+    ([_rg4, [["atHome",true],["playerGrace",45]], "", 146] call _fnc_step) params ["_rg5"];
+    ["at 45 it waits 45 s and no longer",
+        (([_rg4,"state",""] call ALIVE_fnc_hashGet) isEqualTo "PLAYER_FLOWN")
+        && {([_rg5,"state",""] call ALIVE_fnc_hashGet) isEqualTo "PARKED"}] call _fnc_check;
 
     // A player boards during launch: the machine lets go of everything.
     private _r10 = [_m, "newRow", ["BLU_F_5", [[100,100,0],0,"terrain"]]] call ALIVE_fnc_ATOMachine;
