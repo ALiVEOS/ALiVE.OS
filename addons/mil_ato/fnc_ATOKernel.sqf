@@ -863,7 +863,17 @@ private _fnc_transition = {
     // stalled attack alike, and close support sorties were seen turning for home
     // within three seconds of arriving with nothing to say which it was. Each
     // target is named with what was found for it.
-    if (_to isEqualTo "RTB" && {[_obs] call ALIVE_fnc_isHash} && {[_obs, "targetsGone", false] call ALIVE_fnc_hashGet}) then {
+    //
+    // The question is now asked on the way out and before take-off as well, so
+    // it is only named as the reason when it was the reason: a return from the
+    // sortie for RETURN, which the table gives targets gone ahead of a clock
+    // running out, or a launch stood down for it.
+    private _whyNow = [_row2, "reason", ""] call ALIVE_fnc_hashGet;
+    private _goneReturn = _to isEqualTo "RTB" && {_from in ["ENROUTE","ON_STATION"]} && {_whyNow isEqualTo "RETURN"};
+    // The reason on a row is only written when a transition gives one, so it is
+    // read together with the move it belongs to.
+    private _goneStandDown = _from isEqualTo "ASSIGNED" && {_to in ["PARKED","RECOVERING"]} && {_whyNow isEqualTo "TARGETS_GONE"};
+    if ((_goneReturn || _goneStandDown) && {[_obs] call ALIVE_fnc_isHash} && {[_obs, "targetsGone", false] call ALIVE_fnc_hashGet}) then {
         private _list = if (count _tuple > 5 && {(_tuple select 5) isEqualType []}) then { _tuple select 5 } else { [] };
         private _found = _list apply {
             private _t = _x;
@@ -878,7 +888,11 @@ private _fnc_transition = {
                 default { format ["a %1", typeName _t] };
             }
         };
-        ["ALIVE_fnc_ATOKernel - %1 turns for home because its targets are gone: %2", _tail, _found] call ALiVE_fnc_dump;
+        if (_goneReturn) then {
+            ["ALIVE_fnc_ATOKernel - %1 turns for home because its targets are gone: %2", _tail, _found] call ALiVE_fnc_dump;
+        } else {
+            ["ALIVE_fnc_ATOKernel - %1 stands down before launch because its targets are gone: %2", _tail, _found] call ALiVE_fnc_dump;
+        };
     };
 
     switch (_to) do {
@@ -926,6 +940,10 @@ private _fnc_transition = {
             if (!(_sid isEqualTo "") && {!("assignFailed" in _effects)}) then {
                 private _landed = (_from in ["LANDING","RTB"])
                     || {_from isEqualTo "RECOVERING" && {_flew isEqualTo true}};
+                // Stood down before launch because its targets were gone: the
+                // sortie ends for that reason, and an aircraft that never left
+                // its stand needs no turnaround.
+                private _standDown = _goneStandDown;
                 private _others = [_sortieOf, _sid, _tail] call _fnc_othersOn;
                 private _announce = if (_landed) then { _tail } else { "" };
                 if !(_task isEqualTo []) then {
@@ -936,7 +954,7 @@ private _fnc_transition = {
                             private _rec = [_task, "sortie", _sid] call ALIVE_fnc_ATOTask;
                             if ([_rec] call ALIVE_fnc_isHash) then { _announce = [_rec, "landedBy", ""] call ALIVE_fnc_hashGet };
                         };
-                        [_task, "complete", [_sid, if (_landed) then { "landed" } else { "recovered" }]] call ALIVE_fnc_ATOTask;
+                        [_task, "complete", [_sid, if (_landed) then { "landed" } else { if (_standDown) then { "targets gone" } else { "recovered" } }]] call ALIVE_fnc_ATOTask;
                     };
                 };
                 if (count _others == 0 && {!(_announce isEqualTo "")}) then {
@@ -945,7 +963,7 @@ private _fnc_transition = {
                 };
                 // The turnaround. The table reads readyAt when it is asked to
                 // assign and never sets it, so the kernel sets it here.
-                [_row2, "readyAt", _now + TURNAROUND_MIN + (random TURNAROUND_SPREAD)] call ALIVE_fnc_hashSet;
+                [_row2, "readyAt", if (_standDown) then { _now } else { _now + TURNAROUND_MIN + (random TURNAROUND_SPREAD) }] call ALIVE_fnc_hashSet;
                 [_row2, "sortie", []] call ALIVE_fnc_hashSet;
                 [_sortieOf, _tail, ""] call ALIVE_fnc_hashSet;
                 if (count _others == 0) then { [_tuples, _sid] call ALIVE_fnc_hashRem };

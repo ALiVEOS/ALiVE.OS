@@ -597,8 +597,11 @@ switch(_operation) do {
         // without targets, which is every patrol, cannot have lost them, and
         // answering true there would send every patrol home on arrival.
         //
-        // Only asked of an aircraft actually on station, because that is the
-        // only state that reads it, and it costs a lookup per target.
+        // Asked whenever the sortie names targets, not only once it is on
+        // station. On LAN close support sorties flew out for 72 s, 88 s and,
+        // after eight minutes waiting for the runway, four more minutes, each
+        // to turn for home within one tick of arriving because the contact had
+        // died while they were on their way. It is a lookup per named target.
         //
         // And a list of nothing but POSITIONS answers false as well. A patrol is
         // raised with the centre of its zone as its one "target", and a
@@ -608,7 +611,7 @@ switch(_operation) do {
         // sent every patrol home within three seconds of reaching its station.
         // Only objects and profile ids are targets; everything else is where to
         // go.
-        if (_onStation && {count _sortie > 5} && {(_sortie select 5) isEqualType []}) then {
+        if (count _sortie > 5 && {(_sortie select 5) isEqualType []}) then {
             private _targets = _sortie select 5;
             if (count _targets > 0) then {
                 private _named = 0;

@@ -105,12 +105,14 @@ observation sequences, because those are what the table exists to prevent.
         ["an empty tank",          [["canMove",false],["fuel",0]]],
         // A plane on land through its launch: cleared to go, held on its stand
         // with its tank empty, stood on its route, rolling down the runway, and
-        // with somebody riding in it.
+        // with somebody riding in it. And a sortie whose targets are gone.
         ["a plane on land, cleared",   [["needsRunway",true],["fixedWing",true],["crewSeated",true],["lockHeld",true]]],
         ["a plane held on its stand",  [["needsRunway",true],["fixedWing",true],["crewSeated",true],["lockHeld",true],["heldOnStand",true],["canMove",false],["fuel",0]]],
         ["a plane on its taxi route",  [["needsRunway",true],["fixedWing",true],["crewSeated",true],["taxiOutAt",1e6]]],
         ["a plane rolling for take-off", [["needsRunway",true],["fixedWing",true],["crewSeated",true],["taxiOutAt",1e6],["onRunway",true],["speed",60]]],
-        ["a plane on land, player riding", [["needsRunway",true],["fixedWing",true],["crewSeated",true],["lockHeld",true],["playerPassenger",true],["anyPlayerAboard",true]]]
+        ["a plane on land, player riding", [["needsRunway",true],["fixedWing",true],["crewSeated",true],["lockHeld",true],["playerPassenger",true],["anyPlayerAboard",true]]],
+        ["targets gone",               [["targetsGone",true],["crewSeated",true]]],
+        ["targets gone, up",           [["targetsGone",true],["airborne",true],["atHome",false]]]
     ];
 
     private _badState = 0;
@@ -1018,6 +1020,37 @@ observation sequences, because those are what the table exists to prevent.
         ["fixedWing", true], ["launchInProgress", false], ["taxiOutAt", 1160]]] call _fnc_obs, "", _lwDeadline + 1]] call ALIVE_fnc_ATOMachine;
     ["and is still forced up if its take-off stalls, the waits having cost it nothing",
         "forceLaunch" in (_lwOut select 2)] call _fnc_check;
+    // ---- a sortie whose targets are already gone -----------------------------
+    // On LAN close support sorties flew out for 72 s, 88 s and after an eight
+    // minute wait for the runway four more, each to turn round one tick after
+    // arriving because the contact had died on the way.
+    private _tgRow = [_m, "newRow", ["BLU_F_0", [[100,100,0], 0, "terrain"]]] call ALIVE_fnc_ATOMachine;
+    [_tgRow, "state", "ENROUTE"] call ALIVE_fnc_hashSet;
+    [_tgRow, "deadlineAt", 9999] call ALIVE_fnc_hashSet;
+    [_tgRow, "sortie", ["CAS", [100,100,0], 600, 2000, "s1", ["p1"], ""]] call ALIVE_fnc_hashSet;
+    private _tgOut = [_m, "step", [_tgRow, [[["airborne", true], ["atHome", false], ["targetsGone", true]]] call _fnc_obs, "", 1000]] call ALIVE_fnc_ATOMachine;
+    ["a sortie whose targets die on its way out turns for home there",
+        (([(_tgOut select 0), "state", ""] call ALIVE_fnc_hashGet) isEqualTo "RTB")
+        && {([(_tgOut select 0), "reason", ""] call ALIVE_fnc_hashGet) isEqualTo "RETURN"}] call _fnc_check;
+    private _tgOut2 = [_m, "step", [_tgRow, [[["airborne", true], ["atHome", false]]] call _fnc_obs, "", 1000]] call ALIVE_fnc_ATOMachine;
+    ["and one whose targets stand flies on",
+        ([(_tgOut2 select 0), "state", ""] call ALIVE_fnc_hashGet) isEqualTo "ENROUTE"] call _fnc_check;
+    private _tgA = [_m, "newRow", ["BLU_F_0", [[100,100,0], 0, "terrain"]]] call ALIVE_fnc_ATOMachine;
+    [_tgA, "state", "ASSIGNED"] call ALIVE_fnc_hashSet;
+    [_tgA, "deadlineAt", 9999] call ALIVE_fnc_hashSet;
+    [_tgA, "sortie", ["CAS", [100,100,0], 600, 2000, "s1", ["p1"], ""]] call ALIVE_fnc_hashSet;
+    private _tgAOut = [_m, "step", [_tgA, [[["targetsGone", true], ["crewSeated", true], ["lockHeld", true],
+        ["fixedWing", true], ["needsRunway", true]]] call _fnc_obs, "", 1000]] call ALIVE_fnc_ATOMachine;
+    ["one whose targets are gone before it launches is stood down, not launched",
+        (([(_tgAOut select 0), "state", ""] call ALIVE_fnc_hashGet) isEqualTo "PARKED")
+        && {([(_tgAOut select 0), "reason", ""] call ALIVE_fnc_hashGet) isEqualTo "TARGETS_GONE"}
+        && {"releaseHold" in (_tgAOut select 2)} && {"standDownCrew" in (_tgAOut select 2)}
+        && {!("assignFailed" in (_tgAOut select 2))}] call _fnc_check;
+    private _tgAUp = [_m, "step", [_tgA, [[["targetsGone", true], ["airborne", true], ["atHome", false]]] call _fnc_obs, "", 1000]] call ALIVE_fnc_ATOMachine;
+    ["and one that has lifted off by itself is recovered, never parked in the air",
+        (([(_tgAUp select 0), "state", ""] call ALIVE_fnc_hashGet) isEqualTo "RECOVERING")
+        && {!("standDownCrew" in (_tgAUp select 2))}] call _fnc_check;
+
     private _pk = [_m, "newRow", ["BLU_F_0", [[100,100,0], 0, "terrain"]]] call ALIVE_fnc_ATOMachine;
     [_pk, "state", "PARKED"] call ALIVE_fnc_hashSet;
     [_pk, "readyAt", 0] call ALIVE_fnc_hashSet;

@@ -313,6 +313,21 @@ switch(_operation) do {
                             };
 
                             case "ASSIGNED": {
+                                // Its targets are already gone, so there is nothing to
+                                // launch for. On LAN one close support sortie waited
+                                // eight minutes for the runway and flew four more to
+                                // find its contact dead. Stood down where it is; one
+                                // that has lifted off by itself is recovered instead,
+                                // as below.
+                                if ("targetsGone" call _fnc_o) exitWith {
+                                    if (_airborne) then {
+                                        _effects pushBack "unlock";
+                                        _next = "RECOVERING";
+                                    } else {
+                                        _next = "PARKED";
+                                    };
+                                    _reason = "TARGETS_GONE";
+                                };
                                 // Only an aircraft that uses the runway waits for it.
                                 // A helicopter lifts off from its own pad and lands
                                 // on it again, and queueing it behind the jets cost
@@ -595,6 +610,10 @@ switch(_operation) do {
                                 if ("onStation" call _fnc_o) then {
                                     _next = "ON_STATION";
                                 } else {
+                                    // Its targets died while it was on its way:
+                                    // home now, not after flying out to find that
+                                    // out. The same answer ON_STATION gives.
+                                    if ("targetsGone" call _fnc_o) exitWith { _next = "RTB"; _reason = "RETURN" };
                                     if (("fuel" call _fnc_n) < 0.2) then {
                                         _next = "RTB"; _reason = "RETURN_FUEL";
                                     } else {

@@ -295,12 +295,14 @@ console `call` would run the whole thing inside one frame.
     ["a target that has been destroyed counts as gone",
         (([[_victim]] call _fnc_tg) select 1) isEqualTo true] call _fnc_check;
 
-    // Away from its station it is not asked at all, because nothing reads it
-    // there and it costs a lookup for every target.
+    // Away from its station it is asked as well now, so a sortie whose target
+    // has died is called off on its way out rather than on arrival.
     _jet setPosATL [(_spot select 0) + 4000, _spot select 1, 300];
     sleep 2;
-    ["and away from its station the question is not asked",
-        (([["NOT_A_REAL_PROFILE_ID"]] call _fnc_tg) select 1) isEqualTo false] call _fnc_check;
+    ["and away from its station a target that is gone reads gone as well",
+        (([["NOT_A_REAL_PROFILE_ID"]] call _fnc_tg) select 1) isEqualTo true] call _fnc_check;
+    ["while a sortie with no targets still never does",
+        (([[]] call _fnc_tg) select 1) isEqualTo false] call _fnc_check;
 
     { deleteVehicle _x } forEach (crew _jet);
     deleteVehicle _jet;
