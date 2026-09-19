@@ -94,7 +94,7 @@ switch(_operation) do {
                        "crewGroupLive","driverPresent","crewSeated","playerControl","playerPassenger",
                        "anyPlayerAboard","uavControlled","onStation","targetsGone","lockHeld",
                        "deckHome","fixedWing","needsRunway","launchInProgress","onRunway","armed","virtualHome",
-                       "atTaxiOffEnd","canMove"];
+                       "atTaxiOffEnd","canMove","onTaxiway","nearStand"];
             {
                 [_o, _x, 0] call ALIVE_fnc_hashSet;
             } forEach ["altAGL","altASL","speed","fuel","damage","wpRemaining","aliveCrew",
@@ -243,6 +243,23 @@ switch(_operation) do {
             };
         };
         ["onRunway", _onRunway] call _fnc_set;
+
+        // Standing on a taxiway. Asked for one decision only: whether a plane
+        // that has stopped on its way off after landing is in the way, the way
+        // one on the runway is. Kept apart from onRunway on purpose, because the
+        // stands sit close enough to the taxi lines that the runway test's
+        // twenty five metres around a line would flag legitimate parking.
+        //
+        // The shared airside test answers this from its own cached taxiway
+        // shapes, and once that cache exists it is exact on Stratis: every one of
+        // 56 points taken every 20 m along the terrain's taxi-in route and 34
+        // along its taxi-off route reads taxiway, and none of the stands or pads
+        // the module uses does. The cache is built on the server at mission start
+        // by main's airfield survey, or by placement; until it exists this reads
+        // false, which leaves the table doing what it did before it was asked.
+        private _onTaxiway = _agl < 5 && {!isNil "ALiVE_fnc_isAirside"}
+            && {[_pos, 0, [2]] call ALiVE_fnc_isAirside};
+        ["onTaxiway", _onTaxiway] call _fnc_set;
 
         // Has a plane that landed finished taxiing off: is it within eighty
         // metres of the END of its airport's taxi-off route.
@@ -464,6 +481,13 @@ switch(_operation) do {
         private _dHome = _obj distance2D _homePos;
         ["atHome", _dHome < (if (_obj isKindOf "Plane") then {15} else {30})] call _fnc_set;
         ["nearHome", _dHome < 2000] call _fnc_set;
+        // Close enough that putting it on its stand is a short slide rather than
+        // a jump across the field. The landing tidy lets nobody within 300 m see
+        // that, where a longer move needs nobody within a kilometre. Wider than
+        // atHome on purpose: a helicopter that set down 30 to 60 m off its pad,
+        // with somebody a few hundred metres away, would otherwise sit in
+        // recovery with its engine off for ten minutes and then be moved anyway.
+        ["nearStand", _dHome < 60] call _fnc_set;
 
         // ---- who is watching ------------------------------------------------
         // Counted separately around the aircraft and around its home, because

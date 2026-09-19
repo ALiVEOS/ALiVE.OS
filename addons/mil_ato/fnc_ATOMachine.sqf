@@ -592,11 +592,13 @@ switch(_operation) do {
                                     //
                                     // An aircraft that has stopped on it blocks
                                     // every aircraft behind it, and
-                                    // waiting for nobody to be within three
-                                    // hundred metres of a working airfield is
+                                    // waiting for nobody to be within a
+                                    // kilometre of a working airfield is
                                     // waiting for something that does not
                                     // happen. So it is moved, and being seen to
-                                    // move is the cheaper price.
+                                    // move is the cheaper price. A taxiway is
+                                    // counted the same way: it blocks the same
+                                    // aircraft.
                                     //
                                     // This is what is left of the stuck-taxi
                                     // problem. The rest of it was about
@@ -620,11 +622,35 @@ switch(_operation) do {
                                     // A plane stopped anywhere else on its way off
                                     // is given the same thirty seconds before it is
                                     // handed to recovery, because it may only be
-                                    // pausing. Recovery stops the engine, so a jet
-                                    // that paused for something on the taxiway
-                                    // would have been left standing there.
+                                    // pausing. Recovery stops the engine and holds
+                                    // it for ten minutes while anyone is about,
+                                    // which on a taxiway would shut the airfield,
+                                    // so a taxiway is treated as the runway is.
+                                    //
+                                    // Who counts as watching depends on how far
+                                    // the aircraft would be moved. Off its stand
+                                    // it is a kilometre, as recovery and the
+                                    // return home already use: this was three
+                                    // hundred metres, and on Stratis the control
+                                    // tower is 188 m off the runway's line with
+                                    // only nine of twenty two points along the
+                                    // runway within 300 m of it, every one of
+                                    // them within 1000 m. On the test server,
+                                    // Blackfish landings there came to rest about
+                                    // 750 m from the tower, and on LAN one was put
+                                    // on its stand the moment it slowed in front
+                                    // of a player watching from it. Near its own stand already (within
+                                    // sixty metres) it stays at three hundred:
+                                    // that slide is short, and one not made now
+                                    // is not made soon, because at home it is
+                                    // parked where it stopped and short of home
+                                    // it waits out recovery's ten minutes, so at
+                                    // a kilometre every helicopter that set down
+                                    // a little off its pad would stay crooked,
+                                    // or stand idle and then jump anyway.
                                     private _onTheRunway = "onRunway" call _fnc_o;
-                                    private _mayWait = _onTheRunway || {_planeDown};
+                                    private _inTheWay = _onTheRunway || {"onTaxiway" call _fnc_o};
+                                    private _mayWait = _inTheWay || {_planeDown};
                                     private _waited = false;
                                     if (_mayWait) then {
                                         private _since = [_row,"stoppedSince",-1] call ALIVE_fnc_hashGet;
@@ -636,10 +662,15 @@ switch(_operation) do {
                                     } else {
                                         [_row,"stoppedSince",-1] call ALIVE_fnc_hashSet;
                                     };
+                                    private _unwatched = if (_atHome || {"nearStand" call _fnc_o}) then {
+                                        ("playersWithin300" call _fnc_n) == 0
+                                    } else {
+                                        ("playersWithin1000Hull" call _fnc_n) == 0
+                                    };
                                     private _canTidy = ("nearHome" call _fnc_o)
-                                        && {(("playersWithin300" call _fnc_n) == 0)
+                                        && {_unwatched
                                             || {"deckHome" call _fnc_o}
-                                            || {_onTheRunway && {_waited}}}
+                                            || {_inTheWay && {_waited}}}
                                         && {!_playerPassenger};
                                     if (_canTidy) then {
                                         _effects pushBack "placeOnSlot";
@@ -728,9 +759,13 @@ switch(_operation) do {
                                             };
                                             // Nobody about to see it: put away as
                                             // soon as it is down to taxiing speed,
-                                            // as a landing always was.
+                                            // as a landing always was. Nobody
+                                            // within a kilometre, as for one that
+                                            // has stopped: a plane rolling out is
+                                            // never on its own stand, so this is
+                                            // always the long jump.
                                             case (("landed" call _fnc_o) && {"nearHome" call _fnc_o}
-                                                && {("playersWithin300" call _fnc_n) == 0} && {!_playerPassenger}): {
+                                                && {("playersWithin1000Hull" call _fnc_n) == 0} && {!_playerPassenger}): {
                                                 _effects pushBack "placeOnSlot";
                                                 _effects pushBack "turnaround";
                                                 _next = "PARKED";
