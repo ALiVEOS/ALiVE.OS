@@ -1802,8 +1802,11 @@ switch(_operation) do {
                 _v allowDamage true;
                 _v setDamage 0;
                 _v setVariable ["ALiVE_mil_ato_settleResult", "settled", false];
-                ["ALIVE_fnc_ATOSurface - %1 put down from the air and held: still after %2 s, peak %3 m up, put back %4 times, %5 m off its stand",
-                    typeOf _v, round (time - _t0), round _peak, _reseats, round (_v distance2D _tgt)] call ALiVE_fnc_dump;
+                // With the tail and both positions, so where it came to rest can be
+                // checked against its home by grid rather than by one distance.
+                ["ALIVE_fnc_ATOSurface - %1 (%2) put down from the air and held: still after %3 s, peak %4 m up, put back %5 times, %6 m from its home; at %7 (%8), home %9 (%10)",
+                    typeOf _v, _v getVariable ["ALiVE_mil_ato_tail", "no tail"], round (time - _t0), round _peak, _reseats, round (_v distance2D _tgt),
+                    (getPosATL _v) apply { round _x }, mapGridPosition _v, _tgt apply { round _x }, mapGridPosition _tgt] call ALiVE_fnc_dump;
             } else {
                 _v allowDamage false;
                 _v setVariable ["ALiVE_mil_ato_settleResult", "unsettled", false];
