@@ -62,7 +62,8 @@ observation sequences, because those are what the table exists to prevent.
             ["deckHome", false], ["fixedWing", false], ["needsRunway", false],
             ["launchInProgress", false], ["onRunway", false],
             ["fuel", 1], ["armed", true], ["ordnance", 8], ["damage", 0],
-            ["playersWithin1000Home", 0], ["playersWithin1000Hull", 0], ["onTaxiway", false], ["nearStand", false]
+            ["playersWithin1000Home", 0], ["playersWithin1000Hull", 0], ["onTaxiway", false], ["nearStand", false],
+            ["lockBusy", false]
         ]] call ALIVE_fnc_hashCreate;
         { [_o, _x select 0, _x select 1] call ALIVE_fnc_hashSet } forEach _flags;
         _o
@@ -97,6 +98,7 @@ observation sequences, because those are what the table exists to prevent.
         ["a plane taxiing off",    [["needsRunway",true],["fixedWing",true],["landed",true],["touchingGround",true],["speed",20],["nearHome",true],["atHome",false],["playersWithin1000Hull",4]]],
         ["stopped on a taxiway",   [["needsRunway",true],["landed",true],["nearHome",true],["atHome",false],["onTaxiway",true],["playersWithin1000Hull",4]]],
         ["broken on the ground",   [["canMove",false]]],
+        ["a plane waiting on a busy runway", [["needsRunway",true],["fixedWing",true],["crewSeated",true],["lockBusy",true]]],
         ["an empty tank",          [["canMove",false],["fuel",0]]]
     ];
 
@@ -817,6 +819,77 @@ observation sequences, because those are what the table exists to prevent.
     ["each landing gets its own extension: the mark is cleared on the way in",
         (([(_rtbXOut select 0), "state", ""] call ALIVE_fnc_hashGet) isEqualTo "LANDING")
         && {!([(_rtbXOut select 0), "landingExtended", true] call ALIVE_fnc_hashGet)}] call _fnc_check;
+
+    // ---- a launch waits for a runway another of ours is landing on -----------
+    // On LAN an F-22 landing from 6953 m held the runway for 4 min 16 s, and four
+    // launches behind it ran out of time and went back to planning. A plane on
+    // land waits instead, up to six times, then gives up as before.
+    private _fnc_assignWait = {
+        params ["_flags", ["_now", 1000], ["_row", []]];
+        if (_row isEqualTo []) then {
+            _row = [_m, "newRow", ["BLU_F_0", [[100,100,0], 0, "terrain"]]] call ALIVE_fnc_ATOMachine;
+            [_row, "state", "ASSIGNED"] call ALIVE_fnc_hashSet;
+            [_row, "enteredAt", 800] call ALIVE_fnc_hashSet;
+            [_row, "deadlineAt", 950] call ALIVE_fnc_hashSet;
+            [_row, "sortie", ["CAS", [100,100,0], 600, 2000, "s1", [], ""]] call ALIVE_fnc_hashSet;
+        };
+        private _obs = [[["crewSeated", true], ["lockHeld", false], ["needsRunway", true], ["fixedWing", true]] + _flags] call _fnc_obs;
+        private _out = [_m, "step", [_row, _obs, "", _now]] call ALIVE_fnc_ATOMachine;
+        [_out select 0, [(_out select 0), "state", ""] call ALIVE_fnc_hashGet, _out select 2,
+            [(_out select 0), "reason", ""] call ALIVE_fnc_hashGet]
+    };
+    ([[["lockBusy", true]]] call _fnc_assignWait) params ["_aw1", "_awState1", "_awEff1"];
+    diag_log format ["  info  a launch whose runway another aircraft holds went to %1, effects %2", _awState1, _awEff1];
+    ["a launch whose runway another of ours is using waits rather than giving up",
+        _awState1 isEqualTo "ASSIGNED" && {"waitingForRunway" in _awEff1} && {"lock" in _awEff1}
+        && {!("assignFailed" in _awEff1)} && {!("releaseHold" in _awEff1)}
+        && {([_aw1, "runwayWaits", 0] call ALIVE_fnc_hashGet) == 1}
+        && {([_aw1, "deadlineAt", 0] call ALIVE_fnc_hashGet) == 1120}] call _fnc_check;
+    private _awRow = _aw1;
+    private _awLast = [];
+    { ([[["lockBusy", true]], _x, _awRow] call _fnc_assignWait) params ["_r", "_s", "_e", "_why"]; _awRow = _r; _awLast = [_s, _e, _why] } forEach [1121, 1242, 1363, 1484, 1605];
+    ["and keeps waiting while the runway stays busy",
+        (_awLast select 0) isEqualTo "ASSIGNED" && {([_awRow, "runwayWaits", 0] call ALIVE_fnc_hashGet) == 6}] call _fnc_check;
+    ([[["lockBusy", true]], 1726, _awRow] call _fnc_assignWait) params ["", "_awState5", "_awEff5", "_awWhy5"];
+    ["but not for ever: after six waits it gives up as before",
+        _awState5 isEqualTo "PARKED" && {"assignFailed" in _awEff5} && {"standDownCrew" in _awEff5}
+        && {_awWhy5 isEqualTo "NO_LOCK"}] call _fnc_check;
+    ([[["lockBusy", false]]] call _fnc_assignWait) params ["", "_awStateF", "", "_awWhyF"];
+    ["a runway that nobody holds is not waited for: that is a lock problem",
+        _awStateF isEqualTo "PARKED" && {_awWhyF isEqualTo "NO_LOCK"}] call _fnc_check;
+    ([[["lockBusy", true], ["crewSeated", false]]] call _fnc_assignWait) params ["", "_awStateP", "", "_awWhyP"];
+    ["and a launch with no pilot seated is not waited for either",
+        _awStateP isEqualTo "PARKED" && {_awWhyP isEqualTo "NO_PILOT_NO_LOCK"}] call _fnc_check;
+    ([[["lockBusy", true], ["airborne", true], ["atHome", false]]] call _fnc_assignWait) params ["", "_awStateA", "_awEffA"];
+    ["one that has lifted off while it waited is recovered, not kept waiting",
+        _awStateA isEqualTo "RECOVERING" && {"assignFailed" in _awEffA}] call _fnc_check;
+    ([[["lockBusy", true], ["deckHome", true]]] call _fnc_assignWait) params ["", "_awStateD", "_awEffD"];
+    ["a plane on a deck, which nothing holds still, does not wait",
+        _awStateD isEqualTo "PARKED" && {!("waitingForRunway" in _awEffD)}] call _fnc_check;
+    ([[["lockBusy", true], ["playerPassenger", true], ["anyPlayerAboard", true]]] call _fnc_assignWait) params ["", "", "_awEffPP"];
+    ["nor does one with a player sitting in it on an empty tank",
+        !("waitingForRunway" in _awEffPP)] call _fnc_check;
+    // The waits are counted apart from the attempts LAUNCHING's one forced
+    // launch is counted on, so a launch that waited still gets it.
+    ([[["lockBusy", true]]] call _fnc_assignWait) params ["_lw1"];
+    ([[["lockBusy", true]], 1121, _lw1] call _fnc_assignWait) params ["_lw2"];
+    ([[["lockHeld", true]], 1150, _lw2] call _fnc_assignWait) params ["_lw3", "_lwState3"];
+    ["a launch that waited for the runway still launches when it gets it",
+        _lwState3 isEqualTo "LAUNCHING" && {([_lw3, "attempts", 0] call ALIVE_fnc_hashGet) == 0}] call _fnc_check;
+    private _lwDeadline = [_lw3, "deadlineAt", 0] call ALIVE_fnc_hashGet;
+    private _lwOut = [_m, "step", [_lw3, [[["crewSeated", true], ["lockHeld", true], ["needsRunway", true],
+        ["fixedWing", true], ["launchInProgress", false]]] call _fnc_obs, "", _lwDeadline + 1]] call ALIVE_fnc_ATOMachine;
+    ["and is still forced up if its take-off stalls, the waits having cost it nothing",
+        "forceLaunch" in (_lwOut select 2)] call _fnc_check;
+    private _pk = [_m, "newRow", ["BLU_F_0", [[100,100,0], 0, "terrain"]]] call ALIVE_fnc_ATOMachine;
+    [_pk, "state", "PARKED"] call ALIVE_fnc_hashSet;
+    [_pk, "readyAt", 0] call ALIVE_fnc_hashSet;
+    [_pk, "runwayWaits", 3] call ALIVE_fnc_hashSet;
+    [_pk, "sortie", ["CAS", [100,100,0], 600, 2000, "s1", [], ""]] call ALIVE_fnc_hashSet;
+    private _pkOut = [_m, "step", [_pk, [[["fixedWing", true], ["needsRunway", true]]] call _fnc_obs, "ASSIGN", 1000]] call ALIVE_fnc_ATOMachine;
+    ["each launch gets its own waits: the count is cleared on the way in",
+        (([(_pkOut select 0), "state", ""] call ALIVE_fnc_hashGet) isEqualTo "ASSIGNED")
+        && {([(_pkOut select 0), "runwayWaits", 3] call ALIVE_fnc_hashGet) == 0}] call _fnc_check;
 
     if (count _fails == 0) then {
         diag_log "=== ATO Machine test: ALL PASS ===";

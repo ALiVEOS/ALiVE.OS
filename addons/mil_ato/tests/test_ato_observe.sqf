@@ -94,6 +94,17 @@ console `call` would run the whole thing inside one frame.
     ["and reports a climb rate, which is nothing while it is parked",
         (abs ([_obs,"climbRate"] call _fnc_get)) < 2] call _fnc_check;
 
+    // Every key a live hull answers, a dead one answers too, or the table
+    // throws on the tick an aircraft is lost. "pos" is live only by design: the
+    // Kernel reads it only behind objectLive.
+    private _missing = ((_obs select 1) - (_dead select 1)) - ["pos"];
+    if (count _missing > 0) then { diag_log format ["  info  keys a dead hull does not answer: %1", _missing] };
+    ["a dead hull answers every key a live one does", count _missing == 0] call _fnc_check;
+    ["and reports the runway as not held by another aircraft",
+        !([_dead,"lockBusy"] call _fnc_get) && {!([_obs,"lockBusy"] call _fnc_get)}] call _fnc_check;
+    private _busy = [_o, "observe", [_veh, _home, false, [], time, true]] call ALIVE_fnc_ATOObserve;
+    ["or as held by another, when the kernel says so", [_busy,"lockBusy"] call _fnc_get] call _fnc_check;
+
     // --- the player flies it -------------------------------------------------
     if (isNull player) then {
         {

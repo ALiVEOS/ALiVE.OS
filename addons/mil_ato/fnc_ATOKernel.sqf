@@ -1053,6 +1053,13 @@ private _fnc_routeEffects = {
                     _tail, round (([_row2, "deadlineAt", 0] call ALIVE_fnc_hashGet) - _now),
                     round ([_obs, "altAGL", 0] call ALIVE_fnc_hashGet)] call ALiVE_fnc_dump;
             };
+            // Not debug-gated either: at most a handful per launch, two minutes
+            // apart, and they are what shows a launch waited rather than failed.
+            case (_name isEqualTo "waitingForRunway"): {
+                private _holderW = if (_surface isEqualTo []) then { "" } else { [_surface, "holder", _lockKey] call ALIVE_fnc_ATOSurface };
+                ["ALIVE_fnc_ATOKernel - %1 waits for the runway (wait %2), held by %3",
+                    _tail, [_row2, "runwayWaits", 0] call ALIVE_fnc_hashGet, _holderW] call ALiVE_fnc_dump;
+            };
 
             case (_name isEqualTo "refusedTeleportPlayerAboard"): {
                 if (_debug) then { ["ALIVE_fnc_ATOKernel - %1 not moved: a player is aboard", _tail] call ALiVE_fnc_dump };
@@ -2738,7 +2745,13 @@ switch(_operation) do {
                     private _obj = [_place, "objFor", _tail] call ALIVE_fnc_ATOPlace;
                     if !(_obj isEqualType objNull) then { _obj = objNull };
                     private _home = [_logic, _tail] call _fnc_homeOf;
-                    private _lockHeld = ([_surface, "holder", _lockKey] call ALIVE_fnc_ATOSurface) isEqualTo _tail;
+                    // The runway's holder, read once: this aircraft, or another
+                    // of ours, which a launch waiting for it needs to know so it
+                    // waits rather than gives up.
+                    private _holder = [_surface, "holder", _lockKey] call ALIVE_fnc_ATOSurface;
+                    if !(_holder isEqualType "") then { _holder = "" };
+                    private _lockHeld = _holder isEqualTo _tail;
+                    private _lockBusy = !(_holder isEqualTo "") && {!_lockHeld};
                     private _cmd = [_pendingCmd, _tail, ""] call ALIVE_fnc_hashGet;
                     if !(_cmd isEqualType "") then { _cmd = "" };
                     if !(_cmd isEqualTo "") then { [_pendingCmd, _tail] call ALIVE_fnc_hashRem };
@@ -2757,7 +2770,7 @@ switch(_operation) do {
                         [_rowIn, "sortie", +(_pend select 1)] call ALIVE_fnc_hashSet;
                     };
 
-                    private _obs = [_observe, "observe", [_obj, _home, _lockHeld, [_rowIn] call _fnc_tupleOf, _now]] call ALIVE_fnc_ATOObserve;
+                    private _obs = [_observe, "observe", [_obj, _home, _lockHeld, [_rowIn] call _fnc_tupleOf, _now, _lockBusy]] call ALIVE_fnc_ATOObserve;
                     if !([_obs] call ALIVE_fnc_isHash) then { _obs = [] call ALIVE_fnc_hashCreate };
                     [_lastObs, _tail, _obs] call ALIVE_fnc_hashSet;
                     if ([_obs, "objectLive", false] call ALIVE_fnc_hashGet) then {

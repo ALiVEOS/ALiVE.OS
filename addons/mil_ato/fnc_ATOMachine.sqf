@@ -76,6 +76,13 @@ Jman
 #define LANDING_LOW_AGL 300
 #define LANDING_CIRCUIT_AGL 1500
 
+// How long a launch waits each time its runway is held by another of our
+// aircraft, and how many times it may wait before it gives up. Six covers the
+// LAN queue: a landing that held the runway 4 min 16 s and three launches ahead
+// of this one, each holding it until it is up, 100 to 180 s apiece.
+#define ASSIGN_LOCK_WAIT 120
+#define ASSIGN_LOCK_WAITS 6
+
 #define TELEPORTS ["airborneStart","forceLaunch","virtualLaunch","taxiOut","placeOnSlot","forceLanded","quickPark","catapult"]
 
 private ["_result"];
@@ -130,6 +137,11 @@ switch(_operation) do {
             // recovery reaches LANDING with attempts already counted, and would
             // never have been given the time. Cleared on entry to LANDING.
             ["landingExtended", false],
+            // How many times this launch has waited for a runway another of
+            // our aircraft holds. Its own field rather than attempts, because
+            // LAUNCHING's one forced launch is counted on attempts and a wait
+            // would have spent it. Cleared on entry to ASSIGNED.
+            ["runwayWaits", 0],
             ["reason", ""]
         ]] call ALIVE_fnc_hashCreate;
     };
@@ -274,7 +286,27 @@ switch(_operation) do {
                                 if ("crewSeated" call _fnc_o && {_lockOk}) then {
                                     _next = "LAUNCHING";
                                 } else {
-                                    if (_expired) then {
+                                    // Only the runway is missing and another of our
+                                    // aircraft has it: wait instead of giving up. On
+                                    // LAN an F-22 landing from 6953 m held it for
+                                    // 4 min 16 s, and four launches behind it ran out
+                                    // of time, went back to planning and each cost its
+                                    // sortie an attempt. Waiting costs nothing where
+                                    // the plane waits with its tank held empty, so it
+                                    // cannot roll: on land, not on a deck (nothing
+                                    // holds a plane there), not once it has lifted
+                                    // off, and not with a passenger sitting in it.
+                                    private _waitForRunway = _expired && {"crewSeated" call _fnc_o} && {!_lockOk}
+                                        && {"lockBusy" call _fnc_o}
+                                        && {_needsRunway && {!("deckHome" call _fnc_o)} && {!_virtualHome}}
+                                        && {!_airborne} && {!_playerPassenger}
+                                        && {([_row,"runwayWaits",0] call ALIVE_fnc_hashGet) < ASSIGN_LOCK_WAITS};
+                                    if (_waitForRunway) then {
+                                        [_row,"runwayWaits",([_row,"runwayWaits",0] call ALIVE_fnc_hashGet) + 1] call ALIVE_fnc_hashSet;
+                                        [_row,"deadlineAt",_now + ASSIGN_LOCK_WAIT] call ALIVE_fnc_hashSet;
+                                        _effects pushBack "waitingForRunway";
+                                    };
+                                    if (_expired && {!_waitForRunway}) then {
                                         // Normally the hull never moved, so it
                                         // simply goes back to being parked and
                                         // the request is handed back to be re-let.
@@ -916,8 +948,13 @@ switch(_operation) do {
             if !(_next isEqualTo "LANDING") then {
                 [_row,"stoppedSince",-1] call ALIVE_fnc_hashSet;
             };
+            // Each landing gets its own one extension, and each launch its own
+            // waits for the runway.
             if (_next isEqualTo "LANDING") then {
                 [_row,"landingExtended",false] call ALIVE_fnc_hashSet;
+            };
+            if (_next isEqualTo "ASSIGNED") then {
+                [_row,"runwayWaits",0] call ALIVE_fnc_hashSet;
             };
 
             switch (_next) do {

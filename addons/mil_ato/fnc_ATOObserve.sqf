@@ -31,7 +31,7 @@ Any - The new instance or the result of the selected function
 
 Examples:
 (begin example)
-_obs = [_o, "observe", [_obj, _home, _lockHeld, _sortie, _now]] call ALIVE_fnc_ATOObserve;
+_obs = [_o, "observe", [_obj, _home, _lockHeld, _sortie, _now, _lockBusy]] call ALIVE_fnc_ATOObserve;
 
 (end)
 
@@ -103,7 +103,10 @@ switch(_operation) do {
             ["_home", [], [[]]],
             ["_lockHeld", false, [false]],
             ["_sortie", [], [[]]],
-            ["_now", 0, [0]]
+            ["_now", 0, [0]],
+            // Whether the runway is held by another aircraft of ours. Optional,
+            // so every caller that passes five arguments keeps working.
+            ["_lockBusy", false, [false]]
         ];
 
         private _o = [] call ALIVE_fnc_hashCreate;
@@ -123,7 +126,7 @@ switch(_operation) do {
                 [_o, _x, false] call ALIVE_fnc_hashSet;
             } forEach ["local","remote","airborne","atHome","nearHome","landed","touchingGround",
                        "crewGroupLive","driverPresent","crewSeated","playerControl","playerPassenger",
-                       "anyPlayerAboard","uavControlled","onStation","targetsGone","lockHeld",
+                       "anyPlayerAboard","uavControlled","onStation","targetsGone","lockHeld","lockBusy",
                        "deckHome","fixedWing","needsRunway","launchInProgress","onRunway","armed","virtualHome",
                        "atTaxiOffEnd","canMove","onTaxiway","nearStand"];
             {
@@ -602,6 +605,9 @@ switch(_operation) do {
         ["targetsGone", _targetsGone] call _fnc_set;
 
         ["lockHeld", _lockHeld] call _fnc_set;
+        // Held by another of ours: a launch waiting for it waits rather than
+        // giving up while one of our aircraft is landing on it.
+        ["lockBusy", _lockBusy] call _fnc_set;
 
         _result = _o;
     };
