@@ -63,7 +63,10 @@ observation sequences, because those are what the table exists to prevent.
             ["launchInProgress", false], ["onRunway", false],
             ["fuel", 1], ["armed", true], ["ordnance", 8], ["damage", 0],
             ["playersWithin1000Home", 0], ["playersWithin1000Hull", 0], ["onTaxiway", false], ["nearStand", false],
-            ["lockBusy", false]
+            ["lockBusy", false],
+            // Near home unless a case says otherwise, so a landing's extension
+            // turns on how it is flying, as it did before distance counted.
+            ["distHome", 1000]
         ]] call ALIVE_fnc_hashCreate;
         { [_o, _x select 0, _x select 1] call ALIVE_fnc_hashSet } forEach _flags;
         _o
@@ -807,6 +810,16 @@ observation sequences, because those are what the table exists to prevent.
     ([[["needsRunway", false], ["fixedWing", false], ["airborne", false], ["altAGL", 30]]] call _fnc_landingExpiry) params ["", "_lxState9", "_lxEff9"];
     ["a helicopter hovering low over a blocked pad is put down, not given more time",
         _lxState9 isEqualTo "PARKED" && {"forceLanded" in _lxEff9} && {!("landingExtended" in _lxEff9)}] call _fnc_check;
+    // Not far from home. On LAN a Blackfish that had touched down and flown off
+    // again was given the three minutes 231 m up and 48 km out.
+    ([[["needsRunway", false], ["fixedWing", false], ["altAGL", 231], ["climbRate", 0], ["distHome", 48103]]] call _fnc_landingExpiry) params ["", "_lxStateF", "_lxEffF"];
+    ["one low but 48 km from home is put down, not given more time",
+        _lxStateF isEqualTo "PARKED" && {"forceLanded" in _lxEffF} && {!("landingExtended" in _lxEffF)}] call _fnc_check;
+    ([[["altAGL", 1200], ["climbRate", -4], ["distHome", 4500]]] call _fnc_landingExpiry) params ["", "_lxStateC", "_lxEffC"];
+    ["a jet coming down on its circuit 4.5 km out still gets it",
+        _lxStateC isEqualTo "LANDING" && {"landingExtended" in _lxEffC}] call _fnc_check;
+    ([[["altAGL", 1200], ["climbRate", -4], ["distHome", 5500]]] call _fnc_landingExpiry) params ["", "_lxStateC2", "_lxEffC2"];
+    ["but not 5.5 km out", _lxStateC2 isEqualTo "PARKED" && {!("landingExtended" in _lxEffC2)}] call _fnc_check;
     ([_finalFlags + [["playerPassenger", true], ["anyPlayerAboard", true]], 0, true] call _fnc_landingExpiry) params ["", "_lxState8", "_lxEff8"];
     ["with a player aboard, after its extra time it is sent round again rather than put down",
         _lxState8 isEqualTo "LANDING" && {"retryLanding" in _lxEff8} && {!("forceLanded" in _lxEff8)}] call _fnc_check;

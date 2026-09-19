@@ -1049,9 +1049,10 @@ private _fnc_routeEffects = {
             // Not debug-gated: at most once per landing, and it is the evidence
             // for whether the extension was enough.
             case (_name isEqualTo "landingExtended"): {
-                ["ALIVE_fnc_ATOKernel - %1 given %2 s more to finish its landing, %3 m up",
+                ["ALIVE_fnc_ATOKernel - %1 given %2 s more to finish its landing, %3 m up, %4 m out",
                     _tail, round (([_row2, "deadlineAt", 0] call ALIVE_fnc_hashGet) - _now),
-                    round ([_obs, "altAGL", 0] call ALIVE_fnc_hashGet)] call ALiVE_fnc_dump;
+                    round ([_obs, "altAGL", 0] call ALIVE_fnc_hashGet),
+                    round ([_obs, "distHome", 0] call ALIVE_fnc_hashGet)] call ALiVE_fnc_dump;
             };
             // Not debug-gated either: at most a handful per launch, two minutes
             // apart, and they are what shows a launch waited rather than failed.

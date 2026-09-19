@@ -61,7 +61,8 @@ console `call` would run the whole thing inside one frame.
     ["and answers every question the table asks",
         ([_dead,"airborne"] call _fnc_get) isEqualType false
         && {([_dead,"fuel"] call _fnc_get) isEqualType 0}
-        && {([_dead,"playerControl"] call _fnc_get) isEqualType false}] call _fnc_check;
+        && {([_dead,"playerControl"] call _fnc_get) isEqualType false}
+        && {([_dead,"distHome"] call _fnc_get) isEqualType 0}] call _fnc_check;
     ["and reports nobody aboard it", [_dead,"crewLoss"] call _fnc_get] call _fnc_check;
 
     // --- a real hull ---------------------------------------------------------

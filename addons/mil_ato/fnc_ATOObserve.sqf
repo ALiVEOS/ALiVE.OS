@@ -132,7 +132,7 @@ switch(_operation) do {
             {
                 [_o, _x, 0] call ALIVE_fnc_hashSet;
             } forEach ["altAGL","altASL","speed","fuel","damage","wpRemaining","aliveCrew",
-                       "ordnance","climbRate",
+                       "ordnance","climbRate","distHome",
                        "playersWithin300","playersWithin1000Hull","playersWithin1000Home",
                        "playersWithin1500Home"];
             // Nobody is aboard a hull that is gone, so nothing is holding it.
@@ -532,6 +532,10 @@ switch(_operation) do {
         // with somebody a few hundred metres away, would otherwise sit in
         // recovery with its engine off for ten minutes and then be moved anyway.
         ["nearStand", _dHome < 60] call _fnc_set;
+        // And the distance itself, for the one rule that needs a figure rather
+        // than a yes or no: a landing is given its extra time only when the
+        // aircraft is still near enough to be on its way down to this field.
+        ["distHome", _dHome] call _fnc_set;
 
         // ---- who is watching ------------------------------------------------
         // Counted separately around the aircraft and around its home, because

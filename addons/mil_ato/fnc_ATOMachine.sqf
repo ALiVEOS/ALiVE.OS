@@ -75,6 +75,12 @@ Jman
 #define LANDING_EXTENSION 180
 #define LANDING_LOW_AGL 300
 #define LANDING_CIRCUIT_AGL 1500
+// And only within this distance of home. On LAN a Blackfish that had touched
+// down and flown off again was given the three minutes while 231 m up and 48 km
+// away, level, and was put down from there anyway. A jet flying its circuit is
+// several kilometres out and still coming down.
+#define LANDING_EXTENSION_REACH 5000
+
 
 // How long a launch waits each time its runway is held by another of our
 // aircraft, and how many times it may wait before it gives up. Six covers the
@@ -850,10 +856,12 @@ switch(_operation) do {
                                         // order above can share this tick with the
                                         // put-down below; the Kernel applies effects in
                                         // order and the put-down moves the hull last.
-                                        private _comingDown = _airborne && {
-                                            (("altAGL" call _fnc_n) < LANDING_LOW_AGL)
-                                            || {_needsRunway && {("altAGL" call _fnc_n) < LANDING_CIRCUIT_AGL} && {("climbRate" call _fnc_n) < 0}}
-                                        };
+                                        private _comingDown = _airborne
+                                            && {("distHome" call _fnc_n) < LANDING_EXTENSION_REACH}
+                                            && {
+                                                (("altAGL" call _fnc_n) < LANDING_LOW_AGL)
+                                                || {_needsRunway && {("altAGL" call _fnc_n) < LANDING_CIRCUIT_AGL} && {("climbRate" call _fnc_n) < 0}}
+                                            };
                                         if (_comingDown && {!([_row,"landingExtended",false] call ALIVE_fnc_hashGet)}) then {
                                             [_row,"landingExtended",true] call ALIVE_fnc_hashSet;
                                             [_row,"deadlineAt",_now + LANDING_EXTENSION] call ALIVE_fnc_hashSet;
