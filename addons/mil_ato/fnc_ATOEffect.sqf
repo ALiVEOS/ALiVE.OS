@@ -266,6 +266,37 @@ switch(_operation) do {
             [_p distance2D [(_ra select 0) + (_t * _dx), (_ra select 1) + (_t * _dy), 0], _side]
         };
 
+        // What an aircraft that has been told to land is actually doing, for the
+        // log. An RHS Apache on LAN hovered over its stand until the five minute
+        // landing deadline put it down, in two runs (36 m up the time the height
+        // was recorded), and the log could not say why: nothing on the landing
+        // path wrote anything down. On the test server the same airframe lands in
+        // about a minute with RHS alone and with every other mod that LAN run had,
+        // and a vanilla attack helicopter does with soldiers or a truck beside the
+        // pad, so what stops it is something only a real mission has. This names
+        // the command in force, the crew's mood, what is broken, and what the
+        // crew knows about. A hit point the airframe does not have reads -1.
+        private _fnc_landingState = {
+            params ["_o", "_padPos"];
+            private _d = driver _o;
+            private _g = group _d;
+            private _fnc_hit = {
+                private _v = _o getHitPointDamage _this;
+                if (isNil "_v") then { -1 } else { _v }
+            };
+            format ["%1 m up, %2 m from the pad, %3 km/h, climbing %4 m/s, command '%5', %6 %7, %8 waypoints, engine %9, fuel %10, damage %11 (main rotor %12, tail rotor %13, engine %14, can move %15), local %16, %17 enemies known, Drongo '%18'",
+                round ((getPosATL _o) select 2), round (_o distance2D _padPos), round (speed _o), ((velocity _o) select 2) toFixed 1,
+                if (isNull _d) then {"no pilot"} else {currentCommand _d},
+                if (isNull _d) then {"-"} else {behaviour _d},
+                if (isNull _g) then {"-"} else {combatMode _g},
+                if (isNull _g) then {0} else {count (waypoints _g)},
+                isEngineOn _o, (fuel _o) toFixed 2, (damage _o) toFixed 2,
+                ("HitHRotor" call _fnc_hit) toFixed 2, ("HitVRotor" call _fnc_hit) toFixed 2, ("HitEngine" call _fnc_hit) toFixed 2,
+                canMove _o, local _o,
+                if (isNull _d) then {0} else {count (_d targets [true, 2000])},
+                _o getVariable ["daoAction", "-"]]
+        };
+
         // Seventy metres off to one side of a heading, the side further from the
         // runway, never into the sea, and for anything bigger than a man on the
         // nearest spot it fits.
@@ -758,6 +789,12 @@ switch(_operation) do {
                     _matched = true;
                 } else {
                     ["ALIVE_fnc_ATOEffect - %1 put down at its home rather than left flying", typeOf _obj] call ALiVE_fnc_dump;
+                    // And what it was doing up there, the moment before, for a
+                    // landing that ran out of time rather than failing outright.
+                    if (count _home > 0 && {([_obj, _home] call _fnc_up) > 5}) then {
+                        ["ALIVE_fnc_ATOEffect - %1 (%2) when it was put down: %3", typeOf _obj,
+                            _obj getVariable ["ALiVE_mil_ato_tail", "no tail"], [_obj, _home select 0] call _fnc_landingState] call ALiVE_fnc_dump;
+                    };
                     // Said when it did not happen. The surface now also refuses a
                     // stand with a vehicle on it, and the aircraft is then still
                     // flying; recovery brings it round again.
@@ -1871,6 +1908,8 @@ switch(_operation) do {
                 if (!_committed) then {
                     _grp setVariable ["ALiVE_mil_ato_landing", true, false];
                     _grp setVariable ["ALiVE_mil_ato_landingAimedAt", -1, false];
+                    _grp setVariable ["ALiVE_mil_ato_landingSince", time, false];
+                    _grp setVariable ["ALiVE_mil_ato_landingStallSaid", nil, false];
                 };
 
                 // Quiesce and aim, on a timer rather than every tick.
@@ -1946,6 +1985,18 @@ switch(_operation) do {
                     } else {
                         _detail = format ["landing from %1 m, %2 m up", round _dPad, round _agl];
                     };
+                };
+
+                // Still up a minute after it was over its stand and told to come
+                // down: said once, with everything that could be holding it. On
+                // the test server these landings were down 12 to 22 seconds after
+                // that point, so this only speaks for a stuck one.
+                private _since = _grp getVariable ["ALiVE_mil_ato_landingSince", -1];
+                if (_since >= 0 && {(time - _since) >= 60} && {_agl > 5}
+                    && {!(_grp getVariable ["ALiVE_mil_ato_landingStallSaid", false])}) then {
+                    _grp setVariable ["ALiVE_mil_ato_landingStallSaid", true, false];
+                    ["ALIVE_fnc_ATOEffect - %1 (%2) told to land %3 s ago and not down: %4; last step '%5'",
+                        typeOf _obj, _tail, round (time - _since), [_obj, _stand] call _fnc_landingState, _detail] call ALiVE_fnc_dump;
                 };
             };
 
@@ -2088,6 +2139,8 @@ switch(_operation) do {
                     // overhead for thirty-five seconds before aiming at all.
                     _grp setVariable ["ALiVE_mil_ato_landingAimedAt", nil, false];
                     _grp setVariable ["ALiVE_mil_ato_landingHeld", nil, false];
+                    _grp setVariable ["ALiVE_mil_ato_landingSince", nil, false];
+                    _grp setVariable ["ALiVE_mil_ato_landingStallSaid", nil, false];
                     // Give the throttle back, or the next sortie flies at a
                     // landing pace all the way to its target.
                     _grp setSpeedMode "NORMAL";
@@ -2116,6 +2169,8 @@ switch(_operation) do {
                     _grp setVariable ["ALiVE_mil_ato_landing", nil, false];
                     _grp setVariable ["ALiVE_mil_ato_landingAimedAt", nil, false];
                     _grp setVariable ["ALiVE_mil_ato_landingHeld", nil, false];
+                    _grp setVariable ["ALiVE_mil_ato_landingSince", nil, false];
+                    _grp setVariable ["ALiVE_mil_ato_landingStallSaid", nil, false];
                     _detail = "approach restarted";
                 };
             };
