@@ -5,6 +5,9 @@
 <Key ID="STR_ALIVE_PRESETS_SHARE">
     <English>Share as Preset</English>
 </Key>
+<Key ID="STR_ALIVE_PRESETS_LOAD">
+    <English>Load Preset from Clipboard</English>
+</Key>
 </Container>
 </Package>
 </Project>

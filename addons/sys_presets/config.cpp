@@ -42,14 +42,29 @@ class ctrlMenu;
 class display3DEN {
     class ContextMenu: ctrlMenu {
         class Items {
+            // The folder no longer needs a module under the cursor. Sharing does,
+            // and keeps its own condition, but loading a preset is for a scenario
+            // with nothing in it yet, and a folder gated on a module would put the
+            // entry out of reach in the one case it exists for. The folder can
+            // never be empty either way, because loading is always offered.
+            //
+            // An empty condition is how the editor's own entries say "always", and
+            // the class picker's entries keep theirs, so they still only appear
+            // when they can do something.
             class ALIVE_Menu {
-                items[] += {"ALIVE_SharePreset"};
+                conditionShow = "";
+                items[] += {"ALIVE_SharePreset", "ALIVE_LoadPreset"};
             };
 
             class ALIVE_SharePreset {
                 text = "$STR_ALIVE_PRESETS_SHARE";
                 conditionShow = "selectedLogicModule";
                 action = "[] call ALIVE_fnc_presetShare;";
+            };
+
+            class ALIVE_LoadPreset {
+                text = "$STR_ALIVE_PRESETS_LOAD";
+                action = "[] call ALIVE_fnc_presetLoad;";
             };
         };
     };

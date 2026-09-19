@@ -139,10 +139,15 @@ if (is3DEN) then {
     // have to be compiled here to exist while somebody is in the editor.
     ALIVE_fnc_presetCollect = compile preprocessFileLineNumbers "\x\alive\addons\sys_presets\fnc_presetCollect.sqf";
     ALIVE_fnc_presetShare = compile preprocessFileLineNumbers "\x\alive\addons\sys_presets\fnc_presetShare.sqf";
+    ALIVE_fnc_presetPlace = compile preprocessFileLineNumbers "\x\alive\addons\sys_presets\fnc_presetPlace.sqf";
+    ALIVE_fnc_presetLoad = compile preprocessFileLineNumbers "\x\alive\addons\sys_presets\fnc_presetLoad.sqf";
     // These two are registered in CfgFunctions as well, so in a mission they are
     // already compileFinal and must be left alone.
     if (isNil "ALIVE_fnc_presetDefault") then {
         ALIVE_fnc_presetDefault = compile preprocessFileLineNumbers "\x\alive\addons\sys_presets\fnc_presetDefault.sqf";
+    };
+    if (isNil "ALIVE_fnc_presetParse") then {
+        ALIVE_fnc_presetParse = compile preprocessFileLineNumbers "\x\alive\addons\sys_presets\fnc_presetParse.sqf";
     };
     if (isNil "ALIVE_fnc_presetSerialize") then {
         ALIVE_fnc_presetSerialize = compile preprocessFileLineNumbers "\x\alive\addons\sys_presets\fnc_presetSerialize.sqf";
