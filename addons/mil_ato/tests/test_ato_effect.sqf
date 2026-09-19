@@ -197,7 +197,13 @@ nothing changed and it said so.
     // came back for them deleted a pilot in the air. Their empty group goes too.
     private _men18 = +(crew _veh);
     private _grp18 = group (driver _veh);
-    ["FIXTURE: the aircraft has a crew and a group to stand down", count _men18 > 0 && {!isNull _grp18}] call _fnc_check;
+    // With its engine running, as it is when parking has switched it off and
+    // the pilot has started it again: on LAN an Apache was left on its pad
+    // with its engine running and nobody in it.
+    _veh engineOn true;
+    sleep 1;
+    ["FIXTURE: the aircraft has a crew and a group to stand down, and its engine running",
+        count _men18 > 0 && {!isNull _grp18} && {isEngineOn _veh}] call _fnc_check;
     (["standDownCrew"] call _fnc_apply) params ["_st18", "_m18", "_d18"];
     // Read a few seconds later: a deleted man can still read as there in the
     // frame he is deleted in.
@@ -205,6 +211,8 @@ nothing changed and it said so.
     ["the crew is deleted from the aircraft, whoever is watching",
         _st18 isEqualTo "ok" && {_d18 isEqualTo "deleted"}
         && {({!isNull _x} count _men18) == 0} && {count (crew _veh) == 0}] call _fnc_check;
+    diag_log format ["  info  the engine 3 s after the stand-down: %1", if (isEngineOn _veh) then {"running"} else {"off"}];
+    ["and its engine is not left running with nobody in it", !isEngineOn _veh] call _fnc_check;
     diag_log format ["  info  the crew's group 3 s after the stand-down: %1", _grp18];
     ["and its empty group is deleted with it", isNull _grp18] call _fnc_check;
 

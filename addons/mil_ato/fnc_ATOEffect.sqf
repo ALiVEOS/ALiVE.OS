@@ -625,14 +625,29 @@ switch(_operation) do {
                     private _groupsOut = [];
                     { _groupsOut pushBackUnique (group _x) } forEach _ours;
                     { deleteVehicle _x } forEach _ours;
+                    // And the engine switched off once they are out of it. Parking
+                    // switches it off before the crew goes, and a pilot still in
+                    // his seat starts it again (see holdOnStand), so with the men
+                    // deleted after that nobody was left to stop it: on LAN an
+                    // Apache sat on its pad with its engine running and nobody in
+                    // it. Never with a player aboard, and set where the hull lives.
+                    private _fnc_engineStop = {
+                        params ["_v"];
+                        if (isNull _v || {!alive _v} || {!isEngineOn _v}) exitWith {};
+                        if (({isPlayer _x} count (crew _v)) > 0) exitWith {};
+                        if (local _v) then { _v engineOn false } else { [_v, false] remoteExec ["engineOn", _v] };
+                    };
+                    [_obj] call _fnc_engineStop;
                     // Their group goes too once it is empty. Every sortie is crewed
                     // with a new group, and one left behind counts against the
                     // side's group limit for the rest of the mission. Looked at a
-                    // second later, once the men are gone.
-                    [_groupsOut] spawn {
-                        params ["_groups"];
+                    // second later, once the men are gone, and the engine with it:
+                    // a man deleted this frame can still count as aboard.
+                    [_groupsOut, _obj, _fnc_engineStop] spawn {
+                        params ["_groups", "_v", "_fnc_engineStop"];
                         sleep 1;
                         { if (!isNull _x && {(count (units _x)) == 0}) then { _x call ALiVE_fnc_DeleteGroupRemote } } forEach _groups;
+                        if (!isNull _v && {({alive _x} count (crew _v)) == 0}) then { [_v] call _fnc_engineStop };
                     };
                     ["ALIVE_fnc_ATOEffect - crew of %1 deleted from %2 (%3)",
                         count _ours, typeOf _obj, _tailNow] call ALiVE_fnc_dump;
