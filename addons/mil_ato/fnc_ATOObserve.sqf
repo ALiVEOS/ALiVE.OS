@@ -66,6 +66,37 @@ switch(_operation) do {
         _result = [[["class", MAINCLASS]]] call ALIVE_fnc_hashCreate;
     };
 
+    // How many people are close enough to a point to see it, by body or by
+    // Zeus camera.
+    //
+    // A Zeus camera is not a body. A Blackfish was put on its stand the moment
+    // it slowed on the runway, in front of a player watching it land through
+    // Zeus from the control tower, because only bodies were counted. main's
+    // Zeus loop (fnc_ZEUSinit.sqf) moves every assigned curator logic to its
+    // camera once a second and parks it five kilometres off the map while the
+    // camera is closed, so on the server the logic's position IS the camera.
+    // Only a logic with a player assigned counts: one nobody owns stays where
+    // the mission maker put it, which could be the airfield. Headless clients
+    // sit in allPlayers and are dropped, as #918 did for the shared range test.
+    //
+    // That loop starts only when a Zeus module is placed in the mission. A
+    // curator made later by a script is counted where its logic stands rather
+    // than where its camera is, so its camera goes unseen, as every Zeus camera
+    // did before this.
+    //
+    // Needs no instance, so the effector asks it with a nil logic.
+    case "playersNear": {
+        _args params [["_p", [0,0,0], [[]]], ["_r", 300, [0]]];
+        private _bodies = (allPlayers - (entities "HeadlessClient_F")) select {
+            alive _x && {(_x distance2D _p) < _r}
+        };
+        private _cameras = allCurators select {
+            private _owner = getAssignedCuratorUnit _x;
+            !isNull _owner && {isPlayer _owner} && {(_x distance2D _p) < _r}
+        };
+        _result = (count _bodies) + (count _cameras);
+    };
+
     case "observe": {
         _args params [
             ["_obj", objNull, [objNull]],
@@ -492,10 +523,10 @@ switch(_operation) do {
         // ---- who is watching ------------------------------------------------
         // Counted separately around the aircraft and around its home, because
         // one decides whether it may be moved and the other whether it may skip
-        // an approach.
+        // an approach. Bodies and Zeus cameras both, see playersNear.
         private _fnc_players = {
             params ["_p", "_r"];
-            count (allPlayers select { alive _x && {(_x distance2D _p) < _r} })
+            [_logic, "playersNear", [_p, _r]] call MAINCLASS
         };
         ["playersWithin300",      [_pos, 300] call _fnc_players] call _fnc_set;
         ["playersWithin1000Hull", [_pos, 1000] call _fnc_players] call _fnc_set;

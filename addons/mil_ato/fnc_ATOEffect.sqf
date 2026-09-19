@@ -342,9 +342,10 @@ switch(_operation) do {
                     // Deleted outright only when nobody is close enough to see
                     // it happen. Otherwise they get out and are removed once
                     // they have walked off, because people vanishing in front of
-                    // you is worse than a few extra men standing about.
-                    private _watched = (allPlayers select { alive _x && {(_x distance2D _obj) < 300} });
-                    if (count _watched == 0) then {
+                    // you is worse than a few extra men standing about. Watching
+                    // through a Zeus camera counts, the same as the observer's.
+                    private _watched = [nil, "playersNear", [getPosATL _obj, 300]] call ALIVE_fnc_ATOObserve;
+                    if (_watched == 0) then {
                         { deleteVehicle _x } forEach _ours;
                         ["ALIVE_fnc_ATOEffect - crew of %1 deleted from %2 (%3)",
                             count _ours, typeOf _obj, _tailNow] call ALiVE_fnc_dump;

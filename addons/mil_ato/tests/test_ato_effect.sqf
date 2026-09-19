@@ -174,6 +174,23 @@ nothing changed and it said so.
     (["shield", ["BLU_F_0"]] call _fnc_apply) params ["_st17", "_m17"];
     ["shielding again changes nothing and says so", _m17] call _fnc_check;
 
+    // --- who counts as watching -------------------------------------------------
+    // Bodies, and Zeus cameras through the curator logics main's Zeus loop moves
+    // to them. A Zeus module nobody is assigned to stays where it was placed, so
+    // it must not count, or an airfield with one on it would be watched forever.
+    private _bodiesHere = count ((allPlayers - (entities "HeadlessClient_F")) select { alive _x && {(_x distance2D _spot) < 300} });
+    ["the watcher count agrees with the players standing near",
+        ([nil, "playersNear", [_spot, 300]] call ALIVE_fnc_ATOObserve) == _bodiesHere] call _fnc_check;
+    private _curGroup = createGroup sideLogic;
+    private _curator = _curGroup createUnit ["ModuleCurator_F", _spot, [], 0, "NONE"];
+    sleep 1;
+    diag_log format ["  info  an unowned Zeus module placed at the spot: in allCurators %1, owner %2",
+        _curator in allCurators, getAssignedCuratorUnit _curator];
+    ["a Zeus module nobody is assigned to is not a watcher",
+        (_curator in allCurators) && {([nil, "playersNear", [_spot, 300]] call ALIVE_fnc_ATOObserve) == _bodiesHere}] call _fnc_check;
+    deleteVehicle _curator;
+    deleteGroup _curGroup;
+
     // --- standing the crew down ------------------------------------------------
     // A player is within 300 m (the tester), so they should be dismissed rather
     // than deleted in front of them.
