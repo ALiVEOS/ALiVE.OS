@@ -161,6 +161,9 @@ open, which is also a fair statement of what the kernel will have to own.
             // kernel's job, done here in the open because there is no kernel.
             private _bookkeeping = ["assignFailed","markLost","onLost","sortieArrived",
                                     "sortieReturning","sortiePlayerControl",
+                                    // Radio calls, which the kernel words itself and hands
+                                    // the effector finished, never as a bare name.
+                                    "broadcastStart","broadcastOnStation","broadcastReturn","broadcastLost",
                                     "refusedTeleportPlayerAboard"];
             switch (true) do {
                 case (_x isEqualTo "lock"):   { [_s, "lock",   ["rwy", "BLU_F_0", time + 150]] call ALIVE_fnc_ATOSurface };
