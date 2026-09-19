@@ -387,10 +387,13 @@ private _fnc_homeFor = {
     // are never sent to the same bay. Answers from the cascade below are used
     // unvalidated for the same reason.
     private _bayHome = [];
+    // Never a VTOL. It lifts straight up where it stands, and a hangar has a
+    // roof.
     if (isNull _ownObj
         && {_kind isEqualTo "terrain"}
         && {_class isKindOf "Plane"}
         && {getNumber (configFile >> "CfgVehicles" >> _class >> "isUav") == 0}
+        && {getNumber (configFile >> "CfgVehicles" >> _class >> "vtol") == 0}
     ) then {
         private _bay = [_class, _flat, 400, "hangar"] call ALiVE_fnc_findAirSpawnPosition;
         if (count _bay >= 2) then {

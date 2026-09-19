@@ -1925,6 +1925,63 @@ switch(_operation) do {
                 private _spd = abs (speed _obj);
                 private _committed = _grp getVariable ["ALiVE_mil_ato_landing", false];
 
+                // ---- a VTOL ---------------------------------------------------
+                // Comes down on its stand in VTOL mode by its own landing, flying
+                // to the stand at 100 m and told to land once within 600 m, and
+                // is never given landAt. Measured on Stratis, DAO_Gunship_B and
+                // B_T_VTOL_01_armed_F from 2.2 km after the return chain:
+                //
+                //   the helicopter approach below (down to 30 m, limited speed,
+                //   commit within 150 m, 150 m up, 120 km/h): never slow enough
+                //   to commit, destroyed 3 of 3 at 169 to 432 km/h;
+                //   landAt its pad: both flew straight off at 537 km/h and were
+                //   33 km out four minutes later, and a landAt given as it came
+                //   down sent it up again after it had landed;
+                //   told only to fly to the stand: it arrived and flew on, 33 km
+                //   out at 470 km/h;
+                //   land "LAND" once within 600 m: down 0 to 4 m from its stand in
+                //   about 100 s, with a decoy pad 70 m away never chosen.
+                if ((_obj isKindOf "Plane") && {getNumber (configFile >> "CfgVehicles" >> typeOf _obj >> "vtol") != 0}) exitWith {
+                    // The stand's own pad, so the nearest pad is the right one.
+                    private _padV = [_surface, "padFor", [_home, _tail]] call ALIVE_fnc_ATOSurface;
+                    if (isNull _padV) exitWith { _status = "refused"; _detail = "no pad" };
+                    [_grp] call _fnc_quiesce;
+                    private _firstV = (_grp getVariable ["ALiVE_mil_ato_landingSince", -1]) < 0;
+                    if (_firstV) then {
+                        _grp setVariable ["ALiVE_mil_ato_landingSince", time, false];
+                    };
+                    _obj flyInHeight 100;
+                    if (!_committed) then {
+                        // Never told to land on its first tick, however near. The
+                        // move to its stand has to be the order it lands with: its
+                        // return orders gave it a move to a point 800 m out, still
+                        // pending, and a VTOL that lands with a move pending flies
+                        // off to finish it (see the runway landing). Every measured
+                        // landing had the move to its stand given first.
+                        if (_dPad < 600 && {!_firstV}) then {
+                            _obj land "LAND";
+                            _grp setVariable ["ALiVE_mil_ato_landing", true, false];
+                            _grp setVariable ["ALiVE_mil_ato_landingAimedAt", time, false];
+                            _detail = format ["VTOL told to come down %1 m out, %2 m up", round _dPad, round _agl];
+                        } else {
+                            (driver _obj) doMove _stand;
+                            _detail = format ["VTOL inbound %1 m, %2 m up, %3 km/h", round _dPad, round _agl, round _spd];
+                        };
+                    } else {
+                        // Told again every 35 s while it is still up, as the
+                        // helicopter's landing is.
+                        private _aimedAtV = _grp getVariable ["ALiVE_mil_ato_landingAimedAt", -1];
+                        if ((time - _aimedAtV) > 35 && {_agl > 2}) then {
+                            _obj land "LAND";
+                            _grp setVariable ["ALiVE_mil_ato_landingAimedAt", time, false];
+                            _detail = format ["VTOL told again to come down, %1 m out, %2 m up", round _dPad, round _agl];
+                        } else {
+                            _detail = format ["VTOL landing, %1 m out, %2 m up", round _dPad, round _agl];
+                        };
+                    };
+                    [_grp, _obj, _stand, _tail, _detail] call _fnc_stallSay;
+                };
+
                 // Arriving is being low, slow and over the stand, not merely
                 // being near it on the map.
                 //

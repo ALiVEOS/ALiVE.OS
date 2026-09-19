@@ -170,9 +170,19 @@ switch(_operation) do {
         // metres when it was destroyed. The same two airframes given the
         // airport instead came down on the runway and lived.
         //
-        // So anything that is a Plane at all comes back to a runway, and only
-        // a non-VTOL plane is catapulted off one.
-        ["needsRunway", _obj isKindOf "Plane"] call _fnc_set;
+        // So anything that is a Plane at all came back to a runway, and only a
+        // non-VTOL plane was catapulted off one.
+        //
+        // A VTOL now comes back to its STAND, by a landing of its own that it
+        // survives: the effector's landAtPad has a branch for it, measured (see
+        // there), which that 139 km/h figure was not; it was the helicopter's
+        // approach. On the runway it touched down and flew off again, because
+        // the move given with its return orders was still pending, and on LAN
+        // it was found 48 km out that way. So only a fixed-wing plane needs a
+        // runway, and a VTOL on a ship keeps the landing it had: the stand
+        // landing was measured on land only.
+        ["needsRunway", (_obj isKindOf "Plane")
+            && {(getNumber (configFile >> "CfgVehicles" >> typeOf _obj >> "vtol") == 0) || {_deckHome}}] call _fnc_set;
 
         // Whether a launch this module started is still running on this hull.
         //

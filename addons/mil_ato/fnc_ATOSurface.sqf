@@ -1003,6 +1003,12 @@ switch(_operation) do {
             // cross the runway wins. The first answer of all is kept as the
             // fallback, so nothing is lost when every rung is on the far side.
             private _fallback = [];
+            // No hangar for a VTOL: it lifts straight up where it stands, and a
+            // hangar has a roof.
+            private _rungs = ["helipad", "hangar", "apron", "field"];
+            if ((_class isKindOf "Plane") && {getNumber (configFile >> "CfgVehicles" >> _class >> "vtol") != 0}) then {
+                _rungs = _rungs - ["hangar"];
+            };
             {
                 if (count _air < 2) then {
                     private _try = [_class, _anchor, if (_x isEqualTo "helipad") then { PAD_REACH } else { 400 }, _x] call ALiVE_fnc_findAirSpawnPosition;
@@ -1016,7 +1022,7 @@ switch(_operation) do {
                         };
                     };
                 };
-            } forEach ["helipad", "hangar", "apron", "field"];
+            } forEach _rungs;
             if (count _air < 2 && {count _fallback >= 2}) then {
                 ["ALIVE_fnc_ATOSurface - every stand found for %1 is across the runway; taking the nearest one anyway",
                     _class] call ALiVE_fnc_dump;

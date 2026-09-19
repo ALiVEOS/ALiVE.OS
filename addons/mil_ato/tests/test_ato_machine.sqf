@@ -87,16 +87,16 @@ observation sequences, because those are what the table exists to prevent.
         // state is stepped for each of them rather than only for a helicopter
         // on land. These need no mission, which is why they belong here and not
         // in the carrier scene.
-        ["a plane on land",       [["needsRunway",true]]],
-        ["a plane on land, up",   [["needsRunway",true],["airborne",true],["atHome",false]]],
+        ["a plane on land",       [["needsRunway",true],["fixedWing",true]]],
+        ["a plane on land, up",   [["needsRunway",true],["fixedWing",true],["airborne",true],["atHome",false]]],
         ["a plane on a deck",     [["deckHome",true],["fixedWing",true],["needsRunway",true]]],
         ["a plane on a deck, up", [["deckHome",true],["fixedWing",true],["needsRunway",true],["airborne",true],["atHome",false]]],
         ["a plane mid launch",    [["deckHome",true],["fixedWing",true],["needsRunway",true],["launchInProgress",true],["crewSeated",true],["lockHeld",true]]],
         ["a helicopter on a deck",[["deckHome",true]]],
-        ["a VTOL on land",        [["needsRunway",true],["airborne",true],["atHome",false]]],
-        ["stopped on the runway",  [["needsRunway",true],["landed",true],["nearHome",true],["atHome",false],["onRunway",true],["playersWithin1000Hull",4]]],
+        ["a VTOL on land",        [["airborne",true],["atHome",false]]],
+        ["stopped on the runway",  [["needsRunway",true],["fixedWing",true],["landed",true],["nearHome",true],["atHome",false],["onRunway",true],["playersWithin1000Hull",4]]],
         ["a plane taxiing off",    [["needsRunway",true],["fixedWing",true],["landed",true],["touchingGround",true],["speed",20],["nearHome",true],["atHome",false],["playersWithin1000Hull",4]]],
-        ["stopped on a taxiway",   [["needsRunway",true],["landed",true],["nearHome",true],["atHome",false],["onTaxiway",true],["playersWithin1000Hull",4]]],
+        ["stopped on a taxiway",   [["needsRunway",true],["fixedWing",true],["landed",true],["nearHome",true],["atHome",false],["onTaxiway",true],["playersWithin1000Hull",4]]],
         ["broken on the ground",   [["canMove",false]]],
         ["a plane waiting on a busy runway", [["needsRunway",true],["fixedWing",true],["crewSeated",true],["lockBusy",true]]],
         ["an empty tank",          [["canMove",false],["fuel",0]]]
@@ -635,8 +635,8 @@ observation sequences, because those are what the table exists to prevent.
     ["a plane on land is held on its stand before its crew is made",
         _asState isEqualTo "ASSIGNED" && {(_asEff find "holdOnStand") > -1}
         && {(_asEff find "holdOnStand") < (_asEff find "mintCrew")}] call _fnc_check;
-    ["and so is a VTOL on land",
-        "holdOnStand" in (([[["needsRunway", true]]] call _fnc_assign) select 1)] call _fnc_check;
+    ["a VTOL on land is not held, nor given the runway: it lifts where it stands",
+        !("holdOnStand" in (([[]] call _fnc_assign) select 1)) && {!("lock" in (([[]] call _fnc_assign) select 1))}] call _fnc_check;
     ["a helicopter is not held",
         !("holdOnStand" in (([[]] call _fnc_assign) select 1))] call _fnc_check;
     ["nor is a plane on a deck",
@@ -664,7 +664,7 @@ observation sequences, because those are what the table exists to prevent.
     [_upRow, "deadlineAt", 920] call ALIVE_fnc_hashSet;
     [_upRow, "sortie", ["CAS", [100,100,0], 600, 2000, "s1", [], ""]] call ALIVE_fnc_hashSet;
     private _upOut = [_m, "step", [_upRow,
-        [[["crewSeated", true], ["lockHeld", false], ["airborne", true], ["atHome", false], ["needsRunway", true]]] call _fnc_obs,
+        [[["crewSeated", true], ["lockHeld", false], ["airborne", true], ["atHome", false], ["needsRunway", true], ["fixedWing", true]]] call _fnc_obs,
         "", 1000]] call ALIVE_fnc_ATOMachine;
     private _upState = [(_upOut select 0), "state", ""] call ALIVE_fnc_hashGet;
     private _upEff = _upOut select 2;

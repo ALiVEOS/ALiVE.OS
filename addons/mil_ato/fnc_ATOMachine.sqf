@@ -194,6 +194,13 @@ switch(_operation) do {
         // destroyed. So the landing branch asks this and the launch branch asks
         // about fixed wing.
         private _needsRunway = "needsRunway" call _fnc_o;
+        // And whether it needs one to take OFF, which only a fixed-wing plane
+        // does. A VTOL lifts where it stands, as the launch below already says,
+        // so it neither takes the runway lock nor waits for it: on LAN a
+        // Blackfish held the runway for eight minutes while three jets waited
+        // behind it for a runway it never used. A plane on a ship still takes
+        // it.
+        private _takesRunway = _needsRunway && {"fixedWing" call _fnc_o};
 
         // And whether a launch this module started is still running on the
         // hull. The table cannot read a variable off an object, so the observer
@@ -282,7 +289,7 @@ switch(_operation) do {
                                 // both ways: an Apache that could not get down held
                                 // the runway through five minutes of hovering while a
                                 // jet behind it ran out of time on NO_LOCK.
-                                private _lockOk = !_needsRunway || {"lockHeld" call _fnc_o};
+                                private _lockOk = !_takesRunway || {"lockHeld" call _fnc_o};
                                 if ("crewSeated" call _fnc_o && {_lockOk}) then {
                                     _next = "LAUNCHING";
                                 } else {
@@ -298,7 +305,7 @@ switch(_operation) do {
                                     // off, and not with a passenger sitting in it.
                                     private _waitForRunway = _expired && {"crewSeated" call _fnc_o} && {!_lockOk}
                                         && {"lockBusy" call _fnc_o}
-                                        && {_needsRunway && {!("deckHome" call _fnc_o)} && {!_virtualHome}}
+                                        && {_takesRunway && {!("deckHome" call _fnc_o)} && {!_virtualHome}}
                                         && {!_airborne} && {!_playerPassenger}
                                         && {([_row,"runwayWaits",0] call ALIVE_fnc_hashGet) < ASSIGN_LOCK_WAITS};
                                     if (_waitForRunway) then {
@@ -985,7 +992,7 @@ switch(_operation) do {
                     };
                     _effects append ["mintCrew","seatCrew"];
                     // The runway only for something that uses it.
-                    if (_needsRunway) then { _effects pushBack "lock" };
+                    if (_takesRunway) then { _effects pushBack "lock" };
                 };
                 // Start the engine as well as saying it is going. Announcing a
                 // departure does not make one happen.
