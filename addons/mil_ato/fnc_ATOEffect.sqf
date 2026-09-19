@@ -382,19 +382,52 @@ switch(_operation) do {
         };
 
         // Seventy metres off to one side of a heading, the side further from the
-        // runway, never into the sea, and for anything bigger than a man on the
-        // nearest spot it fits.
+        // runway first, on a spot that has been looked at: not in the sea, not
+        // on or beside the runway, and for anything bigger than a man a spot it
+        // fits with no building standing on it. [] when neither side has one,
+        // and then nothing is moved.
+        //
+        // It used to fall back to the raw point when no spot was found. On LAN a
+        // supply truck put aside that way landed in a building and was destroyed
+        // seventeen seconds later; the apron beside that taxiway is lined with
+        // tent hangars, whose open insides pass the empty-spot search.
         private _fnc_aside = {
             params ["_u", "_heading", "_cl"];
             private _a = _u getPos [70, _heading + 90];
             private _b = _u getPos [70, _heading - 90];
-            private _to = if ((([_a, _cl] call _fnc_offRunway) select 0) >= (([_b, _cl] call _fnc_offRunway) select 0)) then { _a } else { _b };
-            if (surfaceIsWater _to) then { _to = if (_to isEqualTo _a) then { _b } else { _a } };
-            if !(_u isKindOf "CAManBase") then {
-                private _clear = _to findEmptyPosition [0, 30, typeOf _u];
-                if (count _clear > 1) then { _to = _clear };
+            private _sides = if ((([_a, _cl] call _fnc_offRunway) select 0) >= (([_b, _cl] call _fnc_offRunway) select 0)) then { [_a, _b] } else { [_b, _a] };
+            private _isMan = _u isKindOf "CAManBase";
+            private _reach = 2;
+            if (!_isMan) then {
+                (boundingBoxReal _u) params ["_lo", "_hi"];
+                _reach = (((abs ((_hi select 0) - (_lo select 0))) max (abs ((_hi select 1) - (_lo select 1)))) / 2) + 2;
             };
-            _to set [2, 0];
+            private _to = [];
+            {
+                if (count _to < 2) then {
+                    private _p = _x;
+                    if (!_isMan) then { _p = _p findEmptyPosition [0, 60, typeOf _u] };
+                    if (count _p > 1) then {
+                        _p = [_p select 0, _p select 1, 0];
+                        // Nothing overhead at its middle or its four corners,
+                        // which is what finds the inside of a hangar, and no
+                        // building standing within its reach.
+                        private _roofed = false;
+                        {
+                            if (!_roofed) then {
+                                private _q = _p getPos [_x select 0, _x select 1];
+                                private _hits = lineIntersectsSurfaces [AGLToASL [_q select 0, _q select 1, 30], AGLToASL [_q select 0, _q select 1, 0.5], _u, objNull, true, 1, "GEOM", "NONE"];
+                                if (count _hits > 0 && {!isNull ((_hits select 0) select 2)}) then { _roofed = true };
+                            };
+                        } forEach [[0, 0], [_reach, 45], [_reach, 135], [_reach, 225], [_reach, 315]];
+                        private _clear = !_roofed
+                            && {!(surfaceIsWater _p)}
+                            && {(([_p, _cl] call _fnc_offRunway) select 0) > 40}
+                            && {(nearestObjects [_p, ["House", "Building"], _reach]) isEqualTo []};
+                        if (_clear) then { _to = _p };
+                    };
+                };
+            } forEach _sides;
             _to
         };
 
@@ -1179,8 +1212,13 @@ switch(_operation) do {
             // once. An empty military vehicle is left where it is: somebody put
             // it there. Nothing a player is in or leads, a player on foot, or
             // this aircraft's own crew is touched. Aside is seventy metres off
-            // the aircraft's line, on the side further from the runway, never
-            // into the sea, on the nearest clear spot for a vehicle.
+            // the aircraft's line, on a spot that has been checked (see
+            // _fnc_aside), and with no such spot the thing is left where it is.
+            //
+            // Nor a supply truck on its way to an aircraft or servicing one. On
+            // LAN one servicing an A-10 on its stand was in the path of another
+            // A-10 stuck in its hangar and was put aside into a building. The
+            // aircraft it serves names it, and the sweep leaves it alone.
             //
             // Civilian is asked of the vehicle's FACTION, not its side: an empty
             // vehicle reads as civilian side whatever it belongs to.
@@ -1200,6 +1238,15 @@ switch(_operation) do {
                     // The runway's line, to pick the side away from it.
                     private _cl = [];
                     if (!isNil "ALiVE_fnc_getRunwayCentreline") then { _cl = [getPosATL _jet, 1500] call ALiVE_fnc_getRunwayCentreline };
+                    // Nowhere clear on either side: left where it is, and said once.
+                    private _fnc_nowhere = {
+                        params ["_u"];
+                        if !(_u getVariable ["ALiVE_mil_ato_sweepNowhere", false]) then {
+                            _u setVariable ["ALiVE_mil_ato_sweepNowhere", true, false];
+                            ["ALIVE_fnc_ATOEffect - %1 in the taxi path of %2 (%3) left where it is: no clear spot within 60 m either side",
+                                typeOf _u, _tail, typeOf _jet] call ALiVE_fnc_dump;
+                        };
+                    };
                     private _fnc_putAside = {
                         params ["_u", "_to", "_how"];
                         private _was = getPosATL _u;
@@ -1210,6 +1257,11 @@ switch(_operation) do {
                     };
 
                     while { !isNull _jet && {alive _jet} && {((getPosATL _jet) select 2) < 50} && {time < _stop} } do {
+                        private _serving = [];
+                        {
+                            private _t = _x getVariable ["ALIVE_resupply_vehicle", objNull];
+                            if (_t isEqualType objNull && {!isNull _t}) then { _serving pushBack _t };
+                        } forEach vehicles;
                         private _pos = getPosATL _jet;
                         private _heading = getDir _jet;
                         private _hx = sin _heading;
@@ -1237,10 +1289,16 @@ switch(_operation) do {
                                 && {getNumber (configFile >> "CfgFactionClasses" >> (faction _u) >> "side") == 3};
                             if (alive _u && {!(_u isEqualTo _jet)} && {isNull (objectParent _u)} && {!_players}
                                 && {!(_u getVariable ["ALiVE_mil_ato_crew", false])}
+                                && {!(_u in _serving)}
                                 && {_isMan || {count _aboard > 0} || {_civilianEmpty}}
                                 && {_ahead > 0} && {_lateral < 30}) then {
                                 if (_civilianEmpty) then {
-                                    [_u, [_u, _heading, _cl] call _fnc_aside, "an empty"] call _fnc_putAside;
+                                    private _toE = [_u, _heading, _cl] call _fnc_aside;
+                                    if (count _toE > 1) then {
+                                        [_u, _toE, "an empty"] call _fnc_putAside;
+                                    } else {
+                                        [_u] call _fnc_nowhere;
+                                    };
                                 } else {
                                     private _warned = _u getVariable ["ALiVE_mil_ato_sweepAt", -1];
                                     if (_warned < 0) then {
@@ -1251,7 +1309,7 @@ switch(_operation) do {
                                         private _mover = if (_isMan) then { _u } else {
                                             if (!isNull (driver _u)) then { driver _u } else { effectiveCommander _u }
                                         };
-                                        if (!isNull _mover) then { _mover doMove _to };
+                                        if (!isNull _mover && {count _to > 1}) then { _mover doMove _to };
                                     } else {
                                         private _from = _u getVariable ["ALiVE_mil_ato_sweepFrom", getPosATL _u];
                                         if ((_u distance2D _from) > 10) then {
@@ -1259,7 +1317,13 @@ switch(_operation) do {
                                             _u setVariable ["ALiVE_mil_ato_sweepAt", -1, false];
                                         } else {
                                             if ((time - _warned) > 5) then {
-                                                [_u, _u getVariable ["ALiVE_mil_ato_sweepTo", [_u, _heading, _cl] call _fnc_aside], "a"] call _fnc_putAside;
+                                                private _toC = _u getVariable ["ALiVE_mil_ato_sweepTo", []];
+                                                if !(_toC isEqualType [] && {count _toC > 1}) then { _toC = [_u, _heading, _cl] call _fnc_aside };
+                                                if (count _toC > 1) then {
+                                                    [_u, _toC, "a"] call _fnc_putAside;
+                                                } else {
+                                                    [_u] call _fnc_nowhere;
+                                                };
                                                 _u setVariable ["ALiVE_mil_ato_sweepAt", -1, false];
                                             };
                                         };
