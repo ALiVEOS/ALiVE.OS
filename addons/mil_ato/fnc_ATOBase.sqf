@@ -1340,9 +1340,10 @@ switch(_operation) do {
 
         // ---- the initial placement ----------------------------------------
         // Placement decides for itself whether anything is wanted: the place
-        // air setting, the carrier refusal, and the "fewer than two armed
-        // records" gate all live there. Asked after both sweeps, as the
-        // contract orders it, so what was adopted counts against the gate.
+        // air setting, the carrier refusal, the "fewer than two armed records"
+        // gate and the separate drone setting all live there. Asked after both
+        // sweeps, as the contract orders it, so what was adopted counts
+        // against the gate.
         private _placed = [];
         if (_failed isEqualTo "" && {[_place] call ALIVE_fnc_isHash}) then {
             [_logic, "phase", "placing"] call ALIVE_fnc_hashSet;

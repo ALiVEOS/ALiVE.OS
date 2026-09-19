@@ -2046,11 +2046,13 @@ switch(_operation) do {
     };
 
     // ---- initial placement --------------------------------------------------
-    // placeInitial() -> tails. Runs when the sweep yielded fewer than two ARMED
-    // present records, and when either placing aircraft is on or the base has
-    // no airfield. D2 helicopters on the field's pads, D3 planes one per hangar
-    // building up to the cap, D12 one drone, each hull created directly at a
-    // cascade home.
+    // placeInitial() -> tails. Two separate questions, because the mission
+    // maker asks them with two separate settings. Crewed aircraft: wanted when
+    // the sweep yielded fewer than two ARMED present records and either placing
+    // aircraft is on or the base has no airfield. A drone: wanted when Place
+    // Drones is on and the books hold no drone already. D2 helicopters on the
+    // field's pads, D3 planes one per hangar building up to the cap, D12 one
+    // drone, each hull created directly at a cascade home.
     //
     // The hangar-fit rung (bounding box against the building, doors, the
     // heading flip) is NOT ported here: a home inside a hangar cannot pass
@@ -2091,27 +2093,52 @@ switch(_operation) do {
         // out loud below rather than done quietly.
         private _virtual = [_base, "isVirtual", false] call ALIVE_fnc_hashGet;
         private _placeAir = [_logic, "placeAir", false] call ALIVE_fnc_hashGet;
-        if (!_placeAir && {!_virtual}) exitWith { _result = [] };
+        // Read here rather than down at the drone rung, because whether a drone
+        // is wanted has to be known before the case decides to do nothing at
+        // all. A single gate on Place Air Assets used to leave before the rung,
+        // which made Place Drones do nothing whenever it was the only one on.
+        private _droneOn = ([_logic, "placeDrones", false] call ALIVE_fnc_hashGet)
+            && {[_logic, "useUAVs", true] call ALIVE_fnc_hashGet};
 
-        // The gate counts armed, crewed aircraft on the books. A drone or an
-        // unarmed airframe is not what the gate is asking about.
+        // One pass over the books for both questions. The crewed count is armed
+        // crewed aircraft only: a drone or an unarmed airframe is not what that
+        // question is asking about. The drone side counts a record whose drone
+        // is coming back as one the base already has, so a restored save is not
+        // given a second one. A record lost with a delivery already ordered is
+        // deliberately NOT counted: the order table lives only for the session,
+        // so after a load nothing is coming and the base would otherwise fly no
+        // drone for the rest of the mission.
         private _view = [_ledger, "view"] call ALIVE_fnc_ATOLedger;
         private _values = _view select 2;
         private _armed = 0;
+        private _haveDrone = false;
         {
             private _rec = _values select _forEachIndex;
             private _cls = [_rec, "vehicleClass", ""] call ALIVE_fnc_hashGet;
-            if (([_rec, "status", ""] call ALIVE_fnc_hashGet) isEqualTo "present"
-                && {!(_cls isEqualTo "")}
-                && {[_cls] call ALiVE_fnc_isArmed}
-                && {!([_cls] call _fnc_isDroneClass)}) then { _armed = _armed + 1 };
+            private _status = [_rec, "status", ""] call ALIVE_fnc_hashGet;
+            if !(_cls isEqualTo "") then {
+                if ([_cls] call _fnc_isDroneClass) then {
+                    private _wants = [_rec, "replacement", ""] call ALIVE_fnc_hashGet;
+                    if (_status in ["present", "unplaceable"]
+                        || {_status isEqualTo "lost" && {_wants in ["wanted", "selfCreate"]}}) then {
+                        _haveDrone = true;
+                    };
+                } else {
+                    if (_status isEqualTo "present" && {[_cls] call ALiVE_fnc_isArmed}) then {
+                        _armed = _armed + 1;
+                    };
+                };
+            };
         } forEach (_view select 1);
-        if (_armed >= 2) exitWith { _result = [] };
 
-        // Said only where it changed the outcome: after the count above, so a
+        private _wantCrewed = (_placeAir || {_virtual}) && {_armed < 2};
+        private _wantDrone = _droneOn && {!_haveDrone};
+        if (!_wantCrewed && {!_wantDrone}) exitWith { _result = [] };
+
+        // Said only where it changed the outcome: after the counts above, so a
         // base that already has its fleet does not announce an override that
         // did nothing.
-        if (_virtual && {!_placeAir}) then {
+        if (_wantCrewed && {_virtual} && {!_placeAir}) then {
             ["ALIVE_fnc_ATOPlace - %1 has no airfield and cannot take over an aircraft that already exists, so it is given its own at its ingress point even though Place Air Assets is off. Nothing else can give this commander aircraft.",
                 _faction] call ALiVE_fnc_dumpR;
         };
@@ -2164,6 +2191,12 @@ switch(_operation) do {
         private _slots = [_base, "virtualSlots", 6] call ALIVE_fnc_hashGet;
         if !(_slots isEqualType 0) then { _slots = 6 };
         _slots = (round _slots) max 1;
+
+        // Everything from here to the end of the airfield rungs makes CREWED
+        // aircraft, so a base that wants only a drone skips all of it. Left at
+        // the indentation it had, the same way the airfield rungs inside it
+        // are, so the rungs read as they did before.
+        if (_wantCrewed) then {
 
         if (_virtual) then {
             // Ingress Aircraft is how many aircraft fly from the point, not how
@@ -2277,11 +2310,12 @@ switch(_operation) do {
         // the branch above instead of.
         };
 
+        // The end of the crewed aircraft.
+        };
+
         // ---- D12 one drone -------------------------------------------------
-        private _droneOn = ([_logic, "placeDrones", false] call ALIVE_fnc_hashGet)
-            && {[_logic, "useUAVs", true] call ALIVE_fnc_hashGet};
         private _drones = [];
-        if (_droneOn) then {
+        if (_wantDrone) then {
             private _custom = [_logic, "droneTypes", ""] call ALIVE_fnc_hashGet;
             if !(_custom isEqualType "") then { _custom = "" };
             if !(_custom isEqualTo "") then {
@@ -2316,7 +2350,11 @@ switch(_operation) do {
             };
         };
 
-        if (count _tails == 0 && {count _helis == 0} && {count _planes == 0} && {count _drones == 0}) then {
+        // Only where crewed aircraft were actually looked for. In drone-only
+        // mode the two lists were never filled, and saying the faction has no
+        // admissible aircraft class on the strength of lists nobody read would
+        // be wrong; the drone rung says its own piece about drones.
+        if (_wantCrewed && {count _tails == 0} && {count _helis == 0} && {count _planes == 0} && {count _drones == 0}) then {
             ["ALIVE_fnc_ATOPlace - no admissible aircraft class for faction %1; nothing placed", _faction] call ALiVE_fnc_dump;
         };
 

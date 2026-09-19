@@ -350,6 +350,123 @@ can be made to say anything; a profile that is still registered cannot.
         "a replacement built at its stand has its class's roles  (no stand found)" call _fnc_skip;
     };
 
+    // --- the two placement settings are asked separately ---------------------
+    // Place Drones used to do nothing on an airfield base unless Place Air
+    // Assets was on as well, because the case left before the drone rung. The
+    // two questions are now asked separately, and the drone one also asks
+    // whether the books already hold a drone, so a restored save is not given
+    // a second one.
+    //
+    // Every configuration gets its own ledger, surface and placement, and its
+    // hulls are removed as soon as its answer has been read: placeInitial
+    // clears the surface's reservations at the start of a pass, so a shared
+    // surface would let one configuration park on a stand another is using,
+    // and hulls left standing crowd the apron the next one is looking at.
+    //
+    // The drone class is pinned rather than left to the faction index, which
+    // the rung picks from at random and which holds classes that resolve to no
+    // role and would be refused, making the test fail at random.
+    private _droneClass = "B_UAV_01_F";
+    ["FIXTURE: the pinned drone class resolves to a role",
+        count ([_droneClass, []] call ALiVE_fnc_getAircraftRoles) > 0] call _fnc_check;
+
+    private _fnc_isDroneCls = {
+        params [["_cls", "", [""]]];
+        (_cls isKindOf "UAV") || {getNumber (configFile >> "CfgVehicles" >> _cls >> "isUav") == 1}
+    };
+
+    // [extra configuration, code that seeds the ledger] -> the classes placed.
+    private _fnc_placeWith = {
+        params ["_extra", ["_seed", {}, [{}]]];
+        private _l = [nil, "create"] call ALIVE_fnc_ATOLedger;
+        private _s = [nil, "create"] call ALIVE_fnc_ATOSurface;
+        private _p = [nil, "create"] call ALIVE_fnc_ATOPlace;
+        [_p, "configure", ([
+            ["ledger", _l], ["surface", _s], ["effect", _effect],
+            ["side", "WEST"], ["faction", "BLU_F"], ["factions", ["BLU_F"]],
+            ["useUAVs", true], ["droneTypes", _droneClass],
+            ["base", [[["center", _anchor], ["isCarrier", false], ["airspace", ""]]] call ALIVE_fnc_hashCreate]
+        ] + _extra)] call ALIVE_fnc_ATOPlace;
+        _l call _seed;
+        private _tails = [_p, "placeInitial", []] call ALIVE_fnc_ATOPlace;
+        if !(_tails isEqualType []) then { _tails = [] };
+        private _classes = [];
+        {
+            _classes pushBack ([[_l, "get", _x] call ALIVE_fnc_ATOLedger, "vehicleClass", ""] call ALIVE_fnc_hashGet);
+            private _o = [_p, "objFor", _x] call ALIVE_fnc_ATOPlace;
+            if (!isNull _o) then {
+                { deleteVehicle _x } forEach (crew _o);
+                deleteVehicle _o;
+            };
+        } forEach _tails;
+        sleep 1;
+        _classes
+    };
+
+    private _fnc_droneCount = {
+        count (_this select { [_x] call _fnc_isDroneCls })
+    };
+    private _fnc_crewedCount = {
+        count (_this select { !([_x] call _fnc_isDroneCls) })
+    };
+
+    private _dronesOnly = [[["placeAir", false], ["placeDrones", true]]] call _fnc_placeWith;
+    diag_log format ["  info  Place Drones on, Place Air Assets off placed %1", _dronesOnly];
+    ["Place Drones on its own places one drone",
+        count _dronesOnly == 1 && {[_dronesOnly select 0] call _fnc_isDroneCls}] call _fnc_check;
+
+    private _neither = [[["placeAir", false], ["placeDrones", false]]] call _fnc_placeWith;
+    diag_log format ["  info  both settings off placed %1", _neither];
+    ["both settings off still places nothing", _neither isEqualTo []] call _fnc_check;
+
+    private _uavsOff = [[["placeAir", false], ["placeDrones", true], ["useUAVs", false]]] call _fnc_placeWith;
+    diag_log format ["  info  Place Drones on with drones turned off placed %1", _uavsOff];
+    ["a commander with drones turned off places none", _uavsOff isEqualTo []] call _fnc_check;
+
+    private _both = [[["placeAir", true], ["placeDrones", true]]] call _fnc_placeWith;
+    diag_log format ["  info  both settings on placed %1", _both];
+    ["both settings on place crewed aircraft and one drone",
+        (_both call _fnc_crewedCount) > 0 && {(_both call _fnc_droneCount) == 1}] call _fnc_check;
+
+    private _fnc_seedDrone = {
+        private _l = _this;
+        private _t = [_l, "createRecord", [_droneClass, "BLU_F", [""], [["Recon"], []]]] call ALIVE_fnc_ATOLedger;
+        [_l, "markPresent", _t] call ALIVE_fnc_ATOLedger;
+    };
+    private _second = [[["placeAir", false], ["placeDrones", true]], _fnc_seedDrone] call _fnc_placeWith;
+    diag_log format ["  info  a base that already has a drone placed %1", _second];
+    ["a base whose books already hold a drone is not given another",
+        _second isEqualTo []] call _fnc_check;
+
+    private _crewedBeside = [[["placeAir", true], ["placeDrones", true]], _fnc_seedDrone] call _fnc_placeWith;
+    diag_log format ["  info  a base with a drone and Place Air Assets on placed %1", _crewedBeside];
+    ["and still gets its crewed aircraft, with no second drone",
+        (_crewedBeside call _fnc_crewedCount) > 0 && {(_crewedBeside call _fnc_droneCount) == 0}] call _fnc_check;
+
+    private _fnc_seedArmed = {
+        private _l = _this;
+        for "_i" from 1 to 2 do {
+            private _t = [_l, "createRecord", ["B_Heli_Attack_01_F", "BLU_F", [""], [["Attack"], ["CAS"]]]] call ALIVE_fnc_ATOLedger;
+            [_l, "markPresent", _t] call ALIVE_fnc_ATOLedger;
+        };
+    };
+    private _armedFleet = [[["placeAir", true], ["placeDrones", true]], _fnc_seedArmed] call _fnc_placeWith;
+    diag_log format ["  info  a base with two armed aircraft and Place Drones on placed %1", _armedFleet];
+    ["a base with its crewed fleet already on the books still gets its drone",
+        count _armedFleet == 1 && {(_armedFleet call _fnc_droneCount) == 1}] call _fnc_check;
+
+    private _fnc_seedLostDrone = {
+        private _l = _this;
+        private _t = [_l, "createRecord", [_droneClass, "BLU_F", [""], [["Recon"], []]]] call ALIVE_fnc_ATOLedger;
+        [_l, "markPresent", _t] call ALIVE_fnc_ATOLedger;
+        [_l, "markLost", _t] call ALIVE_fnc_ATOLedger;
+        [_l, "setReplacement", [_t, "wanted"]] call ALIVE_fnc_ATOLedger;
+    };
+    private _lostDrone = [[["placeAir", false], ["placeDrones", true]], _fnc_seedLostDrone] call _fnc_placeWith;
+    diag_log format ["  info  a base whose drone is lost and awaiting a replacement placed %1", _lostDrone];
+    ["a drone already on its way back is not doubled up",
+        _lostDrone isEqualTo []] call _fnc_check;
+
     // --- cleanup -------------------------------------------------------------
     {
         if (!isNull _x) then {
