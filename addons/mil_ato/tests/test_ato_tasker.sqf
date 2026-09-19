@@ -251,6 +251,64 @@ Runs spawned to match the other tests, though nothing here needs a tick.
     ["and each refusal rules that aircraft out of the next attempt",
         count _excluded == 3] call _fnc_check;
 
+    // --- a pair that loses one aircraft -------------------------------------
+    // A suppression sortie flies as a pair. One of them failing to launch used
+    // to clear both and send the sortie back to be planned while the other was
+    // still flying it, and the first one home closed it under the other.
+    private _fnc_pair = {
+        private _tp = [nil, "create"] call ALIVE_fnc_ATOTask;
+        [_tp, "firstPassDone"] call ALIVE_fnc_ATOTask;
+        private _id = [_tp, "submit", ["SEAD"] call _fnc_request] call ALIVE_fnc_ATOTask;
+        [_tp, "dispatch", [_id, ["p1","p2"]]] call ALIVE_fnc_ATOTask;
+        [_tp, _id]
+    };
+    private _fnc_field = {
+        params ["_tp", "_id", "_key", "_default"];
+        private _rec = [_tp, "sortie", _id] call ALIVE_fnc_ATOTask;
+        if ([_rec] call ALIVE_fnc_isHash) then { [_rec, _key, _default] call ALIVE_fnc_hashGet } else { _default }
+    };
+
+    (call _fnc_pair) params ["_pa", "_paId"];
+    private _pa1 = [_pa, "onRowEvent", [_paId, "p2", "assignFailed", 1010]] call ALIVE_fnc_ATOTask;
+    ["one of a pair failing to launch leaves the sortie with the other",
+        _pa1 isEqualTo "assigned" && {([_pa, _paId, "tails", []] call _fnc_field) isEqualTo ["p1"]}
+        && {"p2" in ([_pa, _paId, "excluded", []] call _fnc_field)} && {([_pa, _paId, "attempts", 0] call _fnc_field) == 0}] call _fnc_check;
+    private _pa2 = [_pa, "onRowEvent", [_paId, "p1", "assignFailed", 1020]] call ALIVE_fnc_ATOTask;
+    ["and only the second failure hands it back to be planned, as one attempt",
+        _pa2 isEqualTo "planning" && {([_pa, _paId, "tails", ["x"]] call _fnc_field) isEqualTo []}
+        && {([_pa, _paId, "attempts", 0] call _fnc_field) == 1}] call _fnc_check;
+
+    (call _fnc_pair) params ["_pb", "_pbId"];
+    [_pb, "onRowEvent", [_pbId, "", "sortieArrived", 1010]] call ALIVE_fnc_ATOTask;
+    private _pb1 = [_pb, "onRowEvent", [_pbId, "p1", "tailLanded", 1020]] call ALIVE_fnc_ATOTask;
+    ["the first of a pair home does not close the sortie under the other",
+        _pb1 isEqualTo "onStation" && {([_pb, _pbId, "tails", []] call _fnc_field) isEqualTo ["p2"]}] call _fnc_check;
+    private _pb2 = [_pb, "onRowEvent", [_pbId, "p2", "tailLanded", 1030]] call ALIVE_fnc_ATOTask;
+    ["the last one home does",
+        _pb2 isEqualTo "complete" && {([_pb, _pbId, "reason", ""] call _fnc_field) isEqualTo "landed"}] call _fnc_check;
+
+    (call _fnc_pair) params ["_pc", "_pcId"];
+    [_pc, "onRowEvent", [_pcId, "", "sortieArrived", 1010]] call ALIVE_fnc_ATOTask;
+    [_pc, "onRowEvent", [_pcId, "p1", "tailLanded", 1020]] call ALIVE_fnc_ATOTask;
+    private _pc2 = [_pc, "onRowEvent", [_pcId, "p2", "assignFailed", 1300]] call ALIVE_fnc_ATOTask;
+    ["one that fails to launch after its wingman flew the job and came home closes it, not a new pair",
+        _pc2 isEqualTo "complete" && {([_pc, _pcId, "reason", ""] call _fnc_field) isEqualTo "landed"}
+        && {([_pc, _pcId, "attempts", 0] call _fnc_field) == 0} && {([_pc, _pcId, "landedBy", ""] call _fnc_field) isEqualTo "p1"}] call _fnc_check;
+
+    (call _fnc_pair) params ["_pd", "_pdId"];
+    [_pd, "onRowEvent", [_pdId, "", "sortieArrived", 1010]] call ALIVE_fnc_ATOTask;
+    [_pd, "onRowEvent", [_pdId, "p1", "onLost", 1020]] call ALIVE_fnc_ATOTask;
+    private _pd2 = [_pd, "onRowEvent", [_pdId, "p2", "assignFailed", 1300]] call ALIVE_fnc_ATOTask;
+    ["but after its wingman was lost on the job, it is planned again",
+        _pd2 isEqualTo "planning"] call _fnc_check;
+
+    (call _fnc_pair) params ["_pe", "_peId"];
+    [_pe, "onRowEvent", [_peId, "", "sortieArrived", 1010]] call ALIVE_fnc_ATOTask;
+    private _pe1 = [_pe, "onRowEvent", [_peId, "p1", "tailRetired", 1020]] call ALIVE_fnc_ATOTask;
+    private _pe2 = [_pe, "onRowEvent", [_peId, "p2", "tailRetired", 1030]] call ALIVE_fnc_ATOTask;
+    ["retiring one of a pair leaves the sortie with the other, and retiring both closes it",
+        _pe1 isEqualTo "onStation" && {_pe2 isEqualTo "complete"} && {([_pe, _peId, "reason", ""] call _fnc_field) isEqualTo "retired"}] call _fnc_check;
+
     // --- an airspace that is already covered --------------------------------
     private _t7 = [nil, "create"] call ALIVE_fnc_ATOTask;
     [_t7, "firstPassDone"] call ALIVE_fnc_ATOTask;

@@ -503,18 +503,50 @@ switch(_operation) do {
             // The airframe could not take the job. Put the request back with
             // that tail excluded, so the next attempt reaches a different
             // aircraft rather than the same one three times.
+            //
+            // Only the LAST aircraft's failure hands the sortie back. A
+            // suppression sortie goes out as a pair, and when one of them never
+            // got its crew seated this cleared both, put the sortie back to be
+            // planned and sent a fresh pair while the other was still flying
+            // it: off the sortie's list, out of reach of a status request or a
+            // cancel, and closing the sortie under the new pair when it landed.
+            // The kernel already keeps a sortie that PART of its aircraft took;
+            // the ASSIGNED deadline and the can't-fly call-off got here without
+            // that guard.
+            //
+            // And a sortie the other aircraft has already flown and come home
+            // from is finished, not planned again. The launch deadline of one
+            // can fall due minutes after its wingman took off first, flew a
+            // near target and landed. Only when one did land: a sortie whose
+            // flying aircraft was lost has not been done, and is planned again.
             case "assignFailed": {
-                private _attempts = ([_s, "attempts", 0] call ALIVE_fnc_hashGet) + 1;
                 private _excluded = [_s, "excluded", []] call ALIVE_fnc_hashGet;
                 if !(_tail isEqualTo "") then { _excluded pushBackUnique _tail };
-                [_s, "attempts", _attempts] call ALIVE_fnc_hashSet;
                 [_s, "excluded", _excluded] call ALIVE_fnc_hashSet;
-                [_s, "tails", []] call ALIVE_fnc_hashSet;
-                if (_attempts >= MAX_ATTEMPTS) then {
-                    [_s, "state", "denied"] call ALIVE_fnc_hashSet;
-                    [_s, "reason", "no airframe took the job"] call ALIVE_fnc_hashSet;
-                } else {
-                    [_s, "state", "planning"] call ALIVE_fnc_hashSet;
+                private _tails = [_s, "tails", []] call ALIVE_fnc_hashGet;
+                private _others = _tails - [_tail];
+                private _state = [_s, "state", ""] call ALIVE_fnc_hashGet;
+                private _flownHome = !(([_s, "landedBy", ""] call ALIVE_fnc_hashGet) isEqualTo "");
+                switch (true) do {
+                    case (_tail in _tails && {count _others > 0}): {
+                        [_s, "tails", _others] call ALIVE_fnc_hashSet;
+                    };
+                    case (_flownHome && {_state in ["onStation","returning"]}): {
+                        [_s, "tails", []] call ALIVE_fnc_hashSet;
+                        [_s, "state", "complete"] call ALIVE_fnc_hashSet;
+                        [_s, "reason", "landed"] call ALIVE_fnc_hashSet;
+                    };
+                    default {
+                        private _attempts = ([_s, "attempts", 0] call ALIVE_fnc_hashGet) + 1;
+                        [_s, "attempts", _attempts] call ALIVE_fnc_hashSet;
+                        [_s, "tails", []] call ALIVE_fnc_hashSet;
+                        if (_attempts >= MAX_ATTEMPTS) then {
+                            [_s, "state", "denied"] call ALIVE_fnc_hashSet;
+                            [_s, "reason", "no airframe took the job"] call ALIVE_fnc_hashSet;
+                        } else {
+                            [_s, "state", "planning"] call ALIVE_fnc_hashSet;
+                        };
+                    };
                 };
                 _result = [_s, "state", ""] call ALIVE_fnc_hashGet;
             };
@@ -522,14 +554,37 @@ switch(_operation) do {
             // A sortie whose every aircraft is gone, or has been taken over by
             // a player, is finished whatever it was sent to do. Recorded with
             // the reason so the record explains itself later.
+            //
+            // The same for an aircraft that is finished with a sortie the rest
+            // of its pair is still flying: retired, turned onto another job, or
+            // home. It comes off the list and the last one closes the sortie.
+            // One that lands is remembered, so whichever event closes the
+            // sortie can say which aircraft flew the job.
             case "onLost";
-            case "sortiePlayerControl": {
+            case "sortiePlayerControl";
+            case "tailRetired";
+            case "tailRerouted";
+            case "tailRecovered";
+            case "tailLanded": {
                 private _tails = [_s, "tails", []] call ALIVE_fnc_hashGet;
                 _tails = _tails - [_tail];
                 [_s, "tails", _tails] call ALIVE_fnc_hashSet;
+                if (_event isEqualTo "tailLanded" && {!(_tail isEqualTo "")}) then {
+                    [_s, "landedBy", _tail] call ALIVE_fnc_hashSet;
+                };
                 if (count _tails == 0) then {
                     [_s, "state", "complete"] call ALIVE_fnc_hashSet;
-                    private _why = if (_event isEqualTo "onLost") then {"every aircraft lost"} else {"taken over by a player"};
+                    // One of them flew the job and came home, whatever became
+                    // of the last: that is how the sortie ended.
+                    private _why = if !(([_s, "landedBy", ""] call ALIVE_fnc_hashGet) isEqualTo "") then { "landed" } else {
+                        switch (_event) do {
+                            case "onLost":        { "every aircraft lost" };
+                            case "tailRetired":   { "retired" };
+                            case "tailRerouted":  { "rerouted" };
+                            case "tailRecovered": { "recovered" };
+                            default               { "taken over by a player" };
+                        }
+                    };
                     [_s, "reason", _why] call ALIVE_fnc_hashSet;
                 };
                 _result = [_s, "state", ""] call ALIVE_fnc_hashGet;

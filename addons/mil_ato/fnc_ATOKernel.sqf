@@ -394,6 +394,17 @@ private _fnc_recField = {
     _out
 };
 
+// The other tails still on a sortie, from the same map the part-took guard
+// reads. A suppression sortie flies as a pair, and anything that ends a
+// sortie because ONE of its aircraft is finished has to ask this first.
+private _fnc_othersOn = {
+    params [["_sortieOf", [], [[]]], ["_sid", "", [""]], ["_tail", "", [""]]];
+    if (_sid isEqualTo "" || {count _sortieOf < 2}) exitWith { [] };
+    (_sortieOf select 1) select {
+        !(_x isEqualTo _tail) && {([_sortieOf, _x, ""] call ALIVE_fnc_hashGet) isEqualTo _sid}
+    }
+};
+
 // The home of a tail, read FRESH from the ledger every time it is needed. The
 // row carries a home too, but the state table never reads it and placement's
 // rehome writes only the ledger, so the ledger is the one that is right.
@@ -807,26 +818,53 @@ private _fnc_transition = {
             // as well would leave the tasker with a sortie that is both
             // complete and planning, plus a mission-complete call on the
             // radio for an aircraft that never moved.
+            //
+            // And closed by the LAST aircraft home. A suppression sortie flies
+            // as a pair, and closing it when the first one parked freed its
+            // airspace for a second pair while the other was still over the
+            // target. The one that is home comes off the sortie and keeps its
+            // turnaround; the sortie, the tuple and the call on the radio wait
+            // for the last. The call names whichever aircraft landed.
             private _sid = [_sortieOf, _tail, ""] call ALIVE_fnc_hashGet;
+            private _flew = [_row2, "flew", false] call ALIVE_fnc_hashGet;
+            [_row2, "flew", false] call ALIVE_fnc_hashSet;
             if (!(_sid isEqualTo "") && {!("assignFailed" in _effects)}) then {
-                private _landed = _from in ["LANDING","RTB"];
+                private _landed = (_from in ["LANDING","RTB"])
+                    || {_from isEqualTo "RECOVERING" && {_flew isEqualTo true}};
+                private _others = [_sortieOf, _sid, _tail] call _fnc_othersOn;
+                private _announce = if (_landed) then { _tail } else { "" };
                 if !(_task isEqualTo []) then {
-                    [_task, "complete", [_sid, if (_landed) then { "landed" } else { "recovered" }]] call ALIVE_fnc_ATOTask;
+                    if (count _others > 0) then {
+                        [_task, "onRowEvent", [_sid, _tail, if (_landed) then { "tailLanded" } else { "tailRecovered" }, _now]] call ALIVE_fnc_ATOTask;
+                    } else {
+                        if (_announce isEqualTo "") then {
+                            private _rec = [_task, "sortie", _sid] call ALIVE_fnc_ATOTask;
+                            if ([_rec] call ALIVE_fnc_isHash) then { _announce = [_rec, "landedBy", ""] call ALIVE_fnc_hashGet };
+                        };
+                        [_task, "complete", [_sid, if (_landed) then { "landed" } else { "recovered" }]] call ALIVE_fnc_ATOTask;
+                    };
                 };
-                if (_landed) then {
+                if (count _others == 0 && {!(_announce isEqualTo "")}) then {
                     [_logic, "STR_ALIVE_ATO_MISSION_COMPLETE",
-                        [[_logic] call _fnc_hqName, [_logic, _tail, "callsign", _tail] call _fnc_recField, _type]] call _fnc_radio;
+                        [[_logic] call _fnc_hqName, [_logic, _announce, "callsign", _announce] call _fnc_recField, _type]] call _fnc_radio;
                 };
                 // The turnaround. The table reads readyAt when it is asked to
                 // assign and never sets it, so the kernel sets it here.
                 [_row2, "readyAt", _now + TURNAROUND_MIN + (random TURNAROUND_SPREAD)] call ALIVE_fnc_hashSet;
                 [_row2, "sortie", []] call ALIVE_fnc_hashSet;
                 [_sortieOf, _tail, ""] call ALIVE_fnc_hashSet;
-                [_tuples, _sid] call ALIVE_fnc_hashRem;
+                if (count _others == 0) then { [_tuples, _sid] call ALIVE_fnc_hashRem };
             };
         };
 
         case "ON_STATION": {
+            // It has flown the job, and the stand hook below wants to know that
+            // however the aircraft gets home. One that landed a little way off
+            // with people about comes home through recovery, and without this
+            // it read as never having flown: no call on the radio, and a pair's
+            // sortie planned again when the other then failed to launch.
+            [_row2, "flew", true] call ALIVE_fnc_hashSet;
+
             // A suppression sortie arriving is something the rest of the mod
             // may want to know about: the old module raised this event.
             if (_from isEqualTo "ENROUTE" && {_type isEqualTo "SEAD"} && {!isNil "ALIVE_eventLog"}) then {
@@ -941,7 +979,24 @@ private _fnc_routeEffects = {
                         ["ALIVE_fnc_ATOKernel - %1 %2 on sortie %3, the tasker says %4", _tail, _name, _sid, _answer] call ALiVE_fnc_dump;
                         [_row2, "sortie", []] call ALIVE_fnc_hashSet;
                         [_sortieOf, _tail, ""] call ALIVE_fnc_hashSet;
-                        [_tuples, _sid] call ALIVE_fnc_hashRem;
+                        // The sortie's tuple goes with its LAST aircraft: the
+                        // other of a pair may still be flying it.
+                        if (([_sortieOf, _sid, _tail] call _fnc_othersOn) isEqualTo []) then {
+                            [_tuples, _sid] call ALIVE_fnc_hashRem;
+                        };
+                        // An event that closed a sortie the other aircraft had
+                        // already flown home from: this one failed to launch,
+                        // was lost, or was taken over by a player. Nothing
+                        // else will say so, because the first one home left
+                        // the call for the last aircraft.
+                        if (_answer isEqualTo "complete") then {
+                            private _rec = [_task, "sortie", _sid] call ALIVE_fnc_ATOTask;
+                            private _by = if ([_rec] call ALIVE_fnc_isHash) then { [_rec, "landedBy", ""] call ALIVE_fnc_hashGet } else { "" };
+                            if !(_by isEqualTo "") then {
+                                [_logic, "STR_ALIVE_ATO_MISSION_COMPLETE",
+                                    [[_logic] call _fnc_hqName, [_logic, _by, "callsign", _by] call _fnc_recField, _type]] call _fnc_radio;
+                            };
+                        };
                     };
                 };
             };
@@ -1800,8 +1855,22 @@ switch(_operation) do {
         private _sortieOf = [_k, "sortieOf", []] call ALIVE_fnc_hashGet;
         private _sid = [_sortieOf, _tail, ""] call ALIVE_fnc_hashGet;
         if (!(_sid isEqualTo "") && {!(_task isEqualTo [])}) then {
-            [_task, "complete", [_sid, "retired"]] call ALIVE_fnc_ATOTask;
-            [[_k, "tuples", []] call ALIVE_fnc_hashGet, _sid] call ALIVE_fnc_hashRem;
+            // Only the last aircraft of a sortie closes it; the other of a
+            // pair may still be flying it. When the other already flew it
+            // home, the job was done, and that is said on the radio.
+            if (([_sortieOf, _sid, _tail] call _fnc_othersOn) isEqualTo []) then {
+                private _rec = [_task, "sortie", _sid] call ALIVE_fnc_ATOTask;
+                private _by = if ([_rec] call ALIVE_fnc_isHash) then { [_rec, "landedBy", ""] call ALIVE_fnc_hashGet } else { "" };
+                [_task, "complete", [_sid, if (_by isEqualTo "") then { "retired" } else { "landed" }]] call ALIVE_fnc_ATOTask;
+                [[_k, "tuples", []] call ALIVE_fnc_hashGet, _sid] call ALIVE_fnc_hashRem;
+                if !(_by isEqualTo "") then {
+                    private _sortieType = [_rec, "type", ""] call ALIVE_fnc_hashGet;
+                    [_logic, "STR_ALIVE_ATO_MISSION_COMPLETE",
+                        [[_logic] call _fnc_hqName, [_logic, _by, "callsign", _by] call _fnc_recField, _sortieType]] call _fnc_radio;
+                };
+            } else {
+                [_task, "onRowEvent", [_sid, _tail, "tailRetired", time]] call ALIVE_fnc_ATOTask;
+            };
         };
         {
             [[_k, _x, []] call ALIVE_fnc_hashGet, _tail] call ALIVE_fnc_hashRem;
@@ -2711,9 +2780,16 @@ switch(_operation) do {
                             // it was over would count as patrolled for the
                             // rest of the mission and no other patrol would
                             // ever be raised for it.
+                            //
+                            // Unless the other of a pair is still flying it,
+                            // in which case only this aircraft leaves it.
                             if (!(_prevSid isEqualTo "") && {!(_prevSid isEqualTo _sid)} && {!(_task isEqualTo [])}) then {
-                                [_task, "complete", [_prevSid, "rerouted"]] call ALIVE_fnc_ATOTask;
-                                [_tuples, _prevSid] call ALIVE_fnc_hashRem;
+                                if (([_sortieOf, _prevSid, _tail] call _fnc_othersOn) isEqualTo []) then {
+                                    [_task, "complete", [_prevSid, "rerouted"]] call ALIVE_fnc_ATOTask;
+                                    [_tuples, _prevSid] call ALIVE_fnc_hashRem;
+                                } else {
+                                    [_task, "onRowEvent", [_prevSid, _tail, "tailRerouted", _now]] call ALIVE_fnc_ATOTask;
+                                };
                             };
                         } else {
                             [_row2, "sortie", +_prevTuple] call ALIVE_fnc_hashSet;
@@ -2791,10 +2867,16 @@ switch(_operation) do {
                     [_task, "dispatch", [_sid, _kept]] call ALIVE_fnc_ATOTask;
                     ["ALIVE_fnc_ATOKernel - %1 did not take sortie %2; it goes ahead with %3", _refused, _sid, _kept] call ALiVE_fnc_dump;
                 } else {
+                    // One event per refusing aircraft, and the tasker's answer
+                    // said once, after the last: the tasker now drops a pair's
+                    // first refusal from the sortie and hands it back to be
+                    // planned only on the second, so the first answer alone
+                    // would read as though the sortie were still assigned.
+                    private _answer = "";
                     {
-                        private _answer = [_task, "onRowEvent", [_sid, _x, "assignFailed", _now]] call ALIVE_fnc_ATOTask;
-                        ["ALIVE_fnc_ATOKernel - %1 did not take sortie %2; nothing took it, the tasker says %3", _x, _sid, _answer] call ALiVE_fnc_dump;
+                        _answer = [_task, "onRowEvent", [_sid, _x, "assignFailed", _now]] call ALIVE_fnc_ATOTask;
                     } forEach _refused;
+                    ["ALIVE_fnc_ATOKernel - %1 did not take sortie %2; nothing took it, the tasker says %3", _refused, _sid, _answer] call ALiVE_fnc_dump;
                 };
             } forEach _failedSids;
         };
