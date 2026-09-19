@@ -116,6 +116,15 @@ Jman
 // How long an approach may hold the runway. Longer, because an aircraft on
 // finals is not the one that can be told to hurry.
 #define LANDING_LOCK_SPAN 700
+// How far past the far end of its runway a plane on land is sent to take off.
+// Far enough that it can only get there by flying, and straight down the runway
+// it takes off along.
+#define TAKEOFF_AIM_BEYOND 2500
+// How near a stand the start of its airport's taxi route has to be for the
+// route to be the way it leaves. The taxi out's own TAXI_REACH: the two must
+// stay equal, or the aim and the taxi out disagree about which runway end the
+// plane starts from.
+#define TAKEOFF_AIM_REACH 3000
 
 // The roster loop runs fast while anything is flying and slow when the whole
 // fleet is parked, because a parked aircraft has nothing to be measured.
@@ -453,12 +462,90 @@ private _fnc_tupleOf = {
     _t
 };
 
+// Where a plane on land is sent to take off: past the far end of the runway it
+// takes off along. [] when that cannot be worked out, and the caller keeps the
+// old aim.
+//
+// It used to be sent 1200 m from its stand toward its target, which ignores the
+// runway entirely. On LAN an A-10 was stood on its taxi route pointing along it,
+// heading 195, for a target on a bearing of about 98, and drove toward the move
+// point on the ground instead of taking off, until its deadline threw it into
+// the air. The same A-10 took off in 117 s for a target only 69 degrees off.
+//
+// The runway end it takes off FROM is chosen the way the taxi out chooses where
+// to stand it, so the two always agree: the end its airport's taxi route ends
+// at, when that route reaches its stand, and otherwise the end of the runway
+// beside its stand nearer to it. Kept per airport for a route, which is the
+// same for every stand it serves, and per stand without one: on a runway with
+// no route, stands near opposite ends take off in opposite directions.
+private _fnc_takeoffAim = {
+    params [["_k", [], [[]]], ["_homePos", [], [[]]]];
+    if (count _homePos < 2 || {isNil "ALiVE_fnc_getRunwayCentreline"}) exitWith { [] };
+    private _w = configFile >> "CfgWorlds" >> worldName;
+    private _secondary = _w >> "SecondaryAirports";
+    private _airportID = -1;
+    private _nearest = 1e10;
+    private _ilsMain = getArray (_w >> "ilsPosition");
+    if (count _ilsMain >= 2) then { _airportID = 0; _nearest = _homePos distance2D _ilsMain };
+    for "_i" from 0 to ((count _secondary) - 1) do {
+        private _ils = getArray ((_secondary select _i) >> "ilsPosition");
+        if (count _ils >= 2 && {(_homePos distance2D _ils) < _nearest}) then {
+            _nearest = _homePos distance2D _ils;
+            _airportID = _i + 1;
+        };
+    };
+    // Its route, as the taxi out reads it: two points at least, the first
+    // within reach of the stand. A home far from every airport has none that
+    // reaches it and is looked at by its stand, as the taxi out does.
+    private _in = [];
+    if (_airportID == 0) then { _in = getArray (_w >> "ilsTaxiIn") };
+    if (_airportID > 0) then { _in = getArray ((_secondary select (_airportID - 1)) >> "ilsTaxiIn") };
+    private _byRoute = count _in >= 4 && {(_homePos distance2D [_in select 0, _in select 1, 0]) <= TAKEOFF_AIM_REACH};
+
+    private _aims = [_k, "takeoffAims", []] call ALIVE_fnc_hashGet;
+    if !([_aims] call ALIVE_fnc_isHash) then {
+        _aims = [] call ALIVE_fnc_hashCreate;
+        [_k, "takeoffAims", _aims] call ALIVE_fnc_hashSet;
+    };
+    private _key = if (_byRoute) then { str _airportID } else { format ["%1 %2", round (_homePos select 0), round (_homePos select 1)] };
+    private _known = [_aims, _key, "none"] call ALIVE_fnc_hashGet;
+    if !(_known isEqualTo "none") exitWith { _known };
+
+    private _entry = if (_byRoute) then { [_in select ((count _in) - 2), _in select ((count _in) - 1), 0] } else { [_homePos select 0, _homePos select 1, 0] };
+    private _for = if (_byRoute) then { format ["airport %1", _airportID] } else { format ["the stand at %1, which no taxi route reaches", _entry apply { round _x }] };
+    private _cl = [_entry, 1500] call ALiVE_fnc_getRunwayCentreline;
+    private _aim = [];
+    if (_cl isEqualType [] && {count _cl > 1}) then {
+        private _ra = _cl select 0;
+        private _rb = _cl select 1;
+        private _start = if ((_entry distance2D _ra) <= (_entry distance2D _rb)) then { _ra } else { _rb };
+        private _far = if (_start isEqualTo _ra) then { _rb } else { _ra };
+        // A line whose near end is a long way from where the route ends is some
+        // other runway, or a fit through two, and not the one it takes off on.
+        // Without a route the taxi out stands it on the nearer end however far
+        // away that is, so the aim goes with it.
+        if ((!_byRoute || {(_entry distance2D _start) < 400}) && {(_start distance2D _far) > 300}) then {
+            private _heading = _start getDir _far;
+            private _p = _far getPos [TAKEOFF_AIM_BEYOND, _heading];
+            _aim = [round (_p select 0), round (_p select 1), 0];
+            ["ALIVE_fnc_ATOKernel - take-off aim for %1: runway from %2 to %3, heading %4, aim %5",
+                _for, _start apply { round _x }, _far apply { round _x }, round _heading, _aim] call ALiVE_fnc_dump;
+        } else {
+            ["ALIVE_fnc_ATOKernel - no take-off aim for %1: the runway line found runs from %2 to %3, %4 m from where its taxi route ends",
+                _for, _start apply { round _x }, _far apply { round _x }, round (_entry distance2D _start)] call ALiVE_fnc_dump;
+        };
+    };
+    [_aims, _key, _aim] call ALIVE_fnc_hashSet;
+    _aim
+};
+
 // How the request wants its sortie flown, as an order chain the effector can
 // take: [[type, position], ...]. Order NAMES come from the tasker or the state
 // table; turning a name into a place needs the sortie and the home, and this
 // is the one place that knows both.
 private _fnc_resolveOrders = {
-    params [["_orders", [], [[]]], ["_obj", objNull, [objNull]], ["_home", [], [[]]], ["_tuple", [], [[]]], ["_state", "", [""]]];
+    params [["_orders", [], [[]]], ["_obj", objNull, [objNull]], ["_home", [], [[]]], ["_tuple", [], [[]]], ["_state", "", [""]],
+            ["_takeoffAim", [], [[]]]];
     private _out = [];
     if (isNull _obj) exitWith { [] };
 
@@ -493,8 +580,14 @@ private _fnc_resolveOrders = {
             // bare "take off" is not an order the engine understands. Aimed
             // at the target when there is one, else down the stored heading.
             case "TAKEOFF": {
-                private _dir = if (_hasTarget) then { _homePos getDir _targetPos } else { _homeDir };
-                _out pushBack ["MOVE", _homePos getPos [1200, _dir]];
+                // A plane on land down its runway (see _fnc_takeoffAim); a
+                // helicopter, a VTOL, a deck or a held one toward its target.
+                if (count _takeoffAim > 1) then {
+                    _out pushBack ["MOVE", _takeoffAim];
+                } else {
+                    private _dir = if (_hasTarget) then { _homePos getDir _targetPos } else { _homeDir };
+                    _out pushBack ["MOVE", _homePos getPos [1200, _dir]];
+                };
             };
             case "MOVE_STATION": { _out pushBack ["MOVE", _targetPos] };
             case "EXECUTE":      { _out pushBack ["SAD", _targetPos] };
@@ -1139,7 +1232,13 @@ private _fnc_issueOrders = {
         private _typed = [_task, "ordersFor", [_tuple select 0, _state]] call ALIVE_fnc_ATOTask;
         if (_typed isEqualType []) then { _orders = _typed };
     };
-    private _chain = [_orders, _obj, _home, _tuple, _state] call _fnc_resolveOrders;
+    private _aim = [];
+    if (_state isEqualTo "LAUNCHING" && {_obj isKindOf "Plane"}
+        && {getNumber (configFile >> "CfgVehicles" >> typeOf _obj >> "vtol") == 0}
+        && {count _home > 2} && {(_home select 2) isEqualTo "terrain"}) then {
+        _aim = [_k, _home select 0] call _fnc_takeoffAim;
+    };
+    private _chain = [_orders, _obj, _home, _tuple, _state, _aim] call _fnc_resolveOrders;
     if (count _chain == 0) exitWith { false };
     private _r = [_effect, "apply", ["issueOrders", _obj, _home, [_chain]]] call ALIVE_fnc_ATOEffect;
     if !(_r isEqualType []) then { _r = ["refused", false, "no answer"] };
