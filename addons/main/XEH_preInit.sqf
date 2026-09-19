@@ -134,6 +134,20 @@ if (is3DEN) then {
         ALIVE_fnc_copyFactionClasses = compile preprocessFileLineNumbers "\x\alive\addons\ui\fnc_copyFactionClasses.sqf";
     };
 
+    // Sharing a scenario's ALiVE setup as a preset, from the same menu and for
+    // the same reason: the editor never runs the CfgFunctions phase, so these
+    // have to be compiled here to exist while somebody is in the editor.
+    ALIVE_fnc_presetCollect = compile preprocessFileLineNumbers "\x\alive\addons\sys_presets\fnc_presetCollect.sqf";
+    ALIVE_fnc_presetShare = compile preprocessFileLineNumbers "\x\alive\addons\sys_presets\fnc_presetShare.sqf";
+    // These two are registered in CfgFunctions as well, so in a mission they are
+    // already compileFinal and must be left alone.
+    if (isNil "ALIVE_fnc_presetDefault") then {
+        ALIVE_fnc_presetDefault = compile preprocessFileLineNumbers "\x\alive\addons\sys_presets\fnc_presetDefault.sqf";
+    };
+    if (isNil "ALIVE_fnc_presetSerialize") then {
+        ALIVE_fnc_presetSerialize = compile preprocessFileLineNumbers "\x\alive\addons\sys_presets\fnc_presetSerialize.sqf";
+    };
+
     // What to do with a list when the preview ends is the picker module's own
     // setting, left in uiNamespace by the module because the mission namespace
     // does not survive the trip back to the editor.

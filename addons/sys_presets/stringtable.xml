@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Project name="Arma3">
+<Package name="ALiVE">
+<Container name="STR_DN">
+<Key ID="STR_ALIVE_PRESETS_SHARE">
+    <English>Share as Preset</English>
+</Key>
+</Container>
+</Package>
+</Project>
