@@ -72,8 +72,21 @@ if (_isArty) then {
     // Topped up to half a tank, never drained to it. Setting 0.5 outright took
     // an aircraft that came back with 0.97 and sent it out on its next sortie
     // with 0.50.
-    _veh setFuel ((fuel _veh) max 0.5);
+    //
+    // An aircraft the air tasking module is holding on its stand for a launch
+    // has its tank kept empty, so its crew cannot drive it out while it waits,
+    // and what the tank held is kept aside and given back when it goes. The
+    // fuel goes there instead: put in the tank, a crewed plane waiting for the
+    // runway rolls out of its hangar.
+    private _atoHeld = _veh getVariable ["ALiVE_mil_ato_heldFuel", -1];
+    private _held = (_atoHeld isEqualType 0) && {_atoHeld >= 0};
+    if (_held) then {
+        _veh setVariable ["ALiVE_mil_ato_heldFuel", _atoHeld max 0.5, true];
+    } else {
+        _veh setFuel ((fuel _veh) max 0.5);
+    };
     _veh setDamage 0;
     _veh setVariable ["ALIVE_resupply_needsService", false, true];
-    ["ALIVE Resupply Service: Vehicle %1 serviced (ammo, fuel %2, damage 0)", _veh, (fuel _veh) toFixed 2] call ALiVE_fnc_dump;
+    ["ALIVE Resupply Service: Vehicle %1 serviced (ammo, fuel %2, damage 0)", _veh,
+        if (_held) then { format ["%1, kept for its launch", (_veh getVariable ["ALiVE_mil_ato_heldFuel", 0]) toFixed 2] } else { (fuel _veh) toFixed 2 }] call ALiVE_fnc_dump;
 };

@@ -422,6 +422,23 @@ nothing changed and it said so.
     ["let go, it has exactly the fuel it had", _stH3 isEqualTo "ok" && {!_mH3} && {abs ((fuel _held) - 0.7) < 0.01}] call _fnc_check;
     (([_e, "apply", ["releaseHold", _held, _heldHome, []]] call ALIVE_fnc_ATOEffect)) params ["_stH4", "_mH4"];
     ["letting go again changes nothing and says so", _stH4 isEqualTo "ok" && {_mH4} && {abs ((fuel _held) - 0.7) < 0.01}] call _fnc_check;
+    // A supply truck finishing its service while the plane is held: its fuel is
+    // kept for the launch, never put in the tank, where a crewed plane waiting
+    // for the runway would roll on it. Only where combat support is loaded.
+    if (isNil "ALIVE_fnc_resupplyService") then {
+        _skipped pushBack "a truck's fuel on a held plane waits for its launch";
+        diag_log "  skip  a truck's fuel on a held plane waits for its launch  (combat support is not loaded)";
+    } else {
+        _held setFuel 0.2;
+        [_e, "apply", ["holdOnStand", _held, _heldHome, []]] call ALIVE_fnc_ATOEffect;
+        [_held] call ALIVE_fnc_resupplyService;
+        private _keptR = _held getVariable ["ALiVE_mil_ato_heldFuel", -1];
+        diag_log format ["  info  after the truck's service the tank reads %1 and %2 is kept for the launch", fuel _held, _keptR];
+        ["a truck's fuel on a held plane waits for its launch: the tank stays empty",
+            (fuel _held) == 0 && {_keptR isEqualType 0} && {abs (_keptR - 0.5) < 0.01}] call _fnc_check;
+        [_e, "apply", ["releaseHold", _held, _heldHome, []]] call ALIVE_fnc_ATOEffect;
+        ["and it has the truck's fuel once let go", abs ((fuel _held) - 0.5) < 0.01] call _fnc_check;
+    };
     deleteVehicle _held;
 
     // --- the taxi out ------------------------------------------------------------
