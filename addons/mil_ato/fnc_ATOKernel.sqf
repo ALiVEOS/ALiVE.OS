@@ -801,7 +801,9 @@ private _fnc_transition = {
                 private _v = [_surface, "validate", [_home, _class, _obj]] call ALIVE_fnc_ATOSurface;
                 if (!(_v param [0, false]) && {(_v param [1, ""]) in ["occupied","geometry"]}) then {
                     private _retry = [_k, "rehomeFailedAt", []] call ALIVE_fnc_hashGet;
-                    private _h = [_place, "rehome", _tail] call ALIVE_fnc_ATOPlace;
+                    // With the reason, so the eviction line can say why a stand
+                    // with nothing on it was given up.
+                    private _h = [_place, "rehome", [_tail, _v param [1, ""]]] call ALIVE_fnc_ATOPlace;
                     if (_h isEqualType [] && {count _h >= 3}) then {
                         [_retry, _tail] call ALIVE_fnc_hashRem;
                     } else {

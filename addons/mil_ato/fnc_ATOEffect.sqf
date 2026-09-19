@@ -307,7 +307,7 @@ switch(_operation) do {
                 private _v = _o getHitPointDamage _this;
                 if (isNil "_v") then { -1 } else { _v }
             };
-            format ["%1 m up, %2 m from the pad, %3 km/h, climbing %4 m/s, command '%5', %6 %7, %8 waypoints, engine %9, fuel %10, damage %11 (main rotor %12, tail rotor %13, engine %14, can move %15), local %16, %17 enemies known, Drongo '%18'",
+            format ["%1 m up, %2 m from the pad, %3 km/h, climbing %4 m/s, command '%5', %6 %7, %8 waypoints, engine %9, fuel %10, damage %11 (main rotor %12, tail rotor %13, engine %14, can move %15), local %16, %17 enemies known, Drongo '%18', spin %19 rad/s",
                 round ((getPosATL _o) select 2), round (_o distance2D _padPos), round (speed _o), ((velocity _o) select 2) toFixed 1,
                 if (isNull _d) then {"no pilot"} else {currentCommand _d},
                 if (isNull _d) then {"-"} else {behaviour _d},
@@ -317,7 +317,11 @@ switch(_operation) do {
                 ("HitHRotor" call _fnc_hit) toFixed 2, ("HitVRotor" call _fnc_hit) toFixed 2, ("HitEngine" call _fnc_hit) toFixed 2,
                 canMove _o, local _o,
                 if (isNull _d) then {0} else {count (_d targets [true, 2000])},
-                _o getVariable ["daoAction", "-"]]
+                _o getVariable ["daoAction", "-"],
+                // How fast it is turning over. A Blackfish put down from banked
+                // flight on LAN was destroyed ten seconds later with nothing in
+                // the log to say it had been thrown; spin is the first sign.
+                (vectorMagnitude (angularVelocity _o)) toFixed 2]
         };
 
         // Seventy metres off to one side of a heading, the side further from the
@@ -573,9 +577,16 @@ switch(_operation) do {
                             // Said once, at the end, because the thing worth knowing
                             // is whether anyone was deleted while the hull they came
                             // from was flying.
-                            ["ALIVE_fnc_ATOEffect - %1 dismissed crew of %2 deleted by %3 s, %4 left alone in an aircraft in the air, hull now has %5 aboard",
+                            // The hull's own state last. It used to read "hull now has
+                            // a dead hull aboard" when the aircraft had been destroyed
+                            // and cleared away before its crew went.
+                            ["ALIVE_fnc_ATOEffect - %1 dismissed crew of %2 deleted by %3 s, %4 left alone in an aircraft in the air, %5",
                                 _gone, _tailNow, _elapsed, _flying,
-                                if (isNull _hull) then {"a dead hull"} else {str (count (crew _hull))}] call ALiVE_fnc_dump;
+                                switch (true) do {
+                                    case (isNull _hull): { "the aircraft is gone" };
+                                    case (!alive _hull): { "the aircraft was destroyed" };
+                                    default { format ["hull now has %1 aboard", count (crew _hull)] };
+                                }] call ALiVE_fnc_dump;
                         };
                         _detail = "dismissed";
                     };

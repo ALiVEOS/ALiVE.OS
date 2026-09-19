@@ -1966,7 +1966,16 @@ switch(_operation) do {
     // a clear there could land inside a sweep parked in consume's wait and
     // discard what that pass had reserved. It only adds.
     case "rehome": {
+        // A tail, or [tail, why] when the caller knows why the stand failed.
+        // The eviction line below names what is standing on the stand, so a
+        // stand that failed for its ground rather than for an intruder read
+        // "evicted from X by " with the reason lost.
         private _tail = _args;
+        private _why = "";
+        if (_args isEqualType []) then {
+            _tail = _args param [0, "", [""]];
+            _why = _args param [1, "", [""]];
+        };
         if !(_tail isEqualType "") then { _tail = "" };
         _result = [];
 
@@ -1988,8 +1997,13 @@ switch(_operation) do {
         // May be null or away; passed as the own object so it never blocks
         // itself, and named in the log for what stood on the stand.
         private _obj = [_logic, "objFor", _tail] call MAINCLASS;
-        ["ALIVE_fnc_ATOPlace - %1 evicted from %2 by %3", _tail, _home select 0,
-            [_home, _class, _obj] call _fnc_intruderName] call ALiVE_fnc_dump;
+        private _who = [_home, _class, _obj] call _fnc_intruderName;
+        ["ALIVE_fnc_ATOPlace - %1 evicted from %2 %3", _tail, _home select 0,
+            if (_who isEqualTo "") then {
+                format ["because its stand failed validation (%1)", if (_why isEqualTo "") then {"reason not given"} else {_why}]
+            } else {
+                format ["by %1", _who]
+            }] call ALiVE_fnc_dump;
 
         [_logic] call _fnc_reserveHomes;
         // Asked on the home's OWN surface, and from where that home actually
