@@ -464,6 +464,20 @@ private _fnc_createHull = {
         _special = "FLY";
         _birth = [_pos select 0, _pos select 1, VIRTUAL_BIRTH];
     };
+    // Not on top of something. The hull is made where it will stand and then
+    // settled there by the surface, and the surface now refuses a stand with a
+    // vehicle on it, so made there anyway it would be left sitting in the
+    // vehicle with none of the settling that protects it. Asked first, by the
+    // same rule; the callers already answer an empty hull.
+    private _blocker = objNull;
+    if (_kind isEqualTo "terrain" && {[_surface] call ALIVE_fnc_isHash}) then {
+        _blocker = [_surface, "standBlocker", [_pos, _class, []]] call ALIVE_fnc_ATOSurface;
+    };
+    if (!isNull _blocker) exitWith {
+        ["ALIVE_fnc_ATOPlace - %1 not created at %2: %3%4 is on that stand", _class, _pos,
+            if (alive _blocker) then {""} else {"a wrecked "}, typeOf _blocker] call ALiVE_fnc_dump;
+        objNull
+    };
     private _obj = createVehicle [_class, _birth, [], 0, _special];
     if (isNull _obj) exitWith {
         ["ALIVE_fnc_ATOPlace - createVehicle returned nothing for %1 at %2", _class, _pos] call ALiVE_fnc_dump;

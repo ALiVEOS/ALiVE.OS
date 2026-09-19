@@ -1389,6 +1389,19 @@ switch(_operation) do {
                     private _cand = _x;
                     (_ignore findIf {_x isEqualTo _cand}) == -1
                 }) isEqualTo []}
+            // A vehicle inside the footprint, wrecked or not, static guns
+            // included. Measured: an aircraft put down on an empty truck was
+            // thrown 314 m up and 281 m sideways, and onto a static machine gun
+            // 35 m up; a Blackfish handed a spot this test had called clear was
+            // 84 m up three seconds after it was put there, and every test of
+            // that spot since points at a vehicle standing on it then. At the
+            // span, the same reach validate and place use, so the three agree
+            // about a spot. Men are not asked about, for the measurement
+            // validate gives.
+            && {((nearestObjects [_p, ["LandVehicle"], _span]) select {
+                    private _cand = _x;
+                    (_ignore findIf {_x isEqualTo _cand}) == -1
+                }) isEqualTo []}
             && {!(call _fnc_walled)};
     };
 
@@ -1560,6 +1573,32 @@ switch(_operation) do {
         _result = (_obj distance2D _at) < _tolerance;
     };
 
+    // What stands on a spot that an aircraft of this class must not be put down
+    // on top of: another aircraft, or a vehicle, wrecked or not, static guns
+    // included. The first one found, or objNull.
+    //
+    // Measured: an aircraft put down on an empty truck was thrown 314 m into the
+    // air and 281 m sideways, and onto a static machine gun 35 m up; men were
+    // pushed aside unharmed and are not asked about. The Blackfish that bounced
+    // off a stand on LAN read a metre below the ground the moment it was put
+    // there and was 84 m up three seconds later, and nothing then looked for
+    // anything but another aircraft. Kept here so that putting an aircraft on a
+    // stand and creating one there refuse for the same things.
+    case "standBlocker": {
+        _args params [["_target",[0,0,0],[[]]], ["_class","",[""]], ["_mine",[],[[]]]];
+        private _reach = 12;
+        private _bbB = [_class] call ALiVE_fnc_getVehicleBoundingBox;
+        if (count _bbB > 1) then {
+            _reach = (((((_bbB select 0) max (_bbB select 1)) / 2) + 4) max 12);
+        };
+        private _blocked = (nearestObjects [_target, ["Air","LandVehicle"], _reach]) select {
+            private _cand = _x;
+            (_mine findIf {_x isEqualTo _cand}) == -1
+                && {alive _cand || {_cand isKindOf "LandVehicle"}}
+        };
+        _result = _blocked param [0, objNull];
+    };
+
     // Put an airframe on its home and make sure it survives arriving there.
     case "place": {
         _args params [["_obj",objNull,[objNull]], ["_home",[],[[]]]];
@@ -1681,20 +1720,12 @@ switch(_operation) do {
         // judged for geometry when it was chosen, and re-running that here
         // would refuse a perfectly good stand for a reason that has not
         // changed since. The aircraft being placed and its own crew are not
-        // obstacles to themselves.
+        // obstacles to themselves. What counts is standBlocker's to say.
         private _mine = [_obj] + (crew _obj);
-        private _reach = 12;
-        private _bb = [typeOf _obj] call ALiVE_fnc_getVehicleBoundingBox;
-        if (count _bb > 1) then {
-            _reach = (((((_bb select 0) max (_bb select 1)) / 2) + 4) max 12);
-        };
-        private _blocked = (nearestObjects [_target, ["Air"], _reach]) select {
-            private _cand = _x;
-            (_mine findIf {_x isEqualTo _cand}) == -1 && {alive _cand}
-        };
-        if (count _blocked > 0) exitWith {
-            ["ALIVE_fnc_ATOSurface - place refused for %1: %2 is already on that stand",
-                typeOf _obj, typeOf (_blocked select 0)] call ALiVE_fnc_dump;
+        private _blocker = [_logic, "standBlocker", [_target, typeOf _obj, _mine]] call MAINCLASS;
+        if (!isNull _blocker) exitWith {
+            ["ALIVE_fnc_ATOSurface - place refused for %1: %2%3 is on that stand",
+                typeOf _obj, if (alive _blocker) then {""} else {"a wrecked "}, typeOf _blocker] call ALiVE_fnc_dump;
             _result = false;
         };
 

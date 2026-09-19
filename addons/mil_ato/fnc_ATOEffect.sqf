@@ -630,7 +630,12 @@ switch(_operation) do {
                     _matched = true;
                 } else {
                     ["ALIVE_fnc_ATOEffect - %1 put down at its home rather than left flying", typeOf _obj] call ALiVE_fnc_dump;
-                    [_surface, "place", [_obj, _home]] call ALIVE_fnc_ATOSurface;
+                    // Said when it did not happen. The surface now also refuses a
+                    // stand with a vehicle on it, and the aircraft is then still
+                    // flying; recovery brings it round again.
+                    if !([_surface, "place", [_obj, _home]] call ALIVE_fnc_ATOSurface) then {
+                        _status = "refused"; _detail = "surface refused the placement";
+                    };
                 };
             };
 

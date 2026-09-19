@@ -333,7 +333,29 @@ refused rather than guessed at.
     (([_surface, "validate", [_victim, _class, objNull]] call ALIVE_fnc_ATOSurface)) params ["_ok2", "_why2"];
     ["an occupied home is refused", !_ok2] call _fnc_check;
     ["and the reason says occupied", _why2 isEqualTo "occupied"] call _fnc_check;
+
+    // A vehicle on a spot is never handed out as a stand or placed onto.
+    // Measured: an aircraft put on a truck is thrown hundreds of metres into
+    // the air, and a Blackfish given a spot the search had called clear was 84 m
+    // up three seconds after it was put there. The search never looked for a
+    // vehicle and the placement looked only for another aircraft.
+    ["a spot with a truck on it is not clear",
+        !([_surface, "spotIsClear", [_victim select 0, _span, [], _class]] call ALIVE_fnc_ATOSurface)] call _fnc_check;
+    private _parkedAt = _anchor getPos [400, 180];
+    _parkedAt set [2, 0];
+    private _mover = createVehicle [_class, _parkedAt, [], 0, "CAN_COLLIDE"];
+    sleep 2;
+    private _moverWas = getPosATL _mover;
+    private _placedOnTruck = [_surface, "place", [_mover, _victim]] call ALIVE_fnc_ATOSurface;
+    diag_log format ["  info  asked to put an aircraft on the truck, place said %1 and it moved %2 m",
+        _placedOnTruck, round (_mover distance2D _moverWas)];
+    ["an aircraft is not put down on a truck",
+        !_placedOnTruck && {(_mover distance2D _moverWas) < 1}] call _fnc_check;
     deleteVehicle _truck;
+    sleep 1;
+    ["and the same spot is clear again once the truck has gone",
+        [_surface, "spotIsClear", [_victim select 0, _span, [], _class]] call ALIVE_fnc_ATOSurface] call _fnc_check;
+    deleteVehicle _mover;
 
     // A man on a stand does not occupy it. Measured: an aircraft put down on
     // four soldiers did not move and every one of them was alive, pushed a few
