@@ -341,6 +341,22 @@ switch(_operation) do {
             } forEach (units _g);
         };
 
+        // The other way, for a crew already aboard that is given a new sortie:
+        // ready to fight and its targeting back. A landing crew is calmed on
+        // the way in, and the same men can be kept for the next sortie.
+        // Courage and fleeing stay as the calming left them, which is what a
+        // combat crew keeps anyway.
+        private _fnc_unquiesce = {
+            params ["_g"];
+            if (isNull _g) exitWith {};
+            _g setBehaviour "AWARE";
+            _g setCombatMode "YELLOW";
+            {
+                _x enableAI "AUTOTARGET";
+                _x enableAI "TARGET";
+            } forEach (units _g);
+        };
+
         // Said once per approach, two minutes after the aircraft was first
         // told to land, counted from the first approach tick rather than from
         // the moment it was over its pad: the Apaches that circled on LAN
@@ -408,8 +424,12 @@ switch(_operation) do {
 
             // ---- crew ------------------------------------------------------
             case "mintCrew": {
+                // Counted, so a stand-down held back by a hold (below) can tell
+                // that the men aboard have been claimed for new work since.
+                _obj setVariable ["ALiVE_mil_ato_crewClaims", (_obj getVariable ["ALiVE_mil_ato_crewClaims", 0]) + 1, false];
                 if (count (crew _obj) > 0) then {
                     _matched = true;
+                    [group ((crew _obj) select 0)] call _fnc_unquiesce;
                 } else {
                     [_obj] call _fnc_keepOffAirOps;
                     private _grp = createVehicleCrew _obj;
@@ -437,8 +457,10 @@ switch(_operation) do {
             };
 
             case "mintDroneCrew": {
+                _obj setVariable ["ALiVE_mil_ato_crewClaims", (_obj getVariable ["ALiVE_mil_ato_crewClaims", 0]) + 1, false];
                 if (count (crew _obj) > 0) then {
                     _matched = true;
+                    [group ((crew _obj) select 0)] call _fnc_unquiesce;
                 } else {
                     [_obj] call _fnc_keepOffAirOps;
                     [_obj, createVehicleCrew _obj] call _fnc_keepOffAirOps;
@@ -470,10 +492,81 @@ switch(_operation) do {
             };
 
             case "standDownCrew": {
-                // Never in the air, whoever asks: the crew is the pilot.
-                if (([_obj, _home] call _fnc_up) > 5) exitWith { _status = "refused"; _detail = "in the air" };
                 private _ours = (crew _obj) select { _x getVariable ["ALiVE_mil_ato_crew", false] };
                 private _tailNow = _obj getVariable ["ALiVE_mil_ato_tail", "no tail"];
+                // Only the men named, when a caller names them: the deferred
+                // stand-down below comes back for the crew it kept aboard, and a
+                // crew seated for the next sortie in the meantime is not theirs.
+                private _only = (_extra param [0, [], [[]]]) select { _x isEqualType objNull };
+                if (count _only > 0) then { _ours = _ours select { _x in _only } };
+                // Nor a crew claimed for a new sortie since the deferred stand-down
+                // looked: it passes the count it saw, compared here, right before
+                // anyone is moved, so a roster tick cannot claim them in between.
+                private _claimsSeen = _extra param [1, -1];
+                if ((_claimsSeen isEqualType 0) && {_claimsSeen >= 0}
+                    && {(_obj getVariable ["ALiVE_mil_ato_crewClaims", 0]) != _claimsSeen}) exitWith {
+                    _matched = true;
+                    _detail = "claimed for a new sortie";
+                };
+                // Not beside a hull that is still being held down after being put
+                // down from the air. On LAN the four crew of a Blackfish put down
+                // from flight were let out beside it and died when it was thrown
+                // and destroyed ten seconds later. They stay aboard, with its
+                // damage off and its tank held empty, and these same men are
+                // stood down once the hold has ended.
+                // Asked before the height, because a held hull can be thrown
+                // well up while it settles, and refused as in the air here the
+                // crew would never be asked for again.
+                private _settling = _obj getVariable ["ALiVE_mil_ato_settlingUntil", -1];
+                if (count _ours > 0 && {_settling isEqualType 0} && {time < _settling}) exitWith {
+                    [_logic, _obj, _home, +_ours, _obj getVariable ["ALiVE_mil_ato_crewClaims", 0]] spawn {
+                        params ["_l", "_v", "_h", "_men", "_claims"];
+                        // The stamp is cleared when the hold ends, and a cleared
+                        // stamp reads as zero, which has always passed.
+                        waitUntil {
+                            sleep 0.5;
+                            isNull _v || {!alive _v}
+                                || {time >= (_v getVariable ["ALiVE_mil_ato_settlingUntil", 0])}
+                        };
+                        if (isNull _v || {!alive _v}) exitWith {};
+                        // The tank comes back as the hold ends, so a sortie can be
+                        // given to the aircraft in the moment before this wakes,
+                        // and it keeps the men already aboard as its crew. Those
+                        // are left where they are.
+                        if ((_v getVariable ["ALiVE_mil_ato_crewClaims", 0]) != _claims) exitWith {
+                            ["ALIVE_fnc_ATOEffect - held crew of %1 kept aboard: crewed for a new sortie as its hold ended", typeOf _v] call ALiVE_fnc_dump;
+                        };
+                        private _aboard = _men select { !isNull _x && {alive _x} && {(objectParent _x) isEqualTo _v} };
+                        if (count _aboard == 0) exitWith {};
+                        // Asked again while the hull still reads as up, which it
+                        // can after the hold lets it go: every 15 s for up to ten
+                        // minutes, while the aircraft is there, because nothing
+                        // else asks again once it is parked. Any other refusal is
+                        // said and left.
+                        private _tAsk = time;
+                        private _asked = false;
+                        while { !_asked && {alive _v} && {(time - _tAsk) < 600} } do {
+                            private _r = [_l, "apply", ["standDownCrew", _v, _h, [_aboard, _claims]]] call ALIVE_fnc_ATOEffect;
+                            private _why = _r param [2, ""];
+                            if ((_r param [0, ""]) isEqualTo "ok") then {
+                                _asked = true;
+                            } else {
+                                if !(_why isEqualTo "in the air") then {
+                                    _asked = true;
+                                    ["ALIVE_fnc_ATOEffect - held crew of %1 not stood down: %2", typeOf _v, _why] call ALiVE_fnc_dump;
+                                } else {
+                                    sleep 15;
+                                };
+                            };
+                        };
+                        if (!_asked && {alive _v}) then {
+                            ["ALIVE_fnc_ATOEffect - held crew of %1 not stood down: still in the air ten minutes after its hold ended", typeOf _v] call ALiVE_fnc_dump;
+                        };
+                    };
+                    _detail = "deferred until the hull has settled";
+                };
+                // Never in the air, whoever asks: the crew is the pilot.
+                if (([_obj, _home] call _fnc_up) > 5) exitWith { _status = "refused"; _detail = "in the air" };
                 if (count _ours == 0) then {
                     _matched = true;
                 } else {
@@ -644,25 +737,44 @@ switch(_operation) do {
             // Nothing here is saved: a restored aircraft is a fresh hull with a
             // full tank, so a hold cannot outlive a save.
             case "holdOnStand": {
-                if (([_obj, _home] call _fnc_up) > 5) exitWith { _status = "refused"; _detail = "in the air" };
+                // A hull still held down after it was put down from the air may
+                // be bouncing, and that hold already keeps its tank empty, so it
+                // is not refused as being in the air. The fuel that hold keeps
+                // is counted here too, because the tank reads empty while it runs.
+                private _settlingH = _obj getVariable ["ALiVE_mil_ato_settlingUntil", -1];
+                private _heldDown = (_settlingH isEqualType 0) && {time < _settlingH};
+                if (!_heldDown && {([_obj, _home] call _fnc_up) > 5}) exitWith { _status = "refused"; _detail = "in the air" };
                 private _kept = _obj getVariable ["ALiVE_mil_ato_heldFuel", -1];
                 if (_kept isEqualType 0 && {_kept >= 0}) exitWith { _matched = true; _detail = "already held" };
-                _obj setVariable ["ALiVE_mil_ato_heldFuel", fuel _obj, true];
+                private _tank = fuel _obj;
+                private _settleKept = _obj getVariable ["ALiVE_mil_ato_settleFuel", -1];
+                if (_settleKept isEqualType 0 && {_settleKept >= 0}) then { _tank = _tank max _settleKept };
+                _obj setVariable ["ALiVE_mil_ato_heldFuel", _tank, true];
                 _obj engineOn false;
                 _obj setFuel 0;
+                // And its crew kept aboard: a crew gets out of an aircraft that
+                // cannot move, and an empty tank makes one. Measured on a
+                // Blackfish, whose gunners were out 3.5 s after its tank emptied.
+                _obj allowCrewInImmobile true;
                 _detail = "held";
             };
 
             // Given back on every way out of the wait. The hull may be on another
             // machine by then, a player's for one, and a tank set from here would
-            // simply not change, so it is set where the hull lives.
+            // simply not change, so it is set where the hull lives. So is the
+            // crew's leave to get out again, unless the hull is still held down
+            // after a put-down from the air, which keeps its crew aboard as well.
             case "releaseHold": {
                 private _kept = _obj getVariable ["ALiVE_mil_ato_heldFuel", -1];
                 if (!(_kept isEqualType 0) || {_kept < 0}) exitWith { _matched = true; _detail = "not held" };
+                private _settlingR = _obj getVariable ["ALiVE_mil_ato_settlingUntil", -1];
+                private _stayR = (_settlingR isEqualType 0) && {time < _settlingR};
                 if (local _obj) then {
                     _obj setFuel _kept;
+                    _obj allowCrewInImmobile _stayR;
                 } else {
                     [_obj, _kept] remoteExec ["setFuel", _obj];
+                    [_obj, _stayR] remoteExec ["allowCrewInImmobile", _obj];
                 };
                 _obj setVariable ["ALiVE_mil_ato_heldFuel", nil, true];
                 _detail = format ["fuel back to %1", _kept toFixed 2];

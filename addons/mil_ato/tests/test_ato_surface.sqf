@@ -284,8 +284,16 @@ refused rather than guessed at.
             [_surface, "place", [_v, _x]] call ALIVE_fnc_ATOSurface] call _fnc_check;
     } forEach _homes;
 
-    // The settle window is 8 s; wait past it before judging.
+    // Made 500 m up, so each of these may read as arriving from the air, and
+    // then it is held until it has been still for three seconds rather than
+    // given damage back on one check at eight. Every hold is waited out before
+    // judging, with the old window as the floor.
+    diag_log format ["  info  %1 of %2 placements are held as arrivals from the air",
+        {!isNil {_x getVariable "ALiVE_mil_ato_settlingUntil"}} count _spawned, count _spawned];
     sleep 12;
+    private _tHold = time;
+    waitUntil { sleep 0.5; (({!isNil {_x getVariable "ALiVE_mil_ato_settlingUntil"}} count _spawned) == 0) || {(time - _tHold) > 30} };
+    diag_log format ["  info  holds after placing: %1", _spawned apply { _x getVariable ["ALiVE_mil_ato_settleResult", "not held"] }];
 
     private _allAlive = ({alive _x} count _spawned) == count _spawned;
     ["every placed airframe is still alive after settling", _allAlive] call _fnc_check;
@@ -329,6 +337,109 @@ refused rather than guessed at.
     private _rearmed = true;
     { if (local _x && {!isDamageAllowed _x}) then { _rearmed = false } } forEach _spawned;
     ["damage is re-armed after settling", _rearmed] call _fnc_check;
+
+    // --- put down from the air ------------------------------------------------
+    // A hull arriving from flight is held down until it has been still, rather
+    // than given damage back on one check eight seconds in: a Blackfish put down
+    // from banked flight was thrown and destroyed by exactly that, on LAN and on
+    // the rig. Its tank is held empty while it is held, and given back after.
+    // The last home, since a small field may yield fewer than eight.
+    private _airIdx = (count _homes) - 1;
+    private _airHome = _homes select _airIdx;
+    private _wasThere = _spawned select _airIdx;
+    _spawned deleteAt _airIdx;
+    deleteVehicle _wasThere;
+    sleep 1;
+    private _fromA = (_airHome select 0) getPos [1500, 0];
+    _fromA set [2, 100];
+    private _air = createVehicle [_class, _fromA, [], 0, "FLY"];
+    _air setPosATL _fromA;
+    createVehicleCrew _air;
+    private _hdgA = _fromA getDir (_airHome select 0);
+    _air setDir _hdgA;
+    _air setVelocity [(sin _hdgA) * 55, (cos _hdgA) * 55, 0];
+    sleep 2;
+    private _fuelA = fuel _air;
+    ["an aircraft in flight is put down on its stand",
+        [_surface, "place", [_air, _airHome]] call ALIVE_fnc_ATOSurface] call _fnc_check;
+    private _untilA = _air getVariable ["ALiVE_mil_ato_settlingUntil", -1];
+    ["and it is held while it settles", (_untilA isEqualType 0) && {_untilA > time}] call _fnc_check;
+    sleep 1;
+    ["with its tank held empty meanwhile", (fuel _air) == 0] call _fnc_check;
+    ["and its crew held with it, damage off",
+        count (crew _air) > 0 && {({isDamageAllowed _x} count (crew _air)) == 0}] call _fnc_check;
+    // Given a sortie while it is still held: the launch hold on its stand takes
+    // what this hold keeps, and the tank stays empty after this one ends, so a
+    // crewed plane waiting for the runway cannot roll. The launch gives it back.
+    private _eA = [nil, "create"] call ALIVE_fnc_ATOEffect;
+    private _hs = [_eA, "apply", ["holdOnStand", _air, _airHome, []]] call ALIVE_fnc_ATOEffect;
+    ["a launch hold taken during it is not refused", (_hs param [0, ""]) isEqualTo "ok"] call _fnc_check;
+    private _tA = time;
+    waitUntil { sleep 0.5; isNil {_air getVariable "ALiVE_mil_ato_settlingUntil"} || {(time - _tA) > 40} };
+    private _resA = _air getVariable ["ALiVE_mil_ato_settleResult", ""];
+    diag_log format ["  info  put down from the air: %1 after %2 s, %3 m off its stand, %4 m up, fuel %5 (was %6)",
+        _resA, round (time - _tA), round (_air distance2D (_airHome select 0)),
+        (round (((getPosATL _air) select 2) * 10)) / 10, fuel _air, _fuelA];
+    ["and it survives being put down", alive _air] call _fnc_check;
+    ["and its crew has its damage back once the hold ends",
+        count (crew _air) > 0 && {({!isDamageAllowed _x} count (crew _air)) == 0}] call _fnc_check;
+    ["and the hold ends", isNil {_air getVariable "ALiVE_mil_ato_settlingUntil"}] call _fnc_check;
+    private _heldA = _air getVariable ["ALiVE_mil_ato_heldFuel", -1];
+    diag_log format ["  info  after the hold: tank %1, kept for the launch %2", fuel _air, _heldA];
+    ["and the tank stays empty after it, the fuel kept for the launch",
+        (fuel _air) == 0 && {(_heldA isEqualType 0) && {_heldA >= (_fuelA - 0.01)}}] call _fnc_check;
+    [_eA, "apply", ["releaseHold", _air, _airHome, []]] call ALIVE_fnc_ATOEffect;
+    ["and its fuel is given back at the launch", (fuel _air) >= (_fuelA - 0.01)] call _fnc_check;
+    if (_resA isEqualTo "settled") then {
+        ["and it ends on its stand", (_air distance2D (_airHome select 0)) <= 5] call _fnc_check;
+        ["with damage back on", (!local _air) || {isDamageAllowed _air}] call _fnc_check;
+    } else {
+        diag_log "  info  the hold ran out before the hull was still; damage left off, as the surface logged";
+    };
+    { deleteVehicle _x } forEach (crew _air);
+    deleteVehicle _air;
+    sleep 1;
+    // A hull made on its stand, as placement makes them, is not held at all.
+    private _ground = createVehicle [_class, _airHome select 0, [], 0, "CAN_COLLIDE"];
+    _ground setPosATL [(_airHome select 0) select 0, (_airHome select 0) select 1, 0];
+    sleep 1;
+    private _okG = [_surface, "place", [_ground, _airHome]] call ALIVE_fnc_ATOSurface;
+    ["a placement from the ground is accepted and not held",
+        _okG && {isNil {_ground getVariable "ALiVE_mil_ato_settlingUntil"}}] call _fnc_check;
+    { deleteVehicle _x } forEach (crew _ground);
+    deleteVehicle _ground;
+    sleep 1;
+
+    // Held, and pushed 4.5 m off its stand each time it is put back, until its
+    // re-seats are spent: still and upright there, it is settled and has its
+    // damage back, rather than being left unable to be hurt.
+    private _upAt = +(_airHome select 0);
+    _upAt set [2, 40];
+    private _pushed = createVehicle [_class, _upAt, [], 0, "CAN_COLLIDE"];
+    _pushed setPosATL _upAt;
+    [_surface, "place", [_pushed, _airHome]] call ALIVE_fnc_ATOSurface;
+    private _tgtP = +(_airHome select 0);
+    _tgtP set [2, 0];
+    private _offP = _tgtP getPos [4.5, ((_airHome select 1) + 90)];
+    _offP set [2, 0];
+    private _moves = 0;
+    private _tP = time;
+    while { (time - _tP) < 20 && {_moves < 4} } do {
+        if ((_pushed distance2D _tgtP) < 1.5) then {
+            _pushed setPosATL _offP;
+            _pushed setVectorUp (surfaceNormal _offP);
+            _pushed setVelocity [0,0,0];
+            _moves = _moves + 1;
+        };
+        sleep 0.5;
+    };
+    waitUntil { sleep 0.5; isNil {_pushed getVariable "ALiVE_mil_ato_settlingUntil"} || {(time - _tP) > 45} };
+    diag_log format ["  info  pushed off %1 times: %2, %3 m off, damage allowed %4",
+        _moves, _pushed getVariable ["ALiVE_mil_ato_settleResult", "none"],
+        (round ((_pushed distance2D _tgtP) * 10)) / 10, isDamageAllowed _pushed];
+    ["a hull still and upright off its stand once it cannot be put back is settled",
+        ((_pushed getVariable ["ALiVE_mil_ato_settleResult", ""]) isEqualTo "settled") && {isDamageAllowed _pushed}] call _fnc_check;
+    _spawned pushBack _pushed;
 
     // --- validate -----------------------------------------------------------
     private _ownHome = _homes select 0;

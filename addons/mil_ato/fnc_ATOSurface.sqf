@@ -148,6 +148,13 @@ Jman
 // does not hold its fleet on the sea bed.
 #define VIRTUAL_HOLD 0.5
 
+// The hold after an aircraft is put down from the air (see "place"): the
+// longest it is held, how long it must be still before damage comes back, and
+// how many times it may be put back on its stand from rest.
+#define SETTLE_MAX 30
+#define SETTLE_QUIET 3
+#define SETTLE_RESEATS 3
+
 private ["_result"];
 
 // Distance from a point to a SEGMENT, in two dimensions. Wanted in three
@@ -1618,6 +1625,213 @@ switch(_operation) do {
             ["ALIVE_fnc_ATOSurface - place refused for %1: object is not local", typeOf _obj] call ALiVE_fnc_dump;
             _result = false;
         };
+
+        // Arriving from the air is the only placement that is held down
+        // afterwards. A plane put on its taxi route, or a hull spawned onto its
+        // stand, is meant to move within seconds, and holding it would stop
+        // every runway launch.
+        private _fromFlight = !((_home select 2) isEqualTo "taxi")
+            && {(((getPos _obj) select 2) > 5) || {(abs (speed _obj)) > 30}};
+
+        // Fuel a hold kept goes back into the tank, unless the aircraft is
+        // being held on its stand for a launch by then (holdOnStand in the
+        // effector). That hold keeps the tank empty until the launch and gives
+        // back what it keeps, so the fuel is added to what it keeps instead:
+        // filled here, a crewed plane waiting for the runway would roll.
+        private _fnc_fuelBack = {
+            params ["_v", "_kept"];
+            if (!(_kept isEqualType 0) || {_kept < 0}) exitWith {};
+            private _standHold = _v getVariable ["ALiVE_mil_ato_heldFuel", -1];
+            if (_standHold isEqualType 0 && {_standHold >= 0}) then {
+                _v setVariable ["ALiVE_mil_ato_heldFuel", _standHold max _kept, true];
+            } else {
+                // Set where the hull lives: a player who took it during the
+                // hold owns it now, and a tank set from here would not change.
+                if (local _v) then {
+                    _v setFuel ((fuel _v) max _kept);
+                } else {
+                    [_v, (fuel _v) max _kept] remoteExec ["setFuel", _v];
+                };
+            };
+        };
+
+        // The crew a hold protected is given back its own damage, and leave to
+        // get out of an aircraft that cannot move, unless the aircraft is being
+        // held on its stand for a launch by then, which keeps a crew aboard too.
+        private _fnc_crewBack = {
+            params ["_v", ["_men", []]];
+            if (!isNull _v) then {
+                if (_men isEqualTo []) then { _men = _v getVariable ["ALiVE_mil_ato_settleMen", []] };
+                _v setVariable ["ALiVE_mil_ato_settleMen", nil, false];
+                private _standHold = _v getVariable ["ALiVE_mil_ato_heldFuel", -1];
+                private _stay = (_standHold isEqualType 0) && {_standHold >= 0};
+                if (local _v) then { _v allowCrewInImmobile _stay } else { [_v, _stay] remoteExec ["allowCrewInImmobile", _v] };
+            };
+            {
+                if (!isNull _x && {alive _x}) then {
+                    if (local _x) then { _x allowDamage true } else { [_x, true] remoteExec ["allowDamage", _x] };
+                };
+            } forEach _men;
+        };
+
+        // Every placement that goes ahead takes the hull over. A hold still
+        // running from an earlier one ends when it sees the count move on, and
+        // the fuel and crew it was keeping are given back now rather than lost
+        // with it. Only once the placement is going ahead: a refused one leaves
+        // a running hold alone, or it would end it with damage still off.
+        private _gen = 0;
+        private _heldMen = [];
+        private _fnc_takeOver = {
+            _gen = (_obj getVariable ["ALiVE_mil_ato_settleGen", 0]) + 1;
+            _obj setVariable ["ALiVE_mil_ato_settleGen", _gen, false];
+            [_obj, _obj getVariable ["ALiVE_mil_ato_settleFuel", -1]] call _fnc_fuelBack;
+            [_obj] call _fnc_crewBack;
+            _obj setVariable ["ALiVE_mil_ato_settleFuel", nil, false];
+            _obj setVariable ["ALiVE_mil_ato_settlingUntil", nil, false];
+        };
+
+        // The hold after a placement from the air.
+        //
+        // Measured on the rig, a Blackfish put down through forceLanded from
+        // banked flight at about 236 km/h: thrown 7 to 34 m into the air in ten
+        // tries out of ten, whatever was done first (engine off, speed and spin
+        // zeroed before, after and a frame later, simulation off across the
+        // move, dropped from 1.5 m). Four of the ten were destroyed, every one
+        // of them by damage coming back at the old single check eight seconds
+        // in, while it was still bouncing. On LAN the same airframe put down
+        // from 94 m was destroyed ten seconds after the move and took its four
+        // crew with it. So the throw is not prevented here; it is ridden out.
+        //
+        // Damage stays off until the hull has been still for SETTLE_QUIET
+        // seconds. While it moves it is damped rather than pinned: no spin, no
+        // drift and nothing upward, but falling is allowed, because putting a
+        // hull back on the ground every tick repeats whatever threw it. Once at
+        // rest somewhere wrong (off its stand, tipped, or resting high) it is
+        // put back from rest, which is gentle, a few times at most. The engine
+        // is switched off and the tank held empty on every look, because a
+        // pilot restarts a stopped engine and an empty tank is the one thing
+        // measured to keep a crewed aircraft where it is. The fuel is kept on
+        // the hull and goes back when the hold ends however it ends.
+        private _fnc_settle = {
+            params ["_v", "_tgt", "_dir", "_deck", "_gen", "_fnc_fuelBack", "_fnc_crewBack", "_men"];
+            private _t0 = time;
+            private _stillSince = -1;
+            private _zLast = -1e9;
+            private _peak = 0;
+            private _reseats = 0;
+            private _gearAsked = false;
+            private _settled = false;
+            private _fnc_z = {
+                if (_deck) then { ((getPosASL _v) select 2) - (_tgt select 2) } else { (getPosATL _v) select 2 }
+            };
+            // Upright means square to the ground it stands on: a stand on a gentle
+            // slope is not a tipped aircraft. Plating is level.
+            private _upRef = if (_deck) then { [0,0,1] } else { surfaceNormal [_tgt select 0, _tgt select 1, 0] };
+            while { (time - _t0) < SETTLE_MAX } do {
+                if (isNull _v || {!alive _v}) exitWith {};
+                if ((_v getVariable ["ALiVE_mil_ato_settleGen", 0]) != _gen) exitWith {};
+                // A player who boarded is left alone, with damage back on.
+                if (({isPlayer _x} count (crew _v)) > 0) exitWith { _settled = true };
+
+                private _f = fuel _v;
+                if (_f > 0) then {
+                    _v setVariable ["ALiVE_mil_ato_settleFuel", (_v getVariable ["ALiVE_mil_ato_settleFuel", 0]) max _f, false];
+                };
+                _v setFuel 0;
+                _v engineOn false;
+
+                private _z = call _fnc_z;
+                _peak = _peak max _z;
+                private _vel = velocity _v;
+                private _moving = ((vectorMagnitude _vel) >= 0.5)
+                    || {(vectorMagnitude (angularVelocity _v)) >= 0.1}
+                    || {(abs (_z - _zLast)) >= 0.05};
+                _zLast = _z;
+                private _done = false;
+                if (_moving) then {
+                    _stillSince = -1;
+                    _v setVelocity [0, 0, (_vel select 2) min 0];
+                    _v setAngularVelocity [0,0,0];
+                } else {
+                    if (_stillSince < 0) then { _stillSince = time };
+                    private _inBand = if (_deck) then { _z >= -3 && {_z <= 3.5} } else { _z <= 3.5 };
+                    // Off its stand is only wrong while it can still be put
+                    // back. Once the re-seats are spent a hull resting still and
+                    // upright a few metres off is settled, or damage would stay
+                    // off on it for the rest of the mission.
+                    private _right = _inBand && {((vectorUp _v) vectorDotProduct _upRef) >= 0.9}
+                        && {((_v distance2D _tgt) <= 3) || {_reseats >= SETTLE_RESEATS}};
+                    if (_right) then {
+                        _done = (time - _stillSince) >= SETTLE_QUIET;
+                    } else {
+                        if (_reseats < SETTLE_RESEATS) then {
+                            _reseats = _reseats + 1;
+                            // A plane's gear is asked down once, by its own
+                            // pilot, while he is still aboard: a hull put down
+                            // from flight arrives with it up.
+                            if (!_gearAsked && {_v isKindOf "Plane"} && {!isNull (driver _v)}) then {
+                                _gearAsked = true;
+                                (driver _v) action ["LandGear", _v];
+                            };
+                            if (_dir >= 0) then { _v setDir _dir };
+                            if (_deck) then {
+                                _v setPosASL [_tgt select 0, _tgt select 1, (_tgt select 2) + 0.4];
+                                _v setVectorUp [0,0,1];
+                            } else {
+                                _v setPosATL _tgt;
+                                _v setVectorUp (surfaceNormal [_tgt select 0, _tgt select 1, 0]);
+                            };
+                            _v setVelocity [0,0,0];
+                            _v setAngularVelocity [0,0,0];
+                            _stillSince = -1;
+                            _zLast = -1e9;
+                        };
+                    };
+                };
+                // Out of the loop from here, at its own level: an exitWith
+                // inside the branches above would only leave the branch.
+                if (_done) exitWith { _settled = true };
+                sleep 0.1;
+            };
+            if (isNull _v || {!alive _v}) exitWith { [_v, _men] call _fnc_crewBack };
+            if ((_v getVariable ["ALiVE_mil_ato_settleGen", 0]) != _gen) exitWith {};
+            [_v, _v getVariable ["ALiVE_mil_ato_settleFuel", -1]] call _fnc_fuelBack;
+            _v setVariable ["ALiVE_mil_ato_settleFuel", nil, false];
+            [_v, _men] call _fnc_crewBack;
+            if (_settled) then {
+                _v allowDamage true;
+                _v setDamage 0;
+                _v setVariable ["ALiVE_mil_ato_settleResult", "settled", false];
+                ["ALIVE_fnc_ATOSurface - %1 put down from the air and held: still after %2 s, peak %3 m up, put back %4 times, %5 m off its stand",
+                    typeOf _v, round (time - _t0), round _peak, _reseats, round (_v distance2D _tgt)] call ALiVE_fnc_dump;
+            } else {
+                _v allowDamage false;
+                _v setVariable ["ALiVE_mil_ato_settleResult", "unsettled", false];
+                ["ALIVE_fnc_ATOSurface - %1 has not settled after %2 s (peak %3 m up, now %4 m up, %5 m off, put back %6 times), damage left off",
+                    typeOf _v, SETTLE_MAX, round _peak, round (call _fnc_z), round (_v distance2D _tgt), _reseats] call ALiVE_fnc_dump;
+            };
+            _v setVariable ["ALiVE_mil_ato_settlingUntil", nil, false];
+        };
+        // Stopped and stamped before the move, so anything that looks at the
+        // hull straight afterwards sees that it is being held.
+        private _fnc_holdStart = {
+            _obj engineOn false;
+            _obj setVelocity [0,0,0];
+            _obj setAngularVelocity [0,0,0];
+            _obj setVariable ["ALiVE_mil_ato_settleFuel", fuel _obj, false];
+            _obj setVariable ["ALiVE_mil_ato_settleResult", nil, false];
+            _obj setVariable ["ALiVE_mil_ato_settlingUntil", time + SETTLE_MAX, false];
+            // The crew is held with it. Measured on a Blackfish put down from
+            // banked flight: 1 or 2 of its 4 were killed aboard in the first
+            // fifth of a second, and the rest got out 3 to 5 s in, because a crew
+            // gets out of an aircraft that cannot move and an empty tank makes
+            // one. With their own damage off and told to stay aboard, all 4 were
+            // alive and aboard 10 s in, both times. Given back when it ends.
+            _heldMen = (crew _obj) select { alive _x && {!isPlayer _x} };
+            { _x allowDamage false } forEach _heldMen;
+            _obj setVariable ["ALiVE_mil_ato_settleMen", _heldMen, false];
+            _obj allowCrewInImmobile true;
+        };
         // Held: put exactly where it belongs, stopped, hidden, and with its
         // simulation off so it stays there. Measured: a hull frozen this way
         // over open water reads the same position thirty seconds later, still
@@ -1634,6 +1848,7 @@ switch(_operation) do {
         // and its replacement took the hold point cleanly.
         if ((_home select 2) isEqualTo "virtual") exitWith {
             ([_logic, "resolve", _home] call MAINCLASS) params ["_targetV", "_dirV"];
+            call _fnc_takeOver;
             _obj allowDamage false;
             if (_dirV >= 0) then { _obj setDir _dirV };
             _obj setPosASL [_targetV select 0, _targetV select 1, _targetV select 2];
@@ -1666,6 +1881,8 @@ switch(_operation) do {
                         typeOf _obj, typeOf (_blockedD select 0)] call ALiVE_fnc_dump;
                     _result = false;
                 } else {
+                    call _fnc_takeOver;
+                    if (_fromFlight) then { call _fnc_holdStart };
                     _obj allowDamage false;
                     if (_dirD >= 0) then { _obj setDir _dirD };
                     // ASL, and a hand's breadth clear of the plating.
@@ -1684,18 +1901,24 @@ switch(_operation) do {
                     // "settled" is measured against the deck rather than
                     // against terrain level: over water terrain level is the
                     // sea bed and every airframe would read as forty metres up.
-                    [_obj, _targetD] spawn {
-                        params ["_v", "_tgt"];
-                        sleep 8;
-                        if (isNull _v || {!alive _v}) exitWith {};
-                        private _off = ((getPosASL _v) select 2) - (_tgt select 2);
-                        if (_off < -3 || {_off > 3.5}) then {
-                            _v allowDamage false;
-                            ["ALIVE_fnc_ATOSurface - %1 settled %2 m off its deck spot, damage left off",
-                                typeOf _v, round _off] call ALiVE_fnc_dump;
-                        } else {
-                            _v allowDamage true;
-                            _v setDamage 0;
+                    // From the air it is held down until it is still.
+                    if (_fromFlight) then {
+                        _obj setAngularVelocity [0,0,0];
+                        [_obj, _targetD, _dirD, true, _gen, _fnc_fuelBack, _fnc_crewBack, _heldMen] spawn _fnc_settle;
+                    } else {
+                        [_obj, _targetD] spawn {
+                            params ["_v", "_tgt"];
+                            sleep 8;
+                            if (isNull _v || {!alive _v}) exitWith {};
+                            private _off = ((getPosASL _v) select 2) - (_tgt select 2);
+                            if (_off < -3 || {_off > 3.5}) then {
+                                _v allowDamage false;
+                                ["ALIVE_fnc_ATOSurface - %1 settled %2 m off its deck spot, damage left off",
+                                    typeOf _v, round _off] call ALiVE_fnc_dump;
+                            } else {
+                                _v allowDamage true;
+                                _v setDamage 0;
+                            };
                         };
                     };
 
@@ -1735,6 +1958,8 @@ switch(_operation) do {
 
         private _dir = _home select 1;
 
+        call _fnc_takeOver;
+        if (_fromFlight) then { call _fnc_holdStart };
         _obj allowDamage false;
         if (_dir >= 0) then { _obj setDir _dir };
         _obj setPosATL _target;
@@ -1771,18 +1996,25 @@ switch(_operation) do {
         // Damage stays off until the airframe has actually settled. Re-arming
         // on a frame still clipping something is what destroyed them eight
         // seconds later, and the old check read damage, which allowDamage false
-        // had already forced to zero, so it always re-armed.
-        [_obj, _target] spawn {
-            params ["_v", "_tgt"];
-            sleep 8;
-            if (isNull _v || {!alive _v}) exitWith {};
-            private _z = (getPosATL _v) select 2;
-            if (_z > 3.5) then {
-                _v allowDamage false;
-                ["ALIVE_fnc_ATOSurface - %1 still %2 m up after settling, damage left off", typeOf _v, round _z] call ALiVE_fnc_dump;
-            } else {
-                _v allowDamage true;
-                _v setDamage 0;
+        // had already forced to zero, so it always re-armed. From the air it is
+        // held down until it is still, above; from the ground this check is
+        // enough and is left exactly as it was.
+        if (_fromFlight) then {
+            _obj setAngularVelocity [0,0,0];
+            [_obj, _target, _dir, false, _gen, _fnc_fuelBack, _fnc_crewBack, _heldMen] spawn _fnc_settle;
+        } else {
+            [_obj, _target] spawn {
+                params ["_v", "_tgt"];
+                sleep 8;
+                if (isNull _v || {!alive _v}) exitWith {};
+                private _z = (getPosATL _v) select 2;
+                if (_z > 3.5) then {
+                    _v allowDamage false;
+                    ["ALIVE_fnc_ATOSurface - %1 still %2 m up after settling, damage left off", typeOf _v, round _z] call ALiVE_fnc_dump;
+                } else {
+                    _v allowDamage true;
+                    _v setDamage 0;
+                };
             };
         };
 

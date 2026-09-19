@@ -202,6 +202,70 @@ nothing changed and it said so.
             _st18 isEqualTo "ok" && {_d18 isEqualTo "dismissed"}] call _fnc_check;
     };
 
+    // --- a crew kept aboard while its aircraft is held down -------------------
+    // Not let out beside a hull put down from the air that is still being held:
+    // on LAN four crew let out beside a Blackfish died with it ten seconds later.
+    // The same men are stood down once the hold ends.
+    if (count (crew _veh) == 0) then { ["mintCrew"] call _fnc_apply; sleep 1 };
+    { _x setVariable ["ALiVE_mil_ato_crew", true, true] } forEach (crew _veh);
+    private _heldMen = +(crew _veh);
+    // Counted apart from being gone: with nobody watching the men are deleted,
+    // which is gone and not dead, and a death must not pass as a stand-down.
+    ALIVE_test_heldKilled = 0;
+    { _x addEventHandler ["Killed", { ALIVE_test_heldKilled = ALIVE_test_heldKilled + 1 }] } forEach _heldMen;
+    _veh setVariable ["ALiVE_mil_ato_settlingUntil", time + 30, false];
+    (["standDownCrew"] call _fnc_apply) params ["_stH", "_mH", "_dH"];
+    ["a crew is kept aboard while its aircraft is held down",
+        _stH isEqualTo "ok" && {_dH isEqualTo "deferred until the hull has settled"}
+        && {count _heldMen > 0} && {({_x in (crew _veh)} count _heldMen) == count _heldMen}] call _fnc_check;
+    sleep 2;
+    _veh setVariable ["ALiVE_mil_ato_settlingUntil", nil, false];
+    sleep 3;
+    ["and those men are stood down once the hold ends, none of them killed",
+        (({alive _x && {_x in (crew _veh)}} count _heldMen) == 0) && {ALIVE_test_heldKilled == 0}] call _fnc_check;
+    // Unless the aircraft is given a new sortie first: the men aboard become its
+    // crew, and are left there.
+    ["mintCrew"] call _fnc_apply;
+    sleep 1;
+    private _nextMen = +(crew _veh);
+    _veh setVariable ["ALiVE_mil_ato_settlingUntil", time + 30, false];
+    (["standDownCrew"] call _fnc_apply) params ["", "", "_dH2"];
+    ["mintCrew"] call _fnc_apply;
+    _veh setVariable ["ALiVE_mil_ato_settlingUntil", nil, false];
+    sleep 3;
+    ["but a crew claimed for a new sortie meanwhile stays aboard",
+        _dH2 isEqualTo "deferred until the hull has settled" && {count _nextMen > 0}
+        && {({alive _x && {_x in (crew _veh)}} count _nextMen) == count _nextMen}] call _fnc_check;
+    // And is ready to fight again: a landing crew is calmed on the way in, and
+    // the same men flying the next sortie must be able to shoot.
+    (group (driver _veh)) setBehaviour "CARELESS";
+    (group (driver _veh)) setCombatMode "BLUE";
+    { _x disableAI "AUTOTARGET"; _x disableAI "TARGET" } forEach (crew _veh);
+    ["mintCrew"] call _fnc_apply;
+    ["and a crew kept for a new sortie has its targeting back",
+        !((behaviour (driver _veh)) isEqualTo "CARELESS") && {!((combatMode (group (driver _veh))) isEqualTo "BLUE")}
+        && {(driver _veh) checkAIFeature "AUTOTARGET"} && {(driver _veh) checkAIFeature "TARGET"}] call _fnc_check;
+    // A held hull can be thrown well up while it settles. Its crew is kept
+    // aboard then too, not refused as in the air and forgotten, and let go once
+    // it is down and the hold is over.
+    private _upMen = +(crew _veh);
+    ALIVE_test_upKilled = 0;
+    { _x addEventHandler ["Killed", { ALIVE_test_upKilled = ALIVE_test_upKilled + 1 }] } forEach _upMen;
+    private _was = getPosATL _veh;
+    _veh allowDamage false;
+    _veh setVariable ["ALiVE_mil_ato_settlingUntil", time + 30, false];
+    _veh setPosATL [_was select 0, _was select 1, 12];
+    (["standDownCrew"] call _fnc_apply) params ["_stU", "", "_dU"];
+    ["a crew is kept aboard a held hull that is up in the air",
+        _stU isEqualTo "ok" && {_dU isEqualTo "deferred until the hull has settled"}] call _fnc_check;
+    _veh setPosATL [_was select 0, _was select 1, 0];
+    _veh setVelocity [0,0,0];
+    _veh setVariable ["ALiVE_mil_ato_settlingUntil", nil, false];
+    sleep 8;
+    ["and let go once it is down, none of them killed",
+        (({alive _x && {_x in (crew _veh)}} count _upMen) == 0) && {ALIVE_test_upKilled == 0}] call _fnc_check;
+    _veh allowDamage true;
+
     // --- re-crewing an aircraft whose crew was killed ---------------------------
     // Bodies stay in their seats, and crew creation only fills empty ones, so
     // this only works if the dead are taken out first.
