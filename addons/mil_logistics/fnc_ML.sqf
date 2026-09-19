@@ -1190,6 +1190,7 @@ switch(_operation) do {
                             };
 
                             private _emergencyPad = createVehicle ["Land_HelipadEmpty_F", _emergencyPos, [], 0, "CAN_COLLIDE"];
+                            _emergencyPad setVariable ["ALiVE_padOwner", "mil_logistics", true];
                             _heli landAt _emergencyPad;
                             _heli setFuel FUEL_WATCHDOG_RECOVER_FUEL;
 
@@ -1257,6 +1258,7 @@ switch(_operation) do {
                             { _x disableAI "AUTOTARGET"; _x disableAI "TARGET"; _x setSkill ["courage", 1]; } forEach (units _grpHover);
 
                             private _landPad = createVehicle ["Land_HelipadEmpty_F", getPosATL _heli, [], 0, "CAN_COLLIDE"];
+                            _landPad setVariable ["ALiVE_padOwner", "mil_logistics", true];
                             _heli landAt _landPad;
                             [_heli, _landPad] spawn {
                                 private _h = _this select 0; private _p = _this select 1; private _t = 0;
@@ -1578,6 +1580,7 @@ switch(_operation) do {
                             private _landPos = getPosATL _vehicle;
                             _landPos set [2, 0];
                             private _pad = createVehicle ["Land_HelipadEmpty_F", _landPos, [], 0, "CAN_COLLIDE"];
+                            _pad setVariable ["ALiVE_padOwner", "mil_logistics", true];
                             _vehicle landAt _pad;
                             [_vehicle, _pad] spawn {
                                 private _h = _this select 0; private _p = _this select 1; private _t = 0;
@@ -2019,6 +2022,7 @@ switch(_operation) do {
                                         _landPos set [2, 0];
                                     };
                                     private _landPad = createVehicle ["Land_HelipadEmpty_F", _landPos, [], 0, "CAN_COLLIDE"];
+                                    _landPad setVariable ["ALiVE_padOwner", "mil_logistics", true];
                                     _heli landAt _landPad;
                                     _landAtIssued = true;
                                     [_heli, _landPad] spawn {
@@ -4374,6 +4378,7 @@ switch(_operation) do {
                                     ]] call ALIVE_fnc_ML;
 
                                     _dropPad = createVehicle ["Land_HelipadEmpty_F", _dropPos, [], 0, "CAN_COLLIDE"];
+                                    _dropPad setVariable ["ALiVE_padOwner", "mil_logistics", true];
                                     _heli landAt _dropPad;
                                     _heli flyInHeight 30;
                                     _lastLandAtTime = serverTime;
@@ -9156,6 +9161,7 @@ switch(_operation) do {
                             if (_waitIterations > _waitTotalIterations || _farEnough) then {
                                 if (!isNull _vehicle && alive _vehicle && _active) then {
                                     private _landPad = createVehicle ["Land_HelipadEmpty_F", getPosATL _vehicle, [], 0, "CAN_COLLIDE"];
+                                    _landPad setVariable ["ALiVE_padOwner", "mil_logistics", true];
                                     _vehicle landAt _landPad;
                                     [_vehicle, _landPad] spawn {
                                         private _h = _this select 0; private _p = _this select 1; private _t = 0;
@@ -10382,6 +10388,7 @@ switch(_operation) do {
                                     // Force heli to land and despawn if still active
                                     if (!isNull _vehicle && alive _vehicle && _active) then {
                                         private _landPad = createVehicle ["Land_HelipadEmpty_F", getPosATL _vehicle, [], 0, "CAN_COLLIDE"];
+                                        _landPad setVariable ["ALiVE_padOwner", "mil_logistics", true];
                                         _vehicle landAt _landPad;
                                         [_vehicle, _landPad] spawn {
                                             private _h = _this select 0; private _p = _this select 1; private _t = 0;
@@ -10734,6 +10741,7 @@ switch(_operation) do {
                             if (_waitIterations > _waitTotalIterations || _farEnough) then {
                                 if (!isNull _vehicle && alive _vehicle && _active) then {
                                     private _landPad = createVehicle ["Land_HelipadEmpty_F", getPosATL _vehicle, [], 0, "CAN_COLLIDE"];
+                                    _landPad setVariable ["ALiVE_padOwner", "mil_logistics", true];
                                     _vehicle landAt _landPad;
                                     [_vehicle, _landPad] spawn {
                                         private _h = _this select 0; private _p = _this select 1; private _t = 0;
@@ -12856,6 +12864,7 @@ switch(_operation) do {
                     if (count _landPos == 2) then { _landPos pushback 0; };
 
                     private _tempPad = createVehicle ["Land_HelipadEmpty_F", _landPos, [], 0, "CAN_COLLIDE"];
+                    _tempPad setVariable ["ALiVE_padOwner", "mil_logistics", true];
 
                     [_heli, _tempPad] spawn {
                         private _heli   = _this select 0;
@@ -13258,6 +13267,7 @@ switch(_operation) do {
                     ]] call MAINCLASS;
 
                     _heliPad = "Land_HelipadEmpty_F" createVehicle _position;
+                    _heliPad setVariable ["ALiVE_padOwner", "mil_logistics", true];
 
                     _eventAssets pushback _heliPad;
                     [_event, "eventAssets",_eventAssets] call ALIVE_fnc_hashSet;
@@ -13287,6 +13297,7 @@ switch(_operation) do {
 
                                 // Issue landAt via temp helipad so heli physically lands
                                 private _tmpPad = createVehicle ["Land_HelipadEmpty_F", _landPos, [], 0, "CAN_COLLIDE"];
+                                _tmpPad setVariable ["ALiVE_padOwner", "mil_logistics", true];
                                 _vehicleObject landAt _tmpPad;
 
                                 // Spawn thread: wait for landing then physically unload troops
@@ -13384,6 +13395,7 @@ switch(_operation) do {
                         _position = _eventPosition getPos [random(DESTINATION_VARIANCE), random(360)];
                     };
                     _heliPad = "Land_HelipadEmpty_F" createVehicle _position;
+                    _heliPad setVariable ["ALiVE_padOwner", "mil_logistics", true];
 
                     _eventAssets pushback _heliPad;
                     [_event, "eventAssets",_eventAssets] call ALIVE_fnc_hashSet;
@@ -13463,6 +13475,7 @@ switch(_operation) do {
                     };
 
                     _heliPad = "Land_HelipadEmpty_F" createVehicle _position;
+                    _heliPad setVariable ["ALiVE_padOwner", "mil_logistics", true];
 
                     _eventAssets pushback _heliPad;
                     [_event, "eventAssets",_eventAssets] call ALIVE_fnc_hashSet;
@@ -13662,6 +13675,7 @@ switch(_operation) do {
                                     // Dummy pad object for sling drop position tracking/cleanup
                                     // (created at drop pos but NOT used for landAt - watchdog drives descent)
                                     private _slingDropPad = createVehicle ["Land_HelipadEmpty_F", _position, [], 0, "CAN_COLLIDE"];
+                                    _slingDropPad setVariable ["ALiVE_padOwner", "mil_logistics", true];
                                     [_slingDropPad] spawn {
                                         sleep 300;
                                         if (!isNull (_this select 0)) then { deleteVehicle (_this select 0); };

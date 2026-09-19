@@ -27,6 +27,7 @@ See Also:
 
 Author:
 SpyderBlack / ARJay
+Jman
 
 Peer Reviewed:
 ---------------------------------------------------------------------------- */
@@ -5551,6 +5552,7 @@ switch (_operation) do {
                 _position = (position _unit) getpos [50, random 360];
 
                 _target = "Land_HelipadEmpty_F" createVehicle _position;
+                _target setVariable ["ALiVE_padOwner", "sup_command", true];
 
                 [_logic, "createDynamicCamera", [_duration,player,_unit,_target]] call MAINCLASS;
 
@@ -5697,6 +5699,7 @@ switch (_operation) do {
                     if(isNil "_target2") then {
                         _randomPosition = (position _source) getpos [random 50, random 360];
                         _target2 = "Land_HelipadEmpty_F" createVehicle _randomPosition;
+                        _target2 setVariable ["ALiVE_padOwner", "sup_command", true];
                     };
 
                     ALIVE_tourCamera = [_source,false,_initialAngle] call ALIVE_fnc_addCamera;

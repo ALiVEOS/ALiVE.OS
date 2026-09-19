@@ -969,6 +969,20 @@ if (count _found == 0 && {_preference in ["auto", "helipad"]} && {_isHeli || _is
         // elsewhere, so it is never within 5m of the pad under test. This distance rule is what keeps
         // an aircraft its own pad, not that exemption. A terrain-authored pad carries no mark.
         if ((_x getVariable ["ALiVE_atoStamped", false]) && {_padPos distance2D _centerPos > 60}) then { continue };
+        // A pad another module made for one landing or one job is not parking.
+        // Logistics, tasking and the command tablet put invisible pads down for
+        // their own helicopters to land on, and they are pads to this search
+        // like any other, so an aircraft could be handed one as its stand while
+        // the helicopter it was made for was on its way in. They are marked when
+        // they are made. The mission maker's own invisible pads carry no mark and
+        // stay on offer.
+        //
+        // This is not the ownership scheme the comment above records reverting.
+        // That one tagged a pad with the aircraft it belonged to, and had to be
+        // released when the aircraft was lost or replaced. This mark says the pad
+        // is nobody's parking at all: it is set once, when the pad is made, never
+        // changes, and goes when the pad goes.
+        if !((_x getVariable ["ALiVE_padOwner", ""]) isEqualTo "") then { continue };
         if !([_padPos, _minSeparation] call _fnc_registryClear) then { continue };
         // Filter the helipad object itself (and any host building it
         // sits on, picked up via 2 m proximity) out of the obstacle

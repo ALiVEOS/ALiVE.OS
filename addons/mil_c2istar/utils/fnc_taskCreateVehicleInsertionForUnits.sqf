@@ -170,6 +170,7 @@ Jman
             };
 
             _heliPad = "Land_HelipadEmpty_F" createVehicle _transportPosition;
+            _heliPad setVariable ["ALiVE_padOwner", "mil_c2istar", true];
 
             _profileWaypoint = [_transportPosition, 1, "TR UNLOAD", "LIMITED", 100, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
             [_crewProfile, "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;

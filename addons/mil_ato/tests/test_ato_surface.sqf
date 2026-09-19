@@ -110,6 +110,27 @@ refused rather than guessed at.
         ["a helicopter anchored 600 m from the nearest free pad is still given a pad",
             count _hhome == 3 && {!((nearestObjects [_hhome select 0, ["HeliH"], 5]) isEqualTo [])}] call _fnc_check;
         ALiVE_airSpawnRegistry = [];
+
+        // A pad another module put down for its own landing is not parking.
+        // Logistics, tasking and the command tablet make invisible pads for
+        // their helicopters and mark them; a mission maker's carry no mark. The
+        // spot is flat, open dirt with the nearest of the field's pads 182 m off,
+        // so within 60 m this pad is the only one there is.
+        private _padAt = [2081.62, 5604.11, 0];
+        private _loose = createVehicle ["Land_HelipadEmpty_F", _padAt, [], 0, "CAN_COLLIDE"];
+        sleep 1;
+        private _asked1 = [_heli, _padAt, 60, "helipad"] call ALiVE_fnc_findAirSpawnPosition;
+        ALiVE_airSpawnRegistry = [];
+        diag_log format ["  info  an unmarked invisible pad: the search answered %1", _asked1];
+        ["an invisible pad nobody has marked is offered as a stand",
+            count _asked1 >= 2 && {((_asked1 select 0) distance2D _padAt) < 5}] call _fnc_check;
+        _loose setVariable ["ALiVE_padOwner", "mil_logistics", true];
+        private _asked2 = [_heli, _padAt, 60, "helipad"] call ALiVE_fnc_findAirSpawnPosition;
+        ALiVE_airSpawnRegistry = [];
+        diag_log format ["  info  the same pad marked as another module's: the search answered %1", _asked2];
+        ["one another module made for its own landing is not",
+            count _asked2 < 2 || {((_asked2 select 0) distance2D _padAt) >= 5}] call _fnc_check;
+        deleteVehicle _loose;
     };
 
     // Pairwise separation: a reserved list that is not respected shows up here.

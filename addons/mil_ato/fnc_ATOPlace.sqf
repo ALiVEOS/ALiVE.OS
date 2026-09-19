@@ -2190,12 +2190,16 @@ switch(_operation) do {
             // nearest pad to each node that is not. The nearest-pad lookup
             // answers nil for an empty result and pushBackUnique of nil is
             // an engine error, hence the param with a null default.
+            // Not a pad another module put down for its own landing: those are
+            // marked when they are made, and are nobody's parking.
             private _pads = [];
             {
                 if (_x isKindOf "HeliH") then {
-                    _pads pushBackUnique _x;
+                    if ((_x getVariable ["ALiVE_padOwner", ""]) isEqualTo "") then { _pads pushBackUnique _x };
                 } else {
-                    private _near = (nearestObjects [position _x, ["HeliH"], 250]) param [0, objNull];
+                    private _near = ((nearestObjects [position _x, ["HeliH"], 250]) select {
+                        (_x getVariable ["ALiVE_padOwner", ""]) isEqualTo ""
+                    }) param [0, objNull];
                     if (!isNull _near) then { _pads pushBackUnique _near };
                 };
             } forEach _nodes;

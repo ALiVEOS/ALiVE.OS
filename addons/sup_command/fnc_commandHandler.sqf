@@ -31,6 +31,7 @@ See Also:
 
 Author:
 SpyderBlack / ARJay
+Jman
 
 Peer reviewed:
 nil
@@ -671,6 +672,7 @@ switch(_operation) do {
                         [_profile,"addWaypoint",_wp] call ALiVE_fnc_profileEntity;
 
                         private _helipad = "Land_HelipadEmpty_F" createVehicle _waypointPosition;
+                        _helipad setVariable ["ALiVE_padOwner", "sup_command", true];
 
                         [_profile,_helipad,_waypointType] spawn {
                             params ["_profile","_helipad","_waypointType"];

@@ -1246,7 +1246,11 @@ switch(_operation) do {
         };
         private _fnc_walled = {
             if (_inHangar) exitWith { false };
-            if !((nearestObjects [_p, ["HeliH"], 5]) isEqualTo []) exitWith { false };
+            // A pad excuses the spot, but not a pad another module put down for
+            // its own landing: those go anywhere a helicopter had to set down.
+            if !(((nearestObjects [_p, ["HeliH"], 5]) select {
+                    (_x getVariable ["ALiVE_padOwner", ""]) isEqualTo ""
+                }) isEqualTo []) exitWith { false };
             private _near = ((nearestObjects [_p, ["House","Building","Wall"], _reach + BODY_PAD])
                 + (nearestTerrainObjects [_p, BODY_TYPES, _reach + BODY_PAD, false, true]))
                 select { !(_x isKindOf "HeliH") && {!(_x in _shelter)} };
