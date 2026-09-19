@@ -2373,19 +2373,43 @@ switch(_operation) do {
                     private _endState = _v getVariable ["ALIVE_resupply_state", ""];
                     if !(_endState isEqualType "") then { _endState = "" };
                     private _byTruck = _endState isEqualTo "complete";
+                    // A full tank, unless the aircraft is being held on its stand
+                    // for a launch by now, which keeps its tank empty so it cannot
+                    // roll: then the fuel is added to what the hold gives back.
+                    // Filled here, a crewed plane waiting for its runway rolls.
+                    private _fnc_fill = {
+                        private _kept = _v getVariable ["ALiVE_mil_ato_heldFuel", -1];
+                        if (_kept isEqualType 0 && {_kept >= 0}) then {
+                            _v setVariable ["ALiVE_mil_ato_heldFuel", 1, true];
+                        } else {
+                            _v setFuel 1;
+                        };
+                    };
+                    private _fuelWas = fuel _v;
                     if (!_byTruck) then {
                         // Where it stands. This is the old behaviour, plus the
                         // rearm it always said it did.
                         _v setDamage 0;
-                        _v setFuel 1;
+                        call _fnc_fill;
                         _v setVehicleAmmo 1;
+                    } else {
+                        // And the tank filled after a truck has been. The truck's
+                        // service only ever raises fuel to half a tank, so an
+                        // aircraft that landed with more got nothing: on LAN an
+                        // Apache was serviced by a truck at 0.61, 0.54 and 0.50
+                        // and would have dropped below the tasker's 0.5 floor on
+                        // its next sortie. How full Combat Support fills its own
+                        // assets is its own question; an aircraft of this
+                        // module leaves its turnaround full, as it does when no
+                        // truck comes.
+                        call _fnc_fill;
                     };
                     _v setVariable ["ALiVE_mil_ato_servicedAt", time, false];
                     _v setVariable ["ALiVE_mil_ato_serviceAsked", nil, false];
-                    ["ALIVE_fnc_ATOEffect - %1 is serviced%2", _tail,
+                    ["ALIVE_fnc_ATOEffect - %1 is serviced%2, fuel %3 -> %4", _tail,
                         if (_byTruck) then { " by a truck" } else {
                             format [" where it stands (the truck said '%1')", _endState]
-                        }] call ALiVE_fnc_dump;
+                        }, _fuelWas toFixed 2, (fuel _v) toFixed 2] call ALiVE_fnc_dump;
                 };
             };
 

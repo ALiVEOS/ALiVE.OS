@@ -369,6 +369,42 @@ nothing changed and it said so.
     { deleteVehicle _x } forEach (crew _broken);
     deleteVehicle _broken;
 
+    // --- a truck's service leaves the tank full ----------------------------------
+    // The truck only ever raises fuel to half a tank, so an aircraft landing with
+    // more got nothing: on LAN an Apache was serviced by a truck at 0.61, 0.54 and
+    // 0.50. The truck is played here by writing its "complete" on the hull while
+    // the service waits, which is what the logistics side does when it is done.
+    if ((count (allMissionObjects "ALiVE_mil_logistics")) > 0) then {
+        _skipped pushBack "a truck's service leaves the tank full";
+        diag_log "  skip  a truck's service leaves the tank full  (a logistics commander is placed, so this would wait for a real truck)";
+    } else {
+        private _tanked = createVehicle ["B_Plane_CAS_01_F", _spot getPos [60, 200], [], 0, "CAN_COLLIDE"];
+        _tanked setPosATL [((_spot getPos [60, 200]) select 0), ((_spot getPos [60, 200]) select 1), 0];
+        sleep 1;
+        _tanked setFuel 0.61;
+        // Damaged as well, which tells the two ways out apart: serviced where it
+        // stands it is repaired, and after a truck the module leaves the repair to
+        // the truck and only fills the tank.
+        _tanked setDamage 0.3;
+        private _tankWas = fuel _tanked;
+        private _tankedHome = [getPosATL _tanked, 0, "terrain"];
+        private _rF1 = [];
+        // Asked and answered in one unscheduled block, so the service's own thread
+        // cannot look before the truck's answer is written.
+        isNil {
+            _rF1 = [_e, "apply", ["turnaround", _tanked, _tankedHome, ["TEST_TANKED"]]] call ALIVE_fnc_ATOEffect;
+            _tanked setVariable ["ALIVE_resupply_state", "complete", true];
+        };
+        _rF1 params ["_stF1", "_mF1", "_dF1"];
+        sleep 7;
+        diag_log format ["  info  turnaround said %1 %2; the tank read %3 before and %4 after the truck's answer, damage %5",
+            _stF1, _dF1, _tankWas, fuel _tanked, damage _tanked];
+        ["FIXTURE: the aircraft came in with more than half a tank and a service was asked for",
+            _tankWas > 0.5 && {_tankWas < 0.7} && {_stF1 isEqualTo "ok"} && {!_mF1}] call _fnc_check;
+        ["a truck's service leaves the tank full", (fuel _tanked) > 0.99 && {(damage _tanked) > 0.2}] call _fnc_check;
+        deleteVehicle _tanked;
+    };
+
     // --- held on the stand -------------------------------------------------------
     // An empty tank while it waits, and exactly what it had given back after.
     private _held = createVehicle ["B_Plane_CAS_01_F", _spot getPos [60, 270], [], 0, "CAN_COLLIDE"];
