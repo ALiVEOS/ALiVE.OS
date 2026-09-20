@@ -9,38 +9,51 @@ Reads the ALiVE modules in the open editor scenario and builds a preset out of
 them: every module, the settings that were actually chosen, and the sync lines
 between them.
 
-Every ALiVE module is taken, not a selection. A mission maker sharing a setup
-should not have to know that leaving out ALiVE Required or the Virtual AI System
-gives the recipient a scenario that quietly does nothing, so the question is not
-asked.
+By default every ALiVE module is taken. A caller can name which modules and which
+areas it wants instead, which is what the window does when somebody ticks them,
+but ALiVE Required and the Virtual AI System are taken whether they were ticked or
+not: a preset without them places cleanly and then does nothing at all, with no
+error to explain it, and that is the one failure a mission maker cannot debug.
+
+A sync line to a module that was not taken goes with it, because there is nothing
+left for it to point at.
 
 Only settings that differ from the module's own default are carried. That keeps a
 preset a few hundred characters instead of forty thousand, and it means a default
 improved later reaches presets written today. The rest of the module's settings
 are not missing from the preset so much as deliberately left to ALiVE.
 
-Two kinds of setting are dropped even when they were chosen, and the caller is
-told which, by name:
-  - anything naming something that only exists in the mission it came from, such
-    as an area marker for a commander's ground, because the name means nothing on
-    another map and a silently empty area is worse than an obvious gap.
-  - the one setting that holds script rather than data, the per-spawn hook, which
-    would make a shared preset a way to run somebody else's code.
+Settings are dropped in two cases, and the caller is told which, by name:
+  - the three that hold script rather than data: the per-spawn hook and the two
+    runway ends, which mil_ato reads with call compile. Carrying any of them would
+    make a shared preset a way to run somebody else's code.
+  - a setting naming an area, when that area is not coming too. Keeping it would
+    point a commander at ground that does not exist, which reads as configured and
+    behaves as broken.
+
+An area that IS coming travels with the preset, so the setting naming it can come
+as well. That is the whole reason presets carry areas at all.
 
 Both lists live in config, under CfgALiVEPresets, so the editor side and the
 tooling that reviews a submission read the same list rather than two copies.
 
 Parameters:
-    None.
+    _choice - ARRAY - optional [_modules, _markers]; nothing means everything
+      _modules - ARRAY of the module entities to take
+      _markers - ARRAY of STRING, the area names to take
 
 Returns:
     ARRAY [_preset, _report]
-      _preset - the preset array, ready for ALIVE_fnc_presetSerialize
-      _report - [_moduleCount, _settingCount, _linkCount, _dropped, _mods]
+      _preset - the preset array, ready for ALIVE_fnc_presetSerialize. Seven parts
+                and version 1 when it carries no areas, eight and version 2 when
+                it does, so a preset that gains nothing from the new part stays
+                readable by builds that came before it.
+      _report - [_moduleCount, _settingCount, _linkCount, _dropped, _mods, _missing]
 
 Examples:
     (begin example)
     ([] call ALIVE_fnc_presetCollect) params ["_preset", "_report"];
+    ([[_someModules, ["BLUFOR_TAOR"]]] call ALIVE_fnc_presetCollect) params ["_preset"];
     (end)
 
 See Also:
@@ -50,13 +63,44 @@ Author:
     Jman
 ---------------------------------------------------------------------------- */
 
+params [["_choice", [], [[]]]];
+
 if (!is3DEN) exitWith {
     ["ALIVE_fnc_presetCollect - only the editor has a scenario to read"] call ALiVE_fnc_dump;
-    [[], [0, 0, 0, [], []]]
+    [[], [0, 0, 0, [], [], []]]
 };
 
+// Nothing chosen means everything, which is what the right click entry does. The
+// window passes two explicit lists instead: which modules, and which areas.
+_choice params [["_pickModules", [], [[]]], ["_pickMarkers", [], [[]]]];
+private _choosing = count _choice > 0;
+
+// Both lists live in config so the editor and the tooling that reviews a
+// submission read the same thing. The fallbacks matter more than they look: a
+// config read comes back empty until the addon is rebuilt, and a fallback that
+// disagrees with config is a second source of truth that only bites later.
 private _skip = getArray (configFile >> "CfgALiVEPresets" >> "skipAttributes");
-if (count _skip == 0) then { _skip = ["taor", "blacklist", "airspace", "ingressMarker", "runwaystartpos", "runwayendpos", "onEachSpawn"] };
+if (count _skip == 0) then { _skip = ["onEachSpawn", "runwaystartpos", "runwayendpos"] };
+
+private _markerSettings = getArray (configFile >> "CfgALiVEPresets" >> "markerAttributes");
+if (count _markerSettings == 0) then { _markerSettings = ["taor", "blacklist", "airspace", "ingressMarker"] };
+
+// A ticked area is carried because it was ticked, and for no other reason.
+// Working it out from the settings instead meant ticking an area whose module
+// was not also ticked carried nothing at all, which is not what the tick says.
+private _here = ["find"] call ALIVE_fnc_presetMarkers;
+private _wantedLower = _pickMarkers apply { toLower _x };
+private _carry = if (_choosing) then {
+    _here select { (toLower _x) in _wantedLower }
+} else {
+    +_here
+};
+private _carryLower = _carry apply { toLower _x };
+
+// Without its area, a setting naming one is dropped too: a taor pointing at a
+// marker that is not there widens the placement modules to the whole map and
+// stops mil_ato starting at all, so half the pair is worse than neither.
+private _missing = [];    // named by a setting, and not coming with it
 
 // Everything the editor holds, whatever list it keeps it in. Asking by list
 // index would tie this to an order the engine is free to change; asking each
@@ -72,8 +116,18 @@ private _modules = [];
     };
 } forEach all3DENEntities;
 
+// Only what was chosen, when a choice was made. ALiVE Required and the profile
+// system are never dropped even if they were not ticked: a preset without them
+// places cleanly and then does nothing at all, with no error to explain it, and
+// that is the one failure a mission maker cannot debug.
+if (_choosing) then {
+    _modules = _modules select {
+        _x in _pickModules || {(toLower (typeOf _x)) in ["alive_require", "alive_sys_profile"]}
+    };
+};
+
 if (count _modules == 0) exitWith {
-    [[], [0, 0, 0, [], []]]
+    [[], [0, 0, 0, [], [], []]]
 };
 
 // A stable order, so the same scenario always writes the same preset and two
@@ -124,7 +178,24 @@ private _settingCount = 0;
                     ([_a, _entity] call ALIVE_fnc_presetDefault) params ["_known", "_default"];
                     private _chosen = !_known || {!([_value, _default] call _fnc_same)};
                     if (_chosen) then {
-                        if (_name in _skip) then {
+                        // A setting that names an area is kept only if every area
+                        // it names is coming too. Keeping it otherwise would point
+                        // a commander at something that is not there.
+                        private _namesAreas = (_markerSettings findIf { _x isEqualTo _name }) >= 0;
+                        private _areasOk = false;
+                        if (_namesAreas) then {
+                            private _named = ["names", [_name, _value]] call ALIVE_fnc_presetMarkers;
+                            private _all = count _named > 0;
+                            {
+                                if !((toLower _x) in _carryLower) then {
+                                    _missing pushBackUnique _x;
+                                    _all = false;
+                                };
+                            } forEach _named;
+                            _areasOk = _all;
+                        };
+
+                        if ((_skip findIf { _x isEqualTo _name }) >= 0 || {_namesAreas && {!_areasOk}}) then {
                             _dropped pushBackUnique _name;
                         } else {
                             // Carried as the editor holds it, so its type survives
@@ -174,8 +245,45 @@ private _links = [];
     } forEach (get3DENConnections _x);
 } forEach _modules;
 
-private _preset = ["ALIVEPRESET", 1,
-    ["", "", "", worldName, getText (configFile >> "CfgPatches" >> "ALiVE_main" >> "version"), ""],
-    _out, _links, _mods, _dropped];
+// The areas, placed relative to their own middle rather than to the map. A
+// preset that carried world coordinates would only mean anything on the map it
+// came from; carried as offsets, the whole arrangement lands wherever it is put
+// and keeps its shape. Sizes stay in real metres, because an area's size is the
+// thing a mission maker actually chose.
+private _markers = [];
+if (count _carry > 0) then {
+    private _rows = [];
+    private _sumX = 0;
+    private _sumY = 0;
+    {
+        private _row = ["read", _x] call ALIVE_fnc_presetMarkers;
+        if (count _row >= 10) then {
+            _rows pushBack _row;
+            _sumX = _sumX + ((_row select 3) param [0, 0]);
+            _sumY = _sumY + ((_row select 3) param [1, 0]);
+        };
+    } forEach _carry;
 
-[_preset, [count _modules, _settingCount, count _links, _dropped, _mods]]
+    if (count _rows > 0) then {
+        private _midX = round (_sumX / count _rows);
+        private _midY = round (_sumY / count _rows);
+        {
+            private _row = +_x;
+            private _at = _row select 3;
+            _row set [3, [round ((_at param [0, 0]) - _midX), round ((_at param [1, 0]) - _midY)]];
+            _markers pushBack _row;
+        } forEach _rows;
+    };
+};
+
+// Seven parts and version 1 when there are no areas, so a preset that gains
+// nothing from the new slot stays readable by every build that already ships.
+// Eight and version 2 only when there is something in it.
+private _meta = ["", "", "", worldName, getText (configFile >> "CfgPatches" >> "ALiVE_main" >> "version"), ""];
+private _preset = if (count _markers == 0) then {
+    ["ALIVEPRESET", 1, _meta, _out, _links, _mods, _dropped]
+} else {
+    ["ALIVEPRESET", 2, _meta, _out, _links, _mods, _dropped, _markers]
+};
+
+[_preset, [count _modules, _settingCount, count _links, _dropped, _mods, _missing]]

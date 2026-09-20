@@ -57,7 +57,7 @@ if ([_preset] call ALIVE_fnc_presetPlaceClick) exitWith { true };
 
 // No editor display to click on, which should not happen, but placing it
 // somewhere beats refusing with nothing said.
-([_preset] call ALIVE_fnc_presetPlace) params ["_placed", "_settings", "_links", "_skipped"];
+([_preset] call ALIVE_fnc_presetPlace) params ["_placed", "_settings", "_links", "_skipped", ["_areas", 0], ["_renamed", []]];
 
 if (_placed == 0) exitWith {
     private _none = format ["Everything in that preset is already in this scenario, so nothing was added: %1.", _skipped joinString ", "];
@@ -73,6 +73,15 @@ private _msg = format ["Preset placed: %1 module%2, %3 setting%4, %5 sync line%6
     _placed, ["s", ""] select (_placed == 1),
     _settings, ["s", ""] select (_settings == 1),
     _links, ["s", ""] select (_links == 1)];
+if (_areas > 0) then {
+    _msg = _msg + format [" %1 area%2 came with it.", _areas, ["s", ""] select (_areas == 1)];
+};
+// An area that had to come in under another name is worth saying. It works,
+// because the modules were pointed at the new name, but the person would
+// otherwise find something in their scenario called what they never called it.
+if (count _renamed > 0) then {
+    _msg = _msg + format [" That name was taken, so: %1.", _renamed joinString ", "];
+};
 
 if (count _skipped > 0) then {
     _msg = _msg + format [" Already here, so left alone: %1.", _skipped joinString ", "];

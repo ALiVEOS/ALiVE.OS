@@ -22,23 +22,38 @@ class CfgALiVEPresets {
     // module it belongs to. Read here by the editor side and by the tooling that
     // reviews a submission, so there is one list rather than two that drift.
     //
-    // The first six name something that exists only in the scenario they came
-    // from: an area marker, a blacklist marker, an airspace, an ingress point,
-    // the two ends of a hand-typed runway. A name that means nothing on the
-    // recipient's map is worse than an obvious gap, because the module comes up
-    // looking configured and does nothing.
-    //
-    // The last is the one setting that holds script rather than data. A preset is
-    // read as data and nothing in it can run, and carrying a per-spawn hook would
-    // hand that property away.
+    // All three hold script rather than data, and a preset is read as data
+    // precisely so that nothing in it can run. The per-spawn hook is the obvious
+    // one. The two runway ends are not obvious at all: they look like place names
+    // but they hold a position written as text, and mil_ato does
+    // "call compile _runwayStartPos" with it at mission start, so carrying them
+    // would hand a stranger's preset a way to run code. They are also absolute
+    // coordinates, which no preset can honour on another map.
     skipAttributes[] = {
+        "onEachSpawn",
+        "runwaystartpos",
+        "runwayendpos"
+    };
+
+    // Settings that name an area marker. These used to be refused outright, for
+    // the good reason that a name meaning nothing on the recipient's map leaves a
+    // module looking configured while doing nothing. They are carried now because
+    // the marker itself travels with them: a preset that brings its own areas can
+    // honour the name it carries.
+    //
+    // Each is split the way the module that reads it splits it, never with one
+    // shared rule: taor and blacklist strip spaces and split on a comma
+    // (mil_placement/fnc_MP.sqf), airspace splits on []"', ; (mil_ato), and
+    // ingressMarker is a single name with its spaces removed.
+    //
+    // When a preset is taken without its areas, these go with them. Half of the
+    // pair is worse than neither: the placement modules quietly widen to the whole
+    // map and mil_ato does not start at all.
+    markerAttributes[] = {
         "taor",
         "blacklist",
         "airspace",
-        "ingressMarker",
-        "runwaystartpos",
-        "runwayendpos",
-        "onEachSpawn"
+        "ingressMarker"
     };
 
     // The presets that ship with ALiVE, as their own text, so the preset window
@@ -82,10 +97,14 @@ class display3DEN {
                 action = "[] call ALIVE_fnc_presetWindow;";
             };
 
+            // Opens the chooser rather than copying straight away. A scenario
+            // that has been worked on usually holds more than the one setup worth
+            // passing on, and being shown what is about to be shared is worth the
+            // extra click.
             class ALIVE_SharePreset {
                 text = "$STR_ALIVE_PRESETS_SHARE";
                 conditionShow = "selectedLogicModule";
-                action = "[] call ALIVE_fnc_presetShare;";
+                action = "[] call ALIVE_fnc_presetChoose;";
             };
 
             class ALIVE_LoadPreset {

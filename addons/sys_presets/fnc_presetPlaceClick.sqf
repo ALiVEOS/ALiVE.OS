@@ -34,7 +34,7 @@ Author:
 params [["_preset", [], [[]]]];
 
 if (!is3DEN) exitWith { false };
-if (count _preset != 7) exitWith { false };
+if (!(count _preset isEqualTo 7) && {!(count _preset isEqualTo 8)}) exitWith { false };
 
 disableSerialization;
 private _eden = findDisplay 313;
@@ -73,15 +73,31 @@ private _id = _eden displayAddEventHandler ["MouseButtonDown", {
 
     private _preset = uiNamespace getVariable ["ALiVE_presetPending", []];
     uiNamespace setVariable ["ALiVE_presetPending", nil];
-    if (count _preset != 7) exitWith { true };
+    // Seven parts, or eight once it carries areas. This one used to exit true and
+    // say nothing at all, so a preset that got this far and failed looked exactly
+    // like a click that worked.
+    if (!(count _preset isEqualTo 7) && {!(count _preset isEqualTo 8)}) exitWith {
+        ["That preset could not be read, so nothing was placed.", 2, 10] call BIS_fnc_3DENNotification;
+        true
+    };
 
-    ([_preset, _pos] call ALIVE_fnc_presetPlace) params ["_placed", "_settings", "_links", "_skipped"];
+    ([_preset, _pos] call ALIVE_fnc_presetPlace) params ["_placed", "_settings", "_links", "_skipped", ["_areas", 0], ["_renamed", []]];
 
     private _msg = if (_placed == 0) then {
         format ["Everything in that preset is already in this scenario: %1.", _skipped joinString ", "]
     } else {
-        format ["Placed %1 module%2 with %3 setting%4 here.", _placed, ["s", ""] select (_placed == 1),
-            _settings, ["s", ""] select (_settings == 1)]
+        private _said = format ["Placed %1 module%2 with %3 setting%4 here.", _placed, ["s", ""] select (_placed == 1),
+            _settings, ["s", ""] select (_settings == 1)];
+        if (_areas > 0) then {
+            _said = _said + format [" %1 area%2 came with it.", _areas, ["s", ""] select (_areas == 1)];
+        };
+        // A renamed area is worth saying out loud. The modules were pointed at the
+        // new name, so it works, but the person would otherwise find an area in
+        // their scenario under a name they never chose.
+        if (count _renamed > 0) then {
+            _said = _said + format [" That name was taken, so: %1.", _renamed joinString ", "];
+        };
+        _said
     };
     [_msg, [0, 1] select (_placed == 0), 10] call BIS_fnc_3DENNotification;
 

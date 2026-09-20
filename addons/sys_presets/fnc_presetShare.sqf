@@ -32,10 +32,15 @@ Author:
     Jman
 ---------------------------------------------------------------------------- */
 
+params [["_choice", [], [[]]]];
+
 if (!is3DEN) exitWith { "" };
 
-([] call ALIVE_fnc_presetCollect) params ["_preset", "_report"];
-_report params [["_modules", 0], ["_settings", 0], ["_links", 0], ["_dropped", []], ["_mods", []]];
+// Nothing chosen means everything, which is what the right click entry asks for.
+// The window hands over two lists instead, so somebody can share part of what is
+// in front of them.
+([_choice] call ALIVE_fnc_presetCollect) params ["_preset", "_report"];
+_report params [["_modules", 0], ["_settings", 0], ["_links", 0], ["_dropped", []], ["_mods", []], ["_missing", []]];
 
 if (count _preset == 0) exitWith {
     ["This scenario has no ALiVE modules to share.", 1, 8] call BIS_fnc_3DENNotification;
@@ -56,8 +61,17 @@ private _msg = format ["Preset copied: %1 module%2, %3 setting%4, %5 link%6, %7 
     _links, ["s", ""] select (_links == 1),
     count _text];
 
+private _areas = count (_preset param [7, []]);
+if (_areas > 0) then {
+    _msg = _msg + format [" %1 area%2 came with it.", _areas, ["s", ""] select (_areas == 1)];
+};
 if (count _dropped > 0) then {
-    _msg = _msg + format [" Left out, because it only means something on this map: %1.", _dropped joinString ", "];
+    _msg = _msg + format [" Left out: %1.", _dropped joinString ", "];
+};
+// Named by a setting and not carried, which is why that setting was left out.
+// Saying only that the setting went would leave the person guessing at the cause.
+if (count _missing > 0) then {
+    _msg = _msg + format [" These areas are not in the preset, so the settings naming them went too: %1.", _missing joinString ", "];
 };
 if (count _mods > 0) then {
     _msg = _msg + format [" Expects: %1.", _mods joinString ", "];

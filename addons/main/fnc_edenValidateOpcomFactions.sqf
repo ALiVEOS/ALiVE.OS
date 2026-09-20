@@ -236,13 +236,16 @@ ALIVE_edenFactionValidatorPending = [_trigger, _scope] spawn {
     //                warn about missing profile sources - the mission-
     //                maker is clearly still setting up.
     //
-    // all3DENEntities returns mixed-type buckets per current A3 docs:
-    //   [_objects, _groups, _triggers, _systems, _markers, _layers,
-    //    _comments, _connections]
-    // Only some buckets hold Objects (objects/triggers/systems/comments);
-    // others hold Strings (markers), Numbers (layers), Arrays
-    // (connections). Filter per-element to pick only Object-typed
-    // entries - modules (systems) are what we actually care about.
+    // all3DENEntities returns mixed-type buckets:
+    //   [_objects, _groups, _triggers, _systems, _waypoints, _markers,
+    //    _layers, _comments]
+    // Measured in the editor 2026-09-20 on a scenario with two area markers
+    // drawn: bucket 5 held exactly those two, and they read back as Strings.
+    // An earlier version of this comment left _waypoints out, which put markers
+    // at 4 and comments at 6, and a later reader took it at face value.
+    // Only some buckets hold Objects (objects/triggers/systems); others hold
+    // Strings (markers), Numbers (layers). Filter per-element to pick only
+    // Object-typed entries - modules (systems) are what we actually care about.
     private _opcomsAll = [];
     private _globalSourceFactions = [];
     private _totalPlacements = 0;

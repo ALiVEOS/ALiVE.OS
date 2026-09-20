@@ -217,12 +217,13 @@ uiNamespace setVariable ["ALiVE_presetWindowRefresh", _fnc_refresh];
     if (!_ok) exitWith {
         (_d displayCtrl 88103) ctrlSetText (if (count _problems > 0) then { _problems select 0 } else { "That preset cannot be read." });
     };
-    // The window gets out of the way and the next click says where it goes, the
-    // same gesture as placing anything else in the editor. Where somebody is
-    // looking has two answers here and neither is reliable in both views, so it
-    // is asked rather than guessed.
+    // The window gets out of the way and what is in the preset is shown before
+    // any of it lands, the same list and the same gesture as sharing one. From
+    // there the next click says where it goes, which is how anything else is
+    // placed in the editor. Where somebody is looking has two answers here and
+    // neither is reliable in both views, so it is asked rather than guessed.
     _d closeDisplay 1;
-    [_preset] call ALIVE_fnc_presetPlaceClick;
+    ["place", _preset] call ALIVE_fnc_presetChoose;
 }] call _fnc_button;
 
 ["Load from clipboard", 0.305, 0.201, {
