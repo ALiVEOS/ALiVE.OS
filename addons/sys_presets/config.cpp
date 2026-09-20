@@ -2,6 +2,10 @@
 
 #include "CfgPatches.hpp"
 #include "CfgFunctions.hpp"
+// The presets that ship with ALiVE, as compositions the editor lists. Written
+// from the .preset files beside this config rather than by hand; see the note at
+// the top of that file.
+#include "Compositions.hpp"
 
 // Sharing an ALiVE setup as a preset: a line of plain text carrying every ALiVE
 // module in the scenario, the settings that were actually chosen, and the sync

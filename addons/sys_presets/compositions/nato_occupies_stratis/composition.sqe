@@ -1,0 +1,122 @@
+version=54;
+center[]={0,0,0};
+class items
+{
+	items=4;
+	class Item0
+	{
+		dataType="Logic";
+		class PositionInfo
+		{
+			position[]={0,0,0};
+		};
+		id=0;
+		type="ALiVE_require";
+		class CustomAttributes
+		{
+			nAttributes=0;
+		};
+	};
+	class Item1
+	{
+		dataType="Logic";
+		class PositionInfo
+		{
+			position[]={8,0,0};
+		};
+		id=1;
+		type="ALiVE_sys_profile";
+		class CustomAttributes
+		{
+			nAttributes=0;
+		};
+	};
+	class Item2
+	{
+		dataType="Logic";
+		class PositionInfo
+		{
+			position[]={16,0,0};
+		};
+		id=2;
+		type="ALiVE_mil_OPCOM";
+		class CustomAttributes
+		{
+			nAttributes=3;
+			class Attribute0
+			{
+				property="ALiVE_mil_opcom_customName";
+				expression="_this setVariable ['customName',_value,true];";
+				class Value
+				{
+					class data
+					{
+						singleType="STRING";
+						value="NATO";
+					};
+				};
+			};
+			class Attribute1
+			{
+				property="ALiVE_mil_opcom_controltype";
+				expression="_this setVariable ['controltype',_value,true];";
+				class Value
+				{
+					class data
+					{
+						singleType="STRING";
+						value="occupation";
+					};
+				};
+			};
+			class Attribute2
+			{
+				property="ALiVE_mil_opcom_factions";
+				expression="_this setVariable ['factions', _value];";
+				class Value
+				{
+					class data
+					{
+						singleType="STRING";
+						value="[""BLU_F""]";
+					};
+				};
+			};
+		};
+	};
+	class Item3
+	{
+		dataType="Logic";
+		class PositionInfo
+		{
+			position[]={24,0,0};
+		};
+		id=3;
+		type="ALiVE_mil_placement";
+		class CustomAttributes
+		{
+			nAttributes=0;
+		};
+	};
+};
+class connections
+{
+	class LinkIDProvider
+	{
+		nextID=1;
+	};
+	class Links
+	{
+		items=1;
+		class Item0
+		{
+			linkID=0;
+			item0=2;
+			item1=3;
+			class CustomData
+			{
+				type="Sync";
+			};
+		};
+	};
+};
