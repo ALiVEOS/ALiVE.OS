@@ -43,7 +43,7 @@ Author:
     Jman
 ---------------------------------------------------------------------------- */
 
-params [["_preset", [], [[]]]];
+params [["_preset", [], [[]]], ["_where", [], [[]]]];
 
 if (!is3DEN) exitWith { [0, 0, 0, []] };
 if (count _preset != 7) exitWith { [0, 0, 0, []] };
@@ -62,10 +62,39 @@ private _have = [];
     };
 } forEach all3DENEntities;
 
-// Beside what the camera is looking at, on the ground, so the modules land
-// where the person is already looking rather than at the map's origin.
-private _anchor = screenToWorld [0.5, 0.5];
-if (count _anchor < 2 || {(_anchor select 0) <= 0}) then { _anchor = [worldSize / 2, worldSize / 2, 0] };
+// In the middle of what the person is looking at, and ON THE MAP.
+//
+// Every candidate is checked against the world's own bounds, because the middle
+// of the screen is not a place when the editor is showing the map: asked there
+// it answers from the camera's forward ray and gives a point off the island
+// entirely. Measured: a preset placed that way landed at 2500, 16650 on Stratis,
+// which is 8192 m square, so the modules existed and nothing was visible
+// anywhere. A position that is merely positive is not good enough.
+private _fnc_onMap = {
+    params ["_p"];
+    if (!(_p isEqualType []) || {count _p < 2}) exitWith { false };
+    private _px = _p select 0;
+    private _py = _p select 1;
+    _px isEqualType 0 && {_py isEqualType 0} && {_px > 0} && {_py > 0}
+        && {_px < worldSize} && {_py < worldSize}
+};
+
+private _camera = get3DENCamera;
+private _anchor = [];
+private _source = "the middle of the map";
+{
+    _x params ["_candidate", "_name"];
+    if (_anchor isEqualTo [] && {[_candidate] call _fnc_onMap}) then {
+        _anchor = +_candidate;
+        _source = _name;
+    };
+} forEach [
+    [_where, "where the caller said"],
+    [screenToWorld [0.5, 0.5], "the middle of the view"],
+    [if (isNull _camera) then { [] } else { getPosATL _camera }, "the editor camera"]
+];
+
+if (_anchor isEqualTo []) then { _anchor = [worldSize / 2, worldSize / 2, 0] };
 _anchor set [2, 0];
 
 private _created = [];
@@ -108,5 +137,11 @@ collect3DENHistory {
 
 private _live = _created select { !isNull _x };
 if (count _live > 0) then { set3DENSelected _live };
+
+// Said out loud, with where they went. "Nothing happened" is the one report that
+// cannot be acted on, and modules placed somewhere off screen look exactly like
+// modules not placed at all.
+["ALIVE_fnc_presetPlace - placed %1 module(s), %2 setting(s), %3 link(s) at %4, taken from %5; already present: %6",
+    count _live, _applied, _drawn, _anchor apply { round _x }, _source, _skipped] call ALiVE_fnc_dump;
 
 [count _live, _applied, _drawn, _skipped]

@@ -8,6 +8,9 @@
 <Key ID="STR_ALIVE_PRESETS_LOAD">
     <English>Load Preset from Clipboard</English>
 </Key>
+<Key ID="STR_ALIVE_PRESETS_LIBRARY">
+    <English>ALiVE Presets...</English>
+</Key>
 </Container>
 </Package>
 </Project>

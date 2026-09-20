@@ -50,6 +50,13 @@ if (!_ok) exitWith {
     false
 };
 
+// The next click says where it goes, the same as placing one from the preset
+// window, so a preset always lands where it was asked for rather than where
+// something guessed.
+if ([_preset] call ALIVE_fnc_presetPlaceClick) exitWith { true };
+
+// No editor display to click on, which should not happen, but placing it
+// somewhere beats refusing with nothing said.
 ([_preset] call ALIVE_fnc_presetPlace) params ["_placed", "_settings", "_links", "_skipped"];
 
 if (_placed == 0) exitWith {

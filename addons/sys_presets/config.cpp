@@ -40,6 +40,23 @@ class CfgALiVEPresets {
         "runwayendpos",
         "onEachSpawn"
     };
+
+    // The presets that ship with ALiVE, as their own text, so the preset window
+    // lists them beside the ones a mission maker has collected and places both
+    // the same way. Written from the preset files; included here rather than
+    // declared on its own because two declarations of one class at the root do
+    // not rapify.
+    #include "Shipped.hpp"
+};
+
+// The window that lists presets. Only the window is declared: its contents are
+// made at run time from the game's own controls, which keeps a screenful of
+// control boilerplate out of this config and the layout somewhere it can be read.
+class ALiVE_PresetLibrary {
+    idd = 88100;
+    movingEnable = 1;
+    enableSimulation = 1;
+    class controls {};
 };
 
 class ctrlMenu;
@@ -57,7 +74,12 @@ class display3DEN {
             // when they can do something.
             class ALIVE_Menu {
                 conditionShow = "";
-                items[] += {"ALIVE_SharePreset", "ALIVE_LoadPreset"};
+                items[] += {"ALIVE_PresetLibrary", "ALIVE_SharePreset", "ALIVE_LoadPreset"};
+            };
+
+            class ALIVE_PresetLibrary {
+                text = "$STR_ALIVE_PRESETS_LIBRARY";
+                action = "[] call ALIVE_fnc_presetWindow;";
             };
 
             class ALIVE_SharePreset {

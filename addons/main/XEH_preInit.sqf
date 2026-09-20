@@ -141,6 +141,10 @@ if (is3DEN) then {
     ALIVE_fnc_presetShare = compile preprocessFileLineNumbers "\x\alive\addons\sys_presets\fnc_presetShare.sqf";
     ALIVE_fnc_presetPlace = compile preprocessFileLineNumbers "\x\alive\addons\sys_presets\fnc_presetPlace.sqf";
     ALIVE_fnc_presetLoad = compile preprocessFileLineNumbers "\x\alive\addons\sys_presets\fnc_presetLoad.sqf";
+    ALIVE_fnc_presetLibrary = compile preprocessFileLineNumbers "\x\alive\addons\sys_presets\fnc_presetLibrary.sqf";
+    ALIVE_fnc_presetWindow = compile preprocessFileLineNumbers "\x\alive\addons\sys_presets\fnc_presetWindow.sqf";
+    ALIVE_fnc_presetWorldAt = compile preprocessFileLineNumbers "\x\alive\addons\sys_presets\fnc_presetWorldAt.sqf";
+    ALIVE_fnc_presetPlaceClick = compile preprocessFileLineNumbers "\x\alive\addons\sys_presets\fnc_presetPlaceClick.sqf";
     // These two are registered in CfgFunctions as well, so in a mission they are
     // already compileFinal and must be left alone.
     if (isNil "ALIVE_fnc_presetDefault") then {
