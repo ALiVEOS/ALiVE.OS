@@ -235,7 +235,10 @@ private _fnc_setAll = {
 };
 uiNamespace setVariable ["ALiVE_presetChooseSetAll", _fnc_setAll];
 
-[if (_placing) then { "Place it" } else { "Copy the preset" }, 0.02, 0.22, {
+// "Place these", not "Place it": the button that opened this window is already
+// called Place it, and two buttons with one name across two windows is the kind
+// of thing that has to be explained in writing afterwards.
+[if (_placing) then { "Place these" } else { "Copy the preset" }, 0.02, 0.22, {
     params ["_ctrl"];
     private _d = ctrlParent _ctrl;
     private _rows = _d getVariable ["rows", []];
