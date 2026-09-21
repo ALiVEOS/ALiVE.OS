@@ -171,7 +171,7 @@ private _list = _display ctrlCreate ["RscListBox", IDC_LIST];
 private _detailLabel = _display ctrlCreate ["RscText", -1];
 _detailLabel ctrlSetText "The one you have picked";
 _detailLabel ctrlSetTextColor [0.62, 0.66, 0.58, 1];
-[_detailLabel, 0.49, 0.155, 0.49, 0.04] call _fnc_at;
+[_detailLabel, 0.49, 0.155, 0.30, 0.04] call _fnc_at;
 
 private _detail = _display ctrlCreate ["RscStructuredText", IDC_DETAIL];
 [_detail, 0.49, 0.20, 0.49, 0.26] call _fnc_at;
@@ -262,6 +262,14 @@ private _fnc_refresh = {
         private _was = lbCurSel _lb;
         private _old = _d getVariable ["entries", []];
         if (_was >= 0 && {_was < count _old}) then { _keep = (_old select _was) select 0 };
+        // A window that has only just opened has no selection to read, and the
+        // display it is replacing is already destroyed, so the last pick is kept
+        // outside the window as well. Going off to place a preset or to see what
+        // it needs and coming back used to drop you at the top of the list, which
+        // reads as the window having forgotten what you were doing.
+        if (_keep isEqualTo "") then {
+            _keep = uiNamespace getVariable ["ALiVE_presetWindowPicked", ""];
+        };
     };
 
     private _entries = ["list"] call ALIVE_fnc_presetLibrary;
@@ -292,13 +300,34 @@ private _fnc_show = {
     private _sel = lbCurSel (_d displayCtrl IDC_LIST);
     if (_sel < 0 || {_sel >= count _entries}) exitWith {};
     (_entries select _sel) params ["_name", "_description", "_text", "_shipped"];
+    // Kept outside the window, because the window is destroyed on the way to the
+    // place-it and mods screens and built again on the way back. Written here
+    // rather than in each button, so it is right whichever way you leave.
+    uiNamespace setVariable ["ALiVE_presetWindowPicked", _name];
     ([_text] call ALIVE_fnc_presetParse) params ["_ok", "_preset"];
     private _what = if (_ok) then {
         private _modules = _preset select 3;
         private _settings = 0;
         { _settings = _settings + count (_x select 1) } forEach _modules;
-        format ["%1 module%2, %3 setting%4 chosen", count _modules, ["s", ""] select (count _modules == 1),
-            _settings, ["s", ""] select (_settings == 1)]
+        // Whether it needs anything beyond ALiVE, said here so the button for the
+        // full list is only worth pressing when there is a list. A missing mod is
+        // the difference between a preset that works and one that places and then
+        // sits there, so the count belongs where the preset is being chosen.
+        // Counted as MODS, not as addons. RHS USAF alone ships a dozen addons,
+        // so counting addons said a preset needed sixteen mods when it needed
+        // six, which is not a rounding error but a wrong answer.
+        private _needs = [_modules, _preset param [5, []], "mods"] call ALIVE_fnc_presetAddons;
+        private _short = count (_needs select { !(_x select 2) });
+        private _mods = switch (true) do {
+            case (count _needs == 0): { "needs nothing beyond ALiVE" };
+            case (_short == 0): { format ["needs %1 other mod%2, all running",
+                count _needs, ["s", ""] select (count _needs == 1)] };
+            default { format ["needs %1 other mod%2, %3 not loaded",
+                count _needs, ["s", ""] select (count _needs == 1), _short] };
+        };
+        format ["%1 module%2, %3 setting%4 chosen<br/>%5", count _modules,
+            ["s", ""] select (count _modules == 1),
+            _settings, ["s", ""] select (_settings == 1), _mods]
     } else { "this preset cannot be read by this build of ALiVE" };
     private _origin = if (_shipped) then { "Ships with ALiVE" } else { "Yours, kept in your profile" };
     // Typing over a shipped preset's name would promise something this cannot
@@ -313,7 +342,12 @@ private _fnc_show = {
     (_d displayCtrl IDC_DESC) ctrlEnable (!_shipped);
     (_d displayCtrl IDC_AUTHOR) ctrlEnable (!_shipped);
     (_d displayCtrl IDC_DETAIL) ctrlSetStructuredText parseText format [
-        "<t size='1.1'>%1</t><br/><br/><t size='0.95'>%2</t><br/><br/><t size='0.9' color='#9aa08d'>%3<br/>%4</t>",
+        // One blank line, not two. This pane cannot scroll and does not grow, so
+        // every line it spends on nothing is a line the text below it loses: the
+        // line saying what the preset needs pushed "Ships with ALiVE" off the
+        // bottom edge. The gap after the title earns its place because the title
+        // is a heading. The one before the grey block did not.
+        "<t size='1.1'>%1</t><br/><br/><t size='0.95'>%2</t><br/><t size='0.9' color='#9aa08d'>%3<br/>%4</t>",
         _name, _description, _what, _origin];
 
     // The submit link is put on the button NOW, while the selection changes,
@@ -391,12 +425,12 @@ uiNamespace setVariable ["ALiVE_presetWindowGoPlace", _fnc_goPlace];
     [ctrlParent _ctrl] call (uiNamespace getVariable ["ALiVE_presetWindowGoPlace", {}]);
 }];
 
-["Place it", 0.020, 0.085, {
+["Place it", 0.818, 0.085, {
     params ["_ctrl"];
     [ctrlParent _ctrl] call (uiNamespace getVariable ["ALiVE_presetWindowGoPlace", {}]);
 }] call _fnc_button;
 
-["Load from clipboard", 0.447, 0.201, {
+["Load from clipboard", 0.020, 0.201, {
     params ["_ctrl"];
     private _d = ctrlParent _ctrl;
     (["add", copyFromClipboard] call ALIVE_fnc_presetLibrary) params ["_ok", "_why"];
@@ -404,7 +438,7 @@ uiNamespace setVariable ["ALiVE_presetWindowGoPlace", _fnc_goPlace];
     if (_ok) then { [_d] call (uiNamespace getVariable ["ALiVE_presetWindowRefresh", {}]) };
 }] call _fnc_button;
 
-["Delete selected", 0.656, 0.158, {
+["Delete selected", 0.612, 0.158, {
     params ["_ctrl"];
     private _d = ctrlParent _ctrl;
     private _entries = _d getVariable ["entries", []];
@@ -420,12 +454,32 @@ uiNamespace setVariable ["ALiVE_presetWindowGoPlace", _fnc_goPlace];
     };
 }] call _fnc_button;
 
+// The full list of what the preset needs loaded, in its own window. The line in
+// the detail pane says whether there is anything to see, so this is only worth
+// pressing when it says there is.
+["Mods required", 0.80, 0.18, {
+    params ["_ctrl"];
+    private _d = ctrlParent _ctrl;
+    private _entries = _d getVariable ["entries", []];
+    private _sel = lbCurSel (_d displayCtrl IDC_LIST);
+    if (_sel < 0 || {_sel >= count _entries}) exitWith {
+        (_d displayCtrl IDC_STATUS) ctrlSetText "Pick a preset first.";
+    };
+    (_entries select _sel) params ["_name", "", "_text"];
+    ([_text] call ALIVE_fnc_presetParse) params ["_ok", "_preset"];
+    if (!_ok) exitWith {
+        (_d displayCtrl IDC_STATUS) ctrlSetText "That preset cannot be read, so what it needs cannot be worked out.";
+    };
+    _d closeDisplay 1;
+    [_preset, _name] call ALIVE_fnc_presetNeeds;
+}, -1, 0.150, 0.05] call _fnc_button;
+
 // Closed by its own display rather than by closeDialog, which only knows about
 // a dialog hung off a mission.
 // Copying a preset back out is how it reaches Discord, a friend, or the submit
 // page. The library is where somebody's collection lives, so it is where they
 // will look to pass one on.
-["Copy to clipboard", 0.113, 0.180, {
+["Copy to clipboard", 0.245, 0.180, {
     params ["_ctrl"];
     private _d = ctrlParent _ctrl;
     private _entries = _d getVariable ["entries", []];
@@ -466,7 +520,7 @@ uiNamespace setVariable ["ALiVE_presetWindowGoPlace", _fnc_goPlace];
 // real click will do it. The link is hung on the button whenever the selection
 // changes, so by the time it is clicked it is already loaded; the handler below
 // only deals with the clipboard.
-["Submit online", 0.301, 0.138, {
+["Submit online", 0.449, 0.138, {
     params ["_ctrl"];
     private _d = ctrlParent _ctrl;
     private _entries = _d getVariable ["entries", []];

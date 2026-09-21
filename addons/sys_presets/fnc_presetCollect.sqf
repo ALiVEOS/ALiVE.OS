@@ -150,7 +150,6 @@ private _fnc_same = {
 
 private _out = [];
 private _dropped = [];
-private _mods = [];
 private _settingCount = 0;
 
 {
@@ -202,22 +201,6 @@ private _settingCount = 0;
                             // and the value goes back in exactly as it came out.
                             _kept pushBack [_prop, _value];
                             _settingCount = _settingCount + 1;
-                            // A faction from another mod is worth recording, so a
-                            // recipient is told what the preset expects rather than
-                            // finding out from an empty battlefield.
-                            if (_value isEqualType "") then {
-                                {
-                                    private _cfg = configFile >> "CfgFactionClasses" >> _x;
-                                    if (isClass _cfg) then {
-                                        {
-                                            private _src = toLower _x;
-                                            if (!(_src select [0, 3] isEqualTo "a3_") && {!(_src select [0, 6] isEqualTo "alive_")}) then {
-                                                _mods pushBackUnique _src;
-                                            };
-                                        } forEach (configSourceAddonList _cfg);
-                                    };
-                                } forEach (_value splitString "[]"",' |");
-                            };
                         };
                     };
                 };
@@ -332,6 +315,12 @@ private _now = systemTime;
 private _fnc_pad = { if (_this < 10) then { "0" + str _this } else { str _this } };
 private _stamp = format ["%1-%2-%3", _now select 0,
     (_now select 1) call _fnc_pad, (_now select 2) call _fnc_pad];
+
+// What the preset needs loaded, worked out from the preset itself once it is
+// finished rather than while it is being built. Done here it also sees the
+// module classes, so a module from somewhere else counts, where the scan this
+// replaced only ever looked at faction settings.
+private _mods = [_out] call ALIVE_fnc_presetAddons;
 
 private _meta = [
     format ["%1 preset, %2", worldName, _stamp],

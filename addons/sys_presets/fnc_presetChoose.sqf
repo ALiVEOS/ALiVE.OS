@@ -275,6 +275,11 @@ private _fnc_button = {
     _b
 };
 
+// Back on the far left and the action that commits on the far right, which is
+// the way round anybody who has used a window before expects. All and None sit
+// between them, starting clear of Back in the mode that has one.
+private _bx0 = if (_placing) then { 0.26 } else { 0.02 };
+
 private _fnc_setAll = {
     params ["_ctrl", "_state"];
     private _d = ctrlParent _ctrl;
@@ -291,7 +296,7 @@ uiNamespace setVariable ["ALiVE_presetChooseSetAll", _fnc_setAll];
 // "Place these", not "Place it": the button that opened this window is already
 // called Place it, and two buttons with one name across two windows is the kind
 // of thing that has to be explained in writing afterwards.
-[if (_placing) then { "Place these" } else { "Copy the preset" }, 0.02, 0.22, {
+[if (_placing) then { "Place these" } else { "Copy the preset" }, 0.64, 0.22, {
     params ["_ctrl"];
     private _d = ctrlParent _ctrl;
     private _rows = _d getVariable ["rows", []];
@@ -381,11 +386,11 @@ uiNamespace setVariable ["ALiVE_presetChooseSetAll", _fnc_setAll];
     [_cut] call ALIVE_fnc_presetPlaceClick;
 }] call _fnc_button;
 
-["All", 0.26, 0.10, {
+["All", _bx0, 0.10, {
     [_this select 0, true] call (uiNamespace getVariable ["ALiVE_presetChooseSetAll", {}]);
 }] call _fnc_button;
 
-["None", 0.37, 0.10, {
+["None", _bx0 + 0.11, 0.10, {
     [_this select 0, false] call (uiNamespace getVariable ["ALiVE_presetChooseSetAll", {}]);
 }] call _fnc_button;
 
@@ -396,7 +401,7 @@ uiNamespace setVariable ["ALiVE_presetChooseSetAll", _fnc_setAll];
 // Only offered when placing. Sharing is reached from the right click menu, so
 // there is no window behind it to return to.
 if (_placing) then {
-    ["Back to your presets", 0.50, 0.20, {
+    ["Back to your presets", 0.02, 0.20, {
         (ctrlParent (_this select 0)) closeDisplay 1;
         [] call ALIVE_fnc_presetWindow;
     }] call _fnc_button;

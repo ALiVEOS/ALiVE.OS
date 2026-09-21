@@ -24,7 +24,16 @@
 class CfgCommands {
     allowedHTMLLoadURIs[] += {
         "*.alivemod.com",
-        "*.alivemod.com/*"
+        "*.alivemod.com/*",
+        // The Workshop page for a mod a preset needs, and the store page for an
+        // official Creator DLC, whose Steam id is an AppID rather than a
+        // Workshop item and so does not live at the same address.
+        "*.steamcommunity.com",
+        "*.steamcommunity.com/*",
+        "steamcommunity.com/*",
+        "*.steampowered.com",
+        "*.steampowered.com/*",
+        "store.steampowered.com/*"
     };
 };
 
