@@ -95,6 +95,12 @@ if (_placing) then {
             _size param [0, 0], _size param [1, 0]], true, false];
     } forEach (_preset param [7, []]);
 } else {
+    // A preset-wide option rather than a thing in the scenario, shown as the top
+    // row so it reuses the same double click as everything else instead of
+    // needing a control of its own. Not offered when placing: by then the preset
+    // either remembered the layout or it did not.
+    _rows pushBack ["layout", "", "Keep the layout, where the modules sit", true, false];
+
     private _modules = [];
     {
         if (_x isEqualType []) then {
@@ -148,24 +154,68 @@ private _fnc_at = {
     _ctrl
 };
 
+// The window needs an edge. Opaque was not enough on its own: the editor's own
+// background is nearly black, so a nearly black panel over it had no visible
+// boundary and read as part of the editor rather than as a window.
+//
+// Three layers, back to front, because controls draw in the order they are made:
+// a pale rectangle for the border, the panel inset a hair inside it, and a
+// slightly lighter bar behind the title so the head of the window reads as one.
+private _edge = _display ctrlCreate ["RscText", -1];
+_edge ctrlSetBackgroundColor [0.47, 0.50, 0.43, 1];
+[_edge, 0, 0, 1, 1] call _fnc_at;
+
 private _back = _display ctrlCreate ["RscText", -1];
-_back ctrlSetBackgroundColor [0.02, 0.03, 0.02, 0.85];
-[_back, 0, 0, 1, 1] call _fnc_at;
+_back ctrlSetBackgroundColor [0.12, 0.13, 0.12, 1];
+[_back, 0.004, 0.006, 0.992, 0.988] call _fnc_at;
+
+private _head = _display ctrlCreate ["RscText", -1];
+_head ctrlSetBackgroundColor [0.19, 0.21, 0.18, 1];
+[_head, 0.004, 0.006, 0.992, 0.145] call _fnc_at;
 
 private _title = _display ctrlCreate ["RscText", -1];
 _title ctrlSetText (if (_placing) then { "Place a Preset" } else { "Share as Preset" });
 [_title, 0.02, 0.02, 0.7, 0.06] call _fnc_at;
 
+// The logo and the build, top right, the same as the preset window.
+// RscPictureKeepAspect so the engine fits the image without distorting it, and
+// screen units rather than _fnc_at because that helper scales x and y by
+// different numbers.
+private _logoH = 0.085 * _ph;
+private _logoW = 2.4 * _logoH;
+private _rightEdge = _px + _pw - (0.025 * _pw);
+
+private _logoClass = "RscPicture";
+if (isClass (configFile >> "RscPictureKeepAspect")) then { _logoClass = "RscPictureKeepAspect" };
+private _logo = _display ctrlCreate [_logoClass, -1];
+_logo ctrlSetText "\x\alive\addons\main\logo_alive.paa";
+_logo ctrlSetPosition [_rightEdge - _logoW, _py + (0.010 * _ph), _logoW, _logoH];
+_logo ctrlCommit 0;
+
+// Right aligned against the same edge the logo uses, so the two stay stacked.
+// A plain RscText starts at the left of its own control, which pushed the words
+// away from the logo rather than under it.
+private _verW = 0.36 * _pw;
+private _ver = _display ctrlCreate ["RscStructuredText", -1];
+_ver ctrlSetStructuredText parseText format [
+    "<t align='right' size='0.85' color='#9ea894'>ALiVE Version: %1</t>",
+    getText (configFile >> "CfgPatches" >> "ALiVE_main" >> "version")];
+_ver ctrlSetPosition [_rightEdge - _verW, _py + (0.010 * _ph) + _logoH, _verW, 0.04 * _ph];
+_ver ctrlCommit 0;
+
 private _hint = _display ctrlCreate ["RscText", -1];
+// Narrower than the window, because the version text shares this row and an
+// RscText clips rather than wraps. The sentence about areas moved to the line
+// along the bottom, which had room and is read at the same moment.
 _hint ctrlSetText (if (_placing) then {
-    "Double click a row to place it or leave it out. Leave an area out and the settings naming it go too."
+    "Double click a row to place it or leave it out."
 } else {
-    "Double click a row to include it or leave it out. Areas bring the settings that name them."
+    "Double click a row to include it or leave it out."
 });
-[_hint, 0.02, 0.08, 0.96, 0.05] call _fnc_at;
+[_hint, 0.02, 0.08, 0.58, 0.05] call _fnc_at;
 
 private _list = _display ctrlCreate ["RscListBox", IDC_ROWS];
-[_list, 0.02, 0.14, 0.96, 0.66] call _fnc_at;
+[_list, 0.02, 0.16, 0.96, 0.64] call _fnc_at;
 
 private _says = _display ctrlCreate ["RscText", IDC_SAYS];
 _says ctrlSetText "";
@@ -184,16 +234,19 @@ private _fnc_draw = {
         private _tick = if (_ticked) then { "[x] " } else { "[  ] " };
         private _tail = if (_locked) then { "   (always included)" } else { "" };
         private _at = _lb lbAdd (_tick + _label + _tail);
-        if (_ticked) then { _on = _on + 1 };
+        if (_ticked && {!(_kind isEqualTo "layout")}) then { _on = _on + 1 };
         if (_ticked && {_kind isEqualTo "area"}) then { _areas = _areas + 1 };
         // Areas in their own colour, so the two kinds read apart at a glance in
         // what can be a long list.
         if (_kind isEqualTo "area") then { _lb lbSetColor [_at, [0.72, 0.82, 0.55, 1]] };
+        if (_kind isEqualTo "layout") then { _lb lbSetColor [_at, [0.6, 0.78, 0.9, 1]] };
         if (_locked) then { _lb lbSetColor [_at, [0.6, 0.6, 0.6, 1]] };
     } forEach _rows;
     if (_was >= 0 && {_was < count _rows}) then { _lb lbSetCurSel _was };
-    (_d displayCtrl IDC_SAYS) ctrlSetText format ["%1 of %2 included, %3 of them areas.",
-        _on, count _rows, _areas];
+    private _things = count (_rows select { !((_x select 0) isEqualTo "layout") });
+    (_d displayCtrl IDC_SAYS) ctrlSetText format [
+        "%1 of %2 included, %3 of them areas. Leave an area out and the settings naming it go too.",
+        _on, _things, _areas];
 };
 
 uiNamespace setVariable ["ALiVE_presetChooseDraw", _fnc_draw];
@@ -244,10 +297,13 @@ uiNamespace setVariable ["ALiVE_presetChooseSetAll", _fnc_setAll];
     private _rows = _d getVariable ["rows", []];
     private _pickModules = [];
     private _pickMarkers = [];
+    private _keepLayout = true;
     {
         _x params ["_kind", "_value", "", "_ticked"];
-        if (_ticked) then {
-            if (_kind isEqualTo "module") then { _pickModules pushBack _value } else { _pickMarkers pushBack _value };
+        switch (_kind) do {
+            case "layout": { _keepLayout = _ticked };
+            case "module": { if (_ticked) then { _pickModules pushBack _value } };
+            case "area": { if (_ticked) then { _pickMarkers pushBack _value } };
         };
     } forEach _rows;
 
@@ -259,7 +315,7 @@ uiNamespace setVariable ["ALiVE_presetChooseSetAll", _fnc_setAll];
 
     if !(_d getVariable ["placing", false]) exitWith {
         _d closeDisplay 1;
-        [[_pickModules, _pickMarkers]] call ALIVE_fnc_presetShare;
+        [[_pickModules, _pickMarkers, _keepLayout]] call ALIVE_fnc_presetShare;
     };
 
     // Placing part of a preset means writing a smaller preset and placing that,
@@ -295,7 +351,15 @@ uiNamespace setVariable ["ALiVE_presetChooseSetAll", _fnc_setAll];
             };
             if (_ok) then { _keep pushBack [_prop, _value] };
         } forEach _settings;
-        _modules pushBack [_class, _keep];
+        // Carried through, not rebuilt from two parts. Several modules read their
+        // own position and act on it, so dropping it here would quietly turn a
+        // faithful preset into a gridded one on its way through the chooser.
+        private _spot = (_wasModules select _x) param [2, []];
+        if (_spot isEqualTo []) then {
+            _modules pushBack [_class, _keep];
+        } else {
+            _modules pushBack [_class, _keep, _spot];
+        };
     } forEach _pickModules;
 
     private _links = [];
@@ -324,6 +388,19 @@ uiNamespace setVariable ["ALiVE_presetChooseSetAll", _fnc_setAll];
 ["None", 0.37, 0.10, {
     [_this select 0, false] call (uiNamespace getVariable ["ALiVE_presetChooseSetAll", {}]);
 }] call _fnc_button;
+
+// Placing arrives here FROM the preset window, and Close dropped you all the way
+// out to the editor, so the only way back to the list was to reopen the window
+// from the right click menu. This is the way back.
+//
+// Only offered when placing. Sharing is reached from the right click menu, so
+// there is no window behind it to return to.
+if (_placing) then {
+    ["Back to your presets", 0.50, 0.20, {
+        (ctrlParent (_this select 0)) closeDisplay 1;
+        [] call ALIVE_fnc_presetWindow;
+    }] call _fnc_button;
+};
 
 ["Close", 0.88, 0.10, { (ctrlParent (_this select 0)) closeDisplay 1 }] call _fnc_button;
 

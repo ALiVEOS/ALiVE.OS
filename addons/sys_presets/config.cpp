@@ -17,6 +17,17 @@
 // The folder and the entry both carry the module condition, the pattern that
 // folder already uses, so neither shows on anything that is not a module.
 
+// Submitting a preset from the editor opens the submit page with the preset
+// already in it. The engine refuses a link that is not whitelisted here and
+// quietly leaves the control holding whatever it had before, saying nothing, so
+// this is not optional and its absence would look like a broken button.
+class CfgCommands {
+    allowedHTMLLoadURIs[] += {
+        "*.alivemod.com",
+        "*.alivemod.com/*"
+    };
+};
+
 class CfgALiVEPresets {
     // Settings a preset never carries, by the attribute's own name, whichever
     // module it belongs to. Read here by the editor side and by the tooling that

@@ -145,10 +145,14 @@ if (is3DEN) then {
     ALIVE_fnc_presetWindow = compile preprocessFileLineNumbers "\x\alive\addons\sys_presets\fnc_presetWindow.sqf";
     ALIVE_fnc_presetWorldAt = compile preprocessFileLineNumbers "\x\alive\addons\sys_presets\fnc_presetWorldAt.sqf";
     ALIVE_fnc_presetPlaceClick = compile preprocessFileLineNumbers "\x\alive\addons\sys_presets\fnc_presetPlaceClick.sqf";
-    ALIVE_fnc_presetMarkers = compile preprocessFileLineNumbers "\x\alive\addons\sys_presets\fnc_presetMarkers.sqf";
     ALIVE_fnc_presetChoose = compile preprocessFileLineNumbers "\x\alive\addons\sys_presets\fnc_presetChoose.sqf";
-    // These two are registered in CfgFunctions as well, so in a mission they are
+    ALIVE_fnc_presetUrlEncode = compile preprocessFileLineNumbers "\x\alive\addons\sys_presets\fnc_presetUrlEncode.sqf";
+    ALIVE_fnc_presetShortcut = compile preprocessFileLineNumbers "\x\alive\addons\sys_presets\fnc_presetShortcut.sqf";
+    // These are registered in CfgFunctions as well, so in a mission they are
     // already compileFinal and must be left alone.
+    if (isNil "ALIVE_fnc_presetMarkers") then {
+        ALIVE_fnc_presetMarkers = compile preprocessFileLineNumbers "\x\alive\addons\sys_presets\fnc_presetMarkers.sqf";
+    };
     if (isNil "ALIVE_fnc_presetDefault") then {
         ALIVE_fnc_presetDefault = compile preprocessFileLineNumbers "\x\alive\addons\sys_presets\fnc_presetDefault.sqf";
     };
