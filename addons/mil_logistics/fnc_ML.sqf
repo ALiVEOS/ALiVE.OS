@@ -131,7 +131,13 @@ switch(_operation) do {
         if (typeName _args == "BOOL") then {
             _logic setVariable ["debug", _args];
         } else {
-            _args = _logic getVariable ["debug", false];
+            // The short name first, then the 3DEN property the editor actually writes,
+            // the same way generateConvoyTasks does a few lines below. Without the
+            // second half, ticking Enable Debug in Eden set a variable nothing here
+            // ever read, so debug stayed off and a reporter who had turned it on sent
+            // a log with no logistics diagnostics in it. That is why #960 took a
+            // second round trip to diagnose.
+            _args = _logic getVariable ["debug", _logic getVariable ["ALiVE_mil_logistics_debug", false]];
         };
         if (typeName _args == "STRING") then {
                 if(_args == "true") then {_args = true;} else {_args = false;};
@@ -7525,6 +7531,16 @@ switch(_operation) do {
                                 _transportGroups = [ALIVE_sideDefaultTransport,_side] call ALIVE_fnc_hashGet;
                             };
 
+                            // Both pools empty means the block below is skipped and NOTHING is created,
+                            // with nothing said. Reported twice as convoys that never turn up and cannot be
+                            // found in Zeus either, while airdrops and helicopters work fine: the air path
+                            // warns and falls back (the HELI_INSERT slingload message), and this one did
+                            // neither. A warning does not deliver the convoy, but it names the faction and
+                            // side whose transport is unregistered, which is the thing nobody could see.
+                            if(count _transportGroups == 0) then {
+                                ["ML - %1: no GROUND transport assets found for faction=%2 side=%3, so nothing was created. Check ALIVE_factionDefaultTransport / ALIVE_sideDefaultTransport registration for that faction.",
+                                    "STANDARD payload", _eventFaction, _side] call ALiVE_fnc_dump;
+                            };
                             if(count _transportGroups > 0) then {
                                 for "_i" from 0 to _groupCount -1 do {
 
@@ -11611,6 +11627,16 @@ switch(_operation) do {
                                 _transportGroups = [ALIVE_sideDefaultTransport,_side] call ALIVE_fnc_hashGet;
                             };
 
+                            // Both pools empty means the block below is skipped and NOTHING is created,
+                            // with nothing said. Reported twice as convoys that never turn up and cannot be
+                            // found in Zeus either, while airdrops and helicopters work fine: the air path
+                            // warns and falls back (the HELI_INSERT slingload message), and this one did
+                            // neither. A warning does not deliver the convoy, but it names the faction and
+                            // side whose transport is unregistered, which is the thing nobody could see.
+                            if(count _transportGroups == 0) then {
+                                ["ML - %1: no GROUND transport assets found for faction=%2 side=%3, so nothing was created. Check ALIVE_factionDefaultTransport / ALIVE_sideDefaultTransport registration for that faction.",
+                                    "troop convoy", _eventFaction, _side] call ALiVE_fnc_dump;
+                            };
                             if(count _transportGroups > 0) then {
                                 for "_i" from 0 to (count _infantryProfiles) -1 do {
 
@@ -11948,6 +11974,16 @@ switch(_operation) do {
                                     _transportGroups = [ALIVE_sideDefaultTransport,_side] call ALIVE_fnc_hashGet;
                                 };
 
+                                // Both pools empty means the block below is skipped and NOTHING is created,
+                                // with nothing said. Reported twice as convoys that never turn up and cannot be
+                                // found in Zeus either, while airdrops and helicopters work fine: the air path
+                                // warns and falls back (the HELI_INSERT slingload message), and this one did
+                                // neither. A warning does not deliver the convoy, but it names the faction and
+                                // side whose transport is unregistered, which is the thing nobody could see.
+                                if(count _transportGroups == 0) then {
+                                    ["ML - %1: no GROUND transport assets found for faction=%2 side=%3, so nothing was created. Check ALIVE_factionDefaultTransport / ALIVE_sideDefaultTransport registration for that faction.",
+                                        "payload convoy", _eventFaction, _side] call ALiVE_fnc_dump;
+                                };
                                 if(count _transportGroups > 0) then {
 
                                     // Players near the departure: spawn the payload transport out of
