@@ -209,6 +209,11 @@ class cfgFunctions {
                 file = "\x\alive\addons\main\fnc_findAirSpawnPosition.sqf";
                 RECOMPILE;
             };
+            class menuKeys {
+                description = "Every key bound to an ALiVE action, modifiers included, for the menu system";
+                file = "\x\alive\addons\main\fnc_menuKeys.sqf";
+                RECOMPILE;
+            };
             class anyPlayerCanSee {
                 description = "True if any alive player within range can see the target (view-cone + LoS) - deferral gate for visible-state changes";
                 file = "\x\alive\addons\main\fnc_anyPlayerCanSee.sqf";

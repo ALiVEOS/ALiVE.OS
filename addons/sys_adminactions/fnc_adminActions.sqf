@@ -149,7 +149,7 @@ switch(_operation) do {
                         // initialise main menu
                         [
                                 "player",
-                                [((["ALiVE", "openMenu"] call cba_fnc_getKeybind) select 5) select 0],
+                                [] call ALiVE_fnc_menuKeys,
                                 -9500,
                                 [
                                         "call ALIVE_fnc_adminActionsMenuDef",
@@ -173,7 +173,7 @@ switch(_operation) do {
                         // remove main menu
                         [
                                 "player",
-                                [((["ALiVE", "openMenu"] call cba_fnc_getKeybind) select 5) select 0],
+                                [] call ALiVE_fnc_menuKeys,
                                 -9500,
                                 [
                                         "call ALIVE_fnc_adminActionsMenuDef",

@@ -27,6 +27,7 @@ See Also:
 
 Author:
 SpyderBlack723
+Jman
 
 Peer Reviewed:
 nil
@@ -250,7 +251,7 @@ switch(_operation) do {
 
         [
             "player",
-            [((["ALiVE", "openMenu"] call cba_fnc_getKeybind) select 5) select 0],
+            [] call ALiVE_fnc_menuKeys,
             -9500,
             [
                 "call ALiVE_fnc_orbatCreatorMenuDef",

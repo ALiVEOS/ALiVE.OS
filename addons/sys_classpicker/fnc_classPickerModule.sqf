@@ -179,7 +179,7 @@ switch (toLower _operation) do {
         // The same key every other ALiVE menu hangs off, rather than one of its own.
         [
             "player",
-            [((["ALiVE", "openMenu"] call CBA_fnc_getKeybind) select 5) select 0],
+            [] call ALiVE_fnc_menuKeys,
             -9500,
             [
                 "call ALIVE_fnc_classPickerMenuDef",

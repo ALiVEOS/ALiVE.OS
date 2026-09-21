@@ -98,7 +98,7 @@ if(!isNil "ace_fnc_startSpectator") then {ace_sys_spectator_can_exit_spectator =
 // initialise main menu
 [
         "player",
-        [((["ALiVE", "openMenu"] call cba_fnc_getKeybind) select 5) select 0],
+        [] call ALiVE_fnc_menuKeys,
         -9500,
         [
                 "call ALIVE_fnc_CombatSupportMenuDef",
