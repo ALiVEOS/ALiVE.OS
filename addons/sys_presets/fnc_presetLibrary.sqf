@@ -130,7 +130,21 @@ switch (toLower _operation) do {
     // nameless. A preset collected from a stranger often has no name at all,
     // which is exactly when somebody wants to give it one.
     case "update": {
-        _args params [["_was", "", [""]], ["_name", "", [""]], ["_description", "", [""]]];
+        _args params [["_was", "", [""]], ["_name", "", [""]], ["_description", "", [""]], ["_author", "", [""]]];
+
+        // A preset is ONE line of text, and the description box is several lines
+        // deep, so a line break typed in there would split the preset in two on
+        // its way out. Flattened here rather than in the window, because this is
+        // where typed text becomes part of a preset and any caller has to pass
+        // through it.
+        private _fnc_oneLine = {
+            if (!(_this isEqualType "") || {_this isEqualTo ""}) exitWith { "" };
+            trim (toString ((toArray _this) apply { if (_x in [10, 13, 9]) then { 32 } else { _x } }))
+        };
+        _name = _name call _fnc_oneLine;
+        _description = _description call _fnc_oneLine;
+        _author = _author call _fnc_oneLine;
+
         private _at = _saved findIf { (_x select 0) isEqualTo _was };
         if (_at < 0) exitWith { _result = [false, "That preset is not one of yours."] };
         if (_name isEqualTo "") exitWith { _result = [false, "A preset needs a name."] };
@@ -145,6 +159,10 @@ switch (toLower _operation) do {
             while { count _meta < 6 } do { _meta pushBack "" };
             _meta set [0, _name];
             _meta set [1, _description];
+            // Only the author, not the world, the build or the date. Those three
+            // are facts about where the preset came from, and letting them be
+            // typed over would make them worthless.
+            _meta set [2, _author];
             _preset set [2, _meta];
             private _rewritten = _preset call ALIVE_fnc_presetSerialize;
             if !(_rewritten isEqualTo "") then { _text = _rewritten };

@@ -46,9 +46,28 @@ private _no = { [false, [], _this] };
 
 if (_text isEqualTo "") exitWith { ["There is nothing on the clipboard."] call _no };
 
+// Does it even begin like a preset? Asked BEFORE parseSimpleArray, because that
+// command does not politely hand back an empty array when the text is not an
+// array: it raises a format error. Whatever is on somebody's clipboard is usually
+// not a preset, so this was throwing an error into the log for every ordinary
+// thing anyone had copied.
+private _trimmed = trim _text;
+if !((_trimmed select [0, 13]) isEqualTo "[""ALIVEPRESET") exitWith {
+    ["That is not a preset. Copy the whole line, starting with [""ALIVEPRESET""."] call _no
+};
+
 // Seven parts, or eight once it carries areas. Anything else is not a preset, or
 // is a preset that was cut short on its way here.
-private _preset = parseSimpleArray _text;
+private _preset = parseSimpleArray _trimmed;
+
+// It began like a preset and still would not parse, so it was cut short on the
+// way here: a Discord message has a length limit and a preset is one long line.
+// The engine logs its own complaint about that and hands back nothing useful, so
+// the result is checked rather than trusted.
+if (isNil "_preset" || {!(_preset isEqualType [])}) exitWith {
+    ["This preset is damaged. It looks like it was cut short when it was copied."] call _no
+};
+
 if (!(count _preset isEqualTo 7) && {!(count _preset isEqualTo 8)}) exitWith {
     ["That is not a preset. Copy the whole line, starting with [""ALIVEPRESET""."] call _no
 };
@@ -89,11 +108,20 @@ private _problems = [];
 {
     private _entry = _x;
     private _at = _forEachIndex + 1;
-    if (!(_entry isEqualType []) || {count _entry != 2}) then {
+    // Two parts, or three once it remembers where the module sat. Most ALiVE
+    // modules do not care where they are, but several read their own position and
+    // act on it, so a preset that keeps the layout carries a third part per
+    // module. A preset written before that stays two and still reads.
+    if (!(_entry isEqualType []) || {!(count _entry in [2, 3])}) then {
         _problems pushBack format ["Module %1 in this preset is damaged.", _at];
     } else {
         _entry params ["_class", "_settings"];
-        if (!(_class isEqualType "") || {!(_settings isEqualType [])}) then {
+        private _spot = _entry param [2, []];
+        private _spotOk = (_spot isEqualTo []) || {
+            (_spot isEqualType []) && {count _spot isEqualTo 2}
+                && {(_spot select 0) isEqualType 0} && {(_spot select 1) isEqualType 0}
+        };
+        if (!(_class isEqualType "") || {!(_settings isEqualType [])} || {!_spotOk}) then {
             _problems pushBack format ["Module %1 in this preset is damaged.", _at];
         } else {
             private _cfg = configFile >> "CfgVehicles" >> _class;

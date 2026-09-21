@@ -57,7 +57,7 @@ if ([_preset] call ALIVE_fnc_presetPlaceClick) exitWith { true };
 
 // No editor display to click on, which should not happen, but placing it
 // somewhere beats refusing with nothing said.
-([_preset] call ALIVE_fnc_presetPlace) params ["_placed", "_settings", "_links", "_skipped", ["_areas", 0], ["_renamed", []]];
+([_preset] call ALIVE_fnc_presetPlace) params ["_placed", "_settings", "_links", "_skipped", ["_areas", 0], ["_renamed", []], ["_trims", []]];
 
 if (_placed == 0) exitWith {
     private _none = format ["Everything in that preset is already in this scenario, so nothing was added: %1.", _skipped joinString ", "];
@@ -81,6 +81,10 @@ if (_areas > 0) then {
 // otherwise find something in their scenario called what they never called it.
 if (count _renamed > 0) then {
     _msg = _msg + format [" That name was taken, so: %1.", _renamed joinString ", "];
+};
+// Cut down because it was drawn on a bigger map than this one.
+if (count _trims > 0) then {
+    _msg = _msg + format [" Too big for this map, so trimmed to fit: %1.", _trims joinString ", "];
 };
 
 if (count _skipped > 0) then {

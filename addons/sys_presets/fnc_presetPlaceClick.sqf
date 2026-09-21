@@ -81,7 +81,7 @@ private _id = _eden displayAddEventHandler ["MouseButtonDown", {
         true
     };
 
-    ([_preset, _pos] call ALIVE_fnc_presetPlace) params ["_placed", "_settings", "_links", "_skipped", ["_areas", 0], ["_renamed", []]];
+    ([_preset, _pos] call ALIVE_fnc_presetPlace) params ["_placed", "_settings", "_links", "_skipped", ["_areas", 0], ["_renamed", []], ["_trims", []]];
 
     private _msg = if (_placed == 0) then {
         format ["Everything in that preset is already in this scenario: %1.", _skipped joinString ", "]
@@ -96,6 +96,12 @@ private _id = _eden displayAddEventHandler ["MouseButtonDown", {
         // their scenario under a name they never chose.
         if (count _renamed > 0) then {
             _said = _said + format [" That name was taken, so: %1.", _renamed joinString ", "];
+        };
+        // An area bigger than this map was cut down to fit it. The commander will
+        // work inside a different shape than the one the preset was drawn with, so
+        // this is not a detail to swallow.
+        if (count _trims > 0) then {
+            _said = _said + format [" Too big for this map, so trimmed to fit: %1.", _trims joinString ", "];
         };
         _said
     };

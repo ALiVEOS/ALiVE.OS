@@ -45,7 +45,7 @@ Parameters:
     "find"    -                        -> ARRAY of STRING, every marker there is
     "read"    - name                   -> ARRAY, the ten columns, or []
     "names"   - [setting, value]       -> ARRAY of STRING, the areas value names
-    "make"    - [row, anchor, taken]   -> ARRAY [wantedName, actualName]
+    "make"    - [row, anchor, taken]   -> ARRAY [wantedName, actualName, trimmed]
     "setting" - [moduleClass, property] -> STRING, the marker setting, or ""
 
 Returns:
@@ -72,12 +72,27 @@ params [["_operation", "", [""]], "_arguments"];
 if (isNil "_arguments") then { _arguments = [] };
 if !(_arguments isEqualType []) then { _arguments = [_arguments] };
 
-if (!is3DEN) exitWith { [] };
+// Only the three operations that touch the editor need the editor. Splitting a
+// setting's value into names, and working out which setting a property is, are
+// string and config work that a mission or a test can do perfectly well, and
+// ALIVE_fnc_presetParse leans on both: gating the whole function on is3DEN made
+// it answer "no areas named" everywhere outside the editor, which is the exact
+// answer that lets an unchecked preset through.
+if (!is3DEN && {(toLower _operation) in ["find", "read", "make"]}) exitWith { [] };
 
 // Six significant digits is the ceiling, so these are the shapes that survive
 // being written out and read back in.
 private _fnc_metres = { round _this };
 private _fnc_alpha = { (round (_this * 100)) / 100 };
+
+// Anything a person typed, flattened to one line. toArray/fromArray rather than
+// splitString, because splitString on a string of only separators returns an
+// empty array and a label of one newline would come back as "".
+private _fnc_oneLine = {
+    if (!(_this isEqualType "") || {_this isEqualTo ""}) exitWith { "" };
+    private _out = (toArray _this) apply { if (_x in [10, 13, 9]) then { 32 } else { _x } };
+    trim (toString _out)
+};
 
 private _fnc_get = {
     // select 0 on an empty read is nil, str writes nil as "any", and an array
@@ -126,7 +141,13 @@ switch (toLower _operation) do {
             [_marker, "brush", "Solid"] call _fnc_get,
             [_marker, "baseColor", "Default"] call _fnc_get,
             ([_marker, "alpha", 1] call _fnc_get) call _fnc_alpha,
-            [_marker, "text", ""] call _fnc_get
+            // A label is the one thing in a marker a person typed, so it is the
+            // one thing that can hold a line break. A preset is one line of text
+            // that travels through a chat message, a web form and a text box, and
+            // a break in the middle of it makes it two presets, neither of which
+            // reads. Turned into a space rather than refused: nobody should lose
+            // a preset over a label.
+            ([_marker, "text", ""] call _fnc_get) call _fnc_oneLine
         ]
     };
 
@@ -167,9 +188,28 @@ switch (toLower _operation) do {
 
         _row params ["_wanted", "_class", "_shape", "_offset", "_size", "_rotation", "_brush", "_colour", "_alpha", "_text"];
 
+        // An area written on a big map can be bigger than a small one. An Altis
+        // TAOR of 10 km dropped on Stratis, which is 8192 m square, covers the
+        // island, and the person believes they constrained the commander's ground
+        // when they have done the opposite. Sizes are in real metres and have to
+        // be, so the only honest thing is to trim one that cannot fit and say so.
+        private _trimmed = false;
+        private _half = worldSize / 2;
+        private _size = [_size param [0, 50], _size param [1, 50]];
+        {
+            if (_x > _half) then {
+                _size set [_forEachIndex, round _half];
+                _trimmed = true;
+            };
+        } forEach +_size;
+
+        // And on the map. The module grid is already bounds checked, because a
+        // preset placed off the island once existed and looked exactly like a
+        // preset that placed nothing. An area is worse: it would be carried in the
+        // settings, so nothing would report it as dropped.
         private _at = [
-            (_anchor param [0, 0]) + (_offset param [0, 0]),
-            (_anchor param [1, 0]) + (_offset param [1, 0]),
+            (((_anchor param [0, 0]) + (_offset param [0, 0])) max 1) min (worldSize - 1),
+            (((_anchor param [1, 0]) + (_offset param [1, 0])) max 1) min (worldSize - 1),
             0
         ];
 
@@ -190,7 +230,7 @@ switch (toLower _operation) do {
         // accepted and ignored, which would read as success in a log.
         if (_class isEqualTo "") then {
             _marker set3DENAttribute ["markerType", _shape];
-            _marker set3DENAttribute ["size2", _size];
+            _marker set3DENAttribute ["size2", +_size];
             _marker set3DENAttribute ["brush", _brush];
         };
         _marker set3DENAttribute ["rotation", _rotation];
@@ -210,10 +250,10 @@ switch (toLower _operation) do {
             // name it really has, and let the caller point the settings at that.
             ["ALIVE_fnc_presetMarkers - %1 would not take the name %2, it is still %3",
                 _wanted, _name, _stillAnswers] call ALiVE_fnc_dump;
-            [_wanted, _stillAnswers]
+            [_wanted, _stillAnswers, _trimmed]
         };
 
-        [_wanted, _name]
+        [_wanted, _name, _trimmed]
     };
 
     // Which marker-naming setting a module's property is, or "" for anything

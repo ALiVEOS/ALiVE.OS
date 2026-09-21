@@ -2,6 +2,11 @@
 // the shipped presets and the never-shared list stay one class: two
 // declarations of the same class at the root will not rapify.
 class Shipped {
+    class nato_holds_one_area {
+        name = "NATO holds one area of the island";
+        description = "The same NATO commander, held to a single area instead of the whole map. The area comes with the preset, so it lands wherever you put it and keeps its size. Move it or resize it afterwards and the commander follows.";
+        text = "[""ALIVEPRESET"",2,[""NATO holds one area of the island"",""The same NATO commander, held to a single area instead of the whole map. The area comes with the preset, so it lands wherever you put it and keeps its size. Move it or resize it afterwards and the commander follows."",""ALiVE"",""Stratis"",""3.2.0.2604133"",""2026-09-21""],[[""ALiVE_require"",[]],[""ALiVE_sys_profile"",[]],[""ALiVE_mil_OPCOM"",[[""ALiVE_mil_opcom_customName"",""NATO""],[""ALiVE_mil_opcom_controltype"",""occupation""],[""ALiVE_mil_opcom_factions"",""[""""BLU_F""""]""]]],[""ALiVE_mil_placement"",[[""ALiVE_mil_placement_taor"",""BLUFOR_TAOR""]]]],[[2,3]],[],[],[[""BLUFOR_TAOR"","""",0,[0,0],[2509,1679],0,""Solid"",""ColorWEST"",0.77,""""]]]";
+    };
     class nato_occupies_stratis {
         name = "NATO takes and holds an island";
         description = "A NATO commander occupying the whole map, with its forces placed on the military objectives it finds. A starting point to build on: add your own players, and change the faction to move it anywhere.";

@@ -72,7 +72,7 @@ if (!is3DEN) exitWith {
 
 // Nothing chosen means everything, which is what the right click entry does. The
 // window passes two explicit lists instead: which modules, and which areas.
-_choice params [["_pickModules", [], [[]]], ["_pickMarkers", [], [[]]]];
+_choice params [["_pickModules", [], [[]]], ["_pickMarkers", [], [[]]], ["_keepLayout", true, [true]]];
 private _choosing = count _choice > 0;
 
 // Both lists live in config so the editor and the tooling that reviews a
@@ -225,7 +225,19 @@ private _settingCount = 0;
         };
     };
 
-    _out pushBack [_type, _kept];
+    // Where the module sits, kept as an offset from the middle of the group, the
+    // same way an area is kept. It is not decoration: mil_placement_custom,
+    // civ_placement_custom and mil_placement_spe place their objective AT it,
+    // mil_ato writes it into its own hash, mil_logistics uses it as the default
+    // static source, and both placement modules centre their objective scenery
+    // on it. Dropping it, which is what a preset did until now, leaves those
+    // modules working off wherever a tidy grid happened to put them.
+    if (_keepLayout) then {
+        private _at = getPosATL _entity;
+        _out pushBack [_type, _kept, [(_at param [0, 0]), (_at param [1, 0])]];
+    } else {
+        _out pushBack [_type, _kept];
+    };
 } forEach _modules;
 
 // The sync lines, as positions in the list above, so a preset carries no editor
@@ -245,41 +257,90 @@ private _links = [];
     } forEach (get3DENConnections _x);
 } forEach _modules;
 
-// The areas, placed relative to their own middle rather than to the map. A
-// preset that carried world coordinates would only mean anything on the map it
-// came from; carried as offsets, the whole arrangement lands wherever it is put
-// and keeps its shape. Sizes stay in real metres, because an area's size is the
-// thing a mission maker actually chose.
-private _markers = [];
-if (count _carry > 0) then {
-    private _rows = [];
+// Everything that has a place is placed relative to ONE middle, worked out from
+// the modules and the areas together.
+//
+// Centring each kind on its own middle would be the obvious thing and would be
+// wrong: a TAOR drawn around a custom objective would come out centred on the
+// areas while the objective came out centred on the modules, and the objective
+// would no longer be inside its own area. The arrangement is the thing being
+// carried, so there is one origin for all of it.
+//
+// A preset carrying world coordinates would only mean anything on the map it came
+// from. Carried as offsets, the whole arrangement lands wherever it is put and
+// keeps its shape. Sizes stay in real metres, because an area's size is a thing
+// the mission maker actually chose.
+private _rows = [];
+{
+    private _row = ["read", _x] call ALIVE_fnc_presetMarkers;
+    if (count _row >= 10) then { _rows pushBack _row };
+} forEach _carry;
+
+private _places = [];
+if (_keepLayout) then {
+    { _places pushBack (_x select 2) } forEach _out;
+};
+{ _places pushBack (_x select 3) } forEach _rows;
+
+private _midX = 0;
+private _midY = 0;
+if (count _places > 0) then {
     private _sumX = 0;
     private _sumY = 0;
     {
-        private _row = ["read", _x] call ALIVE_fnc_presetMarkers;
-        if (count _row >= 10) then {
-            _rows pushBack _row;
-            _sumX = _sumX + ((_row select 3) param [0, 0]);
-            _sumY = _sumY + ((_row select 3) param [1, 0]);
-        };
-    } forEach _carry;
-
-    if (count _rows > 0) then {
-        private _midX = round (_sumX / count _rows);
-        private _midY = round (_sumY / count _rows);
-        {
-            private _row = +_x;
-            private _at = _row select 3;
-            _row set [3, [round ((_at param [0, 0]) - _midX), round ((_at param [1, 0]) - _midY)]];
-            _markers pushBack _row;
-        } forEach _rows;
-    };
+        _sumX = _sumX + (_x param [0, 0]);
+        _sumY = _sumY + (_x param [1, 0]);
+    } forEach _places;
+    _midX = _sumX / count _places;
+    _midY = _sumY / count _places;
 };
+
+// Whole metres, because str writes six significant digits and the round trip
+// check refuses anything that does not come back identical.
+private _fnc_offset = {
+    params ["_at"];
+    [round ((_at param [0, 0]) - _midX), round ((_at param [1, 0]) - _midY)]
+};
+
+if (_keepLayout) then {
+    { _x set [2, [_x select 2] call _fnc_offset] } forEach _out;
+};
+
+private _markers = [];
+{
+    private _row = +_x;
+    _row set [3, [_row select 3] call _fnc_offset];
+    _markers pushBack _row;
+} forEach _rows;
 
 // Seven parts and version 1 when there are no areas, so a preset that gains
 // nothing from the new slot stays readable by every build that already ships.
 // Eight and version 2 only when there is something in it.
-private _meta = ["", "", "", worldName, getText (configFile >> "CfgPatches" >> "ALiVE_main" >> "version"), ""];
+// Who made it, when, and a name, rather than three empty strings. A preset used
+// to come out of here with no title, no author and no date, so a copied one was
+// anonymous and undated the moment it left the library.
+//
+// The author is the profile name, which is the handle the person is already known
+// by in any game they join. It is put in the preset so credit travels with it,
+// and the window shows it in a box they can edit or clear, because a name that
+// travels invisibly is not a name anybody agreed to share.
+//
+// systemTime, not date: date is the SCENARIO's clock, which a mission maker sets
+// to whatever suits the mission, so a preset made today would be filed under the
+// year the editor happens to be showing.
+private _now = systemTime;
+private _fnc_pad = { if (_this < 10) then { "0" + str _this } else { str _this } };
+private _stamp = format ["%1-%2-%3", _now select 0,
+    (_now select 1) call _fnc_pad, (_now select 2) call _fnc_pad];
+
+private _meta = [
+    format ["%1 preset, %2", worldName, _stamp],
+    "",
+    profileName,
+    worldName,
+    getText (configFile >> "CfgPatches" >> "ALiVE_main" >> "version"),
+    _stamp
+];
 private _preset = if (count _markers == 0) then {
     ["ALIVEPRESET", 1, _meta, _out, _links, _mods, _dropped]
 } else {
