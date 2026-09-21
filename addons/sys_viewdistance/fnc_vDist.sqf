@@ -126,16 +126,25 @@ switch(_operation) do {
                     };
 
                     if(_tgvalue > 0) then {
-                        if(_minsettg == 1 && _maxsettg == 2) then {TGARRAY = [50, 25]; terrainGrid = 2; setTerrainGrid 25};
-                        if(_minsettg == 1 && _maxsettg == 3) then {TGARRAY = [50, 25, 12.5]; if (isMultiplayer) then {terrainGrid = 2;} else {terrainGrid = 3}};
-                        if(_minsettg == 1 && _maxsettg == 4) then {TGARRAY = [50, 25, 12.5, 6.25];if (isMultiplayer) then {terrainGrid = 2;} else {terrainGrid = 3}};
-                        if(_minsettg == 1 && _maxsettg == 5) then {TGARRAY = [50, 25, 12.5, 6.25, 3.125];if (isMultiplayer) then {terrainGrid = 2;} else {terrainGrid = 3}};
-                        if(_minsettg == 2 && _maxsettg == 3) then {TGARRAY = [25, 12.5];if (isMultiplayer) then {terrainGrid = 2;} else {terrainGrid = 3}};
-                        if(_minsettg == 2 && _maxsettg == 4) then {TGARRAY = [25, 12.5, 6.25];if (isMultiplayer) then {terrainGrid = 2;} else {terrainGrid = 3}};
-                        if(_minsettg == 2 && _maxsettg == 5) then {TGARRAY = [25, 12.5, 6.25, 3.125];if (isMultiplayer) then {terrainGrid = 2;} else {terrainGrid = 3;}};
-                        if(_minsettg == 3 && _maxsettg == 4) then {TGARRAY = [12.5, 6.25];terrainGrid = 3; setTerrainGrid 12.5};
-                        if(_minsettg == 3 && _maxsettg == 5) then {TGARRAY = [12.5, 6.25, 3.125];terrainGrid = 3; setTerrainGrid 12.5};
-                        if(_minsettg == 4 && _maxsettg == 5) then {TGARRAY = [6.25, 3.125];terrainGrid = 4; setTerrainGrid 6.25};
+                        // One absolute table, indexed by the tier number itself.
+                        //
+                        // This was ten hand-written rows, one per minimum/maximum pair, each building a
+                        // table that STARTED at the configured minimum. But the slider is given the
+                        // absolute range (fnc_vdist_init.sqf:29 sliderSetRange [_minsettg,_maxsettg]), its
+                        // label prints the absolute tier, and the read is TGARRAY select (terrainGrid - 1).
+                        // So everything except the table was already absolute, and a minimum above 1 made
+                        // the two disagree: at minimum 4 the read is select 3 on a two-entry table and
+                        // throws, and at minimum 2 in multiplayer it quietly returns 12.5 where the label
+                        // says tier 2, which is 25.
+                        //
+                        // The clamp below reproduces all ten of those rows exactly, checked pair by pair.
+                        // It also fixes something they got wrong: only four of the ten actually applied the
+                        // grid they had chosen, so the other six set the variable and left the terrain
+                        // alone until the player happened to move the slider.
+                        TGARRAY = [50, 25, 12.5, 6.25, 3.125];
+                        private _startTier = if (isMultiplayer) then { 2 } else { 3 };
+                        terrainGrid = (_startTier max _minsettg) min _maxsettg;
+                        setTerrainGrid (TGARRAY select (terrainGrid - 1));
                     };
 
                     _maxgetvd = (ADDON getVariable ["maxVD", "2"]); // get the maximum view distance se in the module

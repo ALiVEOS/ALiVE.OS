@@ -22,10 +22,10 @@ class CfgVehicles {
                 picture = "x\alive\addons\sys_viewdistance\icon_sys_viewdistance.paa";
                 class Attributes : AttributesBase
                 {
-                        class maxVD : Edit { property = "ALiVE_sys_viewdistance_maxVD"; displayName = "$STR_ALIVE_VDIST_MAX"; tooltip = "$STR_ALIVE_VDIST_MAX_COMMENT"; defaultValue = """20000"""; };
                         class minVD : Edit { property = "ALiVE_sys_viewdistance_minVD"; displayName = "$STR_ALIVE_VDIST_MIN"; tooltip = "$STR_ALIVE_VDIST_MIN_COMMENT"; defaultValue = """500"""; };
-                        class maxTG : Edit { property = "ALiVE_sys_viewdistance_maxTG"; displayName = "$STR_ALIVE_TGRID_MAX"; tooltip = "$STR_ALIVE_TGRID_MAX_COMMENT"; defaultValue = """5"""; };
+                        class maxVD : Edit { property = "ALiVE_sys_viewdistance_maxVD"; displayName = "$STR_ALIVE_VDIST_MAX"; tooltip = "$STR_ALIVE_VDIST_MAX_COMMENT"; defaultValue = """20000"""; };
                         class minTG : Edit { property = "ALiVE_sys_viewdistance_minTG"; displayName = "$STR_ALIVE_TGRID_MIN"; tooltip = "$STR_ALIVE_TGRID_MIN_COMMENT"; defaultValue = """1"""; };
+                        class maxTG : Edit { property = "ALiVE_sys_viewdistance_maxTG"; displayName = "$STR_ALIVE_TGRID_MAX"; tooltip = "$STR_ALIVE_TGRID_MAX_COMMENT"; defaultValue = """5"""; };
                         class ModuleDescription : ModuleDescription {};
                 };
         };
