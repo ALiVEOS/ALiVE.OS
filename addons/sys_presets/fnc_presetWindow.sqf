@@ -316,7 +316,8 @@ private _fnc_show = {
         // Counted as MODS, not as addons. RHS USAF alone ships a dozen addons,
         // so counting addons said a preset needed sixteen mods when it needed
         // six, which is not a rounding error but a wrong answer.
-        private _needs = [_modules, _preset param [5, []], "mods"] call ALIVE_fnc_presetAddons;
+        private _needs = [_modules, _preset param [5, []], "mods",
+            _preset param [8, []]] call ALIVE_fnc_presetAddons;
         private _short = count (_needs select { !(_x select 2) });
         private _mods = switch (true) do {
             case (count _needs == 0): { "needs nothing beyond ALiVE" };

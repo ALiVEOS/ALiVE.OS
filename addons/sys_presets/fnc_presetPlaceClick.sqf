@@ -34,7 +34,11 @@ Author:
 params [["_preset", [], [[]]]];
 
 if (!is3DEN) exitWith { false };
-if (!(count _preset isEqualTo 7) && {!(count _preset isEqualTo 8)}) exitWith { false };
+if (!((count _preset) in [7, 8, 9])) exitWith {
+    ["ALIVE_fnc_presetPlaceClick - a preset of %1 part(s) cannot be read; 7, 8 or 9 expected",
+        count _preset] call ALiVE_fnc_dump;
+    false
+};
 
 disableSerialization;
 private _eden = findDisplay 313;
@@ -76,7 +80,7 @@ private _id = _eden displayAddEventHandler ["MouseButtonDown", {
     // Seven parts, or eight once it carries areas. This one used to exit true and
     // say nothing at all, so a preset that got this far and failed looked exactly
     // like a click that worked.
-    if (!(count _preset isEqualTo 7) && {!(count _preset isEqualTo 8)}) exitWith {
+    if (!((count _preset) in [7, 8, 9])) exitWith {
         ["That preset could not be read, so nothing was placed.", 2, 10] call BIS_fnc_3DENNotification;
         true
     };

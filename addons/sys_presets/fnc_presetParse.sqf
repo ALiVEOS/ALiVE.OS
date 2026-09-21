@@ -68,19 +68,22 @@ if (isNil "_preset" || {!(_preset isEqualType [])}) exitWith {
     ["This preset is damaged. It looks like it was cut short when it was copied."] call _no
 };
 
-if (!(count _preset isEqualTo 7) && {!(count _preset isEqualTo 8)}) exitWith {
+if (!((count _preset) in [7, 8, 9])) exitWith {
     ["That is not a preset. Copy the whole line, starting with [""ALIVEPRESET""."] call _no
 };
 
 _preset params ["_magic", "_version", "_meta", "_modules", "_links", "_mods", "_dropped"];
 private _markers = _preset param [7, []];
+// What the preset was told about its own mods when it was made, by name and
+// Steam id. The only thing that can name a mod this machine does not have.
+private _carried = _preset param [8, []];
 
 if !(_magic isEqualTo "ALIVEPRESET") exitWith {
     ["That is not a preset. Copy the whole line, starting with [""ALIVEPRESET""."] call _no
 };
 if !(_version isEqualType 0) exitWith { ["This preset does not say which version it is."] call _no };
-if (_version > 2) exitWith {
-    [format ["This preset was written for a newer ALiVE (it says version %1, this build reads 2). Update ALiVE.", _version]] call _no
+if (_version > 3) exitWith {
+    [format ["This preset was written for a newer ALiVE (it says version %1, this build reads 3). Update ALiVE.", _version]] call _no
 };
 if (!(_modules isEqualType []) || {!(_links isEqualType [])} || {!(_meta isEqualType [])}) exitWith {
     ["This preset is damaged. It may have been cut short when it was copied."] call _no
@@ -230,6 +233,31 @@ if !(_markers isEqualType []) then {
             };
         };
     } forEach _markers;
+};
+
+// The mod record, checked only for shape. Its contents cannot be verified here
+// and that is the point of it: it describes mods this machine may not have, so
+// there is nothing to compare it against. A damaged entry is dropped rather than
+// refused, because the preset's modules and areas are still perfectly placeable
+// and losing the whole thing over a mod label would be the wrong trade.
+if !(_carried isEqualType []) then {
+    _problems pushBack "The mod list in this preset is damaged.";
+} else {
+    private _clean = [];
+    {
+        if (_x isEqualType [] && {count _x > 3}
+            && {(_x select 0) isEqualType ""} && {!((_x select 0) isEqualTo "")}
+            && {(_x select 1) isEqualType ""}
+            && {(_x select 2) isEqualType true}
+            && {(_x select 3) isEqualType []}) then {
+            _clean pushBack _x;
+        };
+    } forEach _carried;
+    if (count _clean != count _carried) then {
+        ["ALIVE_fnc_presetParse - dropped %1 damaged mod entr(ies) of %2",
+            (count _carried) - (count _clean), count _carried] call ALiVE_fnc_dump;
+        if (count _preset > 8) then { _preset set [8, _clean] };
+    };
 };
 
 if (count _problems > 0) exitWith { [false, [], _problems] };

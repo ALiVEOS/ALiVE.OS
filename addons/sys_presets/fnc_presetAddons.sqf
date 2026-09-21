@@ -59,11 +59,17 @@ Parameters:
     _modules - ARRAY - the modules part of a preset, [[class, settings], ...]
     _declared - ARRAY - optional, addons the preset already states
     _mode - STRING - "addons" for names, "mods" for what somebody downloads
+    _carried - ARRAY - optional, the preset's own mod record (slot 8), each entry
+               [modName, steamId, isDLC, [addons]]. The ONLY source that works
+               for a mod which is not loaded, so it wins where it applies.
 
 Returns:
-    ARRAY. For "addons", addon names, lowercase, sorted, no duplicates.
-    For "mods", one row per mod: [name, [reasons], loaded, link, dir], sorted
-    with anything not loaded first. link is "" when there is nothing to link to.
+    ARRAY. For "addons", addon names, lowercase, sorted, no duplicates, which is
+    what slot 5 stores.
+    For "mods", one row per mod, sorted with anything not loaded first:
+    [name, [reasons], loaded, link, dir, steamId, isDLC, [addons]]. link is ""
+    when there is nothing to link to. The last three are what presetCollect
+    writes into slot 8 so the next reader does not have to derive any of it.
 
 Examples:
     (begin example)
@@ -78,7 +84,8 @@ Author:
     Jman
 ---------------------------------------------------------------------------- */
 
-params [["_modules", [], [[]]], ["_declared", [], [[]]], ["_mode", "addons", [""]]];
+params [["_modules", [], [[]]], ["_declared", [], [[]]], ["_mode", "addons", [""]],
+    ["_carried", [], [[]]]];
 
 // Three arrays kept in step rather than one array of rows, so an addon can be
 // found by name in one operation while it is being filled in.
@@ -190,64 +197,135 @@ private _fnc_modRow = {
     if (_at < 0) then { [] } else { _loaded select _at }
 };
 
-private _keys = [];      // one entry per mod, or per undebuggable addon
+private _fnc_link = {
+    // A Creator DLC's id is a store AppID, not a Workshop item, so it lives at a
+    // different address. An id of "0" means the mod is not from the Workshop at
+    // all, which ALiVE's own row reports.
+    params ["_id", "_isDLC"];
+    if (_id isEqualTo "0" || {_id isEqualTo ""}) exitWith { "" };
+    if (_isDLC) then {
+        format ["https://store.steampowered.com/app/%1/", _id]
+    } else {
+        format ["https://steamcommunity.com/sharedfiles/filedetails/?id=%1", _id]
+    }
+};
+
+// What the preset was told when it was made, keyed by addon. This is the only
+// thing that works for a mod which is NOT loaded: nothing of an absent mod is in
+// config, and it is not in getLoadedModsInfo either, so neither its name nor its
+// Steam id can be worked out here. Whoever made the preset did have it loaded.
+private _carriedOf = [];   // addon (lowercase) -> index into _carried
+{
+    if (_x isEqualType [] && {count _x > 3}) then {
+        private _at = _forEachIndex;
+        {
+            if (_x isEqualType "") then { _carriedOf pushBack [toLower _x, _at] };
+        } forEach (_x select 3);
+    };
+} forEach _carried;
+
+private _fnc_carriedFor = {
+    params ["_addon"];
+    private _at = _carriedOf findIf { (_x select 0) isEqualTo _addon };
+    if (_at < 0) exitWith { [] };
+    _carried param [(_carriedOf select _at) select 1, []]
+};
+
+private _keys = [];
 private _rowNames = [];
 private _rowWhy = [];
 private _rowOn = [];
 private _rowLink = [];
 private _rowDirs = [];
+private _rowIds = [];
+private _rowDLC = [];
+private _rowAddons = [];
 
 {
     private _addon = _x;
     private _dir = _dirs select _forEachIndex;
     private _reasons = _why select _forEachIndex;
     private _on = _addon in _running;
+    private _said = [_addon] call _fnc_carriedFor;
 
-    // Grouped under the mod when there is one. An addon with no mod folder is
-    // either not loaded or came from somewhere that declares no source, and
-    // either way its own name is the most that can honestly be shown.
-    private _key = if (_dir isEqualTo "") then { "addon:" + _addon } else { "mod:" + (toLower _dir) };
+    // Grouped under the mod. The preset's own record wins, because it is the only
+    // source that survives the mod being absent; then the mod folder found in
+    // config; and failing both, the addon stands alone under its own name.
+    private _key = switch (true) do {
+        case (count _said > 0): { "said:" + toLower (_said select 0) };
+        case (!(_dir isEqualTo "")): { "mod:" + (toLower _dir) };
+        default { "addon:" + _addon };
+    };
+
     private _at = _keys find _key;
     if (_at < 0) then {
         private _name = _addon;
         private _link = "";
-        if !(_dir isEqualTo "") then {
-            private _pretty = (modParams [_dir, ["name"]]) param [0, ""];
-            if !(_pretty isEqualTo "") then { _name = _pretty };
+        private _id = "";
+        private _isDLC = false;
 
-            private _row = [_dir] call _fnc_modRow;
-            if (count _row > 0) then {
-                private _id = _row param [7, "0"];
-                private _isDLC = (_row param [2, false]) || {_row param [3, false]};
-                if (!(_id isEqualTo "0") && {!(_id isEqualTo "")}) then {
-                    // A Creator DLC's id is a store AppID, not a Workshop item,
-                    // so it takes the store address instead.
-                    _link = if (_isDLC) then {
-                        format ["https://store.steampowered.com/app/%1/", _id]
-                    } else {
-                        format ["https://steamcommunity.com/sharedfiles/filedetails/?id=%1", _id]
-                    };
+        if (count _said > 0) then {
+            _name = _said select 0;
+            _id = _said select 1;
+            _isDLC = _said select 2;
+        } else {
+            if !(_dir isEqualTo "") then {
+                private _pretty = (modParams [_dir, ["name"]]) param [0, ""];
+                if !(_pretty isEqualTo "") then { _name = _pretty };
+                private _row = [_dir] call _fnc_modRow;
+                if (count _row > 0) then {
+                    _id = _row param [7, "0"];
+                    _isDLC = (_row param [2, false]) || {_row param [3, false]};
                 };
             };
         };
+        _link = [_id, _isDLC] call _fnc_link;
+
         _keys pushBack _key;
         _rowNames pushBack _name;
         _rowWhy pushBack (+_reasons);
         _rowOn pushBack _on;
         _rowLink pushBack _link;
         _rowDirs pushBack _dir;
+        _rowIds pushBack _id;
+        _rowDLC pushBack _isDLC;
+        _rowAddons pushBack [_addon];
     } else {
         { (_rowWhy select _at) pushBackUnique _x } forEach _reasons;
+        (_rowAddons select _at) pushBackUnique _addon;
         // One addon of a mod being absent is enough to call the mod absent,
         // because the preset wanted that addon.
         if (!_on) then { _rowOn set [_at, false] };
     };
 } forEach _names;
 
+// Insurance for a preset that names a mod in its record but not in its addon
+// list, which its own writer never produces but a hand-edited preset could. A
+// mod stated and then silently dropped is the failure this whole thing exists
+// to prevent.
+{
+    if (_x isEqualType [] && {count _x > 3}) then {
+        private _key = "said:" + toLower (_x select 0);
+        if ((_keys find _key) < 0) then {
+            _keys pushBack _key;
+            _rowNames pushBack (_x select 0);
+            _rowWhy pushBack [["stated", "", ""]];
+            _rowOn pushBack false;
+            _rowLink pushBack ([_x select 1, _x select 2] call _fnc_link);
+            _rowDirs pushBack "";
+            _rowIds pushBack (_x select 1);
+            _rowDLC pushBack (_x select 2);
+            _rowAddons pushBack (_x select 3);
+        };
+    };
+} forEach _carried;
+
 private _out = [];
 {
     _out pushBack [_rowNames select _forEachIndex, _rowWhy select _forEachIndex,
-        _rowOn select _forEachIndex, _rowLink select _forEachIndex, _x];
+        _rowOn select _forEachIndex, _rowLink select _forEachIndex, _x,
+        _rowIds select _forEachIndex, _rowDLC select _forEachIndex,
+        _rowAddons select _forEachIndex];
 } forEach _rowDirs;
 
 // Alphabetical, by sorting the names and reading the rows back in that order.

@@ -93,9 +93,30 @@ if (count _skipped > 0) then {
 
 private _mods = _preset select 5;
 if (_mods isEqualType [] && {count _mods > 0}) then {
-    private _missing = _mods select { !((toLower _x) in (activatedAddons apply { toLower _x })) };
+    private _running = activatedAddons apply { toLower _x };
+    private _missing = _mods select { !((toLower _x) in _running) };
     if (count _missing > 0) then {
-        _msg = _msg + format [" This preset expects %1, which is not loaded.", _missing joinString ", "];
+        // Named by the MOD where the preset recorded one, because "rhsusf_c_weapons
+        // is not loaded" tells somebody nothing they can act on, and "RHS: United
+        // States Forces" tells them exactly what to go and get. The record was
+        // written by whoever made the preset, on a machine that had it, which is
+        // why it can be named here at all.
+        private _said = [];
+        {
+            private _addons = (_x param [3, []]) apply { toLower _x };
+            if ((_addons arrayIntersect (_missing apply { toLower _x })) isNotEqualTo []) then {
+                _said pushBackUnique (_x select 0);
+            };
+        } forEach (_preset param [8, []]);
+
+        // Anything the record could not account for still gets said, under its
+        // addon name. Half an answer beats dropping the other half silently.
+        private _named = [];
+        { _named append ((_x param [3, []]) apply { toLower _x }) } forEach (_preset param [8, []]);
+        private _rest = _missing select { !((toLower _x) in _named) };
+
+        _msg = _msg + format [" This preset expects %1, which is not loaded.",
+            (_said + _rest) joinString ", "];
     };
 };
 

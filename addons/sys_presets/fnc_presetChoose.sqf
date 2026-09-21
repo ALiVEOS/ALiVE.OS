@@ -376,10 +376,24 @@ uiNamespace setVariable ["ALiVE_presetChooseSetAll", _fnc_setAll];
     } forEach (_preset param [4, []]);
 
     private _meta = _preset param [2, ["", "", "", "", "", ""]];
-    private _cut = if (count _keptMarkers == 0) then {
-        ["ALIVEPRESET", 1, _meta, _modules, _links, _preset param [5, []], _preset param [6, []]]
-    } else {
-        ["ALIVEPRESET", 2, _meta, _modules, _links, _preset param [5, []], _preset param [6, []], _keptMarkers]
+    // The mod record travels with a cut-down preset whether or not areas do.
+    // It describes mods, not modules, so nothing about leaving a module out
+    // makes it wrong, and dropping it would lose the only thing that can name a
+    // mod the next reader does not have.
+    private _carried = _preset param [8, []];
+    private _cut = switch (true) do {
+        case (count _carried > 0): {
+            ["ALIVEPRESET", 3, _meta, _modules, _links, _preset param [5, []],
+                _preset param [6, []], _keptMarkers, _carried]
+        };
+        case (count _keptMarkers > 0): {
+            ["ALIVEPRESET", 2, _meta, _modules, _links, _preset param [5, []],
+                _preset param [6, []], _keptMarkers]
+        };
+        default {
+            ["ALIVEPRESET", 1, _meta, _modules, _links, _preset param [5, []],
+                _preset param [6, []]]
+        };
     };
 
     _d closeDisplay 1;

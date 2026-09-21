@@ -44,10 +44,12 @@ Parameters:
 
 Returns:
     ARRAY [_preset, _report]
-      _preset - the preset array, ready for ALIVE_fnc_presetSerialize. Seven parts
-                and version 1 when it carries no areas, eight and version 2 when
-                it does, so a preset that gains nothing from the new part stays
-                readable by builds that came before it.
+      _preset - the preset array, ready for ALIVE_fnc_presetSerialize. Versioned
+                by what is actually in it, so a preset gains a part only when it
+                has something to put there and stays readable by older builds
+                otherwise: seven parts and version 1 plain, eight and version 2
+                once it carries areas, nine and version 3 once it carries the
+                record of which mods it needs.
       _report - [_moduleCount, _settingCount, _linkCount, _dropped, _mods, _missing]
 
 Examples:
@@ -322,6 +324,24 @@ private _stamp = format ["%1-%2-%3", _now select 0,
 // replaced only ever looked at faction settings.
 private _mods = [_out] call ALIVE_fnc_presetAddons;
 
+// And the mod behind each of those addons, by NAME and Steam id, recorded now
+// while this machine has them loaded.
+//
+// This is the whole point of the slot. A recipient who is MISSING a mod can work
+// nothing out about it: none of its classes are in their config and it is not in
+// their getLoadedModsInfo, so they cannot be told what it is called or where to
+// get it. Whoever made the preset could. So it is written down here, once, and
+// travels with the preset.
+private _carried = [];
+{
+    _x params ["_name", "", "", "", "", "_id", "_isDLC", "_addons"];
+    // Nothing worth carrying for a mod with no Steam id and nothing but its
+    // addon name, which is what an unresolvable source looks like.
+    if (!(_name isEqualTo "") && {count _addons > 0}) then {
+        _carried pushBack [_name, _id, _isDLC, _addons];
+    };
+} forEach ([_out, [], "mods"] call ALIVE_fnc_presetAddons);
+
 private _meta = [
     format ["%1 preset, %2", worldName, _stamp],
     "",
@@ -330,10 +350,21 @@ private _meta = [
     getText (configFile >> "CfgPatches" >> "ALiVE_main" >> "version"),
     _stamp
 ];
-private _preset = if (count _markers == 0) then {
-    ["ALIVEPRESET", 1, _meta, _out, _links, _mods, _dropped]
-} else {
-    ["ALIVEPRESET", 2, _meta, _out, _links, _mods, _dropped, _markers]
+// Version by what is actually in it, so a preset gains a slot only when it has
+// something to put there and stays readable by older builds otherwise. Seven
+// parts for the plainest preset, eight once it carries areas, nine once it
+// carries a mod record. A version 3 preset always has the areas slot, empty if
+// there are no areas, because the mod record sits after it.
+private _preset = switch (true) do {
+    case (count _carried > 0): {
+        ["ALIVEPRESET", 3, _meta, _out, _links, _mods, _dropped, _markers, _carried]
+    };
+    case (count _markers > 0): {
+        ["ALIVEPRESET", 2, _meta, _out, _links, _mods, _dropped, _markers]
+    };
+    default {
+        ["ALIVEPRESET", 1, _meta, _out, _links, _mods, _dropped]
+    };
 };
 
 [_preset, [count _modules, _settingCount, count _links, _dropped, _mods, _missing]]

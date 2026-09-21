@@ -63,7 +63,14 @@ Author:
 params [["_preset", [], [[]]], ["_where", [], [[]]]];
 
 if (!is3DEN) exitWith { [0, 0, 0, [], 0, [], []] };
-if (!(count _preset isEqualTo 7) && {!(count _preset isEqualTo 8)}) exitWith { [0, 0, 0, [], 0, [], []] };
+if (!((count _preset) in [7, 8, 9])) exitWith {
+    // Never silent. Nine parts arrived here from a version 3 preset while this
+    // read 7 or 8, and placing simply did nothing with nothing in the log to
+    // say why. If a fourth part is ever added, this is the line that has to know.
+    ["ALIVE_fnc_presetPlace - a preset of %1 part(s) cannot be read; 7, 8 or 9 expected",
+        count _preset] call ALiVE_fnc_dump;
+    [0, 0, 0, [], 0, [], []]
+};
 
 _preset params ["_magic", "_version", "_meta", "_modules", "_links"];
 // param, not select: every preset written before areas existed has seven parts,
