@@ -919,6 +919,12 @@ private _fnc_clearOfHangarMouth = {
 // Cascade.
 // ------------------------------------------------------------------------
 private _found = [];
+// Which tier answered, for the log line at the end. Nothing recorded it before,
+// so a successful placement left no trace of HOW it was reached: a pad tier that
+// found no pads and a pad tier that found one and refused it looked identical
+// from outside, and those two want opposite fixes.
+private _tier = "";
+private _padRef = "";
 private _minSeparation = (_vehLen max _vehWid) + 6;
 
 // Tier 1: helipad (helis + VTOLs, never UAVs - per design rule).
@@ -941,7 +947,7 @@ if (count _found == 0 && {_preference in ["auto", "helipad"]} && {_isHeli || _is
         // airframe on top of another. A fresh placement passes objNull (no own airframe yet), so it
         // now correctly falls through to the registry + footprint + occupied-pad checks below and
         // deconflicts onto a distinct pad.
-        if (_padPos distance2D _centerPos < 3 && {!isNull _ownVeh} && {alive _ownVeh} && {_ownVeh distance2D _padPos < 5}) exitWith { _found = [_padPos, _padDir]; };
+        if (_padPos distance2D _centerPos < 3 && {!isNull _ownVeh} && {alive _ownVeh} && {_ownVeh distance2D _padPos < 5}) exitWith { _tier = "T1PAD-OWN"; _found = [_padPos, _padDir]; };
         // An ATO-stamped pad is one aircraft's slot marker, not shared parking, so it is offered only
         // when it is near the spot being asked for. The measured failure was an Apache being handed a
         // stray pad 88m away that a gunship had left behind on 5-degree grass, abandoning the real
@@ -1035,6 +1041,7 @@ if (count _found == 0 && {_preference in ["auto", "helipad"]} && {_isHeli || _is
             // what cb3776ae was written to stop.
             + ((nearestObjects [_padPos, (_classObstacles - ["AllVehicles"]), _padIgnoreRadius]) select { !([_x, _padPos, _hazardRadius] call _fnc_bodyReaches) });
         if !([_padPos, _padDir, _ignore] call _fnc_footprintClear) then { continue };
+        _tier = "T1PAD"; _padRef = typeOf _x;
         _found = [_padPos, _padDir];
     } forEach _candidates;
 };
@@ -1126,6 +1133,7 @@ if (count _found == 0 && {_preference in ["auto", "hangar"]} && _isPlane && !_is
             // of looking at the world can see.
             if !([_hPos, _minSeparation] call _fnc_registryClear) then { continue };
 
+            _tier = "T2HANGAR";
             _found = [_hPos, _hDir];
         } forEach _hangars;
     };
@@ -1177,6 +1185,7 @@ if (count _found == 0 && _wideAirframe && {_preference in ["auto", "apron", "fie
         if !([_pos] call _fnc_clearOfHangarMouth) then { continue };
         if !([_pos, _minSeparation] call _fnc_registryClear) then { continue };
         if !([_pos, _openDir] call _fnc_footprintClear) then { continue };
+        _tier = "T25WIDE";
         _found = [_pos, _openDir];
     };
 };
@@ -1222,6 +1231,7 @@ if (count _found == 0 && {_preference in ["auto", "apron"]}) then {
                             if (count _found > 0) exitWith {};
                             private _pos = _x;
                             if ([_pos] call _fnc_clearOfRoad && {[_pos] call _fnc_clearOfRunwayTaxiway} && {[_pos, _minSeparation] call _fnc_registryClear} && {[_pos, _parkDir] call _fnc_footprintClear} && {[_pos] call _fnc_clearOfHangarMouth}) then {
+                                _tier = "T3APRON";
                                 _found = [_pos, _parkDir];
                             };
                         } forEach _cands;
@@ -1262,6 +1272,7 @@ if (count _found == 0 && {_preference in ["auto", "apron"]}) then {
         // by AI taxi when it engages.
         private _dir = if (_runwayHeading >= 0) then { _runwayHeading } else { random 360 };
         if !([_pos, _dir] call _fnc_footprintClear) then { continue };
+        _tier = "T3APRON-RWY";
         _found = [_pos, _dir];
     };
 };
@@ -1301,6 +1312,7 @@ if (count _found == 0 && {_preference in ["auto", "field"]}) then {
         if !([_pos, _minSeparation] call _fnc_registryClear) then { continue };
         private _dir = random 360;
         if !([_pos, _dir] call _fnc_footprintClear) then { continue };
+        _tier = "T4FIELD";
         _found = [_pos, _dir];
     };
 };
@@ -1313,6 +1325,19 @@ if (count _found > 0) then {
 
 // F9 (DIAG-STRIP): log a validator failure so the next over-subscribed test can confirm whether
 // F4a's _ownVeh pass cleared the []. Read-only, fires only on failure. Strip with the ATO air diags.
+// Which tier answered, and what it anchored on. A placement that looks wrong from
+// outside is nearly always the wrong TIER winning rather than a bad position within
+// the right one, and until now nothing said which. T4FIELD for a helicopter means no
+// pad was found at all, which points at the pad class list rather than at any
+// rejection; T1PAD means a pad was taken. Behind the existing debug switch, so a
+// reporter can turn it on without a build.
+if (count _found > 0 && {!isNil "ALiVE_airSpawn_debug"} && {ALiVE_airSpawn_debug}) then {
+    ["ALIVE FASP chose tier=%1 for %2 at %3 (pref=%4 maxDist=%5 anchoredOn=%6 offset=%7m)",
+        _tier, _vehicleClass, _found select 0, _preference, _maxDistance,
+        if (_padRef isEqualTo "") then { "-" } else { _padRef },
+        round ((_found select 0) distance2D _centerPos)] call ALiVE_fnc_dump;
+};
+
 if (count _found == 0 && {_preference != "helipad"}) then {
     // NOTE: the "helipad"-pref probe (Phase 2c pad search) returns [] whenever no empty pad is nearby -
     // the common case - so it is excluded here to avoid spamming; only the auto/apron/field misses log.
