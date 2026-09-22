@@ -112,7 +112,7 @@ class CfgVehicles {
                             {
                                 class Insane { name = "Fastest (2.00)"; value = "2.00"; };
                                 class Crazy { name = "Faster (1.75)"; value = "1.75"; };
-                                class Extremer { name = "Fast (1.50)"; value = "1.75"; };
+                                class Extremer { name = "Fast (1.50)"; value = "1.50"; };
                                 class Extreme { name = "Quick (1.25)"; value = "1.25"; };
                                 class None { name = "Regular (1.00)"; value = "1.00"; default = 1; };
                                 class High { name = "Slow (0.75)"; value = "0.75"; };
