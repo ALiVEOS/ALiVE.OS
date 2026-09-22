@@ -85,9 +85,9 @@
     <Spanish>Activar el marcado de unidades</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_MARK_UNITS_COMMENT">
-    <English>Allow server admins to mark units positions for 15 seconds</English>
-	<Chinesesimp>允许服务器管理员标记单位位置15秒</Chinesesimp>
-    <Spanish>Permite a los administradores del servidor marcar las posiciones de las unidades durante 15 segundos</Spanish>
+    <English>Allow server admins to mark units positions for 30 seconds</English>
+	<Chinesesimp>允许服务器管理员标记单位位置30秒</Chinesesimp>
+    <Spanish>Permite a los administradores del servidor marcar las posiciones de las unidades durante 30 segundos</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_PROFILES_DEBUG">
     <English>Debug Profile System:</English>

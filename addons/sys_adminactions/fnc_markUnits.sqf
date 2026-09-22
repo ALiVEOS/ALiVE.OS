@@ -99,10 +99,14 @@ private ["_m","_markers","_delay"];
     } forEach _inactiveEntities;
 
 
+    // Fade over _delay seconds. The step used to be written out as .025, which
+    // is 30 seconds at this sleep, while _delay sat unused right above and the
+    // tooltip claimed 15. One number now decides it. (#1044)
+    private _step = 0.75 / _delay;
     _i = 1;
     waitUntil {
         sleep .75;
-        _i = _i - .025;
+        _i = _i - _step;
         
         if (_i <= 0) exitWith { 
             {
