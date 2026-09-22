@@ -613,7 +613,11 @@ switch (_operation) do {
                     };
                 };
                 case (((["ALiVE", "mapCycleDraw"] call cba_fnc_getKeybind) select 5) select 0):{             // Press [ to cycle drawing mode
-                    if (_toggle == ELLIPSE_DRAW) then {
+                    // Wraps at the LAST mode, which is Free Draw (5), not Ellipse (4).
+                    // Wrapping at Ellipse meant the toggle never reached 5, so Free Draw
+                    // was defined, described in this file header and handled in four
+                    // places while being impossible to select. (#1047)
+                    if (_toggle == FREE_DRAW) then {
                         private ["_title","_control"];
                         [_logic, "drawToggle", NO_DRAW] call ALIVE_fnc_marker;
                         _title =  "DRAW MODE OFF";
