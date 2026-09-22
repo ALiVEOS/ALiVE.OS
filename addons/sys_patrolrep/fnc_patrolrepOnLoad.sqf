@@ -122,10 +122,9 @@ _eyes = [
 
 ///--- Initial icon set (after delay to distinguish icon/brush)
 [] spawn {
-        private ["_markere","_markers","_eyesControl","_markerName"];
+        private ["_markere","_markers","_markerName"];
 
         disableSerialization;
-        _eyesControl = (findDisplay 90001) displayCtrl EYES_LIST;
 
         // Set UI controls to defaults
         ctrlSetText [NAME_VALUE, str(player)];

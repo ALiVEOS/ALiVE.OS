@@ -2,9 +2,8 @@
 
 SCRIPT(patrolrepOnMapEvent);
 
-private ["_display", "_markerName", "_map", "_button", "_pos", "_marker","_text"];
+private ["_markerName", "_map", "_button", "_pos", "_marker","_text"];
 
-_display = findDisplay 90001;
 _map = _this select 0;
 _button = _this select 1; if (_button == 1) exitWith {};
 _pos = _map ctrlMapScreenToWorld [_this select 2, _this select 3];
