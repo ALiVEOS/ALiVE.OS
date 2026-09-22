@@ -14,8 +14,7 @@ Should support:
 
 Parameters:
 STRING - Effect Type
-BOOL - On or off
-ARRAY - Effect Parameters
+ARRAY - Effect Parameters. For "Snow": [intensity, on or off]
 
 Returns:
 SCALAR - Effect handle
@@ -30,7 +29,7 @@ none
 
 Examples:
 (begin example)
-["Snow",true,[_intensity]] call ALiVE_fnc_weatherEffects;
+["Snow",[_intensity,true]] call ALiVE_fnc_weatherEffects;
 (end)
 
 See Also:
