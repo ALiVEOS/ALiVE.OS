@@ -41,9 +41,9 @@ _missionName = format["%1_%2", ALIVE_sys_data_GROUP_ID, _missionName];
 
 _data = [MOD(SYS_sitrep),"state"] call ALiVE_fnc_sitrep;
 
-if (count (_data select 1) == 0) exitwith {
-    //[["ALiVE_LOADINGSCREEN"],"BIS_fnc_endLoadingScreen",true,false] call BIS_fnc_MP;
-};
+// An empty store is a result worth saving, not a reason to skip saving. This
+// used to bail out, so deleting your last report wrote nothing and the report
+// came back on the next load. (#1045)
 
 _result = [false,[]];
 

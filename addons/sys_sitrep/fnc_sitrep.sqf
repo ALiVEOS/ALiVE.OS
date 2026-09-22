@@ -579,9 +579,13 @@ switch (_operation) do {
             _sitrepName = _args select 0;
             _sitrepHash = _args select 1;
 
+            // Restored. With this commented out the report vanished from the
+            // running store but its document was left behind in the database,
+            // so rows piled up that nothing referenced. The function guards
+            // itself on a dedicated server with data enabled and bails when the
+            // document has no revision, which is why the call is safe. (#1045)
             If (isDedicated) then {
-                private "_response";
-                // _response = [_sitrepName, _sitrepHash] call ALIVE_fnc_sitrepDeleteData;
+                private _response = [_sitrepName, _sitrepHash] call ALIVE_fnc_sitrepDeleteData;
                 TRACE_1("Delete sitrep", _response);
             };
 
