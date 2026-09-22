@@ -96,6 +96,11 @@ _result = true;
 // search outward. Used so air-crew spawns and the heli LZ fallback don't strand over the
 // sea when a coastal objective's insertion point + random offset land offshore. Returns
 // _pos unchanged if it is already on land, or if no land is found within _max metres.
+//
+// #1055/#1057: also used on every player-resupply spawn draw and on the chosen supply
+// network node. Groups and vehicles were dropped whole when their one draw came up wet,
+// taking the success count with them so the request was refused; individuals were never
+// tested and went into the sea.
 private _fnc_snapToLand = {
     params ["_pos", ["_max", 800]];
     if (!surfaceIsWater _pos) exitWith { _pos };
@@ -1320,6 +1325,7 @@ switch(_operation) do {
             private _nodes = [ALIVE_ML_supplyNetwork, _faction, []] call ALIVE_fnc_hashGet;
             private _bestNodePos  = [];
             private _bestNodeDist = 1e10;
+            private _bestNodeIsHQ = false;
 
             {
                 private _node     = _x;
@@ -1341,18 +1347,37 @@ switch(_operation) do {
                     if (_d < _bestNodeDist) then {
                         _bestNodeDist = _d;
                         _bestNodePos  = _nodePos;
+                        _bestNodeIsHQ = _nodeIsHQ;
                     };
                 };
             } forEach _nodes;
 
             if (count _bestNodePos > 0) then {
-                _nodeResult = _bestNodePos;
+                // #1057: a node is registered wherever a delivery finished, so a resupply flown to a
+                // ship leaves a departure point at sea for the rest of the mission, and nothing here
+                // ever questioned the position. A reported case sat 52 m under water with no land
+                // inside 200 m, which refused every ground unit drawn around it. Bring it ashore, and
+                // where there is no shore in reach the caller's own fallback beats the sea.
+                private _usedFallback = false;
+                _nodeResult = [_bestNodePos, 1200] call _fnc_snapToLand;
+                if (surfaceIsWater _nodeResult) then {
+                    ["ML - getSupplyNetworkDeparturePos: nearest node %1 for faction %2 is at sea and no land lies within 1200 m, departing from fallback %3 instead",
+                        _bestNodePos, _faction, _fallbackPos] call ALiVE_fnc_dump;
+                    _nodeResult = _fallbackPos;
+                    _usedFallback = true;
+                };
                 if (_dbg) then {
                     private _nodePos3 = _nodeResult;
                     if (count _nodePos3 < 3) then { _nodePos3 = _nodePos3 + [0]; };
                     private _nodeName = [_nodePos3] call ALIVE_fnc_taskGetNearestLocationName;
-                    ["ML - Departure anchored to supply network node near %1 at %2 for event %3",
-                        _nodeName, _nodeResult, _eventID] call ALiVE_fnc_dump;
+                    private _nodeKind = if (_bestNodeIsHQ) then {"the commander's own position"} else {"an earlier delivery"};
+                    private _moved = if (_usedFallback) then {
+                        format [", a fallback because the node at %1 is at sea with no shore in reach", _bestNodePos]
+                    } else {
+                        if !(_nodeResult isEqualTo _bestNodePos) then {format [", brought ashore from %1", _bestNodePos]} else {""}
+                    };
+                    ["ML - Departure anchored to supply network node near %1 at %2%3, from %4, for event %5 (world %6)",
+                        _nodeName, _nodeResult, _moved, _nodeKind, _eventID, worldName] call ALiVE_fnc_dump;
                 };
             } else {
                 if (_dbg) then {
@@ -3217,6 +3242,14 @@ switch(_operation) do {
                         if (count _nodes == 0) then {
                             _nodes pushBack [_opcomHQPos, [], true];
                             [ALIVE_ML_supplyNetwork, _fac, _nodes] call ALIVE_fnc_hashSet;
+                            // #1057: this position becomes the side's supply origin, so a module
+                            // dropped over water leaves logistics with nowhere on land to send
+                            // anything from. Unlike a node left behind by a delivery, this one is
+                            // the mission maker's to move, so it is worth saying out loud.
+                            if (surfaceIsWater _opcomHQPos) then {
+                                ["ML - The AI Commander module for %1 is over water at %2, and that is where logistics departs from. Move it onto ground the side holds.",
+                                    _fac, _opcomHQPos] call ALiVE_fnc_dumpR;
+                            };
                             if (_debug) then {
                                 ["ML - Supply network init: OPCOM HQ node registered for faction %1 at %2",
                                     _fac, _opcomHQPos] call ALiVE_fnc_dump;
@@ -10988,6 +11021,7 @@ switch(_operation) do {
                             _itemClass = _x select 0;
 
                             _position = _reinforcementPosition getPos [random(200), random(360)];
+                            _position = [_position] call _fnc_snapToLand;   // #1055: keep the vehicle off the sea
 
                             if!(surfaceIsWater _position) then {
 
@@ -11043,6 +11077,7 @@ switch(_operation) do {
                                         _position set [2,0]; // position might be in water :(
                                     } else {
                                         _position = _reinforcementPosition getPos [random(200), random(360)];
+                                        _position = [_position] call _fnc_snapToLand;   // #1055: the redraw skips the guard above
                                     };
 
                                     TRACE_2(">>>>>>>>>>>>>>>>>>>>>>>>",_itemClass, _position);
@@ -11278,6 +11313,7 @@ switch(_operation) do {
                             _staticIndividualProfiles = [];
 
                             _position = _reinforcementPosition getPos [random(200), random(360)];
+                            _position = [_position] call _fnc_snapToLand;   // #1055: individuals were never tested at all
 
                             if(_paraDrop) then {
                                 if(_eventType == "PR_HELI_INSERT") then {
@@ -11323,6 +11359,7 @@ switch(_operation) do {
                             _joinIndividualProfiles = [];
 
                             _position = _reinforcementPosition getPos [random(200), random(360)];
+                            _position = [_position] call _fnc_snapToLand;   // #1055: individuals were never tested at all
 
                             if(_paraDrop) then {
                                 if(_eventType == "PR_HELI_INSERT") then {
@@ -11367,6 +11404,7 @@ switch(_operation) do {
                             _reinforceIndividualProfiles = [];
 
                             _position = _reinforcementPosition getPos [random(200), random(360)];
+                            _position = [_position] call _fnc_snapToLand;   // #1055: individuals were never tested at all
 
                             if(_paraDrop) then {
                                 if(_eventType == "PR_HELI_INSERT") then {
@@ -11414,6 +11452,7 @@ switch(_operation) do {
                             {
                                 private _group = _x select 0;
                                 private _position = _reinforcementPosition getPos [random(200), random(360)];
+                                _position = [_position] call _fnc_snapToLand;   // #1055: one wet draw used to bin the whole group
 
                                 if !(surfaceIsWater _position) then {
                                     private _groupFaction = (_x select 1) select 1;
