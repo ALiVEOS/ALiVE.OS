@@ -91,12 +91,25 @@ if ([QMOD(SUP_PLAYER_RESUPPLY)] call ALiVE_fnc_isModuleAvailable) then {
     ] call ALIVE_fnc_playerHasAccessItems;
 };
 
-// Combat Support is isGlobal = 2, so its module logic is not in a dedicated
-// client's entities "Module_F" and isModuleAvailable(SUP_COMBATSUPPORT) reads
-// false there. That hid this entry on a dedicated server while it showed on a
-// listen host, where server and client are the same machine. NEO_radioLogic is
-// the Combat Support client logic and IS present on the client, so test that
-// instead of the module scan. (#958)
+// Tests NEO_radioLogic rather than scanning for the Combat Support module. That
+// scan is what failed in #958, which hid this entry on a dedicated server while
+// it worked on a listen host, and 157c46bc swapped it for this test.
+//
+// This comment used to explain the failure by saying Combat Support is
+// isGlobal = 2, so its logic never reaches a dedicated client. That is wrong, and
+// backwards. isGlobal controls where a module FUNCTION executes, not whether its
+// logic exists on a machine: 0 server only, 1 global, 2 persistent global (Biki,
+// "Modules", Creating the Module Config). 2 is MORE global than 1.
+//
+// Measured on 2026-09-22 on a dedicated server with a client joined over the
+// network: 40 module logics were present on that client, the isGlobal = 2 ones
+// among them, and isModuleAvailable(SUP_COMBATSUPPORT) returned true both at the
+// instant a menu is built and later. An issue was raised against the ACE menu on
+// the strength of the old sentence and withdrawn once it was tested.
+//
+// So why the scan failed in #958 is still not established. It was not this.
+// Testing NEO_radioLogic is sound either way: it is the Combat Support client
+// logic and this branch reads its settings, so it checks the thing it needs.
 if (!isNil "NEO_radioLogic") then {
     _csResult = [
         NEO_radioLogic getVariable ["combatsupport_item","LaserDesignators"],
