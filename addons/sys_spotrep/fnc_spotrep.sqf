@@ -299,7 +299,9 @@ switch (_operation) do {
             _spotrepHash = _args select 1;
             _check = false;
             _result = false;
- 						_logic = ALIVE_MIL_C2ISTAR;
+            // Guarded: a mission can run Advanced Markers with no C2ISTAR module,
+            // and a bare read of the global threw on every receiving client. (#1046)
+            _logic = missionNamespace getVariable ["ALIVE_MIL_C2ISTAR", objNull];
  						
             LOG(str QGVAR(callsign));
 
@@ -311,7 +313,13 @@ switch (_operation) do {
                     _check = true;
                 };
 
-                if (_check && (_logic getvariable ["displayDiarySpotrep",false] == "true")) then {
+                // C2ISTAR normalises this attribute to a Boolean once its own
+                // accessor has run, but it is still the raw "true"/"false" string
+                // before that, so accept either rather than comparing to one.
+                private _diary = _logic getVariable ["displayDiarySpotrep", false];
+                if (_diary isEqualType "") then {_diary = _diary == "true"};
+
+                if (_check && {_diary isEqualTo true}) then {
                     [
                         _spotrepName,
                         [_spotrepHash, QGVAR(callsign)] call ALIVE_fnc_hashGet,
