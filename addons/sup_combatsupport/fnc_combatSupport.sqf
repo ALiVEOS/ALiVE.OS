@@ -348,8 +348,18 @@ switch(_operation) do {
                                     _casLogistics = parseNumber (((synchronizedObjects _logic) select _i) getvariable ["cas_logistics","0"]);
                                     _casLogisticsSource = parseNumber (((synchronizedObjects _logic) select _i) getvariable ["cas_logisticssource","0"]);
 
-                                    _casArray = [_position,_direction, _type, _callsign, _id,_code,_height,_casLogistics,_casLogisticsSource];
-                                    _casArrays pushback _casArray;
+                                    // Same check the transport branch below already does. Without it a
+                                    // mistyped or mod-dependent classname gave a callsign in the support
+                                    // menu that never produced an aircraft, and said nothing. (#1035)
+                                    if (isClass (configFile >> "CfgVehicles" >> _type)) then {
+                                        _casArray = [_position,_direction, _type, _callsign, _id,_code,_height,_casLogistics,_casLogisticsSource];
+                                        _casArrays pushback _casArray;
+                                    } else {
+                                        [
+                                            "COMBAT SUPPORT - CAS %1 ignored: vehicle class '%2' is unavailable. Load its required mod or select an available vehicle.",
+                                            _callsign, _type
+                                        ] call ALiVE_fnc_dump;
+                                    };
                                 };
                                 case ("ALiVE_SUP_TRANSPORT") : {
                                     private ["_position","_callsign","_type","_slingloading","_containers","_tasks"];
@@ -470,8 +480,17 @@ switch(_operation) do {
                                     // saved before this setting existed keeps its old behaviour.
                                     _artyRelocate = parseNumber (((synchronizedObjects _logic) select _i) getvariable ["artillery_relocate","0"]);
 
-                                    _artyArray = [_position,_class, _callsign,3,_ordnance,_code,_artyLogistics,_artyLogisticsSource,_artyRelocate];
-                                    _artyArrays pushback _artyArray;
+                                    // As above. An artillery classname that does not resolve produced a
+                                    // callsign with no battery behind it. (#1035)
+                                    if (isClass (configFile >> "CfgVehicles" >> _class)) then {
+                                        _artyArray = [_position,_class, _callsign,3,_ordnance,_code,_artyLogistics,_artyLogisticsSource,_artyRelocate];
+                                        _artyArrays pushback _artyArray;
+                                    } else {
+                                        [
+                                            "COMBAT SUPPORT - Artillery %1 ignored: vehicle class '%2' is unavailable. Load its required mod or select an available vehicle.",
+                                            _callsign, _class
+                                        ] call ALiVE_fnc_dump;
+                                    };
                                 };
                             };
                         };
