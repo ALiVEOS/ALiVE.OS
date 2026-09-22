@@ -931,6 +931,13 @@ private _minSeparation = (_vehLen max _vehWid) + 6;
 if (count _found == 0 && {_preference in ["auto", "helipad"]} && {_isHeli || _isVTOL} && !_isUAV) then {
     private _heliClasses = ["HeliH", "HelipadCircle_F", "HelipadSquare_F", "Land_HelipadEmpty_F", "Land_HelipadSquare_F", "Land_HelipadCircle_F"];
     private _candidates = nearestObjects [_centerPos, _heliClasses, _maxDistance];
+    // Why each pad was turned down, so a base whose pads are all unusable can say
+    // which kind of unusable. A helicopter on the grass beside perfectly good
+    // looking pads took two people three days to explain, and the answer was
+    // burned-out wrecks parked on them, which the log could have said at once.
+    private _noSlot = 0;   // another aircraft reserved it
+    private _blocked = 0;  // something is standing on it
+    private _other = 0;    // somebody else's pad, or an ATO slot too far away
     {
         if (count _found > 0) exitWith {};
         private _padPos = position _x;
@@ -974,7 +981,7 @@ if (count _found == 0 && {_preference in ["auto", "helipad"]} && {_isHeli || _is
         // live hull is _fnc_safeReposition, and its callers pass the stored slot while the hull is
         // elsewhere, so it is never within 5m of the pad under test. This distance rule is what keeps
         // an aircraft its own pad, not that exemption. A terrain-authored pad carries no mark.
-        if ((_x getVariable ["ALiVE_atoStamped", false]) && {_padPos distance2D _centerPos > 60}) then { continue };
+        if ((_x getVariable ["ALiVE_atoStamped", false]) && {_padPos distance2D _centerPos > 60}) then { _other = _other + 1; continue };
         // A pad another module made for one landing or one job is not parking.
         // Logistics, tasking and the command tablet put invisible pads down for
         // their own helicopters to land on, and they are pads to this search
@@ -988,8 +995,8 @@ if (count _found == 0 && {_preference in ["auto", "helipad"]} && {_isHeli || _is
         // released when the aircraft was lost or replaced. This mark says the pad
         // is nobody's parking at all: it is set once, when the pad is made, never
         // changes, and goes when the pad goes.
-        if !((_x getVariable ["ALiVE_padOwner", ""]) isEqualTo "") then { continue };
-        if !([_padPos, _minSeparation] call _fnc_registryClear) then { continue };
+        if !((_x getVariable ["ALiVE_padOwner", ""]) isEqualTo "") then { _other = _other + 1; continue };
+        if !([_padPos, _minSeparation] call _fnc_registryClear) then { _noSlot = _noSlot + 1; continue };
         // Filter the helipad object itself (and any host building it
         // sits on, picked up via 2 m proximity) out of the obstacle
         // returns, so the helipad doesn't count as the obstacle that
@@ -1040,10 +1047,21 @@ if (count _found == 0 && {_preference in ["auto", "helipad"]} && {_isHeli || _is
             // by barrier segments would be refused on its own set-dressing, which is exactly
             // what cb3776ae was written to stop.
             + ((nearestObjects [_padPos, (_classObstacles - ["AllVehicles"]), _padIgnoreRadius]) select { !([_x, _padPos, _hazardRadius] call _fnc_bodyReaches) });
-        if !([_padPos, _padDir, _ignore] call _fnc_footprintClear) then { continue };
+        if !([_padPos, _padDir, _ignore] call _fnc_footprintClear) then { _blocked = _blocked + 1; continue };
         _tier = "T1PAD"; _padRef = typeOf _x;
         _found = [_padPos, _padDir];
     } forEach _candidates;
+
+    // Said plainly and NOT behind the debug switch, because this is the explanation
+    // for something a mission maker can see with their own eyes: aircraft parked on
+    // open ground next to a row of helipads. It only fires when pads were actually
+    // found and every one was refused, so it cannot chatter on a base that simply
+    // has no pads.
+    if (count _found == 0 && {count _candidates > 0}) then {
+        ["ALIVE FASP - %1 helipad(s) within %2 m of %3 and none usable for %4 (%5 occupied, %6 already taken by another aircraft, %7 reserved to a module or too far from an ATO slot). Parking falls back to a hangar, apron or open ground.",
+            count _candidates, round _maxDistance, _centerPos, _vehicleClass,
+            _blocked, _noSlot, _other] call ALiVE_fnc_dump;
+    };
 };
 
 // Tier 2: hangar (manned planes only - helis and UAVs of any class
