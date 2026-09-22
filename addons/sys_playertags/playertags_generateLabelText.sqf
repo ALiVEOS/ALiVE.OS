@@ -37,7 +37,6 @@ func_getRank = {
                 _type isKindOf "Helicopter" ||
                 _type isKindOf "Tank") then {
                     if (_tagsInVehicle) then {
-                                ["Player Tags - _tagsInVehicle: %1", _tagsInVehicle] call ALiVE_fnc_dump;
                             _vehicle = _obj;
                             _objTypeStr = format["%1", (typeOf _vehicle)];
                             _name = getText(configFile >> "cfgVehicles" >> _objTypeStr >> "displayName");
@@ -71,7 +70,16 @@ func_getRank = {
                                     if (playertags_group) then {
                                         _thisgroup = group _x;
                                     };
-                                    _tmpText = _tmpText + format["<t color='%1'>%5 %2</t><br/>", _nameColor, name _x, _groupColor, _thisgroup, _rank];
+                                    // The group sits on the SAME line as the name here,
+                                    // unlike the dismounted branch below. A crew list is one
+                                    // line per man and _lineCount below assumes it, so a
+                                    // second line each would double a full vehicle's label
+                                    // and throw the label's placement out.
+                                    _tmpText = _tmpText + format["<t color='%1'>%5 %2</t>", _nameColor, name _x, _groupColor, _thisgroup, _rank];
+                                    if (playertags_group) then {
+                                        _tmpText = _tmpText + format[" <t color='%1'>%2</t>", _groupColor, _thisgroup];
+                                    };
+                                    _tmpText = _tmpText + "<br/>";
                                     _lineCount = _lineCount + 1;
                                 }
                             } foreach (crew _vehicle);
