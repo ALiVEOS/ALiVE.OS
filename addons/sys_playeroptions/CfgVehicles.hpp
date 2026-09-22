@@ -65,14 +65,7 @@ class CfgVehicles
             class VIEW_DISTANCE: ALiVE_ModuleSubTitle
             {
                 property = MVAR(VIEW_DISTANCE);
-                displayName = "ViEW DISTANCE PARAMETERS";
-            };
-            class maxVD: Edit
-            {
-                property = MVAR(maxVD);
-                displayName = "$STR_ALIVE_VDIST_MAX";
-                tooltip = "$STR_ALIVE_VDIST_MAX_COMMENT";
-                defaultvalue = """20000""";
+                displayName = "VIEW DISTANCE PARAMETERS";
             };
             class minVD: Edit
             {
@@ -81,12 +74,12 @@ class CfgVehicles
                 tooltip = "$STR_ALIVE_VDIST_MIN_COMMENT";
                 defaultvalue = """500""";
             };
-            class maxTG: Edit
+            class maxVD: Edit
             {
-                property = MVAR(maxTG);
-                displayName = "$STR_ALIVE_TGRID_MAX";
-                tooltip = "$STR_ALIVE_TGRID_MAX_COMMENT";
-                defaultvalue = """5""";
+                property = MVAR(maxVD);
+                displayName = "$STR_ALIVE_VDIST_MAX";
+                tooltip = "$STR_ALIVE_VDIST_MAX_COMMENT";
+                defaultvalue = """20000""";
             };
             class minTG: Edit
             {
@@ -94,6 +87,13 @@ class CfgVehicles
                 displayName = "$STR_ALIVE_TGRID_MIN";
                 tooltip = "$STR_ALIVE_TGRID_MIN_COMMENT";
                 defaultvalue = """1""";
+            };
+            class maxTG: Edit
+            {
+                property = MVAR(maxTG);
+                displayName = "$STR_ALIVE_TGRID_MAX";
+                tooltip = "$STR_ALIVE_TGRID_MAX_COMMENT";
+                defaultvalue = """5""";
             };
 
             // PERSISTENCE
