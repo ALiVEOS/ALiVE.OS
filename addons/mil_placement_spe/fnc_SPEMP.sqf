@@ -328,8 +328,8 @@ switch(_operation) do {
 
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
-                ["SPEMP [%1] - Size: %1 Priority: %2",_size,_priority] call ALiVE_fnc_dump;
-                ["SPEMP [%1] - SideNum: %1 Side: %2 Faction: %3",_factionSideNumber,_side,_faction] call ALiVE_fnc_dump;
+                ["SPEMP - Size: %1 Priority: %2",_size,_priority] call ALiVE_fnc_dump;
+                ["SPEMP - SideNum: %1 Side: %2 Faction: %3",_factionSideNumber,_side,_faction] call ALiVE_fnc_dump;
                 ["SPEMP Allow player tasking: %1", _allowPlayerTasking] call ALiVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------
@@ -383,6 +383,15 @@ switch(_operation) do {
  								private _countCrewed = 0;
  								// _position set [2, _direction];
 	     					_profiledCrewed = [_vehicleClass, _side, _faction, "CAPTAIN", _position, _direction, true, _faction, false, false, [], [], true] call ALIVE_fnc_createProfilesCrewedVehicle;
+
+	     					// The On unit spawn scripts are read for this module but were only ever
+	     					// passed on the infantry path, so setting a Vehicle Classname threw them
+	     					// away without a word. Both creators answer [entity, vehicle] and only an
+	     					// entity profile carries them, so they go on the crew. (#1040)
+	     					if (!isNil "_profiledCrewed" && {_profiledCrewed isEqualType []} && {count _profiledCrewed > 0}) then {
+	     					    [_profiledCrewed select 0, "onEachSpawn", _onEachSpawn] call ALIVE_fnc_profileEntity;
+	     					    [_profiledCrewed select 0, "onEachSpawnOnce", _onEachSpawnOnce] call ALIVE_fnc_profileEntity;
+	     					};
 	              _countCrewed = _countCrewed +1; 
                 _countProfiles = _countCrewed;
                        
@@ -396,6 +405,15 @@ switch(_operation) do {
  								private _countUnCrewed = 0;
  								// _position set [2, _direction];
 	     					_profiledUnCrewed = [_vehicleClass, _side, _faction, _position, _direction, true, _faction, false, false, [], [], true] call ALIVE_fnc_createProfilesUnCrewedVehicle;
+
+	     					// The On unit spawn scripts are read for this module but were only ever
+	     					// passed on the infantry path, so setting a Vehicle Classname threw them
+	     					// away without a word. Both creators answer [entity, vehicle] and only an
+	     					// entity profile carries them, so they go on the crew. (#1040)
+	     					if (!isNil "_profiledUnCrewed" && {_profiledUnCrewed isEqualType []} && {count _profiledUnCrewed > 0}) then {
+	     					    [_profiledUnCrewed select 0, "onEachSpawn", _onEachSpawn] call ALIVE_fnc_profileEntity;
+	     					    [_profiledUnCrewed select 0, "onEachSpawnOnce", _onEachSpawnOnce] call ALIVE_fnc_profileEntity;
+	     					};
 	              _countUnCrewed = _countUnCrewed +1; 
                 _countProfiles = _countUnCrewed;
                        
