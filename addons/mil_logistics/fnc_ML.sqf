@@ -11561,70 +11561,80 @@ switch(_operation) do {
                                         _profileIDs pushback _profileID;
                                     } forEach _profiles;
 
-                                    _profileList pushBack _profileIDs;
+                                    // #1056: a group whose faction has no template for it comes back with nobody in it.
+                                    // The count below decides whether the whole request succeeded, so counting an empty
+                                    // group told the player a delivery was on its way and then landed nothing. Worse, the
+                                    // empty list was pushed into the cargo lists, and :4673 reads `_x select 0` off those
+                                    // without checking, so it was a script error waiting for the right faction.
+                                    if (_profileIDs isEqualTo []) then {
+                                        ["ML - Resupply for %1: group %2 produced nobody and has been left out of this request. The faction is probably missing a group by that name.",
+                                            _groupFaction, _group] call ALiVE_fnc_dumpR;
+                                    } else {
+                                        _profileList pushBack _profileIDs;
 
-                                    switch(_itemCategory) do {
-                                        case "Infantry":{
-                                            // A group tagged Infantry but carrying organic vehicles (e.g. a
-                                            // Spearhead CDLC armour platoon whose category class name did not
-                                            // resolve to "Armored" and fell through to the Infantry default)
-                                            // must self-transport as armour on a GROUND (PR_STANDARD) convoy,
-                                            // not be dismounted onto foot. On air paths (heli insert / airdrop)
-                                            // it stays infantry so insertion + the #947 carrierless fallback
-                                            // are untouched.
-                                            if (_containsVehicles == 0 || {_eventType != "PR_STANDARD"}) then {
-                                                _infantryProfiles pushback _profileIDs;
-                                            } else {
+                                        switch(_itemCategory) do {
+                                            case "Infantry":{
+                                                // A group tagged Infantry but carrying organic vehicles (e.g. a
+                                                // Spearhead CDLC armour platoon whose category class name did not
+                                                // resolve to "Armored" and fell through to the Infantry default)
+                                                // must self-transport as armour on a GROUND (PR_STANDARD) convoy,
+                                                // not be dismounted onto foot. On air paths (heli insert / airdrop)
+                                                // it stays infantry so insertion + the #947 carrierless fallback
+                                                // are untouched.
+                                                if (_containsVehicles == 0 || {_eventType != "PR_STANDARD"}) then {
+                                                    _infantryProfiles pushback _profileIDs;
+                                                } else {
+                                                    _armourProfiles pushback _profileIDs;
+                                                };
+                                            };
+                                            case "Support":{
+                                                if (_containsVehicles == 0 || {_eventType != "PR_STANDARD"}) then {
+                                                    _infantryProfiles pushback _profileIDs;
+                                                } else {
+                                                    _armourProfiles pushback _profileIDs;
+                                                };
+                                            };
+                                            case "SpecOps":{
+                                                //If the spec op team, does not have a vehicle (like submarines in A3 vanilla)
+                                                //treat them as infantry to allow heli insertion and paradrop
+                                                if (_containsVehicles == 0) then {
+                                                    _infantryProfiles pushback _profileIDs;
+                                                } else {
+                                                    _specOpsProfiles pushback _profileIDs;
+                                                };
+                                            };
+                                            case "Naval":{
+                                                _marineProfiles pushback _profileIDs;
+                                            };
+                                            case "Armored":{
                                                 _armourProfiles pushback _profileIDs;
                                             };
-                                        };
-                                        case "Support":{
-                                            if (_containsVehicles == 0 || {_eventType != "PR_STANDARD"}) then {
-                                                _infantryProfiles pushback _profileIDs;
-                                            } else {
-                                                _armourProfiles pushback _profileIDs;
+                                            case "Mechanized":{
+                                                 _mechanisedProfiles pushback _profileIDs;
                                             };
-                                        };
-                                        case "SpecOps":{
-                                            //If the spec op team, does not have a vehicle (like submarines in A3 vanilla)
-                                            //treat them as infantry to allow heli insertion and paradrop
-                                            if (_containsVehicles == 0) then {
-                                                _infantryProfiles pushback _profileIDs;
-                                            } else {
-                                                _specOpsProfiles pushback _profileIDs;
+                                            case "Motorized":{
+                                                 _motorisedProfiles pushback _profileIDs;
                                             };
-                                        };
-                                        case "Naval":{
-                                            _marineProfiles pushback _profileIDs;
-                                        };
-                                        case "Armored":{
-                                            _armourProfiles pushback _profileIDs;
-                                        };
-                                        case "Mechanized":{
-                                             _mechanisedProfiles pushback _profileIDs;
-                                        };
-                                        case "Motorized":{
-                                             _motorisedProfiles pushback _profileIDs;
-                                        };
-                                        case "Air":{
-                                            _heliProfiles pushback _profileIDs;
+                                            case "Air":{
+                                                _heliProfiles pushback _profileIDs;
 
-                                            _profileWaypoint = [_reinforcementPosition, 100, "MOVE", "LIMITED", 300, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
-                                            _profile = _profiles select 0;
-                                            [_profile, "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
-                                        };
-                                        default {
-                                            if (_containsVehicles == 0 || {_eventType != "PR_STANDARD"}) then {
-                                                ["ML - WARNING: No item category defined for group %1, using infantry.",_group] call ALIVE_fnc_dump;
-                                                _infantryProfiles pushback _profileIDs;
-                                            } else {
-                                                ["ML - WARNING: No item category defined for group %1 but it carries vehicles, self-transporting as armour.",_group] call ALIVE_fnc_dump;
-                                                _armourProfiles pushback _profileIDs;
+                                                _profileWaypoint = [_reinforcementPosition, 100, "MOVE", "LIMITED", 300, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
+                                                _profile = _profiles select 0;
+                                                [_profile, "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
+                                            };
+                                            default {
+                                                if (_containsVehicles == 0 || {_eventType != "PR_STANDARD"}) then {
+                                                    ["ML - WARNING: No item category defined for group %1, using infantry.",_group] call ALIVE_fnc_dump;
+                                                    _infantryProfiles pushback _profileIDs;
+                                                } else {
+                                                    ["ML - WARNING: No item category defined for group %1 but it carries vehicles, self-transporting as armour.",_group] call ALIVE_fnc_dump;
+                                                    _armourProfiles pushback _profileIDs;
+                                                };
                                             };
                                         };
+
+                                        _totalCount = _totalCount + 1;
                                     };
-
-                                    _totalCount = _totalCount + 1;
                                 };
                             } forEach _groupList;
                         } forEach [
