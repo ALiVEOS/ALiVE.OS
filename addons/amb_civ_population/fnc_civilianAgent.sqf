@@ -444,14 +444,23 @@ switch(_operation) do {
             //  ADVANCED CIVILIANS (AdvCiv) INTEGRATION HOOK
             // ==============================================
 						if (!isNull _unit && {side _unit == civilian} && {alive _unit}) then {
-                private _role = _unit getVariable ["ALiVE_civ_role", ""];
+                // A role is recorded as five separate flags on the unit, set a few dozen
+                // lines above. There is no ALiVE_civ_role variable and never was: nothing
+                // in the mod writes one, so this read always came back empty, the test
+                // below was always true, and town elders, majors, muezzins, priests and
+                // politicians all got the Advanced Civilians treatment anyway. (#1038)
+                private _isRoleCivilian = (_unit getVariable ["townElder", false])
+                    || {_unit getVariable ["major", false]}
+                    || {_unit getVariable ["muezzin", false]}
+                    || {_unit getVariable ["priest", false]}
+                    || {_unit getVariable ["politician", false]};
 
-                if !(_role in ["priest","politician","townelder","major","muezzin"]) then {
+                if (!_isRoleCivilian) then {
                     if (!isNil "ALiVE_fnc_advciv_initUnit") then {
                         [_unit] call ALiVE_fnc_advciv_initUnit;
 
                         if (_debug) then {
-                            ["ALiVE Advanced Civilians - Initialized enhanced civilian: %1 (AgentID: %2 | Role: %3)", _unit, _agentID, _role] call ALIVE_fnc_dump;
+                            ["ALiVE Advanced Civilians - Initialized enhanced civilian: %1 (AgentID: %2)", _unit, _agentID] call ALIVE_fnc_dump;
                         };
                     } else {
                         ["ALiVE Advanced Civilians - WARNING: ALiVE_fnc_advciv_initUnit not found!"] call ALIVE_fnc_dump;
