@@ -96,8 +96,7 @@ if (_menuName == "dataConfirmClear") then {
             [
                 [localize "STR_ALIVE_DATA_CLEAR_CONFIRM_YES",
                     {
-                        ["[ALiVE Data] Admin %1 (UID %2) clearing current mission's profileNamespace data via admin menu.", name player, getPlayerUID player] call ALiVE_fnc_dump;
-                        [] remoteExec ["ALiVE_fnc_ProfileNameSpaceClear", 2];
+                        [name player, getPlayerUID player] remoteExec ["ALiVE_fnc_ProfileNameSpaceClear", 2];
                         [localize "STR_ALIVE_DATA_CLEAR_DONE"] call CBA_fnc_notify;
                     },
                     "",
@@ -128,8 +127,7 @@ if (_menuName == "dataConfirmWipe") then {
             [
                 [localize "STR_ALIVE_DATA_WIPE_CONFIRM_YES",
                     {
-                        ["[ALiVE Data] Admin %1 (UID %2) wiping ALL ALiVE profileNamespace data via admin menu.", name player, getPlayerUID player] call ALiVE_fnc_dump;
-                        [] remoteExec ["ALiVE_fnc_ProfileNameSpaceWipe", 2];
+                        [name player, getPlayerUID player] remoteExec ["ALiVE_fnc_ProfileNameSpaceWipe", 2];
                         [localize "STR_ALIVE_DATA_WIPE_DONE"] call CBA_fnc_notify;
                     },
                     "",

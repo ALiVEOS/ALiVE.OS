@@ -148,7 +148,7 @@ if (isDedicated || (isServer && _pns)) then {
 
         [
             format["Welcome %1!", name player],
-            "ALiVE mission data found. Persistent save data will be loaded! To delete the current mission data execute 'call ALiVE_fnc_ProfileNameSpaceClear' in ALiVE Admin Actions > Debug Console when running this mission!"
+            "ALiVE mission data found. Persistent save data will be loaded! To delete it, use ALiVE Admin Actions > Persistent Data > Clear current mission's data."
         ] call ALIVE_fnc_sendHint;
     };
 

@@ -27,6 +27,17 @@ Highhead
 
 if !(isServer) exitwith {};
 
+// Who asked for it. The admin menu logs on the machine the admin is sitting
+// at, which on a dedicated server is a client, so the server kept no record
+// of a destructive wipe at all and whoever runs it had nothing to go on.
+// Optional, so an existing caller passing nothing still works. (#1041)
+params [["_requestedBy", ""], ["_requestedByUID", ""]];
+if (_requestedBy isNotEqualTo "") then {
+    ["[ALiVE Data] Clearing ALL ALiVE saved data, requested by %1 (UID %2)", _requestedBy, _requestedByUID] call ALiVE_fnc_dump;
+} else {
+    ["[ALiVE Data] Clearing ALL ALiVE saved data"] call ALiVE_fnc_dump;
+};
+
 private _allVariables = +(allvariables profileNamespace);
 
 {
