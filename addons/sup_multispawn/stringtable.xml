@@ -83,9 +83,9 @@ ALiVE_SUP_MULTISPAWN_DESTINATION_%FACTION%&lt;br /&gt;
     <Spanish>Espera de reaparición:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_MULTISPAWN_TIMEOUT_COMMENT">
-    <English>Add a wait time to respawn</English>
-    <Chinesesimp>增加重生的等待时间</Chinesesimp>
-    <Spanish>Añade un tiempo de espera antes de reaparecer</Spanish>
+    <English>How long the Insertion transport waits before lifting off. No effect on the other spawn types.</English>
+    <Chinesesimp>插入运输机起飞前的等待时间。对其他生成方式无效。</Chinesesimp>
+    <Spanish>Cuánto espera el transporte de Inserción antes de despegar. No afecta a los otros tipos de reaparición.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_MULTISPAWN_VEHICLETYPES">
     <English>Vehicletypes:</English>
