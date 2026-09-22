@@ -36,10 +36,18 @@ nil
 
 params ["_mkrname","_start","_end","_width","_color","_alpha"];
 
+// Tolerate a 2D position. ctrlMapScreenToWorld answers [x,y], so a caller
+// working from map clicks has no third element: "select 2" came back nil, the
+// midpoint became Not a Number and createMarkerLocal threw on every segment.
+// mil_ato passes runway positions, which are 3D, which is why it never showed
+// up there.
+private _sz = if (count _start > 2) then {_start select 2} else {0};
+private _ez = if (count _end > 2) then {_end select 2} else {0};
+
 private _pos = [
     ((_start select 0) + (_end select 0)) / 2,
     ((_start select 1) + (_end select 1)) / 2,
-    ((_start select 2) + (_end select 2)) / 2
+    (_sz + _ez) / 2
 ];
 
 
