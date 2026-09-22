@@ -26,7 +26,7 @@ class RscDisplayServerGetReady : RscDisplayGetReady
                     font = "PuristaLight";
                     text = "";
                     x = "5 *                     (            ((safezoneW / safezoneH) min 1.2) / 40)";
-                    y = "0 *                     (            (            ((safezoneW / safezoneH) min 1.2) / 1.2) / 25)";
+                    y = "2 *                     (            (            ((safezoneW / safezoneH) min 1.2) / 1.2) / 25)";
                     w = "7 *                     (            ((safezoneW / safezoneH) min 1.2) / 40)";
                     h = "1.5 *                     (            (            ((safezoneW / safezoneH) min 1.2) / 1.2) / 25)";
                     sizeEx = "0.8 *                     (            (            ((safezoneW / safezoneH) min 1.2) / 1.2) / 25)";
@@ -52,7 +52,7 @@ class RscDisplayClientGetReady : RscDisplayGetReady
                     font = "PuristaLight";
                     text = "";
                     x = "4 *                     (            ((safezoneW / safezoneH) min 1.2) / 40)";
-                    y = "0 *                     (            (            ((safezoneW / safezoneH) min 1.2) / 1.2) / 25)";
+                    y = "2 *                     (            (            ((safezoneW / safezoneH) min 1.2) / 1.2) / 25)";
                     w = "7 *                     (            ((safezoneW / safezoneH) min 1.2) / 40)";
                     h = "1.5 *                     (            (            ((safezoneW / safezoneH) min 1.2) / 1.2) / 25)";
                     sizeEx = "0.8 *                     (            (            ((safezoneW / safezoneH) min 1.2) / 1.2) / 25)";
@@ -77,7 +77,7 @@ class RscDisplayMainMap
                     font = "PuristaLight";
                     text = "";
                     x = "4 *                     (            ((safezoneW / safezoneH) min 1.2) / 40)";
-                    y = "0 *                     (            (            ((safezoneW / safezoneH) min 1.2) / 1.2) / 25)";
+                    y = "2 *                     (            (            ((safezoneW / safezoneH) min 1.2) / 1.2) / 25)";
                     w = "7 *                     (            ((safezoneW / safezoneH) min 1.2) / 40)";
                     h = "1.5 *                     (            (            ((safezoneW / safezoneH) min 1.2) / 1.2) / 25)";
                     sizeEx = "0.8 *                     (            (            ((safezoneW / safezoneH) min 1.2) / 1.2) / 25)";
