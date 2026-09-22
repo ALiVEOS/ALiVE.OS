@@ -145,9 +145,9 @@
     <Spanish>Solo se puede usar un módulo de acciones de administrador</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_USAGE">
-    <English>Place an admin actions module to give the server admin or single player admin functions like teleport, ghost and run scripts.</English>
-	<Chinesesimp>放置一个管理动作模块,以提供服务器管理或单人玩家管理功能,如传送,备份还原(GHOST)和运行脚本。</Chinesesimp>
-    <Spanish>Coloca un módulo de acciones de administrador para dar al administrador del servidor, o al jugador en un jugador, funciones como teletransporte, modo fantasma y ejecución de scripts.</Spanish>
+    <English>Admin Actions starts automatically whenever ALiVE runs; there is no module to place. It gives the server admin, or the host in singleplayer, functions like teleport, ghost and running scripts.</English>
+	<Chinesesimp>管理动作随 ALiVE 自动启动，无需放置模块。它为服务器管理员或单人游戏主机提供传送、备份还原(GHOST)和运行脚本等功能。</Chinesesimp>
+    <Spanish>Acciones de administrador se inicia automáticamente con ALiVE; no hay módulo que colocar. Da al administrador del servidor, o al jugador en un jugador, funciones como teletransporte, modo fantasma y ejecución de scripts.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_OPCOM_TOGGLEINSTALLATIONS">
     <English>Toggle OPCOM Installations</English>
