@@ -52,6 +52,11 @@ switch (_operation) do {
             ["activatorReady", createHashMap],
             ["spawnQueue", []],
             ["spawnQueueMembership", createHashMap],
+            ["pendingSpawns", createHashMap],
+            ["nearestSources", []],
+            ["nearestSourcesAt", 0],
+            ["spawnQueueSweepCursor", 0],
+            ["limiterFullSince", 0],
             ["despawnQueue", []],
             ["lastSpawnTime", 0],
             ["paused", false]
@@ -261,6 +266,15 @@ switch (_operation) do {
         (_logic get "despawnQueue") resize 0;
         _logic set ["spawnQueueMembership", createHashMap];
         _logic set ["lastSpawnTime", 0];
+        // pendingSpawns is deliberately NOT cleared. Reset runs when the
+        // modules pause, which does not stop a spawn already running, so
+        // emptying it here would leave those groups uncounted and let the
+        // first frames after an unpause dispatch into slots they are about
+        // to take. The spawner prunes it every frame anyway.
+        _logic set ["spawnQueueSweepCursor", 0];
+        _logic set ["limiterFullSince", 0];
+        _logic set ["nearestSources", []];
+        _logic set ["nearestSourcesAt", 0];
 
         (_logic get "claimState") params [
             "_activators",
