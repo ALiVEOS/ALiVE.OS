@@ -805,5 +805,11 @@ if (hasInterface) then {
         };
     };
 
-    systemChat "[AdvCiv] Debug helper loaded. Use: call ALiVE_fnc_advciv_debugInfo";
+    // Gated. This announced itself in every player's chat on every mission,
+    // debug off or on. The helper it names is a debug console tool, so the
+    // reminder belongs with the rest of the debug output. The lines inside the
+    // helper itself stay on systemChat: that only runs when somebody calls it.
+    if (!isNil "ALiVE_advciv_debug" && {ALiVE_advciv_debug}) then {
+        systemChat "[AdvCiv] Debug helper loaded. Use: call ALiVE_fnc_advciv_debugInfo";
+    };
 };
