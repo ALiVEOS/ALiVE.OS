@@ -222,7 +222,30 @@ if(isServer) then {
         case "false":  { "never" };
         default        { "auto" };
     };
-    private _smoothSpawn = parseNumber (_logic getVariable ["smoothSpawn", "0.3"]);
+    // #1027: Smooth Spawn is free text and parseNumber answers 0 for anything that is not
+    // a number, so "0,3" with a comma, or "0.3s", silently became 0 and switched spawn
+    // pacing off. A deliberate 0 is a fair thing to ask for and still works; a typo is not,
+    // and used to read as one. Look at the text, since parseNumber cannot tell them apart.
+    //
+    // Every other free-text number on this module is read the same unvalidated way. Left
+    // alone here because 0 is harmless for the rest, and because changing what 16 settings
+    // do with a typo is a bigger decision than this issue.
+    private _smoothSpawnRaw = _logic getVariable ["smoothSpawn", "0.3"];
+    // Eden hands this over as text, but a mission that set the variable itself may have
+    // left a number there, which the old parseNumber took without complaint.
+    if (_smoothSpawnRaw isEqualType 0) then { _smoothSpawnRaw = str _smoothSpawnRaw };
+    private _smoothSpawnText = (_smoothSpawnRaw splitString " ") joinString "";
+    private _smoothSpawn = parseNumber _smoothSpawnText;
+    if (_smoothSpawnText isEqualTo "" ||
+        {((_smoothSpawnText splitString "") - ["0","1","2","3","4","5","6","7","8","9",".","-","+"]) isNotEqualTo []}
+    ) then {
+        ["ALiVE Profile System - Smooth Spawn reads %1, which is not a number, so spawn pacing stays at the default 0.3. Correct it on the Virtual AI module.",
+            _smoothSpawnRaw] call ALiVE_fnc_dumpR;
+        _smoothSpawn = 0.3;
+    };
+    // A negative parses fine but means nothing as a sleep. The selection gate carries its
+    // own floor, so this only guards the per-man sleep.
+    _smoothSpawn = _smoothSpawn max 0;
     private _vehicleSpawnSettleSeconds = parseNumber (_logic getVariable ["vehicleSpawnSettleSeconds", "15"]);
 
     // Despawn Linger. These four were defined on the module and read by the despawn paths,

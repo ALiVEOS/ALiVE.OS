@@ -204,9 +204,16 @@ if (
 
 private _lastProfileSpawnedTime = _coordinator get "lastSpawnTime";
 
+// #1027: Smooth Spawn does two jobs and 0 suits one of them and never this one. At 0 the
+// per-man sleep gives an instant spawn, which somebody may well want, but the test below
+// is then true on every frame and the whole selection runs on all of them. That scan was
+// measured at 1.52 ms: half a percent of CPU once per 0.3 s, nearer 8 percent of a 20 ms
+// frame every frame. The floor is on the SELECTION only, so a deliberate 0 keeps its
+// instant per-man spawn and just stops rebuilding the queue dozens of times a second.
+// At 0.05 s that is one frame at 20 fps, so nobody watching can tell.
 if (
     _spawnQueue isNotEqualTo [] &&
-    {time - _lastProfileSpawnedTime > ALiVE_smoothSpawn}
+    {time - _lastProfileSpawnedTime > (ALiVE_smoothSpawn max 0.05)}
 ) then {
     // The limit counts active groups only. Vehicle profiles never enter
     // entitiesActive, so they neither count toward it nor free a slot.
