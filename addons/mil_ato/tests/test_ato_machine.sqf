@@ -54,7 +54,7 @@ observation sequences, because those are what the table exists to prevent.
         private _o = [[
             ["objectLost", false], ["playerControl", false], ["anyPlayerAboard", false],
             ["playerPassenger", false], ["remote", false], ["airborne", false],
-            ["atHome", true], ["crewLoss", false], ["crewSeated", false],
+            ["atHome", true], ["crewLoss", false], ["crewSeated", false], ["deadAboard", false], ["pilotDead", false],
             ["lockHeld", false], ["onStation", false], ["landed", false],
             ["targetsGone", false], ["nearHome", false],
             // What kind of aircraft and what kind of home. All false is a
@@ -112,7 +112,16 @@ observation sequences, because those are what the table exists to prevent.
         ["a plane rolling for take-off", [["needsRunway",true],["fixedWing",true],["crewSeated",true],["taxiOutAt",1e6],["onRunway",true],["speed",60]]],
         ["a plane on land, player riding", [["needsRunway",true],["fixedWing",true],["crewSeated",true],["lockHeld",true],["playerPassenger",true],["anyPlayerAboard",true]]],
         ["targets gone",               [["targetsGone",true],["crewSeated",true]]],
-        ["targets gone, up",           [["targetsGone",true],["airborne",true],["atHome",false]]]
+        ["targets gone, up",           [["targetsGone",true],["airborne",true],["atHome",false]]],
+        // Shot down four ways. And two aircraft that only look like it, which
+        // keep their state's own rules: one whose engines are gone with its
+        // pilot alive, and one whose tank ran dry in the air.
+        ["shot down, pilot killed",    [["airborne",true],["atHome",false],["crewLoss",true],["deadAboard",true],["pilotDead",true]]],
+        ["shot down, gunner alive",    [["airborne",true],["atHome",false],["deadAboard",true],["pilotDead",true]]],
+        ["shot down, crew bailed out", [["airborne",true],["atHome",false],["crewLoss",true],["damage",0.6]]],
+        ["shot down, low",             [["altAGL",30],["atHome",false],["crewLoss",true],["deadAboard",true],["pilotDead",true]]],
+        ["crippled in the air",        [["airborne",true],["atHome",false],["canMove",false],["crewSeated",true]]],
+        ["dry in the air",             [["airborne",true],["atHome",false],["canMove",false],["fuel",0]]]
     ];
 
     private _badState = 0;
@@ -127,6 +136,8 @@ observation sequences, because those are what the table exists to prevent.
     private _whyAir = [];
     private _badHold = 0;
     private _whyHold = [];
+    private _badDown = 0;
+    private _whyDown = [];
     private _mutated = 0;
     private _combos = 0;
 
@@ -150,6 +161,39 @@ observation sequences, because those are what the table exists to prevent.
 
                     _out params ["_row2", "_orders", "_effects"];
                     private _next = [_row2,"state",""] call ALIVE_fnc_hashGet;
+
+                    // Coming down: clear of the ground with its pilot killed at
+                    // the controls, or with nobody alive aboard after a hit.
+                    private _downP = (([_obs,"airborne",false] call ALIVE_fnc_hashGet)
+                            || {!([_obs,"touchingGround",false] call ALIVE_fnc_hashGet) && {([_obs,"altAGL",0] call ALIVE_fnc_hashGet) > 5}})
+                        && {!([_obs,"objectLost",false] call ALIVE_fnc_hashGet)}
+                        && {!([_obs,"playerControl",false] call ALIVE_fnc_hashGet)}
+                        && {
+                            ([_obs,"pilotDead",false] call ALIVE_fnc_hashGet)
+                            || {([_obs,"crewLoss",false] call ALIVE_fnc_hashGet)
+                                && {([_obs,"deadAboard",false] call ALIVE_fnc_hashGet) || {([_obs,"damage",0] call ALIVE_fnc_hashGet) > 0}}}
+                        };
+                    // Promise: an aircraft coming down is left alone, whatever
+                    // state it was in and whatever it was told. It says so and
+                    // gives the runway back, and nothing else: no new state, no
+                    // crew, no trip home and nothing put on a stand. A cancel is
+                    // the one thing taken, as a move to RTB and nothing more.
+                    private _cancelTaken = (_cmd isEqualTo "CANCEL") && {!(_state in ["PARKED","LOST"])};
+                    private _moved = ["airborneStart","forceLaunch","virtualLaunch","taxiOut","placeOnSlot","forceLanded","quickPark","catapult",
+                        "recrewInPlace","mintCrew","standDownCrew"];
+                    private _downBad = if (_cancelTaken) then {
+                        !(_next isEqualTo "RTB") || {({_x in _moved} count _effects) > 0}
+                    } else {
+                        !(_next isEqualTo _state) || {!(_effects isEqualTo ["goingDown","unlock"])}
+                    };
+                    if (_downP && {_downBad}) then {
+                        _badDown = _badDown + 1;
+                        if (count _whyDown < 6) then {
+                            _whyDown pushBack format ["%1 +%2 (%3%4) -> %5, effects %6",
+                                _state, _cmd, _profileName,
+                                if (_expired) then {", expired"} else {""}, _next, _effects];
+                        };
+                    };
 
                     // Promise: whatever went in, what comes out is a real state.
                     if !(_next in _states) then { _badState = _badState + 1 };
@@ -203,6 +247,7 @@ observation sequences, because those are what the table exists to prevent.
                         if (!([_obs,"landed",false] call ALIVE_fnc_hashGet)
                             && {!([_obs,"remote",false] call ALIVE_fnc_hashGet)}
                             && {!([_obs,"touchingGround",false] call ALIVE_fnc_hashGet)}
+                            && {!_downP}
                             && {!("landAtPad" in _effects)}
                             && {!("landOnRunway" in _effects)}
                             && {!("deckRecover" in _effects)}) then {
@@ -300,6 +345,8 @@ observation sequences, because those are what the table exists to prevent.
     { diag_log format ["  info  fuel-back promise broken by: %1", _x] } forEach _whyHold;
     ["every way out of the wait for the runway, or of a launch held for its taxi route, gives the fuel back", _badHold == 0] call _fnc_check;
     ["step never edits the row it was given", _mutated == 0] call _fnc_check;
+    { diag_log format ["  info  shot-down promise broken by: %1", _x] } forEach _whyDown;
+    ["an aircraft coming down is left to come down", _badDown == 0] call _fnc_check;
 
     // ---- the measured incidents, replayed ------------------------------------
 
@@ -319,6 +366,130 @@ observation sequences, because those are what the table exists to prevent.
 
     ([_r1, [["airborne",true],["atHome",false],["crewLoss",true]], "", 110] call _fnc_step) params ["_r2","_o2","_e2"];
     ["and it is re-crewed rather than left", "recrewInPlace" in _e2] call _fnc_check;
+
+    // Shot down. A jet whose pilot was killed on station was re-crewed and put
+    // on its stand from 94 m up. An A-10 hit on station was sent home, lost its
+    // crew on the way, and was put on its stand from 47 m up in front of the
+    // player who had watched it hit. Each is left to come down now.
+    private _killed = [["airborne",true],["atHome",false],["crewLoss",true],["deadAboard",true],["pilotDead",true]];
+    private _rd = [_m, "newRow", ["BLU_F_20", [[100,100,0],0,"terrain"]]] call ALIVE_fnc_ATOMachine;
+    [_rd,"state","ON_STATION"] call ALIVE_fnc_hashSet;
+    [_rd,"deadlineAt",9999] call ALIVE_fnc_hashSet;
+    ([_rd, _killed, "", 100] call _fnc_step) params ["_rd1","_od1","_ed1"];
+    ["a pilot killed in the air is left to come down, said once, with the runway given back",
+        (([_rd1,"state",""] call ALIVE_fnc_hashGet) isEqualTo "ON_STATION") && {_ed1 isEqualTo ["goingDown","unlock"]}] call _fnc_check;
+    ([_rd1, _killed, "", 102] call _fnc_step) params ["_rd1b","_od1b","_ed1b"];
+    ["and nothing more is said or done on the next tick",
+        (([_rd1b,"state",""] call ALIVE_fnc_hashGet) isEqualTo "ON_STATION") && {_ed1b isEqualTo []}] call _fnc_check;
+    // Below the 50 m that airborne means, still clear of the ground: both
+    // put-downs in front of a player were down there.
+    ([_rd1b, [["altAGL",30],["atHome",false],["crewLoss",true],["deadAboard",true],["pilotDead",true]], "", 104] call _fnc_step) params ["_rd1c","_od1c","_ed1c"];
+    ["and it is still left alone 30 m up",
+        (([_rd1c,"state",""] call ALIVE_fnc_hashGet) isEqualTo "ON_STATION") && {_ed1c isEqualTo []}] call _fnc_check;
+    // And lower still, until it touches: seen 5 m up on its way in, an A-10 was
+    // handed back there and turned for home a moment before it hit.
+    ([_rd1c, [["altAGL",3],["atHome",false],["crewLoss",true],["deadAboard",true],["damage",0.6]], "", 105] call _fnc_step) params ["_rd1d","_od1d","_ed1d"];
+    ["and it is still left alone 3 m up, until it touches the ground",
+        (([_rd1d,"state",""] call ALIVE_fnc_hashGet) isEqualTo "ON_STATION") && {_ed1d isEqualTo []}] call _fnc_check;
+    // Low without having been judged first is not held: a helicopter coming in
+    // to land 3 m up is not coming down.
+    private _rlow = [_m, "newRow", ["BLU_F_28", [[100,100,0],0,"terrain"]]] call ALIVE_fnc_ATOMachine;
+    [_rlow,"state","ON_STATION"] call ALIVE_fnc_hashSet;
+    [_rlow,"deadlineAt",9999] call ALIVE_fnc_hashSet;
+    ([_rlow, [["altAGL",3],["atHome",false],["crewLoss",true],["deadAboard",true]], "", 100] call _fnc_step) params ["_rlow1","_olow1","_elow1"];
+    ["3 m up and never judged in the air is not held",
+        !("goingDown" in _elow1)] call _fnc_check;
+    ([_rd1d, [["objectLost",true]], "", 106] call _fnc_step) params ["_rd2","_od2","_ed2"];
+    ["and is lost when it hits the ground",
+        (([_rd2,"state",""] call ALIVE_fnc_hashGet) isEqualTo "LOST") && {"onLost" in _ed2}] call _fnc_check;
+
+    // A pilot killed with a gunner still alive: nobody else can take the seat.
+    private _rg0 = [_m, "newRow", ["BLU_F_25", [[100,100,0],0,"terrain"]]] call ALIVE_fnc_ATOMachine;
+    [_rg0,"state","ON_STATION"] call ALIVE_fnc_hashSet;
+    [_rg0,"deadlineAt",9999] call ALIVE_fnc_hashSet;
+    ([_rg0, [["airborne",true],["atHome",false],["deadAboard",true],["pilotDead",true]], "", 100] call _fnc_step) params ["_rg01","_og01","_eg01"];
+    ["a pilot killed with a gunner still alive is left to come down too",
+        (([_rg01,"state",""] call ALIVE_fnc_hashGet) isEqualTo "ON_STATION") && {_eg01 isEqualTo ["goingDown","unlock"]}] call _fnc_check;
+
+    // A cancel while it falls is kept, so the sortie stays closed if it lives.
+    private _rc = [_m, "newRow", ["BLU_F_26", [[100,100,0],0,"terrain"]]] call ALIVE_fnc_ATOMachine;
+    [_rc,"state","ON_STATION"] call ALIVE_fnc_hashSet;
+    [_rc,"deadlineAt",9999] call ALIVE_fnc_hashSet;
+    ([_rc, _killed, "CANCEL", 100] call _fnc_step) params ["_rc1","_oc1","_ec1"];
+    ["a cancel while it falls is recorded, and nothing is done to the aircraft",
+        (([_rc1,"state",""] call ALIVE_fnc_hashGet) isEqualTo "RTB")
+        && {([_rc1,"reason",""] call ALIVE_fnc_hashGet) isEqualTo "CANCELLED"}
+        && {!("placeOnSlot" in _ec1)} && {!("recrewInPlace" in _ec1)}] call _fnc_check;
+
+    // Still in the air when its time to come down runs out: handed back, and
+    // the crew rescue it would have had before applies after all.
+    ([_rd1, _killed, "", 100 + 130] call _fnc_step) params ["_rl1","_ol1","_el1"];
+    ["one still flying after its time to come down is handed back to its rules",
+        (([_rl1,"state",""] call ALIVE_fnc_hashGet) isEqualTo "RECOVERING") && {"goingDownLapsed" in _el1}] call _fnc_check;
+    ([_rl1, _killed, "", 100 + 132] call _fnc_step) params ["_rl2","_ol2","_el2"];
+    ["and is then re-crewed, not judged again",
+        ("recrewInPlace" in _el2) && {!("goingDown" in _el2)}] call _fnc_check;
+
+    // Down in one piece: handed back as soon as it is touching the ground.
+    ([_rd1, [["touchingGround",true],["atHome",false],["crewLoss",true],["deadAboard",true],["pilotDead",true],["damage",0.6]], "", 104] call _fnc_step) params ["_rt1","_ot1","_et1"];
+    ["one that comes down in one piece is handed back to its rules",
+        (([_rt1,"state",""] call ALIVE_fnc_hashGet) isEqualTo "RTB")
+        && {([_rt1,"downSince",0] call ALIVE_fnc_hashGet) isEqualTo -1}] call _fnc_check;
+
+    private _ra = [_m, "newRow", ["BLU_F_21", [[100,100,0],0,"terrain"]]] call ALIVE_fnc_ATOMachine;
+    [_ra,"state","ON_STATION"] call ALIVE_fnc_hashSet;
+    [_ra,"deadlineAt",9999] call ALIVE_fnc_hashSet;
+    private _watched = [["airborne",true],["atHome",false],["damage",0.6],["crewSeated",true],["playersWithin1000Hull",1]];
+    ([_ra, _watched, "", 100] call _fnc_step) params ["_ra1","_oa1","_ea1"];
+    ["a damaged aircraft that can still fly turns for home",
+        ([_ra1,"state",""] call ALIVE_fnc_hashGet) isEqualTo "RTB"] call _fnc_check;
+    ([_ra1, _watched, "", 105] call _fnc_step) params ["_ra2","_oa2","_ea2"];
+    ["and with a player near it is not put away, though nobody is at its field",
+        (([_ra2,"state",""] call ALIVE_fnc_hashGet) isEqualTo "RTB") && {!("placeOnSlot" in _ea2)} && {count _oa2 > 0}] call _fnc_check;
+    ([_ra2, [["airborne",true],["atHome",false],["damage",0.6],["crewLoss",true],["playersWithin1000Hull",1]], "", 110] call _fnc_step) params ["_ra3","_oa3","_ea3"];
+    ["and when its crew is lost it is left to come down, not re-crewed",
+        (([_ra3,"state",""] call ALIVE_fnc_hashGet) isEqualTo "RTB") && {_ea3 isEqualTo ["goingDown","unlock"]}] call _fnc_check;
+    ([_ra2, [["airborne",true],["atHome",false],["damage",0.6],["crewSeated",true]], "", 110] call _fnc_step) params ["_ra4","_oa4","_ea4"];
+    ["with nobody near it or its field, one still flying is put away as before",
+        (([_ra4,"state",""] call ALIVE_fnc_hashGet) isEqualTo "PARKED") && {"placeOnSlot" in _ea4}] call _fnc_check;
+
+    // Its engines destroyed with its pilot alive keeps its own rules: canMove
+    // cannot tell that apart from a hull hit it flies on with. It turns for
+    // home as a damaged aircraft, and with a player near it is not put away.
+    private _re = [_m, "newRow", ["BLU_F_22", [[100,100,0],0,"terrain"]]] call ALIVE_fnc_ATOMachine;
+    [_re,"state","ON_STATION"] call ALIVE_fnc_hashSet;
+    [_re,"deadlineAt",9999] call ALIVE_fnc_hashSet;
+    private _engines = [["airborne",true],["atHome",false],["canMove",false],["fuel",0.99],["damage",0.6],["crewSeated",true],["playersWithin1000Hull",1]];
+    ([_re, _engines, "", 100] call _fnc_step) params ["_re1","_oe1","_ee1"];
+    ([_re1, _engines, "", 105] call _fnc_step) params ["_re2","_oe2","_ee2"];
+    ["an aircraft with its engines gone and its pilot alive keeps its own rules",
+        (([_re1,"state",""] call ALIVE_fnc_hashGet) isEqualTo "RTB") && {!("goingDown" in _ee1)}
+        && {([_re2,"state",""] call ALIVE_fnc_hashGet) isEqualTo "RTB"} && {!("placeOnSlot" in _ee2)}] call _fnc_check;
+
+    // A player shot dead at the controls is no different.
+    private _rp = [_m, "newRow", ["BLU_F_23", [[100,100,0],0,"terrain"]]] call ALIVE_fnc_ATOMachine;
+    [_rp,"state","PLAYER_FLOWN"] call ALIVE_fnc_hashSet;
+    ([_rp, _killed, "", 100] call _fnc_step) params ["_rp1","_op1","_ep1"];
+    ["a player killed at the controls is left to come down too",
+        (([_rp1,"state",""] call ALIVE_fnc_hashGet) isEqualTo "PLAYER_FLOWN") && {_ep1 isEqualTo ["goingDown","unlock"]}] call _fnc_check;
+
+    // A virtual home still asks only about the aircraft: nobody near it is
+    // enough, whoever is near the empty point it lives at.
+    private _rv = [_m, "newRow", ["BLU_F_27", [[100,100,0],0,"virtual"]]] call ALIVE_fnc_ATOMachine;
+    [_rv,"state","RTB"] call ALIVE_fnc_hashSet;
+    [_rv,"deadlineAt",9999] call ALIVE_fnc_hashSet;
+    ([_rv, [["airborne",true],["atHome",false],["virtualHome",true],["playersWithin1000Home",3]], "", 100] call _fnc_step) params ["_rv1","_ov1","_ev1"];
+    ["a virtual home with nobody near the aircraft is still put away",
+        (([_rv1,"state",""] call ALIVE_fnc_hashGet) isEqualTo "PARKED") && {"placeOnSlot" in _ev1}] call _fnc_check;
+
+    // And one that only looks like it. A tank run dry in the air reads canMove
+    // false as well, and that aircraft is still recovered as it always was.
+    private _rf = [_m, "newRow", ["BLU_F_24", [[100,100,0],0,"terrain"]]] call ALIVE_fnc_ATOMachine;
+    [_rf,"state","RTB"] call ALIVE_fnc_hashSet;
+    [_rf,"deadlineAt",9999] call ALIVE_fnc_hashSet;
+    ([_rf, [["airborne",true],["atHome",false],["canMove",false],["fuel",0]], "", 100] call _fnc_step) params ["_rf1","_of1","_ef1"];
+    ["an aircraft that ran dry in the air is still recovered",
+        (([_rf1,"state",""] call ALIVE_fnc_hashGet) isEqualTo "PARKED") && {"placeOnSlot" in _ef1}] call _fnc_check;
 
     // The hull is deleted underneath the module mid-sortie.
     private _r3 = [_m, "newRow", ["BLU_F_2", [[100,100,0],0,"terrain"]]] call ALIVE_fnc_ATOMachine;

@@ -1110,6 +1110,12 @@ switch(_operation) do {
         // Rescue where the wreck is, if the wreck is somewhere anybody can
         // reach. A hull that went into the sea leaves its last known position
         // as the only thing worth pointing at.
+        //
+        // The wreck itself is left where it fell, burning, for the garbage
+        // collector to clear later like any other wreck. It used to be deleted
+        // here, in the same second the aircraft was written off, so a player
+        // who watched it come down saw it vanish; and it went even when the
+        // checks below then decided there would be no rescue at all.
         private _destination = +_pos;
         _destination set [2, 0];
         if !(_class isEqualTo "") then {
@@ -1121,7 +1127,6 @@ switch(_operation) do {
                     _destination = position _wreck;
                     _destination set [2, 0];
                 };
-                deleteVehicle _wreck;
             };
         };
 

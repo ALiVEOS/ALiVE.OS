@@ -518,7 +518,9 @@ switch(_operation) do {
                     // creation only fills seats it finds EMPTY, and a body still
                     // occupies one, so an aircraft whose pilot was killed would
                     // be handed no replacement at all and fly on with nobody in
-                    // it. That is the exact failure this effect exists to undo.
+                    // it. The table leaves an aircraft whose crew was killed to
+                    // come down, and asks for this only if it is still in the
+                    // air once its time to come down has run out.
                     { deleteVehicle _x } forEach (crew _obj);
                     [_obj] call _fnc_keepOffAirOps;
                     [_obj, createVehicleCrew _obj] call _fnc_keepOffAirOps;

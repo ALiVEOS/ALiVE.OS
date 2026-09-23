@@ -103,6 +103,11 @@ Jman
 #define ASSIGN_LOCK_WAIT 120
 #define ASSIGN_LOCK_WAITS 6
 
+// How long an aircraft judged shot down is left to come down before it is handed
+// back to its state's own rules. A fall is over well inside this; one still in
+// the air after it is flying, whatever it looked like.
+#define GOING_DOWN_WINDOW 120
+
 #define TELEPORTS ["airborneStart","forceLaunch","virtualLaunch","taxiOut","placeOnSlot","forceLanded","quickPark","catapult"]
 
 private ["_result"];
@@ -239,6 +244,58 @@ switch(_operation) do {
         private _expired = ([_row,"deadlineAt",0] call ALIVE_fnc_hashGet) > 0
                         && {_now >= ([_row,"deadlineAt",0] call ALIVE_fnc_hashGet)};
 
+        // ---- shot down ----------------------------------------------------
+        // In the air with its pilot killed at the controls, or with nobody left
+        // alive aboard after a hit: a crew killed in their seats, or a crew gone
+        // from an aircraft that has been damaged. It is coming down whatever
+        // anybody does, so the ladder below leaves it to fall. A crew gone from
+        // a sound, undamaged aircraft is not this, and is still re-crewed.
+        //
+        // Whether it can move is not asked. Measured on a jet in flight: with
+        // its hull hit point destroyed it read canMove false for 12 s while it
+        // climbed from 340 m to 434 m at 376 km/h, so canMove says nothing
+        // about whether an aircraft is falling. One whose engines are gone and
+        // whose pilot is alive keeps its state's own rules, as it always has,
+        // and comes down by itself.
+        //
+        // "In the air" here is anything clear of the ground, not only above the
+        // 50 m that airborne means. Both put-downs in front of a player were
+        // below it, at 47 m and 30 m. And once an aircraft has been judged to be
+        // coming down, it stays judged until it touches the ground, however low
+        // it is. Seen every 2 s, an A-10 shot down at 159 m was next seen 5 m
+        // up, handed back to its state's rules there, and turned for home with a
+        // radio call to say so a moment before it hit.
+        //
+        // And only for so long. One still in the air when GOING_DOWN_WINDOW
+        // runs out is handed back to its state's rules, and is not judged again
+        // until it has landed or has a live crew again.
+        private _hit = ("pilotDead" call _fnc_o)
+            || {("crewLoss" call _fnc_o) && {("deadAboard" call _fnc_o) || {("damage" call _fnc_n) > 0}}};
+        private _downSince = [_row,"downSince",-1] call ALIVE_fnc_hashGet;
+        private _inAir = _airborne || {!("touchingGround" call _fnc_o)
+            && {(("altAGL" call _fnc_n) > 5) || {_downSince >= 0}}};
+        private _goingDown = false;
+        if (_hit && {_inAir}) then {
+            switch (true) do {
+                // Already handed back.
+                case (_downSince isEqualTo -2): { };
+                case (_downSince < 0): {
+                    [_row,"downSince",_now] call ALIVE_fnc_hashSet;
+                    _goingDown = true;
+                    // Said once, and the runway given back at once rather than
+                    // held by a falling aircraft until its lock runs out.
+                    _effects append ["goingDown","unlock"];
+                };
+                case ((_now - _downSince) < GOING_DOWN_WINDOW): { _goingDown = true; };
+                default {
+                    [_row,"downSince",-2] call ALIVE_fnc_hashSet;
+                    _effects pushBack "goingDownLapsed";
+                };
+            };
+        } else {
+            if !(_downSince isEqualTo -1) then { [_row,"downSince",-1] call ALIVE_fnc_hashSet };
+        };
+
         // ---- the priority ladder ------------------------------------------
         // Order matters and is the same for every state. A lost hull is lost
         // whatever else is true of it; a player in control outranks any command
@@ -251,6 +308,29 @@ switch(_operation) do {
                 _next = "PLAYER_FLOWN";
             } else {
                 switch (true) do {
+
+                    // ---- shot down -----------------------------------------
+                    // Left to come down, and nothing else is done to it. It is
+                    // not re-crewed, not turned for home and not put back on its
+                    // stand from the air. In a test mission an A-10 and an F-22
+                    // were hit and lost their crews, and both were put on their
+                    // stands from 47 m and 30 m up in front of the player who
+                    // had watched them hit: re-crewed in the air, sent home,
+                    // then put away because nobody was near their field. A jet
+                    // whose pilot was killed on station was moved 1303 m in one
+                    // second from 94 m up. It becomes LOST when it hits the
+                    // ground, as any aircraft does.
+                    //
+                    // Ahead of the commands as well. A new job it cannot fly is
+                    // not taken, so the tasker gives it to another aircraft. A
+                    // cancel is taken, and only as a record: the sortie stays
+                    // closed if the aircraft does come back, rather than being
+                    // opened again the first time it turns for home.
+                    case (_goingDown): {
+                        if (_cmd isEqualTo "CANCEL" && {!(_state in ["PARKED","LOST"])}) then {
+                            _next = "RTB"; _reason = "CANCELLED";
+                        };
+                    };
 
                     // ---- commands ------------------------------------------
                     case (_cmd isEqualTo "RETIRE"): { _next = "LOST"; _reason = "retired"; };
@@ -678,23 +758,26 @@ switch(_operation) do {
                             };
 
                             case "RTB": {
-                                // Nobody near home and nobody riding along, so
-                                // there is nothing to see: put it on its slot
-                                // and skip the approach entirely. No lock is
-                                // taken, because no runway is used.
-                                // Nobody to see it go. For a virtual home that
-                                // is asked of the AIRCRAFT rather than of home:
-                                // there is no approach and no landing to watch,
-                                // so the only way back is to be put there, and
-                                // the standing orders have already turned it
-                                // away from the target. Waiting until nobody is
-                                // near an empty point in the sea would be
-                                // waiting on a question nothing ever answers
+                                // Nobody near home, nobody near the aircraft and
+                                // nobody riding along, so there is nothing to
+                                // see: put it on its slot and skip the approach
+                                // entirely. No lock is taken, because no runway
+                                // is used.
+                                //
+                                // The aircraft is asked about as well as home.
+                                // Asking only about home put a returning
+                                // aircraft away in front of the player watching
+                                // it leave the fight, because nobody was at its
+                                // field. For a virtual home only the aircraft is
+                                // asked: there is no approach and no landing to
+                                // watch, so the only way back is to be put
+                                // there, and the standing orders have already
+                                // turned it away from the target. Waiting until
+                                // nobody is near an empty point in the sea would
+                                // be waiting on a question nothing ever answers
                                 // differently.
-                                private _unseen = ("playersWithin1000Home" call _fnc_n) == 0;
-                                if (_virtualHome) then {
-                                    _unseen = ("playersWithin1000Hull" call _fnc_n) == 0;
-                                };
+                                private _unseen = (_virtualHome || {("playersWithin1000Home" call _fnc_n) == 0})
+                                    && {("playersWithin1000Hull" call _fnc_n) == 0};
                                 if (_unseen && {!_playerPassenger}) then {
                                     _effects pushBack "placeOnSlot";
                                     _next = "PARKED";
@@ -1243,8 +1326,9 @@ switch(_operation) do {
         // Nothing local may be done to a hull this machine does not own. Giving a
         // held tank back is the exception: it is set wherever the hull lives, and
         // a player who took an aircraft mid-wait must not be left with it empty.
+        // Saying that it is coming down does nothing to it at all.
         if (_remote) then {
-            _effects = _effects select { _x in ["takeOwnership","unlock","releaseHold"] };
+            _effects = _effects select { _x in ["takeOwnership","unlock","releaseHold","goingDown","goingDownLapsed"] };
         };
 
         // ---- deadline and orders ------------------------------------------

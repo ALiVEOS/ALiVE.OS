@@ -133,7 +133,7 @@ switch(_operation) do {
                        "crewGroupLive","driverPresent","crewSeated","playerControl","playerPassenger",
                        "anyPlayerAboard","uavControlled","onStation","targetsGone","lockHeld","lockBusy",
                        "deckHome","fixedWing","needsRunway","launchInProgress","onRunway","armed","virtualHome",
-                       "atTaxiOffEnd","canMove","onTaxiway","nearStand","heldOnStand"];
+                       "atTaxiOffEnd","canMove","onTaxiway","nearStand","heldOnStand","deadAboard","pilotDead"];
             {
                 [_o, _x, 0] call ALIVE_fnc_hashSet;
             } forEach ["altAGL","altASL","speed","fuel","damage","wpRemaining","aliveCrew",
@@ -434,6 +434,15 @@ switch(_operation) do {
         // standing beside it rather than sitting in it is not ready.
         ["crewSeated", !isNull _driver && {alive _driver}] call _fnc_set;
         ["crewLoss", count _aliveCrew == 0] call _fnc_set;
+        // Somebody dead in a seat. A crew killed aboard stays aboard, and that is
+        // what tells a pilot shot in the air apart from a crew that has merely
+        // gone missing from a sound aircraft: the table leaves the first to come
+        // down and puts a new crew into the second.
+        ["deadAboard", count _aliveCrew < count _crew] call _fnc_set;
+        // A body at the controls. A pilot killed there stays in the seat, and
+        // nobody can be moved into a seat that is taken, so the aircraft is
+        // coming down even with a gunner still alive.
+        ["pilotDead", !isNull _driver && {!alive _driver}] call _fnc_set;
         ["anyPlayerAboard", count _players > 0] call _fnc_set;
 
         // A drone is flown from somewhere else entirely, so being empty is not

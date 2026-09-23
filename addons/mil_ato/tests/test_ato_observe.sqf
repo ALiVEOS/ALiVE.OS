@@ -163,6 +163,33 @@ console `call` would run the whole thing inside one frame.
     ["with nobody flying it", !([_obs,"playerControl"] call _fnc_get)] call _fnc_check;
     ["and nobody riding along", !([_obs,"playerPassenger"] call _fnc_get)] call _fnc_check;
 
+    // --- a pilot killed in the seat --------------------------------------------
+    // Told apart from a crew that has merely gone: the body stays aboard, and
+    // the table leaves an aircraft like that to come down rather than putting a
+    // new crew into it. The pilot is checked into the seat before being killed,
+    // so a pilot who never got in cannot pass for one who died there.
+    ["an empty hull has nobody dead aboard", !([_obs,"deadAboard"] call _fnc_get) && {!([_obs,"pilotDead"] call _fnc_get)}] call _fnc_check;
+    private _kGrp = createGroup west;
+    private _kPilot = _kGrp createUnit ["B_Helipilot_F", _spot, [], 0, "NONE"];
+    _kPilot moveInDriver _veh;
+    sleep 1;
+    _obs = [_veh, _home] call _fnc_obs;
+    diag_log format ["  info  pilot in the seat: %1, crew %2", (driver _veh) isEqualTo _kPilot, count (crew _veh)];
+    ["a live pilot is nobody dead aboard",
+        ((driver _veh) isEqualTo _kPilot) && {!([_obs,"deadAboard"] call _fnc_get)} && {!([_obs,"crewLoss"] call _fnc_get)}
+        && {!([_obs,"pilotDead"] call _fnc_get)}] call _fnc_check;
+    _kPilot setDamage 1;
+    sleep 2;
+    _obs = [_veh, _home] call _fnc_obs;
+    diag_log format ["  info  pilot killed: crew %1, alive %2, still the driver: %3", count (crew _veh), {alive _x} count (crew _veh), (driver _veh) isEqualTo _kPilot];
+    ["a pilot killed in the seat is somebody dead aboard", [_obs,"deadAboard"] call _fnc_get] call _fnc_check;
+    ["and a pilot killed at the controls", [_obs,"pilotDead"] call _fnc_get] call _fnc_check;
+    ["and the crew is reported lost", [_obs,"crewLoss"] call _fnc_get] call _fnc_check;
+    { deleteVehicle _x } forEach (crew _veh);
+    deleteVehicle _kPilot;
+    deleteGroup _kGrp;
+    sleep 1;
+
     // --- condition -----------------------------------------------------------
     _veh setFuel 0;
     sleep 1;

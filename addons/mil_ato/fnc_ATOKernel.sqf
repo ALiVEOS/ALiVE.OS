@@ -1168,6 +1168,23 @@ private _fnc_routeEffects = {
             // A launch given more time for its take-off run, once, and a launch
             // waiting on its stand for its taxi route to clear. Neither is
             // debug-gated: each happens a few times a launch at most.
+            // An aircraft judged shot down and left to come down, and one still
+            // in the air when its time to come down ran out. Neither is
+            // debug-gated: each happens once per aircraft brought down, and they
+            // are the only record that the table left it alone.
+            case (_name isEqualTo "goingDown"): {
+                ["ALIVE_fnc_ATOKernel - %1 shot down, left to come down: %2 m up, damage %3, alive crew %4, pilot killed %5, dead aboard %6",
+                    _tail, round ([_obs, "altAGL", 0] call ALIVE_fnc_hashGet),
+                    ([_obs, "damage", 0] call ALIVE_fnc_hashGet) toFixed 2,
+                    [_obs, "aliveCrew", 0] call ALIVE_fnc_hashGet,
+                    [_obs, "pilotDead", false] call ALIVE_fnc_hashGet,
+                    [_obs, "deadAboard", false] call ALIVE_fnc_hashGet] call ALiVE_fnc_dump;
+            };
+            case (_name isEqualTo "goingDownLapsed"): {
+                ["ALIVE_fnc_ATOKernel - %1 still in the air after its time to come down, handed back to its state's rules: %2 m up, %3 km/h",
+                    _tail, round ([_obs, "altAGL", 0] call ALIVE_fnc_hashGet),
+                    round ([_obs, "speed", 0] call ALIVE_fnc_hashGet)] call ALiVE_fnc_dump;
+            };
             case (_name isEqualTo "launchExtended"): {
                 ["ALIVE_fnc_ATOKernel - %1 given %2 s more for its take-off run, %3 km/h on the runway",
                     _tail, round (([_row2, "deadlineAt", 0] call ALIVE_fnc_hashGet) - _now),
