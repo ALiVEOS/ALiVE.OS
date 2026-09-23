@@ -123,7 +123,14 @@ switch(_operation) do {
                 // Only on player clients
                 if (hasInterface) then {
 
-                    CREWINFO_DEBUG = (_logic getvariable ["crewinfo_debug_setting","false"]) == "true";
+                    // #1030: Player Options does not hand its whole
+                    // attribute set to the systems it creates, it copies a list of indexes
+                    // by name (fnc_playeroptions.sqf:139-143), and Crew Info is given
+                    // [1, 20], which is debug and the UI setting. So "debug" is the only
+                    // debug name that ever arrives here. crewinfo_debug_setting is declared
+                    // on ALiVE_sys_crewinfo, which is scope = 1 and cannot be placed, so
+                    // Eden never writes it and ada774b5 read a name nothing sets.
+                    CREWINFO_DEBUG = (_logic getvariable ["debug","false"]) == "true";
                     CREWINFO_UILOC = parseNumber (_logic getvariable ["crewinfo_ui_setting","1"]);
 
                     Waituntil {!isnil "CREWINFO_DEBUG" && {!isnil "CREWINFO_UILOC"}};

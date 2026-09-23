@@ -123,7 +123,12 @@ switch(_operation) do {
                 waitUntil {!isNil QUOTE(ADDON) && {ADDON getVariable ["init", false]}};
 
                 // Defaults
-                playertags_debug = (_logic getvariable ["playertags_debug_setting","false"]) == "true";
+                // #1030: Player Options copies a list of attribute indexes by name
+                // (fnc_playeroptions.sqf:139-143) and Player Tags is given [1, 22..36].
+                // Index 1 is debug, so that is the only debug name that reaches here.
+                // playertags_debug_setting is declared on ALiVE_sys_playertags, which is
+                // scope = 1 and cannot be placed, so Eden never writes it.
+                playertags_debug = (_logic getvariable ["debug","false"]) == "true";
                 playertags_group = (_logic getvariable ["playertags_displaygroup_setting","true"]) == "true";
                 playertags_rank = (_logic getvariable ["playertags_displayrank_setting","true"]) == "true";
                 playertags_invehicle = (_logic getvariable ["playertags_invehicle_setting","false"]) == "true";
@@ -140,7 +145,7 @@ switch(_operation) do {
 
                 GVAR(RADIUS) = _logic getvariable ["playertags_distance_setting",20];
                 GVAR(STYLE) = _logic getvariable ["playertags_style_setting","default"];
-                GVAR(DEBUG) = (_logic getvariable ["playertags_debug_setting","false"]) == "true";
+                GVAR(DEBUG) = (_logic getvariable ["debug","false"]) == "true";   // #1030, as above
                 GVAR(ONVIEW) = (_logic getvariable ["playertags_onview_setting","false"]) == "true";
 
                 // select method
