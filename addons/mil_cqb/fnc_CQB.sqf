@@ -399,12 +399,24 @@ switch(_operation) do {
                 _collection = [];
                 _objectives = [];
 
+                // #1032: Military Placement (Cust. Obj.) is declared as a sync peer in CfgVehicles
+                // but was missing from this list, so a CQB synced only to it entered this branch,
+                // matched nothing and garrisoned nothing. The map-wide fallback never ran either,
+                // because something was synced. A sync CQB cannot read now falls back to the CQB
+                // locations setting as though nothing were synced, and both empty cases are
+                // reported instead of passing silently.
+                private _placementTypes = ["ALiVE_mil_placement","ALiVE_mil_placement_custom","ALiVE_civ_placement","ALiVE_civ_placement_custom"];
+                private _usableSync = false;
+                private _ignoredSync = [];
+
                 if (count synchronizedObjects _logic > 0) then {
                     for "_i" from 0 to ((count synchronizedObjects _logic) - 1) do {
 
                         _mod = (synchronizedObjects _logic) select _i;
+                        private _used = false;
 
-                        if ((typeof _mod) in ["ALiVE_mil_placement","ALiVE_civ_placement","ALiVE_civ_placement_custom"]) then {
+                        if ((typeof _mod) in _placementTypes) then {
+                            _used = true;
                             waituntil {_mod getVariable ["startupComplete", false]};
                             [format ["waited for %1", typeOf _mod]] call _fnc_cqbDiagMark;
 
@@ -417,6 +429,7 @@ switch(_operation) do {
                         };
 
                         if (typeof _mod == "ALiVE_mil_OPCOM") then {
+                            _used = true;
                             _collection = [[_center, _radius]];
 
                             _faction1 = _mod getvariable ["faction1","OPF_F"];
@@ -432,8 +445,23 @@ switch(_operation) do {
 
                             ["CQB Houses prepared for use with OPCOM Insurgency!"] call ALiVE_fnc_dump;
                         };
+
+                        if (_used) then {_usableSync = true} else {_ignoredSync pushBack (typeof _mod)};
+                    };
+                };
+
+                if (_usableSync) then {
+                    if (count _ignoredSync > 0) then {
+                        ["CQB [%1] - Warning ignoring the sync to %2. CQB only takes its areas from the four Military Placement modules and the Military AI Commander.", _id, _ignoredSync joinString ", "] call ALiVE_fnc_dumpR;
+                    };
+                    if (count _collection == 0) then {
+                        ["CQB [%1] - Warning the placement modules this CQB is synced to have no objectives, so it has no houses to fill and places nothing.", _id] call ALiVE_fnc_dumpR;
                     };
                 } else {
+                    if (count _ignoredSync > 0) then {
+                        ["CQB [%1] - Warning ignoring the sync to %2, so it uses its CQB locations setting as though nothing were synced. CQB only takes its areas from the four Military Placement modules and the Military AI Commander.", _id, _ignoredSync joinString ", "] call ALiVE_fnc_dumpR;
+                    };
+
                     _center = getArray(configFile >> "CfgWorlds" >> worldName >> "centerPosition");
                     _radius = (((_center select 0) max (_center select 1)) * sqrt(2))*2;
 
