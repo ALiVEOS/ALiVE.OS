@@ -273,6 +273,32 @@ if(isServer) then {
     };
     publicVariable "ALiVE_fnc_advciv_isMissionCritical";
 
+    // #1058: a civilian somebody else has taken hold of. Read against ACE 3 source
+    // rather than assumed, because the first version of this comment had it wrong.
+    //
+    // ACE holds a handcuffed unit with a setCaptive status effect, an animation, and an
+    // AnimChanged handler that puts the animation back whenever something changes it
+    // (captives/functions/fnc_setHandcuffed.sqf). It does NOT disable pathing. So the
+    // brain and ACE end up fighting over the same unit: the CALM and ALERT entries clear
+    // the animation and ambientLife gives the civilian somewhere to walk, ACE reapplies,
+    // and the civilian ends up moving around while ACE still has it flagged as cuffed.
+    //
+    // Names are ACE's own spelling. ACE_isUnconscious is a literal legacy name, defined
+    // as VAR_UNCON in medical_engine/script_macros_medical.hpp; the captives pair are
+    // generated from "#define COMPONENT captives" so they are lowercase. Read through
+    // getVariable with a default, so this costs nothing with no ACE loaded. lifeState is
+    // the engine's own view and also covers BIS revive.
+    ALiVE_fnc_advciv_isRestrained = {
+        params [["_unit", objNull]];
+        if (isNull _unit) exitWith { false };
+        if (lifeState _unit isEqualTo "INCAPACITATED") exitWith { true };
+        if (_unit getVariable ["ACE_isUnconscious", false]) exitWith { true };
+        if (_unit getVariable ["ace_captives_isHandcuffed", false]) exitWith { true };
+        if (_unit getVariable ["ace_captives_isSurrendering", false]) exitWith { true };
+        false
+    };
+    publicVariable "ALiVE_fnc_advciv_isRestrained";
+
     ALiVE_fnc_advciv_isValidCiv = {
         params [["_unit", objNull]];
         if (isNull _unit) exitWith { false };

@@ -38,6 +38,35 @@ if (side _unit != civilian) exitWith {
     ALiVE_advciv_activeUnits = ALiVE_advciv_activeUnits - [_unit];
 };
 
+// #1058: while somebody else is holding this civilian, the brain keeps its hands off,
+// rather than fighting ACE for control of the same unit.
+// Transient, unlike the two deregisters above: the unit stays registered and picks up
+// again once it is let go.
+//
+// The flag is what makes release work. A civilian freed in the same state it was taken
+// in passes through no state entry, so nothing would clear the animation or restore the
+// pathing the brain itself had switched off before the cuffs went on. Without it the
+// visible bug would just become a stuck one.
+if ([_unit] call ALiVE_fnc_advciv_isRestrained) exitWith {
+    _unit setVariable ["ALiVE_advciv_heldByOther", true, true];
+};
+
+if (_unit getVariable ["ALiVE_advciv_heldByOther", false]) then {
+    _unit setVariable ["ALiVE_advciv_heldByOther", false, true];
+    _unit enableAI "PATH";
+    // Animation and stance only on foot, the way the rest of this file does it: a
+    // switchMove on a mounted unit fights the vehicle's own animation.
+    if (vehicle _unit == _unit) then {
+        [_unit, ""] remoteExec ["switchMove", 0];
+        _unit setUnitPos "AUTO";
+    };
+    _unit setVariable ["ALiVE_advciv_actionType", "", true];
+    _unit setVariable ["ALiVE_advciv_lastAction", 0];
+    if (ALiVE_advciv_debug) then {
+        ["[ALiVE AdvCiv] civ=%1 released by whatever held it, brain resuming", name _unit] call ALiVE_fnc_dump;
+    };
+};
+
 // Skip the tick while boarding or driving a vehicle escape — those spawned
 // scripts manage their own flow and must not be interrupted
 if (_unit getVariable ["ALiVE_advciv_boarding", false]) exitWith {};
