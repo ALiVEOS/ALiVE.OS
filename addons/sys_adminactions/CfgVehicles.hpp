@@ -21,13 +21,8 @@ class CfgVehicles {
                 picture = "x\alive\addons\sys_adminactions\icon_sys_adminactions.paa";
                 class Attributes : AttributesBase
                 {
-                        class ghost : Combo { property = "ALiVE_sys_adminactions_ghost"; displayName = "$STR_ALIVE_ADMINACTIONS_GHOST"; tooltip = "$STR_ALIVE_ADMINACTIONS_GHOST_COMMENT"; defaultValue = """1"""; class Values { class Yes{name="Yes";value=1;default=1;}; class No{name="No";value=0;}; }; };
-                        class teleport : Combo { property = "ALiVE_sys_adminactions_teleport"; displayName = "$STR_ALIVE_ADMINACTIONS_TELEPORT"; tooltip = "$STR_ALIVE_ADMINACTIONS_TELEPORT_COMMENT"; defaultValue = """1"""; class Values { class Yes{name="Yes";value=1;default=1;}; class No{name="No";value=0;}; }; };
-                        class mark_units : Combo { property = "ALiVE_sys_adminactions_mark_units"; displayName = "$STR_ALIVE_ADMINACTIONS_MARK_UNITS"; tooltip = "$STR_ALIVE_ADMINACTIONS_MARK_UNITS_COMMENT"; defaultValue = """1"""; class Values { class Yes{name="Yes";value=1;default=1;}; class No{name="No";value=0;}; }; };
-                        class profile_debug : Combo { property = "ALiVE_sys_adminactions_profile_debug"; displayName = "$STR_ALIVE_ADMINACTIONS_PROFILES_DEBUG"; tooltip = "$STR_ALIVE_ADMINACTIONS_PROFILES_DEBUG_COMMENT"; defaultValue = """1"""; class Values { class Yes{name="Yes";value=1;default=1;}; class No{name="No";value=0;}; }; };
-                        class profiles_create : Combo { property = "ALiVE_sys_adminactions_profiles_create"; displayName = "$STR_ALIVE_ADMINACTIONS_CREATE_PROFILES"; tooltip = "$STR_ALIVE_ADMINACTIONS_CREATE_PROFILES_COMMENT"; defaultValue = """1"""; class Values { class Yes{name="Yes";value=1;default=1;}; class No{name="No";value=0;}; }; };
-                        class agent_debug : Combo { property = "ALiVE_sys_adminactions_agent_debug"; displayName = "$STR_ALIVE_ADMINACTIONS_AGENT_DEBUG"; tooltip = "$STR_ALIVE_ADMINACTIONS_AGENT_DEBUG_COMMENT"; defaultValue = """1"""; class Values { class Yes{name="Yes";value=1;default=1;}; class No{name="No";value=0;}; }; };
-                        class console : Combo { property = "ALiVE_sys_adminactions_console"; displayName = "$STR_ALIVE_ADMINACTIONS_CONSOLE"; tooltip = "$STR_ALIVE_ADMINACTIONS_CONSOLE_COMMENT"; defaultValue = """1"""; class Values { class Yes{name="Yes";value=1;default=1;}; class No{name="No";value=0;}; }; };
+                        // #1044: the seven Yes/No options that sat here are gone. This module is scope 1 and
+                        // could never be placed, so they were never set, and nothing read them.
                         class ModuleDescription : ModuleDescription {};
                 };
                 class ModuleDescription

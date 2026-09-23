@@ -24,11 +24,6 @@
 	<Chinesesimp>当必要时,调整ALIVE模快设置,即调试排错(debug)</Chinesesimp>
     <Spanish>Ajusta los parámetros de los módulos de ALiVE, como la depuración, según sea necesario</Spanish>
 </Key>
-<Key ID="STR_ALIVE_ADMINACTIONS_GHOST">
-    <English>Allow Ghosting:</English>
-	<Chinesesimp>允许备份还原(GHOST):</Chinesesimp>
-    <Spanish>Permitir modo fantasma:</Spanish>
-</Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_GHOST_ENABLE">
     <English>Enable Ghosting</English>
 	<Chinesesimp>启用备份还原(GHOST)</Chinesesimp>
@@ -43,11 +38,6 @@
     <English>Allow server admins to be ignored by AI</English>
 	<Chinesesimp>允许服务器管理员被AI忽略</Chinesesimp>
     <Spanish>Permite que la IA ignore a los administradores del servidor</Spanish>
-</Key>
-<Key ID="STR_ALIVE_ADMINACTIONS_TELEPORT">
-    <English>Allow Teleport:</English>
-	<Chinesesimp>允许传送：</Chinesesimp>
-    <Spanish>Permitir teletransporte:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_TELEPORT_ENABLE">
     <English>Enable Teleporting</English>
@@ -74,11 +64,6 @@
 	<Chinesesimp>允许服务器管理员传送到地图上任意位置</Chinesesimp>
     <Spanish>Permite a los administradores del servidor teletransportarse a cualquier punto del mapa</Spanish>
 </Key>
-<Key ID="STR_ALIVE_ADMINACTIONS_MARK_UNITS">
-    <English>Mark Units:</English>
-	<Chinesesimp>标记单位</Chinesesimp>
-    <Spanish>Marcar unidades:</Spanish>
-</Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_MARK_UNITS_ENABLE">
     <English>Activate Marking Units</English>
 	<Chinesesimp>激活标记单位</Chinesesimp>
@@ -89,31 +74,6 @@
 	<Chinesesimp>允许服务器管理员标记单位位置30秒</Chinesesimp>
     <Spanish>Permite a los administradores del servidor marcar las posiciones de las unidades durante 30 segundos</Spanish>
 </Key>
-<Key ID="STR_ALIVE_ADMINACTIONS_PROFILES_DEBUG">
-    <English>Debug Profile System:</English>
-	<Chinesesimp>调试(debug)配置系统：</Chinesesimp>
-    <Spanish>Depurar sistema de perfiles:</Spanish>
-</Key>
-<Key ID="STR_ALIVE_ADMINACTIONS_PROFILES_DEBUG_COMMENT">
-    <English>Toggle debug mode on the profile system</English>
-	<Chinesesimp>切换配置系统调试模式</Chinesesimp>
-    <Spanish>Activa o desactiva el modo de depuración del sistema de perfiles</Spanish>
-</Key>
-<Key ID="STR_ALIVE_ADMINACTIONS_AGENT_DEBUG">
-    <English>Debug Agent System:</English>
-	<Chinesesimp>调试代理系统：</Chinesesimp>
-    <Spanish>Depurar sistema de agentes:</Spanish>
-</Key>
-<Key ID="STR_ALIVE_ADMINACTIONS_AGENT_DEBUG_COMMENT">
-    <English>Toggle debug mode on the agent system</English>
-	<Chinesesimp>切换代理系统调试模式</Chinesesimp>
-    <Spanish>Activa o desactiva el modo de depuración del sistema de agentes</Spanish>
-</Key>
-<Key ID="STR_ALIVE_ADMINACTIONS_CREATE_PROFILES">
-    <English>Profile non profiled units:</English>
-	<Chinesesimp>编辑非配置单位：</Chinesesimp>
-    <Spanish>Perfilar unidades sin perfil:</Spanish>
-</Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_CREATE_PROFILES_ENABLE">
     <English>Profile Non-Profiled Units</English>
 	<Chinesesimp>编辑非配置单位</Chinesesimp>
@@ -123,11 +83,6 @@
     <English>Create profiles from non profiles units and vehicles.</English>
 	<Chinesesimp>从非配置单位和载具创建配置文件。</Chinesesimp>
     <Spanish>Crea perfiles a partir de unidades y vehículos sin perfil.</Spanish>
-</Key>
-<Key ID="STR_ALIVE_ADMINACTIONS_CONSOLE">
-    <English>Allow Debug:</English>
-	<Chinesesimp>允许调试排错(debug)</Chinesesimp>
-    <Spanish>Permitir depuración:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_CONSOLE_ENABLE">
     <English>Debug Console</English>
