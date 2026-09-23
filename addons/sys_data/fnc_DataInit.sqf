@@ -222,6 +222,9 @@ if (isDedicated || (isServer && _pns)) then {
                 ["SYS DATA - CONNECTED TO CLOUD SERVICE AND PERFDATA IS ALLOWED"] call ALiVE_fnc_dump;
                 //            MOD(sys_data) setvariable ["disablePerf", "false"];
                 //            ALIVE_sys_perf_ENABLED = true;
+                // #1031: this is the only place that would switch Performance Reporting on,
+                // and it has been commented out since 988cd3c6 in May 2016. Left as it is,
+                // to be picked up when War Room is recoded. See fnc_perfInit.sqf.
             } else {
                 ["SYS DATA - CONNECTED TO CLOUD SERVICE, BUT PERFDATA HAS BEEN TURNED OFF"] call ALiVE_fnc_dump;
                 MOD(sys_data) setvariable ["disablePerf", "true"];

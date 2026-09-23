@@ -34,6 +34,25 @@ LOG(MSG_INIT);
 
 ADDON = false;
 
+// #1031: none of what follows has ever run in ALiVE.OS, and it is kept on purpose for
+// whenever War Room is recoded rather than deleted. Three things are wrong with it, so
+// that revival starts from a list instead of a dig:
+//
+//   1. GVAR(ENABLED) is never set true. fnc_DataInit.sqf sets it false in three places
+//      and the one branch that would enable it, when the cloud reports PerfData allowed,
+//      is commented out at DataInit :223-224. It arrived commented out in 988cd3c6,
+//      10 May 2016, the copy that first opened ALiVE up.
+//   2. The menu block below needs !isDedicated, but the only caller is
+//      fnc_DataInit.sqf:424, which sits inside if (isDedicated). So the monitoring half
+//      can run and the menu half cannot. adminActionsInit is the pattern to copy: it is
+//      spawned for every machine from main/fnc_aliveInit.sqf:642 and splits on
+//      hasInterface internally.
+//   3. GVAR(ENABLED) is both the gate for the menu appearing and the thing the menu
+//      switches off, so one use of Disable Perf removes the only way back. The menu
+//      wants a flag of its own.
+//
+// A second registration in fnc_perf.sqf:113-122 is also dead: nothing calls that
+// function outside its own file.
 TRACE_2("SYS_PERF",isDedicated,GVAR(ENABLED));
 
 if (isDedicated && GVAR(ENABLED)) then {
