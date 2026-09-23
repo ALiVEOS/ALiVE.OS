@@ -129,6 +129,7 @@ class CfgVehicles {
                                     class MECH { name = "$STR_ALIVE_CP_TYPE_MECH"; value = "Mechanized"; };
                                     class MOTOR { name = "$STR_ALIVE_CP_TYPE_MOTOR"; value = "Motorized"; };
                                     class LIGHT { name = "$STR_ALIVE_CP_TYPE_LIGHT"; value = "Infantry"; };
+                                    class AIR { name = "$STR_ALIVE_CP_TYPE_AIR"; value = "Air"; };
                                     class SPECOPS { name = "$STR_ALIVE_CP_TYPE_SPECOPS"; value = "Specops"; };
                                 };
                         };

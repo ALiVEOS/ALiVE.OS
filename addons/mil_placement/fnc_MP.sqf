@@ -134,14 +134,14 @@ switch(_operation) do {
     case "size": {
         _result = [_logic,_operation,_args,DEFAULT_SIZE] call ALIVE_fnc_OOsimpleOperation;
     };
-    // Determine type of enemy force - valid values are: "Random","Armored","Mechanized","Motorized","Infantry","Specops"
+    // Determine type of enemy force - valid values are: "Random","Armored","Mechanized","Motorized","Infantry","Air","Specops"
     case "type": {
         // #1028: "Specops" was offered in the dropdown and has its own case in the force
         // composition switch, but it was missing from this list, so OOsimpleOperation
-        // swapped it for the default and it arrived as Random with nothing said. Only the
-        // explicit choice is added. The Random pool below is left as it was, so picking
-        // Random behaves exactly as before.
-        _result = [_logic,_operation,_args,DEFAULT_TYPE,["Random","Armored","Mechanized","Motorized","Infantry","Specops"]] call ALIVE_fnc_OOsimpleOperation;
+        // swapped it for the default and it arrived as Random with nothing said. "Air" is
+        // offered in the dropdown now as well. Both are explicit choices only: the Random
+        // pool below is left as it was, so picking Random behaves exactly as before.
+        _result = [_logic,_operation,_args,DEFAULT_TYPE,["Random","Armored","Mechanized","Motorized","Infantry","Air","Specops"]] call ALIVE_fnc_OOsimpleOperation;
         if(_result == "Random") then {
             // Randomly pick an type
             _result = (selectRandom ["Armored","Mechanized","Motorized","Infantry"]);
@@ -928,6 +928,16 @@ switch(_operation) do {
             _placeArtillery = [_logic, "placeArtillery"] call MAINCLASS;
             _placeSupplies = [_logic, "placeSupplies"] call MAINCLASS;
             private _garrisonCompositions = ([_logic, "garrisonCompositions"] call MAINCLASS) in [true, "true"];
+
+            // #1028: the air groups further down are only placed when Place helicopters or
+            // Place aircraft is on. With both off, Air weighting loses its main share and
+            // nothing takes its place, so say so rather than let the force come out smaller
+            // with no explanation. civ_placement and civ_placement_custom place their air
+            // share regardless, so they need no such check.
+            if (_type == "Air" && {!(_placeHelis || _placePlanes)}) then {
+                ["MP [%1] - Warning Force Weighting is Air but Place helicopters and Place aircraft are both off, so its air groups will not be placed and nothing takes their place. Switch one of them on to get the air share.",
+                    _faction] call ALiVE_fnc_dumpR;
+            };
 
             _factionConfig = _faction call ALiVE_fnc_configGetFactionClass;
             _factionSideNumber = getNumber(_factionConfig >> "side");

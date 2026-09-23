@@ -58,7 +58,7 @@ class CfgVehicles {
             class type : Combo
             {
                     property = "ALiVE_civ_placement_custom_type"; displayName = "$STR_ALIVE_CP_TYPE"; tooltip = "$STR_ALIVE_CP_TYPE_COMMENT"; defaultValue = """Random""";
-                    class Values { class RANDOM{name="$STR_ALIVE_CP_TYPE_RANDOM";value="Random";default=1;}; class ARMOR{name="$STR_ALIVE_CP_TYPE_ARMOR";value="Armored";}; class MECH{name="$STR_ALIVE_CP_TYPE_MECH";value="Mechanized";}; class MOTOR{name="$STR_ALIVE_CP_TYPE_MOTOR";value="Motorized";}; class LIGHT{name="$STR_ALIVE_CP_TYPE_LIGHT";value="Infantry";}; class SPECOPS{name="$STR_ALIVE_CP_TYPE_SPECOPS";value="Specops";}; };
+                    class Values { class RANDOM{name="$STR_ALIVE_CP_TYPE_RANDOM";value="Random";default=1;}; class ARMOR{name="$STR_ALIVE_CP_TYPE_ARMOR";value="Armored";}; class MECH{name="$STR_ALIVE_CP_TYPE_MECH";value="Mechanized";}; class MOTOR{name="$STR_ALIVE_CP_TYPE_MOTOR";value="Motorized";}; class LIGHT{name="$STR_ALIVE_CP_TYPE_LIGHT";value="Infantry";}; class AIR{name="$STR_ALIVE_CP_TYPE_AIR";value="Air";}; class SPECOPS{name="$STR_ALIVE_CP_TYPE_SPECOPS";value="Specops";}; };
             };
             class readinessLevel : Combo
             {

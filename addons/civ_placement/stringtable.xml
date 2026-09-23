@@ -506,6 +506,15 @@
     <Portuguese>Operações especiais</Portuguese>
     <Russian>Спецназ</Russian>
 </Key>
+<Key ID="STR_ALIVE_CP_TYPE_AIR">
+    <English>Air</English>
+    <Chinese>空軍</Chinese>
+    <Chinesesimp>空军</Chinesesimp>
+    <Spanish>Aéreo</Spanish>
+    <French>Aérien</French>
+    <Portuguese>Aéreo</Portuguese>
+    <Russian>Авиация</Russian>
+</Key>
 <Key ID="STR_ALIVE_CP_CUSTOM_INFANTRY_COUNT">
     <English>Override Infantry:</English>
     <Chinese>覆寫步兵：</Chinese>

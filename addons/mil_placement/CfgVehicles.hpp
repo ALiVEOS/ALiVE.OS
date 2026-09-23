@@ -76,7 +76,7 @@ class CfgVehicles {
                         class type : Combo
                         {
                                 property = "ALiVE_mil_placement_type"; displayName = "$STR_ALIVE_MP_TYPE"; tooltip = "$STR_ALIVE_MP_TYPE_COMMENT"; defaultValue = """Random""";
-                                class Values { class RANDOM{name="$STR_ALIVE_MP_TYPE_RANDOM";value="Random";default=1;}; class ARMOR{name="$STR_ALIVE_MP_TYPE_ARMOR";value="Armored";}; class MECH{name="$STR_ALIVE_MP_TYPE_MECH";value="Mechanized";}; class MOTOR{name="$STR_ALIVE_MP_TYPE_MOTOR";value="Motorized";}; class LIGHT{name="$STR_ALIVE_MP_TYPE_LIGHT";value="Infantry";}; class SPECOPS{name="$STR_ALIVE_MP_TYPE_SPECOPS";value="Specops";}; };
+                                class Values { class RANDOM{name="$STR_ALIVE_MP_TYPE_RANDOM";value="Random";default=1;}; class ARMOR{name="$STR_ALIVE_MP_TYPE_ARMOR";value="Armored";}; class MECH{name="$STR_ALIVE_MP_TYPE_MECH";value="Mechanized";}; class MOTOR{name="$STR_ALIVE_MP_TYPE_MOTOR";value="Motorized";}; class LIGHT{name="$STR_ALIVE_MP_TYPE_LIGHT";value="Infantry";}; class AIR{name="$STR_ALIVE_MP_TYPE_AIR";value="Air";}; class SPECOPS{name="$STR_ALIVE_MP_TYPE_SPECOPS";value="Specops";}; };
                         };
                         class customInfantryCount : Edit { property = "ALiVE_mil_placement_customInfantryCount"; displayName = "$STR_ALIVE_MP_CUSTOM_INFANTRY_COUNT"; tooltip = "$STR_ALIVE_MP_CUSTOM_INFANTRY_COUNT_COMMENT"; defaultValue = """"""; };
                         class customMotorisedCount : Edit { property = "ALiVE_mil_placement_customMotorisedCount"; displayName = "$STR_ALIVE_MP_CUSTOM_MOTORISED_COUNT"; tooltip = "$STR_ALIVE_MP_CUSTOM_MOTORISED_COUNT_COMMENT"; defaultValue = """"""; };
