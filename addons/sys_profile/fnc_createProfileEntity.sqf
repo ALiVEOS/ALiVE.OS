@@ -53,7 +53,7 @@ params [
     ["_aiBehaviour", "SAFE"]
 ];
 
-ASSERT_DEBUG(_positions isnotequalto [] || {count _positions == count _entityClasses}, "fnc_createProfileEntity | count _positions must equal count _unitClasses")
+ASSERT_DEBUG(_positions isEqualTo [] || {count _positions == count _entityClasses}, "fnc_createProfileEntity | count _positions must equal count _entityClasses")
 
 private _unitRanks = ["PRIVATE","CORPORAL","SERGEANT","LIEUTENANT","CAPTAIN","MAJOR","COLONEL"];
 

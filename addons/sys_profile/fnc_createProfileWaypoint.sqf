@@ -5,7 +5,12 @@ SCRIPT(createProfileWaypoint);
 Function: ALIVE_fnc_createProfileWaypoint
 
 Description:
-Creates a waypoint hash for storage in agent profiles
+Creates a waypoint hash for storage in agent profiles.
+The data field is absent (nil) until metadata is supplied or written. Nonempty
+key/value pair arrays are copied into a native HashMap; a supplied HashMap is retained
+by reference. Empty key/value pair arrays leave the data field absent.
+The name field is internal: an alive_wp:<ticktime>:<index> tag is assigned
+when the waypoint is first converted to an Arma waypoint.
 
 Parameters:
 Array - position array
@@ -19,6 +24,8 @@ String - combat mode
 String - behaviour type
 String - description
 Vehicle - vehicle object
+Array - waypoint statements
+Array or HashMap - optional waypoint data as [[key, value], ...] or a native HashMap, defaults to nil (no metadata)
 
 Returns:
 A hash of waypoint settings for storage in a profile
@@ -55,8 +62,16 @@ params [
     ["_description", ""],
     ["_attachVehicle", ""],
     ["_statements", ""],
-    ["_name", ""]
+    "_data"
 ];
+
+if (!isNil "_data" && {_data isEqualType []}) then {
+    _data = if (_data isEqualTo []) then {
+        nil
+    } else {
+        createHashMapFromArray +_data
+    };
+};
 
 private _waypoint = [
     [
@@ -72,8 +87,12 @@ private _waypoint = [
         ["description", _description],
         ["attachVehicle", _attachVehicle],
         ["statements", _statements],
-        ["name", _name]
+        ["name", ""]
     ]
 ] call ALIVE_fnc_hashCreate;
+
+if (!isNil "_data") then {
+    [_waypoint,"data",_data] call ALiVE_fnc_hashSet;
+};
 
 _waypoint

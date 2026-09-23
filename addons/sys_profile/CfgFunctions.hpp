@@ -141,6 +141,11 @@ class cfgFunctions {
                 file = "\x\alive\addons\sys_profile\fnc_createProfileVehicleAssignment.sqf";
                 RECOMPILE;
             };
+            class profileVehicleCanFitPassengers {
+                description = "Returns zero when passengers fit, otherwise the negative number without seats";
+                file = "\x\alive\addons\sys_profile\fnc_profileVehicleCanFitPassengers.sqf";
+                RECOMPILE;
+            };
             class removeProfileVehicleAssignments {
                 description = "removeProfileVehicleAssignments";
                 file = "\x\alive\addons\sys_profile\fnc_removeProfileVehicleAssignments.sqf";

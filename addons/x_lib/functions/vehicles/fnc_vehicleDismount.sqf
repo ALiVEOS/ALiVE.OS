@@ -121,4 +121,16 @@ if(count _turret > 0) then {
     };
 };
 
-(group (_driver select 0)) leaveVehicle _vehicle; 
+// Release the vehicle for every group represented in the assignment.
+private _groups = [];
+{
+    {
+        if (!isNull _x) then {_groups pushBackUnique (group _x)};
+    } forEach _x;
+} forEach _assignments;
+
+if (!_gunnersDismount) then {
+    _groups = _groups - ((_assignments select 1) apply {group _x});
+};
+
+{_x leaveVehicle _vehicle} forEach _groups;

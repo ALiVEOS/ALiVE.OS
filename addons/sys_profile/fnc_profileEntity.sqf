@@ -685,13 +685,23 @@ switch(_operation) do {
                 private _insertionMethod = if ((_firstPending select 1) == "addWaypoint") then {"addWaypointInternal"} else {"insertWaypointInternal"};
                 private _path = _firstPending select 2;
                 private _waypoint = _firstPending select 3;
-                [_waypoint,"name", "pathfound"] call ALiVE_fnc_hashSet;
+                private _data = [_waypoint,"data"] call ALiVE_fnc_hashGet;
+                if (isNil "_data") then {
+                    _data = createHashMap;
+                    [_waypoint,"data",_data] call ALiVE_fnc_hashSet;
+                };
+                _data set ["pathfound",true];
 
                 private _waypointTemplate = +_waypoint;
-                //[_waypointTemplate,"timeout", []] call ALiVE_fnc_hashSet;
-                [_waypointTemplate,"type", "MOVE"] call ALiVE_fnc_hashSet;
-                [_waypointTemplate,"description", ""] call ALiVE_fnc_hashSet;
-                [_waypointTemplate,"attachVehicle", ""] call ALiVE_fnc_hashSet;
+                private _waypointTemplateData = createHashMapFromArray [["pathfound",true]];
+                [_waypointTemplate, [
+                    ["name", ""],
+                    ["data", _waypointTemplateData],
+                    ["type", "MOVE"],
+                    ["description", ""],
+                    ["attachVehicle", ""]
+                ]] call ALiVE_fnc_hashSetMany;
+
                 // The template blanks statements because a terminal's completion statement, such
                 // as the commander's "completed" callback, must fire once at the end of the route
                 // and not at every node along it.
@@ -713,6 +723,7 @@ switch(_operation) do {
                     _path = _path apply {
                         private _tempWP = +_waypointTemplate;
                         [_tempWP,"position", _x] call ALiVE_fnc_hashSet;
+                        [_tempWP,"data", +_waypointTemplateData] call ALiVE_fnc_hashSet;
 
                         _tempWP
                     };
@@ -791,7 +802,18 @@ switch(_operation) do {
 
         private _active = _logic select 2 select 1; //[_logic,"active"] call ALIVE_fnc_hashGet
         if (_active) then {
-            [_logic,"profileWaypointToWaypoint", _waypoint] call MAINCLASS;
+            private _units = _logic select 2 select 21;
+
+            if (_units isnotequalto []) then {
+                private _group = group (_units select 0);
+
+                // A group with no actionable waypoint is still sitting on its automatically
+                // completed starting-position waypoint. Explicitly activate the first waypoint
+                // added after that so its behaviour, combat mode, formation, and speed apply.
+                private _setCurrent = (currentWaypoint _group) >= count (waypoints _group);
+
+                [_waypoint,_group,_setCurrent] call ALIVE_fnc_profileWaypointToWaypoint;
+            };
         };
      };
     };
@@ -1302,8 +1324,10 @@ switch(_operation) do {
             } forEach _unitClasses;
 
             if (_isSPE) then {
+                private _existingProfileWaypoints = ([_logic,"waypoints"] call ALiVE_fnc_hashGet)
+                    + ([_logic,"waypointsCompleted"] call ALiVE_fnc_hashGet);
                 [_logic,"clearWaypoints"] call MAINCLASS;
-                [_logic,_group] call ALIVE_fnc_waypointsToProfileWaypoints;
+                [_logic,_group,_existingProfileWaypoints] call ALIVE_fnc_waypointsToProfileWaypoints;
 
                 if (_debug) then {
                     ["Profile [%1] Spawn - _isSPE: %2, _group: %3,_aiBehaviour: %4",_profileID, _isSPE, _group, _aiBehaviour] call ALIVE_fnc_dump;
@@ -1506,7 +1530,9 @@ switch(_operation) do {
                 [_logic,"active", false] call ALIVE_fnc_hashSet;
                 [_logic,"combatScanPending", true] call ALIVE_fnc_hashSet;
 
-                // update profile waypoints before despawn
+                // Keep the old waypoints for tag-based data recovery before replacing the route.
+                private _existingProfileWaypoints = ([_logic,"waypoints"] call ALiVE_fnc_hashGet)
+                    + ([_logic,"waypointsCompleted"] call ALiVE_fnc_hashGet);
                 [_logic,"clearWaypoints"] call MAINCLASS;
 
                 // A route still being pathfound when the group despawns would be laid onto the
@@ -1530,7 +1556,7 @@ switch(_operation) do {
                         [_logic,"pendingWaypointPaths",_kept] call ALiVE_fnc_hashSet;
                     };
                 };
-                [_logic,_group] call ALIVE_fnc_waypointsToProfileWaypoints;
+                [_logic,_group,_existingProfileWaypoints] call ALIVE_fnc_waypointsToProfileWaypoints;
 
                 [_logic] call ALIVE_fnc_vehicleAssignmentsToProfileVehicleAssignments;
 

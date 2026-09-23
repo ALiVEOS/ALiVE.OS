@@ -915,6 +915,14 @@ switch(_operation) do {
 
                 if (_state isEqualTo []) then {
                     private _engineWaypoints = waypoints _targetGroup;
+                    private _waypointsByName = createHashMap;
+                    {
+                        private _name = [_x,"name",""] call ALiVE_fnc_hashGet;
+                        if ((_name select [0,9]) == "alive_wp:") then {
+                            _waypointsByName set [_name,_x];
+                        };
+                    } forEach (([_profile,"waypoints",[]] call ALiVE_fnc_hashGet) + ([_profile,"waypointsCompleted",[]] call ALiVE_fnc_hashGet));
+
                     private _snapshot = [];
                     private _waypointCount = count _engineWaypoints;
                     private _currentIndex = (currentWaypoint _targetGroup) max 1;
@@ -925,7 +933,7 @@ switch(_operation) do {
                             private _waypoint = _engineWaypoints select _index;
                             private _position = waypointPosition _waypoint;
                             if (count _position >= 2 && {!((_position select [0,2]) isEqualTo [0,0])}) then {
-                                _snapshot pushBack ([_waypoint] call ALiVE_fnc_waypointToProfileWaypoint);
+                                _snapshot pushBack ([_waypoint, _waypointsByName get (waypointName _waypoint)] call ALiVE_fnc_waypointToProfileWaypoint);
                             };
                         };
                     };

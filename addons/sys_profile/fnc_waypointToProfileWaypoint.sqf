@@ -9,6 +9,9 @@ Takes a real waypoint and creates a profile waypoint
 
 Parameters:
 Waypoint - The waypoint
+Hash - optional existing profile waypoint, already matched by the caller using its ALiVE name tag.
+Its metadata is reused while the other settings are read from the Arma waypoint.
+Waypoints without metadata leave data absent (nil) without allocating a HashMap.
 
 Returns:
 A profile waypoint
@@ -25,7 +28,7 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private _waypoint = _this select 0;
+params ["_waypoint","_existingProfileWaypoint"];
 
 if (isnil "_waypoint") exitwith {};
 
@@ -42,6 +45,7 @@ private _description = waypointDescription _waypoint;
 private _statements = waypointStatements _waypoint;
 private _name = waypointName _waypoint;
 
+private _isALiVEWaypoint = (_name select [0,9]) == "alive_wp:";
 private _profileWaypoint = [
     _position,
     _radius,
@@ -54,9 +58,20 @@ private _profileWaypoint = [
     _behaviour,
     _description,
     "",
-    _statements,
-    _name
+    _statements
 ] call ALiVE_fnc_createProfileWaypoint;
+
+if (!isNil "_existingProfileWaypoint") then {
+    private _data = [_existingProfileWaypoint,"data"] call ALiVE_fnc_hashGet;
+    if (!isNil "_data") then {
+        // Reuse the existing HashMap by reference.
+        [_profileWaypoint,"data",_data] call ALiVE_fnc_hashSet;
+    };
+};
+
+if (_isALiVEWaypoint) then {
+    [_profileWaypoint,"name",_name] call ALiVE_fnc_hashSet;
+};
 
 //["wp to p wp"] call ALIVE_fnc_dump;
 //_profileWaypoint call ALIVE_fnc_inspectHash;

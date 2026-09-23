@@ -5,14 +5,16 @@ SCRIPT(createProfileVehicleAssignment);
 Function: ALIVE_fnc_createProfileVehicleAssignment
 
 Description:
-Creates a vehicle assignment array for the group and vehicle
+Assigns unassigned soldiers to available vehicle seats.
 
 Parameters:
 Array - Entity profile
 Array - Vehicle profile
+Boolean - Append (optional, default false)
+Boolean - Passengers only (optional, default false); preserves existing assignments
 
 Returns:
-A vehicle assignment array
+Array - [newly assigned unit indexes, remaining unassigned unit indexes]. Invalid input returns nil.
 
 Examples:
 (begin example)
@@ -27,7 +29,7 @@ ARJay
 Jman
 ---------------------------------------------------------------------------- */
 
-params ["_profileEntity","_profileVehicle",["_append", false]];
+params ["_profileEntity","_profileVehicle",["_append", false],["_passengersOnly", false]];
 
 waituntil {!isnil "ALIVE_profileHandler"};
 
@@ -55,6 +57,14 @@ if (_profileVehicle isEqualType objNull) then {
 
 if (isnil "_profileVehicle" || { !(_profileVehicle isEqualType []) }) exitwith {};
 if (isnil "_profileEntity" || { !(_profileEntity isEqualType []) }) exitwith {};
+
+// Validate profile shape and roles before accessing fixed data slots.
+if (count _profileEntity < 3 || {count _profileVehicle < 3}) exitWith {};
+if !((_profileEntity select 2) isEqualType [] && {(_profileVehicle select 2) isEqualType []}) exitWith {};
+if (count (_profileEntity select 2) < 12 || {count (_profileVehicle select 2) < 12}) exitWith {};
+if ((_profileEntity select 2 select 5) != "entity" || {(_profileVehicle select 2 select 5) != "vehicle"}) exitWith {};
+if !((_profileEntity select 2 select 11) isEqualType [] && {(_profileVehicle select 2 select 11) isEqualType ""}) exitWith {};
+if !(isClass (configFile >> "CfgVehicles" >> (_profileVehicle select 2 select 11))) exitWith {};
 
 private _entityID = _profileEntity select 2 select 4; //[_profileEntity, "profileID"] call ALIVE_fnc_hashGet;
 private _unitIndexes = [_profileEntity, "unitIndexes"] call ALIVE_fnc_profileEntity;
@@ -85,6 +95,7 @@ _unitIndexes = _unitIndexes - _usedIndexes;
 private _unitCount = count _unitIndexes;
 
 
+private _newlyAssigned = [];
 if (count _unitIndexes > 0) then {
 
     // get empty position data for the vehicle
@@ -104,7 +115,8 @@ if (count _unitIndexes > 0) then {
 
     for "_i" from 0 to (count _emptyPositionData - 1) do {
         private _assignment = (_assignments select 2) select _i;
-        private _emptyCount = _emptyPositionData select _i;
+        private _emptyCount = (_emptyPositionData select _i) max 0;
+        if (_passengersOnly && {!(_i in [4,5])}) then {_emptyCount = 0};
 
         /*
         ["empty pos ass: %1",_assignment] call ALIVE_fnc_dump;
@@ -116,11 +128,14 @@ if (count _unitIndexes > 0) then {
                 breakTo "main";
             };
             _assignment pushback (_unitIndexes select _assignedCount);
+            _newlyAssigned pushBack (_unitIndexes select _assignedCount);
             _assignedCount = _assignedCount + 1;
         };
     };
 
-    if (_append) then {
+    // Never create an empty link or overwrite existing seats when no units fit.
+    if (_assignedCount == 0) exitWith {};
+    if (_append || _passengersOnly) then {
         private _currentEntityAssignment = [_currentEntityAssignments, _vehicleID, []] call ALIVE_fnc_hashGet;
         private _currentVehicleAssignment = [_currentVehicleAssignments, _entityID, []] call ALIVE_fnc_hashGet;
 
@@ -140,3 +155,8 @@ if (count _unitIndexes > 0) then {
     [_profileEntity,"addVehicleAssignment", _assignments] call ALIVE_fnc_profileEntity;
     [_profileVehicle,"addVehicleAssignment", _assignments] call ALIVE_fnc_profileVehicle;
 };
+// Report actual remaining assignments, including seats released by legacy replacement mode.
+// Allocation does not confirm that spawned units have boarded.
+private _assignedIndexes = _currentEntityAssignments call ALIVE_fnc_profileVehicleAssignmentGetUsedIndexes;
+private _allIndexes = [_profileEntity, "unitIndexes"] call ALIVE_fnc_profileEntity;
+[_newlyAssigned, _allIndexes - _assignedIndexes]

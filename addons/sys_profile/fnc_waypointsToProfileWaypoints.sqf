@@ -8,13 +8,16 @@ Description:
 Takes real waypoints and creates profile waypoints
 
 Parameters:
-Array - The waypoints
+Hash - The entity profile
+Group - The group
+Array - optional existing profile waypoints, captured before clearing the route.
+Include current and completed waypoints; defaults to [] when no metadata is available.
 
 Returns:
 
 Examples:
 (begin example)
-_result = [_profile, _group] call ALIVE_fnc_waypointsToProfileWaypoints;
+_result = [_profile, _group, _existingProfileWaypoints] call ALIVE_fnc_waypointsToProfileWaypoints;
 (end)
 
 See Also:
@@ -23,19 +26,31 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-params ["_profile","_group"];
+params ["_profile","_group",["_existingProfileWaypoints",[]]];
 
 if (isnil "_profile" || isnil "_group") exitwith {["SYS PROFILE Warning: ALIVE_fnc_waypointsToProfileWaypoints has wrong inputs! - %1", _this] call ALiVE_fnc_dump};
 
 private _waypoints = waypoints _group;
-if (count _waypoints == 0) exitwith {};
+if (_waypoints isequalto []) exitwith {};
+
+// Recover metadata from the route saved by the caller before it was cleared.
+private _waypointsByName = createHashMap;
+{
+    private _name = [_x,"name",""] call ALiVE_fnc_hashGet;
+    if ((_name select [0,9]) == "alive_wp:") then {
+        _waypointsByName set [_name,_x];
+    };
+} forEach _existingProfileWaypoints;
 
 private _pathfindingEnabled = [MOD(profileSystem),"pathfinding"] call ALiVE_fnc_hashGet;
 
 private _convertAndAddWaypoint = {
     params ["_profile","_waypoint"];
 
-    private _profileWaypoint = [_waypoint] call ALIVE_fnc_waypointToProfileWaypoint;
+    private _profileWaypoint = [
+        _waypoint,
+        _waypointsByName get (waypointName _waypoint)
+    ] call ALIVE_fnc_waypointToProfileWaypoint;
     private _waypointPosition = [_profileWaypoint,"position"] call ALIVE_fnc_hashGet;
     private _waypointStatements = [_profileWaypoint,"statements"] call ALIVE_fnc_hashGet;
 
@@ -46,8 +61,8 @@ private _convertAndAddWaypoint = {
     // pathfinding branch expands a waypoint into nodes elsewhere, and that expansion keeps the
     // mark for the same reason.
     if (_pathfindingEnabled) then {
-        private _waypointName = [_profileWaypoint,"name"] call ALiVE_fnc_hashGet;
-        private _waypointReady = _waypointName == "pathfound";
+        private _data = [_profileWaypoint,"data"] call ALiVE_fnc_hashGet;
+        private _waypointReady = (!isNil "_data") && {_data getOrDefault ["pathfound",false]};
 
         if (!((_waypointPosition select [0,2]) isequalto [0,0]) && {(_waypointStatements select 1 != "_disableSimulation = true;")}) then {
             [_profile,"addPendingWaypoint", ["addWaypoint",_profileWaypoint,_waypointReady]] call ALIVE_fnc_profileEntity;

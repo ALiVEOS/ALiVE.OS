@@ -10,6 +10,9 @@ Takes a profile waypoint and creates a real waypoint
 Parameters:
 Hash - profile waypoint
 Group - The group
+Boolean - whether to make the new waypoint current
+Scalar - optional batch index (defaults to the group's waypoint count before addition)
+String - optional batch timestamp (defaults to diag_tickTime toFixed 6)
 
 Returns:
 A waypoint
@@ -26,7 +29,13 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-params ["_profileWaypoint","_group",["_setCurrent", false]];
+params [
+    "_profileWaypoint",
+    "_group",
+    ["_setCurrent", false],
+    "_index",
+    "_timestamp"
+];
 
 if (isnil "_profileWaypoint" || {!(_profileWaypoint isequaltype [])}) exitwith {
     ["- ALiVE_fnc_ProfileWaypointToWaypoint retrieved wrong input: %1!",_this] call ALiVE_fnc_dump;
@@ -63,6 +72,20 @@ if (!isNull _assignedVehicle && {_assignedVehicle isKindOf "LandVehicle"}) then 
 _position set [2,0];
 
 private _waypoint = _group addWaypoint [_position, _radius];
+
+if ((_waypointName select [0,9]) != "alive_wp:") then {
+    // Individual additions use the current count; batch conversions supply their index.
+    if (isnil "_index") then {
+        _index = count (waypoints _group);
+    };
+
+    if (isNil "_timestamp") then {
+        _timestamp = diag_tickTime toFixed 6;
+    };
+
+    _waypointName = format ["alive_wp:%1:%2",_timestamp,_index];
+    [_profileWaypoint,"name", _waypointName] call ALiVE_fnc_hashSet;
+};
 _waypoint setWaypointDescription _description;
 _waypoint setWaypointType _type;
 _waypoint setWaypointFormation _formation;
@@ -90,8 +113,5 @@ if (_waypointStatements isEqualType []) then {
 if (_setCurrent) then {
     _group setCurrentWaypoint _waypoint;
 };
-
-//["p wp to wp"] call ALIVE_fnc_dump;
-//_profileWaypoint call ALIVE_fnc_inspectHash;
 
 _waypoint
