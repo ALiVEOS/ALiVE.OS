@@ -131,9 +131,14 @@ switch(_operation) do {
     case "size": {
         _result = [_logic,_operation,_args,DEFAULT_SIZE] call ALIVE_fnc_OOsimpleOperation;
     };
-    // Determine type of enemy force - valid values are: "Random","Armored","Mechanized","Motorized","Infantry","Air
+    // Determine type of enemy force - valid values are: "Random","Armored","Mechanized","Motorized","Infantry","Air","Specops"
     case "type": {
-        _result = [_logic,_operation,_args,DEFAULT_TYPE,["Random","Armored","Mechanized","Motorized","Infantry","Air"]] call ALIVE_fnc_OOsimpleOperation;
+        // #1028: "Specops" was offered in the dropdown and has its own case in the force
+        // composition switch, but it was missing from this list, so OOsimpleOperation
+        // swapped it for the default and it arrived as Random with nothing said. Only the
+        // explicit choice is added. The Random pool below is left as it was, so picking
+        // Random behaves exactly as before.
+        _result = [_logic,_operation,_args,DEFAULT_TYPE,["Random","Armored","Mechanized","Motorized","Infantry","Air","Specops"]] call ALIVE_fnc_OOsimpleOperation;
         if(_result == "Random") then {
             // Randomly pick an type
             _result = (selectRandom ["Armored","Mechanized","Motorized","Infantry","Air"]);
