@@ -343,8 +343,10 @@ switch(_operation) do {
         };
 
         // Catch a bug that was introduced by the conversion of the
-        // "composition" module field from dropdown to text field
-        if (_args == "false") then {
+        // "composition" module field from dropdown to text field.
+        // A module with no composition value at all, such as one created from script, arrives
+        // here with the false fallback above; comparing that to text threw and stopped its start.
+        if (!(_args isEqualType "") || {_args == "false"}) then {
             _logic setVariable ["composition", ""];
             _args = "";
         };
