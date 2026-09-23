@@ -342,8 +342,21 @@ switch(_operation) do {
         // would send a Blackfish on close air support, or an attack jet on an
         // interception, whenever the right aircraft were busy.
         if (count _fit == 0) then { _fit = _withRoles select { (_x select 4) isEqualTo [] } };
+
+        // #1029: suppression is decided by what an aircraft carries, not by its role.
+        // Only anti-radar missiles take on an air defence site, so nothing else is sent,
+        // however near. The watch raises SEAD only when one of these is ready, and an
+        // attack helicopter sent in its place is the loss that rule exists to avoid.
+        private _noneFits = format ["no free airframe with a role for %1", _type];
+        if (_type isEqualTo "SEAD") then {
+            _fit = _withRoles select {
+                private _caps = [_x select 2, "capabilities", []] call ALIVE_fnc_hashGet;
+                _caps isEqualType [] && {"antiRadiation" in _caps}
+            };
+            _noneFits = "no free airframe carrying anti-radar missiles";
+        };
         if (count _fit == 0) exitWith {
-            _result = ["denied", format ["no free airframe with a role for %1", _type]];
+            _result = ["denied", _noneFits];
         };
 
         // Score, then rank. Penalty dominates distance by a margin no real

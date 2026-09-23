@@ -160,7 +160,8 @@ same orders and the same waypoint count it started with.
     private _rows = [] call ALIVE_fnc_hashCreate;
     [_records, "s1", [[
         ["class", "B_Plane_CAS_01_F"], ["faction", "BLU_F"],
-        ["home", [_anchor, 0, "terrain"]], ["roles", ["SEAD"]], ["capabilities", ["SEAD"]]
+        ["home", [_anchor, 0, "terrain"]], ["roles", ["Attack"]],
+        ["capabilities", ["armed", "agGuided", "antiRadiation", "sensors"]]
     ]] call ALIVE_fnc_hashCreate] call ALIVE_fnc_hashSet;
     [_rows, "s1", [[["state", "PARKED"]]] call ALIVE_fnc_hashCreate] call ALIVE_fnc_hashSet;
 
@@ -168,6 +169,32 @@ same orders and the same waypoint count it started with.
     diag_log format ["  info  suppression pass raised: %1", _seadPass];
     ["a suppression sortie is raised once there is an aircraft that can fly it",
         "SEAD" in (_seadPass apply {_x select 0})] call _fnc_check;
+
+    // #1029: the records above used to carry a "SEAD" role and capability that nothing
+    // real produces, which is how this passed while the air commander never raised one.
+    // An attack helicopter carries no anti-radar missiles, so ready or not it is not a
+    // reason to send anything at a launcher.
+    private _w5 = [nil, "create"] call ALIVE_fnc_ATOWatch;
+    private _t5 = [nil, "create"] call ALIVE_fnc_ATOTask;
+    [_t5, "configure", [["side", "WEST"], ["faction", "BLU_F"]]] call ALIVE_fnc_ATOTask;
+    [_t5, "firstPassDone"] call ALIVE_fnc_ATOTask;
+    [_w5, "configure", [
+        ["airspaces", [_zone]], ["enemyFactions", ["OPF_F"]], ["enemySides", ["EAST"]],
+        ["types", ["SEAD"]], ["task", _t5], ["key", "watchtest5"]
+    ]] call ALIVE_fnc_ATOWatch;
+    [_w5, "start"] call ALIVE_fnc_ATOWatch;
+    private _noHarm = [] call ALIVE_fnc_hashCreate;
+    [_noHarm, "h1", [[
+        ["class", "B_Heli_Attack_01_F"], ["faction", "BLU_F"],
+        ["home", [_anchor, 0, "terrain"]], ["roles", ["Attack", "CAS"]],
+        ["capabilities", ["armed", "gun", "agGuided", "sensors"]]
+    ]] call ALIVE_fnc_hashCreate] call ALIVE_fnc_hashSet;
+    private _noHarmRows = [] call ALIVE_fnc_hashCreate;
+    [_noHarmRows, "h1", [[["state", "PARKED"]]] call ALIVE_fnc_hashCreate] call ALIVE_fnc_hashSet;
+    private _noHarmPass = [_w5, "tick", [2000, _noHarm, _noHarmRows]] call ALIVE_fnc_ATOWatch;
+    diag_log format ["  info  pass with only an attack helicopter ready raised: %1", _noHarmPass];
+    ["an attack aircraft without anti-radar missiles does not raise one",
+        !("SEAD" in (_noHarmPass apply {_x select 0}))] call _fnc_check;
 
     private _parked = [[["state", "PARKED"]]] call ALIVE_fnc_hashCreate;
     [_rows, "s1", [[["state", "ENROUTE"]]] call ALIVE_fnc_hashCreate] call ALIVE_fnc_hashSet;

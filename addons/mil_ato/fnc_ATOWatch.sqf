@@ -465,9 +465,11 @@ switch(_operation) do {
                         if (!_ready && {count _rec > 0} && {count _row > 0}) then {
                             private _state = [_row, "state", ""] call ALIVE_fnc_hashGet;
                             private _caps = [_rec, "capabilities", []] call ALIVE_fnc_hashGet;
-                            private _roles = [_rec, "roles", []] call ALIVE_fnc_hashGet;
+                            // #1029: the capability is called antiRadiation and no role is ever
+                            // called SEAD, so asking for "SEAD" here meant this never passed and
+                            // no suppression sortie was ever raised.
                             if (_state isEqualTo "PARKED"
-                                && {("SEAD" in _caps) || {"SEAD" in _roles}}) then {
+                                && {_caps isEqualType []} && {"antiRadiation" in _caps}) then {
                                 _ready = true;
                             };
                         };

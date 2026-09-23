@@ -133,9 +133,41 @@ Runs spawned to match the other tests, though nothing here needs a tick.
         diag_log "  SKIP  an interception takes the fighter (roles do not resolve here)";
     };
 
-    // Two aircraft against a defended site, where two exist.
-    private _sead = [_t, "plan", [["SEAD"] call _fnc_request, _records, _rows, _obs, []]] call ALIVE_fnc_ATOTask;
-    ["a suppression sortie goes as a pair", count (_sead param [0, []]) == 2] call _fnc_check;
+    // Two aircraft against a defended site, where two exist, and only aircraft that
+    // carry anti-radar missiles (#1029). The Apache is nearest to the target and ready,
+    // and must still never be sent. This used to plan against the Apaches above and
+    // pass, which is exactly the choice the air commander must not make.
+    private _fnc_seadRecord = {
+        params ["_class", "_homePos", "_caps"];
+        private _r = [_class, _homePos] call _fnc_record;
+        [_r, "capabilities", _caps] call ALIVE_fnc_hashSet;
+        _r
+    };
+    private _seadRecords = [] call ALIVE_fnc_hashCreate;
+    private _seadRows = [] call ALIVE_fnc_hashCreate;
+    private _seadObs = [] call ALIVE_fnc_hashCreate;
+    [_seadRecords, "a1", ["B_Heli_Attack_01_F", [4990, 4990, 0], ["armed","gun","agGuided","sensors"]] call _fnc_seadRecord] call ALIVE_fnc_hashSet;
+    [_seadRecords, "a2", ["B_Plane_Fighter_01_F", [2500, 2500, 0], ["armed","aa","agGuided","antiRadiation","radar","sensors"]] call _fnc_seadRecord] call ALIVE_fnc_hashSet;
+    [_seadRecords, "a3", ["B_Plane_Fighter_01_F", [2400, 2400, 0], ["armed","aa","agGuided","antiRadiation","radar","sensors"]] call _fnc_seadRecord] call ALIVE_fnc_hashSet;
+    {
+        [_seadRows, _x, ["PARKED"] call _fnc_row] call ALIVE_fnc_hashSet;
+        [_seadObs, _x, [] call _fnc_obs] call ALIVE_fnc_hashSet;
+    } forEach ["a1","a2","a3"];
+
+    private _sead = [_t, "plan", [["SEAD"] call _fnc_request, _seadRecords, _seadRows, _seadObs, []]] call ALIVE_fnc_ATOTask;
+    private _seadTails = _sead param [0, []];
+    if !(_seadTails isEqualType []) then { _seadTails = [] };
+    diag_log format ["  info  suppression plan: %1", _sead];
+    ["a suppression sortie goes as a pair", count _seadTails == 2] call _fnc_check;
+    ["and only aircraft carrying anti-radar missiles are sent, however near the others are",
+        !("a1" in _seadTails) && {"a2" in _seadTails} && {"a3" in _seadTails}] call _fnc_check;
+
+    private _onlyApache = [] call ALIVE_fnc_hashCreate;
+    [_onlyApache, "a1", [_seadRecords, "a1"] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
+    private _seadNone = [_t, "plan", [["SEAD"] call _fnc_request, _onlyApache, _seadRows, _seadObs, []]] call ALIVE_fnc_ATOTask;
+    diag_log format ["  info  suppression plan with only the Apache: %1", _seadNone];
+    ["with none carrying them the sortie is refused, not flown by something else",
+        (_seadNone param [0, ""]) isEqualTo "denied"] call _fnc_check;
 
     // The nearly dry aircraft is nearer than anything else, so the only reason
     // it can lose is the fuel minimum.
