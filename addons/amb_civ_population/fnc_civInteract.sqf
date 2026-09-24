@@ -747,7 +747,15 @@ switch (_operation) do {
 		_arguments params ["_civ","_value"];
 		if (count _arguments > 2) then {_townHostilityValue = _arguments select 2};
 
-		if (isNil "_townHostilityValue") then {
+		// The dialog asks without the town's share of the change. The copy handed to the
+		// server below carries the share worked out here, so both machines apply the same one.
+		private _fromDialog = isNil "_townHostilityValue";
+
+		if (_fromDialog) then {
+			// -- Check if the caller is trying to increase or decrease hostility
+			_townHostilityValue = if (_value < 0) then {floor random -4} else {floor random 4};
+
+			//-- Keep the open dialog's copy in step, so its hostility reading reacts at once
 			if (isNil {[MOD(civInteractHandler), "CivData"] call ALiVE_fnc_hashGet}) exitWith {};
 
 			_civData = [MOD(civInteractHandler), "CivData"] call ALiVE_fnc_hashGet;
@@ -755,20 +763,29 @@ switch (_operation) do {
 			_civInfo params ["_homePos","_individualHostility","_townHostility","_name"];
 
 			_individualHostility = _individualHostility + _value;
-			// -- Check if the caller is trying to increase or decrease hostility
-			_townHostilityValue = if (_value < 0) then {floor random -4} else {floor random 4};
 			_townHostility = _townHostility + _townHostilityValue;
 			[_civData, "CivInfo", [_homePos, _individualHostility, _townHostility, _name]] call ALiVE_fnc_hashSet;
 
 			[MOD(civInteractHandler), "CivData", _civData] call ALiVE_fnc_hashSet;
 		};
 
-		//-- Change civilian posture globally
-		if (isNil "_townHostilityValue") exitWith {[_logic, "UpdateHostility", [_civ,_value,_townHostilityValue]] remoteExecCall [QUOTE(MAINCLASS),2]};
+		//-- Change civilian posture globally. The records are kept on the server alone and the
+		// dialog runs on the player's machine, so any machine that isn't the server hands the
+		// change over, share included. The old check asked whether the share was missing just
+		// after working it out, so with the dialog open no client ever changed anything. In
+		// single player, or for the player hosting, this machine is the server and carries on.
+		if (_fromDialog && {!isServer}) exitWith {
+			[nil, "UpdateHostility", [_civ, _value, _townHostilityValue]] remoteExecCall [QUOTE(MAINCLASS), 2];
+		};
 
 		_civID = _civ getVariable ["agentID", ""];
 		if (_civID != "") then {
 			_civProfile = [ALIVE_agentHandler, "getAgent", _civID] call ALIVE_fnc_agentHandler;
+			// The server can drop a civilian's record between the player asking and the change
+			// arriving (it does on death) while the body keeps its id. The lookup then answers
+			// with nothing, and nothing assigned to a variable removes it, so this cannot be
+			// read straight.
+			if (isNil "_civProfile") exitWith {};
 			_clusterID = _civProfile select 2 select 9;
 
 			//-- Set town hostility
@@ -1421,15 +1438,11 @@ switch (_operation) do {
 		};
 
 		if (_decreaseChance > random 100) then {
-			// Use local `call MAINCLASS` (matching the question handler's
-			// UpdateHostility call site) so the client-side CivData cache on
-			// _logic is updated synchronously - that's the same source the
-			// refreshHostilityIndicator hook below reads from. The previous
-			// `remoteExecCall [..., 2]` only updated server-side agent /
-			// cluster state and left the open dialog's cached posture stale,
-			// so the player wouldn't see the indicator label or tier-driven
-			// button states react to a successful give until the next
-			// question or dialog re-open.
+			// Called locally, not remote-executed, so the open dialog's copy
+			// on _logic is updated before refreshHostilityIndicator below
+			// reads it, and the indicator and tier-driven buttons react to a
+			// successful give at once. UpdateHostility then hands the change
+			// on to the server itself when this machine isn't the server.
 			[_logic, "UpdateHostility", [_civ, -7]] call MAINCLASS;
 			[_logic, "refreshHostilityIndicator"] call MAINCLASS;
 		};
