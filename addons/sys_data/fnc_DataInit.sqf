@@ -55,8 +55,9 @@ if (isnil "_logic") then {
     _logic = MOD(sys_data);
 };
 
-// Check data source
-GVAR(SOURCE) = _logic getVariable ["source","CouchDB"];
+// Check data source. Local is the default: the Cloud service went with the War Room, and a
+// module created by script should get what the editor offers.
+GVAR(SOURCE) = _logic getVariable ["source","pns"];
 
 // Parse the Save Server UID allowlist (comma separated Steam UIDs) and broadcast it (#873)
 if (isServer) then {
@@ -90,7 +91,7 @@ if (isDedicated || (isServer && _pns)) then {
     publicVariable QGVAR(DISABLED);
 
     GVAR(databaseName) = "arma3live";
-    GVAR(source) = MOD(sys_data) getVariable ["source","CouchDB"];
+    GVAR(source) = MOD(sys_data) getVariable ["source","pns"];
 
     // Try initialising the plugin
     private _initmsg = [_logic getVariable ["disablePerfMon","true"]] call ALIVE_fnc_startALiVEPlugIn;
@@ -711,8 +712,29 @@ if (isDedicated || (isServer && _pns)) then {
     if (GVAR(SOURCE) == "CouchDB" && {isServer && {hasInterface}}) then {
         ["SYS_DATA - Cloud access is not granted for SP/EDITOR/HOST and only dedicated servers! Disabling SYS DATA..."] call ALIVE_fnc_dump;
 
+        // Off first, so nothing can see the module below without also seeing that it's off.
         GVAR(DISABLED) = true;
         PublicVariable QGVAR(DISABLED);
+
+        // Publish the module even though it's off. Player Logistics, IEDs, markers, SPOTREP,
+        // SITREP and PATROLREP wait for it and its startupComplete whenever it's placed, and
+        // waited forever here. Their load functions check DISABLED and load nothing.
+        MOD(sys_data) = _logic;
+        publicVariable QMOD(sys_data);
+
+        // Nothing to send statistics to, the same as a dedicated server that can't reach the cloud.
+        MOD(sys_data) setvariable ["disableStats", "true"];
+        ALIVE_sys_statistics_ENABLED = false;
+        publicVariable "ALIVE_sys_statistics_ENABLED";
+
+        // Only a mission maker previewing from the editor can act on this. The missions shipped
+        // with ALiVE still say Cloud, and a player can't change a setting inside the mod.
+        if (is3DENPreview || {is3DENMultiplayer}) then {
+            [
+                "ALiVE Data",
+                "Database Source is set to Cloud, which isn't available here, so nothing from this mission will be saved. Set it to Local on the ALiVE Data module to keep mission data."
+            ] call ALIVE_fnc_sendHint;
+        };
     };
 };
 

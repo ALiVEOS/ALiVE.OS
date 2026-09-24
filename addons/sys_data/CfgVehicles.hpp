@@ -31,11 +31,11 @@ class CfgVehicles {
                                 property = "ALiVE_sys_data_source";
                                 displayName = "$STR_ALIVE_data_SOURCE";
                                 tooltip = "$STR_ALIVE_data_SOURCE_COMMENT";
-                                defaultValue = """CouchDB""";
+                                defaultValue = """pns""";
                                 class Values
                                 {
-                                    class COUCHDB { name = "Cloud"; value = "CouchDB"; default = 1; };
-                                    class pns { name = "Local"; value = "pns"; };
+                                    class pns { name = "Local"; value = "pns"; default = 1; };
+                                    class COUCHDB { name = "Cloud"; value = "CouchDB"; };
                                 };
                         };
                         class saveDateTime : Combo { property = "ALiVE_sys_data_saveDateTime"; displayName = "$STR_ALIVE_data_SAVEDATETIME"; tooltip = "$STR_ALIVE_data_SAVEDATETIME_COMMENT"; defaultValue = """false"""; class Values { class Yes{name="Yes";value=true;}; class No{name="No";value=false;default=1;}; }; };

@@ -40,10 +40,10 @@ ADDON = false;
 //
 //   1. GVAR(ENABLED) is never set true. fnc_DataInit.sqf sets it false in three places
 //      and the one branch that would enable it, when the cloud reports PerfData allowed,
-//      is commented out at DataInit :223-224. It arrived commented out in 988cd3c6,
+//      is commented out at DataInit :224-225. It arrived commented out in 988cd3c6,
 //      10 May 2016, the copy that first opened ALiVE up.
 //   2. The menu block below needs !isDedicated, but the only caller is
-//      fnc_DataInit.sqf:424, which sits inside if (isDedicated). So the monitoring half
+//      fnc_DataInit.sqf:425, which sits inside if (isDedicated). So the monitoring half
 //      can run and the menu half cannot. adminActionsInit is the pattern to copy: it is
 //      spawned for every machine from main/fnc_aliveInit.sqf:642 and splits on
 //      hasInterface internally.
