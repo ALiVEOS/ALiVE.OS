@@ -169,8 +169,18 @@ if (_sqmValue != "") then {
 };
 
 if (_raw != "") then {
-    // Parse pipe-separated consolidated form.
-    private _parts = _raw splitString "|";
+    // Parse pipe-separated consolidated form, keeping blank slots in place:
+    // splitString drops empty pieces, so one blank slot moved every pick after
+    // it one slot to the left each time the module was reopened.
+    private _parts = [];
+    private _rest = _raw;
+    private _at = _rest find "|";
+    while {_at >= 0} do {
+        _parts pushBack (_rest select [0, _at]);
+        _rest = _rest select [_at + 1];
+        _at = _rest find "|";
+    };
+    _parts pushBack _rest;
     {
         if (_forEachIndex < 6) then {
             _slotSelections set [_forEachIndex, _x];

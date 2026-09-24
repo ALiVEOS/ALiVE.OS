@@ -1098,12 +1098,21 @@ switch(_operation) do {
         // SAVE's setVariable — so the auto-task path would otherwise always read
         // the defaults (BLUFOR enemy = OPF_F), ignoring the picker. Split here,
         // after init (so it runs after those expressions), with the consolidated
-        // value as the source of truth. Guarded on a full 6-token split so a
-        // blank slot (splitString drops empties) falls back to defaults rather
-        // than misaligning the pairs.
+        // value as the source of truth. Split by walking the separators rather
+        // than with splitString, which drops empty pieces: one blank slot then
+        // left five tokens, failed the six-token guard and threw away every
+        // pick. A blank slot now stays blank and keeps that slot's default.
         private _autoGenFactions = _logic getVariable ["autoGenerateFactions", ""];
         if (_autoGenFactions isEqualType "" && {_autoGenFactions != ""}) then {
-            private _slots = _autoGenFactions splitString "|";
+            private _slots = [];
+            private _rest = _autoGenFactions;
+            private _at = _rest find "|";
+            while {_at >= 0} do {
+                _slots pushBack (_rest select [0, _at]);
+                _rest = _rest select [_at + 1];
+                _at = _rest find "|";
+            };
+            _slots pushBack _rest;
             private _slotVars = ["autoGenerateBluforFaction","autoGenerateBluforEnemyFaction","autoGenerateOpforFaction","autoGenerateOpforEnemyFaction","autoGenerateIndforFaction","autoGenerateIndforEnemyFaction"];
             if (count _slots == count _slotVars) then {
                 {
