@@ -416,6 +416,8 @@ private _fnc_goPlace = {
     // there the next click says where it goes, which is how anything else is
     // placed in the editor. Where somebody is looking has two answers here and
     // neither is reliable in both views, so it is asked rather than guessed.
+    // On the map the preset was saved on there is no click: it goes back to
+    // where it was saved.
     _d closeDisplay 1;
     ["place", _preset] call ALIVE_fnc_presetChoose;
 };
@@ -575,6 +577,11 @@ uiNamespace setVariable ["ALiVE_presetWindowGoPlace", _fnc_goPlace];
     if (_ok && {count _missing > 0}) then {
         _said = _said + format [" These areas are not in it, so the settings naming them went too: %1.",
             _missing joinString ", "];
+    };
+    // Said now, because nothing else would tell anybody: placed on this map
+    // again, the preset goes back exactly where it is, with no click.
+    if (_ok && {count ((_preset select 2) param [6, []]) > 0}) then {
+        _said = _said + format [" On %1 it goes back where it is now.", worldName];
     };
     (_d displayCtrl 88103) ctrlSetText _said;
 

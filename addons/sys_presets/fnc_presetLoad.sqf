@@ -51,8 +51,9 @@ if (!_ok) exitWith {
 };
 
 // The next click says where it goes, the same as placing one from the preset
-// window, so a preset always lands where it was asked for rather than where
-// something guessed.
+// window, so a preset lands where it was asked for rather than where something
+// guessed. Back on the map it was saved on it goes straight to where it was
+// saved instead, which is also where it was asked for.
 if ([_preset] call ALIVE_fnc_presetPlaceClick) exitWith { true };
 
 // No editor display to click on, which should not happen, but placing it
@@ -88,7 +89,7 @@ if (count _trims > 0) then {
 };
 
 if (count _skipped > 0) then {
-    _msg = _msg + format [" Already here, so left alone: %1.", _skipped joinString ", "];
+    _msg = _msg + format [" Already in this scenario, so not added again: %1.", _skipped joinString ", "];
 };
 
 private _mods = _preset select 5;

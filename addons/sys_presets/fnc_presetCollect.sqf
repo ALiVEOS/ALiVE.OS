@@ -49,7 +49,9 @@ Returns:
                 has something to put there and stays readable by older builds
                 otherwise: seven parts and version 1 plain, eight and version 2
                 once it carries areas, nine and version 3 once it carries the
-                record of which mods it needs.
+                record of which mods it needs. When anything in it has a place,
+                its description part also says where the middle of it all was,
+                so on the map it came from it can go back there.
       _report - [_moduleCount, _settingCount, _linkCount, _dropped, _mods, _missing]
 
 Examples:
@@ -251,10 +253,13 @@ private _links = [];
 // would no longer be inside its own area. The arrangement is the thing being
 // carried, so there is one origin for all of it.
 //
-// A preset carrying world coordinates would only mean anything on the map it came
-// from. Carried as offsets, the whole arrangement lands wherever it is put and
-// keeps its shape. Sizes stay in real metres, because an area's size is a thing
-// the mission maker actually chose.
+// Carried as offsets, the whole arrangement lands wherever it is put and keeps its
+// shape, on any map. The middle is written down as well, because on the map the
+// preset came from it should go back exactly where it was: somebody who saves
+// their setup and loads it into a fresh scenario on the same map wants it where
+// they built it, not wherever they manage to click. On any other map the middle
+// means nothing and is ignored. Sizes stay in real metres, because an area's size
+// is a thing the mission maker actually chose.
 private _rows = [];
 {
     private _row = ["read", _x] call ALIVE_fnc_presetMarkers;
@@ -276,8 +281,11 @@ if (count _places > 0) then {
         _sumX = _sumX + (_x param [0, 0]);
         _sumY = _sumY + (_x param [1, 0]);
     } forEach _places;
-    _midX = _sumX / count _places;
-    _midY = _sumY / count _places;
+    // Whole metres before anything is measured from it. The middle is written down
+    // as whole metres, and offsets measured from an unrounded middle would put a
+    // module up to a metre out when the two are added back together.
+    _midX = round (_sumX / count _places);
+    _midY = round (_sumY / count _places);
 };
 
 // Whole metres, because str writes six significant digits and the round trip
@@ -350,6 +358,13 @@ private _meta = [
     getText (configFile >> "CfgPatches" >> "ALiVE_main" >> "version"),
     _stamp
 ];
+// Where the middle of it all was, so on this map the preset goes back there. A
+// seventh entry in the description rather than a part of its own: every build
+// that already ships reads the description by position and never counts it, so an
+// older build ignores this and asks for a click, which places the preset
+// correctly. A new part would have been refused by all of them as not a preset.
+// Left out when nothing has a place, because then there is nothing to put back.
+if (count _places > 0) then { _meta pushBack [_midX, _midY] };
 // Version by what is actually in it, so a preset gains a slot only when it has
 // something to put there and stays readable by older builds otherwise. Seven
 // parts for the plainest preset, eight once it carries areas, nine once it

@@ -56,8 +56,9 @@ if !((_trimmed select [0, 13]) isEqualTo "[""ALIVEPRESET") exitWith {
     ["That is not a preset. Copy the whole line, starting with [""ALIVEPRESET""."] call _no
 };
 
-// Seven parts, or eight once it carries areas. Anything else is not a preset, or
-// is a preset that was cut short on its way here.
+// Seven parts, eight once it carries areas, nine once it carries the record of
+// which mods it needs. Anything else is not a preset, or is a preset that was cut
+// short on its way here.
 private _preset = parseSimpleArray _trimmed;
 
 // It began like a preset and still would not parse, so it was cut short on the
@@ -89,6 +90,21 @@ if (!(_modules isEqualType []) || {!(_links isEqualType [])} || {!(_meta isEqual
     ["This preset is damaged. It may have been cut short when it was copied."] call _no
 };
 if (count _modules == 0) exitWith { ["This preset has no modules in it."] call _no };
+
+// Where the preset was saved, when it says: a pair of numbers or nothing. Whether
+// the spot is on this map, and whether this is even the map it came from, is for
+// whatever places it to decide. A damaged one is dropped rather than refused, the
+// same trade as a damaged mod entry further down: without it the preset still
+// places perfectly well, by a click, the way every preset used to.
+private _home = _meta param [6, []];
+if !(_home isEqualTo []) then {
+    private _homeOk = (_home isEqualType []) && {count _home isEqualTo 2}
+        && {(_home select 0) isEqualType 0} && {(_home select 1) isEqualType 0};
+    if (!_homeOk) then {
+        ["ALIVE_fnc_presetParse - dropped a saved position that is not a pair of numbers: %1", _home] call ALiVE_fnc_dump;
+        _meta set [6, []];
+    };
+};
 
 private _skip = getArray (configFile >> "CfgALiVEPresets" >> "skipAttributes");
 if (count _skip == 0) then { _skip = ["onEachSpawn", "runwaystartpos", "runwayendpos"] };

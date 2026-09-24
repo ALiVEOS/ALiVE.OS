@@ -17,7 +17,7 @@ the default static source, and both placement modules centre objective scenery o
 it. For those, the position IS a setting.
 
 A preset that did not keep the layout, and every preset written before presets
-could, still gets the old behaviour: a grid beside where the camera is looking,
+could, still gets the old behaviour: a grid beside the point it is placed around,
 six to a row, so nothing lands on top of anything else.
 
 A module class the scenario already has is left alone rather than added a second
@@ -37,6 +37,10 @@ expected goes away with a single undo.
 
 Parameters:
     _preset - ARRAY - a preset that has been through ALIVE_fnc_presetParse
+    _where  - ARRAY - optional, the point everything is placed around: where the
+              person clicked, or where the preset was saved when it is back on
+              that map. Nothing, or a point off this map, means the middle of
+              the view.
 
 Returns:
     ARRAY [_placed, _settings, _links, _skipped, _areas, _renamed, _trims]
@@ -129,6 +133,7 @@ private _skipped = [];
 private _applied = 0;
 private _drawn = 0;
 private _areas = 0;
+private _madeAreas = [];
 private _renamed = [];
 private _trims = [];
 
@@ -147,6 +152,7 @@ collect3DENHistory {
             (["make", [_x, _anchor, _taken]] call ALIVE_fnc_presetMarkers) params [["_wanted", ""], ["_actual", ""], ["_trimmed", false]];
             if !(_actual isEqualTo "") then {
                 _areas = _areas + 1;
+                _madeAreas pushBack _actual;
                 _taken pushBackUnique _actual;
                 if !(_actual isEqualTo _wanted) then {
                     _renames pushBack [toLower _wanted, _actual];
@@ -229,7 +235,12 @@ collect3DENHistory {
 };
 
 private _live = _created select { !isNull _x };
-if (count _live > 0) then { set3DENSelected _live };
+// The areas as well as the modules, so moving what just landed is one drag and a
+// TAOR is never left behind at the spot its modules were dragged away from. The
+// editor takes a marker by its name here, the same way its own mission statistics
+// window selects every marker in a scenario.
+private _pick = _live + _madeAreas;
+if (count _pick > 0) then { set3DENSelected _pick };
 
 // Said out loud, with where they went. "Nothing happened" is the one report that
 // cannot be acted on, and modules placed somewhere off screen look exactly like

@@ -65,6 +65,16 @@ private _areas = count (_preset param [7, []]);
 if (_areas > 0) then {
     _msg = _msg + format [" %1 area%2 came with it.", _areas, ["s", ""] select (_areas == 1)];
 };
+// Said here because nothing else would tell anybody: placed on this same map, a
+// preset goes straight back where it was taken from, with no click. Without the
+// layout only the areas have somewhere to go back to; the modules go in a row.
+if (count ((_preset select 2) param [6, []]) > 0) then {
+    _msg = _msg + (if (_choice param [2, true]) then {
+        format [" On %1 it goes back where it is now.", worldName]
+    } else {
+        format [" On %1 its areas go back where they are now.", worldName]
+    });
+};
 if (count _dropped > 0) then {
     _msg = _msg + format [" Left out: %1.", _dropped joinString ", "];
 };
