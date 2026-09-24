@@ -39,6 +39,10 @@ params [
     ["_question", ""]
 ];
 
+//-- Set by the case that records an answer. It starts false, or a question that records
+//   none reads it undefined after the switch.
+_answerGiven = false;
+
 //-- Define control ID's
 #define MAINCLASS ALiVE_fnc_civInteract
 #define CIVINTERACT_RESPONSELIST (findDisplay 923 displayCtrl 9239)
@@ -180,8 +184,10 @@ if ((_question in _answersGiven) and (floor random 100 < 75)) exitWith {
     _response = [_response1,_response2,_response3,_response4,_response5,_response6,_response7,_response8] call BIS_fnc_selectRandom;
     CIVINTERACT_RESPONSELIST ctrlSetText _response;
 
-    //-- Check if civilian is irritated
+    //-- Check if civilian is irritated, and show it on the indicator now: this exitWith
+    //   leaves the handler before the refresh at its end
     [_logic,"isIrritated", [_hostile,_asked,_civ]] call MAINCLASS;
+    [_logic, "refreshHostilityIndicator"] call MAINCLASS;
 };
 
 switch (_question) do {
@@ -747,8 +753,8 @@ switch (_question) do {
             _response = [_response1, _response2, _response3, _response4, _response5, _response6,_response7] call BIS_fnc_selectRandom;
             CIVINTERACT_RESPONSELIST ctrlSetText _response;
 
-            //-- Check if civilian is irritated
-            [_logic,"isIrritated", [_hostile,_asked,_civ]] call MAINCLASS;
+            //-- Irritation is rolled once for every question, after the switch. This
+            //   exitWith only leaves the case, so rolling it here as well rolled it twice.
         };
 
         if !(_hostile) then {
@@ -895,8 +901,8 @@ switch (_question) do {
             _response = [_response1, _response2, _response3, _response4, _response5, _response6,_response7] call BIS_fnc_selectRandom;
             CIVINTERACT_RESPONSELIST ctrlSetText _response;
 
-            //-- Check if civilian is irritated
-            [_logic,"isIrritated", [_hostile,_asked,_civ]] call MAINCLASS;
+            //-- Irritation is rolled once for every question, after the switch. This
+            //   exitWith only leaves the case, so rolling it here as well rolled it twice.
         };
 
         //-- This really needs to be a switch, couldn't get it to work properly the first time
@@ -1108,7 +1114,7 @@ switch (_question) do {
 
 };
 
-//-- Check if civilian is irritated
+//-- Check if civilian is irritated, once per question: no case rolls it itself
 [_logic,"isIrritated", [_hostile,_asked,_civ]] call MAINCLASS;
 
 //-- Refresh the hostility indicator label and tier-driven button
