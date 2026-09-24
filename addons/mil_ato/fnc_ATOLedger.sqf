@@ -60,9 +60,12 @@ Jman
 // one. The backend records its own identity in its class key when it is built
 // (sys_data/fnc_Data.sqf sets class to ALIVE_fnc_Data), and nothing else does,
 // so that is the discriminator. Getting this wrong is silent and expensive: a
-// save into a hash looks exactly like a save that worked.
+// save into a hash looks exactly like a save that worked. Every caller passes
+// [_store], so the store is the first element: reading _this whole handed the
+// hash test a one-element array, which is never a hash, and every real save and
+// load went into the handler in memory instead of to the disk.
 private _fnc_isBackend = {
-    private _store = _this;
+    params [["_store", []]];
     if !([_store] call ALIVE_fnc_isHash) exitWith { false };
     (([_store, "class", ""] call ALIVE_fnc_hashGet) isEqualTo "ALIVE_fnc_Data")
 };
