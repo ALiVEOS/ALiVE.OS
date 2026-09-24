@@ -40,7 +40,9 @@ if (_profileEntity isEqualType objNull) then {
 
     _profileEntity = [ALIVE_profileHandler, "getProfile", (_unit getVariable "profileID")] call ALIVE_fnc_profileHandler;
     if (isnil "_profileEntity") then {
-        _profileEntity = [false,[_group],[]] call ALiVE_fnc_CreateProfilesFromUnitsRuntime;
+        // The runtime pass returns [group profiles, vehicle profiles], not one profile, so take
+        // this group's from the first list (nil when it made none, which the guard below catches).
+        _profileEntity = (([false,[_group],[]] call ALiVE_fnc_CreateProfilesFromUnitsRuntime) select 0) param [0];
     };
 };
 
@@ -49,7 +51,7 @@ if (_profileVehicle isEqualType objNull) then {
 
     _profileVehicle = [ALIVE_profileHandler, "getProfile", (_vehicle getVariable "profileID")] call ALIVE_fnc_profileHandler;
     if (isnil "_profileVehicle") then {
-        _profileVehicle = [false,[],[_vehicle]] call ALiVE_fnc_CreateProfilesFromUnitsRuntime;
+        _profileVehicle = (([false,[],[_vehicle]] call ALiVE_fnc_CreateProfilesFromUnitsRuntime) select 1) param [0];
     };
 };
 
