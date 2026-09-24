@@ -24,6 +24,7 @@ ALIVE_fnc_IEDSaveData
 
 Author:
 Trapw0w
+Jman
 ---------------------------------------------------------------------------- */
 if !(isServer && {!(isNil "ALIVE_sys_data")} && {!(ALIVE_sys_data_DISABLED)}) exitwith {false};
 
@@ -34,8 +35,7 @@ if(ALiVE_SYS_DATA_DEBUG_ON) then {
 };
 
 _async = false;
-_missionName = [missionName, "%20","-"] call CBA_fnc_replace;
-_missionName = format["%1_%2", ALIVE_sys_data_GROUP_ID, _missionName];
+_missionName = ([""] call ALiVE_fnc_storeKeys) select 0; // group, mission and map
 
 if (isNil QGVAR(DATAHANDLER)) then {
 

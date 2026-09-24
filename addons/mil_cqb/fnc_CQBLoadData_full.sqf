@@ -25,6 +25,7 @@ ALIVE_fnc_CQBSaveData
 
 Author:
 Highhead
+Jman
 ---------------------------------------------------------------------------- */
 
 if !(isServer && {!(isNil "ALIVE_sys_data")} && {!(ALIVE_sys_data_DISABLED)}) exitwith {};
@@ -34,8 +35,7 @@ private ["_data","_instances"];
 [true, "ALiVE CQB persistence load data started", "cqbper"] call ALIVE_fnc_timer;
 
 private _async = false;
-private _missionName = [missionName, "%20","-"] call CBA_fnc_replace;
-_missionName = format["%1_%2", ALIVE_sys_data_GROUP_ID, _missionName];
+private _missionName = ([""] call ALiVE_fnc_storeKeys) select 0; // group, mission and map
 
 if (isNil QGVAR(DATAHANDLER)) then {
    ["LOAD CQB, CREATE DATA HANDLER!"] call ALIVE_fnc_dump;

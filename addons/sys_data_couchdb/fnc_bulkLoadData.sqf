@@ -21,6 +21,7 @@ Examples:
 
 Author:
 Tupolov
+Jman
 Peer Reviewed:
 
 ---------------------------------------------------------------------------- */
@@ -50,7 +51,7 @@ if (typeName _indexDoc == "ARRAY") then {
     // Try loading more index entries
     private ["_i","_indexName","_newresponse"];
     _i = 1;
-    while {_indexName = format["%1_%2_%3", ALIVE_SYS_DATA_GROUP_ID, missionName, _i]; _newresponse = [_logic, "read", [_module, [], _indexName]] call ALIVE_fnc_Data; typeName _newresponse != "STRING"} do {
+    while {_indexName = format ["%1_%2", _missionKey, _i]; _newresponse = [_logic, "read", [_module, [], _indexName]] call ALIVE_fnc_Data; typeName _newresponse != "STRING"} do {
         private ["_tempIndex"];
 
         _tempIndex = [_newresponse, "index"] call CBA_fnc_hashGet; // Should be an array of key values

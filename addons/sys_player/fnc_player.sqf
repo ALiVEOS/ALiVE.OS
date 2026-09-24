@@ -178,11 +178,9 @@ switch(_operation) do {
 
                         _missionName = [missionName, "%20", "-"] call CBA_fnc_replace;
 
-                        // Set key to servername if group tag not available.
-                        // Includes `worldName` so copies of `mission.sqm`
-                        // across map folders don't collide on the same
-                        // storage key (Eric / SpyderBlack 2026-05-18 report).
-                        MOD(sys_player) setVariable ["key", ([GVAR(datahandler),"key", [] call ALIVE_fnc_getServerName] call ALIVE_fnc_hashGet) + "_" + _missionName + "_" + worldName];
+                        // Player saves sit with the mission date under this mission's
+                        // _DATA name on this map (ALiVE_fnc_storeKeys).
+                        MOD(sys_player) setVariable ["key", (["_DATA"] call ALiVE_fnc_storeKeys) select 0];
 
                         private ["_res"];
                         // Check that a dictionary is available before loading any player data

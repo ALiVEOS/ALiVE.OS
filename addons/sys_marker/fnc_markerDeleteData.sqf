@@ -25,6 +25,7 @@ ALIVE_fnc_markerSaveData
 
 Author:
 Highhead
+Jman
 ---------------------------------------------------------------------------- */
 
 if !(isDedicated && {!(isNil "ALIVE_sys_data")} && {!(ALIVE_sys_data_DISABLED)}) exitwith {false};
@@ -35,8 +36,7 @@ _markerName = _this select 0;
 _markerHash = _this select 1;
 
 _async = true;
-_missionName = [missionName, "%20","-"] call CBA_fnc_replace;
-_missionName = format["%1_%2", ALIVE_sys_data_GROUP_ID, _missionName];
+_missionName = ([""] call ALiVE_fnc_storeKeys) select 0; // group, mission and map
 _docid = _missionName + "-" + _markerName;
 
 _rev = [_markerHash, "_rev", "MISSING"] call ALIVE_fnc_hashGet;
@@ -57,9 +57,9 @@ if ( (count (GVAR(STORE) select 1) - 1) == 0 ) then {
 
             {
                 if (_foreachIndex == 0) then {
-                    _indexName = format["%1_%2", ALIVE_SYS_DATA_GROUP_ID, missionName];
+                    _indexName = _missionName;
                 } else {
-                    _indexName = format["%1_%2_%3", ALIVE_SYS_DATA_GROUP_ID, missionName, _foreachIndex];
+                    _indexName = format ["%1_%2", _missionName, _foreachIndex];
                 };
                 _response = [GVAR(DATAHANDLER), "delete", ["sys_marker", _async, _indexName, _indrevs select _foreachIndex]] call ALIVE_fnc_Data;
             } foreach _indrevs;

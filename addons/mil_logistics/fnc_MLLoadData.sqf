@@ -22,6 +22,7 @@ ALIVE_fnc_MLSaveData
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 if !(isServer && {!(isNil "ALIVE_sys_data")} && {!(ALIVE_sys_data_DISABLED)}) exitwith {false};
@@ -33,8 +34,7 @@ if(ALiVE_SYS_DATA_DEBUG_ON) then {
 };
 
 _async = false;
-_missionName = [missionName, "%20","-"] call CBA_fnc_replace;
-_missionName = format["%1_%2_FORCE_POOL", ALIVE_sys_data_GROUP_ID, _missionName];
+_missionName = (["_FORCE_POOL"] call ALiVE_fnc_storeKeys) select 0; // group, mission and map
 
 if(ALiVE_SYS_DATA_DEBUG_ON) then {
     ["ML DATAHANDLER: %1",QGVAR(DATAHANDLER)] call ALIVE_fnc_dump;

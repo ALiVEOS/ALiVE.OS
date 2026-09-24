@@ -25,6 +25,7 @@ ALIVE_fnc_patrolrepSaveData
 
 Author:
 Highhead
+Jman
 ---------------------------------------------------------------------------- */
 
 private ["_result","_data","_async","_missionName","_message","_messages","_saveResult"];
@@ -36,8 +37,7 @@ if(ALiVE_SYS_DATA_DEBUG_ON) then {
 };
 
 _async = false;
-_missionName = [missionName, "%20","-"] call CBA_fnc_replace;
-_missionName = format["%1_%2", ALIVE_sys_data_GROUP_ID, _missionName];
+_missionName = ([""] call ALiVE_fnc_storeKeys) select 0; // group, mission and map
 
 _data = [MOD(SYS_patrolrep),"state"] call ALiVE_fnc_patrolrep;
 

@@ -396,8 +396,10 @@ switch(_operation) do {
     };
 
     // Reads this instance's own key. Only when that is empty does it look at the
-    // one shared key the old module wrote, and it never deletes it: a campaign
-    // that gets loaded by an older build must still find its aircraft.
+    // one shared key the old module wrote, and it never deletes it itself. Both
+    // are kept per map. On the local backend ALiVE_fnc_storeMigrate moves the
+    // shared key when the Data module starts, and this instance's key when the
+    // kernel passes it at start, just before this load.
     case "load": {
         _args params [["_store",[],[[],""]], ["_key","",[""]], ["_legacyKey","",[""]]];
         private _loaded = [];

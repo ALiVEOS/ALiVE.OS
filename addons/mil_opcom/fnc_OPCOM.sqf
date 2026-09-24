@@ -512,6 +512,12 @@ switch (_operation) do {
 
         private _objectives = [];
 
+        // The starting forces are saved under a name built from this commander's
+        // position, which only it knows. Passing it makes it known to Clear Current
+        // Mission's Data, and moves a save from before saves were kept per map to
+        // this map's name before the load below reads it.
+        [format ["-OPCOM_%1-starting-forces", [_handler,"opcomID"] call CBA_fnc_hashGet]] call ALiVE_fnc_storeMigrate;
+
         //Load Data from DB
         if (_persistent && { !isNil "ALIVE_sys_data" } && {!ALIVE_sys_data_DISABLED}) then {
             _objectives = [_handler,"loadObjectivesDB"] call MAINCLASS;
@@ -519,8 +525,7 @@ switch (_operation) do {
             ["OPCOM loaded %1 objectives from DB!", count _objectives] call ALiVE_fnc_dump;
         
             // Load starting forces
-            private _missionName = [missionName, "%20", "-"] call CBA_fnc_replace;
-            private _key = format ["%1_%2-OPCOM_%3-starting-forces", ALIVE_sys_data_GROUP_ID, _missionName, [_handler,"opcomID"] call CBA_fnc_hashGet];
+            private _key = format ["%1-OPCOM_%2-starting-forces", ([""] call ALiVE_fnc_storeKeys) select 0, [_handler,"opcomID"] call CBA_fnc_hashGet];
             private _result = [GVAR(DATAHANDLER),"read", ["mil_opcom", [], _key]] call ALIVE_fnc_Data;
 
             if (_result isEqualType []) then {
@@ -2906,8 +2911,7 @@ switch (_operation) do {
 
 
             _async = false; // Wait for response from server
-            _missionName = [missionName, "%20","-"] call CBA_fnc_replace;
-            _missionName = format["%1_%2", ALIVE_sys_data_GROUP_ID, _missionName]; // must include group_id to ensure mission reference is unique across groups
+            _missionName = ([""] call ALiVE_fnc_storeKeys) select 0; // group, mission and map
 
             if(ALiVE_SYS_DATA_DEBUG_ON) then {
                 ["OPCOM - SAVE DATA NOW - MISSION NAME: %1! PLEASE WAIT...",_missionName] call ALiVE_fnc_dump;
@@ -3013,8 +3017,7 @@ switch (_operation) do {
 
             //defaults
             private _async = false;
-            private _missionName = [missionName, "%20","-"] call CBA_fnc_replace;
-            _missionName = format ["%1_%2", ALIVE_sys_data_GROUP_ID, _missionName];
+            private _missionName = ([""] call ALiVE_fnc_storeKeys) select 0; // group, mission and map
 
             if (ALiVE_SYS_DATA_DEBUG_ON) then {
                 ["OPCOM - LOAD DATA  - MISSION: %1",_missionName] call ALiVE_fnc_dump;

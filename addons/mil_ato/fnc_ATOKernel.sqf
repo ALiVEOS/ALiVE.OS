@@ -748,12 +748,11 @@ private _fnc_instanceKey = {
 // the one shared key the old module wrote for every commander together.
 private _fnc_storeKeys = {
     params [["_logic", objNull, [objNull]]];
-    private _mission = [missionName, "%20", "-"] call CBA_fnc_replace;
-    private _group = missionNamespace getVariable ["ALIVE_sys_data_GROUP_ID", ""];
     private _instance = "";
     private _k = [_logic] call _fnc_kernel;
     if !(_k isEqualTo []) then { _instance = [_k, "instanceKey", ""] call ALIVE_fnc_hashGet };
-    [format ["%1_%2_ATO_%3", _group, _mission, _instance], format ["%1_%2_ATO", _group, _mission]]
+    // Both kept per map (ALiVE_fnc_storeKeys).
+    [([format ["_ATO_%1", _instance]] call ALiVE_fnc_storeKeys) select 0, (["_ATO"] call ALiVE_fnc_storeKeys) select 0]
 };
 
 // Is the persistence backend there to talk to. The same guard the old save
@@ -2156,15 +2155,17 @@ switch(_operation) do {
                         if (_r isEqualType [] && {count _r > 0}) then { _legacyKept = _r select 0 };
                         // Remembered for the session, so a second instance
                         // of the same faction does not take them again. The
-                        // shared document itself is never deleted: an older
-                        // build must still find its aircraft.
+                        // shared document is never deleted here: it holds every
+                        // faction's aircraft and each commander takes only its
+                        // own. On the local backend it was moved to this map's
+                        // name once, at mission start, by ALiVE_fnc_storeMigrate.
                         GVAR(legacyImported) pushBack _faction;
                     };
                 };
             };
         };
         _result = [_own select 0, _own select 1, _own select 2, _legacyKept];
-        ["ALIVE_fnc_ATOKernel - load for %1: %2 records restored (%3 unplaceable, %4 unknown), %5 taken from the old store",
+        ["ALIVE_fnc_ATOKernel - load for %1: %2 records restored (%3 unplaceable, %4 unknown), %5 taken from the old shared store",
             _ownKey, _own select 0, count (_own select 1), count (_own select 2), _legacyKept] call ALiVE_fnc_dump;
     };
 
@@ -2881,6 +2882,11 @@ switch(_operation) do {
             ["ALIVE_fnc_ATOKernel - instance key %1 is already claimed by %2; %3 will run but will neither load nor save", _key, _held, _logic] call ALiVE_fnc_dumpR;
         } else {
             [GVAR(instanceKeys), _key, _logic] call ALIVE_fnc_hashSet;
+            // The campaign store is named after this key, which only this module
+            // can work out. Passing it makes it known to Clear Current Mission's
+            // Data, and moves a save from before saves were kept per map to this
+            // map's name before the load below reads it.
+            [format ["_ATO_%1", _key]] call ALiVE_fnc_storeMigrate;
         };
         private _persistent = [_logic, "persistent"] call MAINCLASS;
         private _unstable = _persistent && {(vehicleVarName _logic) isEqualTo ""} && {_peers > 1};

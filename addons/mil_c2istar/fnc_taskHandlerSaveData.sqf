@@ -23,6 +23,7 @@ ALIVE_fnc_taskHandlerLoadData
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 private ["_result","_data","_async","_missionName","_message","_messages","_saveResult"];
@@ -34,8 +35,7 @@ if(ALiVE_SYS_DATA_DEBUG_ON) then {
 };
 
 _async = false;
-_missionName = [missionName, "%20","-"] call CBA_fnc_replace;
-_missionName = format["%1_%2_TASK", ALIVE_sys_data_GROUP_ID, _missionName];
+_missionName = (["_TASK"] call ALiVE_fnc_storeKeys) select 0; // group, mission and map
 
 _data = [ALIVE_taskHandler,"exportTaskData"] call ALIVE_fnc_taskHandler;
 

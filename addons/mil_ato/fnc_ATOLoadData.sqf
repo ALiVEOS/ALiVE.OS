@@ -15,6 +15,8 @@ answer is the stored hash, or false when there is nothing to read.
 An instance key may be passed to read one commander's own store. With no
 argument it reads the one shared entry the old module wrote for every
 commander together, which is what a mission saved before the rewrite has.
+A commander's own store only moves to this map's name when that commander
+starts, so the first session after the update reads nothing for it before then.
 
 Parameters:
 String (optional) - the instance key to read; omitted for the old shared entry
@@ -45,12 +47,11 @@ if (!isNil "_this") then {
     if (_this isEqualType [] && {count _this > 0} && {(_this select 0) isEqualType ""}) then { _key = _this select 0 };
 };
 
-private _mission = [missionName, "%20", "-"] call CBA_fnc_replace;
-private _group = missionNamespace getVariable ["ALIVE_sys_data_GROUP_ID", ""];
+// Kept per map (ALiVE_fnc_storeKeys).
 private _store = if (_key isEqualTo "") then {
-    format ["%1_%2_ATO", _group, _mission]
+    (["_ATO"] call ALiVE_fnc_storeKeys) select 0
 } else {
-    format ["%1_%2_ATO_%3", _group, _mission, _key]
+    ([format ["_ATO_%1", _key]] call ALiVE_fnc_storeKeys) select 0
 };
 
 if (isNil QGVAR(DATAHANDLER)) then {

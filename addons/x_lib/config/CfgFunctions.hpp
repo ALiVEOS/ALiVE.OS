@@ -921,6 +921,27 @@ class ProfileNameSpaceClear
 	RECOMPILE;
 };
 
+class storeKeys
+{
+	file = "\x\alive\addons\x_lib\functions\data\fnc_storeKeys.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
+class storeKeysOwned
+{
+	file = "\x\alive\addons\x_lib\functions\data\fnc_storeKeysOwned.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
+class storeMigrate
+{
+	file = "\x\alive\addons\x_lib\functions\data\fnc_storeMigrate.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
 class ProfileNameSpaceLoad
 {
 	file = "\x\alive\addons\x_lib\functions\data\fnc_ProfileNameSpaceLoad.sqf";
