@@ -190,6 +190,97 @@ console `call` would run the whole thing inside one frame.
     deleteGroup _kGrp;
     sleep 1;
 
+    // --- put out of sight on its stand ------------------------------------------
+    // The watchers and the stand come from the kernel in a mission; asked alone,
+    // the observer builds the watchers itself, which is what is checked here,
+    // against a spawn source moved through the two distances. Counts are read
+    // as differences from a baseline, because a player may be standing nearby.
+    _obs = [_veh, _home] call _fnc_obs;
+    ["a parked hull is not asleep, has nothing pending and its stand reads clear",
+        !([_obs,"asleep"] call _fnc_get) && {!([_obs,"servicePending"] call _fnc_get)}
+        && {!([_obs,"settling"] call _fnc_get)} && {[_obs,"standClear"] call _fnc_get}] call _fnc_check;
+    private _wBase = [_obs,"watchersWithinWake"] call _fnc_get;
+    private _sBase = [_obs,"watchersWithinSleep"] call _fnc_get;
+    private _R = if (isNil "ALIVE_spawnRadius") then { 1500 } else { ALIVE_spawnRadius };
+    private _hadSources = !isNil "ALiVE_SpawnSources";
+    private _oldSources = if (_hadSources) then { +ALiVE_SpawnSources } else { [] };
+    // Added to what the mission already has rather than replacing it: a source
+    // of the mission's inside the baseline and then taken away would move the
+    // counts the wrong way. And placed by the spawn radius, not a fixed 1000 m,
+    // which would be outside it on a mission that sets the radius smaller.
+    private _src = createVehicle ["Land_HelipadEmpty_F", _spot getPos [_R * 0.7, 0], [], 0, "CAN_COLLIDE"];
+    ALiVE_SpawnSources = _oldSources + [_src];
+    private _fnc_delta = {
+        private _oD = [_veh, _home] call _fnc_obs;
+        [([_oD,"watchersWithinWake"] call _fnc_get) - _wBase, ([_oD,"watchersWithinSleep"] call _fnc_get) - _sBase]
+    };
+    private _dIn = call _fnc_delta;
+    _src setPos (_spot getPos [_R * 1.1, 0]);
+    private _dEdge = call _fnc_delta;
+    _src setPos (_spot getPos [_R * 1.3, 0]);
+    private _dOut = call _fnc_delta;
+    diag_log format ["  info  spawn source at %1 m, %2 m and %3 m: %4 %5 %6", round (_R * 0.7), round (_R * 1.1), round (_R * 1.3), _dIn, _dEdge, _dOut];
+    ["a spawn source at 0.7 times the spawn radius is inside both distances", _dIn isEqualTo [1,1]] call _fnc_check;
+    ["at 1.1 times the spawn radius it is inside only the sleep distance", _dEdge isEqualTo [0,1]] call _fnc_check;
+    ["at 1.3 times it is inside neither", _dOut isEqualTo [0,0]] call _fnc_check;
+    deleteVehicle _src;
+
+    // How far a watcher wakes it from grows with its own speed: one and a half
+    // slow ticks of travel, in metres. A car pushed to a known speed must come
+    // back with exactly that added to the spawn radius, which is what shows a
+    // km/h and m/s slip. Read in one frame so the speed cannot change between.
+    private _car = createVehicle ["B_Quadbike_01_F", _spot getPos [400, 180], [], 0, "CAN_COLLIDE"];
+    sleep 1;
+    ALiVE_SpawnSources = _oldSources + [_car];
+    private _reachSeen = -1;
+    private _speedSeen = 0;
+    isNil {
+        _car setVelocityModelSpace [0, 15, 0];
+        _speedSeen = abs (speed _car);
+        private _ws = [nil, "watchers", [10]] call ALIVE_fnc_ATOObserve;
+        private _wi = _ws findIf { (_x select 0) isEqualTo _car };
+        if (_wi > -1) then { _reachSeen = (_ws select _wi) select 1 };
+    };
+    private _reachWant = _R + (_speedSeen / 3.6) * 10 * 1.5;
+    diag_log format ["  info  a source at %1 km/h wakes from %2 m, %3 m expected", round _speedSeen, round _reachSeen, round _reachWant];
+    if (_speedSeen > 10) then {
+        ["a moving watcher's reach grows by its own speed over one and a half ticks", (abs (_reachSeen - _reachWant)) < 1] call _fnc_check;
+    } else {
+        "a moving watcher's reach grows by its own speed  (the car never got moving)" call _fnc_skip;
+    };
+    deleteVehicle _car;
+    if (_hadSources) then { ALiVE_SpawnSources = _oldSources } else { ALiVE_SpawnSources = nil };
+
+    _veh setVariable ["ALiVE_mil_ato_serviceAsked", true];
+    _obs = [_veh, _home] call _fnc_obs;
+    ["a service asked for is pending", [_obs,"servicePending"] call _fnc_get] call _fnc_check;
+    _veh setVariable ["ALiVE_mil_ato_serviceAsked", nil];
+    _veh setVariable ["ALIVE_resupply_state", "enroute"];
+    _obs = [_veh, _home] call _fnc_obs;
+    ["so is a logistics truck still on its way", [_obs,"servicePending"] call _fnc_get] call _fnc_check;
+    _veh setVariable ["ALIVE_resupply_state", nil];
+
+    _veh setVariable ["ALiVE_mil_ato_asleep", true];
+    _obs = [_veh, _home] call _fnc_obs;
+    ["marked but still visible is not asleep", !([_obs,"asleep"] call _fnc_get)] call _fnc_check;
+    _veh hideObjectGlobal true;
+    sleep 1;
+    _obs = [_veh, _home] call _fnc_obs;
+    ["marked and hidden is asleep", [_obs,"asleep"] call _fnc_get] call _fnc_check;
+    _veh hideObjectGlobal false;
+    _veh setVariable ["ALiVE_mil_ato_asleep", nil];
+
+    private _oS = [_o, "observe", [_veh, _home, false, [], time, false, -1, -1, false]] call ALIVE_fnc_ATOObserve;
+    ["a stand the kernel reads as blocked is reported blocked", !([_oS,"standClear"] call _fnc_get)] call _fnc_check;
+
+    private _mw = createVehicle ["B_Quadbike_01_F", _spot getPos [30, 90], [], 0, "CAN_COLLIDE"];
+    _mw setVariable ["ALiVE_mil_ato_asleep", true];
+    _mw setDamage 1;
+    sleep 2;
+    private _oW = [_mw, _home] call _fnc_obs;
+    ["a wreck marked asleep still answers asleep, so its way out shows it", [_oW,"asleep"] call _fnc_get] call _fnc_check;
+    deleteVehicle _mw;
+
     // --- condition -----------------------------------------------------------
     _veh setFuel 0;
     sleep 1;

@@ -12,7 +12,7 @@ table decides, this carries it out, and if it cannot it refuses out loud rather
 than half-doing it quietly. Guards that refused correctly and silently for four
 days are why the refusal is spoken.
 
-Three refusals are absolute and are checked here rather than trusted to callers,
+Four refusals are absolute and are checked here rather than trusted to callers,
 so no caller can forget one:
 
   A player in the aircraft. Nothing that moves it, and nothing that removes its
@@ -23,6 +23,11 @@ so no caller can forget one:
   A hull owned by another machine. Anything that only works locally is refused
   and reported, never applied and silently lost, which is what made the same
   fault look intermittent.
+
+  A hull put out of sight on its stand. No crew is made in it and nothing
+  launches it, whoever asks: it would happen where nobody can see, and a held
+  hull has no ray geometry, so nothing could collide with it. It is shown
+  first.
 
   Orders for an aircraft in the air that do not end in a hold. An order chain
   that simply runs out is an aircraft with nothing to do, and that is four
@@ -58,13 +63,19 @@ Jman
 // Anything that moves the aircraft, plus taking its crew away. Refused outright
 // while a player is in it, from any state, by any path. A catapult tows the
 // aircraft onto the wire before it fires, so it belongs here with the rest.
-#define PLAYER_UNSAFE ["airborneStart","forceLaunch","virtualLaunch","taxiOut","placeOnSlot","forceLanded","spawnAtHome","standDownCrew","takeOwnership","catapult","holdOnStand"]
+#define PLAYER_UNSAFE ["airborneStart","forceLaunch","virtualLaunch","taxiOut","placeOnSlot","forceLanded","spawnAtHome","standDownCrew","takeOwnership","catapult","holdOnStand","sleep"]
 
 // Effects that only work where the object lives. On a hull owned elsewhere these
 // do nothing at all, so they are refused and reported instead. releaseHold is not
 // here on purpose: it sets the tank wherever the hull lives, so a player who took
 // the aircraft is never left with it empty.
-#define LOCAL_ONLY ["engineOn","engineOff","airborneStart","forceLaunch","virtualLaunch","taxiOut","placeOnSlot","forceLanded","spawnAtHome","seatCrew","recrewInPlace","standDownCrew","issueOrders","clearOrders","land","taxiTo","revealTargets","releaseTargets","catapult","tailhook","deckRecover","landOnRunway","holdOnStand"]
+#define LOCAL_ONLY ["engineOn","engineOff","airborneStart","forceLaunch","virtualLaunch","taxiOut","placeOnSlot","forceLanded","spawnAtHome","seatCrew","recrewInPlace","standDownCrew","issueOrders","clearOrders","land","taxiTo","revealTargets","releaseTargets","catapult","tailhook","deckRecover","landOnRunway","holdOnStand","sleep"]
+
+// Refused on a hull this module has put out of sight on its stand, whoever
+// asks: a crew made in it or a launch from it would happen where nobody can see
+// and nothing can collide, because a held hull has no ray geometry. The table
+// shows it first; this holds for every other caller as well.
+#define ASLEEP_REFUSED ["mintCrew","mintDroneCrew","recrewInPlace","holdOnStand","engineOn","taxiOut","catapult","forceLaunch","airborneStart","virtualLaunch"]
 
 // Not built in this pass. Named so a caller reaching one is told, rather than
 // finding that nothing happened. deckLaunch stays here on purpose: it would be
@@ -190,7 +201,7 @@ switch(_operation) do {
                    "mintDroneCrew","recrewInPlace","takeOwnership","engineOn","engineOff",
                    "seatCrew","standDownCrew","clearOrders","airborneStart",
                    "catapult","tailhook","deckRecover","landOnRunway","holdOnStand","releaseHold",
-                   "sweepTaxiPath","playerLock"];
+                   "sweepTaxiPath","playerLock","sleep","wake","showFrozen"];
     };
 
     case "apply": {
@@ -205,7 +216,7 @@ switch(_operation) do {
         private _matched = false;
         private _detail = "";
 
-        // ---- the three absolute refusals ----------------------------------
+        // ---- the absolute refusals ----------------------------------------
         // Checked before anything looks at what the effect is, so a new effect
         // added later inherits them rather than having to remember them.
 
@@ -221,6 +232,12 @@ switch(_operation) do {
         if (!isNull _obj && {(_effect in LOCAL_ONLY)} && {!local _obj}) exitWith {
             ["ALIVE_fnc_ATOEffect - %1 refused on %2: the hull is owned elsewhere", _effect, typeOf _obj] call ALiVE_fnc_dump;
             _result = ["refused", false, "remote"];
+        };
+
+        if (!isNull _obj && {_effect in ASLEEP_REFUSED}
+            && {(_obj getVariable ["ALiVE_mil_ato_asleep", false]) isEqualTo true} && {isObjectHidden _obj}) exitWith {
+            ["ALIVE_fnc_ATOEffect - %1 refused on %2: it is out of sight on its stand", _effect, typeOf _obj] call ALiVE_fnc_dump;
+            _result = ["refused", false, "asleep"];
         };
 
         if (_effect in NOT_BUILT) exitWith {
@@ -423,7 +440,22 @@ switch(_operation) do {
                         private _clear = !_roofed
                             && {!(surfaceIsWater _p)}
                             && {(([_p, _cl] call _fnc_offRunway) select 0) > 40}
-                            && {(nearestObjects [_p, ["House", "Building"], _reach]) isEqualTo []};
+                            && {(nearestObjects [_p, ["House", "Building"], _reach]) isEqualTo []}
+                            // And not where an aircraft's own stand check
+                            // would find it. The roof test above passes through
+                            // a jet held out of sight on its stand, which has no
+                            // ray geometry, so without this a car moved off a
+                            // taxi route could be parked on a sleeping jet; and
+                            // one left inside that check refuses the jet's wake
+                            // and moves it to another stand. The reach is the
+                            // surface's: half the aircraft's longer side plus
+                            // four metres, never under twelve.
+                            && {((nearestObjects [_p, ["Air"], 45]) findIf {
+                                private _bbA = [typeOf _x] call ALiVE_fnc_getVehicleBoundingBox;
+                                private _reachA = 12;
+                                if (count _bbA > 1) then { _reachA = ((((_bbA select 0) max (_bbA select 1)) / 2) + 4) max 12 };
+                                (_x distance2D _p) < _reachA
+                            }) == -1};
                         if (_clear) then { _to = _p };
                     };
                 };
@@ -937,6 +969,56 @@ switch(_operation) do {
                     _obj setPosATL [_p select 0, _p select 1, _alt];
                     _obj engineOn true;
                     _obj setVelocity [(sin (getDir _obj)) * 90, (cos (getDir _obj)) * 90, 0];
+                };
+            };
+
+            // A parked aircraft put out of sight and frozen on its stand while
+            // nobody is near, and shown again. Both are the surface's to do,
+            // because it owns what is on a stand; both ends are logged, once
+            // each way, and a refused wake names what is on the stand.
+            case "sleep": {
+                private _surfaceS = _extra param [0, []];
+                private _tailS = _extra param [1, ""];
+                if !([_surfaceS] call ALIVE_fnc_isHash) exitWith { _status = "refused"; _detail = "no surface" };
+                ([_surfaceS, "sleep", _obj] call ALIVE_fnc_ATOSurface) params [["_okS", false, [false]], ["_whyS", "", [""]]];
+                if (_okS) then {
+                    _matched = !(_whyS isEqualTo "");
+                    _detail = _whyS;
+                    if (!_matched) then { ["ALIVE_fnc_ATOEffect - %1 (%2) asleep on its stand, nobody near", typeOf _obj, _tailS] call ALiVE_fnc_dump };
+                } else {
+                    _status = "refused";
+                    _detail = _whyS;
+                };
+            };
+            case "wake": {
+                private _surfaceW = _extra param [0, []];
+                private _tailW = _extra param [1, ""];
+                if !([_surfaceW] call ALIVE_fnc_isHash) exitWith { _status = "refused"; _detail = "no surface" };
+                ([_surfaceW, "wake", _obj] call ALIVE_fnc_ATOSurface) params [["_okW", false, [false]], ["_whyW", "", [""]]];
+                if (_okW) then {
+                    _matched = !(_whyW isEqualTo "");
+                    _detail = _whyW;
+                    if (!_matched) then { ["ALIVE_fnc_ATOEffect - %1 (%2) awake%3", typeOf _obj, _tailW, if (alive _obj) then {""} else {", a wreck"}] call ALiVE_fnc_dump };
+                } else {
+                    _status = "refused";
+                    _detail = _whyW;
+                };
+            };
+            // Shown but left frozen: the last resort for a hull that cannot be
+            // woken when nothing will ask again. The surface gives it its
+            // simulation back once its stand is clear.
+            case "showFrozen": {
+                private _surfaceF = _extra param [0, []];
+                private _tailF = _extra param [1, ""];
+                if !([_surfaceF] call ALIVE_fnc_isHash) exitWith { _status = "refused"; _detail = "no surface" };
+                ([_surfaceF, "showFrozen", _obj] call ALIVE_fnc_ATOSurface) params [["_okF", false, [false]], ["_whyF", "", [""]]];
+                if (_okF) then {
+                    _matched = !(_whyF isEqualTo "");
+                    _detail = _whyF;
+                    if (!_matched) then { ["ALIVE_fnc_ATOEffect - %1 (%2) shown but left frozen until its stand is clear", typeOf _obj, _tailF] call ALiVE_fnc_dump };
+                } else {
+                    _status = "refused";
+                    _detail = _whyF;
                 };
             };
 

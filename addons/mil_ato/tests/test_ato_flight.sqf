@@ -162,6 +162,10 @@ open, which is also a fair statement of what the kernel will have to own.
                 // needs to know whose it was.
                 case "landAtPad":       { [_s, "BLU_F_0"] };
                 case "releaseApproach": { [_s, "BLU_F_0"] };
+                // Put out of sight on its stand and shown again: the surface,
+                // as the kernel hands it.
+                case "sleep":        { [_s, "BLU_F_0"] };
+                case "wake":         { [_s, "BLU_F_0"] };
                 case "lock":         { [] };
                 case "unlock":       { [] };
                 default              { [] };

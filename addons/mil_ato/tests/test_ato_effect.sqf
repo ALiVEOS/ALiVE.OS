@@ -609,6 +609,126 @@ nothing changed and it said so.
     (([_e, "apply", ["engineOn", objNull, _home, []]] call ALIVE_fnc_ATOEffect)) params ["_st20", "_m20", "_d20"];
     ["an effect on a missing aircraft is refused", _st20 isEqualTo "refused"] call _fnc_check;
 
+    // --- put out of sight on its stand, and shown again ------------------------
+    // Through the effector, which hands both to the surface. Measured before
+    // this was built: a jet held this way came back 0.00 m from where it was.
+    private _slPos = _spot getPos [60, 270];
+    private _sl = createVehicle ["B_Heli_Transport_01_F", _slPos, [], 0, "CAN_COLLIDE"];
+    _sl setPosATL [_slPos select 0, _slPos select 1, 0];
+    sleep 3;
+    private _slAt = getPosATL _sl;
+    private _slHome = [[_slAt select 0, _slAt select 1, 0], getDir _sl, "terrain"];
+    private _fnc_on = { params ["_eff", ["_extra", []]]; [_e, "apply", [_eff, _sl, _slHome, _extra]] call ALIVE_fnc_ATOEffect };
+
+    (["sleep", []] call _fnc_on) params ["_z0"];
+    ["put out of sight with no surface is refused", _z0 isEqualTo "refused"] call _fnc_check;
+    (["sleep", [_s, "T_SLEEP"]] call _fnc_on) params ["_z1", "_zm1"];
+    ["an empty parked hull is put out of sight and frozen",
+        (_z1 isEqualTo "ok") && {!_zm1} && {isObjectHidden _sl} && {!(simulationEnabled _sl)}
+        && {(_sl getVariable ["ALiVE_mil_ato_asleep", false]) isEqualTo true}] call _fnc_check;
+    (["sleep", [_s, "T_SLEEP"]] call _fnc_on) params ["_z2", "_zm2", "_zd2"];
+    ["asking again says it is already asleep", (_z2 isEqualTo "ok") && {_zm2} && {_zd2 isEqualTo "already asleep"}] call _fnc_check;
+    (["mintCrew"] call _fnc_on) params ["_z3", "", "_zd3"];
+    (["holdOnStand"] call _fnc_on) params ["_z4", "", "_zd4"];
+    ["no crew and no hold for a hull out of sight, whoever asks",
+        (_z3 isEqualTo "refused") && {_zd3 isEqualTo "asleep"} && {_z4 isEqualTo "refused"} && {_zd4 isEqualTo "asleep"}] call _fnc_check;
+
+    // Beside it, well inside the twelve metres the stand check reaches: a
+    // vehicle made inside a frozen hull is the kind of thing that is thrown.
+    private _tk = createVehicle ["B_Truck_01_transport_F", _slAt getPos [5, 90], [], 0, "CAN_COLLIDE"];
+    sleep 2;
+    (["wake", [_s, "T_SLEEP"]] call _fnc_on) params ["_z5", "", "_zd5"];
+    ["a truck on its stand keeps it out of sight, and says what is there",
+        (_z5 isEqualTo "refused") && {(_zd5 find "stand blocked by") == 0} && {isObjectHidden _sl}] call _fnc_check;
+    deleteVehicle _tk;
+    sleep 1;
+    (["wake", [_s, "T_SLEEP"]] call _fnc_on) params ["_z6", "_zm6"];
+    sleep 2;
+    diag_log format ["  info  shown again %1 m from where it was put out of sight, alive %2", ((getPosATL _sl) distance _slAt) toFixed 2, alive _sl];
+    ["with its stand clear it is shown where it was, simulated again, the mark gone",
+        (_z6 isEqualTo "ok") && {!_zm6} && {!(isObjectHidden _sl)} && {simulationEnabled _sl} && {alive _sl}
+        && {((getPosATL _sl) distance _slAt) < 0.5} && {isNil {_sl getVariable "ALiVE_mil_ato_asleep"}}] call _fnc_check;
+    (["wake", [_s, "T_SLEEP"]] call _fnc_on) params ["_z7", "_zm7", "_zd7"];
+    ["showing one that is not asleep does nothing", (_z7 isEqualTo "ok") && {_zm7} && {_zd7 isEqualTo "not asleep"}] call _fnc_check;
+    (["wake", []] call _fnc_on) params ["_z7b", "", "_zd7b"];
+    ["shown with no surface is refused", (_z7b isEqualTo "refused") && {_zd7b isEqualTo "no surface"}] call _fnc_check;
+
+    _sl enableSimulationGlobal false;
+    sleep 1;
+    (["sleep", [_s, "T_SLEEP"]] call _fnc_on) params ["_z7c", "", "_zd7c"];
+    ["a hull something else froze is left alone",
+        (_z7c isEqualTo "refused") && {_zd7c isEqualTo "frozen by something else"} && {!(isObjectHidden _sl)}] call _fnc_check;
+    _sl enableSimulationGlobal true;
+    sleep 1;
+
+    private _tk2 = createVehicle ["B_Truck_01_transport_F", _slAt getPos [4, 90], [], 0, "CAN_COLLIDE"];
+    sleep 2;
+    (["sleep", [_s, "T_SLEEP"]] call _fnc_on) params ["_z8", "", "_zd8"];
+    ["a truck beside it keeps it in sight", (_z8 isEqualTo "refused") && {(_zd8 find "stand not clear") == 0} && {!(isObjectHidden _sl)}] call _fnc_check;
+    deleteVehicle _tk2;
+    sleep 1;
+
+    _sl hideObjectGlobal true;
+    (["sleep", [_s, "T_SLEEP"]] call _fnc_on) params ["_z9", "", "_zd9"];
+    ["a hull something else hid is left alone", (_z9 isEqualTo "refused") && {_zd9 isEqualTo "hidden by something else"}] call _fnc_check;
+    _sl hideObjectGlobal false;
+
+    createVehicleCrew _sl;
+    sleep 1;
+    (["sleep", [_s, "T_SLEEP"]] call _fnc_on) params ["_z10", "", "_zd10"];
+    ["a hull with a crew aboard is not put out of sight", (_z10 isEqualTo "refused") && {_zd10 isEqualTo "crew aboard"}] call _fnc_check;
+    { deleteVehicle _x } forEach (crew _sl);
+    sleep 1;
+
+    _sl setVariable ["ALiVE_mil_ato_asleep", true];
+    (["wake", [_s, "T_SLEEP"]] call _fnc_on) params ["_z11", "", "_zd11"];
+    ["a mark left on a hull something else showed is cleared",
+        (_z11 isEqualTo "ok") && {_zd11 isEqualTo "marker stale, cleared"} && {isNil {_sl getVariable "ALiVE_mil_ato_asleep"}}] call _fnc_check;
+
+    // Taken to another stand while out of sight and shown there, which is how
+    // every sleeper whose stand is taken gets a new one.
+    (["sleep", [_s, "T_SLEEP"]] call _fnc_on) params ["_z14"];
+    private _slTo = _slAt getPos [50, 0];
+    private _slHome2 = [[_slTo select 0, _slTo select 1, 0], getDir _sl, "terrain"];
+    ([_e, "apply", ["placeOnSlot", _sl, _slHome2, [_s]]] call ALIVE_fnc_ATOEffect) params ["_z15", "", "_zd15"];
+    private _stillHidden = isObjectHidden _sl;
+    ([_e, "apply", ["wake", _sl, _slHome2, [_s, "T_SLEEP"]]] call ALIVE_fnc_ATOEffect) params ["_z16", "", "_zd16"];
+    sleep 10;
+    diag_log format ["  info  moved out of sight: sleep %1, place %2 (%3), wake %4 (%5); %6 m from the new stand, up %7, damage %8",
+        _z14, _z15, _zd15, _z16, _zd16, ((getPosATL _sl) distance2D _slTo) toFixed 2, ((vectorUp _sl) select 2) toFixed 3, (damage _sl) toFixed 3];
+    ["moved while out of sight, and shown on its new stand, upright and unharmed ten seconds later",
+        (_z14 isEqualTo "ok") && {_z15 isEqualTo "ok"} && {_stillHidden} && {_z16 isEqualTo "ok"}
+        && {((getPosATL _sl) distance2D _slTo) < 1} && {((vectorUp _sl) select 2) > 0.95}
+        && {!(isObjectHidden _sl)} && {simulationEnabled _sl} && {alive _sl} && {(damage _sl) < 0.05}] call _fnc_check;
+    _slAt = getPosATL _sl;
+
+    // The last resort, for a hull that cannot be woken when nothing will ask
+    // again: in view but frozen while a truck stands beside it, and simulated
+    // again once the truck has gone.
+    (["sleep", [_s, "T_SLEEP"]] call _fnc_on) params ["_z17"];
+    private _tk4 = createVehicle ["B_Truck_01_transport_F", _slAt getPos [5, 90], [], 0, "CAN_COLLIDE"];
+    sleep 2;
+    (["showFrozen", [_s, "T_SLEEP"]] call _fnc_on) params ["_z18", "_zm18"];
+    ["shown frozen, it is in view, not simulated, and no longer marked",
+        (_z17 isEqualTo "ok") && {_z18 isEqualTo "ok"} && {!_zm18} && {!(isObjectHidden _sl)} && {!(simulationEnabled _sl)}
+        && {isNil {_sl getVariable "ALiVE_mil_ato_asleep"}}] call _fnc_check;
+    sleep 12;
+    ["and stays frozen while the truck is beside it", !(simulationEnabled _sl)] call _fnc_check;
+    deleteVehicle _tk4;
+    private _tFz = time;
+    waitUntil { sleep 1; (simulationEnabled _sl) || {time - _tFz > 15} };
+    ["and is simulated again once its stand is clear", simulationEnabled _sl && {alive _sl}] call _fnc_check;
+
+    (["sleep", [_s, "T_SLEEP"]] call _fnc_on) params ["_z12"];
+    private _tk3 = createVehicle ["B_Truck_01_transport_F", _slAt getPos [5, 90], [], 0, "CAN_COLLIDE"];
+    _sl setDamage 1;
+    sleep 2;
+    (["wake", [_s, "T_SLEEP"]] call _fnc_on) params ["_z13"];
+    ["a wreck is shown even with a truck on its stand",
+        (_z12 isEqualTo "ok") && {_z13 isEqualTo "ok"} && {!(isObjectHidden _sl)}] call _fnc_check;
+    deleteVehicle _tk3;
+    deleteVehicle _sl;
+
     // --- tidy -------------------------------------------------------------------
     { deleteVehicle _x } forEach (crew _veh);
     deleteVehicle _veh;

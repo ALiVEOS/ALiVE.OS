@@ -174,6 +174,10 @@ switch(_operation) do {
             ["taxiedOutAt", -1],
             ["taxiWaits", 0],
             ["launchExtended", false],
+            // Assigned while asleep on its stand: shown first, and its crew
+            // made only once it is in the world again. Cleared when that
+            // happens and on every way out of ASSIGNED.
+            ["crewPending", false],
             ["reason", ""]
         ]] call ALIVE_fnc_hashCreate;
     };
@@ -337,8 +341,13 @@ switch(_operation) do {
                     case (_cmd isEqualTo "CANCEL" && {!(_state in ["PARKED","LOST"])}): {
                         _next = "RTB"; _reason = "CANCELLED";
                     };
+                    // Not by a hull asleep on a stand something now stands on.
+                    // It could not be shown to fly, so the sortie is handed
+                    // straight back for another aircraft rather than after two
+                    // minutes of asking.
                     case (_cmd isEqualTo "ASSIGN" && {_state isEqualTo "PARKED"}
-                          && {_now >= ([_row,"readyAt",0] call ALIVE_fnc_hashGet)}): {
+                          && {_now >= ([_row,"readyAt",0] call ALIVE_fnc_hashGet)}
+                          && {!(("asleep" call _fnc_o) && {!("standClear" call _fnc_o)})}): {
                         _next = "ASSIGNED";
                     };
                     case (_cmd isEqualTo "REROUTE" && {_state isEqualTo "ON_STATION"}): {
@@ -366,6 +375,29 @@ switch(_operation) do {
 
                             case "PARKED": {
                                 if (!_atHome) then { _next = "RECOVERING" };
+                                // Out of sight and frozen while nobody who could
+                                // see it is near, the way a virtual profile is
+                                // nothing until somebody comes: players read an
+                                // airfield of parked jets far from anyone as the
+                                // commander having forgotten to put them away.
+                                // Only on a terrain stand, only empty (no live
+                                // crew and no body), only ours, never with a
+                                // service truck coming or a put-down still
+                                // settling, only on a stand that is clear right
+                                // now, so it can be shown the moment it is
+                                // needed, and only once nobody is inside the
+                                // sleep distance, which is longer than the wake
+                                // distance so somebody pacing the edge cannot
+                                // make it blink. Measured, a jet held this way
+                                // for a minute came back 0.00 m from where it
+                                // was, with its fuel, damage and pylons intact.
+                                private _canSleep = _atHome && {!_airborne} && {!_remote}
+                                    && {!("deckHome" call _fnc_o)} && {!_virtualHome}
+                                    && {"crewLoss" call _fnc_o} && {!("deadAboard" call _fnc_o)} && {!("anyPlayerAboard" call _fnc_o)}
+                                    && {!("asleep" call _fnc_o)} && {!("servicePending" call _fnc_o)} && {!("settling" call _fnc_o)}
+                                    && {"standClear" call _fnc_o}
+                                    && {("watchersWithinSleep" call _fnc_n) == 0};
+                                if (_canSleep) then { _effects pushBack "sleep" };
                             };
 
                             case "PLAYER_FLOWN": {
@@ -413,6 +445,34 @@ switch(_operation) do {
                                     };
                                     _reason = "TARGETS_GONE";
                                 };
+                                // Assigned while asleep: shown first, asked for
+                                // again every tick until it is, and only then
+                                // crewed. The runway is asked for the tick after
+                                // that, by the rule below, never while it is
+                                // still out of sight: a hidden jet that cannot
+                                // launch would hold the runway for its two
+                                // minutes.
+                                private _crewPending = ([_row,"crewPending",false] call ALIVE_fnc_hashGet) || {"asleep" call _fnc_o};
+                                // Still out of sight and no longer at home: its
+                                // stand was taken and it was given another, which
+                                // only recovery takes it to. Handed back at once
+                                // rather than after its two minutes, and moved
+                                // there out of sight on the next tick.
+                                if (_crewPending && {"asleep" call _fnc_o} && {!_atHome}) exitWith {
+                                    _effects append ["unlock","assignFailed"];
+                                    _next = "RECOVERING";
+                                    _reason = "STAND_BLOCKED";
+                                };
+                                if (_crewPending) then {
+                                    if ("asleep" call _fnc_o) then {
+                                        _effects pushBackUnique "wake";
+                                        [_row,"crewPending",true] call ALIVE_fnc_hashSet;
+                                    } else {
+                                        [_row,"crewPending",false] call ALIVE_fnc_hashSet;
+                                        if (_landPlane) then { _effects pushBack "holdOnStand" };
+                                        _effects append ["mintCrew","seatCrew"];
+                                    };
+                                };
                                 // Only an aircraft that uses the runway waits for it.
                                 // A helicopter lifts off from its own pad and lands
                                 // on it again, and queueing it behind the jets cost
@@ -420,7 +480,7 @@ switch(_operation) do {
                                 // the runway through five minutes of hovering while a
                                 // jet behind it ran out of time on NO_LOCK.
                                 private _lockOk = !_takesRunway || {"lockHeld" call _fnc_o};
-                                if ("crewSeated" call _fnc_o && {_lockOk}) then {
+                                if (!_crewPending && {"crewSeated" call _fnc_o} && {_lockOk}) then {
                                     _next = "LAUNCHING";
                                 } else {
                                     // Only the runway is missing and another of our
@@ -467,6 +527,9 @@ switch(_operation) do {
                                         // could not say whether for want of a pilot or of
                                         // the runway lock, which need different fixes.
                                         _reason = switch (true) do {
+                                            // Never shown: something stood on its
+                                            // stand the whole time.
+                                            case (_crewPending && {"asleep" call _fnc_o}): { "STAND_BLOCKED" };
                                             case (!("crewSeated" call _fnc_o) && {!_lockOk}): { "NO_PILOT_NO_LOCK" };
                                             case (!("crewSeated" call _fnc_o)): { "NO_PILOT" };
                                             default { "NO_LOCK" };
@@ -480,7 +543,7 @@ switch(_operation) do {
                                         // back to being parked. The landing approach learnt
                                         // the same lesson. Asked only while it is not held,
                                         // so a lock already won is never extended.
-                                        if (!_lockOk) then { _effects pushBack "lock" };
+                                        if (!_lockOk && {!_crewPending}) then { _effects pushBack "lock" };
                                     };
                                 };
                             };
@@ -1143,7 +1206,10 @@ switch(_operation) do {
                                         };
                                     };
                                     case (_atHome): { _next = "PARKED"; };
-                                    case (("playersWithin1000Hull" call _fnc_n) == 0): {
+                                    // Or while it is out of sight, whoever is near:
+                                    // nobody can see a hidden hull move, and it is
+                                    // shown again once it is on its new stand.
+                                    case ((("playersWithin1000Hull" call _fnc_n) == 0) || {"asleep" call _fnc_o}): {
                                         _effects pushBack "placeOnSlot";
                                         _next = "PARKED";
                                     };
@@ -1189,6 +1255,12 @@ switch(_operation) do {
                 _effects pushBack "releaseHold";
             };
             if (_state isEqualTo "LAUNCHING") then { _effects pushBack "releaseHold" };
+            // And a hull put out of sight is shown again on every way out of
+            // every state: taken to another stand, handed to a player, lost
+            // (a wreck left hidden could be neither cleared nor rescued) or
+            // given back after an assignment it never started.
+            if ("asleep" call _fnc_o) then { _effects pushBackUnique "wake" };
+            if (_state isEqualTo "ASSIGNED") then { [_row,"crewPending",false] call ALIVE_fnc_hashSet };
 
             [_row,"state",_next] call ALIVE_fnc_hashSet;
             [_row,"enteredAt",_now] call ALIVE_fnc_hashSet;
@@ -1211,6 +1283,7 @@ switch(_operation) do {
             };
             if (_next isEqualTo "ASSIGNED") then {
                 [_row,"runwayWaits",0] call ALIVE_fnc_hashSet;
+                [_row,"crewPending",false] call ALIVE_fnc_hashSet;
             };
             if (_next isEqualTo "LAUNCHING") then {
                 [_row,"taxiedOutAt",-1] call ALIVE_fnc_hashSet;
@@ -1245,14 +1318,22 @@ switch(_operation) do {
                 // engine and rolls, and one rolled half out of its hangar door
                 // while it waited. The tank is given back on the way out.
                 case "ASSIGNED":     {
-                    // Fixed wing only: a VTOL lifts where it stands, so it is
-                    // neither held nor given the runway.
-                    if (_landPlane) then {
-                        _effects pushBack "holdOnStand";
+                    if ("asleep" call _fnc_o) then {
+                        // Out of sight on its stand: shown first, and its crew,
+                        // its hold and the runway follow once it is, from the
+                        // state's own rules.
+                        _effects pushBackUnique "wake";
+                        [_row,"crewPending",true] call ALIVE_fnc_hashSet;
+                    } else {
+                        // Fixed wing only: a VTOL lifts where it stands, so it is
+                        // neither held nor given the runway.
+                        if (_landPlane) then {
+                            _effects pushBack "holdOnStand";
+                        };
+                        _effects append ["mintCrew","seatCrew"];
+                        // The runway only for something that uses it.
+                        if (_takesRunway) then { _effects pushBack "lock" };
                     };
-                    _effects append ["mintCrew","seatCrew"];
-                    // The runway only for something that uses it.
-                    if (_takesRunway) then { _effects pushBack "lock" };
                 };
                 // Start the engine as well as saying it is going. Announcing a
                 // departure does not make one happen.
@@ -1313,6 +1394,28 @@ switch(_operation) do {
             };
         };
 
+        // ---- an aircraft put out of sight ----------------------------------
+        // Shown again for anybody near enough to see it, whatever state it is
+        // in. And shown AFTER any move the same step makes, so a hull being
+        // taken to another stand is moved while nobody can see it and appears
+        // where it now belongs; shown first it would either appear at the old
+        // stand and then jump in view, or be refused by whatever caused the move.
+        if (("asleep" call _fnc_o) && {("watchersWithinWake" call _fnc_n) > 0}) then { _effects pushBackUnique "wake" };
+        // Only a parked aircraft is ever put out of sight. One found hidden in
+        // any other state is shown, so nothing it is asked to do next happens
+        // to a hull nobody can see.
+        if (("asleep" call _fnc_o) && {!(_next in ["PARKED","LOST"])}) then { _effects pushBackUnique "wake" };
+        if ("wake" in _effects) then {
+            _effects = _effects - ["wake"];
+            private _lastMove = -1;
+            { if (_x in TELEPORTS) then { _lastMove = _forEachIndex } } forEach _effects;
+            _effects = if (_lastMove < 0) then {
+                ["wake"] + _effects
+            } else {
+                (_effects select [0, _lastMove + 1]) + ["wake"] + (_effects select [_lastMove + 1])
+            };
+        };
+
         // A player in the aircraft refuses every effect that would move it. This
         // is the one rule that outranks the table, and it is applied here rather
         // than in each state so no state can forget it.
@@ -1328,7 +1431,7 @@ switch(_operation) do {
         // a player who took an aircraft mid-wait must not be left with it empty.
         // Saying that it is coming down does nothing to it at all.
         if (_remote) then {
-            _effects = _effects select { _x in ["takeOwnership","unlock","releaseHold","goingDown","goingDownLapsed"] };
+            _effects = _effects select { _x in ["takeOwnership","unlock","releaseHold","goingDown","goingDownLapsed","wake"] };
         };
 
         // ---- deadline and orders ------------------------------------------

@@ -48,6 +48,18 @@ Jman
 // Above this off the ground the aircraft is flying, not parked or rolling.
 #define AIRBORNE_AGL 50
 
+// A parked aircraft is put out of sight only once nobody is inside its wake
+// distance times this, the profile system's own despawn margin, so somebody
+// pacing the edge cannot make it blink. And the wake distance is raised by this
+// many of the roster's slow ticks of a watcher's own speed, so nobody who is
+// moving can reach the field before the aircraft is back in it.
+#define SLEEP_FACTOR 1.2
+#define LOOKAHEAD_TICKS 1.5
+// The profile system's air combat activator counts a watcher as flying from
+// this height, and from then on wakes grounded aircraft from its own, longer,
+// radii (fnc_profileActivatorAirCombat.sqf).
+#define AIR_COMBAT_AIRBORNE 3
+
 private ["_result"];
 
 TRACE_1("ATO Observe - input",_this);
@@ -97,6 +109,73 @@ switch(_operation) do {
         _result = (count _bodies) + (count _cameras);
     };
 
+    // Everyone and everything that would make the profile system spawn an
+    // aircraft profile near it, each with the distance it wakes a parked
+    // aircraft from. Built once a roster tick and handed to every observation,
+    // so the work per aircraft is one distance each.
+    //
+    // Live players (never a headless client), Zeus cameras a player owns, drones
+    // somebody is connected to, and the mission's own spawn sources. A Zeus
+    // camera counts whatever the profile system's own Zeus setting says, as it
+    // does for playersNear above, so nobody watching through one sees a parked
+    // aircraft vanish or appear. The
+    // distance is the largest that applies, never a smaller one: the profile
+    // system's jet radius defaults to 0, which would otherwise shrink it. Then
+    // the watcher's own speed over one and a half slow ticks is added on top, so
+    // a jet at 250 m/s wakes the field from 1500 + 3750 m and a man walking
+    // from 1575 m. Distance is on the map, not through the air, so anything
+    // overhead wakes it a little sooner.
+    //
+    // Needs no instance, like playersNear.
+    case "watchers": {
+        _args params [["_slowTick", 10, [0]]];
+        private _base = if (isNil "ALIVE_spawnRadius") then { 1500 } else { ALIVE_spawnRadius };
+        if !(_base isEqualType 0) then { _base = 1500 };
+        private _ac = [nil, "airCombatActivator"] call MAINCLASS;
+        private _list = ((allPlayers - (entities "HeadlessClient_F")) select { alive _x })
+            + (allCurators select { private _owner = getAssignedCuratorUnit _x; !isNull _owner && {isPlayer _owner} })
+            + (allUnitsUAV select { isUavConnected _x });
+        if (!isNil "ALiVE_SpawnSources" && {ALiVE_SpawnSources isEqualType []}) then {
+            _list append (ALiVE_SpawnSources select { _x isEqualType objNull && {!isNull _x} });
+        };
+        _result = _list apply {
+            private _w = _x;
+            private _v = vehicle _w;
+            private _r = _base;
+            if (_v isKindOf "Plane" && {!isNil "ALIVE_spawnRadiusJet"} && {ALIVE_spawnRadiusJet isEqualType 0}) then { _r = _r max ALIVE_spawnRadiusJet };
+            if (_v isKindOf "Helicopter" && {!isNil "ALIVE_spawnRadiusHeli"} && {ALIVE_spawnRadiusHeli isEqualType 0}) then { _r = _r max ALIVE_spawnRadiusHeli };
+            if (unitIsUAV _v) then {
+                private _uavR = if (isNil "ALIVE_spawnRadiusUAV" || {!(ALIVE_spawnRadiusUAV isEqualType 0)} || {ALIVE_spawnRadiusUAV < 0}) then { _base + 800 } else { ALIVE_spawnRadiusUAV };
+                _r = _r max _uavR;
+            };
+            if (count _ac > 1 && {((getPosATL _v) select 2) >= AIR_COMBAT_AIRBORNE}) then {
+                if (_v isKindOf "Plane") then { _r = _r max (_ac select 0) };
+                if (_v isKindOf "Helicopter") then { _r = _r max (_ac select 1) };
+            };
+            _r = _r + ((abs (speed _v)) / 3.6) * _slowTick * LOOKAHEAD_TICKS;
+            [_w, _r]
+        };
+    };
+
+    // The profile system's air combat activator, when it is on: its plane and
+    // helicopter radii, from which it spawns grounded aircraft profiles for
+    // anyone flying. Empty when there is no profile system or it is off.
+    case "airCombatActivator": {
+        _result = [];
+        if (isNil "ALIVE_profileSystem") exitWith {};
+        private _coord = [ALIVE_profileSystem, "profileActivationCoordinator", 0] call ALIVE_fnc_hashGet;
+        if !(typeName _coord isEqualTo "HASHMAP") exitWith {};
+        private _byId = _coord getOrDefault ["activatorByID", createHashMap];
+        if !(typeName _byId isEqualTo "HASHMAP") exitWith {};
+        private _a = _byId getOrDefault ["airCombat", 0];
+        if !(typeName _a isEqualTo "HASHMAP") exitWith {};
+        private _plane = _a getOrDefault ["planeVehicleRadius", 7000];
+        private _heli = _a getOrDefault ["helicopterVehicleRadius", 5000];
+        if !(_plane isEqualType 0) then { _plane = 7000 };
+        if !(_heli isEqualType 0) then { _heli = 5000 };
+        _result = [_plane, _heli];
+    };
+
     case "observe": {
         _args params [
             ["_obj", objNull, [objNull]],
@@ -111,8 +190,17 @@ switch(_operation) do {
             // back to it, in seconds, or minus one for none. A setting rather
             // than something seen, carried here because the table reads only
             // the observation. Optional, as above.
-            ["_playerGrace", -1, [0]]
+            ["_playerGrace", -1, [0]],
+            // Who could see a parked aircraft, as watchers answers it. The
+            // kernel builds it once a tick and passes it to every observation;
+            // anybody else leaves it out and it is built here.
+            ["_watchers", -1, [[], 0]],
+            // Whether the aircraft's own stand is clear of vehicles, from the
+            // surface, which only the kernel holds. Only a parked aircraft's
+            // answer is ever read. Optional, true when not passed.
+            ["_standClear", true, [true]]
         ];
+        if (_watchers isEqualType 0) then { _watchers = [nil, "watchers", [10]] call MAINCLASS };
 
         private _o = [] call ALIVE_fnc_hashCreate;
         private _fnc_set = { [_o, _this select 0, _this select 1] call ALIVE_fnc_hashSet };
@@ -133,13 +221,18 @@ switch(_operation) do {
                        "crewGroupLive","driverPresent","crewSeated","playerControl","playerPassenger",
                        "anyPlayerAboard","uavControlled","onStation","targetsGone","lockHeld","lockBusy",
                        "deckHome","fixedWing","needsRunway","launchInProgress","onRunway","armed","virtualHome",
-                       "atTaxiOffEnd","canMove","onTaxiway","nearStand","heldOnStand","deadAboard","pilotDead"];
+                       "atTaxiOffEnd","canMove","onTaxiway","nearStand","heldOnStand","deadAboard","pilotDead",
+                       "servicePending","settling","standClear"];
             {
                 [_o, _x, 0] call ALIVE_fnc_hashSet;
             } forEach ["altAGL","altASL","speed","fuel","damage","wpRemaining","aliveCrew",
                        "ordnance","climbRate","distHome","taxiOutAt",
                        "playersWithin300","playersWithin1000Hull","playersWithin1000Home",
-                       "playersWithin1500Home"];
+                       "playersWithin1500Home","watchersWithinWake","watchersWithinSleep"];
+            // Asleep is read off the hull even when it is dead, which it still
+            // answers: a jet bombed in its sleep is a hidden wreck, and the way
+            // out of its state has to show it again.
+            ["asleep", !isNull _obj && {(_obj getVariable ["ALiVE_mil_ato_asleep", false]) isEqualTo true}] call _fnc_set;
             // Nobody is aboard a hull that is gone, so nothing is holding it.
             ["crewLoss", true] call _fnc_set;
             ["playerGrace", _playerGrace] call _fnc_set;
@@ -213,6 +306,21 @@ switch(_operation) do {
         // move, and a plane waiting for its taxi route is not a broken one.
         private _heldFuel = _obj getVariable ["ALiVE_mil_ato_heldFuel", -1];
         ["heldOnStand", (_heldFuel isEqualType 0) && {_heldFuel >= 0}] call _fnc_set;
+
+        // Put out of sight on its stand by this module: marked AND hidden. A
+        // hull something else has shown again is not asleep, and waking it
+        // clears the stale mark.
+        ["asleep", ((_obj getVariable ["ALiVE_mil_ato_asleep", false]) isEqualTo true) && {isObjectHidden _obj}] call _fnc_set;
+        // A service visit is on its way or under way: asked for by this module,
+        // or a logistics truck still driving to it or working on it, which it
+        // carries on doing after this module's own wait has run out.
+        private _rs = _obj getVariable ["ALIVE_resupply_state", ""];
+        if !(_rs isEqualType "") then { _rs = "" };
+        ["servicePending", ((_obj getVariable ["ALiVE_mil_ato_serviceAsked", false]) isEqualTo true) || {_rs in ["enroute","servicing"]}] call _fnc_set;
+        // Still settling after being put down from the air, which a thread is
+        // watching and would be watching a frozen hull.
+        private _settlingUntil = _obj getVariable ["ALiVE_mil_ato_settlingUntil", -1];
+        ["settling", (_settlingUntil isEqualType 0) && {time < _settlingUntil}] call _fnc_set;
 
         // When its taxi out last finished: stood on its airport's route, found
         // already standing on it, or with no route there to be stood on, which
@@ -579,6 +687,24 @@ switch(_operation) do {
         ["playersWithin1000Hull", [_pos, 1000] call _fnc_players] call _fnc_set;
         ["playersWithin1000Home", [_homePos, 1000] call _fnc_players] call _fnc_set;
         ["playersWithin1500Home", [_homePos, 1500] call _fnc_players] call _fnc_set;
+
+        // And watchers in the wider sense a parked aircraft is put away for:
+        // everyone watchers lists, each with their own wake distance. Inside it
+        // wakes the aircraft; nobody inside it times SLEEP_FACTOR lets it sleep;
+        // in between, nothing changes.
+        private _inside = 0;
+        private _nearby = 0;
+        {
+            _x params ["_w", ["_r", 1500, [0]]];
+            if (!isNull _w) then {
+                private _d = _w distance2D _pos;
+                if (_d < _r) then { _inside = _inside + 1 };
+                if (_d < _r * SLEEP_FACTOR) then { _nearby = _nearby + 1 };
+            };
+        } forEach _watchers;
+        ["watchersWithinWake", _inside] call _fnc_set;
+        ["watchersWithinSleep", _nearby] call _fnc_set;
+        ["standClear", _standClear] call _fnc_set;
 
         // ---- the sortie ------------------------------------------------------
         private _onStation = false;

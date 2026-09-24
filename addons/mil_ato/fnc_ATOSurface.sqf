@@ -1601,8 +1601,13 @@ switch(_operation) do {
     // there and was 84 m up three seconds later, and nothing then looked for
     // anything but another aircraft. Kept here so that putting an aircraft on a
     // stand and creating one there refuse for the same things.
+    //
+    // A wrecked aircraft is left out, unless the fourth argument is true. Waking
+    // a hull asks for it: that turns the hull's simulation back on where it
+    // stands, with whatever is inside it, and a wreck there is as solid as a
+    // truck.
     case "standBlocker": {
-        _args params [["_target",[0,0,0],[[]]], ["_class","",[""]], ["_mine",[],[[]]]];
+        _args params [["_target",[0,0,0],[[]]], ["_class","",[""]], ["_mine",[],[[]]], ["_wrecksToo",false,[false]]];
         private _reach = 12;
         private _bbB = [_class] call ALiVE_fnc_getVehicleBoundingBox;
         if (count _bbB > 1) then {
@@ -1611,7 +1616,7 @@ switch(_operation) do {
         private _blocked = (nearestObjects [_target, ["Air","LandVehicle"], _reach]) select {
             private _cand = _x;
             (_mine findIf {_x isEqualTo _cand}) == -1
-                && {alive _cand || {_cand isKindOf "LandVehicle"}}
+                && {_wrecksToo || {alive _cand} || {_cand isKindOf "LandVehicle"}}
         };
         _result = _blocked param [0, objNull];
     };
@@ -2113,6 +2118,110 @@ switch(_operation) do {
     };
 
     // ---- pads and reservations ------------------------------------------
+
+    // Out of sight and frozen where it stands, never moved: a parked aircraft
+    // nobody is near. Not the virtual-home hold below, which release undoes
+    // without asking whose hide it is; this one is marked, so only its own wake
+    // shows it again.
+    //
+    // Refused when something else hid it (sys_logistics hides loaded cargo) or
+    // froze it as a module would. The engine's own Dynamic Simulation also
+    // reads simulationEnabled false on an empty vehicle with nobody near, which
+    // is exactly the hull this is for, so that freeze is told apart with
+    // dynamicSimulationEnabled. Refused on a stand that is not clear: a hull
+    // only sleeps where it could be shown at once. allowDamage is left alone:
+    // measured, a Mk82 10 m away destroyed a held jet and a visible one alike.
+    //
+    // Answers [ok, detail]; the detail says why it was refused, or that nothing
+    // needed doing.
+    case "sleep": {
+        private _obj = _args;
+        if (!(_obj isEqualType objNull) || {isNull _obj}) exitWith { _result = [false, "no object"] };
+        if (((_obj getVariable ["ALiVE_mil_ato_asleep", false]) isEqualTo true) && {isObjectHidden _obj}) exitWith { _result = [true, "already asleep"] };
+        if (isObjectHidden _obj) exitWith { _result = [false, "hidden by something else"] };
+        if (!(simulationEnabled _obj) && {!(dynamicSimulationEnabled _obj)}) exitWith { _result = [false, "frozen by something else"] };
+        if (count (crew _obj) > 0) exitWith { _result = [false, "crew aboard"] };
+        private _at = getPosATL _obj;
+        _at set [2, 0];
+        private _blocker = [_logic, "standBlocker", [_at, typeOf _obj, [_obj]]] call MAINCLASS;
+        if (!isNull _blocker) exitWith { _result = [false, format ["stand not clear: %1", typeOf _blocker]] };
+        _obj setVariable ["ALiVE_mil_ato_asleep", true, false];
+        _obj hideObjectGlobal true;
+        _obj enableSimulationGlobal false;
+        _result = [true, ""];
+    };
+
+    // Back in the world where it stands. The stand is checked first with the
+    // test place uses, because a held hull has no ray geometry (measured: a
+    // line from above passes straight through it) so anything can end up on
+    // it, and an aircraft let go onto a vehicle is thrown (measured: 314 m).
+    // Refused means ask again. Only a wreck skips the check: a hidden wreck is
+    // worse than a thrown one, and there is no switch to force a live hull out
+    // because the throw is the measured fault.
+    //
+    // Only vehicles are looked for, a wrecked aircraft included. Men and crates
+    // are not: measured putting an aircraft down on them, four soldiers were
+    // pushed aside unharmed and a crate was crushed. Nor is a building or a wall
+    // somebody has placed on a stand, which nothing in the mod does.
+    //
+    // Answers [ok, detail] like sleep.
+    case "wake": {
+        private _obj = _args;
+        if (!(_obj isEqualType objNull) || {isNull _obj}) exitWith { _result = [false, "no object"] };
+        if !((_obj getVariable ["ALiVE_mil_ato_asleep", false]) isEqualTo true) exitWith { _result = [true, "not asleep"] };
+        // Shown again by something else: clear the stale mark and make sure it
+        // is simulated, and say so.
+        if (!(isObjectHidden _obj)) exitWith {
+            _obj setVariable ["ALiVE_mil_ato_asleep", nil, false];
+            _obj enableSimulationGlobal true;
+            _result = [true, "marker stale, cleared"];
+        };
+        private _blocker = objNull;
+        if (alive _obj) then {
+            private _at = getPosATL _obj;
+            _at set [2, 0];
+            _blocker = [_logic, "standBlocker", [_at, typeOf _obj, [_obj] + (crew _obj), true]] call MAINCLASS;
+        };
+        if (!isNull _blocker) exitWith {
+            _result = [false, format ["stand blocked by %1%2", if (alive _blocker) then {""} else {"a wrecked "}, typeOf _blocker]];
+        };
+        _obj enableSimulationGlobal true;
+        _obj hideObjectGlobal false;
+        _obj setVariable ["ALiVE_mil_ato_asleep", nil, false];
+        _result = [true, ""];
+    };
+
+    // Shown where it stands but left frozen, for a hull that cannot be woken
+    // when nothing will ask again: its commander is being taken down, or the
+    // aircraft is no longer the commander's. Left hidden it would be an
+    // invisible hull that every later stand check still finds, so a stand that
+    // reads taken with nothing on it. Frozen, whatever is on its stand cannot
+    // throw it. A watch started here gives it its simulation back once the
+    // stand is clear, and ends if the hull is gone or something else has
+    // already done it.
+    //
+    // Answers [ok, detail] like wake.
+    case "showFrozen": {
+        private _obj = _args;
+        if (!(_obj isEqualType objNull) || {isNull _obj}) exitWith { _result = [false, "no object"] };
+        if !((_obj getVariable ["ALiVE_mil_ato_asleep", false]) isEqualTo true) exitWith { _result = [true, "not asleep"] };
+        _obj setVariable ["ALiVE_mil_ato_asleep", nil, false];
+        _obj hideObjectGlobal false;
+        [_logic, _obj] spawn {
+            params ["_surface", "_v"];
+            private _fnc_clear = {
+                private _at = getPosATL _v;
+                _at set [2, 0];
+                isNull ([_surface, "standBlocker", [_at, typeOf _v, [_v] + (crew _v), true]] call ALIVE_fnc_ATOSurface)
+            };
+            waitUntil { sleep 10; isNull _v || {simulationEnabled _v} || {isObjectHidden _v} || {call _fnc_clear} };
+            if (!isNull _v && {!(simulationEnabled _v)} && {!(isObjectHidden _v)}) then {
+                _v enableSimulationGlobal true;
+                ["ALIVE_fnc_ATOSurface - %1 left frozen on its stand is simulated again: the stand is clear", typeOf _v] call ALiVE_fnc_dump;
+            };
+        };
+        _result = [true, ""];
+    };
 
     // Let a held aircraft go. The exact inverse of what place does to one at a
     // virtual home, kept here because this file owns what "held" means.

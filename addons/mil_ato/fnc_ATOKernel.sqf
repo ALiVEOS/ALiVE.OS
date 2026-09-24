@@ -830,6 +830,95 @@ private _fnc_publish = {
     true
 };
 
+// ---- is the stand still a stand --------------------------------------------
+// A new home from placement's rehome, which is the one path to a new home after
+// attach, with the reason, so the eviction line can say why a stand with nothing
+// on it was given up. A failure is written down and retried on the queue tick's
+// own schedule rather than every roster tick. Answers whether the home moved.
+private _fnc_rehome = {
+    params [["_logic", objNull, [objNull]], ["_tail", "", [""]], ["_why", "", [""]], ["_now", 0, [0]]];
+    private _k = [_logic] call _fnc_kernel;
+    private _place = [_logic, "place"] call _fnc_piece;
+    if (_k isEqualTo [] || {_place isEqualTo []}) exitWith { false };
+    private _retry = [_k, "rehomeFailedAt", []] call ALIVE_fnc_hashGet;
+    private _h = [_place, "rehome", [_tail, _why]] call ALIVE_fnc_ATOPlace;
+    if (_h isEqualType [] && {count _h >= 3}) exitWith {
+        [_retry, _tail] call ALIVE_fnc_hashRem;
+        true
+    };
+    [_retry, _tail, _now] call ALIVE_fnc_hashSet;
+    false
+};
+
+// Is the home still a home for this aircraft, asked on arrival at the stand.
+// Geometry means find another; occupied means something else is sitting on it
+// and this aircraft has to move. Answers whether the home moved.
+private _fnc_rehomeIfOccupied = {
+    params [["_logic", objNull, [objNull]], ["_tail", "", [""]], ["_obj", objNull, [objNull]],
+            ["_home", [], [[]]], ["_now", 0, [0]]];
+    private _surface = [_logic, "surface"] call _fnc_piece;
+    if (_surface isEqualTo [] || {count _home < 3}) exitWith { false };
+    private _class = [_logic, _tail, "vehicleClass", ""] call _fnc_recField;
+    private _v = [_surface, "validate", [_home, _class, _obj]] call ALIVE_fnc_ATOSurface;
+    if (!(_v param [0, false]) && {(_v param [1, ""]) in ["occupied","geometry"]}) exitWith {
+        [_logic, _tail, _v param [1, ""], _now] call _fnc_rehome
+    };
+    false
+};
+
+// ---- showing again what was put out of sight -------------------------------
+// One hull asleep on its stand shown through the same checked wake the table
+// uses, so never onto a vehicle on its stand. A refusal is written down like
+// any other and the hull stays marked, so the next ask finds it: the roster's
+// own tick, or the paused driver's retry. When nothing will ask again (_last:
+// the commander is being taken down, or the aircraft is no longer its) a hull
+// that cannot be woken is shown frozen instead, and that is written down every
+// time. Answers whether the hull is in view now.
+private _fnc_wakeOne = {
+    params [["_logic", objNull, [objNull]], ["_tail", "", [""]], ["_obj", objNull, [objNull]],
+            ["_why", "", [""]], ["_last", false, [false]]];
+    private _effect = [_logic, "effect"] call _fnc_piece;
+    private _surface = [_logic, "surface"] call _fnc_piece;
+    if (_effect isEqualTo [] || {_surface isEqualTo []} || {isNull _obj}) exitWith { false };
+    private _home = [_logic, _tail] call _fnc_homeOf;
+    private _r = [_effect, "apply", ["wake", _obj, _home, [_surface, _tail]]] call ALIVE_fnc_ATOEffect;
+    if !(_r isEqualType []) then { _r = ["refused", false, "no answer"] };
+    if !((_r param [0, ""]) isEqualTo "refused") exitWith { true };
+    if (!_last) exitWith {
+        [_logic, _tail, "wake", _r, _why] call _fnc_noteRefusal;
+        false
+    };
+    private _rf = [_effect, "apply", ["showFrozen", _obj, _home, [_surface, _tail]]] call ALIVE_fnc_ATOEffect;
+    if !(_rf isEqualType []) then { _rf = ["refused", false, "no answer"] };
+    private _shown = !((_rf param [0, ""]) isEqualTo "refused");
+    ["ALIVE_fnc_ATOKernel - %1 could not be shown (%2) and nothing will ask again (%3): %4", _tail, _r param [2, ""], _why,
+        if (_shown) then { "left in view, frozen until its stand is clear" } else { format ["left out of sight, %1", _rf param [2, ""]] }] call ALiVE_fnc_dump;
+    _shown
+};
+
+// Every aircraft of this commander asleep on its stand shown again, or only
+// those within the spawn distance of one object when _near is given. Answers
+// how many were shown.
+private _fnc_wakeRows = {
+    params [["_logic", objNull, [objNull]], ["_why", "", [""]], ["_near", objNull, [objNull]], ["_last", false, [false]]];
+    private _k = [_logic] call _fnc_kernel;
+    private _place = [_logic, "place"] call _fnc_piece;
+    if (_k isEqualTo [] || {_place isEqualTo []}) exitWith { 0 };
+    private _rows = [_k, "rows", []] call ALIVE_fnc_hashGet;
+    if !([_rows] call ALIVE_fnc_isHash) exitWith { 0 };
+    private _reach = if (isNil "ALIVE_spawnRadius" || {!(ALIVE_spawnRadius isEqualType 0)}) then { 1500 } else { ALIVE_spawnRadius };
+    private _shown = 0;
+    {
+        private _tail = _x;
+        private _obj = [_place, "objFor", _tail] call ALIVE_fnc_ATOPlace;
+        if (_obj isEqualType objNull && {!isNull _obj} && {(_obj getVariable ["ALiVE_mil_ato_asleep", false]) isEqualTo true}
+            && {isNull _near || {(_obj distance2D _near) < _reach}}) then {
+            if ([_logic, _tail, _obj, _why, _last] call _fnc_wakeOne) then { _shown = _shown + 1 };
+        };
+    } forEach (+(_rows select 1));
+    _shown
+};
+
 // ---- the transition hook ---------------------------------------------------
 // Kernel-only bookkeeping when a row changes state. The state table has
 // already decided the new state; this writes down what that means for the
@@ -898,26 +987,8 @@ private _fnc_transition = {
     switch (_to) do {
         case "PARKED": {
             // ---- the stand ----------------------------------------------
-            // Is the home still a home. Geometry means find another; occupied
-            // means something else is sitting on it and this aircraft has to
-            // move. Both go through placement's rehome, which is the one path
-            // to a new home after attach. A failure is retried on the queue
-            // tick's own schedule rather than every roster tick.
-            if (!(_surface isEqualTo []) && {!(_place isEqualTo [])} && {count _home >= 3}) then {
-                private _class = [_logic, _tail, "vehicleClass", ""] call _fnc_recField;
-                private _v = [_surface, "validate", [_home, _class, _obj]] call ALIVE_fnc_ATOSurface;
-                if (!(_v param [0, false]) && {(_v param [1, ""]) in ["occupied","geometry"]}) then {
-                    private _retry = [_k, "rehomeFailedAt", []] call ALIVE_fnc_hashGet;
-                    // With the reason, so the eviction line can say why a stand
-                    // with nothing on it was given up.
-                    private _h = [_place, "rehome", [_tail, _v param [1, ""]]] call ALIVE_fnc_ATOPlace;
-                    if (_h isEqualType [] && {count _h >= 3}) then {
-                        [_retry, _tail] call ALIVE_fnc_hashRem;
-                    } else {
-                        [_retry, _tail, _now] call ALIVE_fnc_hashSet;
-                    };
-                };
-            };
+            // Is the home still a home: _fnc_rehomeIfOccupied, above.
+            [_logic, _tail, _obj, _home, _now] call _fnc_rehomeIfOccupied;
 
             // ---- the sortie ---------------------------------------------
             // Closed here, and ONLY when the aircraft actually went somewhere.
@@ -1220,6 +1291,13 @@ private _fnc_routeEffects = {
                 if (_debug) then { ["ALIVE_fnc_ATOKernel - %1 not moved: a player is aboard", _tail] call ALiVE_fnc_dump };
             };
 
+            // Not put to sleep while the commander is paused or stopped: a pause
+            // can land between a tick's step and this, and a paused commander
+            // never ticks to show the aircraft again.
+            case (_name isEqualTo "sleep" && {([_k, "paused", false] call ALIVE_fnc_hashGet) || {[_k, "stopped", false] call ALIVE_fnc_hashGet}}): {
+                ["ALIVE_fnc_ATOKernel - %1 not put to sleep: the commander is paused or stopped", _tail] call ALiVE_fnc_dump;
+            };
+
             // ---- things done to the hull --------------------------------
             default {
                 // Nothing is asked of a hull that is not there.
@@ -1250,6 +1328,9 @@ private _fnc_routeEffects = {
                         // A land launch needs it too, to set the aircraft down
                         // on its taxi route the way a stand is set down.
                         case (_name in ["catapult","deckRecover","landOnRunway","virtualLaunch","taxiOut"]): { [_surface, _tail] };
+                        // Putting a parked aircraft out of sight and showing it
+                        // again are the surface's, which owns what is on a stand.
+                        case (_name in ["sleep","wake"]): { [_surface, _tail] };
                         // The tail is the aircraft's name on the radio, and the
                         // supply truck's dispatch carries a callsign.
                         case (_name isEqualTo "turnaround"): { [_tail, [_logic, "showSupportTrucks"] call MAINCLASS] };
@@ -1266,6 +1347,24 @@ private _fnc_routeEffects = {
                     private _r = [_effect, "apply", [_name, _obj, _home, _extra]] call ALIVE_fnc_ATOEffect;
                     if !(_r isEqualType []) then { _r = ["refused", false, "no answer"] };
                     [_logic, _tail, _name, _r, _state] call _fnc_noteRefusal;
+                    // An aircraft that cannot be shown on its own stand because
+                    // something now stands on it is given another stand, and
+                    // is moved there out of sight and shown there. Placement is
+                    // asked straight away: the wake has just looked, from the
+                    // hull, and a second look from the stand's own point can
+                    // miss what it found beside the hull. Only while the hull
+                    // is still on the stand it was refused on; one whose home
+                    // has already moved is on its way there. A failure waits
+                    // for the queue tick's retry. The refusal is logged once
+                    // however many ticks it repeats, and a later one for the
+                    // same reason is not logged again.
+                    if (_name isEqualTo "wake" && {(_r param [0, ""]) isEqualTo "refused"} && {((_r param [2, ""]) find "stand blocked") == 0}
+                        && {count _home > 2} && {(_obj distance2D (_home select 0)) < 5}) then {
+                        private _retryW = [_k, "rehomeFailedAt", []] call ALIVE_fnc_hashGet;
+                        if (([_retryW, _tail, -1] call ALIVE_fnc_hashGet) isEqualTo -1) then {
+                            [_logic, _tail, "occupied", _now] call _fnc_rehome;
+                        };
+                    };
                     // Stood on its route, a plane takes the runway there and then.
                     // The table does not keep it for a plane still on its stand, so
                     // one whose route stayed blocked has let it go; taken here,
@@ -1302,6 +1401,9 @@ private _fnc_issueOrders = {
     private _state = [_row2, "state", ""] call ALIVE_fnc_hashGet;
     if (_state in ["PARKED","PLAYER_FLOWN","LOST"]) exitWith { false };
     if (isNull _obj) exitWith { false };
+    // Nor for an aircraft still waiting to be shown and crewed: there is
+    // nobody in it to give them to until it is.
+    if ([_row2, "crewPending", false] call ALIVE_fnc_hashGet) exitWith { false };
     private _effect = [_logic, "effect"] call _fnc_piece;
     private _task = [_logic, "task"] call _fnc_piece;
     if (_effect isEqualTo []) exitWith { false };
@@ -2089,6 +2191,13 @@ switch(_operation) do {
         if !(_place isEqualTo []) then { _obj = [_place, "objFor", _tail] call ALIVE_fnc_ATOPlace };
 
         if (!isNull _obj && {!(_effect isEqualTo [])}) then {
+            // Shown again first if it was asleep on its stand, checked like any
+            // wake: an aircraft this module no longer owns must not be left out
+            // of sight, nor let go onto a vehicle standing on its stand, and
+            // nothing will ask again once it is off the books.
+            if ((_obj getVariable ["ALiVE_mil_ato_asleep", false]) isEqualTo true) then {
+                [_logic, _tail, _obj, "retired", true] call _fnc_wakeOne;
+            };
             // playerLock with no setting given lets go of a lock this module put on,
             // so an aircraft it no longer owns is not left locked to players.
             { [_effect, "apply", [_x, _obj, _home, []]] call ALIVE_fnc_ATOEffect } forEach ["releaseHold","standDownCrew","clearOrders","engineOff","playerLock"];
@@ -2130,6 +2239,27 @@ switch(_operation) do {
         } forEach ["rows","sortieOf","lastObs","lastLivePos","pendingCmd","pendingSortie","rehomeFailedAt","protectWarned"];
         ["ALIVE_fnc_ATOKernel - %1 retired: %2", _tail, _reason] call ALiVE_fnc_dump;
         _result = true;
+    };
+
+    // Show again every aircraft this commander has put out of sight, for a
+    // pause and for the module being taken down, when nothing ticks to do it:
+    // _fnc_wakeRows, above. Taken down ("stopped") nothing will ask again, so
+    // what cannot be woken is shown frozen. Answers how many were shown.
+    case "wakeAll": {
+        private _why = if (_args isEqualType "") then { _args } else { "" };
+        _result = [_logic, _why, objNull, _why isEqualTo "stopped"] call _fnc_wakeRows;
+    };
+
+    // Show the aircraft asleep near somebody who has just appeared, a respawn
+    // at the airfield above all, without waiting up to a roster tick beside an
+    // empty stand. Answers how many were shown.
+    case "wakeNear": {
+        _result = 0;
+        private _unit = _args;
+        if (!(_unit isEqualType objNull) || {isNull _unit}) exitWith {};
+        private _k = [_logic] call _fnc_kernel;
+        if (_k isEqualTo [] || {[_k, "stopped", false] call ALIVE_fnc_hashGet} || {[_k, "paused", false] call ALIVE_fnc_hashGet}) exitWith {};
+        _result = [_logic, "respawn", _unit, false] call _fnc_wakeRows;
     };
 
     // Register a profile with the commander. The legacy shape, [profileID,
@@ -2592,6 +2722,9 @@ switch(_operation) do {
         if (_args) then {
             [_k, "paused", true] call ALIVE_fnc_hashSet;
             [_k, "pausedAt", time] call ALIVE_fnc_hashSet;
+            // A paused commander never ticks, so nothing it put out of sight
+            // would be shown again for the whole pause.
+            [_logic, "wakeAll", "paused"] call MAINCLASS;
             if !(_base isEqualTo []) then { [_base, "pause", true] call ALIVE_fnc_ATOBase };
             if !(_watch isEqualTo []) then { [_watch, "pause", true] call ALIVE_fnc_ATOWatch };
         } else {
@@ -2883,6 +3016,9 @@ switch(_operation) do {
                 if (!isNull _logic && {!([_k, "stopped", false] call ALIVE_fnc_hashGet)}) then {
                     if ([_k, "paused", false] call ALIVE_fnc_hashGet) then {
                         _interval = ROSTER_SLOW;
+                        // Any aircraft still out of sight, because something
+                        // stood on its stand when the pause came, is asked again.
+                        [_logic, "wakeAll", "paused"] call ALIVE_fnc_ATOKernel;
                     } else {
                         private _r = [_logic, "tick_roster"] call ALIVE_fnc_ATOKernel;
                         _interval = if (!isNil "_r" && {_r isEqualType 0} && {_r > 0}) then { _r } else { ROSTER_SLOW };
@@ -2918,6 +3054,26 @@ switch(_operation) do {
             };
         };
         [_k, "handles", [_hRoster, _hQueue, _hWatch]] call ALIVE_fnc_hashSet;
+
+        // A player who respawns beside a stand is shown the aircraft on it at
+        // once, rather than an empty stand until the next roster tick. One
+        // handler for every commander, each asked in turn, and never removed:
+        // it asks only commanders still in the instance list, so with none left
+        // it does nothing. Whatever it misses the roster tick shows within ten
+        // seconds: a player joining, which takes longer than that to load, and
+        // a respawn landing between a tick's step and its effects, which can
+        // see an aircraft put back to sleep beside it until the next tick.
+        if (isNil QGVAR(respawnWakeEH)) then {
+            GVAR(respawnWakeEH) = addMissionEventHandler ["EntityRespawned", {
+                params ["_entity"];
+                if (isPlayer _entity && {!isNil QGVAR(instanceKeys)}) then {
+                    {
+                        private _m = [GVAR(instanceKeys), _x, objNull] call ALIVE_fnc_hashGet;
+                        if (_m isEqualType objNull && {!isNull _m}) then { [_m, "wakeNear", _entity] call ALIVE_fnc_ATOKernel };
+                    } forEach (+(GVAR(instanceKeys) select 1));
+                };
+            }];
+        };
 
         ["ALIVE_fnc_ATOKernel - %1 (%2) started as instance %3%4", _faction, _side, _key,
             if (_persistent) then { ", persistent" } else { "" }] call ALiVE_fnc_dump;
@@ -2984,6 +3140,10 @@ switch(_operation) do {
         // The module's own figure for handing an aircraft back after a player
         // got out, read once a tick. Minus one when it has none.
         private _playerGrace = [_logic, "returnToATOAfter"] call MAINCLASS;
+        // Everyone who could see a parked aircraft, each with how far away
+        // they wake it, built once a tick and handed to every observation.
+        private _watchers = [_observe, "watchers", [ROSTER_SLOW]] call ALIVE_fnc_ATOObserve;
+        if !(_watchers isEqualType []) then { _watchers = [] };
         {
             private _tail = _x;
             isNil {
@@ -3017,7 +3177,20 @@ switch(_operation) do {
                         [_rowIn, "sortie", +(_pend select 1)] call ALIVE_fnc_hashSet;
                     };
 
-                    private _obs = [_observe, "observe", [_obj, _home, _lockHeld, [_rowIn] call _fnc_tupleOf, _now, _lockBusy, _playerGrace]] call ALIVE_fnc_ATOObserve;
+                    // Whether its own stand is clear, which only the surface
+                    // can say, for a parked aircraft: awake, by the test its
+                    // sleep makes, which the sleep rule asks; asleep, by the
+                    // test its wake makes, a wrecked aircraft included, which
+                    // an assignment asks.
+                    private _standClear = true;
+                    if (!isNull _obj && {alive _obj} && {([_row, "state", ""] call ALIVE_fnc_hashGet) isEqualTo "PARKED"}
+                        && {count _home > 2} && {(_home select 2) isEqualTo "terrain"}) then {
+                        private _at = getPosATL _obj;
+                        _at set [2, 0];
+                        private _asleepNow = ((_obj getVariable ["ALiVE_mil_ato_asleep", false]) isEqualTo true) && {isObjectHidden _obj};
+                        _standClear = isNull ([_surface, "standBlocker", [_at, typeOf _obj, [_obj] + (crew _obj), _asleepNow]] call ALIVE_fnc_ATOSurface);
+                    };
+                    private _obs = [_observe, "observe", [_obj, _home, _lockHeld, [_rowIn] call _fnc_tupleOf, _now, _lockBusy, _playerGrace, _watchers, _standClear]] call ALIVE_fnc_ATOObserve;
                     if !([_obs] call ALIVE_fnc_isHash) then { _obs = [] call ALIVE_fnc_hashCreate };
                     [_lastObs, _tail, _obs] call ALIVE_fnc_hashSet;
                     if ([_obs, "objectLive", false] call ALIVE_fnc_hashGet) then {
@@ -3386,6 +3559,9 @@ switch(_operation) do {
                     private _h = [_base, "continueHandle", scriptNull] call ALIVE_fnc_hashGet;
                     if (_h isEqualType scriptNull && {!scriptDone _h}) then { terminate _h };
                 };
+                // Everything this commander put out of sight is shown again
+                // while its pieces still exist: nothing would, after.
+                [_logic, "wakeAll", "stopped"] call MAINCLASS;
                 private _key = [_k, "instanceKey", ""] call ALIVE_fnc_hashGet;
                 if (!isNil QGVAR(instanceKeys) && {!(_key isEqualTo "")}) then {
                     private _held = [GVAR(instanceKeys), _key, objNull] call ALIVE_fnc_hashGet;

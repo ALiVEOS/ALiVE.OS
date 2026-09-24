@@ -64,6 +64,11 @@ observation sequences, because those are what the table exists to prevent.
             ["fuel", 1], ["armed", true], ["ordnance", 8], ["damage", 0],
             ["playersWithin1000Home", 0], ["playersWithin1000Hull", 0], ["onTaxiway", false], ["nearStand", false],
             ["lockBusy", false],
+            // Asleep on its stand, and what decides it: nobody near, nothing
+            // pending, its stand clear. crewLoss false keeps every older PARKED
+            // profile from ever sleeping, so none of them changes.
+            ["asleep", false], ["servicePending", false], ["settling", false], ["standClear", true],
+            ["watchersWithinWake", 0], ["watchersWithinSleep", 0],
             // Near home unless a case says otherwise, so a landing's extension
             // turns on how it is flying, as it did before distance counted.
             ["distHome", 1000]
@@ -121,7 +126,31 @@ observation sequences, because those are what the table exists to prevent.
         ["shot down, crew bailed out", [["airborne",true],["atHome",false],["crewLoss",true],["damage",0.6]]],
         ["shot down, low",             [["altAGL",30],["atHome",false],["crewLoss",true],["deadAboard",true],["pilotDead",true]]],
         ["crippled in the air",        [["airborne",true],["atHome",false],["canMove",false],["crewSeated",true]]],
-        ["dry in the air",             [["airborne",true],["atHome",false],["canMove",false],["fuel",0]]]
+        ["dry in the air",             [["airborne",true],["atHome",false],["canMove",false],["fuel",0]]],
+        // Parked and put out of sight: when it may sleep, when it must not, and
+        // when it is shown again.
+        ["parked, empty, nobody near",     [["crewLoss",true]]],
+        ["asleep on its stand",            [["asleep",true],["crewLoss",true]]],
+        ["asleep, somebody arriving",      [["asleep",true],["crewLoss",true],["watchersWithinWake",1],["watchersWithinSleep",1]]],
+        ["asleep, somebody at the edge",   [["asleep",true],["crewLoss",true],["watchersWithinSleep",1]]],
+        ["parked, empty, truck coming",    [["crewLoss",true],["servicePending",true]]],
+        ["parked, empty, still settling",  [["crewLoss",true],["settling",true]]],
+        ["parked, empty, body aboard",     [["crewLoss",true],["deadAboard",true]]],
+        ["parked, empty, stand not clear", [["crewLoss",true],["standClear",false]]],
+        ["asleep, hull not ours",          [["asleep",true],["crewLoss",true],["remote",true]]],
+        ["asleep on a deck",               [["asleep",true],["crewLoss",true],["deckHome",true]]],
+        // Each of these is the one thing that must keep a parked aircraft
+        // awake, so taking its guard out of the table turns a promise red.
+        ["parked, empty, on a deck",       [["crewLoss",true],["deckHome",true]]],
+        ["parked, empty, at a hold point", [["crewLoss",true],["virtualHome",true]]],
+        ["parked, empty, off its stand",   [["crewLoss",true],["atHome",false]]],
+        // Asleep with its crew seated and the runway held, which no real
+        // aircraft is; asleep on a stand something now stands on; asleep with
+        // its stand moved; and asleep, owned elsewhere, with somebody near.
+        ["asleep, crewed and cleared",     [["asleep",true],["crewSeated",true],["lockHeld",true],["needsRunway",true],["fixedWing",true]]],
+        ["asleep, stand taken",            [["asleep",true],["crewLoss",true],["standClear",false]]],
+        ["asleep, stand moved",            [["asleep",true],["crewLoss",true],["atHome",false]]],
+        ["asleep, not ours, somebody near",[["asleep",true],["crewLoss",true],["remote",true],["watchersWithinWake",1],["watchersWithinSleep",1]]]
     ];
 
     private _badState = 0;
@@ -138,6 +167,8 @@ observation sequences, because those are what the table exists to prevent.
     private _whyHold = [];
     private _badDown = 0;
     private _whyDown = [];
+    private _badSleep = 0;
+    private _whySleep = [];
     private _mutated = 0;
     private _combos = 0;
 
@@ -186,6 +217,60 @@ observation sequences, because those are what the table exists to prevent.
                     } else {
                         !(_next isEqualTo _state) || {!(_effects isEqualTo ["goingDown","unlock"])}
                     };
+                    // ---- asleep on its stand --------------------------------
+                    private _fnc_g = { [_obs, _this select 0, _this select 1] call ALIVE_fnc_hashGet };
+                    private _asleepP = ["asleep", false] call _fnc_g;
+                    private _mayRestP = (["atHome", false] call _fnc_g) && {!(["airborne", false] call _fnc_g)} && {!(["remote", false] call _fnc_g)}
+                        && {!(["deckHome", false] call _fnc_g)} && {!(["virtualHome", false] call _fnc_g)}
+                        && {["crewLoss", false] call _fnc_g} && {!(["deadAboard", false] call _fnc_g)} && {!(["anyPlayerAboard", false] call _fnc_g)}
+                        && {!_asleepP} && {!(["servicePending", false] call _fnc_g)} && {!(["settling", false] call _fnc_g)}
+                        && {["standClear", false] call _fnc_g} && {(["watchersWithinSleep", 0] call _fnc_g) == 0};
+                    private _wakeAt = _effects find "wake";
+                    private _sleepWhy = "";
+                    switch (true) do {
+                        // Promise: put out of sight only from PARKED to PARKED,
+                        // and only when every guard holds.
+                        case (("sleep" in _effects) && {!((_state isEqualTo "PARKED") && {_next isEqualTo "PARKED"} && {_mayRestP})}): { _sleepWhy = "slept when it must not" };
+                        // Promise: shown for anybody inside the wake distance,
+                        // exactly once, a hull owned elsewhere included.
+                        case (_asleepP && {(["watchersWithinWake", 0] call _fnc_g) > 0} && {({_x isEqualTo "wake"} count _effects) != 1}): { _sleepWhy = "not shown once for somebody near" };
+                        // Promise: no way out of any state leaves it hidden.
+                        case (_asleepP && {!(_next isEqualTo _state)} && {_wakeAt < 0}): { _sleepWhy = "left its state still hidden" };
+                        // Promise: nothing moves it after it has been shown.
+                        case (_wakeAt > -1 && {({_x in ["airborneStart","forceLaunch","virtualLaunch","taxiOut","placeOnSlot","forceLanded","quickPark","catapult"]} count (_effects select [_wakeAt + 1])) > 0}): { _sleepWhy = "moved after it was shown" };
+                        // Promise: in the states a sleeping hull can be in, no
+                        // crew, hold, launch or runway in the same step at all.
+                        // Not only before the wake: the order puts the wake first
+                        // whenever nothing moves the hull, so a crew made after it
+                        // would pass a before-only test, and a refused wake would
+                        // leave that crew in a hull nobody can see.
+                        case (_asleepP && {_state in ["PARKED","ASSIGNED","RECOVERING"]}
+                            && {({_x in ["holdOnStand","mintCrew","mintDroneCrew","seatCrew","recrewInPlace","catapult","taxiOut","forceLaunch","airborneStart","virtualLaunch","engineOn","lock"]}
+                                count _effects) > 0}): { _sleepWhy = "crewed or launched while hidden" };
+                        // Promise: a sortie is not taken by a hull asleep on a
+                        // stand something now stands on.
+                        case (_asleepP && {_cmd isEqualTo "ASSIGN"} && {_state isEqualTo "PARKED"} && {!(["standClear", true] call _fnc_g)}
+                            && {_next isEqualTo "ASSIGNED"}): { _sleepWhy = "took a sortie it could not be shown for" };
+                        // Promise: an assigned sleeper whose stand has moved is
+                        // handed back at once, to be taken to its new one.
+                        case (_asleepP && {_state isEqualTo "ASSIGNED"} && {!(_cmd in ["CANCEL","RETIRE"])}
+                            && {!(["atHome", true] call _fnc_g)} && {!(["airborne", false] call _fnc_g)}
+                            && {!((_next isEqualTo "RECOVERING") && {"assignFailed" in _effects})}): { _sleepWhy = "kept a sortie it cannot start" };
+                        // Promise: never launched while it is still asleep.
+                        case (_asleepP && {!(_state isEqualTo "LAUNCHING")} && {_next isEqualTo "LAUNCHING"}): { _sleepWhy = "launched while hidden" };
+                        // Promise: somebody at the edge, between the two
+                        // distances, changes nothing on a parked aircraft.
+                        case ((_state isEqualTo "PARKED") && {_next isEqualTo "PARKED"} && {(["watchersWithinSleep", 0] call _fnc_g) > 0}
+                            && {(["watchersWithinWake", 0] call _fnc_g) == 0} && {("sleep" in _effects) || {"wake" in _effects}}): { _sleepWhy = "the edge changed it" };
+                    };
+                    if !(_sleepWhy isEqualTo "") then {
+                        _badSleep = _badSleep + 1;
+                        if (count _whySleep < 6) then {
+                            _whySleep pushBack format ["%1: %2 +%3 (%4%5) -> %6, effects %7", _sleepWhy,
+                                _state, _cmd, _profileName, if (_expired) then {", expired"} else {""}, _next, _effects];
+                        };
+                    };
+
                     if (_downP && {_downBad}) then {
                         _badDown = _badDown + 1;
                         if (count _whyDown < 6) then {
@@ -347,6 +432,8 @@ observation sequences, because those are what the table exists to prevent.
     ["step never edits the row it was given", _mutated == 0] call _fnc_check;
     { diag_log format ["  info  shot-down promise broken by: %1", _x] } forEach _whyDown;
     ["an aircraft coming down is left to come down", _badDown == 0] call _fnc_check;
+    { diag_log format ["  info  asleep promise broken by: %1", _x] } forEach _whySleep;
+    ["a parked aircraft sleeps only when it may, and is shown whenever it must be", _badSleep == 0] call _fnc_check;
 
     // ---- the measured incidents, replayed ------------------------------------
 
@@ -366,6 +453,96 @@ observation sequences, because those are what the table exists to prevent.
 
     ([_r1, [["airborne",true],["atHome",false],["crewLoss",true]], "", 110] call _fnc_step) params ["_r2","_o2","_e2"];
     ["and it is re-crewed rather than left", "recrewInPlace" in _e2] call _fnc_check;
+
+    // ---- parked and put out of sight ----------------------------------------
+    private _fnc_parkedRow = {
+        params ["_tail", ["_state", "PARKED"]];
+        private _pr = [_m, "newRow", [_tail, [[100,100,0],0,"terrain"]]] call ALIVE_fnc_ATOMachine;
+        [_pr,"state",_state] call ALIVE_fnc_hashSet;
+        [_pr,"deadlineAt", if (_state in ["PARKED","PLAYER_FLOWN","LOST"]) then {0} else {9999}] call ALIVE_fnc_hashSet;
+        _pr
+    };
+    ([["BLU_F_30"] call _fnc_parkedRow, [["crewLoss",true]], "", 100] call _fnc_step) params ["_sl1","_slo1","_sle1"];
+    ["a parked, empty jet with nobody near is put out of sight",
+        (([_sl1,"state",""] call ALIVE_fnc_hashGet) isEqualTo "PARKED") && {_sle1 isEqualTo ["sleep"]}] call _fnc_check;
+    ([["BLU_F_31"] call _fnc_parkedRow, [["crewLoss",true],["servicePending",true]], "", 100] call _fnc_step) params ["_sl2","_slo2","_sle2"];
+    ["but not while a service truck is coming", !("sleep" in _sle2)] call _fnc_check;
+    ([["BLU_F_32"] call _fnc_parkedRow, [["crewLoss",true],["watchersWithinSleep",1]], "", 100] call _fnc_step) params ["_sl3","_slo3","_sle3"];
+    ["nor with somebody inside the sleep distance", !("sleep" in _sle3)] call _fnc_check;
+    ([["BLU_F_33"] call _fnc_parkedRow, [["asleep",true],["crewLoss",true],["watchersWithinWake",1],["watchersWithinSleep",1]], "", 100] call _fnc_step) params ["_sl4","_slo4","_sle4"];
+    ["asleep, it is shown for somebody arriving", _sle4 isEqualTo ["wake"]] call _fnc_check;
+    ([["BLU_F_34"] call _fnc_parkedRow, [["asleep",true],["crewLoss",true],["watchersWithinSleep",1]], "", 100] call _fnc_step) params ["_sl5","_slo5","_sle5"];
+    ["and left alone for somebody at the edge", _sle5 isEqualTo []] call _fnc_check;
+
+    // Given a sortie while asleep: shown first, crewed the tick after it is
+    // shown, and given the runway the tick after that.
+    private _plane = [["needsRunway",true],["fixedWing",true]];
+    ([["BLU_F_35"] call _fnc_parkedRow, [["asleep",true],["crewLoss",true]] + _plane, "ASSIGN", 100] call _fnc_step) params ["_as1","_aso1","_ase1"];
+    ["a sleeping jet given a sortie is shown first and given nothing else",
+        (([_as1,"state",""] call ALIVE_fnc_hashGet) isEqualTo "ASSIGNED") && {(_ase1 param [0, ""]) isEqualTo "wake"}
+        && {({_x in ["holdOnStand","mintCrew","seatCrew","lock"]} count _ase1) == 0}
+        && {[_as1,"crewPending",false] call ALIVE_fnc_hashGet}] call _fnc_check;
+    ([_as1, [["crewLoss",true]] + _plane, "", 102] call _fnc_step) params ["_as2","_aso2","_ase2"];
+    ["then crewed the tick after it is shown, without the runway yet",
+        ("holdOnStand" in _ase2) && {"mintCrew" in _ase2} && {"seatCrew" in _ase2} && {!("lock" in _ase2)}
+        && {!([_as2,"crewPending",true] call ALIVE_fnc_hashGet)}] call _fnc_check;
+    ([_as2, [["crewLoss",true],["heldOnStand",true]] + _plane, "", 104] call _fnc_step) params ["_as3","_aso3","_ase3"];
+    ["and asks for the runway the tick after that", "lock" in _ase3] call _fnc_check;
+
+    // Given a sortie while asleep and never shown, because something stands
+    // on its stand the whole time: asked to show every tick, given nothing
+    // else, and handed back as STAND_BLOCKED when its time runs out.
+    ([_as1, [["asleep",true],["crewLoss",true]] + _plane, "", 102] call _fnc_step) params ["_bs1","_bso1","_bse1"];
+    ["still out of sight it is asked to show again and given nothing else",
+        ("wake" in _bse1) && {({_x in ["holdOnStand","mintCrew","seatCrew","lock"]} count _bse1) == 0}] call _fnc_check;
+    private _bsDeadline = [_bs1,"deadlineAt",0] call ALIVE_fnc_hashGet;
+    ([_bs1, [["asleep",true],["crewLoss",true]] + _plane, "", _bsDeadline + 1] call _fnc_step) params ["_bs2","_bso2","_bse2"];
+    ["and goes back STAND_BLOCKED, the sortie handed back, when its time runs out",
+        (([_bs2,"state",""] call ALIVE_fnc_hashGet) isEqualTo "PARKED")
+        && {([_bs2,"reason",""] call ALIVE_fnc_hashGet) isEqualTo "STAND_BLOCKED"}
+        && {"assignFailed" in _bse2} && {!([_bs2,"crewPending",true] call ALIVE_fnc_hashGet)}] call _fnc_check;
+
+    // Its stand moved while it slept: taken to the new one out of sight, and
+    // shown there, whoever is near.
+    ([["BLU_F_36"] call _fnc_parkedRow, [["asleep",true],["crewLoss",true],["atHome",false]], "", 100] call _fnc_step) params ["_cs1","_cso1","_cse1"];
+    ["a sleeper whose stand moved goes to recovery and is asked to show",
+        (([_cs1,"state",""] call ALIVE_fnc_hashGet) isEqualTo "RECOVERING") && {"wake" in _cse1}] call _fnc_check;
+    ([_cs1, [["asleep",true],["crewLoss",true],["atHome",false],["playersWithin1000Hull",1]], "", 110] call _fnc_step) params ["_cs2","_cso2","_cse2"];
+    private _placedAt = _cse2 find "placeOnSlot";
+    ["and, still out of sight, is put on its new stand whoever is near, then shown",
+        (_placedAt > -1) && {(_cse2 find "wake") == _placedAt + 1}] call _fnc_check;
+
+    // Given a sortie and then its stand taken and another found for it, still
+    // out of sight: handed back at once rather than after its two minutes, and
+    // taken to the new stand on the next tick.
+    ([_as1, [["asleep",true],["crewLoss",true],["atHome",false]] + _plane, "", 102] call _fnc_step) params ["_ds1","_dso1","_dse1"];
+    ["an assigned sleeper whose stand moved is handed back at once, STAND_BLOCKED",
+        (([_ds1,"state",""] call ALIVE_fnc_hashGet) isEqualTo "RECOVERING")
+        && {([_ds1,"reason",""] call ALIVE_fnc_hashGet) isEqualTo "STAND_BLOCKED"}
+        && {"assignFailed" in _dse1} && {!([_ds1,"crewPending",true] call ALIVE_fnc_hashGet)}] call _fnc_check;
+
+    // Asleep on a stand something now stands on: the sortie is not taken, so it
+    // goes straight back for another aircraft.
+    ([["BLU_F_37"] call _fnc_parkedRow, [["asleep",true],["crewLoss",true],["standClear",false]] + _plane, "ASSIGN", 100] call _fnc_step) params ["_es1","_eso1","_ese1"];
+    ["a sleeper whose stand is taken does not take a sortie",
+        (([_es1,"state",""] call ALIVE_fnc_hashGet) isEqualTo "PARKED") && {_ese1 isEqualTo []}] call _fnc_check;
+
+    // Found crewed and cleared while still asleep, which no real aircraft is:
+    // still only shown, never launched out of sight.
+    ([_as1, [["asleep",true],["crewSeated",true],["lockHeld",true]] + _plane, "", 102] call _fnc_step) params ["_fs1","_fso1","_fse1"];
+    ["an assigned sleeper is shown before anything else, crewed and cleared or not",
+        (([_fs1,"state",""] call ALIVE_fnc_hashGet) isEqualTo "ASSIGNED") && {_fse1 isEqualTo ["wake"]}] call _fnc_check;
+
+    // Its targets gone, or its sortie cancelled, before it was ever shown: it
+    // is shown on the way out like any other, and its crew no longer pending.
+    ([_as1, [["asleep",true],["crewLoss",true],["targetsGone",true]] + _plane, "", 102] call _fnc_step) params ["_gs1","_gso1","_gse1"];
+    ["a sleeper whose targets are gone goes back to its stand, shown",
+        (([_gs1,"state",""] call ALIVE_fnc_hashGet) isEqualTo "PARKED") && {"wake" in _gse1}
+        && {!([_gs1,"crewPending",true] call ALIVE_fnc_hashGet)}] call _fnc_check;
+    ([_as1, [["asleep",true],["crewLoss",true]] + _plane, "CANCEL", 102] call _fnc_step) params ["_hs1","_hso1","_hse1"];
+    ["a sleeper whose sortie is cancelled is shown on the way out",
+        !(([_hs1,"state",""] call ALIVE_fnc_hashGet) isEqualTo "ASSIGNED") && {"wake" in _hse1}
+        && {!([_hs1,"crewPending",true] call ALIVE_fnc_hashGet)}] call _fnc_check;
 
     // Shot down. A jet whose pilot was killed on station was re-crewed and put
     // on its stand from 94 m up. An A-10 hit on station was sent home, lost its
