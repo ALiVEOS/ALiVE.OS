@@ -1752,8 +1752,11 @@ switch (_operation) do {
                     _objectivesCiv = +_objectives;
                     _objectivesMil = +_objectives;
 
-                    _objectivesFilteredCiv = [_objectivesCiv,[_logic],{(([_Input0, "position"] call ALIVE_fnc_HashGet) distance (_x select 2 select 1))*(1-(random 0.20))},"ASCEND",{(_x select 2 select 3) == "CIV"}] call ALiVE_fnc_SortBy;
-                    _objectivesFilteredMil = [_objectivesMil,[_logic],{(([_Input0, "position"] call ALIVE_fnc_HashGet) distance (_x select 2 select 1))*(1-(random 0.20))},"ASCEND",{(_x select 2 select 3) == "MIL"}] call ALiVE_fnc_SortBy;
+                    // Custom objectives are stamped "CUS" (Cust. Obj.) and "CCU" (Cust. Civ. Obj.)
+                    // above, so they count with military and civilian objectives here. Filtering on
+                    // "CIV" and "MIL" alone dropped every custom objective from an insurgency.
+                    _objectivesFilteredCiv = [_objectivesCiv,[_logic],{(([_Input0, "position"] call ALIVE_fnc_HashGet) distance (_x select 2 select 1))*(1-(random 0.20))},"ASCEND",{([_x,"objectiveType","MIL"] call ALiVE_fnc_HashGet) in ["CIV","CCU"]}] call ALiVE_fnc_SortBy;
+                    _objectivesFilteredMil = [_objectivesMil,[_logic],{(([_Input0, "position"] call ALIVE_fnc_HashGet) distance (_x select 2 select 1))*(1-(random 0.20))},"ASCEND",{([_x,"objectiveType","MIL"] call ALiVE_fnc_HashGet) in ["MIL","CUS"]}] call ALiVE_fnc_SortBy;
 
                     _objectives = _objectivesFilteredCiv + _objectivesFilteredMil;
 
