@@ -221,7 +221,7 @@ switch (_operation) do {
 		//-- Hash data to logic
 		[_civData, "Installations", _objectiveInstallations] call ALiVE_fnc_hashSet;		//-- [_factory,_HQ,_depot,_roadblocks]
 		[_civData, "Actions", _objectiveActions] call ALiVE_fnc_hashSet;			//-- [_ambush,_sabotage,_ied,_suicide]
-		[_civData, "CivInfo", _civInfo] call ALiVE_fnc_hashSet;				//-- [_homePos, _individualHostility, _townHostility]
+		[_civData, "CivInfo", _civInfo] call ALiVE_fnc_hashSet;				//-- [_homePos, reading (own max town), _townHostility, _name, own]
 		[_civData, "HostileCivInfo", _hostileCivInfo] call ALiVE_fnc_hashSet;			//-- [_civ,_homePos,_activeCommands]
 		[_civData, "IntelQuality", _intelQuality] call ALiVE_fnc_hashSet;				//-- [chanceBonus, radiusMultiplier, markerDurationBonus, phase, exactMarkerChance, deceptionChance]
 		[_civData, "AnswersGiven", _answersGiven] call ALiVE_fnc_hashSet;			//-- Default []
@@ -519,7 +519,7 @@ switch (_operation) do {
 			_clusterID = (_civProfile select 2) select 9;
 			_cluster = [ALIVE_clusterHandler, "getCluster", _clusterID] call ALIVE_fnc_clusterHandler;
 			_homePos = (_civProfile select 2) select 10;
-			_individualHostility = (_civProfile select 2) select 12;
+			private _ownHostility = (_civProfile select 2) select 12;
 			// The town lookup answers with nothing for an id it no longer holds, and nothing
 			// assigned to a variable removes it, so this cannot be asked for straight.
 			_townHostility = if (isNil "_cluster") then {0} else {[_cluster, "posture", 0] call ALIVE_fnc_hashGet};	//_townHostility = (_cluster select 2) select 9; (Different)
@@ -531,14 +531,17 @@ switch (_operation) do {
 				_name = name _civ;
 			};
 
-			_civInfo = [_homePos, _individualHostility, _townHostility, _name];
+			// The civilian keeps their own value; a town under threat still makes everyone in it
+			// guarded, so the dialog goes by the higher of the two.
+			_individualHostility = _ownHostility max _townHostility;
+			_civInfo = [_homePos, _individualHostility, _townHostility, _name, _ownHostility];
 
 		} else {
-			// Which town this civilian belongs to. Nothing in the mod has ever written the
-			// variable asked for first, so this has always fallen through, and what it fell
-			// through to took whichever town happened to register first. That is how somebody
-			// could be told the mood of a town on the far side of the map. The read stays
-			// because it is the right question; it simply has no answer yet.
+			// Which town this civilian belongs to. A crowd civilian that spawned near an agent carries
+			// it (the crowd FSM sets it on the server, where this runs); anyone else falls through to
+			// the town of the nearest agent, or failing that the nearest town. The old fallback took
+			// whichever town happened to register first, which is how somebody could be told the
+			// mood of a town on the far side of the map.
 			_clusterID = _civ getVariable ["ALiVE_clusterID",""];
 			if (_clusterID == "") then {
 				private _nearestAgent = [position _civ] call ALiVE_fnc_getNearestActiveAgent;
@@ -573,12 +576,18 @@ switch (_operation) do {
 				_cluster = [ALIVE_clusterHandler, "getCluster", _clusterID] call ALIVE_fnc_clusterHandler;
 			};
 			_homePos = _civ getVariable ["ALiVE_homePos",position _civ];
-			_individualHostility = _civ getVariable ["ALiVE_CivPop_Hostility",30];
+			private _ownHostility = _civ getVariable ["ALiVE_CivPop_Hostility",30];
 			// The town lookup answers with nothing for an id it no longer holds, and nothing
 			// assigned to a variable removes it, so this cannot be asked for straight.
 			_townHostility = if (isNil "_cluster") then {0} else {[_cluster, "posture", 0] call ALIVE_fnc_hashGet};
 			_name = name _civ;
-			_civInfo = [_homePos, _individualHostility, _townHostility,_name];
+			_individualHostility = _ownHostility max _townHostility;
+			_civInfo = [_homePos, _individualHostility, _townHostility, _name, _ownHostility];
+		};
+
+		// The module's Debug setting, which is kept on the server, where getData runs.
+		if (!isNil "ALIVE_civilianPopulationSystem" && {[ALIVE_civilianPopulationSystem, "debug", false] call ALiVE_fnc_hashGet}) then {
+			["ALiVE Civilian Interaction - %1 hostility: own %2, town %3, the dialog reads %4", _civ, _civInfo select 4, _civInfo select 2, _civInfo select 1] call ALiVE_fnc_dump;
 		};
 
 		//-- Get nearby hostile civilian
@@ -760,11 +769,19 @@ switch (_operation) do {
 
 			_civData = [MOD(civInteractHandler), "CivData"] call ALiVE_fnc_hashGet;
 			_civInfo = [_civData, "CivInfo"] call ALiVE_fnc_hashGet;
-			_civInfo params ["_homePos","_individualHostility","_townHostility","_name"];
+			_civInfo params ["_homePos","_individualHostility","_townHostility","_name",["_ownHostility", 0]];
+			// A copy made before the civilian kept their own value has only the reading.
+			if (count _civInfo < 5) then {_ownHostility = _individualHostility};
 
-			_individualHostility = _individualHostility + _value;
-			_townHostility = _townHostility + _townHostilityValue;
-			[_civData, "CivInfo", [_homePos, _individualHostility, _townHostility, _name]] call ALiVE_fnc_hashSet;
+			// Worked out as getData works it out, and as the server does for an agent: the
+			// civilian's own value moves, kept between 0 and 100, and the reading is the higher
+			// of it and the town's. The town's share goes to the server alone, where the next
+			// town pass rewrites it within seconds, so the dialog keeps the town as it was when
+			// it opened: adding the share here would move the reading by up to 4 for a few
+			// seconds, and the next open would show it gone.
+			_ownHostility = ((_ownHostility + _value) max 0) min 100;
+			_individualHostility = _ownHostility max _townHostility;
+			[_civData, "CivInfo", [_homePos, _individualHostility, _townHostility, _name, _ownHostility]] call ALiVE_fnc_hashSet;
 
 			[MOD(civInteractHandler), "CivData", _civData] call ALiVE_fnc_hashSet;
 		};
@@ -799,7 +816,7 @@ switch (_operation) do {
 
 			//-- Set individual hostility
 			_hostility = (_civProfile select 2) select 12;
-			_hostility = _hostility + _value;
+			_hostility = ((_hostility + _value) max 0) min 100;
 			[_civProfile, "posture", _hostility] call ALiVE_fnc_hashSet;
 		};
 	};

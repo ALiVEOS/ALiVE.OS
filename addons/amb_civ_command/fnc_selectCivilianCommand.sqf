@@ -22,6 +22,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 params [
@@ -82,7 +83,11 @@ if(count (ALIVE_civCommands select 1) > 0) then {
 
     private _agentCluster = [ALIVE_clusterHandler, "getCluster", _agentData select 2 select 9] call ALIVE_fnc_clusterHandler;
     private _clusterHostilityLevel = [_agentCluster, "posture", 0] call ALIVE_fnc_hashGet;
-    [_agentData, "posture", _clusterHostilityLevel] call ALIVE_fnc_hashSet;
+    // The town's value used to be copied over the civilian's own here, every time they
+    // started something new, which wiped what the dialog's aid and irritation had done
+    // within minutes. The civilian keeps their own value now, and the dialog applies the
+    // town's threat when it reads it (getData in fnc_civInteract.sqf). The unit's local
+    // copy below is the town's value, for the speed choice in fnc_agentSelectSpeedMode.
     _agent setVariable ["posture", _clusterHostilityLevel];
 
     //_clusterHostilityLevel = 3;

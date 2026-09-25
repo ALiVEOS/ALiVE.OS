@@ -113,6 +113,30 @@ switch(_operation) do {
             [ALIVE_civCommandRouter, "init"] call ALIVE_fnc_civCommandRouter;
             [ALIVE_civCommandRouter, "debug", _debug] call ALIVE_fnc_civCommandRouter;
 
+            // Hostility decay for every agent civilian, spawned or not, once a minute. The
+            // civilian keeps their own value now that nothing copies the town's over it, and
+            // this is the only thing that brings it down: the Advanced Civilians loop in
+            // XEH_postInit.sqf leaves agents alone, and never ran for anyone out of sight or
+            // in a mission with Advanced Civilians off. The rate is the module's
+            // civHostilityDecayRate (posture per minute toward 0; 0 switches it off), and a
+            // civilian the aim reaction left traumatised recovers at half the rate, as
+            // before. Cars are agents too, so the type is checked first: field 12 is fuel on
+            // a car.
+            [{
+                private _rate = missionNamespace getVariable ["ALiVE_amb_civ_population_HostilityDecayRate", 1];
+                if (_rate <= 0 || {isNil "ALIVE_agentHandler"}) exitWith {};
+                {
+                    if (((_x select 2) select 4) == "agent") then {
+                        private _h = (_x select 2) select 12;
+                        if (_h > 0) then {
+                            private _unit = (_x select 2) select 5;
+                            private _step = if (!isNull _unit && {_unit getVariable ["ALiVE_advciv_traumatised", false]}) then {_rate * 0.5} else {_rate};
+                            [_x, "posture", (_h - _step) max 0] call ALIVE_fnc_hashSet;
+                        };
+                    };
+                } forEach (([ALIVE_agentHandler, "agents"] call ALIVE_fnc_hashGet) select 2);
+            }, 60, []] call CBA_fnc_addPerFrameHandler;
+
             // turn on debug again to see the state of the agent handler, and set debug on all a agents
             [ALIVE_agentHandler, "debug", _debug] call ALIVE_fnc_agentHandler;
 

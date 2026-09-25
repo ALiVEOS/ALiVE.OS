@@ -94,23 +94,19 @@ if (isServer) then {
         } forEach _units;
     }, 1, []] call CBA_fnc_addPerFrameHandler;
 
-    // Decay civilian hostility posture over time (per-civ, 60s tick).
-    // Mission-maker controls rate via ModuleAmbientCivilians_Population's
-    // civHostilityDecayRate attribute (units = posture per minute toward 0;
-    // 0 disables). Only acts on civilians currently in the active world
-    // (ALiVE_advciv_activeUnits); virtualised civilians reset to default
-    // posture on their next virtual->real cycle anyway, so this handler
-    // has nothing to add for them.
+    // Decay the hostility of civilians that are not agents over time (per civ, 60 s
+    // tick). Mission-maker controls the rate via the Civilian Population module's
+    // civHostilityDecayRate attribute (units = posture per minute toward 0; 0 disables).
+    // Only acts on civilians currently in the active world (ALiVE_advciv_activeUnits).
     //
-    // Two posture stores to decay depending on civ type:
-    //   - Ambient civs (have agentID): canonical posture lives in the
-    //     agent profile's "posture" hash field. Written by UpdateHostility
-    //     fall-through at fnc_civInteract.sqf:732 on questions / gives /
-    //     etc. The dialog reads this field at open time
-    //     (fnc_civInteract.sqf:511) into its CivData snapshot.
-    //   - Non-agent civs (Eden-placed, no agentID): canonical posture is
-    //     the unit's ALiVE_CivPop_Hostility variable. Written by AimReact
-    //     and by the non-agent dialog branch at fnc_civInteract.sqf:535.
+    // Only civilians without an agentID (Eden-placed, crowd) are decayed here: their one
+    // store is the unit's ALiVE_CivPop_Hostility, written by the aim reaction, the Hit
+    // handler and, for crowd civilians, the crowd FSM's starting value. Agent civilians
+    // keep their value in the agent profile, and since the town's value stopped being
+    // copied over it that value lasts, so the population system decays it for every
+    // agent, spawned or not (fnc_civilianPopulationSystem.sqf). An agent's own
+    // ALiVE_CivPop_Hostility, which the aim reaction and the Hit handler also raise, is
+    // not decayed by anything.
     //
     // Floor: 0. The hostility-indicator render does
     // max(_civPosture, _sideBaseline) at display time so the per-side
@@ -118,7 +114,7 @@ if (isServer) then {
     // here.
     //
     // Skip rules: rate <= 0 disables the tick. Per-civ skip when the
-    // active store reads <= 0 (no posture history or already at floor).
+    // unit's value reads <= 0 (never written, or already at the floor).
     //
     // Open-dialog caveat: if a dialog is currently open on a civ, that
     // dialog's CivData is a snapshot taken at open time. Decay updates
@@ -143,18 +139,8 @@ if (isServer) then {
                 } else {
                     _rate
                 };
-                private _civID = _x getVariable ["agentID", ""];
-                if (_civID != "" && {!isNil "ALIVE_agentHandler"}) then {
-                    // Ambient civ — decay agent profile posture (canonical store)
-                    private _profile = [ALIVE_agentHandler, "getAgent", _civID] call ALIVE_fnc_agentHandler;
-                    if (!isNil "_profile") then {
-                        private _h = [_profile, "posture", -1] call ALiVE_fnc_hashGet;
-                        if (_h > 0) then {
-                            [_profile, "posture", (_h - _effectiveRate) max 0] call ALiVE_fnc_hashSet;
-                        };
-                    };
-                } else {
-                    // Non-agent civ (Eden-placed) — decay unit variable
+                // Agent civilians are left to the population system's pass.
+                if ((_x getVariable ["agentID", ""]) == "") then {
                     private _h = _x getVariable ["ALiVE_CivPop_Hostility", -1];
                     if (_h > 0) then {
                         _x setVariable ["ALiVE_CivPop_Hostility", (_h - _effectiveRate) max 0, true];
@@ -418,10 +404,11 @@ if (hasInterface) then {
                     if (_d < 2 && {!_frozen}) then {
                         // Pick the approach gesture by the civ's effective
                         // hostility - per-civ ALiVE_CivPop_Hostility floored
-                        // by the module's per-side campaign baseline (the
-                        // same combined value the dialog hostility indicator
-                        // displays). Fires regardless of indicator mode so
-                        // even indicator-off missions get a discoverable
+                        // by the module's per-side campaign baseline. The
+                        // dialog's indicator can differ: it reads the agent
+                        // profile for agent civilians and also counts the
+                        // town's current threat. Fires regardless of indicator
+                        // mode so even indicator-off missions get a discoverable
                         // disposition cue from the wave / head-shake choice.
                         private _civHostility = _civ getVariable ["ALiVE_CivPop_Hostility", 30];
                         private _playerSide = str (side (group player));

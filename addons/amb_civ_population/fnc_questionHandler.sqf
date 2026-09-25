@@ -739,7 +739,9 @@ switch (_question) do {
     //-- What is your opinion of our forces
     case "Opinion": {
         private ["_response"];
-        _personalHostility = _civInfo select 1;
+        // The civilian's own value rather than the reading (the higher of own and town), so a
+        // civilian who is calm but too scared to talk in a hostile town can still say so below.
+        _personalHostility = _civInfo param [4, _civInfo select 1];
         _townHostility = _civInfo select 2;
 
         if (((_townHostility / 2.5) > 45) and (floor random 100 > 25) and (_personalHostility < 50)) exitWith {
@@ -887,7 +889,9 @@ switch (_question) do {
     //-- What is the general opinion of our forces in your town
     case "TownOpinion": {
         private ["_response"];
-        _personalHostility = _civInfo select 1;
+        // The civilian's own value rather than the reading (the higher of own and town), so a
+        // civilian who is calm but too scared to talk in a hostile town can still say so below.
+        _personalHostility = _civInfo param [4, _civInfo select 1];
         _townHostility = _civInfo select 2;
 
         if (((_townHostility / 2.5) > 45) and (floor random 100 > 25) and (_personalHostility < 50)) exitWith {

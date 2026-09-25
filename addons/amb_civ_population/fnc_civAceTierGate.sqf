@@ -8,12 +8,11 @@ Description:
     Returns true when the civilian's effective hostility is BELOW the
     given threshold, i.e. when the entry should remain visible.
 
-    Reads the same source-of-truth the dialog (case "loadData") and the
-    approach gesture both use: the higher of per-civ `ALiVE_CivPop_
-    Hostility` and the module's per-side baseline from
-    `ALIVE_civilianHostility` for the player's side. So whichever access
-    path the player uses, the same civilian shows the same available
-    actions.
+    Reads the civilian's `ALiVE_CivPop_Hostility`, floored by the module's
+    per-side baseline from `ALIVE_civilianHostility` for the player's
+    side, as the approach gesture does. The dialog can differ: it reads
+    the agent profile for agent civilians and also counts the town's
+    current threat.
 
     The companion ACE menu in addons/sys_acemenu/fnc_aceMenuCiv.sqf
     gates each restricted entry with `&& {[_target, N] call
