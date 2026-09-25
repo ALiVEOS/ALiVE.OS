@@ -65,10 +65,11 @@
     <Spanish>Anulación de la meteorología:</Spanish>
 </Key>
 
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_WEATHER_OVERRIDE_COMMENT">
-    <English>Set initial weather to one of the override settings</English>
-    <Chinesesimp>将初始天气设置为覆盖设置之一</Chinesesimp>
-    <Spanish>Establece la meteorología inicial en uno de los ajustes de anulación</Spanish>
+    <English>Forces Clear, Overcast, Stormy or Foggy skies for the whole mission: it replaces the climate's cloud and fog range for the starting weather and later changes, and also overrides the cloud and fog of the Real climate. The Real Weather option only matters with the Real climate, where it uses the weather at the real current time instead of the mission date.</English>
+    <Chinesesimp>在整个任务中强制使用晴朗、阴天、暴风雨或雾天:它会替换气候在初始天气和之后变化中的云量与雾范围,也会覆盖真实气候的云量与雾。真实天气选项仅在选择真实气候时有效,此时会使用现实当前时间的天气而不是任务日期的天气。</Chinesesimp>
+    <Spanish>Fuerza cielos despejados, nublados, tormentosos o con niebla durante toda la misión: sustituye el rango de nubes y niebla del clima para la meteorología inicial y los cambios posteriores, y también anula las nubes y la niebla del clima Real. La opción Real Weather solo influye con el clima Real, donde usa la meteorología de la hora real actual en lugar de la fecha de la misión.</Spanish>
 </Key>
 
 <Key ID="STR_ALIVE_WEATHER_CYCLE_VARIANCE">

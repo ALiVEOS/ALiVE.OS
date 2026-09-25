@@ -137,14 +137,15 @@
     <Portuguese>Ameaça de IED:</Portuguese>
     <Russian>Угроза СВУ:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_IED_IED_THREAT_COMMENT">
-    <English>Maximum number of roadside / urban IEDs the module can sustain across the AO. None = 0, Low = 50, Medium = 100, High = 200, Extreme = 350. The actual count grows toward the cap as players engage with objectives.</English>
-    <Chinese>模組可在 AO 中維持的路邊／城市 IED 最大數量。無 = 0，低 = 50，中 = 100，高 = 200，極高 = 350。玩家與目標互動時，實際數量會向上限增長。</Chinese>
-    <Chinesesimp>模块可在 AO 中维持的路边／城市 IED 最大数量。无 = 0，低 = 50，中 = 100，高 = 200，极高 = 350。玩家与目标互动时，实际数量会向上限增长。</Chinesesimp>
-    <Spanish>Número máximo de IED de carretera / urbanos que el módulo puede mantener en la ZO. Ninguno = 0, Bajo = 50, Medio = 100, Alto = 200, Extremo = 350. El recuento real crece hacia el límite a medida que los jugadores interactúan con los objetivos.</Spanish>
-    <French>Nombre maximum d'IED routiers / urbains que le module peut maintenir dans la ZO. Aucun = 0, Faible = 50, Moyen = 100, Élevé = 200, Extrême = 350. Le nombre réel croît vers le plafond à mesure que les joueurs interagissent avec les objectifs.</French>
-    <Portuguese>Número máximo de IEDs de estrada / urbanos que o módulo pode manter na AO. Nenhum = 0, Baixo = 50, Médio = 100, Alto = 200, Extremo = 350. A contagem real cresce em direção ao limite à medida que os jogadores interagem com os objetivos.</Portuguese>
-    <Russian>Максимальное число придорожных / городских СВУ, которое модуль поддерживает в зоне операций. Нет = 0, Низко = 50, Средне = 100, Высоко = 200, Экстрим = 350. Фактическое число растёт к пределу по мере взаимодействия игроков с объектами.</Russian>
+    <English>Chance (in %) that each settlement in the area is rigged with roadside / urban IEDs. None = 0, Low = 50, Medium = 100, High = 200, Extreme = 350. Medium and above rig every settlement; higher values also put more IEDs in each one.</English>
+    <Chinese>區域內每個聚落被佈設路邊／城市 IED 的機率（%）。無 = 0，低 = 50，中 = 100，高 = 200，極高 = 350。中及以上會在每個聚落佈設；數值越高，每個聚落的 IED 也越多。</Chinese>
+    <Chinesesimp>区域内每个聚落被布设路边／城市 IED 的概率（%）。无 = 0，低 = 50，中 = 100，高 = 200，极高 = 350。中及以上会在每个聚落布设；数值越高，每个聚落的 IED 也越多。</Chinesesimp>
+    <Spanish>Probabilidad (en %) de que cada población de la zona tenga IED de carretera / urbanos. Ninguno = 0, Bajo = 50, Medio = 100, Alto = 200, Extremo = 350. Medio o superior afecta a todas las poblaciones; los valores más altos también ponen más IED en cada una.</Spanish>
+    <French>Probabilité (en %) que chaque localité de la zone soit piégée avec des IED routiers / urbains. Aucun = 0, Faible = 50, Moyen = 100, Élevé = 200, Extrême = 350. À partir de Moyen, toutes les localités sont piégées; les valeurs plus élevées placent aussi plus d'IED dans chacune.</French>
+    <Portuguese>Chance (em %) de cada povoado da área ser armado com IEDs de estrada / urbanos. Nenhum = 0, Baixo = 50, Médio = 100, Alto = 200, Extremo = 350. Médio ou acima arma todos os povoados; valores mais altos também colocam mais IEDs em cada um.</Portuguese>
+    <Russian>Вероятность (в %) того, что в каждом населённом пункте района будут установлены придорожные / городские СВУ. Нет = 0, Низко = 50, Средне = 100, Высоко = 200, Экстрим = 350. При Средне и выше СВУ появляются в каждом населённом пункте; более высокие значения также увеличивают число СВУ в каждом из них.</Russian>
 </Key>
 <Key ID="STR_ALIVE_IED_IED_STARTING_THREAT">
     <English>Starting IED Threat:</English>
@@ -173,14 +174,15 @@
     <Portuguese>Alerta de detecção de IED:</Portuguese>
     <Russian>Оповещение обнаружения СВУ:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_IED_IED_DETECTION_COMMENT">
-    <English>Choose the type of notification a player will receive when detecting an IED. None = silent. Text = on-screen hint. Audio = audio cue + hint.</English>
-    <Chinese>選擇玩家偵測到 IED 時收到的通知類型。無 = 無聲。文字 = 螢幕提示。音訊 = 音效 + 提示。</Chinese>
-    <Chinesesimp>选择玩家检测到 IED 时收到的通知类型。无 = 无声。文字 = 屏幕提示。音频 = 音效 + 提示。</Chinesesimp>
-    <Spanish>Elige el tipo de notificación que recibirá un jugador al detectar un IED. Ninguna = silencio. Texto = aviso en pantalla. Audio = señal sonora + aviso.</Spanish>
-    <French>Choisissez le type de notification qu'un joueur recevra à la détection d'un IED. Aucune = silencieux. Texte = indice à l'écran. Audio = signal sonore + indice.</French>
-    <Portuguese>Escolha o tipo de notificação que um jogador receberá ao detectar um IED. Nenhuma = silencioso. Texto = dica na tela. Áudio = sinal sonoro + dica.</Portuguese>
-    <Russian>Выберите тип уведомления, получаемого игроком при обнаружении СВУ. Нет = без звука. Текст = подсказка на экране. Аудио = звуковой сигнал + подсказка.</Russian>
+    <English>Choose how a player carrying the detection device is alerted when an IED is detected. None = silent. Text = on-screen hint giving the distance. Audio = audio cue only (no hint).</English>
+    <Chinese>選擇攜帶偵測裝置的玩家偵測到 IED 時的提醒方式。無 = 無聲。文字 = 顯示距離的螢幕提示。音訊 = 僅音效（無提示）。</Chinese>
+    <Chinesesimp>选择携带检测装置的玩家检测到 IED 时的提醒方式。无 = 无声。文字 = 显示距离的屏幕提示。音频 = 仅音效（无提示）。</Chinesesimp>
+    <Spanish>Elige cómo se avisa a un jugador que lleva el dispositivo de detección cuando se detecta un IED. Ninguna = silencio. Texto = aviso en pantalla con la distancia. Audio = solo señal sonora (sin aviso).</Spanish>
+    <French>Choisissez comment un joueur portant l'appareil de détection est alerté lorsqu'un IED est détecté. Aucune = silencieux. Texte = indice à l'écran indiquant la distance. Audio = signal sonore uniquement (sans indice).</French>
+    <Portuguese>Escolha como um jogador que carrega o dispositivo de detecção é alertado quando um IED é detectado. Nenhuma = silencioso. Texto = dica na tela com a distância. Áudio = apenas sinal sonoro (sem dica).</Portuguese>
+    <Russian>Выберите, как оповещается игрок с устройством обнаружения при обнаружении СВУ. Нет = без звука. Текст = подсказка на экране с расстоянием. Аудио = только звуковой сигнал (без подсказки).</Russian>
 </Key>
 <Key ID="STR_ALIVE_IED_IED_DETECTION_DEVICE">
     <English>IED Detector Class:</English>
@@ -209,14 +211,15 @@
     <Portuguese>Ameaça de homens-bomba:</Portuguese>
     <Russian>Угроза смертников:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_IED_BOMBER_THREAT_COMMENT">
-    <English>Maximum number of suicide bombers the module can sustain across the AO. None = 0, Low = 10, Medium = 20, High = 30, Extreme = 50.</English>
-    <Chinese>模組可在 AO 中維持的自殺炸彈客最大數量。無 = 0，低 = 10，中 = 20，高 = 30，極高 = 50。</Chinese>
-    <Chinesesimp>模块可在 AO 中维持的自杀炸弹客最大数量。无 = 0，低 = 10，中 = 20，高 = 30，极高 = 50。</Chinesesimp>
-    <Spanish>Número máximo de terroristas suicidas que el módulo puede mantener en la ZO. Ninguno = 0, Bajo = 10, Medio = 20, Alto = 30, Extremo = 50.</Spanish>
-    <French>Nombre maximum de kamikazes que le module peut maintenir dans la ZO. Aucun = 0, Faible = 10, Moyen = 20, Élevé = 30, Extrême = 50.</French>
-    <Portuguese>Número máximo de homens-bomba que o módulo pode manter na AO. Nenhum = 0, Baixo = 10, Médio = 20, Alto = 30, Extremo = 50.</Portuguese>
-    <Russian>Максимальное число смертников, которое модуль поддерживает в зоне операций. Нет = 0, Низко = 10, Средне = 20, Высоко = 30, Экстрим = 50.</Russian>
+    <English>Chance (in %) that each settlement in the area gets a suicide bomber. None = 0, Low = 10, Medium = 20, High = 30, Extreme = 50.</English>
+    <Chinese>區域內每個聚落出現自殺炸彈客的機率（%）。無 = 0，低 = 10，中 = 20，高 = 30，極高 = 50。</Chinese>
+    <Chinesesimp>区域内每个聚落出现自杀炸弹客的概率（%）。无 = 0，低 = 10，中 = 20，高 = 30，极高 = 50。</Chinesesimp>
+    <Spanish>Probabilidad (en %) de que cada población de la zona tenga un terrorista suicida. Ninguno = 0, Bajo = 10, Medio = 20, Alto = 30, Extremo = 50.</Spanish>
+    <French>Probabilité (en %) que chaque localité de la zone ait un kamikaze. Aucun = 0, Faible = 10, Moyen = 20, Élevé = 30, Extrême = 50.</French>
+    <Portuguese>Chance (em %) de cada povoado da área ter um homem-bomba. Nenhum = 0, Baixo = 10, Médio = 20, Alto = 30, Extremo = 50.</Portuguese>
+    <Russian>Вероятность (в %) того, что в каждом населённом пункте района появится смертник. Нет = 0, Низко = 10, Средне = 20, Высоко = 30, Экстрим = 50.</Russian>
 </Key>
 <Key ID="STR_ALIVE_IED_BOMBER_TYPE">
     <English>(Optional) Bomber Classes:</English>
@@ -263,14 +266,15 @@
     <Portuguese>Ameaça de IED veicular (VB-IED):</Portuguese>
     <Russian>Угроза СВУ на ТС (VB-IED):</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_IED_VB_IED_THREAT_COMMENT">
-    <English>Maximum number of vehicle-borne IEDs (VBIEDs) the module can sustain across the AO. None = 0, Low = 10, Medium = 20, High = 50, Extreme = 70.</English>
-    <Chinese>模組可在 AO 中維持的車載 IED（VBIED）最大數量。無 = 0，低 = 10，中 = 20，高 = 50，極高 = 70。</Chinese>
-    <Chinesesimp>模块可在 AO 中维持的车载 IED（VBIED）最大数量。无 = 0，低 = 10，中 = 20，高 = 50，极高 = 70。</Chinesesimp>
-    <Spanish>Número máximo de IED vehiculares (VBIED) que el módulo puede mantener en la ZO. Ninguno = 0, Bajo = 10, Medio = 20, Alto = 50, Extremo = 70.</Spanish>
-    <French>Nombre maximum d'IED véhiculés (VBIED) que le module peut maintenir dans la ZO. Aucun = 0, Faible = 10, Moyen = 20, Élevé = 50, Extrême = 70.</French>
-    <Portuguese>Número máximo de IEDs veiculares (VBIEDs) que o módulo pode manter na AO. Nenhum = 0, Baixo = 10, Médio = 20, Alto = 50, Extremo = 70.</Portuguese>
-    <Russian>Максимальное число СВУ на ТС (VBIED), которое модуль поддерживает в зоне операций. Нет = 0, Низко = 10, Средне = 20, Высоко = 50, Экстрим = 70.</Russian>
+    <English>Chance (in %) that each settlement in the area is picked for vehicle-borne IEDs (VBIEDs). When players come near, the nearest cars there are each rigged with the same chance, so a picked settlement can still end up with none. None = 0, Low = 10, Medium = 20, High = 50, Extreme = 70.</English>
+    <Chinese>區域內每個聚落被選為車載 IED（VBIED）地點的機率（%）。玩家接近時，當地最近的車輛會各自以相同機率被改裝，因此被選中的聚落仍可能一輛都沒有。無 = 0，低 = 10，中 = 20，高 = 50，極高 = 70。</Chinese>
+    <Chinesesimp>区域内每个聚落被选为车载 IED（VBIED）地点的概率（%）。玩家接近时，当地最近的车辆会各自以相同概率被改装，因此被选中的聚落仍可能一辆都没有。无 = 0，低 = 10，中 = 20，高 = 50，极高 = 70。</Chinesesimp>
+    <Spanish>Probabilidad (en %) de que cada población de la zona sea elegida para IED vehiculares (VBIED). Cuando se acercan jugadores, cada uno de los coches más cercanos se convierte con la misma probabilidad, así que una población elegida puede quedarse sin ninguno. Ninguno = 0, Bajo = 10, Medio = 20, Alto = 50, Extremo = 70.</Spanish>
+    <French>Probabilité (en %) que chaque localité de la zone soit choisie pour des IED véhiculés (VBIED). À l'approche de joueurs, chacune des voitures les plus proches est piégée avec la même probabilité, donc une localité choisie peut n'en avoir aucun. Aucun = 0, Faible = 10, Moyen = 20, Élevé = 50, Extrême = 70.</French>
+    <Portuguese>Chance (em %) de cada povoado da área ser escolhido para IEDs veiculares (VBIEDs). Quando jogadores se aproximam, cada um dos carros mais próximos é armado com a mesma chance, por isso um povoado escolhido pode ficar sem nenhum. Nenhum = 0, Baixo = 10, Médio = 20, Alto = 50, Extremo = 70.</Portuguese>
+    <Russian>Вероятность (в %) того, что каждый населённый пункт района будет выбран для СВУ на ТС (VBIED). При приближении игроков каждая из ближайших машин минируется с той же вероятностью, поэтому в выбранном пункте может не оказаться ни одного СВУ на ТС. Нет = 0, Низко = 10, Средне = 20, Высоко = 50, Экстрим = 70.</Russian>
 </Key>
 <Key ID="STR_ALIVE_IED_VB_IED_SIDE">
     <English>VB-IED Side:</English>
@@ -371,14 +375,15 @@
     <Portuguese>Limiar de acionamento máx.:</Portuguese>
     <Russian>Макс. порог срабатывания:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_IED_ENGINEER_TRIP_THRESHOLDMAX_COMMENT">
-    <English>Upper bound of the per-IED randomised trip threshold. Must be &gt;= Min; if Max &lt; Min the threshold is constant at Min.</English>
-    <Chinese>每個 IED 隨機觸發閾值的上限。必須 &gt;= Min；如果 Max &lt; Min，閾值固定為 Min。</Chinese>
-    <Chinesesimp>每个 IED 随机触发阈值的上限。必须 &gt;= Min；如果 Max &lt; Min，阈值固定为 Min。</Chinesesimp>
-    <Spanish>Límite superior del umbral de activación aleatorio por IED. Debe ser &gt;= Mín; si Máx &lt; Mín el umbral es constante en Mín.</Spanish>
-    <French>Borne supérieure du seuil de déclenchement aléatoire par IED. Doit être &gt;= Min; si Max &lt; Min le seuil est constant à Min.</French>
-    <Portuguese>Limite superior do limiar de acionamento aleatório por IED. Deve ser &gt;= Mín; se Máx &lt; Mín o limiar é constante em Mín.</Portuguese>
-    <Russian>Верхняя граница случайного порога срабатывания для каждого СВУ. Должно быть &gt;= Min; если Max &lt; Min, порог постоянен и равен Min.</Russian>
+    <English>Upper bound of the per-IED randomised trip threshold. Should be &gt;= Min; if Max &lt; Min, each IED's threshold still lands somewhere between the two values.</English>
+    <Chinese>每個 IED 隨機觸發閾值的上限。應 &gt;= Min；如果 Max &lt; Min，每個 IED 的閾值仍會落在兩個值之間。</Chinese>
+    <Chinesesimp>每个 IED 随机触发阈值的上限。应 &gt;= Min；如果 Max &lt; Min，每个 IED 的阈值仍会落在两个值之间。</Chinesesimp>
+    <Spanish>Límite superior del umbral de activación aleatorio por IED. Debería ser &gt;= Mín; si Máx &lt; Mín, el umbral de cada IED sigue cayendo en algún punto entre los dos valores.</Spanish>
+    <French>Borne supérieure du seuil de déclenchement aléatoire par IED. Devrait être &gt;= Min; si Max &lt; Min, le seuil de chaque IED tombe quand même quelque part entre les deux valeurs.</French>
+    <Portuguese>Limite superior do limiar de acionamento aleatório por IED. Deveria ser &gt;= Mín; se Máx &lt; Mín, o limiar de cada IED continua a cair em algum ponto entre os dois valores.</Portuguese>
+    <Russian>Верхняя граница случайного порога срабатывания для каждого СВУ. Должно быть &gt;= Min; если Max &lt; Min, порог каждого СВУ всё равно оказывается где-то между этими двумя значениями.</Russian>
 </Key>
 <Key ID="STR_ALIVE_IED_ENGINEER_DECAY_RATE">
     <English>Trip Decay Rate:</English>

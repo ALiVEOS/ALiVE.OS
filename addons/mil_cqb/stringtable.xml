@@ -292,13 +292,13 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_WHITELIST_COMMENT">
-    <English>Restricts CQB to buildings inside this marker (or markers). Enter marker names separated by commas, no spaces, no quotes, e.g. marker1,marker2. Leave blank for no restriction. Overridden if this module is synced to a Placement module.</English>
-    <Chinesesimp>CQB将出现的标记</Chinesesimp>
-    <Chinese>將 CQB 限制在此標記（或多個標記）內的建築。輸入以逗號分隔的標記名稱,無空格、無引號 — 例如 marker1,marker2。留空表示不限制。若此模組同步至放置模組,則被覆寫。</Chinese>
-    <Spanish>Restringe el CQB a los edificios dentro de este marcador (o marcadores). Introduce los nombres de marcador separados por comas, sin espacios, sin comillas — p. ej. marker1,marker2. Deja vacío para no aplicar restricciones. Sobrescrito si este módulo se sincroniza a un módulo de Colocación.</Spanish>
-    <French>Restreint le CQB aux bâtiments à l'intérieur de ce marqueur (ou de ces marqueurs). Entrez les noms des marqueurs séparés par des virgules, sans espaces, sans guillemets — ex. marker1,marker2. Laissez vide pour aucune restriction. Écrasé si ce module est synchronisé à un module de placement.</French>
-    <Portuguese>Restringe o CQB aos edifícios dentro deste marcador (ou marcadores). Insira os nomes dos marcadores separados por vírgulas, sem espaços, sem aspas — ex. marker1,marker2. Deixe em branco para nenhuma restrição. Sobrescrito se este módulo for sincronizado a um módulo de Posicionamento.</Portuguese>
-    <Russian>Ограничивает CQB зданиями внутри этого маркера (или маркеров). Введите имена маркеров через запятую, без пробелов, без кавычек — например, marker1,marker2. Оставьте пустым, чтобы не ограничивать. Переопределяется при синхронизации этого модуля с модулем Размещения.</Russian>
+    <English>Restricts CQB to buildings inside this marker (or markers). Enter marker names separated by commas, no spaces, no quotes, e.g. marker1,marker2. Leave blank for no restriction. It still applies when this module is synced to a Placement module.</English>
+    <Chinesesimp>将 CQB 限制在此标记（或多个标记）内的建筑。输入以逗号分隔的标记名称，无空格、无引号，例如 marker1,marker2。留空表示不限制。此模块同步至放置模块时仍然生效。</Chinesesimp>
+    <Chinese>將 CQB 限制在此標記（或多個標記）內的建築。輸入以逗號分隔的標記名稱，無空格、無引號，例如 marker1,marker2。留空表示不限制。此模組同步至放置模組時仍然生效。</Chinese>
+    <Spanish>Restringe el CQB a los edificios dentro de este marcador (o marcadores). Introduce los nombres de marcador separados por comas, sin espacios, sin comillas, p. ej. marker1,marker2. Deja vacío para no aplicar restricciones. Sigue aplicándose cuando este módulo se sincroniza a un módulo de Colocación.</Spanish>
+    <French>Restreint le CQB aux bâtiments à l'intérieur de ce marqueur (ou de ces marqueurs). Entrez les noms des marqueurs séparés par des virgules, sans espaces, sans guillemets, ex. marker1,marker2. Laissez vide pour aucune restriction. S'applique toujours lorsque ce module est synchronisé à un module de placement.</French>
+    <Portuguese>Restringe o CQB aos edifícios dentro deste marcador (ou marcadores). Insira os nomes dos marcadores separados por vírgulas, sem espaços, sem aspas, ex. marker1,marker2. Deixe em branco para nenhuma restrição. Continua a aplicar-se quando este módulo é sincronizado a um módulo de Posicionamento.</Portuguese>
+    <Russian>Ограничивает CQB зданиями внутри этого маркера (или маркеров). Введите имена маркеров через запятую, без пробелов, без кавычек, например, marker1,marker2. Оставьте пустым, чтобы не ограничивать. Действует и при синхронизации этого модуля с модулем Размещения.</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_USEDOMINANTFACTION">
@@ -373,13 +373,13 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_PATROLBEHAVIOUR_COMMENT">
-    <English>Combat behaviour for garrison patrols when no enemy is in sight. Defaults to Safe (walking). Groups still automatically switch to alert when they spot an enemy.</English>
-    <Chinesesimp>驻军巡逻在未发现敌人时的战斗行为。默认为安全（步行）。发现敌人时小组仍会自动转为警戒。</Chinesesimp>
-    <Chinese>駐軍巡邏在未發現敵人時的戰鬥行為。預設為安全（步行）。發現敵人時小組仍會自動轉為警戒。</Chinese>
-    <Spanish>Comportamiento de combate de las patrullas de guarnición cuando no hay enemigos a la vista. Por defecto es Seguro (caminando). Los grupos siguen pasando a alerta automáticamente al detectar a un enemigo.</Spanish>
-    <French>Comportement de combat des patrouilles de garnison lorsqu'aucun ennemi n'est en vue. Par défaut: Tranquille (marche). Les groupes passent toujours automatiquement en alerte lorsqu'ils repèrent un ennemi.</French>
-    <Portuguese>Comportamento de combate das patrulhas de guarnição quando não há inimigos à vista. Predefinição: Seguro (a andar). Os grupos continuam a mudar automaticamente para alerta ao avistar um inimigo.</Portuguese>
-    <Russian>Боевое поведение гарнизонных патрулей, когда враг не виден. По умолчанию — «Безопасно» (шагом). Группы всё равно автоматически переходят в боевую готовность, заметив противника.</Russian>
+    <English>Combat behaviour for every CQB group when no enemy is in sight, both groups out on patrol and groups that stay in their building. Defaults to Safe (walking). Groups still automatically switch to alert when they spot an enemy.</English>
+    <Chinesesimp>所有 CQB 小组在未发现敌人时的战斗行为，包括外出巡逻的小组和留在建筑内的小组。默认为安全（步行）。发现敌人时小组仍会自动转为警戒。</Chinesesimp>
+    <Chinese>所有 CQB 小組在未發現敵人時的戰鬥行為，包括外出巡邏的小組和留在建築內的小組。預設為安全（步行）。發現敵人時小組仍會自動轉為警戒。</Chinese>
+    <Spanish>Comportamiento de combate de todos los grupos CQB cuando no hay enemigos a la vista, tanto los que salen de patrulla como los que se quedan en su edificio. Por defecto es Seguro (caminando). Los grupos siguen pasando a alerta automáticamente al detectar a un enemigo.</Spanish>
+    <French>Comportement de combat de tous les groupes CQB lorsqu'aucun ennemi n'est en vue, qu'ils partent en patrouille ou restent dans leur bâtiment. Par défaut: Tranquille (marche). Les groupes passent toujours automatiquement en alerte lorsqu'ils repèrent un ennemi.</French>
+    <Portuguese>Comportamento de combate de todos os grupos CQB quando não há inimigos à vista, tanto os que saem em patrulha como os que ficam no seu edifício. Predefinição: Seguro (a andar). Os grupos continuam a mudar automaticamente para alerta ao avistar um inimigo.</Portuguese>
+    <Russian>Боевое поведение всех групп CQB, когда враг не виден: и тех, что уходят в патруль, и тех, что остаются в своём здании. По умолчанию: «Безопасно» (шагом). Группы всё равно автоматически переходят в боевую готовность, заметив противника.</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_PATROLSPEED">
@@ -393,13 +393,13 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_PATROLSPEED_COMMENT">
-    <English>Movement speed for garrison patrols when no enemy is in sight. Defaults to Limited (walking).</English>
-    <Chinesesimp>驻军巡逻在未发现敌人时的移动速度。默认为受限（步行）。</Chinesesimp>
-    <Chinese>駐軍巡邏在未發現敵人時的移動速度。預設為受限（步行）。</Chinese>
-    <Spanish>Velocidad de movimiento de las patrullas de guarnición cuando no hay enemigos a la vista. Por defecto es Limitada (caminando).</Spanish>
-    <French>Vitesse de déplacement des patrouilles de garnison lorsqu'aucun ennemi n'est en vue. Par défaut: Limitée (marche).</French>
-    <Portuguese>Velocidade de movimento das patrulhas de guarnição quando não há inimigos à vista. Predefinição: Limitada (a andar).</Portuguese>
-    <Russian>Скорость передвижения гарнизонных патрулей, когда враг не виден. По умолчанию — «Ограниченная» (шагом).</Russian>
+    <English>Movement speed for every CQB group when no enemy is in sight, both groups out on patrol and groups that stay in their building. Defaults to Limited (walking).</English>
+    <Chinesesimp>所有 CQB 小组在未发现敌人时的移动速度，包括外出巡逻的小组和留在建筑内的小组。默认为受限（步行）。</Chinesesimp>
+    <Chinese>所有 CQB 小組在未發現敵人時的移動速度，包括外出巡邏的小組和留在建築內的小組。預設為受限（步行）。</Chinese>
+    <Spanish>Velocidad de movimiento de todos los grupos CQB cuando no hay enemigos a la vista, tanto los que salen de patrulla como los que se quedan en su edificio. Por defecto es Limitada (caminando).</Spanish>
+    <French>Vitesse de déplacement de tous les groupes CQB lorsqu'aucun ennemi n'est en vue, qu'ils partent en patrouille ou restent dans leur bâtiment. Par défaut: Limitée (marche).</French>
+    <Portuguese>Velocidade de movimento de todos os grupos CQB quando não há inimigos à vista, tanto os que saem em patrulha como os que ficam no seu edifício. Predefinição: Limitada (a andar).</Portuguese>
+    <Russian>Скорость передвижения всех групп CQB, когда враг не виден: и тех, что уходят в патруль, и тех, что остаются в своём здании. По умолчанию: «Ограниченная» (шагом).</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_PATROLSEARCHCHANCE">
@@ -533,13 +533,13 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_SPAWNDISTANCE_COMMENT">
-    <English>Distance in metres at which ground units spawn/despawn around the player. Note: strategic placements use 1.4x this value.</English>
-    <Chinese>玩家周圍地面單位生成/解除生成的距離（公尺）。注意：戰略放置使用此值的 1.4 倍。</Chinese>
-    <Chinesesimp>玩家周围地面单位生成/解除生成的距离（米）。注意：战略放置使用此值的 1.4 倍。</Chinesesimp>
-    <Spanish>Distancia en metros a la que las unidades terrestres se generan/desaparecen alrededor del jugador. Nota: las colocaciones estratégicas usan 1,4 veces este valor.</Spanish>
-    <French>Distance en mètres à laquelle les unités au sol apparaissent/disparaissent autour du joueur. Note: les placements stratégiques utilisent 1,4× cette valeur.</French>
-    <Portuguese>Distância em metros à qual as unidades terrestres aparecem/desaparecem em torno do jogador. Nota: posicionamentos estratégicos usam 1,4× este valor.</Portuguese>
-    <Russian>Расстояние в метрах, на котором наземные юниты появляются/исчезают вокруг игрока. Примечание: стратегические размещения используют 1,4× это значение.</Russian>
+    <English>Distance in metres around a player on foot or in a ground vehicle at which CQB buildings spawn their units. They despawn once the player is about 20% further away.</English>
+    <Chinese>玩家步行或乘坐地面載具時，CQB 建築在此距離（公尺）內生成其單位。玩家再遠離約 20% 後單位解除生成。</Chinese>
+    <Chinesesimp>玩家步行或乘坐地面载具时，CQB 建筑在此距离（米）内生成其单位。玩家再远离约 20% 后单位解除生成。</Chinesesimp>
+    <Spanish>Distancia en metros alrededor de un jugador a pie o en un vehículo terrestre a la que los edificios CQB generan sus unidades. Desaparecen cuando el jugador se aleja aproximadamente un 20% más.</Spanish>
+    <French>Distance en mètres autour d'un joueur à pied ou dans un véhicule terrestre à laquelle les bâtiments CQB font apparaître leurs unités. Elles disparaissent lorsque le joueur s'éloigne d'environ 20% de plus.</French>
+    <Portuguese>Distância em metros em torno de um jogador a pé ou num veículo terrestre à qual os edifícios CQB fazem aparecer as suas unidades. Desaparecem quando o jogador se afasta cerca de 20% mais.</Portuguese>
+    <Russian>Расстояние в метрах вокруг игрока пешком или в наземной технике, на котором в зданиях CQB появляются юниты. Они исчезают, когда игрок отходит примерно на 20% дальше.</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_SPAWNDISTANCESTATIC">
@@ -553,13 +553,13 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_SPAWNDISTANCESTATIC_COMMENT">
-    <English>Distance in metres at which static weapons spawn/despawn around the player. Note: strategic placements use 1.4x this value.</English>
-    <Chinese>玩家周圍靜態武器生成/解除生成的距離（公尺）。注意：戰略放置使用此值的 1.4 倍。</Chinese>
-    <Chinesesimp>玩家周围静态武器生成/解除生成的距离（米）。注意：战略放置使用此值的 1.4 倍。</Chinesesimp>
-    <Spanish>Distancia en metros a la que las armas estáticas se generan/desaparecen alrededor del jugador. Nota: las colocaciones estratégicas usan 1,4 veces este valor.</Spanish>
-    <French>Distance en mètres à laquelle les armes statiques apparaissent/disparaissent autour du joueur. Note: les placements stratégiques utilisent 1,4× cette valeur.</French>
-    <Portuguese>Distância em metros à qual as armas estáticas aparecem/desaparecem em torno do jogador. Nota: posicionamentos estratégicos usam 1,4× este valor.</Portuguese>
-    <Russian>Расстояние в метрах, на котором стационарное оружие появляется/исчезает вокруг игрока. Примечание: стратегические размещения используют 1,4× это значение.</Russian>
+    <English>Distance in metres around a player on foot or in a ground vehicle at which CQB buildings that got static weapons on an earlier spawn respawn their units. Spawn Ground is used instead if it's larger. A building's first spawn always uses Spawn Ground, and static weapons are only placed when Static weapons is above None. They despawn once the player is about 20% further away.</English>
+    <Chinese>玩家步行或乘坐地面載具時，先前生成時已獲得靜態武器的 CQB 建築在此距離（公尺）內重新生成其單位。若地面單位生成距離更大，則改用該距離。建築首次生成一律使用地面單位生成距離，且只有在「靜態武器」設為高於 None 時才會放置靜態武器。玩家再遠離約 20% 後單位解除生成。</Chinese>
+    <Chinesesimp>玩家步行或乘坐地面载具时，先前生成时已获得静态武器的 CQB 建筑在此距离（米）内重新生成其单位。若地面单位生成距离更大，则改用该距离。建筑首次生成一律使用地面单位生成距离，且只有在"静态武器"设为高于 None 时才会放置静态武器。玩家再远离约 20% 后单位解除生成。</Chinesesimp>
+    <Spanish>Distancia en metros alrededor de un jugador a pie o en un vehículo terrestre a la que los edificios CQB que obtuvieron armas estáticas en una generación anterior vuelven a generar sus unidades. Si Generación terrestre es mayor, se usa esa distancia. La primera generación de un edificio siempre usa Generación terrestre, y solo se colocan armas estáticas si Armas estáticas está por encima de None. Desaparecen cuando el jugador se aleja aproximadamente un 20% más.</Spanish>
+    <French>Distance en mètres autour d'un joueur à pied ou dans un véhicule terrestre à laquelle les bâtiments CQB ayant reçu des armes statiques lors d'une apparition précédente font réapparaître leurs unités. Si Apparition au sol est plus grande, c'est elle qui est utilisée. La première apparition d'un bâtiment utilise toujours Apparition au sol, et les armes statiques ne sont placées que si Armes statiques est au-dessus de None. Elles disparaissent lorsque le joueur s'éloigne d'environ 20% de plus.</French>
+    <Portuguese>Distância em metros em torno de um jogador a pé ou num veículo terrestre à qual os edifícios CQB que receberam armas estáticas numa geração anterior voltam a fazer aparecer as suas unidades. Se Geração terrestre for maior, é essa a usada. A primeira geração de um edifício usa sempre Geração terrestre, e as armas estáticas só são colocadas se Armas estáticas estiver acima de None. Desaparecem quando o jogador se afasta cerca de 20% mais.</Portuguese>
+    <Russian>Расстояние в метрах вокруг игрока пешком или в наземной технике, на котором в зданиях CQB, получивших стационарное оружие при прошлом появлении, снова появляются юниты. Если «Появление пехоты» больше, используется оно. При первом появлении здания всегда используется «Появление пехоты», а стационарное оружие ставится, только если «Стационарное оружие» выше None. Юниты исчезают, когда игрок отходит примерно на 20% дальше.</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_SPAWNDISTANCEHELI">
@@ -573,13 +573,13 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_SPAWNDISTANCEHELI_COMMENT">
-    <English>Distance in metres at which helicopters spawn/despawn around the player. Set to 0 to disable helicopter spawning. Note: strategic placements use 1.4x this value.</English>
-    <Chinese>玩家周圍直升機生成/解除生成的距離（公尺）。設為 0 以停用直升機生成。注意：戰略放置使用此值的 1.4 倍。</Chinese>
-    <Chinesesimp>玩家周围直升机生成/解除生成的距离（米）。设为 0 以停用直升机生成。注意：战略放置使用此值的 1.4 倍。</Chinesesimp>
-    <Spanish>Distancia en metros a la que los helicópteros se generan/desaparecen alrededor del jugador. Establece en 0 para desactivar la generación de helicópteros. Nota: las colocaciones estratégicas usan 1,4 veces este valor.</Spanish>
-    <French>Distance en mètres à laquelle les hélicoptères apparaissent/disparaissent autour du joueur. Réglez sur 0 pour désactiver l'apparition d'hélicoptères. Note: les placements stratégiques utilisent 1,4× cette valeur.</French>
-    <Portuguese>Distância em metros à qual os helicópteros aparecem/desaparecem em torno do jogador. Defina como 0 para desativar a geração de helicópteros. Nota: posicionamentos estratégicos usam 1,4× este valor.</Portuguese>
-    <Russian>Расстояние в метрах, на котором вертолёты появляются/исчезают вокруг игрока. Установите 0, чтобы отключить появление вертолётов. Примечание: стратегические размещения используют 1,4× это значение.</Russian>
+    <English>Distance in metres around a player in a helicopter at which CQB buildings spawn their units. They despawn once the player is about 20% further away. Set to 0 so players in helicopters don't spawn CQB units.</English>
+    <Chinese>玩家乘坐直升機時，CQB 建築在此距離（公尺）內生成其單位。玩家再遠離約 20% 後單位解除生成。設為 0 則乘坐直升機的玩家不會觸發 CQB 單位生成。</Chinese>
+    <Chinesesimp>玩家乘坐直升机时，CQB 建筑在此距离（米）内生成其单位。玩家再远离约 20% 后单位解除生成。设为 0 则乘坐直升机的玩家不会触发 CQB 单位生成。</Chinesesimp>
+    <Spanish>Distancia en metros alrededor de un jugador en un helicóptero a la que los edificios CQB generan sus unidades. Desaparecen cuando el jugador se aleja aproximadamente un 20% más. Establece en 0 para que los jugadores en helicóptero no generen unidades CQB.</Spanish>
+    <French>Distance en mètres autour d'un joueur en hélicoptère à laquelle les bâtiments CQB font apparaître leurs unités. Elles disparaissent lorsque le joueur s'éloigne d'environ 20% de plus. Réglez sur 0 pour que les joueurs en hélicoptère ne fassent pas apparaître d'unités CQB.</French>
+    <Portuguese>Distância em metros em torno de um jogador num helicóptero à qual os edifícios CQB fazem aparecer as suas unidades. Desaparecem quando o jogador se afasta cerca de 20% mais. Defina como 0 para que jogadores em helicópteros não façam aparecer unidades CQB.</Portuguese>
+    <Russian>Расстояние в метрах вокруг игрока в вертолёте, на котором в зданиях CQB появляются юниты. Они исчезают, когда игрок отходит примерно на 20% дальше. Установите 0, чтобы игроки в вертолётах не вызывали появление юнитов CQB.</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_SPAWNDISTANCEJET">
@@ -593,13 +593,13 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_SPAWNDISTANCEJET_COMMENT">
-    <English>Distance in metres at which fixed-wing aircraft spawn/despawn around the player. Set to 0 to disable jet spawning. Note: strategic placements use 1.4x this value.</English>
-    <Chinese>玩家周圍固定翼飛機生成/解除生成的距離（公尺）。設為 0 以停用戰機生成。注意：戰略放置使用此值的 1.4 倍。</Chinese>
-    <Chinesesimp>玩家周围固定翼飞机生成/解除生成的距离（米）。设为 0 以停用战机生成。注意：战略放置使用此值的 1.4 倍。</Chinesesimp>
-    <Spanish>Distancia en metros a la que los aviones de ala fija se generan/desaparecen alrededor del jugador. Establece en 0 para desactivar la generación de jets. Nota: las colocaciones estratégicas usan 1,4 veces este valor.</Spanish>
-    <French>Distance en mètres à laquelle les avions à voilure fixe apparaissent/disparaissent autour du joueur. Réglez sur 0 pour désactiver l'apparition de jets. Note: les placements stratégiques utilisent 1,4× cette valeur.</French>
-    <Portuguese>Distância em metros à qual as aeronaves de asa fixa aparecem/desaparecem em torno do jogador. Defina como 0 para desativar a geração de jatos. Nota: posicionamentos estratégicos usam 1,4× este valor.</Portuguese>
-    <Russian>Расстояние в метрах, на котором самолёты с неподвижным крылом появляются/исчезают вокруг игрока. Установите 0, чтобы отключить появление самолётов. Примечание: стратегические размещения используют 1,4× это значение.</Russian>
+    <English>Distance in metres around a player in a fixed-wing aircraft at which CQB buildings spawn their units. They despawn once the player is about 20% further away. Set to 0 so players in jets don't spawn CQB units.</English>
+    <Chinese>玩家乘坐固定翼飛機時，CQB 建築在此距離（公尺）內生成其單位。玩家再遠離約 20% 後單位解除生成。設為 0 則乘坐戰機的玩家不會觸發 CQB 單位生成。</Chinese>
+    <Chinesesimp>玩家乘坐固定翼飞机时，CQB 建筑在此距离（米）内生成其单位。玩家再远离约 20% 后单位解除生成。设为 0 则乘坐战机的玩家不会触发 CQB 单位生成。</Chinesesimp>
+    <Spanish>Distancia en metros alrededor de un jugador en un avión de ala fija a la que los edificios CQB generan sus unidades. Desaparecen cuando el jugador se aleja aproximadamente un 20% más. Establece en 0 para que los jugadores en jets no generen unidades CQB.</Spanish>
+    <French>Distance en mètres autour d'un joueur dans un avion à voilure fixe à laquelle les bâtiments CQB font apparaître leurs unités. Elles disparaissent lorsque le joueur s'éloigne d'environ 20% de plus. Réglez sur 0 pour que les joueurs en jet ne fassent pas apparaître d'unités CQB.</French>
+    <Portuguese>Distância em metros em torno de um jogador numa aeronave de asa fixa à qual os edifícios CQB fazem aparecer as suas unidades. Desaparecem quando o jogador se afasta cerca de 20% mais. Defina como 0 para que jogadores em jatos não façam aparecer unidades CQB.</Portuguese>
+    <Russian>Расстояние в метрах вокруг игрока в самолёте с неподвижным крылом, на котором в зданиях CQB появляются юниты. Они исчезают, когда игрок отходит примерно на 20% дальше. Установите 0, чтобы игроки в самолётах не вызывали появление юнитов CQB.</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_DEBUG_ENABLE">
@@ -693,13 +693,13 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_UNIT_BLACKLIST_COMMENT">
-    <English>Prevents specific unit group classnames from being used by this CQB module. Enter group classnames separated by commas, no spaces, no quotes, e.g. OPF_G_Inf_AT_F,OPF_G_Inf_AA_F.</English>
-    <Chinesesimp>本CQB模块的黑名单单位</Chinesesimp>
-    <Chinese>防止特定單位小組類別名稱被此 CQB 模組使用。輸入以逗號分隔的小組類別名稱,無空格、無引號 — 例如 OPF_G_Inf_AT_F,OPF_G_Inf_AA_F。</Chinese>
-    <Spanish>Evita que classnames específicos de grupos de unidades sean usados por este módulo CQB. Introduce los classnames de grupo separados por comas, sin espacios, sin comillas — p. ej. OPF_G_Inf_AT_F,OPF_G_Inf_AA_F.</Spanish>
-    <French>Empêche des classnames spécifiques de groupes d'unités d'être utilisés par ce module CQB. Entrez les classnames de groupe séparés par des virgules, sans espaces, sans guillemets — ex. OPF_G_Inf_AT_F,OPF_G_Inf_AA_F.</French>
-    <Portuguese>Impede que classnames específicos de grupos de unidades sejam usados por este módulo CQB. Insira os classnames de grupo separados por vírgulas, sem espaços, sem aspas — ex. OPF_G_Inf_AT_F,OPF_G_Inf_AA_F.</Portuguese>
-    <Russian>Запрещает использование конкретных классов групп юнитов этим модулем CQB. Вводите имена классов групп через запятую, без пробелов, без кавычек — например, OPF_G_Inf_AT_F,OPF_G_Inf_AA_F.</Russian>
+    <English>Stops this CQB module from spawning these soldier types. Enter individual unit classnames (not group classnames), spelled exactly with matching capitals, separated by commas, no spaces, no quotes, e.g. O_G_Soldier_AR_F,O_G_Soldier_LAT_F.</English>
+    <Chinesesimp>阻止此 CQB 模块生成这些士兵类型。输入单个单位的类别名称（不是小组类别名称），拼写和大小写须完全一致，以逗号分隔，无空格、无引号，例如 O_G_Soldier_AR_F,O_G_Soldier_LAT_F。</Chinesesimp>
+    <Chinese>阻止此 CQB 模組生成這些士兵類型。輸入單個單位的類別名稱（不是小組類別名稱），拼寫和大小寫須完全一致，以逗號分隔，無空格、無引號，例如 O_G_Soldier_AR_F,O_G_Soldier_LAT_F。</Chinese>
+    <Spanish>Impide que este módulo CQB genere estos tipos de soldado. Introduce classnames de unidades individuales (no de grupos), escritos exactamente igual, con las mismas mayúsculas, separados por comas, sin espacios, sin comillas, p. ej. O_G_Soldier_AR_F,O_G_Soldier_LAT_F.</Spanish>
+    <French>Empêche ce module CQB de faire apparaître ces types de soldats. Entrez des classnames d'unités individuelles (pas de groupes), écrits exactement, avec les mêmes majuscules, séparés par des virgules, sans espaces, sans guillemets, ex. O_G_Soldier_AR_F,O_G_Soldier_LAT_F.</French>
+    <Portuguese>Impede que este módulo CQB faça aparecer estes tipos de soldado. Insira classnames de unidades individuais (não de grupos), escritos exatamente, com as mesmas maiúsculas, separados por vírgulas, sem espaços, sem aspas, ex. O_G_Soldier_AR_F,O_G_Soldier_LAT_F.</Portuguese>
+    <Russian>Запрещает этому модулю CQB создавать эти типы солдат. Вводите имена классов отдельных юнитов (не групп), написанные точно, с теми же заглавными буквами, через запятую, без пробелов, без кавычек, например, O_G_Soldier_AR_F,O_G_Soldier_LAT_F.</Russian>
 </Key>
 
 <!-- AI-translated; native-speaker review welcome -->

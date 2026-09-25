@@ -72,6 +72,16 @@
     <Portuguese>Prioridade do objetivo civil personalizado. Usada pela avaliação de objetivos do OPCOM.</Portuguese>
     <Russian>Приоритет пользовательской гражданской цели. Используется при оценке целей OPCOM.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CPC_GUARD_AMOUNT_COMMENT">
+    <English>Infantry groups set aside from this objective's infantry (Override Infantry, or the count worked out from Force Size and Force Weighting when that's blank) to garrison and patrol its buildings, so they don't add to the force. Low takes about 1-2 groups and High 5-6 when there are enough, but at least one group always stays out of the garrison, so an infantry count of 0 or 1 gives no garrison.</English>
+    <Chinese>從此目標的步兵中撥出、用於駐防和巡邏其建築物的步兵組（取「覆寫步兵」的值，留空時則依武裝力量大小和武裝力量權重計算），因此不會增加部隊總數。數量足夠時，低約撥出 1-2 組，高約 5-6 組，但總會至少保留一組不參與駐防，因此步兵數量為 0 或 1 時不會有駐防。</Chinese>
+    <Chinesesimp>从此目标的步兵中拨出、用于驻防和巡逻其建筑物的步兵组（取「覆写步兵」的值，留空时则按武装力量大小和武装力量权重计算），因此不会增加部队总数。数量足够时，低约拨出 1-2 组，高约 5-6 组，但总会至少保留一组不参与驻防，因此步兵数量为 0 或 1 时不会有驻防。</Chinesesimp>
+    <Spanish>Grupos de infantería apartados de la infantería de este objetivo (Sustituir infantería, o la cantidad calculada a partir del Tamaño de fuerza y la Ponderación de fuerza si se deja en blanco) para guarnecer y patrullar sus edificios, así que no se suman a la fuerza. Bajo toma unos 1-2 grupos y Alto 5-6 cuando hay suficientes, pero al menos un grupo siempre queda fuera de la guarnición, así que una cantidad de infantería de 0 o 1 no da guarnición.</Spanish>
+    <French>Groupes d'infanterie prélevés sur l'infanterie de cet objectif (Remplacer l'infanterie, ou le nombre calculé à partir de la Taille et de la Pondération de la force si le champ est vide) pour occuper et patrouiller ses bâtiments, ils ne s'ajoutent donc pas à la force. Faible en prend environ 1-2 et Élevé 5-6 quand il y en a assez, mais au moins un groupe reste toujours hors de la garnison, donc un nombre d'infanterie de 0 ou 1 ne donne aucune garnison.</French>
+    <Portuguese>Grupos de infantaria separados da infantaria deste objetivo (Substituir infantaria, ou a contagem calculada a partir do Tamanho e da Ponderação da força quando está em branco) para guarnecer e patrulhar seus edifícios, portanto não se somam à força. Baixo separa cerca de 1-2 grupos e Alto 5-6 quando há o suficiente, mas pelo menos um grupo sempre fica fora da guarnição, então uma contagem de infantaria de 0 ou 1 não gera guarnição.</Portuguese>
+    <Russian>Группы пехоты, выделяемые из пехоты этой цели (значение "Переопределить пехоту" или, если поле пустое, количество, рассчитанное по размеру и весовому составу сил) для гарнизона и патрулирования её зданий, поэтому они не увеличивают силы. Низко забирает около 1-2 групп, Высоко 5-6, если групп достаточно, но хотя бы одна группа всегда остаётся вне гарнизона, поэтому при количестве пехоты 0 или 1 гарнизона не будет.</Russian>
+</Key>
 </Container></Package></Project>
 
 

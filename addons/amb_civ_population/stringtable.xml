@@ -4580,13 +4580,13 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ADVCIV_ALERT_CHANCE_COMMENT">
-    <English>Probability that a civilian becomes alert (rather than immediately panicking) on hearing gunfire. Default: 0.5.</English>
-    <French>Probabilité qu'un civil devienne alerte (plutôt que de paniquer immédiatement) en entendant des tirs. Par défaut: 0.5.</French>
-    <Portuguese>Probabilidade de um civil ficar alerta (em vez de entrar em pânico imediatamente) ao ouvir tiros. Padrão: 0.5.</Portuguese>
-    <Russian>Вероятность того, что гражданский станет настороженным (а не сразу запаникует), услышав стрельбу. По умолчанию: 0.5.</Russian>
-    <Spanish>Probabilidad de que un civil pase a estado de alerta (en vez de entrar en pánico directamente) al oír disparos. Por defecto: 0.5.</Spanish>
-    <Chinese>平民聽到槍聲時進入警戒狀態(而非立刻恐慌)的機率。預設值:0.5。</Chinese>
-    <Chinesesimp>平民听到枪声后进入警觉状态(而非直接恐慌)的机率。默认:0.5。</Chinesesimp>
+    <English>Base chance that a calm civilian far from a shot (more than half the gunfire range and at least 75 m away) reacts to it. The chance rises with how close and how often they've heard shooting, and a civilian who is stressed enough panics instead of just turning alert. Closer civilians always panic. Default: 0.5.</English>
+    <French>Probabilité de base qu'un civil calme loin d'un tir (à plus de la moitié de la portée des tirs et à au moins 75 m) y réagisse. Elle augmente selon la proximité et la fréquence des tirs entendus, et un civil assez stressé panique au lieu de simplement passer en alerte. Les civils plus proches paniquent toujours. Par défaut: 0.5.</French>
+    <Portuguese>Probabilidade base de um civil calmo longe de um tiro (a mais de metade do alcance dos tiros e a pelo menos 75 m) reagir a ele. Aumenta conforme a proximidade e a frequência dos tiros que ouviu, e um civil suficientemente estressado entra em pânico em vez de apenas ficar alerta. Civis mais próximos entram sempre em pânico. Padrão: 0.5.</Portuguese>
+    <Russian>Базовая вероятность того, что спокойный гражданский вдали от выстрела (дальше половины дальности стрельбы и не ближе 75 м) отреагирует на него. Она растёт в зависимости от того, как близко и как часто он слышал стрельбу, а достаточно напуганный гражданский не просто настораживается, а впадает в панику. Более близкие гражданские паникуют всегда. По умолчанию: 0.5.</Russian>
+    <Spanish>Probabilidad base de que un civil tranquilo lejos de un disparo (a más de la mitad del alcance de disparos y al menos a 75 m) reaccione. Aumenta según lo cerca y lo a menudo que haya oído disparos, y un civil lo bastante estresado entra en pánico en vez de solo ponerse alerta. Los civiles más cercanos siempre entran en pánico. Por defecto: 0.5.</Spanish>
+    <Chinese>距離槍聲較遠(超過槍聲範圍一半且至少 75 公尺)的平靜平民對其做出反應的基礎機率。聽到的槍聲越近、越頻繁,機率越高;壓力夠大的平民會直接恐慌,而不只是進入警戒。較近的平民一律會恐慌。預設值:0.5。</Chinese>
+    <Chinesesimp>距离枪声较远(超过枪声范围一半且至少 75 米)的平静平民对其作出反应的基础机率。听到的枪声越近、越频繁,机率越高;压力足够大的平民会直接恐慌,而不只是进入警觉。较近的平民一律会恐慌。默认:0.5。</Chinesesimp>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ADVCIV_CASCADE_RADIUS">
@@ -4620,13 +4620,13 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ADVCIV_CASCADE_CHANCE_COMMENT">
-    <English>Probability that a panicking civilian spreads panic to nearby civilians. Default: 0.25.</English>
-    <French>Probabilité qu'un civil paniqué propage sa panique aux civils à proximité. Par défaut: 0.25.</French>
-    <Portuguese>Probabilidade de um civil em pânico espalhar pânico para civis próximos. Padrão: 0.25.</Portuguese>
-    <Russian>Вероятность того, что паникующий гражданский передаст панику соседям. По умолчанию: 0.25.</Russian>
-    <Spanish>Probabilidad de que un civil en pánico contagie el pánico a civiles cercanos. Por defecto: 0.25.</Spanish>
-    <Chinese>恐慌中的平民將恐慌擴散至附近平民的機率。預設值:0.25。</Chinese>
-    <Chinesesimp>恐慌中的平民将恐慌扩散到附近平民的机率。默认:0.25。</Chinesesimp>
+    <English>Chance that each calm civilian within the Panic Cascade Radius turns alert (stops to watch the danger) when a panicking civilian near them runs for cover. Default: 0.25.</English>
+    <French>Probabilité que chaque civil calme dans le rayon de cascade de panique passe en alerte (s'arrête pour observer le danger) quand un civil paniqué près de lui court se mettre à l'abri. Par défaut: 0.25.</French>
+    <Portuguese>Probabilidade de cada civil calmo dentro do Raio de Cascata de Pânico ficar alerta (parar para observar o perigo) quando um civil em pânico perto dele corre para se abrigar. Padrão: 0.25.</Portuguese>
+    <Russian>Вероятность того, что каждый спокойный гражданский в пределах радиуса каскада паники насторожится (остановится и будет следить за опасностью), когда паникующий гражданский рядом побежит в укрытие. По умолчанию: 0.25.</Russian>
+    <Spanish>Probabilidad de que cada civil tranquilo dentro del radio de cascada de pánico pase a estado de alerta (se detenga a vigilar el peligro) cuando un civil en pánico cercano corra a ponerse a cubierto. Por defecto: 0.25.</Spanish>
+    <Chinese>當附近恐慌的平民跑去躲藏時,恐慌傳染半徑內每名平靜的平民進入警戒狀態(停下觀察危險)的機率。預設值:0.25。</Chinese>
+    <Chinesesimp>当附近恐慌的平民跑去躲藏时,恐慌蔓延半径内每名平静的平民进入警觉状态(停下观察危险)的机率。默认:0.25。</Chinesesimp>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ADVCIV_SHOT_MEMORY_TIME">
@@ -4650,23 +4650,23 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ADVCIV_HANDSUP_CHANCE">
-    <English>Hands Up Chance (0-1):</English>
-    <French>Chance mains en l'air (0-1):</French>
-    <Portuguese>Chance de Mãos ao Alto (0-1):</Portuguese>
-    <Russian>Шанс поднять руки (0-1):</Russian>
-    <Spanish>Probabilidad de levantar manos (0-1):</Spanish>
-    <Chinese>舉手機率 (0-1):</Chinese>
-    <Chinesesimp>举手机率(0-1):</Chinesesimp>
+    <English>Stand Still Chance (0-1):</English>
+    <French>Chance de rester immobile (0-1):</French>
+    <Portuguese>Chance de Ficar Parado (0-1):</Portuguese>
+    <Russian>Шанс замереть стоя (0-1):</Russian>
+    <Spanish>Probabilidad de quedarse de pie (0-1):</Spanish>
+    <Chinese>站立不動機率 (0-1):</Chinese>
+    <Chinesesimp>站立不动机率(0-1):</Chinesesimp>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ADVCIV_HANDSUP_CHANCE_COMMENT">
-    <English>Probability that a civilian stops and raises hands when hit. Default: 0.30.</English>
-    <French>Probabilité qu'un civil s'arrête et lève les mains lorsqu'il est touché. Par défaut: 0.30.</French>
-    <Portuguese>Probabilidade de um civil parar e levantar as mãos ao ser atingido. Padrão: 0.30.</Portuguese>
-    <Russian>Вероятность того, что гражданский остановится и поднимет руки при попадании. По умолчанию: 0.30.</Russian>
-    <Spanish>Probabilidad de que un civil se detenga y levante las manos al ser alcanzado. Por defecto: 0.30.</Spanish>
-    <Chinese>平民中彈時停下並舉起雙手的機率。預設值:0.30。</Chinese>
-    <Chinesesimp>平民被命中时停下并举手的机率。默认:0.30。</Chinesesimp>
+    <English>Chance that a civilian who is hit stops and stands still for a few seconds, then panics. Default: 0.30.</English>
+    <French>Probabilité qu'un civil touché s'arrête et reste immobile debout quelques secondes, puis panique. Par défaut: 0.30.</French>
+    <Portuguese>Probabilidade de um civil atingido parar e ficar imóvel de pé por alguns segundos e depois entrar em pânico. Padrão: 0.30.</Portuguese>
+    <Russian>Вероятность того, что гражданский при попадании остановится и простоит неподвижно несколько секунд, а затем запаникует. По умолчанию: 0.30.</Russian>
+    <Spanish>Probabilidad de que un civil alcanzado se detenga y se quede quieto de pie unos segundos y luego entre en pánico. Por defecto: 0.30.</Spanish>
+    <Chinese>平民中彈時停下並站著不動數秒,然後陷入恐慌的機率。預設值:0.30。</Chinese>
+    <Chinesesimp>平民被命中时停下并站着不动几秒,然后陷入恐慌的机率。默认:0.30。</Chinesesimp>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ADVCIV_DROP_CHANCE">
@@ -4700,13 +4700,13 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ADVCIV_FREEZE_CHANCE_COMMENT">
-    <English>Probability that a civilian freezes in place when hit. Default: 0.15.</English>
-    <French>Probabilité qu'un civil se fige sur place lorsqu'il est touché. Par défaut: 0.15.</French>
-    <Portuguese>Probabilidade de um civil paralisar no lugar ao ser atingido. Padrão: 0.15.</Portuguese>
-    <Russian>Вероятность того, что гражданский замрёт на месте при попадании. По умолчанию: 0.15.</Russian>
-    <Spanish>Probabilidad de que un civil se quede paralizado al ser alcanzado. Por defecto: 0.15.</Spanish>
-    <Chinese>平民中彈時原地僵住的機率。預設值:0.15。</Chinese>
-    <Chinesesimp>平民被命中时原地僵住的机率。默认:0.15。</Chinesesimp>
+    <English>Chance that a civilian who is hit crouches and holds still for a few seconds, then panics. Default: 0.15.</English>
+    <French>Probabilité qu'un civil touché s'accroupisse et reste immobile quelques secondes, puis panique. Par défaut: 0.15.</French>
+    <Portuguese>Probabilidade de um civil atingido se agachar e ficar imóvel por alguns segundos e depois entrar em pânico. Padrão: 0.15.</Portuguese>
+    <Russian>Вероятность того, что гражданский при попадании присядет и замрёт на несколько секунд, а затем запаникует. По умолчанию: 0.15.</Russian>
+    <Spanish>Probabilidad de que un civil alcanzado se agache y se quede quieto unos segundos y luego entre en pánico. Por defecto: 0.15.</Spanish>
+    <Chinese>平民中彈時蹲下並保持不動數秒,然後陷入恐慌的機率。預設值:0.15。</Chinese>
+    <Chinesesimp>平民被命中时蹲下并保持不动几秒,然后陷入恐慌的机率。默认:0.15。</Chinesesimp>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ADVCIV_SCREAM_CHANCE">
@@ -4820,13 +4820,13 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ADVCIV_VOICE_ENABLED_COMMENT">
-    <English>Allow civilians to shout and scream in reaction to gunfire and being hit. Default: Yes.</English>
-    <French>Permet aux civils de crier et hurler en réaction aux tirs et aux impacts. Par défaut: Oui.</French>
-    <Portuguese>Permite que civis gritem e berrem em reação a tiros e ao serem atingidos. Padrão: Sim.</Portuguese>
-    <Russian>Разрешить гражданским кричать и визжать в ответ на стрельбу и попадания. По умолчанию: Да.</Russian>
-    <Spanish>Permite a los civiles gritar y chillar como reacción a disparos y a ser alcanzados. Por defecto: Sí.</Spanish>
-    <Chinese>允許平民對槍聲或中彈發出呼喊與尖叫。預設值:是。</Chinese>
-    <Chinesesimp>允许平民在听到枪声或被命中时喊叫和尖叫。默认:是。</Chinesesimp>
+    <English>Lets civilians shout when they hear gunfire close by, when they're hit, when they start running for cover and while they're hiding. Turning it off doesn't stop the Scream Chance reaction or the frightened cries civilians give when someone fires within about 50 m of them. Default: No.</English>
+    <French>Permet aux civils de crier quand ils entendent des tirs à proximité, quand ils sont touchés, quand ils se mettent à courir vers un abri et pendant qu'ils se cachent. Le désactiver n'empêche ni la réaction Chance de cri, ni les cris de peur que poussent les civils quand quelqu'un tire à moins d'environ 50 m d'eux. Par défaut: Non.</French>
+    <Portuguese>Permite que civis gritem ao ouvir tiros por perto, ao serem atingidos, ao começarem a correr para se abrigar e enquanto se escondem. Desligar isto não impede a reação de Chance de Gritar nem os gritos de medo que os civis dão quando alguém dispara a menos de cerca de 50 m deles. Padrão: Não.</Portuguese>
+    <Russian>Позволяет гражданским кричать, когда рядом стреляют, когда в них попадают, когда они бегут в укрытие и пока они прячутся. Выключение не отменяет реакцию "Шанс крика" и испуганные крики гражданских, когда кто-то стреляет в пределах примерно 50 м от них. По умолчанию: Нет.</Russian>
+    <Spanish>Permite a los civiles gritar cuando oyen disparos cerca, cuando son alcanzados, cuando empiezan a correr a ponerse a cubierto y mientras se esconden. Desactivarlo no impide la reacción de Probabilidad de grito ni los gritos de miedo que dan los civiles cuando alguien dispara a menos de unos 50 m de ellos. Por defecto: No.</Spanish>
+    <Chinese>允許平民在聽到附近槍聲、中彈、開始跑去躲藏以及躲藏時呼喊。關閉此項不會停止「尖叫機率」反應,也不會停止有人在約 50 公尺內開火時平民發出的驚恐叫聲。預設值:否。</Chinese>
+    <Chinesesimp>允许平民在听到附近枪声、被命中、开始跑去躲藏以及躲藏时喊叫。关闭此项不会阻止"尖叫机率"反应,也不会阻止有人在约 50 米内开火时平民发出的惊恐叫声。默认:否。</Chinesesimp>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ADVCIV_VOICE_CHANCE">
@@ -4840,13 +4840,13 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ADVCIV_VOICE_CHANCE_COMMENT">
-    <English>Probability that a civilian plays a voice line when reacting to danger. Default: 0.6.</English>
-    <French>Probabilité qu'un civil émette une voix en réaction à un danger. Par défaut: 0.6.</French>
-    <Portuguese>Probabilidade de um civil reproduzir uma linha de voz ao reagir ao perigo. Padrão: 0.6.</Portuguese>
-    <Russian>Вероятность того, что гражданский проиграет голосовую реплику при реакции на опасность. По умолчанию: 0.6.</Russian>
-    <Spanish>Probabilidad de que un civil reproduzca una línea de voz al reaccionar al peligro. Por defecto: 0.6.</Spanish>
-    <Chinese>平民對危險做出反應時播放語音台詞的機率。預設值:0.6。</Chinese>
-    <Chinesesimp>平民对危险作出反应时播放语音的机率。默认:0.6。</Chinesesimp>
+    <English>Chance that a civilian shouts when they're hit or when they start running for cover. Shouts at nearby gunfire and while hiding use their own fixed chances. Only works while Enable Voice Lines is on. Default: 0.6.</English>
+    <French>Probabilité qu'un civil crie quand il est touché ou quand il se met à courir vers un abri. Les cris dus aux tirs proches et pendant qu'il se cache ont leurs propres chances fixes. Ne fonctionne que si Activer les voix est activé. Par défaut: 0.6.</French>
+    <Portuguese>Probabilidade de um civil gritar ao ser atingido ou ao começar a correr para se abrigar. Os gritos por tiros próximos e enquanto se esconde têm as suas próprias chances fixas. Só funciona com Ativar Linhas de Voz ligado. Padrão: 0.6.</Portuguese>
+    <Russian>Вероятность того, что гражданский закричит при попадании или когда побежит в укрытие. Крики при близкой стрельбе и во время укрытия имеют свои фиксированные шансы. Работает, только если включено "Включить голосовые реплики". По умолчанию: 0.6.</Russian>
+    <Spanish>Probabilidad de que un civil grite cuando es alcanzado o cuando empieza a correr a ponerse a cubierto. Los gritos por disparos cercanos y mientras se esconde tienen sus propias probabilidades fijas. Solo funciona con Activar líneas de voz activado. Por defecto: 0.6.</Spanish>
+    <Chinese>平民中彈或開始跑去躲藏時呼喊的機率。附近槍聲與躲藏時的呼喊使用各自固定的機率。僅在「啟用語音台詞」開啟時有效。預設值:0.6。</Chinese>
+    <Chinesesimp>平民被命中或开始跑去躲藏时喊叫的机率。附近枪声和躲藏时的喊叫使用各自固定的机率。仅在"启用语音"开启时有效。默认:0.6。</Chinesesimp>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_INTERACTION_RANGE">
@@ -5211,13 +5211,13 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ADVCIV_NO_STEAL_USED_COMMENT">
-    <English>Prevent civilians from stealing vehicles that have previously been driven by players. Default: Yes.</English>
-    <French>Empêche les civils de voler des véhicules précédemment conduits par des joueurs. Par défaut: Oui.</French>
-    <Portuguese>Impede que civis roubem veículos que foram dirigidos anteriormente por jogadores. Padrão: Sim.</Portuguese>
-    <Russian>Запретить гражданским угонять технику, которой ранее управляли игроки. По умолчанию: Да.</Russian>
-    <Spanish>Impide que los civiles roben vehículos que hayan sido conducidos previamente por jugadores. Por defecto: Sí.</Spanish>
-    <Chinese>防止平民竊取先前曾被玩家駕駛過的車輛。預設值:是。</Chinese>
-    <Chinesesimp>禁止平民偷窃此前被玩家驾驶过的载具。默认:是。</Chinesesimp>
+    <English>Prevent civilians from stealing any vehicle a player has been in, as driver or passenger. Default: Yes.</English>
+    <French>Empêche les civils de voler tout véhicule dans lequel un joueur est monté, comme conducteur ou passager. Par défaut: Oui.</French>
+    <Portuguese>Impede que civis roubem qualquer veículo em que um jogador tenha entrado, como motorista ou passageiro. Padrão: Sim.</Portuguese>
+    <Russian>Запретить гражданским угонять любую технику, в которую садился игрок, водителем или пассажиром. По умолчанию: Да.</Russian>
+    <Spanish>Impide que los civiles roben cualquier vehículo en el que haya subido un jugador, como conductor o pasajero. Por defecto: Sí.</Spanish>
+    <Chinese>防止平民竊取任何曾有玩家乘坐過的車輛,無論是駕駛還是乘客。預設值:是。</Chinese>
+    <Chinesesimp>禁止平民偷窃任何玩家乘坐过的载具,无论是驾驶员还是乘客。默认:是。</Chinesesimp>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ADVCIV_NO_STEAL_LOADED">
@@ -5251,13 +5251,13 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ADVCIV_LOADED_THRESHOLD_COMMENT">
-    <English>Maximum number of items a vehicle may contain and still be considered empty for theft purposes. A medikit counts as 4. Default: 4.</English>
-    <French>Nombre maximum d'objets qu'un véhicule peut contenir tout en étant encore considéré comme vide pour le vol. Un medikit compte pour 4. Par défaut: 4.</French>
-    <Portuguese>Número máximo de itens que um veículo pode conter e ainda ser considerado vazio para fins de roubo. Um medikit conta como 4. Padrão: 4.</Portuguese>
-    <Russian>Максимальное число предметов в технике, при котором она ещё считается пустой для угона. Аптечка считается за 4. По умолчанию: 4.</Russian>
-    <Spanish>Número máximo de objetos que un vehículo puede contener y aun así considerarse vacío a efectos de robo. Un medikit cuenta como 4. Por defecto: 4.</Spanish>
-    <Chinese>車輛內最多可包含幾件物品仍被視為空車可供竊取。一個醫療包計為 4 件。預設值:4。</Chinese>
-    <Chinesesimp>载具仍被视为空载(可被偷窃)时所能容纳的最大物品数量。一个医疗包计为 4。默认:4。</Chinesesimp>
+    <English>A vehicle carrying more than this many loose weapons, magazines and items is safe from civilian theft. Each one counts once; backpacks, and anything inside bags, vests or uniforms, don't count. Only used while No Loaded Vehicle Theft is on. Default: 4.</English>
+    <French>Un véhicule qui transporte plus que ce nombre d'armes, de chargeurs et d'objets en vrac ne peut pas être volé par les civils. Chacun compte pour un; les sacs à dos, et tout ce qui est rangé dans des sacs, gilets ou uniformes, ne comptent pas. Utilisé seulement si Pas de vol de véhicule chargé est activé. Par défaut: 4.</French>
+    <Portuguese>Um veículo que leve mais do que este número de armas, carregadores e itens soltos fica protegido contra roubo por civis. Cada um conta uma vez; mochilas, e tudo o que estiver dentro de mochilas, coletes ou uniformes, não contam. Só é usado enquanto Sem Roubo de Veículos Carregados estiver ativo. Padrão: 4.</Portuguese>
+    <Russian>Техника, в которой больше этого числа отдельных единиц оружия, магазинов и предметов, защищена от угона гражданскими. Каждая единица считается один раз; рюкзаки и всё, что лежит в рюкзаках, жилетах или униформе, не учитываются. Работает, только если включён "Запрет угона загруженной техники". По умолчанию: 4.</Russian>
+    <Spanish>Un vehículo que lleve más de este número de armas, cargadores y objetos sueltos queda a salvo del robo por civiles. Cada uno cuenta una vez; las mochilas, y todo lo guardado en mochilas, chalecos o uniformes, no cuentan. Solo se usa mientras Sin robo de vehículos cargados esté activado. Por defecto: 4.</Spanish>
+    <Chinese>車內散放的武器、彈匣與物品總數超過此數值時,平民不會竊取該車輛。每件各計 1 件;背包,以及放在背包、背心或制服內的物品都不計入。僅在「禁止竊取有載物的車輛」開啟時有效。預設值:4。</Chinese>
+    <Chinesesimp>载具内散放的武器、弹匣和物品总数超过此数值时,平民不会偷窃该载具。每件各计 1 件;背包,以及放在背包、背心或制服内的物品都不计入。仅在"禁止偷窃已装载载具"开启时有效。默认:4。</Chinesesimp>
 </Key>
 
 <!-- Compatibility -->

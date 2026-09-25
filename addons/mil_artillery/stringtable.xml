@@ -138,14 +138,15 @@
     <Portuguese>Cadência de missão de tiro:</Portuguese>
     <Russian>Периодичность огневых задач:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_MIL_ARTILLERY_CADENCE_COMMENT">
-    <English>How often each battery may fire. Low is roughly one mission per ten minutes per battery, High one per five. Overrides the intensity preset for this parameter only.</English>
-    <Chinese>每個砲兵連可開火的頻率。低約為每個砲兵連每十分鐘一次任務，高則為每五分鐘一次。此設定僅覆蓋強度預設值中的此項參數。</Chinese>
-    <Chinesesimp>每个炮兵连的开火频率。低约为每个炮兵连每十分钟一次任务,高则为每五分钟一次。此设置仅覆盖强度预设中的该项参数。</Chinesesimp>
-    <Spanish>Frecuencia con la que puede disparar cada batería. Baja equivale aproximadamente a una misión cada diez minutos por batería, Alta a una cada cinco. Sobrescribe el preajuste de intensidad solo para este parámetro.</Spanish>
-    <French>Fréquence à laquelle chaque batterie peut ouvrir le feu. Faible correspond à environ une mission toutes les dix minutes par batterie, Élevée une toutes les cinq. Remplace le préréglage d'intensité pour ce seul paramètre.</French>
-    <Portuguese>Com que frequência cada bateria pode atirar. Baixa equivale a aproximadamente uma missão a cada dez minutos por bateria, Alta a uma a cada cinco. Substitui a predefinição de intensidade apenas para este parâmetro.</Portuguese>
-    <Russian>Как часто каждая батарея может открывать огонь. При настройке Низкая - примерно одна огневая задача на десять минут на батарею, при Высокая - одна на пять минут. Переопределяет только этот параметр пресета интенсивности.</Russian>
+    <English>How often each battery may fire. After each mission a battery waits 10 minutes at Low, 7 at Medium or 5 at High, and the mission itself plus a random delay add roughly another 2 to 6 minutes, so Low is about one mission per 12 to 16 minutes per battery and High one per 7 to 11. Overrides the intensity preset for this parameter only.</English>
+    <Chinese>每個砲兵連可開火的頻率。每次任務後，砲兵連需等待：低10分鐘、中7分鐘、高5分鐘；任務本身加上隨機延遲約再增加2至6分鐘，因此低約為每個砲兵連每12至16分鐘一次任務，高則為每7至11分鐘一次。此設定僅覆蓋強度預設值中的此項參數。</Chinese>
+    <Chinesesimp>每个炮兵连的开火频率。每次任务后,炮兵连需等待:低10分钟、中7分钟、高5分钟;任务本身加上随机延迟约再增加2至6分钟,因此低约为每个炮兵连每12至16分钟一次任务,高则为每7至11分钟一次。此设置仅覆盖强度预设中的该项参数。</Chinesesimp>
+    <Spanish>Frecuencia con la que puede disparar cada batería. Tras cada misión una batería espera 10 minutos en Baja, 7 en Media o 5 en Alta, y la propia misión más un retardo aleatorio añaden aproximadamente otros 2 a 6 minutos, así que Baja equivale a una misión cada 12 a 16 minutos por batería y Alta a una cada 7 a 11. Sobrescribe el preajuste de intensidad solo para este parámetro.</Spanish>
+    <French>Fréquence à laquelle chaque batterie peut ouvrir le feu. Après chaque mission, une batterie attend 10 minutes en Faible, 7 en Moyenne ou 5 en Élevée, et la mission elle-même plus un délai aléatoire ajoutent environ 2 à 6 minutes de plus, donc Faible correspond à environ une mission toutes les 12 à 16 minutes par batterie et Élevée une toutes les 7 à 11. Remplace le préréglage d'intensité pour ce seul paramètre.</French>
+    <Portuguese>Com que frequência cada bateria pode atirar. Após cada missão uma bateria espera 10 minutos em Baixa, 7 em Média ou 5 em Alta, e a própria missão mais um atraso aleatório somam cerca de mais 2 a 6 minutos, então Baixa equivale a uma missão a cada 12 a 16 minutos por bateria e Alta a uma a cada 7 a 11. Substitui a predefinição de intensidade apenas para este parâmetro.</Portuguese>
+    <Russian>Как часто каждая батарея может открывать огонь. После каждой задачи батарея ждёт 10 минут при Низкая, 7 при Средняя или 5 при Высокая, а сама задача и случайная задержка добавляют ещё примерно 2-6 минут, так что при Низкая выходит примерно одна задача на 12-16 минут на батарею, при Высокая одна на 7-11. Переопределяет только этот параметр пресета интенсивности.</Russian>
 </Key>
 <Key ID="STR_ALIVE_MIL_ARTILLERY_SPREAD">
     <English>Shell spread:</English>
@@ -174,14 +175,15 @@
     <Portuguese>Disparos por missão de tiro:</Portuguese>
     <Russian>Выстрелов на огневую задачу:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_MIL_ARTILLERY_ROUNDS_COMMENT">
-    <English>How many shells a battery fires per mission (split across its guns). Low 4, Medium 6, High 8. Overrides the intensity preset for this parameter only.</English>
-    <Chinese>每次任務中砲兵連發射的砲彈數量(分配至各火砲)。低4發、中6發、高8發。此設定僅覆蓋強度預設值中的此項參數。</Chinese>
-    <Chinesesimp>每次火力任务中一个炮兵连发射的炮弹数量(由连内各火炮分摊)。低为4发,中为6发,高为8发。此设置仅覆盖强度预设中的该项参数。</Chinesesimp>
-    <Spanish>Número de proyectiles que dispara una batería por misión (repartidos entre sus piezas). Baja 4, Media 6, Alta 8. Sobrescribe el preajuste de intensidad solo para este parámetro.</Spanish>
-    <French>Nombre d'obus tirés par une batterie par mission (répartis entre ses pièces). Faible 4, Moyenne 6, Élevée 8. Remplace le préréglage d'intensité pour ce seul paramètre.</French>
-    <Portuguese>Quantos projéteis uma bateria dispara por missão (divididos entre seus canhões). Baixa 4, Média 6, Alta 8. Substitui a predefinição de intensidade apenas para este parâmetro.</Portuguese>
-    <Russian>Сколько снарядов батарея выпускает за одну задачу (распределяется между её орудиями). Низкая - 4, Средняя - 6, Высокая - 8. Переопределяет только этот параметр пресета интенсивности.</Russian>
+    <English>How many shells a battery fires per mission: Low 4, Medium 6, High 8, shared across its guns. Each gun fires an equal share rounded up, so a battery fires a few extra when the figure doesn't divide evenly between its guns, and one ranging round is fired first. Overrides the intensity preset for this parameter only.</English>
+    <Chinese>每次任務中砲兵連發射的砲彈數量：低4發、中6發、高8發，由各火砲分擔。每門火砲發射相同份額並無條件進位，因此當數量無法被火砲數整除時，砲兵連會多發射幾發；此外會先發射一發試射彈。此設定僅覆蓋強度預設值中的此項參數。</Chinese>
+    <Chinesesimp>每次火力任务中一个炮兵连发射的炮弹数量:低为4发,中为6发,高为8发,由连内各火炮分摊。每门火炮发射相同份额并向上取整,因此当数量不能被火炮数整除时,炮兵连会多发射几发;此外会先发射一发试射弹。此设置仅覆盖强度预设中的该项参数。</Chinesesimp>
+    <Spanish>Número de proyectiles que dispara una batería por misión: Baja 4, Media 6, Alta 8, repartidos entre sus piezas. Cada pieza dispara una parte igual redondeada hacia arriba, así que la batería dispara algunos de más cuando la cifra no se divide exactamente entre sus piezas, y antes se dispara un proyectil de reglaje. Sobrescribe el preajuste de intensidad solo para este parámetro.</Spanish>
+    <French>Nombre d'obus tirés par une batterie par mission: Faible 4, Moyenne 6, Élevée 8, répartis entre ses pièces. Chaque pièce tire une part égale arrondie au supérieur, donc la batterie tire quelques obus de plus quand le nombre ne se divise pas exactement entre ses pièces, et un coup de réglage est tiré en premier. Remplace le préréglage d'intensité pour ce seul paramètre.</French>
+    <Portuguese>Quantos projéteis uma bateria dispara por missão: Baixa 4, Média 6, Alta 8, divididos entre seus canhões. Cada canhão dispara uma parte igual arredondada para cima, então a bateria dispara alguns a mais quando o número não se divide exatamente entre seus canhões, e um disparo de regulagem é feito primeiro. Substitui a predefinição de intensidade apenas para este parâmetro.</Portuguese>
+    <Russian>Сколько снарядов батарея выпускает за одну задачу: Низкая 4, Средняя 6, Высокая 8, с распределением между её орудиями. Каждое орудие стреляет равной долей с округлением вверх, поэтому батарея выпускает несколько лишних снарядов, если число не делится поровну между орудиями; кроме того, первым производится пристрелочный выстрел. Переопределяет только этот параметр пресета интенсивности.</Russian>
 </Key>
 <Key ID="STR_ALIVE_MIL_ARTILLERY_AMMO">
     <English>Battery ammunition stock:</English>
@@ -192,14 +194,15 @@
     <Portuguese>Estoque de munição da bateria:</Portuguese>
     <Russian>Запас боеприпасов батареи:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_MIL_ARTILLERY_AMMO_COMMENT">
-    <English>Each battery's ammunition ledger. Low 60, Medium 90, High 120, Very High 240, Extreme 500 rounds, or Infinite for a battery that never runs dry; a dry battery falls silent until resupplied. Overrides the intensity preset for this parameter only.</English>
-    <Chinese>各砲兵連的彈藥帳目。低60發、中90發、高120發；彈藥耗盡的砲兵連將停止射擊，直到獲得補給為止。此設定僅覆蓋強度預設值中的此項參數。</Chinese>
-    <Chinesesimp>每个炮兵连的弹药账目。低为60发,中为90发,高为120发;弹药耗尽的炮兵连将停止开火,直至获得补给。此设置仅覆盖强度预设中的该项参数。</Chinesesimp>
-    <Spanish>El registro de munición de cada batería. Baja 60, Media 90, Alta 120 proyectiles; una batería sin munición queda en silencio hasta ser reabastecida. Sobrescribe el preajuste de intensidad solo para este parámetro.</Spanish>
-    <French>Le registre de munitions de chaque batterie. Faible 60, Moyenne 90, Élevée 120 coups; une batterie à sec cesse le feu jusqu'à son ravitaillement. Remplace le préréglage d'intensité pour ce seul paramètre.</French>
-    <Portuguese>O registro de munição de cada bateria. Baixa 60, Média 90, Alta 120 disparos; uma bateria sem munição fica em silêncio até ser reabastecida. Substitui a predefinição de intensidade apenas para este parâmetro.</Portuguese>
-    <Russian>Ведомость боеприпасов каждой батареи. Низкая - 60, Средняя - 90, Высокая - 120 снарядов; батарея, израсходовавшая боезапас, замолкает до пополнения. Переопределяет только этот параметр пресета интенсивности.</Russian>
+    <English>Each battery's ammunition ledger. Low 60, Medium 90, High 120, Very High 240, Extreme 500 rounds, or Infinite for a battery that never runs dry. A dry battery stops firing until a Military Logistics convoy resupplies it or, failing that, it refills itself after about one and a half times its cadence wait (about 10 to 13 minutes at Medium cadence). Overrides the intensity preset for this parameter only.</English>
+    <Chinese>各砲兵連的彈藥帳目。低60發、中90發、高120發、很高240發、極高500發，或選擇無限，使砲兵連永不耗盡。彈藥耗盡的砲兵連將停止射擊，直到軍事後勤車隊為其補給；若無車隊，則在約1.5倍的射擊間隔後自動補滿（中等頻率下約10至13分鐘）。此設定僅覆蓋強度預設值中的此項參數。</Chinese>
+    <Chinesesimp>每个炮兵连的弹药账目。低为60发,中为90发,高为120发,很高为240发,极高为500发,或选择无限,使炮兵连永不耗尽。弹药耗尽的炮兵连将停止开火,直至军事后勤车队为其补给;若没有车队,则在约1.5倍的开火间隔后自动补满(中等频率下约10至13分钟)。此设置仅覆盖强度预设中的该项参数。</Chinesesimp>
+    <Spanish>El registro de munición de cada batería. Baja 60, Media 90, Alta 120, Muy alta 240, Extrema 500 proyectiles, o Infinita para una batería que nunca se queda sin munición. Una batería sin munición deja de disparar hasta que un convoy de Logística Militar la reabastece o, si no llega, se recarga sola tras aproximadamente una vez y media su espera de cadencia (unos 10 a 13 minutos con cadencia Media). Sobrescribe el preajuste de intensidad solo para este parámetro.</Spanish>
+    <French>Le registre de munitions de chaque batterie. Faible 60, Moyenne 90, Élevée 120, Très élevée 240, Extrême 500 coups, ou Illimité pour une batterie qui n'est jamais à sec. Une batterie à sec cesse le feu jusqu'à ce qu'un convoi de Logistique militaire la ravitaille ou, à défaut, elle se recharge seule après environ une fois et demie son délai de cadence (environ 10 à 13 minutes en cadence Moyenne). Remplace le préréglage d'intensité pour ce seul paramètre.</French>
+    <Portuguese>O registro de munição de cada bateria. Baixa 60, Média 90, Alta 120, Muito alta 240, Extrema 500 disparos, ou Infinita para uma bateria que nunca fica sem munição. Uma bateria sem munição para de atirar até que um comboio de Logística Militar a reabasteça ou, na falta dele, se recarrega sozinha após cerca de uma vez e meia sua espera de cadência (cerca de 10 a 13 minutos com cadência Média). Substitui a predefinição de intensidade apenas para este parâmetro.</Portuguese>
+    <Russian>Ведомость боеприпасов каждой батареи. Низкая 60, Средняя 90, Высокая 120, Очень высокая 240, Экстремальная 500 снарядов или Бесконечный для батареи, которая никогда не остаётся без боезапаса. Батарея без боезапаса прекращает огонь, пока её не пополнит колонна военной логистики, а если колонны нет, она пополняется сама примерно через полторы паузы периодичности (около 10-13 минут при средней периодичности). Переопределяет только этот параметр пресета интенсивности.</Russian>
 </Key>
 <Key ID="STR_ALIVE_MIL_ARTILLERY_AMMO_INFINITE">
     <English>Infinite</English>
@@ -408,14 +411,15 @@
     <Portuguese>Quão perto um jogador deve estar do alvo ou da bateria que dispara para que projéteis reais surjam e sejam vistos. Além deste alcance, a missão é resolvida no registro sem projéteis visíveis, para poupar desempenho. Aumente-o para mapas grandes ou observação com Zeus/espectador. 3 km por padrão.</Portuguese>
     <Russian>Насколько близко игрок должен находиться к цели или стреляющей батарее, чтобы появились реальные видимые снаряды. За пределами этой дальности задача выполняется по ведомости без видимых снарядов — для экономии производительности. Увеличьте для больших карт или наблюдения через Zeus/спектатора. По умолчанию 3 км.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_MIL_ARTILLERY_DANGERCLOSE_COMMENT">
-    <English>USE WITH CAUTION. Normally a fire mission aborts when friendly units are inside the impact area. Turn this on and batteries fire anyway, shelling targets even with friendlies (including players) close by - expect friendly casualties. Default off.</English>
-    <Chinese>謹慎使用。通常當友軍位於彈著區內時，射擊任務會中止。開啟此選項後，砲兵連仍會照常開火——即使附近有友軍（包括玩家）也一樣，請預期會出現友軍傷亡。預設關閉。</Chinese>
-    <Chinesesimp>谨慎使用。通常当友军位于弹着区内时,射击任务会中止。开启此选项后,炮兵连仍会照常开火——即使附近有友军(包括玩家)也一样,请预期会出现友军伤亡。默认关闭。</Chinesesimp>
-    <Spanish>ÚSESE CON PRECAUCIÓN. Normalmente una misión de fuego se cancela cuando hay unidades aliadas dentro de la zona de impacto. Actívelo y las baterías dispararán igualmente, bombardeando objetivos aunque haya aliados (incluidos jugadores) cerca; espere bajas propias. Desactivado por defecto.</Spanish>
-    <French>À UTILISER AVEC PRUDENCE. Normalement une mission de tir est annulée lorsque des unités alliées se trouvent dans la zone d'impact. Activez ceci et les batteries tirent quand même, pilonnant les cibles même avec des alliés (joueurs compris) à proximité - attendez-vous à des pertes amies. Désactivé par défaut.</French>
-    <Portuguese>USE COM CAUTELA. Normalmente uma missão de fogo é cancelada quando há unidades aliadas dentro da área de impacto. Ative isto e as baterias disparam mesmo assim, bombardeando alvos mesmo com aliados (incluindo jogadores) por perto - espere baixas amigas. Desativado por padrão.</Portuguese>
-    <Russian>ИСПОЛЬЗУЙТЕ С ОСТОРОЖНОСТЬЮ. Обычно огневая задача отменяется, когда в зоне поражения находятся союзные подразделения. Включите это - и батареи всё равно откроют огонь, обстреливая цели даже при близких союзниках (включая игроков); ждите потерь среди своих. По умолчанию выключено.</Russian>
+    <English>USE WITH CAUTION. Normally a fire mission aborts when friendly units are inside the impact area. Turn this on and batteries fire anyway, even with friendlies (including players) close by, so expect friendly casualties. This only applies while a player is within the Visible-fire range of the target or the battery; missions out of that range still abort near friendlies. Default off.</English>
+    <Chinese>謹慎使用。通常當友軍位於彈著區內時，射擊任務會中止。開啟此選項後，即使附近有友軍（包括玩家），砲兵連仍會照常開火，請預期會出現友軍傷亡。此選項僅在有玩家位於目標或砲兵連的可見射擊範圍內時生效；超出該範圍的射擊任務在附近有友軍時仍會中止。預設關閉。</Chinese>
+    <Chinesesimp>谨慎使用。通常当友军位于弹着区内时,射击任务会中止。开启此选项后,即使附近有友军(包括玩家),炮兵连仍会照常开火,请预期会出现友军伤亡。此选项仅在有玩家位于目标或炮兵连的可见射击范围内时生效;超出该范围的射击任务在附近有友军时仍会中止。默认关闭。</Chinesesimp>
+    <Spanish>ÚSESE CON PRECAUCIÓN. Normalmente una misión de fuego se cancela cuando hay unidades aliadas dentro de la zona de impacto. Actívelo y las baterías dispararán igualmente, aunque haya aliados (incluidos jugadores) cerca, así que espere bajas propias. Solo se aplica mientras un jugador esté dentro del alcance de fuego visible del objetivo o de la batería; las misiones fuera de ese alcance se siguen cancelando con aliados cerca. Desactivado por defecto.</Spanish>
+    <French>À UTILISER AVEC PRUDENCE. Normalement une mission de tir est annulée lorsque des unités alliées se trouvent dans la zone d'impact. Activez ceci et les batteries tirent quand même, même avec des alliés (joueurs compris) à proximité, attendez-vous donc à des pertes amies. Ne s'applique que lorsqu'un joueur se trouve dans la portée de tir visible de la cible ou de la batterie; hors de cette portée, les missions sont toujours annulées près d'alliés. Désactivé par défaut.</French>
+    <Portuguese>USE COM CAUTELA. Normalmente uma missão de fogo é cancelada quando há unidades aliadas dentro da área de impacto. Ative isto e as baterias disparam mesmo assim, mesmo com aliados (incluindo jogadores) por perto, por isso espere baixas amigas. Só se aplica enquanto um jogador estiver dentro do alcance de fogo visível do alvo ou da bateria; fora desse alcance, as missões continuam a ser canceladas perto de aliados. Desativado por padrão.</Portuguese>
+    <Russian>ИСПОЛЬЗУЙТЕ С ОСТОРОЖНОСТЬЮ. Обычно огневая задача отменяется, когда в зоне поражения находятся союзные подразделения. Включите это, и батареи всё равно откроют огонь, даже при близких союзниках (включая игроков), так что ждите потерь среди своих. Действует, только пока игрок находится в пределах дальности видимого огня от цели или батареи; задачи за пределами этой дальности по-прежнему отменяются при союзниках рядом. По умолчанию выключено.</Russian>
 </Key>
 <Key ID="STR_ALIVE_MIL_ARTILLERY_SELECTIVITY">
     <English>Target selectivity:</English>

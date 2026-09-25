@@ -162,10 +162,11 @@
     <Chinesesimp>设置名字颜色</Chinesesimp>
     <Spanish>Define el color del nombre</Spanish>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PLAYERTAGS_GROUPCOLOUR">
-    <English>Player Tag Group Colour:</English>
-    <Chinesesimp>球员标签组颜色:</Chinesesimp>
-    <Spanish>Color del grupo en las etiquetas:</Spanish>
+    <English>Player Tag Other Group Colour:</English>
+    <Chinesesimp>玩家标签其他组颜色:</Chinesesimp>
+    <Spanish>Color de otros grupos en las etiquetas:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_GROUPCOLOUR_COMMENT">
     <English>Sets Group Colour</English>
@@ -182,9 +183,10 @@
     <Chinesesimp>设置你的组长的颜色</Chinesesimp>
     <Spanish>Define el color del jefe de tu grupo</Spanish>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PLAYERTAGS_THISGROUPCOLOUR">
-    <English>Player Tag Group Colour:</English>
-    <Chinesesimp>玩家标签组颜色:</Chinesesimp>
+    <English>Player Tag Own Group Colour:</English>
+    <Chinesesimp>玩家标签本组颜色:</Chinesesimp>
     <Spanish>Color de tu grupo en las etiquetas:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_THISGROUPCOLOUR_COMMENT">

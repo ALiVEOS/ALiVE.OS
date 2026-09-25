@@ -57,8 +57,8 @@ class CfgVehicles {
                                 defaultValue = """false""";
                                 class Values
                                 {
-                                    class Yes { name = "No"; value = false; default = 1; };
-                                    class No { name = "Yes"; value = true; };
+                                    class Yes { name = "Yes"; value = false; default = 1; };
+                                    class No { name = "No"; value = true; };
                                 };
                         };
                         class respawnWithGear : Combo

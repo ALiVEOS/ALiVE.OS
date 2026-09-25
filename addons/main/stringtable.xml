@@ -17,10 +17,11 @@
     <Chinesesimp>启用调试:</Chinesesimp>
     <Spanish>Activar depuración:</Spanish>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_DEBUG_COMMENT">
-    <English>Enables Debug for ALiVE Base Systems</English>
-    <Chinesesimp>对ALiVE基础系统启用调试</Chinesesimp>
-    <Spanish>Activa la depuración de los sistemas base de ALiVE</Spanish>
+    <English>Turns on debug for the garbage collector only, which then writes its progress to the RPT log. Other ALiVE modules have their own debug settings.</English>
+    <Chinesesimp>仅对垃圾回收器启用调试，启用后它会将运行进度写入 RPT 日志。其他 ALiVE 模块有各自的调试设置。</Chinesesimp>
+    <Spanish>Activa la depuración solo del recolector de basura, que entonces escribe su progreso en el registro RPT. Los demás módulos de ALiVE tienen sus propios ajustes de depuración.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_REQUIRES_ALIVE">
     <English>ALiVE (Required)</English>
@@ -141,13 +142,13 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_OBJECTIVE_OBJECTS_COMMENT">
-    <English>Static / scenery objects (jammers, radars, antennas, satellite dishes, signal panels) to spawn at the objective. Filterable picker shows currently-loaded classes from registered mods (vanilla A3 + DLCs + RHS + POOK SAM + Crows EW + Expanded Anti Air + Drongos Air Operations etc.). Filter cycle: All / Object Classes (comms+radar) / Static Data (signal panels). Override Edit field accepts free-text class names not surfaced by the picker.</English>
-    <Chinese>靜態/場景物件（干擾器、雷達、天線、衛星接收盤、訊號板）將生成於目標位置。可篩選的選擇器顯示已載入mod的類別（原版A3 + DLC + RHS + POOK SAM + Crows EW + Expanded Anti Air + Drongos Air Operations等）。篩選循環：全部/物件類別（通訊+雷達）/靜態數據（訊號板）。覆寫編輯欄位接受選擇器未顯示的自訂類別名稱。</Chinese>
-    <Chinesesimp>静态/场景物件（干扰器、雷达、天线、卫星接收盘、信号板）将生成于目标位置。可筛选的选择器显示已加载mod的类别（原版A3 + DLC + RHS + POOK SAM + Crows EW + Expanded Anti Air + Drongos Air Operations等）。筛选循环：全部/物件类别（通讯+雷达）/静态数据（信号板）。覆写编辑栏位接受选择器未显示的自定义类别名称。</Chinesesimp>
-    <Spanish>Objetos estáticos / decorativos (interferidores, radares, antenas, antenas parabólicas, paneles de señales) para generar en el objetivo. El selector filtrable muestra las clases actualmente cargadas de los mods registrados (A3 vanilla + DLCs + RHS + POOK SAM + Crows EW + Expanded Anti Air + Drongos Air Operations, etc.). Ciclo de filtro: Todos / Clases de objetos (comunicaciones+radar) / Datos estáticos (paneles de señales). El campo Sustituir acepta nombres de clase en texto libre no listados por el selector.</Spanish>
-    <French>Objets statiques / décoratifs (brouilleurs, radars, antennes, paraboles, panneaux de signaux) à générer à l'objectif. Le sélecteur filtrable affiche les classes actuellement chargées des mods enregistrés (A3 vanilla + DLC + RHS + POOK SAM + Crows EW + Expanded Anti Air + Drongos Air Operations, etc.). Cycle de filtre: Tous / Classes d'objets (comm+radar) / Données statiques (panneaux de signaux). Le champ Remplacer accepte des noms de classes en texte libre non listés par le sélecteur.</French>
-    <Portuguese>Objetos estáticos / cenário (interferidores, radares, antenas, antenas parabólicas, painéis de sinal) para gerar no objetivo. O seletor filtrável mostra as classes carregadas atualmente dos mods registados (A3 vanilla + DLCs + RHS + POOK SAM + Crows EW + Expanded Anti Air + Drongos Air Operations, etc.). Ciclo de filtro: Todos / Classes de objetos (comunicações+radar) / Dados estáticos (painéis de sinal). O campo Substituir aceita nomes de classes em texto livre não listados pelo seletor.</Portuguese>
-    <Russian>Статические / декоративные объекты (глушилки, радары, антенны, спутниковые тарелки, сигнальные панели) для размещения на цели. Фильтруемый выбор показывает загруженные классы из зарегистрированных модов (A3 vanilla + DLC + RHS + POOK SAM + Crows EW + Expanded Anti Air + Drongos Air Operations и т.д.). Цикл фильтра: Все / Классы объектов (связь+радар) / Статические данные (сигнальные панели). Поле Переопределение принимает свободные имена классов, не отображаемые в селекторе.</Russian>
+    <English>Static / scenery objects (jammers, radars, antennas, satellite dishes, signal panels) to spawn around the module's position. Filterable picker shows currently-loaded classes from registered mods (vanilla A3 + DLCs + RHS + POOK SAM + Crows EW + Expanded Anti Air + Drongos Air Operations etc.). Filter cycle: All / Object Classes (comms+radar) / Static Data (signal panels). Override Edit field accepts free-text class names not surfaced by the picker.</English>
+    <Chinese>靜態/場景物件（干擾器、雷達、天線、衛星接收盤、訊號板）將生成於模組位置周圍。可篩選的選擇器顯示已載入mod的類別（原版A3 + DLC + RHS + POOK SAM + Crows EW + Expanded Anti Air + Drongos Air Operations等）。篩選循環：全部/物件類別（通訊+雷達）/靜態數據（訊號板）。覆寫編輯欄位接受選擇器未顯示的自訂類別名稱。</Chinese>
+    <Chinesesimp>静态/场景物件（干扰器、雷达、天线、卫星接收盘、信号板）将生成于模块位置周围。可筛选的选择器显示已加载mod的类别（原版A3 + DLC + RHS + POOK SAM + Crows EW + Expanded Anti Air + Drongos Air Operations等）。筛选循环：全部/物件类别（通讯+雷达）/静态数据（信号板）。覆写编辑栏位接受选择器未显示的自定义类别名称。</Chinesesimp>
+    <Spanish>Objetos estáticos / decorativos (interferidores, radares, antenas, antenas parabólicas, paneles de señales) para generar alrededor de la posición del módulo. El selector filtrable muestra las clases actualmente cargadas de los mods registrados (A3 vanilla + DLCs + RHS + POOK SAM + Crows EW + Expanded Anti Air + Drongos Air Operations, etc.). Ciclo de filtro: Todos / Clases de objetos (comunicaciones+radar) / Datos estáticos (paneles de señales). El campo Sustituir acepta nombres de clase en texto libre no listados por el selector.</Spanish>
+    <French>Objets statiques / décoratifs (brouilleurs, radars, antennes, paraboles, panneaux de signaux) à générer autour de la position du module. Le sélecteur filtrable affiche les classes actuellement chargées des mods enregistrés (A3 vanilla + DLC + RHS + POOK SAM + Crows EW + Expanded Anti Air + Drongos Air Operations, etc.). Cycle de filtre: Tous / Classes d'objets (comm+radar) / Données statiques (panneaux de signaux). Le champ Remplacer accepte des noms de classes en texte libre non listés par le sélecteur.</French>
+    <Portuguese>Objetos estáticos / cenário (interferidores, radares, antenas, antenas parabólicas, painéis de sinal) para gerar ao redor da posição do módulo. O seletor filtrável mostra as classes carregadas atualmente dos mods registados (A3 vanilla + DLCs + RHS + POOK SAM + Crows EW + Expanded Anti Air + Drongos Air Operations, etc.). Ciclo de filtro: Todos / Classes de objetos (comunicações+radar) / Dados estáticos (painéis de sinal). O campo Substituir aceita nomes de classes em texto livre não listados pelo seletor.</Portuguese>
+    <Russian>Статические / декоративные объекты (глушилки, радары, антенны, спутниковые тарелки, сигнальные панели) для размещения вокруг позиции модуля. Фильтруемый выбор показывает загруженные классы из зарегистрированных модов (A3 vanilla + DLC + RHS + POOK SAM + Crows EW + Expanded Anti Air + Drongos Air Operations и т.д.). Цикл фильтра: Все / Классы объектов (связь+радар) / Статические данные (сигнальные панели). Поле Переопределение принимает свободные имена классов, не отображаемые в селекторе.</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_OBJECTIVE_OVERRIDE">
@@ -171,13 +172,13 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_OBJECTIVE_OBJECTS_COUNT">
-    <English>Spawn Objective Units</English>
-    <Chinese>生成目標單位</Chinese>
-    <Chinesesimp>生成目标单位</Chinesesimp>
-    <Spanish>Generar unidades del objetivo</Spanish>
-    <French>Apparition unités d'objectif</French>
-    <Portuguese>Gerar unidades do objetivo</Portuguese>
-    <Russian>Создать единицы цели</Russian>
+    <English>Objective Objects Count</English>
+    <Chinese>目標物件數量</Chinese>
+    <Chinesesimp>目标物件数量</Chinesesimp>
+    <Spanish>Cantidad de objetos del objetivo</Spanish>
+    <French>Nombre d'objets de l'objectif</French>
+    <Portuguese>Quantidade de objetos do objetivo</Portuguese>
+    <Russian>Количество объектов цели</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_OBJECTIVE_OBJECTS_CHANCE">
@@ -191,22 +192,23 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_OBJECTIVE_OBJECTS_CHANCE_COMMENT">
-    <English>Percentage chance that this objective spawns its scenery objects at all. One roll per objective: pass spawns the full configured count, fail spawns none. 100 (default) = always. Use low values so only a fraction of objectives carry special objects like jammers or SAM props.</English>
-    <Chinese>此目標是否生成場景物件的機率。每個目標只擲一次骰:成功則生成完整設定數量，失敗則完全不生成。100（預設值）= 永遠生成。使用低數值可讓只有一小部分目標帶有干擾器或防空飛彈道具等特殊物件。</Chinese>
-    <Chinesesimp>该目标是否会生成其场景物体的百分比几率。每个目标只判定一次:成功则生成全部已配置数量,失败则一个都不生成。100(默认)= 总是生成。使用较低数值可让只有一部分目标携带干扰器或防空导弹道具等特殊物体。</Chinesesimp>
-    <Spanish>Probabilidad, en porcentaje, de que este objetivo genere sus objetos de escenario. Una tirada por objetivo: el éxito genera el número configurado completo, el fallo no genera ninguno. 100 (por defecto) = siempre. Usar valores bajos para que solo una fracción de los objetivos lleve objetos especiales como inhibidores o accesorios de SAM.</Spanish>
-    <French>Pourcentage de chance que cet objectif fasse apparaître ses objets de décor. Un seul tirage par objectif: succès fait apparaître le nombre configuré au complet, échec n'en fait apparaître aucun. 100 (par défaut) = toujours. Utiliser des valeurs basses pour que seule une fraction des objectifs porte des objets spéciaux comme des brouilleurs ou des accessoires SAM.</French>
-    <Portuguese>Chance percentual de este objetivo gerar seus objetos de cenário. Um sorteio por objetivo: sucesso gera a quantidade total configurada, falha não gera nenhum. 100 (padrão) = sempre. Use valores baixos para que apenas uma fração dos objetivos tenha objetos especiais, como bloqueadores de sinal ou suportes de SAM.</Portuguese>
-    <Russian>Процентная вероятность того, что данная задача вообще создаст свои декоративные объекты. Один бросок на задачу: успех — появляется полный заданный набор, неудача — не появляется ничего. 100 (по умолчанию) = всегда. Используйте низкие значения, чтобы особые объекты (глушилки, макеты ЗРК) встречались лишь у части задач.</Russian>
+    <English>Percentage chance that this module spawns its scenery objects at all. One roll per module: pass spawns the full configured count, fail spawns none. 100 (default) = always. Use a low value to make them turn up only some of the time.</English>
+    <Chinese>此模組是否生成其場景物件的百分比機率。每個模組只擲一次骰：成功則生成完整設定數量，失敗則完全不生成。100（預設值）= 永遠生成。使用低數值可讓這些物件只在部分時候出現。</Chinese>
+    <Chinesesimp>该模块是否会生成其场景物体的百分比几率。每个模块只判定一次：成功则生成全部已配置数量，失败则一个都不生成。100（默认）= 总是生成。使用较低数值可让这些物体只在部分时候出现。</Chinesesimp>
+    <Spanish>Probabilidad, en porcentaje, de que este módulo genere sus objetos de escenario. Una tirada por módulo: el éxito genera el número configurado completo, el fallo no genera ninguno. 100 (por defecto) = siempre. Usa un valor bajo para que los objetos solo aparezcan algunas veces.</Spanish>
+    <French>Pourcentage de chance que ce module fasse apparaître ses objets de décor. Un seul tirage par module: succès fait apparaître le nombre configuré au complet, échec n'en fait apparaître aucun. 100 (par défaut) = toujours. Utilisez une valeur basse pour que les objets n'apparaissent que de temps en temps.</French>
+    <Portuguese>Chance percentual de este módulo gerar seus objetos de cenário. Um sorteio por módulo: sucesso gera a quantidade total configurada, falha não gera nenhum. 100 (padrão) = sempre. Use um valor baixo para que os objetos apareçam só algumas vezes.</Portuguese>
+    <Russian>Процентная вероятность того, что этот модуль вообще создаст свои декоративные объекты. Один бросок на модуль: при успехе появляется полный заданный набор, при неудаче не появляется ничего. 100 (по умолчанию) = всегда. Используйте низкое значение, чтобы объекты появлялись лишь иногда.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_OBJECTIVE_OBJECTS_COUNT_COMMENT">
-    <English>How many scenery objects to spawn at the objective, drawn at random from the Objective Objects picker pool. Default 0 (disabled - no scenery spawned). Selection is with replacement, so a small pool plus a high count means duplicates appear.</English>
-    <Chinese>在目標位置生成多少場景物件，從目標物件選擇器池中隨機抽取。預設為0（停用 - 不生成場景物件）。選擇允許重複，因此小型池加上高計數意味著會出現重複物件。</Chinese>
-    <Chinesesimp>在目标位置生成多少场景物件，从目标物件选择器池中随机抽取。默认为0（停用 - 不生成场景物件）。选择允许重复，因此小型池加上高计数意味着会出现重复物件。</Chinesesimp>
-    <Spanish>Cuántos objetos decorativos generar en el objetivo, extraídos al azar del grupo del selector de Objetos del objetivo. Por defecto 0 (desactivado - no se genera decoración). La selección es con reemplazo, así que un grupo pequeño con un conteo alto significa que aparecerán duplicados.</Spanish>
-    <French>Nombre d'objets décoratifs à générer à l'objectif, tirés au hasard du pool du sélecteur Objets de l'objectif. Par défaut 0 (désactivé - aucun décor généré). La sélection est avec remplacement, donc un petit pool avec un nombre élevé signifie que des doublons apparaîtront.</French>
-    <Portuguese>Quantos objetos decorativos gerar no objetivo, sorteados aleatoriamente do conjunto do seletor de Objetos do objetivo. Padrão 0 (desativado - nada gerado). A seleção é com reposição, portanto um conjunto pequeno com uma contagem alta significa que duplicados aparecerão.</Portuguese>
-    <Russian>Сколько декоративных объектов создать на цели, выбранных случайно из пула селектора Объектов цели. По умолчанию 0 (отключено - декорации не создаются). Выборка с возвратом, поэтому маленький пул с большим количеством означает появление дубликатов.</Russian>
+    <English>How many scenery objects to spawn, drawn at random from the Objective Objects picker pool. They're placed as one batch around the module's own position, even on a module that covers many objectives. Default 0 (disabled: no objects spawned). Selection is with replacement, so a small pool plus a high count means duplicates appear.</English>
+    <Chinese>要生成多少場景物件，從目標物件選擇器池中隨機抽取。它們會作為一批放置在模組本身位置的周圍，即使模組涵蓋多個目標也是如此。預設為0（停用：不生成物件）。選擇允許重複，因此小型池加上高計數意味著會出現重複物件。</Chinese>
+    <Chinesesimp>要生成多少场景物件，从目标物件选择器池中随机抽取。它们会作为一批放置在模块本身位置的周围，即使模块涵盖多个目标也是如此。默认为0（停用：不生成物件）。选择允许重复，因此小型池加上高计数意味着会出现重复物件。</Chinesesimp>
+    <Spanish>Cuántos objetos decorativos generar, extraídos al azar del grupo del selector de Objetos del objetivo. Se colocan como un solo lote alrededor de la posición del propio módulo, incluso en un módulo que abarca muchos objetivos. Por defecto 0 (desactivado: no se genera ningún objeto). La selección es con reemplazo, así que un grupo pequeño con un conteo alto significa que aparecerán duplicados.</Spanish>
+    <French>Nombre d'objets décoratifs à générer, tirés au hasard du pool du sélecteur Objets de l'objectif. Ils sont placés en un seul lot autour de la position du module lui-même, même pour un module qui couvre de nombreux objectifs. Par défaut 0 (désactivé: aucun objet généré). La sélection est avec remplacement, donc un petit pool avec un nombre élevé signifie que des doublons apparaîtront.</French>
+    <Portuguese>Quantos objetos decorativos gerar, sorteados aleatoriamente do conjunto do seletor de Objetos do objetivo. Eles são colocados como um único lote ao redor da posição do próprio módulo, mesmo em um módulo que abrange muitos objetivos. Padrão 0 (desativado: nenhum objeto gerado). A seleção é com reposição, portanto um conjunto pequeno com uma contagem alta significa que duplicados aparecerão.</Portuguese>
+    <Russian>Сколько декоративных объектов создать, выбранных случайно из пула селектора Объектов цели. Они размещаются одной партией вокруг позиции самого модуля, даже если модуль охватывает много целей. По умолчанию 0 (отключено: объекты не создаются). Выборка с возвратом, поэтому маленький пул с большим количеством означает появление дубликатов.</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_OBJECTIVE_OBJECTS_BEHAVIOUR">

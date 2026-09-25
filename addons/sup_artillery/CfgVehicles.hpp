@@ -88,7 +88,7 @@ class CfgVehicles {
                                 class Values
                                 {
                                     class Static { name = "Static (LOGCOM Base)"; value = 0; default = 1; };
-                                    class Dynamic { name = "Dynamic (Nearest Objective)"; value = 1; };
+                                    class Dynamic { name = "Dynamic (Nearby Objective)"; value = 1; };
                                 };
                         };
                         class ModuleDescription : ModuleDescription {};

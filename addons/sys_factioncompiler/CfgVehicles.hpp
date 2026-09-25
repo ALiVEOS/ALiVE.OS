@@ -49,7 +49,7 @@ class CfgVehicles {
             class proxyFaction {
                 property = "ALiVE_sys_factioncompiler_proxyFaction";
                 displayName = "Proxy Faction";
-                tooltip = "Config-backed faction used for side, compositions, and static fallback data.";
+                tooltip = "New faction mode only: an existing config faction the compiled faction borrows compositions, supply boxes and fallback vehicles from. Units take their side from the template groups, so pick a proxy on the same side. A category with no template groups places nothing; it does not use the proxy's groups.";
                 control = "ALiVE_FactionChoice_Military";
                 typeName = "STRING";
                 // Internal setVariable key is "faction" so the shared
@@ -76,7 +76,7 @@ class CfgVehicles {
             class overrideMode : Combo {
                 property = "ALiVE_sys_factioncompiler_overrideMode";
                 displayName = "Faction Override Mode";
-                tooltip = "How the compiled groups integrate with the Faction ID. New faction = compiled groups become a brand-new mission-local faction (default; Faction ID must NOT match an existing faction). Override categories = compiled groups REPLACE the synced categories of the existing Faction ID, leaving other categories untouched (Faction ID must match an existing curated or inferred faction; Proxy Faction is ignored).";
+                tooltip = "How the compiled groups integrate with the Faction ID. New faction = compiled groups become a brand-new mission-local faction (default; Faction ID must NOT match an existing faction). Override categories = compiled groups REPLACE the synced categories of the existing Faction ID, leaving other categories untouched (Faction ID should be an existing faction class name; it is not checked, and with an unknown ID the categories you do not override place nothing. Proxy Faction is ignored).";
                 defaultValue = """NewFaction""";
                 class Values {
                     class NewFaction {name = "New faction"; value = "NewFaction"; default = 1;};

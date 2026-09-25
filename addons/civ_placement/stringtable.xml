@@ -29,14 +29,15 @@
     <Portuguese>Ativar depuração:</Portuguese>
     <Russian>Включить отладку:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CP_DEBUG_COMMENT">
-    <English>Enables Civilian Placement module debug: diag_log dumps of cluster generation, placement attempts and synced commander hand-offs.</English>
-    <Chinese>啟用民用部署模組調試 — 將集群生成、部署嘗試和同步指揮官移交記錄到 diag_log。</Chinese>
-    <Chinesesimp>启用民用部署模块调试 — 将集群生成、部署尝试和同步指挥官移交记录到 diag_log。</Chinesesimp>
-    <Spanish>Activa la depuración del módulo de despliegue civil — vuelca al diag_log la generación de clústeres, los intentos de despliegue y las transferencias al comandante sincronizado.</Spanish>
-    <French>Active le débogage du module de déploiement civil — journalise dans diag_log la génération des clusters, les tentatives de déploiement et les transferts au commandant synchronisé.</French>
-    <Portuguese>Ativa a depuração do módulo de posicionamento civil — registra no diag_log a geração de clusters, tentativas de posicionamento e transferências ao comandante sincronizado.</Portuguese>
-    <Russian>Включает отладку модуля размещения у гражданских целей — запись в diag_log генерации кластеров, попыток размещения и передач синхронизированному командиру.</Russian>
+    <English>Shows this module's objectives and planned roadblocks on the map and writes its setup and placement steps to the RPT log.</English>
+    <Chinese>在地圖上顯示此模組的目標與預定路障，並將其設定與部署步驟寫入 RPT 記錄檔。</Chinese>
+    <Chinesesimp>在地图上显示此模块的目标与预定路障，并将其设置与部署步骤写入 RPT 日志。</Chinesesimp>
+    <Spanish>Muestra en el mapa los objetivos y los controles de carretera previstos de este módulo, y escribe sus pasos de preparación y despliegue en el registro RPT.</Spanish>
+    <French>Affiche sur la carte les objectifs et les barrages routiers prévus de ce module, et écrit ses étapes de préparation et de déploiement dans le journal RPT.</French>
+    <Portuguese>Mostra no mapa os objetivos e os bloqueios de estrada previstos deste módulo e grava suas etapas de preparação e posicionamento no registro RPT.</Portuguese>
+    <Russian>Показывает на карте объекты и запланированные блокпосты этого модуля и записывает шаги его настройки и размещения в журнал RPT.</Russian>
 </Key>
 <Key ID="STR_ALIVE_CP_TAOR">
     <English>TAOR Marker:</English>
@@ -443,14 +444,15 @@
     <Portuguese>Ponderação da força:</Portuguese>
     <Russian>Весовой состав сил:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CP_TYPE_COMMENT">
-    <English>Preferred composition of the force. Weighted towards the selected type but not exclusive, other unit types will still appear in smaller numbers.</English>
-    <Chinese>部隊的首選組成。偏向所選類型但非獨佔 — 其他單位類型仍會以較少數量出現。</Chinese>
-    <Chinesesimp>部队的首选组成。偏向所选类型但非独占 — 其他单位类型仍会以较少数量出现。</Chinesesimp>
-    <Spanish>Composición preferida de la fuerza. Ponderada hacia el tipo seleccionado pero no exclusiva — otros tipos de unidad seguirán apareciendo en menor número.</Spanish>
-    <French>Composition préférée de la force. Pondérée vers le type sélectionné mais non exclusive — d'autres types d'unités apparaîtront tout de même en plus petit nombre.</French>
-    <Portuguese>Composição preferida da força. Ponderada para o tipo selecionado mas não exclusiva — outros tipos de unidade ainda aparecerão em menor número.</Portuguese>
-    <Russian>Предпочтительный состав сил. Смещён в сторону выбранного типа, но не исключителен — другие типы юнитов всё равно появятся в меньшем количестве.</Russian>
+    <English>Preferred composition of the force, weighted towards the selected type. Infantry and spec ops groups are always part of it; other vehicle types, and air unless you pick Air or Spec Ops, are only added in small random numbers, so they may not appear at all, especially at smaller force sizes. Random picks one of Armoured, Mechanised, Motorised, Light Infantry or Air.</English>
+    <Chinese>部隊的首選組成，偏向所選類型。步兵和特種部隊組總是包含在內；其他車輛類型，以及空中單位（除非選擇空軍或特種部隊），只會以少量隨機數量加入，因此可能完全不出現，尤其是在較小的部隊規模下。隨機會從裝甲、機械化、摩托化、輕步兵或空軍中選一種。</Chinese>
+    <Chinesesimp>部队的首选组成，偏向所选类型。步兵和特种部队组总是包含在内；其他车辆类型，以及空中单位（除非选择空军或特种部队），只会以少量随机数量加入，因此可能完全不出现，尤其是在较小的部队规模下。随机会从装甲、机械化、摩托化、轻步兵或空军中选一种。</Chinesesimp>
+    <Spanish>Composición preferida de la fuerza, ponderada hacia el tipo seleccionado. Los grupos de infantería y de operaciones especiales siempre forman parte de ella; los demás tipos de vehículos, y los aéreos salvo que elijas Aéreo u Operaciones especiales, solo se añaden en pequeñas cantidades aleatorias, así que pueden no aparecer en absoluto, sobre todo con tamaños de fuerza pequeños. Aleatorio elige uno entre Acorazado, Mecanizado, Motorizado, Infantería ligera o Aéreo.</Spanish>
+    <French>Composition préférée de la force, pondérée vers le type sélectionné. Les groupes d'infanterie et de forces spéciales en font toujours partie; les autres types de véhicules, et l'aérien sauf si vous choisissez Aérien ou Forces spéciales, ne sont ajoutés qu'en petits nombres aléatoires, ils peuvent donc ne pas apparaître du tout, surtout avec de petites tailles de force. Aléatoire choisit l'un des types Blindé, Mécanisé, Motorisé, Infanterie légère ou Aérien.</French>
+    <Portuguese>Composição preferida da força, ponderada para o tipo selecionado. Grupos de infantaria e de operações especiais sempre fazem parte dela; os outros tipos de veículo, e os aéreos a menos que você escolha Aéreo ou Operações especiais, só são adicionados em pequenas quantidades aleatórias, então podem nem aparecer, principalmente com tamanhos de força menores. Aleatório escolhe um entre Blindado, Mecanizado, Motorizado, Infantaria leve ou Aéreo.</Portuguese>
+    <Russian>Предпочтительный состав сил, смещённый в сторону выбранного типа. Группы пехоты и спецназа входят в него всегда; другие типы техники, а также авиация (если не выбраны Авиация или Спецназ) добавляются лишь в небольшом случайном количестве, поэтому их может не быть вовсе, особенно при небольшом размере сил. Случайный выбирает один из вариантов: Бронетанковый, Механизированный, Моторизованный, Лёгкая пехота или Авиация.</Russian>
 </Key>
 <Key ID="STR_ALIVE_CP_TYPE_RANDOM">
     <English>Random</English>
@@ -717,14 +719,15 @@
     <Portuguese>Bloqueios de estrada:</Portuguese>
     <Russian>Блокпосты:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CP_ROADBLOCKS_COMMENT">
-    <English>Density of static roadblocks placed on routes between objectives. None = off, Low = 15%, Medium = 35%, High = 50%, Extreme = 75%, All = every candidate position used. Independent of the OPCOM commander type.</English>
-    <Chinese>在目標之間的路線上放置靜態路障的密度。無 = 關閉，低 = 15%，中 = 35%，高 = 50%，極高 = 75%，全部 = 使用每個候選位置。與 OPCOM 指揮官類型無關。</Chinese>
-    <Chinesesimp>在目标之间的路线上放置静态路障的密度。无 = 关闭，低 = 15%，中 = 35%，高 = 50%，极高 = 75%，全部 = 使用每个候选位置。与 OPCOM 指挥官类型无关。</Chinesesimp>
-    <Spanish>Densidad de controles de carretera estáticos colocados en las rutas entre objetivos. Ninguno = desactivado, Bajo = 15%, Medio = 35%, Alto = 50%, Extremo = 75%, Todos = todas las posiciones candidatas usadas. Independiente del tipo de comandante de OPCOM.</Spanish>
-    <French>Densité des barrages routiers statiques placés sur les routes entre les objectifs. Aucun = désactivé, Faible = 15 %, Moyen = 35 %, Élevé = 50 %, Extrême = 75 %, Tous = toutes les positions candidates utilisées. Indépendant du type de commandant OPCOM.</French>
-    <Portuguese>Densidade dos bloqueios de estrada estáticos colocados nas rotas entre objetivos. Nenhum = desativado, Baixo = 15%, Médio = 35%, Alto = 50%, Extremo = 75%, Todos = todas as posições candidatas utilizadas. Independente do tipo de comandante do OPCOM.</Portuguese>
-    <Russian>Плотность статических блокпостов на маршрутах между объектами. Нет = выкл., Низко = 15%, Средне = 35%, Высоко = 50%, Экстрим = 75%, Все = используются все возможные позиции. Не зависит от типа командира OPCOM.</Russian>
+    <English>Chance that each objective gets roadblocks: None = off, Low = 15%, Medium = 35%, High = 50%, Extreme = 75%, All = every objective. An objective that gets them has up to 1 roadblock at Low, 2 at Medium or High, 3 at Extreme and 4 at All, placed on roads within its radius plus 150 m when players come near and manned by the faction holding the area. No roadblocks are placed when Place units is set to Objectives Only. Independent of the OPCOM commander type.</English>
+    <Chinese>每個目標獲得路障的機率：無 = 關閉，低 = 15%，中 = 35%，高 = 50%，極高 = 75%，全部 = 每個目標。獲得路障的目標在低時最多 1 個路障，中或高時 2 個，極高時 3 個，全部時 4 個，於玩家接近時放置在目標半徑再加 150 公尺範圍內的道路上，並由控制該區域的陣營駐守。當「放置單位」設為「僅目標」時不會放置任何路障。與 OPCOM 指揮官類型無關。</Chinese>
+    <Chinesesimp>每个目标获得路障的几率：无 = 关闭，低 = 15%，中 = 35%，高 = 50%，极高 = 75%，全部 = 每个目标。获得路障的目标在低时最多 1 个路障，中或高时 2 个，极高时 3 个，全部时 4 个，于玩家接近时放置在目标半径再加 150 米范围内的道路上，并由控制该区域的阵营驻守。当「放置单位」设为「仅目标」时不会放置任何路障。与 OPCOM 指挥官类型无关。</Chinesesimp>
+    <Spanish>Probabilidad de que cada objetivo tenga controles de carretera: Ninguno = desactivado, Bajo = 15%, Medio = 35%, Alto = 50%, Extremo = 75%, Todos = todos los objetivos. Un objetivo que los recibe tiene hasta 1 control en Bajo, 2 en Medio o Alto, 3 en Extremo y 4 en Todos, colocados en carreteras dentro de su radio más 150 m cuando se acercan jugadores y guarnecidos por la facción que domina la zona. No se coloca ningún control cuando Colocar unidades está en Solo objetivos. Independiente del tipo de comandante de OPCOM.</Spanish>
+    <French>Probabilité que chaque objectif reçoive des barrages routiers : Aucun = désactivé, Faible = 15 %, Moyen = 35 %, Élevé = 50 %, Extrême = 75 %, Tous = chaque objectif. Un objectif retenu reçoit jusqu'à 1 barrage en Faible, 2 en Moyen ou Élevé, 3 en Extrême et 4 en Tous, placés sur les routes dans son rayon plus 150 m quand des joueurs approchent et tenus par la faction qui contrôle la zone. Aucun barrage n'est placé quand Placer les unités est réglé sur Objectifs uniquement. Indépendant du type de commandant OPCOM.</French>
+    <Portuguese>Chance de cada objetivo receber bloqueios de estrada: Nenhum = desativado, Baixo = 15%, Médio = 35%, Alto = 50%, Extremo = 75%, Todos = todos os objetivos. Um objetivo que os recebe tem até 1 bloqueio em Baixo, 2 em Médio ou Alto, 3 em Extremo e 4 em Todos, colocados em estradas dentro do seu raio mais 150 m quando jogadores se aproximam e guarnecidos pela facção que domina a área. Nenhum bloqueio é colocado quando Posicionar unidades está em Apenas objetivos. Independente do tipo de comandante do OPCOM.</Portuguese>
+    <Russian>Шанс, что у объекта появятся блокпосты: Нет = выкл., Низко = 15%, Средне = 35%, Высоко = 50%, Экстрим = 75%, Все = у каждого объекта. У такого объекта будет до 1 блокпоста при Низко, 2 при Средне или Высоко, 3 при Экстрим и 4 при Все, на дорогах в пределах его радиуса плюс 150 м, когда рядом появляются игроки; их занимает фракция, контролирующая район. Блокпосты не размещаются, если для "Размещать юниты" выбрано "Только объекты". Не зависит от типа командира OPCOM.</Russian>
 </Key>
 <Key ID="STR_ALIVE_CP_PLACE_SEAPATROLS">
     <English>Sea Patrols:</English>
@@ -845,14 +848,15 @@
     <Portuguese>Patrulha de edifícios guarnecidos (%):</Portuguese>
     <Russian>Патрулирование зданий гарнизоном (%):</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CP_CUSTOM_GUARD_PATROL_PERCENT_COMMENT">
-    <English>Percentage of garrison groups that will actively patrol between buildings rather than remaining static. Higher values create more visible activity but increase CPU load. Also governs every garrison placed without a module of its own (the ones the commander orders during play, insurgent and airbase guards, task camp guards, Military Logistics and SPE placement garrisons), but only when no military placement module in the mission carries this setting. Where several civilian modules set different values the smallest applies to those, and None holds them all at their posts.</English>
-    <Chinese>主動在建築物之間巡邏而非保持靜止的駐防組百分比。較高的值會產生更多可見活動但會增加 CPU 負載。</Chinese>
-    <Chinesesimp>主动在建筑物之间巡逻而非保持静止的驻防组百分比。较高的值会产生更多可见活动但会增加 CPU 负载。</Chinesesimp>
-    <Spanish>Porcentaje de grupos de guarnición que patrullarán activamente entre edificios en lugar de permanecer estáticos. Valores mayores generan más actividad visible pero aumentan la carga de CPU.</Spanish>
-    <French>Pourcentage des groupes de garnison qui patrouilleront activement entre les bâtiments plutôt que de rester statiques. Des valeurs plus élevées génèrent plus d'activité visible mais augmentent la charge CPU.</French>
-    <Portuguese>Porcentagem de grupos de guarnição que patrulharão ativamente entre edifícios em vez de permanecerem estáticos. Valores mais altos geram mais atividade visível mas aumentam a carga de CPU.</Portuguese>
-    <Russian>Процент гарнизонных групп, которые будут активно патрулировать между зданиями, а не оставаться на месте. Более высокие значения создают больше видимой активности, но увеличивают нагрузку на CPU.</Russian>
+    <English>Share of the men in each garrison group who patrol between nearby buildings instead of holding a position; reserve infantry that wakes during play and roadblock guards have at most one man patrolling. Higher values create more visible activity but increase CPU load. Also governs every garrison placed without a module of its own (the ones the commander orders during play, insurgent and airbase guards, task camp guards, Military Logistics and SPE placement garrisons), but only when the mission has no Military Placement (Mil. Obj.) or (Cust. Obj.) module: any of those takes over, even with its own setting left at the default. Where several civilian modules set different values the smallest applies to those, and None holds them all at their posts.</English>
+    <Chinese>每個駐防組中在附近建築物之間巡邏、而非堅守位置的人員比例；遊戲中被喚醒的預備步兵與路障守衛最多只有一人巡邏。較高的值會產生更多可見活動但會增加 CPU 負載。也控制所有沒有自身模組的駐防（指揮官在遊戲中下令的駐防、叛軍與空軍基地守衛、任務營地守衛、軍事後勤以及 SPE 部署的駐防），但僅在任務中沒有軍事部署（軍事目標）或（自訂目標）模組時才生效：只要有其中任何一個，即使其設定保持預設值也會取而代之。若多個民用模組設定不同的值，則對這些駐防採用最小值，而「無」會讓它們全部堅守崗位。</Chinese>
+    <Chinesesimp>每个驻防组中在附近建筑物之间巡逻、而非坚守位置的人员比例；游戏中被唤醒的预备步兵与路障守卫最多只有一人巡逻。较高的值会产生更多可见活动但会增加 CPU 负载。也控制所有没有自身模块的驻防（指挥官在游戏中下令的驻防、叛军与空军基地守卫、任务营地守卫、军事后勤以及 SPE 部署的驻防），但仅在任务中没有军事部署（军事目标）或（自定义目标）模块时才生效：只要有其中任何一个，即使其设置保持默认值也会取而代之。若多个民用模块设置了不同的值，则对这些驻防采用最小值，而「无」会让它们全部坚守岗位。</Chinesesimp>
+    <Spanish>Proporción de los hombres de cada grupo de guarnición que patrullan entre los edificios cercanos en lugar de mantener una posición; la infantería de reserva que despierta durante la partida y los guardias de los controles de carretera tienen como máximo un hombre patrullando. Valores mayores generan más actividad visible pero aumentan la carga de CPU. También rige cada guarnición colocada sin un módulo propio (las que el comandante ordena durante la partida, los guardias insurgentes y de base aérea, los guardias de campamentos de tareas, Logística Militar y las guarniciones de colocación SPE), pero solo cuando la misión no tiene ningún módulo de despliegue militar (obj. mil. u obj. personalizado): cualquiera de ellos toma el control, aunque su propio ajuste quede en el valor por defecto. Si varios módulos civiles fijan valores distintos, a esas guarniciones se les aplica el menor, y Ninguno las mantiene a todas en sus puestos.</Spanish>
+    <French>Part des hommes de chaque groupe de garnison qui patrouillent entre les bâtiments voisins au lieu de tenir une position; l'infanterie de réserve qui se réveille en cours de partie et les gardes des barrages routiers n'ont au plus qu'un homme en patrouille. Des valeurs plus élevées génèrent plus d'activité visible mais augmentent la charge CPU. Régit aussi chaque garnison placée sans module propre (celles que le commandant ordonne en cours de partie, les gardes insurgés et de base aérienne, les gardes des camps de tâches, la Logistique militaire et les garnisons du placement SPE), mais seulement quand la mission n'a aucun module de déploiement militaire (obj. mil. ou obj. personnalisé) : n'importe lequel prend le relais, même si son propre réglage est laissé par défaut. Si plusieurs modules civils fixent des valeurs différentes, la plus petite s'applique à ces garnisons, et Aucun les maintient toutes à leur poste.</French>
+    <Portuguese>Proporção dos homens de cada grupo de guarnição que patrulham entre os edifícios próximos em vez de manter uma posição; a infantaria de reserva que desperta durante o jogo e os guardas dos bloqueios de estrada têm no máximo um homem patrulhando. Valores mais altos geram mais atividade visível mas aumentam a carga de CPU. Também rege toda guarnição posicionada sem um módulo próprio (as que o comandante ordena durante o jogo, guardas insurgentes e de base aérea, guardas de acampamentos de tarefas, Logística Militar e guarnições do posicionamento SPE), mas só quando a missão não tem nenhum módulo de posicionamento militar (obj. mil. ou obj. personalizado): qualquer um deles assume, mesmo com a própria configuração no padrão. Se vários módulos civis definirem valores diferentes, o menor vale para essas guarnições, e Nenhum mantém todas em seus postos.</Portuguese>
+    <Russian>Доля бойцов в каждой гарнизонной группе, которые патрулируют между ближайшими зданиями, а не удерживают позицию; у резервной пехоты, пробуждающейся во время игры, и у охраны блокпостов патрулирует не больше одного бойца. Более высокие значения создают больше видимой активности, но увеличивают нагрузку на CPU. Также действует на все гарнизоны, размещённые без собственного модуля (приказанные командиром во время игры, охрану повстанцев и авиабаз, охрану лагерей заданий, военную логистику и гарнизоны размещения SPE), но только если в миссии нет модуля военного размещения (воен. объекты или польз. объекты): любой такой модуль берёт управление на себя, даже если его собственная настройка оставлена по умолчанию. Если несколько гражданских модулей задают разные значения, для этих гарнизонов действует наименьшее, а "Нет" держит их всех на постах.</Russian>
 </Key>
 <Key ID="STR_ALIVE_CP_GARRISON_PATROL_BEHAVIOUR">
     <English>Garrison Patrol Behaviour:</English>

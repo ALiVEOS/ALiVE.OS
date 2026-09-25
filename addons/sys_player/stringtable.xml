@@ -99,10 +99,11 @@
 	<Chinesesimp>停用不同的兵种重新加入</Chinesesimp>
     <Spanish>Desactivar reincorporación con otra clase</Spanish>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_player_allowDiffClass_COMMENT">
-    <English>Allow players to rejoin the mission as a different class</English>
-	<Chinesesimp>允许玩家以不同的兵种重新加入任务</Chinesesimp>
-    <Spanish>Permite a los jugadores volver a la misión con una clase distinta</Spanish>
+    <English>Allow players to rejoin the mission as a different class from their saved one. If not allowed, the mission ends for a player who rejoins as a different class.</English>
+	<Chinesesimp>允许玩家以不同于存档的兵种重新加入任务。若不允许，以不同兵种重新加入的玩家的任务将被结束。</Chinesesimp>
+    <Spanish>Permite a los jugadores volver a la misión con una clase distinta de la guardada. Si no se permite, la misión termina para el jugador que vuelva con una clase distinta.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_player_storeToDB">
     <English>Save to Database:</English>
@@ -129,10 +130,11 @@
 	<Chinesesimp>储存装备：</Chinesesimp>
     <Spanish>Guardar equipo:</Spanish>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_player_SAVELOADOUT_COMMENT">
-    <English>Enable/disable saving player load-out data</English>
-	<Chinesesimp>启用/停用保存玩家装备数据</Chinesesimp>
-    <Spanish>Activa o desactiva el guardado del equipo del jugador</Spanish>
+    <English>Enable/disable giving players back their saved load-out when they rejoin</English>
+	<Chinesesimp>启用/停用玩家重新加入时恢复其已保存的装备</Chinesesimp>
+    <Spanish>Activa o desactiva la devolución del equipo guardado a los jugadores cuando vuelven a unirse</Spanish>
 </Key>
 <Key ID="STR_ALIVE_player_SAVEAMMO">
     <English>Store Ammo Count:</English>

@@ -117,10 +117,11 @@ ALiVE_SUP_MULTISPAWN_DESTINATION_%FACTION%&lt;br /&gt;
     <Chinesesimp>检查敌军重生</Chinesesimp>
     <Spanish>Comprobación de enemigos al reaparecer:</Spanish>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_multispawn_SPAWNINGNEARENEMIESALLOWED_COMMENT">
-    <English>Allowed to spawn on squadmates even if enemies are near!</English>
-    <Chinesesimp>允许在队友身上生成 即使敌军在附近!</Chinesesimp>
-    <Spanish>¡Permite reaparecer junto a compañeros de escuadra aunque haya enemigos cerca!</Spanish>
+    <English>Yes stops players respawning on a squadmate who has enemies within 50 m. No lets them spawn on squadmates even if enemies are near.</English>
+    <Chinesesimp>设为是时，若队友 50 米内有敌军，玩家不能在该队友身上重生。设为否时，即使敌军在附近也允许在队友身上重生。</Chinesesimp>
+    <Spanish>Sí impide que los jugadores reaparezcan junto a un compañero de escuadra que tenga enemigos a menos de 50 m. No les permite reaparecer junto a compañeros aunque haya enemigos cerca.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_multispawn_RESPAWNWITHGEAR">
     <English>Respawn with Gear:</English>

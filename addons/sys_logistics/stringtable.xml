@@ -263,13 +263,13 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_LOGISTICS_BLACKLIST_COMMENT">
-    <English>Comma-separated list of config class names to exclude from all ALiVE logistics interactions. Any object whose type matches or inherits from a listed class cannot be carried, towed, lifted or loaded. Example: B_Soldier_F,Land_Cargo20_military_green_F</English>
-    <Chinese>以逗號分隔的設定類別名稱清單，將從所有 ALiVE 後勤互動中排除。任何類型符合或繼承自列出類別的物件皆無法被攜帶、牽引、吊運或裝載。範例：B_Soldier_F,Land_Cargo20_military_green_F</Chinese>
-    <Chinesesimp>以逗号分隔的配置类别名称列表，将从所有 ALiVE 后勤交互中排除。任何类型符合或继承自列出类别的物件皆无法被携带、牵引、吊运或装载。示例：B_Soldier_F,Land_Cargo20_military_green_F</Chinesesimp>
-    <Spanish>Lista de nombres de clase de configuración separada por comas que se excluirán de todas las interacciones de logística ALiVE. Cualquier objeto cuyo tipo coincida o herede de una clase listada no podrá ser transportado, remolcado, elevado ni cargado. Ejemplo: B_Soldier_F,Land_Cargo20_military_green_F</Spanish>
-    <French>Liste de noms de classe de configuration séparés par virgules à exclure de toutes les interactions de logistique ALiVE. Tout objet dont le type correspond à ou hérite d'une classe listée ne peut pas être transporté, remorqué, élingué ou chargé. Exemple: B_Soldier_F,Land_Cargo20_military_green_F</French>
-    <Portuguese>Lista de nomes de classe de configuração separados por vírgulas a serem excluídos de todas as interações de logística ALiVE. Qualquer objeto cujo tipo corresponda ou herde de uma classe listada não pode ser carregado, rebocado, içado ou carregado em veículo. Exemplo: B_Soldier_F,Land_Cargo20_military_green_F</Portuguese>
-    <Russian>Список имён классов конфигурации через запятую, исключаемых из всех логистических взаимодействий ALiVE. Любой объект, тип которого совпадает с классом из списка или наследуется от него, не может быть перенесён, отбуксирован, поднят или загружен. Пример: B_Soldier_F,Land_Cargo20_military_green_F</Russian>
+    <English>Comma-separated list of config class names to exclude from all ALiVE logistics interactions. Any object whose type matches or inherits from a listed class cannot be carried, towed, lifted or loaded. Example: B_MRAP_01_F,Box_NATO_Ammo_F</English>
+    <Chinese>以逗號分隔的設定類別名稱清單，將從所有 ALiVE 後勤互動中排除。任何類型符合或繼承自列出類別的物件皆無法被攜帶、牽引、吊運或裝載。範例：B_MRAP_01_F,Box_NATO_Ammo_F</Chinese>
+    <Chinesesimp>以逗号分隔的配置类别名称列表，将从所有 ALiVE 后勤交互中排除。任何类型符合或继承自列出类别的物件皆无法被携带、牵引、吊运或装载。示例：B_MRAP_01_F,Box_NATO_Ammo_F</Chinesesimp>
+    <Spanish>Lista de nombres de clase de configuración separada por comas que se excluirán de todas las interacciones de logística ALiVE. Cualquier objeto cuyo tipo coincida o herede de una clase listada no podrá ser transportado, remolcado, elevado ni cargado. Ejemplo: B_MRAP_01_F,Box_NATO_Ammo_F</Spanish>
+    <French>Liste de noms de classe de configuration séparés par virgules à exclure de toutes les interactions de logistique ALiVE. Tout objet dont le type correspond à ou hérite d'une classe listée ne peut pas être transporté, remorqué, élingué ou chargé. Exemple: B_MRAP_01_F,Box_NATO_Ammo_F</French>
+    <Portuguese>Lista de nomes de classe de configuração separados por vírgulas a serem excluídos de todas as interações de logística ALiVE. Qualquer objeto cujo tipo corresponda ou herde de uma classe listada não pode ser carregado, rebocado, içado ou carregado em veículo. Exemplo: B_MRAP_01_F,Box_NATO_Ammo_F</Portuguese>
+    <Russian>Список имён классов конфигурации через запятую, исключаемых из всех логистических взаимодействий ALiVE. Любой объект, тип которого совпадает с классом из списка или наследуется от него, не может быть перенесён, отбуксирован, поднят или загружен. Пример: B_MRAP_01_F,Box_NATO_Ammo_F</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_LOGISTICS_WHITELIST">
@@ -283,12 +283,12 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_LOGISTICS_WHITELIST_COMMENT">
-    <English>Comma-separated list of additional config class names to allow carrying and loading, beyond the built-in defaults. Use this to enable logistics interactions for object types not in the default carry list. Example: Land_Cargo20_military_green_F,Box_IND_Ammo_F</English>
-    <Chinese>以逗號分隔的額外設定類別名稱清單，允許攜帶與裝載，超出內建預設值。用以為不在預設攜帶清單中的物件類型啟用後勤互動。範例：Land_Cargo20_military_green_F,Box_IND_Ammo_F</Chinese>
-    <Chinesesimp>以逗号分隔的额外配置类别名称列表，允许携带与装载，超出内建默认值。用以为不在默认携带列表中的物件类型启用后勤交互。示例：Land_Cargo20_military_green_F,Box_IND_Ammo_F</Chinesesimp>
-    <Spanish>Lista separada por comas de nombres de clase de configuración adicionales que se permitirán transportar y cargar, más allá de los predeterminados. Úsala para habilitar interacciones de logística para tipos de objetos no incluidos en la lista de transporte predeterminada. Ejemplo: Land_Cargo20_military_green_F,Box_IND_Ammo_F</Spanish>
-    <French>Liste séparée par virgules de noms de classe de configuration supplémentaires à autoriser au portage et au chargement, au-delà des valeurs par défaut intégrées. Utilisez-la pour activer les interactions de logistique pour des types d'objets absents de la liste de portage par défaut. Exemple: Land_Cargo20_military_green_F,Box_IND_Ammo_F</French>
-    <Portuguese>Lista separada por vírgulas de nomes de classe de configuração adicionais a permitir transportar e carregar em veículos, além dos padrões embutidos. Use isto para habilitar interações de logística para tipos de objetos ausentes da lista de transporte padrão. Exemplo: Land_Cargo20_military_green_F,Box_IND_Ammo_F</Portuguese>
-    <Russian>Список дополнительных имён классов конфигурации через запятую, разрешённых для переноски и загрузки, сверх встроенных значений по умолчанию. Используйте для включения логистических взаимодействий для типов объектов, отсутствующих в стандартном списке переноски. Пример: Land_Cargo20_military_green_F,Box_IND_Ammo_F</Russian>
+    <English>Comma-separated list of additional config class names (and their child classes) to allow carrying and loading, beyond the built-in defaults, which already cover ammo boxes, static weapons and most props. Buildings can't be added. Example: B_Quadbike_01_F</English>
+    <Chinese>以逗號分隔的額外設定類別名稱清單（含其子類別），允許攜帶與裝載，超出內建預設值；預設值已涵蓋彈藥箱、固定式武器與大部分道具。建築物無法加入。範例：B_Quadbike_01_F</Chinese>
+    <Chinesesimp>以逗号分隔的额外配置类别名称列表（含其子类别），允许携带与装载，超出内建默认值；默认值已涵盖弹药箱、固定式武器与大部分道具。建筑物无法加入。示例：B_Quadbike_01_F</Chinesesimp>
+    <Spanish>Lista separada por comas de nombres de clase de configuración adicionales (y sus clases hijas) que se permitirán transportar y cargar, más allá de los predeterminados, que ya incluyen cajas de munición, armas estáticas y la mayoría de los objetos. No se pueden añadir edificios. Ejemplo: B_Quadbike_01_F</Spanish>
+    <French>Liste séparée par virgules de noms de classe de configuration supplémentaires (et de leurs classes enfants) à autoriser au portage et au chargement, au-delà des valeurs par défaut intégrées, qui couvrent déjà les caisses de munitions, les armes statiques et la plupart des objets. Les bâtiments ne peuvent pas être ajoutés. Exemple: B_Quadbike_01_F</French>
+    <Portuguese>Lista separada por vírgulas de nomes de classe de configuração adicionais (e suas classes filhas) a permitir transportar e carregar em veículos, além dos padrões embutidos, que já incluem caixas de munição, armas estáticas e a maioria dos objetos. Não é possível adicionar edifícios. Exemplo: B_Quadbike_01_F</Portuguese>
+    <Russian>Список дополнительных имён классов конфигурации через запятую (включая их дочерние классы), разрешённых для переноски и загрузки, сверх встроенных значений по умолчанию, которые уже охватывают ящики с боеприпасами, стационарное оружие и большинство предметов. Здания добавить нельзя. Пример: B_Quadbike_01_F</Russian>
 </Key>
 </Container></Package></Project>

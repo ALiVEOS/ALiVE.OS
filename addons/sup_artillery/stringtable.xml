@@ -244,12 +244,12 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ARTILLERY_LOGISTICSSOURCE_DESC">
-    <English>Static: resupply dispatched from LOGCOM base position. Dynamic: dispatched from nearest friendly-held objective.</English>
-    <Chinese>靜態:補給自 LOGCOM 基地位置派出。動態:自最近的友軍佔領目標派出。</Chinese>
-    <Chinesesimp>静态:补给从 LOGCOM 基地位置派出。动态:从最近的友军控制目标派出。</Chinesesimp>
-    <Spanish>Estático: el reabastecimiento se despacha desde la posición base de LOGCOM. Dinámico: se despacha desde el objetivo amigo más cercano en poder propio.</Spanish>
-    <French>Statique: ravitaillement envoyé depuis la position de base du LOGCOM. Dynamique: envoyé depuis l'objectif ami tenu le plus proche.</French>
-    <Portuguese>Estático: ressuprimento despachado a partir da posição da base do LOGCOM. Dinâmico: despachado a partir do objetivo amigo mais próximo em posse aliada.</Portuguese>
-    <Russian>Статический: снабжение отправляется с базовой позиции LOGCOM. Динамический: отправляется с ближайшей дружественной удерживаемой задачи.</Russian>
+    <English>Static: resupply dispatched from the LOGCOM base position. Dynamic: dispatched from one of the 2 or 3 friendly-held objectives nearest the asset, picked at random (from the LOGCOM base if there are none).</English>
+    <Chinese>靜態:補給自 LOGCOM 基地位置派出。動態:自離該資產最近的 2 或 3 個友軍佔領目標中隨機選一個派出(若無則自 LOGCOM 基地派出)。</Chinese>
+    <Chinesesimp>静态:补给从 LOGCOM 基地位置派出。动态:从离该资产最近的 2 或 3 个友军控制目标中随机选一个派出(若没有则从 LOGCOM 基地派出)。</Chinesesimp>
+    <Spanish>Estático: el reabastecimiento se despacha desde la posición base de LOGCOM. Dinámico: se despacha desde uno de los 2 o 3 objetivos en poder propio más cercanos al recurso, elegido al azar (desde la base de LOGCOM si no hay ninguno).</Spanish>
+    <French>Statique: ravitaillement envoyé depuis la position de base du LOGCOM. Dynamique: envoyé depuis l'un des 2 ou 3 objectifs amis tenus les plus proches de l'unité, choisi au hasard (depuis la base du LOGCOM s'il n'y en a aucun).</French>
+    <Portuguese>Estático: ressuprimento despachado a partir da posição da base do LOGCOM. Dinâmico: despachado a partir de um dos 2 ou 3 objetivos em posse aliada mais próximos do recurso, escolhido ao acaso (da base do LOGCOM se não houver nenhum).</Portuguese>
+    <Russian>Статический: снабжение отправляется с базовой позиции LOGCOM. Динамический: отправляется с одного из 2 или 3 ближайших к средству удерживаемых союзниками объектов, выбранного случайно (с базы LOGCOM, если таких нет).</Russian>
 </Key>
 </Container></Package></Project>

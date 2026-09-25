@@ -25,7 +25,7 @@ Collect classnames for settings that ask for them, by looking at things instead 
     <English>Range:</English>
 </Key>
 <Key ID="STR_ALIVE_CLASSPICKER_RADIUS_COMMENT">
-    <English>How far around YOU to look, in metres. Nothing further away than this is labelled, however you are standing. Larger ranges label more at once and cost more to draw in a dense town, so 75 is a good starting point and walking to the next street is cheaper than raising it. This is not what decides which buildings count: when the picker is synced to placement modules, only buildings inside those modules' areas are labelled, however close to you anything else is.</English>
+    <English>How far around YOU to look, in metres. Nothing further away than this is labelled, however you are standing. Larger ranges label more at once and cost more to draw in a dense town, so 75 is a good starting point and walking to the next street is cheaper than raising it. This is not what decides what counts: when the picker is synced to placement modules with TAOR markers, only buildings, vehicles or men inside those markers are labelled, however close to you anything else is.</English>
 </Key>
 <Key ID="STR_ALIVE_CLASSPICKER_INDICES">
     <English>Show position numbers:</English>

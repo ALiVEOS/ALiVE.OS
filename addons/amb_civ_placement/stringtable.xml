@@ -305,13 +305,13 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AMBCP_PLACEMENT_MULTIPLIER_COMMENT">
-    <English>Number of civilian agents placed per location (Medium = baseline; Extreme multiplies by 4)</English>
-    <Chinese>每個地點放置的平民人員數量(Medium = 基準;Extreme 為 4 倍)</Chinese>
-    <Chinesesimp>每个地点放置的平民人员数量(Medium = 基准;Extreme 为 4 倍)</Chinesesimp>
-    <Spanish>Cantidad de agentes civiles por ubicación (Medium = base; Extreme multiplica por 4)</Spanish>
-    <French>Nombre d'agents civils placés par emplacement (Medium = base; Extreme multiplie par 4)</French>
-    <Portuguese>Número de agentes civis por localização (Medium = base; Extreme multiplica por 4)</Portuguese>
-    <Russian>Число гражданских на локацию (Medium = базовое; Extreme — в 4 раза больше)</Russian>
+    <English>Chance that each civilian building in a civilian objective gets one civilian: Low 12.5%, Medium 25%, High 37.5%, Extreme every building. Default: Low.</English>
+    <Chinese>民用目標中每棟民用建築物放置一名平民的機率:低 12.5%, 中 25%, 高 37.5%, 極限則每棟都有。預設值:低。</Chinese>
+    <Chinesesimp>民用目标中每栋民用建筑放置一名平民的几率:低 12.5%, 中 25%, 高 37.5%, 极限则每栋都有。默认:低。</Chinesesimp>
+    <Spanish>Probabilidad de que cada edificio civil de un objetivo civil reciba un civil: Bajo 12,5%, Medio 25%, Alto 37,5%, Extremo todos los edificios. Por defecto: Bajo.</Spanish>
+    <French>Probabilité que chaque bâtiment civil d'un objectif civil reçoive un civil: Bas 12,5%, Moyen 25%, Élevé 37,5%, Extrême tous les bâtiments. Par défaut: Bas.</French>
+    <Portuguese>Probabilidade de cada edifício civil de um objetivo civil receber um civil: Baixo 12,5%, Médio 25%, Alto 37,5%, Extremo todos os edifícios. Padrão: Baixo.</Portuguese>
+    <Russian>Вероятность того, что в каждом гражданском здании гражданской цели появится один гражданский: Низкий 12,5%, Средний 25%, Высокий 37,5%, Экстремальный во всех зданиях. По умолчанию: Низкий.</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AMBCP_PLACEMENT_MULTIPLIER_LOW">
@@ -445,13 +445,13 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AMBCP_AMBIENT_VEHICLE_DAM_COMMENT">
-    <English>Random damage to some vehicles</English>
-    <Chinesesimp>一些平民载具会随机受到些伤害</Chinesesimp>
-    <Chinese>部分車輛會受到隨機損傷</Chinese>
-    <Spanish>Daño aleatorio en algunos vehículos</Spanish>
-    <French>Dégâts aléatoires sur certains véhicules</French>
-    <Portuguese>Dano aleatório em alguns veículos</Portuguese>
-    <Russian>Случайные повреждения на некоторых транспортных средствах</Russian>
+    <English>When on, every ambient vehicle this module parks starts with random damage of about 30% to 90%. Default: No.</English>
+    <Chinesesimp>开启时,此模块停放的每辆环境车辆生成时都会带有约 30% 至 90% 的随机伤害。默认:否。</Chinesesimp>
+    <Chinese>開啟時,此模組停放的每輛環境車輛生成時都會帶有約 30% 至 90% 的隨機損傷。預設值:否。</Chinese>
+    <Spanish>Si está activado, cada vehículo ambiental que aparca este módulo aparece con un daño aleatorio de aproximadamente el 30% al 90%. Por defecto: No.</Spanish>
+    <French>Si activé, chaque véhicule d'ambiance garé par ce module apparaît avec des dégâts aléatoires d'environ 30% à 90%. Par défaut: Non.</French>
+    <Portuguese>Quando ativado, cada veículo ambiental estacionado por este módulo surge com dano aleatório de cerca de 30% a 90%. Padrão: Não.</Portuguese>
+    <Russian>Если включено, каждое фоновое транспортное средство, которое ставит этот модуль, появляется со случайными повреждениями примерно от 30% до 90%. По умолчанию: Нет.</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AMBCP_AMBIENT_ANIMAL_AMOUNT">

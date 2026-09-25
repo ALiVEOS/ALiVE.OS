@@ -42,10 +42,11 @@
     <Chinesesimp>最小视距：</Chinesesimp>
     <Spanish>Distancia de visión mínima:</Spanish>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_VDIST_MIN_COMMENT">
-    <English>Minimum view distance allowed in Game</English>
-    <Chinesesimp>在游戏中允许的视距最小值</Chinesesimp>
-    <Spanish>Distancia de visión mínima permitida en el juego</Spanish>
+    <English>Lowest view distance players can pick on the view distance slider. It isn't applied at mission start.</English>
+    <Chinesesimp>玩家在视距滑块上可选的最小视距。任务开始时不会套用此值。</Chinesesimp>
+    <Spanish>Distancia de visión más baja que los jugadores pueden elegir en el control deslizante de distancia de visión. No se aplica al inicio de la misión.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_TGRID">
     <English>Terrain Grid</English>

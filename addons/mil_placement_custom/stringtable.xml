@@ -37,10 +37,11 @@
     <Chinesesimp>目标优先级</Chinesesimp>
     <Spanish>Prioridad del objetivo:</Spanish>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CMP_PRIORITY_COMMENT">
-    <English>Priority of the custom objective. Used by OPCOM and others for target evaluation</English>
-    <Chinesesimp>自定义目标的优先级,用于OPCOM和其他目标评估</Chinesesimp>
-    <Spanish>Prioridad del objetivo personalizado. La usan OPCOM y otros para evaluar objetivos</Spanish>
+    <English>Priority of the custom objective. Only an Occupation commander uses it when choosing targets, together with size, height and distance; Invasion and Asymmetric commanders go by distance. Military Logistics also sends reinforcements toward the highest-priority objectives the commander holds.</English>
+    <Chinesesimp>自定义目标的优先级。只有占领型指挥官在选择目标时使用它（与大小、高度和距离一起考虑）；入侵型和非对称型指挥官按距离选择。军事后勤也会将增援送往指挥官所控制的最高优先级目标。</Chinesesimp>
+    <Spanish>Prioridad del objetivo personalizado. Solo un comandante de Ocupación la usa al elegir objetivos, junto con el tamaño, la altura y la distancia; los comandantes de Invasión y Asimétricos se guían por la distancia. La Logística militar también envía refuerzos hacia los objetivos de mayor prioridad que controla el comandante.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_CMP_SIZE">
     <English>Objective size:</English>
@@ -177,6 +178,16 @@
     <Portuguese>Desvia parte da força de guarda deste objetivo para ocupar os acampamentos, QGs de campanha e composições de objetivo gerados. Os guardas mantêm seus postos e não são redirecionados pelo comandante de IA. A parcela desviada é dimensionada pelas posições defensáveis da composição; o total de guardas permanece inalterado.</Portuguese>
     <Russian>Направляет часть охранных сил этой цели в созданные лагеря, полевые штабы и композиции цели. Гарнизоны удерживают свои посты и не переназначаются ИИ-командующим. Доля рассчитывается по числу оборонительных позиций композиции; общее число охраны не меняется.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CMP_GUARD_AMOUNT_COMMENT">
+    <English>Infantry groups set aside from this objective's Infantry Count to garrison and patrol its buildings, so they don't add to the force. Low takes about 1-2 groups and High 5-6 when the count allows, but at least one group always stays out of the garrison, so an Infantry Count of 0 or 1 gives no garrison.</English>
+    <Chinese>從此目標的「步兵數量」中撥出、用於駐防和巡邏其建築物的步兵組，因此不會增加部隊總數。數量足夠時，低約撥出 1-2 組，高約 5-6 組，但總會至少保留一組不參與駐防，因此步兵數量為 0 或 1 時不會有駐防。</Chinese>
+    <Chinesesimp>从此目标的「步兵数量」中拨出、用于驻防和巡逻其建筑物的步兵组，因此不会增加部队总数。数量足够时，低约拨出 1-2 组，高约 5-6 组，但总会至少保留一组不参与驻防，因此步兵数量为 0 或 1 时不会有驻防。</Chinesesimp>
+    <Spanish>Grupos de infantería apartados de la Cantidad de infantería de este objetivo para guarnecer y patrullar sus edificios, así que no se suman a la fuerza. Bajo toma unos 1-2 grupos y Alto 5-6 cuando la cantidad lo permite, pero al menos un grupo siempre queda fuera de la guarnición, así que una Cantidad de infantería de 0 o 1 no da guarnición.</Spanish>
+    <French>Groupes d'infanterie prélevés sur le Nombre d'infanterie de cet objectif pour occuper et patrouiller ses bâtiments, ils ne s'ajoutent donc pas à la force. Faible en prend environ 1-2 et Élevé 5-6 quand le nombre le permet, mais au moins un groupe reste toujours hors de la garnison, donc un Nombre d'infanterie de 0 ou 1 ne donne aucune garnison.</French>
+    <Portuguese>Grupos de infantaria separados da Contagem de infantaria deste objetivo para guarnecer e patrulhar seus edifícios, portanto não se somam à força. Baixo separa cerca de 1-2 grupos e Alto 5-6 quando a contagem permite, mas pelo menos um grupo sempre fica fora da guarnição, então uma Contagem de infantaria de 0 ou 1 não gera guarnição.</Portuguese>
+    <Russian>Группы пехоты, выделяемые из "Количества пехоты" этой цели для гарнизона и патрулирования её зданий, поэтому они не увеличивают силы. Низко забирает около 1-2 групп, Высоко 5-6, если позволяет количество, но хотя бы одна группа всегда остаётся вне гарнизона, поэтому при количестве пехоты 0 или 1 гарнизона не будет.</Russian>
+</Key>
 <Key ID="STR_ALIVE_CMP_CUSTOM_SPECOPS_COUNT">
     <English>SpecOps Count:</English>
     <Chinesesimp>特战小组计数</Chinesesimp>
@@ -209,13 +220,13 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CMP_AA_COUNT_COMMENT">
-    <English>Number of AA (anti-air) units to spawn for this objective. Whole number. 0 = no AA. Scale to TAOR / objective size. Each AA slot routes through the composition spawn validator (envelope 10m, mode "ato") so the unit lands on a clear, non-runway position. Crewed AA engages incoming aircraft via vanilla AI. Class drawn from the AA Classes picker below if non-empty, else from the per-faction default list.</English>
-    <Chinese>為此目標生成的防空（AA）單位數量。整數。0 = 不生成防空。依TAOR/目標大小調整。每個防空槽位透過組合生成驗證器（包絡10米，模式 "ato"），確保單位降落在乾淨、非跑道位置。配備人員的防空透過原生AI攻擊來襲飛機。如果下方AA Classes選擇器非空，則從中選擇類別，否則從派系預設清單中選擇。</Chinese>
-    <Chinesesimp>为此目标生成的防空（AA）单位数量。整数。0 = 不生成防空。依TAOR/目标大小调整。每个防空槽位通过组合生成验证器（包络10米，模式 "ato"），确保单位降落在干净、非跑道位置。配备人员的防空通过原生AI攻击来袭飞机。如果下方AA Classes选择器非空，则从中选择类别，否则从派系默认列表中选择。</Chinesesimp>
-    <Spanish>Número de unidades AA (antiaéreas) a generar para este objetivo. Número entero. 0 = sin AA. Ajusta al tamaño del TAOR/objetivo. Cada slot de AA pasa por el validador de generación de composiciones (envoltura 10m, modo "ato") para que la unidad aterrice en una posición despejada, fuera de pista. Las AA tripuladas atacan aeronaves entrantes mediante la IA vanilla. La clase se toma del selector AA Classes inferior si no está vacío, o de la lista por defecto de la facción.</Spanish>
-    <French>Nombre d'unités AA (anti-aériennes) à faire apparaître pour cet objectif. Nombre entier. 0 = aucune AA. Adaptez à la taille du TAOR/objectif. Chaque emplacement AA passe par le validateur de position de composition (enveloppe 10m, mode "ato") pour que l'unité atterrisse sur une position dégagée, hors piste. Les AA équipées engagent les aéronefs entrants via l'IA vanilla. La classe est tirée du sélecteur AA Classes ci-dessous s'il n'est pas vide, sinon de la liste par défaut de la faction.</French>
-    <Portuguese>Número de unidades AA (antiaéreas) para gerar neste objetivo. Número inteiro. 0 = sem AA. Dimensione ao tamanho do TAOR/objetivo. Cada slot de AA passa pelo validador de geração de composição (envelope 10m, modo "ato") para que a unidade pouse em uma posição limpa, fora da pista. As AA tripuladas engajam aeronaves recebidas via IA vanilla. A classe é tirada do seletor AA Classes abaixo se não estiver vazio, ou da lista padrão por facção.</Portuguese>
-    <Russian>Количество единиц ПВО (противовоздушных) для создания на этой цели. Целое число. 0 = без ПВО. Масштабируйте по размеру TAOR/цели. Каждый слот ПВО проходит через валидатор позиции композиции (зона 10м, режим "ato"), чтобы юнит появился на чистой позиции вне взлётной полосы. Экипированные ПВО атакуют входящие самолёты через стандартный ИИ. Класс берётся из селектора AA Classes ниже, если он не пуст, иначе из списка по умолчанию для фракции.</Russian>
+    <English>Number of AA (anti-air) units to spawn for this objective. Whole number. 0 = no AA. Scale to TAOR / objective size. Each AA unit is placed on clear open ground around the module, kept off buildings, runways, taxiways, helipads and roads; if no such spot is found, that unit is skipped. Crewed AA engages incoming aircraft via vanilla AI. Class drawn from the AA Classes picker below if non-empty, else from the per-faction default list.</English>
+    <Chinese>為此目標生成的防空（AA）單位數量。整數。0 = 不生成防空。依TAOR/目標大小調整。每個防空單位都會放在模組周圍的空曠地面上，避開建築物、跑道、滑行道、直升機停機坪和道路；若找不到這樣的位置，該單位就不會生成。配備人員的防空透過原生AI攻擊來襲飛機。如果下方AA Classes選擇器非空，則從中選擇類別，否則從派系預設清單中選擇。</Chinese>
+    <Chinesesimp>为此目标生成的防空（AA）单位数量。整数。0 = 不生成防空。依TAOR/目标大小调整。每个防空单位都会放在模块周围的空旷地面上，避开建筑物、跑道、滑行道、直升机停机坪和道路；若找不到这样的位置，该单位就不会生成。配备人员的防空通过原生AI攻击来袭飞机。如果下方AA Classes选择器非空，则从中选择类别，否则从派系默认列表中选择。</Chinesesimp>
+    <Spanish>Número de unidades AA (antiaéreas) a generar para este objetivo. Número entero. 0 = sin AA. Ajusta al tamaño del TAOR/objetivo. Cada unidad AA se coloca en terreno abierto y despejado alrededor del módulo, lejos de edificios, pistas, calles de rodaje, helipuertos y carreteras; si no se encuentra un lugar así, esa unidad no se genera. Las AA tripuladas atacan aeronaves entrantes mediante la IA vanilla. La clase se toma del selector AA Classes inferior si no está vacío, o de la lista por defecto de la facción.</Spanish>
+    <French>Nombre d'unités AA (anti-aériennes) à faire apparaître pour cet objectif. Nombre entier. 0 = aucune AA. Adaptez à la taille du TAOR/objectif. Chaque unité AA est placée sur un terrain dégagé autour du module, à l'écart des bâtiments, pistes, voies de circulation, héliports et routes; si aucun emplacement de ce type n'est trouvé, cette unité n'apparaît pas. Les AA équipées engagent les aéronefs entrants via l'IA vanilla. La classe est tirée du sélecteur AA Classes ci-dessous s'il n'est pas vide, sinon de la liste par défaut de la faction.</French>
+    <Portuguese>Número de unidades AA (antiaéreas) para gerar neste objetivo. Número inteiro. 0 = sem AA. Dimensione ao tamanho do TAOR/objetivo. Cada unidade AA é colocada em terreno aberto e livre ao redor do módulo, longe de edifícios, pistas, pistas de taxiamento, helipontos e estradas; se nenhum local assim for encontrado, essa unidade não é gerada. As AA tripuladas engajam aeronaves recebidas via IA vanilla. A classe é tirada do seletor AA Classes abaixo se não estiver vazio, ou da lista padrão por facção.</Portuguese>
+    <Russian>Количество единиц ПВО (противовоздушных) для создания на этой цели. Целое число. 0 = без ПВО. Масштабируйте по размеру TAOR/цели. Каждая единица ПВО ставится на открытую свободную местность вокруг модуля, вдали от зданий, взлётных полос, рулёжных дорожек, вертолётных площадок и дорог; если такое место не найдено, эта единица не создаётся. Экипированные ПВО атакуют входящие самолёты через стандартный ИИ. Класс берётся из селектора AA Classes ниже, если он не пуст, иначе из списка по умолчанию для фракции.</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CMP_AA_BEHAVIOUR">
@@ -322,10 +333,11 @@
     <Chinesesimp>创建为总部</Chinesesimp>
     <Spanish>Crear como HQ:</Spanish>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CMP_CREATE_HQ_COMMENT">
-    <English>Selects HQ objective close to the module or if unavailable spawns an HQ composition at the module position</English>
-    <Chinesesimp>选择模块附近的总部目标,或者如果不可用,则在模块位置生成总部合成</Chinesesimp>
-    <Spanish>Selecciona un objetivo de HQ cercano al módulo o, si no hay ninguno disponible, genera una composición de HQ en la posición del módulo</Spanish>
+    <English>Picks the nearest HQ-type building in the objective area, or an object from the spawned composition, as the HQ and raises this objective's priority to 1000. It never spawns an HQ composition itself, and the priority boost doesn't apply when the HQ picked is part of an Auto Field HQ.</English>
+    <Chinesesimp>选择目标区域内最近的总部类建筑，或已生成组合中的某个物体，作为总部，并将此目标的优先级提高到1000。它本身不会生成总部组合；如果选中的总部属于自动野战指挥部，则不会提高优先级。</Chinesesimp>
+    <Spanish>Elige como HQ el edificio de tipo HQ más cercano dentro del área del objetivo, o un objeto de la composición generada, y sube la prioridad de este objetivo a 1000. Nunca genera una composición de HQ por sí mismo, y la subida de prioridad no se aplica cuando el HQ elegido forma parte de un Puesto de Mando de Campaña automático.</Spanish>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CMP_CREATE_FIELD_HQ">
@@ -361,10 +373,11 @@
     <Chinesesimp>准备就绪:</Chinesesimp>
     <Spanish>Nivel de alerta:</Spanish>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CMP_READINESS_LEVEL_COMMENT">
-    <English>The amount of troops that will be on duty and patrolling</English>
-    <Chinesesimp>即将执勤和巡逻的部队数量</Chinesesimp>
-    <Spanish>Cantidad de tropas que estarán de servicio y patrullando</Spanish>
+    <English>Share of this objective's infantry and vehicle groups that are active at mission start; its Garrisoned Infantry Groups always start active. The rest wait in reserve and wake to defend the objective once the active force takes losses (see Reserve activation threshold) and players are near, or as soon as players are near if none started active. Active patrol percent sets how much of the active infantry patrols.</English>
+    <Chinesesimp>此目标的步兵和载具群组中在任务开始时即处于活动状态的比例；其驻防步兵组始终在开始时处于活动状态。其余部队留作预备队，当活动部队遭受损失（见「预备队激活阈值」）且玩家在附近时，才会出动防守目标；若开始时没有任何部队处于活动状态，则玩家一接近就会出动。活动步兵中巡逻的比例由「现役巡逻百分比」设定。</Chinesesimp>
+    <Spanish>Proporción de los grupos de infantería y vehículos de este objetivo que están activos al inicio de la misión; sus grupos de infantería de guarnición siempre empiezan activos. El resto espera en reserva y se activa para defender el objetivo cuando la fuerza activa sufre bajas (ver Umbral de activación de reservas) y hay jugadores cerca, o en cuanto hay jugadores cerca si nada empezó activo. Porcentaje de patrulla activa fija cuánta de la infantería activa patrulla.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_CMP_ALLOW_PLAYER_TASK">
     <English>Allow player tasking:</English>

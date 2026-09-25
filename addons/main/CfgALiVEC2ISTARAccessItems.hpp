@@ -57,7 +57,7 @@ class CfgALiVEC2ISTARAccessItems {
     };
 
     class Tablets {
-        displayName    = "ALiVE Tablet";
+        displayName    = "Combat Support Tablet";
         cfgPatchesName = "ALiVE_main";
         classnames[]   = {"ALiVE_Tablet"};
     };
@@ -70,7 +70,7 @@ class CfgALiVEC2ISTARAccessItems {
 
     // ACE3 radios. Picked up only when ACE3 is loaded.
     class ACE3_Radios {
-        displayName    = "Radios (ACE3)";
+        displayName    = "Radios (ACE3, incl. ACRE PRC-343 / PRC-152)";
         cfgPatchesName = "ace_main";
         classnames[]   = {"ACRE_PRC343", "ACRE_PRC152", "ACE_RadioBackpack", "ACE_PRC117F", "ACE_PRC148", "ACE_PRC152", "ACE_PRC77", "ACE_SEM52SL", "ACE_SEM70"};
     };
