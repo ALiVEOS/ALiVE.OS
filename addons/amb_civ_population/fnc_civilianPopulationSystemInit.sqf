@@ -366,6 +366,11 @@ if(isServer) then {
     [ALIVE_civilianHostility, "WEST", _hostilityWest] call ALIVE_fnc_hashSet;
     [ALIVE_civilianHostility, "EAST", _hostilityEast] call ALIVE_fnc_hashSet;
     [ALIVE_civilianHostility, "GUER", _hostilityIndep] call ALIVE_fnc_hashSet;
+    // Players' machines floor the dialog's hostility indicator, the ACE menu tiers, the
+    // approach gesture and the vehicle stop at their side's figure here, so they need a
+    // copy; on a dedicated server they otherwise read 0 whatever the mission sets. A player
+    // who joins later gets it as well.
+    publicVariable "ALIVE_civilianHostility";
 
     ALIVE_civilianPopulationSystem = [nil, "create"] call ALIVE_fnc_civilianPopulationSystem;
     [ALIVE_civilianPopulationSystem, "init"] call ALIVE_fnc_civilianPopulationSystem;
