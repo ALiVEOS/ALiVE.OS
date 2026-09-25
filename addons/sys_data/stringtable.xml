@@ -211,13 +211,13 @@
             </Key>
             <!-- AI-translated; native-speaker review welcome -->
             <Key ID="STR_ALIVE_DATA_WIPE_ALL_COMMENT">
-                <English>Removes all saved ALiVE data for every mission. Cannot be undone.</English>
-                <Chinese>刪除所有任務的全部ALiVE存檔資料。無法撤銷。</Chinese>
-                <Chinesesimp>删除所有任务的全部ALiVE存档数据。无法撤销。</Chinesesimp>
-                <French>Supprime toutes les données sauvegardées d'ALiVE pour toutes les missions. Action irréversible.</French>
-                <Spanish>Elimina todos los datos guardados de ALiVE de todas las misiones. No se puede deshacer.</Spanish>
-                <Portuguese>Remove todos os dados salvos do ALiVE de todas as missões. Não pode ser desfeito.</Portuguese>
-                <Russian>Удаляет все сохранённые данные ALiVE для всех миссий. Отменить невозможно.</Russian>
+                <English>Removes all saved ALiVE data for every mission and keeps your saved presets. On a dedicated server, a save an older ALiVE build made for another mission stays until that mission has saved once on this build. Cannot be undone.</English>
+                <Chinese>刪除所有任務的全部ALiVE存檔資料,並保留你儲存的預設。在專用伺服器上,舊版 ALiVE 為其他任務建立的存檔會保留,直到該任務用此版本存檔一次。無法撤銷。</Chinese>
+                <Chinesesimp>删除所有任务的全部ALiVE存档数据,并保留你保存的预设。在专用服务器上,旧版 ALiVE 为其他任务创建的存档会保留,直到该任务用此版本存档一次。无法撤销。</Chinesesimp>
+                <French>Supprime toutes les données sauvegardées d'ALiVE pour toutes les missions et conserve vos préréglages enregistrés. Sur un serveur dédié, une sauvegarde faite par une ancienne version d'ALiVE pour une autre mission reste jusqu'à ce que cette mission ait enregistré une fois avec cette version. Action irréversible.</French>
+                <Spanish>Elimina todos los datos guardados de ALiVE de todas las misiones y conserva tus preajustes guardados. En un servidor dedicado, un guardado que una versión anterior de ALiVE hizo para otra misión se queda hasta que esa misión guarde una vez con esta versión. No se puede deshacer.</Spanish>
+                <Portuguese>Remove todos os dados salvos do ALiVE de todas as missões e mantém as suas predefinições salvas. Num servidor dedicado, um salvamento que uma versão anterior do ALiVE fez para outra missão fica até essa missão salvar uma vez com esta versão. Não pode ser desfeito.</Portuguese>
+                <Russian>Удаляет все сохранённые данные ALiVE для всех миссий и оставляет ваши сохранённые пресеты. На выделенном сервере сохранение другой миссии, сделанное старой версией ALiVE, остаётся, пока эта миссия не сохранится один раз на этой версии. Отменить невозможно.</Russian>
             </Key>
             <!-- AI-translated; native-speaker review welcome -->
             <Key ID="STR_ALIVE_DATA_CLEAR_CONFIRM_TITLE">
@@ -271,13 +271,13 @@
             </Key>
             <!-- AI-translated; native-speaker review welcome -->
             <Key ID="STR_ALIVE_DATA_WIPE_CONFIRM_YES_COMMENT">
-                <English>Permanently wipes all ALiVE saved data across every mission. Cannot be undone.</English>
-                <Chinese>永久清除所有任務的全部ALiVE存檔資料。無法撤銷。</Chinese>
-                <Chinesesimp>永久清除所有任务的全部ALiVE存档数据。无法撤销。</Chinesesimp>
-                <French>Efface définitivement toutes les données sauvegardées d'ALiVE pour toutes les missions. Action irréversible.</French>
-                <Spanish>Borra permanentemente todos los datos guardados de ALiVE de todas las misiones. No se puede deshacer.</Spanish>
-                <Portuguese>Apaga permanentemente todos os dados salvos do ALiVE em todas as missões. Não pode ser desfeito.</Portuguese>
-                <Russian>Безвозвратно удаляет все сохранённые данные ALiVE во всех миссиях. Отменить невозможно.</Russian>
+                <English>Permanently wipes all ALiVE saved data across every mission. Your saved presets are kept. Cannot be undone.</English>
+                <Chinese>永久清除所有任務的全部ALiVE存檔資料。你儲存的預設會保留。無法撤銷。</Chinese>
+                <Chinesesimp>永久清除所有任务的全部ALiVE存档数据。你保存的预设会保留。无法撤销。</Chinesesimp>
+                <French>Efface définitivement toutes les données sauvegardées d'ALiVE pour toutes les missions. Vos préréglages enregistrés sont conservés. Action irréversible.</French>
+                <Spanish>Borra permanentemente todos los datos guardados de ALiVE de todas las misiones. Tus preajustes guardados se conservan. No se puede deshacer.</Spanish>
+                <Portuguese>Apaga permanentemente todos os dados salvos do ALiVE em todas as missões. As suas predefinições salvas são mantidas. Não pode ser desfeito.</Portuguese>
+                <Russian>Безвозвратно удаляет все сохранённые данные ALiVE во всех миссиях. Ваши сохранённые пресеты остаются. Отменить невозможно.</Russian>
             </Key>
             <!-- AI-translated; native-speaker review welcome -->
             <Key ID="STR_ALIVE_DATA_CONFIRM_CANCEL">
@@ -311,13 +311,23 @@
             </Key>
             <!-- AI-translated; native-speaker review welcome -->
             <Key ID="STR_ALIVE_DATA_WIPE_DONE">
-                <English>ALiVE: All ALiVE data wiped</English>
-                <Chinese>ALiVE:所有ALiVE資料已清除</Chinese>
-                <Chinesesimp>ALiVE:所有ALiVE数据已清除</Chinesesimp>
-                <French>ALiVE: toutes les données ALiVE effacées</French>
-                <Spanish>ALiVE: todos los datos de ALiVE eliminados</Spanish>
-                <Portuguese>ALiVE: todos os dados ALiVE apagados</Portuguese>
-                <Russian>ALiVE: все данные ALiVE удалены</Russian>
+                <English>ALiVE: Wiped %1 saved-data entries. Your saved presets are kept. This mission saves itself again unless you restart it without saving.</English>
+                <Chinese>ALiVE:已清除 %1 筆存檔資料。你儲存的預設會保留。除非你不存檔直接重新啟動,否則這個任務會再次自行存檔。</Chinese>
+                <Chinesesimp>ALiVE:已清除 %1 条存档数据。你保存的预设会保留。除非你不存档直接重新启动,否则这个任务会再次自行存档。</Chinesesimp>
+                <French>ALiVE: %1 entrées de sauvegarde effacées. Vos préréglages enregistrés sont conservés. Cette mission s'enregistre de nouveau, sauf si vous la redémarrez sans enregistrer.</French>
+                <Spanish>ALiVE: %1 entradas de guardado borradas. Tus preajustes guardados se conservan. Esta misión vuelve a guardarse, salvo que la reinicies sin guardar.</Spanish>
+                <Portuguese>ALiVE: %1 entradas salvas apagadas. As suas predefinições salvas são mantidas. Esta missão volta a salvar-se, a menos que a reinicie sem salvar.</Portuguese>
+                <Russian>ALiVE: удалено записей сохранения: %1. Ваши сохранённые пресеты остались. Эта миссия снова сохранит себя, если не перезапустить её без сохранения.</Russian>
+            </Key>
+            <!-- AI-translated; native-speaker review welcome -->
+            <Key ID="STR_ALIVE_DATA_WIPE_DONE_OLDER">
+                <English>On a dedicated server, a save an older ALiVE build made for another mission stays: start and save that mission once on this build, or clear it from inside the mission.</English>
+                <Chinese>在專用伺服器上,舊版 ALiVE 為其他任務建立的存檔會保留:請用此版本啟動並存檔該任務一次,或在該任務中清除。</Chinese>
+                <Chinesesimp>在专用服务器上,旧版 ALiVE 为其他任务创建的存档会保留:请用此版本启动并存档该任务一次,或在该任务中清除。</Chinesesimp>
+                <French>Sur un serveur dédié, une sauvegarde faite par une ancienne version d'ALiVE pour une autre mission reste: lancez et enregistrez cette mission une fois avec cette version, ou effacez-la depuis la mission.</French>
+                <Spanish>En un servidor dedicado, un guardado que una versión anterior de ALiVE hizo para otra misión se queda: inicia y guarda esa misión una vez con esta versión, o bórralo desde la misión.</Spanish>
+                <Portuguese>Num servidor dedicado, um salvamento que uma versão anterior do ALiVE fez para outra missão fica: inicie e salve essa missão uma vez com esta versão, ou apague-o dentro da missão.</Portuguese>
+                <Russian>На выделенном сервере сохранение другой миссии, сделанное старой версией ALiVE, остаётся: запустите и сохраните эту миссию один раз на этой версии или очистите его из самой миссии.</Russian>
             </Key>
         </Container>
     </Package>

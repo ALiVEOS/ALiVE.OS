@@ -82,6 +82,13 @@ private _fnc_merge = {
         };
     } forEach _slots;
     profileNamespace setVariable [_to, _target];
+    // Recorded by name, as every local save is, so Wipe ALL can find it.
+    private _savedMissions = profileNamespace getVariable [QMOD(SAVEDMISSIONS), []];
+    if !(_savedMissions isEqualType []) then { _savedMissions = [] };
+    if ((_savedMissions findIf {_x isEqualType "" && {_x == _to}}) < 0) then {
+        _savedMissions pushBack _to;
+        profileNamespace setVariable [QMOD(SAVEDMISSIONS), _savedMissions];
+    };
 };
 
 {

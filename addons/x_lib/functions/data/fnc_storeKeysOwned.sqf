@@ -33,7 +33,8 @@ _<map>, or the other way round; the modes take this mission's reading.
 Only names that exist are returned, each once.
 
 Parameters:
-none
+String - the map (optional, default this one). Wipe ALL asks for every map; the
+         move and Clear use this one.
 
 Returns:
 Array - [[name, to, mode], ...]
@@ -45,7 +46,9 @@ Author:
 Jman
 ---------------------------------------------------------------------------- */
 
-private _base = ([""] call ALiVE_fnc_storeKeys) select 0;
+params [["_world", worldName, [""]]];
+
+private _base = (["", _world] call ALiVE_fnc_storeKeys) select 0;
 
 // The parts of save names that only a module can build, passed to
 // ALiVE_fnc_storeMigrate as each module starts.
@@ -91,7 +94,7 @@ private _fnc_addDictionary = {
 // Then the old names.
 {
     private _old = format ["%1_%2", ALIVE_sys_data_GROUP_ID, _x];
-    private _oldWorld = format ["%1_%2", _old, worldName];
+    private _oldWorld = format ["%1_%2", _old, _world];
 
     // The names with the map after an underscore first. They only exist since May
     // 2026, so they are always newer than the same saves in the names without the

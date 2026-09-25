@@ -11,6 +11,8 @@ is the fixed names plus those the running modules registered this session, so a
 save under a name nothing running builds, such as that of an air commander since
 removed from the mission, is left. From the old name with the map after an
 underscore only this mission's mission date and player saves are taken out.
+The names it removes come off the list Wipe ALL reads (ALiVE_SAVEDMISSIONS).
+Only the machines the admin menu offers this to may ask for it.
 
 Parameters:
 String - who asked for it, for the RPT (optional)
@@ -39,6 +41,24 @@ if !(isServer) exitwith {};
 // of a destructive wipe at all and whoever runs it had nothing to go on.
 // Optional, so an existing caller passing nothing still works. (#1041)
 params [["_requestedBy", ""], ["_requestedByUID", ""]];
+
+// Anyone can send a remoteExec, so the server asks again about the machine that sent
+// this one, by the rule the admin menu offers the entry by (ALIVE_fnc_isServerAdmin or
+// BIS_fnc_isDebugConsoleAllowed on that machine): this machine or the host's, a logged-in
+// or voted admin, or a player the mission's debug console setting lets in. It is read
+// first, because the sender is only known in this call.
+private _owner = remoteExecutedOwner;
+private _refused = false;
+if (isRemoteExecuted && {_owner > 0} && {_owner != clientOwner} && {(admin _owner) == 0}) then {
+    private _i = allPlayers findIf {owner _x == _owner};
+    private _uid = if (_i > -1) then {getPlayerUID (allPlayers select _i)} else {""};
+    private _console = getMissionConfigValue ["enableDebugConsole", 0];
+    _refused = !((_console isEqualTo 2) || {_console isEqualType [] && {_uid != ""} && {_uid in _console}});
+};
+if (_refused) exitWith {
+    ["[ALiVE Data] Refused to clear this mission's saved data for machine %1 (%2, UID %3): not an admin", _owner, _requestedBy, _requestedByUID] call ALiVE_fnc_dump;
+};
+
 if (_requestedBy isNotEqualTo "") then {
     ["[ALiVE Data] Clearing this mission's saved data on %1, requested by %2 (UID %3)", worldName, _requestedBy, _requestedByUID] call ALiVE_fnc_dump;
 } else {
@@ -56,6 +76,7 @@ if (isNil "ALIVE_sys_data_GROUP_ID") exitWith {
 // always agree. The old mission date name, with the map after an underscore, is also a
 // whole old save of a mission called <mission>_<map>, so only this mission's two slots
 // are taken out of it.
+private _deleted = [];
 {
     _x params ["_name", "_to", "_mode"];
     if (_mode == "slots") then {
@@ -67,6 +88,7 @@ if (isNil "ALIVE_sys_data_GROUP_ID") exitWith {
             if (count (_store select 1) < _had) then {
                 if ((_store select 1) isEqualTo []) then {
                     profileNamespace setVariable [_name, nil];
+                    _deleted pushBack _name;
                 } else {
                     profileNamespace setVariable [_name, _store];
                 };
@@ -75,11 +97,14 @@ if (isNil "ALIVE_sys_data_GROUP_ID") exitWith {
         };
     } else {
         profileNamespace setVariable [_name, nil];
+        _deleted pushBack _name;
         ["[ALiVE Data] Removed %1", _name] call ALiVE_fnc_dump;
     };
 } forEach ([] call ALiVE_fnc_storeKeysOwned);
 
+// The names removed come off the list Wipe ALL reads, so it stays a list of saves that exist.
 private _allMissions = profileNamespace getVariable [QMOD(SAVEDMISSIONS), []];
-profileNamespace setVariable [QMOD(SAVEDMISSIONS), _allMissions - [([""] call ALiVE_fnc_storeKeys) select 0, format ["ALiVE_%1_%2", missionName, worldName]]];
+if !(_allMissions isEqualType []) then { _allMissions = [] };
+profileNamespace setVariable [QMOD(SAVEDMISSIONS), _allMissions - _deleted];
 
 saveProfileNamespace

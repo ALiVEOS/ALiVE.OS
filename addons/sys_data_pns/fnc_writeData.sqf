@@ -21,6 +21,7 @@ Examples:
 
 Author:
 Tupolov
+Jman
 Peer Reviewed:
 
 ---------------------------------------------------------------------------- */
@@ -49,6 +50,15 @@ MOD(PNS_STORE) = +(profileNamespace getVariable [_missionKey, [] call ALiVE_fnc_
 [MOD(PNS_STORE),_module,_data] call ALiVE_fnc_HashSet;
 
 profileNamespace setVariable [_missionKey, MOD(PNS_STORE)];
+
+// Recorded by name as well, so Wipe ALL can find it again: a dedicated server's
+// profile cannot list its own variables.
+private _savedMissions = profileNamespace getVariable [QMOD(SAVEDMISSIONS), []];
+if !(_savedMissions isEqualType []) then { _savedMissions = [] };
+if ((_savedMissions findIf {_x isEqualType "" && {_x == _missionKey}}) < 0) then {
+    _savedMissions pushBack _missionKey;
+    profileNamespace setVariable [QMOD(SAVEDMISSIONS), _savedMissions];
+};
 
 // Save Docs
 TRACE_1("Saving Data", _data);

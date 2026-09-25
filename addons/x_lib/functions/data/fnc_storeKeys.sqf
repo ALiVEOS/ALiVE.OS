@@ -17,6 +17,7 @@ read as another mission's name on another map. An underscore could: mission
 Parameters:
 String - suffix for a store kept apart from the module saves, such as "_TASK"
          or "_ATO_BLU_F_0" (optional, default "")
+String - the map (optional, default this one). Wipe ALL builds every map's names.
 
 Returns:
 Array - [name on this map, old name without the map]
@@ -34,11 +35,11 @@ Author:
 Jman
 ---------------------------------------------------------------------------- */
 
-params [["_suffix", "", [""]]];
+params [["_suffix", "", [""]], ["_world", worldName, [""]]];
 
 private _mission = [missionName, "%20", "-"] call CBA_fnc_replace;
 
 [
-    format ["%1_%2:%3%4", ALIVE_sys_data_GROUP_ID, _mission, worldName, _suffix],
+    format ["%1_%2:%3%4", ALIVE_sys_data_GROUP_ID, _mission, _world, _suffix],
     format ["%1_%2%3", ALIVE_sys_data_GROUP_ID, _mission, _suffix]
 ]

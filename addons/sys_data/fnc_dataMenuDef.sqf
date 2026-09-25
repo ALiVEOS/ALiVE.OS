@@ -127,8 +127,8 @@ if (_menuName == "dataConfirmWipe") then {
             [
                 [localize "STR_ALIVE_DATA_WIPE_CONFIRM_YES",
                     {
+                        // The server says what it removed once it has done it.
                         [name player, getPlayerUID player] remoteExec ["ALiVE_fnc_ProfileNameSpaceWipe", 2];
-                        [localize "STR_ALIVE_DATA_WIPE_DONE"] call CBA_fnc_notify;
                     },
                     "",
                     localize "STR_ALIVE_DATA_WIPE_CONFIRM_YES_COMMENT",
