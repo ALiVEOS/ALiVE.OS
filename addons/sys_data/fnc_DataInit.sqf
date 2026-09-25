@@ -161,7 +161,9 @@ if (isDedicated || (isServer && _pns)) then {
     // Exit if necessary
     private _exit = false;
 
-    // Check that the config loaded ok, if not then stop the data module
+    // Check that the War Room config loaded and this server may use it. If not, Statistics, AAR
+    // and PerfMon go off whatever the Source setting, as they're War Room features, and a Cloud
+    // source stops the module below. The chat kill feed doesn't depend on any of them.
     if (typeName _config == "STRING" || (typeName _initmsg == "STRING" && {_initmsg == "YOU ARE NOT AUTHORIZED"})) then {
         ["CANNOT CONNECT TO CLOUD SERVICE, DISABLING WEB SERVICES"] call ALIVE_fnc_dump;
 

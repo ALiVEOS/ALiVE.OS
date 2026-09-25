@@ -6,8 +6,13 @@
 
 LOG(MSG_INIT);
 
-// Enable the module
-GVAR(ENABLED) = true;
+// Off until the ALiVE Data module reaches the War Room and switches statistics on, as that's the
+// only place they can go. Starting them on left every mission without the Data module recording
+// for nobody, and throwing script errors on every vehicle hit or kill and whenever a player got
+// in or out of a vehicle or fired its weapon. A client's half of the statistics start-up
+// (fnc_statisticsInit.sqf) can read this before the server's decision arrives, so a rebuilt War
+// Room needs that start-up to wait for the Data module's startupComplete first.
+GVAR(ENABLED) = false;
 GVAR(DISABLED) = false;
 
 // PREP any functions required during XEH init process

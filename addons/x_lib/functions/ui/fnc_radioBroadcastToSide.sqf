@@ -6,7 +6,9 @@ Function: ALIVE_fnc_radioBroadcastToSide
 
 Description:
 Broadcast radio messages including to all friendly sides, with HQ is desired
-Only for use with BIS_fnc_MP
+Each player on the side is told once, on their own machine, from whichever machine this runs on.
+Off the server that means remote execution from a client, so a mission that limits remoteExec
+with CfgRemoteExec must allow ALIVE_fnc_radioBroadcast.
 
 Parameters:
 String - side
@@ -27,6 +29,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 private ["_side","_radioBroadcast","_sideNumber","_playerSide","_playerSideNumber"];
 
@@ -39,10 +42,13 @@ _sideNumber = [_side] call ALIVE_fnc_sideTextToNumber;
     _playerSide = side group _x;
     _playerSideNumber = [_playerSide] call ALIVE_fnc_sideObjectToNumber;
     if(_sideNumber == _playerSideNumber) then {
-        if(isDedicated) then {
-            _radioBroadcast remoteExec ["ALIVE_fnc_radioBroadcast",_x];
-        }else{
+        // Each player is told once, on their own machine, wherever this runs. Testing for a
+        // dedicated server instead showed a host, a headless client or a player's own machine
+        // the message once per friendly player and sent it to nobody else.
+        if(local _x) then {
             _radioBroadcast call ALIVE_fnc_radioBroadcast;
+        }else{
+            _radioBroadcast remoteExec ["ALIVE_fnc_radioBroadcast",_x];
         };
     };
 } foreach allPlayers;

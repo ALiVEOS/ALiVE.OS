@@ -1,7 +1,7 @@
 /* ----------------------------------------------------------------------------
 Function: ALIVE_sys_stat_fnc_unitKilledEH
 Description:
-Handles a unit killed event for all vehicles, aircraft etc. Is defined using XEH in the config of the sys_stat module. Sends the information to the ALIVE website as a "kill" record
+Handles a unit killed event for all vehicles, aircraft etc. Is defined using XEH in the config of the sys_stat module. Sends the information to the ALIVE website as a "kill" record, and posts the chat kill feed when the Data module has it switched on
 
 Parameters:
 Object - the unit that was killed
@@ -39,6 +39,7 @@ See Also:
 
 Author:
 Tupolov
+Jman
 ---------------------------------------------------------------------------- */
 // MAIN
 #define DEBUG_MODE_FULL
@@ -46,7 +47,15 @@ Tupolov
 // Given ACE issue, may want to change this mechanism so that we just record last damage to the unit killed.
 
 #include "script_component.hpp"
-if (GVAR(ENABLED)) then {
+
+// The chat kill feed needs nothing but chat, so it runs whether or not statistics are on.
+// Statistics only ever go to the War Room and are switched off whenever it can't be reached,
+// so a feed that waited for them never ran. Statistics are sent only once they've started,
+// as the player group lookup below throws before the statistics start-up has run.
+private _killFeed = if (isNil QMOD(sys_data)) then {"None"} else {MOD(sys_data) getvariable ["killFeed","None"]};
+private _stats = GVAR(ENABLED) && {!isNil QGVAR(groupTag)};
+
+if (_stats || {_killFeed != "None"}) then {
     private ["_sideKilled","_sideKiller","_killedtype","_killerweapon","_killertype","_distance","_datetime","_factionKiller","_factionKilled","_data","_killedPos","_killerPos","_server","_realtime","_killer","_killed","_killedVehicleClass","_killerVehicleClass","_aceKilled"];
 
     // Set Data
@@ -70,7 +79,6 @@ if (GVAR(ENABLED)) then {
     // if killed is a player or a vehicle then record, if killer is player or player in a vehicle
     if ( (_killed == player) || !(_killed iskindof "Man") || (isPlayer _killer) ) then {
 
-        private _killFeed = MOD(sys_data) getvariable ["killFeed","None"];
         private _message = "";
 
         //["Unit Killed: vehicle: %1, killed: %2, killer: %3, killerunit: %4 (%5)", typeof vehicle _killed, typeof _killed, typeof _killer, _killer, isPlayer _killer] call ALiVE_fnc_dump;
@@ -143,45 +151,49 @@ if (GVAR(ENABLED)) then {
                 [str(_sideKilled),_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
             };
 
-            _data = _data + [ ["Death","true"] , ["Player",getplayeruid _killed], ["PlayerName",name _killed], ["playerGroup", [_killed] call ALiVE_fnc_getPlayerGroup] ];
-            // Send data to server to be written to DB
-            GVAR(UPDATE_EVENTS) = _data;
-            publicVariableServer QGVAR(UPDATE_EVENTS);
+            if (_stats) then {
+                _data = _data + [ ["Death","true"] , ["Player",getplayeruid _killed], ["PlayerName",name _killed], ["playerGroup", [_killed] call ALiVE_fnc_getPlayerGroup] ];
+                // Send data to server to be written to DB
+                GVAR(UPDATE_EVENTS) = _data;
+                publicVariableServer QGVAR(UPDATE_EVENTS);
+            };
         };
 
         if (!(_killed iskindof "Man") && (_killedPos != "000000") && (_killedPos != "000999") && (_killedPos != "999000") && (_killedPos != "999999")  ) then { // vehicle was killed
 
-            if (isPlayer _killer || isPlayer (gunner _killer) || isPlayer (driver _killer)) then {
-                _data = _data + [["Player",getplayeruid _killer] , ["PlayerName",name _killer], ["playerGroup", [_killer] call ALiVE_fnc_getPlayerGroup] ];
+            private _byPlayer = isPlayer _killer || isPlayer (gunner _killer) || isPlayer (driver _killer);
 
+            if (_byPlayer && {_killFeed != "None"}) then {
                 _message = format ["Vehicle destroyed! %1 was destroyed by %2 with a %3 from %4m!", _killedtype, name _killer, _killerweapon, _distance];
-
-                if (_killFeed != "None") then {
-                    _radioBroadcast = [_killer,_message,_killFeed,_sideKiller];
-                    [str(_sideKiller),_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
-                };
-            };
-
-            // Send data to server to be written to DB
-            GVAR(UPDATE_EVENTS) = _data;
-            publicVariableServer QGVAR(UPDATE_EVENTS);
-        };
-
-        if (isPlayer _killer && (_killer != _killed) && (_killed iskindof "Man")) then { // Player was killer
-
-            // Check to see if player is in a vehicle and firing the weapon
-            _data = _data + [ ["Player",getplayeruid _killer] , ["PlayerName",name _killer], ["playerGroup", [_killer] call ALiVE_fnc_getPlayerGroup] ];
-
-            _message = format ["Kill Shot! A %1 was killed by %2 with a %3 from %4m.", _killedtype, name _killer, _killerweapon, _distance];
-
-            if (_killFeed != "None") then {
                 _radioBroadcast = [_killer,_message,_killFeed,_sideKiller];
                 [str(_sideKiller),_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
             };
 
-            // Send data to server to be written to DB
-            GVAR(UPDATE_EVENTS) = _data;
-            publicVariableServer QGVAR(UPDATE_EVENTS);
+            if (_stats) then {
+                if (_byPlayer) then {
+                    _data = _data + [["Player",getplayeruid _killer] , ["PlayerName",name _killer], ["playerGroup", [_killer] call ALiVE_fnc_getPlayerGroup] ];
+                };
+                // Send data to server to be written to DB
+                GVAR(UPDATE_EVENTS) = _data;
+                publicVariableServer QGVAR(UPDATE_EVENTS);
+            };
+        };
+
+        if (isPlayer _killer && (_killer != _killed) && (_killed iskindof "Man")) then { // Player was killer
+
+            if (_killFeed != "None") then {
+                _message = format ["Kill Shot! A %1 was killed by %2 with a %3 from %4m.", _killedtype, name _killer, _killerweapon, _distance];
+                _radioBroadcast = [_killer,_message,_killFeed,_sideKiller];
+                [str(_sideKiller),_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
+            };
+
+            if (_stats) then {
+                // Check to see if player is in a vehicle and firing the weapon
+                _data = _data + [ ["Player",getplayeruid _killer] , ["PlayerName",name _killer], ["playerGroup", [_killer] call ALiVE_fnc_getPlayerGroup] ];
+                // Send data to server to be written to DB
+                GVAR(UPDATE_EVENTS) = _data;
+                publicVariableServer QGVAR(UPDATE_EVENTS);
+            };
 
         };
 
