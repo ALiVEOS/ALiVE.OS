@@ -52,13 +52,13 @@ private _cooldownDuration = 0;
 private _outcome = "";
 private _hasSupportData = !(_supportData isEqualTo []);
 
+// param, not params: params inside this block made new locals that vanished at its end,
+// so the outcome never arrived and every failure was scored as a success.
 if (_hasSupportData) then {
-    _supportData params [
-        ["_clusterID", "", [""]],
-        ["_taskType", "", [""]],
-        ["_cooldownDuration", 0, [0]],
-        ["_outcome", "", [""]]
-    ];
+    _clusterID = _supportData param [0, "", [""]];
+    _taskType = _supportData param [1, "", [""]];
+    _cooldownDuration = _supportData param [2, 0, [0]];
+    _outcome = _supportData param [3, "", [""]];
 };
 
 private _cluster = [];
@@ -148,52 +148,4 @@ if (_hasSupportData && {!(_cluster isEqualTo [])}) then {
         [_position, _cluster, _sideText, _taskType, _effectValue] call ALIVE_fnc_taskMaybeTriggerRetaliation;
     };
 };
-
-if !(_supportData isEqualTo []) then {
-    _supportData params [
-        ["_clusterID", "", [""]],
-        ["_taskType", "", [""]],
-        ["_cooldownDuration", 0, [0]]
-    ];
-
-    private _cluster = nil;
-
-    if (!isNil "ALIVE_clusterHandler" && {!(_clusterID isEqualTo "")}) then {
-        _cluster = [ALIVE_clusterHandler, "getCluster", _clusterID] call ALIVE_fnc_clusterHandler;
-    };
-
-    if (
-        isNil "_cluster" &&
-        {!isNil "ALIVE_clustersCivSettlement"} &&
-        {!isNil "ALIVE_clusterHandler"}
-    ) then {
-        private _closestDistance = 1000000;
-
-        {
-            private _candidateCluster = [ALIVE_clusterHandler, "getCluster", _x] call ALIVE_fnc_clusterHandler;
-
-            if !(isNil "_candidateCluster") then {
-                private _center = [_candidateCluster, "center", []] call ALIVE_fnc_hashGet;
-
-                if !(_center isEqualTo []) then {
-                    private _distance = _position distance2D _center;
-
-                    if (_distance < _closestDistance) then {
-                        _closestDistance = _distance;
-                        _cluster = _candidateCluster;
-                    };
-                };
-            };
-        } forEach (ALIVE_clustersCivSettlement select 1);
-
-        if (_closestDistance > 1000) then {
-            _cluster = nil;
-        };
-    };
-
-    if !(isNil "_cluster") then {
-        [_cluster, _sideText, _taskType, _value, _cooldownDuration] call ALIVE_fnc_taskUpdateCivilianSupportState;
-    };
-};
-
 true
