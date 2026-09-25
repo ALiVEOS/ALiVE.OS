@@ -1478,26 +1478,51 @@ switch(_operation) do {
 
             // --- Despawn linger checks (see sys_profile module "Despawn Linger" params) ---
             // Entity profiles don't own a vehicle directly (that's fnc_profileVehicle's
-            // job), so no live-crew scan here. Only timestamp-based linger applies.
+            // job), so no live-crew scan here, only the post-death linger below.
 
             // Post-death linger: set by the EntityKilled EH in XEH_postInit for
             // profiles near a player-death position. If still in combat within the
-            // linger window, keep linger >= now + ALIVE_midCombatExtension. Clamped
-            // (not additive) so a profile stuck outside spawn range with ongoing
-            // combat can't grow its linger unboundedly across despawn cycles.
+            // linger window, keep linger >= now + ALIVE_midCombatExtension. Each
+            // renewal is clamped (not additive), so the stamp never sits more than one
+            // extension ahead, and it never goes past five extensions beyond the grace
+            // from the death itself (postDeathStampedAt): a group held in COMBAT with
+            // an enemy in range it isn't fighting would otherwise stay spawned for as
+            // long as that lasts.
             // _maxPlausible guard rejects stale persisted stamps after a cross-
             // Arma-session reload (diag_tickTime resets on engine restart).
-            if (!_despawnPrevented) then {
-                private _linger = [_logic, "postDeathLingerUntil", 0] call ALIVE_fnc_hashGet;
-                private _maxPlausible = ALIVE_postDeathGrace max ALIVE_midCombatExtension;
-                if (_linger > 0 && {diag_tickTime < _linger} && {(_linger - diag_tickTime) <= _maxPlausible}) then {
-                    _despawnPrevented = true;
-                    private _inCombat = [_logic, "combat", false] call ALIVE_fnc_hashGet;
-                    if (_inCombat) then {
-                        private _newLinger = diag_tickTime + ALIVE_midCombatExtension;
-                        if (_newLinger > _linger) then {
-                            [_logic, "postDeathLingerUntil", _newLinger] call ALIVE_fnc_hashSet;
-                        };
+            // Checked even when a linked profile already holds this one, so a crew
+            // still fighting from its vehicle gets the extension as well.
+            private _linger = [_logic, "postDeathLingerUntil", 0] call ALIVE_fnc_hashGet;
+            private _maxPlausible = ALIVE_postDeathGrace max ALIVE_midCombatExtension;
+            if (_linger > 0 && {diag_tickTime < _linger} && {(_linger - diag_tickTime) <= _maxPlausible}) then {
+                _despawnPrevented = true;
+                // Still fighting: the leader is in COMBAT or STEALTH and a living enemy (a
+                // soldier on foot, or a vehicle with a living crew) is within
+                // ALIVE_postDeathRadius. The profile's "combat" flag can't tell: only the
+                // virtual simulator sets it and spawning clears it. The behaviour alone
+                // can't either, as some waypoints force COMBAT, so the enemy is what ends
+                // the extension. fnc_profileVehicle's despawn uses the same test.
+                private _leaderNow = leader _group;
+                if (!alive _leaderNow) then {
+                    // a leader who has just died stays leader until the next is promoted
+                    private _i = (units _group) findIf {alive _x};
+                    _leaderNow = if (_i < 0) then {objNull} else {(units _group) select _i};
+                };
+                private _inCombat = !isNull _leaderNow && {(behaviour _leaderNow) in ["COMBAT","STEALTH"]} && {
+                    private _ownSide = side _group;
+                    ((_leaderNow nearEntities [["CAManBase","LandVehicle","Air","Ship"], ALIVE_postDeathRadius]) findIf {
+                        (_ownSide getFriend (side _x)) < 0.6 && {(_x isKindOf "CAManBase") || {((crew _x) findIf {alive _x}) > -1}}
+                    }) > -1
+                };
+                if (_inCombat) then {
+                    // No death time on record (an older stamp): no renewal.
+                    private _stampedAt = [_logic, "postDeathStampedAt", -1] call ALIVE_fnc_hashGet;
+                    private _newLinger = _linger;
+                    if (_stampedAt >= 0 && {_stampedAt <= diag_tickTime}) then {
+                        _newLinger = (diag_tickTime + ALIVE_midCombatExtension) min (_stampedAt + ALIVE_postDeathGrace + 5 * ALIVE_midCombatExtension);
+                    };
+                    if (_newLinger > _linger) then {
+                        [_logic, "postDeathLingerUntil", _newLinger] call ALIVE_fnc_hashSet;
                     };
                 };
             };

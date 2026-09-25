@@ -1177,9 +1177,10 @@ switch (_operation) do {
 
             // (3) Post-death linger: set by the EntityKilled EH in XEH_postInit for
             //     profiles near a player-death position. While still in combat inside
-            //     the linger window, keep linger >= now + midCombatExtension. Clamped
-            //     (not additive) so a profile stuck outside spawn range with ongoing
-            //     combat can't grow its linger unboundedly across despawn cycles.
+            //     the linger window, keep linger >= now + midCombatExtension. Each
+            //     renewal is clamped (not additive), so the stamp never sits more than
+            //     one extension ahead, and it never goes past five extensions beyond the
+            //     grace from the death itself (postDeathStampedAt).
             if (!_despawnPrevented) then {
                 private _linger = [_logic, "postDeathLingerUntil", 0] call ALIVE_fnc_hashGet;
                 private _maxPlausible = ALIVE_postDeathGrace max ALIVE_midCombatExtension;
@@ -1188,9 +1189,30 @@ switch (_operation) do {
                 // be from a previous Arma session -- treat as expired.
                 if (_linger > 0 && {diag_tickTime < _linger} && {(_linger - diag_tickTime) <= _maxPlausible}) then {
                     _despawnPrevented = true;
-                    private _inCombat = [_logic, "combat", false] call ALIVE_fnc_hashGet;
+                    // Still fighting, by the same test as fnc_profileEntity's despawn, taken
+                    // on the vehicle's commander. A vehicle with a recorded crew assignment is
+                    // only despawned through that crew's entity despawn, which holds and
+                    // extends it, so this decides for a vehicle with none: a crew with no
+                    // profile, or a group that got in while spawned.
+                    private _liveVeh = _logic select 2 select 10;
+                    private _cmdr = if (isNull _liveVeh) then {objNull} else {effectiveCommander _liveVeh};
+                    if (!alive _cmdr && {!isNull _liveVeh}) then {
+                        private _i = (crew _liveVeh) findIf {alive _x};
+                        _cmdr = if (_i < 0) then {objNull} else {(crew _liveVeh) select _i};
+                    };
+                    private _inCombat = !isNull _cmdr && {(behaviour _cmdr) in ["COMBAT","STEALTH"]} && {
+                        private _ownSide = side group _cmdr;
+                        ((_cmdr nearEntities [["CAManBase","LandVehicle","Air","Ship"], ALIVE_postDeathRadius]) findIf {
+                            (_ownSide getFriend (side _x)) < 0.6 && {(_x isKindOf "CAManBase") || {((crew _x) findIf {alive _x}) > -1}}
+                        }) > -1
+                    };
                     if (_inCombat) then {
-                        private _newLinger = diag_tickTime + ALIVE_midCombatExtension;
+                        // No death time on record (an older stamp): no renewal.
+                        private _stampedAt = [_logic, "postDeathStampedAt", -1] call ALIVE_fnc_hashGet;
+                        private _newLinger = _linger;
+                        if (_stampedAt >= 0 && {_stampedAt <= diag_tickTime}) then {
+                            _newLinger = (diag_tickTime + ALIVE_midCombatExtension) min (_stampedAt + ALIVE_postDeathGrace + 5 * ALIVE_midCombatExtension);
+                        };
                         if (_newLinger > _linger) then {
                             [_logic, "postDeathLingerUntil", _newLinger] call ALIVE_fnc_hashSet;
                         };

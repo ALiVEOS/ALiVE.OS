@@ -55,7 +55,8 @@ addMissionEventHandler ["Map", {
 // of the death position with a postDeathLingerUntil timestamp; the despawn
 // paths in fnc_profileVehicle and fnc_profileEntity honour that stamp.
 // The despawn paths also extend the stamp when combat is still ongoing, so
-// firefights aren't yanked into the virtual layer partway through.
+// firefights aren't yanked into the virtual layer partway through. The time of
+// the death is kept too, so those extensions stop after five.
 addMissionEventHandler ["EntityKilled", {
     params ["_killed"];
     // Only react to player deaths on the server where the profile handler runs.
@@ -64,12 +65,14 @@ addMissionEventHandler ["EntityKilled", {
     if (isNil "ALIVE_postDeathGrace" || {isNil "ALIVE_postDeathRadius"}) exitWith {};
 
     private _deathPos = getPosASL _killed;
-    private _until = diag_tickTime + ALIVE_postDeathGrace;
+    private _now = diag_tickTime;
+    private _until = _now + ALIVE_postDeathGrace;
 
     // getNearProfiles with ["all","all"] returns every entity AND vehicle
     // profile within the radius. Stamp each; the despawn hot paths read this.
     private _near = [_deathPos, ALIVE_postDeathRadius, ["all","all"]] call ALIVE_fnc_getNearProfiles;
     {
         [_x, "postDeathLingerUntil", _until] call ALIVE_fnc_hashSet;
+        [_x, "postDeathStampedAt", _now] call ALIVE_fnc_hashSet;
     } forEach _near;
 }];
