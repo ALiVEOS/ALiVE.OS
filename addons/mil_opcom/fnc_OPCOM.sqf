@@ -539,10 +539,11 @@ switch (_operation) do {
 
         //If no data was loaded from DB then get objectives data from other modules or synced Location modules!
         if (_objectives isequalto []) then {
+            private _placementObjectives = [];
             {
                 private _moduleObjectives = [_handler,"getModuleObjectives", _x] call MAINCLASS;
                 if (!isnil "_moduleObjectives") then {
-                    _objectives append _moduleObjectives;
+                    _placementObjectives append _moduleObjectives;
                 };
             } foreach (synchronizedObjects _logic);
 
@@ -552,7 +553,7 @@ switch (_operation) do {
                 case ("asymmetric") :   { "asymmetric" };
             };
 
-            _objectives = [_handler,"createObjectives", [_objectives,_objectiveSortStrategy]] call MAINCLASS;
+            _objectives = [_handler,"createObjectives", [_placementObjectives,_objectiveSortStrategy]] call MAINCLASS;
 
             ["OPCOM created %1 new objectives!", count _objectives] call ALiVE_fnc_dump;
         };
