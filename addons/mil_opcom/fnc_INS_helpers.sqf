@@ -37,6 +37,7 @@ See Also:
 Author:
 Highhead
 Javen
+Jman
 
 ---------------------------------------------------------------------------- */
 
@@ -583,14 +584,19 @@ ALiVE_fnc_INS_getHeartsAndMindsPressure = {
                     []
                 };
 
-                private _hostilityHash = [_cluster, "hostility", []] call ALIVE_fnc_hashGet;
                 private _bestPressure = 0;
                 private _bestPhase = "Stabilize";
 
                 {
                     if (_x != _insurgentSideText) then {
-                        private _hostility = [_hostilityHash, _x, 0] call ALIVE_fnc_hashGet;
-                                                private _phase = [_hostility] call ALiVE_fnc_INS_getHostilityPhase;
+                        // Only hearts-and-minds progress puts pressure on the insurgents: the
+                        // civic model's phase and pressure when it is on, a record's support
+                        // (moved by task outcomes) when it is off, and nothing from a side with
+                        // no record here. The phase used to come from the settlement's
+                        // hostility, where the default Low (0) reads as Consolidate, so a side
+                        // not even in the mission cut recruitment to about a quarter of the
+                        // chance set, whatever hostility the mission gave the side that was.
+                        private _phase = "Stabilize";
                         private _support = 0;
                         private _supportState = [];
 
@@ -598,11 +604,15 @@ ALiVE_fnc_INS_getHeartsAndMindsPressure = {
                             if (_x in (_heartsAndMinds select 1)) then {
                                 _supportState = [_heartsAndMinds, _x, []] call ALIVE_fnc_hashGet;
                                 if !(_supportState isEqualTo []) then {
-                                    _phase = [_supportState, "phase", _phase] call ALIVE_fnc_hashGet;
                                     if (missionNamespace getVariable ["ALIVE_civicStateEnabled", false]) then {
+                                        _phase = [_supportState, "phase", _phase] call ALIVE_fnc_hashGet;
                                         private _insurgentPressure = [_supportState, "insurgentPressure", 100] call ALIVE_fnc_hashGet;
                                         _support = 100 - ((_insurgentPressure max 0) min 100);
                                     } else {
+                                        // With the civic model off, the record's phase is worked
+                                        // out from that same hostility (the task refresh does
+                                        // it), so it would bring the fault back as soon as C2ISTAR
+                                        // or a civilian conversation made a record.
                                         _support = [_supportState, "support", 0] call ALIVE_fnc_hashGet;
                                     };
                                 };
