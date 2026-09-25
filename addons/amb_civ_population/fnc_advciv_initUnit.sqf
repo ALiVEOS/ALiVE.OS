@@ -172,35 +172,15 @@ _unit addEventHandler ["Hit", {
     // Applied BEFORE the hitReacting early-exit below so the hostility
     // bump still lands on civs that are mid-react from a prior hit.
     //
-    // Two write paths:
-    // - The runtime variable on the unit object - covers civs without
-    //   an agentID (read by the non-agent branch of case "getData").
-    // - The agent profile's "posture" key (which lives at
-    //   `_civProfile select 2 select 12`) - canonical source read by
-    //   the agent branch of case "getData" for the questioning /
-    //   Gather Intel / hostility-indicator flows. Updating the runtime
-    //   variable alone leaves agent-tracked civs (the typical case in
-    //   advciv-active missions) showing stale hostility in the dialog.
-    //   Server-authoritative; isServer-gated since Hit fires on the
-    //   unit's owner.
+    // The shared setter writes both copies, the agent record and the
+    // unit's broadcast value, so the dialog and the players' machines
+    // see the same number. This handler is only added on the server
+    // (the isServer exit above) and Hit fires where the unit is local,
+    // so a civilian local to a player's machine is not counted here: a
+    // detained one, and one released afterwards, since the group they
+    // are released into is created on that machine.
     if (!isNull _instigator && {isPlayer _instigator}) then {
-        private _bump = round (_damage * 80);
-
-        private _currentHostility = _unit getVariable ["ALiVE_CivPop_Hostility", 30];
-        private _newHostility = (_currentHostility + _bump) min 100;
-        _unit setVariable ["ALiVE_CivPop_Hostility", _newHostility, true];
-
-        if (isServer) then {
-            private _civID = _unit getVariable ["agentID", ""];
-            if (_civID != "") then {
-                private _civProfile = [ALIVE_agentHandler, "getAgent", _civID] call ALIVE_fnc_agentHandler;
-                if (!isNil "_civProfile") then {
-                    private _profileHostility = (_civProfile select 2) select 12;
-                    private _newProfileHostility = (_profileHostility + _bump) min 100;
-                    [_civProfile, "posture", _newProfileHostility] call ALiVE_fnc_hashSet;
-                };
-            };
-        };
+        [_unit, round (_damage * 80)] call ALiVE_fnc_civSetHostility;
     };
 
     if (_unit getVariable ["ALiVE_advciv_hitReacting", false]) exitWith {};    // Already reacting

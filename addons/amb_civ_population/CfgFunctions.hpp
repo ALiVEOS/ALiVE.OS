@@ -231,6 +231,11 @@ class cfgFunctions {
                 file = "\x\alive\addons\amb_civ_population\fnc_civAceAuthGate.sqf";
                 RECOMPILE;
             };
+            class civSetHostility {
+                description = "Moves a civilian's hostility by an amount, both copies, kept 0 to 100, from any machine";
+                file = "\x\alive\addons\amb_civ_population\fnc_civSetHostility.sqf";
+                RECOMPILE;
+            };
             class advciv_convertAgentAndFollow {
                 description = "AdvCiv server-side agent-to-unit conversion for FOLLOW order";
                 file = "\x\alive\addons\amb_civ_population\fnc_advciv_convertAgentAndFollow.sqf";

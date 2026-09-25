@@ -71,6 +71,8 @@ _newUnit setVariable ["ALiVE_advciv_homePos",      _homePos,   true];
 _newUnit setVariable ["ALiVE_advciv_nearShots",    0,          true];
 _newUnit setVariable ["ALiVE_advciv_hidingPos",    [],         true];
 _newUnit setVariable ["ALiVE_advciv_panicLevel",   _panicLevel];
+// Hostility goes with them too, broadcast like every other write of it.
+_newUnit setVariable ["ALiVE_CivPop_Hostility", _unit getVariable ["ALiVE_CivPop_Hostility", 30], true];
 
 // Swap the original agent for the new unit in the active units array
 private _idx = ALiVE_advciv_activeUnits find _unit;

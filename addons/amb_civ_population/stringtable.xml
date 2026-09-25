@@ -768,49 +768,49 @@
     <Russian>Снижение враждебности от помощи:</Russian></Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_HOSTILITY_CHANCE_COMMENT">
-    <English>Probability that giving humanitarian rations or water to a civilian decreases sector hostility.
+    <English>The chance that handing a civilian rations or water works. When it does, that civilian's own hostility drops by 7 points, never below 0, and the ACE menu, the approach gesture, weapon-aim reactions and Gather Intel use it as well as the dialog. The dialog, the ACE menu and the gesture still never read lower than the Hostility setting above for the player's side. It then drifts back toward 30 at the Hostility decay rate. Aid can still be given to a Defiant civilian, though not a Hostile one. For civilians from Civilian Placement, their town's mood only dips by 1 to 4 for a few seconds.
 
-• Low (20%): each aid action has a 1-in-5 chance of helping.
-• Medium (40%): balanced default for most campaigns.
-• High (60%): aid usually helps; fast hearts-and-minds progression.
-• Extreme (80%): aid almost always helps; trivial to flip sector mood.</English>
+• Low (20%): one handout in five helps.
+• Medium (40%): two in five help.
+• High (60%): aid usually helps.
+• Extreme (80%): aid almost always helps.</English>
 
-    <Chinese>向平民提供人道口糧或飲水時，降低該聚落敵意的機率。
+    <Chinese>向平民提供口糧或飲水見效的機率。見效時,該平民自身的敵意下降 7 點,最低為 0,除了對話框之外,ACE 選單、接近時的姿勢、武器瞄準反應與「蒐集情報」也會採用新數值。對話框、ACE 選單與姿勢仍不會低於上方為玩家陣營設定的敵意值。之後會以敵意衰減速率逐漸回到 30。處於反抗狀態的平民仍可接受援助,敵對狀態的則不行。對於來自 Civilian Placement 的平民,其城鎮情緒只會下降 1 至 4 點,且僅持續數秒。
 
-• 低 (20%) — 每次援助行動有 5 分之 1 的機率見效。
-• 中 (40%) — 多數戰役的平衡預設。
-• 高 (60%) — 援助通常有效；人心爭奪進展較快。
-• 極端 (80%) — 援助幾乎總是有效；輕易翻轉聚落情緒。</Chinese>
-    <Chinesesimp>向平民提供人道口粮或饮水时，降低该聚落敌意的概率。
+• 低 (20%):每五次援助有一次見效。
+• 中 (40%):每五次有兩次見效。
+• 高 (60%):援助通常有效。
+• 極端 (80%):援助幾乎總是有效。</Chinese>
+    <Chinesesimp>向平民提供口粮或饮水见效的概率。见效时,该平民自身的敌意下降 7 点,最低为 0,除了对话框之外,ACE 菜单、接近时的姿势、武器瞄准反应与"搜集情报"也会采用新数值。对话框、ACE 菜单与姿势仍不会低于上方为玩家阵营设定的敌意值。之后会以敌意衰减速率逐渐回到 30。处于反抗状态的平民仍可接受援助,敌对状态的则不行。对于来自 Civilian Placement 的平民,其城镇情绪只会下降 1 至 4 点,且仅持续数秒。
 
-• 低 (20%) — 每次援助行动有五分之一的几率见效。
-• 中 (40%) — 多数战役的平衡默认值。
-• 高 (60%) — 援助通常有效；民心工作进展较快。
-• 极端 (80%) — 援助几乎总是有效；轻易翻转聚落情绪。</Chinesesimp>
-    <Spanish>Probabilidad de que dar raciones humanitarias o agua a un civil reduzca la hostilidad del sector.
+• 低 (20%):每五次援助有一次见效。
+• 中 (40%):每五次有两次见效。
+• 高 (60%):援助通常有效。
+• 极端 (80%):援助几乎总是有效。</Chinesesimp>
+    <Spanish>La probabilidad de que dar raciones o agua a un civil surta efecto. Cuando lo hace, la hostilidad propia de ese civil baja 7 puntos, nunca por debajo de 0, y el menú de ACE, el gesto al acercarse, las reacciones al apuntarle y Obtener inteligencia la usan igual que el diálogo. El diálogo, el menú de ACE y el gesto nunca muestran un valor inferior al ajuste de hostilidad de arriba para el bando del jugador. Después vuelve poco a poco hacia 30 al ritmo de la tasa de reducción de hostilidad. Se puede seguir dando ayuda a un civil Desafiante, pero no a uno Hostil. En los civiles de Civilian Placement, el ánimo de su pueblo solo baja de 1 a 4 durante unos segundos.
 
-• Bajo (20%) — cada acción de ayuda tiene 1 entre 5 de surtir efecto.
-• Medio (40%) — valor por defecto equilibrado para la mayoría de campañas.
-• Alto (60%) — la ayuda suele surtir efecto; progresión rápida de corazones y mentes.
-• Extremo (80%) — la ayuda casi siempre surte efecto; trivial voltear el ánimo del sector.</Spanish>
-    <French>Probabilité que donner des rations humanitaires ou de l'eau à un civil baisse l'hostilité du secteur.
+• Bajo (20%): una de cada cinco entregas surte efecto.
+• Medio (40%): dos de cada cinco.
+• Alto (60%): la ayuda suele surtir efecto.
+• Extremo (80%): la ayuda casi siempre surte efecto.</Spanish>
+    <French>La probabilité que donner des rations ou de l'eau à un civil fonctionne. Quand c'est le cas, l'hostilité propre de ce civil baisse de 7 points, jamais sous 0, et le menu ACE, le geste à l'approche, les réactions quand on le vise et Recueillir des renseignements l'utilisent comme le dialogue. Le dialogue, le menu ACE et le geste n'affichent jamais une valeur inférieure au réglage d'hostilité ci-dessus pour le camp du joueur. Elle revient ensuite peu à peu vers 30 au rythme de la décroissance de l'hostilité. On peut encore aider un civil Récalcitrant, mais pas un civil Hostile. Pour les civils issus de Civilian Placement, l'humeur de leur ville ne baisse que de 1 à 4 pendant quelques secondes.
 
-• Faible (20%) — chaque acte d'aide a 1 chance sur 5 de porter fruit.
-• Moyen (40%) — valeur par défaut équilibrée pour la plupart des campagnes.
-• Élevé (60%) — l'aide fonctionne généralement; progression rapide des coeurs et esprits.
-• Extrême (80%) — l'aide fonctionne presque toujours; trivial de retourner le climat du secteur.</French>
-    <Portuguese>Probabilidade de que dar rações humanitárias ou água a um civil reduza a hostilidade do setor.
+• Faible (20%): une remise sur cinq fonctionne.
+• Moyen (40%): deux sur cinq.
+• Élevé (60%): l'aide fonctionne généralement.
+• Extrême (80%): l'aide fonctionne presque toujours.</French>
+    <Portuguese>A probabilidade de que dar rações ou água a um civil funcione. Quando funciona, a hostilidade própria desse civil desce 7 pontos, nunca abaixo de 0, e o menu ACE, o gesto de aproximação, as reações ao ser apontado e a Coleta de Informação usam-na tal como o diálogo. O diálogo, o menu ACE e o gesto nunca mostram um valor inferior à definição de hostilidade acima para o lado do jogador. Depois volta aos poucos para 30 ao ritmo da taxa de redução da hostilidade. Ainda é possível ajudar um civil Desafiador, mas não um Hostil. Nos civis de Civilian Placement, o ânimo da cidade só desce de 1 a 4 durante alguns segundos.
 
-• Baixo (20%) — cada ação de ajuda tem 1 em 5 de chance de surtir efeito.
-• Médio (40%) — valor padrão equilibrado para a maioria das campanhas.
-• Alto (60%) — a ajuda geralmente funciona; progressão rápida de corações e mentes.
-• Extremo (80%) — a ajuda quase sempre funciona; trivial virar o ânimo do setor.</Portuguese>
-    <Russian>Вероятность того, что передача гуманитарных пайков или воды гражданскому снижает враждебность сектора.
+• Baixo (20%): uma entrega em cada cinco funciona.
+• Médio (40%): duas em cada cinco.
+• Alto (60%): a ajuda geralmente funciona.
+• Extremo (80%): a ajuda quase sempre funciona.</Portuguese>
+    <Russian>Вероятность того, что передача пайка или воды мирному жителю подействует. Если подействует, собственная враждебность этого жителя снижается на 7 очков, но не ниже 0, и её используют не только диалог, но и меню ACE, жест при приближении, реакция на прицеливание и "Собрать разведданные". Диалог, меню ACE и жест никогда не показывают значение ниже указанной выше настройки враждебности для стороны игрока. Затем она постепенно возвращается к 30 со скоростью спада враждебности. Помощь можно оказывать и Вызывающему жителю, но не Враждебному. Для жителей из Civilian Placement настроение их города снижается лишь на 1-4 на несколько секунд.
 
-• Низкий (20%) — у каждого акта помощи 1 шанс из 5 сработать.
-• Средний (40%) — сбалансированное значение по умолчанию для большинства кампаний.
-• Высокий (60%) — помощь обычно срабатывает; быстрое развитие сердец и умов.
-• Экстремальный (80%) — помощь почти всегда срабатывает; легко перевернуть настроение сектора.</Russian></Key>
+• Низкий (20%): действует одна раздача из пяти.
+• Средний (40%): две из пяти.
+• Высокий (60%): помощь обычно действует.
+• Экстремальный (80%): помощь почти всегда действует.</Russian></Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_HOSTILITY_CHANCE_LOW">
     <English>Low (20%)</English>
@@ -5030,13 +5030,13 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_HOSTILITY_DECAY_RATE_COMMENT">
-    <English>How many points a civilian's own hostility drops each minute, down to 0. Civilians from a Civilian Placement module calm down whether they're spawned in or not, with Advanced Civilians on or off. Any other civilian, such as one placed in Eden or one from a crowd, only calms down while Advanced Civilians is on and tracking them. The dialog never reads lower than the threat the civilian's town is under at the time, or than the Hostility setting above for the player's side. 0 disables decay. Default: 1.</English>
-    <Chinese>平民自身敵意每分鐘下降的點數,最低降至 0。來自 Civilian Placement 模組的平民無論是否已生成、Advanced Civilians 開啟與否都會冷靜下來。其他平民,例如在 Eden 中放置的平民或人群中的平民,只有在 Advanced Civilians 開啟並追蹤他們時才會冷靜下來。對話框顯示的數值永遠不會低於該平民所在城鎮當下受到的威脅,也不會低於上方為玩家陣營設定的敵意值。0 表示停用衰減。預設:1。</Chinese>
-    <Chinesesimp>平民自身敌意每分钟下降的点数,最低降至 0。来自 Civilian Placement 模块的平民无论是否已生成、Advanced Civilians 开启与否都会冷静下来。其他平民,例如在 Eden 中放置的平民或人群中的平民,只有在 Advanced Civilians 开启并追踪他们时才会冷静下来。对话框显示的数值永远不会低于该平民所在城镇当下受到的威胁,也不会低于上方为玩家阵营设定的敌意值。0 表示停用衰减。默认:1。</Chinesesimp>
-    <French>Nombre de points dont l'hostilité propre d'un civil diminue chaque minute, jusqu'à 0. Les civils issus d'un module Civilian Placement se calment qu'ils soient apparus ou non, avec Advanced Civilians activé ou non. Tout autre civil, par exemple placé dans Eden ou issu d'une foule, ne se calme que lorsque Advanced Civilians est activé et le suit. Le dialogue n'affiche jamais une valeur inférieure à la menace qui pèse sur la ville du civil à ce moment-là, ni au réglage d'hostilité ci-dessus pour le camp du joueur. 0 désactive la décroissance. Par défaut: 1.</French>
-    <Spanish>Cuántos puntos baja cada minuto la hostilidad propia de un civil, hasta 0. Los civiles de un módulo Civilian Placement se calman tanto si han aparecido como si no, con Advanced Civilians activado o no. Cualquier otro civil, como uno colocado en Eden o uno de una multitud, solo se calma mientras Advanced Civilians está activado y lo sigue. El diálogo nunca muestra un valor inferior a la amenaza que sufre el pueblo del civil en ese momento, ni al ajuste de hostilidad de arriba para el bando del jugador. 0 desactiva la reducción. Por defecto: 1.</Spanish>
-    <Portuguese>Quantos pontos a hostilidade própria de um civil desce a cada minuto, até 0. Os civis de um módulo Civilian Placement acalmam-se quer tenham surgido quer não, com o Advanced Civilians ativado ou não. Qualquer outro civil, como um colocado no Eden ou um de uma multidão, só se acalma enquanto o Advanced Civilians estiver ativado e o acompanhar. O diálogo nunca mostra um valor inferior à ameaça que a cidade do civil sofre no momento, nem à definição de hostilidade acima para o lado do jogador. 0 desativa a redução. Padrão: 1.</Portuguese>
-    <Russian>На сколько очков в минуту снижается собственная враждебность мирного жителя, вплоть до 0. Жители из модуля Civilian Placement успокаиваются независимо от того, появились они в мире или нет, при включённой или выключенной системе Advanced Civilians. Любой другой житель, например размещённый в Eden или из толпы, успокаивается, только пока включена и отслеживает его система Advanced Civilians. Диалог никогда не показывает значение ниже угрозы, которой в данный момент подвергается город жителя, а также ниже указанной выше настройки враждебности для стороны игрока. 0 отключает снижение. По умолчанию: 1.</Russian>
+    <English>How many points a civilian's own hostility moves each minute toward its resting value of 30, from either side: an angry civilian calms down, and one who's been won over slowly drifts back to neutral. Every civilian does this, with Advanced Civilians on or off, and civilians from a Civilian Placement module do it even while they're not spawned in. The dialog never reads lower than the threat the civilian's town is under at the time, or than the Hostility setting above for the player's side. 0 switches this off. Default: 1.</English>
+    <Chinese>平民自身敵意每分鐘朝基準值 30 移動的點數,雙向皆然:憤怒的平民會冷靜下來,被爭取過來的平民則會慢慢回到中立。所有平民都會如此,無論 Advanced Civilians 開啟與否;來自 Civilian Placement 模組的平民即使未生成也會如此。對話框顯示的數值永遠不會低於該平民所在城鎮當下受到的威脅,也不會低於上方為玩家陣營設定的敵意值。0 表示關閉。預設:1。</Chinese>
+    <Chinesesimp>平民自身敌意每分钟朝基准值 30 移动的点数,双向皆然:愤怒的平民会冷静下来,被争取过来的平民则会慢慢回到中立。所有平民都会如此,无论 Advanced Civilians 开启与否;来自 Civilian Placement 模块的平民即使未生成也会如此。对话框显示的数值永远不会低于该平民所在城镇当下受到的威胁,也不会低于上方为玩家阵营设定的敌意值。0 表示关闭。默认:1。</Chinesesimp>
+    <French>Nombre de points dont l'hostilité propre d'un civil se rapproche chaque minute de sa valeur de repos, 30, dans un sens comme dans l'autre: un civil en colère se calme, et un civil que l'on a gagné revient peu à peu à la neutralité. Tous les civils le font, avec Advanced Civilians activé ou non, et ceux issus d'un module Civilian Placement le font même lorsqu'ils ne sont pas apparus. Le dialogue n'affiche jamais une valeur inférieure à la menace qui pèse sur la ville du civil à ce moment-là, ni au réglage d'hostilité ci-dessus pour le camp du joueur. 0 désactive ce retour. Par défaut: 1.</French>
+    <Spanish>Cuántos puntos se acerca cada minuto la hostilidad propia de un civil a su valor de reposo, 30, desde cualquiera de los dos lados: un civil enfadado se calma, y uno al que te has ganado vuelve poco a poco a la neutralidad. Todos los civiles lo hacen, con Advanced Civilians activado o no, y los de un módulo Civilian Placement lo hacen incluso cuando no han aparecido. El diálogo nunca muestra un valor inferior a la amenaza que sufre el pueblo del civil en ese momento, ni al ajuste de hostilidad de arriba para el bando del jugador. 0 lo desactiva. Por defecto: 1.</Spanish>
+    <Portuguese>Quantos pontos a hostilidade própria de um civil se aproxima a cada minuto do seu valor de repouso, 30, de qualquer um dos lados: um civil zangado acalma-se, e um que foi conquistado volta aos poucos à neutralidade. Todos os civis o fazem, com o Advanced Civilians ativado ou não, e os de um módulo Civilian Placement fazem-no mesmo quando não surgiram. O diálogo nunca mostra um valor inferior à ameaça que a cidade do civil sofre no momento, nem à definição de hostilidade acima para o lado do jogador. 0 desativa-o. Padrão: 1.</Portuguese>
+    <Russian>На сколько очков в минуту собственная враждебность мирного жителя приближается к значению покоя 30, с любой стороны: разгневанный житель успокаивается, а тот, кого удалось расположить, постепенно возвращается к нейтральному отношению. Так происходит со всеми жителями, при включённой или выключенной системе Advanced Civilians, а с жителями из модуля Civilian Placement даже тогда, когда они не появились в мире. Диалог никогда не показывает значение ниже угрозы, которой в данный момент подвергается город жителя, а также ниже указанной выше настройки враждебности для стороны игрока. 0 отключает это. По умолчанию: 1.</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_HOSTILITY_BUCKET_FRIENDLY">

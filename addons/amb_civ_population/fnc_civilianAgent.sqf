@@ -101,7 +101,7 @@ switch(_operation) do {
                 ["homeCluster", ""], // select 2 select 9
                 ["homePosition", [0,0]], // select 2 select 10
                 ["activeCommands", []], // select 2 select 11
-                ["posture", 0], // select 2 select 12
+                ["posture", 30], // select 2 select 12, starts at the resting value 30
                 ["firstName", "John"], // select 2 select 13
                 ["lastName", "Smith"] // select 2 select 14
             ]] call ALiVE_fnc_hashSetMany;
@@ -390,6 +390,14 @@ switch(_operation) do {
 
             // set agent id on the unit
             _unit setVariable ["agentID", _agentID];
+
+            // The players' machines read the unit's copy of the civilian's hostility (the ACE
+            // menu tiers, the approach gesture, the aim reactions, Gather Intel), so it starts
+            // from the record, which kept its value while the civilian was despawned. At the
+            // resting 30 there's nothing to send: every reader takes an unwritten copy as 30.
+            if ((_logic select 2 select 12) != 30) then {
+                _unit setVariable ["ALiVE_CivPop_Hostility", _logic select 2 select 12, true];
+            };
 
             // set specials on the unit (public if true);
             _unit setVariable ["townElder", _townelder,_townelder];

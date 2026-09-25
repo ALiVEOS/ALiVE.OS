@@ -155,7 +155,10 @@ _asked = ([_civData, "Asked"] call ALiVE_fnc_hashGet) + 1;
 if (!isNil {[_civData, "Hostile"] call ALiVE_fnC_hashGet}) then {
     _hostile = true;
 } else {
-    _hostility = _civInfo select 1;
+    // A civilian's own value rests at 30, so only the amount above that counts, and a civilian
+    // nobody has upset, in a quiet town, is never hostile in conversation. The threat their town
+    // is under still counts in full, as it always has.
+    _hostility = (((_civInfo param [4, _civInfo select 1]) - 30) max 0) max (_civInfo select 2);
     if (random 100 < _hostility) then {
         _hostile = true;
         [_civData, "Hostile", true] call ALiVE_fnc_hashSet;

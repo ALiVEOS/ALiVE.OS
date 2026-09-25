@@ -329,7 +329,8 @@ switch (_operation) do {
 
 		// Tier-driven action restriction.
 		//   Defiant (60-79): active set is Go Away, Go Home, Close,
-		//                    Calm Down, Detain.
+		//                    Calm Down, Detain, and Ration and Water so
+		//                    aid can still bring the civilian back down.
 		//   Hostile (80+):   active set is Go Away, Go Home, Close,
 		//                    Search, Detain (Calm Down locks out).
 		//   Below Defiant:   full button set active.
@@ -348,7 +349,7 @@ switch (_operation) do {
 		];
 		private _activeAtTier = switch (true) do {
 			case (_h >= 80): { [CIVINTERACT_SEARCHBUTTON, CIVINTERACT_DETAIN] };
-			case (_h >= 60): { [CIVINTERACT_CALMDOWN, CIVINTERACT_DETAIN] };
+			case (_h >= 60): { [CIVINTERACT_CALMDOWN, CIVINTERACT_DETAIN, CIVINTERACT_RATION, CIVINTERACT_WATER] };
 			default          { _restrictable };
 		};
 		private _refuses = (_h >= 60);
@@ -773,12 +774,12 @@ switch (_operation) do {
 			// A copy made before the civilian kept their own value has only the reading.
 			if (count _civInfo < 5) then {_ownHostility = _individualHostility};
 
-			// Worked out as getData works it out, and as the server does for an agent: the
-			// civilian's own value moves, kept between 0 and 100, and the reading is the higher
-			// of it and the town's. The town's share goes to the server alone, where the next
-			// town pass rewrites it within seconds, so the dialog keeps the town as it was when
-			// it opened: adding the share here would move the reading by up to 4 for a few
-			// seconds, and the next open would show it gone.
+			// Worked out as getData and the server work it out: the civilian's own value moves,
+			// kept between 0 and 100, and the reading is the higher of it and the town's. The
+			// town's share goes to the server alone, where the next town pass rewrites it within
+			// seconds, so the dialog keeps the town as it was when it opened: adding the share
+			// here would move the reading by up to 4 for a few seconds, and the next open would
+			// show it gone.
 			_ownHostility = ((_ownHostility + _value) max 0) min 100;
 			_individualHostility = _ownHostility max _townHostility;
 			[_civData, "CivInfo", [_homePos, _individualHostility, _townHostility, _name, _ownHostility]] call ALiVE_fnc_hashSet;
@@ -801,7 +802,8 @@ switch (_operation) do {
 			// The server can drop a civilian's record between the player asking and the change
 			// arriving (it does on death) while the body keeps its id. The lookup then answers
 			// with nothing, and nothing assigned to a variable removes it, so this cannot be
-			// read straight.
+			// read straight. The exit only leaves this block: the civilian's own change below
+			// still applies.
 			if (isNil "_civProfile") exitWith {};
 			_clusterID = _civProfile select 2 select 9;
 
@@ -813,12 +815,12 @@ switch (_operation) do {
 				_clusterHostility = [_cluster, "posture", 0] call ALIVE_fnc_hashGet;
 				[_cluster, "posture", (_clusterHostility + _townHostilityValue)] call ALIVE_fnc_hashSet;
 			};
-
-			//-- Set individual hostility
-			_hostility = (_civProfile select 2) select 12;
-			_hostility = ((_hostility + _value) max 0) min 100;
-			[_civProfile, "posture", _hostility] call ALiVE_fnc_hashSet;
 		};
+
+		//-- Set individual hostility: both copies (the agent record and the unit's broadcast
+		// value), for every civilian, agent or not, so the ACE menu, the gestures and Gather
+		// Intel see what the dialog did.
+		[_civ, _value] call ALiVE_fnc_civSetHostility;
 	};
 
 	case "getActivePlan": {

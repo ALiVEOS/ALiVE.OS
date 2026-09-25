@@ -285,11 +285,11 @@ class FSM
                          "                 _clusterHostilityLevel = [ALIVE_civilianHostility, str(side (_player select 0)), 0] call ALIVE_fnc_hashGet;" \n
                          "            };" \n
                          "				if (isNil ""_clusterHostilityLevel"") then {_clusterHostilityLevel = 0;};" \n
-                         "            _agent setVariable [""ALiVE_CivPop_Hostility"",_clusterHostilityLevel,false];" \n
+                         "            _agent setVariable [""ALiVE_CivPop_Hostility"",((_clusterHostilityLevel max 30) min 100),true];" \n
                          "			" \n
                          "       };" \n
                          "" \n
-                         "      // CHANCES           DEF    10>40    40>70   70>100    100+" \n
+                         "      // CHANCES          DEF<40 (unused)  40>70   70>100    100+" \n
                          "      // MOVE TO BUILDING   35     30       25      20         15 " \n
                          "      // MOVE TO OBJECT     40     40        35      30        25" \n
                          "      // MOVE TO PLAYERS    25     20        15      10         5" \n
@@ -310,10 +310,7 @@ class FSM
                          "      // Set chances based on hostility" \n
                          "      private _chances = _movementChances select 0; " \n
                          "" \n
-                         "       if(_clusterHostilityLevel >= 10 && {_clusterHostilityLevel < 40}) then {" \n
-                         "            _chances = _movementChances select 1; " \n
-                         "            _protesting = false;" \n
-                         "       };" \n
+                         "       // Below 40 keeps the calm default: a civilian nobody has upset rests at 30." \n
                          "" \n
                          "       if(_clusterHostilityLevel >= 40 && {_clusterHostilityLevel < 70}) then {" \n
                          "          _chances = _movementChances select 2;" \n
@@ -642,7 +639,7 @@ class FSM
                          "                           """", " \n
                          "                           [0,1,0,1], " \n
                          "                           [(_pos select 0),(_pos select 1), 0.2], 0.8, 0.8, 0, " \n
-                         "                           toUpper(_x getVariable [""ALIVE_CIV_ACTION"",""NONE""]) + "" "" + str(_x getVariable [""ALiVE_CivPop_Hostility"",0]), " \n
+                         "                           toUpper(_x getVariable [""ALIVE_CIV_ACTION"",""NONE""]) + "" "" + str(_x getVariable [""ALiVE_CivPop_Hostility"",30]), " \n
                          "                           1, 0.0315, ""EtelkaMonospacePro""" \n
                          "                      ];" \n
                          "                 };" \n

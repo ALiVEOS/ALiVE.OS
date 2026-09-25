@@ -113,28 +113,51 @@ switch(_operation) do {
             [ALIVE_civCommandRouter, "init"] call ALIVE_fnc_civCommandRouter;
             [ALIVE_civCommandRouter, "debug", _debug] call ALIVE_fnc_civCommandRouter;
 
-            // Hostility decay for every agent civilian, spawned or not, once a minute. The
-            // civilian keeps their own value now that nothing copies the town's over it, and
-            // this is the only thing that brings it down: the Advanced Civilians loop in
-            // XEH_postInit.sqf leaves agents alone, and never ran for anyone out of sight or
-            // in a mission with Advanced Civilians off. The rate is the module's
-            // civHostilityDecayRate (posture per minute toward 0; 0 switches it off), and a
-            // civilian the aim reaction left traumatised recovers at half the rate, as
-            // before. Cars are agents too, so the type is checked first: field 12 is fuel on
-            // a car.
+            // Hostility decay for every civilian, once a minute, toward the resting value 30
+            // from either side: an angry civilian calms down, and one who was won over drifts
+            // back to neutral. It runs here, on the server, with Advanced Civilians on or off.
+            // The rate is the module's civHostilityDecayRate (points a minute; 0 switches it
+            // off). A civilian the aim reaction left traumatised (aimed at while Wary,
+            // "compliant but resentful") calms down at half the rate; it does not slow the
+            // drift back up.
+            //
+            // Agent civilians move their record, spawned or not, and a spawned one's unit
+            // carries the broadcast copy the players' machines read, so it moves with it, as
+            // ALiVE_fnc_civSetHostility keeps them. Cars are agents too, so the type is checked
+            // first: field 12 is fuel on a car. Every other civilian (placed in Eden, from a
+            // crowd) has only the unit's copy, and one nothing has written reads 30 and is left
+            // alone. Crowd civilians are engine agents, which allUnits leaves out.
+            // An open dialog keeps the value it opened with until it's opened again.
             [{
                 private _rate = missionNamespace getVariable ["ALiVE_amb_civ_population_HostilityDecayRate", 1];
-                if (_rate <= 0 || {isNil "ALIVE_agentHandler"}) exitWith {};
+                if (_rate <= 0) exitWith {};
+                private _toRest = {
+                    params ["_h", "_traumatised"];
+                    if (_h > 30) then {(_h - ([_rate, _rate * 0.5] select _traumatised)) max 30} else {(_h + _rate) min 30}
+                };
+                if (!isNil "ALIVE_agentHandler") then {
+                    {
+                        if (((_x select 2) select 4) == "agent") then {
+                            private _h = (_x select 2) select 12;
+                            if (_h != 30) then {
+                                private _unit = (_x select 2) select 5;
+                                private _new = [_h, !isNull _unit && {_unit getVariable ["ALiVE_advciv_traumatised", false]}] call _toRest;
+                                [_x, "posture", _new] call ALIVE_fnc_hashSet;
+                                if (!isNull _unit && {alive _unit}) then {
+                                    _unit setVariable ["ALiVE_CivPop_Hostility", _new, true];
+                                };
+                            };
+                        };
+                    } forEach (([ALIVE_agentHandler, "agents"] call ALIVE_fnc_hashGet) select 2);
+                };
                 {
-                    if (((_x select 2) select 4) == "agent") then {
-                        private _h = (_x select 2) select 12;
-                        if (_h > 0) then {
-                            private _unit = (_x select 2) select 5;
-                            private _step = if (!isNull _unit && {_unit getVariable ["ALiVE_advciv_traumatised", false]}) then {_rate * 0.5} else {_rate};
-                            [_x, "posture", (_h - _step) max 0] call ALIVE_fnc_hashSet;
+                    if (alive _x && {side _x == civilian} && {!isPlayer _x} && {(_x getVariable ["agentID", ""]) == ""}) then {
+                        private _h = _x getVariable ["ALiVE_CivPop_Hostility", 30];
+                        if (_h != 30) then {
+                            _x setVariable ["ALiVE_CivPop_Hostility", [_h, _x getVariable ["ALiVE_advciv_traumatised", false]] call _toRest, true];
                         };
                     };
-                } forEach (([ALIVE_agentHandler, "agents"] call ALIVE_fnc_hashGet) select 2);
+                } forEach (allUnits + (agents apply {agent _x}));
             }, 60, []] call CBA_fnc_addPerFrameHandler;
 
             // turn on debug again to see the state of the agent handler, and set debug on all a agents

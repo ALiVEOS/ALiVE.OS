@@ -16,14 +16,13 @@ Description:
       Neutral   - HandsUp surrender via the canonical advciv_react
                   HANDSUP path.
       Wary      - Same as Neutral plus an ALiVE_advciv_traumatised flag
-                  on the civ for downstream hostility-decay slowdown
-                  (consumer is a future hook).
+                  on the civ, which halves how fast both decay passes
+                  calm them down (it does not slow the drift back up
+                  toward neutral).
       Defiant   - Emphatic head-shake refusal (Gesture_NoLong) plus
                   PANIC flee. Does not comply.
-      Hostile   - Same as Defiant plus a permanent +5 posture bump on
-                  the civ - dual-write to the runtime variable and the
-                  agent profile, matching the wound-bump pattern in the
-                  Hit event handler.
+      Hostile   - Same as Defiant plus a +5 hostility bump through
+                  ALiVE_fnc_civSetHostility, which writes both copies.
 
 Parameters:
     _this select 0: OBJECT - civilian
@@ -141,20 +140,8 @@ switch (_bucket) do {
         [_civ, "Gesture_NoLong"] remoteExec ["playAction", 0];
         [_civ] call _fnc_panicFlee;
 
-        // +5 posture bump - dual-write (runtime variable + agent profile
-        // posture key) so both the non-agent civInteract branch and the
-        // agent-tracked branch see the resentment escalation. Matches the
-        // wound-bump pattern in fnc_advciv_initUnit's Hit event handler.
-        private _bump = 5;
-        private _currentRuntime = _civ getVariable ["ALiVE_CivPop_Hostility", 30];
-        _civ setVariable ["ALiVE_CivPop_Hostility", (_currentRuntime + _bump) min 100, true];
-        private _civID = _civ getVariable ["agentID", ""];
-        if (_civID != "") then {
-            private _civProfile = [ALIVE_agentHandler, "getAgent", _civID] call ALIVE_fnc_agentHandler;
-            if (!isNil "_civProfile") then {
-                private _profileHostility = (_civProfile select 2) select 12;
-                [_civProfile, "posture", (_profileHostility + _bump) min 100] call ALiVE_fnc_hashSet;
-            };
-        };
+        // +5, both copies (the agent record and the unit's broadcast value), through
+        // the shared setter the wound bump and the dialog use too.
+        [_civ, 5] call ALiVE_fnc_civSetHostility;
     };
 };

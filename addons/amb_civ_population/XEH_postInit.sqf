@@ -94,61 +94,8 @@ if (isServer) then {
         } forEach _units;
     }, 1, []] call CBA_fnc_addPerFrameHandler;
 
-    // Decay the hostility of civilians that are not agents over time (per civ, 60 s
-    // tick). Mission-maker controls the rate via the Civilian Population module's
-    // civHostilityDecayRate attribute (units = posture per minute toward 0; 0 disables).
-    // Only acts on civilians currently in the active world (ALiVE_advciv_activeUnits).
-    //
-    // Only civilians without an agentID (Eden-placed, crowd) are decayed here: their one
-    // store is the unit's ALiVE_CivPop_Hostility, written by the aim reaction, the Hit
-    // handler and, for crowd civilians, the crowd FSM's starting value. Agent civilians
-    // keep their value in the agent profile, and since the town's value stopped being
-    // copied over it that value lasts, so the population system decays it for every
-    // agent, spawned or not (fnc_civilianPopulationSystem.sqf). An agent's own
-    // ALiVE_CivPop_Hostility, which the aim reaction and the Hit handler also raise, is
-    // not decayed by anything.
-    //
-    // Floor: 0. The hostility-indicator render does
-    // max(_civPosture, _sideBaseline) at display time so the per-side
-    // baseline floor still applies without needing baseline-aware logic
-    // here.
-    //
-    // Skip rules: rate <= 0 disables the tick. Per-civ skip when the
-    // unit's value reads <= 0 (never written, or already at the floor).
-    //
-    // Open-dialog caveat: if a dialog is currently open on a civ, that
-    // dialog's CivData is a snapshot taken at open time. Decay updates
-    // the canonical store but won't be reflected in the open dialog
-    // until close + reopen. Acceptable for a passive recovery mechanic.
-    //
-    // Traumatised civs decay at half rate. fnc_advciv_civAimReact sets
-    // ALiVE_advciv_traumatised on civs aimed at while at Wary tier
-    // (40-59 hostility) - reads as "compliant but resentful". The flag
-    // persists for the lifetime of the unit object (cleared naturally
-    // when the civ goes virtual; new unit on respawn starts fresh).
-    [{
-        if (!ALiVE_advciv_enabled) exitWith {};
-        private _rate = missionNamespace getVariable ["ALiVE_amb_civ_population_HostilityDecayRate", 1];
-        if (_rate <= 0) exitWith {};
-        private _units = +ALiVE_advciv_activeUnits;
-        {
-            if (!isNull _x && {alive _x}) then {
-                // Traumatised civs (Wary-tier aim-reaction flag) decay slower
-                private _effectiveRate = if (_x getVariable ["ALiVE_advciv_traumatised", false]) then {
-                    _rate * 0.5
-                } else {
-                    _rate
-                };
-                // Agent civilians are left to the population system's pass.
-                if ((_x getVariable ["agentID", ""]) == "") then {
-                    private _h = _x getVariable ["ALiVE_CivPop_Hostility", -1];
-                    if (_h > 0) then {
-                        _x setVariable ["ALiVE_CivPop_Hostility", (_h - _effectiveRate) max 0, true];
-                    };
-                };
-            };
-        } forEach _units;
-    }, 60, []] call CBA_fnc_addPerFrameHandler;
+    // Hostility decay for every civilian, Advanced Civilians on or off, is in the population
+    // system's minute loop (fnc_civilianPopulationSystem.sqf).
 
     // Civilian killed event - spread panic
     addMissionEventHandler ["EntityKilled", {
@@ -405,8 +352,7 @@ if (hasInterface) then {
                         // Pick the approach gesture by the civ's effective
                         // hostility - per-civ ALiVE_CivPop_Hostility floored
                         // by the module's per-side campaign baseline. The
-                        // dialog's indicator can differ: it reads the agent
-                        // profile for agent civilians and also counts the
+                        // dialog's indicator can differ: it also counts the
                         // town's current threat. Fires regardless of indicator
                         // mode so even indicator-off missions get a discoverable
                         // disposition cue from the wave / head-shake choice.

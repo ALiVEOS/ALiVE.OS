@@ -10,9 +10,8 @@ Description:
 
     Reads the civilian's `ALiVE_CivPop_Hostility`, floored by the module's
     per-side baseline from `ALIVE_civilianHostility` for the player's
-    side, as the approach gesture does. The dialog can differ: it reads
-    the agent profile for agent civilians and also counts the town's
-    current threat.
+    side, as the approach gesture does. The dialog can differ: it also
+    counts the town's current threat.
 
     The companion ACE menu in addons/sys_acemenu/fnc_aceMenuCiv.sqf
     gates each restricted entry with `&& {[_target, N] call
