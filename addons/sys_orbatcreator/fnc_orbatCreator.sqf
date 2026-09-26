@@ -1189,15 +1189,21 @@ switch(_operation) do {
 
                 private _cfgRanks = configFile >> "CfgRanks";
 
+                // Each rank's own "rank" entry is the name setRank and CfgGroups take, the same in
+                // every language (#772). Its class name is a number, "0" for a private to "7" for
+                // a general, and stored as the rank it exported as a number that spawned as an
+                // engine error and a private (#1062). General can't be set on a unit, so the list
+                // holds the seven that can.
+                private _unitRanks = ["PRIVATE","CORPORAL","SERGEANT","LIEUTENANT","CAPTAIN","MAJOR","COLONEL"];
+
                 // process in reverse order to have higher ranks higher in the list
                 for "_i" from (count _cfgRanks - 1) to 0 step -1 do {
                     _rank = _cfgRanks select _i;
-                    // class name is the engine rank identifier (locale-independent), displayName is localized
-                    _rankName = toUpper (configName _rank);
+                    _rankName = toUpper getText (_rank >> "rank");
                     _rankDisplayName = getText (_rank >> "displayName");
                     _rankImage = getText (_rank >> "texture");
 
-                    if (_rankName != "GENERAL") then {
+                    if (_rankName in _unitRanks) then {
                         _index = _selectedGroupUnitRank lbAdd _rankDisplayName;
                         _selectedGroupUnitRank lbSetData [_index,_rankName];
                         _selectedGroupUnitRank lbSetPicture [_index,_rankImage];
@@ -1729,6 +1735,13 @@ switch(_operation) do {
                                 _unitSide = getNumber (_unit >> "side");
                                 _unitVehicle = getText (_unit >> "vehicle");
                                 _unitRank = getText (_unit >> "rank");
+                                // A faction this editor exported with numbered ranks (#1062): read
+                                // back as names, so exporting it again writes them out properly.
+                                // General, which can't be set on a unit, becomes the highest that can.
+                                private _rankNo = ["0","1","2","3","4","5","6","7"] find _unitRank;
+                                if (_rankNo >= 0) then {
+                                    _unitRank = ["PRIVATE","CORPORAL","SERGEANT","LIEUTENANT","CAPTAIN","MAJOR","COLONEL"] select (_rankNo min 6);
+                                };
                                 _unitPosition = getArray (_unit >> "position");
 
                                 _unitHash = +_tmpHash;

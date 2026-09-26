@@ -954,6 +954,16 @@ switch(_operation) do {
             private _damages = _logic select 2 select 19;       //[_logic,"damages"] call ALIVE_fnc_hashGet;
             private _ranks = _logic select 2 select 20;         //[_logic,"ranks"] call ALIVE_fnc_hashGet;
 
+            // Every rank read from a CfgGroups entry enters a profile here. A faction the ORBAT
+            // Creator exported from late July 2026 gives it as the number of its CfgRanks class
+            // ("2" for a sergeant); stored as the name it stands for, so the profile and anything
+            // saved from it carry the real rank (#1062). General (7) can't be set on a unit, so
+            // it becomes the highest that can.
+            private _rankNo = ["0","1","2","3","4","5","6","7"] find _rank;
+            if (_rankNo >= 0) then {
+                _rank = ["PRIVATE","CORPORAL","SERGEANT","LIEUTENANT","CAPTAIN","MAJOR","COLONEL"] select (_rankNo min 6);
+            };
+
             _unitClasses pushback _class;
             _positions pushback _position;
             _damages pushback _damage;
@@ -1170,7 +1180,8 @@ switch(_operation) do {
             private _formation = selectRandom ["COLUMN","STAG COLUMN","WEDGE","ECH LEFT","ECH RIGHT","VEE","LINE"];
             private _positionsCount = count _positions;
             private _damagesCount = count _damages;
-            private _ranksCount = count _ranks;
+            // The only names setRank takes (#1062)
+            private _unitRanks = ["PRIVATE","CORPORAL","SERGEANT","LIEUTENANT","CAPTAIN","MAJOR","COLONEL"];
             private _unitCount = 0;
             private _units = [];
             private _paraDrop = false;
@@ -1223,10 +1234,18 @@ switch(_operation) do {
                         _damage = _damages select _unitCount;
                     };
 
-                    private _rank = "PRIVATE";
-                    if (_unitCount < _ranksCount) then {
-                        _rank = _ranks select _unitCount;
-                        if (_rank isEqualTo "") then {_rank = "PRIVATE"};
+                    // Anything setRank won't take, which it answers with an "Unknown enum value"
+                    // error and a private, spawns as a private without the error: a missing or
+                    // empty slot, or a name it doesn't know. A number from an ORBAT Creator export
+                    // ("2" for a sergeant) is converted when the profile is built (addUnit); one
+                    // stored some other way is read as its rank here too (#1062). General, which
+                    // setRank can't take, is the highest it can: a colonel.
+                    private _rank = _ranks param [_unitCount, "PRIVATE"];
+                    if !(_rank isEqualType "") then {_rank = "PRIVATE"};
+                    _rank = toUpper _rank;
+                    if !(_rank in _unitRanks) then {
+                        private _rankNo = ["0","1","2","3","4","5","6","7","GENERAL"] find _rank;
+                        _rank = if (_rankNo < 0) then {"PRIVATE"} else {_unitRanks select (_rankNo min 6)};
                     };
 
                     private _unit = _group createUnit [_x, _unitPosition, [], 0 , "CAN_COLLIDE"];
