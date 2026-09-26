@@ -1279,21 +1279,37 @@ switch(_operation) do {
     case "addHouse": {
         ASSERT_TRUE(_args isequaltype objnull,typeName _args);
 
-        if (!isnull _args) then {
-            private _house = _args;
-            private _registry = _logic getVariable ["houses"];
-            private _houseID = hashValue _house;
+        // An insurgent HQ, weapons depot or IED factory calls this to have CQB guard its
+        // building. The house list was read with a one-element getVariable, which throws,
+        // so no installation building was ever added. The commander waits for its CQB to
+        // finish starting, so the list and its position grid are there for those calls;
+        // any earlier call is logged and skipped.
+        private _registry = _logic getVariable "houses";
+        private _positionGrid = _logic getVariable "positionGrid";
 
-            if !(_houseID in _registry) then {
+        if (!isnull _args && {isNil "_registry" || {isNil "_positionGrid"}}) then {
+            ["CQB [%1] - %2 was not added to the house list: CQB has not finished starting", _logic getVariable ["id", ""], typeOf _args] call ALiVE_fnc_dump;
+        };
+
+        if (!isnull _args && {!isNil "_registry"} && {!isNil "_positionGrid"}) then {
+            private _house = _args;
+            private _houseID = hashValue _house;
+            private _record = _registry get _houseID;
+
+            if (isNil "_record") then {
                 // Registry record: [house, enabled, lifecycle].
-                private _record = [_house, true, "idle"];
+                _record = [_house, true, "idle"];
                 _registry set [_houseID, _record];
 
-                private _positionGrid = _logic getVariable "positionGrid";
                 _positionGrid call ["insert", [[getPosATL _house, _record]]];
+            } else {
+                // Already listed, but an insurgent commander switches every house off at
+                // start, and an IED factory, unlike an HQ or depot, does not switch its
+                // area back on afterwards. Switch this one on, as the house list setter does.
+                _record set [1, true];
             };
 
-            if (_logic getVariable "debug") then {
+            if (_logic getVariable ["debug", false]) then {
                 ["CQB Population: Adding house %1...", _house] call ALiVE_fnc_Dump;
                 [_logic,"debug", true] call MAINCLASS;
             };
