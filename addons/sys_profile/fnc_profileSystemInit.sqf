@@ -197,7 +197,20 @@ if(isServer) then {
     private _activeLimiter = parseNumber (_logic getVariable ["activeLimiter","30"]);
     private _zeusSpawn = (_logic getvariable ["zeusSpawn", "true"]) == "true";
     private _speedModifier = (_logic getVariable ["speedModifier","1"]) call BIS_fnc_parseNumber;
-    private _virtualCombatSpeedModifier = parseNumber (_logic getVariable ["virtualcombat_speedmodifier", "1"]);
+    // Virtual Combat Speed can arrive empty. Its list's editor default named none of its
+    // choices, so a module whose settings were never confirmed saved it that way, and so did
+    // one placed by a preset. Empty reads as 0, and a combat rate of 0 multiplies every
+    // virtual hit to nothing, so nobody away from the players was ever killed in a fight.
+    // No choice on the list is 0 or less, so anything that does not read as more than 0, or
+    // is missing, runs at Regular, the choice the list marks.
+    private _virtualCombatSpeedRegular = 0.75;
+    private _virtualCombatSpeedRaw = _logic getVariable ["virtualcombat_speedmodifier", _virtualCombatSpeedRegular];
+    private _virtualCombatSpeedModifier = [_virtualCombatSpeedRaw, _virtualCombatSpeedRegular] call _asNumber;
+    if (_virtualCombatSpeedModifier <= 0) then {
+        ["ALiVE Profile System - Virtual Combat Speed reads %1, which is none of its speeds and would stop virtual fights doing any damage, so it runs at Regular (%2). Pick a speed on the Virtual AI module.",
+            str _virtualCombatSpeedRaw, _virtualCombatSpeedRegular] call ALiVE_fnc_dumpR;
+        _virtualCombatSpeedModifier = _virtualCombatSpeedRegular;
+    };
     private _virtualCombatRangeModifier = parseNumber (_logic getVariable ["virtualcombat_rangemodifier", "255"]);
     private _pathfinding = (_logic getVariable ["pathfinding", "false"]) == "true";
     // Pass the configured grid setting through RAW (no parse here). It may be an

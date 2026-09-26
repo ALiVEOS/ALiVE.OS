@@ -125,7 +125,7 @@ class CfgVehicles {
                             property = "ALiVE_sys_profile_virtualcombat_speedmodifier";
                             displayName = "$STR_ALIVE_PROFILE_SYSTEM_VIRTUAL_COMBAT_SPEED_MODIFIER";
                             tooltip = "$STR_ALIVE_PROFILE_SYSTEM_VIRTUAL_COMBAT_SPEED_MODIFIER_COMMENT";
-                            defaultValue = """""";
+                            defaultValue = """0.75""";
                             class Values
                             {
                                 class Fastest { name = "Fastest (1.75)"; Value = 1.75; };
