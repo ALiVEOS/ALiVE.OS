@@ -34,6 +34,15 @@ class Cfg3DEN {
             icon = "\A3\ui_f\data\map\markers\nato\b_inf.paa";
             useSideColorOnIcon = 1;
         };
+        class ALiVE_Preset_hearts_minds {
+            path = "x\alive\addons\sys_presets\compositions\hearts_minds";
+            side = 1;
+            editorCategory = "ALiVE_PresetCat";
+            editorSubcategory = "ALiVE_PresetSub";
+            displayName = "Hearts and minds: NATO wins over the towns";
+            icon = "\A3\ui_f\data\map\markers\nato\b_inf.paa";
+            useSideColorOnIcon = 1;
+        };
         class ALiVE_Preset_insurgency {
             path = "x\alive\addons\sys_presets\compositions\insurgency";
             side = 1;
