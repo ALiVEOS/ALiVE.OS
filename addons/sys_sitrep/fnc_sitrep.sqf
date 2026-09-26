@@ -53,6 +53,7 @@ See Also:
 
 Author:
 Tupolov
+Jman
 
 In memory of Peanut
 
@@ -301,8 +302,12 @@ switch (_operation) do {
             if (typeName _sitrep == "BOOL") then {
                 _result = isPlayer player;
             } else {
-                // If player owns sitrep, or player is admin or player is higher rank than owner
-                _result = true;
+                // Its author or a server admin may change or delete a report; this answered
+                // yes for everyone. _sitrep is the report's name in the store. A report saved
+                // before its author was recorded stays open to everybody.
+                private _report = [GVAR(STORE), _sitrep] call ALIVE_fnc_hashGet;
+                private _owner = if (isNil "_report") then {""} else {[_report, QGVAR(player), ""] call ALIVE_fnc_hashGet};
+                _result = (_owner == "") || {_owner == getPlayerUID player} || {call ALIVE_fnc_isServerAdmin};
             };
         };
 
@@ -521,22 +526,14 @@ switch (_operation) do {
             _result = false;
 
             // Delete sitrep
-            switch ([_sitrepHash, QGVAR(locality), "SIDE"] call ALIVE_fnc_hashGet) do {
-                case "SIDE": {
-                    [[_logic,"deletesitrep",[_sitrepName]], "ALIVE_fnc_sitrep", side (group player), false, true] call BIS_fnc_MP;
-                };
-                case "GROUP": {
-                    [[_logic,"deletesitrep",[_sitrepName]], "ALIVE_fnc_sitrep", group player, false, true] call BIS_fnc_MP;
-                };
-                case "FACTION": {
-                   [[_logic,"deletesitrep",[_sitrepName, faction player]], "ALIVE_fnc_sitrep", true, false, true] call BIS_fnc_MP;
-                };
-                case "LOCAL": {
-                    [_logic,"deletesitrep",[_sitrepName]] call ALIVE_fnc_sitrep;
-                };
-                case default {
-                    [[_logic,"deletesitrep",[_sitrepName]], "ALIVE_fnc_sitrep", true, false, true] call BIS_fnc_MP;
-                };
+            // The marker delete goes to every machine except for a private report. It went to the
+            // deleter's current side, group or faction, which misses the report's own audience once
+            // the author has changed group or an admin deletes it; a machine without the marker does
+            // nothing.
+            if (([_sitrepHash, QGVAR(locality), "SIDE"] call ALIVE_fnc_hashGet) == "LOCAL") then {
+                [_logic,"deletesitrep",[_sitrepName]] call ALIVE_fnc_sitrep;
+            } else {
+                [[_logic,"deletesitrep",[_sitrepName]], "ALIVE_fnc_sitrep", true, false, true] call BIS_fnc_MP;
             };
 
             // Remove sitrep from store on all localities
