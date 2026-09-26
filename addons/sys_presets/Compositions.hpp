@@ -16,6 +16,15 @@ class CfgEditorSubcategories {
 
 class Cfg3DEN {
     class Compositions {
+        class ALiVE_Preset_defensive {
+            path = "x\alive\addons\sys_presets\compositions\defensive";
+            side = 1;
+            editorCategory = "ALiVE_PresetCat";
+            editorSubcategory = "ALiVE_PresetSub";
+            displayName = "Defensive: CSAT invades, NATO holds";
+            icon = "\A3\ui_f\data\map\markers\nato\b_inf.paa";
+            useSideColorOnIcon = 1;
+        };
         class ALiVE_Preset_first_steps {
             path = "x\alive\addons\sys_presets\compositions\first_steps";
             side = 0;

@@ -1,0 +1,339 @@
+version=54;
+center[]={0,0,0};
+class items
+{
+	items=7;
+	class Item0
+	{
+		dataType="Logic";
+		class PositionInfo
+		{
+			position[]={-16,0,-12};
+		};
+		id=0;
+		type="ALiVE_require";
+		class CustomAttributes
+		{
+			nAttributes=0;
+		};
+	};
+	class Item1
+	{
+		dataType="Logic";
+		class PositionInfo
+		{
+			position[]={-8,0,-12};
+		};
+		id=1;
+		type="ALiVE_sys_profile";
+		class CustomAttributes
+		{
+			nAttributes=1;
+			class Attribute0
+			{
+				property="ALiVE_sys_profile_virtualcombat_speedmodifier";
+				expression="_this setVariable ['virtualcombat_speedmodifier',_value,true];";
+				class Value
+				{
+					class data
+					{
+						singleType="STRING";
+						value="0.75";
+					};
+				};
+			};
+		};
+	};
+	class Item2
+	{
+		dataType="Logic";
+		class PositionInfo
+		{
+			position[]={0,0,-12};
+		};
+		id=2;
+		type="ALiVE_mil_OPCOM";
+		class CustomAttributes
+		{
+			nAttributes=3;
+			class Attribute0
+			{
+				property="ALiVE_mil_opcom_customName";
+				expression="_this setVariable ['customName',_value,true];";
+				class Value
+				{
+					class data
+					{
+						singleType="STRING";
+						value="NATO";
+					};
+				};
+			};
+			class Attribute1
+			{
+				property="ALiVE_mil_opcom_controltype";
+				expression="_this setVariable ['controltype',_value,true];";
+				class Value
+				{
+					class data
+					{
+						singleType="STRING";
+						value="occupation";
+					};
+				};
+			};
+			class Attribute2
+			{
+				property="ALiVE_mil_opcom_factions";
+				expression="_this setVariable ['factions', _value];";
+				class Value
+				{
+					class data
+					{
+						singleType="STRING";
+						value="[""BLU_F""]";
+					};
+				};
+			};
+		};
+	};
+	class Item3
+	{
+		dataType="Logic";
+		class PositionInfo
+		{
+			position[]={8,0,-12};
+		};
+		id=3;
+		type="ALiVE_mil_placement";
+		class CustomAttributes
+		{
+			nAttributes=3;
+			class Attribute0
+			{
+				property="ALiVE_mil_placement_taor";
+				expression="_this setVariable ['taor',_value,true];";
+				class Value
+				{
+					class data
+					{
+						singleType="STRING";
+						value="NATO_AREA";
+					};
+				};
+			};
+			class Attribute1
+			{
+				property="ALiVE_mil_placement_faction";
+				expression="_this setVariable ['faction', _value];";
+				class Value
+				{
+					class data
+					{
+						singleType="STRING";
+						value="BLU_F";
+					};
+				};
+			};
+			class Attribute2
+			{
+				property="ALiVE_mil_placement_size";
+				expression="_this setVariable ['size',_value,true];";
+				class Value
+				{
+					class data
+					{
+						singleType="STRING";
+						value="100";
+					};
+				};
+			};
+		};
+	};
+	class Item4
+	{
+		dataType="Logic";
+		class PositionInfo
+		{
+			position[]={0,0,3412};
+		};
+		id=4;
+		type="ALiVE_mil_OPCOM";
+		class CustomAttributes
+		{
+			nAttributes=3;
+			class Attribute0
+			{
+				property="ALiVE_mil_opcom_customName";
+				expression="_this setVariable ['customName',_value,true];";
+				class Value
+				{
+					class data
+					{
+						singleType="STRING";
+						value="CSAT";
+					};
+				};
+			};
+			class Attribute1
+			{
+				property="ALiVE_mil_opcom_controltype";
+				expression="_this setVariable ['controltype',_value,true];";
+				class Value
+				{
+					class data
+					{
+						singleType="STRING";
+						value="invasion";
+					};
+				};
+			};
+			class Attribute2
+			{
+				property="ALiVE_mil_opcom_factions";
+				expression="_this setVariable ['factions', _value];";
+				class Value
+				{
+					class data
+					{
+						singleType="STRING";
+						value="[""OPF_F""]";
+					};
+				};
+			};
+		};
+	};
+	class Item5
+	{
+		dataType="Logic";
+		class PositionInfo
+		{
+			position[]={0,0,3400};
+		};
+		id=5;
+		type="ALiVE_mil_placement_custom";
+		class CustomAttributes
+		{
+			nAttributes=5;
+			class Attribute0
+			{
+				property="ALiVE_mil_placement_custom_customInfantryCount";
+				expression="_this setVariable ['customInfantryCount',_value,true];";
+				class Value
+				{
+					class data
+					{
+						singleType="STRING";
+						value="16";
+					};
+				};
+			};
+			class Attribute1
+			{
+				property="ALiVE_mil_placement_custom_customMotorisedCount";
+				expression="_this setVariable ['customMotorisedCount',_value,true];";
+				class Value
+				{
+					class data
+					{
+						singleType="STRING";
+						value="5";
+					};
+				};
+			};
+			class Attribute2
+			{
+				property="ALiVE_mil_placement_custom_customMechanisedCount";
+				expression="_this setVariable ['customMechanisedCount',_value,true];";
+				class Value
+				{
+					class data
+					{
+						singleType="STRING";
+						value="3";
+					};
+				};
+			};
+			class Attribute3
+			{
+				property="ALiVE_mil_placement_custom_customArmourCount";
+				expression="_this setVariable ['customArmourCount',_value,true];";
+				class Value
+				{
+					class data
+					{
+						singleType="STRING";
+						value="2";
+					};
+				};
+			};
+			class Attribute4
+			{
+				property="ALiVE_mil_placement_custom_createFieldHQ";
+				expression="_this setVariable ['createFieldHQ',_value,true];";
+				class Value
+				{
+					class data
+					{
+						singleType="STRING";
+						value="true";
+					};
+				};
+			};
+		};
+	};
+	class Item6
+	{
+		dataType="Marker";
+		position[]={0,0,0};
+		name="NATO_AREA";
+		markerType="RECTANGLE";
+		type="";
+		a=2000;
+		b=1300;
+		colorName="ColorWEST";
+		alpha=0.5;
+		id=6;
+	};
+};
+class connections
+{
+	class LinkIDProvider
+	{
+		nextID=3;
+	};
+	class Links
+	{
+		items=3;
+		class Item0
+		{
+			linkID=0;
+			item0=2;
+			item1=3;
+			class CustomData
+			{
+				type="Sync";
+			};
+		};
+		class Item1
+		{
+			linkID=1;
+			item0=4;
+			item1=5;
+			class CustomData
+			{
+				type="Sync";
+			};
+		};
+		class Item2
+		{
+			linkID=2;
+			item0=4;
+			item1=3;
+			class CustomData
+			{
+				type="Sync";
+			};
+		};
+	};
+};
