@@ -16,6 +16,15 @@ class CfgEditorSubcategories {
 
 class Cfg3DEN {
     class Compositions {
+        class ALiVE_Preset_air_war {
+            path = "x\alive\addons\sys_presets\compositions\air_war";
+            side = 1;
+            editorCategory = "ALiVE_PresetCat";
+            editorSubcategory = "ALiVE_PresetSub";
+            displayName = "Air war: NATO and CSAT fight for the sky";
+            icon = "\A3\ui_f\data\map\markers\nato\b_inf.paa";
+            useSideColorOnIcon = 1;
+        };
         class ALiVE_Preset_defensive {
             path = "x\alive\addons\sys_presets\compositions\defensive";
             side = 1;

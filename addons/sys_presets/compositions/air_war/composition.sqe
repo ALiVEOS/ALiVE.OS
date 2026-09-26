@@ -1,0 +1,218 @@
+version=54;
+center[]={0,0,0};
+class items
+{
+	items=7;
+	class Item0
+	{
+		dataType="Logic";
+		class PositionInfo
+		{
+			position[]={-40,0,-30};
+		};
+		id=0;
+		type="ALiVE_require";
+		class CustomAttributes
+		{
+			nAttributes=0;
+		};
+	};
+	class Item1
+	{
+		dataType="Logic";
+		class PositionInfo
+		{
+			position[]={-20,0,-30};
+		};
+		id=1;
+		type="ALiVE_sys_profile";
+		class CustomAttributes
+		{
+			nAttributes=1;
+			class Attribute0
+			{
+				property="ALiVE_sys_profile_virtualcombat_speedmodifier";
+				expression="_this setVariable ['virtualcombat_speedmodifier',_value,true];";
+				class Value
+				{
+					class data
+					{
+						singleType="STRING";
+						value="0.75";
+					};
+				};
+			};
+		};
+	};
+	class Item2
+	{
+		dataType="Logic";
+		class PositionInfo
+		{
+			position[]={0,0,0};
+		};
+		id=2;
+		type="ALiVE_mil_ato";
+		class CustomAttributes
+		{
+			nAttributes=3;
+			class Attribute0
+			{
+				property="ALiVE_mil_ato_faction";
+				expression="_this setVariable ['faction', _value];";
+				class Value
+				{
+					class data
+					{
+						singleType="STRING";
+						value="BLU_F";
+					};
+				};
+			};
+			class Attribute1
+			{
+				property="ALiVE_mil_ato_airspace";
+				expression="_this setVariable ['airspace',_value,true];";
+				class Value
+				{
+					class data
+					{
+						singleType="STRING";
+						value="NATO_AIR,FRONT_AIR";
+					};
+				};
+			};
+			class Attribute2
+			{
+				property="ALiVE_mil_ato_placeAir";
+				expression="_this setVariable ['placeAir',_value,true];";
+				class Value
+				{
+					class data
+					{
+						singleType="STRING";
+						value="true";
+					};
+				};
+			};
+		};
+	};
+	class Item3
+	{
+		dataType="Logic";
+		class PositionInfo
+		{
+			position[]={8300,0,11150};
+		};
+		id=3;
+		type="ALiVE_mil_ato";
+		class CustomAttributes
+		{
+			nAttributes=5;
+			class Attribute0
+			{
+				property="ALiVE_mil_ato_faction";
+				expression="_this setVariable ['faction', _value];";
+				class Value
+				{
+					class data
+					{
+						singleType="STRING";
+						value="OPF_F";
+					};
+				};
+			};
+			class Attribute1
+			{
+				property="ALiVE_mil_ato_airspace";
+				expression="_this setVariable ['airspace',_value,true];";
+				class Value
+				{
+					class data
+					{
+						singleType="STRING";
+						value="CSAT_AIR,FRONT_AIR";
+					};
+				};
+			};
+			class Attribute2
+			{
+				property="ALiVE_mil_ato_placeAir";
+				expression="_this setVariable ['placeAir',_value,true];";
+				class Value
+				{
+					class data
+					{
+						singleType="STRING";
+						value="true";
+					};
+				};
+			};
+			class Attribute3
+			{
+				property="ALiVE_mil_ato_ingressMarker";
+				expression="_this setVariable ['ingressMarker',_value,true];";
+				class Value
+				{
+					class data
+					{
+						singleType="STRING";
+						value="CSAT_AIR";
+					};
+				};
+			};
+			class Attribute4
+			{
+				property="ALiVE_mil_ato_virtualSlots";
+				expression="_this setVariable ['virtualSlots',_value,true];";
+				class Value
+				{
+					class data
+					{
+						singleType="STRING";
+						value="8";
+					};
+				};
+			};
+		};
+	};
+	class Item4
+	{
+		dataType="Marker";
+		position[]={0,0,0};
+		name="NATO_AIR";
+		markerType="ELLIPSE";
+		type="";
+		a=3000;
+		b=3000;
+		colorName="ColorWEST";
+		alpha=0.35;
+		id=4;
+	};
+	class Item5
+	{
+		dataType="Marker";
+		position[]={3050,0,6650};
+		name="FRONT_AIR";
+		markerType="ELLIPSE";
+		type="";
+		a=2750;
+		b=2750;
+		colorName="ColorOrange";
+		alpha=0.35;
+		id=5;
+	};
+	class Item6
+	{
+		dataType="Marker";
+		position[]={8300,0,11150};
+		name="CSAT_AIR";
+		markerType="ELLIPSE";
+		type="";
+		a=3000;
+		b=3000;
+		colorName="ColorEAST";
+		alpha=0.35;
+		id=6;
+	};
+};
