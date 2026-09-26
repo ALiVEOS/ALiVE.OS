@@ -91,9 +91,9 @@
 </Key>
 
 <Key ID="STR_ALIVE_WEATHER_CYCLE_DELAY_COMMENT">
-    <English>Time in seconds between each weather cycle (minimum 1800 set by game engine)</English>
-    <Chinesesimp>每个天气周期之间的时间(以秒为单位)(游戏引擎设置的最低1800秒)</Chinesesimp>
-    <Spanish>Tiempo en segundos entre cada ciclo meteorológico (mínimo 1800 impuesto por el motor del juego)</Spanish>
+    <English>How long, in seconds, each weather change takes to blend in. The weather then holds for the same time before the next change, so a new one starts at roughly double this interval. Default 1800.</English>
+    <Chinesesimp>每次天气变化逐渐完成所需的秒数。完成后天气会保持同样长的时间，再开始下一次变化，因此新的变化大约每隔此值的两倍时间开始一次。默认 1800。</Chinesesimp>
+    <Spanish>Cuántos segundos tarda cada cambio de clima en completarse. Después, el clima se mantiene ese mismo tiempo antes del siguiente cambio, así que cada cambio nuevo empieza aproximadamente al doble de este intervalo. Por defecto 1800.</Spanish>
 </Key>
 
 <Key ID="STR_ALIVE_WEATHER_REAL_LOCATION">
