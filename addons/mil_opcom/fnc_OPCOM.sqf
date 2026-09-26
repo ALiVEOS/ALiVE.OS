@@ -3199,18 +3199,26 @@ switch (_operation) do {
 
     case "addObjective": {
         // allow users to pass side or faction classname for _logic
-        _logic = if (_logic isequaltype "") then {
+        //
+        // A statement, not an expression. This used to be _logic = if (...) then {...},
+        // and a then-block's value is its last statement: here the "not found" check,
+        // an if whose condition is false whenever a commander IS found, so it gave nil.
+        // Every side or faction string therefore replaced the commander it had just
+        // found with nil and left at the nil check below, adding nothing and saying
+        // nothing. A side string still reaches only the first commander of that side.
+        if (_logic isequaltype "") then {
             private _identifier = _logic;
             _logic = [nil,"findOPCOMByAllegiance", _identifier] call ALiVE_fnc_OPCOM;
 
             if (isnil  "_logic") then {
                 ["OPCOM operation 'addObjective' didn't find an OPCOM for faction or side %1!", _identifier] call ALiVE_fnc_dump;
             };
-        } else {
-            _logic
         };
 
-        if (isnil "_logic" || isnil "_args") exitwith {};
+        // params turns a missing or nil _args into objNull, so isNil never caught it and
+        // a call with no objective details added an empty one at the map's corner. The
+        // test now asks for what the asserts below require.
+        if (isnil "_logic" || {!(_args isequaltype [])} || {count _args < 3}) exitwith {};
 
         ASSERT_TRUE(_args isequaltype [], str _args);
         ASSERT_TRUE(count _args > 2 ,str _args);
