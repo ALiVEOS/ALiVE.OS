@@ -428,6 +428,21 @@ can be made to say anything; a profile that is still registered cannot.
     ["both settings on place crewed aircraft and one drone",
         (_both call _fnc_crewedCount) > 0 && {(_both call _fnc_droneCount) == 1}] call _fnc_check;
 
+    // An airfield with no hangar in the index gets one plane, beside its HQ,
+    // and that plane has to be a fighter: only a fighter flies a patrol or an
+    // interception, and half of NATO's armed planes are attack jets. The base
+    // is given here in full so it can carry an HQ, which the helper's own base
+    // does not have and without which no plane is placed at all.
+    private _hqStand = "Land_Cargo_House_V1_F" createVehicle (_anchor vectorAdd [0, 60, 0]);
+    _made pushBack _hqStand;
+    private _withHQ = [[["placeAir", true],
+        ["base", [[["center", _anchor], ["isCarrier", false], ["airspace", ""], ["hq", _hqStand]]] call ALIVE_fnc_hashCreate]]] call _fnc_placeWith;
+    private _planesHQ = _withHQ select { _x isKindOf "Plane" };
+    diag_log format ["  info  a base with an HQ and no hangar placed %1", _withHQ];
+    ["a base with an HQ and no hangar is given one plane", count _planesHQ == 1] call _fnc_check;
+    ["and that plane is a fighter",
+        count _planesHQ == 1 && {"Fighter" in ([_planesHQ select 0] call ALiVE_fnc_getAircraftRoles)}] call _fnc_check;
+
     private _fnc_seedDrone = {
         private _l = _this;
         private _t = [_l, "createRecord", [_droneClass, "BLU_F", [""], [["Recon"], []]]] call ALIVE_fnc_ATOLedger;

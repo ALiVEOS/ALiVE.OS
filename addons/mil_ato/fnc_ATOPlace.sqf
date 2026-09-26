@@ -2170,6 +2170,39 @@ switch(_operation) do {
                 && {!([_x] call _fnc_isDroneClass)}
         };
 
+        // Planes are chosen from the fighters and the faction's other armed
+        // planes in turn, a fighter first. A patrol or an interception takes a
+        // fighter and nothing else (ATOTask plan), and half of NATO's and
+        // CSAT's armed planes are attack jets with no radar, so picked at
+        // random a base could be stocked with attack jets alone and never fly
+        // either. Measured: the Altis main airport stocked five A-164s, and
+        // every patrol and interception it raised was refused. A faction with
+        // only one kind of plane gets that kind throughout.
+        //
+        // The other turn goes to a plane that can hit the ground when the
+        // faction has one. A reconnaissance-only airframe, such as an armed
+        // Blackfish in a list that also holds fighters, flies nothing without
+        // an AI commander and would otherwise take every other stand.
+        private _fnc_planePools = {
+            params ["_list"];
+            private _fighters = _list select { "Fighter" in ([_x] call ALiVE_fnc_getAircraftRoles) };
+            private _rest = _list - _fighters;
+            private _ground = _rest select {
+                private _roles = [_x] call ALiVE_fnc_getAircraftRoles;
+                "Attack" in _roles || {"CAS" in _roles}
+            };
+            [_fighters, if (count _ground > 0) then { _ground } else { _rest }]
+        };
+        // How many planes were asked for before this one decides which pool it
+        // comes from, so an even count is a fighter.
+        private _fnc_nextPlane = {
+            params ["_pools", "_chosen"];
+            _pools params ["_fighters", "_others"];
+            private _from = if (_chosen % 2 == 0) then { _fighters } else { _others };
+            if (count _from == 0) then { _from = if (count _fighters > 0) then { _fighters } else { _others } };
+            selectRandom _from
+        };
+
         // ---- a base with no airfield ---------------------------------------
         // Every aircraft is asked for at the marker itself. The cascade hands
         // back a different hold point each time, because each home is reserved
@@ -2209,15 +2242,20 @@ switch(_operation) do {
             _planes = (([0, _faction, "Plane"] call ALiVE_fnc_findVehicleType) - _blacklist) select _fnc_flyable;
             private _heliList = _helis;
             private _planeList = _planes;
+            private _pools = [_planeList] call _fnc_planePools;
             private _mix = [];
             if (count _planeList > 0 && {count _heliList > 0}) then {
                 for "_i" from 1 to _want do {
-                    _mix pushBack (if (_i % 2 == 1) then { selectRandom _planeList } else { selectRandom _heliList });
+                    // The odd slots are the planes, so slot _i is plane (_i - 1) / 2.
+                    _mix pushBack (if (_i % 2 == 1) then { [_pools, (_i - 1) / 2] call _fnc_nextPlane } else { selectRandom _heliList });
                 };
             } else {
-                private _only = if (count _planeList > 0) then { _planeList } else { _heliList };
-                if (count _only > 0) then {
-                    for "_i" from 1 to _want do { _mix pushBack (selectRandom _only) };
+                if (count _planeList > 0) then {
+                    for "_i" from 1 to _want do { _mix pushBack ([_pools, _i - 1] call _fnc_nextPlane) };
+                } else {
+                    if (count _heliList > 0) then {
+                        for "_i" from 1 to _want do { _mix pushBack (selectRandom _heliList) };
+                    };
                 };
             };
             if (_want > 0 && {count _mix == 0}) then {
@@ -2290,16 +2328,22 @@ switch(_operation) do {
             if (count _anchors == 0 && {!isNull _hq}) then { _anchors = [_hq] };
 
             private _cap = (count _anchors) min PLANE_CAP;
+            private _pools = [_planes] call _fnc_planePools;
             private _planesPlaced = 0;
+            private _planesAsked = 0;
             private _first = true;
             {
                 // The first building always, the rest with D3's chance, and
                 // never past the cap. The in-place candidate at a hangar
                 // fails validate (the hangar is a building inside the span),
                 // so the cascade runs anchored on the hangar and finds the
-                // apron beside it.
+                // apron beside it. The turn is counted by planes asked for,
+                // not placed, as Military Placement does with its hangars: a
+                // fighter too big for every stand here would otherwise be
+                // asked for again at each hangar and no other plane tried.
                 if (_planesPlaced < _cap && {_first || {random 1 > 0.30}}) then {
-                    private _tail = [_logic, selectRandom _planes, position _x, getDir _x, _airspaceName] call _fnc_placeNew;
+                    private _tail = [_logic, [_pools, _planesAsked] call _fnc_nextPlane, position _x, getDir _x, _airspaceName] call _fnc_placeNew;
+                    _planesAsked = _planesAsked + 1;
                     if !(_tail isEqualTo "") then { _tails pushBack _tail; _planesPlaced = _planesPlaced + 1 };
                 };
                 _first = false;

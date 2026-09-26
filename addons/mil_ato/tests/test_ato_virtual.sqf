@@ -227,6 +227,42 @@ Jman
         } forEach _stocked;
     };
 
+    // --- fighters and attack jets in turn ----------------------------------
+    // Half of NATO's armed planes are attack jets with no radar, and only a
+    // fighter flies a patrol or an interception. Picked at random, a base could
+    // be stocked with attack jets alone and then never fly either. Eight slots
+    // at an ingress point are four planes and four helicopters, and the four
+    // planes have to come out fighter, attack jet, fighter, attack jet.
+    private _ledgerM = [nil, "create"] call ALIVE_fnc_ATOLedger;
+    private _placeM = [nil, "create"] call ALIVE_fnc_ATOPlace;
+    [_placeM, "configure", [
+        ["ledger", _ledgerM], ["surface", _surface],
+        ["effect", [nil, "create"] call ALIVE_fnc_ATOEffect],
+        ["side", "WEST"], ["faction", "BLU_F"], ["factions", ["BLU_F"]],
+        ["base", [[
+            ["center", _best], ["isCarrier", false], ["isVirtual", true],
+            ["virtualSlots", 8], ["airspace", ""]
+        ]] call ALIVE_fnc_hashCreate]
+    ]] call ALIVE_fnc_ATOPlace;
+    private _mixed = [_placeM, "placeInitial", []] call ALIVE_fnc_ATOPlace;
+    if !(_mixed isEqualType []) then { _mixed = [] };
+    private _planeKinds = [];
+    {
+        private _cls = [[_ledgerM, "get", _x] call ALIVE_fnc_ATOLedger, "vehicleClass", ""] call ALIVE_fnc_hashGet;
+        if (_cls isKindOf "Plane") then {
+            _planeKinds pushBack ("Fighter" in ([_cls] call ALiVE_fnc_getAircraftRoles));
+        };
+        private _h = [_placeM, "objFor", _x] call ALIVE_fnc_ATOPlace;
+        if (!isNull _h) then {
+            { deleteVehicle _x } forEach (crew _h);
+            deleteVehicle _h;
+        };
+    } forEach _mixed;
+    diag_log format ["  info  eight ingress slots placed %1 aircraft; for each plane in turn, is it a fighter: %2", count _mixed, _planeKinds];
+    ["eight ingress slots hold four planes", count _planeKinds == 4] call _fnc_check;
+    ["the first plane is a fighter", _planeKinds param [0, false]] call _fnc_check;
+    ["fighters and attack jets take turns", _planeKinds isEqualTo [true, false, true, false]] call _fnc_check;
+
     if (count _fails == 0) then {
         diag_log "=== ATO Virtual base test: ALL PASS ===";
     } else {
