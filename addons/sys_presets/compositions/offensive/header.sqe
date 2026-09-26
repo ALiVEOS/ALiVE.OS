@@ -1,0 +1,5 @@
+version=54;
+name="Offensive: NATO attacks CSAT-held ground";
+author="ALiVE";
+category="EdSubcat_Military";
+requiredAddons[]={"alive_main","alive_sys_profile","alive_mil_opcom","alive_mil_placement_custom","alive_mil_placement"};
