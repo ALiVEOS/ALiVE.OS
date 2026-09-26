@@ -18,6 +18,7 @@ See Also:
 
 Author:
 Tupolov
+Jman
 
 Peer Reviewed:
 nil
@@ -90,6 +91,13 @@ _cs = lbText [CS_LIST, lbCurSel CS_LIST];
 
 [_patrolrepHash, QGVAR(spos), GVAR(spos)] call ALIVE_fnc_hashSet;
 [_patrolrepHash, QGVAR(epos), GVAR(epos)] call ALIVE_fnc_hashSet;
+
+// The send, the restore after a rejoin and the delete all read the scope from locality, and
+// without it every report went to the whole side. Left unset (nothing picked yet), they fall
+// back to side as before.
+if (_eyes != "") then {
+    [_patrolrepHash, QGVAR(locality), _eyes] call ALIVE_fnc_hashSet;
+};
 
 switch _eyes do {
     case "SIDE" : {

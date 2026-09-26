@@ -53,6 +53,7 @@ See Also:
 
 Author:
 Tupolov
+Jman
 
 In memory of Peanut
 
@@ -302,8 +303,12 @@ switch (_operation) do {
             if (typeName _patrolrep == "BOOL") then {
                 _result = isPlayer player;
             } else {
-                // If player owns patrolrep, or player is admin or player is higher rank than owner
-                _result = true;
+                // Its author or a server admin may change or delete a report; this answered
+                // yes for everyone. _patrolrep is the report's name in the store. A report saved
+                // before its author was recorded stays open to everybody.
+                private _report = [GVAR(STORE), _patrolrep] call ALIVE_fnc_hashGet;
+                private _owner = if (isNil "_report") then {""} else {[_report, QGVAR(player), ""] call ALIVE_fnc_hashGet};
+                _result = (_owner == "") || {_owner == getPlayerUID player} || {call ALIVE_fnc_isServerAdmin};
             };
         };
 
@@ -531,22 +536,14 @@ switch (_operation) do {
             _result = false;
 
             // Delete patrolrep
-            switch ([_patrolrepHash, QGVAR(locality), "SIDE"] call ALIVE_fnc_hashGet) do {
-                case "SIDE": {
-                    [[_logic,"deletepatrolrep",[_patrolrepName]], "ALIVE_fnc_patrolrep", side (group player), false, true] call BIS_fnc_MP;
-                };
-                case "GROUP": {
-                    [[_logic,"deletepatrolrep",[_patrolrepName]], "ALIVE_fnc_patrolrep", group player, false, true] call BIS_fnc_MP;
-                };
-                case "FACTION": {
-                   [[_logic,"deletepatrolrep",[_patrolrepName, faction player]], "ALIVE_fnc_patrolrep", true, false, true] call BIS_fnc_MP;
-                };
-                case "LOCAL": {
-                    [_logic,"deletepatrolrep",[_patrolrepName]] call ALIVE_fnc_patrolrep;
-                };
-                case default {
-                    [[_logic,"deletepatrolrep",[_patrolrepName]], "ALIVE_fnc_patrolrep", true, false, true] call BIS_fnc_MP;
-                };
+            // The marker delete goes to every machine except for a private report. It went to the
+            // deleter's current side, group or faction, which misses the report's own audience once
+            // the author has changed group or an admin deletes it; a machine without the marker does
+            // nothing.
+            if (([_patrolrepHash, QGVAR(locality), "SIDE"] call ALIVE_fnc_hashGet) == "LOCAL") then {
+                [_logic,"deletepatrolrep",[_patrolrepName]] call ALIVE_fnc_patrolrep;
+            } else {
+                [[_logic,"deletepatrolrep",[_patrolrepName]], "ALIVE_fnc_patrolrep", true, false, true] call BIS_fnc_MP;
             };
 
             // Remove patrolrep from store on all localities
