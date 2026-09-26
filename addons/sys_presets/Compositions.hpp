@@ -34,6 +34,15 @@ class Cfg3DEN {
             icon = "\A3\ui_f\data\map\markers\nato\b_inf.paa";
             useSideColorOnIcon = 1;
         };
+        class ALiVE_Preset_insurgency {
+            path = "x\alive\addons\sys_presets\compositions\insurgency";
+            side = 1;
+            editorCategory = "ALiVE_PresetCat";
+            editorSubcategory = "ALiVE_PresetSub";
+            displayName = "Insurgency: FIA against NATO";
+            icon = "\A3\ui_f\data\map\markers\nato\b_inf.paa";
+            useSideColorOnIcon = 1;
+        };
         class ALiVE_Preset_nato_holds_one_area {
             path = "x\alive\addons\sys_presets\compositions\nato_holds_one_area";
             side = 1;
