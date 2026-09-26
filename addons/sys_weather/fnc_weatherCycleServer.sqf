@@ -63,22 +63,26 @@ private _newFog = _minimumFog + (_maximumFog - _minimumFog) * random 0.05;
 private _newFogDecay = _newFog/10+random _newFog/100;
 private _newFogAltitude = random 150;
 
-while {_newOvercast > _maximumOvercast || _newOvercast < _minimumOvercast} do {
-    if (_isHighend) then {
-        _newOvercast = (overcast - (random _cycleVariance));
-    };
-    if (_isLowend) then {
-        _newOvercast = (overcast + (random _cycleVariance));
-    };
-    if (!_isHighend && !_isLowend) then {
-        private _seed = random 100;
-        if (_seed >= 50) then {
-            _newOvercast = (overcast + random _cycleVariance); }
-        else {
-           _newOvercast = (overcast - random _cycleVariance);
-        };
+// Draw the next target once and keep it inside the module's band. This used to redraw until the
+// value landed in the band, with no pause and no limit, so once Zeus or a script had moved overcast
+// outside the band it spun for the rest of the mission. In a band so narrow that both edges apply
+// (Tropical in its wet months), pick a direction at random, or the upward branch always won and
+// the sky stuck at full cover.
+if (_isHighend && !_isLowend) then {
+    _newOvercast = (overcast - (random _cycleVariance));
+};
+if (_isLowend && !_isHighend) then {
+    _newOvercast = (overcast + (random _cycleVariance));
+};
+if (_isHighend isEqualTo _isLowend) then {
+    private _seed = random 100;
+    if (_seed >= 50) then {
+        _newOvercast = (overcast + random _cycleVariance); }
+    else {
+       _newOvercast = (overcast - random _cycleVariance);
     };
 };
+_newOvercast = (_newOvercast max _minimumOvercast) min _maximumOvercast;
 
 private _period = WEATHER_CYCLE_DELAY;
 
@@ -106,14 +110,22 @@ if (WEATHER_DEBUG) then {
 };
 
 
-while { ( round(overcast * (10 ^ _decimalplaces)) != round((_newOvercast) * (10 ^ _decimalplaces))  && _cycle) } do {
+// Poll while this cycle is live and start the next change once the target is reached, as
+// fnc_weatherServer.sqf does for the first one. The loop used to run only while the target
+// was NOT reached and started the next change only when it WAS, so after the first change
+// the weather never changed again. If the target is never met (Zeus or another script
+// changing the weather), the next change starts anyway once this one has had its time
+// plus ten minutes.
+private _changeStarted = time;
+while { _cycle } do {
 
     if (_waiting && WEATHER_DEBUG) then {
         hintSilent format["****************************\n Current overcast setting: \n%1\n Overcast target value:\n%2\n****************************", round(overcast * (10 ^ _decimalplaces)) / (10 ^ _decimalplaces), round(_newOvercast * (10 ^ _decimalplaces)) / (10 ^ _decimalplaces)];
     };
 
 
-    if (round(overcast * (10 ^ _decimalplaces)) / (10 ^ _decimalplaces) == round(_newOvercast * (10 ^ _decimalplaces)) / (10 ^ _decimalplaces) && _waiting) then {  // if _newOvercast value reached
+    private _reached = round(overcast * (10 ^ _decimalplaces)) == round(_newOvercast * (10 ^ _decimalplaces));
+    if (_waiting && {_reached || {(time - _changeStarted) > (_period + 600)}}) then {  // _newOvercast value reached, or the change has had its time
         _waiting = false;
 
         if (WEATHER_DEBUG) then {
