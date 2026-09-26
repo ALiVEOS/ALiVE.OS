@@ -221,21 +221,18 @@ GVAR(HEALTH_DATA) = [
 GVAR(LOADOUT_DATA) = [
 
     ["assignedItemMagazines", {
-        private ["_target","_magazines","_weap"];
+        // The magazine loaded in each assigned item (a designator's battery), read from
+        // magazinesAmmoFull. Selecting each item to ask for its magazine raised it and put the
+        // player back on their weapon's main muzzle, and gear is now read on every timed save.
+        private ["_target","_magazines","_items"];
         _target = (_this select 0);
         _magazines = [];
-        _weap = currentWeapon _target;
+        _items = assignedItems _target;
         {
-            private "_magazine";
-            _target selectWeapon _x;
-            if(currentWeapon _target==_x) then {
-                _magazine = currentMagazine _target;
-                if(_magazine != "") then {
-                    _magazines set[count _magazines, _magazine];
-                };
+            if ((_x select 2) && {(_x select 4) in _items}) then {
+                _magazines set [count _magazines, _x select 0];
             };
-        } forEach (assignedItems _target);
-        _target selectWeapon _weap;
+        } forEach (magazinesAmmoFull _target);
         _magazines;},
      {
         removeBackpack (_this select 0);

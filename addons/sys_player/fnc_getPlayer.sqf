@@ -24,6 +24,7 @@ See Also:
 
 Author:
 Tupolov
+Jman
 
 Peer reviewed:
 nil
@@ -97,6 +98,14 @@ if (local _player) then {
     } foreach _data;
 
     _player setVariable[QGVAR(playerloaded), true];
+
+    // Unless the restore has just sent this player off for joining in the wrong role, hand the
+    // server the gear they now carry. The server marks them restored for its timed saves when that
+    // gear arrives, in the same message, so a timed save can't write the state from before it.
+    if !(_player getVariable [QGVAR(kicked), false]) then {
+        private _gearHash = [_logic, "setGear", [_player]] call ALIVE_fnc_player;
+        [[_logic, "updateGear", [_player, _gearHash, true]], "ALiVE_fnc_player", false, false] call BIS_fnc_MP;
+    };
 
     _result = true;
 };

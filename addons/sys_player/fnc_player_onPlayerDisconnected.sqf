@@ -12,6 +12,7 @@
  * an actual drop are handled by the HandleDisconnect EH in ALiVE_fnc_player.
  *
  * Created by Tupolov
+ * Modified by Jman
  * Creation date: 06/08/2013
  *
  * */
@@ -72,7 +73,9 @@ if (!isNil QMOD(sys_player) && isServer) then {
 
         } else {
 
-            if !(_unit getVariable [QGVAR(kicked), false]) then {
+            // Only once their restore is in, as the disconnect save does: saving someone whose
+            // restore never landed would replace the record they own with the fresh spawn.
+            if (!(_unit getVariable [QGVAR(kicked), false]) && {MOD(sys_player) getVariable [_uid + "_restored", false]}) then {
                 _result = [MOD(sys_player), "setPlayer", [_unit]] call ALIVE_fnc_player;
                 TRACE_1("SETTING PLAYER DATA", _result);
             } else {

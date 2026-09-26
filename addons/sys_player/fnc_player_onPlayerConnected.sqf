@@ -85,7 +85,7 @@ if (!isNil QMOD(sys_player) && isServer) then {
         };
 
         if (isNull _unit) then {
-            diag_log[format["SYS_PLAYER: PLAYER UNIT NOT FOUND IN PLAYABLEUNITS(%1)",_name]];
+            diag_log[format["SYS_PLAYER: PLAYER UNIT NOT FOUND IN PLAYABLEUNITS(%1), SO THEIR SAVED STATE IS NOT RESTORED AND TIMED OR DISCONNECT SAVES LEAVE THEIR RECORD ALONE THIS SESSION",_name]];
 
             /// Hmmmm connecting player isn't found...
 
@@ -98,6 +98,13 @@ if (!isNil QMOD(sys_player) && isServer) then {
             // Apply data to player object
             TRACE_3("Sending player data to", _name, _uid, _owner);
             _result = [MOD(sys_player), "getPlayer", [_unit, _owner]] call ALIVE_fnc_player;
+
+            // With no saved record there is nothing to restore, so timed saves can include this
+            // player straight away. When a record was sent, the server marks them once the gear
+            // the client sends after applying it arrives (updateGear).
+            if !(_result) then {
+                MOD(sys_player) setVariable [_uid + "_restored", true];
+            };
 
             TRACE_1("GETTING PLAYER DATA", _result);
 

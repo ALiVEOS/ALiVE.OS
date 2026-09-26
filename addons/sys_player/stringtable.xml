@@ -121,9 +121,9 @@
     <Spanish>Desactivar base de datos externa</Spanish>
 </Key>
 <Key ID="STR_ALIVE_player_storeToDB_COMMENT">
-    <English>Enable/disable saving player data</English>
-	<Chinesesimp>启用/禁用保存玩家数据</Chinesesimp>
-    <Spanish>Activa o desactiva el guardado de los datos del jugador</Spanish>
+    <English>Yes also writes player data to the ALiVE Data module's store when an admin uses Server Save and Exit, and every Auto Save Interval, so it can survive a server restart. Nothing is written when a mission simply ends. With No it's only kept in server memory, for players who rejoin while the mission is still running.</English>
+	<Chinesesimp>选择“Yes”时，在管理员使用“Server Save and Exit”时以及每个自动保存间隔，玩家数据还会写入 ALiVE 数据模块的存储，因此可以在服务器重启后保留。任务直接结束时不会写入。选择“No”时，数据只保存在服务器内存中，供任务仍在进行时重新加入的玩家使用。</Chinesesimp>
+    <Spanish>Con Yes, los datos del jugador también se escriben en el almacenamiento del módulo ALiVE Data cuando un administrador usa Server Save and Exit y en cada intervalo de guardado automático, así que pueden sobrevivir a un reinicio del servidor. No se escribe nada cuando la misión simplemente termina. Con No solo se guardan en la memoria del servidor, para los jugadores que vuelvan mientras la misión sigue en marcha.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_player_SAVELOADOUT">
     <English>Store Loadout:</English>
@@ -187,9 +187,9 @@
     <Spanish>Definir el intervalo de guardado automático</Spanish>
 </Key>
 <Key ID="STR_ALIVE_player_autoSaveTime_COMMENT">
-    <English>Set the interval between auto saves of player data (in seconds) to external database. This may impact server performance. 0 means save only at mission exit or player disconnection.</English>
-	<Chinesesimp>设定为玩家数据自动保存到外部数据库的间隔(以秒计)。这可能会影响服务器性能。0意为仅在任务退出或玩家断开连接时保存。</Chinesesimp>
-    <Spanish>Define el intervalo (en segundos) entre guardados automáticos de los datos del jugador en la base de datos externa. Puede afectar al rendimiento del servidor. 0 significa guardar solo al salir de la misión o al desconectarse el jugador.</Spanish>
+    <English>How often, in seconds, player data is also written to the database while the mission runs. Needs Save to Database on and the ALiVE Data module with Database Source set to Local; it's checked every 10 seconds. 0 or blank turns these timed writes off, leaving the write at Server Save and Exit. Frequent writes can affect server performance.</English>
+	<Chinesesimp>任务运行期间玩家数据写入数据库的间隔（秒）。需要开启“保存到数据库”，并放置 ALiVE 数据模块且将“数据库源”设为“Local”；每 10 秒检查一次。0 或留空会关闭这些定时写入，只在“Server Save and Exit”时写入。过于频繁的写入可能影响服务器性能。</Chinesesimp>
+    <Spanish>Cada cuántos segundos se escriben también los datos del jugador en la base de datos mientras dura la misión. Necesita Guardar en base de datos activado y el módulo ALiVE Data con Origen de la base de datos en Local; se comprueba cada 10 segundos. 0 o vacío desactiva estas escrituras periódicas y deja solo la de Server Save and Exit. Escribir muy a menudo puede afectar al rendimiento del servidor.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_player_ERROR1">
     <English>Only one Player Persistence module can be used</English>

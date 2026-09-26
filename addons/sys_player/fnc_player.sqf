@@ -334,7 +334,9 @@ switch(_operation) do {
             // Set up any checks - autoStorePlayer
             if (isServer) then {
 
-                [ALiVE_fnc_autoStorePlayer, DEFAULT_INTERVAL, [DEFAULT_INTERVAL]] call CBA_fnc_addPerFrameHandler;
+                // Called every 10 s: it counts its calls to time the saves to server memory
+                // (every DEFAULT_INTERVAL) and the database writes (every Auto Save Interval).
+                [ALiVE_fnc_autoStorePlayer, 10, [DEFAULT_INTERVAL, 10]] call CBA_fnc_addPerFrameHandler;
 
                 // Inferno #885: capture player state the moment they drop. This
                 // is the only save path in sys_player driven by an actual engine
@@ -365,10 +367,13 @@ switch(_operation) do {
                             _unit setVariable [QGVAR(kicked), false, true];
                         };
 
+                        // Only once their restore is in: somebody who drops before it lands still
+                        // holds the fresh spawn, and saving that would replace the record they own.
                         private _save = _uid != ""
                             && {!isNull _unit}
                             && {MOD(sys_player) getVariable ["enablePlayerPersistence", false]}
-                            && {!_kicked};
+                            && {!_kicked}
+                            && {MOD(sys_player) getVariable [_uid + "_restored", false]};
 
                         // #885 comment (UnRealxInferno): never persist a dead,
                         // downed or unconscious state - see PLAYER_STATE_UNSAVEABLE.
@@ -395,6 +400,9 @@ switch(_operation) do {
                         // because either way they have left.
                         if (_uid != "") then {
                             MOD(sys_player) setVariable [_uid, false, true];
+                            // and they are no longer restored, so timed saves leave them alone
+                            // until their next connection has been restored again
+                            MOD(sys_player) setVariable [_uid + "_restored", nil];
                         };
 
                         // Never claim the body - let the engine handle it as before
@@ -516,7 +524,23 @@ switch(_operation) do {
                     };
                     [GVAR(gear_data), getplayerUID _unit] call ALIVE_fnc_hashRem;
                     [GVAR(gear_data), getplayerUID _unit, _gearHash] call ALIVE_fnc_hashSet;
+                    // A restore sends its gear with a third element set. The player counts as
+                    // restored for timed saves once that gear is in, marked in the same message,
+                    // so a timed save can never pair the restore with the gear from before it.
+                    if (_args param [2, false, [false]]) then {
+                        _logic setVariable [(getPlayerUID _unit) + "_restored", true];
+                    };
                     _result = _gearHash;
+        };
+        case "pushGear": {
+                    // Runs where the player is local, for a timed save: send the server the gear
+                    // they carry now, which it otherwise only hears about on a container visit.
+                    private _unit = _args select 0;
+                    if (local _unit && {_logic getVariable ["saveLoadout", true]}) then {
+                        private _gearHash = [_logic, "setGear", [_unit]] call MAINCLASS;
+                        [[_logic, "updateGear", [_unit, _gearHash]], "ALiVE_fnc_player", false, false] call BIS_fnc_MP;
+                    };
+                    _result = true;
         };
         case "getPlayer": {
                    // Get player data from player store and apply to player object on client
@@ -578,7 +602,8 @@ switch(_operation) do {
                             // what makes "leave the last good save standing" hold:
                             // the periodic autostore would otherwise write a dead
                             // player's state mid-window and restore it on rejoin.
-                            if (PLAYER_STATE_UNSAVEABLE(_unit)) then {
+                            // A player sent off for joining in the wrong role keeps the record they own.
+                            if (PLAYER_STATE_UNSAVEABLE(_unit) || {_unit getVariable [QGVAR(kicked), false]}) then {
                                 // Plain log, not TRACE - a release build compiles the
                                 // trace out, so there was no way to tell the guard
                                 // fired. autoStorePlayer walks the playable units
@@ -587,7 +612,7 @@ switch(_operation) do {
                                 // informational and name the player, the state and
                                 // the fact the earlier save still stands, so a
                                 // repeat reads as the same player still down.
-                                ["SYS_PLAYER - SAVE SKIPPED FOR %1 (%2), UNIT IS %3 - LAST GOOD SAVE KEPT", name _unit, _puid, toUpper (lifeState _unit)] call ALiVE_fnc_dump;
+                                ["SYS_PLAYER - SAVE SKIPPED FOR %1 (%2), UNIT IS %3 - LAST GOOD SAVE KEPT", name _unit, _puid, [toUpper (lifeState _unit), "SENT OFF FOR THE WRONG ROLE"] select (_unit getVariable [QGVAR(kicked), false])] call ALiVE_fnc_dump;
                                 _result = false;
                             } else {
                                 _playerHash = [_logic, [_unit, _puid]] call ALIVE_fnc_setPlayer;
