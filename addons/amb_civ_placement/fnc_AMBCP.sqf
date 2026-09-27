@@ -675,8 +675,10 @@ switch(_operation) do {
                                 //["SUPPORT CLASSES: %1",_supportClasses] call ALIVE_fnc_dump;
                                 //["LAND CLASSES: %1",_landClasses] call ALIVE_fnc_dump;
 
+                                // A chance for each parked vehicle, at most one per town. The count starts
+                                // at 0, under any cap, so the first vehicle of every town was a support one.
                                 private _supportPlacement = false;
-                                if(_supportCount < _supportMax) then {
+                                if(_supportCount < 1 && {random 1 < _supportMax}) then {
                                     _supportPlacement = true;
                                     _vehicleClass = selectRandom _supportClasses;
                                 }else{
