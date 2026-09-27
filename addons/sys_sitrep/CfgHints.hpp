@@ -11,7 +11,7 @@ class CfgHints
             // Optional hint subtitle, filled by arguments from 'arguments' param
             displayNameShort = "SITREP and PATROLREP";
             // Structured text, filled by arguments from 'arguments' param
-            description = "Allows commanders to submit Situation Reports and Patrol Reports to HQ.  Reports are saved to the database and restored at the beginning of each mission.%1%1%2Open the %3ALiVE Action Menu%4 and select %3C2ISTAR%4 from the list%1%2Select Send SITREPor PATROLREP%1%2 Fill out the appropriate details, including a SITREP position on the map or start/end positions for the PATROLREP.%1%2%3Press SEND%4 to send your report to HQ.";
+            description = "Allows commanders to submit Situation Reports and Patrol Reports to HQ.  Reports are saved to the database and restored at the beginning of each mission.%1%1%2Open the %3ALiVE Action Menu%4 and select %3Commander Actions%4 from the list%1%2Select Send SITREP or Send PATROLREP%1%2 Fill out the appropriate details, including a SITREP position on the map or start/end positions for the PATROLREP.%1%2%3Press SEND%4 to send your report to HQ.";
             // Optional structured text, filled by arguments from 'arguments' param (first argument is %11, see notes bellow), grey color of text
             tip = "Reports automatically record your Grid, Callsign and the Date Time Group in the military format (DDHHmmMMMYY)";
             arguments[] = {

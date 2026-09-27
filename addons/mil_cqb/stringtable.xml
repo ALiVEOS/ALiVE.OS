@@ -94,13 +94,13 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_AMOUNT_COMMENT">
-    <English>Number of units per CQB group. Actual count is randomised between 1 and this value each time a group spawns.</English>
-    <Chinese>每個 CQB 小組的單位數量。實際數量在每次小組生成時於 1 至此數值之間隨機決定。</Chinese>
-    <Chinesesimp>每个 CQB 小组的单位数量。实际数量在每次小组生成时于 1 至此数值之间随机决定。</Chinesesimp>
-    <Spanish>Número de unidades por grupo CQB. La cantidad real se aleatoriza entre 1 y este valor cada vez que se genera un grupo.</Spanish>
-    <French>Nombre d'unités par groupe CQB. Le nombre réel est tiré au hasard entre 1 et cette valeur à chaque apparition d'un groupe.</French>
-    <Portuguese>Número de unidades por grupo CQB. A quantidade real é aleatorizada entre 1 e este valor sempre que um grupo é gerado.</Portuguese>
-    <Russian>Количество юнитов в группе CQB. Фактическое число случайно выбирается от 1 до этого значения при каждом появлении группы.</Russian>
+    <English>Number of units per CQB group. The actual count is picked at random between 1 and this value when a house is garrisoned, and the house keeps that group while the same faction holds it; a different faction rolls a new one.</English>
+    <Chinese>每個 CQB 小組的單位數量。房屋被駐守時，實際數量於 1 至此數值之間隨機決定；只要由同一派系駐守，該房屋就沿用同一小組，換成其他派系則重新決定。</Chinese>
+    <Chinesesimp>每个 CQB 小组的单位数量。房屋被驻守时，实际数量于 1 至此数值之间随机决定；只要由同一派系驻守，该房屋就沿用同一小组，换成其他派系则重新决定。</Chinesesimp>
+    <Spanish>Número de unidades por grupo CQB. La cantidad real se elige al azar entre 1 y este valor cuando se guarnece una casa, y la casa conserva ese grupo mientras la ocupe la misma facción; otra facción elige uno nuevo.</Spanish>
+    <French>Nombre d'unités par groupe CQB. Le nombre réel est tiré au hasard entre 1 et cette valeur lorsqu'une maison est occupée, et la maison garde ce groupe tant que la même faction la tient; une autre faction en tire un nouveau.</French>
+    <Portuguese>Número de unidades por grupo CQB. A quantidade real é sorteada entre 1 e este valor quando uma casa é guarnecida, e a casa mantém esse grupo enquanto a mesma facção a ocupar; outra facção sorteia um novo.</Portuguese>
+    <Russian>Количество юнитов в группе CQB. Фактическое число выбирается случайно от 1 до этого значения, когда дом занимается гарнизоном, и дом сохраняет эту группу, пока его удерживает та же фракция; другая фракция выбирает новую.</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_ENABLE">

@@ -70,9 +70,10 @@
     <English>Sortie Duration:</English>
     <Spanish>Duración de la salida:</Spanish>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ATO_SORTIE_DURATION_COMMENT">
-    <English>Minutes a sortie is allowed to run before the aircraft is recalled, in whole minutes. This also sets how long an aircraft waits for its pilot and how long it loiters on task. Leave blank to use whatever the requesting commander asks for, which is usually 10.</English>
-    <Spanish>Minutos que puede durar una salida antes de que se llame de vuelta a la aeronave, en minutos enteros. También define cuánto espera una aeronave a su piloto y cuánto permanece en órbita sobre el objetivo. Déjalo en blanco para usar lo que pida el comandante solicitante, que suele ser 10.</Spanish>
+    <English>Minutes a sortie is allowed to run before the aircraft is recalled, in whole minutes. This also sets how long an aircraft waits for its pilot and how long it loiters on task. Leave blank to use what the requesting commander asks for, usually 10, or 25 minutes for the air commander's own patrols, interceptions, SEAD sorties and ferry flights.</English>
+    <Spanish>Minutos que puede durar una salida antes de que se llame de vuelta a la aeronave, en minutos enteros. También define cuánto espera una aeronave a su piloto y cuánto permanece en órbita sobre el objetivo. Déjalo en blanco para usar lo que pida el comandante solicitante, normalmente 10, o 25 minutos para las patrullas, interceptaciones, salidas SEAD y vuelos de traslado propios del comandante aéreo.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ATO_MIN_ASSETS">
     <English>Minimum Aircraft For Offensive Missions:</English>
