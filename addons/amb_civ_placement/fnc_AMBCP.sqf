@@ -952,11 +952,10 @@ switch(_operation) do {
 
             // Place ambient civilians
 
-            // Scope bump for known civilian factions whose generic Man units
-            // have scope = 1 (BI internal) but need to appear in the spawn
-            // class list. Kept as defensive guard even though the original
-            // trigger (issue #522, BI population module CIV_F side 7) was
-            // resolved engine-side.
+            // Public (scope 2) classes only, for these civilian factions: their
+            // scope 1 Man classes are internal ones, and spawning them threw
+            // errors (issue #522, the BI population module's CIV_F side 7 units).
+            // Kept as a defensive guard.
             private _minScope = 1;
             if (_faction == "CIV_F" || _faction == "C_VIET" || _faction == "SPE_CIV") then {_minScope = 2};
 
