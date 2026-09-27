@@ -1487,9 +1487,16 @@ ALiVE_fnc_INS_recruit = {
 
                     _attemptsRemaining = if (_recruitAttemptLimit == 0) then {count _agents} else {_recruitAttemptLimit};
 
+                    // The newest loop owns the building. A new HQ set up in the building of a disabled one
+                    // clears the disabled flag, which would wake this loop as well, and 2 loops recruited
+                    // from the one building.
+                    ALiVE_INS_recruitLoopCount = (missionNamespace getVariable ["ALiVE_INS_recruitLoopCount", 0]) + 1;
+                    private _loopToken = ALiVE_INS_recruitLoopCount;
+                    _HQ setVariable ["ALiVE_MIL_OPCOM_HQ_RECRUITLOOP", _loopToken];
+
                     // A disabled HQ stands, so alive alone kept it recruiting after a player or friendly
                     // AI had disabled it. The flag is cleared if a new HQ is set up in the building.
-                    while {alive _HQ && {!(_HQ getVariable ["ALiVE_MIL_OPCOM_HQ_DISABLED", false])} && {_attemptsRemaining != 0} && {!isNil "_objective"} && {!([_objective,"deleted",false] call ALiVE_fnc_HashGet)}} do {
+                    while {alive _HQ && {!(_HQ getVariable ["ALiVE_MIL_OPCOM_HQ_DISABLED", false])} && {(_HQ getVariable ["ALiVE_MIL_OPCOM_HQ_RECRUITLOOP", _loopToken]) == _loopToken} && {_attemptsRemaining != 0} && {!isNil "_objective"} && {!([_objective,"deleted",false] call ALiVE_fnc_HashGet)}} do {
 
                         private _hmPressureData = [_pos,_side,(_size + 600) max 900] call ALiVE_fnc_INS_getHeartsAndMindsPressure;
                         _hmPressureData params [["_hmPressure",0],["_hmPhase","Stabilize"]];
@@ -1503,7 +1510,7 @@ ALiVE_fnc_INS_recruit = {
                         sleep (_adjustedCycleMin + random ((_adjustedCycleMax - _adjustedCycleMin) max 0));
 
                         // Only recruit while the HQ still exists.
-                        if (!alive _HQ || {_HQ getVariable ["ALiVE_MIL_OPCOM_HQ_DISABLED", false]}) exitwith {};
+                        if (!alive _HQ || {_HQ getVariable ["ALiVE_MIL_OPCOM_HQ_DISABLED", false]} || {(_HQ getVariable ["ALiVE_MIL_OPCOM_HQ_RECRUITLOOP", _loopToken]) != _loopToken}) exitwith {};
 
                         // Positive values are finite attempt counts, negative values are unlimited.
                         if (_attemptsRemaining > 0) then {
