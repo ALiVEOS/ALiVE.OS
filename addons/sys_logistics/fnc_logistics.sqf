@@ -968,13 +968,17 @@ switch (_operation) do {
         };
 
         case "allObjects" : {
-            if (isnil "_args" || {isnull _args}) then {_args = []};
+            // isNull on the array of arguments threw, so asking with a position never worked.
+            if (isnil "_args" || {!(_args isEqualType [])}) then {_args = []};
 
             private ["_position","_radius","_list","_objects"];
 
             _position = _args param [0, getArray(configFile >> "CfgWorlds" >> worldName >> "centerPosition")];
             _radius = _args param [1, 30000];
-            _list = _args param [2, ["Reammobox_F","Static","ThingX","LandVehicle","Air"]];
+            // "Ship" too: without it an Eden boat got no key at start, only when a player left it,
+            // keyed by where it was left. Nothing claimed that key on the next load, so the boat
+            // stayed at its start spot and a second one was made where it had been left.
+            _list = _args param [2, ["Reammobox_F","Static","ThingX","LandVehicle","Air","Ship"]];
 
             _objects = [];
             {
