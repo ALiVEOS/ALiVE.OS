@@ -168,7 +168,10 @@ switch (_operation) do {
         private _civicRetaliationIntensity = (parseNumber format ["%1", _logic getvariable ["civicRetaliationIntensity",1]]) max 0;
         private _debug = ((_logic getvariable ["debug","false"]) == "true");
         private _persistent = ((_logic getvariable ["persistent","false"]) == "true");
-        private _reinforcements = call compile (_logic getvariable ["reinforcements","0.9"]);
+        // The editor stores this as text, but a module made by script can hold a number, and
+        // call compile on a number throws.
+        private _reinforcements = _logic getvariable ["reinforcements","0.9"];
+        if !(_reinforcements isEqualType 0) then {_reinforcements = call compile _reinforcements};
         private _roadblocks = (parseNumber format ["%1", _logic getvariable ["roadblocks",1]]) > 0;
         // #697 Phase 2.1: AI-driven friendly destroy of enemy asymmetric
         // installations. Read the mode string here; the behavioural
