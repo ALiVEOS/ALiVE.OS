@@ -79,8 +79,11 @@ addMissionEventHandler ["EntityKilled", {
             if (ALiVE_advciv_debug) then { ["[ALiVE Threat DEBUG] firedAtCivTime SET unit=%1 side=%2 time=%3 origin=CivKilled", name _attackerUnit, side _attackerUnit, time] call ALiVE_fnc_dump; };
         };
 
+        // Only civilians Advanced Civilians is running, as the killed handler in XEH_postInit
+        // checks: this one also reached inactive civilians and the role civilians (elders,
+        // priests) the brain leaves out, and left them marked as panicking.
         {
-            if (alive _x && {side _x == civilian} && {!isPlayer _x} && {_x != _killed}) then {
+            if (alive _x && {side _x == civilian} && {!isPlayer _x} && {_x != _killed} && {_x getVariable ["ALiVE_advciv_active", false]}) then {
                 _x setVariable ["ALiVE_advciv_state", "PANIC", true];
                 _x setVariable ["ALiVE_advciv_panicSource", getPos _killed, true];
                 _x setVariable ["ALiVE_advciv_nearShots", 10];
