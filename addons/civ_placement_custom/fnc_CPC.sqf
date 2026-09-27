@@ -643,7 +643,9 @@ switch (_operation) do {
                     _countSpecOps = round((_size / 25) * 0.5);
                 };
                 case "Specops": {
-                    _countAir = round((_size / 30) * 0.5);
+                    // Aircraft at the small random share the other ground weightings give them; this
+                    // was the Air weighting's share, copied from the Air weighting's case.
+                    _countAir = floor((_size / 30) * random(0.1));
                     _countInfantry = round((_size / 10) * 0.5);
                     _countMotorized = floor((_size / 12) * random 0.2);
                     _countMechanized = floor((_size / 12) * random 0.2);
