@@ -32,7 +32,15 @@ if (ARTY_RESPAWN_LIMIT == 0) exitwith {
 
 //Start respawning if not exited
 sleep _respawn;
-ARTY_RESPAWN_LIMIT = ARTY_RESPAWN_LIMIT - 1;
+// Checked again after the wait, and taken in the same unscheduled step: 2 batteries lost close
+// together both passed the check above, both took 1 off, and the limit went below 0, where it
+// never stopped anything again.
+private _outOfAssets = false;
+isNil { if (ARTY_RESPAWN_LIMIT == 0) then { _outOfAssets = true } else { ARTY_RESPAWN_LIMIT = ARTY_RESPAWN_LIMIT - 1 } };
+if (_outOfAssets) exitwith {
+    _replen = format ["All units! We are out of arty assets"];
+    [[player,_replen,"side"],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;
+};
 
 
 //This unit cannot be used anymore, remove from side-list

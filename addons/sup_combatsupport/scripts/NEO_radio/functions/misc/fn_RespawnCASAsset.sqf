@@ -37,7 +37,15 @@ if (CAS_RESPAWN_LIMIT == 0) exitwith {
 
 //Start respawning if not exited
 sleep _respawn;
-CAS_RESPAWN_LIMIT = CAS_RESPAWN_LIMIT - 1;
+// Checked again after the wait, and taken in the same unscheduled step: 2 aircraft lost close
+// together both passed the check above, both took 1 off, and the limit went below 0, where it
+// never stopped anything again.
+private _outOfAssets = false;
+isNil { if (CAS_RESPAWN_LIMIT == 0) then { _outOfAssets = true } else { CAS_RESPAWN_LIMIT = CAS_RESPAWN_LIMIT - 1 } };
+if (_outOfAssets) exitwith {
+    _replen = format ["All units! We are out of CAS assets"];
+    [[player,_replen,"side"],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;
+};
 
 //Remove from all side-lists
 {
