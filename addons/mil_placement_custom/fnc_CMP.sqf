@@ -1416,7 +1416,9 @@ switch(_operation) do {
                                 _position = _parking select 0;
                                 _activeDir = _parking select 1;
                             } else {
-                                _position = [position _logic, random((_radius select 0) + ((_radius select 0)/0.25)), random(360)] call BIS_fnc_relPos;
+                                // Within the guard radius and a quarter again: dividing by 0.25 put
+                                // patrols up to five guard radii out, 1 km from a 200 m objective.
+                                _position = [position _logic, random((_radius select 0) + ((_radius select 0)*0.25)), random(360)] call BIS_fnc_relPos;
                             };
                         } else {
                             if (_infantryActivePlacedCount < _garrisonCount) then {
@@ -1436,7 +1438,7 @@ switch(_operation) do {
                             } else {
                                 _command = "ALIVE_fnc_ambientMovement";
                                 _radius = [_guardRadius,"SAFE",[0,0,0]];
-                                _position = [position _logic, random((_radius select 0) + ((_radius select 0)/0.25)), random(360)] call BIS_fnc_relPos;
+                                _position = [position _logic, random((_radius select 0) + ((_radius select 0)*0.25)), random(360)] call BIS_fnc_relPos;
                             };
                         };
 
