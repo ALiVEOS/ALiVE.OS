@@ -6889,51 +6889,8 @@ switch(_operation) do {
                                 _groupCount, _motorisedSkipped, count _motorisedProfiles] call ALiVE_fnc_dump;
                         };
 
-                        // create profiles
-                        for "_i" from 0 to _groupCount -1 do {
-
-                            _group = _motorisedGroups select _i;
-
-                            if (_eventType == "HELI_INSERT") then {
-                                _position = [_logic, "prepareHelicopterLZ", [
-                                    _reinforcementPosition getPos [random(200), random(360)], 60
-                                ]] call MAINCLASS;
-                                if (_debug) then {
-                                    ["ML - HELI_INSERT motorised pickup LZ prepared at %1", _position] call ALiVE_fnc_dump;
-                                };
-                            } else {
-                                // STANDARD spawn: route the base point through the clear-spot finder so units aren't placed on hangars/buildings.
-                                // _paraDrop (players watching the base): seed from the out-of-sight
-                                // remote anchor at ground level -- no carrierless chute drop.
-                                private _spawnSeed = _reinforcementPosition;
-                                if (_paraDrop && _eventType == "STANDARD" && {!isNil "_remotePosition"} && {count _remotePosition > 1}) then {
-                                    _spawnSeed = _remotePosition;
-                                };
-                                _position = [_logic, "prepareHelicopterLZ", [
-                                    _spawnSeed getPos [random(200), random(360)], 80
-                                ]] call MAINCLASS;
-                                if (_paraDrop && _eventType != "HELI_INSERT" && _eventType != "STANDARD") then {
-                                    _position set [2,PARADROP_HEIGHT];
-                                };
-                            };
-
-                            if!(surfaceIsWater _position) then {
-
-                                _profiles = [_group, _position, random(360), false, _eventFaction, true] call ALIVE_fnc_createProfilesFromGroupConfig;
-
-                                _profileIDs = [];
-                                {
-                                    _profileID = _x select 2 select 4;
-                                    _profileIDs pushback _profileID;
-                                } forEach _profiles;
-
-                                _motorisedProfiles pushback _profileIDs;
-
-                            } else {
-                                _groupCount = _groupCount - 1;
-                                _totalCount = _totalCount - 1;
-                            };
-                        };
+                        // One loop only: a second copy of the loop above built every motorised group again,
+                        // uncharged, so a request for 2 delivered 4.
 
                         [_eventCargoProfiles, "motorised", _motorisedProfiles] call ALIVE_fnc_hashSet;
 
