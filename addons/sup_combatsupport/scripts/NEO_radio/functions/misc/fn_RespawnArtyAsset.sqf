@@ -17,6 +17,12 @@ _code = _this select 9;
 _leader = _battery;
 _side = _this select 10;
 
+// The Military Logistics settings come off the old battery now: its leader is deleted below, and
+// read after that (or after the body was cleaned up during the wait) they came back as off.
+private _oldLogisticsEnabled = _battery getVariable ["ALIVE_logistics_enabled", false];
+private _oldLogisticsSource = _battery getVariable ["ALIVE_logistics_source", 0];
+private _oldDefaultRounds = _battery getVariable "ALIVE_resupply_defaultRounds";
+
 _unitCount = count _units; if (_unitCount > 4) then { _unitCount = 4 }; if (_unitCount < 1) then { _unitCount = 1 };
 // _canMove comes from the battery being replaced, which weighed both whether its class can
 // move and the module's Allow Repositioning. Working it out again here from a list of
@@ -148,12 +154,9 @@ _roundsUnit = (if (count _artyBatteries > 0) then {_artyBatteries select 0} else
 
 leader _grp setVariable ["NEO_radioArtyBatteryRounds", _roundsAvailable, true];
 
-// Carry the Military Logistics Simulation settings from the old leader onto the new battery so
-// the resupply watchdog keeps monitoring the asset after respawn. Variables are still readable
-// on the dead leader via getVariable.
-private _oldLogisticsEnabled = _battery getVariable ["ALIVE_logistics_enabled", false];
-private _oldLogisticsSource = _battery getVariable ["ALIVE_logistics_source", 0];
-private _oldDefaultRounds = _battery getVariable ["ALIVE_resupply_defaultRounds", _roundsAvailable];
+// Carry the Military Logistics Simulation settings from the old leader, read at the top, onto
+// the new battery so the resupply watchdog keeps monitoring the asset after respawn.
+if (isNil "_oldDefaultRounds") then { _oldDefaultRounds = _roundsAvailable };
 {
     _x setVariable ["ALIVE_logistics_enabled", _oldLogisticsEnabled, true];
     _x setVariable ["ALIVE_logistics_source", _oldLogisticsSource, true];
