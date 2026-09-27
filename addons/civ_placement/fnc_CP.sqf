@@ -182,6 +182,8 @@ switch(_operation) do {
     };
     // Determine force faction
     case "faction": {
+        // What the module was given, before a faction that isn't loaded is swapped for the default.
+        private _asked = if (_args isEqualType "") then {_args} else {_logic getVariable ["faction", ""]};
         _result = [_logic,_operation,_args,DEFAULT_FACTION,[] call ALiVE_fnc_configGetFactions] call ALIVE_fnc_OOsimpleOperation;
 
         if !(_args isEqualType "") then {
@@ -189,6 +191,12 @@ switch(_operation) do {
             if !(_compiledFaction isEqualTo "") then {
                 _result = _compiledFaction;
             };
+        };
+
+        // A faction that isn't loaded (a mod taken out, say) becomes the default without a word.
+        // The swap stores the default in its place, so this only fires once.
+        if (_asked isEqualType "" && {_asked != ""} && {_asked != DEFAULT_FACTION} && {_result == DEFAULT_FACTION}) then {
+            ["%1 - Force Faction %2 is not loaded, so this module places %3 instead", "CP", _asked, DEFAULT_FACTION] call ALiVE_fnc_dump;
         };
     };
     case "guardRadius": {
