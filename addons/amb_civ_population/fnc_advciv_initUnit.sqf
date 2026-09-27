@@ -55,17 +55,17 @@ if (side _unit != civilian) exitWith {
             private _isInVehicle = (_veh != _firer);
             private _pos = if (_isInVehicle) then { getPos _veh } else { getPos _firer };
 
-            // Detect suppressor: check the muzzle slot of the fired weapon
+            // Suppressed when the shot came out of the main muzzle of the firer's own rifle or
+            // pistol, a vehicle seat included, and its muzzle item quietens it. Flash hiders and
+            // muzzle brakes sit in the same slot and counted too: they leave audibleFire at about
+            // 1, where a suppressor's is 0.4 or less. A vehicle's own guns never carry one, and a
+            // round from an underbarrel launcher doesn't go through it.
             private _hasSuppressor = false;
-            if (!_isInVehicle && {_weapon != ""}) then {
-                if (_weapon == currentWeapon _firer) then {
-                    private _acc = _firer weaponAccessories _weapon;
-                    if (count _acc > 0) then {
-                        private _muzzleItem = _acc select 0;
-                        if (typeName _muzzleItem == "STRING" && {_muzzleItem != ""}) then {
-                            _hasSuppressor = true;
-                        };
-                    };
+            if (_weapon != "" && {_muzzle == _weapon} && {_weapon in [primaryWeapon _firer, handgunWeapon _firer]}) then {
+                private _muzzleItem = (_firer weaponAccessories _weapon) param [0, ""];
+                if (_muzzleItem isEqualType "" && {_muzzleItem != ""}) then {
+                    private _coef = configFile >> "CfgWeapons" >> _muzzleItem >> "ItemInfo" >> "AmmoCoef" >> "audibleFire";
+                    _hasSuppressor = isNumber _coef && {getNumber _coef < 0.5};
                 };
             };
 
