@@ -23,6 +23,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 Peer Reviewed:
 nil
 ---------------------------------------------------------------------------- */
@@ -38,18 +39,16 @@ params [
 _markerClusters = [];
 
 if (count _markers > 0) then {
+    // Cluster by cluster, so an objective inside 2 overlapping markers is taken once. Marker by
+    // marker it went in once per marker, and got placed on twice.
+    private _live = _markers select { _x call ALIVE_fnc_markerExists };
+    { _x setMarkerAlpha 0 } forEach _live;
     {
-        _marker =_x;
-        if (_marker call ALIVE_fnc_markerExists) then {
-            _marker setMarkerAlpha 0;
-            {
-                _center = [_x,"center"] call ALIVE_fnc_hashGet;
-                if ([_center,_marker] call ALiVE_fnc_inArea) then {
-                    _markerClusters pushback _x;
-                };
-            } forEach _clusters;
+        _center = [_x,"center"] call ALIVE_fnc_hashGet;
+        if ((_live findIf { [_center, _x] call ALiVE_fnc_inArea }) > -1) then {
+            _markerClusters pushback _x;
         };
-    } forEach _markers;
+    } forEach _clusters;
 }else{
     _markerClusters = _clusters;
 };
