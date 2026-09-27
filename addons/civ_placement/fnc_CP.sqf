@@ -495,6 +495,11 @@ switch(_operation) do {
             // check markers for existance
             private ["_marker","_counter"];
 
+            // A name that matches no marker is dropped, and with every TAOR name wrong the
+            // module places over the whole map, so say which names went.
+            private _taorMissing = _taor select { !(_x call ALIVE_fnc_markerExists) };
+            private _blacklistMissing = _blacklist select { !(_x call ALIVE_fnc_markerExists) };
+
             if(count _taor > 0) then {
                 _counter = 0;
                 {
@@ -517,6 +522,13 @@ switch(_operation) do {
                         _counter = _counter + 1;
                     };
                 } forEach _blacklist;
+            };
+
+            if !(_taorMissing isEqualTo []) then {
+                ["CP - TAOR marker(s) %1 not found, ignored%2", _taorMissing, ["", ". No TAOR marker is left, so this module places over the whole map"] select (_taor isEqualTo [])] call ALiVE_fnc_dump;
+            };
+            if !(_blacklistMissing isEqualTo []) then {
+                ["CP - Blacklist marker(s) %1 not found, ignored", _blacklistMissing] call ALiVE_fnc_dump;
             };
 
             private ["_clusters"];

@@ -641,8 +641,18 @@ switch(_operation) do {
                 _priorityFilter = parseNumber ([_logic,"priorityFilter"] call MAINCLASS);
                 _randomCampsMil = parseNumber ([_logic,"randomCamps"] call MAINCLASS);
 
+                // A name that matches no marker is dropped, and with every TAOR name wrong the
+                // module places over the whole map, so say which names went.
+                private _taorMissing = _taor select { !([_x] call ALIVE_fnc_markerExists) };
+                private _blacklistMissing = _blacklist select { !([_x] call ALIVE_fnc_markerExists) };
                 _taor = _taor select { [_x] call ALIVE_fnc_markerExists };
                 _blacklist = _blacklist select { [_x] call ALIVE_fnc_markerExists };
+                if !(_taorMissing isEqualTo []) then {
+                    ["MP - TAOR marker(s) %1 not found, ignored%2", _taorMissing, ["", ". No TAOR marker is left, so this module places over the whole map"] select (_taor isEqualTo [])] call ALiVE_fnc_dump;
+                };
+                if !(_blacklistMissing isEqualTo []) then {
+                    ["MP - Blacklist marker(s) %1 not found, ignored", _blacklistMissing] call ALiVE_fnc_dump;
+                };
 
                 private ["_HQClusters","_landClusters","_airClusters","_heliClusters","_vehicleClusters"];
 
