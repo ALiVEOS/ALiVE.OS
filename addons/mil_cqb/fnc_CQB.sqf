@@ -1713,10 +1713,11 @@ switch(_operation) do {
                     private _profileID = _unit getvariable ["profileID", ""];
                     private _side = side (group _unit);
                     // The faction the group was built for is kept on the house; the soldiers carry none.
-                    private _faction = _house getvariable ["faction", ""];
+                    // A house restored from a save has none either, so the group's own is the fallback.
+                    private _hookFaction = _house getvariable ["faction", _faction];
                     if (!_cqbOnEachSpawnOnce || {!(_unit getvariable ["ALIVE_hookFired", false])}) then {
                         _unit setVariable ["ALIVE_hookFired", true];
-                        [_unit, _profileID, _side, _faction] spawn (compile _cqbOnEachSpawn);
+                        [_unit, _profileID, _side, _hookFaction] spawn (compile _cqbOnEachSpawn);
                     };
                 } forEach (units _grp);
             };
