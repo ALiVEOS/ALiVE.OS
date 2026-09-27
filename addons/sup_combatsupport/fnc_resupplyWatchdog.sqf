@@ -23,6 +23,7 @@ Returns:
 
 Author:
     Goldwep
+    Jman
 ---------------------------------------------------------------------------- */
 
 // Watchdog constants.
@@ -53,27 +54,42 @@ while {true} do {
         {
             private _veh = _x select 0;
             private _callsign = _x select 2;
-            if (!isNull _veh && {alive _veh} && {!(_veh in _seen)}) then {
-                _seen pushBack _veh;
-                _assets pushBack [_veh, "TRANSPORT", _sideCheck, _callsign];
+            if (!isNull _veh && {alive _veh}) then {
+                private _i = _seen find _veh;
+                if (_i < 0) then {
+                    _seen pushBack _veh;
+                    _assets pushBack [_veh, "TRANSPORT", _sideCheck, _callsign, [_sideCheck]];
+                } else {
+                    ((_assets select _i) select 4) pushBackUnique _sideCheck;
+                };
             };
         } forEach (NEO_radioLogic getVariable [format ["NEO_radioTrasportArray_%1", _sideCheck], []]);
 
         {
             private _veh = _x select 0;
             private _callsign = _x select 2;
-            if (!isNull _veh && {alive _veh} && {!(_veh in _seen)}) then {
-                _seen pushBack _veh;
-                _assets pushBack [_veh, "CAS", _sideCheck, _callsign];
+            if (!isNull _veh && {alive _veh}) then {
+                private _i = _seen find _veh;
+                if (_i < 0) then {
+                    _seen pushBack _veh;
+                    _assets pushBack [_veh, "CAS", _sideCheck, _callsign, [_sideCheck]];
+                } else {
+                    ((_assets select _i) select 4) pushBackUnique _sideCheck;
+                };
             };
         } forEach (NEO_radioLogic getVariable [format ["NEO_radioCasArray_%1", _sideCheck], []]);
 
         {
             private _veh = _x select 0;
             private _callsign = _x select 2;
-            if (!isNull _veh && {alive _veh} && {!(_veh in _seen)}) then {
-                _seen pushBack _veh;
-                _assets pushBack [_veh, "ARTY", _sideCheck, _callsign];
+            if (!isNull _veh && {alive _veh}) then {
+                private _i = _seen find _veh;
+                if (_i < 0) then {
+                    _seen pushBack _veh;
+                    _assets pushBack [_veh, "ARTY", _sideCheck, _callsign, [_sideCheck]];
+                } else {
+                    ((_assets select _i) select 4) pushBackUnique _sideCheck;
+                };
             };
         } forEach (NEO_radioLogic getVariable [format ["NEO_radioArtyArray_%1", _sideCheck], []]);
 
@@ -204,6 +220,28 @@ while {true} do {
             };
             _primaryVeh setVariable ["ALIVE_resupply_waitingRTB", false, true];
         };
+
+        // Guard: only a Military Logistics module serving the side the request names answers it.
+        // Without one it went nowhere, the asset stayed "in progress" and held a dispatch slot for
+        // good, so after 3 such assets nothing was resupplied again. An asset shared with friendly
+        // sides is listed under each, and a module answers only its own side (the register is set
+        // for every AI Commander synced to it), so pick a side a module really serves, the asset's
+        // own first. With none, say why, once per asset.
+        private _servedSides = (_x select 4) select {
+            private _s = _x;
+            (MOD(Require) getVariable [format ["ALIVE_MIL_LOG_AVAIL_%1", _s], false]) &&
+            {((allMissionObjects "ALiVE_mil_logistics") findIf { ([_x, "side"] call ALIVE_fnc_ML) == str _s }) > -1}
+        };
+        if (_servedSides isEqualTo []) then {
+            if !(_primaryVeh getVariable ["ALIVE_resupply_noLogisticsSaid", false]) then {
+                _primaryVeh setVariable ["ALIVE_resupply_noLogisticsSaid", true];
+                ["ALIVE Resupply Watchdog: %1 (%2) needs resupply, but no Military Logistics module serves %3, so none can be sent",
+                    _callsign, _type, (_x select 4) apply { str _x }] call ALiVE_fnc_dump;
+            };
+            continue
+        };
+        private _ownSide = side group _veh;
+        _side = if (_ownSide in _servedSides) then { _ownSide } else { _servedSides select 0 };
 
         // Guard: concurrent dispatch limit.
         private _activeDispatches = missionNamespace getVariable ["ALIVE_resupply_activeCount", 0];
