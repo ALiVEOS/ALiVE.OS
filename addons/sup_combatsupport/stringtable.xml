@@ -44,13 +44,13 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CAS_LIMIT_COMMENT">
-    <English>Total number of times destroyed CAS aircraft can be replaced, shared across all CAS assets. 0 disables replacement.</English>
-    <Chinese>被摧毀的 CAS 飛機可重新替補的總次數，由所有 CAS 資產共用。0 表示停用替補。</Chinese>
-    <Chinesesimp>被摧毁的近距空中支援飞机可被替补的总次数,由所有近距空中支援单位共享。0 表示禁止替补。</Chinesesimp>
-    <Spanish>Número total de veces que las aeronaves de CAS destruidas pueden reemplazarse, compartido entre todos los activos de CAS. 0 desactiva el reemplazo.</Spanish>
-    <French>Nombre total de fois où les aéronefs CAS détruits peuvent être remplacés, partagé entre toutes les unités CAS. 0 désactive le remplacement.</French>
-    <Portuguese>Número total de vezes que aeronaves CAS destruídas podem ser substituídas, compartilhado entre todos os ativos CAS. 0 desativa a substituição.</Portuguese>
-    <Russian>Общее число раз, которое уничтоженные самолёты CAS могут быть заменены, общее для всех средств CAS. 0 отключает замену.</Russian>
+    <English>Total number of times destroyed CAS aircraft can be replaced, shared across all CAS assets. 0 disables replacement. Leave it blank, or enter a negative number, for no limit.</English>
+    <Chinese>被摧毀的 CAS 飛機可重新替補的總次數，由所有 CAS 資產共用。0 表示停用替補。留空或輸入負數則不設上限。</Chinese>
+    <Chinesesimp>被摧毁的近距空中支援飞机可被替补的总次数,由所有近距空中支援单位共享。0 表示禁止替补。留空或输入负数则不设上限。</Chinesesimp>
+    <Spanish>Número total de veces que las aeronaves de CAS destruidas pueden reemplazarse, compartido entre todos los activos de CAS. 0 desactiva el reemplazo. Déjalo en blanco, o pon un número negativo, para que no haya límite.</Spanish>
+    <French>Nombre total de fois où les aéronefs CAS détruits peuvent être remplacés, partagé entre toutes les unités CAS. 0 désactive le remplacement. Laisser vide, ou saisir un nombre négatif, pour aucune limite.</French>
+    <Portuguese>Número total de vezes que aeronaves CAS destruídas podem ser substituídas, compartilhado entre todos os ativos CAS. 0 desativa a substituição. Deixe em branco, ou introduza um número negativo, para não haver limite.</Portuguese>
+    <Russian>Общее число раз, которое уничтоженные самолёты CAS могут быть заменены, общее для всех средств CAS. 0 отключает замену. Оставьте поле пустым или введите отрицательное число, чтобы снять ограничение.</Russian>
 </Key>
 <Key ID="STR_ALIVE_CAS_LIMIT">
     <English>CAS Respawn Limit:</English>
@@ -59,13 +59,13 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_TRANS_LIMIT_COMMENT">
-    <English>Total number of times destroyed transport aircraft can be replaced, shared across all transport assets. 0 disables replacement.</English>
-    <Chinese>被摧毀的運輸機可重新替補的總次數，由所有運輸資產共用。0 表示停用替補。</Chinese>
-    <Chinesesimp>被摧毁的运输机可被替补的总次数,由所有运输单位共享。0 表示禁止替补。</Chinesesimp>
-    <Spanish>Número total de veces que las aeronaves de transporte destruidas pueden reemplazarse, compartido entre todos los activos de transporte. 0 desactiva el reemplazo.</Spanish>
-    <French>Nombre total de fois où les aéronefs de transport détruits peuvent être remplacés, partagé entre toutes les unités de transport. 0 désactive le remplacement.</French>
-    <Portuguese>Número total de vezes que aeronaves de transporte destruídas podem ser substituídas, compartilhado entre todos os ativos de transporte. 0 desativa a substituição.</Portuguese>
-    <Russian>Общее число раз, которое уничтоженные транспортные самолёты могут быть заменены, общее для всех транспортных средств. 0 отключает замену.</Russian>
+    <English>Total number of times destroyed transport aircraft can be replaced, shared across all transport assets. 0 disables replacement. Leave it blank, or enter a negative number, for no limit.</English>
+    <Chinese>被摧毀的運輸機可重新替補的總次數，由所有運輸資產共用。0 表示停用替補。留空或輸入負數則不設上限。</Chinese>
+    <Chinesesimp>被摧毁的运输机可被替补的总次数,由所有运输单位共享。0 表示禁止替补。留空或输入负数则不设上限。</Chinesesimp>
+    <Spanish>Número total de veces que las aeronaves de transporte destruidas pueden reemplazarse, compartido entre todos los activos de transporte. 0 desactiva el reemplazo. Déjalo en blanco, o pon un número negativo, para que no haya límite.</Spanish>
+    <French>Nombre total de fois où les aéronefs de transport détruits peuvent être remplacés, partagé entre toutes les unités de transport. 0 désactive le remplacement. Laisser vide, ou saisir un nombre négatif, pour aucune limite.</French>
+    <Portuguese>Número total de vezes que aeronaves de transporte destruídas podem ser substituídas, compartilhado entre todos os ativos de transporte. 0 desativa a substituição. Deixe em branco, ou introduza um número negativo, para não haver limite.</Portuguese>
+    <Russian>Общее число раз, которое уничтоженные транспортные самолёты могут быть заменены, общее для всех транспортных средств. 0 отключает замену. Оставьте поле пустым или введите отрицательное число, чтобы снять ограничение.</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ARTY_LIMIT">
@@ -79,13 +79,13 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ARTY_LIMIT_COMMENT">
-    <English>Total number of times destroyed artillery batteries can be replaced, shared across all artillery assets. 0 disables replacement.</English>
-    <Chinese>被摧毀的火砲連可重新替補的總次數，由所有火砲資產共用。0 表示停用替補。</Chinese>
-    <Chinesesimp>被摧毁的炮兵单位可被替补的总次数,由所有火炮单位共享。0 表示禁止替补。</Chinesesimp>
-    <Spanish>Número total de veces que las baterías de artillería destruidas pueden reemplazarse, compartido entre todos los activos de artillería. 0 desactiva el reemplazo.</Spanish>
-    <French>Nombre total de fois où les batteries d'artillerie détruites peuvent être remplacées, partagé entre toutes les unités d'artillerie. 0 désactive le remplacement.</French>
-    <Portuguese>Número total de vezes que baterias de artilharia destruídas podem ser substituídas, compartilhado entre todos os ativos de artilharia. 0 desativa a substituição.</Portuguese>
-    <Russian>Общее число раз, которое уничтоженные артиллерийские батареи могут быть заменены, общее для всех артиллерийских средств. 0 отключает замену.</Russian>
+    <English>Total number of times destroyed artillery batteries can be replaced, shared across all artillery assets. 0 disables replacement. Leave it blank, or enter a negative number, for no limit.</English>
+    <Chinese>被摧毀的火砲連可重新替補的總次數，由所有火砲資產共用。0 表示停用替補。留空或輸入負數則不設上限。</Chinese>
+    <Chinesesimp>被摧毁的炮兵单位可被替补的总次数,由所有火炮单位共享。0 表示禁止替补。留空或输入负数则不设上限。</Chinesesimp>
+    <Spanish>Número total de veces que las baterías de artillería destruidas pueden reemplazarse, compartido entre todos los activos de artillería. 0 desactiva el reemplazo. Déjalo en blanco, o pon un número negativo, para que no haya límite.</Spanish>
+    <French>Nombre total de fois où les batteries d'artillerie détruites peuvent être remplacées, partagé entre toutes les unités d'artillerie. 0 désactive le remplacement. Laisser vide, ou saisir un nombre négatif, pour aucune limite.</French>
+    <Portuguese>Número total de vezes que baterias de artilharia destruídas podem ser substituídas, compartilhado entre todos os ativos de artilharia. 0 desativa a substituição. Deixe em branco, ou introduza um número negativo, para não haver limite.</Portuguese>
+    <Russian>Общее число раз, которое уничтоженные артиллерийские батареи могут быть заменены, общее для всех артиллерийских средств. 0 отключает замену. Оставьте поле пустым или введите отрицательное число, чтобы снять ограничение.</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CS_DEBUG">

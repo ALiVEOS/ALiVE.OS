@@ -84,12 +84,14 @@ switch(_operation) do {
                         // script-created modules respawn destroyed assets after 3 SECONDS
                         _CS_Set_Respawn = NEO_radioLogic getvariable ["combatsupport_respawn","600"];
                         CS_RESPAWN = parsenumber(_CS_Set_Respawn);
+                        // A blank limit means no limit, as a negative one already did (it counts down
+                        // and never reaches 0): read as 0, blank turned replacement off.
                         _CAS_SET_RESPAWN_LIMIT = NEO_radioLogic getvariable ["combatsupport_casrespawnlimit","3"];
-                        CAS_RESPAWN_LIMIT = parsenumber(_CAS_SET_RESPAWN_LIMIT);
+                        CAS_RESPAWN_LIMIT = if (_CAS_SET_RESPAWN_LIMIT isEqualTo "") then {-1} else {parsenumber(_CAS_SET_RESPAWN_LIMIT)};
                         _TRANS_SET_RESPAWN_LIMIT = NEO_radioLogic getvariable ["combatsupport_transportrespawnlimit","3"];
-                        TRANS_RESPAWN_LIMIT = parsenumber(_TRANS_SET_RESPAWN_LIMIT);
+                        TRANS_RESPAWN_LIMIT = if (_TRANS_SET_RESPAWN_LIMIT isEqualTo "") then {-1} else {parsenumber(_TRANS_SET_RESPAWN_LIMIT)};
                         _ARTY_SET_RESPAWN_LIMIT = NEO_radioLogic getvariable ["combatsupport_artyrespawnlimit","3"];
-                        ARTY_RESPAWN_LIMIT = parsenumber(_ARTY_SET_RESPAWN_LIMIT);
+                        ARTY_RESPAWN_LIMIT = if (_ARTY_SET_RESPAWN_LIMIT isEqualTo "") then {-1} else {parsenumber(_ARTY_SET_RESPAWN_LIMIT)};
 
                         // Enable Debug attribute drives the module-wide diagnostic gate read by the
                         // CAS engagement/rearm scripts and the resupply watchdog. Bool when binarised,
