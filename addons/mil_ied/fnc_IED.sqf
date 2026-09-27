@@ -598,7 +598,10 @@ switch(_operation) do {
                             if (count _locPos >= 4) then {
                                 private _pos = [_locPos select 0, _locPos select 1, _locPos select 2];
                                 private _size = _locPos select 3;
-                                _locations pushBack [_pos, _size, _locLabel];
+                                // The location's own dice roll, kept since the save format added
+                                // it; an older save has none and gets 0, as it always did.
+                                private _locFate = [_value, "LocationFate", 0] call ALiVE_fnc_hashGet;
+                                _locations pushBack [_pos, _size, _locLabel, _locFate];
                             };
                         };
 
@@ -748,9 +751,13 @@ switch(_operation) do {
 
                     _faction = (selectRandom _factions);
 
-                    //Roll the dice - use 0-100 range so threat values are true percentages
+                    //Roll the dice - use 0-100 range so threat values are true percentages.
+                    // On a reload the location's saved roll is used again, so it gets back the
+                    // bomber and VB-IED it had. Forcing 0 here gave every saved location both.
                     if (GVAR(Loaded)) then {
-                        _fate = 0;
+                        _fate = _x param [3, 0];
+                        if (_fate isEqualType "") then { _fate = parseNumber _fate };
+                        if !(_fate isEqualType 0) then { _fate = 0 };
                     } else {
                         _fate = random 100;
                     };
@@ -767,6 +774,7 @@ switch(_operation) do {
                         _locPos = [_pos select 0, _pos select 1, _pos select 2, _size];
                         [_data, "LocationPos",   _locPos] call ALiVE_fnc_hashSet;
                         [_data, "LocationLabel", _label]  call ALiVE_fnc_hashSet;
+                        [_data, "LocationFate",  _fate]   call ALiVE_fnc_hashSet;
                         [_locs, _label, _data] call ALiVE_fnc_hashSet;
                         [GVAR(STORE), "locations", _locs] call ALiVE_fnc_hashSet;
                     };
@@ -1491,6 +1499,12 @@ switch(_operation) do {
                 if (count _legacyPos > 0) then {
                     _loc = [_logic, "convertString", _legacyPos] call MAINCLASS;
                     [_value, "LocationObj", _loc] call ALiVE_fnc_hashSet;
+                };
+
+                // The location's saved dice roll is a number, and comes back as text too.
+                private _savedFate = [_value, "LocationFate", 0] call ALiVE_fnc_hashGet;
+                if (_savedFate isEqualType "") then {
+                    [_value, "LocationFate", parseNumber _savedFate] call ALiVE_fnc_hashSet;
                 };
             };
 
