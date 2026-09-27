@@ -187,7 +187,9 @@ private _gracePeriod = 15;
                     };
                     if (count _detectors > 0) then {
                         [_ied, _detection, _detectors, _detection, _device] call ALiVE_fnc_detectIED;
-                        _detectedOnce = true;
+                        // detectIED only warns a unit carrying the detector, so only that uses up the
+                        // one warning: an engineer without one nearby mustn't take it from the next man.
+                        if ((_detectors findIf { _device in (items _x) }) > -1) then { _detectedOnce = true };
                     };
                 };
 
