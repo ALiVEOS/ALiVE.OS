@@ -309,9 +309,11 @@ if (isDedicated || (isServer && _pns)) then {
         ["SYS DATA - MISSION: %1 %2 %3",_logic, MOD(sys_data), MOD(sys_data) getVariable "saveDateTime"] call ALiVE_fnc_dump;
     };
 
-    // Handle basic mission persistence - date/time and custom variables
+    // Handle basic mission persistence - date/time and custom variables. The mission's own
+    // values (ALiVE_fnc_setData) come back whenever persistence is on; only the date waits on
+    // Save Mission Time, which used to gate the whole store.
     GVAR(mission_data) = [] call CBA_fnc_hashCreate;
-    if (GVAR(dictionaryLoaded) && (MOD(sys_data) getVariable ["saveDateTime","false"] == "true")) then {
+    if (GVAR(dictionaryLoaded)) then {
         private ["_missionName","_response"];
         // Read in date/time for mission
         ["SYS_DATA - Loading basic mission data."] call ALIVE_fnc_dump;
@@ -324,7 +326,9 @@ if (isDedicated || (isServer && _pns)) then {
                 ["SYS DATA - MISSION DATA LOADED: %1",_response] call ALiVE_fnc_dump;
             };
 
-            setdate ([GVAR(mission_data), "date", date] call CBA_fnc_hashGet);
+            if (MOD(sys_data) getVariable ["saveDateTime","false"] == "true") then {
+                setdate ([GVAR(mission_data), "date", date] call CBA_fnc_hashGet);
+            };
         } else {
 
             if(ALiVE_SYS_DATA_DEBUG_ON) then {

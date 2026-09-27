@@ -38,18 +38,19 @@ if (_name == "__SERVER__") then {
             ["SYS DATA - SERVER EXIT SAVING DATA"] call ALiVE_fnc_dump;
         };
 
+        // The mission's own values (ALiVE_fnc_setData) are saved whenever persistence is on; only
+        // the date waits on Save Mission Time, which used to gate the whole store.
         if (MOD(sys_data) getVariable ["saveDateTime","false"] == "true") then {
-
             [GVAR(mission_data), "date", date] call ALIVE_fnc_hashSet;
-            [GVAR(mission_data), "Group", GVAR(GROUP_ID)] call ALIVE_fnc_hashSet;
+        };
+        [GVAR(mission_data), "Group", GVAR(GROUP_ID)] call ALIVE_fnc_hashSet;
 
-            _missionName = (["_DATA"] call ALiVE_fnc_storeKeys) select 0;
+        _missionName = (["_DATA"] call ALiVE_fnc_storeKeys) select 0;
 
-            _result = [GVAR(datahandler), "write", ["sys_data", GVAR(mission_data), false, _missionName] ] call ALIVE_fnc_Data;
+        _result = [GVAR(datahandler), "write", ["sys_data", GVAR(mission_data), false, _missionName] ] call ALIVE_fnc_Data;
 
-            if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                ["SYS DATA - SAVED DATE TIME: %1",_result] call ALiVE_fnc_dump;
-            };
+        if(ALiVE_SYS_DATA_DEBUG_ON) then {
+            ["SYS DATA - SAVED MISSION DATA: %1",_result] call ALiVE_fnc_dump;
         };
 
         // Save Composition data
