@@ -1298,7 +1298,13 @@ switch (_operation) do {
 		private _civ = if (_arguments isEqualType objNull) then {_arguments} else {[_logic, "Civ"] call ALiVE_fnc_hashGet};
 		if (!isNil "_civ") then {
 			private _chance = missionNamespace getVariable ["ALiVE_amb_civ_population_IntelGatherChance", 30];
-			private _h = _civ getVariable ["ALiVE_CivPop_Hostility", 30];
+			// The civ's own hostility floored by the module's baseline for the player's side,
+			// as the ACE menu's tiers read it.
+			private _playerSide = str (side (group player));
+			private _sideBaseline = if (!isNil "ALIVE_civilianHostility") then {
+				[ALIVE_civilianHostility, _playerSide, 0] call ALiVE_fnc_hashGet
+			} else { 0 };
+			private _h = ((_civ getVariable ["ALiVE_CivPop_Hostility", 30]) max _sideBaseline) max 0 min 100;
 			_civ setVariable ["intelGathered", true];
 
 			// Hide the button on the still-open dialog so the player sees

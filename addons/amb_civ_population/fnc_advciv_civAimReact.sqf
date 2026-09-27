@@ -22,7 +22,8 @@ Description:
       Defiant   - Emphatic head-shake refusal (Gesture_NoLong) plus
                   PANIC flee. Does not comply.
       Hostile   - Same as Defiant plus a +5 hostility bump through
-                  ALiVE_fnc_civSetHostility, which writes both copies.
+                  ALiVE_fnc_civSetHostility, which writes both copies,
+                  when the civ's own figure is 80 or more.
 
 Parameters:
     _this select 0: OBJECT - civilian
@@ -145,7 +146,11 @@ switch (_bucket) do {
         [_civ] call _fnc_panicFlee;
 
         // +5, both copies (the agent record and the unit's broadcast value), through
-        // the shared setter the wound bump and the dialog use too.
-        [_civ, 5] call ALiVE_fnc_civSetHostility;
+        // the shared setter the wound bump and the dialog use too. Only when the civ's
+        // own figure is Hostile: one lifted there by the Hostility setting for the
+        // player's side alone would otherwise climb 5 on every aim.
+        if ((_civ getVariable ["ALiVE_CivPop_Hostility", 30]) >= 80) then {
+            [_civ, 5] call ALiVE_fnc_civSetHostility;
+        };
     };
 };
