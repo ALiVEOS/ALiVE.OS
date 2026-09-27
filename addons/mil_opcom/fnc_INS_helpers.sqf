@@ -1220,7 +1220,9 @@ ALiVE_fnc_INS_addRoadblockHoldAction = {
                     {},
                     [_charge],
                     15
-                ] remoteExec ["BIS_fnc_holdActionAdd", 0, _actionObject];
+                // A dedicated server has no player to hold this, and running the game's hold-action code
+                // there throws on some buildings (fn_holdAction_showIcon), so only players' machines get it.
+                ] remoteExec ["BIS_fnc_holdActionAdd", [0, -2] select isDedicated, _actionObject];
 };
 
 ALiVE_fnc_INS_addRoadblockHoldActionWhenReady = {
@@ -1888,7 +1890,9 @@ ALiVE_fnc_INS_addInstallationHoldActions = {
                 {},
                 [_building, _disabledVar, _subtitleTitle, _subtitleText],
                 _duration
-            ] remoteExec ["BIS_fnc_holdActionAdd", 0, _actionObject];
+            // A dedicated server has no player to hold this, and running the game's hold-action code
+            // there throws on some buildings (fn_holdAction_showIcon), so only players' machines get it.
+            ] remoteExec ["BIS_fnc_holdActionAdd", [0, -2] select isDedicated, _actionObject];
         };
     } foreach ([_building] call ALiVE_fnc_INS_getInstallationActionObjects);
 };
