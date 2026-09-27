@@ -1011,17 +1011,29 @@ ALiVE_fnc_INS_ied = {
 
                 // If IED module is used add IEDs and VBIEDs according to IED module settings
                 if (!isnil "ALiVE_MIL_IED") then {
-                    _trg = createTrigger ["EmptyDetector",_pos];
-                    _trg setTriggerArea [_size + 250, _size + 250,0,false];
-                    _trg setTriggerActivation ["ANY","PRESENT",true];
-                    _num = ceil(_size/100);
-                    _trg setTriggerStatements [
-                        "this && {(vehicle _x in thisList) && ((getposATL _x) select 2 < 25)} count ([] call BIS_fnc_listPlayers) > 0",
-                            format["null = [getpos thisTrigger,%1,'%2',%3] call ALIVE_fnc_createIED",_size,text _id,_num],
-                            format["null = [getpos thisTrigger,'%1'] call ALIVE_fnc_removeIED",text _id]
-                    ];
+                    // One IED trigger per town. On a persistent load Military IED has already rebuilt
+                    // the one it has on record by the time this runs again, and 2 triggers on one
+                    // town put its IEDs out twice. The standing one gives the same orders, so keep it.
+                    private _trg = objNull;
+                    private _standing = (_pos nearObjects ["EmptyDetector", 1]) select {
+                        private _act = (triggerStatements _x) param [1, ""];
+                        (_act find "ALIVE_fnc_createIED") > -1 && {(_act find _id) > -1}
+                    };
+                    if (_standing isEqualTo []) then {
+                        _trg = createTrigger ["EmptyDetector",_pos];
+                        _trg setTriggerArea [_size + 250, _size + 250,0,false];
+                        _trg setTriggerActivation ["ANY","PRESENT",true];
+                        _num = ceil(_size/100);
+                        _trg setTriggerStatements [
+                            "this && {(vehicle _x in thisList) && ((getposATL _x) select 2 < 25)} count ([] call BIS_fnc_listPlayers) > 0",
+                                format["null = [getpos thisTrigger,%1,'%2',%3] call ALIVE_fnc_createIED",_size,text _id,_num],
+                                format["null = [getpos thisTrigger,'%1'] call ALIVE_fnc_removeIED",text _id]
+                        ];
 
-                    [MOD(MIL_IED), "storeTrigger", [_size,format["%1",_id],_pos,true,"IED",_num]] call ALiVE_fnc_IED;
+                        [MOD(MIL_IED), "storeTrigger", [_size,format["%1",_id],_pos,true,"IED",_num]] call ALiVE_fnc_IED;
+                    } else {
+                        _trg = _standing select 0;
+                    };
 
                     [_pos,_size,1] call ALiVE_fnc_placeVBIED;
 
