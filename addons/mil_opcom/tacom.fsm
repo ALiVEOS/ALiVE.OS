@@ -494,7 +494,7 @@ class FSM
                          "" \n
                          "            _posP = [_profile,""position""] call ALiVE_fnc_HashGet;" \n
                          "            _section = [_objective,""section""] call AliVE_fnc_HashGet;" \n
-                         "            _state = [_objective,""tacom_state""] call AliVE_fnc_HashGet;" \n
+                         "            _state = [_objective,""tacom_state"",""none""] call AliVE_fnc_HashGet;" \n
                          "            _transmit = !([_objective,""opcom_state""] call AliVE_fnc_HashGet == ""internal"");" \n
                          "            _dataset = nil;" \n
                          "            " \n
