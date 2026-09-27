@@ -164,7 +164,9 @@ switch(_operation) do {
             //// For backward compatibility, remove after some months ////
             //// Please update the list when this code is read, but not changed
             ////	- 6/2/2019
-            if (_CQB_spawn >= 1) then {_CQB_spawn = _CQB_spawn / 100};
+            // Over 1 only: the editor's 100% is stored as 1, and dividing that by 100 as well
+            // left a module set to 100% garrisoning 1% of its houses.
+            if (_CQB_spawn > 1) then {_CQB_spawn = _CQB_spawn / 100};
             /////////////////////////////////////////////////////////////
             _logic setVariable ["CQB_spawn", _CQB_spawn];
 
