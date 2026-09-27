@@ -39,11 +39,18 @@ if(ALiVE_SYS_DATA_DEBUG_ON) then {
 _async = false;
 _missionName = ([""] call ALiVE_fnc_storeKeys) select 0; // group, mission and map
 
+// Taken and cleared before the store is read: a delete that lands after this sets it again, so
+// the next save still writes the store that delete emptied.
+private _saveEmpty = MOD(SYS_patrolrep) getVariable ["saveEmptyStore", false];
+MOD(SYS_patrolrep) setVariable ["saveEmptyStore", false];
+
 _data = [MOD(SYS_patrolrep),"state"] call ALiVE_fnc_patrolrep;
 
-if (count (_data select 1) == 0) exitwith {
-    //[["ALiVE_LOADINGSCREEN"],"BIS_fnc_endLoadingScreen",true,false] call BIS_fnc_MP;
-};
+// An empty store is saved only after deleting the last report emptied it: skipping every
+// empty store brought that report back after a restart, as it did SITREP's until #1045. A store
+// that was never filled, or is not loaded yet, has nothing to write, and on Local every
+// save rewrites the whole profile.
+if (count (_data select 1) == 0 && {!_saveEmpty}) exitwith {[true, []]};
 
 _result = [false,[]];
 

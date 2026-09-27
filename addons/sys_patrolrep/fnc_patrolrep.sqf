@@ -587,13 +587,19 @@ switch (_operation) do {
             _patrolrepName = _args select 0;
             _patrolrepHash = _args select 1;
 
+            // Restored, as for SITREP in #1045. With this commented out the report vanished from
+            // the running store but its document was left behind in the database. The function
+            // guards itself on a dedicated server with data enabled and does nothing when the
+            // document has no revision to delete against, as on the Local store.
             If (isDedicated) then {
-                private "_response";
-                // _response = [_patrolrepName, _patrolrepHash] call ALIVE_fnc_patrolrepDeleteData;
+                private _response = [_patrolrepName, _patrolrepHash] call ALIVE_fnc_patrolrepDeleteData;
                 TRACE_1("Delete patrolrep", _response);
             };
 
             [GVAR(STORE), _patrolrepName] call ALIVE_fnc_hashRem;
+            // With the last one gone the empty store has to be saved, or it comes back after a
+            // restart. The save writes an empty store only after this.
+            if (isServer && {count (GVAR(STORE) select 1) == 0}) then { MOD(SYS_patrolrep) setVariable ["saveEmptyStore", true] };
 
             _result = GVAR(STORE);
         };
