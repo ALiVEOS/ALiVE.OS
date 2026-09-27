@@ -652,7 +652,9 @@ switch (_state) do {
                         _unit setVariable ["ALiVE_advciv_hidingBuilding", objNull, true];
                         if (vehicle _unit == _unit) then { _unit setUnitPos "DOWN"; };
                         _unit setVariable ["ALiVE_advciv_state", "HIDING", true];
-                        _unit setVariable ["ALiVE_advciv_stateTimer", ALiVE_simulationTime + 60 + random 60];
+                        // Min and Max Hide Time, as every other way into hiding uses. This one hid
+                        // for 60 to 120 s whatever they said.
+                        _unit setVariable ["ALiVE_advciv_stateTimer", ALiVE_simulationTime + ALiVE_advciv_hideTimeMin + random (ALiVE_advciv_hideTimeMax - ALiVE_advciv_hideTimeMin)];
                         if (ALiVE_advciv_debug) then { ["[ALiVE Hide DEBUG] panicRun-30s-timeout civ=%1 retry FOUND NOTHING - HIDING in place at %2", name _unit, getPos _unit] call ALiVE_fnc_dump; };
                     };
                 };
