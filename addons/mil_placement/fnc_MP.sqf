@@ -2427,14 +2427,14 @@ switch(_operation) do {
             };
 
             // Capture the infantry index range BEFORE the air block extends
-            // _groups further. Used downstream by the reserve-pool logic to
-            // restrict reservable groups to infantry / specops only -
-            // vehicle and air groups always activate at mission start
-            // regardless of Readiness, since the activation path spawns
-            // groups near buildings and that's only sensible for foot
-            // soldiers. Indices reflect ACTUAL placements: configGetRandomGroup
-            // may return "FALSE" for missing categories, so post-blacklist
-            // counts can be less than the requested counts.
+            // _groups further. The reserve-pool logic below classes the
+            // groups ahead of it as vehicle groups and the ones inside it as
+            // infantry; Readiness holds back some of each, and air groups
+            // after it always activate at mission start. Indices reflect
+            // ACTUAL placements: configGetRandomGroup may return "FALSE" for
+            // missing categories, so post-blacklist counts can be less than
+            // the requested counts.
+            private _groupsBeforeInfantry = +_groups;
             private _infantryGroupStart = count _groups;
             _groups = _groups + _infantryGroups;
             private _infantryGroupEnd = count _groups;
@@ -2458,8 +2458,11 @@ switch(_operation) do {
                 if (_infantryGroupStart < 0) then { _infantryGroupStart = 0 };
                 _infantryGroupEnd = _infantryGroupStart + (count _infantryGroups);
             } else {
-                _infantryGroupStart = 0;
-                _infantryGroupEnd = 0;
+                // No infantry: the groups ahead of where it would have started are still the
+                // vehicle groups, so Readiness applies to them. A boundary of 0 classed none
+                // of them as a vehicle, and every one was placed active.
+                _infantryGroupStart = count (_groupsBeforeInfantry - ALiVE_PLACEMENT_GROUPBLACKLIST);
+                _infantryGroupEnd = _infantryGroupStart;
             };
 
             // DEBUG -------------------------------------------------------------------------------------

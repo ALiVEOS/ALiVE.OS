@@ -1273,6 +1273,7 @@ switch(_operation) do {
             // pushed first) apart from infantry-equivalent groups
             // (Infantry only - Air and SpecOps come after and stay
             // always-active outside the reserve model).
+            private _groupsBeforeInfantry = +_groups;
             private _infantryGroupStart = count _groups;
 
             _infantryGroups = [];
@@ -1308,8 +1309,11 @@ switch(_operation) do {
                 if (_infantryGroupStart < 0) then { _infantryGroupStart = 0 };
                 _infantryGroupEnd = _infantryGroupStart + (count _infantryGroups);
             } else {
-                _infantryGroupStart = 0;
-                _infantryGroupEnd = 0;
+                // No infantry: the groups ahead of where it would have started are still the
+                // vehicle groups, so Readiness applies to them. A boundary of 0 classed none
+                // of them as a vehicle, and every one was placed active.
+                _infantryGroupStart = count (_groupsBeforeInfantry - ALiVE_PLACEMENT_GROUPBLACKLIST);
+                _infantryGroupEnd = _infantryGroupStart;
             };
 
             // DEBUG -------------------------------------------------------------------------------------

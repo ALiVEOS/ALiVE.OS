@@ -859,6 +859,7 @@ switch (_operation) do {
             };
 
             // Track infantry boundary for the reserve-pool dispatcher.
+            private _groupsBeforeInfantry = +_groups;
             private _infantryGroupStart = count _groups;
 
             private _infantryGroups = [];
@@ -886,8 +887,11 @@ switch (_operation) do {
                 if (_infantryGroupStart < 0) then { _infantryGroupStart = 0 };
                 _infantryGroupEnd = _infantryGroupStart + (count _infantryGroups);
             } else {
-                _infantryGroupStart = 0;
-                _infantryGroupEnd = 0;
+                // No infantry: the groups ahead of where it would have started are still the
+                // vehicle groups, so Readiness applies to them. A boundary of 0 classed none
+                // of them as a vehicle, and every one was placed active.
+                _infantryGroupStart = count (_groupsBeforeInfantry select {!((_x select 0) in ALiVE_PLACEMENT_GROUPBLACKLIST)});
+                _infantryGroupEnd = _infantryGroupStart;
             };
 
             if (_debug) then {
