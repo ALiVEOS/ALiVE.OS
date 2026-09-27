@@ -975,23 +975,23 @@
 <Container name="CIV_INTERACTION">
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_INTERACT_ACTIONS_ROLE_TOWNELDER">
-    <English>townelder.</English>
-    <French>ancien du village.</French>
-    <Portuguese>ancião.</Portuguese>
-    <Russian>старейшина.</Russian>
-    <Spanish>Jeque</Spanish>
-    <Chinese>鎮中耆老。</Chinese>
-    <Chinesesimp>拖车司机。</Chinesesimp>
+    <English>town elder</English>
+    <French>ancien du village</French>
+    <Portuguese>ancião</Portuguese>
+    <Russian>старейшина</Russian>
+    <Spanish>jeque</Spanish>
+    <Chinese>鎮中耆老</Chinese>
+    <Chinesesimp>镇中耆老</Chinesesimp>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_INTERACT_ACTIONS_ROLE_MAJOR">
-    <English>major</English>
+    <English>mayor</English>
     <French>maire</French>
     <Portuguese>prefeito</Portuguese>
     <Russian>мэр</Russian>
     <Spanish>alcalde</Spanish>
     <Chinese>鎮長</Chinese>
-    <Chinesesimp>专业</Chinesesimp>
+    <Chinesesimp>镇长</Chinesesimp>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_INTERACT_ACTIONS_ROLE_PRIEST">

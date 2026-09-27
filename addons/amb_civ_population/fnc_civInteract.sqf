@@ -730,6 +730,11 @@ switch (_operation) do {
 		_role = "none";
 		{if (_civ getvariable [_x,false]) exitwith {_role = _x}} foreach ["townelder","major","priest","muezzin","politician"];
 
+		// Shown after the civilian's name, so it's the role's own word in the player's language,
+		// not the flag's name: a mayor's flag is called major.
+		if (_role != "none") then {
+			_role = localize format ["STR_ALIVE_CIV_INTERACT_ACTIONS_ROLE_%1", toUpper _role];
+		};
 		_result = ([_role] call CBA_fnc_capitalize);
 	};
 

@@ -37,11 +37,14 @@ if ((side group _object) != CIVILIAN || {isnil QGVAR(ROLES_DISABLED)} || {GVAR(R
 // ~10-item addAction list that motivated the UX consolidation.
 if ((missionNamespace getVariable ["ALiVE_amb_civ_population_UIMode", "AUTO"]) != "CLASSIC") exitWith {};
 
+// Each Talk to entry shows for a civilian carrying that role's flag. The flag was looked up by
+// the translated role word, which is the flag's name only in English, and not even there for
+// the town elder, so these entries never showed in another language.
 private _role = localize "STR_ALIVE_CIV_INTERACT_ACTIONS_ROLE_TOWNELDER";
 private _text = format[localize "STR_ALIVE_CIV_INTERACT_ACTIONS_TALKTO",_role];
 private _params = [];
 private _code = {_object = _this select 0; _caller = _this select 1; _params = _this select 3; [_object,_caller] call ALiVE_fnc_SelectRoleAction};
-private _condition = "alive _target" + "&&" + format["_target getvariable [%1,false]",str(_role)];
+private _condition = "alive _target && {_target getvariable ['townelder',false]}";
 
 private _id = _object addAction [
     _text,
@@ -59,7 +62,7 @@ _role = localize "STR_ALIVE_CIV_INTERACT_ACTIONS_ROLE_MAJOR";
 _text = format[localize "STR_ALIVE_CIV_INTERACT_ACTIONS_TALKTO",_role];
 _params = [];
 _code = {_object = _this select 0; _caller = _this select 1; _params = _this select 3; [_object,_caller] call ALiVE_fnc_SelectRoleAction};
-_condition = "alive _target" + "&&" + format["_target getvariable [%1,false]",str(_role)];
+_condition = "alive _target && {_target getvariable ['major',false]}";
 
 _id = _object addAction [
     _text,
@@ -77,7 +80,7 @@ _role = localize "STR_ALIVE_CIV_INTERACT_ACTIONS_ROLE_PRIEST";
 _text = format[localize "STR_ALIVE_CIV_INTERACT_ACTIONS_TALKTO",_role];
 _params = [];
 _code = {_object = _this select 0; _caller = _this select 1; _params = _this select 3; [_object,_caller] call ALiVE_fnc_SelectRoleAction};
-_condition = "alive _target" + "&&" + format["_target getvariable [%1,false]",str(_role)];
+_condition = "alive _target && {_target getvariable ['priest',false]}";
 
 _id = _object addAction [
     _text,
@@ -95,7 +98,7 @@ _role = localize "STR_ALIVE_CIV_INTERACT_ACTIONS_ROLE_MUEZZIN";
 _text = format[localize "STR_ALIVE_CIV_INTERACT_ACTIONS_TALKTO",_role];
 _params = [];
 _code = {_object = _this select 0; _caller = _this select 1; _params = _this select 3; [_object,_caller] call ALiVE_fnc_SelectRoleAction};
-_condition = "alive _target" + "&&" + format["_target getvariable [%1,false]",str(_role)];
+_condition = "alive _target && {_target getvariable ['muezzin',false]}";
 
 _id = _object addAction [
     _text,
@@ -113,7 +116,7 @@ _role = localize "STR_ALIVE_CIV_INTERACT_ACTIONS_ROLE_POLITICIAN";
 _text = format[localize "STR_ALIVE_CIV_INTERACT_ACTIONS_TALKTO",_role];
 _params = [];
 _code = {_object = _this select 0; _caller = _this select 1; _params = _this select 3; [_object,_caller] call ALiVE_fnc_SelectRoleAction};
-_condition = "alive _target" + "&&" + format["_target getvariable [%1,false]",str(_role)];
+_condition = "alive _target && {_target getvariable ['politician',false]}";
 
 _id = _object addAction [
     _text,
