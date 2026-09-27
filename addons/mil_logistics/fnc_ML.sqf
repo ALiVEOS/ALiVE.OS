@@ -5624,7 +5624,13 @@ switch(_operation) do {
                                 _tacom_state = [_primaryReinforcementObjective,"tacom_state","none"] call ALIVE_fnc_hashGet;
                             };
                             if(_tacom_state == "reserve") then { _available = true; };
-                            
+                            // Held is the commander's own classification too, as for the Dynamic pool
+                            // above: tacom_state only reads reserve where a reserve task goes, so with
+                            // the reserve task count at 0 no insertion point was ever available.
+                            if (!_available && {"opcom_state" in (_primaryReinforcementObjective select 1)}) then {
+                                _available = ([_primaryReinforcementObjective,"opcom_state","none"] call ALIVE_fnc_hashGet) isEqualTo "reserve";
+                            };
+
                             
                         // -----------------------------------------------------------------
                         // NEW: Single objective guard - if there is only one reserved
@@ -5777,6 +5783,10 @@ switch(_operation) do {
 
                         if(_tacom_state == "reserve") then {
                             _available = true;
+                        };
+                        // And by the commander's classification, as on the first pass.
+                        if (!_available && {"opcom_state" in (_primaryReinforcementObjective select 1)}) then {
+                            _available = ([_primaryReinforcementObjective,"opcom_state","none"] call ALIVE_fnc_hashGet) isEqualTo "reserve";
                         };
 
                     };
