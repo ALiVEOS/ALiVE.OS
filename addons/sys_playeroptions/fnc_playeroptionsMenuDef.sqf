@@ -107,7 +107,7 @@ if (_menuName == "playeroptions") then {
                     "",
                     -1,
                      true,
-                    !isnil QMOD(sys_playertags) && !(MOD(sys_playertags) getVariable ["display_enabled", false])
+                    !isnil QMOD(sys_playertags) && {!(MOD(sys_playertags) getVariable ["display_enabled", false])} && {!isNil QMOD(sys_playertags_TRIGGER)}
                 ],
                 [localize "STR_ALIVE_PLAYERTAGS_DISPLAY_DISABLE",
                      {     MOD(sys_playertags)  setVariable ["display_enabled", false]; false call MOD(sys_playertags_TRIGGER); },
@@ -116,7 +116,7 @@ if (_menuName == "playeroptions") then {
                     "",
                     -1,
                       true,
-                    !isnil QMOD(sys_playertags) && ( MOD(sys_playertags) getVariable ["display_enabled", false])
+                    !isnil QMOD(sys_playertags) && {MOD(sys_playertags) getVariable ["display_enabled", false]} && {!isNil QMOD(sys_playertags_TRIGGER)}
                 ],
                 [localize "STR_ALIVE_LOGISTICS_ENABLEACTIONS",
                     "[ALiVE_SYS_LOGISTICS, ""addActions""] call ALiVE_fnc_Logistics",
@@ -125,7 +125,7 @@ if (_menuName == "playeroptions") then {
                     "",
                     -1,
                     true,
-                    !isnil QMOD(sys_logistics) && (isnil {player getvariable [QMOD(SYS_LOGISTICS_ACTIONS),nil]})
+                    !isnil QMOD(sys_logistics) && (isnil {player getvariable [QMOD(SYS_LOGISTICS_ACTIONS),nil]}) && {!(MOD(sys_logistics) getVariable ["DISABLELOG", false])}
                 ],
                 [localize "STR_ALIVE_LOGISTICS_DISABLEACTIONS",
                     "[ALiVE_SYS_LOGISTICS, ""removeActions""] call ALiVE_fnc_Logistics",
@@ -134,7 +134,7 @@ if (_menuName == "playeroptions") then {
                     "",
                     -1,
                     true,
-                    !isnil QMOD(sys_logistics) && !(isnil {player getvariable [QMOD(SYS_LOGISTICS_ACTIONS),nil]})
+                    !isnil QMOD(sys_logistics) && !(isnil {player getvariable [QMOD(SYS_LOGISTICS_ACTIONS),nil]}) && {!(MOD(sys_logistics) getVariable ["DISABLELOG", false])}
                 ],
                 [localize "STR_ALIVE_player_allowReset_ACTION",
                     { [MOD(sys_player), "resetPlayer", [player]] call ALIVE_fnc_player;},
@@ -142,8 +142,8 @@ if (_menuName == "playeroptions") then {
                     localize "STR_ALIVE_player_allowReset_ACTION_COMMENT",
                     "",
                     -1,
-                    MOD(sys_player) getVariable ["allowReset", false],
-                    !isNil QMOD(sys_player) && MOD(sys_player) getVariable ["enablePlayerPersistence",false] && (MOD(sys_player) getVariable ["allowReset", false])
+                    !isNil QMOD(sys_player) && {MOD(sys_player) getVariable ["allowReset", false]},
+                    !isNil QMOD(sys_player) && {MOD(sys_player) getVariable ["enablePlayerPersistence",false]} && {MOD(sys_player) getVariable ["allowReset", false]}
                 ],
                 [localize "STR_ALIVE_player_allowManualSave_ACTION",
                     { [MOD(sys_player), "manualSavePlayer", [player]] call ALIVE_fnc_player },
@@ -151,8 +151,8 @@ if (_menuName == "playeroptions") then {
                     localize "STR_ALIVE_player_allowManualSave_ACTION_COMMENT",
                     "",
                     -1,
-                     (MOD(sys_player) getVariable ["allowManualSave", true]),
-                     !isNil QMOD(sys_player) && MOD(sys_player) getVariable ["enablePlayerPersistence",false] && (MOD(sys_player) getVariable ["allowManualSave", true])
+                     !isNil QMOD(sys_player) && {MOD(sys_player) getVariable ["allowManualSave", true]},
+                     !isNil QMOD(sys_player) && {MOD(sys_player) getVariable ["enablePlayerPersistence",false]} && {MOD(sys_player) getVariable ["allowManualSave", true]}
                 ],
                 [localize "STR_ALIVE_player_RESTORE_MARKERS",
                     {[ALIVE_SYS_MARKER, "restoreMarkers", [ALIVE_SYS_MARKER_STORE]] call ALiVE_fnc_marker},
