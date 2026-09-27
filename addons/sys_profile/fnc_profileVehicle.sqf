@@ -1115,6 +1115,9 @@ switch (_operation) do {
                 };
             }, [_vehicle], _settleSeconds] call CBA_fnc_waitAndExecute;
 
+            // Spawning and assignment replay are complete.
+            [_logic,"locked", false] call ALIVE_fnc_hashSet;
+
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
             	if (_isSPE) then {
