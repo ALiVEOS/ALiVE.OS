@@ -798,15 +798,19 @@ ALiVE_fnc_INS_ambush = {
                     };
                 } foreach _agents;
 
-                // Place ambient IED trigger
+                // Place ambient IED trigger. Its IEDs are kept under a key of their own: the town's IED
+                // trigger uses the town's, and 2 triggers on one key put back and take away each
+                // other's IEDs.
+                private _ambushKey = format ["%1-ambush", _id];
+                private _trg = objNull;
                 if (!isnil "ALiVE_mil_IED") then {
                     _trg = createTrigger ["EmptyDetector",getposATL _roadObject];
                     _trg setTriggerArea [_size + 250, _size + 250,0,false];
                     _trg setTriggerActivation ["ANY","PRESENT",true];
                     _trg setTriggerStatements [
                         "this && {(vehicle _x in thisList) && ((getposATL _x) select 2 < 25)} count ([] call BIS_fnc_listPlayers) > 0",
-                            format["null = [getpos thisTrigger,%1,%2,%3] call ALIVE_fnc_createIED",100,text _id,ceil(random 2)],
-                            format["null = [getpos thisTrigger,%1] call ALIVE_fnc_removeIED",text _id]
+                            format["null = [getpos thisTrigger,%1,'%2',%3] call ALIVE_fnc_createIED",100,_ambushKey,ceil(random 2)],
+                            format["null = [getpos thisTrigger,'%1'] call ALIVE_fnc_removeIED",_ambushKey]
                     ];
                 };
 
@@ -820,6 +824,13 @@ ALiVE_fnc_INS_ambush = {
 
                 // Remove ambush marker
                 if (alive _roadObject) then {deletemarker format["Ambush_%1",getposATL _roadObject]; [_objective,"ambush"] call ALiVE_fnc_HashRem};
+
+                // And its IED trigger with any IEDs it has out, so the road isn't mined for good once
+                // the ambush is over.
+                if (!isNull _trg) then {
+                    [_ambushKey, getPos _trg] call ALiVE_fnc_INS_clearIEDs;
+                    deleteVehicle _trg;
+                };
 };
 
 ALiVE_fnc_INS_retreat = {
