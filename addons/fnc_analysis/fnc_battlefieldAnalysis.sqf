@@ -31,6 +31,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 
 Peer reviewed:
 nil
@@ -474,9 +475,9 @@ switch(_operation) do {
             if !(isnil "_sectorData") then {
                 _clusters = [_sectorData,"activeClusters"] call ALIVE_fnc_hashGet;
 
-                private _clusterID = _clusters select 1 select 0;
-
                 {
+                    // Each objective's own key: the sector's first one used to speak for all of them.
+                    private _clusterID = (_clusters select 1) select _forEachIndex;
                     _owner = [_x,"owner"] call ALIVE_fnc_hashGet;
                     _owner = if (typeName _owner == "SIDE") then {str(_owner)} else {_owner};
                     if (_owner == "GUER") then {_owner = "INDEP"};
@@ -524,9 +525,9 @@ switch(_operation) do {
             if !(isnil "_sectorData") then {
                 _clusters = [_sectorData,"activeClusters"] call ALIVE_fnc_hashGet;
 
-                private _clusterID = _clusters select 1 select 0;
-
                 {
+                    // Each objective's own key: the sector's first one used to speak for all of them.
+                    private _clusterID = (_clusters select 1) select _forEachIndex;
                     _owner = [_x,"owner"] call ALIVE_fnc_hashGet;
                     _owner = if (typeName _owner == "SIDE") then {str(_owner)} else {_owner};
                     _clusterType = [_x,"type"] call ALIVE_fnc_hashGet;
