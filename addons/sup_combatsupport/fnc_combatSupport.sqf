@@ -1030,6 +1030,16 @@ switch(_operation) do {
                                     };
                                 } foreach units _grp;
                                 _grp setVariable ["supportWeaponCount",count _units];
+
+                                // The Code field runs on the vehicles in this list, and only the branch
+                                // that spawns guns filled it, so an adopted gun never ran it. The vehicles
+                                // counted above go in: the guns alone beside an emplaced gun, every
+                                // vehicle of a self-propelled battery.
+                                {
+                                    if !(_x isKindOf "CAManBase") then {
+                                        _artyBatteries pushBack _x;
+                                    };
+                                } forEach _units;
                             };
 
                             { _x setVariable ["NEO_radioArtyModule", [leader _grp, _callsign], true] } forEach _units;
@@ -1058,13 +1068,14 @@ switch(_operation) do {
                             // rocket artillery mounts its launcher at spawn - so that
                             // scan resolves no ordnance and the tablet comes up empty.
                             // An Eden-placed gun adopted through the nearestObjects
-                            // branch never reaches _artyBatteries, so fall back to _veh.
+                            // branch is asked itself: it is the module's own class,
+                            // where the first vehicle of its group may not be.
                             // Only overwrite on a real answer: never let a gun the
                             // classname scan already resolved lose its rounds here.
-                            private _probeGun = if (count _artyBatteries > 0) then {
-                                _artyBatteries select 0
+                            private _probeGun = if (!isNil "_veh") then {
+                                _veh
                             } else {
-                                if (isNil "_veh") then { objNull } else { _veh }
+                                if (count _artyBatteries > 0) then { _artyBatteries select 0 } else { objNull }
                             };
                             if (!isNull _probeGun) then {
                                 private _liveRounds = _probeGun call ALiVE_fnc_GetArtyRounds;
