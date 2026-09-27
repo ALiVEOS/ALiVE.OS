@@ -913,6 +913,23 @@ switch (_operation) do {
                 };
                 _result
             };
+
+            // Helper: does a CfgGroups class hold a static weapon or an artillery piece anywhere in it?
+            // A woken vehicle reserve only brings back the first vehicle it parked, so a group like that
+            // is kept active instead: parked, its guns would never appear.
+            private _fnc_groupHasGun = {
+                params ["_groupClass", "_groupFaction"];
+                private _config = [_groupFaction, _groupClass] call ALIVE_fnc_configGetGroup;
+                if (count _config == 0) exitWith { false };
+                ((("true" configClasses _config) findIf {
+                    private _veh = getText (_x >> "vehicle");
+                    _veh isKindOf "StaticWeapon" || {_veh isKindOf "LandVehicle" && {[_veh] call ALIVE_fnc_isArtillery}}
+                }) > -1)
+            };
+
+            // Groups with a gun are always placed active and take no share of Readiness (see
+            // _gunForcedActive below), so the vehicle share is worked out over the other vehicle groups.
+            _vehicleActiveCount = round ((_vehicleGroupCount - ({[_x select 0, _x select 1] call _fnc_groupHasGun} count (_groups select [0, _vehicleGroupCount]))) * _readiness);
             private _fnc_findVehicleParkingPos = {
                 params ["_vehicleClass", "_clusterCenter", "_clusterSize"];
                 if (_vehicleClass == "") exitWith {
@@ -1042,12 +1059,13 @@ switch (_operation) do {
                     private _garrisonPos = nil;
 
                     private _vehicleReserveClass = "";
-                    if (_isVehicle && {_vehicleActivePlacedCount >= _vehicleActiveCount}) then {
+                    // A group with a static weapon or an artillery piece anywhere in it is always placed active:
+                    // parked empty, a gun is one nobody fires, and a woken reserve only brings back its first
+                    // vehicle. It takes no share of Readiness and stays out of the reserve threshold's count
+                    // below. Active groups still use the helper to find their parking.
+                    private _gunForcedActive = _isVehicle && {[_group, _groupFaction] call _fnc_groupHasGun};
+                    if (_isVehicle && {!_gunForcedActive} && {_vehicleActivePlacedCount >= _vehicleActiveCount}) then {
                         _vehicleReserveClass = [_group, _groupFaction] call _fnc_getGroupVehicleClass;
-                        // A static weapon or an artillery piece parked empty is a gun nobody fires, not a reserve: it
-                        // takes the active path, as the helper's note says. Active groups still use the helper to find
-                        // their parking.
-                        if (_vehicleReserveClass isKindOf "StaticWeapon" || {_vehicleReserveClass != "" && {[_vehicleReserveClass] call ALIVE_fnc_isArtillery}}) then { _vehicleReserveClass = "" };
                     };
                     private _isVehicleReserve = _vehicleReserveClass != "";
                     private _isInfantryReserve = _isInfantry && {_infantryActivePlacedCount >= _infantryActiveCount};
@@ -1137,9 +1155,11 @@ switch (_operation) do {
                                     [_x, "setActiveCommand", [_command, "spawn", _radius]] call ALIVE_fnc_profileEntity;
                                     [_x, "homeCluster", _cluster] call ALiVE_fnc_HashSet;
                                     private _profileID = [_x, "profileID"] call ALiVE_fnc_HashGet;
-                                    private _activeIDs = [_cluster, "activeProfileIDs"] call ALiVE_fnc_HashGet;
-                                    _activeIDs pushBack _profileID;
-                                    [_cluster, "activeProfileIDs", _activeIDs] call ALiVE_fnc_HashSet;
+                                    if (!_gunForcedActive) then {
+                                        private _activeIDs = [_cluster, "activeProfileIDs"] call ALiVE_fnc_HashGet;
+                                        _activeIDs pushBack _profileID;
+                                        [_cluster, "activeProfileIDs", _activeIDs] call ALiVE_fnc_HashSet;
+                                    };
                                 };
                                 if (([_x, "type"] call ALiVE_fnc_HashGet) == "vehicle") then {
                                     [_x, "ALiVE_reserveLocked", _vehicleEmptyLocked] call ALiVE_fnc_HashSet;
@@ -1150,10 +1170,13 @@ switch (_operation) do {
                             _totalCount = _totalCount + 1;
                             _activePlacedCount = _activePlacedCount + 1;
                             if (_isInfantry) then { _infantryActivePlacedCount = _infantryActivePlacedCount + 1 };
-                            if (_isVehicle) then { _vehicleActivePlacedCount = _vehicleActivePlacedCount + 1 };
+                            if (_isVehicle && {!_gunForcedActive}) then { _vehicleActivePlacedCount = _vehicleActivePlacedCount + 1 };
 
-                            private _spawned = [_cluster, "reserveActiveAtSpawn"] call ALiVE_fnc_hashGet;
-                            [_cluster, "reserveActiveAtSpawn", _spawned + 1] call ALiVE_fnc_hashSet;
+                            // Not for a group with a gun (see _gunForcedActive).
+                            if (!_gunForcedActive) then {
+                                private _spawned = [_cluster, "reserveActiveAtSpawn"] call ALiVE_fnc_hashGet;
+                                [_cluster, "reserveActiveAtSpawn", _spawned + 1] call ALiVE_fnc_hashSet;
+                            };
                         };
                     };
                 };
