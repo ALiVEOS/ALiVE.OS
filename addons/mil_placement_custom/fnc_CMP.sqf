@@ -677,6 +677,8 @@ switch(_operation) do {
                 };
                 _spot
             };
+            // Guard groups left out because the objective has no dry ground at all, as groups are.
+            private _guardsInWater = 0;
 
             private _priority = [_logic, "priority"] call MAINCLASS;
 
@@ -1311,7 +1313,14 @@ switch(_operation) do {
                                 private _spot = ((_guardJitter min 50) max 20) call _fnc_landSpot;
                                 if !(_spot isEqualTo []) then { _guardPos = _spot };
                             };
-                            _guards = [_guardGroup, _guardPos, random(360), true, _guardFaction, false, false, "STEALTH", _onEachSpawn, _onEachSpawnOnce] call ALIVE_fnc_createProfilesFromGroupConfig;
+                            // Still in the water means the objective has no dry ground: the group is
+                            // left out and counted, as the main force's groups are.
+                            _guards = if (surfaceIsWater _guardPos) then {
+                                _guardsInWater = _guardsInWater + 1;
+                                []
+                            } else {
+                                [_guardGroup, _guardPos, random(360), true, _guardFaction, false, false, "STEALTH", _onEachSpawn, _onEachSpawnOnce] call ALIVE_fnc_createProfilesFromGroupConfig
+                            };
 
                             // DEBUG -------------------------------------------------------------------------------------
                             if(_debug) then {
@@ -1552,11 +1561,12 @@ switch(_operation) do {
 
                         // A spot in the water gets ten more tries within the objective, which keeps
                         // groups spread out along a coast, then dry ground by the nearest land; a
-                        // group with none is left out and counted below, not unseen.
+                        // group with none is left out and counted below, not unseen. A parked
+                        // vehicle's try also needs flat, open ground, as its parking search asks.
                         if (surfaceIsWater _position) then {
                             for "_try" from 1 to 10 do {
                                 private _candidate = [position _logic, _size] call CBA_fnc_RandPos;
-                                if (!surfaceIsWater _candidate) exitWith { _position = _candidate };
+                                if (!surfaceIsWater _candidate && {_activeVehClass == "" || {count (_candidate isFlatEmpty [-1, -1, 0.4, 5, 0, false, objNull]) >= 2}}) exitWith { _position = _candidate };
                             };
                             if (surfaceIsWater _position) then {
                                 private _spot = 50 call _fnc_landSpot;
@@ -1773,7 +1783,12 @@ switch(_operation) do {
                         private _spot = ((_guardJitter min 50) max 20) call _fnc_landSpot;
                         if !(_spot isEqualTo []) then { _guardPos = _spot };
                     };
-                    private _dGuards = [_guardGroup, _guardPos, random(360), true, _guardFaction, false, false, "STEALTH", _onEachSpawn, _onEachSpawnOnce] call ALIVE_fnc_createProfilesFromGroupConfig;
+                    private _dGuards = if (surfaceIsWater _guardPos) then {
+                        _guardsInWater = _guardsInWater + 1;
+                        []
+                    } else {
+                        [_guardGroup, _guardPos, random(360), true, _guardFaction, false, false, "STEALTH", _onEachSpawn, _onEachSpawnOnce] call ALIVE_fnc_createProfilesFromGroupConfig
+                    };
                     {
                         if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
                             [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[_thisRadius,"true",_thisSearchCentre,"",_guardProbabilityCount, _guardPatrolPercentage, _garrisonPatrolBehaviour, _garrisonPatrolSpeed, _preferredGarrisonPositions, true, _thisObjectiveSize]]] call ALIVE_fnc_profileEntity;
@@ -1797,6 +1812,10 @@ switch(_operation) do {
                 if (_debug) then {
                     ["CMP [%1] - Total profiles created (incl. deferred guards): %2", _faction, _countProfiles] call ALiVE_fnc_dump;
                 };
+            };
+
+            if (_guardsInWater > 0) then {
+                ["CMP - %1 of this objective's guard groups were not placed: their spot was in the water and there is no dry ground within %2 m of the module at %3.", _guardsInWater, _size, getPos _logic] call ALiVE_fnc_dump;
             };
 
             // Create HQ
