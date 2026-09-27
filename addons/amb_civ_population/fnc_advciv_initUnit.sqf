@@ -183,6 +183,9 @@ _unit addEventHandler ["Hit", {
         [_unit, round (_damage * 80)] call ALiVE_fnc_civSetHostility;
     };
 
+    // The handler stays when the brain drops a civilian (one following a player is in a mixed
+    // group, say), and the reaction below ends in PANIC that only the brain sets back.
+    if !(_unit getVariable ["ALiVE_advciv_active", false]) exitWith {};
     if (_unit getVariable ["ALiVE_advciv_hitReacting", false]) exitWith {};    // Already reacting
 
     _unit setVariable ["ALiVE_advciv_order", "NONE", true];

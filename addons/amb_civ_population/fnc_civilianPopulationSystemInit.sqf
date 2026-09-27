@@ -256,6 +256,11 @@ if(isServer) then {
         params [["_unit", objNull]];
         if (isNull _unit) exitWith { false };
         if (_unit getVariable ["ALiVE_advciv_blacklist", false]) exitWith { true };
+        // A town elder, mayor, muezzin, priest or politician keeps to its role (#1038), whatever
+        // Mission Critical Check says. The agent spawn checks these flags before it hands a unit
+        // over, but the start-up sweep, the new-unit handler, the catch-all loops and the order
+        // menu all come through here. The flags are broadcast when true, so clients see them.
+        if ((["townElder", "major", "muezzin", "priest", "politician"] findIf { (_unit getVariable [_x, false]) isEqualTo true }) > -1) exitWith { true };
         if (!ALiVE_advciv_missionCriticalCheck) exitWith { false };
 
         private _grp = group _unit;

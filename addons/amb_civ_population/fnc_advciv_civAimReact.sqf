@@ -58,6 +58,10 @@ if ((_state in ["PANIC", "HIDING"]) || {_order == "HANDSUP"}) exitWith {};
 
 private _fnc_panicFlee = {
     params ["_civ"];
+    // Only a civilian the brain runs flees: this sets PANIC and leaves the running to the brain, so
+    // a civilian outside it, a town elder or a protected one, stayed marked PANIC for good. The
+    // refusal gesture before it still plays.
+    if !(_civ getVariable ["ALiVE_advciv_active", false]) exitWith {};
     _civ setVariable ["ALiVE_advciv_state", "PANIC", true];
     _civ setVariable ["ALiVE_advciv_panicSource", getPos _civ, true];
     _civ setVariable ["ALiVE_advciv_hidingPos", [], true];

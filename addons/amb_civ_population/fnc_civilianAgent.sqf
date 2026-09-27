@@ -463,6 +463,18 @@ switch(_operation) do {
                     || {_unit getVariable ["priest", false]}
                     || {_unit getVariable ["politician", false]};
 
+                // Left out, a role civilian gets none of Advanced Civilians' handlers, and its Hit
+                // handler is where a wound from a player raises a civilian's hostility. That part
+                // alone, so shooting an elder still sours them as it does anyone else, with
+                // Advanced Civilians on or off.
+                if (_isRoleCivilian) then {
+                    _unit addEventHandler ["Hit", {
+                        params ["_unit", "_source", "_damage", "_instigator"];
+                        if (_damage < 0.01 || {isNull _instigator} || {!isPlayer _instigator}) exitWith {};
+                        [_unit, round (_damage * 80)] call ALiVE_fnc_civSetHostility;
+                    }];
+                };
+
                 if (!_isRoleCivilian) then {
                     if (!isNil "ALiVE_fnc_advciv_initUnit") then {
                         [_unit] call ALiVE_fnc_advciv_initUnit;

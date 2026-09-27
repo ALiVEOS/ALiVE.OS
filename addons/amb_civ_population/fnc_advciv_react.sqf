@@ -141,6 +141,9 @@ switch (_type) do {
                         && {side _x == civilian}
                         && {!isPlayer _x}
                         && {_x != _unit}
+                        // Only civilians the brain runs, as in the killed handlers: nothing sets
+                        // one outside it back to CALM on its own.
+                        && {_x getVariable ["ALiVE_advciv_active", false]}
                         && {_x getVariable ["ALiVE_advciv_state", "CALM"] == "CALM"}
                         && {random 1 < ALiVE_advciv_cascadeChance}
                         // Rate-limit cascade per unit to prevent chain reactions every frame
@@ -272,9 +275,10 @@ switch (_type) do {
         };
 
         // Spread the alarm to witnesses: civilians very close go straight to PANIC,
-        // those further away become ALERT
+        // those further away become ALERT. Only civilians the brain runs: nothing sets
+        // one outside it back to CALM on its own.
         {
-            if (alive _x && {side _x == civilian} && {!isPlayer _x} && {_x != _unit}) then {
+            if (alive _x && {side _x == civilian} && {!isPlayer _x} && {_x != _unit} && {_x getVariable ["ALiVE_advciv_active", false]}) then {
                 private _civState = _x getVariable ["ALiVE_advciv_state", "CALM"];
                 if (_civState in ["CALM", "ALERT"]) then {
                     if (_x distance _unit < 15) then {
