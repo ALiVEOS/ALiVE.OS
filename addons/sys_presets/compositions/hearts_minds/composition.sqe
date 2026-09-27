@@ -576,26 +576,16 @@ class connections
 {
 	class LinkIDProvider
 	{
-		nextID=2;
+		nextID=1;
 	};
 	class Links
 	{
-		items=2;
+		items=1;
 		class Item0
 		{
 			linkID=0;
 			item0=4;
 			item1=5;
-			class CustomData
-			{
-				type="Sync";
-			};
-		};
-		class Item1
-		{
-			linkID=1;
-			item0=4;
-			item1=6;
 			class CustomData
 			{
 				type="Sync";
