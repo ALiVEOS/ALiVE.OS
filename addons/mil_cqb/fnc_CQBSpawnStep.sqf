@@ -597,7 +597,9 @@ switch (_phase) do {
                     {
                         if (!_once || {!(_x getVariable ["ALIVE_hookFired", false])}) then {
                             _x setVariable ["ALIVE_hookFired", true];
-                            [_x, _x getVariable ["profileID", ""], side group _x, _x getVariable ["faction", ""]] spawn _hook;
+                            // The faction is the one the group was built for, kept on the house: the
+                            // soldiers never carry one, so reading theirs always handed over "".
+                            [_x, _x getVariable ["profileID", ""], side group _x, _house getVariable ["faction", ""]] spawn _hook;
                         };
                     } forEach units _group;
                 };

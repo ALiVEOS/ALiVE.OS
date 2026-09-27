@@ -1712,7 +1712,8 @@ switch(_operation) do {
                     private _unit = _x;
                     private _profileID = _unit getvariable ["profileID", ""];
                     private _side = side (group _unit);
-                    private _faction = _unit getvariable ["faction", ""];
+                    // The faction the group was built for is kept on the house; the soldiers carry none.
+                    private _faction = _house getvariable ["faction", ""];
                     if (!_cqbOnEachSpawnOnce || {!(_unit getvariable ["ALIVE_hookFired", false])}) then {
                         _unit setVariable ["ALIVE_hookFired", true];
                         [_unit, _profileID, _side, _faction] spawn (compile _cqbOnEachSpawn);
