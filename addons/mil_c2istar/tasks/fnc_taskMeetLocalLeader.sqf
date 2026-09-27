@@ -119,7 +119,7 @@ switch (_taskState) do {
             {},
             [_completionVar],
             6
-        ] remoteExec ["BIS_fnc_holdActionAdd", 0, _leader];
+        ] remoteExec ["BIS_fnc_holdActionAdd", [0, -2] select isDedicated, _leader];
 
         private _dialogOptions = [ALIVE_generatedTasks, "MeetLocalLeader"] call ALIVE_fnc_hashGet;
         _dialogOptions = _dialogOptions select 1;

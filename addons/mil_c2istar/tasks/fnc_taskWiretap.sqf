@@ -301,7 +301,7 @@ switch (_taskState) do {
             {},
             [],
             ((sizeOf (typeOf _targetBuilding)) max 15) min 30
-        ] remoteExec ["BIS_fnc_holdActionAdd", 0, _targetBuilding];
+        ] remoteExec ["BIS_fnc_holdActionAdd", [0, -2] select isDedicated, _targetBuilding];
 
         // select the random text
         private _dialogOptions = [ALIVE_generatedTasks, "Wiretap"] call ALIVE_fnc_hashGet;

@@ -131,7 +131,7 @@ switch (_taskState) do {
             {},
             [_completionVar],
             ((sizeOf (typeOf _targetBuilding)) max 12) min 25
-        ] remoteExec ["BIS_fnc_holdActionAdd", 0, _targetBuilding];
+        ] remoteExec ["BIS_fnc_holdActionAdd", [0, -2] select isDedicated, _targetBuilding];
 
         private _dialogOptions = [ALIVE_generatedTasks, "RepairCriticalService"] call ALIVE_fnc_hashGet;
         _dialogOptions = _dialogOptions select 1;

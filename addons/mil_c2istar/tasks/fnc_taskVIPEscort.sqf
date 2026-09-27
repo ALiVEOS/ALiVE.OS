@@ -296,7 +296,7 @@ switch (_taskState) do {
             {},
             [],
             6
-        ] remoteExec ["BIS_fnc_holdActionAdd", 0, _vip];
+        ] remoteExec ["BIS_fnc_holdActionAdd", [0, -2] select isDedicated, _vip];
 
         private _dialogOptions = [ALIVE_generatedTasks, "VIPEscort"] call ALIVE_fnc_hashGet;
         _dialogOptions = _dialogOptions select 1;

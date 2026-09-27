@@ -234,7 +234,7 @@ switch (_taskState) do {
             {},
             [_completionVar],
             10
-        ] remoteExec ["BIS_fnc_holdActionAdd", 0, _aidVehicle];
+        ] remoteExec ["BIS_fnc_holdActionAdd", [0, -2] select isDedicated, _aidVehicle];
 
         private _dialogOptions = [ALIVE_generatedTasks, "AidDelivery"] call ALIVE_fnc_hashGet;
         _dialogOptions = _dialogOptions select 1;
