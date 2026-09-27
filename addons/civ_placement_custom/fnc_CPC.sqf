@@ -317,6 +317,18 @@ switch (_operation) do {
             waitUntil {!isNil "ALiVE_GROUP_CONFIG_DATA_GENERATED"};
 
             private _cluster = [nil, "create"] call ALIVE_fnc_cluster;
+            // The key is the sum of the coordinates, so two modules can come out the same and the second
+            // would overwrite the first. A taken key gets _2, _3 and so on; one that isn't taken stays as it
+            // always was. Picked and claimed in one step, so two modules starting together can't both take it.
+            isNil {
+                if ([ALIVE_clustersCivCustom, _objectiveName] call CBA_fnc_hashHasKey) then {
+                    private _baseName = _objectiveName;
+                    private _suffix = 2;
+                    while {[ALIVE_clustersCivCustom, format ["%1_%2", _baseName, _suffix]] call CBA_fnc_hashHasKey} do { _suffix = _suffix + 1 };
+                    _objectiveName = format ["%1_%2", _baseName, _suffix];
+                };
+                [ALIVE_clustersCivCustom, _objectiveName, _cluster] call ALIVE_fnc_hashSet;
+            };
             [_cluster, "nodes", (nearestObjects [_position, ["static"], _objectiveSize])] call ALIVE_fnc_hashSet;
             [_cluster, "clusterID", _objectiveName] call ALIVE_fnc_hashSet;
             [_cluster, "center", _position] call ALIVE_fnc_hashSet;

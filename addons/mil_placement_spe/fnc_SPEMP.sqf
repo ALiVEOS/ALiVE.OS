@@ -361,6 +361,18 @@ switch(_operation) do {
 	            // assign the objective to OPCOMS
 	            private _objectiveName = format["CUSTOM_%1",floor((_position select 0) + (_position select 1))];
 	            private _cluster = [nil, "create"] call ALIVE_fnc_cluster;
+	            // The key is the sum of the coordinates, so two modules can come out the same and the second
+	            // would overwrite the first. A taken key gets _2, _3 and so on; one that isn't taken stays as it
+	            // always was. Picked and claimed in one step, so two modules starting together can't both take it.
+	            isNil {
+	                if ([ALIVE_clustersMilCustom, _objectiveName] call CBA_fnc_hashHasKey) then {
+	                    private _baseName = _objectiveName;
+	                    private _suffix = 2;
+	                    while {[ALIVE_clustersMilCustom, format ["%1_%2", _baseName, _suffix]] call CBA_fnc_hashHasKey} do { _suffix = _suffix + 1 };
+	                    _objectiveName = format ["%1_%2", _baseName, _suffix];
+	                };
+	                [ALIVE_clustersMilCustom, _objectiveName, _cluster] call ALIVE_fnc_hashSet;
+	            };
 	            [_cluster,"nodes", (nearestObjects [_position,["static"],_size])] call ALIVE_fnc_hashSet;
 	            [_cluster,"clusterID", _objectiveName] call ALIVE_fnc_hashSet;
 	            [_cluster,"center", _position] call ALIVE_fnc_hashSet;
