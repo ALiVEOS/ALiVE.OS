@@ -20,9 +20,20 @@ _num = if (count _this > 2) then {
 };
 
 _debug = ADDON getVariable ["debug", false];
+private _vbSide = ADDON getvariable ["VB_IED_Side", "CIV"];
 
-// Find all vehicles within radius
-_veh = nearestObjects [_location, ["Car"], _radius];
+// The cars within radius that are on the chosen side, judged as createVBIED judges them, wrecks
+// and quad bikes (which it never rigs) left out. A town whose cars are all of another side makes cars of the chosen side below, instead
+// of picking cars that can never be rigged.
+_veh = (nearestObjects [_location, ["Car"], _radius]) select {
+    private _car = _x;
+    private _carSide = if (((crew _car) findIf {alive _x}) < 0) then {
+        [getNumber (configFile >> "CfgVehicles" >> typeOf _car >> "side")] call ALIVE_fnc_sideNumberToText
+    } else {
+        str (side _car)
+    };
+    alive _car && {_carSide == _vbSide} && {!(_car isKindOf "Quadbike_01_base_F")}
+};
 
 _vblist = [];
 
@@ -46,18 +57,32 @@ if (count _veh > 0) then {
 } else {
     private ["_carClasses","_roads","_factions"];
     // Create random vehicles
-    // If ALiVE Ambient civilians are available get the faction from there
-    if (["ALiVE_amb_civ_placement"] call ALiVE_fnc_isModuleAvailable) then {
-
-        waituntil {!isnil QMOD(amb_civ_placement)};
-
-        _factions = [ALiVE_amb_civ_placement getvariable ["faction","CIV_F"]];
-    } else {
-        _factions = ADDON getvariable ["VB_IED_Side", "CIV"] call ALiVE_fnc_getSideFactions;
+    // On CIV with Ambient Civilians running, cars come from its vehicle faction, then its
+    // civilians' faction, since some civilian factions have no cars. Otherwise, or when neither
+    // has any, they come from every faction of the chosen side: createVBIED only rigs a car of
+    // that side, so civilian cars made for EAST, WEST or IND were never rigged. The module is
+    // checked rather than waited for, as this can run from a town's trigger in one frame.
+    private _tryFactions = [];
+    if (_vbSide == "CIV" && {!isNil QMOD(amb_civ_placement)}) then {
+        _tryFactions pushBack [ALiVE_amb_civ_placement getvariable ["ambientVehicleFaction", ""]];
+        _tryFactions pushBack [ALiVE_amb_civ_placement getvariable ["faction", "CIV_F"]];
     };
-
-    _carClasses = [0,_factions,"Car"] call ALiVE_fnc_findVehicleType;
-    _carClasses = _carClasses - ALiVE_PLACEMENT_VEHICLEBLACKLIST;
+    _tryFactions pushBack (_vbSide call ALiVE_fnc_getSideFactions);
+    _carClasses = [];
+    {
+        if (_carClasses isEqualTo [] && {!(_x isEqualTo [""])}) then {
+            _factions = _x;
+            // Unarmed cars only: a military faction's list also has wheeled APCs, armed cars
+            // and drones, which would stand empty in the street for anyone to drive off. No quad
+            // bikes either, as createVBIED never rigs one.
+            _carClasses = (([0,_factions,"Car"] call ALiVE_fnc_findVehicleType) - ALiVE_PLACEMENT_VEHICLEBLACKLIST) select {
+                !(_x isKindOf "Wheeled_APC_F")
+                && {getNumber (configFile >> "CfgVehicles" >> _x >> "isUav") != 1}
+                && {!([_x] call ALiVE_fnc_isArmed)}
+                && {!(_x isKindOf "Quadbike_01_base_F")}
+            };
+        };
+    } forEach _tryFactions;
     _roads = _location nearRoads _radius;
 
     _num = _num / 10;

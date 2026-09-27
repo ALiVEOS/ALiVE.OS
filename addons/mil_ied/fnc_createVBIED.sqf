@@ -23,7 +23,17 @@ if (_debug) then {
     ["Threat: %1, Fate: %4, Side: %2, VBIED: %3", _threat, _side, (_vehicle getvariable [QUOTE(ADDON(VBIED)), false]), _fate] call ALiVE_fnc_dump;
 };
 
-if (_fate > _threat || str(side _vehicle) != _side || (_vehicle isKindOf "Quadbike_01_base_F") ) exitWith {};
+// The side the setting means. The game reports an empty car as civilian whatever it is, so EAST,
+// WEST and IND never rigged a parked one: an empty car goes by the side its class is made for. A
+// car with somebody alive in it keeps the side of who is in it, so one a player is driving is never
+// taken for a civilian car. placeVBIED judges the cars it picks the same way.
+private _vehicleSide = if (((crew _vehicle) findIf {alive _x}) < 0) then {
+    [getNumber (configFile >> "CfgVehicles" >> typeOf _vehicle >> "side")] call ALIVE_fnc_sideNumberToText
+} else {
+    str (side _vehicle)
+};
+
+if (!alive _vehicle || _fate > _threat || _vehicleSide != _side || (_vehicle isKindOf "Quadbike_01_base_F") ) exitWith {};
 
 // Make sure vehicle is not in blacklist
 
