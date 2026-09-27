@@ -168,6 +168,11 @@ switch (_operation) do {
         if (isNil "_factionProcedures") then { _factionProcedures = _allProcedures get "default"; };
 
         _result = _factionProcedures get _procedureName;
+        // A faction that registered only some procedures of its own keeps the default ones for the
+        // rest: a missing one came back nil, and the route job given it threw.
+        if (isNil "_result") then {
+            _result = (_allProcedures get "default") get _procedureName;
+        };
     };
 
     ////////// SECTOR ANALYSIS //////////
