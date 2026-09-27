@@ -1000,7 +1000,8 @@ switch(_operation) do {
             _args = parseNumber _args;
         };
         if (typeName _args == "SCALAR") then {
-            _args = (_args max 0);
+            // 0 to 1, as the tooltip says: over 1, each repeated failure cost more than the last.
+            _args = (_args max 0) min 1;
             _logic setVariable ["civicDuplicateTaskPenalty", _args];
         };
         _result = _logic getVariable ["civicDuplicateTaskPenalty", DEFAULT_CIVIC_DUPLICATE_TASK_PENALTY];
@@ -1229,7 +1230,7 @@ if (isServer) then {
         missionNamespace setVariable ["ALIVE_civicServicesSuccessMultiplier", (_civicServicesSuccessMultiplier max 0), true];
         missionNamespace setVariable ["ALIVE_civicServicesFailureMultiplier", (_civicServicesFailureMultiplier max 0), true];
         missionNamespace setVariable ["ALIVE_civicCooldownMultiplier", (_civicCooldownMultiplier max 0.1), true];
-        missionNamespace setVariable ["ALIVE_civicDuplicateTaskPenalty", (_civicDuplicateTaskPenalty max 0), true];
+        missionNamespace setVariable ["ALIVE_civicDuplicateTaskPenalty", ((_civicDuplicateTaskPenalty max 0) min 1), true];
         missionNamespace setVariable ["ALIVE_civicDebugIntel", _civicDebugIntel, true];
         missionNamespace setVariable ["ALIVE_civicEnabledTaskFamilies", _civicEnabledTaskFamilies];
         missionNamespace setVariable ["ALIVE_civicTaskWeights", _civicTaskWeights];
