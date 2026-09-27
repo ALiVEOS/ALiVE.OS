@@ -64,6 +64,14 @@ _factionId = toString _normalizedFactionId;
 if (!_hasIdentifierChar || {_factionId isEqualTo ""}) then {
     _factionId = "ALIVE_CUSTOM_FACTION";
 };
+// Say so when the typed id changed, as anything that names the faction by the typed id won't find it.
+if !(_factionId isEqualTo _requestedFactionId) then {
+    if (_hasIdentifierChar) then {
+        ["Faction compiler: Faction ID ""%1"" is used as %2 (letters, digits and underscores only), so refer to it by that name", _requestedFactionId, _factionId] call ALIVE_fnc_dump;
+    } else {
+        ["Faction compiler: Faction ID ""%1"" has no letters or digits, so it is used as %2; refer to it by that name", _requestedFactionId, _factionId] call ALIVE_fnc_dump;
+    };
+};
 
 private _displayName = _logic getVariable ["displayName", _factionId];
 if !(_displayName isEqualType "") then {
