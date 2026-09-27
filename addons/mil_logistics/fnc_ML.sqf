@@ -3486,7 +3486,7 @@ switch(_operation) do {
 		            } forEach _thisInstanceSFS;
 		             _countToAdd = ceil((_instanceProfilesCount * _startForceStrengthIncrementFactor)/100);
 		            for "_i" from 0 to (_countToAdd -1) do {
-		            	_randomWeightedElement = [["Infantry","Motorized","Mechanized","Armored","Artillery","AAA","Air","Sea"], _thisInstanceSFS] call BIS_fnc_selectRandomWeighted;
+		            	_randomWeightedElement = [["Infantry","Motorized","Mechanized","Armored","Air","Sea","Artillery","AAA"], _thisInstanceSFS] call BIS_fnc_selectRandomWeighted;
                   [_side, _randomWeightedElement, 1] call ALIVE_fnc_OPCOMIncrementStartForceStrength;    
 		            };
 		          };
@@ -3518,7 +3518,7 @@ switch(_operation) do {
 		            } forEach _thisInstanceSFS;
 		             _countToRemove = ceil((_instanceProfilesCount * _startForceStrengthDecrementFactor)/100);
 		            for "_i" from 0 to (_countToRemove -1) do {
-		            	_randomWeightedElement = [["Infantry","Motorized","Mechanized","Armored","Artillery","AAA","Air","Sea"], _thisInstanceSFS] call BIS_fnc_selectRandomWeighted;
+		            	_randomWeightedElement = [["Infantry","Motorized","Mechanized","Armored","Air","Sea","Artillery","AAA"], _thisInstanceSFS] call BIS_fnc_selectRandomWeighted;
                   [(_factions select 0 select 0), _randomWeightedElement, 1] call ALIVE_fnc_OPCOMdecrementStartForceStrength;    
 		            };
 		        	};

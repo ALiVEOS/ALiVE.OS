@@ -63,16 +63,19 @@ switch _type do {
   case ("Armored") : {
   	_typeNum = 3;
   };
-  case ("Artillery") : {
+  // The commander keeps its starting force as [infantry, motorised, mechanised, armoured,
+  // air, sea, artillery, AAA] (fnc_OPCOM.sqf, the _count it stores), so Air and Sea come
+  // before Artillery and AAA. These four used to point at each other's slots.
+  case ("Air") : {
    _typeNum = 4;
   };
-  case ("AAA") : {
+  case ("Sea") : {
    _typeNum = 5;
   };
-  case ("Air") : {
+  case ("Artillery") : {
    _typeNum = 6;
   };
-  case ("Sea") : {
+  case ("AAA") : {
    _typeNum = 7;
   };
 };
