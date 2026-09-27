@@ -101,8 +101,10 @@ _positionIsUsable = {
 _deleteMarkers = {
     private ["_logic"];
     _logic = _this;
+    // Deleted everywhere, as they were made: createMarker puts them on every machine, and a
+    // local delete left them on the players' maps when debug was switched off.
     {
-        deleteMarkerLocal _x;
+        deleteMarker _x;
     } forEach ([_logic, "debugMarkers", []] call ALIVE_fnc_hashGet);
 };
 
