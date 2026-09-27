@@ -405,7 +405,9 @@ switch(_operation) do {
 	            if (!_speVehicleEmpty) then {
  								private _countCrewed = 0;
  								// _position set [2, _direction];
-	     					_profiledCrewed = [_vehicleClass, _side, _faction, "CAPTAIN", _position, _direction, true, _faction, false, false, [], [], true] call ALIVE_fnc_createProfilesCrewedVehicle;
+	     					// Busy, like the garrison infantry below, so the AI Commander leaves the
+	     					// vehicle guarding its objective instead of taking it for an attack.
+	     					_profiledCrewed = [_vehicleClass, _side, _faction, "CAPTAIN", _position, _direction, true, _faction, false, true, [], [], true] call ALIVE_fnc_createProfilesCrewedVehicle;
 
 	     					// The On unit spawn scripts are read for this module but were only ever
 	     					// passed on the infantry path, so setting a Vehicle Classname threw them
@@ -414,6 +416,13 @@ switch(_operation) do {
 	     					if (!isNil "_profiledCrewed" && {_profiledCrewed isEqualType []} && {count _profiledCrewed > 0}) then {
 	     					    [_profiledCrewed select 0, "onEachSpawn", _onEachSpawn] call ALIVE_fnc_profileEntity;
 	     					    [_profiledCrewed select 0, "onEachSpawnOnce", _onEachSpawnOnce] call ALIVE_fnc_profileEntity;
+	     					    // Pinned as well, as Military Placement's composition garrisons are: the AI
+	     					    // Commander checks the pin, not busy, when it sends the nearest forces at an enemy.
+	     					    private _pid = [_profiledCrewed select 0, "profileID", ""] call ALiVE_fnc_HashGet;
+	     					    if (_pid != "") then {
+	     					        if (isNil "ALIVE_profileStationary") then { ALIVE_profileStationary = [] call ALIVE_fnc_hashCreate; };
+	     					        [ALIVE_profileStationary, _pid, true] call ALIVE_fnc_hashSet;
+	     					    };
 	     					};
 	              _countCrewed = _countCrewed +1; 
                 _countProfiles = _countCrewed;
@@ -427,7 +436,8 @@ switch(_operation) do {
 					    } else {
  								private _countUnCrewed = 0;
  								// _position set [2, _direction];
-	     					_profiledUnCrewed = [_vehicleClass, _side, _faction, _position, _direction, true, _faction, false, false, [], [], true] call ALIVE_fnc_createProfilesUnCrewedVehicle;
+	     					// Busy, as the crewed one above.
+	     					_profiledUnCrewed = [_vehicleClass, _side, _faction, _position, _direction, true, _faction, false, true, [], [], true] call ALIVE_fnc_createProfilesUnCrewedVehicle;
 
 	     					// The On unit spawn scripts are read for this module but were only ever
 	     					// passed on the infantry path, so setting a Vehicle Classname threw them
@@ -436,6 +446,13 @@ switch(_operation) do {
 	     					if (!isNil "_profiledUnCrewed" && {_profiledUnCrewed isEqualType []} && {count _profiledUnCrewed > 0}) then {
 	     					    [_profiledUnCrewed select 0, "onEachSpawn", _onEachSpawn] call ALIVE_fnc_profileEntity;
 	     					    [_profiledUnCrewed select 0, "onEachSpawnOnce", _onEachSpawnOnce] call ALIVE_fnc_profileEntity;
+	     					    // Pinned as well, as Military Placement's composition garrisons are: the AI
+	     					    // Commander checks the pin, not busy, when it sends the nearest forces at an enemy.
+	     					    private _pid = [_profiledUnCrewed select 0, "profileID", ""] call ALiVE_fnc_HashGet;
+	     					    if (_pid != "") then {
+	     					        if (isNil "ALIVE_profileStationary") then { ALIVE_profileStationary = [] call ALIVE_fnc_hashCreate; };
+	     					        [ALIVE_profileStationary, _pid, true] call ALIVE_fnc_hashSet;
+	     					    };
 	     					};
 	              _countUnCrewed = _countUnCrewed +1; 
                 _countProfiles = _countUnCrewed;
