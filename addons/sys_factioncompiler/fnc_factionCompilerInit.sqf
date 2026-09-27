@@ -145,6 +145,7 @@ private _compiledGroups = [] call ALIVE_fnc_hashCreate;
 private _unitClasses = [];
 private _vehicleClasses = [];
 private _templateGroups = [];
+private _leftOutGroups = [];
 private _templateVehicles = [];
 private _sideText = "";
 private _groupIndex = 0;
@@ -256,8 +257,13 @@ private _standardCategories = ["Infantry", "SpecOps", "Motorized", "Motorized_MT
                                     ["Faction compiler [%1] captured group %2 in %3", _factionId, _groupId, _category] call ALIVE_fnc_dump;
                                 };
                             } else {
-                                if (_debug) then {
-                                    ["Faction compiler [%1] skipped group with mismatched side %2", _factionId, _groupSideText] call ALIVE_fnc_dump;
+                                // Said every time, not only with Debug on: a group left out without a
+                                // word showed up only as part of the faction never appearing. Once per
+                                // group, as every synced member of it comes through here.
+                                if !(_group in _leftOutGroups) then {
+                                    _leftOutGroups pushBack _group;
+                                    ["Faction compiler [%1] left out group %2: it is %3, and the faction is %4, the side of the first group it took",
+                                        _factionId, groupId _group, _groupSideText, _sideText] call ALIVE_fnc_dump;
                                 };
                             };
                         };
