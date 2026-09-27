@@ -27,6 +27,7 @@ See Also:
 
 Author:
 Tupolov
+Jman
 ---------------------------------------------------------------------------- */
 // MAIN
 #define DEBUG_MODE_FULL
@@ -174,7 +175,8 @@ _saveServer = {
 
         ["Exit - Server Save Profiles"] call ALiVE_fnc_dump;
 
-        _result = [] call ALiVE_fnc_profilesSaveData;
+        // Saved whatever the time since the last save: this is the last chance to.
+        _result = [true] call ALiVE_fnc_profilesSaveData;
 
         if(!(isNil "_admin") && !(isNil "_result")) then {
             _messages = _result select 1;

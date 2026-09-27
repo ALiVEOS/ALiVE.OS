@@ -8,6 +8,7 @@ Description:
 Save profile system persistence state via sys_data
 
 Parameters:
+Boolean - optional, true to save even within five minutes of the last save (Save and Exit)
 
 Returns:
 Boolean
@@ -23,11 +24,15 @@ ALIVE_fnc_profilesLoadData
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 private ["_result"];
 
 if !(isServer) exitwith {};
+
+// true to save even within five minutes of the last save, as Save and Exit does
+private _force = (_this param [0, false]) isEqualTo true;
 
 _result = [false,[]];
 
@@ -41,7 +46,7 @@ if(ALIVE_saveProfilesPersistent) then {
                 [true, "ALiVE SYS PROFILE - Saving data", "psper"] call ALIVE_fnc_timer;
             };
 
-            if(isNil "ALiVE_sysProfileLastSaveTime" || {time - ALiVE_sysProfileLastSaveTime > 300}) then {
+            if(_force || {isNil "ALiVE_sysProfileLastSaveTime"} || {time - ALiVE_sysProfileLastSaveTime > 300}) then {
 
                 ALiVE_sysProfileLastSaveTime = time;
 
