@@ -835,14 +835,32 @@ ALiVE_fnc_INS_retreat = {
                 } foreach _agents;
 
                 //remove installations if existing
+                // Hash keys match case-sensitively and the recruitment HQ is stored as "HQ"
+                // (INS_recruit), so "hq" never found it: a retreat left the HQ standing and
+                // recruiting. "roadblocks" stays out on purpose: it holds the nearest building
+                // as a marker for where the roadblocks went, and the roadblocks themselves are
+                // run by the roadblock system, which has its own capture and disable.
                 {
                     _object = [[],"convertObject",[_objective,_x,[]] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;
 
-                    if (alive _object && {_x in ["ied","suicide"]}) then {deletevehicle _object};
-                    if (alive _object) then {_object setdamage 1; deleteMarker format["%1_%2",_x,_id]};
+                    if (alive _object) then {
+                        // Only the factory, HQ and depot are the insurgents' own buildings, so only they
+                        // come down. The ied and suicide keys hold the nearest house, wall or road as a
+                        // stand-in for their trigger (the trigger itself only when nothing stood within
+                        // 150 m), ambush a road piece and sabotage the building the insurgents were sent
+                        // to wreck: damaging those flattened whatever stood there. A stored trigger is
+                        // deleted, as before; anything else is left alone.
+                        if (_x in ["factory","HQ","depot"]) then {
+                            _object setdamage 1;
+                        } else {
+                            if (_object isKindOf "EmptyDetector") then {deletevehicle _object};
+                        };
+                        // The markers are named in lower case (hq_<id>, as insurgency.fsm makes it).
+                        deleteMarker format["%1_%2",toLower _x,_id];
+                    };
 
                     [_objective,_x] call ALiVE_fnc_HashRem;
-                } foreach ["factory","hq","ambush","depot","sabotage","ied","suicide"];
+                } foreach ["factory","HQ","ambush","depot","sabotage","ied","suicide"];
 
                 // Reset all actions done on that objective so they can be performed again
                 [_objective,"actionsFulfilled",[]] call ALiVE_fnc_HashSet;
