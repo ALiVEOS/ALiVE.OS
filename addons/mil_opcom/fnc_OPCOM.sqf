@@ -3455,14 +3455,24 @@ switch (_operation) do {
 
         private ["_positions","_pos"];
 
-        // Execute Function on Clients only
-        if !(hasInterface) exitwith {[_logic,_operation,_args] remoteExec ["ALiVE_fnc_OPCOM",owner _unit]};
-
         _args params [
             ["_unit", player, [objNull]],
             ["_objectives", [], [[]]],
             ["_color", "COLORYELLOW", [""]]
         ];
+
+        // The pick is made on the machine of the unit asking. Asking where the unit is local,
+        // not whether this machine has a screen, sends a client's request on from a
+        // player-hosted server instead of opening the map for the host. The unit is read
+        // first: the old check used _unit before these params, which only worked while the
+        // caller's own _unit showed through, so a unit local to a dedicated server (an AI
+        // soldier) sent the call back to the server, where _unit was undefined, without end.
+        // Only the server forwards, since only there does owner name a machine.
+        if (isNull _unit) exitwith {};
+        if !(local _unit) exitwith {
+            if (isServer) then {[_logic,_operation,_args] remoteExec ["ALiVE_fnc_OPCOM",owner _unit]};
+        };
+        if !(hasInterface) exitwith {};
 
         // Only run function if objectives are provided
         if (count _objectives == 0) exitwith {hint "OPCOM currently has no assault objectives in his list!"};
