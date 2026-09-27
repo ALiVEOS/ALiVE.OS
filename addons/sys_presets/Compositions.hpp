@@ -25,6 +25,15 @@ class Cfg3DEN {
             icon = "\A3\ui_f\data\map\markers\nato\b_inf.paa";
             useSideColorOnIcon = 1;
         };
+        class ALiVE_Preset_combat_support {
+            path = "x\alive\addons\sys_presets\compositions\combat_support";
+            side = 1;
+            editorCategory = "ALiVE_PresetCat";
+            editorSubcategory = "ALiVE_PresetSub";
+            displayName = "Combat support: CAS, transport and artillery on call";
+            icon = "\A3\ui_f\data\map\markers\nato\b_inf.paa";
+            useSideColorOnIcon = 1;
+        };
         class ALiVE_Preset_defensive {
             path = "x\alive\addons\sys_presets\compositions\defensive";
             side = 1;
