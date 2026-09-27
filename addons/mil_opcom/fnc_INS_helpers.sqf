@@ -826,11 +826,11 @@ ALiVE_fnc_INS_ambush = {
                 if (alive _roadObject) then {deletemarker format["Ambush_%1",getposATL _roadObject]; [_objective,"ambush"] call ALiVE_fnc_HashRem};
 
                 // And its IED trigger with any IEDs it has out, so the road isn't mined for good once
-                // the ambush is over.
-                if (!isNull _trg) then {
-                    [_ambushKey, getPos _trg] call ALiVE_fnc_INS_clearIEDs;
-                    deleteVehicle _trg;
-                };
+                // the ambush is over. The trigger goes first, so nobody sets it off in between, and
+                // the IEDs are cleared even if the trigger has already gone: Military IED deletes
+                // the triggers within 3 m of an IED it takes away.
+                if (!isNull _trg) then { deleteVehicle _trg };
+                [_ambushKey, getposATL _roadObject] call ALiVE_fnc_INS_clearIEDs;
 };
 
 ALiVE_fnc_INS_retreat = {
@@ -900,8 +900,10 @@ ALiVE_fnc_INS_retreat = {
                         deleteVehicle _x;
                     };
                 } forEach (_pos nearObjects ["EmptyDetector", 1]);
-                // Deleting the IED trigger skips its deactivation, so take the town's IEDs off here.
+                // Deleting the IED trigger skips its deactivation, so take the town's IEDs off here,
+                // and an ambush's too: with the objective's ambush gone, nothing would clear them.
                 [_id, _pos] call ALiVE_fnc_INS_clearIEDs;
+                [format ["%1-ambush", _id], _pos] call ALiVE_fnc_INS_clearIEDs;
                 // And the IED module's record of the trigger, which a persistent reload would build it back from.
                 if (!isNil "ALiVE_mil_ied_STORE") then {
                     private _storedTriggers = [ALiVE_mil_ied_STORE, "triggers"] call ALiVE_fnc_HashGet;

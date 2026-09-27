@@ -73,9 +73,12 @@ switch (_taskState) do {
 
         private _bestPos = [];
         private _bestDist = 1e10;
+        private _townKeys = if (_iedsHash isEqualType [] && {count _iedsHash > 1}) then { _iedsHash select 1 } else { [] };
         {
             private _townHash = _x;
-            if (_townHash isEqualType [] && {count _townHash > 2}) then {
+            // An insurgent ambush's IEDs go when it ends, 15 minutes on, so they are no target.
+            private _townKey = _townKeys param [_forEachIndex, ""];
+            if (_townHash isEqualType [] && {count _townHash > 2} && {!(_townKey isEqualType "" && {(_townKey find "-ambush") > -1})}) then {
                 private _datas = _townHash select 2;
                 {
                     private _pos = [_x, "IEDpos", []] call ALiVE_fnc_hashGet;
