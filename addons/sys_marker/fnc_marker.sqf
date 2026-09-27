@@ -1173,6 +1173,9 @@ switch (_operation) do {
             };
 
             [GVAR(STORE), _markerName] call ALIVE_fnc_hashRem;
+            // With the last one gone the empty store has to be saved, or it comes back after a
+            // restart. The save writes an empty store only after this.
+            if (isServer && {count (GVAR(STORE) select 1) == 0}) then { MOD(SYS_marker) setVariable ["saveEmptyStore", true] };
 
             _result = GVAR(STORE);
         };
