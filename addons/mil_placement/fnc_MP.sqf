@@ -1036,7 +1036,7 @@ switch(_operation) do {
 
                         if !(ALIVE_loadProfilesPersistent) then {
 	                        _group = ["Infantry",_faction] call ALIVE_fnc_configGetRandomGroup;
-	                        _profiles = [_group, position _hqBuilding, random 360, true, _faction] call ALIVE_fnc_createProfilesFromGroupConfig;
+	                        _profiles = [_group, position _hqBuilding, random 360, true, _faction, false, false, "STEALTH", _onEachSpawn, _onEachSpawnOnce] call ALIVE_fnc_createProfilesFromGroupConfig;
 
 	                        {
 	                            if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
@@ -1137,7 +1137,7 @@ switch(_operation) do {
 
                         if !(ALIVE_loadProfilesPersistent) then {
                             _group = ["Infantry",_faction] call ALIVE_fnc_configGetRandomGroup;
-                            _profiles = [_group, _safePos, random 360, true, _faction] call ALIVE_fnc_createProfilesFromGroupConfig;
+                            _profiles = [_group, _safePos, random 360, true, _faction, false, false, "STEALTH", _onEachSpawn, _onEachSpawnOnce] call ALIVE_fnc_createProfilesFromGroupConfig;
 
                             {
                                 if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
@@ -1519,7 +1519,10 @@ switch(_operation) do {
                                     _countProfiles = _countProfiles + 1;
                                     _countUncrewedHelis = _countUncrewedHelis + 1;
                                 } else {
-                                    [_vehicleClass,_side,_faction,"CAPTAIN",_position,_direction,false,_faction] call ALIVE_fnc_createProfilesCrewedVehicle;
+                                    private _crewedProfiles = [_vehicleClass,_side,_faction,"CAPTAIN",_position,_direction,false,_faction] call ALIVE_fnc_createProfilesCrewedVehicle;
+                                    // The On unit spawn scripts go on the crew, as they do for the module's other groups.
+                                    [_crewedProfiles select 0, "onEachSpawn", _onEachSpawn] call ALIVE_fnc_profileEntity;
+                                    [_crewedProfiles select 0, "onEachSpawnOnce", _onEachSpawnOnce] call ALIVE_fnc_profileEntity;
                                     _countProfiles = _countProfiles + 2;
                                     _countCrewedHelis = _countCrewedHelis + 1;
                                 };
@@ -1861,6 +1864,9 @@ switch(_operation) do {
                                 private _aaCrewClass = getText (configFile >> "CfgVehicles" >> _aaClass >> "crew");
                                 private _aaProfile = if (_aaCrewClass != "") then {
                                     private _profiles = [_aaClass, _side, _faction, "PRIVATE", _safePos, _safeDir, false, _faction] call ALIVE_fnc_createProfilesCrewedVehicle;
+                                    // The On unit spawn scripts go on the crew, as they do for the module's other groups.
+                                    [_profiles select 0, "onEachSpawn", _onEachSpawn] call ALIVE_fnc_profileEntity;
+                                    [_profiles select 0, "onEachSpawnOnce", _onEachSpawnOnce] call ALIVE_fnc_profileEntity;
                                     _profiles select 1
                                 } else {
                                     [_aaClass, _side, _faction, _safePos, _safeDir, false, _faction] call ALIVE_fnc_createProfileVehicle
@@ -1998,7 +2004,10 @@ switch(_operation) do {
 
                             if (count _safePos > 0) then {
                                 _usedArtyPositions pushBack _safePos;
-                                [_artyClass, _side, _artySourceFaction, "PRIVATE", _safePos, _safeDir, false, _artySourceFaction] call ALIVE_fnc_createProfilesCrewedVehicle;
+                                private _crewedProfiles = [_artyClass, _side, _artySourceFaction, "PRIVATE", _safePos, _safeDir, false, _artySourceFaction] call ALIVE_fnc_createProfilesCrewedVehicle;
+                                // The On unit spawn scripts go on the crew, as they do for the module's other groups.
+                                [_crewedProfiles select 0, "onEachSpawn", _onEachSpawn] call ALIVE_fnc_profileEntity;
+                                [_crewedProfiles select 0, "onEachSpawnOnce", _onEachSpawnOnce] call ALIVE_fnc_profileEntity;
                                 _countProfiles = _countProfiles + 2;
                                 _gunsPlaced = _gunsPlaced + 1;
                             };
