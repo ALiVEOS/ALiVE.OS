@@ -3239,6 +3239,26 @@ switch (_operation) do {
             ["_insertAtFront", false, [false]]
         ];
 
+        // The same objective added again (same id, same place) hands back the one already there.
+        // A script-added objective is saved with the commander's own, so a mission that adds it
+        // at every start gave a persistent commander two under one id from its second session
+        // on, and removeObjective only ever took out the indexed one. An id that is already in
+        // use somewhere else is still added, as before, but now says so.
+        private _existing = ([_logic,"objectivesByID"] call ALiVE_fnc_HashGet) get _id;
+        if (!isNil "_existing" && {!([_existing,"deleted",false] call ALiVE_fnc_HashGet)}) then {
+            private _there = [_existing,"center",[0,0,0]] call ALiVE_fnc_HashGet;
+            if ((_there distance2D _pos) < 1) then {
+                _result = _existing;
+            } else {
+                ["OPCOM operation 'addObjective': objective id %1 is already in use at %2, adding a second at %3 under the same id", _id, _there, _pos] call ALiVE_fnc_dump;
+            };
+        };
+        if (!isNil "_result") exitwith {
+            if (_debug) then {
+                ["OPCOM operation 'addObjective': objective %1 is already there, keeping it", _id] call ALiVE_fnc_dump;
+            };
+        };
+
         // playerCreated must stay AFTER _rev. The FSMs read the objective value
         // array POSITIONALLY: objectiveID(0), center(1), size(2), objectiveType(3),
         // priority(4) and opcom_state(5) are all read by index in opcom.fsm/tacom.fsm.
