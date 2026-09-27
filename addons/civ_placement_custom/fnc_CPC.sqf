@@ -571,11 +571,27 @@ switch (_operation) do {
                         } forEach ([_x] call _fnc_getOpcomFactions);
                     };
                 } forEach (synchronizedObjects _logic);
-                // Commanders of two sides synced to one module gave it a mixed force. Only the first
-                // faction's side is kept, the side the force is placed as.
+                // Each group is placed on its own faction's side, so commanders of two enemy sides
+                // synced to one module put both sides' groups on one objective. A faction is kept
+                // only if its side and every kept faction's side are friends both ways, first one
+                // first, so allied commanders still give a joint force; the others are left out,
+                // and the log says which. (Friendship isn't transitive: a side friendly to two
+                // enemies mustn't bring both in.)
                 if (count _factions > 1) then {
-                    private _firstSide = (_factions select 0) call ALiVE_fnc_factionSide;
-                    _factions = _factions select { (_x call ALiVE_fnc_factionSide) isEqualTo _firstSide };
+                    private _kept = [_factions select 0];
+                    {
+                        private _side = _x call ALiVE_fnc_factionSide;
+                        private _clash = _kept findIf {
+                            private _keptSide = _x call ALiVE_fnc_factionSide;
+                            (_keptSide getFriend _side) < 0.6 || {(_side getFriend _keptSide) < 0.6}
+                        };
+                        if (_clash < 0) then { _kept pushBack _x };
+                    } forEach (_factions select [1, count _factions - 1]);
+                    private _hostile = _factions - _kept;
+                    if (count _hostile > 0) then {
+                        _factions = _kept;
+                        ["%1 - Force Factions is empty and the synced commanders include enemies of each other: placing %2, leaving out %3", "CPC", _kept, _hostile] call ALiVE_fnc_dump;
+                    };
                 };
             };
 
