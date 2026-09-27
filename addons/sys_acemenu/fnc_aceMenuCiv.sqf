@@ -95,14 +95,36 @@ private _baseCond = {
 //   _condBelowHostile: visible only when h < 80 - hidden only at Hostile.
 //                      Used for Calm Down (Defiant still allows the
 //                      de-escalation attempt; Hostile locks it out).
-// Talk, Go Away, Go Home, and Detain stay on the base condition only -
-// they are the always-available exits / coercive actions.
+// Talk, Go Away and Detain stay on the base condition only - they are the
+// always-available exits / coercive actions. Go Home, offered at any tier
+// too, needs a civilian Advanced Civilians runs, like the other orders.
 private _condBelowDefiant = {
     alive _target &&
     {(getNumber (configFile >> "CfgVehicles" >> typeOf _target >> "side")) == 3} &&
     {!(_target getVariable ["ALiVE_advciv_blacklist", false])} &&
     {call ALiVE_fnc_civAceAuthGate} &&
     {[_target, 60] call ALiVE_fnc_civAceTierGate}
+};
+// Orders: Advanced Civilians' brain carries them out and puts the civilian back after, so they
+// are offered only for a civilian it runs, while it is on. A town elder or priest, or a protected
+// civilian, was left marked ORDERED or with its movement switched off. With Advanced Civilians
+// off they show as before. One following the player is let go by the brain too, and keeps them,
+// as Go Home is how a follow ends; a detained one is in the player's group as well, so the brain
+// must have run it before.
+private _condOrderBelowDefiant = {
+    alive _target &&
+    {(getNumber (configFile >> "CfgVehicles" >> typeOf _target >> "side")) == 3} &&
+    {!(_target getVariable ["ALiVE_advciv_blacklist", false])} &&
+    {call ALiVE_fnc_civAceAuthGate} &&
+    {[_target, 60] call ALiVE_fnc_civAceTierGate} &&
+    {isNil "ALiVE_advciv_enabled" || {!ALiVE_advciv_enabled} || {_target getVariable ["ALiVE_advciv_active", false]} || {group _target == group player && {!isNil {_target getVariable "ALiVE_advciv_homePos"}}}}
+};
+private _condOrderBase = {
+    alive _target &&
+    {(getNumber (configFile >> "CfgVehicles" >> typeOf _target >> "side")) == 3} &&
+    {!(_target getVariable ["ALiVE_advciv_blacklist", false])} &&
+    {call ALiVE_fnc_civAceAuthGate} &&
+    {isNil "ALiVE_advciv_enabled" || {!ALiVE_advciv_enabled} || {_target getVariable ["ALiVE_advciv_active", false]} || {group _target == group player && {!isNil {_target getVariable "ALiVE_advciv_homePos"}}}}
 };
 private _condBelowHostile = {
     alive _target &&
@@ -161,19 +183,20 @@ private _a = [
 // Commands submenu
 // ------------------------------------------------------------------------
 _a = ["ALiVE_Civ_Follow", "Follow Me", "",
-    { [ALiVE_civInteractHandler, "Follow", _target] call ALiVE_fnc_civInteract }, _condBelowDefiant
+    { [ALiVE_civInteractHandler, "Follow", _target] call ALiVE_fnc_civInteract }, _condOrderBelowDefiant
 ] call ace_interact_menu_fnc_createAction;
 ["CAManBase", 0, _pCmd, _a, true] call ace_interact_menu_fnc_addActionToClass;
 
 _a = ["ALiVE_Civ_Stay", "Stay Here", "",
-    { [ALiVE_civInteractHandler, "StayHere", _target] call ALiVE_fnc_civInteract }, _condBelowDefiant
+    { [ALiVE_civInteractHandler, "StayHere", _target] call ALiVE_fnc_civInteract }, _condOrderBelowDefiant
 ] call ace_interact_menu_fnc_createAction;
 ["CAManBase", 0, _pCmd, _a, true] call ace_interact_menu_fnc_addActionToClass;
 
-// Go Home stays on the base condition - always-available exit (sends
-// civ back to home pos), part of the Hostile / Defiant active set.
+// Go Home is on the base order condition: offered at any tier, as the way out (it sends the
+// civilian home), but like the other orders only for a civilian Advanced Civilians runs, or one
+// following the player.
 _a = ["ALiVE_Civ_GoHome", "Go Home", "",
-    { [ALiVE_civInteractHandler, "GoHome", _target] call ALiVE_fnc_civInteract }, _baseCond
+    { [ALiVE_civInteractHandler, "GoHome", _target] call ALiVE_fnc_civInteract }, _condOrderBase
 ] call ace_interact_menu_fnc_createAction;
 ["CAManBase", 0, _pCmd, _a, true] call ace_interact_menu_fnc_addActionToClass;
 
@@ -188,6 +211,7 @@ _a = ["ALiVE_Civ_GetIn", "Get In Vehicle", "",
         {(getNumber (configFile >> "CfgVehicles" >> typeOf _target >> "side")) == 3} &&
         {!(_target getVariable ["ALiVE_advciv_blacklist", false])} &&
         {[_target, 60] call ALiVE_fnc_civAceTierGate} &&
+        {isNil "ALiVE_advciv_enabled" || {!ALiVE_advciv_enabled} || {_target getVariable ["ALiVE_advciv_active", false]} || {group _target == group player && {!isNil {_target getVariable "ALiVE_advciv_homePos"}}}} &&
         {vehicle _target == _target} &&
         {
             // Match the react GETIN target search - any alive movable
@@ -212,6 +236,7 @@ _a = ["ALiVE_Civ_GetOut", "Get Out Vehicle", "",
         {(getNumber (configFile >> "CfgVehicles" >> typeOf _target >> "side")) == 3} &&
         {!(_target getVariable ["ALiVE_advciv_blacklist", false])} &&
         {[_target, 60] call ALiVE_fnc_civAceTierGate} &&
+        {isNil "ALiVE_advciv_enabled" || {!ALiVE_advciv_enabled} || {_target getVariable ["ALiVE_advciv_active", false]} || {group _target == group player && {!isNil {_target getVariable "ALiVE_advciv_homePos"}}}} &&
         {vehicle _target != _target}
     }
 ] call ace_interact_menu_fnc_createAction;
@@ -233,7 +258,7 @@ _a = ["ALiVE_Civ_Stop", "Stop", "",
 // Coercion submenu
 // ------------------------------------------------------------------------
 _a = ["ALiVE_Civ_HandsUp", "Hands Up", "",
-    { [ALiVE_civInteractHandler, "HandsUp", _target] call ALiVE_fnc_civInteract }, _condBelowDefiant
+    { [ALiVE_civInteractHandler, "HandsUp", _target] call ALiVE_fnc_civInteract }, _condOrderBelowDefiant
 ] call ace_interact_menu_fnc_createAction;
 ["CAManBase", 0, _pCoercion, _a, true] call ace_interact_menu_fnc_addActionToClass;
 
@@ -245,7 +270,7 @@ _a = ["ALiVE_Civ_Calm", "Calm Down", "",
 ["CAManBase", 0, _pCoercion, _a, true] call ace_interact_menu_fnc_addActionToClass;
 
 _a = ["ALiVE_Civ_Kneel", "Kneel", "",
-    { [ALiVE_civInteractHandler, "Kneel", _target] call ALiVE_fnc_civInteract }, _condBelowDefiant
+    { [ALiVE_civInteractHandler, "Kneel", _target] call ALiVE_fnc_civInteract }, _condOrderBelowDefiant
 ] call ace_interact_menu_fnc_createAction;
 ["CAManBase", 0, _pCoercion, _a, true] call ace_interact_menu_fnc_addActionToClass;
 

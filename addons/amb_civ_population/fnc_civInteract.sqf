@@ -327,7 +327,8 @@ switch (_operation) do {
 			CIVINTERACT_HOSTILITYLABEL ctrlShow true;
 		};
 
-		// Tier-driven action restriction.
+		// Tier-driven action restriction. (The orders are also greyed, at any tier, for a civilian
+		// Advanced Civilians doesn't run: see further down.)
 		//   Defiant (60-79): active set is Go Away, Go Home, Close,
 		//                    Calm Down, Detain, and Ration and Water so
 		//                    aid can still bring the civilian back down.
@@ -394,6 +395,20 @@ switch (_operation) do {
 					CIVINTERACT_GETIN ctrlSetTooltip "No vehicle within range";
 				};
 			};
+		};
+
+		// Advanced Civilians' brain carries these orders out and puts the civilian back after,
+		// so one it leaves alone (a town elder or priest, a protected one) was left marked
+		// ORDERED, or standing with its movement switched off. Offered only while it runs the
+		// civilian; with Advanced Civilians off they stay as they were. Calm Down stays, as it
+		// clears whatever state the civilian was left in. One following the player is let go by
+		// the brain too, and keeps them, as Go Home is how a follow ends; a detained one is in the
+		// player's group as well, so the brain must have run it before.
+		if (!isNil "ALiVE_advciv_enabled" && {ALiVE_advciv_enabled} && {!(_civ getVariable ["ALiVE_advciv_active", false])} && {group _civ != group player || {isNil {_civ getVariable "ALiVE_advciv_homePos"}}}) then {
+			{
+				_x ctrlEnable false;
+				_x ctrlSetTooltip (localize "STR_ALIVE_CIV_INTERACT_NO_ORDERS_TOOLTIP");
+			} forEach [CIVINTERACT_FOLLOW, CIVINTERACT_STAY, (CIVINTERACT_DISPLAY displayCtrl 92322), CIVINTERACT_HANDSUP, CIVINTERACT_KNEEL, CIVINTERACT_GETIN];
 		};
 	};
 
@@ -1318,9 +1333,10 @@ switch (_operation) do {
 	};
 
 	//-- AdvCiv quick-command bridges. Each one is a passthrough to
-	//   ALIVE_fnc_advciv_react with the appropriate verb string. The
-	//   advciv layer already enforces active-advciv / blacklist /
-	//   alive checks, so these stay thin. GetInVehicle takes a second
+	//   ALIVE_fnc_advciv_react with the appropriate verb string. react
+	//   checks alive / player / blacklist only; the buttons are greyed
+	//   for a civilian Advanced Civilians does not run, bar a follower.
+	//   GetInVehicle takes a second
 	//   argument (the vehicle to enter); advciv_react picks the
 	//   nearest qualifying one when nil. closeDialog 0 fires before
 	//   the action is dispatched so the civ is captured into _civ

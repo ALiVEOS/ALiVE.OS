@@ -1104,6 +1104,16 @@
     <Chinesesimp>平民拒绝合作</Chinesesimp>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_NO_ORDERS_TOOLTIP">
+    <English>This civilian doesn't take orders</English>
+    <French>Ce civil ne prend pas d'ordres</French>
+    <Portuguese>Este civil não aceita ordens</Portuguese>
+    <Russian>Этот гражданский не выполняет приказы</Russian>
+    <Spanish>Este civil no acepta órdenes</Spanish>
+    <Chinese>此平民不接受命令</Chinese>
+    <Chinesesimp>此平民不接受命令</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_INTERACT_REFUSES_TOOLTIP">
     <English>Civilian refuses cooperation</English>
     <French>Le civil refuse la cooperation</French>
