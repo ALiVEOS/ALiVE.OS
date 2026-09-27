@@ -127,6 +127,19 @@ if (_collisionReason isEqualTo "" && {!isNil "ALIVE_factionCustomMappings"} && {
     };
 };
 
+// New faction mode needs an id of its own. Given one the game already has, such as BLU_F, its
+// mapping took that faction over for everything that asks for its groups afterwards. Override
+// categories is the mode for changing a faction that exists.
+if (_collisionReason isEqualTo "" && {!_isOverride}) then {
+    private _factionClass = configFile >> "CfgFactionClasses" >> _factionId;
+    if !(isClass _factionClass) then { _factionClass = missionConfigFile >> "CfgFactionClasses" >> _factionId };
+    if (isClass _factionClass) then {
+        _collisionReason = "faction";
+        _collisionOwner = getText (_factionClass >> "displayName");
+        if (_collisionOwner isEqualTo "") then { _collisionOwner = configName _factionClass };
+    };
+};
+
 if !(_collisionReason isEqualTo "") exitWith {
     private _collisionSourceText = if (_collisionSourceId isEqualTo "") then {""} else {format [" (module %1)", _collisionSourceId]};
     _logic setVariable ["factionId", _requestedFactionId, true];
@@ -135,8 +148,36 @@ if !(_collisionReason isEqualTo "") exitWith {
     _logic setVariable ["compiledFactionSide", "", true];
     _logic setVariable ["compiledFactionDisplayName", _displayName, true];
     _logic setVariable ["compiledFactionGroupCount", 0, true];
-    _logic setVariable ["compiledFactionError", format ["Duplicate compiled faction id %1", _factionId], true];
-    ["Warning Faction compiler [%1] rejected normalized id %2 (requested %3) because it collides with existing %4 %5%6", _displayName, _factionId, _requestedFactionId, _collisionReason, _collisionOwner, _collisionSourceText] call ALIVE_fnc_dump;
+    _logic setVariable ["compiledFactionError", if (_collisionReason isEqualTo "faction") then {
+        format ["Faction id %1 is the game's own faction %2: use a new id, or Override categories to change that faction", _factionId, _collisionOwner]
+    } else {
+        format ["Duplicate compiled faction id %1", _factionId]
+    }, true];
+    ["Warning Faction compiler [%1] rejected normalized id %2 (requested %3) because it collides with existing %4 %5%6; modules synced to it use their own faction instead", _displayName, _factionId, _requestedFactionId, _collisionReason, _collisionOwner, _collisionSourceText] call ALIVE_fnc_dumpR;
+    // The template units go as they would after a compile: the groups on the side of the first
+    // one. Left behind they'd be live units in the mission.
+    if (_deleteTemplates) then {
+        private _templateSide = sideUnknown;
+        {
+            if ((typeOf _x) isEqualTo "ALiVE_sys_factioncompiler_category") then {
+                {
+                    if (_x isKindOf "CAManBase" && {side _x != sideLogic}) then {
+                        private _group = group _x;
+                        if (_templateSide isEqualTo sideUnknown) then { _templateSide = side _group };
+                        if ((side _group) isEqualTo _templateSide) then {
+                            private _vehicles = [];
+                            {
+                                if !((vehicle _x) isEqualTo _x) then { _vehicles pushBackUnique (vehicle _x) };
+                                deleteVehicle _x;
+                            } forEach (units _group);
+                            { deleteVehicle _x } forEach _vehicles;
+                            _group call ALiVE_fnc_DeleteGroupRemote;
+                        };
+                    };
+                } forEach (synchronizedObjects _x);
+            };
+        } forEach _syncedObjects;
+    };
     [_logic, false, _moduleID] call ALIVE_fnc_dumpModuleInit;
     false
 };
