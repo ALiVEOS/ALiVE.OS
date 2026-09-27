@@ -19,6 +19,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 private ["_taskVehicles","_taskGroup","_groupCount","_vehiclesWithRoom","_emptyCount"];
@@ -28,14 +29,16 @@ _taskGroup = _this select 1;
 
 _groupCount = count units _taskGroup;
 
-["GROUP COUNT: %1",_groupCount] call ALIVE_fnc_dump;
+// Behind the debug flag: these ran every few seconds while players waited at a pickup.
+private _debug = !isNil "ALiVE_mil_c2istar_debug" && {ALiVE_mil_c2istar_debug};
+if (_debug) then { ["GROUP COUNT: %1",_groupCount] call ALIVE_fnc_dump; };
 
 _vehiclesWithRoom = [];
 
 {
     _emptyCount = [_x] call ALIVE_fnc_vehicleCountEmptyPositions;
 
-    ["EMPTY COUNT: %1",_emptyCount] call ALIVE_fnc_dump;
+    if (_debug) then { ["EMPTY COUNT: %1",_emptyCount] call ALIVE_fnc_dump; };
 
     if(_groupCount <= _emptyCount) then {
         _vehiclesWithRoom pushback _x;
