@@ -240,7 +240,7 @@ switch(_operation) do {
                                         case ("CAPTAIN") : {_icon = "a3\UI_F\data\GUI\Cfg\Ranks\captain_gs.paa"};
                                         case ("MAJOR") : {_icon = "a3\UI_F\data\GUI\Cfg\Ranks\major_gs.paa"};
                                         case ("COLONEL") : {_icon = "a3\UI_F\data\GUI\Cfg\Ranks\colonel_gs.paa"};
-                                        case ("CORPORAL") : {_icon = "a3\UI_F\data\GUI\Cfg\Ranks\general_gs.paa"};
+                                        case ("CORPORAL") : {_icon = "a3\UI_F\data\GUI\Cfg\Ranks\corporal_gs.paa"};
                                         default {_icon = "a3\UI_F\data\GUI\Cfg\Ranks\private_gs.paa"};
                                     };
 
