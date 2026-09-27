@@ -646,6 +646,24 @@ switch(_operation) do {
                 _size = parseNumber _size;
             };
 
+            // Nearest dry ground within the objective, looked for in rings out from the module the
+            // first time a group or guard spot falls in the water. [] if there is none.
+            private _landAnchor = [-1];
+            private _fnc_landAnchor = {
+                if (_landAnchor isEqualTo [-1]) then {
+                    _landAnchor = [];
+                    private _centre = position _logic;
+                    for "_r" from 25 to (_size max 25) step 25 do {
+                        if !(_landAnchor isEqualTo []) exitWith {};
+                        for "_a" from 0 to 345 step 15 do {
+                            private _p = _centre getPos [_r, _a];
+                            if (!surfaceIsWater _p) exitWith { _landAnchor = _p };
+                        };
+                    };
+                };
+                _landAnchor
+            };
+
             private _priority = [_logic, "priority"] call MAINCLASS;
 
             if(typeName _priority == "STRING") then {
@@ -1273,6 +1291,17 @@ switch(_operation) do {
                                 private _candidate = [_guardAnchor, _guardJitter] call CBA_fnc_RandPos;
                                 if (!surfaceIsWater _candidate) exitWith { _guardPos = _candidate };
                             };
+                            // Still in the water: dry ground by the nearest land within the objective, if there is any.
+                            if (surfaceIsWater _guardPos) then {
+                                private _anchor = call _fnc_landAnchor;
+                                if !(_anchor isEqualTo []) then {
+                                    _guardPos = _anchor;
+                                    for "_try" from 1 to 10 do {
+                                        private _candidate = [_anchor, _guardJitter max 20] call CBA_fnc_RandPos;
+                                        if (!surfaceIsWater _candidate) exitWith { _guardPos = _candidate };
+                                    };
+                                };
+                            };
                             _guards = [_guardGroup, _guardPos, random(360), true, _guardFaction, false, false, "STEALTH", _onEachSpawn, _onEachSpawnOnce] call ALIVE_fnc_createProfilesFromGroupConfig;
 
                             // DEBUG -------------------------------------------------------------------------------------
@@ -1408,6 +1437,7 @@ switch(_operation) do {
                 [_cluster, "reserveModule", _logic] call ALiVE_fnc_hashSet;
                 [_cluster, "reserveModuleClass", MAINCLASS] call ALiVE_fnc_hashSet;
 
+                private _groupsInWater = 0;
                 for "_i" from 0 to (_groupCount - 1) do {
                     private ["_command","_radius","_garrisonPos","_position"];
                     private _groupEntry = _groups select _i;
@@ -1509,6 +1539,20 @@ switch(_operation) do {
                             };
                         };
 
+                        // A spot in the water moves to dry ground by the nearest land within the
+                        // objective; a group with none is left out and counted below, not unseen.
+                        if (surfaceIsWater _position) then {
+                            private _anchor = call _fnc_landAnchor;
+                            if !(_anchor isEqualTo []) then {
+                                _position = _anchor;
+                                for "_try" from 1 to 10 do {
+                                    private _candidate = [_anchor, 50] call CBA_fnc_RandPos;
+                                    if (!surfaceIsWater _candidate) exitWith { _position = _candidate };
+                                };
+                            };
+                            if (surfaceIsWater _position) then { _groupsInWater = _groupsInWater + 1 };
+                        };
+
                         if !(surfaceIsWater _position) then {
                             private _profiles = [_group, _position, _activeDir, false, _groupFaction, false, false, "STEALTH", _onEachSpawn, _onEachSpawnOnce] call ALIVE_fnc_createProfilesFromGroupConfig;
 
@@ -1550,6 +1594,10 @@ switch(_operation) do {
                             };
                         };
                     };
+                };
+
+                if (_groupsInWater > 0) then {
+                    ["CMP - %1 of this objective's groups were not placed: their spot was in the water and there is no dry ground within %2 m of the module at %3.", _groupsInWater, _size, getPos _logic] call ALiVE_fnc_dump;
                 };
 
                 // Activation watcher PFH (5 s tick). Self-terminates if the
@@ -1706,6 +1754,17 @@ switch(_operation) do {
                     for "_try" from 1 to 10 do {
                         private _candidate = [_guardAnchor, _guardJitter] call CBA_fnc_RandPos;
                         if (!surfaceIsWater _candidate) exitWith { _guardPos = _candidate };
+                    };
+                    // Still in the water: dry ground by the nearest land within the objective, if there is any.
+                    if (surfaceIsWater _guardPos) then {
+                        private _anchor = call _fnc_landAnchor;
+                        if !(_anchor isEqualTo []) then {
+                            _guardPos = _anchor;
+                            for "_try" from 1 to 10 do {
+                                private _candidate = [_anchor, _guardJitter max 20] call CBA_fnc_RandPos;
+                                if (!surfaceIsWater _candidate) exitWith { _guardPos = _candidate };
+                            };
+                        };
                     };
                     private _dGuards = [_guardGroup, _guardPos, random(360), true, _guardFaction, false, false, "STEALTH", _onEachSpawn, _onEachSpawnOnce] call ALIVE_fnc_createProfilesFromGroupConfig;
                     {
