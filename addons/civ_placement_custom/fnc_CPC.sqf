@@ -571,6 +571,12 @@ switch (_operation) do {
                         } forEach ([_x] call _fnc_getOpcomFactions);
                     };
                 } forEach (synchronizedObjects _logic);
+                // Commanders of two sides synced to one module gave it a mixed force. Only the first
+                // faction's side is kept, the side the force is placed as.
+                if (count _factions > 1) then {
+                    private _firstSide = (_factions select 0) call ALiVE_fnc_factionSide;
+                    _factions = _factions select { (_x call ALiVE_fnc_factionSide) isEqualTo _firstSide };
+                };
             };
 
             if ((count _factions == 0) && {count _legacyFactions > 0}) then {
