@@ -58,17 +58,10 @@ ALiVE_advciv_voiceLines_hiding = [
     "ALiVE_advciv_crying"
 ];
 
-addMissionEventHandler ["EachFrame", {
-    if (diag_frameNo % 30 != 0) exitWith {};
-    {
-        if (alive _x && {side _x == civilian} && {!isPlayer _x} && {_x getVariable ["ALiVE_advciv_active", false]}) then {
-            private _nearShots = _x getVariable ["ALiVE_advciv_nearShots", 0];
-            if (_nearShots > 0) then {
-                _x setVariable ["ALiVE_advciv_nearShots", (_nearShots - 0.1) max 0];
-            };
-        };
-    } forEach allUnits;
-}];
+// Near shots wear off in the once-a-second handler XEH_postInit adds after calling this. A second
+// one here took 0.1 more every 30 frames, looping over every unit in the mission to do it, so how
+// fast gunfire panic wore off depended on the frame rate. 2165b5d7 removed it once and a merge
+// brought it back.
 
 addMissionEventHandler ["EntityKilled", {
     params ["_killed", "_killer", "_instigator"];
