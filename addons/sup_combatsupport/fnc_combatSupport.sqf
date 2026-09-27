@@ -983,6 +983,9 @@ switch(_operation) do {
                                         _tl = format ["%1_soldier_TL_F", _prefix];
                                         _sl = format ["%1_soldier_F", _prefix];
                                         _newgrp = [_vehPos, _side, [_tl, _sl],[],[],[],[],[],_vehDir] call BIS_fnc_spawnGroup;
+                                        // Flagged like the gun, or the AI Distributor hands the battery to a
+                                        // headless client over these 2 on foot.
+                                        { _x setVariable ["ALIVE_CombatSupport", true] } forEach (units _newgrp);
                                         (units _newgrp) joinSilent _grp;
 
                                         _sptarr = _grp getVariable ["supportWeaponArray",[]];
@@ -1008,14 +1011,22 @@ switch(_operation) do {
                                 // the default of 3 left a 1-tube team firing a third of every mission.
                                 _grp setVariable ["supportWeaponCount",count _units];
                             } else {
+                                // A soldier on foot is his own vehicle, so beside an emplaced gun such as a
+                                // mortar he counted as a gun, and so did a truck with the team's driver in
+                                // it: every mission's rounds were split over things that can't fire them.
+                                // For an emplaced gun only emplaced guns count. A self-propelled battery
+                                // keeps everyone in the list: its move orders go to that list, and a
+                                // leader left out of them would call his guns back.
+                                private _emplaced = _veh isKindOf "StaticWeapon";
                                 {
                                     private _v = vehicle _x;
-                                    if !(_v in _units) then {
+                                    // Every member keeps the lock and the flag, counted or not: the AI
+                                    // Distributor hands a group to a headless client when any member's
+                                    // vehicle lacks the flag, and the battery can't fire from there.
+                                    _v lock true;
+                                    _v setVariable ["ALIVE_CombatSupport", true];
+                                    if ((!_emplaced || {_v isKindOf "StaticWeapon"}) && {!(_v in _units)}) then {
                                         _units pushback _v;
-                                        _v lock true;
-
-                                        // set ownership flag for other modules
-                                        _v setVariable ["ALIVE_CombatSupport", true];
                                     };
                                 } foreach units _grp;
                                 _grp setVariable ["supportWeaponCount",count _units];
