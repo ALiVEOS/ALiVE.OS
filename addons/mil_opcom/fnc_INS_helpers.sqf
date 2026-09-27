@@ -1480,6 +1480,11 @@ ALiVE_fnc_INS_recruit = {
                     _objective = _this select 16;
                     _allSides = ["EAST","WEST","GUER"];
 
+                    // Escalation intensity, its tier roster and the escalation level live on the
+                    // commander. A spawned script cannot see the caller's _opcom, so without this
+                    // it was always nil here and every recruit came from the infantry-only path.
+                    private _opcom = if (isNil "_objective") then {nil} else {[_objective] call ALiVE_fnc_INS_getOpcomByObjective};
+
                     _attemptsRemaining = if (_recruitAttemptLimit == 0) then {count _agents} else {_recruitAttemptLimit};
 
                     while {alive _HQ && {_attemptsRemaining != 0} && {!isNil "_objective"} && {!([_objective,"deleted",false] call ALiVE_fnc_HashGet)}} do {
