@@ -646,13 +646,14 @@ switch(_operation) do {
                 _size = parseNumber _size;
             };
 
-            // Nearest dry ground within the objective, looked for in rings out from the module the
-            // first time a group or guard spot falls in the water. [] if there is none.
+            // Nearest dry ground within the objective, looked for from the module outwards in rings
+            // the first time a group, guard or parked vehicle spot falls in the water. [] if none.
             private _landAnchor = [-1];
             private _fnc_landAnchor = {
                 if (_landAnchor isEqualTo [-1]) then {
                     _landAnchor = [];
                     private _centre = position _logic;
+                    if (!surfaceIsWater _centre) exitWith { _landAnchor = _centre };
                     for "_r" from 25 to (_size max 25) step 25 do {
                         if !(_landAnchor isEqualTo []) exitWith {};
                         for "_a" from 0 to 345 step 15 do {
@@ -662,6 +663,19 @@ switch(_operation) do {
                     };
                 };
                 _landAnchor
+            };
+            // A dry spot within _this metres of that ground (ten tries, else the anchor itself), or
+            // [] when the objective has no dry ground at all.
+            private _fnc_landSpot = {
+                private _jitter = _this;
+                private _anchor = call _fnc_landAnchor;
+                if (_anchor isEqualTo []) exitWith { [] };
+                private _spot = _anchor;
+                for "_try" from 1 to 10 do {
+                    private _candidate = [_anchor, _jitter] call CBA_fnc_RandPos;
+                    if (!surfaceIsWater _candidate) exitWith { _spot = _candidate };
+                };
+                _spot
             };
 
             private _priority = [_logic, "priority"] call MAINCLASS;
@@ -1291,16 +1305,11 @@ switch(_operation) do {
                                 private _candidate = [_guardAnchor, _guardJitter] call CBA_fnc_RandPos;
                                 if (!surfaceIsWater _candidate) exitWith { _guardPos = _candidate };
                             };
-                            // Still in the water: dry ground by the nearest land within the objective, if there is any.
+                            // Still in the water: dry ground by the nearest land within the objective, if there is any,
+                            // scattered no more than 50 m so the guards stay by the objective.
                             if (surfaceIsWater _guardPos) then {
-                                private _anchor = call _fnc_landAnchor;
-                                if !(_anchor isEqualTo []) then {
-                                    _guardPos = _anchor;
-                                    for "_try" from 1 to 10 do {
-                                        private _candidate = [_anchor, _guardJitter max 20] call CBA_fnc_RandPos;
-                                        if (!surfaceIsWater _candidate) exitWith { _guardPos = _candidate };
-                                    };
-                                };
+                                private _spot = ((_guardJitter min 50) max 20) call _fnc_landSpot;
+                                if !(_spot isEqualTo []) then { _guardPos = _spot };
                             };
                             _guards = [_guardGroup, _guardPos, random(360), true, _guardFaction, false, false, "STEALTH", _onEachSpawn, _onEachSpawnOnce] call ALIVE_fnc_createProfilesFromGroupConfig;
 
@@ -1468,7 +1477,9 @@ switch(_operation) do {
                             private _vehiclePos = _parking select 0;
                             private _vehicleDir = _parking select 1;
                             if (surfaceIsWater _vehiclePos) then {
-                                _vehiclePos = (position _logic) getPos [50, random 360];
+                                // Dry ground by the nearest land within the objective, as for the groups.
+                                private _spot = 50 call _fnc_landSpot;
+                                _vehiclePos = if (_spot isEqualTo []) then { (position _logic) getPos [50, random 360] } else { _spot };
                             };
                             if ((!isNil "ALiVE_mil_placement_custom_debug" && {ALiVE_mil_placement_custom_debug})
                                 && {!isNil "ALiVE_vehicleSpawn_debug" && {ALiVE_vehicleSpawn_debug}}) then {
@@ -1539,16 +1550,17 @@ switch(_operation) do {
                             };
                         };
 
-                        // A spot in the water moves to dry ground by the nearest land within the
-                        // objective; a group with none is left out and counted below, not unseen.
+                        // A spot in the water gets ten more tries within the objective, which keeps
+                        // groups spread out along a coast, then dry ground by the nearest land; a
+                        // group with none is left out and counted below, not unseen.
                         if (surfaceIsWater _position) then {
-                            private _anchor = call _fnc_landAnchor;
-                            if !(_anchor isEqualTo []) then {
-                                _position = _anchor;
-                                for "_try" from 1 to 10 do {
-                                    private _candidate = [_anchor, 50] call CBA_fnc_RandPos;
-                                    if (!surfaceIsWater _candidate) exitWith { _position = _candidate };
-                                };
+                            for "_try" from 1 to 10 do {
+                                private _candidate = [position _logic, _size] call CBA_fnc_RandPos;
+                                if (!surfaceIsWater _candidate) exitWith { _position = _candidate };
+                            };
+                            if (surfaceIsWater _position) then {
+                                private _spot = 50 call _fnc_landSpot;
+                                if !(_spot isEqualTo []) then { _position = _spot };
                             };
                             if (surfaceIsWater _position) then { _groupsInWater = _groupsInWater + 1 };
                         };
@@ -1755,16 +1767,11 @@ switch(_operation) do {
                         private _candidate = [_guardAnchor, _guardJitter] call CBA_fnc_RandPos;
                         if (!surfaceIsWater _candidate) exitWith { _guardPos = _candidate };
                     };
-                    // Still in the water: dry ground by the nearest land within the objective, if there is any.
+                    // Still in the water: dry ground by the nearest land within the objective, if there is any,
+                    // scattered no more than 50 m so the guards stay by the objective.
                     if (surfaceIsWater _guardPos) then {
-                        private _anchor = call _fnc_landAnchor;
-                        if !(_anchor isEqualTo []) then {
-                            _guardPos = _anchor;
-                            for "_try" from 1 to 10 do {
-                                private _candidate = [_anchor, _guardJitter max 20] call CBA_fnc_RandPos;
-                                if (!surfaceIsWater _candidate) exitWith { _guardPos = _candidate };
-                            };
-                        };
+                        private _spot = ((_guardJitter min 50) max 20) call _fnc_landSpot;
+                        if !(_spot isEqualTo []) then { _guardPos = _spot };
                     };
                     private _dGuards = [_guardGroup, _guardPos, random(360), true, _guardFaction, false, false, "STEALTH", _onEachSpawn, _onEachSpawnOnce] call ALIVE_fnc_createProfilesFromGroupConfig;
                     {
