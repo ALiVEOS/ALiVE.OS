@@ -105,8 +105,10 @@ _availableHeartsAndMindsTasks = _availableHeartsAndMindsTasks select {
 };
 
 if (_taskLocation isEqualTo []) exitWith {
-    private _fallbackPool = if (_availableHeartsAndMindsTasks isEqualTo []) then {_candidatePool} else {(_candidatePool - _allHeartsAndMindsTasks) + _availableHeartsAndMindsTasks};
-    selectRandom _fallbackPool
+    // Only the Hearts and Minds tasks still enabled. With none enabled this used to fall back to
+    // the whole pool, disabled ones included.
+    private _fallbackPool = (_candidatePool - _allHeartsAndMindsTasks) + _availableHeartsAndMindsTasks;
+    if (_fallbackPool isEqualTo []) then {""} else {selectRandom _fallbackPool}
 };
 
 private _heartsAndMindsWeight = count _availableHeartsAndMindsTasks;
