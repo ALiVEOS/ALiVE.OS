@@ -377,7 +377,7 @@ switch(_operation) do {
                                     if (!isNil "_b" && {alive _b}) then {
                                         _p = [_b] call ALIVE_fnc_getMaxBuildingPositions;
 
-                                        if (_p > 0) then {player setpos (_b buildingpos (ceil random _p))} else {player setPosATL ([getPosATL _b, 20] call CBA_fnc_RandPos)};
+                                        if (_p >= 0) then {player setpos (_b buildingpos (floor random (_p + 1)))} else {player setPosATL ([getPosATL _b, 20] call CBA_fnc_RandPos)};
                                     } else {
                                         ["ALiVE_SUP_MULTISPAWN - No ALiVE_SUP_MULTISPAWN_RESPAWNBUILDING_%1 available... Exiting!",faction player] call ALiVE_fnc_Dump;
                                     };
