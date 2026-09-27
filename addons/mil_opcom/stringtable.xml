@@ -122,14 +122,15 @@
     <Portuguese>Reforços:</Portuguese>
     <Russian>Подкрепления:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_OPCOM_REINFORCEMENTS_COMMENT">
-    <English>Requires Military Logistics Module. Sets the force strength threshold at which the AI Commander requests reinforcements. Aggressive (90%) = requests early, while still near full strength. Moderate (75%) = requests when noticeably weakened. Conservative (50%) = only requests when heavily depleted.</English>
-    <Chinese>需要軍事後勤模組。設定 AI 指揮官請求增援的兵力閾值。激進 (90%) = 早期請求，仍接近滿編時即請求。適中 (75%) = 明顯削弱時請求。保守 (50%) = 僅在嚴重損耗時請求。</Chinese>
-    <Chinesesimp>需要军事后勤模块。设置AI指挥官请求增援的兵力阈值。激进(90%)=较早请求，接近满编时即请求。适中(75%)=明显削弱时请求。保守(50%)=仅在严重损耗时请求。</Chinesesimp>
-    <Spanish>Requiere el módulo de Logística militar. Establece el umbral de fuerza con el que el Comandante IA solicita refuerzos. Agresivo (90%) = solicita pronto, aún cerca de la dotación completa. Moderado (75%) = solicita al estar notablemente debilitado. Conservador (50%) = solo solicita al estar muy mermado.</Spanish>
-    <French>Nécessite le module Logistique militaire. Définit le seuil de force auquel le Commandant IA demande des renforts. Agressif (90 %) = demande tôt, encore proche de la pleine force. Modéré (75 %) = demande lorsqu'il est notablement affaibli. Conservateur (50 %) = ne demande que lorsqu'il est fortement réduit.</French>
-    <Portuguese>Requer o módulo de Logística militar. Define o limite de força no qual o Comandante IA solicita reforços. Agressivo (90%) = solicita cedo, ainda perto da força total. Moderado (75%) = solicita quando notavelmente enfraquecido. Conservador (50%) = só solicita quando muito reduzido.</Portuguese>
-    <Russian>Требуется модуль «Военная логистика». Задаёт порог силы, при котором ИИ-командир запрашивает подкрепления. Агрессивно (90%) = запрашивает рано, ещё при почти полной силе. Умеренно (75%) = запрашивает при заметном ослаблении. Консервативно (50%) = запрашивает только при сильном истощении.</Russian>
+    <English>Requires Military Logistics Module. Sets the force strength threshold at which the AI Commander requests reinforcements. Aggressive (90%) = requests early, while still near full strength. Moderate (75%) = requests when noticeably weakened. Conservative (50%) = only requests when heavily depleted. Not used by an Asymmetric commander.</English>
+    <Chinese>需要軍事後勤模組。設定 AI 指揮官請求增援的兵力閾值。激進 (90%) = 早期請求，仍接近滿編時即請求。適中 (75%) = 明顯削弱時請求。保守 (50%) = 僅在嚴重損耗時請求。不對稱型指揮官不使用此設定。</Chinese>
+    <Chinesesimp>需要军事后勤模块。设置AI指挥官请求增援的兵力阈值。激进(90%)=较早请求，接近满编时即请求。适中(75%)=明显削弱时请求。保守(50%)=仅在严重损耗时请求。不对称型指挥官不使用此设置。</Chinesesimp>
+    <Spanish>Requiere el módulo de Logística militar. Establece el umbral de fuerza con el que el Comandante IA solicita refuerzos. Agresivo (90%) = solicita pronto, aún cerca de la dotación completa. Moderado (75%) = solicita al estar notablemente debilitado. Conservador (50%) = solo solicita al estar muy mermado. Un comandante asimétrico no lo usa.</Spanish>
+    <French>Nécessite le module Logistique militaire. Définit le seuil de force auquel le Commandant IA demande des renforts. Agressif (90 %) = demande tôt, encore proche de la pleine force. Modéré (75 %) = demande lorsqu'il est notablement affaibli. Conservateur (50 %) = ne demande que lorsqu'il est fortement réduit. Non utilisé par un commandant asymétrique.</French>
+    <Portuguese>Requer o módulo de Logística militar. Define o limite de força no qual o Comandante IA solicita reforços. Agressivo (90%) = solicita cedo, ainda perto da força total. Moderado (75%) = solicita quando notavelmente enfraquecido. Conservador (50%) = só solicita quando muito reduzido. Não é usado por um comandante assimétrico.</Portuguese>
+    <Russian>Требуется модуль «Военная логистика». Задаёт порог силы, при котором ИИ-командир запрашивает подкрепления. Агрессивно (90%) = запрашивает рано, ещё при почти полной силе. Умеренно (75%) = запрашивает при заметном ослаблении. Консервативно (50%) = запрашивает только при сильном истощении. Асимметричный командир этот параметр не использует.</Russian>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_FACTIONS">
     <English>Factions:</English>
@@ -301,13 +302,13 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_OPCOM_ASYM_EXCLUDE_KINDS_COMMENT">
-    <English>Comma-separated list of CfgVehicles parent class names whose group entries are excluded from the asymmetric tiered roster. Default keeps tanks, planes, helicopters, and ships out of insurgent recruitment, matching the legacy behaviour. Edit the list to widen recruitment for state-backed insurgent factions (e.g. remove "Tank" to allow old tanks) or narrow it further (e.g. add "Truck" to exclude trucks). Empty = no kinds excluded.</English>
-    <French>Liste séparée par des virgules de noms de classes parentes CfgVehicles dont les entrées de groupe sont exclues de la liste à paliers asymétrique. Par défaut, exclut les chars, avions, hélicoptères et navires du recrutement insurgé, ce qui correspond au comportement antérieur. Modifiez la liste pour élargir le recrutement des factions insurgées soutenues par un État (ex. retirer "Tank" pour autoriser les vieux chars) ou la restreindre davantage (ex. ajouter "Truck" pour exclure les camions). Vide = aucune catégorie exclue.</French>
-    <Portuguese>Lista separada por vírgulas de nomes de classes pai do CfgVehicles cujas entradas de grupo são excluídas da lista escalonada assimétrica. O padrão mantém tanques, aviões, helicópteros e navios fora do recrutamento insurgente, correspondendo ao comportamento legado. Edite a lista para ampliar o recrutamento de facções insurgentes apoiadas por estados (ex. remover "Tank" para permitir tanques antigos) ou restringir ainda mais (ex. adicionar "Truck" para excluir caminhões). Vazio = nenhuma categoria excluída.</Portuguese>
-    <Russian>Список через запятую родительских классов CfgVehicles, чьи групповые записи исключаются из ярусного состава асимметричной OPCOM. По умолчанию исключает танки, самолёты, вертолёты и корабли из набора повстанцев, что соответствует прежнему поведению. Отредактируйте список, чтобы расширить набор для повстанческих фракций, поддерживаемых государствами (например, убрать "Tank", чтобы разрешить старые танки), или сузить его (например, добавить "Truck", чтобы исключить грузовики). Пусто = ничего не исключено.</Russian>
-    <Spanish>Lista separada por comas de nombres de clases padre de CfgVehicles cuyas entradas de grupo se excluyen del listado por niveles asimétrico. El valor predeterminado mantiene tanques, aviones, helicópteros y barcos fuera del reclutamiento insurgente, manteniendo el comportamiento heredado. Edita la lista para ampliar el reclutamiento de facciones insurgentes respaldadas por estados (p. ej. quitar "Tank" para permitir tanques antiguos) o restringirla aún más (p. ej. añadir "Truck" para excluir camiones). Vacío = ninguna categoría excluida.</Spanish>
-    <Chinese>以逗號分隔的 CfgVehicles 父類別名稱清單,其群組將從不對稱分級名單中排除。預設將戰車、飛機、直升機和艦船排除於叛亂方招募之外,符合舊有行為。編輯此清單以擴大國家支援的叛亂派系的招募範圍 (例如移除 "Tank" 以允許舊式戰車),或進一步縮限範圍 (例如新增 "Truck" 以排除卡車)。留空 = 不排除任何類別。</Chinese>
-    <Chinesesimp>以逗号分隔的 CfgVehicles 父类别名称清单,其群组将从不对称分级名单中排除。默认将坦克、飞机、直升机和舰船排除于叛乱方招募之外,符合旧有行为。编辑此清单以扩大国家支援的叛乱派系的招募范围 (例如移除 "Tank" 以允许旧式坦克),或进一步缩限范围 (例如新增 "Truck" 以排除卡车)。留空 = 不排除任何类别。</Chinesesimp>
+    <English>Comma-separated list of CfgVehicles parent class names whose group entries are excluded from the asymmetric tiered roster. Default keeps tanks, planes, helicopters, and ships out of insurgent recruitment, matching the legacy behaviour. Edit the list to widen recruitment for state-backed insurgent factions (e.g. remove "Tank" to allow old tanks) or narrow it further (e.g. add "Truck" to exclude trucks). Empty = no kinds excluded. Only applies while Escalation intensity is on.</English>
+    <French>Liste séparée par des virgules de noms de classes parentes CfgVehicles dont les entrées de groupe sont exclues de la liste à paliers asymétrique. Par défaut, exclut les chars, avions, hélicoptères et navires du recrutement insurgé, ce qui correspond au comportement antérieur. Modifiez la liste pour élargir le recrutement des factions insurgées soutenues par un État (ex. retirer "Tank" pour autoriser les vieux chars) ou la restreindre davantage (ex. ajouter "Truck" pour exclure les camions). Vide = aucune catégorie exclue. Ne s'applique que lorsque l'Intensité d'escalade est activée.</French>
+    <Portuguese>Lista separada por vírgulas de nomes de classes pai do CfgVehicles cujas entradas de grupo são excluídas da lista escalonada assimétrica. O padrão mantém tanques, aviões, helicópteros e navios fora do recrutamento insurgente, correspondendo ao comportamento legado. Edite a lista para ampliar o recrutamento de facções insurgentes apoiadas por estados (ex. remover "Tank" para permitir tanques antigos) ou restringir ainda mais (ex. adicionar "Truck" para excluir caminhões). Vazio = nenhuma categoria excluída. Só se aplica quando a Intensidade de escalada está ativada.</Portuguese>
+    <Russian>Список через запятую родительских классов CfgVehicles, чьи групповые записи исключаются из ярусного состава асимметричной OPCOM. По умолчанию исключает танки, самолёты, вертолёты и корабли из набора повстанцев, что соответствует прежнему поведению. Отредактируйте список, чтобы расширить набор для повстанческих фракций, поддерживаемых государствами (например, убрать "Tank", чтобы разрешить старые танки), или сузить его (например, добавить "Truck", чтобы исключить грузовики). Пусто = ничего не исключено. Действует, только когда включена Интенсивность эскалации.</Russian>
+    <Spanish>Lista separada por comas de nombres de clases padre de CfgVehicles cuyas entradas de grupo se excluyen del listado por niveles asimétrico. El valor predeterminado mantiene tanques, aviones, helicópteros y barcos fuera del reclutamiento insurgente, manteniendo el comportamiento heredado. Edita la lista para ampliar el reclutamiento de facciones insurgentes respaldadas por estados (p. ej. quitar "Tank" para permitir tanques antiguos) o restringirla aún más (p. ej. añadir "Truck" para excluir camiones). Vacío = ninguna categoría excluida. Solo se aplica cuando la Intensidad de escalada está activada.</Spanish>
+    <Chinese>以逗號分隔的 CfgVehicles 父類別名稱清單,其群組將從不對稱分級名單中排除。預設將戰車、飛機、直升機和艦船排除於叛亂方招募之外,符合舊有行為。編輯此清單以擴大國家支援的叛亂派系的招募範圍 (例如移除 "Tank" 以允許舊式戰車),或進一步縮限範圍 (例如新增 "Truck" 以排除卡車)。留空 = 不排除任何類別。僅在啟用升級強度時生效。</Chinese>
+    <Chinesesimp>以逗号分隔的 CfgVehicles 父类别名称清单,其群组将从不对称分级名单中排除。默认将坦克、飞机、直升机和舰船排除于叛乱方招募之外,符合旧有行为。编辑此清单以扩大国家支援的叛乱派系的招募范围 (例如移除 "Tank" 以允许旧式坦克),或进一步缩限范围 (例如新增 "Truck" 以排除卡车)。留空 = 不排除任何类别。仅在启用升级强度时生效。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_ROADBLOCKS">
     <English>Roadblocks:</English>
@@ -589,14 +590,15 @@
     <Portuguese>Chance de retaliação cívica (%):</Portuguese>
     <Russian>Шанс гражд. возмездия (%):</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_OPCOM_CIVIC_RETALIATION_CHANCE_COMMENT">
-    <English>Percent chance for insurgent retaliation after a Hearts and Minds success improves a settlement. 0 disables retaliation; higher values make successful civic outcomes riskier.</English>
-    <Chinese>「人心爭奪」成功改善聚居地後，叛亂分子報復的百分比機率。0 禁用報復；較高的值使成功的民意成果更具風險。</Chinese>
-    <Chinesesimp>「人心争夺」成功改善乡镇后，叛乱分子报复的百分比几率。0 禁用报复；较高的值使成功的民意成果更具风险。</Chinesesimp>
-    <Spanish>Porcentaje de probabilidad de represalia insurgente tras un éxito de «Corazones y Mentes» que mejora un asentamiento. 0 desactiva las represalias; valores mayores hacen que los buenos resultados cívicos sean más arriesgados.</Spanish>
-    <French>Pourcentage de chance de représailles insurgées après qu'un succès « Cœurs et Esprits » améliore une agglomération. 0 désactive les représailles; des valeurs plus élevées rendent les succès civiques plus risqués.</French>
-    <Portuguese>Porcentagem de chance de retaliação insurgente após um sucesso de «Corações e Mentes» melhorar um assentamento. 0 desativa a retaliação; valores maiores tornam resultados cívicos bem-sucedidos mais arriscados.</Portuguese>
-    <Russian>Процент вероятности повстанческого возмездия после того, как успех «Сердец и умов» улучшает поселение. 0 отключает возмездие; большие значения делают успешные гражданские итоги более рискованными.</Russian>
+    <English>Percent chance for insurgent retaliation after a Hearts and Minds success improves a settlement. 0 disables retaliation; higher values make successful civic outcomes riskier. Only applies when C2ISTAR's Enable Civic-State COIN Model is Yes.</English>
+    <Chinese>「人心爭奪」成功改善聚居地後，叛亂分子報復的百分比機率。0 禁用報復；較高的值使成功的民意成果更具風險。僅在 C2ISTAR 的「啟用民情狀態反叛亂模型」為是時生效。</Chinese>
+    <Chinesesimp>「人心争夺」成功改善乡镇后，叛乱分子报复的百分比几率。0 禁用报复；较高的值使成功的民意成果更具风险。仅在 C2ISTAR 的「启用民情状态反叛乱模型」为是时生效。</Chinesesimp>
+    <Spanish>Porcentaje de probabilidad de represalia insurgente tras un éxito de «Corazones y Mentes» que mejora un asentamiento. 0 desactiva las represalias; valores mayores hacen que los buenos resultados cívicos sean más arriesgados. Solo se aplica cuando Habilitar Modelo COIN de Estado Civil de C2ISTAR está en Sí.</Spanish>
+    <French>Pourcentage de chance de représailles insurgées après qu'un succès « Cœurs et Esprits » améliore une agglomération. 0 désactive les représailles; des valeurs plus élevées rendent les succès civiques plus risqués. Ne s'applique que lorsque Activer le modèle COIN d'état civique de C2ISTAR est sur Oui.</French>
+    <Portuguese>Porcentagem de chance de retaliação insurgente após um sucesso de «Corações e Mentes» melhorar um assentamento. 0 desativa a retaliação; valores maiores tornam resultados cívicos bem-sucedidos mais arriscados. Só se aplica quando Ativar Modelo COIN de Estado Cívico do C2ISTAR está em Sim.</Portuguese>
+    <Russian>Процент вероятности повстанческого возмездия после того, как успех «Сердец и умов» улучшает поселение. 0 отключает возмездие; большие значения делают успешные гражданские итоги более рискованными. Действует, только когда в C2ISTAR параметр «Включить модель гражданского состояния COIN» установлен в «Да».</Russian>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_CIVIC_RETALIATION_INTENSITY">
     <English>Civic retaliation intensity:</English>
@@ -607,13 +609,14 @@
     <Portuguese>Intensidade retaliação cívica:</Portuguese>
     <Russian>Интенсивность гражд. возмездия:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_OPCOM_CIVIC_RETALIATION_INTENSITY_COMMENT">
-    <English>Scales the severity of insurgent backlash against improving settlements. 1 = default behaviour; higher values produce stronger retaliatory actions.</English>
-    <Chinese>縮放叛亂分子對改善聚居地的反彈嚴重程度。1 = 預設行為；較高的值會產生更強烈的報復行動。</Chinese>
-    <Chinesesimp>缩放叛乱分子对改善乡镇的反弹严重程度。1 = 默认行为；较高的值会产生更强烈的报复行动。</Chinesesimp>
-    <Spanish>Escala la severidad de la reacción insurgente contra los asentamientos en mejora. 1 = comportamiento por defecto; valores mayores producen acciones de represalia más fuertes.</Spanish>
-    <French>Mise à l'échelle de la sévérité de la réaction insurgée contre les agglomérations en cours d'amélioration. 1 = comportement par défaut; des valeurs plus élevées produisent des actions de représailles plus fortes.</French>
-    <Portuguese>Escala a severidade da reação insurgente contra assentamentos em melhoria. 1 = comportamento padrão; valores maiores produzem ações de retaliação mais fortes.</Portuguese>
-    <Russian>Масштабирует тяжесть повстанческой реакции против улучшающихся поселений. 1 = поведение по умолчанию; большие значения вызывают более сильные ответные действия.</Russian>
+    <English>Scales the severity of insurgent backlash against improving settlements. 1 = default behaviour; higher values produce stronger retaliatory actions. Only applies when C2ISTAR's Enable Civic-State COIN Model is Yes.</English>
+    <Chinese>縮放叛亂分子對改善聚居地的反彈嚴重程度。1 = 預設行為；較高的值會產生更強烈的報復行動。僅在 C2ISTAR 的「啟用民情狀態反叛亂模型」為是時生效。</Chinese>
+    <Chinesesimp>缩放叛乱分子对改善乡镇的反弹严重程度。1 = 默认行为；较高的值会产生更强烈的报复行动。仅在 C2ISTAR 的「启用民情状态反叛乱模型」为是时生效。</Chinesesimp>
+    <Spanish>Escala la severidad de la reacción insurgente contra los asentamientos en mejora. 1 = comportamiento por defecto; valores mayores producen acciones de represalia más fuertes. Solo se aplica cuando Habilitar Modelo COIN de Estado Civil de C2ISTAR está en Sí.</Spanish>
+    <French>Mise à l'échelle de la sévérité de la réaction insurgée contre les agglomérations en cours d'amélioration. 1 = comportement par défaut; des valeurs plus élevées produisent des actions de représailles plus fortes. Ne s'applique que lorsque Activer le modèle COIN d'état civique de C2ISTAR est sur Oui.</French>
+    <Portuguese>Escala a severidade da reação insurgente contra assentamentos em melhoria. 1 = comportamento padrão; valores maiores produzem ações de retaliação mais fortes. Só se aplica quando Ativar Modelo COIN de Estado Cívico do C2ISTAR está em Sim.</Portuguese>
+    <Russian>Масштабирует тяжесть повстанческой реакции против улучшающихся поселений. 1 = поведение по умолчанию; большие значения вызывают более сильные ответные действия. Действует, только когда в C2ISTAR параметр «Включить модель гражданского состояния COIN» установлен в «Да».</Russian>
 </Key>
 </Container></Package></Project>
