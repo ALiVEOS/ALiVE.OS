@@ -2110,7 +2110,10 @@ switch(_operation) do {
                     // missing. `private _hashVal = <missing-key result>`
                     // doesn't populate the local; guard with !isNil before
                     // reading.
+                    // The faction's own list first, then, for a compiled faction, its config faction's,
+                    // which is where the supplies and supports look.
                     private _hashVal = [ALIVE_factionDefaultAA, _faction] call ALIVE_fnc_hashGet;
+                    if (isNil "_hashVal") then { _hashVal = [ALIVE_factionDefaultAA, [_faction] call ALiVE_fnc_factionCompilerGetConfigFaction] call ALIVE_fnc_hashGet };
                     if (!isNil "_hashVal" && {typeName _hashVal == "ARRAY"}) then { _resolved = _hashVal };
                 };
 
