@@ -230,7 +230,10 @@ switch (_type) do {
 
             // Scream and immediately sprint away from the danger source
             case "SCREAM": {
-                [_unit, selectRandom ALiVE_advciv_voiceLines_panic] remoteExec ["say3D", 0];
+                // Enable Voice Lines covers the scream too; the other voice lines already check it.
+                if (ALiVE_advciv_voiceEnabled) then {
+                    [_unit, selectRandom ALiVE_advciv_voiceLines_panic] remoteExec ["say3D", 0];
+                };
                 _unit setSpeedMode "FULL";
                 private _source = _unit getVariable ["ALiVE_advciv_panicSource", [0,0,0]];
                 if !(_source isEqualTo [0,0,0]) then {
