@@ -1065,6 +1065,16 @@ switch (_operation) do {
 
                 _id = [MOD(SYS_LOGISTICS),"id",_x] call ALiVE_fnc_logistics;
 
+                //An object flagged out of Player Logistics keeps the state the mission gave it. What
+                //was saved for it before it was flagged is dropped, under the older flat key too, so
+                //it isn't put back onto it here or by the pass below, or saved again.
+                if ((_x getVariable [QGVAR(DISABLE),false]) isEqualTo true) then {
+                    private _posFlat = getposATL _x;
+                    [GVAR(STORE),_id] call ALiVE_fnc_HashRem;
+                    [GVAR(STORE),format["%1_%2%3", typeof _x, floor(_posFlat select 0), floor(_posFlat select 1)]] call ALiVE_fnc_HashRem;
+                    continue
+                };
+
                 //IDs are derived from class and position, so two objects can land on the same
                 //store key. The first one to match claims the entry - a later object keeps the
                 //position it was placed at instead of being stacked onto the one stored position.
