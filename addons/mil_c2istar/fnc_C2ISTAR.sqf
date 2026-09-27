@@ -540,7 +540,8 @@ switch(_operation) do {
     };
     case "friendlyIntelRadius": {
         if (typeName _args == "SCALAR") then {
-            _logic setVariable ["friendlyIntelRadius", DEFAULT_FRIENDLY_INTEL_RADIUS];
+            // The radius given, not the default: every number used to be stored as 2000.
+            _logic setVariable ["friendlyIntelRadius", _args];
         } else {
             _args = _logic getVariable ["friendlyIntelRadius", DEFAULT_FRIENDLY_INTEL_RADIUS];
         };
