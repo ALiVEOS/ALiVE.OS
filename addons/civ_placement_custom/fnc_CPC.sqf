@@ -941,9 +941,17 @@ switch (_operation) do {
                 {
                     private _seaEntry = ["Naval", _forEachIndex] call _fnc_pickGroupForCategory;
                     _seaEntry params ["_seaPatrolGroup", "_seaPatrolFaction"];
+                    // Both ways a patrol that was asked for can't be placed are said every time,
+                    // not only with Debug on.
+                    if (_seaPatrolGroup == "FALSE") then {
+                        ["CPC [%1] - Sea Patrols is on, but none of these factions has a Naval group, so no sea patrol is placed", _factions joinString ", "] call ALiVE_fnc_dump;
+                    };
                     if !(_seaPatrolGroup == "FALSE") then {
                         private _center = [_x, "center"] call ALIVE_fnc_hashGet;
                         private _pos = [_center, true] call ALiVE_fnc_getClosestSea;
+                        if !(surfaceIsWater _pos) then {
+                            ["CPC [%1] - Sea Patrols is on, but there is no sea near the objective at %2, so no sea patrol is placed", _factions joinString ", ", _center] call ALiVE_fnc_dump;
+                        };
                         if (surfaceIsWater _pos) then {
                             if ((random 1) < _placeSeaPatrols) then {
                                 private _seaPatrol = [_seaPatrolGroup, _pos, random 360, true, _seaPatrolFaction, true, false, "STEALTH", _onEachSpawn, _onEachSpawnOnce] call ALIVE_fnc_createProfilesFromGroupConfig;
