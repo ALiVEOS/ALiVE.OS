@@ -136,6 +136,16 @@ class cfgFunctions {
                 file = "\x\alive\addons\sys_profile\fnc_waypointToProfileWaypoint.sqf";
                 RECOMPILE;
             };
+            class profileWaypointLoad {
+                description = "Processes a LOAD waypoint and reports whether its passengers are loaded";
+                file = "\x\alive\addons\sys_profile\fnc_profileWaypointLoad.sqf";
+                RECOMPILE;
+            };
+            class profileWaypointLoadCondition {
+                description = "Native LOAD waypoint condition for active profiles";
+                file = "\x\alive\addons\sys_profile\fnc_profileWaypointLoadCondition.sqf";
+                RECOMPILE;
+            };
             class createProfileVehicleAssignment {
                 description = "createProfileVehicleAssignment";
                 file = "\x\alive\addons\sys_profile\fnc_createProfileVehicleAssignment.sqf";
@@ -144,6 +154,11 @@ class cfgFunctions {
             class profileVehicleCanFitPassengers {
                 description = "Returns zero when passengers fit, otherwise the negative number without seats";
                 file = "\x\alive\addons\sys_profile\fnc_profileVehicleCanFitPassengers.sqf";
+                RECOMPILE;
+            };
+            class profilePassengersLoaded {
+                description = "Checks whether an entity profile is fully loaded as passengers in a vehicle profile";
+                file = "\x\alive\addons\sys_profile\fnc_profilePassengersLoaded.sqf";
                 RECOMPILE;
             };
             class removeProfileVehicleAssignments {

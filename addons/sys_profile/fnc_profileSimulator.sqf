@@ -301,6 +301,10 @@ if (!_simAttacks) then {
                                     "_waypointSpeed",
                                     "_waypointType"
                                 ];
+                                private _isProfileLoad = _waypointType == "LOAD" && {
+                                    private _data = [_activeWaypoint, "data"] call ALIVE_fnc_hashGet;
+                                    !isNil "_data" && {"passengerProfileId" in _data} && {"vehicleProfileId" in _data}
+                                };
                                 private _distanceToWaypoint = _profilePosition distance2D _destination;
 
                                 private _speedPerSecondArray = _profile select 2 select 22;
@@ -334,14 +338,30 @@ if (!_simAttacks) then {
                                     private _newPosition = _profilePosition;
                                     private _executeStatements = false;
                                     private _handleWPcomplete = {};
+                                    private _waypointReached = _distanceToWaypoint <= (_moveDistance * 2);
 
-                                    switch (_waypointType) do {
-                                        case "CYCLE" : {
+                                    switch (true) do {
+                                        case (_waypointType == "CYCLE"): {
                                             _direction = _profilePosition getDir _destination;
                                             _newPosition = _profilePosition getPos [_moveDistance, _direction];
                                             _handleWPcomplete = {
                                                 _waypoints append _waypointsCompleted;
                                                 _waypointsCompleted = [];
+                                            };
+                                        };
+                                        case _isProfileLoad: {
+                                            private _pickupRadius = if (_completionRadius < 0) then {25} else {_completionRadius};
+                                            _waypointReached = _distanceToWaypoint <= _pickupRadius;
+                                            _direction = _profilePosition getDir _destination;
+
+                                            // Stop at pickup while waiting, including ticks with no movement.
+                                            if (!_waypointReached) then {
+                                                _moveDistance = (_moveDistance max 0) min _distanceToWaypoint;
+                                                _newPosition = if (_moveDistance == _distanceToWaypoint) then {
+                                                    +_destination
+                                                } else {
+                                                    _profilePosition getPos [_moveDistance, _direction]
+                                                };
                                             };
                                         };
                                         default {
@@ -357,10 +377,13 @@ if (!_simAttacks) then {
                                         _newPosition = ASLtoATL _newPosition;
                                     };
 
-                                    // if distance to wp destination is within completion radius
-                                    // mark waypoint as complete
-                                    if (_distanceToWaypoint <= (_moveDistance * 2)) then {
-                                        private _waypointComplete = true;
+                                    // Profile LOADs require passengers; ordinary LOADs retain MOVE behavior.
+                                    if (_waypointReached) then {
+                                        private _waypointComplete = if (_isProfileLoad) then {
+                                            [_profile, _activeWaypoint] call ALiVE_fnc_profileWaypointLoad
+                                        } else {
+                                            true
+                                        };
                                         if (count _statements > 0) then {
                                             private _waypointCondition = _statements select 0;
                                             private _waypointConditionSatisfied = call compile _waypointCondition; // TODO; Fix after https://github.com/ALiVEOS/ALiVE.OS/issues/582

@@ -57,9 +57,14 @@ if (isnil "_profileWaypoint" || {!(_profileWaypoint isequaltype [])}) exitwith {
     "_waypointName"
 ];
 
+private _isProfileLoad = _type == "LOAD" && {
+    private _data = [_profileWaypoint, "data"] call ALIVE_fnc_hashGet;
+    !isNil "_data" && {"passengerProfileId" in _data} && {"vehicleProfileId" in _data}
+};
+
 // If the leader is in a land vehicle, snap waypoints to nearest road within 200m - do not do this if pathfinding enabled
 private _assignedVehicle = assignedVehicle leader _group;
-if (!isNull _assignedVehicle && {_assignedVehicle isKindOf "LandVehicle"}) then {
+if (!_isProfileLoad && {!isNull _assignedVehicle} && {_assignedVehicle isKindOf "LandVehicle"}) then {
     if !([MOD(profileSystem),"pathfinding"] call ALiVE_fnc_hashGet) then {
         private _road = [_position, 200] call BIS_fnc_nearestRoad;
         if !(isNull _road) then {
@@ -69,6 +74,12 @@ if (!isNull _assignedVehicle && {_assignedVehicle isKindOf "LandVehicle"}) then 
     _radius = 0;
 };
 
+// LOAD must keep the rendezvous position used by the passenger distance check.
+if (_isProfileLoad) then {
+    _position = +_position;
+    _radius = 0;
+    if (_completionRadius < 0) then {_completionRadius = 25};
+};
 _position set [2,0];
 
 private _waypoint = _group addWaypoint [_position, _radius];
@@ -106,6 +117,17 @@ if !(_attachVehicle == "") then {
     _waypoint waypointAttachVehicle _attachVehicle;
 };
 
+if (_isProfileLoad) then {
+    _waypointStatements = if (_waypointStatements isEqualType [] && {count _waypointStatements == 2}) then {
+        +_waypointStatements
+    } else {
+        ["true", ""]
+    };
+    _waypointStatements set [0, format [
+        "([this, %1] call ALIVE_fnc_profileWaypointLoadCondition) && {call {%2}}",
+        str _waypointName, _waypointStatements select 0
+    ]];
+};
 if (_waypointStatements isEqualType []) then {
     _waypoint setWaypointStatements _waypointStatements;
 };
