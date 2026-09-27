@@ -18,6 +18,7 @@ See Also:
 
 Author:
 Highhead
+Jman
 
 Peer Reviewed:
 
@@ -51,7 +52,9 @@ private _aimingSpeed = _unit skill "aimingSpeed";
 if ((_faction in (_factionSkills select 1)) && {!(side group _unit == CIVILIAN)}) then {
     _factionSkill = [_factionSkills,_faction] call ALIVE_fnc_hashGet;
 
-    if((_aimingAccuracy != _factionSkill select 2) && {_aimingShake != _factionSkill select 3} && {_aimingSpeed != _factionSkill select 4}) then {
+    // Skip a unit only when all three already match, as they do once it has been set. Needing all
+    // three to differ skipped any unit that matched one of them, so it kept its old skills.
+    if((_aimingAccuracy != _factionSkill select 2) || {_aimingShake != _factionSkill select 3} || {_aimingSpeed != _factionSkill select 4}) then {
 
         _factionSkill params [
             "_minSkill","_maxSkill","_aimingAccuracy","_aimingShake",
