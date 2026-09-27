@@ -16,7 +16,7 @@ Qualification (any of, while on foot):
   - configured detection device (default "MineDetector") in items
   - CfgVehicles displayName == "Explosive Specialist"
   - vehicleVarName matches CBA "EOD" trait
-  - vanilla A3 getUnitTrait "explosivesSpecialist"
+  - vanilla A3 getUnitTrait "explosiveSpecialist"
   - ACE_isEngineer > 0 (ACE engineer level 1 or 2)
   - ACE_isEOD (ACE explosives-specialist role)
 
@@ -45,7 +45,7 @@ if ((vehicle _unit) != _unit) exitWith { false };
     (_device in (items _unit)) ||
     (getText (configFile >> "CfgVehicles" >> typeOf _unit >> "displayName") == "Explosive Specialist") ||
     ([vehicleVarName _unit, "EOD"] call CBA_fnc_find != -1) ||
-    (_unit getUnitTrait "explosivesSpecialist") ||
+    (_unit getUnitTrait "explosiveSpecialist") ||
     ((_unit getVariable ["ACE_isEngineer", 0]) > 0) ||
     (_unit getVariable ["ACE_isEOD", false])
 )

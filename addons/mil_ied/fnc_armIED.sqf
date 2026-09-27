@@ -19,7 +19,7 @@ SCRIPT(armIED);
 //       - configured IED_Detection_Device (default "MineDetector") in items _u
 //       - CfgVehicles displayName == "Explosive Specialist"
 //       - vehicleVarName matches CBA "EOD" trait via CBA_fnc_find
-//       - engine `getUnitTrait "explosivesSpecialist"` returns true (Ares 2026-05-14)
+//       - engine `getUnitTrait "explosiveSpecialist"` returns true (Ares 2026-05-14)
 //       - ACE_isEngineer module variable > 0 (ACE level 1 or 2; Ares 2026-05-14)
 //       - ACE_isEOD module variable true (ACE explosives-specialist role)
 //
@@ -179,7 +179,7 @@ private _gracePeriod = 15;
                             (_device in (items _x)) ||
                             (getText (configFile >> "CfgVehicles" >> typeOf _x >> "displayName") == "Explosive Specialist") ||
                             ([vehicleVarName _x, "EOD"] call CBA_fnc_find != -1) ||
-                            (_x getUnitTrait "explosivesSpecialist") ||           // vanilla A3 explosives-specialist trait
+                            (_x getUnitTrait "explosiveSpecialist") ||           // vanilla A3 explosives-specialist trait
                             ((_x getVariable ["ACE_isEngineer", 0]) > 0) ||       // ACE engineer level 1 or 2
                             (_x getVariable ["ACE_isEOD", false])                 // ACE EOD specialist (explosives role)
                         ) &&
@@ -329,7 +329,7 @@ private _gracePeriod = 15;
                                 (_device in (items _u)),
                                 getText (configFile >> "CfgVehicles" >> typeOf _u >> "displayName"),
                                 vehicleVarName _u,
-                                _u getUnitTrait "explosivesSpecialist",
+                                _u getUnitTrait "explosiveSpecialist",
                                 _u getVariable ["ACE_isEngineer", 0],
                                 _u getVariable ["ACE_isEOD", false]] call ALiVE_fnc_dump;
                         };
