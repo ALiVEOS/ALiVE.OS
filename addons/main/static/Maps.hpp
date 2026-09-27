@@ -264,7 +264,7 @@ if (!_fileExists) then {
     };
 
     if (count ALIVE_civilianPopulationBuildingTypes == 0) then { // if no buildings try loading from file
-        ["MAP NOT INDEXED OR DEDI SERVER FILE LOAD... LOADING MAP DATA: %1",_worldName] call ALiVE_fnc_dump;
+        ["No built-in building types for %1, loading its static data file if there is one",_worldName] call ALiVE_fnc_dump;
         _file = format["x\alive\addons\main\static\%1_staticData.sqf", toLower(worldName)];
         // why the hell are we even calling this here
         if ([_file] call ALiVE_fnc_fileExists) then {

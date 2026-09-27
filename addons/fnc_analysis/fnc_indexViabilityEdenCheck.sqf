@@ -85,8 +85,12 @@ private _filePath = format ["\x\alive\addons\fnc_analysis\data\data.%1.sqf", _wo
 // Inline-load the bundled static index data for the current world.
 // The data file is just SQF that mutates ALIVE_gridData via
 // ALIVE_fnc_hashCreate / ALIVE_fnc_hashSet -- both inline-
-// compiled in XEH_preInit so the call works in pure-Eden.
-call compile preprocessFileLineNumbers _filePath;
+// compiled in XEH_preInit so the call works in pure-Eden. Loaded only when ALiVE bundles one:
+// a terrain without it logged a script-not-found error every time Eden opened it. The engine
+// command, as the ALiVE wrapper for it isn't compiled in pure Eden.
+if (fileExists _filePath) then {
+    call compile preprocessFileLineNumbers _filePath;
+};
 
 if (isNil "ALIVE_gridData") then {
     ALIVE_gridDataSource = "none";
@@ -123,7 +127,14 @@ private _detail = switch (_tier) do {
     case "Good":     { "terrain index is healthy -- modules will use pre-computed sector data, standard init expected" };
     case "Reduced":  { "some sectors have gaps OR terrain has unfavourable conditions; slower init expected -- see RPT for per-metric breakdown" };
     case "Poor":     { "significant sector gaps OR severe terrain conditions; substantial init delay expected -- see RPT for per-metric breakdown" };
-    case "Critical": { "no static index loaded -- modules fall back to per-call engine queries instead of pre-computed sector data" };
+    // Critical is a score, not a missing index: an index that scores under 40 lands here too.
+    case "Critical": {
+        if ((missionNamespace getVariable ["ALIVE_gridDataSource", "none"]) == "none") then {
+            "no index bundled for this terrain -- unless the mission loads its own from init.sqf, modules fall back to per-call engine queries instead of pre-computed sector data"
+        } else {
+            "the index is loaded but scores critically low: severe sector gaps OR terrain conditions; long init delay expected -- see RPT for per-metric breakdown"
+        }
+    };
     default          { "see RPT for the per-metric breakdown" };
 };
 private _msg = format [

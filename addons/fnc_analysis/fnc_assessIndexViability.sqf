@@ -8,8 +8,8 @@ Description:
 Score the terrain's static index quality and log the result to RPT.
 
 Mission makers running ALiVE on a terrain without a proper static
-index (no bundled data file in `fnc_analysis/data/`, no
-mission-supplied `data.<worldName>.sqf` in the mission's subfolder)
+index (no bundled data file in `fnc_analysis/data/`, and no
+`data.<worldName>.sqf` loaded from the mission's init.sqf)
 get a 5-25 minute init while modules fall back to expensive engine
 queries. The score gives them a quantitative read on what the
 loaded index actually contains so they can drop in a better data
@@ -126,8 +126,8 @@ private _aggregateFinal = if (!_haveIndex) then {
     ["  Source: none"] call ALIVE_fnc_dump;
     [format ["  World size                 : %1 m  (%2 km^2)",
         worldSize, (_mapAreaKm2 toFixed 1)]] call ALIVE_fnc_dump;
-    ["  Action: drop data.<worldName>.sqf into the mission's subfolder,"] call ALIVE_fnc_dump;
-    ["          or run sys_indexer against the terrain in Eden."] call ALIVE_fnc_dump;
+    ["  Action: ALiVE has no index for this terrain. The Map Indexer module can make one, and"] call ALIVE_fnc_dump;
+    ["          a mission can load its own from init.sqf (a data.<worldName>.sqf setting ALIVE_gridData)."] call ALIVE_fnc_dump;
     [format ["  M5 Named-locations         : %1  (%2 names, %3/km^2)",
         round _m5, _nameCount, (_nameDensity toFixed 2)]] call ALIVE_fnc_dump;
     [format ["  Runway                     : %1  (-%2)", _runwayLabel, _runwayPenalty]] call ALIVE_fnc_dump;
