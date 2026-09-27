@@ -1547,6 +1547,10 @@ switch(_operation) do {
                         private _vehicleReserveClass = "";
                         if (_isVehicle && {_vehicleActivePlacedCount >= _vehicleActiveCount}) then {
                             _vehicleReserveClass = [_group, _faction] call _fnc_getGroupVehicleClass;
+                            // A static weapon or an artillery piece parked empty is a gun nobody fires, not a reserve: it
+                            // takes the active path, as the helper's note says. Active groups still use the helper to find
+                            // their parking.
+                            if (_vehicleReserveClass isKindOf "StaticWeapon" || {_vehicleReserveClass != "" && {[_vehicleReserveClass] call ALIVE_fnc_isArtillery}}) then { _vehicleReserveClass = "" };
                         };
                         private _isVehicleReserve = _vehicleReserveClass != "";
                         private _isInfantryReserve = _isInfantry && {_infantryActivePlacedCount >= _infantryActiveCount};
