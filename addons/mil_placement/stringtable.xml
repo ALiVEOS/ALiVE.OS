@@ -347,23 +347,25 @@
     <Portuguese>Se os edifícios que o selecionador de spawn de reservas viu dentro de sua bolha de proximidade do jogador de 80 m ficam permanentemente desqualificados pelo resto da missão. Sim (padrão) = tocado uma vez, travado. As reservas não surgirão em um edifício que você já limpou, mesmo se você se afastar muito. Não = o portão de 80 m é reverificado em cada ativação; um edifício do qual você se afastou volta a ser elegível para hospedar reservas. Sim é mais imersivo; Não permite que o objetivo continue se reabastecendo enquanto você avança.</Portuguese>
     <Russian>Здания, которые селектор появления резерва видел в его 80-метровом пузыре близости к игроку, будут навсегда дисквалифицированы на оставшуюся часть миссии. Да (по умолчанию) = тронуто один раз, заблокировано. Резервы не появятся в здании, которое вы уже зачистили, даже если вы далеко отошли. Нет = 80-метровый порог проверяется заново при каждой активации; здание, от которого вы отошли, снова имеет право принимать резервы. Да более иммерсивно; Нет позволяет объекту продолжать пополняться по мере продвижения.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_MP_RESERVE_EMPTY_VEHICLE_LOCKED">
-    <English>Lock empty reserve vehicles:</English>
-    <Chinese>鎖定空載預備車輛：</Chinese>
-    <Chinesesimp>锁定空载预备车辆：</Chinesesimp>
-    <Spanish>Bloquear vehículos de reserva vacíos:</Spanish>
-    <French>Verrouiller les véhicules de réserve vides:</French>
-    <Portuguese>Travar veículos de reserva vazios:</Portuguese>
-    <Russian>Блокировать пустую резервную технику:</Russian>
+    <English>Lock empty force vehicles:</English>
+    <Chinese>鎖定空載部隊車輛：</Chinese>
+    <Chinesesimp>锁定空载部队车辆：</Chinesesimp>
+    <Spanish>Bloquear vehículos vacíos de la fuerza:</Spanish>
+    <French>Verrouiller les véhicules vides de la force:</French>
+    <Portuguese>Travar veículos vazios da força:</Portuguese>
+    <Russian>Блокировать пустую технику сил:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_MP_RESERVE_EMPTY_VEHICLE_LOCKED_COMMENT">
-    <English>Whether vehicles in the reserve pool (parked empty awaiting crew) are locked until activation. Yes (default) = player cannot steal or hijack them mid-mission. No = empty vehicles are unlocked, mission-makers can deliberately let players sneak into the motorpool. Locks lift automatically when activation crews the vehicle.</English>
-    <Chinese>預備隊池中的車輛（停放空載等待乘員）是否在啟動前鎖定。是（預設）= 玩家無法在任務中竊取或劫持。否 = 空載車輛解鎖，任務製作者可以讓玩家潛入車隊。啟動時車輛獲得乘員後鎖會自動解除。</Chinese>
-    <Chinesesimp>预备队池中的车辆（停放空载等待乘员）是否在激活前锁定。是（默认）= 玩家无法在任务中窃取或劫持。否 = 空载车辆解锁，任务制作者可以让玩家潜入车队。激活时车辆获得乘员后锁会自动解除。</Chinesesimp>
-    <Spanish>Si los vehículos en la reserva (estacionados vacíos esperando tripulación) están bloqueados hasta su activación. Sí (por defecto) = el jugador no puede robarlos ni secuestrarlos a media misión. No = los vehículos vacíos quedan desbloqueados, los creadores pueden dejar deliberadamente que los jugadores se cuelen en el parque de vehículos. Los bloqueos se levantan automáticamente cuando la activación tripula el vehículo.</Spanish>
-    <French>Si les véhicules dans la réserve (stationnés vides en attente d'équipage) sont verrouillés jusqu'à leur activation. Oui (par défaut) = le joueur ne peut ni les voler ni les détourner en cours de mission. Non = les véhicules vides sont déverrouillés, les créateurs de mission peuvent délibérément laisser les joueurs s'infiltrer dans le parc. Les verrouillages se lèvent automatiquement lorsque l'activation équipe le véhicule.</French>
-    <Portuguese>Se os veículos na reserva (estacionados vazios aguardando tripulação) ficam travados até a ativação. Sim (padrão) = o jogador não pode roubá-los nem sequestrá-los no meio da missão. Não = veículos vazios ficam destravados, criadores de missão podem deixar os jogadores infiltrarem-se no parque de veículos. Os bloqueios são liberados automaticamente quando a ativação tripula o veículo.</Portuguese>
-    <Russian>Заблокирована ли техника в резерве (припаркованная пустой в ожидании экипажа) до активации. Да (по умолчанию) = игрок не может украсть или угнать её во время миссии. Нет = пустая техника разблокирована, создатели миссий могут намеренно позволить игрокам пробираться к автопарку. Блокировка автоматически снимается, когда активация комплектует технику экипажем.</Russian>
+    <English>Whether the vehicles of this module's force are locked while they stand empty: the reserve pool, parked empty until it is activated, and any force vehicle that spawns empty after its crew was killed. Ambient vehicles, parked aircraft and supply vehicles aren't affected. Yes (default) = players cannot steal or hijack them mid-mission. No = empty vehicles are unlocked, mission-makers can deliberately let players sneak into the motorpool. A reserve vehicle's lock lifts when activation puts a crew in it.</English>
+    <Chinese>此模組部隊的車輛在空載時是否鎖定：包括停放空載直到啟動的預備隊池，以及乘員陣亡後以空載狀態生成的任何部隊車輛。環境車輛、停放的飛機與補給車輛不受影響。是（預設）= 玩家無法在任務中竊取或劫持。否 = 空載車輛解鎖，任務製作者可以讓玩家潛入車隊。預備隊車輛在啟動並配置乘員時自動解鎖。</Chinese>
+    <Chinesesimp>此模块部队的车辆在空载时是否锁定：包括停放空载直到激活的预备队池，以及乘员阵亡后以空载状态生成的任何部队车辆。环境车辆、停放的飞机与补给车辆不受影响。是（默认）= 玩家无法在任务中窃取或劫持。否 = 空载车辆解锁，任务制作者可以让玩家潜入车队。预备队车辆在激活并配置乘员时自动解锁。</Chinesesimp>
+    <Spanish>Si los vehículos de la fuerza de este módulo están bloqueados mientras están vacíos: la reserva, estacionada vacía hasta su activación, y cualquier vehículo de la fuerza que aparezca vacío después de que muriera su tripulación. Los vehículos ambientales, las aeronaves estacionadas y los vehículos de suministro no se ven afectados. Sí (por defecto) = el jugador no puede robarlos ni secuestrarlos a media misión. No = los vehículos vacíos quedan desbloqueados, los creadores pueden dejar deliberadamente que los jugadores se cuelen en el parque de vehículos. El bloqueo de un vehículo de reserva se levanta cuando la activación le asigna una tripulación.</Spanish>
+    <French>Si les véhicules de la force de ce module sont verrouillés tant qu'ils sont vides: la réserve, stationnée vide jusqu'à son activation, et tout véhicule de la force qui apparaît vide après la mort de son équipage. Les véhicules d'ambiance, les aéronefs stationnés et les véhicules de ravitaillement ne sont pas concernés. Oui (par défaut) = le joueur ne peut ni les voler ni les détourner en cours de mission. Non = les véhicules vides sont déverrouillés, les créateurs de mission peuvent délibérément laisser les joueurs s'infiltrer dans le parc. Le verrouillage d'un véhicule de réserve se lève lorsque l'activation y place un équipage.</French>
+    <Portuguese>Se os veículos da força deste módulo ficam travados enquanto estão vazios: a reserva, estacionada vazia até a ativação, e qualquer veículo da força que apareça vazio depois de a tripulação ter morrido. Veículos ambientais, aeronaves estacionadas e veículos de suprimento não são afetados. Sim (padrão) = o jogador não pode roubá-los nem sequestrá-los no meio da missão. Não = veículos vazios ficam destravados, criadores de missão podem deixar os jogadores infiltrarem-se no parque de veículos. O bloqueio de um veículo de reserva é liberado quando a ativação coloca uma tripulação nele.</Portuguese>
+    <Russian>Блокируется ли техника сил этого модуля, пока она пуста: резерв, припаркованный пустым до активации, и любая техника сил, которая появляется пустой после гибели экипажа. Фоновая техника, припаркованные летательные аппараты и машины снабжения не затрагиваются. Да (по умолчанию) = игрок не может украсть или угнать её во время миссии. Нет = пустая техника разблокирована, создатели миссий могут намеренно позволить игрокам пробираться к автопарку. Блокировка резервной техники снимается, когда активация сажает в неё экипаж.</Russian>
 </Key>
 <Key ID="STR_ALIVE_MP_RESERVE_ORPHAN_CREW_BEHAVIOUR">
     <English>Reserve crew with destroyed vehicle:</English>

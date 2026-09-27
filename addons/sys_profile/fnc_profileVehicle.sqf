@@ -745,7 +745,10 @@ switch (_operation) do {
             // catches future virtualisation cycles where the vehicle
             // re-spawns empty (crew profile killed, vehicle preserved).
             private _reserveLockFlag = [_logic, "ALiVE_reserveLocked", false] call ALiVE_fnc_HashGet;
-            private _crewCount = count crew _vehicle;
+            // The crew aren't in yet: they're put in further down, from the profile's crew
+            // assignments. Counting only who's aboard read every vehicle as empty, so crewed ones
+            // were locked too, and a player could never take one after killing its crew.
+            private _crewCount = (count crew _vehicle) + (count (_vehicleAssignments select 1));
             if (_reserveLockFlag && _crewCount == 0) then {
                 _vehicle lock 2;
             };
