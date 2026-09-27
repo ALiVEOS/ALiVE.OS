@@ -449,26 +449,26 @@ private _gracePeriod = 15;
         }; // end while
     };
 
-    // Stub triggers - kept so fnc_removeIED's nearObjects ["EmptyDetector",3] finds
-    // something to clean up. Condition is hardcoded "false" so they never fire;
-    // detonation is driven entirely by the polling loop above.
+    // Stub triggers. Condition is hardcoded "false" so they never fire; detonation is
+    // driven entirely by the polling loop above. They're kept on the IED, for every
+    // machine, as removeIED and a player's disarm delete them by name.
     private _trg = createTrigger ["EmptyDetector", getposATL _ied];
     _trg setTriggerArea [1, 1, 0, false];
     _trg setTriggerActivation ["NONE", "PRESENT", false];
     _trg setTriggerStatements ["false", "", ""];
-    _ied setVariable ["Trigger", _trg];
+    _ied setVariable ["Trigger", _trg, true];
 
     private _trgDetect = createTrigger ["EmptyDetector", getposATL _ied];
     _trgDetect setTriggerArea [1, 1, 0, false];
     _trgDetect setTriggerActivation ["NONE", "PRESENT", false];
     _trgDetect setTriggerStatements ["false", "", ""];
-    _ied setVariable ["Detect_Trigger", _trgDetect];
+    _ied setVariable ["Detect_Trigger", _trgDetect, true];
 
     private _trgDisarm = createTrigger ["EmptyDetector", getposATL _ied];
     _trgDisarm setTriggerArea [1, 1, 0, false];
     _trgDisarm setTriggerActivation ["NONE", "PRESENT", false];
     _trgDisarm setTriggerStatements ["false", "", ""];
-    _ied setVariable ["Det_Trigger", _trgDisarm];
+    _ied setVariable ["Det_Trigger", _trgDisarm, true];
 };
 
 // Note: the per-IED triggers are created asynchronously above after the grace period.

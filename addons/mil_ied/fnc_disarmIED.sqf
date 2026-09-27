@@ -59,11 +59,11 @@ if (_IED getVariable ["ALiVE_IED_Disarmed", false]) exitWith {
         // addActionIED's condition also hides stale entries on other clients).
         [_IED, _id] remoteExec ["ALiVE_fnc_removeActionIED", 0, true];
 
-        // Clean up the stub proximity triggers the armIED spawn created.
-        private _trgr = (position _IED) nearObjects ["EmptyDetector", 3];
+        // Clean up the stub proximity triggers the armIED spawn created, and only those: a
+        // town's or an ambush's IED trigger can stand within a few metres.
         {
-            deleteVehicle _x;
-        } foreach _trgr;
+            deleteVehicle (_IED getVariable [_x, objNull]);
+        } foreach ["Trigger", "Detect_Trigger", "Det_Trigger"];
 
         // Remove from module tracking + drop sector hostility.
         [[position _IED, [str(side group player)], -20] ,"ALiVE_fnc_updateSectorHostility", false, false, true] call BIS_fnc_MP;
@@ -173,10 +173,9 @@ if (_IED getVariable ["ALiVE_IED_Disarmed", false]) exitWith {
             private _shell = [["R_60mm_HE","Bomb_03_F","Bomb_04_F"],[8,1,1]] call BIS_fnc_selectRandomWeighted;
             _shell createVehicle getposATL _IED;
 
-            private _trgr = (position _IED) nearObjects ["EmptyDetector", 3];
             {
-                deleteVehicle _x;
-            } foreach _trgr;
+                deleteVehicle (_IED getVariable [_x, objNull]);
+            } foreach ["Trigger", "Detect_Trigger", "Det_Trigger"];
 
             [[position _IED, [str(side group player)], +10] ,"ALiVE_fnc_updateSectorHostility", false, false, true] call BIS_fnc_MP;
             [[ADDON, "removeIED", _IED] ,"ALiVE_fnc_IED", false, false, true] call BIS_fnc_MP;

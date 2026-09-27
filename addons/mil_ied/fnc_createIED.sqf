@@ -316,14 +316,14 @@ for "_j" from 1 to _numIEDs do {
                 ([["R_60mm_HE","Bomb_03_F","Bomb_04_F"],[8,1,1]] call BIS_fnc_selectRandomWeighted) createVehicle _pos;
             };
 
+            // Its own triggers only (removeIED takes them too once it finds the IED)
+            {
+                deleteVehicle (_IED getVariable [_x, objNull]);
+            } foreach ["Trigger", "Detect_Trigger", "Det_Trigger"];
             [ADDON, "removeIED", _IED] call ALiVE_fnc_IED;
             detach _charge;
             deleteVehicle _IED;
             deletevehicle _charge;
-            private _trgr = _pos nearObjects ["EmptyDetector", 3];
-            {
-                deleteVehicle _x;
-            } foreach _trgr;
         }];
 
         // Mirrored damage handler on the IED (mine) itself. Critical for
@@ -361,13 +361,12 @@ for "_j" from 1 to _numIEDs do {
                 ([["R_60mm_HE","Bomb_03_F","Bomb_04_F"],[8,1,1]] call BIS_fnc_selectRandomWeighted) createVehicle _pos;
             };
 
+            {
+                deleteVehicle (_ied getVariable [_x, objNull]);
+            } foreach ["Trigger", "Detect_Trigger", "Det_Trigger"];
             [ADDON, "removeIED", _ied] call ALiVE_fnc_IED;
             if (!isNull _charge) then { detach _charge; deleteVehicle _charge; };
             deleteVehicle _ied;
-            private _trgr = _pos nearObjects ["EmptyDetector", 3];
-            {
-                deleteVehicle _x;
-            } foreach _trgr;
         }];
         };
 

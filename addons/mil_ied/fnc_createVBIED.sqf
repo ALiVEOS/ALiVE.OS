@@ -107,7 +107,6 @@ _IED setVectorUp [0,0,-1];
 
 // Add damage handler
 _ehID = _IED addeventhandler ["HandleDamage",{
-    private "_trgr";
 //    diag_log str(_this);
 
     if (MOD(mil_IED) getVariable "debug") then {
@@ -123,10 +122,8 @@ _ehID = _IED addeventhandler ["HandleDamage",{
     private _vbShell = [["Bomb_04_F","Bomb_03_F","R_60mm_HE"],[3,3,1]] call BIS_fnc_selectRandomWeighted;
     _vbShell createVehicle [(getpos (_this select 0)) select 0, (getpos (_this select 0)) select 1,0];
 
-    _trgr = (position (_this select 0)) nearObjects ["EmptyDetector", 3];
-    {
-        deleteVehicle _x;
-    } foreach _trgr;
+    // A VBIED has no triggers of its own, so nothing is swept up here: a sweep of every
+    // trigger within 3 m took a town's or an ambush's IED trigger if it blew up that close.
 
     // Update Sector Hostility
     [position (_this select 0), [str(side (_this select 3))], +10] call ALiVE_fnc_updateSectorHostility;

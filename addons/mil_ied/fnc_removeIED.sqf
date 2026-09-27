@@ -64,13 +64,14 @@ _removeIED = {
         } foreach _debugmarkers;
     };
 
-    _IEDCharge = _IEDobj getVariable ["charge", nil];
+    // A dud is never armed, so it has no charge: nothing to delete rather than an error.
+    _IEDCharge = _IEDobj getVariable ["charge", objNull];
 
-    // Delete Triggers
-    _trgr = (position _IEDObj) nearObjects ["EmptyDetector", 3];
+    // Delete the IED's own triggers, not every trigger within 3 m of it: a town's or an
+    // ambush's IED trigger can stand that close, and the town would plant no more.
     {
-        deleteVehicle _x;
-    } foreach _trgr;
+        deleteVehicle (_IEDObj getVariable [_x, objNull]);
+    } foreach ["Trigger", "Detect_Trigger", "Det_Trigger"];
 
     deleteVehicle _IEDCharge;
     deleteVehicle _IEDObj;
