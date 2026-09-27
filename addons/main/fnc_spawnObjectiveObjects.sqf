@@ -58,6 +58,9 @@ Parameters:
                             that this objective spawns its objects at all.
                             ONE roll per objective: pass spawns the full
                             configured count, fail spawns nothing (#914).
+    _ownerFaction: STRING - optional, the faction the calling module resolved.
+                            Empty falls back to the module's single faction
+                            field, then to civilian.
 
 Returns:
     NUMBER - count of objects successfully spawned
@@ -73,7 +76,8 @@ params [
     ["_count", 0, [0]],
     ["_behaviour", "dispersed", [""]],
     ["_debug", false, [false]],
-    ["_chance", 100, [0]]
+    ["_chance", 100, [0]],
+    ["_ownerFaction", "", [""]]
 ];
 
 if (isNull _logic) exitWith { 0 };
@@ -231,7 +235,11 @@ for "_i" from 1 to _count do {
         // scenery doesn't need crew. Falls back to direct createVehicle
         // if the profile call returns nil (some pure-scenery classes
         // like Land_Antenna may not be profileable).
-        private _faction = _logic getVariable ["faction", ""];
+        // The faction the calling module resolved comes first: the custom modules take theirs
+        // from Force Factions and leave the old single faction field empty, so reading only
+        // that field made their objects civilian (a radar with a civilian crew).
+        private _faction = _ownerFaction;
+        if (_faction == "") then { _faction = _logic getVariable ["faction", ""] };
         if (_faction == "") then { _faction = "CIV" };
         private _factionConfig = _faction call ALiVE_fnc_configGetFactionClass;
         private _factionSideNumber = if (!isNil "_factionConfig") then { getNumber (_factionConfig >> "side") } else { 3 };

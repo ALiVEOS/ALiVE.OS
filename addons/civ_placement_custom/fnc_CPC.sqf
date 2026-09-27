@@ -1211,7 +1211,7 @@ switch (_operation) do {
             private _objBehaviour_CPC = [_logic, "objectiveObjectsBehaviour"] call MAINCLASS;
             private _objChanceStr_CPC = [_logic, "objectiveObjectsChance"] call MAINCLASS;
             private _objChance_CPC = if (typeName _objChanceStr_CPC == "STRING" && {_objChanceStr_CPC != ""}) then { (parseNumber _objChanceStr_CPC) max 0 min 100 } else { 100 };
-            private _countObjectiveObjects_CPC = [_logic, _position, _objSizeRadius_CPC, _objCount_CPC, _objBehaviour_CPC, _debug, _objChance_CPC] call ALiVE_fnc_spawnObjectiveObjects;
+            private _countObjectiveObjects_CPC = [_logic, _position, _objSizeRadius_CPC, _objCount_CPC, _objBehaviour_CPC, _debug, _objChance_CPC, _faction] call ALiVE_fnc_spawnObjectiveObjects;
             if (_debug) then {
                 ["CPC - Objective objects placed: %1 of %2 (radius=%3 behaviour=%4)",
                     _countObjectiveObjects_CPC, _objCount_CPC, _objSizeRadius_CPC, _objBehaviour_CPC] call ALiVE_fnc_dump;
