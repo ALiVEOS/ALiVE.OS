@@ -89,38 +89,11 @@ addMissionEventHandler ["EntityKilled", {
     };
 }];
 
-{
-    if (side _x != civilian) then {
-        _x addEventHandler ["FiredMan", {
-            params ["_unit"];
-            private _pos = getPos _unit;
-
-            private _nearCivs = _pos nearEntities ["CAManBase", 50];
-            private _civNear = {alive _x && {side _x == civilian} && {!isPlayer _x}} count _nearCivs;
-            if (_civNear > 0) then {
-                _unit setVariable ["ALiVE_advciv_firedAtCivTime", time, true];
-                if (ALiVE_advciv_debug) then { ["[ALiVE Threat DEBUG] firedAtCivTime SET unit=%1 side=%2 time=%3 origin=FiredMan-near-civ civsInRange=%4", name _unit, side _unit, time, _civNear] call ALiVE_fnc_dump; };
-            };
-
-            {
-                if (alive _x && {side _x == civilian} && {!isPlayer _x} && {_x getVariable ["ALiVE_advciv_active", false]}) then {
-                    private _dist = _x distance _pos;
-                    if (_dist < ALiVE_advciv_maxRange) then {
-                        private _intensity = linearConversion [0, ALiVE_advciv_maxRange, _dist, 10, 1, true];
-                        private _cur = _x getVariable ["ALiVE_advciv_nearShots", 0];
-                        _x setVariable ["ALiVE_advciv_nearShots", (_cur + _intensity) min 20];
-                        if (_x getVariable ["ALiVE_advciv_state", "CALM"] == "CALM" && {_intensity > 3}) then {
-                            if (random 1 < ALiVE_advciv_panicChance) then {
-                                _x setVariable ["ALiVE_advciv_state", "ALERT", true];
-                                _x setVariable ["ALiVE_advciv_panicSource", _pos, true];
-                            };
-                        };
-                    };
-                };
-            } forEach allUnits;
-        }];
-    };
-} forEach allUnits;
+// Gunfire is handled by the FiredMan handler ALiVE_fnc_advciv_initUnit gives every non-civilian
+// unit (ALiVE_fnc_advciv_handleFired). A second, older handler was added here to the units present
+// at start. It compared distances with ALiVE_advciv_maxRange, which nothing defines, so beyond
+// marking the shooter (which the newer handler does too) it never did anything, while looping over
+// every unit in the mission on every shot.
 
 {
     [_x] call ALiVE_fnc_advciv_brainLoop;
