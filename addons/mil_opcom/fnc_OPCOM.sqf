@@ -2642,8 +2642,9 @@ switch (_operation) do {
 
                         if !(isNil "_roadblockFaction") then {
                             private _candidateRoads = _spawnPos nearRoads (_size + 20);
+                            // All three have to hold, as in createRoadblock: with OR almost every road passed.
                             _candidateRoads = _candidateRoads select {
-                                _x distance _spawnPos >= (_size - 10) || {isOnRoad _x} || {(str _x) find "invisible" == -1}
+                                _x distance _spawnPos >= (_size - 10) && {isOnRoad _x} && {(str _x) find "invisible" == -1}
                             };
 
                             private _existingRoadblocks = if (isnil "ALiVE_CIV_PLACEMENT_ROADBLOCKS") then {[]} else {ALiVE_CIV_PLACEMENT_ROADBLOCKS};

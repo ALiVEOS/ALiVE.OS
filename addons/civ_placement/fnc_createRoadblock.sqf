@@ -108,8 +108,9 @@ if (_num > 5) then {_num = 5};
 // Find all the roads
 _roads = _pos nearRoads (_radius + 20);
 
-// scan road positions, filter trails, filter runways and find those roads on outskirts
-_roads = _roads select {_x distance _pos >= (_radius - 10) || {isOnRoad _x} || {(str _x) find "invisible" == -1}};
+// scan road positions, filter trails, filter runways and find those roads on outskirts. All three
+// have to hold: joined with OR, almost every road passed, so a roadblock could land anywhere in town.
+_roads = _roads select {_x distance _pos >= (_radius - 10) && {isOnRoad _x} && {(str _x) find "invisible" == -1}};
 
 if (_roads isEqualTo []) exitWith {
     GVAR(ROADBLOCKS_NOROADS) pushBackUnique [_pos, _radius];
