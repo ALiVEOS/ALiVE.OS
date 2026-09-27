@@ -360,10 +360,24 @@ switch(_operation) do {
             if (_allowPlayerTasking) then {
 	            // assign the objective to OPCOMS
 	            private _objectiveName = format["CUSTOM_%1",floor((_position select 0) + (_position select 1))];
+	            // Modules whose coordinates add up to the same whole number share that key. They're told
+	            // apart by where they stand, west to east and then south to north, so each gets the same
+	            // key every session whatever order they start in: the first keeps the key as it always
+	            // was and the next gets _2, and so on. The counter below still catches anything left over.
+	            private _keyModules = (allMissionObjects "ALiVE_mil_placement_custom") + (allMissionObjects "ALiVE_mil_placement_spe");
+	            private _keySum = floor ((_position select 0) + (_position select 1));
+	            private _sameKey = [];
+	            {
+	                private _p = position _x;
+	                if (floor ((_p select 0) + (_p select 1)) == _keySum) then { _sameKey pushBack [_p select 0, _p select 1, _forEachIndex] };
+	            } forEach _keyModules;
+	            _sameKey sort true;
+	            private _keyRank = _sameKey findIf { (_keyModules select (_x select 2)) == _logic };
+	            if (_keyRank > 0) then { _objectiveName = format ["%1_%2", _objectiveName, _keyRank + 1] };
 	            private _cluster = [nil, "create"] call ALIVE_fnc_cluster;
-	            // The key is the sum of the coordinates, so two modules can come out the same and the second
-	            // would overwrite the first. A taken key gets _2, _3 and so on; one that isn't taken stays as it
-	            // always was. Picked and claimed in one step, so two modules starting together can't both take it.
+	            // A key still taken, two modules on the very same spot say, gets the next free number, so
+	            // the second never overwrites the first. Picked and claimed in one step, so two modules
+	            // starting together can't both take it.
 	            isNil {
 	                if ([ALIVE_clustersMilCustom, _objectiveName] call CBA_fnc_hashHasKey) then {
 	                    private _baseName = _objectiveName;
