@@ -211,7 +211,24 @@ if(isServer) then {
             str _virtualCombatSpeedRaw, _virtualCombatSpeedRegular] call ALiVE_fnc_dumpR;
         _virtualCombatSpeedModifier = _virtualCombatSpeedRegular;
     };
-    private _virtualCombatRangeModifier = parseNumber (_logic getVariable ["virtualcombat_rangemodifier", "255"]);
+    // Virtual Combat Range is free text too, and blank or a typo came out of parseNumber as 0,
+    // a range at which no virtual fight ever starts. Read it the way Smooth Spawn is read below;
+    // a 0 typed on purpose still turns virtual fights off, and says so.
+    private _virtualCombatRangeRaw = _logic getVariable ["virtualcombat_rangemodifier", "255"];
+    if (_virtualCombatRangeRaw isEqualType 0) then { _virtualCombatRangeRaw = str _virtualCombatRangeRaw };
+    if !(_virtualCombatRangeRaw isEqualType "") then { _virtualCombatRangeRaw = "" };
+    private _virtualCombatRangeText = (_virtualCombatRangeRaw splitString " ") joinString "";
+    private _virtualCombatRangeModifier = parseNumber _virtualCombatRangeText;
+    if (_virtualCombatRangeText isEqualTo "" ||
+        {((_virtualCombatRangeText splitString "") - ["0","1","2","3","4","5","6","7","8","9","."]) isNotEqualTo []}
+    ) then {
+        ["ALiVE Profile System - Virtual Combat Range reads %1, which is not a number, so virtual fights use the default 255 m. Correct it on the Virtual AI module.",
+            str _virtualCombatRangeRaw] call ALiVE_fnc_dumpR;
+        _virtualCombatRangeModifier = 255;
+    };
+    if (_virtualCombatRangeModifier == 0) then {
+        ["ALiVE Profile System - Virtual Combat Range is 0, so virtual AI groups never fight each other."] call ALiVE_fnc_dumpR;
+    };
     private _pathfinding = (_logic getVariable ["pathfinding", "false"]) == "true";
     // Pass the configured grid setting through RAW (no parse here). It may be an
     // auto-size token ("auto"/"high"/"med"/"low"), a stringified pair "[x,y]" from
