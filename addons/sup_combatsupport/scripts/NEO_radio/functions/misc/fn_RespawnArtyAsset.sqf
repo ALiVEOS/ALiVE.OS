@@ -62,42 +62,66 @@ _vehDir = 0;
 _grp = createGroup _side;
 _artyBatteries = [];
 
-if (_side == WEST && _type == "BUS_MotInf_MortTeam") then {
-    // Spawn a mortar team :)
-    private ["_veh","_vehPos"];
-    _vehPos = (_pos getPos [30, _vehDir]); _vehPos set [2, 0];
-    _grp = [_vehPos, side _grp, (configFile >> "cfgGroups" >> "WEST" >> "BLU_F" >> "Motorized" >> "BUS_MotInf_MortTeam"),[],[],[],[],[],_vehDir] call BIS_fnc_spawnGroup;
-    {
-        _units pushback _x;
-        _x setVariable ["ALIVE_CombatSupport", true];
-    } foreach units _grp;
-} else {
-    private ["_vehPos","_i"];
-    for "_i" from 1 to _unitCount do
-    {
-        private ["_veh"];
-        _vehPos = (_pos getPos [15, _vehDir]); _vehPos set [2, 0];
-        _veh = createVehicle [_type, _vehPos, [], 0, "CAN_COLLIDE"];
-        _veh setDir _vehDir;
-        _veh setPosATL _vehPos;
-        createVehicleCrew _veh;
-        _crew = crew _veh;
-        _crew joinSilent _grp;
-        _grp addVehicle _veh;
-        _veh lock true;
-        _vehDir = _vehDir + 90;
-
-        _units pushback _veh;
-        _artyBatteries pushback _veh;
-
-        // Exclude CS from VCOM
-        // CS only runs serverside so no PV is needed
-        (driver _veh) setvariable ["VCOM_NOAI", true];
-
-        // set ownership flag for other modules
-        _veh setVariable ["ALIVE_CombatSupport", true];
+// A mortar team is named after its CfgGroups entry, not a vehicle, and the first spawn
+// (fnc_combatSupport.sqf) puts down the side's static mortar in its place. Only NATO's
+// motorised team had a case here, and it built a different team from the first spawn's;
+// the other five names went to createVehicle, which made nothing, so the empty battery
+// counted as lost at once and respawned again until the limit every battery shares ran out.
+private _spawnClass = _type;
+if (_type in ["BUS_Support_Mort","BUS_MotInf_MortTeam","OIA_MotInf_MortTeam","OI_support_Mort","HAF_MotInf_MortTeam","HAF_Support_Mort"]) then {
+    _unitCount = 1;
+    _spawnClass = switch (_type select [0,1]) do {
+        case "O" : {"O_Mortar_01_F"};
+        case "H" : {"I_Mortar_01_F"};
+        default {"B_Mortar_01_F"};
     };
 };
+
+private ["_vehPos","_i"];
+for "_i" from 1 to _unitCount do
+{
+    private ["_veh"];
+    _vehPos = (_pos getPos [15, _vehDir]); _vehPos set [2, 0];
+    _veh = createVehicle [_spawnClass, _vehPos, [], 0, "CAN_COLLIDE"];
+    _veh setDir _vehDir;
+    _veh setPosATL _vehPos;
+    createVehicleCrew _veh;
+    _crew = crew _veh;
+    _crew joinSilent _grp;
+    _grp addVehicle _veh;
+    _veh lock true;
+    _vehDir = _vehDir + 90;
+
+    _units pushback _veh;
+    _artyBatteries pushback _veh;
+
+    // Exclude CS from VCOM
+    // CS only runs serverside so no PV is needed
+    (driver _veh) setvariable ["VCOM_NOAI", true];
+
+    // set ownership flag for other modules
+    _veh setVariable ["ALIVE_CombatSupport", true];
+
+    // Kept out of the profile system, as the first spawn keeps it.
+    _veh setVariable ["ALIVE_profileIgnore", true];
+    _grp setVariable ["ALIVE_profileIgnore", true];
+
+    // A leader and an assistant to pack and carry the mortar, as the first spawn gives it.
+    // Not the motorised teams' cars: the first spawn's are still parked where it left them.
+    if (_spawnClass in ["O_Mortar_01_F","B_Mortar_01_F","I_Mortar_01_F"]) then {
+        private _prefix = _spawnClass select [0,1];
+        private _newgrp = [_vehPos, _side, [format ["%1_soldier_TL_F", _prefix], format ["%1_soldier_F", _prefix]],[],[],[],[],[],_vehDir] call BIS_fnc_spawnGroup;
+        (units _newgrp) joinSilent _grp;
+        deleteGroup _newgrp;
+
+        private _sptarr = _grp getVariable ["supportWeaponArray",[]];
+        _sptarr pushback _veh;
+        _grp setvariable ["supportWeaponArray", _sptarr];
+    };
+};
+// A fire mission splits its rounds over this many guns and a mortar team's unpack waits for
+// this many tubes, so the default of 3 left a 1-tube team firing a third of every mission.
+_grp setVariable ["supportWeaponCount", count _units];
 
 {_x setVariable ["NEO_radioArtyModule", [leader _grp, _callsign], true]} forEach _units;
 

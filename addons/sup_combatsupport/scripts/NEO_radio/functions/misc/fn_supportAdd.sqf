@@ -321,6 +321,9 @@ switch (_support) do
                 };
             };
         };
+        // A fire mission splits its rounds over this many guns and a mortar team's unpack waits
+        // for this many tubes, so the default of 3 left a 1-tube team firing a third of a mission.
+        _grp setVariable ["supportWeaponCount", count _units];
 
         { _x setVariable ["NEO_radioArtyModule", [leader _grp, _callsign], true] } forEach _units;
 

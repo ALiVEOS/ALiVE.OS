@@ -482,7 +482,10 @@ switch(_operation) do {
 
                                     // As above. An artillery classname that does not resolve produced a
                                     // callsign with no battery behind it. (#1035)
-                                    if (isClass (configFile >> "CfgVehicles" >> _class)) then {
+                                    // The mortar teams are CfgGroups names, not vehicles, and the battery
+                                    // builder below has its own case for them, so they pass too; the
+                                    // vehicle check alone threw them out with a log line.
+                                    if (isClass (configFile >> "CfgVehicles" >> _class) || {_class in ["BUS_Support_Mort","BUS_MotInf_MortTeam","OIA_MotInf_MortTeam","OI_support_Mort","HAF_MotInf_MortTeam","HAF_Support_Mort"]}) then {
                                         _artyArray = [_position,_class, _callsign,3,_ordnance,_code,_artyLogistics,_artyLogisticsSource,_artyRelocate];
                                         _artyArrays pushback _artyArray;
                                     } else {
@@ -1000,6 +1003,10 @@ switch(_operation) do {
                                         };
                                     };
                                 };
+                                // As the Eden branch below sets it: a fire mission splits its rounds over
+                                // this many guns and a mortar team's unpack waits for this many tubes, so
+                                // the default of 3 left a 1-tube team firing a third of every mission.
+                                _grp setVariable ["supportWeaponCount",count _units];
                             } else {
                                 {
                                     private _v = vehicle _x;
