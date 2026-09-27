@@ -3321,9 +3321,14 @@ switch(_operation) do {
             for "_i" from 0 to ((count synchronizedObjects _logic)-1) do {
                 _moduleObject = (synchronizedObjects _logic) select _i;
 
-                waituntil {_module = _moduleObject getVariable "handler"; !(isnil "_module")};
-                _module = _moduleObject getVariable "handler";
-                _modules pushback _module;
+                // Only an AI Commander sets the handler waited for here. Anything else synced to
+                // this module (a placement module, Player Combat Logistics) never does, and
+                // waiting for it hung the start-up without a word.
+                if ((typeOf _moduleObject) == "ALiVE_mil_OPCOM") then {
+                    waituntil {_module = _moduleObject getVariable "handler"; !(isnil "_module")};
+                    _module = _moduleObject getVariable "handler";
+                    _modules pushback _module;
+                };
             };
 
             // DEBUG -------------------------------------------------------------------------------------
