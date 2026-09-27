@@ -752,6 +752,21 @@ ALiVE_fnc_INS_assault = {
                 [_timeTaken,_pos,[_side],20,_allSides,_objective] call ALiVE_fnc_INS_updateHostilityByPresence;
 };
 
+// Takes an IED trigger's IEDs off the map for good. The IED module keeps them in its store under
+// the key the trigger's order names and puts them back each time the trigger fires, and only the
+// trigger's deactivation (players leaving) takes them off again, which deleting the trigger skips.
+ALiVE_fnc_INS_clearIEDs = {
+                params ["_key", "_pos"];
+
+                if (isNil "ALiVE_mil_ied_STORE") exitwith {};
+                private _allIEDs = [ALiVE_mil_ied_STORE, "IEDs"] call ALiVE_fnc_HashGet;
+                if (isNil "_allIEDs") exitwith {};
+                if (isNil {[_allIEDs, _key] call ALiVE_fnc_HashGet}) exitwith {};
+
+                [_pos, _key] call ALIVE_fnc_removeIED;
+                [_allIEDs, _key] call ALiVE_fnc_HashRem;
+};
+
 ALiVE_fnc_INS_ambush = {
                 private ["_timeTaken","_pos","_id","_size","_faction","_sides","_agents","_road","_roadObject","_objective","_event","_eventID"];
 
@@ -861,6 +876,28 @@ ALiVE_fnc_INS_retreat = {
 
                     [_objective,_x] call ALiVE_fnc_HashRem;
                 } foreach ["factory","HQ","ambush","depot","sabotage","ied","suicide"];
+
+                // The IED and suicide bomber triggers themselves sit on the objective's centre (INS_ied
+                // and INS_suicide are handed the same centre as this retreat), and the objective only
+                // keeps a stand-in for them, so they were never removed: the town went on planting IEDs
+                // and sending bombers after the insurgents had gone, and a later IED action added another.
+                // Only this town's: Military IED's own triggers can share the centre. The IED one names
+                // the town in its order, the bomber one carries its id.
+                {
+                    private _act = (triggerStatements _x) param [1, ""];
+                    if (((_act find "ALIVE_fnc_createIED") > -1 && {(_act find _id) > -1}) || {(_x getVariable ["ALiVE_INS_objectiveID", ""]) == _id}) then {
+                        deleteVehicle _x;
+                    };
+                } forEach (_pos nearObjects ["EmptyDetector", 1]);
+                // Deleting the IED trigger skips its deactivation, so take the town's IEDs off here.
+                [_id, _pos] call ALiVE_fnc_INS_clearIEDs;
+                // And the IED module's record of the trigger, which a persistent reload would build it back from.
+                if (!isNil "ALiVE_mil_ied_STORE") then {
+                    private _storedTriggers = [ALiVE_mil_ied_STORE, "triggers"] call ALiVE_fnc_HashGet;
+                    if (!isNil "_storedTriggers") then {
+                        [_storedTriggers, format ["%1-IED", _id]] call ALiVE_fnc_HashRem;
+                    };
+                };
 
                 // Reset all actions done on that objective so they can be performed again
                 [_objective,"actionsFulfilled",[]] call ALiVE_fnc_HashSet;
@@ -1032,6 +1069,9 @@ ALiVE_fnc_INS_suicide = {
                         format ["null = [[getpos thisTrigger,%1,'%2'],thisList] call ALIVE_fnc_createBomber", _size, (selectRandom _civFactions)],
                          ""
                     ];
+                    // Named for the town, so a retreat can tell it from Military IED's own bomber
+                    // trigger, which can sit on the same centre.
+                    _trg setVariable ["ALiVE_INS_objectiveID", _id];
 
                     _placeholders = ((nearestobjects [_pos,["Static"],150]) + (_pos nearRoads 150));
                     if (!isnil "_placeholders" && {count _placeholders > 0}) then {_trg = _placeholders select 0};
