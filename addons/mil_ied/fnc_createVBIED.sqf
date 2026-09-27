@@ -36,18 +36,16 @@ private ["_marker","_counter","_black","_t"];
 _black = false;
 _t = true;
 
+// Inside any of the markers, not just the last: each pass of the old loops overwrote the answer,
+// so with 2 or more markers only the last one counted.
 if(count _blacklist > 0) then {
-    {
-        _black = [_vehicle, _x] call ALiVE_fnc_inArea;
-    } foreach _blacklist;
+    _black = (_blacklist findIf { [_vehicle, _x] call ALiVE_fnc_inArea }) > -1;
 };
 
 if (_black) exitWith {};
 
 if(count _taor > 0) then {
-    {
-        _t = [_vehicle, _x] call ALiVE_fnc_inArea;
-    } foreach _taor;
+    _t = (_taor findIf { [_vehicle, _x] call ALiVE_fnc_inArea }) > -1;
 };
 
 if !(_t) exitWith {};
