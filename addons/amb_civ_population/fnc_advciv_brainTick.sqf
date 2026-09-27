@@ -545,8 +545,14 @@ switch (_state) do {
                 _unit setVariable ["ALiVE_advciv_openFleeRetryAt", nil];
 
                 // Retry once from the civilian's NEW position after at least
-                // 25 seconds of fleeing, then shelter or hide in place.
-                private _retryHouse = [_unit] call ALiVE_fnc_advciv_findHouseProgressive;
+                // 25 seconds of fleeing, then shelter or hide in place. With Prefer
+                // Buildings off it hides in place: looking for a building here took
+                // every civilian indoors 25 s into its flee, whatever the setting.
+                private _retryHouse = if (ALiVE_advciv_preferBuildings) then {
+                    [_unit] call ALiVE_fnc_advciv_findHouseProgressive
+                } else {
+                    [objNull, []]
+                };
                 private _retryBld   = _retryHouse select 0;
                 private _retryPos   = _retryHouse select 1;
                 if (!isNull _retryBld && {count _retryPos > 0}) then {
