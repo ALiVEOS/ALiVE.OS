@@ -171,12 +171,35 @@ switch(_operation) do {
     };
 
     case "faction": {
-        _result = [_logic,_operation,_args,DEFAULT_FACTION,[] call ALiVE_fnc_configGetFactions] call ALIVE_fnc_OOsimpleOperation;
+        // What the module was given, before a faction that isn't loaded is swapped for the default.
+        private _asked = if (_args isEqualType "") then {_args} else {_logic getVariable ["faction", ""]};
+        private _loadedFactions = [] call ALiVE_fnc_configGetFactions;
+        _result = [_logic,_operation,_args,DEFAULT_FACTION,_loadedFactions] call ALIVE_fnc_OOsimpleOperation;
 
         if !(_args isEqualType "") then {
             private _compiledFaction = [_logic] call ALiVE_fnc_factionCompilerResolveForModule;
             if !(_compiledFaction isEqualTo "") then {
                 _result = _compiledFaction;
+            };
+        };
+
+        // A faction that isn't loaded (a mod taken out, say) becomes the default without a word,
+        // and the default here is Spearhead 1944's, which may not be loaded either. Said once
+        // per module.
+        if (_result == DEFAULT_FACTION && {!(_logic getVariable ["ALiVE_SPEMP_factionWarned", false])}) then {
+            private _askedOther = _asked isEqualType "" && {_asked != ""} && {_asked != DEFAULT_FACTION};
+            if !(DEFAULT_FACTION in _loadedFactions) then {
+                _logic setVariable ["ALiVE_SPEMP_factionWarned", true];
+                if (_askedOther) then {
+                    ["SPEMP - Force Faction %1 is not loaded, and nor is %2, the Spearhead 1944 faction it falls back to", _asked, DEFAULT_FACTION] call ALiVE_fnc_dump;
+                } else {
+                    ["SPEMP - Force Faction %1 comes with Spearhead 1944, which is not loaded", DEFAULT_FACTION] call ALiVE_fnc_dump;
+                };
+            } else {
+                if (_askedOther) then {
+                    _logic setVariable ["ALiVE_SPEMP_factionWarned", true];
+                    ["%1 - Force Faction %2 is not loaded, so this module uses %3 instead", "SPEMP", _asked, DEFAULT_FACTION] call ALiVE_fnc_dump;
+                };
             };
         };
     };
