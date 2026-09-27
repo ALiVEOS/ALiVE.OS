@@ -136,7 +136,21 @@ switch(_operation) do {
                                 [_factionData,QGVAR(RESPAWNPOSITION), getmarkerPos ("Respawn_" + str(_id call ALiVE_fnc_factionSide))] call ALiVE_fnc_HashSet;
                                 [_factionData,QGVAR(MULTISPAWN_TYPE),_logic getvariable ["spawntype","forwardspawn"]] call ALiVE_fnc_HashSet;
                                 [_factionData,QGVAR(RESPAWN_WITH_GEAR), (_logic getvariable ["respawnWithGear","false"]) == "true"] call ALiVE_fnc_HashSet;
-                                [_factionData,QGVAR(TIMEOUT),call compile (_logic getvariable ["timeout","60"])] call ALiVE_fnc_HashSet;
+                                // The box is read as a number of seconds: compiling it as code threw on a typo
+                                // and let anything that wasn't a number through. Anything else keeps 60.
+                                private _timeoutText = _logic getvariable ["timeout","60"];
+                                private _timeoutValue = if (_timeoutText isEqualType 0) then {_timeoutText} else {
+                                    private _chars = toArray ((_timeoutText splitString " ") joinString "");
+                                    if (count _chars > 0 && {(_chars findIf {!(_x == 46 || {_x >= 48 && {_x <= 57}})}) < 0}) then {
+                                        parseNumber _timeoutText
+                                    } else {
+                                        if (count _chars > 0) then {
+                                            ["ALiVE_SUP_MULTISPAWN - Respawn Timeout ""%1"" isn't a number of seconds, so 60 is used.", _timeoutText] call ALiVE_fnc_Dump;
+                                        };
+                                        60
+                                    };
+                                };
+                                [_factionData,QGVAR(TIMEOUT),_timeoutValue] call ALiVE_fnc_HashSet;
                                 [_factionData,QGVAR(VEHICLETYPE), [MOD(SUP_MULTISPAWN),"selectDefaultVehicle",_id call ALiVE_fnc_factionSide] call ALiVE_fnc_Multispawn] call ALiVE_fnc_HashSet;
 
                                 //Override vehicles from synchronised objects
@@ -675,7 +689,12 @@ switch(_operation) do {
             _inserting = [_factionData,QGVAR(INSERTING),false] call ALiVE_fnc_HashGet;
             _timeout = [_factionData,QGVAR(TIMEOUT),60] call ALiVE_fnc_HashGet;
 
-            if ((format["ALiVE_SUP_MULTISPAWN_INSERTION_%1",faction _player]) call ALiVE_fnc_markerExists) then {_insertion = getMarkerPos (format["ALiVE_SUP_MULTISPAWN_INSERTION_%1",faction _player])} else {_insertion = [1000,1000,100]};
+            if ((format["ALiVE_SUP_MULTISPAWN_INSERTION_%1",faction _player]) call ALiVE_fnc_markerExists) then {_insertion = getMarkerPos (format["ALiVE_SUP_MULTISPAWN_INSERTION_%1",faction _player])} else {
+                // Nothing synced to start the transport from: it came in from map position 1000,1000,
+                // often at sea or off the map. It starts over the module now, and the RPT says why.
+                ["ALiVE_SUP_MULTISPAWN - no insertion point for faction %1: sync an insertion object to the module. The transport starts over the module instead.", faction _player] call ALiVE_fnc_Dump;
+                _insertion = (getPosATL _logic) vectorAdd [0,0,100];
+            };
             if ((format["ALiVE_SUP_MULTISPAWN_DESTINATION_%1",faction _player]) call ALiVE_fnc_markerExists) then {_destination = getMarkerPos (format["ALiVE_SUP_MULTISPAWN_DESTINATION_%1",faction _player])} else {_destination = getMarkerPos format["Respawn_%1", (faction _player) call ALiVE_fnc_factionSide]};
 
             if !(!isnil "_insertion" && {!isnil "_destination"} && {!isnil "_player" && {!isnull _player}} && {!isnil "_timeout"}) exitwith {};
