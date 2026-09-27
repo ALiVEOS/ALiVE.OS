@@ -18,9 +18,10 @@ _leader = _battery;
 _side = _this select 10;
 
 _unitCount = count _units; if (_unitCount > 4) then { _unitCount = 4 }; if (_unitCount < 1) then { _unitCount = 1 };
-_canMove = if (_type in ["B_MBT_01_arty_F", "O_MBT_02_arty_F", "B_MBT_01_mlrs_F","O_Mortar_01_F", "B_Mortar_01_F","I_Mortar_01_F","BUS_Support_Mort","BUS_MotInf_MortTeam","OIA_MotInf_MortTeam","OI_support_Mort","HAF_MotInf_MortTeam","HAF_Support_Mort"]) then { true } else { false };
+// _canMove comes from the battery being replaced, which weighed both whether its class can
+// move and the module's Allow Repositioning. Working it out again here from a list of
+// vanilla classes dropped that setting and pinned every modded battery in place.
 _rounds = _availableRounds;
-_roundsUnit = _type call NEO_fnc_artyUnitAvailableRounds;
 _roundsAvailable = [];
 
 //Exit if limit is reached
@@ -33,13 +34,6 @@ if (ARTY_RESPAWN_LIMIT == 0) exitwith {
 sleep _respawn;
 ARTY_RESPAWN_LIMIT = ARTY_RESPAWN_LIMIT - 1;
 
-//Validate rounds
-{
-    if ((_x select 0) in _roundsUnit) then
-    {
-        _roundsAvailable pushback _x;
-    };
-} forEach _rounds;
 
 //This unit cannot be used anymore, remove from side-list
 _sideArray = NEO_radioLogic getVariable [format["NEO_radioArtyArray_%1", _side], []];
@@ -108,6 +102,17 @@ if (_side == WEST && _type == "BUS_MotInf_MortTeam") then {
 {_x setVariable ["NEO_radioArtyModule", [leader _grp, _callsign], true]} forEach _units;
 
 [[(units _grp select 0),_callsign], "fnc_setGroupID", false, false] spawn BIS_fnc_MP;
+
+//Validate rounds against what the new battery can fire: its live gun where there is one, as
+//the first spawn does. NEO_fnc_artyUnitAvailableRounds only knows the vanilla classes, so a
+//modded battery came back from a respawn with nothing on its tablet.
+_roundsUnit = (if (count _artyBatteries > 0) then {_artyBatteries select 0} else {_type}) call ALiVE_fnc_GetArtyRounds;
+{
+    if ((_x select 0) in _roundsUnit) then
+    {
+        _roundsAvailable pushback _x;
+    };
+} forEach _rounds;
 
 leader _grp setVariable ["NEO_radioArtyBatteryRounds", _roundsAvailable, true];
 
