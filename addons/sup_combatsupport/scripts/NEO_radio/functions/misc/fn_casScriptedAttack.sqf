@@ -260,14 +260,20 @@ _enemySides = ["EAST","WEST","GUER"] - [_sideTxt];
 // set, so an enemy-used empty CIVILIAN-faction vehicle sitting in the marked area still counts as a target.
 _friendlySides = [WEST,EAST,RESISTANCE] select { _x == _sideCas || {(_sideCas getFriend _x) >= 0.6} };
 _enemiesNear = 1;
+// The area the per-pass scan clears is the one the player set on the tablet (250 to 1000 m), not a
+// fixed 150 m: enemies inside the drawn ring but further out were neither attacked nor counted, so
+// the attack ended with them still there. Taken once here, because an attack run doubles
+// _radiusCas below whenever it has to widen a target search.
+private _scanRadius = _radiusCas;
 _killableNear = 1;   // real (killable) objects only - drives loop completion; profiles are advisory       // seed > 0 so the first pass always runs; the scan then reflects the true count
 _playerLaze  = objNull;   // a player's own manual laser designation in the area - takes priority when present
 _rtbNeeded   = false;
 _rtbReason   = "";
 _passCount   = 0;
 
-// Keep attack-running the marked area while LIVE enemies remain within 150m (crewed units/vehicles,
-// virtualised enemy profiles, and empty hostile/civilian vehicles), breaking off to RTB on low fuel,
+// Keep attack-running the marked area while LIVE enemies remain within the player's radius (crewed
+// units/vehicles, virtualised enemy profiles, empty hostile vehicles, and empty civilian ones within
+// 150m of the mark), breaking off to RTB on low fuel,
 // damage, or winchester. Hard time + pass backstops guarantee the loop can never run away.
 // Hold the group at BLUE for the whole scripted delivery: fireAtTarget / forceWeaponFire
 // bypass ROE so the scripted shots still fire, but the now fully-loaded rack cannot be
@@ -306,11 +312,13 @@ while {
     };
 
     // ---- per-pass enemy scan (once per pass): crewed enemies + virtualised enemy profiles +
-    //      empty hostile vehicles within 150m of the marker. Drives persist-until-clear + strike aim. ----
-    private _nearUnits = _posCas nearEntities [["Man","Car","Tank"], 150];
-    private _crewedEnemies = _nearUnits select { alive _x && {side _x != _sideCas} && {side _x != civilian} && {_x != _veh} };
+    //      empty hostile vehicles within the player's radius of the marker. Drives persist-until-clear + strike aim. ----
+    private _nearUnits = _posCas nearEntities [["Man","Car","Tank"], _scanRadius];
+    // Allied sides are spared as they are for empty vehicles: across the player's ring a friendly
+    // unit of another side (GUER beside a WEST jet, say) is far more likely than within 150 m.
+    private _crewedEnemies = _nearUnits select { alive _x && {side _x != civilian} && {!((side _x) in _friendlySides)} && {_x != _veh} };
 
-    private _enemyProfiles = [_posCas, 150, [_enemySides, "entity"], true] call ALIVE_fnc_getNearProfiles;
+    private _enemyProfiles = [_posCas, _scanRadius, [_enemySides, "entity"], true] call ALIVE_fnc_getNearProfiles;
     _enemyProfiles = _enemyProfiles select {
         ((_x select 2 select 3) != "CIV") && {(_x select 2 select 3) != "CIVILIAN"}
     };
@@ -318,9 +326,14 @@ while {
     // empty vehicles: with no crew their `side` reads CIVILIAN, so resolve allegiance from the config
     // faction. Include unless it resolves to a FRIENDLY military side - friendly empties are spared, while
     // hostile-military AND enemy-used civilian empties both count (CIVILIAN is never a friendly-military side).
-    private _emptyVeh = (_posCas nearEntities [["Car","Tank"], 150]) select {
+    // A civilian empty only counts within 150 m of the mark, the old scan radius: across the player's
+    // ring it would be every parked car in town, and the jet kept strafing them after the enemy was dead.
+    private _emptyVeh = (_posCas nearEntities [["Car","Tank"], _scanRadius]) select {
         (crew _x isEqualTo []) && {alive _x} && {damage _x < 1} && {_x != _veh} &&
-        {!(((faction _x) call ALiVE_fnc_factionSide) in _friendlySides)}
+        {
+            private _vehSide = (faction _x) call ALiVE_fnc_factionSide;
+            !(_vehSide in _friendlySides) && {_vehSide != civilian || {(_x distance2D _posCas) <= 150}}
+        }
     };
 
     // player manual designation: a friendly laser in the area (not our own) beats auto-detection - the
