@@ -47,16 +47,18 @@ private _name = waypointName _waypoint;
 
 private _isALiVEWaypoint = (_name select [0,9]) == "alive_wp:";
 
-// Keep the caller's condition, not the active-only LOAD wrapper, across despawns.
-if (!isNil "_existingProfileWaypoint" && {_type == "LOAD"}
-    && {((_statements select 0) find "ALIVE_fnc_profileWaypointLoadCondition") != -1}
-) then {
+// Keep caller statements, not active-only LOAD wrappers, across despawns.
+if (!isNil "_existingProfileWaypoint" && {_type == "LOAD"}) then {
     private _originalStatements = [_existingProfileWaypoint, "statements"] call ALIVE_fnc_hashGet;
-    _statements set [0, if (_originalStatements isEqualType [] && {count _originalStatements == 2}) then {
-        _originalStatements select 0
-    } else {
-        "true"
-    }];
+    if !(_originalStatements isEqualType [] && {count _originalStatements == 2}) then {
+        _originalStatements = ["true", ""];
+    };
+    if (((_statements select 0) find "ALIVE_fnc_profileWaypointLoadCondition") != -1) then {
+        _statements set [0, _originalStatements select 0];
+    };
+    if (((_statements select 1) find "ALIVE_fnc_profileWaypointLoadReset") != -1) then {
+        _statements set [1, _originalStatements select 1];
+    };
 };
 private _profileWaypoint = [
     _position,

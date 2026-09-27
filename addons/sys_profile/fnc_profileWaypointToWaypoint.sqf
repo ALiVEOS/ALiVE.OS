@@ -127,6 +127,10 @@ if (_isProfileLoad) then {
         "([this, %1] call ALIVE_fnc_profileWaypointLoadCondition) && {call {%2}}",
         str _waypointName, _waypointStatements select 0
     ]];
+    _waypointStatements set [1, format [
+        "[group this, %1] call ALIVE_fnc_profileWaypointLoadReset; %2",
+        str _waypointName, _waypointStatements select 1
+    ]];
 };
 if (_waypointStatements isEqualType []) then {
     _waypoint setWaypointStatements _waypointStatements;

@@ -27,6 +27,8 @@ ARJay
 
 params ["_waypoints","_group"];
 
+[_group] call ALIVE_fnc_profileWaypointLoadReset;
+
 private _cycleWaypoints = [];
 private _timestamp = diag_tickTime toFixed 6;
 

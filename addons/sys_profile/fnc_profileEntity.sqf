@@ -819,6 +819,9 @@ switch(_operation) do {
     };
 
     case "clearWaypoints": {
+        // Despawn marks the profile inactive before reaching this cleanup.
+        private _group = [_logic, "group", grpNull] call ALIVE_fnc_hashGet;
+        [_group] call ALIVE_fnc_profileWaypointLoadReset;
         [_logic, [
             ["waypoints", []],
             ["waypointsCompleted", []]

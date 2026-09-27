@@ -5,32 +5,27 @@ SCRIPT(profileWaypointLoadCondition);
 Function: ALIVE_fnc_profileWaypointLoadCondition
 
 Description:
-Native LOAD waypoint condition. Resolves the crew profile and tagged profile
-waypoint, then processes loading on the group owner's machine. The native waypoint
-stays pending until all passengers have boarded. Profile waypoints remain stored
-while the group is active, so the tag identifies the correct LOAD along the route.
+Native LOAD condition on the crew group's owner. Announces each visit once, then
+reads the server's matching completion result. No profile registry is needed on
+this machine. Repeated condition evaluations do not repeat assignments or orders.
 
 Parameters:
 Object - Group leader (this in the native waypoint condition)
 String - ALiVE waypoint name
 
 Returns:
-Boolean - Whether loading has completed. Missing profiles or waypoints return false.
+Boolean - Whether the server has completed this LOAD visit.
 ---------------------------------------------------------------------------- */
 
 params ["_leader", "_waypointName"];
-
-if (isNil "ALIVE_profileHandler") exitWith {false};
-private _profilesById = [ALIVE_profileHandler, "profilesById"] call ALIVE_fnc_hashGet;
-private _crewProfile = _profilesById get (_leader getVariable ["profileID", ""]);
-if (isNil "_crewProfile" || {!(_crewProfile select 2 select 1)}
-    || {(_crewProfile select 2 select 13) != group _leader}
+private _group = group _leader;
+if (isNull _group || {!local _group}
+    || {waypointName [_group, currentWaypoint _group] != _waypointName}
 ) exitWith {false};
 
-private _waypoints = _crewProfile select 2 select 16;
-private _index = _waypoints findIf {
-    ([_x, "name"] call ALIVE_fnc_hashGet) == _waypointName
+private _visit = _group getVariable ["ALIVE_profileLoadVisit", ["", 0]];
+if ((_visit select 0) != _waypointName) then {
+    _visit = [_waypointName, (_visit select 1) + 1];
+    _group setVariable ["ALIVE_profileLoadVisit", _visit, true];
 };
-if (_index == -1) exitWith {false};
-
-[_crewProfile, _waypoints select _index] call ALIVE_fnc_profileWaypointLoad
+(_group getVariable ["ALIVE_profileLoadResult", []]) isEqualTo [_visit, true]

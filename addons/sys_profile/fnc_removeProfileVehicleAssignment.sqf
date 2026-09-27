@@ -51,7 +51,8 @@ if (_entityID in (_vehicleAssignments select 1)) then {
             private _vehicle = _profileVehicle select 2 select 10;
 
             private _vehicleAssignment = [_assignment,_units] call ALIVE_fnc_profileVehicleAssignmentIndexesToUnits;
-            [_vehicleAssignment, _vehicle] call ALIVE_fnc_vehicleDismount;
+            [_profileEntity select 2 select 13, _vehicleAssignment, _vehicle, _vehicleID, false]
+                call ALIVE_fnc_profileVehicleAssignmentOrder;
         } else {
             [
                 "ALiVE fnc_removeProfileVehicleAssignment: skipping dismount, entity-side assignment missing (entity=%1 vehicle=%2). Cleanup continues.",

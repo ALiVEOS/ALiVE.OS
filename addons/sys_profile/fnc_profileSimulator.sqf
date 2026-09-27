@@ -118,6 +118,11 @@ if (!_simAttacks) then {
                     ["_timeLastSim", -1]
                 ];
 
+                // Active LOAD processing must continue while the transport is stationary.
+                if (_profile select 2 select 1) then {
+                    [_profile] call ALIVE_fnc_profileWaypointLoad;
+                };
+
                 // -1 is a profile that has never been simulated: either freshly
                 // created, or out of a save written before the field was declared.
                 // Anything that is not a sane number lands here too, deliberately.

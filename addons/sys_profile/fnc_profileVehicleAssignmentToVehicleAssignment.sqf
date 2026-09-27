@@ -55,7 +55,8 @@ if (_profileType == "vehicle") then {
                 private _units = _entityProfile select 2 select 21; //[_entityProfile,"units"] call ALIVE_fnc_hashGet;
                 private _unitAssignments = [_vehicleAssignment, _units] call ALIVE_fnc_profileVehicleAssignmentIndexesToUnits;
                 if (_orderGetIn) then {
-                    [_unitAssignments, _vehicle] call ALIVE_fnc_vehicleMount;
+                    [_entityProfile select 2 select 13, _unitAssignments, _vehicle, _vehicleAssignment select 0, true]
+                        call ALIVE_fnc_profileVehicleAssignmentOrder;
                 } else {
                     [_unitAssignments, _vehicle] call ALIVE_fnc_vehicleMoveIn;
                 };
@@ -81,7 +82,8 @@ if (_profileType == "vehicle") then {
                 private _vehicle = _vehicleProfile select 2 select 10; //[_vehicleProfile,"vehicle"] call ALIVE_fnc_hashGet;
                 private _unitAssignments = [_vehicleAssignment, _units] call ALIVE_fnc_profileVehicleAssignmentIndexesToUnits;
                 if (_orderGetIn) then {
-                    [_unitAssignments, _vehicle] call ALIVE_fnc_vehicleMount;
+                    [_profile select 2 select 13, _unitAssignments, _vehicle, _vehicleAssignment select 0, true]
+                        call ALIVE_fnc_profileVehicleAssignmentOrder;
                 } else {
                     [_unitAssignments, _vehicle] call ALIVE_fnc_vehicleMoveIn;
                 };

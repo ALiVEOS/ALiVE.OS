@@ -146,6 +146,16 @@ class cfgFunctions {
                 file = "\x\alive\addons\sys_profile\fnc_profileWaypointLoadCondition.sqf";
                 RECOMPILE;
             };
+            class profileWaypointLoadReset {
+                description = "Clears LOAD visit and dispatch state";
+                file = "\x\alive\addons\sys_profile\fnc_profileWaypointLoadReset.sqf";
+                RECOMPILE;
+            };
+            class profileWaypointLoadLand {
+                description = "Executes a LOAD landing command on the helicopter owner";
+                file = "\x\alive\addons\sys_profile\fnc_profileWaypointLoadLand.sqf";
+                RECOMPILE;
+            };
             class createProfileVehicleAssignment {
                 description = "createProfileVehicleAssignment";
                 file = "\x\alive\addons\sys_profile\fnc_createProfileVehicleAssignment.sqf";
@@ -189,6 +199,11 @@ class cfgFunctions {
             class profileVehicleAssignmentToVehicleAssignment {
                 description = "profileVehicleAssignmentToVehicleAssignment";
                 file = "\x\alive\addons\sys_profile\fnc_profileVehicleAssignmentToVehicleAssignment.sqf";
+                RECOMPILE;
+            };
+            class profileVehicleAssignmentOrder {
+                description = "Orders boarding or dismounting on the current owner with cancellation revisions";
+                file = "\x\alive\addons\sys_profile\fnc_profileVehicleAssignmentOrder.sqf";
                 RECOMPILE;
             };
             class profileVehicleAssignmentIndexesToUnits {
