@@ -4347,7 +4347,10 @@ switch (_operation) do {
             // iteration above.
             private _placementType = typeOf _x;
             if (_placementType in ["ALiVE_mil_placement","ALiVE_civ_placement","ALiVE_civ_placement_custom","ALiVE_mil_placement_custom"]) then {
-                private _placementFactions = [_x getVariable ["factions", ""]] call _parsePlacementFactions;
+                // A Custom Faction Compiler synced to the placement module decides the faction it
+                // places, ahead of its Force Factions, so it decides what it supplies here too.
+                private _compiledFaction = [_x] call ALiVE_fnc_factionCompilerResolveForModule;
+                private _placementFactions = if (_compiledFaction != "") then {[_compiledFaction]} else {[_x getVariable ["factions", ""]] call _parsePlacementFactions};
                 private _legacyPlacementFactions = [];
                 if (count _placementFactions == 0) then {
                     _legacyPlacementFactions = [_x getVariable ["faction", ""]] call _parsePlacementFactions;

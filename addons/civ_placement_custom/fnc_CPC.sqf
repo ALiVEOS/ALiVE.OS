@@ -564,6 +564,14 @@ switch (_operation) do {
 
             private _type = [_logic, "type"] call MAINCLASS;
             private _factions = [_logic getVariable ["factions", ""]] call _fnc_parseFactions;
+            // A Custom Faction Compiler synced to this module places its compiled faction, ahead of
+            // Force Factions, as the faction getter does for the other placement modules. This
+            // module never called that getter, so a synced compiler did nothing here.
+            private _compiledFaction = [_logic] call ALiVE_fnc_factionCompilerResolveForModule;
+            if (_compiledFaction != "") then {
+                _factions = [_compiledFaction];
+                ["%1 - a synced Custom Faction Compiler sets this module's force to %2", "CPC", _compiledFaction] call ALiVE_fnc_dump;
+            };
             // Read the raw hidden legacy value so only a non-default legacy
             // faction blocks OPCOM inheritance.
             private _legacyFactions = [_logic getVariable ["faction", ""]] call _fnc_parseFactions;
