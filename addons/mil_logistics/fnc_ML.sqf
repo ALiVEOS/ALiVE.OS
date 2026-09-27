@@ -443,8 +443,10 @@ switch(_operation) do {
         _result = _args;
     };
     case "type": {
+        // The type is "DYNAMIC" or "STATIC" and is compared as text, so it is kept as text:
+        // parseNumber turned either one into 0.
         if(typeName _args == "STRING") then {
-            _logic setVariable [_operation, parseNumber _args];
+            _logic setVariable [_operation, toUpper _args];
         };
 
         _result = _logic getVariable [_operation, DEFAULT_TYPE];
