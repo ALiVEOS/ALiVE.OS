@@ -1487,7 +1487,9 @@ ALiVE_fnc_INS_recruit = {
 
                     _attemptsRemaining = if (_recruitAttemptLimit == 0) then {count _agents} else {_recruitAttemptLimit};
 
-                    while {alive _HQ && {_attemptsRemaining != 0} && {!isNil "_objective"} && {!([_objective,"deleted",false] call ALiVE_fnc_HashGet)}} do {
+                    // A disabled HQ stands, so alive alone kept it recruiting after a player or friendly
+                    // AI had disabled it. The flag is cleared if a new HQ is set up in the building.
+                    while {alive _HQ && {!(_HQ getVariable ["ALiVE_MIL_OPCOM_HQ_DISABLED", false])} && {_attemptsRemaining != 0} && {!isNil "_objective"} && {!([_objective,"deleted",false] call ALiVE_fnc_HashGet)}} do {
 
                         private _hmPressureData = [_pos,_side,(_size + 600) max 900] call ALiVE_fnc_INS_getHeartsAndMindsPressure;
                         _hmPressureData params [["_hmPressure",0],["_hmPhase","Stabilize"]];
@@ -1501,7 +1503,7 @@ ALiVE_fnc_INS_recruit = {
                         sleep (_adjustedCycleMin + random ((_adjustedCycleMax - _adjustedCycleMin) max 0));
 
                         // Only recruit while the HQ still exists.
-                        if (!alive _HQ) exitwith {};
+                        if (!alive _HQ || {_HQ getVariable ["ALiVE_MIL_OPCOM_HQ_DISABLED", false]}) exitwith {};
 
                         // Positive values are finite attempt counts, negative values are unlimited.
                         if (_attemptsRemaining > 0) then {
