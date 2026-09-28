@@ -105,12 +105,20 @@ switch(_operation) do {
 
                 if(!isDedicated && !isHC) then {
                     private ["_mingettg","_minsettg","_maxsettg","_maxgettg","_tgvalue","_settg","_maxsetvd","_maxgetvd"];
-                    _mingettg = ADDON getvariable["minTG", "2"]; // get the minimum terrain grid set in themodule
-                    _minsettg = parseNumber _mingettg; // convert the minimum variable to a number
+                    // The fallbacks are the editor's defaults (1 and 5), for a module made by script; they
+                    // were the text "2", which pinned the grid to tier 2.
+                    _mingettg = ADDON getvariable["minTG", "1"]; // get the minimum terrain grid set in themodule
+                    _minsettg = parseNumber format ["%1", _mingettg]; // convert the minimum variable to a number
                     if (_minsettg == 0) then {_minsettg = 1;}; //if the minimum terrain grid has not been set i.e blank, then set it to 1
-                    _maxgettg = (ADDON getVariable ["maxTG", "2"]); // get the maximum terrain grid set in the module
-                    _maxsettg = parseNumber _maxgettg; // convert the maximum variable to a number
+                    _maxgettg = (ADDON getVariable ["maxTG", "5"]); // get the maximum terrain grid set in the module
+                    _maxsettg = parseNumber format ["%1", _maxgettg]; // convert the maximum variable to a number
                     if (_maxsettg == 0) then {_maxsettg = 5;}; //if the maximum terrain grid has not been set i.e blank, then set it to  5
+                    // Tiers are whole numbers 1 to 5, and a minimum above the maximum is taken the other way round:
+                    // as typed it applied no grid at all and ran the slider backwards, and equal
+                    // values outside 1 to 5 had no grid to set.
+                    _minsettg = ((round _minsettg) max 1) min 5;
+                    _maxsettg = ((round _maxsettg) max 1) min 5;
+                    if (_minsettg > _maxsettg) then { private _swap = _minsettg; _minsettg = _maxsettg; _maxsettg = _swap; };
 
                     _tgvalue = _maxsettg - _minsettg;
                     tgvalue = _tgvalue;
@@ -123,6 +131,8 @@ switch(_operation) do {
                              case 5 : {_settg = 3.125};
                         };
                         setTerrainGrid _settg;
+                        // The dialog places its slider at this tier, even while it shows Disabled.
+                        terrainGrid = _maxsettg;
                     };
 
                     if(_tgvalue > 0) then {
@@ -147,8 +157,8 @@ switch(_operation) do {
                         setTerrainGrid (TGARRAY select (terrainGrid - 1));
                     };
 
-                    _maxgetvd = (ADDON getVariable ["maxVD", "2"]); // get the maximum view distance se in the module
-                    _maxsetvd = parseNumber _maxgetvd; // convert the maximum variable to a number
+                    _maxgetvd = (ADDON getVariable ["maxVD", "20000"]); // get the maximum view distance se in the module (editor default 20000; it was the text "2", 2 m)
+                    _maxsetvd = parseNumber format ["%1", _maxgetvd]; // convert the maximum variable to a number
 
                     if (_maxsetvd == 0) then {_maxsetvd = 15000;}; //if the maximum view distance has not been set i.e blank, then set it to 15000
                     if(viewdistance >  _maxsetvd) then {
