@@ -144,7 +144,7 @@ ALIVE_fnc_COPBuildSpotrep = {
 
     private _profileSide = "";
     private _faction = "";
-    private _units = [];
+    private _men = 1;
     private _speedArr = [0, 0];
 
     // Defensive count guards — ALiVE profile tuple indexes (sys_profile):
@@ -156,13 +156,16 @@ ALIVE_fnc_COPBuildSpotrep = {
         private _data = _profile select 2;
         if (count _data >= 4)  then { _profileSide = _data select 3; };
         if (count _data >= 30) then { _faction     = _data select 29; };
-        if (count _data >= 22) then { _units       = _data select 21; };
+        if (count _data >= 22) then { _men         = count (_data select 21) max 1; };
         if (count _data >= 23) then { _speedArr    = _data select 22; };
     };
 
     private _type = [_profile] call ALIVE_fnc_COPTypeFromProfile;
     private _factionCode = [_faction] call ALIVE_fnc_COPFactionShortCode;
-    private _count = count _units max 1;
+    // One per group, as the size classes expect. The profile's unit list only
+    // holds soldiers while the group is spawned near a player, so counting it
+    // mixed men with groups: one 8-man squad read x8 with a battalion's bars.
+    private _count = 1;
     private _sizeInd = [_count] call ALIVE_fnc_COPSizeIndicator;
 
     // Speed classification: 0=stationary, 1=slow, 2=med, 3=fast
@@ -174,8 +177,12 @@ ALIVE_fnc_COPBuildSpotrep = {
                    else { if (_speedVal < ALIVE_COP_SPEED_MED)   then { 2 }
                    else { 3 } } };
 
-    // Heading from first waypoint if available; fall back to 0.
+    // Heading towards the first waypoint. A group with none isn't going
+    // anywhere, so it gets no arrow: the speed above is the group's cruising
+    // speed from its config, not how fast it's moving, so every group used to
+    // draw an arrow, pointing north when it had no waypoint.
     private _heading = 0;
+    private _hasWaypoint = false;
     if (count _profile >= 3) then {
         private _data = _profile select 2;
         if (count _data >= 17) then {
@@ -183,12 +190,16 @@ ALIVE_fnc_COPBuildSpotrep = {
             if (_waypoints isEqualType [] && {count _waypoints > 0}) then {
                 private _wp = (_waypoints select 0);
                 if (_wp isEqualType [] && {count _wp >= 2}) then {
-                    private _wpPos = _wp select 1;
-                    // Stricter dimension check: getDir expects a 2- or 3-element
-                    // position. Some profile types put a non-position object at
-                    // waypoint[1] (observed: 13-element array). Treat anything
-                    // outside the position shape as no-heading rather than
-                    // letting getDir throw mid-spotrep build.
+                    // A profile waypoint is an ALiVE hash, so its position is under
+                    // the "position" key; element 1 is the list of its 13 key names,
+                    // which is why the heading always came out as north.
+                    private _wpPos = if ((_wp select 0) isEqualTo "#CBA_HASH#") then {
+                        [_wp, "position", []] call ALiVE_fnc_hashGet
+                    } else {
+                        _wp select 1
+                    };
+                    // getDir expects a 2- or 3-element position; anything else
+                    // counts as no heading rather than letting getDir throw.
                     if (
                         _wpPos isEqualType []
                         && {count _wpPos >= 2}
@@ -196,16 +207,22 @@ ALIVE_fnc_COPBuildSpotrep = {
                         && {_pos isEqualType []}
                         && {count _pos >= 2}
                         && {count _pos <= 3}
+                        // A group standing on its waypoint isn't going anywhere yet either.
+                        && {(_pos distance2D _wpPos) > 25}
                     ) then {
                         _heading = _pos getDir _wpPos;
+                        _hasWaypoint = true;
                     };
                 };
             };
         };
     };
+    if (!_hasWaypoint) then { _speed = 0 };
 
     // Activity derived later from observing commander's nearest objective.
-    [_pos, _profileSide, _type, _factionCode, _count, _sizeInd, "", _heading, _speed, _age]
+    // Element 10, the group's men while it's spawned (1 while virtual), is only for the
+    // lone-infantry filter, which judged "lone" that way before counts became groups.
+    [_pos, _profileSide, _type, _factionCode, _count, _sizeInd, "", _heading, _speed, _age, _men]
 };
 
 // ----------------------------------------------------------------------------
@@ -241,7 +258,7 @@ ALIVE_fnc_COPClusterEnemy = {
     {
         private _spotrep = _x;
         private _type = _spotrep select 2;
-        private _count = _spotrep select 4;
+        private _count = _spotrep param [10, _spotrep select 4];
         private _keep = false;
 
         if (_type in ALIVE_COP_ALWAYS_SHOW) then {
@@ -402,6 +419,9 @@ ALIVE_fnc_COPBuildBFT = {
         _rawProfileCount = _rawProfileCount + count _nearProfiles;
         {
             private _profile = _x;
+            // A player's own group is the game's to show on its map: drawn here as well, its
+            // symbol and type label sat on top of the player's name. This layer is for AI forces.
+            if ([_profile, "isPlayer", false] call ALiVE_fnc_hashGet) then { continue };
             // Dedup by profileID across overlapping anchor queries.
             private _profileID = "";
             if (count _profile >= 3) then {
@@ -412,17 +432,16 @@ ALIVE_fnc_COPBuildBFT = {
                 _seen set [_profileID, true];
 
                 private _pos = [0, 0, 0];
-                private _units = [];
                 private _faction = "";
                 if (count _profile >= 3) then {
                     private _data = _profile select 2;
                     if (count _data >= 3)  then { _pos     = _data select 2; };
-                    if (count _data >= 22) then { _units   = _data select 21; };
                     if (count _data >= 30) then { _faction = _data select 29; };
                 };
                 private _type = [_profile] call ALIVE_fnc_COPTypeFromProfile;
                 private _factionCode = [_faction] call ALIVE_fnc_COPFactionShortCode;
-                private _count = count _units max 1;
+                // One per group, as for enemy contacts.
+                private _count = 1;
                 _positions pushBack [_pos, _type, _count, _factionCode];
             };
         } forEach _nearProfiles;

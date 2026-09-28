@@ -1644,13 +1644,21 @@ if (isServer) then {
                 // flags are read in the client Draw EH (axis arrows especially),
                 // so without this broadcast clients would fall back to COPConfig
                 // defaults. JIP-persistent so late joiners inherit the visibility.
+                // The five FEAT flags are what tell Partial, Full and Advanced
+                // apart; left out, every player but the host saw the Advanced
+                // trails, rings, MIXED and movement arrows from Partial up.
                 {
                     missionNamespace setVariable [_x, missionNamespace getVariable [_x, true], true];
                 } forEach [
                     "ALIVE_COP_LAYER_ENEMIES",
                     "ALIVE_COP_OBJ_AXIS_ARROWS",
                     "ALIVE_COP_ASYM_SHOW_HOSTILITY",
-                    "ALIVE_COP_ASYM_SHOW_ACTIVITY"
+                    "ALIVE_COP_ASYM_SHOW_ACTIVITY",
+                    "ALIVE_COP_FEAT_MOVEMENT",
+                    "ALIVE_COP_FEAT_TRAIL",
+                    "ALIVE_COP_FEAT_THREAT",
+                    "ALIVE_COP_FEAT_CONFIDENCE",
+                    "ALIVE_COP_FEAT_COMPOSITION"
                 ];
 
                 private _asym = [_logic, "commanderIntelAsymmetric"] call MAINCLASS;
