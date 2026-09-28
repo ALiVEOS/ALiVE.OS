@@ -5,7 +5,9 @@ SCRIPT(taskCreateRadioBroadcastForPlayers);
 Function: ALIVE_fnc_taskCreateRadioBroadcastForPlayers
 
 Description:
-Mark a position for players
+Plays a task's radio dialogue to each of its players, once each, on their own machine.
+Players on other machines are reached with remoteExec, so a mission that limits remoteExec
+with CfgRemoteExec must allow ALIVE_fnc_radioBroadcast.
 
 Parameters:
 
@@ -19,6 +21,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 private ["_messageCode","_taskDialog","_taskSide","_taskPlayers","_sideObject","_messages"];
@@ -61,10 +64,13 @@ if(_messageCode in (_taskDialog select 1)) then {
                         };
                     };
 
-                    if(isDedicated) then {
-                        [_radioBroadcast,"ALIVE_fnc_radioBroadcast",_player,false,false] spawn BIS_fnc_MP;
-                    }else{
+                    // Each task player is told once, on their own machine, wherever this runs.
+                    // Testing for a dedicated server instead played every line on a player host's
+                    // own screen once per task player and sent it to nobody else.
+                    if(local _player) then {
                         _radioBroadcast call ALIVE_fnc_radioBroadcast;
+                    }else{
+                        _radioBroadcast remoteExec ["ALIVE_fnc_radioBroadcast",_player];
                     };
                 };
 
