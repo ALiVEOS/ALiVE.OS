@@ -480,6 +480,17 @@ switch (_operation) do {
     case "autoGenerateTasks": {
         if (_args isEqualType []) then {
             private _debug = [_logic, "debug", false] call ALIVE_fnc_hashGet;
+
+            // Automatic Player Tasks off. The Constant cycle comes straight here rather than
+            // through TASK_GENERATE, so the switch is read here too. Nothing has been claimed
+            // yet, and the task manager keeps calling this every cycle while a side is on
+            // Constant, so turning the switch back on picks up again by itself.
+            if (!isNil "ALiVE_c2istar_autoPlayerTasks" && {!ALiVE_c2istar_autoPlayerTasks}) exitWith {
+                if (_debug) then {
+                    ["Task Handler - automatic player tasks are turned off, Constant task not generated"] call ALiVE_fnc_dump;
+                };
+            };
+
             private _taskData = _args;
 
 			_taskData params [
