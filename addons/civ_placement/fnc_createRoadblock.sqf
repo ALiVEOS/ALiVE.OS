@@ -424,7 +424,7 @@ for "_j" from 1 to (count _roadpoints) do {
                 [_x,"busy",true] call ALIVE_fnc_hashSet;
                 // Hold the roadblock: register the guard "stationary" so
                 // OPCOM/TACOM never drains it (busy alone doesn't cover the QRF path).
-                // Runtime-only marker (as with static AA) -- not rehydrated on persistent reload.
+                // Saved with the profile, so a persistent reload pins it again.
                 private _pid = [_x,"profileID",""] call ALiVE_fnc_HashGet;
                 if (_pid != "") then {
                     if (isNil "ALIVE_profileStationary") then { ALIVE_profileStationary = [] call ALIVE_fnc_hashCreate; };

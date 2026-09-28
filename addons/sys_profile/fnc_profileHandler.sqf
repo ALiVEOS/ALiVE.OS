@@ -1251,6 +1251,13 @@ switch(_operation) do {
                 _aiBehaviour = [_profile, "aiBehaviour", "AWARE"] call ALIVE_fnc_hashGet;
                 [_exportProfile, "aiBehaviour", _aiBehaviour] call ALIVE_fnc_hashSet;
 
+                // A pinned post (roadblock and Garrison Obj. guards, a composition's garrison, static
+                // AA) is saved as one, so it's pinned again after a reload instead of being handed to
+                // the commander. Written only for one that is, to keep saves small.
+                if (!isNil "ALIVE_profileStationary" && {[ALIVE_profileStationary, _profileID, false] call ALIVE_fnc_hashGet}) then {
+                    [_exportProfile, "stationary", true] call ALIVE_fnc_hashSet;
+                };
+
                 [_exportProfiles, _profileID, _exportProfile] call ALIVE_fnc_hashSet;
 
                 if(ALiVE_SYS_DATA_DEBUG_ON) then {
@@ -1336,6 +1343,16 @@ switch(_operation) do {
 
                     [_profileEntity, "isSPE", [_profile,"isSPE"] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
                     [_profileEntity, "aiBehaviour", [_profile,"aiBehaviour"] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
+
+                    // A pinned post comes back pinned, and held back from the commander as it was.
+                    // Only the pin brings busy back: other busy flags belong to jobs a reload ends.
+                    private _importStationary = [_profile, "stationary", false] call ALIVE_fnc_hashGet;
+                    if (_importStationary isEqualType "") then { _importStationary = (toLower _importStationary) == "true" };
+                    if (_importStationary isEqualTo true) then {
+                        if (isNil "ALIVE_profileStationary") then { ALIVE_profileStationary = [] call ALIVE_fnc_hashCreate; };
+                        [ALIVE_profileStationary, [_profileEntity, "profileID"] call ALIVE_fnc_hashGet, true] call ALIVE_fnc_hashSet;
+                        [_profileEntity, "busy", true] call ALIVE_fnc_hashSet;
+                    };
 
                     [_profileEntity, "objectType", [_profile,"objectType"] call ALIVE_fnc_hashGet] call ALIVE_fnc_profileEntity;
 
@@ -1436,6 +1453,21 @@ switch(_operation) do {
 
                     [_profileVehicle, "isSPE", [_profile,"isSPE"] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
                     [_profileVehicle, "aiBehaviour", [_profile,"aiBehaviour"] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
+
+                    // A pinned vehicle comes back pinned, and an empty reserve vehicle keeps its lock:
+                    // the lock was saved but never read back, so it came back unlocked.
+                    private _importStationary = [_profile, "stationary", false] call ALIVE_fnc_hashGet;
+                    if (_importStationary isEqualType "") then { _importStationary = (toLower _importStationary) == "true" };
+                    if (_importStationary isEqualTo true) then {
+                        if (isNil "ALIVE_profileStationary") then { ALIVE_profileStationary = [] call ALIVE_fnc_hashCreate; };
+                        [ALIVE_profileStationary, [_profileVehicle, "profileID"] call ALIVE_fnc_hashGet, true] call ALIVE_fnc_hashSet;
+                        [_profileVehicle, "busy", true] call ALIVE_fnc_hashSet;
+                    };
+                    private _importLocked = [_profile, "ALiVE_reserveLocked", false] call ALIVE_fnc_hashGet;
+                    if (_importLocked isEqualType "") then { _importLocked = (toLower _importLocked) == "true" };
+                    if (_importLocked isEqualTo true) then {
+                        [_profileVehicle, "ALiVE_reserveLocked", true] call ALIVE_fnc_hashSet;
+                    };
 
                     /*
                     [_profileVehicle, "damage", [_profile,"damage"] call ALIVE_fnc_hashGet] call ALIVE_fnc_profileVehicle;
