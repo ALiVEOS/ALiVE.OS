@@ -101,12 +101,43 @@ if (!isNull _firer) then {
             private _state   = _civ getVariable ["ALiVE_advciv_state", "CALM"];
             private _onFoot  = (vehicle _civ == _civ);
 
+            // Panic Chance: in the three bands below a civilian panics only when this roll comes
+            // up, and otherwise turns alert and watches the shot. It was read by nothing since the
+            // old handler went, so every civilian in the bands panicked whatever it was set to.
+            // It's rolled once per incident: a civilian who stayed calm keeps that while the
+            // shooting goes on, shots less than Shot Memory Time apart. Rolled on every shot, one
+            // burst of fire panicked nearly everyone whatever the chance was set to.
+            private _fnc_panics = {
+                private _heldAt = _civ getVariable ["ALiVE_advciv_panicHeldAt", -1e6];
+                if (time - _heldAt < (missionNamespace getVariable ["ALiVE_advciv_shotMemoryTime", 30])) exitWith {
+                    _civ setVariable ["ALiVE_advciv_panicHeldAt", time];
+                    false
+                };
+                if (random 1 < (missionNamespace getVariable ["ALiVE_advciv_panicChance", 0.7])) exitWith { true };
+                _civ setVariable ["ALiVE_advciv_panicHeldAt", time];
+                false
+            };
+            // From calm the brain arms the alert window on the change of state, so the timer is
+            // cleared here, as the outermost band does. One already alert keeps its window: the
+            // brain re-arms it only on a change of state, so cleared it would never run out.
+            private _fnc_alertOnly = {
+                if (_state != "ALERT") then {
+                    _civ setVariable ["ALiVE_advciv_state", "ALERT", true];
+                    _civ setVariable ["ALiVE_advciv_stateTimer", 0];
+                };
+                _civ setVariable ["ALiVE_advciv_panicSource", _pos, true];
+                _civ setBehaviour "AWARE";
+                if (_onFoot) then { _civ setUnitPos "UP"; };
+                _civ doWatch _pos;
+            };
+
             // ---------------------------------------------------------------
             // Three distance bands with escalating reaction severity
             // ---------------------------------------------------------------
 
             // Band 1 — Very close (< 30 m): immediate PANIC + sprint away
             if (_dist < 30 && {_state in ["CALM","ALERT"]}) then {
+                if !(call _fnc_panics) exitWith { call _fnc_alertOnly };
 
                 _civ setVariable ["ALiVE_advciv_state", "PANIC", true];
                 _civ setVariable ["ALiVE_advciv_panicSource", _pos, true];
@@ -139,6 +170,7 @@ if (!isNull _firer) then {
             } else {
             // Band 2 — Medium range (< 75 m): PANIC but less urgency
             if (_dist < 75 && {_state in ["CALM","ALERT"]}) then {
+                if !(call _fnc_panics) exitWith { call _fnc_alertOnly };
 
                 _civ setVariable ["ALiVE_advciv_state", "PANIC", true];
                 _civ setVariable ["ALiVE_advciv_panicSource", _pos, true];
@@ -170,6 +202,7 @@ if (!isNull _firer) then {
             } else {
             // Band 3 — Far (< 50% of range): lower intensity reaction
             if (_dist < _range * 0.5 && {_state in ["CALM","ALERT"]}) then {
+                if !(call _fnc_panics) exitWith { call _fnc_alertOnly };
 
                 _civ setVariable ["ALiVE_advciv_state", "PANIC", true];
                 _civ setVariable ["ALiVE_advciv_panicSource", _pos, true];
@@ -192,7 +225,8 @@ if (!isNull _firer) then {
                         // Alert chance scales up with accumulated stress
                         private _alertRoll = ALiVE_advciv_alertChance + (_newShots * 0.05);
                         if (random 1 < _alertRoll) then {
-                            if (_newShots > 4) then {
+                            // Panic Chance applies out here too: one who doesn't panic turns alert.
+                            if (_newShots > 4 && {call _fnc_panics}) then {
                                 // High stress despite range — go straight to PANIC
                                 _civ setVariable ["ALiVE_advciv_state", "PANIC", true];
                                 _civ setVariable ["ALiVE_advciv_panicSource", _pos, true];
@@ -218,8 +252,9 @@ if (!isNull _firer) then {
                     };
 
                     case "ALERT": {
-                        // Already alert: escalate to PANIC if stress is significant
-                        if (_dist < _range * 0.75 || {_newShots > 3}) then {
+                        // Already alert: escalate to PANIC if stress is significant, and
+                        // Panic Chance comes up
+                        if ((_dist < _range * 0.75 || {_newShots > 3}) && {call _fnc_panics}) then {
                             _civ setVariable ["ALiVE_advciv_state", "PANIC", true];
                             _civ setVariable ["ALiVE_advciv_panicSource", _pos, true];
                             _civ setVariable ["ALiVE_advciv_hidingPos", [], true];
