@@ -38,6 +38,9 @@ params [["_unit", objNull, [objNull]], ["_device", "MineDetector", [""]]];
 
 if (isNull _unit) exitWith { false };
 
+// A vehicle is never an engineer, and the unit checks below don't take one.
+if !(_unit isKindOf "CAManBase") exitWith { false };
+
 // Dismounted only.
 if ((vehicle _unit) != _unit) exitWith { false };
 

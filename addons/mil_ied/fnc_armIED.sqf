@@ -285,7 +285,7 @@ private _gracePeriod = 15;
                         alive _x &&
                         ((getposATL (vehicle _x)) select 2 < 8) &&
                         ((_x isKindOf "CAManBase") || {!(_x isKindOf "Man") && {({alive _x} count (crew _x)) > 0}}) &&
-                        ((_x in _players) || {(vehicle _x) in _players} || {_aiTriggerable && {_x call ALiVE_fnc_iedAICounts}}) &&
+                        ((_x in _players) || {(vehicle _x) in _players} || {((crew _x) findIf {_x in _players}) > -1} || {_aiTriggerable && {_x call ALiVE_fnc_iedAICounts}}) &&
                         ((_x distance2D _ied) < _stompRadius)
                     };
                     if (count _stompList > 0) then {
@@ -299,7 +299,10 @@ private _gracePeriod = 15;
 
                 {
                     private _u = _x;
-                    private _isPlayer = (_u in _players) || (vehicle _u in _players);
+                    // A vehicle is a candidate in its own right (the search finds it, not the men in
+                    // it), so a player in it counts through its crew; compared as it stood, a player's
+                    // vehicle never did.
+                    private _isPlayer = (_u in _players) || {(vehicle _u) in _players} || {((crew _u) findIf {_x in _players}) > -1};
                     // With AI triggering on, AI count only on a player's side or one friendly to it.
                     private _relevant = _isPlayer || {_aiTriggerable && {_u call ALiVE_fnc_iedAICounts}};
 
@@ -333,7 +336,8 @@ private _gracePeriod = 15;
                         // DIAG-STRIP: companion to the forEach entry trace.
                         // Once body is entered for a player, log the
                         // qualification breakdown. Strip with the entry log.
-                        if (_debugLocal) then {
+                        // Men only: a vehicle has no items or traits to show.
+                        if (_debugLocal && {_u isKindOf "CAManBase"}) then {
                             ["ALIVE-%1 IED DIAG: qualifying %2 _inVehicle=%3 _qualifies=%4 _challengeEnabled=%5 (device=%6 displayName=%7 vvn=%8 trait=%9 ace_eng=%10 ace_eod=%11)",
                                 time, name _u, _inVehicle, _qualifies, _challengeEnabled,
                                 (_device in (items _u)),
