@@ -1195,7 +1195,9 @@ switch(_operation) do {
                                 // creeping outwards ring by ring. Same ground, a fraction of the work, and the
                                 // guns end up spread across it instead of sitting on rings. See the helper for
                                 // what the old way was costing.
-                                private _res = [_cPos, 200, 10, _usedArtyPositions, 25, _debug] call ALiVE_fnc_findBatterySpawnPosition;
+                                // The search covers the objective, however big: at a flat 200 m a large one's guns all
+                                // stood near its centre.
+                                private _res = [_cPos, 200 max ([_cluster, "size", 200] call ALIVE_fnc_hashGet), 10, _usedArtyPositions, 25, _debug] call ALiVE_fnc_findBatterySpawnPosition;
 
                                 if (count _res >= 2) then {
                                     _safePos = _res select 0;
@@ -1651,7 +1653,9 @@ switch(_operation) do {
 
                             if (isnil "_position") then {
                                 if (isnil "_garrisonPos") then {
-                                    _position = (_center getPos [((_size / 2) + (random 500)), (random 360)]);
+                                    // Within the objective: from halfway out to its edge. Up to 500 m past half its size put a
+                                    // 200 m objective's patrols 600 m away.
+                                    _position = (_center getPos [((_size / 2) + (random (_size / 2))), (random 360)]);
                                 } else {
                                     _position = [_garrisonPos, 50] call CBA_fnc_RandPos;
                                 };
