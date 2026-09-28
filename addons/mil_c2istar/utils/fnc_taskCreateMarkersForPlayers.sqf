@@ -19,6 +19,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 private ["_taskPosition","_taskSide","_taskID","_taskPlayers","_taskType","_type","_customText","_colour","_typePrefix","_icon","_markerDefinition","_player"];
@@ -83,7 +84,7 @@ switch(_taskType) do {
 
         switch(_type) do {
             case "Car":{
-                _icon = format["%1_recon",_typePrefix];
+                _icon = if (_typePrefix == "c") then {"c_car"} else {format["%1_motor_inf",_typePrefix]};
             };
             case "Tank":{
                 _icon = format["%1_armor",_typePrefix];
@@ -92,10 +93,10 @@ switch(_taskType) do {
                 _icon = format["%1_armor",_typePrefix];
             };
             case "Truck":{
-                _icon = format["%1_recon",_typePrefix];
+                _icon = if (_typePrefix == "c") then {"c_car"} else {format["%1_motor_inf",_typePrefix]};
             };
             case "Ship":{
-                _icon = format["%1_unknown",_typePrefix];
+                _icon = if (_typePrefix == "c") then {"c_ship"} else {format["%1_naval",_typePrefix]};
             };
             case "Helicopter":{
                 _icon = format["%1_air",_typePrefix];
