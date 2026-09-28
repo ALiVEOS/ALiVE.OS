@@ -23,6 +23,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 private ["_vehicle","_vehicleClass","_result"];
@@ -49,7 +50,8 @@ if(_vehicle isKindOf "Tank") then {
 if(_vehicle isKindOf "Armored") then {
     _result = "Armored";
 };
-if(_vehicle isKindOf "Truck") then {
+// Arma 3's trucks and vans inherit from Truck_F, not the older Truck class, so they came back as Car.
+if(_vehicle isKindOf "Truck" || {_vehicle isKindOf "Truck_F"}) then {
     _result = "Truck";
 };
 if(_vehicle isKindOf "Ship") then {

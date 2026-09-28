@@ -1578,6 +1578,7 @@ class FSM
                          "                case ""Helicopter"" : {_QRFtype = ""air""};" \n
                          "                case ""Tank"" : {_QRFtype = ""air""};" \n
                          "                case ""Car"" : {_QRFtype = ""armored""};" \n
+                         "                case ""Truck"" : {_QRFtype = ""armored""};" \n
                          "                default {_QRFtype = ""infantry""};" \n
                          "            };" \n
                          "		};" \n

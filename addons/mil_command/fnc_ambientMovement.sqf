@@ -74,7 +74,9 @@ if (count _vehiclesInCommandOf > 0) then {
             _vehicleObjectType = _vehicleProfile select 2 select 6; //[_profile,"objectType"] call ALIVE_fnc_hashGet;
 
             switch (_vehicleObjectType) do {
-                case ("Car") : {
+                // A truck moves as a car does: it read as one until trucks were told apart.
+                case ("Car");
+                case ("Truck") : {
                     _radius = 800;
                     _useLocations = true;
                     _roads = true;
