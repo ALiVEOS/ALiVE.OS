@@ -211,8 +211,10 @@ switch(_operation) do {
                         };
                         if (!isNil "_migrated") then {
                             _logic setVariable ["integrationChoice", _migrated];
+                            // A mission has one legacy setting or the other, and an unset one can't
+                            // go into the log line as it is.
                             ["ALIVE-%1 MIL_IED: legacy integration setting migrated to integrationChoice='%2' (from thirdParty=%3, integrationMode=%4)",
-                                time, _migrated, _legacyTp, _legacyIMode] call ALiVE_fnc_dump;
+                                time, _migrated, if (isNil "_legacyTp") then {"none"} else {_legacyTp}, if (isNil "_legacyIMode") then {"none"} else {_legacyIMode}] call ALiVE_fnc_dump;
                         };
                     };
                     [ADDON, "integrationChoice", _logic getVariable ["integrationChoice", "_auto"]] call MAINCLASS;
