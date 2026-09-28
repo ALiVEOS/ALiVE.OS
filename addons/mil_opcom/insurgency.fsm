@@ -366,6 +366,10 @@ class FSM
                          "    [_center,[""EAST"",""WEST"",""GUER""] - [_side], -50] call ALiVE_fnc_updateSectorHostility;" \n
                          "" \n
                          "    _guards = [_objective,""guards""] call ALiVE_fnc_HashRem;" \n
+                         "" \n
+                         "    // The insurgents have lost it, so its CQB houses stop being garrisoned. _CQB holds the" \n
+                         "    // modules as saved data by now, so they're turned back into objects first." \n
+                         "    [_center, _size, (_CQB apply {if (_x isEqualType objNull) then {_x} else {[[],""convertObject"",_x] call ALiVE_fnc_OPCOM}}) select {_x isEqualType objNull && {!isNull _x}}] call ALiVE_fnc_removeCQBpositions;" \n
                          "};" \n
                          "" \n
                          "// debug ---------------------------------------" \n
