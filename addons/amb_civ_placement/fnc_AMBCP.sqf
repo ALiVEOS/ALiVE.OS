@@ -934,9 +934,9 @@ switch(_operation) do {
                                 if (_debug) then {
                                     private _markerName = format ["ALIVE_AMBCP_herd_%1_%2", floor diag_tickTime * 1000, _herdsPlaced];
                                     createMarker [_markerName, _herdPos];
-                                    _markerName setMarkerType "mil_triangle";
+                                    _markerName setMarkerType "mil_triangle_noShadow";
                                     _markerName setMarkerColor "ColorCIV";
-                                    _markerName setMarkerText format ["%1x %2", _groupSize, _animalClass];
+                                    _markerName setMarkerText format ["Animals: %1 %2", _groupSize, _animalClass];
                                 };
                             };
                         };

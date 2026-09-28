@@ -1018,7 +1018,7 @@ switch (_operation) do {
                     private _mName = format ["%1_%2", _tag, _forEachIndex];
                     private _m = createMarker [_mName, _x];
                     _m setMarkerShape "ICON";
-                    _m setMarkerType "hd_dot";
+                    _m setMarkerType "hd_dot_noShadow";
                     _m setMarkerSize [0.5, 0.5];
                     _m setMarkerColor _drawColor;
                     _m setMarkerAlpha 0.7;

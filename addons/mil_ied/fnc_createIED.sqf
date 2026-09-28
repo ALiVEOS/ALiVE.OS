@@ -400,7 +400,7 @@ for "_j" from 1 to _numIEDs do {
         _t = format["ied_r%1", floor (random 1000)];
         _text = "IED";
 
-        _iedm = [_t, position _IED, "Icon", [0.5,0.5], "TEXT:", _text, "TYPE:", "mil_dot", "COLOR:", "ColorRed", "GLOBAL"] call CBA_fnc_createMarker;
+        _iedm = [_t, position _IED, "Icon", [0.5,0.5], "TEXT:", _text, "TYPE:", "mil_dot_noShadow", "COLOR:", "ColorRed", "GLOBAL"] call CBA_fnc_createMarker;
         _IED setvariable ["Marker", _iedm];
 
         _markers = ADDON getVariable ["debugMarkers",[]];

@@ -150,7 +150,7 @@ class FSM
        "if(_debug) then {" \n
        "    createMarkerLocal [format[""GP:%1"", _unit], _pos];" \n
        "    format[""GP:%1"", _unit] setMarkerShapeLocal ""ICON"";" \n
-       "    format[""GP:%1"", _unit] setMarkerTypeLocal ""hd_dot"";" \n
+       "    format[""GP:%1"", _unit] setMarkerTypeLocal ""hd_dot_noShadow"";" \n
        "    format[""GP:%1"", _unit] setMarkerDir _startdir;" \n
        "};" \n
        ""/*%FSM</STATEINIT""">*/;

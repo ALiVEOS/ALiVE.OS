@@ -1244,7 +1244,7 @@ class FSM
                          "              private _d = createMarker [format[""%1_debug"",(time + random 10000)], position _m];" \n
                          "              _d setMarkerShape ""ICON"";" \n
                          "              _d setMarkerSize [.65, .65];" \n
-                         "              _d setMarkerType ""mil_dot"";" \n
+                         "              _d setMarkerType ""mil_dot_noShadow"";" \n
                          "              _d setMarkerColor ""ColorGreen"";" \n
                          "              _d setMarkerAlpha 1;" \n
                          "              _m setVariable [""CP_Marker"", _d, false];" \n
@@ -1318,7 +1318,7 @@ class FSM
                          "              private _d = createMarker [format[""%1_debug"",(time + random 10000)], position _agent];" \n
                          "              _d setMarkerShape ""ICON"";" \n
                          "              _d setMarkerSize [.65, .65];" \n
-                         "              _d setMarkerType ""mil_dot"";" \n
+                         "              _d setMarkerType ""mil_dot_noShadow"";" \n
                          "              _d setMarkerColor ""ColorGreen"";" \n
                          "              _d setMarkerAlpha 1;" \n
                          "              _agent setVariable [""CP_Marker"", _d];" \n

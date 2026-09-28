@@ -258,7 +258,7 @@ switch (_operation) do {
 
         _m = createMarker [str str _posCenter, [(_posCenter select 0)-40,(_posCenter select 1)+150]];
         _m setMarkerShape "ICON";
-        _m setMarkerType "hd_dot";
+        _m setMarkerType "hd_dot_noShadow";
         _m setMarkerSize [0.05,0.05];
         _m setMarkerColor "ColorWhite";
         _m setMarkerAlpha 0.6;
@@ -267,11 +267,11 @@ switch (_operation) do {
 
         _m = createMarker [str str str _posCenter, [(_posCenter select 0)-200,(_posCenter select 1)+50]];
         _m setMarkerShape "ICON";
-        _m setMarkerType "hd_dot";
+        _m setMarkerType "hd_dot_noShadow";
         _m setMarkerSize [0.05,0.05];
         _m setMarkerColor "ColorBrown";
         _m setMarkerAlpha 0.6;
-        _mtext = format ["[H:%1|R:%2|D:%3|W:%4]", _height toFixed 2, _roadModifier toFixed 2, _density toFixed 2, _waterModifier toFixed 2];
+        _mtext = format ["Sector: height %1, road %2, density %3, water %4", _height toFixed 2, _roadModifier toFixed 2, _density toFixed 2, _waterModifier toFixed 2];
         _m setMarkerText _mtext;
 
         _result = [str _posCenter, str str _posCenter, str str str _posCenter];

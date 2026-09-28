@@ -379,9 +379,6 @@ class FSM
                          "    // Update regular OPCOM objective debug marker" \n
                          "    [_id,_center,""RECTANGLE"", [_size,_size],_color,"""", ""EMPTY"", ""FDiagonal"",0,0.5 ] call ALIVE_fnc_createMarkerGlobal;" \n
                          "" \n
-                         "    // Always show hostility value" \n
-                         "    [format[""%1_Hostility"",_id],_center,""ICON"", [1,1],_color,""         H: "" + str(_hostility), ""mil_dot"", ""FDiagonal"",0,0.5 ] call ALIVE_fnc_createMarkerGlobal;" \n
-                         "" \n
                          "    // Always show installations" \n
                          "    if (alive _HQ) then {[format[""hq_%1"",_id],getposATL _HQ,""ICON"", [1,1],""ColorRed"",""Recruitment HQ"", ""n_installation"", ""FDiagonal"",0,0.5 ] call ALIVE_fnc_createMarkerGlobal} else {deleteMarker format[""hq_%1"",_id]};" \n
                          "    if (alive _depot) then {[format[""depot_%1"",_id],getposATL _depot,""ICON"", [1,1],""ColorRed"",""Weapons depot"", ""n_installation"", ""FDiagonal"",0,0.5 ] call ALIVE_fnc_createMarkerGlobal} else {deleteMarker format[""depot_%1"",_id]};" \n
@@ -389,16 +386,23 @@ class FSM
                          "    if (alive _ambush) then {[format[""ambush_%1"",_id],getposATL _ambush,""ICON"", [1,1],""ColorRed"",""Ambush"", ""hd_ambush"", ""FDiagonal"",0,0.5 ] call ALIVE_fnc_createMarkerGlobal} else {deleteMarker format[""ambush_%1"",_id]};" \n
                          "    if (alive _sabotage) then {[format[""sabotage_%1"",_id],getposATL _sabotage,""ICON"", [1,1],""ColorRed"",""Sabotage"", ""n_installation"", ""FDiagonal"",0,0.5 ] call ALIVE_fnc_createMarkerGlobal} else {deleteMarker format[""sabotage_%1"",_id]};" \n
                          "    if (alive _ied) then {[format[""ied_%1"",_id],getposATL _ied,""ELLIPSE"", [_size,_size],""ColorRed"",""IED"", ""hd_ambush"", ""FDiagonal"",0,0.5 ] call ALIVE_fnc_createMarkerGlobal} else {deleteMarker format[""ied_%1"",_id]};" \n
-                         "    if (alive _suicide) then {[format[""suicide_%1"",_id],getposATL _suicide,""ELLIPSE"", [_size,_size],""ColorRed"",""Suicidebomber"", ""n_installation"", ""FDiagonal"",0,0.5 ] call ALIVE_fnc_createMarkerGlobal} else {deleteMarker format[""suicide_%1"",_id]};" \n
+                         "    if (alive _suicide) then {[format[""suicide_%1"",_id],getposATL _suicide,""ELLIPSE"", [_size,_size],""ColorRed"",""Suicide bomber"", ""n_installation"", ""FDiagonal"",0,0.5 ] call ALIVE_fnc_createMarkerGlobal} else {deleteMarker format[""suicide_%1"",_id]};" \n
                          "    if (alive _roadblocks) then {[format[""roadblocks_%1"",_id],getposATL _roadblocks,""ELLIPSE"", [_size,_size],""ColorRed"",""Roadblocks"", ""n_installation"", ""FDiagonal"",0,0.5 ] call ALIVE_fnc_createMarkerGlobal} else {deleteMarker format[""roadblocks_%1"",_id]};" \n
                          "    " \n
                          "    // Check for guards" \n
                          "    if (isnil ""_guards"") then {_guardsCopy = []} else {_guardsCopy = _guards};" \n
                          "" \n
-                         "    // Only show orders on assigned or guarded objectives" \n
-                         "    if (count (_section + _guardsCopy) > 0) then {" \n
-                         "        [format[""%1_actions"",_id,_type],_center,""ICON"", [1,1],""ColorRed"",""                "" + str(([_actions select 0] + _actionsFulfilled)), ""mil_dot"", ""FDiagonal"",0,0.5 ] call ALIVE_fnc_createMarkerGlobal;" \n
+                         "    // One label beside the objective: its hostility, and while it's assigned or guarded, its" \n
+                         "    // current action and the ones already done. It used to be two labels on the same spot," \n
+                         "    // pushed apart with spaces, which ran into each other." \n
+                         "    private _label = format [""Hostility: %1"", _hostility];" \n
+                         "    if (count (_section + _guardsCopy) > 0 && {!isNil ""_actions""}) then {" \n
+                         "        _label = format [""%1, action: %2"", _label, _actions select 0];" \n
+                         "        if (count _actionsFulfilled > 0) then {" \n
+                         "            _label = format [""%1, done: %2"", _label, (_actionsFulfilled apply {if (_x isEqualType """") then {_x} else {str _x}}) joinString "", ""];" \n
+                         "        };" \n
                          "    };" \n
+                         "    [format[""%1_Hostility"",_id],_center,""ICON"", [1,1],_color,_label, ""mil_dot"", ""FDiagonal"",0,0.5 ] call ALIVE_fnc_createMarkerGlobal;" \n
                          "" \n
                          "    //[""FSM state: %1 of %2"",""OBJECTIVE ANALYSIS"",_id] call ALIVE_fnc_dumpR;" \n
                          "};" \n

@@ -123,7 +123,7 @@ _createMarkers = {
                 _m = createMarker [_m, getPosATL _x];
                 _m setMarkerShape "Icon";
                 _m setMarkerSize [0.5,0.5];
-                _m setMarkerType "mil_dot";
+                _m setMarkerType "mil_dot_noShadow";
                 _markers pushback _m;
             } else {
                 _m setMarkerPos (getPosATL _x);
@@ -168,12 +168,12 @@ _createMarkers = {
         _m = createMarker [format[MTEMPLATE, _random, count _markers], ["strategic", _center] call ALiVE_fnc_debugMarkerOffset];
         _m setMarkerShape "Icon";
         _m setMarkerSize [0.75, 0.75];
-        _m setMarkerType "mil_dot";
+        _m setMarkerType "mil_dot_noShadow";
         _m setMarkerColor _color;
         if (_subType == "") then {
-            _m setMarkerText format["%1|%2|%3|%4", _id, _type, _priority, floor _size];
+            _m setMarkerText format["Cluster %1: %2, priority %3, size %4", _id, _type, _priority, floor _size];
         } else {
-            _m setMarkerText format["%1: %2|%3|%4|%5", _subType, _id, _type, _priority, floor _size];
+            _m setMarkerText format["%1 %2: %3, priority %4, size %5", _subType, _id, _type, _priority, floor _size];
         };
         _markers pushback _m;
 

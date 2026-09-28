@@ -248,7 +248,7 @@ class FSM
        "if(_debug) then {" \n
        "    createMarkerLocal [format[""HP:%1"", _unit], _pos];" \n
        "    format[""HP:%1"", _unit] setMarkerShapeLocal ""ICON"";" \n
-       "    format[""HP:%1"", _unit] setMarkerTypeLocal ""mil_box"";" \n
+       "    format[""HP:%1"", _unit] setMarkerTypeLocal ""mil_box_noShadow"";" \n
        "};" \n
        ""/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;

@@ -132,9 +132,9 @@ _createMarkers = {
                 _m = createMarker [format[MTEMPLATE, format["l%1_%2",_gridID,_id]], _sectorLabelPosition];
                 _m setMarkerShape "ICON";
                 _m setMarkerSize [0.5, 0.5];
-                _m setMarkerType "mil_dot";
+                _m setMarkerType "mil_dot_noShadow";
                 _m setMarkerColor _debugColor;
-                _m setMarkerText _id;
+                _m setMarkerText format ["Sector: %1", _id];
 
                 _markers pushback _m;
 

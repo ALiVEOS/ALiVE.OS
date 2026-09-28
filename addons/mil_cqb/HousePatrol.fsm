@@ -343,7 +343,7 @@ class FSM
        "if(_debug) then {" \n
        "    createMarkerLocal [_mkr, _leader];" \n
        "    _mkr setMarkerShapeLocal ""ICON"";" \n
-       "    _mkr setMarkerTypeLocal ""mil_box"";" \n
+       "    _mkr setMarkerTypeLocal ""mil_box_noShadow"";" \n
        "};" \n
        ""/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;

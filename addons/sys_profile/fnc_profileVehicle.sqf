@@ -1372,7 +1372,7 @@ switch (_operation) do {
                 format ["%1_mortar",_typePrefix];
             };
             default {
-                "hd_dot"
+                "hd_dot_noShadow"
             };
         };
 

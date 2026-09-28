@@ -22,6 +22,7 @@ See Also:
 
 Author:
 Tupolov
+Jman
 ---------------------------------------------------------------------------- */
 private ["_profile","_params","_startPos","_type","_speed","_formation","_behaviour","_profileWaypoint","_vehiclesInCommandOf","_radius","_debug","_objective","_isDiverTeam","_debugColor","_profileSide"];
 
@@ -89,7 +90,7 @@ _profileWaypoint = [_startPos, 15, _type, _speed, 30, [], _formation, "NO CHANGE
 [_profile, "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
 
 if (_debug) then {
-    [str(random 1000), _startPos, "ICON",[1,1],"COLOR:","ColorGreen","TYPE:","mil_dot","TEXT:",format ["Marine-%1-START",[_profile,"profileID"] call ALIVE_fnc_hashGet]] call CBA_fnc_createMarker;
+    [str(random 1000), _startPos, "ICON",[1,1],"COLOR:","ColorGreen","TYPE:","mil_dot_noShadow","TEXT:",format ["Sea patrol %1: start",[_profile,"profileID"] call ALIVE_fnc_hashGet]] call CBA_fnc_createMarker;
 };
 
 // Adjust patrol radius based on vehicle availability
@@ -110,7 +111,7 @@ if (count _vehiclesInCommandOf > 0) then {
     [_profile, "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
 
     if (_debug  && count ([_profile,"waypoints",[]] call ALiVE_fnc_HashGet) < 5) then {
-        [str(random 1000), _objective, "ICON",[1,1],"COLOR:",_debugColor,"TYPE:","mil_dot","TEXT:",format ["Marine-%1-%2",[_profile,"profileID"] call ALIVE_fnc_hashGet, count ([_profile,"waypoints",[]] call ALiVE_fnc_HashGet)]] call CBA_fnc_createMarker;
+        [str(random 1000), _objective, "ICON",[1,1],"COLOR:",_debugColor,"TYPE:","mil_dot_noShadow","TEXT:",format ["Sea patrol %1: waypoint %2",[_profile,"profileID"] call ALIVE_fnc_hashGet, count ([_profile,"waypoints",[]] call ALiVE_fnc_HashGet)]] call CBA_fnc_createMarker;
     };
 };
 
@@ -164,7 +165,7 @@ while {count ([_profile,"waypoints",[]] call ALiVE_fnc_HashGet) < 5} do {
             [_profile, "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
 
             if (_debug  && count ([_profile,"waypoints",[]] call ALiVE_fnc_HashGet) < 5) then {
-                [str(random 1000), _gpos, "ICON",[1,1],"COLOR:",_debugColor,"TYPE:","mil_dot","TEXT:",format ["Marine-%1-%2",[_profile,"profileID"] call ALIVE_fnc_hashGet, count ([_profile,"waypoints",[]] call ALiVE_fnc_HashGet)]] call CBA_fnc_createMarker;
+                [str(random 1000), _gpos, "ICON",[1,1],"COLOR:",_debugColor,"TYPE:","mil_dot_noShadow","TEXT:",format ["Sea patrol %1: waypoint %2",[_profile,"profileID"] call ALIVE_fnc_hashGet, count ([_profile,"waypoints",[]] call ALiVE_fnc_HashGet)]] call CBA_fnc_createMarker;
             };
         } else {
             if (_debug) then {

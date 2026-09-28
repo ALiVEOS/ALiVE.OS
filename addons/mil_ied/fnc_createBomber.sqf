@@ -164,7 +164,7 @@ if (_debug) then {
                 _marker = _bomber getVariable ["marker", nil];
                 if (isNil "_marker" || {!(_marker in allMapMarkers)}) then {
                     private ["_markers"];
-                    _marker = [format ["suic_%1", random 1000], position _bomber , "Icon", [1,1], "TEXT:", "Suicide", "TYPE:", "mil_dot", "COLOR:", "ColorRed", "GLOBAL"] call CBA_fnc_createMarker;
+                    _marker = [format ["suic_%1", random 1000], position _bomber , "Icon", [1,1], "TEXT:", "Suicide bomber", "TYPE:", "mil_dot_noShadow", "COLOR:", "ColorRed", "GLOBAL"] call CBA_fnc_createMarker;
                     _bomber setVariable ["marker", _marker];
                 } else {
                     _marker setmarkerpos position _bomber;

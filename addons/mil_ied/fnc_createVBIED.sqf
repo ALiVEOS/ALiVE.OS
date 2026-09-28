@@ -85,7 +85,7 @@ _IED setVectorUp [0,0,-1];
             if (isNil "_marker" || {!(_marker in allMapMarkers)}) then {
                 private ["_vbiedm","_t","_markers"];
                 _t = format["vbied_r%1", floor (random 1000)];
-                _marker = [_t, getposATL _vehicle, "Icon", [0.5,0.5], "TYPE:", "mil_dot", "COLOR:", "ColorRed", "GLOBAL","TEXT:","VBIED"] call CBA_fnc_createMarker;
+                _marker = [_t, getposATL _vehicle, "Icon", [0.5,0.5], "TYPE:", "mil_dot_noShadow", "COLOR:", "ColorRed", "GLOBAL","TEXT:","VBIED"] call CBA_fnc_createMarker;
                 _vehicle setVariable ["marker",_marker];
             } else {
                 _marker setmarkerpos position _vehicle;

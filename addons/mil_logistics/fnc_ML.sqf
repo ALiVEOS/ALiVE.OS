@@ -253,7 +253,7 @@ switch(_operation) do {
             _m = createMarker [format["%1_%2",MTEMPLATE,_markerID], _position];
             _m setMarkerShape "ICON";
             _m setMarkerSize [0.5, 0.5];
-            _m setMarkerType "mil_join";
+            _m setMarkerType "mil_join_noShadow";
             _m setMarkerColor _debugColor;
             _m setMarkerText _text;
 

@@ -1595,7 +1595,7 @@ switch(_operation) do {
         // Update house that group despawned
         if (!isnil "_house") then {
             _house setVariable ["group", nil, true];
-            (format [MTEMPLATE, _house]) setMarkerType "mil_Dot";
+            (format [MTEMPLATE, _house]) setMarkerType "mil_dot_noShadow";
             private _record = (_logic getVariable ["houses", createHashMap]) get (hashValue _house);
             if (!isNil "_record") then {
                 _record set [2, "idle"];

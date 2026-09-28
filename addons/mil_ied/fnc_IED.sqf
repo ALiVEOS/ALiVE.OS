@@ -1337,7 +1337,7 @@ switch(_operation) do {
                     _t = format["ied_r%1", floor (random 1000)];
                     _pos = [_IED, "IEDpos", [0,0,0]] call ALiVE_fnc_hashGet;
                     _type = [_IED, "IEDtype", "IED"] call ALiVE_fnc_hashGet;
-                    _iedm = [_t, _pos, "Icon", [0.5,0.5], "TEXT:", _type, "TYPE:", "mil_dot", "COLOR:", "ColorRed", "GLOBAL"] call CBA_fnc_createMarker;
+                    _iedm = [_t, _pos, "Icon", [0.5,0.5], "TEXT:", _type, "TYPE:", "mil_dot_noShadow", "COLOR:", "ColorRed", "GLOBAL"] call CBA_fnc_createMarker;
 
                     _markers pushback _iedm;
 
