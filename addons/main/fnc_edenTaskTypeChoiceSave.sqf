@@ -136,6 +136,17 @@ if (!isNull _logicObj) then {
                 };
             } forEach ([_existingValue, ","] call CBA_fnc_split);
         };
+        // Civic families hidden while Civic State is off stay as they are stored. Read what is
+        // stored rather than the logic variable, which is empty until the window has been saved
+        // once; an empty value (or none stored yet) means every family, so all of them stay.
+        if (_varName == "civicEnabledTaskFamilies") then {
+            private _stored = (_logicObj get3DENAttribute "ALiVE_MIL_C2ISTAR_civicEnabledTaskFamilies") param [0, ""];
+            if !(_stored isEqualType "") then { _stored = "" };
+            private _storedList = if (_stored == "") then { +_civicOnlyTasks } else {
+                ([_stored, ","] call CBA_fnc_split) apply { [_x] call _trim }
+            };
+            { if (_x in _hiddenTasks && {_x in _storedList}) then { _merged pushBackUnique _x } } forEach _civicOnlyTasks;
+        };
     };
 };
 
@@ -144,6 +155,10 @@ if (!isNull _logicObj) then {
 // ------------------------------------------------------------------------
 _merged sort true;
 private _value = _merged joinString ",";
+
+// Civic families read an empty value as every family, so nothing ticked is saved as NONE, which
+// the commander reads as none.
+if (_varName == "civicEnabledTaskFamilies" && {_value == ""}) then { _value = "NONE" };
 
 _display setVariable ["value", _value];
 

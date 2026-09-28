@@ -273,6 +273,14 @@ _sortedSource sort true;
     };
 } forEach _sortedSource;
 
+// Civic families: an empty value has always meant every family, so show them all ticked, and
+// NONE (saved when every box was unticked) ticks none. An empty picker used to save as empty,
+// which the commander reads as every family.
+if (_kindToken == "civic") then {
+    if (_value == "") then { _selectedTasks = +_hmTasks };
+    if ((toUpper _value) == "NONE") then { _selectedTasks = [] };
+};
+
 // ------------------------------------------------------------------------
 // Tick saved entries; collect non-surfaced ones for the override field.
 // ------------------------------------------------------------------------

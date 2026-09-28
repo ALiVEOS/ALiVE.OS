@@ -1207,8 +1207,14 @@ if (isServer) then {
         private _civicTaskWeights = [_civicTaskWeightsRaw] call _parseTaskWeights;
         private _allCivicTasks = ["AidDelivery", "SupplyConvoy", "MeetLocalLeader", "VIPEscort", "SecureCommunityEvent", "RepairCriticalService", "MedicalOutreach", "CheckpointPartnership", "InformantExfiltration", "MarketReopening"];
 
-        if (_civicEnabledTaskFamilies isEqualTo []) then {
-            _civicEnabledTaskFamilies = _allCivicTasks apply {toUpper _x};
+        // NONE, saved when every family is unticked, means none. Empty still means every family,
+        // as it always has, so a mission saved before the picker keeps them all.
+        if (_civicEnabledTaskFamilies isEqualTo ["NONE"]) then {
+            _civicEnabledTaskFamilies = [];
+        } else {
+            if (_civicEnabledTaskFamilies isEqualTo []) then {
+                _civicEnabledTaskFamilies = _allCivicTasks apply {toUpper _x};
+            };
         };
         {
             if !((toUpper _x) in (_civicTaskWeights select 1)) then {
