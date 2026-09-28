@@ -424,6 +424,10 @@ switch (_operation) do {
                         // in a different block (#1017).
                         private _roadblockGuardPatrol = (parseNumber ([_logic,"guardPatrolPercentage"] call MAINCLASS)) min 1;
                         private _roadblockComps = [_logic, "roadblockCompositions"] call MAINCLASS;
+                        // The checkpoint is the module's: its guards take the module's On unit spawn
+                        // code, and one of its factions once start-up has worked them out.
+                        private _roadblockOnSpawn = [_logic, "onEachSpawn"] call MAINCLASS;
+                        private _roadblockOnSpawnOnce = [_logic, "onEachSpawnOnce"] call MAINCLASS;
                         private _maxRoadblockSpawnAttempts = 10;
                         private _lastRoadblockDebug = -30;
 
@@ -448,7 +452,9 @@ switch (_operation) do {
                                     if (_spawn) then {
                                         _spawnChecks = _spawnChecks + 1;
 
-                                        private _roadblockResult = [_position, _size + 150, ceil(_roadBlocks / 30), _debug, _roadblockComps, _roadblockGuardPatrol] call ALiVE_fnc_createRoadblock;
+                                        private _roadblockFactions = _logic getVariable ["ALiVE_CPC_resolvedFactions", []];
+                                        private _roadblockFaction = if (count _roadblockFactions > 0) then {selectRandom _roadblockFactions} else {""};
+                                        private _roadblockResult = [_position, _size + 150, ceil(_roadBlocks / 30), _debug, _roadblockComps, _roadblockGuardPatrol, _roadblockFaction, _roadblockOnSpawn, _roadblockOnSpawnOnce] call ALiVE_fnc_createRoadblock;
                                         private _roadblockLocation = [_position, _size];
 
                                         if (count _roadblockResult > 0) then {
@@ -634,6 +640,8 @@ switch (_operation) do {
             };
 
             if (count _factions == 0) then { _factions = [DEFAULT_FACTION] };
+            // For the roadblock thread, which starts before this is worked out.
+            _logic setVariable ["ALiVE_CPC_resolvedFactions", _factions];
 
             private _faction = _factions select 0;
             private _size = parseNumber ([_logic, "size"] call MAINCLASS);

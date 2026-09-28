@@ -790,6 +790,11 @@ switch(_operation) do {
                         // in a different block (#1017).
                         private _roadblockGuardPatrol = (parseNumber ([_logic,"guardPatrolPercentage"] call MAINCLASS)) min 1;
                         private _roadblockComps = [_logic, "roadblockCompositions"] call MAINCLASS;
+                        // The checkpoint is the module's: its guards take the module's faction and
+                        // its On unit spawn code, not whoever happens to dominate the road.
+                        private _roadblockFaction = [_logic, "faction"] call MAINCLASS;
+                        private _roadblockOnSpawn = [_logic, "onEachSpawn"] call MAINCLASS;
+                        private _roadblockOnSpawnOnce = [_logic, "onEachSpawnOnce"] call MAINCLASS;
                         _maxRoadblockSpawnAttempts = 10;
                         _lastRoadblockDebug = -30;
 
@@ -822,7 +827,7 @@ switch(_operation) do {
 
                                         if (_spawn) then {
                                             _spawnChecks = _spawnChecks + 1;
-                                            _thisroadblockResult = [_position, _size + 150, ceil(_roadBlocks / 30), _debug, _roadblockComps, _roadblockGuardPatrol] call ALiVE_fnc_createRoadblock;
+                                            _thisroadblockResult = [_position, _size + 150, ceil(_roadBlocks / 30), _debug, _roadblockComps, _roadblockGuardPatrol, _roadblockFaction, _roadblockOnSpawn, _roadblockOnSpawnOnce] call ALiVE_fnc_createRoadblock;
                                             if (_debug) then { ["_thisroadblockResult: %1, count: %2", _thisroadblockResult, count _thisroadblockResult] call ALiVE_fnc_dump };
                                                 if (count _thisroadblockResult > 0)  then {
                                                 GVAR(ROADBLOCK_LOCATIONS) set [_foreachIndex, -1];

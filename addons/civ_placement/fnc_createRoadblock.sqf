@@ -72,7 +72,12 @@ params [
     // The module's Garrison Building Patrol, already bounded to at least one by the caller.
     // Defaults to one, which is what this call passed before the setting reached it, so a
     // caller that does not supply it behaves exactly as it did (#1017).
-    ["_guardPatrolPercentage", 1, [0]]
+    ["_guardPatrolPercentage", 1, [0]],
+    // The placing module's faction and its On unit spawn code. Without a faction the guards
+    // come from whoever dominates the road, as they always did (the insurgent commander's way).
+    ["_moduleFaction", "", [""]],
+    ["_onEachSpawn", "", [""]],
+    ["_onEachSpawnOnce", true, [true]]
 ];
 
 private _result = [];
@@ -124,7 +129,7 @@ if (_roads isEqualTo []) exitWith {
 // only worth a full pass over the virtual population once there is somewhere to
 // put a roadblock. Nothing between here and the road scan above reads it, and it
 // writes nothing outside itself, so waiting until now costs nothing.
-private _fac = [_pos, _radius] call ALiVE_fnc_getDominantFaction;
+private _fac = if (_moduleFaction != "") then {_moduleFaction} else {[_pos, _radius] call ALiVE_fnc_getDominantFaction};
 
 if (isNil "_fac") exitWith {
     ["Unable to find a dominant faction within %1 radius", _radius] call ALiVE_fnc_Dump;
@@ -407,7 +412,7 @@ for "_j" from 1 to (count _roadpoints) do {
     // Spawn static virtual group if Profile System is loaded and get them to defend
     if !(isnil "ALiVE_ProfileHandler") then {
         private _group = ["Infantry",_fac] call ALIVE_fnc_configGetRandomGroup;
-        private _guards = [_group, _spawnedSafePos, random(360), true, _fac, true] call ALIVE_fnc_createProfilesFromGroupConfig;
+        private _guards = [_group, _spawnedSafePos, random(360), true, _fac, true, false, "STEALTH", _onEachSpawn, _onEachSpawnOnce] call ALIVE_fnc_createProfilesFromGroupConfig;
 
         ["ALIVE_fnc_createRoadBlock [%1] - Calling ALIVE_fnc_configGetRandomGroup", _fac] call ALiVE_fnc_dump;
 
