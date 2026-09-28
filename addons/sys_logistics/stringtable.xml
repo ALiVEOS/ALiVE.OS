@@ -84,13 +84,13 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_LOGISTICS_DEBUG_COMMENT">
-    <English>Outputs logistics system diagnostics to the RPT log.</English>
-    <Chinese>將後勤系統診斷輸出至 RPT 日誌。</Chinese>
-    <Chinesesimp>将后勤系统诊断输出至 RPT 日志。</Chinesesimp>
-    <Spanish>Vuelca diagnósticos del sistema de logística al registro RPT.</Spanish>
-    <French>Écrit les diagnostics du système de logistique dans le journal RPT.</French>
-    <Portuguese>Emite diagnósticos do sistema de logística para o log RPT.</Portuguese>
-    <Russian>Выводит диагностику системы логистики в лог RPT.</Russian>
+    <English>Writes a line to the server's RPT for each saved object when a save loads: recreated, matched to one already there, or removed because it was destroyed.</English>
+    <Chinese>載入存檔時，為每個已儲存的物件在伺服器 RPT 寫入一行：重新建立、對應到已存在的物件，或因已被摧毀而移除。</Chinese>
+    <Chinesesimp>载入存档时，为每个已保存的物体在服务器 RPT 写入一行：重新创建、对应到已存在的物体，或因已被摧毁而移除。</Chinesesimp>
+    <Spanish>Al cargar una partida guardada, escribe una línea en el RPT del servidor por cada objeto guardado: recreado, asignado a uno que ya existe o eliminado porque fue destruido.</Spanish>
+    <French>Au chargement d'une sauvegarde, écrit une ligne dans le RPT du serveur pour chaque objet sauvegardé: recréé, associé à un objet déjà présent ou supprimé parce qu'il a été détruit.</French>
+    <Portuguese>Ao carregar um salvamento, grava uma linha no RPT do servidor para cada objeto salvo: recriado, associado a um que já existe ou removido porque foi destruído.</Portuguese>
+    <Russian>При загрузке сохранения пишет в RPT сервера строку для каждого сохранённого объекта: создан заново, сопоставлен с уже существующим или удалён, потому что был уничтожен.</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_LOGISTICS_ENABLEACTIONS">

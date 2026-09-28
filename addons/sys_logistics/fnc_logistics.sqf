@@ -1168,7 +1168,7 @@ switch (_operation) do {
                         _object setposATL ([_args,QGVAR(POSITION)] call ALiVE_fnc_HashGet);
                         _object setVectorDirAndUp ([_args,QGVAR(VECDIRANDUP)] call ALiVE_fnc_HashGet);
 
-                        ["SYS LOGISTICS - recreated non existing object %1 of type %2",_object,_type] call ALiVE_fnc_dump;
+                        if ((!isnil QMOD(SYS_LOGISTICS) && {MOD(SYS_LOGISTICS) getvariable ["DEBUG",false]}) || {missionNamespace getVariable ["ALiVE_SYS_DATA_DEBUG_ON", false]}) then {["SYS LOGISTICS - recreated non existing object %1 of type %2",_object,_type] call ALiVE_fnc_dump;};
 
                     } else {
                         TRACE_1("ALiVE SYS LOGISTICS Remapping existing map object!",_x);
@@ -1178,7 +1178,7 @@ switch (_operation) do {
                         [_args,QGVAR(ID),[MOD(SYS_LOGISTICS),"id",_object] call ALiVE_fnc_logistics] call ALiVE_fnc_HashSet;
                         [_args,QGVAR(POSITION),getposATL _object] call ALiVE_fnc_hashSet;
 
-                        ["SYS LOGISTICS - remapped existing object %1 of type %2",_object,_type] call ALiVE_fnc_dump;
+                        if ((!isnil QMOD(SYS_LOGISTICS) && {MOD(SYS_LOGISTICS) getvariable ["DEBUG",false]}) || {missionNamespace getVariable ["ALiVE_SYS_DATA_DEBUG_ON", false]}) then {["SYS LOGISTICS - remapped existing object %1 of type %2",_object,_type] call ALiVE_fnc_dump;};
                     };
 
                     _createdObjects pushback _object;
@@ -1216,14 +1216,14 @@ switch (_operation) do {
                         if (_x isKindOf "House") then {
                             TRACE_1("ALiVE SYS LOGISTICS Destroying building which has been destroyed in a previous session!",_x);
 
-                            ["SYS LOGISTICS - Destroying building %1 which has been destroyed in a previous session!",_x] call ALiVE_fnc_dump;
+                            if ((!isnil QMOD(SYS_LOGISTICS) && {MOD(SYS_LOGISTICS) getvariable ["DEBUG",false]}) || {missionNamespace getVariable ["ALiVE_SYS_DATA_DEBUG_ON", false]}) then {["SYS LOGISTICS - Destroying building %1 which has been destroyed in a previous session!",_x] call ALiVE_fnc_dump;};
 
                             // Do not setdamage or delete directly here but destroy the buildings when mission has started
                             _buildings pushback _x;
                         } else {
                    		    TRACE_1("ALiVE SYS LOGISTICS Deleting object which has been destroyed in a previous session!",_x);
 
-                            ["SYS LOGISTICS - Deleting object %1 which has been destroyed in a previous session!",_x] call ALiVE_fnc_dump;
+                            if ((!isnil QMOD(SYS_LOGISTICS) && {MOD(SYS_LOGISTICS) getvariable ["DEBUG",false]}) || {missionNamespace getVariable ["ALiVE_SYS_DATA_DEBUG_ON", false]}) then {["SYS LOGISTICS - Deleting object %1 which has been destroyed in a previous session!",_x] call ALiVE_fnc_dump;};
 
                    		    deleteVehicle _x;
                         };
