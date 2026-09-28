@@ -1220,6 +1220,29 @@ switch (_operation) do {
                             };
                         };
 
+                        // A start spot in the water gets 20 more tries: ten within 100 m of the objective's centre, where
+                        // a garrison starts, then ten out to 700 m, as far as a garrison looks for its buildings. A
+                        // vehicle's try gets the first check its parking spot gets: clear where it stands or beside a
+                        // road near it, and flat. Left in the water, the group was skipped, its turn went to the
+                        // next group and the last one in the list was never placed; that now only happens when all 20
+                        // tries fail.
+                        if (surfaceIsWater _position) then {
+                            for "_try" from 1 to 20 do {
+                                private _candidate = _center getPos [([_clusterSize min 100, _clusterSize min 700] select (_try > 10)) * sqrt (random 1), random 360];
+                                if !(surfaceIsWater _candidate) then {
+                                    if (_activeVehClass == "") then {
+                                        _position = _candidate;
+                                    } else {
+                                        private _fit = [_activeVehClass, _candidate, 30, "road", _activeDir] call ALiVE_fnc_findVehicleSpawnPosition;
+                                        if (count _fit >= 2 && {count ((_fit select 0) isFlatEmpty [-1, -1, 0.4, 5, 0, false, objNull]) >= 2}) then {
+                                            _position = _fit select 0; _activeDir = _fit select 1;
+                                        };
+                                    };
+                                };
+                                if !(surfaceIsWater _position) exitWith {};
+                            };
+                        };
+
                         if !(surfaceIsWater _position) then {
                             private _profiles = [_group, _position, _activeDir, true, _groupFaction, false, false, "STEALTH", _onEachSpawn, _onEachSpawnOnce] call ALIVE_fnc_createProfilesFromGroupConfig;
 
