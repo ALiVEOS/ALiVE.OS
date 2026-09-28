@@ -50,10 +50,12 @@ if (count _staticWeapons > 0) then
         if (count _units == 0) exitWith {};
 
         private _weapon = _x;
-        private _positionCount = [_weapon] call ALIVE_fnc_vehicleCountEmptyPositions;
-        private _unit = _units select 0;
 
-        if (_positionCount > 0) then {
+        // Only a gun a man can actually take uses one up. A wreck, a vehicle locked against AI, or
+        // a car whose gun was manned but had a free seat elsewhere, each took a man anyway, and he
+        // then got no post at all.
+        if (alive _weapon && {locked _weapon != 2} && {(_weapon emptyPositions "Gunner") > 0}) then {
+            private _unit = _units select 0;
             if (_moveInstantly) then {
                 _unit assignAsGunner _weapon;
                 _unit moveInGunner _weapon;
@@ -61,9 +63,8 @@ if (count _staticWeapons > 0) then
                 _unit assignAsGunner _weapon;
                 [_unit] orderGetIn true;
             };
+            _units deleteAt 0;
         };
-
-        _units deleteAt 0;
     } forEach _staticWeapons;
 };
 
