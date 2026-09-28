@@ -43,7 +43,9 @@ class CfgVehicles {
                     defaultValue = """6""";
                     class Values
                     {
-                        class initialBlank { name = ""; default = 6; value = 6; };
+                        // The editor default: no rain, fog or lightning, cloud up to half cover. It had no
+                        // name, so an untouched module read as unset though it gave this weather.
+                        class initialBlank { name = "Fair"; default = 6; value = 6; };
                         class initialArid { name = "Arid"; value = 0; };
                         class initialContinental { name = "Continental"; value = 1; };
                         class initialTropical { name = "Tropical"; value = 2; };
