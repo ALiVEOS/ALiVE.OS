@@ -451,15 +451,9 @@ switch(_operation) do {
         };
         // DEBUG -------------------------------------------------------------------------------------
 
-        if(
-            (count _skillFactionsRecruit == 0) &&
-            (count _skillFactionsRegular == 0) &&
-            (count _skillFactionsVeteran == 0) &&
-            (count _skillFactionsExpert == 0) &&
-            (count _customSkillFactions == 0)
-        ) then {
-            _skillFactionsRegular = ["OPF_F","OPF_G_F","OPF_T_F","BLU_F","BLU_G_F","BLU_T_F","BLU_CTRG_F","IND_F","IND_G_F","IND_C_F"];
-        };
+        // With every tier and Custom empty, no skill is set. A fallback here was meant to put the
+        // vanilla factions on Regular, but the hidden legacy tier attributes hold "[]", which
+        // counts as filled, so it never ran; making it run now would change every untouched module.
 
         // min abil, max abil, aim acc, aim shake, aim speed, end, sdist, stime, cour, fleeing, reload, comm, gen
         _recruitSkill = [0.2,0.21,0.01,1,0.05,0.05,0.2,0.2,0.05,0.65,0.05,1,0.2];
