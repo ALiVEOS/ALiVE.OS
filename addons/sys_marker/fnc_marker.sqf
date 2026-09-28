@@ -804,7 +804,9 @@ switch (_operation) do {
                                 private "_mkrname";
                                 // create a rectangle marker from the line info
                                 _mkrname = "FREE" + str(random time + 1);
-                                [_mkrname, GVAR(startpoint), GVAR(endpoint), _width, _color, 0.8] call ALiVE_fnc_createLineMarker;
+                                // The colour's name: _color is the RGBA drawLine takes, and a marker given
+                                // that got no colour at all.
+                                [_mkrname, GVAR(startpoint), GVAR(endpoint), _width, _colorClass, 0.8] call ALiVE_fnc_createLineMarker;
 
                             };
                             GVAR(freeDrawCount) = 0;
