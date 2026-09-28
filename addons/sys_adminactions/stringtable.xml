@@ -105,13 +105,13 @@
     <Spanish>Acciones de administrador se inicia automáticamente con ALiVE; no hay módulo que colocar. Da al administrador del servidor, o al jugador en un jugador, funciones como teletransporte, modo fantasma y ejecución de scripts.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_OPCOM_TOGGLEINSTALLATIONS">
-    <English>Toggle OPCOM Installations</English>
-	<Chinesesimp>切换作战指挥设施</Chinesesimp>
-    <Spanish>Mostrar u ocultar instalaciones de OPCOM</Spanish>
+    <English>Show OPCOM Installations</English>
+	<Chinesesimp>显示 OPCOM 设施</Chinesesimp>
+    <Spanish>Mostrar instalaciones de OPCOM</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_OPCOM_TOGGLEINSTALLATIONS_COMMENT">
-    <English>Displays markers at installations</English>
-	<Chinesesimp>在设施处显示标记</Chinesesimp>
-    <Spanish>Muestra marcadores en las instalaciones</Spanish>
+    <English>Shows every AI commander's objectives and installations on the map for about 40 seconds, then they fade</English>
+	<Chinesesimp>在地图上显示所有 AI 指挥官的目标与设施约 40 秒,之后逐渐消失</Chinesesimp>
+    <Spanish>Muestra en el mapa los objetivos e instalaciones de todos los comandantes IA durante unos 40 segundos; luego se desvanecen</Spanish>
 </Key>
 </Container></Package></Project>
