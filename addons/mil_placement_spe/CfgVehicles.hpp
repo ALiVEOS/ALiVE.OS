@@ -76,17 +76,17 @@ class CfgVehicles {
                                     class No { name = "No"; value = false; default = 1; };
                                 };
                         };
-                        class allowPlayerTasking : Combo
+                        // Hidden: the AI commander leaves a Garrison Obj. alone, so its objective never
+                        // gets an owner and player tasks never reach it, whatever this says. Kept, not
+                        // removed, so a mission's saved choice still loads.
+                        class allowPlayerTasking
                         {
                                 property = "ALiVE_mil_placement_spe_allowPlayerTasking";
-                                displayName = "$STR_ALIVE_SPEMP_ALLOW_PLAYER_TASK";
-                                tooltip = "$STR_ALIVE_SPEMP_ALLOW_PLAYER_TASK_COMMENT";
+                                displayName = "";
+                                control = "ALiVE_HiddenAttribute";
+                                typeName = "STRING";
+                                expression = "_this setVariable ['allowPlayerTasking', _value];";
                                 defaultValue = """true""";
-                                class Values
-                                {
-                                    class Yes { name = "Yes"; value = true; default = 1; };
-                                    class No { name = "No"; value = false; };
-                                };
                         };
                         // ---- On Spawn Hook --------------------------------------------------
                         class HDR_HOOK : ALiVE_ModuleSubTitle { property = "ALiVE_mil_placement_spe_HDR_HOOK"; displayName = "ON SPAWN HOOK"; };
