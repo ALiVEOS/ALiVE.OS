@@ -21,6 +21,7 @@ See Also:
 
 Author:
 Highhead
+Jman
 
 Peer reviewed:
 nil
@@ -87,8 +88,8 @@ _markers = [];
                     deleteMarker format["iedI_%1",_id];
                 };
                 if (alive _suicide && {!_enabled}) then {
-                    _markers append [[format["suicide_%1",_id],getposATL _suicide,"ELLIPSE", [_size,_size],"ColorRed","Suicidebomber", "n_installation", "FDiagonal",0,0.5] call ALIVE_fnc_createMarkerGlobal];
-                    _markers append [[format["suicideI_%1",_id],getposATL _suicide,"ICON", [0.1,0.1],"ColorRed","Suicidebomber", "mil_dot", "FDiagonal",0,0.5 ] call ALIVE_fnc_createMarkerGlobal];
+                    _markers append [[format["suicide_%1",_id],getposATL _suicide,"ELLIPSE", [_size,_size],"ColorRed","Suicide bomber", "n_installation", "FDiagonal",0,0.5] call ALIVE_fnc_createMarkerGlobal];
+                    _markers append [[format["suicideI_%1",_id],getposATL _suicide,"ICON", [0.1,0.1],"ColorRed","Suicide bomber", "mil_dot", "FDiagonal",0,0.5 ] call ALIVE_fnc_createMarkerGlobal];
                 } else {
                     deleteMarker format["suicide_%1",_id];
                     deleteMarker format["suicideI_%1",_id];
