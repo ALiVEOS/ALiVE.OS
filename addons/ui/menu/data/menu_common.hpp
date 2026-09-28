@@ -274,12 +274,12 @@ class AliveUI_RscMap
     colorText[] = {0,0,0,1};
     colorTracks[] = {1.0, 0.0, 0.0, 1}; //colorTracks[] = {0.84,0.76,0.65,0.15};
     colorTracksFill[] = {1.0, 1.0, 0.0, 1}; //colorTracksFill[] = {0.84,0.76,0.65,1};
-    font = "TahomaB";
+    font = "RobotoCondensed"; // marker labels; the game's own maps get the same from main
     fontGrid = "TahomaB";
-    fontInfo = "PuristaMedium";
-    fontLabel = "PuristaMedium";
+    fontInfo = "RobotoCondensed"; // as the game's own map
+    fontLabel = "RobotoCondensed"; // as the game's own map
     fontLevel = "TahomaB";
-    fontNames = "PuristaMedium";
+    fontNames = "RobotoCondensed"; // as the game's own map
     fontUnits = "TahomaB";
     maxSatelliteAlpha = 0.85; // #698 restore satellite terrain layer (renders when zoomed in; was 0)
     moveOnEdges = 1;
@@ -298,10 +298,10 @@ class AliveUI_RscMap
     shadow = 0;
     showCountourInterval = 0;
     sizeEx = 0.04;
-    sizeExGrid = 0.025; //sizeExGrid = 0.02;
+    sizeExGrid = 0.02; // as the game's own map
     sizeExInfo = "(     (     (     ((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.8)";
     sizeExLabel = "(      (     (     ((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.8)";
-    sizeExLevel = 0.025; //sizeExLevel = 0.02;
+    sizeExLevel = 0.02; // as the game's own map
     sizeExNames = "(      (     (     ((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.8) * 2";
     sizeExUnits = "(      (     (     ((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.8)";
     stickX[] = {0.2,["Gamma",1,1.5]};
