@@ -494,14 +494,29 @@ switch(_operation) do {
 
             private _guardProbability = parseNumber([_logic, "guardProbability"] call MAINCLASS);
 
-            // A count box holding something that isn't a number counts as 0: say so, rather than place
-            // nothing without a word.
+            // A count box is read with parseNumber, which takes the number at the start and drops the rest:
+            // "two" is 0 and "2 AA" is 2. Say what was read whenever the box doesn't hold just a number,
+            // rather than place nothing, or something else, without a word. Blank and 0 are left alone.
             {
                 _x params ["_box", "_text"];
-                if (_text isEqualType "" && {((toArray _text) findIf {!(_x in [32, 45, 46] || {_x >= 48 && {_x <= 57}})}) > -1}) then {
-                    ["CMP - the %1 count box holds ""%2"", which isn't a number, so it counts as 0", _box, _text] call ALiVE_fnc_dump;
+                if (_text isEqualType "" && {!((_text splitString " ") isEqualTo [])}) then {
+                    private _read = parseNumber _text;
+                    // Plain is an optional sign, then digits with at most one point: "2-4" and "2 3" aren't.
+                    private _bare = trim _text;
+                    if ((_bare select [0, 1]) in ["-", "+"]) then { _bare = _bare select [1] };
+                    private _chars = toArray _bare;
+                    private _digits = {_x >= 48 && {_x <= 57}} count _chars;
+                    private _points = {_x == 46} count _chars;
+                    private _plain = _digits > 0 && {_points <= 1} && {_digits + _points == count _chars};
+                    if (_read < 1 && {!(_plain && {_read == 0})}) then {
+                        ["CMP - the %1 count box holds ""%2"", which reads as %3, so none are placed", _box, _text, _read] call ALiVE_fnc_dump;
+                    } else {
+                        if (!_plain && {_read >= 1}) then {
+                            ["CMP - the %1 count box holds ""%2"", which reads as %3", _box, _text, _read] call ALiVE_fnc_dump;
+                        };
+                    };
                 };
-            } forEach [["infantry", [_logic, "customInfantryCount"] call MAINCLASS], ["motorised", [_logic, "customMotorisedCount"] call MAINCLASS], ["mechanised", [_logic, "customMechanisedCount"] call MAINCLASS], ["armour", [_logic, "customArmourCount"] call MAINCLASS], ["spec ops", [_logic, "customSpecOpsCount"] call MAINCLASS], ["artillery", [_logic, "customArtilleryCount"] call MAINCLASS]];
+            } forEach [["infantry", [_logic, "customInfantryCount"] call MAINCLASS], ["motorised", [_logic, "customMotorisedCount"] call MAINCLASS], ["mechanised", [_logic, "customMechanisedCount"] call MAINCLASS], ["armour", [_logic, "customArmourCount"] call MAINCLASS], ["spec ops", [_logic, "customSpecOpsCount"] call MAINCLASS], ["artillery", [_logic, "customArtilleryCount"] call MAINCLASS], ["AA", [_logic, "aaCount"] call MAINCLASS]];
             private _countInfantry = [_logic, "customInfantryCount"] call MAINCLASS;
             _countInfantry = parseNumber _countInfantry;
             
