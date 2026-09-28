@@ -736,7 +736,9 @@ switch(_operation) do {
                 };
             };
 
-            // Set up Bombers and IED triggers at each location (except any player starting location)
+            // Set up Bombers and IED triggers at each location (except any player starting location,
+            // which is set up once nobody is in it: see the end of this case)
+            private _skipped = [];
             //
             // Each `_x` is a [pos, size, label] tuple produced by the cluster
             // discovery in case "start" (or rebuilt from persistence in the
@@ -875,8 +877,33 @@ switch(_operation) do {
                         };
                     };
 
+                } else {
+                    _skipped pushBack _x;
                 };
             } foreach _locations;
+
+            // A settlement with a player in it at the start is passed over, so nothing is planted
+            // under their feet, but it never got its triggers afterwards. From ten minutes in it's
+            // looked at again each minute and set up once nobody is in it.
+            // The side goes with it: the set-up reads the car bomb side from the start-up that
+            // called it, which a thread of its own doesn't have.
+            if (count _skipped > 0) then {
+                [_logic, _skipped, _triggerType, _noIED, _logic getVariable ["VB_IED_Side", DEFAULT_VB_IED_SIDE]] spawn {
+                    params ["_logic", "_skipped", "_triggerType", "_noIED", "_side"];
+                    sleep 600;
+                    while {count _skipped > 0} do {
+                        private _clear = _skipped select {
+                            private _loc = _x;
+                            ({(getpos _x distance (_loc select 0)) < (_loc select 1)} count ([] call BIS_fnc_listPlayers)) == 0
+                        };
+                        if (count _clear > 0) then {
+                            _skipped = _skipped - _clear;
+                            [_logic, "setupTriggers", [_clear, _triggerType, _noIED]] call MAINCLASS;
+                        };
+                        sleep 60;
+                    };
+                };
+            };
         };
         // Return TAOR marker
         case "removeIED": {
