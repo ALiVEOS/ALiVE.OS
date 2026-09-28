@@ -479,7 +479,7 @@ switch (_taskState) do {
 
                 [_params,"nextTask",""] call ALIVE_fnc_hashSet;
 
-                _task set [8,"Cancelled"];
+                _task set [8,"Canceled"];
                 _task set [10, "N"];
                 _result = _task;
 
