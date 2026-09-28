@@ -180,7 +180,7 @@ private _gracePeriod = 15;
                             (getText (configFile >> "CfgVehicles" >> typeOf _x >> "displayName") == "Explosive Specialist") ||
                             ([vehicleVarName _x, "EOD"] call CBA_fnc_find != -1) ||
                             (_x getUnitTrait "explosiveSpecialist") ||           // vanilla A3 explosives-specialist trait
-                            ((_x getVariable ["ACE_isEngineer", 0]) > 0) ||       // ACE engineer level 1 or 2
+                            ((_x getVariable ["ACE_isEngineer", 0]) in [true, 1, 2]) || // ACE engineer, level 1 or 2 or true
                             (_x getVariable ["ACE_isEOD", false])                 // ACE EOD specialist (explosives role)
                         ) &&
                         // Players only, whatever AI Units Trigger IEDs says: the warning is a hint

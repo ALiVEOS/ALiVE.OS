@@ -49,6 +49,7 @@ if ((vehicle _unit) != _unit) exitWith { false };
     (getText (configFile >> "CfgVehicles" >> typeOf _unit >> "displayName") == "Explosive Specialist") ||
     ([vehicleVarName _unit, "EOD"] call CBA_fnc_find != -1) ||
     (_unit getUnitTrait "explosiveSpecialist") ||
-    ((_unit getVariable ["ACE_isEngineer", 0]) > 0) ||
+    // ACE takes true/false here as well as a level, and a true/false compared with 0 threw.
+    ((_unit getVariable ["ACE_isEngineer", 0]) in [true, 1, 2]) ||
     (_unit getVariable ["ACE_isEOD", false])
 )
