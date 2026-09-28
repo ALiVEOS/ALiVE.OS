@@ -83,6 +83,10 @@ if (isNil "ALIVE_gridData") exitWith {
     
     private _sectorID = [_sector,"id"] call ALIVE_fnc_sector;
     private _sectorGridData = [ALIVE_gridData, _sectorID] call ALIVE_fnc_hashGet;
+    // A sector the index doesn't cover gets the dummy data a map with no index at all gets. The
+    // map bound can run past the indexed area (VR: 81 sectors), and saving the missing value
+    // threw once for each of them at start-up.
+    if (isNil "_sectorGridData") then { _sectorGridData = [] call ALIVE_fnc_sectorDataDummy };
 
     [_sector,"data", _sectorGridData] call ALIVE_fnc_hashSet;
 } forEach _sectors;
