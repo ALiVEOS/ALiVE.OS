@@ -262,16 +262,10 @@ class CfgVehicles
                         tooltip = "$STR_ALIVE_ATO_MAX_CONCURRENT_SORTIES_COMMENT";
                         defaultValue = """""";
                 };
-                // Aircrew, not runway geometry - this was previously filed under the
-                // runway section, where nobody would think to look for it.
-                class pilotbuilding : Edit
-                {
-                        property = "ALiVE_mil_ato_pilotbuilding";
-                        displayName = "$STR_ALIVE_ATO_PILOTBUILDING";
-                        tooltip = "$STR_ALIVE_ATO_PILOTBUILDING_COMMENT";
-                        defaultValue = """""";
-                        typeName = "STRING";
-                };
+                // Hidden: nothing reads Pilot Ready Room since the rewrite, which builds each crew
+                // straight into its aircraft when a sortie starts. Kept, not removed, so a mission's
+                // saved value still loads.
+                class pilotbuilding { property = "ALiVE_mil_ato_pilotbuilding"; control = "ALiVE_HiddenAttribute"; defaultValue = """"""; expression = "_this setVariable ['pilotbuilding', _value, true];"; typeName = "STRING"; displayName = ""; };
                 // ---- Player interaction ------------------------------------------------
                 class HDR_PLAYERS : ALiVE_ModuleSubTitle { property = "ALiVE_mil_ato_HDR_PLAYERS"; displayName = "PLAYER INTERACTION"; };
                 // Defaults to Yes, as it always was. No locks this commander's aircraft
