@@ -658,23 +658,20 @@ switch(_operation) do {
         _result = _args;
     };
     case "copShowBft": {
-        // Direct BOOL toggle for the friendly BFT layer in COP. Overrides
-        // the Commander Intel Mode tier's BFT default — mission-maker can
-        // force BFT on at Partial tier (which normally disables it) or
-        // force off at Full / Advanced (which normally enables it). Read
-        // before COPApplyTier in the init block so the tier preset's
-        // `if (isNil ALIVE_COP_LAYER_BFT)` guard preserves the explicit
-        // setting.
-        if (typeName _args == "BOOL") then {
+        // Friendly BFT layer in COP: "auto" (the Commander Intel Mode tier decides), "on" or
+        // "off", resolved with the other layer overrides before COPApplyTier. It was a Yes / No
+        // toggle, so a saved true or false (bool or text) reads as on or off, as it behaved.
+        if (_args isEqualType "" && {_args != ""}) then {
             _logic setVariable ["copShowBft", _args];
         } else {
-            _args = _logic getVariable ["copShowBft", true];
+            if (_args isEqualType true) then {
+                _logic setVariable ["copShowBft", _args];
+            };
+            _args = _logic getVariable ["copShowBft", "auto"];
         };
-        if (typeName _args == "STRING") then {
-            _args = (_args == "true");
-            _logic setVariable ["copShowBft", _args];
-        };
-        if (typeName _args != "BOOL") then { _args = true };
+        if (_args isEqualType true) then { _args = ["off", "on"] select _args };
+        if ((toLower _args) == "true") then { _args = "on" };
+        if ((toLower _args) == "false") then { _args = "off" };
         _result = _args;
     };
     // Per-layer visibility overrides — string passthrough of "auto"/"on"/"off".
@@ -1479,14 +1476,6 @@ if (isServer) then {
                 ALIVE_COP_INTERVAL_FAST = _updateInterval;
                 ALIVE_COP_INTERVAL_SLOW = _updateInterval * 2;
 
-                // Friendly BFT layer toggle — set BEFORE COPApplyTier so the
-                // tier preset's `if (isNil ALIVE_COP_LAYER_BFT)` guard
-                // preserves the mission-maker's explicit choice. Lets the
-                // operator force BFT on at Partial tier (which normally
-                // kills it) or force off at Full / Advanced.
-                private _showBft = [_logic, "copShowBft"] call MAINCLASS;
-                ALIVE_COP_LAYER_BFT = _showBft;
-
                 // Per-layer visibility overrides. Set BEFORE COPApplyTier so the
                 // tier's `if (isNil ...)` guards (and COPConfig's) preserve an
                 // explicit On/Off; "auto" leaves the flag unset so the COP Mode
@@ -1502,6 +1491,9 @@ if (isServer) then {
                         // "auto" — leave unset; tier/config resolves it.
                     };
                 };
+                // Friendly BFT too: on Auto the tier decides, shown at Full and Advanced, hidden at
+                // Basic and Partial. It used to be written here outright, so the tier never could.
+                ["copShowBft",         "ALIVE_COP_LAYER_BFT"]          call _applyLayerOverride;
                 ["copLayerEnemies",    "ALIVE_COP_LAYER_ENEMIES"]      call _applyLayerOverride;
                 ["copLayerAxisArrows", "ALIVE_COP_OBJ_AXIS_ARROWS"]    call _applyLayerOverride;
                 ["copLayerSentiment",  "ALIVE_COP_ASYM_SHOW_HOSTILITY"] call _applyLayerOverride;

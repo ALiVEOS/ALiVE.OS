@@ -759,16 +759,22 @@ class CfgVehicles {
                                     class Yes { name = "$STR_ALIVE_C2ISTAR_COP_ASYM_YES"; value = "true"; };
                             };
                     };
+                    // Auto / On / Off like the other layers. It was Yes / No with Yes the default,
+                    // written before the Commander Intel Mode tier, so the tier could never turn it
+                    // off. A mission saved with Yes or No reads as On or Off, unchanged.
                     class copShowBft : Combo
                     {
                             property = "ALiVE_MIL_C2ISTAR_copShowBft";
                             displayName = "$STR_ALIVE_C2ISTAR_COP_SHOW_BFT";
                             tooltip = "$STR_ALIVE_C2ISTAR_COP_SHOW_BFT_COMMENT";
-                            defaultValue = """true""";
+                            defaultValue = """auto""";
+                            typeName = "STRING";
+                            expression = "_this setVariable ['copShowBft', _value];";
                             class Values
                             {
-                                    class Yes { name = "$STR_ALIVE_C2ISTAR_COP_SHOW_BFT_YES"; value = "true";  default = 1; };
-                                    class No  { name = "$STR_ALIVE_C2ISTAR_COP_SHOW_BFT_NO";  value = "false"; };
+                                    class Auto { name = "$STR_ALIVE_C2ISTAR_COP_LAYER_AUTO"; value = "auto"; default = 1; };
+                                    class On   { name = "$STR_ALIVE_C2ISTAR_COP_LAYER_ON";   value = "on"; };
+                                    class Off  { name = "$STR_ALIVE_C2ISTAR_COP_LAYER_OFF";  value = "off"; };
                             };
                     };
                     // Hide the friendly OPCOM / TACOM order markers — the attack /
