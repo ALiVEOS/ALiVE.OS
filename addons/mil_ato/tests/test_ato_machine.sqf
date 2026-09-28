@@ -63,6 +63,7 @@ observation sequences, because those are what the table exists to prevent.
             ["launchInProgress", false], ["onRunway", false],
             ["fuel", 1], ["armed", true], ["ordnance", 8], ["damage", 0],
             ["playersWithin1000Home", 0], ["playersWithin1000Hull", 0], ["onTaxiway", false], ["nearStand", false],
+            ["playersSeeHull", false],
             ["lockBusy", false],
             // Asleep on its stand, and what decides it: nobody near, nothing
             // pending, its stand clear. crewLoss false keeps every older PARKED
@@ -1422,6 +1423,41 @@ observation sequences, because those are what the table exists to prevent.
     ["each launch gets its own waits: the count is cleared on the way in",
         (([(_pkOut select 0), "state", ""] call ALIVE_fnc_hashGet) isEqualTo "ASSIGNED")
         && {([(_pkOut select 0), "runwayWaits", 3] call ALIVE_fnc_hashGet) == 0}] call _fnc_check;
+
+    // ---- stranded on the ground, away from its stand, with people about ----
+    // Its time up, it goes back on its stand only while nobody can see it go.
+    private _sh = [_m, "newRow", ["BLU_F_SH", [[100,100,0], 0, "terrain"]]] call ALIVE_fnc_ATOMachine;
+    [_sh, "state", "RECOVERING"] call ALIVE_fnc_hashSet;
+    [_sh, "deadlineAt", 500] call ALIVE_fnc_hashSet;
+    private _shSeen = [_m, "step", [_sh, [[["atHome", false], ["nearHome", true], ["landed", true],
+        ["playersWithin1000Hull", 3], ["playersSeeHull", true]]] call _fnc_obs, "", 1000]] call ALIVE_fnc_ATOMachine;
+    ["an aircraft somebody can see is not moved when its time is up",
+        (([(_shSeen select 0), "state", ""] call ALIVE_fnc_hashGet) isEqualTo "RECOVERING")
+        && {!("placeOnSlot" in (_shSeen select 2))}] call _fnc_check;
+    private _sh2 = [_m, "newRow", ["BLU_F_SH2", [[100,100,0], 0, "terrain"]]] call ALIVE_fnc_ATOMachine;
+    [_sh2, "state", "RECOVERING"] call ALIVE_fnc_hashSet;
+    [_sh2, "deadlineAt", 500] call ALIVE_fnc_hashSet;
+    private _shUnseen = [_m, "step", [_sh2, [[["atHome", false], ["nearHome", true], ["landed", true],
+        ["playersWithin1000Hull", 3], ["playersSeeHull", false]]] call _fnc_obs, "", 1000]] call ALIVE_fnc_ATOMachine;
+    ["and one nobody can see is put back on its stand",
+        (([(_shUnseen select 0), "state", ""] call ALIVE_fnc_hashGet) isEqualTo "PARKED")
+        && {"placeOnSlot" in (_shUnseen select 2)}] call _fnc_check;
+    private _sh3 = [_m, "newRow", ["BLU_F_SH3", [[100,100,0], 0, "terrain"]]] call ALIVE_fnc_ATOMachine;
+    [_sh3, "state", "RECOVERING"] call ALIVE_fnc_hashSet;
+    [_sh3, "deadlineAt", 500] call ALIVE_fnc_hashSet;
+    private _shRunway = [_m, "step", [_sh3, [[["atHome", false], ["nearHome", true], ["landed", true],
+        ["playersWithin1000Hull", 3], ["playersSeeHull", true], ["onRunway", true]]] call _fnc_obs, "", 1000]] call ALIVE_fnc_ATOMachine;
+    ["one on the runway goes when its time is up, whoever can see it",
+        (([(_shRunway select 0), "state", ""] call ALIVE_fnc_hashGet) isEqualTo "PARKED")
+        && {"placeOnSlot" in (_shRunway select 2)}] call _fnc_check;
+    private _sh4 = [_m, "newRow", ["BLU_F_SH4", [[100,100,0], 0, "terrain"]]] call ALIVE_fnc_ATOMachine;
+    [_sh4, "state", "RECOVERING"] call ALIVE_fnc_hashSet;
+    [_sh4, "deadlineAt", 500] call ALIVE_fnc_hashSet;
+    private _shLate = [_m, "step", [_sh4, [[["atHome", false], ["nearHome", true], ["landed", true],
+        ["playersWithin1000Hull", 3], ["playersSeeHull", true]]] call _fnc_obs, "", 1700]] call ALIVE_fnc_ATOMachine;
+    ["and a watched one goes 20 minutes after its time",
+        (([(_shLate select 0), "state", ""] call ALIVE_fnc_hashGet) isEqualTo "PARKED")
+        && {"placeOnSlot" in (_shLate select 2)}] call _fnc_check;
 
     if (count _fails == 0) then {
         diag_log "=== ATO Machine test: ALL PASS ===";

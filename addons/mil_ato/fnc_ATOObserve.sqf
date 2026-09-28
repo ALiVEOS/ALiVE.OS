@@ -222,7 +222,7 @@ switch(_operation) do {
                        "anyPlayerAboard","uavControlled","onStation","targetsGone","lockHeld","lockBusy",
                        "deckHome","fixedWing","needsRunway","launchInProgress","onRunway","armed","virtualHome",
                        "atTaxiOffEnd","canMove","onTaxiway","nearStand","heldOnStand","deadAboard","pilotDead",
-                       "servicePending","settling","standClear"];
+                       "servicePending","settling","standClear","playersSeeHull"];
             {
                 [_o, _x, 0] call ALIVE_fnc_hashSet;
             } forEach ["altAGL","altASL","speed","fuel","damage","wpRemaining","aliveCrew",
@@ -687,6 +687,33 @@ switch(_operation) do {
         ["playersWithin1000Hull", [_pos, 1000] call _fnc_players] call _fnc_set;
         ["playersWithin1000Home", [_homePos, 1000] call _fnc_players] call _fnc_set;
         ["playersWithin1500Home", [_homePos, 1500] call _fnc_players] call _fnc_set;
+
+        // And whether any of them can actually see it, which decides when an
+        // aircraft stranded on the ground away from its stand may be put back
+        // on it while people are about. Asked only then: on the ground, off its
+        // stand, somebody within a kilometre. A player sees it when it is within
+        // 60 degrees either side of where their head faces (freelook counts)
+        // with nothing between their eyes and it but their own vehicle. Terrain
+        // is not checked, so a hill counts as seeing it, the safe way round. A
+        // Zeus camera within a kilometre always counts, as the way it faces
+        // can't be read on the server.
+        private _seen = false;
+        if ((([_o, "playersWithin1000Hull", 0] call ALIVE_fnc_hashGet) > 0)
+            && {!([_o, "airborne", false] call ALIVE_fnc_hashGet)}
+            && {!([_o, "atHome", false] call ALIVE_fnc_hashGet)}) then {
+            private _hullASL = AGLToASL (_obj modelToWorld [0,0,0]);
+            _seen = (((allPlayers - (entities "HeadlessClient_F")) findIf {
+                alive _x && {(_x distance2D _pos) < 1000} && {
+                    private _eye = eyePos _x;
+                    ((eyeDirection _x) vectorCos (_hullASL vectorDiff _eye)) >= 0.5
+                    && {!(lineIntersects [_eye, _hullASL, vehicle _x, _obj])}
+                }
+            }) > -1) || {(allCurators findIf {
+                private _owner = getAssignedCuratorUnit _x;
+                !isNull _owner && {isPlayer _owner} && {(_x distance2D _pos) < 1000}
+            }) > -1};
+        };
+        ["playersSeeHull", _seen] call _fnc_set;
 
         // And watchers in the wider sense a parked aircraft is put away for:
         // everyone watchers lists, each with their own wake distance. Inside it

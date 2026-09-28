@@ -1215,8 +1215,20 @@ switch(_operation) do {
                                     };
                                     default {
                                         // On the ground, away from home, with
-                                        // people watching. It has to fly back.
-                                        if (_expired) then {
+                                        // people about. Once its time is up it
+                                        // is put back on its stand while none
+                                        // of them can see it go. Whoever can,
+                                        // it goes when it is in the way, on a
+                                        // runway or a taxiway, as a landing's
+                                        // stop does, and 20 minutes after its
+                                        // time, so a watcher can't hold it
+                                        // there for good.
+                                        if (_expired && {
+                                            !("playersSeeHull" call _fnc_o)
+                                            || {"onRunway" call _fnc_o}
+                                            || {"onTaxiway" call _fnc_o}
+                                            || {_now >= (([_row,"deadlineAt",0] call ALIVE_fnc_hashGet) + 1200)}
+                                        }) then {
                                             _effects pushBack "placeOnSlot";
                                             _next = "PARKED";
                                         };
