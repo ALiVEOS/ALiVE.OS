@@ -826,13 +826,13 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_DISPLAY_TRACEGRID_COMMENT">
-    <English>Renders a 50m by 50m marker grid layer over built-up areas indicating zones of potential (not confirmed) enemy presence. Grid cells change to green when cleared. Select the hatch pattern used for the marker fill.</English>
-    <Chinese>在建成區上方繪製一層 50 公尺 x 50 公尺的標記網格,指示潛在(非確認)敵軍存在的區域。網格單元在清除後會轉為綠色。選擇用於標記填色的網底樣式。</Chinese>
-    <Chinesesimp>在建成区上方渲染一层 50 米 x 50 米的标记网格,指示潜在(未经确认)敌军存在的区域。网格单元在清剿后会变为绿色。可选择用于标记填充的图案样式。</Chinesesimp>
-    <Spanish>Renderiza una capa de cuadrícula de marcadores de 50 x 50 m sobre las áreas urbanizadas indicando zonas de presencia enemiga potencial (no confirmada). Las celdas de la cuadrícula cambian a verde cuando se despejan. Seleccione el patrón de trama usado para el relleno del marcador.</Spanish>
-    <French>Affiche une couche de grille de marqueurs de 50 m sur 50 m au-dessus des zones bâties, indiquant les zones de présence ennemie potentielle (non confirmée). Les cellules de la grille passent au vert une fois nettoyées. Sélectionnez le motif de hachures utilisé pour le remplissage des marqueurs.</French>
-    <Portuguese>Renderiza uma camada de grade de marcadores de 50m por 50m sobre áreas urbanizadas indicando zonas de presença inimiga potencial (não confirmada). As células da grade mudam para verde quando limpas. Selecione o padrão de textura usado para o preenchimento do marcador.</Portuguese>
-    <Russian>Отрисовывает слой сетки маркеров 50×50 м поверх застроенных территорий, указывая зоны потенциального (неподтверждённого) присутствия противника. Ячейки сетки становятся зелёными после зачистки. Выберите узор штриховки, используемый для заливки маркеров.</Russian>
+    <English>Renders a 100m by 100m marker grid layer over built-up areas indicating zones of potential (not confirmed) enemy presence. Grid cells change to green when cleared. Select the hatch pattern used for the marker fill.</English>
+    <Chinese>在建成區上方繪製一層 100 公尺 x 100 公尺的標記網格,指示潛在(非確認)敵軍存在的區域。網格單元在清除後會轉為綠色。選擇用於標記填色的網底樣式。</Chinese>
+    <Chinesesimp>在建成区上方渲染一层 100 米 x 100 米的标记网格,指示潜在(未经确认)敌军存在的区域。网格单元在清剿后会变为绿色。可选择用于标记填充的图案样式。</Chinesesimp>
+    <Spanish>Renderiza una capa de cuadrícula de marcadores de 100 x 100 m sobre las áreas urbanizadas indicando zonas de presencia enemiga potencial (no confirmada). Las celdas de la cuadrícula cambian a verde cuando se despejan. Seleccione el patrón de trama usado para el relleno del marcador.</Spanish>
+    <French>Affiche une couche de grille de marqueurs de 100 m sur 100 m au-dessus des zones bâties, indiquant les zones de présence ennemie potentielle (non confirmée). Les cellules de la grille passent au vert une fois nettoyées. Sélectionnez le motif de hachures utilisé pour le remplissage des marqueurs.</French>
+    <Portuguese>Renderiza uma camada de grade de marcadores de 100m por 100m sobre áreas urbanizadas indicando zonas de presença inimiga potencial (não confirmada). As células da grade mudam para verde quando limpas. Selecione o padrão de textura usado para o preenchimento do marcador.</Portuguese>
+    <Russian>Отрисовывает слой сетки маркеров 100×100 м поверх застроенных территорий, указывая зоны потенциального (неподтверждённого) присутствия противника. Ячейки сетки становятся зелёными после зачистки. Выберите узор штриховки, используемый для заливки маркеров.</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_DISPLAY_PLAYER_SECTORS">

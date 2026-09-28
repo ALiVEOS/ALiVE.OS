@@ -22,6 +22,7 @@ See Also:
 
 Author:
 Highhead
+Jman
 
 Peer Reviewed:
 nil
@@ -40,30 +41,29 @@ _fill = if (count _this > 1) then {_this select 1} else {"Solid"};
 
     If ((_pos select 2) < 2 && {_x == vehicle _x})  then {
         private _gridPos = _pos call ALiVE_fnc_GridPos;
-        private _markerID = format["ALiVE_TraceGrid_%1%2",_gridpos select 0,_gridPos select 1];
-        private _nearEnemy = [_gridPos,str(_side), 75] call ALiVE_fnc_isEnemyNear;
+        private _markerID = format["ALiVE_TraceGrid_%1_%2",_gridpos select 0,_gridPos select 1];
 
-        [{
-            if (_markerID == _x) exitwith {
-                if (_nearEnemy) then {
-                    if (_markerID in _cleared) then {
-                        // if grid was cleared before then mark the grid red again on all clients of the specific side including JIP clients that join in later
-                        [[_markerID,_gridPos,"RECTANGLE",[50,50],"COLORRED","","EMPTY", _fill,0,0.5],"ALIVE_fnc_createMarker",_side,true,false] spawn BIS_fnc_MP;
-
-                        // remove from cleared sectors
-                        [GVAR(TRACEGRID_STORE),str(_side),([GVAR(TRACEGRID_STORE),str(_side),[]] call ALiVE_fnc_HashGet) - [_markerID]] call ALiVE_fnc_HashSet;
-                    };
-                } else {
-                     if !(_markerID in _cleared) then {
-                        // if grid is not yet cleared then mark the cleared grid green on all clients of the specific side including JIP clients that join in later
-                        [[_markerID,_gridPos,"RECTANGLE",[50,50],"COLORGREEN","","EMPTY", _fill,0,0.5],"ALIVE_fnc_createMarker",_side,true,false] spawn BIS_fnc_MP;
-
-                        // collect to cleared sectors
-                        [GVAR(TRACEGRID_STORE),str(_side),([GVAR(TRACEGRID_STORE),str(_side),[]] call ALiVE_fnc_HashGet) + [_markerID]] call ALiVE_fnc_HashSet;
-                    };
+        // only the squares T.R.A.C.E. drew, the ones with buildings, change colour
+        if (_markerID in _grid) then {
+            private _nearEnemy = [_gridPos,str(_side), 75] call ALiVE_fnc_isEnemyNear;
+            // Each change goes to that side's clients, late joiners included, under the square's
+            // own id, so a new colour replaces the last one in the late-joiner queue rather than
+            // queueing behind every change since the start.
+            private _jipID = format ["%1_%2", _markerID, _side];
+            if (_nearEnemy) then {
+                if (_markerID in _cleared) then {
+                    // cleared before: red again
+                    [_markerID,_gridPos,"RECTANGLE",[50,50],"COLORRED","","EMPTY", _fill,0,0.5] remoteExecCall ["ALIVE_fnc_createMarker", _side, _jipID];
+                    [GVAR(TRACEGRID_STORE),str(_side),_cleared - [_markerID]] call ALiVE_fnc_HashSet;
+                };
+            } else {
+                if !(_markerID in _cleared) then {
+                    // not cleared yet: green
+                    [_markerID,_gridPos,"RECTANGLE",[50,50],"COLORGREEN","","EMPTY", _fill,0,0.5] remoteExecCall ["ALIVE_fnc_createMarker", _side, _jipID];
+                    [GVAR(TRACEGRID_STORE),str(_side),_cleared + [_markerID]] call ALiVE_fnc_HashSet;
                 };
             };
-        },_grid,10] call ALiVE_fnc_arrayFrameSplitter;
+        };
     };
 } foreach allPlayers;
 

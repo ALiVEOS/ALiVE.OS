@@ -26,6 +26,7 @@ See Also:
 
 Author:
 Highhead
+Jman
 
 Peer Reviewed:
 nil
@@ -41,14 +42,19 @@ _fill = if (count _this > 2) then {_this select 2} else {"Solid"};
 if (isnil QGVAR(TRACEGRID_STORE)) then {GVAR(TRACEGRID_STORE) = [] call ALiVE_fnc_HashCreate};
 
 _grid = [];
+// "Drawn already?" is asked once per building, so it's asked of a hash map: asked of the growing
+// list, the build slowed with the square of the number of buildings.
+private _drawn = createHashMap;
 
 [{
     private ["_gridPos","_markerID"];
 
     _gridPos = (getposATL _x) call ALiVE_fnc_GridPos;
-    _markerID = format["ALiVE_TraceGrid_%1%2",_gridpos select 0,_gridPos select 1];
+    // X and Y are kept apart: joined, 150,5050 and 15050,50 made one name on a map over 10 km.
+    _markerID = format["ALiVE_TraceGrid_%1_%2",_gridpos select 0,_gridPos select 1];
 
-    if !(_markerID in _grid) then {
+    if !(_markerID in _drawn) then {
+        _drawn set [_markerID, true];
         [_markerID,_gridPos,"RECTANGLE", [50,50], "COLORRED", "", "EMPTY", _fill, 0, 0.5] call ALIVE_fnc_createMarkerGlobal;
         _grid pushBack _markerID;
     };
