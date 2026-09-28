@@ -211,17 +211,21 @@ if (isNil "ALIVE_COP_ASYM_SHOW_ROADBLOCK") then { ALIVE_COP_ASYM_SHOW_ROADBLOCK 
 if (isNil "ALIVE_COP_SIZE_ENEMY")          then { ALIVE_COP_SIZE_ENEMY          = 24 };
 if (isNil "ALIVE_COP_SIZE_BFT")            then { ALIVE_COP_SIZE_BFT            = 24 };
 if (isNil "ALIVE_COP_SIZE_BADGE")          then { ALIVE_COP_SIZE_BADGE          = 14 };
-if (isNil "ALIVE_COP_TEXT_SIZE")           then { ALIVE_COP_TEXT_SIZE           = 0.045 };
 
 // ============================================================================
-// FONTS & TEXT
+// FONTS & TEXT: the rules every ALiVE map label follows. One regular face, an
+// outline rather than a drop shadow, three sizes, and label text in its colour
+// mixed halfway toward white so it reads on both the paper and satellite map.
+// Every COP label is drawn through ALIVE_fnc_COPDrawLabel. FONT_BOLD stays as an
+// alias so a mission that set it still loads; nothing is drawn bold.
 // ============================================================================
-if (isNil "ALIVE_COP_FONT_MAIN")           then { ALIVE_COP_FONT_MAIN           = "PuristaMedium" };
-if (isNil "ALIVE_COP_FONT_BOLD")           then { ALIVE_COP_FONT_BOLD           = "PuristaBold" };
-if (isNil "ALIVE_COP_TEXT_SIZE_LABEL")     then { ALIVE_COP_TEXT_SIZE_LABEL     = 0.04 };
-if (isNil "ALIVE_COP_TEXT_SIZE_BADGE")     then { ALIVE_COP_TEXT_SIZE_BADGE     = 0.05 };
-if (isNil "ALIVE_COP_TEXT_SIZE_COMPOSITION") then { ALIVE_COP_TEXT_SIZE_COMPOSITION = 0.035 };
-if (isNil "ALIVE_COP_TEXT_SIZE_BFT_FACTOR") then { ALIVE_COP_TEXT_SIZE_BFT_FACTOR = 0.85 };
+if (isNil "ALIVE_COP_FONT_MAIN")           then { ALIVE_COP_FONT_MAIN           = "RobotoCondensed" };
+if (isNil "ALIVE_COP_FONT_BOLD")           then { ALIVE_COP_FONT_BOLD           = ALIVE_COP_FONT_MAIN };
+if (isNil "ALIVE_COP_TEXT_SHADOW")         then { ALIVE_COP_TEXT_SHADOW         = 2 };      // 0 none, 1 drop shadow, 2 outline
+if (isNil "ALIVE_COP_TEXT_TINT")           then { ALIVE_COP_TEXT_TINT           = 0.5 };    // how far label colour moves toward white
+if (isNil "ALIVE_COP_TEXT_TIERS")          then {
+    ALIVE_COP_TEXT_TIERS = createHashMapFromArray [["primary", 0.04], ["secondary", 0.035], ["emphasis", 0.05]];
+};
 
 // ============================================================================
 // LAYOUT OFFSETS (world meters — positions relative to marker center)
@@ -336,6 +340,11 @@ if (isNil "ALIVE_COP_TEX_OBJ_ATTACK")  then { ALIVE_COP_TEX_OBJ_ATTACK  = "" };
 if (isNil "ALIVE_COP_TEX_OBJ_DEFEND")  then { ALIVE_COP_TEX_OBJ_DEFEND  = "" };
 if (isNil "ALIVE_COP_TEX_OBJ_RECON")   then { ALIVE_COP_TEX_OBJ_RECON   = "" };
 if (isNil "ALIVE_COP_TEX_OBJ_RESERVE") then { ALIVE_COP_TEX_OBJ_RESERVE = "" };
+// Stand-in for text-only drawIcon calls. A map draws no text at all when drawIcon's texture
+// is "", at any size (measured in game 2026-09-28), so every label drawn without an icon
+// (activity letters, MIXED, insurgent zone labels, objective labels with no centre icon)
+// is drawn over this transparent texture instead.
+if (isNil "ALIVE_COP_TEX_CLEAR")       then { ALIVE_COP_TEX_CLEAR       = "#(argb,8,8,3)color(0,0,0,0)" };
 
 // Procedural white fill (tintable by colour param) for sentiment heat shading
 if (isNil "ALIVE_COP_TEX_FILL_WHITE") then { ALIVE_COP_TEX_FILL_WHITE = "#(rgb,8,8,3)color(1,1,1,1)" };
@@ -410,6 +419,8 @@ if (isNil "ALIVE_COP_COLOR_AXIS_SCRATCH") then { ALIVE_COP_COLOR_AXIS_SCRATCH = 
 // downstream; all consumers either copy out synchronously or pass to engine,
 // so a single scratch shared per-entity-per-frame is safe.
 if (isNil "ALIVE_COP_COLOR_ENEMY_SCRATCH") then { ALIVE_COP_COLOR_ENEMY_SCRATCH = +ALIVE_COP_COLOR_THREAT_RING };
+// Per-label scratch for ALIVE_fnc_COPDrawLabel's tinted text colour.
+if (isNil "ALIVE_COP_COLOR_TEXT_SCRATCH") then { ALIVE_COP_COLOR_TEXT_SCRATCH = [1, 1, 1, 1] };
 
 // Civilian sentiment overlay
 if (isNil "ALIVE_COP_COLOR_HOSTILE")      then { ALIVE_COP_COLOR_HOSTILE      = [0.8,  0.4,   0.0,  0.35] };

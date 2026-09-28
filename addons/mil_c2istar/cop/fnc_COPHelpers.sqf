@@ -535,9 +535,35 @@ ALIVE_fnc_COPIsThreat = {
 };
 
 // ============================================================================
+// Map text: every COP label goes through these two, so all of it follows the
+// same rules (see FONTS & TEXT in fnc_COPConfig.sqf)
+// ============================================================================
+
+// [ctrl, texture, colour, position, width, height, text, tier, align]. The tier is
+// "primary", "secondary" or "emphasis". Pass the width and height of the icon the
+// label belongs to, so the text sits where it did beside it, and the colour of the
+// thing it labels: the text is drawn in that colour mixed ALIVE_COP_TEXT_TINT of the
+// way toward white, alpha kept, so it keeps its side hint and reads on either map.
+// The tint goes into one scratch array after the empty-text exit, as this runs per
+// label per frame (drawIcon copies the colour, so sharing the scratch is safe). A
+// map draws no text at all over an empty texture, so "" becomes the transparent one.
+ALIVE_fnc_COPDrawLabel = {
+    params ["_c", "_tex", "_col", "_pos", "_w", "_h", "_text", ["_tier", "primary"], ["_align", "right"]];
+    if (_text isEqualTo "") exitWith {};
+    if (_tex isEqualTo "") then { _tex = ALIVE_COP_TEX_CLEAR };
+    private _k = ALIVE_COP_TEXT_TINT;
+    ALIVE_COP_COLOR_TEXT_SCRATCH set [0, (_col select 0) + (1 - (_col select 0)) * _k];
+    ALIVE_COP_COLOR_TEXT_SCRATCH set [1, (_col select 1) + (1 - (_col select 1)) * _k];
+    ALIVE_COP_COLOR_TEXT_SCRATCH set [2, (_col select 2) + (1 - (_col select 2)) * _k];
+    ALIVE_COP_COLOR_TEXT_SCRATCH set [3, _col select 3];
+    private _size = ALIVE_COP_TEXT_TIERS getOrDefault [_tier, ALIVE_COP_TEXT_TIERS get "primary"];
+    _c drawIcon [_tex, ALIVE_COP_COLOR_TEXT_SCRATCH, _pos, _w, _h, 0, _text, ALIVE_COP_TEXT_SHADOW, _size, ALIVE_COP_FONT_MAIN, _align];
+};
+
+// ============================================================================
 // Lifecycle log
 // ============================================================================
-["COP - Helpers: 19 helpers seeded"] call ALiVE_fnc_dump;
+["COP - Helpers: 20 helpers seeded"] call ALiVE_fnc_dump;
 
 private _result = true;
 TRACE_1("COPHelpers - output",_result);

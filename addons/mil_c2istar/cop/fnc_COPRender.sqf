@@ -132,7 +132,7 @@ ALIVE_fnc_COPDrawActivityBadge = {
     private _color = [_activity] call ALIVE_fnc_COPGetActivityColor;
     private _badgePos = [(_pos select 0) + ALIVE_COP_BADGE_OFFSET_X, (_pos select 1) + ALIVE_COP_BADGE_OFFSET_Y, 0];
 
-    _mapCtrl drawIcon ["", _color, _badgePos, 0, 0, 0, _activity, 1, ALIVE_COP_TEXT_SIZE_BADGE, ALIVE_COP_FONT_BOLD, "center"];
+    [_mapCtrl, ALIVE_COP_TEX_CLEAR, _color, _badgePos, 0, 0, _activity, "emphasis", "center"] call ALIVE_fnc_COPDrawLabel;
 };
 
 // Faded line connecting past positions of a cluster.
@@ -205,7 +205,7 @@ ALIVE_fnc_COPDrawComposition = {
     if (!_isMixed) exitWith {};
 
     private _belowPos = [_pos select 0, (_pos select 1) + ALIVE_COP_COMPOSITION_OFFSET_Y, 0];
-    _mapCtrl drawIcon ["", _color, _belowPos, 0, 0, 0, "MIXED", 1, ALIVE_COP_TEXT_SIZE_COMPOSITION, ALIVE_COP_FONT_MAIN, "center"];
+    [_mapCtrl, ALIVE_COP_TEX_CLEAR, _color, _belowPos, 0, 0, "MIXED", "secondary", "center"] call ALIVE_fnc_COPDrawLabel;
 };
 
 // ============================================================================
@@ -265,11 +265,12 @@ ALIVE_fnc_COPDrawEnemyMarker = {
 
     // Main NATO icon.
     private _iconPath = [_sideKey, _type] call ALIVE_fnc_COPGetIconPath;
-    // Shadow param 0 (no drop-shadow text fx) to match the BFT marker below
-    // and read clean; icon size now matches BFT via ALIVE_COP_SIZE_ENEMY.
+    // The symbol in full side colour, then its label through COPDrawLabel at the
+    // same size so the text sits where it did; icon size matches BFT.
     _mapCtrl drawIcon [_iconPath, _color, _pos,
-                       ALIVE_COP_SIZE_ENEMY, ALIVE_COP_SIZE_ENEMY, 0,
-                       _displayLabel, 0, ALIVE_COP_TEXT_SIZE, ALIVE_COP_FONT_MAIN, "right"];
+                       ALIVE_COP_SIZE_ENEMY, ALIVE_COP_SIZE_ENEMY, 0, "", 0];
+    [_mapCtrl, ALIVE_COP_TEX_CLEAR, _color, _pos,
+     ALIVE_COP_SIZE_ENEMY, ALIVE_COP_SIZE_ENEMY, _displayLabel, "primary", "right"] call ALIVE_fnc_COPDrawLabel;
 
     if (ALIVE_COP_render_showIntelDetail) then {
         [_mapCtrl, _pos, _sizeInd, _color] call ALIVE_fnc_COPDrawSizeIndicator;
@@ -319,8 +320,9 @@ ALIVE_fnc_COPDrawBftMarker = {
     };
 
     _mapCtrl drawIcon [_iconPath, ALIVE_COP_COLOR_BFT_SCRATCH, _pos,
-                       ALIVE_COP_SIZE_BFT, ALIVE_COP_SIZE_BFT, 0,
-                       _label, 0, ALIVE_COP_TEXT_SIZE * ALIVE_COP_TEXT_SIZE_BFT_FACTOR, ALIVE_COP_FONT_MAIN, "right"];
+                       ALIVE_COP_SIZE_BFT, ALIVE_COP_SIZE_BFT, 0, "", 0];
+    [_mapCtrl, ALIVE_COP_TEX_CLEAR, ALIVE_COP_COLOR_BFT_SCRATCH, _pos,
+     ALIVE_COP_SIZE_BFT, ALIVE_COP_SIZE_BFT, _label, "secondary", "right"] call ALIVE_fnc_COPDrawLabel;
 
     if (ALIVE_COP_BFT_FEAT_SIZE && ALIVE_COP_render_showBftDetail) then {
         [_mapCtrl, _pos, _sizeInd, ALIVE_COP_COLOR_BFT_SCRATCH] call ALIVE_fnc_COPDrawSizeIndicator;
@@ -419,13 +421,16 @@ ALIVE_fnc_COPDrawObjective = {
         // which pushed the text off larger rings so it read as "no label" --
         // riding it on the centre point keeps it on the marker. Always shown
         // for these commander's-intent markers (not zoom-gated like tactical
-        // contacts) so they stay readable at the strategic zoom-out. An empty
-        // texture still draws the text, so "none" centre icons keep their
-        // label. Aligned "left" (text extends RIGHT of the point) -- the held
-        // flag aligns "right" (text extends LEFT), so on objectives that are
-        // both held and in a ring state the two labels split to opposite sides
-        // of the centre instead of overlapping, at any zoom.
-        _mapCtrl drawIcon [_centreIcon, _color, _labelPos, ALIVE_COP_OBJ_HELD_ICON_SIZE, ALIVE_COP_OBJ_HELD_ICON_SIZE, 0, _label, 1, ALIVE_COP_TEXT_SIZE_LABEL, ALIVE_COP_FONT_MAIN, "left"];
+        // contacts) so they stay readable at the strategic zoom-out. The centre
+        // icon, if one is picked, then the label at the icon's size so the text
+        // sits beside it either way. Aligned "left", the held flag "right", so
+        // on objectives that are both held and in a ring state the two labels
+        // go to opposite sides of the centre instead of overlapping.
+        if (_centreIcon != "") then {
+            _mapCtrl drawIcon [_centreIcon, _color, _labelPos, ALIVE_COP_OBJ_HELD_ICON_SIZE, ALIVE_COP_OBJ_HELD_ICON_SIZE, 0, "", 0];
+        };
+        [_mapCtrl, ALIVE_COP_TEX_CLEAR, _color, _labelPos,
+         ALIVE_COP_OBJ_HELD_ICON_SIZE, ALIVE_COP_OBJ_HELD_ICON_SIZE, _label, "primary", "left"] call ALIVE_fnc_COPDrawLabel;
     };
 
     // Held-objective flag overlay (replaces the old mil_logistics debug
@@ -451,19 +456,13 @@ ALIVE_fnc_COPDrawObjective = {
         private _heldLabel = format ["HELD%1", _heldLocPart];
 
         // Icon + label (backdrop halo removed 2026-05-28 -- the configurable
-        // held colour gives enough contrast on its own).
-        _mapCtrl drawIcon [
-            ALIVE_COP_TEX_HELD,
-            _heldColor,
-            _labelPos,
-            ALIVE_COP_OBJ_HELD_ICON_SIZE, ALIVE_COP_OBJ_HELD_ICON_SIZE,
-            0,
-            _heldLabel,
-            1,
-            ALIVE_COP_TEXT_SIZE_LABEL,
-            ALIVE_COP_FONT_MAIN,
-            "right"
-        ];
+        // held colour gives enough contrast on its own), then its label.
+        if (ALIVE_COP_TEX_HELD != "") then {
+            _mapCtrl drawIcon [ALIVE_COP_TEX_HELD, _heldColor, _labelPos,
+                               ALIVE_COP_OBJ_HELD_ICON_SIZE, ALIVE_COP_OBJ_HELD_ICON_SIZE, 0, "", 0];
+        };
+        [_mapCtrl, ALIVE_COP_TEX_CLEAR, _heldColor, _labelPos,
+         ALIVE_COP_OBJ_HELD_ICON_SIZE, ALIVE_COP_OBJ_HELD_ICON_SIZE, _heldLabel, "primary", "right"] call ALIVE_fnc_COPDrawLabel;
     };
 };
 
@@ -565,7 +564,7 @@ ALIVE_fnc_COPDrawAsymZone = {
     private _label = format ["INTEL - %1 - %2", _stateLabel, _locName];
 
     private _labelPos = [_pos select 0, (_pos select 1) + _size + ALIVE_COP_ASYM_LABEL_OFFSET_Y, 0];
-    _mapCtrl drawIcon ["", _color, _labelPos, 0, 0, 0, _label, 1, ALIVE_COP_TEXT_SIZE_LABEL, ALIVE_COP_FONT_MAIN, "center"];
+    [_mapCtrl, ALIVE_COP_TEX_CLEAR, _color, _labelPos, 0, 0, _label, "primary", "center"] call ALIVE_fnc_COPDrawLabel;
 };
 
 // Civilian sentiment heat shading (player-side filtered).
@@ -651,8 +650,9 @@ ALIVE_fnc_COPDrawAsymInfra = {
     private _label = toUpper _type;
 
     _mapCtrl drawIcon [_icon, ALIVE_COP_COLOR_ASYM_INFRA_SCRATCH, _pos,
-                       ALIVE_COP_ASYM_INFRA_ICON_PX, ALIVE_COP_ASYM_INFRA_ICON_PX, 0,
-                       _label, 1, ALIVE_COP_TEXT_SIZE_LABEL, ALIVE_COP_FONT_MAIN, "right"];
+                       ALIVE_COP_ASYM_INFRA_ICON_PX, ALIVE_COP_ASYM_INFRA_ICON_PX, 0, "", 0];
+    [_mapCtrl, ALIVE_COP_TEX_CLEAR, ALIVE_COP_COLOR_ASYM_INFRA_SCRATCH, _pos,
+     ALIVE_COP_ASYM_INFRA_ICON_PX, ALIVE_COP_ASYM_INFRA_ICON_PX, _label, "primary", "right"] call ALIVE_fnc_COPDrawLabel;
 };
 
 // ============================================================================
@@ -762,7 +762,7 @@ ALIVE_fnc_COPDrawAll = {
     // overprinting them.
     ALIVE_COP_render_labelLineWorld = (
         ((_mapCtrl ctrlMapScreenToWorld [0.5, 0.5]) select 1)
-        - ((_mapCtrl ctrlMapScreenToWorld [0.5, 0.5 + (ALIVE_COP_TEXT_SIZE_LABEL * 1.3)]) select 1)
+        - ((_mapCtrl ctrlMapScreenToWorld [0.5, 0.5 + ((ALIVE_COP_TEXT_TIERS get "primary") * 1.3)]) select 1)
     ) max 0;
 
     // ----- Layer 5 (back): civilian sentiment heat map -----
@@ -926,13 +926,9 @@ ALIVE_fnc_COPDrawAll = {
         // own in-world position nothing drew. Icon dimensions in map
         // units (metres); 50m at standard zoom is invisibly small but
         // gives the text rendering path something to anchor to.
-        // Black, no shadow, small text — clean unobtrusive HUD.
-        _mapCtrl drawIcon [
-            "#(argb,8,8,3)color(0,0,0,0)", [0, 0, 0, 1], _hudPos,
-            50, 50, 0,
-            localize "STR_ALIVE_C2ISTAR_COP_COMMAND_VIEW_HUD",
-            0, ALIVE_COP_TEXT_SIZE_BADGE * 1.5, ALIVE_COP_FONT_BOLD, "right"
-        ];
+        // Light text with the outline, like every COP label.
+        [_mapCtrl, ALIVE_COP_TEX_CLEAR, [1, 1, 1, 1], _hudPos, 50, 50,
+         localize "STR_ALIVE_C2ISTAR_COP_COMMAND_VIEW_HUD", "emphasis", "right"] call ALIVE_fnc_COPDrawLabel;
     };
 };
 
