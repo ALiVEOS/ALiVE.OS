@@ -183,7 +183,10 @@ private _gracePeriod = 15;
                             ((_x getVariable ["ACE_isEngineer", 0]) > 0) ||       // ACE engineer level 1 or 2
                             (_x getVariable ["ACE_isEOD", false])                 // ACE EOD specialist (explosives role)
                         ) &&
-                        (if (_aiTriggerable) then { true } else { _x in ([] call BIS_fnc_listPlayers) })
+                        // Players only, whatever AI Units Trigger IEDs says: the warning is a hint
+                        // or a sound for a player, and an AI engineer used up the one warning an
+                        // IED gives before any player got it.
+                        (_x in ([] call BIS_fnc_listPlayers))
                     };
                     if (count _detectors > 0) then {
                         [_ied, _detection, _detectors, _detection, _device] call ALiVE_fnc_detectIED;
