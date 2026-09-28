@@ -3476,6 +3476,8 @@ switch(_operation) do {
 		        	  // DEBUG -------------------------------------------------------------------------------------
 		             _objectiveID = [_objective,"id"] call ALiVE_fnc_hashGet;
 		             _objectivePos = [_objective,"center"] call ALiVE_fnc_hashGet;
+		             // Nothing to add to or take from when no commander of that side exists.
+		             _thisInstanceSFS = [];
 		            {
 		            	 _thissideTarget = [_x, "side", ""] call ALIVE_fnc_hashGet;  
 		            	if (_thissideTarget == _side) then {   
@@ -3508,6 +3510,8 @@ switch(_operation) do {
 		        	  // DEBUG -------------------------------------------------------------------------------------
 		             _objectiveID = [_objective,"id"] call ALiVE_fnc_hashGet;
 		             _objectivePos = [_objective,"center"] call ALiVE_fnc_hashGet;
+		             // Nothing to add to or take from when no commander of that side exists.
+		             _thisInstanceSFS = [];
 		            {
 		            	 _thissideTarget = [_x, "side", ""] call ALIVE_fnc_hashGet;  
 		            	if (_thissideTarget == (_factions select 0 select 0)) then {   
