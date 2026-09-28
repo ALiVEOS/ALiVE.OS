@@ -142,8 +142,10 @@ private _classify = {
         };
     };
 
-    // Truck before Car (Truck inherits Car in A3 - more specific wins).
-    if (_v isKindOf "Truck") exitWith { "Truck" };
+    // Truck before Car (Truck inherits Car in A3 - more specific wins). Arma 3's own trucks
+    // and vans come down from Truck_F, not the older Truck, and were bucketed as cars, so a
+    // truck could be swapped for a car.
+    if (_v isKindOf "Truck" || {_v isKindOf "Truck_F"}) exitWith { "Truck" };
 
     // Car: armored (wheeled APC / MRAP / LSV / armor>=200) vs regular
     // (Offroad / Hatchback / SUV / Quadbike). The kindOf checks catch
