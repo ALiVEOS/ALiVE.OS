@@ -1714,79 +1714,78 @@ switch(_operation) do {
         
         _result = [];
         if (visibleMap || _forceRender) then {
-
             private _markers = [];
-
-            private _position = [_logic,"position"] call ALIVE_fnc_hashGet;
-            private _profileID = [_logic,"profileID"] call ALIVE_fnc_hashGet;
-            private _profileSide = [_logic,"side"] call ALIVE_fnc_hashGet;
-            private _profileType = [_logic,"objectType"] call ALIVE_fnc_hashGet;
-            private _profileActive = [_logic,"active"] call ALIVE_fnc_hashGet;
-            private _profileWaypoints = [_logic,"waypoints"] call ALIVE_fnc_hashGet;
-
-            private _debugColor = [_logic,"debugColor","ColorGreen"] call ALIVE_fnc_hashGet;
-            private _typePrefix = "n";
-            switch(_profileSide) do {
-                case "EAST":{
-                    _debugColor = "ColorRed";
-                    _typePrefix = "o";
-                };
-                case "WEST":{
-                    _debugColor = "ColorBlue";
-                    _typePrefix = "b";
-                };
-                case "CIV":{
-                    _debugColor = "ColorYellow";
-                    _typePrefix = "n";
-                };
-                case "GUER":{
-                    _debugColor = "ColorGreen";
-                    _typePrefix = "n";
-                };
-            };
-
-            private _debugIcon = format["%1_inf",_typePrefix];
-
-            private _label = [_profileID, "_"] call CBA_fnc_split;
-            private _debugAlpha = if (_profileActive) then { 1 } else { 0.3 };
-
-            private _waypointCount = 0;
             {
-                private _waypointPosition = [_x,"position"] call ALIVE_fnc_hashGet;
-
-                private _m = createMarker [format["SIM_MARKER_%1_%2",_profileID,_waypointCount], _waypointPosition];
-                _m setMarkerShape "ICON";
-                _m setMarkerSize [.6, .6];
-                _m setMarkerType "waypoint";
-                _m setMarkerColor _debugColor;
-                _m setMarkerAlpha 0.6;
-
-                _m setMarkerText format["%1", _label select ((count _label) - 1), _waypointCount];
-
+                private _m = createMarker [_x get "id", _x get "position"];
+                _m setMarkerShape (_x get "shape");
+                _m setMarkerSize (_x get "size");
+                _m setMarkerType (_x get "type");
+                _m setMarkerColor (_x get "color");
+                _m setMarkerAlpha (_x get "alpha");
+                _m setMarkerText (_x get "text");
                 _markers pushback _m;
-
-                [_logic,"debugMarkers", _markers] call ALIVE_fnc_hashSet;
-
-                _waypointCount = _waypointCount + 1;
-            } forEach _profileWaypoints;
-
-            if (count _position > 0) then {
-                private _m = createMarker [format[MTEMPLATE, format["%1_debug",_profileID]], _position];
-                _m setMarkerShape "ICON";
-                _m setMarkerSize [.4, .4];
-                _m setMarkerType _debugIcon;
-                _m setMarkerColor _debugColor;
-                _m setMarkerAlpha _debugAlpha;
-
-                _m setMarkerText format["e%1",_label select ((count _label) - 1)];
-
-                _markers pushback _m;
-
-                [_logic,"debugMarkers", _markers] call ALIVE_fnc_hashSet;
-            };
-
+            } forEach ([_logic, "debugMarkerData"] call MAINCLASS);
+            [_logic,"debugMarkers", _markers] call ALIVE_fnc_hashSet;
             _result = _markers;
+        };
+    };
 
+    // The markers createDebugMarkers draws, as data, for a caller that shows them only to some
+    // players (the friendly coverage in fnc_liveAnalysis). Creates nothing.
+    case "debugMarkerData": {
+        _result = [];
+
+        private _position = [_logic,"position"] call ALIVE_fnc_hashGet;
+        private _profileID = [_logic,"profileID"] call ALIVE_fnc_hashGet;
+        private _profileSide = [_logic,"side"] call ALIVE_fnc_hashGet;
+        private _profileActive = [_logic,"active"] call ALIVE_fnc_hashGet;
+        private _profileWaypoints = [_logic,"waypoints"] call ALIVE_fnc_hashGet;
+
+        private _debugColor = [_logic,"debugColor","ColorGreen"] call ALIVE_fnc_hashGet;
+        private _typePrefix = "n";
+        switch(_profileSide) do {
+            case "EAST":{
+                _debugColor = "ColorRed";
+                _typePrefix = "o";
+            };
+            case "WEST":{
+                _debugColor = "ColorBlue";
+                _typePrefix = "b";
+            };
+            case "CIV":{
+                _debugColor = "ColorYellow";
+                _typePrefix = "n";
+            };
+            case "GUER":{
+                _debugColor = "ColorGreen";
+                _typePrefix = "n";
+            };
+        };
+
+        private _debugIcon = format["%1_inf",_typePrefix];
+
+        private _label = [_profileID, "_"] call CBA_fnc_split;
+        private _debugAlpha = if (_profileActive) then { 1 } else { 0.3 };
+
+        private _waypointCount = 0;
+        {
+            private _waypointPosition = [_x,"position"] call ALIVE_fnc_hashGet;
+            _result pushback (createHashMapFromArray [
+                ["id", format["SIM_MARKER_%1_%2",_profileID,_waypointCount]],
+                ["position", _waypointPosition], ["shape", "ICON"], ["size", [.6, .6]],
+                ["type", "waypoint"], ["color", _debugColor], ["alpha", 0.6],
+                ["text", format["%1", _label select ((count _label) - 1), _waypointCount]]
+            ]);
+            _waypointCount = _waypointCount + 1;
+        } forEach _profileWaypoints;
+
+        if (count _position > 0) then {
+            _result pushback (createHashMapFromArray [
+                ["id", format[MTEMPLATE, format["%1_debug",_profileID]]],
+                ["position", _position], ["shape", "ICON"], ["size", [.4, .4]],
+                ["type", _debugIcon], ["color", _debugColor], ["alpha", _debugAlpha],
+                ["text", format["e%1",_label select ((count _label) - 1)]]
+            ]);
         };
     };
 

@@ -150,6 +150,47 @@ switch(_operation) do {
         {deleteMarkerLocal _x} forEach _args;
     };
 
+    // Who may see intel about a side, by the Map Intel Visibility setting: the rule the
+    // objective intel below follows. Args [side, factions], the side as a side or its text.
+    // With no factions, Same Faction falls back to the side, as it does for an objective.
+    case "intelRecipients": {
+        _args params [["_side", "CIV"], ["_factions", [], [[]]]];
+        private _sourceSide = civilian;
+        if (_side isEqualType west) then {
+            _sourceSide = _side;
+        } else {
+            private _text = if (_side isEqualType "") then {toUpper _side} else {toUpper str _side};
+            if (_text in ["INDEP","INDEPENDENT","RESISTANCE"]) then { _text = "GUER" };
+            _sourceSide = [_text] call ALIVE_fnc_sideTextToObject;
+        };
+        private _visibility = toUpper (missionNamespace getVariable ["ALIVE_militaryIntelVisibility", "SIDE"]);
+        _result = switch (_visibility) do {
+            case "ALL": {+allPlayers};
+            case "FRIENDLY": {allPlayers select {(_sourceSide getFriend (side (group _x))) >= 0.6}};
+            case "FACTION": {
+                if (_factions isEqualTo []) then {
+                    allPlayers select {side (group _x) == _sourceSide}
+                } else {
+                    allPlayers select {(faction _x) in _factions}
+                };
+            };
+            default {allPlayers select {side (group _x) == _sourceSide}};
+        };
+    };
+
+    // Shows intel markers, given as data, to the players listed and takes them off everyone
+    // else's map. Args [marker names, marker data, players].
+    case "showIntelMarkers": {
+        _args params [["_markers", [], [[]]], ["_markerData", [], [[]]], ["_recipients", [], [[]]]];
+        if (count _recipients > 0 && {count _markerData > 0}) then {
+            [objNull,"createMarkersLocally", _markerData] remoteExecCall ["ALiVE_fnc_liveAnalysis", _recipients];
+        };
+        private _others = allPlayers - _recipients;
+        if (count _others > 0 && {count _markers > 0}) then {
+            [objNull,"deleteMarkersLocally", _markers] remoteExecCall ["ALiVE_fnc_liveAnalysis", _others];
+        };
+    };
+
     case "pause": {
         if(typeName _args != "BOOL") then {
             // if no new value was provided return current setting
@@ -829,6 +870,7 @@ switch(_operation) do {
             _side = _intelItem select 2;
 
             private ["_markers","_alpha","_marker","_color","_dir","_icon","_m"];
+            private _markerData = [];
 
             // on the first run create all the markers
             if(_runCount == 0) then {
@@ -855,23 +897,21 @@ switch(_operation) do {
                     };
                 };
 
-                // create type marker
-                _m = createMarker [format[MTEMPLATE, format["%1_type", _jobID]], _position];
-                _m setMarkerShape "ICON";
-                _m setMarkerSize [0.3, 0.3];
-                _m setMarkerType "mil_warning";
-                _m setMarkerColor _color;
-                _m setMarkerAlpha _alpha;
-                _m setMarkerText " KIA";
-
+                // the type marker, as data: only the players who may see it are sent it
+                _m = format[MTEMPLATE, format["%1_type", _jobID]];
                 _markers pushback _m;
+                _markerData = [createHashMapFromArray [
+                    ["id", _m], ["position", _position], ["shape", "ICON"], ["size", [0.3, 0.3]],
+                    ["type", "mil_warning"], ["color", _color], ["alpha", _alpha], ["text", " KIA"]
+                ]];
 
-                _jobArgs pushback [_markers];
+                _jobArgs pushback [_markers, _markerData];
 
             // on subsequent runs lower marker alpha
             } else {
 
                 _markers = _jobArgs select 1 select 0;
+                _markerData = (_jobArgs select 1) param [1, []];
 
                 // set alpha based on age of intel item
                 if(_runCount <= 1) then {
@@ -888,10 +928,20 @@ switch(_operation) do {
                 };
 
                 {
-                    _x setMarkerAlpha _alpha;
-                } forEach _markers;
+                    _x set ["alpha", _alpha];
+                } forEach _markerData;
 
             };
+
+            // A kill is intel for the side that lost the unit and for the side that made the
+            // kill, each by Map Intel Visibility. Sent again each run, so a late joiner and the
+            // fading reach them.
+            private _recipients = [_logic, "intelRecipients", [_side, [_faction]]] call MAINCLASS;
+            private _killerSide = _intelItem param [3, ""];
+            if (_killerSide isEqualType "" && {(toUpper _killerSide) in ["WEST","EAST","GUER"]}) then {
+                { _recipients pushBackUnique _x } forEach ([_logic, "intelRecipients", [_killerSide, []]] call MAINCLASS);
+            };
+            [_logic, "showIntelMarkers", [_markers, _markerData, _recipients]] call MAINCLASS;
         };
     };
 
@@ -924,9 +974,9 @@ switch(_operation) do {
 
             _markers = _jobArgs select 1 select 0;
 
-            {
-                deleteMarker _x;
-            } forEach _markers;
+            if (count _markers > 0 && {count allPlayers > 0}) then {
+                [objNull,"deleteMarkersLocally", _markers] remoteExecCall ["ALiVE_fnc_liveAnalysis", allPlayers];
+            };
 
         };
     };
@@ -957,6 +1007,7 @@ switch(_operation) do {
             _faction = _intelItem select 1;
 
             private ["_markers","_alpha","_marker","_color","_dir","_icon"];
+            private _markerData = [];
 
             // on the first run create all the markers
             if(_runCount == 0) then {
@@ -965,23 +1016,21 @@ switch(_operation) do {
                 _alpha = 1;
                 _color = "ColorYellow";
 
-                // create type marker
-                _m = createMarker [format[MTEMPLATE, format["%1_type", _jobID]], _position];
-                _m setMarkerShape "ICON";
-                _m setMarkerSize [0.3, 0.3];
-                _m setMarkerType "mil_warning";
-                _m setMarkerColor _color;
-                _m setMarkerAlpha _alpha;
-                _m setMarkerText " KIA";
-
+                // the type marker, as data: only the players who may see it are sent it
+                _m = format[MTEMPLATE, format["%1_type", _jobID]];
                 _markers pushback _m;
+                _markerData = [createHashMapFromArray [
+                    ["id", _m], ["position", _position], ["shape", "ICON"], ["size", [0.3, 0.3]],
+                    ["type", "mil_warning"], ["color", _color], ["alpha", _alpha], ["text", " KIA"]
+                ]];
 
-                _jobArgs pushback [_markers];
+                _jobArgs pushback [_markers, _markerData];
 
             // on subsequent runs lower marker alpha
             } else {
 
                 _markers = _jobArgs select 1 select 0;
+                _markerData = (_jobArgs select 1) param [1, []];
 
                 // set alpha based on age of intel item
                 if(_runCount <= 1) then {
@@ -998,10 +1047,22 @@ switch(_operation) do {
                 };
 
                 {
-                    _x setMarkerAlpha _alpha;
-                } forEach _markers;
+                    _x set ["alpha", _alpha];
+                } forEach _markerData;
 
             };
+
+            // A civilian's death is intel for the side that killed them, by Map Intel
+            // Visibility, and everyone's when that isn't a fighting side (not known, or a
+            // civilian, as civilian traffic and some blasts report). Sent again each run, so a
+            // late joiner and the fading reach them.
+            private _killerSide = _intelItem param [3, ""];
+            private _recipients = if (_killerSide isEqualType "" && {(toUpper _killerSide) in ["WEST","EAST","GUER"]}) then {
+                [_logic, "intelRecipients", [_killerSide, []]] call MAINCLASS
+            } else {
+                +allPlayers
+            };
+            [_logic, "showIntelMarkers", [_markers, _markerData, _recipients]] call MAINCLASS;
         };
     };
 
@@ -1034,9 +1095,9 @@ switch(_operation) do {
 
             _markers = _jobArgs select 1 select 0;
 
-            {
-                deleteMarker _x;
-            } forEach _markers;
+            if (count _markers > 0 && {count allPlayers > 0}) then {
+                [objNull,"deleteMarkersLocally", _markers] remoteExecCall ["ALiVE_fnc_liveAnalysis", allPlayers];
+            };
 
         };
     };
@@ -1068,6 +1129,7 @@ switch(_operation) do {
             _side = _intelItem select 2;
 
             private ["_markers","_alpha","_marker","_color","_dir","_icon"];
+            private _markerData = [];
 
             // on the first run create all the markers
             if(_runCount == 0) then {
@@ -1094,23 +1156,21 @@ switch(_operation) do {
                     };
                 };
 
-                // create type marker
-                _m = createMarker [format[MTEMPLATE, format["%1_type", _jobID]], _position];
-                _m setMarkerShape "ICON";
-                _m setMarkerSize [0.3, 0.3];
-                _m setMarkerType "mil_start";
-                _m setMarkerColor _color;
-                _m setMarkerAlpha _alpha;
-                _m setMarkerText " insertion";
-
+                // the type marker, as data: only the players who may see it are sent it
+                _m = format[MTEMPLATE, format["%1_type", _jobID]];
                 _markers pushback _m;
+                _markerData = [createHashMapFromArray [
+                    ["id", _m], ["position", _position], ["shape", "ICON"], ["size", [0.3, 0.3]],
+                    ["type", "mil_start"], ["color", _color], ["alpha", _alpha], ["text", " insertion"]
+                ]];
 
-                _jobArgs pushback [_markers];
+                _jobArgs pushback [_markers, _markerData];
 
             // on subsequent runs lower marker alpha
             } else {
 
                 _markers = _jobArgs select 1 select 0;
+                _markerData = (_jobArgs select 1) param [1, []];
                 _profiles = _jobArgs select 1 select 1;
 
                 // set alpha based on age of intel item
@@ -1128,10 +1188,14 @@ switch(_operation) do {
                 };
 
                 {
-                    _x setMarkerAlpha _alpha;
-                } forEach _markers;
+                    _x set ["alpha", _alpha];
+                } forEach _markerData;
 
             };
+
+            // Shown only to the players who may see intel about this side, by Map Intel
+            // Visibility, and sent again each run, so a late joiner and the fading reach them.
+            [_logic, "showIntelMarkers", [_markers, _markerData, [_logic, "intelRecipients", [_side, [_faction]]] call MAINCLASS]] call MAINCLASS;
         };
     };
 
@@ -1164,9 +1228,9 @@ switch(_operation) do {
 
             _markers = _jobArgs select 1 select 0;
 
-            {
-                deleteMarker _x;
-            } forEach _markers;
+            if (count _markers > 0 && {count allPlayers > 0}) then {
+                [objNull,"deleteMarkersLocally", _markers] remoteExecCall ["ALiVE_fnc_liveAnalysis", allPlayers];
+            };
 
         };
     };
@@ -1198,6 +1262,7 @@ switch(_operation) do {
             _side = _intelItem select 2;
 
             private ["_markers","_alpha","_marker","_color","_dir","_icon","_profiles"];
+            private _markerData = [];
 
             // on the first run create all the markers
             if(_runCount == 0) then {
@@ -1224,23 +1289,21 @@ switch(_operation) do {
                     };
                 };
 
-                // create type marker
-                _m = createMarker [format[MTEMPLATE, format["%1_type", _jobID]], _position];
-                _m setMarkerShape "ICON";
-                _m setMarkerSize [0.3, 0.3];
-                _m setMarkerType "mil_end";
-                _m setMarkerColor _color;
-                _m setMarkerAlpha _alpha;
-                _m setMarkerText " destination";
-
+                // the type marker, as data: only the players who may see it are sent it
+                _m = format[MTEMPLATE, format["%1_type", _jobID]];
                 _markers pushback _m;
+                _markerData = [createHashMapFromArray [
+                    ["id", _m], ["position", _position], ["shape", "ICON"], ["size", [0.3, 0.3]],
+                    ["type", "mil_end"], ["color", _color], ["alpha", _alpha], ["text", " destination"]
+                ]];
 
-                _jobArgs pushback [_markers];
+                _jobArgs pushback [_markers, _markerData];
 
             // on subsequent runs lower marker alpha
             } else {
 
                 _markers = _jobArgs select 1 select 0;
+                _markerData = (_jobArgs select 1) param [1, []];
                 _profiles = _jobArgs select 1 select 1;
 
                 // set alpha based on age of intel item
@@ -1258,10 +1321,14 @@ switch(_operation) do {
                 };
 
                 {
-                    _x setMarkerAlpha _alpha;
-                } forEach _markers;
+                    _x set ["alpha", _alpha];
+                } forEach _markerData;
 
             };
+
+            // Shown only to the players who may see intel about this side, by Map Intel
+            // Visibility, and sent again each run, so a late joiner and the fading reach them.
+            [_logic, "showIntelMarkers", [_markers, _markerData, [_logic, "intelRecipients", [_side, [_faction]]] call MAINCLASS]] call MAINCLASS;
         };
     };
     
@@ -1294,9 +1361,9 @@ switch(_operation) do {
 
             _markers = _jobArgs select 1 select 0;
 
-            {
-                deleteMarker _x;
-            } forEach _markers;
+            if (count _markers > 0 && {count allPlayers > 0}) then {
+                [objNull,"deleteMarkersLocally", _markers] remoteExecCall ["ALiVE_fnc_liveAnalysis", allPlayers];
+            };
 
         };
     };
@@ -1327,19 +1394,9 @@ switch(_operation) do {
             if(count _jobArgs > 1) then {
                 if((count (_jobArgs select 1)) > 0) then {
                     _markers = _jobArgs select 1 select 0;
-                    _profiles = _jobArgs select 1 select 1;
-                    private _profilesByID = [ALiVE_profileHandler,"profilesById"] call ALiVE_fnc_hashGet;
-
-                    {
-                        _profile = _profilesByID get _x;
-                        if !(isnil "_profile") then {
-                            [_profile, "deleteDebugMarkers"] call ALIVE_fnc_profileEntity;
-                        };
-                    } forEach _profiles;
-
-                    {
-                        deleteMarker _x;
-                    } forEach _markers;
+                    if (count _markers > 0 && {count allPlayers > 0}) then {
+                        [objNull,"deleteMarkersLocally", _markers] remoteExecCall ["ALiVE_fnc_liveAnalysis", allPlayers];
+                    };
                 };
             };
 
@@ -1367,7 +1424,9 @@ switch(_operation) do {
                         } forEach _active;
 
                         {
-                            _nearProfiles = [_centerPosition, _radius, [str(_x),"entity"]] call ALIVE_fnc_getNearProfiles;
+                            private _coverageSide = _x;
+                            _nearProfiles = [_centerPosition, _radius, [str(_coverageSide),"entity"]] call ALIVE_fnc_getNearProfiles;
+                            private _sideData = [];
 
                             {
                                 _profile = _x;
@@ -1375,19 +1434,25 @@ switch(_operation) do {
                                     _position = _profile select 2 select 2;
 
                                     if!(surfaceIsWater _position) then {
-                                        // Pass [true] to force-render so the server-side analysis pump
-                                        // creates markers regardless of the server's visibleMap state
-                                        // (issue #606 — friendly-intel was silently no-op on dedicated
-                                        // server because the server never has a map open). See the
-                                        // matching comment in sys_profile/fnc_profileEntity.sqf
-                                        // case "createDebugMarkers".
-                                        _marker = [_profile, "createDebugMarkers", [true]] call ALIVE_fnc_profileEntity;
-                                        _markers append _marker;
+                                        // The profile's markers as data, renamed so they never meet the
+                                        // debug markers the profile draws for itself.
+                                        {
+                                            _x set ["id", format [MTEMPLATE, format ["friendly_%1", _x get "id"]]];
+                                            _markers pushback (_x get "id");
+                                            _sideData pushback _x;
+                                        } forEach ([_profile, "debugMarkerData"] call ALIVE_fnc_profileEntity);
                                         _profiles pushback (_profile select 2 select 4);
                                     };
 
                                 };
                             } forEach _nearProfiles;
+
+                            // A side's coverage is shown to that side and the sides friendly to it,
+                            // never to its enemies. Everyone saw it before.
+                            private _sideRecipients = allPlayers select {(_coverageSide getFriend (side (group _x))) >= 0.6};
+                            if (count _sideRecipients > 0 && {count _sideData > 0}) then {
+                                [objNull,"createMarkersLocally", _sideData] remoteExecCall ["ALiVE_fnc_liveAnalysis", _sideRecipients];
+                            };
 
                         } forEach _sides;
                     };
@@ -1413,8 +1478,8 @@ switch(_operation) do {
 
             _intelItem = _jobArgs select 0;
 
-            // set item as completed
-            _intelItem set [5, true];
+            // set item as completed (this job's first argument is its radius, not an item)
+            if (_intelItem isEqualType []) then { _intelItem set [5, true] };
 
 
             // DEBUG -------------------------------------------------------------------------------------
@@ -1428,19 +1493,9 @@ switch(_operation) do {
             private ["_profiles","_markers","_profile","_alpha","_marker"];
 
             _markers = _jobArgs select 1 select 0;
-            _profiles = _jobArgs select 1 select 1;
-            private _profilesByID = [ALiVE_profileHandler,"profilesById"] call ALiVE_fnc_hashGet;
-
-            {
-                _profile = _profilesByID get _x;
-                if !(isnil "_profile") then {
-                    [_profile, "deleteDebugMarkers"] call ALIVE_fnc_profileEntity;
-                };
-            } forEach _profiles;
-
-            {
-                deleteMarker _x;
-            } forEach _markers;
+            if (count _markers > 0 && {count allPlayers > 0}) then {
+                [objNull,"deleteMarkersLocally", _markers] remoteExecCall ["ALiVE_fnc_liveAnalysis", allPlayers];
+            };
 
         };
     };
