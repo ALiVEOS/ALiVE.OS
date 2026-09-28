@@ -908,6 +908,14 @@ switch(_operation) do {
             _customArmourCount = [_logic,"customArmourCount"] call MAINCLASS;
             _customSpecOpsCount = [_logic,"customSpecOpsCount"] call MAINCLASS;
 
+            // A count box holding something that isn't a number counts as 0: say so, rather than place
+            // nothing without a word.
+            {
+                _x params ["_box", "_text"];
+                if (_text isEqualType "" && {((toArray _text) findIf {!(_x in [32, 45, 46] || {_x >= 48 && {_x <= 57}})}) > -1}) then {
+                    ["MP - the %1 count box holds ""%2"", which isn't a number, so it counts as 0", _box, _text] call ALiVE_fnc_dump;
+                };
+            } forEach [["infantry", [_logic, "customInfantryCount"] call MAINCLASS], ["motorised", [_logic, "customMotorisedCount"] call MAINCLASS], ["mechanised", [_logic, "customMechanisedCount"] call MAINCLASS], ["armour", [_logic, "customArmourCount"] call MAINCLASS], ["spec ops", [_logic, "customSpecOpsCount"] call MAINCLASS]];
             _customInfantryCount = if (_customInfantryCount == "") then { 666 } else { parseNumber _customInfantryCount };
             _customMotorisedCount = if (_customMotorisedCount == "") then { 666 } else { parseNumber _customMotorisedCount };
             _customMechanisedCount = if (_customMechanisedCount == "") then { 666 } else { parseNumber _customMechanisedCount };

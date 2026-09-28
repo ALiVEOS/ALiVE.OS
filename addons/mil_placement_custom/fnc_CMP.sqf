@@ -494,6 +494,14 @@ switch(_operation) do {
 
             private _guardProbability = parseNumber([_logic, "guardProbability"] call MAINCLASS);
 
+            // A count box holding something that isn't a number counts as 0: say so, rather than place
+            // nothing without a word.
+            {
+                _x params ["_box", "_text"];
+                if (_text isEqualType "" && {((toArray _text) findIf {!(_x in [32, 45, 46] || {_x >= 48 && {_x <= 57}})}) > -1}) then {
+                    ["CMP - the %1 count box holds ""%2"", which isn't a number, so it counts as 0", _box, _text] call ALiVE_fnc_dump;
+                };
+            } forEach [["infantry", [_logic, "customInfantryCount"] call MAINCLASS], ["motorised", [_logic, "customMotorisedCount"] call MAINCLASS], ["mechanised", [_logic, "customMechanisedCount"] call MAINCLASS], ["armour", [_logic, "customArmourCount"] call MAINCLASS], ["spec ops", [_logic, "customSpecOpsCount"] call MAINCLASS], ["artillery", [_logic, "customArtilleryCount"] call MAINCLASS]];
             private _countInfantry = [_logic, "customInfantryCount"] call MAINCLASS;
             _countInfantry = parseNumber _countInfantry;
             
