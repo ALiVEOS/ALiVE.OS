@@ -121,11 +121,11 @@ if (isNil "ALIVE_COP_THREAT_TYPES")        then { ALIVE_COP_THREAT_TYPES        
 // Clustering
 if (isNil "ALIVE_COP_CLUSTER_RADIUS")      then { ALIVE_COP_CLUSTER_RADIUS      = 200 };
 if (isNil "ALIVE_COP_FILTER_LONE_INF")     then { ALIVE_COP_FILTER_LONE_INF     = true };
-if (isNil "ALIVE_COP_ALWAYS_SHOW")         then { ALIVE_COP_ALWAYS_SHOW         = ["air", "armor", "at", "aa"] };
+if (isNil "ALIVE_COP_ALWAYS_SHOW")         then { ALIVE_COP_ALWAYS_SHOW         = ["air", "armor", "mech", "at", "aa"] };
 if (isNil "ALIVE_COP_PLAYER_RADIUS")       then { ALIVE_COP_PLAYER_RADIUS       = 1000 };
 
 // Threat hierarchy — dominant type wins when clustering mixed groups
-if (isNil "ALIVE_COP_THREAT_ORDER")        then { ALIVE_COP_THREAT_ORDER        = ["air", "armor", "mech", "motor", "infantry", "unknown"] };
+if (isNil "ALIVE_COP_THREAT_ORDER")        then { ALIVE_COP_THREAT_ORDER        = ["air", "armor", "mech", "art", "aa", "at", "motor", "naval", "infantry", "unknown"] };
 
 // Confidence border thresholds (seconds since last update)
 if (isNil "ALIVE_COP_CONFIDENCE_FRESH")    then { ALIVE_COP_CONFIDENCE_FRESH    = 60 };

@@ -5,7 +5,7 @@ SCRIPT(COPHelpers);
 Function: ALIVE_fnc_COPHelpers
 
 Description:
-    Declares 18 pure helper globals used across COP server, client, and
+    Declares 19 pure helper globals used across COP server, client, and
     render code. Running this function seeds the following globals on
     missionNamespace:
 
@@ -14,6 +14,7 @@ Description:
       ALIVE_fnc_COPGetSideColor       — side key → RGBA
       ALIVE_fnc_COPGetIconPath        — side key + type → NATO marker texture path
       ALIVE_fnc_COPTypeFromProfile    — ALiVE profile → internal type string
+      ALIVE_fnc_COPTypeFromClass      — vehicle classname → internal type string
       ALIVE_fnc_COPDominantType       — pick highest-threat type from list
       ALIVE_fnc_COPSizeIndicator      — profile count → NATO size string
       ALIVE_fnc_COPFactionShortCode   — faction classname → display short code
@@ -45,6 +46,7 @@ Returns:
 
 Author:
     Goldwep (ALiVE Mod Team)
+    Jman
 ---------------------------------------------------------------------------- */
 
 TRACE_1("COPHelpers - input",_this);
@@ -119,8 +121,8 @@ ALIVE_fnc_COPGetIconPath = {
         case "armored":    { "armor" };
         case "art":        { "art" };
         case "artillery":  { "art" };
-        case "at":         { "at" };
-        case "aa":         { "aa" };
+        case "at":         { "inf" };
+        case "aa":         { "antiair" };
         case "air":        { "air" };
         case "helicopter": { "air" };
         case "plane":      { "plane" };
@@ -132,6 +134,9 @@ ALIVE_fnc_COPGetIconPath = {
     };
 
     private _path = format [ALIVE_COP_NATO_PATH_TEMPLATE, _prefix, _suffix];
+    // Arma has no unknown-side unit frames (u_inf and the rest don't exist), so an unresolved
+    // side gets the module's own unknown marker.
+    if (_prefix == "u") then { _path = ALIVE_COP_TEX_UNKNOWN };
     ALIVE_COP_ICON_CACHE set [_cacheKey, _path];
     _path
 };
@@ -144,6 +149,52 @@ ALIVE_fnc_COPGetIconPath = {
 //   index 8 = vehicles-in-command-of array
 // Defensive count guards preserved for schema drift resilience.
 // ============================================================================
+
+// Vehicle classname -> internal type, cached per class. Every tracked APC, self-propelled gun
+// and mobile AA vehicle is a Tank to the engine, so asking Tank first drew all of them as armour.
+// The editor's own subcategory tells them apart for vanilla and RHS alike (EdSubcat_Tanks,
+// EdSubcat_APCs, EdSubcat_AAs, EdSubcat_Artillery, rhs_EdSubcat_tank/ifv/apc/aa/artillery), so
+// it comes first; the class tests below it cover mods that set none of these.
+ALIVE_fnc_COPTypeFromClass = {
+    params [["_class", "", [""]]];
+    if (_class == "") exitWith { "none" };
+
+    private _cached = ALIVE_COP_TYPE_CACHE getOrDefault [_class, ""];
+    if (_cached != "") exitWith { _cached };
+
+    private _cfg = configFile >> "CfgVehicles" >> _class;
+    private _sub = toLower getText (_cfg >> "editorSubcategory");
+    private _type = call {
+        if (_class isKindOf "Air") exitWith { "air" };
+        if (_class isKindOf "Ship") exitWith { "naval" };
+        // Mortars, self-propelled guns and rocket launchers all fire indirect.
+        if (_class isKindOf "StaticMortar" || {getNumber (_cfg >> "artilleryScanner") > 0}
+            || {_sub find "subcat_artillery" >= 0}) exitWith { "art" };
+        if (_class isKindOf "StaticWeapon") exitWith {
+            if (_class isKindOf "StaticATWeapon" || {_class isKindOf "AT_01_base_F"}) exitWith { "at" };
+            // Air defence by class, or a mount that elevates past 70 degrees with weapons
+            // able to engage aircraft (SAM and gun systems). Machine-gun and grenade tripods
+            // inherit exactly 70 degrees from the game's static base, so the anti-air test
+            // alone, which counts anything past 65, drew them as AA.
+            if (_class isKindOf "StaticAAWeapon" || {_class isKindOf "AA_01_base_F"}
+                || {getNumber (_cfg >> "Turrets" >> "MainTurret" >> "maxElev") > 70 && {[_class] call ALiVE_fnc_isAntiAirCapable}}) exitWith { "aa" };
+            "none"
+        };
+        if (_sub find "subcat_aa" >= 0) exitWith { "aa" };
+        if (_sub find "subcat_tank" >= 0) exitWith { "armor" };
+        if (_sub find "subcat_apc" >= 0 || {_sub find "subcat_ifv" >= 0}) exitWith { "mech" };
+        // No subcategory the tests above know: fall back on the class and what it carries.
+        if (_class isKindOf "Wheeled_APC_F" || {_class isKindOf "Tracked_APC"}
+            || {_class isKindOf "Tank" && {getNumber (_cfg >> "transportSoldier") > 0}}) exitWith { "mech" };
+        if (_class isKindOf "LandVehicle" && {[_class] call ALiVE_fnc_isAntiAirCapable}) exitWith { "aa" };
+        if (_class isKindOf "Tank") exitWith { "armor" };
+        if (_class isKindOf "Car") exitWith { "motor" };
+        "none"
+    };
+
+    ALIVE_COP_TYPE_CACHE set [_class, _type];
+    _type
+};
 
 ALIVE_fnc_COPTypeFromProfile = {
     params [["_profile", [], [[]]]];
@@ -192,34 +243,22 @@ ALIVE_fnc_COPTypeFromProfile = {
     private _hasArt = false;
     private _hasAA = false;
     private _hasAT = false;
+    private _hasNaval = false;
 
     {
         private _veh = _x;
         if (!isNil "_veh") then {
             private _class = if (_veh isEqualType "") then { _veh } else { typeOf _veh };
             if (_class != "") then {
-                // Classname cache — avoids 7 isKindOf config walks per vehicle.
-                private _cachedType = ALIVE_COP_TYPE_CACHE getOrDefault [_class, ""];
-                if (_cachedType != "") then {
-                    switch (_cachedType) do {
-                        case "armor": { _hasArmor = true; };
-                        case "mech":  { _hasMech = true; };
-                        case "motor": { _hasMotor = true; };
-                        case "air":   { _hasAir = true; };
-                        case "art":   { _hasArt = true; };
-                        case "aa":    { _hasAA = true; };
-                        case "at":    { _hasAT = true; };
-                    };
-                } else {
-                    private _vehType = "none";
-                    if (_class isKindOf "Tank") then { _hasArmor = true; _vehType = "armor"; };
-                    if (_vehType == "none" && {_class isKindOf "Wheeled_APC_F" || _class isKindOf "Tracked_APC"}) then { _hasMech = true; _vehType = "mech"; };
-                    if (_vehType == "none" && {_class isKindOf "Car"}) then { _hasMotor = true; _vehType = "motor"; };
-                    if (_vehType == "none" && {_class isKindOf "Air"}) then { _hasAir = true; _vehType = "air"; };
-                    if (_vehType == "none" && {_class isKindOf "StaticMortar"}) then { _hasArt = true; _vehType = "art"; };
-                    if (_vehType == "none" && {_class isKindOf "StaticAAWeapon"}) then { _hasAA = true; _vehType = "aa"; };
-                    if (_vehType == "none" && {_class isKindOf "StaticATWeapon"}) then { _hasAT = true; _vehType = "at"; };
-                    ALIVE_COP_TYPE_CACHE set [_class, _vehType];
+                switch ([_class] call ALIVE_fnc_COPTypeFromClass) do {
+                    case "armor": { _hasArmor = true; };
+                    case "mech":  { _hasMech = true; };
+                    case "motor": { _hasMotor = true; };
+                    case "air":   { _hasAir = true; };
+                    case "art":   { _hasArt = true; };
+                    case "aa":    { _hasAA = true; };
+                    case "at":    { _hasAT = true; };
+                    case "naval": { _hasNaval = true; };
                 };
             };
         };
@@ -233,6 +272,7 @@ ALIVE_fnc_COPTypeFromProfile = {
     if (_hasAA)    exitWith { "aa" };
     if (_hasAT)    exitWith { "at" };
     if (_hasMotor) exitWith { "motor" };
+    if (_hasNaval) exitWith { "naval" };
 
     // Fallback: infantry if entity, unknown if vehicle without classification
     if (_entityType == "entity") exitWith { "infantry" };
@@ -497,7 +537,7 @@ ALIVE_fnc_COPIsThreat = {
 // ============================================================================
 // Lifecycle log
 // ============================================================================
-["COP - Helpers: 18 helpers seeded"] call ALiVE_fnc_dump;
+["COP - Helpers: 19 helpers seeded"] call ALiVE_fnc_dump;
 
 private _result = true;
 TRACE_1("COPHelpers - output",_result);
