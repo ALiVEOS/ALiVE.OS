@@ -75,8 +75,11 @@ class CfgVehicles {
             class customSkillFactionsManual    { property = "ALiVE_sys_aiskill_customSkillFactionsManual";    control = "ALiVE_HiddenAttribute"; defaultValue = """""";   expression = "_this setVariable ['customSkillFactionsManual', _value];";    typeName = "STRING"; displayName = ""; };
             // ── CUSTOM SKILL OVERRIDE ─────────────────────────────────────────
             class HDR_CUSTOM : ALiVE_ModuleSubTitle { property = "ALiVE_sys_aiskill_HDR_CUSTOM"; displayName = "CUSTOM SKILL VALUES"; };
-            class customSkillAbilityMin : Edit { property = "ALiVE_sys_aiskill_customSkillAbilityMin"; displayName = "$STR_ALIVE_AISKILL_CUSTOM_ABILITY_MIN"; tooltip = "$STR_ALIVE_AISKILL_CUSTOM_ABILITY_MIN_COMMENT"; defaultValue = """0.2"""; typeName = "NUMBER"; };
-            class customSkillAbilityMax : Edit { property = "ALiVE_sys_aiskill_customSkillAbilityMax"; displayName = "$STR_ALIVE_AISKILL_CUSTOM_ABILITY_MAX"; tooltip = "$STR_ALIVE_AISKILL_CUSTOM_ABILITY_MAX_COMMENT"; defaultValue = """0.25"""; typeName = "NUMBER"; };
+            // Hidden: Min and Max Ability never did anything. The ability they rolled sets every
+            // sub-skill, and the skill values below are set straight after it and replace it. Kept,
+            // not removed, so a mission's saved values still load.
+            class customSkillAbilityMin { property = "ALiVE_sys_aiskill_customSkillAbilityMin"; control = "ALiVE_HiddenAttribute"; defaultValue = """0.2"""; expression = "_this setVariable ['customSkillAbilityMin', _value, true];"; typeName = "NUMBER"; displayName = ""; };
+            class customSkillAbilityMax { property = "ALiVE_sys_aiskill_customSkillAbilityMax"; control = "ALiVE_HiddenAttribute"; defaultValue = """0.25"""; expression = "_this setVariable ['customSkillAbilityMax', _value, true];"; typeName = "NUMBER"; displayName = ""; };
             class customSkillAimAccuracy : Edit { property = "ALiVE_sys_aiskill_customSkillAimAccuracy"; displayName = "$STR_ALIVE_AISKILL_CUSTOM_AIM_ACCURACY"; tooltip = "$STR_ALIVE_AISKILL_CUSTOM_AIM_ACCURACY_COMMENT"; defaultValue = """0.3"""; typeName = "NUMBER"; };
             class customSkillAimShake : Edit { property = "ALiVE_sys_aiskill_customSkillAimShake"; displayName = "$STR_ALIVE_AISKILL_CUSTOM_AIM_SHAKE"; tooltip = "$STR_ALIVE_AISKILL_CUSTOM_AIM_SHAKE_COMMENT"; defaultValue = """0.9"""; typeName = "NUMBER"; };
             class customSkillAimSpeed : Edit { property = "ALiVE_sys_aiskill_customSkillAimSpeed"; displayName = "$STR_ALIVE_AISKILL_CUSTOM_AIM_SPEED"; tooltip = "$STR_ALIVE_AISKILL_CUSTOM_AIM_SPEED_COMMENT"; defaultValue = """0.3"""; typeName = "NUMBER"; };

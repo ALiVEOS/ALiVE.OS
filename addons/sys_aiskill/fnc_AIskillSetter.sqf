@@ -62,10 +62,8 @@ if ((_faction in (_factionSkills select 1)) && {!(side group _unit == CIVILIAN)}
             "_courage","_fleeing","_reloadSpeed","_commanding","_general"
         ];
 
-        _diff = _maxSkill - _minSkill;
-
-        _unit setUnitAbility (_minSkill + (random _diff));
-
+        // No setUnitAbility from the Min/Max Ability roll: it sets every sub-skill, and the ten
+        // set just below replaced it, so the roll never changed a unit.
         _unit setSkill ["aimingAccuracy", _aimingAccuracy];
         _unit setSkill ["aimingShake", _aimingShake];
         _unit setSkill ["aimingSpeed", _aimingSpeed];
