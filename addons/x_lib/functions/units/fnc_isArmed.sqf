@@ -25,6 +25,7 @@ See Also:
 
 Author:
 Highhead
+Jman
 ---------------------------------------------------------------------------- */
 
 private ["_object","_isArmed"];
@@ -47,6 +48,26 @@ if (_object isKindOf "CAManBase") then {
     if (_object isKindOf "AllVehicles" && {!(_object isKindof "Plane")}) then {
         // Checks if magazines are set for the main turrets, tbc: AH9 Pawnee seems to be misconfiged (no magazines)
         _isArmed = count (getArray(configfile >> "CfgVehicles" >> _object >> "Turrets" >> "MainTurret" >> "Magazines")) > 0 || count (getArray(configfile >> "CfgVehicles" >> _object >> "Turrets" >> "M2_Turret" >> "Magazines")) > 0 || count (configfile >> "CfgVehicles" >> _object >> "Components" >> "TransportPylonsComponent" >> "pylons") > 0;
+
+        // Any other turret, nested ones included, with a weapon's magazines: a car armed on a turret
+        // by another name (an RHS M1151 with its machine gun, say) read as unarmed. Smoke, flare and
+        // designator magazines don't count, and nothing the lines above found armed changes.
+        if !(_isArmed) then {
+            private _fnc_turretArmed = {
+                params ["_turretsCfg"];
+                private _armed = false;
+                {
+                    private _mags = (getArray (_x >> "magazines")) select {
+                        private _m = toLower _x;
+                        (_m find "smoke") < 0 && {(_m find "laserbatteries") < 0} && {(_m find "flare") < 0}
+                    };
+                    if (count _mags > 0) exitWith { _armed = true };
+                    if ([_x >> "Turrets"] call _fnc_turretArmed) exitWith { _armed = true };
+                } forEach ("isClass _x" configClasses _turretsCfg);
+                _armed
+            };
+            _isArmed = [configfile >> "CfgVehicles" >> _object >> "Turrets"] call _fnc_turretArmed;
+        };
     } else {
 	    if (_object isKindOf "Plane") then {
 	
