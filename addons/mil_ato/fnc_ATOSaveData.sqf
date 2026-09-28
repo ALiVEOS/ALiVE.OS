@@ -60,10 +60,16 @@ if (count _modules == 0) exitWith {
 private _saved = 0;
 {
     private _logic = _x;
-    ([_logic, "save"] call ALIVE_fnc_ATOKernel) params [["_ok", false, [false]], ["_why", "", [""]]];
-    if (_ok) then { _saved = _saved + 1 };
-    _messages pushBack format ["ALiVE Military air tasking orders - %1: %2",
-        if (_ok) then { "saved" } else { "not saved" }, _why];
+    // Only a persistent commander ever loads what it saved, so only a persistent one is saved.
+    // Each save is a full write of the profile, and the autosave repeats it every cycle.
+    if !([_logic, "persistent"] call ALIVE_fnc_ATOKernel) then {
+        _messages pushBack format ["ALiVE Military air tasking orders - not saved: Persistent is off for the %1 air commander", [_logic, "faction"] call ALIVE_fnc_ATOKernel];
+    } else {
+        ([_logic, "save"] call ALIVE_fnc_ATOKernel) params [["_ok", false, [false]], ["_why", "", [""]]];
+        if (_ok) then { _saved = _saved + 1 };
+        _messages pushBack format ["ALiVE Military air tasking orders - %1: %2",
+            if (_ok) then { "saved" } else { "not saved" }, _why];
+    };
 } forEach _modules;
 
 private _result = [_saved > 0, _messages];

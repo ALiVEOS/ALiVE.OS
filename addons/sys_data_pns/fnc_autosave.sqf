@@ -22,6 +22,7 @@ Examples:
 
 Author:
 Highhead
+Jman
 Peer Reviewed:
 
 ---------------------------------------------------------------------------- */
@@ -95,10 +96,15 @@ ALiVE_SYS_DATA_PNS_AUTOSAVE = _interval spawn {
 			    [_id, "__SERVER__", _uid] call ALIVE_fnc_player_onPlayerDisconnected;
 			};
 
+			private _lastProfileSave = missionNamespace getVariable ["ALiVE_sysProfileLastSaveTime", -1];
 			if (["ALiVE_sys_profile"] call ALiVE_fnc_isModuleAvailable) then {
 			    ["SYS DATA PNS Autosave - Server Save Profiles"] call ALiVE_fnc_dump;
 			    [] call ALiVE_fnc_profilesSaveData;
 			};
+			// Whether the profiles were saved on this pass, or aren't kept at all. The profile save skips
+			// itself within five minutes of the last one.
+			private _profilesSaved = !(missionNamespace getVariable ["ALIVE_saveProfilesPersistent", false])
+			    || {(missionNamespace getVariable ["ALiVE_sysProfileLastSaveTime", -1]) != _lastProfileSave};
 
 			if (["ALiVE_mil_OPCOM"] call ALiVE_fnc_isModuleAvailable) then {
 			    ["SYS DATA PNS Autosave - Server Save OPCOM State"] call ALiVE_fnc_dump;
@@ -148,6 +154,24 @@ ALiVE_SYS_DATA_PNS_AUTOSAVE = _interval spawn {
 			if (["ALiVE_mil_c2istar"] call ALiVE_fnc_isModuleAvailable) then {
 			    ["SYS DATA PNS Autosave - Server Save Task State"] call ALiVE_fnc_dump;
 			    [] call ALiVE_fnc_taskHandlerSaveData;
+			};
+
+			// The air commander used to be saved only by Save and Exit, so a mission kept by the
+			// autosave alone lost every change to its aircraft since the last one. Its save never
+			// suspends, so it can run in this block. Only one set to Persistent is saved, and only on
+			// a pass that saved the profiles too: the two are loaded together, and an air commander
+			// saved after the profiles can bring back twice an aircraft it took over in between, once
+			// from its own record and once from the profile the older profile save still holds.
+			if (((entities "Module_F") findIf {typeOf _x == "ALiVE_mil_ato" && {[_x, "persistent"] call ALIVE_fnc_ATOKernel}}) > -1) then {
+			    if (_profilesSaved) then {
+			        ["SYS DATA PNS Autosave - Server Save ATO State"] call ALiVE_fnc_dump;
+			        // A refused save says why, as Save and Exit shows it on the admin's tablet.
+			        {
+			            if ((_x find "refused") > -1) then { [_x] call ALiVE_fnc_dump };
+			        } forEach (([] call ALiVE_fnc_ATOSaveData) param [1, []]);
+			    } else {
+			        ["SYS DATA PNS Autosave - ATO State not saved on this pass: it's saved with the profiles, and the profile save waits five minutes between saves"] call ALiVE_fnc_dump;
+			    };
 			};
 
 		} call CBA_fnc_Directcall;
