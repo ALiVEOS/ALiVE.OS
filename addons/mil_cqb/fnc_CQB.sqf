@@ -439,6 +439,12 @@ switch(_operation) do {
                             _faction3 = _mod getvariable ["faction3","NONE"];
                             _faction4 = _mod getvariable ["faction4","NONE"];
                             _factions = [_mod getvariable ["factions",[]]] call ALiVE_fnc_parseArrayFromString;
+                            // The commander adds its Additional Factions (by name) to these at run
+                            // time but never writes the sum back, so a commander on that field alone
+                            // read to CQB as having none, and CQB fell back to CSAT.
+                            {
+                                if !(_x in _factions) then { _factions pushBack _x };
+                            } forEach ([_mod getvariable ["factionsManual",[]]] call ALiVE_fnc_parseArrayFromString);
 
                             if ((count _factions) == 0) then {{if (!(_x == "NONE") && {!(_x in _factions)}) then {_factions pushBack _x}} foreach [_faction1,_faction2,_faction3,_faction4]};
 
