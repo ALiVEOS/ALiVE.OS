@@ -329,6 +329,56 @@ if (_entryType == "VEHICLE") then {
             };
         };
 
+        // The group's other vehicles come too, each with its own crew. Only the first land vehicle
+        // is parked, so a tank platoon or a group with two carriers woke as that one vehicle and
+        // its foot soldiers. They're placed out of the players' sight, behind the parked one and
+        // 250 m or more from any player, and drive in. They carry the module's empty-vehicle lock,
+        // and the objective goes on counting the group once, as it does an active one.
+        private _entitySide = [_profileEntity, "side", ""] call ALiVE_fnc_hashGet;
+        private _lockSetting = [_logic, "reserveEmptyVehicleLocked"] call _modClass;
+        private _lockExtras = if (_lockSetting isEqualType true) then { _lockSetting } else { (parseNumber format ["%1", _lockSetting]) > 0 };
+        private _nearestPlayer = objNull;
+        private _nearestDist = 1e10;
+        {
+            private _d = _x distance2D _vehiclePos;
+            if (_d < _nearestDist) then { _nearestDist = _d; _nearestPlayer = _x };
+        } forEach _playersInArea;
+        private _awayDir = if (isNull _nearestPlayer) then { random 360 } else { _nearestPlayer getDir _vehiclePos };
+        private _parkedPassed = false;
+        for "_i" from 0 to (count _groupConfig) - 1 do {
+            private _entry = _groupConfig select _i;
+            if (isClass _entry) then {
+                private _entryVehicle = getText (_entry >> "vehicle");
+                if (_entryVehicle != "" && {!(_entryVehicle isKindOf "Man")}) then {
+                    if (!_parkedPassed && {_entryVehicle isKindOf "LandVehicle"}) then {
+                        _parkedPassed = true;
+                    } else {
+                        private _rank = getText (_entry >> "rank");
+                        if (_rank == "") then { _rank = "PRIVATE" };
+                        private _spot = [];
+                        {
+                            private _c = _vehiclePos getPos [_x, _awayDir - 30 + random 60];
+                            if (!surfaceIsWater _c && {(_playersInArea findIf {(_x distance2D _c) < 250}) < 0}) exitWith { _spot = _c };
+                        } forEach [150, 250, 350, 450, 600];
+                        if !(_spot isEqualTo []) then {
+                            private _extra = [_entryVehicle, _entitySide, _entryFaction, _rank, _spot, _awayDir + 180, true] call ALIVE_fnc_createProfilesCrewedVehicle;
+                            {
+                                switch ([_x, "type"] call ALiVE_fnc_hashGet) do {
+                                    case "entity": {
+                                        [_x, "setActiveCommand", ["ALIVE_fnc_ambientMovement", "spawn", [_guardRadius, "SAFE", [0,0,0]]]] call ALIVE_fnc_profileEntity;
+                                        [_x, "homeCluster", _cluster] call ALiVE_fnc_hashSet;
+                                    };
+                                    case "vehicle": {
+                                        [_x, "ALiVE_reserveLocked", _lockExtras] call ALiVE_fnc_hashSet;
+                                    };
+                                };
+                            } forEach _extra;
+                        };
+                    };
+                };
+            };
+        };
+
         // Create the vehicle assignment after all deferred units have been added
         private _unitClasses = [_profileEntity, "unitClasses"] call ALiVE_fnc_hashGet;
         [_profileEntity, _profileVehicle] call ALiVE_fnc_createProfileVehicleAssignment;
