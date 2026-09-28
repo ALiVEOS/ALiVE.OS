@@ -29,6 +29,13 @@ private _isAlive          = (_integrationMode == "alive");
 private _isPassive        = (_integrationMode == "passive");
 private _isEngineMine     = (_integrationMode == "engineMine");
 
+// The mission's own Additional Classes have nothing to set them off in the modes that leave arming
+// to a mod or the engine, so ALiVE arms them there as it does in its own mode, unless they're
+// mines. Left alone they were duds. Passive mode is left as it is: its objects hurt by contact,
+// and a prop added there is meant to do the same, not to carry a charge.
+private _additionalIED = ADDON getVariable ["resolvedAdditionalIEDClasses", []];
+private _fnc_aliveArms = { _isAlive || {!_isPassive && {(_this in _additionalIED) && {!(_this isKindOf "MineBase")}}} };
+
 if (_thirdParty && _debug) then {
     ["MIL IED: Using non-alive integration mode: %1", _integrationMode] call ALiVE_fnc_dump;
 };
@@ -84,6 +91,7 @@ if (_IEDcount == 0) then {
 
 for "_j" from 1 to _numIEDs do {
     private ["_IEDpos","_pos","_cen","_near","_IED","_IEDskin","_data","_ID","_error","_IEDskins"];
+    private _aliveArms = _isAlive;
 
     // Select Position for IED and remove position used
     _error = false;
@@ -216,12 +224,14 @@ for "_j" from 1 to _numIEDs do {
         // mine objects don't sink under terrain).
         _IEDpos set [2, ADDON getVariable ["resolvedPlacementZ", -0.1]];
         _IEDskin = (selectRandom _IEDskins);
+        _aliveArms = _IEDskin call _fnc_aliveArms;
 
         // engineMine mode uses createMine instead of createVehicle so the
         // engine treats the placed object as a properly armed mine - this is
         // what makes pressure / tripwire triggers actually fire on it.
-        // Other modes (alive, mine, passive) all use createVehicle.
-        _IED = if (_isEngineMine) then {
+        // Other modes (alive, mine, passive) all use createVehicle, as does
+        // an Additional Class that ALiVE arms itself.
+        _IED = if (_isEngineMine && {!_aliveArms}) then {
             createMine [_IEDskin, _IEDpos, [], 0]
         } else {
             createVehicle [_IEDskin, _IEDpos, [], 0, "NONE"]
@@ -258,8 +268,10 @@ for "_j" from 1 to _numIEDs do {
             ["ALIVE-%1 IED: store-replay skipped - player within 75m of stored pos %2", time, _storedPos] call ALiVE_fnc_dump;
             _error = true;
         } else {
-            _IED = createVehicle [[_data, "IEDskin", "ALIVE_IEDUrbanSmall_Remote_Ammo"] call ALiVE_fnc_hashGet, _storedPos, [], 0, "NONE"];
-            if (_thirdParty) then {
+            private _storedSkin = [_data, "IEDskin", "ALIVE_IEDUrbanSmall_Remote_Ammo"] call ALiVE_fnc_hashGet;
+            _aliveArms = _storedSkin call _fnc_aliveArms;
+            _IED = createVehicle [_storedSkin, _storedPos, [], 0, "NONE"];
+            if (_thirdParty && {!_aliveArms}) then {
                 _IED setpos [(position _IED) select 0, (position _IED) select 1, 0.15];
             };
         };
@@ -279,7 +291,7 @@ for "_j" from 1 to _numIEDs do {
     _IED setvariable ["town", _town];
 
     // Check if Dud IED
-    if (!_dud && !_thirdParty) then {
+    if (!_dud && {_aliveArms}) then {
         [_IED, typeOf _IED] call ALIVE_fnc_armIED;
 
         // Attach the demo charge. chargeOffsetZ controls Z relative to the IED:

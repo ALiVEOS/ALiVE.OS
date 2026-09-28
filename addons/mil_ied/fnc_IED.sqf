@@ -346,6 +346,9 @@ switch(_operation) do {
                     private _autoModeFollowsIntegration = !(_iChoice == "_force_alive") &&
                                                           !(_iChoice == "_auto" && _resolved == "alive" && isNil "_candidateIntegration");
 
+                    // The road and urban Additional Classes, kept apart for createIED: in the modes
+                    // that leave arming to a mod or the engine, ALiVE arms these itself.
+                    private _additionalIED = [];
                     private _fnResolveClasses = {
                         params ["_category", "_defaultArr"];
                         private _base       = [ADDON, _category] call MAINCLASS;
@@ -391,6 +394,7 @@ switch(_operation) do {
                             _addArr = [_addArr, ","] call CBA_fnc_split;
                             {
                                 if (_x != "" && {!(_x in _pool)}) then { _pool pushBack _x; };
+                                if (_x != "" && {_category != "clutterClasses"}) then { _additionalIED pushBackUnique _x; };
                             } forEach _addArr;
                         };
                         _pool
@@ -399,6 +403,7 @@ switch(_operation) do {
                     ADDON setVariable ["resolvedRoadIEDClasses",  ["roadIEDClasses",  DEFAULT_ROADIEDS]  call _fnResolveClasses, true];
                     ADDON setVariable ["resolvedUrbanIEDClasses", ["urbanIEDClasses", DEFAULT_URBANIEDS] call _fnResolveClasses, true];
                     ADDON setVariable ["resolvedClutterClasses",  ["clutterClasses",  DEFAULT_CLUTTER]  call _fnResolveClasses, true];
+                    ADDON setVariable ["resolvedAdditionalIEDClasses", _additionalIED, true];
 
                     // Vertical placement offset (Z). When an integration is the active
                     // authority (specific choice, or Auto picked it), use its declared
