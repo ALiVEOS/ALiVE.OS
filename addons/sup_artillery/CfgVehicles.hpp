@@ -17,8 +17,8 @@ class CfgVehicles {
                 author = MODULE_AUTHOR;
                 functionPriority = 161;
                 isGlobal = 2;
-                icon = "x\alive\addons\sup_cas\icon_sup_cas.paa";
-                picture = "x\alive\addons\sup_cas\icon_sup_cas.paa";
+                icon = "x\alive\addons\sup_artillery\icon_sup_artillery.paa";
+                picture = "x\alive\addons\sup_artillery\icon_sup_artillery.paa";
                 class Attributes : AttributesBase
                 {
                         class HDR_GENERAL : ALiVE_ModuleSubTitle { property = "ALiVE_sup_artillery_HDR_GENERAL"; displayName = "GENERAL"; };
