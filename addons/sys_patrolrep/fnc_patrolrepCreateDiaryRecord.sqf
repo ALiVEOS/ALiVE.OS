@@ -43,6 +43,7 @@ See Also:
 
 Author:
 Tupolov
+Jman
 Peer Reviewed:
 nil
 ---------------------------------------------------------------------------- */
@@ -59,7 +60,7 @@ _markers setMarkerPosLocal (_params select 18);
 _markers setMarkerAlphaLocal 1;
 
 _markers setMarkerTextLocal format["%1 START",_markerName];
-_markers setMarkerTypeLocal "mil_marker";
+_markers setMarkerTypeLocal "mil_marker_noShadow";
 
 _markere = createMarkerLocal [format["%1END",_markerName], _params select 19];
 
@@ -67,7 +68,7 @@ _markere setMarkerPosLocal (_params select 19);
 _markere setMarkerAlphaLocal 1;
 
 _markere setMarkerTextLocal format["%1 END",_markerName];
-_markere setMarkerTypeLocal "mil_marker";
+_markere setMarkerTypeLocal "mil_marker_noShadow";
 
 if !(player diarySubjectExists "PATROLREP") then {
     player createDiarySubject ["PATROLREP","PATROLREP"];

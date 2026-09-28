@@ -4,7 +4,7 @@ SCRIPT(createMarkerGlobal);
 /* ----------------------------------------------------------------------------
 Function: ALIVE_fnc_createMarkerGlobal
 Description:
-Creates a marker all at once
+Creates a marker all at once. A mil_ or hd_ icon is drawn without its drop shadow.
 
 Parameters:
 array - marker values
@@ -33,6 +33,7 @@ See Also:
 
 Author:
 Tupolov
+Jman
 
 Peer Reviewed:
 nil
@@ -49,7 +50,11 @@ _marker setMarkerColor (_this select 4);
 _marker setMarkerText (_this select 5);
 if (count _this > 6) then {
     if ((_this select 6) != "") then {
-        _marker setMarkerType (_this select 6);
+        // A mil_ or hd_ icon has a _noShadow twin: the same icon without the drop shadow. The twin
+        // is used because a marker's type reaches every machine, where a shadow setting doesn't.
+        private _type = _this select 6;
+        if (isClass (configFile >> "CfgMarkers" >> (_type + "_noShadow"))) then { _type = _type + "_noShadow" };
+        _marker setMarkerType _type;
     };
 };
 if (count _this > 7) then {

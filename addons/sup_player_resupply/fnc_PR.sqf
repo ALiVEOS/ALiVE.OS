@@ -1331,7 +1331,7 @@ switch(_operation) do {
                         _marker = createMarkerLocal ["PR_DESTINATION_M1", _position];
                         _marker setMarkerShapeLocal "Icon";
                         _marker setMarkerSizeLocal [0.75, 0.75];
-                        _marker setMarkerTypeLocal "mil_dot";
+                        _marker setMarkerTypeLocal "mil_dot_noShadow";
                         _marker setMarkerColorLocal "ColorYellow";
                         _marker setMarkerTextLocal _markerLabel;
                         _markers pushback _marker;
@@ -2900,7 +2900,7 @@ switch(_operation) do {
                         _marker = createMarkerLocal [format["%1%2",MTEMPLATE,"marker"],_position];
                         _marker setMarkerAlphaLocal 1;
                         _marker setMarkerTextLocal _markerLabel;
-                        _marker setMarkerTypeLocal "hd_End";
+                        _marker setMarkerTypeLocal "hd_End_noShadow";
 
                         [_logic,"marker",[_marker]] call MAINCLASS;
                         [_logic,"destination",_position] call MAINCLASS;
@@ -3303,7 +3303,7 @@ switch(_operation) do {
                         _marker = createMarkerLocal ["PR_STATUS_M1", _position];
                         _marker setMarkerShapeLocal "Icon";
                         _marker setMarkerSizeLocal [0.75, 0.75];
-                        _marker setMarkerTypeLocal "mil_dot";
+                        _marker setMarkerTypeLocal "mil_dot_noShadow";
                         _marker setMarkerColorLocal "ColorYellow";
                         _marker setMarkerTextLocal "Request Location";
                         _markers pushback _marker;

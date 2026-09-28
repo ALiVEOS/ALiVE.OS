@@ -122,6 +122,8 @@ switch(_operation) do {
                     _marker setMarkerAlphaLocal _alpha;
                 };
                 if !(isnil "_type") then {
+                    // a mil_ icon's _noShadow twin: the same icon without the drop shadow
+                    if (isClass (configFile >> "CfgMarkers" >> (_type + "_noShadow"))) then { _type = _type + "_noShadow" };
                     _marker setMarkerTypeLocal _type;
                 };
                 if !(isnil "_size") then {

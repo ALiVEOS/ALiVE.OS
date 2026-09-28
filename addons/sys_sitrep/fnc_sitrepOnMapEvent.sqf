@@ -28,7 +28,7 @@ _marker setMarkerPosLocal _pos;
 _marker setMarkerAlphaLocal 1;
 
 _marker setMarkerTextLocal "SITREP";
-_marker setMarkerTypeLocal "mil_marker";
+_marker setMarkerTypeLocal "mil_marker_noShadow";
 
 GVAR(pos) = _pos;
 

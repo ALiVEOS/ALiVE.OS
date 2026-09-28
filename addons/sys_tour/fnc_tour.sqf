@@ -29,6 +29,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 
 Peer Reviewed:
 ---------------------------------------------------------------------------- */
@@ -920,7 +921,7 @@ switch(_operation) do {
                 _m = createMarkerLocal [_markerID, _position];
                 _m setMarkerShapeLocal "ICON";
                 _m setMarkerSizeLocal _dimensions;
-                _m setMarkerTypeLocal "mil_dot";
+                _m setMarkerTypeLocal "mil_dot_noShadow";
                 _m setMarkerColorLocal _color;
                 _m setMarkerTextLocal _markerID;
                 _m
@@ -1376,11 +1377,11 @@ switch(_operation) do {
                             if!(isNil "_state") then {
                                 switch(_state) do {
                                     case "reserve":{
-                                        _icon = "mil_marker";
+                                        _icon = "mil_marker_noShadow";
                                         _text = " occupied";
                                     };
                                     case "defend":{
-                                        _icon = "mil_marker";
+                                        _icon = "mil_marker_noShadow";
                                         _text = " occupied";
                                     };
                                     case "recon":{
@@ -1389,7 +1390,7 @@ switch(_operation) do {
                                         _m = createMarker [format[MTEMPLATE, format["%1_dir", _objectiveID]], (_position getPos [100, _dir])];
                                         _m setMarkerShape "ICON";
                                         _m setMarkerSize [0.5,0.5];
-                                        _m setMarkerType "mil_arrow";
+                                        _m setMarkerType "mil_arrow_noShadow";
                                         _m setMarkerColor _color;
                                         _m setMarkerAlpha _alpha;
                                         _m setMarkerDir _dir;
@@ -1405,14 +1406,14 @@ switch(_operation) do {
                                         _m = createMarker [format[MTEMPLATE, format["%1_dir", _objectiveID]], (_position getPos [100, _dir])];
                                         _m setMarkerShape "ICON";
                                         _m setMarkerSize [0.5,0.5];
-                                        _m setMarkerType "mil_arrow2";
+                                        _m setMarkerType "mil_arrow2_noShadow";
                                         _m setMarkerColor _color;
                                         _m setMarkerAlpha _alpha;
                                         _m setMarkerDir _dir;
 
                                         _markers pushback _m;
 
-                                        _icon = "mil_warning";
+                                        _icon = "mil_warning_noShadow";
                                         _text = " captured";
                                     };
                                 };

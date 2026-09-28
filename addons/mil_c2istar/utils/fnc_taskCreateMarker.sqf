@@ -145,7 +145,9 @@ _m setMarkerAlphaLocal _markerAlpha;
 _m setMarkerShapeLocal _markerShape;
 
 if(_markerShape == "ICON") then {
-    _m setMarkerTypeLocal _markerType;
+    // a mil_ or hd_ icon's _noShadow twin: the same icon without the drop shadow
+    private _flatType = _markerType + "_noShadow";
+    _m setMarkerTypeLocal (if (isClass (configFile >> "CfgMarkers" >> _flatType)) then {_flatType} else {_markerType});
 };
 
 // For ICON markers with a non-empty text label, suppress the text on

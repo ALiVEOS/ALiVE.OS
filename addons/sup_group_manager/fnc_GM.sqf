@@ -27,6 +27,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 
 Peer Reviewed:
 ---------------------------------------------------------------------------- */
@@ -754,7 +755,7 @@ switch(_operation) do {
                     _marker = createMarkerLocal [format["%1%2",MTEMPLATE,"marker"],_position];
                     _marker setMarkerAlphaLocal 1;
                     _marker setMarkerTextLocal _markerLabel;
-                    _marker setMarkerTypeLocal "hd_End";
+                    _marker setMarkerTypeLocal "hd_End_noShadow";
 
                     [_groupState,"groupMapActive",true] call ALIVE_fnc_hashSet;
 
@@ -813,7 +814,7 @@ switch(_operation) do {
                     _marker = createMarkerLocal [format["%1%2",MTEMPLATE,"marker"],_position];
                     _marker setMarkerAlphaLocal 1;
                     _marker setMarkerTextLocal _markerLabel;
-                    _marker setMarkerTypeLocal "hd_End";
+                    _marker setMarkerTypeLocal "hd_End_noShadow";
 
                     [_groupState,"groupMapActive",true] call ALIVE_fnc_hashSet;
 

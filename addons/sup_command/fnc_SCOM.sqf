@@ -2095,7 +2095,7 @@ switch (_operation) do {
 
                         private _m = createMarkerLocal ["ALiVE_SCOM_OBJ_DESIGNATE", _position];
                         _m setMarkerShapeLocal "ICON";
-                        _m setMarkerTypeLocal "mil_objective";
+                        _m setMarkerTypeLocal "mil_objective_noShadow";
                         _m setMarkerColorLocal "ColorOrange";
                         _m setMarkerTextLocal "New Objective";
 
@@ -2932,7 +2932,7 @@ switch (_operation) do {
                             _m = createMarkerLocal [format[MTEMPLATE,_attackID], [_position select 0,(_position select 1) + 15]];
                             _m setMarkerShapeLocal "ICON";
                             _m setMarkerSizeLocal [0.6,0.6];
-                            _m setMarkerTypeLocal "mil_warning";
+                            _m setMarkerTypeLocal "mil_warning_noShadow";
                             _m setMarkerColorLocal _color;
                             _m setMarkerTextLocal "Combat";
                             _markers pushback _m;
@@ -2958,7 +2958,7 @@ switch (_operation) do {
                             _m = createMarkerLocal [format[MTEMPLATE,_attackID], [_position select 0,(_position select 1) + 15]];
                             _m setMarkerShapeLocal "ICON";
                             _m setMarkerSizeLocal [0.6,0.6];
-                            _m setMarkerTypeLocal "mil_warning";
+                            _m setMarkerTypeLocal "mil_warning_noShadow";
                             _m setMarkerColorLocal _color;
                             _m setMarkerTextLocal "Combat";
                             _markers pushback _m;
@@ -2984,7 +2984,7 @@ switch (_operation) do {
                             _m = createMarkerLocal [format[MTEMPLATE,_attackID], [_position select 0,(_position select 1) + 15]];
                             _m setMarkerShapeLocal "ICON";
                             _m setMarkerSizeLocal [0.6,0.6];
-                            _m setMarkerTypeLocal "mil_warning";
+                            _m setMarkerTypeLocal "mil_warning_noShadow";
                             _m setMarkerColorLocal _color;
                             _m setMarkerTextLocal "Combat";
                             _markers pushback _m;
@@ -3010,7 +3010,7 @@ switch (_operation) do {
                             _m = createMarkerLocal [format[MTEMPLATE,_attackID], [_position select 0,(_position select 1) + 15]];
                             _m setMarkerShapeLocal "ICON";
                             _m setMarkerSizeLocal [0.6,0.6];
-                            _m setMarkerTypeLocal "mil_warning";
+                            _m setMarkerTypeLocal "mil_warning_noShadow";
                             _m setMarkerColorLocal _color;
                             _m setMarkerTextLocal "Combat";
                             _markers pushback _m;
@@ -3036,7 +3036,7 @@ switch (_operation) do {
                             _m = createMarkerLocal [format[MTEMPLATE,_attackID], [_position select 0,(_position select 1) + 15]];
                             _m setMarkerShapeLocal "ICON";
                             _m setMarkerSizeLocal [0.6,0.6];
-                            _m setMarkerTypeLocal "mil_warning";
+                            _m setMarkerTypeLocal "mil_warning_noShadow";
                             _m setMarkerColorLocal _color;
                             _m setMarkerTextLocal "Combat";
                             _markers pushback _m;
@@ -3062,7 +3062,7 @@ switch (_operation) do {
                             _m = createMarkerLocal [format[MTEMPLATE,_attackID], [_position select 0,(_position select 1) + 15]];
                             _m setMarkerShapeLocal "ICON";
                             _m setMarkerSizeLocal [0.6,0.6];
-                            _m setMarkerTypeLocal "mil_warning";
+                            _m setMarkerTypeLocal "mil_warning_noShadow";
                             _m setMarkerColorLocal _color;
                             _m setMarkerTextLocal "Combat";
                             _markers pushback _m;
@@ -3088,7 +3088,7 @@ switch (_operation) do {
                             _m = createMarkerLocal [format[MTEMPLATE,_attackID], [_position select 0,(_position select 1) + 15]];
                             _m setMarkerShapeLocal "ICON";
                             _m setMarkerSizeLocal [0.75,0.75];
-                            _m setMarkerTypeLocal "mil_warning";
+                            _m setMarkerTypeLocal "mil_warning_noShadow";
                             _m setMarkerColorLocal _color;
                             _m setMarkerTextLocal "Combat";
                             _markers pushback _m;
@@ -3114,7 +3114,7 @@ switch (_operation) do {
                             _m = createMarkerLocal [format[MTEMPLATE,_attackID], [_position select 0,(_position select 1) + 15]];
                             _m setMarkerShapeLocal "ICON";
                             _m setMarkerSizeLocal [0.75,0.75];
-                            _m setMarkerTypeLocal "mil_warning";
+                            _m setMarkerTypeLocal "mil_warning_noShadow";
                             _m setMarkerColorLocal _color;
                             _m setMarkerTextLocal "Combat";
                             _markers pushback _m;
@@ -3362,7 +3362,7 @@ switch (_operation) do {
                                     private _m = createMarkerLocal [format[MTEMPLATE, format["%1%2_dir", _objectiveID, _forEachIndex]], _position getpos [100, _dir]];
                                     _m setMarkerShapeLocal "ICON";
                                     _m setMarkerSizeLocal [0.5,0.5];
-                                    _m setMarkerTypeLocal "mil_arrow";
+                                    _m setMarkerTypeLocal "mil_arrow_noShadow";
                                     _m setMarkerColorLocal _color;
                                     _m setMarkerAlphaLocal _alpha;
                                     _m setMarkerDirLocal _dir;
@@ -3376,7 +3376,7 @@ switch (_operation) do {
                                     private _m = createMarkerLocal [format[MTEMPLATE, format["%1%2_dir", _objectiveID, _forEachIndex]], _position getpos [100, _dir]];
                                     _m setMarkerShapeLocal "ICON";
                                     _m setMarkerSizeLocal [0.5,0.5];
-                                    _m setMarkerTypeLocal "mil_arrow2";
+                                    _m setMarkerTypeLocal "mil_arrow2_noShadow";
                                     _m setMarkerColorLocal _color;
                                     _m setMarkerAlphaLocal _alpha;
                                     _m setMarkerDirLocal _dir;
@@ -3392,11 +3392,11 @@ switch (_operation) do {
                     if (!isnil "_tacom_state") then {
                         switch(_tacom_state) do {
                             case "reserve":{
-                                _icon = "mil_marker";
+                                _icon = "mil_marker_noShadow";
                                 _text = " occupied";
                             };
                             case "defend":{
-                                _icon = "mil_marker";
+                                _icon = "mil_marker_noShadow";
                                 _text = " occupied";
                             };
                             case "recon":{
@@ -3404,7 +3404,7 @@ switch (_operation) do {
                                 _text = " sighting";
                             };
                             case "capture":{
-                                _icon = "mil_warning";
+                                _icon = "mil_warning_noShadow";
                                 _text = " captured";
                             };
                         };
@@ -4046,7 +4046,7 @@ switch (_operation) do {
 
             private _icon = createMarkerLocal [format["ALiVE_SCOM_OBJ_%1_icon",_forEachIndex], _center];
             _icon setMarkerShapeLocal "ICON";
-            _icon setMarkerTypeLocal "mil_objective";
+            _icon setMarkerTypeLocal "mil_objective_noShadow";
             _icon setMarkerColorLocal (if (_playerCreated) then {"ColorOrange"} else {_opcomColor});
             _icon setMarkerSizeLocal [0.7,0.7];
             _icon setMarkerTextLocal (format["%1%2", _forEachIndex + 1, if (_playerCreated) then {" P"} else {""}]);

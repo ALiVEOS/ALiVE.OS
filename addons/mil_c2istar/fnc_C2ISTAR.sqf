@@ -2336,7 +2336,7 @@ if (isServer) then {
                         _marker = createMarkerLocal [format["%1%2",MTEMPLATE,"marker"],_position];
                         _marker setMarkerAlphaLocal 1;
                         _marker setMarkerTextLocal "Destination";
-                        _marker setMarkerTypeLocal "hd_Objective";
+                        _marker setMarkerTypeLocal "hd_Objective_noShadow";
 
                         [_logic,"taskMarker",[_marker]] call MAINCLASS;
                         [_logic,"taskDestination",_position] call MAINCLASS;
@@ -3027,7 +3027,7 @@ if (isServer) then {
                         _marker = createMarkerLocal [format["%1%2",MTEMPLATE,"marker"],_position];
                         _marker setMarkerAlphaLocal 1;
                         _marker setMarkerTextLocal "Area of Operation";
-                        _marker setMarkerTypeLocal "hd_Objective";
+                        _marker setMarkerTypeLocal "hd_Objective_noShadow";
 
                         [_logic,"taskMarker",[_marker]] call MAINCLASS;
                         [_logic,"taskDestination",_position] call MAINCLASS;
@@ -4480,7 +4480,7 @@ if (isServer) then {
             _marker = createMarkerLocal [format["%1%2",MTEMPLATE,"marker"],_position];
             _marker setMarkerAlphaLocal 1;
             _marker setMarkerTextLocal "Destination";
-            _marker setMarkerTypeLocal "hd_Objective";
+            _marker setMarkerTypeLocal "hd_Objective_noShadow";
 
             [_logic,"taskMarker",[_marker]] call MAINCLASS;
             [_logic,"taskDestination",_position] call MAINCLASS;

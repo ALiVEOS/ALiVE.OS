@@ -20,6 +20,7 @@ See Also:
 
 Author:
 Highhead, FX from LK Nuke
+Jman
 ---------------------------------------------------------------------------- */
 private ["_nukepos","_fallouttime","_radzone"];
 
@@ -356,7 +357,7 @@ NUKE_fnc_RadiationServer = {
         _markerobj1 = createMarkerLocal [_markernameicon, _nukepos];
         _markernameicon setMarkerShape "ICON";
         _markernameicon setMarkerColor "ColorRed";
-        _markernameicon setMarkerType "mil_destroy";
+        _markernameicon setMarkerType "mil_destroy_noShadow";
         _markernameicon setMarkerText "Nuclear Radiation";
 
         //Radiation damage

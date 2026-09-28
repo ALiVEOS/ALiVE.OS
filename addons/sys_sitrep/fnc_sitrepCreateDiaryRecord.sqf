@@ -42,6 +42,7 @@ See Also:
 
 Author:
 Tupolov
+Jman
 Peer Reviewed:
 nil
 ---------------------------------------------------------------------------- */
@@ -100,4 +101,4 @@ _marker setMarkerPosLocal (_params select 17);
 _marker setMarkerAlphaLocal 1;
 
 _marker setMarkerTextLocal format["SITREP %1",_params select 0];
-_marker setMarkerTypeLocal "mil_marker";
+_marker setMarkerTypeLocal "mil_marker_noShadow";

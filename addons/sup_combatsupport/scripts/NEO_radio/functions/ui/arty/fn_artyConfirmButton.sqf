@@ -102,7 +102,7 @@ _battery setVariable ["NEO_radioArtyUnitStatus", "MISSION", true];
 private _lastShotMarker = NEO_radioLogic getVariable ["NEO_supportMarkerArtyLastShot", ""];
 if (_lastShotMarker == "") then {
     _lastShotMarker = createMarkerLocal ["NEO_supportMarkerArtyLastShot", _pos];
-    _lastShotMarker setMarkerTypeLocal "hd_Destroy";
+    _lastShotMarker setMarkerTypeLocal "hd_Destroy_noShadow";
     _lastShotMarker setMarkerColorLocal "ColorOrange";
     NEO_radioLogic setVariable ["NEO_supportMarkerArtyLastShot", _lastShotMarker];
 };

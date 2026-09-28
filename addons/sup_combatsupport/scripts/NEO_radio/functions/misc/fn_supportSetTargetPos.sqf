@@ -20,7 +20,7 @@ switch (toUpper (_lb lbText (lbCurSel _lb))) do
     case "TRANSPORT" :
     {
         _marker setMarkerTextLocal "Transport";
-        _marker setMarkerTypeLocal "hd_Pickup";
+        _marker setMarkerTypeLocal "hd_Pickup_noShadow";
 
         [[], 0] call NEO_fnc_supportDrawRing; // transport has no area of influence
 
@@ -31,7 +31,7 @@ switch (toUpper (_lb lbText (lbCurSel _lb))) do
     case "CAS" :
     {
         _marker setMarkerTextLocal "CAS";
-        _marker setMarkerTypeLocal "hd_Destroy";
+        _marker setMarkerTypeLocal "hd_Destroy_noShadow";
 
         // area-of-influence ring at the CAS engagement radius (slider 655592)
         [_pos, sliderPosition (_display displayCtrl 655592), "ColorBlue"] call NEO_fnc_supportDrawRing;
@@ -43,7 +43,7 @@ switch (toUpper (_lb lbText (lbCurSel _lb))) do
     case "ARTY" :
     {
         _marker setMarkerTextLocal "STRIKE";
-        _marker setMarkerTypeLocal "hd_Objective";
+        _marker setMarkerTypeLocal "hd_Objective_noShadow";
         _marker setMarkerColorLocal "ColorOrange";
 
         // area-of-influence ring at the dispersion / beaten zone (slider 655609); 0 = pinpoint
