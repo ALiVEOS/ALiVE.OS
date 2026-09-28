@@ -212,8 +212,11 @@ private _gracePeriod = 15;
                 private _pollLookahead = 0.5;   // seconds - matches the loop's sleep above
                 private _detonateList = _ied nearEntities ["Man", _proximity + _anticipateMax];
                 _detonateList append (_ied nearEntities ["LandVehicle", _proximity + _anticipateMax]);
+                // Men and crewed vehicles only: with AI Units Trigger IEDs on, an empty car, an
+                // unmanned static weapon or an animal (all found by the searches above) set it off.
                 _detonateList = _detonateList select {
                     alive _x && ((getposATL (vehicle _x)) select 2 < 8) &&
+                    {(_x isKindOf "CAManBase") || {!(_x isKindOf "Man") && {({alive _x} count (crew _x)) > 0}}} &&
                     {
                         private _speedMs    = vectorMagnitude (velocity (vehicle _x));
                         private _anticipate = (_speedMs * _pollLookahead) min _anticipateMax;
@@ -278,7 +281,8 @@ private _gracePeriod = 15;
                     private _stompList = _stompCandidates select {
                         alive _x &&
                         ((getposATL (vehicle _x)) select 2 < 8) &&
-                        (_aiTriggerable || (_x in _players) || ((vehicle _x) in _players)) &&
+                        ((_x isKindOf "CAManBase") || {!(_x isKindOf "Man") && {({alive _x} count (crew _x)) > 0}}) &&
+                        ((_x in _players) || {(vehicle _x) in _players} || {_aiTriggerable && {_x call ALiVE_fnc_iedAICounts}}) &&
                         ((_x distance2D _ied) < _stompRadius)
                     };
                     if (count _stompList > 0) then {
@@ -293,7 +297,8 @@ private _gracePeriod = 15;
                 {
                     private _u = _x;
                     private _isPlayer = (_u in _players) || (vehicle _u in _players);
-                    private _relevant = _aiTriggerable || _isPlayer;
+                    // With AI triggering on, AI count only on a player's side or one friendly to it.
+                    private _relevant = _isPlayer || {_aiTriggerable && {_u call ALiVE_fnc_iedAICounts}};
 
                     // DIAG-STRIP: per-iteration body-entry trace. #890 retest
                     // (Ares, 2026-05-20) showed first-candidate log firing for

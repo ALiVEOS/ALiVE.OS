@@ -25,9 +25,14 @@ if (typeName (_this select 0) == "ARRAY") then {
 // ground" test, and applying this same filter to trigger arming suppressed
 // IED spawning for every GM-hosted mission. Skipping a Zeus-assigned GM as a
 // bomber victim is an acceptable trade. Jman 2026-05-28 / refined 2026-05-30.
+// Only someone the trigger counts: a player, or with AI Units Trigger IEDs on, AI on a player's
+// side or one friendly to it. The first in the list could be a civilian or one of the town's own
+// men, and the town's one bomber went after them.
+private _aiCounts = ADDON getVariable ["aiTriggerable", false];
 _victim = ((_this select 1) select {
     private _person = if (vehicle _x != _x) then { driver (vehicle _x) } else { _x };
-    !isNull _person && {isNull (getAssignedCuratorLogic _person)}
+    !isNull _person && {isNull (getAssignedCuratorLogic _person)} &&
+    {if (_aiCounts) then { _x call ALiVE_fnc_iedAICounts } else { ((crew _x) findIf {isPlayer _x}) > -1 }}
 }) param [0, objNull];
 
 _debug = ADDON getVariable ["debug", false];

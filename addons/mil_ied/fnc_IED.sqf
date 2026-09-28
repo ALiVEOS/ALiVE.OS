@@ -218,6 +218,28 @@ switch(_operation) do {
                     [ADDON, "integrationChoice", _logic getVariable ["integrationChoice", "_auto"]] call MAINCLASS;
                     [ADDON, "aiTriggerable", _logic getVariable ["AI_Triggerable", false]] call MAINCLASS;
 
+                    // Who counts with AI Units Trigger IEDs on: a player, or AI on a player's side or a
+                    // side friendly to it. Civilians and the players' enemies (the town's own garrison)
+                    // walked into the IEDs and used them up, and the bomber with them. Takes a man or
+                    // a crewed vehicle, as a trigger's list holds.
+                    ALiVE_fnc_iedAICounts = {
+                        private _crew = (crew _this) select {alive _x};
+                        if (_crew isEqualTo []) then { _crew = [_this] };
+                        if ((_crew findIf {isPlayer _x}) > -1) exitWith { true };
+                        private _side = side group (_crew select 0);
+                        if (_side == civilian) exitWith { false };
+                        // The players' sides, worked out at most every 2 s (the trigger asks
+                        // twice a second for every unit in its area). Only West, East and
+                        // Independent count: a headless client, virtual Zeus or spectator is a logic.
+                        if (time - (missionNamespace getVariable ["ALiVE_IED_playerSidesAt", -10]) > 2) then {
+                            private _sides = [];
+                            { private _s = side group _x; if (_s in [west, east, independent]) then { _sides pushBackUnique _s } } forEach allPlayers;
+                            ALiVE_IED_playerSides = _sides;
+                            ALiVE_IED_playerSidesAt = time;
+                        };
+                        (ALiVE_IED_playerSides findIf {(_x getFriend _side) >= 0.6}) > -1
+                    };
+
                     // Normalize numeric/bool Combo attributes through their case handlers.
                     // Eden can store the raw defaultValue string ("0"/"1"/"0.02") when the
                     // user never touched an attribute; each case handler coerces to the
@@ -667,8 +689,10 @@ switch(_operation) do {
             // getposATL (vehicle _x) gives hull Z above terrain — checked against 25m.
             private _trgCondPresence =
                 if (_aiTriggerable) then {
-                    // Any alive unit or vehicle crew at low altitude — players AND AI
-                    "({alive _x && ((getposATL (vehicle _x)) select 2 < 25)} count thislist > 0)"
+                    // Players, and AI on a player's side or one friendly to it, at low altitude.
+                    // The server alone looks: the trigger runs on every machine, and the helper
+                    // it asks is the server's.
+                    "(isServer && {thislist findIf {alive _x && {((getposATL (vehicle _x)) select 2 < 25)} && {_x call ALiVE_fnc_iedAICounts}} > -1})"
                 } else {
                     // Players only: accept either the person object OR their
                     // current vehicle in thisList. When a player boards a
@@ -997,6 +1021,10 @@ switch(_operation) do {
             _result = _args;
         };
         case "aiTriggerable": {
+            // The editor hands the choice over as 0 or 1, and the shared setter keeps only a true or
+            // false, swapping anything else for false, so Yes never took. A number or text is read here.
+            if (_args isEqualType 0) then { _args = _args > 0 };
+            if (_args isEqualType "") then { _args = (toLower _args) in ["1", "true"] };
             _result = [_logic,_operation,_args,false] call ALIVE_fnc_OOsimpleOperation;
         };
         case "Persistence": {
@@ -1365,7 +1393,7 @@ switch(_operation) do {
 
                 // Respect AI_Triggerable setting when rebuilding persisted triggers
                 private _restoredCond = if ([_logic, "aiTriggerable"] call MAINCLASS) then {
-                    "({alive _x && ((getposATL (vehicle _x)) select 2 < 25)} count thislist > 0)"
+                    "(isServer && {thislist findIf {alive _x && {((getposATL (vehicle _x)) select 2 < 25)} && {_x call ALiVE_fnc_iedAICounts}} > -1})"
                 } else {
                     // Accept person OR vehicle in thisList - see the
                     // matching comment in case "start" (search for
