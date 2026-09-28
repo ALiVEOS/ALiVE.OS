@@ -24,6 +24,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 private ["_position","_side","_radius","_found","_enemySides","_entities","_entitySide","_withProfiles"];
@@ -62,6 +63,21 @@ if(count _entities > 0) then {
             _found = true;
         };
     } forEach _entities;
+};
+
+// nearEntities returns nobody sitting in a vehicle, so an enemy crew parked beside the position
+// didn't count: look inside the vehicles near it too (LandVehicle covers statics and bikes). Two
+// kinds are left out, as before: a hull that can't be damaged (nothing a player does clears it,
+// and the air commander leaves some parked aircraft that way for good, crew aboard), and drones
+// and autonomous turrets, whose crew is the game's drone AI rather than soldiers.
+if (!_found) then {
+    {
+        if (((crew _x) findIf {alive _x && {(side group _x) in _enemySides}}) > -1) exitWith {
+            _found = true;
+        };
+    } forEach ((_position nearEntities [["LandVehicle", "Air", "Ship"], _radius]) select {
+        isDamageAllowed _x && {getNumber (configOf _x >> "isUav") != 1}
+    });
 };
 
 if (!_found && {_withProfiles}) then {
