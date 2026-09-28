@@ -226,7 +226,11 @@ if (_type == "entity" && {count (_assignments select 1) == 0}) then {
        ["ALIVE_fnc_garrison - calling ALIVE_fnc_groupGarrisonSPE - _profileType: %1",_profileType] call ALiVE_fnc_dump;
       };
       // DEBUG -------------------------------------------------------------------------------------
-     [_group, _pos, _radius, true, _onlyProfiles, _cbaRadius] call ALIVE_fnc_groupGarrisonSPE;
+     // The post the placement recorded. The profile's position is where the leader stood when it
+     // last despawned, so from the second spawn on the gun and position searches moved with him.
+     // A profile without one (saved before the post was recorded) searches from where it is.
+     private _post = [_profile, "garrisonAnchor", _pos] call ALiVE_fnc_HashGet;
+     [_group, _post, _radius, true, _onlyProfiles, _cbaRadius] call ALIVE_fnc_groupGarrisonSPE;
     } else {
     	// DEBUG -------------------------------------------------------------------------------------
     	if (ALiVE_SYS_PROFILE_DEBUG_ON) then {

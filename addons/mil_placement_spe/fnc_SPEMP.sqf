@@ -582,6 +582,9 @@ switch(_operation) do {
 	                    {
 	                        if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
 	                            [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[10,"false",_size,"SPE"]]] call ALIVE_fnc_profileEntity;
+	                            // The post it holds, so every later spawn garrisons from the module rather than from
+	                            // wherever its leader stood when it last despawned.
+	                            [_x, "garrisonAnchor", +_position] call ALIVE_fnc_hashSet;
 	                            [_x,"busy",true] call ALIVE_fnc_hashSet;
 	                            // Pinned too, as the crewed vehicle is: the AI Commander checks the pin,
 	                            // not busy, when it sends the nearest forces at an enemy, and busy isn't

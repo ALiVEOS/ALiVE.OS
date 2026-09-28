@@ -1419,6 +1419,12 @@ switch(_operation) do {
                         [_profileEntity, "ALiVE_artyHold", [_profile,"ALiVE_artyHold"] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
                     };
 
+                    // the post a Garrison Obj. group holds, so it garrisons from the module after a
+                    // reload as well, rather than from wherever its leader stood when it was saved
+                    if("garrisonAnchor" in (_profile select 1)) then {
+                        [_profileEntity, "garrisonAnchor", [_profile,"garrisonAnchor"] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
+                    };
+
                     if(ALiVE_SYS_DATA_DEBUG_ON) then {
                         ["SYS PROFILE - RECREATED PROFILE ENTITY:"] call ALiVE_fnc_dump;
                         _profileEntity call ALIVE_fnc_inspectHash;
