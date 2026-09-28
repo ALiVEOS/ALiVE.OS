@@ -131,6 +131,15 @@ if (_nearestTown == "") then {
     _nearestTown = "the settlement";
 };
 
-["COIN Update", format ["Insurgents launched %1 near %2. Local status is now %3.", _retaliationType, _nearestTown, [_supportState, "statusBand", "Fragile"] call ALIVE_fnc_hashGet]] remoteExec ["BIS_fnc_showSubtitle", 0];
+// Said in words, and to the task's side only: it went to every player on every side, and named
+// the retaliation by its internal type.
+private _whatHappened = switch (_retaliationType) do {
+    case "ServiceSabotage":       { "sabotaged local services" };
+    case "InformantIntimidation": { "intimidated local informants" };
+    case "MarketDisruption":      { "disrupted the market" };
+    default                       { "spread propaganda" };
+};
+private _audience = if (_sideText in ["EAST", "WEST", "GUER"]) then { [_sideText] call ALIVE_fnc_sideTextToObject } else { 0 };
+["COIN Update", format ["Insurgents %1 near %2. Local status is now %3.", _whatHappened, _nearestTown, [_supportState, "statusBand", "Fragile"] call ALIVE_fnc_hashGet]] remoteExec ["BIS_fnc_showSubtitle", _audience];
 
 true
