@@ -37,6 +37,10 @@ Jman
 params ["_units", "_position", "_radius", ["_moveInstantly", true], ["_sortFrom", [], [[]]]];
 
 private _movementAssignments = [];
+// A man walking to a slot isn't on it yet, so it's claimed for him for as long as his walk may
+// take (it gives up after two minutes) and isn't handed to another group meanwhile. His own group
+// garrisoning again gives it back to him, or to its next man if he has a post already.
+private _placingGroup = group (_units param [0, objNull]);
 // The sweep covers the area asked for, which for a placed garrison is the whole
 // objective, but the slots are handed out nearest the men. nearestObjects returns them
 // ordered from the sweep centre, so without this the first man of a group at the rim
@@ -51,11 +55,14 @@ _cbaObjects = [_cbaObjects, [], { _x distance2D _sortFrom }, "ASCEND"] call BIS_
     private _cbaPos = getPosATL _x;
     private _cbaDir = getDir _x;
 
-    // Skip a position that already has a (non-player) occupant, so overlapping garrison
-    // groups don't stack two units on the same slot. Keeps the unit for the next free one.
-    if (((nearestObjects [_cbaPos, ["CAManBase"], 1.5]) findIf {alive _x && {!isPlayer _x}}) == -1) then {
+    // Skip a position that already has a (non-player) occupant, or a man on his way to it, so
+    // overlapping garrison groups don't stack two units on the same slot. Keeps the unit for the
+    // next free one.
+    (_x getVariable ["ALiVE_garrisonClaim", [objNull, 0]]) params ["_claimant", "_claimedUntil"];
+    private _claimHeld = alive _claimant && {time < _claimedUntil};
+    if ((!_claimHeld || {group _claimant == _placingGroup}) && {((nearestObjects [_cbaPos, ["CAManBase"], 1.5]) findIf {alive _x && {!isPlayer _x}}) == -1}) then {
 
-        private _unit = _units select 0;
+        private _unit = [_units select 0, _claimant] select (_claimHeld && {_claimant in _units});
 
         if (_moveInstantly) then {
             _unit setPosATL _cbaPos;
@@ -63,9 +70,10 @@ _cbaObjects = [_cbaObjects, [], { _x distance2D _sortFrom }, "ASCEND"] call BIS_
             doStop _unit;
         } else {
             _movementAssignments pushBack [_unit, _cbaPos, _cbaDir];
+            _x setVariable ["ALiVE_garrisonClaim", [_unit, time + 125]];
         };
 
-        _units deleteAt 0;
+        _units deleteAt (_units find _unit);
     };
 } forEach _cbaObjects;
 

@@ -220,6 +220,26 @@ if (_type == "entity" && {count (_assignments select 1) == 0}) then {
     private _groupPos = _pos;
     if (!isNull _group && {!isNull (leader _group)}) then { _groupPos = getPosATL (leader _group) };
 
+    // Men put straight into their buildings would appear there in front of a player, so a group
+    // garrisoned with a player within 500 m of it or of its objective walks in instead, as woken
+    // reserves do. The order usually runs as the group spawns, with players well off, but one
+    // given to a group already on the map, like the AI Commander's reserve and insurgency guard
+    // orders, runs at once. Whoever the profile system spawns units for counts as a player here:
+    // a Zeus when Zeus spawning is on, a connected drone and the mission's own spawn sources too.
+    if (_moveInstantly) then {
+        private _watchers = (allPlayers - entities "HeadlessClient_F") + (allUnitsUAV select { isUavConnected _x });
+        if (!isNil "ALIVE_profileSystem" && {[ALIVE_profileSystem, "zeusSpawn", false] call ALiVE_fnc_hashGet}) then {
+            _watchers append allCurators;
+        };
+        if (!isNil "ALiVE_SpawnSources" && {ALiVE_SpawnSources isEqualType []}) then {
+            _watchers append (ALiVE_SpawnSources select { _x isEqualType objNull && {!isNull _x} });
+        };
+        private _watched = (_watchers findIf {
+            (_x distance2D _groupPos) < 500 || {(_x distance2D _searchCentre) < 500}
+        }) > -1;
+        if (_watched) then { _moveInstantly = false };
+    };
+
     if (_profileType == "SPE") then {
     	// DEBUG -------------------------------------------------------------------------------------
     	if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
@@ -230,7 +250,7 @@ if (_type == "entity" && {count (_assignments select 1) == 0}) then {
      // last despawned, so from the second spawn on the gun and position searches moved with him.
      // A profile without one (saved before the post was recorded) searches from where it is.
      private _post = [_profile, "garrisonAnchor", _pos] call ALiVE_fnc_HashGet;
-     [_group, _post, _radius, true, _onlyProfiles, _cbaRadius] call ALIVE_fnc_groupGarrisonSPE;
+     [_group, _post, _radius, _moveInstantly, _onlyProfiles, _cbaRadius] call ALIVE_fnc_groupGarrisonSPE;
     } else {
     	// DEBUG -------------------------------------------------------------------------------------
     	if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
