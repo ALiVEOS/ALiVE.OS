@@ -14215,11 +14215,50 @@ switch(_operation) do {
 
             } forEach _reinforceIndividualProfiles;
 
+            // A reinforcement group is handed to the AI Commander here. One whose transport was
+            // destroyed on the way kept its link to it, and the commander leaves out any group tied
+            // to a vehicle, so it never showed in the commander's lists or the tablet's Ops list and
+            // never got an order. Links to this delivery's own transports, and to any vehicle that's
+            // gone, are dropped; a group's own vehicles are kept.
+            private _transportVehicles = [_event, "transportVehiclesProfiles", []] call ALIVE_fnc_hashGet;
             {
                 {
                     _profile = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
                     if!(isNil "_profile") then {
                         [_profile,"busy",false] call ALIVE_fnc_hashSet;
+                        private _vAssign = [_profile, "vehicleAssignments"] call ALIVE_fnc_hashGet;
+                        if (([_profile, "type", ""] call ALIVE_fnc_hashGet) == "entity" && {!isNil "_vAssign"} && {_vAssign isEqualType []} && {count _vAssign >= 2}) then {
+                            private _inCargo = [_profile, "vehiclesInCargoOf", []] call ALIVE_fnc_hashGet;
+                            private _inCommand = [_profile, "vehiclesInCommandOf", []] call ALIVE_fnc_hashGet;
+                            // The in-cargo and in-command lists as well as the links: a group listed in cargo
+                            // doesn't move while virtual, and one that despawned on foot can keep a stale entry.
+                            private _vehicleIDs = (_vAssign select 1) + _inCargo + _inCommand;
+                            _vehicleIDs = _vehicleIDs arrayIntersect _vehicleIDs;
+                            private _dropped = [];
+                            {
+                                private _vehicleID = _x;
+                                private _vehicleProfile = [ALIVE_profileHandler, "getProfile", _vehicleID] call ALIVE_fnc_profileHandler;
+                                private _gone = isNil "_vehicleProfile";
+                                if (_gone || {_vehicleID in _transportVehicles}) then {
+                                    if (!_gone) then {
+                                        [_profile, _vehicleProfile] call ALIVE_fnc_removeProfileVehicleAssignment;
+                                    };
+                                    // What the helper leaves (it acts only while the vehicle's own record lists
+                                    // the group), and every trace of a vehicle that's gone, is dropped here.
+                                    [_vAssign, _vehicleID, nil] call ALIVE_fnc_hashSet;
+                                    _inCargo deleteAt (_inCargo find _vehicleID);
+                                    _inCommand deleteAt (_inCommand find _vehicleID);
+                                    _dropped pushBack _vehicleID;
+                                };
+                            } forEach _vehicleIDs;
+                            if (count _dropped > 0 && {(_vAssign select 1) isEqualTo []}) then {
+                                [_profile, "speedPerSecond", "Man" call ALIVE_fnc_vehicleGetSpeedPerSecond] call ALIVE_fnc_hashSet;
+                            };
+                            if (_debug && {count _dropped > 0}) then {
+                                ["ML - setEventProfilesAvailable: reinforceGroup %1 released from vehicle links %2, %3 left",
+                                    _x, _dropped, count (_vAssign select 1)] call ALiVE_fnc_dump;
+                            };
+                        };
                     };
                 } forEach _x;
 
