@@ -317,9 +317,12 @@ switch(_operation) do {
                     };
 
                     // _autoModeFollowsIntegration: under autoDetect=Auto, does iChoice imply
-                    // we should swap in the integration? Mirrors the Phase 3b rule.
+                    // we should swap in the integration? Mirrors the Phase 3b rule. On Auto an
+                    // integration that opts in (ACE Explosives' autoPickEligible) is taken too:
+                    // it keeps the ALiVE pipeline, so the resolved mode stays "alive", and that
+                    // alone used to leave Auto with nothing to swap in.
                     private _autoModeFollowsIntegration = !(_iChoice == "_force_alive") &&
-                                                          !(_iChoice == "_auto" && _resolved == "alive");
+                                                          !(_iChoice == "_auto" && _resolved == "alive" && isNil "_candidateIntegration");
 
                     private _fnResolveClasses = {
                         params ["_category", "_defaultArr"];
