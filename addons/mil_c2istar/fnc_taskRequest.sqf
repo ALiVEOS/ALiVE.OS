@@ -58,22 +58,36 @@ if (isNil "ALIVE_MIL_C2ISTAR") exitwith {
 private _logic = ALIVE_MIL_C2ISTAR;
 
 if (_strategic) then {
+    // A commander with several factions sends one of them at random, so a request counts when its
+    // faction and the Friendly faction chosen for the side belong to the same commander, not only
+    // when the two match. Before, most of such a commander's tasks were dropped.
+    private _fnc_sameCommander = {
+        params ["_requestFaction", "_chosenFaction"];
+        if (_requestFaction == _chosenFaction) exitWith { true };
+        ((missionNamespace getVariable ["OPCOM_instances", []]) findIf {
+            _x isEqualType [] && {
+                private _opcomFactions = [_x, "factions", []] call ALiVE_fnc_hashGet;
+                (_requestFaction in _opcomFactions) && {_chosenFaction in _opcomFactions}
+            }
+        }) > -1
+    };
+
     // Check auto task generation is turned on for side and faction
     switch (_side) do {
         case "GUER": {
             private _autoGenerateINDFOR = [_logic, "autoGenerateIndfor"] call ALiVE_fnc_C2ISTAR;
             private _autoGenerateINDFORFaction = [_logic, "autoGenerateIndforFaction"] call ALiVE_fnc_C2ISTAR;
-            if (_autoGenerateINDFOR == "Strategic" && {_faction == _autoGenerateINDFORFaction}) then {_autoGenerateStrategicTasks = true};
+            if (_autoGenerateINDFOR == "Strategic" && {[_faction, _autoGenerateINDFORFaction] call _fnc_sameCommander}) then {_autoGenerateStrategicTasks = true};
         };
         case "EAST": {
             private _autoGenerateOPFOR = [_logic, "autoGenerateOpfor"] call ALiVE_fnc_C2ISTAR;
             private _autoGenerateOPFORFaction = [_logic, "autoGenerateOpforFaction"] call ALiVE_fnc_C2ISTAR;
-            if (_autoGenerateOPFOR == "Strategic" && {_faction == _autoGenerateOPFORFaction}) then {_autoGenerateStrategicTasks = true};
+            if (_autoGenerateOPFOR == "Strategic" && {[_faction, _autoGenerateOPFORFaction] call _fnc_sameCommander}) then {_autoGenerateStrategicTasks = true};
         };
         default {
             private _autoGenerateBLUFOR = [_logic, "autoGenerateBlufor"] call ALiVE_fnc_C2ISTAR;
             private _autoGenerateBLUFORFaction = [_logic, "autoGenerateBluforFaction"] call ALiVE_fnc_C2ISTAR;
-            if (_autoGenerateBLUFOR == "Strategic" && {_faction == _autoGenerateBLUFORFaction}) then {_autoGenerateStrategicTasks = true};
+            if (_autoGenerateBLUFOR == "Strategic" && {[_faction, _autoGenerateBLUFORFaction] call _fnc_sameCommander}) then {_autoGenerateStrategicTasks = true};
         };
     };
 
