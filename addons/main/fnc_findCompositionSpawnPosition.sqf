@@ -76,6 +76,8 @@ Parameters:
                               its own debug attribute through without
                               relying on init.sqf timing (which can fire
                               after module init in MP host). Default false.
+    _this select 9: BOOL    - skip trying the centre itself first. Default false.
+                              A battery sets it once a gun stands on the centre.
 
 Returns:
     ARRAY [_pos, _dir] on success, [] on failure.
@@ -115,7 +117,11 @@ params [
     // Optional caller-owned accumulator; avoids mixing concurrent module totals.
     ["_startupMetrics", [], [[]]],
     // Camp opt-in: registered airfields define coverage; other callers retain discovery.
-    ["_registeredAirfieldsOnly", false, [true]]
+    ["_registeredAirfieldsOnly", false, [true]],
+    // Skip Stage 1's try of the centre itself. A battery sets it once a gun already
+    // stands there: guns not yet spawned don't block the spot, so every later gun was
+    // handed the same centre, failed the spacing and was dropped.
+    ["_skipCentre", false, [true]]
 ];
 
 // _runwayClearanceMul scales the runway/taxiway rejection radius. Default
@@ -951,7 +957,7 @@ if (_swallowed) exitWith {
 // ------------------------------------------------------------------------
 private _profCenterT0 = if (_collectStartupMetrics) then {diag_tickTime} else {0};
 PROFILE_SCOPE(COMPCENTERCHECK, "ALiVE composition validation: center check")
-private _centerClear = _mode != "roadblock" && {[_centerPos, _envelope] call _candidateClear};
+private _centerClear = _mode != "roadblock" && {!_skipCentre} && {[_centerPos, _envelope] call _candidateClear};
 PROFILE_SCOPE_END(COMPCENTERCHECK)
 if (_collectStartupMetrics) then { _profCenterSeconds = diag_tickTime - _profCenterT0 };
 if (_centerClear) exitWith {

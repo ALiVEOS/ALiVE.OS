@@ -78,6 +78,12 @@ ALiVE_DIAG_artyCalls = ALiVE_DIAG_artyCalls + 1;
 
 private _result = [];
 
+// Once a gun stands on the centre, the validator's first try (the centre itself) is skipped.
+// It found the centre clear every time, because guns placed but not yet spawned don't block
+// it, so each later gun got the same spot six times, failed the spacing and was dropped: a
+// battery on open ground came out as one gun.
+private _skipCentre = (_used findIf {_centre distance2D _x < _minSeparation}) >= 0;
+
 // The validator picks its spot at random within the disc, so a spot too close to
 // a gun already placed is bad luck rather than a dead end, and asking again is
 // worth doing. Six goes is plenty: each one searches the whole area, so needing
@@ -87,7 +93,7 @@ private _result = [];
 // clear at all in the whole disc, and asking again would only repeat the same
 // search, so give up at once rather than paying for it six times over.
 for "_attempt" from 1 to 6 do {
-    private _found = [_centre, _radius, _envelope, _mode, random 360, _debug, 0.6] call ALiVE_fnc_findCompositionSpawnPosition;
+    private _found = [_centre, _radius, _envelope, _mode, random 360, _debug, 0.6, [], false, _skipCentre] call ALiVE_fnc_findCompositionSpawnPosition;
 
     if (count _found < 2) exitWith {
         if (_debug) then {
