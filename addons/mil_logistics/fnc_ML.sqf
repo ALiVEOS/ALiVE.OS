@@ -11394,7 +11394,18 @@ switch(_operation) do {
                                                 _position = _remotePosition;
                                             } else {
                                                 if (_paraDrop) then {
-                                                    _position set [2, PARADROP_HEIGHT];
+                                                    // A convoy with players near its departure starts out of
+                                                    // sight at the remote anchor, where its trucks are made, as
+                                                    // requested individuals and vehicles do. Chuted in over the
+                                                    // departure, the group landed by the players and its truck
+                                                    // waited empty at the hidden spot.
+                                                    if (_eventType == "PR_STANDARD") then {
+                                                        _position = [_logic, "prepareHelicopterLZ", [
+                                                            _remotePosition getPos [random(150), random(360)], 80
+                                                        ]] call MAINCLASS;
+                                                    } else {
+                                                        _position set [2, PARADROP_HEIGHT];
+                                                    };
                                                 };
                                             };
                                         };
