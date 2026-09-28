@@ -854,6 +854,8 @@ switch(_operation) do {
 
             //Get global cleared sectors
             [_state,"cleared", MOD(CQB) getvariable "cleared"] call ALiVE_fnc_hashSet;
+            // and the houses cleared one by one
+            [_state,"clearedHouses", _logic getVariable ["clearedHouses", []]] call ALiVE_fnc_hashSet;
 
             _data = [] call ALiVE_fnc_HashCreate;
             {
@@ -959,6 +961,20 @@ switch(_operation) do {
             } else {
                 _data = (values (_logic getVariable ["houses", createHashMap])) apply {_x select 0};
                 _disabled = ((values (_logic getVariable ["houses", createHashMap])) select {!(_x select 1)}) apply {_x select 0};
+
+                // Houses cleared one by one in an earlier session come off again, and stay
+                // remembered for the next save.
+                private _clearedHouses = [_args, "clearedHouses", []] call ALiVE_fnc_hashGet;
+                if (_clearedHouses isEqualType []) then {
+                    {
+                        _x params [["_type", ""], ["_spot", []]];
+                        if (_type isEqualType "" && {_spot isEqualType []} && {count _spot >= 2}) then {
+                            private _h = _spot nearestObject _type;
+                            if (!isNull _h) then { _data = _data - [_h]; _disabled = _disabled - [_h] };
+                        };
+                    } forEach _clearedHouses;
+                    _logic setVariable ["clearedHouses", +_clearedHouses];
+                };
             };
 
             //Apply houselist
@@ -1393,6 +1409,12 @@ switch(_operation) do {
             };
 
             [_logic, "removeHouse", _house] call ALiVE_fnc_CQB;
+            // Remembered by type and spot for the save, which leaves the house list out (it runs to
+            // a hundred KB and more): a house cleared on its own, its sector not yet all clear, would
+            // otherwise be garrisoned again after a reload.
+            private _clearedHouses = _logic getVariable ["clearedHouses", []];
+            _clearedHouses pushBack [typeOf _house, (getPosATL _house) select [0, 2]];
+            _logic setVariable ["clearedHouses", _clearedHouses];
 
             private _parentSectorID = ((_sectorID splitString "_") select [0, 2]) joinString "_";
             private _parentCount = 0;
