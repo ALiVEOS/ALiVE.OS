@@ -174,7 +174,11 @@ switch(_operation) do {
                                                 {deletevehicle _x} foreach (units group (driver _vehicle)); deletevehicle _vehicle;
                                             };
                                             case ("vehicle") : {
-                                                if ((vehicle _x) isKindOf "Car") exitwith {
+                                                // Any vehicle the faction's players can ride in: it was cars only, so a
+                                                // synced tank, helicopter or boat was left out without a word. Static
+                                                // weapons and parachutes are land and air vehicles to the engine, so
+                                                // they're kept out, or a synced mortar could take the truck's place.
+                                                if (({_vehicle isKindOf _x} count ["LandVehicle","Air","Ship"] > 0) && {({_vehicle isKindOf _x} count ["StaticWeapon","ParachuteBase"]) == 0}) exitwith {
                                                     call compile (format["ALiVE_SUP_MULTISPAWN_RESPAWNVEHICLE_%1 = _x",_id]);
                                                     Publicvariable (format["ALiVE_SUP_MULTISPAWN_RESPAWNVEHICLE_%1",_id]);
 
@@ -230,16 +234,16 @@ switch(_operation) do {
                     if (_respawnGroup call ALiVE_fnc_markerExists) then {
                         _pos = (getmarkerPos _respawnGroup);
 
-                        ["ALiVE_SUP_MULTISPAWN - Using respawn point %2 at %1!",_pos,_respawnGroup] call ALiVE_fnc_Dump;
+                        if (missionNamespace getVariable [QGVAR(DEBUG), false]) then {["ALiVE_SUP_MULTISPAWN - Using respawn point %2 at %1!",_pos,_respawnGroup] call ALiVE_fnc_Dump;};
                     } else {
                         if (_respawnFaction call ALiVE_fnc_markerExists) then {
                             _pos = (getmarkerPos _respawnFaction);
 
-                            ["ALiVE_SUP_MULTISPAWN - Using respawn point %2 at %1!",_pos,_respawnFaction] call ALiVE_fnc_Dump;
+                            if (missionNamespace getVariable [QGVAR(DEBUG), false]) then {["ALiVE_SUP_MULTISPAWN - Using respawn point %2 at %1!",_pos,_respawnFaction] call ALiVE_fnc_Dump;};
                         } else {
                             _pos = getMarkerPos _respawn;
 
-                            ["ALiVE_SUP_MULTISPAWN - Using default respawn point %2 at %1!",_pos,_respawn] call ALiVE_fnc_Dump;
+                            if (missionNamespace getVariable [QGVAR(DEBUG), false]) then {["ALiVE_SUP_MULTISPAWN - Using default respawn point %2 at %1!",_pos,_respawn] call ALiVE_fnc_Dump;};
                         };
                     };
 
@@ -259,7 +263,7 @@ switch(_operation) do {
 
                             waituntil {!isnull player};
 
-                            ["SUP MULTISPAWN - Forward Spawn EH placed at %1...", time] call ALiVE_fnc_dump;
+                            if (missionNamespace getVariable [QGVAR(DEBUG), false]) then {["SUP MULTISPAWN - Forward Spawn EH placed at %1...", time] call ALiVE_fnc_dump;};
 
                             player addEventHandler ["KILLED",{
                                 if (!isnil "ALiVE_SYS_PLAYER_LOADOUT_DATA" && {GVAR(RESPAWN_WITH_GEAR)}) then {GVAR(PLAYERGEAR) = [objNull, [_this select 0]] call ALiVE_fnc_setGear};
@@ -284,7 +288,7 @@ switch(_operation) do {
 
                             waituntil {!isnull player};
 
-                            ["SUP MULTISPAWN - Insertion EH placed at %1...", time] call ALiVE_fnc_dump;
+                            if (missionNamespace getVariable [QGVAR(DEBUG), false]) then {["SUP MULTISPAWN - Insertion EH placed at %1...", time] call ALiVE_fnc_dump;};
 
                             player addEventHandler ["KILLED", {
                                 if (!isnil "ALiVE_SYS_PLAYER_LOADOUT_DATA" && {GVAR(RESPAWN_WITH_GEAR)}) then {GVAR(PLAYERGEAR) = [objNull, [_this select 0]] call ALiVE_fnc_setGear};
@@ -330,7 +334,7 @@ switch(_operation) do {
                             if !(!isnil "_respawnVehicle" && {_respawnVehicle}) then {
                                 ["ALiVE_SUP_MULTISPAWN - Please place a vehicle with name ALiVE_SUP_MULTISPAWN_RESPAWNVEHICLE_%1... Defaulting to regular respawn point!",faction player] call ALiVE_fnc_DumpR;
                             } else {
-                                ["SUP MULTISPAWN - Vehicle EH placed at %1...", time] call ALiVE_fnc_dump;
+                                if (missionNamespace getVariable [QGVAR(DEBUG), false]) then {["SUP MULTISPAWN - Vehicle EH placed at %1...", time] call ALiVE_fnc_dump;};
                             };
 
                             player addEventHandler ["KILLED", {
@@ -353,7 +357,22 @@ switch(_operation) do {
                                         _v = call compile format["ALiVE_SUP_MULTISPAWN_RESPAWNVEHICLE_%1",faction player];
 
                                         if !(alive _v) exitwith {["ALiVE_SUP_MULTISPAWN - No ALiVE_SUP_MULTISPAWN_RESPAWNVEHICLE_%1 available... Exiting!",faction player] call ALiVE_fnc_dump};
-                                        if ([_v] call ALIVE_fnc_vehicleCountEmptyPositions > 0) then {player moveInCargo _v} else {player setPosATL ([getPosATL _v, 10] call CBA_fnc_RandPos)};
+                                        // A passenger seat if one is free: a tank or an attack helicopter may have
+                                        // none. Otherwise beside it, but only on dry ground, so nobody is put in
+                                        // the air beside a flying one or in the sea beside a boat; there they stay
+                                        // at the normal respawn point.
+                                        if ((_v emptyPositions "Cargo") > 0) then {
+                                            player moveInCargo _v;
+                                        } else {
+                                            // isTouchingGround can read false for a vehicle another machine owns,
+                                            // as the respawn vehicle is on a dedicated server, so being under a
+                                            // metre off the ground counts too.
+                                            if ((isTouchingGround _v || {((getPos _v) select 2) < 1}) && {!(surfaceIsWater (getPosASL _v))}) then {
+                                                player setPosATL ([getPosATL _v, 10] call CBA_fnc_RandPos);
+                                            } else {
+                                                if (missionNamespace getVariable [QGVAR(DEBUG), false]) then {["SUP MULTISPAWN - %1 has no free passenger seat and isn't on dry ground, so the player stays at the respawn point", typeOf _v] call ALiVE_fnc_dump};
+                                            };
+                                        };
                                     };
 
                                     sleep 3;
@@ -381,7 +400,7 @@ switch(_operation) do {
                                 ["ALiVE_SUP_MULTISPAWN - Please place a ALiVE_SUP_MULTISPAWN_RESPAWNBUILDING_%1 marker near a building... Defaulting to regular respawn point!",faction player] call ALiVE_fnc_dumpR;
                             } else {
                                 _respawnBuilding = nearestObject [getmarkerpos _buildingMarker, "Building"];
-                                ["SUP MULTISPAWN - Building EH placed at %1...", getposATL _respawnBuilding] call ALiVE_fnc_dump;
+                                if (missionNamespace getVariable [QGVAR(DEBUG), false]) then {["SUP MULTISPAWN - Building EH placed at %1...", getposATL _respawnBuilding] call ALiVE_fnc_dump;};
                             };
 
                             player addEventHandler ["KILLED", {
