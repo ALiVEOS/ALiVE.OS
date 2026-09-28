@@ -1302,12 +1302,14 @@ switch(_operation) do {
             _groups = _groups + _infantryGroups;
             private _infantryGroupEnd = count _groups;
 
+            private _airGroups = [];
             for "_i" from 0 to _countAir -1 do {
                 _group = ["Air",_faction] call ALIVE_fnc_configGetRandomGroup;
                 if!(_group == "FALSE") then {
-                    _groups pushback _group;
+                    _airGroups pushback _group;
                 };
             };
+            _groups = _groups + _airGroups;
 
             for "_i" from 0 to _countSpecOps -1 do {
                 _group = ["SpecOps",_faction] call ALIVE_fnc_configGetRandomGroup;
@@ -1330,6 +1332,9 @@ switch(_operation) do {
                 _infantryGroupStart = count (_groupsBeforeInfantry - ALiVE_PLACEMENT_GROUPBLACKLIST);
                 _infantryGroupEnd = _infantryGroupStart;
             };
+            // Air groups come straight after the infantry. They sit parked with no orders, so the
+            // reserve threshold leaves them out of an objective's active force.
+            private _airGroupEnd = _infantryGroupEnd + count (_airGroups - ALiVE_PLACEMENT_GROUPBLACKLIST);
 
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
@@ -1579,7 +1584,7 @@ switch(_operation) do {
                 if(_totalCount < _groupCount) then {
 
                     private _fnc_placeGroupCP = {
-                        params ["_group", "_isVehicle", "_isInfantry"];
+                        params ["_group", "_isVehicle", "_isInfantry", ["_isAir", false]];
                         private ["_profiles","_command","_radius","_position","_garrisonPos"];
 
                         // Reserve dispatch
@@ -1677,7 +1682,7 @@ switch(_operation) do {
                                         [_x, "setActiveCommand", [_command,"spawn",_radius]] call ALIVE_fnc_profileEntity;
                                         [_x, "homeCluster", _cluster] call ALiVE_fnc_HashSet;
                                         private _profileID = [_x, "profileID"] call ALiVE_fnc_HashGet;
-                                        if (!_gunForcedActive) then {
+                                        if (!_gunForcedActive && {!_isAir}) then {
                                             private _activeIDs = [_cluster, "activeProfileIDs"] call ALiVE_fnc_HashGet;
                                             _activeIDs pushBack _profileID;
                                             [_cluster, "activeProfileIDs", _activeIDs] call ALiVE_fnc_HashSet;
@@ -1694,8 +1699,9 @@ switch(_operation) do {
                                 if (_isInfantry) then { _infantryActivePlacedCount = _infantryActivePlacedCount + 1 };
                                 if (_isVehicle && {!_gunForcedActive}) then { _vehicleActivePlacedCount = _vehicleActivePlacedCount + 1 };
 
-                                // Not for a group with a gun (see _gunForcedActive).
-                                if (!_gunForcedActive) then {
+                                // Not for a group with a gun (see _gunForcedActive), nor an air group: it sits parked
+                                // where it was placed, so counted here it kept the objective's reserve asleep.
+                                if (!_gunForcedActive && {!_isAir}) then {
                                     private _spawned = [_cluster, "reserveActiveAtSpawn"] call ALiVE_fnc_hashGet;
                                     [_cluster, "reserveActiveAtSpawn", _spawned + 1] call ALiVE_fnc_hashSet;
                                 };
@@ -1709,13 +1715,15 @@ switch(_operation) do {
                             _group = _groups select _totalCount;
                             private _isVehicle = (_totalCount < _infantryGroupStart);
                             private _isInfantry = (_totalCount >= _infantryGroupStart) && (_totalCount < _infantryGroupEnd);
-                            [_group, _isVehicle, _isInfantry] call _fnc_placeGroupCP;
+                            private _isAir = (_totalCount >= _infantryGroupEnd) && (_totalCount < _airGroupEnd);
+                            [_group, _isVehicle, _isInfantry, _isAir] call _fnc_placeGroupCP;
                         };
                     } else {
                         _group = _groups select _totalCount;
                         private _isVehicle = (_totalCount < _infantryGroupStart);
                         private _isInfantry = (_totalCount >= _infantryGroupStart) && (_totalCount < _infantryGroupEnd);
-                        [_group, _isVehicle, _isInfantry] call _fnc_placeGroupCP;
+                        private _isAir = (_totalCount >= _infantryGroupEnd) && (_totalCount < _airGroupEnd);
+                        [_group, _isVehicle, _isInfantry, _isAir] call _fnc_placeGroupCP;
                     };
                 };
 

@@ -2880,6 +2880,7 @@ switch(_operation) do {
 
                                 private _isVehicle = (_totalCount < _infantryGroupStart);
                                 private _isInfantry = (_totalCount >= _infantryGroupStart) && (_totalCount < _infantryGroupEnd);
+                                private _isAir = (_totalCount >= _infantryGroupEnd);
                                 // Try to extract vehicle class only when this
                                 // group is past the vehicle-active quota. If
                                 // extraction succeeds we route to vehicle
@@ -3028,7 +3029,7 @@ switch(_operation) do {
                                                 // so the alive-count check picks it up.
                                                 [_x, "homeCluster", _cluster] call ALiVE_fnc_HashSet;
                                                 private _profileID = [_x, "profileID"] call ALiVE_fnc_HashGet;
-                                                if (!_gunForcedActive) then {
+                                                if (!_gunForcedActive && {!_isAir}) then {
                                                     private _activeIDs = [_cluster, "activeProfileIDs"] call ALiVE_fnc_HashGet;
                                                     _activeIDs pushBack _profileID;
                                                     [_cluster, "activeProfileIDs", _activeIDs] call ALiVE_fnc_HashSet;
@@ -3054,8 +3055,9 @@ switch(_operation) do {
 
                                         // Track active count per cluster for
                                         // the reserve activation threshold.
-                                        // Not for a group with a gun (see _gunForcedActive).
-                                        if (!_gunForcedActive) then {
+                                        // Not for a group with a gun (see _gunForcedActive), nor an air group: it sits parked
+                                        // where it was placed, so counted here it kept the objective's reserve asleep.
+                                        if (!_gunForcedActive && {!_isAir}) then {
                                             private _spawned = [_x, "reserveActiveAtSpawn"] call ALiVE_fnc_hashGet;
                                             [_x, "reserveActiveAtSpawn", _spawned + 1] call ALiVE_fnc_hashSet;
                                         };
@@ -3071,6 +3073,7 @@ switch(_operation) do {
 
                             private _isVehicle = (_totalCount < _infantryGroupStart);
                             private _isInfantry = (_totalCount >= _infantryGroupStart) && (_totalCount < _infantryGroupEnd);
+                            private _isAir = (_totalCount >= _infantryGroupEnd);
                             private _vehicleReserveClass = "";
                             // A group with a static weapon or an artillery piece anywhere in it is always placed active:
                             // parked empty, a gun is one nobody fires, and a woken reserve only brings back its first
@@ -3182,7 +3185,7 @@ switch(_operation) do {
                                             // multi-group branch above).
                                             [_x, "homeCluster", _cluster] call ALiVE_fnc_HashSet;
                                             private _profileID = [_x, "profileID"] call ALiVE_fnc_HashGet;
-                                            if (!_gunForcedActive) then {
+                                            if (!_gunForcedActive && {!_isAir}) then {
                                                 private _activeIDs = [_cluster, "activeProfileIDs"] call ALiVE_fnc_HashGet;
                                                 _activeIDs pushBack _profileID;
                                                 [_cluster, "activeProfileIDs", _activeIDs] call ALiVE_fnc_HashSet;
@@ -3203,8 +3206,9 @@ switch(_operation) do {
 
                                     // Track active count per cluster for
                                     // the reserve activation threshold.
-                                    // Not for a group with a gun (see _gunForcedActive).
-                                    if (!_gunForcedActive) then {
+                                    // Not for a group with a gun (see _gunForcedActive), nor an air group: it sits parked
+                                    // where it was placed, so counted here it kept the objective's reserve asleep.
+                                    if (!_gunForcedActive && {!_isAir}) then {
                                         private _spawned = [_x, "reserveActiveAtSpawn"] call ALiVE_fnc_hashGet;
                                         [_x, "reserveActiveAtSpawn", _spawned + 1] call ALiVE_fnc_hashSet;
                                     };
