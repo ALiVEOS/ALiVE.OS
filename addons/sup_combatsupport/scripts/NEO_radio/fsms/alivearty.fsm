@@ -29,7 +29,7 @@ item24[] = {"not_in_range",4,218,208.929932,64.092453,298.929932,114.092430,1.00
 item25[] = {"__7",2,250,219.131882,190.831787,309.131866,240.831772,0.000000,""};
 item26[] = {"Static",4,250,405.627228,193.648911,495.627014,243.648956,0.000000,"Static"};
 item27[] = {"no_ammo",4,218,-234.370651,-101.837402,-144.370667,-51.837425,50.000000,"no ammo"};
-item28[] = {"__8",1,250,-463.550537,-101.837433,-373.550507,-51.837440,0.000000,""};
+item28[] = {"__8",2,250,-463.550537,-101.837433,-373.550507,-51.837440,0.000000,""};
 item29[] = {"at_base",4,218,54.840569,922.746033,144.841217,972.745728,0.000000,"at base"};
 item30[] = {"",7,210,111.217598,-0.995733,119.217628,7.004266,0.000000,""};
 item31[] = {"",7,210,-437.671722,211.124527,-429.671722,219.124512,0.000000,""};
@@ -66,6 +66,8 @@ item61[] = {"__18",2,250,-22.962128,1398.389893,67.037888,1448.389893,0.000000,"
 item62[] = {"",7,210,-365.201996,1597.376709,-357.201996,1605.376709,0.000000,""};
 item63[] = {"",7,210,-368.245575,1432.007813,-360.245575,1440.007813,0.000000,""};
 item64[] = {"not_mortar",4,218,71.240044,1330.887329,161.240051,1380.887329,0.000000,"not mortar"};
+item65[] = {"resupplied",4,218,-463.550537,-181.837433,-373.550507,-131.837433,50.000000,"resupplied"};
+item66[] = {"dead_noammo",4,218,-600.550537,-101.837433,-510.550507,-51.837440,100.000000,"dead noammo"};
 version=1;
 class LayoutItems
 {
@@ -161,6 +163,10 @@ link78[] = {61,64};
 link79[] = {62,63};
 link80[] = {63,48};
 link81[] = {64,49};
+link82[] = {28,65};
+link83[] = {28,66};
+link84[] = {65,2};
+link85[] = {66,20};
 globals[] = {0.000000,0,0,0,0,640,480,1,81,6316128,1,-730.424255,836.463684,837.353271,-340.838837,1165,876,1};
 window[] = {2,-1,-1,-1,-1,964,78,1770,78,3,1183};
 *//*%FSM</HEAD>*/
@@ -870,6 +876,32 @@ class FSM
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
+                                /*%FSM<LINK "dead_noammo">*/
+                                class dead_noammo
+                                {
+                                        itemno = 66;
+                                        priority = 100.000000;
+                                        to="__6";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"{ alive _x } count _units < 1" \n
+                                         "||" \n
+                                         "{ alive _x } count units _grp < 1"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "resupplied">*/
+                                class resupplied
+                                {
+                                        itemno = 65;
+                                        priority = 50.000000;
+                                        to="main_loop";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"count (_battery getVariable [""NEO_radioArtyBatteryRounds"", []]) > 0" \n
+                                         "&&" \n
+                                         "{_grp getVariable [""supportWeaponCount"",3] > 0}"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/"_battery setVariable [""NEO_radioArtyUnitStatus"", ""NONE"", true];"/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
                         };
                 };
                 /*%FSM</STATE>*/
@@ -1416,7 +1448,6 @@ class FSM
         finalStates[] =
         {
                 "__6",
-                "__8",
                 "__13",
         };
 };
