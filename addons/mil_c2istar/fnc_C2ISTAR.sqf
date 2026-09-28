@@ -1338,6 +1338,18 @@ if (isServer) then {
 
                 sleep 120;
 
+                // Read each side's mode again: one switched on the C2ISTAR tablet in the last two
+                // minutes keeps what it was switched to, rather than being put back on Constant.
+                private _sideNow = ["getSideSettings", ["WEST"]] call ALiVE_fnc_playerOrders;
+                _autoGenerateBLUFOR = _sideNow param [0, _autoGenerateBLUFOR];
+                _autoGenerateBLUFOREnemyFaction = _sideNow param [1, _autoGenerateBLUFOREnemyFaction];
+                _sideNow = ["getSideSettings", ["EAST"]] call ALiVE_fnc_playerOrders;
+                _autoGenerateOPFOR = _sideNow param [0, _autoGenerateOPFOR];
+                _autoGenerateOPFOREnemyFaction = _sideNow param [1, _autoGenerateOPFOREnemyFaction];
+                _sideNow = ["getSideSettings", ["GUER"]] call ALiVE_fnc_playerOrders;
+                _autoGenerateINDFOR = _sideNow param [0, _autoGenerateINDFOR];
+                _autoGenerateINDFOREnemyFaction = _sideNow param [1, _autoGenerateINDFOREnemyFaction];
+
                 if(_autoGenerateBLUFOR == "Constant") then {
 
                     private _taskData = [];

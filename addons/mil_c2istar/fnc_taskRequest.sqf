@@ -72,22 +72,25 @@ if (_strategic) then {
         }) > -1
     };
 
+    // The side's mode comes through getSideSettings, which reads the task handler's copy first:
+    // that's the one the C2ISTAR tablet's auto-generate button changes. The module's setting only
+    // ever holds what was set in the editor, so reading it here meant the tablet could neither
+    // start nor stop Strategic tasks.
+    private _sideMode = (["getSideSettings", [_side]] call ALiVE_fnc_playerOrders) param [0, "None"];
+
     // Check auto task generation is turned on for side and faction
     switch (_side) do {
         case "GUER": {
-            private _autoGenerateINDFOR = [_logic, "autoGenerateIndfor"] call ALiVE_fnc_C2ISTAR;
             private _autoGenerateINDFORFaction = [_logic, "autoGenerateIndforFaction"] call ALiVE_fnc_C2ISTAR;
-            if (_autoGenerateINDFOR == "Strategic" && {[_faction, _autoGenerateINDFORFaction] call _fnc_sameCommander}) then {_autoGenerateStrategicTasks = true};
+            if (_sideMode == "Strategic" && {[_faction, _autoGenerateINDFORFaction] call _fnc_sameCommander}) then {_autoGenerateStrategicTasks = true};
         };
         case "EAST": {
-            private _autoGenerateOPFOR = [_logic, "autoGenerateOpfor"] call ALiVE_fnc_C2ISTAR;
             private _autoGenerateOPFORFaction = [_logic, "autoGenerateOpforFaction"] call ALiVE_fnc_C2ISTAR;
-            if (_autoGenerateOPFOR == "Strategic" && {[_faction, _autoGenerateOPFORFaction] call _fnc_sameCommander}) then {_autoGenerateStrategicTasks = true};
+            if (_sideMode == "Strategic" && {[_faction, _autoGenerateOPFORFaction] call _fnc_sameCommander}) then {_autoGenerateStrategicTasks = true};
         };
         default {
-            private _autoGenerateBLUFOR = [_logic, "autoGenerateBlufor"] call ALiVE_fnc_C2ISTAR;
             private _autoGenerateBLUFORFaction = [_logic, "autoGenerateBluforFaction"] call ALiVE_fnc_C2ISTAR;
-            if (_autoGenerateBLUFOR == "Strategic" && {[_faction, _autoGenerateBLUFORFaction] call _fnc_sameCommander}) then {_autoGenerateStrategicTasks = true};
+            if (_sideMode == "Strategic" && {[_faction, _autoGenerateBLUFORFaction] call _fnc_sameCommander}) then {_autoGenerateStrategicTasks = true};
         };
     };
 

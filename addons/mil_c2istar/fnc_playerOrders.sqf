@@ -197,6 +197,21 @@ switch (_operation) do {
         private _logic = missionNamespace getVariable ["ALIVE_MIL_C2ISTAR", objNull];
         if (isNull _logic) exitWith {_result = ["None", "OPF_F"]};
 
+        // The task handler's copy first, as the C2ISTAR tablet's auto-generate button changes that
+        // one. The module's own setting only ever holds what was set in the editor, so reading it
+        // here put the editor's mode back over the tablet's whenever a group opted back in.
+        private _sideKey = ["WEST", _side] select (_side in ["EAST", "GUER"]);
+        private _stored = [];
+        if (!isNil "ALIVE_taskHandler") then {
+            private _autoGenerateSides = [ALIVE_taskHandler, "autoGenerateSides", []] call ALiVE_fnc_hashGet;
+            if !(_autoGenerateSides isEqualTo []) then {
+                _stored = [_autoGenerateSides, _sideKey, []] call ALiVE_fnc_hashGet;
+            };
+        };
+        if (_stored isEqualType [] && {count _stored > 1} && {(_stored select 0) isEqualType ""} && {(_stored select 0) != ""}) exitWith {
+            _result = +_stored;
+        };
+
         _result = switch (_side) do {
             case "EAST": {
                 [[_logic, "autoGenerateOpfor"] call ALiVE_fnc_C2ISTAR, [_logic, "autoGenerateOpforEnemyFaction"] call ALiVE_fnc_C2ISTAR]

@@ -481,16 +481,6 @@ switch (_operation) do {
         if (_args isEqualType []) then {
             private _debug = [_logic, "debug", false] call ALIVE_fnc_hashGet;
 
-            // Automatic Player Tasks off. The Constant cycle comes straight here rather than
-            // through TASK_GENERATE, so the switch is read here too. Nothing has been claimed
-            // yet, and the task manager keeps calling this every cycle while a side is on
-            // Constant, so turning the switch back on picks up again by itself.
-            if (!isNil "ALiVE_c2istar_autoPlayerTasks" && {!ALiVE_c2istar_autoPlayerTasks}) exitWith {
-                if (_debug) then {
-                    ["Task Handler - automatic player tasks are turned off, Constant task not generated"] call ALiVE_fnc_dump;
-                };
-            };
-
             private _taskData = _args;
 
 			_taskData params [
@@ -502,8 +492,21 @@ switch (_operation) do {
 					"_taskAutoGenerate"
 				];
 
+            // The side's mode is kept before the switch below is read, so a C2ISTAR tablet press
+            // made while Automatic Player Tasks is off still counts once it's back on. Strategic
+            // requests read this copy too.
             private _autoGenerateSides = [_logic, "autoGenerateSides"] call ALIVE_fnc_hashGet;
             [_autoGenerateSides, _taskSide, [_taskAutoGenerate, _taskEnemyFaction]] call ALIVE_fnc_hashSet;
+
+            // Automatic Player Tasks off. The Constant cycle comes straight here rather than
+            // through TASK_GENERATE, so the switch is read here too. Nothing has been claimed
+            // yet, and the task manager keeps calling this every cycle while a side is on
+            // Constant, so turning the switch back on picks up again by itself.
+            if (!isNil "ALiVE_c2istar_autoPlayerTasks" && {!ALiVE_c2istar_autoPlayerTasks}) exitWith {
+                if (_debug) then {
+                    ["Task Handler - automatic player tasks are turned off, Constant task not generated"] call ALiVE_fnc_dump;
+                };
+            };
 
             private _tasksBySide = [_logic, "tasksBySide"] call ALIVE_fnc_hashGet;
             private _sideTasks = [_tasksBySide,_taskSide] call ALIVE_fnc_hashGet;
