@@ -66,6 +66,73 @@ if (isNil "ALiVE_advciv_enabled") exitWith {
 
 ["ALiVE Advanced Civilians - postInit starting | ALiVE_advciv_enabled = %1", ALiVE_advciv_enabled] call ALIVE_fnc_dump;
 
+// ==============================================
+//  CLIENT: TALK TO CIVILIAN, ADVANCED OR NOT
+// ==============================================
+// Talk to Civilian belongs to the Civilian Population module, so these two run whether
+// Advanced Civilians is on or off. They sat below the exit just after this, so with it off a
+// late joiner never rebuilt the interaction handler (#937) and no client ran the catch-all that
+// attaches the action (#959). Both do nothing unless Talk to Civilian is on.
+if (hasInterface) then {
+    // JIP / late-join client fallback for the civilian interaction handler.
+    // ALiVE_civInteractHandler is built only inside the civ-population module's function=
+    // body, which BIS_fnc_initModules runs in a one-shot mission-init pass; a client that
+    // joins after (or races) that pass never builds it, so the per-civilian "Talk to
+    // Civilian" addAction wait times out and non-host players get no interaction option
+    // (#937). Rebuild it here from the server-broadcast module logic. Spawned so
+    // fnc_civInteract "init"'s waitUntil {waterItems} can suspend; idempotent via the isNil
+    // guard here plus fnc_civInteract "init"'s own isNil gate (a clean co-join that already
+    // built the handler simply skips the rebuild).
+    if (isNil "ALiVE_civInteractHandler") then {
+        [] spawn {
+            private _waitStart = diag_tickTime;
+            waitUntil { sleep 1; (!isNil "ALiVE_civInteractHandler") || {!isNil "ALiVE_CivInteract_Logic"} || {diag_tickTime - _waitStart > 180} };
+            if (isNil "ALiVE_civInteractHandler" && {!isNil "ALiVE_CivInteract_Logic"}) then {
+                [ALiVE_CivInteract_Logic] call ALiVE_fnc_civInteractInit;
+            };
+        };
+    };
+
+    // Client-side catch-all for the interaction action (#959). The per-civilian clientInit
+    // (fnc_addCivilianInteraction) is the ONLY path that attaches the "Talk to Civilian"
+    // action, and it is one-shot: on a dedicated client it can fire before the interaction
+    // handler exists (the handler built ~228 s into the reporter's session, well past the
+    // per-civ 120 s wait) or miss a server-spawned civilian outright, leaving that civ
+    // permanently non-interactive with nothing logged. SP / hosted hide this because the
+    // civilians are local to the host, so the attach is reliable there. Mirror the server's
+    // 15 s allUnits re-init sweep with a client-side sweep of NEARBY civilians:
+    // fnc_addCivilianInteraction is now idempotent (per-machine ALiVE_civInteract_resolved
+    // guard), so re-calling it is a cheap no-op once a civ is handled. 60 m keeps it light --
+    // you only ever interact up close. ACE mode owns interaction through its own menu, skip.
+    [{
+        PROFILE_SCOPE(ADDCIVINTERACT, "ALiVE Add Civ Interact Action Handler")
+        if (isNil "ALiVE_civInteractHandler") exitWith {};
+        if (isNull player || {!alive player}) exitWith {};
+        if ((missionNamespace getVariable ["ALiVE_amb_civ_population_UIMode", "AUTO"]) == "ACE") exitWith {};
+        private _added = 0;
+        {
+            if (
+                alive _x
+                && {!isPlayer _x}
+                && {!(_x getVariable ["ALiVE_civInteract_resolved", false])}
+                && {!(_x getVariable ["ALiVE_advciv_blacklist", false])}
+                && {(getNumber (configFile >> "CfgVehicles" >> typeOf _x >> "side")) == 3}
+            ) then {
+                [_x] call ALiVE_fnc_addCivilianInteraction;
+                _added = _added + 1;
+            };
+        } forEach (nearestObjects [player, ["CAManBase"], 60]);
+        // Positive diagnostic: a healthy host resolves every civ through clientInit, so this
+        // stays 0. A rising total means the catch-all is attaching interactions the per-civ
+        // clientInit did not -- the direct confirmation that #959 was the clientInit path.
+        if (_added > 0) then {
+            private _total = (missionNamespace getVariable ["ALiVE_civInteract_catchAllCount", 0]) + _added;
+            missionNamespace setVariable ["ALiVE_civInteract_catchAllCount", _total];
+            ["[Civ Interact] catch-all attached interaction to %1 nearby civilian(s) clientInit missed (session total %2)", _added, _total] call ALiVE_fnc_dump;
+        };
+    }, 10, []] call CBA_fnc_addPerFrameHandler;
+};
+
 // Exit if AdvCiv is disabled
 if (!ALiVE_advciv_enabled) exitWith {
     ["ALiVE Advanced Civilians - postInit EXITED (disabled)"] call ALIVE_fnc_dump;
@@ -248,64 +315,6 @@ if (isServer) then {
 //  CLIENT INITIALIZATION
 // ==============================================
 if (hasInterface) then {
-    // JIP / late-join client fallback for the civilian interaction handler.
-    // ALiVE_civInteractHandler is built only inside the civ-population module's function=
-    // body, which BIS_fnc_initModules runs in a one-shot mission-init pass; a client that
-    // joins after (or races) that pass never builds it, so the per-civilian "Talk to
-    // Civilian" addAction wait times out and non-host players get no interaction option
-    // (#937). Rebuild it here from the server-broadcast module logic. Spawned so
-    // fnc_civInteract "init"'s waitUntil {waterItems} can suspend; idempotent via the isNil
-    // guard here plus fnc_civInteract "init"'s own isNil gate (a clean co-join that already
-    // built the handler simply skips the rebuild).
-    if (isNil "ALiVE_civInteractHandler") then {
-        [] spawn {
-            private _waitStart = diag_tickTime;
-            waitUntil { sleep 1; (!isNil "ALiVE_civInteractHandler") || {!isNil "ALiVE_CivInteract_Logic"} || {diag_tickTime - _waitStart > 180} };
-            if (isNil "ALiVE_civInteractHandler" && {!isNil "ALiVE_CivInteract_Logic"}) then {
-                [ALiVE_CivInteract_Logic] call ALiVE_fnc_civInteractInit;
-            };
-        };
-    };
-
-    // Client-side catch-all for the interaction action (#959). The per-civilian clientInit
-    // (fnc_addCivilianInteraction) is the ONLY path that attaches the "Talk to Civilian"
-    // action, and it is one-shot: on a dedicated client it can fire before the interaction
-    // handler exists (the handler built ~228 s into the reporter's session, well past the
-    // per-civ 120 s wait) or miss a server-spawned civilian outright, leaving that civ
-    // permanently non-interactive with nothing logged. SP / hosted hide this because the
-    // civilians are local to the host, so the attach is reliable there. Mirror the server's
-    // 15 s allUnits re-init sweep with a client-side sweep of NEARBY civilians:
-    // fnc_addCivilianInteraction is now idempotent (per-machine ALiVE_civInteract_resolved
-    // guard), so re-calling it is a cheap no-op once a civ is handled. 60 m keeps it light --
-    // you only ever interact up close. ACE mode owns interaction through its own menu, skip.
-    [{
-        PROFILE_SCOPE(ADDCIVINTERACT, "ALiVE Add Civ Interact Action Handler")
-        if (isNil "ALiVE_civInteractHandler") exitWith {};
-        if (isNull player || {!alive player}) exitWith {};
-        if ((missionNamespace getVariable ["ALiVE_amb_civ_population_UIMode", "AUTO"]) == "ACE") exitWith {};
-        private _added = 0;
-        {
-            if (
-                alive _x
-                && {!isPlayer _x}
-                && {!(_x getVariable ["ALiVE_civInteract_resolved", false])}
-                && {!(_x getVariable ["ALiVE_advciv_blacklist", false])}
-                && {(getNumber (configFile >> "CfgVehicles" >> typeOf _x >> "side")) == 3}
-            ) then {
-                [_x] call ALiVE_fnc_addCivilianInteraction;
-                _added = _added + 1;
-            };
-        } forEach (nearestObjects [player, ["CAManBase"], 60]);
-        // Positive diagnostic: a healthy host resolves every civ through clientInit, so this
-        // stays 0. A rising total means the catch-all is attaching interactions the per-civ
-        // clientInit did not -- the direct confirmation that #959 was the clientInit path.
-        if (_added > 0) then {
-            private _total = (missionNamespace getVariable ["ALiVE_civInteract_catchAllCount", 0]) + _added;
-            missionNamespace setVariable ["ALiVE_civInteract_catchAllCount", _total];
-            ["[Civ Interact] catch-all attached interaction to %1 nearby civilian(s) clientInit missed (session total %2)", _added, _total] call ALiVE_fnc_dump;
-        };
-    }, 10, []] call CBA_fnc_addPerFrameHandler;
-
     // Stop-on-approach: freeze any nearby civilian and wave once when the
     // local player closes within 2 m, so the scroll-wheel / ACE interact
     // menu can lock on without the civ drifting out of range. Release
