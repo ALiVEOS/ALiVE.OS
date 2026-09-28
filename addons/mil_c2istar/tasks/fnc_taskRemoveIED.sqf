@@ -73,6 +73,8 @@ switch (_taskState) do {
 
         private _bestPos = [];
         private _bestDist = 1e10;
+        private _bestTown = "";
+        private _bestID = "";
         private _townKeys = if (_iedsHash isEqualType [] && {count _iedsHash > 1}) then { _iedsHash select 1 } else { [] };
         {
             private _townHash = _x;
@@ -80,6 +82,7 @@ switch (_taskState) do {
             private _townKey = _townKeys param [_forEachIndex, ""];
             if (_townHash isEqualType [] && {count _townHash > 2} && {!(_townKey isEqualType "" && {(_townKey find "-ambush") > -1})}) then {
                 private _datas = _townHash select 2;
+                private _ids = _townHash select 1;
                 {
                     private _pos = [_x, "IEDpos", []] call ALiVE_fnc_hashGet;
                     if (_pos isEqualType [] && {count _pos >= 2}) then {
@@ -87,6 +90,8 @@ switch (_taskState) do {
                         if (_d < _bestDist) then {
                             _bestDist = _d;
                             _bestPos = _pos;
+                            _bestTown = _townKey;
+                            _bestID = _ids param [_forEachIndex, ""];
                         };
                     };
                 } forEach _datas;
@@ -150,6 +155,9 @@ switch (_taskState) do {
         [_taskParams, "taskIDs", _taskIDs] call ALIVE_fnc_hashSet;
         [_taskParams, "dialog", _dialogOption] call ALIVE_fnc_hashSet;
         [_taskParams, "targetPos", _bestPos] call ALIVE_fnc_hashSet;
+        // Which entry in Military IED's store it is, so the task can tell when it has gone.
+        [_taskParams, "targetTown", _bestTown] call ALIVE_fnc_hashSet;
+        [_taskParams, "targetID", _bestID] call ALIVE_fnc_hashSet;
         [_taskParams, "seenArmed", false] call ALIVE_fnc_hashSet;
         [_taskParams, "lastState", ""] call ALIVE_fnc_hashSet;
 
@@ -198,11 +206,33 @@ switch (_taskState) do {
 
         // Latch once we've actually seen the device spawned at the target, so
         // virtualisation despawn (player walks away -> IED removed) can't be
-        // mistaken for resolution.
-        if (_armedCount > 0 && {!_seenArmed}) then {
+        // mistaken for resolution. The target itself counts even once disarmed:
+        // a player can disarm it between two checks, which also takes it off the store.
+        private _targetID = [_params, "targetID", ""] call ALIVE_fnc_hashGet;
+        private _targetTown = [_params, "targetTown", ""] call ALIVE_fnc_hashGet;
+        private _hasTarget = _targetID isEqualType "" && {_targetID != ""};
+        if (!_seenArmed && {_armedCount > 0 || {_hasTarget && {(_nearObjects findIf {((_x getVariable ["ID", ""]) isEqualTo _targetID) && {(_x getVariable ["town", ""]) isEqualTo _targetTown}}) > -1}}}) then {
             _seenArmed = true;
             [_params, "seenArmed", true] call ALIVE_fnc_hashSet;
         };
+
+        // A target never seen spawned that has gone from Military IED's store (its town's IEDs
+        // taken away, the store cleared) will never turn up, so the task is called off rather
+        // than left open for good, which held up every new automatic task for the side.
+        if (!_seenArmed && {_hasTarget}) then {
+            private _liveStore = missionNamespace getVariable ["ALiVE_MIL_IED_STORE", []];
+            private _liveIEDs = if (_liveStore isEqualType [] && {count _liveStore > 2}) then {[_liveStore, "IEDs", []] call ALiVE_fnc_hashGet} else {[]};
+            private _liveTown = if (_liveIEDs isEqualType [] && {count _liveIEDs > 2}) then {[_liveIEDs, _targetTown, []] call ALiVE_fnc_hashGet} else {[]};
+            private _stillThere = _liveTown isEqualType [] && {count _liveTown > 2} && {_targetID in (_liveTown select 1)};
+            if (!_stillThere) then {
+                [_params, "nextTask", ""] call ALIVE_fnc_hashSet;
+                _task set [8, "Canceled"];
+                _task set [10, "N"];
+                _result = _task;
+                [_taskPlayers, _taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
+            };
+        };
+        if !(_result isEqualTo []) exitWith {};
 
         // A player has to be near the target for completion to count.
         private _playerNear = ({(getPosATL _x) distance2D _targetPos < (IED_TASK_RADIUS + 150)} count allPlayers) > 0;
