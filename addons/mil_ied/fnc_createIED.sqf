@@ -71,12 +71,12 @@ if (_IEDcount == 0) then {
         _numIEDs = count _posloc;
     };
 
-    // Bail out early with a clear debug message if there are no valid positions
+    // Bail out early with a clear debug message if there are no valid positions. The town is
+    // stored empty below, so the data has to exist before this leaves.
+    _IEDData = [] call ALiVE_fnc_hashCreate;
     if (_numIEDs == 0) exitWith {
         ["ALIVE-%1 IED: No valid positions found for IEDs at %2 - skipping", time, _town] call ALiVE_fnc_dump;
     };
-
-    _IEDData = [] call ALiVE_fnc_hashCreate;
 
 } else {
     _numIEDs = _IEDcount;
