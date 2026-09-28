@@ -169,6 +169,37 @@ ALIVE_edenFactionValidatorPending = [_trigger, _scope] spawn {
     private _resolvePlacementFactions = {
         params ["_mod"];
         private _type = typeOf _mod;
+
+        // A Custom Faction Compiler synced to the placement module decides the faction it
+        // places, ahead of its Force Factions, as it does when the mission runs. Its Faction ID
+        // is tidied the way the compiler tidies it, as that is the name the faction goes by:
+        // each run of anything but letters and digits becomes one underscore, and with no
+        // letter or digit at all it is ALIVE_CUSTOM_FACTION. Only one compiler may be synced;
+        // with more, the mission falls back to the Force Factions, and so does this check.
+        private _compilers = ((get3DENConnections _mod) select {
+            (_x select 0) == "Sync" && {(_x select 1) isEqualType objNull} && {(typeOf (_x select 1)) isEqualTo "ALiVE_sys_factioncompiler"}
+        }) apply {_x select 1};
+        if (count _compilers == 1) exitWith {
+            private _raw = ((_compilers select 0) get3DENAttribute "ALiVE_sys_factioncompiler_factionId") param [0, ""];
+            if !(_raw isEqualType "") then { _raw = str _raw };
+            private _codes = [];
+            private _lastWasUnderscore = false;
+            private _hasIdentifierChar = false;
+            {
+                if ((_x >= 48 && _x <= 57) || {(_x >= 65 && _x <= 90) || (_x >= 97 && _x <= 122)}) then {
+                    _codes pushBack _x;
+                    _lastWasUnderscore = false;
+                    _hasIdentifierChar = true;
+                } else {
+                    if !(_lastWasUnderscore) then {
+                        _codes pushBack 95;
+                        _lastWasUnderscore = true;
+                    };
+                };
+            } forEach (toArray _raw);
+            [if (_hasIdentifierChar) then {toString _codes} else {"ALIVE_CUSTOM_FACTION"}]
+        };
+
         private _factions = [_mod getVariable ["factions", ""]] call _parseFactions;
         private _legacyFactions = [_mod getVariable ["faction", ""]] call _parseFactions;
         private _legacyIsDefault = (count _legacyFactions == 1) && {(_legacyFactions select 0) == "BLU_F"};
