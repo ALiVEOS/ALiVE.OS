@@ -879,6 +879,16 @@ switch(_operation) do {
             private _preferredGarrisonPositions = [_logic,"preferredGarrisonPositions"] call MAINCLASS;
             if (isNil "_preferredGarrisonPositions" || {!(_preferredGarrisonPositions isEqualType "")}) then { _preferredGarrisonPositions = "" };
 
+            // Where a Random Camp or the Field HQ may go: inside the TAOR when there is one, and
+            // outside every blacklist marker. Only the cluster a search starts from was checked,
+            // and the search for clear ground goes up to 800 m from it.
+            private _placeTaor = ([_logic, "taor"] call MAINCLASS) select { [_x] call ALIVE_fnc_markerExists };
+            private _placeBlacklist = ([_logic, "blacklist"] call MAINCLASS) select { [_x] call ALIVE_fnc_markerExists };
+            private _fnc_inPlacementArea = {
+                params ["_p"];
+                (_placeTaor isEqualTo [] || {(_placeTaor findIf { _p inArea _x }) > -1}) && {(_placeBlacklist findIf { _p inArea _x }) < 0}
+            };
+
             // What the HQ posts below pass for building patrol. Bounded to at least one so a
             // mission that changed nothing is unaffected: the setting defaults to fifty, and fifty
             // bounded to one is the single man these thirty metre posts have always had. Set it to
@@ -1126,7 +1136,13 @@ switch(_operation) do {
                     _compResult = [];
                     {
                         if (count _compResult > 0) exitWith {};
-                        _compResult = [_pos, _x, _envelope, "fieldhq"] call ALiVE_fnc_findCompositionSpawnPosition;
+                        // A spot outside the TAOR or inside a blacklist marker is tried again, up to
+                        // three times; a tier with no clear spot at all moves straight on.
+                        for "_try" from 1 to 3 do {
+                            private _found = [_pos, _x, _envelope, "fieldhq"] call ALiVE_fnc_findCompositionSpawnPosition;
+                            if (count _found == 0) exitWith {};
+                            if ([_found select 0] call _fnc_inPlacementArea) exitWith { _compResult = _found };
+                        };
                     } forEach _hqTiers;
 
                     if (count _compResult > 0) then {
@@ -1274,7 +1290,13 @@ switch(_operation) do {
                             {
                                 if (count _compResult > 0) exitWith {};
                                 PROFILE_SCOPE(MPCAMPVALIDATORCALL, "ALiVE MP startup: complete camp validator call")
-                                _compResult = [_pos, _x, _envelope, "field", -1, false, 1.0, [], true] call ALiVE_fnc_findCompositionSpawnPosition;
+                                // A spot outside the TAOR or inside a blacklist marker is tried again,
+                                // up to three times; a tier with no clear spot at all moves straight on.
+                                for "_try" from 1 to 3 do {
+                                    private _found = [_pos, _x, _envelope, "field", -1, false, 1.0, [], true] call ALiVE_fnc_findCompositionSpawnPosition;
+                                    if (count _found == 0) exitWith {};
+                                    if ([_found select 0] call _fnc_inPlacementArea) exitWith { _compResult = _found };
+                                };
                                 PROFILE_SCOPE_END(MPCAMPVALIDATORCALL)
                             } forEach _campTiers;
                             PROFILE_SCOPE_END(MPCAMPVALIDATE)
