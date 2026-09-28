@@ -20,18 +20,9 @@ class CfgVehicles {
                 author = MODULE_AUTHOR;
                 class Attributes : AttributesBase
                 {
-                    class debug : Combo
-                    {
-                            property = "ALiVE_sys_orbatcreator_debug";
-                            displayName = "$STR_ALIVE_ORBATCREATOR_DEBUG";
-                            tooltip = "$STR_ALIVE_ORBATCREATOR_DEBUG_COMMENT";
-                            defaultValue = """false""";
-                            class Values
-                            {
-                                class Yes { name = "Yes"; value = true; };
-                                class No { name = "No"; value = false; default = 1; };
-                            };
-                    };
+                    // Hidden: nothing reads Enable Debug, and the ORBAT Creator has no debug output
+                    // for it to switch on. Kept, not removed, so a mission's saved value still loads.
+                    class debug { property = "ALiVE_sys_orbatcreator_debug"; control = "ALiVE_HiddenAttribute"; defaultValue = """false"""; expression = "_this setVariable ['debug', _value, true];"; typeName = "STRING"; displayName = ""; };
                     class background : Combo
                     {
                             property = "ALiVE_sys_orbatcreator_background";
