@@ -478,6 +478,15 @@ switch(_operation) do {
         if (isServer) then {
             _logic setVariable ["pr_item", _logic getVariable ["pr_item", DEFAULT_PR_ITEM], true];
             _logic setVariable ["pr_item_custom", _logic getVariable ["pr_item_custom", DEFAULT_PR_ITEM_CUSTOM], true];
+            // The Factions list has the same gap: a mission saved before its expression was made
+            // to broadcast keeps the old one, so it's sent from here, then a flag to say it's there.
+            _logic setVariable ["pr_factionWhitelist", _logic getVariable ["pr_factionWhitelist", []], true];
+            _logic setVariable ["pr_factionWhitelistSent", true, true];
+        } else {
+            // A player's machine waits for the server's copy, briefly: read too early, an empty
+            // list would open the Side and Faction lists to more than the mission chose.
+            private _t0 = time;
+            waitUntil { sleep 0.2; (_logic getVariable ["pr_factionWhitelistSent", false]) || {time - _t0 > 30} };
         };
 
         // load static data
@@ -533,6 +542,34 @@ switch(_operation) do {
         // Get on with it
         [_logic, "start"] call MAINCLASS;
 
+        // Filter Friendly Factions reads the AI commanders, which only the server has, so a
+        // dedicated server's clients found none and kept the player's own faction. The server
+        // publishes, per side, the factions of every commander friendly to it, once each
+        // commander placed in the mission is up (straight away when there are none).
+        if (isServer && {_filterFriendlyFactions}) then {
+            [] spawn {
+                private _t0 = time;
+                private _placed = count (allMissionObjects "ALiVE_mil_OPCOM");
+                waitUntil { sleep 2; (count (missionNamespace getVariable ["OPCOM_instances", []]) >= _placed) || {time - _t0 > 120} };
+                private _bySide = [["WEST", []], ["EAST", []], ["GUER", []], ["CIV", []]];
+                {
+                    if (_x isEqualType []) then {
+                        private _opcomFactions = ([_x, "factions", []] call ALIVE_fnc_hashGet) select {(_x isEqualType "") && {_x != ""}};
+                        {
+                            private _friendSide = _x;
+                            private _i = _bySide findIf {(_x select 0) == _friendSide};
+                            if (_i > -1) then {
+                                private _list = (_bySide select _i) select 1;
+                                { if !(_x in _list) then { _list pushBack _x } } forEach _opcomFactions;
+                            };
+                        } forEach ([_x, "sidesfriendly", []] call ALIVE_fnc_hashGet);
+                    };
+                } forEach (missionNamespace getVariable ["OPCOM_instances", []]);
+                ALIVE_PR_opcomFriendlyFactions = _bySide;
+                publicVariable "ALIVE_PR_opcomFriendlyFactions";
+            };
+        };
+
         // The machine has an interface? Must be a MP client, SP client or a client that acts as host!
         if (hasInterface) then {
 
@@ -566,8 +603,11 @@ switch(_operation) do {
 
             _playerFaction = faction player;
 
+            // A new array: the empty list is the same one kept as the module's Factions and as
+            // pr_factionWhitelist, so adding to it made both read as set. The friendly filter
+            // then stood aside for a list nobody chose, and Faction mode left out civilian vehicles.
             if (count ALIVE_PR_FACTIONLIST == 0) then {
-                ALIVE_PR_FACTIONLIST pushback _playerFaction;
+                ALIVE_PR_FACTIONLIST = ALIVE_PR_FACTIONLIST + [_playerFaction];
             };
 
             // When filterFriendlyFactions is enabled, narrow ALIVE_PR_FACTIONLIST
@@ -580,19 +620,29 @@ switch(_operation) do {
                 private _explicitWhitelist = _logic getVariable ["pr_factionWhitelist", ""];
                 if (_explicitWhitelist isEqualTo "" || {_explicitWhitelist isEqualTo []}) then {
                     private _friendlyFactions = [];
-                    {
-                        if (_x isEqualType []) then {
-                            private _sidesFriendly = [_x, "sidesfriendly", []] call ALIVE_fnc_hashGet;
-                            if (_sideText in _sidesFriendly) then {
-                                private _opcomFactions = [_x, "factions", []] call ALIVE_fnc_hashGet;
-                                {
-                                    if ((_x isEqualType "") && {!(_x isEqualTo "")} && {!(_x in _friendlyFactions)}) then {
-                                        _friendlyFactions pushBack _x;
-                                    };
-                                } forEach _opcomFactions;
+                    if (isServer) then {
+                        {
+                            if (_x isEqualType []) then {
+                                private _sidesFriendly = [_x, "sidesfriendly", []] call ALIVE_fnc_hashGet;
+                                if (_sideText in _sidesFriendly) then {
+                                    private _opcomFactions = [_x, "factions", []] call ALIVE_fnc_hashGet;
+                                    {
+                                        if ((_x isEqualType "") && {!(_x isEqualTo "")} && {!(_x in _friendlyFactions)}) then {
+                                            _friendlyFactions pushBack _x;
+                                        };
+                                    } forEach _opcomFactions;
+                                };
                             };
-                        };
-                    } forEach (missionNamespace getVariable ["OPCOM_instances", []]);
+                        } forEach (missionNamespace getVariable ["OPCOM_instances", []]);
+                    } else {
+                        // Not the server: the commanders live there, so read what it publishes. A
+                        // slow persistent load can start the server's side well after this.
+                        private _t0 = time;
+                        waitUntil { sleep 1; !isNil "ALIVE_PR_opcomFriendlyFactions" || {time - _t0 > 300} };
+                        private _bySide = missionNamespace getVariable ["ALIVE_PR_opcomFriendlyFactions", []];
+                        private _i = _bySide findIf {(_x select 0) == _sideText};
+                        if (_i > -1) then { _friendlyFactions = +((_bySide select _i) select 1) };
+                    };
 
                     if (count _friendlyFactions > 0) then {
                         ALIVE_PR_FACTIONLIST = _friendlyFactions;
@@ -761,6 +811,16 @@ switch(_operation) do {
             private _pr_faction_whitelist = [_logic, "factions", _logic getVariable ["pr_factionWhitelist", DEFAULT_FACTIONS]] call MAINCLASS;
             private _civ = count _pr_faction_whitelist == 0;
 
+            // With no Factions list set and Filter Friendly Factions off, Side mode shows every
+            // faction on the player's side, as that setting's tooltip says. ALIVE_PR_FACTIONLIST
+            // then holds only the player's own faction, put there for Faction mode, and narrowed
+            // the side to it. The side's factions come from their config: the side-wide sort
+            // below takes in other sides' and neutral vehicles too.
+            private _sideFactions = ALIVE_PR_FACTIONLIST;
+            if (!_filterFriendlyFactions && {count _merged == 0}) then {
+                _sideFactions = (("true" configClasses (configFile >> "CfgFactionClasses")) select {getNumber (_x >> "side") == _sideNumber}) apply {configName _x};
+            };
+
             // get sorted config data
             if(_restrictionType == "SIDE") then {
                 // Build the full side-wide vehicle hash first, then filter each
@@ -775,7 +835,7 @@ switch(_operation) do {
                     if (!isNil "_classList" && {_classList isEqualType []}) then {
                         private _filtered = _classList select {
                             private _vFaction = getText (configFile >> "CfgVehicles" >> _x >> "faction");
-                            _vFaction in ALIVE_PR_FACTIONLIST
+                            _vFaction in _sideFactions
                         };
                         if (count _filtered > 0) then {
                             [_sortedVehicles, _category, _filtered] call ALiVE_fnc_hashSet;
@@ -921,7 +981,7 @@ switch(_operation) do {
                 private _allGroups = [_sideText] call ALIVE_fnc_sortCFGGroupsBySide;
                 {
                     private _faction = _x;
-                    if (_faction in ALIVE_PR_FACTIONLIST) then {
+                    if (_faction in _sideFactions) then {
                         private _factionGroups = [_allGroups, _faction] call ALiVE_fnc_hashGet;
                         if (!isNil "_factionGroups" && {_factionGroups isEqualType []} && {count (_factionGroups select 1) > 0}) then {
                             [_sortedGroups, _faction, _factionGroups] call ALiVE_fnc_hashSet;

@@ -92,7 +92,7 @@ class CfgVehicles {
                         // the LOAD handler on idc 101.
                         control      = "ALiVE_FactionChoiceMulti_Military_FactionWhitelist";
                         typeName     = "STRING";
-                        expression   = "_this setVariable ['pr_factionWhitelist', _value];";
+                        expression   = "_this setVariable ['pr_factionWhitelist', _value, true];";
                         defaultValue = """[]""";
                     };
                     class pr_factionWhitelistManual : Edit { property = "ALiVE_sup_player_resupply_pr_factionWhitelistManual"; displayName = "$STR_ALIVE_PR_FACTION_WHITELIST_MANUAL"; tooltip = "$STR_ALIVE_PR_FACTION_WHITELIST_MANUAL_COMMENT"; defaultValue = """"""; typeName = "STRING"; };
