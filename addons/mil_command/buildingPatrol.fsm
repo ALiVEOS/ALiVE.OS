@@ -185,7 +185,17 @@ class FSM
                                          "// debug ---------------------------------------" \n
                                          "_unit setBehaviour _behaviour;" \n
                                          "_unit setSpeedMode _speed;" \n
-                                         "// [_group] call CBA_fnc_clearWaypoints;"/*%FSM</ACTION""">*/;
+                                         "// CBA's building search leaves a regroup waypoint that only completes once every unit" \n
+                                         "// in the group is idle at the same moment, which a garrison hardly ever is, so they" \n
+                                         "// piled up at one a lap. Delete the leftovers; the group's other waypoints stay." \n
+                                         "private _searchGroup = group _unit;" \n
+                                         "if !(isNull _searchGroup) then {" \n
+                                         "    for ""_i"" from (count (waypoints _searchGroup)) - 1 to 0 step -1 do {" \n
+                                         "        if (((waypointStatements [_searchGroup, _i]) select 0) isEqualTo ""({unitReady _x || !(alive _x)} count thisList) == count thisList"") then {" \n
+                                         "            deleteWaypoint [_searchGroup, _i];" \n
+                                         "        };" \n
+                                         "    };" \n
+                                         "};"/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
                                 /*%FSM<LINK "DESTROY">*/
