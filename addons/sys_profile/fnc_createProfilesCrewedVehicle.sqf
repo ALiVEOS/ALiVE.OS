@@ -63,7 +63,9 @@ params [
 // will use the substituted vehicle's NATIVE crew config entry, which is
 // already correct for the mod faction. No separate crew substitution
 // needed at this hook point.
-if (!isNil "ALIVE_factionCustomMappings" && {_faction in (ALIVE_factionCustomMappings select 1)}) then {
+// A Garrison Obj. vehicle (_isSPE) is the one the mission maker named in Vehicle Classname, so it
+// is never swapped: the swap picks a random vehicle of the same kind from the faction.
+if (!_isSPE && {!isNil "ALIVE_factionCustomMappings"} && {_faction in (ALIVE_factionCustomMappings select 1)}) then {
     private _customMappings = [ALIVE_factionCustomMappings, _faction] call ALIVE_fnc_hashGet;
     if ([_customMappings,"Inferred", false] call ALIVE_fnc_hashGet) then {
         _vehicleClass = [_vehicleClass, _faction] call ALiVE_fnc_substituteFactionVehicle;

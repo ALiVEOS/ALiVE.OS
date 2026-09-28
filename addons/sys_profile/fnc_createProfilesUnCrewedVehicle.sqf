@@ -53,7 +53,8 @@ _isSPE = if(count _this > 11) then {_this select 11} else {false};
 // rationale). When mil_placement spawned a vanilla A3 vehicle here as
 // a side-default fallback, swap it for a same-kindOf vehicle from the
 // mod faction. Curated mappings keep their declared vehicles.
-if (!isNil "ALIVE_factionCustomMappings" && {_faction in (ALIVE_factionCustomMappings select 1)}) then {
+// A Garrison Obj. vehicle (_isSPE) is the one the mission maker named, so it is never swapped.
+if (!_isSPE && {!isNil "ALIVE_factionCustomMappings"} && {_faction in (ALIVE_factionCustomMappings select 1)}) then {
     private _customMappings = [ALIVE_factionCustomMappings, _faction] call ALIVE_fnc_hashGet;
     if ([_customMappings, "Inferred", false] call ALIVE_fnc_hashGet) then {
         _vehicleClass = [_vehicleClass, _faction] call ALiVE_fnc_substituteFactionVehicle;
