@@ -112,7 +112,9 @@ private _threshold = parseNumber ([_logic, "reserveActivationThreshold"] call _m
 // Threshold gate. When activeAtSpawn > 0 AND fraction > threshold,
 // the force is healthy - skip silently. When activeAtSpawn == 0,
 // fall through (proximity-only activation; see comment above).
-if (_activeAtSpawn > 0 && {(_aliveCount / _activeAtSpawn) > _threshold}) exitWith { false };
+// A force at full strength is healthy whatever the threshold: at 100% the fraction is never above
+// it, so the reserve woke with no losses at all as soon as a player came near.
+if (_activeAtSpawn > 0 && {((_aliveCount / _activeAtSpawn) > _threshold) || {_aliveCount >= _activeAtSpawn}}) exitWith { false };
 
 // 3. Cooldown elapsed?
 private _cooldown = parseNumber ([_logic, "reserveActivationCooldown"] call _modClass);
@@ -208,7 +210,10 @@ private _fnc_activateAsInfantry = {
             };
             continue
         };
-        _candidateBuilding = _b;
+        // The nearest safe building: the list runs nearest the centre first, and the pick was
+        // overwritten to the end, so the furthest one always won. The scan still runs on, so the
+        // lock sees every building the players are near.
+        if (isNull _candidateBuilding) then { _candidateBuilding = _b };
     } forEach _buildingsInArea;
     if (_lockCleared) then {
         [_cluster, "clearedBuildings", _clearedBuildings] call ALiVE_fnc_hashSet;
@@ -276,10 +281,9 @@ if (_entryType == "VEHICLE") then {
 
     if (_isOrphaned) then {
         private _orphanBehaviour = [_logic, "reserveOrphanCrewBehaviour"] call _modClass;
-        // Pop orphan from pool first - either way, this entry is consumed.
-        _reservePool deleteAt 0;
 
         if (_orphanBehaviour == "Drop") then {
+            _reservePool deleteAt 0;
             if (_debug) then {
                 ["[ALiVE Reserve DEBUG] DROP-ORPHAN cluster=%1 vehicleClass=%2 reservesRemaining=%3",
                     _clusterLabel, [_profileVehicle, "vehicleClass", "?"] call ALiVE_fnc_hashGet, count _reservePool] call ALiVE_fnc_dump;
@@ -289,8 +293,10 @@ if (_entryType == "VEHICLE") then {
             // the same orphan that's already gone.
             [_cluster, "lastReserveWake", serverTime] call ALiVE_fnc_hashSet;
         } else {
-            // SpawnAsInfantry - reuse the infantry helper.
+            // SpawnAsInfantry - reuse the infantry helper. The entry is spent only once the crew is
+            // placed: with no safe building this time it waits for the next, rather than being lost.
             _activated = [_groupClass, _entryFaction, _entryOnSpawn, _entryOnSpawnOnce] call _fnc_activateAsInfantry;
+            if (_activated) then { _reservePool deleteAt 0 } else { _reservePool pushBack (_reservePool deleteAt 0) };
         };
     } else {
         // Vehicle alive - add crew to the existing empty entity profile,
@@ -480,6 +486,10 @@ if (_entryType == "VEHICLE") then {
     if (_ok) then {
         _reservePool deleteAt 0;
         _activated = true;
+    } else {
+        // No safe building this time: to the back of the queue, so the reserves behind it
+        // (a vehicle reserve needs no building) still get their turn.
+        _reservePool pushBack (_reservePool deleteAt 0);
     };
 };
 
