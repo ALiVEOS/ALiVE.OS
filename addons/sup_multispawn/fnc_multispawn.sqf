@@ -323,9 +323,15 @@ switch(_operation) do {
                             _respawnVehicle = !isnil {call compile (format["ALiVE_SUP_MULTISPAWN_RESPAWNVEHICLE_%1",faction player])};
 
                             if !(_respawn call ALiVE_fnc_markerExists) then {createMarkerLocal [_respawn, getposATL _logic]};
-                            if !(!isnil "_respawnVehicle" && {_respawnVehicle}) exitwith {["ALiVE_SUP_MULTISPAWN - Please place a vehicle with name ALiVE_SUP_MULTISPAWN_RESPAWNVEHICLE_%1... Defaulting to regular respawn point!",faction player] call ALiVE_fnc_DumpR};
 
-                            ["SUP MULTISPAWN - Vehicle EH placed at %1...", time] call ALiVE_fnc_dump;
+                            // Without its vehicle, say so once and put the handlers on all the same: Respawn with
+                            // Gear lives in them, and each respawn looks for the vehicle again, so one named after
+                            // this check still counts.
+                            if !(!isnil "_respawnVehicle" && {_respawnVehicle}) then {
+                                ["ALiVE_SUP_MULTISPAWN - Please place a vehicle with name ALiVE_SUP_MULTISPAWN_RESPAWNVEHICLE_%1... Defaulting to regular respawn point!",faction player] call ALiVE_fnc_DumpR;
+                            } else {
+                                ["SUP MULTISPAWN - Vehicle EH placed at %1...", time] call ALiVE_fnc_dump;
+                            };
 
                             player addEventHandler ["KILLED", {
                                 if (!isnil "ALiVE_SYS_PLAYER_LOADOUT_DATA" && {GVAR(RESPAWN_WITH_GEAR)}) then {GVAR(PLAYERGEAR) = [objNull, [_this select 0]] call ALiVE_fnc_setGear};
@@ -363,12 +369,20 @@ switch(_operation) do {
                             waituntil {!isnull player};
 
                             _respawn = format["Respawn_%1",side group player];
-                            _respawnBuilding = nearestObject [getmarkerpos format["ALiVE_SUP_MULTISPAWN_RESPAWNBUILDING_%1",faction player], "Building"];
+                            private _buildingMarker = format["ALiVE_SUP_MULTISPAWN_RESPAWNBUILDING_%1",faction player];
 
                             if !(_respawn call ALiVE_fnc_markerExists) then {createMarkerLocal [_respawn, getposATL _logic]};
-                            if (isnil "_respawnBuilding") exitwith {["ALiVE_SUP_MULTISPAWN - Please place a ALiVE_SUP_MULTISPAWN_RESPAWNBUILDING_%1 marker near a building... Defaulting to regular respawn point!",faction player] call ALiVE_fnc_dumpR};
 
-                            ["SUP MULTISPAWN - Building EH placed at %1...", getposATL _respawnBuilding] call ALiVE_fnc_dump;
+                            // Without its marker there's no building to use, so say so once. The handlers still
+                            // go on: Respawn with Gear lives in them, and each respawn looks for the marker again,
+                            // so one a mission places or moves later is used. The old check tested the building
+                            // for nil, and a lookup that finds nothing gives a null object, so it never fired.
+                            if !(_buildingMarker call ALiVE_fnc_markerExists) then {
+                                ["ALiVE_SUP_MULTISPAWN - Please place a ALiVE_SUP_MULTISPAWN_RESPAWNBUILDING_%1 marker near a building... Defaulting to regular respawn point!",faction player] call ALiVE_fnc_dumpR;
+                            } else {
+                                _respawnBuilding = nearestObject [getmarkerpos _buildingMarker, "Building"];
+                                ["SUP MULTISPAWN - Building EH placed at %1...", getposATL _respawnBuilding] call ALiVE_fnc_dump;
+                            };
 
                             player addEventHandler ["KILLED", {
                                 if (!isnil "ALiVE_SYS_PLAYER_LOADOUT_DATA" && {GVAR(RESPAWN_WITH_GEAR)}) then {GVAR(PLAYERGEAR) = [objNull, [_this select 0]] call ALiVE_fnc_setGear};
@@ -386,14 +400,19 @@ switch(_operation) do {
 
                                     if (!isNil "ALiVE_SYS_PLAYER_LOADOUT_DATA" && {GVAR(RESPAWN_WITH_GEAR)} && {!isNil QGVAR(PLAYERGEAR)}) then {_hdl = [objNull, [player,GVAR(PLAYERGEAR)]] spawn ALiVE_fnc_getGear};
 
-                                    _b = nearestObject [getmarkerpos format["ALiVE_SUP_MULTISPAWN_RESPAWNBUILDING_%1",faction player], "Building"];
+                                    private _buildingMarker = format["ALiVE_SUP_MULTISPAWN_RESPAWNBUILDING_%1",faction player];
+                                    _b = if (_buildingMarker call ALiVE_fnc_markerExists) then {nearestObject [getmarkerpos _buildingMarker, "Building"]} else {objNull};
 
-                                    if (!isNil "_b" && {alive _b}) then {
+                                    if (alive _b) then {
                                         _p = [_b] call ALIVE_fnc_getMaxBuildingPositions;
 
                                         if (_p >= 0) then {player setpos (_b buildingpos (floor random (_p + 1)))} else {player setPosATL ([getPosATL _b, 20] call CBA_fnc_RandPos)};
                                     } else {
-                                        ["ALiVE_SUP_MULTISPAWN - No ALiVE_SUP_MULTISPAWN_RESPAWNBUILDING_%1 available... Exiting!",faction player] call ALiVE_fnc_Dump;
+                                        // A missing marker was reported once at the start; a marker with no building left
+                                        // by it is worth a line each time.
+                                        if (_buildingMarker call ALiVE_fnc_markerExists) then {
+                                            ["ALiVE_SUP_MULTISPAWN - No ALiVE_SUP_MULTISPAWN_RESPAWNBUILDING_%1 available... Exiting!",faction player] call ALiVE_fnc_Dump;
+                                        };
                                     };
 
                                     sleep 3;
