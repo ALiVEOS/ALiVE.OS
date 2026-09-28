@@ -20,18 +20,9 @@ class CfgVehicles {
         picture = "x\alive\addons\sys_tour\icon_sys_tour.paa";
         class Attributes : AttributesBase
         {
-            class debug : Combo
-            {
-                    property = "ALiVE_sys_tour_debug";
-                    displayName = "$STR_ALIVE_TOUR_DEBUG";
-                    tooltip = "$STR_ALIVE_TOUR_DEBUG_COMMENT";
-                    defaultValue = """false""";
-                    class Values
-                    {
-                        class Yes { name = "Yes"; value = true; };
-                        class No { name = "No"; value = false; default = 1;};
-                    };
-            };
+            // Hidden: nothing reads Enable Debug, and the tour has no debug output for it to switch
+            // on. Kept, not removed, so a mission's saved value still loads.
+            class debug { property = "ALiVE_sys_tour_debug"; control = "ALiVE_HiddenAttribute"; defaultValue = """false"""; expression = "_this setVariable ['debug', _value, true];"; typeName = "STRING"; displayName = ""; };
             class ModuleDescription : ModuleDescription {};
         };
     };
