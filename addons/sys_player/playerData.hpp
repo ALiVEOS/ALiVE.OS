@@ -110,9 +110,10 @@ GVAR(UNIT_DATA) = [
         ["rating",{rating  (_this select 0);}, {(_this select 0) addrating (_this select 1);}],
         ["rank",{rank (_this select 0);}, {(_this select 0) setUnitRank (_this select 1);}],
         ["group",{group  (_this select 0);}, "SKIP"], // {[(_this select 0)] joinSilent (_this select 1);}
-        ["leader", {(leader  (_this select 0) == (_this select 0));}, "SKIP"], // {(_this select 1) selectLeader (_this select 0);}
-        ["viewDistance", { (_this select 0) getvariable ["viewDistance",1500];}, {setviewDistance (_this select 1);}],
-        ["terrainGrid", { (_this select 0) getvariable ["terrainGrid",25];}, {setterraingrid (_this select 1);}]
+        ["leader", {(leader  (_this select 0) == (_this select 0));}, "SKIP"] // {(_this select 1) selectLeader (_this select 0);}
+        // View distance and terrain grid aren't saved: they're each player's own settings, held
+        // inside the View Distance module's limits. They were read from unit variables that
+        // nothing set, so every reconnect put the player back to 1500 m and grid 25.
         // Identity?
 ];
 
