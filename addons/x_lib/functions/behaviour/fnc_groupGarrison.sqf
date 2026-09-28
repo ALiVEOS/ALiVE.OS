@@ -139,7 +139,8 @@ if (count _staticWeapons > 0) then
     } forEach _staticWeapons;
 };
 
-if (count _units == 0) exitwith {};
+// Every man went to a static weapon: nobody walks, so the waypoint lock taken above goes now.
+if (count _units == 0) exitwith { if (!_moveInstantly) then { _group lockWP false } };
 
 // Man CBA AI Building Positions first when present (mission-maker-placed custom positions,
 // e.g. trench slots) -- the vanilla buildingPos below does not return them, so prefer these
@@ -147,12 +148,15 @@ if (count _units == 0) exitwith {};
 // fills (mutates _units), so a mission with no CBA positions is unaffected. (#945)
 private _movementAssignments = [_units, _position, _radius, _moveInstantly, _groupPosition] call ALIVE_fnc_garrisonUnitsOnCBAPositions;
 
+// Walking men hold the group's waypoints locked (taken above) until they're all in place,
+// then it's released: a woken reserve takes the AI Commander's orders, and a group whose
+// waypoints stay locked can never follow one.
 private _fnc_startMovement = {
     params ["_movementGroup", "_assignments"];
-    if (_assignments isEqualTo []) exitWith {};
+    if (_assignments isEqualTo []) exitWith { if (!_moveInstantly) then { _movementGroup lockWP false } };
 
-    [_movementGroup, _assignments] spawn {
-        params ["_movementGroup", "_assignments"];
+    [_movementGroup, _assignments, !_moveInstantly] spawn {
+        params ["_movementGroup", "_assignments", "_unlock"];
 
         {
             _x params ["_unit", "_destination"];
@@ -181,6 +185,7 @@ private _fnc_startMovement = {
 
             _assignments isEqualTo []
         };
+        if (_unlock) then { _movementGroup lockWP false };
     };
 };
 
@@ -527,7 +532,9 @@ if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
 
 
 
-if ((count _buildings == 0) && !(isNil "_profile") && ([_profile,"isCycling"] call ALiVE_fnc_HashGet)) exitwith {
+// Lazy, so a group garrisoned without a profile (roadblock guards) never reads it: the
+// unbraced form evaluated every part and threw "Undefined variable _profile".
+if ((count _buildings == 0) && {!(isNil "_profile")} && {[_profile,"isCycling"] call ALiVE_fnc_HashGet}) exitwith {
 
        [_group, _movementAssignments] call _fnc_startMovement;
 	

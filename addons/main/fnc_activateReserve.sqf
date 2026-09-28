@@ -137,8 +137,10 @@ private _size = [_cluster, "size", 200] call ALiVE_fnc_hashGet;
 private _engagementMultiplier = parseNumber ([_logic, "reserveEngagementMultiplier"] call _modClass);
 if (_engagementMultiplier <= 0) then { _engagementMultiplier = 3 };
 private _engagementRadius = _size * _engagementMultiplier;
-private _playersInArea = (allPlayers - entities "HeadlessClient_F")
-    select { (_x distance2D _center) < _engagementRadius };
+// Every player, for the distance rules below: a reserve never appears within 80 m of anyone, or
+// its other vehicles within 250 m, whether or not that player is inside the ring that wakes it.
+private _allPlayers = allPlayers - entities "HeadlessClient_F";
+private _playersInArea = _allPlayers select { (_x distance2D _center) < _engagementRadius };
 if (_playersInArea isEqualTo []) exitWith {
     if (_debug) then {
         ["[ALiVE Reserve DEBUG] SKIP cluster=%1 reason=no-player-in-area engagementRadius=%2 reserves=%3 activeAlive=%4/%5",
@@ -183,7 +185,7 @@ private _activated = false;
 // using the group class from the orphan entry. Shared between vehicle-
 // reserve orphan branch and (potentially) future fall-throughs.
 private _fnc_activateAsInfantry = {
-    params ["_group", "_faction", "_onEachSpawn", "_onEachSpawnOnce"];
+    params ["_group", "_faction", "_onEachSpawn", "_onEachSpawnOnce", ["_crewOnly", false]];
 
     // Building check. The 80 m proximity gate keeps reserves from
     // popping in next to the player. The optional "lock cleared
@@ -203,7 +205,7 @@ private _fnc_activateAsInfantry = {
         private _slots = _b call BIS_fnc_buildingPositions;
         if (count _slots == 0) then { continue };
         if (_lockCleared && {_b in _clearedBuildings}) then { continue };
-        private _tooClose = _playersInArea findIf { (_b distance2D _x) < _proximityGate };
+        private _tooClose = _allPlayers findIf { (_b distance2D _x) < _proximityGate };
         if (_tooClose >= 0) then {
             if (_lockCleared && {!(_b in _clearedBuildings)}) then {
                 _clearedBuildings pushBack _b;
@@ -227,9 +229,9 @@ private _fnc_activateAsInfantry = {
         false
     };
 
-    // Spawn 5-15 m outside the building.
+    // Spawn within 15 m of the building.
     private _spawnPos = [position _candidateBuilding, 5 + random 10] call CBA_fnc_RandPos;
-    private _profiles = [_group, _spawnPos, random 360, true, _faction, false, false, "STEALTH", _onEachSpawn, _onEachSpawnOnce] call ALIVE_fnc_createProfilesFromGroupConfig;
+    private _profiles = [_group, _spawnPos, random 360, true, _faction, false, false, "STEALTH", _onEachSpawn, _onEachSpawnOnce, _crewOnly] call ALIVE_fnc_createProfilesFromGroupConfig;
 
     {
         if (([_x, "type"] call ALiVE_fnc_hashGet) == "entity") then {
@@ -241,8 +243,10 @@ private _fnc_activateAsInfantry = {
             // in the meantime" while the rest hold the building.
             // Reinforcements spawn beside one building but search the whole objective,
             // sized to it, the way the first garrison does. The guard radius stays the
-            // floor of that search (#1016).
-            [_x, "setActiveCommand", ["ALIVE_fnc_garrison", "spawn", [_guardRadius, "true", _center, "", 1, (_guardPatrolPercentage min 1), _garrisonPatrolBehaviour, _garrisonPatrolSpeed, _preferredGarrisonPositions, true, _size]]] call ALIVE_fnc_profileEntity;
+            // floor of that search (#1016). They walk there rather than being placed: a
+            // player is close by when a reserve wakes, and placed at once the men appeared
+            // in buildings anywhere in the objective, next to a player or in one just cleared.
+            [_x, "setActiveCommand", ["ALIVE_fnc_garrison", "spawn", [_guardRadius, "true", _center, "", 1, (_guardPatrolPercentage min 1), _garrisonPatrolBehaviour, _garrisonPatrolSpeed, _preferredGarrisonPositions, true, _size, false]]] call ALIVE_fnc_profileEntity;
             [_x, "homeCluster", _cluster] call ALiVE_fnc_hashSet;
             _activeIDs pushBack ([_x, "profileID"] call ALiVE_fnc_hashGet);
         };
@@ -295,10 +299,29 @@ if (_entryType == "VEHICLE") then {
         } else {
             // SpawnAsInfantry - reuse the infantry helper. The entry is spent only once the crew is
             // placed: with no safe building this time it waits for the next, rather than being lost.
-            _activated = [_groupClass, _entryFaction, _entryOnSpawn, _entryOnSpawnOnce] call _fnc_activateAsInfantry;
+            // Crew only, so the group's people come on foot: handed the whole group, the helper
+            // brought back a fresh copy of the vehicle that had just been destroyed.
+            _activated = [_groupClass, _entryFaction, _entryOnSpawn, _entryOnSpawnOnce, true] call _fnc_activateAsInfantry;
             if (_activated) then { _reservePool deleteAt 0 } else { _reservePool pushBack (_reservePool deleteAt 0) };
         };
     } else {
+        // Where the vehicle actually is when it's in the world, as a player may have moved it.
+        private _vehiclePos = if (isNull _vehicleObject) then {
+            [_profileVehicle, "position", _center] call ALiVE_fnc_hashGet
+        } else {
+            getPosATL _vehicleObject
+        };
+
+        // The crew appears in its seats, so with a player within 80 m of the parked vehicle
+        // it waits for a later check at the back of the queue, the rule woken infantry keep.
+        if ((_allPlayers findIf {(_x distance2D _vehiclePos) < 80}) >= 0) exitWith {
+            _reservePool pushBack (_reservePool deleteAt 0);
+            if (_debug) then {
+                ["[ALiVE Reserve DEBUG] SKIP cluster=%1 reason=player-at-vehicle reserves=%2 activeAlive=%3/%4",
+                    _clusterLabel, count _reservePool, _aliveCount, _activeAtSpawn] call ALiVE_fnc_dump;
+            };
+        };
+
         // Vehicle alive - add crew to the existing empty entity profile,
         // clear busy flags, unlock if applicable, then despawn / spawn
         // the entity so the new crew materialises inside the truck.
@@ -309,8 +332,6 @@ if (_entryType == "VEHICLE") then {
         for "_i" from 0 to (count _vehiclePositions) - 3 do {
             _countCrewPositions = _countCrewPositions + (_vehiclePositions select _i);
         };
-        private _vehiclePos = [_profileVehicle, "position", _center] call ALiVE_fnc_hashGet;
-
         // Add vehicle's own crew (driver/gunner/commander).
         for "_i" from 0 to _countCrewPositions - 1 do {
             [_profileEntity, "addUnit", [_crew, _vehiclePos, 0, "PRIVATE"]] call ALIVE_fnc_profileEntity;
@@ -331,8 +352,9 @@ if (_entryType == "VEHICLE") then {
 
         // The group's other vehicles come too, each with its own crew. Only the first land vehicle
         // is parked, so a tank platoon or a group with two carriers woke as that one vehicle and
-        // its foot soldiers. They're placed out of the players' sight, behind the parked one and
-        // 250 m or more from any player, and drive in. They carry the module's empty-vehicle lock,
+        // its foot soldiers. They're placed behind the parked one, away from the nearest player and
+        // 250 m or more from every player, and patrol the roads from there. They
+        // carry the module's empty-vehicle lock,
         // and the objective goes on counting the group once, as it does an active one.
         private _entitySide = [_profileEntity, "side", ""] call ALiVE_fnc_hashGet;
         private _lockSetting = [_logic, "reserveEmptyVehicleLocked"] call _modClass;
@@ -342,7 +364,7 @@ if (_entryType == "VEHICLE") then {
         {
             private _d = _x distance2D _vehiclePos;
             if (_d < _nearestDist) then { _nearestDist = _d; _nearestPlayer = _x };
-        } forEach _playersInArea;
+        } forEach _allPlayers;
         private _awayDir = if (isNull _nearestPlayer) then { random 360 } else { _nearestPlayer getDir _vehiclePos };
         private _parkedPassed = false;
         for "_i" from 0 to (count _groupConfig) - 1 do {
@@ -358,7 +380,7 @@ if (_entryType == "VEHICLE") then {
                         private _spot = [];
                         {
                             private _c = _vehiclePos getPos [_x, _awayDir - 30 + random 60];
-                            if (!surfaceIsWater _c && {(_playersInArea findIf {(_x distance2D _c) < 250}) < 0}) exitWith { _spot = _c };
+                            if (!surfaceIsWater _c && {(_allPlayers findIf {(_x distance2D _c) < 250}) < 0}) exitWith { _spot = _c };
                         } forEach [150, 250, 350, 450, 600];
                         if !(_spot isEqualTo []) then {
                             private _extra = [_entryVehicle, _entitySide, _entryFaction, _rank, _spot, _awayDir + 180, true] call ALIVE_fnc_createProfilesCrewedVehicle;

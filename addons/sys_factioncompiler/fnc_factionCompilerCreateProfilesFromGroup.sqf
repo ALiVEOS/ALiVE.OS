@@ -11,7 +11,10 @@ params [
     ["_isSPE", false],
     ["_aiBehaviour", "STEALTH"],
     ["_onEachSpawn", ""],
-    ["_onEachSpawnOnce", true]
+    ["_onEachSpawnOnce", true],
+    // Crew only: the vehicles are left out and every recorded soldier, crews included, comes on
+    // foot. A reserve whose parked vehicle was destroyed wakes this way under Spawn as infantry.
+    ["_crewOnly", false]
 ];
 
 private _groupProfiles = [];
@@ -77,6 +80,8 @@ _groupProfiles pushBack _profileEntity;
         [_unitData, "rank", "PRIVATE"] call ALIVE_fnc_hashGet
     ]] call ALIVE_fnc_profileEntity;
 } forEach _unitEntries;
+
+if (_crewOnly) then { _vehicleEntries = [] };
 
 {
     private _vehicleData = _x;

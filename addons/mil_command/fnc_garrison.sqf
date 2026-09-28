@@ -24,7 +24,7 @@ Author:
 Highhead, Jman
 ---------------------------------------------------------------------------- */
 
-private ["_type","_waypoints","_unit","_profile","_active","_args","_pos","_radius","_onlyProfiles","_assignments","_group","_profileType","_profileCount","_guardPatrolPercentage","_patrolBehaviour","_patrolSpeed","_cbaRadius","_preferredGarrison","_fillShortfall","_hadModuleSetting","_preferredIndicesOnly","_searchCentre","_objectiveSize","_searchRadius"];
+private ["_type","_waypoints","_unit","_profile","_active","_args","_pos","_radius","_onlyProfiles","_assignments","_group","_profileType","_profileCount","_guardPatrolPercentage","_patrolBehaviour","_patrolSpeed","_cbaRadius","_preferredGarrison","_fillShortfall","_hadModuleSetting","_preferredIndicesOnly","_searchCentre","_objectiveSize","_searchRadius","_moveInstantly"];
 
 _profile = _this param [0, ["",[],[],nil], [[]]];
 _args = _this param [1, 200, [-1,[]]];
@@ -52,6 +52,8 @@ _cbaRadius = 300;
 // from where the group stands, exactly as before.
 _searchCentre = [];
 _objectiveSize = 0;
+// Seated at once, the way a garrison that spawns before any player is near should be.
+_moveInstantly = true;
 
 
 if (_args isEqualType []) then {
@@ -92,6 +94,10 @@ if (_args isEqualType []) then {
     // The objective's own size, so the search can cover it rather than a fixed radius from
     // wherever the group was scattered to within it.
     _objectiveSize = _args param [10, 0, [0]];
+    // A woken reserve walks to its buildings instead: it spawns with players close by, and
+    // placed at once its men appeared in buildings anywhere in the objective, next to a
+    // player or in one they had just cleared.
+    _moveInstantly = _args param [11, true, [false]];
 };
 
 // A caller with no placement module behind it is given the mission's list. The
@@ -227,7 +233,7 @@ if (_type == "entity" && {count (_assignments select 1) == 0}) then {
        ["ALIVE_fnc_garrison - calling ALIVE_fnc_groupGarrison - searching %4 m around %6 (objective size %7, guard radius %8), group %2 is %9 m from it, profileID: %3, profileType: %1, guardPatrolPercentage: %5", _profileType, _group, _id, round _searchRadius, _guardPatrolPercentage, _searchCentre, round _objectiveSize, round _radius, round (_groupPos distance2D _searchCentre)] call ALiVE_fnc_dump;
       };
       // DEBUG -------------------------------------------------------------------------------------
-     [_group, _searchCentre, _searchRadius, true, _onlyProfiles, _profileCount, _id, _guardPatrolPercentage, _patrolBehaviour, _patrolSpeed, _preferredGarrison, _fillShortfall, _preferredIndicesOnly, _groupPos, _radius] call ALIVE_fnc_groupGarrison;
+     [_group, _searchCentre, _searchRadius, _moveInstantly, _onlyProfiles, _profileCount, _id, _guardPatrolPercentage, _patrolBehaviour, _patrolSpeed, _preferredGarrison, _fillShortfall, _preferredIndicesOnly, _groupPos, _radius] call ALIVE_fnc_groupGarrison;
     };
 
 };

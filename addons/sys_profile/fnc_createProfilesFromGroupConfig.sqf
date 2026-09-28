@@ -11,6 +11,9 @@ Parameters:
 String - Group class name from CfgGroups
 Array - position
 Scalar - direction
+(optional, in order) Boolean spawn good position, String faction, Boolean busy, Boolean SPE,
+String AI behaviour, String on-each-spawn code, Boolean on-each-spawn once,
+Boolean crew only: the group's vehicles are left out and each one's crew joins the group on foot
 
 Returns:
 Array of created profiles
@@ -43,7 +46,8 @@ params [
     ["_isSPE", false],
     ["_aiBehaviour", "STEALTH"],
     ["_onEachSpawn", ""],
-    ["_onEachSpawnOnce", true]
+    ["_onEachSpawnOnce", true],
+    ["_crewOnly", false]
 ];
 
 private _groupProfiles = [];
@@ -92,7 +96,7 @@ if(!isNil "ALIVE_factionCustomMappings") then {
 private _compiledProfiles = [];
 
 if !(_compiledFaction isEqualTo "") then {
-    _compiledProfiles = [_groupClass, _position, _direction, _spawnGoodPosition, _compiledFaction, _busy, _isSPE, _aiBehaviour, _onEachSpawn, _onEachSpawnOnce] call ALIVE_fnc_factionCompilerCreateProfilesFromGroup;
+    _compiledProfiles = [_groupClass, _position, _direction, _spawnGoodPosition, _compiledFaction, _busy, _isSPE, _aiBehaviour, _onEachSpawn, _onEachSpawnOnce, _crewOnly] call ALIVE_fnc_factionCompilerCreateProfilesFromGroup;
 };
 
 if (count _compiledProfiles > 0) exitWith {_compiledProfiles};
@@ -206,6 +210,29 @@ if(count _config > 0) then {
     };
 
     //["CGROUP Vehicles: %1 Units: %2",_groupVehicles,_groupUnits] call ALIVE_fnc_dump;
+
+    // Crew only: each vehicle's crew comes on foot and the vehicle itself is left out. A reserve
+    // whose parked vehicle was destroyed wakes this way when its module says Spawn as infantry.
+    // The crew is counted the way the vehicle loop below counts it.
+    if (_crewOnly) then {
+        {
+            _x params ["_crewVehicle", "_crewRank"];
+            // A drone's crew is its AI operator, not soldiers to put on foot.
+            if (getNumber (configFile >> "CfgVehicles" >> _crewVehicle >> "isUav") == 1) then { continue };
+            private _crewClass = _crewVehicle call ALIVE_fnc_configGetVehicleCrew;
+            if (_isInferredRedirect) then {
+                _crewClass = [_crewClass, _originalFaction] call ALiVE_fnc_substituteFactionUnit;
+            };
+            private _crewPositions = [_crewVehicle] call ALIVE_fnc_configGetVehicleEmptyPositions;
+            private _crewCount = 0;
+            for "_i" from 0 to count _crewPositions - 3 do {
+                _crewCount = _crewCount + (_crewPositions select _i);
+            };
+            if (_crewCount < 2 && {[_crewVehicle] call ALIVE_fnc_isArtillery}) then { _crewCount = 2 };
+            for "_i" from 1 to _crewCount do { _groupUnits pushBack [_crewClass, _crewRank] };
+        } forEach _groupVehicles;
+        _groupVehicles = [];
+    };
 
 
     // get counts of current profiles
