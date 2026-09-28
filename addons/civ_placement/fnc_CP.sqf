@@ -1342,6 +1342,9 @@ switch(_operation) do {
             _groupCount = count _groups;
             _clusterCount = count _clusters;
             _groupPerCluster = floor(_groupCount / _clusterCount);
+            // Groups that don't divide evenly go one each to the first objectives. Left out, they
+            // were never placed, and they're the end of the list: spec ops, then air.
+            private _groupsLeftOver = _groupCount - (_groupPerCluster * _clusterCount);
             _totalCount = 0;
 
             // Reserve-pool placement model. Mirrors mil_placement semantics:
@@ -1701,7 +1704,8 @@ switch(_operation) do {
                     };
 
                     if(_groupPerCluster > 0) then {
-                        for "_i" from 0 to _groupPerCluster -1 do {
+                        private _groupsHere = _groupPerCluster + ([0, 1] select (_forEachIndex < _groupsLeftOver));
+                        for "_i" from 0 to _groupsHere -1 do {
                             _group = _groups select _totalCount;
                             private _isVehicle = (_totalCount < _infantryGroupStart);
                             private _isInfantry = (_totalCount >= _infantryGroupStart) && (_totalCount < _infantryGroupEnd);
@@ -1745,6 +1749,10 @@ switch(_operation) do {
                 };
 
             } forEach _clusters;
+
+            if (_debug) then {
+                ["CP [%1] - Placed %2 of %3 groups over %4 objectives: %5 active, %6 held in reserve", _faction, _totalCount, _groupCount, _clusterCount, _activePlacedCount, _totalCount - _activePlacedCount] call ALiVE_fnc_dump;
+            };
 
             // Activation watcher PFH (5 s tick) shared with the other
             // placement modules through addons/main/fnc_activateReserve.sqf.
