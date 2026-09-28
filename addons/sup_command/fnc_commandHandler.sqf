@@ -422,9 +422,19 @@ switch(_operation) do {
 
                 if (_selOpcomID == _opcomID) then {
 		        private _opcomFactions = [_opcom,"factions"] call ALiVE_fnc_hashGet;
-			{
-				private _faction = _x;
-				private _profiles = [MOD(profileHandler),"getProfilesByFaction", _faction] call ALiVE_fnc_profileHandler;
+		        // Under an Ops Limit of Faction a player can only order their own faction's groups
+		        // (opsCallerAuthorizedForProfile), so only those are listed.
+		        if (([_logic,"opsLimit","SIDE"] call ALiVE_fnc_hashGet) == "FACTION") then {
+		            private _caller = [_playerID] call ALiVE_fnc_getPlayerByUID;
+		            _opcomFactions = _opcomFactions select { !isNull _caller && {_x == faction _caller} };
+		        };
+		        // Every faction's profiles go into one lookup first, so each unit type is ONE list covering
+		        // them all. It was 8 lists per faction, and the tablet reads 8, so a commander's second
+		        // faction was never listed.
+		        private _ownProfiles = createHashMap;
+		        {
+		            { _ownProfiles set [_x, true] } forEach ([MOD(profileHandler),"getProfilesByFaction", _x] call ALiVE_fnc_profileHandler);
+		        } foreach _opcomFactions;
 
 				{
 							
@@ -432,7 +442,7 @@ switch(_operation) do {
 					private _typeUnits = [_opcom,_x, []] call ALiVE_fnc_HashGet;
 
 					{
-						if (_x in _profiles) then {
+						if (_x in _ownProfiles) then {
 
 							private _profile = [MOD(profileHandler),"getProfile", _x] call ALiVE_fnc_profileHandler;
 
@@ -460,7 +470,6 @@ switch(_operation) do {
 
 					_groups pushBack _data;
 				} foreach ["infantry","motorized","mechanized","armored","air","sea","artillery","AAA"];
-			} foreach _opcomFactions;
 					
                 };
             } foreach OPCOM_INSTANCES;
