@@ -34,13 +34,13 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PR_DEBUG_COMMENT">
-    <English>Writes Player Combat Logistics diagnostic logging to the RPT (resupply requests, deliveries and catalog resolution).</English>
-    <Chinese>將玩家戰鬥後勤除錯記錄寫入 RPT（補給請求、運送及目錄解析）。</Chinese>
-    <Chinesesimp>将玩家战斗后勤诊断日志写入 RPT(补给请求、投送及目录解析)。</Chinesesimp>
-    <Spanish>Escribe el registro de diagnóstico de la Logística de Combate para Jugadores en el RPT (solicitudes de reabastecimiento, entregas y resolución de catálogo).</Spanish>
-    <French>Écrit dans le RPT les journaux de diagnostic de la Logistique de combat joueur (demandes de ravitaillement, livraisons et résolution du catalogue).</French>
-    <Portuguese>Grava no RPT os registros de diagnóstico da Logística de Combate do Jogador (solicitações de ressuprimento, entregas e resolução de catálogo).</Portuguese>
-    <Russian>Записывает диагностические логи игрового логистического снабжения в RPT (запросы снабжения, поставки и разрешение каталога).</Russian>
+    <English>Writes Player Combat Logistics diagnostic lines to each player's RPT: which factions the tablet offers and how its lists are built.</English>
+    <Chinese>將玩家戰鬥後勤的診斷記錄寫入每位玩家的 RPT：平板提供哪些陣營，以及其清單如何建立。</Chinese>
+    <Chinesesimp>将玩家战斗后勤的诊断记录写入每位玩家的 RPT：平板提供哪些阵营，以及其列表如何建立。</Chinesesimp>
+    <Spanish>Escribe en el RPT de cada jugador las líneas de diagnóstico de la Logística de Combate para Jugadores: qué facciones ofrece la tableta y cómo se construyen sus listas.</Spanish>
+    <French>Écrit dans le RPT de chaque joueur les lignes de diagnostic de la Logistique de combat joueur: les factions que la tablette propose et la façon dont ses listes sont construites.</French>
+    <Portuguese>Grava no RPT de cada jogador as linhas de diagnóstico da Logística de Combate do Jogador: quais facções o tablet oferece e como suas listas são montadas.</Portuguese>
+    <Russian>Записывает диагностические строки логистики игроков в RPT каждого игрока: какие фракции предлагает планшет и как строятся его списки.</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PR_ALLOW">

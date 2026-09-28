@@ -452,11 +452,15 @@ switch(_operation) do {
         ALIVE_SUP_PLAYER_RESUPPLY = _logic;
 
         // Enable Debug attribute drives the module-wide diagnostic gate. Coerce like pr_audio
-        // below (bool when binarised, STRING "0"/"1" on -packonly builds).
-        private _prDebug = _logic getVariable ["pr_debug", false];
-        if !(_prDebug isEqualType true) then { _prDebug = parseNumber format ["%1", _prDebug] > 0; };
-        ALiVE_sup_player_resupply_debug = _prDebug;
-        publicVariable "ALiVE_sup_player_resupply_debug";
+        // below (bool when binarised, STRING "0"/"1" on -packonly builds). Only the server holds
+        // the setting, as its Eden expression doesn't broadcast, so only the server works it out
+        // and sends it: each player's machine used to find no value and send false over it.
+        if (isServer) then {
+            private _prDebug = _logic getVariable ["pr_debug", false];
+            if !(_prDebug isEqualType true) then { _prDebug = parseNumber format ["%1", _prDebug] > 0; };
+            ALiVE_sup_player_resupply_debug = _prDebug;
+            publicVariable "ALiVE_sup_player_resupply_debug";
+        };
 
         // pr_audio arrives as STRING "0"/"1" on builds packed without binarisation; the getter's
         // BOOL default would silently overwrite a "0" back to true, making audio impossible to
@@ -646,9 +650,9 @@ switch(_operation) do {
 
                     if (count _friendlyFactions > 0) then {
                         ALIVE_PR_FACTIONLIST = _friendlyFactions;
-                        ["SUP_PR filterFriendlyFactions - ALIVE_PR_FACTIONLIST filtered to OPCOM friendly factions: %1", ALIVE_PR_FACTIONLIST] call ALiVE_fnc_dump;
+                        if (missionNamespace getVariable ["ALiVE_sup_player_resupply_debug", false]) then {["SUP_PR filterFriendlyFactions - ALIVE_PR_FACTIONLIST filtered to OPCOM friendly factions: %1", ALIVE_PR_FACTIONLIST] call ALiVE_fnc_dump;};
                     } else {
-                        ["SUP_PR filterFriendlyFactions - no OPCOM friendly factions found yet, keeping existing ALIVE_PR_FACTIONLIST: %1", ALIVE_PR_FACTIONLIST] call ALiVE_fnc_dump;
+                        if (missionNamespace getVariable ["ALiVE_sup_player_resupply_debug", false]) then {["SUP_PR filterFriendlyFactions - no OPCOM friendly factions found yet, keeping existing ALIVE_PR_FACTIONLIST: %1", ALIVE_PR_FACTIONLIST] call ALiVE_fnc_dump;};
                     };
                 };
             };
@@ -913,7 +917,7 @@ switch(_operation) do {
                 } forEach _categoryKeys;
 
                 ALIVE_PR_vehicleCacheReady = true;
-                ["SUP_PR - vehicle cache built: %1 entries", count (ALIVE_PR_vehicleCache select 1)] call ALiVE_fnc_dump;
+                if (missionNamespace getVariable ["ALiVE_sup_player_resupply_debug", false]) then {["SUP_PR - vehicle cache built: %1 entries", count (ALIVE_PR_vehicleCache select 1)] call ALiVE_fnc_dump;};
 
                 // If the user selected a category while the cache was still building,
                 // trigger the UI refresh on a new spawn so disableSerialization works
@@ -926,7 +930,7 @@ switch(_operation) do {
 
                         private _supplyList = PR_getControl(PRTablet_CTRL_MainDisplay, PRTablet_CTRL_SupplyList);
                         if (isNull _supplyList) exitWith {
-                            ["SUP_PR - cache refresh: supply list control not found, tablet may be closed"] call ALiVE_fnc_dump;
+                            if (missionNamespace getVariable ["ALiVE_sup_player_resupply_debug", false]) then {["SUP_PR - cache refresh: supply list control not found, tablet may be closed"] call ALiVE_fnc_dump;};
                         };
 
                         private _sortedVehicles = [ALIVE_SUP_PLAYER_RESUPPLY, "sortedVehicles"] call MAINCLASS;
@@ -965,7 +969,7 @@ switch(_operation) do {
                         [ALIVE_SUP_PLAYER_RESUPPLY, "selectedSupplyListValues",  _supplyListValues]  call MAINCLASS;
                         lbClear _supplyList;
                         { _supplyList lbAdd format["%1", _x]; } forEach _options;
-                        ["SUP_PR - cache refresh complete for category '%1' (%2 items)", _pendingCategory, count _options - 1] call ALiVE_fnc_dump;
+                        if (missionNamespace getVariable ["ALiVE_sup_player_resupply_debug", false]) then {["SUP_PR - cache refresh complete for category '%1' (%2 items)", _pendingCategory, count _options - 1] call ALiVE_fnc_dump;};
                     };
                 };
             };
@@ -995,7 +999,7 @@ switch(_operation) do {
                     [_sortedGroups, _x, _factionGroups] call ALiVE_fnc_hashSet;
                 } foreach ALIVE_PR_FACTIONLIST;
             };
-            ["SUP_PR - sortedGroups factions: %1", _sortedGroups select 1] call ALiVE_fnc_dump;
+            if (missionNamespace getVariable ["ALiVE_sup_player_resupply_debug", false]) then {["SUP_PR - sortedGroups factions: %1", _sortedGroups select 1] call ALiVE_fnc_dump;};
 
             [_logic,"sortedGroups",_sortedGroups] call MAINCLASS;
 
@@ -2016,7 +2020,7 @@ switch(_operation) do {
                     // DEFAULT_SORTED_VEHICLES is [] (plain array) — replace with an
                     // empty hash so all downstream ALIVE_fnc_hashGet calls are safe.
                     if (isNil "_sortedVehicles" || {!(_sortedVehicles isEqualType [])} || {count _sortedVehicles < 2}) then {
-                        ["SUP_PR SUPPLY_LIST_SELECT - sortedVehicles not yet initialised (type: %1, count: %2), using empty hash", typeName _sortedVehicles, count (_sortedVehicles)] call ALiVE_fnc_dump;
+                        if (missionNamespace getVariable ["ALiVE_sup_player_resupply_debug", false]) then {["SUP_PR SUPPLY_LIST_SELECT - sortedVehicles not yet initialised (type: %1, count: %2), using empty hash", typeName _sortedVehicles, count (_sortedVehicles)] call ALiVE_fnc_dump;};
                         _sortedVehicles = [] call ALiVE_fnc_hashCreate;
                     };
                     _faction = [_logic,"faction"] call MAINCLASS;
@@ -2352,7 +2356,7 @@ switch(_operation) do {
                     _sortedVehicles = [_logic,"sortedVehicles"] call MAINCLASS;
                     // Ensure _sortedVehicles is a valid hash regardless of init timing.
                     if (isNil "_sortedVehicles" || {!(_sortedVehicles isEqualType [])} || {count _sortedVehicles < 2}) then {
-                        ["SUP_PR REINFORCE_LIST_SELECT - sortedVehicles not yet initialised (type: %1, count: %2), using empty hash", typeName _sortedVehicles, count (_sortedVehicles)] call ALiVE_fnc_dump;
+                        if (missionNamespace getVariable ["ALiVE_sup_player_resupply_debug", false]) then {["SUP_PR REINFORCE_LIST_SELECT - sortedVehicles not yet initialised (type: %1, count: %2), using empty hash", typeName _sortedVehicles, count (_sortedVehicles)] call ALiVE_fnc_dump;};
                         _sortedVehicles = [] call ALiVE_fnc_hashCreate;
                     };
                     _sortedGroups = [_logic,"sortedGroups"] call MAINCLASS;
@@ -2361,7 +2365,7 @@ switch(_operation) do {
                     // empty hash so all downstream ALIVE_fnc_hashGet calls are safe.
                     if (isNil "_sortedGroups" || {!(_sortedGroups isEqualType [])} || {count _sortedGroups < 2}) then {
                         _sortedGroups = [] call ALiVE_fnc_hashCreate;
-                        ["SUP_PR - sortedGroups not yet initialised, using empty hash"] call ALiVE_fnc_dump;
+                        if (missionNamespace getVariable ["ALiVE_sup_player_resupply_debug", false]) then {["SUP_PR - sortedGroups not yet initialised, using empty hash"] call ALiVE_fnc_dump;};
                     };
                     _faction = [_logic,"faction"] call MAINCLASS;
                     _side = [_logic,"side"] call MAINCLASS;
@@ -2442,7 +2446,7 @@ switch(_operation) do {
                                             if (_x != "<< Back") then {
                                                 private _displayName = getText(configfile >> "CfgFactionClasses" >> _x >> "displayName");
 
-                                                ["Set %1 to %2", _x, _displayName] call ALiVE_fnc_dump;
+                                                if (missionNamespace getVariable ["ALiVE_sup_player_resupply_debug", false]) then {["Set %1 to %2", _x, _displayName] call ALiVE_fnc_dump;};
                                                 _options set [_foreachindex, _displayName];
                                                 _values set [_foreachindex, _x];
                                             };
@@ -2470,7 +2474,7 @@ switch(_operation) do {
                                     _categories = [_sortedGroups,_selectedValue] call ALIVE_fnc_hashGet;
                                     // Guard: faction key may not exist in sortedGroups (e.g. no CfgGroups entry)
                                     if (isNil "_categories" || {!(_categories isEqualType [])} || {count _categories < 2}) then {
-                                        ["SUP_PR REINFORCE depth1 - no categories for faction '%1', skipping", _selectedValue] call ALiVE_fnc_dump;
+                                        if (missionNamespace getVariable ["ALiVE_sup_player_resupply_debug", false]) then {["SUP_PR REINFORCE depth1 - no categories for faction '%1', skipping", _selectedValue] call ALiVE_fnc_dump;};
                                         _categories = [] call ALiVE_fnc_hashCreate;
                                     };
                                     _categories = _categories select 1;
@@ -2555,7 +2559,7 @@ switch(_operation) do {
 
                                     // Guard: category or group key may not exist
                                     if (isNil "_groups" || {!(_groups isEqualType [])} || {count _groups < 3}) then {
-                                        ["SUP_PR REINFORCE depth2 - no groups for category '%1' faction '%2', skipping", _selectedReinforceListParents select 2, _selectedReinforceListParents select 1] call ALiVE_fnc_dump;
+                                        if (missionNamespace getVariable ["ALiVE_sup_player_resupply_debug", false]) then {["SUP_PR REINFORCE depth2 - no groups for category '%1' faction '%2', skipping", _selectedReinforceListParents select 2, _selectedReinforceListParents select 1] call ALiVE_fnc_dump;};
                                         _options = ["<< Back"];
                                         _values = ["<< Back"];
                                     } else {
@@ -3177,7 +3181,7 @@ switch(_operation) do {
                             }else{
                                 [[_pollEvent],"ALIVE_fnc_addEventToServer",false,false] spawn BIS_fnc_MP;
                             };
-                            ["SUP_PR - status auto-refresh fired"] call ALiVE_fnc_dump;
+                            if (missionNamespace getVariable ["ALiVE_sup_player_resupply_debug", false]) then {["SUP_PR - status auto-refresh fired"] call ALiVE_fnc_dump;};
                         };
                     };
 
