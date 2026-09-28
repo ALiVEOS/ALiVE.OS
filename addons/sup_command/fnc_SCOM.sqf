@@ -2908,7 +2908,10 @@ switch (_operation) do {
                 };
 
                 {
-                    _x params ["_infantry","_motorised","_mechanized","_armor","_air","_sea","_artillery","_AAA"];
+                    // The order the server builds them in (fnc_commandHandler.sqf, unit marking), where
+                    // artillery and AA come before air and sea. Read the other way round, artillery showed
+                    // as aircraft, AA as unknown and naval units as mechanised.
+                    _x params ["_infantry","_motorised","_mechanized","_armor","_artillery","_AAA","_air","_sea"];
 
                     // create markers for each profile type
 
@@ -3044,7 +3047,7 @@ switch (_operation) do {
 
                     {
                         _x params ["_position","_attackID"];
-                        _profileMarker = format["%1_unknown",_typePrefix];
+                        _profileMarker = format["%1_naval",_typePrefix];
 
                         _m = createMarkerLocal [format[MTEMPLATE, _profileCount], _position];
                         _m setMarkerShapeLocal "ICON";
@@ -3096,7 +3099,7 @@ switch (_operation) do {
 
                     {
                         _x params ["_position","_attackID"];
-                        _profileMarker = format["%1_mech_inf",_typePrefix];
+                        _profileMarker = format["%1_antiair",_typePrefix];
 
                         _m = createMarkerLocal [format[MTEMPLATE, _profileCount], _position];
                         _m setMarkerShapeLocal "ICON";
@@ -3844,9 +3847,9 @@ switch (_operation) do {
                     [_mechanized,"Mechanized","%1_mech_inf"],
                     [_armor,"Armor","%1_armor"],
                     [_air,"Air","%1_air"],
-                    [_sea,"Naval","%1_unknown"],
+                    [_sea,"Naval","%1_naval"],
                     [_artillery,"Artillery","%1_art"],
-                    [_AAA,"Anti-Air","%1_mech_inf"]
+                    [_AAA,"Anti-Air","%1_antiair"]
                 ];
 
                 private _unlockedCount = 0;
