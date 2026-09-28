@@ -120,7 +120,20 @@ ALiVE_fnc_INS_classifyClassesTier = {
                             // launchers) accompany infantry and don't
                             // elevate tier either.
                             if (!(_class isKindOf "Man") && {!(_class isKindOf "StaticWeapon")}) then {
-                                if (_class isKindOf "Car") then {
+                                // Wheeled APCs, MRAPs, LSVs and trucks all inherit Car, so Car alone
+                                // put every one of them in the light tier and left medium empty. They
+                                // are medium, as is any Car with the armour of one (a modded APC). A3's
+                                // trucks come down from Truck_F, not the older Truck.
+                                private _isMediumWheeled = (_class isKindOf "Truck") ||
+                                    {_class isKindOf "Truck_F"} ||
+                                    {_class isKindOf "Wheeled_APC_F"} ||
+                                    {_class isKindOf "MRAP_01_base_F"} ||
+                                    {_class isKindOf "MRAP_02_base_F"} ||
+                                    {_class isKindOf "MRAP_03_base_F"} ||
+                                    {_class isKindOf "LSV_01_base_F"} ||
+                                    {_class isKindOf "LSV_02_base_F"} ||
+                                    {getNumber (configFile >> "CfgVehicles" >> _class >> "armor") >= 200};
+                                if (_class isKindOf "Car" && {!_isMediumWheeled}) then {
                                     _hasLight = true;
                                 } else {
                                     // Any other non-infantry, non-
@@ -219,15 +232,30 @@ ALiVE_fnc_INS_buildTieredGroupRoster = {
                 private _groupsConfig = _faction call ALiVE_fnc_configGetFactionGroups;
                 if (isNull _groupsConfig) exitWith {_roster};
 
+                // As the infantry-only picker does: blacklisted groups (the mission's own list
+                // included) and groups with no units are left out, and the infantry tier comes
+                // from the faction's Infantry category only, so a tank crew or divers aren't
+                // recruited as infantry. A mapped faction (RHS and others) names its own category.
+                private _blacklist = missionNamespace getVariable ["ALiVE_PLACEMENT_GROUPBLACKLIST", []];
+                private _infantryCategory = "Infantry";
+                if (!isNil "ALIVE_factionCustomMappings" && {_faction in (ALIVE_factionCustomMappings select 1)}) then {
+                    private _mappedTypes = [[ALIVE_factionCustomMappings, _faction] call ALIVE_fnc_hashGet, "GroupFactionTypes"] call ALIVE_fnc_hashGet;
+                    if (!isNil "_mappedTypes") then {
+                        private _mapped = [_mappedTypes, "Infantry"] call ALIVE_fnc_hashGet;
+                        if (!isNil "_mapped" && {_mapped isEqualType ""}) then { _infantryCategory = _mapped };
+                    };
+                };
+
                 for "_i" from 0 to (count _groupsConfig - 1) do {
                     private _categoryConfig = _groupsConfig select _i;
                     if (isClass _categoryConfig) then {
+                        private _isInfantryCategory = (configName _categoryConfig) == _infantryCategory;
                         for "_j" from 0 to (count _categoryConfig - 1) do {
                             private _groupConfig = _categoryConfig select _j;
-                            if (isClass _groupConfig) then {
+                            if (isClass _groupConfig && {!((configName _groupConfig) in _blacklist)} && {count ("isClass _x" configClasses _groupConfig) > 0}) then {
                                 private _tier = [_groupConfig, _excludedKinds] call ALiVE_fnc_INS_classifyGroupTier;
                                 switch (_tier) do {
-                                    case "infantry": { (_roster select 0) pushBack (configName _groupConfig); };
+                                    case "infantry": { if (_isInfantryCategory) then { (_roster select 0) pushBack (configName _groupConfig); }; };
                                     case "light":    { (_roster select 1) pushBack (configName _groupConfig); };
                                     case "medium":   { (_roster select 2) pushBack (configName _groupConfig); };
                                 };
