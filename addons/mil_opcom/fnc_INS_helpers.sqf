@@ -282,9 +282,10 @@ ALiVE_fnc_INS_buildTieredGroupRoster = {
 // status. Monotonic ratcheting is handled at the call site - this
 // helper just reports the current scalar.
 //
-// Returns: scalar (sum of insurgent-side hostility across this
-// OPCOM's settlement clusters). 0 if sector grid / cluster handler
-// aren't initialised (returns 0 = "nothing to escalate on").
+// Returns: scalar (how far insurgent-side hostility has risen since
+// the start, summed across this OPCOM's settlement clusters). 0 if
+// sector grid / cluster handler aren't initialised (returns 0 =
+// "nothing to escalate on").
 ALiVE_fnc_INS_sampleOpcomHostility = {
                 params [["_handler", [], [[]]]];
 
@@ -297,6 +298,11 @@ ALiVE_fnc_INS_sampleOpcomHostility = {
 
                 private _objectives = [_handler, "objectives", []] call ALiVE_fnc_HashGet;
                 private _seenClusterIDs = [];
+
+                // Every settlement starts at the hostility set in Civilian Population, so only the
+                // rise since then counts. Summing the start itself gave a map with many settlements
+                // a head start that could unlock a tier before anything had happened.
+                private _baseline = if (isNil "ALIVE_civilianHostility") then {0} else {[ALIVE_civilianHostility, _side, 0] call ALiVE_fnc_hashGet};
 
                 {
                     private _objective = _x;
@@ -319,7 +325,7 @@ ALiVE_fnc_INS_sampleOpcomHostility = {
                                 if !(isNil "_cluster") then {
                                     private _clusterHostility = [_cluster, "hostility"] call ALiVE_fnc_hashGet;
                                     private _sideHostility = [_clusterHostility, _side, 0] call ALiVE_fnc_hashGet;
-                                    _totalHostility = _totalHostility + _sideHostility;
+                                    _totalHostility = _totalHostility + _sideHostility - _baseline;
                                 };
                             };
                         } forEach _settlementClusters;
