@@ -528,6 +528,14 @@ switch(_operation) do {
         private _playersToSendMarkerTo = allPlayers select { side (group _X) == _sideObject };
         if (_playersToSendMarkerTo isEqualTo []) exitWith {};
 
+        // The commander's own blocking lines and arrows take its side's colour, as the contacts
+        // now take theirs: blue for everyone left an OPFOR commander's lines looking like the enemy.
+        private _ownColor = switch (_logic getvariable ["side", "WEST"]) do {
+            case "EAST": { "ColorOPFOR" };
+            case "GUER": { "ColorIndependent" };
+            default { "ColorBLUFOR" };
+        };
+
         private _reportType = _report get "type";
         switch (_reportType) do {
             case "spotrep": {
@@ -712,7 +720,7 @@ switch(_operation) do {
                     ["shape", "RECTANGLE"],
                     ["size", [25, (_objectiveSize * 1.5) min 350]],
                     ["direction", _dirToAttackers - 90],
-                    ["color", "ColorBlufor"],
+                    ["color", _ownColor],
                     ["brush", "FDiagonal"]
                 ];
 
@@ -730,7 +738,7 @@ switch(_operation) do {
                     ["position", _arrowStart],
                     ["shape", "POLYLINE"],
                     ["path", _path],
-                    ["color", "ColorBlufor"]
+                    ["color", _ownColor]
                 ];
 
                 // TACOM recon/capture blocking lines have their OWN COP toggle
@@ -770,7 +778,7 @@ switch(_operation) do {
                     ["shape", "RECTANGLE"],
                     ["size", [25, (_objectiveSize * 1.5) min 350]],
                     ["direction", _dirToAttackers - 90],
-                    ["color", "ColorBlufor"],
+                    ["color", _ownColor],
                     ["brush", "FDiagonal"]
                 ];
 
@@ -788,7 +796,7 @@ switch(_operation) do {
                     ["position", _arrowStart],
                     ["shape", "POLYLINE"],
                     ["path", _path],
-                    ["color", "ColorBlufor"]
+                    ["color", _ownColor]
                 ];
 
                 // TACOM recon/capture blocking lines have their OWN COP toggle
@@ -898,30 +906,28 @@ switch(_operation) do {
         _args params ["_side","_groupType"];
 
         private ["_typePrefix","_color"];
-        private _friendlySide = _logic getvariable "side";
 
-        if (_side == _friendlySide) then {
-            _typePrefix = "b";
-            _color = "ColorBLUFOR";
-        } else {
-            _typePrefix = "o";
-            _color = "ColorOPFOR";
+        // Each side keeps its own colour and frame whoever is looking, as on the rest of the
+        // map and in the COP overlay. Coloured by viewer, the same group was red here and
+        // blue there, and an enemy Independent faction showed as OPFOR.
+        switch (_side) do {
+            case "EAST": {
+                _typePrefix = "o";
+                _color = "ColorOPFOR";
+            };
+            case "WEST": {
+                _typePrefix = "b";
+                _color = "ColorBLUFOR";
+            };
+            case "GUER": {
+                _typePrefix = "n";
+                _color = "ColorIndependent";
+            };
+            default {
+                _typePrefix = "n";
+                _color = "ColorUNKNOWN";
+            };
         };
-
-        // switch (_side) do {
-        //     case "EAST": {
-        //         _typePrefix = "o";
-        //         _color = "ColorOPFOR";
-        //     };
-        //     case "WEST": {
-        //         _typePrefix = "b";
-        //         _color = "ColorBLUFOR";
-        //     };
-        //     case "GUER": {
-        //         _typePrefix = "n";
-        //         _color = "ColorIndependent";
-        //     };
-        // };
 
         private _markerType = switch (_groupType) do {
             case "infantry": { format ["%1_inf", _typePrefix] };
@@ -934,7 +940,7 @@ switch(_operation) do {
             case "armored": { format ["%1_armor", _typePrefix] };
             case "artillery": { format ["%1_art", _typePrefix] };
             case "ship";
-            case "boat": { format ["%1_unknown", _typePrefix] };
+            case "boat": { format ["%1_naval", _typePrefix] };
             case "helicopter": { format ["%1_air", _typePrefix] };
             case "plane": { format ["%1_plane", _typePrefix] };
             case "uav": { format ["%1_uav", _typePrefix] };
