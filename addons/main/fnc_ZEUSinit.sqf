@@ -29,6 +29,7 @@ See Also:
 
 Author:
 Highhead
+Jman
 ---------------------------------------------------------------------------- */
 
 //Exit if Zeus not placed with an empty default function to save perf
@@ -40,6 +41,29 @@ ALiVE_fnc_ZeusRegister = {
         private ["_unit"];
         _unit = _this select 0;
         {_x addCuratorEditableObjects [_unit]} foreach allCurators;
+    };
+};
+
+// Mark what a Zeus places, so Civilian Population leaves a Zeus-placed civilian to the Zeus:
+// its check reads ALiVE_curator_placed, which nothing ever set. The event fires on the Zeus
+// player's machine, so every machine hooks the curators it has, and any added later, and the
+// mark is sent to all. A placed group marks each of its men, a vehicle its crew.
+ALiVE_fnc_ZeusMarkPlaced = {
+    params ["_curator", "_entity"];
+    private _marked = [_entity] + (crew _entity);
+    if (_entity isKindOf "CAManBase") then { _marked append (units group _entity) };
+    { _x setVariable ["ALiVE_curator_placed", true, true] } forEach (_marked arrayIntersect _marked);
+};
+[] spawn {
+    private _hooked = [];
+    while {true} do {
+        {
+            if !(_x in _hooked) then {
+                _x addEventHandler ["CuratorObjectPlaced", ALiVE_fnc_ZeusMarkPlaced];
+                _hooked pushBack _x;
+            };
+        } forEach allCurators;
+        sleep 10;
     };
 };
 
