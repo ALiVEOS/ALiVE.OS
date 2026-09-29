@@ -580,8 +580,10 @@ switch (_operation) do {
             _costSoFarMapLayer1 set [_startSector select 0, 0];
             _costSoFarMapLayer2 set [_startSubSector select 0, 0];
 
-            // Slot 5 caches the coarse-route tail distance; -1 means not calculated.
-            private _layer1Data = [_cameFromMapLayer1, _costSoFarMapLayer1, _frontierLayer1, _pathLayer1, _closestSector, -1];
+            // Slot 5 caches the coarse-route tail distance; -1 means not calculated. Slot 6: the coarse
+            // search reached the goal's sector. Slot 7: that coarse route as first built, since the fine
+            // search trims slot 3 from the front as it passes (both read by _fnc_coarseRoute).
+            private _layer1Data = [_cameFromMapLayer1, _costSoFarMapLayer1, _frontierLayer1, _pathLayer1, _closestSector, -1, false, []];
             private _layer2Data = [_cameFromMapLayer2, _costSoFarMapLayer2, _frontierLayer2, _pathLayer2, _closestSubSector, _itersSinceClosest];
 
             _currentJobData = [false, [false,false,false], _layer1Data, _layer2Data, _startSector, _goalSector, _startSubSector, _goalSubSector, []];
@@ -625,6 +627,7 @@ switch (_operation) do {
             if !(_completion isEqualTo []) then {
                 if ([_logic, "stepLayerPath", [_procedure, _completion]] call MAINCLASS) then {
                     _completion params ["_completedLayer", "_start", "_end", "_cameFrom", "_path", "_size", "_retarget"];
+                    if (_completedLayer == 1) then {_layer1 set [7, +_path]};
                     if (_retarget && {count _path > 0}) then {
                         [_waypoint, "position", _path select (count _path - 1)] call ALiVE_fnc_hashSet;
                     };
@@ -647,6 +650,35 @@ switch (_operation) do {
                 && {!((_capabilities select 4))}
                 && {!(ALiVE_airsideFields isEqualTo [])};
             private _airsideCanDiscount = _airsideActive && {ALiVE_pathfinding_airsideWeight < 1};
+            // The fine search gave up though the coarse search had reached the goal's sector, and it had
+            // barely got away from where it started: no nearer the goal than its first cell, or under a
+            // coarse sector nearer while still more than a sector short (dense ground all round with no
+            // road: trees, walls, buildings, or a steep slope). Moving the order onto the closest cell
+            // reached, as a failed search otherwise does, then put it where the unit already stood, and a
+            // profile that isn't spawned in counts as arrived once it has no waypoint left. For a land
+            // unit, hand back the coarse route as first built, less its last point (the goal sector's raw
+            // centre, placed unlike the others and up to most of a sector off the goal), and leave the
+            // order where it was given. A search that got well on its way still stops where it gave up.
+            private _fnc_coarseRoute = {
+                private _closest = _layer2 select 4;
+                private _startDistance = (_startSubSector select 2) distance (_goalSubSector select 2);
+                if !(
+                    (_capabilities select 0)
+                    && {_layer1 param [6, false]}
+                    && {
+                        ((_closest select 1) select 0) isEqualTo (_startSubSector select 0)
+                        || {(_startDistance - (_closest select 0)) < _sectorSize && {(_closest select 0) > _sectorSize}}
+                    }
+                ) exitWith {false};
+                private _route = +(_layer1 param [7, []]);
+                if (_route isNotEqualTo []) then {_route deleteAt (count _route - 1)};
+                _result = _route + [_goalSubSector select 2];
+                _jobComplete = true;
+                ["ALiVE pathfinder: %1 couldn't get away from where it started, %2 m from its goal: %3",
+                    _callbackArgs param [0, ""], round (_closest select 0),
+                    [format ["sent along the coarse route (%1 points)", count _result], "sent straight to it"] select (count _result == 1)] call ALiVE_fnc_dump;
+                true
+            };
 
             if (!_initComplete) then {
 
@@ -715,6 +747,7 @@ switch (_operation) do {
 
 
                 if ((_currentSector select 0) isequalto (_goalSector select 0)) exitwith {
+                    _layer1 set [6, true];
                     [_logic,"beginLayerPath", [1, _startSector, _goalSector ,_cameFromMapLayer1, _pathLayer1, _sectorSize, false]] call MAINCLASS;
                     breakto "main";
                 };
@@ -813,6 +846,7 @@ switch (_operation) do {
                 private _pathLayer1 = _layer1 select 3;
                 private _currentSubSector = [_frontierLayer2, _costSoFarMapLayer2] call ALiVE_fnc_pathfinderPriorityPullFresh;
                 if (isNil "_currentSubSector") exitWith {
+                    if (call _fnc_coarseRoute) then {breakTo "main"};
                     [_logic,"beginLayerPath", [2, _startSubSector, (_closestSubSector select 1), _cameFromMapLayer2, _pathLayer2, _subSectorSize, true]] call MAINCLASS;
                     breakTo "main";
                 };
@@ -949,6 +983,7 @@ switch (_operation) do {
                             };
                             if (/*(_distanceToGoal > (_closestSubSector select 0)*4) ||*/ (_itersSinceClosest > 500)) exitwith {
                                 // Unable to complete path to goal - spent too much time looking
+                                if (call _fnc_coarseRoute) then {breakTo "main"};
                                 [_logic,"beginLayerPath", [2, _startSubSector, (_closestSubSector select 1),_cameFromMapLayer2, _pathLayer2, _subSectorSize, true]] call MAINCLASS;
                                 breakto "main";
                             };
@@ -972,6 +1007,7 @@ switch (_operation) do {
 
                 if (count _frontierLayer2 == 0) exitwith {
                     // Unable to complete path to goal - ran out of sectors to check
+                    if (call _fnc_coarseRoute) then {breakTo "main"};
                     [_logic,"beginLayerPath", [2, _startSubSector, (_closestSubSector select 1), _cameFromMapLayer2, _pathLayer2, _subSectorSize, true]] call MAINCLASS;
                     breakto "main";
                 };
