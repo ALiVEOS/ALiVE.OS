@@ -1339,14 +1339,15 @@ switch(_operation) do {
                     [_profileEntity, "unitClasses", [_profile,"unitClasses"] call ALIVE_fnc_hashGet] call ALIVE_fnc_profileEntity;
                     [_profileEntity, "position", [_profile,"position"] call ALIVE_fnc_hashGet] call ALIVE_fnc_profileEntity;
                     [_profileEntity, "faction", [_profile,"faction"] call ALIVE_fnc_hashGet] call ALIVE_fnc_profileEntity;
-                    [_profileEntity, "_rev", [_profile,"_rev"] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
-                    [_profileEntity, "_id", [_profile,"_id"] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
 
-                    [_profileEntity, "hasSimulated", [_profile,"hasSimulated"] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
-                    [_profileEntity, "despawnPosition", [_profile,"despawnPosition"] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
-
-                    [_profileEntity, "isSPE", [_profile,"isSPE"] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
-                    [_profileEntity, "aiBehaviour", [_profile,"aiBehaviour"] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
+                    // Only the ones the save holds. A local save leaves out the empty _rev and _id, and setting a key
+                    // to nothing removes it, so the profile lost both slots and every value after them sat 2 places
+                    // early, where the code reads them by position (#1063).
+                    {
+                        if (_x in (_profile select 1)) then {
+                            [_profileEntity, _x, [_profile, _x] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
+                        };
+                    } forEach ["_rev", "_id", "hasSimulated", "despawnPosition", "isSPE", "aiBehaviour"];
 
                     // A pinned post comes back pinned, and held back from the commander as it was.
                     // Only the pin brings busy back: other busy flags belong to jobs a reload ends.
@@ -1455,14 +1456,13 @@ switch(_operation) do {
                     [_profileVehicle, "direction", [_profile,"direction"] call ALIVE_fnc_hashGet] call ALIVE_fnc_profileVehicle;
                     [_profileVehicle, "faction", [_profile,"faction"] call ALIVE_fnc_hashGet] call ALIVE_fnc_profileVehicle;
                     [_profileVehicle, "engineOn", [_profile,"engineOn"] call ALIVE_fnc_hashGet] call ALIVE_fnc_profileVehicle;
-                    [_profileVehicle, "_rev", [_profile,"_rev"] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
-                    [_profileVehicle, "_id", [_profile,"_id"] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
 
-                    [_profileVehicle, "hasSimulated", [_profile,"hasSimulated"] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
-                    [_profileVehicle, "despawnPosition", [_profile,"despawnPosition"] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
-
-                    [_profileVehicle, "isSPE", [_profile,"isSPE"] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
-                    [_profileVehicle, "aiBehaviour", [_profile,"aiBehaviour"] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
+                    // only the ones the save holds (see the entity branch above)
+                    {
+                        if (_x in (_profile select 1)) then {
+                            [_profileVehicle, _x, [_profile, _x] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
+                        };
+                    } forEach ["_rev", "_id", "hasSimulated", "despawnPosition", "isSPE", "aiBehaviour"];
 
                     // A pinned vehicle comes back pinned, and an empty reserve vehicle keeps its lock:
                     // the lock was saved but never read back, so it came back unlocked.
