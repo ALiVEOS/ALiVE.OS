@@ -13036,7 +13036,11 @@ switch(_operation) do {
         _profileID = _entityProfile select 2 select 4;
         _vehiclesInCommandOf = _entityProfile select 2 select 8;
 
-        if(count _vehiclesInCommandOf == 0) exitWith { _result = false; };
+        // a crew that bailed out and despawned on foot no longer lists its vehicle
+        if(count _vehiclesInCommandOf == 0) exitWith {
+            [_logic, "unloadAbandonedTransports", _event] call MAINCLASS;
+            _result = false;
+        };
 
         _vehicleProfileID = _vehiclesInCommandOf select 0;
 
@@ -13195,6 +13199,67 @@ switch(_operation) do {
 
     };
 
+    case "unloadAbandonedTransports": {
+        // A crew that bailed out of its vehicle and despawned on foot no longer lists it, so the unload
+        // can't find the vehicle through the crew, and the cargo sat in it until the unload wait gave up.
+        // Find it through the delivery's own list instead: every transport of the delivery that nobody
+        // crews any more lets its cargo out where it stands. A spawned vehicle is crewed if someone is at
+        // the wheel; a virtual one if a group it lists still lists it back.
+        private _event = _args;
+        private _debug = [_logic, "debug"] call MAINCLASS;
+
+        {
+            private _vehicleID = _x;
+            private _vehicleProfile = [ALIVE_profileHandler, "getProfile", _vehicleID] call ALIVE_fnc_profileHandler;
+
+            if (!isNil "_vehicleProfile" && {(_vehicleProfile select 2 select 9) isNotEqualTo []}) then {
+                private _vehicleObject = _vehicleProfile select 2 select 10;
+                private _crewed = if (!isNull _vehicleObject && {alive _vehicleObject}) then {
+                    alive driver _vehicleObject
+                } else {
+                    ((_vehicleProfile select 2 select 8) findIf {
+                        private _crewProfile = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+                        !isNil "_crewProfile" && {_vehicleID in (_crewProfile select 2 select 8)}
+                    }) > -1
+                };
+                // spawned men stay aboard an aircraft that isn't down, still linked, for a later look
+                private _airborne = !isNull _vehicleObject && {_vehicleObject isKindOf "Air"} && {!isTouchingGround _vehicleObject};
+
+                if (!_crewed) then {
+                    private _position = +(_vehicleProfile select 2 select 2);
+                    _position set [2, 0];
+                    private _released = [];
+
+                    {
+                        private _cargoProfile = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+
+                        if (!isNil "_cargoProfile" && {!(_airborne && {_cargoProfile select 2 select 1})}) then {
+                            [_cargoProfile, _vehicleProfile] call ALIVE_fnc_removeProfileVehicleAssignment;
+
+                            if (_cargoProfile select 2 select 1) then {
+                                {
+                                    if (alive _x && {vehicle _x == _vehicleObject}) then {
+                                        unassignVehicle _x;
+                                        [_x] orderGetIn false;
+                                        _x moveOut _vehicleObject;
+                                    };
+                                } forEach (_cargoProfile select 2 select 21);
+                            } else {
+                                [_cargoProfile, "position", _position] call ALIVE_fnc_profileEntity;
+                            };
+
+                            _released pushBack _x;
+                        };
+                    } forEach +(_vehicleProfile select 2 select 9); // a copy: releasing each group takes it out of the list
+
+                    if (_debug && {_released isNotEqualTo []}) then {
+                        ["ML - unloadAbandonedTransports: nobody crews %1, so %2 got out where it stands", _vehicleID, _released] call ALiVE_fnc_dump;
+                    };
+                };
+            };
+        } forEach ([_event, "transportVehiclesProfiles", []] call ALIVE_fnc_hashGet);
+    };
+
     case "unloadTransportHelicopter": {
 
         private ["_event","_entityProfile","_active","_profileID","_vehiclesInCommandOf","_debug","_eventID","_eventData","_eventCargoProfiles",
@@ -13208,7 +13273,11 @@ switch(_operation) do {
         _profileID = _entityProfile select 2 select 4;
         _vehiclesInCommandOf = _entityProfile select 2 select 8;
 
-        if(count _vehiclesInCommandOf == 0) exitWith { _result = false; };
+        // a crew that bailed out and despawned on foot no longer lists its vehicle
+        if(count _vehiclesInCommandOf == 0) exitWith {
+            [_logic, "unloadAbandonedTransports", _event] call MAINCLASS;
+            _result = false;
+        };
 
         _vehicleProfileID = _vehiclesInCommandOf select 0;
 
