@@ -4306,14 +4306,13 @@ switch (_operation) do {
 
         //Check if there are any profiles available.
         //
-        //Enumerate factions offered by synced placement modules
-        //so an OPCOM Factions vs placement-module faction mismatch
-        //surfaces clearly in the RPT. Fires unconditionally (not
-        //debug-gated) because this is the commonest OPCOM-init
-        //misconfiguration: mission-maker picks faction X in OPCOM
-        //but the synced Mil Placement was left on its OPF_F
-        //default, so there are zero profiles for X and OPCOM
-        //silently refuses to run.
+        // The factions the placement modules synced to this commander place, named in the no-groups warning below
+        // when a missing faction isn't among them. That's the commonest OPCOM-init misconfiguration: faction X picked
+        // here, the synced Mil Placement left on its default, so there are no groups for X and the commander won't
+        // run. A synced placement of another side is fine on its own: a commander controls every profile of its
+        // factions wherever they were placed, and a synced placement gives it objectives, not forces (objectives
+        // shared between sides are made this way). The Eden check in main/fnc_edenValidateOpcomFactions.sqf works
+        // the same way.
         private _parsePlacementFactions = {
             params ["_value"];
             private _parsed = [];
@@ -4374,17 +4373,6 @@ switch (_operation) do {
             };
         } forEach (synchronizedObjects _opcomModule);
 
-        private _unmatchedFactions = _factions select {!(_x in _availableFactions)};
-        if (count _unmatchedFactions > 0) then {
-            [
-                "ALiVE OPCOM init MISMATCH: AI Commander '%1' has Factions [%2] but synced placement modules only provide factions [%3]. Unmatched: [%4]. Fix: change the OPCOM Factions multi-select to match a placement module, sync a placement with the missing faction, or leave a custom objective's Force Factions empty so it inherits this Commander.",
-                _customName,
-                _factions joinString ", ",
-                _availableFactions joinString ", ",
-                _unmatchedFactions joinString ", "
-            ] call ALiVE_fnc_Dump;
-        };
-
         // Verify that OPCOM has at least one group
         // Warn for factions with no groups
 
@@ -4404,10 +4392,16 @@ switch (_operation) do {
         } foreach _factions;
 
         if (_factionsWithNoGroups isnotequalto []) then {
+            private _syncedHint = "";
+            if (_availableFactions isNotEqualTo [] && {(_factionsWithNoGroups findIf {!(_x in _availableFactions)}) >= 0}) then {
+                _syncedHint = format [" The placement modules synced to AI Commander '%1' place [%2]: set one to the missing faction, or leave a synced custom objective's Force Factions empty so it takes this Commander's.",
+                    _customName, _availableFactions joinString ", "];
+            };
             [
-                "There are no groups for OPCOM faction(s) %1! %2",
+                "There are no groups for OPCOM faction(s) %1! %2%3",
                 _factionsWithNoGroups,
-                "Please ensure you have configured a Mil Placement or Mil Placement (Civ Obj) module for this faction (or faction units are synced to Virtual AI module). If so, please check groups are correctly configured for this faction."
+                "Please ensure you have configured a Mil Placement or Mil Placement (Civ Obj) module for this faction (or faction units are synced to Virtual AI module). If so, please check groups are correctly configured for this faction.",
+                _syncedHint
             ] call ALIVE_fnc_dumpR;
         };
 
