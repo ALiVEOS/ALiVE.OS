@@ -13064,29 +13064,25 @@ switch(_operation) do {
                                 [_cargoProfile,_vehicleProfile] call ALIVE_fnc_removeProfileVehicleAssignment;
 
                                 // If the cargo profile is active (spawned), physically
-                                // unload the units and move them to their own group so
-                                // they are not commanded by the heli crew
+                                // unload the units. They stay in their own group, the one
+                                // their profile holds and the orders on arrival are sent to.
                                 private _cargoActive = _cargoProfile select 2 select 1;
                                 if (_cargoActive) then {
                                     private _cargoUnits = _cargoProfile select 2 select 21;
                                     private _heliVehicle = _vehicleProfile select 2 select 10;
 
                                     if (count _cargoUnits > 0) then {
-                                        // Create a new group on the same side for the infantry
-                                        private _newGroup = createGroup (side (_cargoUnits select 0));
-
                                         {
                                             if (alive _x) then {
                                                 unassignVehicle _x;
                                                 [_x] orderGetIn false;
                                                 _x moveOut _heliVehicle;
-                                                [_x] joinSilent _newGroup;
                                             };
                                         } forEach _cargoUnits;
 
                                         if (_debug) then {
-                                            ["ML - unloadTransportHelicopter: Moved %1 units from heli crew group to new group %2",
-                                                count _cargoUnits, _newGroup] call ALiVE_fnc_dump;
+                                            ["ML - unloadTransport: moved %1 units out of %2",
+                                                count _cargoUnits, _heliVehicle] call ALiVE_fnc_dump;
                                         };
                                     };
                                 };
@@ -13268,11 +13264,7 @@ switch(_operation) do {
                     _eventAssets pushback _heliPad;
                     [_event, "eventAssets",_eventAssets] call ALIVE_fnc_hashSet;
 
-                    // The loop walks a copy, as releasing each group takes it out of this list. The landing
-                    // thread below still gets the list itself, now emptied, so it moves nobody out: it never
-                    // did with one group aboard, and made to act it would move men out of a helicopter still
-                    // in the air after 90 s, and regroup them away from their profile.
-                    _inCargo = _vehicleProfile select 2 select 9;
+                    _inCargo = +(_vehicleProfile select 2 select 9); // a copy: releasing each group takes it out of the list
 
                     if(count _inCargo > 0) then {
                         {
@@ -13283,7 +13275,7 @@ switch(_operation) do {
                                 [_cargoProfile,_vehicleProfile] call ALIVE_fnc_removeProfileVehicleAssignment;
                             };
 
-                        } forEach +_inCargo;
+                        } forEach _inCargo;
                     };
 
                     private _vehiclesInCommandOf = _entityProfile select 2 select 8;
@@ -13300,53 +13292,77 @@ switch(_operation) do {
                                 _tmpPad setVariable ["ALiVE_padOwner", "mil_logistics", true];
                                 _vehicleObject landAt _tmpPad;
 
-                                // Spawn thread: wait for landing then physically unload troops
-                                [_vehicleObject, _tmpPad, _inCargo, _vehicleProfile, _debug] spawn {
-                                    private _heli    = _this select 0;
-                                    private _pad     = _this select 1;
-                                    private _cargo   = _this select 2;
-                                    private _vProf   = _this select 3;
-                                    private _dbg     = _this select 4;
+                                // Once the helicopter is down and stopped, let the men it carried get out the usual way (they
+                                // were told to above, and are again) for as long as they keep filing out, then move out any
+                                // still aboard.
+                                // Never in the air, where they'd fall, and they stay in their own group: the one their profile
+                                // holds and the orders on arrival are sent to. If it lifts off first, wait for it to set down
+                                // again. Five minutes at most.
+                                [_vehicleObject, _tmpPad, _inCargo, _debug] spawn {
+                                    params ["_heli", "_pad", "_cargo", "_dbg"];
+                                    private _stillAboard = {
+                                        private _aboard = [];
+                                        {
+                                            private _prof = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+                                            if !(isNil "_prof") then {
+                                                _aboard append (((_prof select 2) param [21, [], [[]]]) select { alive _x && {vehicle _x == _heli} });
+                                            };
+                                        } forEach _cargo;
+                                        _aboard
+                                    };
 
-                                    // Wait until landed or 90s timeout
                                     private _t = 0;
-                                    waitUntil {
-                                        sleep 2; _t = _t + 2;
-                                        isTouchingGround _heli || !alive _heli || _t > 90
+                                    private _done = false;
+                                    private _touchdowns = 0;
+                                    while {!_done} do {
+                                        // down and stopped (speed only measures going forwards, so the velocity is used)
+                                        waitUntil {
+                                            sleep 2; _t = _t + 2;
+                                            (isTouchingGround _heli && {vectorMagnitude velocity _heli < 0.5}) || !alive _heli || _t > 300
+                                        };
+                                        _touchdowns = _touchdowns + 1;
+
+                                        // the usual way out first, while it stays down. Anyone still aboard is told again to get
+                                        // out: a man the release above missed is still assigned, and the pilot won't wait for him.
+                                        // The wait runs on while men keep getting out (about one every 2 s) and ends after 8 s
+                                        // with nobody leaving, or 60 s in all.
+                                        {
+                                            unassignVehicle _x;
+                                            [_x] orderGetIn false;
+                                        } forEach (call _stillAboard);
+                                        private _onGround = 0;
+                                        private _idle = 0;
+                                        private _left = count (call _stillAboard);
+                                        private _up = false;
+                                        waitUntil {
+                                            sleep 1; _onGround = _onGround + 1; _idle = _idle + 1;
+                                            private _now = count (call _stillAboard);
+                                            if (_now < _left) then { _left = _now; _idle = 0; };
+                                            _up = !isTouchingGround _heli;
+                                            !alive _heli || {_up} || {_now == 0} || {_idle >= 8} || {_onGround >= 60}
+                                        };
+                                        _t = _t + _onGround;
+
+                                        // a bounce or a lift-off ends the wait too, and then it waits to be down again
+                                        if (alive _heli && {!_up} && {vectorMagnitude velocity _heli < 0.5}) then {
+                                            private _aboard = call _stillAboard;
+                                            {
+                                                unassignVehicle _x;
+                                                [_x] orderGetIn false;
+                                                _x moveOut _heli;
+                                            } forEach _aboard;
+
+                                            if (_dbg) then {
+                                                ["ML - unloadTransportHelicopter: moved %1 still aboard out of %2, %3 s after it set down (touchdown %4, %5 m from its pad)",
+                                                    count _aboard, _heli, _onGround, _touchdowns, round (_heli distance2D _pad)] call ALiVE_fnc_dump;
+                                            };
+                                            _done = true;
+                                        } else {
+                                            _done = !alive _heli || {_t > 300} || {(call _stillAboard) isEqualTo []};
+                                        };
                                     };
 
                                     deleteVehicle _pad;
-
-                                    if (alive _heli) then {
-                                        // Physically move all cargo units out
-                                        {
-                                            private _profID = _x;
-                                            private _prof = [ALIVE_profileHandler, "getProfile", _profID] call ALIVE_fnc_profileHandler;
-                                            if !(isNil "_prof") then {
-                                                private _units = _prof select 2 select 21;
-                                                if !(isNil "_units") then {
-                                                    private _newGroup = if (count _units > 0) then {
-                                                        createGroup (side (_units select 0))
-                                                    } else { grpNull };
-
-                                                    {
-                                                        if (alive _x) then {
-                                                            unassignVehicle _x;
-                                                            [_x] orderGetIn false;
-                                                            _x moveOut _heli;
-                                                            if !(isNull _newGroup) then {
-                                                                [_x] joinSilent _newGroup;
-                                                            };
-                                                        };
-                                                    } forEach _units;
-
-                                                    if (_dbg) then {
-                                                        ["ML - unloadTransportHelicopter: Physically unloaded %1 units from heli", count _units] call ALiVE_fnc_dump;
-                                                    };
-                                                };
-                                            };
-                                        } forEach _cargo;
-                                    };
                                 };
 
                                 // Profile waypoint to the land position (fallback for virtual helis)
