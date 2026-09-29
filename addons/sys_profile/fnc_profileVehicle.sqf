@@ -404,7 +404,7 @@ switch (_operation) do {
                     [_entityProfile,_logic] call ALIVE_fnc_removeProfileVehicleAssignment;
                 };
             } foreach _x;
-        } foreach [_entitiesInCommandOf, _entitiesInCargoOf];
+        } foreach [+_entitiesInCommandOf, +_entitiesInCargoOf]; // copies: the helper shrinks both as it goes
 
         // reset data
         [_logic,"vehicleAssignments", [] call ALIVE_fnc_hashCreate] call ALIVE_fnc_hashSet;

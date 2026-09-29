@@ -25,6 +25,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 params ["_profile"];
@@ -34,7 +35,9 @@ private _vehicleAssignments = [_profile,"vehicleAssignments"] call ALIVE_fnc_has
 
 private _profilesById = [ALIVE_profileHandler,"profilesById"] call ALiVE_fnc_hashGet;
 
-private _assignedIDs = _vehicleAssignments select 1;
+// A copy: the helper takes each key out of this very list as it goes, so walking the list itself
+// skipped every second link and left that group tied to the vehicle.
+private _assignedIDs = +(_vehicleAssignments select 1);
 
 if (_profileType == "vehicle") then {
     {
