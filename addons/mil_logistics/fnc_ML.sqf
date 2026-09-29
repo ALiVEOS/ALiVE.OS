@@ -13280,7 +13280,10 @@ switch(_operation) do {
                         if (_profileType == "entity" && !_busy) then {
 
                             private _waypoints = [_profile, "waypoints"] call ALIVE_fnc_hashGet;
-                            private _hasWaypoints = !isNil "_waypoints" && {count _waypoints > 0};
+                            // An order whose route is still with the route finder has no stops yet, but it is an
+                            // order: counted as none, the group was sent back here once it had carried it out.
+                            private _hasWaypoints = (!isNil "_waypoints" && {count _waypoints > 0})
+                                || {([_profile, "pendingWaypointPaths", []] call ALIVE_fnc_hashGet) isNotEqualTo []};
 
                             if (_active) then {
                                 // Profile is spawned - check actual unit movement
