@@ -116,6 +116,33 @@ private _staticWeapons = nearestObjects [_position, ["StaticWeapon"], _radius];
 _staticWeapons = [_staticWeapons, [], { _x distance2D _groupPosition }, "ASCEND"] call BIS_fnc_sortBy;
 _staticWeapons = _staticWeapons select { (_x distance2D _groupPosition) <= _fallbackRadius };
 
+// A garrison order runs on the server, and a stop only takes on the machine that owns the man: a
+// headless client's men stopped from here walked straight back to their leader. So each man is
+// stopped, and turned, by his own machine.
+private _fnc_hold = {
+    params ["_unit", "_dir"];
+    if (local _unit) then {
+        if (!isNil "_dir") then { _unit setDir _dir };
+        doStop _unit;
+    } else {
+        if (!isNil "_dir") then { [_unit, _dir] remoteExecCall ["setDir", _unit] };
+        _unit remoteExecCall ["doStop", _unit];
+    };
+};
+
+// A man's building patrol stops him at each building, sets his behaviour and pace and has his group
+// search it, and none of that takes from here for a man another machine owns: run from here, a headless
+// client's patrolling man walked back to his leader once he'd reached his building. So it runs on his.
+private _fnc_patrol = {
+    params ["_args"];
+    private _unit = _args select 1;
+    if (local _unit) then {
+        _args execFSM "\x\alive\addons\mil_command\buildingPatrol.fsm";
+    } else {
+        [_args, "\x\alive\addons\mil_command\buildingPatrol.fsm"] remoteExec ["execFSM", _unit];
+    };
+};
+
 if (count _staticWeapons > 0) then
 {
     {
@@ -133,12 +160,27 @@ if (count _staticWeapons > 0) then
         if (alive _weapon && {locked _weapon != 2} && {(_weapon emptyPositions "Gunner") > 0}
             && {!_claimHeld || {group _claimant == _group}}) then {
             private _unit = [_units select 0, _claimant] select (_claimHeld && {_claimant in _units});
+            // The seat and get-in commands only act on a man local to the machine running them,
+            // and a garrison order runs on the server, so a man a headless client owns (in a group
+            // the AI Commander garrisons again, say) is seated by his own machine.
             if (_moveInstantly) then {
-                _unit assignAsGunner _weapon;
-                _unit moveInGunner _weapon;
+                if (local _unit) then {
+                    _unit assignAsGunner _weapon;
+                    _unit moveInGunner _weapon;
+                } else {
+                    [_unit, _weapon] remoteExecCall ["assignAsGunner", _unit];
+                    [_unit, _weapon] remoteExecCall ["moveInGunner", _unit];
+                    // His machine seats him a moment later, and until then the gun still reads empty here.
+                    _weapon setVariable ["ALiVE_garrisonClaim", [_unit, time + 30]];
+                };
             } else {
-                _unit assignAsGunner _weapon;
-                [_unit] orderGetIn true;
+                if (local _unit) then {
+                    _unit assignAsGunner _weapon;
+                    [_unit] orderGetIn true;
+                } else {
+                    [_unit, _weapon] remoteExecCall ["assignAsGunner", _unit];
+                    [[_unit], true] remoteExecCall ["orderGetIn", _unit];
+                };
                 _weapon setVariable ["ALiVE_garrisonClaim", [_unit, time + 125]];
             };
 
@@ -173,7 +215,7 @@ private _fnc_startMovement = {
     // unscheduled step: a new order ends this pass wherever it has got to, and caught between the
     // hold and the walk it would leave the group locked and held for good.
     private _walker = {
-        params ["_movementGroup", "_assignments", "_unlock", "_walk"];
+        params ["_movementGroup", "_assignments", "_unlock", "_walk", "_hold"];
         // A man who can't reach his post mustn't hold the group's waypoints locked for as long as it's
         // spawned, so after two minutes the rest stop where they stand.
         private _giveUp = time + 120;
@@ -199,10 +241,7 @@ private _fnc_startMovement = {
 
                 if (!_stillAssigned || {_unit call ALiVE_fnc_unitReadyRemote}) then {
                     if (_stillAssigned) then {
-                        if (_direction >= 0) then {
-                            _unit setDir _direction;
-                        };
-                        doStop _unit;
+                        if (_direction >= 0) then { [_unit, _direction] call _hold } else { [_unit] call _hold };
                     };
                     _assignments deleteAt _forEachIndex;
                 };
@@ -212,7 +251,7 @@ private _fnc_startMovement = {
         };
         {
             _x params ["_unit"];
-            if (_unlock && {[_unit] call _ours}) then { doStop _unit };
+            if (_unlock && {[_unit] call _ours}) then { [_unit] call _hold };
         } forEach _assignments;
         if (_unlock) then {
             isNil {
@@ -243,7 +282,7 @@ private _fnc_startMovement = {
             missionNamespace setVariable ["ALiVE_garrisonWalkCount", _walk];
             { (_x select 0) setVariable ["ALiVE_garrisonWalk", _walk] } forEach _assignments;
         };
-        [_movementGroup, _assignments, !_moveInstantly, _walk] spawn _walker;
+        [_movementGroup, _assignments, !_moveInstantly, _walk, _fnc_hold] spawn _walker;
     };
 };
 
@@ -772,8 +811,7 @@ private _fnc_claimRound = {
                 private _seated = _units deleteAt 0;
                 if (_moveInstantly) then {
                     _seated setposATL _x;
-                    _seated setdir ((_seated getRelDir _building)-180);
-                    dostop _seated;
+                    [_seated, (_seated getRelDir _building) - 180] call _fnc_hold;
                 } else {
                     _movementAssignments pushBack [_seated, _x];
                 };
@@ -827,8 +865,7 @@ private _fnc_claimRound = {
 
                 if (_moveInstantly) then {
                     _unit setposATL _position;
-                    _unit setdir ((_unit getRelDir _building)-180);
-                    dostop _unit;
+                    [_unit, (_unit getRelDir _building) - 180] call _fnc_hold;
                 } else {
                     _movementAssignments pushBack [_unit, _position];
                 };
@@ -845,7 +882,7 @@ private _fnc_claimRound = {
                          };
                          _patrolWaypointsCleared = true;
                      };
-                     [_group, _unit, _patrolBuildings, ALiVE_SYS_PROFILE_DEBUG_ON, _patrolBehaviour, _patrolSpeed] execFSM "\x\alive\addons\mil_command\buildingPatrol.fsm";
+                     [[_group, _unit, _patrolBuildings, ALiVE_SYS_PROFILE_DEBUG_ON, _patrolBehaviour, _patrolSpeed]] call _fnc_patrol;
                      _unitPercentCount = _unitPercentCount -1;
                    };
                 };
@@ -910,8 +947,7 @@ private _fnc_drain = {
 
             if (_moveInstantly) then {
                 _seated setposATL _seatPos;
-                _seated setdir ((_seated getRelDir _queueBuilding)-180);
-                dostop _seated;
+                [_seated, (_seated getRelDir _queueBuilding) - 180] call _fnc_hold;
             } else {
                 _movementAssignments pushBack [_seated, _seatPos];
             };
@@ -932,7 +968,7 @@ private _fnc_drain = {
                     };
                     _patrolWaypointsCleared = true;
                 };
-                [_group, _seated, _patrolBuildings, ALiVE_SYS_PROFILE_DEBUG_ON, _patrolBehaviour, _patrolSpeed] execFSM "\x\alive\addons\mil_command\buildingPatrol.fsm";
+                [[_group, _seated, _patrolBuildings, ALiVE_SYS_PROFILE_DEBUG_ON, _patrolBehaviour, _patrolSpeed]] call _fnc_patrol;
                 _unitPercentCount = _unitPercentCount - 1;
             };
         } forEach _dealable;
@@ -1022,7 +1058,7 @@ if (_capped && {count _units > 0}) then {
                 };
                 _patrolWaypointsCleared = true;
             };
-            [_group, _walker, _patrolBuildings, ALiVE_SYS_PROFILE_DEBUG_ON, _patrolBehaviour, _patrolSpeed] execFSM "\x\alive\addons\mil_command\buildingPatrol.fsm";
+            [[_group, _walker, _patrolBuildings, ALiVE_SYS_PROFILE_DEBUG_ON, _patrolBehaviour, _patrolSpeed]] call _fnc_patrol;
             _unitPercentCount = _unitPercentCount - 1;
             _patrolFromStart = _patrolFromStart + 1;
         };
@@ -1057,7 +1093,7 @@ if ((_twoPass || _capped) && {_guardPatrolPercentage > 0} && {count _patrolBuild
             };
             _patrolWaypointsCleared = true;
         };
-        [_group, _x, _patrolBuildings, ALiVE_SYS_PROFILE_DEBUG_ON, _patrolBehaviour, _patrolSpeed] execFSM "\x\alive\addons\mil_command\buildingPatrol.fsm";
+        [[_group, _x, _patrolBuildings, ALiVE_SYS_PROFILE_DEBUG_ON, _patrolBehaviour, _patrolSpeed]] call _fnc_patrol;
         _unitPercentCount = _unitPercentCount - 1;
     } forEach _authoredPatrolCandidates;
 };

@@ -66,8 +66,15 @@ _cbaObjects = [_cbaObjects, [], { _x distance2D _sortFrom }, "ASCEND"] call BIS_
 
         if (_moveInstantly) then {
             _unit setPosATL _cbaPos;
-            _unit setDir _cbaDir;
-            doStop _unit;
+            // A stop only takes on the machine that owns the man, which for a group a headless
+            // client owns isn't the server running this.
+            if (local _unit) then {
+                _unit setDir _cbaDir;
+                doStop _unit;
+            } else {
+                [_unit, _cbaDir] remoteExecCall ["setDir", _unit];
+                _unit remoteExecCall ["doStop", _unit];
+            };
         } else {
             _movementAssignments pushBack [_unit, _cbaPos, _cbaDir];
             _x setVariable ["ALiVE_garrisonClaim", [_unit, time + 125]];

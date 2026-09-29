@@ -44,6 +44,20 @@ private _staticWeapons = nearestObjects [_position, ["StaticWeapon"], _radius];
     };
 } foreach (nearestObjects [_position, ["Car"], _radius]);
 
+// A garrison order runs on the server, and a stop only takes on the machine that owns the man: a
+// headless client's men stopped from here walked straight back to their leader. So each man is
+// stopped, and turned, by his own machine.
+private _fnc_hold = {
+    params ["_unit", "_dir"];
+    if (local _unit) then {
+        if (!isNil "_dir") then { _unit setDir _dir };
+        doStop _unit;
+    } else {
+        if (!isNil "_dir") then { [_unit, _dir] remoteExecCall ["setDir", _unit] };
+        _unit remoteExecCall ["doStop", _unit];
+    };
+};
+
 if (count _staticWeapons > 0) then
 {
     {
@@ -62,12 +76,27 @@ if (count _staticWeapons > 0) then
         if (alive _weapon && {locked _weapon != 2} && {(_weapon emptyPositions "Gunner") > 0}
             && {!_claimHeld || {group _claimant == _group}}) then {
             private _unit = [_units select 0, _claimant] select (_claimHeld && {_claimant in _units});
+            // The seat and get-in commands only act on a man local to the machine running them,
+            // and a garrison order runs on the server, so a man a headless client owns (in a group
+            // the AI Commander garrisons again, say) is seated by his own machine.
             if (_moveInstantly) then {
-                _unit assignAsGunner _weapon;
-                _unit moveInGunner _weapon;
+                if (local _unit) then {
+                    _unit assignAsGunner _weapon;
+                    _unit moveInGunner _weapon;
+                } else {
+                    [_unit, _weapon] remoteExecCall ["assignAsGunner", _unit];
+                    [_unit, _weapon] remoteExecCall ["moveInGunner", _unit];
+                    // His machine seats him a moment later, and until then the gun still reads empty here.
+                    _weapon setVariable ["ALiVE_garrisonClaim", [_unit, time + 30]];
+                };
             } else {
-                _unit assignAsGunner _weapon;
-                [_unit] orderGetIn true;
+                if (local _unit) then {
+                    _unit assignAsGunner _weapon;
+                    [_unit] orderGetIn true;
+                } else {
+                    [_unit, _weapon] remoteExecCall ["assignAsGunner", _unit];
+                    [[_unit], true] remoteExecCall ["orderGetIn", _unit];
+                };
                 _weapon setVariable ["ALiVE_garrisonClaim", [_unit, time + 125]];
             };
             _units deleteAt (_units find _unit);
@@ -94,7 +123,7 @@ if !(_movementAssignments isEqualTo []) then {
     // unscheduled step: a new order ends this pass wherever it has got to, and caught between the
     // hold and the walk it would leave the group locked and held for good.
     private _walker = {
-        params ["_movementGroup", "_assignments", "_unlock", "_walk"];
+        params ["_movementGroup", "_assignments", "_unlock", "_walk", "_hold"];
         // A man who can't reach his post mustn't hold the group's waypoints locked for as long as it's
         // spawned, so after two minutes the rest stop where they stand.
         private _giveUp = time + 120;
@@ -120,10 +149,7 @@ if !(_movementAssignments isEqualTo []) then {
 
                 if (!_stillAssigned || {_unit call ALiVE_fnc_unitReadyRemote}) then {
                     if (_stillAssigned) then {
-                        if (_direction >= 0) then {
-                            _unit setDir _direction;
-                        };
-                        doStop _unit;
+                        if (_direction >= 0) then { [_unit, _direction] call _hold } else { [_unit] call _hold };
                     };
                     _assignments deleteAt _forEachIndex;
                 };
@@ -133,7 +159,7 @@ if !(_movementAssignments isEqualTo []) then {
         };
         {
             _x params ["_unit"];
-            if (_unlock && {[_unit] call _ours}) then { doStop _unit };
+            if (_unlock && {[_unit] call _ours}) then { [_unit] call _hold };
         } forEach _assignments;
         if (_unlock) then {
             isNil {
@@ -164,6 +190,6 @@ if !(_movementAssignments isEqualTo []) then {
             missionNamespace setVariable ["ALiVE_garrisonWalkCount", _walk];
             { (_x select 0) setVariable ["ALiVE_garrisonWalk", _walk] } forEach _movementAssignments;
         };
-        [_group, _movementAssignments, !_moveInstantly, _walk] spawn _walker;
+        [_group, _movementAssignments, !_moveInstantly, _walk, _fnc_hold] spawn _walker;
     };
 };
