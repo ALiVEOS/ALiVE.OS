@@ -9754,6 +9754,9 @@ switch(_operation) do {
                                 private _destWP = [_eventPosition, 50, "MOVE", "LIMITED", 2, [], "COLUMN"] call ALIVE_fnc_createProfileWaypoint;
                                 [_pilotProfile, "addWaypoint", _leadWP] call ALIVE_fnc_profileEntity;
                                 [_pilotProfile, "addWaypoint", _destWP] call ALIVE_fnc_profileEntity;
+                                // Its men are out, so the truck's part of the delivery is done: the drive on as overwatch
+                                // mustn't hold the delivery up while it looks for a way to the objective's centre.
+                                [_pilotProfile, "alive_ml_dismounted", true] call ALIVE_fnc_hashSet;
                             } else {
                                 if (_debug) then {
                                     ["ML - transportTravel: Vehicle %1 pilot profile %2 not found, skipping overwatch waypoint",
@@ -9807,7 +9810,7 @@ switch(_operation) do {
                     _profile = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
                     if!(isNil "_profile") then {
 
-                        _completed = [_logic,"checkWaypointCompleted",_profile] call MAINCLASS;
+                        _completed = ([_profile, "alive_ml_dismounted", false] call ALIVE_fnc_hashGet) || {[_logic,"checkWaypointCompleted",_profile] call MAINCLASS};
 
                         if!(_completed) then {
                             _waypointsNotCompleted = _waypointsNotCompleted + 1;
@@ -12850,6 +12853,13 @@ switch(_operation) do {
         private ["_entityProfile","_debug","_active","_profileID","_waypointCompleted"];
 
         _entityProfile = _args;
+
+        // A unit waiting for its route from the route finder hasn't been given its stops yet. Its list of stops is
+        // empty until the route comes back, and that read as arrived, so a convoy vehicle whose route was queued
+        // behind others could be unloaded, or have its crew removed, where it started.
+        if (([_entityProfile, "pendingWaypointPaths", []] call ALIVE_fnc_hashGet) isNotEqualTo []) exitWith {
+            _result = false;
+        };
 
         _debug = [_logic, "debug"] call MAINCLASS;
 
