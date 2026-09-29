@@ -9547,7 +9547,7 @@ switch(_operation) do {
                         if (_distToDest > _DISMOUNT_RADIUS) then { continue };
 
                         // Within dismount radius - check for cargo
-                        private _inCargo = _vehProfile select 2 select 9;
+                        private _inCargo = +(_vehProfile select 2 select 9); // a copy: releasing each group takes it out of the list
                         if (_debug) then {
                             ["ML - transportTravel: Transport vehicle %1 within dismount radius. Cargo profiles: %2",
                                 _vehProfID, count _inCargo] call ALiVE_fnc_dump;
@@ -13039,7 +13039,7 @@ switch(_operation) do {
 
                     private ["_group","_position","_heliPad","_inCargo","_cargoProfileID","_cargoProfile"];
 
-                    _inCargo = _vehicleProfile select 2 select 9;
+                    _inCargo = +(_vehicleProfile select 2 select 9); // a copy: releasing each group takes it out of the list
 
                     if(count _inCargo > 0) then {
                         {
@@ -13085,7 +13085,7 @@ switch(_operation) do {
 
                     private ["_inCargo","_cargoProfileID","_cargoProfile","_position"];
 
-                    _inCargo = _vehicleProfile select 2 select 9;
+                    _inCargo = +(_vehicleProfile select 2 select 9); // a copy: releasing each group takes it out of the list
 
                     if(count _inCargo > 0) then {
                         {
@@ -13254,6 +13254,10 @@ switch(_operation) do {
                     _eventAssets pushback _heliPad;
                     [_event, "eventAssets",_eventAssets] call ALIVE_fnc_hashSet;
 
+                    // The loop walks a copy, as releasing each group takes it out of this list. The landing
+                    // thread below still gets the list itself, now emptied, so it moves nobody out: it never
+                    // did with one group aboard, and made to act it would move men out of a helicopter still
+                    // in the air after 90 s, and regroup them away from their profile.
                     _inCargo = _vehicleProfile select 2 select 9;
 
                     if(count _inCargo > 0) then {
@@ -13265,7 +13269,7 @@ switch(_operation) do {
                                 [_cargoProfile,_vehicleProfile] call ALIVE_fnc_removeProfileVehicleAssignment;
                             };
 
-                        } forEach _inCargo;
+                        } forEach +_inCargo;
                     };
 
                     private _vehiclesInCommandOf = _entityProfile select 2 select 8;
@@ -13342,7 +13346,7 @@ switch(_operation) do {
 
                     private ["_position","_inCargo","_cargoProfileID","_cargoProfile"];
 
-                    _inCargo = _vehicleProfile select 2 select 9;
+                    _inCargo = +(_vehicleProfile select 2 select 9); // a copy: releasing each group takes it out of the list
                     _position = _eventPosition getPos [random(DESTINATION_VARIANCE), random(360)];
 
                     if(count _inCargo > 0) then {
