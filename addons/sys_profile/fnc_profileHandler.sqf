@@ -962,13 +962,13 @@ switch(_operation) do {
         private _profiles = [_logic, "getProfiles"] call MAINCLASS;
 
         {
-            _profile = [_profiles, _x] call ALIVE_fnc_hashGet;
+            private _profile = [_profiles, _x] call ALIVE_fnc_hashGet;
+            if (isNil "_profile") then { continue }; // unregistered by the simulator while this loop was suspended
 
             //_profile call ALIVE_fnc_inspectHash;
 
-            _profileID = _profile select 2 select 4;
-            _profileType = _profile select 2 select 5;
-            _isPlayer = false;
+            private _profileType = _profile select 2 select 5;
+            private _isPlayer = false;
 
             if (_profileType == "entity") then {
                 _isPlayer = _profile select 2 select 30;
@@ -982,7 +982,8 @@ switch(_operation) do {
                 };
             };
 
-        } forEach (_profiles select 1);
+        } forEach +(_profiles select 1); // a copy: each destroy takes its own key out of this list, and
+                                         // walking the list itself left every second profile standing
 
         private _state = [_logic, "state"] call MAINCLASS;
         _state call ALIVE_fnc_inspectHash;
