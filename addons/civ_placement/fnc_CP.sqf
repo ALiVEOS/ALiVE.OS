@@ -423,6 +423,32 @@ switch(_operation) do {
             [_logic, "taor", _logic getVariable ["taor", DEFAULT_TAOR]] call MAINCLASS;
             [_logic, "blacklist", _logic getVariable ["blacklist", DEFAULT_TAOR]] call MAINCLASS;
 
+            // The name this module's queued roadblocks are filed under, the same every session while the module
+            // keeps its variable name or its place: the name the mission maker gave it, else its class and spot to
+            // the metre. Only a module that places roadblocks takes one. Two of a kind on one spot can't be told
+            // apart across a save, so the second files its roadblocks under no name: it builds them itself unless
+            // a named module with an objective there files them first, or drops them where it has its own roadblock
+            // already. The log says to name them.
+            private _roadblockOwner = "";
+            if ((parseNumber ([_logic, "roadBlocks"] call MAINCLASS)) > 0 && {[_logic, "withPlacement"] call MAINCLASS}) then {
+                _roadblockOwner = vehicleVarName _logic;
+                if (_roadblockOwner isEqualTo "") then {
+                    private _ownerPos = getPosATL _logic;
+                    _roadblockOwner = format ["%1@%2_%3", typeOf _logic, round (_ownerPos select 0), round (_ownerPos select 1)];
+                };
+                private _shared = false;
+                isNil {
+                    if (isNil "ALiVE_roadblockOwners") then { ALiVE_roadblockOwners = [] };
+                    _shared = _roadblockOwner in ALiVE_roadblockOwners;
+                    if (!_shared) then { ALiVE_roadblockOwners pushBack _roadblockOwner };
+                };
+                if (_shared) then {
+                    ["CP - WARNING: another module of this kind stands on the same spot (%1), so their queued roadblocks can't be told apart after a save. Give each a variable name.", getPosATL _logic] call ALiVE_fnc_dumpR;
+                    _roadblockOwner = "";
+                };
+            };
+            _logic setVariable ["ALiVE_roadblockOwner", _roadblockOwner];
+
             if !(["ALiVE_sys_profile"] call ALiVE_fnc_isModuleAvailable) exitwith {
                 ["Profile System module not placed! Exiting..."] call ALiVE_fnc_DumpR;
                 _logic setVariable ["startupComplete", true];
@@ -722,38 +748,14 @@ switch(_operation) do {
 
                 }else{
 
-                    // Persistent load: "placement" is skipped (profiles were
-                    // restored elsewhere) so GVAR(ROADBLOCK_LOCATIONS) - which
-                    // the spawn loop below iterates unconditionally - is left
-                    // undefined and the loop crashes. Mirror the pattern in
-                    // civ_placement_custom (fnc_CPC.sqf ~250-281): seed the
-                    // queue from the persisted ALIVE_CIV_PLACEMENT_ROADBLOCK_LOCATIONS
-                    // cache by intersecting it with this module's objectives.
-                    // Fixes #494.
+                    // Persistent load: "placement" is skipped (profiles were restored elsewhere), so the
+                    // roadblock queue is the saved ALIVE_CIV_PLACEMENT_ROADBLOCK_LOCATIONS, this module's
+                    // GVAR(ROADBLOCK_LOCATIONS) by another spelling, restored by the Data module. The thread
+                    // below builds this module's entries from it, and files under this module the unfiled entries
+                    // at its objectives that an older save brings, and those of a module since renamed or moved
+                    // (#494).
                     if (isNil QGVAR(ROADBLOCK_LOCATIONS)) then {
                         GVAR(ROADBLOCK_LOCATIONS) = [];
-                    };
-
-                    private _roadBlocks = parseNumber([_logic, "roadBlocks"] call MAINCLASS);
-                    if (_roadBlocks > 0 && isNil QMOD(COMPOSITIONS_LOADED)) then {
-                        // #922: when COMPOSITIONS_LOADED is set, sys_data has already restored these roadblocks this load - re-seeding here would duplicate them. (The queue inited above stays [], so the spawn loop is still safe.)
-                        private _restoredRoadblocks = 0;
-                        private _savedRoadblockLocations = if (isNil "ALIVE_CIV_PLACEMENT_ROADBLOCK_LOCATIONS") then {[]} else {+ALIVE_CIV_PLACEMENT_ROADBLOCK_LOCATIONS};
-
-                        {
-                            private _center = [_x, "center"] call ALIVE_fnc_hashGet;
-                            private _clusterSize = [_x, "size"] call ALIVE_fnc_hashGet;
-                            private _roadblockLocation = [_center, _clusterSize];
-
-                            if ((_savedRoadblockLocations findIf {_x isEqualTo _roadblockLocation}) >= 0 && {(GVAR(ROADBLOCK_LOCATIONS) findIf {_x isEqualTo _roadblockLocation}) < 0}) then {
-                                GVAR(ROADBLOCK_LOCATIONS) pushBack _roadblockLocation;
-                                _restoredRoadblocks = _restoredRoadblocks + 1;
-                            };
-                        } forEach ([_logic, "objectives"] call MAINCLASS);
-
-                        if (_debug) then {
-                            ["CP - Restored %1 deferred roadblock locations for persistent load", _restoredRoadblocks] call ALiVE_fnc_dump;
-                        };
                     };
 
                     // DEBUG -------------------------------------------------------------------------------------
@@ -798,57 +800,108 @@ switch(_operation) do {
                         _maxRoadblockSpawnAttempts = 10;
                         _lastRoadblockDebug = -30;
 
-                        if (_debug) then { ["TOTAL VAR(ROADBLOCK_LOCATIONS): %1, count: %2", GVAR(ROADBLOCK_LOCATIONS), count GVAR(ROADBLOCK_LOCATIONS)] call ALiVE_fnc_dump };
-                                            
-                        while {count GVAR(ROADBLOCK_LOCATIONS) > 0} do {
-                            private ["_timer","_spawnChecks"];
-
-                            _timer = time;
-                            _spawnChecks = 0;
-
-                            {
-                                private ["_position","_size","_spawn","_attempts","_thisroadblockResult"];
-
-                                if (!isnil "_x") then {
-
-                                    if (typeName _x == "ARRAY") then {
-                                        _position  = _x select 0;
-                                        _size = _x select 1;
-
-                                        _spawn = false;
-
-                                        if ([_position, ALIVE_spawnRadius,ALIVE_spawnRadiusJet,ALIVE_spawnRadiusHeli] call ALiVE_fnc_anyPlayersInRangeIncludeAir) then {
-                                            _spawn = true;
-                                        } else {
-                                            if ([_position, ALIVE_spawnRadiusJet] call ALiVE_fnc_anyAutonomousInRange > 0) then {
-                                                _spawn = true;
-                                            };
-                                        };
-
-                                        if (_spawn) then {
-                                            _spawnChecks = _spawnChecks + 1;
-                                            _thisroadblockResult = [_position, _size + 150, ceil(_roadBlocks / 30), _debug, _roadblockComps, _roadblockGuardPatrol, _roadblockFaction, _roadblockOnSpawn, _roadblockOnSpawnOnce] call ALiVE_fnc_createRoadblock;
-                                            if (_debug) then { ["_thisroadblockResult: %1, count: %2", _thisroadblockResult, count _thisroadblockResult] call ALiVE_fnc_dump };
-                                                if (count _thisroadblockResult > 0)  then {
-                                                GVAR(ROADBLOCK_LOCATIONS) set [_foreachIndex, -1];
-                                                } else {
-                                                _attempts = if (count _x > 2) then {_x select 2} else {0};
-                                                _attempts = _attempts + 1;
-
-                                                if (_attempts >= _maxRoadblockSpawnAttempts) then {
-                                                    GVAR(ROADBLOCK_LOCATIONS) set [_foreachIndex, -1];
-                                                    if (_debug) then { ["Roadblock at %1 failed to spawn after %2 attempts; removing from queue", _position, _attempts] call ALiVE_fnc_dump };
-                                                } else {
-                                                    GVAR(ROADBLOCK_LOCATIONS) set [_foreachIndex, [_position, _size, _attempts]];
-                                                };
-                                            };
-                                            if (_debug) then { ["VAR(ROADBLOCK_LOCATIONS): %1, count: %2", GVAR(ROADBLOCK_LOCATIONS), count GVAR(ROADBLOCK_LOCATIONS)] call ALiVE_fnc_dump };
+                        // One queue serves every module that places roadblocks. Each entry, [centre, size, attempts,
+                        // owner], is filed under the module that queued it, and this thread builds its own and the
+                        // unfiled ones at its own objectives (from a save made before entries were filed, or queued by
+                        // a second module on the same spot, which files none). Every change to the queue is made in one
+                        // unscheduled step, so another module's thread can't come between reading an entry and
+                        // changing it. An entry being built stays on the queue, so a save taken meanwhile still holds
+                        // it, and is listed in ALiVE_roadblocksBuilding so no other thread builds it too.
+                        // The Data module restores a saved queue, so wait for it, or for it saying it's off (two
+                        // minutes at most, in case it never says).
+                        if (!isNil "ALIVE_sys_data") then {
+                            private _dataWaitFrom = time;
+                            waitUntil { sleep 1; (ALIVE_sys_data getVariable ["startupComplete", false]) || {missionNamespace getVariable ["ALiVE_sys_data_DISABLED", false]} || {time - _dataWaitFrom > 120} };
+                        };
+                        private _myOwner = _logic getVariable ["ALiVE_roadblockOwner", ""];
+                        // every module that could file roadblocks has taken its name (30 s at most)
+                        private _placers = (allMissionObjects "ALiVE_civ_placement") + (allMissionObjects "ALiVE_civ_placement_custom");
+                        private _ownerWaitFrom = time;
+                        waitUntil { sleep 1; (_placers findIf {isNil {_x getVariable "ALiVE_roadblockOwner"}}) < 0 || {time - _ownerWaitFrom > 30} };
+                        private _fnc_orphan = {
+                            private _owner = _this param [3, ""];
+                            _owner isNotEqualTo "" && {!(_owner in (missionNamespace getVariable ["ALiVE_roadblockOwners", []]))}
+                        };
+                        private _fnc_building = { ((missionNamespace getVariable ["ALiVE_roadblocksBuilding", []]) findIf { _x isEqualTo _this }) >= 0 };
+                        // An entry at one of this module's own objectives with nobody's name on it, or the name of a
+                        // module since moved or renamed, is filed under this one, one per objective, so another module
+                        // can't build it with its own faction. Where this module has its own entry already, those are
+                        // dropped instead. Any other entry filed under a module that isn't here stays queued, unbuilt,
+                        // until a module of that name comes back.
+                        private _objectives = ([_logic, "objectives"] call MAINCLASS) apply { [[_x, "center"] call ALIVE_fnc_hashGet, [_x, "size"] call ALIVE_fnc_hashGet] };
+                        isNil {
+                            if (isNil QGVAR(ROADBLOCK_LOCATIONS)) then { GVAR(ROADBLOCK_LOCATIONS) = [] };
+                            if (isNil "ALiVE_roadblocksBuilding") then { ALiVE_roadblocksBuilding = [] };
+                            // an older build marked finished entries -1 until the end of its pass, and a save could catch one
+                            GVAR(ROADBLOCK_LOCATIONS) = GVAR(ROADBLOCK_LOCATIONS) select { _x isEqualType [] && {count _x > 1} };
+                            if (_myOwner isNotEqualTo "" && {(GVAR(ROADBLOCK_LOCATIONS) findIf { ((_x param [3, ""]) isEqualTo "" || {_x call _fnc_orphan}) && {!(_x call _fnc_building)} }) >= 0}) then {
+                                {
+                                    _x params ["_objCentre", "_objSize"];
+                                    private _unfiled = { ((_x param [3, ""]) isEqualTo "" || {_x call _fnc_orphan}) && {((_x select 0) distance2D _objCentre) < 1} && {!(_x call _fnc_building)} };
+                                    if ((GVAR(ROADBLOCK_LOCATIONS) findIf { (_x param [3, ""]) isEqualTo _myOwner && {((_x select 0) distance2D _objCentre) < 1} }) >= 0) then {
+                                        GVAR(ROADBLOCK_LOCATIONS) = GVAR(ROADBLOCK_LOCATIONS) select { !(call _unfiled) };
+                                    } else {
+                                        private _i = GVAR(ROADBLOCK_LOCATIONS) findIf { (call _unfiled) && {abs ((_x select 1) - _objSize) < 1} };
+                                        if (_i >= 0) then {
+                                            private _e = GVAR(ROADBLOCK_LOCATIONS) select _i;
+                                            GVAR(ROADBLOCK_LOCATIONS) set [_i, [_e select 0, _e select 1, _e param [2, 0], _myOwner]];
                                         };
                                     };
-                                };
-                            } foreach GVAR(ROADBLOCK_LOCATIONS);
+                                } forEach _objectives;
+                            };
+                        };
 
-                            GVAR(ROADBLOCK_LOCATIONS) = GVAR(ROADBLOCK_LOCATIONS) - [-1];
+                        if (_debug) then { ["TOTAL VAR(ROADBLOCK_LOCATIONS): %1, count: %2", GVAR(ROADBLOCK_LOCATIONS), count GVAR(ROADBLOCK_LOCATIONS)] call ALiVE_fnc_dump };
+
+                        while {true} do {
+                            private _mine = GVAR(ROADBLOCK_LOCATIONS) select { _x isEqualType [] && {count _x > 1} && {((_x param [3, ""]) isEqualTo _myOwner && {_myOwner isNotEqualTo ""}) || {(_x param [3, ""]) isEqualTo "" && {private _c = _x select 0; (_objectives findIf { ((_x select 0) distance2D _c) < 1 }) >= 0}}} && {!(_x call _fnc_building)} };
+                            if (_mine isEqualTo []) exitWith {};
+
+                            private _timer = time;
+                            private _spawnChecks = 0;
+
+                            {
+                                private _entry = _x;
+                                _entry params ["_position", "_size"];
+
+                                if (([_position, ALIVE_spawnRadius, ALIVE_spawnRadiusJet, ALIVE_spawnRadiusHeli] call ALiVE_fnc_anyPlayersInRangeIncludeAir)
+                                    || {([_position, ALIVE_spawnRadiusJet] call ALiVE_fnc_anyAutonomousInRange) > 0}) then {
+
+                                    // taken in one step: listed as being built, so only this thread builds it
+                                    private _taken = false;
+                                    isNil {
+                                        if ((GVAR(ROADBLOCK_LOCATIONS) findIf { _x isEqualTo _entry }) >= 0 && {!(_entry call _fnc_building)}) then {
+                                            ALiVE_roadblocksBuilding pushBack _entry;
+                                            _taken = true;
+                                        };
+                                    };
+
+                                    if (_taken) then {
+                                        _spawnChecks = _spawnChecks + 1;
+                                        private _thisroadblockResult = [_position, _size + 150, ceil(_roadBlocks / 30), _debug, _roadblockComps, _roadblockGuardPatrol, _roadblockFaction, _roadblockOnSpawn, _roadblockOnSpawnOnce] call ALiVE_fnc_createRoadblock;
+                                        if (_debug) then { ["_thisroadblockResult: %1, count: %2", _thisroadblockResult, count _thisroadblockResult] call ALiVE_fnc_dump };
+
+                                        // off the queue once built or given up on, else back for another try
+                                        private _attempts = (_entry param [2, 0]) + 1;
+                                        isNil {
+                                            private _b = ALiVE_roadblocksBuilding findIf { _x isEqualTo _entry };
+                                            if (_b >= 0) then { ALiVE_roadblocksBuilding deleteAt _b };
+                                            private _i = GVAR(ROADBLOCK_LOCATIONS) findIf { _x isEqualTo _entry };
+                                            if (_i >= 0) then {
+                                                if (count _thisroadblockResult > 0 || {_attempts >= _maxRoadblockSpawnAttempts}) then {
+                                                    GVAR(ROADBLOCK_LOCATIONS) deleteAt _i;
+                                                } else {
+                                                    GVAR(ROADBLOCK_LOCATIONS) set [_i, [_position, _size, _attempts, _entry param [3, ""]]];
+                                                };
+                                            };
+                                        };
+                                        if (_debug && {count _thisroadblockResult == 0} && {_attempts >= _maxRoadblockSpawnAttempts}) then {
+                                            ["Roadblock at %1 failed to spawn after %2 attempts; removing from queue", _position, _attempts] call ALiVE_fnc_dump;
+                                        };
+                                        if (_debug) then { ["VAR(ROADBLOCK_LOCATIONS): %1, count: %2", GVAR(ROADBLOCK_LOCATIONS), count GVAR(ROADBLOCK_LOCATIONS)] call ALiVE_fnc_dump };
+                                    };
+                                };
+                            } forEach _mine;
 
                             if (_debug && {(_spawnChecks > 0) || {time - _lastRoadblockDebug > 30}}) then {
                                 ["Roadblock iteration time: %1 secs for %2 entries...", time - _timer, count GVAR(ROADBLOCK_LOCATIONS)] call ALiVE_fnc_dump;
@@ -1768,13 +1821,15 @@ switch(_operation) do {
 
                 if (!isnil "ALIVE_fnc_createRoadblock" && {random 100 < _roadBlocks} ) then {
 
-                    private ["_rb"];
-
-                    _rb = [];
-                    _rb pushback _center;
-                    _rb pushback _size;
-
-                    GVAR(ROADBLOCK_LOCATIONS) pushback _rb;
+                    // [centre, size, attempts, the module that places it], and not when the restored queue holds
+                    // the cluster already (compositions saved but profiles not): this module's own entry, or an
+                    // unfiled one from an older save, which the roadblock thread then files under it
+                    private _rb = [_center, _size, 0, _logic getVariable ["ALiVE_roadblockOwner", ""]];
+                    isNil {
+                        if ((GVAR(ROADBLOCK_LOCATIONS) findIf { _x isEqualType [] && {count _x > 1} && {((_x select 0) distance2D _center) < 1} && {(_x param [3, ""]) in [_rb select 3, ""]} }) < 0) then {
+                            GVAR(ROADBLOCK_LOCATIONS) pushback _rb;
+                        };
+                    };
 
                     // Debug-mode preview marker. ROADBLOCK_LOCATIONS holds the
                     // CLUSTER centre - the actual roadblock spawns at a road
