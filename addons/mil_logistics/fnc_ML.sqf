@@ -685,12 +685,78 @@ switch(_operation) do {
         private _minRadius     = _args select 1;
         private _maxRadius     = _args select 2;
         private _usedPositions = if (count _args > 3) then { _args select 3 } else { [] };
+        private _nearFirst     = _args param [4, false];
+        private _heliSize      = _args param [5, 0];      // the helicopter's config mapSize, for the tighter clearing
+        private _recheck       = _args param [6, false];  // near-only look round a spot already chosen: no tracker
         private _debug         = [_logic, "debug"] call MAINCLASS;
 
         ["ML - findHelicopterLandingPos: Searching near %1 min %2 max %3",
             _centerPos, _minRadius, _maxRadius] call ALiVE_fnc_dump;
 
         private _foundPos = [];
+
+        // --- Pass 0, when asked for: the nearest clear spot to the centre itself (where a player called
+        // it in), the centre first and then rings every 25 m out to the maximum radius. Nobody on foot
+        // within the clearing, so it doesn't come down on the player who asked for it. The passes below
+        // are left as they were; they run only if this finds nothing (never on a re-check).
+        if (_nearFirst) then {
+            // 50 m from this delivery's own spots and from other recent ones (a helicopter is gone a
+            // minute after its men are out, so a second request to the same point still lands by it)
+            private _spacing = _usedPositions apply { [_x, 50] };
+            if (!_recheck) then {
+                {
+                    if (count _x > 3 && {(time - (_x select 3)) < 600}) then { _spacing pushBack [_x, 50]; };
+                } forEach (missionNamespace getVariable ["ALIVE_ML_usedLZPositions", []]);
+            };
+            private _objectTypes = ["TREE","SMALL TREE","BUILDING","HOUSE","CHURCH","CHAPEL","CROSS","BUNKER","FORTRESS","FOUNTAIN",
+                "VIEW-TOWER","LIGHTHOUSE","QUAY","FUELSTATION","HOSPITAL","FENCE","WALL","HIDE","BUSSTOP","TRANSMITTER","STACK",
+                "RUIN","TOURISM","WATERTOWER","ROCK","ROCKS","POWER LINES","POWERSOLAR","POWERWAVE","POWERWIND","SHIPWRECK"];
+            private _fnc_lzClear = {
+                params ["_candidate", "_maxRise", "_clearRadius"];
+                if (surfaceIsWater _candidate) exitWith { false };
+                if ((_spacing findIf { (_candidate distance2D [(_x select 0) select 0, (_x select 0) select 1]) < (_x select 1) }) > -1) exitWith { false };
+                private _h0 = getTerrainHeightASL _candidate;
+                if (([0, 90, 180, 270] findIf { abs ((getTerrainHeightASL (_candidate getPos [15, _x])) - _h0) > _maxRise }) > -1) exitWith { false };
+                if ((nearestTerrainObjects [_candidate, _objectTypes, _clearRadius]) isNotEqualTo []) exitWith { false };
+                // things the mission placed (compositions, fortifications) aren't terrain objects
+                if (((_candidate nearObjects ["Static", _clearRadius]) select { !(_x isKindOf "HeliH") }) isNotEqualTo []) exitWith { false };
+                // a helicopter hovering over the spot isn't in the way
+                if (((_candidate nearEntities [["Car","Tank","Air","Ship"], LZ_VEHICLE_CLEAR_RADIUS]) select { !(_x isKindOf "Air") || {isTouchingGround _x} }) isNotEqualTo []) exitWith { false };
+                if ((_candidate nearEntities [["Man"], _clearRadius]) isNotEqualTo []) exitWith { false };
+                (lineIntersectsSurfaces [
+                    AGLtoASL (_candidate vectorAdd [0, 0, LZ_VERTICAL_CHECK_HEIGHT]), AGLtoASL (_candidate vectorAdd [0, 0, 1]),
+                    objNull, objNull, true, 1, "GEOM"
+                ]) isEqualTo []
+            };
+
+            private _candidates = [_centerPos select [0, 2]];
+            for "_r" from 25 to _maxRadius step 25 do {
+                for "_b" from 0 to 315 step 45 do { _candidates pushBack ((_centerPos getPos [_r, _b]) select [0, 2]) };
+            };
+            // The usual clearances first (a 2.5 m rise over 15 m, nothing within LZ_OBJECT_CLEAR_RADIUS); where
+            // there's no such spot, as in a hillside town, a tighter clearing on a slope a helicopter can still
+            // take (4.5 m over 15 m: the centre of Agia Marina rises 4 m, and a helicopter set down there on its
+            // own), 15 m across for a small helicopter and wider for a big one.
+            {
+                _x params ["_maxRise", "_clearRadius"];
+                {
+                    private _candidate = _x + [0];
+                    if ([_candidate, _maxRise, _clearRadius] call _fnc_lzClear) exitWith { _foundPos = _candidate; };
+                } forEach _candidates;
+                if (count _foundPos > 0) exitWith {};
+            } forEach [[2.5, LZ_OBJECT_CLEAR_RADIUS], [4.5, 15 max (0.6 * _heliSize)]];
+
+            if (count _foundPos > 0 && {!_recheck}) then {
+                private _globalUsed0 = (missionNamespace getVariable ["ALIVE_ML_usedLZPositions", []]) select { count _x > 3 && {(time - (_x select 3)) < 600} };
+                _globalUsed0 pushback (_foundPos + [time]);
+                missionNamespace setVariable ["ALIVE_ML_usedLZPositions", _globalUsed0];
+                if (_debug) then {
+                    ["ML - findHelicopterLandingPos: clear spot %1 m from the centre at %2", round (_foundPos distance2D _centerPos), _foundPos] call ALiVE_fnc_dump;
+                };
+            };
+        };
+        // a re-check only looks close round the spot it was given; nothing found means keep that spot
+        if (_recheck) exitWith { _result = _foundPos; };
 
         // --- Pass 1: Try roads first - they are clear of buildings by definition ---
         private _searchRadius = _maxRadius;
@@ -847,7 +913,8 @@ switch(_operation) do {
         };
 
         if (count _foundPos == 0) then {
-            _foundPos = _centerPos getPos [_minRadius + 20 + (count _usedPositions * 30), random 360];
+            // unchecked, so never right on top of a player's call-in point
+            _foundPos = _centerPos getPos [(_minRadius max ([0, 80] select _nearFirst)) + 20 + (count _usedPositions * 30), random 360];
             ["ML - findHelicopterLandingPos: WARNING - No clear pos after %1 attempts, fallback %2",
                 _maxAttempts, _foundPos] call ALiVE_fnc_dump;
         };
@@ -1530,6 +1597,8 @@ switch(_operation) do {
 
             private _phase        = 0; // 0=transit 1=landing 2=unload 3=rtb
             private _phaseTimer   = 0;
+            private _groundTimer  = 0;      // time spent on the ground in UNLOAD (troop helicopters)
+            private _unloadSkipped = false; // UNLOAD entered by the stuck skip, away from its spot
             private _running      = true;
             private _landAtIssued = false;
             private _wdLifetime   = 0;  // #426 - total loop time for the tasked backstop
@@ -1991,12 +2060,18 @@ switch(_operation) do {
                             _heli setVariable ["alive_ml_transit_stuck_timer", _stuckTimer];
                             _heli setVariable ["alive_ml_transit_stuck_attempts", _stuckRecoveryAttempts];
 
-                            if (_distToDest < 350 || _forceSkip) then {
+                            // A troop helicopter is at its spot within 150 m: this also tells the delivery
+                            // to unload, and men ordered out sooner make the pilot set down short of it.
+                            // A slingload helicopter keeps 350 m.
+                            private _isSlingT = (!isNil "ALIVE_ML_slingCargo") && {count (ALIVE_ML_slingCargo getOrDefault [_vProfID, []]) > 0};
+                            private _unloadDist = [150, 350] select _isSlingT;
+                            if (_distToDest < _unloadDist || _forceSkip) then {
                                 // For slingload helis, skip LANDING entirely -- landAt is ignored
                                 // by the Arma AI when carrying a slung vehicle, so the heli never
                                 // descends. Go straight to UNLOAD and signal unloadTransportHelicopter
                                 // to force-release the slung load via the RTB path.
-                                _phase = 2; _phaseTimer = 0;
+                                _phase = 2; _phaseTimer = 0; _groundTimer = 0;
+                                _unloadSkipped = _distToDest >= _unloadDist;
                                 _heli setVariable ["alive_ml_watchdog_phase", _phase];
 
                                 // Disable combat AI on the heli's group so the AI doesn't
@@ -2217,8 +2292,18 @@ switch(_operation) do {
                                 // with the 60s as a backstop. A genuine sling that failed to attach (in
                                 // the map but getSlingLoad still null) still times out at 60s.
                                 private _isSlingHeli = (!isNil "ALIVE_ML_slingCargo") && {count (ALIVE_ML_slingCargo getOrDefault [_vProfID, []]) > 0};
-                                private _troopsClear = (!_isSlingHeli) && {(count (fullCrew [_heli, "cargo", false])) == 0};
-                                if (_troopsClear || _phaseTimer > 60) then {
+                                // Troops clear: nobody alive aboard outside the pilot's group, whatever seat he's in
+                                // (a man in a door or firing seat isn't "cargo", and the old test sent the helicopter
+                                // home with him). The landing step also says when the men are out. The timers are
+                                // backstops: 90 s on the ground; 150 s without ever touching down; 330 s in all; 60 s
+                                // for a helicopter pushed into this phase away from its spot. Sling helicopters keep 60 s.
+                                private _passengers = (crew _heli) select { alive _x && {group _x != group (driver _heli)} };
+                                private _troopsClear = (!_isSlingHeli) && {_passengers isEqualTo [] || {_heli getVariable ["alive_ml_troops_out", false]}};
+                                if (isTouchingGround _heli) then { _groundTimer = _groundTimer + 5; };
+                                private _timedOut = if (_isSlingHeli || _unloadSkipped) then { _phaseTimer > 60 } else {
+                                    _groundTimer > 90 || {_groundTimer == 0 && {_phaseTimer > 150}} || {_phaseTimer > 330}
+                                };
+                                if (_troopsClear || _timedOut) then {
                                     if (_isSlingHeli) then {
                                         // Timeout: sling never attached or unload thread never started.
                                         // Force RTB regardless so the heli doesn't hover indefinitely.
@@ -2228,8 +2313,12 @@ switch(_operation) do {
                                             ([getPos _heli] call ALIVE_fnc_taskGetNearestLocationName),
                                             round _heliAGLu, _heliSpdU, getPosATL _heli] call ALiVE_fnc_dump;
                                     } else {
-                                        if (_dbg) then {
-                                            ["ML - heliDeliveryWatchdog: %1 troops disembarked (cargo seats clear at t=%2s), RTB.", _tProfID, _phaseTimer] call ALiVE_fnc_dump;
+                                        if (_troopsClear) then {
+                                            if (_dbg) then {
+                                                ["ML - heliDeliveryWatchdog: %1 troops disembarked (t=%2s, %3 s on the ground), RTB.", _tProfID, _phaseTimer, _groundTimer] call ALiVE_fnc_dump;
+                                            };
+                                        } else {
+                                            ["ML - heliDeliveryWatchdog: %1 leaving with %2 still aboard (t=%3s, %4 s on the ground), RTB.", _tProfID, count _passengers, _phaseTimer, _groundTimer] call ALiVE_fnc_dump;
                                         };
                                     };
 
@@ -8122,14 +8211,28 @@ switch(_operation) do {
                 private _heliTaskID = "";
 
                 {
-                    private _destPos = [_logic, "findHelicopterLandingPos", [
-                        _eventPosition, 200, 600, _usedLandingPositions
-                    ]] call MAINCLASS;
+                    // A player's insert goes to the nearest clear spot to where it was called in; the AI's keeps
+                    // its stand-off. The spot is kept on the transport so the unload lands it there, not at a
+                    // second spot found later, and the waypoint is the spot itself, done within about 120 m:
+                    // the men are ordered out there, and that's where the pilot sets down.
+                    private _destPos = if (_playerRequested) then {
+                        private _tIdxLZ = _transportProfiles find _x;
+                        private _vProfLZ = if (_tIdxLZ < 0) then {nil} else {
+                            [ALIVE_profileHandler, "getProfile", _eventTransportVehiclesProfiles param [_tIdxLZ, ""]] call ALIVE_fnc_profileHandler
+                        };
+                        private _heliSize = if (isNil "_vProfLZ") then {0} else {
+                            getNumber (configFile >> "CfgVehicles" >> (_vProfLZ select 2 select 11) >> "mapSize")
+                        };
+                        [_logic, "findHelicopterLandingPos", [_eventPosition, 0, 150, _usedLandingPositions, true, _heliSize]] call MAINCLASS
+                    } else {
+                        [_logic, "findHelicopterLandingPos", [_eventPosition, 200, 600, _usedLandingPositions]] call MAINCLASS
+                    };
                     _usedLandingPositions pushback _destPos;
-                    _profileWaypoint = [_destPos, 200, "MOVE", "NORMAL", 100, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
+                    _profileWaypoint = [_destPos, 0, "MOVE", "NORMAL", 50, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
 
                     _profile = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
                     if!(isNil "_profile") then {
+                        [_profile, "alive_ml_lz", +_destPos] call ALIVE_fnc_hashSet;
                         // FIX: Clear any residual waypoints from profile-creation time (e.g. the
                         // loiter WP assigned when the transport was built). A stale pickup-LZ
                         // loiter WP would be completed immediately on spawn since the heli starts
@@ -8468,22 +8571,30 @@ switch(_operation) do {
                             if (_heliActive) then {
                                 private _heliObj = _profile select 2 select 10;
                                 if (!isNull _heliObj && alive _heliObj) then {
-                                    if (_heliObj distance _eventPosition < 500) then {
+                                    // Sent to a spot of its own, it's there within 150 m of that spot: the men
+                                    // ordered out any sooner make the pilot set down wherever he is.
+                                    private _lzT = [_profile, "alive_ml_lz", []] call ALIVE_fnc_hashGet;
+                                    private _distT = if (_lzT isEqualTo []) then { _heliObj distance _eventPosition } else { _heliObj distance2D _lzT };
+                                    if (_distT < ([500, 150] select (_lzT isNotEqualTo []))) then {
                                         _completed = true;
                                         // Latch delivered so subsequent iterations skip
                                         // the stuck-recovery branch.
                                         [_profile, "alive_ml_delivered", true] call ALIVE_fnc_hashSet;
                                         ["ML - heliTransport: %1 LATCH delivered via position-check (dist=%2 iter=%3)",
-                                            _x, _heliObj distance _eventPosition, _waitIterations] call ALiVE_fnc_dump;
+                                            _x, _distT, _waitIterations] call ALiVE_fnc_dump;
                                     };
 
                                     // Stuck-heli recovery: if the heli has not reached the
                                     // destination after many iterations, reassign its waypoint
-                                    // directly to the event position every 30 iterations.
-                                    // forceHelicopterLanding is ineffective when the AI cannot
+                                    // directly to the event position (its own spot, if it has one) every
+                                    // 30 iterations. forceHelicopterLanding is ineffective when the AI cannot
                                     // path to its per-heli LZ -- a direct waypoint breaks deadlock.
                                     if (!_completed && _waitIterations > 20 && (_waitIterations - 20) % 30 == 0) then {
-                                        private _newWP = [_eventPosition, 200, "MOVE", "NORMAL", 300, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
+                                        private _newWP = if (_lzT isEqualTo []) then {
+                                            [_eventPosition, 200, "MOVE", "NORMAL", 300, [], "LINE"] call ALIVE_fnc_createProfileWaypoint
+                                        } else {
+                                            [_lzT, 0, "MOVE", "NORMAL", 50, [], "LINE"] call ALIVE_fnc_createProfileWaypoint
+                                        };
                                         [_profile, "clearWaypoints"] call ALIVE_fnc_profileEntity;
                                         [_profile, "addWaypoint", _newWP] call ALIVE_fnc_profileEntity;
                                         ["ML - heliTransport: %1 stuck at iteration %2, reassigning waypoint to event position %3",
@@ -8539,6 +8650,9 @@ switch(_operation) do {
                                     isNull (_profile select 2 select 10)] call ALiVE_fnc_dump;
                                 };
                                 [_logic,"unloadTransportHelicopter",[_event,_profile]] call MAINCLASS;
+                                // once: a second unload (the waypoint done first, then the position check next
+                                // time round) found no cargo, placed another pad and ordered another landing
+                                [_profile, "alive_ml_delivered", true] call ALIVE_fnc_hashSet;
                             };
                         } else {
                             _waypointsNotCompleted = _waypointsNotCompleted + 1;
@@ -8550,11 +8664,12 @@ switch(_operation) do {
 
                 // if some waypoints are completed
                 // can assume most units are close to
-                // destination, adjust timeout
+                // destination, adjust timeout. 30 checks are left, not 10: a wingman now has to reach
+                // 150 m of its own spot, not 500 m of the destination, before its men are let out.
                 if(_waypointsCompleted > 0) then {
                     _waitDifference = _waitTotalIterations - _waitIterations;
                     if(_waitDifference > 30) then {
-                        _waitIterations = _waitTotalIterations - 10;
+                        _waitIterations = _waitTotalIterations - 30;
                     };
                 };
 
@@ -13356,9 +13471,20 @@ switch(_operation) do {
                         };
                     } foreach _eventAssets;
 
-                    _position = [_logic, "findHelicopterLandingPos", [
-                        _eventPosition, 200, 600, _blacklistPositions
-                    ]] call MAINCLASS;
+                    // Land where it was sent: heliTransportStart kept the spot on the transport. A second search
+                    // here put the pad 150-1200 m from it (the spacing check pushes it off the first spot). The
+                    // spot was checked minutes ago, so it's looked at again: a vehicle or someone on foot now on
+                    // it moves the pad to the nearest clear spot within 50 m (none: it stays).
+                    _position = [_entityProfile, "alive_ml_lz", []] call ALIVE_fnc_hashGet;
+                    if (_position isEqualTo []) then {
+                        _position = [_logic, "findHelicopterLandingPos", [
+                            _eventPosition, 200, 600, _blacklistPositions
+                        ]] call MAINCLASS;
+                    } else {
+                        private _heliSizeU = getNumber (configFile >> "CfgVehicles" >> (_vehicleProfile select 2 select 11) >> "mapSize");
+                        private _stillClear = [_logic, "findHelicopterLandingPos", [_position, 0, 50, _blacklistPositions, true, _heliSizeU, true]] call MAINCLASS;
+                        if (_stillClear isNotEqualTo []) then { _position = _stillClear; };
+                    };
 
                     _heliPad = "Land_HelipadEmpty_F" createVehicle _position;
                     _heliPad setVariable ["ALiVE_padOwner", "mil_logistics", true];
@@ -13464,6 +13590,11 @@ switch(_operation) do {
                                         };
                                     };
 
+                                    // tells the delivery watchdog the men are out, so it sends the helicopter home now
+                                    // (only a step that had men to let out)
+                                    if (_cargo isNotEqualTo [] && {alive _heli} && {(call _stillAboard) isEqualTo []}) then {
+                                        _heli setVariable ["alive_ml_troops_out", true];
+                                    };
                                     deleteVehicle _pad;
                                 };
 
@@ -13587,9 +13718,13 @@ switch(_operation) do {
                             _eventPosition, 300, 700, _payloadBlacklist
                         ]] call MAINCLASS
                     } else {
-                        [_logic, "findHelicopterLandingPos", [
-                            _eventPosition, 200, 600, _payloadBlacklist
-                        ]] call MAINCLASS
+                        // where it was sent, as for a troop helicopter
+                        private _sentTo = [_entityProfile, "alive_ml_lz", []] call ALIVE_fnc_hashGet;
+                        if (_sentTo isNotEqualTo []) then { _sentTo } else {
+                            [_logic, "findHelicopterLandingPos", [
+                                _eventPosition, 200, 600, _payloadBlacklist
+                            ]] call MAINCLASS
+                        }
                     };
 
                     _heliPad = "Land_HelipadEmpty_F" createVehicle _position;
