@@ -1125,6 +1125,18 @@ if (!_simAttacks) then {
             // unassign vehicle from entity
             _x call ALiVE_fnc_removeProfileVehicleAssignment;
 
+            // Any other group aboard (passengers, or a group manning only a gun) wasn't unassigned above, so
+            // it kept a link to a vehicle that's about to be removed: the AI Commander leaves out a group with
+            // a vehicle link, and one listed in cargo isn't moved while virtual. It's released here with all
+            // its men; only the attacked group loses the men it had aboard.
+            private _commandingID = _commandingEntity select 2 select 4;
+            {
+                private _otherProfile = _profilesById get _x;
+                if (!isNil "_otherProfile" && {(_otherProfile select 2 select 5) == "entity"}) then {
+                    [_otherProfile, _subordinateVehicle] call ALiVE_fnc_removeProfileVehicleAssignment;
+                };
+            } forEach ((([_subordinateVehicle, "entitiesInCommandOf", []] call ALiVE_fnc_hashGet) + ([_subordinateVehicle, "entitiesInCargoOf", []] call ALiVE_fnc_hashGet)) - [_commandingID]);
+
             // re-base the entity's remaining vehicle assignments - the crew
             // removal shifted the unit arrays down, so surviving vehicles'
             // stored indexes would point at the wrong soldiers
