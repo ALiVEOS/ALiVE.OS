@@ -1717,16 +1717,23 @@ switch(_operation) do {
                                 _vehicle move _rtbPos;
                             };
                         } else {
-                            // LANDING / UNLOAD: reissue landAt to override evasive AI.
-                            private _landPos = getPosATL _vehicle;
-                            _landPos set [2, 0];
-                            private _pad = createVehicle ["Land_HelipadEmpty_F", _landPos, [], 0, "CAN_COLLIDE"];
-                            _pad setVariable ["ALiVE_padOwner", "mil_logistics", true];
-                            _vehicle landAt _pad;
-                            [_vehicle, _pad] spawn {
-                                private _h = _this select 0; private _p = _this select 1; private _t = 0;
-                                waitUntil { sleep 2; _t = _t + 2; isTouchingGround _h || !alive _h || _t > 60 };
-                                deleteVehicle _p;
+                            // LANDING / UNLOAD: reissue landAt to override evasive AI. A helicopter lowering
+                            // a slung load is held over its own pad at the spot, so it's sent back to that one:
+                            // a new pad where it was hit would hold it wherever that was.
+                            private _slingPad = _vehicle getVariable ["alive_ml_sling_pad", objNull];
+                            if (!isNull _slingPad) then {
+                                _vehicle landAt _slingPad;
+                            } else {
+                                private _landPos = getPosATL _vehicle;
+                                _landPos set [2, 0];
+                                private _pad = createVehicle ["Land_HelipadEmpty_F", _landPos, [], 0, "CAN_COLLIDE"];
+                                _pad setVariable ["ALiVE_padOwner", "mil_logistics", true];
+                                _vehicle landAt _pad;
+                                [_vehicle, _pad] spawn {
+                                    private _h = _this select 0; private _p = _this select 1; private _t = 0;
+                                    waitUntil { sleep 2; _t = _t + 2; isTouchingGround _h || !alive _h || _t > 60 };
+                                    deleteVehicle _p;
+                                };
                             };
                         };
                     };
@@ -1773,8 +1780,25 @@ switch(_operation) do {
                 // timeouts below fire ONLY for untasked helis so they can never pre-empt
                 // the authoritative "arrived" or orphan the tasks unlatched.
                 if (_heliKey != "") then { _wdLifetime = _wdLifetime + 5; };
-                if (_heliKey != "" && {(([ALIVE_MLHeliTaskStates, _heliKey, ["enroute", 0]] call ALIVE_fnc_hashGet) select 0) != "enroute"}) exitWith {
-                    if (_dbg) then { ["ML - heliDeliveryWatchdog: %1 task latch resolved, watchdog exiting.", _tProfID] call ALiVE_fnc_dump; };
+                // A helicopter still lowering its slung load keeps its watchdog until the load is down,
+                // and one leaving in the middle of UNLOAD is sent home here: otherwise it's left held
+                // over its pad at 12 m, and its hit handler keeps sending it back there.
+                private _heliSpawned = !isNull _heli && {alive _heli};
+                if (_heliKey != "" && {(([ALIVE_MLHeliTaskStates, _heliKey, ["enroute", 0]] call ALIVE_fnc_hashGet) select 0) != "enroute"}
+                    && {!(_phase == 2 && {_heliSpawned} && {!isNull getSlingLoad _heli})}) exitWith {
+                    if (_phase == 2 && {_heliSpawned} && {!(_heli getVariable ["alive_ml_rtb_issued", false])}
+                        && {!isNull (_heli getVariable ["alive_ml_sling_pad", objNull])
+                            || {(!isNil "ALIVE_ML_slingCargo") && {count (ALIVE_ML_slingCargo getOrDefault [_vProfID, []]) > 0}}}) then {
+                        deleteVehicle (_heli getVariable ["alive_ml_sling_pad", objNull]);
+                        private _nudgeX = _heli getVariable ["alive_ml_sling_nudge", scriptNull];
+                        if (!scriptDone _nudgeX) then { terminate _nudgeX; };
+                        _heli setVariable ["alive_ml_rtb_issued", true];
+                        _heli setVariable ["alive_ml_watchdog_phase", 3];
+                        _heli flyInHeight 150;
+                        (group (driver _heli)) setSpeedMode "FULL";
+                        _heli move _returnPos;
+                    };
+                    if (_dbg) then { ["ML - heliDeliveryWatchdog: %1 task latch resolved (phase %2), watchdog exiting.", _tProfID, _phase] call ALiVE_fnc_dump; };
                     _running = false;
                 };
                 if (_heliKey != "" && {_wdLifetime > 3600}) exitWith {
@@ -2191,38 +2215,74 @@ switch(_operation) do {
                         };
 
                         // UNLOAD - wait for cargo to exit, then scatter troops before RTB
-                        // UNLOAD (slingload path):
-                        // Wait until unloadTransportHelicopter has started monitoring
-                        // (alive_ml_sling_unload_active=true), then signal RTB.
-                        // This ensures the sling is physically attached before we ask
-                        // for force-release, preventing the premature parachute-at-cruise-altitude drop.
+                        // UNLOAD (slingload path): the helicopter is held over its spot on an empty helipad, nudged over
+                        // it if it stops short, and pays its ropes out so the load sinks onto the ground while it keeps
+                        // its hover; the load is let go once it's down, and it goes home. A loaded helicopter won't come
+                        // down below about 50 m whatever it's told (flyInHeight plain or forced, landAt, an UNHOOK
+                        // waypoint: measured), so it used to hang there until the load was let go by parachute from
+                        // 40-60 m, wherever it had stopped, which could be 350 m short of the spot and over houses.
                         case 2: {
                             private _slungT0 = getSlingLoad _heli;
                             private _slungAttached = !isNull _slungT0;
-                            private _slungAGL = if (_slungAttached) then { (getPosATL _slungT0) select 2 } else { -1 };
+                            // getPos: above the surface, the sea included (getPosATL there is above the sea bed)
+                            private _slungAGL = if (_slungAttached) then { (getPos _slungT0) select 2 } else { -1 };
                             private _unloadActive  = _heli getVariable ["alive_ml_sling_unload_active", false];
                             private _heliAGLu = (getPosATL _heli) select 2;
                             private _heliSpdU = round (speed _heli);
+                            private _winchT = _heli getVariable ["alive_ml_sling_winch", -1];   // phase time the ropes were paid out
+                            private _fnc_slingTidy = {
+                                deleteVehicle (_heli getVariable ["alive_ml_sling_pad", objNull]);
+                                private _nudgeH = _heli getVariable ["alive_ml_sling_nudge", scriptNull];
+                                if (!isNull _nudgeH && {!scriptDone _nudgeH}) then { terminate _nudgeH; };
+                            };
 
-                            // Force heli descent so the slung truck can touch ground.
-                            // Phase 0 left flyInHeight=100 (TRANSIT enforcement) and
-                            // phase 1 LANDING is explicitly skipped for slingload --
-                            // without overriding flyInHeight here the heli hovers at
-                            // ~70-90m AGL throughout phase 2. The slung truck then
-                            // never reaches AGL<5 and the early-release block never
-                            // fires; eventually the case-2 timeout force-drops the
-                            // load by parachute from cruise altitude. Reapply per
-                            // tick because flyInHeight under sling weight is advisory
-                            // and the engine tends to drift the heli back up.
-                            // doMove to current pos pins the heli over the drop spot
-                            // while it descends instead of drifting on the prior
-                            // MOVE waypoint. Skip when the truck is already on the
-                            // ground -- early-release will fire this same tick, no
-                            // need to push the heli down further (and risk briefly
-                            // dragging the truck along the ground at long-cable LZs).
-                            if (_slungAttached && {_slungAGL >= 5}) then {
-                                _heli flyInHeight 12;
-                                _heli doMove (getPosATL _heli);
+                            if (_slungAttached && {_winchT < 0}) then {
+                                // Held over the spot (landAt holds a helicopter without bringing it down), and the lower
+                                // hover asked for: a Huron comes down from about 77 m to about 65 m, less rope to pay out.
+                                if (isNull (_heli getVariable ["alive_ml_sling_pad", objNull])) then {
+                                    private _padPos = +_destPos;
+                                    _padPos set [2, 0];
+                                    private _padS = createVehicle ["Land_HelipadEmpty_F", _padPos, [], 0, "CAN_COLLIDE"];
+                                    _padS setVariable ["ALiVE_padOwner", "mil_logistics", true];
+                                    [_padS] spawn { sleep 300; if (!isNull (_this select 0)) then { deleteVehicle (_this select 0); }; };
+                                    _heli setVariable ["alive_ml_sling_pad", _padS];
+                                    _heli landAt _padS;
+                                    _heli flyInHeight 12;
+                                };
+                                // A loaded helicopter stops 50-90 m short of where it's sent. Once it has, it's nudged
+                                // sideways over the spot (a fifth of the distance a second, at most 4 m/s, its own climb
+                                // or sink kept) until it's within 8 m or 40 s have gone.
+                                // (started is kept as a time: a finished script's handle reads as null, as a never-started one does)
+                                private _nudgeT = _heli getVariable ["alive_ml_sling_nudge_t", -1];
+                                if (_nudgeT < 0 && {(_heli distance2D _destPos) < 150} && {abs (speed _heli) < 15}) then {
+                                    private _nudge = [_heli, +_destPos] spawn {
+                                        params ["_h", "_s"];
+                                        private _t0 = time;
+                                        while { alive _h && {!isNull getSlingLoad _h} && {(_h distance2D _s) > 8} && {(time - _t0) < 40} } do {
+                                            private _dir = _h getDir _s;
+                                            private _sp = ((_h distance2D _s) / 5) min 4;
+                                            _h setVelocity [(sin _dir) * _sp, (cos _dir) * _sp, (velocity _h) select 2];
+                                            sleep 0.1;
+                                        };
+                                    };
+                                    _heli setVariable ["alive_ml_sling_nudge", _nudge];
+                                    _heli setVariable ["alive_ml_sling_nudge_t", _phaseTimer];
+                                    _nudgeT = _phaseTimer;
+                                };
+                                // Then every rope is paid out by the load's height plus 1 m (3 m/s, a rope can't be
+                                // longer than 100 m), and the load sinks onto the ground while the helicopter hovers.
+                                // A nudge still going after 45 s (a busy server stretches its sleeps) is stopped first.
+                                if (_nudgeT >= 0 && {scriptDone (_heli getVariable ["alive_ml_sling_nudge", scriptNull]) || {(_phaseTimer - _nudgeT) > 45}}) then {
+                                    private _nudgeLate = _heli getVariable ["alive_ml_sling_nudge", scriptNull];
+                                    if (!scriptDone _nudgeLate) then { terminate _nudgeLate; };
+                                    { ropeUnwind [_x, 3, (_slungAGL + 1) min (100 - ropeLength _x), true] } forEach (ropes _heli);
+                                    _heli setVariable ["alive_ml_sling_winch", _phaseTimer];
+                                    _winchT = _phaseTimer;
+                                    if (_dbg) then {
+                                        ["ML - heliDeliveryWatchdog: %1 over its spot (%2 m off, %3 m up), paying the ropes out %4 m.",
+                                            _tProfID, round (_heli distance2D _destPos), round _heliAGLu, round (_slungAGL + 1)] call ALiVE_fnc_dump;
+                                    };
+                                };
                             };
 
                             // EARLY-RELEASE: slung vehicle touched ground = delivery
@@ -2233,12 +2293,16 @@ switch(_operation) do {
                             // lets unloadTransportHelicopter recover the reference and
                             // still run its post-drop seating logic.
                             private _earlyReleased = false;
-                            if (_slungAttached && {_slungAGL < 5}) then {
+                            private _loadDown = if (_winchT < 0) then { _slungAGL < 5 } else {
+                                _slungAGL < 1 || {(_phaseTimer - _winchT) > 45 && {_slungAGL < 5}}
+                            };
+                            if (_slungAttached && {_loadDown}) then {
+                                call _fnc_slingTidy;
                                 _heli setVariable ["alive_ml_slingload_object", _slungT0];
                                 _heli setVariable ["alive_ml_sling_watchdog_released", true];
                                 _heli setSlingLoad objNull;
-                                ["ML - heliDeliveryWatchdog: %1 early-release - slung vehicle on ground (AGL<5m), releasing sling and issuing RTB.",
-                                    _tProfID] call ALiVE_fnc_dump;
+                                ["ML - heliDeliveryWatchdog: %1 early-release - slung vehicle on ground (%2 m up), releasing sling and issuing RTB.",
+                                    _tProfID, _slungAGL toFixed 1] call ALiVE_fnc_dump;
 
                                 // Post-release vertical kick. The heli is at low AGL
                                 // (typically 4-12m) directly above the just-dropped truck;
@@ -2276,8 +2340,11 @@ switch(_operation) do {
                                 _earlyReleased = true;
                             };
 
-                            if (!_earlyReleased && _slungAttached && _unloadActive) then {
-                                // unloadTransportHelicopter is monitoring -- signal it to release
+                            if (!_earlyReleased && {!_slungAttached} && {_heli getVariable ["alive_ml_sling_released", false]}) then {
+                                // The unload thread let the load go itself (on the ground, or at its own time limit): home.
+                                // It used to be told to let go as soon as it started, and did it by parachute from wherever
+                                // the load was hanging.
+                                call _fnc_slingTidy;
                                 _heli setVariable ["alive_ml_rtb_issued", true];
 
                                 // Issue RTB waypoints via profile
@@ -2328,15 +2395,19 @@ switch(_operation) do {
                                 // (a man in a door or firing seat isn't "cargo", and the old test sent the helicopter
                                 // home with him). The landing step also says when the men are out. The timers are
                                 // backstops: 90 s on the ground; 150 s without ever touching down; 330 s in all; 60 s
-                                // for a helicopter pushed into this phase away from its spot. Sling helicopters keep 60 s.
+                                // for a helicopter pushed into this phase away from its spot. A sling helicopter carrying its
+                                // load gets 150 s to reach its spot and lower it (about a minute, measured), 60 s without.
                                 private _passengers = (crew _heli) select { alive _x && {group _x != group (driver _heli)} };
                                 private _troopsClear = (!_isSlingHeli) && {_passengers isEqualTo [] || {_heli getVariable ["alive_ml_troops_out", false]}};
                                 if (isTouchingGround _heli) then { _groundTimer = _groundTimer + 5; };
-                                private _timedOut = if (_isSlingHeli || _unloadSkipped) then { _phaseTimer > 60 } else {
-                                    _groundTimer > 90 || {_groundTimer == 0 && {_phaseTimer > 150}} || {_phaseTimer > 330}
+                                private _timedOut = if (_isSlingHeli) then { _phaseTimer > ([60, 150] select _slungAttached) } else {
+                                    if (_unloadSkipped) then { _phaseTimer > 60 } else {
+                                        _groundTimer > 90 || {_groundTimer == 0 && {_phaseTimer > 150}} || {_phaseTimer > 330}
+                                    }
                                 };
                                 if (_troopsClear || _timedOut) then {
                                     if (_isSlingHeli) then {
+                                        call _fnc_slingTidy;
                                         // Timeout: sling never attached or unload thread never started.
                                         // Force RTB regardless so the heli doesn't hover indefinitely.
                                         ["ML - heliDeliveryWatchdog: %1 UNLOAD timeout (slungAttached=%2 unloadActive=%3) class=%4 side=%5 near=%6 AGL=%7m spd=%8km/h pos=%9, forcing RTB.",
@@ -2362,7 +2433,7 @@ switch(_operation) do {
                                     if (_slungAttached) then {
                                         private _slungVeh = getSlingLoad _heli;
                                         if (!isNull _slungVeh) then {
-                                            private _slungAGL = (getPosATL _slungVeh) select 2;
+                                            private _slungAGL = (getPos _slungVeh) select 2;   // above the surface, the sea included
                                             if (_slungAGL > 5) then {
                                                 private _para = createVehicle ["B_Parachute_02_F", getPosATL _slungVeh, [], 0, "FLY"];
                                                 _para setPosASL (getPosASL _slungVeh);
@@ -2370,7 +2441,7 @@ switch(_operation) do {
                                                 _slungVeh attachTo [_para, [0,0,0]];
                                                 [_para, _slungVeh] spawn {
                                                     private _p = _this select 0; private _v = _this select 1;
-                                                    waitUntil { sleep 1; (getPosATL _v select 2) < 3 || !alive _p };
+                                                    waitUntil { sleep 1; (getPos _v select 2) < 3 || !alive _p };
                                                     detach _v; deleteVehicle _p;
                                                 };
                                             };
@@ -14276,43 +14347,50 @@ switch(_operation) do {
                                         // Attach a parachute if still at altitude so vehicle lands intact.
                                         private _rtbIssued = _vehicle getVariable ["alive_ml_rtb_issued", false];
                                         if (_rtbIssued) then {
-                                            private _rtbAGL = (getPosATL _slingloadVehicle) select 2;
-                                            if (_rtbAGL > 5) then {
-                                                private _rtbPara = createVehicle ["B_Parachute_02_F", getPosATL _slingloadVehicle, [], 0, "FLY"];
-                                                _rtbPara setPosASL (getPosASL _slingloadVehicle);
-                                                _rtbPara setVelocity (velocity _vehicle);
-                                                _slingloadVehicle attachTo [_rtbPara, [0,0,0]];
-                                                [_rtbPara, _slingloadVehicle] spawn {
-                                                    private _p = _this select 0; private _v = _this select 1;
-                                                    waitUntil { sleep 1; (getPosATL _v select 2) < 3 || !alive _p };
-                                                    detach _v; deleteVehicle _p;
+                                            // Only a load still hanging from this helicopter is let go here. The
+                                            // watchdog sets one down itself and sends the helicopter home, and a
+                                            // parachute or a climb from here would then land on a load already
+                                            // resting on the ground, on a roof or afloat, and cancel the order home.
+                                            // getPos: above the surface, the sea included (getPosATL there is above the sea bed)
+                                            if ((getSlingLoad _vehicle) isEqualTo _slingloadVehicle) then {
+                                                private _rtbAGL = (getPos _slingloadVehicle) select 2;
+                                                if (_rtbAGL > 5) then {
+                                                    private _rtbPara = createVehicle ["B_Parachute_02_F", getPosATL _slingloadVehicle, [], 0, "FLY"];
+                                                    _rtbPara setPosASL (getPosASL _slingloadVehicle);
+                                                    _rtbPara setVelocity (velocity _vehicle);
+                                                    _slingloadVehicle attachTo [_rtbPara, [0,0,0]];
+                                                    [_rtbPara, _slingloadVehicle] spawn {
+                                                        private _p = _this select 0; private _v = _this select 1;
+                                                        waitUntil { sleep 1; (getPos _v select 2) < 3 || !alive _p };
+                                                        detach _v; deleteVehicle _p;
+                                                    };
+                                                    ["ML - unloadTransportHelicopter: RTB force-release - parachute attached to %1 at AGL %2m",
+                                                        _slingloadVehicle, _rtbAGL] call ALiVE_fnc_dump;
                                                 };
-                                                ["ML - unloadTransportHelicopter: RTB force-release - parachute attached to %1 at AGL %2m",
-                                                    _slingloadVehicle, _rtbAGL] call ALiVE_fnc_dump;
+                                                _vehicle setSlingLoad objNull;
+                                                ["ML - unloadTransportHelicopter: RTB already issued to %1, force-releasing slung load.",
+                                                    _vehicle] call ALiVE_fnc_dump;
+                                                // Climb immediately after release so heli doesn't fly through
+                                                // the descending parachute+vehicle directly below it.
+                                                private _heliPosASL = getPosASL _vehicle;
+                                                private _climbTarget = _heliPosASL;
+                                                _climbTarget set [2, (_heliPosASL select 2) + 50];
+                                                _vehicle flyInHeight (PARADROP_HEIGHT + 50);
+                                                _vehicle setVelocity [
+                                                    velocity _vehicle select 0,
+                                                    velocity _vehicle select 1,
+                                                    15
+                                                ];
+                                                _vehicle doMove (ASLToAGL _climbTarget);
                                             };
-                                            _vehicle setSlingLoad objNull;
                                             deleteVehicle _slingDropPad;
                                             _vehicle setVariable ["alive_ml_sling_unload_active", false];
                                             _vehicle setVariable ["alive_ml_sling_released", true];
                                             _dropped = true;
-                                            ["ML - unloadTransportHelicopter: RTB already issued to %1, force-releasing slung load.",
-                                                _vehicle] call ALiVE_fnc_dump;
-                                            // Climb immediately after release so heli doesn't fly through
-                                            // the descending parachute+vehicle directly below it.
-                                            private _heliPosASL = getPosASL _vehicle;
-                                            private _climbTarget = _heliPosASL;
-                                            _climbTarget set [2, (_heliPosASL select 2) + 50];
-                                            _vehicle flyInHeight (PARADROP_HEIGHT + 50);
-                                            _vehicle setVelocity [
-                                                velocity _vehicle select 0,
-                                                velocity _vehicle select 1,
-                                                15
-                                            ];
-                                            _vehicle doMove (ASLToAGL _climbTarget);
                                             true
                                         } else {
 
-                                        private _slungAGL = (getPosATL _slingloadVehicle) select 2;
+                                        private _slungAGL = (getPos _slingloadVehicle) select 2;
 
                                         // NOTE: No landAt retries issued here. The heliDeliveryWatchdog
                                         // is the sole authority on landAt -- it retries every 30-35s in
@@ -14320,7 +14398,9 @@ switch(_operation) do {
                                         // the AI to oscillate between two different target pads and never
                                         // commit to a descent. This thread only monitors AGL and releases.
 
-                                        if (_slungAGL <= SLINGLOAD_DROP_HEIGHT || _dropTimer >= SLINGLOAD_DROP_TIMEOUT) then {
+                                        // while the watchdog pays the ropes out the load is let go once it's down, not on the way
+                                        private _dropAt = [SLINGLOAD_DROP_HEIGHT, 1] select ((_vehicle getVariable ["alive_ml_sling_winch", -1]) >= 0);
+                                        if (_slungAGL <= _dropAt || _dropTimer >= SLINGLOAD_DROP_TIMEOUT) then {
                                             private _groundPos = getPosATL _slingloadVehicle;
                                             _groundPos set [2, 0];
                                             private _h0 = getTerrainHeightASL _groundPos;
@@ -14340,7 +14420,7 @@ switch(_operation) do {
                                             } else {
                                                 // Flat enough or timed out - release the load.
                                                 // Attach parachute if still at altitude so vehicle lands intact.
-                                                private _relAGL = (getPosATL _slingloadVehicle) select 2;
+                                                private _relAGL = (getPos _slingloadVehicle) select 2;
                                                 if (_relAGL > 5) then {
                                                     private _relPara = createVehicle ["B_Parachute_02_F", getPosATL _slingloadVehicle, [], 0, "FLY"];
                                                     _relPara setPosASL (getPosASL _slingloadVehicle);
@@ -14348,7 +14428,7 @@ switch(_operation) do {
                                                     _slingloadVehicle attachTo [_relPara, [0,0,0]];
                                                     [_relPara, _slingloadVehicle] spawn {
                                                         private _p = _this select 0; private _v = _this select 1;
-                                                        waitUntil { sleep 1; (getPosATL _v select 2) < 3 || !alive _p };
+                                                        waitUntil { sleep 1; (getPos _v select 2) < 3 || !alive _p };
                                                         detach _v; deleteVehicle _p;
                                                     };
                                                     ["ML - unloadTransportHelicopter: Parachute attached to slung vehicle %1 at AGL %2m",
