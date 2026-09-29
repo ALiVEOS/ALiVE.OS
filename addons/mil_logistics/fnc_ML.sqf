@@ -8675,6 +8675,12 @@ switch(_operation) do {
                 if(_waypointsNotCompleted == 0) then {
 
                     if(_waypointsCompleted > 0) then {
+                        // The unload wait counts its checks in the same slot as this stage: start it from
+                        // nought, or a count past its limit (40), which a long flight or a second helicopter
+                        // arriving later leaves, timed it out on its first look and sent the helicopters
+                        // home with men still aboard.
+                        _eventStateData set [0, 0];
+                        [_event, "stateData", _eventStateData] call ALIVE_fnc_hashSet;
                         [_event, "state", "heliTransportUnloadWait"] call ALIVE_fnc_hashSet;
                         [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
                     }else{
@@ -9826,6 +9832,11 @@ switch(_operation) do {
                 if(_waypointsNotCompleted == 0) then {
 
                     if(_waypointsCompleted > 0) then {
+                        // The unload wait counts its checks in the same slot as this stage: start it from
+                        // nought, or a count past its limit (40), which a long trip or a second transport
+                        // arriving later leaves, timed it out on its first look and rode on into the return.
+                        _eventStateData set [0, 0];
+                        [_event, "stateData", _eventStateData] call ALIVE_fnc_hashSet;
                         [_event, "state", "transportUnloadWait"] call ALIVE_fnc_hashSet;
                         [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
                     }else{
@@ -10187,6 +10198,9 @@ switch(_operation) do {
                     } forEach _eventTransportProfiles;
 
                     // set state to wait for return of transports
+                    // Reset stateData counter so transportReturnWait starts at 0, as the helicopters' does
+                    _eventStateData set [0, 0];
+                    [_event, "stateData", _eventStateData] call ALIVE_fnc_hashSet;
                     [_event, "state", "transportReturnWait"] call ALIVE_fnc_hashSet;
                     [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
 
