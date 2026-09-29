@@ -2081,34 +2081,17 @@ switch(_operation) do {
                             private _direction = direction _x;
                             private _vehicleClass = (selectRandom _heliClasses);
 
-                            // Threshold reconciled to 0.2 to match mil_placement (was
-                            // `> 0.8` = 80% crewed, an inversion bug or historical drift
-                            // that produced unwanted AI pilots on most ambient helis).
-                            // Crewed helis are gated on mil_ato presence - same logic as
-                            // mil_placement: if no ATO module to task them, no point
-                            // burning AI slots on idle pilots.
-                            private _atoActive = count (allMissionObjects "ALiVE_mil_ato") > 0;
-                            private _diceRoll = random 1;
-                            private _crewed = _atoActive && {_diceRoll <= 0.2};
+                            // Parked empty, as Military Placement parks them: the air commander (mil_ato) takes over parked
+                            // aircraft of its faction, crewed or not, deletes any crew they came with and puts its own
+                            // aboard only when it sends one out.
                             if ((!isNil "ALiVE_mil_placement_custom_debug" && {ALiVE_mil_placement_custom_debug})
                                 && {!isNil "ALiVE_vehicleSpawn_debug" && {ALiVE_vehicleSpawn_debug}}) then {
-                                ["[ALiVE VehSpawn DEBUG] HELI-PLACEMENT module=mil_placement_custom faction=%1 class=%2 pos=%3 atoActive=%4 dice=%5 threshold=0.2 result=%6",
-                                    _faction, _vehicleClass, _position, _atoActive, _diceRoll,
-                                    if (_crewed) then {"CREWED"} else {"UNCREWED"}] call ALiVE_fnc_dump;
+                                ["[ALiVE VehSpawn DEBUG] HELI-PLACEMENT module=mil_placement_custom faction=%1 class=%2 pos=%3 parked empty",
+                                    _faction, _vehicleClass, _position] call ALiVE_fnc_dump;
                             };
-
-                            if !(_crewed) then {
-                                [_vehicleClass,_side,_faction,_position,_direction,false,_faction] call ALIVE_fnc_createProfileVehicle;
-                                _countProfiles = _countProfiles + 1;
-                                _countUncrewedHelis =_countUncrewedHelis + 1;
-                            }else{
-                                private _crewedProfiles = [_vehicleClass,_side,_faction,"CAPTAIN",_position,_direction,false,_faction] call ALIVE_fnc_createProfilesCrewedVehicle;
-                                // The On unit spawn scripts go on the crew, as they do for the module's other groups.
-                                [_crewedProfiles select 0, "onEachSpawn", _onEachSpawn] call ALIVE_fnc_profileEntity;
-                                [_crewedProfiles select 0, "onEachSpawnOnce", _onEachSpawnOnce] call ALIVE_fnc_profileEntity;
-                                _countProfiles = _countProfiles + 2;
-                                _countCrewedHelis = _countCrewedHelis + 1;
-                            };
+                            [_vehicleClass,_side,_faction,_position,_direction,false,_faction] call ALIVE_fnc_createProfileVehicle;
+                            _countProfiles = _countProfiles + 1;
+                            _countUncrewedHelis =_countUncrewedHelis + 1;
                         };
                     } forEach _nodes;
 
