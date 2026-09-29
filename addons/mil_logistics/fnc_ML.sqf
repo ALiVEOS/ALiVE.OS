@@ -46,6 +46,8 @@ ARJay & Jman
 #define DEFAULT_TYPE "DYNAMIC"
 #define DEFAULT_REGISTRY_ID ""
 #define PARADROP_HEIGHT 350
+// open water all round a boat that comes down under a parachute, which drifts on the way down (70 m in a test)
+#define BOAT_CHUTE_CLEARANCE 100
 #define PARADROP_MIN_DROP_HEIGHT 200
 #define DESTINATION_VARIANCE 150
 #define DESTINATION_RADIUS 300
@@ -935,11 +937,13 @@ switch(_operation) do {
         // 25 m out to the given radius, about 50 m apart round each ring. [] when there's none. Unlike
         // ALIVE_fnc_getClosestSea, which returns a random sea point up to a sector away (or the point itself
         // a few hundred metres inland), this is the nearest. A spot within the given spacing of any position
-        // in the avoid list is passed over, so boats made together don't share one.
-        _args params ["_centre", ["_maxRadius", 1000], ["_avoid", []], ["_spacing", 30]];
+        // in the avoid list is passed over, so boats made together don't share one. With a clearance, a spot
+        // also needs water that far out all round it.
+        _args params ["_centre", ["_maxRadius", 1000], ["_avoid", []], ["_spacing", 30], ["_clearance", 0]];
         private _navigable = {
             private _p = _this;
             surfaceIsWater _p && {(getTerrainHeightASL _p) < -2} && {(_avoid findIf { _x distance2D _p < _spacing }) == -1}
+                && {_clearance <= 0 || {({ surfaceIsWater (_p getPos [_clearance, _x]) } count [0, 45, 90, 135, 180, 225, 270, 315]) == 8}}
         };
         private _found = [];
         private _c = (_centre select [0, 2]) + [0];
@@ -11061,16 +11065,19 @@ switch(_operation) do {
                         private "_seaDest";           // the water nearest the destination, found once when a boat needs it
                         private _boatSpots = [];      // the water each of this request's boats was given, so no two share a spot
                         // A spot on water a boat can use, nearest the first of the given points that has one, at
-                        // least 30 m from this request's other boats; failing that, near the sea nearest the first
-                        // point. [] when there's none.
+                        // least 30 m from this request's other boats, with water the given clearance out all round
+                        // when there's any such spot; failing that, near the sea nearest the first point. [] when
+                        // there's none.
                         private _fnc_boatWater = {
+                            params ["_points", ["_clearance", 0]];
                             private _spot = [];
                             {
-                                _spot = [_logic, "findNavigableWater", [_x, 1000, _boatSpots, 30]] call MAINCLASS;
+                                _spot = [_logic, "findNavigableWater", [_x, 1000, _boatSpots, 30, _clearance]] call MAINCLASS;
                                 if (_spot isNotEqualTo []) exitWith {};
-                            } forEach _this;
-                            if (_spot isEqualTo [] && {_this isNotEqualTo []}) then {
-                                private _sea = [_this select 0, true] call ALIVE_fnc_getClosestSea;
+                            } forEach _points;
+                            if (_spot isEqualTo [] && {_clearance > 0}) exitWith { [_points] call _fnc_boatWater };
+                            if (_spot isEqualTo [] && {_points isNotEqualTo []}) then {
+                                private _sea = [_points select 0, true] call ALIVE_fnc_getClosestSea;
                                 if (surfaceIsWater _sea) then {
                                     _spot = [_logic, "findNavigableWater", [_sea, 500, _boatSpots, 30]] call MAINCLASS;
                                 };
@@ -11089,6 +11096,7 @@ switch(_operation) do {
                         {
                             _itemClass = _x select 0;
                             private _boatWater = [];   // the water a boat is put on, [] when it has none
+                            private _boatChute = false;   // whether it comes down under a parachute
 
                             _position = _reinforcementPosition getPos [random(200), random(360)];
                             _position = [_position] call _fnc_snapToLand;   // #1055: keep the vehicle off the sea
@@ -11133,11 +11141,13 @@ switch(_operation) do {
                                         // departure when the destination has none. A helicopter slings it, as before.
                                         if (_eventType in ["PR_STANDARD", "PR_AIRDROP"]) then {
                                             if (isNil "_seaDest") then { _seaDest = [_logic, "findNavigableWater", [_eventPosition, 1000]] call MAINCLASS; };
-                                            _boatWater = (if (_eventType == "PR_AIRDROP" && {_seaDest isNotEqualTo []}) then {
+                                            // under a parachute when players can see it come down, and then onto open water
+                                            _boatChute = _eventType == "PR_AIRDROP" && {_seaDest isNotEqualTo []} && {([_eventPosition, 1500] call ALiVE_fnc_anyPlayersInRange) > 0};
+                                            _boatWater = [(if (_eventType == "PR_AIRDROP" && {_seaDest isNotEqualTo []}) then {
                                                 [_seaDest]
                                             } else {
                                                 if (_paraDrop) then {[_remotePosition, _position]} else {[_position]}
-                                            }) call _fnc_boatWater;
+                                            }), [0, BOAT_CHUTE_CLEARANCE] select _boatChute] call _fnc_boatWater;
                                             if (_boatWater isNotEqualTo []) then { _position = +_boatWater; };
                                         } else {
                                             if(_paraDrop) then {
@@ -11160,7 +11170,7 @@ switch(_operation) do {
                                         // no aircraft carries a boat: it's put on the water found above, by the destination
                                         // under a parachute when players can see it
                                         _position = +_boatWater;
-                                        if (_seaDest isNotEqualTo [] && {([_eventPosition, 1500] call ALiVE_fnc_anyPlayersInRange) > 0}) then { _position set [2, PARADROP_HEIGHT]; };
+                                        if (_boatChute) then { _position set [2, PARADROP_HEIGHT]; };
                                     } else {
                                         if (_paraDrop && _eventType == "PR_HELI_INSERT") then {
                                             _position = _remotePosition getPos [random(200), random(360)];
@@ -11786,7 +11796,7 @@ switch(_operation) do {
                                                         private _chute = _eventType == "PR_AIRDROP" && {_seaDest isNotEqualTo []} && {([_eventPosition, 1500] call ALiVE_fnc_anyPlayersInRange) > 0};
                                                         private _first = [];
                                                         {
-                                                            private _spot = _from call _fnc_boatWater;
+                                                            private _spot = [_from, [0, BOAT_CHUTE_CLEARANCE] select _chute] call _fnc_boatWater;
                                                             if (_spot isNotEqualTo []) then {
                                                                 if (_first isEqualTo []) then { _first = +_spot; };
                                                                 if (_chute) then { _spot set [2, PARADROP_HEIGHT]; };
