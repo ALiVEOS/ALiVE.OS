@@ -11490,11 +11490,9 @@ switch(_operation) do {
                                             case "SpecOps":{
                                                 // A team with no vehicle is carried like infantry. One that brings vehicles used to go
                                                 // into a list nothing reads; now it travels as an Infantry group with its own does:
-                                                // under its own power by Convoy, the men flown and the vehicles slung by helicopter.
-                                                // Not by Airdrop, which can't take a team's own vehicles along: the drop reads every
-                                                // id in the infantry list as men, stops on the vehicle and leaves the aircraft
-                                                // circling. So by Airdrop the team stays at its departure point, as before, and the
-                                                // log says so. Boats (divers' assault boats, SDVs) are no use at a land destination:
+                                                // under its own power by Convoy, the men flown and the vehicles slung by helicopter,
+                                                // and dropped together with its vehicles by Airdrop. Boats (divers' assault boats,
+                                                // SDVs) are no use at a land destination:
                                                 // kept, a boat would be left behind by Convoy or Airdrop, or set down on dry ground by
                                                 // a helicopter, with the team tied to it. So a team goes without its boats (their
                                                 // crews come along on foot), and the log says that too.
@@ -11508,20 +11506,10 @@ switch(_operation) do {
                                                     } forEach _boats;
                                                     _containsVehicles = _containsVehicles - count _boats;
                                                 };
-                                                if (_containsVehicles == 0) then {
+                                                if (_containsVehicles == 0 || {_eventType != "PR_STANDARD"}) then {
                                                     _infantryProfiles pushback _profileIDs;
                                                 } else {
-                                                    if (_eventType == "PR_STANDARD") then {
-                                                        _armourProfiles pushback _profileIDs;
-                                                    } else {
-                                                        if (_eventType == "PR_AIRDROP") then {
-                                                            ["ML - WARNING: SpecOps group %1 brings vehicles, which an airdrop can't take along, so it stays at its departure point (%2). Request it by convoy or helicopter instead.",
-                                                                _group, _position] call ALiVE_fnc_dumpR;
-                                                            _specOpsProfiles pushback _profileIDs;
-                                                        } else {
-                                                            _infantryProfiles pushback _profileIDs;
-                                                        };
-                                                    };
+                                                    _armourProfiles pushback _profileIDs;
                                                 };
                                             };
                                             case "Naval":{
@@ -12337,6 +12325,51 @@ switch(_operation) do {
                                         };
                                     };
 
+                                    // A group that brings its own vehicles (an Infantry, Support or SpecOps group, or one
+                                    // with no category) can't ride in the drop aircraft: the paradrop reads every id it
+                                    // carries as men, stops on the first vehicle and leaves the aircraft circling. Drop it
+                                    // with its vehicles instead, the way a faction with no aircraft gets its airdrop (#947):
+                                    // the vehicles under parachutes when players can see the drop zone (its men are placed
+                                    // beside them, as #947 does), set down with a move order otherwise. They go down straight
+                                    // away, ahead of the aircraft. Each vehicle gets its own spot. The list is the one the
+                                    // delivery keeps, so taking the groups out here keeps them out of the paradrop too.
+                                    private _playersNearDropZone = ([_eventPosition, 1500] call ALiVE_fnc_anyPlayersInRange) > 0;
+                                    private _vehicleGroups = _infantryProfiles select { (_x findIf { [_x,"vehicle"] call CBA_fnc_find != -1 }) > -1 };
+                                    {
+                                        _infantryProfiles deleteAt (_infantryProfiles find _x);
+                                        private _dropPos = _eventPosition getPos [random(DESTINATION_VARIANCE), random(360)];
+                                        if (surfaceIsWater _dropPos) then { _dropPos = +_eventPosition; };
+                                        private _spot = 0;
+                                        {
+                                            private _p = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+                                            if (!isNil "_p") then {
+                                                if ((_p select 2 select 5) == "vehicle") then {
+                                                    _spot = _spot + 1;
+                                                    // its own spot 25 m further out each time, on another bearing if that one is water
+                                                    private _dry = ([0, 45, 90, 135, 180, 225, 270, 315] apply { _dropPos getPos [25 * _spot, 90 * _spot + _x] }) select { !surfaceIsWater _x };
+                                                    private _vehiclePos = if (_dry isEqualTo []) then { +_dropPos } else { _dry select 0 };
+                                                    if (_playersNearDropZone) then { _vehiclePos set [2, PARADROP_HEIGHT]; };
+                                                    // despawnPosition too, or the spawner puts it back where it was made
+                                                    [_p, "position", _vehiclePos] call ALIVE_fnc_profileVehicle;
+                                                    [_p, "despawnPosition", _vehiclePos] call ALIVE_fnc_profileVehicle;
+                                                } else {
+                                                    private _groupPos = +_dropPos;
+                                                    if (_playersNearDropZone) then { _groupPos set [2, PARADROP_HEIGHT]; };
+                                                    [_p, "position", _groupPos] call ALIVE_fnc_profileEntity;
+                                                    [_p, "mergePositions"] call ALIVE_fnc_profileEntity;
+                                                    // a move order only when set down: a waypoint would have the virtual mover
+                                                    // bring a parachuting group to the ground before it spawns (see #947 below)
+                                                    if (!_playersNearDropZone) then {
+                                                        private _wpDZ = [_eventPosition, 100, "MOVE", "NORMAL", 60, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
+                                                        [_p, "clearWaypoints"] call ALIVE_fnc_profileEntity;
+                                                        [_p, "addWaypoint", _wpDZ] call ALIVE_fnc_profileEntity;
+                                                    };
+                                                };
+                                            };
+                                        } forEach _x;
+                                        ["ML - PR_AIRDROP: group %1 brings vehicles, so it's dropped with them at %2 (%3)",
+                                            _x, _dropPos, ["set down", "vehicles by parachute"] select _playersNearDropZone] call ALiVE_fnc_dump;
+                                    } forEach _vehicleGroups;
                                     if (count _airdropTransportGroups > 0) then {
 
                                         // ---- Part A: slingload helis for vehicle cargo ----
