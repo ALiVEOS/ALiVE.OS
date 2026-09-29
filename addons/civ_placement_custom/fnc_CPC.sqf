@@ -1156,7 +1156,23 @@ switch (_operation) do {
                             private _vehiclePos = _parking select 0;
                             private _vehicleDir = _parking select 1;
                             if (surfaceIsWater _vehiclePos) then {
-                                _vehiclePos = _center getPos [50, random 360];
+                                // The same 20 tries an active group's start spot in the water gets: ten within 100 m of the
+                                // objective's centre, then ten out to its edge (700 m at most). Each dry one must be clear where
+                                // it stands or beside a road near it, and flat. Only when all 20 fail does it still take a point
+                                // 50 m from the centre, unchecked, which on a pier or islet can be the sea too.
+                                for "_try" from 1 to 20 do {
+                                    private _candidate = _center getPos [([_clusterSize min 100, _clusterSize min 700] select (_try > 10)) * sqrt (random 1), random 360];
+                                    if !(surfaceIsWater _candidate) then {
+                                        private _fit = [_vehicleReserveClass, _candidate, 30, "road", _vehicleDir] call ALiVE_fnc_findVehicleSpawnPosition;
+                                        if (count _fit >= 2 && {count ((_fit select 0) isFlatEmpty [-1, -1, 0.4, 5, 0, false, objNull]) >= 2}) then {
+                                            _vehiclePos = _fit select 0; _vehicleDir = _fit select 1;
+                                        };
+                                    };
+                                    if !(surfaceIsWater _vehiclePos) exitWith {};
+                                };
+                                if (surfaceIsWater _vehiclePos) then {
+                                    _vehiclePos = _center getPos [50, random 360];
+                                };
                             };
                             if ((!isNil "ALiVE_civ_placement_custom_debug" && {ALiVE_civ_placement_custom_debug})
                                 && {!isNil "ALiVE_vehicleSpawn_debug" && {ALiVE_vehicleSpawn_debug}}) then {
