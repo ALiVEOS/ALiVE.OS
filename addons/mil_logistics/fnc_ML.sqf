@@ -14734,6 +14734,68 @@ switch(_operation) do {
             deleteVehicle _x;
         } forEach _eventAssets;
 
+        // A Static Defence request holds the spot it was delivered to whether or not anyone's watching. Its men get the
+        // garrison order, which starts at once when they're spawned and is kept for whenever they spawn otherwise; they
+        // stay busy, and they're pinned as stationary, which keeps the AI Commander's attacks off them too (those
+        // ignore busy) and, unlike busy, is saved with the mission. A virtual group used to be handed to the commander,
+        // and a group that brought vehicles got nothing at all. One still in a vehicle of its own holds where it is,
+        // in it: the garrison order would have its crew leave it for the buildings. Its own vehicles are the other ids
+        // of its entry, still there; links to this delivery's transports and to vehicles that are gone are dropped
+        // first, as for a reinforcement group, since a group left listed in a transport's cargo can't move while
+        // virtual. The order isn't given again when it already has it (this runs twice for a transported delivery,
+        // and a second order would take a spawned garrison out of its buildings to seat it all over again).
+        // [entries of profile IDs, destination]
+        private _fnc_holdStatic = {
+            params ["_entries", "_holdAt"];
+            private _transportsH = [_event, "transportVehiclesProfiles", []] call ALIVE_fnc_hashGet;
+            {
+                private _entry = _x;
+                {
+                    private _p = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+                    if (!isNil "_p") then {
+                        if ((_p select 2 select 5) == "entity") then {
+                            private _vAssign = [_p, "vehicleAssignments"] call ALIVE_fnc_hashGet;
+                            private _inCargo = [_p, "vehiclesInCargoOf", []] call ALIVE_fnc_hashGet;
+                            private _inCommand = [_p, "vehiclesInCommandOf", []] call ALIVE_fnc_hashGet;
+                            if (!isNil "_vAssign" && {_vAssign isEqualType []} && {count _vAssign >= 2}) then {
+                                private _linked = (_vAssign select 1) + _inCargo + _inCommand;
+                                _linked = _linked arrayIntersect _linked;
+                                private _droppedH = false;
+                                {
+                                    private _vehicleID = _x;
+                                    private _vp = [ALIVE_profileHandler, "getProfile", _vehicleID] call ALIVE_fnc_profileHandler;
+                                    if (isNil "_vp" || {_vehicleID in _transportsH}) then {
+                                        if (!isNil "_vp") then { [_p, _vp] call ALIVE_fnc_removeProfileVehicleAssignment; };
+                                        [_vAssign, _vehicleID, nil] call ALIVE_fnc_hashSet;
+                                        _inCargo deleteAt (_inCargo find _vehicleID);
+                                        _inCommand deleteAt (_inCommand find _vehicleID);
+                                        _droppedH = true;
+                                    };
+                                } forEach _linked;
+                                if (_droppedH && {(_vAssign select 1) isEqualTo []}) then {
+                                    [_p, "speedPerSecond", "Man" call ALIVE_fnc_vehicleGetSpeedPerSecond] call ALIVE_fnc_hashSet;
+                                };
+                            };
+                            private _inOwnVehicle = ((_inCargo + _inCommand) findIf { _x in _entry }) > -1;
+                            if (!_inOwnVehicle) then {
+                                private _cmds = [_p, "activeCommands", []] call ALIVE_fnc_hashGet;
+                                private _has = (_cmds findIf { (_x select 0) == "ALIVE_fnc_managedGarrison" && {((_x param [2, []]) param [2, []]) isEqualTo _holdAt} }) > -1;
+                                if (!_has) then {
+                                    [_p, "setActiveCommand", ["ALIVE_fnc_managedGarrison","managed",[200,"false",_holdAt, count _entries]]] call ALIVE_fnc_profileEntity;
+                                };
+                            };
+                            [_p, "busy", true] call ALIVE_fnc_hashSet;
+                            if (isNil "ALIVE_profileStationary") then { ALIVE_profileStationary = [] call ALIVE_fnc_hashCreate; };
+                            [ALIVE_profileStationary, _p select 2 select 4, true] call ALIVE_fnc_hashSet;
+                        } else {
+                            // only the men count for the commander; a vehicle is left free as before
+                            if !(_p select 2 select 1) then { [_p, "busy", false] call ALIVE_fnc_hashSet; };
+                        };
+                    };
+                } forEach _entry;
+            } forEach _entries;
+        };
+
         if!(_playerRequested) then {
 
             // AI requested
@@ -15161,82 +15223,9 @@ switch(_operation) do {
 
                 } forEach _joinGroupProfiles;
 
-                // static defence profiles
-                // if active set to garrison
-                // nearby structures
-
-                {
-                    {
-                        _profile = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
-                        if!(isNil "_profile") then {
-
-                            _active = _profile select 2 select 1;
-                            _type = _profile select 2 select 5;
-
-                            if(_type == "entity") then {
-
-                                if(_active) then {
-                                    // [_profile, "setActiveCommand", ["ALIVE_fnc_managedGarrison","managed",[200,"false",_eventPosition]]] call ALIVE_fnc_profileEntity;
-                                    [_profile, "setActiveCommand", ["ALIVE_fnc_managedGarrison","managed",[200,"false",_eventPosition, (count _staticIndividualProfiles)]]] call ALIVE_fnc_profileEntity;
-
-                                }else{
-
-                                    [_profile,"busy",false] call ALIVE_fnc_hashSet;
-
-                                };
-
-                            }else{
-
-                                if!(_active) then {
-
-                                    [_profile,"busy",false] call ALIVE_fnc_hashSet;
-
-                                };
-
-                            };
-
-                        };
-                    } forEach _x;
-
-                } forEach _staticIndividualProfiles;
-
-                {
-                    if(count _x < 2) then {
-
-                        _profile = [ALIVE_profileHandler, "getProfile", (_x select 0)] call ALIVE_fnc_profileHandler;
-                        if!(isNil "_profile") then {
-
-                            _active = _profile select 2 select 1;
-                            _type = _profile select 2 select 5;
-
-                            if(_type == "entity") then {
-
-                                if(_active) then {
-
-                                    // [_profile, "setActiveCommand", ["ALIVE_fnc_managedGarrison","managed",[200,"false",_eventPosition]]] call ALIVE_fnc_profileEntity;
-                                    [_profile, "setActiveCommand", ["ALIVE_fnc_managedGarrison","managed",[200,"false",_eventPosition, (count _staticGroupProfiles)]]] call ALIVE_fnc_profileEntity;
-
-                                }else{
-
-                                    [_profile,"busy",false] call ALIVE_fnc_hashSet;
-
-                                };
-
-                            }else{
-
-                                if!(_active) then {
-
-                                    [_profile,"busy",false] call ALIVE_fnc_hashSet;
-
-                                };
-
-                            };
-
-                        };
-
-                    };
-
-                } forEach _staticGroupProfiles;
+                // static defence profiles hold the spot (_fnc_holdStatic above)
+                [_staticIndividualProfiles, _eventPosition] call _fnc_holdStatic;
+                [_staticGroupProfiles, _eventPosition] call _fnc_holdStatic;
 
                 // If payload profiles are still carrying their load, wait a while then dump them
                 private ["_payloadProfiles","_payloadProfileID","_payloadVehicleID","_payloadProfile","_payloadVehicle","_payloadCount",
@@ -15488,25 +15477,9 @@ switch(_operation) do {
 
                 } forEach _reinforceGroupProfiles;
 
-                {
-                    {
-                        _profile = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
-                        if!(isNil "_profile") then {
-                            [_profile,"busy",false] call ALIVE_fnc_hashSet;
-                        };
-                    } forEach _x;
-
-                } forEach _staticIndividualProfiles;
-
-                {
-                    {
-                        _profile = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
-                        if!(isNil "_profile") then {
-                            [_profile,"busy",false] call ALIVE_fnc_hashSet;
-                        };
-                    } forEach _x;
-
-                } forEach _staticGroupProfiles;
+                // a static defence holds its spot even when whoever asked for it has gone
+                [_staticIndividualProfiles, _eventPosition] call _fnc_holdStatic;
+                [_staticGroupProfiles, _eventPosition] call _fnc_holdStatic;
 
 
                 // dispatch event
