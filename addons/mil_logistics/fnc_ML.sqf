@@ -930,6 +930,34 @@ switch(_operation) do {
     };
     
     
+    case "findNavigableWater": {
+        // The nearest water a boat can use (at least 2 m deep) to a point: the point itself, then rings every
+        // 25 m out to the given radius, about 50 m apart round each ring. [] when there's none. Unlike
+        // ALIVE_fnc_getClosestSea, which returns a random sea point up to a sector away (or the point itself
+        // a few hundred metres inland), this is the nearest. A spot within the given spacing of any position
+        // in the avoid list is passed over, so boats made together don't share one.
+        _args params ["_centre", ["_maxRadius", 1000], ["_avoid", []], ["_spacing", 30]];
+        private _navigable = {
+            private _p = _this;
+            surfaceIsWater _p && {(getTerrainHeightASL _p) < -2} && {(_avoid findIf { _x distance2D _p < _spacing }) == -1}
+        };
+        private _found = [];
+        private _c = (_centre select [0, 2]) + [0];
+        if (_c call _navigable) then {
+            _found = _c;
+        } else {
+            for "_r" from 25 to _maxRadius step 25 do {
+                private _steps = 8 max (floor (2 * pi * _r / 50));
+                for "_i" from 0 to (_steps - 1) do {
+                    private _p = ((_centre getPos [_r, _i * 360 / _steps]) select [0, 2]) + [0];
+                    if (_p call _navigable) exitWith { _found = _p; };
+                };
+                if (_found isNotEqualTo []) exitWith {};
+            };
+        };
+        _result = _found;
+    };
+
     // ============================================================
     // NEW OPERATION: findBestDeliveryObjective
     // Scores OPCOM objectives by tactical need and friendly unit
@@ -9456,7 +9484,14 @@ switch(_operation) do {
                 _planeProfiles = [_eventCargoProfiles, 'plane'] call ALIVE_fnc_hashGet;
                 _heliProfiles = [_eventCargoProfiles, 'heli'] call ALIVE_fnc_hashGet;
 
-                _countProfiles = (count(_transportProfiles)) + (count(_armourProfiles)) + (count(_mechanisedProfiles)) + (count(_motorisedProfiles));
+                // A boat sails to water of its own (below), so it takes no road point here. Counted in, it asked the
+                // road search for more points than it might find, and a short answer puts every vehicle on a random
+                // spot near the destination instead.
+                private _boatProfiles = [_event, "boatProfiles", []] call ALIVE_fnc_hashGet;
+                private _boatDestination = [_event, "boatDestination", []] call ALIVE_fnc_hashGet;
+                private _isBoat = { (_this select 0) in _boatProfiles && {_boatDestination isNotEqualTo []} };
+
+                _countProfiles = (count(_transportProfiles)) + ({ !(_x call _isBoat) } count _armourProfiles) + (count(_mechanisedProfiles)) + (count(_motorisedProfiles));
 
                 _position = [_eventPosition] call ALIVE_fnc_getClosestRoad;
 
@@ -9483,7 +9518,9 @@ switch(_operation) do {
                 if (count _positionSeries > 0) then {
                     [_event, "finalDestination", _positionSeries select 0] call ALIVE_fnc_hashSet;
                 } else {
-                    [_event, "finalDestination", _eventPosition] call ALIVE_fnc_hashSet;
+                    // a convoy of boats alone still gets a spot on land, the road nearest the destination: the
+                    // tablet marks it, and the spot asked for can be out on the water
+                    [_event, "finalDestination", [_eventPosition, _position] select (_boatProfiles isNotEqualTo [])] call ALIVE_fnc_hashSet;
                 };
 
                 {
@@ -9511,16 +9548,26 @@ switch(_operation) do {
 
                 } forEach _infantryProfiles;
 
+                // Each boat sails to its own spot on the water nearest the destination, 60 m from the others
+                // where there's room so they don't finish on top of one another, done within about 120 m (a boat
+                // is rarely parked as close to its waypoint as a vehicle on a road).
+                private _boatStops = [];
                 {
-                    _position = _positionSeries select _seriesIndex;
-                    _profileWaypoint = [_position, 1, "MOVE", "NORMAL", 2, [], "COLUMN"] call ALIVE_fnc_createProfileWaypoint;
+                    _profileWaypoint = if (_x call _isBoat) then {
+                        private _stop = [_logic, "findNavigableWater", [_boatDestination, 300, _boatStops, 60]] call MAINCLASS;
+                        if (_stop isEqualTo []) then { _stop = +_boatDestination; };
+                        _boatStops pushBack _stop;
+                        [_stop, 0, "MOVE", "NORMAL", 50, [], "COLUMN"] call ALIVE_fnc_createProfileWaypoint
+                    } else {
+                        _position = _positionSeries select _seriesIndex;
+                        _seriesIndex = _seriesIndex + 1;
+                        [_position, 1, "MOVE", "NORMAL", 2, [], "COLUMN"] call ALIVE_fnc_createProfileWaypoint
+                    };
 
                     _profile = [ALIVE_profileHandler, "getProfile", _x select 0] call ALIVE_fnc_profileHandler;
                     if!(isNil "_profile") then {
                         [_profile, "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
                     };
-
-                    _seriesIndex = _seriesIndex + 1;
 
                 } forEach _armourProfiles;
 
@@ -9825,11 +9872,18 @@ switch(_operation) do {
 
                 // if some waypoints are completed
                 // can assume most units are close to
-                // destination, adjust timeout
+                // destination, adjust timeout. Once the trucks are in, a boat of the convoy still sailing
+                // gets 120 more checks (about 20 minutes) rather than 15: it can have a longer way round by
+                // sea than the trucks have by road, but one that's stuck mustn't hold the delivery for the hour.
                 if(_waypointsCompleted > 0) then {
+                    private _boatsUnderway = {
+                        private _boat = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+                        !(isNil "_boat") && {!([_logic,"checkWaypointCompleted",_boat] call MAINCLASS)}
+                    } count ([_event, "boatProfiles", []] call ALIVE_fnc_hashGet);
                     _waitDifference = _waitTotalIterations - _waitIterations;
-                    if(_waitDifference > 50) then {
-                        _waitIterations = _waitTotalIterations - 15;
+                    private _checksLeft = [15, 120] select (_boatsUnderway > 0);
+                    if(_waitDifference > (_checksLeft max 50)) then {
+                        _waitIterations = _waitTotalIterations - _checksLeft;
                     };
                 };
 
@@ -11003,6 +11057,27 @@ switch(_operation) do {
                         _heliProfiles = [];
                         _planeProfiles = [];
                         _marineProfiles = [];
+                        private _boatProfiles = [];   // crews of boats that sail themselves with a convoy
+                        private "_seaDest";           // the water nearest the destination, found once when a boat needs it
+                        private _boatSpots = [];      // the water each of this request's boats was given, so no two share a spot
+                        // A spot on water a boat can use, nearest the first of the given points that has one, at
+                        // least 30 m from this request's other boats; failing that, near the sea nearest the first
+                        // point. [] when there's none.
+                        private _fnc_boatWater = {
+                            private _spot = [];
+                            {
+                                _spot = [_logic, "findNavigableWater", [_x, 1000, _boatSpots, 30]] call MAINCLASS;
+                                if (_spot isNotEqualTo []) exitWith {};
+                            } forEach _this;
+                            if (_spot isEqualTo [] && {_this isNotEqualTo []}) then {
+                                private _sea = [_this select 0, true] call ALIVE_fnc_getClosestSea;
+                                if (surfaceIsWater _sea) then {
+                                    _spot = [_logic, "findNavigableWater", [_sea, 500, _boatSpots, 30]] call MAINCLASS;
+                                };
+                            };
+                            if (_spot isNotEqualTo []) then { _boatSpots pushBack _spot; };
+                            _spot
+                        };
                         _specOpsProfiles = [];
 
                         _payloadGroupProfiles = [];
@@ -11013,6 +11088,7 @@ switch(_operation) do {
 
                         {
                             _itemClass = _x select 0;
+                            private _boatWater = [];   // the water a boat is put on, [] when it has none
 
                             _position = _reinforcementPosition getPos [random(200), random(360)];
                             _position = [_position] call _fnc_snapToLand;   // #1055: keep the vehicle off the sea
@@ -11051,11 +11127,25 @@ switch(_operation) do {
                                         };
                                     };
                                     case "Ship":{
-                                        if(_paraDrop) then {
-                                            _position set [2,PARADROP_HEIGHT];
+                                        // By Convoy a boat starts, crewed, on water near the departure (near the out-of-sight
+                                        // spot first when players are at the departure) and sails itself with the convoy.
+                                        // By Airdrop it's put on the water nearest the destination (below), or near the
+                                        // departure when the destination has none. A helicopter slings it, as before.
+                                        if (_eventType in ["PR_STANDARD", "PR_AIRDROP"]) then {
+                                            if (isNil "_seaDest") then { _seaDest = [_logic, "findNavigableWater", [_eventPosition, 1000]] call MAINCLASS; };
+                                            _boatWater = (if (_eventType == "PR_AIRDROP" && {_seaDest isNotEqualTo []}) then {
+                                                [_seaDest]
+                                            } else {
+                                                if (_paraDrop) then {[_remotePosition, _position]} else {[_position]}
+                                            }) call _fnc_boatWater;
+                                            if (_boatWater isNotEqualTo []) then { _position = +_boatWater; };
                                         } else {
-                                            // Find the nearest bit of water
-                                            _position = [_position, true] call ALIVE_fnc_getClosestSea;
+                                            if(_paraDrop) then {
+                                                _position set [2,PARADROP_HEIGHT];
+                                            } else {
+                                                // Find the nearest bit of water
+                                                _position = [_position, true] call ALIVE_fnc_getClosestSea;
+                                            };
                                         };
                                     };
                                     case "Air":{
@@ -11066,21 +11156,31 @@ switch(_operation) do {
 
                                 if(_eventType == "PR_AIRDROP" || (_eventType == "PR_HELI_INSERT" && _itemCategory != "Air")) then {
 
-                                    if (_paraDrop && _eventType == "PR_HELI_INSERT") then {
-                                        _position = _remotePosition getPos [random(200), random(360)];
-                                        _position set [2,0]; // position might be in water :(
+                                    if (_itemCategory == "Ship" && {_eventType == "PR_AIRDROP"} && {_boatWater isNotEqualTo []}) then {
+                                        // no aircraft carries a boat: it's put on the water found above, by the destination
+                                        // under a parachute when players can see it
+                                        _position = +_boatWater;
+                                        if (_seaDest isNotEqualTo [] && {([_eventPosition, 1500] call ALiVE_fnc_anyPlayersInRange) > 0}) then { _position set [2, PARADROP_HEIGHT]; };
                                     } else {
-                                        _position = _reinforcementPosition getPos [random(200), random(360)];
-                                        _position = [_position] call _fnc_snapToLand;   // #1055: the redraw skips the guard above
+                                        if (_paraDrop && _eventType == "PR_HELI_INSERT") then {
+                                            _position = _remotePosition getPos [random(200), random(360)];
+                                            _position set [2,0]; // position might be in water :(
+                                        } else {
+                                            _position = _reinforcementPosition getPos [random(200), random(360)];
+                                            _position = [_position] call _fnc_snapToLand;   // #1055: the redraw skips the guard above
+                                        };
                                     };
 
                                     TRACE_2(">>>>>>>>>>>>>>>>>>>>>>>>",_itemClass, _position);
 
                                     _profiles = [_itemClass,_side,_eventFaction,_position] call ALIVE_fnc_createProfileVehicle;
                                     _profiles = [_profiles];
-                                    // Once spawned, prevent despawn while being slung
+                                    // Once spawned, prevent despawn while being slung. An Airdrop never slings a boat, and
+                                    // one kept from despawning would stay spawned for good.
                                     _profile = _profiles select 0;
-                                    [_profile, "spawnType", ["preventDespawn"]] call ALIVE_fnc_profileVehicle;
+                                    if !(_itemCategory == "Ship" && {_eventType == "PR_AIRDROP"}) then {
+                                        [_profile, "spawnType", ["preventDespawn"]] call ALIVE_fnc_profileVehicle;
+                                    };
 
                                 }else{
                                     _profiles = [_itemClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,true,true] call ALIVE_fnc_createProfilesCrewedVehicle;
@@ -11102,13 +11202,21 @@ switch(_operation) do {
                                         _armourProfiles pushback _profileIDs;
                                     };
                                     case "Ship":{
-                                        // Only a helicopter request carries a boat (it slings it); by Convoy or Airdrop it's
-                                        // left near the departure point. Said here so it isn't a mystery.
-                                        if (_eventType != "PR_HELI_INSERT") then {
-                                            ["ML - WARNING: boat %1 has nothing to carry it to the destination by convoy or airdrop, so it stays near its departure point (%2).",
-                                                _itemClass, _position] call ALiVE_fnc_dumpR;
+                                        // By Convoy it sails itself with the convoy's own vehicles to the water nearest the
+                                        // destination; by Airdrop it was put on that water above; a helicopter slings it.
+                                        // With no water a boat can use near the destination, or none near the departure to
+                                        // start on, it stays near the departure, and the log says so. Its crew go when it
+                                        // arrives (unloadTransport), even with players near.
+                                        if (_eventType in ["PR_STANDARD", "PR_AIRDROP"] && {_seaDest isEqualTo [] || {_boatWater isEqualTo []}}) then {
+                                            ["ML - WARNING: boat %1 has no water it can use near %2, so it stays near its departure point (%3).",
+                                                _itemClass, ["its departure", "the destination"] select (_seaDest isEqualTo []), _position] call ALiVE_fnc_dumpR;
                                         };
-                                        _marineProfiles pushback _profileIDs;
+                                        if (_eventType == "PR_STANDARD" && {_seaDest isNotEqualTo []} && {_boatWater isNotEqualTo []}) then {
+                                            _armourProfiles pushback _profileIDs;
+                                            _boatProfiles pushback (_profileIDs select 0);
+                                        } else {
+                                            _marineProfiles pushback _profileIDs;
+                                        };
                                     };
                                     case "Air":{
                                         _heliProfiles pushback _profileIDs;
@@ -11523,11 +11631,25 @@ switch(_operation) do {
 
                                     switch (_itemCategory) do {
                                         case "Naval": {
-                                            if (_paraDrop) then {
-                                                _position set [2, PARADROP_HEIGHT];
+                                            // By Convoy or Airdrop it's made where infantry would be, and put on the water
+                                            // below once it's known whether it brings a boat. A helicopter request is as it was.
+                                            if (_eventType == "PR_HELI_INSERT") then {
+                                                if (_paraDrop) then {
+                                                    _position set [2, PARADROP_HEIGHT];
+                                                } else {
+                                                    // Find the nearest bit of water
+                                                    _position = [_position, true] call ALIVE_fnc_getClosestSea;
+                                                };
                                             } else {
-                                                // Find the nearest bit of water
-                                                _position = [_position, true] call ALIVE_fnc_getClosestSea;
+                                                if (_paraDrop) then {
+                                                    if (_eventType == "PR_STANDARD") then {
+                                                        _position = [_logic, "prepareHelicopterLZ", [
+                                                            _remotePosition getPos [random(150), random(360)], 80
+                                                        ]] call MAINCLASS;
+                                                    } else {
+                                                        _position set [2, PARADROP_HEIGHT];
+                                                    };
+                                                };
                                             };
                                         };
                                         case "Air": {
@@ -11631,16 +11753,77 @@ switch(_operation) do {
                                                 };
                                             };
                                             case "Naval":{
-                                                // Nothing carries a Naval group's men: by Convoy or Airdrop it's handed over with the
-                                                // rest of the request near its departure point, and so is one with no boat (a diver
-                                                // team) by helicopter, whose loop only slings vehicles. A helicopter request does sling
-                                                // a boat, or move it to the destination when no helicopter can lift it. Said here so
-                                                // the group left behind isn't a mystery.
-                                                if (_eventType != "PR_HELI_INSERT" || {_containsVehicles == 0}) then {
-                                                    ["ML - WARNING: Naval group %1 has nothing to carry it to the destination, so it stays near its departure point (%2).",
-                                                        _group, _position] call ALiVE_fnc_dumpR;
+                                                // With a boat: by Convoy it's put on water near the departure (near the out-of-sight
+                                                // spot first when players are at the departure) and sails itself with the convoy's
+                                                // own vehicles to the water nearest the destination; by Airdrop it's put on that
+                                                // water, under a parachute when players can see it. Each boat gets its own spot and
+                                                // the men go with the first. With no water a boat can use near the destination it's
+                                                // put on the water near the departure and stays there; with none there either it
+                                                // stays where it was made; the log says which. A diver team with no boat is carried
+                                                // like infantry, and one whose vehicles aren't all boats goes as an Infantry group with
+                                                // vehicles does (by Convoy under its own power). A helicopter request is as it was.
+                                                private _boats = _profiles select { (_x select 2 select 5) == "vehicle" && {(_x select 2 select 11) isKindOf "Ship"} };
+                                                if (_eventType == "PR_HELI_INSERT") then {
+                                                    if (_containsVehicles == 0) then {
+                                                        ["ML - WARNING: Naval group %1 has nothing to carry it to the destination, so it stays near its departure point (%2).",
+                                                            _group, _position] call ALiVE_fnc_dumpR;
+                                                    };
+                                                    _marineProfiles pushback _profileIDs;
+                                                } else {
+                                                    if (_boats isEqualTo [] || {count _boats < _containsVehicles}) then {
+                                                        if (_containsVehicles == 0 || {_eventType != "PR_STANDARD"}) then {
+                                                            _infantryProfiles pushback _profileIDs;
+                                                        } else {
+                                                            _armourProfiles pushback _profileIDs;
+                                                        };
+                                                    } else {
+                                                        if (isNil "_seaDest") then { _seaDest = [_logic, "findNavigableWater", [_eventPosition, 1000]] call MAINCLASS; };
+                                                        private _from = if (_eventType == "PR_AIRDROP" && {_seaDest isNotEqualTo []}) then {
+                                                            [_seaDest]
+                                                        } else {
+                                                            if (_paraDrop) then {[_remotePosition, _position]} else {[_position]}
+                                                        };
+                                                        private _chute = _eventType == "PR_AIRDROP" && {_seaDest isNotEqualTo []} && {([_eventPosition, 1500] call ALiVE_fnc_anyPlayersInRange) > 0};
+                                                        private _first = [];
+                                                        {
+                                                            private _spot = _from call _fnc_boatWater;
+                                                            if (_spot isNotEqualTo []) then {
+                                                                if (_first isEqualTo []) then { _first = +_spot; };
+                                                                if (_chute) then { _spot set [2, PARADROP_HEIGHT]; };
+                                                                // despawnPosition too, or the spawner puts it back where it was made
+                                                                [_x, "position", +_spot] call ALIVE_fnc_profileVehicle;
+                                                                [_x, "despawnPosition", +_spot] call ALIVE_fnc_profileVehicle;
+                                                            };
+                                                        } forEach _boats;
+                                                        if (_first isEqualTo []) then {
+                                                            ["ML - WARNING: Naval group %1 has no water it can use near its departure, so it stays at its departure point (%2).",
+                                                                _group, _position] call ALiVE_fnc_dumpR;
+                                                            _marineProfiles pushback _profileIDs;
+                                                        } else {
+                                                            {
+                                                                // on the water, not in the air: the men are seated in their boat as the
+                                                                // group spawns, and ride it down when it comes under a parachute
+                                                                if ((_x select 2 select 5) != "vehicle") then {
+                                                                    [_x, "position", +_first] call ALIVE_fnc_profileEntity;
+                                                                    [_x, "mergePositions"] call ALIVE_fnc_profileEntity;
+                                                                };
+                                                            } forEach _profiles;
+                                                            if (_seaDest isEqualTo []) then {
+                                                                ["ML - WARNING: Naval group %1 has no water it can use near the destination, so it stays on the water near its departure point (%2).",
+                                                                    _group, _first] call ALiVE_fnc_dumpR;
+                                                                _marineProfiles pushback _profileIDs;
+                                                            } else {
+                                                                if (_eventType == "PR_STANDARD") then {
+                                                                    _armourProfiles pushback _profileIDs;
+                                                                    _boatProfiles pushback (_profileIDs select 0);
+                                                                } else {
+                                                                    // Airdrop: on the water already, handed over with the rest of the request
+                                                                    _marineProfiles pushback _profileIDs;
+                                                                };
+                                                            };
+                                                        };
+                                                    };
                                                 };
-                                                _marineProfiles pushback _profileIDs;
                                             };
                                             case "Armored":{
                                                 _armourProfiles pushback _profileIDs;
@@ -12326,6 +12509,10 @@ switch(_operation) do {
                         [_eventCargoProfiles, "motorised", _motorisedProfiles] call ALIVE_fnc_hashSet;
                         [_eventCargoProfiles, "heli", _heliProfiles] call ALIVE_fnc_hashSet;
                         [_eventCargoProfiles, "plane", _planeProfiles] call ALIVE_fnc_hashSet;
+
+                        // boats that sail themselves with the convoy, and the water they sail to
+                        [_event, "boatProfiles", _boatProfiles] call ALIVE_fnc_hashSet;
+                        [_event, "boatDestination", if (isNil "_seaDest") then {[]} else {_seaDest}] call ALIVE_fnc_hashSet;
 
 
                         // DEBUG -------------------------------------------------------------------------------------
@@ -13280,7 +13467,9 @@ switch(_operation) do {
             };
             case "EMPTY":{
 
-                if!(_active) then {
+                // An ordered boat's crew go when it arrives even with players near: let out the way a car's
+                // crew are, they'd be left swimming in deep water beside it.
+                if(!_active || {(_vehicleProfile select 2 select 11) isKindOf "Ship"}) then {
 
                     private ["_group","_position","_heliPad"];
 
