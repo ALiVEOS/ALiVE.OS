@@ -214,7 +214,10 @@ if(_debug) then {
 
                         _position = getPosATL _vehicle;
 
-                        _vehicle setVariable ["profileID",format["vehicle_%1",_vehicleCount]];
+                        // The ID its profile gets below. The next crewman in this vehicle looks the
+                        // profile up by this, and this pass's own count (as this line used) differs
+                        // from the handler's once vehicle IDs were handed out before it ran.
+                        _vehicle setVariable ["profileID",_vehicleID];
 
                         _profileVehicle = [nil, "create"] call ALIVE_fnc_profileVehicle;
                         [_profileVehicle, "init"] call ALIVE_fnc_profileVehicle;
