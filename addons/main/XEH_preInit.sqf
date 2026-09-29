@@ -333,6 +333,12 @@ if (is3DEN) then {
     //   ALiVE_<placement>_faction
     add3DENEventHandler ["OnEntityAttributeChanged", {
         params ["_entity", "_property"];
+        // The Virtual AI System's Synchronisation Options decide which editor-placed
+        // units it turns into forces, which the faction check counts, so changing
+        // them checks every AI Commander again.
+        if (_property == "ALiVE_sys_profile_syncronised") exitWith {
+            ["attr", []] call ALiVE_edenFactionValidator;
+        };
         if ((toLower _property) find "faction" < 0) exitWith {};
 
         // Entity must be part of a sync graph - otherwise the mission-
@@ -440,6 +446,15 @@ if (is3DEN) then {
             if (count _scope > 0) then {
                 ["sync", _scope] call ALiVE_edenFactionValidator;
             };
+        };
+
+        // A sync to or from the Virtual AI System changes which editor-placed units it
+        // turns into forces, which the faction check counts, so every AI Commander is
+        // checked again. The unit end of the line isn't a Logic, so the block above
+        // misses it; and this comes after that block because the validator runs only
+        // the last call it's given.
+        if (_connType == "Sync" && {((_srcs + [_dest]) findIf {typeOf _x == "ALiVE_sys_profile"}) >= 0}) then {
+            ["sync", []] call ALiVE_edenFactionValidator;
         };
 
         // Faction-compiler category sync hint. Fires only on Sync
