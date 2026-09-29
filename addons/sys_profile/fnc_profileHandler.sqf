@@ -487,6 +487,9 @@ switch(_operation) do {
 
     case "unregisterProfile": {
         if (_args isEqualType "") then {_args = [_logic,"getProfile", _args] call MAINCLASS};
+        // An id that is already gone gives nothing back, and _args then no longer exists: the
+        // test below logged "Undefined variable" (an id removed twice, or one that never existed).
+        if (isNil "_args") exitWith {};
 
         if (_args isEqualType []) then {
             private _profile = _args;
