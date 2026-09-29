@@ -1433,11 +1433,11 @@ switch(_operation) do {
 
                     [ALIVE_profileHandler, "registerProfile", _profileEntity] call ALIVE_fnc_profileHandler;
 
-                    //Collect the index-number of the entity id
+                    //Collect the index-number of the entity id: the number after its last "_". Sorting the parts
+                    //and taking the lowest, as before, read "FOO_1st-entity_50" as 1, not 50
                     _index = [[_profileEntity,"profileID","entity_0"] call ALIVE_fnc_hashGet, "_"] call CBA_fnc_split;
                     if (count _index > 0) then {
-                        _index sort true;
-                        _index = parseNumber (_index select 0); // will fallback to 0 if a wrong input is given
+                        _index = parseNumber (_index select (count _index - 1)); // will fallback to 0 if a wrong input is given
 
                         _entities pushback _index;
                     };
@@ -1530,11 +1530,11 @@ switch(_operation) do {
 
                     [ALIVE_profileHandler, "registerProfile", _profileVehicle] call ALIVE_fnc_profileHandler;
 
-                    //Collect the index-number of the vehicle id
+                    //Collect the index-number of the vehicle id: the number after its last "_". Sorting the parts
+                    //and taking the lowest, as before, read "FOO_1st-vehicle_50" as 1, not 50
                     _index = [[_profileVehicle,"profileID","vehicle_0"] call ALIVE_fnc_hashGet, "_"] call CBA_fnc_split;
                     if (count _index > 0) then {
-                        _index sort true;
-                        _index = parseNumber (_index select 0); // will fallback to 0 if a wrong input is given
+                        _index = parseNumber (_index select (count _index - 1)); // will fallback to 0 if a wrong input is given
 
                         _vehicles pushback _index;
                     };
@@ -1546,13 +1546,16 @@ switch(_operation) do {
             _vehicles sort false;
             _entities sort false;
 
-            //Validating
-            _entities = if (count _entities > 0 && {typeName (_entities select 0) == "SCALAR"}) then {_entities select 0} else {0};
-            _vehicles = if (count _vehicles > 0 && {typeName (_vehicles select 0) == "SCALAR"}) then {_vehicles select 0} else {0};
+            //Validating: the next number to hand out is one past the highest loaded
+            _entities = if (count _entities > 0 && {typeName (_entities select 0) == "SCALAR"}) then {(_entities select 0) + 1} else {0};
+            _vehicles = if (count _vehicles > 0 && {typeName (_vehicles select 0) == "SCALAR"}) then {(_vehicles select 0) + 1} else {0};
 
-            //Set highest index-number on the profiles-counters in order to let objects created lateron have correct unique IDs
-            [_logic,"profileVehicleCount", _vehicles] call ALIVE_fnc_hashSet;
-            [_logic,"profileEntityCount", _entities] call ALIVE_fnc_hashSet;
+            //Set the profile counters past the highest index-number, so objects created later on get unique IDs.
+            //A counter holds the NEXT number it hands out: set to the highest loaded, it gave that number out
+            //again and the new profile took the loaded one's place. Never lowered, so no number is handed out
+            //twice in one session.
+            [_logic,"profileVehicleCount", _vehicles max ([_logic,"profileVehicleCount",0] call ALIVE_fnc_hashGet)] call ALIVE_fnc_hashSet;
+            [_logic,"profileEntityCount", _entities max ([_logic,"profileEntityCount",0] call ALIVE_fnc_hashGet)] call ALIVE_fnc_hashSet;
             [_logic,"profileCount", _total] call ALIVE_fnc_hashSet;
         };
     };
