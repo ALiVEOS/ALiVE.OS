@@ -1105,7 +1105,8 @@ if (!_simAttacks) then {
             if (count (_vehAssignments select 1) > 0) then {
                 private _vehicleID = _subordinateVehicle select 2 select 4;
 
-                private _vehAssignment = [_vehAssignments,_vehicleID] call ALiVE_fnc_hashGet;
+                // none when a group with nobody left was let go of it by an earlier wreck this cycle
+                private _vehAssignment = [_vehAssignments,_vehicleID,[]] call ALiVE_fnc_hashGet;
 
                 // flatten the position groups and remove in DESCENDING unit
                 // index order. The groups hold ascending indexes, so reversing
@@ -1119,7 +1120,10 @@ if (!_simAttacks) then {
                     [_commandingEntity,"removeUnit", _x] call ALiVE_fnc_profileEntity
                 } foreach _crewIdx;
             } else {
-                ["FIXME: _vehAssignments is empty while we expect it not to be?!"] call ALiVE_fnc_dump;
+                // expected for a group an earlier wreck this cycle emptied and queued for the kill: it let go of everything
+                if ((_toBeKilled findIf { (_x select 1 select 2 select 4) == (_commandingEntity select 2 select 4) }) == -1) then {
+                    ["FIXME: _vehAssignments is empty while we expect it not to be?!"] call ALiVE_fnc_dump;
+                };
             };
 
             // unassign vehicle from entity
@@ -1127,15 +1131,73 @@ if (!_simAttacks) then {
 
             // Any other group aboard (passengers, or a group manning only a gun) wasn't unassigned above, so
             // it kept a link to a vehicle that's about to be removed: the AI Commander leaves out a group with
-            // a vehicle link, and one listed in cargo isn't moved while virtual. It's released here with all
-            // its men; only the attacked group loses the men it had aboard.
+            // a vehicle link, and one listed in cargo isn't moved while virtual. Each one loses the men it had
+            // in the vehicle, as the crew does, and is released from it with the men it has left. A group
+            // with nobody left is killed by whoever destroyed the vehicle.
             private _commandingID = _commandingEntity select 2 select 4;
+            private _destroyedID = _subordinateVehicle select 2 select 4;
+            private _aboardIDs = (([_subordinateVehicle, "entitiesInCommandOf", []] call ALiVE_fnc_hashGet) + ([_subordinateVehicle, "entitiesInCargoOf", []] call ALiVE_fnc_hashGet)) - [_commandingID];
             {
                 private _otherProfile = _profilesById get _x;
                 if (!isNil "_otherProfile" && {(_otherProfile select 2 select 5) == "entity"}) then {
-                    [_otherProfile, _subordinateVehicle] call ALiVE_fnc_removeProfileVehicleAssignment;
+                    if (_otherProfile select 2 select 1) then {
+                        // spawned: only let go of the wreck. Its men are real, and taking them off its
+                        // record would leave them in the world with no profile.
+                        [_otherProfile, _subordinateVehicle] call ALiVE_fnc_removeProfileVehicleAssignment;
+                    } else {
+                        private _otherAssignments = _otherProfile select 2 select 7;
+                        private _otherClasses = _otherProfile select 2 select 11;
+
+                        // the men it had aboard, removed in DESCENDING index order as for the crew. Seats past
+                        // its last man are skipped: a group shot at while riding loses men without its seats
+                        // being renumbered, so they can point too far.
+                        private _aboardIdx = [];
+                        { _aboardIdx append _x } forEach (([_otherAssignments, _destroyedID, []] call ALiVE_fnc_hashGet) param [2, [], [[]]]);
+                        _aboardIdx = (_aboardIdx arrayIntersect _aboardIdx) select { _x < count _otherClasses };
+                        _aboardIdx sort false;
+
+                        {
+                            [_otherProfile, "removeUnit", _x] call ALiVE_fnc_profileEntity;
+                        } forEach _aboardIdx;
+
+                        [_otherProfile, _subordinateVehicle] call ALiVE_fnc_removeProfileVehicleAssignment;
+
+                        // re-base its other vehicle assignments on the shifted unit arrays
+                        if (count _aboardIdx > 0) then {
+                            {
+                                private _otherAssign = [_otherAssignments, _x] call ALiVE_fnc_hashGet;
+                                if (!isNil "_otherAssign") then {
+                                    {
+                                        private _group = _x;
+                                        {
+                                            private _old = _x;
+                                            _group set [_forEachIndex, _old - ({ _x < _old } count _aboardIdx)];
+                                        } forEach _group;
+                                    } forEach (_otherAssign param [2, [], [[]]]);
+                                };
+                            } forEach +(_otherAssignments select 1);
+                        };
+
+                        if (count _aboardIdx > 0 && {_otherClasses isEqualTo []}) then {
+                            // nobody left: it lets go of any other vehicle it still holds, so none keeps a
+                            // link to a group that's about to be removed, and is killed by whoever
+                            // destroyed this one
+                            {
+                                private _heldVehicle = _profilesById get _x;
+                                if (!isNil "_heldVehicle") then {
+                                    [_otherProfile, _heldVehicle] call ALiVE_fnc_removeProfileVehicleAssignment;
+                                };
+                            } forEach +(_otherAssignments select 1);
+
+                            private _otherID = _otherProfile select 2 select 4;
+                            private _vehicleKill = _toBeKilled findIf { (_x select 1 select 2 select 4) == _destroyedID };
+                            if (_vehicleKill > -1 && {(_toBeKilled findIf { (_x select 1 select 2 select 4) == _otherID }) == -1}) then {
+                                _toBeKilled pushBack [(_toBeKilled select _vehicleKill) select 0, _otherProfile];
+                            };
+                        };
+                    };
                 };
-            } forEach ((([_subordinateVehicle, "entitiesInCommandOf", []] call ALiVE_fnc_hashGet) + ([_subordinateVehicle, "entitiesInCargoOf", []] call ALiVE_fnc_hashGet)) - [_commandingID]);
+            } forEach (_aboardIDs arrayIntersect _aboardIDs);
 
             // re-base the entity's remaining vehicle assignments - the crew
             // removal shifted the unit arrays down, so surviving vehicles'
