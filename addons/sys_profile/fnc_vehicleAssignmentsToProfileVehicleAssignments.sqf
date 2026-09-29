@@ -22,6 +22,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 private ["_profile","_profileType","_profileID","_profileActive","_vehicle","_groupsInVehicle","_group","_units","_vehiclesUnitsIn","_leader",
@@ -33,10 +34,19 @@ _profileType = _profile select 2 select 5; //[_profile,"type"] call ALIVE_fnc_ha
 _profileID = _profile select 2 select 4; //[_profile,"profileID"] call ALIVE_fnc_hashGet;
 _profileActive = _profile select 2 select 1; //[_profile,"active"] call ALIVE_fnc_hashGet;
 
-// reset data
+// reset data. A vehicle lists the groups in it and a group the vehicles it's in, and each resets its own
+// pair. Run on a group, this used to clear the vehicle's pair instead, so a vehicle its men had got out
+// of stayed in the group's lists, and the simulator doesn't move a virtual group listed in one. A group
+// on foot is back at walking pace; one still in a vehicle gets its lists and pace back from it below.
 [_profile,"vehicleAssignments",[] call ALIVE_fnc_hashCreate] call ALIVE_fnc_hashSet;
-[_profile,"entitiesInCommandOf",[]] call ALIVE_fnc_hashSet;
-[_profile,"entitiesInCargoOf",[]] call ALIVE_fnc_hashSet;
+if (_profileType == "vehicle") then {
+    [_profile,"entitiesInCommandOf",[]] call ALIVE_fnc_hashSet;
+    [_profile,"entitiesInCargoOf",[]] call ALIVE_fnc_hashSet;
+} else {
+    [_profile,"vehiclesInCommandOf",[]] call ALIVE_fnc_hashSet;
+    [_profile,"vehiclesInCargoOf",[]] call ALIVE_fnc_hashSet;
+    [_profile,"speedPerSecond","Man" call ALIVE_fnc_vehicleGetSpeedPerSecond] call ALIVE_fnc_hashSet;
+};
 
 if(_profileType == "vehicle") then {
 
