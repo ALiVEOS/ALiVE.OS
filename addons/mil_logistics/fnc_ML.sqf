@@ -10970,6 +10970,12 @@ switch(_operation) do {
                                         _armourProfiles pushback _profileIDs;
                                     };
                                     case "Ship":{
+                                        // Only a helicopter request carries a boat (it slings it); by Convoy or Airdrop it's
+                                        // left near the departure point. Said here so it isn't a mystery.
+                                        if (_eventType != "PR_HELI_INSERT") then {
+                                            ["ML - WARNING: boat %1 has nothing to carry it to the destination by convoy or airdrop, so it stays near its departure point (%2).",
+                                                _itemClass, _position] call ALiVE_fnc_dumpR;
+                                        };
                                         _marineProfiles pushback _profileIDs;
                                     };
                                     case "Air":{
@@ -11468,15 +11474,52 @@ switch(_operation) do {
                                                 };
                                             };
                                             case "SpecOps":{
-                                                //If the spec op team, does not have a vehicle (like submarines in A3 vanilla)
-                                                //treat them as infantry to allow heli insertion and paradrop
+                                                // A team with no vehicle is carried like infantry. One that brings vehicles used to go
+                                                // into a list nothing reads; now it travels as an Infantry group with its own does:
+                                                // under its own power by Convoy, the men flown and the vehicles slung by helicopter.
+                                                // Not by Airdrop, which can't take a team's own vehicles along: the drop reads every
+                                                // id in the infantry list as men, stops on the vehicle and leaves the aircraft
+                                                // circling. So by Airdrop the team stays at its departure point, as before, and the
+                                                // log says so. Boats (divers' assault boats, SDVs) are no use at a land destination:
+                                                // kept, a boat would be left behind by Convoy or Airdrop, or set down on dry ground by
+                                                // a helicopter, with the team tied to it. So a team goes without its boats (their
+                                                // crews come along on foot), and the log says that too.
+                                                private _boats = _profiles select { (_x select 2 select 5) == "vehicle" && {(_x select 2 select 11) isKindOf "Ship"} };
+                                                if (_boats isNotEqualTo []) then {
+                                                    ["ML - Resupply: SpecOps group %1 goes without its boats (%2), which are no use at a land destination.",
+                                                        _group, _boats apply {_x select 2 select 11}] call ALiVE_fnc_dumpR;
+                                                    {
+                                                        _profileIDs deleteAt (_profileIDs find (_x select 2 select 4));
+                                                        [_x, "destroy"] call ALIVE_fnc_profileVehicle;
+                                                    } forEach _boats;
+                                                    _containsVehicles = _containsVehicles - count _boats;
+                                                };
                                                 if (_containsVehicles == 0) then {
                                                     _infantryProfiles pushback _profileIDs;
                                                 } else {
-                                                    _specOpsProfiles pushback _profileIDs;
+                                                    if (_eventType == "PR_STANDARD") then {
+                                                        _armourProfiles pushback _profileIDs;
+                                                    } else {
+                                                        if (_eventType == "PR_AIRDROP") then {
+                                                            ["ML - WARNING: SpecOps group %1 brings vehicles, which an airdrop can't take along, so it stays at its departure point (%2). Request it by convoy or helicopter instead.",
+                                                                _group, _position] call ALiVE_fnc_dumpR;
+                                                            _specOpsProfiles pushback _profileIDs;
+                                                        } else {
+                                                            _infantryProfiles pushback _profileIDs;
+                                                        };
+                                                    };
                                                 };
                                             };
                                             case "Naval":{
+                                                // Nothing carries a Naval group's men: by Convoy or Airdrop it's handed over with the
+                                                // rest of the request near its departure point, and so is one with no boat (a diver
+                                                // team) by helicopter, whose loop only slings vehicles. A helicopter request does sling
+                                                // a boat, or move it to the destination when no helicopter can lift it. Said here so
+                                                // the group left behind isn't a mystery.
+                                                if (_eventType != "PR_HELI_INSERT" || {_containsVehicles == 0}) then {
+                                                    ["ML - WARNING: Naval group %1 has nothing to carry it to the destination, so it stays near its departure point (%2).",
+                                                        _group, _position] call ALiVE_fnc_dumpR;
+                                                };
                                                 _marineProfiles pushback _profileIDs;
                                             };
                                             case "Armored":{
