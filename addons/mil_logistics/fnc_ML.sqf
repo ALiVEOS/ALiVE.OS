@@ -638,14 +638,21 @@ switch(_operation) do {
                 LZ_MAX_SEARCH_ATTEMPTS, _clearPos, surfaceIsWater _centerPos] call ALiVE_fnc_dump;
         };
 
-        // Move blocking infantry clear of the chosen LZ
-        private _blockingInfantry = _clearPos nearEntities [["Man"], LZ_OBJECT_CLEAR_RADIUS];
+        // Move blocking infantry clear of the chosen LZ. These spots are picked round the base a delivery
+        // or reinforcement sets off from, where players often are, so players are left where they stand,
+        // with their own squads and any man a player is remote-controlling. The rest go just outside the
+        // clearing, and only to a spot the search really found: a failed search hands back the map's centre.
+        private _blockingInfantry = (_clearPos nearEntities [["Man"], LZ_OBJECT_CLEAR_RADIUS]) select {
+            !isPlayer _x
+            && {!isPlayer (leader group _x)}
+            && {isNull (_x getVariable ["bis_fnc_moduleRemoteControl_owner", objNull])}
+        };
         if (count _blockingInfantry > 0) then {
             ["ML - prepareHelicopterLZ: Moving %1 blocking infantry from LZ %2",
                 count _blockingInfantry, _clearPos] call ALiVE_fnc_dump;
             {
-                private _movePos = [getPos _x, 8, 30, 1, 0, LZ_MAX_GRADIENT, 0] call BIS_fnc_findSafePos;
-                if (count _movePos > 0 && !(surfaceIsWater _movePos)) then {
+                private _movePos = [_clearPos, LZ_OBJECT_CLEAR_RADIUS + 2, LZ_OBJECT_CLEAR_RADIUS + 15, 1, 0, LZ_MAX_GRADIENT, 0] call BIS_fnc_findSafePos;
+                if (count _movePos == 2 && {!(surfaceIsWater _movePos)}) then {
                     _x setPos _movePos;
                     if (_debug) then {
                         ["ML - prepareHelicopterLZ: Moved unit %1 to %2", _x, _movePos] call ALiVE_fnc_dump;
