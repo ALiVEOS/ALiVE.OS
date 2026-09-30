@@ -1015,6 +1015,47 @@ switch(_operation) do {
         };
     };
 
+    case "holdSlingHelicopter": {
+        // A crewed helicopter is made flying, 300 m up, even where its profile stands on the ground, and one made at its
+        // departure because a player is there dives to its cruise height in its first ten seconds, before its delivery
+        // watchdog is started: a UH-60M slinging a 3.4 t Prowler went from 300 m to 75 m in 10 s and to 27 m soon after,
+        // too low for the ridges ahead and too heavy to climb back (measured). So a helicopter given a load to sling is
+        // held at the height it's made at from the moment it exists, looked for four times a second, and the watchdog's
+        // floor takes over from there: it brings it down as the high ground falls behind and lifts it when the load is
+        // lowered or gone. The first helicopter made for the profile is held and this stops; the despawn guard every
+        // sling helicopter is given keeps that one spawned. One made only once its load is let go (a delivery that
+        // went unseen, then a player near its way home) isn't held: the load no longer names it. [vehicle profile ID, debug]
+        _args params ["_vProfID", ["_debug", false]];
+        private _cargoID = ((missionNamespace getVariable ["ALIVE_ML_slingCargo", createHashMap]) getOrDefault [_vProfID, []]) param [0, ""];
+        [_vProfID, _cargoID, _debug] spawn {
+            params ["_vProfID", "_cargoID", "_dbg"];
+            private _t0 = time;
+            private _heli = objNull;
+            private _gone = false;
+            waitUntil {
+                sleep 0.25;
+                private _vp = [ALIVE_profileHandler, "getProfile", _vProfID] call ALIVE_fnc_profileHandler;
+                private _cp = [ALIVE_profileHandler, "getProfile", _cargoID] call ALIVE_fnc_profileHandler;
+                if (isNil "_vp" || {isNil "_cp"} || {([_cp, "slung", []] call ALIVE_fnc_hashGet) isEqualTo []}) then {
+                    _gone = true;
+                } else {
+                    if ((_vp select 2 select 1) && {(_vp select 2 select 10) isEqualType objNull}) then { _heli = _vp select 2 select 10; };
+                };
+                _gone || {!isNull _heli} || {time - _t0 > 3600}
+            };
+            if (!isNull _heli && {alive _heli} && {(_heli getVariable ["alive_ml_floor_asl", 0]) == 0}) then {
+                private _asl = (getPosASL _heli) select 2;
+                private _held = (floor (_asl / 10)) * 10;
+                _heli flyInHeightASL [_held, _held, _held];
+                _heli setVariable ["alive_ml_floor_asl", _held];
+                _heli setVariable ["alive_ml_floor_reach", _asl];
+                if (_dbg) then {
+                    ["ML - holdSlingHelicopter: %1 made %2 m up, held above %3 m ASL.", _vProfID, round ((getPos _heli) select 2), _held] call ALiVE_fnc_dump;
+                };
+            };
+        };
+    };
+
     case "airdropCarrierless": {
         // An Airdrop group or ordered vehicle no aircraft carries goes down at the destination straight
         // away (#947): under a parachute when players are within 1500 m of it (the spawner hangs anything
@@ -2054,10 +2095,13 @@ switch(_operation) do {
                 private _heli     = _vProf select 2 select 10;
 
                 // the floor a slinging helicopter is held at on its way (below) goes once it has nothing slung, here,
-                // before the watchdog can stop, so it doesn't fly home held at it
+                // before the watchdog can stop, so it doesn't fly home held at it. The highest it has flown counts
+                // again from then on: a load the spawner hooks on a moment late would otherwise have it sent back up
+                // to the height it was made at, a climb one that heavy can't make.
                 if (!isNull _heli && {alive _heli} && {isNull getSlingLoad _heli} && {(_heli getVariable ["alive_ml_floor_asl", 0]) != 0}) then {
                     _heli flyInHeightASL [0, 0, 0];
                     _heli setVariable ["alive_ml_floor_asl", 0];
+                    _heli setVariable ["alive_ml_floor_reach", 0];
                     if (_dbg) then { ["ML - heliDeliveryWatchdog: %1 has nothing slung, its floor lifted.", _tProfID] call ALiVE_fnc_dump; };
                 };
 
@@ -2167,11 +2211,11 @@ switch(_operation) do {
                     // plus the 100 m it keeps over the ground anyway, and the highest this watchdog has seen it fly, so
                     // it's never asked to climb: one that heavy can't, and one asked to climb back up after diving went
                     // backwards for 14 minutes (measured). A crewed helicopter is made in the air, 300 m up, so one made
-                    // on its way is held clear of every ridge; one made at the departure with a player there dives to
-                    // its cruise height before this watchdog starts, and isn't helped. The floor comes down as the high
-                    // ground falls behind and goes when it starts to lower the load. Held over the spot it does nothing:
-                    // landAt takes the helicopter below it, and one that heavy sinks as it slows to a hover and sets its
-                    // load down on the way in (both UH-60Ms about 80 m short, undamaged: measured).
+                    // on its way is held clear of every ridge; one made at the departure with a player there is held
+                    // from the moment it exists by holdSlingHelicopter, and this carries on from there. The floor comes
+                    // down as the high ground falls behind and goes when it starts to lower the load. Held over the spot
+                    // it does nothing: landAt takes the helicopter below it, and one that heavy sinks as it slows to a
+                    // hover and sets its load down on the way in (both UH-60Ms about 80 m short, undamaged: measured).
                     private _floorASL = 0;
                     if (_phase == 0 && {!isNull getSlingLoad _heli}) then {
                         private _from = _posASL;
@@ -2188,6 +2232,7 @@ switch(_operation) do {
                     if (_floorASL != (_heli getVariable ["alive_ml_floor_asl", 0])) then {
                         _heli flyInHeightASL [_floorASL, _floorASL, _floorASL];
                         _heli setVariable ["alive_ml_floor_asl", _floorASL];
+                        if (_floorASL == 0) then { _heli setVariable ["alive_ml_floor_reach", 0]; };
                         if (_dbg) then {
                             if (_floorASL > 0) then {
                                 ["ML - heliDeliveryWatchdog: %1 slinging, kept above %2 m ASL (%3 m from its spot).", _tProfID, _floorASL, round (_heli distance2D _destPos)] call ALiVE_fnc_dump;
@@ -3053,6 +3098,7 @@ switch(_operation) do {
                 if (!isNull _heliEnd && {alive _heliEnd} && {isNull getSlingLoad _heliEnd} && {(_heliEnd getVariable ["alive_ml_floor_asl", 0]) != 0}) then {
                     _heliEnd flyInHeightASL [0, 0, 0];
                     _heliEnd setVariable ["alive_ml_floor_asl", 0];
+                    _heliEnd setVariable ["alive_ml_floor_reach", 0];
                     if (_dbg) then { ["ML - heliDeliveryWatchdog: %1 stopped, its floor lifted.", _tProfID] call ALiVE_fnc_dump; };
                 };
             };
@@ -7601,6 +7647,7 @@ switch(_operation) do {
                                             // vehicle profile id, read by heliDeliveryWatchdog.
                                             if (isNil "ALIVE_ML_slingCargo") then { ALIVE_ML_slingCargo = createHashMap; };
                                             ALIVE_ML_slingCargo set [(_heliVehicleProf select 2 select 4), [(_slingloadProfile select 2 select 4), _eventPosition]];
+                                            [_logic, "holdSlingHelicopter", [_heliVehicleProf select 2 select 4, _debug]] call MAINCLASS;
                                             if (_debug) then {
                                                 ["ML - HELI_INSERT slingload: preventDespawn set on pilot %1 heli %2 truck %3",
                                                     _profiles select 0 select 2 select 4,
@@ -8259,6 +8306,7 @@ switch(_operation) do {
                                             // backref, which doesn't survive the spawn rebuild).
                                             if (isNil "ALIVE_ML_slingCargo") then { ALIVE_ML_slingCargo = createHashMap; };
                                             ALIVE_ML_slingCargo set [((_profiles select 1) select 2 select 4), [(_slingLoadProfile select 2 select 4), _eventPosition]];
+                                            [_logic, "holdSlingHelicopter", [(_profiles select 1) select 2 select 4, _debug]] call MAINCLASS;
 
                                             // Same fix as motorised: waypoint to _eventPosition not
                                             // _reinforcementPosition to prevent immediate profile despawn.
@@ -11981,6 +12029,7 @@ switch(_operation) do {
                                         // vehicle profile id, read by heliDeliveryWatchdog.
                                         if (isNil "ALIVE_ML_slingCargo") then { ALIVE_ML_slingCargo = createHashMap; };
                                         ALIVE_ML_slingCargo set [(_heliVehicleProf select 2 select 4), [(_slingloadProfile select 2 select 4), [_eventPosition, _boatLZ] select _isBoat]];
+                                        [_logic, "holdSlingHelicopter", [_heliVehicleProf select 2 select 4, _debug]] call MAINCLASS;
                                         // heliTransportStart sends it to this water, not to a landing spot
                                         if (_isBoat) then { [_heliEntityProf, "alive_ml_boat_lz", +_boatLZ] call ALIVE_fnc_hashSet; };
 
@@ -12751,6 +12800,7 @@ switch(_operation) do {
                                             // backref + dropPos, which don't survive the spawn rebuild).
                                             if (isNil "ALIVE_ML_slingCargo") then { ALIVE_ML_slingCargo = createHashMap; };
                                             ALIVE_ML_slingCargo set [(_heliVehicleProf select 2 select 4), [(_slingloadProfile select 2 select 4), [_eventPosition, _boatLZ] select _isBoat]];
+                                            [_logic, "holdSlingHelicopter", [_heliVehicleProf select 2 select 4, _debug]] call MAINCLASS;
                                             if (_isBoat) then { [_heliEntityProf, "alive_ml_boat_lz", +_boatLZ] call ALIVE_fnc_hashSet; };
 
                                             _transportProfiles pushback (_profiles select 0 select 2 select 4);
@@ -13457,6 +13507,7 @@ switch(_operation) do {
                                         _airdropSlingDrops pushBack _slingDropPos;
                                         if (isNil "ALIVE_ML_slingCargo") then { ALIVE_ML_slingCargo = createHashMap; };
                                         ALIVE_ML_slingCargo set [(_heliVehicleProf select 2 select 4), [_cargoID, _slingDropPos]];
+                                        [_logic, "holdSlingHelicopter", [_heliVehicleProf select 2 select 4, _debug]] call MAINCLASS;
                                         [_heliEntityProf, "alive_ml_lz", +_slingDropPos] call ALIVE_fnc_hashSet;
                                         // The unload tells a player's transport by these lists: in the payload list it gets the
                                         // sling release, where it would otherwise get the landing that lets troops out.
