@@ -19,6 +19,7 @@ See Also:
 
 Author:
 Highhead
+Jman
 
 Peer Reviewed:
 nil
@@ -35,7 +36,10 @@ _blacklist = GVAR(LIFTABLE) select 2;
 _canLift = false;
 
 // Basic checks
-if (isnil "_object" || {isnil "_container"} || {{_object isKindOf _x} count _blackList > 0} || {!isnil {_object getvariable QGVAR(DISABLE)}} || {!(_container isKindOf "Air")} || {(getNumber (configFile >> "cfgVehicles" >> typeof _container >> "transportSoldier")) < 6} || {count attachedObjects _container > 0}) exitwith {_canLift};
+// A helicopter carrying something is refused. A load hanging on its sling ropes isn't among its attachedObjects (a load
+// this module lifts is, as is anything else attached to it), so getSlingLoad is asked as well: otherwise one slinging a
+// vehicle was offered Lift object for whatever stood nearest, which was the load on its own ropes.
+if (isnil "_object" || {isnil "_container"} || {{_object isKindOf _x} count _blackList > 0} || {!isnil {_object getvariable QGVAR(DISABLE)}} || {!(_container isKindOf "Air")} || {(getNumber (configFile >> "cfgVehicles" >> typeof _container >> "transportSoldier")) < 6} || {count attachedObjects _container > 0} || {!isNull getSlingLoad _container}) exitwith {_canLift};
 
 {if (_container isKindOf _x) exitwith {_containerCanLift = true}} foreach _allowedContainers;
 {if (_object isKindOf _x) exitwith {_objectCanLift = true}} foreach _allowedObjects;
