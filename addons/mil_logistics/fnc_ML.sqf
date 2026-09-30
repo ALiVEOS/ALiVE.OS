@@ -11497,6 +11497,38 @@ switch(_operation) do {
                             if (_spot isNotEqualTo []) then { _boatSpots pushBack _spot; };
                             _spot
                         };
+                        // Down at the destination with no helicopter, for a player's Helicopter delivery none of whose
+                        // helicopters can lift a vehicle, or that has none: as airdropCarrierless puts it, by parachute
+                        // when players are near, which also moves where it's made again and lets it despawn. Only its
+                        // position used to be moved, so it was made again where it started, and kept from despawning
+                        // for good. A boat goes on the water it was given (or the nearest to the destination), and stays
+                        // near its departure when there's none. An aircraft ordered with its crew flies itself: only its
+                        // position is moved, as before. [profile, the water a boat was given or []]
+                        private _fnc_heliFallback = {
+                            params ["_p", ["_water", []]];
+                            if ((_p select 2 select 5) != "vehicle") exitWith {
+                                [_p, "position", _eventPosition] call ALIVE_fnc_profileVehicle;
+                            };
+                            if ((_p select 2 select 11) isKindOf "Ship") exitWith {
+                                [_p, "spawnType", []] call ALIVE_fnc_profileVehicle;
+                                // under a parachute when players are near to see it, as an Airdrop's boat comes, onto
+                                // water with room round it to drift onto
+                                private _chuteB = ([_eventPosition, 1500] call ALiVE_fnc_anyPlayersInRange) > 0;
+                                if (_water isEqualTo [] || {_chuteB}) then {
+                                    _water = [[_eventPosition], [BOAT_SLING_CLEARANCE, BOAT_CHUTE_CLEARANCE] select _chuteB] call _fnc_boatWater;
+                                };
+                                if (_water isNotEqualTo []) then {
+                                    _water = +_water;
+                                    if (_chuteB) then { _water set [2, PARADROP_HEIGHT]; };
+                                    [_p, "position", +_water] call ALIVE_fnc_profileVehicle;
+                                    [_p, "despawnPosition", +_water] call ALIVE_fnc_profileVehicle;
+                                } else {
+                                    ["ML - WARNING: boat %1 has no water it can use near %2, so it stays near its departure point.",
+                                        _p select 2 select 4, _eventPosition] call ALiVE_fnc_dumpR;
+                                };
+                            };
+                            [_logic, "airdropCarrierless", [[[_p select 2 select 4]], _eventPosition, _debug]] call MAINCLASS;
+                        };
                         _specOpsProfiles = [];
 
                         _payloadGroupProfiles = [];
@@ -11727,21 +11759,18 @@ switch(_operation) do {
                                         };
                                     } foreach _transportGroups;
 
-                                    // Cannot find heli big enough to slingload this vehicle.
-                                    // Fall back to PR_AIRDROP "Option A" teleport: the cargo
-                                    // profile was already registered earlier in the dispatch
-                                    // loop, so we simply reposition it at the destination
-                                    // rather than decrementing _totalCount and bailing.
-                                    // The old exitWith here also broke the _emptyVehicleProfiles
-                                    // forEach entirely, silently abandoning any further cargo items.
+                                    // Cannot find heli big enough to slingload this vehicle: down at the destination
+                                    // without one (_fnc_heliFallback). The cargo profile was already registered earlier in
+                                    // the dispatch loop, so _totalCount stands. The old exitWith here also broke the
+                                    // _emptyVehicleProfiles forEach entirely, silently abandoning any further cargo items.
                                     if (_vehicleClass == "") then {
                                         private _heavyID = _x select 0;
                                         private _heavyProfile = [ALiVE_ProfileHandler, "getProfile", _heavyID] call ALIVE_fnc_profileHandler;
                                         if (!isNil "_heavyProfile") then {
-                                            [_heavyProfile, "position", _eventPosition] call ALIVE_fnc_profileVehicle;
+                                            [_heavyProfile] call _fnc_heliFallback;
                                             _payloadGroupProfiles pushback [_heavyID];
-                                            ["ML - PR_HELI_INSERT empty-vehicle too heavy to sling (weight %1). Teleporting %2 to destination %3 (Option A fallback).",
-                                                _payloadWeight, _heavyID, _eventPosition] call ALiVE_fnc_dump;
+                                            ["ML - PR_HELI_INSERT: no helicopter carries %1 (weight %2), so it goes down at the destination without one.",
+                                                _heavyID, _payloadWeight] call ALiVE_fnc_dump;
                                         } else {
                                             ["ML - PR_HELI_INSERT weight-fail fallback: profile %1 already un-registered, skipping.", _heavyID] call ALiVE_fnc_dump;
                                             _totalCount = _totalCount - 1;
@@ -11818,16 +11847,16 @@ switch(_operation) do {
                             } else {
                                 // #909: no sling-capable heli available (none configured for the
                                 // faction, or all blacklisted for failed sling-validation this
-                                // session). Don't abandon the cargo - drop each empty vehicle at
-                                // the destination (the same Option-A teleport the per-vehicle
-                                // no-lift fallback uses) so the player still gets their vehicle.
-                                ["ML - PR_HELI_INSERT: no sling-capable heli for %1 (none/all blacklisted) - teleporting %2 empty vehicle(s) to destination %3.",
+                                // session). Don't abandon the cargo - each empty vehicle goes down
+                                // at the destination without one (_fnc_heliFallback), as one no
+                                // helicopter can lift does, so the player still gets their vehicle.
+                                ["ML - PR_HELI_INSERT: no sling-capable heli for %1 (none/all blacklisted) - %2 empty vehicle(s) go down at the destination %3 without one.",
                                     _eventFaction, count _emptyVehicleProfiles, _eventPosition] call ALIVE_fnc_dump;
                                 {
                                     private _evID = _x select 0;
                                     private _evProfile = [ALiVE_ProfileHandler, "getProfile", _evID] call ALIVE_fnc_profileHandler;
                                     if (!isNil "_evProfile") then {
-                                        [_evProfile, "position", _eventPosition] call ALIVE_fnc_profileVehicle;
+                                        [_evProfile] call _fnc_heliFallback;
                                         _payloadGroupProfiles pushback [_evID];
                                     };
                                 } forEach _emptyVehicleProfiles;
@@ -12518,16 +12547,15 @@ switch(_operation) do {
                                                 };
                                             } foreach _transportGroups;
 
-                                            // Cannot find heli big enough to slingload this vehicle.
-                                            // Fall back to PR_AIRDROP "Option A" teleport — same
-                                            // rationale as the empty-vehicle loop above; keeps
-                                            // _totalCount honest and continues the forEach.
+                                            // Cannot find heli big enough to slingload this vehicle: as in the empty-vehicle loop
+                                            // above, down at the destination without one; keeps _totalCount honest and continues
+                                            // the forEach.
                                             if (_vehicleClass == "") then {
                                                 if (!isNil "_slingLoadProfile") then {
-                                                    [_slingLoadProfile, "position", _eventPosition] call ALIVE_fnc_profileVehicle;
+                                                    [_slingLoadProfile] call _fnc_heliFallback;
                                                     _payloadGroupProfiles pushback [_x];
-                                                    ["ML - PR_HELI_INSERT grouped-vehicle too heavy to sling (weight %1). Teleporting %2 to destination %3 (Option A fallback).",
-                                                        _payloadWeight, _x, _eventPosition] call ALiVE_fnc_dump;
+                                                    ["ML - PR_HELI_INSERT: no helicopter carries grouped vehicle %1 (weight %2), so it goes down at the destination without one.",
+                                                        _x, _payloadWeight] call ALiVE_fnc_dump;
                                                 } else {
                                                     ["ML - PR_HELI_INSERT weight-fail fallback: profile %1 already un-registered, skipping.", _x] call ALiVE_fnc_dump;
                                                     _totalCount = _totalCount - 1;
