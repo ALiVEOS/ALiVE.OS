@@ -2172,7 +2172,8 @@ switch(_operation) do {
                 private _heliSpawned = !isNull _heli && {alive _heli};
                 private _settled = _heliKey != "" && {(([ALIVE_MLHeliTaskStates, _heliKey, ["enroute", 0]] call ALIVE_fnc_hashGet) select 0) != "enroute"};
                 if (_settled && {!(_heliSpawned && {!isNull getSlingLoad _heli})}) exitWith {
-                    if (_phase == 2 && {_heliSpawned} && {!(_heli getVariable ["alive_ml_rtb_issued", false])}
+                    // (the delivery's own order home marks it as sent home too, and doesn't take its pad away)
+                    if (_phase == 2 && {_heliSpawned}
                         && {!isNull (_heli getVariable ["alive_ml_sling_pad", objNull])
                             || {(!isNil "ALIVE_ML_slingCargo") && {count (ALIVE_ML_slingCargo getOrDefault [_vProfID, []]) > 0}}}) then {
                         deleteVehicle (_heli getVariable ["alive_ml_sling_pad", objNull]);
@@ -9501,12 +9502,14 @@ switch(_operation) do {
                             // and the load then fell with nothing to slow it. With the requesting player there, the end of the
                             // unload has let it go already. The helicopter is reached through the pilot's command list.
                             private _vIDsG = _transportProfile select 2 select 8;   // vehiclesInCommandOf
+                            private _heliG = objNull;
                             if ((_vIDsG isEqualType []) && {count _vIDsG > 0}) then {
                                 private _vProfG = [ALIVE_profileHandler, "getProfile", _vIDsG select 0] call ALIVE_fnc_profileHandler;
                                 if (!isNil "_vProfG" && {_vProfG select 2 select 1}) then {
-                                    private _heliG = _vProfG select 2 select 10;
-                                    // one still lowering its load at its spot is left to finish (its unload sets it down and
-                                    // tidies up after it; let go here, the men never got in and the load was marked as a crate)
+                                    _heliG = _vProfG select 2 select 10;
+                                    // one still lowering its load at its spot is left to its unload, which lets go once it sees
+                                    // the helicopter marked as sent home (below) and tidies up after it, or, if none was started
+                                    // (the flight ran out first), to its watchdog, which lowers it and lets go at its time limit
                                     if (_heliG isEqualType objNull && {!isNull _heliG} && {alive _heliG} && {!isNull getSlingLoad _heliG}
                                         && {!(_heliG getVariable ["alive_ml_sling_unload_active", false])}
                                         && {(_heliG getVariable ["alive_ml_watchdog_phase", 0]) < 2}) then {
@@ -9531,11 +9534,11 @@ switch(_operation) do {
                             [_transportProfile, "addWaypoint", _leaveWPTurn] call ALIVE_fnc_profileEntity;
                             [_transportProfile, "addWaypoint", _leaveWPFinal] call ALIVE_fnc_profileEntity;
 
-                            // Signal the slingload spawn thread (if still running) that RTB
-                            // waypoints have been issued - it must not clear them.
-                            private _rtbVehicleObj = _transportProfile select 2 select 10;
-                            if (!isNull _rtbVehicleObj) then {
-                                _rtbVehicleObj setVariable ["alive_ml_rtb_issued", true];
+                            // The helicopter is marked as sent home, so an unload still lowering its load lets it go now
+                            // (under a parachute more than 5 m up, kept from damage) and has it climb away. The mark used to
+                            // go on the pilot, slot 10 of this entity profile, where nothing looks for it.
+                            if (_heliG isEqualType objNull && {!isNull _heliG}) then {
+                                _heliG setVariable ["alive_ml_rtb_issued", true];
                             };
                         };
                     } forEach _eventTransportProfiles;
@@ -9781,7 +9784,8 @@ switch(_operation) do {
                     private _vProfR = [ALIVE_profileHandler, "getProfile", _heliVehR] call ALIVE_fnc_profileHandler;
                     if (!isNil "_vProfR") then {
                         private _heliR = _vProfR select 2 select 10;
-                        // one still lowering its load at its spot is left to finish, as in heliTransportReturn
+                        // one still lowering its load at its spot is left to finish (unlike heliTransportReturn this
+                        // doesn't mark the helicopter as sent home, so its unload carries on lowering it)
                         if ((_vProfR select 2 select 1) && {_heliR isEqualType objNull} && {!isNull _heliR} && {alive _heliR} && {!isNull getSlingLoad _heliR}
                             && {!(_heliR getVariable ["alive_ml_sling_unload_active", false])}
                             && {(_heliR getVariable ["alive_ml_watchdog_phase", 0]) < 2}) then {
@@ -15000,6 +15004,7 @@ switch(_operation) do {
                                     // The watchdog drives the actual descent via landAt.
                                     private _dropTimer = 0;
                                     private _dropped   = false;
+                                    private _chuted    = false;   // let go under a parachute, sent home
 
                                     waitUntil {
                                         sleep 2;
@@ -15025,7 +15030,13 @@ switch(_operation) do {
                                             // getPos: above the surface, the sea included (getPosATL there is above the sea bed)
                                             if ((getSlingLoad _vehicle) isEqualTo _slingloadVehicle) then {
                                                 private _rtbAGL = (getPos _slingloadVehicle) select 2;
-                                                if (!isNull ([_logic, "releaseSlungLoad", [_slingloadVehicle, _vehicle]] call MAINCLASS)) then {
+                                                // Given the load's profile, the release keeps its despawn guard until it's down and
+                                                // then records where it landed, so the tidy-up below leaves both to it: cleared
+                                                // under the parachute, it could be despawned in mid-air and made again there, and
+                                                // it drifts (27 m from 19 m up) from where it was let go.
+                                                private _loadIDr = _slingloadVehicle getVariable ["profileID", ""];
+                                                if (!isNull ([_logic, "releaseSlungLoad", [_slingloadVehicle, _vehicle, _loadIDr]] call MAINCLASS)) then {
+                                                    _chuted = _loadIDr != "";   // without its ID the release can't, so the tidy-up does
                                                     ["ML - unloadTransportHelicopter: RTB force-release - parachute attached to %1 at AGL %2m",
                                                         _slingloadVehicle, _rtbAGL] call ALiVE_fnc_dump;
                                                 };
@@ -15119,15 +15130,22 @@ switch(_operation) do {
                                                     // Update truck profile position to where it actually landed.
                                                     // The profile still has the original HQ spawn position --
                                                     // without this ALiVE cannot locate the vehicle to despawn it.
-                                                    private _truckLandPos = getPos _slingloadVehicle;
-                                                    _truckLandPos set [2, 0];
-                                                    [_slungProf, "position",        _truckLandPos] call ALIVE_fnc_profileVehicle;
-                                                    [_slungProf, "despawnPosition", _truckLandPos] call ALIVE_fnc_profileVehicle;
-                                                    [_slungProf, "hasSimulated",    false]         call ALIVE_fnc_profileVehicle;
-                                                    ["ML - unloadTransportHelicopter: Slung truck %1 profile updated. pos=%2 hasSimulated=false spawnType=[]",
-                                                        _slingloadVehicle, _truckLandPos] call ALiVE_fnc_dump;
-                                                    // Clear preventDespawn so the truck profile returns to normal lifecycle
-                                                    [_slungProf, "spawnType", []] call ALIVE_fnc_profileVehicle;
+                                                    // One let go under a parachute when sent home has both done by the release
+                                                    // once it's down (above).
+                                                    if (!_chuted) then {
+                                                        private _truckLandPos = getPos _slingloadVehicle;
+                                                        _truckLandPos set [2, 0];
+                                                        [_slungProf, "position",        _truckLandPos] call ALIVE_fnc_profileVehicle;
+                                                        [_slungProf, "despawnPosition", _truckLandPos] call ALIVE_fnc_profileVehicle;
+                                                        [_slungProf, "hasSimulated",    false]         call ALIVE_fnc_profileVehicle;
+                                                        ["ML - unloadTransportHelicopter: Slung truck %1 profile updated. pos=%2 hasSimulated=false spawnType=[]",
+                                                            _slingloadVehicle, _truckLandPos] call ALiVE_fnc_dump;
+                                                        // Clear preventDespawn so the truck profile returns to normal lifecycle
+                                                        [_slungProf, "spawnType", []] call ALIVE_fnc_profileVehicle;
+                                                    } else {
+                                                        ["ML - unloadTransportHelicopter: Slung truck %1 coming down under a parachute; its profile is updated once it's down.",
+                                                            _slingloadVehicle] call ALiVE_fnc_dump;
+                                                    };
 
                                                     // Seat infantry crew into the now-landed truck.
                                                     // The sling spawn path bypasses normal _inCargo loading
