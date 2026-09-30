@@ -964,6 +964,57 @@ switch(_operation) do {
         _result = _found;
     };
 
+    case "releaseSlungLoad": {
+        // A slung load its helicopter lets go of more than 5 m up (at a time limit, or when the helicopter is sent home)
+        // comes down under a parachute, which from 5-30 m has no time to slow it, and nothing kept it from damage: an
+        // HMMWV let go 22 m up was wrecked (measured). So the load and anyone in it are kept from damage from the moment
+        // it's let go until 8 s after it's down, as the spawner does for a vehicle it drops by parachute, and one left on
+        // top of something or tipped over on dry land, with no player in it, goes to clear ground within 50 m (or stays
+        // put if there's none). The parachute lets it go under 3 m, looked at four times a second: once a second let a
+        // low one reach the ground still hanging from it. One caught on something is taken off after a minute, as the
+        // spawner does, so nothing is left unable to take damage for good. Lower than 5 m it's just let go, as before.
+        // [load, helicopter]; returns the parachute, objNull when there's none. The caller lets go of the sling.
+        _args params ["_load", ["_carrier", objNull]];
+        _result = objNull;
+        if (!isNull _load && {alive _load} && {((getPos _load) select 2) > 5}) then {   // above the surface, the sea included
+            private _protected = [_load] + crew _load;
+            { [_x, false] remoteExecCall ["allowDamage", _x]; } forEach _protected;
+            private _para = createVehicle ["B_Parachute_02_F", getPosATL _load, [], 0, "FLY"];
+            _para setPosASL (getPosASL _load);
+            _para setVelocity (velocity _carrier);
+            _load attachTo [_para, [0,0,0]];
+            [_para, _load, _protected] spawn {
+                params ["_para", "_load", "_protected"];
+                private _t0 = time;
+                waitUntil { sleep 0.25; isNull _load || {!alive _para} || {((getPos _load) select 2) < 3} || {time - _t0 > 60} };
+                if (!isNull _load) then {
+                    // anyone put in it on the way down is kept from damage for the landing too
+                    { [_x, false] remoteExecCall ["allowDamage", _x]; _protected pushBack _x; } forEach ((crew _load) - _protected);
+                    detach _load;
+                };
+                deleteVehicle _para;
+                sleep 3;
+                private _atl = getPosATL _load;
+                if (!isNull _load && {alive _load} && {!surfaceIsWater _atl} && {speed _load < 2} && {((crew _load) findIf {isPlayer _x}) < 0}
+                    && {(_atl select 2) > 1.5 || {((vectorUp _load) select 2) < 0.7}}) then {
+                    private _clear = [typeOf _load, _atl, 50, "auto", getDir _load] call ALiVE_fnc_findVehicleSpawnPosition;
+                    if (_clear isNotEqualTo []) then {
+                        _clear params ["_pos", "_dir"];
+                        _load setVelocity [0, 0, 0];
+                        _load setDir _dir;
+                        _load setPosATL [_pos select 0, _pos select 1, 0];
+                        _load setVectorUp (surfaceNormal _pos);
+                    };
+                };
+                sleep 5;
+                // damage comes back on whichever machine owns each of them by then
+                { if (alive _x) then { [_x, true] remoteExecCall ["allowDamage", _x]; }; } forEach _protected;
+                if (!isNull _load) then { _load setVariable ["ALiVE_paraSettled", true]; };
+            };
+            _result = _para;
+        };
+    };
+
     case "airdropCarrierless": {
         // An Airdrop group or ordered vehicle no aircraft carries goes down at the destination straight
         // away (#947): under a parachute when players are within 1500 m of it (the spawner hangs anything
@@ -2766,18 +2817,8 @@ switch(_operation) do {
                                     if (_slungAttached) then {
                                         private _slungVeh = getSlingLoad _heli;
                                         if (!isNull _slungVeh) then {
-                                            private _slungAGL = (getPos _slungVeh) select 2;   // above the surface, the sea included
-                                            if (_slungAGL > 5) then {
-                                                private _para = createVehicle ["B_Parachute_02_F", getPosATL _slungVeh, [], 0, "FLY"];
-                                                _para setPosASL (getPosASL _slungVeh);
-                                                _para setVelocity (velocity _heli);
-                                                _slungVeh attachTo [_para, [0,0,0]];
-                                                [_para, _slungVeh] spawn {
-                                                    private _p = _this select 0; private _v = _this select 1;
-                                                    waitUntil { sleep 1; (getPos _v select 2) < 3 || !alive _p };
-                                                    detach _v; deleteVehicle _p;
-                                                };
-                                            };
+                                            // more than 5 m up it goes under a parachute, kept from damage until it's settled
+                                            [objNull, "releaseSlungLoad", [_slungVeh, _heli]] call MAINCLASS;
                                             // Stash the slung-vehicle reference + watchdog-release flag
                                             // BEFORE setSlingLoad objNull so unloadTransportHelicopter
                                             // can recover the reference and still run its post-drop
@@ -14825,16 +14866,7 @@ switch(_operation) do {
                                             // getPos: above the surface, the sea included (getPosATL there is above the sea bed)
                                             if ((getSlingLoad _vehicle) isEqualTo _slingloadVehicle) then {
                                                 private _rtbAGL = (getPos _slingloadVehicle) select 2;
-                                                if (_rtbAGL > 5) then {
-                                                    private _rtbPara = createVehicle ["B_Parachute_02_F", getPosATL _slingloadVehicle, [], 0, "FLY"];
-                                                    _rtbPara setPosASL (getPosASL _slingloadVehicle);
-                                                    _rtbPara setVelocity (velocity _vehicle);
-                                                    _slingloadVehicle attachTo [_rtbPara, [0,0,0]];
-                                                    [_rtbPara, _slingloadVehicle] spawn {
-                                                        private _p = _this select 0; private _v = _this select 1;
-                                                        waitUntil { sleep 1; (getPos _v select 2) < 3 || !alive _p };
-                                                        detach _v; deleteVehicle _p;
-                                                    };
+                                                if (!isNull ([_logic, "releaseSlungLoad", [_slingloadVehicle, _vehicle]] call MAINCLASS)) then {
                                                     ["ML - unloadTransportHelicopter: RTB force-release - parachute attached to %1 at AGL %2m",
                                                         _slingloadVehicle, _rtbAGL] call ALiVE_fnc_dump;
                                                 };
@@ -14894,16 +14926,7 @@ switch(_operation) do {
                                                 // Flat enough or timed out - release the load.
                                                 // Attach parachute if still at altitude so vehicle lands intact.
                                                 private _relAGL = (getPos _slingloadVehicle) select 2;
-                                                if (_relAGL > 5) then {
-                                                    private _relPara = createVehicle ["B_Parachute_02_F", getPosATL _slingloadVehicle, [], 0, "FLY"];
-                                                    _relPara setPosASL (getPosASL _slingloadVehicle);
-                                                    _relPara setVelocity (velocity _vehicle);
-                                                    _slingloadVehicle attachTo [_relPara, [0,0,0]];
-                                                    [_relPara, _slingloadVehicle] spawn {
-                                                        private _p = _this select 0; private _v = _this select 1;
-                                                        waitUntil { sleep 1; (getPos _v select 2) < 3 || !alive _p };
-                                                        detach _v; deleteVehicle _p;
-                                                    };
+                                                if (!isNull ([_logic, "releaseSlungLoad", [_slingloadVehicle, _vehicle]] call MAINCLASS)) then {
                                                     ["ML - unloadTransportHelicopter: Parachute attached to slung vehicle %1 at AGL %2m",
                                                         _slingloadVehicle, _relAGL] call ALiVE_fnc_dump;
                                                 };
@@ -15077,19 +15100,8 @@ switch(_operation) do {
                     if (!isNull _heliObjInactive && alive _heliObjInactive) then {
                         private _slungObjInactive = getSlingLoad _heliObjInactive;
                         if (!isNull _slungObjInactive) then {
-                            // Attach parachute if truck is still at altitude (above the surface, the sea included)
-                            private _truckAGL = (getPos _slungObjInactive) select 2;
-                            if (_truckAGL > 5) then {
-                                private _para = createVehicle ["B_Parachute_02_F", getPosATL _slungObjInactive, [], 0, "FLY"];
-                                _para setPosASL (getPosASL _slungObjInactive);
-                                _para setVelocity (velocity _heliObjInactive);
-                                _slungObjInactive attachTo [_para, [0,0,0]];
-                                [_para, _slungObjInactive] spawn {
-                                    private _p = _this select 0; private _v = _this select 1;
-                                    waitUntil { sleep 1; (getPos _v select 2) < 3 || !alive _p };
-                                    detach _v; deleteVehicle _p;
-                                };
-                            };
+                            // more than 5 m up it goes under a parachute, kept from damage until it's settled
+                            [_logic, "releaseSlungLoad", [_slungObjInactive, _heliObjInactive]] call MAINCLASS;
                             _heliObjInactive setSlingLoad objNull;
                         };
                         // Issue RTB via flyInHeight + move toward departure origin
