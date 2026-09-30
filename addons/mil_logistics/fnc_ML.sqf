@@ -2002,6 +2002,14 @@ switch(_operation) do {
                 private _isActive = _vProf select 2 select 1;
                 private _heli     = _vProf select 2 select 10;
 
+                // the floor a slinging helicopter is held at on its way (below) goes once it has nothing slung, here,
+                // before the watchdog can stop, so it doesn't fly home held at it
+                if (!isNull _heli && {alive _heli} && {isNull getSlingLoad _heli} && {(_heli getVariable ["alive_ml_floor_asl", 0]) != 0}) then {
+                    _heli flyInHeightASL [0, 0, 0];
+                    _heli setVariable ["alive_ml_floor_asl", 0];
+                    if (_dbg) then { ["ML - heliDeliveryWatchdog: %1 has nothing slung, its floor lifted.", _tProfID] call ALiVE_fnc_dump; };
+                };
+
                 // #426 - shot down while spawned. Latch before any cleanup;
                 // first-write-wins keeps an RTB kill from flipping a delivered
                 // run (already "arrived") to "destroyed".
@@ -2098,6 +2106,43 @@ switch(_operation) do {
                                 if (!isNull _slungDriver) then { currentCommand _slungDriver } else { "no-driver" },
                                 if (!isNull _slungGrp) then { behaviour leader _slungGrp } else { "no-grp" },
                                 if (!isNull _slungGrp) then { combatBehaviour _slungGrp } else { "no-grp" }] call ALiVE_fnc_dump;
+                        };
+                    };
+
+                    // A helicopter slinging a load near its limit can't climb a rise: it stops at the slope, drifts back
+                    // and down, and the load is let go where it touches, kilometres short (a UH-60M with a 3.4 t Prowler
+                    // let go 2278 and 1467 m short, a Ghost Hawk with the same load 2236 m short: measured). So on its way
+                    // with a load it's held at the lower of two heights: the highest ground still between it and its spot
+                    // plus the 100 m it keeps over the ground anyway, and the highest this watchdog has seen it fly, so
+                    // it's never asked to climb: one that heavy can't, and one asked to climb back up after diving went
+                    // backwards for 14 minutes (measured). A crewed helicopter is made in the air, 300 m up, so one made
+                    // on its way is held clear of every ridge; one made at the departure with a player there dives to
+                    // its cruise height before this watchdog starts, and isn't helped. The floor comes down as the high
+                    // ground falls behind and goes when it starts to lower the load. Held over the spot it does nothing:
+                    // landAt takes the helicopter below it, and one that heavy sinks as it slows to a hover and sets its
+                    // load down on the way in (both UH-60Ms about 80 m short, undamaged: measured).
+                    private _floorASL = 0;
+                    if (_phase == 0 && {!isNull getSlingLoad _heli}) then {
+                        private _from = _posASL;
+                        private _reach = (_heli getVariable ["alive_ml_floor_reach", 0]) max (_from select 2);
+                        _heli setVariable ["alive_ml_floor_reach", _reach];
+                        private _n = (floor ((_heli distance2D _destPos) / 50)) max 1;
+                        private _top = 0;
+                        for "_i" from 0 to _n do {
+                            _top = _top max (getTerrainHeightASL [(_from select 0) + ((_destPos select 0) - (_from select 0)) * _i / _n,
+                                (_from select 1) + ((_destPos select 1) - (_from select 1)) * _i / _n]);
+                        };
+                        _floorASL = ((ceil ((_top + 100) / 10)) * 10) min ((floor (_reach / 10)) * 10);
+                    };
+                    if (_floorASL != (_heli getVariable ["alive_ml_floor_asl", 0])) then {
+                        _heli flyInHeightASL [_floorASL, _floorASL, _floorASL];
+                        _heli setVariable ["alive_ml_floor_asl", _floorASL];
+                        if (_dbg) then {
+                            if (_floorASL > 0) then {
+                                ["ML - heliDeliveryWatchdog: %1 slinging, kept above %2 m ASL (%3 m from its spot).", _tProfID, _floorASL, round (_heli distance2D _destPos)] call ALiVE_fnc_dump;
+                            } else {
+                                ["ML - heliDeliveryWatchdog: %1 floor lifted (%2 m from its spot).", _tProfID, round (_heli distance2D _destPos)] call ALiVE_fnc_dump;
+                            };
                         };
                     };
 
@@ -2334,7 +2379,17 @@ switch(_operation) do {
                             private _stuckTimer = _heli getVariable ["alive_ml_transit_stuck_timer", 0];
                             private _stuckRecoveryAttempts = _heli getVariable ["alive_ml_transit_stuck_attempts", 0];
                             private _forceSkip = false;
-                            if (_heliAGLt < 30 && abs _heliSpdT < 5) then {
+                            // A slinging helicopter counts as stuck at any height and speed while it's getting nowhere:
+                            // less than 5 m higher and less than 20 m nearer its spot than 5 s ago. One near its limit that
+                            // can't climb stops 40-100 m up, or drifts backwards at 10-16 km/h, and neither the 30 m nor the
+                            // 5 km/h test ever saw it: it wandered for 14 minutes (measured). A slow climb it can make isn't
+                            // taken for a stall. Once it's getting somewhere again it gets the rescue afresh.
+                            private _slungNow = !isNull getSlingLoad _heli;
+                            private _lastTr = _heli getVariable ["alive_ml_transit_last", [_posASL select 2, _distToDest]];
+                            _heli setVariable ["alive_ml_transit_last", [_posASL select 2, _distToDest]];
+                            private _noProgress = ((_posASL select 2) - (_lastTr select 0)) < 5 && {((_lastTr select 1) - _distToDest) < 20};
+                            if (_slungNow && {!_noProgress}) then { _stuckRecoveryAttempts = 0; };
+                            if ((_heliAGLt < 30 && abs _heliSpdT < 5) || {_slungNow && {_noProgress}}) then {
                                 _stuckTimer = _stuckTimer + 5;
                                 if (_stuckTimer > 30) then {
                                     if (_stuckRecoveryAttempts < 1) then {
@@ -2948,6 +3003,18 @@ switch(_operation) do {
                 };
 
             }; // end while
+
+            // however the watchdog stopped, its helicopter isn't left held at a slinging floor once it has nothing slung
+            // (one still carrying its load keeps it)
+            private _vProfEnd = [ALIVE_profileHandler, "getProfile", _vProfID] call ALIVE_fnc_profileHandler;
+            if (!isNil "_vProfEnd") then {
+                private _heliEnd = _vProfEnd select 2 select 10;
+                if (!isNull _heliEnd && {alive _heliEnd} && {isNull getSlingLoad _heliEnd} && {(_heliEnd getVariable ["alive_ml_floor_asl", 0]) != 0}) then {
+                    _heliEnd flyInHeightASL [0, 0, 0];
+                    _heliEnd setVariable ["alive_ml_floor_asl", 0];
+                    if (_dbg) then { ["ML - heliDeliveryWatchdog: %1 stopped, its floor lifted.", _tProfID] call ALiVE_fnc_dump; };
+                };
+            };
 
         }; // end spawn
 
