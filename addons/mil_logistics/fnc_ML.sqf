@@ -10806,9 +10806,9 @@ switch(_operation) do {
                                 // If payload vehicle is not slingloading and its cargo is empty - its done.
                                 TRACE_2("PR UNLOADED", !_slingLoading, _noCargo);
 
-                                if (_active && _noCargo && !_slingLoading) then {
-                                    _payloadUnloaded = true;
-                                } else {
+                                // every one of them has to be done: set for each one in turn, the last one listed decided,
+                                // and the wait ended while another was still lowering its load
+                                if !(_active && _noCargo && !_slingLoading) then {
                                     _payloadUnloaded = false;
                                 };
 
@@ -15868,13 +15868,9 @@ switch(_operation) do {
                                 // If payload vehicle is not slingloading and its cargo is empty - its done.
                                 TRACE_2("PR UNLOADED", !_slingLoading, _noCargo);
 
-                                if( _active && _noCargo && !_slingloading ) then {
-                                    _payloadUnloaded = true;
-
-                                } else {
-
+                                // any one not spawned, or still carrying something, means the wait below, not only the last listed
+                                if !( _active && _noCargo && !_slingloading ) then {
                                     _payloadUnloaded = false;
-
                                 };
 
                                 // If we've run out of time, dump cargo
