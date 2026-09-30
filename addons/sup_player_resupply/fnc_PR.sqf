@@ -1621,6 +1621,19 @@ switch(_operation) do {
                             case 'airdropWait':{
                                 _stateLabel = 'Loading';
                             };
+                            // the Airdrop's own stages, which read blank
+                            case 'airdropStart':{
+                                _stateLabel = 'Loading';
+                            };
+                            case 'airdropFly':{
+                                _stateLabel = 'Enroute';
+                            };
+                            case 'airdropReturn':{
+                                _stateLabel = 'RTB';
+                            };
+                            case 'airdropReturnWait':{
+                                _stateLabel = 'RTB';
+                            };
                             case 'heliTransportStart':{
                                 _stateLabel = 'Loading';
                             };
