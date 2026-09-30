@@ -2162,12 +2162,16 @@ switch(_operation) do {
                 // timeouts below fire ONLY for untasked helis so they can never pre-empt
                 // the authoritative "arrived" or orphan the tasks unlatched.
                 if (_heliKey != "") then { _wdLifetime = _wdLifetime + 5; };
-                // A helicopter still lowering its slung load keeps its watchdog until the load is down,
-                // and one leaving in the middle of UNLOAD is sent home here: otherwise it's left held
-                // over its pad at 12 m, and its hit handler keeps sending it back there.
+                // A helicopter still carrying its slung load keeps its watchdog until the load is let go, on its way as
+                // well as over its spot. The task is settled when the delivery's wait ends, run out included, and one
+                // still on its way used to lose its watchdog then, load hooked, keeping the floor it's held at with
+                // nothing left to lift it. On its way it now only holds that floor and doesn't start lowering the load
+                // (TRANSIT, below): the delivery lets go of a load still on its way when it sends the helicopter home,
+                // and the floor goes at the top of the next pass. One leaving in the middle of UNLOAD is sent home
+                // here: otherwise it's left held over its pad at 12 m, and its hit handler keeps sending it back there.
                 private _heliSpawned = !isNull _heli && {alive _heli};
-                if (_heliKey != "" && {(([ALIVE_MLHeliTaskStates, _heliKey, ["enroute", 0]] call ALIVE_fnc_hashGet) select 0) != "enroute"}
-                    && {!(_phase == 2 && {_heliSpawned} && {!isNull getSlingLoad _heli})}) exitWith {
+                private _settled = _heliKey != "" && {(([ALIVE_MLHeliTaskStates, _heliKey, ["enroute", 0]] call ALIVE_fnc_hashGet) select 0) != "enroute"};
+                if (_settled && {!(_heliSpawned && {!isNull getSlingLoad _heli})}) exitWith {
                     if (_phase == 2 && {_heliSpawned} && {!(_heli getVariable ["alive_ml_rtb_issued", false])}
                         && {!isNull (_heli getVariable ["alive_ml_sling_pad", objNull])
                             || {(!isNil "ALIVE_ML_slingCargo") && {count (ALIVE_ML_slingCargo getOrDefault [_vProfID, []]) > 0}}}) then {
@@ -2543,9 +2547,12 @@ switch(_operation) do {
                                         // Second response: force phase 0 -> 2 skip so the
                                         // parachute-drop fallback (UNLOAD timeout path) lands
                                         // the cargo without needing the heli to reach the LZ.
-                                        ["ML - heliDeliveryWatchdog: %1 stuck after recovery attempt at dist=%2m AGL=%3m, forcing phase 0 -> 2 skip.",
-                                            _tProfID, round _distToDest, round _heliAGLt] call ALiVE_fnc_dump;
-                                        _forceSkip = true;
+                                        // (not once its task is settled: the skip below is held back then)
+                                        if (!_settled) then {
+                                            ["ML - heliDeliveryWatchdog: %1 stuck after recovery attempt at dist=%2m AGL=%3m, forcing phase 0 -> 2 skip.",
+                                                _tProfID, round _distToDest, round _heliAGLt] call ALiVE_fnc_dump;
+                                            _forceSkip = true;
+                                        };
                                     };
                                 };
                             } else {
@@ -2559,7 +2566,8 @@ switch(_operation) do {
                             // A slingload helicopter keeps 350 m.
                             private _isSlingT = (!isNil "ALIVE_ML_slingCargo") && {count (ALIVE_ML_slingCargo getOrDefault [_vProfID, []]) > 0};
                             private _unloadDist = [150, 350] select _isSlingT;
-                            if (_distToDest < _unloadDist || _forceSkip) then {
+                            // (not once its task is settled: the delivery is ending, and it lets go of the load itself)
+                            if ((_distToDest < _unloadDist || _forceSkip) && {!_settled}) then {
                                 // For slingload helis, skip LANDING entirely -- landAt is ignored
                                 // by the Arma AI when carrying a slung vehicle, so the heli never
                                 // descends. Go straight to UNLOAD and signal unloadTransportHelicopter
