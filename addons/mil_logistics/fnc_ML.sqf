@@ -977,9 +977,12 @@ switch(_operation) do {
         // cleared while it came down, it could be despawned on its last 3 m or while being moved off a roof (the spawner leaves
         // anything higher alone) and made again there. It's then recorded where it came to rest, not where it was let go (it
         // drifts, 27 m from 19 m up). Until then the load carries alive_ml_sling_record_pending, and anything else that would
-        // record it (the unload's tidy-up, a later release of the same load) leaves that to this one.
-        // [load, helicopter, load profile ID]; returns the parachute, objNull when there's none. The caller lets go of the sling.
-        _args params ["_load", ["_carrier", objNull], ["_loadProfileID", ""]];
+        // record it (the unload's tidy-up, a later release of the same load) leaves that to this one. One set down (no
+        // parachute) is recorded at once; given a number of seconds it keeps its guard that long, for an unload about to start
+        // to find it and seat its men.
+        // [load, helicopter, load profile ID, seconds to keep the guard of one set down]; returns the parachute, objNull when
+        // there's none. The caller lets go of the sling.
+        _args params ["_load", ["_carrier", objNull], ["_loadProfileID", ""], ["_guardFor", 0]];
         _result = objNull;
         if (!isNull _load && {alive _load} && {((getPos _load) select 2) > 5}) then {   // above the surface, the sea included
             private _protected = [_load] + crew _load;
@@ -1042,7 +1045,21 @@ switch(_operation) do {
                             // the whole profile in the server log)
                             [_loadProfile, "hasSimulated", false] call ALIVE_fnc_hashSet;
                         };
-                        [_loadProfile, "spawnType", []] call ALIVE_fnc_profileVehicle;
+                        if (_guardFor > 0) then {
+                            [_loadProfileID, _guardFor] spawn {
+                                params ["_id", "_wait"];
+                                sleep _wait;
+                                private _lp = [ALIVE_profileHandler, "getProfile", _id] call ALIVE_fnc_profileHandler;
+                                if (!isNil "_lp" && {([_lp, "spawnType", []] call ALIVE_fnc_hashGet) isNotEqualTo []}) then {
+                                    private _obj = _lp select 2 select 10;
+                                    if (isNil "_obj" || {!(_obj isEqualType objNull)} || {!(_obj getVariable ["alive_ml_sling_record_pending", false])}) then {
+                                        [_lp, "spawnType", []] call ALIVE_fnc_profileVehicle;
+                                    };
+                                };
+                            };
+                        } else {
+                            [_loadProfile, "spawnType", []] call ALIVE_fnc_profileVehicle;
+                        };
                     };
                 } else {
                     // guarded until it's down, whatever the caller did to its profile before letting it go
@@ -2456,6 +2473,14 @@ switch(_operation) do {
                             // getPosATL, height above the terrain, on purpose: over the sea that's above the sea bed, so a
                             // load skimming the water on the way isn't let go into it, and a roof on the way doesn't count
                             if (!isNull _slungT0a && {((getPosATL _slungT0a) select 2) < 5}) then {
+                                // With no unload running, the load's profile is told where it was set down and loses its
+                                // sling link here, and its despawn guard 3 minutes later: nothing else did either, and it
+                                // kept the guard and the position it was made at for good. The 3 minutes are for an unload
+                                // that's about to start: it finds the load, records it and seats its men, and a load with no
+                                // guard could be despawned first. One already running does all that itself.
+                                if !(_heli getVariable ["alive_ml_sling_unload_active", false]) then {
+                                    [objNull, "releaseSlungLoad", [_slungT0a, _heli, _slungT0a getVariable ["profileID", ""], 180]] call MAINCLASS;
+                                };
                                 _heli setVariable ["alive_ml_slingload_object", _slungT0a];
                                 _heli setVariable ["alive_ml_sling_watchdog_released", true];
                                 _heli setSlingLoad objNull;
@@ -2792,6 +2817,10 @@ switch(_operation) do {
                             };
                             if (_slungAttached && {_loadDown}) then {
                                 call _fnc_slingTidy;
+                                // recorded where it was set down when no unload is running, as the TRANSIT release does
+                                if !(_heli getVariable ["alive_ml_sling_unload_active", false]) then {
+                                    [objNull, "releaseSlungLoad", [_slungT0, _heli, _slungT0 getVariable ["profileID", ""], 180]] call MAINCLASS;
+                                };
                                 _heli setVariable ["alive_ml_slingload_object", _slungT0];
                                 _heli setVariable ["alive_ml_sling_watchdog_released", true];
                                 _heli setSlingLoad objNull;
@@ -2932,8 +2961,9 @@ switch(_operation) do {
                                     if (_slungAttached) then {
                                         private _slungVeh = getSlingLoad _heli;
                                         if (!isNull _slungVeh) then {
-                                            // more than 5 m up it goes under a parachute, kept from damage until it's settled
-                                            [objNull, "releaseSlungLoad", [_slungVeh, _heli]] call MAINCLASS;
+                                            // more than 5 m up it goes under a parachute, kept from damage until it's settled;
+                                            // its profile keeps its despawn guard until then and records where it came down
+                                            [objNull, "releaseSlungLoad", [_slungVeh, _heli, _slungVeh getVariable ["profileID", ""]]] call MAINCLASS;
                                             // Stash the slung-vehicle reference + watchdog-release flag
                                             // BEFORE setSlingLoad objNull so unloadTransportHelicopter
                                             // can recover the reference and still run its post-drop
