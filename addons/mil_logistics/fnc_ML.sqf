@@ -1018,6 +1018,186 @@ switch(_operation) do {
         _result = _playersNearDropZone;
     };
 
+    case "airdropVivFlyby": {
+        // An ordered vehicle dropped from a transport aircraft (a C-130, a Blackfish) over the destination, for
+        // players there to see. The aircraft is made about 4 km out on the side the delivery comes from and flown over
+        // at 350 m and on past, empty, with its ramp and doors open on the way in; a delivery's second aircraft comes
+        // 1 km behind the first and 50 m higher, and so on. Where it passes closest to the drop spot (an AI pilot's
+        // track is often off to one side), the vehicle is made just behind and below its tail, over 300 m up, which
+        // the spawner hangs under a parachute, so it looks to come off the ramp.
+        // It isn't loaded for real: setVehicleCargo needs the vehicle's own config to allow it and the hold to fit it,
+        // and that ruled out an RHS HMMWV in the RHS C-130 (loaded, but it wouldn't let go in flight) and a Marshall
+        // (too big for its hold). The aircraft has no profile and is deleted once no player is within 6 km of it,
+        // or 4 minutes after its pass.
+        // The vehicle's profile is looked up again whenever it's acted on. One that's gone meanwhile (destroyed, taken
+        // by a player, or the delivery called off) isn't dropped; one that's spawned where it was made is taken away
+        // from there first, unless a player's in it or has just got out, when it stays. A vehicle whose aircraft never
+        // gets there goes down at the destination as airdropCarrierless puts it. Once it's down its profile is where
+        // it landed and it's no longer kept from despawning; its ID goes on ALIVE_ML_vivDone whatever happened, which
+        // airdropFly waits for.
+        // [cargo profile ID, aircraft class, drop spot, departure, side, debug, its place among the delivery's aircraft]
+        _args params ["_cargoID", "_carrierClass", "_dropPos", "_fromPos", "_side", ["_debug", false], ["_index", 0]];
+        if (isNil "ALIVE_ML_vivDone") then { ALIVE_ML_vivDone = []; };
+        private _inDir = _fromPos getDir _dropPos;
+        private _start = _dropPos getPos [4000 + 1000 * _index, _inDir + 180];
+        _start set [2, 0];
+        private _height = 350 + 50 * _index;
+        [_logic, _cargoID, _carrierClass, _dropPos, _inDir, _start, _height, _side, _debug] spawn {
+            params ["_logic", "_cargoID", "_carrierClass", "_dropPos", "_inDir", "_start", "_height", "_side", "_debug"];
+            private _cargoProf = [ALIVE_profileHandler, "getProfile", _cargoID] call ALIVE_fnc_profileHandler;
+            if (isNil "_cargoProf") exitWith { ALIVE_ML_vivDone pushBackUnique _cargoID; };
+            // Whether the vehicle can be moved: "gone" when its profile has been removed, "busy" while the profile system
+            // is part way through making it where it is, "stays" when it's spawned and a player's in it or has just got
+            // out, "free" otherwise. A spawned one is taken away first, which the guard an ordered vehicle is given, or
+            // a player's death nearby, would refuse.
+            private _fnc_free = {
+                if (isNil { [ALIVE_profileHandler, "getProfile", _cargoID] call ALIVE_fnc_profileHandler }) exitWith { "gone" };
+                if (!(_cargoProf select 2 select 1) && {[_cargoProf, "locked", false] call ALIVE_fnc_hashGet}) exitWith { "busy" };
+                if (_cargoProf select 2 select 1) then {
+                    [_cargoProf, "spawnType", []] call ALIVE_fnc_profileVehicle;
+                    [_cargoProf, "postDeathLingerUntil", 0] call ALIVE_fnc_hashSet;
+                    [_cargoProf, "despawn"] call ALIVE_fnc_profileVehicle;
+                };
+                ["free", "stays"] select (_cargoProf select 2 select 1)
+            };
+            private _startASL = +_start;
+            _startASL set [2, ((getTerrainHeightASL _start) max 0) + _height];
+            private _grp = createGroup [[_side] call ALIVE_fnc_sideTextToObject, true];
+            private _plane = createVehicle [_carrierClass, _startASL, [], 0, "FLY"];
+            _plane setPosASL _startASL;
+            _plane setDir _inDir;
+            _plane setVelocityModelSpace [0, 80, 0];
+            createVehicleCrew _plane;
+            (crew _plane) joinSilent _grp;
+            _grp setBehaviour "CARELESS";
+            _grp setCombatMode "BLUE";
+            _grp allowFleeing 0;
+            { _x disableAI "AUTOTARGET"; _x disableAI "TARGET"; _x disableAI "AUTOCOMBAT"; } forEach (units _grp);
+            // its ramp and doors: the RHS C-130 has a ramp (on a class it inherits) and doors, the Blackfish's ramp is
+            // Door_1_source. A source of the door type moves only for animateDoor, any other only for animateSource.
+            private _ramps = ((configProperties [configFile >> "CfgVehicles" >> _carrierClass >> "AnimationSources", "isClass _x", true])
+                select { private _n = toLower configName _x; "ramp" in _n || {"door" in _n} }) apply { [configName _x, getText (_x >> "source") == "door"] };
+            private _fnc_ramps = {
+                params ["_plane", "_ramps", "_phase"];
+                {
+                    _x params ["_name", "_isDoor"];
+                    if (_isDoor) then { _plane animateDoor [_name, _phase]; } else { _plane animateSource [_name, _phase]; };
+                } forEach _ramps;
+            };
+
+            private _dropped = false;
+            private _outcome = "";
+            private _closest = 1e9;
+            private _rampOpen = false;
+            // well beyond, or it circles back over the players when it gets there
+            private _past = _dropPos getPos [10000, _inDir];
+            _plane flyInHeight _height;
+            _plane doMove _dropPos;
+            private _t = 0;
+            while { _t < 240 && {alive _plane} && {!_dropped} } do {
+                sleep 0.5;
+                _t = _t + 0.5;
+                private _d = _plane distance2D _dropPos;
+                if (!_rampOpen && {_d < 1500}) then {
+                    [_plane, _ramps, 1] call _fnc_ramps;
+                    _rampOpen = true;
+                };
+                if (_d < 200 || {_d > _closest && {_closest < 800}}) then {
+                    // 40 m behind the tail and 15 m below, and over 300 m up whatever the ground does
+                    private _outAt = (getPosATL _plane) getPos [40, (getDir _plane) + 180];
+                    _outAt set [2, (((getPosATL _plane) select 2) - 15) max 310];
+                    // in one go (isNil runs it unscheduled), so the profile system can't make it again where it was
+                    // between its being taken away and its being made behind the aircraft
+                    isNil {
+                        _outcome = call _fnc_free;
+                        if (_outcome == "free") then {
+                            // the spawner's jet flyover sound is for a drop with no aircraft to be seen
+                            missionNamespace setVariable ["bis_fnc_curatorobjectedited_paraSoundTime", time + 10];
+                            [_cargoProf, "position", _outAt] call ALIVE_fnc_profileVehicle;
+                            [_cargoProf, "despawnPosition", +_outAt] call ALIVE_fnc_profileVehicle;
+                            [_cargoProf, "spawnType", ["preventDespawn"]] call ALIVE_fnc_profileVehicle;
+                            [_cargoProf, "spawn"] call ALIVE_fnc_profileVehicle;
+                        };
+                    };
+                    // part way through being made where it is: tried again on the next pass
+                    _dropped = _outcome != "busy";
+                };
+                _closest = _closest min _d;
+                // well past its closest without having dropped it
+                if (_d > _closest + 1000) exitWith {};
+            };
+            _plane flyInHeight _height;
+            _plane doMove _past;
+            if (_debug) then {
+                ["ML - airdropVivFlyby: %1 from %2, dropped %3 (it came within %4 m of the drop spot)", _cargoID, _carrierClass, _dropped && {_outcome == "free"}, round _closest] call ALiVE_fnc_dump;
+            };
+
+            if (!_dropped) then {
+                private _tries = 0;
+                waitUntil {
+                    isNil {
+                        _outcome = call _fnc_free;
+                        if (_outcome == "free") then {
+                            [_logic, "airdropCarrierless", [[[_cargoID]], _dropPos, _debug]] call ALIVE_fnc_ML;
+                        };
+                    };
+                    _tries = _tries + 1;
+                    if (_outcome == "busy" && {_tries <= 10}) then { sleep 1; };
+                    _outcome != "busy" || {_tries > 10}
+                };
+                if (_outcome == "free") then {
+                    ["ML - airdropVivFlyby: %1's aircraft (%2) never got there, so it goes down at the destination instead", _cargoID, _carrierClass] call ALiVE_fnc_dump;
+                };
+            };
+            if (_debug && {_outcome == "gone"}) then {
+                ["ML - airdropVivFlyby: %1 is gone (destroyed, taken by a player or called off), so nothing is dropped", _cargoID] call ALiVE_fnc_dump;
+            };
+            if (_debug && {_outcome == "stays"}) then {
+                ["ML - airdropVivFlyby: %1 stays where it is, as a player is in it or has just got out", _cargoID] call ALiVE_fnc_dump;
+            };
+            if (_debug && {_outcome == "busy"}) then {
+                ["ML - airdropVivFlyby: %1 is still being made where it is, so it stays there", _cargoID] call ALiVE_fnc_dump;
+            };
+
+            // the aircraft shuts its ramp and flies on, and is deleted once no player is within 6 km of it, or 4 minutes
+            // after its pass; a wreck is left where it came down
+            [_plane, _grp, _ramps, _fnc_ramps] spawn {
+                params ["_plane", "_grp", "_ramps", "_fnc_ramps"];
+                sleep 10;
+                [_plane, _ramps, 0] call _fnc_ramps;
+                private _t = 10;
+                waitUntil { sleep 5; _t = _t + 5; !alive _plane || {([getPosATL _plane, 6000] call ALiVE_fnc_anyPlayersInRange) == 0} || {_t > 240} };
+                if (alive _plane) then {
+                    { deleteVehicle _x } forEach (crew _plane);
+                    deleteVehicle _plane;
+                    deleteGroup _grp;
+                };
+            };
+
+            if (_dropped && {_outcome == "free"}) then {
+                private _t0 = time;
+                waitUntil { sleep 0.5; !isNull (_cargoProf select 2 select 10) || {time - _t0 > 20} };
+                private _cargo = _cargoProf select 2 select 10;
+                private _t2 = 0;
+                waitUntil { sleep 1; _t2 = _t2 + 1; isNull _cargo || {!alive _cargo} || {_t2 > 10 && {((getPos _cargo) select 2) < 2} && {abs (speed _cargo) < 3}} || {_t2 > 180} };
+                // unless it's gone on the way down: destroyed, or a player's got in
+                if (!isNil { [ALIVE_profileHandler, "getProfile", _cargoID] call ALIVE_fnc_profileHandler }) then {
+                    if (!isNull _cargo && {alive _cargo}) then {
+                        private _landed = getPos _cargo;
+                        _landed set [2, 0];
+                        [_cargoProf, "position", _landed] call ALIVE_fnc_profileVehicle;
+                        [_cargoProf, "despawnPosition", +_landed] call ALIVE_fnc_profileVehicle;
+                    };
+                    [_cargoProf, "spawnType", []] call ALIVE_fnc_profileVehicle;
+                };
+                if (_debug) then {
+                    ["ML - airdropVivFlyby: %1 down %2 m from its spot", _cargoID, if (isNull _cargo) then {-1} else {round (_cargo distance2D _dropPos)}] call ALiVE_fnc_dump;
+                };
+            };
+            ALIVE_ML_vivDone pushBackUnique _cargoID;
+        };
+    };
+
     // ============================================================
     // NEW OPERATION: findBestDeliveryObjective
     // Scores OPCOM objectives by tactical need and friendly unit
@@ -9271,6 +9451,12 @@ switch(_operation) do {
                     };
                 } forEach ([_event, "airdropSlingTransports", []] call ALIVE_fnc_hashGet);
                 _dropped = _dropped && _slingsDone;
+                // and every vehicle a transport aircraft carries inside is down (airdropVivFlyby says so either way)
+                private _vivCargoF = [_event, "airdropVivCargo", []] call ALIVE_fnc_hashGet;
+                if (_vivCargoF isNotEqualTo [] && {isNil "ALIVE_ML_vivDone" || {(_vivCargoF findIf { !(_x in ALIVE_ML_vivDone) }) >= 0}}) then {
+                    _dropped = false;
+                    _anyAlive = true;   // an aircraft still on its way counts, or a delivery with nothing else would stop waiting
+                };
 
                 if (_dropped || _waitIterations > _waitTotalIterations || (!_anyAlive && _waitIterations > 5)) then {
                     if (_debug) then {
@@ -11113,6 +11299,10 @@ switch(_operation) do {
                     };
                     if (!isNil "ALIVE_ML_slingCargo") then { ALIVE_ML_slingCargo deleteAt _heliVehS; };
                 } forEach ([_event, "airdropSlingTransports", []] call ALIVE_fnc_hashGet);
+                // the transport aircraft drops of this delivery are finished with
+                if (!isNil "ALIVE_ML_vivDone") then {
+                    ALIVE_ML_vivDone = ALIVE_ML_vivDone - ([_event, "airdropVivCargo", []] call ALIVE_fnc_hashGet);
+                };
 
                 [_logic, "setEventProfilesAvailable", _event] call MAINCLASS;
 
@@ -12889,6 +13079,46 @@ switch(_operation) do {
                                         _pick
                                     };
 
+                                    // Transport aircraft that drop a vehicle (a C-130, a Blackfish), of the faction or, when
+                                    // transport isn't limited to it, of its side: the fixed-wing aircraft whose config gives them a
+                                    // vehicle load, looked up once per faction the first time one's wanted. _fnc_vivCarrierFor gives
+                                    // the one whose load limit the vehicle's mass is within with the least to spare, "" when none:
+                                    // 28 t for the RHS C-130, 25 t for the Blackfish, so no main battle tank. The mass is the
+                                    // vehicle's own, weighed once per class, as ALiVE's weight estimate is far out for anything
+                                    // tracked (a Nyx weighs 4.9 t and was put at 38 t). airdropVivFlyby doesn't load the vehicle for
+                                    // real, so what the vehicle's own config says about being carried doesn't matter.
+                                    private _fnc_vivCarrierFor = {
+                                        params ["_cargoClass"];
+                                        if (isNil "ALIVE_ML_vivCarriers") then { ALIVE_ML_vivCarriers = createHashMap; };
+                                        private _vivKey = format ["%1|%2|%3", _eventFaction, _side, _limitTransportToFaction];
+                                        if !(_vivKey in ALIVE_ML_vivCarriers) then {
+                                            private _sideNum = [_side] call ALIVE_fnc_sideTextToNumber;
+                                            private _found = ("getNumber (_x >> 'scope') == 2 && {getNumber (_x >> 'VehicleTransport' >> 'Carrier' >> 'maxLoadMass') > 0}" configClasses (configFile >> "CfgVehicles")) select {
+                                                (configName _x) isKindOf "Plane"
+                                                    && {getText (_x >> "faction") == _eventFaction || {!_limitTransportToFaction && {getNumber (_x >> "side") == _sideNum}}}
+                                            };
+                                            ALIVE_ML_vivCarriers set [_vivKey, _found apply { configName _x }];
+                                        };
+                                        private _vivCarriers = ALIVE_ML_vivCarriers get _vivKey;
+                                        if (_vivCarriers isEqualTo []) exitWith { "" };
+                                        if (isNil "ALIVE_ML_vivMass") then { ALIVE_ML_vivMass = createHashMap; };
+                                        private _mass = ALIVE_ML_vivMass getOrDefault [_cargoClass, -1];
+                                        if (_mass < 0) then {
+                                            private _o = _cargoClass createVehicleLocal [0, 0, 1000];
+                                            _mass = getMass _o;
+                                            deleteVehicle _o;
+                                            if (_mass <= 0) then { _mass = [_cargoClass] call ALIVE_fnc_getObjectWeight; };
+                                            ALIVE_ML_vivMass set [_cargoClass, _mass];
+                                        };
+                                        private _pick = "";
+                                        private _spare = 1e9;
+                                        {
+                                            private _max = getNumber (configFile >> "CfgVehicles" >> _x >> "VehicleTransport" >> "Carrier" >> "maxLoadMass");
+                                            if (_max >= _mass && {_max - _mass < _spare}) then { _spare = _max - _mass; _pick = _x; };
+                                        } forEach _vivCarriers;
+                                        _pick
+                                    };
+
                                     // A group that brings its own vehicles (an Infantry, Support or SpecOps group, or one
                                     // with no category) can't ride in the drop aircraft: the paradrop reads every id it
                                     // carries as men, stops on the first vehicle and leaves the aircraft circling. Drop it
@@ -12916,7 +13146,13 @@ switch(_operation) do {
                                     // and left its men behind. With 3 or more loads of other deliveries still slung, this one's go
                                     // down at the destination too. A boat with no water near the destination stays near its
                                     // departure, and a Naval group on the water it was put on, as before.
+                                    // An ordered vehicle that isn't slung, as no helicopter lifts it or 3 loads are slung already,
+                                    // is dropped from a transport aircraft when one's load limit takes it and players are there to
+                                    // see it (airdropVivFlyby); with nobody near, it's set down at the destination as before, which
+                                    // is all anyone would see.
                                     private _slingItems = [];         // [vehicle profile, helicopter class, the water a boat is let go on or []]
+                                    private _vivItems = [];           // [vehicle profile, aircraft class]
+                                    private _playersNearDZ = ([_eventPosition, 1500] call ALiVE_fnc_anyPlayersInRange) > 0;
                                     private _carrierlessGroups = [];
                                     private _busySlings = 0;
                                     if (!isNil "ALIVE_ML_slingCargo") then {
@@ -12931,7 +13167,15 @@ switch(_operation) do {
                                         private _hasMen = (_profs findIf { (_x select 2 select 5) != "vehicle" }) >= 0;
                                         private _picks = (_profs select { (_x select 2 select 5) == "vehicle" }) apply { [_x, [_x select 2 select 11] call _fnc_slingHeliFor, []] };
                                         if (_hasMen || {_busySlings >= MAX_SLINGLOAD_CONCURRENT} || {(_picks findIf { (_x select 1) == "" }) >= 0}) then {
-                                            _carrierlessGroups pushBack _ids;
+                                            private _vivClass = "";
+                                            if (!_hasMen && {count _picks == 1} && {_playersNearDZ}) then {
+                                                _vivClass = [((_picks select 0) select 0) select 2 select 11] call _fnc_vivCarrierFor;
+                                            };
+                                            if (_vivClass != "") then {
+                                                _vivItems pushBack [(_picks select 0) select 0, _vivClass];
+                                            } else {
+                                                _carrierlessGroups pushBack _ids;
+                                            };
                                         } else {
                                             _slingItems append _picks;
                                         };
@@ -13092,6 +13336,18 @@ switch(_operation) do {
                                             _eventFaction
                                         ]] call MAINCLASS;
                                     };
+
+                                    // ---- Part D: a transport aircraft for each vehicle one drops ----
+                                    private _airdropVivCargo = [];
+                                    {
+                                        _x params ["_vivProfile", "_vivClass"];
+                                        private _vivDrop = _eventPosition getPos [random(DESTINATION_VARIANCE), random(360)];
+                                        if (surfaceIsWater _vivDrop) then { _vivDrop = +_eventPosition; };
+                                        _vivDrop set [2, 0];
+                                        [_logic, "airdropVivFlyby", [_vivProfile select 2 select 4, _vivClass, _vivDrop, _remotePosition, _side, _debug, _forEachIndex]] call MAINCLASS;
+                                        _airdropVivCargo pushBack (_vivProfile select 2 select 4);
+                                    } forEach _vivItems;
+                                    [_event, "airdropVivCargo", _airdropVivCargo] call ALIVE_fnc_hashSet;
 
                                     // everything no helicopter carries goes down at the destination now, ahead of the aircraft
                                     if (_carrierlessGroups isNotEqualTo []) then {
