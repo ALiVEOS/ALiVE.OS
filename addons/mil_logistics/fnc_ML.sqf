@@ -2527,13 +2527,34 @@ switch(_operation) do {
                                 if (_nudgeT >= 0 && {scriptDone (_heli getVariable ["alive_ml_sling_nudge", scriptNull]) || {(_phaseTimer - _nudgeT) > 85}}) then {
                                     private _nudgeLate = _heli getVariable ["alive_ml_sling_nudge", scriptNull];
                                     if (!scriptDone _nudgeLate) then { terminate _nudgeLate; };
+                                    private _give = (_slungAGL + 1) min (100 - (selectMax (((ropes _heli) apply { ropeLength _x }) + [0])));
                                     { ropeUnwind [_x, 3, (_slungAGL + 1) min (100 - ropeLength _x), true] } forEach (ropes _heli);
                                     _heli setVariable ["alive_ml_sling_winch", _phaseTimer];
+                                    // when these ropes will have finished paying out, plus 5 s for the load to settle
+                                    _heli setVariable ["alive_ml_sling_winch_done", _phaseTimer + (ceil (_give / 3)) + 5];
                                     _winchT = _phaseTimer;
                                     if (_dbg) then {
                                         ["ML - heliDeliveryWatchdog: %1 over its spot (%2 m off, %3 m up), paying the ropes out %4 m.",
-                                            _tProfID, round (_heli distance2D _destPos), round _heliAGLu, round (_slungAGL + 1)] call ALiVE_fnc_dump;
+                                            _tProfID, round (_heli distance2D _destPos), round ((getPos _heli) select 2), round _give] call ALiVE_fnc_dump;
                                     };
+                                };
+                            };
+
+                            // A helicopter that climbs as its ropes go out leaves its load hanging short of the ground: a
+                            // UH-60M rose 12-30 m and left its load 9-22 m up until the time limit dropped it by parachute
+                            // (measured). So once the ropes have finished paying out and the load has had 5 s to settle, a
+                            // load still more than 1 m up has them paid out again by its height plus 1 m, while the
+                            // helicopter holds over its spot and there's rope to give (100 m at most).
+                            if (_slungAttached && {_winchT >= 0} && {_slungAGL > 1}
+                                && {_phaseTimer >= (_heli getVariable ["alive_ml_sling_winch_done", _winchT + 20])}
+                                && {abs (speed _heli) < 15} && {(_heli distance2D _destPos) < 50}
+                                && {((ropes _heli) findIf { (ropeLength _x) < 99 }) >= 0}) then {
+                                private _give = (_slungAGL + 1) min (100 - (selectMax (((ropes _heli) apply { ropeLength _x }) + [0])));
+                                { ropeUnwind [_x, 3, (_slungAGL + 1) min (100 - ropeLength _x), true] } forEach (ropes _heli);
+                                _heli setVariable ["alive_ml_sling_winch_done", _phaseTimer + (ceil (_give / 3)) + 5];
+                                if (_dbg) then {
+                                    ["ML - heliDeliveryWatchdog: %1 load still %2 m up with its ropes out, paying out %3 m more (%4 m up).",
+                                        _tProfID, round _slungAGL, round _give, round ((getPos _heli) select 2)] call ALiVE_fnc_dump;
                                 };
                             };
 
