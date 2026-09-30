@@ -9831,8 +9831,8 @@ switch(_operation) do {
                     private _vProfR = [ALIVE_profileHandler, "getProfile", _heliVehR] call ALIVE_fnc_profileHandler;
                     if (!isNil "_vProfR") then {
                         private _heliR = _vProfR select 2 select 10;
-                        // one still lowering its load at its spot is left to finish (unlike heliTransportReturn this
-                        // doesn't mark the helicopter as sent home, so its unload carries on lowering it)
+                        // one still lowering its load at its spot is left to its unload, which lets go once it sees the
+                        // helicopter marked as sent home (below) and tidies up after it
                         if ((_vProfR select 2 select 1) && {_heliR isEqualType objNull} && {!isNull _heliR} && {alive _heliR} && {!isNull getSlingLoad _heliR}
                             && {!(_heliR getVariable ["alive_ml_sling_unload_active", false])}
                             && {(_heliR getVariable ["alive_ml_watchdog_phase", 0]) < 2}) then {
@@ -9844,6 +9844,13 @@ switch(_operation) do {
                             if (_debug) then {
                                 ["ML - airdropReturn: %1 still carrying its load, let it go before sending it home.", _pilotR] call ALiVE_fnc_dump;
                             };
+                        };
+                        // Marked as sent home, as heliTransportReturn does, so an unload still lowering its load lets it
+                        // go now (under a parachute more than 5 m up, kept from damage) and has it climb away. Unmarked,
+                        // the unload carried on lowering while the helicopter was sent home, and it could carry the load
+                        // off and drop it when it was removed.
+                        if (_heliR isEqualType objNull && {!isNull _heliR}) then {
+                            _heliR setVariable ["alive_ml_rtb_issued", true];
                         };
                     };
                 } forEach ([_event, "airdropSlingTransports", []] call ALIVE_fnc_hashGet);
