@@ -2495,16 +2495,18 @@ switch(_operation) do {
                                     _heli landAt _padS;
                                     _heli flyInHeight 12;
                                 };
-                                // A loaded helicopter stops 50-90 m short of where it's sent. Once it has, it's nudged
-                                // sideways over the spot (a fifth of the distance a second, at most 4 m/s, its own climb
-                                // or sink kept) until it's within 8 m or 40 s have gone.
+                                // A loaded helicopter stops 50-90 m short of where it's sent, and now and then nearer
+                                // 200 m (185 m, one sent over water: measured). Once it has, it's nudged sideways over
+                                // the spot (a fifth of the distance a second, at most 4 m/s, its own climb or sink kept)
+                                // until it's within 8 m or 80 s have gone. Only one within 150 m used to be, and one
+                                // further out hung there until its load was let go by parachute, a boat over land.
                                 // (started is kept as a time: a finished script's handle reads as null, as a never-started one does)
                                 private _nudgeT = _heli getVariable ["alive_ml_sling_nudge_t", -1];
-                                if (_nudgeT < 0 && {(_heli distance2D _destPos) < 150} && {abs (speed _heli) < 15}) then {
+                                if (_nudgeT < 0 && {(_heli distance2D _destPos) < 300} && {abs (speed _heli) < 15}) then {
                                     private _nudge = [_heli, +_destPos] spawn {
                                         params ["_h", "_s"];
                                         private _t0 = time;
-                                        while { alive _h && {!isNull getSlingLoad _h} && {(_h distance2D _s) > 8} && {(time - _t0) < 40} } do {
+                                        while { alive _h && {!isNull getSlingLoad _h} && {(_h distance2D _s) > 8} && {(time - _t0) < 80} } do {
                                             private _dir = _h getDir _s;
                                             private _sp = ((_h distance2D _s) / 5) min 4;
                                             _h setVelocity [(sin _dir) * _sp, (cos _dir) * _sp, (velocity _h) select 2];
@@ -2514,11 +2516,15 @@ switch(_operation) do {
                                     _heli setVariable ["alive_ml_sling_nudge", _nudge];
                                     _heli setVariable ["alive_ml_sling_nudge_t", _phaseTimer];
                                     _nudgeT = _phaseTimer;
+                                    if (_dbg) then {
+                                        ["ML - heliDeliveryWatchdog: %1 stopped %2 m short of its spot, nudging it over.",
+                                            _tProfID, round (_heli distance2D _destPos)] call ALiVE_fnc_dump;
+                                    };
                                 };
                                 // Then every rope is paid out by the load's height plus 1 m (3 m/s, a rope can't be
                                 // longer than 100 m), and the load sinks onto the ground while the helicopter hovers.
-                                // A nudge still going after 45 s (a busy server stretches its sleeps) is stopped first.
-                                if (_nudgeT >= 0 && {scriptDone (_heli getVariable ["alive_ml_sling_nudge", scriptNull]) || {(_phaseTimer - _nudgeT) > 45}}) then {
+                                // A nudge still going after 85 s (a busy server stretches its sleeps) is stopped first.
+                                if (_nudgeT >= 0 && {scriptDone (_heli getVariable ["alive_ml_sling_nudge", scriptNull]) || {(_phaseTimer - _nudgeT) > 85}}) then {
                                     private _nudgeLate = _heli getVariable ["alive_ml_sling_nudge", scriptNull];
                                     if (!scriptDone _nudgeLate) then { terminate _nudgeLate; };
                                     { ropeUnwind [_x, 3, (_slungAGL + 1) min (100 - ropeLength _x), true] } forEach (ropes _heli);
@@ -2643,10 +2649,15 @@ switch(_operation) do {
                                 // backstops: 90 s on the ground; 150 s without ever touching down; 330 s in all; 60 s
                                 // for a helicopter pushed into this phase away from its spot. A sling helicopter carrying its
                                 // load gets 150 s to reach its spot and lower it (about a minute, measured), 60 s without.
+                                // Once it's being nudged over the spot it gets until 145 s after the nudge began (up to 80 s
+                                // of nudge, then the ropes), at most 175 s, so a load still on its way down isn't sent by
+                                // parachute. The unload thread lets go at its own 180 s, which starts a little later.
                                 private _passengers = (crew _heli) select { alive _x && {group _x != group (driver _heli)} };
                                 private _troopsClear = (!_isSlingHeli) && {_passengers isEqualTo [] || {_heli getVariable ["alive_ml_troops_out", false]}};
                                 if (isTouchingGround _heli) then { _groundTimer = _groundTimer + 5; };
-                                private _timedOut = if (_isSlingHeli) then { _phaseTimer > ([60, 150] select _slungAttached) } else {
+                                private _nudgeFrom = _heli getVariable ["alive_ml_sling_nudge_t", -1];
+                                private _slungLimit = if (_nudgeFrom < 0) then { 150 } else { 150 max ((_nudgeFrom + 145) min 175) };
+                                private _timedOut = if (_isSlingHeli) then { _phaseTimer > ([60, _slungLimit] select _slungAttached) } else {
                                     if (_unloadSkipped) then { _phaseTimer > 60 } else {
                                         _groundTimer > 90 || {_groundTimer == 0 && {_phaseTimer > 150}} || {_phaseTimer > 330}
                                     }
@@ -8564,7 +8575,10 @@ switch(_operation) do {
                     // its stand-off. The spot is kept on the transport so the unload lands it there, not at a
                     // second spot found later, and the waypoint is the spot itself, done within about 120 m:
                     // the men are ordered out there, and that's where the pilot sets down.
-                    private _destPos = if (_playerRequested) then {
+                    // A helicopter slinging a boat goes to the water it was given (alive_ml_boat_lz), not a landing spot.
+                    private _tProfBoat = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+                    private _boatLZ = if (isNil "_tProfBoat") then {[]} else {[_tProfBoat, "alive_ml_boat_lz", []] call ALIVE_fnc_hashGet};
+                    private _destPos = if (_boatLZ isNotEqualTo []) then { +_boatLZ } else { if (_playerRequested) then {
                         private _tIdxLZ = _transportProfiles find _x;
                         private _vProfLZ = if (_tIdxLZ < 0) then {nil} else {
                             [ALIVE_profileHandler, "getProfile", _eventTransportVehiclesProfiles param [_tIdxLZ, ""]] call ALIVE_fnc_profileHandler
@@ -8575,7 +8589,7 @@ switch(_operation) do {
                         [_logic, "findHelicopterLandingPos", [_eventPosition, 0, 150, _usedLandingPositions, true, _heliSize]] call MAINCLASS
                     } else {
                         [_logic, "findHelicopterLandingPos", [_eventPosition, 200, 600, _usedLandingPositions]] call MAINCLASS
-                    };
+                    } };
                     _usedLandingPositions pushback _destPos;
                     _profileWaypoint = [_destPos, 0, "MOVE", "NORMAL", 50, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
 
@@ -11744,6 +11758,13 @@ switch(_operation) do {
 
                                     _payloadWeight = [(_slingLoadProfile select 2 select 11)] call ALIVE_fnc_getObjectWeight;
 
+                                    // A boat is let go on open water by the destination, as an Airdrop's is: the landing
+                                    // spot a helicopter is sent to keeps off water, so it used to be lowered on land.
+                                    private _boatLZ = [];
+                                    private _isBoat = !isNil "_slingLoadProfile" && {(_slingLoadProfile select 2 select 5) == "vehicle"}
+                                        && {(_slingLoadProfile select 2 select 11) isKindOf "Ship"};
+                                    if (_isBoat) then { _boatLZ = [[_eventPosition], BOAT_SLING_CLEARANCE] call _fnc_boatWater; };
+
                                     // Select helicopter that can slingload the vehicle
                                     _vehicleClass = "";
                                     _currentDiff = 15000;
@@ -11759,18 +11780,22 @@ switch(_operation) do {
                                         };
                                     } foreach _transportGroups;
 
-                                    // Cannot find heli big enough to slingload this vehicle: down at the destination
-                                    // without one (_fnc_heliFallback). The cargo profile was already registered earlier in
-                                    // the dispatch loop, so _totalCount stands. The old exitWith here also broke the
+                                    // Cannot find heli big enough to slingload this vehicle, or it's a boat with no
+                                    // water near the destination: down at the destination without one (_fnc_heliFallback),
+                                    // or left near its departure. The cargo profile was already registered earlier in the
+                                    // dispatch loop, so _totalCount stands. The old exitWith here also broke the
                                     // _emptyVehicleProfiles forEach entirely, silently abandoning any further cargo items.
-                                    if (_vehicleClass == "") then {
+                                    if (_vehicleClass == "" || {_isBoat && {_boatLZ isEqualTo []}}) then {
                                         private _heavyID = _x select 0;
                                         private _heavyProfile = [ALiVE_ProfileHandler, "getProfile", _heavyID] call ALIVE_fnc_profileHandler;
                                         if (!isNil "_heavyProfile") then {
-                                            [_heavyProfile] call _fnc_heliFallback;
+                                            [_heavyProfile, _boatLZ] call _fnc_heliFallback;
                                             _payloadGroupProfiles pushback [_heavyID];
-                                            ["ML - PR_HELI_INSERT: no helicopter carries %1 (weight %2), so it goes down at the destination without one.",
-                                                _heavyID, _payloadWeight] call ALiVE_fnc_dump;
+                                            // a boat with no water has said so itself, and stays where it is
+                                            if (!_isBoat || {_boatLZ isNotEqualTo []}) then {
+                                                ["ML - PR_HELI_INSERT: no helicopter carries %1 (weight %2), so it goes down at the destination without one.",
+                                                    _heavyID, _payloadWeight] call ALiVE_fnc_dump;
+                                            };
                                         } else {
                                             ["ML - PR_HELI_INSERT weight-fail fallback: profile %1 already un-registered, skipping.", _heavyID] call ALiVE_fnc_dump;
                                             _totalCount = _totalCount - 1;
@@ -11826,10 +11851,12 @@ switch(_operation) do {
                                         // backref, which doesn't survive the spawn rebuild). Keyed by heli
                                         // vehicle profile id, read by heliDeliveryWatchdog.
                                         if (isNil "ALIVE_ML_slingCargo") then { ALIVE_ML_slingCargo = createHashMap; };
-                                        ALIVE_ML_slingCargo set [(_heliVehicleProf select 2 select 4), [(_slingloadProfile select 2 select 4), _eventPosition]];
+                                        ALIVE_ML_slingCargo set [(_heliVehicleProf select 2 select 4), [(_slingloadProfile select 2 select 4), [_eventPosition, _boatLZ] select _isBoat]];
+                                        // heliTransportStart sends it to this water, not to a landing spot
+                                        if (_isBoat) then { [_heliEntityProf, "alive_ml_boat_lz", +_boatLZ] call ALIVE_fnc_hashSet; };
 
                                         if (_debug) then {
-                                            ["ML - PR_HELI_INSERT [%1] dest waypoint: %2", _forEachIndex + 1, _prDestPos] call ALiVE_fnc_dump;
+                                            ["ML - PR_HELI_INSERT [%1] dest waypoint: %2", _forEachIndex + 1, [_prDestPos, _boatLZ] select _isBoat] call ALiVE_fnc_dump;
                                         };
 
                                         // Fuel watchdog for PR infantry transport heli
@@ -12532,6 +12559,11 @@ switch(_operation) do {
 
                                             _payloadWeight = [(_slingLoadProfile select 2 select 11)] call ALIVE_fnc_getObjectWeight;
 
+                                            // a group's boat is let go on open water by the destination too
+                                            private _boatLZ = [];
+                                            private _isBoat = !isNil "_slingLoadProfile" && {(_slingLoadProfile select 2 select 11) isKindOf "Ship"};
+                                            if (_isBoat) then { _boatLZ = [[_eventPosition], BOAT_SLING_CLEARANCE] call _fnc_boatWater; };
+
                                             // Select helicopter that can slingload the vehicle
                                             _vehicleClass = "";
                                             _currentDiff = 15000;
@@ -12547,15 +12579,18 @@ switch(_operation) do {
                                                 };
                                             } foreach _transportGroups;
 
-                                            // Cannot find heli big enough to slingload this vehicle: as in the empty-vehicle loop
-                                            // above, down at the destination without one; keeps _totalCount honest and continues
-                                            // the forEach.
-                                            if (_vehicleClass == "") then {
+                                            // Cannot find heli big enough to slingload this vehicle, or it's a boat with no
+                                            // water near the destination: as in the empty-vehicle loop above, down at the
+                                            // destination without one, or left near its departure; keeps _totalCount honest
+                                            // and continues the forEach.
+                                            if (_vehicleClass == "" || {_isBoat && {_boatLZ isEqualTo []}}) then {
                                                 if (!isNil "_slingLoadProfile") then {
-                                                    [_slingLoadProfile] call _fnc_heliFallback;
+                                                    [_slingLoadProfile, _boatLZ] call _fnc_heliFallback;
                                                     _payloadGroupProfiles pushback [_x];
-                                                    ["ML - PR_HELI_INSERT: no helicopter carries grouped vehicle %1 (weight %2), so it goes down at the destination without one.",
-                                                        _x, _payloadWeight] call ALiVE_fnc_dump;
+                                                    if (!_isBoat || {_boatLZ isNotEqualTo []}) then {
+                                                        ["ML - PR_HELI_INSERT: no helicopter carries grouped vehicle %1 (weight %2), so it goes down at the destination without one.",
+                                                            _x, _payloadWeight] call ALiVE_fnc_dump;
+                                                    };
                                                 } else {
                                                     ["ML - PR_HELI_INSERT weight-fail fallback: profile %1 already un-registered, skipping.", _x] call ALiVE_fnc_dump;
                                                     _totalCount = _totalCount - 1;
@@ -12586,7 +12621,8 @@ switch(_operation) do {
                                             // #909: spawn-proof heli->cargo link (replaces the per-profile
                                             // backref + dropPos, which don't survive the spawn rebuild).
                                             if (isNil "ALIVE_ML_slingCargo") then { ALIVE_ML_slingCargo = createHashMap; };
-                                            ALIVE_ML_slingCargo set [(_heliVehicleProf select 2 select 4), [(_slingloadProfile select 2 select 4), _eventPosition]];
+                                            ALIVE_ML_slingCargo set [(_heliVehicleProf select 2 select 4), [(_slingloadProfile select 2 select 4), [_eventPosition, _boatLZ] select _isBoat]];
+                                            if (_isBoat) then { [_heliEntityProf, "alive_ml_boat_lz", +_boatLZ] call ALIVE_fnc_hashSet; };
 
                                             _transportProfiles pushback (_profiles select 0 select 2 select 4);
                                             _transportVehicleProfiles pushback (_profiles select 1 select 2 select 4);
