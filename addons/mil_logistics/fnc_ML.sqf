@@ -1673,7 +1673,10 @@ switch(_operation) do {
                             !isTouchingGround _heli
                         ) then {
                             private _cargoCount = { alive _x && _x != driver _heli && _x != gunner _heli } count crew _heli;
-                            private _hasSlung = !isNull (vehicle _heli) && { count (attachedObjects _heli) > 0 };
+                            // a load on sling ropes isn't one of the helicopter's attachedObjects (measured: getSlingLoad
+                            // sees it and it hangs on 4 ropes, attachedObjects stays empty), so a loaded helicopter that
+                            // stalled on its way counted as a hover with nothing slung and was destroyed
+                            private _hasSlung = !isNull (vehicle _heli) && { !isNull getSlingLoad _heli || {count (attachedObjects _heli) > 0} };
                             if (_cargoCount == 0 && !_hasSlung) then {
                                 _hoverTicks = _hoverTicks + 1;
                             } else {
