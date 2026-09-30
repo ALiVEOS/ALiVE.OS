@@ -987,13 +987,44 @@ switch (_operation) do {
                     missionnamespace setvariable ["bis_fnc_curatorobjectedited_paraSoundTime",time + 10]
                 };
 
+                // Damage comes back vehicleSpawnSettleSeconds (15 s by default) after a vehicle is made, the
+                // settle check further down, and one on a parachute is still over 150 m up then, so it used to
+                // land with damage on. One that came down on a wall, a rock, a shed or a roof could be wrecked as
+                // the parachute let go, or be left on top of it: 2 wrecked and 6 left on top of something in 80
+                // drops over a coastal town and an air base. Now the vehicle and anyone riding in it are kept from
+                // damage for the last 30 m and the landing. One left on top of something or tipped over on dry
+                // land, with no player in it and not being driven, goes to clear ground within 50 m that the
+                // vehicle spawn check finds, or stays where it is if there's none; one in the water is left alone.
+                // Damage comes back 8 s after it's down, on whichever machine owns it then (a player who got in
+                // has taken it over), and ALiVE_paraSettled is set on it for anything waiting to see where it ended up.
                 [_vehicle,_parachute] spawn {
                     _vehicle = _this select 0;
                     _parachute = _this select 1;
 
-                    waituntil {isnull _parachute || isnull _vehicle};
+                    waituntil { sleep 0.25; isnull _parachute || {isnull _vehicle} || {((getPos _vehicle) select 2) < 30} };
+                    private _protected = [_vehicle] + crew _vehicle;
+                    { [_x, false] remoteExecCall ["allowDamage", _x]; } forEach _protected;
+                    // a parachute that never lets go (caught on something) is taken off after a minute
+                    private _low = time;
+                    waituntil { sleep 0.25; isnull _parachute || {isnull _vehicle} || {time - _low > 60} };
                     _vehicle setdir direction _vehicle;
                     deletevehicle _parachute;
+                    sleep 3;
+                    private _atl = getPosATL _vehicle;
+                    if (alive _vehicle && {!surfaceIsWater _atl} && {speed _vehicle < 2} && {((crew _vehicle) findIf {isPlayer _x}) < 0}
+                        && {(_atl select 2) > 1.5 || {((vectorUp _vehicle) select 2) < 0.7}}) then {
+                        private _clear = [typeOf _vehicle, _atl, 50, "auto", getDir _vehicle] call ALiVE_fnc_findVehicleSpawnPosition;
+                        if (_clear isNotEqualTo []) then {
+                            _clear params ["_pos", "_dir"];
+                            _vehicle setVelocity [0, 0, 0];
+                            _vehicle setDir _dir;
+                            _vehicle setPosATL [_pos select 0, _pos select 1, 0];
+                            _vehicle setVectorUp (surfaceNormal _pos);
+                        };
+                    };
+                    sleep 5;
+                    { if (alive _x) then { [_x, true] remoteExecCall ["allowDamage", _x]; }; } forEach _protected;
+                    if (!isNull _vehicle) then { _vehicle setVariable ["ALiVE_paraSettled", true]; };
                 };
             };
 

@@ -1179,7 +1179,9 @@ switch(_operation) do {
                 waitUntil { sleep 0.5; !isNull (_cargoProf select 2 select 10) || {time - _t0 > 20} };
                 private _cargo = _cargoProf select 2 select 10;
                 private _t2 = 0;
-                waitUntil { sleep 1; _t2 = _t2 + 1; isNull _cargo || {!alive _cargo} || {_t2 > 10 && {((getPos _cargo) select 2) < 2} && {abs (speed _cargo) < 3}} || {_t2 > 180} };
+                // down, still, and let go by the spawner, which can move one that came down on something
+                waitUntil { sleep 1; _t2 = _t2 + 1; isNull _cargo || {!alive _cargo}
+                    || {_t2 > 10 && {((getPos _cargo) select 2) < 2} && {abs (speed _cargo) < 3} && {_cargo getVariable ["ALiVE_paraSettled", false]}} || {_t2 > 180} };
                 // unless it's gone on the way down: destroyed, or a player's got in
                 if (!isNil { [ALIVE_profileHandler, "getProfile", _cargoID] call ALIVE_fnc_profileHandler }) then {
                     if (!isNull _cargo && {alive _cargo}) then {
