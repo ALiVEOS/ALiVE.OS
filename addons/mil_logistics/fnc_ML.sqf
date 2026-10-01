@@ -14440,7 +14440,9 @@ switch(_operation) do {
                     _position = _vehicleProfile select 2 select 2;
                     _position set [2,0];
                     [_vehicleProfile,"position",_position] call ALIVE_fnc_profileVehicle;
-                    [_vehicleProfile,"hasSimulated",false] call ALIVE_fnc_profileVehicle;
+                    // (not an operation of the vehicle profile: asked through it, it wrote nothing and put the whole
+                    // profile in the server log)
+                    [_vehicleProfile,"hasSimulated",false] call ALIVE_fnc_hashSet;
                     [_vehicleProfile,"engineOn",false] call ALIVE_fnc_profileVehicle;
                     [_vehicleProfile,"despawnPosition",_position] call ALIVE_fnc_profileVehicle;
 
@@ -14821,7 +14823,9 @@ switch(_operation) do {
                     _position = _vehicleProfile select 2 select 2;
                     _position set [2,0];
                     [_vehicleProfile,"position",_position] call ALIVE_fnc_profileVehicle;
-                    [_vehicleProfile,"hasSimulated",false] call ALIVE_fnc_profileVehicle;
+                    // (not an operation of the vehicle profile: asked through it, it wrote nothing and put the whole
+                    // profile in the server log)
+                    [_vehicleProfile,"hasSimulated",false] call ALIVE_fnc_hashSet;
                     [_vehicleProfile,"engineOn",false] call ALIVE_fnc_profileVehicle;
                     [_vehicleProfile,"despawnPosition",_position] call ALIVE_fnc_profileVehicle;
 
@@ -15325,7 +15329,9 @@ switch(_operation) do {
                     _position = _vehicleProfile select 2 select 2;
                     _position set [2,0];
                     [_vehicleProfile,"position",_position] call ALIVE_fnc_profileVehicle;
-                    [_vehicleProfile,"hasSimulated",false] call ALIVE_fnc_profileVehicle;
+                    // (not an operation of the vehicle profile: asked through it, it wrote nothing and put the whole
+                    // profile in the server log)
+                    [_vehicleProfile,"hasSimulated",false] call ALIVE_fnc_hashSet;
                     [_vehicleProfile,"engineOn",false] call ALIVE_fnc_profileVehicle;
                     [_vehicleProfile,"despawnPosition",_position] call ALIVE_fnc_profileVehicle;
 
