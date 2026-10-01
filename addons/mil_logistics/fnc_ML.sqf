@@ -1183,13 +1183,18 @@ switch(_operation) do {
                     [_ep, "addWaypoint", [_spot, 50, "MOVE", "NORMAL", 50, [], "LINE"] call ALIVE_fnc_createProfileWaypoint] call ALIVE_fnc_profileEntity;
                 };
             };
-            // land "LAND" sets it down; landAt only holds it over a pad
+            // land "LAND" sets it down; landAt only holds it over a pad. One held as it flew over its spot went past it,
+            // the order to go there used up on the way, and hung where it stopped, 460 m off, never close enough to be told
+            // to land: it's sent back while it's more than 300 m from its spot and nearly still, every 10 s.
             private _t = 0;
             private _landing = false;
+            private _tSent = 0;
             waitUntil {
                 sleep 2; _t = _t + 2;
                 if (isNull _heli || {!alive _heli}) exitWith { true };
-                if (!_landing && {(_heli distance2D _spot) < 150}) then { _landing = true; _heli land "LAND"; };
+                private _dSpot = _heli distance2D _spot;
+                if (!_landing && {_dSpot < 150}) then { _landing = true; _heli land "LAND"; };
+                if (_dSpot > 300 && {speed _heli < 10} && {_t - _tSent >= 10}) then { _tSent = _t; _landing = false; _heli move _spot; };
                 (isTouchingGround _heli && {vectorMagnitude velocity _heli < 1}) || {_t > 420}
             };
             deleteVehicle _pad;
