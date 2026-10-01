@@ -2032,6 +2032,60 @@ switch(_operation) do {
                 };
             };
 
+            // A load still on the ropes of a sling helicopter that's been destroyed, or whose profile has gone (shot down,
+            // or lost while virtual), was left slung to it and kept from despawning for good: every other release goes
+            // through the helicopter's profile, and this watchdog stopped when that went. Once the load has come to rest
+            // (or after 2 minutes) it's cut free of the wreck and let go as any other is: its profile is given where it is
+            // and loses its link and its despawn guard. One an earlier release is still bringing down is left to that one.
+            private _fnc_freeLoad = {
+                private _entryF = (missionNamespace getVariable ["ALIVE_ML_slingCargo", createHashMap]) getOrDefault [_vProfID, []];
+                private _cargoF = _entryF param [0, ""];
+                if (_cargoF == "") exitWith {};
+                // a load let go already, as on every delivery that went to plan, has nothing to wait for
+                private _lpF = [ALIVE_profileHandler, "getProfile", _cargoF] call ALIVE_fnc_profileHandler;
+                if (isNil "_lpF" || {([_lpF, "slung", []] call ALIVE_fnc_hashGet) isEqualTo []}) exitWith {};
+                [_cargoF, _tProfID, _entryF param [1, []]] spawn {
+                    params ["_cargoID", "_tProfID", "_spot"];
+                    private _t0 = time;
+                    private _obj = objNull;
+                    waitUntil {
+                        sleep 2;
+                        private _lp = [ALIVE_profileHandler, "getProfile", _cargoID] call ALIVE_fnc_profileHandler;
+                        if (isNil "_lp") exitWith { true };
+                        private _o = _lp select 2 select 10;
+                        _obj = if (!isNil "_o" && {_o isEqualType objNull}) then {_o} else {objNull};
+                        isNull _obj || {!alive _obj} || {speed _obj < 1 && {((getPos _obj) select 2) < 3}} || {time - _t0 > 120}
+                    };
+                    private _lp = [ALIVE_profileHandler, "getProfile", _cargoID] call ALIVE_fnc_profileHandler;
+                    if (isNil "_lp" || {([_lp, "slung", []] call ALIVE_fnc_hashGet) isEqualTo []}) exitWith {};
+                    // the ropes stay on a wreck, holding the load to it; an intact helicopter nobody's flying (its pilot
+                    // dead and no player aboard) is made to let go of it
+                    if (!isNull _obj && {alive _obj}) then {
+                        private _wreck = ropeAttachedTo _obj;
+                        if (!isNull _wreck) then {
+                            if (!alive _wreck) then {
+                                { ropeDestroy _x } forEach (ropes _wreck);
+                            } else {
+                                if (!alive driver _wreck && {((crew _wreck) findIf { isPlayer _x }) < 0}) then {
+                                    if !(_wreck setSlingLoad objNull) then { { ropeDestroy _x } forEach (ropes _wreck); };
+                                };
+                            };
+                        };
+                    };
+                    // a boat nobody saw goes on its water by the destination, as at the end of an Airdrop: one waiting
+                    // to be picked up sits on dry ground by the departure, of no use there, so the player still gets it
+                    if (isNull _obj && {(_lp select 2 select 11) isKindOf "Ship"} && {_spot isEqualType []} && {count _spot > 1} && {surfaceIsWater _spot}) then {
+                        private _onWater = +_spot;
+                        _onWater set [2, 0];
+                        [_lp, "position", _onWater] call ALIVE_fnc_profileVehicle;
+                        [_lp, "despawnPosition", +_onWater] call ALIVE_fnc_profileVehicle;
+                    };
+                    [objNull, "releaseSlungLoad", [objNull, objNull, _cargoID]] call MAINCLASS;
+                    ["ML - heliDeliveryWatchdog: %1's helicopter was lost with %2 slung, let go at %3.", _tProfID, _cargoID,
+                        if (isNull _obj) then {"its profile's position"} else { (getPosATL _obj) apply { round _x } }] call ALiVE_fnc_dump;
+                };
+            };
+
             private _phase        = 0; // 0=transit 1=landing 2=unload 3=rtb
             private _phaseTimer   = 0;
             private _groundTimer  = 0;      // time spent on the ground in UNLOAD (troop helicopters)
@@ -2082,7 +2136,7 @@ switch(_operation) do {
                 // backstop timeout -> "aborted". Both no-op if the event machine already
                 // latched "arrived" (virtual delivery). Untasked helis (_heliKey "")
                 // only reach here via _profGone, and the latch call is a no-op for them.
-                if (_profGone) then { "destroyed" call _fnc_latchHeli; } else { "aborted" call _fnc_latchHeli; };
+                if (_profGone) then { "destroyed" call _fnc_latchHeli; call _fnc_freeLoad; } else { "aborted" call _fnc_latchHeli; };
                 if (_dbg) then { ["ML - heliDeliveryWatchdog: %1 exit before spawn (profileGone=%2 latchTerminal=%3 t=%4s).", _tProfID, _profGone, _latchTerminal, _wdWait] call ALiVE_fnc_dump; };
             };
 
@@ -2162,6 +2216,7 @@ switch(_operation) do {
                     // by the event machine (which fires strictly before the transport
                     // profile is destroyed), so this write is a no-op for it.
                     "destroyed" call _fnc_latchHeli;
+                    call _fnc_freeLoad;
                     if (_dbg) then { ["ML - heliDeliveryWatchdog: Profile gone (%1), exiting.", _tProfID] call ALiVE_fnc_dump; };
                     _running = false;
                 };
@@ -2185,6 +2240,7 @@ switch(_operation) do {
                 // run (already "arrived") to "destroyed".
                 if (!isNull _heli && {!alive _heli}) exitWith {
                     "destroyed" call _fnc_latchHeli;
+                    call _fnc_freeLoad;
                     if (_dbg) then { ["ML - heliDeliveryWatchdog: %1 destroyed (phase %2), exiting.", _tProfID, _phase] call ALiVE_fnc_dump; };
                     _running = false;
                 };
