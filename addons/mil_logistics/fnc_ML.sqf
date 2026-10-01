@@ -11099,6 +11099,16 @@ switch(_operation) do {
                     } foreach _payloadProfiles;
                 };
 
+                // an ordered helicopter on its way down to its pad keeps the delivery waiting until it's handed over
+                {
+                    private _vpO = [ALIVE_profileHandler, "getProfile", _x param [1, ""]] call ALIVE_fnc_profileHandler;
+                    if (!isNil "_vpO" && {_vpO select 2 select 1}) then {
+                        private _oO = _vpO select 2 select 10;
+                        if (_oO isEqualType objNull && {!isNull _oO} && {alive _oO} && {_oO isKindOf "Helicopter"}
+                            && {!isNull driver _oO} && {!(_oO getVariable ["alive_ml_handed_over", false])}) then { _payloadUnloaded = false; };
+                    };
+                } forEach ([_eventCargoProfiles, "heli", []] call ALIVE_fnc_hashGet);
+
                 TRACE_2("PR UNLOADED", _loadedUnits, _payloadUnloaded);
 
                 // If all inf units are unloaded and all payloads are unloaded, then complete
@@ -13665,7 +13675,21 @@ switch(_operation) do {
                                     // read zero transport waypoints as "destroyed enroute" and send
                                     // a false loss report; eventComplete sends the single correct
                                     // delivered notification instead.
-                                    if (count _eventTransportProfiles == 0) then {
+                                    // An aircraft ordered on its own has no transport, but a helicopter can fly itself in: it goes
+                                    // through the same states as an ordered aircraft flying with a delivery and is handed over where
+                                    // it lands. It used to complete at once and leave the helicopter at its base with its crew aboard.
+                                    // Only for an order of helicopters and nothing else: one with a plane in it is left as it was (the
+                                    // hand-over orders the crew out, which would leave a flying plane with nobody in it), and so is
+                                    // one with men or vehicles placed at the destination, which would otherwise wait on its flight.
+                                    private _flyItself = (count _heliProfiles > 0)
+                                        && {(count _payload + count _staticIndividuals + count _joinIndividuals + count _reinforceIndividuals
+                                            + count _staticGroups + count _joinGroups + count _reinforceGroups) == 0}
+                                        && {count _emptyVehicleProfiles == count _heliProfiles}
+                                        && {(_heliProfiles findIf {
+                                        private _vpA = [ALIVE_profileHandler, "getProfile", _x param [1, ""]] call ALIVE_fnc_profileHandler;
+                                        isNil "_vpA" || {!(((_vpA select 2) select 11) isKindOf "Helicopter")}
+                                    }) == -1};
+                                    if (count _eventTransportProfiles == 0 && {!_flyItself}) then {
                                         [_event, "state", "eventComplete"] call ALIVE_fnc_hashSet;
                                     } else {
                                         [_event, "state", "heliTransportStart"] call ALIVE_fnc_hashSet;
@@ -15034,7 +15058,28 @@ switch(_operation) do {
                     _eventAssets pushback _heliPad;
                     [_event, "eventAssets",_eventAssets] call ALIVE_fnc_hashSet;
 
-                    [_entityProfile,_vehicleProfile] call ALIVE_fnc_removeProfileVehicleAssignment;
+                    // An ordered helicopter still in the air is set down on its pad before its crew leave it (land "LAND"
+                    // sets one down; landAt only holds it over the pad), and the unload wait waits for that. Told to get
+                    // out in the air, its crew went nowhere and the delivery could close with it still flying.
+                    private _vehObj = _vehicleProfile select 2 select 10;
+                    if (!isNil "_vehObj" && {_vehObj isEqualType objNull} && {!isNull _vehObj} && {alive _vehObj} && {_vehObj isKindOf "Helicopter"} && {!isTouchingGround _vehObj}) then {
+                        _vehObj move (getPos _heliPad);
+                        [_vehObj, _heliPad, _entityProfile, _vehicleProfile] spawn {
+                            params ["_h", "_pad", "_ep", "_vp"];
+                            private _t = 0;
+                            private _landing = false;
+                            waitUntil {
+                                sleep 2; _t = _t + 2;
+                                if (!_landing && {alive _h} && {(_h distance2D _pad) < 150}) then { _landing = true; _h land "LAND"; };
+                                !alive _h || {isTouchingGround _h && {vectorMagnitude velocity _h < 1}} || {_t > 300}
+                            };
+                            if (alive _h && {isTouchingGround _h}) then { _h engineOn false; };
+                            [_ep, _vp] call ALIVE_fnc_removeProfileVehicleAssignment;
+                            _h setVariable ["alive_ml_handed_over", true];
+                        };
+                    } else {
+                        [_entityProfile,_vehicleProfile] call ALIVE_fnc_removeProfileVehicleAssignment;
+                    };
 
                 }else{
 
