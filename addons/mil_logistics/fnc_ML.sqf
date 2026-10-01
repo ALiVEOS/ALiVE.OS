@@ -16371,7 +16371,16 @@ switch(_operation) do {
 
                             _vehicle = _payloadVehicle select 2 select 10;
 
-                            [_event, "finalDestination", position _vehicle] call ALIVE_fnc_hashSet;
+                            // only a spawned one has a position to give: an unspawned one's object is null, and the
+                            // destination became [0,0,0], the corner of the map, on the player's tablet
+                            if (!isNil "_vehicle" && {_vehicle isEqualType objNull} && {!isNull _vehicle}) then {
+                                [_event, "finalDestination", position _vehicle] call ALIVE_fnc_hashSet;
+                            } else {
+                                // and with none set yet (a convoy's only comes from here), the one asked for
+                                if (count ([_event, "finalDestination", []] call ALIVE_fnc_hashGet) < 2) then {
+                                    [_event, "finalDestination", +_eventPosition] call ALIVE_fnc_hashSet;
+                                };
+                            };
                         };
                     };
 
