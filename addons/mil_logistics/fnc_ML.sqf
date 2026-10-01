@@ -10907,8 +10907,15 @@ switch(_operation) do {
                             _logEvent = ['LOGCOM_RESPONSE', [_requestID,_playerID],"Logistics","REQUEST_ARRIVED"] call ALIVE_fnc_event;
                             [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
                         }else{
-                            _logEvent = ['LOGCOM_RESPONSE', [_requestID,_playerID],"Logistics","REQUEST_LOST"] call ALIVE_fnc_event;
-                            [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
+                            // Every transport is gone. Cargo that outlived it goes on and is handed over at the end of the
+                            // delivery, which tells the player it's done, so it isn't reported lost first: the player used
+                            // to hear both.
+                            private _cargoLeft = ((_infantryProfiles + _motorisedProfiles + _mechanisedProfiles + _armourProfiles + _planeProfiles + _heliProfiles)
+                                findIf { !isNil { [ALIVE_profileHandler, "getProfile", _x param [0, ""]] call ALIVE_fnc_profileHandler } }) != -1;
+                            if (!_cargoLeft) then {
+                                _logEvent = ['LOGCOM_RESPONSE', [_requestID,_playerID],"Logistics","REQUEST_LOST"] call ALIVE_fnc_event;
+                                [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
+                            };
                         };
                     };
 
