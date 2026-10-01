@@ -7649,12 +7649,14 @@ switch(_operation) do {
 
                             _payloadGroupProfiles = [];
 
-                            // Append side defaults when faction list is empty OR when not faction-limited.
-                            // Using && caused spuriously empty _transportGroups when the faction list was
-                            // populated but limitTransportToFaction was false, incorrectly forcing all
-                            // HELI_INSERT and HELI_PARADROP events to STANDARD delivery.
-                            if(count _transportGroups == 0 || !_limitTransportToFaction) then {
-                                _transportGroups append ([ALIVE_sideDefaultAirTransport,_side] call ALIVE_fnc_hashGet);
+                            // The side's helicopters are a fallback: used only when the faction has no helicopter of its
+                            // own it can use (VTOLs and classes that failed to sling this session are filtered out below,
+                            // so those count as none) and never on Faction Only. They used to be added whenever the setting
+                            // allowed, and on Faction Only too when the faction had none, appended into the registry's own
+                            // list for the faction, which kept them.
+                            private _slingFailedF = missionNamespace getVariable ["ALIVE_ML_slingFailedClasses", []];
+                            if ({_x isKindOf "Helicopter" && {!(_x in _slingFailedF)}} count _transportGroups == 0 && !_limitTransportToFaction) then {
+                                _transportGroups = +([ALIVE_sideDefaultAirTransport,_side,[]] call ALIVE_fnc_hashGet);
                             };
 
                             // HELI_INSERT requires LANDING at the destination LZ. Filter
@@ -8403,10 +8405,11 @@ switch(_operation) do {
 
                             _transportGroups = [ALIVE_factionDefaultAirTransport,_eventFaction,[]] call ALIVE_fnc_hashGet;
 
-                            // Match the same fallback logic used by the _slingAvailable check:
-                            // only append side defaults when faction list is empty AND not faction-limited.
-                            if (count _transportGroups == 0 && !_limitTransportToFaction) then {
-                                _transportGroups append ([ALIVE_sideDefaultAirTransport,_side] call ALIVE_fnc_hashGet);
+                            // Side defaults only when the faction has none it can use (classes that failed to sling this
+                            // session are filtered out below) AND not faction-limited. A copy rather than an append: the
+                            // faction's list is the registry's own, and appending wrote the side's into it.
+                            if ({!(_x in (missionNamespace getVariable ["ALIVE_ML_slingFailedClasses", []]))} count _transportGroups == 0 && !_limitTransportToFaction) then {
+                                _transportGroups = +([ALIVE_sideDefaultAirTransport,_side,[]] call ALIVE_fnc_hashGet);
                             };
 
                             // Filter out classes that have failed sling-validation in this
@@ -13647,13 +13650,14 @@ switch(_operation) do {
 
                                     // a copy: the append below used to add the side's aircraft to the faction's own list, every time
                                     private _airdropTransportGroups = +([ALIVE_factionDefaultAirTransport,_eventFaction,[]] call ALIVE_fnc_hashGet);
-                                    // #947: append side defaults ONLY when transports are not faction-limited.
-                                    // The old `count == 0 ||` also refilled an EMPTY faction pool from the side
-                                    // registry, so Faction Only + a heli-less faction (WW2 mods) still spawned
-                                    // a vanilla side aircraft. A faction-limited heli-less pool must stay empty
-                                    // so the carrierless fallback below delivers the drop instead.
-                                    if (!_limitTransportToFaction) then {
-                                        _airdropTransportGroups append ([ALIVE_sideDefaultAirTransport,_side] call ALIVE_fnc_hashGet);
+                                    // #947: the side's aircraft only when the faction has no helicopter of its own it can use (the
+                                    // pool is cut to helicopters, and classes that failed to sling this session, below), and never
+                                    // on Faction Only: a faction-limited pool with nothing in it must stay empty so the carrierless
+                                    // fallback below delivers the drop instead. They used to be added alongside the faction's own
+                                    // whenever the setting allowed.
+                                    private _slingFailedAD = missionNamespace getVariable ["ALIVE_ML_slingFailedClasses", []];
+                                    if ({_x isKindOf "Helicopter" && {!(_x in _slingFailedAD)}} count _airdropTransportGroups == 0 && !_limitTransportToFaction) then {
+                                        _airdropTransportGroups append ([ALIVE_sideDefaultAirTransport,_side,[]] call ALIVE_fnc_hashGet);
                                     };
 
                                     if (_debug) then {
@@ -13709,8 +13713,11 @@ switch(_operation) do {
                                             private _sideNum = [_side] call ALIVE_fnc_sideTextToNumber;
                                             private _found = ("getNumber (_x >> 'scope') == 2 && {getNumber (_x >> 'VehicleTransport' >> 'Carrier' >> 'maxLoadMass') > 0}" configClasses (configFile >> "CfgVehicles")) select {
                                                 (configName _x) isKindOf "Plane"
-                                                    && {getText (_x >> "faction") == _eventFaction || {!_limitTransportToFaction && {getNumber (_x >> "side") == _sideNum}}}
+                                                    && {getText (_x >> "faction") == _eventFaction || {getNumber (_x >> "side") == _sideNum}}
                                             };
+                                            // the faction's own carriers; the side's only when it has none, and never on Faction Only
+                                            private _ownCarriers = _found select { getText (_x >> "faction") == _eventFaction };
+                                            if (_ownCarriers isNotEqualTo [] || _limitTransportToFaction) then { _found = _ownCarriers; };
                                             ALIVE_ML_vivCarriers set [_vivKey, _found apply { configName _x }];
                                         };
                                         private _vivCarriers = ALIVE_ML_vivCarriers get _vivKey;
