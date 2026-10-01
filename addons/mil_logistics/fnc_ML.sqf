@@ -9702,8 +9702,18 @@ switch(_operation) do {
                             _logEvent = ['LOGCOM_RESPONSE', [_requestID,_playerID],"Logistics","REQUEST_ARRIVED"] call ALIVE_fnc_event;
                             [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
                         }else{
-                            _logEvent = ['LOGCOM_RESPONSE', [_requestID,_playerID],"Logistics","REQUEST_LOST"] call ALIVE_fnc_event;
-                            [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
+                            // Every helicopter is gone. As for a convoy, anything it carried that outlived it is handed over at
+                            // the end of the delivery, which tells the player it's done, so it isn't reported lost first.
+                            private _cargoLeftH = ((_infantryProfiles + ([_eventCargoProfiles, 'motorised', []] call ALIVE_fnc_hashGet)
+                                + ([_eventCargoProfiles, 'mechanised', []] call ALIVE_fnc_hashGet) + ([_eventCargoProfiles, 'armour', []] call ALIVE_fnc_hashGet)
+                                + _planeProfiles + _heliProfiles)
+                                findIf { !isNil { [ALIVE_profileHandler, "getProfile", _x param [0, ""]] call ALIVE_fnc_profileHandler } }) != -1;
+                            if (!_cargoLeftH) then {
+                                _logEvent = ['LOGCOM_RESPONSE', [_requestID,_playerID],"Logistics","REQUEST_LOST"] call ALIVE_fnc_event;
+                                [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
+                                // the player's tablet closes the request on this; the end of the delivery doesn't say delivered
+                                [_event, "requestLost", true] call ALIVE_fnc_hashSet;
+                            };
                         };
                     };
 
@@ -11075,6 +11085,8 @@ switch(_operation) do {
                             if (!_cargoLeft) then {
                                 _logEvent = ['LOGCOM_RESPONSE', [_requestID,_playerID],"Logistics","REQUEST_LOST"] call ALIVE_fnc_event;
                                 [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
+                                // the player's tablet closes the request on this; the end of the delivery doesn't say delivered
+                                [_event, "requestLost", true] call ALIVE_fnc_hashSet;
                             };
                         };
                     };
@@ -16536,8 +16548,8 @@ switch(_operation) do {
                     _logEvent = ['LOGISTICS_COMPLETE', [_finalDestination,_eventFaction,_side,_eventID,_eventType],"Logistics"] call ALIVE_fnc_event;
                     [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
 
-                    // respond to player request
-                    if(_playerRequested) then {
+                    // respond to player request, unless it was reported lost: with nothing left the player heard both
+                    if(_playerRequested && {!([_event, "requestLost", false] call ALIVE_fnc_hashGet)}) then {
                         _finalDestination = [_event, "finalDestination"] call ALIVE_fnc_hashGet;
                         _logEvent = ['LOGCOM_RESPONSE', [_requestID,_playerID,_finalDestination,true],"Logistics","REQUEST_DELIVERED"] call ALIVE_fnc_event;
                         [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
@@ -16552,8 +16564,8 @@ switch(_operation) do {
                     _logEvent = ['LOGISTICS_COMPLETE', [_finalDestination,_eventFaction,_side,_eventID,_eventType],"Logistics"] call ALIVE_fnc_event;
                     [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
 
-                    // respond to player request
-                    if(_playerRequested) then {
+                    // respond to player request, unless it was reported lost: with nothing left the player heard both
+                    if(_playerRequested && {!([_event, "requestLost", false] call ALIVE_fnc_hashGet)}) then {
                         _finalDestination = [_event, "finalDestination"] call ALIVE_fnc_hashGet;
                         _logEvent = ['LOGCOM_RESPONSE', [_requestID,_playerID,_finalDestination,false],"Logistics","REQUEST_DELIVERED"] call ALIVE_fnc_event;
                         [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
