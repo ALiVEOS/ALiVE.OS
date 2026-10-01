@@ -5615,9 +5615,11 @@ switch(_operation) do {
                     _factionFound = false;
                 };
 
-                // if no mil logistics handles this faction, and there is one mil
-                // logistics for this side and this module handles that side
-                if((count _factionOPCOMModules == 0) && (count _sideOPCOMModules == 1) && (_side == _eventSide)) then {
+                // if no mil logistics handles this faction, the module that took the request answers for it: the one
+                // for this side, or with several commanders on the side, its first ready module (as LOGCOM_REQUEST)
+                private _readyMLs = (entities "Module_F") select { typeOf _x == "ALiVE_mil_logistics" && {_x getVariable ["initialAnalysisComplete", false]} };
+                if ((count _factionOPCOMModules == 0) && {_side == _eventSide} && {count _sideOPCOMModules == 1
+                    || {count _sideOPCOMModules > 1 && {_logic == ((_readyMLs select { ([_x, "side"] call MAINCLASS) == _eventSide }) param [0, objNull])}}}) then {
                     _factionFound = true;
                 };
 
@@ -5823,9 +5825,11 @@ switch(_operation) do {
                     _factionFound = false;
                 };
 
-                // if no mil logistics handles this faction, and there is one mil
-                // logistics for this side and this module handles that side
-                if((count _factionOPCOMModules == 0) && (count _sideOPCOMModules == 1) && (_side == _eventSide)) then {
+                // if no mil logistics handles this faction, the module that took the request answers for it: the one
+                // for this side, or with several commanders on the side, its first ready module (as LOGCOM_REQUEST)
+                private _readyMLs = (entities "Module_F") select { typeOf _x == "ALiVE_mil_logistics" && {_x getVariable ["initialAnalysisComplete", false]} };
+                if ((count _factionOPCOMModules == 0) && {_side == _eventSide} && {count _sideOPCOMModules == 1
+                    || {count _sideOPCOMModules > 1 && {_logic == ((_readyMLs select { ([_x, "side"] call MAINCLASS) == _eventSide }) param [0, objNull])}}}) then {
                     _factionFound = true;
                 };
 
@@ -6136,9 +6140,15 @@ switch(_operation) do {
                         };
                     } forEach (entities "Module_F");
 
-                    // if no mil logistics handles this faction, and there is more than one mil
-                    // logistics for this side return an error
-                    if(((count _factionOPCOMModules == 0) && (count _sideOPCOMModules > 1)) || ((count _factionOPCOMModules == 0) && (count _sideOPCOMModules == 0))) then {
+                    // the logistics modules that have finished starting up, in the order they were placed. A request
+                    // no module owns is answered by one of them: one still starting answers "wait" and stops above,
+                    // and one with no commander never starts listening.
+                    private _readyMLs = (entities "Module_F") select { typeOf _x == "ALiVE_mil_logistics" && {_x getVariable ["initialAnalysisComplete", false]} };
+
+                    // if no mil logistics handles this faction and there's none for this side, the first ready module
+                    // refuses it: every module that didn't own the faction did, whatever its side, and the player's side
+                    // heard the refusal once per module
+                    if ((count _factionOPCOMModules == 0) && {count _sideOPCOMModules == 0} && {_logic == (_readyMLs param [0, objNull])}) then {
                         _eventForceMakeup = _eventData select 3;
                         _playerID = _eventData select 5;
                         _requestID = _eventForceMakeup select 0;
@@ -6147,9 +6157,10 @@ switch(_operation) do {
                         [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
                     };
 
-                    // if no mil logistics handles this faction, and there is one mil
-                    // logistics for this side and this module handles that side
-                    if((count _factionOPCOMModules == 0) && (count _sideOPCOMModules == 1) && (_side == _eventSide)) then {
+                    // if no mil logistics handles this faction, the one for this side takes it; with several commanders
+                    // on the side, the first ready module of that side does (the request used to be refused)
+                    if ((count _factionOPCOMModules == 0) && {_side == _eventSide} && {count _sideOPCOMModules == 1
+                        || {count _sideOPCOMModules > 1 && {_logic == ((_readyMLs select { ([_x, "side"] call MAINCLASS) == _eventSide }) param [0, objNull])}}}) then {
 
                         _factionFound = true;
 
