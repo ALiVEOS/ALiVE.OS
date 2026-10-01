@@ -3061,7 +3061,7 @@ switch(_operation) do {
                                                 ["ML - heliDeliveryWatchdog: %1 troops disembarked (t=%2s, %3 s on the ground), RTB.", _tProfID, _phaseTimer, _groundTimer] call ALiVE_fnc_dump;
                                             };
                                         } else {
-                                            ["ML - heliDeliveryWatchdog: %1 leaving with %2 still aboard (t=%3s, %4 s on the ground), RTB.", _tProfID, count _passengers, _phaseTimer, _groundTimer] call ALiVE_fnc_dump;
+                                            ["ML - heliDeliveryWatchdog: %1 never let its men out: %2 still aboard (t=%3s, %4 s on the ground) get out where it is, RTB.", _tProfID, count _passengers, _phaseTimer, _groundTimer] call ALiVE_fnc_dump;
                                         };
                                     };
 
@@ -3099,6 +3099,52 @@ switch(_operation) do {
                                         _heli setVelocity [_vKickTO select 0, _vKickTO select 1, 12];
                                     };
 
+                                    // A troop helicopter whose time ran out with men still aboard lets them out where it is, by
+                                    // parachute if it's off the ground, before it turns for home. It used to take them home, where
+                                    // its removal 1200 m out deleted them with it. They're released from it first, as the unload
+                                    // step does, in case it never got that far.
+                                    private _bailed = false;
+                                    if (!_isSlingHeli && {!_troopsClear} && {_passengers isNotEqualTo []}) then {
+                                        private _vpU = [ALIVE_profileHandler, "getProfile", _vProfID] call ALIVE_fnc_profileHandler;
+                                        if (!isNil "_vpU") then {
+                                            {
+                                                private _cpU = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+                                                if (!isNil "_cpU") then { [_cpU, _vpU] call ALIVE_fnc_removeProfileVehicleAssignment; };
+                                            } forEach +(_vpU select 2 select 9);
+                                        };
+                                        // a parachute only well clear of the ground (it's made 8 m under the helicopter); lower
+                                        // than that they're put on the ground beside it
+                                        private _airborne = !isTouchingGround _heli && {((getPos _heli) select 2) > 30};
+                                        {
+                                            private _u = _x;
+                                            // kept from damage from the moment they leave, until they're down
+                                            _u allowDamage false;
+                                            unassignVehicle _u;
+                                            [_u] orderGetIn false;
+                                            _u moveOut _heli;
+                                            private _chute = objNull;
+                                            if (_airborne) then {
+                                                // 5 m apart, three to a row, so the canopies don't open into each other
+                                                private _dropASL = (getPosASL _heli) vectorAdd [(_forEachIndex mod 3) * 5 - 5, (floor (_forEachIndex / 3)) * 5 - 5, -8];
+                                                _chute = createVehicle ["Steerable_Parachute_F", ASLToAGL _dropASL, [], 0, "CAN_COLLIDE"];
+                                                _chute allowDamage false;
+                                                _chute setPosASL _dropASL;
+                                                _chute setVelocity (velocity _heli);
+                                                _u moveInDriver _chute;
+                                            } else {
+                                                _u setVehiclePosition [getPosATL _heli, [], 10, "NONE"];
+                                            };
+                                            [_u, _chute] spawn {
+                                                params ["_u", "_c"];
+                                                private _t = 0;
+                                                waitUntil { sleep 0.5; _t = _t + 0.5; isTouchingGround _u || {isNull _c && {_t > 2}} || {_t > 60} };
+                                                sleep 2;
+                                                if (alive _u) then { _u allowDamage true; };
+                                            };
+                                        } forEach _passengers;
+                                        _bailed = true;
+                                    };
+
                                     _heli setVariable ["alive_ml_rtb_issued", true];
                                     private _tProfNow = [ALIVE_profileHandler, "getProfile", _tProfID] call ALIVE_fnc_profileHandler;
                                     if !(isNil "_tProfNow") then {
@@ -3126,7 +3172,7 @@ switch(_operation) do {
                                     // aboard RTBs undelivered (nobody wins). Troops physically
                                     // clear, or a sling heli (load force-released just above),
                                     // is a real delivery.
-                                    if (_troopsClear || _isSlingHeli) then { "arrived" call _fnc_latchHeli; } else { "aborted" call _fnc_latchHeli; };
+                                    if (_troopsClear || _isSlingHeli || _bailed) then { "arrived" call _fnc_latchHeli; } else { "aborted" call _fnc_latchHeli; };
                                     _heli setVariable ["alive_ml_watchdog_phase", _phase];
                                 } else {
                                     if (_dbg) then {
