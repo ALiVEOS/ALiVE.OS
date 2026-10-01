@@ -6098,12 +6098,39 @@ switch(_operation) do {
             if(_eventType == "PR_STANDARD" || _eventType == "PR_AIRDROP" || _eventType == "PR_HELI_INSERT") then {
                 _initComplete = _logic getVariable "initialAnalysisComplete";
                 if!(_initComplete) then {
-                    _eventForceMakeup = _eventData select 3;
-                    _playerID = _eventData select 5;
-                    _requestID = _eventForceMakeup select 0;
-                    // respond to player request
-                    _logEvent = ['LOGCOM_RESPONSE', [_requestID,_playerID],"Logistics","DENIED_WAITING_INIT"] call ALIVE_fnc_event;
-                    [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
+                    // Every logistics module gets the request, and each one still starting up answered "wait", so the
+                    // player's side heard it once per module, whatever the faction. Only the module that would take the
+                    // request once ready answers: the first of those owning the faction while none of them is ready (a
+                    // ready one takes it); with none owning it, the first listening module of the requester's side while
+                    // none of that side's is ready (a ready one adopts it); with no module on that side either, the first
+                    // listening module while none at all is ready (a ready one refuses it). A starting module's own side
+                    // and factions aren't set until it's ready, so both are read from the AI Commanders synced to it, as
+                    // the routing below does for ready ones.
+                    private _reqFaction = _eventData select 1;
+                    private _reqSide = _eventData select 2;
+                    private _listeningMLs = (entities "Module_F") select { typeOf _x == "ALiVE_mil_logistics" && {(_x getVariable ["listenerID", ""]) != ""} };
+                    private _fnc_commanders = {
+                        ((synchronizedObjects _this) select { (_x getVariable ["moduleType", ""]) == "ALIVE_OPCOM" && {!isNil {_x getVariable "handler"}} }) apply { _x getVariable "handler" }
+                    };
+                    private _ownerMLs = _listeningMLs select { private _cmds = _x call _fnc_commanders; ({ _reqFaction in ([_x, "factions", []] call ALIVE_fnc_hashGet) } count _cmds) > 0 };
+                    private _sideMLs = _listeningMLs select { private _cmds = _x call _fnc_commanders; ({ ([_x, "side", ""] call ALIVE_fnc_hashGet) == _reqSide } count _cmds) > 0 };
+                    private _answers = if (_ownerMLs isNotEqualTo []) then {
+                        ({ _x getVariable ["initialAnalysisComplete", false] } count _ownerMLs) == 0 && {_logic == (_ownerMLs select 0)}
+                    } else {
+                        if (_sideMLs isNotEqualTo []) then {
+                            ({ _x getVariable ["initialAnalysisComplete", false] } count _sideMLs) == 0 && {_logic == (_sideMLs select 0)}
+                        } else {
+                            ({ _x getVariable ["initialAnalysisComplete", false] } count _listeningMLs) == 0 && {_logic == (_listeningMLs param [0, objNull])}
+                        };
+                    };
+                    if (_answers) then {
+                        _eventForceMakeup = _eventData select 3;
+                        _playerID = _eventData select 5;
+                        _requestID = _eventForceMakeup select 0;
+                        // respond to player request
+                        _logEvent = ['LOGCOM_RESPONSE', [_requestID,_playerID],"Logistics","DENIED_WAITING_INIT"] call ALIVE_fnc_event;
+                        [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
+                    };
                 };
             };
 
