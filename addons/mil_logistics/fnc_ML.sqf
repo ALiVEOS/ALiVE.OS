@@ -10309,6 +10309,8 @@ switch(_operation) do {
                             private _finalDestination = [_event, "finalDestination", []] call ALIVE_fnc_hashGet;
                             private _logEvent2 = ['LOGCOM_RESPONSE', [_requestID,_playerID,_finalDestination,true],"Logistics","REQUEST_DELIVERED"] call ALIVE_fnc_event;
                             [ALIVE_eventLog, "addEvent", _logEvent2] call ALIVE_fnc_eventLog;
+                            // the end of the delivery doesn't report it again
+                            [_event, "deliveredSent", true] call ALIVE_fnc_hashSet;
                             if (_debug) then {
                                 ["ML - airdropReturnWait: REQUEST_DELIVERED sent to player %1 for request %2",
                                     _playerID, _requestID] call ALiVE_fnc_dump;
@@ -12067,7 +12069,8 @@ switch(_operation) do {
                     if (!isNil "ALIVE_ML_slingCargo") then { ALIVE_ML_slingCargo deleteAt _heliVehS; };
                 } forEach ([_event, "airdropSlingTransports", []] call ALIVE_fnc_hashGet);
                 // and any helicopter whose profile has gone comes off the sling map: a Helicopter delivery's stayed on it for
-                // the rest of the mission. Only gone ones: the payload hand-over below still looks a live one's load up there.
+                // the rest of the mission. Only gone ones: the payload hand-over, below or already running from when the
+                // transports finished, still looks a live one's load up there.
                 if (!isNil "ALIVE_ML_slingCargo") then {
                     { if (isNil { [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler }) then { ALIVE_ML_slingCargo deleteAt _x; }; } forEach (keys ALIVE_ML_slingCargo);
                 };
@@ -16339,6 +16342,14 @@ switch(_operation) do {
                 [_staticIndividualProfiles, _eventPosition] call _fnc_holdStatic;
                 [_staticGroupProfiles, _eventPosition] call _fnc_holdStatic;
 
+                // A transported delivery comes here twice, when its transports finish and again at its end. The joins and the
+                // static hold above are safe to repeat (one already joined is gone), and the second call is what joins a
+                // squad that was still virtual at the first. The rest goes once, on the first call that finds the player:
+                // the payload hand-over, the completion event and the delivered report. The player heard the request
+                // completed twice, and a second hand-over gave the payload helicopters their way out again.
+                if ([_event, "playerHandedOver", false] call ALIVE_fnc_hashGet) exitWith {};
+                [_event, "playerHandedOver", true] call ALIVE_fnc_hashSet;
+
                 // If payload profiles are still carrying their load, wait a while then dump them
                 private ["_payloadProfiles","_payloadProfileID","_payloadVehicleID","_payloadProfile","_payloadVehicle","_payloadCount",
                 "_reinforcementPosition","_position","_vehicle"];
@@ -16549,7 +16560,7 @@ switch(_operation) do {
                     [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
 
                     // respond to player request, unless it was reported lost: with nothing left the player heard both
-                    if(_playerRequested && {!([_event, "requestLost", false] call ALIVE_fnc_hashGet)}) then {
+                    if(_playerRequested && {!([_event, "requestLost", false] call ALIVE_fnc_hashGet)} && {!([_event, "deliveredSent", false] call ALIVE_fnc_hashGet)}) then {
                         _finalDestination = [_event, "finalDestination"] call ALIVE_fnc_hashGet;
                         _logEvent = ['LOGCOM_RESPONSE', [_requestID,_playerID,_finalDestination,true],"Logistics","REQUEST_DELIVERED"] call ALIVE_fnc_event;
                         [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
@@ -16565,7 +16576,7 @@ switch(_operation) do {
                     [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
 
                     // respond to player request, unless it was reported lost: with nothing left the player heard both
-                    if(_playerRequested && {!([_event, "requestLost", false] call ALIVE_fnc_hashGet)}) then {
+                    if(_playerRequested && {!([_event, "requestLost", false] call ALIVE_fnc_hashGet)} && {!([_event, "deliveredSent", false] call ALIVE_fnc_hashGet)}) then {
                         _finalDestination = [_event, "finalDestination"] call ALIVE_fnc_hashGet;
                         _logEvent = ['LOGCOM_RESPONSE', [_requestID,_playerID,_finalDestination,false],"Logistics","REQUEST_DELIVERED"] call ALIVE_fnc_event;
                         [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
