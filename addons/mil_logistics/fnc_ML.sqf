@@ -1087,6 +1087,44 @@ switch(_operation) do {
         };
     };
 
+    case "removeTransportUnseen": {
+        // A delivery's transport helicopter whose flight home runs out of time while a player is near it isn't taken away
+        // in front of them: it flies on home and goes once no player is within the given distance of it (a player aboard is
+        // near), or once it's no longer spawned, as one that gets clear of the destination does. Checked every 10 s. One
+        // destroyed meanwhile is left to the profile system. [vehicle profile ID, distance, debug]
+        _args params ["_vID", ["_radius", 1500], ["_debug", false]];
+        [_vID, _radius, _debug] spawn {
+            params ["_vID", "_radius", "_dbg"];
+            private _dead = false;
+            waitUntil {
+                sleep 10;
+                private _vp = [ALIVE_profileHandler, "getProfile", _vID] call ALIVE_fnc_profileHandler;
+                if (isNil "_vp") exitWith { true };
+                private _veh = _vp select 2 select 10;
+                if !(_vp select 2 select 1) exitWith { true };
+                if (isNil "_veh" || {!(_veh isEqualType objNull)} || {isNull _veh}) exitWith { true };
+                if (!alive _veh) exitWith { _dead = true; true };
+                ([getPos _veh, _radius] call ALiVE_fnc_anyPlayersInRange) == 0
+            };
+            private _vp = [ALIVE_profileHandler, "getProfile", _vID] call ALIVE_fnc_profileHandler;
+            if (_dead || {isNil "_vp"}) exitWith {};
+            // anyone still aboard a spawned one goes first, as the delivery watchdog does it: deleting the helicopter
+            // with them seated throws them out, from whatever height it's at
+            private _vehR = _vp select 2 select 10;
+            if ((_vp select 2 select 1) && {!isNil "_vehR"} && {_vehR isEqualType objNull} && {!isNull _vehR}) then {
+                { if (vehicle _x == _vehR) then { deleteVehicle _x; }; } forEach (crew _vehR);
+            };
+            private _inCommand = _vp select 2 select 8;
+            if (count _inCommand > 0) then {
+                private _cmdProf = [ALIVE_profileHandler, "getProfile", _inCommand select 0] call ALIVE_fnc_profileHandler;
+                if (!isNil "_cmdProf") then { [_cmdProf, "destroy"] call ALIVE_fnc_profileEntity; };
+            };
+            [_vp, "vehicleAssignments", [] call ALIVE_fnc_hashCreate] call ALIVE_fnc_hashSet;
+            [_vp, "destroy"] call ALIVE_fnc_profileVehicle;
+            ["ML - removeTransportUnseen: %1 removed, no player near it.", _vID] call ALiVE_fnc_dump;
+        };
+    };
+
     case "holdSlingHelicopter": {
         // A crewed helicopter is made flying, 300 m up, even where its profile stands on the ground, and one made at its
         // departure because a player is there dives to its cruise height in its first ten seconds, before its delivery
@@ -9979,6 +10017,8 @@ switch(_operation) do {
                     private _anyActive = 0;
                     private _anyAlive  = 0;
                     private _departurePos = [_event, "departurePosition"] call ALIVE_fnc_hashGet;
+                    // a player this near a helicopter can see it (the heliParadropReturnWait guard)
+                    private _guardRadius = (missionNamespace getVariable ["ALIVE_spawnRadiusHeli", 1500]) max 1500;
 
                     {
                         private _tProfile = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
@@ -9996,7 +10036,9 @@ switch(_operation) do {
                                 _farEnough = _checkPos distance2D _departurePos < 500;
                             };
 
-                            if (_waitIterations > _waitTotalIterations || _farEnough) then {
+                            // the last check is the one the delivery ends on: tested before the count goes up, `>`
+                            // never matched it, so a helicopter that never got back was never taken away
+                            if (_waitIterations >= _waitTotalIterations || _farEnough) then {
                                 // a load a sling helicopter still carries is let go first, as heliTransportReturnWait does
                                 if (!isNull _vehicle && {alive _vehicle} && {!isNull getSlingLoad _vehicle}) then {
                                     private _loadAW = getSlingLoad _vehicle;
@@ -10004,18 +10046,28 @@ switch(_operation) do {
                                     _vehicle setSlingLoad objNull;
                                     ["ML - airdropReturnWait: %1 still carrying its load when removed, let it go first.", _x] call ALiVE_fnc_dump;
                                 };
-                                if (!isNull _vehicle && alive _vehicle && _active) then {
-                                    private _landPad = createVehicle ["Land_HelipadEmpty_F", getPosATL _vehicle, [], 0, "CAN_COLLIDE"];
-                                    _landPad setVariable ["ALiVE_padOwner", "mil_logistics", true];
-                                    _vehicle landAt _landPad;
-                                    [_vehicle, _landPad] spawn {
-                                        private _h = _this select 0; private _p = _this select 1; private _t = 0;
-                                        waitUntil { sleep 2; _t = _t + 2; isTouchingGround _h || !alive _h || _t > 30 };
-                                        deleteVehicle _p;
-                                        if (alive _h) then { _h setDamage 1; };
+                                // out of time with a player near it, it flies on and goes once no player is near
+                                if (!_farEnough && {_active} && {!isNull _vehicle} && {alive _vehicle} && {([getPos _vehicle, _guardRadius] call ALiVE_fnc_anyPlayersInRange) > 0}) then {
+                                    [_logic, "removeTransportUnseen", [_x, _guardRadius, _debug]] call MAINCLASS;
+                                    ["ML - airdropReturnWait: %1 out of time %2 m from its departure with a player near, removed once nobody is.",
+                                        _x, if (count _departurePos > 1) then { round ((getPos _vehicle) distance2D _departurePos) } else {-1}] call ALiVE_fnc_dump;
+                                } else {
+                                    if (!_farEnough) then {
+                                        ["ML - airdropReturnWait: %1 out of time on its way back, removed.", _x] call ALiVE_fnc_dump;
                                     };
+                                    if (!isNull _vehicle && alive _vehicle && _active) then {
+                                        private _landPad = createVehicle ["Land_HelipadEmpty_F", getPosATL _vehicle, [], 0, "CAN_COLLIDE"];
+                                        _landPad setVariable ["ALiVE_padOwner", "mil_logistics", true];
+                                        _vehicle landAt _landPad;
+                                        [_vehicle, _landPad] spawn {
+                                            private _h = _this select 0; private _p = _this select 1; private _t = 0;
+                                            waitUntil { sleep 2; _t = _t + 2; isTouchingGround _h || !alive _h || _t > 30 };
+                                            deleteVehicle _p;
+                                            if (alive _h) then { _h setDamage 1; };
+                                        };
+                                    };
+                                    _active = false;
                                 };
-                                _active = false;
                             };
 
                             if (_active) then {
@@ -11219,6 +11271,8 @@ switch(_operation) do {
                     // if all units haven't reached objective
                     _waitTotalIterations = 60;
                     _waitIterations = _eventStateData param [0, 0]; if (isNil "_waitIterations" || typeName _waitIterations != "SCALAR") then { _waitIterations = 0; };
+                    // a player this near a helicopter can see it (the heliParadropReturnWait guard)
+                    private _guardRadius = (missionNamespace getVariable ["ALIVE_spawnRadiusHeli", 1500]) max 1500;
 
                     // once transport vehicles are inactive
                     // dispose of the profiles
@@ -11271,7 +11325,9 @@ switch(_operation) do {
                                         };
                                     };
                                 };
-                                if (_waitIterations > _waitTotalIterations || _farEnough) then {
+                                // The last check is the one the delivery ends on: tested before the count goes up,
+                                // `>` never matched it, so a helicopter that never got clear was never taken away.
+                                if (_waitIterations >= _waitTotalIterations || _farEnough) then {
                                     // A load it still carries is let go first, under a parachute more than 5 m up and kept
                                     // from damage, and its profile is told where it comes down: the helicopter is removed
                                     // below, and the load then fell with nothing to slow it.
@@ -11281,19 +11337,30 @@ switch(_operation) do {
                                         _vehicle setSlingLoad objNull;
                                         ["ML - heliTransportReturnWait: %1 still carrying its load when removed, let it go first.", _x] call ALiVE_fnc_dump;
                                     };
-                                    // Force heli to land and despawn if still active
-                                    if (!isNull _vehicle && alive _vehicle && _active) then {
-                                        private _landPad = createVehicle ["Land_HelipadEmpty_F", getPosATL _vehicle, [], 0, "CAN_COLLIDE"];
-                                        _landPad setVariable ["ALiVE_padOwner", "mil_logistics", true];
-                                        _vehicle landAt _landPad;
-                                        [_vehicle, _landPad] spawn {
-                                            private _h = _this select 0; private _p = _this select 1; private _t = 0;
-                                            waitUntil { sleep 2; _t = _t + 2; isTouchingGround _h || !alive _h || _t > 30 };
-                                            deleteVehicle _p;
-                                            if (alive _h) then { _h setDamage 1; }; // despawn by destroying if won't land
+                                    // Out of time with a player near it, it isn't taken away in front of them: it flies on
+                                    // home and goes once no player is near.
+                                    if (!_farEnough && {_active} && {_hasLiveVehicle} && {([getPos _vehicle, _guardRadius] call ALiVE_fnc_anyPlayersInRange) > 0}) then {
+                                        [_logic, "removeTransportUnseen", [_x, _guardRadius, _debug]] call MAINCLASS;
+                                        ["ML - heliTransportReturnWait: %1 out of time %2 m from the destination with a player near, removed once nobody is.",
+                                            _x, if (count _finalDest > 1) then { round ((getPos _vehicle) distance2D _finalDest) } else {-1}] call ALiVE_fnc_dump;
+                                    } else {
+                                        if (!_farEnough) then {
+                                            ["ML - heliTransportReturnWait: %1 out of time on its way home, removed.", _x] call ALiVE_fnc_dump;
                                         };
+                                        // Force heli to land and despawn if still active
+                                        if (!isNull _vehicle && alive _vehicle && _active) then {
+                                            private _landPad = createVehicle ["Land_HelipadEmpty_F", getPosATL _vehicle, [], 0, "CAN_COLLIDE"];
+                                            _landPad setVariable ["ALiVE_padOwner", "mil_logistics", true];
+                                            _vehicle landAt _landPad;
+                                            [_vehicle, _landPad] spawn {
+                                                private _h = _this select 0; private _p = _this select 1; private _t = 0;
+                                                waitUntil { sleep 2; _t = _t + 2; isTouchingGround _h || !alive _h || _t > 30 };
+                                                deleteVehicle _p;
+                                                if (alive _h) then { _h setDamage 1; }; // despawn by destroying if won't land
+                                            };
+                                        };
+                                        _active = false;
                                     };
-                                    _active = false;
                                 };
                             };
 
@@ -11608,6 +11675,8 @@ switch(_operation) do {
                     private _anyActive = 0;
                     private _anyAlive  = 0;
                     private _finalDest = [_event, "finalDestination"] call ALIVE_fnc_hashGet;
+                    // a player this near a helicopter can see it
+                    private _guardRadius = (missionNamespace getVariable ["ALIVE_spawnRadiusHeli", 1500]) max 1500;
 
                     {
                         private _tProfile = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
@@ -11626,11 +11695,11 @@ switch(_operation) do {
                                 // Never land-and-remove a carrier players can see: an active
                                 // (= observed) heli stopping mid-air, or hovering over water
                                 // where isTouchingGround never fires, then detonating looks
-                                // broken. Defer and let it keep flying its RTB waypoints --
-                                // the _waitTotalIterations timeout below still bounds its
-                                // lifetime regardless. Gate on the live heli spawn radius so
-                                // missions with a raised spawn envelope are covered too.
-                                private _dzGuardRadius = (missionNamespace getVariable ["ALIVE_spawnRadiusHeli", 1500]) max 1500;
+                                // broken. Defer and let it keep flying its RTB waypoints;
+                                // when the time below runs out it goes once no player is near.
+                                // Gate on the live heli spawn radius so missions with a raised
+                                // spawn envelope are covered too.
+                                private _dzGuardRadius = _guardRadius;
                                 if (_farEnough && {([_checkPos, _dzGuardRadius] call ALiVE_fnc_anyPlayersInRange) > 0}) then {
                                     _farEnough = false;
                                     if (_debug) then {
@@ -11640,19 +11709,31 @@ switch(_operation) do {
                                 };
                             };
 
-                            if (_waitIterations > _waitTotalIterations || _farEnough) then {
-                                if (!isNull _vehicle && alive _vehicle && _active) then {
-                                    private _landPad = createVehicle ["Land_HelipadEmpty_F", getPosATL _vehicle, [], 0, "CAN_COLLIDE"];
-                                    _landPad setVariable ["ALiVE_padOwner", "mil_logistics", true];
-                                    _vehicle landAt _landPad;
-                                    [_vehicle, _landPad] spawn {
-                                        private _h = _this select 0; private _p = _this select 1; private _t = 0;
-                                        waitUntil { sleep 2; _t = _t + 2; isTouchingGround _h || !alive _h || _t > 30 };
-                                        deleteVehicle _p;
-                                        if (alive _h) then { _h setDamage 1; };
+                            // the last check is the one the delivery ends on: tested before the count goes up, `>`
+                            // never matched it, so a helicopter that never got clear was never taken away
+                            if (_waitIterations >= _waitTotalIterations || _farEnough) then {
+                                // out of time with a player near it, it flies on home and goes once no player is near
+                                if (!_farEnough && {_active} && {!isNull _vehicle} && {alive _vehicle} && {([getPos _vehicle, _guardRadius] call ALiVE_fnc_anyPlayersInRange) > 0}) then {
+                                    [_logic, "removeTransportUnseen", [_x, _guardRadius, _debug]] call MAINCLASS;
+                                    ["ML - heliParadropReturnWait: %1 out of time %2 m from the destination with a player near, removed once nobody is.",
+                                        _x, if (count _finalDest > 1) then { round ((getPos _vehicle) distance2D _finalDest) } else {-1}] call ALiVE_fnc_dump;
+                                } else {
+                                    if (!_farEnough) then {
+                                        ["ML - heliParadropReturnWait: %1 out of time on its way home, removed.", _x] call ALiVE_fnc_dump;
                                     };
+                                    if (!isNull _vehicle && alive _vehicle && _active) then {
+                                        private _landPad = createVehicle ["Land_HelipadEmpty_F", getPosATL _vehicle, [], 0, "CAN_COLLIDE"];
+                                        _landPad setVariable ["ALiVE_padOwner", "mil_logistics", true];
+                                        _vehicle landAt _landPad;
+                                        [_vehicle, _landPad] spawn {
+                                            private _h = _this select 0; private _p = _this select 1; private _t = 0;
+                                            waitUntil { sleep 2; _t = _t + 2; isTouchingGround _h || !alive _h || _t > 30 };
+                                            deleteVehicle _p;
+                                            if (alive _h) then { _h setDamage 1; };
+                                        };
+                                    };
+                                    _active = false;
                                 };
-                                _active = false;
                             };
 
                             if (_active) then {
