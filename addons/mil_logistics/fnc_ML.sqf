@@ -2082,8 +2082,8 @@ switch(_operation) do {
                 // a load let go already, as on every delivery that went to plan, has nothing to wait for
                 private _lpF = [ALIVE_profileHandler, "getProfile", _cargoF] call ALIVE_fnc_profileHandler;
                 if (isNil "_lpF" || {([_lpF, "slung", []] call ALIVE_fnc_hashGet) isEqualTo []}) exitWith {};
-                [_cargoF, _tProfID, _entryF param [1, []]] spawn {
-                    params ["_cargoID", "_tProfID", "_spot"];
+                [_cargoF, _tProfID, _entryF param [1, []], _vProfID] spawn {
+                    params ["_cargoID", "_tProfID", "_spot", "_vProfIDF"];
                     private _t0 = time;
                     private _obj = objNull;
                     waitUntil {
@@ -2119,6 +2119,13 @@ switch(_operation) do {
                         [_lp, "despawnPosition", +_onWater] call ALIVE_fnc_profileVehicle;
                     };
                     [objNull, "releaseSlungLoad", [objNull, objNull, _cargoID]] call MAINCLASS;
+                    // and the helicopter is done with it: off the sling map, and one that survived no longer carries it
+                    if (!isNil "ALIVE_ML_slingCargo") then { ALIVE_ML_slingCargo deleteAt _vProfIDF; };
+                    private _vpF = [ALIVE_profileHandler, "getProfile", _vProfIDF] call ALIVE_fnc_profileHandler;
+                    if (!isNil "_vpF") then {
+                        [_vpF, "slingload", []] call ALIVE_fnc_profileVehicle;
+                        [_vpF, "slingloading", false] call ALIVE_fnc_hashSet;
+                    };
                     ["ML - heliDeliveryWatchdog: %1's helicopter was lost with %2 slung, let go at %3.", _tProfID, _cargoID,
                         if (isNull _obj) then {"its profile's position"} else { (getPosATL _obj) apply { round _x } }] call ALiVE_fnc_dump;
                 };
@@ -11836,6 +11843,11 @@ switch(_operation) do {
                     };
                     if (!isNil "ALIVE_ML_slingCargo") then { ALIVE_ML_slingCargo deleteAt _heliVehS; };
                 } forEach ([_event, "airdropSlingTransports", []] call ALIVE_fnc_hashGet);
+                // and any helicopter whose profile has gone comes off the sling map: a Helicopter delivery's stayed on it for
+                // the rest of the mission. Only gone ones: the payload hand-over below still looks a live one's load up there.
+                if (!isNil "ALIVE_ML_slingCargo") then {
+                    { if (isNil { [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler }) then { ALIVE_ML_slingCargo deleteAt _x; }; } forEach (keys ALIVE_ML_slingCargo);
+                };
                 // the transport aircraft drops of this delivery are finished with
                 if (!isNil "ALIVE_ML_vivDone") then {
                     ALIVE_ML_vivDone = ALIVE_ML_vivDone - ([_event, "airdropVivCargo", []] call ALIVE_fnc_hashGet);
