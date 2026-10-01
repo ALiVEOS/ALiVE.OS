@@ -28,6 +28,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 private ["_assignments", "_vehicle", "_gunnersDismount", "_driver", "_gunners", "_commander", "_cargo","_turret","_turrets","_unit"];
@@ -35,6 +36,19 @@ private ["_assignments", "_vehicle", "_gunnersDismount", "_driver", "_gunners", 
 _assignments = _this select 0;
 _vehicle = _this select 1;
 _gunnersDismount = if(count _this > 2) then {_this select 2} else {true};
+
+// unassignVehicle and orderGetIn take effect only where the man is local, and a group the AI Distributor hands to a
+// headless client is local there, so for one of those they go to his own machine
+private _fnc_release = {
+    params ["_man"];
+    if (local _man) then {
+        unassignVehicle _man;
+        [_man] orderGetIn false;
+    } else {
+        _man remoteExecCall ["unassignVehicle", _man];
+        [[_man], false] remoteExecCall ["orderGetIn", _man];
+    };
+};
 
 /*
 ["VEHICLE DISMOUNT : %1",_vehicle] call ALIVE_fnc_dump;
@@ -45,8 +59,7 @@ _assignments call ALIVE_fnc_inspectArray;
 // driver
 _driver = _assignments select 0;
 {
-    unassignVehicle _x;
-    [_x] orderGetIn false;
+    [_x] call _fnc_release;
 } forEach _driver;
 
 // gunner
@@ -54,16 +67,14 @@ if(_gunnersDismount) then
 {
     _gunners = _assignments select 1;
     {
-        unassignVehicle _x;
-        [_x] orderGetIn false;
+        [_x] call _fnc_release;
     } forEach _gunners;
 };
 
 // commander
 _commander = _assignments select 2;
 {
-    unassignVehicle _x;
-    [_x] orderGetIn false;
+    [_x] call _fnc_release;
 } forEach _commander;
 
 // turrets
@@ -85,16 +96,14 @@ if(count _turret > 0) then {
 
     for "_i" from 0 to (count _turret)-1 do {
         _unit = _turret select _i;
-        unassignVehicle _unit;
-        [_unit] orderGetIn false;
+        [_unit] call _fnc_release;
     };
 };
 
 // cargo
 _cargo = _assignments select 4;
 {
-    unassignVehicle _x;
-    [_x] orderGetIn false;
+    [_x] call _fnc_release;
 } forEach _cargo;
 
 // player turrets
@@ -116,9 +125,19 @@ if(count _turret > 0) then {
 
     for "_i" from 0 to (count _turret)-1 do {
         _unit = _turret select _i;
-        unassignVehicle _unit;
-        [_unit] orderGetIn false;
+        [_unit] call _fnc_release;
     };
 };
 
-(group (_driver select 0)) leaveVehicle _vehicle; 
+// leaveVehicle too, and a group is local where its leader is (a group as the target of a remote call means where a
+// player in it is, so it goes to the leader)
+if (count _driver > 0) then {
+    private _crewGroup = group (_driver select 0);
+    if (!isNull _crewGroup) then {
+        if (local _crewGroup) then {
+            _crewGroup leaveVehicle _vehicle;
+        } else {
+            [_crewGroup, _vehicle] remoteExecCall ["leaveVehicle", leader _crewGroup];
+        };
+    };
+}; 

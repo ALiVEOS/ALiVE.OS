@@ -84,6 +84,14 @@ ARJay & Jman
 #define SLINGLOAD_DROP_TIMEOUT 180  // seconds to wait for heli to descend before forcing release
 // Airfield departure: a held objective within this range of a fixed runway ILS point qualifies as an airfield departure base
 #define AIRFIELD_OBJECTIVE_RADIUS 1000
+// Commands that take effect only where the man is local. A group the AI Distributor hands to a headless client is local
+// there, so sent from the server they did nothing: a man stayed in his seat with his order to get in, or was put out of a
+// helicopter with no parachute and no protection. On a local man each runs as it always did; otherwise it goes to his
+// own machine, where remote calls run in the order they were sent. moveOut works from anywhere.
+#define ML_UNASSIGN(ML_MAN) if (local ML_MAN) then {unassignVehicle ML_MAN} else {ML_MAN remoteExecCall ["unassignVehicle", ML_MAN]}
+#define ML_NO_GETIN(ML_MAN) if (local ML_MAN) then {[ML_MAN] orderGetIn false} else {[[ML_MAN], false] remoteExecCall ["orderGetIn", ML_MAN]}
+#define ML_ALLOW_DAMAGE(ML_MAN,ML_ON) if (local ML_MAN) then {ML_MAN allowDamage ML_ON} else {[ML_MAN, ML_ON] remoteExecCall ["allowDamage", ML_MAN]}
+#define ML_INTO_DRIVER(ML_MAN,ML_VEH) if (local ML_MAN) then {ML_MAN moveInDriver ML_VEH} else {[ML_MAN, ML_VEH] remoteExecCall ["moveInDriver", ML_MAN]}
 
 private ["_result"];
 
@@ -1889,7 +1897,7 @@ switch(_operation) do {
                             // Passengers = crew members that are not the driver or gunner.
                             private _passengers = crew _heli select { alive _x && _x != driver _heli && _x != gunner _heli };
                             if (count _passengers > 0) then {
-                                { unassignVehicle _x; _x moveOut _heli; } forEach _passengers;
+                                { ML_UNASSIGN(_x); _x moveOut _heli; } forEach _passengers;
                                 ["ML - spawnHelicopterFuelWatchdog: ALERT profile %1 sustained hover with %2 passengers -- ejecting before forced landing.",
                                     _profileID, count _passengers] call ALiVE_fnc_dump;
                             };
@@ -3198,9 +3206,9 @@ switch(_operation) do {
                                         {
                                             private _u = _x;
                                             // kept from damage from the moment they leave, until they're down
-                                            _u allowDamage false;
-                                            unassignVehicle _u;
-                                            [_u] orderGetIn false;
+                                            ML_ALLOW_DAMAGE(_u, false);
+                                            ML_UNASSIGN(_u);
+                                            ML_NO_GETIN(_u);
                                             _u moveOut _heli;
                                             private _chute = objNull;
                                             if (_airborne) then {
@@ -3210,16 +3218,25 @@ switch(_operation) do {
                                                 _chute allowDamage false;
                                                 _chute setPosASL _dropASL;
                                                 _chute setVelocity (velocity _heli);
-                                                _u moveInDriver _chute;
+                                                ML_INTO_DRIVER(_u, _chute);
                                             } else {
                                                 _u setVehiclePosition [getPosATL _heli, [], 10, "NONE"];
                                             };
                                             [_u, _chute] spawn {
                                                 params ["_u", "_c"];
+                                                // a man the headless client owns is put in his parachute by his own machine, and the call can get there
+                                                // before he's out of the helicopter or before the parachute is: look again each second
+                                                for "_i" from 1 to 3 do {
+                                                    sleep 1;
+                                                    if (isNull _c || {!alive _u} || {vehicle _u == _c} || {((getPos _u) select 2) < 10}) exitWith {};
+                                                    if (vehicle _u != _u) then { _u moveOut (vehicle _u); };
+                                                    ML_INTO_DRIVER(_u, _c);
+                                                    ["ML - parachute: %1 not in his parachute %2 s after leaving, sent again", _u, _i] call ALiVE_fnc_dump;
+                                                };
                                                 private _t = 0;
                                                 waitUntil { sleep 0.5; _t = _t + 0.5; isTouchingGround _u || {isNull _c && {_t > 2}} || {_t > 60} };
                                                 sleep 2;
-                                                if (alive _u) then { _u allowDamage true; };
+                                                if (alive _u) then { ML_ALLOW_DAMAGE(_u, true); };
                                             };
                                         } forEach _passengers;
                                         _bailed = true;
@@ -3917,7 +3934,7 @@ switch(_operation) do {
                                     // Eject from heli if seated -- moveInDriver into a
                                     // parachute fails silently when the unit is in a vehicle.
                                     if (vehicle _unit != _unit) then {
-                                        unassignVehicle _unit;
+                                        ML_UNASSIGN(_unit);
                                         _unit moveOut (vehicle _unit);
                                     };
                                     private _dropPosASL = getPosASL _heli2;
@@ -3926,10 +3943,19 @@ switch(_operation) do {
                                     _para allowDamage false;
                                     _para setPosASL _dropPosASL;
                                     _para setVelocity (velocity _heli2);
-                                    _unit moveInDriver _para;
+                                    ML_INTO_DRIVER(_unit, _para);
                                     [_unit, _para] spawn {
                                         params ["_u", "_p"];
-                                        _u allowDamage false;
+                                        ML_ALLOW_DAMAGE(_u, false);
+                                        // a man the headless client owns is put in his parachute by his own machine, and the call can get there
+                                        // before he's out of the helicopter or before the parachute is: look again each second
+                                        for "_i" from 1 to 3 do {
+                                            sleep 1;
+                                            if (isNull _p || {!alive _u} || {vehicle _u == _p} || {((getPos _u) select 2) < 10}) exitWith {};
+                                            if (vehicle _u != _u) then { _u moveOut (vehicle _u); };
+                                            ML_INTO_DRIVER(_u, _p);
+                                            ["ML - parachute: %1 not in his parachute %2 s after leaving, sent again", _u, _i] call ALiVE_fnc_dump;
+                                        };
                                         // Wait until touching ground, para deleted, or 60s timeout
                                         private _t = 0;
                                         waitUntil {
@@ -3937,7 +3963,7 @@ switch(_operation) do {
                                             isTouchingGround _u || isNull _p || _t > 60
                                         };
                                         sleep 2; // brief grace period after landing
-                                        if (alive _u) then { _u allowDamage true; };
+                                        if (alive _u) then { ML_ALLOW_DAMAGE(_u, true); };
                                     };
                                     ["ML - heliParadropWatchdog: %1 unit %2 dropped in parachute. paraPos=[%3,%4] paraAGL=%5m heliVel=[%6,%7,%8]",
                                         _tProfID, _unit,
@@ -3996,7 +4022,7 @@ switch(_operation) do {
                                         private _unit = _x;
                                         if (alive _unit) then {
                                             if (vehicle _unit != _unit) then {
-                                                unassignVehicle _unit;
+                                                ML_UNASSIGN(_unit);
                                                 _unit moveOut (vehicle _unit);
                                             };
                                             private _dropPosASL = getPosASL _heli3;
@@ -4005,17 +4031,26 @@ switch(_operation) do {
                                             _para allowDamage false;
                                             _para setPosASL _dropPosASL;
                                             _para setVelocity (velocity _heli3);
-                                            _unit moveInDriver _para;
+                                            ML_INTO_DRIVER(_unit, _para);
                                             [_unit, _para] spawn {
                                                 params ["_u", "_p"];
-                                                _u allowDamage false;
+                                                ML_ALLOW_DAMAGE(_u, false);
+                                                // a man the headless client owns is put in his parachute by his own machine, and the call can get there
+                                                // before he's out of the helicopter or before the parachute is: look again each second
+                                                for "_i" from 1 to 3 do {
+                                                    sleep 1;
+                                                    if (isNull _p || {!alive _u} || {vehicle _u == _p} || {((getPos _u) select 2) < 10}) exitWith {};
+                                                    if (vehicle _u != _u) then { _u moveOut (vehicle _u); };
+                                                    ML_INTO_DRIVER(_u, _p);
+                                                    ["ML - parachute: %1 not in his parachute %2 s after leaving, sent again", _u, _i] call ALiVE_fnc_dump;
+                                                };
                                                 private _t = 0;
                                                 waitUntil {
                                                     sleep 0.5; _t = _t + 0.5;
                                                     isTouchingGround _u || isNull _p || _t > 60
                                                 };
                                                 sleep 2;
-                                                if (alive _u) then { _u allowDamage true; };
+                                                if (alive _u) then { ML_ALLOW_DAMAGE(_u, true); };
                                             };
                                             if (_dbg) then {
                                                 ["ML - heliParadropWatchdog: %1 unit %2 dropped (force-spawn path)", _tProfID, _unit] call ALiVE_fnc_dump;
@@ -10840,7 +10875,7 @@ switch(_operation) do {
                                 private _cargoUnits = _cargoProfile select 2 select 21;
                                 private _vehObj     = _vehProfile select 2 select 10;
                                 if (!isNull _vehObj) then {
-                                    { if (alive _x) then { unassignVehicle _x; _x moveOut _vehObj; }; } forEach _cargoUnits;
+                                    { if (alive _x) then { ML_UNASSIGN(_x); _x moveOut _vehObj; }; } forEach _cargoUnits;
                                     if (_debug) then {
                                         ["ML - transportTravel: Physically dismounted %1 units from %2",
                                             count _cargoUnits, _vehProfID] call ALiVE_fnc_dump;
@@ -14824,8 +14859,8 @@ switch(_operation) do {
                                     if (count _cargoUnits > 0) then {
                                         {
                                             if (alive _x) then {
-                                                unassignVehicle _x;
-                                                [_x] orderGetIn false;
+                                                ML_UNASSIGN(_x);
+                                                ML_NO_GETIN(_x);
                                                 _x moveOut _heliVehicle;
                                             };
                                         } forEach _cargoUnits;
@@ -14956,8 +14991,8 @@ switch(_operation) do {
                             if (_cargoProfile select 2 select 1) then {
                                 {
                                     if (alive _x && {vehicle _x == _vehicleObject}) then {
-                                        unassignVehicle _x;
-                                        [_x] orderGetIn false;
+                                        ML_UNASSIGN(_x);
+                                        ML_NO_GETIN(_x);
                                         _x moveOut _vehicleObject;
                                     };
                                 } forEach (_cargoProfile select 2 select 21);
@@ -15157,8 +15192,8 @@ switch(_operation) do {
                                         // The wait runs on while men keep getting out (about one every 2 s) and ends after 8 s
                                         // with nobody leaving, or 60 s in all.
                                         {
-                                            unassignVehicle _x;
-                                            [_x] orderGetIn false;
+                                            ML_UNASSIGN(_x);
+                                            ML_NO_GETIN(_x);
                                         } forEach (call _stillAboard);
                                         private _onGround = 0;
                                         private _idle = 0;
@@ -15177,8 +15212,8 @@ switch(_operation) do {
                                         if (alive _heli && {!_up} && {vectorMagnitude velocity _heli < 0.5}) then {
                                             private _aboard = call _stillAboard;
                                             {
-                                                unassignVehicle _x;
-                                                [_x] orderGetIn false;
+                                                ML_UNASSIGN(_x);
+                                                ML_NO_GETIN(_x);
                                                 _x moveOut _heli;
                                             } forEach _aboard;
 
