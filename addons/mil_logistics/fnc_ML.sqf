@@ -1090,11 +1090,15 @@ switch(_operation) do {
     };
 
     case "removeTransportUnseen": {
-        // A delivery's transport helicopter whose flight home runs out of time while a player is near it isn't taken away
-        // in front of them: it flies on home and goes once no player is within the given distance of it (a player aboard is
-        // near), or once it's no longer spawned, as one that gets clear of the destination does. Checked every 10 s. One
+        // A delivery's transport helicopter that's due to go while a player is near it (its flight home ran out of time, or
+        // it was stuck hovering) isn't taken away in front of them: it goes once no player is within the given distance of
+        // it (a player aboard is near), or once it's no longer spawned, as one that gets clear does. Checked every 10 s. One
         // destroyed meanwhile is left to the profile system. [vehicle profile ID, distance, debug]
         _args params ["_vID", ["_radius", 1500], ["_debug", false]];
+        // one wait per helicopter: its flight home and the fuel watchdog can both hand the same one over
+        private _vpP = [ALIVE_profileHandler, "getProfile", _vID] call ALIVE_fnc_profileHandler;
+        if (isNil "_vpP" || {[_vpP, "alive_ml_unseen_pending", false] call ALIVE_fnc_hashGet}) exitWith {};
+        [_vpP, "alive_ml_unseen_pending", true] call ALIVE_fnc_hashSet;
         [_vID, _radius, _debug] spawn {
             params ["_vID", "_radius", "_dbg"];
             private _dead = false;
@@ -1824,11 +1828,16 @@ switch(_operation) do {
                             private _landPad = createVehicle ["Land_HelipadEmpty_F", getPosATL _heli, [], 0, "CAN_COLLIDE"];
                             _landPad setVariable ["ALiVE_padOwner", "mil_logistics", true];
                             _heli landAt _landPad;
-                            [_heli, _landPad] spawn {
-                                private _h = _this select 0; private _p = _this select 1; private _t = 0;
+                            // It used to be destroyed 30 s on, landed or not (landAt rarely brings one down, so mostly in
+                            // the air). It goes once no player is near it instead.
+                            [_heli, _landPad, _heliProfile select 2 select 4, _debug] spawn {
+                                params ["_h", "_p", "_vID", "_dbg"];
+                                private _t = 0;
                                 waitUntil { sleep 2; _t = _t + 2; isTouchingGround _h || !alive _h || _t > 30 };
                                 deleteVehicle _p;
-                                if (alive _h) then { _h setDamage 1; };
+                                if (alive _h) then {
+                                    [objNull, "removeTransportUnseen", [_vID, (missionNamespace getVariable ["ALIVE_spawnRadiusHeli", 1500]) max 1500, _dbg]] call ALIVE_fnc_ML;
+                                };
                             };
                             _hoverTicks = 0;
                             _active = false;
