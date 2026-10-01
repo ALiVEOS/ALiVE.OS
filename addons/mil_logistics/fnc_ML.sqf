@@ -8780,6 +8780,8 @@ switch(_operation) do {
                             private _reservation = [_event, "poolReservation", 0] call ALIVE_fnc_hashGet;
                             _forcePool = _forcePool + _reservation;
                             _forcePool = _forcePool - _totalCount;
+                            // settled: removing the request later has nothing to give back
+                            [_event, "poolReservation", 0] call ALIVE_fnc_hashSet;
 
                             if(_debug) then {
                                 ["ML - monitorEvent: Pool reconciliation. Reservation refunded: %1 True count deducted: %2 Remaining pool: %3",
@@ -16349,6 +16351,22 @@ switch(_operation) do {
 
         _eventID = _args;
         _eventQueue = [_logic, "eventQueue"] call MAINCLASS;
+
+        // An AI Commander's request is charged to the Force Pool when it arrives, and settled once its groups are made.
+        // One turned down before that (the Static insertion point not held, or no groups could be made) used to keep
+        // the charge, so refused requests drained the pool: it's given back here.
+        private _evR = [_eventQueue, _eventID, []] call ALIVE_fnc_hashGet;
+        if (_evR isEqualType [] && {_evR isNotEqualTo []}) then {
+            private _reservationR = [_evR, "poolReservation", 0] call ALIVE_fnc_hashGet;
+            if (_reservationR isEqualType 0 && {_reservationR > 0}) then {
+                private _factionR = ([_evR, "data", []] call ALIVE_fnc_hashGet) param [1, ""];
+                private _poolR = [ALIVE_globalForcePool, _factionR, 0] call ALIVE_fnc_hashGet;
+                if (_poolR isEqualType "") then { _poolR = parseNumber _poolR; };
+                [ALIVE_MLGlobalRegistry, "updateGlobalForcePool", [[_logic, "registryID"] call MAINCLASS, _poolR + _reservationR]] call ALIVE_fnc_MLGlobalRegistry;
+                [_evR, "poolReservation", 0] call ALIVE_fnc_hashSet;
+                ["ML - Request %1 turned down: %2 group(s) given back to the force pool (now %3).", _eventID, _reservationR, _poolR + _reservationR] call ALiVE_fnc_dump;
+            };
+        };
 
         [_eventQueue,_eventID] call ALIVE_fnc_hashRem;
 
