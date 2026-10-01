@@ -4439,6 +4439,41 @@ switch(_operation) do {
 		        _startForceStrengthDecrementFactor = parseNumber([_logic, "startForceStrengthDecFactor"] call MAINCLASS);
 		           
 		        _data params ["_side","_objective"]; 
+		        // Whether this module's side held the place just taken. Its commander's copy of it (every copy shares the
+		        // place's center; cluster ids repeat between military and civilian places) counts when either of the
+		        // commander's last two looks at the field listed it as its own or contested, or a section is holding or
+		        // defending it. A defending section that is wiped out is cleared from the place before the capture comes in,
+		        // and a look taken in between already has it as the enemy's; the one before still has it. A look over 15
+		        // minutes old doesn't count (an Asymmetric commander looks only at the start), and a capture by a side the
+		        // commander counts as friendly is no loss. Another side taking a place this side never held used to cut this
+		        // side's force cap as well.
+		        private _fnc_heldHere = {
+		            params ["_obj", "_ourSide", "_takenBy"];
+		            if (isNil "_obj" || {!(_obj isEqualType [])}) exitWith { false };
+		            private _centerC = [_obj, "center", []] call ALiVE_fnc_hashGet;
+		            if (isNil "_centerC" || {!(_centerC isEqualType [])} || {count _centerC < 2}) exitWith { false };
+		            // a look: [its own, the enemy's, contested, time], each entry [objectiveID, ...]
+		            private _fnc_lookIDs = {
+		                params ["_look"];
+		                if (_look isEqualType [] && {count _look > 3} && {(time - (_look select 3)) < 900}) then {
+		                    ((_look select 0) + (_look select 2)) apply { _x select 0 }
+		                } else { [] };
+		            };
+		            private _held = false;
+		            {
+		                if (([_x, "side", ""] call ALIVE_fnc_hashGet) == _ourSide && {!(_takenBy in ([_x, "sidesfriendly", []] call ALiVE_fnc_hashGet))}) then {
+		                    private _oursIDs = ([[_x, "clusteroccupation", []] call ALiVE_fnc_hashGet] call _fnc_lookIDs)
+		                        + ([[_x, "clusteroccupationPrevious", []] call ALiVE_fnc_hashGet] call _fnc_lookIDs);
+		                    {
+		                        if ((([_x, "center", [0,0,0]] call ALiVE_fnc_hashGet) distance2D _centerC) < 10
+		                            && {(([_x, "objectiveID", ""] call ALiVE_fnc_hashGet) in _oursIDs)
+		                            || {([_x, "tacom_state", "none"] call ALiVE_fnc_hashGet) in ["reserve", "defend"]}}) exitWith { _held = true; };
+		                    } forEach ([_x, "objectives", []] call ALiVE_fnc_hashGet);
+		                };
+		                if (_held) exitWith {};
+		            } forEach OPCOM_INSTANCES;
+		            _held
+		        };
 		         // DEBUG -------------------------------------------------------------------------------------
              if (_debug) then {
               ["ML - Force Strength 'OPCOM_CAPTURE' -> _side (event): %1, _eventFaction: %2, _faction: %3, _factions: %4", _side, _eventFaction, (_factions select 0 select 0), _factions] call ALiVE_fnc_dump;
@@ -4478,9 +4513,9 @@ switch(_operation) do {
 		            };
 		          };
 		        }; 
-		        // the side that lost && startForceStrengthDec is true...
+		        // the side that lost && startForceStrengthDec is true... and only when this side held it
 		        if (_eventFaction == _side && _startForceStrengthDecrement) then {
-		        	if (_side != (_factions select 0 select 0)) then {
+		        	if (_side != (_factions select 0 select 0) && {[_objective, _factions select 0 select 0, _side] call _fnc_heldHere}) then {
 		        		// DEBUG -------------------------------------------------------------------------------------
                 if (_debug) then {
 		        	   ["ML - Force Strength 'OPCOM_CAPTURE' (Decrement) -> _faction: %1, _side (event): %2, _eventFaction: %3, _objective: %4, _startForceStrengthDecrementFactor: %5", (_factions select 0 select 0), _side, _eventFaction, _objective, _startForceStrengthDecrementFactor] call ALiVE_fnc_dump;

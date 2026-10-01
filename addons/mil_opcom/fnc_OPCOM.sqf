@@ -3115,6 +3115,7 @@ switch (_operation) do {
                 [_logic,"objectives", _objectives] call ALiVE_fnc_HashSet;
                 [_logic,"rebuildObjectiveIndexes"] call MAINCLASS;
                 [_logic,"clusteroccupation", []] call ALiVE_fnc_HashSet;
+                [_logic,"clusteroccupationPrevious", []] call ALiVE_fnc_HashSet;
 
                 private _i = 10;
 
@@ -3654,6 +3655,9 @@ switch (_operation) do {
         } foreach _objectives;
 
         private _clusterOccupation = [_friendlyObjectives, _enemyObjectives, _contestedObjectives, time];
+        // the look before this one is kept as well: a place whose defenders were wiped out just before this look is
+        // already the enemy's in it, and Military Logistics asks whether this side held a place another side has taken
+        [_logic,"clusteroccupationPrevious", [_logic,"clusteroccupation", []] call ALiVE_fnc_HashGet] call ALiVE_fnc_HashSet;
         [_logic,"clusteroccupation", _clusterOccupation] call AliVE_fnc_HashSet;
 
         private _controltype = [_logic,"controltype", "invasion"] call ALiVE_fnc_HashGet;
