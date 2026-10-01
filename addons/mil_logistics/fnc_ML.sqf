@@ -1094,10 +1094,11 @@ switch(_operation) do {
         // it was stuck hovering) isn't taken away in front of them: it goes once no player is within the given distance of
         // it (a player aboard is near), or once it's no longer spawned, as one that gets clear does. Checked every 10 s. One
         // destroyed meanwhile is left to the profile system. [vehicle profile ID, distance, debug]
-        _args params ["_vID", ["_radius", 1500], ["_debug", false]];
-        // one wait per helicopter: its flight home and the fuel watchdog can both hand the same one over
+        _args params ["_vID", ["_radius", 1500], ["_debug", false], ["_handedOn", false]];
+        // one wait per helicopter: its flight home and the fuel watchdog can both hand the same one over. A helicopter
+        // that landed at its base comes here with the flag already set (_handedOn), so nothing gets in between.
         private _vpP = [ALIVE_profileHandler, "getProfile", _vID] call ALIVE_fnc_profileHandler;
-        if (isNil "_vpP" || {[_vpP, "alive_ml_unseen_pending", false] call ALIVE_fnc_hashGet}) exitWith {};
+        if (isNil "_vpP" || {!_handedOn && {[_vpP, "alive_ml_unseen_pending", false] call ALIVE_fnc_hashGet}}) exitWith {};
         [_vpP, "alive_ml_unseen_pending", true] call ALIVE_fnc_hashSet;
         [_vID, _radius, _debug] spawn {
             params ["_vID", "_radius", "_dbg"];
@@ -1128,6 +1129,80 @@ switch(_operation) do {
             [_vp, "vehicleAssignments", [] call ALIVE_fnc_hashCreate] call ALIVE_fnc_hashSet;
             [_vp, "destroy"] call ALIVE_fnc_profileVehicle;
             ["ML - removeTransportUnseen: %1 removed, no player near it.", _vID] call ALiVE_fnc_dump;
+        };
+    };
+
+    case "parkTransportAtBase": {
+        // A delivery's transport helicopter due to go while a player is near it lands at its base and waits there, crew
+        // aboard, until nobody is within 500 m, rather than vanishing in front of them. At most 3 wait at any one base: past
+        // that, or with no base or no helicopter, it answers false and the caller removes it as before. True also when it's
+        // already on its way out (landing here, or waiting to go after its flight home ran out of time or it hovered stuck).
+        // One that can't get down within 7 minutes goes once nobody's within the helicopter spawn distance instead.
+        // [vehicle profile ID, base position, debug]
+        _args params ["_vID", ["_base", []], ["_debug", false]];
+        _result = false;
+        private _vpK = [ALIVE_profileHandler, "getProfile", _vID] call ALIVE_fnc_profileHandler;
+        if (isNil "_vpK" || {!(_base isEqualType [])} || {count _base < 2}) exitWith {};
+        if ([_vpK, "alive_ml_unseen_pending", false] call ALIVE_fnc_hashGet) exitWith { _result = true; };
+        private _heliK = _vpK select 2 select 10;
+        if (isNil "_heliK" || {!(_heliK isEqualType objNull)} || {isNull _heliK} || {!alive _heliK} || {!(_heliK isKindOf "Helicopter")}) exitWith {};
+        if (isNil "ALIVE_ML_parked") then { ALIVE_ML_parked = createHashMap; };
+        // the ones still there: [base, the spot each landed on]
+        // a helicopter destroyed while it waited stops counting at once, not when the profile system lets it go
+        {
+            private _vpX = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+            private _oX = if (isNil "_vpX") then { objNull } else { _vpX select 2 select 10 };
+            if (isNil "_vpX" || {!(_oX isEqualType objNull)} || {isNull _oX} || {!alive _oX}) then { ALIVE_ML_parked deleteAt _x; };
+        } forEach (keys ALIVE_ML_parked);
+        if (({ ((_x select 0) distance2D _base) < 1000 } count (values ALIVE_ML_parked)) >= 3) exitWith {};
+        private _spot = [objNull, "findHelicopterLandingPos", [_base, 0, 300, (values ALIVE_ML_parked) apply { _x select 1 }, true,
+            getNumber (configFile >> "CfgVehicles" >> typeOf _heliK >> "mapSize")]] call MAINCLASS;
+        // the finder falls back to an unchecked point near the base when nothing's clear: never onto water
+        if (!(_spot isEqualType []) || {count _spot < 2} || {surfaceIsWater _spot}) exitWith {};
+        ALIVE_ML_parked set [_vID, [+_base, +_spot]];
+        [_vpK, "alive_ml_unseen_pending", true] call ALIVE_fnc_hashSet;
+        _result = true;
+        [_vID, _heliK, _spot, _debug] spawn {
+            params ["_vID", "_heli", "_spot", "_dbg"];
+            private _pad = createVehicle ["Land_HelipadEmpty_F", _spot, [], 0, "CAN_COLLIDE"];
+            _pad setVariable ["ALiVE_padOwner", "mil_logistics", true];
+            private _grp = group (driver _heli);
+            _grp setBehaviour "CARELESS";
+            _grp setCombatMode "BLUE";
+            // the delivery watchdog's hit handler sends a helicopter in its flight home (phase 3) off home again when
+            // it's hit; past that phase it leaves it alone, so a hit doesn't pull it off its landing
+            _heli setVariable ["alive_ml_watchdog_phase", 4];
+            _heli flyInHeight 60;
+            _heli move _spot;
+            // its record goes there too, should it despawn on the way
+            private _vp = [ALIVE_profileHandler, "getProfile", _vID] call ALIVE_fnc_profileHandler;
+            if (!isNil "_vp") then {
+                private _ep = [ALIVE_profileHandler, "getProfile", (_vp select 2 select 8) param [0, ""]] call ALIVE_fnc_profileHandler;
+                if (!isNil "_ep") then {
+                    [_ep, "clearWaypoints"] call ALIVE_fnc_profileEntity;
+                    [_ep, "addWaypoint", [_spot, 50, "MOVE", "NORMAL", 50, [], "LINE"] call ALIVE_fnc_createProfileWaypoint] call ALIVE_fnc_profileEntity;
+                };
+            };
+            // land "LAND" sets it down; landAt only holds it over a pad
+            private _t = 0;
+            private _landing = false;
+            waitUntil {
+                sleep 2; _t = _t + 2;
+                if (isNull _heli || {!alive _heli}) exitWith { true };
+                if (!_landing && {(_heli distance2D _spot) < 150}) then { _landing = true; _heli land "LAND"; };
+                (isTouchingGround _heli && {vectorMagnitude velocity _heli < 1}) || {_t > 420}
+            };
+            deleteVehicle _pad;
+            private _down = !isNull _heli && {alive _heli} && {isTouchingGround _heli};
+            if (_down) then {
+                _heli engineOn false;
+                { _x disableAI "MOVE"; } forEach (units _grp);
+            };
+            ["ML - parkTransportAtBase: %1 %2 at its base (%3 m from its spot, %4 s), waits there until nobody's near.",
+                _vID, ["didn't get down", "landed"] select _down, if (isNull _heli) then {-1} else { round (_heli distance2D _spot) }, _t] call ALiVE_fnc_dump;
+            // removed once nobody's within 500 m of it, or the spawn distance if it never got down
+            // it keeps its flag: the wait takes it over as it is, so nothing can hand it over again in between
+            [objNull, "removeTransportUnseen", [_vID, [(missionNamespace getVariable ["ALIVE_spawnRadiusHeli", 1500]) max 1500, 500] select _down, _dbg, true]] call ALIVE_fnc_ML;
         };
     };
 
@@ -3235,6 +3310,15 @@ switch(_operation) do {
                                     round _distFromDest, round _heliAGLr, _heliSpdR] call ALiVE_fnc_dump;
                             };
                             if (_distFromDest > 1200 || _phaseTimer > 600) then {
+                                // With a player near, it lands at its base and waits there until nobody is, rather than being
+                                // deleted in front of them with everyone aboard. At most 3 wait at a base; past that, as before.
+                                private _guardRadiusC = (missionNamespace getVariable ["ALIVE_spawnRadiusHeli", 1500]) max 1500;
+                                if (([getPos _heli, _guardRadiusC] call ALiVE_fnc_anyPlayersInRange) > 0
+                                    && {[objNull, "parkTransportAtBase", [_vProfID, _returnPos, _dbg]] call MAINCLASS}) exitWith {
+                                    ["ML - heliDeliveryWatchdog: %1 home with a player near, landing at its base to wait (dist=%2m t=%3s).",
+                                        _tProfID, round _distFromDest, _phaseTimer] call ALiVE_fnc_dump;
+                                    _running = false;
+                                };
                                 ["ML - heliDeliveryWatchdog: %1 RTB complete. class=%2 near=%3 dist=%4m AGL=%5m spd=%6km/h t=%7s",
                                     _tProfID, typeOf _heli,
                                     ([getPos _heli] call ALIVE_fnc_taskGetNearestLocationName),
@@ -10115,6 +10199,14 @@ switch(_operation) do {
                                     _vehicle setSlingLoad objNull;
                                     ["ML - airdropReturnWait: %1 still carrying its load when removed, let it go first.", _x] call ALiVE_fnc_dump;
                                 };
+                                // one already landing at its base, or waiting to go, is left to that
+                                if ([_tProfile, "alive_ml_unseen_pending", false] call ALIVE_fnc_hashGet) exitWith {};
+                                // back at its departure with a player near it, it lands there and waits until nobody's near
+                                // rather than vanishing in front of them. At most 3 wait at a base.
+                                if (_farEnough && {_active} && {!isNull _vehicle} && {alive _vehicle} && {([getPos _vehicle, _guardRadius] call ALiVE_fnc_anyPlayersInRange) > 0}
+                                    && {[_logic, "parkTransportAtBase", [_x, _departurePos, _debug]] call MAINCLASS}) exitWith {
+                                    ["ML - airdropReturnWait: %1 back with a player near, landing at its departure to wait.", _x] call ALiVE_fnc_dump;
+                                };
                                 // out of time with a player near it, it flies on and goes once no player is near
                                 if (!_farEnough && {_active} && {!isNull _vehicle} && {alive _vehicle} && {([getPos _vehicle, _guardRadius] call ALiVE_fnc_anyPlayersInRange) > 0}) then {
                                     [_logic, "removeTransportUnseen", [_x, _guardRadius, _debug]] call MAINCLASS;
@@ -10139,6 +10231,8 @@ switch(_operation) do {
                                 };
                             };
 
+                            // one landing at its departure, or waiting to go, is that wait's: not counted, not removed here
+                            if ([_tProfile, "alive_ml_unseen_pending", false] call ALIVE_fnc_hashGet) exitWith {};
                             if (_active) then {
                                 if (!isNull _vehicle && alive _vehicle && canMove _vehicle) then {
                                     _anyAlive = _anyAlive + 1;
@@ -11423,6 +11517,16 @@ switch(_operation) do {
                                         _vehicle setSlingLoad objNull;
                                         ["ML - heliTransportReturnWait: %1 still carrying its load when removed, let it go first.", _x] call ALiVE_fnc_dump;
                                     };
+                                    // one already landing at its base, or waiting to go, is left to that
+                                    if ([_transportProfile, "alive_ml_unseen_pending", false] call ALIVE_fnc_hashGet) exitWith {};
+                                    // Clear of the destination with a player near it, it lands at its base and waits there until
+                                    // nobody's near, rather than vanishing in front of them. At most 3 wait at a base.
+                                    private _baseRW = [_event, "departurePosition", []] call ALIVE_fnc_hashGet;
+                                    if (count _baseRW < 2 && {_hasLiveVehicle}) then { _baseRW = _vehicle getVariable ["alive_ml_returnPos", []]; };
+                                    if (_farEnough && {_active} && {_hasLiveVehicle} && {([getPos _vehicle, _guardRadius] call ALiVE_fnc_anyPlayersInRange) > 0}
+                                        && {[_logic, "parkTransportAtBase", [_x, _baseRW, _debug]] call MAINCLASS}) exitWith {
+                                        ["ML - heliTransportReturnWait: %1 clear of the destination with a player near, landing at its base to wait.", _x] call ALiVE_fnc_dump;
+                                    };
                                     // Out of time with a player near it, it isn't taken away in front of them: it flies on
                                     // home and goes once no player is near.
                                     if (!_farEnough && {_active} && {_hasLiveVehicle} && {([getPos _vehicle, _guardRadius] call ALiVE_fnc_anyPlayersInRange) > 0}) then {
@@ -11449,6 +11553,10 @@ switch(_operation) do {
                                     };
                                 };
                             };
+
+                            // One landing at its base, or waiting to go, is that wait's: not counted, so the delivery doesn't
+                            // wait on it (and hold up the next helicopter delivery), and not removed here.
+                            if ([_transportProfile, "alive_ml_unseen_pending", false] call ALIVE_fnc_hashGet) exitWith {};
 
                             // FIX 4: Gate on _hasLiveVehicle before canMove. _vehicle is
                             // select 2 select 10 which can be a dead/null object even when
