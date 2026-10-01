@@ -24,16 +24,26 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 params ["_assignments","_vehicle"];
+
+// moveIn takes effect only where the man is local, and a group the AI Distributor hands to a headless client is
+// local there, so for one of those it goes to his own machine, with the assignAs before it (which works from
+// anywhere) so that both run there in the order sent
 
 // driver
 private _driver = _assignments select 0;
 {
     if !(isnil "_x") then {
-        _x assignAsDriver _vehicle;
-        _x moveInDriver _vehicle;
+        if (local _x) then {
+            _x assignAsDriver _vehicle;
+            _x moveInDriver _vehicle;
+        } else {
+            [_x, _vehicle] remoteExecCall ["assignAsDriver", _x];
+            [_x, _vehicle] remoteExecCall ["moveInDriver", _x];
+        };
     };
 } forEach _driver;
 
@@ -41,8 +51,13 @@ private _driver = _assignments select 0;
 private _gunners = _assignments select 1;
 {
     if !(isnil "_x") then {
-        _x assignAsGunner _vehicle;
-        _x moveInGunner _vehicle;
+        if (local _x) then {
+            _x assignAsGunner _vehicle;
+            _x moveInGunner _vehicle;
+        } else {
+            [_x, _vehicle] remoteExecCall ["assignAsGunner", _x];
+            [_x, _vehicle] remoteExecCall ["moveInGunner", _x];
+        };
     };
 } forEach _gunners;
 
@@ -50,8 +65,13 @@ private _gunners = _assignments select 1;
 private _commander = _assignments select 2;
 {
     if !(isnil "_x") then {
-        _x assignAsCommander _vehicle;
-        _x moveInCommander _vehicle;
+        if (local _x) then {
+            _x assignAsCommander _vehicle;
+            _x moveInCommander _vehicle;
+        } else {
+            [_x, _vehicle] remoteExecCall ["assignAsCommander", _x];
+            [_x, _vehicle] remoteExecCall ["moveInCommander", _x];
+        };
     };
 } forEach _commander;
 
@@ -66,8 +86,13 @@ if (count _turret > 0) then {
         if (_turrets isEqualTo []) exitWith {};
 
         private _turretPath = _turrets deleteAt ((count _turrets) - 1);
-        _x assignAsTurret [_vehicle, _turretPath];
-        _x moveInTurret [_vehicle, _turretPath];
+        if (local _x) then {
+            _x assignAsTurret [_vehicle, _turretPath];
+            _x moveInTurret [_vehicle, _turretPath];
+        } else {
+            [_x, [_vehicle, _turretPath]] remoteExecCall ["assignAsTurret", _x];
+            [_x, [_vehicle, _turretPath]] remoteExecCall ["moveInTurret", _x];
+        };
     } forEach _turret;
 };
 
@@ -75,8 +100,13 @@ if (count _turret > 0) then {
 private _cargo = _assignments select 4;
 {
     if !(isnil "_x") then {
-        _x assignAsCargo _vehicle;
-        _x moveInCargo _vehicle;
+        if (local _x) then {
+            _x assignAsCargo _vehicle;
+            _x moveInCargo _vehicle;
+        } else {
+            [_x, _vehicle] remoteExecCall ["assignAsCargo", _x];
+            [_x, _vehicle] remoteExecCall ["moveInCargo", _x];
+        };
     };
 } forEach _cargo;
 
@@ -91,7 +121,12 @@ if (count _turret > 0) then {
         if (_turrets isEqualTo []) exitWith {};
 
         private _turretPath = _turrets deleteAt ((count _turrets) - 1);
-        _x assignAsTurret [_vehicle, _turretPath];
-        _x moveInTurret [_vehicle, _turretPath];
+        if (local _x) then {
+            _x assignAsTurret [_vehicle, _turretPath];
+            _x moveInTurret [_vehicle, _turretPath];
+        } else {
+            [_x, [_vehicle, _turretPath]] remoteExecCall ["assignAsTurret", _x];
+            [_x, [_vehicle, _turretPath]] remoteExecCall ["moveInTurret", _x];
+        };
     } forEach _turret;
 };

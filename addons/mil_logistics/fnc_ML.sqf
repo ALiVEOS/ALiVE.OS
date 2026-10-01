@@ -92,6 +92,7 @@ ARJay & Jman
 #define ML_NO_GETIN(ML_MAN) if (local ML_MAN) then {[ML_MAN] orderGetIn false} else {[[ML_MAN], false] remoteExecCall ["orderGetIn", ML_MAN]}
 #define ML_ALLOW_DAMAGE(ML_MAN,ML_ON) if (local ML_MAN) then {ML_MAN allowDamage ML_ON} else {[ML_MAN, ML_ON] remoteExecCall ["allowDamage", ML_MAN]}
 #define ML_INTO_DRIVER(ML_MAN,ML_VEH) if (local ML_MAN) then {ML_MAN moveInDriver ML_VEH} else {[ML_MAN, ML_VEH] remoteExecCall ["moveInDriver", ML_MAN]}
+#define ML_INTO_CARGO(ML_MAN,ML_VEH) if (local ML_MAN) then {ML_MAN moveInCargo ML_VEH} else {[ML_MAN, ML_VEH] remoteExecCall ["moveInCargo", ML_MAN]}
 
 private ["_result"];
 
@@ -8426,7 +8427,7 @@ switch(_operation) do {
                                                         private _infUnits = _ip select 2 select 21;
                                                         {
                                                             if (alive _x && vehicle _x == _x) then {
-                                                                _x moveInCargo _heliObj;
+                                                                ML_INTO_CARGO(_x, _heliObj);
                                                             };
                                                         } forEach _infUnits;
                                                     };
@@ -15762,7 +15763,7 @@ switch(_operation) do {
                                                                 private _units = _infProf select 2 select 21;
                                                                 {
                                                                     if (alive _x) then {
-                                                                        _x moveInCargo _truck;
+                                                                        ML_INTO_CARGO(_x, _truck);
                                                                     };
                                                                 } forEach _units;
                                                                 ["ML - unloadTransportHelicopter: Seated %1 infantry from %2 into truck %3",
