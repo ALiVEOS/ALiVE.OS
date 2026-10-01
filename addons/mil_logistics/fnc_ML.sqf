@@ -287,11 +287,13 @@ switch(_operation) do {
     case "registryID": {
         _result = [_logic,_operation,_args,DEFAULT_REGISTRY_ID] call ALIVE_fnc_OOsimpleOperation;
     };
+    // The reinforcement and air transport switches default to Yes in the editor, so a module made by script without
+    // them set reads Yes too: it used to read No and send nothing.
     case "allowInfantryReinforcement": {
         if (typeName _args == "BOOL") then {
             _logic setVariable ["allowInfantryReinforcement", _args];
         } else {
-            _args = _logic getVariable ["allowInfantryReinforcement", false];
+            _args = _logic getVariable ["allowInfantryReinforcement", true];
         };
         if (typeName _args == "STRING") then {
             if(_args == "true") then {_args = true;} else {_args = false;};
@@ -305,7 +307,7 @@ switch(_operation) do {
         if (typeName _args == "BOOL") then {
             _logic setVariable ["allowMechanisedReinforcement", _args];
         } else {
-            _args = _logic getVariable ["allowMechanisedReinforcement", false];
+            _args = _logic getVariable ["allowMechanisedReinforcement", true];
         };
         if (typeName _args == "STRING") then {
             if(_args == "true") then {_args = true;} else {_args = false;};
@@ -319,7 +321,7 @@ switch(_operation) do {
         if (typeName _args == "BOOL") then {
             _logic setVariable ["allowMotorisedReinforcement", _args];
         } else {
-            _args = _logic getVariable ["allowMotorisedReinforcement", false];
+            _args = _logic getVariable ["allowMotorisedReinforcement", true];
         };
         if (typeName _args == "STRING") then {
             if(_args == "true") then {_args = true;} else {_args = false;};
@@ -333,7 +335,7 @@ switch(_operation) do {
         if (typeName _args == "BOOL") then {
             _logic setVariable ["allowArmourReinforcement", _args];
         } else {
-            _args = _logic getVariable ["allowArmourReinforcement", false];
+            _args = _logic getVariable ["allowArmourReinforcement", true];
         };
         if (typeName _args == "STRING") then {
             if(_args == "true") then {_args = true;} else {_args = false;};
@@ -347,7 +349,7 @@ switch(_operation) do {
         if (typeName _args == "BOOL") then {
             _logic setVariable ["allowHeliReinforcement", _args];
         } else {
-            _args = _logic getVariable ["allowHeliReinforcement", false];
+            _args = _logic getVariable ["allowHeliReinforcement", true];
         };
         if (typeName _args == "STRING") then {
             if(_args == "true") then {_args = true;} else {_args = false;};
@@ -361,7 +363,7 @@ switch(_operation) do {
         if (typeName _args == "BOOL") then {
             _logic setVariable ["allowPlaneReinforcement", _args];
         } else {
-            _args = _logic getVariable ["allowPlaneReinforcement", false];
+            _args = _logic getVariable ["allowPlaneReinforcement", true];
         };
         if (typeName _args == "STRING") then {
             if(_args == "true") then {_args = true;} else {_args = false;};
@@ -408,7 +410,7 @@ switch(_operation) do {
         if (typeName _args == "BOOL") then {
             _logic setVariable ["enableAirTransport", _args];
         } else {
-            _args = _logic getVariable ["enableAirTransport", false];
+            _args = _logic getVariable ["enableAirTransport", true];
         };
         if (typeName _args == "STRING") then {
             if(_args == "true") then {_args = true;} else {_args = false;};
