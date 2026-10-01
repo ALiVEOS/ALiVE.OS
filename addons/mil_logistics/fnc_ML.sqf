@@ -9765,7 +9765,14 @@ switch(_operation) do {
                     // #TODO: Change this so each helicopter peels off in the direction of it's offset from the eventDestination position
                     {
                         private _transportProfile = [ALIVE_profileHandler,"getProfile", _x] call ALiVE_fnc_profileHandler;
-                        if!(isNil "_transportProfile") then {
+                        // One the delivery watchdog has already sent to land at its base (it can, 1200 m out, before this runs
+                        // while another helicopter of the delivery is still unloading) is left to that: cleared and given the
+                        // route home, it flew that instead of landing. Its pilot's command list names it.
+                        private _heldR = !isNil "_transportProfile" && {
+                            private _vpH = [ALIVE_profileHandler, "getProfile", (_transportProfile select 2 select 8) param [0, ""]] call ALIVE_fnc_profileHandler;
+                            !isNil "_vpH" && {[_vpH, "alive_ml_unseen_pending", false] call ALIVE_fnc_hashGet}
+                        };
+                        if (!(isNil "_transportProfile") && {!_heldR}) then {
                             // FIX 3: Use live vehicle position when active - the stored profile
                             // position (select 2 select 2) may be the spawn origin if the profile
                             // system hasn't updated it yet, making the egress bearing incorrect.
@@ -10118,7 +10125,12 @@ switch(_operation) do {
 
                 {
                     private _tProfile = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
-                    if (!isNil "_tProfile") then {
+                    // one already sent to land at its departure, or waiting to go, is left to that (as heliTransportReturn)
+                    private _heldA = !isNil "_tProfile" && {
+                        private _vpH = [ALIVE_profileHandler, "getProfile", (_tProfile select 2 select 8) param [0, ""]] call ALIVE_fnc_profileHandler;
+                        !isNil "_vpH" && {[_vpH, "alive_ml_unseen_pending", false] call ALIVE_fnc_hashGet}
+                    };
+                    if (!isNil "_tProfile" && {!_heldA}) then {
                         private _liveVehicle2 = _tProfile select 2 select 10;
                         private _tPos = if (!isNull _liveVehicle2 && alive _liveVehicle2) then {
                             getPos _liveVehicle2
@@ -16317,7 +16329,9 @@ switch(_operation) do {
                         _payloadProfile = [ALIVE_profileHandler, "getProfile", _payloadProfileID] call ALIVE_fnc_profileHandler;
                         _payloadVehicle = [ALIVE_profileHandler, "getProfile", _payloadVehicleID] call ALIVE_fnc_profileHandler;
 
-                        if(!(isNil "_payloadProfile") && !(isNil "_payloadVehicle")) then {
+                        // one landing at its base, or waiting to go, is left to that: it's no payload to wait on, and its
+                        // position (its base) isn't where the delivery went
+                        if(!(isNil "_payloadProfile") && !(isNil "_payloadVehicle") && {!([_payloadVehicle, "alive_ml_unseen_pending", false] call ALIVE_fnc_hashGet)}) then {
                             _payloadProfiles pushback [_payloadProfileID, _payloadVehicleID];
 
                             _vehicle = _payloadVehicle select 2 select 10;
@@ -16340,6 +16354,15 @@ switch(_operation) do {
 
                         _payloadProfiles = _this select 0;
                         _returnPosition = _this select 1;
+
+                        // A helicopter landing at its base, or waiting to go once nobody's near, is left to that: it isn't
+                        // waited for, unloaded, sent off or removed here. It's looked for again after the wait below, which can
+                        // run 2 minutes, and at every check of the last loop. Sent off, one landing at its base flew away instead.
+                        private _fnc_held = {
+                            private _vpH = [ALIVE_profileHandler, "getProfile", _this param [1, ""]] call ALIVE_fnc_profileHandler;
+                            !isNil "_vpH" && {[_vpH, "alive_ml_unseen_pending", false] call ALIVE_fnc_hashGet}
+                        };
+                        _payloadProfiles = _payloadProfiles select { !(_x call _fnc_held) };
 
                         // Check to see if payload profiles are ready to return
                         // Slingloaders can return once done.
@@ -16411,6 +16434,7 @@ switch(_operation) do {
                             };
                         };
 
+                        _payloadProfiles = _payloadProfiles select { !(_x call _fnc_held) };
                         _profileWaypoint = [_returnPosition, 100, "MOVE", "FULL", 300, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
                         _profileCount = 0;
 
@@ -16453,7 +16477,7 @@ switch(_operation) do {
                                 // dispose of the profiles
                                 {
 
-                                    if (count _x > 0) then {
+                                    if (count _x > 0 && {!(_x call _fnc_held)}) then {
                                         private ["_ID","_profile","_pVehicle"];
                                         _ID = _x select 0;
                                         _profile = [ALIVE_profileHandler, "getProfile", _ID] call ALIVE_fnc_profileHandler;
