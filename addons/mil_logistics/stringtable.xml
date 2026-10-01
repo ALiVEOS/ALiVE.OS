@@ -356,14 +356,15 @@
     <Portuguese>Ativar transporte aéreo:</Portuguese>
     <Russian>Включить воздушный транспорт:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ML_ENABLE_AIR_TRANSPORT_COMMENT">
-    <English>Allow reinforcements to be flown in by air transport</English>
-    <Chinese>允許透過空中運輸投送增援</Chinese>
-    <Chinesesimp>允许通过空中运输投送增援</Chinesesimp>
-    <Spanish>Permite que los refuerzos lleguen por transporte aéreo</Spanish>
-    <French>Permet l'acheminement des renforts par transport aérien</French>
-    <Portuguese>Permite que os reforços cheguem por transporte aéreo</Portuguese>
-    <Russian>Разрешает доставку подкреплений по воздуху</Russian>
+    <English>Lets the AI Commander's reinforcements be flown in by helicopter or dropped by parachute. Player orders aren't affected: Player Combat Logistics has its own Allow Heli/VTOL and Allow Airdrop switches.</English>
+    <Chinese>允許 AI 指揮官的增援以直升機運抵或以降落傘空投。不影響玩家的請求：玩家戰鬥後勤另有「允許直升機/VTOL」與「允許空投」開關。</Chinese>
+    <Chinesesimp>允许 AI 指挥官的增援以直升机运抵或以降落伞空投。不影响玩家的请求：玩家战斗后勤另有“允许直升机/VTOL”与“允许空投”开关。</Chinesesimp>
+    <Spanish>Permite que los refuerzos del comandante IA lleguen en helicóptero o se lancen en paracaídas. No afecta a los pedidos de los jugadores: Logística de combate del jugador tiene sus propios ajustes Permitir helicóptero/VTOL y Permitir lanzamiento aéreo.</Spanish>
+    <French>Permet aux renforts du commandant IA d'arriver en hélicoptère ou d'être largués en parachute. Les commandes des joueurs ne sont pas concernées: Logistique de combat joueur a ses propres réglages Autoriser hélicoptère/VTOL et Autoriser le largage aérien.</French>
+    <Portuguese>Permite que os reforços do comandante IA cheguem de helicóptero ou sejam lançados de paraquedas. Não afeta os pedidos dos jogadores: Logística de combate do jogador tem os seus próprios ajustes Permitir helicóptero/VTOL e Permitir lançamento aéreo.</Portuguese>
+    <Russian>Разрешает подкреплениям ИИ-командира прибывать на вертолёте или сбрасываться на парашютах. На заказы игроков не влияет: у модуля «Боевое снабжение игрока» есть свои настройки «Разрешить вертолёт/VTOL» и «Разрешить десантирование».</Russian>
 </Key>
 <Key ID="STR_ALIVE_ML_LIMIT">
     <English>Air Transport Assets:</English>
