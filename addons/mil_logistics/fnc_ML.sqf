@@ -10214,6 +10214,9 @@ switch(_operation) do {
                                     private _loadAW = getSlingLoad _vehicle;
                                     [_logic, "releaseSlungLoad", [_loadAW, _vehicle, _loadAW getVariable ["profileID", ""]]] call MAINCLASS;
                                     _vehicle setSlingLoad objNull;
+                                    // and its own profile no longer carries it (as heliTransportReturnWait does)
+                                    [_tProfile, "slingload", []] call ALIVE_fnc_profileVehicle;
+                                    [_tProfile, "slingloading", false] call ALIVE_fnc_hashSet;
                                     ["ML - airdropReturnWait: %1 still carrying its load when removed, let it go first.", _x] call ALiVE_fnc_dump;
                                 };
                                 // one already landing at its base, or waiting to go, is left to that
@@ -11532,6 +11535,10 @@ switch(_operation) do {
                                         private _loadRW = getSlingLoad _vehicle;
                                         [_logic, "releaseSlungLoad", [_loadRW, _vehicle, _loadRW getVariable ["profileID", ""]]] call MAINCLASS;
                                         _vehicle setSlingLoad objNull;
+                                        // and its own profile no longer carries it, as heliTransportReturn has it: left set, one that
+                                        // stays on (landing at its base, or waiting to go) still read as carrying a load
+                                        [_transportProfile, "slingload", []] call ALIVE_fnc_profileVehicle;
+                                        [_transportProfile, "slingloading", false] call ALIVE_fnc_hashSet;
                                         ["ML - heliTransportReturnWait: %1 still carrying its load when removed, let it go first.", _x] call ALiVE_fnc_dump;
                                     };
                                     // one already landing at its base, or waiting to go, is left to that
