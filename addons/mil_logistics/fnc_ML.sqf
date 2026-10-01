@@ -4475,6 +4475,10 @@ switch(_operation) do {
 		        _startForceStrengthDecrementFactor = parseNumber([_logic, "startForceStrengthDecFactor"] call MAINCLASS);
 		           
 		        _data params ["_side","_objective"]; 
+		        // An Asymmetric commander raises its capture with the side as a Side (ALiVE_fnc_INS_assault), a conventional one
+		        // as text, and every test here compares text: with Inc. or Dec. Force Strength on, an insurgent capture stopped
+		        // this handler with a script error. A Side is taken as its text (WEST, EAST, GUER).
+		        if (_side isEqualType sideUnknown) then { _side = str _side; _eventFaction = _side; };
 		        // Whether this module's side held the place just taken. Its commander's copy of it (every copy shares the
 		        // place's center; cluster ids repeat between military and civilian places) counts when either of the
 		        // commander's last two looks at the field listed it as its own or contested, or a section is holding or
