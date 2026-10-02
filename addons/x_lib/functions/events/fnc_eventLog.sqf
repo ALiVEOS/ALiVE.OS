@@ -29,6 +29,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 
 Peer reviewed:
 nil
@@ -182,7 +183,9 @@ switch(_operation) do {
         private _filter = _args;
         private _filteredListeners = _logic getvariable "listenersByFilter";
 
-        _result = _filteredListeners get _filter;
+        // an event type nobody listens to has no entry: hand back an empty set rather than nil, which
+        // threw "Undefined variable in expression: _result" when the result was returned
+        _result = _filteredListeners getOrDefault [_filter, createHashMap];
     };
 
     case "addEvent";
