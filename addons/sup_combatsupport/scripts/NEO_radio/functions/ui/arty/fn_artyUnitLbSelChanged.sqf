@@ -110,10 +110,17 @@ if (!(_status in ["KILLED", "MISSION", "RTB", "MOVE", "RESPONSE", "NOAMMO"]) && 
     } forEach _ord;
 
     //Arty Markers
+    // the band the battery fires its first listed round in, measured as the fire check measures it,
+    // so a target between the rings on ground level with the guns is one it takes. The weapon's own
+    // range, drawn before, put the Mk6 mortar's outer ring at 500 m against a shell that lands out to
+    // about 4080 m.
+    private _guns = (_artyArray select (lbCurSel _artyUnitLb)) select 3;
+    if (!isNil { NEO_radioLogic getVariable "NEO_radioTalkWithArty" }) then { _guns = [NEO_radioLogic getVariable "NEO_radioTalkWithArty"] };
+    private _ringGun = (_guns select { alive _x }) param [0, _class];
+    private _ringMag = "";
+    { if (_ringMag == "" && {(_x select 1) >= 1}) then { _ringMag = [_ringGun, _x select 0] call ALIVE_fnc_getArtyMagazineType } } forEach _ord;
+    private _radius = [_guns, _ringMag, _class] call NEO_fnc_artyUnitFiringDistance;
     {
-        private ["_radius"];
-        _radius = _class call NEO_fnc_artyUnitFiringDistance;
-
         _x setMarkerPosLocal getPosATL _battery;
         _x setMarkerShapeLocal "ELLIPSE";
         _x setMarkerBrushlocal "SolidBorder";

@@ -338,23 +338,12 @@ class FSM
                                          "// shells landed long." \n
                                          "" \n
                                          "//Validate Fire Mission" \n
-                                         "private _minRange = 0;" \n
-                                         "private _testPos = position (leader _grp);" \n
-                                         "private _timeout = diag_tickTime + 1; // just in case :)" \n
-                                         "" \n
-                                         "while {diag_tickTime < _timeout} do {" \n
-                                         "    private _testPosInRange = _testPos inRangeOfArtillery [units _grp, _ordnance];" \n
-                                         "" \n
-                                         "    if (_testPosInRange) exitWith {" \n
-                                         "        _minRange = (position (leader _grp)) distance2D _testPos;" \n
-                                         "        _minRange = _minRange + 50;" \n
-                                         "        [""ARTY FSM (NEW TASK): _testPosInRange: %1, _minRange: %2"",_testPosInRange,_minRange] call ALiVE_fnc_dump;" \n
-                                         "    };" \n
-                                         "" \n
-                                         "    _testPos = [_testPos, 1, 0] call BIS_fnc_relPos;" \n
-                                         "};" \n
-                                         "" \n
-                                         "[""ARTY FSM (NEW TASK) (inRangeOfArtillery) _testPos: %1, units _grp: %2, _ordnance: %3"", _testPos, units _grp, _ordnance] call ALiVE_fnc_dump;" \n
+                                         "// the band the battery fires this round in, measured with the engine's own range check" \n
+                                         "// (NEO_fnc_artyUnitFiringDistance): the tablet's rings show the same band and a move into range" \n
+                                         "// aims inside it. Its minimum carries the 50 m this check has always added; it used to be found" \n
+                                         "// here by stepping out from the leader a metre at a time for up to a second." \n
+                                         "private _minRange = ([_units, _ordnance, _class] call NEO_fnc_artyUnitFiringDistance) select 0;" \n
+                                         "[""ARTY FSM (NEW TASK): _minRange: %1, units _grp: %2, _ordnance: %3"", _minRange, units _grp, _ordnance] call ALiVE_fnc_dump;" \n
                                          "" \n
                                          "_inRange = false;" \n
                                          "if (_target distance2D (position (leader _grp)) > _minRange) then {" \n
@@ -978,11 +967,30 @@ class FSM
                                         action=/*%FSM<ACTION""">*/"_battery setVariable [""NEO_radioArtyUnitStatus"", ""MOVE"", true];" \n
                                          "_battery setVariable [""NEO_radioArtyMove"", nil, true];" \n
                                          "" \n
-                                         "_firingDistance = _class call NEO_fnc_artyUnitFiringDistance;" \n
-                                         "_radiusMove = 0;" \n
-                                         "if (_leader distance _target < (_firingDistance select 0)) then { _radiusMove = _firingDistance select 0 };" \n
-                                         "if (_leader distance _target > (_firingDistance select 1)) then { _radiusMove = _firingDistance select 1 };" \n
+                                         "// the band the battery fires this round in, as the fire check measured it. From too far it stops at 9/10" \n
+                                         "// of its reach, or a tenth closer if the check refused a target inside the reach, and the reach is taken" \n
+                                         "// for the ground it would stand on: a target h metres higher is reached out to R * sqrt(1 - 2h/R), so a" \n
+                                         "// few passes settle the stop. It never stops inside half as far again as the minimum, which is where a" \n
+                                         "// target too close sends it. The weapon's own range, used before, can be far from the round's (the Mk6" \n
+                                         "// mortar's says 500 m against a shell that lands out to about 4080 m), and a target between that range's" \n
+                                         "// ends set no distance at all, so the battery was sent to the target itself." \n
+                                         "_firingDistance = [_units, _ordnance, _class] call NEO_fnc_artyUnitFiringDistance;" \n
                                          "_dirMove = (_target getDir _leader);" \n
+                                         "private _distTarget = _leader distance2D _target;" \n
+                                         "private _reach = _firingDistance select 1;" \n
+                                         "private _ground = getTerrainHeightASL _target;" \n
+                                         "_radiusMove = 0.9 * (_distTarget min _reach);" \n
+                                         "for ""_i"" from 1 to 3 do {" \n
+                                         "    private _dh = _ground - getTerrainHeightASL (_target getPos [_radiusMove, _dirMove]);" \n
+                                         "    _radiusMove = _radiusMove min (0.9 * _reach * sqrt (0 max (1 - 2 * _dh / _reach)));" \n
+                                         "};" \n
+                                         "_radiusMove = _radiusMove max (1.5 * (_firingDistance select 0));" \n
+                                         "// and on dry ground with room round it: the search below only takes dry spots but falls back to this point" \n
+                                         "// when it finds none, and each man goes to a point 50 m round the stop, so a stop at sea or by the water's" \n
+                                         "// edge sends men into the sea, where the team stops and never sets up. A stop with water within 60 m is" \n
+                                         "// pulled in along the line until it has none." \n
+                                         "private _wet = { private _p = _target getPos [_this, _dirMove]; surfaceIsWater _p || {({ surfaceIsWater (_p getPos [60, _x]) } count [0, 90, 180, 270]) > 0} };" \n
+                                         "while { _radiusMove > 1.5 * (_firingDistance select 0) && {_radiusMove call _wet} } do { _radiusMove = _radiusMove - 25 };" \n
                                          "_posMove = (_target getPos [_radiusMove, _dirMove]);" \n
                                          "_isFlat = _posMove isflatempty [10,0,1,10,0,false,objNull];" \n
                                          "_tries = 0;" \n
