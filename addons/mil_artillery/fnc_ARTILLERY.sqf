@@ -69,15 +69,18 @@ switch(_operation) do {
 
             // single dial scaling every throttle:
             // [cooldown base, cooldown jitter, dispersion m, rounds per mission, min contacts, max concurrent, rounds ledger, cb acquisition per shell]
+            // min contacts follows the Target selectivity names: Low is Strict (3), Medium is Standard (2), High and
+            // Extreme are Loose (1). Medium asked for 3 known enemies within 200 m of a target, as many as Strict, which
+            // a fight rarely gathers, so at the default the artillery hardly ever fired.
             private _profile = switch (_intensity) do {
-                case "LOW":  { [600, 120, 100, 4, 4, 1, 60, 0.05] };
-                case "HIGH": { [300, 120, 50, 8, 2, 2, 120, 0.18] };
+                case "LOW":  { [600, 120, 100, 4, 3, 1, 60, 0.05] };
+                case "HIGH": { [300, 120, 50, 8, 1, 2, 120, 0.18] };
                 // EXTREME - saturation mode. Short cooldown, fires on a single
                 // contact, more rounds and ammunition. Its concurrency (index 5)
                 // defaults to the "Scale with guns" mode (see the concurrency dial
                 // + buildRegistry), so more guns mean more simultaneous fire.
                 case "EXTREME": { [180, 60, 40, 10, 1, 2, 160, 0.25] };
-                default      { [420, 120, 75, 6, 3, 1, 90, 0.10] };
+                default      { [420, 120, 75, 6, 2, 1, 90, 0.10] };
             };
 
             // per-parameter fine tuning: each override replaces just its slice
@@ -373,7 +376,7 @@ switch(_operation) do {
 
         private _debug = [_logic, "debug"] call MAINCLASS;
         private _registry = _logic getVariable ["batteryRegistry", []];
-        private _ledgerSize = (_logic getVariable ["intensityProfile", [420,120,75,6,3,1,90]]) select 6;
+        private _ledgerSize = (_logic getVariable ["intensityProfile", [420,120,75,6,2,1,90]]) select 6;
 
         private _knownEntityIDs = [];
         {
@@ -723,7 +726,7 @@ switch(_operation) do {
                     if (_tick == 0 && {[_logic, "debug"] call ALIVE_fnc_MilArtillery}) then {
                         private _handled = _logic getVariable ["handledSides", []];
                         private _scopeText = if (count _handled > 0) then { str _handled } else { "every unclaimed side (nothing synced)" };
-                        private _p = _logic getVariable ["intensityProfile", [420,120,75,6,3,1,90]];
+                        private _p = _logic getVariable ["intensityProfile", [420,120,75,6,2,1,90]];
                         ["ALiVE MIL_ARTILLERY - module serving %1: intensity %2 -> cooldown %3+%4s dispersion %5m rounds %6 minContacts %7 concurrent %8 ledger %9 cbAcquire %10",
                             _scopeText, [_logic,"intensity"] call ALIVE_fnc_MilArtillery,
                             _p select 0, _p select 1, _p select 2, _p select 3, _p select 4, _p select 5, _p select 6, _p param [7, 0.10]] call ALiVE_fnc_dump;
@@ -735,7 +738,7 @@ switch(_operation) do {
                         // request-rate lever raised: drain up to the free
                         // concurrency slots per tick so the extra requests reach
                         // the guns instead of trickling one per ~20s
-                        private _maxCon = (_logic getVariable ["intensityProfile", [420,120,75,6,3,1,90]]) select 5;
+                        private _maxCon = (_logic getVariable ["intensityProfile", [420,120,75,6,2,1,90]]) select 5;
                         private _drained = 0;
                         while { count _queue > 0 && {_drained < _maxCon} && {(_logic getVariable ["activeMissions", 0]) < _maxCon} } do {
                             private _request = _queue deleteAt 0;
@@ -763,7 +766,7 @@ switch(_operation) do {
 
                     // dry batteries request resupply, capped so they don't all
                     // dispatch at once (reuses the concurrency dial)
-                    private _resupplyCap = (_logic getVariable ["intensityProfile", [420,120,75,6,3,1,90]]) select 5;
+                    private _resupplyCap = (_logic getVariable ["intensityProfile", [420,120,75,6,2,1,90]]) select 5;
                     private _registry = _logic getVariable ["batteryRegistry", []];
                     private _resupplying = { ([_x,"state"] call ALiVE_fnc_hashGet) == "RESUPPLYING" } count _registry;
                     {
@@ -801,7 +804,7 @@ switch(_operation) do {
 
         [_record,"state","RESUPPLYING"] call ALiVE_fnc_hashSet;
 
-        private _profileSettings = _logic getVariable ["intensityProfile", [420,120,75,6,3,1,90]];
+        private _profileSettings = _logic getVariable ["intensityProfile", [420,120,75,6,2,1,90]];
 
         if ([_logic, "debug"] call MAINCLASS) then {
             ["ALiVE MIL_ARTILLERY - battery %1 is dry, requesting resupply to %2", _entityID, mapGridPosition _pos] call ALiVE_fnc_dump;
@@ -834,7 +837,7 @@ switch(_operation) do {
         private _record = _registry select _idx;
         if (([_record,"state"] call ALiVE_fnc_hashGet) != "RESUPPLYING") exitWith {};
 
-        private _profileSettings = _logic getVariable ["intensityProfile", [420,120,75,6,3,1,90]];
+        private _profileSettings = _logic getVariable ["intensityProfile", [420,120,75,6,2,1,90]];
         [_record,"rounds",_profileSettings select 6] call ALiVE_fnc_hashSet;
         [_record,"cooldownUntil",0] call ALiVE_fnc_hashSet;
         // deaf to counter-battery for one cooldown cycle: without this a
@@ -953,7 +956,7 @@ switch(_operation) do {
         private _request = _args;
         _request params ["_targetID","_targetPos","_contacts","_reqSide","_reqFaction","_asym",["_cbRequest",false,[false]]];
 
-        private _profileSettings = _logic getVariable ["intensityProfile", [420,120,75,6,3,1,90]];
+        private _profileSettings = _logic getVariable ["intensityProfile", [420,120,75,6,2,1,90]];
         _profileSettings params ["_cooldownBase","_cooldownJitter","_dispersion","_roundsPerMission","_minContacts","_maxConcurrent","_ledgerSize"];
 
         // targeting rules: no shells on lone scouts
@@ -1357,7 +1360,7 @@ switch(_operation) do {
     // enemy volley - two hostile sides may both locate the same battery
     case "cbScan": {
 
-        private _profile = _logic getVariable ["intensityProfile", [420,120,75,6,3,1,90]];
+        private _profile = _logic getVariable ["intensityProfile", [420,120,75,6,2,1,90]];
         private _pAcquire = _profile param [7, 0.10];
         private _contactsList = _logic getVariable ["cbContacts", []];
         // stamp is taken BEFORE the events read: shells recorded while this
@@ -1476,7 +1479,7 @@ switch(_operation) do {
         private _contactsList = _logic getVariable ["cbContacts", []];
         if (count _contactsList > 0) then {
 
-            private _profile = _logic getVariable ["intensityProfile", [420,120,75,6,3,1,90]];
+            private _profile = _logic getVariable ["intensityProfile", [420,120,75,6,2,1,90]];
             private _minContacts = _profile select 4;
             private _maxConcurrent = _profile select 5;
             private _queue = _logic getVariable ["requestQueue", []];

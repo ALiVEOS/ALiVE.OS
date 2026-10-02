@@ -30,7 +30,7 @@ params ["_logic","_record","_targetID","_targetPos",["_force", false, [false]]];
 // _force = a debug/test strike: skip the friendly-fire abort so the strike is
 // always observable (the caller accepts firing near friendlies)
 private _debug = [_logic, "debug"] call ALIVE_fnc_MilArtillery;
-private _settings = _logic getVariable ["intensityProfile", [420,120,75,6,3,1,90]];
+private _settings = _logic getVariable ["intensityProfile", [420,120,75,6,2,1,90]];
 _settings params ["_cooldownBase","_cooldownJitter","_dispersion","_roundsPerMission","_minContacts","_maxConcurrent","_ledgerSize"];
 // danger-close: when on, batteries fire even with friendlies in the impact
 // area (the module's ignore-nearby-friendlies toggle - use with caution)

@@ -49,7 +49,7 @@
     <Russian>Интенсивность огневых задач:</Russian>
 </Key>
 <Key ID="STR_ALIVE_MIL_ARTILLERY_INTENSITY_COMMENT">
-    <English>One setting that scales everything: how often each battery may fire, shell spread, rounds per mission, how many enemy contacts are needed before a strike is called, and battery ammunition stocks. Low keeps artillery an occasional threat; High makes it a constant presence; Extreme saturates the battlefield and lets more guns fire at once (it fires on a single spotted contact and scales with how many batteries are in play).</English>
+    <English>One setting that scales everything: how often each battery may fire, shell spread, rounds per mission, how many known enemies must be near a target before a strike is called, and battery ammunition stocks. Low keeps artillery an occasional threat and waits for 3 enemies near a target, Medium for 2; High makes it a constant presence and fires on 1; Extreme saturates the battlefield, fires on 1 too, and lets more guns fire at once as more batteries are in play.</English>
     <Chinese>一個可調整所有參數的設定：每個砲兵連可開火的頻率、彈著散佈範圍、每次任務發射的砲彈數量、下令攻擊前所需的敵軍接觸數量，以及砲兵連的彈藥存量。低會讓砲兵成為偶發威脅；高則讓砲兵持續構成威脅。</Chinese>
     <Chinesesimp>一个统一调节所有参数的设置:每个炮兵连的开火频率、炮弹散布范围、每次任务发射的弹数、发起打击所需的敌方接触目标数量,以及炮兵连的弹药储量。低强度使炮兵仅偶尔构成威胁;高强度则使其持续存在。</Chinesesimp>
     <Spanish>Un único ajuste que escala todo lo demás: la frecuencia con la que puede disparar cada batería, la dispersión de los proyectiles, el número de disparos por misión, cuántos contactos enemigos se necesitan antes de ordenar un ataque, y las reservas de munición de las baterías. Baja mantiene la artillería como una amenaza ocasional; Alta la convierte en una presencia constante.</Spanish>
