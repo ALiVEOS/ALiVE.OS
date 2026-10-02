@@ -84,9 +84,29 @@ if (_isHighend isEqualTo _isLowend) then {
 };
 _newOvercast = (_newOvercast max _minimumOvercast) min _maximumOvercast;
 
+// The climate's rain chance decides the change. Left alone the engine rains under any cloud past about 0.6, and
+// a script can't hold that rain off, so a dry roll keeps the cloud at 0.5, or at the climate's floor if that's
+// higher, and a wet roll lifts it to at least 0.55 where the climate reaches that and sets the rain, heavier
+// under heavier cloud. Where the floor is 0.6 or more (the Tropical monsoon, Weather Override's Overcast and
+// Stormy) no change can be dry, so a dry roll leaves the cloud as drawn and the rain to the engine, as before.
+// The chance used to be logged and nothing more, so every climate rained whenever its cloud passed 0.6.
+// Lightning is left to the engine: a scripted value only shows when the mission ticks Manual Override.
+private _newRain = -1;
+if (random 100 < _rainProbability && {_maximumOvercast >= 0.55}) then {
+    _newOvercast = _newOvercast max 0.55;
+    _newRain = ((_newOvercast - 0.5) * 2) max 0.2 min 1;
+} else {
+    if (_minimumOvercast < 0.6) then {
+        _newOvercast = _newOvercast min (0.5 max _minimumOvercast);
+        _newRain = 0;
+    };
+};
+
 private _period = WEATHER_CYCLE_DELAY;
 
 _period setOvercast round(_newOvercast * (10 ^ _decimalplaces)) / (10 ^ _decimalplaces);
+if (_newRain >= 0) then { _period setRain _newRain };
+if (WEATHER_DEBUG) then { ["Module ALiVE_sys_weather RAIN ROLL: chance %1, cloud to %2, rain to %3", _rainProbability, _newOvercast, ["the engine's", _newRain] select (_newRain >= 0)] call ALIVE_fnc_dump; };
 
 if (random 100 <= _fogProbability) then {
     _isFoggy = true;

@@ -342,7 +342,19 @@ if (INITIAL_WEATHER == 5 && typeName GVAR(REAL_WEATHER) != "BOOL") then { // REA
     //0 setGusts = [GVAR(REAL_WEATHER),"wgustm", round(_initialOvercast * (10 ^ _decimalplaces)) / (10 ^ _decimalplaces)] call ALiVE_fnc_hashGet;
 
 } else {
+    // the same rain roll as every later change (fnc_weatherCycleServer.sqf)
+    private _initialRain = -1;
+    if (random 100 < _rainProbability && {_maximumOvercast >= 0.55}) then {
+        _initialOvercast = _initialOvercast max 0.55;
+        _initialRain = ((_initialOvercast - 0.5) * 2) max 0.2 min 1;
+    } else {
+        if (_minimumOvercast < 0.6) then {
+            _initialOvercast = _initialOvercast min (0.5 max _minimumOvercast);
+            _initialRain = 0;
+        };
+    };
     0 setOvercast round(_initialOvercast * (10 ^ _decimalplaces)) / (10 ^ _decimalplaces);
+    if (_initialRain >= 0) then { 0 setRain _initialRain };
     if (random 100 <= _fogProbability) then {
         _isFoggy = true;
         0 setFog [_initialFog, _initialFogDecay, _initialFogAltitude];

@@ -54,9 +54,7 @@
 </Key>
 
 <Key ID="STR_ALIVE_WEATHER_INITIAL_COMMENT">
-    <English>For a complete local explanation please refer to ALiVE wiki</English>
-    <Chinesesimp>有关完整的本地解释,请参考ALiVE wiki</Chinesesimp>
-    <Spanish>Para una explicación local completa, consulta la wiki de ALiVE</Spanish>
+    <English>Sets the cloud and fog range, which for Continental, Tropical and Mediterranean follows the month of the mission date, and how often a weather change brings rain: Continental half the time, Tropical most of the time, Mediterranean a quarter of the time, Arid and Fair never. A month whose cloud stays light, as in their summers, stays dry, and one whose cloud stays heavy, as in the Tropical monsoon, rains regardless. Lightning comes with heavy cloud on its own.</English>
 </Key>
 
 <Key ID="STR_ALIVE_WEATHER_OVERRIDE">
