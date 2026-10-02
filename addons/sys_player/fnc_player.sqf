@@ -558,6 +558,49 @@ switch(_operation) do {
                             // Execute getplayer on local client using CBA_fnc_remoteLocalEvent
                             [ "getPlayer", [_unit, [_unit, _playerHash]] ] call CBA_fnc_whereLocalEvent;
 
+                            // Only the player goes back to where they saved. Their AI squadmates start from the
+                            // editor on every load and walk out to them, and one of the player's own class looks
+                            // like a copy of them: the "clone" of #822. So when the player leads their group,
+                            // its living AI on foot are brought to where the player is put back. Not when:
+                            // - the player saved inside a vehicle, as the restore then seats them in it wherever
+                            //   it now stands;
+                            // - the client is about to turn the player away for rejoining as a different class
+                            //   (checkPlayer), which would leave the squad stranded at the old spot;
+                            // - an AI is already within 100 m of it, so a reconnect mid-mission leaves a squad in
+                            //   cover where it is.
+                            // Each one gets a clear spot on dry land near the saved position, or stays where it is
+                            // if none turns up: from a position, getPos [distance, heading] gives the seabed's
+                            // depth over water. setPos works on them wherever they are local.
+                            private _savedPos = [_playerHash, "position", []] call ALIVE_fnc_hashGet;
+                            if (
+                                _logic getVariable ["savePosition", true]
+                                && {count _savedPos > 1}
+                                && {leader group _unit == _unit}
+                                && {([_playerHash, "vehicle", "NONE"] call ALIVE_fnc_hashGet) == "NONE"}
+                                && {typeOf _unit == ([_playerHash, "class", typeOf _unit] call ALIVE_fnc_hashGet) || {_logic getVariable ["allowDiffClass", false]}}
+                            ) then {
+                                private _moved = 0;
+                                {
+                                    if (!isPlayer _x && {alive _x} && {vehicle _x == _x} && {_x distance2D _savedPos > 100}) then {
+                                        private _unitClass = typeOf _x;
+                                        private _spot = [];
+                                        for "_i" from 1 to 4 do {
+                                            if (_spot isEqualTo []) then {
+                                                private _try = (_savedPos getPos [3 + random 4, random 360]) findEmptyPosition [0, 10, _unitClass];
+                                                if (_try isNotEqualTo [] && {!surfaceIsWater _try}) then {_spot = _try};
+                                            };
+                                        };
+                                        if (_spot isNotEqualTo []) then {
+                                            _x setPos _spot;
+                                            _moved = _moved + 1;
+                                        };
+                                    };
+                                } forEach (units group _unit - [_unit]);
+                                if (_moved > 0) then {
+                                    ["SYS_PLAYER - %1 AI of %2's squad brought to where they were restored", _moved, name _unit] call ALiVE_fnc_dump;
+                                };
+                            };
+
                             _result = true;
                     } else {
                         if ([_logic,"debug"] call MAINCLASS) then {
