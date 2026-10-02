@@ -332,11 +332,10 @@ class FSM
                                          "" \n
                                          "[""ARTY FSM (NEW TASK): _newTaskArray: %1"",_newTaskArray] call ALiVE_fnc_dump;" \n
                                          "" \n
-                                         "//Get ASL position" \n
-                                         "_dummy = ""Land_HelipadEmpty_F"" createVehicleLocal _target;" \n
-                                         "_dummy setPosATL [getPosATL _dummy select 0, getPosATL _dummy select 1, 0];" \n
-                                         "_target = getPosASL _dummy;" \n
-                                         "deleteVehicle _dummy;" \n
+                                         "// the target stays [x, y, 0]: the engine's range check and doArtilleryFire both read the third number as" \n
+                                         "// height above the ground there. It used to be turned into the ground's height above sea level here, which" \n
+                                         "// aimed every mission that far above the target, so on high ground a target in range was refused and the" \n
+                                         "// shells landed long." \n
                                          "" \n
                                          "//Validate Fire Mission" \n
                                          "private _minRange = 0;" \n
