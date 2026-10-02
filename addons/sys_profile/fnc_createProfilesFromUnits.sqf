@@ -129,6 +129,25 @@ if (count _markedVehicles > 0) then {
     ["ALIVE_fnc_createProfilesFromUnits - %1 vehicle(s) carry ALIVE_profileIgnore and have been left as live AI", count _markedVehicles] call ALiVE_fnc_dump;
 };
 
+// A group holding a playable unit belongs to the players. The leader tests below leave a group alone once a
+// player leads it, but not while an AI keeps the slot warm (Enable AI) or a player sits under an AI leader.
+// Taken then, the slot is saved with the rest as an ordinary AI group, so on every load it comes back at the
+// start with a copy of the player's character in it while he joins on his own (#822, synced squads in
+// particular). Leave such groups live, and the vehicles they crew with them: left in the list, those would
+// be taken as empty vehicles and deleted from under the group.
+private _playable = playableUnits + switchableUnits + allPlayers;
+private _playerGroups = _groups select {
+    !isNull _x && {!isPlayer leader _x} && {(units _x) findIf {_x in _playable} > -1}
+};
+if (count _playerGroups > 0) then {
+    private _playerGroupVehicles = _vehicles select {
+        !isNull _x && {(crew _x) findIf {group _x in _playerGroups} > -1}
+    };
+    _groups = _groups - _playerGroups;
+    _vehicles = _vehicles - _playerGroupVehicles;
+    ["ALIVE_fnc_createProfilesFromUnits - %1 group(s) hold a playable unit and have been left as live AI, with %2 vehicle(s) they crew", count _playerGroups, count _playerGroupVehicles] call ALiVE_fnc_dump;
+};
+
 //["Create Mode Groups: %1",_groups] call ALIVE_fnc_dump;
 //["Create Mode Vehicles: %1",_vehicles] call ALIVE_fnc_dump;
 

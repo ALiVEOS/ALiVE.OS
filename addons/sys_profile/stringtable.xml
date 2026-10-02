@@ -58,9 +58,7 @@
     <Spanish>Opciones de sincronización:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SYNC_COMMENT">
-    <English>Modify synced units behaviour</English>
-    <Chinesesimp>修改同步单位行为</Chinesesimp>
-    <Spanish>Modifica el comportamiento de las unidades sincronizadas</Spanish>
+    <English>Decides which editor-placed units the Virtual AI System takes over.\n\nOnly virtualize synced units (default): the groups of the units synced here, with the vehicles they sit in, so syncing one soldier takes their whole squad.\nVirtualize all editor placed units except synced units: every other group and vehicle.\n\nA group holding a playable unit is always left alone at the start, so players keep their own squads. One case slips through when Enable AI is off in the mission's Multiplayer attributes: a slot has no unit until its player joins, so a squad whose player joins after the start is taken over as an ordinary AI group (saved as one when this module is persistent) and kept apart from them. To avoid that, leave the players' squads unsynced with the first option, and sync them with the second.</English>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SYNC_ADD">
     <English>Only virtualize synced units</English>
