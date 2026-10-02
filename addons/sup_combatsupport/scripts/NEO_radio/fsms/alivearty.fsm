@@ -286,7 +286,7 @@ class FSM
                                         priority = 100.000000;
                                         to="__6";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"{ alive _x } count _units < 1" \n
+                                        condition=/*%FSM<CONDITION""">*/"(_grp getVariable [""ALiVE_CS_mortarMove"", """"] == """" && {{ alive _x } count _units < 1})" \n
                                          "||" \n
                                          "{ alive _x } count units _grp < 1" \n
                                          "" \n
@@ -494,7 +494,7 @@ class FSM
                                         priority = 100.000000;
                                         to="__6";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"{ alive _x } count _units < 1" \n
+                                        condition=/*%FSM<CONDITION""">*/"(_grp getVariable [""ALiVE_CS_mortarMove"", """"] == """" && {{ alive _x } count _units < 1})" \n
                                          "||" \n
                                          "{ alive _x } count units _grp < 1" \n
                                          "" \n
@@ -541,7 +541,7 @@ class FSM
                                         priority = 100.000000;
                                         to="__6";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"{ alive _x } count _units < 1" \n
+                                        condition=/*%FSM<CONDITION""">*/"(_grp getVariable [""ALiVE_CS_mortarMove"", """"] == """" && {{ alive _x } count _units < 1})" \n
                                          "||" \n
                                          "{ alive _x } count units _grp < 1" \n
                                          "" \n
@@ -588,7 +588,7 @@ class FSM
                                         priority = 100.000000;
                                         to="__6";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"{ alive _x } count _units < 1" \n
+                                        condition=/*%FSM<CONDITION""">*/"(_grp getVariable [""ALiVE_CS_mortarMove"", """"] == """" && {{ alive _x } count _units < 1})" \n
                                          "||" \n
                                          "{ alive _x } count units _grp < 1" \n
                                          "" \n
@@ -638,7 +638,7 @@ class FSM
                                         priority = 100.000000;
                                         to="__6";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"{ alive _x } count _units < 1" \n
+                                        condition=/*%FSM<CONDITION""">*/"(_grp getVariable [""ALiVE_CS_mortarMove"", """"] == """" && {{ alive _x } count _units < 1})" \n
                                          "||" \n
                                          "{ alive _x } count units _grp < 1" \n
                                          "" \n
@@ -679,7 +679,7 @@ class FSM
                                         priority = 100.000000;
                                         to="__6";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"{ alive _x } count _units < 1" \n
+                                        condition=/*%FSM<CONDITION""">*/"(_grp getVariable [""ALiVE_CS_mortarMove"", """"] == """" && {{ alive _x } count _units < 1})" \n
                                          "||" \n
                                          "{ alive _x } count units _grp < 1" \n
                                          "" \n
@@ -701,24 +701,61 @@ class FSM
                                          "// IF its a mortar team moving, get them to disassemble and pack up" \n
                                          "if (    _grp getVariable [""mortar"", false]) then {" \n
                                          "" \n
-                                         "    {" \n
-                                         "        [_grp, _x] call ALiVE_fnc_packMortar;" \n
-                                         "    } foreach (_grp getVariable [""supportWeaponArray"",[]]);" \n
+                                         "    // Taking a tube apart deletes it and runs for up to a minute and a half in a script of its own, and this" \n
+                                         "    // action can't wait (its old loop gave up at once and sent the team off mid-pack), so a script waits for" \n
+                                         "    // every tube to be packed and sends the team then. ALiVE_CS_mortarMove tells the dead checks the tubes" \n
+                                         "    // are gone on purpose until the new ones are counted, and keeps the arrival check off until they leave." \n
+                                         "    // Called back to base on the way, the team is already packed: it's only turned round, or, still" \n
+                                         "    // packing, the script sends it to the new place, read when it goes. Each tube needs a man on foot to" \n
+                                         "    // carry its second half, picked by the pack's own rule (on foot, not the leader, not already carrying)," \n
+                                         "    // so a team short of those stays. A tube whose gunner is gone can't be carried or fired: it's removed." \n
+                                         "    private _tubesUp = (_grp getVariable [""supportWeaponArray"",[]]) select { alive _x && {alive gunner _x} };" \n
+                                         "    private _carriers = (units _grp) select { alive _x && {vehicle _x == _x} && {_x != leader _grp} && {!(_x getVariable [""packAssistant"", false])} };" \n
+                                         "    _grp setVariable [""ALiVE_CS_mortarDest"", _pos];" \n
+                                         "    switch (_grp getVariable [""ALiVE_CS_mortarMove"", """"]) do {" \n
+                                         "        case """": {" \n
+                                         "            if (count _carriers < count _tubesUp) then {" \n
+                                         "                // nobody to carry the tubes back: the battery stays set up where it is, says so, and doesn't" \n
+                                         "                // claim to be moving back or to be at base (ALiVE_CS_refused silences those)" \n
+                                         "                _grp setVariable [""NEO_radioArtyNotInBase"", nil];" \n
+                                         "                _grp setVariable [""ALiVE_CS_refused"", true];" \n
+                                         "                [(leader _grp), _callsign, _callsignPlayer] spawn {" \n
+                                         "                    sleep 6;" \n
+                                         "                    private _msg = format [""%1, %2 hasn't the men left to carry its mortars back to base, staying put. Out."", _this select 2, _this select 1];" \n
+                                         "                    [[_this select 0, _msg, ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+                                         "                };" \n
+                                         "            } else {" \n
+                                         "                _grp setVariable [""ALiVE_CS_mortarMove"", ""packing""];" \n
+                                         "                _grp setVariable [""ALiVE_CS_packedTubes"", []];" \n
+                                         "                {" \n
+                                         "                    if (_x in _tubesUp) then { [_grp, _x] call ALiVE_fnc_packMortar } else { deleteVehicle _x };" \n
+                                         "                } foreach (_grp getVariable [""supportWeaponArray"",[]]);" \n
                                          "" \n
-                                         "    private ""_packedup"";" \n
-                                         "    _packedup = false;" \n
-                                         "    while { !(_packedup) } do" \n
-                                         "    {" \n
-                                         "        {" \n
-                                         "            _packedup = true;" \n
-                                         "            if !(_x getVariable [""packed"",false]) exitWith {_packedup = false};" \n
-                                         "        }foreach  (_grp getVariable [""supportWeaponArray"",[]]);" \n
+                                         "                _grp spawn {" \n
+                                         "                    private _grp = _this;" \n
+                                         "                    private _t0 = time;" \n
+                                         "                    waitUntil {" \n
+                                         "                        sleep 1;" \n
+                                         "                        private _recs = _grp getVariable [""ALiVE_CS_packedTubes"", []];" \n
+                                         "                        ({ _x select 4 } count _recs) == count _recs || {time - _t0 > 120}" \n
+                                         "                    };" \n
+                                         "                    diag_log ""Mortar team have packed up mortars and are moving"";" \n
+                                         "                    private _dest = _grp getVariable [""ALiVE_CS_mortarDest"", getPos (leader _grp)];" \n
+                                         "                    {" \n
+                                         "                        _x enableAI ""MOVE""; _x enableAI ""ANIM"";" \n
+                                         "                        [_x, (_dest getPos [50, (random 360)])] call ALiVE_fnc_doMoveRemote;" \n
+                                         "                    } forEach (units _grp);" \n
+                                         "                    sleep 5;" \n
+                                         "                    _grp setVariable [""ALiVE_CS_mortarMove"", ""moving""];" \n
+                                         "                };" \n
+                                         "            };" \n
+                                         "        };" \n
+                                         "        case ""moving"": {" \n
+                                         "            {" \n
+                                         "                [_x, (_pos getPos [50, (random 360)])] call ALiVE_fnc_doMoveRemote;" \n
+                                         "            } forEach (units _grp);" \n
+                                         "        };" \n
                                          "    };" \n
-                                         "" \n
-                                         "    {" \n
-                                         "        _x enableAI ""MOVE""; _x enableAI ""ANIM"";" \n
-                                         "        [_x, (_pos getPos [50, (random 360)])] call ALiVE_fnc_doMoveRemote;" \n
-                                         "    } forEach (units _grp);" \n
                                          "" \n
                                          "} else {" \n
                                          "" \n
@@ -730,7 +767,7 @@ class FSM
                                          "" \n
                                          "private ""_msg"";" \n
                                          "_msg = format [""%1, Battery %2 is moving back to Base. Out"",_callsignPlayer, _callsign];" \n
-                                         "[[(_units select 0),_msg, ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+                                         "if !(_grp getVariable [""ALiVE_CS_refused"", false]) then { [[(leader _grp),_msg, ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP };" \n
                                          ""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
@@ -769,6 +806,7 @@ class FSM
                         itemno = 20;
                         init = /*%FSM<STATEINIT""">*/"_battery setVariable [""NEO_radioArtyUnitStatus"", ""KILLED"", true];" \n
                          "" \n
+                         "{ if !(_x in _units) then { deleteVehicle _x } } forEach (_grp getVariable [""supportWeaponArray"", []]);" \n
                          "if (!_removeFSM) then {" \n
                          "	[_units, _grp, _callsign, _pos, _availableRounds,_canMove,_classCopy, _battery, CS_RESPAWN, _code, _side] spawn ALIVE_fnc_RespawnArtyAsset;" \n
                          "};"/*%FSM</STATEINIT""">*/;
@@ -794,7 +832,7 @@ class FSM
                                         priority = 100.000000;
                                         to="__6";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"{ alive _x } count _units < 1" \n
+                                        condition=/*%FSM<CONDITION""">*/"(_grp getVariable [""ALiVE_CS_mortarMove"", """"] == """" && {{ alive _x } count _units < 1})" \n
                                          "||" \n
                                          "{ alive _x } count units _grp < 1" \n
                                          "" \n
@@ -883,7 +921,7 @@ class FSM
                                         priority = 100.000000;
                                         to="__6";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"{ alive _x } count _units < 1" \n
+                                        condition=/*%FSM<CONDITION""">*/"(_grp getVariable [""ALiVE_CS_mortarMove"", """"] == """" && {{ alive _x } count _units < 1})" \n
                                          "||" \n
                                          "{ alive _x } count units _grp < 1"/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
@@ -921,7 +959,7 @@ class FSM
                                         priority = 100.000000;
                                         to="__6";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"{ alive _x } count _units < 1" \n
+                                        condition=/*%FSM<CONDITION""">*/"(_grp getVariable [""ALiVE_CS_mortarMove"", """"] == """" && {{ alive _x } count _units < 1})" \n
                                          "||" \n
                                          "{ alive _x } count units _grp < 1" \n
                                          "" \n
@@ -972,25 +1010,62 @@ class FSM
                                          "" \n
                                          "diag_log ""Battery is mortar, waiting for team to pack up mortars"";" \n
                                          "" \n
-                                         "    {" \n
-                                         "        [_grp, _x] call ALiVE_fnc_packMortar;" \n
-                                         "    } foreach (_grp getVariable [""supportWeaponArray"",[]]);" \n
+                                         "    // Taking a tube apart deletes it and runs for up to a minute and a half in a script of its own, and this" \n
+                                         "    // action can't wait (its old loop gave up at once and sent the team off mid-pack), so a script waits for" \n
+                                         "    // every tube to be packed and sends the team then. ALiVE_CS_mortarMove tells the dead checks the tubes" \n
+                                         "    // are gone on purpose until the new ones are counted, and keeps the arrival check off until they leave." \n
+                                         "    // Called back to base on the way, the team is already packed: it's only turned round, or, still" \n
+                                         "    // packing, the script sends it to the new place, read when it goes. Each tube needs a man on foot to" \n
+                                         "    // carry its second half, picked by the pack's own rule (on foot, not the leader, not already carrying)," \n
+                                         "    // so a team short of those stays. A tube whose gunner is gone can't be carried or fired: it's removed." \n
+                                         "    private _tubesUp = (_grp getVariable [""supportWeaponArray"",[]]) select { alive _x && {alive gunner _x} };" \n
+                                         "    private _carriers = (units _grp) select { alive _x && {vehicle _x == _x} && {_x != leader _grp} && {!(_x getVariable [""packAssistant"", false])} };" \n
+                                         "    _grp setVariable [""ALiVE_CS_mortarDest"", _isFlat];" \n
+                                         "    switch (_grp getVariable [""ALiVE_CS_mortarMove"", """"]) do {" \n
+                                         "        case """": {" \n
+                                         "            if (count _carriers < count _tubesUp) then {" \n
+                                         "                // the battery doesn't go: the move is called off as a recall would, and the player is told" \n
+                                         "                // that instead of the usual ""moving in range"" (ALiVE_CS_refused silences it)" \n
+                                         "                _grp setVariable [""NEO_radioArtyNotInBase"", nil];" \n
+                                         "                _grp setVariable [""ALiVE_CS_refused"", true];" \n
+                                         "                _battery setVariable [""NEO_radioArtyGoToBase"", true, true];" \n
+                                         "                [(leader _grp), _callsign, _callsignPlayer] spawn {" \n
+                                         "                    sleep 6;" \n
+                                         "                    private _msg = format [""%1, %2 hasn't the men left to carry its mortars, staying put. Out."", _this select 2, _this select 1];" \n
+                                         "                    [[_this select 0, _msg, ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+                                         "                };" \n
+                                         "            } else {" \n
+                                         "                _grp setVariable [""ALiVE_CS_mortarMove"", ""packing""];" \n
+                                         "                _grp setVariable [""ALiVE_CS_packedTubes"", []];" \n
+                                         "                {" \n
+                                         "                    if (_x in _tubesUp) then { [_grp, _x] call ALiVE_fnc_packMortar } else { deleteVehicle _x };" \n
+                                         "                } foreach (_grp getVariable [""supportWeaponArray"",[]]);" \n
                                          "" \n
-                                         "    private ""_packedup"";" \n
-                                         "    _packedup = false;" \n
-                                         "    while { !(_packedup) } do" \n
-                                         "    {" \n
-                                         "        {" \n
-                                         "            _packedup = true;" \n
-                                         "            if !(_x getVariable [""packed"",false]) exitWith {_packedup = false};" \n
-                                         "        }foreach  (_grp getVariable [""supportWeaponArray"",[]]);" \n
+                                         "                _grp spawn {" \n
+                                         "                    private _grp = _this;" \n
+                                         "                    private _t0 = time;" \n
+                                         "                    waitUntil {" \n
+                                         "                        sleep 1;" \n
+                                         "                        private _recs = _grp getVariable [""ALiVE_CS_packedTubes"", []];" \n
+                                         "                        ({ _x select 4 } count _recs) == count _recs || {time - _t0 > 120}" \n
+                                         "                    };" \n
+                                         "                    diag_log ""Mortar team have packed up mortars and are moving"";" \n
+                                         "                    private _dest = _grp getVariable [""ALiVE_CS_mortarDest"", getPos (leader _grp)];" \n
+                                         "                    {" \n
+                                         "                        _x enableAI ""MOVE""; _x enableAI ""ANIM"";" \n
+                                         "                        [_x, (_dest getPos [50, (random 360)])] call ALiVE_fnc_doMoveRemote;" \n
+                                         "                    } forEach (units _grp);" \n
+                                         "                    sleep 5;" \n
+                                         "                    _grp setVariable [""ALiVE_CS_mortarMove"", ""moving""];" \n
+                                         "                };" \n
+                                         "            };" \n
+                                         "        };" \n
+                                         "        case ""moving"": {" \n
+                                         "            {" \n
+                                         "                [_x, (_isFlat getPos [50, (random 360)])] call ALiVE_fnc_doMoveRemote;" \n
+                                         "            } forEach (units _grp);" \n
+                                         "        };" \n
                                          "    };" \n
-                                         "" \n
-                                         "diag_log ""Mortar team have packed up mortars and are moving"";" \n
-                                         "" \n
-                                         "    {" \n
-                                         "        [_x, (_isFlat getPos [50, (random 360)])] call ALiVE_fnc_doMoveRemote;" \n
-                                         "    } forEach (units _grp);" \n
                                          "" \n
                                          "} else {" \n
                                          "    _grp setVariable [""mortar"", false];" \n
@@ -1000,11 +1075,12 @@ class FSM
                                          "" \n
                                          "};" \n
                                          "" \n
-                                         "[(_units select 0), _callsign, _callsignPlayer] spawn" \n
+                                         "[(leader _grp), _callsign, _callsignPlayer, _grp] spawn" \n
                                          "{" \n
                                          "    private ""_msg"";" \n
                                          "    _msg = format[""Copy that %1, %2 moving in range of target, stand by. Out."", _this select 2, _this select 1];" \n
                                          "    sleep 5;" \n
+                                         "    if ((_this select 3) getVariable [""ALiVE_CS_refused"", false]) exitWith { (_this select 3) setVariable [""ALiVE_CS_refused"", nil] };" \n
                                          "    [[_this select 0, _msg, ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
                                          "};" \n
                                          ""/*%FSM</ACTION""">*/;
@@ -1050,7 +1126,7 @@ class FSM
                                         priority = 100.000000;
                                         to="__6";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"{ alive _x } count _units < 1" \n
+                                        condition=/*%FSM<CONDITION""">*/"(_grp getVariable [""ALiVE_CS_mortarMove"", """"] == """" && {{ alive _x } count _units < 1})" \n
                                          "||" \n
                                          "{ alive _x } count units _grp < 1" \n
                                          "" \n
@@ -1076,15 +1152,21 @@ class FSM
                                         priority = 0.000000;
                                         to="__12";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"{ _x call ALiVE_fnc_unitReadyRemote } count units _grp == count units _grp" \n
+                                        condition=/*%FSM<CONDITION""">*/"{ _x call ALiVE_fnc_unitReadyRemote } count units _grp == count units _grp && {_grp getVariable [""ALiVE_CS_mortarMove"", """"] != ""packing""}" \n
                                          ""/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/"// IF its a mortar team, get them to assemble mortars" \n
                                          "" \n
-                                         "if (    _grp getVariable [""mortar"", false]) then {" \n
+                                         "if (_grp getVariable [""mortar"", false] && {_grp getVariable [""ALiVE_CS_mortarMove"", """"] != """"}) then {" \n
                                          "" \n
                                          "    private [""_oldUnits"",""_newUnits""];" \n
                                          "" \n
-                                         "    _oldUnits = _grp getvariable [""supportWeaponArray"", []];" \n
+                                         "    _oldUnits = _grp getvariable [""ALiVE_CS_packedTubes"", []];" \n
+                                         "    _grp setVariable [""ALiVE_CS_packedTubes"", []];" \n
+                                         "    _grp setVariable [""ALiVE_CS_mortarMove"", ""unpacking""];" \n
+                                         "    // count down from the tubes actually carried: a tube already lost isn't among them, and a battery one" \n
+                                         "    // short waited for it for good" \n
+                                         "    _grp setVariable [""supportWeaponCount"", count _oldUnits];" \n
+                                         "    _grp setVariable [""ALiVE_CS_unpackStart"", time];" \n
                                          "" \n
                                          "    _grp setvariable [""supportWeaponArray"", []];" \n
                                          "" \n
@@ -1207,7 +1289,7 @@ class FSM
                                         priority = 100.000000;
                                         to="__6";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"{ alive _x } count _units < 1" \n
+                                        condition=/*%FSM<CONDITION""">*/"(_grp getVariable [""ALiVE_CS_mortarMove"", """"] == """" && {{ alive _x } count _units < 1})" \n
                                          "||" \n
                                          "{ alive _x } count units _grp < 1" \n
                                          "" \n
@@ -1222,17 +1304,25 @@ class FSM
                                         priority = 0.000000;
                                         to="__18";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"{ _x call ALiVE_fnc_unitReadyRemote } count units _grp == count units _grp" \n
+                                        condition=/*%FSM<CONDITION""">*/"{ _x call ALiVE_fnc_unitReadyRemote } count units _grp == count units _grp && {_grp getVariable [""ALiVE_CS_mortarMove"", """"] != ""packing""}" \n
                                          ""/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/"_grp setVariable [""NEO_radioArtyNotInBase"", nil];" \n
+                                         "private _stayed = _grp getVariable [""ALiVE_CS_refused"", false];" \n
+                                         "_grp setVariable [""ALiVE_CS_refused"", nil];" \n
                                          "" \n
                                          "// IF its a mortar team, get them to assemble mortars" \n
                                          "" \n
-                                         "if (    _grp getVariable [""mortar"", false]) then {" \n
+                                         "if (_grp getVariable [""mortar"", false] && {_grp getVariable [""ALiVE_CS_mortarMove"", """"] != """"}) then {" \n
                                          "" \n
                                          "    private [""_oldUnits""];" \n
                                          "" \n
-                                         "    _oldUnits = _grp getvariable [""supportWeaponArray"", []];" \n
+                                         "    _oldUnits = _grp getvariable [""ALiVE_CS_packedTubes"", []];" \n
+                                         "    _grp setVariable [""ALiVE_CS_packedTubes"", []];" \n
+                                         "    _grp setVariable [""ALiVE_CS_mortarMove"", ""unpacking""];" \n
+                                         "    // count down from the tubes actually carried: a tube already lost isn't among them, and a battery one" \n
+                                         "    // short waited for it for good" \n
+                                         "    _grp setVariable [""supportWeaponCount"", count _oldUnits];" \n
+                                         "    _grp setVariable [""ALiVE_CS_unpackStart"", time];" \n
                                          "" \n
                                          "    _grp setvariable [""supportWeaponArray"", []];" \n
                                          "" \n
@@ -1248,14 +1338,14 @@ class FSM
                                          "    _battery setVariable [""NEO_radioArtyUnitStatus"", ""NOAMMO"", true];" \n
                                          "    private ""_msg"";" \n
                                          "    _msg = format [""%1, Battery %2 is at Base and out of ammo. Out."",_callsignPlayer, _callsign];" \n
-                                         "    [[(_units select 0), _msg, ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+                                         "    if (!_stayed) then { [[(leader _grp), _msg, ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP };" \n
                                          "}" \n
                                          "else" \n
                                          "{" \n
                                          "    _battery setVariable [""NEO_radioArtyUnitStatus"", ""NONE"", true];" \n
                                          "    private ""_msg"";" \n
                                          "    _msg = format [""%1, Battery %2 is at Base and ready for fire mission. Out."",_callsignPlayer, _callsign];" \n
-                                         "    [[(_units select 0), _msg, ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+                                         "    if (!_stayed) then { [[(leader _grp), _msg, ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP };" \n
                                          "};" \n
                                          ""/*%FSM</ACTION""">*/;
                                 };
@@ -1279,7 +1369,7 @@ class FSM
                                         priority = 100.000000;
                                         to="__6";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"{ alive _x } count _units < 1" \n
+                                        condition=/*%FSM<CONDITION""">*/"(_grp getVariable [""ALiVE_CS_mortarMove"", """"] == """" && {{ alive _x } count _units < 1})" \n
                                          "||" \n
                                          "{ alive _x } count units _grp < 1" \n
                                          "" \n
@@ -1294,9 +1384,20 @@ class FSM
                                         priority = 0.000000;
                                         to="__16";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"count (_grp getVariable [""supportWeaponArray"",[]]) == _grp getVariable [""supportWeaponCount"",3]"/*%FSM</CONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"count (_grp getVariable [""supportWeaponArray"",[]]) == _grp getVariable [""supportWeaponCount"",3]" \n
+                                         "|| {_grp getVariable [""ALiVE_CS_mortarMove"", """"] == ""unpacking"" && {time - (_grp getVariable [""ALiVE_CS_unpackStart"", time]) > 150}}"/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/"diag_log ""Mortar team have unpacked mortars and are ready"";" \n
-                                         "_units = _grp getVariable [""supportWeaponArray"",[]];"/*%FSM</ACTION""">*/;
+                                         "_units = _grp getVariable [""supportWeaponArray"",[]];" \n
+                                         "_grp setVariable [""supportWeaponCount"", count _units];" \n
+                                         "// the resupply watch and the tablet's battery list still pointed at the tubes taken apart: the watch" \n
+                                         "// follows the tube rebuilt from its old one, or any standing tube if that one didn't come back" \n
+                                         "private _prim = _units select { _x getVariable [""ALiVE_CS_wasPrimary"", false] };" \n
+                                         "{ _x setVariable [""ALiVE_CS_wasPrimary"", nil] } forEach _prim;" \n
+                                         "if (_prim isNotEqualTo []) then { _battery setVariable [""ALIVE_resupply_primaryVehicle"", _prim select 0, true] } else { if (count _units > 0 && {!isNil {_battery getVariable ""ALIVE_resupply_primaryVehicle""}} && {!alive (_battery getVariable [""ALIVE_resupply_primaryVehicle"", objNull])}) then { _battery setVariable [""ALIVE_resupply_primaryVehicle"", _units select 0, true] } };" \n
+                                         "private _artyArr = NEO_radioLogic getVariable [format [""NEO_radioArtyArray_%1"", _side], []];" \n
+                                         "{ if ((_x select 1) isEqualTo _grp) then { _x set [3, _units] } } forEach _artyArr;" \n
+                                         "NEO_radioLogic setVariable [format [""NEO_radioArtyArray_%1"", _side], _artyArr, true];" \n
+                                         "_grp setVariable [""ALiVE_CS_mortarMove"", nil];"/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
                         };
@@ -1386,7 +1487,7 @@ class FSM
                                         priority = 100.000000;
                                         to="__6";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"{ alive _x } count _units < 1" \n
+                                        condition=/*%FSM<CONDITION""">*/"(_grp getVariable [""ALiVE_CS_mortarMove"", """"] == """" && {{ alive _x } count _units < 1})" \n
                                          "||" \n
                                          "{ alive _x } count units _grp < 1" \n
                                          "" \n
@@ -1401,9 +1502,20 @@ class FSM
                                         priority = 0.000000;
                                         to="main_loop";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"count (_grp getVariable [""supportWeaponArray"",[]]) == _grp getVariable [""supportWeaponCount"",3]"/*%FSM</CONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"count (_grp getVariable [""supportWeaponArray"",[]]) == _grp getVariable [""supportWeaponCount"",3]" \n
+                                         "|| {_grp getVariable [""ALiVE_CS_mortarMove"", """"] == ""unpacking"" && {time - (_grp getVariable [""ALiVE_CS_unpackStart"", time]) > 150}}"/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/"diag_log ""Mortar team have unpacked mortars and are ready"";" \n
-                                         "_units = _grp getVariable [""supportWeaponArray"",[]];"/*%FSM</ACTION""">*/;
+                                         "_units = _grp getVariable [""supportWeaponArray"",[]];" \n
+                                         "_grp setVariable [""supportWeaponCount"", count _units];" \n
+                                         "// the resupply watch and the tablet's battery list still pointed at the tubes taken apart: the watch" \n
+                                         "// follows the tube rebuilt from its old one, or any standing tube if that one didn't come back" \n
+                                         "private _prim = _units select { _x getVariable [""ALiVE_CS_wasPrimary"", false] };" \n
+                                         "{ _x setVariable [""ALiVE_CS_wasPrimary"", nil] } forEach _prim;" \n
+                                         "if (_prim isNotEqualTo []) then { _battery setVariable [""ALIVE_resupply_primaryVehicle"", _prim select 0, true] } else { if (count _units > 0 && {!isNil {_battery getVariable ""ALIVE_resupply_primaryVehicle""}} && {!alive (_battery getVariable [""ALIVE_resupply_primaryVehicle"", objNull])}) then { _battery setVariable [""ALIVE_resupply_primaryVehicle"", _units select 0, true] } };" \n
+                                         "private _artyArr = NEO_radioLogic getVariable [format [""NEO_radioArtyArray_%1"", _side], []];" \n
+                                         "{ if ((_x select 1) isEqualTo _grp) then { _x set [3, _units] } } forEach _artyArr;" \n
+                                         "NEO_radioLogic setVariable [format [""NEO_radioArtyArray_%1"", _side], _artyArr, true];" \n
+                                         "_grp setVariable [""ALiVE_CS_mortarMove"", nil];"/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
                         };
