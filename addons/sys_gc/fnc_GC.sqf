@@ -117,7 +117,7 @@ switch(_operation) do {
         private _individualTypes = [_logic getvariable ["ALiVE_GC_INDIVIDUALTYPES", []]] call ALiVE_fnc_parseArrayFromString;
         private _debug = _logic getvariable ["debug","false"];
         private _interval = _logic getvariable ["ALiVE_GC_INTERVAL","300"];
-        private _threshold = parseNumber (_logic getvariable ["ALiVE_GC_THRESHHOLD","50"]);
+        private _threshold = parseNumber (_logic getvariable ["ALiVE_GC_THRESHHOLD","100"]);
 
         if (_debug isEqualType "") then {
             _debug = (tolower _debug == "true");
@@ -225,7 +225,7 @@ switch(_operation) do {
 
             // the moment allDead crosses the threshold the queue drains
             // instantly regardless of expiry and player proximity
-            private _instant = (count allDead) >= (_logic getVariable ["gcThreshold", 50]);
+            private _instant = (count allDead) >= (_logic getVariable ["gcThreshold", 100]);
 
             // Player list cached once per tick; only fetched when it will be used,
             // since instant mode never consults it.
