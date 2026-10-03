@@ -428,7 +428,7 @@ switch(_operation) do {
 
                                     _position = getposATL ((synchronizedObjects _logic) select _i);
                                     _callsign = ((synchronizedObjects _logic) select _i) getvariable ["artillery_callsign","FOX SEVEN"];
-                                    _class = ((synchronizedObjects _logic) select _i) getvariable ["artillery_type","B_Mortar_01_F"];
+                                    _class = ((synchronizedObjects _logic) select _i) getvariable ["artillery_type","B_MBT_01_arty_F"];
                                     // custom classname override always wins when filled
                                     private _classCustom = [((synchronizedObjects _logic) select _i) getvariable ["artillery_type_custom",""], " ", ""] call CBA_fnc_replace;
                                     if (_classCustom != "") then { _class = _classCustom };
