@@ -1337,6 +1337,10 @@ switch(_operation) do {
 
             // set group profile as active and store references to units on the profile
 
+            // A unit that couldn't be made (a class from a mod that isn't loaded, or every unit when the
+            // side has run out of groups) is a null in _units from the start. Despawn must not take that
+            // for a deletion and drop the unit, or the whole profile, for good.
+            [_logic,"spawnIncomplete", (_units findIf {isNull _x}) > -1] call ALIVE_fnc_hashSet;
             [_logic,"leader", leader _group] call ALIVE_fnc_hashSet;
             [_logic,"group", _group] call ALIVE_fnc_hashSet;
             [_logic,"units", _units] call ALIVE_fnc_hashSet;
@@ -1452,6 +1456,44 @@ switch(_operation) do {
 
         // not already inactive
         if (_active) then {
+
+            // A unit deleted outright (as Zeus deletes) is a null object here. A kill takes a unit off
+            // the profile through handleDeath, but a deletion fires nothing, so the loop further down
+            // would store it at [0,0,0] with no damage and the next spawn would bring it back. Take
+            // deleted units off the way a kill does, last first so the indexes still to visit hold.
+            // Not after a spawn that left nulls of its own (see spawnIncomplete in spawn).
+            private _deleted = 0;
+            if !([_logic, "spawnIncomplete", false] call ALIVE_fnc_hashGet) then {
+                for "_i" from (count _units - 1) to 0 step -1 do {
+                    if (isNull (_units select _i)) then {
+                        [_logic, "removeUnit", _i] call MAINCLASS;
+                        _deleted = _deleted + 1;
+                    };
+                };
+            };
+            // Nobody left. When the whole group was deleted, the profile goes the way it does when the
+            // last unit dies (fnc_profileKilledEventHandler): its commands stop and it comes off the
+            // register, while still active so the active lists drop it too. Not "destroy", which empties
+            // the hash that a caller such as activateReserve goes on using. With no units there is nothing
+            // to despawn in any case, and carrying on would save the profile at [0,0,0] and list it again.
+            if (_units isEqualTo []) exitWith {
+                if (_deleted > 0) then {
+                    [ALIVE_commandRouter, "deactivate", _logic] call ALIVE_fnc_commandRouter;
+                    // free any vehicle this crew was in, or its profile never despawns (the spawner
+                    // only despawns a vehicle with nobody assigned to it)
+                    [_logic, "clearVehicleAssignments"] call MAINCLASS;
+                    [ALIVE_profileHandler, "unregisterProfile", _logic] call ALIVE_fnc_profileHandler;
+                    _group call ALiVE_fnc_DeleteGroupRemote;
+                    [_logic, "group", grpNull] call ALIVE_fnc_hashSet;
+                    [_logic, "leader", objNull] call ALIVE_fnc_hashSet;
+                };
+            };
+            // A deleted leader leaves the stored one null, and the profile's position is read from it.
+            if (_deleted > 0 && {isNull _leader}) then {
+                _leader = leader _group;
+                if (isNull _leader || {!(_leader in _units)}) then { _leader = _units select 0 };
+                [_logic, "leader", _leader] call ALIVE_fnc_hashSet;
+            };
 
             private _despawnPrevented = false;
             private _linked = [_logic] call ALIVE_fnc_vehicleAssignmentsGetLinkedProfiles;
