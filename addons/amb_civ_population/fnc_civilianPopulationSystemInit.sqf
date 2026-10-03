@@ -48,7 +48,9 @@ if(isServer) then {
     private _ambientCrowdSpawn = parseNumber (_logic getVariable ["ambientCrowdSpawn","0"]);
     private _ambientCrowdDensity = parseNumber (_logic getVariable ["ambientCrowdDensity","4"]);
     private _ambientCrowdLimit = parseNumber (_logic getVariable ["ambientCrowdLimit","50"]);
-    private _ambientCrowdFaction = (_logic getVariable ["ambientCrowdFaction",""]);
+    // CIV_F, as the editor sets it. An empty value, given on purpose, still has the crowd
+    // pick a faction per building.
+    private _ambientCrowdFaction = (_logic getVariable ["ambientCrowdFaction","CIV_F"]);
 
     // Custom water / ration item classnames. Resolution priority:
     //   1. Consolidated `customHumanitarianItems` (preferred, written
