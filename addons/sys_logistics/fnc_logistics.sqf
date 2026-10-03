@@ -944,6 +944,15 @@ switch (_operation) do {
 
                 //Serverside only section
                 if (isServer) then {
+                    //ACE removes a trench by deleting it, with no event to say so, so a stored
+                    //trench takes itself out of the store as it goes or a reload brings it back.
+                    //Set once: setEH runs again on an object every time the store is applied.
+                    if ((["ACE_envelope_small","ACE_envelope_big"] findIf {_object isKindOf _x}) > -1 && {isNil {_object getVariable QGVAR(EH_DELETED)}}) then {
+                        _object setVariable [QGVAR(EH_DELETED), _object addEventHandler ["Deleted", {
+                            if (!isnil QMOD(SYS_LOGISTICS)) then {[MOD(SYS_LOGISTICS),"removeObject",[_this select 0]] call ALIVE_fnc_logistics};
+                        }]];
+                    };
+
                     //apply these EHs on vehicles
                     if ({_object isKindOf _x} count ["LandVehicle","Air","Ship"] > 0) then {
 
