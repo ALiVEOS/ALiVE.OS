@@ -37,13 +37,13 @@ Jman
 #define MAINCLASS                       ALIVE_fnc_CMP
 #define MTEMPLATE                       "ALiVE_CMP_%1"
 #define DEFAULT_FACTION                 QUOTE(BLU_F)
-#define DEFAULT_SIZE                    "50"
+#define DEFAULT_SIZE                    "300"
 #define DEFAULT_PRIORITY                "50"
 #define DEFAULT_NO_TEXT                 "0"
 #define DEFAULT_COMPOSITION             false
 #define DEFAULT_OBJECTIVES              []
 #define DEFAULT_READINESS_LEVEL         "1"
-#define DEFAULT_AMBIENT_VEHICLE_AMOUNT  "0.2"
+#define DEFAULT_AMBIENT_VEHICLE_AMOUNT  "0"
 #define DEFAULT_HQ_BUILDING             objNull
 #define DEFAULT_HQ_CLUSTER              []
 #define DEFAULT_AMBIENT_GUARD_AMOUNT "0.2"
@@ -168,7 +168,8 @@ switch(_operation) do {
     };
 
     case "aaClasses": {
-        _result = [_logic,_operation,_args,DEFAULT_NO_TEXT] call ALIVE_fnc_OOsimpleOperation;
+        // empty, as the editor leaves it: "0" read as a class list and kept the default AA list out
+        _result = [_logic,_operation,_args,""] call ALIVE_fnc_OOsimpleOperation;
     };
     case "factions": {
         _result = [_logic,_operation,_args,"[]"] call ALIVE_fnc_OOsimpleOperation;
@@ -306,7 +307,7 @@ switch(_operation) do {
         if (typeName _args == "BOOL") then {
             _logic setVariable ["placeHelis", _args];
         } else {
-            _args = _logic getVariable ["placeHelis", false];
+            _args = _logic getVariable ["placeHelis", true];
         };
         if (typeName _args == "STRING") then {
             if(_args == "true") then {_args = true;} else {_args = false;};
@@ -321,7 +322,7 @@ switch(_operation) do {
         if (typeName _args == "BOOL") then {
             _logic setVariable ["placeSupplies", _args];
         } else {
-            _args = _logic getVariable ["placeSupplies", false];
+            _args = _logic getVariable ["placeSupplies", true];
         };
         if (typeName _args == "STRING") then {
             if(_args == "true") then {_args = true;} else {_args = false;};
