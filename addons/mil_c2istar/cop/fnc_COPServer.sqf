@@ -784,10 +784,15 @@ ALIVE_fnc_COPDeriveActivity = {
                             // reset on capture), so held has to take precedence or
                             // a just-captured objective reads "<side> Attacking"
                             // on ground that side now holds.
+                            // The commander says attacking from the moment it orders an
+                            // attack, through the scouting TACOM does first, so the
+                            // scouting is read from TACOM's own state or no objective
+                            // ever shows as Recon.
+                            private _tacState = [_x, "tacom_state", "none"] call ALiVE_fnc_HashGet;
                             private _normState = if (_isHeld) then { "reserve" } else {
                                 switch (toLower _state) do {
                                     case "attacking";
-                                    case "capture":   { "attack" };
+                                    case "capture":   { ["attack", "recon"] select (_tacState == "recon") };
                                     case "defending": { "defend" };
                                     case "reserving": { "reserve" };
                                     default           { _state };
