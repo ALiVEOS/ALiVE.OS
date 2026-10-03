@@ -24,6 +24,7 @@ See Also:
 
 Author:
 Tupolov
+Jman
 
 Peer reviewed:
 nil
@@ -41,9 +42,17 @@ private _launch = _this select 2;
     _custom = _this select 1;
     private _launch = _this select 2;
 
-    waitUntil{!isNull player};
+    // On a dedicated server, as the web indexer runs it, there is no player to wait for and nobody
+    // to press a key. The object categories then have to be in the static data file already,
+    // written outside the game, and the two pauses for a key press are skipped.
+    private _headless = !hasInterface;
+    ALiVE_indexMap_finished = false;
 
-    ALiVE_keypress_id = (findDisplay 46) displayAddEventHandler ["KeyDown", "ALiVE_keypress = true;"];
+    if !(_headless) then {
+        waitUntil{!isNull player};
+
+        ALiVE_keypress_id = (findDisplay 46) displayAddEventHandler ["KeyDown", "ALiVE_keypress = true;"];
+    };
 
     ["ALiVE Map Indexer","Starting Map Index"] call ALiVE_fnc_sendHint;
 
@@ -71,6 +80,10 @@ private _launch = _this select 2;
     [">>>>>>>>>>>>>>>>>> Checking for existing static data..."] call ALiVE_fnc_dump;
     _result = "ALiVEClient" callExtension format["checkStatic~%1", worldName];
 
+    if (_headless && {_result != "SUCCESS"}) exitwith {
+        [">>>>>>>>>>>>>>>>>> There was a problem, exiting indexing: no static data file for %1, and objects can only be categorised by a player", worldName] call ALiVE_fnc_dump;
+    };
+
     If (_result != "SUCCESS") then {
         [">>>>>>>>>>>>>>>>>> No static data found"] call ALiVE_fnc_dump;
         ["ALiVE Map Indexer","Starting Object Categorization"] call ALiVE_fnc_sendHint;
@@ -80,16 +93,18 @@ private _launch = _this select 2;
 
     };
 
-    forceMap true;
+    if !(_headless) then {
+        forceMap true;
 
-    ALiVE_keypress_id_map = (findDisplay 12) displayAddEventHandler ["KeyDown", "ALiVE_keypress = true;"];
+        ALiVE_keypress_id_map = (findDisplay 12) displayAddEventHandler ["KeyDown", "ALiVE_keypress = true;"];
 
-    ALiVE_keypress = false;
-    cutText [format["HEY! %1, STATIC DATA GENERATED. PRESS ANY KEY TO CONTINUE", toUpper(name player)],"PLAIN", 1, true];
-    sleep 0.7;
-    waitUntil {sleep 0.3; cutText [format["HEY! %1, PRESS ANY KEY TO CONTINUE", toUpper(name player)],"PLAIN", 1, true]; ALiVE_keypress};
-    ALiVE_keypress = false;
-    cutText ["","PLAIN", 1, true];
+        ALiVE_keypress = false;
+        cutText [format["HEY! %1, STATIC DATA GENERATED. PRESS ANY KEY TO CONTINUE", toUpper(name player)],"PLAIN", 1, true];
+        sleep 0.7;
+        waitUntil {sleep 0.3; cutText [format["HEY! %1, PRESS ANY KEY TO CONTINUE", toUpper(name player)],"PLAIN", 1, true]; ALiVE_keypress};
+        ALiVE_keypress = false;
+        cutText ["","PLAIN", 1, true];
+    };
 
     // Generate Map Clusters
 
@@ -128,19 +143,26 @@ private _launch = _this select 2;
     waitUntil {sleep 0.3; scriptDone _handle};
 
 
-    ALiVE_keypress = false;
-    cutText [format["HEY! %1, MAP INDEXING COMPLETE. PRESS ANY KEY TO CONTINUE", toUpper(name player)],"PLAIN", 1, true];
-    sleep 0.7;
-    waitUntil {sleep 0.3; cutText [format["HEY! %1, PRESS ANY KEY TO CONTINUE", toUpper(name player)],"PLAIN", 1, true]; ALiVE_keypress};
-    ALiVE_keypress = false;
-    cutText ["","PLAIN", 1, true];
+    if !(_headless) then {
+        ALiVE_keypress = false;
+        cutText [format["HEY! %1, MAP INDEXING COMPLETE. PRESS ANY KEY TO CONTINUE", toUpper(name player)],"PLAIN", 1, true];
+        sleep 0.7;
+        waitUntil {sleep 0.3; cutText [format["HEY! %1, PRESS ANY KEY TO CONTINUE", toUpper(name player)],"PLAIN", 1, true]; ALiVE_keypress};
+        ALiVE_keypress = false;
+        cutText ["","PLAIN", 1, true];
 
-    (findDisplay 12) displayRemoveEventHandler ["keyDown",ALiVE_keypress_id_map];
+        (findDisplay 12) displayRemoveEventHandler ["keyDown",ALiVE_keypress_id_map];
+    };
 
     ["ALiVE Map Indexer","Map Indexing Completed!"] call ALiVE_fnc_sendHint;
     [">>>>>>>>>>>>>>>>>> Map Indexing Completed!"] call ALiVE_fnc_dump;
 
-    forceMap false;
+    // For a script that started the indexer and waits on it, such as the web indexer's job.
+    ALiVE_indexMap_finished = true;
 
-    (findDisplay 46) displayRemoveEventHandler ["keyDown",ALiVE_keypress_id];
+    if !(_headless) then {
+        forceMap false;
+
+        (findDisplay 46) displayRemoveEventHandler ["keyDown",ALiVE_keypress_id];
+    };
 };
