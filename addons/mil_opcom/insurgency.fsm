@@ -1629,12 +1629,15 @@ class FSM
                          "            } foreach _storage;" \n
                          "" \n
                          "            if (count _assignments > 0) then {" \n
+                         "                // A copy: the unlink helper takes each key out of the list it walks, so every second" \n
+                         "                // vehicle stayed linked under the old side. An id that no longer resolves is skipped." \n
                          "                {" \n
                          "                    _vehicleProfile = [ALiVE_ProfileHandler,""getProfile"",_x] call ALiVE_fnc_ProfileHandler;" \n
-                         "    " \n
-                         "                    [_profile,_vehicleProfile] call ALIVE_fnc_removeProfileVehicleAssignment;" \n
-                         "                    [ALiVE_ProfileHandler,""unregisterProfile"",_vehicleProfile] call ALiVE_fnc_ProfileHandler;" \n
-                         "                } foreach (_assignments select 1)" \n
+                         "                    if (!isNil ""_vehicleProfile"") then {" \n
+                         "                        [_profile,_vehicleProfile] call ALIVE_fnc_removeProfileVehicleAssignment;" \n
+                         "                        [ALiVE_ProfileHandler,""unregisterProfile"",_vehicleProfile] call ALiVE_fnc_ProfileHandler;" \n
+                         "                    };" \n
+                         "                } foreach +(_assignments select 1)" \n
                          "            };" \n
                          "    " \n
                          "            if (_active) then {" \n
