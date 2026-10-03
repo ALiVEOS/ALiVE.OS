@@ -205,6 +205,24 @@ switch(_operation) do {
 	                        ["sys_player", name player, getplayerUID player, owner player] call ALIVE_fnc_player_onPlayerConnected;
 	                    };
 
+	                    // A player who is already on the server when the mission starts raises no connect event, and
+	                    // the restore only ever started from that event: when the server started a mission again after
+	                    // a save, with its players still connected, every one of them began at their editor spot. So
+	                    // for the first few minutes hand each player in the mission to the connect handler as well. It
+	                    // takes a player on once per connection, so one the event does reach isn't restored twice.
+	                    [] spawn {
+	                        private _until = diag_tickTime + 180;
+	                        while {diag_tickTime < _until} do {
+	                            {
+	                                private _uid = getPlayerUID _x;
+	                                if (_uid != "" && {!(_x isKindOf "HeadlessClient_F")} && {!(MOD(sys_player) getVariable [_uid + "_connectHandled", false])}) then {
+	                                    ["sys_player", name _x, _uid, owner _x] call ALIVE_fnc_player_onPlayerConnected;
+	                                };
+	                            } forEach (allPlayers - [player]);
+	                            sleep 5;
+	                        };
+	                    };
+
                         // Set true that player data has been loaded
                         MOD(sys_player) setVariable ["loaded", true, true];
 
@@ -403,6 +421,9 @@ switch(_operation) do {
                             // and they are no longer restored, so timed saves leave them alone
                             // until their next connection has been restored again
                             MOD(sys_player) setVariable [_uid + "_restored", nil];
+                            // and their next connection is restored afresh (the connect handler takes a player
+                            // on once per connection)
+                            MOD(sys_player) setVariable [_uid + "_connectHandled", nil];
                         };
 
                         // Never claim the body - let the engine handle it as before

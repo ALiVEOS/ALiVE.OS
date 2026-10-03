@@ -36,6 +36,12 @@ if (!isNil QMOD(sys_player) && isServer) then {
 
     };
 
+    // The connect event and the player module's start-of-mission pass can both reach a player, and a
+    // second restore would add their rating again. So a player is taken on once per connection: the
+    // mark is cleared when they disconnect, or below if their unit can't be found, so a later try can run.
+    if (MOD(sys_player) getVariable [_uid + "_connectHandled", false]) exitWith {};
+    MOD(sys_player) setVariable [_uid + "_connectHandled", true];
+
     // Disable user input?
     // Disallow damage?
     // Black Screen?
@@ -86,6 +92,7 @@ if (!isNil QMOD(sys_player) && isServer) then {
 
         if (isNull _unit) then {
             diag_log[format["SYS_PLAYER: PLAYER UNIT NOT FOUND IN PLAYABLEUNITS(%1), SO THEIR SAVED STATE IS NOT RESTORED AND TIMED OR DISCONNECT SAVES LEAVE THEIR RECORD ALONE THIS SESSION",_name]];
+            MOD(sys_player) setVariable [_uid + "_connectHandled", false];
 
             /// Hmmmm connecting player isn't found...
 
