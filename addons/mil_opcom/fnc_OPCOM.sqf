@@ -4294,7 +4294,7 @@ switch (_operation) do {
         // exit if there are no objectives
         if (_objectiveCount == 0) exitwith {
             [
-                "There are 0 objectives for OPCOM instance with factions %1! Please assign Military or Civilian Placement Objectives!",
+                "Aborting OPCOM Init... There are 0 objectives for OPCOM instance with factions %1! Please assign Military or Civilian Placement Objectives!",
                 _factions
             ] call ALIVE_fnc_dumpR;
         };
@@ -4453,7 +4453,7 @@ switch (_operation) do {
         private _testSide = _factionSides select 0;
         private _differingSideIndex = _factionSides findIf { _x != _testSide };
         if (_differingSideIndex != -1) exitwith {
-            ["There are factions from different sides within this OPCOM %1! Please only select one side per OPCOM!", _factions] call ALIVE_fnc_dumpR;
+            ["Aborting OPCOM Init... There are factions from different sides within this OPCOM %1! Please only select one side per OPCOM!", _factions] call ALIVE_fnc_dumpR;
         };
 
         if (_debug) then {
