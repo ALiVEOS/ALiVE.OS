@@ -148,6 +148,18 @@ if (count _playerGroups > 0) then {
     ["ALIVE_fnc_createProfilesFromUnits - %1 group(s) hold a playable unit and have been left as live AI, with %2 vehicle(s) they crew", count _playerGroups, count _playerGroupVehicles] call ALiVE_fnc_dump;
 };
 
+// A group a player leads is left alone by those leader tests, but a vehicle its AI sat in without the player
+// went on to the empty-vehicle pass at the end, which takes over and deletes any vehicle with no player
+// aboard: the squad lost its truck at mission start and stood where it had been. Keep such vehicles with the
+// squad. One with a player aboard still goes through that pass as before.
+private _squadVehicles = _vehicles select {
+    !isNull _x && {(crew _x) findIf {isPlayer _x} == -1} && {(crew _x) findIf {isPlayer leader group _x} > -1}
+};
+if (count _squadVehicles > 0) then {
+    _vehicles = _vehicles - _squadVehicles;
+    ["ALIVE_fnc_createProfilesFromUnits - %1 vehicle(s) carrying a player's squad have been left live with it", count _squadVehicles] call ALiVE_fnc_dump;
+};
+
 //["Create Mode Groups: %1",_groups] call ALIVE_fnc_dump;
 //["Create Mode Vehicles: %1",_vehicles] call ALIVE_fnc_dump;
 
