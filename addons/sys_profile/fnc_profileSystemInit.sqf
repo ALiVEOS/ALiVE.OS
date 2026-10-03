@@ -194,7 +194,7 @@ if(isServer) then {
         _airCombatHelicopterVehicleRadius = ([_standardValue, _airCombatHelicopterVehicleRadius] call _asNumber) max 0;
     };
 
-    private _activeLimiter = parseNumber (_logic getVariable ["activeLimiter","30"]);
+    private _activeLimiter = parseNumber (_logic getVariable ["activeLimiter","144"]);
     private _zeusSpawn = (_logic getvariable ["zeusSpawn", "true"]) == "true";
     private _speedModifier = (_logic getVariable ["speedModifier","1"]) call BIS_fnc_parseNumber;
     // Virtual Combat Speed can arrive empty. Its list's editor default named none of its
