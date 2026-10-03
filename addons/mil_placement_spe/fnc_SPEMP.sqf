@@ -39,9 +39,8 @@ Jman
 #define DEFAULT_FACTION                 QUOTE(SPE_US_ARMY)
 #define DEFAULT_SIZE                    "50"
 #define DEFAULT_PRIORITY                "50"
-#define DEFAULT_NO_TEXT                 "0"
 #define DEFAULT_OBJECTIVES              []
-#define DEFAULT_BEHAVIOUR_TYPE          QUOTE(STEALTH)
+#define DEFAULT_BEHAVIOUR_TYPE          QUOTE(AWARE)
 
 TRACE_1("SPEMP - input",_this);
 
@@ -116,7 +115,8 @@ switch(_operation) do {
     };
 
     case "speInfantryClass": {
-        _result = [_logic,_operation,_args,DEFAULT_NO_TEXT] call ALIVE_fnc_OOsimpleOperation;
+        // empty, as the editor leaves it: "0" was looked up as a group class
+        _result = [_logic,_operation,_args,""] call ALIVE_fnc_OOsimpleOperation;
     };
     
     case "speInfantryBehaviour": {
@@ -124,14 +124,15 @@ switch(_operation) do {
     };
         
     case "speVehicleClass": {
-        _result = [_logic,_operation,_args,DEFAULT_NO_TEXT] call ALIVE_fnc_OOsimpleOperation;
+        // empty, as the editor leaves it: "0" was looked up as a vehicle class
+        _result = [_logic,_operation,_args,""] call ALIVE_fnc_OOsimpleOperation;
     };
     
     case "speVehicleEmpty": {
         if (typeName _args == "BOOL") then {
             _logic setVariable ["speVehicleEmpty", _args];
         } else {
-            _args = _logic getVariable ["speVehicleEmpty", true];
+            _args = _logic getVariable ["speVehicleEmpty", false];
         };
 
         if (typeName _args == "STRING") then {
