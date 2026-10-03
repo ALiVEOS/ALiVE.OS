@@ -229,7 +229,7 @@ if(isServer) then {
     if (_virtualCombatRangeModifier == 0) then {
         ["ALiVE Profile System - Virtual Combat Range is 0, so virtual AI groups never fight each other."] call ALiVE_fnc_dumpR;
     };
-    private _pathfinding = (_logic getVariable ["pathfinding", "false"]) == "true";
+    private _pathfinding = (_logic getVariable ["pathfinding", "true"]) == "true";
     // Pass the configured grid setting through RAW (no parse here). It may be an
     // auto-size token ("auto"/"high"/"med"/"low"), a stringified pair "[x,y]" from
     // a saved mission, or a legacy [x,y] array - the resolver in fnc_pathfinder
