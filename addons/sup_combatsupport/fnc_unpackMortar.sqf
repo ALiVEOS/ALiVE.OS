@@ -94,8 +94,18 @@ if (isNil "_gunner" || isNil "_assistant") exitWith {
 
     _assistant setUnitPos "Middle";
 
+    // Assemble is aimed at the other half of the weapon, the base bag lying on the ground (BIKI's own example
+    // is _unit action ["Assemble", nearestObject [_unit, "Tripod_Bag"]]). It was given the gunner's own bag,
+    // so it never did anything and every set-up sat out the 60 s below before the tube was made by script. The
+    // assistant puts the base bag down, and once it's on the ground the gunner assembles onto it.
+    private _baseBag = unitBackpack _assistant;
+    private _baseBagType = backpack _assistant;
     _assistant action ["PutBag",_assistant];
-    _gunner action ["Assemble",unitbackpack _gunner];
+    private _tb = time;
+    waitUntil {sleep 0.5; backpack _assistant == "" || {time - _tb > 10}};
+    sleep 1;
+    if (isNull _baseBag && {_baseBagType != ""}) then {_baseBag = nearestObject [_gunner, _baseBagType]};
+    _gunner action ["Assemble",_baseBag];
 
     _wait = true;
     _timein = true;
