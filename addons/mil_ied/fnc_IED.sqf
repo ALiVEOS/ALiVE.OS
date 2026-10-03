@@ -516,6 +516,80 @@ switch(_operation) do {
                 */
                 _result = ADDON;
         };
+        case "filterLocations": {
+            // IED/Bomber Locations. Enemy-Occupied (1) keeps the towns where the enemy's AI Commanders have forces at
+            // their objectives, their own or contested: the commanders synced to this module or, with none synced,
+            // every commander hostile to a side the players can take. While those have forces at no objective yet
+            // (an insurgency recruits its forces later) every town is kept, as Random. Unoccupied (2) keeps the towns
+            // where no commander sees forces of either side. Read once, from each commander's own record, when every
+            // commander has started. With no commander in the mission, every town is kept, as Random.
+            _args params ["_locations", "_locsMode", ["_commanders", []]];
+            private _all = allMissionObjects "ALiVE_mil_OPCOM";
+            if (_all isEqualTo []) exitWith {
+                ["ALiVE MIL IED - IED/Bomber Locations needs an AI Commander in the mission; placing as Random"] call ALiVE_fnc_dump;
+                _result = _locations;
+            };
+            private _t0 = diag_tickTime;
+            waitUntil {
+                sleep 5;
+                ((_all findIf { !isNull _x && {!(_x getVariable ["startupComplete", false])} }) == -1) || {(diag_tickTime - _t0) > 900}
+            };
+            private _late = { !isNull _x && {!(_x getVariable ["startupComplete", false])} } count _all;
+            if (_late > 0) then {
+                ["ALiVE MIL IED - IED/Bomber Locations: %1 AI Commander(s) still starting after 15 minutes; going by the others", _late] call ALiVE_fnc_dump;
+            };
+            private _whose = "the AI Commander(s) synced to this module";
+            if (_locsMode == 1 && {_commanders isEqualTo []}) then {
+                // Nothing synced: the enemy is every commander hostile to a side the players can take
+                private _players = [west, east, independent] select { (playableSlotsNumber _x) > 0 };
+                { _players pushBackUnique (side group _x) } forEach allPlayers;
+                _players = _players select { _x in [west, east, independent] };
+                if (_players isEqualTo []) then {
+                    _commanders = _all;
+                    _whose = "every AI Commander (no player side found)";
+                } else {
+                    _commanders = _all select {
+                        private _h = _x getVariable ["handler", []];
+                        private _s = if ([_h] call ALIVE_fnc_isHash) then { [[_h, "side", ""] call ALiVE_fnc_hashGet] call ALIVE_fnc_sideTextToObject } else { civilian };
+                        (_s in [west, east, independent]) && {(_players findIf { (_s getFriend _x) < 0.6 }) > -1}
+                    };
+                    _whose = format ["the AI Commanders hostile to %1", _players];
+                };
+            };
+            // [centre, size] of every objective where those commanders have forces, their own or contested; for
+            // Unoccupied, also where only their enemy has. A commander counts the forces within 500 m of an objective,
+            // so a bigger objective is matched at 500 m.
+            private _columns = [[0, 2], [0, 1, 2]] select (_locsMode == 2);
+            private _held = [];
+            {
+                private _h = _x getVariable ["handler", []];
+                if ([_h] call ALIVE_fnc_isHash) then {
+                    private _occ = [_h, "clusteroccupation", []] call ALiVE_fnc_hashGet;
+                    private _ids = [];
+                    { _ids append ((_occ param [_x, []]) apply { _x param [0, ""] }) } forEach _columns;
+                    {
+                        if (([_x, "objectiveID", ""] call ALiVE_fnc_hashGet) in _ids) then {
+                            _held pushBack [[_x, "center", [0,0,0]] call ALiVE_fnc_hashGet, ([_x, "size", 0] call ALiVE_fnc_hashGet) min 500];
+                        };
+                    } forEach ([_h, "objectives", []] call ALiVE_fnc_hashGet);
+                };
+            } forEach ([_all, _commanders] select (_locsMode == 1));
+            if (_locsMode == 1 && {_held isEqualTo []}) exitWith {
+                ([["ALiVE MIL IED - IED/Bomber Locations Enemy-Occupied: %1 have forces at no objective yet; placing as Random", _whose],
+                    ["ALiVE MIL IED - IED/Bomber Locations Enemy-Occupied: no AI Commander is hostile to the players; placing as Random"]]
+                    select (_commanders isEqualTo [])) call ALiVE_fnc_dump;
+                _result = _locations;
+            };
+            _result = _locations select {
+                private _pos = _x select 0;
+                private _size = _x select 1;
+                private _isHeld = (_held findIf { (_pos distance2D (_x select 0)) <= ((_size max (_x select 1)) max 300) }) > -1;
+                [!_isHeld, _isHeld] select (_locsMode == 1)
+            };
+            ["ALiVE MIL IED - IED/Bomber Locations %1: %2 of %3 towns kept, going by %4 (%5 objectives with forces)",
+                ["", "Enemy-Occupied", "Unoccupied"] select _locsMode, count _result, count _locations,
+                ["every AI Commander", _whose] select (_locsMode == 1), count _held] call ALiVE_fnc_dump;
+        };
         case "start": {
             if (isServer) then {
 
@@ -533,6 +607,13 @@ switch(_operation) do {
                 _taor = [_logic, "taor"] call MAINCLASS;
                 _blacklist = [_logic, "blacklist"] call MAINCLASS;
                 _side = _logic getvariable ["VB_IED_Side", DEFAULT_VB_IED_SIDE];
+
+                // A save taken while IED/Bomber Locations was still waiting on the AI Commanders holds no IEDs at all:
+                // place them afresh rather than restore nothing
+                if (GVAR(Loaded) && {([_logic, "Locs_IED"] call MAINCLASS) in [1, 2]}
+                    && {((([GVAR(STORE), "triggers", [] call ALiVE_fnc_hashCreate] call ALiVE_fnc_hashGet) select 1) - ["_id", "_rev"]) isEqualTo []}) then {
+                    GVAR(Loaded) = false;
+                };
 
                 if !(GVAR(Loaded)) then {
                     // Initialise Locations
@@ -589,6 +670,27 @@ switch(_operation) do {
                             private _pos = _x select 0;
                             ({ [_pos, _x] call ALiVE_fnc_inArea } count _taor) > 0
                         };
+                    };
+
+                    // IED/Bomber Locations: Random places as below, at once. Enemy-Occupied and Unoccupied need
+                    // the AI Commanders to have started, so those place from a thread of their own (starting
+                    // threat when a commander is synced, regular otherwise) and this start isn't held for them.
+                    private _locsMode = [_logic, "Locs_IED"] call MAINCLASS;
+                    if (_locsMode isEqualType 0 && {_locsMode in [1, 2]} && {_locations isNotEqualTo []}) then {
+                        private _syncedOpcom = (synchronizedObjects _logic) select { !isNull _x && {(typeOf _x) == "ALiVE_mil_OPCOM"} };
+                        [_logic, +_locations, ["regular", "starting"] select (_syncedOpcom isNotEqualTo []), _locsMode, _syncedOpcom, _side] spawn {
+                            // setupTriggers reads _side from here when there is no Civilian Placement to take a faction from
+                            params ["_logic", "_locations", "_mode", "_locsMode", "_commanders", "_side"];
+                            _locations = [_logic, "filterLocations", [_locations, _locsMode, _commanders]] call MAINCLASS;
+                            [_logic, "setupTriggers", [_locations, _mode]] call MAINCLASS;
+                            if ([_logic, "debug"] call MAINCLASS) then {
+                                // The start's own debug pass ran before anything was placed here
+                                [_logic, "deleteMarkers"] call MAINCLASS;
+                                [_logic, "createMarkers"] call MAINCLASS;
+                                ["ALIVE IED - Count IED Triggers %1", count ([GVAR(STORE), "triggers", [] call ALiVE_fnc_hashCreate] call ALiVE_fnc_hashGet select 1)] call ALIVE_fnc_dump;
+                            };
+                        };
+                        _locations = [];
                     };
 
                     if (count synchronizedObjects _logic > 0) then {
