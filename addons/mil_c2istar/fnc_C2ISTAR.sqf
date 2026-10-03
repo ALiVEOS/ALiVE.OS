@@ -36,7 +36,7 @@ Peer Reviewed:
 #define MAINCLASS ALIVE_fnc_C2ISTAR
 #define MTEMPLATE "ALiVE_C2_%1"
 #define DEFAULT_DEBUG false
-#define DEFAULT_C2_ITEM "LaserDesignator"
+#define DEFAULT_C2_ITEM "LaserDesignators"
 #define DEFAULT_C2_ITEM_CUSTOM ""
 #define DEFAULT_STATE "INIT"
 #define DEFAULT_SIDE "WEST"
@@ -61,7 +61,7 @@ Peer Reviewed:
 #define DEFAULT_DISPLAY_INTEL false
 #define DEFAULT_MAP_INTEL_VISIBILITY "SIDE"
 #define DEFAULT_MAP_INTEL_REVEAL_INSTALLATIONS false
-#define DEFAULT_INTEL_CHANCE "0.1"
+#define DEFAULT_INTEL_CHANCE "1"
 #define DEFAULT_FRIENDLY_INTEL false
 #define DEFAULT_FRIENDLY_INTEL_RADIUS 2000
 #define DEFAULT_DISPLAY_PLAYER_SECTORS false
@@ -383,7 +383,7 @@ switch(_operation) do {
         if (typeName _args == "BOOL") then {
             _logic setVariable ["scomOpsAllowSpectate", _args];
         } else {
-            _args = _logic getVariable ["scomOpsAllowSpectate", false];
+            _args = _logic getVariable ["scomOpsAllowSpectate", true];
         };
         if (typeName _args == "STRING") then {
                 if(_args == "true") then {_args = true;} else {_args = false;};
@@ -397,7 +397,7 @@ switch(_operation) do {
         if (typeName _args == "BOOL") then {
             _logic setVariable ["scomOpsAllowInstantJoin", _args];
         } else {
-            _args = _logic getVariable ["scomOpsAllowInstantJoin", false];
+            _args = _logic getVariable ["scomOpsAllowInstantJoin", true];
         };
         if (typeName _args == "STRING") then {
                 if(_args == "true") then {_args = true;} else {_args = false;};
@@ -411,7 +411,7 @@ switch(_operation) do {
         if (typeName _args == "BOOL") then {
             _logic setVariable ["scomOpsAllowImageIntelligence", _args];
         } else {
-            _args = _logic getVariable ["scomOpsAllowImageIntelligence", false];
+            _args = _logic getVariable ["scomOpsAllowImageIntelligence", true];
         };
         if (typeName _args == "STRING") then {
                 if(_args == "true") then {_args = true;} else {_args = false;};
