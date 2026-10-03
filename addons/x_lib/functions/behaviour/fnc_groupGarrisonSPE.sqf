@@ -20,10 +20,12 @@ Author:
 Jman
 ---------------------------------------------------------------------------- */
 
-params ["_group","_position","_radius","_moveInstantly", ["_onlyProfiled", false], ["_cbaSearchRadius", 300]];
+params ["_group","_position",["_radius", 50],"_moveInstantly", ["_onlyProfiled", false], ["_cbaSearchRadius", 300]];
 
 private _units = units _group;
-_radius = 50;
+// At least 50 m: the Spearhead placement asks for 10, too little to reach the post's own guns. A garrison
+// ordered over a bigger area searches all of it, where this used to cut every order down to 50.
+_radius = if (_radius isEqualType 0) then { _radius max 50 } else { 50 };
 
 [_group] call ALiVE_fnc_releaseGarrisonBuildings;
 
