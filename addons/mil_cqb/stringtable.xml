@@ -732,15 +732,8 @@
     <Portuguese>Executar uma vez por unidade:</Portuguese>
     <Russian>Выполнить один раз на юнита:</Russian>
 </Key>
-<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_ON_EACH_SPAWN_ONCE_COMMENT">
-    <English>Yes: the SQF hook runs only on the first spawn of each unit, which is useful for one-time setup like adding event handlers. No: runs every time the unit re-spawns.</English>
-    <Chinese>是：SQF 鉤子僅在每個單位首次生成時執行 — 適用於一次性設定,例如新增事件處理器。否：每次單位重新生成時都執行。</Chinese>
-    <Chinesesimp>是：SQF 钩子仅在每个单位首次生成时执行 — 适用于一次性设定,例如新增事件处理器。否：每次单位重新生成时都执行。</Chinesesimp>
-    <Spanish>Sí: el hook SQF se ejecuta solo en la primera aparición de cada unidad — útil para configuraciones únicas como agregar manejadores de eventos. No: se ejecuta cada vez que la unidad reaparece.</Spanish>
-    <French>Oui: le hook SQF ne s'exécute qu'à la première apparition de chaque unité — utile pour la configuration ponctuelle comme l'ajout de gestionnaires d'événements. Non: s'exécute à chaque réapparition de l'unité.</French>
-    <Portuguese>Sim: o hook SQF é executado apenas no primeiro aparecimento de cada unidade — útil para configuração pontual como adicionar manipuladores de eventos. Não: executa cada vez que a unidade reaparece.</Portuguese>
-    <Russian>Да: SQF-обработчик выполняется только при первом появлении каждого юнита — полезно для одноразовой настройки, например добавления обработчиков событий. Нет: выполняется каждый раз при повторном появлении юнита.</Russian>
+    <English>The SQF hook runs each time CQB spawns a soldier, including every time a house's soldiers spawn again after players have left and come back, because each spawn creates new soldiers. That keeps anything it adds, such as event handlers, in place. Yes only stops it running twice on the same soldier, so in practice both settings behave the same.</English>
 </Key>
 </Container></Package></Project>
 

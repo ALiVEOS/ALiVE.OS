@@ -991,12 +991,6 @@
     <Russian>Выполнить один раз для юнита:</Russian>
 </Key>
 <Key ID="STR_ALIVE_CP_ON_EACH_SPAWN_ONCE_COMMENT">
-    <English>Yes: the SQF hook runs only on the first spawn of each unit profile, which is useful for one-time setup like adding event handlers. No: runs every time the profile re-spawns after being virtual.</English>
-    <Chinese>是：SQF 鉤子只在每個單位設定檔的首次生成時執行 — 適用於一次性設定如新增事件處理器。否：每次設定檔在虛擬化後重新生成時都執行。</Chinese>
-    <Chinesesimp>是：SQF 钩子只在每个单位配置文件的首次生成时执行 — 适用于一次性设置如添加事件处理器。否：每次配置文件在虚拟化后重新生成时都执行。</Chinesesimp>
-    <Spanish>Sí: el gancho SQF se ejecuta solo en la primera aparición de cada perfil de unidad — útil para configuración puntual como añadir manejadores de eventos. No: se ejecuta cada vez que el perfil reaparece tras estar virtual.</Spanish>
-    <French>Oui: le hook SQF ne s'exécute qu'à la première apparition de chaque profil d'unité — utile pour la configuration ponctuelle comme l'ajout de gestionnaires d'événements. Non: s'exécute à chaque réapparition du profil après avoir été virtuel.</French>
-    <Portuguese>Sim: o hook SQF é executado apenas na primeira aparição de cada perfil de unidade — útil para configuração única como adicionar manipuladores de eventos. Não: executa toda vez que o perfil é gerado novamente após ser virtual.</Portuguese>
-    <Russian>Да: SQF-хук выполняется только при первом создании каждого профиля юнита — полезно для одноразовой настройки, например, добавления обработчиков событий. Нет: выполняется каждый раз при пересоздании профиля после виртуализации.</Russian>
+    <English>The SQF hook runs each time a unit spawns, including every re-spawn after being virtual, because each spawn creates new soldiers. That keeps anything it adds, such as event handlers, in place. Yes only stops it running twice on the same soldier, so in practice both settings behave the same.</English>
 </Key>
 </Container></Package></Project>
