@@ -37,7 +37,7 @@ Jman
 #define SUPERCLASS ALIVE_fnc_baseClass
 #define MAINCLASS ALIVE_fnc_MP
 #define MTEMPLATE "ALiVE_MP_%1"
-#define DEFAULT_SIZE "100"
+#define DEFAULT_SIZE "200"
 #define DEFAULT_TYPE QUOTE(RANDOM)
 #define DEFAULT_FACTION QUOTE(BLU_F)
 #define DEFAULT_TAOR []
@@ -51,7 +51,7 @@ Jman
 #define DEFAULT_OBJECTIVES_VEHICLE []
 #define DEFAULT_SIZE_FILTER "0"
 #define DEFAULT_PRIORITY_FILTER "0"
-#define DEFAULT_AMBIENT_VEHICLE_AMOUNT "0.2"
+#define DEFAULT_AMBIENT_VEHICLE_AMOUNT "0"
 #define DEFAULT_AMBIENT_GUARD_AMOUNT "0.2"
 #define DEFAULT_AMBIENT_GUARD_RADIUS "200"
 #define DEFAULT_AMBIENT_GUARD_PATROL_PERCENT "50"
@@ -242,7 +242,7 @@ switch(_operation) do {
             if (typeName _args == "BOOL") then {
                 _logic setVariable ["createHQ", _args];
             } else {
-                _args = _logic getVariable ["createHQ", false];
+                _args = _logic getVariable ["createHQ", true];
             };
             if (typeName _args == "STRING") then {
                 if(_args == "true") then {_args = true;} else {_args = false;};
@@ -256,7 +256,7 @@ switch(_operation) do {
             if (typeName _args == "BOOL") then {
                 _logic setVariable ["createFieldHQ", _args];
             } else {
-                _args = _logic getVariable ["createFieldHQ", false];
+                _args = _logic getVariable ["createFieldHQ", true];
             };
             if (typeName _args == "STRING") then {
                 if(_args == "true") then {_args = true;} else {_args = false;};
@@ -270,7 +270,7 @@ switch(_operation) do {
         if (typeName _args == "BOOL") then {
             _logic setVariable ["placeHelis", _args];
         } else {
-            _args = _logic getVariable ["placeHelis", false];
+            _args = _logic getVariable ["placeHelis", true];
         };
         if (typeName _args == "STRING") then {
             if(_args == "true") then {_args = true;} else {_args = false;};
@@ -322,7 +322,7 @@ switch(_operation) do {
         if (typeName _args == "BOOL") then {
             _logic setVariable ["placeSupplies", _args];
         } else {
-            _args = _logic getVariable ["placeSupplies", false];
+            _args = _logic getVariable ["placeSupplies", true];
         };
         if (typeName _args == "STRING") then {
             if(_args == "true") then {_args = true;} else {_args = false;};
