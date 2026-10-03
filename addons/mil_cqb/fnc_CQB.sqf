@@ -298,7 +298,7 @@ switch(_operation) do {
             if (_CQB_onEachSpawnOnce isEqualType "") then {_CQB_onEachSpawnOnce = (_CQB_onEachSpawnOnce == "true")};
             _logic setVariable ["onEachSpawnOnce", _CQB_onEachSpawnOnce];
 
-            private _CQB_Locations = _logic getvariable ["CQB_LOCATIONTYPE","towns"];
+            private _CQB_Locations = _logic getvariable ["CQB_LOCATIONTYPE","all"];
 
             if (isnil QMOD(smoothSpawn)) then {MOD(smoothSpawn) = 0.3};
 
