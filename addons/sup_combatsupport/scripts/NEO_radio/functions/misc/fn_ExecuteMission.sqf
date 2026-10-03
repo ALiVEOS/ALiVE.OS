@@ -50,6 +50,28 @@ sleep 2;
 
 };
 
+// Count the shells that actually leave, and take only those off the battery. Its rounds used to come off as
+// the order was given, so a mission no gun could fire (out of reach, or a sea point the engine won't aim at)
+// still emptied the battery and was reported as fired. Only the mission's own magazine counts, so a
+// commander's machine gun doesn't.
+private _guns = [];
+{
+    private _gun = vehicle _x;
+    if (!isNull _gun && {!(_gun in _guns)}) then { _guns pushBack _gun };
+} forEach (_units + [_battery]);
+_battery setVariable ["ALiVE_CS_shotsFired", 0];
+_battery setVariable ["ALiVE_CS_shotMagazine", _ordnance];
+private _firedEHs = _guns apply {
+    _x setVariable ["ALiVE_CS_firingFor", _battery];
+    [_x, _x addEventHandler ["Fired", {
+        params ["_gun", "", "", "", "", "_magazine"];
+        private _b = _gun getVariable ["ALiVE_CS_firingFor", objNull];
+        if (!isNull _b && {_magazine == (_b getVariable ["ALiVE_CS_shotMagazine", ""])}) then {
+            _b setVariable ["ALiVE_CS_shotsFired", (_b getVariable ["ALiVE_CS_shotsFired", 0]) + 1];
+        };
+    }]]
+};
+
 if(_missionRoundCount == 1) then {
     _battery DOArtilleryFire [_targetPos, _ordnance, _missionRoundCount];
 
@@ -78,6 +100,42 @@ if(_missionRoundCount == 1) then {
             sleep _rateOfFire;
         };
     };
+};
+
+// The firing is over once every round asked for has left, nothing has left for 30 s since the last shot,
+// nothing has left at all after 90 s (the guns can't reach, or won't aim there), or the mission runs too long.
+private _t0 = time;
+private _lastShot = time;
+private _seen = 0;
+waitUntil {
+    sleep 1;
+    private _n = _battery getVariable ["ALiVE_CS_shotsFired", 0];
+    if (_n > _seen) then { _seen = _n; _lastShot = time };
+    _n >= _missionRoundCount
+    || {_seen == 0 && {time - _t0 > 90}}
+    || {_seen > 0 && {time - _lastShot > 30}}
+    || {time - _t0 > 120 + 20 * _missionRoundCount}
+};
+{
+    _x params ["_gun", "_eh"];
+    if (!isNull _gun) then {
+        _gun removeEventHandler ["Fired", _eh];
+        _gun setVariable ["ALiVE_CS_firingFor", nil];
+    };
+} forEach _firedEHs;
+private _fired = (_battery getVariable ["ALiVE_CS_shotsFired", 0]) min _missionRoundCount;
+if (_fired > 0) then {
+    private _rounds = +(_battery getVariable ["NEO_radioArtyBatteryRounds", []]);
+    {
+        _x params ["_round", "_count"];
+        if (_round == _ordnanceType) exitWith {
+            if (_count - _fired > 0) then { _rounds set [_forEachIndex, [_round, _count - _fired]] } else { _rounds deleteAt _forEachIndex };
+        };
+    } forEach _rounds;
+    _battery setVariable ["NEO_radioArtyBatteryRounds", _rounds, true];
+};
+if (!isNil "ALiVE_sup_combatsupport_debug" && {ALiVE_sup_combatsupport_debug}) then {
+    ["MISSION: %1 of %2 rounds left the guns and came off the battery", _fired, _missionRoundCount] call ALiVE_fnc_dump;
 };
 
 _battery setVariable ["ARTY_COMPLETE", true, true];

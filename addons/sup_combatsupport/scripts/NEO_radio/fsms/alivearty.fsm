@@ -413,43 +413,8 @@ class FSM
                                          "" \n
                                          "[_battery, _target, _missionType, _ordnanceType, _rateOfFire, _durationOrCount, _class,_ordnance,_dispersion, _units] spawn ALIVE_fnc_ExecuteMission;" \n
                                          "" \n
-                                         "//Update ammo" \n
-                                         "_ammo = _battery getVariable ""NEO_radioArtyBatteryRounds"";" \n
-                                         "_newAmmo = [];" \n
-                                         "_newAmmoArray = _ammo;" \n
-                                         "" \n
-                                         "{" \n
-                                         "    private [""_round"", ""_count"", ""_countNew""];" \n
-                                         "    _round = _x select 0; " \n
-                                         "    _count = _x select 1; " \n
-                                         "    _newAmmoIndex = _forEachIndex;" \n
-                                         "" \n
-                                         "    if (_ordnanceType == _round) then  " \n
-                                         "    {" \n
-                                         "        _countNew = _count - _durationOrCount;" \n
-                                         "        if(_countNew > 0) then" \n
-                                         "        {" \n
-                                         "" \n
-                                         "        _newAmmo = [_ordnanceType, _countNew];" \n
-                                         "" \n
-                                         "                if (count _newAmmo > 0) then" \n
-                                         "                {" \n
-                                         "" \n
-                                         "                _newAmmoArray set [_newAmmoIndex, _newAmmo];" \n
-                                         "" \n
-                                         "                };" \n
-                                         "        }" \n
-                                         "        else" \n
-                                         "        {" \n
-                                         "" \n
-                                         "        _newAmmoArray set [_newAmmoIndex, ""DELETEPLEASE""];" \n
-                                         "        _newAmmoArray = _newAmmoArray - [""DELETEPLEASE""]" \n
-                                         "        " \n
-                                         "        };" \n
-                                         "    };" \n
-                                         "} forEach _ammo;" \n
-                                         "" \n
-                                         "_battery setVariable [""NEO_radioArtyBatteryRounds"", _newAmmoArray, true];" \n
+                                         "// The rounds come off the battery in ALIVE_fnc_ExecuteMission as the shells actually leave;" \n
+                                         "// taking the whole count here emptied it for missions no gun could fire." \n
                                          "" \n
                                          ""/*%FSM</ACTION""">*/;
                                 };
@@ -1223,43 +1188,8 @@ class FSM
                                          "" \n
                                          "[_battery, _target, _missionType, _ordnanceType, _rateOfFire, _durationOrCount, _class,_ordnance,_dispersion, _units] spawn ALIVE_fnc_ExecuteMission;" \n
                                          "" \n
-                                         "//Update ammo" \n
-                                         "_ammo = _battery getVariable ""NEO_radioArtyBatteryRounds"";" \n
-                                         "_newAmmo = [];" \n
-                                         "_newAmmoArray = _ammo;" \n
-                                         "" \n
-                                         "{" \n
-                                         "    private [""_round"", ""_count"", ""_countNew""];" \n
-                                         "    _round = _x select 0; " \n
-                                         "    _count = _x select 1; " \n
-                                         "    _newAmmoIndex = _forEachIndex;" \n
-                                         "" \n
-                                         "    if (_ordnanceType == _round) then  " \n
-                                         "    {" \n
-                                         "        _countNew = _count - _durationOrCount;" \n
-                                         "        if(_countNew > 0) then" \n
-                                         "        {" \n
-                                         "" \n
-                                         "        _newAmmo = [_ordnanceType, _countNew];" \n
-                                         "" \n
-                                         "                if (count _newAmmo > 0) then" \n
-                                         "                {" \n
-                                         "" \n
-                                         "                _newAmmoArray set [_newAmmoIndex, _newAmmo];" \n
-                                         "" \n
-                                         "                };" \n
-                                         "        }" \n
-                                         "        else" \n
-                                         "        {" \n
-                                         "" \n
-                                         "        _newAmmoArray set [_newAmmoIndex, ""DELETEPLEASE""];" \n
-                                         "        _newAmmoArray = _newAmmoArray - [""DELETEPLEASE""]" \n
-                                         "        " \n
-                                         "        };" \n
-                                         "    };" \n
-                                         "} forEach _ammo;" \n
-                                         "" \n
-                                         "_battery setVariable [""NEO_radioArtyBatteryRounds"", _newAmmoArray, true];" \n
+                                         "// The rounds come off the battery in ALIVE_fnc_ExecuteMission as the shells actually leave;" \n
+                                         "// taking the whole count here emptied it for missions no gun could fire." \n
                                          "" \n
                                          ""/*%FSM</ACTION""">*/;
                                 };
@@ -1434,43 +1364,8 @@ class FSM
                                          "" \n
                                          "[_battery, _target, _missionType, _ordnanceType, _rateOfFire, _durationOrCount, _class,_ordnance,_dispersion, _units] spawn ALIVE_fnc_ExecuteMission;" \n
                                          "" \n
-                                         "//Update ammo" \n
-                                         "_ammo = _battery getVariable ""NEO_radioArtyBatteryRounds"";" \n
-                                         "_newAmmo = [];" \n
-                                         "_newAmmoArray = _ammo;" \n
-                                         "" \n
-                                         "{" \n
-                                         "    private [""_round"", ""_count"", ""_countNew""];" \n
-                                         "    _round = _x select 0; " \n
-                                         "    _count = _x select 1; " \n
-                                         "    _newAmmoIndex = _forEachIndex;" \n
-                                         "" \n
-                                         "    if (_ordnanceType == _round) then  " \n
-                                         "    {" \n
-                                         "        _countNew = _count - _durationOrCount;" \n
-                                         "        if(_countNew > 0) then" \n
-                                         "        {" \n
-                                         "" \n
-                                         "        _newAmmo = [_ordnanceType, _countNew];" \n
-                                         "" \n
-                                         "                if (count _newAmmo > 0) then" \n
-                                         "                {" \n
-                                         "" \n
-                                         "                _newAmmoArray set [_newAmmoIndex, _newAmmo];" \n
-                                         "" \n
-                                         "                };" \n
-                                         "        }" \n
-                                         "        else" \n
-                                         "        {" \n
-                                         "" \n
-                                         "        _newAmmoArray set [_newAmmoIndex, ""DELETEPLEASE""];" \n
-                                         "        _newAmmoArray = _newAmmoArray - [""DELETEPLEASE""]" \n
-                                         "        " \n
-                                         "        };" \n
-                                         "    };" \n
-                                         "} forEach _ammo;" \n
-                                         "" \n
-                                         "_battery setVariable [""NEO_radioArtyBatteryRounds"", _newAmmoArray, true];" \n
+                                         "// The rounds come off the battery in ALIVE_fnc_ExecuteMission as the shells actually leave;" \n
+                                         "// taking the whole count here emptied it for missions no gun could fire." \n
                                          "" \n
                                          ""/*%FSM</ACTION""">*/;
                                 };
