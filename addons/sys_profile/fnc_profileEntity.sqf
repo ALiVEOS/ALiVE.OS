@@ -1488,8 +1488,9 @@ switch(_operation) do {
                     [_logic, "leader", objNull] call ALIVE_fnc_hashSet;
                 };
             };
-            // A deleted leader leaves the stored one null, and the profile's position is read from it.
-            if (_deleted > 0 && {isNull _leader}) then {
+            // The stored leader is null when he was deleted (above), or killed and his body cleared away
+            // since (a kill takes him off _units but leaves him here), and the position is read from him.
+            if (isNull _leader) then {
                 _leader = leader _group;
                 if (isNull _leader || {!(_leader in _units)}) then { _leader = _units select 0 };
                 [_logic, "leader", _leader] call ALIVE_fnc_hashSet;
