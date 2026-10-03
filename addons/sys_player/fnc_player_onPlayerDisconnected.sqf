@@ -38,6 +38,16 @@ if (!isNil QMOD(sys_player) && isServer) then {
     if (_name == "__SERVER__") exitWith {
 
         if (!isNil "ALIVE_sys_data" && {!ALIVE_sys_data_DISABLED} && {MOD(sys_player) getVariable ["enablePlayerPersistence",false]}) then {
+            // This writes the records held in memory, which the timed save only refreshes every 5 minutes, so an
+            // admin's server save stored each player where they had been at the last one. Bring everyone who's in
+            // up to date first. Only once their restore is in, as the other saves do: saving someone whose restore
+            // never landed would replace the record they own with the fresh spawn.
+            {
+                private _puid = getPlayerUID _x;
+                if (_puid != "" && {MOD(sys_player) getVariable [_puid + "_restored", false]}) then {
+                    [MOD(sys_player), "setPlayer", [_x]] call ALIVE_fnc_player;
+                };
+            } forEach (allPlayers - entities "HeadlessClient_F");
             _result = [MOD(sys_player), "savePlayers", [false]] call ALIVE_fnc_player;
 
             ["SYS_PLAYER - SAVING PLAYER DATA: %1",_result] call ALiVE_fnc_dump;
