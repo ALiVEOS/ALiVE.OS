@@ -354,43 +354,43 @@ switch(_operation) do {
         _result = _logic getVariable [_operation, []];
     };
     case "customSkillAbilityMin": {
-        _result = [_logic,_operation,_args,_logic getvariable [_operation,0]] call ALIVE_fnc_OOsimpleOperation;
+        _result = [_logic,_operation,_args,_logic getvariable [_operation,0.2]] call ALIVE_fnc_OOsimpleOperation;
     };
     case "customSkillAbilityMax": {
-        _result = [_logic,_operation,_args,_logic getvariable [_operation,0]] call ALIVE_fnc_OOsimpleOperation;
+        _result = [_logic,_operation,_args,_logic getvariable [_operation,0.25]] call ALIVE_fnc_OOsimpleOperation;
     };
     case "customSkillAimAccuracy": {
-        _result = [_logic,_operation,_args,_logic getvariable [_operation,0]] call ALIVE_fnc_OOsimpleOperation;
+        _result = [_logic,_operation,_args,_logic getvariable [_operation,0.3]] call ALIVE_fnc_OOsimpleOperation;
     };
     case "customSkillAimShake": {
-        _result = [_logic,_operation,_args,_logic getvariable [_operation,0]] call ALIVE_fnc_OOsimpleOperation;
+        _result = [_logic,_operation,_args,_logic getvariable [_operation,0.9]] call ALIVE_fnc_OOsimpleOperation;
     };
     case "customSkillAimSpeed": {
-        _result = [_logic,_operation,_args,_logic getvariable [_operation,0]] call ALIVE_fnc_OOsimpleOperation;
+        _result = [_logic,_operation,_args,_logic getvariable [_operation,0.3]] call ALIVE_fnc_OOsimpleOperation;
     };
     case "customSkillEndurance": {
-        _result = [_logic,_operation,_args,_logic getvariable [_operation,0]] call ALIVE_fnc_OOsimpleOperation;
+        _result = [_logic,_operation,_args,_logic getvariable [_operation,0.3]] call ALIVE_fnc_OOsimpleOperation;
     };
     case "customSkillSpotDistance": {
-        _result = [_logic,_operation,_args,_logic getvariable [_operation,0]] call ALIVE_fnc_OOsimpleOperation;
+        _result = [_logic,_operation,_args,_logic getvariable [_operation,0.9]] call ALIVE_fnc_OOsimpleOperation;
     };
     case "customSkillSpotTime": {
-        _result = [_logic,_operation,_args,_logic getvariable [_operation,0]] call ALIVE_fnc_OOsimpleOperation;
+        _result = [_logic,_operation,_args,_logic getvariable [_operation,0.5]] call ALIVE_fnc_OOsimpleOperation;
     };
     case "customSkillCourage": {
-        _result = [_logic,_operation,_args,_logic getvariable [_operation,0]] call ALIVE_fnc_OOsimpleOperation;
+        _result = [_logic,_operation,_args,_logic getvariable [_operation,0.7]] call ALIVE_fnc_OOsimpleOperation;
     };
     case "customSkillFleeing": {
-        _result = [_logic,_operation,_args,_logic getvariable [_operation,0]] call ALIVE_fnc_OOsimpleOperation;
+        _result = [_logic,_operation,_args,_logic getvariable [_operation,0.3]] call ALIVE_fnc_OOsimpleOperation;
     };
     case "customSkillReload": {
-        _result = [_logic,_operation,_args,_logic getvariable [_operation,0]] call ALIVE_fnc_OOsimpleOperation;
+        _result = [_logic,_operation,_args,_logic getvariable [_operation,0.3]] call ALIVE_fnc_OOsimpleOperation;
     };
     case "customSkillCommanding": {
-        _result = [_logic,_operation,_args,_logic getvariable [_operation,0]] call ALIVE_fnc_OOsimpleOperation;
+        _result = [_logic,_operation,_args,_logic getvariable [_operation,1]] call ALIVE_fnc_OOsimpleOperation;
     };
     case "customSkillGeneral": {
-        _result = [_logic,_operation,_args,_logic getvariable [_operation,0]] call ALIVE_fnc_OOsimpleOperation;
+        _result = [_logic,_operation,_args,_logic getvariable [_operation,0.5]] call ALIVE_fnc_OOsimpleOperation;
     };
     case "factionSkills": {
         _result = [_logic,_operation,_args,_logic getvariable [_operation,[]]] call ALIVE_fnc_OOsimpleOperation;
