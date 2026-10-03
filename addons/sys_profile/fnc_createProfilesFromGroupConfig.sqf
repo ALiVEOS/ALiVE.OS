@@ -170,6 +170,13 @@ if(count _config > 0) then {
         _side = "GUER";
     };
 
+    // The mission's own unit blacklist (ALiVE_PLACEMENT_CUSTOM_UNITBLACKLIST in init.sqf) keeps those soldiers out
+    // of every group, and the rest of the group still comes. Only the mission's own entries: the built-in part of
+    // ALiVE_PLACEMENT_UNITBLACKLIST is for the ambient population and lists gun and drone crews among others.
+    // Vehicle crews still come, except the crews of a crew-only group, who come on foot as soldiers.
+    private _unitBlacklist = ((missionNamespace getVariable ["ALiVE_PLACEMENT_CUSTOM_UNITBLACKLIST", []]) select { _x isEqualType "" }) apply { toLower _x };
+    private _listed = [];
+
     // loop through the config for the group
     for "_i" from 0 to count _config -1 do {
         _class = (_config select _i);
@@ -204,7 +211,11 @@ if(count _config > 0) then {
                 if (_isInferredRedirect) then {
                     _vehicle = [_vehicle, _originalFaction] call ALiVE_fnc_substituteFactionUnit;
                 };
-                _groupUnits pushback [_vehicle,_rank];
+                if ((toLower _vehicle) in _unitBlacklist) then {
+                    _listed pushback [_vehicle,_rank];
+                } else {
+                    _groupUnits pushback [_vehicle,_rank];
+                };
             };
         };
     };
@@ -229,9 +240,18 @@ if(count _config > 0) then {
                 _crewCount = _crewCount + (_crewPositions select _i);
             };
             if (_crewCount < 2 && {[_crewVehicle] call ALIVE_fnc_isArtillery}) then { _crewCount = 2 };
-            for "_i" from 1 to _crewCount do { _groupUnits pushBack [_crewClass, _crewRank] };
+            private _onFoot = [_groupUnits, _listed] select ((toLower _crewClass) in _unitBlacklist);
+            for "_i" from 1 to _crewCount do { _onFoot pushBack [_crewClass, _crewRank] };
         } forEach _groupVehicles;
         _groupVehicles = [];
+    };
+
+    // A group made only of listed soldiers comes as it is: an empty one would leave its objective, task or wave a
+    // group short. Listing the group itself (ALiVE_PLACEMENT_CUSTOM_GROUPBLACKLIST) has another one chosen instead.
+    if (_listed isNotEqualTo [] && {_groupUnits isEqualTo []} && {_groupVehicles isEqualTo []}) then {
+        ["Group '%1' (%2) is made only of soldiers on the mission's unit blacklist, so it comes as it is. Put the group on ALiVE_PLACEMENT_CUSTOM_GROUPBLACKLIST to have another group chosen instead.",
+            _groupClass, _groupFaction] call ALiVE_fnc_dump;
+        _groupUnits = _listed;
     };
 
 

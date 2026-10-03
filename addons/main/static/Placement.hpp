@@ -3,7 +3,9 @@ if (isnil "ALiVE_PLACEMENT_CUSTOM_VEHICLEBLACKLIST") then {ALiVE_PLACEMENT_CUSTO
 if (isnil "ALiVE_PLACEMENT_CUSTOM_GROUPBLACKLIST") then {ALiVE_PLACEMENT_CUSTOM_GROUPBLACKLIST = []};
 
 /*
- * Mil placement / Ambient civilians / Mil logistics unit blacklist
+ * Unit blacklist. The whole list keeps these classes out of the ambient civilian population. The mission's own
+ * entries (ALiVE_PLACEMENT_CUSTOM_UNITBLACKLIST, set in init.sqf) also keep those soldiers out of the groups ALiVE
+ * places, which fnc_createProfilesFromGroupConfig builds.
  */
  
 ALiVE_PLACEMENT_UNITBLACKLIST = ALiVE_PLACEMENT_CUSTOM_UNITBLACKLIST +
