@@ -325,7 +325,8 @@ if (isNil "ALIVE_COP_SIZE_THRESH_COMPANY") then { ALIVE_COP_SIZE_THRESH_COMPANY 
 // ============================================================================
 if (isNil "ALIVE_COP_TEX_DOT")        then { ALIVE_COP_TEX_DOT        = "\A3\ui_f\data\map\markers\military\dot_ca.paa" };
 if (isNil "ALIVE_COP_TEX_WARNING")    then { ALIVE_COP_TEX_WARNING    = "\A3\ui_f\data\map\markers\military\warning_ca.paa" };
-if (isNil "ALIVE_COP_TEX_INSTALL")    then { ALIVE_COP_TEX_INSTALL    = "\A3\ui_f\data\map\markers\military\install_ca.paa" };
+// the game has no military\install_ca.paa, so installations drew nothing: NATO's installation symbol
+if (isNil "ALIVE_COP_TEX_INSTALL")    then { ALIVE_COP_TEX_INSTALL    = "\A3\ui_f\data\map\markers\nato\n_installation.paa" };
 if (isNil "ALIVE_COP_TEX_BOX")        then { ALIVE_COP_TEX_BOX        = "\A3\ui_f\data\map\markers\military\box_ca.paa" };
 if (isNil "ALIVE_COP_TEX_FLAG")       then { ALIVE_COP_TEX_FLAG       = "\A3\ui_f\data\map\markers\military\flag_ca.paa" };
 if (isNil "ALIVE_COP_TEX_OBJECTIVE")  then { ALIVE_COP_TEX_OBJECTIVE  = "\A3\ui_f\data\map\markers\military\objective_ca.paa" };

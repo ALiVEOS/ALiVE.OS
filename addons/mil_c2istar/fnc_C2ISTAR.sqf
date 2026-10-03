@@ -1569,7 +1569,8 @@ if (isServer) then {
                         case "dot":       { "\A3\ui_f\data\map\markers\military\dot_ca.paa" };
                         case "flag":      { "\A3\ui_f\data\map\markers\military\flag_ca.paa" };
                         case "box":       { "\A3\ui_f\data\map\markers\military\box_ca.paa" };
-                        case "install":   { "\A3\ui_f\data\map\markers\military\install_ca.paa" };
+                        // the game has no military\install_ca.paa, so this drew nothing: NATO's installation symbol
+                        case "install":   { "\A3\ui_f\data\map\markers\nato\n_installation.paa" };
                         case "warning":   { "\A3\ui_f\data\map\markers\military\warning_ca.paa" };
                         case "objective": { "\A3\ui_f\data\map\markers\military\objective_ca.paa" };
                         case "none":      { "" };
