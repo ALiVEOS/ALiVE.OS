@@ -192,13 +192,13 @@
 <!-- AI-translated; native-speaker review welcome -->
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_SPAWN_COMMENT">
-    <English>Chance that a house near an existing garrison is also occupied. With Density set to None (the default), this chance applies to every house in the area instead.</English>
-    <Chinesesimp>已有驻军附近的房屋同样被占用的概率。密度设为"无"（默认）时，该概率适用于区域内的每栋房屋。</Chinesesimp>
-    <Chinese>已有駐軍附近的建築同樣被佔用的機率。密度設為「無」（預設）時，該機率適用於區域內的每棟建築。</Chinese>
-    <Spanish>Probabilidad de que una casa cercana a una guarnición existente también esté ocupada. Con la Densidad en Ninguna (predeterminado), esta probabilidad se aplica a todas las casas de la zona.</Spanish>
-    <French>Probabilité qu'une maison proche d'une garnison existante soit également occupée. Avec la Densité sur Aucune (par défaut), cette probabilité s'applique à toutes les maisons de la zone.</French>
-    <Portuguese>Probabilidade de uma casa próxima de uma guarnição existente também estar ocupada. Com a Densidade em Nenhuma (padrão), esta probabilidade aplica-se a todas as casas da área.</Portuguese>
-    <Russian>Вероятность того, что дом рядом с существующим гарнизоном также будет занят. Если Плотность установлена на «Нет» (по умолчанию), эта вероятность применяется ко всем домам в области.</Russian>
+    <English>Chance that a house near an existing garrison is also occupied. With Density set to None (the default), this chance applies to every house in the area instead. With Type set to Strategic it only decides buildings within 60 m of one already occupied, and every other strategic building is occupied.</English>
+    <Chinesesimp>已有驻军附近的房屋同样被占用的概率。密度设为"无"（默认）时，该概率适用于区域内的每栋房屋。类型设为 Strategic 时，它只决定距离已占用建筑 60 米以内的建筑，其他战略建筑一律被占用。</Chinesesimp>
+    <Chinese>已有駐軍附近的建築同樣被佔用的機率。密度設為「無」（預設）時，該機率適用於區域內的每棟建築。類型設為 Strategic 時，它只決定距離已佔用建築 60 公尺以內的建築，其他戰略建築一律被佔用。</Chinese>
+    <Spanish>Probabilidad de que una casa cercana a una guarnición existente también esté ocupada. Con la Densidad en Ninguna (predeterminado), esta probabilidad se aplica a todas las casas de la zona. Con el Tipo en Strategic solo decide los edificios a menos de 60 m de uno ya ocupado, y todos los demás edificios estratégicos se ocupan.</Spanish>
+    <French>Probabilité qu'une maison proche d'une garnison existante soit également occupée. Avec la Densité sur Aucune (par défaut), cette probabilité s'applique à toutes les maisons de la zone. Avec le Type sur Strategic, elle ne décide que des bâtiments à moins de 60 m d'un bâtiment déjà occupé, et tous les autres bâtiments stratégiques sont occupés.</French>
+    <Portuguese>Probabilidade de uma casa próxima de uma guarnição existente também estar ocupada. Com a Densidade em Nenhuma (padrão), esta probabilidade aplica-se a todas as casas da área. Com o Tipo em Strategic só decide os edifícios a menos de 60 m de um já ocupado, e todos os outros edifícios estratégicos são ocupados.</Portuguese>
+    <Russian>Вероятность того, что дом рядом с существующим гарнизоном также будет занят. Если Плотность установлена на «Нет» (по умолчанию), эта вероятность применяется ко всем домам в области. Если Тип установлен на Strategic, она решает только для зданий в пределах 60 м от уже занятого, а все остальные стратегические здания занимаются всегда.</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_DISABLE">
@@ -333,13 +333,13 @@
 <!-- AI-translated; native-speaker review welcome -->
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_DENSITY_COMMENT">
-    <English>Guarantees an occupied house at least every N metres: any house further than N from all existing garrisons is always occupied, while houses closer than N are decided by the Probability chance. None (default): no guaranteed spacing - every house is decided by Probability alone.</English>
-    <Chinesesimp>保证至少每 N 米有一栋被占用的房屋：距离所有已有驻军超过 N 米的房屋必定被占用，而更近的房屋则由概率决定。无（默认）：不保证间距——每栋房屋仅由概率决定。</Chinesesimp>
-    <Chinese>保證至少每 N 公尺有一棟被佔用的建築：距離所有已有駐軍超過 N 公尺的建築必定被佔用，而更近的建築則由機率決定。無（預設）：不保證間距——每棟建築僅由機率決定。</Chinese>
-    <Spanish>Garantiza una casa ocupada al menos cada N metros: toda casa a más de N de todas las guarniciones existentes se ocupa siempre, mientras que las casas a menos de N se deciden por la Probabilidad. Ninguna (predeterminado): sin espaciado garantizado; cada casa se decide solo por la Probabilidad.</Spanish>
-    <French>Garantit une maison occupée au moins tous les N mètres: toute maison à plus de N de toutes les garnisons existantes est toujours occupée, tandis que les maisons à moins de N sont décidées par la Probabilité. Aucune (par défaut): pas d'espacement garanti - chaque maison est décidée par la seule Probabilité.</French>
-    <Portuguese>Garante uma casa ocupada pelo menos a cada N metros: qualquer casa a mais de N de todas as guarnições existentes é sempre ocupada, enquanto as casas a menos de N são decididas pela Probabilidade. Nenhuma (padrão): sem espaçamento garantido - cada casa é decidida apenas pela Probabilidade.</Portuguese>
-    <Russian>Гарантирует занятый дом как минимум каждые N метров: любой дом дальше N от всех существующих гарнизонов занимается всегда, а дома ближе N определяются Вероятностью. «Нет» (по умолчанию): без гарантированного интервала — каждый дом определяется только Вероятностью.</Russian>
+    <English>Guarantees an occupied house at least every N metres: any house further than N from all existing garrisons is always occupied, while houses closer than N are decided by the Probability chance. None (default): no guaranteed spacing - every house is decided by Probability alone. With Type set to Strategic this setting does nothing: every strategic building is occupied, and Probability decides only those within 60 m of one already occupied.</English>
+    <Chinesesimp>保证至少每 N 米有一栋被占用的房屋：距离所有已有驻军超过 N 米的房屋必定被占用，而更近的房屋则由概率决定。无（默认）：不保证间距——每栋房屋仅由概率决定。类型设为 Strategic 时此设置无效：每栋战略建筑都会被占用，概率只决定距离已占用建筑 60 米以内的建筑。</Chinesesimp>
+    <Chinese>保證至少每 N 公尺有一棟被佔用的建築：距離所有已有駐軍超過 N 公尺的建築必定被佔用，而更近的建築則由機率決定。無（預設）：不保證間距——每棟建築僅由機率決定。類型設為 Strategic 時此設定無效：每棟戰略建築都會被佔用，機率只決定距離已佔用建築 60 公尺以內的建築。</Chinese>
+    <Spanish>Garantiza una casa ocupada al menos cada N metros: toda casa a más de N de todas las guarniciones existentes se ocupa siempre, mientras que las casas a menos de N se deciden por la Probabilidad. Ninguna (predeterminado): sin espaciado garantizado; cada casa se decide solo por la Probabilidad. Con el Tipo en Strategic este ajuste no hace nada: todos los edificios estratégicos se ocupan, y la Probabilidad solo decide los que están a menos de 60 m de uno ya ocupado.</Spanish>
+    <French>Garantit une maison occupée au moins tous les N mètres: toute maison à plus de N de toutes les garnisons existantes est toujours occupée, tandis que les maisons à moins de N sont décidées par la Probabilité. Aucune (par défaut): pas d'espacement garanti - chaque maison est décidée par la seule Probabilité. Avec le Type sur Strategic, ce réglage ne fait rien: tous les bâtiments stratégiques sont occupés, et la Probabilité ne décide que de ceux à moins de 60 m d'un bâtiment déjà occupé.</French>
+    <Portuguese>Garante uma casa ocupada pelo menos a cada N metros: qualquer casa a mais de N de todas as guarnições existentes é sempre ocupada, enquanto as casas a menos de N são decididas pela Probabilidade. Nenhuma (padrão): sem espaçamento garantido - cada casa é decidida apenas pela Probabilidade. Com o Tipo em Strategic esta definição não faz nada: todos os edifícios estratégicos são ocupados, e a Probabilidade só decide os que estão a menos de 60 m de um já ocupado.</Portuguese>
+    <Russian>Гарантирует занятый дом как минимум каждые N метров: любой дом дальше N от всех существующих гарнизонов занимается всегда, а дома ближе N определяются Вероятностью. «Нет» (по умолчанию): без гарантированного интервала — каждый дом определяется только Вероятностью. Если Тип установлен на Strategic, эта настройка ничего не делает: заняты все стратегические здания, а Вероятность решает только для зданий в пределах 60 м от уже занятого.</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_PATROLCHANCE">
