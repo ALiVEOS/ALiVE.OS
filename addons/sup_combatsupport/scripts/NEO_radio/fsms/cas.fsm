@@ -138,6 +138,7 @@ class FSM
                          "_posIn = [];" \n
                          "_target = objNull;" \n
                          "_removeFSM = false;" \n
+                         "_loiterEnd = -1;" \n
                          "" \n
                          "_veh lockDriver true;" \n
                          "" \n
@@ -888,7 +889,9 @@ class FSM
                         name = "__7";
                         itemno = 25;
                         init = /*%FSM<STATEINIT""">*/"private _loiterDuration = _taskArray param [7, -1];" \n
-                         "if (_loiterDuration > 0) then { _loiterEnd = time + _loiterDuration; } else { _loiterEnd = -1; };" \n
+                         "// assigned at this level, not inside an if block: a variable first set inside a block lives only there," \n
+                         "// and the timeout check in the loiter state then never saw an end time" \n
+                         "_loiterEnd = [-1, time + _loiterDuration] select (_loiterDuration > 0);" \n
                          "" \n
                          "[_veh,_callsign,_posCas, _audio, _player] spawn" \n
                          "{        " \n
@@ -1055,7 +1058,10 @@ class FSM
                                         to="_";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
                                         condition=/*%FSM<CONDITION""">*/"!isNil ""_loiterEnd"" && {_loiterEnd > 0 && {time > _loiterEnd}}"/*%FSM</CONDITION""">*/;
-                                        action=/*%FSM<ACTION""">*/"_task = ""RTB"";"/*%FSM</ACTION""">*/;
+                                        action=/*%FSM<ACTION""">*/"_task = ""RTB"";" \n
+                                         "_loiterEnd = -1;" \n
+                                         "// the recorded task of the aircraft becomes the RTB too, or the rearm service takes the old loiter for a new task and leaves it to land unwatched" \n
+                                         "_veh setVariable [""NEO_radioCurrentTask"", [""RTB"", _base, 0, 0, """", """", objNull], true];"/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
                                 /*%FSM<LINK "_">*/
