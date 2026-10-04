@@ -26,6 +26,20 @@ ALIVE_fnc_RespawnArtyAsset = compile preprocessFileLineNumbers "x\alive\addons\s
 ALIVE_fnc_RespawnTransportAsset = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_RespawnTransportAsset.sqf";
 
 ALIVE_fnc_RespawnCASAsset = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_RespawnCASAsset.sqf";
+// A two-seat jet's back seat can own pylons, the S.O.G. F-4C's bombs among them, and the CAS menu and the
+// attack only use the pilot's weapons: hand every pylon to the pilot, with the rounds it carries. Planes only:
+// an attack helicopter's gunner owns its missile pylons and fires them.
+NEO_fnc_casPylonsToPilot = {
+    params ["_veh"];
+    if !(_veh isKindOf "Plane") exitWith {};
+    {
+        _x params ["_index", "", "_turret", "_magazine", "_rounds"];
+        if (_turret isNotEqualTo [-1] && {_magazine != ""}) then {
+            _veh setPylonLoadout [_index, _magazine, true, [-1]];
+            _veh setAmmoOnPylon [_index, _rounds];
+        };
+    } forEach getAllPylonsInfo _veh;
+};
 
 //----------------------
 //UI

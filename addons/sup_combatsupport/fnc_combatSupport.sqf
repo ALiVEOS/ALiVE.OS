@@ -166,7 +166,9 @@ switch(_operation) do {
 
                             if (count _pylonMagazines > 0) then {
                                 private _codeArray = [_code, ";"] call CBA_fnc_split;
-                                _codeArray pushBack (format ["{(_this select 0) setPylonLoadOut [_forEachIndex + 1, _x]} forEach %1", _pylonMagazines]);
+                                // a plane's pylons all go to the pilot (see NEO_fnc_casPylonsToPilot); a helicopter's stay with their seats
+                                private _pylonSet = ["setPylonLoadOut [_forEachIndex + 1, _x]", "setPylonLoadOut [_forEachIndex + 1, _x, true, [-1]]"] select (_entry isKindOf "Plane");
+                                _codeArray pushBack (format ["{(_this select 0) %1} forEach %2", _pylonSet, _pylonMagazines]);
                                 _code = [_codeArray, ";"] call CBA_fnc_join;
                             };
 
@@ -758,6 +760,8 @@ switch(_operation) do {
                             };
 
 
+                             // a two-seater's back-seat pylons (the S.O.G. F-4C's bombs) go to the pilot, who flies the attack
+                             [_veh] call NEO_fnc_casPylonsToPilot;
                              _veh lockDriver true;
                             [_grp,0] setWaypointPosition [(getPos _veh),0];
 

@@ -101,6 +101,8 @@ if (count _veh == 0) then {
         _grp addVehicle _veh;
     };
 
+    // a two-seater's back-seat pylons (the S.O.G. F-4C's bombs) go to the pilot, who flies the attack
+    [_veh] call NEO_fnc_casPylonsToPilot;
     _veh lockDriver true;
     _veh setVariable ["ALIVE_CombatSupport", true];
 

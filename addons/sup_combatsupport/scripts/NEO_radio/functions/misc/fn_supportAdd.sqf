@@ -179,6 +179,8 @@ switch (_support) do
             };
         };
 
+        // a two-seater's back-seat pylons (the S.O.G. F-4C's bombs) go to the pilot, who flies the attack
+        [_veh] call NEO_fnc_casPylonsToPilot;
         _veh lockDriver true;
         [_grp,0] setWaypointPosition [(getPos _veh),0];
 
