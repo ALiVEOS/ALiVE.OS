@@ -1375,7 +1375,11 @@ switch(_operation) do {
 
             private _positionGrid = _logic getVariable "positionGrid";
             private _record = _registry get _houseID;
-            _positionGrid call ["remove", [getPosATL _house, _record]];
+            // A persistent load rebuilds the house list before the grid exists, removing the houses of sectors
+            // the save has cleared; the grid is built from the list afterwards and so leaves them out anyway.
+            if (!isNil "_positionGrid") then {
+                _positionGrid call ["remove", [getPosATL _house, _record]];
+            };
             // A cached query must not keep a removed house eligible for claiming.
             _record set [1, false];
 
