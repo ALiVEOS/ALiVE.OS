@@ -521,8 +521,9 @@ switch(_operation) do {
             // their objectives, their own or contested: the commanders synced to this module or, with none synced,
             // every commander hostile to a side the players can take. While those have forces at no objective yet
             // (an insurgency recruits its forces later) every town is kept, as Random. Unoccupied (2) keeps the towns
-            // where no commander sees forces of either side. Read once, from each commander's own record, when every
-            // commander has started. With no commander in the mission, every town is kept, as Random.
+            // where no commander sees forces of either side and no soldiers stand within the town's size (300 m at
+            // least). Read once, from each commander's own record and the profiles, when every commander has
+            // started. With no commander in the mission, every town is kept, as Random.
             _args params ["_locations", "_locsMode", ["_commanders", []]];
             private _all = allMissionObjects "ALiVE_mil_OPCOM";
             if (_all isEqualTo []) exitWith {
@@ -580,15 +581,25 @@ switch(_operation) do {
                     select (_commanders isEqualTo [])) call ALiVE_fnc_dump;
                 _result = _locations;
             };
+            // For Unoccupied, soldiers of any side standing in or near a town count too, though no commander has an
+            // objective there: a patrol or a group placed away from the objectives. Players don't: a town they're in
+            // is set up once they've left it, as it always was.
+            private _forcesNear = {
+                params ["_pos", "_radius"];
+                if (isNil "ALiVE_profileSystem") exitWith { false };
+                ([_pos, _radius, [["EAST", "WEST", "GUER"], "entity", "none", { !([_x, "isPlayer", false] call ALiVE_fnc_hashGet) }]]
+                    call ALIVE_fnc_getNearProfiles) isNotEqualTo []
+            };
             _result = _locations select {
                 private _pos = _x select 0;
                 private _size = _x select 1;
                 private _isHeld = (_held findIf { (_pos distance2D (_x select 0)) <= ((_size max (_x select 1)) max 300) }) > -1;
+                if (_locsMode == 2 && {!_isHeld}) then { _isHeld = [_pos, _size max 300] call _forcesNear };
                 [!_isHeld, _isHeld] select (_locsMode == 1)
             };
             ["ALiVE MIL IED - IED/Bomber Locations %1: %2 of %3 towns kept, going by %4 (%5 objectives with forces)",
                 ["", "Enemy-Occupied", "Unoccupied"] select _locsMode, count _result, count _locations,
-                ["every AI Commander", _whose] select (_locsMode == 1), count _held] call ALiVE_fnc_dump;
+                ["every AI Commander and the soldiers near each town", _whose] select (_locsMode == 1), count _held] call ALiVE_fnc_dump;
         };
         case "start": {
             if (isServer) then {
