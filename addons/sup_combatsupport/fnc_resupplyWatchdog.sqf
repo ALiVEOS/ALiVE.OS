@@ -189,7 +189,8 @@ while {true} do {
 
         // Fuel and damage: read off the primary vehicle (the tank / heli / jet), not the
         // leader soldier - soldier fuel is always 1 and soldier damage is body hp.
-        private _needsFuel = fuel _primaryVeh < FUEL_THRESHOLD;
+        // a CAS plane held on its stand has an empty tank and the real figure kept on it
+        private _needsFuel = (_primaryVeh getVariable ["NEO_casHeldFuel", fuel _primaryVeh]) < FUEL_THRESHOLD;
         private _needsRepair = damage _primaryVeh > DAMAGE_THRESHOLD && {damage _primaryVeh < 1};
 
         // RTB hand-off flag from the CAS attack loop: the aircraft flew home specifically to be

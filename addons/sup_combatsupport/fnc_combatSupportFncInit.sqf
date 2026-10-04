@@ -40,6 +40,53 @@ NEO_fnc_casPylonsToPilot = {
         };
     } forEach getAllPylonsInfo _veh;
 };
+// A CAS plane parked where the game's own AI treats it as lined up for take-off (the start of a runway, facing down it)
+// starts up and takes off by itself before it has been given anything to do: two F-100Ds parked at the start of the
+// Khe Sanh SF strip were airborne 15 s into the mission, and side by side they met on the runway. Combat Support had not
+// tasked them, so it showed them waiting at home and offered no RTB. This watches a plane while it has no task: the
+// moment it starts its engine or rolls on the ground, it is put back on its stand and held there with an empty tank, the
+// one thing that keeps a crewed jet still (the air commander holds its parked jets the same way). What was in the tank is
+// kept on the plane (NEO_casHeldFuel) and the next task gives it back (cas.fsm, state "_"); the crew stays aboard.
+NEO_fnc_casHoldWhenParked = {
+    params ["_veh", "_callsign", "_dir"];
+    if (!(_veh isKindOf "Plane") || {unitIsUAV _veh}) exitWith {};
+    private _said = false;
+    while { alive _veh } do {
+        sleep 1;
+        if ((_veh getVariable ["NEO_radioCurrentTask", []]) isEqualTo []) then {
+            private _kept = _veh getVariable ["NEO_casHeldFuel", -1];
+            if (_kept >= 0) then {
+                // refuelled while held (a resupply truck): keep the larger figure and empty it again
+                if (fuel _veh > 0) then {
+                    _veh setVariable ["NEO_casHeldFuel", _kept max (fuel _veh), true];
+                    _veh setFuel 0;
+                };
+            } else {
+                if (isTouchingGround _veh && {((getPosATL _veh) select 2) < 2} && {isEngineOn _veh || {(abs speed _veh) > 2}}) then {
+                    _veh setVariable ["NEO_casHeldFuel", fuel _veh, true];
+                    _veh allowCrewInImmobile true;
+                    _veh setFuel 0;
+                    _veh engineOn false;
+                    _veh setVelocity [0, 0, 0];
+                    private _stand = _veh getVariable ["ALIVE_CombatSupport_Base", []];
+                    if (_stand isEqualType [] && {count _stand >= 2} && {(_veh distance2D _stand) > 3}) then {
+                        _veh allowDamage false;
+                        _veh setPosATL [_stand select 0, _stand select 1, 0];
+                        _veh setDir _dir;
+                        _veh setVectorUp [0, 0, 1];
+                        _veh setVelocity [0, 0, 0];
+                        [_veh] spawn { sleep 3; (_this select 0) allowDamage true; };
+                    };
+                    if (!_said) then {
+                        _said = true;
+                        ["COMBAT SUPPORT - %1 (%2) started up by itself where it is parked, most likely at the start of a runway, where the game treats it as lined up for take-off. It is held on its stand until it is given a task. Parking it away from the start of the runway avoids this.",
+                            _callsign, typeOf _veh] call ALiVE_fnc_dump;
+                    };
+                };
+            };
+        };
+    };
+};
 
 //----------------------
 //UI

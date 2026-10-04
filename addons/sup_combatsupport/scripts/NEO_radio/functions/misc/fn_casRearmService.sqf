@@ -129,7 +129,7 @@ if (_parked && _needsService && {alive _veh} && {!(call _fnc_retasked)}) then {
     private _svcStart = serverTime;
     private _fnc_serviced = {
         if ((_veh getVariable ["ALIVE_resupply_lastDispatch", 0]) > _svcStart) exitWith { true };
-        if (fuel _veh < 0.45 || {damage _veh > 0.1}) exitWith { false };
+        if ((_veh getVariable ["NEO_casHeldFuel", fuel _veh]) < 0.45 || {damage _veh > 0.1}) exitWith { false };
         // no ordnance type below 25% of capacity (mirrors the resupply watchdog's check)
         private _low = false;
         {
@@ -153,6 +153,8 @@ if (_parked && _needsService && {alive _veh} && {!(call _fnc_retasked)}) then {
             // full restore, teleport airborne over the field, resume via a loiter at base
             if (!isNil "ALiVE_sup_combatsupport_debug" && {ALiVE_sup_combatsupport_debug}) then { ["CAS-REARM: %1 service cycle timed out - force recovery (fuel=%2 damage=%3)", _callsign, fuel _veh, damage _veh] call ALiVE_fnc_dump; };
             _veh setVariable ["ALIVE_resupply_needsService", false, true];
+            _veh setVariable ["NEO_casHeldFuel", nil, true];
+            _veh allowCrewInImmobile false;
             _veh setVehicleAmmo 1;
             _veh setFuel 1;
             _veh setDamage 0;

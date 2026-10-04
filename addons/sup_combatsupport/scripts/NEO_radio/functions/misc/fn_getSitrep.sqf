@@ -83,7 +83,7 @@ _speed = speed _asset;
 private ["_damage","_fuel","_text","_ammo","_avail"];
 
 _damage = getDammage _asset;
-_fuel = fuel _asset;
+_fuel = _asset getVariable ["NEO_casHeldFuel", fuel _asset];   // a CAS plane held on its stand keeps its real figure here
 _ammoArray = _asset call ALiVE_fnc_vehicleGetAmmo;
 _distance = _destination distance _pos;
 
