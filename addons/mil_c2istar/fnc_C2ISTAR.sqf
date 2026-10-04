@@ -3395,10 +3395,7 @@ if (isServer) then {
 
     case "disableAll": {
 
-        [_logic,"disableMainMenu"] call MAINCLASS;
         [_logic,"disableTasking"] call MAINCLASS;
-        [_logic,"disableAAR"] call MAINCLASS;
-        [_logic,"disableISTAR"] call MAINCLASS;
         [_logic,"disableAddTask"] call MAINCLASS;
         [_logic,"disableEditTask"] call MAINCLASS;
         [_logic,"disableAddTaskManagePlayers"] call MAINCLASS;
