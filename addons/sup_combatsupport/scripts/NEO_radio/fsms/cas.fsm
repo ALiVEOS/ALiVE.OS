@@ -650,8 +650,8 @@ class FSM
                          "// Radio" \n
                          "[[_veh, format[""%1 is at parking position. Out."",_callsign],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
                          "" \n
-                         "// move the loiter point to here" \n
-                         "[_grp,0] setWaypointPosition [_base,0];"/*%FSM</STATEINIT""">*/;
+                         "// move the loiter point to here: its stand, or where it now stands when it was parked away from it" \n
+                         "[_grp,0] setWaypointPosition [[_base, getPosATL _veh] select ((_veh distance _base) > 50), 0];"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {

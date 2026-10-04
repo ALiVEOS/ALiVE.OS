@@ -51,29 +51,47 @@ private _fnc_retasked = {
 // ---- Phase 1: landing watchdog --------------------------------------------
 private _t0 = time;
 private _parked = false;
+private _heldDown = false;
 while {alive _veh && {!_parked} && {!(call _fnc_retasked)} && {time - _t0 < 300}} do {
     if (((getPosATL _veh) select 2) < 1 && {(abs speed _veh) < 2}) then {
         _parked = true;
     } else {
-        sleep 5;
+        // A plane down on the runway is held there. Its group still had a move order to its stand and the AI flew
+        // there rather than taxi, so a jet that had just landed went straight back up and circled. Once its rollout
+        // is under 60 km/h its own spot becomes the order, the pilot stops and the engine goes off, so it rolls to a
+        // halt and is then moved off the runway below; the next task restarts it.
+        if (!_isHeli && {!_heldDown} && {((getPosATL _veh) select 2) < 1} && {isTouchingGround _veh}
+            && {(abs speed _veh) < 60} && {!(call _fnc_retasked)}) then {
+            _heldDown = true;
+            [group _veh, 0] setWaypointPosition [getPosATL _veh, 0];
+            doStop (driver _veh);
+            _veh engineOn false;
+        };
+        sleep ([5, 2] select _heldDown);
     };
 };
 
-if (alive _veh && {!_parked} && {!(call _fnc_retasked)}) then {
-    // stuck landing - teleport onto the airfield's taxi-in parking point
+if (alive _veh && {!_parked || {_heldDown}} && {!(call _fnc_retasked)}) then {
+    // stuck landing, or held where it rolled to a stop - teleport onto its stand
     private _park = getPosATL _veh;
-    if (_airport isEqualType 0 && {_airport >= 0} && {_airport < 100}) then {
-        private _taxi = [];
-        if (_airport == 0) then {
-            _taxi = getArray (configFile >> "CfgWorlds" >> worldName >> "ilsTaxiIn");
-        } else {
-            private _sec = configProperties [configFile >> "CfgWorlds" >> worldName >> "SecondaryAirports", "isClass _x", true];
-            if (_airport - 1 < count _sec) then {
-                _taxi = getArray ((_sec select (_airport - 1)) >> "ilsTaxiIn");
+    // Its own stand, the base the FSM's at-base check measures against. The last point of the field's ilsTaxiIn is
+    // where that route leads out to the runway for take-off, not parking: on Stratis it is 21 m from the touchdown point.
+    if (_base isEqualType [] && {count _base >= 2} && {!(_base isEqualTo [0,0,0])}) then {
+        _park = [_base select 0, _base select 1, 0];
+    } else {
+        if (_airport isEqualType 0 && {_airport >= 0} && {_airport < 100}) then {
+            private _taxi = [];
+            if (_airport == 0) then {
+                _taxi = getArray (configFile >> "CfgWorlds" >> worldName >> "ilsTaxiIn");
+            } else {
+                private _sec = configProperties [configFile >> "CfgWorlds" >> worldName >> "SecondaryAirports", "isClass _x", true];
+                if (_airport - 1 < count _sec) then {
+                    _taxi = getArray ((_sec select (_airport - 1)) >> "ilsTaxiIn");
+                };
             };
-        };
-        if (count _taxi >= 2) then {
-            _park = [_taxi select (count _taxi - 2), _taxi select (count _taxi - 1), 0];
+            if (count _taxi >= 2) then {
+                _park = [_taxi select (count _taxi - 2), _taxi select (count _taxi - 1), 0];
+            };
         };
     };
     // don't drop onto another parked airframe
