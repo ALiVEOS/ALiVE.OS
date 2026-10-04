@@ -746,7 +746,10 @@ switch(_operation) do {
                                 // The location's own dice roll, kept since the save format added
                                 // it; an older save has none and gets 0, as it always did.
                                 private _locFate = [_value, "LocationFate", 0] call ALiVE_fnc_hashGet;
-                                _locations pushBack [_pos, _size, _locLabel, _locFate];
+                                // A save from before each threat had its own roll has one roll for all three
+                                _locations pushBack [_pos, _size, _locLabel, _locFate,
+                                    [_value, "LocationFateBomber", _locFate] call ALiVE_fnc_hashGet,
+                                    [_value, "LocationFateVB", _locFate] call ALiVE_fnc_hashGet];
                             };
                         };
 
@@ -860,7 +863,7 @@ switch(_operation) do {
             // GVAR(Loaded) branch). Legacy engine LOCATION handles are no
             // longer used here — see the rationale comment in case "start".
             {
-                private ["_fate","_pos","_size","_label","_trg"];
+                private ["_fate","_fateBomber","_fateVB","_pos","_size","_label","_trg"];
 
                 _pos   = _x select 0;
                 _size  = _x select 1;
@@ -903,12 +906,17 @@ switch(_operation) do {
                     //Roll the dice - use 0-100 range so threat values are true percentages.
                     // On a reload the location's saved roll is used again, so it gets back the
                     // bomber and VB-IED it had. Forcing 0 here gave every saved location both.
+                    // Each threat has its own roll, so a town with a bomber is no likelier than any other to
+                    // have an IED or a car bomb as well. A save from before has one roll, used for all three.
                     if (GVAR(Loaded)) then {
-                        _fate = _x param [3, 0];
-                        if (_fate isEqualType "") then { _fate = parseNumber _fate };
-                        if !(_fate isEqualType 0) then { _fate = 0 };
+                        private _toNumber = { if (_this isEqualType "") then { parseNumber _this } else { [0, _this] select (_this isEqualType 0) } };
+                        _fate = (_x param [3, 0]) call _toNumber;
+                        _fateBomber = (_x param [4, _fate]) call _toNumber;
+                        _fateVB = (_x param [5, _fate]) call _toNumber;
                     } else {
                         _fate = random 100;
+                        _fateBomber = random 100;
+                        _fateVB = random 100;
                     };
 
                     // Per-location persistence record shared by Bombers / VBIEDs /
@@ -924,12 +932,14 @@ switch(_operation) do {
                         [_data, "LocationPos",   _locPos] call ALiVE_fnc_hashSet;
                         [_data, "LocationLabel", _label]  call ALiVE_fnc_hashSet;
                         [_data, "LocationFate",  _fate]   call ALiVE_fnc_hashSet;
+                        [_data, "LocationFateBomber", _fateBomber] call ALiVE_fnc_hashSet;
+                        [_data, "LocationFateVB", _fateVB] call ALiVE_fnc_hashSet;
                         [_locs, _label, _data] call ALiVE_fnc_hashSet;
                         [GVAR(STORE), "locations", _locs] call ALiVE_fnc_hashSet;
                     };
 
                     // Bombers
-                    if (_fate < _logic getvariable ["Bomber_Threat", DEFAULT_BOMBER_THREAT] && !(_startupIED)) then {
+                    if (_fateBomber < _logic getvariable ["Bomber_Threat", DEFAULT_BOMBER_THREAT] && !(_startupIED)) then {
 
                         // Place Suicide Bomber trigger
 
@@ -948,7 +958,7 @@ switch(_operation) do {
                     };
 
                     // VBIEDs
-                    if (_fate < _logic getvariable ["VB_IED_Threat", DEFAULT_VB_IED_THREAT] && !(_startupIED)) then {
+                    if (_fateVB < _logic getvariable ["VB_IED_Threat", DEFAULT_VB_IED_THREAT] && !(_startupIED)) then {
 
                         // Place VBIED
                         _trg = createTrigger["EmptyDetector", _pos];
@@ -1679,11 +1689,13 @@ switch(_operation) do {
                     [_value, "LocationObj", _loc] call ALiVE_fnc_hashSet;
                 };
 
-                // The location's saved dice roll is a number, and comes back as text too.
-                private _savedFate = [_value, "LocationFate", 0] call ALiVE_fnc_hashGet;
-                if (_savedFate isEqualType "") then {
-                    [_value, "LocationFate", parseNumber _savedFate] call ALiVE_fnc_hashSet;
-                };
+                // The location's saved dice rolls are numbers, and come back as text too.
+                {
+                    private _savedFate = [_value, _x, 0] call ALiVE_fnc_hashGet;
+                    if (_savedFate isEqualType "") then {
+                        [_value, _x, parseNumber _savedFate] call ALiVE_fnc_hashSet;
+                    };
+                } forEach ["LocationFate", "LocationFateBomber", "LocationFateVB"];
             };
 
             _convertTriggers = {
