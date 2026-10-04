@@ -1116,7 +1116,21 @@ class FSM
                          "" \n
                          "// #735 follow-up: fixed-wing otherwise decelerates to loiter speed on the run-in - force a committed pass (helis keep their natural orbit)" \n
                          "if (_veh isKindOf ""Plane"") then {" \n
-                         "    _veh forceSpeed ((_maxSpeed / 3.6) * 0.6);" \n
+                         "    if (((getPosATL _veh) select 2) > 20) then {" \n
+                         "        _veh forceSpeed ((_maxSpeed / 3.6) * 0.6);" \n
+                         "    } else {" \n
+                         "        // Not while it is still on the ground: a parked F-4C forced to run-in speed on the Khe Sanh SF airfield went" \n
+                         "        // across the grass at 160 km/h and was destroyed 13 s after the order. It taxis and takes off at its own pace," \n
+                         "        // and the run-in speed applies once it is up, unless this attack has been replaced or has already reached the" \n
+                         "        // target area (that step switches the group from BLUE to YELLOW)." \n
+                         "        [_veh, (_maxSpeed / 3.6) * 0.6, _veh getVariable [""NEO_casSortieId"", 0], _veh getVariable [""NEO_radioCurrentTask"", []], _posCas, _radiusCas * _radiusCasMult] spawn {" \n
+                         "            params [""_veh"", ""_runIn"", ""_sortie"", ""_myTask"", ""_posCas"", ""_near""];" \n
+                         "            private _same = { (_veh getVariable [""NEO_casSortieId"", 0]) == _sortie && {(_veh getVariable [""NEO_radioCurrentTask"", []]) isEqualTo _myTask} };" \n
+                         "            private _giveUp = time + 600;" \n
+                         "            waitUntil { sleep 1; !alive _veh || {((getPosATL _veh) select 2) > 50} || {!(call _same)} || {time > _giveUp} };" \n
+                         "            if (alive _veh && {((getPosATL _veh) select 2) > 50} && {call _same} && {(_veh distance2D _posCas) > _near} && {combatMode (group _veh) == ""BLUE""}) then { _veh forceSpeed _runIn; };" \n
+                         "        };" \n
+                         "    };" \n
                          "};"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
