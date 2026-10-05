@@ -60,7 +60,9 @@ if (!_fileExists) then {
     ALIVE_civilianSettlementBuildingTypes = [];
 
     // Altis Stratis
-    if(_worldName == "Altis" || _worldName == "Stratis" || _worldName == "sfp_wamako" || _worldName == "Imrali" || _worldName == "wake" || _worldName == "gorgona") then {
+    // Altis and Stratis load their own ALiVE 3 index files now, like every other terrain; this list stays for the
+    // worlds that still share it
+    if(_worldName == "sfp_wamako" || _worldName == "Imrali" || _worldName == "wake" || _worldName == "gorgona") then {
 
         ALIVE_airBuildingTypes = ALIVE_airBuildingTypes + [
             "hangar"
