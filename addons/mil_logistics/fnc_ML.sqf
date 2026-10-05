@@ -5724,9 +5724,9 @@ switch(_operation) do {
 
                                     _eventCargoProfiles = [_x, "cargoProfiles"] call ALIVE_fnc_hashGet;
                                     _transportVehiclesProfiles = [_x, "transportVehiclesProfiles"] call ALIVE_fnc_hashGet;
-                                    _armourProfiles = [_eventCargoProfiles, 'armour'] call ALIVE_fnc_hashGet;
-                                    _mechanisedProfiles = [_eventCargoProfiles, 'mechanised'] call ALIVE_fnc_hashGet;
-                                    _motorisedProfiles = [_eventCargoProfiles, 'motorised'] call ALIVE_fnc_hashGet;
+                                    _armourProfiles = [_eventCargoProfiles, 'armour', []] call ALIVE_fnc_hashGet;
+                                    _mechanisedProfiles = [_eventCargoProfiles, 'mechanised', []] call ALIVE_fnc_hashGet;
+                                    _motorisedProfiles = [_eventCargoProfiles, 'motorised', []] call ALIVE_fnc_hashGet;
 
                                     {
                                         _profile = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
@@ -5917,10 +5917,10 @@ switch(_operation) do {
                                     _transportProfiles = [_x, "transportProfiles"] call ALIVE_fnc_hashGet;
                                     _transportVehiclesProfiles = [_x, "transportVehiclesProfiles"] call ALIVE_fnc_hashGet;
 
-                                    _infantryProfiles = [_eventCargoProfiles, 'infantry'] call ALIVE_fnc_hashGet;
-                                    _armourProfiles = [_eventCargoProfiles, 'armour'] call ALIVE_fnc_hashGet;
-                                    _mechanisedProfiles = [_eventCargoProfiles, 'mechanised'] call ALIVE_fnc_hashGet;
-                                    _motorisedProfiles = [_eventCargoProfiles, 'motorised'] call ALIVE_fnc_hashGet;
+                                    _infantryProfiles = [_eventCargoProfiles, 'infantry', []] call ALIVE_fnc_hashGet;
+                                    _armourProfiles = [_eventCargoProfiles, 'armour', []] call ALIVE_fnc_hashGet;
+                                    _mechanisedProfiles = [_eventCargoProfiles, 'mechanised', []] call ALIVE_fnc_hashGet;
+                                    _motorisedProfiles = [_eventCargoProfiles, 'motorised', []] call ALIVE_fnc_hashGet;
                                     _planeProfiles = [_eventCargoProfiles, 'plane'] call ALIVE_fnc_hashGet;
                                     _heliProfiles = [_eventCargoProfiles, 'heli'] call ALIVE_fnc_hashGet;
 
