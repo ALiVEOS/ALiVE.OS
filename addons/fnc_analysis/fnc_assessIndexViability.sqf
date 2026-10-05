@@ -35,10 +35,20 @@ Reads:
   ALiVE_AcceptLowIndexViability  -- Main module Eden attribute,
                                     suppresses the warning dialog
                                     when true
+  main\static\<world>_staticData.sqf -- its ALiVE_indexVersion line,
+                                    the format the bundled index was
+                                    made with (diagnostic only)
 
 Writes (public variables):
   ALiVE_indexViabilityScore  -- aggregate score 0-100
   ALiVE_indexViabilityTier   -- "Good" / "Reduced" / "Poor" / "Critical"
+Writes (local):
+  ALiVE_indexViabilityVersionOld -- true when the bundled index was made
+                                    before v3.1 (no measured building
+                                    positions), so a re-index is worth it
+  ALiVE_indexViabilityReasons    -- what held the score back, in plain
+                                    words for the Eden banner ("" if
+                                    nothing did, or there is no index)
 
 Side effects:
   - RPT log block with per-metric breakdown + verdict
@@ -98,6 +108,39 @@ private _hasRunway = _hasPrimaryRunway || _hasSecondary;
 private _runwayPenalty = if (_hasRunway) then { 0 } else { 15 };
 private _runwayLabel = if (_hasRunway) then { "Present" } else { "Absent" };
 
+// -------------------------------------------------------------------
+// Index version (diagnostic only -- not folded into score)
+// From v3.1 every building's positions are measured in game when the
+// index is made, so its military / civilian split follows what the AI
+// can actually use. An older bundled index still works, but re-making
+// it is worth it. The static data file's ALiVE_indexVersion line says
+// which format it is; an index without one predates v3.1. Read from
+// the file rather than the global so it is always this world's.
+// -------------------------------------------------------------------
+private _indexVersion = "";
+private _staticText = loadFile format ["\x\alive\addons\main\static\%1_staticData.sqf", worldName];
+private _versionAt = _staticText find "ALiVE_indexVersion";
+if (_versionAt >= 0) then {
+    private _quoted = (_staticText select [_versionAt, 80]) splitString """";
+    if (count _quoted > 1) then { _indexVersion = _quoted select 1 };
+};
+private _versionParts = (_indexVersion splitString ".") apply { parseNumber _x };
+private _hasMeasuredPositions = (count _versionParts >= 2) && {
+    ((_versionParts select 0) > 3) || {((_versionParts select 0) == 3) && {(_versionParts select 1) >= 1}}
+};
+private _bundled = _source == "bundled";
+private _versionLabel = switch (true) do {
+    case (!_bundled):           { "n/a" };
+    case (_indexVersion == ""): { "before 3.1" };
+    default                     { _indexVersion };
+};
+private _versionNote = switch (true) do {
+    case (!_bundled):             { "the mission loads its own index" };
+    case (_hasMeasuredPositions): { "building positions measured" };
+    default                       { "no measured building positions, re-index recommended" };
+};
+ALiVE_indexViabilityVersionOld = _bundled && {!_hasMeasuredPositions};
+
 // Tier classification, used by both branches.
 private _classifyTier = {
     params ["_score"];
@@ -128,6 +171,7 @@ private _aggregateFinal = if (!_haveIndex) then {
         worldSize, (_mapAreaKm2 toFixed 1)]] call ALIVE_fnc_dump;
     ["  Action: ALiVE has no index for this terrain. The Map Indexer module can make one, and"] call ALIVE_fnc_dump;
     ["          a mission can load its own from init.sqf (a data.<worldName>.sqf setting ALIVE_gridData)."] call ALIVE_fnc_dump;
+    ALiVE_indexViabilityReasons = "";
     [format ["  M5 Named-locations         : %1  (%2 names, %3/km^2)",
         round _m5, _nameCount, (_nameDensity toFixed 2)]] call ALIVE_fnc_dump;
     [format ["  Runway                     : %1  (-%2)", _runwayLabel, _runwayPenalty]] call ALIVE_fnc_dump;
@@ -384,6 +428,19 @@ private _aggregateFinal = if (!_haveIndex) then {
     private _aggregate = ((_qualityAvg - _complexityPenalty - _runwayPenalty - _milClustersPenalty - _roadPenalty) max 0) min 100;
     private _tier = [_aggregate] call _classifyTier;
 
+    // What held the score back, in plain words for the Eden banner: every penalty that applied, and
+    // any quality metric well under its baseline.
+    private _reasons = [];
+    if (_m1 < 90) then { _reasons pushBack format ["sector gaps (%1 of %2 sectors)", _sectorCount, _expectedSectorCount] };
+    if (_m2 < 60) then { _reasons pushBack "few good positions" };
+    if (_m3 < 60) then { _reasons pushBack "little flat ground" };
+    if (_m5 < 60) then { _reasons pushBack format ["few named places (%1)", _nameCount] };
+    if (_runwayPenalty > 0) then { _reasons pushBack format ["no runway (-%1)", _runwayPenalty] };
+    if (_roadPenalty > 0) then { _reasons pushBack format ["sparse roads (-%1)", _roadPenalty] };
+    if (_milClustersPenalty > 0) then { _reasons pushBack format ["few military objectives (-%1)", _milClustersPenalty] };
+    if (_complexityPenalty > 0) then { _reasons pushBack format ["large index, slower init (-%1)", _complexityPenalty] };
+    ALiVE_indexViabilityReasons = _reasons joinString ", ";
+
     ["----------------------------------------------------------------------------"] call ALIVE_fnc_dump;
     [format ["ALiVE Index Viability -- worldName=%1", worldName]] call ALIVE_fnc_dump;
     [format ["  Source: %1", _source]] call ALIVE_fnc_dump;
@@ -406,6 +463,7 @@ private _aggregateFinal = if (!_haveIndex) then {
         _milClustersTier, _totalMilClusters, _milClustersPenalty]] call ALIVE_fnc_dump;
     [format ["  Road network               : %1  (M4=%2, -%3)",
         _roadTier, round _m4, _roadPenalty]] call ALIVE_fnc_dump;
+    [format ["  Index version              : %1  (%2)", _versionLabel, _versionNote]] call ALIVE_fnc_dump;
     [format ["  Re-index recommendation    : %1  (%2)",
         if (_reindexYes) then { "Yes" } else { "No" },
         _reindexReason]] call ALIVE_fnc_dump;

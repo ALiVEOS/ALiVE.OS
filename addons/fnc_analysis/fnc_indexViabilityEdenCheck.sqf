@@ -137,12 +137,21 @@ private _detail = switch (_tier) do {
     };
     default          { "see RPT for the per-metric breakdown" };
 };
+// Below Good, say what actually held the score back rather than the tier's general wording.
+private _reasons = missionNamespace getVariable ["ALiVE_indexViabilityReasons", ""];
+if (_tier != "Good" && {_reasons != ""}) then {
+    _detail = "held back by " + _reasons;
+};
 private _msg = format [
     "ALiVE Index Viability: %1 (%2) -- %3. RPT carries the per-metric breakdown.",
     _tier,
     round ALiVE_indexViabilityScore,
     _detail
 ];
+// An index made before v3.1 scores the same, but re-making it would add measured building positions.
+if (missionNamespace getVariable ["ALiVE_indexViabilityVersionOld", false]) then {
+    _msg = _msg + " Its index was made before v3.1, so re-indexing would add measured building positions.";
+};
 [_msg, _severity, 20] call BIS_fnc_3DENNotification;
 ["ALiVE Eden Viability check: score=%1 (%2) -- 3DEN notification fired (severity %3).",
     round ALiVE_indexViabilityScore, _tier, _severity] call ALiVE_fnc_dump;
