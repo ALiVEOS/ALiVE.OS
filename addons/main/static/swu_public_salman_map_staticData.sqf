@@ -1,14 +1,18 @@
+// ALiVE 3 index v3.1, made 2026-10-05 by the ALiVE web indexer, building positions measured
 private["_worldName"];
 
 _worldName = tolower(worldName);
 
-["SETTING UP MAP: swu_public_salman_map"] call ALiVE_fnc_dump;
+["SETTING UP MAP: swu_public_salman_map (ALiVE 3 index v3.1, 2026-10-05)"] call ALiVE_fnc_dump;
+
+ALiVE_indexVersion = ["3.1", "2026-10-05", "web", true];
 
 ALIVE_Indexing_Blacklist = [];
 ALIVE_militaryBuildingTypes = [];
 ALIVE_militaryParkingBuildingTypes = [];
 ALIVE_militarySupplyBuildingTypes = [];
 ALIVE_militaryHQBuildingTypes = [];
+ALIVE_militaryFieldworkBuildingTypes = [];
 ALIVE_airBuildingTypes = [];
 ALIVE_militaryAirBuildingTypes = [];
 ALIVE_civilianAirBuildingTypes = [];
@@ -75,7 +79,6 @@ ALiVE_mapCompositionType = "Desert";
         "ca\structures_e\wall\wall_l\wall_l_mosque_2_ep1.p3d",
         "ca\wheeled\hmmwv_wrecked.p3d",
         "opxbuildings\block4.p3d",
-        "opxbuildings\hut7.p3d",
         "opxmisc\cart.p3d",
         "opxmisc\cart3.p3d",
         "opxmisc\container3.p3d",
@@ -137,6 +140,14 @@ ALiVE_mapCompositionType = "Desert";
         "ca\structures_e\mil\mil_controltower_ep1.p3d",
         "ca\structures_e\mil\mil_hangar_ep1.p3d",
         "ca\structures_e\mil\mil_house_ep1.p3d"
+    ];
+
+    ALIVE_militaryFieldworkBuildingTypes = ALIVE_militaryFieldworkBuildingTypes + [
+        "a3\structures_f_enoch\military\barracks\guardtower_01_f.p3d",
+        "a3\structures_f_enoch\military\barracks\guardtower_02_f.p3d",
+        "ca\misc_e\fortified_nest_big_ep1.p3d",
+        "ca\misc_e\fortified_nest_small_ep1.p3d",
+        "opxmisc\guardtower.p3d"
     ];
 
     ALIVE_civilianSettlementBuildingTypes = ALIVE_civilianSettlementBuildingTypes + [
@@ -251,6 +262,7 @@ ALiVE_mapCompositionType = "Desert";
         "opxbuildings\hut2.p3d",
         "opxbuildings\hut4.p3d",
         "opxbuildings\hut5.p3d",
+        "opxbuildings\hut7.p3d",
         "opxbuildings\hut9.p3d",
         "opxbuildings\hut9_c.p3d",
         "opxbuildings\long_house1.p3d",
@@ -322,6 +334,7 @@ ALiVE_mapCompositionType = "Desert";
         "ca\structures_e\housel\house_l_8_ep1.p3d",
         "opxbuildings\block10.p3d",
         "opxbuildings\hut6.p3d",
+        "opxbuildings\hut7.p3d",
         "opxbuildings\policestation.p3d",
         "opxbuildings\villa.p3d"
     ];

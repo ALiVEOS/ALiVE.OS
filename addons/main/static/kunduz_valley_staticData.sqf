@@ -1,14 +1,18 @@
+// ALiVE 3 index v3.1, made 2026-10-05 by the ALiVE web indexer, building positions measured
 private["_worldName"];
 
 _worldName = tolower(worldName);
 
-["SETTING UP MAP: kunduz_valley"] call ALiVE_fnc_dump;
+["SETTING UP MAP: kunduz_valley (ALiVE 3 index v3.1, 2026-10-05)"] call ALiVE_fnc_dump;
+
+ALiVE_indexVersion = ["3.1", "2026-10-05", "web", true];
 
 ALIVE_Indexing_Blacklist = [];
 ALIVE_militaryBuildingTypes = [];
 ALIVE_militaryParkingBuildingTypes = [];
 ALIVE_militarySupplyBuildingTypes = [];
 ALIVE_militaryHQBuildingTypes = [];
+ALIVE_militaryFieldworkBuildingTypes = [];
 ALIVE_airBuildingTypes = [];
 ALIVE_militaryAirBuildingTypes = [];
 ALIVE_civilianAirBuildingTypes = [];
@@ -59,7 +63,6 @@ ALiVE_mapCompositionType = "Desert";
         "a3\structures_f_argo\walls\military\mil_wallbig_4m_damaged_left_f.p3d",
         "a3\structures_f_argo\walls\military\mil_wallbig_4m_damaged_right_f.p3d",
         "a3\structures_f_argo\walls\military\mil_wallbig_debris_f.p3d",
-        "a3\structures_f_enoch\civilian\camps\caravan_01_rust_f.p3d",
         "a3\structures_f_enoch\decals\horizontal\decal_damage_long_01_f.p3d",
         "a3\structures_f_enoch\decals\horizontal\decal_damage_long_02_f.p3d",
         "a3\structures_f_enoch\decals\horizontal\decal_damage_long_03_f.p3d",
@@ -95,18 +98,14 @@ ALiVE_mapCompositionType = "Desert";
         "a3\structures_f_enoch\industrial\agriculture\manurepile_01_f.p3d",
         "a3\structures_f_enoch\industrial\agriculture\trough_01_f.p3d",
         "a3\structures_f_enoch\industrial\farms\strawstack_01_f.p3d",
-        "a3\structures_f_enoch\industrial\houses\waterstation_01_f.p3d",
         "a3\structures_f_enoch\industrial\pipes\indpipe3_big_ground1_f.p3d",
         "a3\structures_f_enoch\industrial\pipes\indpipe3_big_ground2_f.p3d",
         "a3\structures_f_enoch\industrial\pipes\indpipe3_big_support_f.p3d",
         "a3\structures_f_enoch\industrial\pipes\indpipe3_bigl_l_f.p3d",
         "a3\structures_f_enoch\industrial\pipes\indpipe3_bigl_r_f.p3d",
-        "a3\structures_f_enoch\industrial\sawmills\sawmill_01_illuminati_tower_f.p3d",
         "a3\structures_f_enoch\industrial\sheds\shed_ind_old_ruins_f.p3d",
-        "a3\structures_f_enoch\infrastructure\highway\highway_pillar_01_garage_f.p3d",
         "a3\structures_f_enoch\military\domes\domeparts_01_struts_stack_f.p3d",
         "a3\structures_f_enoch\military\radar\radar_01_airshaft_f.p3d",
-        "a3\structures_f_enoch\military\radar\radar_01_cooler_f.p3d",
         "a3\structures_f_enoch\military\training\craterlong_02_f.p3d",
         "a3\structures_f_enoch\military\training\disturbedsoil_02_decal_f.p3d",
         "a3\structures_f_enoch\military\training\shellcrater_02_debris_f.p3d",
@@ -142,13 +141,11 @@ ALiVE_mapCompositionType = "Desert";
         "a3\structures_f_exp\commercial\market\metalshelter_01_f.p3d",
         "a3\structures_f_exp\commercial\market\metalshelter_01_ruins_f.p3d",
         "a3\structures_f_exp\commercial\market\metalshelter_02_ruins_f.p3d",
-        "a3\structures_f_exp\industrial\sugarcanefactory_01\scf_01_heap_bagasse_f.p3d",
         "a3\structures_f_exp\industrial\surfacemine_01\sm_01_shelter_narrow_f.p3d",
         "a3\structures_f_exp\industrial\surfacemine_01\sm_01_shelter_wide_f.p3d",
         "a3\structures_f_exp\infrastructure\bridges\bridgewooden_01_f.p3d",
         "a3\structures_f_exp\infrastructure\bridges\bridgewooden_01_pillar_f.p3d",
         "a3\structures_f_exp\infrastructure\watersupply\watertower_01_ruins_f.p3d",
-        "a3\structures_f_exp\naval\piers\pierwooden_02_16m_f.p3d",
         "a3\structures_f_exp\naval\piers\pierwooden_03_f.p3d",
         "a3\structures_f_exp\walls\backalleys\backalley_01_l_1m_f.p3d",
         "a3\structures_f_exp\walls\backalleys\backalley_01_l_gap_f.p3d",
@@ -193,7 +190,6 @@ ALiVE_mapCompositionType = "Desert";
         "ca\buildings2\misc_cargo\misc_cargo1g.p3d",
         "ca\buildings\furniture\dkamna_bila.p3d",
         "ca\buildings\furniture\hromada_beden_dekorativnix.p3d",
-        "ca\buildings\misc\leseni2x.p3d",
         "ca\buildings\misc\zed_civil.p3d",
         "ca\buildings\misc\zed_desert.p3d",
         "ca\buildings\misc\zed_dira_civil.p3d",
@@ -209,14 +205,12 @@ ALiVE_mapCompositionType = "Desert";
         "ca\misc2\hbarrier5.p3d",
         "ca\structures\misc\armory\pneu\pneu.p3d",
         "ca\structures\nav_pier\nav_pier_pneu.p3d",
-        "ca\structures_e\housea\a_mosque_big\a_mosque_big_wall_gate_ep1.p3d",
         "ca\structures_e\housek\house_k_1_ruins_ep1.p3d",
         "ca\structures_e\housek\house_k_3_ruins_ep1.p3d",
         "ca\structures_e\housek\house_k_5_ruins_ep1.p3d",
         "ca\structures_e\housek\house_k_6_ruins_ep1.p3d",
         "ca\structures_e\housek\house_k_7_ruins_ep1.p3d",
         "ca\structures_e\housek\house_k_8_ruins_ep1.p3d",
-        "ca\structures_e\housek\terrace_k_1_ep1.p3d",
         "ca\structures_e\housel\house_l_1_ruins_ep1.p3d",
         "ca\structures_e\housel\house_l_3_ruins_ep1.p3d",
         "ca\structures_e\housel\house_l_4_ruins_ep1.p3d",
@@ -231,8 +225,6 @@ ALiVE_mapCompositionType = "Desert";
         "ca\structures_e\misc\misc_cables\misc_cable_ep1.p3d",
         "ca\structures_e\misc\misc_interier\table_small_ep1.p3d",
         "ca\structures_e\misc\misc_interier\teapot_ep1.p3d",
-        "ca\structures_e\misc\misc_market\kiosk_ep1.p3d",
-        "ca\structures_e\misc\misc_market\market_stalls_01_ep1.p3d",
         "ca\structures_e\wall\wall_l\wall_l3_5m_ep1.p3d",
         "ca\structures_e\wall\wall_l\wall_l_mosque_1_ep1.p3d",
         "ca\structures_e\wall\wall_l\wall_l_mosque_2_ep1.p3d",
@@ -242,6 +234,7 @@ ALiVE_mapCompositionType = "Desert";
     ALIVE_militaryBuildingTypes = ALIVE_militaryBuildingTypes + [
         "a3\structures_f\mil\bagbunker\bagbunker_large_f.p3d",
         "a3\structures_f\mil\bagbunker\bagbunker_small_f.p3d",
+        "a3\structures_f_enoch\industrial\sawmills\sawmill_01_illuminati_tower_f.p3d",
         "a3\structures_f_enoch\military\barracks\barracks_02_f.p3d",
         "a3\structures_f_enoch\military\barracks\barracks_03_f.p3d",
         "a3\structures_f_enoch\military\barracks\barracks_04_f.p3d",
@@ -254,6 +247,7 @@ ALiVE_mapCompositionType = "Desert";
         "a3\structures_f_enoch\military\barracks\guardtower_01_f.p3d",
         "a3\structures_f_enoch\military\barracks\guardtower_02_f.p3d",
         "a3\structures_f_enoch\military\radar\mobileradar_01_radar_f.p3d",
+        "a3\structures_f_enoch\military\radar\radar_01_cooler_f.p3d",
         "a3\structures_f_exp\military\fortifications\bagbunker_01_small_green_f.p3d",
         "ca\buildings\bouda_plech_open.p3d",
         "ca\misc_e\barrack2_ep1.p3d",
@@ -292,9 +286,18 @@ ALiVE_mapCompositionType = "Desert";
 
     ALIVE_militaryHQBuildingTypes = ALIVE_militaryHQBuildingTypes + [
         "a3\structures_f_enoch\military\barracks\barracks_06_f.p3d",
+        "ca\structures_e\mil\mil_controltower_ep1.p3d",
         "ca\structures_e\mil\mil_hangar_ep1.p3d",
         "ca\structures_e\mil\mil_house_dam_ep1.p3d",
         "ca\structures_e\mil\mil_house_ep1.p3d"
+    ];
+
+    ALIVE_militaryFieldworkBuildingTypes = ALIVE_militaryFieldworkBuildingTypes + [
+        "a3\structures_f_enoch\military\barracks\guardtower_01_f.p3d",
+        "a3\structures_f_enoch\military\barracks\guardtower_02_f.p3d",
+        "a3\structures_f_exp\military\fortifications\bagbunker_01_small_green_f.p3d",
+        "ca\misc_e\fortified_nest_big_ep1.p3d",
+        "ca\misc_e\fortified_nest_small_ep1.p3d"
     ];
 
     ALiVE_HeliBuildingTypes = ALiVE_HeliBuildingTypes + [
@@ -310,6 +313,7 @@ ALiVE_mapCompositionType = "Desert";
         "a3\structures_f\households\slum\slum_house01_f.p3d",
         "a3\structures_f\households\slum\slum_house02_f.p3d",
         "a3\structures_f\households\slum\slum_house03_f.p3d",
+        "a3\structures_f_enoch\civilian\camps\caravan_01_rust_f.p3d",
         "a3\structures_f_enoch\civilian\sheds\shed_11_f.p3d",
         "a3\structures_f_enoch\industrial\garages\garagerow_01_small_f.p3d",
         "a3\structures_f_enoch\industrial\houses\workshop_01_f.p3d",
@@ -321,6 +325,7 @@ ALiVE_mapCompositionType = "Desert";
         "a3\structures_f_enoch\industrial\houses\workshop_05_f.p3d",
         "a3\structures_f_enoch\industrial\houses\workshop_05_grey_f.p3d",
         "a3\structures_f_enoch\industrial\sheds\industrialshed_01_f.p3d",
+        "a3\structures_f_enoch\infrastructure\highway\highway_pillar_01_garage_f.p3d",
         "a3\structures_f_exp\civilian\sheds\shed_02_f.p3d",
         "a3\structures_f_exp\civilian\sheds\shed_03_f.p3d",
         "a3\structures_f_exp\civilian\sheds\shed_05_f.p3d",
@@ -337,6 +342,7 @@ ALiVE_mapCompositionType = "Desert";
         "ca\structures_e\housea\a_mosque_big\a_mosque_big_minaret_2_ep1.p3d",
         "ca\structures_e\housea\a_mosque_big\a_mosque_big_wall_corner_ep1.p3d",
         "ca\structures_e\housea\a_mosque_big\a_mosque_big_wall_ep1.p3d",
+        "ca\structures_e\housea\a_mosque_big\a_mosque_big_wall_gate_ep1.p3d",
         "ca\structures_e\housea\a_mosque_small\a_mosque_small_1_dam_ep1.p3d",
         "ca\structures_e\housea\a_mosque_small\a_mosque_small_1_ep1.p3d",
         "ca\structures_e\housea\a_mosque_small\a_mosque_small_2_dam_ep1.p3d",
@@ -366,6 +372,7 @@ ALiVE_mapCompositionType = "Desert";
         "ca\structures_e\housek\house_k_7_ep1.p3d",
         "ca\structures_e\housek\house_k_8_dam_ep1.p3d",
         "ca\structures_e\housek\house_k_8_ep1.p3d",
+        "ca\structures_e\housek\terrace_k_1_ep1.p3d",
         "ca\structures_e\housel\house_l_1_ep1.p3d",
         "ca\structures_e\housel\house_l_3_dam_ep1.p3d",
         "ca\structures_e\housel\house_l_3_ep1.p3d",
@@ -378,6 +385,8 @@ ALiVE_mapCompositionType = "Desert";
         "ca\structures_e\housel\house_l_7_ep1.p3d",
         "ca\structures_e\housel\house_l_8_ep1.p3d",
         "ca\structures_e\housel\house_l_9_ep1.p3d",
+        "ca\structures_e\misc\misc_market\kiosk_ep1.p3d",
+        "ca\structures_e\misc\misc_market\market_stalls_01_ep1.p3d",
         "ca\structures_e\misc\shed_m01_ep1.p3d"
     ];
 
@@ -424,6 +433,7 @@ ALiVE_mapCompositionType = "Desert";
         "ca\structures_e\housek\house_k_7_ep1.p3d",
         "ca\structures_e\housek\house_k_8_dam_ep1.p3d",
         "ca\structures_e\housek\house_k_8_ep1.p3d",
+        "ca\structures_e\housek\terrace_k_1_ep1.p3d",
         "ca\structures_e\housel\house_l_1_ep1.p3d",
         "ca\structures_e\housel\house_l_3_dam_ep1.p3d",
         "ca\structures_e\housel\house_l_3_ep1.p3d",
@@ -440,6 +450,7 @@ ALiVE_mapCompositionType = "Desert";
 
     ALIVE_civilianPowerBuildingTypes = ALIVE_civilianPowerBuildingTypes + [
         "a3\structures_f\ind\solarpowerplant\spp_transformer_f.p3d",
+        "a3\structures_f_enoch\industrial\houses\waterstation_01_f.p3d",
         "a3\structures_f_enoch\industrial\power\powerstation_01_f.p3d",
         "a3\structures_f_enoch\military\radar\mobileradar_01_generator_f.p3d"
     ];
@@ -447,12 +458,12 @@ ALiVE_mapCompositionType = "Desert";
     ALIVE_civilianCommsBuildingTypes = ALIVE_civilianCommsBuildingTypes + [
         "a3\structures_f\ind\transmitter_tower\tbox_f.p3d",
         "a3\structures_f\ind\transmitter_tower\ttowersmall_1_f.p3d",
-        "a3\structures_f\ind\transmitter_tower\ttowersmall_2_f.p3d",
-        "ca\structures_e\mil\mil_controltower_ep1.p3d"
+        "a3\structures_f\ind\transmitter_tower\ttowersmall_2_f.p3d"
     ];
 
     ALIVE_civilianMarineBuildingTypes = ALIVE_civilianMarineBuildingTypes + [
         "a3\structures_f\naval\piers\pier_small_f.p3d",
+        "a3\structures_f_exp\naval\piers\pierwooden_02_16m_f.p3d",
         "a3\structures_f_exp\naval\piers\pierwooden_02_30deg_f.p3d"
     ];
 
@@ -465,7 +476,9 @@ ALiVE_mapCompositionType = "Desert";
 
     ALIVE_civilianConstructionBuildingTypes = ALIVE_civilianConstructionBuildingTypes + [
         "a3\structures_f_exp\industrial\dieselpowerplant_01\dpp_01_mainfactory_f.p3d",
-        "a3\structures_f_exp\industrial\dieselpowerplant_01\dpp_01_smallfactory_f.p3d"
+        "a3\structures_f_exp\industrial\dieselpowerplant_01\dpp_01_smallfactory_f.p3d",
+        "a3\structures_f_exp\industrial\sugarcanefactory_01\scf_01_heap_bagasse_f.p3d",
+        "ca\buildings\misc\leseni2x.p3d"
     ];
 
 };

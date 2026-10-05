@@ -1,14 +1,18 @@
+// ALiVE 3 index v3.1, made 2026-10-05 by the ALiVE web indexer, building positions measured
 private["_worldName"];
 
 _worldName = tolower(worldName);
 
-["SETTING UP MAP: sehreno"] call ALiVE_fnc_dump;
+["SETTING UP MAP: sehreno (ALiVE 3 index v3.1, 2026-10-05)"] call ALiVE_fnc_dump;
+
+ALiVE_indexVersion = ["3.1", "2026-10-05", "web", true];
 
 ALIVE_Indexing_Blacklist = [];
 ALIVE_militaryBuildingTypes = [];
 ALIVE_militaryParkingBuildingTypes = [];
 ALIVE_militarySupplyBuildingTypes = [];
 ALIVE_militaryHQBuildingTypes = [];
+ALIVE_militaryFieldworkBuildingTypes = [];
 ALIVE_airBuildingTypes = [];
 ALIVE_militaryAirBuildingTypes = [];
 ALIVE_civilianAirBuildingTypes = [];
@@ -41,7 +45,6 @@ ALiVE_mapCompositionType = "Woodland";
         "a3\props_f_enoch\civilian\forest\deerskeleton_damaged_01_f.p3d",
         "a3\props_f_enoch\civilian\forest\deerskeleton_full_01_f.p3d",
         "a3\props_f_enoch\civilian\forest\feedrack_01_f.p3d",
-        "a3\props_f_enoch\civilian\forest\feedshack_01_f.p3d",
         "a3\props_f_enoch\industrial\supplies\woodenbox_02_f.p3d",
         "a3\props_f_enoch\military\decontamination\sponge_01_f.p3d",
         "a3\props_f_exp\industrial\heavyequipment\bulldozer_01_abandoned_f.p3d",
@@ -59,7 +62,6 @@ ALiVE_mapCompositionType = "Woodland";
         "a3\structures_f\civ\lamps\lampstadium_f.p3d",
         "a3\structures_f\ind\factory\factory_tunnel_f.p3d",
         "a3\structures_f\ind\shed\shed_big_f.p3d",
-        "a3\structures_f\ind\shed\u_shed_ind_f.p3d",
         "a3\structures_f_argo\commercial\billboards\billboard_02_blank_f.p3d",
         "a3\structures_f_argo\commercial\billboards\billboard_03_blank_f.p3d",
         "a3\structures_f_argo\commercial\billboards\billboard_04_blank_f.p3d",
@@ -79,7 +81,6 @@ ALiVE_mapCompositionType = "Woodland";
         "a3\structures_f_enoch\civilian\accessories\stonewell_01_f.p3d",
         "a3\structures_f_enoch\civilian\camps\camp_house_01_brown_ruins_f.p3d",
         "a3\structures_f_enoch\civilian\camps\caravan_01_green_f.p3d",
-        "a3\structures_f_enoch\civilian\camps\caravan_01_rust_f.p3d",
         "a3\structures_f_enoch\civilian\constructions\scaffolding_new_f.p3d",
         "a3\structures_f_enoch\civilian\houses\house_1w01_ruins_f.p3d",
         "a3\structures_f_enoch\civilian\houses\house_1w03_ruins_f.p3d",
@@ -93,7 +94,6 @@ ALiVE_mapCompositionType = "Woodland";
         "a3\structures_f_enoch\civilian\sheds\shed_10_ruins_f.p3d",
         "a3\structures_f_enoch\commercial\fuelstation_03\fuelstation_03_prices_f.p3d",
         "a3\structures_f_enoch\commercial\fuelstation_03\fuelstation_03_pump_f.p3d",
-        "a3\structures_f_enoch\commercial\fuelstation_03\fuelstation_03_roof_f.p3d",
         "a3\structures_f_enoch\commercial\villagestore_01\villagestore_01_ruins_f.p3d",
         "a3\structures_f_enoch\cultural\calvary_03\calvary_03_f.p3d",
         "a3\structures_f_enoch\cultural\calvary_04\calvary_04_f.p3d",
@@ -133,7 +133,6 @@ ALiVE_mapCompositionType = "Woodland";
         "a3\structures_f_enoch\industrial\farms\greenhouse_01_damaged_f.p3d",
         "a3\structures_f_enoch\industrial\farms\strawstack_01_f.p3d",
         "a3\structures_f_enoch\industrial\farms\watertower_02_f.p3d",
-        "a3\structures_f_enoch\industrial\houses\waterstation_01_f.p3d",
         "a3\structures_f_enoch\industrial\materials\timberlog_05_f.p3d",
         "a3\structures_f_enoch\industrial\materials\timberpile_02_f.p3d",
         "a3\structures_f_enoch\industrial\materials\timberpile_03_f.p3d",
@@ -219,10 +218,6 @@ ALiVE_mapCompositionType = "Woodland";
         "a3\structures_f_exp\cultural\ancientrelics\stonetanoa_01_f.p3d",
         "a3\structures_f_exp\industrial\stockyard_01\sy_01_stockpile_01_f.p3d",
         "a3\structures_f_exp\industrial\stockyard_01\sy_01_stockpile_02_f.p3d",
-        "a3\structures_f_exp\industrial\sugarcanefactory_01\scf_01_chimney_f.p3d",
-        "a3\structures_f_exp\industrial\sugarcanefactory_01\scf_01_condenser_f.p3d",
-        "a3\structures_f_exp\industrial\sugarcanefactory_01\scf_01_crystallizer_f.p3d",
-        "a3\structures_f_exp\industrial\sugarcanefactory_01\scf_01_feeder_f.p3d",
         "a3\structures_f_exp\industrial\sugarcanefactory_01\scf_01_pipe_24m_f.p3d",
         "a3\structures_f_exp\industrial\sugarcanefactory_01\scf_01_pipe_24m_high_f.p3d",
         "a3\structures_f_exp\industrial\sugarcanefactory_01\scf_01_pipe_8m_f.p3d",
@@ -254,7 +249,6 @@ ALiVE_mapCompositionType = "Woodland";
         "a3\structures_f_exp\infrastructure\runways\runwaydigit_9_f.p3d",
         "a3\structures_f_exp\military\emplacements\emplacementgun_01_d_rusty_f.p3d",
         "a3\structures_f_exp\naval\piers\breakwater_02_f.p3d",
-        "a3\structures_f_exp\naval\piers\pierwooden_02_16m_f.p3d",
         "a3\structures_f_exp\naval\piers\pierwooden_03_f.p3d",
         "a3\structures_f_exp\walls\crashbarriers\crashbarrier_01_8m_f.p3d",
         "a3\structures_f_exp\walls\crashbarriers\crashbarrier_01_end_l_f.p3d",
@@ -278,14 +272,11 @@ ALiVE_mapCompositionType = "Woodland";
         "a3\structures_f_orange\industrial\cargo\cargo20_idap_f.p3d",
         "a3\structures_f_orange\walls\plastic\plasticnetfence_01_long_d_f.p3d",
         "a3\structures_f_orange\walls\plastic\plasticnetfence_01_long_f.p3d",
-        "jbad_structures\afghan_house_a\a_mosque_small\jbad_a_mosque_small_2.p3d",
         "jbad_structures\ind\ind_coltan_mine\jbad_misc_coltan_heap.p3d",
         "jbad_structures\ind\ind_fuelstation\jbad_ind_fuelstation_feed.p3d",
-        "jbad_structures\ind\ind_fuelstation\jbad_ind_fuelstation_shed.p3d",
         "jbad_structures\ind\ind_oil_mine\jbad_ind_oil_pump.p3d",
         "jbad_structures\ind\ind_shed\jbad_ind_shed_01.p3d",
         "jbad_structures\ind\ind_shed\jbad_ind_shed_02.p3d",
-        "jbad_structures\mosque_big\jbad_mosque_big_addon.p3d",
         "jbad_structures\opxbuildings2\jbad_opx2_apartmentcomplex_ruins.p3d",
         "jbad_structures\opxbuildings2\jbad_opx2_complex5_ruins.p3d",
         "jbad_structures\opxbuildings2\jbad_opx2_shop2_ruins.p3d",
@@ -382,6 +373,14 @@ ALiVE_mapCompositionType = "Woodland";
         "jbad_structures\mil\jbad_mil_barracks.p3d"
     ];
 
+    ALIVE_militaryFieldworkBuildingTypes = ALIVE_militaryFieldworkBuildingTypes + [
+        "a3\structures_f_enoch\military\barracks\guardtower_01_f.p3d",
+        "a3\structures_f_enoch\military\barracks\guardtower_02_f.p3d",
+        "a3\structures_f_enoch\military\bunkers\bunker_02_light_double_f.p3d",
+        "a3\structures_f_enoch\military\bunkers\bunker_02_light_left_f.p3d",
+        "a3\structures_f_enoch\military\bunkers\bunker_02_light_right_f.p3d"
+    ];
+
     ALIVE_airBuildingTypes = ALIVE_airBuildingTypes + [
         "a3\structures_f\ind\airport\hangar_f.p3d",
         "a3\structures_f_exp\infrastructure\airports\airport_01_hangar_f.p3d",
@@ -409,6 +408,7 @@ ALiVE_mapCompositionType = "Woodland";
     ALIVE_civilianSettlementBuildingTypes = ALIVE_civilianSettlementBuildingTypes + [
         "a3\props_f_enoch\civilian\forest\deerstand_01_f.p3d",
         "a3\props_f_enoch\civilian\forest\deerstand_02_f.p3d",
+        "a3\props_f_enoch\civilian\forest\feedshack_01_f.p3d",
         "a3\structures_f\dominants\castle\castle_01_tower_f.p3d",
         "a3\structures_f\dominants\hospital\hospital_main_f.p3d",
         "a3\structures_f\dominants\hospital\hospital_side1_f.p3d",
@@ -421,9 +421,11 @@ ALiVE_mapCompositionType = "Woodland";
         "a3\structures_f\ind\airport\airport_center_f.p3d",
         "a3\structures_f\ind\reservoirtank\reservoirtower_f.p3d",
         "a3\structures_f\ind\shed\i_shed_ind_f.p3d",
+        "a3\structures_f\ind\shed\u_shed_ind_f.p3d",
         "a3\structures_f_argo\commercial\supermarket_01\supermarket_01_malden_f.p3d",
         "a3\structures_f_argo\industrial\agriculture\barn_01_brown_f.p3d",
         "a3\structures_f_enoch\civilian\camps\camp_house_01_brown_f.p3d",
+        "a3\structures_f_enoch\civilian\camps\caravan_01_rust_f.p3d",
         "a3\structures_f_enoch\civilian\houses\house_1b01_f.p3d",
         "a3\structures_f_enoch\civilian\houses\house_1w01_f.p3d",
         "a3\structures_f_enoch\civilian\houses\house_1w02_f.p3d",
@@ -518,6 +520,7 @@ ALiVE_mapCompositionType = "Woodland";
         "jbad_structures\afghan_house_a\a_minaret\jbad_a_minaret.p3d",
         "jbad_structures\afghan_house_a\a_minaret_porto\jbad_a_minaret_porto.p3d",
         "jbad_structures\afghan_house_a\a_mosque_small\jbad_a_mosque_small_1.p3d",
+        "jbad_structures\afghan_house_a\a_mosque_small\jbad_a_mosque_small_2.p3d",
         "jbad_structures\afghan_house_a\a_stationhouse\jbad_a_stationhouse.p3d",
         "jbad_structures\afghan_house_a\a_villa\jbad_a_villa.p3d",
         "jbad_structures\afghan_houses_c2\jbad_dum_istan2.p3d",
@@ -540,6 +543,7 @@ ALiVE_mapCompositionType = "Woodland";
         "jbad_structures\ind\ind_workshop01\jbad_ind_workshop01_03.p3d",
         "jbad_structures\ind\ind_workshop01\jbad_ind_workshop01_04.p3d",
         "jbad_structures\ind\ind_workshop01\jbad_ind_workshop01_l.p3d",
+        "jbad_structures\mosque_big\jbad_mosque_big_addon.p3d",
         "jbad_structures\mosque_big\jbad_mosque_big_hq.p3d",
         "jbad_structures\mosque_big\jbad_mosque_big_minaret_2.p3d",
         "jbad_structures\opxbuildings2\jbad_opx2_apartmentcomplex.p3d",
@@ -672,6 +676,7 @@ ALiVE_mapCompositionType = "Woodland";
         "jbad_structures\afghan_houses_c\jbad_house_c_5_v3.p3d",
         "jbad_structures\afghan_houses_c\jbad_house_c_9.p3d",
         "jbad_structures\generalstore\jbad_a_generalstore_01a.p3d",
+        "jbad_structures\mosque_big\jbad_mosque_big_addon.p3d",
         "jbad_structures\mosque_big\jbad_mosque_big_hq.p3d",
         "jbad_structures\mosque_big\jbad_mosque_big_minaret_2.p3d",
         "jbad_structures\opxbuildings2\jbad_opx2_apartmentcomplex.p3d",
@@ -709,10 +714,12 @@ ALiVE_mapCompositionType = "Woodland";
         "a3\structures_f\ind\solarpowerplant\solarpanel_1_f.p3d",
         "a3\structures_f\ind\solarpowerplant\spp_panel_f.p3d",
         "a3\structures_f\ind\solarpowerplant\spp_transformer_f.p3d",
+        "a3\structures_f_enoch\industrial\houses\waterstation_01_f.p3d",
         "a3\structures_f_enoch\industrial\power\powerstation_01_f.p3d",
         "a3\structures_f_enoch\industrial\power\substation_01_f.p3d",
         "a3\structures_f_enoch\industrial\smokestacks\smokestack_01_f.p3d",
-        "a3\structures_f_enoch\military\radar\mobileradar_01_generator_f.p3d"
+        "a3\structures_f_enoch\military\radar\mobileradar_01_generator_f.p3d",
+        "a3\structures_f_exp\industrial\sugarcanefactory_01\scf_01_chimney_f.p3d"
     ];
 
     ALIVE_civilianCommsBuildingTypes = ALIVE_civilianCommsBuildingTypes + [
@@ -727,17 +734,20 @@ ALiVE_mapCompositionType = "Woodland";
         "a3\structures_f\dominants\lighthouse\lighthouse_small_f.p3d",
         "a3\structures_f\naval\piers\pier_f.p3d",
         "a3\structures_f_exp\industrial\port\mobilecrane_01_f.p3d",
-        "a3\structures_f_exp\industrial\port\mobilecrane_01_hook_f.p3d"
+        "a3\structures_f_exp\industrial\port\mobilecrane_01_hook_f.p3d",
+        "a3\structures_f_exp\naval\piers\pierwooden_02_16m_f.p3d"
     ];
 
     ALIVE_civilianFuelBuildingTypes = ALIVE_civilianFuelBuildingTypes + [
         "a3\structures_f\ind\dieselpowerplant\dp_smalltank_f.p3d",
+        "a3\structures_f_enoch\commercial\fuelstation_03\fuelstation_03_roof_f.p3d",
         "a3\structures_f_enoch\commercial\fuelstation_03\fuelstation_03_shop_f.p3d",
         "a3\structures_f_enoch\industrial\dieselpowerplant_01\dp_bigtank_old_f.p3d",
         "a3\structures_f_enoch\industrial\dieselpowerplant_01\dp_smalltank_old_f.p3d",
         "a3\structures_f_exp\industrial\port\storagetank_01_small_f.p3d",
         "a3\structures_f_exp\industrial\sugarcanefactory_01\scf_01_crystallizertowers_f.p3d",
         "jbad_structures\ind\ind_fuelstation\jbad_ind_fuelstation_build.p3d",
+        "jbad_structures\ind\ind_fuelstation\jbad_ind_fuelstation_shed.p3d",
         "jbad_structures\ind\ind_oil_mine\jbad_ind_oil_tower.p3d"
     ];
 
@@ -750,7 +760,10 @@ ALiVE_mapCompositionType = "Woodland";
         "a3\structures_f_enoch\industrial\sawmills\sawmill_01_f.p3d",
         "a3\structures_f_enoch\industrial\smokestacks\smokestack_01_factory_f.p3d",
         "a3\structures_f_exp\industrial\dieselpowerplant_01\dpp_01_smallfactory_f.p3d",
-        "a3\structures_f_exp\industrial\sugarcanefactory_01\scf_01_boilerbuilding_f.p3d"
+        "a3\structures_f_exp\industrial\sugarcanefactory_01\scf_01_boilerbuilding_f.p3d",
+        "a3\structures_f_exp\industrial\sugarcanefactory_01\scf_01_condenser_f.p3d",
+        "a3\structures_f_exp\industrial\sugarcanefactory_01\scf_01_crystallizer_f.p3d",
+        "a3\structures_f_exp\industrial\sugarcanefactory_01\scf_01_feeder_f.p3d"
     ];
 
 };
