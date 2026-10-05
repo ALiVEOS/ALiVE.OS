@@ -500,6 +500,26 @@ switch(_operation) do {
                 //Get all enterable houses
                 _houses = []; {_houses = _houses + ([_x select 0, _x select 1] call ALiVE_fnc_getEnterableHouses)} foreach _collection;
 
+                // Fieldworks the terrain's index lists (an ALiVE 3 index, v3.1 on), trenches and bunkers soldiers
+                // can stand in, are ordinary houses to CQB unless the module says otherwise: left out, or strategic.
+                // One pass with an exact model lookup, as a jungle map hands this tens of thousands of houses.
+                private _fieldworkCQB = toUpper (_logic getVariable ["CQB_fieldworks", "HOUSES"]);
+                private _fieldworkModels = missionNamespace getVariable ["ALIVE_militaryFieldworkBuildingTypes", []];
+                if (_fieldworkCQB in ["LEAVEOUT", "STRATEGIC"] && {!(_fieldworkModels isEqualTo [])}) then {
+                    if (isNil "ALiVE_fieldworkModels") then { ALiVE_fieldworkModels = createHashMapFromArray (_fieldworkModels apply {[toLower _x, true]}) };
+                    private _fieldworks = [];
+                    private _others = [];
+                    { if ((toLower ((getModelInfo _x) select 1)) in ALiVE_fieldworkModels) then {_fieldworks pushBack _x} else {_others pushBack _x} } forEach _houses;
+                    _houses = _others;
+                    if (_fieldworkCQB == "STRATEGIC") then {
+                        _houses append _fieldworks;
+                        // by class, as the sort tests classes; never "", or every house without a class would join
+                        private _classes = (_fieldworks apply {typeOf _x}) - [""];
+                        _strategicTypes = _strategicTypes + (_classes arrayIntersect _classes);
+                    };
+                    ["CQB fieldworks %1: %2 fieldworks among %3 houses", _fieldworkCQB, count _fieldworks, count _houses + (if (_fieldworkCQB == "LEAVEOUT") then {count _fieldworks} else {0})] call ALiVE_fnc_dump;
+                };
+
                 TRACE_TIME(QUOTE(COMPONENT),[]); // 3
                 ["gathered enterable houses", format ["%1 houses from %2 areas",
                     count _houses, count _collection]] call _fnc_cqbDiagMark;

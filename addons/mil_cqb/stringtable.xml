@@ -735,5 +735,51 @@
 <Key ID="STR_ALIVE_CQB_ON_EACH_SPAWN_ONCE_COMMENT">
     <English>The SQF hook runs each time CQB spawns a soldier, including every time a house's soldiers spawn again after players have left and come back, because each spawn creates new soldiers. That keeps anything it adds, such as event handlers, in place. Yes only stops it running twice on the same soldier, so in practice both settings behave the same.</English>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CQB_FIELDWORKS">
+    <English>Fieldworks:</English>
+    <Chinesesimp>野战工事：</Chinesesimp>
+    <Chinese>野戰工事：</Chinese>
+    <Spanish>Fortificaciones de campaña:</Spanish>
+    <French>Fortifications de campagne :</French>
+    <Portuguese>Fortificações de campanha:</Portuguese>
+    <Russian>Полевые укрепления:</Russian>
+</Key>
+<Key ID="STR_ALIVE_CQB_FIELDWORKS_COMMENT">
+    <English>Trenches, bunkers and other fieldworks the terrain's index lists (an ALiVE 3 index, v3.1 or later). As houses: CQB uses them like any other building, as before. Leave out: CQB never spawns in them. Strategic: they count as strategic buildings.</English>
+    <Chinesesimp>地形索引中列出的战壕、地堡等野战工事（ALiVE 3 索引，v3.1 或更高）。作为房屋：CQB 像对待其他建筑一样使用它们，保持原样。排除：CQB 不在其中生成。战略：它们算作战略建筑。</Chinesesimp>
+    <Chinese>地形索引中列出的戰壕、碉堡等野戰工事（ALiVE 3 索引，v3.1 或更高）。作為房屋：CQB 像對待其他建築一樣使用它們，保持原樣。排除：CQB 不在其中生成。戰略：它們算作戰略建築。</Chinese>
+    <Spanish>Trincheras, búnkeres y otras fortificaciones que lista el índice del terreno (índice de ALiVE 3, v3.1 o posterior). Como casas: CQB las usa como cualquier edificio, como antes. Excluir: CQB nunca aparece en ellas. Estratégicas: cuentan como edificios estratégicos.</Spanish>
+    <French>Tranchées, bunkers et autres fortifications listés par l'index du terrain (index ALiVE 3, v3.1 ou plus). Comme des maisons : le CQB les utilise comme tout bâtiment, comme avant. Exclure : le CQB n'y apparaît jamais. Stratégiques : elles comptent comme bâtiments stratégiques.</French>
+    <Portuguese>Trincheiras, bunkers e outras fortificações listadas no índice do terreno (índice ALiVE 3, v3.1 ou posterior). Como casas: o CQB as usa como qualquer edifício, como antes. Excluir: o CQB nunca surge nelas. Estratégicas: contam como edifícios estratégicos.</Portuguese>
+    <Russian>Окопы, бункеры и другие полевые укрепления из индекса местности (индекс ALiVE 3, v3.1 или новее). Как дома: CQB использует их как любые здания, как раньше. Исключить: CQB никогда не появляется в них. Стратегические: они считаются стратегическими зданиями.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CQB_FIELDWORKS_HOUSES">
+    <English>As houses</English>
+    <Chinesesimp>作为房屋</Chinesesimp>
+    <Chinese>作為房屋</Chinese>
+    <Spanish>Como casas</Spanish>
+    <French>Comme des maisons</French>
+    <Portuguese>Como casas</Portuguese>
+    <Russian>Как дома</Russian>
+</Key>
+<Key ID="STR_ALIVE_CQB_FIELDWORKS_LEAVEOUT">
+    <English>Leave out</English>
+    <Chinesesimp>排除</Chinesesimp>
+    <Chinese>排除</Chinese>
+    <Spanish>Excluir</Spanish>
+    <French>Exclure</French>
+    <Portuguese>Excluir</Portuguese>
+    <Russian>Исключить</Russian>
+</Key>
+<Key ID="STR_ALIVE_CQB_FIELDWORKS_STRATEGIC">
+    <English>Strategic</English>
+    <Chinesesimp>战略</Chinesesimp>
+    <Chinese>戰略</Chinese>
+    <Spanish>Estratégicas</Spanish>
+    <French>Stratégiques</French>
+    <Portuguese>Estratégicas</Portuguese>
+    <Russian>Стратегические</Russian>
+</Key>
 </Container></Package></Project>
 

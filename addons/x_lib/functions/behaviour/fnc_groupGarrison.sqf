@@ -23,6 +23,8 @@ Array - optional, where the group stands. Candidates are handed out nearest to i
         house fallback and patrol circuits are drawn around it. Defaults to the search centre.
 Scalar - optional, how far the fallback and the patrol circuits reach from the group.
         Defaults to the search radius, which is what every caller had before.
+Boolean - optional, seat the fieldworks the terrain's index lists (trenches, bunkers) before
+        ordinary buildings, after any preferred ones (default false)
 
 The most men one building may take is NOT a parameter. It is read off the placement
 modules by ALIVE_fnc_garrisonOccupancyLimit, so no caller has to know about it. Each
@@ -47,7 +49,7 @@ ARJay, Highhead, Jman
 // other garrison groups.
 if (!isServer) exitWith {};
 
-params ["_group","_position","_radius","_moveInstantly", ["_onlyProfiled", false], ["_profileCount",0], ["_profileID",nil], ["_guardPatrolPercentage",50], ["_patrolBehaviour","SAFE"], ["_patrolSpeed","LIMITED"], ["_preferredGarrison","",[""]], ["_fillShortfall",true,[false]], ["_preferredIndicesOnly",false,[false]], ["_groupPosition",[],[[]]], ["_fallbackRadius",0,[0]]];
+params ["_group","_position","_radius","_moveInstantly", ["_onlyProfiled", false], ["_profileCount",0], ["_profileID",nil], ["_guardPatrolPercentage",50], ["_patrolBehaviour","SAFE"], ["_patrolSpeed","LIMITED"], ["_preferredGarrison","",[""]], ["_fillShortfall",true,[false]], ["_preferredIndicesOnly",false,[false]], ["_groupPosition",[],[[]]], ["_fallbackRadius",0,[0]], ["_fieldworkFirst",false,[false]]];
 
 // Two anchors, kept apart on purpose. The SEARCH, which decides what candidates exist
 // at all, is centred on _position and reaches _radius: for a placed garrison that is the
@@ -517,9 +519,34 @@ _buildings = [_buildings, [], { _x distance2D _groupPosition }, "ASCEND"] call B
 _houseRank = [_houseRank, [], { _x distance2D _groupPosition }, "ASCEND"] call BIS_fnc_sortBy;
 private _preferredTierCount = count _preferredBuildings;
 
+// Fieldworks next, when the placement module asks: the trenches and bunkers the terrain's
+// index lists, inside this search, nearest the group first. They come after every curated
+// prop (the preferred list and the garrison whitelist) and before ordinary houses, and are
+// claimed like any other building, so groups spread along a trench line rather than piling
+// into one section. Matched on the exact model, one lookup per object.
+private _fieldworks = [];
+if (_fieldworkFirst && {!((missionNamespace getVariable ["ALIVE_militaryFieldworkBuildingTypes", []]) isEqualTo [])}) then {
+    if (isNil "ALiVE_fieldworkModels") then {
+        ALiVE_fieldworkModels = createHashMapFromArray (ALIVE_militaryFieldworkBuildingTypes apply {[toLower _x, true]});
+    };
+    _fieldworks = (nearestObjects [_position, ["House","Building"], _radius]) select {
+        ((toLower ((getModelInfo _x) select 1)) in ALiVE_fieldworkModels) && {!((_x buildingPos 0) isEqualTo [0,0,0])}
+    };
+    if (_excluding) then { _fieldworks = _fieldworks select { !((toLower typeOf _x) in _blacklist) } };
+    _fieldworks = _fieldworks - _preferredBuildings;
+    _fieldworks = [_fieldworks, [], { _x distance2D _groupPosition }, "ASCEND"] call BIS_fnc_sortBy;
+};
+
 // Ordinary houses last. They are only here because the curated props could not
 // seat everybody, so they take the men left over rather than the first ones.
-_buildings = _preferredBuildings + _buildings + _houseRank;
+if (_fieldworks isEqualTo []) then {
+    _buildings = _preferredBuildings + _buildings + _houseRank;
+} else {
+    // The houses were appended to the curated props above when the props alone could not seat
+    // the guard, so split them back out: curated props, then fieldworks, then houses.
+    private _houses = (_buildings arrayIntersect _houseFound) + _houseRank;
+    _buildings = _preferredBuildings + ((_buildings - _houseFound) - _fieldworks) + _fieldworks + (_houses - _fieldworks);
+};
 
 // The limit, bounded by this group's share of the objective.
 //

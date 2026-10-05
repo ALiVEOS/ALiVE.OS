@@ -1322,4 +1322,149 @@
     <Portuguese>Coloque o módulo Posicionamento militar no editor. Escolha Tamanho da força, Ponderação e Facção (o menu suspenso Facção é autopreenchido a partir dos mods carregados, com facções não conformes sinalizadas para que você saiba se irão surgir nativamente ou via camada de inferência). Coloque um marcador TAOR se quiser restringir o posicionamento a uma parte do mapa. Para controle multi-facção, sincronize com um Comandante IA cuja seleção múltipla Facções contenha as facções adicionais.</Portuguese>
     <Russian>Разместите модуль «Военное размещение» в редакторе. Выберите размер сил, весовой состав и фракцию (список фракций автоматически заполняется из загруженных модов; нестандартные фракции помечаются, чтобы вы видели, появятся ли они нативно или через слой инференса). Разместите маркер TAOR, если хотите ограничить размещение частью карты. Для управления несколькими фракциями синхронизируйте с ИИ-командиром, в мультивыборе «Фракции» которого заданы дополнительные фракции.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_MP_HDR_FIELDWORKS">
+    <English>FIELDWORKS</English>
+    <Chinesesimp>野战工事</Chinesesimp>
+    <Chinese>野戰工事</Chinese>
+    <Spanish>FORTIFICACIONES DE CAMPAÑA</Spanish>
+    <French>FORTIFICATIONS DE CAMPAGNE</French>
+    <Portuguese>FORTIFICAÇÕES DE CAMPANHA</Portuguese>
+    <Russian>ПОЛЕВЫЕ УКРЕПЛЕНИЯ</Russian>
+</Key>
+<Key ID="STR_ALIVE_MP_FIELDWORK_USE">
+    <English>Fieldworks:</English>
+    <Chinesesimp>野战工事：</Chinesesimp>
+    <Chinese>野戰工事：</Chinese>
+    <Spanish>Fortificaciones de campaña:</Spanish>
+    <French>Fortifications de campagne :</French>
+    <Portuguese>Fortificações de campanha:</Portuguese>
+    <Russian>Полевые укрепления:</Russian>
+</Key>
+<Key ID="STR_ALIVE_MP_FIELDWORK_USE_COMMENT">
+    <English>How this module uses the trenches, bunkers and other fieldworks the terrain's index lists. Only an ALiVE 3 index (v3.1 or later) lists them; with an older one nothing changes. Ignore: as before. Garrison first: garrisons take fieldwork positions before ordinary buildings. Strengthen objectives: as Garrison first, and plain military objectives with fieldworks inside rank higher. Own objectives: as Strengthen objectives, and groups of fieldworks become objectives too. The settings below can change any part of the preset.</English>
+    <Chinesesimp>此模块如何使用地形索引中列出的战壕、地堡等野战工事。只有 ALiVE 3 索引（v3.1 或更高）会列出它们；旧索引不会有任何变化。忽略：保持原样。优先驻防：驻军先占用野战工事位置，再占用普通建筑。加强目标：同优先驻防，且内部有野战工事的普通军事目标优先级更高。独立目标：同加强目标，且成组的野战工事也会成为目标。下方设置可修改预设的任一部分。</Chinesesimp>
+    <Chinese>此模組如何使用地形索引中列出的戰壕、碉堡等野戰工事。只有 ALiVE 3 索引（v3.1 或更高）會列出它們；舊索引不會有任何變化。忽略：保持原樣。優先駐防：駐軍先佔用野戰工事位置，再佔用普通建築。加強目標：同優先駐防，且內部有野戰工事的普通軍事目標優先級更高。獨立目標：同加強目標，且成組的野戰工事也會成為目標。下方設定可修改預設的任一部分。</Chinese>
+    <Spanish>Cómo usa este módulo las trincheras, búnkeres y otras fortificaciones que lista el índice del terreno. Solo un índice de ALiVE 3 (v3.1 o posterior) las lista; con uno anterior no cambia nada. Ignorar: como antes. Guarnición primero: las guarniciones ocupan las fortificaciones antes que los edificios normales. Reforzar objetivos: como Guarnición primero, y los objetivos militares normales con fortificaciones dentro tienen más prioridad. Objetivos propios: como Reforzar objetivos, y los grupos de fortificaciones también son objetivos. Los ajustes de abajo pueden cambiar cualquier parte del preajuste.</Spanish>
+    <French>Comment ce module utilise les tranchées, bunkers et autres fortifications listés par l'index du terrain. Seul un index ALiVE 3 (v3.1 ou plus) les liste ; avec un index plus ancien, rien ne change. Ignorer : comme avant. Garnison d'abord : les garnisons occupent les fortifications avant les bâtiments ordinaires. Renforcer les objectifs : comme Garnison d'abord, et les objectifs militaires ordinaires contenant des fortifications passent en priorité. Objectifs propres : comme Renforcer les objectifs, et les groupes de fortifications deviennent aussi des objectifs. Les réglages ci-dessous peuvent modifier n'importe quelle partie du préréglage.</French>
+    <Portuguese>Como este módulo usa as trincheiras, bunkers e outras fortificações listadas no índice do terreno. Só um índice ALiVE 3 (v3.1 ou posterior) as lista; com um mais antigo nada muda. Ignorar: como antes. Guarnição primeiro: as guarnições ocupam as fortificações antes dos edifícios comuns. Reforçar objetivos: como Guarnição primeiro, e objetivos militares comuns com fortificações dentro ganham prioridade. Objetivos próprios: como Reforçar objetivos, e grupos de fortificações também viram objetivos. As opções abaixo podem mudar qualquer parte da predefinição.</Portuguese>
+    <Russian>Как модуль использует окопы, бункеры и другие полевые укрепления из индекса местности. Их содержит только индекс ALiVE 3 (v3.1 или новее); со старым индексом ничего не меняется. Игнорировать: как раньше. Сначала гарнизон: гарнизоны занимают укрепления раньше обычных зданий. Усилить цели: как «Сначала гарнизон», и обычные военные цели с укреплениями внутри получают больший приоритет. Собственные цели: как «Усилить цели», и группы укреплений тоже становятся целями. Настройки ниже меняют любую часть пресета.</Russian>
+</Key>
+<Key ID="STR_ALIVE_MP_FIELDWORK_USE_IGNORE">
+    <English>Ignore</English>
+    <Chinesesimp>忽略</Chinesesimp>
+    <Chinese>忽略</Chinese>
+    <Spanish>Ignorar</Spanish>
+    <French>Ignorer</French>
+    <Portuguese>Ignorar</Portuguese>
+    <Russian>Игнорировать</Russian>
+</Key>
+<Key ID="STR_ALIVE_MP_FIELDWORK_USE_GARRISON">
+    <English>Garrison first</English>
+    <Chinesesimp>优先驻防</Chinesesimp>
+    <Chinese>優先駐防</Chinese>
+    <Spanish>Guarnición primero</Spanish>
+    <French>Garnison d'abord</French>
+    <Portuguese>Guarnição primeiro</Portuguese>
+    <Russian>Сначала гарнизон</Russian>
+</Key>
+<Key ID="STR_ALIVE_MP_FIELDWORK_USE_STRENGTHEN">
+    <English>Strengthen objectives</English>
+    <Chinesesimp>加强目标</Chinesesimp>
+    <Chinese>加強目標</Chinese>
+    <Spanish>Reforzar objetivos</Spanish>
+    <French>Renforcer les objectifs</French>
+    <Portuguese>Reforçar objetivos</Portuguese>
+    <Russian>Усилить цели</Russian>
+</Key>
+<Key ID="STR_ALIVE_MP_FIELDWORK_USE_OWN">
+    <English>Own objectives</English>
+    <Chinesesimp>独立目标</Chinesesimp>
+    <Chinese>獨立目標</Chinese>
+    <Spanish>Objetivos propios</Spanish>
+    <French>Objectifs propres</French>
+    <Portuguese>Objetivos próprios</Portuguese>
+    <Russian>Собственные цели</Russian>
+</Key>
+<Key ID="STR_ALIVE_MP_FIELDWORK_FROM_PRESET">
+    <English>From the preset</English>
+    <Chinesesimp>使用预设</Chinesesimp>
+    <Chinese>使用預設</Chinese>
+    <Spanish>Según el preajuste</Spanish>
+    <French>Selon le préréglage</French>
+    <Portuguese>Conforme a predefinição</Portuguese>
+    <Russian>Из пресета</Russian>
+</Key>
+<Key ID="STR_ALIVE_MP_FIELDWORK_GARRISON">
+    <English>Garrison fieldworks first:</English>
+    <Chinesesimp>优先驻防野战工事：</Chinesesimp>
+    <Chinese>優先駐防野戰工事：</Chinese>
+    <Spanish>Guarnecer fortificaciones primero:</Spanish>
+    <French>Garnison dans les fortifications d'abord :</French>
+    <Portuguese>Guarnecer fortificações primeiro:</Portuguese>
+    <Russian>Сначала занимать укрепления:</Russian>
+</Key>
+<Key ID="STR_ALIVE_MP_FIELDWORK_GARRISON_COMMENT">
+    <English>Garrisons take fieldwork positions before ordinary buildings, after any preferred garrison buildings. From the preset: on for every preset except Ignore.</English>
+    <Chinesesimp>驻军先占用野战工事位置，再占用普通建筑，但排在首选驻防建筑之后。使用预设：除“忽略”外的所有预设都开启。</Chinesesimp>
+    <Chinese>駐軍先佔用野戰工事位置，再佔用普通建築，但排在首選駐防建築之後。使用預設：除「忽略」外的所有預設都開啟。</Chinese>
+    <Spanish>Las guarniciones ocupan las fortificaciones antes que los edificios normales, después de los edificios de guarnición preferidos. Según el preajuste: activado en todos salvo Ignorar.</Spanish>
+    <French>Les garnisons occupent les fortifications avant les bâtiments ordinaires, après les bâtiments de garnison préférés. Selon le préréglage : activé pour tous sauf Ignorer.</French>
+    <Portuguese>As guarnições ocupam as fortificações antes dos edifícios comuns, depois dos edifícios de guarnição preferidos. Conforme a predefinição: ligado em todas exceto Ignorar.</Portuguese>
+    <Russian>Гарнизоны занимают укрепления раньше обычных зданий, но после предпочтительных зданий гарнизона. Из пресета: включено для всех пресетов, кроме «Игнорировать».</Russian>
+</Key>
+<Key ID="STR_ALIVE_MP_FIELDWORK_PRIORITY">
+    <English>Fieldwork priority each:</English>
+    <Chinesesimp>每个野战工事的优先级：</Chinesesimp>
+    <Chinese>每個野戰工事的優先級：</Chinese>
+    <Spanish>Prioridad por fortificación:</Spanish>
+    <French>Priorité par fortification :</French>
+    <Portuguese>Prioridade por fortificação:</Portuguese>
+    <Russian>Приоритет за укрепление:</Russian>
+</Key>
+<Key ID="STR_ALIVE_MP_FIELDWORK_PRIORITY_COMMENT">
+    <English>Priority a plain military objective gains for each fieldwork inside it. Airfields, helipads and HQs keep their own. Blank uses the preset: 5 for Strengthen objectives and Own objectives, otherwise 0.</English>
+    <Chinesesimp>普通军事目标内每有一个野战工事所增加的优先级。机场、直升机坪和总部保持原有优先级。留空使用预设：加强目标和独立目标为 5，其余为 0。</Chinesesimp>
+    <Chinese>普通軍事目標內每有一個野戰工事所增加的優先級。機場、直升機坪和總部保持原有優先級。留空使用預設：加強目標和獨立目標為 5，其餘為 0。</Chinese>
+    <Spanish>Prioridad que gana un objetivo militar normal por cada fortificación que contiene. Aeródromos, helipuertos y cuarteles mantienen la suya. En blanco usa el preajuste: 5 en Reforzar objetivos y Objetivos propios, si no 0.</Spanish>
+    <French>Priorité gagnée par un objectif militaire ordinaire pour chaque fortification qu'il contient. Aérodromes, héliports et QG gardent la leur. Vide : préréglage, 5 pour Renforcer les objectifs et Objectifs propres, sinon 0.</French>
+    <Portuguese>Prioridade que um objetivo militar comum ganha por cada fortificação dentro dele. Aeródromos, helipontos e QGs mantêm a sua. Em branco usa a predefinição: 5 em Reforçar objetivos e Objetivos próprios, senão 0.</Portuguese>
+    <Russian>Приоритет, который обычная военная цель получает за каждое укрепление внутри неё. Аэродромы, вертолётные площадки и штабы сохраняют свой. Пусто — из пресета: 5 для «Усилить цели» и «Собственные цели», иначе 0.</Russian>
+</Key>
+<Key ID="STR_ALIVE_MP_FIELDWORK_PRIORITY_MAX">
+    <English>Fieldwork priority limit:</English>
+    <Chinesesimp>野战工事优先级上限：</Chinesesimp>
+    <Chinese>野戰工事優先級上限：</Chinese>
+    <Spanish>Límite de prioridad por fortificaciones:</Spanish>
+    <French>Limite de priorité des fortifications :</French>
+    <Portuguese>Limite de prioridade das fortificações:</Portuguese>
+    <Russian>Предел приоритета укреплений:</Russian>
+</Key>
+<Key ID="STR_ALIVE_MP_FIELDWORK_PRIORITY_MAX_COMMENT">
+    <English>The most priority fieldworks can add to one objective. Never more than 49, so an HQ (50) still comes first. Blank uses the preset: 40.</English>
+    <Chinesesimp>野战工事最多能为一个目标增加的优先级。不超过 49，因此总部（50）仍然优先。留空使用预设：40。</Chinesesimp>
+    <Chinese>野戰工事最多能為一個目標增加的優先級。不超過 49，因此總部（50）仍然優先。留空使用預設：40。</Chinese>
+    <Spanish>Lo máximo que las fortificaciones pueden sumar a un objetivo. Nunca más de 49, así un cuartel (50) sigue primero. En blanco usa el preajuste: 40.</Spanish>
+    <French>Le maximum que les fortifications peuvent ajouter à un objectif. Jamais plus de 49, pour qu'un QG (50) reste premier. Vide : préréglage, 40.</French>
+    <Portuguese>O máximo que as fortificações podem somar a um objetivo. Nunca mais de 49, para um QG (50) continuar primeiro. Em branco usa a predefinição: 40.</Portuguese>
+    <Russian>Наибольший приоритет, который укрепления могут добавить одной цели. Не больше 49, чтобы штаб (50) оставался первым. Пусто — из пресета: 40.</Russian>
+</Key>
+<Key ID="STR_ALIVE_MP_FIELDWORK_OBJECTIVES">
+    <English>Fieldwork objectives (percent):</English>
+    <Chinesesimp>野战工事目标（百分比）：</Chinesesimp>
+    <Chinese>野戰工事目標（百分比）：</Chinese>
+    <Spanish>Objetivos de fortificación (porcentaje):</Spanish>
+    <French>Objectifs de fortification (pourcentage) :</French>
+    <Portuguese>Objetivos de fortificação (porcentagem):</Portuguese>
+    <Russian>Цели из укреплений (процент):</Russian>
+</Key>
+<Key ID="STR_ALIVE_MP_FIELDWORK_OBJECTIVES_COMMENT">
+    <English>Groups of fieldworks made into objectives of their own, largest first, up to this share of the module's other military objectives. Every objective takes an equal part of the module's forces, so keep it modest. Blank uses the preset: 25 for Own objectives, otherwise 0.</English>
+    <Chinesesimp>将成组的野战工事设为独立目标，从最大的开始，最多为本模块其他军事目标数量的这一比例。每个目标平分本模块的兵力，因此请适度设置。留空使用预设：独立目标为 25，其余为 0。</Chinesesimp>
+    <Chinese>將成組的野戰工事設為獨立目標，從最大的開始，最多為本模組其他軍事目標數量的這一比例。每個目標平分本模組的兵力，因此請適度設定。留空使用預設：獨立目標為 25，其餘為 0。</Chinese>
+    <Spanish>Grupos de fortificaciones convertidos en objetivos propios, los mayores primero, hasta esta proporción de los demás objetivos militares del módulo. Cada objetivo recibe una parte igual de las fuerzas, así que conviene moderación. En blanco usa el preajuste: 25 en Objetivos propios, si no 0.</Spanish>
+    <French>Groupes de fortifications transformés en objectifs, les plus grands d'abord, jusqu'à cette part des autres objectifs militaires du module. Chaque objectif reçoit une part égale des forces, restez donc modéré. Vide : préréglage, 25 pour Objectifs propres, sinon 0.</French>
+    <Portuguese>Grupos de fortificações transformados em objetivos próprios, os maiores primeiro, até esta parcela dos outros objetivos militares do módulo. Cada objetivo recebe uma parte igual das forças, então use com moderação. Em branco usa a predefinição: 25 em Objetivos próprios, senão 0.</Portuguese>
+    <Russian>Группы укреплений, превращённые в отдельные цели, начиная с крупнейших, до этой доли от прочих военных целей модуля. Каждая цель получает равную часть сил, так что не завышайте. Пусто — из пресета: 25 для «Собственные цели», иначе 0.</Russian>
+</Key>
 </Container></Package></Project>

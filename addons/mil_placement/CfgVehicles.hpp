@@ -216,6 +216,30 @@ class CfgVehicles {
                         class placeHelis : Combo { property = "ALiVE_mil_placement_placeHelis"; displayName = "$STR_ALIVE_MP_PLACE_HELI"; tooltip = "$STR_ALIVE_MP_PLACE_HELI_COMMENT"; defaultValue = """true"""; class Values { class Yes{name="Yes";value=true;default=1;}; class No{name="No";value=false;}; }; };
                         class placePlanes : Combo { property = "ALiVE_mil_placement_placePlanes"; displayName = "$STR_ALIVE_MP_PLACE_PLANE"; tooltip = "$STR_ALIVE_MP_PLACE_PLANE_COMMENT"; defaultValue = """true"""; class Values { class Yes{name="Yes";value=true;default=1;}; class No{name="No";value=false;}; }; };
                         class placeSupplies : Combo { property = "ALiVE_mil_placement_placeSupplies"; displayName = "$STR_ALIVE_MP_PLACE_SUPPLIES"; tooltip = "$STR_ALIVE_MP_PLACE_SUPPLIES_COMMENT"; defaultValue = """true"""; class Values { class Yes{name="Yes";value=true;default=1;}; class No{name="No";value=false;}; }; };
+                        // ---- Fieldworks ------------------------------------------------------
+                        class HDR_FIELDWORKS : ALiVE_ModuleSubTitle { property = "ALiVE_mil_placement_HDR_FIELDWORKS"; displayName = "$STR_ALIVE_MP_HDR_FIELDWORKS"; };
+                        class fieldworkUse : Combo
+                        {
+                                property = "ALiVE_mil_placement_fieldworkUse";
+                                displayName = "$STR_ALIVE_MP_FIELDWORK_USE";
+                                tooltip = "$STR_ALIVE_MP_FIELDWORK_USE_COMMENT";
+                                defaultValue = """IGNORE""";
+                                class Values
+                                {
+                                    class Ignore { name = "$STR_ALIVE_MP_FIELDWORK_USE_IGNORE"; value = "IGNORE"; default = 1; };
+                                    class Garrison { name = "$STR_ALIVE_MP_FIELDWORK_USE_GARRISON"; value = "GARRISON"; };
+                                    class Strengthen { name = "$STR_ALIVE_MP_FIELDWORK_USE_STRENGTHEN"; value = "STRENGTHEN"; };
+                                    class Own { name = "$STR_ALIVE_MP_FIELDWORK_USE_OWN"; value = "OWN"; };
+                                };
+                        };
+                        class fieldworkGarrison : Combo
+                        {
+                                property = "ALiVE_mil_placement_fieldworkGarrison"; displayName = "$STR_ALIVE_MP_FIELDWORK_GARRISON"; tooltip = "$STR_ALIVE_MP_FIELDWORK_GARRISON_COMMENT"; defaultValue = """PRESET""";
+                                class Values { class PRESET{name="$STR_ALIVE_MP_FIELDWORK_FROM_PRESET";value="PRESET";default=1;}; class YES{name="Yes";value="1";}; class NO{name="No";value="0";}; };
+                        };
+                        class fieldworkPriority : Edit { property = "ALiVE_mil_placement_fieldworkPriority"; displayName = "$STR_ALIVE_MP_FIELDWORK_PRIORITY"; tooltip = "$STR_ALIVE_MP_FIELDWORK_PRIORITY_COMMENT"; defaultValue = """"""; };
+                        class fieldworkPriorityMax : Edit { property = "ALiVE_mil_placement_fieldworkPriorityMax"; displayName = "$STR_ALIVE_MP_FIELDWORK_PRIORITY_MAX"; tooltip = "$STR_ALIVE_MP_FIELDWORK_PRIORITY_MAX_COMMENT"; defaultValue = """"""; };
+                        class fieldworkObjectives : Edit { property = "ALiVE_mil_placement_fieldworkObjectives"; displayName = "$STR_ALIVE_MP_FIELDWORK_OBJECTIVES"; tooltip = "$STR_ALIVE_MP_FIELDWORK_OBJECTIVES_COMMENT"; defaultValue = """"""; };
                         // ---- AI Artillery (#887) --------------------------------------------
                         class HDR_ARTILLERY : ALiVE_ModuleSubTitle { property = "ALiVE_mil_placement_HDR_ARTILLERY"; displayName = "AI ARTILLERY"; };
                         class placeArtillery : Combo { property = "ALiVE_mil_placement_placeArtillery"; displayName = "$STR_ALIVE_MP_PLACE_ARTILLERY"; tooltip = "$STR_ALIVE_MP_PLACE_ARTILLERY_COMMENT"; defaultValue = """false"""; class Values { class Yes{name="Yes";value=true;}; class No{name="No";value=false;default=1;}; }; };

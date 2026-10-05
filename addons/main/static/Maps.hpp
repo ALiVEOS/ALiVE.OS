@@ -305,3 +305,7 @@ ALIVE_airBuildingTypes = ALIVE_airBuildingTypes arrayIntersect ALIVE_airBuilding
 
 ALIVE_heliBuildingTypes = ALIVE_heliBuildingTypes + _defaultHeliBuildings;
 ALIVE_heliBuildingTypes = ALIVE_heliBuildingTypes arrayIntersect ALIVE_heliBuildingTypes;
+
+// Fieldworks: trenches, bunkers and the like that soldiers can stand in. Only an ALiVE 3 index lists them (v3.1 on),
+// so every older index leaves the list empty and the modules that read it carry on exactly as before.
+if (isNil "ALIVE_militaryFieldworkBuildingTypes") then { ALIVE_militaryFieldworkBuildingTypes = [] };

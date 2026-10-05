@@ -246,7 +246,7 @@ private _fnc_activateAsInfantry = {
             // floor of that search (#1016). They walk there rather than being placed: a
             // player is close by when a reserve wakes, and placed at once the men appeared
             // in buildings anywhere in the objective, next to a player or in one just cleared.
-            [_x, "setActiveCommand", ["ALIVE_fnc_garrison", "spawn", [_guardRadius, "true", _center, "", 1, (_guardPatrolPercentage min 1), _garrisonPatrolBehaviour, _garrisonPatrolSpeed, _preferredGarrisonPositions, true, _size, false]]] call ALIVE_fnc_profileEntity;
+            [_x, "setActiveCommand", ["ALIVE_fnc_garrison", "spawn", [_guardRadius, "true", _center, "", 1, (_guardPatrolPercentage min 1), _garrisonPatrolBehaviour, _garrisonPatrolSpeed, _preferredGarrisonPositions, true, _size, false, _logic getVariable ["ALiVE_fieldworkGarrison", false]]]] call ALIVE_fnc_profileEntity;
             [_x, "homeCluster", _cluster] call ALiVE_fnc_hashSet;
             _activeIDs pushBack ([_x, "profileID"] call ALiVE_fnc_hashGet);
         };

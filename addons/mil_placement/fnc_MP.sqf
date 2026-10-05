@@ -210,6 +210,22 @@ switch(_operation) do {
     case "preferredGarrisonPositions": {
         _result = [_logic,_operation,_args,""] call ALIVE_fnc_OOsimpleOperation;
     };
+    // Fieldworks: a preset, and four settings that each override one part of it when filled in
+    case "fieldworkUse": {
+        _result = [_logic,_operation,_args,"IGNORE"] call ALIVE_fnc_OOsimpleOperation;
+    };
+    case "fieldworkGarrison": {
+        _result = [_logic,_operation,_args,"PRESET"] call ALIVE_fnc_OOsimpleOperation;
+    };
+    case "fieldworkPriority": {
+        _result = [_logic,_operation,_args,""] call ALIVE_fnc_OOsimpleOperation;
+    };
+    case "fieldworkPriorityMax": {
+        _result = [_logic,_operation,_args,""] call ALIVE_fnc_OOsimpleOperation;
+    };
+    case "fieldworkObjectives": {
+        _result = [_logic,_operation,_args,""] call ALIVE_fnc_OOsimpleOperation;
+    };
     case "garrisonPatrolSpeed": {
         _result = [_logic,_operation,_args,"LIMITED"] call ALIVE_fnc_OOsimpleOperation;
     };
@@ -708,10 +724,107 @@ switch(_operation) do {
                     PROFILE_SCOPE_END(MPCAMPFILTER)
                 };
 
+                // Fieldworks: trenches, bunkers and the like the terrain's index lists (an ALiVE 3 index, v3.1 on).
+                // The preset gives four values, and each setting under it overrides one when filled in. Each preset
+                // includes the one before it. Ignore with nothing overridden changes nothing here or in any garrison.
+                private _fwUse = toUpper ([_logic, "fieldworkUse"] call MAINCLASS);
+                (switch (_fwUse) do {
+                    case "GARRISON": {[true, 0, 0, 0]};
+                    case "STRENGTHEN": {[true, 5, 40, 0]};
+                    case "OWN": {[true, 5, 40, 25]};
+                    default {[false, 0, 0, 0]};
+                }) params ["_fwGarrison", "_fwEach", "_fwMax", "_fwShare"];
+                private _fwNumber = {
+                    params ["_value", "_preset"];
+                    if (_value isEqualType 0) exitWith {_value};
+                    if (_value isEqualType "" && {_value != ""}) exitWith {parseNumber _value};
+                    _preset
+                };
+                private _fwSetting = [_logic, "fieldworkGarrison"] call MAINCLASS;
+                if (_fwSetting isEqualTo "1" || {_fwSetting isEqualTo "0"}) then { _fwGarrison = _fwSetting isEqualTo "1" };
+                _fwEach = ([[_logic, "fieldworkPriority"] call MAINCLASS, _fwEach] call _fwNumber) max 0;
+                // an HQ ranks 50, and a raised depot must never outrank it
+                _fwMax = (([[_logic, "fieldworkPriorityMax"] call MAINCLASS, _fwMax] call _fwNumber) max 0) min 49;
+                _fwShare = (([[_logic, "fieldworkObjectives"] call MAINCLASS, _fwShare] call _fwNumber) max 0) min 100;
+                private _fwModels = missionNamespace getVariable ["ALIVE_militaryFieldworkBuildingTypes", []];
+                if ((_fwGarrison || {_fwEach > 0} || {_fwShare > 0}) && {_fwModels isEqualTo []}) then {
+                    ["MP %1 - Fieldworks set to %2, but the %3 index lists none (only an ALiVE 3 index, v3.1 or later, does): carrying on without them", _faction, _fwUse, worldName] call ALiVE_fnc_dump;
+                    _fwGarrison = false;
+                    _fwEach = 0;
+                    _fwShare = 0;
+                };
+                // read by every garrison this module orders, reserves included
+                _logic setVariable ["ALiVE_fieldworkGarrison", _fwGarrison];
+
+                private _fwRaise = _fwEach > 0 && {_fwMax > 0};
+
                 PROFILE_SCOPE(MPMILFILTER, "ALiVE MP startup: filter military and special clusters")
-                _clusters = [_clusters,_sizeFilter,_priorityFilter] call ALIVE_fnc_copyClusters;
+                // With Strengthen on, priorities are raised before the priority filter, below, so a fortified
+                // position can pass a filter its base rank would fail
+                _clusters = [_clusters,_sizeFilter,[_priorityFilter, -999999] select _fwRaise] call ALIVE_fnc_copyClusters;
                 _clusters = [_clusters, _taor] call ALIVE_fnc_clustersInsideMarker;
                 _clusters = [_clusters, _blacklist] call ALIVE_fnc_clustersOutsideMarker;
+
+                if (_fwRaise) then {
+                    if (isNil "ALiVE_fieldworkModels") then { ALiVE_fieldworkModels = createHashMapFromArray (_fwModels apply {[toLower _x, true]}) };
+                    // The index's fieldwork groups hold every fieldwork in a group of three or more, so counting those
+                    // points is one engine call per objective. A clusters file without them falls back to a search.
+                    // Loaded nodes are the buildings themselves; a node not yet resolved is still [id, position].
+                    private _fwPoints = [];
+                    if !(isNil "ALIVE_clustersMilFieldwork") then {
+                        { { _fwPoints pushBack (if (_x isEqualType objNull) then {getPosATL _x} else {_x select 1}) } forEach ([_x, "nodes", []] call ALIVE_fnc_hashGet) } forEach (ALIVE_clustersMilFieldwork select 2);
+                    };
+                    private _raised = 0;
+                    {
+                        private _cluster = _x;
+                        // plain military objectives only: an airfield, a helipad or an HQ keeps the rank it has
+                        if (([_cluster, "priority", 0] call ALIVE_fnc_hashGet) isEqualTo 0) then {
+                            private _centre = [_cluster, "center"] call ALIVE_fnc_hashGet;
+                            private _reach = ([_cluster, "size", 0] call ALIVE_fnc_hashGet) max 50;
+                            private _found = if (_fwPoints isEqualTo []) then {
+                                {
+                                    ((toLower ((getModelInfo _x) select 1)) in ALiVE_fieldworkModels) && {!((_x buildingPos 0) isEqualTo [0,0,0])}
+                                } count (nearestObjects [_centre, ["House","Building"], _reach])
+                            } else {
+                                count (_fwPoints inAreaArray [_centre, _reach, _reach, 0, false])
+                            };
+                            if (_found > 0) then {
+                                [_cluster, "priority", (_found * _fwEach) min _fwMax] call ALIVE_fnc_hashSet;
+                                _raised = _raised + 1;
+                            };
+                        };
+                    } forEach _clusters;
+                    private _before = count _clusters;
+                    _clusters = _clusters select { ([_x, "priority", 0] call ALIVE_fnc_hashGet) >= _priorityFilter };
+                    ["MP %1 - Fieldworks raised the priority of %2 of %3 military objectives; %4 pass the priority filter of %5", _faction, _raised, _before, count _clusters, _priorityFilter] call ALiVE_fnc_dump;
+                };
+
+                if (_fwShare > 0) then {
+                    if (isNil "ALIVE_clustersMilFieldwork") then {
+                        ["MP %1 - Fieldworks set to %2, but the %3 clusters file has no fieldwork groups (an index made before v3.1): no fieldwork objectives", _faction, _fwUse, worldName] call ALiVE_fnc_dump;
+                    } else {
+                        private _fwClusters = ALIVE_clustersMilFieldwork select 2;
+                        _fwClusters = [_fwClusters, _sizeFilter, -999999] call ALIVE_fnc_copyClusters;
+                        // A group ranks as Strengthen would rank it: the priority per fieldwork, up to the limit, then the
+                        // same priority filter as every other objective
+                        if (_fwRaise) then { { [_x, "priority", ((count ([_x, "nodes", []] call ALIVE_fnc_hashGet)) * _fwEach) min _fwMax] call ALIVE_fnc_hashSet } forEach _fwClusters };
+                        _fwClusters = _fwClusters select { ([_x, "priority", 0] call ALIVE_fnc_hashGet) >= _priorityFilter };
+                        _fwClusters = [_fwClusters, _taor] call ALIVE_fnc_clustersInsideMarker;
+                        _fwClusters = [_fwClusters, _blacklist] call ALIVE_fnc_clustersOutsideMarker;
+                        // none where an objective already stands
+                        _fwClusters = _fwClusters select {
+                            private _centre = [_x, "center"] call ALIVE_fnc_hashGet;
+                            (_clusters findIf { (_centre distance2D ([_x, "center"] call ALIVE_fnc_hashGet)) < ([_x, "size", 0] call ALIVE_fnc_hashGet) }) == -1
+                        };
+                        // Largest groups first, and no more than the share allows: every objective takes an equal part
+                        // of the module's forces, so each one added thins the garrisons everywhere else
+                        _fwClusters = [_fwClusters, [], { count ([_x, "nodes", []] call ALIVE_fnc_hashGet) }, "DESCEND"] call BIS_fnc_sortBy;
+                        private _fwRoom = (ceil ((count _clusters) * _fwShare / 100)) max 1;
+                        if (count _fwClusters > _fwRoom) then { _fwClusters resize _fwRoom };
+                        ["MP %1 - Fieldworks added %2 objectives, up to %3 percent of %4", _faction, count _fwClusters, _fwShare, count _clusters] call ALiVE_fnc_dump;
+                        _clusters = _clusters + _fwClusters;
+                    };
+                };
 
                 {
                     [_x,"debug", [_logic, "debug"] call MAINCLASS] call ALIVE_fnc_cluster;
@@ -2833,7 +2946,7 @@ switch(_operation) do {
                         // Garrison & Patrols instead of the static garrison.
                         {
                             if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
-                              [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[_thisRadius,"true",_thisSearchCentre,"",_guardProbabilityCount, _guardPatrolPercentage, _garrisonPatrolBehaviour, _garrisonPatrolSpeed, _preferredGarrisonPositions, true, _thisObjectiveSize]]] call ALIVE_fnc_profileEntity;
+                              [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[_thisRadius,"true",_thisSearchCentre,"",_guardProbabilityCount, _guardPatrolPercentage, _garrisonPatrolBehaviour, _garrisonPatrolSpeed, _preferredGarrisonPositions, true, _thisObjectiveSize, true, _logic getVariable ["ALiVE_fieldworkGarrison", false]]]] call ALIVE_fnc_profileEntity;
                               if (_pinStationary) then {
                                   // composition garrisons hold their posts - the
                                   // same pin roadblock guards use, honoured at
@@ -2970,7 +3083,7 @@ switch(_operation) do {
                                         if (_infantryActivePlacedCount < _garrisonCount) then {
                                             _command = "ALIVE_fnc_garrison";
                                             _garrisonPos = [_center, 50] call CBA_fnc_RandPos;
-                                            _radius = [_guardRadius,"true",_center,"",_guardProbabilityCount, _guardPatrolPercentage, _garrisonPatrolBehaviour, _garrisonPatrolSpeed, _preferredGarrisonPositions, true, _size];
+                                            _radius = [_guardRadius,"true",_center,"",_guardProbabilityCount, _guardPatrolPercentage, _garrisonPatrolBehaviour, _garrisonPatrolSpeed, _preferredGarrisonPositions, true, _size, true, _logic getVariable ["ALiVE_fieldworkGarrison", false]];
                                         } else {
                                             _command = "ALIVE_fnc_ambientMovement";
                                             _radius = [_guardRadius,"SAFE",[0,0,0]];
@@ -3171,7 +3284,7 @@ switch(_operation) do {
                                     if (_infantryActivePlacedCount < _garrisonCount) then {
                                         _command = "ALIVE_fnc_garrison";
                                         _garrisonPos = [_center, 50] call CBA_fnc_RandPos;
-                                        _radius = [_guardRadius,"true",_center,"",_guardProbabilityCount, _guardPatrolPercentage, _garrisonPatrolBehaviour, _garrisonPatrolSpeed, _preferredGarrisonPositions, true, _size];
+                                        _radius = [_guardRadius,"true",_center,"",_guardProbabilityCount, _guardPatrolPercentage, _garrisonPatrolBehaviour, _garrisonPatrolSpeed, _preferredGarrisonPositions, true, _size, true, _logic getVariable ["ALiVE_fieldworkGarrison", false]];
                                     } else {
                                         _command = "ALIVE_fnc_ambientMovement";
                                         _radius = [_guardRadius,"SAFE",[0,0,0]];

@@ -43,6 +43,7 @@ _patrolSpeed = "LIMITED";
 _preferredGarrison = "";
 _fillShortfall = true;
 _hadModuleSetting = false;
+private _fieldworkFirst = false;
 _preferredIndicesOnly = false;
 // SPE garrison: radius to sweep for CBA AI Building Positions (the objective's Size). (#945)
 _cbaRadius = 300;
@@ -98,6 +99,9 @@ if (_args isEqualType []) then {
     // placed at once its men appeared in buildings anywhere in the objective, next to a
     // player or in one they had just cleared.
     _moveInstantly = _args param [11, true, [false]];
+    // The placement module's Fieldworks setting: trenches and bunkers the terrain's index lists are seated before
+    // ordinary buildings. Off when the slot is missing, as it is from every caller that is not a placement module.
+    _fieldworkFirst = _args param [12, false, [false]];
 };
 
 // A caller with no placement module behind it is given the mission's list. The
@@ -257,7 +261,7 @@ if (_type == "entity" && {count (_assignments select 1) == 0}) then {
        ["ALIVE_fnc_garrison - calling ALIVE_fnc_groupGarrison - searching %4 m around %6 (objective size %7, guard radius %8), group %2 is %9 m from it, profileID: %3, profileType: %1, guardPatrolPercentage: %5", _profileType, _group, _id, round _searchRadius, _guardPatrolPercentage, _searchCentre, round _objectiveSize, round _radius, round (_groupPos distance2D _searchCentre)] call ALiVE_fnc_dump;
       };
       // DEBUG -------------------------------------------------------------------------------------
-     [_group, _searchCentre, _searchRadius, _moveInstantly, _onlyProfiles, _profileCount, _id, _guardPatrolPercentage, _patrolBehaviour, _patrolSpeed, _preferredGarrison, _fillShortfall, _preferredIndicesOnly, _groupPos, _radius] call ALIVE_fnc_groupGarrison;
+     [_group, _searchCentre, _searchRadius, _moveInstantly, _onlyProfiles, _profileCount, _id, _guardPatrolPercentage, _patrolBehaviour, _patrolSpeed, _preferredGarrison, _fillShortfall, _preferredIndicesOnly, _groupPos, _radius, _fieldworkFirst] call ALIVE_fnc_groupGarrison;
     };
 
 };
