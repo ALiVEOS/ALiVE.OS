@@ -36,6 +36,7 @@ Hash - addVehicleAssignment - Add a profile vehicle assignment array to the prof
 None - clearVehicleAssignments - Clear the profile vehicle assignments array
 Hash - addWaypoint - Add a profile waypoint object to the profile waypoint array
 None - clearWaypoints - Clear the profile waypoint array
+Array - rebuildWaypointPaths - Repair applied waypoints and requeue pending orders from the current position
 Array - mergePositions - Sets the position of all sub units to the passed position
 Array - addUnit - Add a unit to the group [_class,_position,_damage]
 Scalar - removeUnit - Remove a unit from the group
@@ -620,7 +621,7 @@ switch(_operation) do {
                 _callbackArgs params ["_profileID","_pendingPath"];
 
                 private _profile = [ALiVE_profileHandler,"getProfile", _profileID] call ALiVE_fnc_profileHandler;
-                if (!isnil "_profile") then {
+                if (!isnil "_profile" && {(_pendingPath select 1) != "cancelled"}) then {
                     _pendingPath set [0,true];
                     _pendingPath set [2,_path];
                     [_profile,"advancePendingWaypoints"] call ALIVE_fnc_profileEntity;
@@ -645,6 +646,26 @@ switch(_operation) do {
         };
       };
         _result = _pendingPath;
+    };
+
+    case "rebuildWaypointPaths": {
+        private _orders = +_args;
+        private _pending = [_logic,"pendingWaypointPaths",[]] call ALiVE_fnc_hashGet;
+        // Copy destinations before cancelling: old jobs still own their waypoint hashes.
+        private _pendingOrders = _pending apply {[_x select 1, +(_x select 3)]};
+        {_x set [1,"cancelled"]} forEach _pending;
+        [_logic,"pendingWaypointPaths",[]] call ALiVE_fnc_hashSet;
+        [ALiVE_Pathfinder,"cancelProfilePaths",[_logic,"profileID"] call ALiVE_fnc_hashGet] call ALiVE_fnc_pathfinder;
+        [_logic,"clearWaypoints"] call MAINCLASS;
+
+        // Repair the spawn connection first; the remaining applied nodes stay ready.
+        {
+            [_logic,"addPendingWaypoint",["addWaypoint",_x,_forEachIndex > 0]] call MAINCLASS;
+        } forEach _orders;
+        // Later orders need fresh predecessors, even if their old routes were ready.
+        {
+            [_logic,"addPendingWaypoint",_x] call MAINCLASS;
+        } forEach _pendingOrders;
     };
 
     case "advancePendingWaypoints": {
@@ -685,8 +706,15 @@ switch(_operation) do {
                 private _insertionMethod = if ((_firstPending select 1) == "addWaypoint") then {"addWaypointInternal"} else {"insertWaypointInternal"};
                 private _path = _firstPending select 2;
                 private _waypoint = _firstPending select 3;
-                [_waypoint,"name", "pathfound"] call ALiVE_fnc_hashSet;
+                private _navalRoute = ([_waypoint,"name",""] call ALiVE_fnc_hashGet) == "pathfound:naval";
+                // Recapture preserves name and completion radius; placement radius resets to zero.
+                [_waypoint,"name", ["pathfound","pathfound:naval"] select _navalRoute] call ALiVE_fnc_hashSet;
 
+                if (_navalRoute) then {
+                    [_waypoint,"radius",0] call ALiVE_fnc_hashSet;
+                    private _completion = (missionNamespace getVariable ["ALiVE_pathfinding_navalCompletionRadius",1.5]) max 0.5 min 5;
+                    [_waypoint,"completionRadius",_completion] call ALiVE_fnc_hashSet;
+                };
                 private _waypointTemplate = +_waypoint;
                 //[_waypointTemplate,"timeout", []] call ALiVE_fnc_hashSet;
                 [_waypointTemplate,"type", "MOVE"] call ALiVE_fnc_hashSet;
@@ -748,7 +776,7 @@ switch(_operation) do {
 
                 // check next pending path
 
-                if (count _firstPending > 0) then {
+                if (count _pendingWaypoints > 0) then {
                     _firstPending = _pendingWaypoints select 0;
                 } else {
                     _firstPending = nil;
@@ -1354,7 +1382,24 @@ switch(_operation) do {
 
             if !(_isSPE) then {
                 _waypoints append _waypointsCompleted;
-                [_waypoints, _group] call ALIVE_fnc_profileWaypointsToWaypoints;
+                private _repathNaval = false;
+                private "_spawnPosition";
+                if (count _waypoints > 0 && {([_waypoints select 0,"name",""] call ALiVE_fnc_hashGet) == "pathfound:naval"}) then {
+                    _spawnPosition = getPosATL leader _group;
+                    private _nextPosition = [_waypoints select 0,"position"] call ALiVE_fnc_hashGet;
+                    private _settings = [missionNamespace getVariable ["ALiVE_pathfinding_seaLevel",0],
+                        (missionNamespace getVariable ["ALiVE_pathfinding_navalDepth",1]) max 0.1,
+                        (missionNamespace getVariable ["ALiVE_pathfinding_navalClearance",2.5]) max 0];
+                    _repathNaval = !([_spawnPosition,_nextPosition,_settings] call ALiVE_fnc_pathfinderNavalSegment);
+                };
+                if (_repathNaval) then {
+                    // A spawn-position correction may have moved the hull to another
+                    // side of a bend. Hold until the first connection is rebuilt.
+                    [_logic,"position",_spawnPosition] call MAINCLASS;
+                    [{[_logic,"rebuildWaypointPaths",_waypoints] call MAINCLASS}, []] call CBA_fnc_directCall;
+                } else {
+                    [_waypoints, _group] call ALIVE_fnc_profileWaypointsToWaypoints;
+                };
             };
 	         
             // process commands

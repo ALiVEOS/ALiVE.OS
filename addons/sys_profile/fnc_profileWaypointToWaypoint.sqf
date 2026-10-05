@@ -60,7 +60,16 @@ if (!isNull _assignedVehicle && {_assignedVehicle isKindOf "LandVehicle"}) then 
     _radius = 0;
 };
 
-_position set [2,0];
+// Negative radius uses ASL and prevents the engine from moving a validated
+// naval point onto a bank. Zero radius still permits placement adjustment.
+private _navalRoute = _waypointName == "pathfound:naval";
+if (_navalRoute) then {
+    _position = +_position;
+    _position set [2, missionNamespace getVariable ["ALiVE_pathfinding_seaLevel",0]];
+    _radius = -1;
+} else {
+    _position set [2,0];
+};
 
 private _waypoint = _group addWaypoint [_position, _radius];
 _waypoint setWaypointDescription _description;

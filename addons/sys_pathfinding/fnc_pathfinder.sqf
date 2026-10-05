@@ -495,9 +495,26 @@ switch (_operation) do {
         // arguments must keep their shared references: the callback marks the
         // profile's original pending-path record ready. Unary + deep-copies it.
         private _newJob = _args + [];
-        _pathJobs pushback _newJob;
-        
+        // Cache the route type once when queuing the request.
+        private _isNaval = (_procedure select 1) isEqualTo [false,false,false,true,false];
+        _newJob pushBack _isNaval;
+        _pathJobs pushBack _newJob;
+
         if (count _pathJobs == 1) then {
+            [_logic,"loadCurrentJobData"] call MAINCLASS;
+        };
+    };
+
+    case "cancelProfilePaths": {
+        private _pathJobs = _logic get "pathJobs";
+        private _cancelCurrent = count _pathJobs > 0
+            && {((_pathJobs select 0 select 4) param [0,""]) isEqualTo _args};
+        for "_i" from (count _pathJobs - 1) to 0 step -1 do {
+            if (((_pathJobs select _i select 4) param [0,""]) isEqualTo _args) then {
+                _pathJobs deleteAt _i;
+            };
+        };
+        if (_cancelCurrent) then {
             [_logic,"loadCurrentJobData"] call MAINCLASS;
         };
     };
@@ -517,7 +534,16 @@ switch (_operation) do {
             };
 
             private _endPos = [_waypoint,"position"] call ALive_fnc_hashGet;
-            
+
+            // Ships need water connections, not cell labels. Keep their small graph
+            // request-local, before the generic same-cell and invalid-goal shortcuts.
+            if (_nextJob select 6) exitWith {
+                private _naval = [nil, "create", [_startPos, _endPos]] call ALiVE_fnc_pathfinderNaval;
+                // False layer flags keep the shared completion check inactive.
+                // Naval work does not allocate the seven land placeholder arrays.
+                _logic set ["currentJobData", [false,[false,false,false],nil,nil,nil,nil,nil,nil,nil,_naval]];
+            };
+
             private _terrainGrid = _logic get "terrainGrid";
 
             // Goal-snap: a land-capable group must never be routed
@@ -599,11 +625,7 @@ switch (_operation) do {
 
         private _pathJobs = _logic get "pathJobs";
         private _queuedPathCount = count _pathJobs;
-        if (missionNamespace getVariable ["ALiVE_pathfinding_queueChat", true]) then {
-        };
         if (_queuedPathCount == 0) exitwith {};
-
-        _debugMarkers = _logic get "pathDebugMarkers";
 
         private _currentJob = _pathJobs select 0;
         private _currentJobData = _logic get "currentJobData";
@@ -611,7 +633,6 @@ switch (_operation) do {
         _currentJob params ["_startPos","_procedure","_waypoint","_previousWaypoint","_callbackArgs","_callback"];
         _currentJobData params ["_isActive","_jobDataFlags","_layer1", "_layer2","_startSector", "_goalSector", "_startSubSector", "_goalSubSector"];
         _jobDataFlags params ["_initComplete", "_layer1Complete", "_layer2Complete"];
-        _procedure params ["_name","_capabilities","_limits","_weights"];
 
         // Prevent this from executing the same job twice in the event of a race condition
         if (_isActive) exitwith {};
@@ -623,6 +644,38 @@ switch (_operation) do {
 
         call {
 
+            if (_currentJob select 6) exitWith {
+                private _naval = _currentJobData select 9;
+                if ([_naval, "step"] call ALiVE_fnc_pathfinderNaval) then {
+                    _result = _naval get "result";
+                    private _status = _naval get "status";
+                    [_waypoint,"position",+(_result select (count _result - 1))] call ALiVE_fnc_hashSet;
+                    [_waypoint,"name","pathfound:naval"] call ALiVE_fnc_hashSet;
+                    [_waypoint,"navalPathStatus",_status] call ALiVE_fnc_hashSet;
+                    private _elapsedMs = 1000 * (diag_tickTime - (_naval get "createdAt"));
+                    [_waypoint,"navalPathElapsedMs",_elapsedMs] call ALiVE_fnc_hashSet;
+                    [_waypoint,"navalPathWorkMs",_naval get "workMs"] call ALiVE_fnc_hashSet;
+                    [_waypoint,"navalPathNodes",_naval get "expanded"] call ALiVE_fnc_hashSet;
+                    [_waypoint,"navalPathSpacing",_naval get "spacing"] call ALiVE_fnc_hashSet;
+                    if (missionNamespace getVariable ["ALiVE_pathfinding_navalDebug",false]) then {
+                        ["ALiVE naval route %1: %2; elapsed %3 ms; work %4 ms; %5 nodes; spacing %6 m",
+                            _callbackArgs param [0,""], _status, _elapsedMs, _naval get "workMs",
+                            _naval get "expanded", _naval get "spacing"] call ALiVE_fnc_dump;
+                    };
+                    if !(_status in ["complete","shore"]) then {
+                        // A partial route is not a completed OPCOM order. Hold at its
+                        // reachable end instead of firing the terminal success callback.
+                        private _statements = [_waypoint,"statements",""] call ALiVE_fnc_hashGet;
+                        private _spawnedOnly = _statements isEqualType [] && {count _statements > 1} && {(_statements select 1) == "_disableSimulation = true;"};
+                        [_waypoint,"statements",["false",["","_disableSimulation = true;"] select _spawnedOnly]] call ALiVE_fnc_hashSet;
+                        ["ALiVE naval route %1: %2 after %3 nodes; stopped at %4",
+                            _callbackArgs param [0,""], _status, _naval get "expanded", _result select (count _result - 1)] call ALiVE_fnc_dump;
+                    };
+                    _jobComplete = true;
+                };
+            };
+
+            _procedure params ["_name","_capabilities","_limits","_weights"];
             private _completion = _currentJobData param [8, []];
             if !(_completion isEqualTo []) then {
                 if ([_logic, "stepLayerPath", [_procedure, _completion]] call MAINCLASS) then {

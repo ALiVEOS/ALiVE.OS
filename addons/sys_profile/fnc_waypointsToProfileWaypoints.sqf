@@ -47,7 +47,7 @@ private _convertAndAddWaypoint = {
     // mark for the same reason.
     if (_pathfindingEnabled) then {
         private _waypointName = [_profileWaypoint,"name"] call ALiVE_fnc_hashGet;
-        private _waypointReady = _waypointName == "pathfound";
+        private _waypointReady = _waypointName in ["pathfound","pathfound:naval"];
 
         if (!((_waypointPosition select [0,2]) isequalto [0,0]) && {(_waypointStatements select 1 != "_disableSimulation = true;")}) then {
             [_profile,"addPendingWaypoint", ["addWaypoint",_profileWaypoint,_waypointReady]] call ALIVE_fnc_profileEntity;

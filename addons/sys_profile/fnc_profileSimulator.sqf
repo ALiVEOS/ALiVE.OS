@@ -293,13 +293,15 @@ if (!_simAttacks) then {
                                     "completionRadius",
                                     "statements",
                                     "speed",
-                                    "type"
+                                    "type",
+                                    "name"
                                 ]] call ALiVE_fnc_hashGetMany) params [
                                     "_destination",
                                     "_completionRadius",
                                     "_statements",
                                     "_waypointSpeed",
-                                    "_waypointType"
+                                    "_waypointType",
+                                    ["_waypointName",""]
                                 ];
                                 private _distanceToWaypoint = _profilePosition distance2D _destination;
 
@@ -315,9 +317,15 @@ if (!_simAttacks) then {
                                 private _direction = 0;
                                 private _moveDistance = _speedPerSecond * _simModifier * _speedModifier * accTime;
 
-                                // don't overshoot waypoint
-                                if (_moveDistance > _distanceToWaypoint) then {
-                                    _moveDistance = _distanceToWaypoint - (random (_completionRadius * 0.7));
+                                private _navalRoute = _waypointName == "pathfound:naval";
+                                // Naval bends must be reached before moving onto the next leg.
+                                // Random standoff and early completion can cut through a river bank.
+                                if (_navalRoute) then {
+                                    _moveDistance = (_moveDistance max 0) min _distanceToWaypoint;
+                                } else {
+                                    if (_moveDistance > _distanceToWaypoint) then {
+                                        _moveDistance = _distanceToWaypoint - (random (_completionRadius * 0.7));
+                                    };
                                 };
 
                                 if (!isnil "_profilePosition" && {!(_profilePosition isEqualTo [])} && {!isnil "_destination"}) then {
@@ -359,7 +367,12 @@ if (!_simAttacks) then {
 
                                     // if distance to wp destination is within completion radius
                                     // mark waypoint as complete
-                                    if (_distanceToWaypoint <= (_moveDistance * 2)) then {
+                                    private _arrived = if (_navalRoute) then {
+                                        (_newPosition distance2D _destination) <= 0.01
+                                    } else {
+                                        _distanceToWaypoint <= (_moveDistance * 2)
+                                    };
+                                    if (_arrived) then {
                                         private _waypointComplete = true;
                                         if (count _statements > 0) then {
                                             private _waypointCondition = _statements select 0;

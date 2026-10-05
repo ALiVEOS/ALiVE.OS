@@ -8,6 +8,18 @@ class CfgFunctions {
                 RECOMPILE;
             };
 
+            class pathfinderNaval {
+                description = "Sparse naval routes with local river refinement";
+                file = "\x\alive\addons\sys_pathfinding\fnc_pathfinderNaval.sqf";
+                RECOMPILE;
+            };
+
+            class pathfinderNavalSegment {
+                description = "Depth and hull clearance between naval route points";
+                file = "\x\alive\addons\sys_pathfinding\fnc_pathfinderNavalSegment.sqf";
+                RECOMPILE;
+            };
+
             class pathfinderCheckCoastTravelForWater {
                 description = "";
                 file = "\x\alive\addons\sys_pathfinding\fnc_pathfinderCheckCoastTravelForWater.sqf";
