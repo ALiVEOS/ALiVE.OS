@@ -1,40 +1,211 @@
+// ALiVE 3 index v3.1, made 2026-10-05 by the ALiVE web indexer, building positions measured
 private["_worldName"];
- _worldName = tolower(worldName);
- ["SETTING UP MAP: woodland_acr"] call ALiVE_fnc_dump;
- ALIVE_Indexing_Blacklist = [];
- ALIVE_airBuildingTypes = [];
- ALIVE_militaryParkingBuildingTypes = [];
- ALIVE_militarySupplyBuildingTypes = [];
- ALIVE_militaryHQBuildingTypes = [];
- ALIVE_militaryAirBuildingTypes = [];
- ALIVE_civilianAirBuildingTypes = [];
- ALiVE_HeliBuildingTypes = [];
- ALIVE_militaryHeliBuildingTypes = [];
- ALIVE_civilianHeliBuildingTypes = [];
- ALIVE_militaryBuildingTypes = [];
- ALIVE_civilianPopulationBuildingTypes = [];
- ALIVE_civilianHQBuildingTypes = [];
- ALIVE_civilianPowerBuildingTypes = [];
- ALIVE_civilianCommsBuildingTypes = [];
- ALIVE_civilianMarineBuildingTypes = [];
- ALIVE_civilianRailBuildingTypes = [];
- ALIVE_civilianFuelBuildingTypes = [];
- ALIVE_civilianConstructionBuildingTypes = [];
- ALIVE_civilianSettlementBuildingTypes = [];
- if(tolower(_worldName) == "woodland_acr") then {
-ALIVE_militaryBuildingTypes = ALIVE_militaryBuildingTypes + ["airport_tower","radar","bunker","cargo_house_v","cargo_patrol_","research","mil_wall","fortification","razorwire","dome","deerstand","vez"];
-ALIVE_militaryParkingBuildingTypes = ALIVE_militaryParkingBuildingTypes + ["bunker","cargo_house_v","cargo_patrol_","research","bunker"];
-ALIVE_militarySupplyBuildingTypes = ALIVE_militarySupplyBuildingTypes + ["barrack","cargo_hq_","miloffices","cargo_house_v","cargo_patrol_","research","barrack","mil_house","mil_controltower"];
-ALIVE_militaryHQBuildingTypes = ALIVE_militaryHQBuildingTypes + ["barrack","cargo_hq_","miloffices","cargo_tower","barrack","mil_house","mil_controltower"];
-ALIVE_airBuildingTypes = ALIVE_airBuildingTypes + ["hangar","hangar"];
-ALIVE_civilianAirBuildingTypes = ALIVE_civilianAirBuildingTypes + ["hangar","runway_beton","runway_main","runway_secondary","ss_hangar","hangar_2","hangar","runway_beton","runway_end","runway_main","runway_secondary"];
-ALIVE_civilianPopulationBuildingTypes = ALIVE_civilianPopulationBuildingTypes + ["church","hospital","amphitheater","chapel_v","households","hospital","houseblock","generalstore","house"];
-ALIVE_civilianHQBuildingTypes = ALIVE_civilianHQBuildingTypes + ["offices","a_office01","a_office02","a_municipaloffice"];
-ALIVE_civilianSettlementBuildingTypes = ALIVE_civilianSettlementBuildingTypes + ["church","hospital","amphitheater","chapel_v","households","hospital","houseblock","generalstore","house"];
-ALIVE_civilianPowerBuildingTypes = ALIVE_civilianPowerBuildingTypes + ["dp_main","spp_t","pec_","powerstation","trafostanica"];
-ALIVE_civilianCommsBuildingTypes = ALIVE_civilianCommsBuildingTypes + ["communication_f","ttowerbig_","illuminanttower","vysilac_fm","telek","tvtower"];
-ALIVE_civilianMarineBuildingTypes = ALIVE_civilianMarineBuildingTypes + ["crane","lighthouse","nav_pier","pier_","crane","lighthouse","nav_pier","pier_","pier"];
-ALIVE_civilianRailBuildingTypes = ALIVE_civilianRailBuildingTypes + ["rail_house","rail_station","rail_platform","rails_bridge","stationhouse"];
-ALIVE_civilianFuelBuildingTypes = ALIVE_civilianFuelBuildingTypes + ["fuelstation","dp_bigtank","fuelstation","expedice","indpipe","komin","ind_stack_big","ind_tankbig","fuel_tank_big"];
-ALIVE_civilianConstructionBuildingTypes = ALIVE_civilianConstructionBuildingTypes + ["wip","bridge_highway","ind_mlyn_01","ind_pec_01","wip","sawmillpen","workshop"];
+
+_worldName = tolower(worldName);
+
+["SETTING UP MAP: woodland_acr (ALiVE 3 index v3.1, 2026-10-05)"] call ALiVE_fnc_dump;
+
+ALiVE_indexVersion = ["3.1", "2026-10-05", "web", true];
+
+ALIVE_Indexing_Blacklist = [];
+ALIVE_militaryBuildingTypes = [];
+ALIVE_militaryParkingBuildingTypes = [];
+ALIVE_militarySupplyBuildingTypes = [];
+ALIVE_militaryHQBuildingTypes = [];
+ALIVE_militaryFieldworkBuildingTypes = [];
+ALIVE_airBuildingTypes = [];
+ALIVE_militaryAirBuildingTypes = [];
+ALIVE_civilianAirBuildingTypes = [];
+ALiVE_HeliBuildingTypes = [];
+ALIVE_militaryHeliBuildingTypes = [];
+ALIVE_civilianHeliBuildingTypes = [];
+ALIVE_civilianSettlementBuildingTypes = [];
+ALIVE_civilianHQBuildingTypes = [];
+ALIVE_civilianPopulationBuildingTypes = [];
+ALIVE_civilianPowerBuildingTypes = [];
+ALIVE_civilianCommsBuildingTypes = [];
+ALIVE_civilianMarineBuildingTypes = [];
+ALIVE_civilianRailBuildingTypes = [];
+ALIVE_civilianFuelBuildingTypes = [];
+ALIVE_civilianConstructionBuildingTypes = [];
+
+ALiVE_mapCompositionType = "Woodland";
+
+ if (tolower(_worldName) == "woodland_acr") then {
+    ALIVE_Indexing_Blacklist = ALIVE_Indexing_Blacklist + [
+        "ca\buildings2\a_crane_02\crane_rails.p3d",
+        "ca\buildings2\a_crane_02\crane_rails_end.p3d",
+        "ca\buildings2\ind_shed_02\ind_shed_02_end.p3d",
+        "ca\buildings2\ind_shed_02\ind_shed_02_main.p3d",
+        "ca\buildings2\ind_tank\ind_tanksmall.p3d",
+        "ca\buildings2\misc_waterstation\misc_waterstation.p3d",
+        "ca\buildings2\shed_small\shed_m02.p3d",
+        "ca\buildings\misc\plot_rust_vrat_o.p3d",
+        "ca\structures\ind_quarry\ind_hammermill.p3d",
+        "ca\structures\nav_pier\nav_pier_c_270.p3d",
+        "ca\structures\nav_pier\nav_pier_c_r10.p3d",
+        "ca\structures\nav_pier\nav_pier_c_r30.p3d",
+        "ca\structures\rail\rail_platform\rail_platform_cross.p3d",
+        "ca\structures\rail\rail_platform\rail_platform_segment.p3d",
+        "ca\structures\rail\rail_platform\rail_platform_start.p3d"
+    ];
+
+    ALIVE_militaryBuildingTypes = ALIVE_militaryBuildingTypes + [
+        "ca\buildings\hangar_2.p3d",
+        "ca\buildings\hlidac_budka.p3d",
+        "ca\buildings\repair_center.p3d",
+        "ca\structures\mil\mil_guardhouse.p3d"
+    ];
+
+    ALIVE_militaryParkingBuildingTypes = ALIVE_militaryParkingBuildingTypes + [
+        "ca\buildings\hangar_2.p3d"
+    ];
+
+    ALIVE_militarySupplyBuildingTypes = ALIVE_militarySupplyBuildingTypes + [
+        "ca\buildings\hangar_2.p3d"
+    ];
+
+    ALIVE_civilianSettlementBuildingTypes = ALIVE_civilianSettlementBuildingTypes + [
+        "ca\buildings2\a_generalstore_01\a_generalstore_01a.p3d",
+        "ca\buildings2\barn_metal\barn_metal.p3d",
+        "ca\buildings2\farm_cowshed\farm_cowshed_a.p3d",
+        "ca\buildings2\farm_cowshed\farm_cowshed_b.p3d",
+        "ca\buildings2\farm_cowshed\farm_cowshed_c.p3d",
+        "ca\buildings2\farm_wtower\farm_wtower.p3d",
+        "ca\buildings2\houseblocks\houseblock_a\houseblock_a1.p3d",
+        "ca\buildings2\houseblocks\houseblock_a\houseblock_a1_1.p3d",
+        "ca\buildings2\houseblocks\houseblock_a\houseblock_a2.p3d",
+        "ca\buildings2\houseblocks\houseblock_a\houseblock_a2_1.p3d",
+        "ca\buildings2\houseblocks\houseblock_a\houseblock_a3.p3d",
+        "ca\buildings2\houseblocks\houseblock_b\houseblock_b1.p3d",
+        "ca\buildings2\houseblocks\houseblock_b\houseblock_b2.p3d",
+        "ca\buildings2\houseblocks\houseblock_b\houseblock_b3.p3d",
+        "ca\buildings2\houseblocks\houseblock_b\houseblock_b4.p3d",
+        "ca\buildings2\houseblocks\houseblock_b\houseblock_b5.p3d",
+        "ca\buildings2\houseblocks\houseblock_b\houseblock_b6.p3d",
+        "ca\buildings2\houseblocks\houseblock_c\houseblock_c2.p3d",
+        "ca\buildings2\houseblocks\houseblock_c\houseblock_c3.p3d",
+        "ca\buildings2\houseblocks\houseblock_c\houseblock_c4.p3d",
+        "ca\buildings2\houseblocks\houseblock_c\houseblock_c5.p3d",
+        "ca\buildings2\houseblocks\houseblock_d\houseblock_d1.p3d",
+        "ca\buildings2\houseblocks\houseblock_d\houseblock_d2.p3d",
+        "ca\buildings2\ind_cementworks\ind_pec\ind_pec_03a.p3d",
+        "ca\buildings2\ind_garage01\ind_garage01.p3d",
+        "ca\buildings2\ind_shed_01\ind_shed_01_end.p3d",
+        "ca\buildings2\ind_shed_01\ind_shed_01_main.p3d",
+        "ca\buildings2\ind_workshop01\ind_workshop01_01.p3d",
+        "ca\buildings2\ind_workshop01\ind_workshop01_02.p3d",
+        "ca\buildings2\ind_workshop01\ind_workshop01_03.p3d",
+        "ca\buildings2\ind_workshop01\ind_workshop01_04.p3d",
+        "ca\buildings2\ind_workshop01\ind_workshop01_l.p3d",
+        "ca\buildings2\shed_small\shed_m01.p3d",
+        "ca\buildings2\shed_small\shed_m03.p3d",
+        "ca\buildings2\shed_small\shed_w01.p3d",
+        "ca\buildings2\shed_small\shed_w02.p3d",
+        "ca\buildings2\shed_small\shed_w03.p3d",
+        "ca\buildings\hut06.p3d",
+        "ca\buildings\komin.p3d",
+        "ca\buildings\kulna.p3d",
+        "ca\buildings\sara_domek_zluty.p3d",
+        "ca\structures\barn_w\barn_w_01.p3d",
+        "ca\structures\barn_w\barn_w_02.p3d",
+        "ca\structures\house\a_fuelstation\a_fuelstation_build.p3d",
+        "ca\structures\house\a_hospital\a_hospital.p3d",
+        "ca\structures\house\a_office01\a_office01.p3d",
+        "ca\structures\house\a_office02\a_office02.p3d",
+        "ca\structures\house\a_stationhouse\a_stationhouse.p3d",
+        "ca\structures\house\housev2\housev2_01a.p3d",
+        "ca\structures\house\housev2\housev2_01b.p3d",
+        "ca\structures\house\housev2\housev2_03.p3d",
+        "ca\structures\house\housev2\housev2_03b.p3d",
+        "ca\structures\house\housev2\housev2_04_interier.p3d",
+        "ca\structures\house\housev2\housev2_05.p3d",
+        "ca\structures\house\housev\housev_1i1.p3d",
+        "ca\structures\house\housev\housev_1i2.p3d",
+        "ca\structures\house\housev\housev_1i3.p3d",
+        "ca\structures\house\housev\housev_1i4.p3d",
+        "ca\structures\house\housev\housev_1l1.p3d",
+        "ca\structures\house\housev\housev_1t.p3d",
+        "ca\structures\house\housev\housev_2i.p3d",
+        "ca\structures\house\housev\housev_2l.p3d",
+        "ca\structures\house\housev\housev_2t1.p3d",
+        "ca\structures\house\housev\housev_2t2.p3d",
+        "ca\structures\house\housev\housev_3i1.p3d",
+        "ca\structures\house\housev\housev_3i2.p3d",
+        "ca\structures\house\housev\housev_3i3.p3d",
+        "ca\structures\house\housev\housev_3i4.p3d",
+        "ca\structures\ind\ind_stack_big.p3d",
+        "ca\structures\ind_quarry\ind_quarry.p3d",
+        "ca\structures\shed\shed_small\shed_w4.p3d",
+        "ca\structures\shed_ind\shed_ind02.p3d"
+    ];
+
+    ALIVE_civilianHQBuildingTypes = ALIVE_civilianHQBuildingTypes + [
+        "ca\structures\house\a_hospital\a_hospital.p3d",
+        "ca\structures\house\a_office01\a_office01.p3d",
+        "ca\structures\house\a_stationhouse\a_stationhouse.p3d"
+    ];
+
+    ALIVE_civilianPopulationBuildingTypes = ALIVE_civilianPopulationBuildingTypes + [
+        "ca\buildings2\a_generalstore_01\a_generalstore_01a.p3d",
+        "ca\buildings2\barn_metal\barn_metal.p3d",
+        "ca\buildings2\farm_cowshed\farm_cowshed_a.p3d",
+        "ca\buildings2\farm_cowshed\farm_cowshed_b.p3d",
+        "ca\buildings2\farm_cowshed\farm_cowshed_c.p3d",
+        "ca\buildings2\ind_workshop01\ind_workshop01_01.p3d",
+        "ca\buildings2\ind_workshop01\ind_workshop01_l.p3d",
+        "ca\buildings\sara_domek_zluty.p3d",
+        "ca\structures\barn_w\barn_w_01.p3d",
+        "ca\structures\barn_w\barn_w_02.p3d",
+        "ca\structures\house\a_fuelstation\a_fuelstation_build.p3d",
+        "ca\structures\house\a_hospital\a_hospital.p3d",
+        "ca\structures\house\a_office01\a_office01.p3d",
+        "ca\structures\house\a_stationhouse\a_stationhouse.p3d",
+        "ca\structures\house\housev2\housev2_04_interier.p3d",
+        "ca\structures\house\housev\housev_1i3.p3d",
+        "ca\structures\house\housev\housev_1i4.p3d",
+        "ca\structures\house\housev\housev_2l.p3d",
+        "ca\structures\house\housev\housev_2t2.p3d"
+    ];
+
+    ALIVE_civilianPowerBuildingTypes = ALIVE_civilianPowerBuildingTypes + [
+        "ca\buildings2\misc_powerstation\misc_powerstation.p3d",
+        "ca\buildings\trafostanica_velka.p3d",
+        "ca\buildings\trafostanica_velka_draty.p3d"
+    ];
+
+    ALIVE_civilianCommsBuildingTypes = ALIVE_civilianCommsBuildingTypes + [
+        "ca\buildings\telek1.p3d",
+        "ca\buildings\vysilac_fm.p3d"
+    ];
+
+    ALIVE_civilianMarineBuildingTypes = ALIVE_civilianMarineBuildingTypes + [
+        "ca\buildings2\a_crane_02\a_crane_02a.p3d",
+        "ca\buildings2\a_crane_02\a_crane_02b.p3d",
+        "ca\structures\nav_boathouse\nav_boathouse.p3d",
+        "ca\structures\nav_boathouse\nav_boathouse_piert.p3d",
+        "ca\structures\nav_pier\nav_pier_c.p3d",
+        "ca\structures\nav_pier\nav_pier_c2_end.p3d",
+        "ca\structures\nav_pier\nav_pier_c_90.p3d",
+        "ca\structures\nav_pier\nav_pier_c_t20.p3d"
+    ];
+
+    ALIVE_civilianRailBuildingTypes = ALIVE_civilianRailBuildingTypes + [
+        "ca\buildings2\rail_house_01\rail_house_01.p3d",
+        "ca\structures\rail\rail_station_big\rail_station_big.p3d",
+        "ca\structures\rail\railway\rails_bridge_40.p3d"
+    ];
+
+    ALIVE_civilianFuelBuildingTypes = ALIVE_civilianFuelBuildingTypes + [
+        "ca\buildings2\ind_cementworks\ind_expedice\ind_expedice_3.p3d",
+        "ca\buildings2\ind_tank\ind_tankbig.p3d",
+        "ca\structures\house\a_fuelstation\a_fuelstation_build.p3d",
+        "ca\structures\house\a_fuelstation\a_fuelstation_feed.p3d",
+        "ca\structures\house\a_fuelstation\a_fuelstation_shed.p3d"
+    ];
+
+    ALIVE_civilianConstructionBuildingTypes = ALIVE_civilianConstructionBuildingTypes + [
+        "ca\buildings2\ind_cementworks\ind_malykomin\ind_malykomin.p3d"
+    ];
+
 };
