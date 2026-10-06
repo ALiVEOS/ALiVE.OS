@@ -1,3 +1,4 @@
+// ALiVE 3 index v3.1, made 2026-10-06 by the ALiVE web indexer, building positions measured
 /*=================*/
 /*opening pbo scargard.pbo
 ///////<HEADER>///////
@@ -83,6 +84,20 @@ wrp_objects=
 		[
 			[311322,[2267,1594]],
 			[135793,[4001,1889]]
+		]
+	],
+	["a3\structures_f_heli\ind\machines\waterpump_01_f.p3d",
+		[
+			[130720,[2806,1803]],
+			[130704,[3160,3326]],
+			[135792,[4048,1879]],
+			[299185,[2953,3937]],
+			[299186,[2956,3935]],
+			[14650,[2998,4526]],
+			[74504,[3698,4581]],
+			[310779,[3279,4715]],
+			[130570,[3946,4120]],
+			[76732,[4817,5241]]
 		]
 	],
 	["a3\structures_f\households\house_big01\i_house_big_01_v1_f.p3d",
@@ -372,6 +387,18 @@ wrp_objects=
 			[310491,[3252,4666]]
 		]
 	],
+	["a3\structures_f\ind\solarpowerplant\solarpanel_1_f.p3d",
+		[
+			[296540,[2687,4379]],
+			[296555,[2761,4341]],
+			[298712,[3071,3957]],
+			[297512,[2839,4192]],
+			[299108,[3125,4324]],
+			[299109,[3116,4339]],
+			[299061,[3163,4435]],
+			[298979,[3068,4572]]
+		]
+	],
 	["a3\structures_f\households\house_small01\i_house_small_01_v2_f.p3d",
 		[
 			[11061,[2728,4418]],
@@ -390,6 +417,11 @@ wrp_objects=
 	["a3\structures_f\households\stone_small\d_stone_housesmall_v1_f.p3d",
 		[
 			[11422,[2728,4469]]
+		]
+	],
+	["a3\structures_f\households\house_small02\d_house_small_02_v1_f.p3d",
+		[
+			[11423,[2726,4479]]
 		]
 	],
 	["a3\structures_f\households\slum\slum_house03_f.p3d",
@@ -455,6 +487,12 @@ wrp_objects=
 			[11273,[3137,4385]]
 		]
 	],
+	["a3\structures_f\ind\solarpowerplant\solarpanel_3_f.p3d",
+		[
+			[299128,[3159,4388]],
+			[299099,[3155,4396]]
+		]
+	],
 	["a3\structures_f_heli\ind\cargo\cargo10_brick_red_f.p3d",
 		[
 			[299144,[3199,4369]],
@@ -514,6 +552,11 @@ wrp_objects=
 			[11164,[2982,4552]]
 		]
 	],
+	["a3\structures_f\ind\fuelstation_small\fs_roof_f.p3d",
+		[
+			[11168,[2983,4550]]
+		]
+	],
 	["a3\structures_f\ind\shed\i_shed_ind_f.p3d",
 		[
 			[11187,[2954,4512]],
@@ -524,6 +567,17 @@ wrp_objects=
 	["a3\boat_f_gamma\boat_civil_04\boat_civil_04_f.p3d",
 		[
 			[11136,[2926,4619]]
+		]
+	],
+	["a3\structures_f_heli\items\airport\portablehelipadlight_01_f.p3d",
+		[
+			[14767,[2929,4655]],
+			[14774,[2918,4647]],
+			[14775,[2925,4649]],
+			[14776,[2927,4639]],
+			[14777,[2927,4635]],
+			[14778,[2933,4644]],
+			[14779,[2938,4643]]
 		]
 	],
 	["a3\structures_f\dominants\hospital\hospital_main_f.p3d",
@@ -559,6 +613,12 @@ wrp_objects=
 			[310782,[3294,4729]],
 			[310783,[3294,4729]],
 			[310784,[3294,4728]]
+		]
+	],
+	["a3\structures_f_heli\ind\machines\pressurewasher_01_f.p3d",
+		[
+			[311146,[3163,4572]],
+			[310880,[3254,4671]]
 		]
 	],
 	["a3\structures_f\ind\dieselpowerplant\dp_transformer_f.p3d",
