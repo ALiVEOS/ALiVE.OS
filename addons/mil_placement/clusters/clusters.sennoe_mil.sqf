@@ -1,3 +1,4 @@
+// ALiVE 3 index v3.1, made 2026-10-06 by the ALiVE web indexer, building positions measured
 #include "\x\alive\addons\civ_placement\script_component.hpp"
 ALIVE_clusterBuild = [CLUSTERBUILD];
 ALIVE_clustersMil = [] call ALIVE_fnc_hashCreate;
@@ -17,12 +18,10 @@ _nodes set [count _nodes, ["1113",[144.032,1295.43,-0.000305176]]];
 _cluster = [nil, "create"] call ALIVE_fnc_cluster;
 _nodes = [];
 _nodes set [count _nodes, ["601",[5090.49,6326.65,-0.175171]]];
-_nodes set [count _nodes, ["613",[5047.67,6275.23,-1.50333]]];
-_nodes set [count _nodes, ["612",[5065.18,6258.52,-1.49976]]];
 [_cluster,"nodes",_nodes] call ALIVE_fnc_hashSet;
 [_cluster, "state", _cluster] call ALIVE_fnc_cluster;
 [_cluster,"clusterID","c_1"] call ALIVE_fnc_hashSet;
-[_cluster,"center",[5065.46,6296.07]] call ALIVE_fnc_hashSet;
+[_cluster,"center",[5090.49,6326.65]] call ALIVE_fnc_hashSet;
 [_cluster,"size",150] call ALIVE_fnc_hashSet;
 [_cluster,"type","MIL"] call ALIVE_fnc_hashSet;
 [_cluster,"priority",0] call ALIVE_fnc_hashSet;
