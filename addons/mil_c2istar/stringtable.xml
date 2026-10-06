@@ -1854,6 +1854,12 @@
     <Portuguese>Por quanto tempo, em segundos, um VIP em pânico pode permanecer sem controle antes que a tarefa de Escolta de VIP seja marcada como falha.</Portuguese>
     <Russian>Как долго, в секундах, паникующий VIP может оставаться без управления, прежде чем задача сопровождения VIP будет отмечена как проваленная.</Russian>
 </Key>
+<Key ID="STR_ALIVE_C2ISTAR_CSAR_TIMEOUT">
+    <English>Pilot Rescue Timeout (s):</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_CSAR_TIMEOUT_COMMENT">
+    <English>How long, in seconds, a downed pilot waits to be rescued. When it runs out the rescue task is cancelled and the pilot is removed. Never less than 300.</English>
+</Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_TASK_AO_RADIUS">
     <English>Task AO Radius (m):</English>

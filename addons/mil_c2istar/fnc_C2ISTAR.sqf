@@ -77,6 +77,10 @@ Peer Reviewed:
 // different one. Two gives something else at least twice before the same kind can return.
 #define DEFAULT_ORDER_REPEAT_BLOCK 2
 #define DEFAULT_VIP_PANIC_TIMEOUT 180
+// Seconds a downed pilot waits for rescue before the task, the pilot and his
+// strobe are cleared away. Never less than five minutes.
+#define DEFAULT_CSAR_TIMEOUT 1800
+#define MIN_CSAR_TIMEOUT 300
 #define DEFAULT_TASK_AO_RADIUS 0
 #define DEFAULT_FILTER_ENEMY_FACTIONS true
 #define DEFAULT_CIVIC_STATE_ENABLED false
@@ -868,6 +872,20 @@ switch(_operation) do {
         // Module attribute system may store value as string — coerce to scalar
         if (typeName _result == "STRING") then { _result = parseNumber _result; };
     };
+    case "csarTimeout": {
+        if (typeName _args == "STRING") then {
+            _args = parseNumber _args;
+        };
+        if (typeName _args == "SCALAR") then {
+            _args = (_args max MIN_CSAR_TIMEOUT);
+            _logic setVariable ["csarTimeout", _args];
+        };
+
+        // A module saved before this attribute existed has no value at all.
+        _result = _logic getVariable ["csarTimeout", DEFAULT_CSAR_TIMEOUT];
+        if (typeName _result == "STRING") then { _result = parseNumber _result; };
+        if !(_result isEqualType 0) then { _result = DEFAULT_CSAR_TIMEOUT; };
+    };
     case "taskAoRadius": {
         if (typeName _args == "STRING") then {
             _args = parseNumber _args;
@@ -1161,6 +1179,7 @@ if (isServer) then {
 
         private _taskMinDistance = [_logic, "taskMinDistance"] call MAINCLASS;
         private _vipPanicTimeout = [_logic, "vipPanicTimeout"] call MAINCLASS;
+        private _csarTimeout = [_logic, "csarTimeout"] call MAINCLASS;
         private _filterEnemyFactions = [_logic, "filterEnemyFactions"] call MAINCLASS;
         private _civicStateEnabled = [_logic, "civicStateEnabled"] call MAINCLASS;
         private _civicTrustSuccessMultiplier = [_logic, "civicTrustSuccessMultiplier"] call MAINCLASS;
@@ -1224,6 +1243,7 @@ if (isServer) then {
 
         missionNamespace setVariable ["ALIVE_taskMinDistance", (_taskMinDistance max 0), true];
         missionNamespace setVariable ["ALIVE_taskVipPanicTimeout", (_vipPanicTimeout max 30), true];
+        missionNamespace setVariable ["ALIVE_taskCsarTimeout", (_csarTimeout max MIN_CSAR_TIMEOUT), true];
         missionNamespace setVariable ["ALIVE_c2istar_filterEnemyFactions", _filterEnemyFactions, true];
         missionNamespace setVariable ["ALIVE_civicStateEnabled", _civicStateEnabled, true];
         missionNamespace setVariable ["ALIVE_civicTrustSuccessMultiplier", (_civicTrustSuccessMultiplier max 0), true];
@@ -1772,13 +1792,15 @@ if (isServer) then {
             // with none present they fail with "No targets found". controltype is
             // broadcast public on the OPCOM module at mission init, so it reads
             // correctly here even though this tablet UI runs client-side.
-            private _hiddenTaskTypes = [];
+            // A rescue cannot be asked for: it only exists once a pilot has
+            // ejected and landed, and C2ISTAR raises it itself when one does.
+            private _hiddenTaskTypes = ["CSAR"];
             private _hasAsymmetricOpcom = false;
             {
                 private _ct = _x getVariable ["controltype", ""];
                 if (_ct isEqualType "" && {(toLower _ct) == "asymmetric"}) exitWith { _hasAsymmetricOpcom = true; };
             } forEach (allMissionObjects "ALiVE_mil_OPCOM");
-            if (!_hasAsymmetricOpcom) then { _hiddenTaskTypes = ["InsurgencyPatrol", "InsurgencyDestroyAssets"]; };
+            if (!_hasAsymmetricOpcom) then { _hiddenTaskTypes append ["InsurgencyPatrol", "InsurgencyDestroyAssets"]; };
 
             if (!isnil "ALIVE_generatedTasks" && {count ALIVE_generatedTasks > 2}) then {
 	            {

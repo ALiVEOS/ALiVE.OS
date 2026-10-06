@@ -367,12 +367,15 @@ Runs spawned to match the other tests, though nothing here needs a tick.
     // reachable is every gate in front of it, which is where the logic lives.
     private _tp = [nil, "create"] call ALIVE_fnc_ATOTask;
 
+    // A rescue is no longer raised here at all. C2ISTAR raises one itself when
+    // a pilot is seen to eject and land alive, so the operation only refuses.
+    ["a rescue is never raised by the air commander",
+        ([_tp, "csar", ["t1", "B_Heli_Attack_01_F", [100,100,0]]] call ALIVE_fnc_ATOTask)
+            isEqualTo ["denied", "raised by ejection"]] call _fnc_check;
+
     // Off by default, deliberately: a mission should be able to run air support
     // without generating anybody a task.
-    ["task generation is off until it is asked for",
-        ([_tp, "csar", ["t1", "B_Heli_Attack_01_F", [100,100,0]]] call ALIVE_fnc_ATOTask)
-            isEqualTo ["denied", "task generation off"]] call _fnc_check;
-    ["and a player task is refused for the same reason",
+    ["a player task is refused until task generation is asked for",
         ([_tp, "playerTask", ["SEAD", ["someProfileId"]]] call ALIVE_fnc_ATOTask)
             isEqualTo ["denied", "task generation off"]] call _fnc_check;
 
@@ -381,17 +384,9 @@ Runs spawned to match the other tests, though nothing here needs a tick.
         ([_tp, "generateTasks", false] call ALIVE_fnc_hashGet)
         && {([_tp, "faction", ""] call ALIVE_fnc_hashGet) isEqualTo "BLU_F"}] call _fnc_check;
 
-    // A rescue with no rescuers is not a rescue. C2ISTAR owns the task system,
-    // so without it there is nowhere for one to go, and this is re-asked on
-    // every call because a mission can load it late.
-    private _csarNoC2 = [_tp, "csar", ["t1", "B_Heli_Attack_01_F", [100,100,0]]] call ALIVE_fnc_ATOTask;
-    ["a rescue is refused when there is no task system to carry it",
-        (_csarNoC2 param [1, ""]) in ["no c2istar", "nobody on the side is taking orders"]] call _fnc_check;
-    diag_log format ["  info  rescue without c2istar refused: %1", _csarNoC2];
-
-    ["a rescue with no position is refused rather than pointing at nowhere",
-        (([_tp, "csar", ["t1", "B_Heli_Attack_01_F", []]] call ALIVE_fnc_ATOTask) param [1, ""])
-            in ["no position", "no c2istar"]] call _fnc_check;
+    ["and still refused with task generation on",
+        ([_tp, "csar", ["t1", "B_Heli_Attack_01_F", [100,100,0]]] call ALIVE_fnc_ATOTask)
+            isEqualTo ["denied", "raised by ejection"]] call _fnc_check;
 
     ["a player task with no type is refused",
         ([_tp, "playerTask", ["", ["x"]]] call ALIVE_fnc_ATOTask)

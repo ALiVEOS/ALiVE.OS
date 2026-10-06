@@ -31,3 +31,23 @@ if (hasInterface) then {
         []
     ] call CBA_fnc_addPerFrameHandler;
 };
+
+// ---- Downed pilot watcher (C2ISTAR rescue) --------------------------------
+//
+// Server only. Every 2 s it notes who sits in a plane's crew seat, spots the
+// same men a moment later in an ejection seat or under a canopy, follows them
+// to the ground and raises a rescue task where they land. The body is the
+// "watchTick" operation in tasks/fnc_taskCSAR.sqf; it returns at once while
+// there is no C2ISTAR task handler.
+//
+// This file runs once per C2ISTAR module, so the handler is registered once
+// per mission however many modules are placed.
+if (isServer && {isNil "ALiVE_c2istar_csarWatcher"}) then {
+    ALiVE_c2istar_csarWatcher = [
+        {
+            ["watchTick", "", [], [], false] call ALIVE_fnc_taskCSAR;
+        },
+        2,
+        []
+    ] call CBA_fnc_addPerFrameHandler;
+};

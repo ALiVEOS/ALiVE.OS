@@ -1077,92 +1077,17 @@ switch(_operation) do {
     };
 
     // ---- offering a downed crew as a rescue (M2) ---------------------------
-    // Every gate here is a refusal with a reason rather than a silent no-op, so
-    // a mission that never sees a rescue can be told which gate closed.
+    // Retired. A rescue is now raised by C2ISTAR itself, and only when a pilot
+    // is actually seen to eject and land alive (mil_c2istar, the "watchTick"
+    // operation in tasks/fnc_taskCSAR.sqf). Raising one here, when a hull was
+    // written off, offered rescues for crews that had died in their seats and
+    // put the pilot down somewhere he never was.
     //
-    // There is no crew profile to find any more. An adopted airframe is not a
-    // sys_profile profile (decision 6), so the old module's branch that read the
-    // crew's profile, pinned it with a waypoint and skipped the chance roll on
-    // the grounds they were demonstrably alive has nothing left to read. Every
-    // rescue now goes through the chance roll.
+    // The operation stays, refusing with a reason, so markLost in the kernel and
+    // requestCSARPlayerTask keep working unchanged. This module's chance of
+    // rescue still counts: the watcher rolls it for this module's own aircraft.
     case "csar": {
-        _args params [["_tail","",[""]], ["_class","",[""]], ["_pos",[],[[]]]];
-
-        if !([_logic, "generateTasks", false] call ALIVE_fnc_hashGet) exitWith {
-            _result = ["denied", "task generation off"];
-        };
-        // Re-checked per call rather than cached at start-up: a mission can
-        // load C2ISTAR late, and the old module decided this once and was then
-        // wrong for the rest of the mission.
-        if !(["ALiVE_mil_c2istar"] call ALiVE_fnc_isModuleAvailable) exitWith {
-            _result = ["denied", "no c2istar"];
-        };
-        if (count _pos < 2) exitWith { _result = ["denied", "no position"] };
-
-        private _players = [_logic, "sidePlayers"] call MAINCLASS;
-        if ((_players param [0, []]) isEqualTo []) exitWith {
-            _result = ["denied", "nobody on the side is taking orders"];
-        };
-
-        private _side = [_logic, "side", ""] call ALIVE_fnc_hashGet;
-        private _faction = [_logic, "faction", ""] call ALIVE_fnc_hashGet;
-
-        // Rescue where the wreck is, if the wreck is somewhere anybody can
-        // reach. A hull that went into the sea leaves its last known position
-        // as the only thing worth pointing at.
-        //
-        // The wreck itself is left where it fell, burning, for the garbage
-        // collector to clear later like any other wreck. It used to be deleted
-        // here, in the same second the aircraft was written off, so a player
-        // who watched it come down saw it vanish; and it went even when the
-        // checks below then decided there would be no rescue at all.
-        private _destination = +_pos;
-        _destination set [2, 0];
-        if !(_class isEqualTo "") then {
-            private _wrecks = (entities _class) select { !alive _x };
-            if (count _wrecks > 0) then {
-                private _sorted = [_wrecks, [_destination], {_input0 distance _x}, "ASCEND"] call ALiVE_fnc_SortBy;
-                private _wreck = _sorted select 0;
-                if !(surfaceIsWater (position _wreck)) then {
-                    _destination = position _wreck;
-                    _destination set [2, 0];
-                };
-            };
-        };
-
-        // Nothing to be rescued FROM is not a rescue. Kept from the old module:
-        // a crash on friendly ground with nobody near it is a recovery the side
-        // can manage without being asked.
-        private _enemyNear = [_destination, _side, 3000, true] call ALiVE_fnc_isEnemyNear;
-        private _enemyFaction = [_destination, 3000] call ALiVE_fnc_getDominantFaction;
-        private _enemyGround = false;
-        if (!isNil "_enemyFaction" && {!(_enemyFaction isEqualTo "")}) then {
-            _enemyGround = (([_side] call ALIVE_fnc_sideTextToObject) getFriend (_enemyFaction call ALIVE_fnc_factionSide)) < 0.6;
-        } else {
-            _enemyFaction = "OPF_F";
-        };
-        if (!_enemyNear && {!_enemyGround}) exitWith {
-            _result = ["denied", "crew is not in danger"];
-        };
-
-        if (random 1 >= ([_logic, "chanceOfRescue", 0.5] call ALIVE_fnc_hashGet)) exitWith {
-            _result = ["denied", "no rescue this time"];
-        };
-
-        // Class at index 11, where another task carries its targets, and nothing
-        // at 12. The old module appended the crew's profile id there; an adopted
-        // airframe has no profile, so there is no id to append and anything
-        // reading index 12 would be reading a stale value.
-        private _taskData = [
-            [_logic, "nextTaskId", _faction] call MAINCLASS,
-            "ATO", _side, _faction, "CSAR", "NULL",
-            _destination, _players, _enemyFaction, "Y", "Side", _class
-        ];
-
-        private _event = ["TASK_GENERATE", _taskData, "ATO"] call ALIVE_fnc_event;
-        [ALIVE_eventLog, "addEvent", _event] call ALIVE_fnc_eventLog;
-        ["ALIVE_fnc_ATOTask - rescue offered for %1 (%2) at %3", _tail, _class, _destination] call ALiVE_fnc_dump;
-        _result = ["raised", _taskData select 0, "CSAR"];
+        _result = ["denied", "raised by ejection"];
     };
 
     // ---- moving an airframe for its own sake -------------------------------
