@@ -331,7 +331,8 @@ if (!isNil "ALiVE_mapCompositionType") then {
     if !(_category isEqualTo []) then {
         _windowStart=0;
         // Split into chunks that won't be too large to pass to the extension
-        while {_windowStart < (count _category - 1)} do {
+        // < count, not < count - 1: a list of exactly 1 model, or a last chunk of 1 (61, 121, ...), was never written
+        while {_windowStart < count _category} do {
             _partialArray = _category select [_windowStart,_windowLength min (count _category - _windowStart)];
             ['staticData~%1|%2 = %2 + %3;',worldName,_array, _partialArray] call ALiVE_fnc_dump;
             _result = "ALiVEClient" callExtension format['staticData~%1|%2 = %2 + %3;',worldName,_array, _partialArray];
