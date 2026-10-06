@@ -2,4 +2,19 @@
 <Project name="Arma3">
 <Package name="ALiVE">
 <Container name="STR_DN">
+<Key ID="STR_ALIVE_INDEX_TERRAIN_MENU">
+    <English>ALiVE</English>
+</Key>
+<Key ID="STR_ALIVE_INDEX_TERRAIN">
+    <English>Index this terrain</English>
+</Key>
+<Key ID="STR_ALIVE_INDEX_TERRAIN_REINDEX">
+    <English>Re-index this terrain</English>
+</Key>
+<Key ID="STR_ALIVE_INDEX_TERRAIN_WORKSHOP_ONLY">
+    <English>Index this terrain (Workshop terrains only)</English>
+</Key>
+<Key ID="STR_ALIVE_INDEX_TERRAIN_DONE">
+    <English>Index this terrain (already indexed, v%1)</English>
+</Key>
 </Container></Package></Project>

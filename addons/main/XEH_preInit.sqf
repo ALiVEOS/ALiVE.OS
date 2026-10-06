@@ -279,6 +279,8 @@ if (is3DEN) then {
     if (isNil "ALIVE_fnc_dump") then { ALIVE_fnc_dump = compile preprocessFileLineNumbers "\x\alive\addons\x_lib\functions\logging\fnc_dump.sqf"; };
     if (isNil "ALIVE_fnc_assessIndexViability") then { ALIVE_fnc_assessIndexViability = compile preprocessFileLineNumbers "\x\alive\addons\fnc_analysis\fnc_assessIndexViability.sqf"; };
     if (isNil "ALIVE_fnc_indexViabilityEdenCheck") then { ALIVE_fnc_indexViabilityEdenCheck = compile preprocessFileLineNumbers "\x\alive\addons\fnc_analysis\fnc_indexViabilityEdenCheck.sqf"; };
+    // "Index this terrain" in the editor's top menu. Needs only dump (above).
+    if (isNil "ALIVE_fnc_indexTerrainMenu") then { ALIVE_fnc_indexTerrainMenu = compile preprocessFileLineNumbers "\x\alive\addons\fnc_analysis\fnc_indexTerrainMenu.sqf"; };
 
     // #887 artillery-donor dropdown (FactionChoice "artilleryOnly" flag):
     // the Eden load handler runs the isArtillery chain to keep only
@@ -548,5 +550,33 @@ if (is3DEN) then {
         [] call ALIVE_fnc_indexViabilityEdenCheck;
     };
 
-    ["ALiVE 3DEN: faction-sync + compiler-sync validators registered (OnEntityAttributeChanged + OnConnectingEnd + OnMissionPreview); viability check spawned (latched on worldName)"] call ALiVE_fnc_dump;
+    // "Index this terrain" in the editor's top menu. Each time the editor
+    // display is built (launch auto-restore, a terrain switch, coming back
+    // from preview) the entry is back at its greyed config default, and no
+    // one editor event covers all of those. So, like the preset shortcut,
+    // this waits for the display, sets the entry up, then waits for the
+    // display to go, a preview to start or the terrain to change, and
+    // loops. uiSleep because mission time does not move in the editor.
+    //
+    // preInit re-fires on mission load, so the loop's handle is kept in
+    // uiNamespace (missionNamespace does not survive in the editor) and
+    // another loop only starts if that one has ended.
+    private _menuLoop = uiNamespace getVariable ["ALiVE_indexTerrainMenuLoop", scriptNull];
+    if (isNull _menuLoop || {scriptDone _menuLoop}) then {
+        uiNamespace setVariable ["ALiVE_indexTerrainMenuLoop", [] spawn {
+            while {true} do {
+                waitUntil { uiSleep 1; !isNull (findDisplay 313) && {worldName != ""} && {!is3DENPreview} };
+                uiSleep 2;
+                private _eden = findDisplay 313;
+                private _world = worldName;
+                [] call ALIVE_fnc_indexTerrainMenu;
+                waitUntil {
+                    uiSleep 1;
+                    is3DENPreview || {!((findDisplay 313) isEqualTo _eden)} || {worldName != _world}
+                };
+            };
+        }];
+    };
+
+    ["ALiVE 3DEN: faction-sync + compiler-sync validators registered (OnEntityAttributeChanged + OnConnectingEnd + OnMissionPreview); viability check spawned (latched on worldName); index terrain menu loop running"] call ALiVE_fnc_dump;
 };

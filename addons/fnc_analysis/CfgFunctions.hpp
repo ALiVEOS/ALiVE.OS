@@ -151,6 +151,11 @@ class cfgFunctions {
                 file = "\x\alive\addons\fnc_analysis\fnc_indexViabilityEdenCheck.sqf";
                 RECOMPILE;
             };
+            class indexTerrainMenu {
+                description = "indexTerrainMenu";
+                file = "\x\alive\addons\fnc_analysis\fnc_indexTerrainMenu.sqf";
+                RECOMPILE;
+            };
             class sectorDataSort {
                 description = "sectorDataSort";
                 file = "\x\alive\addons\fnc_analysis\fnc_sectorDataSort.sqf";
