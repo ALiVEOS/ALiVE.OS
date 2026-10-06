@@ -91,6 +91,7 @@ class alive_indexing_list
                 "- Allow ambient vehicles to spawn here",
                 "- Allow ambient supplies to spawn here",
                 "- Allow this building to be used as an HQ",
+                "- Fieldworks soldiers can stand in",
                 "Aircraft (Fixed Wing) Buildings",
                 "- Primarily used by Military aircraft",
                 "- Used by Civilian aircraft only",
@@ -107,7 +108,7 @@ class alive_indexing_list
                 "Civilian - Fuel",
                 "Civilian - Construction"
             };
-            rows = 20;
+            rows = 21;
             columns = 1;
             //rowHeight = 1.1 * GUI_GRID_CENTER_H; // Row height
             //itemSpacing = 0; // Height of empty space between items
