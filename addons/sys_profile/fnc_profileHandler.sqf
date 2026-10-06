@@ -1189,6 +1189,54 @@ switch(_operation) do {
                     _aiBehaviour = [_profile, "aiBehaviour", "AWARE"] call ALIVE_fnc_hashGet;
                     [_exportProfile, "aiBehaviour", _aiBehaviour] call ALIVE_fnc_hashSet;
 
+                    // The route, so a reloaded group carries on with it rather than standing still (#756).
+                    // Each waypoint is saved without what cannot outlive the session: a statement names the
+                    // commander's state machine by a handle that means nothing after a restart, and its quotes
+                    // break a Cloud save. The wander ambient movement lays is left out, as despawn leaves it.
+                    // A Cloud save keeps one value type per key name and the profile's own "type" is a number,
+                    // so the waypoint type travels as "waypointType". isCycling is worked out again on load.
+                    private _exportWaypoint = {
+                        params ["_waypoint"];
+                        private _statements = [_waypoint, "statements", ""] call ALIVE_fnc_hashGet;
+                        if (_statements isEqualType [] && {count _statements > 1} && {(_statements select 1) isEqualTo "_disableSimulation = true;"}) exitWith {[]};
+                        if ((([_waypoint, "position", [0,0,0]] call ALIVE_fnc_hashGet) select [0,2]) isEqualTo [0,0]) exitWith {[]};
+                        private _copy = [_waypoint] call ALIVE_fnc_hashCopy;
+                        private _waypointType = [_copy, "type", "MOVE"] call ALIVE_fnc_hashGet;
+                        [_copy, "type"] call ALIVE_fnc_hashRem;
+                        [_copy, "waypointType", _waypointType] call ALIVE_fnc_hashSet;
+                        { [_copy, _x, ""] call ALIVE_fnc_hashSet } forEach ["statements", "description", "attachVehicle"];
+                        _copy
+                    };
+
+                    private _exportWaypoints = [];
+                    private _exportWaypointsCompleted = [];
+                    private _exportGroup = _profile select 2 select 13;
+                    if ((_profile select 2 select 1) && {!isNull _exportGroup}) then {
+                        // A spawned group's stored route is the one it spawned with, so read how far it has got,
+                        // in the order despawn uses. Its completed waypoints are among the real ones already.
+                        private _groupWaypoints = waypoints _exportGroup;
+                        private _current = (currentWaypoint _exportGroup) min (count _groupWaypoints);
+                        private _route = _groupWaypoints select [_current];
+                        if ((_groupWaypoints findIf {waypointType _x == "CYCLE"}) >= 0) then {
+                            _route append (_groupWaypoints select [1, (_current - 1) max 0]);
+                        };
+                        {
+                            private _exported = [[_x] call ALIVE_fnc_waypointToProfileWaypoint] call _exportWaypoint;
+                            if (count _exported > 0) then { _exportWaypoints pushBack _exported };
+                        } forEach _route;
+                    } else {
+                        {
+                            private _exported = [_x] call _exportWaypoint;
+                            if (count _exported > 0) then { _exportWaypoints pushBack _exported };
+                        } forEach (_profile select 2 select 16);
+                        {
+                            private _exported = [_x] call _exportWaypoint;
+                            if (count _exported > 0) then { _exportWaypointsCompleted pushBack _exported };
+                        } forEach (_profile select 2 select 17);
+                    };
+                    [_exportProfile, "waypoints", _exportWaypoints] call ALIVE_fnc_hashSet;
+                    [_exportProfile, "waypointsCompleted", _exportWaypointsCompleted] call ALIVE_fnc_hashSet;
+
                 }else{
 
                     _exportProfile = [_profile, [], [
@@ -1347,7 +1395,39 @@ switch(_operation) do {
                         if (_x in (_profile select 1)) then {
                             [_profileEntity, _x, [_profile, _x] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
                         };
-                    } forEach ["_rev", "_id", "hasSimulated", "despawnPosition", "isSPE", "aiBehaviour"];
+                    } forEach ["_rev", "_id", "hasSimulated", "despawnPosition", "isSPE", "aiBehaviour", "waypoints", "waypointsCompleted"];
+
+                    // The route, saved since #756. A Cloud save comes back through JSON, where each value takes
+                    // the type the data dictionary holds for its key name, so a number can come back as a string.
+                    // Put back what the waypoint code reads; a Local save already has the right types. The type
+                    // was saved as "waypointType" and goes back under "type".
+                    private _importRoute = ([_profileEntity, "waypoints", []] call ALIVE_fnc_hashGet) + ([_profileEntity, "waypointsCompleted", []] call ALIVE_fnc_hashGet);
+                    {
+                        private _importWaypoint = _x;
+                        if ("waypointType" in (_importWaypoint select 1)) then {
+                            [_importWaypoint, "type", [_importWaypoint, "waypointType"] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
+                            [_importWaypoint, "waypointType"] call ALIVE_fnc_hashRem;
+                        };
+                        {
+                            private _value = [_importWaypoint, _x] call ALIVE_fnc_hashGet;
+                            if (!isNil "_value" && {_value isEqualType ""}) then { [_importWaypoint, _x, parseNumber _value] call ALIVE_fnc_hashSet };
+                        } forEach ["radius", "completionRadius"];
+                        {
+                            private _value = [_importWaypoint, _x, []] call ALIVE_fnc_hashGet;
+                            if (_value isEqualType [] && {(_value findIf {_x isEqualType ""}) >= 0}) then {
+                                [_importWaypoint, _x, _value apply { if (_x isEqualType "") then { parseNumber _x } else { _x } }] call ALIVE_fnc_hashSet;
+                            };
+                        } forEach ["position", "timeout"];
+                        {
+                            _x params ["_wpKey", "_wpDefault"];
+                            private _value = [_importWaypoint, _wpKey] call ALIVE_fnc_hashGet;
+                            if (isNil "_value" || {!(_value isEqualType "")}) then { [_importWaypoint, _wpKey, _wpDefault] call ALIVE_fnc_hashSet };
+                        } forEach [["type", "MOVE"], ["speed", "UNCHANGED"], ["formation", "NO CHANGE"], ["combatMode", "NO CHANGE"],
+                            ["behaviour", "UNCHANGED"], ["description", ""], ["attachVehicle", ""], ["statements", ""], ["name", ""]];
+                    } forEach _importRoute;
+
+                    // isCycling is never cleared once set, so it is not saved; a route that loops holds a CYCLE.
+                    [_profileEntity, "isCycling", (_importRoute findIf {([_x, "type", ""] call ALIVE_fnc_hashGet) == "CYCLE"}) >= 0] call ALIVE_fnc_hashSet;
 
                     // A pinned post comes back pinned, and held back from the commander as it was.
                     // Only the pin brings busy back: other busy flags belong to jobs a reload ends.
