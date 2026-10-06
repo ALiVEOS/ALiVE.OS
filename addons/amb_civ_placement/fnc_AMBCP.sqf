@@ -475,6 +475,27 @@ switch(_operation) do {
                 };
                 // DEBUG -------------------------------------------------------------------------------------
 
+                // A size filter can leave a small map with no settlement at all: Stratis and Utes have none
+                // of 250 m or more on their v3.1 indexes. Rather than place no civilians, step the filter
+                // down to 160 m, then to any size, inside the same TAOR and blacklist, and say so. A mission
+                // that already finds a settlement never reaches this.
+                if ((([_logic, "objectives"] call MAINCLASS) isEqualTo []) && {_sizeFilter > 0} && {!isNil "ALIVE_clustersCivSettlement"}) then {
+                    private _settlementClusters = ALIVE_clustersCivSettlement select 2;
+                    {
+                        private _relaxed = _x;
+                        private _retry = [_settlementClusters, _relaxed, _priorityFilter] call ALIVE_fnc_copyClusters;
+                        _retry = [_retry, _taor] call ALIVE_fnc_clustersInsideMarker;
+                        _retry = [_retry, _blacklist] call ALIVE_fnc_clustersOutsideMarker;
+                        if !(_retry isEqualTo []) exitWith {
+                            {
+                                [_x, "debug", [_logic, "debug"] call MAINCLASS] call ALIVE_fnc_cluster;
+                            } forEach _retry;
+                            [_logic, "objectives", _retry] call MAINCLASS;
+                            ["AMBCP - No settlement of %1 m or more inside the TAOR, so civilians use the %2 settlements of %3 m or more instead", _sizeFilter, count _retry, _relaxed] call ALiVE_fnc_dumpR;
+                        };
+                    } forEach ([160, 0] select {_x < _sizeFilter});
+                };
+
                 _clusters = [_logic, "objectives"] call MAINCLASS;
 
                 if(count _clusters > 0) then {
