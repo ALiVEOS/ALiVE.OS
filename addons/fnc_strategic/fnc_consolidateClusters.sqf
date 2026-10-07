@@ -9,7 +9,8 @@ Description:
 Consolidate clusters using an x_lib spatial grid with 700 m cells. Candidate
 order, priority, strict distance checks, node order and master-array aliasing
 match the original pass. Reindex merged centers and query remaining ordinals
-again; do not revisit candidates already passed. Input nodes must be stationary.
+again; do not revisit candidates already passed. Geometry is cached lazily
+and invalidated for every alias when nodes change. Input nodes must be stationary.
 
 Parameters:
 Array - Master clusters
@@ -44,6 +45,10 @@ private _liveIDs = [];
 private _entries = [];
 private _aliases = [];
 private _centers = [];
+// [] marks an unread scalar. Read lazily to preserve getter side effects and
+// share values across aliases of the same hash. Nodes changes invalidate size.
+private _sizes = [];
+private _priorities = [];
 private _minX = 0;
 private _minY = 0;
 private _maxX = 0;
@@ -66,6 +71,8 @@ PROFILE_SCOPE(INDEX, "ALiVE_fnc_consolidateClusters: build grid")
     _liveIDs pushBack (if (_x isEqualTo -1) then {-1} else {_forEachIndex});
     _entries pushBack [];
     _aliases pushBack [];
+    _sizes pushBack [];
+    _priorities pushBack [];
     private _center = [];
     if !(_x isEqualTo -1) then {
         _center = [_x, "center"] call ALIVE_fnc_cluster;
@@ -107,7 +114,10 @@ PROFILE_SCOPE(MERGES, "ALiVE_fnc_consolidateClusters: merge pass")
     for "_mergePass" from 0 to (count _slots) do {
         if (!_refresh) exitWith {};
         _refresh = false;
-        private _outCenter = [_out, "center"] call ALIVE_fnc_cluster;
+        private _outCenter = _centers select _outID;
+        // A destroyed alias is still visited by the original master traversal.
+        // Its getter recreates an empty center field; preserve that raw state.
+        if (count _outCenter == 0) then {_outCenter = [_out, "center"] call ALIVE_fnc_cluster;};
         if (count _outCenter > 0) then {
             private _candidates = _grid call ["findInRange", [_outCenter, MAX_CLUSTER_SIZE, true, true, false]];
             if (_instrument) then {
@@ -121,11 +131,29 @@ PROFILE_SCOPE(MERGES, "ALiVE_fnc_consolidateClusters: merge pass")
                 _cursor = _id;
                 private _other = _slots select _id;
                 if !(_out isEqualRef _other) then {
-                    private _otherCenter = [_other, "center"] call ALIVE_fnc_cluster;
+                    private _otherCenter = _centers select _id;
                     if (count _otherCenter > 0) then {
-                        private _max = (([_other, "size"] call ALIVE_fnc_cluster) + ([_out, "size"] call ALIVE_fnc_cluster)) max MIN_CLUSTER_SIZE min MAX_CLUSTER_SIZE;
-                        private _outPriority = [_out, "priority"] call ALIVE_fnc_cluster;
-                        private _otherPriority = [_other, "priority"] call ALIVE_fnc_cluster;
+                        private _otherSize = _sizes select _id;
+                        if (_otherSize isEqualType []) then {
+                            _otherSize = [_other, "size"] call ALIVE_fnc_cluster;
+                            {_sizes set [_x, _otherSize];} forEach (_aliases select _id);
+                        };
+                        private _outSize = _sizes select _outID;
+                        if (_outSize isEqualType []) then {
+                            _outSize = [_out, "size"] call ALIVE_fnc_cluster;
+                            {_sizes set [_x, _outSize];} forEach (_aliases select _outID);
+                        };
+                        private _max = (_otherSize + _outSize) max MIN_CLUSTER_SIZE min MAX_CLUSTER_SIZE;
+                        private _outPriority = _priorities select _outID;
+                        if (_outPriority isEqualType []) then {
+                            _outPriority = [_out, "priority"] call ALIVE_fnc_cluster;
+                            {_priorities set [_x, _outPriority];} forEach (_aliases select _outID);
+                        };
+                        private _otherPriority = _priorities select _id;
+                        if (_otherPriority isEqualType []) then {
+                            _otherPriority = [_other, "priority"] call ALIVE_fnc_cluster;
+                            {_priorities set [_x, _otherPriority];} forEach (_aliases select _id);
+                        };
                         if (_instrument) then {_distanceChecks = _distanceChecks + 1;};
                         if ((_otherCenter distance _outCenter) < _max && {_outPriority >= _otherPriority}) then {
                             private _nodesOut = [_out, "nodes"] call ALIVE_fnc_cluster;
@@ -141,6 +169,9 @@ PROFILE_SCOPE(MERGES, "ALiVE_fnc_consolidateClusters: merge pass")
                                 private _entry = _entries select _x;
                                 if (count _entry > 0) then {_grid call ["remove", _entry];};
                                 _entries set [_x, []];
+                                _centers set [_x, []];
+                                _sizes set [_x, []];
+                                _priorities set [_x, []];
                             } forEach (_aliases select _id);
                             [_other, "destroy"] call ALIVE_fnc_cluster;
                             private _resultIndex = _liveIDs find _id;
@@ -150,6 +181,10 @@ PROFILE_SCOPE(MERGES, "ALiVE_fnc_consolidateClusters: merge pass")
 
                             private _newCenter = [_out, "center"] call ALIVE_fnc_cluster;
                             {
+                                // Preserve the native setter's lazy size state:
+                                // do not fill size until another pair needs it.
+                                _centers set [_x, _newCenter];
+                                _sizes set [_x, []];
                                 private _entry = _entries select _x;
                                 if (count _newCenter > 0) then {
                                     _grid call ["move", [_entry select 0, _newCenter, _x]];
