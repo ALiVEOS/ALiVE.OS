@@ -17,6 +17,7 @@ Returns:
 
 Author:
 SpyderBlack723
+Jman
 ---------------------------------------------------------------------------- */
 
 if (isNil "ALiVE_spacialGridClass") then {
@@ -322,11 +323,48 @@ if (isNil "ALiVE_profileSpacialGridClass") then {
                     };
                 };
 
+                // A profile that "destroy" has emptied ((_x select 2) is []) can still turn up here: a scheduled
+                // caller can be paused between collecting the sectors and reading them while the profile is
+                // unregistered and destroyed. Reading it threw "0 elements provided" here and in
+                // getNearProfiles (#1071), so the check sits in the same expression that reads the profile.
+                private _stale = false;
+
                 if (_preciseDistance) then {
                     if (!_filter2D) then {
-                        _result = _result select {(((_x select 2) select 2) distance _center) <= _radius};
+                        _result = _result select {
+                            if ((_x select 2) isEqualTo []) then {_stale = true; false} else {(((_x select 2) select 2) distance _center) <= _radius}
+                        };
                     } else {
-                        _result = _result select {(((_x select 2) select 2) distance2D _center) <= _radius};
+                        _result = _result select {
+                            if ((_x select 2) isEqualTo []) then {_stale = true; false} else {(((_x select 2) select 2) distance2D _center) <= _radius}
+                        };
+                    };
+                } else {
+                    _result = _result select {
+                        if ((_x select 2) isEqualTo []) then {_stale = true; false} else {true}
+                    };
+                };
+
+                // If one was still stored in a sector, clear it out so it can't come back on every query.
+                // profileSectors is only cleared where it still points at that sector, in case the ID now
+                // belongs to a live profile somewhere else.
+                if (_stale) then {
+                    private _profileSectors = _self get "profileSectors";
+
+                    for "_y" from _minY to _maxY do {
+                        for "_x" from _minX to _maxX do {
+                            private _sectorIndex = _x + (_y * _sectorsInColumn);
+                            private _sector = _sectors select _sectorIndex;
+                            private _staleIDs = (keys _sector) select {((_sector get _x) select 2) isEqualTo []};
+
+                            {
+                                _sector deleteAt _x;
+                                if ((_profileSectors getOrDefault [_x, -1]) == _sectorIndex) then {
+                                    _profileSectors deleteAt _x;
+                                };
+                                ["ALiVE profile grid: removed emptied profile %1 left in sector %2", _x, _sectorIndex] call ALiVE_fnc_dump;
+                            } forEach _staleIDs;
+                        };
                     };
                 };
 
@@ -401,12 +439,21 @@ if (isNil "ALiVE_profileSpacialGridClass") then {
                 };
             };
 
-            private _targets = _candidates select {
-                !((_x select 2) select 1)
-                && {(((_x select 2) select 2) distance2D _center) <= _radius}
-            };
+            // Skip profiles emptied by "destroy" while this query was paused (#1071), and read the ID in the
+            // same pass so a profile can't be emptied between the check and the read.
+            private _result = [];
 
-            private _result = _targets apply {_x select 2 select 4};
+            {
+                private _data = _x select 2;
+
+                if (
+                    _data isNotEqualTo []
+                    && {!(_data select 1)}
+                    && {((_data select 2) distance2D _center) <= _radius}
+                ) then {
+                    _result pushBack (_data select 4);
+                };
+            } forEach _candidates;
 
             PROFILE_SCOPE_END(FINDCOMBATTARGETS)
 
