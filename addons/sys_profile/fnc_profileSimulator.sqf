@@ -347,9 +347,12 @@ if (!_simAttacks) then {
                                         case "CYCLE" : {
                                             _direction = _profilePosition getDir _destination;
                                             _newPosition = _profilePosition getPos [_moveDistance, _direction];
+                                            // the loop starts again: the waypoints done this lap go back on the route and
+                                            // the done list empties. Read and clear them on the profile itself, as the
+                                            // list pushed to below lives only inside that if block.
                                             _handleWPcomplete = {
-                                                _waypoints append _waypointsCompleted;
-                                                _waypointsCompleted = [];
+                                                _waypoints append (_profile select 2 select 17);
+                                                [_profile, "waypointsCompleted", []] call ALIVE_fnc_hashSet;
                                             };
                                         };
                                         default {
