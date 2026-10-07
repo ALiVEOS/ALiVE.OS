@@ -94,31 +94,70 @@ switch (_taskState) do {
         // already be cleared, in which case the area-clear check on
         // the Destroy sub-task succeeds on first tick and the task
         // ends instantly with no fight. Verify before issuing.
+        // Objectives another task already holds are passed over: anything in the claim store,
+        // and anywhere within 500 m of a live capture task of this side. The key this request
+        // reserved itself (the tablet and the commander carry it at index 12) is never passed
+        // over. The key of the objective chosen goes back to generateTask in the task's params,
+        // which claims it.
+        private _ownKey = _task param [12, []];
+        private _claimedKeys = [];
+        if (!isNil QGVAR(playerRequests)) then {
+            _claimedKeys = [GVAR(playerRequests), "CaptureObjective", []] call ALiVE_fnc_hashGet;
+        };
+        private _livePositions = [];
+        if (!isNil "ALIVE_taskHandler") then {
+            {
+                private _livePos = _x param [3, [], [[]]];
+                if ((_x param [11, ""]) isEqualTo "None"
+                    && {((_x param [12, "", [""]]) find "-CaptureObjective-Parent") > -1}
+                    && {(_x param [2, ""]) == _taskSide}
+                    && {!((_x param [8, ""]) in ["Succeeded", "Failed", "Canceled"])}
+                    && {count _livePos >= 2}) then {
+                    _livePositions pushBack _livePos;
+                };
+            } forEach (([ALIVE_taskHandler, "getTasks"] call ALIVE_fnc_taskHandler) select 2);
+        };
+        private _chosenKey = [];
+        private _passedOver = 0;
+
         private _size = 200;
         _targetPosition = [];
         {
             private _candidatePos = [_x, "center", _taskLocation] call ALiVE_fnc_hashGet;
             private _candidateSize = [_x, "size", 200] call ALiVE_fnc_hashGet;
-            // Use the OPCOM objective size where available, capped
-            // at 500 m so the enemy-presence search stays bounded on
-            // large objectives, floored at 200 m so small ones get a
-            // fair sweep.
-            private _verifyRadius = (_candidateSize min 500) max 200;
-            private _enemyPresent = [_candidatePos, _taskSide, _verifyRadius, true] call ALIVE_fnc_isEnemyNear;
-            if (!isNil "ALiVE_mil_c2istar_debug" && {ALiVE_mil_c2istar_debug}) then {
-                ["DIAG-STRIP taskCaptureObjective: candidate idx=%1 pos=%2 size=%3 verifyRadius=%4 enemyPresent=%5", _forEachIndex, _candidatePos, _candidateSize, _verifyRadius, _enemyPresent] call ALiVE_fnc_dump;
+            private _candidateKey = [_x, "objectiveID", ""] call ALiVE_fnc_hashGet;
+            if (_candidateKey isEqualTo "") then { _candidateKey = [_x, "clusterID", ""] call ALiVE_fnc_hashGet; };
+            if (_candidateKey isEqualTo "") then { _candidateKey = _candidatePos; };
+            private _heldElsewhere = !(_candidateKey isEqualTo _ownKey) && {
+                (_candidateKey in _claimedKeys) || {(_livePositions findIf {_x distance2D _candidatePos < 500}) > -1}
             };
+            private _enemyPresent = false;
+            if (_heldElsewhere) then {
+                _passedOver = _passedOver + 1;
+            } else {
+                // Use the OPCOM objective size where available, capped
+                // at 500 m so the enemy-presence search stays bounded on
+                // large objectives, floored at 200 m so small ones get a
+                // fair sweep.
+                private _verifyRadius = (_candidateSize min 500) max 200;
+                _enemyPresent = [_candidatePos, _taskSide, _verifyRadius, true] call ALIVE_fnc_isEnemyNear;
+                if (!isNil "ALiVE_mil_c2istar_debug" && {ALiVE_mil_c2istar_debug}) then {
+                    ["DIAG-STRIP taskCaptureObjective: candidate idx=%1 pos=%2 size=%3 verifyRadius=%4 enemyPresent=%5", _forEachIndex, _candidatePos, _candidateSize, _verifyRadius, _enemyPresent] call ALiVE_fnc_dump;
+                };
+            };
+            // At the loop's own level, so it leaves the loop and keeps the nearest one found.
             if (_enemyPresent) exitWith {
                 _size = _candidateSize;
                 _targetPosition = _candidatePos;
+                _chosenKey = _candidateKey;
             };
         } forEach _objectives;
 
-        // Exit if no objective in the attacking list still has
+        // Exit if no free objective in the attacking list still has
         // verifiable enemy presence (everything OPCOM thinks it is
-        // attacking has already been cleared).
+        // attacking has already been cleared or is held by another task).
         if (count _targetPosition == 0) exitwith {
-            ["C2ISTAR - Task CaptureObjective - No attacking objective has verified enemy presence! Exiting!"] call ALiVE_fnc_Dump;
+            ["C2ISTAR - Task CaptureObjective - No free attacking objective has verified enemy presence (%1 passed over as held by another task)! Exiting!", _passedOver] call ALiVE_fnc_Dump;
         };
 
         // ["pl %1 tar %2", getpos player, _targetPosition] call ALiVE_fnc_DumpR;
@@ -216,6 +255,8 @@ switch (_taskState) do {
             [_taskParams,"enemyFaction",_taskEnemyFaction] call ALIVE_fnc_hashSet;
             [_taskParams,"objSize",_size] call ALIVE_fnc_hashSet;
             [_taskParams,"lastState",""] call ALIVE_fnc_hashSet;
+            [_taskParams,"strategicReservationKey",_chosenKey] call ALIVE_fnc_hashSet;
+            [_taskParams,"strategicReservationType","CaptureObjective"] call ALIVE_fnc_hashSet;
 
             // return the created tasks and params
 

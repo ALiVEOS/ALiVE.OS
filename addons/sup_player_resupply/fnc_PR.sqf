@@ -837,9 +837,12 @@ switch(_operation) do {
                     private _category = _x;
                     private _classList = [_allVehicles, _category] call ALiVE_fnc_hashGet;
                     if (!isNil "_classList" && {_classList isEqualType []}) then {
+                        // Supply crates tagged Default belong to no faction, so the faction test
+                        // alone dropped every one of them: all of vanilla's and Expeditionary
+                        // Forces' only crate. Faction mode already lets them in through side 3.
                         private _filtered = _classList select {
                             private _vFaction = getText (configFile >> "CfgVehicles" >> _x >> "faction");
-                            _vFaction in _sideFactions
+                            _vFaction in _sideFactions || {_vFaction == "Default" && {_x isKindOf "ReammoBox_F"}}
                         };
                         if (count _filtered > 0) then {
                             [_sortedVehicles, _category, _filtered] call ALiVE_fnc_hashSet;
@@ -2164,7 +2167,10 @@ switch(_operation) do {
                                             if (!isNil "_classList" && {_classList isEqualType []} && {count _classList > 0}) then {
                                                 private _hasAmmo = false;
                                                 {
-                                                    if (_x isKindOf "Ammo" || _x isKindOf "ReammoBox" || _x isKindOf "AmmoBox") exitWith {
+                                                    // Arma 3's ammo and supply crates descend from ReammoBox_F, a
+                                                    // separate base from ReammoBox, so without it no crate counted
+                                                    // and the category holding them was never offered.
+                                                    if (_x isKindOf "Ammo" || {_x isKindOf "ReammoBox"} || {_x isKindOf "AmmoBox"} || {_x isKindOf "ReammoBox_F"}) exitWith {
                                                         _hasAmmo = true;
                                                     };
                                                 } forEach _classList;
@@ -2220,6 +2226,15 @@ switch(_operation) do {
                                 _values = ["<< Back"];
 
                                 _vehicleClasses = [_sortedVehicles,_selectedValue] call ALIVE_fnc_hashGet;
+
+                                // Under Combat Supplies only the crates of a category are listed. A
+                                // category is offered there when it holds one crate, and the rest of
+                                // it can be vehicles (a Support category holds trucks as well as pods).
+                                if (!isNil "_vehicleClasses" && {(_selectedSupplyListParents param [0, ""]) == "Combat Supplies"}) then {
+                                    _vehicleClasses = _vehicleClasses select {
+                                        _x isKindOf "Ammo" || {_x isKindOf "ReammoBox"} || {_x isKindOf "AmmoBox"} || {_x isKindOf "ReammoBox_F"}
+                                    };
+                                };
 
                                 private ["_deliveryType","_maxWeight","_counts"];
 

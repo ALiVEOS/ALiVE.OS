@@ -230,8 +230,6 @@ if (_autoGenerateStrategicTasks) then {
 
     if !(isNil "_target") then {
 
-        _currentTargets pushBack _targetReservationKey;
-
         private _destination = _targetData param [0, []];
         private _enemyFaction = _targetData param [1, "OPF_F"];
 
@@ -315,7 +313,14 @@ if (_autoGenerateStrategicTasks) then {
                 _taskData pushBack _targetReservationKey;
             };
 
-            [GVAR(playerRequests), _type, _currentTargets] call ALiVE_fnc_hashSet;
+            // Claimed here, once the order is certain to go out, rather than when the target was
+            // picked. The list read above can be the store's own list rather than a copy, so adding
+            // to it there claimed the objective on the spot, and when nobody turned out to be
+            // taking orders (just above) no task was raised and nothing ever handed it back. Read
+            // again rather than reusing that list, since another route may have written it since.
+            private _heldTargets = [GVAR(playerRequests), _type, []] call ALiVE_fnc_hashGet;
+            _heldTargets pushBack _targetReservationKey;
+            [GVAR(playerRequests), _type, _heldTargets] call ALiVE_fnc_hashSet;
 
             private _event = ["TASK_GENERATE", _taskData, "C2ISTAR"] call ALIVE_fnc_event;
             [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;

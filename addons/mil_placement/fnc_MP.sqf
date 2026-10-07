@@ -927,11 +927,78 @@ switch(_operation) do {
 
                 private _campClusters = [];
                 private _sectors = [ALIVE_sectorGrid,"sectors"] call ALIVE_fnc_sectorGrid;
+
+                // A world can be bigger than the terrain on it: Kunduz River fills 10 of its 20 km and the
+                // rest is flat ground with nothing on it, level along a row or a column where the edge was
+                // stretched out. Camps only go in a sector that holds roads, indexed objectives or real
+                // ground, or in one beside it. A sector with no land height samples (open sea, or an old
+                // index) keeps its own spots but vouches for nothing, and an index with no ground at all
+                // keeps every sector, as before.
+                private _fnc_anyIn = {
+                    params ["_h"];
+                    _h isEqualType [] && {count _h > 2} && {((_h select 2) findIf {_x isEqualType [] && {count _x > 0}}) > -1}
+                };
+                // 1 ground, 0 level, -1 no land samples
+                private _fnc_groundState = {
+                    params ["_data"];
+                    if ([[_data, "roads", []] call ALIVE_fnc_hashGet] call _fnc_anyIn) exitWith {1};
+                    if ([[_data, "clustersMil", []] call ALIVE_fnc_hashGet] call _fnc_anyIn) exitWith {1};
+                    if ([[_data, "clustersCiv", []] call ALIVE_fnc_hashGet] call _fnc_anyIn) exitWith {1};
+                    private _samples = [_data, "elevationSamplesLand", []] call ALIVE_fnc_hashGet;
+                    if !(_samples isEqualType [] && {count _samples > 0}) exitWith {-1};
+                    private _rows = createHashMap;
+                    private _cols = createHashMap;
+                    {
+                        private _xy = _x select 0;
+                        private _h = _x select 1;
+                        private _r = _rows getOrDefault [_xy select 1, [_h, _h], true];
+                        _r set [0, (_r select 0) min _h];
+                        _r set [1, (_r select 1) max _h];
+                        private _c = _cols getOrDefault [_xy select 0, [_h, _h], true];
+                        _c set [0, (_c select 0) min _h];
+                        _c set [1, (_c select 1) max _h];
+                    } forEach _samples;
+                    [0, 1] select (((values _rows) findIf {((_x select 1) - (_x select 0)) >= 0.05} > -1)
+                        && {((values _cols) findIf {((_x select 1) - (_x select 0)) >= 0.05} > -1)})
+                };
+                private _ground = createHashMap;
+                private _unknown = createHashMap;
+                {
+                    private _state = [[_x, "data", ["",[],[],nil]] call ALIVE_fnc_hashGet] call _fnc_groundState;
+                    private _id = [_x, "id", ""] call ALIVE_fnc_hashGet;
+                    if (_state == 1) then { _ground set [_id, true] };
+                    if (_state == -1) then { _unknown set [_id, true] };
+                } forEach _sectors;
+                private _useGround = count _ground > 0;
+                private _fnc_nearGround = {
+                    params ["_id"];
+                    (_id splitString "_") params [["_row", ""], ["_col", ""]];
+                    private _r0 = parseNumber _row;
+                    private _c0 = parseNumber _col;
+                    private _near = false;
+                    for "_dr" from -1 to 1 do {
+                        for "_dc" from -1 to 1 do {
+                            if ((format ["%1_%2", _r0 + _dr, _c0 + _dc]) in _ground) then { _near = true };
+                        };
+                    };
+                    _near
+                };
+                private _offSectors = 0;
+                private _offSpots = 0;
+
                 {
                     private _sector = _x;
 
                     private _sectorData = [_sector,"data", ["",[],[],nil]] call ALIVE_fnc_hashGet;
                     private _flatEmpty = [_sectorData,"flatEmpty", []] call ALIVE_fnc_hashGet;
+                    if (_useGround && {count _flatEmpty > 0}) then {
+                        private _id = [_sector, "id", ""] call ALIVE_fnc_hashGet;
+                        if (!(_id in _unknown) && {!([_id] call _fnc_nearGround)}) then {
+                            _offSectors = _offSectors + 1;
+                            _offSpots = _offSpots + count _flatEmpty;
+                            _flatEmpty = [];
+                        };
+                    };
 
                     // Iterate every flat-empty position in this sector
                     // rather than using only the first. Each candidate
@@ -968,6 +1035,10 @@ switch(_operation) do {
                         };
                     } foreach _flatEmpty;
                 } foreach _sectors;
+
+                if (_offSectors > 0) then {
+                    ["ALiVE MP - Random Camps left out %1 sectors (%2 spots) with no roads, objectives or ground: the world there is bigger than the terrain", _offSectors, _offSpots] call ALiVE_fnc_dump;
+                };
 
                 ALIVE_clustersMilLand = [_campClusters] call ALiVE_fnc_HashCreate;
                 PROFILE_SCOPE_END(MPCAMPGENERATE)

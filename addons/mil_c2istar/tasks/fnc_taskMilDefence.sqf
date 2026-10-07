@@ -64,32 +64,94 @@ switch (_taskState) do {
         // establish the location for the task
         // get friendly occupied cluster position
 
-        // true = ignore custom military objectives that do not allow player tasking
-        _targetPosition = [_taskLocation,_taskLocationType,_taskSide,"MIL",true] call ALIVE_fnc_taskGetSideCluster;
+        // Places another defence task of this side already holds are passed over: anywhere
+        // within 500 m of a live defence task, and of objectives other requests have reserved
+        // but not built yet. The key this request reserved itself (carried at index 12) is not
+        // counted against it, and the air commander's defend-its-HQ order is left alone since
+        // it names the HQ to defend.
+        private _ownKey = _task param [12, []];
+        private _excludedPositions = [];
+        if (_requestPlayerID != "ATO") then {
+            if (!isNil "ALIVE_taskHandler") then {
+                {
+                    private _livePos = _x param [3, [], [[]]];
+                    if ((_x param [11, ""]) isEqualTo "None"
+                        && {((_x param [12, "", [""]]) find "-MilDefence-Parent") > -1}
+                        && {(_x param [2, ""]) == _taskSide}
+                        && {!((_x param [8, ""]) in ["Succeeded", "Failed", "Canceled"])}
+                        && {count _livePos >= 2}) then {
+                        _excludedPositions pushBack _livePos;
+                    };
+                } forEach (([ALIVE_taskHandler, "getTasks"] call ALIVE_fnc_taskHandler) select 2);
+            };
+            if (!isNil QGVAR(playerRequests)) then {
+                private _heldKeys = [GVAR(playerRequests), "MilDefence", []] call ALiVE_fnc_hashGet;
+                // Where each objective of this side's commanders is, built once, for held keys
+                // that name an objective or cluster rather than a position.
+                private _centres = createHashMap;
+                if ((_heldKeys findIf {_x isEqualType ""}) > -1) then {
+                    {
+                        if (_x isEqualType [] && {([_x, "side", ""] call ALiVE_fnc_hashGet) == _taskSide}) then {
+                            {
+                                private _centre = [_x, "center", []] call ALiVE_fnc_hashGet;
+                                _centres set [[_x, "objectiveID", ""] call ALiVE_fnc_hashGet, _centre];
+                                _centres set [[_x, "clusterID", ""] call ALiVE_fnc_hashGet, _centre];
+                            } forEach ([_x, "objectives", []] call ALiVE_fnc_hashGet);
+                        };
+                    } forEach (missionNamespace getVariable ["OPCOM_instances", []]);
+                };
+                {
+                    if !(_x isEqualTo _ownKey) then {
+                        private _heldPos = if (_x isEqualType []) then {_x} else {_centres getOrDefault [_x, []]};
+                        if (count _heldPos >= 2) then { _excludedPositions pushBack _heldPos };
+                    };
+                } forEach _heldKeys;
+            };
+        };
 
+        // true = ignore custom military objectives that do not allow player tasking
+        _targetPosition = [_taskLocation,_taskLocationType,_taskSide,"MIL",true,_excludedPositions] call ALIVE_fnc_taskGetSideCluster;
+
+        private _usedComposition = false;
         if(count _targetPosition == 0 || {_taskLocationType == "Map" && {_targetPosition distance _taskLocation > 1000}}) then {
             private ["_category","_compType"];
+            _usedComposition = true;
+            // Coming here because the sites nearby are held, a spot within 500 m of one is no
+            // better than the site itself. With nothing held, every spot passes, as before.
+            private _fnc_clearOfHeld = {
+                params ["_pos"];
+                count _pos >= 2 && {(_excludedPositions findIf {_pos distance2D _x < 500}) < 0}
+            };
+
             // no friendly occupied cluster found
             // try to get a position containing friendlies
             _targetPosition = [_taskLocation,_taskLocationType,_taskSide] call ALIVE_fnc_taskGetSideSectorCompositionPosition;
+            if (count _targetPosition > 0) then {
+                _targetPosition = [_targetPosition, 250] call ALIVE_fnc_findFlatArea;
+                if !([_targetPosition] call _fnc_clearOfHeld) then { _targetPosition = [] };
+            };
 
-            // use selected map location or default player position
+            // use selected map location or default player position. findSafePos picks at random
+            // inside its ring, so a few tries find a spot clear of held places when there is
+            // one; past that the last pick stands, as it always did.
             if (count _targetPosition == 0) then {
-                _targetPosition = [
-                    _taskLocation,
-                    50,
-                    1500,
-                    1,
-                    0,
-                    0.25,
-                    0,
-                    [],
-                    [_taskLocation]
-                ] call BIS_fnc_findSafePos;
+                for "_try" from 1 to 8 do {
+                    _targetPosition = [[
+                        _taskLocation,
+                        50,
+                        1500,
+                        1,
+                        0,
+                        0.25,
+                        0,
+                        [],
+                        [_taskLocation]
+                    ] call BIS_fnc_findSafePos, 250] call ALIVE_fnc_findFlatArea;
+                    if ([_targetPosition] call _fnc_clearOfHeld) exitWith {};
+                };
             };
 
             // spawn a populated composition
-            _targetPosition = [_targetPosition, 250] call ALIVE_fnc_findFlatArea;
 
             _compType = "Military";
             If (_taskFaction call ALiVE_fnc_factionSide == RESISTANCE) then {
@@ -187,6 +249,42 @@ switch (_taskState) do {
             [_taskParams,"enemyFaction",_taskEnemyFaction] call ALIVE_fnc_hashSet;
             [_taskParams,"missileStrikeCreated",false] call ALIVE_fnc_hashSet;
             [_taskParams,"atmosphereCreated",false] call ALIVE_fnc_hashSet;
+
+            // The key to claim for this place. A request that reserved an objective and was
+            // built on a site keeps holding that objective, so the tablet and the commander keep
+            // steering others away from it. Otherwise the commander's defending objective at the
+            // site when there is one within 300 m, else the position itself (a composition put
+            // down when no site was free claims only its own spot). generateTask claims it once
+            // the task exists.
+            private _chosenKey = _targetPosition;
+            private _hasOwnKey = switch (typeName _ownKey) do {
+                case "STRING": {_ownKey != ""};
+                case "ARRAY": {!(_ownKey isEqualTo [])};
+                default {false};
+            };
+            private _keyOpcom = [];
+            if (_hasOwnKey && {!_usedComposition}) then {
+                _chosenKey = _ownKey;
+            } else {
+                {
+                    if (_x isEqualType [] && {_taskFaction in ([_x, "factions", []] call ALiVE_fnc_hashGet)}) exitWith { _keyOpcom = _x };
+                } forEach (missionNamespace getVariable ["OPCOM_instances", []]);
+            };
+            if !(_keyOpcom isEqualTo []) then {
+                private _nearObjectives = [_keyOpcom, "nearestObjectives", [_targetPosition, "defending"]] call ALiVE_fnc_OPCOM;
+                if (isNil "_nearObjectives") then { _nearObjectives = [] };
+                if !(_nearObjectives isEqualTo []) then {
+                    private _nearest = _nearObjectives select 0;
+                    private _nearestCenter = [_nearest, "center", []] call ALiVE_fnc_hashGet;
+                    if (count _nearestCenter >= 2 && {_nearestCenter distance2D _targetPosition <= 300}) then {
+                        _chosenKey = [_nearest, "objectiveID", ""] call ALiVE_fnc_hashGet;
+                        if (_chosenKey isEqualTo "") then { _chosenKey = [_nearest, "clusterID", ""] call ALiVE_fnc_hashGet; };
+                        if (_chosenKey isEqualTo "") then { _chosenKey = _nearestCenter; };
+                    };
+                };
+            };
+            [_taskParams,"strategicReservationKey",_chosenKey] call ALIVE_fnc_hashSet;
+            [_taskParams,"strategicReservationType","MilDefence"] call ALIVE_fnc_hashSet;
             [_taskParams,"currentWave",1] call ALIVE_fnc_hashSet;
             [_taskParams,"lastWave",0] call ALIVE_fnc_hashSet;
             [_taskParams,"totalWaves",1 + floor(random 5)] call ALIVE_fnc_hashSet;

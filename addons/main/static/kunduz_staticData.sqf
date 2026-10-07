@@ -1,33 +1,165 @@
+// ALiVE 3 index v3.1, made 2026-10-07 by the ALiVE web indexer, building positions measured
 private["_worldName"];
- _worldName = tolower(worldName);
- ["SETTING UP MAP: kunduz"] call ALiVE_fnc_dump;
- ALIVE_Indexing_Blacklist = [];
- ALIVE_airBuildingTypes = [];
- ALIVE_militaryParkingBuildingTypes = [];
- ALIVE_militarySupplyBuildingTypes = [];
- ALIVE_militaryHQBuildingTypes = [];
- ALIVE_militaryAirBuildingTypes = [];
- ALIVE_civilianAirBuildingTypes = [];
- ALiVE_HeliBuildingTypes = [];
- ALIVE_militaryHeliBuildingTypes = [];
- ALIVE_civilianHeliBuildingTypes = [];
- ALIVE_militaryBuildingTypes = [];
- ALIVE_civilianPopulationBuildingTypes = [];
- ALIVE_civilianHQBuildingTypes = [];
- ALIVE_civilianPowerBuildingTypes = [];
- ALIVE_civilianCommsBuildingTypes = [];
- ALIVE_civilianMarineBuildingTypes = [];
- ALIVE_civilianRailBuildingTypes = [];
- ALIVE_civilianFuelBuildingTypes = [];
- ALIVE_civilianConstructionBuildingTypes = [];
- ALIVE_civilianSettlementBuildingTypes = [];
- if(tolower(_worldName) == "kunduz") then {
-[ALIVE_mapBounds, worldName, 5000] call ALIVE_fnc_hashSet;
-ALIVE_Indexing_Blacklist = ALIVE_Indexing_Blacklist + ["pra3\pra3_tunnels\poster3.p3d","pra3\pra3_tunnels\poster2.p3d","pra3\pra3_tunnels\poster4.p3d"];
-ALIVE_militaryBuildingTypes = ALIVE_militaryBuildingTypes + ["pra3\pra3_tunnels\wood_beams_h_join.p3d","pra3\pra3_tunnels\floor_sandy.p3d","pra3\pra3_tunnels\wood_beams.p3d","pra3\pra3_tunnels\wood_beams_t.p3d","pra3\pra3_tunnels\wood_beam.p3d","pra3\pra3_tunnels\tunnel_small_ramp.p3d","pra3\pra3_tunnels\cable_hanging.p3d","pra3\pra3_tunnels\wood_beams_h.p3d","pra3\pra3_tunnels\cable_ground.p3d","pra3\pra3_tunnels\tunnel_large_room_4doors.p3d","pra3\pra3_tunnels\tunnel_small_bend.p3d","pra3\pra3_structures\fata\qalat.p3d","pra3\pra3_tunnels\wood_beams_h_sloped.p3d","pra3\pra3_tunnels\tunnel_large_s_bend.p3d","pra3\pra3_tunnels\tunnel_large_room_1door.p3d"];
-ALIVE_militarySupplyBuildingTypes = ALIVE_militarySupplyBuildingTypes + ["pra3\pra3_tunnels\floor_sandy.p3d","pra3\pra3_tunnels\tunnel_small_ramp.p3d","pra3\pra3_tunnels\wood_beams_h.p3d","pra3\pra3_tunnels\tunnel_large_room_4doors.p3d","pra3\pra3_tunnels\tunnel_large_s_bend.p3d","pra3\pra3_tunnels\tunnel_large_room_1door.p3d"];
-ALIVE_militaryHQBuildingTypes = ALIVE_militaryHQBuildingTypes + ["pra3\pra3_tunnels\tunnel_large_room_4doors.p3d","pra3\pra3_structures\fata\qalat.p3d","pra3\pra3_tunnels\tunnel_large_room_1door.p3d"];
-ALIVE_civilianPopulationBuildingTypes = ALIVE_civilianPopulationBuildingTypes + ["pra3\pra3_structures\afghan_houses_old\jbad_house_1_old.p3d","pra3\pra3_structures\afghan_houses_old\jbad_house_3_old.p3d","pra3\pra3_structures\afghan_houses_old\jbad_house_9_stuff.p3d","pra3\pra3_structures\afghan_houses_old\jbad_house_9_old.p3d","pra3\pra3_structures\afghan_houses_c\jbad_house_c_11.p3d","pra3\pra3_structures\afghan_houses_old\jbad_house_4_old.p3d","pra3\pra3_structures\afghan_houses_a\a_mosque_small\jbad_a_mosque_small_1.p3d","pra3\pra3_structures\afghan_houses_old\jbad_house_8_old.p3d","pra3\pra3_structures\afghan_houses\jbad_house5.p3d","pra3\pra3_structures\afghan_houses_old\jbad_house_6_old.p3d","pra3\pra3_structures\afghan_houses_old\jbad_house_7_old.p3d","pra3\pra3_structures\afghan_houses\jbad_house_1.p3d","pra3\pra3_structures\afghan_houses_a\a_mosque_small\jbad_a_mosque_small_2.p3d","pra3\pra3_structures\afghan_houses\jbad_house2_basehide.p3d","pra3\pra3_structures\afghan_houses\jbad_house6.p3d","pra3\pra3_structures\afghan_houses\jbad_house3.p3d","pra3\pra3_structures\afghan_houses_c\jbad_house_c_5.p3d","pra3\pra3_structures\afghan_houses_c\jbad_house_c_1_v2.p3d","pra3\pra3_structures\afghan_houses_c\jbad_house_c_1.p3d","pra3\pra3_structures\afghan_houses_c\jbad_house_c_2.p3d","pra3\pra3_structures\afghan_houses\jbad_house8.p3d","pra3\pra3_structures\afghan_houses\jbad_house7.p3d","pra3\pra3_structures\afghan_houses_c\jbad_house_c_5_v3.p3d","pra3\pra3_structures\afghan_houses_c\jbad_house_c_5_v1.p3d","pra3\pra3_structures\afghan_houses_c\jbad_house_c_3.p3d","pra3\pra3_structures\afghan_houses_c\jbad_house_c_4.p3d","pra3\pra3_structures\afghan_houses_c\jbad_house_c_5_v2.p3d","pra3\pra3_structures\afghan_houses_a\a_minaret\jbad_a_minaret.p3d"];
-ALIVE_civilianHQBuildingTypes = ALIVE_civilianHQBuildingTypes + ["pra3\pra3_structures\afghan_houses\jbad_house6.p3d","pra3\pra3_structures\afghan_houses_c\jbad_house_c_1_v2.p3d","pra3\pra3_structures\afghan_houses_c\jbad_house_c_1.p3d","pra3\pra3_structures\afghan_houses_c\jbad_house_c_2.p3d","pra3\pra3_structures\afghan_houses_c\jbad_house_c_3.p3d","pra3\pra3_structures\afghan_houses_c\jbad_house_c_4.p3d"];
-ALIVE_civilianSettlementBuildingTypes = ALIVE_civilianSettlementBuildingTypes + ["pra3\pra3_structures\afghan_houses_old\jbad_house_1_old.p3d","pra3\pra3_structures\afghan_houses_old\jbad_house_3_old.p3d","pra3\pra3_structures\afghan_houses_old\jbad_house_9_stuff.p3d","pra3\pra3_structures\afghan_houses_old\jbad_house_9_old.p3d","pra3\pra3_structures\afghan_houses_c\jbad_house_c_11.p3d","pra3\pra3_structures\afghan_houses_old\jbad_house_4_old.p3d","pra3\pra3_structures\afghan_houses_a\a_mosque_small\jbad_a_mosque_small_1.p3d","pra3\pra3_structures\afghan_houses_old\jbad_house_8_old.p3d","pra3\pra3_structures\afghan_houses\jbad_house5.p3d","pra3\pra3_structures\afghan_houses_old\jbad_house_6_old.p3d","pra3\pra3_structures\afghan_houses_old\jbad_house_7_old.p3d","pra3\pra3_structures\afghan_houses\jbad_house_1.p3d","pra3\pra3_structures\walls\walls_l\jbad_wall_l_mosque_2.p3d","pra3\pra3_structures\walls\walls_l\jbad_wall_l_mosque_1.p3d","pra3\pra3_structures\afghan_houses_a\a_mosque_small\jbad_a_mosque_small_2.p3d","pra3\pra3_structures\afghan_houses\jbad_house2_basehide.p3d","pra3\pra3_structures\afghan_houses\jbad_terrace.p3d","pra3\pra3_structures\afghan_houses\jbad_house6.p3d","pra3\pra3_structures\afghan_houses\jbad_house3.p3d","pra3\pra3_structures\afghan_houses_c\jbad_house_c_5.p3d","pra3\pra3_structures\afghan_houses_c\jbad_house_c_1_v2.p3d","pra3\pra3_structures\afghan_houses_c\jbad_house_c_1.p3d","pra3\pra3_structures\afghan_houses_c\jbad_house_c_2.p3d","pra3\pra3_structures\afghan_houses\jbad_house8.p3d","pra3\pra3_structures\afghan_houses\jbad_house7.p3d","pra3\pra3_structures\afghan_houses_c\jbad_house_c_5_v3.p3d","pra3\pra3_structures\afghan_houses_c\jbad_house_c_5_v1.p3d","pra3\pra3_structures\afghan_houses_c\jbad_house_c_3.p3d","pra3\pra3_structures\afghan_houses_c\jbad_house_c_4.p3d","pra3\pra3_structures\afghan_houses_c\jbad_house_c_5_v2.p3d","pra3\pra3_structures\afghan_houses_a\a_minaret\jbad_a_minaret.p3d","pra3\pra3_structures\afghan_houses\jbad_house3_ruins.p3d","pra3\pra3_structures\afghan_houses\jbad_house7_ruins.p3d","pra3\pra3_structures\afghan_houses\jbad_house8_ruins.p3d"];
+
+_worldName = tolower(worldName);
+
+["SETTING UP MAP: kunduz (ALiVE 3 index v3.1, 2026-10-07)"] call ALiVE_fnc_dump;
+
+ALiVE_indexVersion = ["3.1", "2026-10-07", "web", true];
+
+ALIVE_Indexing_Blacklist = [];
+ALIVE_militaryBuildingTypes = [];
+ALIVE_militaryParkingBuildingTypes = [];
+ALIVE_militarySupplyBuildingTypes = [];
+ALIVE_militaryHQBuildingTypes = [];
+ALIVE_militaryFieldworkBuildingTypes = [];
+ALIVE_airBuildingTypes = [];
+ALIVE_militaryAirBuildingTypes = [];
+ALIVE_civilianAirBuildingTypes = [];
+ALiVE_HeliBuildingTypes = [];
+ALIVE_militaryHeliBuildingTypes = [];
+ALIVE_civilianHeliBuildingTypes = [];
+ALIVE_civilianSettlementBuildingTypes = [];
+ALIVE_civilianHQBuildingTypes = [];
+ALIVE_civilianPopulationBuildingTypes = [];
+ALIVE_civilianPowerBuildingTypes = [];
+ALIVE_civilianCommsBuildingTypes = [];
+ALIVE_civilianMarineBuildingTypes = [];
+ALIVE_civilianRailBuildingTypes = [];
+ALIVE_civilianFuelBuildingTypes = [];
+ALIVE_civilianConstructionBuildingTypes = [];
+
+ALiVE_mapCompositionType = "Desert";
+
+ if (tolower(_worldName) == "kunduz") then {
+    ALIVE_Indexing_Blacklist = ALIVE_Indexing_Blacklist + [
+        "pra3\pra3_tunnels\poster2.p3d",
+        "pra3\pra3_tunnels\poster3.p3d",
+        "pra3\pra3_tunnels\poster4.p3d"
+    ];
+
+    ALIVE_militaryBuildingTypes = ALIVE_militaryBuildingTypes + [
+        "pra3\pra3_structures\fata\qalat.p3d",
+        "pra3\pra3_tunnels\cable_ground.p3d",
+        "pra3\pra3_tunnels\cable_hanging.p3d",
+        "pra3\pra3_tunnels\floor_sandy.p3d",
+        "pra3\pra3_tunnels\tunnel_large_room_1door.p3d",
+        "pra3\pra3_tunnels\tunnel_large_room_4doors.p3d",
+        "pra3\pra3_tunnels\tunnel_large_s_bend.p3d",
+        "pra3\pra3_tunnels\tunnel_small_bend.p3d",
+        "pra3\pra3_tunnels\tunnel_small_ramp.p3d",
+        "pra3\pra3_tunnels\wood_beam.p3d",
+        "pra3\pra3_tunnels\wood_beams.p3d",
+        "pra3\pra3_tunnels\wood_beams_h.p3d",
+        "pra3\pra3_tunnels\wood_beams_h_join.p3d",
+        "pra3\pra3_tunnels\wood_beams_h_sloped.p3d",
+        "pra3\pra3_tunnels\wood_beams_t.p3d"
+    ];
+
+    ALIVE_militarySupplyBuildingTypes = ALIVE_militarySupplyBuildingTypes + [
+        "pra3\pra3_tunnels\floor_sandy.p3d",
+        "pra3\pra3_tunnels\tunnel_large_room_1door.p3d",
+        "pra3\pra3_tunnels\tunnel_large_room_4doors.p3d",
+        "pra3\pra3_tunnels\tunnel_large_s_bend.p3d",
+        "pra3\pra3_tunnels\tunnel_small_ramp.p3d",
+        "pra3\pra3_tunnels\wood_beams_h.p3d"
+    ];
+
+    ALIVE_militaryHQBuildingTypes = ALIVE_militaryHQBuildingTypes + [
+        "pra3\pra3_structures\fata\qalat.p3d",
+        "pra3\pra3_tunnels\tunnel_large_room_1door.p3d",
+        "pra3\pra3_tunnels\tunnel_large_room_4doors.p3d"
+    ];
+
+    ALiVE_HeliBuildingTypes = ALiVE_HeliBuildingTypes + [
+        "a3\structures_f\mil\helipads\helipadcivil_f.p3d"
+    ];
+
+    ALIVE_militaryHeliBuildingTypes = ALIVE_militaryHeliBuildingTypes + [
+        "a3\structures_f\mil\helipads\helipadcivil_f.p3d"
+    ];
+
+    ALIVE_civilianSettlementBuildingTypes = ALIVE_civilianSettlementBuildingTypes + [
+        "pra3\pra3_misc\bridge\ic_002_bridge.p3d",
+        "pra3\pra3_structures\afghan_houses\jbad_house2_basehide.p3d",
+        "pra3\pra3_structures\afghan_houses\jbad_house3.p3d",
+        "pra3\pra3_structures\afghan_houses\jbad_house3_ruins.p3d",
+        "pra3\pra3_structures\afghan_houses\jbad_house5.p3d",
+        "pra3\pra3_structures\afghan_houses\jbad_house6.p3d",
+        "pra3\pra3_structures\afghan_houses\jbad_house7.p3d",
+        "pra3\pra3_structures\afghan_houses\jbad_house7_ruins.p3d",
+        "pra3\pra3_structures\afghan_houses\jbad_house8.p3d",
+        "pra3\pra3_structures\afghan_houses\jbad_house8_ruins.p3d",
+        "pra3\pra3_structures\afghan_houses\jbad_house_1.p3d",
+        "pra3\pra3_structures\afghan_houses\jbad_terrace.p3d",
+        "pra3\pra3_structures\afghan_houses_a\a_minaret\jbad_a_minaret.p3d",
+        "pra3\pra3_structures\afghan_houses_a\a_mosque_small\jbad_a_mosque_small_1.p3d",
+        "pra3\pra3_structures\afghan_houses_a\a_mosque_small\jbad_a_mosque_small_2.p3d",
+        "pra3\pra3_structures\afghan_houses_c\jbad_house_c_1.p3d",
+        "pra3\pra3_structures\afghan_houses_c\jbad_house_c_11.p3d",
+        "pra3\pra3_structures\afghan_houses_c\jbad_house_c_1_v2.p3d",
+        "pra3\pra3_structures\afghan_houses_c\jbad_house_c_2.p3d",
+        "pra3\pra3_structures\afghan_houses_c\jbad_house_c_3.p3d",
+        "pra3\pra3_structures\afghan_houses_c\jbad_house_c_4.p3d",
+        "pra3\pra3_structures\afghan_houses_c\jbad_house_c_5.p3d",
+        "pra3\pra3_structures\afghan_houses_c\jbad_house_c_5_v1.p3d",
+        "pra3\pra3_structures\afghan_houses_c\jbad_house_c_5_v2.p3d",
+        "pra3\pra3_structures\afghan_houses_c\jbad_house_c_5_v3.p3d",
+        "pra3\pra3_structures\afghan_houses_old\jbad_house_1_old.p3d",
+        "pra3\pra3_structures\afghan_houses_old\jbad_house_3_old.p3d",
+        "pra3\pra3_structures\afghan_houses_old\jbad_house_4_old.p3d",
+        "pra3\pra3_structures\afghan_houses_old\jbad_house_6_old.p3d",
+        "pra3\pra3_structures\afghan_houses_old\jbad_house_7_old.p3d",
+        "pra3\pra3_structures\afghan_houses_old\jbad_house_8_old.p3d",
+        "pra3\pra3_structures\afghan_houses_old\jbad_house_9_old.p3d",
+        "pra3\pra3_structures\afghan_houses_old\jbad_house_9_stuff.p3d",
+        "pra3\pra3_structures\walls\walls_l\jbad_wall_l_mosque_1.p3d",
+        "pra3\pra3_structures\walls\walls_l\jbad_wall_l_mosque_2.p3d"
+    ];
+
+    ALIVE_civilianHQBuildingTypes = ALIVE_civilianHQBuildingTypes + [
+        "pra3\pra3_structures\afghan_houses\jbad_house6.p3d",
+        "pra3\pra3_structures\afghan_houses_c\jbad_house_c_1.p3d",
+        "pra3\pra3_structures\afghan_houses_c\jbad_house_c_1_v2.p3d",
+        "pra3\pra3_structures\afghan_houses_c\jbad_house_c_2.p3d",
+        "pra3\pra3_structures\afghan_houses_c\jbad_house_c_3.p3d",
+        "pra3\pra3_structures\afghan_houses_c\jbad_house_c_4.p3d"
+    ];
+
+    ALIVE_civilianPopulationBuildingTypes = ALIVE_civilianPopulationBuildingTypes + [
+        "pra3\pra3_misc\bridge\ic_002_bridge.p3d",
+        "pra3\pra3_structures\afghan_houses\jbad_house2_basehide.p3d",
+        "pra3\pra3_structures\afghan_houses\jbad_house3.p3d",
+        "pra3\pra3_structures\afghan_houses\jbad_house5.p3d",
+        "pra3\pra3_structures\afghan_houses\jbad_house6.p3d",
+        "pra3\pra3_structures\afghan_houses\jbad_house7.p3d",
+        "pra3\pra3_structures\afghan_houses\jbad_house8.p3d",
+        "pra3\pra3_structures\afghan_houses\jbad_house_1.p3d",
+        "pra3\pra3_structures\afghan_houses_a\a_minaret\jbad_a_minaret.p3d",
+        "pra3\pra3_structures\afghan_houses_a\a_mosque_small\jbad_a_mosque_small_1.p3d",
+        "pra3\pra3_structures\afghan_houses_a\a_mosque_small\jbad_a_mosque_small_2.p3d",
+        "pra3\pra3_structures\afghan_houses_c\jbad_house_c_1.p3d",
+        "pra3\pra3_structures\afghan_houses_c\jbad_house_c_11.p3d",
+        "pra3\pra3_structures\afghan_houses_c\jbad_house_c_1_v2.p3d",
+        "pra3\pra3_structures\afghan_houses_c\jbad_house_c_2.p3d",
+        "pra3\pra3_structures\afghan_houses_c\jbad_house_c_3.p3d",
+        "pra3\pra3_structures\afghan_houses_c\jbad_house_c_4.p3d",
+        "pra3\pra3_structures\afghan_houses_c\jbad_house_c_5.p3d",
+        "pra3\pra3_structures\afghan_houses_c\jbad_house_c_5_v1.p3d",
+        "pra3\pra3_structures\afghan_houses_c\jbad_house_c_5_v2.p3d",
+        "pra3\pra3_structures\afghan_houses_c\jbad_house_c_5_v3.p3d",
+        "pra3\pra3_structures\afghan_houses_old\jbad_house_1_old.p3d",
+        "pra3\pra3_structures\afghan_houses_old\jbad_house_3_old.p3d",
+        "pra3\pra3_structures\afghan_houses_old\jbad_house_4_old.p3d",
+        "pra3\pra3_structures\afghan_houses_old\jbad_house_6_old.p3d",
+        "pra3\pra3_structures\afghan_houses_old\jbad_house_7_old.p3d",
+        "pra3\pra3_structures\afghan_houses_old\jbad_house_8_old.p3d",
+        "pra3\pra3_structures\afghan_houses_old\jbad_house_9_old.p3d",
+        "pra3\pra3_structures\afghan_houses_old\jbad_house_9_stuff.p3d"
+    ];
+
+    ALIVE_civilianMarineBuildingTypes = ALIVE_civilianMarineBuildingTypes + [
+        "a3\structures_f\naval\piers\pier_small_f.p3d"
+    ];
+
 };

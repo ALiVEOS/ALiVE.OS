@@ -2207,6 +2207,10 @@ switch(_operation) do {
             // spoken for, for the rest of the mission.
             _obj setVariable ["ALiVE_mil_ato_tail", nil, true];
             _obj setVariable ["ALIVE_profileIgnore", nil, true];
+            // and the loss line shield put on: a hull it no longer owns reports its own loss
+            private _lossEH = _obj getVariable ["ALiVE_mil_ato_lossEH", -1];
+            if (_lossEH isEqualType 0 && {_lossEH >= 0}) then { _obj removeMPEventHandler ["MPKilled", _lossEH] };
+            _obj setVariable ["ALiVE_mil_ato_lossEH", nil, false];
         };
         if !(_surface isEqualTo []) then {
             [_surface, "unlock", _tail] call ALIVE_fnc_ATOSurface;

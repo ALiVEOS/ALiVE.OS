@@ -3,7 +3,7 @@
 /*
  * Mil placement ambient vehicles per faction
  */
-[ALIVE_factionDefaultSupports, "CFP_B_USARMY_WDL", [
+[ALIVE_factionDefaultSupports, "CUP_B_US_Army", [
 		"CUP_B_HMMWV_Unarmed_USA",
 		"CUP_B_HMMWV_Ambulance_USA",
 		"CUP_B_HMMWV_Transport_USA",
@@ -20,7 +20,7 @@
 /*
  * Mil placement random supply boxes per faction
  */
-[ALIVE_factionDefaultSupplies, "CFP_B_USARMY_WDL", [
+[ALIVE_factionDefaultSupplies, "CUP_B_US_Army", [
 		"CUP_USBasicAmmunitionBox_EP1",
 		"CUP_USBasicWeapons_EP1",
 		"CUP_USOrdnanceBox_EP1",
@@ -34,7 +34,7 @@
 /*
  * Mil logistics convoy transport vehicles per faction
  */
-[ALIVE_factionDefaultTransport, "CFP_B_USARMY_WDL", [
+[ALIVE_factionDefaultTransport, "CUP_B_US_Army", [
 		"CUP_B_MTVR_USA",
 		"CUP_B_MTVR_Ammo_USA",
 		"CUP_B_MTVR_Refuel_USA",
@@ -45,7 +45,7 @@
 /*
  * Mil logistics air transport vehicles per faction
  */
-[ALIVE_factionDefaultAirTransport, "CFP_B_USARMY_WDL", [
+[ALIVE_factionDefaultAirTransport, "CUP_B_US_Army", [
 		"CUP_B_CH47F_USA",
 		"CUP_B_CH47F_VIV_USA",
 		"CUP_B_UH60M_US",
@@ -59,7 +59,7 @@
 /*
  * Mil logistics airdrop containers per faction
  */
-[ALIVE_factionDefaultContainers, "CFP_B_USARMY_WDL", [
+[ALIVE_factionDefaultContainers, "CUP_B_US_Army", [
 		"ALIVE_B_T_supplyCrate_F","B_CargoNet_01_ammo_F","CargoNet_01_box_F","Land_Pod_Heli_Transport_04_box_F"
 	]
 ] call ALIVE_fnc_hashSet;

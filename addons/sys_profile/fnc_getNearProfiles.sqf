@@ -27,6 +27,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 params [
@@ -41,7 +42,7 @@ private _spacialGrid = [ALiVE_profileSystem,"spacialGridProfiles"] call ALiVE_fn
 private _near = _spacialGrid call ["findInRange", [_position,_radius,_filter2D,true,_preciseDistance]];
 
 if (_categorySelector isEqualTo []) then {
-    _near select {(_x select 2 select 5) == "entity"};
+    _near select {(_x select 2) isNotEqualTo [] && {(_x select 2 select 5) == "entity"}};
 } else {
     _categorySelector params [
         ["_categorySide", "all"],
@@ -67,30 +68,33 @@ if (_categorySelector isEqualTo []) then {
     private _filtered = _near;
 
     if (_hasSideFilter || {_hasTypeFilter} || {_hasObjectTypeFilter}) then {
+        // (_x select 2) is [] for a profile destroyed since findInRange returned it (#1071)
         _filtered = _near select {
-            private _sideMatches = if (!_hasSideFilter) then {
-                true
-            } else {
-                if (_categorySide isEqualType []) then {
-                    (_x select 2 select 3) in _categorySide
+            if ((_x select 2) isEqualTo []) then {false} else {
+                private _sideMatches = if (!_hasSideFilter) then {
+                    true
                 } else {
-                    (_x select 2 select 3) == _categorySide
-                }
-            };
+                    if (_categorySide isEqualType []) then {
+                        (_x select 2 select 3) in _categorySide
+                    } else {
+                        (_x select 2 select 3) == _categorySide
+                    }
+                };
 
-            private _typeMatches = !_hasTypeFilter || {(_x select 2 select 5) == _categoryType};
+                private _typeMatches = !_hasTypeFilter || {(_x select 2 select 5) == _categoryType};
 
-            private _objectTypeMatches = if (!_hasObjectTypeFilter) then {
-                true
-            } else {
-                if (_categoryObjectType isEqualType []) then {
-                    (_x select 2 select 6) in _categoryObjectType
+                private _objectTypeMatches = if (!_hasObjectTypeFilter) then {
+                    true
                 } else {
-                    (_x select 2 select 6) == _categoryObjectType
-                }
-            };
+                    if (_categoryObjectType isEqualType []) then {
+                        (_x select 2 select 6) in _categoryObjectType
+                    } else {
+                        (_x select 2 select 6) == _categoryObjectType
+                    }
+                };
 
-            _sideMatches && {_typeMatches} && {_objectTypeMatches}
+                _sideMatches && {_typeMatches} && {_objectTypeMatches}
+            }
         };
     };
 
