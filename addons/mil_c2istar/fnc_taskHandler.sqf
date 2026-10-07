@@ -697,29 +697,22 @@ switch (_operation) do {
 
                 if (_taskTargets isEqualType [] && {!(_taskTargets isEqualTo [])}) then {
                     private _taskObjective = _taskTargets select 0;
-                    private _reservationKey = [];
                     private _objectivePosition = [];
 
+                    // The target gives the objective's position only. What a task holds in the
+                    // claim store is the key its request carried at index 12 (below) or the key its
+                    // own search reports; a key worked out from the target here was never entered
+                    // in the store, so handing it back could remove another task's entry. The air
+                    // commander's defend-its-HQ order passes its HQ here, with nothing at index 12.
                     switch (typeName _taskObjective) do {
                         case "ARRAY": {
                             _objectivePosition = [_taskObjective, "center", _taskLocation] call ALiVE_fnc_hashGet;
-                            _reservationKey = [_taskObjective, "objectiveID", ""] call ALiVE_fnc_hashGet;
-
-                            if (_reservationKey isEqualTo "") then {
-                                _reservationKey = [_taskObjective, "clusterID", ""] call ALiVE_fnc_hashGet;
-                            };
-
-                            if (_reservationKey isEqualTo "") then {
-                                _reservationKey = _objectivePosition;
-                            };
                         };
                         case "OBJECT": {
                             _objectivePosition = position _taskObjective;
-                            _reservationKey = _objectivePosition;
                         };
                         case "STRING": {
                             _objectivePosition = _taskLocation;
-                            _reservationKey = _taskObjective;
                         };
                     };
 
@@ -727,25 +720,11 @@ switch (_operation) do {
                         _strategicObjectivePosition = _objectivePosition;
                         _hasStrategicObjectivePosition = true;
                     };
-
-                    private _hasReservationKey = switch (typeName _reservationKey) do {
-                        case "STRING": {_reservationKey != ""};
-                        default {!(_reservationKey isEqualTo [])};
-                    };
-
-                    if (_hasReservationKey) then {
-                        _strategicReservationKey = _reservationKey;
-                        _hasStrategicReservationKey = true;
-                    };
                 };
 
-                // Prefer the key the request actually reserved, carried at index 12 by
-                // fnc_taskRequest. The derivation above starts from the raw target and cannot
-                // see an objectiveID when that target is a profile, so it produces a position
-                // that release will never find. Storing the carried value means release deletes
-                // exactly what the request wrote, whatever shape it is. Payloads with no index
-                // 12, which is the tablet route and every automatic non-commander source, keep
-                // the derived behaviour untouched.
+                // The key the request reserved, carried at index 12 by the commander and the
+                // tablet. Release deletes exactly what the request wrote, whatever shape it is.
+                // Payloads with no index 12 reserved nothing up front.
                 private _carriedReservationKey = _taskData param [12, []];
                 private _hasCarriedReservationKey = switch (typeName _carriedReservationKey) do {
                     case "STRING": {_carriedReservationKey != ""};
@@ -802,8 +781,55 @@ switch (_operation) do {
                         [_taskParams, "strategicObjectivePosition", _strategicObjectivePosition] call ALiVE_fnc_hashSet;
                     };
 
-                    if (_hasStrategicReservationKey) then {
-                        [_taskParams, "strategicReservationKey", _strategicReservationKey] call ALiVE_fnc_hashSet;
+                    // A capture or defence task reports the objective it was actually built on,
+                    // which is not always the one its request reserved: the task runs its own
+                    // search and passes over anything another task holds. Claim what it was built
+                    // on, so no other route sends players there while it runs, and hand back a
+                    // reserved key it did not use. Every route arrives here, the automatic ones
+                    // included, which until now claimed nothing at all.
+                    private _builtKey = [_taskParams, "strategicReservationKey", []] call ALiVE_fnc_hashGet;
+                    private _builtType = [_taskParams, "strategicReservationType", ""] call ALiVE_fnc_hashGet;
+                    private _hasBuiltKey = _builtType != "" && {switch (typeName _builtKey) do {
+                        case "STRING": {_builtKey != ""};
+                        case "ARRAY": {!(_builtKey isEqualTo [])};
+                        default {false};
+                    }};
+
+                    if (_hasBuiltKey) then {
+                        if (isNil QGVAR(playerRequests)) then {
+                            GVAR(playerRequests) = [] call ALiVE_fnc_hashCreate;
+                        };
+
+                        if (_hasStrategicReservationKey && {!(_strategicReservationKey isEqualTo _builtKey)}) then {
+                            private _heldReserved = [GVAR(playerRequests), _reservationTaskType, []] call ALiVE_fnc_hashGet;
+                            private _reservedIndex = _heldReserved find _strategicReservationKey;
+
+                            if (_reservedIndex > -1) then {
+                                _heldReserved deleteAt _reservedIndex;
+                                [GVAR(playerRequests), _reservationTaskType, _heldReserved] call ALiVE_fnc_hashSet;
+                            };
+                        };
+
+                        // One entry per task holding a place, so two tasks on one place (the air
+                        // commander's defend-its-HQ order, or a defence task put down beside a held
+                        // objective) keep it held until the last of them ends; each end removes one.
+                        // A key the request carried is in the list already, entered by the request.
+                        private _heldBuilt = [GVAR(playerRequests), _builtType, []] call ALiVE_fnc_hashGet;
+                        if !(_hasStrategicReservationKey && {_strategicReservationKey isEqualTo _builtKey}) then {
+                            _heldBuilt pushBack _builtKey;
+                        };
+                        [GVAR(playerRequests), _builtType, _heldBuilt] call ALiVE_fnc_hashSet;
+
+                        // DIAG-STRIP: which key each task took and what its request had reserved.
+                        // A claim with no matching release line is a leak.
+                        // Gate: ALiVE_c2istar_taskDiag = true.
+                        if (!isNil "ALiVE_c2istar_taskDiag" && {ALiVE_c2istar_taskDiag}) then {
+                            ["[C2ISTAR CLAIM DIAG] claim id=%1 type=%2 key=%3 reserved=%4 held=%5", _taskID, _builtType, _builtKey, [[], _strategicReservationKey] select _hasStrategicReservationKey, count _heldBuilt] call ALiVE_fnc_dump;
+                        };
+                    } else {
+                        if (_hasStrategicReservationKey) then {
+                            [_taskParams, "strategicReservationKey", _strategicReservationKey] call ALiVE_fnc_hashSet;
+                        };
                     };
 
                     [_managedTaskParams, _taskID, _taskParams] call ALiVE_fnc_hashSet;
@@ -838,9 +864,9 @@ switch (_operation) do {
             } else {
                 // Generation produced nothing, so give the reservation back. Without this the
                 // objective stayed claimed with no task in existence to ever release it, and
-                // every later request for it was refused. A find miss is a harmless no-op, and
-                // payloads that reserved nothing arrive here with no key at all. The tablet
-                // route unwinds its own reservation in fnc_playerOrders and is unaffected.
+                // every later request for it was refused. Payloads that reserved nothing arrive
+                // here with no key at all. The commander and the tablet both carry their key at
+                // index 12, so this is the one place a failed order hands it back.
                 if (_hasStrategicReservationKey && {!isNil QGVAR(playerRequests)}) then {
                     private _heldTargets = [GVAR(playerRequests), _reservationTaskType, []] call ALiVE_fnc_hashGet;
                     private _heldIndex = _heldTargets find _strategicReservationKey;
@@ -1691,6 +1717,13 @@ switch (_operation) do {
                                 if (_reservationIndex > -1) then {
                                     _currentTargets deleteAt _reservationIndex;
                                     [GVAR(playerRequests), _taskType, _currentTargets] call ALiVE_fnc_hashSet;
+                                };
+
+                                // DIAG-STRIP: pairs with the claim line in generateTask. found=false
+                                // means the task ended holding a key the store did not have.
+                                // Gate: ALiVE_c2istar_taskDiag = true.
+                                if (!isNil "ALiVE_c2istar_taskDiag" && {ALiVE_c2istar_taskDiag}) then {
+                                    ["[C2ISTAR CLAIM DIAG] release id=%1 type=%2 key=%3 found=%4 held=%5", _rootTaskID, _taskType, _reservationKey, _reservationIndex > -1, count _currentTargets] call ALiVE_fnc_dump;
                                 };
                             };
                         };

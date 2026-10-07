@@ -445,11 +445,10 @@ switch (_operation) do {
 
         if (_taskType == "" || {_taskLocation isEqualTo []}) exitWith {_result = false};
 
+        // One entry per holder: the task built from this order removes exactly one when it ends.
         private _currentTargets = [GVAR(playerRequests), _taskType, []] call ALiVE_fnc_hashGet;
-        if !(_reservationKey in _currentTargets) then {
-            _currentTargets pushBack _reservationKey;
-            [GVAR(playerRequests), _taskType, _currentTargets] call ALiVE_fnc_hashSet;
-        };
+        _currentTargets pushBack _reservationKey;
+        [GVAR(playerRequests), _taskType, _currentTargets] call ALiVE_fnc_hashSet;
 
         private _taskID = format ["OPORD_%1_%2", _groupID, floor (diag_tickTime * 10)];
 
@@ -462,20 +461,18 @@ switch (_operation) do {
             ["[C2ISTAR #992 DIAG] minted by=TABLET id=%1 group=%2", _taskID, _groupID] call ALiVE_fnc_dump;
         };
         private _taskPlayers = [_playerIDs, _playerNames];
-        private _task = [_taskID, _requestPlayerID, _side, _faction, _taskType, "Map", _taskLocation, _taskPlayers, _enemyFaction, "Y", "Group"];
+        // The key reserved above travels with the order (index 12, with nothing at 11), so the
+        // task counts that objective as its own rather than as taken. Only CaptureObjective and
+        // MilDefence come this way, the two types that read index 12 as a reservation.
+        private _task = [_taskID, _requestPlayerID, _side, _faction, _taskType, "Map", _taskLocation, _taskPlayers, _enemyFaction, "Y", "Group", [], _reservationKey];
 
         [ALIVE_taskHandler, "generateTask", _task] call ALiVE_fnc_taskHandler;
 
         private _createdTask = [ALIVE_taskHandler, "getTask", _taskID] call ALiVE_fnc_taskHandler;
-        if (isNil "_createdTask") then {
-            private _currentTargets = [GVAR(playerRequests), _taskType, []] call ALiVE_fnc_hashGet;
-            private _reservationIndex = _currentTargets find _reservationKey;
-
-            if (_reservationIndex > -1) then {
-                _currentTargets deleteAt _reservationIndex;
-                [GVAR(playerRequests), _taskType, _currentTargets] call ALiVE_fnc_hashSet;
-            };
-        } else {
+        // A failed order needs nothing handed back here: it carried its key at index 12, and
+        // generateTask returns a carried key itself when no task is built. Taking a second
+        // entry here could remove one belonging to another task holding the same place.
+        if !(isNil "_createdTask") then {
             // Remember what this order sent the group to, so asking for a different one
             // can steer away from it.
             //
@@ -512,7 +509,13 @@ switch (_operation) do {
                 if (_taskID in (_managedTaskParams select 1)) then {
                     private _taskParams = [_managedTaskParams, _taskID] call ALiVE_fnc_hashGet;
                     [_taskParams, "strategicObjectivePosition", _builtLocation] call ALiVE_fnc_hashSet;
-                    [_taskParams, "strategicReservationKey", _reservationKey] call ALiVE_fnc_hashSet;
+                    // generateTask has already stored the key of the objective the task was built
+                    // on. It can differ from the one reserved above, which it then handed back, and
+                    // writing ours over it would make the task's end free the wrong one.
+                    private _storedKey = [_taskParams, "strategicReservationKey", []] call ALiVE_fnc_hashGet;
+                    if (_storedKey isEqualTo [] || {_storedKey isEqualTo ""}) then {
+                        [_taskParams, "strategicReservationKey", _reservationKey] call ALiVE_fnc_hashSet;
+                    };
                     [_managedTaskParams, _taskID, _taskParams] call ALiVE_fnc_hashSet;
                     _remembered = true;
                 };

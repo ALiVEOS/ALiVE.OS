@@ -11,6 +11,7 @@ Parameters:
 checkMilCustom: bool. Check if custom military objectives allows player tasking.
     true: ignore custom military objectives that do not allow player tasking.
     false: assume all objectives allow player tasking.
+excludedPositions: array of positions (optional). Clusters within 500 m of any of them are left out.
 
 Returns:
 
@@ -23,6 +24,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 private ["_sideClusters","_targetPosition","_debug","_result","_nextState","_sortedClusters"];
@@ -32,7 +34,8 @@ params [
     "_taskLocationType",
     "_side",
     ["_type", ""],
-    ["_checkMilCustom", false]
+    ["_checkMilCustom", false],
+    ["_excludedPositions", []]
 ];
 
 if(_type != "") then {
@@ -69,6 +72,16 @@ if(count _sideClusters > 0) then {
 
         if (count _filteredClusters > 0) then {
             _candidateClusters = _filteredClusters;
+        };
+    };
+
+    // Clusters another task already holds are left out. A caller that passes no list sees
+    // no change. If every cluster is held the result is empty, the same as a side holding
+    // none, and the callers already fall back from there.
+    if !(_excludedPositions isEqualTo []) then {
+        _candidateClusters = _candidateClusters select {
+            private _clusterPos = [_x, "position", []] call ALIVE_fnc_hashGet;
+            _clusterPos isEqualTo [] || {(_excludedPositions findIf {_clusterPos distance2D _x < 500}) < 0}
         };
     };
 
