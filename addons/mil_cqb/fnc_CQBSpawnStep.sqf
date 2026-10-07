@@ -60,6 +60,7 @@ switch (_phase) do {
             _context set ["dominantFarCounts", createHashMap];
             _context set ["dominantNearOrder", []];
             _context set ["dominantFarOrder", []];
+            _context set ["dominantOwnSkipped", 0];
             _context set ["phase", "factionProfiles"];
         } else {
             private _factions = _logic getVariable ["factions", ["OPF_F"]];
@@ -121,6 +122,12 @@ switch (_phase) do {
         while {_cursor < count _groups && {_processed < 256} && {_processed == 0 || {diag_tickTime - _started < 0.00075}}} do {
             private _group = _groups select _cursor;
             private _leader = leader _group;
+            // A group CQB made itself is its own output, not the force holding the area: counted, one
+            // garrison of the wrong faction would make the next house nearby pick that faction too.
+            if (!isNull _leader && {!isNull (_leader getVariable ["ALIVE_cqb_instance", objNull])}) then {
+                _context set ["dominantOwnSkipped", (_context getOrDefault ["dominantOwnSkipped", 0]) + 1];
+                _leader = objNull;
+            };
             if (!isNull _leader) then {
                 private _distance = _position distance getPosATL _leader;
                 if (_distance < _farRadius && {{isPlayer _x} count units _group < 1}) then {
@@ -182,17 +189,18 @@ switch (_phase) do {
             };
             private _near = [_context get "dominantNearCounts", _context get "dominantNearOrder"] call _fnc_tally;
             private _far = [_context get "dominantFarCounts", _context get "dominantFarOrder"] call _fnc_tally;
+            private _own = _context getOrDefault ["dominantOwnSkipped", 0];
             private _wide = _context get "dominantFallbackRadius";
             if (_bestFaction == "") then {
-                ["CQB Population: No dominant faction within %1m of house at %2 - nothing spawned, house will retry. Counted within %1m: [%3]",
-                    _wide, _position, _far] call ALiVE_fnc_Dump;
+                ["CQB Population: No dominant faction within %1m of house at %2 - nothing spawned, house will retry. Counted within %1m: [%3]. CQB's own groups left out: %4",
+                    _wide, _position, _far, _own] call ALiVE_fnc_Dump;
             } else {
                 if (_scan == "close") then {
-                    ["CQB Population: Dominant faction %1 detected on close scan (250m) of house at %2. Counted within 250m: [%3]; within %4m: [%5]",
-                        _bestFaction, _position, _near, _wide, _far] call ALiVE_fnc_Dump;
+                    ["CQB Population: Dominant faction %1 detected on close scan (250m) of house at %2. Counted within 250m: [%3]; within %4m: [%5]. CQB's own groups left out: %6",
+                        _bestFaction, _position, _near, _wide, _far, _own] call ALiVE_fnc_Dump;
                 } else {
-                    ["CQB Population: Dominant faction %1 detected on wide scan (%2m) of house at %3 - nothing within 250m. Counted within %2m: [%4]",
-                        _bestFaction, _wide, _position, _far] call ALiVE_fnc_Dump;
+                    ["CQB Population: Dominant faction %1 detected on wide scan (%2m) of house at %3 - nothing within 250m. Counted within %2m: [%4]. CQB's own groups left out: %5",
+                        _bestFaction, _wide, _position, _far, _own] call ALiVE_fnc_Dump;
                 };
             };
         };
