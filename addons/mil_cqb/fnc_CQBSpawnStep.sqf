@@ -167,8 +167,34 @@ switch (_phase) do {
             _winner
         };
         private _bestFaction = [_context get "dominantNearCounts", _context get "dominantNearOrder"] call _selectWinner;
+        private _scan = "close";
         if (_bestFaction == "") then {
             _bestFaction = [_context get "dominantFarCounts", _context get "dominantFarOrder"] call _selectWinner;
+            _scan = "wide";
+        };
+
+        // Which scan answered, what it counted and what won (#976): the only way to tell a house
+        // garrisoned by its own neighbourhood from one that borrowed a faction from further away.
+        if (_logic getVariable ["debug", false]) then {
+            private _fnc_tally = {
+                params ["_counts", "_order"];
+                (_order apply { format ["%1 x%2", _x, _counts get _x] }) joinString ", "
+            };
+            private _near = [_context get "dominantNearCounts", _context get "dominantNearOrder"] call _fnc_tally;
+            private _far = [_context get "dominantFarCounts", _context get "dominantFarOrder"] call _fnc_tally;
+            private _wide = _context get "dominantFallbackRadius";
+            if (_bestFaction == "") then {
+                ["CQB Population: No dominant faction within %1m of house at %2 - nothing spawned, house will retry. Counted within %1m: [%3]",
+                    _wide, _position, _far] call ALiVE_fnc_Dump;
+            } else {
+                if (_scan == "close") then {
+                    ["CQB Population: Dominant faction %1 detected on close scan (250m) of house at %2. Counted within 250m: [%3]; within %4m: [%5]",
+                        _bestFaction, _position, _near, _wide, _far] call ALiVE_fnc_Dump;
+                } else {
+                    ["CQB Population: Dominant faction %1 detected on wide scan (%2m) of house at %3 - nothing within 250m. Counted within %2m: [%4]",
+                        _bestFaction, _wide, _position, _far] call ALiVE_fnc_Dump;
+                };
+            };
         };
 
         if (_bestFaction == "") then {
