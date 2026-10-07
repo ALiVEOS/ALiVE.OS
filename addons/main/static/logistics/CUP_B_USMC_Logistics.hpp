@@ -3,7 +3,7 @@
 /*
  * Mil placement ambient vehicles per faction
  */
-[ALIVE_factionDefaultSupports, "CFP_B_USMC_DES", [
+[ALIVE_factionDefaultSupports, "CUP_B_USMC", [
 		"CUP_B_HMMWV_Unarmed_USMC",
 		"CUP_B_M1151_USMC",
 		"CUP_B_MTVR_USMC",
@@ -17,7 +17,7 @@
 /*
  * Mil placement random supply boxes per faction
  */
-[ALIVE_factionDefaultSupplies, "CFP_B_USMC_DES", [
+[ALIVE_factionDefaultSupplies, "CUP_B_USMC", [
 		"CUP_USBasicAmmunitionBox",
 		"CUP_USBasicWeaponsBox",
 		"CUP_USOrdnanceBox",
@@ -30,7 +30,7 @@
 /*
  * Mil logistics convoy transport vehicles per faction
  */
-[ALIVE_factionDefaultTransport, "CFP_B_USMC_DES", [
+[ALIVE_factionDefaultTransport, "CUP_B_USMC", [
 		"CUP_B_MTVR_USMC",
 		"CUP_B_MTVR_Ammo_USMC",
 		"CUP_B_MTVR_Refuel_USMC"
@@ -40,7 +40,7 @@
 /*
  * Mil logistics air transport vehicles per faction
  */
-[ALIVE_factionDefaultAirTransport, "CFP_B_USMC_DES", [
+[ALIVE_factionDefaultAirTransport, "CUP_B_USMC", [
 		"CUP_B_CH53E_USMC",
 		"CUP_B_CH53E_VIV_USMC",
 		"CUP_B_MH60L_DAP_2x_USN",
