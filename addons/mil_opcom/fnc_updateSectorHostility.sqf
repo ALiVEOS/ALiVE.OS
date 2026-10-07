@@ -19,11 +19,12 @@ See Also:
 
 Author:
 Highhead
+Jman
 Peer Reviewed:
 nil
 ---------------------------------------------------------------------------- */
 
-private ["_sector","_sectorData"];
+private ["_sector","_sectorData","_civClusters","_settlementClusters","_clusterID","_cluster","_clusterHostility"];
 
 if (isnil QMOD(SECTORGRID) || {isnil QMOD(CLUSTERHANDLER)} || {isnil QMOD(SECTORGRID)}) exitwith {};
 
