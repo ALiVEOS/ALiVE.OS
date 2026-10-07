@@ -1,3 +1,4 @@
+// ALiVE 3 index v3.1, made 2026-10-06 by the ALiVE web indexer, building positions measured
 /*=================*/
 /*opening pbo BTHBC_Forest_Island.pbo
 ///////<HEADER>///////
@@ -147,6 +148,12 @@ wrp_objects=
 			[341245,[7476,8590]],
 			[341266,[7566,8565]],
 			[340644,[7582,8646]]
+		]
+	],
+	["ca\buildings\misc\leseni2x.p3d",
+		[
+			[341265,[7492,8576]],
+			[341332,[7567,8573]]
 		]
 	],
 	["bthbc_map_data\data\objects\castle\bthbc_castle_donjon.p3d",

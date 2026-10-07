@@ -309,7 +309,8 @@ if (_autoGenerateStrategicTasks) then {
             // place. Treat this as closing a hole rather than as repairing a reported fault.
             //
             // Appended only for the two types that reserve anything. Index 12 already means
-            // something else to other tasks: CAS reads friendly units there, CSAR a crew id.
+            // something else to other tasks: CAS reads friendly units there. CSAR carries its
+            // pilots at index 11 instead ([pilot netIds, hull netId]) and never comes this way.
             if (_type in ["CaptureObjective", "MilDefence"] && {!isNil "_targetReservationKey"}) then {
                 _taskData pushBack _targetReservationKey;
             };

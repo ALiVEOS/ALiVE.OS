@@ -102,7 +102,10 @@ PROFILE_SCOPE(MERGES, "ALiVE_fnc_consolidateClusters: merge pass")
     private _outID = _forEachIndex;
     private _cursor = -1;
     private _refresh = !(_out isEqualTo -1) && {count _result > 0};
-    while {_refresh} do {
+    // Every refresh absorbs a later slot. Bound retries by the slot count
+    // without the engine's 10,000-iteration unscheduled while-loop limit.
+    for "_mergePass" from 0 to (count _slots) do {
+        if (!_refresh) exitWith {};
         _refresh = false;
         private _outCenter = [_out, "center"] call ALIVE_fnc_cluster;
         if (count _outCenter > 0) then {

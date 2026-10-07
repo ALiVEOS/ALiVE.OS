@@ -46,6 +46,11 @@ class cfgFunctions {
                 file = "\x\alive\addons\fnc_strategic\fnc_clustersOutsideMarker.sqf";
                 RECOMPILE;
             };
+            class clustersDropStrayHelipads {
+                description = "Drop military objectives made only of invisible helipads, away from any other military building";
+                file = "\x\alive\addons\fnc_strategic\fnc_clustersDropStrayHelipads.sqf";
+                RECOMPILE;
+            };
             class staticClusterOutput {
                 description = "Returns clusters in string format for static file storage";
                 file = "\x\alive\addons\fnc_strategic\fnc_staticClusterOutput.sqf";

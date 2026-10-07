@@ -1,3 +1,4 @@
+// ALiVE 3 index v3.1, made 2026-10-06 by the ALiVE web indexer, building positions measured
 /*=================*/
 /*opening pbo Oberlausitz.pbo
 ///////<HEADER>///////
@@ -25070,13 +25071,6 @@ wrp_objects=
 			[4043584,[7822,7066]],
 			[4043585,[7823,7067]],
 			[4043586,[7822,7069]]
-		]
-	],
-	["hag_objects\hag_bridges\hag_bridge_road.p3d",
-		[
-			[4060607,[6145,7478]],
-			[4060606,[6156,7501]],
-			[4060605,[6166,7523]]
 		]
 	],
 	["a3\structures_f_exp\industrial\port\storagetank_01_small_f.p3d",

@@ -116,6 +116,14 @@ class CfgVehicles {
                             defaultValue = """180""";
                             typeName = "NUMBER";
                     };
+                    class csarTimeout : Edit
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_csarTimeout";
+                            displayName = "$STR_ALIVE_C2ISTAR_CSAR_TIMEOUT";
+                            tooltip = "$STR_ALIVE_C2ISTAR_CSAR_TIMEOUT_COMMENT";
+                            defaultValue = """1800""";
+                            typeName = "NUMBER";
+                    };
                     class taskAoRadius : Edit
                     {
                             property = "ALiVE_MIL_C2ISTAR_taskAoRadius";

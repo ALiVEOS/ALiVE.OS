@@ -908,6 +908,8 @@ switch(_operation) do {
                 PROFILE_SCOPE(MPINDEXCOMPILE, "ALiVE MP startup: compile terrain cluster index")
                 call compile preprocessFileLineNumbers _file;
                 PROFILE_SCOPE_END(MPINDEXCOMPILE)
+                // objectives made only of invisible helipads, away from any other military building, are left out
+                [] call ALIVE_fnc_clustersDropStrayHelipads;
                 ALIVE_loadedMilClusters = true;
             };
         }] call CBA_fnc_directCall;

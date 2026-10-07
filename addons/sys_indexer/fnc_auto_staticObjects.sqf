@@ -10,6 +10,7 @@ _categories = [
     ["ALIVE_militaryParkingBuildingTypes","Military - Parking","Buildings that ambient vehicles will be placed around"],
     ["ALIVE_militarySupplyBuildingTypes","Military - Supply","Buildings that ambient supply boxes will be placed around"],
     ["ALIVE_militaryHQBuildingTypes","Military - HQ","Buildings that can be selected as HQ locations"],
+    ["ALIVE_militaryFieldworkBuildingTypes","Military - Fieldworks","Trenches, bunkers, sandbag positions and towers soldiers can stand in"],
     ["ALIVE_airBuildingTypes","Generic - Air","All building where fixed wing aircraft can be spawned"],
     ["ALIVE_militaryAirBuildingTypes","Military - Air","Buildings that ambient fixed wing aircraft spawn in"],
     ["ALIVE_civilianAirBuildingTypes","Civilian - Air","Buildings that ambient fixed wing aircraft spawn in"],
@@ -42,6 +43,8 @@ if (_custom) then {
         _model = _x select 0;
         _samples = _x select 1;
         ALiVE_wrp_model = _model;
+        // The object on screen, so the Fieldworks tick can check it has building positions
+        ALiVE_wrp_object = objNull;
         ALIVE_map_index_choice = 99;
         _i = 0;
         createDialog "alive_indexing_list";
@@ -53,8 +56,10 @@ if (_custom) then {
             _id = _o select 0;
             _pos = _o select 1;
             _obj = _pos nearestObject _id;
+            ALiVE_wrp_object = _obj;
 
-            if (!isNil "_obj") then {
+            // nearestObject returns objNull when nothing is found, never nil
+            if (!isNull _obj) then {
                 _cam = [_obj, false, "HIGH"] call ALiVE_fnc_addCamera;
                 [_cam, true] call ALIVE_fnc_startCinematic;
                 cutText [format["Progress:%3/%4 - Object: %1, Model: %2", typeof _obj, str(_model), _foreachIndex + 1, count wrp_objects],"PLAIN DOWN"];
@@ -70,6 +75,7 @@ if (_custom) then {
                 camDestroy _cam;
             } else {
                 [">>>>>>>>>>>>>>>>>>>>>>>>>>>> Warning: could not find object for %1 at %2", _model, _pos] call ALiVE_fnc_dump;
+                sleep 1;
             };
             _i = _i + 1;
             if (_i == count _samples) then {_i = 0;};
@@ -116,6 +122,8 @@ if (_custom) then {
         "miloffices",
         "cargo_tower"
     ];
+
+    ALIVE_militaryFieldworkBuildingTypes = [];
 
     ALIVE_militaryAirBuildingTypes = [
         "tenthangar"
@@ -322,6 +330,11 @@ if (!isNil "ALiVE_mapCompositionType") then {
     _result = "ALiVEClient" callExtension format['staticData~%1|ALiVE_mapCompositionType = "%2";',worldName,ALiVE_mapCompositionType];
 };
 
+// The file header the extension writes declares every list except the fieldworks one, and the
+// lines below add to each list, so declare it here, empty, the same way the header declares the
+// others. Always written, whatever the map bounds.
+_result = "ALiVEClient" callExtension format['staticData~%1|ALIVE_militaryFieldworkBuildingTypes = [];',worldName];
+
 {
     private ["_array","_arrayActual","_result"];
     _array = _x select 0;
@@ -331,7 +344,8 @@ if (!isNil "ALiVE_mapCompositionType") then {
     if !(_category isEqualTo []) then {
         _windowStart=0;
         // Split into chunks that won't be too large to pass to the extension
-        while {_windowStart < (count _category - 1)} do {
+        // < count, not < count - 1: a list of exactly 1 model, or a last chunk of 1 (61, 121, ...), was never written
+        while {_windowStart < count _category} do {
             _partialArray = _category select [_windowStart,_windowLength min (count _category - _windowStart)];
             ['staticData~%1|%2 = %2 + %3;',worldName,_array, _partialArray] call ALiVE_fnc_dump;
             _result = "ALiVEClient" callExtension format['staticData~%1|%2 = %2 + %3;',worldName,_array, _partialArray];

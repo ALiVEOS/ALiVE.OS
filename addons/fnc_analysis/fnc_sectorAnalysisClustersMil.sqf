@@ -24,6 +24,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 private ["_sectors","_err","_worldName","_file","_sector","_result","_centerPosition","_id","_bounds","_dimensions",
@@ -42,6 +43,8 @@ ASSERT_TRUE(typeName _sectors == "ARRAY",_err);
         _worldName = toLower(worldName);
         _file = format["\x\alive\addons\mil_placement\clusters\clusters.%1_mil.sqf", _worldName];
         call compile preprocessFileLineNumbers _file;
+        // objectives made only of invisible helipads, away from any other military building, are left out
+        [] call ALIVE_fnc_clustersDropStrayHelipads;
         ALIVE_loadedMilClusters = true;
 
         //[] call ALIVE_fnc_timer;

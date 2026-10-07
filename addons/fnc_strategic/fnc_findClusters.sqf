@@ -26,6 +26,7 @@ _metrics = createHashMap;
 _clusters = [_objects, 150, _metrics] call ALIVE_fnc_findClusters;
 Author:
 Wolffy.au (original algorithm)
+Jman (large-list traversal approach)
 ---------------------------------------------------------------------------- */
 
 PARAMS_1(_obj_array);
@@ -99,7 +100,10 @@ for "_seed" from 0 to ((count _points) - 1) do {
         private _nodes = [];
         private _current = _seed;
 
-        while {_current != -1} do {
+        // Each step consumes one point. Bound traversal by the input count:
+        // unscheduled while loops are capped at 10,000 iterations by the engine.
+        for "_chainStep" from 0 to ((count _points) - 1) do {
+            if (_current == -1) exitWith {};
             private _first = _points select _current;
             _nodes pushBack _first;
             _active set [_current, false];
