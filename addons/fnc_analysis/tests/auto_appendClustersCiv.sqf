@@ -317,6 +317,8 @@ _gridData = [] call ALIVE_fnc_hashCreate;
 } forEach (ALIVE_clustersCivSettlement select 2);
 
 
+private _exportWriter = createHashMap;
+
 {
     _sectorID = _x;
     _sectorData = [_gridData,_sectorID] call ALIVE_fnc_hashGet;
@@ -330,23 +332,25 @@ _gridData = [] call ALIVE_fnc_hashCreate;
     _costructionClusters = [_sectorData, "construction"] call ALIVE_fnc_hashGet;
     _settlementClusters = [_sectorData, "settlement"] call ALIVE_fnc_hashGet;
 
-    "ALiVEClient" callExtension format['sectorData~%1|%2|_sectorData = [ALIVE_gridData, "%3"] call ALIVE_fnc_hashGet;',worldname,"civ",_sectorID];
+    [_exportWriter, format['sectorData~%1|%2|_sectorData = [ALIVE_gridData, "%3"] call ALIVE_fnc_hashGet;',worldname,"civ",_sectorID]] call ALIVE_fnc_exportWrite;
     //_exportString = _exportString + '_sectorData = [_sector, "data"] call ALIVE_fnc_sector;';
 
-    "ALiVEClient" callExtension format['sectorData~%1|%2|_clustersCiv = [] call ALIVE_fnc_hashCreate;',worldname,"civ"];
-    "ALiVEClient" callExtension format['sectorData~%1|%2|[_clustersCiv,"consolidated",%3] call ALIVE_fnc_hashSet;',worldname,"civ",_consolidatedClusters];
-    "ALiVEClient" callExtension format['sectorData~%1|%2|[_clustersCiv,"power",%3] call ALIVE_fnc_hashSet;',worldname,"civ",_powerClusters];
-    "ALiVEClient" callExtension format['sectorData~%1|%2|[_clustersCiv,"comms",%3] call ALIVE_fnc_hashSet;',worldname,"civ",_commsClusters];
-    "ALiVEClient" callExtension format['sectorData~%1|%2|[_clustersCiv,"marine",%3] call ALIVE_fnc_hashSet;',worldname,"civ",_marineClusters];
-    "ALiVEClient" callExtension format['sectorData~%1|%2|[_clustersCiv,"fuel",%3] call ALIVE_fnc_hashSet;',worldname,"civ",_fuelClusters];
-    "ALiVEClient" callExtension format['sectorData~%1|%2|[_clustersCiv,"rail",%3] call ALIVE_fnc_hashSet;',worldname,"civ",_railClusters];
-    "ALiVEClient" callExtension format['sectorData~%1|%2|[_clustersCiv,"construction",%3] call ALIVE_fnc_hashSet;',worldname,"civ",_costructionClusters];
-    "ALiVEClient" callExtension format['sectorData~%1|%2|[_clustersCiv,"settlement",%3] call ALIVE_fnc_hashSet;',worldname,"civ",_settlementClusters];
-    "ALiVEClient" callExtension format['sectorData~%1|%2|[_sectorData,"clustersCiv",_clustersCiv] call ALIVE_fnc_hashSet;',worldname,"civ"];
+    [_exportWriter, format['sectorData~%1|%2|_clustersCiv = [] call ALIVE_fnc_hashCreate;',worldname,"civ"]] call ALIVE_fnc_exportWrite;
+    [_exportWriter, format['sectorData~%1|%2|[_clustersCiv,"consolidated",%3] call ALIVE_fnc_hashSet;',worldname,"civ",_consolidatedClusters]] call ALIVE_fnc_exportWrite;
+    [_exportWriter, format['sectorData~%1|%2|[_clustersCiv,"power",%3] call ALIVE_fnc_hashSet;',worldname,"civ",_powerClusters]] call ALIVE_fnc_exportWrite;
+    [_exportWriter, format['sectorData~%1|%2|[_clustersCiv,"comms",%3] call ALIVE_fnc_hashSet;',worldname,"civ",_commsClusters]] call ALIVE_fnc_exportWrite;
+    [_exportWriter, format['sectorData~%1|%2|[_clustersCiv,"marine",%3] call ALIVE_fnc_hashSet;',worldname,"civ",_marineClusters]] call ALIVE_fnc_exportWrite;
+    [_exportWriter, format['sectorData~%1|%2|[_clustersCiv,"fuel",%3] call ALIVE_fnc_hashSet;',worldname,"civ",_fuelClusters]] call ALIVE_fnc_exportWrite;
+    [_exportWriter, format['sectorData~%1|%2|[_clustersCiv,"rail",%3] call ALIVE_fnc_hashSet;',worldname,"civ",_railClusters]] call ALIVE_fnc_exportWrite;
+    [_exportWriter, format['sectorData~%1|%2|[_clustersCiv,"construction",%3] call ALIVE_fnc_hashSet;',worldname,"civ",_costructionClusters]] call ALIVE_fnc_exportWrite;
+    [_exportWriter, format['sectorData~%1|%2|[_clustersCiv,"settlement",%3] call ALIVE_fnc_hashSet;',worldname,"civ",_settlementClusters]] call ALIVE_fnc_exportWrite;
+    [_exportWriter, format['sectorData~%1|%2|[_sectorData,"clustersCiv",_clustersCiv] call ALIVE_fnc_hashSet;',worldname,"civ"]] call ALIVE_fnc_exportWrite;
 
-    "ALiVEClient" callExtension format['sectorData~%1|%2|[ALIVE_gridData, "%3", _sectorData] call ALIVE_fnc_hashSet;',worldname,"civ",_sectorID];
+    [_exportWriter, format['sectorData~%1|%2|[ALIVE_gridData, "%3", _sectorData] call ALIVE_fnc_hashSet;',worldname,"civ",_sectorID]] call ALIVE_fnc_exportWrite;
 
 } forEach (_gridData select 1);
+
+if !([_exportWriter] call ALIVE_fnc_exportWrite) then {throw (_exportWriter get "error");};
 
 ["Adjustment complete, civilian results have been written to file"] call ALIVE_fnc_dump;
 

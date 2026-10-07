@@ -15,7 +15,6 @@ and invalidated for every alias when nodes change. Input nodes must be stationar
 Parameters:
 Array - Master clusters
 Array - Additional clusters (optional)
-HashMap - Optional output metrics
 
 Returns:
 Array - Surviving clusters, in original order
@@ -27,11 +26,8 @@ Jman
 
 params [
     ["_master", [], [[]]],
-    ["_redundant", [], [[]]],
-    ["_metrics", createHashMap]
+    ["_redundant", [], [[]]]
 ];
-private _instrument = count _this > 2;
-private _started = diag_tickTime;
 PROFILE_SCOPE(CONSOLIDATE, "ALiVE_fnc_consolidateClusters: spatial")
 private _result = _master;
 {
@@ -59,11 +55,6 @@ private _includePosition = {
     _maxX = _maxX max (_this select 0);
     _maxY = _maxY max (_this select 1);
 };
-private _distanceChecks = 0;
-private _queries = 0;
-private _candidateEntries = 0;
-private _merges = 0;
-private _indexMoves = 0;
 
 PROFILE_SCOPE(INDEX, "ALiVE_fnc_consolidateClusters: build grid")
 {
@@ -101,7 +92,6 @@ private _grid = [nil, "create", [_origin, _gridSize, _cellSize]] call ALiVE_fnc_
     };
 } forEach _centers;
 PROFILE_SCOPE_END(INDEX)
-private _indexSeconds = diag_tickTime - _started;
 
 PROFILE_SCOPE(MERGES, "ALiVE_fnc_consolidateClusters: merge pass")
 {
@@ -120,10 +110,6 @@ PROFILE_SCOPE(MERGES, "ALiVE_fnc_consolidateClusters: merge pass")
         if (count _outCenter == 0) then {_outCenter = [_out, "center"] call ALIVE_fnc_cluster;};
         if (count _outCenter > 0) then {
             private _candidates = _grid call ["findInRange", [_outCenter, MAX_CLUSTER_SIZE, true, true, false]];
-            if (_instrument) then {
-                _queries = _queries + 1;
-                _candidateEntries = _candidateEntries + count _candidates;
-            };
             _candidates = _candidates select {_x > _cursor};
             _candidates sort true;
             {
@@ -154,7 +140,6 @@ PROFILE_SCOPE(MERGES, "ALiVE_fnc_consolidateClusters: merge pass")
                             _otherPriority = [_other, "priority"] call ALIVE_fnc_cluster;
                             {_priorities set [_x, _otherPriority];} forEach (_aliases select _id);
                         };
-                        if (_instrument) then {_distanceChecks = _distanceChecks + 1;};
                         if ((_otherCenter distance _outCenter) < _max && {_outPriority >= _otherPriority}) then {
                             private _nodesOut = [_out, "nodes"] call ALIVE_fnc_cluster;
                             private _nodesOther = [_other, "nodes"] call ALIVE_fnc_cluster;
@@ -177,7 +162,6 @@ PROFILE_SCOPE(MERGES, "ALiVE_fnc_consolidateClusters: merge pass")
                             private _resultIndex = _liveIDs find _id;
                             _result set [_resultIndex, -1];
                             _liveIDs set [_resultIndex, -1];
-                            if (_instrument) then {_merges = _merges + 1;};
 
                             private _newCenter = [_out, "center"] call ALIVE_fnc_cluster;
                             {
@@ -189,7 +173,6 @@ PROFILE_SCOPE(MERGES, "ALiVE_fnc_consolidateClusters: merge pass")
                                 if (count _newCenter > 0) then {
                                     _grid call ["move", [_entry select 0, _newCenter, _x]];
                                     _entries set [_x, [_newCenter, _x]];
-                                    if (_instrument) then {_indexMoves = _indexMoves + 1;};
                                 } else {
                                     _grid call ["remove", _entry];
                                     _entries set [_x, []];
@@ -209,18 +192,6 @@ PROFILE_SCOPE(MERGES, "ALiVE_fnc_consolidateClusters: merge pass")
 } forEach _master;
 PROFILE_SCOPE_END(MERGES)
 
-if (_instrument) then {
-    _metrics set ["inputClusters", count _slots];
-    _metrics set ["outputClusters", count _result];
-    _metrics set ["cellSize", _cellSize];
-    _metrics set ["distanceChecks", _distanceChecks];
-    _metrics set ["queries", _queries];
-    _metrics set ["candidateEntries", _candidateEntries];
-    _metrics set ["merges", _merges];
-    _metrics set ["indexMoves", _indexMoves];
-    _metrics set ["indexSeconds", _indexSeconds];
-    _metrics set ["totalSeconds", diag_tickTime - _started];
-};
 ["Targets Consolidated"] call ALIVE_fnc_dump;
 PROFILE_SCOPE_END(CONSOLIDATE)
 _result

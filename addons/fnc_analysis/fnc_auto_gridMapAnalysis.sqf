@@ -37,6 +37,7 @@ _export = if(count _this > 2) then {_this select 2} else {false};
 _debug = if(count _this > 3) then {_this select 3} else {false};
 
 private _exportWriter = createHashMap;
+private _indexSubGrid = [];
 
 // reset existing analysis data
 if(count _sectors == 0) then {
@@ -69,7 +70,10 @@ if(_debug) then {
     };
     // DEBUG -------------------------------------------------------------------------------------
 
-    _subGrid = [_sector,10,format["Grid_%1",_forEachIndex]] call ALIVE_fnc_sectorSubGrid;
+    private _analysisGridArgs = [_sector,10,format["Grid_%1",_forEachIndex]];
+    if (!_debug) then {_analysisGridArgs pushBack _indexSubGrid;};
+    _subGrid = _analysisGridArgs call ALIVE_fnc_sectorSubGrid;
+    if (!_debug) then {_indexSubGrid = _subGrid;};
     _subGridSectors = [_subGrid, "sectors"] call ALIVE_fnc_sectorGrid;
 
     // DEBUG -------------------------------------------------------------------------------------
@@ -353,11 +357,13 @@ if(_debug) then {
     };
     // DEBUG -------------------------------------------------------------------------------------
 
-    [_subGrid, "destroy"] call ALIVE_fnc_sectorGrid;
+    if (_debug) then {[_subGrid, "destroy"] call ALIVE_fnc_sectorGrid;};
 
     if (_debug) then {[_sector, "debug", false] call ALIVE_fnc_sector;};
 
 
 } forEach _sectors;
+
+if (count _indexSubGrid > 0) then {[_indexSubGrid, "destroy"] call ALIVE_fnc_sectorGrid;};
 
 if (_export && {!([_exportWriter] call ALIVE_fnc_exportWrite)}) then {throw (_exportWriter get "error");};

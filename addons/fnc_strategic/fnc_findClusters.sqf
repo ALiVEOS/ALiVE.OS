@@ -15,15 +15,12 @@ Unresolved (null) objects are omitted.
 Parameters:
 Array - Objects, in seed and nearest-neighbor tie order
 Number - Maximum neighbor distance (optional, defaults to 150)
-HashMap - Optional output metrics; omit for normal calls
 
 Returns:
 Array - Clusters, with the same seed and node order as the linear algorithm
 
 Examples:
 _clusters = [_objects] call ALIVE_fnc_findClusters;
-_metrics = createHashMap;
-_clusters = [_objects, 150, _metrics] call ALIVE_fnc_findClusters;
 Author:
 Wolffy.au (original algorithm)
 Jman (large-list traversal approach)
@@ -36,19 +33,11 @@ ASSERT_DEFINED("_obj_array", _err);
 ASSERT_OP(typeName _obj_array, == ,"ARRAY", _err);
 
 PROFILE_SCOPE(CLUSTERING, "ALiVE_fnc_findClusters: spatial")
-private _instrument = count _this > 2;
-private _metrics = _this param [2, createHashMap];
-private _started = diag_tickTime;
 private _cellSize = 150;
 private _entries = [];
 private _rawPoints = [];
-private _occupiedCells = 0;
 private _points = [];
 private _active = [];
-private _distanceChecks = 0;
-private _bucketEntries = 0;
-private _queries = 0;
-private _nullObjects = 0;
 
 PROFILE_SCOPE(INDEX, "ALiVE_fnc_findClusters: build x_lib grid")
 private _minX = 0;
@@ -56,9 +45,7 @@ private _minY = 0;
 private _maxX = 0;
 private _maxY = 0;
 {
-    if (isNull _x) then {
-        _nullObjects = _nullObjects + 1;
-    } else {
+    if (!isNull _x) then {
         private _position = getPosWorld _x;
         _rawPoints pushBack [_position, _x];
         _minX = _minX min (_position select 0);
@@ -78,7 +65,6 @@ private _grid = [nil, "create", [_origin, _gridSize, _cellSize]] call ALiVE_fnc_
     private _bucket = _grid call ["coordsToSector", _coords];
     // Keep first occurrence/order. HashMap cannot use object identity as a key.
     if ((_bucket findIf {(_points select (_x select 1)) isEqualTo _object}) == -1) then {
-        if (count _bucket == 0) then {_occupiedCells = _occupiedCells + 1;};
         private _entry = [_position, count _points];
         _points pushBack _object;
         _entries pushBack _entry;
@@ -87,7 +73,6 @@ private _grid = [nil, "create", [_origin, _gridSize, _cellSize]] call ALiVE_fnc_
     };
 } forEach _rawPoints;
 PROFILE_SCOPE_END(INDEX)
-private _indexSeconds = diag_tickTime - _started;
 
 private _clusters = [];
 // The old helper starts its minimum at 999999 even for larger max distances.
@@ -114,11 +99,6 @@ for "_seed" from 0 to ((count _points) - 1) do {
             private _near = _grid call ["findInRange", [_entry select 0, _searchRadius, true, false, false]];
             private _bestDistance = 999999;
             private _next = -1;
-            if (_instrument) then {
-                _queries = _queries + 1;
-                _bucketEntries = _bucketEntries + count _near;
-                _distanceChecks = _distanceChecks + count _near;
-            };
             {
                 private _candidate = _x select 1;
                 private _distance = _first distance (_points select _candidate);
@@ -138,18 +118,5 @@ for "_seed" from 0 to ((count _points) - 1) do {
 };
 PROFILE_SCOPE_END(CHAINS)
 
-if (_instrument) then {
-    _metrics set ["inputObjects", count _obj_array];
-    _metrics set ["uniqueObjects", count _points];
-    _metrics set ["nullObjects", _nullObjects];
-    _metrics set ["cellSize", _cellSize];
-    _metrics set ["occupiedCells", _occupiedCells];
-    _metrics set ["clusters", count _clusters];
-    _metrics set ["distanceChecks", _distanceChecks];
-    _metrics set ["bucketEntries", _bucketEntries];
-    _metrics set ["queries", _queries];
-    _metrics set ["indexSeconds", _indexSeconds];
-    _metrics set ["totalSeconds", diag_tickTime - _started];
-};
 PROFILE_SCOPE_END(CLUSTERING)
 _clusters

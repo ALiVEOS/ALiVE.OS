@@ -170,6 +170,8 @@ _gridData = [] call ALIVE_fnc_hashCreate;
 } forEach (ALIVE_clustersMilHeli select 2);
 
 
+private _exportWriter = createHashMap;
+
 {
     _sectorID = _x;
     _sectorData = [_gridData,_sectorID] call ALIVE_fnc_hashGet;
@@ -178,18 +180,20 @@ _gridData = [] call ALIVE_fnc_hashCreate;
     _airClusters = [_sectorData, "air"] call ALIVE_fnc_hashGet;
     _heliClusters = [_sectorData, "heli"] call ALIVE_fnc_hashGet;
 
-    "ALiVEClient" callExtension format['sectorData~%1|%2|_sectorData = [ALIVE_gridData, "%3"] call ALIVE_fnc_hashGet;',worldname,"mil",_sectorID];
+    [_exportWriter, format['sectorData~%1|%2|_sectorData = [ALIVE_gridData, "%3"] call ALIVE_fnc_hashGet;',worldname,"mil",_sectorID]] call ALIVE_fnc_exportWrite;
     //_exportString = _exportString + '_sectorData = [_sector, "data"] call ALIVE_fnc_sector;';
 
-    "ALiVEClient" callExtension format['sectorData~%1|%2|_clustersMil = [] call ALIVE_fnc_hashCreate;',worldname,"mil"];
-    "ALiVEClient" callExtension format['sectorData~%1|%2|[_clustersMil,"consolidated",%3] call ALIVE_fnc_hashSet;',worldname,"mil",_consolidatedClusters];
-    "ALiVEClient" callExtension format['sectorData~%1|%2|[_clustersMil,"air",%3] call ALIVE_fnc_hashSet;',worldname,"mil",_airClusters];
-    "ALiVEClient" callExtension format['sectorData~%1|%2|[_clustersMil,"heli",%3] call ALIVE_fnc_hashSet;',worldname,"mil",_heliClusters];
-    "ALiVEClient" callExtension format['sectorData~%1|%2|[_sectorData,"clustersMil",_clustersMil] call ALIVE_fnc_hashSet;',worldname,"mil"];
+    [_exportWriter, format['sectorData~%1|%2|_clustersMil = [] call ALIVE_fnc_hashCreate;',worldname,"mil"]] call ALIVE_fnc_exportWrite;
+    [_exportWriter, format['sectorData~%1|%2|[_clustersMil,"consolidated",%3] call ALIVE_fnc_hashSet;',worldname,"mil",_consolidatedClusters]] call ALIVE_fnc_exportWrite;
+    [_exportWriter, format['sectorData~%1|%2|[_clustersMil,"air",%3] call ALIVE_fnc_hashSet;',worldname,"mil",_airClusters]] call ALIVE_fnc_exportWrite;
+    [_exportWriter, format['sectorData~%1|%2|[_clustersMil,"heli",%3] call ALIVE_fnc_hashSet;',worldname,"mil",_heliClusters]] call ALIVE_fnc_exportWrite;
+    [_exportWriter, format['sectorData~%1|%2|[_sectorData,"clustersMil",_clustersMil] call ALIVE_fnc_hashSet;',worldname,"mil"]] call ALIVE_fnc_exportWrite;
 
-    "ALiVEClient" callExtension format['sectorData~%1|%2|[ALIVE_gridData, "%3", _sectorData] call ALIVE_fnc_hashSet;',worldname,"mil",_sectorID];
+    [_exportWriter, format['sectorData~%1|%2|[ALIVE_gridData, "%3", _sectorData] call ALIVE_fnc_hashSet;',worldname,"mil",_sectorID]] call ALIVE_fnc_exportWrite;
 
 } forEach (_gridData select 1);
+
+if !([_exportWriter] call ALIVE_fnc_exportWrite) then {throw (_exportWriter get "error");};
 
 ["Adjustment complete, military results have been written to file"] call ALIVE_fnc_dump;
 

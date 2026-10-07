@@ -5,12 +5,14 @@ SCRIPT(sectorAnalysisFlatEmpty);
 Function: ALIVE_fnc_sectorAnalysisFlatEmpty
 
 Description:
-Perform analysis on an array of sectors using the find empty command
+Perform flat-position analysis, preserving the original search and flatness
+parameters. Default searches try the same one-metre empty area with a short
+search distance first; failures retry the original full sector distance.
+Explicit vehicle classes and distances of one metre or less retain one query.
 
 Parameters:
 Array - array of sectors
-Scalar - the max positions to find within the sector
-String - vehicle class to use to find empty position for
+String - optional vehicle class (default "false" selects the native default)
 
 Returns:
 ...
@@ -46,7 +48,16 @@ ASSERT_TRUE(typeName _sectors == "ARRAY",_err);
     if!(_vehicleClass == "false") then {
         _position = _centerPosition findEmptyPosition[1, _radius, _vehicleClass];
     }else{
-        _position = _centerPosition findEmptyPosition[1, _radius];
+        if (_radius > 1) then {
+            // Native search starts at the center. A short successful search
+            // returns the same first empty point without scanning the full area.
+            _position = _centerPosition findEmptyPosition[1, 1];
+            if (count _position == 0) then {
+                _position = _centerPosition findEmptyPosition[1, _radius];
+            };
+        } else {
+            _position = _centerPosition findEmptyPosition[1, _radius];
+        };
     };
 
     if(count _position > 0) then {

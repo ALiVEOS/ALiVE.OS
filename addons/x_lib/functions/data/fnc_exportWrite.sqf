@@ -3,17 +3,13 @@ SCRIPT(exportWrite);
 /* Queue complete export statements in one caller-owned context. A call with
    only the context flushes it. The caller must flush before reporting success.
    Native null/pipe handling is preserved by sending those packets individually.
-   Optional context fields: extension, limit, send (test transport callback).
+   Optional context fields: extension, limit.
    Failed writes latch error and prevent subsequent writes. */
 params ["_writer", ["_request", "", [""]]];
 if ((_writer getOrDefault ["error", ""]) != "") exitWith {false};
 private _send = {
     params ["_packet"];
-    private _response = if ("send" in _writer) then {
-        _packet call (_writer get "send")
-    } else {
-        (_writer getOrDefault ["extension", "ALiVEClient"]) callExtension _packet
-    };
+    private _response = (_writer getOrDefault ["extension", "ALiVEClient"]) callExtension _packet;
     if (_response != "SUCCESS") then {
         _writer set ["error", format ["ALiVE export write failed: %1", _response]];
     };
