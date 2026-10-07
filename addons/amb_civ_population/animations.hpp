@@ -18,10 +18,12 @@ class CfgMovesMaleSdr: CfgMovesBasic // Override CfgMovesMaleSdr class in which 
 		class CutSceneAnimationBaseSit;
 		class CutSceneAnimationBaseZoZo;
 
+		// The base of the calming set, never played itself: C5calming_apc.rtm was never in the mod, so it
+		// points at one of the set that was, rather than a file the game reports missing at every start.
 		class c5calming_apc: CutSceneAnimationBaseZoZo
 		{
 			actions = "NoActions";
-			file = "x\alive\addons\amb_civ_population\anim\C5calming_apc";
+			file = "x\alive\addons\amb_civ_population\anim\C5calming_fjodor";
 			looped = 0;
 			speed = 0.006384;
 			collisionShape = "A3\anims_f\Data\Geom\Sdr\geom_empty.p3d";
