@@ -2699,6 +2699,24 @@ switch(_operation) do {
                     _obj setVariable ["profileID", nil, true];
                     _obj setVariable ["profileIndex", nil, true];
                     _obj setVariable ["runtimeProfiled", nil, true];
+                    // With no profile, the profile system's loss line never fires for it, so a hull lost on
+                    // its stand was only ever noticed as gone at the next check. Say once what killed it and
+                    // what state it was in: asleep, held or put down. MPKilled, so it is heard here even when
+                    // the hull is local elsewhere (a player took it); taken off when the module lets go.
+                    if (isNil { _obj getVariable "ALiVE_mil_ato_lossEH" }) then {
+                        _obj setVariable ["ALiVE_mil_ato_lossEH", _obj addMPEventHandler ["MPKilled", {
+                            if (!isServer) exitWith {};
+                            params ["_hull", "_killer", "_instigator"];
+                            private _by = if (isNull _instigator) then { _killer } else { _instigator };
+                            ["ALIVE_fnc_ATOEffect - %1 (%2) destroyed at %3 (%4) by %5 (side %6, %7 m away); asleep %8, hidden %9, simulated %10, put down %11, damage allowed %12",
+                                typeOf _hull, _hull getVariable ["ALiVE_mil_ato_tail", "no tail"], (getPosATL _hull) apply { round _x }, mapGridPosition _hull,
+                                if (isNull _by) then { "nobody recorded" } else { if (_by isEqualTo _hull) then { "itself" } else { typeOf _by } },
+                                if (isNull _by || {_by isEqualTo _hull}) then { "-" } else { if (isNull group _by) then { side _by } else { side group _by } },
+                                if (isNull _by) then { -1 } else { round (_by distance _hull) },
+                                (_hull getVariable ["ALiVE_mil_ato_asleep", false]) isEqualTo true, isObjectHidden _hull, simulationEnabled _hull,
+                                _hull getVariable ["ALiVE_mil_ato_settleResult", "no"], isDamageAllowed _hull] call ALiVE_fnc_dump;
+                        }], false];
+                    };
                 };
             };
 
