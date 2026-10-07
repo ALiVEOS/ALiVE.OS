@@ -636,6 +636,8 @@ switch(_operation) do {
                 private _file = format ["x\alive\addons\mil_placement\clusters\clusters.%1_mil.sqf", toLower worldName];
                 ALIVE_loadedMilClusters = false;
                 call compile preprocessFileLineNumbers _file;
+                // objectives made only of invisible helipads, away from any other military building, are left out
+                [] call ALIVE_fnc_clustersDropStrayHelipads;
                 ALIVE_loadedMilClusters = true;
             };
         }] call CBA_fnc_directCall;

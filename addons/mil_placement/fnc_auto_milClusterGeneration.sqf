@@ -120,6 +120,13 @@ _clusters = [_clusters] call ALIVE_fnc_consolidateClusters;
 _clusters = [_clusters] call ALIVE_fnc_consolidateClusters;
 "MO - Locations Completed" call ALiVE_fnc_logger;
 
+// objectives made only of invisible helipads, away from any other military building, are left out
+private _kept = [[_clusters, _clusters_copy_hq, _clusters_copy_air, _clusters_copy_heli]] call ALIVE_fnc_clustersDropStrayHelipads;
+_clusters = _kept select 0;
+_clusters_copy_hq = _kept select 1;
+_clusters_copy_air = _kept select 2;
+_clusters_copy_heli = _kept select 3;
+
 {
     [_x, "debug", true] call ALIVE_fnc_cluster;
 } forEach _clusters;
