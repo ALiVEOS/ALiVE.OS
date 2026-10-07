@@ -5,68 +5,75 @@ SCRIPT(sectorAnalysisElevation);
 Function: ALIVE_fnc_sectorAnalysisElevation
 
 Description:
-Perform analysis on an array of sectors
+Sample sector-center elevation. LAND and SHORE reuse one hidden pointer per
+call, preserving marker placement on terrain whose direct height query differs. SEA
+samples retain the original pointer lifecycle to preserve wave-dependent depth. The
+pointer preserves the original water/surface placement semantics of setPos:
+SEA stores negative ATL, other terrain types store ASL. Input sample positions,
+ordering and sector data fields are preserved. Near-zero ASL samples use a
+fresh marker to preserve their sign partition.
 
 Parameters:
-None
+Array - Sectors
+HashMap - Optional output metrics
 
 Returns:
-...
-
-Examples:
-(begin example)
-// add elevation data to passed sector objects
-_result = [] call ALIVE_fnc_sectorAnalysisElevation;
-(end)
-
-See Also:
-
+Nothing
 
 Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_sectors","_err","_sector","_result","_centerPosition","_bounds","_dimensions","_elevation","_elevationData","_markers","_m","_id","_sectorData","_terrainData"];
-
-_sectors = _this select 0;
-_err = format["sector analysis elevation requires an array of sectors - %1",_sectors];
-ASSERT_TRUE(typeName _sectors == "ARRAY",_err);
-
+params [["_sectors", [], [[]]], ["_metrics", createHashMap]];
+private _instrument = count _this > 1;
+private _started = diag_tickTime;
+private _marker = objNull;
+private _directSamples = 0;
+private _pointerSamples = 0;
+private _created = 0;
+PROFILE_SCOPE(ELEVATION, "ALiVE_fnc_sectorAnalysisElevation: sample")
 {
-    _sector = _x;
-
-    _centerPosition = [_sector, "center"] call ALIVE_fnc_sector;
-    _id = [_sector, "id"] call ALIVE_fnc_sector;
-    _bounds = [_sector, "bounds"] call ALIVE_fnc_sector;
-    _dimensions = [_sector, "dimensions"] call ALIVE_fnc_sector;
-    _sectorData = [_sector, "data"] call ALIVE_fnc_sector;
-    _terrainData = [_sectorData, "terrain"] call ALIVE_fnc_hashGet;
-
-    _elevationData = [];
-    _markers = [];
-
-    if(_terrainData == "SEA") then {
-        _m = [_centerPosition] call ALIVE_fnc_spawnDebugMarker;
-        hideObjectGlobal _m;
-        _markers pushback _m;
-        _elevation = ((getPosATL _m) select 2);
+    private _center = [_x, "center"] call ALIVE_fnc_sector;
+    private _data = [_x, "data"] call ALIVE_fnc_sector;
+    private _terrain = [_data, "terrain"] call ALIVE_fnc_hashGet;
+    private _elevation = 0;
+    if (_terrain == "SEA") then {
+        private _seaMarker = [_center] call ALIVE_fnc_spawnDebugMarker;
+        hideObjectGlobal _seaMarker;
+        _elevation = (getPosATL _seaMarker) select 2;
         _elevation = _elevation - (_elevation * 2);
-        _elevationData pushback [_centerPosition,_elevation];
-
+        deleteVehicle _seaMarker;
+        if (_instrument) then {_created = _created + 1; _pointerSamples = _pointerSamples + 1;};
     } else {
-        _m = [_centerPosition] call ALIVE_fnc_spawnDebugMarker;
-        hideObjectGlobal _m;
-        _markers pushback _m;
-        _elevation = ((getPosASL _m) select 2);
-        _elevationData pushback [_centerPosition,_elevation];
+        if (isNull _marker) then {
+            _marker = [_center] call ALIVE_fnc_spawnDebugMarker;
+            hideObjectGlobal _marker;
+            if (_instrument) then {_created = _created + 1;};
+        } else {
+            _marker setPos _center;
+        };
+        _elevation = (getPosASL _marker) select 2;
+        // Preserve the original sign partition at the water/zero boundary.
+        // Reusing a pointer can differ by a few float units near zero.
+        if (abs _elevation <= 0.0001) then {
+            private _zeroMarker = [_center] call ALIVE_fnc_spawnDebugMarker;
+            hideObjectGlobal _zeroMarker;
+            _elevation = (getPosASL _zeroMarker) select 2;
+            deleteVehicle _zeroMarker;
+            if (_instrument) then {_created = _created + 1;};
+        };
+        if (_instrument) then {_pointerSamples = _pointerSamples + 1;};
     };
-
-    {
-        deleteVehicle _x;
-    } forEach _markers;
-
-    // store the result of the analysis on the sector instance
-    [_sector, "data", ["elevationSamples",_elevationData]] call ALIVE_fnc_sector;
-    [_sector, "data", ["elevation",_elevation]] call ALIVE_fnc_sector;
-
+    [_x, "data", ["elevationSamples", [[_center, _elevation]]]] call ALIVE_fnc_sector;
+    [_x, "data", ["elevation", _elevation]] call ALIVE_fnc_sector;
 } forEach _sectors;
+if (!isNull _marker) then {deleteVehicle _marker;};
+if (_instrument) then {
+    _metrics set ["samples", count _sectors];
+    _metrics set ["directSamples", _directSamples];
+    _metrics set ["pointerSamples", _pointerSamples];
+    _metrics set ["objectsCreated", _created];
+    _metrics set ["objectsDeleted", _created];
+    _metrics set ["totalSeconds", diag_tickTime - _started];
+};
+PROFILE_SCOPE_END(ELEVATION)

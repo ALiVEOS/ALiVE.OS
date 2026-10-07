@@ -12,7 +12,7 @@ Array - A list of clusters
 String - Output array name
 
 Returns:
-String - String version of the clusters
+Bool - write/queue success (shared contexts must be flushed by the caller)
 
 Examples:
 (begin example)
@@ -29,20 +29,21 @@ nil
 ---------------------------------------------------------------------------- */
 
 
-private ["_result","_state","_nodes"];
+private ["_state","_nodes"];
 
 params [
     ["_clusters", [], [[]]],
     ["_arrayName", "", [""]],
     ["_count", 0, [0]],
-    ["_type", "", [""]]
+    ["_type", "", [""]],
+    ["_exportWriter", createHashMap, [createHashMap]]
 ];
 
 // diag_log str(_this);
 
-_result = true;
+private _ownsWriter = count _this < 5;
 
-"ALiVEClient" callExtension format['clusterData~%1|%2|%3 = [] call ALIVE_fnc_hashCreate;',worldName,_type,_arrayName];
+[_exportWriter, format['clusterData~%1|%2|%3 = [] call ALIVE_fnc_hashCreate;',worldName,_type,_arrayName]] call ALIVE_fnc_exportWrite;
 {
 
     _state = [_x, "state"] call ALIVE_fnc_cluster;
@@ -50,30 +51,30 @@ _result = true;
 
     if(count _nodes > 0) then {
 
-        "ALiVEClient" callExtension format['clusterData~%1|%2|_cluster = [nil, "create"] call ALIVE_fnc_cluster;',worldName,_type];
+        [_exportWriter, format['clusterData~%1|%2|_cluster = [nil, "create"] call ALIVE_fnc_cluster;',worldName,_type]] call ALIVE_fnc_exportWrite;
 
-        "ALiVEClient" callExtension format['clusterData~%1|%2|_nodes = [];',worldName,_type];
+        [_exportWriter, format['clusterData~%1|%2|_nodes = [];',worldName,_type]] call ALIVE_fnc_exportWrite;
         {
             if!(isNil "_x") then {
-                "ALiVEClient" callExtension format['clusterData~%1|%2|_nodes set [count _nodes, %3];',worldName,_type,_x];
+                [_exportWriter, format['clusterData~%1|%2|_nodes set [count _nodes, %3];',worldName,_type,_x]] call ALIVE_fnc_exportWrite;
             };
         } forEach _nodes;
-        "ALiVEClient" callExtension format['clusterData~%1|%2|[_cluster,"nodes",_nodes] call ALIVE_fnc_hashSet;',worldName,_type];
-        "ALiVEClient" callExtension format['clusterData~%1|%2|[_cluster, "state", _cluster] call ALIVE_fnc_cluster;',worldName,_type];
+        [_exportWriter, format['clusterData~%1|%2|[_cluster,"nodes",_nodes] call ALIVE_fnc_hashSet;',worldName,_type]] call ALIVE_fnc_exportWrite;
+        [_exportWriter, format['clusterData~%1|%2|[_cluster, "state", _cluster] call ALIVE_fnc_cluster;',worldName,_type]] call ALIVE_fnc_exportWrite;
 
-        "ALiVEClient" callExtension format['clusterData~%1|%2|[_cluster,"clusterID","c_%3"] call ALIVE_fnc_hashSet;',worldName,_type,_count];
+        [_exportWriter, format['clusterData~%1|%2|[_cluster,"clusterID","c_%3"] call ALIVE_fnc_hashSet;',worldName,_type,_count]] call ALIVE_fnc_exportWrite;
         // Same accessor requirement as fnc_staticClusterOutput - a merged cluster's
         // center/size are invalidated until read through ALIVE_fnc_cluster.
-        "ALiVEClient" callExtension format['clusterData~%1|%2|[_cluster,"center",%3] call ALIVE_fnc_hashSet;',worldName,_type,[_x,"center"] call ALIVE_fnc_cluster];
-        "ALiVEClient" callExtension format['clusterData~%1|%2|[_cluster,"size",%3] call ALIVE_fnc_hashSet;',worldName,_type,[_x,"size"] call ALIVE_fnc_cluster];
-        "ALiVEClient" callExtension format['clusterData~%1|%2|[_cluster,"type","%3"] call ALIVE_fnc_hashSet;',worldName,_type,[_x,"type"] call ALIVE_fnc_hashGet];
-        "ALiVEClient" callExtension format['clusterData~%1|%2|[_cluster,"priority",%3] call ALIVE_fnc_hashSet;',worldName,_type,[_x,"priority"] call ALIVE_fnc_hashGet];
-        "ALiVEClient" callExtension format['clusterData~%1|%2|[_cluster,"debugColor","%3"] call ALIVE_fnc_hashSet;',worldName,_type,[_x,"debugColor"] call ALIVE_fnc_hashGet];
+        [_exportWriter, format['clusterData~%1|%2|[_cluster,"center",%3] call ALIVE_fnc_hashSet;',worldName,_type,[_x,"center"] call ALIVE_fnc_cluster]] call ALIVE_fnc_exportWrite;
+        [_exportWriter, format['clusterData~%1|%2|[_cluster,"size",%3] call ALIVE_fnc_hashSet;',worldName,_type,[_x,"size"] call ALIVE_fnc_cluster]] call ALIVE_fnc_exportWrite;
+        [_exportWriter, format['clusterData~%1|%2|[_cluster,"type","%3"] call ALIVE_fnc_hashSet;',worldName,_type,[_x,"type"] call ALIVE_fnc_hashGet]] call ALIVE_fnc_exportWrite;
+        [_exportWriter, format['clusterData~%1|%2|[_cluster,"priority",%3] call ALIVE_fnc_hashSet;',worldName,_type,[_x,"priority"] call ALIVE_fnc_hashGet]] call ALIVE_fnc_exportWrite;
+        [_exportWriter, format['clusterData~%1|%2|[_cluster,"debugColor","%3"] call ALIVE_fnc_hashSet;',worldName,_type,[_x,"debugColor"] call ALIVE_fnc_hashGet]] call ALIVE_fnc_exportWrite;
 
-        "ALiVEClient" callExtension format['clusterData~%1|%2|[%3,"c_%4",_cluster] call ALIVE_fnc_hashSet;',worldName,_type,_arrayName,_count];
+        [_exportWriter, format['clusterData~%1|%2|[%3,"c_%4",_cluster] call ALIVE_fnc_hashSet;',worldName,_type,_arrayName,_count]] call ALIVE_fnc_exportWrite;
 
         _count = _count + 1;
     };
 } forEach _clusters;
 
-_result
+if (_ownsWriter) then {[_exportWriter] call ALIVE_fnc_exportWrite} else {(_exportWriter getOrDefault ["error", ""]) == ""}

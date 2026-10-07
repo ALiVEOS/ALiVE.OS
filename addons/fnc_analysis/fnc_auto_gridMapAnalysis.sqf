@@ -9,8 +9,9 @@ Perform analysis of terrain for a grid
 
 Parameters:
 Grid - the grid to run the map analysis on
-Bool - export - exports the results of the analysis to the clipboard once completed
-Bool - debug - debug mode
+Array - Optional sectors (empty selects the whole grid)
+Bool - export - exports results through ALiVEClient
+Bool - debug - enables markers, verbose arrays and stage diagnostics
 
 Returns:
 ...
@@ -35,13 +36,15 @@ _sectors = _this select 1;
 _export = if(count _this > 2) then {_this select 2} else {false};
 _debug = if(count _this > 3) then {_this select 3} else {false};
 
+private _exportWriter = createHashMap;
+
 // reset existing analysis data
 if(count _sectors == 0) then {
     _sectors = [_grid, "sectors"] call ALIVE_fnc_sectorGrid;
 };
 
 if(_export) then {
-    "ALiVEClient" callExtension format["indexData~%1|ALIVE_gridData = [] call ALIVE_fnc_hashCreate;",worldName];
+    [_exportWriter, format["indexData~%1|ALIVE_gridData = [] call ALIVE_fnc_hashCreate;",worldName]] call ALIVE_fnc_exportWrite;
 };
 
 // DEBUG -------------------------------------------------------------------------------------
@@ -56,7 +59,7 @@ if(_debug) then {
     _sectorData = [_sector, "data"] call ALIVE_fnc_sector;
     _sectorID = [_sector, "id"] call ALIVE_fnc_sector;
 
-    [_sector, "debug", true] call ALIVE_fnc_sector;
+    if (_debug) then {[_sector, "debug", true] call ALIVE_fnc_sector;};
 
     // DEBUG -------------------------------------------------------------------------------------
     if(_debug) then {
@@ -132,11 +135,11 @@ if(_debug) then {
         _subGridShore = [_subGridTerrainSamples, "shore"] call ALIVE_fnc_hashGet;
         _subGridSea = [_subGridTerrainSamples, "sea"] call ALIVE_fnc_hashGet;
 
-        _landTerrain = _landTerrain + _subGridLand;
-        _shoreTerrain = _shoreTerrain + _subGridShore;
-        _seaTerrain = _seaTerrain + _subGridSea;
+        _landTerrain append _subGridLand;
+        _shoreTerrain append _subGridShore;
+        _seaTerrain append _subGridSea;
 
-        _elevationSamples = _elevationSamples + _subGridElevationSamples;
+        _elevationSamples append _subGridElevationSamples;
 
     } forEach _subGridSectors;
 
@@ -156,9 +159,11 @@ if(_debug) then {
 
     _elevation = _elevation / ((count _elevationSamples)-1);
 
-    ["L: %1",_landTerrain] call ALIVE_fnc_dump;
-    ["S: %1",_shoreTerrain] call ALIVE_fnc_dump;
-    ["SEA: %1",_seaTerrain] call ALIVE_fnc_dump;
+    if (_debug) then {
+        ["L: %1",_landTerrain] call ALIVE_fnc_dump;
+        ["S: %1",_shoreTerrain] call ALIVE_fnc_dump;
+        ["SEA: %1",_seaTerrain] call ALIVE_fnc_dump;
+    };
 
     // determine terrain type
     if((count _landTerrain == 0) && (count _shoreTerrain == 0) && (count _seaTerrain > 0)) then {
@@ -249,21 +254,21 @@ if(_debug) then {
             _subGridCrossroad = [_subGridRoads, "crossroad"] call ALIVE_fnc_hashGet;
             _subGridTerminus = [_subGridRoads, "terminus"] call ALIVE_fnc_hashGet;
 
-            _forestPlaces = _forestPlaces + _subGridForestPlaces;
-            _hillPlaces = _hillPlaces + _subGridHillPlaces;
+            _forestPlaces append _subGridForestPlaces;
+            _hillPlaces append _subGridHillPlaces;
             /*
-            _meadowPlaces = _meadowPlaces + _subGridMeadowPlaces;
-            _treePlaces = _treePlaces + _subGridTreePlaces;
-            _housePlaces = _housePlaces + _subGridHousePlaces;
-            _seaPlaces = _seaPlaces + _subGridSeaPlaces;
+            _meadowPlaces append _subGridMeadowPlaces;
+            _treePlaces append _subGridTreePlaces;
+            _housePlaces append _subGridHousePlaces;
+            _seaPlaces append _subGridSeaPlaces;
             */
 
-            _roadSamples = _roadSamples + _subGridRoad;
-            _crossroadSamples = _crossroadSamples + _subGridCrossroad;
-            _terminusSamples = _terminusSamples + _subGridTerminus;
+            _roadSamples append _subGridRoad;
+            _crossroadSamples append _subGridCrossroad;
+            _terminusSamples append _subGridTerminus;
 
             if(count (_subGridFlatEmptySamples select 0) > 0) then {
-                _flatEmptySamples = _flatEmptySamples + _subGridFlatEmptySamples;
+                _flatEmptySamples append _subGridFlatEmptySamples;
             };
 
         } forEach _subGridSectors;
@@ -305,38 +310,38 @@ if(_debug) then {
 
 
     if(_export) then {
-        "ALiVEClient" callExtension format["indexData~%1|_sectorData = [] call ALIVE_fnc_hashCreate;",worldName];
+        [_exportWriter, format["indexData~%1|_sectorData = [] call ALIVE_fnc_hashCreate;",worldName]] call ALIVE_fnc_exportWrite;
 
-        "ALiVEClient" callExtension format['indexData~%1|[_sectorData,"elevationSamplesLand",%2] call ALIVE_fnc_hashSet;',worldName,_elevationSamplesLand];
-        "ALiVEClient" callExtension format['indexData~%1|[_sectorData,"elevationSamplesSea",%2] call ALIVE_fnc_hashSet;',worldName,_elevationSamplesSea];
-        "ALiVEClient" callExtension format['indexData~%1|[_sectorData,"elevation",%2] call ALIVE_fnc_hashSet;',worldName,_elevation];
-        "ALiVEClient" callExtension format['indexData~%1|[_sectorData,"flatEmpty",%2] call ALIVE_fnc_hashSet;',worldName,_flatEmptySamples];
-        "ALiVEClient" callExtension format['indexData~%1|[_sectorData,"terrain","%2"] call ALIVE_fnc_hashSet;',worldName,_terrain];
+        [_exportWriter, format['indexData~%1|[_sectorData,"elevationSamplesLand",%2] call ALIVE_fnc_hashSet;',worldName,_elevationSamplesLand]] call ALIVE_fnc_exportWrite;
+        [_exportWriter, format['indexData~%1|[_sectorData,"elevationSamplesSea",%2] call ALIVE_fnc_hashSet;',worldName,_elevationSamplesSea]] call ALIVE_fnc_exportWrite;
+        [_exportWriter, format['indexData~%1|[_sectorData,"elevation",%2] call ALIVE_fnc_hashSet;',worldName,_elevation]] call ALIVE_fnc_exportWrite;
+        [_exportWriter, format['indexData~%1|[_sectorData,"flatEmpty",%2] call ALIVE_fnc_hashSet;',worldName,_flatEmptySamples]] call ALIVE_fnc_exportWrite;
+        [_exportWriter, format['indexData~%1|[_sectorData,"terrain","%2"] call ALIVE_fnc_hashSet;',worldName,_terrain]] call ALIVE_fnc_exportWrite;
 
-        "ALiVEClient" callExtension format['indexData~%1|_terrainSamples = [] call ALIVE_fnc_hashCreate;',worldName];
-        "ALiVEClient" callExtension format['indexData~%1|[_terrainSamples,"land",%2] call ALIVE_fnc_hashSet;',worldName,_landTerrain];
-        "ALiVEClient" callExtension format['indexData~%1|[_terrainSamples,"sea",%2] call ALIVE_fnc_hashSet;',worldName,_seaTerrain];
-        "ALiVEClient" callExtension format['indexData~%1|[_terrainSamples,"shore",%2] call ALIVE_fnc_hashSet;',worldName,_shoreTerrain];
-        "ALiVEClient" callExtension format['indexData~%1|[_sectorData,"terrainSamples",_terrainSamples] call ALIVE_fnc_hashSet;',worldName];
+        [_exportWriter, format['indexData~%1|_terrainSamples = [] call ALIVE_fnc_hashCreate;',worldName]] call ALIVE_fnc_exportWrite;
+        [_exportWriter, format['indexData~%1|[_terrainSamples,"land",%2] call ALIVE_fnc_hashSet;',worldName,_landTerrain]] call ALIVE_fnc_exportWrite;
+        [_exportWriter, format['indexData~%1|[_terrainSamples,"sea",%2] call ALIVE_fnc_hashSet;',worldName,_seaTerrain]] call ALIVE_fnc_exportWrite;
+        [_exportWriter, format['indexData~%1|[_terrainSamples,"shore",%2] call ALIVE_fnc_hashSet;',worldName,_shoreTerrain]] call ALIVE_fnc_exportWrite;
+        [_exportWriter, format['indexData~%1|[_sectorData,"terrainSamples",_terrainSamples] call ALIVE_fnc_hashSet;',worldName]] call ALIVE_fnc_exportWrite;
 
-        "ALiVEClient" callExtension format['indexData~%1|_bestPlaces = [] call ALIVE_fnc_hashCreate;',worldName];
-        "ALiVEClient" callExtension  format['indexData~%1|[_bestPlaces,"forest",%2] call ALIVE_fnc_hashSet;',worldName,_forestPlaces];
-        "ALiVEClient" callExtension  format['indexData~%1|[_bestPlaces,"exposedHills",%2] call ALIVE_fnc_hashSet;',worldName,_hillPlaces];
+        [_exportWriter, format['indexData~%1|_bestPlaces = [] call ALIVE_fnc_hashCreate;',worldName]] call ALIVE_fnc_exportWrite;
+        [_exportWriter, format['indexData~%1|[_bestPlaces,"forest",%2] call ALIVE_fnc_hashSet;',worldName,_forestPlaces]] call ALIVE_fnc_exportWrite;
+        [_exportWriter, format['indexData~%1|[_bestPlaces,"exposedHills",%2] call ALIVE_fnc_hashSet;',worldName,_hillPlaces]] call ALIVE_fnc_exportWrite;
         /*
-        "ALiVEClient" callExtension  format['indexData~%1|[_bestPlaces,"meadow",%2] call ALIVE_fnc_hashSet;',worldName,_meadowPlaces];
-        "ALiVEClient" callExtension  format['indexData~%1|[_bestPlaces,"exposedTrees",%2] call ALIVE_fnc_hashSet;',worldName,_treePlaces];
-        "ALiVEClient" callExtension  format['indexData~%1|[_bestPlaces,"houses",%2] call ALIVE_fnc_hashSet;',worldName,_housePlaces];
-        "ALiVEClient" callExtension  format['indexData~%1|[_bestPlaces,"sea",%2] call ALIVE_fnc_hashSet;',worldName,_seaPlaces];
+        [_exportWriter, format['indexData~%1|[_bestPlaces,"meadow",%2] call ALIVE_fnc_hashSet;',worldName,_meadowPlaces]] call ALIVE_fnc_exportWrite;
+        [_exportWriter, format['indexData~%1|[_bestPlaces,"exposedTrees",%2] call ALIVE_fnc_hashSet;',worldName,_treePlaces]] call ALIVE_fnc_exportWrite;
+        [_exportWriter, format['indexData~%1|[_bestPlaces,"houses",%2] call ALIVE_fnc_hashSet;',worldName,_housePlaces]] call ALIVE_fnc_exportWrite;
+        [_exportWriter, format['indexData~%1|[_bestPlaces,"sea",%2] call ALIVE_fnc_hashSet;',worldName,_seaPlaces]] call ALIVE_fnc_exportWrite;
         */
-        "ALiVEClient" callExtension format['indexData~%1|[_sectorData,"bestPlaces",_bestPlaces] call ALIVE_fnc_hashSet;',worldName];
+        [_exportWriter, format['indexData~%1|[_sectorData,"bestPlaces",_bestPlaces] call ALIVE_fnc_hashSet;',worldName]] call ALIVE_fnc_exportWrite;
 
-        "ALiVEClient" callExtension  format['indexData~%1|_roads = [] call ALIVE_fnc_hashCreate;',worldName];
-        "ALiVEClient" callExtension  str(formatText['indexData~%1|[_roads,"road",%2] call ALIVE_fnc_hashSet;',worldName,_roadSamples]);
-        "ALiVEClient" callExtension  format['indexData~%1|[_roads,"crossroad",%2] call ALIVE_fnc_hashSet;',worldName,_crossroadSamples];
-        "ALiVEClient" callExtension  format['indexData~%1|[_roads,"terminus",%2] call ALIVE_fnc_hashSet;',worldName,_terminusSamples];
-        "ALiVEClient" callExtension  format['indexData~%1|[_sectorData,"roads",_roads] call ALIVE_fnc_hashSet;',worldName];
+        [_exportWriter, format['indexData~%1|_roads = [] call ALIVE_fnc_hashCreate;',worldName]] call ALIVE_fnc_exportWrite;
+        [_exportWriter, str(formatText['indexData~%1|[_roads,"road",%2] call ALIVE_fnc_hashSet;',worldName,_roadSamples])] call ALIVE_fnc_exportWrite;
+        [_exportWriter, format['indexData~%1|[_roads,"crossroad",%2] call ALIVE_fnc_hashSet;',worldName,_crossroadSamples]] call ALIVE_fnc_exportWrite;
+        [_exportWriter, format['indexData~%1|[_roads,"terminus",%2] call ALIVE_fnc_hashSet;',worldName,_terminusSamples]] call ALIVE_fnc_exportWrite;
+        [_exportWriter, format['indexData~%1|[_sectorData,"roads",_roads] call ALIVE_fnc_hashSet;',worldName]] call ALIVE_fnc_exportWrite;
 
-        "ALiVEClient" callExtension  format['indexData~%1|[ALIVE_gridData, "%2", _sectorData] call ALIVE_fnc_hashSet;',worldName,_sectorID];
+        [_exportWriter, format['indexData~%1|[ALIVE_gridData, "%2", _sectorData] call ALIVE_fnc_hashSet;',worldName,_sectorID]] call ALIVE_fnc_exportWrite;
     };
 
     // DEBUG -------------------------------------------------------------------------------------
@@ -350,7 +355,9 @@ if(_debug) then {
 
     [_subGrid, "destroy"] call ALIVE_fnc_sectorGrid;
 
-    [_sector, "debug", false] call ALIVE_fnc_sector;
+    if (_debug) then {[_sector, "debug", false] call ALIVE_fnc_sector;};
 
 
 } forEach _sectors;
+
+if (_export && {!([_exportWriter] call ALIVE_fnc_exportWrite)}) then {throw (_exportWriter get "error");};

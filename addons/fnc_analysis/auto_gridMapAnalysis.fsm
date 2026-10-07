@@ -64,7 +64,7 @@ class FSM
        "_allSectors = [_grid, ""sectors""] call ALIVE_fnc_sectorGrid;" \n
        "[""Sectors created: %1"",count _allSectors] call ALiVE_fnc_dump;" \n
        "" \n
-       "[_grid, [], true, true] call ALIVE_fnc_auto_gridMapAnalysis;"/*%FSM</STATEINIT""">*/;
+       "[_grid, [], true, missionNamespace getVariable [""ALIVE_indexing_debug"", false]] call ALIVE_fnc_auto_gridMapAnalysis;"/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
       class Links
       {

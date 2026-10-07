@@ -2328,3 +2328,10 @@ class vehicleSetDamage
 	ext = ".sqf";
 	RECOMPILE;
 };
+
+class exportWrite
+{
+    file = "\x\alive\addons\x_lib\functions\data\fnc_exportWrite.sqf";
+    ext = ".sqf";
+    RECOMPILE;
+};

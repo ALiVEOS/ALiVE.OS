@@ -193,29 +193,30 @@ _clusters = [_clusters] call ALIVE_fnc_consolidateClusters;
 
 
 
+private _exportWriter = createHashMap;
 private _worldName = toLower(worldName);
 private _clusterCount = 0;
 
-"ALiVEClient" callExtension format["clusterData~%1|%2|#include ""\x\alive\addons\civ_placement\script_component.hpp""",worldName, "civ"];
+[_exportWriter, format["clusterData~%1|%2|#include ""\x\alive\addons\civ_placement\script_component.hpp""",worldName, "civ"]] call ALIVE_fnc_exportWrite;
 
-"ALiVEClient" callExtension format["clusterData~%1|%2|ALIVE_clusterBuild = [CLUSTERBUILD];",worldName, "civ"];
+[_exportWriter, format["clusterData~%1|%2|ALIVE_clusterBuild = [CLUSTERBUILD];",worldName, "civ"]] call ALIVE_fnc_exportWrite;
 
 private _pV = productVersion;
 // "ALiVEClient" callExtension format['clusterData~%1|%2|** ALIVE_clusterBuild = ["%1", "%2", %3, %4, "%5"];',worldName, "civ", _pV select 0, _pV select 1, _pV select 2, _pV select 3, _pV select 4];
 
 private _objectivesName = "ALIVE_clustersCiv";
-private _result = [_clusters, _objectivesName, _clusterCount,"civ"] call ALIVE_fnc_auto_staticClusterOutput;
+private _result = [_clusters, _objectivesName, _clusterCount,"civ",_exportWriter] call ALIVE_fnc_auto_staticClusterOutput;
 
 diag_log _objectivesName;
 
 if(count _clusters_copy_hq > 0) then {
     _objectivesName = "ALIVE_clustersCivHQ";
-    _result = [_clusters_copy_hq, _objectivesName, _clusterCount,"civ"] call ALIVE_fnc_auto_staticClusterOutput;
+    _result = [_clusters_copy_hq, _objectivesName, _clusterCount,"civ",_exportWriter] call ALIVE_fnc_auto_staticClusterOutput;
 
     diag_log _objectivesName;
 }else{
     _objectivesName = "ALIVE_clustersCivHQ";
-    _result = [_clusters_copy_comms, _objectivesName, _clusterCount,"civ"] call ALIVE_fnc_auto_staticClusterOutput;
+    _result = [_clusters_copy_comms, _objectivesName, _clusterCount,"civ",_exportWriter] call ALIVE_fnc_auto_staticClusterOutput;
 
     diag_log _objectivesName;
 };
@@ -224,12 +225,12 @@ _clusterCount = _clusterCount + (count _clusters_copy_hq);
 
 if(count _clusters_copy_power > 0) then {
     _objectivesName = "ALIVE_clustersCivPower";
-    _result = [_clusters_copy_power, _objectivesName, _clusterCount,"civ"] call ALIVE_fnc_auto_staticClusterOutput;
+    _result = [_clusters_copy_power, _objectivesName, _clusterCount,"civ",_exportWriter] call ALIVE_fnc_auto_staticClusterOutput;
 
     diag_log _objectivesName;
 }else{
     _objectivesName = "ALIVE_clustersCivPower";
-    _result = [_clusters_copy_comms, _objectivesName, _clusterCount,"civ"] call ALIVE_fnc_auto_staticClusterOutput;
+    _result = [_clusters_copy_comms, _objectivesName, _clusterCount,"civ",_exportWriter] call ALIVE_fnc_auto_staticClusterOutput;
 
     diag_log _objectivesName;
 };
@@ -238,75 +239,77 @@ _clusterCount = _clusterCount + (count _clusters_copy_power);
 
 if(count _clusters_copy_comms > 0) then {
     _objectivesName = "ALIVE_clustersCivComms";
-    _result = [_clusters_copy_comms, _objectivesName, _clusterCount,"civ"] call ALIVE_fnc_auto_staticClusterOutput;
+    _result = [_clusters_copy_comms, _objectivesName, _clusterCount,"civ",_exportWriter] call ALIVE_fnc_auto_staticClusterOutput;
 
     diag_log _objectivesName;
 }else{
     _objectivesName = "ALIVE_clustersCivComms";
-    "ALiVEClient" callExtension format["clusterData~%1|%2|%3 = [] call ALIVE_fnc_hashCreate;",worldName,"civ",_objectivesName];
+    [_exportWriter, format["clusterData~%1|%2|%3 = [] call ALIVE_fnc_hashCreate;",worldName,"civ",_objectivesName]] call ALIVE_fnc_exportWrite;
 };
 
 _clusterCount = _clusterCount + (count _clusters_copy_comms);
 
 if(count _clusters_copy_marine > 0) then {
     _objectivesName = "ALIVE_clustersCivMarine";
-    _result = [_clusters_copy_marine, _objectivesName, _clusterCount,"civ"] call ALIVE_fnc_auto_staticClusterOutput;
+    _result = [_clusters_copy_marine, _objectivesName, _clusterCount,"civ",_exportWriter] call ALIVE_fnc_auto_staticClusterOutput;
 
     diag_log _objectivesName;
 }else{
     _objectivesName = "ALIVE_clustersCivMarine";
-    "ALiVEClient" callExtension format["clusterData~%1|%2|%3 = [] call ALIVE_fnc_hashCreate;",worldName,"civ",_objectivesName];
+    [_exportWriter, format["clusterData~%1|%2|%3 = [] call ALIVE_fnc_hashCreate;",worldName,"civ",_objectivesName]] call ALIVE_fnc_exportWrite;
 };
 
 _clusterCount = _clusterCount + (count _clusters_copy_marine);
 
 if(count _clusters_copy_rail > 0) then {
     _objectivesName = "ALIVE_clustersCivRail";
-    _result = [_clusters_copy_rail, _objectivesName, _clusterCount,"civ"] call ALIVE_fnc_auto_staticClusterOutput;
+    _result = [_clusters_copy_rail, _objectivesName, _clusterCount,"civ",_exportWriter] call ALIVE_fnc_auto_staticClusterOutput;
 
     diag_log _objectivesName;
 }else{
     _objectivesName = "ALIVE_clustersCivRail";
-    "ALiVEClient" callExtension format["clusterData~%1|%2|%3 = [] call ALIVE_fnc_hashCreate;",worldName,"civ",_objectivesName];
+    [_exportWriter, format["clusterData~%1|%2|%3 = [] call ALIVE_fnc_hashCreate;",worldName,"civ",_objectivesName]] call ALIVE_fnc_exportWrite;
 };
 
 _clusterCount = _clusterCount + (count _clusters_copy_rail);
 
 if(count _clusters_copy_fuel > 0) then {
     _objectivesName = "ALIVE_clustersCivFuel";
-    _result = [_clusters_copy_fuel, _objectivesName, _clusterCount,"civ"] call ALIVE_fnc_auto_staticClusterOutput;
+    _result = [_clusters_copy_fuel, _objectivesName, _clusterCount,"civ",_exportWriter] call ALIVE_fnc_auto_staticClusterOutput;
 
     diag_log _objectivesName;
 }else{
     _objectivesName = "ALIVE_clustersCivFuel";
-    "ALiVEClient" callExtension format["clusterData~%1|%2|%3 = [] call ALIVE_fnc_hashCreate;",worldName,"civ",_objectivesName];
+    [_exportWriter, format["clusterData~%1|%2|%3 = [] call ALIVE_fnc_hashCreate;",worldName,"civ",_objectivesName]] call ALIVE_fnc_exportWrite;
 };
 
 _clusterCount = _clusterCount + (count _clusters_copy_fuel);
 
 if(count _clusters_copy_construction > 0) then {
     _objectivesName = "ALIVE_clustersCivConstruction";
-    _result = [_clusters_copy_construction, _objectivesName, _clusterCount,"civ"] call ALIVE_fnc_auto_staticClusterOutput;
+    _result = [_clusters_copy_construction, _objectivesName, _clusterCount,"civ",_exportWriter] call ALIVE_fnc_auto_staticClusterOutput;
 
     diag_log _objectivesName;
 }else{
     _objectivesName = "ALIVE_clustersCivConstruction";
-    "ALiVEClient" callExtension format["clusterData~%1|%2|%3 = [] call ALIVE_fnc_hashCreate;",worldName,"civ",_objectivesName];
+    [_exportWriter, format["clusterData~%1|%2|%3 = [] call ALIVE_fnc_hashCreate;",worldName,"civ",_objectivesName]] call ALIVE_fnc_exportWrite;
 };
 
 _clusterCount = _clusterCount + (count _clusters_copy_construction);
 
 if(count _clusters_copy_settlement > 0) then {
     _objectivesName = "ALIVE_clustersCivSettlement";
-    _result = [_clusters_copy_settlement, _objectivesName, _clusterCount,"civ"] call ALIVE_fnc_auto_staticClusterOutput;
+    _result = [_clusters_copy_settlement, _objectivesName, _clusterCount,"civ",_exportWriter] call ALIVE_fnc_auto_staticClusterOutput;
 
     diag_log _objectivesName;
 }else{
     _objectivesName = "ALIVE_clustersCivSettlement";
-    "ALiVEClient" callExtension format["clusterData~%1|%2|%3 = [] call ALIVE_fnc_hashCreate;",worldName,"civ",_objectivesName];
+    [_exportWriter, format["clusterData~%1|%2|%3 = [] call ALIVE_fnc_hashCreate;",worldName,"civ",_objectivesName]] call ALIVE_fnc_exportWrite;
 };
 
 _clusterCount = _clusterCount + (count _clusters_copy_settlement);
 
+
+if !([_exportWriter] call ALIVE_fnc_exportWrite) then {throw (_exportWriter get "error");};
 
 ["Civilian Objectives generation complete, results written to file"] call ALIVE_fnc_dump;

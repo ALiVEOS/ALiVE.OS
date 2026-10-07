@@ -75,6 +75,8 @@ private _launch = _this select 2;
     // ["FILE CHECK: %1", _file] call ALiVE_fnc_dump;
 
     call compile (preprocessFile _file);
+    // A new indexing run must resolve its new terrain placements afresh.
+    missionNamespace setVariable ["ALIVE_objectLookupCache", nil];
 
     // Check for static data
     [">>>>>>>>>>>>>>>>>> Checking for existing static data..."] call ALiVE_fnc_dump;
