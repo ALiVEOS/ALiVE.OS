@@ -37,7 +37,14 @@ if (!GVAR(SHOW)) exitWith { hintSilent "" };
             if (isNil QGVAR(LAST)) then {
                 parseText format ["<t size='1.1'>%1</t><br/>%2", localize "STR_ALIVE_PERF_SERVER", localize "STR_ALIVE_PERF_WAITING"]
             } else {
-                private _rows = GVAR(LAST) apply {format ["<t align='left'>%1</t><t align='right'>%2</t>", _x select 0, _x select 1]};
+                // plain labels on screen; the RPT keeps the short field names, which are easier to search
+                private _rows = GVAR(LAST) apply {
+                    _x params ["_key", "_value"];
+                    if (_key == "time") then { _value = [_value / 3600, "HH:MM:SS"] call BIS_fnc_timeToString };
+                    private _label = localize format ["STR_ALIVE_PERF_L_%1", toUpper _key];
+                    if (_label == "") then { _label = _key };
+                    format ["<t align='left'>%1</t><t align='right'>%2</t>", _label, _value]
+                };
                 parseText format ["<t size='1.1'>%1</t><br/>%2", localize "STR_ALIVE_PERF_SERVER", _rows joinString "<br/>"]
             };
         };

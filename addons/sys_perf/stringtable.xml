@@ -133,4 +133,134 @@
     <Portuguese>Aguardando a primeira medição...</Portuguese>
     <Russian>Ожидание первого замера...</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_PERF_L_TIME">
+    <English>Mission time</English>
+    <Chinese>任務時間</Chinese>
+    <Chinesesimp>任务时间</Chinesesimp>
+    <Spanish>Tiempo de misión</Spanish>
+    <French>Temps de mission</French>
+    <Portuguese>Tempo de missão</Portuguese>
+    <Russian>Время миссии</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_PERF_L_FPS">
+    <English>Server FPS</English>
+    <Chinese>伺服器 FPS</Chinese>
+    <Chinesesimp>服务器 FPS</Chinesesimp>
+    <Spanish>FPS del servidor</Spanish>
+    <French>FPS du serveur</French>
+    <Portuguese>FPS do servidor</Portuguese>
+    <Russian>FPS сервера</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_PERF_L_FPSMIN">
+    <English>Lowest FPS</English>
+    <Chinese>最低 FPS</Chinese>
+    <Chinesesimp>最低 FPS</Chinesesimp>
+    <Spanish>FPS mínimo</Spanish>
+    <French>FPS minimum</French>
+    <Portuguese>FPS mínimo</Portuguese>
+    <Russian>Минимальный FPS</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_PERF_L_PLAYERS">
+    <English>Players</English>
+    <Chinese>玩家</Chinese>
+    <Chinesesimp>玩家</Chinesesimp>
+    <Spanish>Jugadores</Spanish>
+    <French>Joueurs</French>
+    <Portuguese>Jogadores</Portuguese>
+    <Russian>Игроки</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_PERF_L_LOCALAI">
+    <English>AI on server</English>
+    <Chinese>伺服器上的 AI</Chinese>
+    <Chinesesimp>服务器上的 AI</Chinesesimp>
+    <Spanish>IA en el servidor</Spanish>
+    <French>IA sur le serveur</French>
+    <Portuguese>IA no servidor</Portuguese>
+    <Russian>ИИ на сервере</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_PERF_L_REMOTEAI">
+    <English>AI elsewhere</English>
+    <Chinese>其他機器上的 AI</Chinese>
+    <Chinesesimp>其他机器上的 AI</Chinesesimp>
+    <Spanish>IA en otras máquinas</Spanish>
+    <French>IA ailleurs</French>
+    <Portuguese>IA em outras máquinas</Portuguese>
+    <Russian>ИИ на других машинах</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_PERF_L_GROUPS">
+    <English>Groups</English>
+    <Chinese>群組</Chinese>
+    <Chinesesimp>小组</Chinesesimp>
+    <Spanish>Grupos</Spanish>
+    <French>Groupes</French>
+    <Portuguese>Grupos</Portuguese>
+    <Russian>Группы</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_PERF_L_VEHICLES">
+    <English>Vehicles</English>
+    <Chinese>載具</Chinese>
+    <Chinesesimp>载具</Chinesesimp>
+    <Spanish>Vehículos</Spanish>
+    <French>Véhicules</French>
+    <Portuguese>Veículos</Portuguese>
+    <Russian>Техника</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_PERF_L_DEAD">
+    <English>Dead</English>
+    <Chinese>死亡</Chinese>
+    <Chinesesimp>死亡</Chinesesimp>
+    <Spanish>Muertos</Spanish>
+    <French>Morts</French>
+    <Portuguese>Mortos</Portuguese>
+    <Russian>Погибшие</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_PERF_L_PROFILESACTIVE">
+    <English>Profiles spawned</English>
+    <Chinese>已生成的設定檔</Chinese>
+    <Chinesesimp>已生成的档案</Chinesesimp>
+    <Spanish>Perfiles generados</Spanish>
+    <French>Profils générés</French>
+    <Portuguese>Perfis gerados</Portuguese>
+    <Russian>Профили в игре</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_PERF_L_PROFILESINACTIVE">
+    <English>Profiles virtual</English>
+    <Chinese>虛擬設定檔</Chinese>
+    <Chinesesimp>虚拟档案</Chinesesimp>
+    <Spanish>Perfiles virtuales</Spanish>
+    <French>Profils virtuels</French>
+    <Portuguese>Perfis virtuais</Portuguese>
+    <Russian>Виртуальные профили</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_PERF_L_SCRIPTS">
+    <English>Scripts</English>
+    <Chinese>腳本</Chinese>
+    <Chinesesimp>脚本</Chinesesimp>
+    <Spanish>Scripts</Spanish>
+    <French>Scripts</French>
+    <Portuguese>Scripts</Portuguese>
+    <Russian>Скрипты</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_PERF_L_FSMS">
+    <English>FSMs</English>
+    <Chinese>FSM</Chinese>
+    <Chinesesimp>FSM</Chinesesimp>
+    <Spanish>FSM</Spanish>
+    <French>FSM</French>
+    <Portuguese>FSMs</Portuguese>
+    <Russian>FSM</Russian>
+</Key>
 </Container></Package></Project>
