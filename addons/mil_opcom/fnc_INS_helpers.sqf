@@ -2229,6 +2229,16 @@ ALiVE_fnc_INS_filterObjectiveBuildings = {
             continue
         };
 
+        // A building players cannot bring down is no place for an installation: the way to end
+        // one is to destroy its building. Some classes are made indestructible in their config
+        // (destrType DestructNo), so charges do nothing and the installation and its marker stay
+        // for good. Measured on Malden: 114 of 2,534 enterable buildings, and 5 demolition charges
+        // left one at damage 0 while the destructible ones beside it went down.
+        if ((getText (configOf _h >> "destrType")) == "DestructNo" || {!isDamageAllowed _h}) then {
+            _buildings set [_index,objNull];
+            continue
+        };
+
         private _buildingPositions = [getposATL _h,5] call ALIVE_fnc_findIndoorHousePositions;
         
         if (count _buildingPositions == 0) then {
