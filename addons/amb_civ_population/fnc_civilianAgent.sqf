@@ -511,6 +511,18 @@ switch(_operation) do {
             };
             
 
+            // "Has anyone been pressuring you?" reads ALiVE_CivPop_InsurgentContact. The insurgent
+            // commander sets it on the civilians near a building when it puts an installation there,
+            // but that only reaches civilians already spawned, and civilians spawn only near players,
+            // so on a run with six installations not one civilian was flagged. Checked here instead,
+            // as the civilian spawns: a building within 50 m that hosts an installation carries the
+            // commander's public marker (mil_OPCOM's INSTALLATION_KILLED_EH_ADDED).
+            if !(_unit getVariable ["ALiVE_CivPop_InsurgentContact", false]) then {
+                if ((nearestObjects [_unit, ["House"], 50]) findIf {_x getVariable ["ALiVE_mil_OPCOM_INSTALLATION_KILLED_EH_ADDED", false]} > -1) then {
+                    _unit setVariable ["ALiVE_CivPop_InsurgentContact", true, true];
+                };
+            };
+
             // store the agent id on the active agents index
             [ALIVE_agentHandler,"setActive",[_agentID,_logic]] call ALIVE_fnc_agentHandler;
 
