@@ -31,6 +31,7 @@ See Also:
 
 Author:
 Tupolov
+Jman
 ---------------------------------------------------------------------------- */
 
 // ["COMPOSITION INPUT : %1",_this] call ALiVE_fnc_dump;
@@ -129,35 +130,51 @@ if (count _faction != 0) then {
 
 };
 
-{
-    private _configPath = _x; // Military_Pacific
-
-    for "_i" from 0 to ((count _configPath) - 1) do
+// Collects the compositions in the given CfgGroups >> Empty classes that match the categories, sizes and factions asked for
+private _fnc_collect = {
     {
+        private _configPath = _x; // Military_Pacific
 
-        private _item = _configPath select _i; // airports
+        for "_i" from 0 to ((count _configPath) - 1) do
+        {
 
-        if (isClass _item && (count _cat == 0 || ({tolower(configName _item) find tolower(_x) != -1} count _cat > 0))) then {
+            private _item = _configPath select _i; // airports
 
-            if (count _size == 0  || ({tolower(configName _item) find tolower(_x) != -1} count _size > 0)) then { // airportslarge
+            if (isClass _item && (count _cat == 0 || ({tolower(configName _item) find tolower(_x) != -1} count _cat > 0))) then {
 
-                for "_i" from 0 to ((count _item) - 1) do
-                {
-                    private _comp = _item select _i;
-                    // diag_log str(_comp);
-                    if (isClass _comp) then {
-                        // diag_log _enemyFactions;
-                        if ({(configName _comp) find _x != -1} count _enemyFactions == 0 ||  count _faction == 0  ) then {
-                            if ({(configName _comp) find _x != -1} count _searchString > 0 ||  count _searchString == 0  ) then {
-                                _result pushback _comp;
+                if (count _size == 0  || ({tolower(configName _item) find tolower(_x) != -1} count _size > 0)) then { // airportslarge
+
+                    for "_i" from 0 to ((count _item) - 1) do
+                    {
+                        private _comp = _item select _i;
+                        // diag_log str(_comp);
+                        if (isClass _comp) then {
+                            // diag_log _enemyFactions;
+                            if ({(configName _comp) find _x != -1} count _enemyFactions == 0 ||  count _faction == 0  ) then {
+                                if ({(configName _comp) find _x != -1} count _searchString > 0 ||  count _searchString == 0  ) then {
+                                    _result pushback _comp;
+                                };
                             };
                         };
                     };
                 };
             };
         };
-    };
-} foreach _configPaths;
+    } foreach _this;
+};
+
+_configPaths call _fnc_collect;
+
+// An environment's set can exist and still hold nothing of what's asked for: ALiVE's own Woodland and Desert military
+// sets are empty without the optional CUP compositions, so Random Camps, field HQs and outposts found nothing on a
+// Woodland or Desert terrain while the troops meant for them were placed anyway. Fall back to the standard set for
+// the same categories, as is already done when the set is missing altogether.
+if (count _result == 0 && {_compType != _comp}) then {
+    [
+        missionConfigFile >> "CfgGroups" >> "Empty" >> _comp,
+        configFile >> "CfgGroups" >> "Empty" >> _comp
+    ] call _fnc_collect;
+};
 
 
 if (count _result == 0 && _recursive) then {
