@@ -567,10 +567,12 @@ private _candidateClear = {
     // worldSize bounds the playable square; any candidate with X or Y
     // outside [0, worldSize] is rejected first. (Issue #877: Random
     // camps spawning outside map bounds.)
+    // The whole composition has to fit, not just its anchor: a camp 4 m in from the edge
+    // passed, and half of it and the groups round it stood outside the map (Rosche, 2026-10-08).
     private _wsz = worldSize;
     if (
-        ((_p select 0) < 0) || {(_p select 0) > _wsz} ||
-        {(_p select 1) < 0} || {(_p select 1) > _wsz}
+        ((_p select 0) < _clearReach) || {(_p select 0) > _wsz - _clearReach} ||
+        {(_p select 1) < _clearReach} || {(_p select 1) > _wsz - _clearReach}
     ) exitWith {
         if (_debug) then { ["[ALiVE CompSpawn]   reject %1: outside world bounds (worldSize=%2)", _p, _wsz] call ALiVE_fnc_dump };
         _rejectCounts set [0, (_rejectCounts select 0) + 1];

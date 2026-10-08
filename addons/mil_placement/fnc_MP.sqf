@@ -1011,10 +1011,21 @@ switch(_operation) do {
                         private _candidatePos = _x;
 
                         private _tooClose = ((_campSpacingCenters findIf {_x distance _candidatePos < _randomCampsMil}) > -1);
+                        private _campCenter = [];
                         if (!_tooClose) then {
                             PROFILE_SCOPE(MPCAMPFLATAREA, "ALiVE MP camp generation: findFlatArea")
-                            private _campCenter = [_candidatePos, 500] call ALiVE_fnc_findFlatArea;
+                            _campCenter = [_candidatePos, 500] call ALiVE_fnc_findFlatArea;
                             PROFILE_SCOPE_END(MPCAMPFLATAREA)
+                            // Beyond the map edge is flat and empty to every search, so the flat-area search
+                            // can carry a site off the map, and the camp's guards are scattered up to 100 m
+                            // round this centre: on Rosche 21 of 249 sites started off the map and their
+                            // groups were placed outside it. Keep the centre 150 m inside the edge, falling
+                            // back to the flat spot the index found, and drop the site if that is no better.
+                            private _fnc_inside = { params ["_p"]; private _m = 150; ((_p select 0) > _m) && {(_p select 0) < worldSize - _m} && {(_p select 1) > _m} && {(_p select 1) < worldSize - _m} };
+                            if !([_campCenter] call _fnc_inside) then { _campCenter = _candidatePos };
+                            _tooClose = !([_campCenter] call _fnc_inside);
+                        };
+                        if (!_tooClose) then {
                             private _campId = format["c_%1_%2", floor (_campCenter select 0), floor (_campCenter select 1)];
 
                             private _campCluster = [nil, "create"] call ALIVE_fnc_cluster;
