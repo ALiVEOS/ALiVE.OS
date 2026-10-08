@@ -1020,7 +1020,19 @@ switch(_operation) do {
                             private _agentID = format["agent_%1",[ALIVE_agentHandler, "getNextInsertID"] call ALIVE_fnc_agentHandler];
 
                             private _buildingPositions = [getPosATL _building,15] call ALIVE_fnc_findIndoorHousePositions;
-                            private _buildingPosition = if (count _buildingPositions > 0) then {selectRandom _buildingPositions} else {getPosATL _building};
+                            // No indoor position nearby: the building's centre is inside its walls on almost every
+                            // building (2,626 of 2,639 on Malden), so the civilian stood in the middle of it. Use the
+                            // building's own exit, or failing that a spot just outside its footprint.
+                            private _buildingPosition = if (count _buildingPositions > 0) then {selectRandom _buildingPositions} else {
+                                private _exit = _building buildingExit 0;
+                                if !(_exit isEqualTo [0,0,0]) then { ASLToATL (AGLToASL _exit) } else {
+                                    (boundingBoxReal _building) params ["_bbMin", "_bbMax"];
+                                    private _out = (((_bbMax select 0) - (_bbMin select 0)) max ((_bbMax select 1) - (_bbMin select 1))) / 2 + 2;
+                                    private _spot = _building getPos [_out, getDir _building + 180];
+                                    _spot set [2, 0];
+                                    _spot
+                                };
+                            };
 
                             private _agent = [nil, "create"] call ALIVE_fnc_civilianAgent;
                             [_agent, "init"] call ALIVE_fnc_civilianAgent;
