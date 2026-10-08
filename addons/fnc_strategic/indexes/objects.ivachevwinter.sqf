@@ -1,11 +1,12 @@
+// ALiVE 3 index v3.1, made 2026-10-08 by the ALiVE web indexer, building positions measured
 /*=================*/
 /*opening pbo ww2_terrainsif_w_worlds_if_ivachevwinter_w.pbo
 ///////<HEADER>///////
 prefix=WW2\TerrainsIF_w\Worlds\IF_IvachevWinter_w
-Mikero=DePbo.dll.6.61
+Mikero=DePbo.dll
 version=00000000
 Pbo Type is: Arma Addon
-Sha: '740B3C2446D24E7F267B120AB10A0938ADB91E0C'
+Sha: '5718B9ED9A2F77DF36CBBAD8D77BFD0D55C487AC'
 //////</HEADER>//////
 wrp= ????????p
 OPRW Version 25 (binarised)
