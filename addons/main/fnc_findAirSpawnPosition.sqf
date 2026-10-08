@@ -214,7 +214,26 @@ private _classObstacles = [
     "Land_JunkPile_F", "Land_GarbageContainer_closed_F",
     "Land_GarbageBags_F", "Land_Tyres_F", "Land_GarbagePallet_F",
     "Land_Basket_F", "Land_Sack_F", "Land_Sacks_goods_F",
-    "Land_Sacks_heap_F", "Land_BarrelTrash_F"
+    "Land_Sacks_heap_F", "Land_BarrelTrash_F",
+    // Fortifications, as in the ground list (#850): the header asks for the two to
+    // be kept in step and they had drifted. They descend straight from NonStrategic
+    // or Strategic, so neither "Wall" nor "House" names them. Measured 8 Oct on open
+    // ground, a ring of them was already refused through the flat-ground test, so
+    // this is the sweep's own list catching up rather than a new refusal. Pads still
+    // excuse them on purpose, see the pad tier.
+    "Land_HBarrier_1_F", "Land_HBarrier_3_F", "Land_HBarrier_5_F",
+    "Land_HBarrier_Big_F", "Land_HBarrierWall4_F", "Land_HBarrierWall6_F",
+    "Land_HBarrierWall_corner_F", "Land_HBarrierWall_corridor_F",
+    "Land_HBarrierTower_F",
+    "Land_BagFence_Round_F", "Land_BagFence_Long_F",
+    "Land_BagFence_Short_F", "Land_BagFence_End_F",
+    "Land_BagFence_Corner_F",
+    "Land_BagBunker_Small_F", "Land_BagBunker_Large_F",
+    "Land_BagBunker_Tower_F",
+    "Land_CncBarrier_F", "Land_CncBarrierMedium_F",
+    "Land_CncBarrierMedium4_F", "Land_CncShelter_F",
+    "Land_CncWall1_F", "Land_CncWall4_F",
+    "Land_Razorwire_F"
 ];
 
 // ------------------------------------------------------------------------
@@ -315,7 +334,16 @@ private _fnc_registryClear = {
         // 60s reservation as "occupied" and evict itself off its pad (the self-eviction that kept adopted
         // airframes off empty pads). _ownerID "" (every caller that passes no owner, plus the shared
         // flying-ingress entries which carry no 4th element) never matches, so those stay unchanged.
-        ((_pos distance2D (_x select 0)) < _minSeparation)
+        // The bigger of the two aircraft sets the distance: a small helicopter placed after a
+        // Blackfish was kept only its own small distance away and could reserve inside the
+        // Blackfish's span. An entry's class gives its size (bounding boxes are cached); an
+        // air commander entry holds a tail number instead, so it keeps the incoming size.
+        private _entryClass = _x param [1, ""];
+        private _entrySep = if (_entryClass isEqualType "" && {isClass (configFile >> "CfgVehicles" >> _entryClass)}) then {
+            private _eb = [_entryClass] call ALiVE_fnc_getVehicleBoundingBox;
+            ((_eb param [0, 0]) max (_eb param [1, 0])) + 6
+        } else { 0 };
+        ((_pos distance2D (_x select 0)) < (_minSeparation max _entrySep))
         && {!(_ownerID != "" && {(_x param [3, ""]) isEqualTo _ownerID})}
     };
     _occupied < 0
@@ -755,6 +783,37 @@ if (_runwayHeading < 0) then {
     } forEach _runwaySegments;
 };
 
+// The hangars near a point, for the hangar mouths and the hangar tier. ALIVE_airBuildingTypes holds
+// either classname fragments ("hangar") or, in every index the web indexer made, full model paths
+// ("a3\structures_f\ind\airport\hangar_f.p3d"). Matching only classnames found nothing on those
+// terrains, so no plane was ever put in a hangar there. A model path is matched against the
+// building's own model; a fragment against its classname as before. The list also holds runway and
+// taxiway pieces, which are never a hangar. Asks for buildings only, not every object in range.
+private _fnc_nearHangars = {
+    params ["_pos", "_radius"];
+    private _models = [];
+    private _parts = [];
+    {
+        private _e = toLower _x;
+        if (_e select [0, 1] == "\") then { _e = _e select [1] };
+        if ((_e find ".p3d") > 0) then {
+            if ((_e find "runway") < 0 && {(_e find "\roads") < 0} && {(_e find "taxiway") < 0}) then { _models pushBackUnique _e };
+        } else {
+            _parts pushBackUnique _e;
+        };
+    } forEach ALIVE_airBuildingTypes;
+    private _near = (nearestTerrainObjects [_pos, ["BUILDING", "HOUSE"], _radius, false, true])
+        + (nearestObjects [_pos, ["House", "Building"], _radius, true]);
+    private _hangars = (_near arrayIntersect _near) select {
+        private _t = toLower (typeOf _x);
+        private _m = toLower ((getModelInfo _x) select 1);
+        if (_m select [0, 1] == "\") then { _m = _m select [1] };
+        (_m in _models) || {_t != "" && {(_parts findIf { [_t, _x] call CBA_fnc_find != -1 }) >= 0}}
+    };
+    // nearest first, as nearestObjects gave them before
+    [_hangars, [_pos], { _x distance2D _input0 }, "ASCEND"] call BIS_fnc_sortBy
+};
+
 private _fnc_pointToSegmentDist2D = {
     params ["_p", "_a", "_b"];
     private _ax = _a select 0; private _ay = _a select 1;
@@ -854,10 +913,7 @@ private _fnc_clearOfRunwayTaxiway = {
 // one-ended hangar answers false for its back wall and keeps that ground.
 private _mouths = [];
 if (_preference in ["auto", "apron", "field"] && {!isNil "ALIVE_airBuildingTypes"}) then {
-    private _nearHangars = (nearestObjects [_centerPos, [], _maxDistance]) select {
-        private _t = toLower (typeOf _x);
-        ALIVE_airBuildingTypes findIf { [_t, _x] call CBA_fnc_find != -1 } >= 0
-    };
+    private _nearHangars = [_centerPos, _maxDistance] call _fnc_nearHangars;
     {
         private _h = _x;
         private _bb = boundingBoxReal _h;
@@ -1068,15 +1124,8 @@ if (count _found == 0 && {_preference in ["auto", "helipad"]} && {_isHeli || _is
 // must use helipads / aprons / field per design rule).
 if (count _found == 0 && {_preference in ["auto", "hangar"]} && _isPlane && !_isUAV) then {
     if (!isNil "ALIVE_airBuildingTypes") then {
-        private _candidates = nearestObjects [_centerPos, [], _maxDistance];
-        // Filter to hangar-type buildings via substring match.
-        // CBA_fnc_find takes [haystack, needle] - haystack is the
-        // building's typeOf, needle is each entry from the building-
-        // types list (e.g. "hangar", "tenthangar").
-        private _hangars = _candidates select {
-            private _t = toLower (typeOf _x);
-            ALIVE_airBuildingTypes findIf { [_t, _x] call CBA_fnc_find != -1 } >= 0
-        };
+        // by classname fragment or model path, buildings only (_fnc_nearHangars)
+        private _hangars = [_centerPos, _maxDistance] call _fnc_nearHangars;
         {
             if (count _found > 0) exitWith {};
             private _hangar = _x;
