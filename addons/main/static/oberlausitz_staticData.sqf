@@ -1,11 +1,11 @@
-// ALiVE 3 index v3.1, made 2026-10-06 by the ALiVE web indexer, building positions measured
+// ALiVE 3 index v3.1, made 2026-10-08 by the ALiVE web indexer, building positions measured
 private["_worldName"];
 
 _worldName = tolower(worldName);
 
-["SETTING UP MAP: oberlausitz (ALiVE 3 index v3.1, 2026-10-06)"] call ALiVE_fnc_dump;
+["SETTING UP MAP: oberlausitz (ALiVE 3 index v3.1, 2026-10-08)"] call ALiVE_fnc_dump;
 
-ALiVE_indexVersion = ["3.1", "2026-10-06", "web", true];
+ALiVE_indexVersion = ["3.1", "2026-10-08", "web", true];
 
 ALIVE_Indexing_Blacklist = [];
 ALIVE_militaryBuildingTypes = [];
@@ -429,11 +429,6 @@ ALiVE_mapCompositionType = "Woodland";
         "mbg\mbg_celle2_objects\mbg_hangar_2.p3d",
         "mbg\mbg_celle2_objects\mbg_hangar_3.p3d",
         "mbg\mbg_celle2_objects\mbg_hangar_end.p3d",
-        "mbg\mbg_killhouses_a3\m\mbg_killhouse_1.p3d",
-        "mbg\mbg_killhouses_a3\m\mbg_killhouse_2.p3d",
-        "mbg\mbg_killhouses_a3\m\mbg_killhouse_3.p3d",
-        "mbg\mbg_killhouses_a3\m\mbg_killhouse_4.p3d",
-        "mbg\mbg_killhouses_a3\m\mbg_killhouse_5.p3d",
         "mbg\mbg_killhouses_a3\m\mbg_shoothouse_1.p3d",
         "mbg\mbg_killhouses_a3\m\mbg_warehouse.p3d",
         "mbg_buildings_3\m\airport\mbg_atc_base.p3d",
@@ -659,6 +654,11 @@ ALiVE_mapCompositionType = "Woodland";
         "hag_objects\hag_garage\hag_garage.p3d",
         "kpfs_kaserne\guard_house.p3d",
         "mbg\mbg_celle2_objects\mbg_companybuilding_1.p3d",
+        "mbg\mbg_killhouses_a3\m\mbg_killhouse_1.p3d",
+        "mbg\mbg_killhouses_a3\m\mbg_killhouse_2.p3d",
+        "mbg\mbg_killhouses_a3\m\mbg_killhouse_3.p3d",
+        "mbg\mbg_killhouses_a3\m\mbg_killhouse_4.p3d",
+        "mbg\mbg_killhouses_a3\m\mbg_killhouse_5.p3d",
         "mbg_buildings_3\m\commercial\mbg_ger_pub_1.p3d",
         "mbg_buildings_3\m\commercial\mbg_ger_pub_2.p3d",
         "mbg_buildings_3\m\commercial\mbg_ger_supermarket_1.p3d",
@@ -760,6 +760,11 @@ ALiVE_mapCompositionType = "Woodland";
         "deox_obj\deox_house_d_r4.p3d",
         "kpfs_kaserne\guard_house.p3d",
         "mbg\mbg_celle2_objects\mbg_companybuilding_1.p3d",
+        "mbg\mbg_killhouses_a3\m\mbg_killhouse_1.p3d",
+        "mbg\mbg_killhouses_a3\m\mbg_killhouse_2.p3d",
+        "mbg\mbg_killhouses_a3\m\mbg_killhouse_3.p3d",
+        "mbg\mbg_killhouses_a3\m\mbg_killhouse_4.p3d",
+        "mbg\mbg_killhouses_a3\m\mbg_killhouse_5.p3d",
         "mbg_buildings_3\m\commercial\mbg_ger_pub_1.p3d",
         "mbg_buildings_3\m\commercial\mbg_ger_pub_2.p3d",
         "mbg_buildings_3\m\commercial\mbg_ger_supermarket_1.p3d",
