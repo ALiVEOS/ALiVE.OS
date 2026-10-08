@@ -101,6 +101,8 @@ ALiVE is complex but not complicated. Each module is standalone but they can be 
 
 Everything starts with the Placement modules. These modules fulfill two important functions: they identify a list of military and civilian objectives or areas of importance across the map and secondly, they place the AI groups. There are several module parameters for customising the type of objectives and also the shape and size of the AI forces. Refer to the Military and Civilian Placement Module pages for further details on these.
 
+The objectives come from a terrain index: a survey of the map's buildings, roads and open ground that ships with ALiVE for more than 170 terrains. On a terrain without one, placement and the AI Commanders have little to work from, and the startup screen says so. The Map Indexer module can make an index for any terrain, and indexes made by the community are added to ALiVE.
+
 If an AI Commander is placed, it will take command of all available AI forces of its faction. However, it needs to know where its objectives are and this is simply done by synchronising it to one or more Placements Modules.  So for example you could place an OPFOR Military Placement module to occupy an area of the map then sync a BLUFOR AI Commander to it so it knows to attack those objectives.
 
 Using different combinations of modules it is possible to quickly create a huge range of scenarios, from massive tank battles to intense urban counter insurgency. The best way is to experiment!
