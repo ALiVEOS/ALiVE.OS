@@ -81,6 +81,7 @@ ALiVE_mapCompositionType = "Woodland";
     ];
 
     ALIVE_airBuildingTypes = ALIVE_airBuildingTypes + [
+        "ca\buildings\hangar_2.p3d",
         "ca\roads2\runway_end15.p3d",
         "ca\roads2\runway_end33.p3d",
         "ca\roads2\runway_poj_t_2.p3d",
@@ -88,6 +89,7 @@ ALiVE_mapCompositionType = "Woodland";
     ];
 
     ALIVE_militaryAirBuildingTypes = ALIVE_militaryAirBuildingTypes + [
+        "ca\buildings\hangar_2.p3d",
         "ca\roads2\runway_end15.p3d",
         "ca\roads2\runway_end33.p3d",
         "ca\roads2\runway_poj_t_2.p3d",

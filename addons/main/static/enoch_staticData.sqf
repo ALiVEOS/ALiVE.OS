@@ -457,6 +457,16 @@ ALiVE_mapCompositionType = "Woodland";
         "a3\structures_f_enoch\military\bunkers\bunker_02_right_f.p3d"
     ];
 
+    ALIVE_airBuildingTypes = ALIVE_airBuildingTypes + [
+        "a3\structures_f_enoch\military\airfield\servicehangar_01_l_f.p3d",
+        "a3\structures_f_enoch\military\airfield\servicehangar_01_r_f.p3d"
+    ];
+
+    ALIVE_militaryAirBuildingTypes = ALIVE_militaryAirBuildingTypes + [
+        "a3\structures_f_enoch\military\airfield\servicehangar_01_l_f.p3d",
+        "a3\structures_f_enoch\military\airfield\servicehangar_01_r_f.p3d"
+    ];
+
     ALIVE_civilianSettlementBuildingTypes = ALIVE_civilianSettlementBuildingTypes + [
         "a3\props_f_enoch\civilian\forest\deerstand_01_f.p3d",
         "a3\props_f_enoch\civilian\forest\deerstand_02_f.p3d",

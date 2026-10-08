@@ -300,6 +300,14 @@ ALiVE_mapCompositionType = "Desert";
         "ca\misc_e\fortified_nest_small_ep1.p3d"
     ];
 
+    ALIVE_airBuildingTypes = ALIVE_airBuildingTypes + [
+        "ca\structures_e\mil\mil_hangar_ep1.p3d"
+    ];
+
+    ALIVE_militaryAirBuildingTypes = ALIVE_militaryAirBuildingTypes + [
+        "ca\structures_e\mil\mil_hangar_ep1.p3d"
+    ];
+
     ALiVE_HeliBuildingTypes = ALiVE_HeliBuildingTypes + [
         "a3\structures_f\mil\helipads\helipadcivil_f.p3d"
     ];
