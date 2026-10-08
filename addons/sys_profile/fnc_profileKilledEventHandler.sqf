@@ -20,6 +20,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 if (!isserver) exitwith {};
 
@@ -37,6 +38,9 @@ switch(_profileType) do {
         private _allProfileUnitsDead = [_profile,"handleDeath", _unit] call ALIVE_fnc_profileEntity;
 
         if !(_allProfileUnitsDead) then {
+            // free any vehicle this crew was assigned to first: without it the dead crew's ID stayed on
+            // the vehicle, was saved with it, and the AI Commander picked it up on every load (#1073)
+            [_profile,"clearVehicleAssignments"] call ALIVE_fnc_profileEntity;
             [ALIVE_profileHandler,"unregisterProfile", _profile] call ALIVE_fnc_profileHandler;
 
             // log event

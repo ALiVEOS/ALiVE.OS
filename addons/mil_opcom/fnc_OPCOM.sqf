@@ -3820,6 +3820,22 @@ switch (_operation) do {
                     case ("vehicle") : {
                         _assignments = [_profile,"entitiesInCommandOf",[]] call ALIVE_fnc_hashGet;
 
+                        // A crew removed without freeing its vehicle left its ID here, and the ID was saved
+                        // and loaded with the vehicle every session, so TACOM logged one more "NULL profile
+                        // passed to FSM" each time (#1073). Drop such IDs from the vehicle itself, which also
+                        // heals a campaign saved before this.
+                        if ((_assignments findIf {isNil {_profilesById get _x}}) != -1) then {
+                            private _vehicleAssignments = _profile select 2 select 7;
+                            private _inCargoOf = [_profile,"entitiesInCargoOf",[]] call ALIVE_fnc_hashGet;
+                            {
+                                if (isNil {_profilesById get _x}) then {
+                                    _assignments deleteAt (_assignments find _x);
+                                    _inCargoOf deleteAt (_inCargoOf find _x);
+                                    [_vehicleAssignments,_x,nil] call ALIVE_fnc_hashSet;
+                                };
+                            } forEach +_assignments;
+                        };
+
                         if ((count (_assignments)) > 0) then {
 
                             // Dont collect vehicles with player profiles assigned
