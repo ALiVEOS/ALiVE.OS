@@ -66,7 +66,9 @@ if (_unit getVariable ["ALiVE_civInteract_resolved", false]) exitWith {};
     } else {
         4
     };
-    private _cond = format ["alive _target && !(_target getVariable ['ALiVE_advciv_blacklist', false]) && _this distance _target < %1", _range];
+    // Not while the player drags or carries a body with ACE, and not on a civilian who is
+    // unconscious (ACE or vanilla): a carried unconscious civilian otherwise showed the action (#1025).
+    private _cond = format ["alive _target && !(_target getVariable ['ALiVE_advciv_blacklist', false]) && _this distance _target < %1 && !(_this getVariable ['ace_dragging_isDragging', false]) && !(_this getVariable ['ace_dragging_isCarrying', false]) && !(_target getVariable ['ACE_isUnconscious', false]) && lifeState _target != 'INCAPACITATED'", _range];
 
     switch (_uiMode) do {
 
