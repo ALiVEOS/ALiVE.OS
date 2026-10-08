@@ -1581,7 +1581,10 @@ switch(_operation) do {
             private ["_countSupplies","_supplyClasses","_box"];
             _countSupplies = 0;
 
-            if(_placeSupplies) then {
+            // Not when the profiles came from a save: the crates are profiles too and come back with
+            // them, and this runs before the "profiles are persistent" exit below, so every load added
+            // a fresh set beside the saved ones (6 more crates per reload on Stratis, measured 8 Oct).
+            if(_placeSupplies && {!ALIVE_loadProfilesPersistent}) then {
 
                 // attempt to get supplies by faction
                 private _staticFaction = [_faction] call ALiVE_fnc_factionCompilerGetConfigFaction;
