@@ -365,23 +365,21 @@ private _fnc_footprintClear = {
     // Caller-supplied non-obstacles (see _ignoreObjects above) apply at every tier.
     _ignore = _ignore + _ignoreObjects;
 
-    // 9-sample sweep at the hazard radius.
-    private _samples = [
-        _pos,
-        _pos getPos [_hazardRadius, 0],
-        _pos getPos [_hazardRadius, 90],
-        _pos getPos [_hazardRadius, 180],
-        _pos getPos [_hazardRadius, 270],
-        _pos getPos [_hazardRadius, 45],
-        _pos getPos [_hazardRadius, 135],
-        _pos getPos [_hazardRadius, 225],
-        _pos getPos [_hazardRadius, 315]
-    ];
-
     // Water rejection for non-amphibious craft. Helicopters operate over
     // water, but parking on it is a different proposition - reject
     // unconditionally. Mission-makers wanting carrier spawns should
     // route via the ship-deck path upstream.
+    //
+    // Sampled densely enough that a narrow inlet cannot sit between two samples.
+    // Nine points (the centre and eight on the rim at 45 degrees) left 14.5 m of
+    // rim unchecked between neighbours on a gunship's 19 m disc and no inner ring
+    // at all. Now 24 on the rim, 12 at two thirds and 6 at one third of the
+    // radius, plus the centre. Measured on Malden's coast, of 143 dry spots with
+    // water inside the disc the old test missed 4 and this one 1.
+    private _samples = [_pos];
+    { _samples pushBack (_pos getPos [_hazardRadius, _x]) } forEach [0, 15, 30, 45, 60, 75, 90, 105, 120, 135, 150, 165, 180, 195, 210, 225, 240, 255, 270, 285, 300, 315, 330, 345];
+    { _samples pushBack (_pos getPos [_hazardRadius * 0.66, _x]) } forEach [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330];
+    { _samples pushBack (_pos getPos [_hazardRadius * 0.33, _x]) } forEach [0, 60, 120, 180, 240, 300];
     if ({surfaceIsWater _x} count _samples > 0) exitWith { false };
 
     // Sweep the WHOLE footprint, not nine dots on its edge.
