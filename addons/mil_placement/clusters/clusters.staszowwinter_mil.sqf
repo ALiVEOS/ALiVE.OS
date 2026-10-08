@@ -1,3 +1,4 @@
+// ALiVE 3 index v3.1, made 2026-10-08 by the ALiVE web indexer, building positions measured
 #include "\x\alive\addons\civ_placement\script_component.hpp"
 ALIVE_clusterBuild = [CLUSTERBUILD];
 ALIVE_clustersMil = [] call ALIVE_fnc_hashCreate;
@@ -18,7 +19,7 @@ _cluster = [nil, "create"] call ALIVE_fnc_cluster;
 _nodes = [];
 _nodes set [count _nodes, ["817183",[13756.2,8346.62,0.00435066]]];
 _nodes set [count _nodes, ["817175",[13775.8,8338.58,0.0192699]]];
-_nodes set [count _nodes, ["814454",[13784.8,8359.66,0.0102425]]];
+_nodes set [count _nodes, ["814454",[13784.9,8359.66,0.0102425]]];
 _nodes set [count _nodes, ["814459",[13755.5,8370.21,-0.0810261]]];
 _nodes set [count _nodes, ["814384",[13770.4,8416.25,0.414196]]];
 _nodes set [count _nodes, ["814590",[13793.2,8434.68,-0.0343933]]];
@@ -35,7 +36,7 @@ _nodes set [count _nodes, ["814714",[13807.6,8395.44,-0.0107365]]];
 [ALIVE_clustersMil,"c_1",_cluster] call ALIVE_fnc_hashSet;
 _cluster = [nil, "create"] call ALIVE_fnc_cluster;
 _nodes = [];
-_nodes set [count _nodes, ["797051",[14246,9156.75,0.000270844]]];
+_nodes set [count _nodes, ["797051",[14246,9156.76,0.000270844]]];
 [_cluster,"nodes",_nodes] call ALIVE_fnc_hashSet;
 [_cluster, "state", _cluster] call ALIVE_fnc_cluster;
 [_cluster,"clusterID","c_2"] call ALIVE_fnc_hashSet;
@@ -63,7 +64,7 @@ _cluster = [nil, "create"] call ALIVE_fnc_cluster;
 _nodes = [];
 _nodes set [count _nodes, ["817183",[13756.2,8346.62,0.00435066]]];
 _nodes set [count _nodes, ["817175",[13775.8,8338.58,0.0192699]]];
-_nodes set [count _nodes, ["814454",[13784.8,8359.66,0.0102425]]];
+_nodes set [count _nodes, ["814454",[13784.9,8359.66,0.0102425]]];
 _nodes set [count _nodes, ["814459",[13755.5,8370.21,-0.0810261]]];
 _nodes set [count _nodes, ["814384",[13770.4,8416.25,0.414196]]];
 _nodes set [count _nodes, ["814590",[13793.2,8434.68,-0.0343933]]];
@@ -80,7 +81,7 @@ _nodes set [count _nodes, ["814714",[13807.6,8395.44,-0.0107365]]];
 [ALIVE_clustersMilHQ,"c_4",_cluster] call ALIVE_fnc_hashSet;
 _cluster = [nil, "create"] call ALIVE_fnc_cluster;
 _nodes = [];
-_nodes set [count _nodes, ["797051",[14246,9156.75,0.000270844]]];
+_nodes set [count _nodes, ["797051",[14246,9156.76,0.000270844]]];
 [_cluster,"nodes",_nodes] call ALIVE_fnc_hashSet;
 [_cluster, "state", _cluster] call ALIVE_fnc_cluster;
 [_cluster,"clusterID","c_5"] call ALIVE_fnc_hashSet;
@@ -92,3 +93,5 @@ _nodes set [count _nodes, ["797051",[14246,9156.75,0.000270844]]];
 [ALIVE_clustersMilHQ,"c_5",_cluster] call ALIVE_fnc_hashSet;
 ALIVE_clustersMilAir = [] call ALIVE_fnc_hashCreate;
 ALIVE_clustersMilHeli = [] call ALIVE_fnc_hashCreate;
+// fieldworks: used only when Military Placement's Fieldworks setting asks for them
+ALIVE_clustersMilFieldwork = [] call ALIVE_fnc_hashCreate;
