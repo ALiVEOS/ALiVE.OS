@@ -61,6 +61,26 @@ A recent addition is a fully in game GUI for building unit, group and faction co
 - For Dedicated Servers use -mod=@CBA_A3;@ALiVEServer;@ALiVE
 - ALiVE requires CBA_A3
 
+#### Content for other mods and CDLC
+ALiVE ships support for some mods and Creator DLC in its `addons` folder. Each part loads only when the mod it needs is loaded too, and is skipped quietly otherwise, so there is nothing to copy in or out:
+
+| Addon | Loads when this is loaded | Adds |
+|---|---|---|
+| `composition_vn` | S.O.G. Prairie Fire | Jungle military compositions for camps, field HQs and outposts |
+| `composition_spe` | Spearhead 1944 | Bocage military and guerrilla compositions |
+| `composition_cup` | CUP Terrains Core | Desert, Woodland and Pacific compositions built from CUP objects |
+| `compatibility_gm` | Global Mobilization | ALiVE factions and groups for Global Mobilization units |
+
+Without the mod, the server log shows a line like `Skipped loading of addon 'ALiVE_composition_vn' as required addon 'loadorder_f_vietnam' is not present`. That is expected and not an error.
+
+These four used to live in the `optional` folder and had to be copied into `addons` by hand. In `@ALiVE` the update replaces those copies, since the files have the same names. If you copied any of them into `@ALiVEServer` or another mod folder, delete them there, or the old ungated copy loads alongside the new one.
+
+#### Optional addons
+The `optional` folder now holds only server-side choices that change behaviour, so they stay opt-in. Copy one into `@ALiVE\addons` (or `@ALiVEServer\addons`) on the dedicated server to use it:
+
+- `sys_data_auto` adds the Data module on a dedicated server for missions that don't place one
+- `sys_data_auto_perfmon` does the same with player statistics off and performance monitoring on
+
 ### Help
 There are several entries in the Field Manual which will guide you through interacting with key in game ALiVE features.
 

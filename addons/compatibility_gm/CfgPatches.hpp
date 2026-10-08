@@ -4,6 +4,7 @@ class CfgPatches {
         weapons[] = {};
         requiredVersion = REQUIRED_VERSION;
         requiredAddons[] = {"ALIVE_main","cba_ui","gm_core","gm_core_localization"};
+        skipWhenMissingDependencies = 1;
         versionDesc = "ALiVE";
         VERSION_CONFIG;
         author = MODULE_AUTHOR;
@@ -15,6 +16,7 @@ class CfgPatches {
         weapons[] = {};
         requiredVersion = REQUIRED_VERSION;
         requiredAddons[] = {"ALIVE_main","cba_ui","gm_core","gm_core_localization"};
+        skipWhenMissingDependencies = 1;
         authors[] = {"Jman"};
         authorUrl = "http://alivemod.com/";
     };
@@ -23,6 +25,7 @@ class CfgPatches {
         weapons[] = {};
         requiredVersion = REQUIRED_VERSION;
         requiredAddons[] = {"ALIVE_main","cba_ui","gm_core","gm_core_localization"};
+        skipWhenMissingDependencies = 1;
         authors[] = {"Jman"};
         authorUrl = "http://alivemod.com/";
     };
@@ -31,6 +34,7 @@ class CfgPatches {
         weapons[] = {};
         requiredVersion = REQUIRED_VERSION;
         requiredAddons[] = {"ALIVE_main","cba_ui","gm_core","gm_core_localization"};
+        skipWhenMissingDependencies = 1;
         authors[] = {"Jman"};
         authorUrl = "http://alivemod.com/";
     };
@@ -39,6 +43,7 @@ class CfgPatches {
         weapons[] = {};
         requiredVersion = REQUIRED_VERSION;
         requiredAddons[] = {"ALIVE_main","cba_ui","gm_core","gm_core_localization"};
+        skipWhenMissingDependencies = 1;
         authors[] = {"Jman"};
         authorUrl = "http://alivemod.com/";
     };
@@ -47,6 +52,7 @@ class CfgPatches {
         weapons[] = {};
         requiredVersion = REQUIRED_VERSION;
         requiredAddons[] = {"ALIVE_main","cba_ui","gm_core","gm_core_localization"};
+        skipWhenMissingDependencies = 1;
         authors[] = {"Jman"};
         authorUrl = "http://alivemod.com/";
     };
@@ -55,6 +61,7 @@ class CfgPatches {
         weapons[] = {};
         requiredVersion = REQUIRED_VERSION;
         requiredAddons[] = {"ALIVE_main","cba_ui","gm_core","gm_core_localization"};
+        skipWhenMissingDependencies = 1;
         authors[] = {"Jman"};
         authorUrl = "http://alivemod.com/";
     };
@@ -63,6 +70,7 @@ class CfgPatches {
         weapons[] = {};
         requiredVersion = REQUIRED_VERSION;
         requiredAddons[] = {"ALIVE_main","cba_ui","gm_core","gm_core_localization"};
+        skipWhenMissingDependencies = 1;
         authors[] = {"Jman"};
         authorUrl = "http://alivemod.com/";
     };
@@ -71,6 +79,7 @@ class CfgPatches {
         weapons[] = {};
         requiredVersion = REQUIRED_VERSION;
         requiredAddons[] = {"ALIVE_main","cba_ui","gm_core","gm_core_localization"};
+        skipWhenMissingDependencies = 1;
         authors[] = {"Jman"};
         authorUrl = "http://alivemod.com/";
     };
@@ -79,6 +88,7 @@ class CfgPatches {
         weapons[] = {};
         requiredVersion = REQUIRED_VERSION;
         requiredAddons[] = {"ALIVE_main","cba_ui","gm_core","gm_core_localization"};
+        skipWhenMissingDependencies = 1;
         authors[] = {"Jman"};
         authorUrl = "http://alivemod.com/";
     };
@@ -87,6 +97,7 @@ class CfgPatches {
         weapons[] = {};
         requiredVersion = REQUIRED_VERSION;
         requiredAddons[] = {"ALIVE_main","cba_ui","gm_core","gm_core_localization"};
+        skipWhenMissingDependencies = 1;
         authors[] = {"Jman"};
         authorUrl = "http://alivemod.com/";
     };
@@ -95,6 +106,7 @@ class CfgPatches {
         weapons[] = {};
         requiredVersion = REQUIRED_VERSION;
         requiredAddons[] = {"ALIVE_main","cba_ui","gm_core","gm_core_localization"};
+        skipWhenMissingDependencies = 1;
         authors[] = {"Jman"};
         authorUrl = "http://alivemod.com/";
     };
