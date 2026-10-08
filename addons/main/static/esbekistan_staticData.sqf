@@ -264,17 +264,21 @@ ALiVE_mapCompositionType = "Desert";
     ];
 
     ALIVE_airBuildingTypes = ALIVE_airBuildingTypes + [
+        "ca\buildings\hangar_2.p3d",
         "ca\roads_e\runway\runway_end22_ep1.p3d",
         "ca\roads_e\runway\runway_end24_ep1.p3d",
         "ca\roads_e\runway\runway_main_ep1.p3d",
-        "ca\roads_e\runway\runway_poj_t_2_ep1.p3d"
+        "ca\roads_e\runway\runway_poj_t_2_ep1.p3d",
+        "ca\structures_e\mil\mil_hangar_ep1.p3d"
     ];
 
     ALIVE_militaryAirBuildingTypes = ALIVE_militaryAirBuildingTypes + [
+        "ca\buildings\hangar_2.p3d",
         "ca\roads_e\runway\runway_end22_ep1.p3d",
         "ca\roads_e\runway\runway_end24_ep1.p3d",
         "ca\roads_e\runway\runway_main_ep1.p3d",
-        "ca\roads_e\runway\runway_poj_t_2_ep1.p3d"
+        "ca\roads_e\runway\runway_poj_t_2_ep1.p3d",
+        "ca\structures_e\mil\mil_hangar_ep1.p3d"
     ];
 
     ALiVE_HeliBuildingTypes = ALiVE_HeliBuildingTypes + [

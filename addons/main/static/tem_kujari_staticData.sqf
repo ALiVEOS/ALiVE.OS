@@ -73,6 +73,14 @@ ALiVE_mapCompositionType = "Jungle";
         "ca\structures_e\mil\mil_hangar_ep1.p3d"
     ];
 
+    ALIVE_airBuildingTypes = ALIVE_airBuildingTypes + [
+        "ca\structures_e\mil\mil_hangar_ep1.p3d"
+    ];
+
+    ALIVE_militaryAirBuildingTypes = ALIVE_militaryAirBuildingTypes + [
+        "ca\structures_e\mil\mil_hangar_ep1.p3d"
+    ];
+
     ALIVE_civilianSettlementBuildingTypes = ALIVE_civilianSettlementBuildingTypes + [
         "a3\structures_f\households\slum\cargo_house_slum_f.p3d",
         "a3\structures_f\households\slum\slum_house01_f.p3d",
