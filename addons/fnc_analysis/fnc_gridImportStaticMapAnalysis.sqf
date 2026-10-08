@@ -75,6 +75,11 @@ if (isNil "ALIVE_gridData") exitWith {
     if (isNil "ALIVE_indexViabilityAssessed") then {
         ALIVE_indexViabilityAssessed = true;
         [] call ALIVE_fnc_assessIndexViability;
+
+        // The verdict above only reaches the log, and Eden's notice only the mission maker. This
+        // line also shows on the startup screen (dumpR passes a WARNING to it during startup), so the people
+        // playing an unindexed terrain see why objectives and camps are thin.
+        [format ["WARNING: ALiVE has no index for %1, so placement and the AI commanders have little to work from. The Map Indexer module can make one.", worldName]] call ALIVE_fnc_dumpR;
     };
 };
 
