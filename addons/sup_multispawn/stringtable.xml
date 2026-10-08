@@ -78,9 +78,9 @@ ALiVE_SUP_MULTISPAWN_DESTINATION_%FACTION%&lt;br /&gt;
     <Spanish>Selecciona dónde reaparecerán los jugadores</Spanish>
 </Key>
 <Key ID="STR_ALIVE_MULTISPAWN_TIMEOUT">
-    <English>Respawn Timeout:</English>
-    <Chinesesimp>重生超时:</Chinesesimp>
-    <Spanish>Espera de reaparición:</Spanish>
+    <English>Insertion Wait (seconds):</English>
+    <Chinesesimp>插入等待（秒）:</Chinesesimp>
+    <Spanish>Espera de inserción (segundos):</Spanish>
 </Key>
 <Key ID="STR_ALIVE_MULTISPAWN_TIMEOUT_COMMENT">
     <English>How long the Insertion transport waits before lifting off. No effect on the other spawn types.</English>
