@@ -1,3 +1,4 @@
+// ALiVE 3 index v3.1, made 2026-10-08 by the ALiVE web indexer, building positions measured
 /*=================*/
 /*opening pbo projeta3014.pbo
 ///////<HEADER>///////
@@ -4281,12 +4282,6 @@ wrp_objects=
 			[8736,[7231,14690]],
 			[4860,[5768,17669]],
 			[31264,[17339,14481]]
-		]
-	],
-	["ca\buildings2\a_statue\a_statue02.p3d",
-		[
-			[17388,[7317,6000]],
-			[5307,[5789,17667]]
 		]
 	],
 	["ca\buildings2\houseblocks\houseblock_b\houseblock_b4.p3d",

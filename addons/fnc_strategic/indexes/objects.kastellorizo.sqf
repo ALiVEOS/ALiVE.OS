@@ -1,3 +1,4 @@
+// ALiVE 3 index v3.1, made 2026-10-08 by the ALiVE web indexer, building positions measured
 /*=================*/
 /*opening pbo kastellorizo.pbo
 ///////<HEADER>///////
@@ -105,11 +106,6 @@ wrp_objects=
 	["a3\structures_f\mil\helipads\helipadcircle_f.p3d",
 		[
 			[18765,[2048,1795]]
-		]
-	],
-	["a3\structures_f_heli\furniture\officechair_01_f.p3d",
-		[
-			[18513,[1949,1833]]
 		]
 	],
 	["a3\structures_f_heli\furniture\officecabinet_01_f.p3d",
