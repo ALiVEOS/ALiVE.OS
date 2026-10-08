@@ -150,6 +150,14 @@ ALiVE_mapCompositionType = "Desert";
         "opxmisc\guardtower.p3d"
     ];
 
+    ALIVE_airBuildingTypes = ALIVE_airBuildingTypes + [
+        "ca\structures_e\mil\mil_hangar_ep1.p3d"
+    ];
+
+    ALIVE_militaryAirBuildingTypes = ALIVE_militaryAirBuildingTypes + [
+        "ca\structures_e\mil\mil_hangar_ep1.p3d"
+    ];
+
     ALIVE_civilianSettlementBuildingTypes = ALIVE_civilianSettlementBuildingTypes + [
         "a3\structures_f\households\addons\i_garage_v1_dam_f.p3d",
         "a3\structures_f\households\addons\i_garage_v2_f.p3d",

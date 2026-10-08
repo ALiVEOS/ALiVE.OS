@@ -411,13 +411,19 @@ ALiVE_mapCompositionType = "Desert";
 
     ALIVE_airBuildingTypes = ALIVE_airBuildingTypes + [
         "a3\structures_f\mil\tenthangar\tenthangar_v1_f.p3d",
+        "a3\structures_f_enoch\military\airfield\servicehangar_01_l_f.p3d",
+        "a3\structures_f_enoch\military\airfield\servicehangar_01_r_f.p3d",
         "a3\structures_f_exp\infrastructure\airports\airport_01_hangar_f.p3d",
+        "jbad_structures\ind\hangar_2\jbad_hangar_2.p3d",
         "jbad_structures\mil\hanger\jbad_hanger_withdoor.p3d"
     ];
 
     ALIVE_militaryAirBuildingTypes = ALIVE_militaryAirBuildingTypes + [
         "a3\structures_f\mil\tenthangar\tenthangar_v1_f.p3d",
+        "a3\structures_f_enoch\military\airfield\servicehangar_01_l_f.p3d",
+        "a3\structures_f_enoch\military\airfield\servicehangar_01_r_f.p3d",
         "a3\structures_f_exp\infrastructure\airports\airport_01_hangar_f.p3d",
+        "jbad_structures\ind\hangar_2\jbad_hangar_2.p3d",
         "jbad_structures\mil\hanger\jbad_hanger_withdoor.p3d"
     ];
 

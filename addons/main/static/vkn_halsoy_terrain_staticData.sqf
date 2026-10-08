@@ -179,6 +179,8 @@ ALiVE_mapCompositionType = "Woodland";
     ALIVE_airBuildingTypes = ALIVE_airBuildingTypes + [
         "a3\structures_f\ind\airport\hangar_f.p3d",
         "a3\structures_f\mil\tenthangar\tenthangar_v1_f.p3d",
+        "a3\structures_f_enoch\military\airfield\servicehangar_01_l_f.p3d",
+        "a3\structures_f_enoch\military\airfield\servicehangar_01_r_f.p3d",
         "a3\structures_f_exp\infrastructure\airports\airport_02_hangar_left_f.p3d",
         "a3\structures_f_exp\infrastructure\airports\airport_02_hangar_right_f.p3d",
         "a3\structures_f_exp\infrastructure\runways\runwayholdmark_17-35_f.p3d"
@@ -187,6 +189,8 @@ ALiVE_mapCompositionType = "Woodland";
     ALIVE_militaryAirBuildingTypes = ALIVE_militaryAirBuildingTypes + [
         "a3\structures_f\ind\airport\hangar_f.p3d",
         "a3\structures_f\mil\tenthangar\tenthangar_v1_f.p3d",
+        "a3\structures_f_enoch\military\airfield\servicehangar_01_l_f.p3d",
+        "a3\structures_f_enoch\military\airfield\servicehangar_01_r_f.p3d",
         "a3\structures_f_exp\infrastructure\airports\airport_02_hangar_left_f.p3d",
         "a3\structures_f_exp\infrastructure\airports\airport_02_hangar_right_f.p3d"
     ];

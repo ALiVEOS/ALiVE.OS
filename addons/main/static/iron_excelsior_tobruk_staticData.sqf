@@ -185,6 +185,14 @@ ALiVE_mapCompositionType = "Desert";
         "ww2\objects_m\structures\ww2_bunkers_m\ww2_swu_mareth_bunker_1.p3d"
     ];
 
+    ALIVE_airBuildingTypes = ALIVE_airBuildingTypes + [
+        "ca\structures_e\mil\mil_hangar_ep1.p3d"
+    ];
+
+    ALIVE_militaryAirBuildingTypes = ALIVE_militaryAirBuildingTypes + [
+        "ca\structures_e\mil\mil_hangar_ep1.p3d"
+    ];
+
     ALIVE_civilianSettlementBuildingTypes = ALIVE_civilianSettlementBuildingTypes + [
         "a3\structures_f\civ\belltowers\belltower_02_v2_ruins_f.p3d",
         "a3\structures_f\dominants\castle\castle_01_tower_f.p3d",

@@ -411,16 +411,24 @@ ALiVE_mapCompositionType = "Desert";
 
     ALIVE_airBuildingTypes = ALIVE_airBuildingTypes + [
         "a3\structures_f\mil\tenthangar\tenthangar_v1_f.p3d",
+        "a3\structures_f_enoch\military\airfield\servicehangar_01_l_f.p3d",
+        "a3\structures_f_enoch\military\airfield\servicehangar_01_r_f.p3d",
         "a3\structures_f_exp\infrastructure\airports\airport_01_hangar_f.p3d",
         "a3\structures_f_exp\infrastructure\airports\airport_02_hangar_left_f.p3d",
-        "a3\structures_f_exp\infrastructure\airports\airport_02_hangar_right_f.p3d"
+        "a3\structures_f_exp\infrastructure\airports\airport_02_hangar_right_f.p3d",
+        "ca\buildings\hangar_2.p3d",
+        "ca\structures_e\mil\mil_hangar_ep1.p3d"
     ];
 
     ALIVE_militaryAirBuildingTypes = ALIVE_militaryAirBuildingTypes + [
         "a3\structures_f\mil\tenthangar\tenthangar_v1_f.p3d",
+        "a3\structures_f_enoch\military\airfield\servicehangar_01_l_f.p3d",
+        "a3\structures_f_enoch\military\airfield\servicehangar_01_r_f.p3d",
         "a3\structures_f_exp\infrastructure\airports\airport_01_hangar_f.p3d",
         "a3\structures_f_exp\infrastructure\airports\airport_02_hangar_left_f.p3d",
-        "a3\structures_f_exp\infrastructure\airports\airport_02_hangar_right_f.p3d"
+        "a3\structures_f_exp\infrastructure\airports\airport_02_hangar_right_f.p3d",
+        "ca\buildings\hangar_2.p3d",
+        "ca\structures_e\mil\mil_hangar_ep1.p3d"
     ];
 
     ALiVE_HeliBuildingTypes = ALiVE_HeliBuildingTypes + [

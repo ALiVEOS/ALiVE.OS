@@ -576,6 +576,7 @@ ALiVE_mapCompositionType = "Woodland";
         "a3\structures_f_exp\infrastructure\runways\runway_01_40m_f.p3d",
         "a3\structures_f_exp\infrastructure\runways\runwayholdmark_17_f.p3d",
         "a3\structures_f_exp\infrastructure\runways\runwayholdmark_35_f.p3d",
+        "ca\buildings\hangar_2.p3d",
         "ca\roads_e\runway\runway_end15_ep1.p3d",
         "ca\roads_e\runway\runway_main_ep1.p3d"
     ];
@@ -586,6 +587,7 @@ ALiVE_mapCompositionType = "Woodland";
         "a3\structures_f_exp\infrastructure\airports\airport_01_hangar_f.p3d",
         "a3\structures_f_exp\infrastructure\airports\airport_02_hangar_left_f.p3d",
         "a3\structures_f_exp\infrastructure\airports\airport_02_hangar_right_f.p3d",
+        "ca\buildings\hangar_2.p3d",
         "ca\roads_e\runway\runway_end15_ep1.p3d",
         "ca\roads_e\runway\runway_main_ep1.p3d"
     ];
