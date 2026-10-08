@@ -479,6 +479,28 @@ switch(_operation) do {
                     if (!isNil "ALiVE_fnc_advciv_initUnit") then {
                         [_unit] call ALiVE_fnc_advciv_initUnit;
 
+                        // What Advanced Civilians knew about this civilian before it last went virtual: how many
+                        // shots it has heard and when, and its hostility offset, so a civilian who was shaken
+                        // by a firefight does not come back calm, and one who has been talked to reads the same.
+                        // Its home is not restored: the agent always respawns at its recorded home, and a home
+                        // moved since (after fleeing by vehicle) would send it walking across the map. The
+                        // behaviour state (panic, hiding) is left at its fresh start on purpose: its timers and
+                        // hiding spot are not saved, and a civilian restored into HIDE has nothing to finish it.
+                        if (_unit getVariable ["ALiVE_advciv_active", false]) then {
+                            {
+                                _x params ["_key", "_value"];
+                                switch (_key) do {
+                                    case "ALiVE_advciv_nearShots": { _unit setVariable [_key, _value] };
+                                    // A time from before a reload is ahead of the new clock, which would read as
+                                    // a shot still to come.
+                                    case "ALiVE_advciv_lastShotTime": {
+                                        if (_value <= time) then { _unit setVariable [_key, _value] };
+                                    };
+                                    case "ALiVE_CivPop_PerceivedOffset": { _unit setVariable [_key, _value, true] };
+                                };
+                            } forEach ([_logic, "advcivState", []] call ALIVE_fnc_hashGet);
+                        };
+
                         if (_debug) then {
                             ["ALiVE Advanced Civilians - Initialized enhanced civilian: %1 (AgentID: %2)", _unit, _agentID] call ALIVE_fnc_dump;
                         };

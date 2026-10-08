@@ -24,18 +24,20 @@ params [["_unit", objNull]];
 
 if (isNull _unit) exitWith {[]};
 
-[
+private _state = [
     ["ALiVE_advciv_state",          _unit getVariable ["ALiVE_advciv_state",          "CALM"]],
     ["ALiVE_advciv_homePos",        _unit getVariable ["ALiVE_advciv_homePos",        getPos _unit]],
     ["ALiVE_advciv_hidingPos",      _unit getVariable ["ALiVE_advciv_hidingPos",      []]],
     ["ALiVE_advciv_nearShots",      _unit getVariable ["ALiVE_advciv_nearShots",      0]],
-    ["ALiVE_advciv_lastShotTime",   _unit getVariable ["ALiVE_advciv_lastShotTime",   0]],
-    // Per-civ perceived-hostility offset for the civHostilityIndicator
-    // attribute. Lazy-initialised on first dialog open against this civ;
-    // persists for the lifetime of the unit object so re-opening shows
-    // the same perceived value until actual hostility shifts the bucket.
-    // Saved via this function for future cross-cycle persistence; the
-    // restore-side currently doesn't read advcivState back (pre-existing
-    // gap, not blocking Phase 1 - the offset re-initialises on respawn).
-    ["ALiVE_CivPop_PerceivedOffset", _unit getVariable ["ALiVE_CivPop_PerceivedOffset", 0]]
-]
+    ["ALiVE_advciv_lastShotTime",   _unit getVariable ["ALiVE_advciv_lastShotTime",   0]]
+];
+
+// Per-civ perceived-hostility offset for the civHostilityIndicator attribute, rolled the first time
+// someone talks to this civilian. Saved only once it has been rolled: saving a stand-in 0 for a civilian
+// nobody has spoken to would bring it back as a real 0 and the roll would never happen. Read back by
+// ALIVE_fnc_civilianAgent when the civilian is next spawned.
+if !(isNil {_unit getVariable "ALiVE_CivPop_PerceivedOffset"}) then {
+    _state pushBack ["ALiVE_CivPop_PerceivedOffset", _unit getVariable "ALiVE_CivPop_PerceivedOffset"];
+};
+
+_state
