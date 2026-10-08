@@ -54,7 +54,7 @@ if (_name == "__SERVER__") then {
         };
 
         // Save Composition data
-        if (MOD(sys_data) getVariable ["saveCompositions","false"] == "true") then {
+        if (MOD(sys_data) getVariable ["saveCompositions","true"] == "true") then {
 
             // Add any spawned roadblocks
             if (!isNil "ALIVE_CIV_PLACEMENT_ROADBLOCKS") then {

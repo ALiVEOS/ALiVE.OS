@@ -346,7 +346,10 @@ if (isDedicated || (isServer && _pns)) then {
 
     // Handle compositions persistence
     MOD(PCOMPOSITIONS) = [] call CBA_fnc_hashCreate;
-    if (GVAR(dictionaryLoaded) && (MOD(sys_data) getVariable ["saveCompositions","false"] == "true")) then {
+    // Save Compositions is Yes by default in the editor, and a module left at its default stores
+    // no value, so a missing one means Yes. It was read as No, so a mission whose maker never
+    // touched the setting neither saved its compositions nor loaded them back.
+    if (GVAR(dictionaryLoaded) && (MOD(sys_data) getVariable ["saveCompositions","true"] == "true")) then {
         private ["_missionName","_response"];
         // Read in compositions for mission
         ["SYS_DATA - Loading mission compositions data."] call ALIVE_fnc_dump;
