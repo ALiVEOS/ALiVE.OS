@@ -29,7 +29,7 @@ ALIVE_civilianRailBuildingTypes = [];
 ALIVE_civilianFuelBuildingTypes = [];
 ALIVE_civilianConstructionBuildingTypes = [];
 
-ALiVE_mapCompositionType = "Jungle";
+ALiVE_mapCompositionType = "Desert";
 
  if (tolower(_worldName) == "tem_kujari") then {
     ALIVE_Indexing_Blacklist = ALIVE_Indexing_Blacklist + [
