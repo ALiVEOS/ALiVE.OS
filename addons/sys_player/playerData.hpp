@@ -110,7 +110,13 @@ GVAR(UNIT_DATA) = [
         ["rating",{rating  (_this select 0);}, {(_this select 0) addrating (_this select 1);}],
         ["rank",{rank (_this select 0);}, {(_this select 0) setUnitRank (_this select 1);}],
         ["group",{group  (_this select 0);}, "SKIP"], // {[(_this select 0)] joinSilent (_this select 1);}
-        ["leader", {(leader  (_this select 0) == (_this select 0));}, "SKIP"] // {(_this select 1) selectLeader (_this select 0);}
+        ["leader", {(leader  (_this select 0) == (_this select 0));}, "SKIP"], // {(_this select 1) selectLeader (_this select 0);}
+        // Whether the player's group opted out of C2ISTAR's automatic orders. The opt-out lives on the
+        // group, which a reload rebuilds, so it went back to opted in. Only a true is put back: a
+        // groupmate saved before the opt-out must not switch it on again for the whole group. A save
+        // made before this field existed has no value for it and the restore skips it.
+        ["ordersOptOut", {(group (_this select 0)) getVariable ["ALiVE_mil_c2istar_playerOrdersOptOut", false];},
+            {if ((_this select 1) isEqualTo true) then {(group (_this select 0)) setVariable ["ALiVE_mil_c2istar_playerOrdersOptOut", true, true]};}]
         // View distance and terrain grid aren't saved: they're each player's own settings, held
         // inside the View Distance module's limits. They were read from unit variables that
         // nothing set, so every reconnect put the player back to 1500 m and grid 25.
