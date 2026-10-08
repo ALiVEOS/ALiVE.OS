@@ -14,43 +14,43 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_DISABLE_PERF">
-    <English>Disable Perf</English>
-    <Chinese>停用效能記錄</Chinese>
-    <Chinesesimp>禁用性能记录</Chinesesimp>
-    <Spanish>Desactivar rendimiento</Spanish>
-    <French>Désactiver Perf</French>
-    <Portuguese>Desativar Desempenho</Portuguese>
-    <Russian>Отключить учёт производительности</Russian>
+    <English>Stop Perf</English>
+    <Chinese>停止效能監測</Chinese>
+    <Chinesesimp>停止性能监测</Chinesesimp>
+    <Spanish>Detener rendimiento</Spanish>
+    <French>Arrêter Perf</French>
+    <Portuguese>Parar Desempenho</Portuguese>
+    <Russian>Остановить мониторинг</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PERF_COMMENT">
-    <English>Disable MP Perf recorded to ALiVE web service</English>
-    <Chinese>停用回報至 ALiVE 網路服務的多人效能記錄</Chinese>
-    <Chinesesimp>禁止将多人性能数据记录至 ALiVE 网络服务</Chinesesimp>
-    <Spanish>Desactivar el registro de rendimiento multijugador en el servicio web de ALiVE</Spanish>
-    <French>Désactive l'enregistrement Perf MP vers le service web ALiVE</French>
-    <Portuguese>Desativa o registro de Desempenho MP no serviço web do ALiVE</Portuguese>
-    <Russian>Отключает отправку данных MP-производительности в веб-сервис ALiVE</Russian>
+    <English>Server performance: show it, and start or stop monitoring</English>
+    <Chinese>伺服器效能：顯示，並開始或停止監測</Chinese>
+    <Chinesesimp>服务器性能：显示，并开始或停止监测</Chinesesimp>
+    <Spanish>Rendimiento del servidor: mostrarlo e iniciar o detener la supervisión</Spanish>
+    <French>Performances du serveur : les afficher, et démarrer ou arrêter la surveillance</French>
+    <Portuguese>Desempenho do servidor: mostrar e iniciar ou parar o monitoramento</Portuguese>
+    <Russian>Производительность сервера: показать, запустить или остановить мониторинг</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PERF_ENABLE">
-    <English>Enable Perf</English>
-    <Chinese>啟用效能記錄</Chinese>
-    <Chinesesimp>启用性能记录</Chinesesimp>
-    <Spanish>Activar rendimiento</Spanish>
-    <French>Activer Perf</French>
-    <Portuguese>Ativar Desempenho</Portuguese>
-    <Russian>Включить учёт производительности</Russian>
+    <English>Start Perf</English>
+    <Chinese>開始效能監測</Chinese>
+    <Chinesesimp>开始性能监测</Chinesesimp>
+    <Spanish>Iniciar rendimiento</Spanish>
+    <French>Démarrer Perf</French>
+    <Portuguese>Iniciar Desempenho</Portuguese>
+    <Russian>Запустить мониторинг</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PERF_ENABLE_COMMENT">
-    <English>Enable/Disable perf recording to the ALiVE web service</English>
-    <Chinese>啟用／停用回報至 ALiVE 網路服務的效能記錄</Chinese>
-    <Chinesesimp>启用/禁用向 ALiVE 网络服务记录性能数据</Chinesesimp>
-    <Spanish>Activar/desactivar el registro de rendimiento en el servicio web de ALiVE</Spanish>
-    <French>Active/désactive l'enregistrement des performances vers le service web ALiVE</French>
-    <Portuguese>Ativa/Desativa o registro de desempenho no serviço web do ALiVE</Portuguese>
-    <Russian>Включает/отключает запись данных производительности в веб-сервис ALiVE</Russian>
+    <English>Start sampling the server's performance every 60 seconds, written to the server RPT as lines starting ALiVE PERF</English>
+    <Chinese>開始每 60 秒取樣伺服器效能，寫入伺服器 RPT，以 ALiVE PERF 開頭</Chinese>
+    <Chinesesimp>开始每 60 秒采样服务器性能，写入服务器 RPT，以 ALiVE PERF 开头</Chinesesimp>
+    <Spanish>Empieza a medir el rendimiento del servidor cada 60 segundos y lo escribe en el RPT del servidor en líneas que empiezan por ALiVE PERF</Spanish>
+    <French>Mesure les performances du serveur toutes les 60 secondes et les écrit dans le RPT du serveur, sur des lignes commençant par ALiVE PERF</French>
+    <Portuguese>Começa a medir o desempenho do servidor a cada 60 segundos e grava no RPT do servidor em linhas que começam com ALiVE PERF</Portuguese>
+    <Russian>Каждые 60 секунд замеряет производительность сервера и пишет её в RPT сервера строками, начинающимися с ALiVE PERF</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PERF_ERROR1">
@@ -63,4 +63,74 @@
     <Russian>Можно использовать только один модуль учёта производительности</Russian>
 </Key>
 
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_DISABLE_PERF_COMMENT">
+    <English>Stop sampling the server performance</English>
+    <Chinese>停止取樣伺服器效能</Chinese>
+    <Chinesesimp>停止采样服务器性能</Chinesesimp>
+    <Spanish>Deja de medir el rendimiento del servidor</Spanish>
+    <French>Arrête la mesure des performances du serveur</French>
+    <Portuguese>Para de medir o desempenho do servidor</Portuguese>
+    <Russian>Прекращает замеры производительности сервера</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_PERF_SHOW">
+    <English>Show Perf</English>
+    <Chinese>顯示效能</Chinese>
+    <Chinesesimp>显示性能</Chinesesimp>
+    <Spanish>Mostrar rendimiento</Spanish>
+    <French>Afficher Perf</French>
+    <Portuguese>Mostrar Desempenho</Portuguese>
+    <Russian>Показать производительность</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_PERF_HIDE">
+    <English>Hide Perf</English>
+    <Chinese>隱藏效能</Chinese>
+    <Chinesesimp>隐藏性能</Chinesesimp>
+    <Spanish>Ocultar rendimiento</Spanish>
+    <French>Masquer Perf</French>
+    <Portuguese>Ocultar Desempenho</Portuguese>
+    <Russian>Скрыть производительность</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_PERF_SHOW_COMMENT">
+    <English>Show the server's latest performance sample, refreshed every 5 seconds</English>
+    <Chinese>顯示伺服器最新的效能取樣，每 5 秒更新</Chinese>
+    <Chinesesimp>显示服务器最新的性能采样，每 5 秒刷新</Chinesesimp>
+    <Spanish>Muestra la última medición de rendimiento del servidor, actualizada cada 5 segundos</Spanish>
+    <French>Affiche la dernière mesure de performances du serveur, actualisée toutes les 5 secondes</French>
+    <Portuguese>Mostra a última medição de desempenho do servidor, atualizada a cada 5 segundos</Portuguese>
+    <Russian>Показывает последний замер производительности сервера, обновляется каждые 5 секунд</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_PERF_SERVER">
+    <English>Server performance</English>
+    <Chinese>伺服器效能</Chinese>
+    <Chinesesimp>服务器性能</Chinesesimp>
+    <Spanish>Rendimiento del servidor</Spanish>
+    <French>Performances du serveur</French>
+    <Portuguese>Desempenho do servidor</Portuguese>
+    <Russian>Производительность сервера</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_PERF_OFF">
+    <English>Monitoring is off. Use Start Perf to begin.</English>
+    <Chinese>監測已關閉。使用「開始效能監測」開始。</Chinese>
+    <Chinesesimp>监测已关闭。使用“开始性能监测”开始。</Chinesesimp>
+    <Spanish>La supervisión está desactivada. Usa Iniciar rendimiento para empezar.</Spanish>
+    <French>La surveillance est arrêtée. Utilisez Démarrer Perf pour commencer.</French>
+    <Portuguese>O monitoramento está desligado. Use Iniciar Desempenho para começar.</Portuguese>
+    <Russian>Мониторинг выключен. Запустите его пунктом «Запустить мониторинг».</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_PERF_WAITING">
+    <English>Waiting for the first sample...</English>
+    <Chinese>等待第一次取樣……</Chinese>
+    <Chinesesimp>等待第一次采样……</Chinesesimp>
+    <Spanish>Esperando la primera medición...</Spanish>
+    <French>En attente de la première mesure...</French>
+    <Portuguese>Aguardando a primeira medição...</Portuguese>
+    <Russian>Ожидание первого замера...</Russian>
+</Key>
 </Container></Package></Project>

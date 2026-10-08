@@ -34,25 +34,15 @@ LOG(MSG_INIT);
 
 ADDON = false;
 
-// #1031: none of what follows has ever run in ALiVE.OS, and it is kept on purpose for
-// whenever War Room is recoded rather than deleted. Three things are wrong with it, so
-// that revival starts from a list instead of a dig:
+// #1031: the War Room recorder below (perf data sent to the ALiVE web service) has never
+// run in ALiVE.OS, and it is kept on purpose for whenever War Room is recoded rather than
+// deleted. GVAR(ENABLED) is never set true: fnc_DataInit.sqf sets it false in three places
+// and the one branch that would enable it, when the cloud reports PerfData allowed, is
+// commented out at DataInit :224-225 (it arrived commented out in 988cd3c6, 10 May 2016).
 //
-//   1. GVAR(ENABLED) is never set true. fnc_DataInit.sqf sets it false in three places
-//      and the one branch that would enable it, when the cloud reports PerfData allowed,
-//      is commented out at DataInit :224-225. It arrived commented out in 988cd3c6,
-//      10 May 2016, the copy that first opened ALiVE up.
-//   2. The menu block below needs !isDedicated, but the only caller is
-//      fnc_DataInit.sqf:425, which sits inside if (isDedicated). So the monitoring half
-//      can run and the menu half cannot. adminActionsInit is the pattern to copy: it is
-//      spawned for every machine from main/fnc_aliveInit.sqf:642 and splits on
-//      hasInterface internally.
-//   3. GVAR(ENABLED) is both the gate for the menu appearing and the thing the menu
-//      switches off, so one use of Disable Perf removes the only way back. The menu
-//      wants a flag of its own.
-//
-// A second registration in fnc_perf.sqf:113-122 is also dead: nothing calls that
-// function outside its own file.
+// The admin Perf menu no longer lives here. It is set up for every machine by
+// ALIVE_fnc_perfMenuInit, spawned from main/fnc_aliveInit.sqf, and drives the War Room-free
+// monitor in ALIVE_fnc_perfServer, which writes "ALiVE PERF" lines to the RPT.
 TRACE_2("SYS_PERF",isDedicated,GVAR(ENABLED));
 
 if (isDedicated && GVAR(ENABLED)) then {
@@ -148,31 +138,5 @@ if (isDedicated && GVAR(ENABLED)) then {
 
 };
 
-
-TRACE_4("Adding menu",isDedicated,isHC,GVAR(ENABLED),GVAR(DISABLED));
-
-if(!isDedicated && !isHC && GVAR(ENABLED)) then {
-        // Initialise interaction key if undefined
-        if(isNil "SELF_INTERACTION_KEY") then {SELF_INTERACTION_KEY = [221,[false,false,false]];};
-
-        // if ACE spectator enabled, seto to allow exit
-        if(!isNil "ace_fnc_startSpectator") then {ace_sys_spectator_can_exit_spectator = true;};
-
-        // Initialise default map click command if undefined
-        ISNILS(DEFAULT_MAPCLICK,"");
-
-        TRACE_3("Menu pre-req",SELF_INTERACTION_KEY,ace_fnc_startSpectator,DEFAULT_MAPCLICK);
-
-        // initialise main menu
-        [
-                "player",
-                [] call ALiVE_fnc_menuKeys,
-                -9500,
-                [
-                        "call ALIVE_fnc_perfMenuDef",
-                        ["main", "alive_flexiMenu_rscPopup"]
-                ]
-        ] call CBA_fnc_flexiMenu_Add;
-};
 
 ADDON = true;

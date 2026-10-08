@@ -75,6 +75,16 @@
     <Chinesesimp>当没有玩家存在时,将自动暂停vAI、AI指挥官、CQB和Amb Civs。</Chinesesimp>
     <Spanish>Pausa automáticamente la IA virtual, el Comandante IA, CQB y los civiles ambientales si no hay jugadores en el servidor.</Spanish>
 </Key>
+<Key ID="STR_ALIVE_PERFATSTART">
+    <English>Performance Monitoring at Start:</English>
+    <Chinesesimp>开局时进行性能监测:</Chinesesimp>
+    <Spanish>Supervisión de rendimiento al inicio:</Spanish>
+</Key>
+<Key ID="STR_ALIVE_PERFATSTART_COMMENT">
+    <English>Start sampling the server's performance when the mission starts, every 60 seconds, written to the server RPT as lines starting ALiVE PERF. Admins can also start and stop it from the ALiVE menu (Perf), and Show Perf displays the latest sample.</English>
+    <Chinesesimp>任务开始时开始采样服务器性能，每 60 秒一次，以 ALiVE PERF 开头的行写入服务器 RPT。管理员也可以在 ALiVE 菜单（Perf）中开始或停止，“显示性能”会显示最新的采样。</Chinesesimp>
+    <Spanish>Empieza a medir el rendimiento del servidor al iniciar la misión, cada 60 segundos, y lo escribe en el RPT del servidor en líneas que empiezan por ALiVE PERF. Los administradores también pueden iniciarlo y detenerlo desde el menú de ALiVE (Perf), y Mostrar rendimiento enseña la última medición.</Spanish>
+</Key>
 <Key ID="STR_ALIVE_DISABLEADMINACTIONS">
     <English>Disable Admin Actions:</English>
     <Chinesesimp>禁用管理动作(Actions):</Chinesesimp>

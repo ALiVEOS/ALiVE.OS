@@ -66,6 +66,12 @@ if (typeName _params == typeName []) then {
             ],
              ...
 */
+// #1031: the menu only appears to an admin. Whether it appears is not tied to whether
+// monitoring runs (GVAR(RUNNING), set by the server), so stopping it never removes
+// the way to start it again.
+private _running = missionNamespace getVariable [QGVAR(RUNNING), false];
+private _showing = missionNamespace getVariable [QGVAR(SHOW), false];
+
 _menus =
 [
     [
@@ -74,38 +80,47 @@ _menus =
             [localize "STR_ALIVE_PERF" + " >",
                 "",
                 "",
-                localize "STR_ALIVE_PERF_ENABLE_COMMENT",
-                                ["call ALiVE_fnc_perfMenuDef", "perf", 1],
-                                -1, !(GVAR(DISABLED)), (call ALIVE_fnc_isServerAdmin)
+                localize "STR_ALIVE_PERF_COMMENT",
+                ["call ALiVE_fnc_perfMenuDef", "perf", 1],
+                -1, true, (call ALIVE_fnc_isServerAdmin)
             ]
         ]
     ]
 ];
 
-TRACE_2("Menu setup",GVAR(ENABLED),GVAR(DISABLED));
+TRACE_2("Menu setup",_running,_showing);
 
 if (_menuName == "perf") then {
     _menus set [count _menus,
         [
             ["perf", localize "STR_ALIVE_PERF", "popup"],
             [
+                [localize (["STR_ALIVE_PERF_SHOW", "STR_ALIVE_PERF_HIDE"] select _showing),
+                    { call ALIVE_fnc_perfShow; },
+                    "",
+                    localize "STR_ALIVE_PERF_SHOW_COMMENT",
+                    "",
+                    -1,
+                    true,
+                    true
+                ],
                 [localize "STR_ALIVE_PERF_ENABLE",
-                    { GVAR(ENABLED) = true; PublicVariable QGVAR(ENABLED); },
+                    { ["start"] remoteExecCall ["ALIVE_fnc_perfServer", 2]; },
                     "",
                     localize "STR_ALIVE_PERF_ENABLE_COMMENT",
                     "",
                     -1,
-                    !(GVAR(ENABLED)),
-                    !(GVAR(ENABLED))
+                    !_running,
+                    !_running
                 ],
                 [localize "STR_ALIVE_DISABLE_PERF",
-                    { GVAR(ENABLED) = false; PublicVariable QGVAR(ENABLED); },
+                    { ["stop"] remoteExecCall ["ALIVE_fnc_perfServer", 2]; },
                     "",
-                    localize "STR_ALIVE_PERF_ENABLE_COMMENT",
+                    localize "STR_ALIVE_DISABLE_PERF_COMMENT",
                     "",
                     -1,
-                    (GVAR(ENABLED)),
-                    (GVAR(ENABLED))
+                    _running,
+                    _running
                 ]
             ]
         ]

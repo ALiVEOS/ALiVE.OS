@@ -642,6 +642,9 @@ if !(_logic getVariable ["ALIVE_DISABLEADMINACTIONS", false]) then {
     [] spawn ALiVE_fnc_adminActionsInit;
 };
 
+// Server performance monitor and its admin menu (#1031)
+[_logic getVariable ["ALiVE_PERFATSTART", false]] spawn ALiVE_fnc_perfMenuInit;
+
 // Advanced Markers
 if !(_logic getVariable ["ALIVE_DISABLEMARKERS", false]) then {
     [] spawn ALIVE_fnc_spotrepInit;

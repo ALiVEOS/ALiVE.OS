@@ -2171,6 +2171,28 @@ class CfgVehicles {
                             };
                     };
             };
+            class ALiVE_PERFATSTART: Combo
+            {
+                    property =  MVAR(ALiVE_PERFATSTART);
+
+                    displayName = "$STR_ALIVE_PERFATSTART";
+                    tooltip = "$STR_ALIVE_PERFATSTART_COMMENT";
+                    typeName = "BOOL";
+                    defaultValue = "false";
+                    class Values
+                    {
+                            class Yes
+                            {
+                                    name = "Yes";
+                                    value = 1;
+                            };
+                            class No
+                            {
+                                    name = "No";
+                                    value = 0;
+                            };
+                    };
+            };
             class ALiVE_PAUSEMODULES: Combo
             {
                     property =  MVAR(ALiVE_PAUSEMODULES);

@@ -95,31 +95,8 @@ switch(_operation) do {
                 - frequent check to modify menu and display status (ALIVE_fnc_adminActoinsmenuDef)
                 */
 
-        TRACE_2("Adding menu",isDedicated,isHC);
-
-                if(!isDedicated && !isHC) then {
-                        // Initialise interaction key if undefined
-                        if(isNil "SELF_INTERACTION_KEY") then {SELF_INTERACTION_KEY = [221,[false,false,false]];};
-
-                        // if ACE spectator enabled, seto to allow exit
-                        if(!isNil "ace_fnc_startSpectator") then {ace_sys_spectator_can_exit_spectator = true;};
-
-                        // Initialise default map click command if undefined
-                        ISNILS(DEFAULT_MAPCLICK,"");
-
-                TRACE_3("Menu pre-req",SELF_INTERACTION_KEY,ace_fnc_startSpectator,DEFAULT_MAPCLICK);
-
-                        // initialise main menu
-                        [
-                                "player",
-                                [] call ALiVE_fnc_menuKeys,
-                                -9500,
-                                [
-                                        "call ALIVE_fnc_perfMenuDef",
-                                        ["main", "alive_flexiMenu_rscPopup"]
-                                ]
-                        ] call CBA_fnc_flexiMenu_Add;
-                };
+        // #1031: the admin menu is registered by ALIVE_fnc_perfMenuInit, not here; this
+        // function has no caller.
 
                 /*
                 CONTROLLER  - coordination
@@ -137,18 +114,6 @@ switch(_operation) do {
                         publicVariable QMOD(perf);
                 };
 
-                if(!isDedicated && !isHC) then {
-                        // remove main menu
-                        [
-                                "player",
-                                [] call ALiVE_fnc_menuKeys,
-                                -9500,
-                                [
-                                        "call ALIVE_fnc_perfMenuDef",
-                                        ["main", "alive_flexiMenu_rscPopup"]
-                                ]
-                        ] call CBA_fnc_flexiMenu_Remove;
-                };
         };
         default {
                 private["_err"];
