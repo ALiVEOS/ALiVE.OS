@@ -1,3 +1,4 @@
+// ALiVE 3 index v3.1, made 2026-10-08 by the ALiVE web indexer, building positions measured
 /*=================*/
 /*opening pbo kidal.pbo
 ///////<HEADER>///////
@@ -9556,11 +9557,6 @@ wrp_objects=
 			[3224496,[28244,33653]],
 			[3223024,[28154,33691]],
 			[3224517,[28335,33615]]
-		]
-	],
-	["a3\structures_f\households\slum\cargo_house_slum_ruins_f.p3d",
-		[
-			[3199358,[28336,34453]]
 		]
 	],
 	["a3\structures_f\ind\transmitter_tower\ttowerbig_1_f.p3d",
