@@ -76,7 +76,14 @@ private _configPaths = [
 
 // Default to regular if additional PBOs are not loaded
 if (!isClass (_configPaths select 0) && !isClass(_configPaths select 1)) then {
-    ["WARNING: You don't appear to have the %1 compositions loaded, make sure you have added the composition PBOs to your @ALiVE or @ALiVEServer addon folders! Falling back to %2!", _compType,_comp] call ALiVE_fnc_dump;
+    // Said once per set. Every camp, HQ and outpost asks again, so a Jungle terrain without the optional
+    // composition_vn pack logged it 123 times in one startup on Cam Lao Nam.
+    private _warned = missionNamespace getVariable ["ALiVE_compositionSetsWarned", []];
+    if !(_compType in _warned) then {
+        _warned pushBack _compType;
+        missionNamespace setVariable ["ALiVE_compositionSetsWarned", _warned];
+        ["WARNING: No %1 compositions are loaded, so the standard %2 compositions are used instead. Add the matching composition PBO from ALiVE's optional folder to @ALiVE or @ALiVEServer if there is one.", _compType,_comp] call ALiVE_fnc_dump;
+    };
 
     _configPaths = [
         missionConfigFile >> "CfgGroups" >> "Empty" >> _comp,
