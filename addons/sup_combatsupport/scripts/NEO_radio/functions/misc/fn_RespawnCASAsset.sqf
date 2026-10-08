@@ -32,7 +32,7 @@ switch ((getNumber(configfile >> "CfgVehicles" >> _type >> "side"))) do {
 //Exit if limit is reached
 if (CAS_RESPAWN_LIMIT == 0) exitwith {
     _replen = format ["All units! We are out of CAS assets"];
-    [[player,_replen,"side"],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;
+    [[player,_replen,"side",_side],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;
 };
 
 //Start respawning if not exited
@@ -44,7 +44,7 @@ private _outOfAssets = false;
 isNil { if (CAS_RESPAWN_LIMIT == 0) then { _outOfAssets = true } else { CAS_RESPAWN_LIMIT = CAS_RESPAWN_LIMIT - 1 } };
 if (_outOfAssets) exitwith {
     _replen = format ["All units! We are out of CAS assets"];
-    [[player,_replen,"side"],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;
+    [[player,_replen,"side",_side],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;
 };
 
 //Remove from all side-lists
@@ -173,4 +173,4 @@ private _fsmHandle = [_veh, _grp, _callsign, _pos, _airport, _dir, _height, _typ
 } foreach _sides;
 
 _replen = format ["All Units this is %1, We are back on Station and are ready for tasking", _callsign] ;
-[[player,_replen,"side"],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;
+[[player,_replen,"side",_side],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;
