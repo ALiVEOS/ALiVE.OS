@@ -1030,6 +1030,21 @@ switch(_operation) do {
                 ALIVE_PR_HQ = (createGroup _playerSide) createUnit ["Logic", [10,10,1000], [], 0, "NONE"];
                 ALIVE_PR_HQ setGroupId [_HQ];
                 ALIVE_PR_HQ setIdentity _identity;
+                // The HQ speaks the player's own language: another voice that shares the language of the
+                // player's. The side's voice above is only the fallback, and on its own it gave an OPFOR
+                // player a Farsi HQ whatever their faction speaks, Russian included.
+                private _myVoice = speaker player;
+                private _langs = (getArray (configFile >> "CfgVoice" >> _myVoice >> "identityTypes")) select { (_x find "Language") == 0 };
+                // Left alone when the side's HQ voice already speaks it, so a NATO player keeps the HQ voice.
+                private _hqLangs = getArray (configFile >> "CfgVoice" >> (speaker ALIVE_PR_HQ) >> "identityTypes");
+                if (count _langs > 0 && {(_langs findIf { _x in _hqLangs }) < 0}) then {
+                    private _pool = ("getNumber (_x >> 'scope') == 2" configClasses (configFile >> "CfgVoice")) select {
+                        private _ids = getArray (_x >> "identityTypes");
+                        (_ids findIf { _x in _langs }) > -1
+                    };
+                    _pool = (_pool apply { configName _x }) - [_myVoice];
+                    if (count _pool > 0) then { ALIVE_PR_HQ setSpeaker (selectRandom _pool) };
+                };
                 ALIVE_PR_HQ kbAddtopic["ALIVE_PR_protocol", "a3\modules_f\supports\kb\protocol.bikb"];
 
             };
