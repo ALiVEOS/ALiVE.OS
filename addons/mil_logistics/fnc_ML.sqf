@@ -12577,6 +12577,17 @@ switch(_operation) do {
                                         _profile = _profiles select 0;
                                         [_profile, "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
                                     };
+                                    // A category the cases above don't name (RHS's menu offers Support, MRAP, AA and
+                                    // artillery): it went on no list, so it was made and charged for and never travelled.
+                                    // Go by what the vehicle is: tracked or tank-like with the armour, the rest with the
+                                    // motorised vehicles.
+                                    default {
+                                        if (_itemClass isKindOf "Tank") then {
+                                            _armourProfiles pushback _profileIDs;
+                                        } else {
+                                            _motorisedProfiles pushback _profileIDs;
+                                        };
+                                    };
                                 };
 
                                 _totalCount = _totalCount + 1;
