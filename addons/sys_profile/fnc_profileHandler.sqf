@@ -1374,6 +1374,7 @@ switch(_operation) do {
 
             _entities = [];
             _vehicles = [];
+            private _importedEntities = [];
             _total = [_logic,"profileCount",0] call ALIVE_fnc_hashGet;
 
             {
@@ -1542,6 +1543,7 @@ switch(_operation) do {
                     };
 
                     [ALIVE_profileHandler, "registerProfile", _profileEntity] call ALIVE_fnc_profileHandler;
+                    _importedEntities pushBack _profileEntity;
 
                     //Collect the index-number of the entity id: the number after its last "_". Sorting the parts
                     //and taking the lowest, as before, read "FOO_1st-entity_50" as 1, not 50
@@ -1661,6 +1663,13 @@ switch(_operation) do {
                 };
 
             } forEach (_profiles select 2);
+
+            // update entity profile speeds once all vehicle profiles are created
+            {
+                private _assignments = [_x,"vehicleAssignments"] call ALIVE_fnc_hashGet;
+                private _speed = [_assignments, _x] call ALIVE_fnc_profileVehicleAssignmentsGetSpeedPerSecond;
+                [_x,"speedPerSecond", _speed] call ALIVE_fnc_hashSet;
+            } forEach _importedEntities;
 
             //Sort collected index-numbers to get the highest one
             _vehicles sort false;
