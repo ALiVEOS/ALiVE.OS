@@ -62,9 +62,19 @@ for "_i" from 0 to (_count - 1) do {
     private _baseId = format ["alive_decoy_intel_%1_%2", diag_tickTime, _i];
 
     private _mEllipse = [_baseId, _decoyPos, "ELLIPSE", [150, 150], "ColorRed", "IED", "n_installation", "FDiagonal", 0, 0.5] call ALIVE_fnc_createMarkerGlobal;
-    private _mIcon    = [_baseId + "I", _decoyPos, "ICON", [0.1, 0.1], "ColorRed", "installation", "mil_dot", "FDiagonal", 0, 0.5] call ALIVE_fnc_createMarkerGlobal;
+    // Drawn as a real reveal is (ALiVE_fnc_OPCOMToggleInstallations): the dot carries the objective type,
+    // and most also show one installation, with its own label and icon, a short way inside the ellipse.
+    // A decoy used to be the only marker labelled "installation" and the only one with no installation
+    // icon, so it could be told apart at a glance (F106).
+    private _mIcon    = [_baseId + "I", _decoyPos, "ICON", [0.1, 0.1], "ColorRed", selectRandom ["CIV", "MIL"], "mil_dot", "FDiagonal", 0, 0.5] call ALIVE_fnc_createMarkerGlobal;
 
     _createdMarkers append [_mEllipse, _mIcon];
+
+    if (random 1 < 0.75) then {
+        private _inst = selectRandom [["Recruitment HQ", "n_installation"], ["Weapons depot", "n_installation"], ["IED factory", "n_installation"], ["Sabotage", "n_installation"], ["Ambush", "hd_ambush"]];
+        private _instPos = _decoyPos getPos [random 60, random 360];
+        _createdMarkers pushBack ([_baseId + "H", _instPos, "ICON", [0.5, 0.5], "ColorRed", _inst select 0, _inst select 1, "FDiagonal", 0, 0.5] call ALIVE_fnc_createMarkerGlobal);
+    };
 };
 
 // Fade-and-delete matching the cadence used by
