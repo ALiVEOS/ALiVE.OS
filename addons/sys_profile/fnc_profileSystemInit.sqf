@@ -76,6 +76,8 @@ if(isServer) then {
     private _spawnTypeHeliRadius = parseNumber (_logic getVariable ["spawnTypeHeliRadius","1500"]);
     private _spawnTypeJetRadius = parseNumber (_logic getVariable ["spawnTypeJetRadius","0"]);
     private _spawnTypeUAVRadius = parseNumber (_logic getVariable ["spawnRadiusUAV", "-1"]);
+    // Vehicle Spawn Distance (#422): blank or 0 keeps vehicles at the normal spawn distance.
+    ALIVE_spawnRadiusVehicle = parseNumber (_logic getVariable ["spawnRadiusVehicle", "0"]);
     private _proximitySpawning = true;
     private _airCombatSpawning = false;
     private _airCombatPlaneVehicleRadius = 7000;

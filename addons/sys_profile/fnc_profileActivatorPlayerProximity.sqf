@@ -19,6 +19,7 @@ Any
 
 Author:
 SpyderBlack723
+Jman
 ---------------------------------------------------------------------------- */
 
 params [
@@ -98,14 +99,30 @@ switch (_operation) do {
                 ] select (ALIVE_spawnRadiusUAV == -1);
             };
 
-            private _profilesInDeactivationRange = [_center,_radius * 1.2,["all","all"],true] call ALiVE_fnc_getNearProfiles;
+            // Vehicle Spawn Distance (#422): around someone on the ground, vehicles and the groups in
+            // them spawn this far out, so they're seen driving in rather than appearing. Blank or 0,
+            // or less than the normal distance, keeps the normal distance. Each profile is held by its
+            // own distance once spawned too, or a vehicle beyond the normal one would be put away again.
+            private _vehicleRadius = _radius;
+            if (_spawnSourceVehicle == _spawnSource && {!(unitIsUAV _spawnSource)}) then {
+                _vehicleRadius = _radius max (missionNamespace getVariable ["ALIVE_spawnRadiusVehicle", 0]);
+            };
+            private _fnc_inVehicle = {
+                params ["_data", "_profile"];
+                ((_data select 5) == "vehicle")
+                || {!(([_profile, "vehiclesInCommandOf", []] call ALiVE_fnc_hashGet) isEqualTo [])}
+                || {!(([_profile, "vehiclesInCargoOf", []] call ALiVE_fnc_hashGet) isEqualTo [])}
+            };
+
+            private _profilesInDeactivationRange = [_center,(_radius max _vehicleRadius) * 1.2,["all","all"],true] call ALiVE_fnc_getNearProfiles;
 
             {
                 private _profileData = _x select 2;
+                private _ownRadius = if (_vehicleRadius > _radius && {[_profileData, _x] call _fnc_inVehicle}) then { _vehicleRadius } else { _radius };
 
                 if ((_profileData select 5) != "entity" || {!(_profileData select 30)}) then {
                     if !(_profileData select 1) then {
-                        if ((_profileData select 2) distance _center <= _radius) then {
+                        if ((_profileData select 2) distance _center <= _ownRadius) then {
                             private _isShip = false;
                             private _isWater = false;
 
@@ -153,18 +170,20 @@ switch (_operation) do {
                             };
                         };
                     } else {
-                        if (
-                            isNull (_profileData select 10) &&
-                            {(_profileData select 5) == "entity"}
-                        ) then {
-                            private _leader = leader (_profileData select 13);
+                        if ((_profileData select 2) distance _center <= _ownRadius * 1.2) then {
+                            if (
+                                isNull (_profileData select 10) &&
+                                {(_profileData select 5) == "entity"}
+                            ) then {
+                                private _leader = leader (_profileData select 13);
 
-                            if (!isNull _leader) then {
-                                [_x,"leader",_leader] call ALiVE_fnc_hashSet;
+                                if (!isNull _leader) then {
+                                    [_x,"leader",_leader] call ALiVE_fnc_hashSet;
+                                };
                             };
-                        };
 
-                        _claims pushBack (_profileData select 4);
+                            _claims pushBack (_profileData select 4);
+                        };
                     };
                 };
             } forEach _profilesInDeactivationRange;

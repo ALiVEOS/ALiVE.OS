@@ -180,6 +180,12 @@
     <Chinesesimp>玩家在直升机上生成人工智能的半径。设置为0可在直升机中禁用生成</Chinesesimp>
     <Spanish>Radio alrededor del jugador en helicóptero en el que aparece la IA. Ponlo a 0 para desactivar la aparición mientras se vuela en helicóptero</Spanish>
 </Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_SPAWN_VEHICLE_RADIUS">
+    <English>Vehicle Spawn Radius (m):</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_SPAWN_VEHICLE_RADIUS_COMMENT">
+    <English>How far from a player on the ground vehicles, and the groups riding or crewing them, spawn. Set it above Spawn Radius so vehicles are seen driving in rather than appearing; infantry still uses Spawn Radius. Leave it blank, or set it no higher than Spawn Radius, to spawn vehicles at Spawn Radius as before.</English>
+</Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SPAWN_UAV_RADIUS">
     <English>Spawn UAV Radius (m):</English>
     <Chinesesimp>无人机生成半径:</Chinesesimp>
