@@ -18,8 +18,16 @@ PA_fixtures = _snapshots apply {[_x select 0, _x select 1]};
         {
             _x params ["_key", "_expected"];
             private _actual = [_profile, _key, "(missing)"] call ALIVE_fnc_hashGet;
+            private _matches = _actual isEqualTo _expected;
+            if (_key == "vehicleAssignments" && {[_actual] call ALIVE_fnc_isHash}
+                && {[_expected] call ALIVE_fnc_isHash}) then {
+                // The hash default is nil; equality against that undefined slot
+                // fails even for identical assignments. Compare stored keys/values.
+                _matches = [(_actual select 1), (_actual select 2)] isEqualTo
+                    [(_expected select 1), (_expected select 2)];
+            };
             [format ["%1: %2 survives save/load", _alias, _key],
-                _actual isEqualTo _expected, _expected, _actual] call PA_fnc_assert;
+                _matches, _expected, _actual] call PA_fnc_assert;
         } forEach _fields;
         if (_alias == "pending") then {
             private _applied = ([_profile, "waypoints", []] call ALIVE_fnc_hashGet)

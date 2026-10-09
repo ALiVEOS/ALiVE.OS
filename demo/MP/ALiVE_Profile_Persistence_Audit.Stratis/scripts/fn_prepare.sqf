@@ -53,18 +53,19 @@ private _partialReady = ["Partly mounted fixture has someone on foot and walking
 
 private _mixed = ["multipleVehicles", ["B_crew_F", "B_crew_F", "B_crew_F", "B_crew_F"], [1810, 5660, 0]] call _entity;
 private _fast = ["fastVehicle", "B_Quadbike_01_F", [1810, 5660, 0]] call _vehicle;
-private _slow = ["slowVehicle", "B_Truck_01_transport_F", [1810, 5680, 0]] call _vehicle;
+private _slow = ["slowVehicle", "B_APC_Tracked_01_rcws_F", [1810, 5680, 0]] call _vehicle;
 [_mixed, _fast] call ALIVE_fnc_createProfileVehicleAssignment;
 [_mixed, _slow] call ALIVE_fnc_createProfileVehicleAssignment;
 private _quadSpeed = "B_Quadbike_01_F" call ALIVE_fnc_vehicleGetSpeedPerSecond;
-private _truckSpeed = "B_Truck_01_transport_F" call ALIVE_fnc_vehicleGetSpeedPerSecond;
-private _expectedMixed = if ((_quadSpeed select 0) < (_truckSpeed select 0)) then {_quadSpeed} else {_truckSpeed};
+private _slowSpeed = "B_APC_Tracked_01_rcws_F" call ALIVE_fnc_vehicleGetSpeedPerSecond;
+private _expectedMixed = if ((_quadSpeed select 0) < (_slowSpeed select 0)) then {_quadSpeed} else {_slowSpeed};
 private _mixedAssigned = ([_mixed, "vehicleAssignments"] call ALIVE_fnc_hashGet) call ALIVE_fnc_profileVehicleAssignmentsGetCount;
 private _mixedReady = ["Multiple-vehicle fixture uses the slowest transport speed",
     _mixedAssigned == 4 && {count ([_mixed, "vehiclesInCommandOf"] call ALIVE_fnc_hashGet) == 2}
-        && {(_quadSpeed select 0) != (_truckSpeed select 0)}
+        && {(_quadSpeed select 0) != (_slowSpeed select 0)}
         && {([_mixed, "speedPerSecond"] call ALIVE_fnc_hashGet) isEqualTo _expectedMixed},
-    _expectedMixed, [_mixed, "speedPerSecond"] call ALIVE_fnc_hashGet] call PA_fnc_assert;
+    [4, 2, _expectedMixed], [_mixedAssigned, count ([_mixed, "vehiclesInCommandOf"] call ALIVE_fnc_hashGet),
+        [_mixed, "speedPerSecond"] call ALIVE_fnc_hashGet]] call PA_fnc_assert;
 ["onFoot", ["B_Soldier_F"], [1810, 5650, 0]] call _entity;
 
 private _pending = ["pending", ["B_Soldier_F"], [1810, 5620, 0]] call _entity;

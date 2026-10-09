@@ -21,6 +21,7 @@ class CfgFunctions
             class local {};
             class emptyValidation {};
             class mountedValidation {};
+            class automated {};
             class cloud {};
             class cloudTransport {};
             class request {};
@@ -42,5 +43,17 @@ class CfgRemoteExec
         mode = 2;
         jip = 0;
         class systemChat { allowedTargets = 0; };
+    };
+};
+
+// Manual operation is the default; the dedicated runner opts in via server.cfg.
+class Params
+{
+    class PA_Automated
+    {
+        title = "Run persistence audit automatically";
+        values[] = {0, 1};
+        texts[] = {"Manual", "Automated"};
+        default = 0;
     };
 };

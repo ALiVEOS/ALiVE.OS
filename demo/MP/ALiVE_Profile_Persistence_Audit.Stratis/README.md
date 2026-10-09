@@ -19,13 +19,29 @@ Use the development mod build you intend to audit. These files call functions fr
 5. **Verify the last saved baseline** reruns observations without preparing or repairing fixtures.
 6. **Spawn restored hook and attrition fixtures** physically spawns the restored infantry and crew nearby. It checks whether the hook's PA_hookRan marker actually appears. Inspect the vehicle and wounded infantry for their condition. Run fresh Local tests before repeating comparisons after spawning.
 
+## Automated dedicated-server run
+
+From the repository root on Windows, run:
+
+```powershell
+python utils/run_profile_persistence_audit.py
+```
+
+The launcher uses the installed arma3server_x64.exe, CBA, and ALiVE dependencies. It packages the current repository sys_profile addon and this mission for every run. Use --game-dir, --alive-mod, or --cba-mod for other installation paths.
+
+Each run has a fresh persistence profile and logs under %TEMP%/ALiVE_Profile_Persistence_Audit. The server binds to 127.0.0.1, starts the mission without a player, runs the Local roundtrip and empty-save suites, then is stopped by the launcher. A uniquely named mission PBO is temporarily staged in the game's MPMissions directory and removed afterward. The manifest records the commit, launch command, and profile source hashes; result.json and the RPT retain the evidence.
+
+The launcher requires every focused empty-save, mounted-speed and raw unit-count assertion to report PASS. Missing assertions, timeouts and script errors cannot pass. result.json reports focused_passed separately from the full audit, which returns exit code 1 if any assertion fails, including other persistence findings. Cloud, physical spawning and cold-restart checks use the manual actions described above.
+
+The PA_Automated mission parameter defaults to Manual; the launcher opts into Automated in its server configuration.
+
 ## Coverage and expected evidence
 
 | Finding | Fixture / observation |
 | --- | --- |
 | Empty saves rejected | Empty save is accepted as persistent / leaves no non-player profiles; both assertions should PASS with the fix; the original bug left the warm-load seed in place. Tests the production loader directly, without requiring a placement module. |
-| Mounted speed lost | Fully mounted MRAP crew keeps vehicle speed; a partly mounted quadbike group keeps walking speed; a group using a quadbike and truck uses the slower transport; an on-foot group keeps walking speed. Both record orders must work, and unresolved vehicle references must return a complete walking-speed array. |
-| Cached unit count lost | Inspect raw unitCount immediately after load, before a getter/performance consumer can repair it. The mounted-speed restoration pass now rebuilds it because partly mounted groups depend on the correct count. |
+| Mounted speed lost | Fully mounted MRAP crew keeps vehicle speed; a partly mounted quadbike group keeps walking speed; a group using a quadbike and tracked APC uses the slower transport; an on-foot group keeps walking speed. Both record orders must work, and unresolved vehicle references must return a complete walking-speed array. |
+| Cached unit count lost | Inspect raw unitCount immediately after load, before a getter/performance consumer can repair it. The unitClasses setter maintains it during import, before the speed restoration pass reads it. |
 | Spawn hooks lost | Non-empty code and onEachSpawnOnce=false; compare fields, then optionally spawn and check the unit marker. |
 | Cargo / sling relationships lost | A cargo truck with B_supplyCrate_F, a helicopter referencing that truck, and the reciprocal slung field. Compare both sides, independently of sling-load physics. |
 | Pending orders lost | A real queued pathfinding request is saved in the same unscheduled block as its creation, before a callback can run. The destination must remain in restored applied or pending orders. An applied waypoint is a control. |

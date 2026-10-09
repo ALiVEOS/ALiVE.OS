@@ -27,3 +27,7 @@ if (count _baseline > 0) then {
     [{[] call PA_fnc_verify}, []] call CBA_fnc_directCall;
 };
 "[PA] Ready. Use the player action menu. FAIL means the persistence invariant did not survive." remoteExec ["systemChat", 0];
+
+if ((["PA_Automated", 0] call BIS_fnc_getParamValue) == 1) then {
+    [] spawn PA_fnc_automated;
+};
