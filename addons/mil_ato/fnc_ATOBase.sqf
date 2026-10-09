@@ -1532,6 +1532,13 @@ switch(_operation) do {
         // Skipped at a base with no ground as well, and for exactly the reason
         // given above: the helper places on land only and would spend its two
         // hundred attempts per object finding none.
+        // ...and said, when some were asked for, so a mission maker isn't left looking for them
+        if (_failed isEqualTo "" && {_isCarrier || {_isVirtual}}) then {
+            private _asked = _module getVariable ["objectiveObjectsCount", "0"];
+            if !(_asked in [0, "0", ""]) then {
+                ["ALIVE_fnc_ATOBase - Objective Objects are not placed for a commander based on %1: they are placed on land only", ["a carrier", "an ingress point"] select _isVirtual] call ALiVE_fnc_dump;
+            };
+        };
         if (_failed isEqualTo "" && {!_isCarrier} && {!_isVirtual}) then {
             private _countRaw = _module getVariable ["objectiveObjectsCount", "0"];
             private _count = switch (true) do {
