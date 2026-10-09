@@ -151,7 +151,17 @@ switch(_operation) do {
                 // select method
                 switch (GVAR(STYLE)) do {
                     case ("modern") : {GVAR(TRIGGER) = {[ADDON,"active",_this] call ALiVE_fnc_playertags}};
-                    case ("default") : {GVAR(TRIGGER) = {enable_playertags = _this}};
+                    // The Default style draws through an overlay that only this module's own menu opened, and that
+                    // menu is never registered, so switching tags on from Player Options showed nothing (F220). The
+                    // overlay is opened here the first time tags go on, on its own layer, and left up: with tags off
+                    // its loop draws nothing.
+                    case ("default") : {GVAR(TRIGGER) = {
+                        enable_playertags = _this;
+                        if (_this && {hasInterface} && {isNil QGVAR(OVERLAY_OPEN)}) then {
+                            GVAR(OVERLAY_OPEN) = true;
+                            ("ALiVE_playertags" call BIS_fnc_rscLayer) cutRsc ["playertagsOverlayRsc", "PLAIN"];
+                        };
+                    }};
                     default {GVAR(TRIGGER) = {[ADDON,"active",_this] call ALiVE_fnc_playertags}};
                 };
 
