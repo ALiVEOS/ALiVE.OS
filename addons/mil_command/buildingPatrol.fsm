@@ -48,6 +48,7 @@ class FSM
                         init = /*%FSM<STATEINIT""">*/"private [""_unit"",""_buildings"",""_building"",""_buildingPositions"",""_testWait"",""_iteration""];" \n
                          "" \n
                          "_group = _this select 0;" \n
+                         "_fsmArgs = +_this;" \n
                          "_unit = _this select 1;" \n
                          "_buildings = _this select 2;" \n
                          "_debug = _this select 3;" \n
@@ -107,6 +108,8 @@ class FSM
                         itemno = 5;
                         init = /*%FSM<STATEINIT""">*/"" \n
                          "if !(alive _unit) then {_destroy = true;};" \n
+                         "// the man's group was handed to another machine: the patrol carries on there, and this copy ends (F444)" \n
+                         "if (!_destroy && {!local _unit}) then { [_fsmArgs, ""\x\alive\addons\mil_command\buildingPatrol.fsm""] remoteExec [""execFSM"", _unit]; _destroy = true; };" \n
                          "_waitTime = random [60,160,360];" \n
                          "// debug ---------------------------------------" \n
                          "if(_debug) then { [""Executed FSM Command - [buildingPatrol.fsm] Running Action for _unit: %1, _waitTime: %2 mins"", _unit, _waitTime/60] call ALiVE_fnc_dump; };" \n
