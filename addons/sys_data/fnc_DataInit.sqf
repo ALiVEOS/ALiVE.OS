@@ -329,6 +329,37 @@ if (isDedicated || (isServer && _pns)) then {
             if (MOD(sys_data) getVariable ["saveDateTime","false"] == "true") then {
                 setdate ([GVAR(mission_data), "date", date] call CBA_fnc_hashGet);
             };
+
+            // Respawn tickets as saved (#396). Put back a few seconds in, once the mission's own
+            // start-up has handed out its starting tickets, and set to the saved count rather than
+            // added to whatever the mission gave.
+            private _tickets = [GVAR(mission_data), "ALiVE_respawnTickets", []] call CBA_fnc_hashGet;
+            if (_tickets isEqualType [] && {count _tickets > 0}) then {
+                _tickets spawn {
+                    waitUntil { sleep 1; time > 10 };
+                    {
+                        _x params [["_key", ""], ["_n", -1]];
+                        private _target = switch (_key) do {
+                            case "WEST": { west };
+                            case "EAST": { east };
+                            case "GUER": { resistance };
+                            case "CIV": { civilian };
+                            case "MISSION": { missionNamespace };
+                            default { objNull };
+                        };
+                        if (!(_target isEqualTo objNull) && {_n isEqualType 0} && {_n >= 0}) then {
+                            // none set yet reads -1: make the count exist first, so a saved 0 comes back as 0
+                            if (([_target] call BIS_fnc_respawnTickets) < 0) then {
+                                [_target, 1] call BIS_fnc_respawnTickets;
+                                [_target, -1] call BIS_fnc_respawnTickets;
+                            };
+                            private _now = [_target] call BIS_fnc_respawnTickets;
+                            [_target, _n - _now] call BIS_fnc_respawnTickets;
+                        };
+                    } forEach _this;
+                    ["SYS_DATA - Respawn tickets restored: %1", _this] call ALIVE_fnc_dump;
+                };
+            };
         } else {
 
             if(ALiVE_SYS_DATA_DEBUG_ON) then {
