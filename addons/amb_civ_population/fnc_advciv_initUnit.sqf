@@ -158,7 +158,10 @@ if (vehicle _unit == _unit) then { _unit setUnitPos "UP"; };
 // =========================================================================
 // Hit event handler — manages damage reactions and vehicle bail-out
 // =========================================================================
-_unit addEventHandler ["Hit", {
+// A civilian the brain let go and later takes back in comes through here again: its earlier handlers go
+// first, or each wound raised its hostility twice.
+{ _unit removeEventHandler _x } forEach (_unit getVariable ["ALiVE_advciv_ehIds", []]);
+private _hitEH = _unit addEventHandler ["Hit", {
     params ["_unit", "_source", "_damage", "_instigator"];
 
     if (isNull _unit || {!alive _unit}) exitWith {};
@@ -266,7 +269,7 @@ _unit addEventHandler ["Hit", {
 // =========================================================================
 // Deleted event handler — deregisters the unit from all AdvCiv tracking
 // =========================================================================
-_unit addEventHandler ["Deleted", {
+private _deletedEH = _unit addEventHandler ["Deleted", {
     params ["_unit"];
     _unit setVariable ["ALiVE_advciv_active", false];
     _unit setVariable ["ALiVE_advciv_brainRunning", false];
@@ -274,6 +277,8 @@ _unit addEventHandler ["Deleted", {
     // Clear any pending remote exec for this unit's order menu channel
     remoteExec ["", format ["ALiVE_advciv_menu%1", netId _unit]];
 }];
+
+_unit setVariable ["ALiVE_advciv_ehIds", [["Hit", _hitEH], ["Deleted", _deletedEH]]];
 
 // Register in the active units array, add the order menu, then start the brain loop
 [_unit] call ALiVE_fnc_advciv_orderMenu;
