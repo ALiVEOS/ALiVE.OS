@@ -3005,10 +3005,14 @@ switch(_operation) do {
         // for its assets. Asked to init WITHOUT persistence on purpose: the
         // kernel loads its own records, and the registry's own load path
         // reads a debug flag it never declares.
+        // Built in a local and published only once it is set up. Two air commanders
+        // starting together could otherwise find the registry created but not yet
+        // initialised, and register into it with no module list (F513).
         if (isNil "ALIVE_ATOGlobalRegistry") then {
-            ALIVE_ATOGlobalRegistry = [nil, "create"] call ALIVE_fnc_ATOGlobalRegistry;
-            [ALIVE_ATOGlobalRegistry, "init", false] call ALIVE_fnc_ATOGlobalRegistry;
-            [ALIVE_ATOGlobalRegistry, "debug", _debug] call ALIVE_fnc_ATOGlobalRegistry;
+            private _registry = [nil, "create"] call ALIVE_fnc_ATOGlobalRegistry;
+            [_registry, "init", false] call ALIVE_fnc_ATOGlobalRegistry;
+            [_registry, "debug", _debug] call ALIVE_fnc_ATOGlobalRegistry;
+            if (isNil "ALIVE_ATOGlobalRegistry") then { ALIVE_ATOGlobalRegistry = _registry };
         };
         [ALIVE_ATOGlobalRegistry, "register", _logic] call ALIVE_fnc_ATOGlobalRegistry;
 
