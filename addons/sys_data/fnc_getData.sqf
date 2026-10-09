@@ -20,6 +20,7 @@ Examples:
 
 Author:
 Tupolov
+Jman
 Peer Reviewed:
 
 ---------------------------------------------------------------------------- */
@@ -27,10 +28,8 @@ private ["_key", "_result"];
 
 _key = _this select 0;
 
-if (typeName _key == "STRING") then {
-    _result = [GVAR(mission_data), _key] call ALiVE_fnc_hashGet;
-} else {
-    _result = "ERROR";
-};
+// A key never set answers nothing. Handed back straight from the lookup, as returning the unset _result logged an
+// undefined-variable error every time a mission asked for a value it hadn't saved yet.
+if !(typeName _key == "STRING") exitWith { "ERROR" };
 
-_result;
+[GVAR(mission_data), _key] call ALiVE_fnc_hashGet
