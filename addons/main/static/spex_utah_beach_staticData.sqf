@@ -1,11 +1,11 @@
-// ALiVE 3 index v3.1, made 2026-10-05 by the ALiVE web indexer, building positions measured
+// ALiVE 3 index v3.1, made 2026-10-09 by the ALiVE web indexer, building positions measured
 private["_worldName"];
 
 _worldName = tolower(worldName);
 
-["SETTING UP MAP: spex_utah_beach (ALiVE 3 index v3.1, 2026-10-05)"] call ALiVE_fnc_dump;
+["SETTING UP MAP: spex_utah_beach (ALiVE 3 index v3.1, 2026-10-09)"] call ALiVE_fnc_dump;
 
-ALiVE_indexVersion = ["3.1", "2026-10-05", "web", true];
+ALiVE_indexVersion = ["3.1", "2026-10-09", "web", true];
 
 ALIVE_Indexing_Blacklist = [];
 ALIVE_militaryBuildingTypes = [];
@@ -44,11 +44,6 @@ ALiVE_mapCompositionType = "Bocage";
         "a3\structures_f_enoch\civilian\accessories\chickencoop_01_f.p3d",
         "a3\structures_f_enoch\civilian\accessories\hutch_01_f.p3d",
         "a3\structures_f_enoch\civilian\accessories\stonewell_01_f.p3d",
-        "a3\structures_f_enoch\civilian\sheds\shed_10_ruins_f.p3d",
-        "a3\structures_f_enoch\civilian\sheds\shed_11_ruins_f.p3d",
-        "a3\structures_f_enoch\civilian\sheds\shed_12_ruins_f.p3d",
-        "a3\structures_f_enoch\civilian\sheds\shed_13_ruins_f.p3d",
-        "a3\structures_f_enoch\civilian\sheds\shed_14_ruins_f.p3d",
         "a3\structures_f_enoch\cultural\calvary_03\calvary_03_f.p3d",
         "a3\structures_f_enoch\cultural\castleruins\castleruins_01_wall_d_l_f.p3d",
         "a3\structures_f_enoch\cultural\castleruins\castleruins_01_wall_d_r_f.p3d",
@@ -58,10 +53,6 @@ ALiVE_mapCompositionType = "Bocage";
         "a3\structures_f_enoch\cultural\cemeteries\grave_11_f.p3d",
         "a3\structures_f_enoch\cultural\statues\statue_03_f.p3d",
         "a3\structures_f_enoch\industrial\agriculture\manurepile_01_f.p3d",
-        "a3\structures_f_enoch\industrial\farms\barn_02_ruins_f.p3d",
-        "a3\structures_f_enoch\industrial\farms\cowshed_01_a_ruins_f.p3d",
-        "a3\structures_f_enoch\industrial\farms\cowshed_01_b_ruins_f.p3d",
-        "a3\structures_f_enoch\industrial\farms\cowshed_01_c_ruins_f.p3d",
         "a3\structures_f_enoch\industrial\farms\strawstack_01_f.p3d",
         "a3\structures_f_enoch\industrial\materials\timberlog_01_f.p3d",
         "a3\structures_f_enoch\industrial\materials\timberlog_05_f.p3d",
@@ -82,9 +73,6 @@ ALiVE_mapCompositionType = "Bocage";
         "a3\structures_f_enoch\military\training\shellcrater_02_large_f.p3d",
         "a3\structures_f_enoch\military\training\shellcrater_02_small_f.p3d",
         "a3\structures_f_enoch\military\training\target_line_papertargets_01_f.p3d",
-        "a3\structures_f_enoch\ruins\houseruin_big_01_half_f.p3d",
-        "a3\structures_f_enoch\ruins\houseruin_big_02_f.p3d",
-        "a3\structures_f_enoch\ruins\houseruin_small_01_half_f.p3d",
         "a3\structures_f_enoch\ruins\housewallruin_corner_01_f.p3d",
         "a3\structures_f_enoch\ruins\housewallruin_corner_02_f.p3d",
         "a3\structures_f_enoch\ruins\housewallruin_door_01_f.p3d",
@@ -97,7 +85,6 @@ ALiVE_mapCompositionType = "Bocage";
         "a3\structures_f_exp\walls\hedges\hedge_01_s_4m_f.p3d",
         "a3\structures_f_exp\walls\polewalls\polewall_01_pole_f.p3d",
         "a3\structures_f_exp\walls\wooden\woodenwall_02_s_pole_f.p3d",
-        "ww2\spe_structures2\industrial\mine\spe_mine_platform.p3d",
         "ww2\spe_structures2\infrastructure\bridge\spe_bridge_wood_01_pathlod.p3d",
         "ww2\spe_structures2\infrastructure\platforms\spe_platform_wall_8m.p3d",
         "ww2\spe_structures2\items\agriculture\spe_sack_corn_heap.p3d",
@@ -218,15 +205,6 @@ ALiVE_mapCompositionType = "Bocage";
         "ww2\spe_structures\military\walls\spe_sandbag_long_thick.p3d",
         "ww2\spe_structures\military\walls\spe_sandbag_nest.p3d",
         "ww2\spe_structures\military\walls\spe_sandbag_short.p3d",
-        "ww2\spe_structures\ruins\spe_house_arch_02_ruins.p3d",
-        "ww2\spe_structures\ruins\spe_house_big_02_ruins.p3d",
-        "ww2\spe_structures\ruins\spe_house_small_02_ruins.p3d",
-        "ww2\spe_structures\ruins\spe_house_small_03_ruins.p3d",
-        "ww2\spe_structures\ruins\spe_house_small_04_ruins.p3d",
-        "ww2\spe_structures\ruins\spe_house_thatch_01_ruins.p3d",
-        "ww2\spe_structures\ruins\spe_house_thatch_03_ruins.p3d",
-        "ww2\spe_structures\ruins\spe_house_thatch_05_ruins.p3d",
-        "ww2\spe_structures\ruins\spe_office_small_01_ruins.p3d",
         "ww2\spe_structures\spe_a3_props_exp\spe_a3_bulldozer_01_wreck_green_us.p3d",
         "ww2\spe_structures\spe_a3_walls\spe_a3_stonewall_01_s_10m.p3d",
         "ww2\spe_structures\spe_a3_walls\spe_a3_stonewall_01_s_d.p3d",
@@ -322,6 +300,8 @@ ALiVE_mapCompositionType = "Bocage";
         "ww2\spe_structures\civilian\church\spe_church_belltower_02.p3d",
         "ww2\spe_structures\civilian\church\spe_church_belltower_03.p3d",
         "ww2\spe_structures\civilian\dominants\spe_chateau_01.p3d",
+        "ww2\spe_structures\civilian\house\spe_house_arch_02.p3d",
+        "ww2\spe_structures\civilian\house\spe_manor_house.p3d",
         "ww2\spe_structures\military\casemate\spe_58c.p3d",
         "ww2\spe_structures\military\casemate\spe_h134.p3d",
         "ww2\spe_structures\military\casemate\spe_h607.p3d",
@@ -335,6 +315,7 @@ ALiVE_mapCompositionType = "Bocage";
         "ww2\spe_structures\military\spe_tent_01.p3d",
         "ww2\spe_structures\military\spe_tent_02.p3d",
         "ww2\spe_structures\military\spe_tent_03.p3d",
+        "ww2\spe_structures\ruins\spe_house_arch_02_ruins.p3d",
         "ww2\spe_structures\spe_a3_cultural\spe_a3_church_04_lightblue_damaged.p3d",
         "ww2\spe_structures\spe_a3_cultural\spe_a3_church_04_white_red_damaged.p3d",
         "ww2\spex_terrains\tem_utah_beach_objects\objects\trenches\utah_beach_trench_corner_60.p3d",
@@ -394,23 +375,36 @@ ALiVE_mapCompositionType = "Bocage";
         "a3\props_f_enoch\civilian\forest\deerstand_02_f.p3d",
         "a3\structures_f_enoch\civilian\camps\caravan_01_rust_f.p3d",
         "a3\structures_f_enoch\civilian\sheds\shed_09_f.p3d",
+        "a3\structures_f_enoch\civilian\sheds\shed_09_ruins_f.p3d",
         "a3\structures_f_enoch\civilian\sheds\shed_10_f.p3d",
+        "a3\structures_f_enoch\civilian\sheds\shed_10_ruins_f.p3d",
         "a3\structures_f_enoch\civilian\sheds\shed_11_f.p3d",
+        "a3\structures_f_enoch\civilian\sheds\shed_11_ruins_f.p3d",
         "a3\structures_f_enoch\civilian\sheds\shed_12_f.p3d",
+        "a3\structures_f_enoch\civilian\sheds\shed_12_ruins_f.p3d",
         "a3\structures_f_enoch\civilian\sheds\shed_13_f.p3d",
+        "a3\structures_f_enoch\civilian\sheds\shed_13_ruins_f.p3d",
         "a3\structures_f_enoch\civilian\sheds\shed_14_f.p3d",
+        "a3\structures_f_enoch\civilian\sheds\shed_14_ruins_f.p3d",
         "a3\structures_f_enoch\cultural\castleruins\castleruins_01_bastion_f.p3d",
         "a3\structures_f_enoch\industrial\farms\barn_02_f.p3d",
+        "a3\structures_f_enoch\industrial\farms\barn_02_ruins_f.p3d",
         "a3\structures_f_enoch\industrial\farms\barn_03_large_f.p3d",
         "a3\structures_f_enoch\industrial\farms\barn_03_small_f.p3d",
         "a3\structures_f_enoch\industrial\farms\cowshed_01_a_f.p3d",
+        "a3\structures_f_enoch\industrial\farms\cowshed_01_a_ruins_f.p3d",
         "a3\structures_f_enoch\industrial\farms\cowshed_01_b_f.p3d",
+        "a3\structures_f_enoch\industrial\farms\cowshed_01_b_ruins_f.p3d",
         "a3\structures_f_enoch\industrial\farms\cowshed_01_c_f.p3d",
+        "a3\structures_f_enoch\industrial\farms\cowshed_01_c_ruins_f.p3d",
         "a3\structures_f_enoch\ruins\houseruin_big_01_f.p3d",
+        "a3\structures_f_enoch\ruins\houseruin_big_01_half_f.p3d",
+        "a3\structures_f_enoch\ruins\houseruin_big_02_f.p3d",
         "a3\structures_f_enoch\ruins\houseruin_big_02_half_f.p3d",
         "a3\structures_f_enoch\ruins\houseruin_big_03_f.p3d",
         "a3\structures_f_enoch\ruins\houseruin_big_03_half_f.p3d",
         "a3\structures_f_enoch\ruins\houseruin_small_01_f.p3d",
+        "a3\structures_f_enoch\ruins\houseruin_small_01_half_f.p3d",
         "a3\structures_f_enoch\ruins\houseruin_small_02_f.p3d",
         "ww2\spe_structures2\civilian\house\spe_townhouse_01.p3d",
         "ww2\spe_structures2\civilian\house\spe_townhouse_02.p3d",
@@ -436,6 +430,7 @@ ALiVE_mapCompositionType = "Bocage";
         "ww2\spe_structures2\cultural\church\spe_church_evroult_talltower.p3d",
         "ww2\spe_structures2\cultural\church\spe_church_evroult_wings.p3d",
         "ww2\spe_structures2\industrial\mine\spe_mine_office.p3d",
+        "ww2\spe_structures2\industrial\mine\spe_mine_platform.p3d",
         "ww2\spe_structures2\industrial\mine\spe_mine_shed.p3d",
         "ww2\spe_structures\civilian\church\spe_church_front.p3d",
         "ww2\spe_structures\civilian\church\spe_church_hallway.p3d",
@@ -480,8 +475,16 @@ ALiVE_mapCompositionType = "Bocage";
         "ww2\spe_structures\ruins\spe_corner_house_02_ruins.p3d",
         "ww2\spe_structures\ruins\spe_corner_house_05_ruins.p3d",
         "ww2\spe_structures\ruins\spe_house_arch_01_ruins.p3d",
+        "ww2\spe_structures\ruins\spe_house_big_02_ruins.p3d",
         "ww2\spe_structures\ruins\spe_house_big_04_ruins.p3d",
         "ww2\spe_structures\ruins\spe_house_small_01_ruins.p3d",
+        "ww2\spe_structures\ruins\spe_house_small_02_ruins.p3d",
+        "ww2\spe_structures\ruins\spe_house_small_03_ruins.p3d",
+        "ww2\spe_structures\ruins\spe_house_small_04_ruins.p3d",
+        "ww2\spe_structures\ruins\spe_house_thatch_01_ruins.p3d",
+        "ww2\spe_structures\ruins\spe_house_thatch_03_ruins.p3d",
+        "ww2\spe_structures\ruins\spe_house_thatch_05_ruins.p3d",
+        "ww2\spe_structures\ruins\spe_office_small_01_ruins.p3d",
         "ww2\spe_structures\ruins\spe_shop_01_ruins.p3d",
         "ww2\spe_structures\ruins\spe_shop_02_ruins.p3d",
         "ww2\spe_structures\spe_a3_agriculture\spe_a3_barn_01_brown.p3d",
@@ -568,10 +571,6 @@ ALiVE_mapCompositionType = "Bocage";
 
     ALIVE_civilianFuelBuildingTypes = ALIVE_civilianFuelBuildingTypes + [
         "ww2\spe_structures\infrastructure\water_tower\spe_water_tower_01.p3d"
-    ];
-
-    ALIVE_civilianConstructionBuildingTypes = ALIVE_civilianConstructionBuildingTypes + [
-        "a3\structures_f_enoch\civilian\sheds\shed_09_ruins_f.p3d"
     ];
 
 };
