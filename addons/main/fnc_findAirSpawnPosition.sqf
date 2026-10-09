@@ -211,6 +211,9 @@ private _staticTerrainTypes = [
 ];
 private _classObstacles = [
     "Wall", "House", "AllVehicles",
+    // Wrecks, terrain or mission-placed: a wreck is a Building, not a House, so neither of the
+    // two above names one, and an aircraft was created on top of one lying on a pad (F248).
+    "Wreck_Base",
     "Land_JunkPile_F", "Land_GarbageContainer_closed_F",
     "Land_GarbageBags_F", "Land_Tyres_F", "Land_GarbagePallet_F",
     "Land_Basket_F", "Land_Sack_F", "Land_Sacks_goods_F",
@@ -261,7 +264,7 @@ private _reachTerrainTypes = [
     "RUIN", "SHIPWRECK", "STACK", "TOURISM", "TRANSMITTER", "VIEW-TOWER",
     "WALL", "WATERTOWER", "Wreck_Base"
 ];
-private _reachClassObstacles = ["Wall", "House"];
+private _reachClassObstacles = ["Wall", "House", "Wreck_Base"];
 // Rocks and other aircraft are measured too, but without the courtesy margin - see the
 // second half of the body pass. A rock and a parked neighbour are things not to be ON,
 // not things to stand politely back from, and both carry their origin under their own
@@ -1105,6 +1108,13 @@ if (count _found == 0 && {_preference in ["auto", "helipad"]} && {_isHeli || _is
             // by barrier segments would be refused on its own set-dressing, which is exactly
             // what cb3776ae was written to stop.
             + ((nearestObjects [_padPos, (_classObstacles - ["AllVehicles"]), _padIgnoreRadius]) select { !([_x, _padPos, _hazardRadius] call _fnc_bodyReaches) });
+        // A wreck is not set-dressing. Whether terrain-placed or put down by the mission, one whose body reaches
+        // under the aircraft stays an obstacle: the structure exemptions above caught wrecks too (a wreck is a
+        // Building), so a helicopter was created on top of one lying on a pad (F248). Terrain wrecks often carry
+        // no class, so their model name is checked as well.
+        _ignore = _ignore select {
+            !((_x isKindOf "Wreck_Base" || {"wreck" in toLower ((getModelInfo _x) select 0)}) && {[_x, _padPos, _hazardRadius] call _fnc_bodyReaches})
+        };
         if !([_padPos, _padDir, _ignore] call _fnc_footprintClear) then { _blocked = _blocked + 1; continue };
         _tier = "T1PAD"; _padRef = typeOf _x;
         _found = [_padPos, _padDir];
