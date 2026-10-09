@@ -412,6 +412,30 @@ switch (_taskState) do {
                             ]
                         ] call BIS_fnc_findSafePos;
 
+                        // The meeting is held in the open: the table and the two men stood 2 m either side
+                        // of it all need nothing overhead. When no safe spot is found the search hands back
+                        // the task position itself, which can be inside the composition's house, and there
+                        // the table and both men were put on the ground under its raised floor (seen on a
+                        // Takistan hilltop). Look for open, fairly level ground nearby instead.
+                        private _fnc_open = {
+                            params ["_p"];
+                            private _a = ATLToASL [_p select 0, _p select 1, 0.3];
+                            (lineIntersectsSurfaces [_a, _a vectorAdd [0, 0, 25], objNull, objNull, true, 1, "GEOM", "NONE"]) isEqualTo []
+                        };
+                        private _fnc_meetingClear = {
+                            params ["_p"];
+                            ((surfaceNormal _p) select 2) > 0.9
+                            && {[_p] call _fnc_open}
+                            && {[[_p select 0, (_p select 1) - 2, 0]] call _fnc_open}
+                            && {[[_p select 0, (_p select 1) + 2, 0]] call _fnc_open}
+                        };
+                        if !([_pos] call _fnc_meetingClear) then {
+                            for "_try" from 1 to 60 do {
+                                private _c = _taskPosition getPos [8 + random 72, random 360];
+                                if (!(surfaceIsWater _c) && {[_c] call _fnc_meetingClear}) exitWith { _pos = _c };
+                            };
+                        };
+
                         _table = _tableClass createVehicle _pos;
                         _table setdir 0;
                         _table enableSimulation false;
