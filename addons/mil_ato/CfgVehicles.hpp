@@ -209,6 +209,26 @@ class CfgVehicles
                         expression   = "_this setVariable ['droneTypes', _value];";
                         defaultValue = """""";
                 };
+                // Which aircraft this commander may place (#953): the faction's own list often holds
+                // aircraft a mission maker doesn't want, or misses ones they do.
+                class aircraftWhitelist : Edit
+                {
+                        property     = "ALiVE_mil_ato_aircraftWhitelist";
+                        displayName  = "$STR_ALIVE_ATO_AIRCRAFT_WHITELIST";
+                        tooltip      = "$STR_ALIVE_ATO_AIRCRAFT_WHITELIST_COMMENT";
+                        typeName     = "STRING";
+                        expression   = "_this setVariable ['aircraftWhitelist', _value];";
+                        defaultValue = """""";
+                };
+                class aircraftBlacklist : Edit
+                {
+                        property     = "ALiVE_mil_ato_aircraftBlacklist";
+                        displayName  = "$STR_ALIVE_ATO_AIRCRAFT_BLACKLIST";
+                        tooltip      = "$STR_ALIVE_ATO_AIRCRAFT_BLACKLIST_COMMENT";
+                        typeName     = "STRING";
+                        expression   = "_this setVariable ['aircraftBlacklist', _value];";
+                        defaultValue = """""";
+                };
                 // Separate from Place Air Assets on purpose: a drone needs no aircrew,
                 // so an air component can consist of drones alone, and that should not
                 // depend on whether crewed aircraft were wanted too.

@@ -799,6 +799,8 @@ switch(_operation) do {
             ["placeAir", false],
             ["placeDrones", false],
             ["droneTypes", ""],
+            ["aircraftWhitelist", ""],
+            ["aircraftBlacklist", ""],
             // the collaborators, [] until configure hands them over
             ["ledger", []],
             ["surface", []],
@@ -2207,6 +2209,30 @@ switch(_operation) do {
         if !(_hq isEqualType objNull) then { _hq = objNull };
         private _airspaceName = [_base, "airspace", ""] call ALIVE_fnc_hashGet;
         private _blacklist = if (isNil "ALiVE_PLACEMENT_VEHICLEBLACKLIST") then { [] } else { ALiVE_PLACEMENT_VEHICLEBLACKLIST };
+        // Aircraft Types and Excluded Aircraft on the module (#953): class names typed in, in any
+        // case, separated by commas or spaces. Types, when set, replaces what the faction lists for
+        // that kind of aircraft, so an aircraft from another faction can be used; Excluded is never
+        // placed, drones included. A name that is no aircraft class is said once and left out.
+        private _fnc_classList = {
+            params ["_text"];
+            if !(_text isEqualType "") exitWith { [] };
+            private _out = [];
+            {
+                private _cfg = configFile >> "CfgVehicles" >> _x;
+                if (isClass _cfg && {_x isKindOf "Air"}) then { _out pushBackUnique configName _cfg } else {
+                    ["ALIVE_fnc_ATOPlace - %1 in Aircraft Types or Excluded Aircraft is not an aircraft class and was ignored", _x] call ALiVE_fnc_dump;
+                };
+            } forEach ((_text splitString "[]"", ") select { !(_x isEqualTo "") });
+            _out
+        };
+        private _onlyTypes = [[_logic, "aircraftWhitelist", ""] call ALIVE_fnc_hashGet] call _fnc_classList;
+        _blacklist = _blacklist + ([[_logic, "aircraftBlacklist", ""] call ALIVE_fnc_hashGet] call _fnc_classList);
+        private _fnc_kindPool = {
+            params ["_kind"];
+            private _own = [0, _faction, _kind] call ALiVE_fnc_findVehicleType;
+            if (count _onlyTypes > 0) then { _own = _onlyTypes select { _x isKindOf _kind } };
+            _own - _blacklist
+        };
 
         // Start the pass with exactly the homes the ledger knows, so a
         // sibling whose hull is away is not parked on.
@@ -2288,8 +2314,8 @@ switch(_operation) do {
             // or a base restored with one aircraft ends up holding one more
             // than the figure the mission maker typed.
             private _want = (_slots - _armed) max 0;
-            _helis = (([0, _faction, "Helicopter"] call ALiVE_fnc_findVehicleType) - _blacklist) select _fnc_flyable;
-            _planes = (([0, _faction, "Plane"] call ALiVE_fnc_findVehicleType) - _blacklist) select _fnc_flyable;
+            _helis = (["Helicopter"] call _fnc_kindPool) select _fnc_flyable;
+            _planes = (["Plane"] call _fnc_kindPool) select _fnc_flyable;
             private _heliList = _helis;
             private _planeList = _planes;
             private _pools = [_planeList] call _fnc_planePools;
@@ -2326,7 +2352,7 @@ switch(_operation) do {
         } else {
 
         // ---- D2 helicopters ------------------------------------------------
-        _helis = (([0, _faction, "Helicopter"] call ALiVE_fnc_findVehicleType) - _blacklist) select _fnc_flyable;
+        _helis = (["Helicopter"] call _fnc_kindPool) select _fnc_flyable;
         if (count _helis > 0) then {
             // Every pad in the cluster: the nodes that are pads, plus the
             // nearest pad to each node that is not. The nearest-pad lookup
@@ -2368,7 +2394,7 @@ switch(_operation) do {
         // shared apron search accepts no list of spots already handed out, so
         // asked repeatedly at one anchor it returns the same spot, finds it
         // reserved, and falls to a ring search that exhausts.
-        _planes = (([0, _faction, "Plane"] call ALiVE_fnc_findVehicleType) - _blacklist) select _fnc_flyable;
+        _planes = (["Plane"] call _fnc_kindPool) select _fnc_flyable;
         if (count _planes > 0) then {
             private _anchors = [];
             if (!isNil "ALIVE_airBuildingTypes" && {!isNil "ALIVE_militaryAirBuildingTypes"} && {count _nodes > 0}) then {

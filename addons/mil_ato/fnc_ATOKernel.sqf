@@ -1798,6 +1798,16 @@ switch(_operation) do {
         if (_set) then { [_logic, "place", [["droneTypes", _result]]] call _fnc_configure };
     };
 
+    // Class names, as text. Aircraft Types, when set, is the only aircraft this
+    // commander places, the faction's own or not; Excluded Aircraft is never
+    // placed. Both apply to placement only, not to aircraft restored from a save.
+    case "aircraftWhitelist";
+    case "aircraftBlacklist": {
+        private _set = _args isEqualType "";
+        _result = [_logic, _operation, _args, ""] call ALIVE_fnc_OOsimpleOperation;
+        if (_set) then { [_logic, "place", [[_operation, _result]]] call _fnc_configure };
+    };
+
     // Minutes allowed for a sortie, as text. Blank or 0 keeps whatever the
     // requesting commander asked for. Pushed to the tasker in SECONDS.
     case "sortieDuration": {
@@ -2835,7 +2845,7 @@ switch(_operation) do {
                 [_logic, _x] call MAINCLASS;
             } forEach ["persistent","createHQ","placeAir","generateTasks","generateSEADTasks","resupply","broadcastOnRadio",
                        "showSupportTrucks","playersCanUseAircraft","returnToATOAfter",
-                       "placeDrones","useUAVs","droneTypes","sortieDuration","minAssetsForOffensive","maxConcurrentSorties",
+                       "placeDrones","useUAVs","droneTypes","aircraftWhitelist","aircraftBlacklist","sortieDuration","minAssetsForOffensive","maxConcurrentSorties",
                        "pilotbuilding","runwaystartpos","runwayendpos","runwaywidth","objectiveObjects","objectiveObjectsCount",
                        "objectiveObjectsChance","objectiveObjectsBehaviour"];
 
@@ -2971,7 +2981,9 @@ switch(_operation) do {
             ["useUAVs", [_logic, "useUAVs"] call MAINCLASS],
             ["placeAir", [_logic, "placeAir"] call MAINCLASS],
             ["placeDrones", [_logic, "placeDrones"] call MAINCLASS],
-            ["droneTypes", [_logic, "droneTypes"] call MAINCLASS]
+            ["droneTypes", [_logic, "droneTypes"] call MAINCLASS],
+            ["aircraftWhitelist", [_logic, "aircraftWhitelist"] call MAINCLASS],
+            ["aircraftBlacklist", [_logic, "aircraftBlacklist"] call MAINCLASS]
         ]] call ALIVE_fnc_ATOPlace;
         [_task, "configure", [
             ["maxConcurrentSorties", parseNumber ([_logic, "maxConcurrentSorties"] call MAINCLASS)],

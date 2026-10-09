@@ -42,6 +42,18 @@
     <English>HQ radio traffic, heard only by players on this module's own side: the airbase call at mission start, missions acknowledged or denied, aircraft scrambling, on station and heading home, missions complete and aircraft lost. No silences all of it.</English>
     <Spanish>Tráfico de radio del HQ, oído solo por los jugadores del bando de este módulo: el aviso de la base aérea al inicio de la misión, misiones aceptadas o denegadas, aeronaves que despegan, en posición y de regreso, misiones completadas y aeronaves perdidas. «No» lo silencia todo.</Spanish>
 </Key>
+<Key ID="STR_ALIVE_ATO_AIRCRAFT_WHITELIST">
+    <English>Aircraft Types:</English>
+</Key>
+<Key ID="STR_ALIVE_ATO_AIRCRAFT_WHITELIST_COMMENT">
+    <English>Class names of the only helicopters and planes this commander places, separated by commas, for example B_Heli_Attack_01_dynamicLoadout_F, B_Plane_CAS_01_dynamicLoadout_F. They can be from any faction. Leave it blank to use the aircraft the faction itself lists, which is the usual choice. Drones are set in Drone Types. Aircraft already restored from a save are kept.</English>
+</Key>
+<Key ID="STR_ALIVE_ATO_AIRCRAFT_BLACKLIST">
+    <English>Excluded Aircraft:</English>
+</Key>
+<Key ID="STR_ALIVE_ATO_AIRCRAFT_BLACKLIST_COMMENT">
+    <English>Class names of aircraft this commander never places, separated by commas: helicopters, planes and drones. Use it to drop one aircraft from the faction's list, such as one too big for your hangars. Aircraft already restored from a save are kept.</English>
+</Key>
 <Key ID="STR_ALIVE_ATO_DRONE_TYPES">
     <English>Drone Types:</English>
     <Spanish>Tipos de dron:</Spanish>
