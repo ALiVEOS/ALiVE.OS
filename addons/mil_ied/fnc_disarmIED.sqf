@@ -142,7 +142,10 @@ if (_IED getVariable ["ALiVE_IED_Disarmed", false]) exitWith {
     private _newDeviceThreshold = if (_challengeEnabled) then {
         private _base = _addonLogic getVariable ["IED_Engineer_Disarm_NewDeviceBase", 0.75];
         if (_base isEqualType "") then { _base = parseNumber _base };
-        ((_base + 0.15 * _skill) min 0.90) max 0.70
+        // Skill closes part of the gap to certainty rather than adding a flat 0.15 and clamping to 0.90: the
+        // clamp made Default, Rare and Very Rare all 10% for a skilled engineer. Default keeps 25% at skill 0
+        // and 10% at skill 1; Rare is 15% and 6%, Very Rare 5% and 2%, Often 40% and 16%.
+        ((_base + (1 - _base) * 0.6 * _skill) min 0.99) max 0.50
     } else {
         0.90
     };

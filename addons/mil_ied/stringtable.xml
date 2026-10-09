@@ -432,7 +432,7 @@
     <Russian>Порог угадывания провода:</Russian>
 </Key>
 <Key ID="STR_ALIVE_IED_ENGINEER_DISARM_NEWDEVICE_COMMENT">
-    <English>Baseline threshold for the 'new device' wire-guess minigame. Effective trigger rate: ~10%% at skill 1.0, ~25%% at skill 0, clamped [0.70, 0.90]. Lower value = wire-guess fires more often.</English>
+    <English>Baseline threshold for the 'new device' wire-guess minigame. Effective trigger rate with Default: ~25%% at skill 0, ~10%% at skill 1.0; Rare 15%% and 6%%, Very Rare 5%% and 2%%. Lower value = wire-guess fires more often.</English>
     <Chinese>「新裝置」線路猜測小遊戲的基準閾值。有效觸發率：技能 1.0 時約 10%%，技能 0 時約 25%%，限制在 [0.70, 0.90]。較低值 = 線路猜測更頻繁觸發。</Chinese>
     <Chinesesimp>「新装置」线路猜测小游戏的基准阈值。有效触发率：技能 1.0 时约 10%%，技能 0 时约 25%%，限制在 [0.70, 0.90]。较低值 = 线路猜测更频繁触发。</Chinesesimp>
     <Spanish>Umbral de base para el minijuego de adivinar cable de 'nuevo dispositivo'. Tasa efectiva de activación: ~10%% con habilidad 1.0, ~25%% con habilidad 0, limitado a [0,70; 0,90]. Valor menor = el minijuego se dispara más a menudo.</Spanish>
