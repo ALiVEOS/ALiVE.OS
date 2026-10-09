@@ -67,7 +67,12 @@ if(!isNil "ALIVE_factionCustomMappings") then {
                     _groups = [_groups, _type] call ALIVE_fnc_hashGet;
 
                     if(count _groups > 0) then {
-                        _groupName = _groups select floor(random count _groups);
+                        // Blacklisted groups are left out of the draw, as the config path below
+                        // does. Left in, placement subtracted them after the draw and those
+                        // objectives were simply a group short for compiled and RHS-style
+                        // factions (F260); now another group of the type is drawn instead.
+                        private _allowed = if (isNil "ALiVE_PLACEMENT_GROUPBLACKLIST") then { _groups } else { _groups - ALiVE_PLACEMENT_GROUPBLACKLIST };
+                        _groupName = if (count _allowed > 0) then { selectRandom _allowed } else { "FALSE" };
                     }else{
                         // The category is listed for this faction but holds nothing, so
                         // nothing can be picked and the config path below is skipped.
