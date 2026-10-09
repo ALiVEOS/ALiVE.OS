@@ -126,8 +126,20 @@ if (count _section > 0) then {
         if (!isNil "_profile") exitWith { _hasAliveProfiles = true; };
     } forEach _section;
 } else {
-    // No section assigned yet - trust tacom_state alone.
-    _hasAliveProfiles = true;
+    // No section assigned yet. Strict mode trusts tacom_state alone. In controlled mode (the commander map)
+    // there is no tacom_state to trust, and this passed unconditionally, so every objective on the side's list
+    // with quiet ground round it painted as held, ground nobody had been near included. There it now takes
+    // the side's own or an allied unit within the radius, spawned or virtual. An objective in the gap after a
+    // reset still shows while its old garrison stands on it.
+    if (_requireReserve) then {
+        _hasAliveProfiles = true;
+    } else {
+        private _here = [_obj, "center"] call ALIVE_fnc_hashGet;
+        private _ownSides = [_side] + (([_side] call ALiVE_fnc_getSideAllegiances) param [1, []]);
+        private _ownSideObjs = _ownSides apply { [_x] call ALiVE_fnc_sideTextToObject };
+        _hasAliveProfiles = ((_here nearEntities [["Man","Car","Tank"], _enemyRadius]) findIf { alive _x && {(side _x) in _ownSideObjs} } >= 0)
+            || {([_here, _enemyRadius, [_ownSides, "entity"], true] call ALIVE_fnc_getNearProfiles) isNotEqualTo []};
+    };
 };
 if (!_hasAliveProfiles) exitWith { false };
 
