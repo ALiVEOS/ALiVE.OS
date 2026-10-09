@@ -1452,11 +1452,14 @@ switch(_operation) do {
                             _compType = "Guerrilla";
                         };
 
-                        _composition = (selectRandom ([_compType, ["Camps","Outposts"], ["Medium"], _faction] call ALiVE_fnc_getCompositions));
-
-                        if (isNil "_composition") then {
-                            _composition = (selectRandom ([_compType, ["Camps","Outposts"], ["Medium","Small"], _faction] call ALiVE_fnc_getCompositions));
+                        // The small camps join in when there are fewer than three medium ones to choose from, as there
+                        // were none at all before. A set can be that thin for a faction: on Cam Lao Nam with the SOG
+                        // pack, O_VC and O_PAVN have one medium camp, a prison camp, so every Random Camp was one.
+                        private _campPool = [_compType, ["Camps","Outposts"], ["Medium"], _faction] call ALiVE_fnc_getCompositions;
+                        if (count _campPool < 3) then {
+                            _campPool = _campPool + ([_compType, ["Camps","Outposts"], ["Small"], _faction] call ALiVE_fnc_getCompositions);
                         };
+                        _composition = selectRandom _campPool;
 
                         PROFILE_SCOPE_END(MPCAMPSELECT)
                         if(!isNil "_composition" && {count _composition > 0}) then {
@@ -1512,7 +1515,10 @@ switch(_operation) do {
                                 // A spot outside the TAOR or inside a blacklist marker is tried again,
                                 // up to three times; a tier with no clear spot at all moves straight on.
                                 for "_try" from 1 to 3 do {
-                                    private _found = [_pos, _x, _envelope, "field", -1, false, 1.0, [], true] call ALiVE_fnc_findCompositionSpawnPosition;
+                                    // Run in one go rather than a few milliseconds a frame: a 500 m search costs
+                                    // about 0.03 s of work, but spread across frames while everything else starts
+                                    // it took 2 to 8 s, which is where a Random Camp's three seconds went.
+                                    private _found = [{ _this call ALiVE_fnc_findCompositionSpawnPosition }, [_pos, _x, _envelope, "field", -1, false, 1.0, [], true]] call CBA_fnc_directCall;
                                     if (count _found == 0) exitWith {};
                                     if ([_found select 0] call _fnc_inPlacementArea) exitWith { _compResult = _found };
                                 };
