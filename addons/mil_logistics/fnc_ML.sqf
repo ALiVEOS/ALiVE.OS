@@ -8751,8 +8751,11 @@ switch(_operation) do {
 
                                             [_slingLoadProfile,"slung",[[_profiles select 1 select 2 select 4]]] call ALIVE_fnc_profileVehicle;
 
-                                            _transportProfiles pushback (_profiles select 0 select 2 select 4);
-                                            _transportVehicleProfiles pushback (_profiles select 1 select 2 select 4);
+                                            // Straight onto the delivery's own lists: _transportProfiles was folded into them
+                                            // further up, as a copy, so anything pushed onto it here never reached the
+                                            // delivery, which then never counted, sent home or removed these helicopters.
+                                            _eventTransportProfiles pushback (_profiles select 0 select 2 select 4);
+                                            _eventTransportVehiclesProfiles pushback (_profiles select 1 select 2 select 4);
 
                                             _profileIDs = [];
                                             { _profileIDs pushback (_x select 2 select 4); } forEach _profiles;
