@@ -655,6 +655,10 @@ class FSM
                          "                private _event = ['OPCOM_ORDER_CONFIRMED', [_opcomID, _target,_operation, _side, _factions], ""OPCOM""] call ALIVE_fnc_event;" \n
                          "                [ALIVE_eventLog, ""addEvent"",_event] call ALIVE_fnc_eventLog;" \n
                          "" \n
+                         "                if (_debug && {([_OPCOM_HANDLER, ""noGroupsWaits"", 0] call ALiVE_fnc_hashGet) > 0}) then {" \n
+                         "                    [""OPCOM %1 has a free group again, after %2 orders waited for one"", _side, [_OPCOM_HANDLER, ""noGroupsWaits"", 0] call ALiVE_fnc_hashGet] call ALIVE_fnc_dumpR;" \n
+                         "                    [_OPCOM_HANDLER, ""noGroupsWaits"", 0] call ALiVE_fnc_hashSet;" \n
+                         "                };" \n
                          "                if(_debug) then { [""TACOM message received: %1 %2! Details: %3!"",([_target,""opcom_state""] call AliVE_fnc_HashGet),([_target,""objectiveID""] call AliVE_fnc_HashGet),_return] call ALIVE_fnc_dumpR; };" \n
                          "" \n
                          "            }  else {" \n
@@ -665,8 +669,15 @@ class FSM
                          "                [_target,""opcom_orders"",""none""] call ALiVE_fnc_HashSet;" \n
                          "" \n
                          "                if(_debug) then {" \n
-                         "                    [""TACOM message received: %1"", _return] call ALIVE_fnc_dumpR;" \n
-                         "                    [""OPCOM skipping objective %1 for this cycle"", [_target, ""objectiveID""] call AliVE_fnc_HashGet] call ALIVE_fnc_dumpR;" \n
+                         "                    // Out of groups: said once, not once per objective per cycle (413 lines in one testers log)." \n
+                         "                    if ((_return param [0, """"]) isEqualTo ""no groups available"") then {" \n
+                         "                        private _waited = [_OPCOM_HANDLER, ""noGroupsWaits"", 0] call ALiVE_fnc_hashGet;" \n
+                         "                        if (_waited == 0) then { [""OPCOM %1 has no free groups left to send: its orders wait until a group comes free (the next line says when)"", _side] call ALIVE_fnc_dumpR; };" \n
+                         "                        [_OPCOM_HANDLER, ""noGroupsWaits"", _waited + 1] call ALiVE_fnc_hashSet;" \n
+                         "                    } else {" \n
+                         "                        [""TACOM message received: %1"", _return] call ALIVE_fnc_dumpR;" \n
+                         "                        [""OPCOM skipping objective %1 for this cycle"", [_target, ""objectiveID""] call AliVE_fnc_HashGet] call ALIVE_fnc_dumpR;" \n
+                         "                    };" \n
                          "                };" \n
                          "" \n
                          "            };" \n
