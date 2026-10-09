@@ -98,6 +98,24 @@ private ["_result"];
 
 TRACE_1("ML - input",_this);
 
+// Military Logistics' transports keep their crews on the server (F495). It flies and lands them with commands
+// (flyInHeight, landAt, land, move, setSpeedMode) that only take effect where the crew is local, and the AI
+// Distributor handed any server group to a headless client, so a delivery helicopter there ignored its landing,
+// departure and flight home. The crew profile carries ignore_HC, which sys_profile copies onto every unit it
+// spawns; a crew already in the world is marked directly. Combat Support keeps its vehicles back the same way.
+if (isNil "ALiVE_ML_fnc_keepCrewOnServer") then {
+    ALiVE_ML_fnc_keepCrewOnServer = {
+        {
+            private _p = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+            if (!isNil "_p" && {_p isEqualType []} && {count _p > 0}) then {
+                [_p, "ignore_HC", true] call ALIVE_fnc_hashSet;
+                { _x setVariable ["ALiVE_ignore_HC", true] } forEach ([_p, "units", []] call ALIVE_fnc_hashGet);
+            };
+        } forEach _this;
+    };
+};
+
+
 params [
     ["_logic", objNull, [objNull]],
     ["_operation", "", [""]],
@@ -9120,7 +9138,7 @@ switch(_operation) do {
                             };
 
                             [_event, "cargoProfiles", _eventCargoProfiles] call ALIVE_fnc_hashSet;
-                            [_event, "transportProfiles", _eventTransportProfiles] call ALIVE_fnc_hashSet;
+                            [_event, "transportProfiles", _eventTransportProfiles] call ALIVE_fnc_hashSet; _eventTransportProfiles call ALiVE_ML_fnc_keepCrewOnServer;
                             [_event, "transportVehiclesProfiles", _eventTransportVehiclesProfiles] call ALIVE_fnc_hashSet;
 
                             [_logic, "prepareUnitCounts", _event] call MAINCLASS;
@@ -9419,7 +9437,7 @@ switch(_operation) do {
                                 _eventTransportVehiclesProfiles deleteAt _tIdx;
                             };
                         };
-                        [_event, "transportProfiles", _transportProfiles] call ALIVE_fnc_hashSet;
+                        [_event, "transportProfiles", _transportProfiles] call ALIVE_fnc_hashSet; _transportProfiles call ALiVE_ML_fnc_keepCrewOnServer;
                         [_event, "transportVehiclesProfiles", _eventTransportVehiclesProfiles] call ALIVE_fnc_hashSet;
                     };
 
@@ -14373,7 +14391,7 @@ switch(_operation) do {
                             };
 
                             [_event, "cargoProfiles", _eventCargoProfiles] call ALIVE_fnc_hashSet;
-                            [_event, "transportProfiles", _eventTransportProfiles] call ALIVE_fnc_hashSet;
+                            [_event, "transportProfiles", _eventTransportProfiles] call ALIVE_fnc_hashSet; _eventTransportProfiles call ALiVE_ML_fnc_keepCrewOnServer;
                             [_event, "transportVehiclesProfiles", _eventTransportVehiclesProfiles] call ALIVE_fnc_hashSet;
 
                             [_logic, "prepareUnitCounts", _event] call MAINCLASS;
@@ -14461,7 +14479,7 @@ switch(_operation) do {
         _eventTransportProfiles = [_logic, "removeUnregisteredProfiles", _eventTransportProfiles] call MAINCLASS;
 
         [_unitCounts, "transport", count _eventTransportProfiles] call ALIVE_fnc_hashSet;
-        [_event, "transportProfiles", _eventTransportProfiles] call ALIVE_fnc_hashSet;
+        [_event, "transportProfiles", _eventTransportProfiles] call ALIVE_fnc_hashSet; _eventTransportProfiles call ALiVE_ML_fnc_keepCrewOnServer;
 
         private _eventTransportVehiclesProfiles = [_event, "transportVehiclesProfiles"] call ALIVE_fnc_hashGet;
         _eventTransportVehiclesProfiles = [_logic, "removeUnregisteredProfiles", _eventTransportVehiclesProfiles] call MAINCLASS;
