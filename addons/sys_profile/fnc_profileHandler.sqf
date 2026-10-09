@@ -1274,6 +1274,27 @@ switch(_operation) do {
                         [_exportProfile, "entitiesInCargoOf"] call ALIVE_fnc_hashRem;
                     };
 
+                    // Fuel, damage and ammo are kept across a save, so a vehicle doesn't come back
+                    // full, whole and re-armed after a reload. A spawned vehicle is read live, as the
+                    // profile only catches up when it despawns. Each is written only when it differs
+                    // from a fresh vehicle, so the save only grows by the vehicles that have been in
+                    // action: fuel and damage to two places, and ammo only once a magazine is down.
+                    private _liveVehicle = _profile select 2 select 10;
+                    private _isLive = !isNull _liveVehicle && {alive _liveVehicle};
+                    private _saveFuel = if (_isLive) then { fuel _liveVehicle } else { _profile select 2 select 13 };
+                    private _saveDamage = if (_isLive) then { _liveVehicle call ALIVE_fnc_vehicleGetDamage } else { _profile select 2 select 16 };
+                    private _saveAmmo = if (_isLive) then { _liveVehicle call ALIVE_fnc_vehicleGetAmmo } else { _profile select 2 select 14 };
+                    if (_saveFuel isEqualType 0 && {_saveFuel < 0.995}) then {
+                        [_exportProfile, "fuel", (round (_saveFuel * 100)) / 100] call ALIVE_fnc_hashSet;
+                    };
+                    _saveDamage = (_saveDamage select { (_x param [1, 0]) isEqualType 0 && {(_x select 1) >= 0.005} }) apply { [_x select 0, (round ((_x select 1) * 100)) / 100] };
+                    if (count _saveDamage > 0) then {
+                        [_exportProfile, "damage", _saveDamage] call ALIVE_fnc_hashSet;
+                    };
+                    if (_saveAmmo findIf { (_x select 1) < (_x select 2) } > -1) then {
+                        [_exportProfile, "ammo", _saveAmmo] call ALIVE_fnc_hashSet;
+                    };
+
                 };
 
                 if([_exportProfile, "_rev"] call ALIVE_fnc_hashGet == "") then {
@@ -1559,11 +1580,22 @@ switch(_operation) do {
                         [_profileVehicle, "ALiVE_reserveLocked", true] call ALIVE_fnc_hashSet;
                     };
 
-                    /*
-                    [_profileVehicle, "damage", [_profile,"damage"] call ALIVE_fnc_hashGet] call ALIVE_fnc_profileVehicle;
-                    [_profileVehicle, "ammo", [_profile,"ammo"] call ALIVE_fnc_hashGet] call ALIVE_fnc_profileVehicle;
-                    [_profileVehicle, "fuel", [_profile,"fuel"] call ALIVE_fnc_hashGet] call ALIVE_fnc_profileVehicle;
-                    */
+                    // Fuel, damage and ammo as saved, applied when the vehicle next spawns. The export
+                    // leaves out whatever matches a fresh vehicle, and so does a save written before
+                    // these were kept, so a missing one leaves the profile's fresh default.
+                    if ("fuel" in (_profile select 1)) then {
+                        private _importFuel = [_profile, "fuel"] call ALIVE_fnc_hashGet;
+                        if (_importFuel isEqualType "") then { _importFuel = parseNumber _importFuel };
+                        [_profileVehicle, "fuel", _importFuel] call ALIVE_fnc_profileVehicle;
+                    };
+                    {
+                        if (_x in (_profile select 1)) then {
+                            private _importValue = [_profile, _x] call ALIVE_fnc_hashGet;
+                            if (_importValue isEqualType []) then {
+                                [_profileVehicle, _x, _importValue] call ALIVE_fnc_profileVehicle;
+                            };
+                        };
+                    } forEach ["damage", "ammo"];
 
                     if("vehicleAssignmentKeys" in (_profile select 1)) then {
                         [_profileVehicle, "vehicleAssignments", _rebuiltHash] call ALIVE_fnc_hashSet;
