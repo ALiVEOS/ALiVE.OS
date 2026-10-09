@@ -74,6 +74,18 @@ private _configPaths = [
     configFile >> "CfgGroups" >> "Empty" >> _compType
 ];
 
+// Jungle comes only with the optional SOG composition pack, and there is no civilian Jungle set at all. Without one
+// the nearest set is Pacific, which ships with ALiVE, rather than the standard set: a Vietnam map played without SOG
+// (Da Krong, from the Unsung mod) can then be Jungle and still get jungle-looking camps.
+if (_env == "Jungle" && {!isClass (_configPaths select 0)} && {!isClass (_configPaths select 1)}) then {
+    private _pacific = format ["%1_Pacific", _comp];
+    private _paths = [missionConfigFile >> "CfgGroups" >> "Empty" >> _pacific, configFile >> "CfgGroups" >> "Empty" >> _pacific];
+    if (isClass (_paths select 0) || {isClass (_paths select 1)}) then {
+        _compType = _pacific;
+        _configPaths = _paths;
+    };
+};
+
 // Default to regular if additional PBOs are not loaded
 if (!isClass (_configPaths select 0) && !isClass(_configPaths select 1)) then {
     // Said once per set. Every camp, HQ and outpost asks again, so a Jungle terrain without the optional
