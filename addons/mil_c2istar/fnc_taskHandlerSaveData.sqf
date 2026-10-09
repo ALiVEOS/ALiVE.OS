@@ -37,10 +37,17 @@ if(ALiVE_SYS_DATA_DEBUG_ON) then {
 _async = false;
 _missionName = (["_TASK"] call ALiVE_fnc_storeKeys) select 0; // group, mission and map
 
+// Taken and cleared before the export: a delete that lands after this sets it again.
+private _saveEmpty = [ALIVE_taskHandler, "saveEmptyStore", false] call ALIVE_fnc_hashGet;
+[ALIVE_taskHandler, "saveEmptyStore", false] call ALIVE_fnc_hashSet;
+
 _data = [ALIVE_taskHandler,"exportTaskData"] call ALIVE_fnc_taskHandler;
 
 if (isNil "_data") exitWith {};
-if (count (_data select 1) == 0) exitwith {
+// An empty list is saved only once a saved task has been deleted, as SPOTREP and SITREP do:
+// skipped, the store kept the last save's tasks and the next load brought them back. One that
+// never held a task has nothing to write, and on Local every save rewrites the whole profile.
+if (count (_data select 1) == 0 && {!_saveEmpty}) exitwith {
     //[["ALiVE_LOADINGSCREEN"],"BIS_fnc_endLoadingScreen",true,false] call BIS_fnc_MP;
 };
 

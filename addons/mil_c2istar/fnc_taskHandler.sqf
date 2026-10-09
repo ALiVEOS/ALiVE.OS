@@ -1763,6 +1763,12 @@ switch (_operation) do {
                 [_tasks, _taskID] call ALIVE_fnc_hashRem;
                 [_logic, "tasks", _tasks] call ALIVE_fnc_hashSet;
 
+                // A saved task is gone, so the next save is written even when it leaves nothing
+                // to save; skipped, the last save's tasks came back on the next load.
+                if ((_task select 12) isEqualTo "PLAYER") then {
+                    [_logic, "saveEmptyStore", true] call ALIVE_fnc_hashSet;
+                };
+
                 // remove from tasks by side hash
                 private _tasksBySide = [_logic, "tasksBySide"] call ALIVE_fnc_hashGet;
                 private _sideTasks = [_tasksBySide, _taskSide] call ALIVE_fnc_hashGet;
