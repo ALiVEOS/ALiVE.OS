@@ -125,7 +125,9 @@ private _syncVipEscortState = {
                 [_vip, getPosATL _escortVehicle] call ALiVE_fnc_doMoveRemote;
             } else {
                 if (_escortVehicle emptyPositions "cargo" > 0) then {
-                    _vip allowGetIn true;
+                    // allowGetIn takes a list of units: given one unit it threw, which stopped the task's
+                    // check every time a player waited in a vehicle with room, so the arrival was never seen.
+                    [_vip] allowGetIn true;
                     _vip assignAsCargo _escortVehicle;
                     [_vip] orderGetIn true;
                 };
