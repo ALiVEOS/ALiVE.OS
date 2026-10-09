@@ -404,13 +404,17 @@ private _fnc_footprintClear = {
     private _clearRadius = _hazardRadius + _clearMargin;
 
     // Origin pass. Cheap, covers every listed type, and rejects on the object
-    // reference point exactly as before. It stays first and stays unchanged, so any
-    // candidate it can refuse costs exactly what it always did.
+    // reference point. Flat things are let through here as the body pass below lets them
+    // through: apron paving squares, painted pads and runway lights are ground to park on.
+    // Counting them refused a disc round the middle of every twenty metre paving square,
+    // which on Stratis left the whole apron with no spot for a UAV and one each for a
+    // helicopter and a jet. Only objects found here pay for the height check.
+    private _fnc_standsUp = { boundingBoxReal _this params ["_bMin", "_bMax"]; ((_bMax select 2) - (_bMin select 2)) >= 1 };
     private _terrainHits = (nearestTerrainObjects [_pos, _staticTerrainTypes, _clearRadius, false, true]) - _ignore;
-    if !(_terrainHits isEqualTo []) exitWith { false };
+    if (_terrainHits findIf { _x call _fnc_standsUp } >= 0) exitWith { false };
 
     private _classHits = (nearestObjects [_pos, _classObstacles, _clearRadius]) - _ignore;
-    if !(_classHits isEqualTo []) exitWith { false };
+    if (_classHits findIf { _x call _fnc_standsUp } >= 0) exitWith { false };
 
     // Body pass. Both queries above are blind to anything whose origin sits outside
     // the disc, however far its walls reach in, which is how airframes ended up
