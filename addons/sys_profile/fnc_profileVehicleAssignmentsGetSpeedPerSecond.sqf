@@ -43,7 +43,7 @@ if (_countAssignedUnits < _unitCount) then {
 } else {
     private _profilesById = [ALiVE_profileHandler,"profilesById"] call ALiVE_fnc_hashGet;
 
-    _result = [];
+    private _result = [];
     {
         private _vehicleProfile = _profilesById get _x;
 
@@ -57,5 +57,5 @@ if (_countAssignedUnits < _unitCount) then {
         };
     } forEach _vehiclesInCommandOf;
 
-    _result
+    if (_result isEqualTo []) then {_manSpeedArray} else {_result}
 }
