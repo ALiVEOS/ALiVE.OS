@@ -52,7 +52,14 @@ if(ALIVE_loadProfilesPersistent) then {
 
                 _profiles = [ALIVE_profileHandler,"loadProfileData"] call ALIVE_fnc_profileHandler;
 
-                if (!(isnil "_profiles") && {typename _profiles == "ARRAY"} && {count _profiles > 0} && {count (_profiles select 2) > 0}) then {
+                // A valid save can have no surviving profiles. Still reset/import it
+                // so placement does not recreate the initial forces after a reload.
+                if (!isNil "_profiles"
+                    && {[_profiles] call ALIVE_fnc_isHash}
+                    && {(_profiles select 1) isEqualType []}
+                    && {(_profiles select 2) isEqualType []}
+                    && {count (_profiles select 1) == count (_profiles select 2)}
+                ) then {
 
                     ALiVE_sysProfileLastLoadTime = time;
 

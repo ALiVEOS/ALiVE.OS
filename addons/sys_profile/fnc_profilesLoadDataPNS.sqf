@@ -32,7 +32,12 @@ if !(isServer) exitwith {};
 if (isServer) then {
         _profiles = QMOD(SYS_PROFILE) call ALiVE_fnc_ProfileNameSpaceLoad;
 
-        if (!(isnil "_profiles") && {typename _profiles == "ARRAY"} && {count _profiles > 0} && {count (_profiles select 2) > 0}) then {
+        if (!isNil "_profiles"
+            && {[_profiles] call ALIVE_fnc_isHash}
+            && {(_profiles select 1) isEqualType []}
+            && {(_profiles select 2) isEqualType []}
+            && {count (_profiles select 1) == count (_profiles select 2)}
+        ) then {
 
             [ALIVE_profileHandler,"reset"] call ALIVE_fnc_profileHandler;
 
