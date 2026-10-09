@@ -225,8 +225,11 @@ switch (_operation) do {
         };
     };
     case "getAutoOrderSidePlayers": {
+        // _skipBusy: leave out players already on a task, for automatic orders (F503). Side tasks ask without it,
+        // so a busy player still has them in the list for later.
         _args params [
-            ["_side", "", [""]]
+            ["_side", "", [""]],
+            ["_skipBusy", false, [true]]
         ];
 
         if !(isServer) exitWith {_result = [[], []]};
@@ -240,7 +243,19 @@ switch (_operation) do {
                 _playerSide = [_playerSide] call ALIVE_fnc_sideObjectToNumber;
                 _playerSide = [_playerSide] call ALIVE_fnc_sideNumberToText;
 
-                if (_playerSide == _side && {!(group _x getVariable [QGVAR(playerOrdersOptOut), false])}) then {
+                // Not a player whose group is already on a task, as selectEligibleGroup tests a group. Given an
+                // automatic order anyway, the player's chosen task lost its marker and tracking to it (F503);
+                // with nobody free the caller holds the order until someone is.
+                // A task the player asked for themselves counts too, whatever it was given to: the commander's
+                // own tasks are requested as OPCOM and list every player on the side, so they don't.
+                private _groupData = ["getGroupData", [_x]] call MAINCLASS;
+                private _uid = getPlayerUID _x;
+                private _onTask = _skipBusy && {(!(_groupData isEqualTo []) && {!((["getGroupCurrentParentTask", [_groupData select 1]] call MAINCLASS) isEqualTo [])})
+                    || {!isNil "ALIVE_taskHandler" && {(([ALIVE_taskHandler, "getTasksByPlayer", _uid] call ALiVE_fnc_taskHandler) findIf {
+                        !isNil "_x" && {_x isEqualType []} && {count _x > 12} && {(_x param [1, ""]) isEqualTo _uid}
+                        && {!((_x param [8, ""]) in ["Succeeded", "Failed", "Canceled"])}
+                    }) > -1}}};
+                if (_playerSide == _side && {!_onTask} && {!(group _x getVariable [QGVAR(playerOrdersOptOut), false])}) then {
                     private _playerID = getPlayerUID _x;
 
                     if !(_playerID in _playerIDs) then {

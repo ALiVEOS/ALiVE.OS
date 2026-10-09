@@ -273,7 +273,7 @@ if (_autoGenerateStrategicTasks) then {
                 _taskPlayers = [_groupPlayerIDs, _groupPlayerNames];
                 _apply = "Group";
             } else {
-                private _autoOrderPlayers = ["getAutoOrderSidePlayers", [_side]] call ALiVE_fnc_playerOrders;
+                private _autoOrderPlayers = ["getAutoOrderSidePlayers", [_side, true]] call ALiVE_fnc_playerOrders;
 
                 if ((_autoOrderPlayers select 0) isEqualTo []) then {
                     _autoGenerateStrategicTasks = false;
