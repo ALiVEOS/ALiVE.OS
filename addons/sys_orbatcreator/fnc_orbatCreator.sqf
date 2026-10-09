@@ -119,6 +119,13 @@ switch(_operation) do {
 
         [_logic,"disableRandomization", _disableRandomization] call MAINCLASS;
 
+        // Copy Parent Classes arrives as the text "true" or "false", as the setting above does. It was never
+        // read here, and its one reader asked with a value and so wrote No over it: it never did anything.
+        private _copyParent = _logic getVariable ["copyParent", "false"];
+        if (_copyParent isEqualType "") then { _copyParent = _copyParent == "true" };
+        if !(_copyParent isEqualType true) then { _copyParent = false };
+        [_logic,"copyParent", _copyParent] call MAINCLASS;
+
         private _arsenalType = _logic getVariable ["arsenalType", "BIS"];
         if !(_arsenalType isEqualType "") then {
             _arsenalType = "BIS";
@@ -3750,7 +3757,7 @@ switch(_operation) do {
     case "onCopyFactionOkClicked": {
 
         private _state = [_logic,"state"] call MAINCLASS;
-        private _copyParent = [_logic,"copyParent", false] call MAINCLASS;
+        private _copyParent = [_logic,"copyParent"] call MAINCLASS;
         private _factions = [_state,"factions"] call ALiVE_fnc_hashGet;
 
         private _inputDisplayname = OC_getControl( OC_DISPLAY_CREATEFACTION , OC_CREATEFACTION_INPUT_DISPLAYNAME );
