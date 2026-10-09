@@ -337,6 +337,27 @@ if (hasInterface) then {
     // alone leaves running until the next AI tick.
     [{
         PROFILE_SCOPE(STOPNEARBYCIV, "ALiVE Stop Nearby Civ Handler")
+        // Every civilian this player froze is let go once the player is more than 3 m away, dead or in a vehicle.
+        // Only civilians inside the 5 m scan below were ever released, and only by that player stepping back to
+        // between 3 and 5 m, so one who died, drove off or ran past left the civilian frozen and staring.
+        private _mine = missionNamespace getVariable ["ALiVE_civ_frozenByMe", []];
+        if (_mine isNotEqualTo []) then {
+            private _gone = isNull player || {!alive player} || {vehicle player != player};
+            {
+                if (isNull _x || {!alive _x} || {_gone} || {(_x distance player) > 3}) then {
+                    if (!isNull _x && {_x getVariable ["ALiVE_civ_approachFreeze", false]}) then {
+                        // a Stop or Get Down given in the dialog meanwhile keeps it where it is
+                        if !(_x getVariable ["ALiVE_civ_dialogHold", false]) then {
+                            [_x, "MOVE"] remoteExec ["enableAI", _x];
+                            [_x, objNull] remoteExec ["doWatch", _x];
+                        };
+                        _x setVariable ["ALiVE_civ_approachFreeze", false, true];
+                    };
+                    _mine set [_forEachIndex, objNull];
+                };
+            } forEach _mine;
+            ALiVE_civ_frozenByMe = _mine select { !isNull _x };
+        };
         if (isNull player || {!alive player}) exitWith {};
         if ((missionNamespace getVariable ["ALiVE_amb_civ_population_UIMode", "AUTO"]) == "CLASSIC") exitWith {};
 
@@ -357,7 +378,14 @@ if (hasInterface) then {
                     private _d = _civ distance player;
                     private _frozen = _civ getVariable ["ALiVE_civ_approachFreeze", false];
 
-                    if (_d < 2 && {!_frozen}) then {
+                    // Not a civilian already held some other way: captive, fleeing, restrained or surrendering
+                    // under ACE, or under an order from the dialog. Freezing then releasing one undid that hold.
+                    private _held = captive _civ || {fleeing _civ}
+                        || {_civ getVariable ["ace_captives_isHandcuffed", false]}
+                        || {_civ getVariable ["ace_captives_isSurrendering", false]}
+                        || {(_civ getVariable ["ALiVE_advciv_order", "NONE"]) != "NONE"}
+                        || {_civ getVariable ["ALiVE_civ_dialogHold", false]};
+                    if (_d < 2 && {!_frozen} && {!_held}) then {
                         // Pick the approach gesture by the civ's effective
                         // hostility - per-civ ALiVE_CivPop_Hostility floored
                         // by the module's per-side campaign baseline. The
@@ -386,11 +414,8 @@ if (hasInterface) then {
                         [_civ, player] remoteExec ["doWatch", _civ];
                         [_civ, _gesture] remoteExec ["playAction", 0];
                         _civ setVariable ["ALiVE_civ_approachFreeze", true, true];
-                    };
-                    if (_d > 3 && {_frozen}) then {
-                        [_civ, "MOVE"] remoteExec ["enableAI", _civ];
-                        [_civ, objNull] remoteExec ["doWatch", _civ];
-                        _civ setVariable ["ALiVE_civ_approachFreeze", false, true];
+                        if (isNil "ALiVE_civ_frozenByMe") then { ALiVE_civ_frozenByMe = [] };
+                        ALiVE_civ_frozenByMe pushBackUnique _civ;
                     };
                 };
             };

@@ -1198,10 +1198,12 @@ switch (_operation) do {
 			[_civ] spawn {
 				params ["_civ"];
 				sleep 1;
+				_civ setVariable ["ALiVE_civ_dialogHold", true, true];   // the approach freeze leaves it be
 				_civ disableAI "MOVE";
 				sleep (60 + (ceil random 20));
 				_civ enableAI "MOVE";
 				_civ setUnitPos "AUTO";
+				_civ setVariable ["ALiVE_civ_dialogHold", false, true];
 			};
 		};
 	};
@@ -1215,11 +1217,13 @@ switch (_operation) do {
 			[_civ] spawn {
 				params ["_civ"];
 				sleep 1;
+				_civ setVariable ["ALiVE_civ_dialogHold", true, true];   // the approach freeze leaves it be
 				_civ disableAI "MOVE";
 				_civ setUnitPos "DOWN";
 				sleep (60 + (ceil random 20));
 				_civ enableAI "MOVE";
 				_civ setUnitPos "AUTO";
+				_civ setVariable ["ALiVE_civ_dialogHold", false, true];
 			};
 		};
 	};
