@@ -753,6 +753,14 @@ waituntil {
 // Init complete
 if (isServer && {!isnil QMOD(SYS_DATA)}) then {
     MOD(sys_data) setvariable ["startupComplete",true,true];
+
+    // Autosave, as often as the module says (Jman 9 Oct 2026). It used to need a line in initServer.sqf, and called
+    // there without its interval it never saved. Off by default; local storage only, which the function checks.
+    private _autoSave = parseNumber format ["%1", MOD(sys_data) getVariable ["autoSaveInterval", "0"]];
+    if (_autoSave > 0 && {!(GVAR(DISABLED))}) then {
+        ["SYS_DATA - Autosave every %1 minutes.", _autoSave] call ALIVE_fnc_dump;
+        (_autoSave * 60) call ALiVE_fnc_AutoSave_PNS;
+    };
 };
 
 TRACE_2("SYS_DATA STAT VAR", MOD(sys_data) getVariable "disableStats", ALIVE_sys_statistics_ENABLED);

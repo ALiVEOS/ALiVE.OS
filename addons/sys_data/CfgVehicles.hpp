@@ -40,6 +40,22 @@ class CfgVehicles {
                         };
                         class saveDateTime : Combo { property = "ALiVE_sys_data_saveDateTime"; displayName = "$STR_ALIVE_data_SAVEDATETIME"; tooltip = "$STR_ALIVE_data_SAVEDATETIME_COMMENT"; defaultValue = """false"""; class Values { class Yes{name="Yes";value=true;}; class No{name="No";value=false;default=1;}; }; };
                         class saveCompositions : Combo { property = "ALiVE_sys_data_saveCompositions"; displayName = "$STR_ALIVE_data_SAVECOMPOSITIONS"; tooltip = "$STR_ALIVE_data_SAVECOMPOSITIONS_COMMENT"; defaultValue = """true"""; class Values { class Yes{name="Yes";value=true;default=1;}; class No{name="No";value=false;}; }; };
+                        class autoSaveInterval : Combo
+                        {
+                                property = "ALiVE_sys_data_autoSaveInterval";
+                                displayName = "$STR_ALIVE_data_AUTOSAVEINTERVAL";
+                                tooltip = "$STR_ALIVE_data_AUTOSAVEINTERVAL_COMMENT";
+                                defaultValue = """0""";
+                                class Values
+                                {
+                                    class Off { name = "Off"; value = "0"; default = 1; };
+                                    class M5 { name = "Every 5 minutes"; value = "5"; };
+                                    class M10 { name = "Every 10 minutes"; value = "10"; };
+                                    class M15 { name = "Every 15 minutes"; value = "15"; };
+                                    class M30 { name = "Every 30 minutes"; value = "30"; };
+                                    class M60 { name = "Every 60 minutes"; value = "60"; };
+                                };
+                        };
                         class killFeed : Combo
                         {
                                 property = "ALiVE_sys_data_killFeed";

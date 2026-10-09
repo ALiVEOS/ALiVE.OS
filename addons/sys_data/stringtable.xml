@@ -82,6 +82,12 @@
                 <Chinesesimp>保存路障/前哨:</Chinesesimp>
                 <Spanish>Guardar controles y puestos avanzados:</Spanish>
             </Key>
+            <Key ID="STR_ALIVE_data_AUTOSAVEINTERVAL">
+                <English>Autosave:</English>
+            </Key>
+            <Key ID="STR_ALIVE_data_AUTOSAVEINTERVAL_COMMENT">
+                <English>How often the server saves the mission on its own: the AI forces, objectives, players and the air commander, as Save and Exit does. Local storage only, on a dedicated or hosted server. Off by default. A mission that already calls ALiVE_fnc_AutoSave_PNS itself keeps working; whichever starts last sets the interval.</English>
+            </Key>
             <Key ID="STR_ALIVE_Data_SAVECOMPOSITIONS_COMMENT">
                 <English>Enable/disable saving any compositions that are spawned for camps, checkpoints etc</English>
                 <Chinesesimp>启用/禁用保存为营地、检查点等生成的任何合成</Chinesesimp>
