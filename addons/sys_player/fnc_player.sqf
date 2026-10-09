@@ -112,19 +112,20 @@ switch(_operation) do {
 
             MOD(sys_player) = _logic;
 
-            // Set Module Parameters as booleans
-            MOD(sys_player) setVariable ["enablePlayerPersistence", call compile (_logic getvariable "enablePlayerPersistence")];
-            MOD(sys_player) setVariable ["allowReset", call compile (_logic getvariable "allowReset")];
-            MOD(sys_player) setVariable ["allowDiffClass", call compile (_logic getvariable "allowDiffClass")];
-            MOD(sys_player) setVariable ["allowManualSave", call compile (_logic getvariable "allowManualSave")];
-            MOD(sys_player) setVariable ["storeToDB", call compile (_logic getvariable "storeToDB")];
-            MOD(sys_player) setVariable ["autoSaveTime", call compile (_logic getvariable "autoSaveTime")];
+            // Set Module Parameters as booleans. Each falls back to its editor default, so a module made by script that leaves
+            // one out starts as the editor's would rather than failing to compile a missing value (F232).
+            MOD(sys_player) setVariable ["enablePlayerPersistence", call compile (_logic getvariable ["enablePlayerPersistence", "true"])];
+            MOD(sys_player) setVariable ["allowReset", call compile (_logic getvariable ["allowReset", "true"])];
+            MOD(sys_player) setVariable ["allowDiffClass", call compile (_logic getvariable ["allowDiffClass", "false"])];
+            MOD(sys_player) setVariable ["allowManualSave", call compile (_logic getvariable ["allowManualSave", "true"])];
+            MOD(sys_player) setVariable ["storeToDB", call compile (_logic getvariable ["storeToDB", "false"])];
+            MOD(sys_player) setVariable ["autoSaveTime", call compile (_logic getvariable ["autoSaveTime", "0"])];
 
-            MOD(sys_player) setVariable ["saveLoadout", call compile (_logic getvariable "saveLoadout")];
-            MOD(sys_player) setVariable ["saveAmmo", call compile (_logic getvariable "saveAmmo")];
-            MOD(sys_player) setVariable ["saveHealth", call compile (_logic getvariable "saveHealth")];
-            MOD(sys_player) setVariable ["savePosition", call compile (_logic getvariable "savePosition")];
-            MOD(sys_player) setVariable ["saveScores", call compile (_logic getvariable "saveScores")];
+            MOD(sys_player) setVariable ["saveLoadout", call compile (_logic getvariable ["saveLoadout", "true"])];
+            MOD(sys_player) setVariable ["saveAmmo", call compile (_logic getvariable ["saveAmmo", "true"])];
+            MOD(sys_player) setVariable ["saveHealth", call compile (_logic getvariable ["saveHealth", "true"])];
+            MOD(sys_player) setVariable ["savePosition", call compile (_logic getvariable ["savePosition", "true"])];
+            MOD(sys_player) setVariable ["saveScores", call compile (_logic getvariable ["saveScores", "true"])];
 
             MOD(sys_player) setVariable ["saved", false];
 
