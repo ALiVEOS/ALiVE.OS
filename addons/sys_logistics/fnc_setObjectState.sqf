@@ -19,6 +19,7 @@ See Also:
 
 Author:
 Highhead
+Jman
 
 Peer Reviewed:
 nil
@@ -39,6 +40,16 @@ _object setVectorDirAndUp ([_state,QGVAR(VECDIRANDUP)] call ALiVE_fnc_HashGet);
 
 [_object,([_state,QGVAR(CARGO)] call ALiVE_fnc_HashGet)] call ALiVE_fnc_setObjectCargo;
 [_object,([_state,QGVAR(FUEL)] call ALiVE_fnc_HashGet)] call ALiVE_fnc_setObjectFuel;
+
+// ACE fuel and ammo cargo as saved (#869), through ACE's own setters so it updates what it shows.
+private _aceFuel = [_state, QGVAR(ACEFUEL), -1] call ALiVE_fnc_HashGet;
+if (_aceFuel isEqualType 0 && {_aceFuel >= 0}) then {
+    if (!isNil "ace_refuel_fnc_setFuel") then { [_object, _aceFuel] call ace_refuel_fnc_setFuel } else { _object setVariable ["ace_refuel_currentFuelCargo", _aceFuel, true] };
+};
+private _aceAmmo = [_state, QGVAR(ACEAMMO), -1] call ALiVE_fnc_HashGet;
+if (_aceAmmo isEqualType 0 && {_aceAmmo >= 0}) then {
+    if (!isNil "ace_rearm_fnc_setSupplyCount") then { [_object, _aceAmmo] call ace_rearm_fnc_setSupplyCount } else { _object setVariable ["ace_rearm_currentSupply", _aceAmmo, true] };
+};
 
 
 _damageModel = [_state,QGVAR(POINTDAMAGE)] call ALiVE_fnc_HashGet;

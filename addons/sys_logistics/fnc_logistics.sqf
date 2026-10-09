@@ -297,6 +297,20 @@ switch (_operation) do {
                     [_args,QGVAR(DAMAGE),[_x] call ALiVE_fnc_getObjectDamage] call ALiVE_fnc_HashSet;
                     [_args,QGVAR(POINTDAMAGE),[_x] call ALiVE_fnc_getObjectPointDamage] call ALiVE_fnc_HashSet;
 
+                    // ACE's own cargo (#869): a fuel truck's litres and an ammo truck's supply points.
+                    // ACE only sets these once some has been used, and an object it never touched is
+                    // full, so only a value it has set is saved; without ACE there are none.
+                    private _aceObject = _x;
+                    {
+                        _x params ["_aceVar", "_key"];
+                        private _aceValue = _aceObject getVariable [_aceVar, -1];
+                        if (_aceValue isEqualType 0 && {_aceValue >= 0}) then {
+                            [_args, _key, _aceValue] call ALiVE_fnc_HashSet;
+                        } else {
+                            [_args, _key] call ALiVE_fnc_HashRem;
+                        };
+                    } forEach [["ace_refuel_currentFuelCargo", QGVAR(ACEFUEL)], ["ace_rearm_currentSupply", QGVAR(ACEAMMO)]];
+
                     //Only stored when opted in, so default saves are unchanged
                     if ((_x getVariable [QGVAR(NOREMAP),false]) isEqualTo true) then {
                         [_args,QGVAR(NOREMAP),true] call ALiVE_fnc_HashSet;
@@ -1269,6 +1283,9 @@ switch (_operation) do {
                 [QGVAR(POINTDAMAGE),"ASL_HP"],
                 [QGVAR(CONTAINER),"ASL_CO"],
                 [QGVAR(NOREMAP),"ASL_NR"],
+                // ACE fuel and ammo cargo (#869); a key left off this list is dropped from the save
+                [QGVAR(ACEFUEL),"ASL_AF"],
+                [QGVAR(ACEAMMO),"ASL_AA"],
                 ["_rev","_rev"]
             ];
 
