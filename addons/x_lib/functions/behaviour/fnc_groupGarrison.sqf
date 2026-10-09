@@ -679,7 +679,13 @@ if ((count _buildings == 0) && {!(isNil "_profile")} && {[_profile,"isCycling"] 
 	 	 // DEBUG ------------------------------------------------------------------------------------- 
 	 	 // The area to search on foot is drawn around the men at the guard radius, which is
 	 	 // what this call received before the search widened to the objective.
-	 	 [_group, [_groupPosition, _fallbackRadius, _fallbackRadius, 0, false]] call CBA_fnc_taskSearchArea;
+	 	 // CBA's search works on a group this machine owns: a headless client's group was left standing with no
+	 	 // orders, so it runs on the machine that owns the group
+	 	 if (local _group) then {
+	 	     [_group, [_groupPosition, _fallbackRadius, _fallbackRadius, 0, false]] call CBA_fnc_taskSearchArea;
+	 	 } else {
+	 	     [_group, [_groupPosition, _fallbackRadius, _fallbackRadius, 0, false]] remoteExecCall ["CBA_fnc_taskSearchArea", leader _group];
+	 	 };
 };
 
 private _seatDemand = count _units;
