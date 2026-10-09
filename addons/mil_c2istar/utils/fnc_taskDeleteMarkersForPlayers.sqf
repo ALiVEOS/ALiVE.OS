@@ -19,6 +19,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 private ["_taskPosition","_taskSide","_taskType","_colour","_markerDefinition","_player"];
@@ -32,7 +33,8 @@ params [
     _player = [_x] call ALIVE_fnc_getPlayerByUID;
 
     if !(isNull _player) then {
-        if(isDedicated) then {
+        // the player's own machine removes them: on a hosted game the host is not every player
+        if !(local _player) then {
             [[_taskID],"ALIVE_fnc_taskDeleteMarkers",_player,false,false] spawn BIS_fnc_MP;
         }else{
             [_taskID] call ALIVE_fnc_taskDeleteMarkers;

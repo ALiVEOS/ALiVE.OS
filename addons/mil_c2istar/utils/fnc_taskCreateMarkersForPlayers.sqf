@@ -20,6 +20,7 @@ See Also:
 Author:
 ARJay
 Jman
+Jman
 ---------------------------------------------------------------------------- */
 
 private ["_taskPosition","_taskSide","_taskID","_taskPlayers","_taskType","_type","_customText","_colour","_typePrefix","_icon","_markerDefinition","_player"];
@@ -152,7 +153,8 @@ if (typeName _customText == "STRING" && {_customText != ""} && {count _markerDef
     _player = [_x] call ALIVE_fnc_getPlayerByUID;
 
     if !(isNull _player) then {
-        if(isDedicated) then {
+        // the player's own machine draws them: on a hosted game the host is not every player
+        if !(local _player) then {
             [_markerDefinition,"ALIVE_fnc_taskCreateMarker",_player,false,false] spawn BIS_fnc_MP;
         }else{
             _markerDefinition call ALIVE_fnc_taskCreateMarker;
