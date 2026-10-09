@@ -2950,6 +2950,17 @@ switch(_operation) do {
 
         // ---- the campaign, before the base looks -------------------------
         // Loaded now so the base's restore sees the records.
+        // The Data module reports itself up before it sets the group every save
+        // name is built from, with a plugin call in between; loaded in that gap,
+        // the records were looked for under the wrong name and the first save
+        // then wrote over the campaign (F265). So wait for the group, bounded.
+        if (_persistent && {call _fnc_dataUp} && {canSuspend}) then {
+            private _groupBy = diag_tickTime + 120;
+            waitUntil { sleep 0.5; !isNil "ALIVE_sys_data_GROUP_ID" || {!(call _fnc_dataUp)} || {diag_tickTime > _groupBy} };
+            if (isNil "ALIVE_sys_data_GROUP_ID") then {
+                ["ALIVE_fnc_ATOKernel - the Data module set no save group within 120 s; loading with what it has"] call ALiVE_fnc_dump;
+            };
+        };
         if (_persistent) then { [_logic, "load"] call MAINCLASS };
 
         // ---- wiring ------------------------------------------------------
