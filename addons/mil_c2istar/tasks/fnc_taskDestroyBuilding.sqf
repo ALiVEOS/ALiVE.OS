@@ -23,6 +23,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 private ["_taskState","_taskID","_task","_params","_debug","_result","_nextState"];
@@ -92,7 +93,11 @@ switch (_taskState) do {
         if (count _targetBuildings == 0) then {
             // Find a building based on the location type
             private _clusterPos = [_taskLocation, _taskLocationType, _taskEnemySide, "MIL"] call ALIVE_fnc_taskGetSideCluster;
-            _targetBuildings = nearestObjects [_clusterPos, ["House", "Building"], 300];
+            // no enemy military objective to aim at answers an empty position: give up quietly below, as
+            // nearestObjects on an empty position is a script error
+            if (count _clusterPos >= 2) then {
+                _targetBuildings = nearestObjects [_clusterPos, ["House", "Building"], 300];
+            };
         };
 
         if (count _targetBuildings == 0) exitwith {["C2ISTAR - Task DestroyBuilding - Could not find building!"] call ALiVE_fnc_Dump};
