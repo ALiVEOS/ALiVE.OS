@@ -52,6 +52,15 @@ params [
 
 #define MTEMPLATE "ALiVE_COMMANDHANDLER_%1"
 
+// Only the server, or a player's tablet through ALiVE_fnc_SCOMTabletEventToServer, may drive the
+// handler. That route checks who sent the event and marks its scope; nothing in ALiVE remote-executes
+// the handler itself. A client that calls it directly, which a mission allowing remote calls to any
+// function would let through, could otherwise change a group's leader, rewrite its waypoints or put
+// a unit into it, as none of those operations look at who asked.
+if (isRemoteExecuted && {remoteExecutedOwner != 2} && {isNil "_ALiVE_scomTabletCaller"}) exitWith {
+    ["ALiVE Command - refused %1 from a direct remote call by client %2", _operation, remoteExecutedOwner] call ALiVE_fnc_dump;
+};
+
 switch(_operation) do {
 
     case "destroy": {
