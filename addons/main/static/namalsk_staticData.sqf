@@ -25,6 +25,8 @@ ALIVE_civilianFuelBuildingTypes = [];
 ALIVE_civilianConstructionBuildingTypes = [];
 ALIVE_civilianSettlementBuildingTypes = [];
 
+ALiVE_mapCompositionType = "Woodland";
+
 if (_worldName == "namalsk") then {
     ALIVE_airBuildingTypes = ALIVE_airBuildingTypes + [
         "hangar"
