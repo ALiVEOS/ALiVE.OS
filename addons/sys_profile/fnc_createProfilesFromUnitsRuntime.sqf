@@ -389,6 +389,10 @@ _vehicleCount = 0;
 
             if(_playerVehicle) then {
                 [_profileVehicle, "active", true] call ALIVE_fnc_profileVehicle;
+                // The live vehicle stays for the player aboard, so tie it to its profile as a spawn would. Left
+                // unmarked, every later Profile Non-Profiled Units pass profiled it again, a new copy each time.
+                [_profileVehicle, "vehicle", _vehicle] call ALIVE_fnc_hashSet;
+                _vehicle setVariable ["profileID", _vehicleID];
             } else {
                 deleteVehicle _vehicle;
             };
