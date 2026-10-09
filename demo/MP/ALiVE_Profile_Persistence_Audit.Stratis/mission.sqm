@@ -1,0 +1,104 @@
+version=12;
+class Mission
+{
+    addOns[]={"alive_main","alive_sys_profile","alive_sys_data","A3_Characters_F_BLUFOR","a3_map_stratis"};
+    addOnsAuto[]={"alive_main","alive_sys_profile","alive_sys_data","A3_Characters_F_BLUFOR","a3_map_stratis"};
+    randomSeed=723;
+    class Intel { briefingName="ALiVE Profile Persistence Audit"; year=2035; month=7; day=6; hour=12; minute=0; startWeather=0; forecastWeather=0; };
+    class Groups
+    {
+        items=4;
+        class Item0
+        {
+            side="LOGIC";
+            class Vehicles
+            {
+                items=1;
+                class Item0
+                {
+                    position[]={1850,0,5750};
+                    id=0; side="LOGIC"; vehicle="ALiVE_require"; leader=1; skill=0.6;
+                    class args
+                    {
+                        items=3;
+                        class Item0 { value="false"; parentCls="ALiVE_require"; typeName="debug"; };
+                        class Item1 { value="true"; parentCls="ALiVE_require"; typeName="ALiVE_DISABLESAVE"; };
+                        class Item2 { value="0"; parentCls="ALiVE_require"; typeName="ALiVE_DISABLEADMINACTIONS"; };
+                    };
+                };
+            };
+        };
+        class Item1
+        {
+            side="LOGIC";
+            class Vehicles
+            {
+                items=1;
+                class Item0
+                {
+                    position[]={1855,0,5750};
+                    id=1; side="LOGIC"; vehicle="ALiVE_sys_data"; leader=1; skill=0.6;
+                    class args
+                    {
+                        items=8;
+                        class Item0 { value="pns"; parentCls="ALiVE_sys_data"; typeName="source"; };
+                        class Item1 { value="false"; parentCls="ALiVE_sys_data"; typeName="debug"; };
+                        class Item2 { value="true"; parentCls="ALiVE_sys_data"; typeName="disableStats"; };
+                        class Item3 { value="true"; parentCls="ALiVE_sys_data"; typeName="disableAAR"; };
+                        class Item4 { value="true"; parentCls="ALiVE_sys_data"; typeName="disablePerf"; };
+                        class Item5 { value="true"; parentCls="ALiVE_sys_data"; typeName="disablePerfMon"; };
+                        class Item6 { value="false"; parentCls="ALiVE_sys_data"; typeName="saveDateTime"; };
+                        class Item7 { value="false"; parentCls="ALiVE_sys_data"; typeName="saveCompositions"; };
+                    };
+                };
+            };
+        };
+        class Item2
+        {
+            side="LOGIC";
+            class Vehicles
+            {
+                items=1;
+                class Item0
+                {
+                    position[]={1860,0,5750};
+                    id=2; side="LOGIC"; vehicle="ALiVE_sys_profile"; leader=1; skill=0.6;
+                    class args
+                    {
+                        items=11;
+                        class Item0 { value="true"; parentCls="ALiVE_sys_profile"; typeName="persistent"; };
+                        class Item1 { value="false"; parentCls="ALiVE_sys_profile"; typeName="debug"; };
+                        class Item2 { value="IGNORE"; parentCls="ALiVE_sys_profile"; typeName="syncronised"; };
+                        class Item3 { value="50"; parentCls="ALiVE_sys_profile"; typeName="spawnRadius"; };
+                        class Item4 { value="50"; parentCls="ALiVE_sys_profile"; typeName="spawnTypeHeliRadius"; };
+                        class Item5 { value="0"; parentCls="ALiVE_sys_profile"; typeName="spawnTypeJetRadius"; };
+                        class Item6 { value="50"; parentCls="ALiVE_sys_profile"; typeName="spawnRadiusUAV"; };
+                        class Item7 { value="30"; parentCls="ALiVE_sys_profile"; typeName="activeLimiter"; };
+                        class Item8 { value="true"; parentCls="ALiVE_sys_profile"; typeName="pathfinding"; };
+                        class Item9 { value="false"; parentCls="ALiVE_sys_profile"; typeName="airCombatSpawning"; };
+                        class Item10 { value="0"; parentCls="ALiVE_sys_profile"; typeName="smoothSpawn"; };
+                    };
+                };
+            };
+        };
+        class Item3
+        {
+            side="WEST";
+            class Vehicles
+            {
+                items=1;
+                class Item0
+                {
+                    position[]={1850,0,5750}; id=3; side="WEST"; vehicle="B_Soldier_F";
+                    player="PLAYER COMMANDER"; leader=1; skill=1;
+                    init="this setVariable ['ALIVE_profileIgnore',true,true]; this setPosATL [1850,5750,0];";
+                };
+            };
+        };
+    };
+    class Markers
+    {
+        items=1;
+        class Item0 { position[]={1850,0,5750}; name="respawn_west"; type="Empty"; };
+    };
+};

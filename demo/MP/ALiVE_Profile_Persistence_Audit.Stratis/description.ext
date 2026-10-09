@@ -1,0 +1,46 @@
+author = "ALiVE profile persistence audit";
+onLoadName = "ALiVE | Profile Persistence Audit";
+onLoadMission = "Controlled persistence reproductions. Use the player action menu; inspect [PA] lines in the server RPT.";
+respawn = 3;
+respawnDelay = 3;
+disabledAI = 1;
+enableDebugConsole = 1;
+class Header { gameType = COOP; minPlayers = 1; maxPlayers = 1; };
+class CfgFunctions
+{
+    class PA
+    {
+        tag = "PA";
+        class Audit
+        {
+            file = "scripts";
+            class assert {};
+            class prepare {};
+            class snapshot {};
+            class verify {};
+            class local {};
+            class emptyValidation {};
+            class mountedValidation {};
+            class cloud {};
+            class cloudTransport {};
+            class request {};
+            class show {};
+        };
+    };
+};
+// Allow normal ALiVE RPCs; the test request itself checks server/admin ownership.
+class CfgRemoteExec
+{
+    class Functions
+    {
+        mode = 2;
+        jip = 0;
+        class PA_fnc_request { allowedTargets = 2; };
+    };
+    class Commands
+    {
+        mode = 2;
+        jip = 0;
+        class systemChat { allowedTargets = 0; };
+    };
+};
