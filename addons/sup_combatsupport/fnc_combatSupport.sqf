@@ -773,6 +773,12 @@ switch(_operation) do {
                                         private ["_veh", "_spawn"];
                                         _veh = _this select 0;
                                         _spawn = compile(_this select 1);
+                                        // After cas.fsm's first state, which refuels, re-arms and repairs the aircraft and
+                                        // sets this variable in the same go. Started at once, the mission maker's code
+                                        // raced that reset, so an ammo or fuel change of theirs held only if it ran
+                                        // second (F296). Bounded, so a state machine that never starts can't hold it.
+                                        private _by = time + 30;
+                                        waitUntil { sleep 0.2; isNull _veh || {!isNil {_veh getVariable "ALIVE_CombatSupport_Base"}} || {time > _by} };
                                         [_veh] spawn _spawn;
                                     };
                                 };
