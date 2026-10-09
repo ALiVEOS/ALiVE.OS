@@ -1,3 +1,4 @@
+// ALiVE 3 index v3.1, made 2026-10-09 by the ALiVE web indexer, building positions measured
 /*=================*/
 /*opening pbo beketov_wrp.pbo
 ///////<HEADER>///////
@@ -208795,16 +208796,6 @@ wrp_objects=
 			[476343,[7727,4617]]
 		]
 	],
-	["ca\structures\a_buildingwip\a_buildingwip.p3d",
-		[
-			[482872,[8190,4565]],
-			[482873,[8217,4592]],
-			[482954,[8272,4591]],
-			[472967,[8008,5184]],
-			[1046866,[11324,11065]],
-			[1046859,[11312,11104]]
-		]
-	],
 	["ca\buildings2\ind_cementworks\ind_malykomin\ind_malykomin.p3d",
 		[
 			[476512,[7941,4649]],
@@ -208869,11 +208860,6 @@ wrp_objects=
 	["ca\buildings\dum_mesto2l.p3d",
 		[
 			[474633,[7932,4960]]
-		]
-	],
-	["ca\structures\furniture\chairs\church_chair\church_chair.p3d",
-		[
-			[479003,[8103,4879]]
 		]
 	],
 	["ca\structures\house\housev2\housev2_05.p3d",
@@ -209969,24 +209955,6 @@ wrp_objects=
 			[477834,[8351,5134]],
 			[285486,[9022,11177]],
 			[823597,[17528,17511]]
-		]
-	],
-	["ca\roads_e\sidewalks\sw_a_turn_ep1.p3d",
-		[
-			[466100,[8714,5580]],
-			[468676,[8774,5575]],
-			[467900,[8741,5671]],
-			[467899,[8766,5672]],
-			[468075,[8842,5674]],
-			[468076,[8844,5644]],
-			[468344,[8953,5653]],
-			[468130,[8945,5724]],
-			[468444,[8993,5657]],
-			[468445,[9005,5654]],
-			[468235,[8980,5738]],
-			[468236,[8982,5727]],
-			[464847,[8984,5807]],
-			[464846,[8967,5842]]
 		]
 	],
 	["a3\structures_f\ind\transmitter_tower\ttowerbig_2_f.p3d",
