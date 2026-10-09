@@ -29,7 +29,7 @@ ALIVE_civilianRailBuildingTypes = [];
 ALIVE_civilianFuelBuildingTypes = [];
 ALIVE_civilianConstructionBuildingTypes = [];
 
-ALiVE_mapCompositionType = "Pacific";
+ALiVE_mapCompositionType = "Jungle";
 
  if (tolower(_worldName) == "rhspkl") then {
     ALIVE_Indexing_Blacklist = ALIVE_Indexing_Blacklist + [
