@@ -935,7 +935,14 @@ switch(_operation) do {
                 private _worldName = toLower worldName;
                 private _file = format ["x\alive\addons\civ_placement\clusters\clusters.%1_civ.sqf", _worldName];
 
-                call compile preprocessFileLineNumbers _file;
+                // A terrain with no ALiVE index has no file here: start from empty lists and say so, rather than
+                // fail later on an undefined variable and blame the TAOR marker
+                if (fileExists _file) then {
+                    call compile preprocessFileLineNumbers _file;
+                } else {
+                    { missionNamespace setVariable [_x, [] call ALIVE_fnc_hashCreate] } forEach ["ALIVE_clustersCiv", "ALIVE_clustersCivHQ", "ALIVE_clustersCivPower", "ALIVE_clustersCivComms", "ALIVE_clustersCivMarine", "ALIVE_clustersCivRail", "ALIVE_clustersCivFuel", "ALIVE_clustersCivConstruction", "ALIVE_clustersCivSettlement"];
+                    ["ALiVE CP - %1 has no ALiVE index, so Civilian Placement has no civilian objectives to place on. The Map Indexer module can make one.", worldName] call ALiVE_fnc_dump;
+                };
                 ALIVE_loadedCIVClusters = true;
             };
         }] call CBA_fnc_directCall;

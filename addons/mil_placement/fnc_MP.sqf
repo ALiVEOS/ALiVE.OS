@@ -920,7 +920,15 @@ switch(_operation) do {
 
                 ALIVE_loadedMilClusters = false;
                 PROFILE_SCOPE(MPINDEXCOMPILE, "ALiVE MP startup: compile terrain cluster index")
-                call compile preprocessFileLineNumbers _file;
+                // A terrain with no ALiVE index has no file here. Reading it anyway left the objective lists
+                // undefined, and placement then failed on an undefined variable and blamed the TAOR marker.
+                // Start from empty lists instead and say why there is nothing to place on.
+                if (fileExists _file) then {
+                    call compile preprocessFileLineNumbers _file;
+                } else {
+                    { missionNamespace setVariable [_x, [] call ALIVE_fnc_hashCreate] } forEach ["ALIVE_clustersMil", "ALIVE_clustersMilHQ", "ALIVE_clustersMilAir", "ALIVE_clustersMilHeli"];
+                    ["ALiVE MP - %1 has no ALiVE index, so Military Placement has no military objectives to place on. The Map Indexer module can make one.", worldName] call ALiVE_fnc_dump;
+                };
                 PROFILE_SCOPE_END(MPINDEXCOMPILE)
                 // objectives made only of invisible helipads, away from any other military building, are left out
                 [] call ALIVE_fnc_clustersDropStrayHelipads;
