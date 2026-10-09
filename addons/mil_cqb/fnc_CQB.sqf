@@ -449,6 +449,12 @@ switch(_operation) do {
                             if ((count _factions) == 0) then {{if (!(_x == "NONE") && {!(_x in _factions)}) then {_factions pushBack _x}} foreach [_faction1,_faction2,_faction3,_faction4]};
 
                             _factions = [_logic,"factions",_factions] call ALiVE_fnc_CQB;
+                            // Said, not done silently: a CQB synced to a commander garrisons with the
+                            // commander's factions, so a Use Dominant Faction left on is overridden, and
+                            // without this line its debug output simply never appeared (#1068, #1069).
+                            if (_logic getVariable ["CQB_UseDominantFaction", false]) then {
+                                ["CQB [%1] - Use Dominant Faction is off: this CQB is synced to an AI Commander and garrisons with its factions %2", _id, _factions] call ALiVE_fnc_dump;
+                            };
                             _logic setVariable ["CQB_UseDominantFaction", false];
 
                             ["CQB Houses prepared for use with OPCOM Insurgency!"] call ALiVE_fnc_dump;
