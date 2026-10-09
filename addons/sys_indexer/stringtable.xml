@@ -38,7 +38,7 @@
     <Spanish>Límite de mapa personalizado:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_INDEXER_MAPBOUND_COMMENT">
-    <English>Map bound value must cover the entire map and be rounded up to nearest 1000. By default uses worldSize/mapSize</English>
+    <English>Map bound value must cover the entire map and be rounded up to nearest 1000. By default uses worldSize/mapSize. Only used when the terrain has no static data yet: a re-index keeps the bound already in it.</English>
     <Chinesesimp>地图绑定值必须覆盖整个地图,并四舍五入到最接近1000。默认使用worldSize/mapSize</Chinesesimp>
     <Spanish>El valor del límite de mapa debe cubrir todo el mapa y redondearse al alza al millar más próximo. Por defecto usa worldSize/mapSize</Spanish>
 </Key>
@@ -63,7 +63,7 @@
     <Spanish>Entorno de composiciones:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_INDEXER_ENVIRONMENT_COMMENT">
-    <English>Environment used to select ALiVE compositions on this map. Written to the exported static data, so it no longer needs to be added by hand after indexing.</English>
+    <English>Environment used to select ALiVE compositions on this map. Written to the exported static data, so it no longer needs to be added by hand after indexing. Only used when the terrain has no static data yet: a re-index keeps the environment already in it.</English>
     <Chinesesimp>用于在此地图上选择ALiVE阵地布局的环境。会写入导出的静态数据，索引后无需再手动添加。</Chinesesimp>
     <Spanish>Entorno usado para elegir las composiciones de ALiVE en este mapa. Se escribe en los datos estáticos exportados, así que ya no hay que añadirlo a mano después de indexar.</Spanish>
 </Key>
