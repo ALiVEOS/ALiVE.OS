@@ -190,6 +190,31 @@ switch(_operation) do {
         // One retry, then it is made here. Done before dispatching so a stuck
         // order frees its record in the same pass rather than the next one.
         private _pending = [_logic, "pending", []] call ALIVE_fnc_hashGet;
+
+        // ---- orders a reload left open (F423) --------------------------------
+        // The order table is not saved, but a record keeps "ordered:<event>" or
+        // "delivered:attaching" through a save. After a reload nothing timed
+        // those out, and as neither reads as wanted nothing replaced the
+        // aircraft again either. On the first pass each one goes back in the
+        // table with a fresh clock, so it times out and is built here like any
+        // order that never arrived. An entry already in the table is left alone.
+        if !([_logic, "reopened", false] call ALIVE_fnc_hashGet) then {
+            [_logic, "reopened", true] call ALIVE_fnc_hashSet;
+            private _held = (_pending select 2) apply { _x param [0, ""] };
+            private _view0 = [_ledger, "view"] call ALIVE_fnc_ATOLedger;
+            {
+                private _rec = [_view0, _x, []] call ALIVE_fnc_hashGet;
+                private _wants = [_rec, "replacement", ""] call ALIVE_fnc_hashGet;
+                if ([_rec, "status", ""] call ALIVE_fnc_hashGet == "lost"
+                    && {(_wants find "ordered:") == 0 || {_wants isEqualTo "delivered:attaching"}}
+                    && {!(_x in _held)}) then {
+                    [_pending, format ["reopened_%1", _x],
+                        [_x, _now, [_rec, "lossCount", 1] call ALIVE_fnc_hashGet, _wants isEqualTo "delivered:attaching"]] call ALIVE_fnc_hashSet;
+                    ["ALIVE_fnc_ATOResupply - %1 had a replacement %2 when the mission was saved; it is built here if nothing arrives in %3 s",
+                        _x, _wants, DELIVERY_TIMEOUT] call ALiVE_fnc_dump;
+                };
+            } forEach (_view0 select 1);
+        };
         {
             private _eventId = _x;
             private _entry = [_pending, _eventId, []] call ALIVE_fnc_hashGet;
