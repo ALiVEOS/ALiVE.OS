@@ -14517,6 +14517,27 @@ switch(_operation) do {
 
         [_event, "currentUnitCounts", _unitCounts] call ALIVE_fnc_hashSet;
 
+        // An AI-requested delivery whose every transport is gone while its cargo was still aboard or boarding is
+        // handed over at once, through the event's normal completion (F430). The transport's death frees the
+        // cargo for the AI Commander straight away, but the delivery only noticed later, from its waypoints or a
+        // timeout, and its hand-over then set the garrison order over whatever the commander had given meanwhile.
+        // Only for an event that had transports to lose.
+        if ((count _eventTransportProfiles) + (count _eventTransportVehiclesProfiles) > 0) then {
+            [_event, "hadTransports", true] call ALIVE_fnc_hashSet;
+        } else {
+            if (!_playerRequested && {_totalCount > 0} && {[_event, "hadTransports", false] call ALIVE_fnc_hashGet}
+                && {([_event, "state", ""] call ALIVE_fnc_hashGet) in ["transportLoad", "transportLoadWait", "transportTravel",
+                    "heliTransportStart", "heliTransport", "heliParadropStart", "heliParadropFly"]}) then {
+                // Set again each check while the event is still in one of those states: its own handler runs after this
+                // and can move it on (to a load wait, say), and the completion it is sent to hands the cargo over once.
+                if !([_event, "transportsLostHandedOver", false] call ALIVE_fnc_hashGet) then {
+                    [_event, "transportsLostHandedOver", true] call ALIVE_fnc_hashSet;
+                    ["ML - event %1: every transport was lost with its cargo aboard; handing the cargo over now", [_event, "id", ""] call ALIVE_fnc_hashGet] call ALiVE_fnc_dump;
+                };
+                [_event, "state", "eventComplete"] call ALIVE_fnc_hashSet;
+            };
+        };
+
         _result = _totalCount;
     };
 
