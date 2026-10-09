@@ -1128,7 +1128,12 @@ switch(_operation) do {
                         "ranks",
                         "side",
                         "isSPE",
-                        "aiBehaviour"
+                        "aiBehaviour",
+                        // The objective a placed group belongs to, held as the whole objective
+                        // with its building list. Saved, that is a full copy of the objective in
+                        // every group placed on it, about 100,000 characters each, and the load
+                        // never reads it back.
+                        "homeCluster"
                     ]] call ALIVE_fnc_hashCopy;
 
                     [_exportProfile, "type", 1] call ALIVE_fnc_hashSet;
