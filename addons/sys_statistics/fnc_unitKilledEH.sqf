@@ -61,6 +61,10 @@ if (_stats || {_killFeed != "None"}) then {
     // Set Data
     _killed = _this select 0;
     _killer = _this select 1;
+    // The unit that actually fired, when the game names one. A player gunning under an AI commander is the
+    // instigator while the killer reads as the vehicle's AI commander, so the gunner got no Kill Shot.
+    private _instigator = _this param [2, objNull];
+    if (!isNull _instigator && {_instigator != _killed} && {isPlayer _instigator}) then { _killer = _instigator };
 
     // ["KILLED: %1",_this] call ALiVE_fnc_dump;
 
@@ -116,6 +120,16 @@ if (_stats || {_killFeed != "None"}) then {
         if !(_killer isKindof "Man") then {
                 _killerweapon = _killerweapon + format[" (%1)", getText (configFile >> "cfgVehicles" >> (typeof (vehicle _killer)) >> "displayName")];
         };
+        // a man firing from a vehicle used the vehicle's weapon, not the one he carries
+        if ((_killer isKindof "Man") && {vehicle _killer != _killer}) then {
+            private _veh = vehicle _killer;
+            private _turret = (assignedVehicleRole _killer) param [1, []];
+            private _w = if (_turret isEqualTo []) then { currentWeapon _veh } else { _veh currentWeaponTurret _turret };
+            if (_w != "") then {
+                _killerweapon = getText (configFile >> "cfgWeapons" >> _w >> "displayName") + format [" (%1)", getText (configFile >> "cfgVehicles" >> (typeOf _veh) >> "displayName")];
+                _killerweaponType = _w;
+            };
+        };
 
         if (_killerweapon == "") then {
             _killerweapon = "UNKNOWN";
@@ -162,6 +176,8 @@ if (_stats || {_killFeed != "None"}) then {
         if (!(_killed iskindof "Man") && (_killedPos != "000000") && (_killedPos != "000999") && (_killedPos != "999000") && (_killedPos != "999999")  ) then { // vehicle was killed
 
             private _byPlayer = isPlayer _killer || isPlayer (gunner _killer) || isPlayer (driver _killer);
+            // a player wrecking the vehicle they're in isn't announced as having destroyed it "from 0m"
+            if (_killer == _killed || {vehicle _killer == _killed}) then { _byPlayer = false };
 
             if (_byPlayer && {_killFeed != "None"}) then {
                 _message = format ["Vehicle destroyed! %1 was destroyed by %2 with a %3 from %4m!", _killedtype, name _killer, _killerweapon, _distance];
