@@ -686,6 +686,13 @@ private _fnc_claimGlobal = {
     }
 };
 
+// Forget what a save would have kept for a takeover that has ended, either way (F424).
+private _fnc_dropInFlight = {
+    params ["_logic", "_vehId"];
+    private _cInfo = [_logic, "consumingInfo", []] call ALIVE_fnc_hashGet;
+    if ([_cInfo] call ALIVE_fnc_isHash) then { [_cInfo, _vehId] call ALIVE_fnc_hashRem };
+};
+
 private _fnc_releaseGlobal = {
     params [["_id", "", [""]]];
     if (!isNil "ALiVE_ATO_consuming") then { ALiVE_ATO_consuming deleteAt _id };
@@ -902,6 +909,30 @@ switch(_operation) do {
 
     case "claimed": { _result = [_logic] call _fnc_claimedIds };
 
+    // The takeovers still in flight, for a save to keep (F424): [class, home, airspaces, roles, capabilities,
+    // profile id] each. Only those still claimed, so an entry left behind by a pass that stopped is never saved.
+    case "inFlight": {
+        _result = [];
+        private _cInfo = [_logic, "consumingInfo", []] call ALIVE_fnc_hashGet;
+        private _consuming = [_logic, "consuming", []] call ALIVE_fnc_hashGet;
+        if ([_cInfo] call ALIVE_fnc_isHash && {[_consuming] call ALIVE_fnc_isHash}) then {
+            private _base = [_logic, "base", []] call ALIVE_fnc_hashGet;
+            private _iValues = _cInfo select 2;
+            {
+                private _vehId = _x;
+                if (_vehId in (_consuming select 1)) then {
+                    (_iValues select _forEachIndex) params ["_class", "_home", "_roles", "_caps"];
+                    // The airspace the home falls in, else the base's, as the record would get.
+                    private _airspaceName = "";
+                    {
+                        if (_airspaceName isEqualTo "" && {_x isEqualType ""} && {(_home select 0) inArea _x}) then { _airspaceName = _x };
+                    } forEach ([_logic, "airspaces", []] call ALIVE_fnc_hashGet);
+                    if (_airspaceName isEqualTo "") then { _airspaceName = [_base, "airspace", ""] call ALIVE_fnc_hashGet };
+                    _result pushBack [_class, _home, [_airspaceName], _roles, _caps, _vehId];
+                };
+            } forEach (_cInfo select 1);
+        };
+    };
     case "pendingLegacy": { _result = +([_logic, "pendingLegacy", []] call ALIVE_fnc_hashGet) };
 
     // ---- may we have this one? --------------------------------------------
@@ -1427,6 +1458,21 @@ switch(_operation) do {
         // that kept it would block a real stand until the next sweep.
         [_surface, "reserve", [_home select 0, [_class] call _fnc_span]] call ALIVE_fnc_ATOSurface;
 
+        // What a save needs to keep this aircraft if it lands during the takeover below (F424). Between the
+        // profile being unregistered and the record being written there are up to nine seconds of waits, and a
+        // save in that window found the aircraft in neither store, so it was gone after a reload. The save adds
+        // a record for each takeover still in flight to what it writes, tied to the profile, and the reload then
+        // takes the profile over if it was saved too or builds the aircraft at this home if it wasn't. Only for a
+        // new record: an inherited one is already in the ledger.
+        if (_intoTail isEqualTo "") then {
+            private _cInfo = [_logic, "consumingInfo", []] call ALIVE_fnc_hashGet;
+            if !([_cInfo] call ALIVE_fnc_isHash) then {
+                _cInfo = [] call ALIVE_fnc_hashCreate;
+                [_logic, "consumingInfo", _cInfo] call ALIVE_fnc_hashSet;
+            };
+            [_cInfo, _vehId, [_class, +_home, +_roles, +_caps]] call ALIVE_fnc_hashSet;
+        };
+
         // ---- the one irreversible step --------------------------------------
         ([_logic, "consume", [_vehId, _entId, _home]] call MAINCLASS) params [["_hull", objNull, [objNull]], ["_crossed", false, [false]]];
 
@@ -1445,6 +1491,7 @@ switch(_operation) do {
         if (!_crossed) exitWith {
             [_logic, _home, _class] call _fnc_unreserve;
             [_consuming, _vehId] call ALIVE_fnc_hashRem;
+            [_logic, _vehId] call _fnc_dropInFlight;
             _result = ["refused", "consume refused"];
         };
 
@@ -1457,6 +1504,7 @@ switch(_operation) do {
         if (isNull _hull && {!(_intoTail isEqualTo "")}) exitWith {
             [_logic, _home, _class] call _fnc_unreserve;
             [_consuming, _vehId] call ALIVE_fnc_hashRem;
+            [_logic, _vehId] call _fnc_dropInFlight;
             ["ALIVE_fnc_ATOPlace - %1 consumed for %2 but the hull was lost on the way; the record stays lost so a replacement is built instead",
                 _vehId, _intoTail] call ALiVE_fnc_dump;
             _result = ["refused", "consumed but the hull was lost"];
@@ -1490,6 +1538,8 @@ switch(_operation) do {
         // stays: the hull is still settling onto it.
 
         [_consuming, _vehId] call ALIVE_fnc_hashRem;
+        // The record exists now, so a save no longer needs the in-flight one.
+        [_logic, _vehId] call _fnc_dropInFlight;
 
         if (isNull _hull) exitWith {
             // A new record for an aircraft that really was taken and then

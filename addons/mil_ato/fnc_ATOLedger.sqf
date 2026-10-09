@@ -373,12 +373,35 @@ switch(_operation) do {
     // The store is a parameter so the ledger can be tested without a backend.
     // Pass a hash to exercise it offline; pass "sys_data" for the real one.
     case "save": {
-        _args params [["_store",[],[[],""]], ["_key","",[""]]];
+        _args params [["_store",[],[[],""]], ["_key","",[""]], ["_inFlight",[],[[]]]];
         if (_key isEqualTo "") exitWith {
             ["ALIVE_fnc_ATOLedger - save refused: no instance key"] call ALiVE_fnc_dump;
             _result = false;
         };
         private _snapshot = [_logic,"snapshot"] call MAINCLASS;
+        // Aircraft being taken over as the save lands (F424): written as records in this snapshot only, numbered
+        // on from the next tail and the saved counter raised past them, and tied to the profile being taken over
+        // so the reload takes that profile over, or builds at the home if the profile was already gone.
+        if (count _inFlight > 0) then {
+            private _meta = [_snapshot,"meta",[]] call ALIVE_fnc_hashGet;
+            private _faction = [_logic,"faction",""] call ALIVE_fnc_hashGet;
+            private _display = getText (configFile >> "CfgFactionClasses" >> _faction >> "displayName");
+            if (_display isEqualTo "") then { _display = _faction };
+            private _index = [_meta,"nextIndex",0] call ALIVE_fnc_hashGet;
+            {
+                _x params ["_class", "_home", "_airspace", "_roles", "_caps", "_legacy"];
+                private _tail = format ["%1_%2", _faction, _index];
+                private _rec = [[
+                    ["tail", _tail], ["vehicleClass", _class], ["faction", _faction], ["airspace", +_airspace],
+                    ["callsign", format ["%1 %2", _display, _index + 1]], ["roles", +_roles], ["capabilities", +_caps],
+                    ["home", +_home], ["status", "present"], ["lossCount", 0], ["replacement", ""], ["legacyProfileID", _legacy]
+                ]] call ALIVE_fnc_hashCreate;
+                [_snapshot,_tail,_rec] call ALIVE_fnc_hashSet;
+                _index = _index + 1;
+            } forEach _inFlight;
+            [_meta,"nextIndex",_index] call ALIVE_fnc_hashSet;
+            ["ALIVE_fnc_ATOLedger - save: %1 aircraft being taken over are kept as well", count _inFlight] call ALiVE_fnc_dump;
+        };
         // A test store and the real backend are BOTH hashes, so asking whether
         // this is a hash cannot tell them apart, and it used to answer "test
         // store" for the real one. That meant a live save wrote into memory and

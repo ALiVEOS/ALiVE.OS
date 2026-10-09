@@ -2107,7 +2107,11 @@ switch(_operation) do {
         if (_ledger isEqualTo []) exitWith { _result = [false, "ALiVE Military air tasking orders - save refused: no ledger"] };
         private _store = call _fnc_dataHandler;
         ([_logic] call _fnc_storeKeys) params ["_ownKey"];
-        private _r = [_ledger, "save", [_store, _ownKey]] call ALIVE_fnc_ATOLedger;
+        // Takeovers still in flight go in too (F424), so a save that lands in one doesn't lose the aircraft.
+        private _place = [_logic, "place"] call _fnc_piece;
+        private _inFlight = if (_place isEqualTo []) then { [] } else { [_place, "inFlight"] call ALIVE_fnc_ATOPlace };
+        if !(_inFlight isEqualType []) then { _inFlight = [] };
+        private _r = [_ledger, "save", [_store, _ownKey, _inFlight]] call ALIVE_fnc_ATOLedger;
         // Both shipped backends answer with a STRING on success and the data
         // layer answers "ERROR" when it is disabled, so success is anything
         // that is neither false nor that word.
