@@ -388,23 +388,16 @@ switch (_taskState) do {
                             _vehicle = [_nearVehicles] call ALIVE_fnc_taskGetVehicleWithMaxRoom;
                             _maxRoomVehicle = _vehicle select 0;
 
-                            // if there is a player vehicle that
-                            // has any available room
-                            // resize the profile group to fit in the vehicle
-                            // and then assign it
+                            // A player vehicle with some room, but not for the whole team. The team used to be cut
+                            // down to fit, and the soldiers who didn't fit were split off into a group of their own
+                            // and left standing at the pick up point. They now wait for a transport with room for
+                            // all of them, as they do when no vehicle has any room, and the radio says why once.
                             if!(isNull _maxRoomVehicle) then {
 
-                                _room = _vehicle select 1;
-
-                                [_infantryProfile,"resize",_room] call ALIVE_fnc_profileEntity;
-
-                                _infantryGroup = _infantryProfile select 2 select 13;
-
-                                _assignments = [_infantryGroup, _maxRoomVehicle, true] call ALIVE_fnc_vehicleAssignGroup;
-
-                                [_params,"pickupReached",true] call ALIVE_fnc_hashSet;
-                                [_params,"vehicle",_maxRoomVehicle] call ALIVE_fnc_hashSet;
-                                [_params,"assignments",_assignments] call ALIVE_fnc_hashSet;
+                                if !([_params,"moreSeatsPrompted",false] call ALIVE_fnc_hashGet) then {
+                                    ["chat_more_seats",_currentTaskDialog,_taskSide,_taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
+                                    [_params,"moreSeatsPrompted",true] call ALIVE_fnc_hashSet;
+                                };
 
                             }else{
 
