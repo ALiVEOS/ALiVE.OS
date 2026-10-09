@@ -765,6 +765,20 @@ switch(_operation) do {
                 _clusters = [_clusters, _taor] call ALIVE_fnc_clustersInsideMarker;
                 _clusters = [_clusters, _blacklist] call ALIVE_fnc_clustersOutsideMarker;
 
+                // Random Camps go on every flat, empty spot the spacing allows, so a big terrain that is mostly open
+                // ground gets hundreds: Chernobyl is 30 km with 16 objectives and drew over 900 camps on High. Allow
+                // twice the military objectives this module places on (at least 25), and never more than 50 on Low,
+                // 100 on Medium or 200 on High. Altis keeps about the 200 it already had on High. Above the cap an
+                // even share is kept, picked at random, so the camps still spread across the area.
+                if (_randomCampsMil > 0) then {
+                    private _campCap = ((2 * count _clusters) max 25) min ([200, 100, 50] select ((([1000, 1500, 2500] find _randomCampsMil)) max 0));
+                    if (count _landClusters > _campCap) then {
+                        ["ALiVE MP [%1] - Random Camps: %2 sites found, %3 kept (twice the %4 military objectives, at least 25)", _faction, count _landClusters, _campCap, count _clusters] call ALiVE_fnc_dump;
+                        _landClusters = _landClusters call BIS_fnc_arrayShuffle;
+                        _landClusters resize _campCap;
+                    };
+                };
+
                 if (_fwRaise) then {
                     if (isNil "ALiVE_fieldworkModels") then { ALiVE_fieldworkModels = createHashMapFromArray (_fwModels apply {[toLower _x, true]}) };
                     // The index's fieldwork groups hold every fieldwork in a group of three or more, so counting those
