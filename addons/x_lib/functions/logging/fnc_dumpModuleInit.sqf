@@ -22,6 +22,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 private ["_logic","_start","_moduleID","_message"];
@@ -51,6 +52,9 @@ if(isNil "ALIVE_firstModuleInit") then {
     [] call ALIVE_fnc_dumpLogo;
     ["Global INIT"] call ALiVE_fnc_dump;
     [true,"Global Init Timer Started","INIT"] call ALIVE_fnc_timer;
+
+    // every module's areas hidden now, before any module has started (main XEH_preInit.sqf)
+    if (!isNil "ALiVE_moduleAreaSweep") then { [] call ALiVE_moduleAreaSweep };
 };
 
 // Tell every machine which module is working, so the startup screen can say what is

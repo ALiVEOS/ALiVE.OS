@@ -2,6 +2,38 @@
 
 LOG(MSG_INIT);
 
+// Every module's own areas (TAOR, blacklist, CQB's lists, the air commander's airspace) out of sight at once, on
+// every machine with a screen, from the first module init on that machine (ALIVE_fnc_dumpModuleInit). Each module
+// also hides its own when it starts, but they start one after another, and a module late in a cold start left its
+// area on the briefing map for minutes. Measured on the rig: a module's settings are not there yet when its object
+// init runs, and a mission keeps the setting expressions it was saved with, so the first module init is the
+// earliest point every module's settings can be read.
+// Fields by module, never by name alone: Logistics keeps vehicle classes under "blacklist".
+ALiVE_moduleAreaFields = createHashMapFromArray [
+    ["ALiVE_mil_placement", ["taor", "blacklist"]],
+    ["ALiVE_civ_placement", ["taor", "blacklist"]],
+    ["ALiVE_amb_civ_placement", ["taor", "blacklist"]],
+    ["ALiVE_mil_ied", ["taor", "blacklist"]],
+    ["ALiVE_mil_cqb", ["whitelist", "blacklist"]],
+    ["ALiVE_mil_ato", ["airspace"]]
+];
+ALiVE_moduleAreaSweep = {
+    if (!hasInterface || {is3DEN}) exitWith {};
+    {
+        private _logic = _x;
+        {
+            // the comma separated text the mission maker typed, or a list when a script made the module
+            private _value = _logic getVariable [_x, ""];
+            private _names = [];
+            if (_value isEqualType []) then { _names = _value };
+            if (_value isEqualType "") then { _names = (_value splitString ",") apply { _x trim [" ", 0] } };
+            {
+                if (_x isEqualType "" && {_x != ""} && {markerShape _x != ""}) then { _x setMarkerAlphaLocal 0 };
+            } forEach _names;
+        } forEach (ALiVE_moduleAreaFields getOrDefault [typeOf _logic, []]);
+    } forEach (allMissionObjects "Logic");
+};
+
 // One line saying exactly what this install is, first thing in the log. Which
 // build a report came from has had to be worked out from which diagnostic lines
 // happen to be present, and getting that wrong has cost a reporter a wasted test
