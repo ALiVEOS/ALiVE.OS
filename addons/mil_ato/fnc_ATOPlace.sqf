@@ -2331,6 +2331,7 @@ switch(_operation) do {
             private _pools = [_planes] call _fnc_planePools;
             private _planesPlaced = 0;
             private _planesAsked = 0;
+            private _tried = [];
             private _first = true;
             {
                 // The first building always, the rest with D3's chance, and
@@ -2342,12 +2343,28 @@ switch(_operation) do {
                 // fighter too big for every stand here would otherwise be
                 // asked for again at each hangar and no other plane tried.
                 if (_planesPlaced < _cap && {_first || {random 1 > 0.30}}) then {
-                    private _tail = [_logic, [_pools, _planesAsked] call _fnc_nextPlane, position _x, getDir _x, _airspaceName] call _fnc_placeNew;
+                    private _cls = [_pools, _planesAsked] call _fnc_nextPlane;
+                    _tried pushBackUnique _cls;
+                    private _tail = [_logic, _cls, position _x, getDir _x, _airspaceName] call _fnc_placeNew;
                     _planesAsked = _planesAsked + 1;
                     if !(_tail isEqualTo "") then { _tails pushBack _tail; _planesPlaced = _planesPlaced + 1 };
                 };
                 _first = false;
             } forEach _anchors;
+
+            // No plane at all: at a one-hangar airfield the single plane asked for
+            // can be one no stand there fits (NATO's Black Wasp at the one-hangar
+            // airfield at 20600,20130 on Altis, F319), and the base had helicopters only. The
+            // faction's other planes are tried at the first hangar, a few at most,
+            // before the base is left without one.
+            if (_planesPlaced == 0 && {count _anchors > 0}) then {
+                private _anchor = _anchors select 0;
+                {
+                    if (_planesPlaced > 0 || {_forEachIndex >= 4}) exitWith {};
+                    private _tail = [_logic, _x, position _anchor, getDir _anchor, _airspaceName] call _fnc_placeNew;
+                    if !(_tail isEqualTo "") then { _tails pushBack _tail; _planesPlaced = _planesPlaced + 1 };
+                } forEach ((_planes arrayIntersect _planes) - _tried);
+            };
         };
 
         // The end of the airfield rungs, which a base with no airfield takes
