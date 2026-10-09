@@ -838,7 +838,7 @@ private _fnc_claimRound = {
                 private _seated = _units deleteAt 0;
                 if (_moveInstantly) then {
                     _seated setposATL _x;
-                    [_seated, (_seated getRelDir _building) - 180] call _fnc_hold;
+                    [_seated, _building getDir _seated] call _fnc_hold;
                 } else {
                     _movementAssignments pushBack [_seated, _x];
                 };
@@ -892,7 +892,7 @@ private _fnc_claimRound = {
 
                 if (_moveInstantly) then {
                     _unit setposATL _position;
-                    [_unit, (_unit getRelDir _building) - 180] call _fnc_hold;
+                    [_unit, _building getDir _unit] call _fnc_hold;
                 } else {
                     _movementAssignments pushBack [_unit, _position];
                 };
@@ -974,7 +974,7 @@ private _fnc_drain = {
 
             if (_moveInstantly) then {
                 _seated setposATL _seatPos;
-                [_seated, (_seated getRelDir _queueBuilding) - 180] call _fnc_hold;
+                [_seated, _queueBuilding getDir _seated] call _fnc_hold;
             } else {
                 _movementAssignments pushBack [_seated, _seatPos];
             };
