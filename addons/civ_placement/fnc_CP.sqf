@@ -762,6 +762,8 @@ switch(_operation) do {
                     if(_debug) then { ["CP - Profiles are persistent, no creation of profiles"] call ALiVE_fnc_dump; };
                     // DEBUG -------------------------------------------------------------------------------------
 
+                    ["restore", _logic, MAINCLASS] call ALIVE_fnc_reservePersist;   // the reserves not yet woken (F388)
+
                     // set module as started
                     _logic setVariable ["startupComplete", true];
 
@@ -1868,16 +1870,7 @@ switch(_operation) do {
             private _totalReserves = 0;
             { _totalReserves = _totalReserves + count ([_x, "reservePool", []] call ALiVE_fnc_hashGet) } forEach _clusters;
             if (_totalReserves > 0) then {
-                [{
-                    params ["_args", "_handle"];
-                    _args params ["_watchClusters", "_watchLogic"];
-                    if (isNull _watchLogic) exitWith {
-                        [_handle] call CBA_fnc_removePerFrameHandler;
-                    };
-                    {
-                        [_x, _watchLogic] call ALIVE_fnc_activateReserve;
-                    } forEach _watchClusters;
-                }, 5, [_clusters, _logic]] call CBA_fnc_addPerFrameHandler;
+                [_clusters, _logic] call ALIVE_fnc_reserveWatch;
             };
 
             ["CP %2 - Total profiles created: %1",_countProfiles, _faction] call ALiVE_fnc_dump;

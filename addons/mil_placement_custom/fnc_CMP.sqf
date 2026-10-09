@@ -1016,6 +1016,8 @@ switch(_operation) do {
                 if(_debug) then { ["CMP - Profiles are persistent, no creation of profiles"] call ALiVE_fnc_dump; };
                 // DEBUG -------------------------------------------------------------------------------------
 
+                ["restore", _logic, MAINCLASS] call ALIVE_fnc_reservePersist;   // the reserves not yet woken (F388)
+
                 // set module as started
                 _logic setVariable ["startupComplete", true];
 
@@ -1666,16 +1668,7 @@ switch(_operation) do {
                 // module logic becomes null. Identical pattern to mil_placement.
                 private _totalReserves = count ([_cluster, "reservePool", []] call ALiVE_fnc_hashGet);
                 if (_totalReserves > 0) then {
-                    [{
-                        params ["_args", "_handle"];
-                        _args params ["_watchClusters", "_watchLogic"];
-                        if (isNull _watchLogic) exitWith {
-                            [_handle] call CBA_fnc_removePerFrameHandler;
-                        };
-                        {
-                            [_x, _watchLogic] call ALIVE_fnc_activateReserve;
-                        } forEach _watchClusters;
-                    }, 5, [[_cluster], _logic]] call CBA_fnc_addPerFrameHandler;
+                    [[_cluster], _logic] call ALIVE_fnc_reserveWatch;
                 };
             };
 

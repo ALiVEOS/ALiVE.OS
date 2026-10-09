@@ -144,6 +144,16 @@ class cfgFunctions {
                 file = "\x\alive\addons\main\fnc_activateReserve.sqf";
                 RECOMPILE;
             };
+            class reserveWatch {
+                description = "Starts the reserve-activation watcher for a placement module's objectives and lists them for saving";
+                file = "\x\alive\addons\main\fnc_reserveWatch.sqf";
+                RECOMPILE;
+            };
+            class reservePersist {
+                description = "Saves the placement modules' unwoken reserves and brings them back on a persistent load";
+                file = "\x\alive\addons\main\fnc_reservePersist.sqf";
+                RECOMPILE;
+            };
             class tabletBox {
                 description = "Returns [x,y,w,h] of the screen box every ALiVE tablet is drawn in, so script-positioned artwork matches the GUI_GRID layout the controls use";
                 file = "\x\alive\addons\main\fnc_tabletBox.sqf";
