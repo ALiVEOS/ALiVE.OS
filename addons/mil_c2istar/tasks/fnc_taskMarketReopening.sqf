@@ -106,6 +106,8 @@ private _spawnWaveProfiles = {
                     private _profileWaypoint = [_waypointPosition, 100, "MOVE", "FULL", 100, [], "LINE", "NO CHANGE", "SAFE"] call ALIVE_fnc_createProfileWaypoint;
                     [(_profiles select 0), "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
                     _profileIDs pushBack _profileID;
+                    // its vehicles on their own list (the caller's): once the men get out, nothing else leads to them
+                    if (!isNil "_waveVehicleIDs") then { { if ((_x select 2 select 5) == "vehicle") then { _waveVehicleIDs pushBack (_x select 2 select 4) } } forEach _profiles };
                 };
             };
         };
@@ -442,7 +444,9 @@ switch (_taskState) do {
             [_params] call _cleanupObjects;
         } else {
             if (_currentWave <= _totalWaves && {serverTime >= _nextWaveAt} && {_entityProfileIDs isEqualTo []}) then {
+                private _waveVehicleIDs = [];
                 private _waveProfileIDs = [_taskPosition, _enemyFaction, _currentWave] call _spawnWaveProfiles;
+                [_params, "waveVehicleIDs", ([_params, "waveVehicleIDs", []] call ALIVE_fnc_hashGet) + _waveVehicleIDs] call ALIVE_fnc_hashSet;
                 if (_waveProfileIDs isEqualTo []) then {
                     if (_currentWave < _totalWaves) then {
                         [_params, "currentWave", _currentWave + 1] call ALIVE_fnc_hashSet;
@@ -492,6 +496,15 @@ switch (_taskState) do {
 
                 if (_areaClear || {_realAreaClear}) then {
                     [_entityProfileIDs] call ALIVE_fnc_taskDestroyEntityProfiles;
+                    // and the wave's vehicles, which a wave that got out no longer leads to: they were left at the task site
+                    {
+                        private _vp = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+                        if (!isNil "_vp") then {
+                            private _veh = _vp select 2 select 10;
+                            if (isNull _veh || {(crew _veh) findIf { isPlayer _x } < 0}) then { [_vp, "destroy"] call ALIVE_fnc_profileVehicle };
+                        };
+                    } forEach ([_params, "waveVehicleIDs", []] call ALIVE_fnc_hashGet);
+                    [_params, "waveVehicleIDs", []] call ALIVE_fnc_hashSet;
                     [_params, "entityProfileIDs", []] call ALIVE_fnc_hashSet;
                     [_params, "currentWave", _totalWaves + 1] call ALIVE_fnc_hashSet;
                     [_params, "nextWaveAt", 0] call ALIVE_fnc_hashSet;
