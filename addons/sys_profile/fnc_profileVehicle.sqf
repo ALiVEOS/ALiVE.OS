@@ -1028,8 +1028,14 @@ switch (_operation) do {
                 };
             };
 
+            // The vehicle is still protected from damage while it spawns, and the engine ignores a part's damage
+            // set while that's on, so a damaged vehicle came back whole every time it spawned. Lift the protection
+            // for the restore only.
             if(count _damage > 0) then {
+                private _protected = !isDamageAllowed _vehicle;
+                if (_protected) then { _vehicle allowDamage true };
                 [_vehicle, _damage] call ALIVE_fnc_vehicleSetDamage;
+                if (_protected) then { _vehicle allowDamage false };
             };
 
             if(count _ammo > 0) then {
