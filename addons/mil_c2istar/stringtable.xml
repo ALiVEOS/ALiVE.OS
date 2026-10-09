@@ -966,7 +966,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_COP_ASYM_COMMENT">
-    <English>When Yes, and Commander Intel Mode is not Off, the asymmetric COP layer (Layer 5) runs: insurgent activity zones and civilian sentiment. Insurgent infrastructure markers (IEDs, factories, depots, HQs, roadblocks and similar) stay hidden; there is no editor setting to show them. When No, Layer 5 is forced off regardless of master defaults. Has no effect when Commander Intel Mode is Off. DATA SOURCE: requires an asymmetric Military AI Commander (control type set to asymmetric) placed in the mission; without one the Asymmetric layer has nothing to display even when this is set to Yes.</English>
+    <English>Only used when Commander Intel Mode (COP) is set above Off. When Yes, and Commander Intel Mode is not Off, the asymmetric COP layer (Layer 5) runs: insurgent activity zones and civilian sentiment. Insurgent infrastructure markers (IEDs, factories, depots, HQs, roadblocks and similar) stay hidden; there is no editor setting to show them. When No, Layer 5 is forced off regardless of master defaults. Has no effect when Commander Intel Mode is Off. DATA SOURCE: requires an asymmetric Military AI Commander (control type set to asymmetric) placed in the mission; without one the Asymmetric layer has nothing to display even when this is set to Yes.</English>
     <Chinese>設為「是」且指揮官情報模式不為「關閉」時，非對稱 COP 層（第 5 層）會執行：叛亂活動區域與平民情緒。叛亂份子基礎設施標記（IED、工廠、補給站、指揮部、路障等）保持隱藏，編輯器中沒有設定可以顯示它們。設為「否」時，無論主預設為何，第 5 層都會被強制關閉。指揮官情報模式為「關閉」時無效。資料來源：任務中必須放置一個非對稱的 Military AI Commander（控制類型設為非對稱）；若沒有，即使設為「是」，非對稱層也沒有內容可顯示。</Chinese>
     <Chinesesimp>设为「是」且指挥官情报模式不为「关闭」时，非对称 COP 层（第 5 层）会执行：叛乱活动区域和平民情绪。叛乱分子基础设施标记（IED、工厂、补给站、指挥部、路障等）保持隐藏，编辑器中没有设置可以显示它们。设为「否」时，无论主预设为何，第 5 层都会被强制关闭。指挥官情报模式为「关闭」时无效。数据来源：任务中必须放置一个非对称的 Military AI Commander（控制类型设为非对称）；若没有，即使设为「是」，非对称层也没有内容可显示。</Chinesesimp>
     <Spanish>Cuando se establece en Sí y el Modo de Inteligencia del Comandante no es Apagado, la capa COP asimétrica (Capa 5) se ejecuta: zonas de actividad insurgente y sentimiento civil. Los marcadores de infraestructura insurgente (IED, fábricas, depósitos, cuarteles generales, controles de carretera y similares) permanecen ocultos; no hay ningún ajuste del editor para mostrarlos. Cuando se establece en No, la Capa 5 se desactiva forzosamente independientemente de los valores predeterminados. No tiene efecto cuando el Modo de Inteligencia del Comandante es Apagado. FUENTE DE DATOS: requiere un Military AI Commander asimétrico (tipo de control asimétrico) colocado en la misión; sin uno, la capa Asimétrica no tiene nada que mostrar aunque esté en Sí.</Spanish>
@@ -1006,7 +1006,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_COP_UPDATE_INTERVAL_COMMENT">
-    <English>How often the COP server pulls fresh intel from each OPCOM. Loop A (enemies + BFT) runs at this interval; Loop B (objectives, lower-priority) runs at 2x this value. Upstream OPCOM's TACOM analysis cycle is fixed at 120 seconds, which is the cap on data freshness regardless of how fast COP polls. Presets: Fast (15s, tight feedback for active engagements), Standard (30s, responsive), Balanced (60s, recommended default, half a TACOM cycle, catches every update within 60s for half the redundant work), Economy (120s, aligned with TACOM cycle, cheapest server load). Independent of the Sector Update Time setting above.</English>
+    <English>Only used when Commander Intel Mode (COP) is set above Off. How often the COP server pulls fresh intel from each OPCOM. Loop A (enemies + BFT) runs at this interval; Loop B (objectives, lower-priority) runs at 2x this value. Upstream OPCOM's TACOM analysis cycle is fixed at 120 seconds, which is the cap on data freshness regardless of how fast COP polls. Presets: Fast (15s, tight feedback for active engagements), Standard (30s, responsive), Balanced (60s, recommended default, half a TACOM cycle, catches every update within 60s for half the redundant work), Economy (120s, aligned with TACOM cycle, cheapest server load). Independent of the Sector Update Time setting above.</English>
     <Chinese>COP 伺服器從各個 OPCOM 拉取最新情報的頻率。迴圈 A(敵情 + BFT)以此間隔執行;迴圈 B(目標,優先度較低)以此數值的 2 倍間隔執行。上游 OPCOM 的 TACOM 分析週期固定為 120 秒 — 無論 COP 輪詢速度多快,這都是資料新鮮度的上限。預設值:快速(15 秒,適合積極交戰時的緊密回饋)、標準(30 秒,反應靈敏)、平衡(60 秒,建議預設值 — 為半個 TACOM 週期,可在 60 秒內捕捉每次更新,同時省下一半的重複工作)、經濟(120 秒,與 TACOM 週期對齊,伺服器負載最低)。與上方的「區塊更新時間」設定相互獨立。</Chinese>
     <Chinesesimp>COP 服务器从各 OPCOM 拉取最新情报的频率。循环 A(敌情 + BFT)按此间隔运行;循环 B(目标,优先级较低)按此值的 2 倍运行。上游 OPCOM 的 TACOM 分析周期固定为 120 秒 — 无论 COP 轮询多快,这都是数据新鲜度的上限。预设值:快速(15秒,适合激烈交战的紧密反馈)、标准(30秒,响应迅速)、均衡(60秒,推荐默认值 — 相当于半个 TACOM 周期,在 60 秒内捕获每次更新,同时减少一半冗余负载)、经济(120秒,与 TACOM 周期对齐,服务器负载最低)。与上方的区块更新时间设置相互独立。</Chinesesimp>
     <Spanish>Con qué frecuencia el servidor COP extrae inteligencia fresca de cada OPCOM. El Bucle A (enemigos + BFT) se ejecuta a este intervalo; el Bucle B (objetivos, menor prioridad) se ejecuta al doble de este valor. El ciclo de análisis TACOM de OPCOM aguas arriba está fijado en 120 segundos; ese es el límite de frescura de los datos sin importar la rapidez con que sondee COP. Preajustes: Rápido (15s, respuesta ajustada para combates activos), Estándar (30s, sensible), Equilibrado (60s, recomendado por defecto — la mitad de un ciclo TACOM, captura toda actualización en 60s con la mitad del trabajo redundante), Económico (120s, alineado con el ciclo TACOM, la carga de servidor más barata). Independiente del ajuste de Tiempo de Actualización de Sector de arriba.</Spanish>
@@ -1086,7 +1086,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_COP_SHOW_BFT_COMMENT">
-    <English>Friendly Blue Force Tracker layer in the COP overlay: friendly profile-managed forces shown as side-coloured chevrons within the anchor radius. Auto (default) follows the Commander Intel Mode: shown at Full and Advanced, hidden at Basic and Partial. On shows it at any mode, useful for cooperative play and command overview. Off hides it at any mode, for tighter operational security where players shouldn't see friendly positions on the map. A mission saved with the old Yes or No keeps it as On or Off. Independent of the Map Intel "Friendly Coverage" setting above, which drives the legacy global SQM friendly markers.</English>
+    <English>Only used when Commander Intel Mode (COP) is set above Off. Friendly Blue Force Tracker layer in the COP overlay: friendly profile-managed forces shown as side-coloured chevrons within the anchor radius. Auto (default) follows the Commander Intel Mode: shown at Full and Advanced, hidden at Basic and Partial. On shows it at any mode, useful for cooperative play and command overview. Off hides it at any mode, for tighter operational security where players shouldn't see friendly positions on the map. A mission saved with the old Yes or No keeps it as On or Off. Independent of the Map Intel "Friendly Coverage" setting above, which drives the legacy global SQM friendly markers.</English>
     <Chinese>COP 疊加層中的友軍藍軍追蹤圖層:在錨點半徑內,以陣營顏色的 V 形標記顯示由檔案管理的友軍。自動(預設)依指揮官情報模式而定:在完整與進階模式顯示,在基本與部分模式隱藏。開啟則在任何模式都顯示,適合合作遊戲與指揮總覽。關閉則在任何模式都隱藏,用於更嚴格的作戰保密,讓玩家無法在地圖上看到友軍位置。以舊的「是」或「否」儲存的任務會保持為開啟或關閉。與上方地圖情報的「友軍覆蓋」設定無關,該設定控制舊式全域 SQM 友軍標記。</Chinese>
     <Chinesesimp>COP 叠加层中的友军蓝军追踪图层:在锚点半径内,以阵营颜色的 V 形标记显示由档案管理的友军。自动(默认)依指挥官情报模式而定:在完整与高级模式显示,在基础与部分模式隐藏。开启则在任何模式都显示,适合合作游戏与指挥总览。关闭则在任何模式都隐藏,用于更严格的作战保密,让玩家无法在地图上看到友军位置。以旧的「是」或「否」保存的任务会保持为开启或关闭。与上方地图情报的「友军覆盖」设置无关,该设置控制旧式全局 SQM 友军标记。</Chinesesimp>
     <Spanish>Capa Blue Force Tracker aliada en la superposición COP: las fuerzas aliadas gestionadas por perfiles, como galones del color del bando, dentro del radio de anclaje. Auto (predeterminado) sigue el modo de inteligencia del comandante: se muestra en Completo y Avanzado y se oculta en Básico y Parcial. Activado la muestra en cualquier modo, útil para el juego cooperativo y la visión de mando. Desactivado la oculta en cualquier modo, para una seguridad operativa más estricta en la que los jugadores no deben ver posiciones aliadas en el mapa. Una misión guardada con el antiguo Sí o No la mantiene como Activado o Desactivado. Independiente del ajuste «Cobertura aliada» de la inteligencia del mapa de arriba, que controla los antiguos marcadores SQM aliados globales.</Spanish>
@@ -1156,7 +1156,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_COP_LAYER_ENEMIES_COMMENT">
-    <English>Per-layer override for the enemy intel contacts layer (the spotted-enemy markers). Commander Intel Mode (COP) above is the master switch and the overall preset: it decides which layers are on at each tier and, when set to Off, disables the whole COP overlay. This setting only fine-tunes this one layer on top of that preset. Auto (default) follows whatever Commander Intel Mode selects. On forces the layer visible even at a tier that would normally drop it; Off hides it even at a tier that would normally show it. Has no effect when Commander Intel Mode is Off.</English>
+    <English>Only used when Commander Intel Mode (COP) is set above Off. Per-layer override for the enemy intel contacts layer (the spotted-enemy markers). Commander Intel Mode (COP) above is the master switch and the overall preset: it decides which layers are on at each tier and, when set to Off, disables the whole COP overlay. This setting only fine-tunes this one layer on top of that preset. Auto (default) follows whatever Commander Intel Mode selects. On forces the layer visible even at a tier that would normally drop it; Off hides it even at a tier that would normally show it. Has no effect when Commander Intel Mode is Off.</English>
     <Chinese>針對敵軍情資接觸圖層(已發現敵軍標記)的個別圖層覆寫設定。上方的指揮官情資模式(COP)是主開關與整體預設值——它決定各階層開啟哪些圖層,若設為「關閉」則會停用整個 COP 疊層。此設定只在該預設值之上微調這一個圖層。自動(預設)會依指揮官情資模式的選擇而定。「開啟」會強制顯示此圖層,即使該階層通常不會顯示;「關閉」則會強制隱藏此圖層,即使該階層通常會顯示。當指揮官情資模式為「關閉」時,此設定不生效。</Chinese>
     <Chinesesimp>针对敌情接触图层(已侦测敌军标记)的逐层覆盖设置。上方的指挥官情报模式(COP)是主开关及总体预设 — 它决定各层级下哪些图层开启,若设为关闭则整个 COP 叠加层都会停用。此设置仅在该预设基础上微调这一个图层。自动(默认)跟随指挥官情报模式所选内容。开启会强制该图层显示,即使在通常会隐藏它的层级下;关闭会强制隐藏,即使在通常会显示它的层级下。当指挥官情报模式为关闭时无效。</Chinesesimp>
     <Spanish>Anulación por capa para la capa de contactos de inteligencia enemiga (los marcadores de enemigo detectado). El Modo de Inteligencia de Comandante (COP) de arriba es el interruptor maestro y el preajuste general: decide qué capas están activas en cada nivel y, cuando se ajusta a Desactivado, desactiva toda la superposición de COP. Este ajuste solo afina esta capa concreta sobre ese preajuste. Auto (por defecto) sigue lo que seleccione el Modo de Inteligencia de Comandante. Activado fuerza la capa visible incluso en un nivel que normalmente la eliminaría; Desactivado la oculta incluso en un nivel que normalmente la mostraría. No tiene efecto cuando el Modo de Inteligencia de Comandante está Desactivado.</Spanish>
@@ -1176,7 +1176,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_COP_LAYER_AXIS_COMMENT">
-    <English>Per-layer override for the dashed axis-of-advance arrows drawn from the nearest friendly cluster to attack objectives. Commander Intel Mode (COP) above is the master switch and the overall preset; this setting only fine-tunes this one element on top of it. Auto (default) follows the Commander Intel Mode preset. On forces the arrows on even at a tier that normally drops them (Full / Partial / Basic); Off hides them even at Advanced. Has no effect when Commander Intel Mode is Off.</English>
+    <English>Only used when Commander Intel Mode (COP) is set above Off. Per-layer override for the dashed axis-of-advance arrows drawn from the nearest friendly cluster to attack objectives. Commander Intel Mode (COP) above is the master switch and the overall preset; this setting only fine-tunes this one element on top of it. Auto (default) follows the Commander Intel Mode preset. On forces the arrows on even at a tier that normally drops them (Full / Partial / Basic); Off hides them even at Advanced. Has no effect when Commander Intel Mode is Off.</English>
     <Chinese>針對從最近友軍集結點指向攻擊目標所繪製之虛線進攻軸箭頭的個別圖層覆寫設定。上方的指揮官情資模式(COP)是主開關與整體預設值;此設定只在該預設值之上微調此元素。自動(預設)會依指揮官情資模式的預設值而定。「開啟」會強制顯示箭頭,即使該階層(完整/部分/基本)通常會將其省略;「關閉」則會在「進階」階層也隱藏箭頭。當指揮官情資模式為「關閉」時,此設定不生效。</Chinese>
     <Chinesesimp>针对从最近友军集群指向进攻目标绘制的虚线推进轴箭头的逐层覆盖设置。上方的指挥官情报模式(COP)是主开关及总体预设;此设置仅在此基础上微调该元素。自动(默认)跟随指挥官情报模式预设。开启会强制显示箭头,即使在通常会隐藏它们的层级下(完整/部分/基础);关闭会在高级层级下也隐藏它们。当指挥官情报模式为关闭时无效。</Chinesesimp>
     <Spanish>Anulación por capa para las flechas discontinuas de eje de avance trazadas desde el grupo amigo más cercano hacia los objetivos de ataque. El Modo de Inteligencia de Comandante (COP) de arriba es el interruptor maestro y el preajuste general; este ajuste solo afina este elemento sobre él. Auto (por defecto) sigue el preajuste del Modo de Inteligencia de Comandante. Activado fuerza las flechas incluso en un nivel que normalmente las elimina (Completo / Parcial / Básico); Desactivado las oculta incluso en Avanzado. No tiene efecto cuando el Modo de Inteligencia de Comandante está Desactivado.</Spanish>
@@ -1196,7 +1196,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_COP_LAYER_SENTIMENT_COMMENT">
-    <English>Per-layer override for the civilian sentiment heat-map (part of the asymmetric layer). Commander Intel Mode (COP) above is the master switch and overall preset; this setting only fine-tunes this one element. Auto (default) follows the preset. On forces the heat-map on; Off hides it. Requires the asymmetric layer to be active, so set Commander Intel Asymmetric to Yes. Has no effect when Commander Intel Mode is Off or the asymmetric layer is disabled.</English>
+    <English>Only used when Commander Intel Mode (COP) is set above Off. Per-layer override for the civilian sentiment heat-map (part of the asymmetric layer). Commander Intel Mode (COP) above is the master switch and overall preset; this setting only fine-tunes this one element. Auto (default) follows the preset. On forces the heat-map on; Off hides it. Requires the asymmetric layer to be active, so set Commander Intel Asymmetric to Yes. Has no effect when Commander Intel Mode is Off or the asymmetric layer is disabled.</English>
     <Chinese>針對平民情緒熱區圖(屬於非對稱圖層的一部分)的個別圖層覆寫設定。上方的指揮官情資模式(COP)是主開關與整體預設值;此設定只在該預設值之上微調此元素。自動(預設)會依預設值而定。「開啟」會強制顯示熱區圖;「關閉」則會隱藏。需要非對稱圖層處於啟用狀態——請將指揮官情資非對稱設為「是」。當指揮官情資模式為「關閉」或非對稱圖層已停用時,此設定不生效。</Chinese>
     <Chinesesimp>针对平民情绪热力图(属于非对称图层的一部分)的逐层覆盖设置。上方的指挥官情报模式(COP)是主开关及总体预设;此设置仅在此基础上微调该元素。自动(默认)跟随预设。开启会强制显示热力图;关闭会隐藏。需要非对称图层处于激活状态 — 将指挥官情报非对称设为是。当指挥官情报模式为关闭或非对称图层被禁用时无效。</Chinesesimp>
     <Spanish>Anulación por capa para el mapa de calor de sentimiento civil (parte de la capa asimétrica). El Modo de Inteligencia de Comandante (COP) de arriba es el interruptor maestro y el preajuste general; este ajuste solo afina este elemento. Auto (por defecto) sigue el preajuste. Activado fuerza el mapa de calor; Desactivado lo oculta. Requiere que la capa asimétrica esté activa; ajuste Inteligencia de Comandante Asimétrica a Sí. No tiene efecto cuando el Modo de Inteligencia de Comandante está Desactivado o la capa asimétrica está deshabilitada.</Spanish>
@@ -1216,7 +1216,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_COP_LAYER_ACTIVITY_COMMENT">
-    <English>Per-layer override for the asymmetric activity zones (insurgent activity areas, part of the asymmetric layer). Commander Intel Mode (COP) above is the master switch and overall preset; this setting only fine-tunes this one element. Auto (default) follows the preset. On forces the zones on; Off hides them. Requires the asymmetric layer to be active, so set Commander Intel Asymmetric to Yes. Has no effect when Commander Intel Mode is Off or the asymmetric layer is disabled.</English>
+    <English>Only used when Commander Intel Mode (COP) is set above Off. Per-layer override for the asymmetric activity zones (insurgent activity areas, part of the asymmetric layer). Commander Intel Mode (COP) above is the master switch and overall preset; this setting only fine-tunes this one element. Auto (default) follows the preset. On forces the zones on; Off hides them. Requires the asymmetric layer to be active, so set Commander Intel Asymmetric to Yes. Has no effect when Commander Intel Mode is Off or the asymmetric layer is disabled.</English>
     <Chinese>針對非對稱活動區域(叛亂份子活動地帶,屬於非對稱圖層的一部分)的個別圖層覆寫設定。上方的指揮官情資模式(COP)是主開關與整體預設值;此設定只在該預設值之上微調此元素。自動(預設)會依預設值而定。「開啟」會強制顯示這些區域;「關閉」則會隱藏。需要非對稱圖層處於啟用狀態——請將指揮官情資非對稱設為「是」。當指揮官情資模式為「關閉」或非對稱圖層已停用時,此設定不生效。</Chinese>
     <Chinesesimp>针对非对称活动区域(叛乱分子活动区域,属于非对称图层的一部分)的逐层覆盖设置。上方的指挥官情报模式(COP)是主开关及总体预设;此设置仅在此基础上微调该元素。自动(默认)跟随预设。开启会强制显示区域;关闭会隐藏它们。需要非对称图层处于激活状态 — 将指挥官情报非对称设为是。当指挥官情报模式为关闭或非对称图层被禁用时无效。</Chinesesimp>
     <Spanish>Anulación por capa para las zonas de actividad asimétrica (áreas de actividad insurgente, parte de la capa asimétrica). El Modo de Inteligencia de Comandante (COP) de arriba es el interruptor maestro y el preajuste general; este ajuste solo afina este elemento. Auto (por defecto) sigue el preajuste. Activado fuerza las zonas; Desactivado las oculta. Requiere que la capa asimétrica esté activa; ajuste Inteligencia de Comandante Asimétrica a Sí. No tiene efecto cuando el Modo de Inteligencia de Comandante está Desactivado o la capa asimétrica está deshabilitada.</Spanish>
@@ -1236,7 +1236,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_COP_FRIENDLY_ORDERS_COMMENT">
-    <English>Show or hide the friendly attack order markers from map intel: a circle on each objective a commander is attacking, labelled e.g. "BLUFOR Attacking". No (default) hides them so the COP overlay is the single source of objective intent (its own Attack / Defend rings show the same orders). Yes shows them. The recon / capture blocking lines have their own toggle below and are not affected by this. These markers only exist when Display Map Intel is Yes and this module is synced to a Military AI Commander whose side is ticked in Commander Intel Sides, and only that side's players see them. Applies whether or not Commander Intel Mode is on.</English>
+    <English>Only used when Commander Intel Mode (COP) is set above Off. Show or hide the friendly attack order markers from map intel: a circle on each objective a commander is attacking, labelled e.g. "BLUFOR Attacking". No (default) hides them so the COP overlay is the single source of objective intent (its own Attack / Defend rings show the same orders). Yes shows them. The recon / capture blocking lines have their own toggle below and are not affected by this. These markers only exist when Display Map Intel is Yes and this module is synced to a Military AI Commander whose side is ticked in Commander Intel Sides, and only that side's players see them. Applies whether or not Commander Intel Mode is on.</English>
     <Chinese>顯示或隱藏地圖情報中的友軍攻擊命令標記:在指揮官正在攻擊的每個目標上畫出圓圈,並標示如 "BLUFOR Attacking"。「否」(預設)會將其隱藏,使 COP 疊層成為目標意圖的唯一資訊來源(其自身的攻擊/防守環會顯示相同命令)。「是」則會顯示這些標記。偵察/佔領封鎖線有其獨立的下方開關,不受此設定影響。只有在「顯示地圖情報」為「是」,且本模組已同步至一個 Military AI Commander、其陣營也已在「指揮官情報陣營」中勾選時,這些標記才會產生,且只有該陣營的玩家看得到。無論指揮官情資模式是否開啟皆適用。</Chinese>
     <Chinesesimp>显示或隐藏地图情报中的友军进攻命令标记:在指挥官正在进攻的每个目标上绘制圆圈,并标注如 "BLUFOR Attacking"。否(默认)会隐藏它们,使 COP 叠加层成为目标意图的唯一信息来源(其自身的进攻/防守圆环显示相同的命令)。是会显示它们。侦察/占领封锁线有其自身的独立开关(见下),不受此设置影响。只有当显示地图情报为是,且本模块已同步到一个 Military AI Commander、其所属阵营也已在指挥官情报阵营中勾选时,这些标记才会生成,并且只有该阵营的玩家能看到。无论指挥官情报模式是否开启均适用。</Chinesesimp>
     <Spanish>Muestra u oculta los marcadores de órdenes de ataque amigas de la inteligencia de mapa: un círculo en cada objetivo que un comandante está atacando, con una etiqueta como "BLUFOR Attacking". No (por defecto) los oculta para que la superposición de COP sea la única fuente de intención de objetivo (sus propios anillos de Ataque / Defensa muestran las mismas órdenes). Sí los muestra. Las líneas de bloqueo de reconocimiento / captura tienen su propio interruptor más abajo y no se ven afectadas por este. Estos marcadores solo existen cuando Mostrar Inteligencia en Mapa está en Sí y este módulo está sincronizado con un Military AI Commander cuyo bando está marcado en Bandos de Inteligencia de Comandante, y solo los ven los jugadores de ese bando. Se aplica esté o no activado el Modo de Inteligencia de Comandante.</Spanish>
@@ -1256,7 +1256,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_COP_BLOCKING_LINES_COMMENT">
-    <English>Show or hide the TACOM recon / capture blocking-line markers: the FLOT-style rectangles and advance arrows drawn by the military intel (G2) pipeline to show a sector being secured. Yes (default) shows them. These are kept separate from the order markers above because the COP overlay does not draw them, so they stay useful even with COP on. Independent of the Map Intel display settings, which decide whether the intel is generated. Applies whether or not Commander Intel Mode is on.</English>
+    <English>Only used when Commander Intel Mode (COP) is set above Off. Show or hide the TACOM recon / capture blocking-line markers: the FLOT-style rectangles and advance arrows drawn by the military intel (G2) pipeline to show a sector being secured. Yes (default) shows them. These are kept separate from the order markers above because the COP overlay does not draw them, so they stay useful even with COP on. Independent of the Map Intel display settings, which decide whether the intel is generated. Applies whether or not Commander Intel Mode is on.</English>
     <Chinese>顯示或隱藏由軍事情資(G2)管線繪製的 TACOM 偵察/佔領封鎖線標記——用以顯示扇區正在被確保的前線式矩形與推進箭頭。「是」(預設)會顯示這些標記。此設定與上方的命令標記各自獨立保留,因為 COP 疊層本身不繪製這些標記,所以即使開啟 COP 仍然有用。與地圖情資顯示設定各自獨立,後者決定是否產生情資。無論指揮官情資模式是否開啟皆適用。</Chinese>
     <Chinesesimp>显示或隐藏 TACOM 侦察/占领封锁线标记 — 由军事情报(G2)管线绘制的 FLOT 风格矩形与推进箭头,用于显示正在被清剿的区块。是(默认)会显示它们。这些标记与上方的命令标记分开保留,因为 COP 叠加层不会绘制它们,所以即使开启 COP 它们仍然有用。与地图情报显示设置相互独立,后者决定情报是否生成。无论指挥官情报模式是否开启均适用。</Chinesesimp>
     <Spanish>Muestra u oculta los marcadores de línea de bloqueo de reconocimiento / captura TACOM: los rectángulos estilo FLOT y las flechas de avance trazados por el flujo de inteligencia militar (G2) para mostrar un sector en proceso de ser asegurado. Sí (por defecto) los muestra. Se mantienen separados de los marcadores de órdenes de arriba porque la superposición de COP no los dibuja, por lo que siguen siendo útiles incluso con COP activado. Independiente de los ajustes de visualización de Inteligencia de Mapa, que deciden si se genera la inteligencia. Se aplica esté o no activado el Modo de Inteligencia de Comandante.</Spanish>
@@ -1276,7 +1276,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_COP_COMMAND_VIEW_COMMENT">
-    <English>Lets players see COP intel across the whole map instead of only within COP Anchor Distance. When Yes, this wide view is on for every player from mission start; players carrying a C2ISTAR access item get a Command View entry in the C2ISTAR menu to turn it off and on again, and their choice is kept through respawn. Has no effect while Commander Intel Mode is Off. Default No.</English>
+    <English>Only used when Commander Intel Mode (COP) is set above Off. Lets players see COP intel across the whole map instead of only within COP Anchor Distance. When Yes, this wide view is on for every player from mission start; players carrying a C2ISTAR access item get a Command View entry in the C2ISTAR menu to turn it off and on again, and their choice is kept through respawn. Has no effect while Commander Intel Mode is Off. Default No.</English>
     <Chinese>讓玩家在整張地圖上看到 COP 情資,而不僅限於 COP 錨點距離範圍內。啟用後,所有玩家從任務開始即開啟此全圖視角;攜帶 C2ISTAR 存取物品的玩家會在 C2ISTAR 選單中看到指揮視角選項,可將其關閉或重新開啟,且選擇在重生後仍會保留。指揮官情報模式為關閉時無效。預設為否。</Chinese>
     <Chinesesimp>让玩家在整张地图上看到 COP 情报,而不仅限于 COP 锚点距离范围内。启用后,所有玩家从任务开始即开启此全图视图;携带 C2ISTAR 访问物品的玩家会在 C2ISTAR 菜单中看到指挥视图选项,可将其关闭或重新开启,且选择在重生后仍会保留。指挥官情报模式为关闭时无效。默认为否。</Chinesesimp>
     <Spanish>Permite a los jugadores ver la inteligencia de COP en todo el mapa en lugar de solo dentro de la Distancia de Anclaje de COP. Con Sí, esta vista amplia está activada para todos los jugadores desde el inicio de la misión; los jugadores que llevan un objeto de acceso de C2ISTAR tienen una entrada Vista de Mando en el menú de C2ISTAR para desactivarla y volver a activarla, y su elección se mantiene al reaparecer. No tiene efecto mientras el Modo de Inteligencia del Comandante esté en Apagado. Por defecto No.</Spanish>
@@ -1346,7 +1346,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_COP_ANCHOR_DISTANCE_COMMENT">
-    <English>Radius around each player within which COP intel (enemies, BFT, objectives, asymmetric) is displayed on the map. The anchor is the player, so this distance determines how far from the player's position intel appears. This is a RENDER-side setting only; it does not change what intel OPCOM gathers, only what portion of it gets drawn on your map. WARNING: high distances (1000 m or more) combined with many objectives or high unit counts can cause COP to take longer to display information and may reduce client frame rate with the map open.</English>
+    <English>Only used when Commander Intel Mode (COP) is set above Off. Radius around each player within which COP intel (enemies, BFT, objectives, asymmetric) is displayed on the map. The anchor is the player, so this distance determines how far from the player's position intel appears. This is a RENDER-side setting only; it does not change what intel OPCOM gathers, only what portion of it gets drawn on your map. WARNING: high distances (1000 m or more) combined with many objectives or high unit counts can cause COP to take longer to display information and may reduce client frame rate with the map open.</English>
     <Chinese>以每位玩家為中心,顯示 COP 情資(敵軍、藍軍追蹤、目標、非對稱)的半徑範圍。錨點即為玩家本身——此距離決定情資會在玩家位置多遠範圍內顯示出來。這是純粹的顯示端設定,不會改變 OPCOM 蒐集的情資內容,只會影響地圖上實際繪出的情資範圍。警告:若距離設定過大(1000 公尺以上),搭配大量目標或高單位數量時,可能導致 COP 顯示資訊耗時變長,並在開啟地圖時降低客戶端畫面更新率。</Chinese>
     <Chinesesimp>以每名玩家为中心、在此半径范围内会在地图上显示 COP 情报(敌情、BFT、目标、非对称)。锚点即为玩家 — 此距离决定情报会在距玩家位置多远处显示。这仅是一个渲染端设置;它不会改变 OPCOM 收集哪些情报,只影响其中多少会被绘制到地图上。警告:较大的距离(1000 米或以上)配合较多目标或高单位数量,可能导致 COP 显示信息耗时增加,并可能在打开地图时降低客户端帧率。</Chinesesimp>
     <Spanish>Radio alrededor de cada jugador dentro del cual se muestra en el mapa la inteligencia de COP (enemigos, BFT, objetivos, asimétrica). El anclaje es el jugador; esta distancia determina hasta dónde de la posición del jugador aparece la inteligencia. Este es un ajuste solo de RENDERIZADO; no cambia qué inteligencia recopila OPCOM, solo qué parte de ella se dibuja en el mapa. ADVERTENCIA: distancias altas (1000 m o más) combinadas con muchos objetivos o un alto número de unidades pueden hacer que COP tarde más en mostrar información y pueden reducir la tasa de fotogramas del cliente con el mapa abierto.</Spanish>
@@ -1366,7 +1366,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_COP_SHOW_ATTACK_COMMENT">
-    <English>Draw markers for objectives OPCOM is attacking on the COP overlay. Default Yes.</English>
+    <English>Only used when Commander Intel Mode (COP) is set above Off. Draw markers for objectives OPCOM is attacking on the COP overlay. Default Yes.</English>
     <Chinese>在 COP 疊層上繪出 OPCOM 正在攻擊之目標的標記。預設為「是」。</Chinese>
     <Chinesesimp>在 COP 叠加层上为 OPCOM 正在进攻的目标绘制标记。默认为是。</Chinesesimp>
     <Spanish>Dibuja marcadores para los objetivos que OPCOM está atacando en la superposición de COP. Por defecto Sí.</Spanish>
@@ -1386,7 +1386,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_COP_SHOW_DEFEND_COMMENT">
-    <English>Draw markers for objectives OPCOM is defending on the COP overlay. Default Yes.</English>
+    <English>Only used when Commander Intel Mode (COP) is set above Off. Draw markers for objectives OPCOM is defending on the COP overlay. Default Yes.</English>
     <Chinese>在 COP 疊層上繪出 OPCOM 正在防守之目標的標記。預設為「是」。</Chinese>
     <Chinesesimp>在 COP 叠加层上为 OPCOM 正在防守的目标绘制标记。默认为是。</Chinesesimp>
     <Spanish>Dibuja marcadores para los objetivos que OPCOM está defendiendo en la superposición de COP. Por defecto Sí.</Spanish>
@@ -1406,7 +1406,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_COP_SHOW_RECON_COMMENT">
-    <English>Draw markers for objectives OPCOM is reconnoitring on the COP overlay. Default Yes.</English>
+    <English>Only used when Commander Intel Mode (COP) is set above Off. Draw markers for objectives OPCOM is reconnoitring on the COP overlay. Default Yes.</English>
     <Chinese>在 COP 疊層上繪出 OPCOM 正在偵察之目標的標記。預設為「是」。</Chinese>
     <Chinesesimp>在 COP 叠加层上为 OPCOM 正在侦察的目标绘制标记。默认为是。</Chinesesimp>
     <Spanish>Dibuja marcadores para los objetivos que OPCOM está reconociendo en la superposición de COP. Por defecto Sí.</Spanish>
@@ -1426,7 +1426,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_COP_SHOW_RESERVE_COMMENT">
-    <English>Draw markers for objectives OPCOM is holding in reserve on the COP overlay. Default No.</English>
+    <English>Only used when Commander Intel Mode (COP) is set above Off. Draw markers for objectives OPCOM is holding in reserve on the COP overlay. Default No.</English>
     <Chinese>在 COP 疊層上繪出 OPCOM 列為預備隊之目標的標記。預設為「否」。</Chinese>
     <Chinesesimp>在 COP 叠加层上为 OPCOM 保留为预备队的目标绘制标记。默认为否。</Chinesesimp>
     <Spanish>Dibuja marcadores para los objetivos que OPCOM mantiene en reserva en la superposición de COP. Por defecto No.</Spanish>
@@ -1446,7 +1446,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_COP_SHOW_HELD_COMMENT">
-    <English>Draw the held-objective markers on the COP overlay (the friendly reserve anchors currently under your control). Set to No to hide them entirely. Default Yes.</English>
+    <English>Only used when Commander Intel Mode (COP) is set above Off. Draw the held-objective markers on the COP overlay (the friendly reserve anchors currently under your control). Set to No to hide them entirely. Default Yes.</English>
     <Chinese>在 COP 疊層上繪出佔領目標的標記(目前由己方控制的友軍預備錨點)。設為「否」可完全隱藏。預設為「是」。</Chinese>
     <Chinesesimp>在 COP 叠加层上绘制已占领目标标记(当前由己方控制的友军预备队锚点)。设为否可将其完全隐藏。默认为是。</Chinesesimp>
     <Spanish>Dibuja los marcadores de objetivo retenido en la superposición de COP (los anclajes de reserva amigos actualmente bajo su control). Ajuste a No para ocultarlos por completo. Por defecto Sí.</Spanish>
@@ -1466,7 +1466,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_COP_ATTACK_COLOUR_COMMENT">
-    <English>Colour of the Attack objective ring on the COP overlay. Uses the standard Arma marker-colour palette. Default Red.</English>
+    <English>Only used when Commander Intel Mode (COP) is set above Off. Colour of the Attack objective ring on the COP overlay. Uses the standard Arma marker-colour palette. Default Red.</English>
     <Chinese>COP 疊層上攻擊目標環的顏色。使用標準 Arma 標記顏色調色盤。預設為紅色。</Chinese>
     <Chinesesimp>COP 叠加层上进攻目标圆环的颜色。使用标准 Arma 标记颜色调色板。默认为红色。</Chinesesimp>
     <Spanish>Color del anillo de objetivo de Ataque en la superposición de COP. Usa la paleta estándar de colores de marcador de Arma. Por defecto Rojo.</Spanish>
@@ -1486,7 +1486,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_COP_ATTACK_ICON_COMMENT">
-    <English>Optional icon drawn at the centre of the Attack objective ring. Default None (ring + label only).</English>
+    <English>Only used when Commander Intel Mode (COP) is set above Off. Optional icon drawn at the centre of the Attack objective ring. Default None (ring + label only).</English>
     <Chinese>繪製於攻擊目標環中心的選用圖示。預設為無(僅顯示環與標籤)。</Chinese>
     <Chinesesimp>在进攻目标圆环中心绘制的可选图标。默认为无(仅圆环加标签)。</Chinesesimp>
     <Spanish>Icono opcional dibujado en el centro del anillo de objetivo de Ataque. Por defecto Ninguno (solo anillo + etiqueta).</Spanish>
@@ -1506,7 +1506,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_COP_DEFEND_COLOUR_COMMENT">
-    <English>Colour of the Defend objective ring on the COP overlay. Uses the standard Arma marker-colour palette. Default Brown.</English>
+    <English>Only used when Commander Intel Mode (COP) is set above Off. Colour of the Defend objective ring on the COP overlay. Uses the standard Arma marker-colour palette. Default Brown.</English>
     <Chinese>COP 疊層上防守目標環的顏色。使用標準 Arma 標記顏色調色盤。預設為棕色。</Chinese>
     <Chinesesimp>COP 叠加层上防守目标圆环的颜色。使用标准 Arma 标记颜色调色板。默认为棕色。</Chinesesimp>
     <Spanish>Color del anillo de objetivo de Defensa en la superposición de COP. Usa la paleta estándar de colores de marcador de Arma. Por defecto Marrón.</Spanish>
@@ -1526,7 +1526,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_COP_DEFEND_ICON_COMMENT">
-    <English>Optional icon drawn at the centre of the Defend objective ring. Default None (ring + label only).</English>
+    <English>Only used when Commander Intel Mode (COP) is set above Off. Optional icon drawn at the centre of the Defend objective ring. Default None (ring + label only).</English>
     <Chinese>繪製於防守目標環中心的選用圖示。預設為無(僅顯示環與標籤)。</Chinese>
     <Chinesesimp>在防守目标圆环中心绘制的可选图标。默认为无(仅圆环加标签)。</Chinesesimp>
     <Spanish>Icono opcional dibujado en el centro del anillo de objetivo de Defensa. Por defecto Ninguno (solo anillo + etiqueta).</Spanish>
@@ -1546,7 +1546,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_COP_RECON_COLOUR_COMMENT">
-    <English>Colour of the Recon objective ring on the COP overlay. Uses the standard Arma marker-colour palette. Default Yellow.</English>
+    <English>Only used when Commander Intel Mode (COP) is set above Off. Colour of the Recon objective ring on the COP overlay. Uses the standard Arma marker-colour palette. Default Yellow.</English>
     <Chinese>COP 疊層上偵察目標環的顏色。使用標準 Arma 標記顏色調色盤。預設為黃色。</Chinese>
     <Chinesesimp>COP 叠加层上侦察目标圆环的颜色。使用标准 Arma 标记颜色调色板。默认为黄色。</Chinesesimp>
     <Spanish>Color del anillo de objetivo de Reconocimiento en la superposición de COP. Usa la paleta estándar de colores de marcador de Arma. Por defecto Amarillo.</Spanish>
@@ -1566,7 +1566,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_COP_RECON_ICON_COMMENT">
-    <English>Optional icon drawn at the centre of the Recon objective ring. Default None (ring + label only).</English>
+    <English>Only used when Commander Intel Mode (COP) is set above Off. Optional icon drawn at the centre of the Recon objective ring. Default None (ring + label only).</English>
     <Chinese>繪製於偵察目標環中心的選用圖示。預設為無(僅顯示環與標籤)。</Chinese>
     <Chinesesimp>在侦察目标圆环中心绘制的可选图标。默认为无(仅圆环加标签)。</Chinesesimp>
     <Spanish>Icono opcional dibujado en el centro del anillo de objetivo de Reconocimiento. Por defecto Ninguno (solo anillo + etiqueta).</Spanish>
@@ -1586,7 +1586,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_COP_RESERVE_COLOUR_COMMENT">
-    <English>Colour of the Reserve objective ring on the COP overlay. Uses the standard Arma marker-colour palette. Default Grey.</English>
+    <English>Only used when Commander Intel Mode (COP) is set above Off. Colour of the Reserve objective ring on the COP overlay. Uses the standard Arma marker-colour palette. Default Grey.</English>
     <Chinese>COP 疊層上預備隊目標環的顏色。使用標準 Arma 標記顏色調色盤。預設為灰色。</Chinese>
     <Chinesesimp>COP 叠加层上预备队目标圆环的颜色。使用标准 Arma 标记颜色调色板。默认为灰色。</Chinesesimp>
     <Spanish>Color del anillo de objetivo de Reserva en la superposición de COP. Usa la paleta estándar de colores de marcador de Arma. Por defecto Gris.</Spanish>
@@ -1606,7 +1606,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_COP_RESERVE_ICON_COMMENT">
-    <English>Optional icon drawn at the centre of the Reserve objective ring. Default None (ring + label only).</English>
+    <English>Only used when Commander Intel Mode (COP) is set above Off. Optional icon drawn at the centre of the Reserve objective ring. Default None (ring + label only).</English>
     <Chinese>繪製於預備隊目標環中心的選用圖示。預設為無(僅顯示環與標籤)。</Chinese>
     <Chinesesimp>在预备队目标圆环中心绘制的可选图标。默认为无(仅圆环加标签)。</Chinesesimp>
     <Spanish>Icono opcional dibujado en el centro del anillo de objetivo de Reserva. Por defecto Ninguno (solo anillo + etiqueta).</Spanish>
@@ -1626,7 +1626,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_COP_HELD_COLOUR_WEST_COMMENT">
-    <English>Colour of held-objective markers held by Blufor (West) on the COP overlay. Uses the standard Arma marker-colour palette. Default Blufor blue.</English>
+    <English>Only used when Commander Intel Mode (COP) is set above Off. Colour of held-objective markers held by Blufor (West) on the COP overlay. Uses the standard Arma marker-colour palette. Default Blufor blue.</English>
     <Chinese>COP 疊層上由藍軍(西方)佔領之目標標記的顏色。使用標準 Arma 標記顏色調色盤。預設為藍軍藍色。</Chinese>
     <Chinesesimp>COP 叠加层上由 Blufor(西方)占领的目标标记颜色。使用标准 Arma 标记颜色调色板。默认为 Blufor 蓝。</Chinesesimp>
     <Spanish>Color de los marcadores de objetivo retenido por Blufor (Oeste) en la superposición de COP. Usa la paleta estándar de colores de marcador de Arma. Por defecto azul Blufor.</Spanish>
@@ -1646,7 +1646,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_COP_HELD_COLOUR_EAST_COMMENT">
-    <English>Colour of held-objective markers held by Opfor (East) on the COP overlay. Uses the standard Arma marker-colour palette. Default Opfor red.</English>
+    <English>Only used when Commander Intel Mode (COP) is set above Off. Colour of held-objective markers held by Opfor (East) on the COP overlay. Uses the standard Arma marker-colour palette. Default Opfor red.</English>
     <Chinese>COP 疊層上由紅軍(東方)佔領之目標標記的顏色。使用標準 Arma 標記顏色調色盤。預設為紅軍紅色。</Chinese>
     <Chinesesimp>COP 叠加层上由 Opfor(东方)占领的目标标记颜色。使用标准 Arma 标记颜色调色板。默认为 Opfor 红。</Chinesesimp>
     <Spanish>Color de los marcadores de objetivo retenido por Opfor (Este) en la superposición de COP. Usa la paleta estándar de colores de marcador de Arma. Por defecto rojo Opfor.</Spanish>
@@ -1666,7 +1666,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_COP_HELD_COLOUR_GUER_COMMENT">
-    <English>Colour of held-objective markers held by Independent (Guerrilla) on the COP overlay. Uses the standard Arma marker-colour palette. Default Independent green.</English>
+    <English>Only used when Commander Intel Mode (COP) is set above Off. Colour of held-objective markers held by Independent (Guerrilla) on the COP overlay. Uses the standard Arma marker-colour palette. Default Independent green.</English>
     <Chinese>COP 疊層上由獨立勢力(游擊隊)佔領之目標標記的顏色。使用標準 Arma 標記顏色調色盤。預設為獨立勢力綠色。</Chinese>
     <Chinesesimp>COP 叠加层上由独立方(游击队)占领的目标标记颜色。使用标准 Arma 标记颜色调色板。默认为独立方绿。</Chinesesimp>
     <Spanish>Color de los marcadores de objetivo retenido por Independiente (Guerrilla) en la superposición de COP. Usa la paleta estándar de colores de marcador de Arma. Por defecto verde Independiente.</Spanish>
@@ -1686,7 +1686,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_COP_HELD_ICON_COMMENT">
-    <English>Icon used for the held-objective marker on the COP overlay. Default Dot.</English>
+    <English>Only used when Commander Intel Mode (COP) is set above Off. Icon used for the held-objective marker on the COP overlay. Default Dot.</English>
     <Chinese>COP 疊層上用於佔領目標標記的圖示。預設為圓點。</Chinese>
     <Chinesesimp>COP 叠加层上占领目标标记所用的图标。默认为圆点。</Chinesesimp>
     <Spanish>Icono usado para el marcador de objetivo retenido en la superposición de COP. Por defecto Punto.</Spanish>
@@ -1912,7 +1912,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_CIVIC_TRUST_SUCCESS_COMMENT">
-    <English>Multiplier applied to trust gains from successful Hearts and Minds tasks. 1.0 = stock; 2.0 = double; 0.5 = half. Affects how quickly local trust ramps in response to player effort.</English>
+    <English>Only used when Enable Civic-State COIN Model is Yes. Multiplier applied to trust gains from successful Hearts and Minds tasks. 1.0 = stock; 2.0 = double; 0.5 = half. Affects how quickly local trust ramps in response to player effort.</English>
     <Chinese>套用於成功「民心工程」任務所獲信任提升量的倍率。1.0 = 原始值;2.0 = 兩倍;0.5 = 一半。影響當地信任度依玩家努力提升的速度。</Chinese>
     <Chinesesimp>应用于赢得民心任务成功后信任度增益的倍率。1.0 = 原始值;2.0 = 双倍;0.5 = 减半。影响当地信任度随玩家努力提升的速度。</Chinesesimp>
     <Spanish>Multiplicador aplicado a las ganancias de confianza por tareas de Corazones y Mentes exitosas. 1.0 = estándar; 2.0 = doble; 0.5 = mitad. Afecta a la rapidez con que aumenta la confianza local en respuesta al esfuerzo del jugador.</Spanish>
@@ -1932,7 +1932,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_CIVIC_TRUST_FAILURE_COMMENT">
-    <English>Multiplier applied to trust losses from failed Hearts and Minds tasks. Trust lost to insurgent backlash is not affected. Higher values make trust loss more punishing.</English>
+    <English>Only used when Enable Civic-State COIN Model is Yes. Multiplier applied to trust losses from failed Hearts and Minds tasks. Trust lost to insurgent backlash is not affected. Higher values make trust loss more punishing.</English>
     <Chinese>套用於失敗「民心工程」任務所導致信任度損失的倍率。叛亂份子報復造成的信任度損失不受影響。數值越高,信任度損失越嚴重。</Chinese>
     <Chinesesimp>应用于赢得民心任务失败导致信任度损失的倍率。叛乱分子反扑造成的信任度损失不受影响。数值越高,信任度损失越严重。</Chinesesimp>
     <Spanish>Multiplicador aplicado a las pérdidas de confianza por tareas de Corazones y Mentes fallidas. La confianza perdida por represalias insurgentes no se ve afectada. Valores más altos hacen la pérdida de confianza más severa.</Spanish>
@@ -1952,7 +1952,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_CIVIC_SECURITY_SUCCESS_COMMENT">
-    <English>Multiplier applied to security gains from successful Hearts and Minds tasks. Security feeds OPCOM hostility decay and insurgent-spawn suppression in settled areas.</English>
+    <English>Only used when Enable Civic-State COIN Model is Yes. Multiplier applied to security gains from successful Hearts and Minds tasks. Security feeds OPCOM hostility decay and insurgent-spawn suppression in settled areas.</English>
     <Chinese>套用於成功「民心工程」任務所獲治安提升量的倍率。治安會影響 OPCOM 敵意衰減速度,以及在已安定地區壓制叛亂份子生成。</Chinese>
     <Chinesesimp>应用于赢得民心任务成功后安全度增益的倍率。安全度会影响 OPCOM 敌意衰减及已安定地区的叛乱分子生成抑制。</Chinesesimp>
     <Spanish>Multiplicador aplicado a las ganancias de seguridad por tareas de Corazones y Mentes exitosas. La seguridad alimenta la decadencia de hostilidad de OPCOM y la supresión de aparición de insurgentes en zonas pacificadas.</Spanish>
@@ -1972,7 +1972,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_CIVIC_SECURITY_FAILURE_COMMENT">
-    <English>Multiplier applied to security losses from failed Hearts and Minds tasks. Security lost to insurgent backlash is not affected.</English>
+    <English>Only used when Enable Civic-State COIN Model is Yes. Multiplier applied to security losses from failed Hearts and Minds tasks. Security lost to insurgent backlash is not affected.</English>
     <Chinese>套用於失敗「民心工程」任務所導致治安損失的倍率。叛亂份子報復造成的治安損失不受影響。</Chinese>
     <Chinesesimp>应用于赢得民心任务失败导致安全度损失的倍率。叛乱分子反扑造成的安全度损失不受影响。</Chinesesimp>
     <Spanish>Multiplicador aplicado a las pérdidas de seguridad por tareas de Corazones y Mentes fallidas. La seguridad perdida por represalias insurgentes no se ve afectada.</Spanish>
@@ -1992,7 +1992,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_CIVIC_SERVICES_SUCCESS_COMMENT">
-    <English>Multiplier applied to services gains from successful Hearts and Minds tasks. Services represent functioning infrastructure and feed civilian-population cooperation events.</English>
+    <English>Only used when Enable Civic-State COIN Model is Yes. Multiplier applied to services gains from successful Hearts and Minds tasks. Services represent functioning infrastructure and feed civilian-population cooperation events.</English>
     <Chinese>套用於成功「民心工程」任務所獲公共服務提升量的倍率。公共服務代表運作中的基礎建設,並會影響平民人口合作事件。</Chinese>
     <Chinesesimp>应用于赢得民心任务成功后公共服务增益的倍率。公共服务代表正常运作的基础设施,并影响平民人口的合作事件。</Chinesesimp>
     <Spanish>Multiplicador aplicado a las ganancias de servicios por tareas de Corazones y Mentes exitosas. Los servicios representan infraestructura funcional y alimentan los eventos de cooperación de la población civil.</Spanish>
@@ -2012,7 +2012,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_CIVIC_SERVICES_FAILURE_COMMENT">
-    <English>Multiplier applied to services losses from failed Hearts and Minds tasks. Services lost to insurgent backlash are not affected.</English>
+    <English>Only used when Enable Civic-State COIN Model is Yes. Multiplier applied to services losses from failed Hearts and Minds tasks. Services lost to insurgent backlash are not affected.</English>
     <Chinese>套用於失敗「民心工程」任務所導致公共服務損失的倍率。叛亂份子報復造成的公共服務損失不受影響。</Chinese>
     <Chinesesimp>应用于赢得民心任务失败导致公共服务损失的倍率。叛乱分子反扑造成的公共服务损失不受影响。</Chinesesimp>
     <Spanish>Multiplicador aplicado a las pérdidas de servicios por tareas de Corazones y Mentes fallidas. Los servicios perdidos por represalias insurgentes no se ven afectados.</Spanish>
