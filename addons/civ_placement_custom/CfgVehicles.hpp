@@ -49,7 +49,7 @@ class CfgVehicles {
             class objectiveSize : Edit { property = "ALiVE_civ_placement_custom_objectiveSize"; displayName = "$STR_ALIVE_CPC_OBJECTIVE_SIZE"; tooltip = "$STR_ALIVE_CPC_OBJECTIVE_SIZE_COMMENT"; defaultValue = """200"""; };
             // ---- Force Composition ----------------------------------------------
             class HDR_FORCE : ALiVE_ModuleSubTitle { property = "ALiVE_civ_placement_custom_HDR_FORCE"; displayName = "FORCE COMPOSITION"; };
-            class withPlacement : Combo { property = "ALiVE_civ_placement_custom_withPlacement"; displayName = "$STR_ALIVE_CP_PLACEMENT"; tooltip = "$STR_ALIVE_CP_PLACEMENT_COMMENT"; defaultValue = """true"""; class Values { class Yes{name="$STR_ALIVE_CP_PLACEMENT_YES";value=true;default=1;}; class No{name="$STR_ALIVE_CP_PLACEMENT_NO";value=false;}; }; };
+            class withPlacement : Combo { property = "ALiVE_civ_placement_custom_withPlacement"; displayName = "$STR_ALIVE_CP_PLACEMENT"; tooltip = "$STR_ALIVE_CP_PLACEMENT_COMMENT"; defaultValue = """true"""; class Values { class Yes{name="$STR_ALIVE_CP_PLACEMENT_YES";value=true;default=1;}; class No{name="$STR_ALIVE_CP_PLACEMENT_NO";value=false;}; class Units{name="$STR_ALIVE_CP_PLACEMENT_UNITS";value="units";}; }; };
             class size : Combo
             {
                     property = "ALiVE_civ_placement_custom_size"; displayName = "$STR_ALIVE_CP_SIZE"; tooltip = "$STR_ALIVE_CP_SIZE_COMMENT"; defaultValue = """200""";

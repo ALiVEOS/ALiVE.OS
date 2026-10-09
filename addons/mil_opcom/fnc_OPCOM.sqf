@@ -703,6 +703,11 @@ switch (_operation) do {
         ]) exitwith {
             // wait for module to finish init
             waituntil { _module getVariable ["startupComplete", false] };
+            // Set to Placement Only (#1026): its units are placed, its objectives are no commander's.
+            if (_module getVariable ["ALiVE_placementOnly", false]) exitWith {
+                ["OPCOM - %1 is set to Placement Only, so its objectives are left out", _module] call ALiVE_fnc_dump;
+                _result = [];
+            };
 
             private _moduleObjectives = [_module,"objectives",objNull, []] call ALIVE_fnc_OOsimpleOperation;
 

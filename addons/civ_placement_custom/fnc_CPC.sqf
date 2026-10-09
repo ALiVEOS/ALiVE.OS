@@ -253,7 +253,10 @@ switch (_operation) do {
         };
 
         if (isNil "_args") exitWith {_result = DEFAULT_WITH_PLACEMENT};
-        if (_args isEqualType "") then {_args = (_args == "true")};
+        // "units" is Placement Only (#1026): units are placed, but no AI Commander synced to this
+        // module is given its objectives. The value turns into true below, so it is marked apart.
+        if (_args isEqualTo "units") then {_logic setVariable ["ALiVE_placementOnly", true, true]};
+        if (_args isEqualType "") then {_args = (_args in ["true", "units"])};
 
         _result = [_logic, _operation, _args, DEFAULT_WITH_PLACEMENT] call ALIVE_fnc_OOsimpleOperation;
     };

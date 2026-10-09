@@ -67,7 +67,7 @@ class CfgVehicles {
 
                         // ---- Force Composition ----------------------------------------------
                         class HDR_FORCE : ALiVE_ModuleSubTitle { property = "ALiVE_mil_placement_HDR_FORCE"; displayName = "FORCE COMPOSITION"; };
-                        class withPlacement : Combo { property = "ALiVE_mil_placement_withPlacement"; displayName = "$STR_ALIVE_MP_PLACEMENT"; tooltip = "$STR_ALIVE_MP_PLACEMENT_COMMENT"; defaultValue = """true"""; class Values { class Yes{name="$STR_ALIVE_MP_PLACEMENT_YES";value="true";default=1;}; class No{name="$STR_ALIVE_MP_PLACEMENT_NO";value="false";}; }; };
+                        class withPlacement : Combo { property = "ALiVE_mil_placement_withPlacement"; displayName = "$STR_ALIVE_MP_PLACEMENT"; tooltip = "$STR_ALIVE_MP_PLACEMENT_COMMENT"; defaultValue = """true"""; class Values { class Yes{name="$STR_ALIVE_MP_PLACEMENT_YES";value="true";default=1;}; class No{name="$STR_ALIVE_MP_PLACEMENT_NO";value="false";}; class Units{name="$STR_ALIVE_MP_PLACEMENT_UNITS";value="units";}; }; };
                         class size : Combo
                         {
                                 property = "ALiVE_mil_placement_size"; displayName = "$STR_ALIVE_MP_SIZE"; tooltip = "$STR_ALIVE_MP_SIZE_COMMENT"; defaultValue = """200""";

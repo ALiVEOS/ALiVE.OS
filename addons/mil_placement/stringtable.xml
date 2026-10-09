@@ -395,7 +395,7 @@
     <Russian>Размещать юниты:</Russian>
 </Key>
 <Key ID="STR_ALIVE_MP_PLACEMENT_COMMENT">
-    <English>Place Units: spawns both units and registers objectives. Objectives Only: registers objectives for an AI Commander without placing any units, which is useful when OPCOM manages forces separately.</English>
+    <English>Place Units: spawns both units and registers objectives. Objectives Only: registers objectives for an AI Commander without placing any units, which is useful when OPCOM manages forces separately. Placement Only: places the units but gives no synced AI Commander its objectives, for example when one whole-map module supplies the objectives and per-faction modules supply the forces.</English>
     <Chinese>放置單位：同時生成單位並註冊目標。僅目標：為 AI 指揮官註冊目標但不放置任何單位 — 當 OPCOM 單獨管理部隊時很有用。</Chinese>
     <Chinesesimp>放置单位：同时生成单位并注册目标。仅目标：为 AI 指挥官注册目标但不放置任何单位 — 当 OPCOM 单独管理部队时很有用。</Chinesesimp>
     <Spanish>Colocar unidades: genera unidades y registra objetivos. Solo objetivos: registra objetivos para un comandante IA sin colocar unidades — útil cuando OPCOM gestiona las fuerzas por separado.</Spanish>
@@ -420,6 +420,9 @@
     <French>Objectifs uniquement</French>
     <Portuguese>Apenas objetivos</Portuguese>
     <Russian>Только объекты</Russian>
+</Key>
+<Key ID="STR_ALIVE_MP_PLACEMENT_UNITS">
+    <English>Placement Only</English>
 </Key>
 <Key ID="STR_ALIVE_MP_SIZE">
     <English>Force Size:</English>
