@@ -33,6 +33,26 @@ private ["_grid","_fill"];
 _grid = _this select 0;
 _fill = if (count _this > 1) then {_this select 1} else {"Solid"};
 
+// Squares cleared before a reload, painted green for their side once the grid has drawn them (F405).
+if (!isNil QGVAR(TRACEGRID_REPAINT)) then {
+    private _left = 0;
+    {
+        private _sideStr = _x;
+        private _side = switch (_sideStr) do { case "WEST": {west}; case "EAST": {east}; case "GUER": {resistance}; case "CIV": {civilian}; default {sideUnknown} };
+        private _still = [];
+        {
+            if (_x in _grid && {_side != sideUnknown}) then {
+                [_x, getMarkerPos _x, "RECTANGLE", [50,50], "COLORGREEN", "", "EMPTY", _fill, 0, 0.5] remoteExecCall ["ALIVE_fnc_createMarker", _side, format ["%1_%2", _x, _side]];
+            } else {
+                if (_side != sideUnknown) then { _still pushBack _x };
+            };
+        } forEach ([GVAR(TRACEGRID_REPAINT), _sideStr, []] call ALiVE_fnc_HashGet);
+        [GVAR(TRACEGRID_REPAINT), _sideStr, _still] call ALiVE_fnc_HashSet;
+        _left = _left + count _still;
+    } forEach (GVAR(TRACEGRID_REPAINT) select 1);
+    if (_left == 0) then { GVAR(TRACEGRID_REPAINT) = nil };
+};
+
 {
     private _pos = getposATL _x;
     private _side = side group _x;

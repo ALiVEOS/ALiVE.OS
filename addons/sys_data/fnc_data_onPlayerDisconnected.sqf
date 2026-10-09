@@ -46,6 +46,10 @@ if (_name == "__SERVER__") then {
         [GVAR(mission_data), "Group", GVAR(GROUP_ID)] call ALIVE_fnc_hashSet;
         // The placement modules' reserves not yet woken. They're built only at a fresh start, so
         // without this a reload lost every one of them (ALIVE_fnc_reservePersist).
+        // Each side's cleared T.R.A.C.E. squares, so they come back green after a reload (F405).
+        if (!isNil "ALiVE_x_lib_TRACEGRID_STORE") then {
+            [GVAR(mission_data), "ALiVE_traceCleared", ALiVE_x_lib_TRACEGRID_STORE] call ALIVE_fnc_hashSet;
+        };
         if (!isNil "ALIVE_fnc_reservePersist") then {
             [GVAR(mission_data), "ALiVE_reservePools", ["save"] call ALIVE_fnc_reservePersist] call ALIVE_fnc_hashSet;
         };

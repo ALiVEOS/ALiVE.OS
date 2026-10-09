@@ -38,8 +38,18 @@ _pos = _this select 0;
 _radius = _this select 1;
 _fill = if (count _this > 2) then {_this select 2} else {"Solid"};
 
-//Create store (TBD: persist to DB via MIL_C2ISTAR)
+// Each side's cleared squares. Saved with the mission (ALiVE Data's mission store), so after a reload the
+// squares a side had cleared come back green rather than every square starting red again (F405).
 if (isnil QGVAR(TRACEGRID_STORE)) then {GVAR(TRACEGRID_STORE) = [] call ALiVE_fnc_HashCreate};
+if (isNil QGVAR(TRACEGRID_RESTORED) && {!isNil "ALiVE_fnc_getData"} && {!isNil "ALiVE_sys_data_mission_data"}) then {
+    GVAR(TRACEGRID_RESTORED) = true;
+    private _saved = ["ALiVE_traceCleared"] call ALiVE_fnc_getData;
+    if (!isNil "_saved" && {_saved isEqualType []} && {[_saved] call ALiVE_fnc_isHash}) then {
+        GVAR(TRACEGRID_STORE) = +_saved;
+        // painted green by ALiVE_fnc_updateTraceGrid once each square has been drawn, as they're drawn a few a frame
+        GVAR(TRACEGRID_REPAINT) = +_saved;
+    };
+};
 
 _grid = [];
 // "Drawn already?" is asked once per building, so it's asked of a hash map: asked of the growing
