@@ -283,6 +283,7 @@ switch(_operation) do {
     case "unitClasses": {
         if (_args isEqualType []) then {
             [_logic,"unitClasses", _args] call ALIVE_fnc_hashSet;
+            [_logic,"unitCount", count _args] call ALIVE_fnc_hashSet;
         } else {
             _result = [_logic,"unitClasses"] call ALIVE_fnc_hashGet;
         };
