@@ -89,6 +89,15 @@ while {true} do {
 
         _HudNames ctrlSetStructuredText parseText  _name;
         _HudNames ctrlCommit 0;
+        _HudNames setVariable ["ALiVE_crewinfoShown", true];
+    } else {
+        // Out of the vehicle, or on the map: take the list down. The display lasts for good, so
+        // the last vehicle's crew stayed on screen after getting out until the next vehicle.
+        if (_HudNames getVariable ["ALiVE_crewinfoShown", false]) then {
+            _HudNames ctrlSetStructuredText parseText "";
+            _HudNames ctrlCommit 0;
+            _HudNames setVariable ["ALiVE_crewinfoShown", false];
+        };
     };
 
     sleep _sleep;
