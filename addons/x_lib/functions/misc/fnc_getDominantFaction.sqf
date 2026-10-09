@@ -40,9 +40,24 @@ if !(isnil "ALIVE_profileHandler") then {
     _profiles = [[],[],[]];
 };
 
+// A virtual group aboard an aircraft gets no vote either, as with the live groups below. Its
+// faction is stamped from its leader, so an aircraft with the base game's pilots votes for the
+// base game's faction, and the air commander asks this over its parked aircraft.
+private _fnc_aboardAir = {
+    params ["_entity"];
+    private _aboard = ([_entity, "vehiclesInCommandOf", []] call ALIVE_fnc_hashGet) + ([_entity, "vehiclesInCargoOf", []] call ALIVE_fnc_hashGet);
+    (_aboard findIf {
+        private _veh = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+        !isNil "_veh" && {
+            private _class = [_veh, "vehicleClass", ""] call ALIVE_fnc_hashGet;
+            (_class isKindOf "Air") && {!(_class isKindOf "ParachuteBase")}
+        }
+    }) > -1
+};
+
 _facs = [];
 {
-    if (((_x select 2 select 5) == "entity") && {!(_x select 2 select 1)} && {!(_x select 2 select 30)} && {(_x select 2 select 2) distance _pos < _radius}) then {
+    if (((_x select 2 select 5) == "entity") && {!(_x select 2 select 1)} && {!(_x select 2 select 30)} && {(_x select 2 select 2) distance _pos < _radius} && {!([_x] call _fnc_aboardAir)}) then {
         private _votes = 1;
         if (_weighted) then { _votes = (_x select 2 select 12) max 1; }; // unitCount
         for "_i" from 1 to _votes do {
