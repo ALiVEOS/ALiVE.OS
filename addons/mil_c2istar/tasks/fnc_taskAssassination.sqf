@@ -412,8 +412,70 @@ switch (_taskState) do {
                             ]
                         ] call BIS_fnc_findSafePos;
 
+                        // When the meeting is held in the open (no building nearby, below), the table and the
+                        // two men stood 2 m either side of it all need nothing overhead. When no safe spot is found the search hands back
+                        // the task position itself, which can be inside the composition's house, and there
+                        // the table and both men were put on the ground under its raised floor (seen on a
+                        // Takistan hilltop). Look for open, fairly level ground nearby instead.
+                        private _fnc_open = {
+                            params ["_p"];
+                            private _a = ATLToASL [_p select 0, _p select 1, 0.3];
+                            (lineIntersectsSurfaces [_a, _a vectorAdd [0, 0, 25], objNull, objNull, true, 1, "GEOM", "NONE"]) isEqualTo []
+                        };
+                        private _fnc_meetingClear = {
+                            params ["_p"];
+                            ((surfaceNormal _p) select 2) > 0.9
+                            && {[_p] call _fnc_open}
+                            && {[[_p select 0, (_p select 1) - 2, 0]] call _fnc_open}
+                            && {[[_p select 0, (_p select 1) + 2, 0]] call _fnc_open}
+                        };
+                        // Indoors first: two of a building's own floor positions, under its roof, on the same
+                        // floor and 2.5 to 6 m apart, in a building within 50 m. Those positions sit on the real
+                        // floor, which a map position does not: the engine puts anything placed by map position
+                        // on the ground, under a raised floor. Outdoors only when no building nearby has a pair.
+                        private _fnc_roofed = {
+                            params ["_bp"];
+                            private _a = (AGLToASL _bp) vectorAdd [0, 0, 0.3];
+                            !((lineIntersectsSurfaces [_a, _a vectorAdd [0, 0, 25], objNull, objNull, true, 1, "GEOM", "NONE"]) isEqualTo [])
+                        };
+                        private _indoor = [];
+                        {
+                            private _bps = (_x buildingPos -1) select { !(_x isEqualTo [0,0,0]) && {[_x] call _fnc_roofed} };
+                            private _best = [];
+                            {
+                                private _a = _x;
+                                private _i = _forEachIndex;
+                                {
+                                    if (_forEachIndex > _i) then {
+                                        private _d = _a distance2D _x;
+                                        if (_d >= 2.5 && {_d <= 6} && {abs ((_a select 2) - (_x select 2)) < 0.3}
+                                            && {_best isEqualTo [] || {((_a select 2) min (_x select 2)) < (((_best select 0) select 2) min ((_best select 1) select 2))}}) then {
+                                            _best = [_a, _x];
+                                        };
+                                    };
+                                } forEach _bps;
+                            } forEach _bps;
+                            if !(_best isEqualTo []) exitWith { _indoor = _best };
+                        } forEach (nearestObjects [_taskPosition, ["House", "Building"], 50]);
+
+                        if (_indoor isEqualTo []) then {
+                            if !([_pos] call _fnc_meetingClear) then {
+                                for "_try" from 1 to 60 do {
+                                    private _c = _taskPosition getPos [8 + random 72, random 360];
+                                    if (!(surfaceIsWater _c) && {[_c] call _fnc_meetingClear}) exitWith { _pos = _c };
+                                };
+                            };
+                        };
+
                         _table = _tableClass createVehicle _pos;
                         _table setdir 0;
+                        if !(_indoor isEqualTo []) then {
+                            _indoor params ["_seatA", "_seatB"];
+                            // on the floor between the two men, its base level with their feet
+                            _table setPosASL [((_seatA select 0) + (_seatB select 0)) / 2, ((_seatA select 1) + (_seatB select 1)) / 2,
+                                ((AGLToASL _seatA) select 2) - (((boundingBoxReal _table) select 0) select 2)];
+                            _table setDir ((_seatA getDir _seatB) + 90);
+                        };
                         _table enableSimulation false;
 
                         _electronic = [_table,_electronicClass] call ALIVE_fnc_taskSpawnOnTopOf;
@@ -445,14 +507,22 @@ switch (_taskState) do {
 
                         _HVTGroup = _HVTProfile1 select 2 select 13;
                         _HVT = leader _HVTGroup;
-                        _HVT setpos [getpos _table select 0,(getpos _table select 1)-2,0];
+                        if (_indoor isEqualTo []) then {
+                            _HVT setpos [getpos _table select 0,(getpos _table select 1)-2,0];
+                        } else {
+                            _HVT setPosATL (_indoor select 0);
+                        };
                         _HVT setdir ([_HVT, _table] call BIS_fnc_dirTo);
                         _HVT setName [format["%1 %2",(_unitDetails select 1), (_unitDetails select 2)], (_unitDetails select 1), (_unitDetails select 2)];
                         _HVT setRank toUpper(_unitDetails select 3);
 
                         _HVTGroup2 = _HVTProfile2 select 2 select 13;
                         _HVT2 = leader _HVTGroup2;
-                        _HVT2 setpos [getpos _table select 0,(getpos _table select 1)+2,0];
+                        if (_indoor isEqualTo []) then {
+                            _HVT2 setpos [getpos _table select 0,(getpos _table select 1)+2,0];
+                        } else {
+                            _HVT2 setPosATL (_indoor select 1);
+                        };
                         _HVT2 setdir ([_HVT2, _table] call BIS_fnc_dirTo);
 
                         _HVT disableAI "MOVE";

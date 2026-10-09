@@ -51,4 +51,8 @@ if (isNull _caller) exitWith {};
 
 (_this select 1) set [0, getPlayerUID _caller];
 
+// Seen by the command handler (called below, so it shares this scope): it is how the handler
+// tells this authenticated route from a client calling it directly, which it refuses.
+private _ALiVE_scomTabletCaller = _caller;
+
 [MOD(commandHandler),"handleEvent", _this] call ALiVE_fnc_commandHandler;

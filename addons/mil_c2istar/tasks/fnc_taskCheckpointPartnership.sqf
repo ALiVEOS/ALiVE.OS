@@ -95,7 +95,7 @@ private _getEventLosses = {
 };
 
 private _spawnWaveProfiles = {
-    params ["_taskPosition", "_enemyFaction", "_currentWave"];
+    params ["_taskPosition", "_enemyFaction", "_currentWave", ["_defenderSide", ""]];
 
     private _profileIDs = [];
     private _groups = [];
@@ -109,6 +109,11 @@ private _spawnWaveProfiles = {
     };
 
     private _remotePositions = [_taskPosition, 600, 5, true] call ALIVE_fnc_getPositionDistancePlayers;
+    // Not inside a defender's reach: a wave that spawns within the 255 m a virtual group fights at is
+    // fought before anybody sees it, as Military Defence found, and can be gone in seconds.
+    if !(_defenderSide isEqualTo "") then {
+        _remotePositions = _remotePositions select { count ([_x, 300, [_defenderSide, "entity"]] call ALIVE_fnc_getNearProfiles) == 0 };
+    };
     private _remotePosition = if (count _remotePositions > 0) then {
         selectRandom _remotePositions
     } else {
@@ -509,7 +514,7 @@ switch (_taskState) do {
 
             if (_currentWave <= _totalWaves && {serverTime >= _nextWaveAt} && {_entityProfileIDs isEqualTo []}) then {
                 private _waveVehicleIDs = [];
-                private _waveProfileIDs = [_taskPosition, _enemyFaction, _currentWave] call _spawnWaveProfiles;
+                private _waveProfileIDs = [_taskPosition, _enemyFaction, _currentWave, _taskSide] call _spawnWaveProfiles;
                 [_params, "waveVehicleIDs", ([_params, "waveVehicleIDs", []] call ALIVE_fnc_hashGet) + _waveVehicleIDs] call ALIVE_fnc_hashSet;
                 if (_waveProfileIDs isEqualTo []) then {
                     private _spawnFailureCount = ([_params, "spawnFailureCount", 0] call ALIVE_fnc_hashGet) + 1;

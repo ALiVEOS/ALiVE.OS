@@ -1457,8 +1457,8 @@ switch(_operation) do {
             // Run mission-maker code on each spawned unit.
             // Inside the code block: _this = [unit, profileID, side, faction]
             // Executes in a spawned (scheduled) thread - sleep/waitUntil are safe.
-            // Per-unit guard variable ALIVE_spawnCode_run prevents re-fire on
-            // re-spawn when onEachSpawnOnce = true (default behaviour).
+            // With onEachSpawnOnce = true (the default) it runs on the group's first spawn only:
+            // the profile's spawnCodeRun mark stops it again on a respawn or after a load.
             private _spawnCode = [_logic, "onEachSpawn", ""] call ALIVE_fnc_hashGet;
             if (_spawnCode != "") then {
                 private _spawnCodeCompiled = compile _spawnCode;
@@ -1466,13 +1466,17 @@ switch(_operation) do {
                     ["_spawnOnce",true],
                     ["_hookFaction",""]
                 ];
-                {
-                    private _unit = _x;
-                    if (!_spawnOnce || {!(_unit getVariable ["ALIVE_spawnCode_run", false])}) then {
+                // Once means once for the group, so the mark goes on the profile. It was kept on
+                // each soldier, and the soldiers are new every time the group spawns, so "once"
+                // ran again on every spawn.
+                if (!_spawnOnce || {!([_logic, "spawnCodeRun", false] call ALIVE_fnc_hashGet)}) then {
+                    if (_spawnOnce) then { [_logic, "spawnCodeRun", true] call ALIVE_fnc_hashSet };
+                    {
+                        private _unit = _x;
                         _unit setVariable ["ALIVE_spawnCode_run", true, true];
                         [_unit, _profileID, _side, _hookFaction] spawn _spawnCodeCompiled;
-                    };
-                } forEach _units;
+                    } forEach _units;
+                };
             };
             // --- end onEachSpawn hook ---
 

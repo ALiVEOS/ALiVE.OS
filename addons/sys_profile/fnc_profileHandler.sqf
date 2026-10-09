@@ -1422,7 +1422,7 @@ switch(_operation) do {
                         if (_x in (_profile select 1)) then {
                             [_profileEntity, _x, [_profile, _x] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
                         };
-                    } forEach ["_rev", "_id", "hasSimulated", "despawnPosition", "isSPE", "aiBehaviour", "waypoints", "waypointsCompleted"];
+                    } forEach ["_rev", "_id", "hasSimulated", "despawnPosition", "isSPE", "aiBehaviour", "waypoints", "waypointsCompleted", "spawnCodeRun"];
 
                     // The route, saved since #756. A Cloud save comes back through JSON, where each value takes
                     // the type the data dictionary holds for its key name, so a number can come back as a string.

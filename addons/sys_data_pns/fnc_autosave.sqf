@@ -9,7 +9,7 @@ Saves mission state to PNS in given interval!
 !! Health Warning: This function is writing to file (freeze for about 2 seconds). Will cause desync and lag in MP !!
 
 Parameters:
-Number - Interval to save in seconds
+Number - Interval to save in seconds, or "now" to save once straight away (server only, Local source)
 
 Returns:
 nothing (nil)
@@ -18,6 +18,9 @@ Examples:
 (begin example)
     // Will save every 15 minutes
     900 call ALiVE_fnc_AUTOSAVE_PNS
+
+    // Saves once now, leaving any timed autosave as it is (for example from a trigger before a restart)
+    "now" call ALiVE_fnc_AUTOSAVE_PNS
 (end)
 
 Author:
@@ -27,19 +30,23 @@ Peer Reviewed:
 
 ---------------------------------------------------------------------------- */
 
-private _interval = if (isNil "_this") then {-1} else {_this};
+// "now" saves once, straight away, and leaves a timed autosave running as it was. It's for a
+// mission's own scripts and triggers, to save before a planned restart for example. Asked for on
+// Discord: there was no way to save from a script, and a number here starts or replaces the timer.
+private _once = (!isNil "_this") && {_this isEqualTo "now"};
+private _interval = if (isNil "_this" || {_once}) then {-1} else {_this};
 
 if !(isServer && {!isNil "ALiVE_SYS_DATA_SOURCE"} && {ALiVE_SYS_DATA_SOURCE == "pns"}) exitWith {["SYS DATA PNS - Local machine is not the server or local save not available! Exiting..."] call ALiVE_fnc_dump};
 
-if (!isNil "ALiVE_SYS_DATA_PNS_AUTOSAVE") then {terminate ALiVE_SYS_DATA_PNS_AUTOSAVE};
+if (!_once && {!isNil "ALiVE_SYS_DATA_PNS_AUTOSAVE"}) then {terminate ALiVE_SYS_DATA_PNS_AUTOSAVE};
 
-ALiVE_SYS_DATA_PNS_AUTOSAVE = _interval spawn {
+private _handle = [_interval, _once] spawn {
 
-    private _interval = _this;
+    params ["_interval", "_once"];
 
-    while {_interval > 0} do {
+    while {_interval > 0 || {_once}} do {
 
-        sleep _interval;
+        if (!_once) then { sleep _interval };
 
 	    sleep 5;
 	    TitleText ["ALiVE IS PREPARING TO SAVE...","PLAIN"];
@@ -180,9 +187,15 @@ ALiVE_SYS_DATA_PNS_AUTOSAVE = _interval spawn {
         ["SAVING FINISHED!"] call ALiVE_fnc_dumpMPH;
 	    sleep 2;
 	    TitleText ["","PLAIN"];
+
+        if (_once) exitWith {};
     };
+
+    if (_once) exitWith {};
 
     ["SYS DATA PNS - AutoSave (local) process exiting... (%1)",ALiVE_SYS_DATA_PNS_AUTOSAVE] call ALiVE_fnc_dump;
 
 	terminate ALiVE_SYS_DATA_PNS_AUTOSAVE; ALiVE_SYS_DATA_PNS_AUTOSAVE = nil;
 };
+
+if (!_once) then { ALiVE_SYS_DATA_PNS_AUTOSAVE = _handle };
