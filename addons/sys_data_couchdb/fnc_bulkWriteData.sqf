@@ -109,7 +109,7 @@ _parse = {
     _json = [_logic, "convert", [_value]] call ALIVE_fnc_Data;
     TRACE_1("",_json);
 
-    _docs = _docs + _json + ",";
+    _docs = _docs + "," + _json;
 };
 
 // For each hash create a JSON string
@@ -117,10 +117,8 @@ _parse = {
 
 TRACE_1("",_bulkend);
 
-_string = _cmd + ",'" + _bulkstart + _docs + _bulkend + "'";
-
-// remove trailing , from string
-_string = [_string, ",]}", "]}"] call CBA_fnc_replace;
+// Remove only the structural leading comma, leaving document strings intact.
+_string = _cmd + ",'" + _bulkstart + (_docs select [1]) + _bulkend + "'";
 
 // Add databaseName
 //_db = [_logic, "databaseName", "arma3live"] call ALIVE_fnc_hashGet;

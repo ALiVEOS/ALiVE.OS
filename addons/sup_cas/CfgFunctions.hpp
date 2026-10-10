@@ -4,12 +4,12 @@ class cfgFunctions {
                         class CAS {
                                 description = "The main class";
                                 file = "\x\alive\addons\sup_cas\fnc_CAS.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
                         };
                         class CASInit {
                                 description = "The module initialisation function";
                                 file = "\x\alive\addons\sup_cas\fnc_CASInit.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
                         };
                    };
         };

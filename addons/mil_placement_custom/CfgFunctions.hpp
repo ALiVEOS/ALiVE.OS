@@ -4,12 +4,12 @@ class cfgFunctions {
                         class CMP {
                                 description = "The main class";
                                 file = "\x\alive\addons\mil_placement_custom\fnc_CMP.sqf";
-                                RECOMPILE;
+                                ALIVE_RECOMPILE;
                         };
                         class CMPInit {
                                 description = "The module initialisation function";
                                 file = "\x\alive\addons\mil_placement_custom\fnc_CMPInit.sqf";
-                                RECOMPILE;
+                                ALIVE_RECOMPILE;
                         };
                 };
         };

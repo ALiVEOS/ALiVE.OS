@@ -4,12 +4,12 @@ class CfgFunctions {
             class tour {
                 description = "The main class";
                 file = "\x\alive\addons\sys_tour\fnc_tour.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class tourInit {
                 description = "The module initialisation function";
                 file = "\x\alive\addons\sys_tour\fnc_tourInit.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
         };
     };

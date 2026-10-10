@@ -4,17 +4,17 @@ class cfgFunctions {
                         class moduletemplate {
                                 description = "The main class";
                                 file = "\x\alive\addons\sys_moduletemplate\fnc_moduletemplate.sqf";
-								recompile = RECOMPILE;
+								ALIVE_RECOMPILE;
                         };
                         class moduletemplateInit {
                                 description = "The module initialisation function";
                                 file = "\x\alive\addons\sys_moduletemplate\fnc_moduletemplateInit.sqf";
-								recompile = RECOMPILE;
+								ALIVE_RECOMPILE;
                         };
                         class moduletemplateParams {
                                 description = "Template parameters";
                                 file = "\x\alive\addons\sys_moduletemplate\fnc_moduletemplateParams.sqf";
-								recompile = RECOMPILE;
+								ALIVE_RECOMPILE;
                         };
                 };
         };

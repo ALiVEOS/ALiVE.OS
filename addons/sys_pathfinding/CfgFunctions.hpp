@@ -5,91 +5,91 @@ class CfgFunctions {
             class pathfinder {
                 description = "";
                 file = "\x\alive\addons\sys_pathfinding\fnc_pathfinder.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
 
             class pathfinderNaval {
                 description = "Sparse naval routes with local river refinement";
                 file = "\x\alive\addons\sys_pathfinding\fnc_pathfinderNaval.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
 
             class pathfinderNavalSegment {
                 description = "Depth and hull clearance between naval route points";
                 file = "\x\alive\addons\sys_pathfinding\fnc_pathfinderNavalSegment.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
 
             class pathfinderCheckCoastTravelForWater {
                 description = "";
                 file = "\x\alive\addons\sys_pathfinding\fnc_pathfinderCheckCoastTravelForWater.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
 
             class pathfinderGetWaterEdgeCache {
                 description = "";
                 file = "\x\alive\addons\sys_pathfinding\fnc_pathfinderGetWaterEdgeCache.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
 
             class pathfinderGetMovementCost {
                 description = "";
                 file = "\x\alive\addons\sys_pathfinding\fnc_pathfinderGetMovementCost.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
 
             class pathfinderGetFinalMovementCost {
                 description = "";
                 file = "\x\alive\addons\sys_pathfinding\fnc_pathfinderGetFinalMovementCost.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
 
             class pathfinderPriorityAdd {
                 description = "";
                 file = "\x\alive\addons\sys_pathfinding\fnc_pathfinderPriorityAdd.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
 
             class pathfinderPriorityPullNode {
                 description = "";
                 file = "\x\alive\addons\sys_pathfinding\fnc_pathfinderPriorityPullNode.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
 
             class pathfinderPriorityPullFresh {
                 description = "";
                 file = "\x\alive\addons\sys_pathfinding\fnc_pathfinderPriorityPullFresh.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
 
             class pathfinderSetNode {
                 description = "";
                 file = "\x\alive\addons\sys_pathfinding\fnc_pathfinderSetNode.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
 
             class pathfinderHeuristic {
                 description = "";
                 file = "\x\alive\addons\sys_pathfinding\fnc_pathfinderHeuristic.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
 
             class pathfinderCanTraverse {
                 description = "";
                 file = "\x\alive\addons\sys_pathfinding\fnc_pathfinderCanTraverse.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
 
             class pathfindingGrid {
                 description = "";
                 file = "\x\alive\addons\sys_pathfinding\fnc_pathfindingGrid.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
 
             class pathfindingSector {
                 description = "";
                 file = "\x\alive\addons\sys_pathfinding\fnc_pathfindingSector.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
 
         };

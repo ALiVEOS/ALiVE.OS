@@ -4,67 +4,67 @@ class cfgFunctions {
                 class data {
                     description = "Data Handler";
                     file = "\x\alive\addons\sys_data\fnc_data.sqf";
-                    RECOMPILE;
+                    ALIVE_RECOMPILE;
                 };
                 class dataInit {
                     description = "The module initialisation function";
                     file = "\x\alive\addons\sys_data\fnc_dataInit.sqf";
-                    RECOMPILE;
+                    ALIVE_RECOMPILE;
                 };
                 class sendToPlugIn {
                     description = "Sends data to an external plugin via arma2net";
                     file = "\x\alive\addons\sys_data\fnc_sendToPlugIn.sqf";
-                    RECOMPILE;
+                    ALIVE_RECOMPILE;
                 };
                 class sendToPlugInAsync {
                     description = "Sends data to an external plugin via arma2net using an Async function";
                     file = "\x\alive\addons\sys_data\fnc_sendToPlugInAsync.sqf";
-                    RECOMPILE;
+                    ALIVE_RECOMPILE;
                 };
                 class getServerIP {
                     description = "Gets the servers IP address via arma2net";
                     file = "\x\alive\addons\sys_data\fnc_getServerIP.sqf";
-                    RECOMPILE;
+                    ALIVE_RECOMPILE;
                 };
                 class getServerName {
                     description = "Gets the server hostname via arma2net";
                     file = "\x\alive\addons\sys_data\fnc_getServerName.sqf";
-                    RECOMPILE;
+                    ALIVE_RECOMPILE;
                 };
                 class getServerTime {
                     description = "Gets the current local time from the server via arma2net";
                     file = "\x\alive\addons\sys_data\fnc_getServerTime.sqf";
-                    RECOMPILE;
+                    ALIVE_RECOMPILE;
                 };
                 class getGroupID {
                     description = "Gets the group ID via arma2net";
                     file = "\x\alive\addons\sys_data\fnc_getGroupID.sqf";
-                    RECOMPILE;
+                    ALIVE_RECOMPILE;
                 };
                 class getData {
                     description = "Gets custom data";
                     file = "\x\alive\addons\sys_data\fnc_getData.sqf";
-                    RECOMPILE;
+                    ALIVE_RECOMPILE;
                 };
                 class setData {
                     description = "Sets custom data";
                     file = "\x\alive\addons\sys_data\fnc_setData.sqf";
-                    RECOMPILE;
+                    ALIVE_RECOMPILE;
                 };
                 class startALiVEPLugIn {
                     description = "Starts the ALiVE Plugin for arma2net";
                     file = "\x\alive\addons\sys_data\fnc_startALiVEPlugIn.sqf";
-                    RECOMPILE;
+                    ALIVE_RECOMPILE;
                 };
                 class data_OnPlayerDisconnected {
                         description = "The module onPlayerDisconnected handler";
                         file = "\x\alive\addons\sys_data\fnc_data_onPlayerDisconnected.sqf";
-                        RECOMPILE;
+                        ALIVE_RECOMPILE;
                 };
                 class dataMenuDef {
                         description = "Admin-menu submenu for ALiVE persist-data wipe actions";
                         file = "\x\alive\addons\sys_data\fnc_dataMenuDef.sqf";
-                        RECOMPILE;
+                        ALIVE_RECOMPILE;
                 };
             };
         };

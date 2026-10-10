@@ -4,12 +4,12 @@ class cfgFunctions {
             class CPC {
                 description = "The main class";
                 file = "\x\alive\addons\civ_placement_custom\fnc_CPC.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class CPCInit {
                 description = "The module initialisation function";
                 file = "\x\alive\addons\civ_placement_custom\fnc_CPCInit.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
         };
     };

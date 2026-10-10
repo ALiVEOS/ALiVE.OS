@@ -4,37 +4,37 @@ class cfgFunctions {
                         class ML {
                                 description = "The main class";
                                 file = "\x\alive\addons\mil_logistics\fnc_ML.sqf";
-                                RECOMPILE;
+                                ALIVE_RECOMPILE;
                         };
                         class MLInit {
                                 description = "The module initialisation function";
                                 file = "\x\alive\addons\mil_logistics\fnc_MLInit.sqf";
-                                RECOMPILE;
+                                ALIVE_RECOMPILE;
                         };
                         class MLGlobalRegistry {
                                 description = "Handles global module registry and forcepools";
                                 file = "\x\alive\addons\mil_logistics\fnc_MLGlobalRegistry.sqf";
-                                RECOMPILE;
+                                ALIVE_RECOMPILE;
                         };
                         class MLLoadData {
                                 description = "Load persistent data";
                                 file = "\x\alive\addons\mil_logistics\fnc_MLLoadData.sqf";
-                                RECOMPILE;
+                                ALIVE_RECOMPILE;
                         };
                         class MLSaveData {
                                 description = "Save persistent data";
                                 file = "\x\alive\addons\mil_logistics\fnc_MLSaveData.sqf";
-                                RECOMPILE;
+                                ALIVE_RECOMPILE;
                         };
                         class MLAttachSmokeOrStrobe {
                                 description = "Attaches smoke or strobe to object depending on day time";
                                 file = "\x\alive\addons\mil_logistics\fnc_MLAttachSmokeOrStrobe.sqf";
-                                RECOMPILE;
+                                ALIVE_RECOMPILE;
                         };
                         class MLExcludeKindsFilter {
                                 description = "Filters reinforcement candidates against the Excluded Kinds attribute";
                                 file = "\x\alive\addons\mil_logistics\fnc_MLExcludeKindsFilter.sqf";
-                                RECOMPILE;
+                                ALIVE_RECOMPILE;
                         };
                 };
         };

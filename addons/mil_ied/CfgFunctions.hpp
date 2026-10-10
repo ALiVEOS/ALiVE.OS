@@ -4,107 +4,107 @@ class cfgFunctions {
                         class IED {
                                 description = "The main class";
                                 file = "\x\alive\addons\mil_ied\fnc_ied.sqf";
-                                RECOMPILE;
+                                ALIVE_RECOMPILE;
                         };
                         class IEDInit {
                                 description = "The module initialisation function";
                                 file = "\x\alive\addons\mil_ied\fnc_iedInit.sqf";
-                                RECOMPILE;
+                                ALIVE_RECOMPILE;
                         };
                         class IEDMenuDef {
                                 description = "The module menu definition";
                                 file = "\x\alive\addons\mil_ied\fnc_iedMenuDef.sqf";
-                                RECOMPILE;
+                                ALIVE_RECOMPILE;
                         };
                         class createBomber {
                                 description = "Create an ambient suicide bomber";
                                 file = "\x\alive\addons\mil_ied\fnc_createBomber.sqf";
-                                RECOMPILE;
+                                ALIVE_RECOMPILE;
                         };
                         class RemoveBomber {
                                 description = "Remove a suicide bomber";
                                 file = "\x\alive\addons\mil_ied\fnc_removeBomber.sqf";
-                                RECOMPILE;
+                                ALIVE_RECOMPILE;
                         };
                         class RemoveIED {
                                 description = "Remove an IED";
                                 file = "\x\alive\addons\mil_ied\fnc_removeIED.sqf";
-                                RECOMPILE;
+                                ALIVE_RECOMPILE;
                         };
                         class placeIED {
                                 description = "Find a suitable location for an IED";
                                 file = "\x\alive\addons\mil_ied\fnc_placeIED.sqf";
-                                RECOMPILE;
+                                ALIVE_RECOMPILE;
                         };
                         class placeVBIED {
                                 description = "Find a suitable location for an IED";
                                 file = "\x\alive\addons\mil_ied\fnc_placeVBIED.sqf";
-                                                                RECOMPILE;
+                                                                ALIVE_RECOMPILE;
                         };
                         class armIED {
                                 description = "Arm an IED";
                                 file = "\x\alive\addons\mil_ied\fnc_armIED.sqf";
-                                RECOMPILE;
+                                ALIVE_RECOMPILE;
                         };
                         class iedUnitQualifies {
                                 description = "Shared engineer/EOD qualification predicate";
                                 file = "\x\alive\addons\mil_ied\fnc_iedUnitQualifies.sqf";
-                                RECOMPILE;
+                                ALIVE_RECOMPILE;
                         };
                         class createVBIED {
                                 description = "Create a VB-IED";
                                 file = "\x\alive\addons\mil_ied\fnc_createVBIED.sqf";
-                                RECOMPILE;
+                                ALIVE_RECOMPILE;
                         };
                         class disarmIED {
                                 description = "Disarm a IED";
                                 file = "\x\alive\addons\mil_ied\fnc_disarmIED.sqf";
-                                RECOMPILE;
+                                ALIVE_RECOMPILE;
                         };
                         class detectIED {
                                 description = "Detect a IED";
                                 file = "\x\alive\addons\mil_ied\fnc_detectIED.sqf";
-                                RECOMPILE;
+                                ALIVE_RECOMPILE;
                         };
                         class createIED {
                                 description = "Create an IED";
                                 file = "\x\alive\addons\mil_ied\fnc_createIED.sqf";
-                                RECOMPILE;
+                                ALIVE_RECOMPILE;
                         };
                         class addActionIED {
                                 description = "Add an action to an IED";
                                 file = "\x\alive\addons\mil_ied\fnc_addActionIED.sqf";
-                                RECOMPILE;
+                                ALIVE_RECOMPILE;
                         };
                         class removeActionIED {
                                 description = "Remove an action from an IED";
                                 file = "\x\alive\addons\mil_ied\fnc_removeActionIED.sqf";
-                                RECOMPILE;
+                                ALIVE_RECOMPILE;
                         };
                         class IEDLoadData {
                                 description = "Load Persisted IED's";
                                 file = "\x\alive\addons\mil_ied\fnc_IEDLoadData.sqf";
-                                RECOMPILE;
+                                ALIVE_RECOMPILE;
                         };
                         class IEDSaveData {
                                 description = "Save IED's to DB";
                                 file = "\x\alive\addons\mil_ied\fnc_IEDSaveData.sqf";
-                                RECOMPILE;
+                                ALIVE_RECOMPILE;
                         };
                         class IEDPlacementHelpers {
                                 description = "Helper functions for terrain validation and tactical IED placement";
                                 file = "\x\alive\addons\mil_ied\fnc_IEDPlacementHelpers.sqf";
-                                RECOMPILE;
+                                ALIVE_RECOMPILE;
                         };
                         class detectIEDIntegrations {
                                 description = "Detect loaded 3rd-party IED integrations from Cfg3rdPartyIEDs";
                                 file = "\x\alive\addons\mil_ied\fnc_detectIEDIntegrations.sqf";
-                                RECOMPILE;
+                                ALIVE_RECOMPILE;
                         };
                         class IEDLocationSource {
                                 description = "Population centres to place IEDs around, from the cheapest source that answers";
                                 file = "\x\alive\addons\mil_ied\fnc_IEDLocationSource.sqf";
-                                RECOMPILE;
+                                ALIVE_RECOMPILE;
                         };
                         // Note: fnc_edenIntegrationChoiceLoad.sqf and
                         // fnc_edenIntegrationChoiceSave.sqf are deliberately NOT registered

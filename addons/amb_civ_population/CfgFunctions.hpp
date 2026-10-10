@@ -4,152 +4,152 @@ class cfgFunctions {
             class civilianPopulationSystemInit {
                 description = "civilianPopulationSystemInit";
                 file = "\x\alive\addons\amb_civ_population\fnc_civilianPopulationSystemInit.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class civilianPopulationSystem {
                 description = "civilianPopulationSystem";
                 file = "\x\alive\addons\amb_civ_population\fnc_civilianPopulationSystem.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class civilianPopulationMenuDef {
                 description = "civilianPopulationMenuDef";
                 file = "\x\alive\addons\amb_civ_population\fnc_civilianPopulationMenuDef.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class clusterHandler {
                 description = "clusterHandler";
                 file = "\x\alive\addons\amb_civ_population\fnc_clusterHandler.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class civilianAgent {
                 description = "civilianAgent";
                 file = "\x\alive\addons\amb_civ_population\fnc_civilianAgent.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class civilianVehicle {
                 description = "civilianVehicle";
                 file = "\x\alive\addons\amb_civ_population\fnc_civilianVehicle.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class createCivilianVehicle {
                 description = "createCivilianVehicle";
                 file = "\x\alive\addons\amb_civ_population\fnc_createCivilianVehicle.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class agentKilledEventHandler {
                 description = "agentKilledEventHandler";
                 file = "\x\alive\addons\amb_civ_population\fnc_agentKilledEventHandler.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class agentGetInEventHandler {
                 description = "agentGetInEventHandler";
                 file = "\x\alive\addons\amb_civ_population\fnc_agentGetInEventHandler.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class agentFiredNearEventHandler {
                 description = "agentFiredNearEventHandler";
                 file = "\x\alive\addons\amb_civ_population\fnc_agentFiredNearEventHandler.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class crowdKilledEventHandler {
                 description = "crowdKilledEventHandler";
                 file = "\x\alive\addons\amb_civ_population\fnc_crowdKilledEventHandler.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class crowdFiredNearEventHandler {
                 description = "crowdFiredNearEventHandler";
                 file = "\x\alive\addons\amb_civ_population\fnc_crowdFiredNearEventHandler.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class agentHandler {
                 description = "agentHandler";
                 file = "\x\alive\addons\amb_civ_population\fnc_agentHandler.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class addCustomBuildingSound {
                 description = "addCustomBuildingSound";
                 file = "\x\alive\addons\amb_civ_population\fnc_addCustomBuildingSound.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class addAmbientRoomMusic {
                 description = "addAmbientRoomMusic";
                 file = "\x\alive\addons\amb_civ_population\fnc_addAmbientRoomMusic.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class clientAddAmbientRoomMusic {
                 description = "clientAddAmbientRoomMusic";
                 file = "\x\alive\addons\amb_civ_population\fnc_clientAddAmbientRoomMusic.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class addAmbientRoomLight {
                 description = "addAmbientRoomLight";
                 file = "\x\alive\addons\amb_civ_population\fnc_addAmbientRoomLight.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class clientAddAmbientRoomLight {
                 description = "clientAddAmbientRoomLight";
                 file = "\x\alive\addons\amb_civ_population\fnc_clientAddAmbientRoomLight.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class agentSelectSpeedMode {
                 description = "agentSelectSpeedMode";
                 file = "\x\alive\addons\amb_civ_population\fnc_agentSelectSpeedMode.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class getAgentEnemyNear {
                 description = "getAgentEnemyNear";
                 file = "\x\alive\addons\amb_civ_population\fnc_getAgentEnemyNear.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class getNearestActiveAgent {
                 description = "getNearestActiveAgent";
                 file = "\x\alive\addons\amb_civ_population\fnc_getNearestActiveAgent.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class getGlobalPosture {
                 description = "getGlobalPosture";
                 file = "\x\alive\addons\amb_civ_population\fnc_getGlobalPosture.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class getAgentData {
                 description = "getAgentData";
                 file = "\x\alive\addons\amb_civ_population\fnc_getAgentData.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class addCivilianActions {
                 description = "Adds civilian actions";
                 file = "\x\alive\addons\amb_civ_population\fnc_addCivilianActions.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class selectRoleAction {
                 description = "Selects civilian action";
                 file = "\x\alive\addons\amb_civ_population\fnc_selectRoleAction.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class addCivilianInteraction {
                 description = "Adds interact option to civilians";
                 file = "\x\alive\addons\amb_civ_population\fnc_addCivilianInteraction.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class civInteract {
                 description = "Main handler for civilian interraction";
                 file = "\x\alive\addons\amb_civ_population\fnc_civInteract.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class gatherIntelDeceptive {
                 description = "Places decoy installation markers when a hostile civilian lies about enemy positions";
                 file = "\x\alive\addons\amb_civ_population\fnc_gatherIntelDeceptive.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class civInteractInit {
                 description = "Initializes civilian interaction";
                 file = "\x\alive\addons\amb_civ_population\fnc_civInteractInit.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class questionHandler {
                 description = "Main handler for questions";
                 file = "\x\alive\addons\amb_civ_population\fnc_questionHandler.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             
             // ==============================================
@@ -159,102 +159,102 @@ class cfgFunctions {
             class advciv_ambientLife {
                 description = "AdvCiv ambient life routines";
                 file = "\x\alive\addons\amb_civ_population\fnc_advciv_ambientLife.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class advciv_brainTick {
                 description = "AdvCiv brain tick";
                 file = "\x\alive\addons\amb_civ_population\fnc_advciv_brainTick.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class advciv_getSafePositions {
                 description = "AdvCiv get safe positions";
                 file = "\x\alive\addons\amb_civ_population\fnc_advciv_getSafePositions.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class advciv_handleExplosion {
                 description = "AdvCiv handle explosion";
                 file = "\x\alive\addons\amb_civ_population\fnc_advciv_handleExplosion.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class advciv_isVehicleProtected {
                 description = "AdvCiv is vehicle protected";
                 file = "\x\alive\addons\amb_civ_population\fnc_advciv_isVehicleProtected.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class advciv_initUnit {
                 description = "AdvCiv init unit";
                 file = "\x\alive\addons\amb_civ_population\fnc_advciv_initUnit.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class advciv_init {
                 description = "AdvCiv init";
                 file = "\x\alive\addons\amb_civ_population\fnc_advciv_init.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class advciv_handleFired {
                 description = "AdvCiv handle fired";
                 file = "\x\alive\addons\amb_civ_population\fnc_advciv_handleFired.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class advciv_brainLoop {
                 description = "AdvCiv brain loop";
                 file = "\x\alive\addons\amb_civ_population\fnc_advciv_brainLoop.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class advciv_orderMenu {
                 description = "AdvCiv order menu";
                 file = "\x\alive\addons\amb_civ_population\fnc_advciv_orderMenu.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class advciv_react {
                 description = "AdvCiv react";
                 file = "\x\alive\addons\amb_civ_population\fnc_advciv_react.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class advciv_civAimReact {
                 description = "AdvCiv server-side civilian aim-pressure reaction dispatch";
                 file = "\x\alive\addons\amb_civ_population\fnc_advciv_civAimReact.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class advciv_civAimRelease {
                 description = "AdvCiv server-side release of an aim-pressure-triggered HandsUp civilian";
                 file = "\x\alive\addons\amb_civ_population\fnc_advciv_civAimRelease.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class civAceTierGate {
                 description = "Tier-gate predicate for ACE civilian interact menu entries";
                 file = "\x\alive\addons\amb_civ_population\fnc_civAceTierGate.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class civAceAuthGate {
                 description = "Authorisation-gate predicate for ACE civilian interact menu entries (limitInteraction parity)";
                 file = "\x\alive\addons\amb_civ_population\fnc_civAceAuthGate.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class civSetHostility {
                 description = "Moves a civilian's hostility by an amount, both copies, kept 0 to 100, from any machine";
                 file = "\x\alive\addons\amb_civ_population\fnc_civSetHostility.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class advciv_convertAgentAndFollow {
                 description = "AdvCiv server-side agent-to-unit conversion for FOLLOW order";
                 file = "\x\alive\addons\amb_civ_population\fnc_advciv_convertAgentAndFollow.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class advciv_findHouse {
                 description = "AdvCiv find house";
                 file = "\x\alive\addons\amb_civ_population\fnc_advciv_findHouse.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class advciv_findHouseProgressive {
                 description = "AdvCiv find house with progressive-radius retry (1x / 2x / 3x fleeRadius)";
                 file = "\x\alive\addons\amb_civ_population\fnc_advciv_findHouseProgressive.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class advciv_saveStateToProfile {
                 description = "AdvCiv save state to profile";
                 file = "\x\alive\addons\amb_civ_population\fnc_advciv_saveStateToProfile.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             
 
