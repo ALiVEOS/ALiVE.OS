@@ -253,15 +253,15 @@ switch(_operation) do {
         _dataSelection = [] call ALIVE_fnc_hashCreate;
 
         [_dataSelection,"icon","x\alive\addons\sys_tour\data\alive_icons_tour_data.paa"] call ALIVE_fnc_hashSet;
-        [_dataSelection,"inactiveLabel","Database"] call ALIVE_fnc_hashSet;
-        [_dataSelection,"activeLabel","The central persistence database"] call ALIVE_fnc_hashSet;
+        [_dataSelection,"inactiveLabel","Persistence"] call ALIVE_fnc_hashSet;
+        [_dataSelection,"activeLabel","Saving a campaign between sessions"] call ALIVE_fnc_hashSet;
         [_dataSelection,"iconState",["Data",0,0]] call ALIVE_fnc_hashSet;
 
         _warroomSelection = [] call ALIVE_fnc_hashCreate;
 
         [_warroomSelection,"icon","x\alive\addons\sys_tour\data\alive_icons_tour_task.paa"] call ALIVE_fnc_hashSet;
-        [_warroomSelection,"inactiveLabel","WarRoom Web Integration"] call ALIVE_fnc_hashSet;
-        [_warroomSelection,"activeLabel","The WarRoom web system"] call ALIVE_fnc_hashSet;
+        [_warroomSelection,"inactiveLabel","ALiVE Online"] call ALIVE_fnc_hashSet;
+        [_warroomSelection,"activeLabel","Documentation and the terrain indexer"] call ALIVE_fnc_hashSet;
         [_warroomSelection,"iconState",["Warroom",0,0]] call ALIVE_fnc_hashSet;
 
         _backSelection = [] call ALIVE_fnc_hashCreate;
@@ -434,6 +434,14 @@ switch(_operation) do {
     };
 
     case "start": {
+
+        // The tour drives the player at the machine it runs on: single player, or the host of a
+        // hosted game. A dedicated server has no player, so it says so and leaves it (#1060).
+        if (isDedicated) exitWith {
+            ["ALiVE Tour: the tour is for single player and the host of a hosted game, so it does not start on a dedicated server."] call ALiVE_fnc_dump;
+            // Still counted as started, or the mission's loading would wait on it.
+            _logic setVariable ["startupComplete", true];
+        };
 
         if(isServer) then {
 
@@ -1659,9 +1667,9 @@ switch(_operation) do {
 
             private["_line1","_line2","_line3","_line4","_line5","_line6","_line7","_baseCopy"];
 
-            _line1 = "<br/><t size='1.5' color='#68a7b7'>Central Persistence Database</t><br/><br/>";
-            _line2 = "<t size='1'>In order to store in game statistics, live operation feeds, player gear, and all other persistence layer operations, the ALiVE team has developed technology to store data in a central database.</t><br/><br/>";
-            _line3 = "<t size='1'>Built using modern data transfer and storage technologies (JSON,NoSQL) the ALiVE data tech provides seamless transfer from in game to storage and storage back to game.</t><br/><br/>";
+            _line1 = "<br/><t size='1.5' color='#68a7b7'>Persistence</t><br/><br/>";
+            _line2 = "<t size='1'>ALiVE can carry a campaign from one session to the next. With the Data module in the mission, the server saves the state of the war to its own profile: the AI Commanders' objectives and forces, logistics and placed objects, player gear and tasks.</t><br/><br/>";
+            _line3 = "<t size='1'>Load the mission again and it picks up where you left off. Nothing leaves the server and no account is needed.</t><br/><br/>";
 
             _baseCopy = format["%1%2%3%4%5%6%7",_line1,_line2,_line3];
 
@@ -1696,45 +1704,14 @@ switch(_operation) do {
 
             private["_line1","_line2","_line3","_line4","_line5","_line6","_line7","_baseCopy"];
 
-            _line1 = "<br/><t size='1.5' color='#68a7b7' >WarRoom</t><br/><br/>";
-            _line2 = "<t size='1'>ALiVE introduces revolutionary web services integration by streaming ARMA 3 in game data to our ALiVE War Room web platform. War Room allows players and groups to review current and past operations as well keep track of individual and group performance statistics.</t><br/><br/>";
-            _line3 = "<t size='1'>War Room offers groups membership to a virtual task force operating across the various AO's offered by the ARMA 3 engine. War Room exposes task force wins, losses and leaderboards for performance. The platform provides live streaming capabilities for BLUFOR tracking, group management tools, after action reporting, and ALiVE module controls from the web.</t><br/><br/>";
-            _line4 = "<t size='1'>Beside events, statistics and streaming, War Room provides the platform for persisting Multiplayer Campaigns. This allows groups to run 'multi-session operations' by storing game state to a cloud based database. Group admins can update campaign data via the War Room, such as adding map markers, objectives, editing loadouts or adding vehicles and units to the campaign - all via the web platform.</t><br/><br/>";
+            _line1 = "<br/><t size='1.5' color='#68a7b7'>ALiVE Online</t><br/><br/>";
+            _line2 = "<t size='1'>The alivemod.com site carries the documentation for every ALiVE module: what each setting does, how to set it up and what to test.</t><br/><br/>";
+            _line3 = "<t size='1'>It also runs an online terrain indexer, which reads a new map and prepares the data ALiVE needs to play on it, so community terrains can be added without indexing in the editor.</t><br/><br/>";
 
-            _baseCopy = format["%1%2%3%4%5%6%7",_line1,_line2,_line3,_line4];
+            _baseCopy = format["%1%2%3",_line1,_line2,_line3];
 
-            ["openImageFull",[_logic,"handleMenuCallback","Warroom"]] call ALIVE_fnc_displayMenu;
-            ["setFullImageText",_baseCopy] call ALIVE_fnc_displayMenu;
-            ["setFullImage","x\alive\addons\sys_tour\data\warroom1.paa"] call ALIVE_fnc_displayMenu;
-
-            sleep 1;
-
-            private["_line","_currentCopy"];
-
-            _line = "<t size='1'>Image: WarRoom global operations map</t><br/><br/>";
-            _currentCopy = format["%1%2",_baseCopy,_line];
-            ["setFullImageText",_currentCopy] call ALIVE_fnc_displayMenu;
-
-            sleep 20;
-
-            _line = "<t size='1'>Image: Player stats overview</t><br/><br/>";
-            _currentCopy = format["%1%2",_baseCopy,_line];
-            ["setFullImageText",_currentCopy] call ALIVE_fnc_displayMenu;
-            ["setFullImage","x\alive\addons\sys_tour\data\warroom2.paa"] call ALIVE_fnc_displayMenu;
-
-            sleep 20;
-
-            _line = "<t size='1'>Image: Player experience</t><br/><br/>";
-            _currentCopy = format["%1%2",_baseCopy,_line];
-            ["setFullImageText",_currentCopy] call ALIVE_fnc_displayMenu;
-            ["setFullImage","x\alive\addons\sys_tour\data\warroom3.paa"] call ALIVE_fnc_displayMenu;
-
-            sleep 20;
-
-            _line = "<t size='1'>Image: Operation AAR</t><br/><br/>";
-            _currentCopy = format["%1%2",_baseCopy,_line];
-            ["setFullImageText",_currentCopy] call ALIVE_fnc_displayMenu;
-            ["setFullImage","x\alive\addons\sys_tour\data\warroom4.paa"] call ALIVE_fnc_displayMenu;
+            ["openFull",[_logic,"handleMenuCallback","Warroom"]] call ALIVE_fnc_displayMenu;
+            ["setFullText",_baseCopy] call ALIVE_fnc_displayMenu;
 
         };
 
@@ -3035,7 +3012,7 @@ switch(_operation) do {
 
             _line1 = "<br/><t size='1.5' color='#68a7b7'>ALiVE Menu</t><br/><br/>";
             _line2 = "<t size='1'>All actions available in game to players are accessible via the ALiVE menu. To open the menu use your <a href='http://en.wikipedia.org/wiki/Menu_key' color='#68a7b7'>keyboards menu key (if existing)</a></t><br/><br/>";
-            _line3 = "<t size='1'>If you wish to remap the ALiVE menu key to an alternate binding in Custom Controls - Use Action 20 in the control options menu of the game. Do not use a modifier (CTRL, ALT or SHIFT). You will need to restart ArmA for this to take effect.</t><br/><br/>";
+            _line3 = "<t size='1'>To use a different key, go to Options, Controls, Configure Addons, choose ALiVE and set Open Menu. Arma needs a restart for the change to take effect.</t><br/><br/>";
 
             _baseCopy = format["%1%2%3%4%5%6%7",_line1,_line2,_line3];
 
