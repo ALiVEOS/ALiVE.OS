@@ -419,6 +419,17 @@ switch(_operation) do {
         };
     };
 
+    // A pathfinding procedure for this group alone (#1059), by name: "LandRoad" to keep a group
+    // to roads, or one the mission added with addPathfindingProcedure. "" goes back to the one its
+    // vehicle decides. A name the pathfinder doesn't know is ignored when the route is planned.
+    case "pathfindingProcedure": {
+        if (_args isEqualType "") then {
+            [_logic,"pathfindingProcedure", _args] call ALIVE_fnc_hashSet;
+        } else {
+            _result = [_logic,"pathfindingProcedure",""] call ALIVE_fnc_hashGet;
+        };
+    };
+
     case "onEachSpawn": {
         if (_args isEqualType "") then {
             [_logic,"onEachSpawn", _args] call ALIVE_fnc_hashSet;

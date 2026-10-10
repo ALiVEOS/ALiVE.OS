@@ -56,6 +56,18 @@ if (_profileType == "entity") then {
 };
 
 private _faction = [_profile,"faction"] call ALiVE_fnc_profileEntity;
-_result = [Alive_pathfinder,"getPathfindingProcedure",[_pathfindingProcedure,_faction]] call Alive_fnc_pathfinder;
+
+// One set on this profile by the mission comes first (#1059), when the pathfinder knows it.
+private "_result";
+private _override = [_profile,"pathfindingProcedure",""] call ALiVE_fnc_hashGet;
+if (_override isEqualType "" && {_override != ""}) then {
+    _result = [Alive_pathfinder,"getPathfindingProcedure",[_override,_faction]] call Alive_fnc_pathfinder;
+    if (isNil "_result") then {
+        ["ALiVE pathfinding: profile %1 asks for procedure '%2', which isn't registered, so it uses '%3'", _profile select 2 select 4, _override, _pathfindingProcedure] call ALiVE_fnc_dump;
+    };
+};
+if (isNil "_result") then {
+    _result = [Alive_pathfinder,"getPathfindingProcedure",[_pathfindingProcedure,_faction]] call Alive_fnc_pathfinder;
+};
 
 _result;
