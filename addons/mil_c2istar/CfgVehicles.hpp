@@ -115,6 +115,20 @@ class CfgVehicles {
                             tooltip = "$STR_ALIVE_C2ISTAR_TASK_BLACKLIST_COMMENT";
                             defaultValue = """""";
                     };
+                    class aiTaskTakeover : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_aiTaskTakeover";
+                            displayName = "$STR_ALIVE_C2ISTAR_AI_TASK_TAKEOVER";
+                            tooltip = "$STR_ALIVE_C2ISTAR_AI_TASK_TAKEOVER_COMMENT";
+                            defaultValue = """0""";
+                            class Values
+                            {
+                                    class Never { name = "Never"; value = "0"; };
+                                    class M15   { name = "After 15 minutes"; value = "15"; };
+                                    class M30   { name = "After 30 minutes"; value = "30"; };
+                                    class M60   { name = "After 60 minutes"; value = "60"; };
+                            };
+                    };
                     class vipPanicTimeout : Edit
                     {
                             property = "ALiVE_MIL_C2ISTAR_vipPanicTimeout";

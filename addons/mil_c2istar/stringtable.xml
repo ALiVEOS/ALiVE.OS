@@ -582,6 +582,12 @@
 <Key ID="STR_ALIVE_C2ISTAR_AI_SURRENDER_COMMENT">
     <English>Once an AI group has lost half its men, each survivor on foot with an enemy player within 200 m has this chance to surrender. He drops his weapons and puts his hands up (an ACE captive when ACE is loaded). Players can question each prisoner once: he may mark enemy groups within 2 km on that player's map and reveal his side's installations nearby.</English>
 </Key>
+<Key ID="STR_ALIVE_C2ISTAR_AI_TASK_TAKEOVER">
+    <English>AI Takes Over Slow Tasks</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_AI_TASK_TAKEOVER_COMMENT">
+    <English>When a player task is still open after this long, the nearest friendly AI group within 3 km that isn't busy is sent to the task area to search and destroy, and the side is told on the radio. The task stays open for players to finish. The group goes back to its AI Commander when the task ends. One group per task.</English>
+</Key>
 <Key ID="STR_ALIVE_C2ISTAR_GENERATE_BRIEFING">
     <English>Generate Briefing</English>
 </Key>

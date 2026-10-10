@@ -355,6 +355,9 @@ switch (_operation) do {
         // of the mission and the commander keeps passing over them. Releasing twice
         // does no harm, so this cannot clash with the normal finish.
         [_taskID] call ALIVE_fnc_taskReleaseTaskLocks;
+        // and a group sent in because the task ran long (#692)
+        [_taskID + "_takeover"] call ALIVE_fnc_taskReleaseTaskLocks;
+        if (!isNil "ALiVE_c2istar_taskTakeover") then { ALiVE_c2istar_taskTakeover deleteAt _taskID };
 
         [_logic, "unregisterTask", _taskID] call MAINCLASS;
         [_logic, "updateTaskState", _eventData] call MAINCLASS;
@@ -2072,6 +2075,48 @@ switch (_operation) do {
                                 ["[C2ISTAR #942 DIAG] manager skip %1: managed parameters already released", _taskID] call ALIVE_fnc_dump;
                             };
                             continue
+                        };
+
+                        // A task players have left open too long gets the nearest idle friendly AI group sent
+                        // to it (#692). The group is held off its commander while the task runs and handed back
+                        // when the task ends (TASK_DELETE releases it); the task stays open for players.
+                        private _takeoverMinutes = missionNamespace getVariable ["ALiVE_c2istar_aiTaskTakeover", 0];
+                        if (_takeoverMinutes > 0) then {
+                            if (isNil "ALiVE_c2istar_taskTakeover") then { ALiVE_c2istar_taskTakeover = createHashMap };
+                            private _since = ALiVE_c2istar_taskTakeover getOrDefault [_rootTaskID, -1];
+                            if (_since isEqualTo -1) then { ALiVE_c2istar_taskTakeover set [_rootTaskID, time]; _since = time };
+                            if (_since >= 0 && {time - _since > _takeoverMinutes * 60}) then {
+                                // handled once per task, whether or not a group was found
+                                ALiVE_c2istar_taskTakeover set [_rootTaskID, -2];
+                                private _taskPos = _mainTask select 3;
+                                private _best = [];
+                                private _bestDist = 3001;
+                                {
+                                    private _p = _x;
+                                    private _pid = [_p, "profileID", ""] call ALIVE_fnc_hashGet;
+                                    private _d = ([_p, "position", [0,0,0]] call ALIVE_fnc_hashGet) distance2D _taskPos;
+                                    if (_d < _bestDist
+                                        && {[_p, "type", ""] call ALIVE_fnc_hashGet == "entity"}
+                                        && {!([_p, "isPlayer", false] call ALIVE_fnc_hashGet)}
+                                        && {!([_p, "busy", false] call ALIVE_fnc_hashGet)}
+                                        && {!(!isNil "ALIVE_profileStationary" && {[ALIVE_profileStationary, _pid, false] call ALIVE_fnc_hashGet})}
+                                        && {([_p, "vehiclesInCommandOf", []] call ALIVE_fnc_hashGet) findIf {
+                                                private _v = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+                                                isNil "_v" || {private _c = [_v, "vehicleClass", ""] call ALIVE_fnc_hashGet; _c isKindOf "Air" || {_c isKindOf "Ship"} || {_c isKindOf "StaticWeapon"}}
+                                            } == -1}
+                                    ) then { _best = _p; _bestDist = _d };
+                                } forEach ([_taskPos, 3000, [_taskSide, "entity"]] call ALIVE_fnc_getNearProfiles);
+                                if !(_best isEqualTo []) then {
+                                    private _pid = [_best, "profileID", ""] call ALIVE_fnc_hashGet;
+                                    [_rootTaskID + "_takeover", [_pid]] call ALIVE_fnc_taskLockProfiles;
+                                    private _approach = _taskPos getPos [150, _taskPos getDir ([_best, "position", _taskPos] call ALIVE_fnc_hashGet)];
+                                    [_best, "addWaypoint", [_approach, 100, "MOVE", "NORMAL", 50, [], "LINE", "YELLOW", "AWARE"] call ALIVE_fnc_createProfileWaypoint] call ALIVE_fnc_profileEntity;
+                                    [_best, "addWaypoint", [_taskPos, 100, "SAD", "NORMAL", 100, [], "LINE", "RED", "COMBAT"] call ALIVE_fnc_createProfileWaypoint] call ALIVE_fnc_profileEntity;
+                                    private _msg = format ["%1 has been open %2 minutes. A friendly unit %3 m away is moving in to take it on.", _mainTask select 5, _takeoverMinutes, round _bestDist];
+                                    [_taskSide, [objNull, _msg, "side", [_taskSide] call ALIVE_fnc_sideTextToObject, false, false, false, true, "HQ"]] call ALIVE_fnc_radioBroadcastToSide;
+                                    ["C2ISTAR - task %1 open %2 min: profile %3 sent from %4 m", _rootTaskID, _takeoverMinutes, _pid, round _bestDist] call ALIVE_fnc_dump;
+                                };
+                            };
                         };
 
                         // DEBUG -------------------------------------------------------------------------------------

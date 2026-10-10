@@ -1377,6 +1377,12 @@ switch(_operation) do {
             };
         };
 
+        // A player task still open after this many minutes gets a friendly AI group sent to it (#692).
+        // Read live by the task manager, so a mission can change it while running; 0 is off.
+        private _takeover = _logic getVariable ["aiTaskTakeover", 0];
+        if (_takeover isEqualType "") then { _takeover = parseNumber _takeover };
+        if (isServer) then { missionNamespace setVariable ["ALiVE_c2istar_aiTaskTakeover", _takeover] };
+
         // Enemy soldiers can surrender and be questioned (#840). Once a group has lost half its
         // men, each survivor on foot with a player of a hostile side within 200 m rolls the AI
         // Surrender Chance once. One who gives up drops his weapons, puts his hands up and leaves
