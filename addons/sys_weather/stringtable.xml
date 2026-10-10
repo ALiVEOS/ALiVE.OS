@@ -7,6 +7,12 @@
     <Chinesesimp>动态天气环境</Chinesesimp>
     <Spanish>Meteorología dinámica ambiental</Spanish>
 </Key>
+<Key ID="STR_ALIVE_WEATHER_PRECIPITATION">
+    <English>Precipitation</English>
+</Key>
+<Key ID="STR_ALIVE_WEATHER_PRECIPITATION_COMMENT">
+    <English>Snow draws the module's rain as falling snow, using the game's own snow, so it doesn't fall indoors. How heavily it falls still follows the rain the module sets. Rain leaves it as rain.</English>
+</Key>
 <Key ID="STR_ALIVE_WEATHER_COMMENT">
     <English>Dynamic Weather module</English>
     <Chinesesimp>动态天气模块</Chinesesimp>

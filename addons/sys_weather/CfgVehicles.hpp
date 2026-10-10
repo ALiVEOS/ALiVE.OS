@@ -73,6 +73,18 @@ class CfgVehicles {
             class weather_cycle_delay_setting : Edit { property = "ALiVE_sys_weather_weather_cycle_delay_setting"; displayName = "$STR_ALIVE_WEATHER_CYCLE_DELAY"; tooltip = "$STR_ALIVE_WEATHER_CYCLE_DELAY_COMMENT"; defaultValue = """1800"""; typeName = "NUMBER"; };
             class weather_cycle_variance_setting : Edit { property = "ALiVE_sys_weather_weather_cycle_variance_setting"; displayName = "$STR_ALIVE_WEATHER_CYCLE_VARIANCE"; tooltip = "$STR_ALIVE_WEATHER_CYCLE_VARIANCE_COMMENT"; defaultValue = """0.2"""; typeName = "NUMBER"; };
             class weather_real_location_setting : Edit { property = "ALiVE_sys_weather_weather_real_location_setting"; displayName = "$STR_ALIVE_WEATHER_REAL_LOCATION"; tooltip = "$STR_ALIVE_WEATHER_REAL_LOCATION_COMMENT"; defaultValue = """COUNTRY/CITY"""; typeName = "STRING"; };
+            class weather_precipitation_setting : Combo
+            {
+                property = "ALiVE_sys_weather_weather_precipitation_setting";
+                displayName = "$STR_ALIVE_WEATHER_PRECIPITATION";
+                tooltip = "$STR_ALIVE_WEATHER_PRECIPITATION_COMMENT";
+                defaultValue = """rain""";
+                class Values
+                {
+                    class Rain { name = "Rain"; value = "rain"; };
+                    class Snow { name = "Snow"; value = "snow"; };
+                };
+            };
             class ModuleDescription : ModuleDescription {};
         };
     };
