@@ -2087,6 +2087,9 @@ if (isServer) then {
                 deleteMarkerLocal (_markers select 0);
             };
 
+            ALiVE_C2ISTAR_taskReturnPoint = nil;
+            deleteMarkerLocal format["%1%2",MTEMPLATE,"return"];
+
         };
 
     };
@@ -2954,6 +2957,9 @@ if (isServer) then {
 
                 case "TASK_GENERATE_BACK_BUTTON_CLICK": {
 
+                    ALiVE_C2ISTAR_taskReturnPoint = nil;
+                    deleteMarkerLocal format["%1%2",MTEMPLATE,"return"];
+
                     [_logic,"disableGenerateTask"] call MAINCLASS;
                     [_logic,"enableTasking"] call MAINCLASS;
                 };
@@ -2975,6 +2981,8 @@ if (isServer) then {
                     [_taskingState,"generateTypeListSelectedValue",_selectedValue] call ALIVE_fnc_hashSet;
 
                     [_logic,"taskingState",_taskingState] call MAINCLASS;
+
+                    [_logic,"generateTaskReturnHint"] call MAINCLASS;
 
                     //_taskingState call ALIVE_fnc_inspectHash;
 
@@ -3030,8 +3038,9 @@ if (isServer) then {
                     _button = _args select 0 select 1;
                     _posX = _args select 0 select 2;
                     _posY = _args select 0 select 3;
+                    private _alt = (_args select 0) param [6, false];
 
-                    if(_button == 0) then {
+                    if(_button == 0 && {!_alt}) then {
 
                         _markers = [_logic,"taskMarker"] call MAINCLASS;
 
@@ -3054,6 +3063,35 @@ if (isServer) then {
 
                         [_logic,"taskMarker",[_marker]] call MAINCLASS;
                         [_logic,"taskDestination",_position] call MAINCLASS;
+
+                    };
+
+                    // Alt+click picks where a rescued hostage is brought back (#274); a right button
+                    // would fire on every right-drag pan. Left unset, the Rescue task uses the
+                    // side's AI Commander HQ as before.
+                    if(_button == 0 && {_alt}) then {
+
+                        private _statusText = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAddStatusText);
+                        private _taskingState = [_logic,"taskingState"] call MAINCLASS;
+                        if (([_taskingState,"generateTypeListSelectedValue",""] call ALIVE_fnc_hashGet) != "Rescue") exitWith {
+                            _statusText ctrlSetText "A return point is only for a Rescue task";
+                            _statusText ctrlSetTextColor [0.729,0.216,0.235,1];
+                        };
+
+                        _map = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAddMap);
+                        _position = _map ctrlMapScreenToWorld [_posX, _posY];
+
+                        deleteMarkerLocal format["%1%2",MTEMPLATE,"return"];
+                        _marker = createMarkerLocal [format["%1%2",MTEMPLATE,"return"],_position];
+                        _marker setMarkerAlphaLocal 1;
+                        _marker setMarkerTextLocal "Return point";
+                        _marker setMarkerTypeLocal "hd_pickup_noShadow";
+                        _marker setMarkerColorLocal "ColorWhite";
+
+                        ALiVE_C2ISTAR_taskReturnPoint = _position;
+
+                        _statusText ctrlSetText "Return point set for a Rescue task";
+                        _statusText ctrlSetTextColor [1,1,1,1];
 
                     };
 
@@ -3149,7 +3187,20 @@ if (isServer) then {
 
                     }else{
 
-                        _event = ['TASK_GENERATE', [_requestID,_playerID,_side,_faction,_type,_location,_destination,_selectedPlayers,_enemyFaction,_current,_apply], "C2ISTAR"] call ALIVE_fnc_event;
+                        private _eventData = [_requestID,_playerID,_side,_faction,_type,_location,_destination,_selectedPlayers,_enemyFaction,_current,_apply];
+
+                        // A return point picked on the map rides at 13; 11 and 12 belong to the
+                        // commander's targets and claim key, so they go empty (#274).
+                        // Only a Rescue gets it: Destroy Vehicles, DCA and SEAD read 11 as their targets.
+                        if (!isNil "ALiVE_C2ISTAR_taskReturnPoint") then {
+                            if (_type == "Rescue") then {
+                                _eventData append [[], [], ALiVE_C2ISTAR_taskReturnPoint];
+                            };
+                            ALiVE_C2ISTAR_taskReturnPoint = nil;
+                            deleteMarkerLocal format["%1%2",MTEMPLATE,"return"];
+                        };
+
+                        _event = ['TASK_GENERATE', _eventData, "C2ISTAR"] call ALIVE_fnc_event;
 
                         if(isServer) then {
                             [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
@@ -3790,6 +3841,23 @@ if (isServer) then {
         _statusText ctrlShow true;
 
         _statusText ctrlSetText "";
+        [_logic,"generateTaskReturnHint"] call MAINCLASS;
+    };
+
+    case "generateTaskReturnHint": {
+
+        // With Rescue picked, the status line says how to set where the hostage is brought
+        // back (#274); with another type it clears its own hint and leaves anything else.
+        private _statusText = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAddStatusText);
+        private _taskingState = [_logic,"taskingState"] call MAINCLASS;
+        private _hints = ["Rescue: Alt+click the map to set the return point", "Return point set for a Rescue task"];
+
+        if (([_taskingState,"generateTypeListSelectedValue",""] call ALIVE_fnc_hashGet) == "Rescue") then {
+            _statusText ctrlSetText (_hints select (!isNil "ALiVE_C2ISTAR_taskReturnPoint"));
+            _statusText ctrlSetTextColor [1,1,1,1];
+        } else {
+            if (ctrlText _statusText in _hints) then { _statusText ctrlSetText "" };
+        };
     };
 
     case "disableGenerateTask": {

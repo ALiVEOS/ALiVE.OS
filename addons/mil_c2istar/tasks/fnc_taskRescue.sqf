@@ -174,7 +174,11 @@ switch (_taskState) do {
         // OPCOM is placed in the mission, fall back to the legacy
         // friendly-cluster -> random-safe-pos -> spawn-camp chain so
         // missions without OPCOM still get a Return location.
-        _returnPosition = [_taskSide] call ALIVE_fnc_taskGetReturnPosition;
+        // A return point the player picked on the tablet map comes first (#274).
+        _returnPosition = _task param [13, []];
+        if !(_returnPosition isEqualType [] && {count _returnPosition >= 2}) then {
+            _returnPosition = [_taskSide] call ALIVE_fnc_taskGetReturnPosition;
+        };
 
         if (count _returnPosition == 0) then {
             // legacy fallback - friendly cluster
