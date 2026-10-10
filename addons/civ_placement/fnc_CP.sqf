@@ -1517,7 +1517,8 @@ switch(_operation) do {
                         sleep (missionNamespace getVariable ["ALiVE_CP_seaPatrolTaskInterval", 600]);
                         if (!isNil "ALIVE_eventLog" && {!isNil "ALIVE_profileHandler"}) then {
                             ALiVE_CP_seaPatrolBoats = ALiVE_CP_seaPatrolBoats select { !isNil {[ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler} };
-                            private _tasks = if (isNil "ALIVE_taskHandler") then {[]} else {([ALIVE_taskHandler, "tasks", ["", [], [], nil]] call ALIVE_fnc_hashGet) select 1};
+                            // the tasks still running: a cancelled or failed one stays in the task list itself
+                            private _tasks = if (isNil "ALIVE_taskHandler") then {[]} else {([ALIVE_taskHandler, "activeTasks", ["", [], [], nil]] call ALIVE_fnc_hashGet) select 1};
                             {
                                 private _sideText = _x;
                                 private _sideObj = [_sideText] call ALiVE_fnc_sideTextToObject;

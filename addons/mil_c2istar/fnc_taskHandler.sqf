@@ -1405,6 +1405,10 @@ switch (_operation) do {
             // central call don't conflict.
             if (_taskState in ["Succeeded", "Failed", "Canceled"]) then {
                 [_taskID] call ALIVE_fnc_taskReleaseTaskLocks;
+                // and a group sent in because the task ran long (#692): a cancelled task
+                // never reaches TASK_DELETE, which left that group held for good
+                [_taskID + "_takeover"] call ALIVE_fnc_taskReleaseTaskLocks;
+                if (!isNil "ALiVE_c2istar_taskTakeover") then { ALiVE_c2istar_taskTakeover deleteAt _taskID };
             };
 
             private _task = [_logic, "getTask", _taskID] call MAINCLASS;
