@@ -268,7 +268,8 @@ if(count _config > 0) then {
     [_profileEntity, "position", _position] call ALIVE_fnc_profileEntity;
     [_profileEntity, "side", _side] call ALIVE_fnc_profileEntity;
     [_profileEntity, "faction", _groupFaction] call ALIVE_fnc_profileEntity;
-    [_profileEntity, "objectType", _groupClass] call ALIVE_fnc_profileEntity;
+    // The plain group name: a category>name draw (#79) is for finding the config only.
+    [_profileEntity, "objectType", if (_groupClass isEqualType "") then { _groupClass select [(_groupClass find ">") + 1] } else { _groupClass }] call ALIVE_fnc_profileEntity;
     [_profileEntity, "busy", _busy] call ALIVE_fnc_profileEntity;
     [_profileEntity, "isSPE", _isSPE] call ALIVE_fnc_profileEntity;
     [_profileEntity, "aiBehaviour", _aiBehaviour] call ALIVE_fnc_profileEntity;

@@ -25,6 +25,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 private ["_factionConfig","_factionSide","_typeConfig","_groups","_class","_countUnits", "_unit","_group","_groupName","_customMappings","_groupFactionTypes","_customGroup","_mappedType"];
@@ -176,9 +177,16 @@ if!(_customGroup) then {
 		};
 
 
-		if(count _groups > 0) then {  
-		 _group = _groups select floor(random count _groups);  
-		 _groupName = configName _group;  
+		if(count _groups > 0) then {
+		 _group = _groups select floor(random count _groups);
+		 _groupName = configName _group;
+
+		 // A name this faction also uses in another category goes out as category>name, so
+		 // the group spawned is the one drawn and not its namesake (#79).
+		 if (isNil "ALiVE_groupConfigDuplicates") then { [] call ALIVE_fnc_groupGenerateConfigData };
+		 if (ALiVE_groupConfigDuplicates getOrDefault [format ["%1_%2", _faction, _groupName], false]) then {
+		 	_groupName = format ["%1>%2", configName _typeConfig, _groupName];
+		 };
 		};
 
 		if (_groupName == "") then { 

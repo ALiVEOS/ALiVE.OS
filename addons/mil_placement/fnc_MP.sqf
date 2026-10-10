@@ -3167,7 +3167,7 @@ switch(_operation) do {
                                         // have set, so OPCOM / mil_intel /
                                         // damage-output classify correctly
                                         // once activation flips busy off.
-                                        [_profileEntity, "objectType", _group] call ALIVE_fnc_profileEntity;
+                                        [_profileEntity, "objectType", _group select [(_group find ">") + 1]] call ALIVE_fnc_profileEntity;
                                         [_profileEntity, "aiBehaviour", "STEALTH"] call ALIVE_fnc_profileEntity;
                                         [_profileEntity, "onEachSpawn", _onEachSpawn] call ALIVE_fnc_profileEntity;
                                         [_profileEntity, "onEachSpawnOnce", _onEachSpawnOnce] call ALIVE_fnc_profileEntity;
@@ -3384,7 +3384,7 @@ switch(_operation) do {
                                     private _emptyProfiles = [_vehicleReserveClass, _side, _faction, _vehiclePos, _vehicleDir, false, _faction] call ALIVE_fnc_createProfilesUnCrewedVehicle;
                                     private _profileEntity = _emptyProfiles select 0;
                                     private _profileVehicle = _emptyProfiles select 1;
-                                    [_profileEntity, "objectType", _group] call ALIVE_fnc_profileEntity;
+                                    [_profileEntity, "objectType", _group select [(_group find ">") + 1]] call ALIVE_fnc_profileEntity;
                                     [_profileEntity, "aiBehaviour", "STEALTH"] call ALIVE_fnc_profileEntity;
                                     [_profileEntity, "onEachSpawn", _onEachSpawn] call ALIVE_fnc_profileEntity;
                                     [_profileEntity, "onEachSpawnOnce", _onEachSpawnOnce] call ALIVE_fnc_profileEntity;
