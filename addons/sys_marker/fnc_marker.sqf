@@ -66,6 +66,7 @@ See Also:
 
 Author:
 Tupolov
+Jman
 
 In memory of Peanut
 
@@ -917,9 +918,8 @@ switch (_operation) do {
 
             // See if position is inside nearest marker
             if (markerShape _markerName != "ICON") then {
-                _obj = "Land_Can_Rusty_F" createVehicleLocal _pos;
-                _result = [_obj, _markerName] call ALIVE_fnc_inArea;
-                deleteVehicle _obj;
+                // The position itself is enough; no object needs creating to ask (#623).
+                _result = [_pos, _markerName] call ALIVE_fnc_inArea;
                 if (_result) then {_result = _markerName};
             } else {
                 _scale = ctrlMapScale ((findDisplay 12) displayCtrl 51);
