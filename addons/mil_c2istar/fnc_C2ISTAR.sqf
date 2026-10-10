@@ -1390,6 +1390,19 @@ switch(_operation) do {
                 params ["_u"];
                 if (!alive _u || {_u getVariable ["ALiVE_surrendered", false]}) exitWith {};
                 _u setVariable ["ALiVE_surrendered", true, true];
+                // Off his profile first, the way the CSAR task and a takeover do, or the profile
+                // deletes him from the players' hands when it despawns and brings him back armed.
+                private _pid = _u getVariable ["profileID", ""];
+                if (_pid isEqualType "" && {_pid != ""} && {!isNil "ALIVE_profileHandler"}) then {
+                    private _prof = [ALIVE_profileHandler, "getProfile", _pid] call ALIVE_fnc_profileHandler;
+                    if (!isNil "_prof") then {
+                        // The last of them gone: the profile is finished, as the kill handler does it.
+                        if !([_prof, "handleDeath", _u] call ALIVE_fnc_profileEntity) then {
+                            [_prof, "clearVehicleAssignments"] call ALIVE_fnc_profileEntity;
+                            [ALIVE_profileHandler, "unregisterProfile", _prof] call ALIVE_fnc_profileHandler;
+                        };
+                    };
+                };
                 private _g = createGroup [side group _u, true];
                 _g setVariable ["ALIVE_profileIgnore", true, true];
                 [_u] joinSilent _g;
