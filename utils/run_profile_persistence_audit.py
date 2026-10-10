@@ -127,12 +127,59 @@ def main():
               "failures": sum("[PA] FAIL |" in line for line in audit_lines)}
     # Missing or interrupted suites are failures, even if no FAIL assertion appeared.
     result["suites_complete"] = all(f"AUTOMATED SUITE END | {suite} | assertions=" in text
-                                      for suite in ["roundtrip", "empty"])
+                                      for suite in ["roundtrip", "spawnHooks", "damage", "transport", "orders", "empty"])
     result["script_errors"] = [line for line in text.splitlines()
                                 if re.search(r"Error (in expression|position|Undefined|Generic|Type)|Script .* not found", line)]
     required = {"Empty save is accepted as persistent", "Empty save leaves no non-player profiles",
                 "Unresolved vehicle references return a complete walking-speed array",
                 "Speed resolver leaves its caller's result unchanged"}
+    required.update({"hook: onEachSpawn survives save/load", "hook: onEachSpawnOnce survives save/load",
+                     "injured: damages survives save/load", "Damage / active: fixture spawned",
+                     "Damage / active: live damage differs from cached damage", "Damage / PNS document readable",
+                     "Damage / all fixture IDs saved"})
+    required.update({"cargo: cargo survives save/load", "cargo: slung survives save/load",
+                     "carrier: slingload survives save/load", "Transport / PNS document readable",
+                     "Transport / all fixture IDs saved"})
+    for case in ["Normal / carrier first", "Normal / load first", "Legacy PNS / carrier first"]:
+        required.add(f"Transport / {case}: record order saved")
+        for alias in ["truck", "carrier", "load", "classCarrier", "legacy", "empty"]:
+            for observation in ["profile restored", "cargo restored", "slingload restored", "slung restored"]:
+                required.add(f"Transport / {case} / {alias}: {observation}")
+        for observation in ["cargo truck spawned", "duplicate cargo recreated", "first sling vehicle spawned",
+                            "second sling vehicle spawned", "profiled sling attachment recreated", "profiled load cargo recreated",
+                            "class sling carrier spawned", "class sling attachment recreated", "class load cargo recreated",
+                            "spawned cargo cleaned up"]:
+            required.add(f"Transport / {case}: {observation}")
+    required.add("Queued order destination survives, applied or awaiting a new path")
+    for alias in ["foot", "mounted"]:
+        for observation in ["real requests pending at save time", "durable methods and destinations saved",
+                            "runtime queue omitted", "callbacks removed and live orders unchanged"]:
+            required.add(f"Orders / {alias}: {observation}")
+    for case in ["normal entities first", "normal vehicles first", "legacy loader", "legacy raw queue", "numeric strings", "pathfinding disabled"]:
+        for alias in ["foot", "mounted", "legacy"]:
+            for observation in ["profile restored", "fresh queue size", "fresh job count", "queue drained",
+                                "applied order sequence", "cycle state preserved", "filtered orders absent", "obsolete callbacks absent"]:
+                required.add(f"Orders / {case} / {alias}: {observation}")
+            if case != "pathfinding disabled" and alias != "legacy":
+                for observation in ["methods and destinations restored", "correct movement procedure",
+                                    "readiness and waypoint settings restored"]:
+                    required.add(f"Orders / {case} / {alias}: {observation}")
+    for alias in ["virtual", "active", "filtered"]:
+        for observation in ["saved damage matches source units", "saved class alignment"]:
+            required.add(f"Damage / {alias}: {observation}")
+    for loader in ["Normal", "Legacy PNS"]:
+        for alias in ["virtual", "active", "legacy", "short", "strings", "filtered"]:
+            for observation in ["profile restored", "cached damage restored", "physical spawn completed",
+                                "physical damage restored", "despawn completed"]:
+                required.add(f"Damage / {loader} / {alias}: {observation}")
+    for round_number in [1, 2]:
+        required.add(f"Spawn hooks / round {round_number}: PNS document readable")
+        required.add(f"Spawn hooks / round {round_number}: all fixture IDs saved")
+        for alias in ["repeat", "once", "legacy"]:
+            for observation in ["profile restored", "code restored or defaults retained", "once flag restored or defaults retained",
+                                "prior execution state restored", "physical spawn completed", "execution count",
+                                "unit customization and arguments", "despawn completed"]:
+                required.add(f"Spawn hooks / round {round_number} / {alias}: {observation}")
     for alias in ["mounted", "partlyMounted", "multipleVehicles"]:
         required.add(f"{alias}: vehicleAssignments survives save/load")
         required.add(f"{alias}: vehiclesInCommandOf survives save/load")

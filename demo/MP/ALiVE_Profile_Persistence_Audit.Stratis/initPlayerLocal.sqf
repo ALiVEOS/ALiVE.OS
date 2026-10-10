@@ -18,6 +18,10 @@ player allowDamage false;
     ["PA: 4 - Save fresh fixtures for a mission restart", "save"],
     ["PA: 5 - Verify the last saved baseline", "verify"],
     ["PA: 6 - Spawn restored hook and attrition fixtures", "show"],
+    ["PA: 7 - Run spawn customization regressions", "spawnHooks"],
+    ["PA: 8 - Run infantry damage regressions", "damage"],
+    ["PA: 9 - Run cargo and sling regressions", "transport"],
+    ["PA: 10 - Run pending movement regressions", "orders"],
     ["PA: Clear this test mission's saved state", "clear"]
 ];
 player createDiaryRecord ["Diary", ["Persistence tests",

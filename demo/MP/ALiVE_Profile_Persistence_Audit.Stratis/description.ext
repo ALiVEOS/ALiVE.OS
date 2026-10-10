@@ -21,6 +21,10 @@ class CfgFunctions
             class local {};
             class emptyValidation {};
             class mountedValidation {};
+            class spawnValidation {};
+            class damageValidation {};
+            class transportValidation {};
+            class ordersValidation {};
             class automated {};
             class cloud {};
             class cloudTransport {};
