@@ -84,18 +84,15 @@
 
 #define MOD(var1) GVARMAIN(var1)
 #define QMOD(var1) QUOTE(GVARMAIN(var1))
-#ifdef RECOMPILE
-    #undef RECOMPILE
-#endif
-// Addon functions are compiled when their configs are loaded. Recompiling the
-// complete function library at every mission start also recompiles it for the
-// main-menu mission, briefly blocking the UI each time the menu is entered.
-// Keep hot-reload available for local source-development builds without making
-// public development/release builds pay that cost.
+
+// CBA defaults RECOMPILE macro to 1 by default
+// each component includes cba after this file
+// thus always forcing recompile to be on
+// switched to use an explicitly different macro (ALIVE_RECOMPILE) to avoid this issue
 #ifdef ALIVE_DEV_RECOMPILE_FUNCTIONS
-    #define RECOMPILE recompile = 1
+    #define ALIVE_RECOMPILE recompile = 1
 #else
-    #define RECOMPILE recompile = 0
+    #define ALIVE_RECOMPILE recompile = 0
 #endif
 #define MODULE_AUTHOR QUOTE(ALiVE Mod Team)
 #define MACRO_ADDITEM(ITEM,COUNT) class _xx_##ITEM { \
