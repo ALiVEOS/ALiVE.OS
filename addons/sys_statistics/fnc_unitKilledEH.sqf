@@ -165,6 +165,13 @@ if (_stats || {_killFeed != "None"}) then {
                 [str(_sideKilled),_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
             };
 
+            // A player killed by a player: the handler runs only where the dead player is local,
+            // so the killer's Kill Shot is posted from here or it is never posted at all.
+            if (isPlayer _killer && {_killer != _killed} && {_killFeed != "None"}) then {
+                private _shot = format ["Kill Shot! A %1 was killed by %2 with a %3 from %4m.", _killedtype, name _killer, _killerweapon, _distance];
+                [str(_sideKiller),[_killer,_shot,_killFeed,_sideKiller]] call ALIVE_fnc_radioBroadcastToSide;
+            };
+
             if (_stats) then {
                 _data = _data + [ ["Death","true"] , ["Player",getplayeruid _killed], ["PlayerName",name _killed], ["playerGroup", [_killed] call ALiVE_fnc_getPlayerGroup] ];
                 // Send data to server to be written to DB
