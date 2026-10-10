@@ -1300,6 +1300,80 @@ switch(_operation) do {
             "ALiVE_c2istar_airLoss" addPublicVariableEventHandler { (_this select 1) call ALiVE_c2istar_fnc_showAirLoss };
         };
 
+        // Ask a friendly soldier about the friendly units around him (#562). Walk up to an AI
+        // soldier of your side who isn't in your group and ask: every other friendly group within
+        // a kilometre of him is marked on your own map for two minutes. Each soldier can be asked
+        // once a minute. Only units that are spawned are known to him, as they would be on the radio.
+        private _askFriendlies = _logic getVariable ["askFriendlies", true];
+        if (_askFriendlies isEqualType "") then { _askFriendlies = (toLower _askFriendlies) != "false" };
+        if (hasInterface && {_askFriendlies isEqualTo true}) then {
+            ALiVE_c2istar_fnc_canAskFriendly = {
+                params ["_target", "_caller"];
+                !isNull _target && {_target isKindOf "CAManBase"} && {alive _target} && {!isPlayer _target}
+                && {vehicle _target isEqualTo _target} && {(_caller distance _target) < 4}
+                && {(side group _target) isEqualTo (side group _caller)} && {!(group _target isEqualTo group _caller)}
+                && {lifeState _target != "INCAPACITATED"} && {!(_target getVariable ["ALiVE_c2istar_askedRecently", false])}
+            };
+            ALiVE_c2istar_fnc_askFriendly = {
+                params ["_target", "_caller"];
+                _target setVariable ["ALiVE_c2istar_askedRecently", true];
+                [_target] spawn { sleep 60; (_this select 0) setVariable ["ALiVE_c2istar_askedRecently", nil] };
+                private _side = side group _caller;
+                private _prefix = switch (_side) do { case west: {"b_"}; case east: {"o_"}; case resistance: {"n_"}; default {"n_"} };
+                private _groups = allGroups select {
+                    (side _x) isEqualTo _side && {!(_x isEqualTo group _caller)} && {alive leader _x} && {(leader _x distance2D _target) < 1000}
+                };
+                { deleteMarkerLocal _x } forEach (missionNamespace getVariable ["ALiVE_c2istar_askMarkers", []]);
+                private _markers = [];
+                {
+                    private _veh = vehicle leader _x;
+                    private _kind = switch (true) do {
+                        case (_veh isKindOf "Air"): { "air" };
+                        case (_veh isKindOf "Tank"): { "armor" };
+                        case (_veh isKindOf "Wheeled_APC_F" || {_veh isKindOf "Tracked_APC"}): { "mech_inf" };
+                        case (_veh isKindOf "LandVehicle" && {!(_veh isKindOf "StaticWeapon")}): { "motor_inf" };
+                        case (_veh isKindOf "Ship"): { "naval" };
+                        default { "inf" };
+                    };
+                    private _m = createMarkerLocal [format ["ALiVE_c2istar_ask_%1_%2", round time, _forEachIndex], getPosATL leader _x];
+                    _m setMarkerTypeLocal (_prefix + _kind);
+                    _m setMarkerTextLocal format ["%1 (%2)", groupId _x, { alive _x } count units _x];
+                    _markers pushBack _m;
+                } forEach _groups;
+                missionNamespace setVariable ["ALiVE_c2istar_askMarkers", _markers];
+                [_markers] spawn {
+                    sleep 120;
+                    private _now = missionNamespace getVariable ["ALiVE_c2istar_askMarkers", []];
+                    { deleteMarkerLocal _x } forEach (_this select 0);
+                    if (_now isEqualTo (_this select 0)) then { missionNamespace setVariable ["ALiVE_c2istar_askMarkers", []] };
+                };
+                private _say = [
+                    "%1: no other friendly units around here that I know of.",
+                    "%1: one friendly group within a kilometre of here. It's on your map for the next two minutes.",
+                    "%1: %2 friendly groups within a kilometre of here. They're on your map for the next two minutes."
+                ] select ((count _groups) min 2);
+                hint format [_say, name _target, count _groups];
+                count _groups
+            };
+            [] spawn {
+                waitUntil { sleep 1; !isNull player };
+                if (isClass (configFile >> "CfgPatches" >> "ace_interact_menu")) then {
+                    waitUntil { sleep 1; !isNil "ace_interact_menu" && {!isNull ace_player} };
+                    private _action = ["ALiVE_AskFriendly", "Ask about friendly units", "", { [_target, _player] call ALiVE_c2istar_fnc_askFriendly },
+                        { [_target, _player] call ALiVE_c2istar_fnc_canAskFriendly }] call ace_interact_menu_fnc_createAction;
+                    ["CAManBase", 0, ["ACE_MainActions"], _action, true] call ace_interact_menu_fnc_addActionToClass;
+                } else {
+                    private _fnc_add = {
+                        _this addAction ["Ask about friendly units", { [cursorObject, _this select 1] call ALiVE_c2istar_fnc_askFriendly }, nil, 1.4, false, true, "",
+                            "[cursorObject, _this] call ALiVE_c2istar_fnc_canAskFriendly", 4];
+                    };
+                    player call _fnc_add;
+                    player addEventHandler ["Respawn", { params ["_unit"]; _unit call (missionNamespace getVariable ["ALiVE_c2istar_askAdd", {}]) }];
+                    ALiVE_c2istar_askAdd = _fnc_add;
+                };
+            };
+        };
+
 // Read once into a global so the task handler and the menu can both see it without
 // reaching for the module every time. The server broadcasts it so a change made from
 // the menu reaches everyone.

@@ -575,6 +575,16 @@ class CfgVehicles {
                             expression = "_this setVariable ['reportEnemyAirAttack', _value, true];";
                             defaultValue = "true";
                     };
+                    class askFriendlies
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_askFriendlies";
+                            displayName = "$STR_ALIVE_C2ISTAR_ASK_FRIENDLIES";
+                            tooltip = "$STR_ALIVE_C2ISTAR_ASK_FRIENDLIES_COMMENT";
+                            control = "Checkbox";
+                            typeName = "BOOL";
+                            expression = "_this setVariable ['askFriendlies', _value, true];";
+                            defaultValue = "true";
+                    };
                     class reportAirSituation
                     {
                             property = "ALiVE_MIL_C2ISTAR_reportAirSituation";

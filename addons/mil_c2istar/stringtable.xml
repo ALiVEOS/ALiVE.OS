@@ -570,6 +570,12 @@
 <Key ID="STR_ALIVE_C2ISTAR_TASK_BLACKLIST_COMMENT">
     <English>Marker names, separated by commas, for areas generated tasks must stay out of, such as your main base. A task won't pick an objective, town or enemy position inside any of these markers. Leave empty for no restriction.</English>
 </Key>
+<Key ID="STR_ALIVE_C2ISTAR_ASK_FRIENDLIES">
+    <English>Ask Soldiers About Friendly Units</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_ASK_FRIENDLIES_COMMENT">
+    <English>Players can walk up to an AI soldier of their side who isn't in their group and ask about friendly units. Every other friendly group within a kilometre of him is marked on that player's map for two minutes. Each soldier can be asked once a minute.</English>
+</Key>
 <Key ID="STR_ALIVE_C2ISTAR_GENERATE_BRIEFING">
     <English>Generate Briefing</English>
 </Key>
