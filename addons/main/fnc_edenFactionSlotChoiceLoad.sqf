@@ -243,6 +243,9 @@ _display setVariable ["alive_populating", false];
 _display setVariable ["alive_allRows", _allRows];
 _display setVariable ["alive_slotSides", _slotSides];
 _display setVariable ["alive_slotLabels", _slotLabels];
+// Enemy slots take several factions, comma-separated in the stored value (#1061): a click adds
+// or removes one. Every other slot holds one.
+_display setVariable ["alive_multiSlots", _legacyVars apply { (toLower _x) find "enemy" >= 0 }];
 
 // ---- Populate function ----------------------------------------------------
 //
@@ -269,14 +272,18 @@ private _populateFn = {
 
     lbClear _listCtrl;
     private _selectedClass = _slotSelections param [_currentSlot, ""];
+    private _multi = (_display getVariable ["alive_multiSlots", []]) param [_currentSlot, false];
+    private _picked = (_selectedClass splitString ", ") select { _x != "" };
     private _selectedIdx = -1;
     {
         _x params ["_classname", "_displayName", "_side"];
         if (_side in _allowedSides) then {
-            private _idx = _listCtrl lbAdd _displayName;
+            private _isPicked = _classname in _picked;
+            private _idx = _listCtrl lbAdd (if (_multi && {_isPicked}) then { "[+] " + _displayName } else { _displayName });
             _listCtrl lbSetData [_idx, _classname];
-            if (_classname == _selectedClass) then {
-                _selectedIdx = _idx;
+            if (_isPicked) then {
+                if (_selectedIdx < 0) then { _selectedIdx = _idx };
+                if (_multi) then { _listCtrl lbSetColor [_idx, [0.55, 0.85, 0.55, 1]] };
             };
         };
     } forEach _allRows;
@@ -292,7 +299,7 @@ private _populateFn = {
     private _sideFilterLabelCtrl = _display controlsGroupCtrl 1201;
     if (!isNull _filterLabelCtrl) then {
         private _slotLabel = _slotLabels param [_currentSlot, format ["Slot %1", _currentSlot]];
-        _filterLabelCtrl ctrlSetText format ["Slot: %1", _slotLabel];
+        _filterLabelCtrl ctrlSetText (if (_multi) then { format ["Slot: %1 (click to add or remove)", _slotLabel] } else { format ["Slot: %1", _slotLabel] });
     };
     if (!isNull _sideFilterLabelCtrl) then {
         _sideFilterLabelCtrl ctrlSetText format ["Side: %1", _sideMode];
@@ -329,8 +336,21 @@ _listCtrl ctrlAddEventHandler ["LBSelChanged", {
     private _slotSelections = _disp getVariable ["alive_slotSelections", []];
     private _currentSlot    = _disp getVariable ["alive_currentSlot", 0];
     while {count _slotSelections < 6} do { _slotSelections pushBack ""; };
-    _slotSelections set [_currentSlot, _classname];
-    _disp setVariable ["alive_slotSelections", _slotSelections];
+    if ((_disp getVariable ["alive_multiSlots", []]) param [_currentSlot, false]) then {
+        // Toggle it in the list, keeping at least one, then redraw to show which are picked.
+        private _picked = ((_slotSelections select _currentSlot) splitString ", ") select { _x != "" };
+        if (_classname in _picked) then {
+            if (count _picked > 1) then { _picked = _picked - [_classname] };
+        } else {
+            _picked pushBack _classname;
+        };
+        _slotSelections set [_currentSlot, _picked joinString ","];
+        _disp setVariable ["alive_slotSelections", _slotSelections];
+        [_disp] call (_disp getVariable ["alive_populateFn", {}]);
+    } else {
+        _slotSelections set [_currentSlot, _classname];
+        _disp setVariable ["alive_slotSelections", _slotSelections];
+    };
 }];
 
 // ---- Slot cycle button (idc 1210) -----------------------------------------

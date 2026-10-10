@@ -498,6 +498,13 @@ switch (_operation) do {
             private _autoGenerateSides = [_logic, "autoGenerateSides"] call ALIVE_fnc_hashGet;
             [_autoGenerateSides, _taskSide, [_taskAutoGenerate, _taskEnemyFaction]] call ALIVE_fnc_hashSet;
 
+            // A side's Enemy setting may list several factions (#1061): the side keeps the list above,
+            // and each task is aimed at one of them, drawn here.
+            if (_taskEnemyFaction isEqualType "" && {_taskEnemyFaction find "," >= 0}) then {
+                private _enemies = (_taskEnemyFaction splitString ", ") select { _x != "" };
+                if (_enemies isNotEqualTo []) then { _taskEnemyFaction = selectRandom _enemies };
+            };
+
             // Automatic Player Tasks off. The Constant cycle comes straight here rather than
             // through TASK_GENERATE, so the switch is read here too. Nothing has been claimed
             // yet, and the task manager keeps calling this every cycle while a side is on
@@ -621,6 +628,13 @@ switch (_operation) do {
 					"_taskCurrent",
 					"_taskApplyType"
 				];
+
+            // An enemy list (#1061) is narrowed to one faction for this task, here as well as in the
+            // automatic cycle, so a commander order or a tablet request given the list works too.
+            if (_taskEnemyFaction isEqualType "" && {_taskEnemyFaction find "," >= 0}) then {
+                private _enemies = (_taskEnemyFaction splitString ", ") select { _x != "" };
+                if (_enemies isNotEqualTo []) then { _taskEnemyFaction = selectRandom _enemies; _taskData set [8, _taskEnemyFaction] };
+            };
 
             // _taskPlayers is [_uids, _displayNames]; (_taskPlayers select 0)
             // is the array of UID strings. When the auto-task scheduler is
@@ -2147,6 +2161,9 @@ switch (_operation) do {
                                     _mainTask params ["", "_requestPlayerID", "", "", "_taskFaction"];
 
                                     private _taskEnemyFaction = [_taskParams, "enemyFaction"] call ALIVE_fnc_hashGet;
+                                    // The side's own enemy list when it has one, so a follow-on can go after another of them (#1061).
+                                    private _sideEnemies = _sideAutoGeneration param [1, ""];
+                                    if (_sideEnemies isEqualType "" && {_sideEnemies != ""}) then { _taskEnemyFaction = _sideEnemies };
                                     private _generate = [format ["%1_%2", _taskSide, time], _requestPlayerID, _taskSide, _taskFaction, _taskEnemyFaction, _sideAutoGeneration select 0];
 
                                     [_logic, "autoGenerateTasks", _generate] call MAINCLASS;

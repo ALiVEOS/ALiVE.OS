@@ -843,6 +843,11 @@ switch (_operation) do {
 
         private _sideSettings = ["getSideSettings", [_side]] call MAINCLASS;
         private _enemyFaction = _sideSettings param [1, "OPF_F"];
+        // One faction from the side's enemy list for this order (#1061).
+        if (_enemyFaction isEqualType "" && {_enemyFaction find "," >= 0}) then {
+            private _enemies = (_enemyFaction splitString ", ") select { _x != "" };
+            if (_enemies isNotEqualTo []) then { _enemyFaction = selectRandom _enemies };
+        };
 
         // The strategic path picks CaptureObjective / MilDefence from nearby OPCOM
         // objectives and never consults the C2ISTAR auto-task whitelist. Only try it when
