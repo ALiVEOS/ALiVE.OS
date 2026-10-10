@@ -328,6 +328,12 @@ class FSM
                                          "_grp setCombatMode _ROE;" \n
                                          "_grp setSpeedMode ""FULL"";" \n
                                          "_grp enableAttack false;" \n
+                                         "// A fire-at-will loiter is an overwatch: the crew engage what they see from the orbit (#712)." \n
+                                         "if (_ROE in [""YELLOW"", ""RED""]) then {" \n
+                                         "    { _x enableAi ""TARGET""; _x enableAi ""AUTOTARGET""; } forEach units _grp;" \n
+                                         "} else {" \n
+                                         "    { _x disableAi ""TARGET""; _x disableAi ""AUTOTARGET""; } forEach units _grp;" \n
+                                         "};" \n
                                          "[_veh, _posCas] call ALiVE_fnc_doMoveRemote;" \n
                                          "" \n
                                          "" \n

@@ -28,7 +28,7 @@ private _listBackground = [0.047, 0.047, 0.047, 0.72];
 _show = switch (toUpper (_lb lbData _index)) do
 {
     case "SAD" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit will move to location, provide Close Air Support and engage all painted targets</t>" };
-    case "LOITER" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit will move to location and loiter without engaging any targets</t>" };
+    case "LOITER" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit will move to location and orbit it at the chosen altitude. With Hold Fire it only watches; with Fire At Will it covers the area and engages hostiles it sees</t>" };
     case "ATTACK" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit engages all hostiles in the target area, including unmanned vehicles. Lase a target to designate it manually - the pilot will prioritise your laser. Automatic uses the best weapon first and switches as ammo runs out; pick a specific weapon below to force it</t>" };
 };
 _veh = _casArray select (lbCurSel _casUnitLb) select 0;
@@ -74,27 +74,21 @@ if (toUpper (_lb lbData _index) == "SAD" || toUpper (_lb lbData _index) == "LOIT
         };
     "];
 
-    // ROE only matters for tasks that actually engage - LOITER never fires, so hide it
-    if (toUpper (_lb lbData _index) == "LOITER") then {
-        _casROEText ctrlSetText "";
-        _casROELb ctrlEnable false;
-        lbClear _casROELb;
-    } else {
-        _casROELb ctrlSetBackgroundColor _listBackground;
-        _casROEText ctrlSetStructuredText parseText "<t color='#B4B4B4' size='0.8' font='PuristaMedium'>RULES OF ENGAGEMENT</t>";
-        // sits just left of the ROE list so "RULES OF ENGAGEMENT" reads flush with it;
-        // wide (transparent bg, so the extra width is invisible) to stay on one line
-                _casROEText ctrlSetPosition [0.38 * _uiW + _uiX, 0.59 * _uiH + _uiY, (0.16 * _uiW), (0.028 * _uiH)];
-        _casROEText ctrlCommit 0;
+    // Every task takes an ROE. LOITER starts on Hold Fire, so it only watches unless told to engage (#712).
+    _casROELb ctrlSetBackgroundColor _listBackground;
+    _casROEText ctrlSetStructuredText parseText "<t color='#B4B4B4' size='0.8' font='PuristaMedium'>RULES OF ENGAGEMENT</t>";
+    // sits just left of the ROE list so "RULES OF ENGAGEMENT" reads flush with it;
+    // wide (transparent bg, so the extra width is invisible) to stay on one line
+            _casROEText ctrlSetPosition [0.38 * _uiW + _uiX, 0.59 * _uiH + _uiY, (0.16 * _uiW), (0.028 * _uiH)];
+    _casROEText ctrlCommit 0;
 
-        _casROELb ctrlEnable true;
-        lbClear _casROELb;
-        {
-            _casROELb lbAdd (_x select 0);
-            _casROELb lbSetData [_foreachIndex, (_x select 1)];
-        } forEach [["Hold Fire","BLUE"], ["Hold Fire - Defend","GREEN"], ["Hold Fire - Return Fire","WHITE"],["Fire At Will","YELLOW"],["Fire At Will - Engage At Will","RED"]];
-        _casROELb lbSetCurSel 4;
-    };
+    _casROELb ctrlEnable true;
+    lbClear _casROELb;
+    {
+        _casROELb lbAdd (_x select 0);
+        _casROELb lbSetData [_foreachIndex, (_x select 1)];
+    } forEach [["Hold Fire","BLUE"], ["Hold Fire - Defend","GREEN"], ["Hold Fire - Return Fire","WHITE"],["Fire At Will","YELLOW"],["Fire At Will - Engage At Will","RED"]];
+    _casROELb lbSetCurSel ([4, 0] select (toUpper (_lb lbData _index) == "LOITER"));
 
 
     // one shared filter with the runtime weapon logic - see NEO_fnc_casUsableWeapons
