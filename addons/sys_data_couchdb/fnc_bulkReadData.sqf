@@ -24,7 +24,7 @@ Peer Reviewed:
 #include "script_component.hpp"
 SCRIPT(readData_couchdb);
 
-private ["_response","_result","_error","_module","_data","_pairs","_cmd","_json","_logic","_args","_convert","_db","_key","_call","_dockeys"];
+private ["_response","_result","_error","_module","_data","_pairs","_cmd","_json","_logic","_args","_convert","_db","_key","_call","_dockeys","_uids"];
 
 // Avoided using the format command as it has a 2kb limt
 
@@ -76,42 +76,50 @@ if(ALiVE_SYS_DATA_DEBUG_ON) then {
 // From response create key/value pair arrays
 if (_response == "READY" || _response == "OK") then {
 
-    // Now poll data stack until all documents are collected
-    private ["_data","_temp"];
-    _data = "";
-    _temp = [] call ALiVE_fnc_hashCreate;
+    // Profiles may recover a partial campaign; other modules require a complete batch.
+    private _allowPartial = _module == "sys_profile";
+    private _failed = false;
+    private _temp = [] call ALiVE_fnc_hashCreate;
+    private _data = "";
     _json = format ["GetBulkJSON ['%1']", _module];
-    While {_data != "END"} do {
-        private ["_tempDoc","_id"];
+    while {_data != "END"} do {
         _data = [_json] call ALIVE_fnc_sendToPlugIn;
         TRACE_1("COUCH DATA", _data);
-        if (_data == "SYS_DATA_ERROR") exitWith {["There was an error loading data! Report it to ALiVE Devs. Module: %1, Key: %2, Records: %3",_module, _key, _uids] call ALiVE_fnc_dump;};
-            if (_data != "END") then{
-                _tempDoc = [_logic, "restore", [_data]] call ALIVE_fnc_Data;
-                //["TEMPDOC DUMP %1",_tempDoc] call ALiVE_fnc_dump;
-                _id = [_tempDoc,"_id"] call ALiVE_fnc_hashGet;
-                [_temp, _id, _tempDoc] call ALiVE_fnc_hashSet;
+        if (_data == "SYS_DATA_ERROR") exitWith {_failed = true};
+        if (_data != "END") then {
+            private _tempDoc = [_logic, "restore", [_data]] call ALIVE_fnc_Data;
+            if !([_tempDoc] call ALIVE_fnc_isHash) exitWith {
+                _failed = true;
+                ["SYS_DATA_COUCHDB - SKIPPING INVALID DOCUMENT: Module: %1, Key: %2", _module, _key] call ALiVE_fnc_dump;
             };
+            private _id = [_tempDoc, "_id", ""] call ALIVE_fnc_hashGet;
+            if !(_id in _dockeys) exitWith {
+                _failed = true;
+                ["SYS_DATA_COUCHDB - SKIPPING UNEXPECTED DOCUMENT ID: Module: %1, Key: %2, ID: %3", _module, _key, _id] call ALiVE_fnc_dump;
+            };
+            [_temp, _id, _tempDoc] call ALiVE_fnc_hashSet;
+        };
     };
 
-    // Restore original module index (without mission key) for each document
     _result = [] call ALiVE_fnc_hashCreate;
+    private _missing = [];
     {
-        private ["_mkey","_record"];
-        _mkey = _key + "-" + _x;
-
-        _record = [_temp, _mkey] call ALiVE_fnc_hashGet;
-        if!(isNil "_record") then {
+        private _mkey = _key + "-" + _x;
+        private _record = [_temp, _mkey] call ALiVE_fnc_hashGet;
+        if (isNil "_record") then {
+            _missing pushBack _x;
+        } else {
             [_result, _x, _record] call ALiVE_fnc_hashSet;
-        }else{
-
-            if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                ["SYS_DATA_COUCHDB - RECORD IS NIL! LOOKING FOR KEY: %1 IN HASH:",_mkey] call ALiVE_fnc_dump;
-            };
-
-            (_temp select 1) call ALIVE_fnc_inspectArray;
         };
-    } foreach _uids;
+    } forEach _uids;
+    if (_failed || {count _missing > 0}) then {
+        ["SYS_DATA_COUCHDB - INCOMPLETE BULK READ: Module: %1, Key: %2, Loaded: %3/%4, Missing: %5",
+            _module, _key, count (_result select 1), count _uids, _missing] call ALiVE_fnc_dump;
+        // A failed nonempty download must never look like a saved empty campaign.
+        if (!_allowPartial || {count (_result select 1) == 0}) then {
+            _result = "SYS_DATA_ERROR";
+        };
+    };
 
     if(ALiVE_SYS_DATA_DEBUG_ON) then {
         ["SYS_DATA_COUCHDB - BULK READ RESULT: %1",[str(_result)] call CBA_fnc_strLen] call ALiVE_fnc_dump;
