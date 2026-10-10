@@ -272,7 +272,8 @@ switch (_operation) do {
         _args params [
             ["_side", "", [""]],
             ["_faction", "", [""]],
-            ["_destination", [], [[]]]
+            ["_destination", [], [[]]],
+            ["_taskType", "", [""]]
         ];
 
         if !(isServer) exitWith {_result = []};
@@ -303,7 +304,10 @@ switch (_operation) do {
                         ];
 
                         if !(_groupID in (_groupsByID select 1)) then {
-                            if !(_group getVariable [QGVAR(playerOrdersOptOut), false]) then {
+                            // A group given its own task types (#549) is only handed those.
+                            private _allowed = (_group getVariable ["ALiVE_taskTypes", []]) apply { toLower _x };
+                            if (!(_group getVariable [QGVAR(playerOrdersOptOut), false])
+                                && {_taskType == "" || {_allowed isEqualTo []} || {(toLower _taskType) in _allowed}}) then {
                                 if ((["getGroupCurrentParentTask", [_groupID]] call MAINCLASS) isEqualTo []) then {
                                     private _exactFactionMatch = _faction == "" || {_groupFaction == _faction};
                                     private _distance = if (_destination isEqualTo []) then {0} else {_groupPos distance2D _destination};

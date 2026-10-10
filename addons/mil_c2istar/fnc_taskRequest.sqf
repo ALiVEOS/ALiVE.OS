@@ -211,7 +211,7 @@ if (_autoGenerateStrategicTasks) then {
         private _candidateSelectedGroup = [];
 
         if (_playerID == "OPCOM") then {
-            _candidateSelectedGroup = ["selectEligibleGroup", [_side, _faction, _candidateDestination]] call ALiVE_fnc_playerOrders;
+            _candidateSelectedGroup = ["selectEligibleGroup", [_side, _faction, _candidateDestination, _type]] call ALiVE_fnc_playerOrders;
 
             if !(_candidateSelectedGroup isEqualTo []) then {
                 _candidateTaskFaction = _candidateSelectedGroup select 9;
