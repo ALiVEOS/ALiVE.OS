@@ -2,6 +2,24 @@
 <Project name="Arma3">
 <Package name="ALiVE">
 <Container name="STR_DN">
+<Key ID="STR_ALIVE_RECRUIT">
+    <English>Recruitment</English>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_COMMENT">
+    <English>Sync to one or more objects, such as a flagpole or an officer. Players at those objects can recruit AI soldiers into their own group, up to the group size set here. Recruits are not part of any AI Commander's forces and are not saved.</English>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_CLASSES">
+    <English>Unit Classes</English>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_CLASSES_COMMENT">
+    <English>Class names of the soldiers players can recruit, separated by commas. Leave empty for up to eight common infantry roles of each player's own faction.</English>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_MAX">
+    <English>Max Group Size</English>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_MAX_COMMENT">
+    <English>The most men a group can have, players included, before recruiting stops. Two players in one group with this at 8 can recruit 6.</English>
+</Key>
 <Key ID="STR_ALIVE_GM">
     <English>Player Command/Control (C2ISTAR)</English>
     <Chinesesimp>玩家命令/控制(C2ISTAR)</Chinesesimp>

@@ -20,4 +20,40 @@ class CfgVehicles {
                 picture = "x\alive\addons\sup_group_manager\icon_sup_group_manager.paa";
                 author = MODULE_AUTHOR;
         };
+        // Recruitment (#977): sync to objects; players recruit AI into their own group there.
+        class ALiVE_sup_recruit : ModuleAliveBase
+        {
+                scope = 2;
+                displayName = "$STR_ALIVE_RECRUIT";
+                function = "ALIVE_fnc_recruitInit";
+                functionPriority = 153;
+                isGlobal = 2;
+                icon = "x\alive\addons\sup_group_manager\icon_sup_group_manager.paa";
+                picture = "x\alive\addons\sup_group_manager\icon_sup_group_manager.paa";
+                author = MODULE_AUTHOR;
+                class Attributes : AttributesBase
+                {
+                        class unitClasses : Edit
+                        {
+                                property = "ALiVE_sup_recruit_unitClasses";
+                                displayName = "$STR_ALIVE_RECRUIT_CLASSES";
+                                tooltip = "$STR_ALIVE_RECRUIT_CLASSES_COMMENT";
+                                defaultValue = """""";
+                        };
+                        class maxGroupSize : Edit
+                        {
+                                property = "ALiVE_sup_recruit_maxGroupSize";
+                                displayName = "$STR_ALIVE_RECRUIT_MAX";
+                                tooltip = "$STR_ALIVE_RECRUIT_MAX_COMMENT";
+                                defaultValue = """8""";
+                                typeName = "NUMBER";
+                        };
+                        class ModuleDescription : ModuleDescription {};
+                };
+                class ModuleDescription
+                {
+                        description[] = {"$STR_ALIVE_RECRUIT_COMMENT"};
+                        sync[] = {"AnyStaticObject", "AnyVehicle", "AnyPerson"};
+                };
+        };
 };
