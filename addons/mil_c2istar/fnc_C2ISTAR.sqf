@@ -1233,6 +1233,57 @@ switch(_operation) do {
             }];
         };
 
+        // Air situation (#968): each side with players is told when the air over the battle changes
+        // hands, on the same AIR PICTURE page. Every 30 s it counts the side's own armed aircraft in
+        // the air and the enemy ones it knows about; a new state is said once it has held for a
+        // minute, and an empty sky only after a minute and a half, so a single pass doesn't flap it.
+        // Only what's spawned and seen counts, so it's honest about what the side can know.
+        private _reportSky = _logic getVariable ["reportAirSituation", true];
+        if (_reportSky isEqualType "") then { _reportSky = (toLower _reportSky) != "false" };
+        if (isServer && {_reportSky isEqualTo true}) then {
+            [] spawn {
+                private _committed = createHashMap;   // side -> state said last
+                private _candidate = createHashMap;   // side -> [state, checks it has held]
+                private _words = createHashMapFromArray [
+                    ["ours", "we hold air superiority"], ["theirs", "the enemy holds air superiority"],
+                    ["contested", "the air is contested"], ["quiet", "the sky is clear of armed aircraft we know of"]
+                ];
+                while {true} do {
+                    sleep 30;
+                    private _air = vehicles select {
+                        _x isKindOf "Air" && {!(_x isKindOf "ParachuteBase")} && {alive _x} && {((getPosATL _x) select 2) > 20}
+                        && {count crew _x > 0} && {[_x] call ALIVE_fnc_isArmed}
+                    };
+                    {
+                        private _side = _x;
+                        if ((allPlayers findIf { side group _x isEqualTo _side }) >= 0) then {
+                            private _own = { side group (effectiveCommander _x) isEqualTo _side } count _air;
+                            private _enemy = { private _s = side group (effectiveCommander _x); (_side getFriend _s) < 0.6 && {(_side knowsAbout _x) > 1} } count _air;
+                            private _state = switch (true) do {
+                                case (_own > 0 && {_enemy > 0}): { "contested" };
+                                case (_own > 0): { "ours" };
+                                case (_enemy > 0): { "theirs" };
+                                default { "quiet" };
+                            };
+                            private _c = _candidate getOrDefault [_side, ["", 0]];
+                            _c = if ((_c select 0) == _state) then { [_state, (_c select 1) + 1] } else { [_state, 1] };
+                            _candidate set [_side, _c];
+                            private _needed = [2, 3] select (_state == "quiet");
+                            private _said = _committed getOrDefault [_side, "quiet"];
+                            if ((_c select 1) >= _needed && {_state != _said}) then {
+                                _committed set [_side, _state];
+                                private _text = format ["Air situation: %1", _words get _state];
+                                ALiVE_c2istar_airLoss = [[_side], [daytime, "HH:MM"] call BIS_fnc_timeToString, _text];
+                                publicVariable "ALiVE_c2istar_airLoss";
+                                if (hasInterface) then { ALiVE_c2istar_airLoss call ALiVE_c2istar_fnc_showAirLoss };
+                                ["C2ISTAR air picture: %1 for %2 (%3 ours up, %4 enemy seen)", _text, _side, _own, _enemy] call ALiVE_fnc_dump;
+                            };
+                        };
+                    } forEach [west, east, resistance];
+                };
+            };
+        };
+
         if (hasInterface) then {
             ALiVE_c2istar_fnc_showAirLoss = {
                 params ["_sides", "_time", "_text"];

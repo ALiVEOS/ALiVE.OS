@@ -546,6 +546,12 @@
 <Key ID="STR_ALIVE_C2ISTAR_REPORT_AIR_ATTACK_COMMENT">
     <English>When enemy aircraft kill your side's men or vehicles, your side's players get a line on the AIR PICTURE page of the map diary and a short notice: "Friendly forces under attack from an enemy helicopter near Agia Marina". At most once per 2 km area every 5 minutes.</English>
 </Key>
+<Key ID="STR_ALIVE_C2ISTAR_REPORT_AIR_SITUATION">
+    <English>Report Air Situation</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_REPORT_AIR_SITUATION_COMMENT">
+    <English>Players are told on the AIR PICTURE page of the map diary when the air situation changes: we hold air superiority, the enemy holds it, the air is contested, or the sky is clear of armed aircraft it knows of. It counts your side's armed aircraft in the air and the enemy ones your side knows about, and only reports a change once it has lasted about a minute.</English>
+</Key>
 <Key ID="STR_ALIVE_C2ISTAR_GENERATE_BRIEFING">
     <English>Generate Briefing</English>
 </Key>
