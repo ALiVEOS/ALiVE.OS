@@ -194,17 +194,6 @@ private _gracePeriod = 15;
         // the silent-immunity branch below.
         private _loggedImmune = [];
 
-        // DIAG-STRIP: confirm polling-loop entered post-waitUntil-cap.
-        // Eric's RPT (Discord 2026-05-14) shows IEDs arming but no accum
-        // / detonation logs -- distinguishing "loop never ran" from
-        // "player never reached proximity" needs an entry log + a
-        // first-candidate log. Strip once root cause identified.
-        if (_debugLocal) then {
-            ["ALIVE-%1 IED DIAG: polling loop entered for IED at %2 (proximity %3, threshold %4)",
-                time, getposATL _ied, _proximity, _threshold toFixed 3] call ALiVE_fnc_dump;
-        };
-        private _loggedFirstCandidate = false;
-        private _loggedFirstApproach = false;
 
         while {
             !_detonated &&
@@ -276,37 +265,6 @@ private _gracePeriod = 15;
                     }
                 };
 
-                // DIAG-STRIP: 30m approach detection per IED. Companion to the
-                // first-candidate log below. Eric's #890 retest (2026-05-15)
-                // showed polling loop entered but no first-candidate log --
-                // need to distinguish "player got near the area but missed
-                // the tight 3-11m proximity" from "player never came close
-                // at all". One-shot latch per IED.
-                if (_debugLocal && !_loggedFirstApproach) then {
-                    private _approachList = (_ied nearEntities ["Man", 30]) select {
-                        alive _x && (_x in ([] call BIS_fnc_listPlayers))
-                    };
-                    if (count _approachList > 0) then {
-                        private _details = _approachList apply {
-                            format ["%1[%2]@%3m", name _x, typeOf _x, round (_x distance _ied)]
-                        };
-                        ["ALIVE-%1 IED DIAG: player(s) approached within 30m of IED at %2: %3",
-                            time, getposATL _ied, _details] call ALiVE_fnc_dump;
-                        _loggedFirstApproach = true;
-                    };
-                };
-
-                // DIAG-STRIP: first-candidate visibility per IED. Confirms
-                // a player actually entered this IED's proximity at least
-                // once (companion to the polling-loop entry log above).
-                // Strip once Eric's case is closed.
-                if (_debugLocal && !_loggedFirstCandidate && count _detonateList > 0) then {
-                    private _names = _detonateList apply { format ["%1[%2]", name _x, typeOf _x] };
-                    ["ALIVE-%1 IED DIAG: first candidate(s) in proximity of IED at %2: %3",
-                        time, getposATL _ied, _names] call ALiVE_fnc_dump;
-                    _loggedFirstCandidate = true;
-                };
-
                 private _players       = [] call BIS_fnc_listPlayers;
                 private _shouldDetonate = false;
                 private _engineersSeen = [];
@@ -355,24 +313,6 @@ private _gracePeriod = 15;
                     // With AI triggering on, AI count only on a player's side or one friendly to it.
                     private _relevant = _isPlayer || {_aiTriggerable && {_u call ALiVE_fnc_iedAICounts}};
 
-                    // DIAG-STRIP: per-iteration body-entry trace. #890 retest
-                    // (Ares, 2026-05-20) showed first-candidate log firing for
-                    // Ares but neither the silent-immunity, accumulator, nor
-                    // detonation logs followed — i.e. the for-each body below
-                    // either didn't run, or ran without reaching any branch.
-                    // Ares's 2026-05-21 follow-up confirms stripped loadout,
-                    // no engineer flag anywhere, no MineDetector — so the
-                    // !_qualifies branch should have detonated immediately.
-                    // It didn't, which points at dedi locality: `_u in _players`
-                    // (where _players = BIS_fnc_listPlayers) may be failing
-                    // even though `isPlayer _u` evaluates true server-side.
-                    // Log BOTH so the next RPT names the closing gate
-                    // directly. Strip once root cause identified.
-                    if (_debugLocal) then {
-                        ["ALIVE-%1 IED DIAG: forEach _u=%2[%3] inPlayers=%4 isPlayerCmd=%5 _aiTriggerable=%6 _relevant=%7 _shouldDetonate=%8 _playersCount=%9",
-                            time, name _u, typeOf _u, (_u in _players), isPlayer _u, _aiTriggerable, _relevant, _shouldDetonate, count _players] call ALiVE_fnc_dump;
-                    };
-
                     if (_relevant && !_shouldDetonate) then {
                         private _inVehicle = (vehicle _u) != _u;
 
@@ -382,21 +322,6 @@ private _gracePeriod = 15;
                         // via ALiVE_fnc_iedUnitQualifies (which also enforces dismounted).
                         private _qualifies = [_u, _device] call ALiVE_fnc_iedUnitQualifies;
 
-                        // DIAG-STRIP: companion to the forEach entry trace.
-                        // Once body is entered for a player, log the
-                        // qualification breakdown. Strip with the entry log.
-                        // Men only: a vehicle has no items or traits to show.
-                        if (_debugLocal && {_u isKindOf "CAManBase"}) then {
-                            ["ALIVE-%1 IED DIAG: qualifying %2 _inVehicle=%3 _qualifies=%4 _challengeEnabled=%5 (device=%6 displayName=%7 vvn=%8 trait=%9 ace_eng=%10 ace_eod=%11)",
-                                time, name _u, _inVehicle, _qualifies, _challengeEnabled,
-                                (_device in (items _u)),
-                                getText (configFile >> "CfgVehicles" >> typeOf _u >> "displayName"),
-                                vehicleVarName _u,
-                                _u getUnitTrait "explosiveSpecialist",
-                                _u getVariable ["ACE_isEngineer", 0],
-                                _u getVariable ["ACE_isEOD", false]] call ALiVE_fnc_dump;
-                        };
-
                         if (!_qualifies) then {
                             // Non-engineer or vehicle-borne: instant detonation (legacy behaviour).
                             _shouldDetonate = true;
@@ -405,16 +330,10 @@ private _gracePeriod = 15;
                                 // Master toggle off: qualifying engineer is fully immune (legacy).
                                 // Nothing to do - fall through without accumulating.
                                 //
-                                // DIAG-STRIP: surface this silent-immunity case so
-                                // testers can see WHY a qualifying unit walked
-                                // through proximity without anything happening.
-                                // Ares's #890 dedicated-server RPT (2026-05-18)
-                                // showed candidate-in-proximity but no accum / no
-                                // detonation -- with the engineer-immune branch
-                                // logging nothing, the silence was indistinguish-
-                                // able from the loop having stalled. One log per
-                                // engineer per IED via _loggedImmune (persists
-                                // across the 0.5s poll cycles).
+                                // With Debug on, say once per engineer per IED that
+                                // this one is immune, so a tester can see why a qualifying
+                                // unit walked through without anything happening (kept
+                                // on purpose after #890; the other traces were removed).
                                 private _key = netId _u;
                                 if (_debugLocal && !(_key in _loggedImmune)) then {
                                     _loggedImmune pushBack _key;
