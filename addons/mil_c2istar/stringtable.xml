@@ -534,6 +534,12 @@
     <Portuguese>Todas</Portuguese>
     <Russian>Все</Russian>
 </Key>
+<Key ID="STR_ALIVE_C2ISTAR_REPORT_AIR_LOSS">
+    <English>Report Enemy Aircraft Losses</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_REPORT_AIR_LOSS_COMMENT">
+    <English>When an aircraft goes down, players on the sides hostile to it get a line on the AIR PICTURE page of the map diary and a short notice: "Enemy fighter down near Agia Marina". It says what kind of aircraft (fighter, attack aircraft, helicopter, transport or drone), not the model. Covers the AI Commander's profiled aircraft, spawned or virtual, and the air commander's own.</English>
+</Key>
 <Key ID="STR_ALIVE_C2ISTAR_GENERATE_BRIEFING">
     <English>Generate Briefing</English>
 </Key>

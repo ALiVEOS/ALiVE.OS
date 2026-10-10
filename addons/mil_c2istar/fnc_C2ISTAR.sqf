@@ -1154,6 +1154,59 @@ switch(_operation) do {
         };
         ALIVE_MIL_C2ISTAR = _logic;
 
+        // Enemy aircraft losses (#968): when an aircraft goes down, every player on a side hostile
+        // to it gets a line on the AIR PICTURE page of the map diary and a notification. Called by
+        // the profile system (spawned and virtual losses) and the air commander (its own aircraft,
+        // which have no profile). One report per aircraft.
+        private _reportAir = _logic getVariable ["reportEnemyAirLoss", true];
+        if (_reportAir isEqualType "") then { _reportAir = (toLower _reportAir) != "false" };
+        if (isServer && {_reportAir isEqualTo true}) then {
+            ALiVE_c2istar_airLossSeen = createHashMap;
+            ALiVE_c2istar_fnc_reportAirLoss = {
+                params [["_class", "", [""]], ["_pos", [0,0,0], [[]]], ["_side", sideUnknown, [sideUnknown]], ["_key", "", [""]]];
+                if (_class isEqualTo "" || {!(_class isKindOf "Air")} || {_class isKindOf "ParachuteBase"}) exitWith {};
+                if (_key isEqualTo "") then { _key = format ["%1_%2", _class, _pos apply { round (_x / 50) }] };
+                if (_key in ALiVE_c2istar_airLossSeen) exitWith {};
+                ALiVE_c2istar_airLossSeen set [_key, true];
+                if (_side isEqualTo sideUnknown) then { _side = [getNumber (configFile >> "CfgVehicles" >> _class >> "side")] call BIS_fnc_sideType };
+
+                // A general class, not the model: what a spotter would call it.
+                private _kind = switch (true) do {
+                    case (getNumber (configFile >> "CfgVehicles" >> _class >> "isUav") == 1): { "drone" };
+                    case (_class isKindOf "Helicopter"): { "helicopter" };
+                    default {
+                        private _roles = [_class] call ALiVE_fnc_getAircraftRoles;
+                        switch (true) do {
+                            case ("Fighter" in _roles): { "fighter" };
+                            case ("Attack" in _roles || {"CAS" in _roles}): { "attack aircraft" };
+                            default { "transport aircraft" };
+                        };
+                    };
+                };
+                private _near = [_pos] call ALIVE_fnc_taskGetNearestLocationName;
+                private _time = [daytime, "HH:MM"] call BIS_fnc_timeToString;
+                private _text = format ["Enemy %1 down near %2", _kind, _near];
+
+                // Told to the sides hostile to it, by a broadcast each player filters for itself, so a
+                // mission's remote-execution whitelist can't stop it.
+                private _sides = [west, east, resistance] select { (_x getFriend _side) < 0.6 && {!(_x isEqualTo _side)} };
+                ALiVE_c2istar_airLoss = [_sides, _time, _text];
+                publicVariable "ALiVE_c2istar_airLoss";
+                if (hasInterface) then { ALiVE_c2istar_airLoss call ALiVE_c2istar_fnc_showAirLoss };
+                ["C2ISTAR air picture: %1 (%2) at %3, told %4", _text, _class, mapGridPosition _pos, _sides] call ALiVE_fnc_dump;
+            };
+        };
+        if (hasInterface) then {
+            ALiVE_c2istar_fnc_showAirLoss = {
+                params ["_sides", "_time", "_text"];
+                if !((side group player) in _sides) exitWith {};
+                if !(player diarySubjectExists "ALiVE_AirPicture") then { player createDiarySubject ["ALiVE_AirPicture", "AIR PICTURE"] };
+                player createDiaryRecord ["ALiVE_AirPicture", [format ["%1 %2", _time, _text], format ["%1: %2.", _time, _text]]];
+                hintSilent format ["AIR PICTURE\n%1", _text];
+            };
+            "ALiVE_c2istar_airLoss" addPublicVariableEventHandler { (_this select 1) call ALiVE_c2istar_fnc_showAirLoss };
+        };
+
 // Read once into a global so the task handler and the menu can both see it without
 // reaching for the module every time. The server broadcasts it so a change made from
 // the menu reaches everyone.

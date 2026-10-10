@@ -1251,6 +1251,11 @@ if (!_simAttacks) then {
                 // log event
                 private _event = ['PROFILE_KILLED', [_victimPos,_victimFaction,_victimSide,_killerSide,_victim,_killer,_victimProfileID,_victimObjectType], "ProfileSimulator"] call ALiVE_fnc_event;
                [MOD(eventLog),"addEvent",_event] call ALiVE_fnc_eventLog;
+            } else {
+                // A virtual aircraft shot down is told to the other sides' players (#968).
+                if (!isNil "ALiVE_c2istar_fnc_reportAirLoss") then {
+                    [_victim select 2 select 11, _victim select 2 select 2, [_victim select 2 select 3] call ALIVE_fnc_sideTextToObject, _victim select 2 select 4] call ALiVE_c2istar_fnc_reportAirLoss;
+                };
             };
 
             [MOD(profileHandler),"unregisterProfile", _victim] call ALiVE_fnc_profileHandler;

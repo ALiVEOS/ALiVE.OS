@@ -2866,6 +2866,11 @@ switch(_operation) do {
                 _status = _r param [0, "ok"];
                 _matched = _r param [1, false];
                 _detail = _r param [2, ""];
+                // An air commander's aircraft has no profile, so its loss is told to the other
+                // sides' players from here (#968).
+                if (_effect isEqualTo "broadcastLost" && {!isNull _obj} && {!isNil "ALiVE_c2istar_fnc_reportAirLoss"}) then {
+                    [typeOf _obj, getPosATL _obj, sideUnknown, format ["ato_%1", netId _obj]] call ALiVE_c2istar_fnc_reportAirLoss;
+                };
             };
 
             default {

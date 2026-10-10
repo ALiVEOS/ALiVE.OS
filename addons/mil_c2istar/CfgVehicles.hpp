@@ -548,6 +548,16 @@ class CfgVehicles {
                                     class No  { name = "No";  value = "false"; };
                             };
                     };
+                    class reportEnemyAirLoss
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_reportEnemyAirLoss";
+                            displayName = "$STR_ALIVE_C2ISTAR_REPORT_AIR_LOSS";
+                            tooltip = "$STR_ALIVE_C2ISTAR_REPORT_AIR_LOSS_COMMENT";
+                            control = "Checkbox";
+                            typeName = "BOOL";
+                            expression = "_this setVariable ['reportEnemyAirLoss', _value, true];";
+                            defaultValue = "true";
+                    };
                     class generateBriefing
                     {
                             property = "ALiVE_MIL_C2ISTAR_generateBriefing";

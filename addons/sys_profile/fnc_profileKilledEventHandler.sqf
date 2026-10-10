@@ -93,6 +93,11 @@ switch(_profileType) do {
             private _killerDist = if (isNull _killer) then {-1} else {round (_killer distance _unit)};
             private _nearBldg  = (nearestObjects [(getPosATL _unit), ["Building","House"], 6]) apply {typeOf _x};
             ["ALIVE airframe-loss: %1 (%2) DESTROYED at %3 by %4 (side %5) [self=%6 killerVeh=%7 dist=%8m victimSpeed=%9 nearBldg=%10]", _vId, _vClass, _vPos, _killerType, _killerSide, _self, _killerVeh, _killerDist, round (speed _unit), _nearBldg] call ALIVE_fnc_dump;
+            // Told to the other sides' players as an enemy loss (#968), when C2ISTAR reports them.
+            if (!isNil "ALiVE_c2istar_fnc_reportAirLoss") then {
+                // The class itself: _vClass here is the profile's broad type ("Plane"), which can't say fighter or attack.
+                [if (isNull _unit) then { _profile select 2 select 11 } else { typeOf _unit }, _vPos, [_profile select 2 select 3] call ALIVE_fnc_sideTextToObject, _vId] call ALiVE_c2istar_fnc_reportAirLoss;
+            };
         };
 
         // not sure about this, it will remove the profile and the vehicle wreck will remain
