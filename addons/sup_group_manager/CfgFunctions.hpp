@@ -44,7 +44,7 @@ class CfgFunctions {
             class recruitInit {
                 description = "Recruitment module: recruit AI into the player's group (#977)";
                 file = "\x\alive\addons\sup_group_manager\fnc_recruitInit.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
         };
     };
