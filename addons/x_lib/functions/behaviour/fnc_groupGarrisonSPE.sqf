@@ -49,15 +49,32 @@ private _staticWeapons = nearestObjects [_position, ["StaticWeapon"], _radius];
 // A garrison order runs on the server, and a stop only takes on the machine that owns the man: a
 // headless client's men stopped from here walked straight back to their leader. So each man is
 // stopped, and turned, by his own machine.
+// Held on his post under fire too, as in ALIVE_fnc_groupGarrison: standing when raised or indoors,
+// crouched in the open, and unable to walk off until his group's next order.
 private _fnc_hold = {
-    params ["_unit", "_dir"];
+    params ["_unit", "_dir", ["_onPost", true]];
+    private _stance = "";
+    if (_onPost) then {
+        private _building = nearestBuilding _unit;
+        // Within a building's footprint (a house, a bunker, a trench piece) or raised, he stands to fire
+        // over the parapet; in the open, even beside one, he crouches.
+        private _inside = !isNull _building && {
+            private _m = _building worldToModel (getPosATL _unit);
+            (boundingBoxReal _building) params ["_lo", "_hi"];
+            (_m select 0) > (_lo select 0) && {(_m select 0) < (_hi select 0)} && {(_m select 1) > (_lo select 1)} && {(_m select 1) < (_hi select 1)}
+        };
+        _stance = ["MIDDLE", "UP"] select ((((getPosATL _unit) select 2) > 1.5) || _inside);
+    };
     if (local _unit) then {
         if (!isNil "_dir") then { _unit setDir _dir };
         doStop _unit;
+        if (_stance != "") then { _unit setUnitPos _stance; _unit disableAI "PATH" };
     } else {
         if (!isNil "_dir") then { [_unit, _dir] remoteExecCall ["setDir", _unit] };
         _unit remoteExecCall ["doStop", _unit];
+        if (_stance != "") then { [_unit, _stance] remoteExecCall ["setUnitPos", _unit]; [_unit, "PATH"] remoteExecCall ["disableAI", _unit] };
     };
+    if (_stance != "") then { _unit setVariable ["ALiVE_garrisonHeld", true, true] };
 };
 
 if (count _staticWeapons > 0) then
@@ -151,7 +168,9 @@ if !(_movementAssignments isEqualTo []) then {
 
                 if (!_stillAssigned || {_unit call ALiVE_fnc_unitReadyRemote}) then {
                     if (_stillAssigned) then {
-                        if (_direction >= 0) then { [_unit, _direction] call _hold } else { [_unit] call _hold };
+                        // Pinned only on the post itself: an unreachable seat also reads ready, and he stops short of it.
+                        private _arrived = (_unit distance2D _destination) < 2.5;
+                        if (_direction >= 0) then { [_unit, _direction, _arrived] call _hold } else { [_unit, nil, _arrived] call _hold };
                     };
                     _assignments deleteAt _forEachIndex;
                 };
@@ -161,7 +180,7 @@ if !(_movementAssignments isEqualTo []) then {
         };
         {
             _x params ["_unit"];
-            if (_unlock && {[_unit] call _ours}) then { [_unit] call _hold };
+            if (_unlock && {[_unit] call _ours}) then { [_unit, nil, false] call _hold };
         } forEach _assignments;
         if (_unlock) then {
             isNil {

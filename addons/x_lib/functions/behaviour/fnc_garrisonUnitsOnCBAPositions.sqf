@@ -68,13 +68,20 @@ _cbaObjects = [_cbaObjects, [], { _x distance2D _sortFrom }, "ASCEND"] call BIS_
             _unit setPosATL _cbaPos;
             // A stop only takes on the machine that owns the man, which for a group a headless
             // client owns isn't the server running this.
+            // Held there under fire as well, standing in his trench or post, the same as every
+            // garrison post (see ALIVE_fnc_groupGarrison); his group's next order lets him go.
             if (local _unit) then {
                 _unit setDir _cbaDir;
                 doStop _unit;
+                _unit setUnitPos "UP";
+                _unit disableAI "PATH";
             } else {
                 [_unit, _cbaDir] remoteExecCall ["setDir", _unit];
                 _unit remoteExecCall ["doStop", _unit];
+                [_unit, "UP"] remoteExecCall ["setUnitPos", _unit];
+                [_unit, "PATH"] remoteExecCall ["disableAI", _unit];
             };
+            _unit setVariable ["ALiVE_garrisonHeld", true, true];
         } else {
             _movementAssignments pushBack [_unit, _cbaPos, _cbaDir];
             _x setVariable ["ALiVE_garrisonClaim", [_unit, time + 125]];

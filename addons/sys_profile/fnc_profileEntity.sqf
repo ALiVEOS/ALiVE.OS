@@ -554,7 +554,38 @@ switch(_operation) do {
 
     };
 
+    // Men a garrison held on their posts (ALIVE_fnc_groupGarrison) are let go: free to move and
+    // to take whatever stance again, and back with their leader. Called when the profile's commands
+    // are cleared for a new order and when it is given somewhere to go, so a new order never finds
+    // them pinned. A garrison that has simply finished keeps them. A garrison given again holds them again.
+    // Given men instead ([objNull, "releaseGarrisonHold", [men]]), it lets those go: a man leaving his
+    // group for a player's, or a player joining his, must not stay pinned.
+    case "releaseGarrisonHold": {
+        private _men = [];
+        if (_args isEqualType [] && {_args isNotEqualTo []}) then {
+            _men = _args select { _x isEqualType objNull && {!isNull _x} };
+        } else {
+            private _group = if (_logic isEqualType []) then { _logic select 2 select 13 } else { grpNull };
+            if (_group isEqualType grpNull && {!isNull _group}) then { _men = units _group };
+        };
+            {
+                if (_x getVariable ["ALiVE_garrisonHeld", false]) then {
+                    _x setVariable ["ALiVE_garrisonHeld", false, true];
+                    if (local _x) then {
+                        _x enableAI "PATH";
+                        _x setUnitPos "AUTO";
+                        _x doFollow (leader _x);
+                    } else {
+                        [_x, "PATH"] remoteExecCall ["enableAI", _x];
+                        [_x, "AUTO"] remoteExecCall ["setUnitPos", _x];
+                        [_x, leader _x] remoteExecCall ["doFollow", _x];
+                    };
+                };
+            } forEach _men;
+    };
+
     case "insertWaypoint": {
+      [_logic, "releaseGarrisonHold"] call MAINCLASS;
       private _waypoint = _args;
       private _isSPE = [_logic, "isSPE", false] call ALIVE_fnc_hashGet;
       if (isNil "_isSPE") then { _isSPE = false; };
@@ -571,6 +602,7 @@ switch(_operation) do {
     };
 
     case "addWaypoint": {
+      [_logic, "releaseGarrisonHold"] call MAINCLASS;
       private _waypoint = _args;
       private _isSPE = [_logic, "isSPE", false] call ALIVE_fnc_hashGet;
       if (isNil "_isSPE") then { _isSPE = false; };
@@ -892,6 +924,8 @@ switch(_operation) do {
     };
 
     case "clearActiveCommands": {
+        // A new order: any men its garrison held on their posts are let go first.
+        [_logic, "releaseGarrisonHold"] call MAINCLASS;
         private _type = _logic select 2 select 5;
 
         if (!(isnil "_type") && {_type == "entity"}) then {

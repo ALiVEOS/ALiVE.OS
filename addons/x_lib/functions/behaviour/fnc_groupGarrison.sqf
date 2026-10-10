@@ -69,6 +69,7 @@ private _unitPercentCount = ((count _units) * _guardPatrolPercentage) / 100;
 private _profile = nil;
 
 [_group] call ALiVE_fnc_releaseGarrisonBuildings;
+_group setVariable ["ALiVE_garrisonNoHold", nil];
 
 // A walk still under way from an earlier order leaves these men alone from here on: this pass
 // decides where each of them goes, and a walk it starts tags its own walkers again.
@@ -121,15 +122,39 @@ _staticWeapons = _staticWeapons select { (_x distance2D _groupPosition) <= _fall
 // A garrison order runs on the server, and a stop only takes on the machine that owns the man: a
 // headless client's men stopped from here walked straight back to their leader. So each man is
 // stopped, and turned, by his own machine.
+//
+// A man on his post also keeps it under fire. Stopped and nothing more, the engine's combat
+// behaviour had him go prone behind the parapet or climb down and leave: under a 150 s attack on
+// Stratis 7 of 8 men left their towers and the Cargo HQ, and one in six samples was prone. Held
+// standing (crouching in the open) and unable to walk off, all 8 stayed up and fired from their
+// posts. The new order his group gets lets him go again (ALIVE_fnc_commandRouter, deactivate).
+// A walker who gave up short of his post is only stopped, as before, not pinned in the open.
 private _fnc_hold = {
-    params ["_unit", "_dir"];
+    params ["_unit", "_dir", ["_onPost", true]];
+    private _stance = "";
+    // A group sent to search the area instead (no buildings left to take) is only stopped.
+    if ((group _unit) getVariable ["ALiVE_garrisonNoHold", false]) then { _onPost = false };
+    if (_onPost) then {
+        private _building = nearestBuilding _unit;
+        // Within a building's footprint (a house, a bunker, a trench piece) or raised, he stands to fire
+        // over the parapet; in the open, even beside one, he crouches.
+        private _inside = !isNull _building && {
+            private _m = _building worldToModel (getPosATL _unit);
+            (boundingBoxReal _building) params ["_lo", "_hi"];
+            (_m select 0) > (_lo select 0) && {(_m select 0) < (_hi select 0)} && {(_m select 1) > (_lo select 1)} && {(_m select 1) < (_hi select 1)}
+        };
+        _stance = ["MIDDLE", "UP"] select ((((getPosATL _unit) select 2) > 1.5) || _inside);
+    };
     if (local _unit) then {
         if (!isNil "_dir") then { _unit setDir _dir };
         doStop _unit;
+        if (_stance != "") then { _unit setUnitPos _stance; _unit disableAI "PATH" };
     } else {
         if (!isNil "_dir") then { [_unit, _dir] remoteExecCall ["setDir", _unit] };
         _unit remoteExecCall ["doStop", _unit];
+        if (_stance != "") then { [_unit, _stance] remoteExecCall ["setUnitPos", _unit]; [_unit, "PATH"] remoteExecCall ["disableAI", _unit] };
     };
+    if (_stance != "") then { _unit setVariable ["ALiVE_garrisonHeld", true, true] };
 };
 
 // A man's building patrol stops him at each building, sets his behaviour and pace and has his group
@@ -243,7 +268,9 @@ private _fnc_startMovement = {
 
                 if (!_stillAssigned || {_unit call ALiVE_fnc_unitReadyRemote}) then {
                     if (_stillAssigned) then {
-                        if (_direction >= 0) then { [_unit, _direction] call _hold } else { [_unit] call _hold };
+                        // Pinned only on the post itself: an unreachable seat also reads ready, and he stops short of it.
+                        private _arrived = (_unit distance2D _destination) < 2.5;
+                        if (_direction >= 0) then { [_unit, _direction, _arrived] call _hold } else { [_unit, nil, _arrived] call _hold };
                     };
                     _assignments deleteAt _forEachIndex;
                 };
@@ -253,7 +280,7 @@ private _fnc_startMovement = {
         };
         {
             _x params ["_unit"];
-            if (_unlock && {[_unit] call _ours}) then { [_unit] call _hold };
+            if (_unlock && {[_unit] call _ours}) then { [_unit, nil, false] call _hold };
         } forEach _assignments;
         if (_unlock) then {
             isNil {
@@ -663,6 +690,8 @@ if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
 // unbraced form evaluated every part and threw "Undefined variable _profile".
 if ((count _buildings == 0) && {!(isNil "_profile")} && {[_profile,"isCycling"] call ALiVE_fnc_HashGet}) exitwith {
 
+       // The group searches the area next, so men reaching a post on the way aren't pinned there.
+       _group setVariable ["ALiVE_garrisonNoHold", true];
        [_group, _movementAssignments] call _fnc_startMovement;
 	
 	   private _id = [_profile,"profileID","error"] call ALiVE_fnc_HashGet;

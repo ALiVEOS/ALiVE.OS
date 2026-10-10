@@ -31,6 +31,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 
 Peer reviewed:
 nil
@@ -249,6 +250,8 @@ switch(_operation) do {
 
             _unit setVariable ["profileID",_leaderGroupToPID];
 
+            // A garrison guard taken into a player's group is let off his post first.
+            [objNull, "releaseGarrisonHold", [_unit]] call ALIVE_fnc_profileEntity;
             [_unit] joinSilent _group;
 
             _event = ['GROUPS_UPDATED', [_playerID,[]], "GROUP_HANDLER"] call ALIVE_fnc_event;

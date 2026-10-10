@@ -1196,6 +1196,8 @@ switch(_operation) do {
             _selected enableSimulationGlobal false;
             _selected hideObjectGlobal true;
 
+            // A garrisoned group the player takes over is let off its posts so it can follow him.
+            [objNull, "releaseGarrisonHold", units _targetGroup] call ALIVE_fnc_profileEntity;
             [_player] joinSilent _targetGroup;
             private _joinDeadline = diag_tickTime + 8;
             waitUntil {

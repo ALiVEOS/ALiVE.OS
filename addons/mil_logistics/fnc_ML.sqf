@@ -16444,6 +16444,8 @@ switch(_operation) do {
 
                                     _units = _profile select 2 select 21;
 
+                                    // Men a garrison held on their posts are let go before they join the player.
+                                    [objNull, "releaseGarrisonHold", _units] call ALIVE_fnc_profileEntity;
                                     _units joinSilent (group _player);
 
                                     [ALIVE_profileHandler, "unregisterProfile", _profile] call ALIVE_fnc_profileHandler;
@@ -16482,6 +16484,8 @@ switch(_operation) do {
 
                                     _units = _profile select 2 select 21;
 
+                                    // Men a garrison held on their posts are let go before they join the player.
+                                    [objNull, "releaseGarrisonHold", _units] call ALIVE_fnc_profileEntity;
                                     _units joinSilent (group _player);
 
                                     [ALIVE_profileHandler, "unregisterProfile", _profile] call ALIVE_fnc_profileHandler;
