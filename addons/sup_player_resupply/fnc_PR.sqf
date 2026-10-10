@@ -1567,7 +1567,9 @@ switch(_operation) do {
                     "_stateLabel","_rowData","_payloadID","_payloadPositions","_payloadDistance","_payloadType","_typeLabel"];
 
                     _payloadStatusList = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_StatusList);
-                    _payloadStatusList ctrlShow true;
+                    // Shown only while the status screen is the one up: a reply landing on the
+                    // request screen drew the list over it.
+                    _payloadStatusList ctrlShow ([_logic,"state"] call MAINCLASS == "REQUEST_SENT");
 
                     lbClear _payloadStatusList;
 
@@ -1790,10 +1792,12 @@ switch(_operation) do {
 
                     case "REQUEST_SENT":{
 
-                        // request has been sent
-                        // display the status interface
+                        // The status screen was open when the tablet closed, so it opens on it again,
+                        // fetching the status and restarting its refresh. Resetting to the request
+                        // screen left the state on the status screen, and every refresh then drew the
+                        // status list over the request screen (AshTray, 10 Oct 2026).
 
-                        [_logic,"resetRequest"] call MAINCLASS;
+                        ['SHOW_STATUS_CLICK',[[]]] call ALIVE_fnc_PRTabletOnAction;
 
                     };
                     case "RESET":{
@@ -3211,9 +3215,10 @@ switch(_operation) do {
                     // Stops automatically when the player navigates back to the request screen.
                     [_logic] spawn {
                         private _statusLogic = _this select 0;
-                        while { [_statusLogic,"state"] call MAINCLASS == "REQUEST_SENT" } do {
+                        // Stops when the tablet closes too: reopening on the status screen starts a new one.
+                        while { [_statusLogic,"state"] call MAINCLASS == "REQUEST_SENT" && {!isNull (findDisplay PRTablet_CTRL_MainDisplay)} } do {
                             sleep 15;
-                            if ([_statusLogic,"state"] call MAINCLASS != "REQUEST_SENT") exitWith {};
+                            if ([_statusLogic,"state"] call MAINCLASS != "REQUEST_SENT" || {isNull (findDisplay PRTablet_CTRL_MainDisplay)}) exitWith {};
                             private _side     = [_statusLogic,"side"]    call MAINCLASS;
                             private _faction  = [_statusLogic,"faction"] call MAINCLASS;
                             private _playerID = getPlayerUID player;
@@ -3231,6 +3236,10 @@ switch(_operation) do {
                 };
 
                 case "SHOW_REQUEST_CLICK": {
+
+                    // Leaving the status screen says so, which ends its 15 s refresh. Left on the
+                    // status state, every refresh drew the status list over the request screen.
+                    [_logic,"state","RESET"] call MAINCLASS;
 
                     // set the interface state
 
