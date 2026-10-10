@@ -444,6 +444,9 @@ switch(_operation) do {
             private _eventID = _unit addMPEventHandler["MPKilled", ALIVE_fnc_agentKilledEventHandler];
             _eventID = _unit addEventHandler["FiredNear", ALIVE_fnc_agentFiredNearEventHandler];
 
+            // The mission's On Each Spawn code, given [unit, agent ID], in its own thread.
+            if (!isNil "ALiVE_CivPop_onEachSpawn") then { [_unit, _agentID] spawn ALiVE_CivPop_onEachSpawn };
+
             // set agent as active and store a reference to the unit on the agent
             [_logic,"unit",_unit] call ALIVE_fnc_hashSet;
             [_logic,"active",true] call ALIVE_fnc_hashSet;

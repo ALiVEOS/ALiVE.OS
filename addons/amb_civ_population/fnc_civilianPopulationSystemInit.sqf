@@ -31,6 +31,10 @@ if(isServer) then {
 
     MOD(amb_civ_population) = _logic;
 
+    // On Each Spawn: the mission's own code, run for every civilian as it spawns (see civilianAgent).
+    private _onEachSpawn = _logic getVariable ["onEachSpawn", ""];
+    if (_onEachSpawn isEqualType "" && {_onEachSpawn != ""}) then { ALiVE_CivPop_onEachSpawn = compile _onEachSpawn };
+
     // Destroying people's homes turns them against you (#425). A lived-in building destroyed
     // by a side raises the local civilians' hostility to that side by 5, half what killing one
     // of them does. updateSectorHostility only touches civilian settlements, so a barracks or a

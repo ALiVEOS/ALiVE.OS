@@ -737,6 +737,12 @@
     <Portuguese>Opcional. Selecione uma única facção civil para os spawns de multidões ambientais. Especificar uma facção melhora o desempenho; deixe em branco para que o ativador de multidões escolha uma facção por edifício a partir dos civis próximos. Facções de mods não carregados aparecem como «(unrecognised)» — o valor armazenado é preservado de qualquer forma.</Portuguese>
     <Russian>Необязательно. Выберите одну гражданскую фракцию для спавна окружающих толп. Указание фракции повышает производительность; оставьте пустым, чтобы активатор толп выбирал фракцию по зданию из ближайших гражданских. Фракции из незагруженных модов отображаются как «(unrecognised)» — сохранённое значение сохраняется в любом случае.</Russian></Key>
 <!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_POP_ON_EACH_SPAWN">
+    <English>On Each Spawn</English>
+</Key>
+<Key ID="STR_ALIVE_CIV_POP_ON_EACH_SPAWN_COMMENT">
+    <English>SQF code run for every civilian as it spawns. _this = [unit, agentID]. Runs on the server in its own thread; use remoteExec to reach players. Example: _this params ["_unit"]; _unit addItem "FirstAidKit";</English>
+</Key>
 <Key ID="STR_ALIVE_CIV_POP_AMBIENT_VOLUME">
     <English>Ambient Sound Volume:</English>
 </Key>

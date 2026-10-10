@@ -6,7 +6,7 @@ class CfgVehicles {
     };
     class ModuleAliveBase : Module_F
     {
-        class AttributesBase : AttributesBase { class ALiVE_ModuleSubTitle; };
+        class AttributesBase : AttributesBase { class ALiVE_ModuleSubTitle; class ALiVE_EditMultilineSQF; };
         class ModuleDescription;
     };
     class ADDON : ModuleAliveBase
@@ -184,6 +184,8 @@ class CfgVehicles {
             };
             class disableAmbientSounds : Combo { property = "ALiVE_amb_civ_population_disableAmbientSounds"; displayName = "$STR_ALIVE_CIV_POP_DISABLE_AMBIENT_SOUNDS"; tooltip = "$STR_ALIVE_CIV_POP_DISABLE_AMBIENT_SOUNDS_COMMENT"; defaultValue = """false"""; class Values { class No { name = "No"; value = false; default = 1; }; class Yes { name = "Yes"; value = true; }; }; };
             class ambientSoundVolume : Combo { property = "ALiVE_amb_civ_population_ambientSoundVolume"; displayName = "$STR_ALIVE_CIV_POP_AMBIENT_VOLUME"; tooltip = "$STR_ALIVE_CIV_POP_AMBIENT_VOLUME_COMMENT"; defaultValue = """1"""; class Values { class V1 { name = "Normal"; value = "1"; default = 1; }; class V15 { name = "1.5x"; value = "1.5"; }; class V2 { name = "2x"; value = "2"; }; class V3 { name = "3x"; value = "3"; }; class V4 { name = "4x"; value = "4"; }; class V5 { name = "5x"; value = "5"; }; }; };
+            // On Each Spawn (Discord wish list, 10 Oct): code run on the server for every civilian spawned.
+            class onEachSpawn : ALiVE_EditMultilineSQF { property = "ALiVE_amb_civ_population_onEachSpawn"; displayName = "$STR_ALIVE_CIV_POP_ON_EACH_SPAWN"; tooltip = "$STR_ALIVE_CIV_POP_ON_EACH_SPAWN_COMMENT"; defaultValue = """"""; };
 
             // ---- Humanitarian ---------------------------------------------------
             class HDR_HUMANITARIAN : ALiVE_ModuleSubTitle { property = "ALiVE_amb_civ_population_HDR_HUMANITARIAN"; displayName = "HUMANITARIAN"; };
