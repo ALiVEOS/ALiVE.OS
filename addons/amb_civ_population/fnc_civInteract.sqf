@@ -1444,7 +1444,11 @@ switch (_operation) do {
 		};
 
 		// Ensure item is in the inventory & remove it
-		private _validItems = ((vestItems player) + (uniformItems player) + (backpackItems player)) arrayIntersect _items;
+		// Matched without regard to case: a class typed into the module's custom food or water list
+		// as "ace_mre_beefstew" is the game's "ACE_MRE_BeefStew", and an exact match said the
+		// player had none while carrying plenty (AshTray, 10 Oct 2026).
+		private _wanted = _items apply { toLower _x };
+		private _validItems = ((vestItems player) + (uniformItems player) + (backpackItems player)) select { (toLower _x) in _wanted };
 		if (_validItems isequalto []) exitWith {
 			["openSideSmall",0.3] call ALIVE_fnc_displayMenu;
 			["setSideSmallText",localize "STR_ALIVE_CIV_POP_NOAID"] spawn ALIVE_fnc_displayMenu;
