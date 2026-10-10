@@ -118,7 +118,10 @@ private _runwayLabel = if (_hasRunway) then { "Present" } else { "Absent" };
 // the file rather than the global so it is always this world's.
 // -------------------------------------------------------------------
 private _indexVersion = "";
-private _staticText = loadFile format ["\x\alive\addons\main\static\%1_staticData.sqf", worldName];
+// Only read when it exists: loadFile on a missing file pops up "Script ... not found" in the editor on
+// every map without an index, VR included.
+private _staticPath = format ["\x\alive\addons\main\static\%1_staticData.sqf", worldName];
+private _staticText = if (fileExists _staticPath) then { loadFile _staticPath } else { "" };
 private _versionAt = _staticText find "ALiVE_indexVersion";
 if (_versionAt >= 0) then {
     private _quoted = (_staticText select [_versionAt, 80]) splitString """";

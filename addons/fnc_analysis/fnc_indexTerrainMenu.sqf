@@ -110,7 +110,9 @@ private _hasWorkshop = _mod != "" && {!_isDLC} && {_id != "0"} && {_id != ""} &&
 // fnc_assessIndexViability.sqf: the static data file's
 // ALiVE_indexVersion line; an index without one predates 3.1.
 // -------------------------------------------------------------------
-private _staticText = loadFile format ["\x\alive\addons\main\static\%1_staticData.sqf", worldName];
+// Only read when it exists: loadFile on a missing file pops up "Script ... not found" in the editor.
+private _staticPath = format ["\x\alive\addons\main\static\%1_staticData.sqf", worldName];
+private _staticText = if (fileExists _staticPath) then { loadFile _staticPath } else { "" };
 private _indexed = _staticText != "" || {fileExists format ["\x\alive\addons\fnc_analysis\data\data.%1.sqf", toLower worldName]};
 private _version = "";
 private _versionAt = _staticText find "ALiVE_indexVersion";
