@@ -338,6 +338,19 @@ class CfgVehicles {
                                         class Many { name = "Many"; value = "many"; };
                                 };
                         };
+                        class preparedDefences : Combo
+                        {
+                                property = "ALiVE_mil_opcom_preparedDefences";
+                                displayName = "$STR_ALIVE_OPCOM_PREPARED_DEFENCES";
+                                tooltip = "$STR_ALIVE_OPCOM_PREPARED_DEFENCES_COMMENT";
+                                defaultValue = """none""";
+                                class Values
+                                {
+                                        class None { name = "None"; value = "none"; };
+                                        class Few  { name = "Few";  value = "few"; };
+                                        class Many { name = "Many"; value = "many"; };
+                                };
+                        };
                         // ----  Task Overrides ----------------------------------------
                         class TSK_OVR : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_TSK_OVR"; displayName = "TASK OVERRIDES"; };
                         class taskProfileCountOverrides : Edit

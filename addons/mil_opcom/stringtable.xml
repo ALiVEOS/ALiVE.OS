@@ -460,6 +460,12 @@
 <Key ID="STR_ALIVE_OPCOM_RECRUITER_TASK_CHANCE_COMMENT">
     <English>Insurgency commander only. Chance, 0 to 100, that a new Recruitment HQ gives every hostile side with players a task to kill the recruiter there. Needs a C2ISTAR module. 0 turns it off.</English>
 </Key>
+<Key ID="STR_ALIVE_OPCOM_PREPARED_DEFENCES">
+    <English>Prepared Defences</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_PREPARED_DEFENCES_COMMENT">
+    <English>Invasion and Occupation commanders dig in. Once an objective has been held for 10 minutes, a small fort of sandbags, barriers and sometimes a static weapon of the commander's faction is built at its edge facing the enemy. Few fortifies up to 3 objectives, Many up to 8, at most one every 5 minutes, never within 300 m of a player. With persistence on, forts are saved with the mission.</English>
+</Key>
 <Key ID="STR_ALIVE_OPCOM_FRONTLINE_MINEFIELDS">
     <English>Frontline Minefields</English>
 </Key>
