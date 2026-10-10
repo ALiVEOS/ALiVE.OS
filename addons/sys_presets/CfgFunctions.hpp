@@ -6,17 +6,17 @@ class cfgFunctions {
             class presetDefault {
                 description = "What a module setting reads when nobody has touched it";
                 file = "\x\alive\addons\sys_presets\fnc_presetDefault.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class presetParse {
                 description = "Checks a preset somebody else wrote against this build";
                 file = "\x\alive\addons\sys_presets\fnc_presetParse.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class presetSerialize {
                 description = "Writes a preset out as one line of text";
                 file = "\x\alive\addons\sys_presets\fnc_presetSerialize.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             // Registered because presetParse calls it, and presetParse is
             // callable from a mission. Its editor-only operations bow out on
@@ -25,7 +25,7 @@ class cfgFunctions {
             class presetMarkers {
                 description = "Everything a preset needs to know about editor markers";
                 file = "\x\alive\addons\sys_presets\fnc_presetMarkers.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
         };
     };

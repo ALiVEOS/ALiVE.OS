@@ -4,310 +4,310 @@ class cfgFunctions {
             class buttonAbort {
                 description = "Calls any scripts required when the user disconnects";
                 file = "\x\alive\addons\main\fnc_buttonAbort.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class aliveInit {
                 description = "ALiVE init function";
                 file = "\x\alive\addons\main\fnc_aliveInit.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class Nuke {
                 description = "Fires a Nuke at given position";
                 file = "\x\alive\addons\main\fnc_Nuke.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class isModuleSynced {
                 description = "Checks if modules are synced";
                 file = "\x\alive\addons\main\fnc_isModuleSynced.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class isModuleAvailable {
                 description = "Checks if modules are available";
                 file = "\x\alive\addons\main\fnc_isModuleAvailable.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class playerHasAccessItems {
                 description = "Shared access-item gate for the player tablet/menu modules";
                 file = "\x\alive\addons\main\fnc_playerHasAccessItems.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class versioning {
                 description = "Warns or kicks players on version mismatch";
                 file = "\x\alive\addons\main\fnc_versioning.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class isModuleInitialised {
                 description = "Checks if given modules are initialised";
                 file = "\x\alive\addons\main\fnc_isModuleInitialised.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class normalizeFlexiMenuActions {
                 description = "Converts CBA flexiMenu code-block actions to string form required by buttonSetAction";
                 file = "\x\alive\addons\main\fnc_normalizeFlexiMenuActions.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class spawnObjectiveObjects {
                 description = "Parses the objectiveObjects setVariable string from a module logic and spawns the picked classes around the supplied center (#875 shared helper)";
                 file = "\x\alive\addons\main\fnc_spawnObjectiveObjects.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class registerForceUpright {
                 description = "Tags an entity for force-upright orientation and records its position-grid key for re-application after ALiVE virtualisation cycles";
                 file = "\x\alive\addons\main\fnc_registerForceUpright.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class neighbourAwareSearchCap {
                 description = "Returns a search-radius ceiling capped at half-distance to the nearest sibling ALiVE placement-class module logic, clamped to [floor, ceiling]";
                 file = "\x\alive\addons\main\fnc_neighbourAwareSearchCap.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class pauseModule {
                 description = "Pauses given module(s)";
                 file = "\x\alive\addons\main\fnc_pauseModule.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class unPauseModule {
                 description = "activates given module(s) after pausing";
                 file = "\x\alive\addons\main\fnc_unPauseModule.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class pauseModulesAuto {
                 description = "Adds EHs to pause all main modules if no players are on server";
                 file = "\x\alive\addons\main\fnc_pauseModulesAuto.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class ZEUSinit {
                 description = "Initialises Zeus for ALiVE";
                 file = "\x\alive\addons\main\fnc_ZEUSinit.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class mainTablet {
                 description = "ALiVE Main Tablet";
                 file = "\x\alive\addons\main\fnc_mainTablet.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class AI_Distributor {
                 description = "Distributes AI to all headless clients";
                 file = "\x\alive\addons\main\fnc_AI_Distributor.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class staticDataHandler {
                 description = "Serializes loading of staticData";
                 file = "\x\alive\addons\main\fnc_staticDataHandler.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class edenValidateOpcomFactions {
                 description = "3DEN editor-time validator: warns when OPCOM factions aren't provided by synced placement modules";
                 file = "\x\alive\addons\main\fnc_edenValidateOpcomFactions.sqf";
                 preInit = 1;
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class edenValidateFactionCompilerSync {
                 description = "3DEN editor-time validator: warns when sys_factioncompiler categories have vehicles synced directly instead of crew";
                 file = "\x\alive\addons\main\fnc_edenValidateFactionCompilerSync.sqf";
                 preInit = 1;
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class edenArtilleryDependencyCheck {
                 description = "3DEN editor-time advisory: warns when Military AI Commander Artillery is placed with no source of artillery batteries";
                 file = "\x\alive\addons\main\fnc_edenArtilleryDependencyCheck.sqf";
                 preInit = 1;
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class getVehicleBoundingBox {
                 description = "Returns cached [length, width, height] bbox dimensions for a vehicle classname";
                 file = "\x\alive\addons\main\fnc_getVehicleBoundingBox.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class findVehicleSpawnPosition {
                 description = "Unified vehicle spawn-position validator with bbox-aware footprint check + side-of-road placement";
                 file = "\x\alive\addons\main\fnc_findVehicleSpawnPosition.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class findCompositionSpawnPosition {
                 description = "Unified composition spawn-position validator (envelope-aware footprint + airfield exclusion + mode bundles for camps / FieldHQ / civilian / roadblock)";
                 file = "\x\alive\addons\main\fnc_findCompositionSpawnPosition.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class findBatterySpawnPosition {
                 description = "Finds one clear spot for a gun in a battery, spread from the guns already placed - one wide validator search in place of the thirty six narrow ring searches each placement module had grown its own copy of";
                 file = "\x\alive\addons\main\fnc_findBatterySpawnPosition.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class getCompositionRadius {
                 description = "Returns cached composition diameter in metres - walks CfgGroups>Empty config, doubles max-from-origin object distance, adds 5m buffer";
                 file = "\x\alive\addons\main\fnc_getCompositionRadius.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class activateReserve {
                 description = "Reserve-pool activation tick (one cluster per call) - shared across mil_placement / civ_placement / mil_placement_custom / civ_placement_custom via the cluster's reserveModuleClass hash entry";
                 file = "\x\alive\addons\main\fnc_activateReserve.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class reserveWatch {
                 description = "Starts the reserve-activation watcher for a placement module's objectives and lists them for saving";
                 file = "\x\alive\addons\main\fnc_reserveWatch.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class reservePersist {
                 description = "Saves the placement modules' unwoken reserves and brings them back on a persistent load";
                 file = "\x\alive\addons\main\fnc_reservePersist.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class tabletBox {
                 description = "Returns [x,y,w,h] of the screen box every ALiVE tablet is drawn in, so script-positioned artwork matches the GUI_GRID layout the controls use";
                 file = "\x\alive\addons\main\fnc_tabletBox.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class getAirfieldGeometry {
                 description = "Returns runway and taxiway segments around a position (mil_ato attrs + ALiVE_runway tags + BI substring matches)";
                 file = "\x\alive\addons\main\fnc_getAirfieldGeometry.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class getRunwayCentreline {
                 description = "Derives a usable runway centreline near a position for terrains with no ILS config data";
                 file = "\x\alive\addons\main\fnc_getRunwayCentreline.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class buildAirsideCache {
                 description = "Reduces every airfield on the terrain to cached bounding circles and capsules once at mission start, so airside tests later cost no engine query";
                 file = "\x\alive\addons\main\fnc_buildAirsideCache.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class isAirside {
                 description = "True when a position is on airfield surface ground movement should keep off: runway, approach strips, taxiway or parking. Hot path, cached arithmetic only";
                 file = "\x\alive\addons\main\fnc_isAirside.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class airsideClear {
                 description = "Moves a position off airfield surface by the shortest push that clears it, or returns it unchanged when it cannot";
                 file = "\x\alive\addons\main\fnc_airsideClear.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class airsideLegBypass {
                 description = "Returns intermediate positions routing a straight leg around airfield surface, or empty when the leg is already clear";
                 file = "\x\alive\addons\main\fnc_airsideLegBypass.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class isAirfieldPosition {
                 description = "True when a position is a recognised airfield for a given airframe: on or beside a runway, or on a helipad for rotary and VTOL";
                 file = "\x\alive\addons\main\fnc_isAirfieldPosition.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class findRunwayClear {
                 description = "Returns input position unchanged when clear of runway/taxiway segments by `_clearance`m beyond halfWidth, or a perpendicular-nudged position otherwise. One-shot waypoint / unit-sweep helper";
                 file = "\x\alive\addons\main\fnc_findRunwayClear.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class listFactionAAUnits {
                 description = "Feeder for ALiVE_AAUnitChoiceMulti - returns AA-shape CfgVehicles classes for a faction as 6-tuples [class, display, side, role, category, source]";
                 file = "\x\alive\addons\main\fnc_listFactionAAUnits.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class edenAAUnitChoiceLoad {
                 description = "Eden attributeLoad handler for ALiVE_AAUnitChoiceMulti (faction-aware AA unit multi-select listbox + Role filter + override field)";
                 file = "\x\alive\addons\main\fnc_edenAAUnitChoiceLoad.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class edenAAUnitChoiceSave {
                 description = "Eden attributeSave handler for ALiVE_AAUnitChoiceMulti";
                 file = "\x\alive\addons\main\fnc_edenAAUnitChoiceSave.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class findAirSpawnPosition {
                 description = "Unified air-unit spawn-position validator: helipad/hangar/apron/field cascade, runway+taxiway exclusion, door verification";
                 file = "\x\alive\addons\main\fnc_findAirSpawnPosition.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class menuKeys {
                 description = "Every key bound to an ALiVE action, modifiers included, for the menu system";
                 file = "\x\alive\addons\main\fnc_menuKeys.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class anyPlayerCanSee {
                 description = "True if any alive player within range can see the target (view-cone + LoS) - deferral gate for visible-state changes";
                 file = "\x\alive\addons\main\fnc_anyPlayerCanSee.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class isHeldObjective {
                 description = "True if an OPCOM objective hash counts as a friendly-held reserve right now (tacom_state=reserve + section profiles alive + <3 enemy units within radius). Shared by mil_logistics HELI_INSERT routing and mil_c2istar COP overlay so visual + routing decisions agree.";
                 file = "\x\alive\addons\main\fnc_isHeldObjective.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class listFactionVehicleClasses {
                 description = "Feeder for ALiVE_FactionStaticDataChoice - returns kind-filtered CfgVehicles classes per faction";
                 file = "\x\alive\addons\main\fnc_listFactionVehicleClasses.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class edenFactionStaticDataLoad {
                 description = "Eden attributeLoad handler for ALiVE_FactionStaticDataChoice (multi-select listbox + override field)";
                 file = "\x\alive\addons\main\fnc_edenFactionStaticDataLoad.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class edenFactionStaticDataSave {
                 description = "Eden attributeSave handler for ALiVE_FactionStaticDataChoice";
                 file = "\x\alive\addons\main\fnc_edenFactionStaticDataSave.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class resolvePreferredGarrisonPositions {
                 description = "Garrison resolver: parses canonical Class=index,index string into a hash of preferred building positions";
                 file = "\x\alive\addons\main\fnc_resolvePreferredGarrisonPositions.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class resolveFactionStaticChoice {
                 description = "Module-init resolver: parses canonical FACTION=class string and merges into target static-data registry hash";
                 file = "\x\alive\addons\main\fnc_resolveFactionStaticChoice.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class edenTaskTypeChoiceLoad {
                 description = "Eden attributeLoad handler for ALiVE_TaskTypeChoice (flat-list task-type multi-select with override field)";
                 file = "\x\alive\addons\main\fnc_edenTaskTypeChoiceLoad.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class edenTaskTypeChoiceSave {
                 description = "Eden attributeSave handler for ALiVE_TaskTypeChoice";
                 file = "\x\alive\addons\main\fnc_edenTaskTypeChoiceSave.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class resolveTaskTypeChoice {
                 description = "Module-init resolver for flat-list task-type registries (e.g. ALIVE_autoGeneratedTasks)";
                 file = "\x\alive\addons\main\fnc_resolveTaskTypeChoice.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class listFactionCompositions {
                 description = "Feeder for ALiVE_CompositionChoice - returns [class, displayName] pairs for compositions valid for a given faction";
                 file = "\x\alive\addons\main\fnc_listFactionCompositions.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class edenCompositionChoiceLoad {
                 description = "Eden attributeLoad handler for ALiVE_CompositionChoice (faction-aware composition multi-select listbox + override field)";
                 file = "\x\alive\addons\main\fnc_edenCompositionChoiceLoad.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class edenCompositionChoiceSave {
                 description = "Eden attributeSave handler for ALiVE_CompositionChoice";
                 file = "\x\alive\addons\main\fnc_edenCompositionChoiceSave.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class edenFilteredMultiSelectLoad {
                 description = "Eden attributeLoad handler for ALiVE_FilteredMultiSelect_Base derivatives (single-axis filtered listbox + override edit, consolidated structured-format storage)";
                 file = "\x\alive\addons\main\fnc_edenFilteredMultiSelectLoad.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class edenFilteredMultiSelectSave {
                 description = "Eden attributeSave handler for ALiVE_FilteredMultiSelect_Base derivatives";
                 file = "\x\alive\addons\main\fnc_edenFilteredMultiSelectSave.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class edenFactionTierChoiceLoad {
                 description = "Eden attributeLoad handler for ALiVE_FactionTierChoice (swap-selection per-tier picker - all factions visible, filter cycles which tier's ticks display)";
                 file = "\x\alive\addons\main\fnc_edenFactionTierChoiceLoad.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class edenFactionTierChoiceSave {
                 description = "Eden attributeSave handler for ALiVE_FactionTierChoice";
                 file = "\x\alive\addons\main\fnc_edenFactionTierChoiceSave.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
         };
     };

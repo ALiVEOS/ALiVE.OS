@@ -4,332 +4,332 @@ class cfgFunctions {
             class profileSystemInit {
                 description = "profileSystemInit";
                 file = "\x\alive\addons\sys_profile\fnc_profileSystemInit.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class profileSystem {
                 description = "profileSystem";
                 file = "\x\alive\addons\sys_profile\fnc_profileSystem.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class profileSpacialGrid {
                 description = "Profile-aware spatial grid";
                 file = "\x\alive\addons\sys_profile\fnc_profileSpacialGrid.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class profileHandler {
                 description = "profileHandler";
                 file = "\x\alive\addons\sys_profile\fnc_profileHandler.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class profile {
                 description = "profile";
                 file = "\x\alive\addons\sys_profile\fnc_profile.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class profileEntity {
                 description = "profileEntity";
                 file = "\x\alive\addons\sys_profile\fnc_profileEntity.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class profileMenuDef {
                 description = "profileMenuDef";
                 file = "\x\alive\addons\sys_profile\fnc_profileMenuDef.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class profileVehicle {
                 description = "profileVehicle";
                 file = "\x\alive\addons\sys_profile\fnc_profileVehicle.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class createProfilesFromGroupConfig {
                 description = "createProfilesFromGroupConfig";
                 file = "\x\alive\addons\sys_profile\fnc_createProfilesFromGroupConfig.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class createProfilesCrewedVehicle {
                 description = "createProfilesCrewedVehicle";
                 file = "\x\alive\addons\sys_profile\fnc_createProfilesCrewedVehicle.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class createProfilesUnCrewedVehicle {
                 description = "createProfilesUnCrewedVehicle";
                 file = "\x\alive\addons\sys_profile\fnc_createProfilesUnCrewedVehicle.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class createProfileVehicle {
                 description = "createProfileVehicle";
                 file = "\x\alive\addons\sys_profile\fnc_createProfileVehicle.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class createProfileEntity {
                 description = "createProfileEntity";
                 file = "\x\alive\addons\sys_profile\fnc_createProfileEntity.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class createProfilesFromUnits {
                 description = "createProfilesFromUnits";
                 file = "\x\alive\addons\sys_profile\fnc_createProfilesFromUnits.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class createProfilesFromUnitsRuntime {
                 description = "createProfilesFromUnitsRuntime";
                 file = "\x\alive\addons\sys_profile\fnc_createProfilesFromUnitsRuntime.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class zeusVirtualiseInRadius {
                 description = "Handles placement of the Virtualise Groups In Radius Zeus module";
                 file = "\x\alive\addons\sys_profile\fnc_zeusVirtualiseInRadius.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class virtualiseInRadiusResult {
                 description = "Displays the result of a Virtualise Groups In Radius request";
                 file = "\x\alive\addons\sys_profile\fnc_virtualiseInRadiusResult.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class showVirtualiseUnavailable {
                 description = "Shows the profile-system guard over the active Zeus display";
                 file = "\x\alive\addons\sys_profile\fnc_showVirtualiseUnavailable.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class virtualiseInRadius {
                 description = "Virtualises unprofiled AI groups and empty vehicles in a radius";
                 file = "\x\alive\addons\sys_profile\fnc_virtualiseInRadius.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class createProfilesFromPlayers {
                 description = "createProfilesFromPlayers";
                 file = "\x\alive\addons\sys_profile\fnc_createProfilesFromPlayers.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class profileKilledEventHandler {
                 description = "profileKilledEventHandler";
                 file = "\x\alive\addons\sys_profile\fnc_profileKilledEventHandler.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class profileGetInEventHandler {
                 description = "profileGetInEventHandler";
                 file = "\x\alive\addons\sys_profile\fnc_profileGetInEventHandler.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class createProfileWaypoint {
                 description = "createProfileWaypoint";
                 file = "\x\alive\addons\sys_profile\fnc_createProfileWaypoint.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class profileWaypointsToWaypoints {
                 description = "profileWaypointsToWaypoints";
                 file = "\x\alive\addons\sys_profile\fnc_profileWaypointsToWaypoints.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class profileWaypointToWaypoint {
                 description = "profileWaypointToWaypoint";
                 file = "\x\alive\addons\sys_profile\fnc_profileWaypointToWaypoint.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class waypointsToProfileWaypoints {
                 description = "waypointsToProfileWaypoints";
                 file = "\x\alive\addons\sys_profile\fnc_waypointsToProfileWaypoints.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class waypointToProfileWaypoint {
                 description = "waypointToProfileWaypoint";
                 file = "\x\alive\addons\sys_profile\fnc_waypointToProfileWaypoint.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class createProfileVehicleAssignment {
                 description = "createProfileVehicleAssignment";
                 file = "\x\alive\addons\sys_profile\fnc_createProfileVehicleAssignment.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class removeProfileVehicleAssignments {
                 description = "removeProfileVehicleAssignments";
                 file = "\x\alive\addons\sys_profile\fnc_removeProfileVehicleAssignments.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class removeProfileVehicleAssignment {
                 description = "removeProfileVehicleAssignment";
                 file = "\x\alive\addons\sys_profile\fnc_removeProfileVehicleAssignment.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class profileVehicleAssignmentGetUsedIndexes {
                 description = "profileVehicleAssignmentGetUsedIndexes";
                 file = "\x\alive\addons\sys_profile\fnc_profileVehicleAssignmentGetUsedIndexes.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class profileVehicleAssignmentGetEmptyPositions {
                 description = "profileVehicleAssignmentGetEmptyPositions";
                 file = "\x\alive\addons\sys_profile\fnc_profileVehicleAssignmentGetEmptyPositions.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class profileVehicleAssignmentsToVehicleAssignments {
                 description = "profileVehicleAssignmentsToVehicleAssignments";
                 file = "\x\alive\addons\sys_profile\fnc_profileVehicleAssignmentsToVehicleAssignments.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class profileVehicleAssignmentToVehicleAssignment {
                 description = "profileVehicleAssignmentToVehicleAssignment";
                 file = "\x\alive\addons\sys_profile\fnc_profileVehicleAssignmentToVehicleAssignment.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class profileVehicleAssignmentIndexesToUnits {
                 description = "profileVehicleAssignmentIndexesToUnits";
                 file = "\x\alive\addons\sys_profile\fnc_profileVehicleAssignmentIndexesToUnits.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class profileVehicleAssignmentsGetInCommand {
                 description = "profileVehicleAssignmentsGetInCommand";
                 file = "\x\alive\addons\sys_profile\fnc_profileVehicleAssignmentsGetInCommand.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class profileVehicleAssignmentsGetInCargo {
                 description = "profileVehicleAssignmentsGetInCargo";
                 file = "\x\alive\addons\sys_profile\fnc_profileVehicleAssignmentsGetInCargo.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class profileVehicleAssignmentsSetAllPositions {
                 description = "profileVehicleAssignmentsSetAllPositions";
                 file = "\x\alive\addons\sys_profile\fnc_profileVehicleAssignmentsSetAllPositions.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class profileVehicleAssignmentsGetSpeedPerSecond {
                 description = "profileVehicleAssignmentsGetSpeedPerSecond";
                 file = "\x\alive\addons\sys_profile\fnc_profileVehicleAssignmentsGetSpeedPerSecond.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class profileVehicleAssignmentsGetCount {
                 description = "profileVehicleAssignmentsGetCount";
                 file = "\x\alive\addons\sys_profile\fnc_profileVehicleAssignmentsGetCount.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class profileGetGoodSpawnPosition {
                 description = "profileGetGoodSpawnPosition";
                 file = "\x\alive\addons\sys_profile\fnc_profileGetGoodSpawnPosition.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class profileGetAnyLinkedInRange {
                 description = "profileGetAnyLinkedInRange";
                 file = "\x\alive\addons\sys_profile\fnc_profileGetAnyLinkedInRange.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class profileSimulator {
                 description = "profileSimulator";
                 file = "\x\alive\addons\sys_profile\fnc_profileSimulator.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class profileActivationCoordinator {
                 description = "Owns profile activation claims and queues";
                 file = "\x\alive\addons\sys_profile\fnc_profileActivationCoordinator.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class profileActivatorPlayerProximity {
                 description = "Traditional player-distance profile activator";
                 file = "\x\alive\addons\sys_profile\fnc_profileActivatorPlayerProximity.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class profileActivatorAirCombat {
                 description = "Optional air-combat profile activator";
                 file = "\x\alive\addons\sys_profile\fnc_profileActivatorAirCombat.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class profileActivationTick {
                 description = "Per-frame profile activation pipeline";
                 file = "\x\alive\addons\sys_profile\fnc_profileActivationTick.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class profileSpawner {
                 description = "Executes queued profile spawn and despawn transitions";
                 file = "\x\alive\addons\sys_profile\fnc_profileSpawner.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class getNearProfiles {
                 description = "getNearProfiles";
                 file = "\x\alive\addons\sys_profile\fnc_getNearProfiles.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class vehicleAssignmentsGetLinkedProfiles {
                 description = "vehicleAssignmentsGetLinkedProfiles";
                 file = "\x\alive\addons\sys_profile\fnc_vehicleAssignmentsGetLinkedProfiles.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class vehicleAssignmentsToProfileVehicleAssignments {
                 description = "vehicleAssignmentsToProfileVehicleAssignments";
                 file = "\x\alive\addons\sys_profile\fnc_vehicleAssignmentsToProfileVehicleAssignments.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class vehicleAssignmentToProfileVehicleAssignment {
                 description = "vehicleAssignmentToProfileVehicleAssignment";
                 file = "\x\alive\addons\sys_profile\fnc_vehicleAssignmentToProfileVehicleAssignment.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class getInActiveEntitiesForMarking {
                 description = "getInActiveEntitiesForMarking";
                 file = "\x\alive\addons\sys_profile\fnc_getInActiveEntitiesForMarking.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class profile_onPlayerConnected {
                 description = "profile_onPlayerConnected";
                 file = "\x\alive\addons\sys_profile\fnc_profile_onPlayerConnected.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class profile_onPlayerDisconnected {
                 description = "profile_onPlayerDisconnected";
                 file = "\x\alive\addons\sys_profile\fnc_profile_onPlayerDisconnected.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class profilesSaveData {
                 description = "profilesSaveData";
                 file = "\x\alive\addons\sys_profile\fnc_profilesSaveData.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class profilesLoadData {
                 description = "profilesLoadData";
                 file = "\x\alive\addons\sys_profile\fnc_profilesLoadData.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class profilesSaveDataPNS {
                 description = "profilesSaveDataPNS";
                 file = "\x\alive\addons\sys_profile\fnc_profilesSaveDataPNS.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class profilesLoadDataPNS {
                 description = "profilesLoadDataPNS";
                 file = "\x\alive\addons\sys_profile\fnc_profilesLoadDataPNS.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class profileAttack {
                 description = "profileAttack";
                 file = "\x\alive\addons\sys_profile\fnc_profileAttack.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class profileCombatHandler {
                 description = "profileCombatHandler";
                 file = "\x\alive\addons\sys_profile\fnc_profileCombatHandler.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class profileGetDamageOutput {
                 description = "profileGetDamageOutput";
                 file = "\x\alive\addons\sys_profile\fnc_profileGetDamageOutput.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class profileGetPathfindingProcedure {
                 description = "profileGetPathfindingProcedure";
                 file = "\x\alive\addons\sys_profile\fnc_profileGetPathfindingProcedure.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
            class findFilteredSafePos {
                 description = "findFilteredSafePos";
                 file = "\x\alive\addons\sys_profile\fnc_findFilteredSafePos.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class debugVirtualisedProfiles {
                 description = "Server-side PFH that periodically snapshots ALIVE_profileHandler profile state and broadcasts to admin / Zeus clients for live virtualised-profile map visibility (#863)";
                 file = "\x\alive\addons\sys_profile\fnc_debugVirtualisedProfiles.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class debugVirtualisedProfilesClient {
                 description = "Client-side receiver for the virtualised-profiles snapshot; admin / Zeus gate + per-profile local map marker render (#863)";
                 file = "\x\alive\addons\sys_profile\fnc_debugVirtualisedProfilesClient.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
         };
     };
