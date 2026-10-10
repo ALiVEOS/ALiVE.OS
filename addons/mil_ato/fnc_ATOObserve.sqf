@@ -801,6 +801,47 @@ switch(_operation) do {
             };
         };
 
+        // A suppression sortie is aimed at positions, so the test above never ends one. Its job
+        // is the radars: once it has seen an enemy radar around where it was sent and none is
+        // left standing there, it is done. Carrying on meant low gun runs on the launcher, and a
+        // pair of Black Wasps was lost doing exactly that once its HARM had killed the radar
+        // (2026-09-23). Nothing seen yet means nothing is ended, so a site still virtual when the
+        // jets arrive is not mistaken for a destroyed one.
+        if (_onStation && {count _sortie > 5} && {(_sortie select 0) isEqualTo "SEAD"}) then {
+            if (isNil "ALiVE_mil_ato_radarClasses") then { ALiVE_mil_ato_radarClasses = createHashMap };
+            private _fnc_hasRadar = {
+                private _type = typeOf _this;
+                private _known = ALiVE_mil_ato_radarClasses get _type;
+                if (isNil "_known") then {
+                    private _c = configOf _this >> "Components" >> "SensorsManagerComponent" >> "Components";
+                    _known = (("true" configClasses _c) findIf { getText (_x >> "componentType") isEqualTo "ActiveRadarSensorComponent" }) >= 0;
+                    ALiVE_mil_ato_radarClasses set [_type, _known];
+                };
+                _known
+            };
+            private _ourSide = side group _obj;
+            private _aims = ((_sortie select 5) select { _x isEqualType [] && {count _x >= 2} }) + [_sortie select 1];
+            private _reach = ((_sortie select 3) max 500) + 500;
+            private _radars = [];
+            {
+                if (_x isEqualType [] && {count _x >= 2}) then {
+                    _radars append ((_x nearEntities [["LandVehicle","StaticWeapon","Ship"], _reach]) select {
+                        alive _x && {(_ourSide getFriend (side group _x)) < 0.6} && {_x call _fnc_hasRadar}
+                    });
+                };
+            } forEach _aims;
+            // Held per sortie, not per airframe: a wingman reaching the site after its lead's HARM
+            // has already killed the radar never sees one, and went on strafing the launcher.
+            if (isNil "ALiVE_mil_ato_seadRadarSeen") then { ALiVE_mil_ato_seadRadarSeen = createHashMap };
+            // Each air commander numbers its sorties from 1, so the id alone is shared between commanders.
+            private _key = str [_ourSide, _sortie select 4, _sortie select 1];
+            if (_radars isNotEqualTo []) then {
+                ALiVE_mil_ato_seadRadarSeen set [_key, true];
+            } else {
+                if (ALiVE_mil_ato_seadRadarSeen getOrDefault [_key, false]) then { _targetsGone = true };
+            };
+        };
+
         ["onStation", _onStation] call _fnc_set;
         ["targetsGone", _targetsGone] call _fnc_set;
 
