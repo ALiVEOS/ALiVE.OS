@@ -256,6 +256,7 @@ class CfgVehicles {
                     property = "ALiVE_civ_placement_custom_placeSeaPatrols"; displayName = "$STR_ALIVE_CP_PLACE_SEAPATROLS"; tooltip = "$STR_ALIVE_CP_PLACE_SEAPATROLS_COMMENT"; defaultValue = """0""";
                     class Values { class NONE{name="None";value=0;default=1;}; class All{name="All";value=1;}; class EXTREME{name="Extreme";value=0.75;}; class HIGH{name="High";value=0.55;}; class MEDIUM{name="Medium";value=0.33;}; class LOW{name="Low";value=0.2;}; };
             };
+            class seaPatrolFaction : Edit { property = "ALiVE_civ_placement_custom_seaPatrolFaction"; displayName = "$STR_ALIVE_CP_SEAPATROL_FACTION"; tooltip = "$STR_ALIVE_CP_SEAPATROL_FACTION_COMMENT"; expression = "_this setVariable ['seaPatrolFaction', _value, true];"; defaultValue = """"""; };
             // ---- On Spawn Hook --------------------------------------------------
             class HDR_HOOK : ALiVE_ModuleSubTitle { property = "ALiVE_civ_placement_custom_HDR_HOOK"; displayName = "ON SPAWN HOOK"; };
             class onEachSpawn : ALiVE_EditMultilineSQF

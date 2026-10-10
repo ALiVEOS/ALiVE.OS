@@ -1519,10 +1519,29 @@ switch(_operation) do {
                     ["CP [%1] - Placing Sea Patrols at %2 marine clusters",_faction, count _marineClusters] call ALiVE_fnc_dump;
                 };
 
+                // Sea Patrol Faction (#957): most factions have no boats, so the patrols can come
+                // from another faction on the same side, CSAT's for an FIA objective say.
+                private _seaFaction = _faction;
+                private _borrowed = [_logic getVariable ["seaPatrolFaction", ""]] call CBA_fnc_trim;
+                if (_borrowed != "") then {
+                    switch (true) do {
+                        case !(isClass (configFile >> "CfgFactionClasses" >> _borrowed)): {
+                            ["CP [%1] - Sea Patrol Faction '%2' is not a faction in this game, so the objective's own faction is used", _faction, _borrowed] call ALiVE_fnc_dump;
+                        };
+                        case ((_borrowed call ALiVE_fnc_factionSide) != (_faction call ALiVE_fnc_factionSide)): {
+                            ["CP [%1] - Sea Patrol Faction '%2' is on another side, so the objective's own faction is used", _faction, _borrowed] call ALiVE_fnc_dump;
+                        };
+                        case ((["Naval", _borrowed] call ALIVE_fnc_configGetRandomGroup) == "FALSE"): {
+                            ["CP [%1] - Sea Patrol Faction '%2' has no Naval group, so the objective's own faction is used", _faction, _borrowed] call ALiVE_fnc_dump;
+                        };
+                        default { _seaFaction = _borrowed };
+                    };
+                };
+
                 { // For each marine cluster
 
                     // Get naval group
-                    private _seaPatrolGroup = ["Naval", _faction] call ALIVE_fnc_configGetRandomGroup;
+                    private _seaPatrolGroup = ["Naval", _seaFaction] call ALIVE_fnc_configGetRandomGroup;
 
                     // Check to see if a naval group is available
                     if (_seaPatrolGroup != "FALSE") then {
@@ -1537,7 +1556,7 @@ switch(_operation) do {
                             //chance of sea patrol
                             if ((random 1) < _placeSeaPatrols) then {
                                 // Create a sea patrol profile (mark it busy)
-                                private _seaPatrol = [_seaPatrolGroup, _pos, random(360), true, _faction, true, false, "STEALTH", _onEachSpawn, _onEachSpawnOnce] call ALIVE_fnc_createProfilesFromGroupConfig;
+                                private _seaPatrol = [_seaPatrolGroup, _pos, random(360), true, _seaFaction, true, false, "STEALTH", _onEachSpawn, _onEachSpawnOnce] call ALIVE_fnc_createProfilesFromGroupConfig;
 
                                 // Set Waypoints for patrol
                                 {

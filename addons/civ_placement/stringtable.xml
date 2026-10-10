@@ -732,6 +732,12 @@
     <Portuguese>Chance de cada objetivo receber bloqueios de estrada: Nenhum = desativado, Baixo = 15%, Médio = 35%, Alto = 50%, Extremo = 75%, Todos = todos os objetivos. Um objetivo que os recebe tem até 1 bloqueio em Baixo, 2 em Médio ou Alto, 3 em Extremo e 4 em Todos, colocados em estradas dentro do seu raio mais 150 m quando jogadores se aproximam e guarnecidos pela própria facção do módulo (uma delas, se tiver várias). Nenhum bloqueio é colocado quando Posicionar unidades está em Apenas objetivos. Independente do tipo de comandante do OPCOM.</Portuguese>
     <Russian>Шанс, что у объекта появятся блокпосты: Нет = выкл., Низко = 15%, Средне = 35%, Высоко = 50%, Экстрим = 75%, Все = у каждого объекта. У такого объекта будет до 1 блокпоста при Низко, 2 при Средне или Высоко, 3 при Экстрим и 4 при Все, на дорогах в пределах его радиуса плюс 150 м, когда рядом появляются игроки; их занимает собственная фракция модуля (одна из них, если у модуля их несколько). Блокпосты не размещаются, если для "Размещать юниты" выбрано "Только объекты". Не зависит от типа командира OPCOM.</Russian>
 </Key>
+<Key ID="STR_ALIVE_CP_SEAPATROL_FACTION">
+    <English>Sea Patrol Faction:</English>
+</Key>
+<Key ID="STR_ALIVE_CP_SEAPATROL_FACTION_COMMENT">
+    <English>Most factions have no boats. Put another faction's class name here, on the same side, and the sea patrols use its boats instead: OPF_F (CSAT) for an FIA objective, say. Leave it empty to use the objective's own factions. A faction on another side, or one that isn't loaded, is ignored and the log says so.</English>
+</Key>
 <Key ID="STR_ALIVE_CP_PLACE_SEAPATROLS">
     <English>Sea Patrols:</English>
     <Chinese>海上巡邏隊：</Chinese>

@@ -396,6 +396,15 @@ class CfgVehicles {
                                 };
                         };
 
+                        class seaPatrolFaction : Edit
+                        {
+                                property = "ALiVE_civ_placement_seaPatrolFaction";
+                                displayName = "$STR_ALIVE_CP_SEAPATROL_FACTION";
+                                tooltip = "$STR_ALIVE_CP_SEAPATROL_FACTION_COMMENT";
+                                expression = "_this setVariable ['seaPatrolFaction', _value, true];";
+                                defaultValue = """""";
+                        };
+
                         // ---- On Spawn Hook --------------------------------------------------
                         class HDR_HOOK : ALiVE_ModuleSubTitle { property = "ALiVE_civ_placement_HDR_HOOK"; displayName = "ON SPAWN HOOK"; };
                         class onEachSpawn : ALiVE_EditMultilineSQF

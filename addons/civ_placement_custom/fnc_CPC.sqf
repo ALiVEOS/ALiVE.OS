@@ -1108,8 +1108,32 @@ switch (_operation) do {
             private _placeSeaPatrols = [_logic, "placeSeaPatrols"] call MAINCLASS;
             if (_placeSeaPatrols > 0) then {
                 private _marineClusters = [_logic, "objectivesMarine"] call MAINCLASS;
+
+                // Sea Patrol Faction (#957): most factions have no boats, so the patrols can come
+                // from another faction on the same side as these.
+                private _borrowed = [_logic getVariable ["seaPatrolFaction", ""]] call CBA_fnc_trim;
+                if (_borrowed != "") then {
+                    switch (true) do {
+                        case !(isClass (configFile >> "CfgFactionClasses" >> _borrowed)): {
+                            ["CPC [%1] - Sea Patrol Faction '%2' is not a faction in this game, so these factions' own boats are used", _factions joinString ", ", _borrowed] call ALiVE_fnc_dump;
+                            _borrowed = "";
+                        };
+                        case (_factions isNotEqualTo [] && {(_borrowed call ALiVE_fnc_factionSide) != ((_factions select 0) call ALiVE_fnc_factionSide)}): {
+                            ["CPC [%1] - Sea Patrol Faction '%2' is on another side, so these factions' own boats are used", _factions joinString ", ", _borrowed] call ALiVE_fnc_dump;
+                            _borrowed = "";
+                        };
+                        case ((["Naval", _borrowed] call ALIVE_fnc_configGetRandomGroup) == "FALSE"): {
+                            ["CPC [%1] - Sea Patrol Faction '%2' has no Naval group, so these factions' own boats are used", _factions joinString ", ", _borrowed] call ALiVE_fnc_dump;
+                            _borrowed = "";
+                        };
+                    };
+                };
                 {
-                    private _seaEntry = ["Naval", _forEachIndex] call _fnc_pickGroupForCategory;
+                    private _seaEntry = if (_borrowed != "") then {
+                        [["Naval", _borrowed] call ALIVE_fnc_configGetRandomGroup, _borrowed]
+                    } else {
+                        ["Naval", _forEachIndex] call _fnc_pickGroupForCategory
+                    };
                     _seaEntry params ["_seaPatrolGroup", "_seaPatrolFaction"];
                     // Both ways a patrol that was asked for can't be placed are said every time,
                     // not only with Debug on.
