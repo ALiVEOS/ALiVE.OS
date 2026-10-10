@@ -576,6 +576,12 @@
 <Key ID="STR_ALIVE_C2ISTAR_ASK_FRIENDLIES_COMMENT">
     <English>Players can walk up to an AI soldier of their side who isn't in their group and ask about friendly units. Every other friendly group within a kilometre of him is marked on that player's map for two minutes. Each soldier can be asked once a minute.</English>
 </Key>
+<Key ID="STR_ALIVE_C2ISTAR_AI_SURRENDER">
+    <English>AI Surrender Chance</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_AI_SURRENDER_COMMENT">
+    <English>Once an AI group has lost half its men, each survivor on foot with an enemy player within 200 m has this chance to surrender. He drops his weapons and puts his hands up (an ACE captive when ACE is loaded). Players can question each prisoner once: he may mark enemy groups within 2 km on that player's map and reveal his side's installations nearby.</English>
+</Key>
 <Key ID="STR_ALIVE_C2ISTAR_GENERATE_BRIEFING">
     <English>Generate Briefing</English>
 </Key>

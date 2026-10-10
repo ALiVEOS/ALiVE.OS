@@ -1374,6 +1374,123 @@ switch(_operation) do {
             };
         };
 
+        // Enemy soldiers can surrender and be questioned (#840). Once a group has lost half its
+        // men, each survivor on foot with a player of a hostile side within 200 m rolls the AI
+        // Surrender Chance once. One who gives up drops his weapons, puts his hands up and leaves
+        // his group (so the AI commander no longer counts him); with ACE he is an ACE captive and
+        // can be cuffed and escorted. Questioned, once each, a prisoner may mark the enemy groups
+        // within 2 km on that player's map and reveal his side's installations near him.
+        private _surrenderChance = _logic getVariable ["aiSurrenderChance", 0];
+        if (_surrenderChance isEqualType "") then { _surrenderChance = parseNumber _surrenderChance };
+        // Read live from the global, so a mission can change it while running; the handler and
+        // the actions cost nothing while it is 0.
+        if (isServer) then { missionNamespace setVariable ["ALiVE_c2istar_surrenderChance", _surrenderChance, true] };
+        if (isServer) then {
+            ALiVE_c2istar_fnc_surrender = {
+                params ["_u"];
+                if (!alive _u || {_u getVariable ["ALiVE_surrendered", false]}) exitWith {};
+                _u setVariable ["ALiVE_surrendered", true, true];
+                private _g = createGroup [side group _u, true];
+                _g setVariable ["ALIVE_profileIgnore", true, true];
+                [_u] joinSilent _g;
+                if (isClass (configFile >> "CfgPatches" >> "ace_captives")) then {
+                    ["ace_captives_setSurrendered", [_u, true], _u] call CBA_fnc_targetEvent;
+                } else {
+                    [_u, true] remoteExecCall ["setCaptive", _u];
+                    [_u, ["Surrender", _u]] remoteExecCall ["action", _u];
+                };
+                [_u, { removeAllWeapons _this; _this disableAI "PATH"; _this disableAI "AUTOTARGET"; _this disableAI "TARGET" }] remoteExecCall ["call", _u];
+                ["C2ISTAR: %1 (%2) surrendered at %3", name _u, side _g, mapGridPosition _u] call ALiVE_fnc_dump;
+                // Gone once nobody is about, unless players have taken him with them.
+                [_u] spawn {
+                    params ["_u"];
+                    waitUntil { sleep 30; !alive _u || {([getPosATL _u, 1000] call ALiVE_fnc_anyPlayersInRange) == 0} };
+                    if (alive _u && {!(_u getVariable ["ace_captives_isHandcuffed", false])}) then { deleteVehicle _u };
+                };
+            };
+            addMissionEventHandler ["EntityKilled", {
+                params ["_victim"];
+                if ((missionNamespace getVariable ["ALiVE_c2istar_surrenderChance", 0]) <= 0) exitWith {};
+                if (!(_victim isKindOf "CAManBase") || {isPlayer _victim}) exitWith {};
+                private _g = group _victim;
+                if (isNull _g || {_g getVariable ["ALiVE_surrenderRolled", false]}) exitWith {};
+                private _alive = (units _g) select { alive _x && {!(_x isEqualTo _victim)} };
+                if (_alive isEqualTo [] || {(_alive findIf { isPlayer _x }) >= 0}) exitWith {};
+                private _size = _g getVariable ["ALiVE_surrenderSize", -1];
+                if (_size < 0) then { _size = (count _alive) + 1; _g setVariable ["ALiVE_surrenderSize", _size] };
+                if ((count _alive) > (_size / 2)) exitWith {};
+                _g setVariable ["ALiVE_surrenderRolled", true];
+                private _side = side _g;
+                private _chance = missionNamespace getVariable ["ALiVE_c2istar_surrenderChance", 0];
+                {
+                    private _u = _x;
+                    if (vehicle _u isEqualTo _u && {random 100 < _chance}
+                        && {(allPlayers findIf { alive _x && {(_side getFriend side group _x) < 0.6} && {(_x distance _u) < 200} }) >= 0}) then {
+                        [_u] call ALiVE_c2istar_fnc_surrender;
+                    };
+                } forEach _alive;
+            }];
+            // Asked by a player's machine: answer with what the prisoner knows.
+            ALiVE_c2istar_fnc_interrogate = {
+                params ["_prisoner", "_caller"];
+                if (!alive _prisoner || {_prisoner getVariable ["ALiVE_questioned", false]}) exitWith {};
+                _prisoner setVariable ["ALiVE_questioned", true, true];
+                private _sideText = str (side group _prisoner);
+                private _found = [];
+                if (random 100 >= 30) then {
+                    private _profiles = [getPosATL _prisoner, 2000, [_sideText, "entity"]] call ALIVE_fnc_getNearProfiles;
+                    _found = (_profiles call BIS_fnc_arrayShuffle) select [0, 4];
+                    _found = _found apply { [_x, "position", [0, 0, 0]] call ALIVE_fnc_hashGet };
+                    [getPosATL _prisoner, 2000, side group _prisoner] call ALIVE_fnc_OPCOMToggleInstallations;
+                };
+                ALiVE_c2istar_questionAnswer = [name _prisoner, _found, side group _prisoner];
+                if (isPlayer _caller && {!(local _caller)}) then { (owner _caller) publicVariableClient "ALiVE_c2istar_questionAnswer" } else { ALiVE_c2istar_questionAnswer call ALiVE_c2istar_fnc_showAnswer };
+            };
+            // Asked and answered by broadcast, so a mission's remote-execution whitelist can't stop it.
+            "ALiVE_c2istar_questionAsk" addPublicVariableEventHandler { (_this select 1) call ALiVE_c2istar_fnc_interrogate };
+        };
+        if (hasInterface) then {
+            ALiVE_c2istar_fnc_showAnswer = {
+                params ["_name", "_positions", "_side"];
+                private _prefix = switch (_side) do { case west: {"b_"}; case east: {"o_"}; case resistance: {"n_"}; default {"o_"} };
+                if (_positions isEqualTo []) exitWith { hint format ["%1 won't tell you anything.", _name] };
+                {
+                    private _m = createMarkerLocal [format ["ALiVE_c2istar_pow_%1_%2", round time, _forEachIndex], _x];
+                    _m setMarkerTypeLocal (_prefix + "unknown");
+                    _m setMarkerTextLocal format ["%1 says: enemy here", _name];
+                    [_m] spawn { sleep 600; deleteMarkerLocal (_this select 0) };
+                } forEach _positions;
+                hint format ["%1 talked: %2 enemy positions he knows of are on your map for ten minutes.", _name, count _positions];
+            };
+            "ALiVE_c2istar_questionAnswer" addPublicVariableEventHandler { (_this select 1) call ALiVE_c2istar_fnc_showAnswer };
+            ALiVE_c2istar_fnc_askQuestion = {
+                params ["_target", "_caller"];
+                ALiVE_c2istar_questionAsk = [_target, _caller];
+                if (isServer) then { ALiVE_c2istar_questionAsk call ALiVE_c2istar_fnc_interrogate } else { publicVariableServer "ALiVE_c2istar_questionAsk" };
+            };
+            ALiVE_c2istar_fnc_canQuestion = {
+                params ["_target", "_caller"];
+                !isNull _target && {alive _target} && {_target getVariable ["ALiVE_surrendered", false]}
+                && {!(_target getVariable ["ALiVE_questioned", false])} && {(_caller distance _target) < 3}
+            };
+            [] spawn {
+                waitUntil { sleep 1; !isNull player };
+                if (isClass (configFile >> "CfgPatches" >> "ace_interact_menu")) then {
+                    waitUntil { sleep 1; !isNil "ace_interact_menu" && {!isNull ace_player} };
+                    private _action = ["ALiVE_Question", "Question prisoner", "", { [_target, _player] call ALiVE_c2istar_fnc_askQuestion },
+                        { [_target, _player] call ALiVE_c2istar_fnc_canQuestion }] call ace_interact_menu_fnc_createAction;
+                    ["CAManBase", 0, ["ACE_MainActions"], _action, true] call ace_interact_menu_fnc_addActionToClass;
+                } else {
+                    ALiVE_c2istar_questionAdd = {
+                        _this addAction ["Question prisoner", { [cursorObject, _this select 1] call ALiVE_c2istar_fnc_askQuestion }, nil, 1.4, false, true, "",
+                            "[cursorObject, _this] call ALiVE_c2istar_fnc_canQuestion", 3];
+                    };
+                    player call ALiVE_c2istar_questionAdd;
+                    player addEventHandler ["Respawn", { params ["_unit"]; _unit call ALiVE_c2istar_questionAdd }];
+                };
+            };
+        };
+
 // Read once into a global so the task handler and the menu can both see it without
 // reaching for the module every time. The server broadcasts it so a change made from
 // the menu reaches everyone.
