@@ -11,6 +11,8 @@ diag_log "[PA] AUTOMATED START";
         case "damage": {[] call PA_fnc_damageValidation};
         case "transport": {[] call PA_fnc_transportValidation};
         case "orders": {[] call PA_fnc_ordersValidation};
+        case "json": {[] call PA_fnc_jsonValidation};
+        case "cloudDownloads": {[] call PA_fnc_cloudDownloadValidation};
         default {
             [{params ["_mode"]; [_mode] call PA_fnc_local}, [_mode]] call CBA_fnc_directCall;
         };
@@ -19,7 +21,7 @@ diag_log "[PA] AUTOMATED START";
     diag_log format ["[PA] AUTOMATED SUITE END | %1 | assertions=%2 | failures=%3",
         _mode, count PA_results, {(_x select 1) == "FAIL"} count PA_results];
     sleep 0.1;
-} forEach ["roundtrip", "spawnHooks", "damage", "transport", "orders", "empty"];
+} forEach ["roundtrip", "spawnHooks", "damage", "transport", "orders", "json", "cloudDownloads", "empty"];
 PA_results = _allResults;
 PA_busy = false;
 diag_log format ["[PA] AUTOMATED COMPLETE | assertions=%1 | failures=%2",

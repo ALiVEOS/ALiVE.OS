@@ -8,6 +8,7 @@ from pathlib import Path
 import re
 import struct
 import subprocess
+import sys
 import tempfile
 import time
 import uuid
@@ -31,6 +32,7 @@ def pack_pbo(source, destination, prefix=None):
 
 
 def main():
+    sys.stdout.reconfigure(encoding="utf-8", errors="backslashreplace")
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--game-dir", type=Path, default=Path(
         r"C:\Program Files (x86)\Steam\steamapps\common\Arma 3"))
@@ -56,9 +58,10 @@ def main():
     profiles = run / "profiles"
     for directory in [addons, missions, profiles]:
         directory.mkdir(parents=True, exist_ok=True)
-    # Link immutable installed dependencies, replacing only sys_profile in this run.
+    # Link installed dependencies, replacing the addons under test in this run.
+    rebuilt = ["sys_profile", "sys_data_couchdb", "x_lib"]
     for pbo in sorted((alive / "addons").glob("*.pbo")):
-        if pbo.name.lower() == "sys_profile.pbo":
+        if pbo.stem.lower() in rebuilt:
             continue
         destination = addons / pbo.name
         try:
@@ -66,8 +69,9 @@ def main():
         except OSError:
             import shutil
             shutil.copy2(pbo, destination)
-    pack_pbo(repo / "addons/sys_profile", addons / "sys_profile.pbo",
-             r"x\alive\addons\sys_profile")
+    for addon in rebuilt:
+        pack_pbo(repo / "addons" / addon, addons / (addon + ".pbo"),
+                 "x\\alive\\addons\\" + addon)
     mission_source = repo / "demo/MP/ALiVE_Profile_Persistence_Audit.Stratis"
     mission_name = "ALIVE_PA_" + uuid.uuid4().hex + ".Stratis"
     packaged_mission = missions / (mission_name + ".pbo")
@@ -92,6 +96,8 @@ def main():
         ["git", "rev-parse", "HEAD"], cwd=repo, text=True).strip(),
         "profile_sources": {p.name: hashlib.sha256(p.read_bytes()).hexdigest()
                             for p in (repo / "addons/sys_profile").glob("*.sqf")}}
+    manifest["rebuilt_sources"] = {p.relative_to(repo).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
+        for addon in rebuilt for p in (repo / "addons" / addon).rglob("*") if p.is_file()}
     (run / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
     print(f"Evidence directory: {run}", flush=True)
     process = subprocess.Popen(command, cwd=game, creationflags=subprocess.CREATE_NO_WINDOW)
@@ -127,12 +133,80 @@ def main():
               "failures": sum("[PA] FAIL |" in line for line in audit_lines)}
     # Missing or interrupted suites are failures, even if no FAIL assertion appeared.
     result["suites_complete"] = all(f"AUTOMATED SUITE END | {suite} | assertions=" in text
-                                      for suite in ["roundtrip", "spawnHooks", "damage", "transport", "orders", "empty"])
+                                      for suite in ["roundtrip", "spawnHooks", "damage", "transport", "orders", "json", "cloudDownloads", "empty"])
     result["script_errors"] = [line for line in text.splitlines()
                                 if re.search(r"Error (in expression|position|Undefined|Generic|Type)|Script .* not found", line)]
     required = {"Empty save is accepted as persistent", "Empty save leaves no non-player profiles",
                 "Unresolved vehicle references return a complete walking-speed array",
                 "Speed resolver leaves its caller's result unchanged"}
+    required.update({"JSON / quotes escaped", "JSON / backslashes escaped", "JSON / controls escaped",
+                     "JSON / empty object", "JSON / bulk / 0", "JSON / bulk / 1"})
+    required.update("JSON / roundtrip / " + field for field in [
+        "PA_JSON_text", "PA_JSON_controls", "PA_JSON_unicode", "PA_JSON_nested", "PA_JSON_array",
+        "PA_JSON_emptyHash", "onEachSpawn", "onEachSpawnOnce"])
+    required.update("JSON / standard / " + field for field in ["escaped key", "unicode", "items", "number", "bool"])
+    required.update("JSON / invalid escape / " + str(i) for i in range(3))
+    for index in range(3):
+        required.update("JSON / nested error / " + container + " / " + str(index)
+                        for container in ["object", "array", "rows"])
+    required.update("JSON / nested boundary / " + str(index) for index in range(7))
+    required.add("JSON / ERROR literal is valid data")
+    for round_number in [1, 2]:
+        for alias in ["repeat", "once", "ranOnce", "ranRepeat"]:
+            required.update(f"JSON / Boolean fallback / {round_number} / {alias}: " + observation
+                            for observation in ["source strings", "restored", "once Boolean",
+                                                "execution Boolean", "physical execution"])
+    required.update("JSON / invalid grammar / " + str(index) for index in range(29))
+    required.update({"JSON / valid number grammar", "JSON / whitespace and empty values"})
+    for case in ["start error", "stream error", "partial stream error", "missing document",
+                 "partial missing document", "duplicate missing document", "malformed document",
+                 "missing ID", "unexpected ID", "malformed first", "malformed last", "missing ID first",
+                 "unexpected ID first", "empty stream error", "empty unexpected document",
+                 "empty", "populated", "populated reverse"]:
+        required.update("Cloud download / " + case + ": " + observation
+                        for observation in ["bulk result", "seed state", "persistence state", "profile IDs"])
+    required.add("Cloud download / other module remains strict")
+    required.update("Cloud download / missing vehicle: " + observation for observation in [
+        "crew retained", "vehicle excluded", "assignments cleared", "links cleared", "walking speed",
+        "walking path", "order applied"])
+    required.update("Cloud download / missing crew: " + observation for observation in [
+        "vehicle retained", "links cleared"])
+    for alias in ["carrier", "load"]:
+        required.update("Cloud download / missing sling partner / " + alias + ": " + observation
+                        for observation in ["restored", "link cleared"])
+    for once in ["false", "true"]:
+        required.update("JSON / profile / " + once + ": " + observation
+                        for observation in ["restored", "code exact", "boolean exact", "execution 1", "execution 2"])
+    wire_chunks = {}
+    for line in text.splitlines():
+        if match := re.search(r"\[PA_JSON_CODES\] (\w+) (\d+) (\[[0-9, ]*\])", line):
+            wire_chunks.setdefault(match.group(1), {})[int(match.group(2))] = json.loads(match.group(3))
+    wire_checks = []
+    for name in ["fixture", "bulk0", "bulk1"]:
+        try:
+            codes = []
+            for offset, chunk in sorted(wire_chunks.get(name, {}).items()):
+                if offset != len(codes):
+                    raise ValueError(f"Missing JSON wire chunk at {len(codes)}")
+                codes.extend(chunk)
+            wire = b"".join(struct.pack("<H", code) for code in codes).decode("utf-16-le")
+            wire_checks.append({"name": name, "parsed": json.loads(wire)})
+        except (ValueError, UnicodeError, struct.error) as error:
+            wire_checks.append({"name": name, "error": str(error)})
+    result["json_wire_checks"] = wire_checks
+    punctuation = 'quote " slash \\ path C:\\ALiVE\\test literal \\n [, {, ,]} : [ ] { } / apostrophe \''
+    controls = "".join(chr(code) for code in [1, 8, 9, 10, 12, 13, 31])
+    unicode_text = "\u0152\u03a9\u4e2d\U0001f600"
+    expected_wire = [
+        {"PA_JSON_text": punctuation, "PA_JSON_controls": controls,
+         "PA_JSON_unicode": unicode_text, "PA_JSON_nested": {'key":[,]\\\t': punctuation},
+         "PA_JSON_array": ["", punctuation, [controls, unicode_text], [], "false", "true", 12.5],
+         "PA_JSON_emptyHash": {}, "onEachSpawn": '_this params ["_unit"];', "onEachSpawnOnce": "false"},
+        {"docs": [{"PA_JSON_bulk": punctuation, "_id": "audit-one"},
+                  {"PA_JSON_bulk": controls, "_id": "audit-two"}]},
+        {"docs": []}]
+    result["json_wire_valid"] = len(wire_checks) == len(expected_wire) and all(
+        item.get("parsed") == expected for item, expected in zip(wire_checks, expected_wire))
     required.update({"hook: onEachSpawn survives save/load", "hook: onEachSpawnOnce survives save/load",
                      "injured: damages survives save/load", "Damage / active: fixture spawned",
                      "Damage / active: live damage differs from cached damage", "Damage / PNS document readable",
@@ -201,7 +275,7 @@ def main():
                      if (match := re.search(r"\[PA\] FAIL \| (.*?) \| expected=", line))}
     result["missing_or_failed_regressions"] = sorted((required - passed_labels) | (required & failed_labels))
     result["focused_assertions_required"] = len(required)
-    result["focused_passed"] = complete and result["suites_complete"] and not result["missing_or_failed_regressions"] and not result["script_errors"]
+    result["focused_passed"] = complete and result["suites_complete"] and not result["missing_or_failed_regressions"] and not result["script_errors"] and result["json_wire_valid"]
     result["passed"] = result["focused_passed"] and not result["failures"]
     (run / "result.json").write_text(json.dumps(result, indent=2), encoding="utf-8")
     print(f"Focused regressions: {'PASS' if result['focused_passed'] else 'FAIL/BLOCKED'} ({len(required)} required assertions)")

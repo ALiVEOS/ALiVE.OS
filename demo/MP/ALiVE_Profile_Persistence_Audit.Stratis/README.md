@@ -27,6 +27,10 @@ Use the development mod build you intend to audit. These files call functions fr
 
 10. **Run pending movement regressions** queues two appended orders and a front insertion for walking and mounted groups in the same unscheduled block as saving. Confirms the durable format, exclusion of canceled/ambient orders and sanitization of old callbacks. Exercises both import orders, normal/legacy loaders, the older raw pending format, numeric strings and disabled pathfinding. Waits for real pathfinding jobs to drain and verifies the resulting order sequence.
 
+11. **Run Cloud JSON regressions** exercises the production encoder, parser, restorer and bulk writer without contacting CouchDB. Checks quoted keys/code, paths, controls, Unicode, nested/empty values, separator-like text and both Boolean values. Invalid escapes and truncated containers must reject the entire JSON response at every nesting level; literal ERROR strings remain valid data. Missing Boolean dictionary entries are exercised across two Cloud roundtrips, including already-executed hooks. Object/array separators, complete members, primitive numbers and trailing input are validated. Real exported profiles pass through the Cloud codec, then restored hooks execute on physical soldiers across two spawns.
+
+12. **Run Cloud download regressions** uses the production bulk reader, bulk loader and profile loader with an isolated index and extension boundary. Profile downloads keep valid documents and skip malformed, missing or unexpected documents, including valid documents arriving after an invalid one. A stream error retains profiles already received. A nonempty download with no valid profiles fails and retains the seed; a genuinely empty index still clears it successfully. Other persistence modules still require a complete batch. Surviving crew/vehicle/sling profiles lose references to excluded partners; a recovered crew walks and replays its pending order when its vehicle is missing.
+
 ## Automated dedicated-server run
 
 From the repository root on Windows, run:
@@ -35,11 +39,11 @@ From the repository root on Windows, run:
 python utils/run_profile_persistence_audit.py
 ```
 
-The launcher uses the installed arma3server_x64.exe, CBA, and ALiVE dependencies. It packages the current repository sys_profile addon and this mission for every run. Use --game-dir, --alive-mod, or --cba-mod for other installation paths.
+The launcher uses the installed arma3server_x64.exe, CBA, and ALiVE dependencies. It packages the current repository sys_profile, sys_data_couchdb and x_lib addons and this mission for every run. Use --game-dir, --alive-mod, or --cba-mod for other installation paths.
 
 Each run has a fresh persistence profile and logs under %TEMP%/ALiVE_Profile_Persistence_Audit. The server binds to 127.0.0.1, starts the mission without a player, runs the Local roundtrip, physical spawn-customization, infantry-damage, cargo/sling, pending-order and empty-save suites, then is stopped by the launcher. A uniquely named mission PBO is temporarily staged in the game's MPMissions directory and removed afterward. The manifest records the commit, launch command, and profile source hashes; result.json and the RPT retain the evidence.
 
-The launcher requires every focused empty-save, mounted-speed, raw unit-count, spawn-customization, infantry-damage, cargo/sling and pending-order assertion to report PASS. Missing assertions, timeouts and script errors cannot pass. result.json reports focused_passed separately from the full audit, which returns exit code 1 if any assertion fails, including other persistence findings. Cloud, physical attrition inspection and cold-restart checks use the manual actions described above.
+The launcher requires every focused empty-save, mounted-speed, raw unit-count, spawn-customization, infantry-damage, cargo/sling and pending-order assertion to report PASS. Missing assertions, timeouts and script errors cannot pass. result.json reports focused_passed separately from the full audit, which returns exit code 1 if any assertion fails, including other persistence findings. The JSON suite also validates outgoing payloads with Python's JSON decoder. Cloud download regressions are automated. Cloud index/write-failure, physical attrition inspection and cold-restart checks use the manual actions described above.
 
 The PA_Automated mission parameter defaults to Manual; the launcher opts into Automated in its server configuration.
 
@@ -56,7 +60,8 @@ The PA_Automated mission parameter defaults to Manual; the launcher opts into Au
 | Attrition reset | Real vehicle getters capture fuel=0.25, partial ammo and damage from a temporary MRAP; infantry starts at damage=0.4 and must retain it. The damage suite checks virtual/live saves, restored physical damage and legacy fallbacks through both loaders. |
 | Old Cloud pages resurrect profiles | First save must have multiple pages and load 2,400 records. After shrinking to one record, removed IDs must not reappear. |
 | Cloud failure masked | A working control save precedes injected failure. Bulk save must return an error and leave the previous index published. |
-| Cloud quote escaping | The production encoder must escape quotes inside ordinary spawn-code strings. |
+| Cloud partial profile recovery | Successful profile documents are restored; failed documents are excluded and logged. No successful documents from a nonempty/failed download returns SYS_DATA_ERROR and retains the seed. A valid empty index still succeeds. Missing crew, vehicle and sling links are removed before movement replay. |
+| Cloud quote escaping | The JSON suite checks exact string roundtrips and physical hook execution. Generated document and bulk payloads must parse as standard JSON; onEachSpawnOnce retains its Boolean type. |
 
 ## Isolation and limits
 
@@ -64,5 +69,7 @@ The PA_Automated mission parameter defaults to Manual; the launcher opts into Au
 - Expectations use that key plus _PA_BASELINE_V1. **Clear this test mission's saved state** clears only its profile record and manifest, retaining other module records and other missions.
 - Automatic profile simulation and activation stay paused. This prevents movement, combat or cached-value repair from hiding the state observed immediately after loading.
 - The pending pathfinding job is real; creation and saving share one CBA_fnc_directCall block. Warm reload cancels the original test jobs after saving, modeling an engine restart so an old callback cannot repair an imported profile. Callbacks can run after the save-only block.
+- Cloud download tests use a unique pa_download source and temporarily capture extension calls. No Cloud connection or PNS save is written; the original handler, dictionary and extension function are restored afterward.
+- The JSON suite captures and restores the plugin call function within an unscheduled block; all JSON conversion and bulk command construction use production code. It does not test a live CouchDB deployment.
 - Cloud tests register a unique pa_memory source. Production Data functions are not replaced. The boundary implements revisions and record lookup, but does not validate network/plugin behavior or exercise a live CouchDB deployment.
 - Installation does not establish runtime validation. Keep the server RPT from an actual run to confirm reproductions and identify unexpected script errors.

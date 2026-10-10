@@ -25,6 +25,8 @@ class CfgFunctions
             class damageValidation {};
             class transportValidation {};
             class ordersValidation {};
+            class jsonValidation {};
+            class cloudDownloadValidation {};
             class automated {};
             class cloud {};
             class cloudTransport {};

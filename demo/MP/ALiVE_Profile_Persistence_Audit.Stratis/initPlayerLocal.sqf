@@ -22,6 +22,8 @@ player allowDamage false;
     ["PA: 8 - Run infantry damage regressions", "damage"],
     ["PA: 9 - Run cargo and sling regressions", "transport"],
     ["PA: 10 - Run pending movement regressions", "orders"],
+    ["PA: 11 - Run Cloud JSON regressions", "json"],
+    ["PA: 12 - Run Cloud download regressions", "cloudDownloads"],
     ["PA: Clear this test mission's saved state", "clear"]
 ];
 player createDiaryRecord ["Diary", ["Persistence tests",

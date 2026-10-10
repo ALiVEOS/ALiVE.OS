@@ -8,7 +8,7 @@ if (_sender != 2 && {admin _sender == 0}) exitWith {
 if (!PA_ready || {PA_busy}) exitWith {
     "[PA] Tests are not ready, or another operation is running." remoteExec ["systemChat", _sender];
 };
-if !(_operation in ["roundtrip", "empty", "cloud", "save", "verify", "show", "spawnHooks", "damage", "transport", "orders", "clear"]) exitWith {};
+if !(_operation in ["roundtrip", "empty", "cloud", "save", "verify", "show", "spawnHooks", "damage", "transport", "orders", "json", "cloudDownloads", "clear"]) exitWith {};
 PA_busy = true;
 [_operation, _caller] spawn {
     params ["_operation", "_caller"];
@@ -19,6 +19,8 @@ PA_busy = true;
         case "damage": {[] call PA_fnc_damageValidation};
         case "transport": {[] call PA_fnc_transportValidation};
         case "orders": {[] call PA_fnc_ordersValidation};
+        case "json": {[] call PA_fnc_jsonValidation};
+        case "cloudDownloads": {[] call PA_fnc_cloudDownloadValidation};
         case "cloud": {
             [{[] call PA_fnc_cloud}, []] call CBA_fnc_directCall;
         };
