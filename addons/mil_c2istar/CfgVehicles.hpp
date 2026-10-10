@@ -578,6 +578,18 @@ class CfgVehicles {
                             expression = "_this setVariable ['reportAirSituation', _value, true];";
                             defaultValue = "true";
                     };
+                    class airSituationAircraft : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_airSituationAircraft";
+                            displayName = "$STR_ALIVE_C2ISTAR_AIR_SITUATION_AIRCRAFT";
+                            tooltip = "$STR_ALIVE_C2ISTAR_AIR_SITUATION_AIRCRAFT_COMMENT";
+                            defaultValue = """all""";
+                            class Values
+                            {
+                                    class All      { name = "$STR_ALIVE_C2ISTAR_AIR_SITUATION_ALL";      value = "all"; };
+                                    class Fighters { name = "$STR_ALIVE_C2ISTAR_AIR_SITUATION_FIGHTERS"; value = "fighters"; };
+                            };
+                    };
                     class generateBriefing
                     {
                             property = "ALiVE_MIL_C2ISTAR_generateBriefing";

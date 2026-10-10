@@ -552,6 +552,18 @@
 <Key ID="STR_ALIVE_C2ISTAR_REPORT_AIR_SITUATION_COMMENT">
     <English>Players are told on the AIR PICTURE page of the map diary when the air situation changes: we hold air superiority, the enemy holds it, the air is contested, or the sky is clear of armed aircraft it knows of. It counts your side's armed aircraft in the air and the enemy ones your side knows about, and only reports a change once it has lasted about a minute.</English>
 </Key>
+<Key ID="STR_ALIVE_C2ISTAR_AIR_SITUATION_AIRCRAFT">
+    <English>Air Situation Counts</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_AIR_SITUATION_AIRCRAFT_COMMENT">
+    <English>Which aircraft decide who holds the air in the Report Air Situation messages. All Armed Aircraft counts every armed plane, helicopter and drone in the air; Fighters Only counts planes built for air-to-air combat, so helicopters and ground-attack aircraft don't change it.</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_AIR_SITUATION_ALL">
+    <English>All Armed Aircraft</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_AIR_SITUATION_FIGHTERS">
+    <English>Fighters Only</English>
+</Key>
 <Key ID="STR_ALIVE_C2ISTAR_GENERATE_BRIEFING">
     <English>Generate Briefing</English>
 </Key>

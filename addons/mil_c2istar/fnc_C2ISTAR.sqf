@@ -1241,7 +1241,9 @@ switch(_operation) do {
         private _reportSky = _logic getVariable ["reportAirSituation", true];
         if (_reportSky isEqualType "") then { _reportSky = (toLower _reportSky) != "false" };
         if (isServer && {_reportSky isEqualTo true}) then {
-            [] spawn {
+            [_logic] spawn {
+                params ["_logic"];
+                private _fighterClass = createHashMap;   // class -> built for air-to-air (asked once per class)
                 private _committed = createHashMap;   // side -> state said last
                 private _candidate = createHashMap;   // side -> [state, checks it has held]
                 private _words = createHashMapFromArray [
@@ -1250,9 +1252,12 @@ switch(_operation) do {
                 ];
                 while {true} do {
                     sleep 30;
+                    // Read each time, so a mission can switch it while running.
+                    private _fightersOnly = ((toLower str (_logic getVariable ["airSituationAircraft", "all"])) find "fighters") >= 0;
                     private _air = vehicles select {
                         _x isKindOf "Air" && {!(_x isKindOf "ParachuteBase")} && {alive _x} && {((getPosATL _x) select 2) > 20}
                         && {count crew _x > 0} && {[_x] call ALIVE_fnc_isArmed}
+                        && {!_fightersOnly || {_fighterClass getOrDefaultCall [typeOf _x, { _x isKindOf "Plane" && {"Fighter" in ([typeOf _x] call ALiVE_fnc_getAircraftRoles)} }, true]}}
                     };
                     {
                         private _side = _x;
