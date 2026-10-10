@@ -82,6 +82,13 @@ _cbaObjects = [_cbaObjects, [], { _x distance2D _sortFrom }, "ASCEND"] call BIS_
                 [_unit, "PATH"] remoteExecCall ["disableAI", _unit];
             };
             _unit setVariable ["ALiVE_garrisonHeld", true, true];
+            // The hold lives on the machine that owns the man, so it is put back if he moves to another, as when
+            // a headless client takes the group. The handler only fires where it was added: server and headless clients.
+            if !(_unit getVariable ["ALiVE_garrisonLocalEH", false]) then {
+                _unit setVariable ["ALiVE_garrisonLocalEH", true];
+                private _owners = [[clientOwner], (entities "HeadlessClient_F") select { isPlayer _x } apply { owner _x }] select isServer;
+                [_unit, ["Local", { params ["_u", "_isLocal"]; if (_isLocal && {_u getVariable ["ALiVE_garrisonHeld", false]}) then { doStop _u; _u disableAI "PATH" } }]] remoteExecCall ["addEventHandler", ([2] + _owners) arrayIntersect ([2] + _owners)];
+            };
         } else {
             _movementAssignments pushBack [_unit, _cbaPos, _cbaDir];
             _x setVariable ["ALiVE_garrisonClaim", [_unit, time + 125]];
