@@ -548,6 +548,16 @@ class CfgVehicles {
                                     class No  { name = "No";  value = "false"; };
                             };
                     };
+                    class generateBriefing
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_generateBriefing";
+                            displayName = "$STR_ALIVE_C2ISTAR_GENERATE_BRIEFING";
+                            tooltip = "$STR_ALIVE_C2ISTAR_GENERATE_BRIEFING_COMMENT";
+                            control = "Checkbox";
+                            typeName = "BOOL";
+                            expression = "_this setVariable ['generateBriefing', _value, true];";
+                            defaultValue = "false";
+                    };
                     class mapIntelVisibility : Combo
                     {
                             property = "ALiVE_MIL_C2ISTAR_mapIntelVisibility";

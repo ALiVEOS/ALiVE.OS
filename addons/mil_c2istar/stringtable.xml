@@ -534,6 +534,12 @@
     <Portuguese>Todas</Portuguese>
     <Russian>Все</Russian>
 </Key>
+<Key ID="STR_ALIVE_C2ISTAR_GENERATE_BRIEFING">
+    <English>Generate Briefing</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_GENERATE_BRIEFING_COMMENT">
+    <English>Writes a briefing into each player's map diary once the AI Commanders are up: the place, time and weather, the friendly and enemy commanders with their factions and rough strength, what your side is trying to do, and which ALiVE support is available. Each side gets its own. Briefing entries you wrote yourself stay as they are.</English>
+</Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_DISPLAY_INTEL">
     <English>Display Map Intel:</English>

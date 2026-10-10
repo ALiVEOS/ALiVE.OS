@@ -1955,6 +1955,159 @@ if (isServer) then {
             [_logic,"listen"] call MAINCLASS;
 
         };
+
+        // Generate Briefing (#248): a briefing in each player's map diary, written from what the
+        // mission's modules actually hold once the AI Commanders are up. The server writes one per
+        // side and broadcasts it; each player reads their own side's.
+        private _brief = _logic getVariable ["generateBriefing", false];
+        if (_brief isEqualType "") then { _brief = (toLower _brief) == "true" };
+        if (_brief isEqualTo true) then {
+            if (isServer) then { [_logic, "buildBriefing"] spawn MAINCLASS };
+            if (hasInterface) then {
+                [] spawn {
+                    waitUntil { sleep 1; !isNil "ALiVE_c2istar_briefing" && {!isNull player} };
+                    private _side = str side group player;
+                    if (_side in ["GUER", "INDEPENDENT"]) then { _side = "GUER" };
+                    private _entry = ALiVE_c2istar_briefing select { (_x select 0) == _side };
+                    private _records = if (_entry isEqualTo []) then { [] } else { (_entry select 0) select 1 };
+                    if (_records isEqualTo []) then { ["C2ISTAR: no generated briefing for a player on side %1", _side] call ALiVE_fnc_dump };
+                    // Written last first: the diary lists the newest record at the top.
+                    { player createDiaryRecord ["Diary", [_x select 0, _x select 1]] } forEach (+_records call { reverse _this; _this });
+                };
+            };
+        };
+    };
+
+    case "buildBriefing": {
+        // Waits for the AI Commanders, then writes Situation, Friendly forces, Enemy forces, Mission
+        // and Support for each side as [title, text] pairs into ALiVE_c2istar_briefing.
+        private _modules = allMissionObjects "ALiVE_mil_OPCOM";
+        private _t0 = diag_tickTime;
+        waitUntil { sleep 2; ((_modules findIf { !(_x getVariable ["startupComplete", false]) }) < 0) || {diag_tickTime - _t0 > 300} };
+        sleep 5;
+
+        private _fnc_sideText = { private _s = toUpper _this; if (_s in ["RESISTANCE", "INDEPENDENT", "GUER"]) then { "GUER" } else { _s } };
+        private _fnc_facName = { private _n = getText (configFile >> "CfgFactionClasses" >> _this >> "displayName"); if (_n == "") then { _this } else { _n } };
+        private _fnc_groups = {
+            private _n = 0;
+            { private _ids = [ALIVE_profileHandler, "getProfilesByFactionByType", [_x, "entity"]] call ALIVE_fnc_profileHandler; if (_ids isEqualType []) then { _n = _n + count _ids } } forEach _this;
+            _n
+        };
+        private _fnc_strength = {
+            switch (true) do {
+                case (_this == 0): { "no groups yet" };
+                case (_this < 10): { "a handful of groups" };
+                case (_this < 30): { format ["about %1 groups", 5 * round (_this / 5)] };
+                default { format ["about %1 groups, a large force", 10 * round (_this / 10)] };
+            };
+        };
+
+        // What each commander is, by side.
+        private _commanders = [];
+        {
+            private _h = _x getVariable ["handler", []];
+            if ([_h] call ALIVE_fnc_isHash) then {
+                private _side = ([_h, "side", ""] call ALIVE_fnc_hashGet) call _fnc_sideText;
+                private _factions = [_h, "factions", []] call ALIVE_fnc_hashGet;
+                private _type = toLower ([_h, "controltype", "invasion"] call ALIVE_fnc_hashGet);
+                private _objectives = count ([_h, "objectives", []] call ALIVE_fnc_hashGet);
+                _commanders pushBack [_side, _factions, _type, _objectives];
+            };
+        } forEach _modules;
+
+        // Weather and time, in words.
+        private _fnc_band = { params ["_v", "_words"]; _words select (floor ((_v * (count _words)) min ((count _words) - 1))) };
+        private _sky = [overcast, ["clear skies", "some cloud", "overcast", "heavy cloud"]] call _fnc_band;
+        private _fogWords = [fog, ["no fog", "light fog", "fog", "thick fog"]] call _fnc_band;
+        private _rainWords = if (rain > 0.1) then { [rain, ["light rain", "rain", "heavy rain"]] call _fnc_band } else { "no rain" };
+        private _place = getText (configFile >> "CfgWorlds" >> worldName >> "description");
+        if (_place == "") then { _place = worldName };
+        date params ["_y", "_mo", "_d", "_h", "_mi"];
+        private _situation = format ["At the start of the operation.<br/>Area of operations: %1.<br/>Local time: %2:%3 on %4/%5/%6.<br/>Weather: %7, %8, %9.",
+            _place, [_h, 2] call CBA_fnc_formatNumber, [_mi, 2] call CBA_fnc_formatNumber, _d, _mo, _y, _sky, _fogWords, _rainWords];
+
+        // Support is told per side. The air commander and AI logistics serve the AI Commanders
+        // they're synced to; Combat Support serves the side of the vehicles synced to it.
+        private _fnc_servesSide = {
+            params ["_class", "_sideObj"];
+            ((entities _class) findIf {
+                ((synchronizedObjects _x) findIf {
+                    (typeOf _x) == "ALiVE_mil_OPCOM" && {
+                        private _h = _x getVariable ["handler", []];
+                        [_h] call ALIVE_fnc_isHash && {[[([_h, "side", ""] call ALIVE_fnc_hashGet) call _fnc_sideText] call ALIVE_fnc_sideTextToObject, _sideObj] call BIS_fnc_sideIsFriendly}
+                    }
+                }) >= 0
+            }) >= 0
+        };
+        // Combat Support keeps a list per side of what it can send; read those once it has built them.
+        if (count (entities "ALiVE_sup_combatsupport") > 0) then {
+            private _t1 = diag_tickTime;
+            waitUntil { sleep 2; !isNil "NEO_radioLogic" || {diag_tickTime - _t1 > 120} };
+            sleep 5;
+        };
+        private _fnc_csKinds = {
+            params ["_sideObj"];
+            if (isNil "NEO_radioLogic") exitWith { [] };
+            private _kinds = [];
+            {
+                _x params ["_var", "_word"];
+                if (count (NEO_radioLogic getVariable [format [_var, _sideObj], []]) > 0) then { _kinds pushBack _word };
+            } forEach [["NEO_radioTrasportArray_%1", "transport"], ["NEO_radioCasArray_%1", "close air support"], ["NEO_radioArtyArray_%1", "artillery"]];
+            _kinds
+        };
+
+        private _briefing = createHashMap;
+        {
+            private _side = _x;
+            private _sideObj = [_side] call ALIVE_fnc_sideTextToObject;
+            private _friendly = _commanders select { ([[_x select 0] call ALIVE_fnc_sideTextToObject, _sideObj] call BIS_fnc_sideIsFriendly) };
+            private _enemy = _commanders select { ([[_x select 0] call ALIVE_fnc_sideTextToObject, _sideObj] call BIS_fnc_sideIsEnemy) };
+
+            private _fnc_describe = {
+                params ["_list", "_ours"];
+                if (_list isEqualTo []) exitWith { [if (_ours) then { "No AI Commander is fighting alongside you." } else { "No enemy AI Commander has been identified." }] };
+                _list apply {
+                    _x params ["", "_factions", "_type", "_objectives"];
+                    private _what = switch (_type) do {
+                        case "occupation": { "holding the ground it has" };
+                        case "asymmetric": { "running an insurgency" };
+                        default { "on the offensive" };
+                    };
+                    format ["%1: %2, %3 across %4 objectives.", (_factions apply { _x call _fnc_facName }) joinString ", ", (_factions call _fnc_groups) call _fnc_strength, _what, _objectives]
+                }
+            };
+
+            private _mission = if (_friendly isEqualTo []) then {
+                "Operate independently. There is no AI Commander on your side, so the fight is yours to direct."
+            } else {
+                private _types = _friendly apply { _x select 2 };
+                switch (true) do {
+                    case ("asymmetric" in _types): { "Support the insurgency: hit the occupying forces where they are weak, recruit, and stay out of sight." };
+                    case ("invasion" in _types): { "Support your AI Commander's offensive: take enemy-held objectives and hold them. Your task list and the command tablet say where you're needed." };
+                    default { "Hold what your AI Commander holds and push back any enemy attack. Your task list and the command tablet say where you're needed." };
+                };
+            };
+
+            private _support = [];
+            private _cs = [_sideObj] call _fnc_csKinds;
+            if (_cs isNotEqualTo []) then { _support pushBack format ["Combat Support: %1, called from the support menu.", _cs joinString ", "] };
+            if (count (entities "ALiVE_sup_player_resupply") > 0) then { _support pushBack "Player Logistics is in this mission: supplies, vehicles and reinforcements may be requested from the command tablet." };
+            if (["ALiVE_mil_ato", _sideObj] call _fnc_servesSide) then { _support pushBack "An Air Component Commander flies its own sorties and takes air requests from the tablet." };
+            if (["ALiVE_mil_logistics", _sideObj] call _fnc_servesSide) then { _support pushBack "Your AI Commander is resupplied by its own logistics, so its losses are replaced over time." };
+            if (_support isEqualTo []) then { _support pushBack "No ALiVE support has been set up for your side." };
+
+            _briefing set [_side, [
+                ["Situation", _situation],
+                ["Friendly forces", ([_friendly, true] call _fnc_describe) joinString "<br/>"],
+                ["Enemy forces", ([_enemy, false] call _fnc_describe) joinString "<br/>"],
+                ["Mission", _mission],
+                ["Support", _support joinString "<br/>"]
+            ]];
+        } forEach ["WEST", "EAST", "GUER"];
+
+        ALiVE_c2istar_briefing = _briefing toArray false;
+        publicVariable "ALiVE_c2istar_briefing";
+        ["C2ISTAR: briefing written for %1 AI Commander(s)", count _commanders] call ALiVE_fnc_dump;
     };
 
     case "listen": {
