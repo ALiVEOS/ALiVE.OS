@@ -1196,6 +1196,43 @@ switch(_operation) do {
                 ["C2ISTAR air picture: %1 (%2) at %3, told %4", _text, _class, mapGridPosition _pos, _sides] call ALiVE_fnc_dump;
             };
         };
+
+        // Enemy air attacks (#968): a man or ground vehicle killed by an enemy aircraft tells his own
+        // side's players they're under air attack there, on the same AIR PICTURE page. Once per 2 km
+        // square every 5 minutes, so a strafing run is one line, not twenty. Kills only: a hit that
+        // doesn't kill isn't reported.
+        private _reportCAS = _logic getVariable ["reportEnemyAirAttack", true];
+        if (_reportCAS isEqualType "") then { _reportCAS = (toLower _reportCAS) != "false" };
+        if (isServer && {_reportCAS isEqualTo true}) then {
+            ALiVE_c2istar_airAttackSeen = createHashMap;
+            addMissionEventHandler ["EntityKilled", {
+                params ["_unit", "_killer", "_instigator"];
+                private _shooter = if (!isNull _instigator) then { vehicle _instigator } else { vehicle _killer };
+                if (isNull _shooter || {!(_shooter isKindOf "Air")} || {_shooter isKindOf "ParachuteBase"}) exitWith {};
+                if !(_unit isKindOf "CAManBase" || {_unit isKindOf "LandVehicle"} || {_unit isKindOf "StaticWeapon"}) exitWith {};
+                private _victimSide = if (_unit isKindOf "CAManBase") then { side group _unit } else { [getNumber (configOf _unit >> "side")] call BIS_fnc_sideType };
+                // A man just killed can already read as civilian; his class says whose he was.
+                if !(_victimSide in [west, east, resistance]) then { _victimSide = [getNumber (configOf _unit >> "side")] call BIS_fnc_sideType };
+                private _attackerSide = side group (if (!isNull _instigator) then { _instigator } else { _killer });
+                if !(_victimSide in [west, east, resistance]) exitWith {};
+                if ((_victimSide getFriend _attackerSide) >= 0.6) exitWith {};
+                private _pos = getPosATL _unit;
+                private _key = format ["%1_%2_%3", _victimSide, floor ((_pos select 0) / 2000), floor ((_pos select 1) / 2000)];
+                if (time < (ALiVE_c2istar_airAttackSeen getOrDefault [_key, -1])) exitWith {};
+                ALiVE_c2istar_airAttackSeen set [_key, time + 300];
+                private _what = switch (true) do {
+                    case (getNumber (configOf _shooter >> "isUav") == 1): { "an enemy drone" };
+                    case (_shooter isKindOf "Helicopter"): { "an enemy helicopter" };
+                    default { "enemy aircraft" };
+                };
+                private _text = format ["Friendly forces under attack from %1 near %2", _what, [_pos] call ALIVE_fnc_taskGetNearestLocationName];
+                ALiVE_c2istar_airLoss = [[_victimSide], [daytime, "HH:MM"] call BIS_fnc_timeToString, _text];
+                publicVariable "ALiVE_c2istar_airLoss";
+                if (hasInterface) then { ALiVE_c2istar_airLoss call ALiVE_c2istar_fnc_showAirLoss };
+                ["C2ISTAR air picture: %1 (%2 by %3) at %4", _text, typeOf _unit, typeOf _shooter, mapGridPosition _pos] call ALiVE_fnc_dump;
+            }];
+        };
+
         if (hasInterface) then {
             ALiVE_c2istar_fnc_showAirLoss = {
                 params ["_sides", "_time", "_text"];

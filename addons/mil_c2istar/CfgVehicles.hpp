@@ -558,6 +558,16 @@ class CfgVehicles {
                             expression = "_this setVariable ['reportEnemyAirLoss', _value, true];";
                             defaultValue = "true";
                     };
+                    class reportEnemyAirAttack
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_reportEnemyAirAttack";
+                            displayName = "$STR_ALIVE_C2ISTAR_REPORT_AIR_ATTACK";
+                            tooltip = "$STR_ALIVE_C2ISTAR_REPORT_AIR_ATTACK_COMMENT";
+                            control = "Checkbox";
+                            typeName = "BOOL";
+                            expression = "_this setVariable ['reportEnemyAirAttack', _value, true];";
+                            defaultValue = "true";
+                    };
                     class generateBriefing
                     {
                             property = "ALiVE_MIL_C2ISTAR_generateBriefing";
