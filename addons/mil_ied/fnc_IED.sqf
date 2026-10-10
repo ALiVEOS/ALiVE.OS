@@ -254,6 +254,10 @@ switch(_operation) do {
                     [ADDON, "VB_IED_Threat",                     _logic getVariable ["VB_IED_Threat", 0]] call MAINCLASS;
                     [ADDON, "Locs_IED",                          _logic getVariable ["Locs_IED", 0]] call MAINCLASS;
                     [ADDON, "IED_Engineer_Challenge",            _logic getVariable ["IED_Engineer_Challenge", 1]] call MAINCLASS;
+                    // Trigger Man Chance (#578), percent; read by armIED.
+                    private _dickerChance = _logic getVariable ["IED_Dicker_Chance", 0];
+                    if (_dickerChance isEqualType "") then { _dickerChance = parseNumber _dickerChance };
+                    ADDON setVariable ["IED_Dicker_Chance", _dickerChance];
                     [ADDON, "IED_Engineer_Trip_Base",            _logic getVariable ["IED_Engineer_Trip_Base", 0.02]] call MAINCLASS;
                     [ADDON, "IED_Engineer_Trip_ThresholdMin",    _logic getVariable ["IED_Engineer_Trip_ThresholdMin", 0.7]] call MAINCLASS;
                     [ADDON, "IED_Engineer_Trip_ThresholdMax",    _logic getVariable ["IED_Engineer_Trip_ThresholdMax", 1.3]] call MAINCLASS;

@@ -313,6 +313,12 @@
     <Portuguese>Onde IEDs, VB-IEDs e homens-bomba podem ser colocados. Aleatório = qualquer cidade da área. Áreas ocupadas pelo inimigo = apenas cidades onde o comandante IA inimigo tem forças depois de iniciado: o comandante sincronizado com este módulo, ou todo comandante hostil aos jogadores. Enquanto ainda não tiver forças posicionadas, como uma insurgência no início, são colocados como em Aleatório. Desocupados = apenas cidades onde nenhum comandante IA tem forças.</Portuguese>
     <Russian>Где могут размещаться СВУ, VB-IED и смертники. Случайно = любой населённый пункт в зоне. Территории, занятые противником = только населённые пункты, где у вражеского ИИ-командира есть силы после его запуска: командира, синхронизированного с этим модулем, или любого командира, враждебного игрокам. Пока у него ещё нет сил на местах, как у повстанцев в начале, размещение идёт как при «Случайно». Не занятые = только населённые пункты, где ни у одного ИИ-командира нет сил.</Russian>
 </Key>
+<Key ID="STR_ALIVE_IED_DICKER_CHANCE">
+    <English>Trigger Man Chance</English>
+</Key>
+<Key ID="STR_ALIVE_IED_DICKER_CHANCE_COMMENT">
+    <English>How many IEDs get a civilian trigger man watching from 60 to 150 m away. While he is free he sets the IED off himself when anyone comes near, so a careful approach won't save you. Kill him, detain him or make him surrender and it won't go off when approached; disarm it as usual. ALiVE IEDs only.</English>
+</Key>
 <Key ID="STR_ALIVE_IED_ENGINEER_CHALLENGE">
     <English>Engineer Challenge:</English>
     <Chinese>工兵挑戰：</Chinese>

@@ -117,6 +117,46 @@ private _gracePeriod = 15;
 
     if (isNull _ied || !alive _ied) exitWith {};
 
+    // A trigger man (#578). With Trigger Man Chance set, an IED may get a civilian watching it
+    // from 60-150 m with a clear view. While he is alive and free he sets it off himself when
+    // someone comes near, whoever they are, so an engineer's careful approach doesn't help.
+    // Kill him, detain him or make him surrender and nobody is left to set it off: it no longer
+    // goes off when approached, and is disarmed the usual way. ALiVE's own IEDs only.
+    private _dickerChance = ADDON getVariable ["IED_Dicker_Chance", 0];
+    if (_dickerChance isEqualType "") then { _dickerChance = parseNumber _dickerChance };
+    if (_dickerChance > 0 && {(ADDON getVariable ["resolvedIntegrationMode", "alive"]) != "mine"} && {random 100 < _dickerChance}) then {
+        private _target = (getPosASL _ied) vectorAdd [0, 0, 0.5];
+        private _spot = [];
+        for "_i" from 1 to 30 do {
+            private _p = (getPosATL _ied) getPos [60 + random 90, random 360];
+            _p set [2, 0];
+            private _eye = (ATLToASL _p) vectorAdd [0, 0, 1.6];
+            if (!surfaceIsWater _p && {!(terrainIntersectASL [_eye, _target])}
+                && {(lineIntersectsSurfaces [_eye, _target, _ied, objNull, true, 1, "VIEW", "FIRE"]) isEqualTo []}
+                && {([_p, 300] call ALiVE_fnc_anyPlayersInRange) == 0}) exitWith { _spot = _p };
+        };
+        if (_spot isEqualTo []) exitWith {};
+        // Dressed like the people of the place: the class of a civilian already about, if any.
+        private _civs = (allUnits + (agents apply { agent _x })) select { (side group _x) isEqualTo civilian && {_x isKindOf "CAManBase"} && {!isPlayer _x} };
+        private _cls = if (_civs isNotEqualTo []) then { typeOf (selectRandom _civs) } else { "C_man_1" };
+        private _d = (createGroup [civilian, true]) createUnit [_cls, _spot, [], 0, "CAN_COLLIDE"];
+        if (isNull _d) exitWith {};
+        _d setDir (_d getDir _ied);
+        _d disableAI "PATH";
+        _d setBehaviour "CARELESS";
+        _d setUnitPos (selectRandom ["UP", "MIDDLE"]);
+        _d doWatch (getPosATL _ied);
+        if (isClass (configFile >> "CfgWeapons" >> "ACE_Cellphone")) then { _d addItem "ACE_Cellphone" };
+        _d setVariable ["ALiVE_advciv_blacklist", true, true];
+        _d setVariable ["ALiVE_CivPop_InsurgentContact", true, true];
+        _d setVariable ["ALiVE_IED_DickerOf", _ied, true];
+        _ied setVariable ["ALiVE_IED_Dicker", _d, true];
+        _ied setVariable ["ALiVE_IED_DickerMode", true, true];
+        if (ADDON getVariable ["debug", false]) then {
+            ["ALIVE-%1 IED: trigger man %2 (%3) watching IED at %4 from %5 m", time, name _d, _cls, getPosATL _ied, round (_d distance _ied)] call ALiVE_fnc_dump;
+        };
+    };
+
     // ---------------------------------------------------------------------
     // Polling-loop detonation model.
     // EmptyDetector-based triggers with ANY/PRESENT have synchronous-fire
@@ -133,6 +173,15 @@ private _gracePeriod = 15;
         private _tripBase         = ADDON getVariable ["IED_Engineer_Trip_Base", 0.02];
         private _decayRate        = ADDON getVariable ["IED_Engineer_Decay_Rate", 0.01];
         private _threshold        = _ied getVariable ["ALiVE_IED_TripThreshold", 1.0];
+        // Trigger man (#578): set above when this IED got one.
+        private _dickerMode = _ied getVariable ["ALiVE_IED_DickerMode", false];
+        private _dicker     = _ied getVariable ["ALiVE_IED_Dicker", objNull];
+        private _dickerAt   = -1;
+        private _fnc_dickerFree = {
+            alive _dicker && {!captive _dicker} && {lifeState _dicker != "INCAPACITATED"}
+            && {!(_dicker getVariable ["ace_captives_isHandcuffed", false])} && {!(_dicker getVariable ["ace_captives_isSurrendering", false])}
+            && {(_dicker distance _ied) < 400}
+        };
         private _debugLocal       = ADDON getVariable ["debug", false];
         private _stompRadius      = ADDON getVariable ["resolvedStompRadius", 0];
 
@@ -438,6 +487,26 @@ private _gracePeriod = 15;
                     };
                 } forEach (+(keys _tripMap));
 
+                // With a trigger man the IED is his to set off, not a pressure device: free, he
+                // fires it a second or two after anyone comes within 15 m of the blast radius;
+                // gone, nothing sets it off.
+                if (_dickerMode) then {
+                    _shouldDetonate = false;
+                    if (call _fnc_dickerFree) then {
+                        private _near = ((_ied nearEntities [["Man", "LandVehicle"], _proximity + 15]) select {
+                            alive _x && {((getposATL (vehicle _x)) select 2) < 8} && {!(_x isEqualTo _dicker)}
+                            && {(_x in _players) || {((crew _x) findIf {_x in _players}) > -1} || {_aiTriggerable && {_x call ALiVE_fnc_iedAICounts}}}
+                        }) isNotEqualTo [];
+                        if (!_near) then { _dickerAt = -1 } else {
+                            if (_dickerAt < 0) then { _dickerAt = time + 1 + random 2 };
+                            if (time >= _dickerAt) then {
+                                _shouldDetonate = true;
+                                if (_debugLocal) then { ["ALIVE-%1 IED: trigger man %2 set off the IED at %3", time, name _dicker, getPosATL _ied] call ALiVE_fnc_dump };
+                            };
+                        };
+                    };
+                };
+
                 if (_shouldDetonate) then {
                     private _iedPos = getpos _ied;
                     deletevehicle (_ied getVariable ["Detect_Trigger", objNull]);
@@ -459,6 +528,18 @@ private _gracePeriod = 15;
 
             }; // end isNull check
         }; // end while
+
+        // The IED is gone, disarmed or blown. A trigger man still free walks off and is removed
+        // once no player is within 400 m; a detained or dead one is left to the players.
+        private _fnc_dickerLoose = { alive _dicker && {!captive _dicker} && {!(_dicker getVariable ["ace_captives_isHandcuffed", false])} };
+        if (_dickerMode && _fnc_dickerLoose) then {
+            _dicker enableAI "PATH";
+            _dicker setUnitPos "AUTO";
+            _dicker doWatch objNull;
+            _dicker doMove (_dicker getPos [300, random 360]);
+            waitUntil { sleep 10; !(call _fnc_dickerLoose) || {([getPosATL _dicker, 400] call ALiVE_fnc_anyPlayersInRange) == 0} };
+            if (call _fnc_dickerLoose) then { deleteVehicle _dicker };
+        };
     };
 
     // Stub triggers. Condition is hardcoded "false" so they never fire; detonation is

@@ -112,6 +112,21 @@ class CfgVehicles {
                                 defaultValue = """1""";
                                 class Values { class No{name="No";value=0;}; class Yes{name="Yes";value=1;default=1;}; };
                         };
+                        class IED_Dicker_Chance : Combo
+                        {
+                                property = "ALiVE_mil_ied_IED_Dicker_Chance";
+                                displayName = "$STR_ALIVE_IED_DICKER_CHANCE";
+                                tooltip = "$STR_ALIVE_IED_DICKER_CHANCE_COMMENT";
+                                defaultValue = """0""";
+                                class Values
+                                {
+                                        class None { name="None"; value=0; default=1; };
+                                        class Few  { name="10%"; value=10; };
+                                        class Some { name="25%"; value=25; };
+                                        class Half { name="50%"; value=50; };
+                                        class All  { name="All"; value=100; };
+                                };
+                        };
                         class IED_Engineer_Trip_Base : Combo
                         {
                                 property = "ALiVE_mil_ied_IED_Engineer_Trip_Base";
