@@ -50,10 +50,10 @@ if (_isArty) then {
         if (_v != _x && {!(_v in _batteryVehicles)}) then { _batteryVehicles pushBack _v };
     } forEach (units (group _leader));
 
-    // Topped up to half a tank, never drained to it, the same as below.
+    // A full tank, the same as below.
     {
         _x setVehicleAmmo 1;
-        _x setFuel ((fuel _x) max 0.5);
+        _x setFuel 1;
         _x setDamage 0;
     } forEach _batteryVehicles;
 
@@ -69,9 +69,9 @@ if (_isArty) then {
 } else {
     // Transport or CAS: _veh IS the vehicle.
     _veh setVehicleAmmo 1;
-    // Topped up to half a tank, never drained to it. Setting 0.5 outright took
-    // an aircraft that came back with 0.97 and sent it out on its next sortie
-    // with 0.50.
+    // A full tank, as the air commander gives its own aircraft. It used to be
+    // half, so a Combat Support aircraft went out on each sortie with less fuel
+    // than one the air commander had serviced on the same stand.
     //
     // An aircraft the air tasking module is holding on its stand for a launch
     // has its tank kept empty, so its crew cannot drive it out while it waits,
@@ -81,9 +81,9 @@ if (_isArty) then {
     private _atoHeld = _veh getVariable ["ALiVE_mil_ato_heldFuel", -1];
     private _held = (_atoHeld isEqualType 0) && {_atoHeld >= 0};
     if (_held) then {
-        _veh setVariable ["ALiVE_mil_ato_heldFuel", _atoHeld max 0.5, true];
+        _veh setVariable ["ALiVE_mil_ato_heldFuel", 1, true];
     } else {
-        _veh setFuel ((fuel _veh) max 0.5);
+        _veh setFuel 1;
     };
     _veh setDamage 0;
     _veh setVariable ["ALIVE_resupply_needsService", false, true];
