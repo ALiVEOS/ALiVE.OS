@@ -737,6 +737,12 @@
     <Portuguese>Opcional. Selecione uma única facção civil para os spawns de multidões ambientais. Especificar uma facção melhora o desempenho; deixe em branco para que o ativador de multidões escolha uma facção por edifício a partir dos civis próximos. Facções de mods não carregados aparecem como «(unrecognised)» — o valor armazenado é preservado de qualquer forma.</Portuguese>
     <Russian>Необязательно. Выберите одну гражданскую фракцию для спавна окружающих толп. Указание фракции повышает производительность; оставьте пустым, чтобы активатор толп выбирал фракцию по зданию из ближайших гражданских. Фракции из незагруженных модов отображаются как «(unrecognised)» — сохранённое значение сохраняется в любом случае.</Russian></Key>
 <!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_POP_AMBIENT_VOLUME">
+    <English>Ambient Sound Volume:</English>
+</Key>
+<Key ID="STR_ALIVE_CIV_POP_AMBIENT_VOLUME_COMMENT">
+    <English>How loud the town sounds are: markets, homes, calls to prayer and the rest. Normal plays them as before; 2x to 5x makes a busy place sound busy. Disable Ambient Sounds still turns them all off.</English>
+</Key>
 <Key ID="STR_ALIVE_CIV_POP_DISABLE_AMBIENT_SOUNDS">
     <English>Disable Ambient Sounds:</English>
     <Chinese>停用環境音效:</Chinese>

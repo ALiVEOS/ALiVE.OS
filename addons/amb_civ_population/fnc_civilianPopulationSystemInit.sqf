@@ -131,6 +131,36 @@ if(isServer) then {
     private _disableAmbientSounds = (_logic getVariable ["disableAmbientSounds", "false"]) isEqualTo "true";
     missionNamespace setVariable ["ALiVE_CivPop_AmbientSoundsDisabled", _disableAmbientSounds, true];
 
+    // Ambient Sound Volume (#638): how loud the town sounds are, 1 as before, up to 5. At 1 they
+    // play exactly as they always have; louder ones go through playSound3D, played on each machine
+    // alone (its local flag) since every client already runs its own copy of each sound.
+    private _ambientVolume = _logic getVariable ["ambientSoundVolume", "1"];
+    if (_ambientVolume isEqualType "") then { _ambientVolume = parseNumber _ambientVolume };
+    if !(_ambientVolume isEqualType 0) then { _ambientVolume = 1 };
+    if (_ambientVolume <= 0) then { _ambientVolume = 1 };
+    missionNamespace setVariable ["ALiVE_CivPop_AmbientVolume", (_ambientVolume max 0.1) min 5, true];
+    missionNamespace setVariable ["ALiVE_CivPop_fnc_sayAmbient", {
+        params ["_source", "_track"];
+        private _volume = missionNamespace getVariable ["ALiVE_CivPop_AmbientVolume", 1];
+        private _cfg = missionConfigFile >> "CfgSounds" >> _track;
+        private _inMission = isClass _cfg;
+        if !(_inMission) then { _cfg = configFile >> "CfgSounds" >> _track };
+        private _sound = getArray (_cfg >> "sound");
+        if (_volume == 1 || {_sound isEqualTo []}) exitWith { _source say3D _track };
+        private _path = _sound select 0;
+        if ((_path select [0, 1]) == "\") then { _path = _path select [1] };
+        if (_inMission) then { _path = getMissionPath _path };
+        // The track's own level from its config, as say3D would use it, times the setting.
+        private _base = _sound param [1, 1];
+        if (_base isEqualType "") then {
+            // "db+10" or "db-5": decibels after the "db"
+            _base = 10 ^ ((parseNumber (_base select [2])) / 20);
+        };
+        private _range = _sound param [3, 100];
+        if !(_range isEqualType 0) then { _range = 100 };
+        playSound3D [_path, _source, false, getPosASL _source, (_base * _volume) min 5, 1, _range, 0, true];
+    }, true];
+
     // ----------------------------------------------------------------
     //  Advanced Civilians - read module args and set globals
     //

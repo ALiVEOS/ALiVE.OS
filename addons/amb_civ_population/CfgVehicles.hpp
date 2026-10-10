@@ -183,6 +183,7 @@ class CfgVehicles {
                 defaultValue = """CIV_F""";
             };
             class disableAmbientSounds : Combo { property = "ALiVE_amb_civ_population_disableAmbientSounds"; displayName = "$STR_ALIVE_CIV_POP_DISABLE_AMBIENT_SOUNDS"; tooltip = "$STR_ALIVE_CIV_POP_DISABLE_AMBIENT_SOUNDS_COMMENT"; defaultValue = """false"""; class Values { class No { name = "No"; value = false; default = 1; }; class Yes { name = "Yes"; value = true; }; }; };
+            class ambientSoundVolume : Combo { property = "ALiVE_amb_civ_population_ambientSoundVolume"; displayName = "$STR_ALIVE_CIV_POP_AMBIENT_VOLUME"; tooltip = "$STR_ALIVE_CIV_POP_AMBIENT_VOLUME_COMMENT"; defaultValue = """1"""; class Values { class V1 { name = "Normal"; value = "1"; default = 1; }; class V15 { name = "1.5x"; value = "1.5"; }; class V2 { name = "2x"; value = "2"; }; class V3 { name = "3x"; value = "3"; }; class V4 { name = "4x"; value = "4"; }; class V5 { name = "5x"; value = "5"; }; }; };
 
             // ---- Humanitarian ---------------------------------------------------
             class HDR_HUMANITARIAN : ALiVE_ModuleSubTitle { property = "ALiVE_amb_civ_population_HDR_HUMANITARIAN"; displayName = "HUMANITARIAN"; };

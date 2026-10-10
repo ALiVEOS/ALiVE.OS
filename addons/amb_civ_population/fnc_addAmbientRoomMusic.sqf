@@ -70,7 +70,7 @@ hideObjectGlobal _musicSource;
                 [_building, _musicSource, _trackName] remoteExec ["ALIVE_fnc_clientAddAmbientRoomMusic"];
 
             }else{
-                _musicSource say3d _trackName;
+                [_musicSource, _trackName] call (missionNamespace getVariable ["ALiVE_CivPop_fnc_sayAmbient", { (_this select 0) say3D (_this select 1) }]); // Ambient Sound Volume (#638)
             };
 
             sleep _trackDuration;

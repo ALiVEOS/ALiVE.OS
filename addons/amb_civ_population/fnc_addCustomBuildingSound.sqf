@@ -83,7 +83,7 @@ if (count _customBuildingData > 0) then {
                                 [_building, _source, _trackName] remoteExec ["ALIVE_fnc_clientAddAmbientRoomMusic"];
 
                             }else{
-                                _source say3d _trackName;
+                                [_source, _trackName] call (missionNamespace getVariable ["ALiVE_CivPop_fnc_sayAmbient", { (_this select 0) say3D (_this select 1) }]); // Ambient Sound Volume (#638)
                             };
 
                             sleep _trackDuration;

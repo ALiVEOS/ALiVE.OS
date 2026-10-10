@@ -22,6 +22,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 params ["_building","_source","_track"];
@@ -29,4 +30,4 @@ params ["_building","_source","_track"];
 _source attachTo [_building,[1,1,1]];
 hideObjectGlobal _source;
 
-_source say3d _track;
+[_source, _track] call (missionNamespace getVariable ["ALiVE_CivPop_fnc_sayAmbient", { (_this select 0) say3D (_this select 1) }]); // Ambient Sound Volume (#638)
