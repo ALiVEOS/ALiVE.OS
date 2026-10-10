@@ -66,6 +66,25 @@ if (_profilesToSim isEqualTo []) then {
     private _entities = [_profilesByType,"entity"] call ALiVE_fnc_hashGet;
     _profilesToSim append _entities;
 
+    // A spawned vehicle that no profiled group commands (driven by a player's own AI, say) has nothing
+    // above that moves its profile, which stayed where it spawned. Once the players were a spawn radius
+    // from that spot the vehicle was put away from under its crew. Its profile now follows the vehicle.
+    {
+        private _vehicleProfile = _profilesById get _x;
+        if (!isNil "_vehicleProfile") then {
+            private _data = _vehicleProfile select 2;
+            if ((_data select 1) && {(_data select 8) isEqualTo []}) then {
+                private _object = _data select 10;
+                if (!isNull _object && {alive _object}) then {
+                    private _newPosition = getPosATL _object;
+                    if ((_newPosition distance (_data select 2)) > 10) then {
+                        [_vehicleProfile,"position", _newPosition] call ALiVE_fnc_profileVehicle;
+                    };
+                };
+            };
+        };
+    } forEach ([_profilesByType,"vehicle",[]] call ALiVE_fnc_hashGet);
+
     _simAttacks = true;
     [MOD(profileSystem),"simulatingAttacks", true] call ALiVE_fnc_hashSet;
 
