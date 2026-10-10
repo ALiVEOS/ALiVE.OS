@@ -154,6 +154,8 @@ switch (_operation) do {
         private _recruitSuccessChance = ((parseNumber format ["%1", _logic getvariable ["recruitSuccessChance",50]]) max 0) min 100;
         // Chance a new Recruitment HQ raises a task to kill its recruiter (#426).
         private _recruiterTaskChance = ((parseNumber format ["%1", _logic getvariable ["recruiterTaskChance",0]]) max 0) min 100;
+        // Frontline Minefields (#979): none, few or many.
+        private _frontlineMinefields = toLower format ["%1", _logic getvariable ["frontlineMinefields","none"]];
         private _hostilityPresenceMultiplier = (parseNumber format ["%1", _logic getvariable ["hostilityPresenceMultiplier",1]]) max 0;
         private _hostilityInstallationMultiplier = (parseNumber format ["%1", _logic getvariable ["hostilityInstallationMultiplier",1]]) max 0;
         private _hostilityInstallationInterval = ((parseNumber format ["%1", _logic getvariable ["hostilityInstallationInterval",10]]) max 0) * 60;
@@ -312,6 +314,7 @@ switch (_operation) do {
             ["recruitAttemptLimit", _recruitAttemptLimit],
             ["recruitSuccessChance", _recruitSuccessChance],
             ["recruiterTaskChance", _recruiterTaskChance],
+            ["frontlineMinefields", _frontlineMinefields],
             ["hostilityPresenceMultiplier", _hostilityPresenceMultiplier],
             ["hostilityInstallationMultiplier", _hostilityInstallationMultiplier],
             ["hostilityInstallationInterval", _hostilityInstallationInterval],
@@ -616,6 +619,84 @@ switch (_operation) do {
                 private _fsm = [_handler] execFSM "\x\alive\addons\mil_opcom\insurgency.fsm";
 
                 [_handler,"OPCOM_FSM", _fsm] call ALiVE_fnc_HashSet;
+            };
+        };
+
+        // Frontline minefields (#979). An invasion or occupation commander with Frontline
+        // Minefields set lays a small field in front of each held objective that faces the enemy:
+        // anti-tank mines on the roads into it, anti-personnel mines elsewhere, in a band beyond
+        // its edge facing the nearest enemy-held objective (or the nearest enemy group). Its own
+        // side and friendly sides are told where the mines are. Few allows 2 fields, Many 6; one
+        // field per objective, at most one every 5 min; never within 300 m of a player. Fields stay until cleared.
+        if (_type in ["occupation","invasion"]) then {
+            [_handler] spawn {
+                params ["_handler"];
+                sleep 180;
+                while { !isNil "_handler" && {!([_handler,"stopped",false] call ALiVE_fnc_HashGet)} } do {
+                    private _setting = toLower ([_handler,"frontlineMinefields","none"] call ALiVE_fnc_HashGet);
+                    private _max = switch (_setting) do { case "few": {2}; case "many": {6}; default {0} };
+                    private _fields = [_handler,"minefields",[]] call ALiVE_fnc_HashGet;
+                    if (_max > 0 && {count _fields < _max}) then {
+                        private _side = [[_handler,"side","EAST"] call ALiVE_fnc_HashGet] call ALiVE_fnc_sideTextToObject;
+                        private _held = ([_handler,"objectives",[]] call ALiVE_fnc_HashGet) select {
+                            private _oid = [_x,"objectiveID",""] call ALiVE_fnc_HashGet;
+                            ([_x,"opcom_state",""] call ALiVE_fnc_HashGet) in ["defend","defending","reserve","reserving"]
+                            && {(_fields findIf { (_x select 0) == _oid }) < 0}
+                        };
+                        // Where the enemy is: the centres of objectives hostile commanders hold.
+                        private _enemyPos = [];
+                        {
+                            private _o = _x;
+                            private _oSide = [[_o,"side","EAST"] call ALiVE_fnc_HashGet] call ALiVE_fnc_sideTextToObject;
+                            if ((_side getFriend _oSide) < 0.6) then {
+                                {
+                                    if (([_x,"opcom_state",""] call ALiVE_fnc_HashGet) in ["defend","defending","reserve","reserving"]) then {
+                                        _enemyPos pushBack ([_x,"center",[0,0,0]] call ALiVE_fnc_HashGet);
+                                    };
+                                } forEach ([_o,"objectives",[]] call ALiVE_fnc_HashGet);
+                            };
+                        } forEach (missionNamespace getVariable ["OPCOM_instances", []]);
+                        // The objective of ours nearest the enemy, within 3 km of it, goes first.
+                        private _best = []; private _bestD = 3000;
+                        {
+                            private _c = [_x,"center",[0,0,0]] call ALiVE_fnc_HashGet;
+                            private _toward = [];
+                            private _d = 1e9;
+                            { if ((_x distance2D _c) < _d) then { _d = _x distance2D _c; _toward = _x } } forEach _enemyPos;
+                            if (_toward isEqualTo []) then {
+                                private _foes = ((missionNamespace getVariable ["OPCOM_instances", []]) apply { [_x,"side",""] call ALiVE_fnc_HashGet }) select { (_side getFriend ([_x] call ALiVE_fnc_sideTextToObject)) < 0.6 };
+                                {
+                                    private _near = [_c, 3000, [_x, "entity"]] call ALIVE_fnc_getNearProfiles;
+                                    { private _p = [_x,"position",[0,0,0]] call ALiVE_fnc_HashGet; if ((_p distance2D _c) < _d) then { _d = _p distance2D _c; _toward = _p } } forEach _near;
+                                } forEach _foes;
+                            };
+                            if (_toward isNotEqualTo [] && {_d < _bestD} && {([_c, 300] call ALiVE_fnc_anyPlayersInRange) == 0}) then { _bestD = _d; _best = [_x, _c, _toward] };
+                        } forEach _held;
+                        if (_best isNotEqualTo []) then {
+                            _best params ["_objective", "_c", "_toward"];
+                            private _size = ([_objective,"size",150] call ALiVE_fnc_HashGet) max 100;
+                            private _dir = _c getDir _toward;
+                            private _mines = [];
+                            private _tries = 0;
+                            while { count _mines < 12 && {_tries < 60} } do {
+                                _tries = _tries + 1;
+                                private _p = (_c getPos [_size + 40 + random 120, _dir]) getPos [(random 160) - 80, _dir + 90];
+                                if (!surfaceIsWater _p && {((nearestBuilding _p) distance2D _p) > 8} && {([_p, 300] call ALiVE_fnc_anyPlayersInRange) == 0}) then {
+                                    private _onRoad = (_p nearRoads 6) isNotEqualTo [];
+                                    private _m = createMine [["APERSMine", "ATMine"] select _onRoad, _p, [], 0];
+                                    {
+                                        if ((_side getFriend _x) >= 0.6) then { _x revealMine _m };
+                                    } forEach [west, east, resistance];
+                                    _mines pushBack _m;
+                                };
+                            };
+                            _fields pushBack [[_objective,"objectiveID",""] call ALiVE_fnc_HashGet, _c, _mines];
+                            [_handler,"minefields",_fields] call ALiVE_fnc_HashSet;
+                            ["OPCOM %1: minefield of %2 mines laid in front of %3, facing %4", _side, count _mines, mapGridPosition _c, round _dir] call ALiVE_fnc_dump;
+                        };
+                    };
+                    sleep 300;
+                };
             };
         };
 

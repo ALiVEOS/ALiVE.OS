@@ -325,6 +325,19 @@ class CfgVehicles {
                                 defaultValue = """0""";
                                 typeName = "NUMBER";
                         };
+                        class frontlineMinefields : Combo
+                        {
+                                property = "ALiVE_mil_opcom_frontlineMinefields";
+                                displayName = "$STR_ALIVE_OPCOM_FRONTLINE_MINEFIELDS";
+                                tooltip = "$STR_ALIVE_OPCOM_FRONTLINE_MINEFIELDS_COMMENT";
+                                defaultValue = """none""";
+                                class Values
+                                {
+                                        class None { name = "None"; value = "none"; };
+                                        class Few  { name = "Few";  value = "few"; };
+                                        class Many { name = "Many"; value = "many"; };
+                                };
+                        };
                         // ----  Task Overrides ----------------------------------------
                         class TSK_OVR : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_TSK_OVR"; displayName = "TASK OVERRIDES"; };
                         class taskProfileCountOverrides : Edit

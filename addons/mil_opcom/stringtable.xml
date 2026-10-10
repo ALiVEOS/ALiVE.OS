@@ -460,6 +460,12 @@
 <Key ID="STR_ALIVE_OPCOM_RECRUITER_TASK_CHANCE_COMMENT">
     <English>Insurgency commander only. Chance, 0 to 100, that a new Recruitment HQ gives every hostile side with players a task to kill the recruiter there. Needs a C2ISTAR module. 0 turns it off.</English>
 </Key>
+<Key ID="STR_ALIVE_OPCOM_FRONTLINE_MINEFIELDS">
+    <English>Frontline Minefields</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_FRONTLINE_MINEFIELDS_COMMENT">
+    <English>Invasion and occupation commanders only. The commander lays small minefields in front of the objectives it holds that face the enemy: anti-tank mines on the roads in, anti-personnel mines elsewhere. Few allows 2 fields, Many 6, one per objective, never near a player. Its own side and friendly sides know where they are. Fields stay until cleared and are not saved.</English>
+</Key>
 <Key ID="STR_ALIVE_OPCOM_HOSTILITY_PRESENCE_MULTIPLIER">
     <English>Hostility presence multiplier:</English>
     <Chinese>敵意存在乘數：</Chinese>
