@@ -31,6 +31,23 @@ if(isServer) then {
 
     MOD(amb_civ_population) = _logic;
 
+    // Destroying people's homes turns them against you (#425). A lived-in building destroyed
+    // by a side raises the local civilians' hostility to that side by 5, half what killing one
+    // of them does. updateSectorHostility only touches civilian settlements, so a barracks or a
+    // hut in the hills changes nothing.
+    if (isNil QGVAR(homeKilledEH)) then {
+        GVAR(homeKilledEH) = addMissionEventHandler ["EntityKilled", {
+            params ["_building", "_killer", "_instigator"];
+            if !(_building isKindOf "House") exitWith {};
+            if (count (_building buildingPos -1) < 2) exitWith {};
+            private _who = if (isNull _instigator) then {_killer} else {_instigator};
+            if (isNull _who) exitWith {};
+            private _side = side group _who;
+            if !(_side in [west, east, resistance]) exitWith {};
+            [getPosATL _building, [str _side], +5] call ALiVE_fnc_updateSectorHostility;
+        }];
+    };
+
     private _debug = (_logic getVariable ["debug","false"]) == "true";
     private _spawnRadius = parseNumber (_logic getVariable ["spawnRadius","1500"]);
     private _spawnTypeHeliRadius = parseNumber (_logic getVariable ["spawnTypeHeliRadius","1500"]);
