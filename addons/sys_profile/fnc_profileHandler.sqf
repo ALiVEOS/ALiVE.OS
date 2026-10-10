@@ -1124,6 +1124,7 @@ switch(_operation) do {
                         "damages",
                         "positions",
                         "isPlayer",
+                        "pendingWaypointPaths",
                         "unitCount",
                         "ranks",
                         "side",
@@ -1163,16 +1164,29 @@ switch(_operation) do {
 
                     _classes = _profile select 2 select 11;
                     _exportClasses = [];
+                    private _exportDamages = [];
+                    private _profileDamages = _profile select 2 select 19;
+                    private _profileUnits = _profile select 2 select 21;
+                    private _profileActive = _profile select 2 select 1;
 
                     {
                         if!(isNil "_x") then {
                             if(typeName _x == "STRING") then {
                                 _exportClasses pushback _x;
+                                // profile unit damages are updated on despawn
+                                // this assures we persist current values for spawned units
+                                private _damage = _profileDamages param [_forEachIndex, 0];
+                                if (_profileActive) then {
+                                    private _unit = _profileUnits param [_forEachIndex, objNull];
+                                    if (!isNull _unit) then { _damage = damage _unit };
+                                };
+                                _exportDamages pushBack _damage;
                             };
                         };
                     } forEach _classes;
 
                     [_exportProfile, "unitClasses", _exportClasses] call ALIVE_fnc_hashSet;
+                    [_exportProfile, "damages", _exportDamages] call ALIVE_fnc_hashSet;
 
                     _side = _profile select 2 select 3;
 
@@ -1241,6 +1255,20 @@ switch(_operation) do {
                     };
                     [_exportProfile, "waypoints", _exportWaypoints] call ALIVE_fnc_hashSet;
                     [_exportProfile, "waypointsCompleted", _exportWaypointsCompleted] call ALIVE_fnc_hashSet;
+
+                    // store waypoints that have not been given a defined route by pathfinding
+                    // when loaded, fresh requests to pathfinding will be registered
+                    private _exportPendingOrders = [];
+                    {
+                        private _method = _x select 1;
+                        if (_method in ["addWaypoint", "insertWaypoint"]) then {
+                            private _exported = [_x select 3] call _exportWaypoint;
+                            if (count _exported > 0) then { _exportPendingOrders pushBack [_method, _exported] };
+                        };
+                    } forEach ([_profile, "pendingWaypointPaths", []] call ALIVE_fnc_hashGet);
+                    if (count _exportPendingOrders > 0) then {
+                        [_exportProfile, "pendingWaypointOrders", _exportPendingOrders] call ALIVE_fnc_hashSet;
+                    };
 
                 }else{
 
@@ -1375,6 +1403,7 @@ switch(_operation) do {
             _entities = [];
             _vehicles = [];
             private _importedEntities = [];
+            private _importedOrders = [];
             _total = [_logic,"profileCount",0] call ALIVE_fnc_hashGet;
 
             {
@@ -1414,6 +1443,15 @@ switch(_operation) do {
                     [_profileEntity, "unitClasses", [_profile,"unitClasses"] call ALIVE_fnc_hashGet] call ALIVE_fnc_profileEntity;
                     [_profileEntity, "position", [_profile,"position"] call ALIVE_fnc_hashGet] call ALIVE_fnc_profileEntity;
                     [_profileEntity, "faction", [_profile,"faction"] call ALIVE_fnc_hashGet] call ALIVE_fnc_profileEntity;
+                    [_profileEntity, "onEachSpawn", [_profile,"onEachSpawn", ""] call ALIVE_fnc_hashGet] call ALIVE_fnc_profileEntity;
+                    // Cloud returns strings when a Boolean's dictionary entry is missing.
+                    // Normalize the once flag and execution marker before spawn reads them.
+                    {
+                        _x params ["_key", "_default"];
+                        private _flag = [_profile, _key, _default] call ALIVE_fnc_hashGet;
+                        if (_flag isEqualType "") then { _flag = (toLower _flag) == "true" };
+                        [_profileEntity, _key, if (_flag isEqualType true) then {_flag} else {_default}] call ALIVE_fnc_hashSet;
+                    } forEach [["onEachSpawnOnce", true], ["spawnCodeRun", false]];
 
                     // Only the ones the save holds. A local save leaves out the empty _rev and _id, and setting a key
                     // to nothing removes it, so the profile lost both slots and every value after them sat 2 places
@@ -1422,13 +1460,43 @@ switch(_operation) do {
                         if (_x in (_profile select 1)) then {
                             [_profileEntity, _x, [_profile, _x] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
                         };
-                    } forEach ["_rev", "_id", "hasSimulated", "despawnPosition", "isSPE", "aiBehaviour", "waypoints", "waypointsCompleted", "spawnCodeRun"];
+                    } forEach ["_rev", "_id", "hasSimulated", "despawnPosition", "isSPE", "aiBehaviour", "waypoints", "waypointsCompleted"];
 
                     // The route, saved since #756. A Cloud save comes back through JSON, where each value takes
                     // the type the data dictionary holds for its key name, so a number can come back as a string.
                     // Put back what the waypoint code reads; a Local save already has the right types. The type
                     // was saved as "waypointType" and goes back under "type".
+                    private _pendingOrders = [];
+                    if ("pendingWaypointOrders" in (_profile select 1)) then {
+                        _pendingOrders = [_profile, "pendingWaypointOrders", []] call ALIVE_fnc_hashGet;
+                    } else {
+                        // Older saves copied the runtime queue: [ready, method, path, waypoint].
+                        // Only the method and destination remain meaningful after a restart.
+                        private _legacyPending = [_profile, "pendingWaypointPaths", []] call ALIVE_fnc_hashGet;
+                        if (_legacyPending isEqualType []) then {
+                            _pendingOrders = (_legacyPending select { _x isEqualType [] && { count _x >= 4 } }) apply { [_x select 1, _x select 3] };
+                        };
+                    };
+                    private _importPendingOrders = [];
+                    if (_pendingOrders isEqualType []) then {
+                        {
+                            if (_x isEqualType [] && {count _x == 2}
+                                && {(_x select 0) in ["addWaypoint", "insertWaypoint"]}
+                                && {[_x select 1] call ALIVE_fnc_isHash}) then {
+                                private _orderWaypoint = [_x select 1] call ALIVE_fnc_hashCopy;
+                                private _statements = [_orderWaypoint, "statements", ""] call ALIVE_fnc_hashGet;
+                                private _spawnedOnly = _statements isEqualType [] && {count _statements > 1}
+                                    && {(_statements select 1) isEqualTo "_disableSimulation = true;"};
+                                if (!_spawnedOnly) then {
+                                    {[_orderWaypoint, _x, ""] call ALIVE_fnc_hashSet} forEach ["statements", "description", "attachVehicle"];
+                                    _importPendingOrders pushBack [_x select 0, _orderWaypoint];
+                                };
+                            };
+                        } forEach _pendingOrders;
+                    };
+                    _importedOrders pushBack [_profileEntity, _importPendingOrders];
                     private _importRoute = ([_profileEntity, "waypoints", []] call ALIVE_fnc_hashGet) + ([_profileEntity, "waypointsCompleted", []] call ALIVE_fnc_hashGet);
+                    private _waypointsToRestore = _importRoute + (_importPendingOrders apply {_x select 1});
                     {
                         private _importWaypoint = _x;
                         if ("waypointType" in (_importWaypoint select 1)) then {
@@ -1451,7 +1519,7 @@ switch(_operation) do {
                             if (isNil "_value" || {!(_value isEqualType "")}) then { [_importWaypoint, _wpKey, _wpDefault] call ALIVE_fnc_hashSet };
                         } forEach [["type", "MOVE"], ["speed", "UNCHANGED"], ["formation", "NO CHANGE"], ["combatMode", "NO CHANGE"],
                             ["behaviour", "UNCHANGED"], ["description", ""], ["attachVehicle", ""], ["statements", ""], ["name", ""]];
-                    } forEach _importRoute;
+                    } forEach _waypointsToRestore;
 
                     // isCycling is never cleared once set, so it is not saved; a route that loops holds a CYCLE.
                     [_profileEntity, "isCycling", (_importRoute findIf {([_x, "type", ""] call ALIVE_fnc_hashGet) == "CYCLE"}) >= 0] call ALIVE_fnc_hashSet;
@@ -1507,10 +1575,17 @@ switch(_operation) do {
                     [_profileEntity, "side", _side] call ALIVE_fnc_profileEntity;
 
                     _unitClasses = [_profile,"unitClasses"] call ALIVE_fnc_hashGet;
+                    private _savedDamages = [_profile, "damages", []] call ALIVE_fnc_hashGet;
+                    if !(_savedDamages isEqualType []) then { _savedDamages = [] };
                     _damages = [];
                     {
                         if !(isnil "_x") then {
-                            _damages pushback 0;
+                            // Old saves omitted damage. Missing entries remain healthy; Cloud
+                            // values can be strings when their dictionary entry is unavailable.
+                            _damage = _savedDamages param [_forEachIndex, 0];
+                            if (_damage isEqualType "") then { _damage = parseNumber _damage };
+                            if !(_damage isEqualType 0) then { _damage = 0 };
+                            _damages pushback _damage;
                         };
                     } forEach _unitClasses;
 
@@ -1602,7 +1677,7 @@ switch(_operation) do {
                                 [_profileVehicle, _x, _importValue] call ALIVE_fnc_profileVehicle;
                             };
                         };
-                    } forEach ["damage", "ammo"];
+                    } forEach ["damage", "ammo", "cargo", "slingload", "slung"];
 
                     if("vehicleAssignmentKeys" in (_profile select 1)) then {
                         [_profileVehicle, "vehicleAssignments", _rebuiltHash] call ALIVE_fnc_hashSet;
@@ -1664,12 +1739,59 @@ switch(_operation) do {
 
             } forEach (_profiles select 2);
 
+            // A partial load can omit a crew, vehicle or sling partner. Remove stale
+            // links before speed calculation and pending movement requests use them.
+            private _loadedByID = [_logic, "profilesById"] call ALIVE_fnc_hashGet;
+            {
+                private _loadedProfile = _x;
+                private _profileAssignments = [_loadedProfile, "vehicleAssignments"] call ALIVE_fnc_hashGet;
+                {
+                    if (isNil {_loadedByID get _x}) then {
+                        [_profileAssignments, _x] call ALIVE_fnc_hashRem;
+                    };
+                } forEach +(_profileAssignments select 1);
+                private _isEntity = (_loadedProfile select 2 select 5) == "entity";
+                private _referenceKeys = if (_isEntity) then {
+                    ["vehiclesInCommandOf", "vehiclesInCargoOf"]
+                } else {
+                    ["entitiesInCommandOf", "entitiesInCargoOf"]
+                };
+                {
+                    private _references = [_loadedProfile, _x, []] call ALIVE_fnc_hashGet;
+                    [_loadedProfile, _x, _references select {!isNil {_loadedByID get _x}}] call ALIVE_fnc_hashSet;
+                } forEach _referenceKeys;
+                if (!_isEntity) then {
+                    {
+                        private _link = [_loadedProfile, _x, []] call ALIVE_fnc_hashGet;
+                        private _target = _link param [0, ""];
+                        if (_target isEqualType [] && {count _target > 0}
+                            && {isNil {_loadedByID get (_target select 0)}}) then {
+                            [_loadedProfile, _x, []] call ALIVE_fnc_hashSet;
+                        };
+                    } forEach ["slingload", "slung"];
+                };
+            } forEach (([_logic, "getProfiles"] call MAINCLASS) select 2);
+
             // update entity profile speeds once all vehicle profiles are created
             {
                 private _assignments = [_x,"vehicleAssignments"] call ALIVE_fnc_hashGet;
                 private _speed = [_assignments, _x] call ALIVE_fnc_profileVehicleAssignmentsGetSpeedPerSecond;
                 [_x,"speedPerSecond", _speed] call ALIVE_fnc_hashSet;
             } forEach _importedEntities;
+
+            // Referenced vehicles must exist before choosing the pathfinding procedure.
+            // Queue each batch unscheduled so callbacks cannot drain it between orders.
+            {
+                [{
+                    params ["_entity", "_orders"];
+                    if (!isNil "ALIVE_Pathfinder") then {
+                        [ALIVE_Pathfinder, "cancelProfilePaths", [_entity, "profileID"] call ALIVE_fnc_hashGet] call ALIVE_fnc_pathfinder;
+                    };
+                    {
+                        [_entity, _x select 0, _x select 1] call ALIVE_fnc_profileEntity;
+                    } forEach _orders;
+                }, _x] call CBA_fnc_directCall;
+            } forEach _importedOrders;
 
             //Sort collected index-numbers to get the highest one
             _vehicles sort false;
