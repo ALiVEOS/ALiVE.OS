@@ -56,12 +56,37 @@ if (!GVAR(AI_DISTRIBUTOR_MODE) && {!isNull GVAR(AI_DISTRIBUTOR)}) exitWith {
 
 waituntil {time > 0};
 
-// ACEX Headless detection //
-if (isClass(configFile >> "CfgPatches" >> "acex_headless")) then {
+// ACE Headless detection //
+// ACE now ships its headless transfer as ace_headless (it was acex_headless); both still read
+// acex_headless_enabled and acex_headless_blacklist. With ACE's transfer on, ALiVE stands down,
+// and instead keeps ACE's blacklist set on what ALiVE itself keeps off headless clients:
+// units marked ALiVE_ignore_HC and Combat Support vehicles, which ACE would otherwise move.
+if (isClass(configFile >> "CfgPatches" >> "acex_headless") || {isClass(configFile >> "CfgPatches" >> "ace_headless")}) then {
     waitUntil {!isNil "acex_headless_enabled"};
 
     if (acex_headless_enabled) then {
-        ["AI Distributor detected ACEX Headless module enabled, shutting down !"] call ALiVE_fnc_dump;
+        ["AI Distributor detected ACE Headless enabled, standing down and passing ALiVE's exclusions to it."] call ALiVE_fnc_dump;
+        if (isNil QGVAR(ACE_HC_BLACKLIST)) then {
+            GVAR(ACE_HC_BLACKLIST) = [] spawn {
+                while {true} do {
+                    {
+                        private _keep = (_x getVariable ["ALiVE_ignore_HC", false]) isEqualTo true
+                            || {((vehicle _x) getVariable ["ALiVE_CombatSupport", false]) isEqualTo true};
+                        private _ours = _x getVariable ["ALiVE_aceBlacklisted", false];
+                        if (_keep && {!(_x getVariable ["acex_headless_blacklist", false])}) then {
+                            _x setVariable ["acex_headless_blacklist", true, true];
+                            _x setVariable ["ALiVE_aceBlacklisted", true];
+                        };
+                        // Let go of what ALiVE set once ALiVE no longer keeps it.
+                        if (!_keep && {_ours}) then {
+                            _x setVariable ["acex_headless_blacklist", nil, true];
+                            _x setVariable ["ALiVE_aceBlacklisted", nil];
+                        };
+                    } forEach allUnits;
+                    sleep 15;
+                };
+            };
+        };
         terminate _thisScript;
         waitUntil {scriptDone _thisScript};
     };
