@@ -404,6 +404,18 @@ class CfgVehicles {
                                 expression = "_this setVariable ['seaPatrolFaction', _value, true];";
                                 defaultValue = """""";
                         };
+                        class seaPatrolTasks : Combo
+                        {
+                                property = "ALiVE_civ_placement_seaPatrolTasks";
+                                displayName = "$STR_ALIVE_CP_SEAPATROL_TASKS";
+                                tooltip = "$STR_ALIVE_CP_SEAPATROL_TASKS_COMMENT";
+                                defaultValue = """false""";
+                                class Values
+                                {
+                                    class No  { name = "No";  value = "false"; };
+                                    class Yes { name = "Yes"; value = "true"; };
+                                };
+                        };
 
                         // ---- On Spawn Hook --------------------------------------------------
                         class HDR_HOOK : ALiVE_ModuleSubTitle { property = "ALiVE_civ_placement_HDR_HOOK"; displayName = "ON SPAWN HOOK"; };
