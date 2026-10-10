@@ -141,7 +141,7 @@ switch(_operation) do {
         _result = _list apply {
             private _w = _x;
             private _v = vehicle _w;
-            private _r = _base;
+            private _r = _base max (_w getVariable ["ALiVE_spawnSourceRadius", 0]); // a kill box's own radius (#541)
             if (_v isKindOf "Plane" && {!isNil "ALIVE_spawnRadiusJet"} && {ALIVE_spawnRadiusJet isEqualType 0}) then { _r = _r max ALIVE_spawnRadiusJet };
             if (_v isKindOf "Helicopter" && {!isNil "ALIVE_spawnRadiusHeli"} && {ALIVE_spawnRadiusHeli isEqualType 0}) then { _r = _r max ALIVE_spawnRadiusHeli };
             if (unitIsUAV _v) then {

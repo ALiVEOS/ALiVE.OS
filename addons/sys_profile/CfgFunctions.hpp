@@ -221,6 +221,11 @@ class cfgFunctions {
                 file = "\x\alive\addons\sys_profile\fnc_profileActivationCoordinator.sqf";
                 RECOMPILE;
             };
+            class profileKillBoxes {
+                description = "Kill Box Markers: map markers that keep the AI around them spawned";
+                file = "\x\alive\addons\sys_profile\fnc_profileKillBoxes.sqf";
+                RECOMPILE;
+            };
             class profileActivatorPlayerProximity {
                 description = "Traditional player-distance profile activator";
                 file = "\x\alive\addons\sys_profile\fnc_profileActivatorPlayerProximity.sqf";

@@ -239,7 +239,9 @@ if (_type == "entity" && {count (_assignments select 1) == 0}) then {
             _watchers append (ALiVE_SpawnSources select { _x isEqualType objNull && {!isNull _x} });
         };
         private _watched = (_watchers findIf {
-            (_x distance2D _groupPos) < 500 || {(_x distance2D _searchCentre) < 500}
+            // A kill box (#541) watches its whole radius.
+            private _range = 500 max (_x getVariable ["ALiVE_spawnSourceRadius", 0]);
+            (_x distance2D _groupPos) < _range || {(_x distance2D _searchCentre) < _range}
         }) > -1;
         if (_watched) then { _moveInstantly = false };
     };

@@ -63,6 +63,16 @@ class CfgVehicles {
                     class spawnTypeHeliRadius : Edit { property = "ALiVE_sys_profile_spawnTypeHeliRadius"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_SPAWN_HELI_RADIUS"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_SPAWN_HELI_RADIUS_COMMENT"; expression = "_this setVariable ['spawnTypeHeliRadius', _value, true];"; defaultValue = """1500"""; };
                     class spawnTypeJetRadius : Edit { property = "ALiVE_sys_profile_spawnTypeJetRadius"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_SPAWN_JET_RADIUS"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_SPAWN_JET_RADIUS_COMMENT"; expression = "_this setVariable ['spawnTypeJetRadius', _value, true];"; defaultValue = """0"""; };
                     class spawnRadiusVehicle : Edit { property = "ALiVE_sys_profile_spawnRadiusVehicle"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_SPAWN_VEHICLE_RADIUS"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_SPAWN_VEHICLE_RADIUS_COMMENT"; expression = "_this setVariable ['spawnRadiusVehicle', _value, true];"; defaultValue = """"""; };
+                    class killBoxMarkers
+                    {
+                            property = "ALiVE_sys_profile_killBoxMarkers";
+                            displayName = "$STR_ALIVE_PROFILE_SYSTEM_KILLBOX";
+                            tooltip = "$STR_ALIVE_PROFILE_SYSTEM_KILLBOX_COMMENT";
+                            control = "Checkbox";
+                            typeName = "BOOL";
+                            expression = "_this setVariable ['killBoxMarkers', _value, true];";
+                            defaultValue = "false";
+                    };
                     class spawnRadiusUAV : Edit { property = "ALiVE_sys_profile_spawnRadiusUAV"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_SPAWN_UAV_RADIUS"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_SPAWN_UAV_RADIUS_COMMENT"; expression = "_this setVariable ['spawnRadiusUAV', _value, true];"; defaultValue = """-1"""; };
                     class SPACER_AIR_COMBAT : ALiVE_ModuleSubTitle { property = "ALiVE_sys_profile_SPACER_AIR_COMBAT"; displayName = " "; };
                     class airCombatSpawning

@@ -186,6 +186,12 @@
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SPAWN_VEHICLE_RADIUS_COMMENT">
     <English>How far from a player on the ground vehicles, and the groups riding or crewing them, spawn. Set it above Spawn Radius so vehicles are seen driving in rather than appearing; infantry still uses Spawn Radius. Leave it blank, or set it no higher than Spawn Radius, to spawn vehicles at Spawn Radius as before.</English>
 </Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_KILLBOX">
+    <English>Kill Box Markers:</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_KILLBOX_COMMENT">
+    <English>Lets players keep an area's AI spawned for aircraft to attack. Place a map marker whose text starts with KILLBOX, with a radius after it if you like (KILLBOX 2000 or KILLBOX 2km, at most 5 km; without one it uses Spawn Radius). The radius comes from the text, not the marker's shape. Everything inside stays spawned while the marker is there and a player is within 10 km of it; delete the marker to end it. A marker from any side counts. Off by default, because a big box spawns a lot of AI.</English>
+</Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SPAWN_UAV_RADIUS">
     <English>Spawn UAV Radius (m):</English>
     <Chinesesimp>无人机生成半径:</Chinesesimp>

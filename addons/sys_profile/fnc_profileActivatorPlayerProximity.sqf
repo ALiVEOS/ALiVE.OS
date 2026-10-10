@@ -71,7 +71,8 @@ switch (_operation) do {
 
                 _spawnSourcesUnfiltered =
                     _spawnSourcesUnfiltered select {
-                        _x distance _spawnSource > 30
+                        // A kill box (#541) is never folded into a player stood on it, or its radius is lost.
+                        _x distance _spawnSource > 30 || {(_x getVariable ["ALiVE_spawnSourceRadius", 0]) > 0}
                     };
             };
 
@@ -99,12 +100,16 @@ switch (_operation) do {
                 ] select (ALIVE_spawnRadiusUAV == -1);
             };
 
+            // A source that brings its own radius, a kill box (#541) for one, uses it for everything.
+            private _sourceRadius = _spawnSource getVariable ["ALiVE_spawnSourceRadius", 0];
+            if (_sourceRadius > 0) then { _radius = _sourceRadius };
+
             // Vehicle Spawn Distance (#422): around someone on the ground, vehicles and the groups in
             // them spawn this far out, so they're seen driving in rather than appearing. Blank or 0,
             // or less than the normal distance, keeps the normal distance. Each profile is held by its
             // own distance once spawned too, or a vehicle beyond the normal one would be put away again.
             private _vehicleRadius = _radius;
-            if (_spawnSourceVehicle == _spawnSource && {!(unitIsUAV _spawnSource)}) then {
+            if (_spawnSourceVehicle == _spawnSource && {!(unitIsUAV _spawnSource)} && {_sourceRadius <= 0}) then {
                 _vehicleRadius = _radius max (missionNamespace getVariable ["ALIVE_spawnRadiusVehicle", 0]);
             };
             private _fnc_inVehicle = {

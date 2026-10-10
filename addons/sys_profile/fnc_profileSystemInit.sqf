@@ -340,6 +340,11 @@ if(isServer) then {
 
     [ALIVE_profileSystem,"start"] call ALIVE_fnc_profileSystem;
 
+    // Kill Box Markers (#541): a map marker named KILLBOX keeps the AI around it spawned.
+    if ([_logic getVariable ["killBoxMarkers", false], false] call _asBool) then {
+        [] spawn ALiVE_fnc_profileKillBoxes;
+    };
+
 };
 
 if (isDedicated || (isServer)) then {
