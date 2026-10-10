@@ -3828,6 +3828,12 @@ if (isServer) then {
                         [_logic,"disableAutoGenerateTasks"] call MAINCLASS;
                         [_logic,"enableTasking"] call MAINCLASS;
 
+                        // With Automatic Player Tasks off the choice is kept and starts once they're
+                        // on again. Said here, or the button looks as if it did nothing.
+                        if (_autoGenerate != "None" && {!(missionNamespace getVariable ["ALiVE_c2istar_autoPlayerTasks", true])}) then {
+                            hint "Automatic player tasks are switched off for this mission, so none will arrive until they're turned back on, on the C2ISTAR module or from the commander menu. Your choice is kept until then.";
+                        };
+
                     };
 
                 };
