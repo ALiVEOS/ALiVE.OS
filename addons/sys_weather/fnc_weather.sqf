@@ -104,13 +104,14 @@ case "init": {
     if (WEATHER_DEBUG) then { [WEATHER_DEBUG_CYCLE] spawn ALIVE_fnc_weatherDebugEvent; };
 
     // Precipitation: Snow (#232) makes every machine with a screen draw its rain as falling snow.
-    [_logic, "snow"] call ALIVE_fnc_weather;
+    // Sent by the server to everyone and kept for joiners, as this module's init only runs on the
+    // machines present at the start.
+    if (isServer) then { [_logic, "snow"] remoteExecCall ["ALIVE_fnc_weather", 0, true] };
 
     };
     // The engine's own snow (Arma 2.08+): the rain particles are swapped for snowflakes on this
     // machine, so it falls where rain would and never indoors. How much falls still follows the
-    // rain the module sets. Each machine sets it for itself, joiners included, as the module runs
-    // everywhere.
+    // rain the module sets.
     case "snow": {
         if (hasInterface && {(toLower format ["%1", _logic getVariable ["weather_precipitation_setting", "rain"]]) == "snow"}) then {
             setRain ["a3\data_f\snowflake4_ca.paa", 4, 0.01, 25, 0.05, 2.5, 0.5, 0.5, 0.07, 0.07, [1, 1, 1, 0.5], 0, 0.2, 0.5, 0.5, true, false];
