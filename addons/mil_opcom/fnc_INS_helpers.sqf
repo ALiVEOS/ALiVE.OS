@@ -1541,6 +1541,32 @@ ALiVE_fnc_INS_recruit = {
 
                     // Set HQ
                     [_objective,"HQ",[[],"convertObject",_HQ] call ALiVE_fnc_OPCOM] call ALiVE_fnc_HashSet;
+
+                    // A recruiter worth killing (#426): with the commander's Recruiter HVT Task
+                    // Chance, every hostile side with players is given an Assassination task at the
+                    // new Recruitment HQ, through the same direct channel the convoy tasks use. Once per town.
+                    private _hvtChance = if (isNil "_opcom") then {0} else {[_opcom,"recruiterTaskChance",0] call ALiVE_fnc_HashGet};
+                    if (_hvtChance > 0 && {!([_objective,"recruiterTaskRaised",false] call ALiVE_fnc_HashGet)} && {random 100 < _hvtChance} && {!isNil "ALIVE_eventLog"}) then {
+                        [_objective,"recruiterTaskRaised",true] call ALiVE_fnc_HashSet;
+                        private _insSide = if (_side isEqualType "") then {[_side] call ALiVE_fnc_sideTextToObject} else {_side};
+                        {
+                            private _hSideText = _x;
+                            private _hSide = [_hSideText] call ALiVE_fnc_sideTextToObject;
+                            if ((_hSide getFriend _insSide) < 0.6) then {
+                                private _hp = [_hSideText] call ALiVE_fnc_getPlayersDataSource;
+                                if (count (_hp select 1) > 0) then {
+                                    private _pObj = [(_hp select 1) select 0] call ALIVE_fnc_getPlayerByUID;
+                                    if (!isNull _pObj) then {
+                                        private _taskData = [format ["%1_recruiter_%2", _id, round time], "OPCOM", _hSideText, faction _pObj,
+                                            "Assassination", "NULL", getPosATL _HQ, [_hp select 1, _hp select 0], _faction, "Y", "Side"];
+                                        private _tEvent = ["TASK_GENERATE", _taskData, "OPCOM"] call ALIVE_fnc_event;
+                                        [ALIVE_eventLog, "addEvent", _tEvent] call ALIVE_fnc_eventLog;
+                                        ["ALiVE OPCOM: recruiter task raised for %1 at the Recruitment HQ near %2", _hSideText, mapGridPosition _HQ] call ALiVE_fnc_dump;
+                                    };
+                                };
+                            };
+                        } forEach (["EAST","WEST","GUER"] - [str _insSide]);
+                    };
                 };
 
                 // Add TACOM IED command on all selected agents

@@ -454,6 +454,12 @@
     <Portuguese>Chance por tentativa de recrutamento de que um novo grupo insurgente seja criado com sucesso. Use 0 para desativar a geração por recrutamento ou 100 para que toda tentativa tenha êxito.</Portuguese>
     <Russian>Вероятность за каждую попытку вербовки, что новая повстанческая группа будет успешно создана. 0 отключает спавн через вербовку, 100 делает каждую попытку успешной.</Russian>
 </Key>
+<Key ID="STR_ALIVE_OPCOM_RECRUITER_TASK_CHANCE">
+    <English>Recruiter HVT Task Chance</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_RECRUITER_TASK_CHANCE_COMMENT">
+    <English>Insurgency commander only. Chance, 0 to 100, that a new Recruitment HQ gives every hostile side with players a task to kill the recruiter there. Needs a C2ISTAR module. 0 turns it off.</English>
+</Key>
 <Key ID="STR_ALIVE_OPCOM_HOSTILITY_PRESENCE_MULTIPLIER">
     <English>Hostility presence multiplier:</English>
     <Chinese>敵意存在乘數：</Chinese>

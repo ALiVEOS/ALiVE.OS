@@ -152,6 +152,8 @@ switch (_operation) do {
         _recruitAttemptLimit = _recruitAttemptLimit max -1;
 
         private _recruitSuccessChance = ((parseNumber format ["%1", _logic getvariable ["recruitSuccessChance",50]]) max 0) min 100;
+        // Chance a new Recruitment HQ raises a task to kill its recruiter (#426).
+        private _recruiterTaskChance = ((parseNumber format ["%1", _logic getvariable ["recruiterTaskChance",0]]) max 0) min 100;
         private _hostilityPresenceMultiplier = (parseNumber format ["%1", _logic getvariable ["hostilityPresenceMultiplier",1]]) max 0;
         private _hostilityInstallationMultiplier = (parseNumber format ["%1", _logic getvariable ["hostilityInstallationMultiplier",1]]) max 0;
         private _hostilityInstallationInterval = ((parseNumber format ["%1", _logic getvariable ["hostilityInstallationInterval",10]]) max 0) * 60;
@@ -309,6 +311,7 @@ switch (_operation) do {
             ["recruitCycleMax", _recruitCycleMax],
             ["recruitAttemptLimit", _recruitAttemptLimit],
             ["recruitSuccessChance", _recruitSuccessChance],
+            ["recruiterTaskChance", _recruiterTaskChance],
             ["hostilityPresenceMultiplier", _hostilityPresenceMultiplier],
             ["hostilityInstallationMultiplier", _hostilityInstallationMultiplier],
             ["hostilityInstallationInterval", _hostilityInstallationInterval],

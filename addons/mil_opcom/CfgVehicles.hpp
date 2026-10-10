@@ -317,6 +317,14 @@ class CfgVehicles {
                                 defaultValue = """50""";
                                 typeName = "NUMBER";
                         };
+                        class recruiterTaskChance : Edit
+                        {
+                                property = "ALiVE_mil_opcom_recruiterTaskChance";
+                                displayName = "$STR_ALIVE_OPCOM_RECRUITER_TASK_CHANCE";
+                                tooltip = "$STR_ALIVE_OPCOM_RECRUITER_TASK_CHANCE_COMMENT";
+                                defaultValue = """0""";
+                                typeName = "NUMBER";
+                        };
                         // ----  Task Overrides ----------------------------------------
                         class TSK_OVR : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_TSK_OVR"; displayName = "TASK OVERRIDES"; };
                         class taskProfileCountOverrides : Edit
