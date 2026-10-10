@@ -1388,6 +1388,15 @@ if (isServer) then {
         } forEach _allCivicTasks;
 
         missionNamespace setVariable ["ALIVE_taskMinDistance", (_taskMinDistance max 0), true];
+
+        // Task Blacklist (#729): marker names, comma separated. Generated tasks don't pick a target
+        // inside any of them. A name with no marker is reported once and left out.
+        private _taskBlacklist = _logic getVariable ["taskBlacklist", ""];
+        if (_taskBlacklist isEqualType "") then { _taskBlacklist = (_taskBlacklist splitString ", ") select { _x != "" } };
+        if !(_taskBlacklist isEqualType []) then { _taskBlacklist = [] };
+        private _missing = _taskBlacklist select { markerShape _x == "" };
+        if (_missing isNotEqualTo []) then { ["ALiVE C2ISTAR: Task Blacklist marker(s) not found, ignored: %1", _missing] call ALiVE_fnc_dump };
+        missionNamespace setVariable ["ALIVE_taskBlacklistMarkers", _taskBlacklist - _missing, true];
         missionNamespace setVariable ["ALIVE_taskVipPanicTimeout", (_vipPanicTimeout max 30), true];
         missionNamespace setVariable ["ALIVE_taskCsarTimeout", (_csarTimeout max MIN_CSAR_TIMEOUT), true];
         missionNamespace setVariable ["ALIVE_c2istar_filterEnemyFactions", _filterEnemyFactions, true];

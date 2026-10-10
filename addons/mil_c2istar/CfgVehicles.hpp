@@ -108,6 +108,13 @@ class CfgVehicles {
                             defaultValue = """0""";
                             typeName = "NUMBER";
                     };
+                    class taskBlacklist : Edit
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_taskBlacklist";
+                            displayName = "$STR_ALIVE_C2ISTAR_TASK_BLACKLIST";
+                            tooltip = "$STR_ALIVE_C2ISTAR_TASK_BLACKLIST_COMMENT";
+                            defaultValue = """""";
+                    };
                     class vipPanicTimeout : Edit
                     {
                             property = "ALiVE_MIL_C2ISTAR_vipPanicTimeout";

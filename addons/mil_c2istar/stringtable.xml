@@ -564,6 +564,12 @@
 <Key ID="STR_ALIVE_C2ISTAR_AIR_SITUATION_FIGHTERS">
     <English>Fighters Only</English>
 </Key>
+<Key ID="STR_ALIVE_C2ISTAR_TASK_BLACKLIST">
+    <English>Task Blacklist</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_TASK_BLACKLIST_COMMENT">
+    <English>Marker names, separated by commas, for areas generated tasks must stay out of, such as your main base. A task won't pick an objective, town or enemy position inside any of these markers. Leave empty for no restriction.</English>
+</Key>
 <Key ID="STR_ALIVE_C2ISTAR_GENERATE_BRIEFING">
     <English>Generate Briefing</English>
 </Key>

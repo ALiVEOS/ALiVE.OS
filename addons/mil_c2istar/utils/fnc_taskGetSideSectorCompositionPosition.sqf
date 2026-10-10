@@ -65,6 +65,15 @@ if(count _sideSectors > 0) then {
         };
     };
 
+    // Areas the mission keeps generated tasks out of (Task Blacklist on the C2ISTAR module, #729).
+    private _taskBlacklist = missionNamespace getVariable ["ALIVE_taskBlacklistMarkers", []];
+    if (_taskBlacklist isNotEqualTo []) then {
+        _spawnSectors = _spawnSectors select {
+            private _sectorPos = [_x, "position", []] call ALIVE_fnc_hashGet;
+            _sectorPos isEqualTo [] || {(_taskBlacklist findIf {_sectorPos inArea _x}) < 0}
+        };
+    };
+
     _countSectors = count _spawnSectors;
 
     if(_countSectors > 0) then {
@@ -109,6 +118,11 @@ if(count _sideSectors > 0) then {
             if(count _flatEmpty > 0) then {
                 _targetPosition = (selectRandom _flatEmpty);
             };
+        };
+
+        // A refined spot can sit just inside a blacklisted area the sector centre is clear of.
+        if ((_taskBlacklist findIf {_targetPosition inArea _x}) >= 0) then {
+            _targetPosition = [_targetSector, "position"] call ALIVE_fnc_hashGet;
         };
 
     };

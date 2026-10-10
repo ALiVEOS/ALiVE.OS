@@ -251,6 +251,16 @@ if (_taskLocationType in ["Short", "Medium", "Long"] && {_minDistance > 0}) then
     };
 };
 
+// Areas the mission keeps generated tasks out of (Task Blacklist on the C2ISTAR module, #729).
+private _taskBlacklist = missionNamespace getVariable ["ALIVE_taskBlacklistMarkers", []];
+if (_taskBlacklist isNotEqualTo []) then {
+    _sortedClusters = _sortedClusters select {
+        private _center = [_x select 0, "center", []] call ALIVE_fnc_hashGet;
+        _center isEqualTo [] || {(_taskBlacklist findIf {_center inArea _x}) < 0}
+    };
+};
+if (_sortedClusters isEqualTo []) exitWith { [] };
+
 private _selectedIndex = 0;
 private _maxIndex = (count _sortedClusters) - 1;
 

@@ -19,6 +19,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 private ["_taskLocation","_taskLocationType","_side","_opcomModules","_moduleType","_objectiveData","_opcom","_controlType","_opcomSide","_center",
@@ -97,9 +98,14 @@ if(count _objectives > 0) then {
         };
     };
 
-    // _sortedObjectives call ALIVE_fnc_inspectArray;
+    // Areas the mission keeps generated tasks out of (Task Blacklist on the C2ISTAR module, #729).
+    private _taskBlacklist = missionNamespace getVariable ["ALIVE_taskBlacklistMarkers", []];
+    if (_taskBlacklist isNotEqualTo []) then {
+        _sortedObjectives = _sortedObjectives select { private _c = _x select 1; (_taskBlacklist findIf {_c inArea _x}) < 0 };
+    };
 
     private _countObjectives = count _sortedObjectives;
+    if (_countObjectives == 0) exitWith {};
 
     if(_taskLocationType == "Map" || _taskLocationType == "Short") then {
         if(count _sortedObjectives > 1 && _taskLocationType == "Short") then {
