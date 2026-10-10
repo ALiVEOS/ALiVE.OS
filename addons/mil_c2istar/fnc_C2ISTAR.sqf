@@ -1329,8 +1329,11 @@ switch(_operation) do {
                     private _veh = vehicle leader _x;
                     private _kind = switch (true) do {
                         case (_veh isKindOf "Air"): { "air" };
+                        // A tracked APC is a kind of Tank in Arma 3, and some tanks carry a few men,
+                        // so the editor's own category decides, and troop space only when it has none.
+                        case (_veh isKindOf "Wheeled_APC_F" || {getText (configOf _veh >> "editorSubcategory") == "EdSubcat_APCs"}): { "mech_inf" };
+                        case (_veh isKindOf "Tank" && {getText (configOf _veh >> "editorSubcategory") != "EdSubcat_Tanks"} && {getNumber (configOf _veh >> "transportSoldier") >= 6}): { "mech_inf" };
                         case (_veh isKindOf "Tank"): { "armor" };
-                        case (_veh isKindOf "Wheeled_APC_F" || {_veh isKindOf "Tracked_APC"}): { "mech_inf" };
                         case (_veh isKindOf "LandVehicle" && {!(_veh isKindOf "StaticWeapon")}): { "motor_inf" };
                         case (_veh isKindOf "Ship"): { "naval" };
                         default { "inf" };
