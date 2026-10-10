@@ -4,17 +4,17 @@ class cfgFunctions {
             class classPickerModule {
                 description = "The main class";
                 file = "\x\alive\addons\sys_classpicker\fnc_classPickerModule.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class classPickerModuleInit {
                 description = "The module initialisation function";
                 file = "\x\alive\addons\sys_classpicker\fnc_classPickerModuleInit.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
             class classPickerMenuDef {
                 description = "Class picker entries for the ALiVE menu";
                 file = "\x\alive\addons\sys_classpicker\fnc_classPickerMenuDef.sqf";
-                RECOMPILE;
+                ALIVE_RECOMPILE;
             };
         };
     };

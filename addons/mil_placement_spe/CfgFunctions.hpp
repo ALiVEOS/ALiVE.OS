@@ -4,12 +4,12 @@ class cfgFunctions {
                         class SPEMP {
                                 description = "The main class";
                                 file = "\x\alive\addons\mil_placement_spe\fnc_SPEMP.sqf";
-                                RECOMPILE;
+                                ALIVE_RECOMPILE;
                         };
                         class SPEMPInit {
                                 description = "The module initialisation function";
                                 file = "\x\alive\addons\mil_placement_spe\fnc_SPEMPInit.sqf";
-                                RECOMPILE;
+                                ALIVE_RECOMPILE;
                         };
                 };
         };
