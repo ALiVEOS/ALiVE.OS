@@ -6,6 +6,11 @@ class CfgFunctions {
                 file = "\x\alive\addons\mil_c2istar\fnc_C2ISTAR.sqf";
                 ALIVE_RECOMPILE;
             };
+            class C2ISTARSoldierInteract {
+                description = "The soldier interaction window: prisoners and friendly soldiers";
+                file = "\x\alive\addons\mil_c2istar\fnc_C2ISTARSoldierInteract.sqf";
+                ALIVE_RECOMPILE;
+            };
             class C2ISTARInit {
                 description = "The module initialisation function";
                 file = "\x\alive\addons\mil_c2istar\fnc_C2ISTARInit.sqf";

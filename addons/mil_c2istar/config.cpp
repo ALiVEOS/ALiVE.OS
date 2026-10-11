@@ -5,3 +5,4 @@
 #include "CfgFunctions.hpp"
 #include "CfgHints.hpp"
 #include "\x\alive\addons\mil_c2istar\data\ui\main.hpp"
+#include "\x\alive\addons\mil_c2istar\data\ui\soldier.hpp"

@@ -1355,25 +1355,9 @@ switch(_operation) do {
                     "%1: one friendly group within a kilometre of here. It's on your map for the next two minutes.",
                     "%1: %2 friendly groups within a kilometre of here. They're on your map for the next two minutes."
                 ] select ((count _groups) min 2);
-                hint format [_say, name _target, count _groups];
+                // the soldier window shows the answer itself
+                if (isNull findDisplay 9260) then { hint format [_say, name _target, count _groups] };
                 count _groups
-            };
-            [] spawn {
-                waitUntil { sleep 1; !isNull player };
-                if (isClass (configFile >> "CfgPatches" >> "ace_interact_menu")) then {
-                    waitUntil { sleep 1; !isNil "ace_interact_menu" && {!isNull ace_player} };
-                    private _action = ["ALiVE_AskFriendly", "Ask about friendly units", "", { [_target, _player] call ALiVE_c2istar_fnc_askFriendly },
-                        { [_target, _player] call ALiVE_c2istar_fnc_canAskFriendly }] call ace_interact_menu_fnc_createAction;
-                    ["CAManBase", 0, ["ACE_MainActions"], _action, true] call ace_interact_menu_fnc_addActionToClass;
-                } else {
-                    private _fnc_add = {
-                        _this addAction ["Ask about friendly units", { [cursorObject, _this select 1] call ALiVE_c2istar_fnc_askFriendly }, nil, 1.4, false, true, "",
-                            "[cursorObject, _this] call ALiVE_c2istar_fnc_canAskFriendly", 4];
-                    };
-                    player call _fnc_add;
-                    player addEventHandler ["Respawn", { params ["_unit"]; _unit call (missionNamespace getVariable ["ALiVE_c2istar_askAdd", {}]) }];
-                    ALiVE_c2istar_askAdd = _fnc_add;
-                };
             };
         };
 
@@ -1399,6 +1383,8 @@ switch(_operation) do {
                 params ["_u"];
                 if (!alive _u || {_u getVariable ["ALiVE_surrendered", false]}) exitWith {};
                 _u setVariable ["ALiVE_surrendered", true, true];
+                // his own side, kept: told to follow a player he joins that player's group
+                _u setVariable ["ALiVE_prisonerSide", side group _u, true];
                 // Off his profile first, the way the CSAR task and a takeover do, or the profile
                 // deletes him from the players' hands when it despawns and brings him back armed.
                 private _pid = _u getVariable ["profileID", ""];
@@ -1427,7 +1413,9 @@ switch(_operation) do {
                 [_u] spawn {
                     params ["_u"];
                     waitUntil { sleep 30; !alive _u || {([getPosATL _u, 1000] call ALiVE_fnc_anyPlayersInRange) == 0} };
-                    if (alive _u && {!(_u getVariable ["ace_captives_isHandcuffed", false])}) then { deleteVehicle _u };
+                    // ...or tied up, or walking in a player's group
+                    if (alive _u && {!(_u getVariable ["ace_captives_isHandcuffed", false])} && {!(_u getVariable ["ALiVE_restrained", false])}
+                        && {!isPlayer leader group _u}) then { deleteVehicle _u };
                 };
             };
             addMissionEventHandler ["EntityKilled", {
@@ -1457,15 +1445,16 @@ switch(_operation) do {
                 params ["_prisoner", "_caller"];
                 if (!alive _prisoner || {_prisoner getVariable ["ALiVE_questioned", false]}) exitWith {};
                 _prisoner setVariable ["ALiVE_questioned", true, true];
-                private _sideText = str (side group _prisoner);
+                private _pSide = _prisoner getVariable ["ALiVE_prisonerSide", side group _prisoner];
+                private _sideText = str _pSide;
                 private _found = [];
                 if (random 100 >= 30) then {
                     private _profiles = [getPosATL _prisoner, 2000, [_sideText, "entity"]] call ALIVE_fnc_getNearProfiles;
                     _found = (_profiles call BIS_fnc_arrayShuffle) select [0, 4];
                     _found = _found apply { [_x, "position", [0, 0, 0]] call ALIVE_fnc_hashGet };
-                    [getPosATL _prisoner, 2000, side group _prisoner] call ALIVE_fnc_OPCOMToggleInstallations;
+                    [getPosATL _prisoner, 2000, _pSide] call ALIVE_fnc_OPCOMToggleInstallations;
                 };
-                ALiVE_c2istar_questionAnswer = [name _prisoner, _found, side group _prisoner];
+                ALiVE_c2istar_questionAnswer = [name _prisoner, _found, _pSide];
                 if (isPlayer _caller && {!(local _caller)}) then { (owner _caller) publicVariableClient "ALiVE_c2istar_questionAnswer" } else { ALiVE_c2istar_questionAnswer call ALiVE_c2istar_fnc_showAnswer };
             };
             // Asked and answered by broadcast, so a mission's remote-execution whitelist can't stop it.
@@ -1475,14 +1464,15 @@ switch(_operation) do {
             ALiVE_c2istar_fnc_showAnswer = {
                 params ["_name", "_positions", "_side"];
                 private _prefix = switch (_side) do { case west: {"b_"}; case east: {"o_"}; case resistance: {"n_"}; default {"o_"} };
-                if (_positions isEqualTo []) exitWith { hint format ["%1 won't tell you anything.", _name] };
+                private _fnc_tell = { if (isNull findDisplay 9260) then { hint _this } else { ((findDisplay 9260) displayCtrl 92602) ctrlSetStructuredText text _this } };
+                if (_positions isEqualTo []) exitWith { (format ["%1 won't tell you anything.", _name]) call _fnc_tell };
                 {
                     private _m = createMarkerLocal [format ["ALiVE_c2istar_pow_%1_%2", round time, _forEachIndex], _x];
                     _m setMarkerTypeLocal (_prefix + "unknown");
                     _m setMarkerTextLocal format ["%1 says: enemy here", _name];
                     [_m] spawn { sleep 600; deleteMarkerLocal (_this select 0) };
                 } forEach _positions;
-                hint format ["%1 talked: %2 enemy positions he knows of are on your map for ten minutes.", _name, count _positions];
+                (format ["%1 talked: %2 enemy positions he knows of are on your map for ten minutes.", _name, count _positions]) call _fnc_tell;
             };
             "ALiVE_c2istar_questionAnswer" addPublicVariableEventHandler { (_this select 1) call ALiVE_c2istar_fnc_showAnswer };
             ALiVE_c2istar_fnc_askQuestion = {
@@ -1495,20 +1485,29 @@ switch(_operation) do {
                 !isNull _target && {alive _target} && {_target getVariable ["ALiVE_surrendered", false]}
                 && {!(_target getVariable ["ALiVE_questioned", false])} && {(_caller distance _target) < 3}
             };
-            [] spawn {
-                waitUntil { sleep 1; !isNull player };
-                if (isClass (configFile >> "CfgPatches" >> "ace_interact_menu")) then {
-                    waitUntil { sleep 1; !isNil "ace_interact_menu" && {!isNull ace_player} };
-                    private _action = ["ALiVE_Question", "Question prisoner", "", { [_target, _player] call ALiVE_c2istar_fnc_askQuestion },
-                        { [_target, _player] call ALiVE_c2istar_fnc_canQuestion }] call ace_interact_menu_fnc_createAction;
-                    ["CAManBase", 0, ["ACE_MainActions"], _action, true] call ace_interact_menu_fnc_addActionToClass;
-                } else {
-                    ALiVE_c2istar_questionAdd = {
-                        _this addAction ["Question prisoner", { [cursorObject, _this select 1] call ALiVE_c2istar_fnc_askQuestion }, nil, 1.4, false, true, "",
-                            "[cursorObject, _this] call ALiVE_c2istar_fnc_canQuestion", 3];
+        };
+
+        // One "Talk to soldier" opens the soldier interaction window, on a prisoner or on a
+        // friendly soldier (ALiVE_fnc_C2ISTARSoldierInteract), from the scroll wheel or ACE.
+        if (isNil "ALiVE_c2istar_soldierInteractInit") then {
+            ALiVE_c2istar_soldierInteractInit = true;
+            ["init"] call ALiVE_fnc_C2ISTARSoldierInteract;
+            if (hasInterface) then {
+                [] spawn {
+                    waitUntil { sleep 1; !isNull player };
+                    if (isClass (configFile >> "CfgPatches" >> "ace_interact_menu")) then {
+                        waitUntil { sleep 1; !isNil "ace_interact_menu" && {!isNull ace_player} };
+                        private _action = ["ALiVE_TalkSoldier", "Talk to soldier", "", { ["open", [_target]] call ALiVE_fnc_C2ISTARSoldierInteract },
+                            { ["canTalk", [_target, _player]] call ALiVE_fnc_C2ISTARSoldierInteract }] call ace_interact_menu_fnc_createAction;
+                        ["CAManBase", 0, ["ACE_MainActions"], _action, true] call ace_interact_menu_fnc_addActionToClass;
+                    } else {
+                        ALiVE_c2istar_talkAdd = {
+                            _this addAction ["Talk to soldier", { ["open", [cursorObject]] call ALiVE_fnc_C2ISTARSoldierInteract }, nil, 1.4, false, true, "",
+                                "['canTalk', [cursorObject, _this]] call ALiVE_fnc_C2ISTARSoldierInteract", 4];
+                        };
+                        player call ALiVE_c2istar_talkAdd;
+                        player addEventHandler ["Respawn", { params ["_unit"]; _unit call ALiVE_c2istar_talkAdd }];
                     };
-                    player call ALiVE_c2istar_questionAdd;
-                    player addEventHandler ["Respawn", { params ["_unit"]; _unit call ALiVE_c2istar_questionAdd }];
                 };
             };
         };
