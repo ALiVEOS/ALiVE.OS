@@ -6,7 +6,7 @@
     <English>Recruitment</English>
 </Key>
 <Key ID="STR_ALIVE_RECRUIT_COMMENT">
-    <English>Sync to one or more objects, such as a flagpole or an officer. Players at those objects can recruit AI soldiers into their own group, up to the group size set here. Recruits are not part of any AI Commander's forces and are not saved.</English>
+    <English>Sync to one or more objects, such as a flagpole or an officer. Players at those objects can recruit AI soldiers into their own group, up to the group size set here. Recruits are not part of any AI Commander's forces. With player saves on, they are saved with the player who recruited them.</English>
 </Key>
 <Key ID="STR_ALIVE_RECRUIT_CLASSES">
     <English>Unit Classes</English>
