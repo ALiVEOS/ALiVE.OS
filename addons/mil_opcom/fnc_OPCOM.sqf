@@ -637,7 +637,8 @@ switch (_operation) do {
                 params ["_handler"];
                 sleep 180;
                 private _side = [[_handler,"side","EAST"] call ALiVE_fnc_HashGet] call ALiVE_fnc_sideTextToObject;
-                    while { !isNil "_handler" && {!([_handler,"stopped",false] call ALiVE_fnc_HashGet)} } do {
+                private _tooFew = createHashMap;
+                while { !isNil "_handler" && {!([_handler,"stopped",false] call ALiVE_fnc_HashGet)} } do {
                     // Fields saved with the mission come back first, checked every pass so a load that
                     // finishes late is still picked up. A field cleared before the save comes back empty,
                     // still counting against the limit, as it did before the save.
@@ -681,6 +682,7 @@ switch (_operation) do {
                             private _oid = [_x,"objectiveID",""] call ALiVE_fnc_HashGet;
                             ([_x,"opcom_state",""] call ALiVE_fnc_HashGet) in ["defend","defending","reserve","reserving","idle"]
                             && {(_fields findIf { (_x select 0) == _oid }) < 0}
+                            && {time - (_tooFew getOrDefault [_oid, -1e6]) > 1800}
                         };
                         // Where the enemy is: the centres of objectives hostile commanders hold.
                         private _enemyPos = [];
@@ -729,6 +731,12 @@ switch (_operation) do {
                                     } forEach [west, east, resistance];
                                     _mines pushBack _m; _classes pushBack _cls;
                                 };
+                            };
+                            // Too few spots to make a field (buildings, water, an airfield): take them up and try
+                            // this objective again on a later pass rather than leave a mine or two on their own.
+                            if (count _mines < 6) exitWith {
+                                { deleteVehicle _x } forEach _mines;
+                                _tooFew set [[_objective,"objectiveID",""] call ALiVE_fnc_HashGet, time];
                             };
                             _fields pushBack [[_objective,"objectiveID",""] call ALiVE_fnc_HashGet, _c, _mines, _classes];
                             private _saveList = []; { _saveList pushBack [_classes select _forEachIndex, getPosATL _x] } forEach _mines; [_objective,"minefield",_saveList] call ALiVE_fnc_HashSet; [_objective,"minefieldLaid",true] call ALiVE_fnc_HashSet;
