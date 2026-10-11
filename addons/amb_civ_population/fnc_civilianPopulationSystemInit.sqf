@@ -142,8 +142,25 @@ if(isServer) then {
         } forEach (_arr + _manualArr);
         _merged
     };
-    private _customWaterItems  = ["water",  "customWaterItems",  "customWaterItemsManual"]  call _mergeItems;
-    private _customRationItems = ["ration", "customHumRatItems", "customHumRatItemsManual"] call _mergeItems;
+    // A class copied from the editor's object list, such as Item_ACE_Can, is the holder an item
+    // lies in on the ground, not the item a player carries, so it never matched anything in a
+    // player's kit (AshTray, 10 Oct 2026). It is swapped for the items it holds.
+    private _fnc_carried = {
+        private _out = [];
+        {
+            private _c = configFile >> "CfgVehicles" >> _x;
+            if (isClass _c && {!isClass (configFile >> "CfgWeapons" >> _x)} && {!isClass (configFile >> "CfgMagazines" >> _x)}) then {
+                { _out pushBackUnique getText (_x >> "name") } forEach ("true" configClasses (_c >> "TransportItems"));
+                { _out pushBackUnique getText (_x >> "magazine") } forEach ("true" configClasses (_c >> "TransportMagazines"));
+                { _out pushBackUnique getText (_x >> "weapon") } forEach ("true" configClasses (_c >> "TransportWeapons"));
+            } else {
+                _out pushBackUnique _x;
+            };
+        } forEach _this;
+        _out select { _x != "" }
+    };
+    private _customWaterItems  = (["water",  "customWaterItems",  "customWaterItemsManual"]  call _mergeItems) call _fnc_carried;
+    private _customRationItems = (["ration", "customHumRatItems", "customHumRatItemsManual"] call _mergeItems) call _fnc_carried;
 
     // Publish the disable-ambient-sounds toggle as a mission-namespace global
     // so the per-building sound functions (fnc_addAmbientRoomMusic,
