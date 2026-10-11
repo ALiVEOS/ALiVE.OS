@@ -219,6 +219,12 @@ while {true} do {
                 };
                 continue
             };
+            // On the ground isn't enough: a transport waits at a landing zone too (Land, Pickup, a
+            // medevac), and a truck sent there found it gone when it flew on. Only at home, for a
+            // helicopter: a plane comes home to the runway, which can be well away from its stand.
+            private _home = _primaryVeh getVariable ["ALIVE_CombatSupport_Base", []];
+            if (_home isEqualType objNull) then { _home = if (isNull _home) then { [] } else { getPosATL _home } };
+            if (_primaryVeh isKindOf "Helicopter" && {_home isEqualType []} && {count _home >= 2} && {(_primaryVeh distance2D _home) > 300}) then { continue };
             _primaryVeh setVariable ["ALIVE_resupply_waitingRTB", false, true];
         };
 
