@@ -1438,6 +1438,12 @@ switch(_operation) do {
             private _activePlacedCount = 0;
             private _infantryActivePlacedCount = 0;
             private _vehicleActivePlacedCount = 0;
+            // Readiness is shared out as the groups are handed out, not used up first: each group is active while
+            // the actives so far of its kind are short of Readiness times the groups of that kind seen so far.
+            // Used up first, the first objectives got every active group and the rest only reserves, which stay
+            // empty until a player comes near. The total is unchanged. Military Placement does the same.
+            private _vehicleSeen = 0;
+            private _infantrySeen = 0;
 
             // Helper: extract first LandVehicle classname from a CfgGroups class.
             private _fnc_getGroupVehicleClass = {
@@ -1735,12 +1741,14 @@ switch(_operation) do {
                         // vehicle. It takes no share of Readiness and stays out of the reserve threshold's count
                         // below. Active groups still use the helper to find their parking.
                         private _gunForcedActive = _isVehicle && {[_group, _faction] call _fnc_groupHasGun};
-                        if (_isVehicle && {!_gunForcedActive} && {_vehicleActivePlacedCount >= _vehicleActiveCount}) then {
+                        if (_isVehicle && {!_gunForcedActive} && {_vehicleActivePlacedCount >= round ((_vehicleSeen + 1) * _readiness)}) then {
                             _vehicleReserveClass = [_group, _faction] call _fnc_getGroupVehicleClass;
                         };
                         private _isVehicleReserve = _vehicleReserveClass != "";
-                        private _isInfantryReserve = _isInfantry && {_infantryActivePlacedCount >= _infantryActiveCount};
+                        private _isInfantryReserve = _isInfantry && {_infantryActivePlacedCount >= round ((_infantrySeen + 1) * _readiness)};
                         private _isReserve = _isVehicleReserve || _isInfantryReserve;
+                        if (_isVehicle && {!_gunForcedActive}) then { _vehicleSeen = _vehicleSeen + 1 };
+                        if (_isInfantry) then { _infantrySeen = _infantrySeen + 1 };
 
                         if (_isReserve) then {
                             private _reservePool = [_cluster, "reservePool"] call ALiVE_fnc_hashGet;
