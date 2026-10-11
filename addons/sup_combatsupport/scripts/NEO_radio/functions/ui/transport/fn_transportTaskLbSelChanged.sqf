@@ -28,6 +28,7 @@ _show = switch (toUpper (_lb lbText _index)) do
     case "INSERTION" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit will move to designated coordinates and will hover for rope insertion</t>" };
     case "SLINGLOAD" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit will move to designated coordinates and slingload nearest available object.</t>" };
     case "UNHOOK" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit will move to designated coordinates and unhook current slingload</t>" };
+    case "MEDEVAC" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit will land at the marked position; load your wounded and clear it to leave. They're treated at base and flown back to you</t>" };
 };
 
 //Help Text

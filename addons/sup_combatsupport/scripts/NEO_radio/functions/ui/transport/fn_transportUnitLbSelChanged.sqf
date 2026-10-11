@@ -46,6 +46,7 @@ _text ctrlSetStructuredText parseText (switch (_status) do
     case "SMOKE" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit is waiting for smoke</t>" };
     case "SMOKECONF" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit is waiting for smoke confirmation</t>" };
     case "CARGO" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit is waiting for cargo to board</t>" };
+    case "MEDEVAC" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit is on a medevac</t>" };
 });
 
 //Base Button
@@ -84,6 +85,10 @@ _tasksArray = _chopper getVariable "NEO_transportAvailableTasks";
 
 if ([(configFile >> "CfgVehicles" >> typeOf _chopper >> "slingLoadMaxCargoMass")] call ALiVE_fnc_getConfigValue == 0) then {
     _tasksArray = _tasksArray - ["Slingload","Unhook"];
+};
+// Medevac needs seats for the wounded and somewhere to land: a gunship or anything not a helicopter can't.
+if (getNumber (configFile >> "CfgVehicles" >> typeOf _chopper >> "transportSoldier") == 0 || {!(_chopper isKindOf "Helicopter")}) then {
+    _tasksArray = _tasksArray - ["Medevac"];
 };
 
 

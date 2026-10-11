@@ -59,6 +59,7 @@ _text = switch (toUpper _task) do
     case "INSERTION" : { format ["%1, move to %3 %4 for insertion. Over.", _callsign, _callSignPlayer, _posTask select 0, _posTask select 1] };
     case "SLINGLOAD" : { format ["%1, move to %3 %4 for slingloading. Over.", _callsign, _callSignPlayer, _posTask select 0, _posTask select 1] };
     case "UNHOOK" : { format ["%1, move to %3 %4 to deliver sling load. Over.", _callsign, _callSignPlayer, _posTask select 0, _posTask select 1] };
+    case "MEDEVAC" : { format ["%1, %2 requesting medevac at %3 %4. Over.", _callsign, _callSignPlayer, _posTask select 0, _posTask select 1] };
 };
 
 if (_audio) then {

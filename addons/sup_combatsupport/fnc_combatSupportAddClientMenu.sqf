@@ -82,6 +82,53 @@ NEO_radioLogic setVariable ["NEO_radioPlayerActionArray",
 
                 _vehicle_found;
             "
+        ],
+        // Medevac (#694): on a helicopter waiting at its landing zone, load the group's wounded
+        // within 50 m, and send it off.
+        [
+            ("<t color=""#700000"">" + ("Load Wounded") + "</t>"),
+            {
+                private _caller = _this select 1;
+                private _heli = if (vehicle _caller != _caller) then { vehicle _caller } else { cursorTarget };
+                private _hurt = (units group _caller) select {
+                    alive _x && {vehicle _x == _x} && {(_x distance _heli) < 50} && {
+                        (damage _x) > 0.1 || {(lifeState _x) == "INCAPACITATED"} || {_x getVariable ["ACE_isUnconscious", false]}
+                        || {count (_x getVariable ["ace_medical_openWounds", []]) > 0}
+                    }
+                };
+                private _room = _heli emptyPositions "cargo";
+                _hurt = _hurt select [0, _room];
+                // moved in without being assigned: a pilot landed to pick men up lifts off by himself
+                // once everyone assigned to the aircraft is aboard
+                { [_x, _heli] remoteExecCall ["moveInCargo", _x] } forEach _hurt;
+                hint format ["%1 wounded loaded, %2 seats left.", count _hurt, (_room - count _hurt) max 0];
+            },
+            "medevacLoad",
+            -1,
+            false,
+            true,
+            "",
+            "
+                private _heli = if (vehicle _this != _this) then { vehicle _this } else { cursorTarget };
+                !isNull _heli && {(_heli getVariable [""NEO_radioMedevacState"", """"]) == ""LZ""} && {(_this distance _heli) < 25}
+            "
+        ],
+        [
+            ("<t color=""#700000"">" + ("Clear To Leave") + "</t>"),
+            {
+                private _caller = _this select 1;
+                private _heli = if (vehicle _caller != _caller) then { vehicle _caller } else { cursorTarget };
+                _heli setVariable ["NEO_radioMedevacClear", true, true];
+            },
+            "medevacClear",
+            -1,
+            false,
+            true,
+            "",
+            "
+                private _heli = if (vehicle _this != _this) then { vehicle _this } else { cursorTarget };
+                !isNull _heli && {(_heli getVariable [""NEO_radioMedevacState"", """"]) == ""LZ""} && {(_this distance _heli) < 25}
+            "
         ]
     ]
 ];
