@@ -2178,6 +2178,9 @@ switch(_operation) do {
                         waitUntil { sleep 0.5; ((_synced findIf { !isNull _x && {!(_x getVariable ["startupComplete", false])} }) == -1) || {diag_tickTime > _until} };
                     };
                     private _side = [[_logic, "side"] call MAINCLASS] call ALIVE_fnc_sideTextToObject;
+                    // A faction another air commander has as its own is left to that commander,
+                    // whichever of the two finishes waiting first.
+                    private _others = ((entities "Module_F") select { (typeOf _x) isEqualTo "ALiVE_mil_ato" && {!(_x isEqualTo _logic)} }) apply { _x getVariable ["faction", ""] };
                     {
                         private _h = if (isNull _x) then { [] } else { _x getVariable ["handler", []] };
                         if ([_h] call ALIVE_fnc_isHash) then {
@@ -2185,7 +2188,7 @@ switch(_operation) do {
                             if (_mSide isEqualType "" && {[[_mSide] call ALIVE_fnc_sideTextToObject, _side] call BIS_fnc_sideIsFriendly}) then {
                                 private _mf = [_h, "factions", []] call ALIVE_fnc_hashGet;
                                 if (_mf isEqualType []) then {
-                                    { if (_x isEqualType "") then { _wanted pushBackUnique _x } } forEach _mf;
+                                    { if (_x isEqualType "" && {!(_x in _others)}) then { _wanted pushBackUnique _x } } forEach _mf;
                                 };
                             };
                         };
