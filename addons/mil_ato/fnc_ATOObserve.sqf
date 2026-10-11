@@ -674,11 +674,14 @@ switch(_operation) do {
         // truck coming to service it. On LAN a truck crossed two Apaches' stands as they spun up
         // and both lost their rotors, so their launches were called off.
         private _rotorsBlocked = false;
-        if (_obj isKindOf "Helicopter" && {!isEngineOn _obj} && {((getPosATL _obj) select 2) < 5}) then {
+        // Asked with the engine running as well: that is when the rotors are turning. The bounding
+        // value is a diameter, so half of it plus 2 m is the rotor disc with a little to spare. A
+        // manned static weapon by the pad doesn't count, as it never moves under the rotors.
+        if (_obj isKindOf "Helicopter" && {((getPosATL _obj) select 2) < 5}) then {
             private _ownTruck = _obj getVariable ["ALIVE_resupply_vehicle", objNull];
-            private _reach = ((boundingBoxReal _obj) select 2) + 2;
+            private _reach = (((boundingBoxReal _obj) select 2) / 2) + 2;
             _rotorsBlocked = ((_obj nearEntities [["LandVehicle","Ship"], _reach]) findIf {
-                alive _x && {_x != _ownTruck} && {((crew _x) findIf { alive _x }) >= 0}
+                alive _x && {_x != _ownTruck} && {!(_x isKindOf "StaticWeapon")} && {((crew _x) findIf { alive _x }) >= 0}
             }) >= 0;
         };
         ["rotorsBlocked", _rotorsBlocked] call _fnc_set;

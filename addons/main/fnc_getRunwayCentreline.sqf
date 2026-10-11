@@ -204,7 +204,8 @@ if (_line isEqualTo []) then {
     {
         private _ils = getArray (_x >> "ilsPosition");
         private _dir = getArray (_x >> "ilsDirection");
-        if (count _ils >= 2 && {count _dir >= 3}) then {
+        // A map with no airport of its own inherits the default [0,0] and no taxi path: not a runway.
+        if (count _ils >= 2 && {count _dir >= 3} && {!((_ils select [0, 2]) isEqualTo [0,0])} && {(getArray (_x >> "ilsTaxiOff")) isNotEqualTo []}) then {
             private _t = [_ils select 0, _ils select 1, 0];
             private _d = _t distance2D _position;
             // ilsDirection is [x, glide slope, y], pointing back up the approach
@@ -218,6 +219,12 @@ if (_line isEqualTo []) then {
                     private _s = (((_taxi select _j) - (_t select 0)) * (_u select 0)) + (((_taxi select (_j + 1)) - (_t select 1)) * (_u select 1));
                     _reach = _reach max _s;
                     _back = _back min _s;
+                };
+                // The taxi-off path runs down the strip from touchdown. A map whose direction is set the
+                // other way shows it behind the touchdown point, so the line is turned round to match.
+                if (-_back > _reach) then {
+                    _u = [-(_u select 0), -(_u select 1)];
+                    private _r = -_back; _back = -_reach; _reach = _r;
                 };
                 _reach = _reach max 300;
                 _bestD = _d;
