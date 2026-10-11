@@ -130,3 +130,35 @@ if (count _turret > 0) then {
         };
     } forEach _turret;
 };
+
+// A light static weapon (a Stinger or Igla tripod) is often knocked over by its own crewman,
+// who is created where it stands; he then can't get into a gun on its side and stands next to
+// it. For a few seconds after crewing, a static weapon that has gone over is stood back up on
+// the ground, and a gunner still outside it is put back in.
+if (_vehicle isKindOf "StaticWeapon") then {
+    [_vehicle, _gunners] spawn {
+        params ["_vehicle", "_gunners"];
+        for "_i" from 1 to 10 do {
+            sleep 1;
+            if (isNull _vehicle || {!alive _vehicle}) exitWith {};
+            if (((vectorUp _vehicle) select 2) < 0.8) then {
+                private _p = getPosATL _vehicle;
+                private _fix = [_vehicle, surfaceNormal _p, [_p select 0, _p select 1, 0]];
+                if (local _vehicle) then {
+                    _vehicle setVectorUp (_fix select 1);
+                    _vehicle setPosATL (_fix select 2);
+                } else {
+                    [_vehicle, _fix select 1] remoteExecCall ["setVectorUp", _vehicle];
+                    [_vehicle, _fix select 2] remoteExecCall ["setPosATL", _vehicle];
+                };
+            };
+            if (isNull (gunner _vehicle)) then {
+                {
+                    if (!isNil "_x" && {alive _x} && {vehicle _x == _x}) then {
+                        if (local _x) then { _x moveInGunner _vehicle } else { [_x, _vehicle] remoteExecCall ["moveInGunner", _x] };
+                    };
+                } forEach _gunners;
+            };
+        };
+    };
+};
