@@ -58,6 +58,11 @@ private _fnc_unwanted = {
     || {_isGM && {_isWinterTerrain != _isWin}}
     || {_isGM && {(_s find "_sf_") >= 0 || {(_s find "_blk") >= 0} || {(_s find "_90_") >= 0}}}
     || {(["crew", "pilot", "officer", "police"] findIf { (_s find _x) >= 0 }) >= 0}
+    // not soldiers at all, though they count as men: mods' spawner and invisible helpers,
+    // base and uniform classes, and the UAV AI, none of which carries a weapon
+    || {(["spawner", "invisible", "uav_ai"] findIf { (_s find _x) >= 0 }) >= 0}
+    || {(_s select [count _s - 5]) == "_base" || {(_s find "_base_f") >= 0} || {(_s find "uniform") >= 0}}
+    || {(getArray (configFile >> "CfgVehicles" >> _type >> "weapons")) isEqualTo []}
 };
 private _usable = _types select { !([_x] call _fnc_unwanted) };
 
