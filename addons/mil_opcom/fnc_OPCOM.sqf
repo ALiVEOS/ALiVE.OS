@@ -811,7 +811,12 @@ switch (_operation) do {
                             if (_own isNotEqualTo []) then { _comps = _own };
                             private _comp = selectRandom _comps;
                             private _r = ([_comp] call ALiVE_fnc_getCompositionRadius) max 8;
-                            private _pos = [_c getPos [(_size * 0.6) max 30, _dir], 0, 80, _r, 0, 0.25, 0, [], [[0,0,0],[0,0,0]]] call BIS_fnc_findSafePos;
+                            // Through the composition site check, which keeps a fort off slopes, roads,
+                            // buildings and water; the engine's own search took ground up to a 0.25 gradient
+                            // and left forts leaning on hillsides.
+                            private _site = [_c getPos [(_size * 0.6) max 30, _dir], 80, _r, "military", _dir] call ALiVE_fnc_findCompositionSpawnPosition;
+                            if (_site isEqualTo []) then { continue };
+                            private _pos = _site select 0;
                             // no clear ground near this one: it is tried again on a later pass
                             if ((_pos distance2D _c) > (_size + 200) || {(_pos nearRoads (_r + 4)) isNotEqualTo []} || {([_pos, 300] call ALiVE_fnc_anyPlayersInRange) > 0} || {!isNil "ALiVE_fnc_isAirside" && {[_pos, _r] call ALiVE_fnc_isAirside}}) then { continue };
                             [_comp, _pos, _dir, _faction] call ALiVE_fnc_spawnComposition;
@@ -855,7 +860,9 @@ switch (_operation) do {
                                     private _rFull = ([_comp] call ALiVE_fnc_getCompositionRadius) max 10;
                                     private _r = _rFull min 18;
                                     private _dir = random 360;
-                                    private _pos = [_c getPos [(_size * 0.6) max 30, _dir], 0, 150, _r, 0, 0.25, 0, [], [[0,0,0],[0,0,0]]] call BIS_fnc_findSafePos;
+                                    private _site = [_c getPos [(_size * 0.6) max 30, _dir], 150, _rFull, "military", _dir] call ALiVE_fnc_findCompositionSpawnPosition;
+                                    if (_site isEqualTo []) then { continue };
+                                    private _pos = _site select 0;
                                     if ((_pos distance2D _c) > (_size + 200) || {(_pos nearRoads (_rFull + 4)) isNotEqualTo []} || {([_pos, 300] call ALiVE_fnc_anyPlayersInRange) > 0} || {!isNil "ALiVE_fnc_isAirside" && {[_pos, _rFull] call ALiVE_fnc_isAirside}}) then { continue };
                                     [_comp, _pos, _c getDir _pos, _faction] call ALiVE_fnc_spawnComposition;
                                     _medium pushBack _oid;
