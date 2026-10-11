@@ -464,8 +464,16 @@ switch (_operation) do {
 
             // determine a suitable spawn position
             [_logic] call ALIVE_fnc_profileGetGoodSpawnPosition;
-            _position = _logic select 2 select 2; //[_entityProfile,"position"] call ALIVE_fnc_hashGet;
+            _position = +(_logic select 2 select 2); //[_entityProfile,"position"] call ALIVE_fnc_hashGet;
             _special = "NONE";
+
+            if (tolower _vehicleType == "ship") then {
+                // Profiles store ATL, but createVehicle expects AGL for boats
+                if (count _position == 2) then { _position pushBack 0; };
+                if (surfaceIsWater _position && {(_position select 2) != 0}) then {
+                    _position = ASLToAGL (ATLToASL _position);
+                };
+            };
 
             //["SPAWN VEHICLE [%1] pos: %2",_profileID,_position] call ALIVE_fnc_dump;
 
@@ -671,24 +679,10 @@ switch (_operation) do {
 
             _vehicle allowDamage false;
 
-            // #1024 - a hull created over water can arrive below the surface. Profile
-            // positions are ATL, and over water ATL zero is the BED rather than the
-            // waterline, which is why profileSimulator converts a moved water position
-            // with ASLtoATL before storing it. Any position that reached here without
-            // that conversion, including the two-element results of the searches above,
-            // creates the boat on the bottom. Deep water hid it because the hull floats
-            // back up; a two metre river channel does not, and the hull stays wedged in
-            // the terrain. That is the "underwater or immobile" that was reported.
-            //
-            // Corrected AFTER creation on purpose: reading the position back off the
-            // object means this needs no assumption about how createVehicle interprets
-            // the z it was handed, which is the one thing here that could not be
-            // established from source.
-            //
-            // Only lifts a hull RESTING ON THE BOTTOM, never one merely under the
-            // surface, so a diver vehicle under way between the bed and the waterline is
-            // left alone. And it never lowers anything, so a boat carried on a deck or a
-            // trailer above the water keeps its height.
+            // #1024 - retain the bottom-resting hull fallback for legacy profiles.
+            // Boat creation uses AGL, so zero-height water-search results already
+            // spawn at the surface. Only lift a hull resting on the bed; preserve
+            // submarines between the bed and surface and boats above the water.
             if (tolower _vehicleType == "ship") then {
                 private _createdASL = getPosASL _vehicle;
                 private _bed = getTerrainHeightASL _createdASL;
