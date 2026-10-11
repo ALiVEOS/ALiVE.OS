@@ -149,10 +149,15 @@ if(isServer) then {
         private _out = [];
         {
             private _c = configFile >> "CfgVehicles" >> _x;
+            private _held = [];
             if (isClass _c && {!isClass (configFile >> "CfgWeapons" >> _x)} && {!isClass (configFile >> "CfgMagazines" >> _x)}) then {
-                { _out pushBackUnique getText (_x >> "name") } forEach ("true" configClasses (_c >> "TransportItems"));
-                { _out pushBackUnique getText (_x >> "magazine") } forEach ("true" configClasses (_c >> "TransportMagazines"));
-                { _out pushBackUnique getText (_x >> "weapon") } forEach ("true" configClasses (_c >> "TransportWeapons"));
+                { _held pushBackUnique getText (_x >> "name") } forEach ("true" configClasses (_c >> "TransportItems"));
+                { _held pushBackUnique getText (_x >> "magazine") } forEach ("true" configClasses (_c >> "TransportMagazines"));
+                { _held pushBackUnique getText (_x >> "weapon") } forEach ("true" configClasses (_c >> "TransportWeapons"));
+                _held = _held select { _x != "" };
+            };
+            if (count _held > 0) then {
+                { _out pushBackUnique _x } forEach _held;
             } else {
                 _out pushBackUnique _x;
             };
