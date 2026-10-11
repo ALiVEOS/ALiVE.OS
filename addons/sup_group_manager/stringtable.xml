@@ -4,27 +4,75 @@
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_RECRUIT">
     <English>Recruitment</English>
+    <Chinesesimp>招募</Chinesesimp>
+    <Chinese>招募</Chinese>
+    <Spanish>Reclutamiento</Spanish>
+    <French>Recrutement</French>
+    <Portuguese>Recrutamento</Portuguese>
+    <Russian>Вербовка</Russian>
 </Key>
 <Key ID="STR_ALIVE_RECRUIT_COMMENT">
     <English>Sync to one or more objects, such as a flagpole or an officer. Players at those objects can recruit AI soldiers into their own group, up to the group size set here. Recruits are not part of any AI Commander's forces. With player saves on, they are saved with the player who recruited them.</English>
+    <Chinesesimp>同步到一个或多个物体，例如旗杆或军官。玩家在这些物体处可以招募 AI 士兵加入自己的小组，直到此处设定的小组人数。招募的士兵不属于任何 AI 指挥官的部队。开启玩家保存时，他们会与招募他们的玩家一起保存。</Chinesesimp>
+    <Chinese>同步到一個或多個物體，例如旗桿或軍官。玩家在這些物體處可以招募 AI 士兵加入自己的小組，直到此處設定的小組人數。招募的士兵不屬於任何 AI 指揮官的部隊。開啟玩家保存時，他們會與招募他們的玩家一起保存。</Chinese>
+    <Spanish>Sincronízalo con uno o más objetos, como un mástil o un oficial. Los jugadores en esos objetos pueden reclutar soldados de la IA para su propio grupo, hasta el tamaño de grupo fijado aquí. Los reclutas no forman parte de las fuerzas de ningún comandante de IA. Con el guardado de jugadores activado, se guardan con el jugador que los reclutó.</Spanish>
+    <French>Synchronisez-le avec un ou plusieurs objets, comme un mât ou un officier. Les joueurs près de ces objets peuvent recruter des soldats IA dans leur propre groupe, jusqu'à la taille de groupe fixée ici. Les recrues ne font partie des forces d'aucun commandant IA. Avec la sauvegarde des joueurs activée, elles sont sauvegardées avec le joueur qui les a recrutées.</French>
+    <Portuguese>Sincronize com um ou mais objetos, como um mastro ou um oficial. Os jogadores nesses objetos podem recrutar soldados da IA para o seu próprio grupo, até ao tamanho de grupo definido aqui. Os recrutas não fazem parte das forças de nenhum comandante de IA. Com o guardar de jogadores ativo, são guardados com o jogador que os recrutou.</Portuguese>
+    <Russian>Синхронизируйте с одним или несколькими объектами, например флагштоком или офицером. Игроки у этих объектов могут вербовать солдат ИИ в свою группу до заданного здесь размера группы. Завербованные не входят в силы ни одного командира ИИ. При включённом сохранении игроков они сохраняются вместе с завербовавшим их игроком.</Russian>
 </Key>
 <Key ID="STR_ALIVE_RECRUIT_CLASSES">
     <English>Unit Classes</English>
+    <Chinesesimp>单位类别</Chinesesimp>
+    <Chinese>單位類別</Chinese>
+    <Spanish>Clases de unidad</Spanish>
+    <French>Classes d'unités</French>
+    <Portuguese>Classes de unidade</Portuguese>
+    <Russian>Классы бойцов</Russian>
 </Key>
 <Key ID="STR_ALIVE_RECRUIT_CLASSES_COMMENT">
     <English>Class names of the soldiers players can recruit, separated by commas. Leave empty for up to eight common infantry roles of each player's own faction.</English>
+    <Chinesesimp>玩家可以招募的士兵类名，用逗号分隔。留空则为每位玩家自己阵营最多八种常见步兵角色。</Chinesesimp>
+    <Chinese>玩家可以招募的士兵類名，用逗號分隔。留空則為每位玩家自己陣營最多八種常見步兵角色。</Chinese>
+    <Spanish>Nombres de clase de los soldados que los jugadores pueden reclutar, separados por comas. Déjalo vacío para hasta ocho funciones de infantería comunes de la facción de cada jugador.</Spanish>
+    <French>Noms de classe des soldats que les joueurs peuvent recruter, séparés par des virgules. Laissez vide pour jusqu'à huit rôles d'infanterie courants de la faction de chaque joueur.</French>
+    <Portuguese>Nomes de classe dos soldados que os jogadores podem recrutar, separados por vírgulas. Deixe vazio para até oito funções de infantaria comuns da fação de cada jogador.</Portuguese>
+    <Russian>Имена классов солдат, которых могут вербовать игроки, через запятую. Оставьте пустым — до восьми обычных пехотных ролей фракции каждого игрока.</Russian>
 </Key>
 <Key ID="STR_ALIVE_RECRUIT_SKILL">
     <English>Recruit Skill</English>
+    <Chinesesimp>招募士兵技能</Chinesesimp>
+    <Chinese>招募士兵技能</Chinese>
+    <Spanish>Habilidad de los reclutas</Spanish>
+    <French>Compétence des recrues</French>
+    <Portuguese>Habilidade dos recrutas</Portuguese>
+    <Russian>Навык завербованных</Russian>
 </Key>
 <Key ID="STR_ALIVE_RECRUIT_SKILL_COMMENT">
     <English>How good recruits are. Game default leaves them at the skill the game gives any new soldier (set by the difficulty settings); the other choices set every recruit's skill to that level.</English>
+    <Chinesesimp>招募士兵的水平。游戏默认保持游戏赋予任何新士兵的技能（由难度设置决定）；其他选项会把每名招募士兵的技能设为该等级。</Chinesesimp>
+    <Chinese>招募士兵的水平。遊戲預設保持遊戲賦予任何新士兵的技能（由難度設定決定）；其他選項會把每名招募士兵的技能設為該等級。</Chinese>
+    <Spanish>Lo buenos que son los reclutas. Predeterminado del juego los deja con la habilidad que el juego da a cualquier soldado nuevo (según la dificultad); las demás opciones fijan la habilidad de todos los reclutas en ese nivel.</Spanish>
+    <French>Le niveau des recrues. Par défaut du jeu leur laisse la compétence que le jeu donne à tout nouveau soldat (selon la difficulté) ; les autres choix fixent la compétence de chaque recrue à ce niveau.</French>
+    <Portuguese>Quão bons são os recrutas. Predefinição do jogo deixa-os com a habilidade que o jogo dá a qualquer soldado novo (definida pela dificuldade); as outras opções definem a habilidade de cada recruta nesse nível.</Portuguese>
+    <Russian>Насколько хороши завербованные. «По умолчанию» оставляет навык, который игра даёт любому новому солдату (зависит от сложности); остальные варианты задают этот уровень навыка каждому завербованному.</Russian>
 </Key>
 <Key ID="STR_ALIVE_RECRUIT_MAX">
     <English>Max Group Size</English>
+    <Chinesesimp>小组人数上限</Chinesesimp>
+    <Chinese>小組人數上限</Chinese>
+    <Spanish>Tamaño máximo del grupo</Spanish>
+    <French>Taille maximale du groupe</French>
+    <Portuguese>Tamanho máximo do grupo</Portuguese>
+    <Russian>Макс. размер группы</Russian>
 </Key>
 <Key ID="STR_ALIVE_RECRUIT_MAX_COMMENT">
     <English>The most men a group can have, players included, before recruiting stops. Two players in one group with this at 8 can recruit 6.</English>
+    <Chinesesimp>小组在停止招募前最多可有的人数（包括玩家）。设为 8 时，同组两名玩家可以招募 6 人。</Chinesesimp>
+    <Chinese>小組在停止招募前最多可有的人數（包括玩家）。設為 8 時，同組兩名玩家可以招募 6 人。</Chinese>
+    <Spanish>El máximo de hombres que puede tener un grupo, jugadores incluidos, antes de que se detenga el reclutamiento. Dos jugadores en un grupo con este valor en 8 pueden reclutar 6.</Spanish>
+    <French>Le nombre maximal d'hommes qu'un groupe peut avoir, joueurs compris, avant que le recrutement s'arrête. Deux joueurs dans un groupe avec cette valeur à 8 peuvent recruter 6 hommes.</French>
+    <Portuguese>O máximo de homens que um grupo pode ter, jogadores incluídos, antes de o recrutamento parar. Dois jogadores num grupo com este valor em 8 podem recrutar 6.</Portuguese>
+    <Russian>Наибольшее число бойцов в группе, включая игроков, после которого вербовка прекращается. Два игрока в группе при значении 8 могут завербовать 6.</Russian>
 </Key>
 <Key ID="STR_ALIVE_GM">
     <English>Player Command/Control (C2ISTAR)</English>
