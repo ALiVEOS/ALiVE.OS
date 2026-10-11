@@ -927,11 +927,13 @@ switch (_operation) do {
         _group setVariable [QGVAR(playerOrdersOptOut), _optedOut, true];
 
         // Kept on the server by group name as well, so the choice is saved with the
-        // mission and still there for a group that is empty when the save is made.
+        // mission and still there for a group that is empty when the save is made. The
+        // players in the group are kept with it: a callsign is handed out again, and only
+        // these players bring the opt-out back to a group of that name.
         if (isNil "ALIVE_C2ISTAR_optOutGroups") then { ALIVE_C2ISTAR_optOutGroups = [] call ALIVE_fnc_hashCreate };
         private _groupName = [str _group, " ", "_"] call CBA_fnc_replace;
         if (_optedOut) then {
-            [ALIVE_C2ISTAR_optOutGroups, _groupName, true] call ALIVE_fnc_hashSet;
+            [ALIVE_C2ISTAR_optOutGroups, _groupName, ((units _group) select { isPlayer _x }) apply { getPlayerUID _x }] call ALIVE_fnc_hashSet;
         } else {
             [ALIVE_C2ISTAR_optOutGroups, _groupName] call ALIVE_fnc_hashRem;
         };

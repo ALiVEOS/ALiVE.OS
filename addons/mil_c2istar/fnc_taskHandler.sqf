@@ -129,12 +129,13 @@ switch (_operation) do {
 
             // The groups opted out of automatic orders. Put back on any group already
             // here; a player who joins later gets it back in syncTasks.
-            if (!isNil QGVAR(DATAHANDLER)) then {
+            if (!isNil QGVAR(DATAHANDLER) && {(toLower (missionNamespace getVariable ["ALiVE_sys_data_source", "pns"])) isEqualTo "pns"}) then {
                 private _optOut = [GVAR(DATAHANDLER), "bulkLoad", ["sys_tasks_optout", (["_TASK_OPTOUT"] call ALiVE_fnc_storeKeys) select 0, false]] call ALIVE_fnc_Data;
                 if (!isNil "_optOut" && {[_optOut] call ALIVE_fnc_isHash}) then {
                     ALIVE_C2ISTAR_optOutGroups = _optOut;
                     {
-                        if ([_optOut, [str _x, " ", "_"] call CBA_fnc_replace, false] call ALIVE_fnc_hashGet) then {
+                        private _uids = [_optOut, [str _x, " ", "_"] call CBA_fnc_replace, []] call ALIVE_fnc_hashGet;
+                        if (_uids isEqualType [] && {((units _x) findIf { (getPlayerUID _x) in _uids }) > -1}) then {
                             _x setVariable [QGVAR(playerOrdersOptOut), true, true];
                         };
                     } forEach allGroups;
@@ -963,8 +964,10 @@ switch (_operation) do {
                     ((str(side group _player)) != "UNKNOWN")
                 };
 
-                // A group that opted out of automatic orders before the save stays out.
-                if (!isNil "ALIVE_C2ISTAR_optOutGroups" && {[ALIVE_C2ISTAR_optOutGroups, _groupID, false] call ALIVE_fnc_hashGet}) then {
+                // A group that opted out of automatic orders before the save stays out, when one
+                // of the players who opted it out is back in a group of that name.
+                private _optOutUIDs = if (isNil "ALIVE_C2ISTAR_optOutGroups") then { [] } else { [ALIVE_C2ISTAR_optOutGroups, _groupID, []] call ALIVE_fnc_hashGet };
+                if (_optOutUIDs isEqualType [] && {_playerID in _optOutUIDs}) then {
                     (group _player) setVariable [QGVAR(playerOrdersOptOut), true, true];
                 };
 

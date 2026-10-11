@@ -39,12 +39,20 @@ _missionName = (["_TASK"] call ALiVE_fnc_storeKeys) select 0; // group, mission 
 
 // The groups opted out of automatic orders, saved on their own before the task list,
 // which skips the save when it holds nothing. Only once a group has opted out or a
-// saved list was loaded, so a mission that never used it writes nothing.
-if (!isNil "ALIVE_C2ISTAR_optOutGroups") then {
+// saved list was loaded, so a mission that never used it writes nothing. Local saves
+// only: the list is plain name/true pairs, which the CouchDB writer cannot take.
+if (!isNil "ALIVE_C2ISTAR_optOutGroups" && {(toLower (missionNamespace getVariable ["ALiVE_sys_data_source", "pns"])) isEqualTo "pns"}) then {
     if (isNil QGVAR(DATAHANDLER)) then {
         GVAR(DATAHANDLER) = [nil, "create"] call ALIVE_fnc_Data;
         [GVAR(DATAHANDLER),"storeType",true] call ALIVE_fnc_Data;
     };
+    // Players who joined an opted-out group since are counted in with it.
+    {
+        private _uids = [ALIVE_C2ISTAR_optOutGroups, [str _x, " ", "_"] call CBA_fnc_replace, 0] call ALIVE_fnc_hashGet;
+        if (_uids isEqualType [] && {_x getVariable [QGVAR(playerOrdersOptOut), false]}) then {
+            { _uids pushBackUnique (getPlayerUID _x) } forEach ((units _x) select { isPlayer _x });
+        };
+    } forEach allGroups;
     [GVAR(DATAHANDLER), "bulkSave", ["sys_tasks_optout", ALIVE_C2ISTAR_optOutGroups, (["_TASK_OPTOUT"] call ALiVE_fnc_storeKeys) select 0, _async]] call ALIVE_fnc_Data;
 };
 
