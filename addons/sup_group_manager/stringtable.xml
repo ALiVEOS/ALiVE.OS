@@ -56,6 +56,132 @@
     <Portuguese>Quão bons são os recrutas. Predefinição do jogo deixa-os com a habilidade que o jogo dá a qualquer soldado novo (definida pela dificuldade); as outras opções definem a habilidade de cada recruta nesse nível.</Portuguese>
     <Russian>Насколько хороши завербованные. «По умолчанию» оставляет навык, который игра даёт любому новому солдату (зависит от сложности); остальные варианты задают этот уровень навыка каждому завербованному.</Russian>
 </Key>
+<Key ID="STR_ALIVE_RECRUIT_VEHICLES">
+    <English>Vehicle Classes</English>
+    <Chinesesimp>载具类名</Chinesesimp>
+    <Chinese>載具類名</Chinese>
+    <Spanish>Clases de vehículos</Spanish>
+    <French>Classes de véhicules</French>
+    <Portuguese>Classes de veículos</Portuguese>
+    <Russian>Классы техники</Russian>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_VEHICLES_COMMENT">
+    <English>Vehicles players can take here, as class names separated by commas. They come empty: the players crew them. Leave it empty for none.</English>
+    <Chinesesimp>玩家可在此领取的载具，以逗号分隔的类名填写。载具为空载，由玩家自行驾驶。留空则不提供。</Chinesesimp>
+    <Chinese>玩家可在此領取的載具，以逗號分隔的類名填寫。載具為空載，由玩家自行駕駛。留空則不提供。</Chinese>
+    <Spanish>Vehículos que los jugadores pueden tomar aquí, como nombres de clase separados por comas. Llegan vacíos: los tripulan los jugadores. Déjalo vacío para ninguno.</Spanish>
+    <French>Véhicules que les joueurs peuvent prendre ici, en noms de classe séparés par des virgules. Ils arrivent vides : les joueurs forment l'équipage. Laissez vide pour aucun.</French>
+    <Portuguese>Veículos que os jogadores podem levar aqui, como nomes de classe separados por vírgulas. Chegam vazios: são os jogadores que os tripulam. Deixe vazio para nenhum.</Portuguese>
+    <Russian>Техника, которую игроки могут взять здесь, — имена классов через запятую. Она пустая: экипаж — сами игроки. Оставьте пустым, если не нужна.</Russian>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_MAX_VEHICLES">
+    <English>Vehicles Per Player</English>
+    <Chinesesimp>每名玩家载具数</Chinesesimp>
+    <Chinese>每名玩家載具數</Chinese>
+    <Spanish>Vehículos por jugador</Spanish>
+    <French>Véhicules par joueur</French>
+    <Portuguese>Veículos por jogador</Portuguese>
+    <Russian>Техники на игрока</Russian>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_MAX_VEHICLES_COMMENT">
+    <English>How many of these vehicles one player can have at a time. A destroyed one frees its place.</English>
+    <Chinesesimp>每名玩家同时可拥有的此类载具数量。被摧毁的载具会让出名额。</Chinesesimp>
+    <Chinese>每名玩家同時可擁有的此類載具數量。被摧毀的載具會讓出名額。</Chinese>
+    <Spanish>Cuántos de estos vehículos puede tener un jugador a la vez. Uno destruido libera su plaza.</Spanish>
+    <French>Combien de ces véhicules un joueur peut avoir à la fois. Un véhicule détruit libère sa place.</French>
+    <Portuguese>Quantos destes veículos um jogador pode ter de cada vez. Um destruído liberta o lugar.</Portuguese>
+    <Russian>Сколько такой техники может быть у одного игрока одновременно. Уничтоженная освобождает место.</Russian>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_SPAWN_POINTS">
+    <English>Spawn Points</English>
+    <Chinesesimp>生成点</Chinesesimp>
+    <Chinese>生成點</Chinese>
+    <Spanish>Puntos de aparición</Spanish>
+    <French>Points d'apparition</French>
+    <Portuguese>Pontos de aparecimento</Portuguese>
+    <Russian>Точки появления</Russian>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_SPAWN_POINTS_COMMENT">
+    <English>Where recruits and vehicles appear: marker names or object variable names, separated by commas, one picked at random each time. An object gives its own height, so a ship's deck or a rooftop works. Give a marker its own height as name:height, for example deck:12. Leave it empty and they appear beside the object recruited at.</English>
+    <Chinesesimp>招募士兵和载具出现的位置：标记名或物体变量名，以逗号分隔，每次随机选一个。物体会提供自身高度，因此可用船甲板或屋顶。留空则出现在招募物体旁边。</Chinesesimp>
+    <Chinese>招募士兵和載具出現的位置：標記名或物體變數名，以逗號分隔，每次隨機選一個。物體會提供自身高度，因此可用船甲板或屋頂。留空則出現在招募物體旁邊。</Chinese>
+    <Spanish>Dónde aparecen reclutas y vehículos: nombres de marcadores o de variables de objetos, separados por comas; cada vez se elige uno al azar. Un objeto da su propia altura, así que vale la cubierta de un barco o una azotea. Si se deja vacío, aparecen junto al objeto donde se recluta.</Spanish>
+    <French>Où apparaissent recrues et véhicules : noms de marqueurs ou de variables d'objets, séparés par des virgules, un tiré au hasard à chaque fois. Un objet donne sa propre hauteur, donc le pont d'un navire ou un toit conviennent. Laissez vide et ils apparaissent près de l'objet de recrutement.</French>
+    <Portuguese>Onde aparecem recrutas e veículos: nomes de marcadores ou de variáveis de objetos, separados por vírgulas, um escolhido ao acaso de cada vez. Um objeto dá a sua própria altura, por isso o convés de um navio ou um telhado servem. Vazio, aparecem junto ao objeto onde se recruta.</Portuguese>
+    <Russian>Где появляются новобранцы и техника: имена маркеров или переменных объектов через запятую, каждый раз выбирается случайная. Объект задаёт свою высоту, так что подойдут палуба корабля или крыша. Если пусто — появляются рядом с объектом вербовки.</Russian>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_SPAWN_HEIGHT">
+    <English>Marker Height</English>
+    <Chinesesimp>标记高度</Chinesesimp>
+    <Chinese>標記高度</Chinese>
+    <Spanish>Altura del marcador</Spanish>
+    <French>Hauteur du marqueur</French>
+    <Portuguese>Altura do marcador</Portuguese>
+    <Russian>Высота маркера</Russian>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_SPAWN_HEIGHT_COMMENT">
+    <English>Metres above the ground (or the sea) at a marker spawn point, for a marker on a ship or a building. 0 puts them on the ground. Objects used as spawn points give their own height instead.</English>
+    <Chinesesimp>标记生成点高于地面（或海面）的米数，用于船上或建筑上的标记。0 表示放在地面。用作生成点的物体则使用其自身高度。</Chinesesimp>
+    <Chinese>標記生成點高於地面（或海面）的公尺數，用於船上或建築上的標記。0 表示放在地面。用作生成點的物體則使用其自身高度。</Chinese>
+    <Spanish>Metros sobre el suelo (o el mar) en un punto de aparición de marcador, para un marcador en un barco o un edificio. 0 los pone en el suelo. Los objetos usados como puntos dan su propia altura.</Spanish>
+    <French>Mètres au-dessus du sol (ou de la mer) à un point d'apparition marqueur, pour un marqueur sur un navire ou un bâtiment. 0 les pose au sol. Les objets servant de points donnent leur propre hauteur.</French>
+    <Portuguese>Metros acima do solo (ou do mar) num ponto de marcador, para um marcador num navio ou edifício. 0 põe-nos no chão. Objetos usados como pontos dão a sua própria altura.</Portuguese>
+    <Russian>Высота в метрах над землёй (или морем) у маркерной точки — для маркера на корабле или здании. 0 — на земле. Объекты-точки задают собственную высоту.</Russian>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_CODE">
+    <English>Code On Each</English>
+    <Chinesesimp>对每个执行的代码</Chinesesimp>
+    <Chinese>對每個執行的程式碼</Chinese>
+    <Spanish>Código en cada uno</Spanish>
+    <French>Code sur chacun</French>
+    <Portuguese>Código em cada um</Portuguese>
+    <Russian>Код для каждого</Russian>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_CODE_COMMENT">
+    <English>Code run on each new recruit and vehicle, with _this the new soldier or vehicle: loadouts, event handlers, traits, variables, cargo. Runs on the recruiting player's machine.</English>
+    <Chinesesimp>对每名新招募士兵和每辆载具执行的代码，_this 为该士兵或载具：装备、事件处理、特性、变量、货物。在招募玩家的机器上运行。</Chinesesimp>
+    <Chinese>對每名新招募士兵和每輛載具執行的程式碼，_this 為該士兵或載具：裝備、事件處理、特性、變數、貨物。在招募玩家的機器上執行。</Chinese>
+    <Spanish>Código ejecutado en cada recluta y vehículo nuevo, con _this el soldado o vehículo: equipos, manejadores de eventos, rasgos, variables, carga. Se ejecuta en la máquina del jugador que recluta.</Spanish>
+    <French>Code exécuté sur chaque nouvelle recrue et chaque véhicule, avec _this le soldat ou le véhicule : équipements, gestionnaires d'événements, traits, variables, cargaison. S'exécute sur la machine du joueur qui recrute.</French>
+    <Portuguese>Código executado em cada novo recruta e veículo, com _this o soldado ou veículo: equipamentos, event handlers, traços, variáveis, carga. Corre na máquina do jogador que recruta.</Portuguese>
+    <Russian>Код, выполняемый для каждого новобранца и машины, _this — солдат или машина: снаряжение, обработчики событий, черты, переменные, груз. Выполняется на машине вербующего игрока.</Russian>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_INTERFACE">
+    <English>Interface</English>
+    <Chinesesimp>界面</Chinesesimp>
+    <Chinese>介面</Chinese>
+    <Spanish>Interfaz</Spanish>
+    <French>Interface</French>
+    <Portuguese>Interface</Portuguese>
+    <Russian>Интерфейс</Russian>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_INTERFACE_COMMENT">
+    <English>Window: one Recruitment action opens a window listing everything on offer. Actions: a scroll-wheel action for each soldier and vehicle, as before.</English>
+    <Chinesesimp>窗口：一个 Recruitment 动作打开列出所有可选项的窗口。动作：每名士兵和每辆载具各有一个滚轮动作，与以前相同。</Chinesesimp>
+    <Chinese>視窗：一個 Recruitment 動作開啟列出所有可選項的視窗。動作：每名士兵和每輛載具各有一個滾輪動作，與以前相同。</Chinese>
+    <Spanish>Ventana: una acción Recruitment abre una ventana con todo lo disponible. Acciones: una acción de rueda por cada soldado y vehículo, como antes.</Spanish>
+    <French>Fenêtre : une action Recruitment ouvre une fenêtre listant tout ce qui est proposé. Actions : une action de molette par soldat et véhicule, comme avant.</French>
+    <Portuguese>Janela: uma ação Recruitment abre uma janela com tudo o que há. Ações: uma ação da roda por cada soldado e veículo, como antes.</Portuguese>
+    <Russian>Окно: одно действие «Recruitment» открывает окно со всем доступным. Действия: по действию колеса на каждого солдата и машину, как раньше.</Russian>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_INTERFACE_WINDOW">
+    <English>Window</English>
+    <Chinesesimp>窗口</Chinesesimp>
+    <Chinese>視窗</Chinese>
+    <Spanish>Ventana</Spanish>
+    <French>Fenêtre</French>
+    <Portuguese>Janela</Portuguese>
+    <Russian>Окно</Russian>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_INTERFACE_ACTIONS">
+    <English>Actions</English>
+    <Chinesesimp>动作</Chinesesimp>
+    <Chinese>動作</Chinese>
+    <Spanish>Acciones</Spanish>
+    <French>Actions</French>
+    <Portuguese>Ações</Portuguese>
+    <Russian>Действия</Russian>
+</Key>
 <Key ID="STR_ALIVE_RECRUIT_MAX">
     <English>Max Group Size</English>
     <Chinesesimp>小组人数上限</Chinesesimp>

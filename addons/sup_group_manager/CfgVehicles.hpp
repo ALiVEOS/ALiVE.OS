@@ -63,6 +63,56 @@ class CfgVehicles {
                                         class Elite   { name = "Elite (1.0)";  value = "1"; };
                                 };
                         };
+                        class vehicleClasses : Edit
+                        {
+                                property = "ALiVE_sup_recruit_vehicleClasses";
+                                displayName = "$STR_ALIVE_RECRUIT_VEHICLES";
+                                tooltip = "$STR_ALIVE_RECRUIT_VEHICLES_COMMENT";
+                                defaultValue = """""";
+                        };
+                        class maxVehicles : Edit
+                        {
+                                property = "ALiVE_sup_recruit_maxVehicles";
+                                displayName = "$STR_ALIVE_RECRUIT_MAX_VEHICLES";
+                                tooltip = "$STR_ALIVE_RECRUIT_MAX_VEHICLES_COMMENT";
+                                defaultValue = """2""";
+                                typeName = "NUMBER";
+                        };
+                        class spawnPoints : Edit
+                        {
+                                property = "ALiVE_sup_recruit_spawnPoints";
+                                displayName = "$STR_ALIVE_RECRUIT_SPAWN_POINTS";
+                                tooltip = "$STR_ALIVE_RECRUIT_SPAWN_POINTS_COMMENT";
+                                defaultValue = """""";
+                        };
+                        class spawnHeight : Edit
+                        {
+                                property = "ALiVE_sup_recruit_spawnHeight";
+                                displayName = "$STR_ALIVE_RECRUIT_SPAWN_HEIGHT";
+                                tooltip = "$STR_ALIVE_RECRUIT_SPAWN_HEIGHT_COMMENT";
+                                defaultValue = """0""";
+                                typeName = "NUMBER";
+                        };
+                        class recruitCode : Edit
+                        {
+                                property = "ALiVE_sup_recruit_recruitCode";
+                                displayName = "$STR_ALIVE_RECRUIT_CODE";
+                                tooltip = "$STR_ALIVE_RECRUIT_CODE_COMMENT";
+                                control = "EditCodeMulti5";
+                                defaultValue = """""";
+                        };
+                        class recruitInterface : Combo
+                        {
+                                property = "ALiVE_sup_recruit_recruitInterface";
+                                displayName = "$STR_ALIVE_RECRUIT_INTERFACE";
+                                tooltip = "$STR_ALIVE_RECRUIT_INTERFACE_COMMENT";
+                                defaultValue = """window""";
+                                class Values
+                                {
+                                        class Window  { name = "$STR_ALIVE_RECRUIT_INTERFACE_WINDOW";  value = "window"; };
+                                        class Actions { name = "$STR_ALIVE_RECRUIT_INTERFACE_ACTIONS"; value = "actions"; };
+                                };
+                        };
                         class ModuleDescription : ModuleDescription {};
                 };
                 class ModuleDescription

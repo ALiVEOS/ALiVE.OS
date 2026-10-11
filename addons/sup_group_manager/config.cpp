@@ -5,3 +5,4 @@
 #include "CfgFunctions.hpp"
 #include "CfgHints.hpp"
 #include "\x\alive\addons\sup_group_manager\data\ui\main.hpp"
+#include "\x\alive\addons\sup_group_manager\data\ui\recruit.hpp"

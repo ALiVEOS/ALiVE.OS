@@ -41,6 +41,11 @@ class CfgFunctions {
                 file = "\x\alive\addons\sup_group_manager\fnc_GMSetTerrainMode.sqf";
                 ALIVE_RECOMPILE;
             };
+            class recruitWindow {
+                description = "The Recruitment module's window (#1075)";
+                file = "\x\alive\addons\sup_group_manager\fnc_recruitWindow.sqf";
+                ALIVE_RECOMPILE;
+            };
             class recruitInit {
                 description = "Recruitment module: recruit AI into the player's group (#977)";
                 file = "\x\alive\addons\sup_group_manager\fnc_recruitInit.sqf";

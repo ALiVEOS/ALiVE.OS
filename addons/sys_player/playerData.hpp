@@ -126,7 +126,7 @@ GVAR(UNIT_DATA) = [
             // Only this player's own: everyone in a group saw the same men, and each would have
             // brought them back.
             ((units group _p) select { alive _x && {!isPlayer _x} && {_x getVariable ["ALiVE_recruited", false]} && {(_x getVariable ["ALiVE_recruitedBy", ""]) == getPlayerUID _p} }) apply {
-                [typeOf _x, getUnitLoadout _x, skill _x, damage _x, (getPosATL _x) vectorDiff (getPosATL _p)]
+                [typeOf _x, getUnitLoadout _x, skill _x, damage _x, (getPosATL _x) vectorDiff (getPosATL _p), _x getVariable ["ALiVE_recruitCode", ""]]
             }
         }, {
             if !((_this select 1) isEqualType []) exitWith {};
@@ -137,7 +137,7 @@ GVAR(UNIT_DATA) = [
                 private _uid = getPlayerUID _p;
                 if (((units group _p) findIf { (_x getVariable ["ALiVE_recruitedBy", ""]) == _uid }) > -1) exitWith {};
                 {
-                    _x params [["_class", "", [""]], ["_loadout", [], [[]]], ["_skill", -1, [0]], ["_damage", 0, [0]], ["_offset", [0,0,0], [[]]]];
+                    _x params [["_class", "", [""]], ["_loadout", [], [[]]], ["_skill", -1, [0]], ["_damage", 0, [0]], ["_offset", [0,0,0], [[]]], ["_code", "", [""]]];
                     if (isClass (configFile >> "CfgVehicles" >> _class)) then {
                         private _u = (group _p) createUnit [_class, (getPosATL _p) vectorAdd _offset, [], 3, "NONE"];
                         [_u] joinSilent (group _p);
@@ -146,6 +146,8 @@ GVAR(UNIT_DATA) = [
                         _u setDamage _damage;
                         _u setVariable ["ALiVE_recruited", true, true];
                         _u setVariable ["ALiVE_recruitedBy", _uid, true];
+                        // the Recruitment module's code, run on him again as it was when he joined
+                        if (_code != "") then { _u setVariable ["ALiVE_recruitCode", _code, true]; _u call compile _code };
                     };
                 } forEach _list;
             };

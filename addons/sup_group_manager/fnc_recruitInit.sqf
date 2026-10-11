@@ -5,12 +5,19 @@ SCRIPT(recruitInit);
 Function: ALIVE_fnc_recruitInit
 
 Description:
-Recruitment module (#977). Every object synced to the module gets a "Recruit"
-action per unit class; the recruit is made beside the object and joins the
-player's own group, until the group reaches the module's size cap.
+Recruitment module (#977, #1075). Every object synced to the module offers recruits: by
+default one "Recruitment" action opens a window listing the soldiers and vehicles on
+offer; with Interface set to Actions each one gets its own "Recruit" action instead.
 
-Recruits belong to the player's group only: they are not ALiVE profiles, so
-they don't come out of or go back into any force pool, and they aren't saved.
+A soldier joins the player's own group, until the group reaches the module's size cap.
+A vehicle comes empty, up to the module's vehicle allowance per player. Both appear at
+one of the module's spawn points (marker names or object names; an object gives its own
+height, so a ship's deck or a rooftop works, and a marker can be given a height), or
+beside the recruiting object when there are none. The module's code runs on each one,
+with _this the new soldier or vehicle.
+
+Recruits belong to the player's group only: they are not ALiVE profiles, so they don't
+come out of or go back into any force pool. A player save keeps a player's own recruits.
 
 Parameters:
 _this select 0: OBJECT - the module
@@ -70,46 +77,148 @@ ALiVE_fnc_recruitClasses = {
     _classes
 };
 
+// Where a recruit appears: a random spawn point, or beside the recruiting object.
+// Returns [position ASL, direction, exact] - exact when the point gives its own height.
+ALiVE_fnc_recruitSpawnPos = {
+    params ["_object", "_settings", "_isVehicle", "_class"];
+    _settings params ["", "", "", "", "", "", "_points", "_height"];
+    private _candidates = [];
+    {
+        // "name" or "name:height": a height given with the point beats the module's Marker Height
+        (_x splitString ":") params [["_name", ""], ["_h", ""]];
+        private _ptHeight = if (_h != "") then { parseNumber _h } else { _height };
+        private _obj = missionNamespace getVariable [_name, objNull];
+        if (_obj isEqualType objNull && {!isNull _obj}) then {
+            _candidates pushBack [getPosASL _obj, getDir _obj, true];
+        } else {
+            if (getMarkerColor _name != "") then {
+                private _p = getMarkerPos _name;
+                if (_ptHeight > 0) then {
+                    _candidates pushBack [[_p select 0, _p select 1, ((getTerrainHeightASL _p) max 0) + _ptHeight], markerDir _name, true];
+                } else {
+                    _candidates pushBack [AGLToASL [_p select 0, _p select 1, 0], markerDir _name, false];
+                };
+            };
+        };
+    } forEach _points;
+    // An exact point (a deck, a roof) can't be shifted to find room, so one with a vehicle
+    // already standing on it is passed over: a second would land on the first.
+    if (_isVehicle) then {
+        _candidates = _candidates select { !(_x select 2) || {((ASLToAGL (_x select 0)) nearEntities [["LandVehicle", "Air", "Ship"], 8]) isEqualTo []} };
+        if (_candidates isEqualTo [] && {_points isNotEqualTo []}) then { _candidates = [[[], 0, true]] };
+    };
+    if (_candidates isNotEqualTo []) exitWith {
+        (selectRandom _candidates) params ["_pos", "_dir", "_exact"];
+        if (_pos isEqualTo []) exitWith { [[], 0, true] };
+        if (_exact) exitWith { [_pos, _dir, true] };
+        private _free = (ASLToAGL _pos) findEmptyPosition [0, [8, 40] select _isVehicle, [_class, "B_Soldier_F"] select !_isVehicle];
+        if (_free isEqualTo []) then { _free = ASLToAGL _pos };
+        [AGLToASL _free, _dir, false]
+    };
+    if (_isVehicle) exitWith {
+        private _free = (getPosATL _object) findEmptyPosition [8, 50, _class];
+        if (_free isEqualTo []) then { _free = (getPosATL _object) getPos [12, random 360] };
+        [AGLToASL _free, random 360, false]
+    };
+    [AGLToASL ((getPosATL _object) getPos [3 + random 2, random 360]), random 360, false]
+};
+
 ALiVE_fnc_recruitUnit = {
-    params ["_object", "_class", "_max", ["_skill", 0]];
+    params ["_object", "_class", "_settings"];
+    _settings params ["", "", "", "_max", "_skill", "", "", "", "_code"];
     private _group = group player;
     private _size = { alive _x } count units _group;
-    if (_size >= _max) exitWith { hint format ["Your group is full: %1 is the most it can have.", _max] };
-    if (time < (player getVariable ["ALiVE_recruitNext", 0])) exitWith { hint "Give the last recruit a moment." };
+    if (_size >= _max) exitWith { hint format ["Your group is full: %1 is the most it can have.", _max]; false };
+    if (time < (player getVariable ["ALiVE_recruitNext", 0])) exitWith { hint "Give the last recruit a moment."; false };
+    ([_object, _settings, false, _class] call ALiVE_fnc_recruitSpawnPos) params ["_pos", "_dir", "_exact"];
+    private _unit = _group createUnit [_class, ASLToAGL _pos, [], [2, 0] select _exact, "NONE"];
+    if (isNull _unit) exitWith { hint "Nobody is available to join you."; false };
     player setVariable ["ALiVE_recruitNext", time + 3];
-    private _pos = (getPosATL _object) getPos [3 + random 2, random 360];
-    private _unit = _group createUnit [_class, _pos, [], 2, "NONE"];
-    if (isNull _unit) exitWith { hint "Nobody is available to join you." };
+    if (_exact) then { _unit setPosASL _pos };
+    _unit setDir _dir;
     [_unit] joinSilent _group;
     _unit setVariable ["ALiVE_recruited", true, true];
     // whose recruit he is, so a player save keeps only that player's own
     _unit setVariable ["ALiVE_recruitedBy", getPlayerUID player, true];
     if (_skill > 0) then { _unit setSkill _skill };
+    // the module's code, kept with him so a player save that brings him back runs it again
+    _unit setVariable ["ALiVE_recruitCode", _settings param [9, ""], true];
+    _unit call _code;
     hint format ["%1 has joined your group (%2 of %3).", getText (configFile >> "CfgVehicles" >> _class >> "displayName"), _size + 1, _max];
+    true
+};
+
+// This player's recruited vehicles that still run
+ALiVE_fnc_recruitVehiclesOwned = {
+    vehicles select { alive _x && {(_x getVariable ["ALiVE_recruitedVehicleBy", ""]) == getPlayerUID player} }
+};
+
+ALiVE_fnc_recruitVehicle = {
+    params ["_object", "_class", "_settings"];
+    _settings params ["", "", "", "", "", "_maxVeh", "", "", "_code"];
+    private _have = count (call ALiVE_fnc_recruitVehiclesOwned);
+    if (_have >= _maxVeh) exitWith { hint format ["You have %1 of %2 vehicles already. One has to be destroyed before you can take another.", _have, _maxVeh]; false };
+    if (time < (player getVariable ["ALiVE_recruitNext", 0])) exitWith { hint "Give the last one a moment."; false };
+    ([_object, _settings, true, _class] call ALiVE_fnc_recruitSpawnPos) params ["_pos", "_dir", "_exact"];
+    if (_pos isEqualTo []) exitWith { hint "The spawn point is taken. Move the vehicle that's there and try again."; false };
+    private _veh = createVehicle [_class, [0, 0, 1000 + random 500], [], 0, "CAN_COLLIDE"];
+    if (isNull _veh) exitWith { hint "That vehicle isn't available."; false };
+    player setVariable ["ALiVE_recruitNext", time + 5];
+    _veh setDir _dir;
+    _veh setPosASL _pos;
+    _veh setVelocity [0, 0, 0];
+    _veh setVariable ["ALiVE_recruitedVehicleBy", getPlayerUID player, true];
+    // a player's own, so a Zeus virtualise doesn't hand it to an AI commander
+    _veh setVariable ["ALIVE_profileIgnore", true, true];
+    _veh call _code;
+    hint format ["%1 is ready (%2 of %3 vehicles).", getText (configFile >> "CfgVehicles" >> _class >> "displayName"), _have + 1, _maxVeh];
+    true
 };
 
 [_logic] spawn {
     params ["_logic"];
     waitUntil { sleep 1; !isNull player };
-    private _max = _logic getVariable ["maxGroupSize", 8];
-    if (_max isEqualType "") then { _max = parseNumber _max };
+    private _num = { params ["_v", "_d"]; if (_v isEqualType "") then { _v = parseNumber _v }; if (_v isEqualType 0) then { _v } else { _d } };
+    private _max = [_logic getVariable ["maxGroupSize", 8], 8] call _num;
     if (_max < 1) then { _max = 8 };
-    private _skill = _logic getVariable ["recruitSkill", 0];
-    if (_skill isEqualType "") then { _skill = parseNumber _skill };
+    private _skill = [_logic getVariable ["recruitSkill", 0], 0] call _num;
+    private _maxVeh = [_logic getVariable ["maxVehicles", 2], 2] call _num;
+    private _height = [_logic getVariable ["spawnHeight", 0], 0] call _num;
     private _classes = [_logic] call ALiVE_fnc_recruitClasses;
+    private _rawV = _logic getVariable ["vehicleClasses", ""];
+    private _vehicles = if (_rawV isEqualType "") then { (_rawV splitString ", ") select { _x != "" && {isClass (configFile >> "CfgVehicles" >> _x)} && {getNumber (configFile >> "CfgVehicles" >> _x >> "scope") >= 1} } } else { [] };
+    if (_maxVeh < 1) then { _vehicles = [] };
+    private _rawP = _logic getVariable ["spawnPoints", ""];
+    private _points = if (_rawP isEqualType "") then { (_rawP splitString ", ") select { _x != "" } } else { [] };
+    private _rawC = _logic getVariable ["recruitCode", ""];
+    private _code = if (_rawC isEqualType "" && {_rawC != ""}) then { compile _rawC } else { {} };
+    private _window = (_logic getVariable ["recruitInterface", "window"]) != "actions";
+    private _settings = [_logic, _classes, _vehicles, _max, _skill, _maxVeh, _points, _height, _code, ["", _rawC] select (_rawC isEqualType "" && {_rawC != ""})];
     private _objects = (synchronizedObjects _logic) select { !(_x isKindOf "Logic") };
-    if (_objects isEqualTo [] || {_classes isEqualTo []}) exitWith {
-        ["ALiVE Recruitment: nothing to do (%1 synced objects, %2 unit classes)", count _objects, count _classes] call ALiVE_fnc_dump;
+    if (_objects isEqualTo [] || {(_classes + _vehicles) isEqualTo []}) exitWith {
+        ["ALiVE Recruitment: nothing to do (%1 synced objects, %2 unit classes, %3 vehicle classes)", count _objects, count _classes, count _vehicles] call ALiVE_fnc_dump;
     };
     {
         private _object = _x;
-        {
-            _object addAction [
-                format ["Recruit %1", getText (configFile >> "CfgVehicles" >> _x >> "displayName")],
-                { (_this select 3) call ALiVE_fnc_recruitUnit },
-                [_object, _x, _max, _skill], 1.5, false, true, "", "alive _target && {vehicle _this isEqualTo _this}", 5
-            ];
-        } forEach _classes;
+        if (_window) then {
+            _object addAction ["Recruitment", { ["open", _this select 3] call ALiVE_fnc_recruitWindow },
+                [_object, _settings], 1.5, true, true, "", "alive _target && {vehicle _this isEqualTo _this}", 5];
+        } else {
+            {
+                _object addAction [
+                    format ["Recruit %1", getText (configFile >> "CfgVehicles" >> _x >> "displayName")],
+                    { (_this select 3) call ALiVE_fnc_recruitUnit },
+                    [_object, _x, _settings], 1.5, false, true, "", "alive _target && {vehicle _this isEqualTo _this}", 5
+                ];
+            } forEach _classes;
+            {
+                _object addAction [
+                    format ["Take %1", getText (configFile >> "CfgVehicles" >> _x >> "displayName")],
+                    { (_this select 3) call ALiVE_fnc_recruitVehicle },
+                    [_object, _x, _settings], 1.4, false, true, "", "alive _target && {vehicle _this isEqualTo _this}", 5
+                ];
+            } forEach _vehicles;
+        };
     } forEach _objects;
-    _logic setVariable ["ALiVE_recruitReady", [count _objects, _classes], false];
+    _logic setVariable ["ALiVE_recruitReady", [count _objects, _classes, _vehicles], false];
 };
