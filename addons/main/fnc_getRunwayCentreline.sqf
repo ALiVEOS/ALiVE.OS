@@ -187,6 +187,50 @@ private _known = ALiVE_runwayCentrelineCache findIf { (_x select 0) isEqualTo _c
 if (_known > -1) exitWith { +((ALiVE_runwayCentrelineCache select _known) select 1) };
 
 private _line = call _fnc_derive;
+
+// Last: the terrain's own airport config. Every dirt strip on Altis has an ILS touchdown point and
+// direction in its map config, but its soil surface has no runway objects for the survey to find, so it
+// had no line at all. The strip runs from the touchdown point away from the approach, as far as the
+// config's taxi-off points reach along it (300 m at least).
+if (_line isEqualTo []) then {
+    private _w = configFile >> "CfgWorlds" >> worldName;
+    private _fields = [_w];
+    private _sec = _w >> "SecondaryAirports";
+    for "_i" from 0 to ((count _sec) - 1) do {
+        if (isClass (_sec select _i)) then { _fields pushBack (_sec select _i) };
+    };
+    private _best = [];
+    private _bestD = _radius;
+    {
+        private _ils = getArray (_x >> "ilsPosition");
+        private _dir = getArray (_x >> "ilsDirection");
+        if (count _ils >= 2 && {count _dir >= 3}) then {
+            private _t = [_ils select 0, _ils select 1, 0];
+            private _d = _t distance2D _position;
+            // ilsDirection is [x, glide slope, y], pointing back up the approach
+            private _len = sqrt (((_dir select 0) ^ 2) + ((_dir select 2) ^ 2));
+            if (_d <= _bestD && {_len > 0}) then {
+                private _u = [-(_dir select 0) / _len, -(_dir select 2) / _len];
+                private _reach = 0;
+                private _back = 0;
+                private _taxi = getArray (_x >> "ilsTaxiOff");
+                for "_j" from 0 to ((count _taxi) - 2) step 2 do {
+                    private _s = (((_taxi select _j) - (_t select 0)) * (_u select 0)) + (((_taxi select (_j + 1)) - (_t select 1)) * (_u select 1));
+                    _reach = _reach max _s;
+                    _back = _back min _s;
+                };
+                _reach = _reach max 300;
+                _bestD = _d;
+                _best = [
+                    [(_t select 0) + (_u select 0) * _back, (_t select 1) + (_u select 1) * _back, 0],
+                    [(_t select 0) + (_u select 0) * _reach, (_t select 1) + (_u select 1) * _reach, 0],
+                    12
+                ];
+            };
+        };
+    } forEach _fields;
+    _line = _best;
+};
 if (isNil "_line" || {!(_line isEqualType [])}) then { _line = [] };
 ALiVE_runwayCentrelineCache pushBack [_cell, +_line];
 _line
