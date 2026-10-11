@@ -71,7 +71,7 @@ ALiVE_fnc_recruitClasses = {
 };
 
 ALiVE_fnc_recruitUnit = {
-    params ["_object", "_class", "_max"];
+    params ["_object", "_class", "_max", ["_skill", 0]];
     private _group = group player;
     private _size = { alive _x } count units _group;
     if (_size >= _max) exitWith { hint format ["Your group is full: %1 is the most it can have.", _max] };
@@ -82,6 +82,7 @@ ALiVE_fnc_recruitUnit = {
     if (isNull _unit) exitWith { hint "Nobody is available to join you." };
     [_unit] joinSilent _group;
     _unit setVariable ["ALiVE_recruited", true, true];
+    if (_skill > 0) then { _unit setSkill _skill };
     hint format ["%1 has joined your group (%2 of %3).", getText (configFile >> "CfgVehicles" >> _class >> "displayName"), _size + 1, _max];
 };
 
@@ -91,6 +92,8 @@ ALiVE_fnc_recruitUnit = {
     private _max = _logic getVariable ["maxGroupSize", 8];
     if (_max isEqualType "") then { _max = parseNumber _max };
     if (_max < 1) then { _max = 8 };
+    private _skill = _logic getVariable ["recruitSkill", 0];
+    if (_skill isEqualType "") then { _skill = parseNumber _skill };
     private _classes = [_logic] call ALiVE_fnc_recruitClasses;
     private _objects = (synchronizedObjects _logic) select { !(_x isKindOf "Logic") };
     if (_objects isEqualTo [] || {_classes isEqualTo []}) exitWith {
@@ -102,7 +105,7 @@ ALiVE_fnc_recruitUnit = {
             _object addAction [
                 format ["Recruit %1", getText (configFile >> "CfgVehicles" >> _x >> "displayName")],
                 { (_this select 3) call ALiVE_fnc_recruitUnit },
-                [_object, _x, _max], 1.5, false, true, "", "alive _target && {vehicle _this isEqualTo _this}", 5
+                [_object, _x, _max, _skill], 1.5, false, true, "", "alive _target && {vehicle _this isEqualTo _this}", 5
             ];
         } forEach _classes;
     } forEach _objects;

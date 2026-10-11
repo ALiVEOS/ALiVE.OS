@@ -14,6 +14,12 @@
 <Key ID="STR_ALIVE_RECRUIT_CLASSES_COMMENT">
     <English>Class names of the soldiers players can recruit, separated by commas. Leave empty for up to eight common infantry roles of each player's own faction.</English>
 </Key>
+<Key ID="STR_ALIVE_RECRUIT_SKILL">
+    <English>Recruit Skill</English>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_SKILL_COMMENT">
+    <English>How good recruits are. Game default leaves them at the skill the game gives any new soldier (set by the difficulty settings); the other choices set every recruit's skill to that level.</English>
+</Key>
 <Key ID="STR_ALIVE_RECRUIT_MAX">
     <English>Max Group Size</English>
 </Key>

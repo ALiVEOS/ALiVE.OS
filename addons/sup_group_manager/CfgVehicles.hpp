@@ -48,6 +48,21 @@ class CfgVehicles {
                                 defaultValue = """8""";
                                 typeName = "NUMBER";
                         };
+                        class recruitSkill : Combo
+                        {
+                                property = "ALiVE_sup_recruit_recruitSkill";
+                                displayName = "$STR_ALIVE_RECRUIT_SKILL";
+                                tooltip = "$STR_ALIVE_RECRUIT_SKILL_COMMENT";
+                                defaultValue = """0""";
+                                class Values
+                                {
+                                        class Default { name = "Game default"; value = "0"; };
+                                        class Low     { name = "Low (0.3)";    value = "0.3"; };
+                                        class Medium  { name = "Medium (0.5)"; value = "0.5"; };
+                                        class High    { name = "High (0.7)";   value = "0.7"; };
+                                        class Elite   { name = "Elite (1.0)";  value = "1"; };
+                                };
+                        };
                         class ModuleDescription : ModuleDescription {};
                 };
                 class ModuleDescription
