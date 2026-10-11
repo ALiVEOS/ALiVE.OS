@@ -669,7 +669,7 @@ switch (_operation) do {
                     // What each field still has in the ground goes on its objective, which is what a save keeps.
                     {
                         _x params ["_oid", "_c", "_mines", ["_classes", []]];
-                        private _o = [[],"getobjectivebyid",_oid] call ALiVE_fnc_OPCOM;
+                        private _o = [_handler,"getobjectivebyid",_oid] call ALiVE_fnc_OPCOM;
                         if (!isNil "_o" && {_o isEqualType []}) then {
                             private _left = [];
                             { if (!isNull _x && {alive _x}) then { _left pushBack [_classes param [_forEachIndex, "APERSMine"], getPosATL _x] } } forEach _mines;
@@ -763,18 +763,23 @@ switch (_operation) do {
                 while { !isNil "_handler" && {!([_handler,"stopped",false] call ALiVE_fnc_HashGet)} } do {
                     private _max = switch (toLower ([_handler,"preparedDefences","none"] call ALiVE_fnc_HashGet)) do { case "few": {3}; case "many": {8}; default {0} };
                     private _built = [_handler,"defences",[]] call ALiVE_fnc_HashGet;
+                    // How long each objective has been held, kept every pass so a lost and retaken
+                    // objective starts again, however many forts are already up.
+                    {
+                        private _oid = [_x,"objectiveID",""] call ALiVE_fnc_HashGet;
+                        if (([_x,"opcom_state",""] call ALiVE_fnc_HashGet) in ["defend","defending","reserve","reserving","idle"]) then {
+                            if !(_oid in _heldSince) then { _heldSince set [_oid, time] };
+                        } else {
+                            _heldSince deleteAt _oid;
+                        };
+                    } forEach ([_handler,"objectives",[]] call ALiVE_fnc_HashGet);
                     if (_max > 0 && {count _built < _max}) then {
                         private _sideText = [_handler,"side","EAST"] call ALiVE_fnc_HashGet;
                         private _side = [_sideText] call ALiVE_fnc_sideTextToObject;
                         private _candidates = [];
                         {
                             private _oid = [_x,"objectiveID",""] call ALiVE_fnc_HashGet;
-                            if (([_x,"opcom_state",""] call ALiVE_fnc_HashGet) in ["defend","defending","reserve","reserving","idle"]) then {
-                                if !(_oid in _heldSince) then { _heldSince set [_oid, time] };
-                                if (time - (_heldSince get _oid) >= (missionNamespace getVariable ["ALiVE_OPCOM_defenceHold", 600]) && {!(_oid in _built)} && {!(_oid in _skip)}) then { _candidates pushBack _x };
-                            } else {
-                                _heldSince deleteAt _oid;
-                            };
+                            if (_oid in _heldSince && {time - (_heldSince get _oid) >= (missionNamespace getVariable ["ALiVE_OPCOM_defenceHold", 600])} && {!(_oid in _built)} && {!(_oid in _skip)}) then { _candidates pushBack _x };
                         } forEach ([_handler,"objectives",[]] call ALiVE_fnc_HashGet);
                         private _foes = ((missionNamespace getVariable ["OPCOM_instances", []]) apply { [_x,"side",""] call ALiVE_fnc_HashGet }) select { _x != "" && {(_side getFriend ([_x] call ALiVE_fnc_sideTextToObject)) < 0.6} };
                         {
@@ -825,7 +830,7 @@ switch (_operation) do {
                             {
                                 private _objective = _x;
                                 private _oid = [_objective,"objectiveID",""] call ALiVE_fnc_HashGet;
-                                if (_oid in _built && {!(_oid in _medium)} && {_oid in _heldSince}
+                                if (_oid in _built && {!(_oid in _medium)} && {!((_oid + "_medium") in _skip)} && {_oid in _heldSince}
                                     && {time - (_heldSince get _oid) >= 4 * (missionNamespace getVariable ["ALiVE_OPCOM_defenceHold", 600])}
                                     && {([_objective,"opcom_state",""] call ALiVE_fnc_HashGet) in ["defend","defending","reserve","reserving","idle"]}) then {
                                     private _c = [_objective,"center",[0,0,0]] call ALiVE_fnc_HashGet;
@@ -840,17 +845,18 @@ switch (_operation) do {
                                         if (_own isEqualTo []) then { _own = _comps select { private _n = configName _x; ["_BLU_","_OPF_","_IND_"] findIf { _n find _x >= 0 } < 0 } };
                                     };
                                     if (_own isNotEqualTo []) then { _comps = _own };
-                                    if (_comps isEqualTo []) then { _medium pushBack _oid; continue };
+                                    if (_comps isEqualTo []) then { _skip set [_oid + "_medium", true]; continue };
                                     // The medium forts are wide (median radius about 30 m) and ground that clear is
                                     // rarely found by a town, so the narrower ones are used and 18 m of clear ground
                                     // around the centre is enough, searched out to 150 m.
-                                    private _narrow = _comps select { ([_x] call ALiVE_fnc_getCompositionRadius) <= 35 };
+                                    private _narrow = _comps select { ([_x] call ALiVE_fnc_getCompositionRadius) <= 28 };
                                     if (_narrow isNotEqualTo []) then { _comps = _narrow };
                                     private _comp = selectRandom _comps;
-                                    private _r = (([_comp] call ALiVE_fnc_getCompositionRadius) max 10) min 18;
+                                    private _rFull = ([_comp] call ALiVE_fnc_getCompositionRadius) max 10;
+                                    private _r = _rFull min 18;
                                     private _dir = random 360;
                                     private _pos = [_c getPos [(_size * 0.6) max 30, _dir], 0, 150, _r, 0, 0.25, 0, [], [[0,0,0],[0,0,0]]] call BIS_fnc_findSafePos;
-                                    if ((_pos distance2D _c) > (_size + 200) || {(_pos nearRoads (_r + 4)) isNotEqualTo []} || {([_pos, 300] call ALiVE_fnc_anyPlayersInRange) > 0} || {!isNil "ALiVE_fnc_isAirside" && {[_pos, _r] call ALiVE_fnc_isAirside}}) then { continue };
+                                    if ((_pos distance2D _c) > (_size + 200) || {(_pos nearRoads (_rFull + 4)) isNotEqualTo []} || {([_pos, 300] call ALiVE_fnc_anyPlayersInRange) > 0} || {!isNil "ALiVE_fnc_isAirside" && {[_pos, _rFull] call ALiVE_fnc_isAirside}}) then { continue };
                                     [_comp, _pos, _c getDir _pos, _faction] call ALiVE_fnc_spawnComposition;
                                     _medium pushBack _oid;
                                     ["OPCOM %1: prepared defences extended (%2) at %3", _sideText, configName _comp, mapGridPosition _pos] call ALiVE_fnc_dump;

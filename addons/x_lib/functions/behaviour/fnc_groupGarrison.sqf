@@ -477,13 +477,14 @@ private _buildings = nearestObjects [_position,ALIVE_garrisonPositions select 1,
 // Props of compositions ALiVE spawned that none of the recognised kinds cover, from a custom or modded
 // composition, are seated on a ring around them as tents and nets are, rather than leaving the guard to
 // patrol the footprint. Only a composition none of whose props is recognised, so the standard ones seat
-// as they always have, and only sizeable props: a crate or a barrel is no post. Each spawned composition
+// as they always have, and only sizeable props: a crate or a barrel is no post, nor is a fence or a run
+// of wire (anything under 1.5 m across). Each spawned composition
 // lists its objects on the hidden marker it leaves at its centre.
 {
     private _compObjects = (_x getVariable ["ALiVE_X_LIB_COMPOSITION_OBJECTS", []]) select { !isNull _x };
     if ((_compObjects findIf { _x in _buildings }) < 0) then {
         {
-            if ((_x distance2D _position) <= _radius && {!(_x isKindOf "AllVehicles")} && {((boundingBoxReal _x) select 2) >= 4}) then {
+            if ((_x distance2D _position) <= _radius && {!(_x isKindOf "AllVehicles")} && {((boundingBoxReal _x) select 2) >= 4} && {(boundingBoxReal _x) params ["_lo", "_hi"]; (((_hi select 0) - (_lo select 0)) min ((_hi select 1) - (_lo select 1))) >= 1.5}) then {
                 _buildings pushBack _x;
             };
         } forEach _compObjects;
