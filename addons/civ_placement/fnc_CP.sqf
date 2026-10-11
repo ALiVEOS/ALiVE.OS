@@ -786,7 +786,9 @@ switch(_operation) do {
 
                 if!(ALIVE_loadProfilesPersistent) then {
 
-                    if(count _clusters > 0) then {
+                    // Sea patrols only need marine objectives, so a TAOR over a harbour with no
+                    // settlement big enough to count still gets them.
+                    if (count _clusters > 0 || {_placeSeaPatrols > 0 && {count ([_logic, "objectivesMarine"] call MAINCLASS) > 0}}) then {
                         // start placement
                         [_logic, "placement"] call MAINCLASS;
                     }else{
@@ -1481,10 +1483,11 @@ switch(_operation) do {
             // Position and create groups
             _groupCount = count _groups;
             _clusterCount = count _clusters;
-            _groupPerCluster = floor(_groupCount / _clusterCount);
+            // With no land objectives (only sea patrols to place) no group has anywhere to go.
+            _groupPerCluster = if (_clusterCount > 0) then { floor(_groupCount / _clusterCount) } else { 0 };
             // Groups that don't divide evenly go one each to the first objectives. Left out, they
             // were never placed, and they're the end of the list: spec ops, then air.
-            private _groupsLeftOver = _groupCount - (_groupPerCluster * _clusterCount);
+            private _groupsLeftOver = if (_clusterCount > 0) then { _groupCount - (_groupPerCluster * _clusterCount) } else { 0 };
             _totalCount = 0;
 
             // Reserve-pool placement model. Mirrors mil_placement semantics:
