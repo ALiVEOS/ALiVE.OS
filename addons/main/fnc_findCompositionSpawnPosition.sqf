@@ -665,8 +665,11 @@ private _candidateClear = {
     private _outerRadius = (_envHalf * 1.5) max 25;
     private _neighbourhoodMaxDelta = (_outerRadius * 2) * _deltaRatio;
 
-    private _innerSamples = [_p select 2];
-    { _innerSamples pushBack ((_p getPos [_innerRadius, _x]) select 2); } forEach [0, 45, 90, 135, 180, 225, 270, 315];
+    // Heights from the terrain itself: "getPos [distance, heading]" gives height 0 at every
+    // point, so sampling its third element compared zeros and these two checks never
+    // rejected a slope (a 30 m camp was found on 5.8 m of fall).
+    private _innerSamples = [getTerrainHeightASL _p];
+    { _innerSamples pushBack (getTerrainHeightASL (_p getPos [_innerRadius, _x])); } forEach [0, 45, 90, 135, 180, 225, 270, 315];
     private _innerHi = selectMax _innerSamples;
     private _innerLo = selectMin _innerSamples;
     if (_innerHi - _innerLo > _maxDelta) exitWith {
@@ -675,8 +678,8 @@ private _candidateClear = {
         false
     };
 
-    private _outerSamples = [_p select 2];
-    { _outerSamples pushBack ((_p getPos [_outerRadius, _x]) select 2); } forEach [0, 90, 180, 270];
+    private _outerSamples = [getTerrainHeightASL _p];
+    { _outerSamples pushBack (getTerrainHeightASL (_p getPos [_outerRadius, _x])); } forEach [0, 90, 180, 270];
     private _outerHi = selectMax _outerSamples;
     private _outerLo = selectMin _outerSamples;
     if (_outerHi - _outerLo > _neighbourhoodMaxDelta) exitWith {
