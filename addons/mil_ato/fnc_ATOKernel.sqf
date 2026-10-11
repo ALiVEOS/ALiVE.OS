@@ -2136,7 +2136,8 @@ switch(_operation) do {
 
     // Load this commander's records: its own key first, and only when that
     // holds nothing the one shared key the old module wrote, filtered to this
-    // commander's faction. The old store held every faction in one document
+    // commander's faction and those of the friendly ground commanders synced to
+    // it. The old store held every faction in one document
     // and the ledger's legacy import takes all of it, so the filtering is
     // done here or every commander would be given every faction's aircraft.
     // Answers [kept, unplaceable, unknown, legacyKept].
@@ -2163,21 +2164,56 @@ switch(_operation) do {
             if (!isNil "_legacy" && {[_legacy] call ALIVE_fnc_isHash}) then {
                 if (isNil QGVAR(legacyImported)) then { GVAR(legacyImported) = [] };
                 private _faction = [_ledger, "faction", ""] call ALIVE_fnc_hashGet;
-                if (!(_faction isEqualTo "") && {!(_faction in GVAR(legacyImported))}) then {
-                    private _mine = [_legacy, _faction, []] call ALIVE_fnc_hashGet;
-                    if ([_mine] call ALIVE_fnc_isHash) then {
-                        private _sub = [] call ALIVE_fnc_hashCreate;
-                        [_sub, _faction, _mine] call ALIVE_fnc_hashSet;
-                        private _r = [_ledger, "importLegacy", _sub] call ALIVE_fnc_ATOLedger;
-                        if (_r isEqualType [] && {count _r > 0}) then { _legacyKept = _r select 0 };
-                        // Remembered for the session, so a second instance
-                        // of the same faction does not take them again. The
-                        // shared document is never deleted here: it holds every
-                        // faction's aircraft and each commander takes only its
-                        // own. On the local backend it was moved to this map's
-                        // name once, at mission start, by ALiVE_fnc_storeMigrate.
-                        GVAR(legacyImported) pushBack _faction;
+
+                // A commander covering more than its own faction takes those
+                // too. The merge of the synced ground commanders happens much
+                // later, once the base is up, so their factions are read here
+                // straight from them, after a shorter wait than the base makes. Only
+                // this rare path waits; a normal load never gets here.
+                private _wanted = [_faction];
+                private _synced = (synchronizedObjects _logic) select { !isNull _x && {(typeOf _x) == "ALiVE_mil_OPCOM"} };
+                if (count _synced > 0) then {
+                    if (canSuspend) then {
+                        private _until = diag_tickTime + 300;
+                        waitUntil { sleep 0.5; ((_synced findIf { !isNull _x && {!(_x getVariable ["startupComplete", false])} }) == -1) || {diag_tickTime > _until} };
                     };
+                    private _side = [[_logic, "side"] call MAINCLASS] call ALIVE_fnc_sideTextToObject;
+                    {
+                        private _h = if (isNull _x) then { [] } else { _x getVariable ["handler", []] };
+                        if ([_h] call ALIVE_fnc_isHash) then {
+                            private _mSide = [_h, "side", "EAST"] call ALIVE_fnc_hashGet;
+                            if (_mSide isEqualType "" && {[[_mSide] call ALIVE_fnc_sideTextToObject, _side] call BIS_fnc_sideIsFriendly}) then {
+                                private _mf = [_h, "factions", []] call ALIVE_fnc_hashGet;
+                                if (_mf isEqualType []) then {
+                                    { if (_x isEqualType "") then { _wanted pushBackUnique _x } } forEach _mf;
+                                };
+                            };
+                        };
+                    } forEach _synced;
+                };
+
+                private _sub = [] call ALIVE_fnc_hashCreate;
+                private _took = [];
+                {
+                    if (!(_x isEqualTo "") && {!(_x in GVAR(legacyImported))}) then {
+                        private _mine = [_legacy, _x, []] call ALIVE_fnc_hashGet;
+                        if ([_mine] call ALIVE_fnc_isHash) then {
+                            [_sub, _x, _mine] call ALIVE_fnc_hashSet;
+                            _took pushBack _x;
+                        };
+                    };
+                } forEach _wanted;
+                if (count _took > 0) then {
+                    private _r = [_ledger, "importLegacy", _sub] call ALIVE_fnc_ATOLedger;
+                    if (_r isEqualType [] && {count _r > 0}) then { _legacyKept = _r select 0 };
+                    // Remembered for the session, so a second instance
+                    // of the same faction does not take them again. The
+                    // shared document is never deleted here: it holds every
+                    // faction's aircraft and each commander takes only its
+                    // own. On the local backend it was moved to this map's
+                    // name once, at mission start, by ALiVE_fnc_storeMigrate.
+                    GVAR(legacyImported) append _took;
+                    ["ALIVE_fnc_ATOKernel - old shared store: took the aircraft of %1", _took] call ALiVE_fnc_dump;
                 };
             };
         };
