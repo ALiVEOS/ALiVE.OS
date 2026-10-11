@@ -27,6 +27,7 @@ See Also:
 
 Author:
 Highhead
+Jman
 ---------------------------------------------------------------------------- */
 
 private ["_unittype","_types","_unittypes","_factions","_blacklist","_armed","_isWinterTerrain","_unittypeStr","_isWinUnit","_isSfUnit","_isGMUnit","_isBlkUnit"];
@@ -44,66 +45,33 @@ _types = [0, selectRandom _factions,"Man",_armed] call ALiVE_fnc_findVehicleType
 _unittypes = [];
 _isWinterTerrain = ["winter", worldName] call BIS_fnc_inString;
 
-if(count _types > 0) then {
+// The classes that can be picked, filtered once. This used to draw at random until a class
+// passed, which never ended for a faction where none can (one with only crew, pilots and
+// officers, say: measured 11 Oct, an Assassination task stalled there for good). It also
+// added every reject to the caller's own blacklist, which is often the shared CQB one.
+private _fnc_unwanted = {
+    params ["_type"];
+    private _s = toLower ([_type] call ALiVE_fnc_toString);
+    private _isGM = (_s find "gm_") >= 0;
+    private _isWin = (_s find "_win") >= 0;
+    (_type in _blacklist)
+    || {_isGM && {_isWinterTerrain != _isWin}}
+    || {_isGM && {(_s find "_sf_") >= 0 || {(_s find "_blk") >= 0} || {(_s find "_90_") >= 0}}}
+    || {(["crew", "pilot", "officer", "police"] findIf { (_s find _x) >= 0 }) >= 0}
+};
+private _usable = _types select { !([_x] call _fnc_unwanted) };
+
+if (_usable isNotEqualTo []) then {
     for "_i" from 1 to _count do {
-        while {
-        	_unittype = selectRandom _types; 
-        	
-        	_unittypeStr = [_unittype] call ALiVE_fnc_toString;
-        	_isGMUnit = ["gm_", _unittypeStr] call BIS_fnc_inString;
-        	_isWinUnit = ["_win", _unittypeStr] call BIS_fnc_inString;
-        	_isSfUnit = ["_sf_", _unittypeStr] call BIS_fnc_inString;
-        	_isBlkUnit = ["_blk", _unittypeStr] call BIS_fnc_inString;
-        	_isCrewUnit = ["crew", _unittypeStr] call BIS_fnc_inString;
-        	_isPilotUnit = ["pilot", _unittypeStr] call BIS_fnc_inString;
-        	_isOfficerUnit = ["officer", _unittypeStr] call BIS_fnc_inString;
-        	_isPoliceUnit = ["police", _unittypeStr] call BIS_fnc_inString;
-        	_isFlkUnit = ["_90_", _unittypeStr] call BIS_fnc_inString;
-        	
-        	// dynamically add to blacklist if it's a wintermap & it's a GM unit and this is not a winter unit
-        	if (_isWinterTerrain && _isGMUnit && !_isWinUnit) then {
-        		_blacklist pushback _unittype;
-        	};
-        	// dynamically add to blacklist if it's not a wintermap & it's a GM unit and this is a winter unit
-        	if (!_isWinterTerrain && _isGMUnit && _isWinUnit) then {
-        		_blacklist pushback _unittype;
-        	};
-					// dynamically add to blacklist if it's a GM unit and this is a SF unit
-        	if (_isGMUnit && _isSfUnit) then {
-        		_blacklist pushback _unittype;
-        	};
-					// dynamically add to blacklist if it's a GM unit and this is a Blk unit
-        	if (_isGMUnit && _isBlkUnit) then {
-        		_blacklist pushback _unittype;
-        	};
-					// dynamically add to blacklist if it's a GM unit and this is an FLK unit
-        	if (_isGMUnit && _isFlkUnit) then {
-        		_blacklist pushback _unittype;
-        	};
-					// dynamically add to blacklist if it's a crew unit
-        	if (_isCrewUnit) then {
-        		_blacklist pushback _unittype;
-        	};
-					// dynamically add to blacklist if it's a pilot unit
-        	if (_isPilotUnit) then {
-        		_blacklist pushback _unittype;
-        	};
-					// dynamically add to blacklist if it's an officer unit
-        	if (_isOfficerUnit) then {
-        		_blacklist pushback _unittype;
-        	};
-					// dynamically add to blacklist if it's a police unit
-        	if (_isPoliceUnit) then {
-        		_blacklist pushback _unittype;
-        	};
-
-        	(_unittype in _blacklist)
-
-        } do {true}; 
-        if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
-        	["ALiVE_fnc_chooseRandomUnits - _unittype: %1", _unittype] call ALiVE_fnc_Dump;
+        _unittype = selectRandom _usable;
+        if (missionNamespace getVariable ["ALiVE_SYS_PROFILE_DEBUG_ON", false]) then {
+            ["ALiVE_fnc_chooseRandomUnits - _unittype: %1", _unittype] call ALiVE_fnc_Dump;
         };
         _unittypes pushback _unittype;
+    };
+} else {
+    if (_types isNotEqualTo []) then {
+        ["ALiVE_fnc_chooseRandomUnits: none of the %1 soldier classes of %2 can be used (all crew, pilots, officers, police or blacklisted)", count _types, _factions] call ALiVE_fnc_dump;
     };
 };
 
