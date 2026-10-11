@@ -631,14 +631,46 @@ switch (_operation) do {
         // its edge facing the nearest enemy-held objective (or the nearest enemy group). Its own
         // side and friendly sides are told where the mines are. Few allows 2 fields, Many 6; one
         // field per objective, at most one every 5 min; never within 300 m of a player. Fields stay until cleared.
+        // The mines still in the ground are kept on their objective, so a saved mission lays them again on load.
         if (_type in ["occupation","invasion"]) then {
             [_handler] spawn {
                 params ["_handler"];
                 sleep 180;
+                private _side = [[_handler,"side","EAST"] call ALiVE_fnc_HashGet] call ALiVE_fnc_sideTextToObject;
+                // Fields saved with the mission come back first.
+                private _fields = [_handler,"minefields",[]] call ALiVE_fnc_HashGet;
+                {
+                    private _oid = [_x,"objectiveID",""] call ALiVE_fnc_HashGet;
+                    private _saved = [_x,"minefield",[]] call ALiVE_fnc_HashGet;
+                    if (_saved isEqualType [] && {_saved isNotEqualTo []} && {(_fields findIf { (_x select 0) == _oid }) < 0}) then {
+                        private _mines = []; private _classes = [];
+                        {
+                            _x params [["_cls", "APERSMine", [""]], ["_pos", [], [[]]]];
+                            if (_pos isNotEqualTo []) then {
+                                private _m = createMine [_cls, _pos, [], 0];
+                                { if ((_side getFriend _x) >= 0.6) then { _x revealMine _m } } forEach [west, east, resistance];
+                                _mines pushBack _m; _classes pushBack _cls;
+                            };
+                        } forEach _saved;
+                        _fields pushBack [_oid, [_x,"center",[0,0,0]] call ALiVE_fnc_HashGet, _mines, _classes];
+                    };
+                } forEach ([_handler,"objectives",[]] call ALiVE_fnc_HashGet);
+                [_handler,"minefields",_fields] call ALiVE_fnc_HashSet;
+                if (_fields isNotEqualTo []) then { ["OPCOM %1: %2 saved minefield(s) laid again", _side, count _fields] call ALiVE_fnc_dump };
                 while { !isNil "_handler" && {!([_handler,"stopped",false] call ALiVE_fnc_HashGet)} } do {
                     private _setting = toLower ([_handler,"frontlineMinefields","none"] call ALiVE_fnc_HashGet);
                     private _max = switch (_setting) do { case "few": {2}; case "many": {6}; default {0} };
                     private _fields = [_handler,"minefields",[]] call ALiVE_fnc_HashGet;
+                    // What each field still has in the ground goes on its objective, which is what a save keeps.
+                    {
+                        _x params ["_oid", "_c", "_mines", ["_classes", []]];
+                        private _o = [[],"getobjectivebyid",_oid] call ALiVE_fnc_OPCOM;
+                        if (!isNil "_o" && {_o isEqualType []}) then {
+                            private _left = [];
+                            { if (!isNull _x && {alive _x}) then { _left pushBack [_classes param [_forEachIndex, "APERSMine"], getPosATL _x] } } forEach _mines;
+                            [_o,"minefield",_left] call ALiVE_fnc_HashSet;
+                        };
+                    } forEach _fields;
                     if (_max > 0 && {count _fields < _max}) then {
                         private _side = [[_handler,"side","EAST"] call ALiVE_fnc_HashGet] call ALiVE_fnc_sideTextToObject;
                         private _held = ([_handler,"objectives",[]] call ALiVE_fnc_HashGet) select {
@@ -679,21 +711,23 @@ switch (_operation) do {
                             _best params ["_objective", "_c", "_toward"];
                             private _size = ([_objective,"size",150] call ALiVE_fnc_HashGet) max 100;
                             private _dir = _c getDir _toward;
-                            private _mines = [];
+                            private _mines = []; private _classes = [];
                             private _tries = 0;
                             while { count _mines < 12 && {_tries < 60} } do {
                                 _tries = _tries + 1;
                                 private _p = (_c getPos [_size + 40 + random 120, _dir]) getPos [(random 160) - 80, _dir + 90];
                                 if (!surfaceIsWater _p && {((nearestBuilding _p) distance2D _p) > 8} && {([_p, 300] call ALiVE_fnc_anyPlayersInRange) == 0}) then {
                                     private _onRoad = (_p nearRoads 6) isNotEqualTo [];
-                                    private _m = createMine [["APERSMine", "ATMine"] select _onRoad, _p, [], 0];
+                                    private _cls = ["APERSMine", "ATMine"] select _onRoad;
+                                    private _m = createMine [_cls, _p, [], 0];
                                     {
                                         if ((_side getFriend _x) >= 0.6) then { _x revealMine _m };
                                     } forEach [west, east, resistance];
-                                    _mines pushBack _m;
+                                    _mines pushBack _m; _classes pushBack _cls;
                                 };
                             };
-                            _fields pushBack [[_objective,"objectiveID",""] call ALiVE_fnc_HashGet, _c, _mines];
+                            _fields pushBack [[_objective,"objectiveID",""] call ALiVE_fnc_HashGet, _c, _mines, _classes];
+                            private _saveList = []; { _saveList pushBack [_classes select _forEachIndex, getPosATL _x] } forEach _mines; [_objective,"minefield",_saveList] call ALiVE_fnc_HashSet;
                             [_handler,"minefields",_fields] call ALiVE_fnc_HashSet;
                             ["OPCOM %1: minefield of %2 mines laid in front of %3, facing %4", _side, count _mines, mapGridPosition _c, round _dir] call ALiVE_fnc_dump;
                         };
