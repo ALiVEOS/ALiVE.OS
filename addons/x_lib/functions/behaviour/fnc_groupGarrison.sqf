@@ -474,6 +474,21 @@ private _fnc_seatSupply = {
 };
 
 private _buildings = nearestObjects [_position,ALIVE_garrisonPositions select 1,_radius];
+// Props of compositions ALiVE spawned that none of the recognised kinds cover, from a custom or modded
+// composition, are seated on a ring around them as tents and nets are, rather than leaving the guard to
+// patrol the footprint. Only a composition none of whose props is recognised, so the standard ones seat
+// as they always have, and only sizeable props: a crate or a barrel is no post. Each spawned composition
+// lists its objects on the hidden marker it leaves at its centre.
+{
+    private _compObjects = (_x getVariable ["ALiVE_X_LIB_COMPOSITION_OBJECTS", []]) select { !isNull _x };
+    if ((_compObjects findIf { _x in _buildings }) < 0) then {
+        {
+            if ((_x distance2D _position) <= _radius && {!(_x isKindOf "AllVehicles")} && {((boundingBoxReal _x) select 2) >= 4}) then {
+                _buildings pushBack _x;
+            };
+        } forEach _compObjects;
+    };
+} forEach (nearestObjects [_position, ["ALIVE_DemoCharge_Remote_Ammo"], _radius + 60]);
 if (_excluding) then {
     private _kept = _buildings select { !((toLower typeOf _x) in _blacklist) };
     { _excludedSet pushBackUnique _x } forEach (_buildings - _kept);
