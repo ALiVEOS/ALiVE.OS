@@ -116,7 +116,36 @@ GVAR(UNIT_DATA) = [
         // groupmate saved before the opt-out must not switch it on again for the whole group. A save
         // made before this field existed has no value for it and the restore skips it.
         ["ordersOptOut", {(group (_this select 0)) getVariable ["ALiVE_mil_c2istar_playerOrdersOptOut", false];},
-            {if ((_this select 1) isEqualTo true) then {(group (_this select 0)) setVariable ["ALiVE_mil_c2istar_playerOrdersOptOut", true, true]};}]
+            {if ((_this select 1) isEqualTo true) then {(group (_this select 0)) setVariable ["ALiVE_mil_c2istar_playerOrdersOptOut", true, true]};}],
+        // The men the player recruited (Recruitment module): class, kit, skill, damage and where
+        // they stood from the player. They're put back round the player once the player's own
+        // position is restored, and only into a group that has no recruits already, so a second
+        // restore can't double them.
+        ["recruits", {
+            private _p = _this select 0;
+            ((units group _p) select { alive _x && {!isPlayer _x} && {_x getVariable ["ALiVE_recruited", false]} }) apply {
+                [typeOf _x, getUnitLoadout _x, skill _x, damage _x, (getPosATL _x) vectorDiff (getPosATL _p)]
+            }
+        }, {
+            if !((_this select 1) isEqualType []) exitWith {};
+            if ((_this select 1) isEqualTo []) exitWith {};
+            _this spawn {
+                params ["_p", "_list"];
+                sleep 3;
+                if (((units group _p) findIf { _x getVariable ["ALiVE_recruited", false] }) > -1) exitWith {};
+                {
+                    _x params [["_class", "", [""]], ["_loadout", [], [[]]], ["_skill", -1, [0]], ["_damage", 0, [0]], ["_offset", [0,0,0], [[]]]];
+                    if (isClass (configFile >> "CfgVehicles" >> _class)) then {
+                        private _u = (group _p) createUnit [_class, (getPosATL _p) vectorAdd _offset, [], 3, "NONE"];
+                        [_u] joinSilent (group _p);
+                        if (_loadout isNotEqualTo []) then { _u setUnitLoadout _loadout };
+                        if (_skill >= 0) then { _u setSkill _skill };
+                        _u setDamage _damage;
+                        _u setVariable ["ALiVE_recruited", true, true];
+                    };
+                } forEach _list;
+            };
+        }]
         // View distance and terrain grid aren't saved: they're each player's own settings, held
         // inside the View Distance module's limits. They were read from unit variables that
         // nothing set, so every reconnect put the player back to 1500 m and grid 25.
