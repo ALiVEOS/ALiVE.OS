@@ -1261,15 +1261,26 @@ class FSM
                          "        // this commander's other objectives, never an installation's guards (#974)." \n
                          "        if (count _section < ceil(_sizeSection/3) && {[_objective,""playerCreated"",false] call ALiVE_fnc_HashGet}) then {" \n
                          "            private _assigned = [_OPCOM_HANDLER,""profileObjectiveAssignment"",createHashMap] call ALiVE_fnc_HashGet;" \n
+                         "            private _byID = [_OPCOM_HANDLER,""objectivesByID"",createHashMap] call ALiVE_fnc_HashGet;" \n
                          "            private _pool = []; {_pool append ([_OPCOM_HANDLER,_x,[]] call ALiVE_fnc_HashGet)} foreach _types;" \n
                          "            _pool = _pool select {" \n
                          "                private _pf = [ALiVE_ProfileHandler,""getProfile"",_x] call ALiVE_fnc_ProfileHandler;" \n
+                         "                private _from = _byID get (_assigned getOrDefault [_x,""""]);" \n
                          "                !isnil ""_pf"" && {!(_x in _section)} && {_x in _assigned} &&" \n
+                         "                {isNil ""_from"" || {!([_from,""playerCreated"",false] call ALiVE_fnc_HashGet)}} &&" \n
                          "                {([_pf,""type"",""""] call ALiVE_fnc_HashGet) == ""entity""} &&" \n
                          "                {{toLower(_x select 0) == ""alive_fnc_garrison""} count ([_pf,""activeCommands"",[]] call ALiVE_fnc_HashGet) == 0}" \n
                          "            };" \n
                          "            _pool = [_pool,[_center],{_Input0 distance ([[ALiVE_ProfileHandler,""getProfile"",_x] call ALiVE_fnc_ProfileHandler,""position""] call ALiVE_fnc_HashGet)},""ASCEND""] call ALiVE_fnc_SortBy;" \n
                          "            _pool resize ((_sizeSection - (count _section)) min (count _pool));" \n
+                         "            // Never taken from another player objective, or two of them trade the same men back and" \n
+                         "            // forth; and taken off the old objective's list of men on their way, or it waits forever." \n
+                         "            if (isNil ""_OPCOM_FSM"") then {_OPCOM_FSM = [_OPCOM_HANDLER,""OPCOM_FSM""] call ALiVE_fnc_HashGet};" \n
+                         "            {" \n
+                         "                private _pv = format [""_pending_%1"", _assigned getOrDefault [_x,""""]];" \n
+                         "                private _pl = _OPCOM_FSM getFSMvariable _pv;" \n
+                         "                if (!isNil ""_pl"" && {_pl isEqualType []}) then {_OPCOM_FSM setFSMvariable [_pv, _pl - [_x]]};" \n
+                         "            } foreach _pool;" \n
                          "            _section = _section + _pool;" \n
                          "        };" \n
                          "" \n
