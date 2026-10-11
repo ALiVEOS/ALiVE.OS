@@ -231,6 +231,20 @@ class CfgVehicles {
                                     class often { name = "Often"; value = 10; };
                                 };
                         };
+                        class hvt : Combo
+                        {
+                                property = "ALiVE_mil_opcom_hvt";
+                                displayName = "$STR_ALIVE_OPCOM_HVT";
+                                tooltip = "$STR_ALIVE_OPCOM_HVT_COMMENT";
+                                defaultValue = """0""";
+                                class Values
+                                {
+                                    class none { name = "$STR_ALIVE_OPCOM_HVT_NONE"; value = 0; default = 1; };
+                                    class short { name = "$STR_ALIVE_OPCOM_HVT_10"; value = 600; };
+                                    class medium { name = "$STR_ALIVE_OPCOM_HVT_20"; value = 1200; };
+                                    class long { name = "$STR_ALIVE_OPCOM_HVT_30"; value = 1800; };
+                                };
+                        };
                         class asym_friendlyDisableInstallations : Combo
                         {
                                 property = "ALiVE_mil_opcom_asym_friendlyDisableInstallations";

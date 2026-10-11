@@ -483,7 +483,8 @@ class FSM
                          "                private _selectionAllowed = true;" \n
                          "                if (_selectedState in [""attack"",""unassigned""]) then {" \n
                          "                    private _module = [_OPCOM_HANDLER,""module""] call ALiVE_fnc_HashGet;" \n
-                         "                    _selectionAllowed = {((typeof _x) == ""EmptyDetector"") && {!(triggerActivated _x)}} count (synchronizedObjects _module) == 0;" \n
+                         "                    _selectionAllowed = {((typeof _x) == ""EmptyDetector"") && {!(triggerActivated _x)}} count (synchronizedObjects _module) == 0" \n
+                         "                        && {time >= (_module getVariable [""ALiVE_HVT_holdUntil"", -1])};" \n
                          "                };" \n
                          "" \n
                          "                if (_selectionAllowed) then {" \n

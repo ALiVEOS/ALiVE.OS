@@ -171,6 +171,79 @@
     <Russian>Шанс, что любой солдат стороны этого командира, кем бы он ни был убит, уронит предмет разведданных. При прочтении на карте отмечаются объекты и установки этой стороны в радиусе 1,5 км. Работает при любом типе управления. На сторону используется одно значение: если у стороны несколько командиров, его задаёт для всех последний запущенный. Нет = 0%, Изредка = 5%, Часто = 10%.</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_OPCOM_HVT">
+    <English>High Value Target</English>
+    <Chinese>高價值目標</Chinese>
+    <Chinesesimp>高价值目标</Chinesesimp>
+    <Spanish>Objetivo de alto valor</Spanish>
+    <French>Cible de haute valeur</French>
+    <Portuguese>Alvo de alto valor</Portuguese>
+    <Russian>Важная цель</Russian>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_HVT_COMMENT">
+    <English>Places a named officer of this commander's faction, with a guard group, at its most important objective. He stays there and takes no orders. With Intel Chance on, intel read from this side's dead sometimes marks where he was last seen. Killing him stops the commander starting new attacks for the time chosen here, and both sides are told. Saved with the mission. None = no officer.</English>
+    <Chinese>在此指揮官最重要的目標處放置一名本陣營的具名軍官及一支護衛小組。他留在原地，不接受命令。啟用情報機率時，閱讀此陣營陣亡者的情報有時會標示他最後出現的位置。擊殺他後，指揮官在此處選定的時間內不會發起新攻擊，雙方都會收到通知。隨任務保存。無 = 不放置軍官。</Chinese>
+    <Chinesesimp>在此指挥官最重要的目标处放置一名本阵营的具名军官及一支护卫小组。他留在原地，不接受命令。启用情报几率时，阅读此阵营阵亡者的情报有时会标示他最后出现的位置。击杀他后，指挥官在此处选定的时间内不会发起新攻击，双方都会收到通知。随任务保存。无 = 不放置军官。</Chinesesimp>
+    <Spanish>Coloca un oficial con nombre de la facción de este comandante, con un grupo de escolta, en su objetivo más importante. Se queda allí y no recibe órdenes. Con la probabilidad de inteligencia activa, la inteligencia leída de los muertos de este bando a veces marca dónde se le vio por última vez. Matarlo impide que el comandante inicie nuevos ataques durante el tiempo elegido aquí, y ambos bandos reciben aviso. Se guarda con la misión. Ninguno = sin oficial.</Spanish>
+    <French>Place un officier nommé de la faction de ce commandant, avec un groupe de garde, sur son objectif le plus important. Il y reste et ne reçoit pas d'ordres. Avec la probabilité de renseignement activée, les renseignements lus sur les morts de ce camp indiquent parfois où il a été vu pour la dernière fois. Le tuer empêche le commandant de lancer de nouvelles attaques pendant la durée choisie ici, et les deux camps sont prévenus. Sauvegardé avec la mission. Aucun = pas d'officier.</French>
+    <Portuguese>Coloca um oficial com nome da facção deste comandante, com um grupo de guarda, no seu objetivo mais importante. Ele fica lá e não recebe ordens. Com a chance de inteligência ativa, a inteligência lida dos mortos deste lado às vezes marca onde ele foi visto pela última vez. Matá-lo impede o comandante de iniciar novos ataques durante o tempo escolhido aqui, e ambos os lados são avisados. Guardado com a missão. Nenhum = sem oficial.</Portuguese>
+    <Russian>Размещает именного офицера фракции этого командира с группой охраны на его самом важном объекте. Он остаётся там и не получает приказов. При включённом шансе разведданных разведданные, прочитанные у погибших этой стороны, иногда отмечают, где его видели в последний раз. Его гибель не даёт командиру начинать новые атаки в течение выбранного здесь времени, и обе стороны получают оповещение. Сохраняется вместе с миссией. Нет = без офицера.</Russian>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_HVT_KILLED_ENEMY">
+    <English>%1, the enemy high value target, has been killed. Their commander has stopped new attacks for now.</English>
+    <Chinese>敵方高價值目標 %1 已被擊殺。敵方指揮官暫時停止發起新攻擊。</Chinese>
+    <Chinesesimp>敌方高价值目标 %1 已被击杀。敌方指挥官暂时停止发起新攻击。</Chinesesimp>
+    <Spanish>%1, el objetivo de alto valor enemigo, ha muerto. Su comandante ha detenido los nuevos ataques por ahora.</Spanish>
+    <French>%1, la cible de haute valeur ennemie, a été tué. Son commandant a suspendu les nouvelles attaques pour l'instant.</French>
+    <Portuguese>%1, o alvo de alto valor inimigo, foi morto. O seu comandante parou novos ataques por agora.</Portuguese>
+    <Russian>%1, важная цель противника, убит. Его командир пока прекратил новые атаки.</Russian>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_HVT_KILLED_OWN">
+    <English>%1, our high value target, has been killed. Our commander has stopped new attacks for now.</English>
+    <Chinese>我方高價值目標 %1 已陣亡。我方指揮官暫時停止發起新攻擊。</Chinese>
+    <Chinesesimp>我方高价值目标 %1 已阵亡。我方指挥官暂时停止发起新攻击。</Chinesesimp>
+    <Spanish>%1, nuestro objetivo de alto valor, ha muerto. Nuestro comandante ha detenido los nuevos ataques por ahora.</Spanish>
+    <French>%1, notre cible de haute valeur, a été tué. Notre commandant a suspendu les nouvelles attaques pour l’instant.</French>
+    <Portuguese>%1, o nosso alvo de alto valor, foi morto. O nosso comandante parou novos ataques por agora.</Portuguese>
+    <Russian>%1, наша важная цель, убит. Наш командир пока прекратил новые атаки.</Russian>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_HVT_NONE">
+    <English>None</English>
+    <Chinese>無</Chinese>
+    <Chinesesimp>无</Chinesesimp>
+    <Spanish>Ninguno</Spanish>
+    <French>Aucun</French>
+    <Portuguese>Nenhum</Portuguese>
+    <Russian>Нет</Russian>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_HVT_10">
+    <English>On, attacks pause 10 min</English>
+    <Chinese>開啟，攻擊暫停 10 分鐘</Chinese>
+    <Chinesesimp>开启，攻击暂停 10 分钟</Chinesesimp>
+    <Spanish>Activo, pausa de 10 min</Spanish>
+    <French>Activé, pause de 10 min</French>
+    <Portuguese>Ativo, pausa de 10 min</Portuguese>
+    <Russian>Вкл., пауза 10 мин</Russian>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_HVT_20">
+    <English>On, attacks pause 20 min</English>
+    <Chinese>開啟，攻擊暫停 20 分鐘</Chinese>
+    <Chinesesimp>开启，攻击暂停 20 分钟</Chinesesimp>
+    <Spanish>Activo, pausa de 20 min</Spanish>
+    <French>Activé, pause de 20 min</French>
+    <Portuguese>Ativo, pausa de 20 min</Portuguese>
+    <Russian>Вкл., пауза 20 мин</Russian>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_HVT_30">
+    <English>On, attacks pause 30 min</English>
+    <Chinese>開啟，攻擊暫停 30 分鐘</Chinese>
+    <Chinesesimp>开启，攻击暂停 30 分钟</Chinesesimp>
+    <Spanish>Activo, pausa de 30 min</Spanish>
+    <French>Activé, pause de 30 min</French>
+    <Portuguese>Ativo, pausa de 30 min</Portuguese>
+    <Russian>Вкл., пауза 30 мин</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_OPCOM_ASYM_FRIENDLY_DISABLE">
     <English>Friendly AI disables installations:</English>
     <Chinese>友方 AI 禁用設施：</Chinese>

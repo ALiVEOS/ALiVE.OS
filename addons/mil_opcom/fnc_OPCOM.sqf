@@ -123,6 +123,8 @@ switch (_operation) do {
         private _type = _logic getvariable ["controltype","invasion"];
         private _occupation = (parseNumber format ["%1", _logic getvariable ["asym_occupation",-100]])/100;
         private _intelChance = (parseNumber format ["%1", _logic getvariable ["intelchance",-100]])/100;
+        // High value target (#625): how long, in seconds, new attacks pause once he's killed; 0 is off
+        private _hvt = parseNumber format ["%1", _logic getvariable ["hvt", 0]];
         // Phase 4: faction sources, all unioned below.
         //   factions       : multi-select listbox (primary UX,
         //                    ORIGINAL property so old `factions`
@@ -335,6 +337,7 @@ switch (_operation) do {
             ["asym_occupation", _occupation],
             ["controltype", _type],
             ["intelchance", _intelChance],
+            ["hvt", _hvt],
             ["roadblocks", _roadblocks],
             ["friendlyDisableMode", _friendlyDisableMode],
             ["asymEscalationIntensity", _asymEscalationIntensity],
@@ -543,6 +546,13 @@ switch (_operation) do {
             if (_result isEqualType []) then {
                 private _startingForces = [_result,"data"] call CBA_fnc_hashGet;
                 [_handler,"startForceStrength", _startingForces] call CBA_fnc_hashSet;
+            };
+
+            // The high value target, so a saved mission doesn't place a second one
+            _key = format ["%1-OPCOM_%2-hvt", ([""] call ALiVE_fnc_storeKeys) select 0, [_handler,"opcomID"] call CBA_fnc_hashGet];
+            _result = [GVAR(DATAHANDLER),"read", ["mil_opcom", [], _key]] call ALIVE_fnc_Data;
+            if (_result isEqualType [] && {!isNil {[_result,"data"] call CBA_fnc_hashGet}}) then {
+                [_handler,"hvtRecord", [_result,"data"] call CBA_fnc_hashGet] call CBA_fnc_hashSet;
             };
 
             [_handler,"objectives", _objectives] call ALiVE_fnc_hashSet;
@@ -885,6 +895,8 @@ switch (_operation) do {
         [_factions] call ALiVE_fnc_initFindVehicleTypeCache;
 
         [_handler,"startupComplete", true] call ALiVE_fnc_HashSet;
+
+        ["place", [_handler]] spawn ALiVE_fnc_OPCOMHVT;
 
     };
 
@@ -3215,6 +3227,21 @@ switch (_operation) do {
                 [GVAR(DATAHANDLER), "write", ["mil_opcom", _data, false, _key]] call ALIVE_fnc_Data;
             };
 
+            // The high value target: who he is, whether he's still alive, and what's left of the
+            // attack pause if he isn't
+            private _hvtRecord = +([_logic,"hvtRecord",[]] call ALiVE_fnc_HashGet);
+            if (_hvtRecord isNotEqualTo []) then {
+                _hvtRecord set [3, ((([_logic,"module"] call ALiVE_fnc_HashGet) getVariable ["ALiVE_HVT_holdUntil", -1]) - time) max 0];
+                private _key = format ["%1-OPCOM_%2-hvt", _missionName, [_logic, "opcomID"] call CBA_fnc_hashGet];
+                private _prev = [GVAR(DATAHANDLER), "read", ["mil_opcom", [], _key]] call ALIVE_fnc_Data;
+                private _data = [[["data", _hvtRecord]]] call CBA_fnc_hashCreate;
+                if (_prev isEqualType []) then {
+                    private _rev = [_prev, "_rev"] call CBA_fnc_hashGet;
+                    if (!isNil {_rev}) then { [_data, "_rev", _rev] call CBA_fnc_hashSet };
+                };
+                [GVAR(DATAHANDLER), "write", ["mil_opcom", _data, false, _key]] call ALIVE_fnc_Data;
+            };
+
             if(ALiVE_SYS_DATA_DEBUG_ON) then {
                 ["OPCOM - SAVE DATA RESULT (maybe truncated in RPT, dont worry): %1",_saveResult] call ALiVE_fnc_dump;
                 ["OPCOM - SAVE DATA SAVING COMPLETE!"] call ALiVE_fnc_dump;
@@ -4245,7 +4272,9 @@ switch (_operation) do {
         private _OPCOM_FSM = [_logic,"OPCOM_FSM",-1] call ALiVE_fnc_HashGet;
         private _OPCOM_SKIP_OBJECTIVES = _OPCOM_FSM getFSMvariable ["_OPCOM_SKIP_OBJECTIVES", []];
 
-        private _allSyncedTriggersActivated = {((typeof _x) == "EmptyDetector") && {!(triggerActivated _x)}} count (synchronizedObjects _module) == 0;
+        // Synced triggers all fired, and no pause after the high value target was killed (#625)
+        private _allSyncedTriggersActivated = {((typeof _x) == "EmptyDetector") && {!(triggerActivated _x)}} count (synchronizedObjects _module) == 0
+            && {time >= (_module getVariable ["ALiVE_HVT_holdUntil", -1])};
 
         private _targetObjectiveIndex = _objectives findIf {
             private _objectiveID = [_x, "objectiveID"] call AliVE_fnc_HashGet;

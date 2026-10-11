@@ -41,6 +41,11 @@ class cfgFunctions {
                                 file = "\x\alive\addons\mil_opcom\fnc_OPCOMToggleInstallations.sqf";
                                 ALIVE_RECOMPILE;
                         };
+                        class OPCOMHVT {
+                                description = "The AI Commander's high value target";
+                                file = "\x\alive\addons\mil_opcom\fnc_OPCOMHVT.sqf";
+                                ALIVE_RECOMPILE;
+                        };
                         class OPCOMAsymmetricState {
                                 description = "Returns installation and profiled force counts for asymmetric OPCOM instances";
                                 file = "\x\alive\addons\mil_opcom\fnc_OPCOMAsymmetricState.sqf";
