@@ -1006,6 +1006,6 @@
     <Russian>Выполнить один раз для юнита:</Russian>
 </Key>
 <Key ID="STR_ALIVE_CP_ON_EACH_SPAWN_ONCE_COMMENT">
-    <English>The SQF hook runs each time a unit spawns, including every re-spawn after being virtual, because each spawn creates new soldiers. That keeps anything it adds, such as event handlers, in place. Yes only stops it running twice on the same soldier, so in practice both settings behave the same.</English>
+    <English>Yes (the default): the SQF hook runs once for each group, when it first spawns, and not again when the group spawns back in after being virtual or after a load. No: it runs every time the group spawns, which keeps anything it adds to the soldiers, such as event handlers, in place, since each spawn creates new soldiers.</English>
 </Key>
 </Container></Package></Project>
