@@ -2180,7 +2180,7 @@ switch(_operation) do {
                     private _side = [[_logic, "side"] call MAINCLASS] call ALIVE_fnc_sideTextToObject;
                     // A faction another air commander has as its own is left to that commander,
                     // whichever of the two finishes waiting first.
-                    private _others = ((entities "Module_F") select { (typeOf _x) isEqualTo "ALiVE_mil_ato" && {!(_x isEqualTo _logic)} }) apply { _x getVariable ["faction", ""] };
+                    private _others = ((entities "Module_F") select { (typeOf _x) isEqualTo "ALiVE_mil_ato" && {!(_x isEqualTo _logic)} }) apply { [_x, "faction"] call MAINCLASS };
                     {
                         private _h = if (isNull _x) then { [] } else { _x getVariable ["handler", []] };
                         if ([_h] call ALIVE_fnc_isHash) then {
