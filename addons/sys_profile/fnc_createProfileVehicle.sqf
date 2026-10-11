@@ -35,6 +35,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 params [
@@ -87,5 +88,10 @@ if !(_spawnGoodPosition) then {
 };
 
 [ALIVE_profileHandler,"registerProfile", _profileVehicle] call ALIVE_fnc_profileHandler;
+
+// While the placement modules are still placing, the spot is claimed: the vehicle is virtual,
+// so nothing stands there yet for the next placement's checks to find, and two placements on
+// one spot met as they spawned. The claims go once every placement module has finished.
+[_position, _vehicleClass] call ALiVE_fnc_claimGround;
 
 _profileVehicle

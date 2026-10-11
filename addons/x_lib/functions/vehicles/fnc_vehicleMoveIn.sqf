@@ -141,18 +141,22 @@ if (_vehicle isKindOf "StaticWeapon") then {
         for "_i" from 1 to 10 do {
             sleep 1;
             if (isNull _vehicle || {!alive _vehicle}) exitWith {};
-            if (((vectorUp _vehicle) select 2) < 0.8) then {
+            // Only one standing on the ground: a gun on a roof or a platform is left where it is.
+            if (((vectorUp _vehicle) select 2) < 0.8 && {((getPosATL _vehicle) select 2) < 1.5}) then {
                 private _p = getPosATL _vehicle;
-                private _fix = [_vehicle, surfaceNormal _p, [_p select 0, _p select 1, 0]];
+                private _up = surfaceNormal _p;
+                private _at = [_p select 0, _p select 1, 0];
                 if (local _vehicle) then {
-                    _vehicle setVectorUp (_fix select 1);
-                    _vehicle setPosATL (_fix select 2);
+                    _vehicle setVectorUp _up;
+                    _vehicle setPosATL _at;
                 } else {
-                    [_vehicle, _fix select 1] remoteExecCall ["setVectorUp", _vehicle];
-                    [_vehicle, _fix select 2] remoteExecCall ["setPosATL", _vehicle];
+                    [_vehicle, _up] remoteExecCall ["setVectorUp", _vehicle];
+                    [_vehicle, _at] remoteExecCall ["setPosATL", _vehicle];
                 };
             };
-            if (isNull (gunner _vehicle)) then {
+            // A gunner is put back only in the first seconds, while the fall is what kept him out;
+            // one who gets out later is left to do so.
+            if (_i <= 4 && {isNull (gunner _vehicle)}) then {
                 {
                     if (!isNil "_x" && {alive _x} && {vehicle _x == _x}) then {
                         if (local _x) then { _x moveInGunner _vehicle } else { [_x, _vehicle] remoteExecCall ["moveInGunner", _x] };

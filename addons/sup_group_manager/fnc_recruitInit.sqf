@@ -82,6 +82,8 @@ ALiVE_fnc_recruitUnit = {
     if (isNull _unit) exitWith { hint "Nobody is available to join you." };
     [_unit] joinSilent _group;
     _unit setVariable ["ALiVE_recruited", true, true];
+    // whose recruit he is, so a player save keeps only that player's own
+    _unit setVariable ["ALiVE_recruitedBy", getPlayerUID player, true];
     if (_skill > 0) then { _unit setSkill _skill };
     hint format ["%1 has joined your group (%2 of %3).", getText (configFile >> "CfgVehicles" >> _class >> "displayName"), _size + 1, _max];
 };

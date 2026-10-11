@@ -124,6 +124,11 @@ class cfgFunctions {
                 file = "\x\alive\addons\main\fnc_findVehicleSpawnPosition.sqf";
                 ALIVE_RECOMPILE;
             };
+            class claimGround {
+                description = "Claim a placed vehicle's ground while the placement modules place";
+                file = "\x\alive\addons\main\fnc_claimGround.sqf";
+                ALIVE_RECOMPILE;
+            };
             class findCompositionSpawnPosition {
                 description = "Unified composition spawn-position validator (envelope-aware footprint + airfield exclusion + mode bundles for camps / FieldHQ / civilian / roadblock)";
                 file = "\x\alive\addons\main\fnc_findCompositionSpawnPosition.sqf";

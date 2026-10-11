@@ -123,7 +123,9 @@ GVAR(UNIT_DATA) = [
         // restore can't double them.
         ["recruits", {
             private _p = _this select 0;
-            ((units group _p) select { alive _x && {!isPlayer _x} && {_x getVariable ["ALiVE_recruited", false]} }) apply {
+            // Only this player's own: everyone in a group saw the same men, and each would have
+            // brought them back.
+            ((units group _p) select { alive _x && {!isPlayer _x} && {_x getVariable ["ALiVE_recruited", false]} && {(_x getVariable ["ALiVE_recruitedBy", ""]) == getPlayerUID _p} }) apply {
                 [typeOf _x, getUnitLoadout _x, skill _x, damage _x, (getPosATL _x) vectorDiff (getPosATL _p)]
             }
         }, {
@@ -132,7 +134,8 @@ GVAR(UNIT_DATA) = [
             _this spawn {
                 params ["_p", "_list"];
                 sleep 3;
-                if (((units group _p) findIf { _x getVariable ["ALiVE_recruited", false] }) > -1) exitWith {};
+                private _uid = getPlayerUID _p;
+                if (((units group _p) findIf { (_x getVariable ["ALiVE_recruitedBy", ""]) == _uid }) > -1) exitWith {};
                 {
                     _x params [["_class", "", [""]], ["_loadout", [], [[]]], ["_skill", -1, [0]], ["_damage", 0, [0]], ["_offset", [0,0,0], [[]]]];
                     if (isClass (configFile >> "CfgVehicles" >> _class)) then {
@@ -142,6 +145,7 @@ GVAR(UNIT_DATA) = [
                         if (_skill >= 0) then { _u setSkill _skill };
                         _u setDamage _damage;
                         _u setVariable ["ALiVE_recruited", true, true];
+                        _u setVariable ["ALiVE_recruitedBy", _uid, true];
                     };
                 } forEach _list;
             };

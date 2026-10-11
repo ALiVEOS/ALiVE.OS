@@ -35,6 +35,16 @@ if (!isServer || {isNull _player}) exitWith {};
 private _men = (units group _player) select { alive _x && {!isPlayer _x} && {_x getVariable ["ALiVE_PR_rented", false]} };
 if (_men isEqualTo []) exitWith {};
 
+// Vehicles that came with them (every man aboard is one of them) go with them; any other they
+// were riding in, a player's say, they get out of.
+private _own = [];
+{
+    private _v = vehicle _x;
+    if (_v != _x) then {
+        if (((crew _v) findIf { !(_x in _men) }) < 0) then { _own pushBackUnique _v } else { unassignVehicle _x; moveOut _x };
+    };
+} forEach _men;
+
 private _group = createGroup [side group _player, true];
 _men joinSilent _group;
 { _x setVariable ["ALiVE_PR_rented", nil, true] } forEach _men;
@@ -59,8 +69,8 @@ _group setBehaviour "AWARE";
 
 [format [localize "STR_ALIVE_PR_SENDHOME_DONE", count _men]] remoteExecCall ["systemChat", _player];
 
-[_group] spawn {
-    params ["_group"];
+[_group, _own] spawn {
+    params ["_group", "_own"];
     private _t0 = time;
     waitUntil {
         sleep 10;
@@ -69,5 +79,6 @@ _group setBehaviour "AWARE";
         (_alive isEqualTo []) || {(time - _t0 > 30) && {(allPlayers findIf { alive _x && {(_x distance2D (leader _group)) < _reach} }) < 0}}
     };
     { deleteVehicle _x } forEach (units _group);
+    { if ((crew _x) isEqualTo []) then { deleteVehicle _x } } forEach _own;
     deleteGroup _group;
 };

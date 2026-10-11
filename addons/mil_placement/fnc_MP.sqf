@@ -2907,14 +2907,14 @@ switch(_operation) do {
                     // Gradient-check the result; if the seed-pos
                     // accept is on a slope, fall through to the
                     // road/field stages which prefer flat ground.
-                    private _result = [_vehicleClass, _seedPos, _searchRadius, "road", _seedDir, true] call ALiVE_fnc_findVehicleSpawnPosition;
+                    private _result = [_vehicleClass, _seedPos, _searchRadius, "road", _seedDir] call ALiVE_fnc_findVehicleSpawnPosition;
                     if (count _result >= 2 && {[_result select 0] call _fnc_isFlatEnough}) exitWith { _result };
 
                     // Stage B: validator pref="auto" - Stage 3 field
                     // heuristic. Stage 3 already gradient-checks; but
                     // if Stage 1 accepted first (sloped seed) we'd
                     // skip Stage 3 internally, so re-check here too.
-                    _result = [_vehicleClass, _seedPos, _searchRadius, "auto", _seedDir, true] call ALiVE_fnc_findVehicleSpawnPosition;
+                    _result = [_vehicleClass, _seedPos, _searchRadius, "auto", _seedDir] call ALiVE_fnc_findVehicleSpawnPosition;
                     if (count _result >= 2 && {[_result select 0] call _fnc_isFlatEnough}) exitWith { _result };
 
                     // Stage C: flat seed. Only accept if the seed
@@ -2930,7 +2930,7 @@ switch(_operation) do {
                     // clearings well beyond the immediate pre-pick
                     // area. Useful when the cluster sits in airport-
                     // like terrain where stages A-C all fail.
-                    _result = [_vehicleClass, _clusterCenter, _clusterSize * 3, "auto", _seedDir, true] call ALiVE_fnc_findVehicleSpawnPosition;
+                    _result = [_vehicleClass, _clusterCenter, _clusterSize * 3, "auto", _seedDir] call ALiVE_fnc_findVehicleSpawnPosition;
                     if (count _result >= 2 && {[_result select 0] call _fnc_isFlatEnough}) exitWith { _result };
 
                     // Stage E: truly last resort. 50 m offset from
@@ -3148,7 +3148,7 @@ switch(_operation) do {
                                             for "_try" from 1 to 20 do {
                                                 private _candidate = _center getPos [([_size min 100, _size min 700] select (_try > 10)) * sqrt (random 1), random 360];
                                                 if !(surfaceIsWater _candidate) then {
-                                                    private _fit = [_vehicleReserveClass, _candidate, 30, "road", _vehicleDir, true] call ALiVE_fnc_findVehicleSpawnPosition;
+                                                    private _fit = [_vehicleReserveClass, _candidate, 30, "road", _vehicleDir] call ALiVE_fnc_findVehicleSpawnPosition;
                                                     if (count _fit >= 2 && {count ((_fit select 0) isFlatEmpty [-1, -1, 0.4, 5, 0, false, objNull]) >= 2}) then {
                                                         _vehiclePos = _fit select 0; _vehicleDir = _fit select 1;
                                                     };
@@ -3261,7 +3261,7 @@ switch(_operation) do {
                                                 if (_activeVehClass == "") then {
                                                     _position = _candidate;
                                                 } else {
-                                                    private _fit = [_activeVehClass, _candidate, 30, "road", _activeDir, true] call ALiVE_fnc_findVehicleSpawnPosition;
+                                                    private _fit = [_activeVehClass, _candidate, 30, "road", _activeDir] call ALiVE_fnc_findVehicleSpawnPosition;
                                                     if (count _fit >= 2 && {count ((_fit select 0) isFlatEmpty [-1, -1, 0.4, 5, 0, false, objNull]) >= 2}) then {
                                                         _position = _fit select 0; _activeDir = _fit select 1;
                                                     };
@@ -3370,7 +3370,7 @@ switch(_operation) do {
                                         for "_try" from 1 to 20 do {
                                             private _candidate = _center getPos [([_size min 100, _size min 700] select (_try > 10)) * sqrt (random 1), random 360];
                                             if !(surfaceIsWater _candidate) then {
-                                                private _fit = [_vehicleReserveClass, _candidate, 30, "road", _vehicleDir, true] call ALiVE_fnc_findVehicleSpawnPosition;
+                                                private _fit = [_vehicleReserveClass, _candidate, 30, "road", _vehicleDir] call ALiVE_fnc_findVehicleSpawnPosition;
                                                 if (count _fit >= 2 && {count ((_fit select 0) isFlatEmpty [-1, -1, 0.4, 5, 0, false, objNull]) >= 2}) then {
                                                     _vehiclePos = _fit select 0; _vehicleDir = _fit select 1;
                                                 };
@@ -3461,7 +3461,7 @@ switch(_operation) do {
                                             if (_activeVehClass == "") then {
                                                 _position = _candidate;
                                             } else {
-                                                private _fit = [_activeVehClass, _candidate, 30, "road", _activeDir, true] call ALiVE_fnc_findVehicleSpawnPosition;
+                                                private _fit = [_activeVehClass, _candidate, 30, "road", _activeDir] call ALiVE_fnc_findVehicleSpawnPosition;
                                                 if (count _fit >= 2 && {count ((_fit select 0) isFlatEmpty [-1, -1, 0.4, 5, 0, false, objNull]) >= 2}) then {
                                                     _position = _fit select 0; _activeDir = _fit select 1;
                                                 };
