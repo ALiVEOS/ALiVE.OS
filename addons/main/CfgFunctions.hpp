@@ -129,6 +129,11 @@ class cfgFunctions {
                 file = "\x\alive\addons\main\fnc_claimGround.sqf";
                 ALIVE_RECOMPILE;
             };
+            class heliGunnersArm {
+                description = "Let an AI helicopter's door gunners fire back while its pilot flies on";
+                file = "\x\alive\addons\main\fnc_heliGunnersArm.sqf";
+                ALIVE_RECOMPILE;
+            };
             class findCompositionSpawnPosition {
                 description = "Unified composition spawn-position validator (envelope-aware footprint + airfield exclusion + mode bundles for camps / FieldHQ / civilian / roadblock)";
                 file = "\x\alive\addons\main\fnc_findCompositionSpawnPosition.sqf";

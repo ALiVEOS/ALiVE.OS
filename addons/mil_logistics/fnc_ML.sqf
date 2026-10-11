@@ -2330,6 +2330,8 @@ switch(_operation) do {
                         _grp setCombatMode "BLUE";
                         _grp setSpeedMode "FULL";
                         { _x disableAI "AUTOTARGET"; _x disableAI "TARGET"; _x disableAI "AUTOCOMBAT"; _x setSkill ["courage", 1]; } forEach (units _grp);
+                        // on the way home the door gunners keep firing back when it's hit
+                        if (_currentPhase == 3) then { [_vehicle] call ALiVE_fnc_heliGunnersArm };
 
                         if (_currentPhase == 3) then {
                             // RTB: reissue MOVE toward home base instead of landAt.
@@ -3317,6 +3319,8 @@ switch(_operation) do {
                                 _grpRTB allowFleeing 0;
                                 _grpRTB setCombatMode "BLUE";
                                 { _x disableAI "AUTOTARGET"; _x disableAI "TARGET"; _x disableAI "AUTOCOMBAT"; _x setSkill ["courage", 1]; } forEach (units _grpRTB);
+                                // door gunners fire back on the way home; the pilot still flies on
+                                [_heli] call ALiVE_fnc_heliGunnersArm;
                             };
 
                             private _distFromDest = _heli distance _destPos;
@@ -3687,6 +3691,8 @@ switch(_operation) do {
                             _grp setCombatMode "BLUE";
                             _grp setSpeedMode "FULL";
                             { _x disableAI "AUTOTARGET"; _x disableAI "TARGET"; _x setSkill ["courage", 1]; } forEach (units _grp);
+                            // door gunners fire back on the run in; the pilot still flies on
+                            [_heli] call ALiVE_fnc_heliGunnersArm;
 
                             // Attach hit EH once the heli is active -- resets course immediately on hit
                             if (_paradropHitEH < 0 && isNull _paradropHitEHObj) then {
@@ -3716,6 +3722,8 @@ switch(_operation) do {
                                             _g setCombatMode "BLUE";
                                             _g setSpeedMode "FULL";
                                             { _x disableAI "AUTOTARGET"; _x disableAI "TARGET"; _x setSkill ["courage", 1]; } forEach (units _g);
+                                            // the door gunners keep firing back on the run in, not over the drop zone
+                                            if !(_vehicle getVariable ["alive_ml_para_dropping", false]) then { [_vehicle] call ALiVE_fnc_heliGunnersArm };
 
                                             // Re-enforce altitude immediately on hit so AI doesn't dive
                                             _vehicle flyInHeight PARADROP_HEIGHT;
@@ -3879,6 +3887,14 @@ switch(_operation) do {
                 } else { nil };
                 private _heli2 = if (!isNil "_vp2") then { _vp2 select 2 select 10 } else { objNull };
                 private _heliActive = (!isNull _heli2 && alive _heli2);
+                // Over the drop zone the crew is flown as before the door gunners were armed in
+                // transit: all BLUE, targeting off.
+                if (_heliActive) then {
+                    _heli2 setVariable ["alive_ml_para_dropping", true];
+                    private _gD = group (driver _heli2);
+                    _gD setCombatMode "BLUE";
+                    { _x disableAI "AUTOTARGET"; _x disableAI "TARGET" } forEach (units _gD);
+                };
 
                 // Log full drop-entry state: position, altitude, velocity, active/virtual
                 private _dropAGL  = if (_heliActive) then { round ((_heli2 modelToWorldVisual [0,0,0]) select 2) } else { -1 };
@@ -14726,6 +14742,14 @@ switch(_operation) do {
                     _unit forceSpeed 50;
                 };
             } forEach (units _group);
+
+            // door gunners fire back on the way in; the crew stays CARELESS and the pilot flies on.
+            // Only in transit: a sling helicopter still gets this call once after its watchdog has
+            // moved it to UNLOAD, and a paradrop's drop run is flown as the landings are, all BLUE.
+            private _heliT = vehicle (leader _group);
+            if ((_heliT getVariable ["alive_ml_watchdog_phase", 0]) == 0 && {!(_heliT getVariable ["alive_ml_para_dropping", false])}) then {
+                [_heliT] call ALiVE_fnc_heliGunnersArm;
+            };
 
         }else{
             [_entityProfile,"spawn"] call ALIVE_fnc_profileEntity;
