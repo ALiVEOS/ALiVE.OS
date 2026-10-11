@@ -16447,6 +16447,8 @@ switch(_operation) do {
                                     // Men a garrison held on their posts are let go before they join the player.
                                     [objNull, "releaseGarrisonHold", _units] call ALIVE_fnc_profileEntity;
                                     _units joinSilent (group _player);
+                                    // so the player can send them home again (#691)
+                                    { _x setVariable ["ALiVE_PR_rented", true, true] } forEach _units;
 
                                     [ALIVE_profileHandler, "unregisterProfile", _profile] call ALIVE_fnc_profileHandler;
                                 }else{
@@ -16487,6 +16489,8 @@ switch(_operation) do {
                                     // Men a garrison held on their posts are let go before they join the player.
                                     [objNull, "releaseGarrisonHold", _units] call ALIVE_fnc_profileEntity;
                                     _units joinSilent (group _player);
+                                    // so the player can send them home again (#691)
+                                    { _x setVariable ["ALiVE_PR_rented", true, true] } forEach _units;
 
                                     [ALIVE_profileHandler, "unregisterProfile", _profile] call ALIVE_fnc_profileHandler;
                                 }else{

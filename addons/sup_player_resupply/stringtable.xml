@@ -300,4 +300,34 @@
     <Portuguese>Lista separada por vírgulas de nomes de classes do config para restringir o catálogo de reabastecimento apenas a estas classes (ex. Box_IND_Ammo_F,B_MRAP_01_F). Apenas estas classes aparecerão. Os nomes de classe são sensíveis a maiúsculas/minúsculas.</Portuguese>
     <Russian>Список через запятую имён классов конфига, ограничивающий каталог снабжения только этими классами (например, Box_IND_Ammo_F,B_MRAP_01_F). Появятся только эти классы. Имена классов чувствительны к регистру.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_PR_SENDHOME">
+    <English>Send reinforcements home</English>
+    <Chinesesimp>遣返增援部队</Chinesesimp>
+    <Chinese>遣返增援部隊</Chinese>
+    <Spanish>Enviar los refuerzos de vuelta</Spanish>
+    <French>Renvoyer les renforts</French>
+    <Portuguese>Mandar os reforços de volta</Portuguese>
+    <Russian>Отправить подкрепление обратно</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_PR_SENDHOME_COMMENT">
+    <English>The men Player Combat Logistics delivered into your group leave it and head away from the fighting</English>
+    <Chinesesimp>玩家战斗后勤送入你小组的士兵离开小组并撤离战斗</Chinesesimp>
+    <Chinese>玩家戰鬥後勤送入你小組的士兵離開小組並撤離戰鬥</Chinese>
+    <Spanish>Los hombres que la logística de combate del jugador incorporó a tu grupo lo dejan y se alejan del combate</Spanish>
+    <French>Les hommes que la logistique de combat joueur a ajoutés à votre groupe le quittent et s'éloignent des combats</French>
+    <Portuguese>Os homens que a logística de combate do jogador colocou no seu grupo saem dele e afastam-se do combate</Portuguese>
+    <Russian>Бойцы, доставленные боевым снабжением в вашу группу, покидают её и уходят от боя</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_PR_SENDHOME_DONE">
+    <English>%1 reinforcements are heading home.</English>
+    <Chinesesimp>%1 名增援士兵正在返回。</Chinesesimp>
+    <Chinese>%1 名增援士兵正在返回。</Chinese>
+    <Spanish>%1 refuerzos regresan.</Spanish>
+    <French>%1 renforts repartent.</French>
+    <Portuguese>%1 reforços estão a regressar.</Portuguese>
+    <Russian>Подкрепление (%1) возвращается.</Russian>
+</Key>
 </Container></Package></Project>

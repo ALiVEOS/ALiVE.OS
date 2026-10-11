@@ -31,6 +31,11 @@ class CfgFunctions {
                 file = "\x\alive\addons\sup_player_resupply\fnc_PRTabletOnUnLoad.sqf";
                 ALIVE_RECOMPILE;
             };
+            class PRSendHome {
+                description = "Send home the men Player Combat Logistics delivered into a player's group (#691)";
+                file = "\x\alive\addons\sup_player_resupply\fnc_PRSendHome.sqf";
+                ALIVE_RECOMPILE;
+            };
             class PRTabletEventToClient {
                 description = "Call the tablet on the client from the server";
                 file = "\x\alive\addons\sup_player_resupply\fnc_PRTabletEventToClient.sqf";

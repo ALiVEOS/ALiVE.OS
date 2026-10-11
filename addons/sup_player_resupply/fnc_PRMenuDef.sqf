@@ -88,6 +88,16 @@ _menus =
                 -1,
                 (MOD(Require) getVariable [format["ALIVE_MIL_LOG_AVAIL_%1", (side group player)], false]),
                 !([QMOD(mil_c2istar)] call ALiVE_fnc_isModuleAvailable) && {_result}
+            ],
+            // Men delivered into the player's group can be sent home again (#691), whoever leads it.
+            [localize "STR_ALIVE_PR_SENDHOME",
+                {[player] remoteExecCall ["ALIVE_fnc_PRSendHome", 2]},
+                "",
+                localize "STR_ALIVE_PR_SENDHOME_COMMENT",
+                "",
+                -1,
+                true,
+                ((units group player) findIf { _x getVariable ["ALiVE_PR_rented", false] }) > -1
             ]
         ]
     ]
