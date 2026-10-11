@@ -37,6 +37,17 @@ if(ALiVE_SYS_DATA_DEBUG_ON) then {
 _async = false;
 _missionName = (["_TASK"] call ALiVE_fnc_storeKeys) select 0; // group, mission and map
 
+// The groups opted out of automatic orders, saved on their own before the task list,
+// which skips the save when it holds nothing. Only once a group has opted out or a
+// saved list was loaded, so a mission that never used it writes nothing.
+if (!isNil "ALIVE_C2ISTAR_optOutGroups") then {
+    if (isNil QGVAR(DATAHANDLER)) then {
+        GVAR(DATAHANDLER) = [nil, "create"] call ALIVE_fnc_Data;
+        [GVAR(DATAHANDLER),"storeType",true] call ALIVE_fnc_Data;
+    };
+    [GVAR(DATAHANDLER), "bulkSave", ["sys_tasks_optout", ALIVE_C2ISTAR_optOutGroups, (["_TASK_OPTOUT"] call ALiVE_fnc_storeKeys) select 0, _async]] call ALIVE_fnc_Data;
+};
+
 // Taken and cleared before the export: a delete that lands after this sets it again.
 private _saveEmpty = [ALIVE_taskHandler, "saveEmptyStore", false] call ALIVE_fnc_hashGet;
 [ALIVE_taskHandler, "saveEmptyStore", false] call ALIVE_fnc_hashSet;

@@ -88,7 +88,7 @@ private _fnc_addDictionary = {
 // suffix any module saves under belongs in this list and in the one below.
 {
     [_base + _x, "", "self"] call _fnc_add;
-} forEach (["", "_DATA", "_COMPOSITIONS", "_TASK", "_FORCE_POOL", "_ATO"] + _suffixes);
+} forEach (["", "_DATA", "_COMPOSITIONS", "_TASK", "_TASK_OPTOUT", "_FORCE_POOL", "_ATO"] + _suffixes);
 ["dictionary_" + _base, "self"] call _fnc_addDictionary;
 
 // Then the old names.

@@ -926,6 +926,16 @@ switch (_operation) do {
         private _optedOut = !(_group getVariable [QGVAR(playerOrdersOptOut), false]);
         _group setVariable [QGVAR(playerOrdersOptOut), _optedOut, true];
 
+        // Kept on the server by group name as well, so the choice is saved with the
+        // mission and still there for a group that is empty when the save is made.
+        if (isNil "ALIVE_C2ISTAR_optOutGroups") then { ALIVE_C2ISTAR_optOutGroups = [] call ALIVE_fnc_hashCreate };
+        private _groupName = [str _group, " ", "_"] call CBA_fnc_replace;
+        if (_optedOut) then {
+            [ALIVE_C2ISTAR_optOutGroups, _groupName, true] call ALIVE_fnc_hashSet;
+        } else {
+            [ALIVE_C2ISTAR_optOutGroups, _groupName] call ALIVE_fnc_hashRem;
+        };
+
         private _message = if (_optedOut) then {
             "Your group is now opted out of automatic OPCOM orders."
         } else {

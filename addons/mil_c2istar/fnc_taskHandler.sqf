@@ -127,6 +127,20 @@ switch (_operation) do {
 
             _data = call ALIVE_fnc_taskHandlerLoadData;
 
+            // The groups opted out of automatic orders. Put back on any group already
+            // here; a player who joins later gets it back in syncTasks.
+            if (!isNil QGVAR(DATAHANDLER)) then {
+                private _optOut = [GVAR(DATAHANDLER), "bulkLoad", ["sys_tasks_optout", (["_TASK_OPTOUT"] call ALiVE_fnc_storeKeys) select 0, false]] call ALIVE_fnc_Data;
+                if (!isNil "_optOut" && {[_optOut] call ALIVE_fnc_isHash}) then {
+                    ALIVE_C2ISTAR_optOutGroups = _optOut;
+                    {
+                        if ([_optOut, [str _x, " ", "_"] call CBA_fnc_replace, false] call ALIVE_fnc_hashGet) then {
+                            _x setVariable [QGVAR(playerOrdersOptOut), true, true];
+                        };
+                    } forEach allGroups;
+                };
+            };
+
             if(typeName _data == "ARRAY") then {
 
                 {
@@ -947,6 +961,11 @@ switch (_operation) do {
                 waitUntil {
                     sleep 1;
                     ((str(side group _player)) != "UNKNOWN")
+                };
+
+                // A group that opted out of automatic orders before the save stays out.
+                if (!isNil "ALIVE_C2ISTAR_optOutGroups" && {[ALIVE_C2ISTAR_optOutGroups, _groupID, false] call ALIVE_fnc_hashGet}) then {
+                    (group _player) setVariable [QGVAR(playerOrdersOptOut), true, true];
                 };
 
                 private _playerSide = side (group _player);
