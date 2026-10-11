@@ -1473,15 +1473,15 @@ switch(_operation) do {
                     private _seedPos = _clusterCenter getPos [(random (_clusterSize / 2)) + 30, random 360];
                     private _seedDir = random 360;
 
-                    private _result = [_vehicleClass, _seedPos, _searchRadius, "road", _seedDir] call ALiVE_fnc_findVehicleSpawnPosition;
+                    private _result = [_vehicleClass, _seedPos, _searchRadius, "road", _seedDir, true] call ALiVE_fnc_findVehicleSpawnPosition;
                     if (count _result >= 2 && {[_result select 0] call _fnc_isFlatEnough}) exitWith { _result };
 
-                    _result = [_vehicleClass, _seedPos, _searchRadius, "auto", _seedDir] call ALiVE_fnc_findVehicleSpawnPosition;
+                    _result = [_vehicleClass, _seedPos, _searchRadius, "auto", _seedDir, true] call ALiVE_fnc_findVehicleSpawnPosition;
                     if (count _result >= 2 && {[_result select 0] call _fnc_isFlatEnough}) exitWith { _result };
 
                     if ([_seedPos] call _fnc_isFlatEnough) exitWith { [_seedPos, _seedDir] };
 
-                    _result = [_vehicleClass, _clusterCenter, _clusterSize * 3, "auto", _seedDir] call ALiVE_fnc_findVehicleSpawnPosition;
+                    _result = [_vehicleClass, _clusterCenter, _clusterSize * 3, "auto", _seedDir, true] call ALiVE_fnc_findVehicleSpawnPosition;
                     if (count _result >= 2 && {[_result select 0] call _fnc_isFlatEnough}) exitWith { _result };
 
                     [_clusterCenter getPos [50, random 360], _seedDir]

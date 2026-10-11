@@ -70,7 +70,10 @@ params [
     ["_centerPos", [0,0,0], [[]], [2,3]],
     ["_maxDistance", 100, [0]],
     ["_preference", "auto", [""]],
-    ["_preferredDir", -1, [0]]
+    ["_preferredDir", -1, [0]],
+    // true for a placement choosing where a vehicle will live: the spot is then claimed, so
+    // later placements keep clear of it while it is still virtual
+    ["_claim", false, [false]]
 ];
 
 if (_vehicleClass == "" || count _centerPos < 2) exitWith { [] };
@@ -183,6 +186,11 @@ private _fnc_footprintClear = {
     };
 
     if ({surfaceIsWater _x} count _samples > 0) exitWith { _lastRejectReason = "water"; false };
+
+    // Ground another placement has taken (see ALiVE_fnc_findCompositionSpawnPosition). A claim
+    // within half a metre is this vehicle's own, met again as it spawns where it was placed.
+    private _reach = _hl max _hw;
+    if (!isNil "ALiVE_groundClaims" && {(ALiVE_groundClaims findIf { private _d = _pos distance2D (_x select 0); _d > 0.5 && {_d < (_reach + (_x select 1) + 1)} }) >= 0}) exitWith { _lastRejectReason = "claimed"; false };
 
     private _terrainHit = _samples findIf {
         !((nearestTerrainObjects [_x, _staticTerrainTypes, _sampleRadius + _gap, false, true]) isEqualTo [])
@@ -453,6 +461,11 @@ if (_debug) then {
         ["[ALiVE VehSpawn DEBUG] EXIT class=%1 result=FAIL (caller falls back to %2)",
             _vehicleClass, _centerPos] call ALiVE_fnc_dump;
     };
+};
+
+if (_claim && {count _found > 0}) then {
+    if (isNil "ALiVE_groundClaims") then { ALiVE_groundClaims = [] };
+    ALiVE_groundClaims pushBack [_found select 0, _hl max _hw];
 };
 
 _found

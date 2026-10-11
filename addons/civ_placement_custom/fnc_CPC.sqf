@@ -1090,12 +1090,12 @@ switch (_operation) do {
                 private _searchRadius = (_clusterSize + 100) max 200;
                 private _seedPos = _clusterCenter getPos [(random (_clusterSize / 2)) + 30, random 360];
                 private _seedDir = random 360;
-                private _result = [_vehicleClass, _seedPos, _searchRadius, "road", _seedDir] call ALiVE_fnc_findVehicleSpawnPosition;
+                private _result = [_vehicleClass, _seedPos, _searchRadius, "road", _seedDir, true] call ALiVE_fnc_findVehicleSpawnPosition;
                 if (count _result >= 2 && {[_result select 0] call _fnc_isFlatEnough}) exitWith { _result };
-                _result = [_vehicleClass, _seedPos, _searchRadius, "auto", _seedDir] call ALiVE_fnc_findVehicleSpawnPosition;
+                _result = [_vehicleClass, _seedPos, _searchRadius, "auto", _seedDir, true] call ALiVE_fnc_findVehicleSpawnPosition;
                 if (count _result >= 2 && {[_result select 0] call _fnc_isFlatEnough}) exitWith { _result };
                 if ([_seedPos] call _fnc_isFlatEnough) exitWith { [_seedPos, _seedDir] };
-                _result = [_vehicleClass, _clusterCenter, _clusterSize * 3, "auto", _seedDir] call ALiVE_fnc_findVehicleSpawnPosition;
+                _result = [_vehicleClass, _clusterCenter, _clusterSize * 3, "auto", _seedDir, true] call ALiVE_fnc_findVehicleSpawnPosition;
                 if (count _result >= 2 && {[_result select 0] call _fnc_isFlatEnough}) exitWith { _result };
                 [_clusterCenter getPos [50, random 360], _seedDir]
             };
@@ -1257,7 +1257,7 @@ switch (_operation) do {
                                 for "_try" from 1 to 20 do {
                                     private _candidate = _center getPos [([_clusterSize min 100, _clusterSize min 700] select (_try > 10)) * sqrt (random 1), random 360];
                                     if !(surfaceIsWater _candidate) then {
-                                        private _fit = [_vehicleReserveClass, _candidate, 30, "road", _vehicleDir] call ALiVE_fnc_findVehicleSpawnPosition;
+                                        private _fit = [_vehicleReserveClass, _candidate, 30, "road", _vehicleDir, true] call ALiVE_fnc_findVehicleSpawnPosition;
                                         if (count _fit >= 2 && {count ((_fit select 0) isFlatEmpty [-1, -1, 0.4, 5, 0, false, objNull]) >= 2}) then {
                                             _vehiclePos = _fit select 0; _vehicleDir = _fit select 1;
                                         };
@@ -1343,7 +1343,7 @@ switch (_operation) do {
                                     if (_activeVehClass == "") then {
                                         _position = _candidate;
                                     } else {
-                                        private _fit = [_activeVehClass, _candidate, 30, "road", _activeDir] call ALiVE_fnc_findVehicleSpawnPosition;
+                                        private _fit = [_activeVehClass, _candidate, 30, "road", _activeDir, true] call ALiVE_fnc_findVehicleSpawnPosition;
                                         if (count _fit >= 2 && {count ((_fit select 0) isFlatEmpty [-1, -1, 0.4, 5, 0, false, objNull]) >= 2}) then {
                                             _position = _fit select 0; _activeDir = _fit select 1;
                                         };

@@ -518,8 +518,8 @@ private _onAirfieldSurface = {
 // and the per-candidate trace below cannot be left on to find out because it
 // writes a line for every sample and a wide search takes over a thousand.
 // One summary line at the end costs nothing and answers the question.
-private _rejectCounts = [0,0,0,0,0,0,0,0,0,0,0,0];
-private _rejectNames = ["bounds","runway","helipad","road","obstacle","water-centre","water-edge","slope-normal","slope-inner","slope-outer","surface","rock"];
+private _rejectCounts = [0,0,0,0,0,0,0,0,0,0,0,0,0];
+private _rejectNames = ["bounds","runway","helipad","road","obstacle","water-centre","water-edge","slope-normal","slope-inner","slope-outer","surface","rock","claimed"];
 
 // How far the composition's objects can actually reach from the anchor.
 //
@@ -576,6 +576,14 @@ private _candidateClear = {
     ) exitWith {
         if (_debug) then { ["[ALiVE CompSpawn]   reject %1: outside world bounds (worldSize=%2)", _p, _wsz] call ALiVE_fnc_dump };
         _rejectCounts set [0, (_rejectCounts select 0) + 1];
+        false
+    };
+
+    // Ground another placement has already taken. Placements are virtual until a player comes
+    // near, so nothing stands there yet to be found by the object checks below; two of them on
+    // one spot met as they spawned, and the lighter one was thrown over.
+    if (!isNil "ALiVE_groundClaims" && {(ALiVE_groundClaims findIf { (_p distance2D (_x select 0)) < (_clearReach + (_x select 1)) }) >= 0}) exitWith {
+        _rejectCounts set [12, (_rejectCounts select 12) + 1];
         false
     };
 
@@ -1148,6 +1156,13 @@ if (count _result == 0 && {_radius >= 50 || _callerDebug || _debug}) then {
     if (_reasons == "") then { _reasons = "none recorded" };
     ["[ALiVE CompSpawn] FAIL centre=%1 mode=%2 radius=%3m envelope=%4m after %5 tries - turned away by: %6",
         _centerPos, _mode, _radius, _envelope, _maxAttempts, _reasons] call ALiVE_fnc_dump;
+};
+
+// The site is taken from here on, for every later placement that asks either this check or
+// the vehicle one.
+if (count _result > 0) then {
+    if (isNil "ALiVE_groundClaims") then { ALiVE_groundClaims = [] };
+    ALiVE_groundClaims pushBack [_result select 0, [_envelope] call _fnc_clearReach];
 };
 
 call _fnc_profDone;
