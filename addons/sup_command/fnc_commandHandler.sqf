@@ -2495,9 +2495,9 @@ switch(_operation) do {
                     [_opcom,"side",""] call ALiVE_fnc_hashGet
                 ];
 
-                if (([_opcom,"controltype",""] call ALiVE_fnc_hashGet) == "asymmetric") then {
-                    if (_statusText == "") then {_statusText = "Objectives view not available for asymmetric commanders"};
-                } else {
+                // An insurgency commander takes player objectives as well (#974): with nobody free it
+                // borrows insurgents from its other operations, never an installation's guards.
+                call {
                     {
                         _objectiveData pushBack [
                             [_x,"objectiveID",""] call ALiVE_fnc_hashGet,
@@ -2599,7 +2599,7 @@ switch(_operation) do {
                 [_logic,"opsSendObjectivesDenied",[_playerID,_selOpcom]] call MAINCLASS;
             };
 
-            if (isnil "_opcom" || {([_opcom,"controltype",""] call ALiVE_fnc_hashGet) == "asymmetric"}) exitwith {
+            if (isnil "_opcom") exitwith {
                 [_logic,"opsSendObjectives",[_playerID,_selOpcom,""]] call MAINCLASS;
             };
 
@@ -2668,12 +2668,6 @@ switch(_operation) do {
                 [_logic,"opsSendObjectives",[_playerID,_selOpcom,""]] call MAINCLASS;
             };
 
-            // parity with opsAddObjective/opsSendObjectives - asymmetric
-            // commanders are scoped out of all player-objective interaction
-            if (([_opcom,"controltype",""] call ALiVE_fnc_hashGet) == "asymmetric") exitwith {
-                [_logic,"opsSendObjectives",[_playerID,_selOpcom,"Objectives view not available for asymmetric commanders"]] call MAINCLASS;
-            };
-
             private _objective = [_opcom,"getObjectiveByID",_objectiveID] call ALiVE_fnc_OPCOM;
 
             if (isnil "_objective") exitwith {
@@ -2717,13 +2711,6 @@ switch(_operation) do {
 
             if (isnil "_opcom") exitwith {
                 [_logic,"opsSendObjectives",[_playerID,_selOpcom,""]] call MAINCLASS;
-            };
-
-            // parity with opsAddObjective/opsSendObjectives - asymmetric
-            // commanders are scoped out of all player-objective interaction, so
-            // a crafted event cannot reorder their objective queue
-            if (([_opcom,"controltype",""] call ALiVE_fnc_hashGet) == "asymmetric") exitwith {
-                [_logic,"opsSendObjectives",[_playerID,_selOpcom,"Objectives view not available for asymmetric commanders"]] call MAINCLASS;
             };
 
             // recompute the index server-side - the FSM churns the array, a
