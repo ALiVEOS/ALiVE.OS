@@ -74,13 +74,11 @@ ALiVE_CivPop_Interaction_WaterItems = [
         // ACE3 (ace_field_rations) — current classes; ACEX names
         // deprecated 2021-ish, kept below for backward-compat with
         // legacy missions.
-        "ACE_Canteen",
-        "ACE_WaterBottle",
-        "ACE_Spirit",
-        "ACE_Franta",
-        "ACE_RedGull",
-        // Vanilla Arma 3 soft-drink cans
-        "Item_Can_V1_F", "Item_Can_V2_F", "Item_Can_V3_F",
+        "ACE_Canteen", "ACE_Canteen_Half",
+        "ACE_WaterBottle", "ACE_WaterBottle_Half",
+        "ACE_Can_Spirit",
+        "ACE_Can_Franta",
+        "ACE_Can_RedGull",
         // MGM Foods
         "mgm_item_redgull",
         // Kurt's Survival System (KSS)
@@ -93,23 +91,18 @@ ALiVE_CivPop_Interaction_RationItems = [
         // Vanilla ALiVE
         "ALiVE_Humrat",
         // ACE3 (ace_field_rations) — modern MRE set + misc rations
+        // (the names ACE 3.21 defines, measured 11 Oct 2026)
         "ACE_MRE_BeefStew",
         "ACE_MRE_ChickenTikkaMasala",
-        "ACE_MRE_ChickenWithRice",
-        "ACE_MRE_CreamOfChickenSoup",
+        "ACE_MRE_ChickenHerbDumplings",
+        "ACE_MRE_CreamChickenSoup",
+        "ACE_MRE_CreamTomatoSoup",
         "ACE_MRE_LambCurry",
-        "ACE_MRE_MeatballsWithPasta",
+        "ACE_MRE_MeatballsPasta",
         "ACE_MRE_SteakVegetables",
-        "ACE_HumanitarianRation",
-        "ACE_Banana",
-        "ACE_SunflowerSeeds",
-        "ACE_BeefJerky",
-        // Legacy ACEX humanitarian ration (class retired ~2021 but
-        // kept here so missions built during the ACEX era still
-        // pattern-match if the player happens to carry an old cache).
         "ACE_Humanitarian_Ration",
-        // Vanilla Arma 3
-        "Item_TacticalBacon_F",
+        "ACE_Banana",
+        "ACE_Sunflower_Seeds",
         // MGM Foods
         "mgm_item_mre",
         // Kurt's Survival System (KSS)

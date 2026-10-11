@@ -52,19 +52,9 @@
 
 class CfgALiVEHumanitarianItems {
 
-    // Vanilla A3 -- always loaded. Soda cans (drinks) + Tactical Bacon.
-    class ALiVE_Vanilla_A3 {
-        cfgPatchesName = "A3_Characters_F";
-        displayName    = "Arma 3";
-        class water {
-            class Item_Can_V1_F { displayName = "Spirit (can)"; };
-            class Item_Can_V2_F { displayName = "Franta (can)"; };
-            class Item_Can_V3_F { displayName = "RedGull (can)"; };
-        };
-        class ration {
-            class Item_TacticalBacon_F { displayName = "Tactical Bacon"; };
-        };
-    };
+    // Vanilla Arma 3 has no food or drink a player can carry: its cans and Tactical Bacon
+    // are props only, and Item_Can_V1_F to V3_F and Item_TacticalBacon_F, listed here
+    // before, are not classes at all.
 
     // ALiVE core items -- always loaded alongside the mod itself.
     class ALiVE_Core {
@@ -78,34 +68,34 @@ class CfgALiVEHumanitarianItems {
         };
     };
 
-    // ACE3 field-rations PBO. Modern classnames; the legacy
-    // ACE_Humanitarian_Ration (underscored) from the retired ACEX
-    // PBO is kept in the static CivPop.hpp lookup list for
-    // backward-compat but deliberately omitted here -- ACEX hasn't
-    // shipped for ~4 years and the current classname is
-    // ACE_HumanitarianRation (no underscore).
+    // ACE3 field-rations PBO.
     class ACE3_FieldRations {
         cfgPatchesName = "ace_field_rations";
         displayName    = "ACE3";
+        // The class names ACE 3.21 defines (measured 11 Oct 2026). Spirit, Franta, RedGull,
+        // ChickenWithRice, CreamOfChickenSoup, MeatballsWithPasta, HumanitarianRation,
+        // SunflowerSeeds and BeefJerky, listed here before, are not ACE classes.
         class water {
-            class ACE_Canteen     { displayName = "Canteen"; };
-            class ACE_WaterBottle { displayName = "Water Bottle"; };
-            class ACE_Spirit      { displayName = "Spirit (soda)"; };
-            class ACE_Franta      { displayName = "Franta (soda)"; };
-            class ACE_RedGull     { displayName = "RedGull (energy drink)"; };
+            class ACE_Canteen          { displayName = "Canteen"; };
+            class ACE_Canteen_Half     { displayName = "Canteen (half)"; };
+            class ACE_WaterBottle      { displayName = "Water Bottle"; };
+            class ACE_WaterBottle_Half { displayName = "Water Bottle (half)"; };
+            class ACE_Can_Spirit       { displayName = "Spirit (can)"; };
+            class ACE_Can_Franta       { displayName = "Franta (can)"; };
+            class ACE_Can_RedGull      { displayName = "RedGull (can)"; };
         };
         class ration {
-            class ACE_MRE_BeefStew           { displayName = "MRE - Beef Stew"; };
-            class ACE_MRE_ChickenTikkaMasala { displayName = "MRE - Chicken Tikka Masala"; };
-            class ACE_MRE_ChickenWithRice    { displayName = "MRE - Chicken with Rice"; };
-            class ACE_MRE_CreamOfChickenSoup { displayName = "MRE - Cream of Chicken Soup"; };
-            class ACE_MRE_LambCurry          { displayName = "MRE - Lamb Curry"; };
-            class ACE_MRE_MeatballsWithPasta { displayName = "MRE - Meatballs with Pasta"; };
-            class ACE_MRE_SteakVegetables    { displayName = "MRE - Steak & Vegetables"; };
-            class ACE_HumanitarianRation     { displayName = "Humanitarian Ration"; };
-            class ACE_Banana                 { displayName = "Banana"; };
-            class ACE_SunflowerSeeds         { displayName = "Sunflower Seeds"; };
-            class ACE_BeefJerky              { displayName = "Beef Jerky"; };
+            class ACE_MRE_BeefStew             { displayName = "MRE - Beef Stew"; };
+            class ACE_MRE_ChickenTikkaMasala   { displayName = "MRE - Chicken Tikka Masala"; };
+            class ACE_MRE_ChickenHerbDumplings { displayName = "MRE - Chicken with Herb Dumplings"; };
+            class ACE_MRE_CreamChickenSoup     { displayName = "MRE - Cream Chicken Soup"; };
+            class ACE_MRE_CreamTomatoSoup      { displayName = "MRE - Cream Tomato Soup"; };
+            class ACE_MRE_LambCurry            { displayName = "MRE - Lamb Curry"; };
+            class ACE_MRE_MeatballsPasta       { displayName = "MRE - Meatballs and Pasta"; };
+            class ACE_MRE_SteakVegetables      { displayName = "MRE - Steak & Vegetables"; };
+            class ACE_Humanitarian_Ration      { displayName = "Humanitarian Ration"; };
+            class ACE_Banana                   { displayName = "Banana"; };
+            class ACE_Sunflower_Seeds          { displayName = "Sunflower Seeds"; };
         };
     };
 
@@ -140,7 +130,8 @@ class CfgALiVEHumanitarianItems {
     // S.O.G. Prairie Fire (Vietnam CDLC). Crate-prop drinks + field
     // rations + fresh food props.
     class VN_SOG_PrairieFire {
-        cfgPatchesName = "vn_characters_c";
+        // the addon that defines the S.O.G. food and drink; vn_characters_c is not a patch
+        cfgPatchesName = "weapons_f_vietnam_c";
         displayName    = "S.O.G. Prairie Fire";
         class water {
             class vn_prop_drink_01 { displayName = "Drink (crate prop 1)"; };
