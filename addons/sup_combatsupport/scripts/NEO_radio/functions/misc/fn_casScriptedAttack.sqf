@@ -296,11 +296,16 @@ while {
 } do {
     _passCount = _passCount + 1;
 
-    // current weapon empty but the jet is not dry: switch to the next usable loaded
+    // A gunner killed mid-attack takes the weapons on his seat with him: they come off
+    // the list here, so the attack moves to what is left, or the gate ends it and the
+    // aircraft heads home, instead of holding a gun nobody can fire until the timeout.
+    _usableWeapons = [_veh] call NEO_fnc_casUsableWeapons;
+
+    // current weapon empty (or its gunner gone) but the jet is not dry: switch to the next usable loaded
     // weapon (same priority as AUTO), re-run the per-family setup + re-aim, and keep
     // attacking. A specific pick no longer forces an early winchester. The while gate
     // only let this pass run because something is still loaded, so a pick always lands.
-    if ((_veh ammo _weapon) <= 0) then {
+    if ((_veh ammo _weapon) <= 0 || {!(_weapon in _usableWeapons)}) then {
         private _next = [_veh, _usableWeapons] call NEO_fnc_casNextWeapon;
         if (_next != "" && {_next != _weapon}) then {
             [[_veh, format ["%1 is out of %2, switching to %3. Out.", _callsign, [configFile >> "CfgWeapons" >> _weapon] call bis_fnc_displayName, [configFile >> "CfgWeapons" >> _next] call bis_fnc_displayName], "side"],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;

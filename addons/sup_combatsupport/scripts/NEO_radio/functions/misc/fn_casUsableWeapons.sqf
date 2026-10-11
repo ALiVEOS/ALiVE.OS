@@ -15,9 +15,21 @@
 // ------------------------------------------------------------------
 params ["_veh"];
 
+// Only weapons on a seat somebody alive is in: with its gunner dead, an attack
+// helicopter's gun can't fire, and an attack that picked it stalled until the
+// sortie timed out. An aircraft with nobody aboard keeps the whole list, so the
+// picker still shows what a parked asset carries.
+private _manned = [];
+{
+    private _u = if (_x isEqualTo [-1]) then { driver _veh } else { _veh turretUnit _x };
+    if (!isNull _u && {alive _u}) then { _manned append (_veh weaponsTurret _x) };
+} forEach ([[-1]] + allTurrets [_veh, false]);
+private _crewed = (crew _veh) findIf { alive _x } >= 0;
+
 (weapons _veh) select {
     private _w = _x;
     private _keep = false;
+    private _seatless = _crewed && {!(_w in _manned)};
     // a mounted laser designator appears in weapons _veh but is not a weapon.
     // The engine base class is the reliable gate (vanilla/RHS/CUP/ACE designators
     // inherit Laserdesignator); the name/displayName token is a mod-safety backstop
@@ -26,7 +38,7 @@ params ["_veh"];
     private _isDesignator = _w isKindOf ["Laserdesignator", configFile >> "CfgWeapons"]
         || {((toLower _w) find "designat") >= 0}
         || {((toLower getText (configFile >> "CfgWeapons" >> _w >> "displayName")) find "designator") >= 0};
-    if (!_isDesignator) then {
+    if (!_isDesignator && {!_seatless}) then {
         // gun/cannon: always usable (may declare magazines per-muzzle)
         if (_w isKindOf ["CannonCore", configFile >> "CfgWeapons"]) then {
             _keep = true;
