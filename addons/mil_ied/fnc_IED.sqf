@@ -952,7 +952,7 @@ switch(_operation) do {
                         _trg setTriggerArea[(_size+250),(_size+250),0,false];
 
                         _trg setTriggerActivation["ANY","PRESENT",false];
-                        _trg setTriggerStatements[format["this && %1", _trgCondPresence], format ["null = [[getpos thisTrigger,%1,'%2'],thisList] call ALIVE_fnc_createBomber", _size, _faction], ""];
+                        _trg setTriggerStatements[format["this && {%1}", _trgCondPresence], format ["null = [[getpos thisTrigger,%1,'%2'],thisList] call ALIVE_fnc_createBomber", _size, _faction], ""];
 
                         if (_debug) then {
                             ["ALIVE-%1 Suicide Bomber Trigger: created at %2 (%3)", time, _label, mapgridposition _pos] call ALiVE_fnc_dump;
@@ -970,7 +970,7 @@ switch(_operation) do {
                         _trg setTriggerArea[(_size+250),(_size+250),0,false];
 
                         _trg setTriggerActivation["ANY","PRESENT",false];
-                        _trg setTriggerStatements[format["this && %1", _trgCondPresence], format ["null = [getpos thisTrigger,%1] call ALIVE_fnc_placeVBIED",_size], ""];
+                        _trg setTriggerStatements[format["this && {%1}", _trgCondPresence], format ["null = [getpos thisTrigger,%1] call ALIVE_fnc_placeVBIED",_size], ""];
 
                         if (_debug) then {
                             ["ALIVE-%1 VBIED Trigger: created at %2 (%3)", time, _label, mapgridposition _pos] call ALiVE_fnc_dump;
@@ -993,11 +993,11 @@ switch(_operation) do {
                             // Ensure minimum of 1 IED if threat > 0
                             if (_num < 1 && _iedThreat > 0) then {_num = 1;};
                             _trg setTriggerActivation["ANY","PRESENT",true]; // true = repeated
-                            _trg setTriggerStatements[format["this && %1", _trgCondPresence], format ["null = [getpos thisTrigger,%1,""%2"",%3] call ALIVE_fnc_createIED",_size, _label, _num], format ["null = [getpos thisTrigger,""%1""] call ALIVE_fnc_removeIED",_label]];
+                            _trg setTriggerStatements[format["this && {%1}", _trgCondPresence], format ["null = [getpos thisTrigger,%1,""%2"",%3] call ALIVE_fnc_createIED",_size, _label, _num], format ["null = [getpos thisTrigger,""%1""] call ALIVE_fnc_removeIED",_label]];
                             [_logic, "storeTrigger", [_size,_label,_pos, false,"IED",_num]] call MAINCLASS;
                         } else {
                             _trg setTriggerActivation["ANY","PRESENT",true]; // true = repeated
-                            _trg setTriggerStatements[format["this && %1", _trgCondPresence], format ["null = [getpos thisTrigger,%1,""%2""] call ALIVE_fnc_createIED",_size, _label], format ["null = [getpos thisTrigger,""%1""] call ALIVE_fnc_removeIED", _label]];
+                            _trg setTriggerStatements[format["this && {%1}", _trgCondPresence], format ["null = [getpos thisTrigger,%1,""%2""] call ALIVE_fnc_createIED",_size, _label], format ["null = [getpos thisTrigger,""%1""] call ALIVE_fnc_removeIED", _label]];
                             [_logic, "storeTrigger", [_size,_label,_pos, false, "IED"]] call MAINCLASS;
                         };
 
@@ -1569,9 +1569,9 @@ switch(_operation) do {
                 };
 
                 if (_num > 0) then {
-                    _trg setTriggerStatements[format["this && %1", _restoredCond], format ["null = [getpos thisTrigger,%1,""%2"", %3] call ALIVE_fnc_createIED",_size, _label, _num], format ["null = [getpos thisTrigger,""%1""] call ALIVE_fnc_removeIED",_label]];
+                    _trg setTriggerStatements[format["this && {%1}", _restoredCond], format ["null = [getpos thisTrigger,%1,""%2"", %3] call ALIVE_fnc_createIED",_size, _label, _num], format ["null = [getpos thisTrigger,""%1""] call ALIVE_fnc_removeIED",_label]];
                 } else {
-                    _trg setTriggerStatements[format["this && %1", _restoredCond], format ["null = [getpos thisTrigger,%1,""%2""] call ALIVE_fnc_createIED",_size, _label], format ["null = [getpos thisTrigger,""%1""] call ALIVE_fnc_removeIED",_label]];
+                    _trg setTriggerStatements[format["this && {%1}", _restoredCond], format ["null = [getpos thisTrigger,%1,""%2""] call ALIVE_fnc_createIED",_size, _label], format ["null = [getpos thisTrigger,""%1""] call ALIVE_fnc_removeIED",_label]];
                 };
 
                 if (_logic getVariable["debug",false]) then {
