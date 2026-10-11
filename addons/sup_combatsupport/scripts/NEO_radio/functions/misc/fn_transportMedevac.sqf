@@ -49,8 +49,8 @@ private _bail = {
     };
     call _cleanup;
 };
-// The men in its cargo seats: the door gunners have a group of their own (#530), so "not the
-// pilot's group" counted them too, and they were put out at the landing zone with the wounded.
+// The men in its cargo seats, by seat: counting "not the pilot's group" once caught the door
+// gunners too (they had a group of their own then, #530) and put them out at the landing zone.
 private _passengers = { (fullCrew [_chopper, "cargo"]) apply { _x select 0 } };
 
 // Fly to a point and set down, the way the FSM's own landings do: a pad to aim at, then

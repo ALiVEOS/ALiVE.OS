@@ -3,13 +3,17 @@
     #530: let a transport's turret door gunners return fire while the AI pilot keeps flying
     its route uninterrupted.
 
-    Behaviour is group-wide (Biki), so a gunner cannot be AWARE while the pilot stays CARELESS
-    inside one group - that was the failed first attempt (setBehaviour on the gunner flipped the
-    whole crew, the pilot reacted and hovered). This instead moves the real turret gunners into
-    their OWN AWARE group, decoupled from the pilot's CARELESS group, and runs a light loop that
-    nudges each gunner onto the nearest visible hostile and forces the shot (passive heli
-    door-gun AI is too sluggish to rely on). The pilot / vehicle group is never touched, so the
-    aircraft keeps flying its doMove and lands normally.
+    Measured on the rig (a Ghost Hawk past 8 riflemen 300 m off its track, 11 Oct): door
+    gunners only fire while they are in the PILOT's group. Moved into a group of their own
+    (the first version of this) they never fired once, even at COMBAT/RED with the enemy
+    known. They are also silenced by combat mode BLUE, and by TARGET switched off on the
+    pilot, who leads the group. What works and keeps the pilot calm: the crew stays one
+    CARELESS group with combat mode YELLOW, only the pilot's AUTOCOMBAT is off, and a light
+    loop shows the gunners the nearest hostile and orders the shot (unaided, a helicopter
+    crew barely spots infantry: nothing known after 30 s hovering 300 m away). Run as the
+    FSM sets the crew up, that fired 48 rounds and hit 4 of 8 men on a fly-past with the
+    route unchanged, and the pilot stayed CARELESS hovering under fire. Only men in armed
+    turrets count as gunners: a copilot's seat is a turret too.
 
     Params: 0: _chopper <OBJECT> - the transport
     Server-side only (the Combat Support transport crew is server-local).
@@ -20,42 +24,31 @@ params ["_chopper"];
 if (!isServer) exitWith {};
 if (isNull _chopper) exitWith {};
 
-private _side = side _chopper;
-private _gunGrp = createGroup [_side, true]; // deleteWhenEmpty - tidies itself if the gunners die
-_chopper setVariable ["NEO_radioGunnerGroup", _gunGrp, true];
-
-// move real turret gunners (never the pilot, never a player) into the defend group and undo the
-// react-init targeting leash on them
-private _gunners = [];
-{
-    private _g = _chopper turretUnit _x;
-    if (!isNull _g && {_g != driver _chopper} && {!isPlayer _g}) then {
-        [_g] joinSilent _gunGrp;
-        _g enableAi "TARGET";
-        _g enableAi "AUTOTARGET";
-        _gunners pushBack _g;
-    };
-} forEach allTurrets _chopper;
-
-if (_gunners isEqualTo []) exitWith {
-    // unarmed transport - nothing to do
-    deleteGroup _gunGrp;
-    _chopper setVariable ["NEO_radioGunnerGroup", grpNull, true];
+private _grp = group driver _chopper;
+private _gunners = ((allTurrets _chopper) select { (_chopper weaponsTurret _x) isNotEqualTo [] }) apply { _chopper turretUnit _x } select {
+    !isNull _x && {_x != driver _chopper} && {!isPlayer _x}
 };
+if (_gunners isEqualTo []) exitWith {}; // unarmed transport - nothing to do
+_chopper setVariable ["NEO_radioGunnerDefendArmed", true, true];
 
-_gunGrp setBehaviour "AWARE";
-_gunGrp setCombatMode "YELLOW";
+// targeting back on for the whole crew (the FSM's init switches it off), the pilot kept from
+// escalating to COMBAT (that is what makes an AI helicopter hover or break off)
+{ _x enableAI "TARGET"; _x enableAI "AUTOTARGET" } forEach (crew _chopper select {!isPlayer _x});
+(driver _chopper) disableAI "AUTOCOMBAT";
 // default the master switch on; the tablet ROE combo (fn_setROE) flips it to hold
 _chopper setVariable ["NEO_radioGunnerDefendOn", true, true];
-// keep the pilot from auto-escalating to COMBAT behaviour (that switch is what makes an AI heli
-// hover / break off); per-unit, does not touch the gunners
-{ _x disableAi "AUTOCOMBAT" } forEach (crew _chopper select {!(_x in _gunners)});
+_grp setCombatMode "YELLOW";
 
-// engagement loop: pick the nearest hostile with line of sight and force the gunners onto it
-[_chopper, _gunGrp] spawn {
-    params ["_chopper", "_gunGrp"];
-    private _gside = side _gunGrp;
-    while { alive _chopper && {({alive _x} count units _gunGrp) > 0} } do {
+// engagement loop: pick the nearest hostile with line of sight and put the gunners onto it
+[_chopper] spawn {
+    params ["_chopper"];
+    while { alive _chopper && {alive driver _chopper} } do {
+        private _grp = group driver _chopper;
+        private _gside = side _grp;
+        private _gunners = ((allTurrets _chopper) select { (_chopper weaponsTurret _x) isNotEqualTo [] }) apply { _chopper turretUnit _x } select {
+            alive _x && {_x != driver _chopper} && {!isPlayer _x}
+        };
+        if (_gunners isEqualTo []) exitWith {};
         private _t = objNull;
         private _td = 1e9;
         {
@@ -68,13 +61,9 @@ _chopper setVariable ["NEO_radioGunnerDefendOn", true, true];
         } forEach (_chopper nearEntities [["Man","Car","Tank","Air","Ship"], 800]);
 
         if (!isNull _t && {_chopper getVariable ["NEO_radioGunnerDefendOn", true]}) then {
-            // reveal to the GUNNER group (not the vehicle/pilot group) - doFire is dropped unless
-            // the firing unit's own group knows the target
-            _gunGrp reveal [_t, 4];
-            { _x doTarget _t; _x doFire _t } forEach (units _gunGrp select {alive _x});
+            _grp reveal [_t, 4];
+            { _x doTarget _t; _x doFire _t } forEach _gunners;
         };
         sleep 2.5;
     };
-    // group is deleteWhenEmpty and RespawnTransportAsset recycles it on death - no explicit
-    // deleteGroup here (it would warn on a not-yet-GC'd non-empty group)
 };

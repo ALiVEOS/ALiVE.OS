@@ -89,8 +89,9 @@ private _keepAsset = (!isNull _veh) && {
     || ({ isPlayer _x && { alive _x } && { _x distance _veh < 120 } } count allPlayers > 0)
 };
 
-// #530: the door gunners live in their own group (NEO_radioGunnerGroup), so they are NOT in
-// units _grp - grab it while _veh still exists so we can recycle them alongside the rest
+// #530: door gunners used to live in their own group (NEO_radioGunnerGroup) and so weren't in
+// units _grp. They stay in the crew's group now; a helicopter from before that still carries
+// the old group, so it is recycled alongside the rest when set
 private _gunGrp = if (!isNull _veh) then { _veh getVariable ["NEO_radioGunnerGroup", grpNull] } else { grpNull };
 
 //Delete objects and groups

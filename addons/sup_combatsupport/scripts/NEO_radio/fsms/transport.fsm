@@ -226,7 +226,7 @@ class FSM
                          "    _x setSkill 1;" \n
                          "} forEach units _grp;" \n
                          "" \n
-                         "//#530: turret door gunners defend the aircraft (own AWARE group + scripted fire) while the pilot stays CARELESS and flies" \n
+                         "//#530: turret door gunners defend the aircraft (the crew stays one CARELESS group at YELLOW, pilot AUTOCOMBAT off, scripted fire) while the pilot flies" \n
                          "[_chopper] spawn NEO_fnc_transportGunnerDefend;" \n
                          "" \n
                          "//Vehicle Status" \n
