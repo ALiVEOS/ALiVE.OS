@@ -580,7 +580,7 @@
     <English>AI Surrender Chance</English>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_AI_SURRENDER_COMMENT">
-    <English>Once an AI group has lost half its men, each survivor on foot with an enemy player within 200 m has this chance to surrender. He drops his weapons and puts his hands up (an ACE captive when ACE is loaded). Players can question each prisoner once: he may mark enemy groups within 2 km on that player's map and reveal his side's installations nearby.</English>
+    <English>Once an AI group has lost half its men, each survivor on foot with an enemy player within 200 m has this chance to surrender. He drops his weapons and puts his hands up (an ACE captive when ACE is loaded). Players can question each prisoner once: he may mark enemy groups within 2 km on that player's map and reveal his side's installations nearby. A percentage from 0 (never) to 100.</English>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_AI_TASK_TAKEOVER">
     <English>AI Takes Over Slow Tasks</English>

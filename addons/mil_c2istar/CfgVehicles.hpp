@@ -599,19 +599,15 @@ class CfgVehicles {
                             expression = "_this setVariable ['askFriendlies', _value, true];";
                             defaultValue = "true";
                     };
-                    class aiSurrenderChance : Combo
+                    // Any percentage (#1077); missions saved with the old list's 0, 10, 25 or 50
+                    // load into it unchanged
+                    class aiSurrenderChance : Edit
                     {
                             property = "ALiVE_MIL_C2ISTAR_aiSurrenderChance";
                             displayName = "$STR_ALIVE_C2ISTAR_AI_SURRENDER";
                             tooltip = "$STR_ALIVE_C2ISTAR_AI_SURRENDER_COMMENT";
                             defaultValue = """0""";
-                            class Values
-                            {
-                                    class Never { name = "Never"; value = "0"; };
-                                    class Rare  { name = "10%";   value = "10"; };
-                                    class Some  { name = "25%";   value = "25"; };
-                                    class Often { name = "50%";   value = "50"; };
-                            };
+                            typeName = "NUMBER";
                     };
                     class reportAirSituation
                     {

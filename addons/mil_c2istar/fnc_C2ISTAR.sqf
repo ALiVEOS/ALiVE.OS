@@ -1375,6 +1375,7 @@ switch(_operation) do {
         // within 2 km on that player's map and reveal his side's installations near him.
         private _surrenderChance = _logic getVariable ["aiSurrenderChance", 0];
         if (_surrenderChance isEqualType "") then { _surrenderChance = parseNumber _surrenderChance };
+        _surrenderChance = (_surrenderChance max 0) min 100;
         // Read live from the global, so a mission can change it while running; the handler and
         // the actions cost nothing while it is 0.
         if (isServer) then { missionNamespace setVariable ["ALiVE_c2istar_surrenderChance", _surrenderChance, true] };
