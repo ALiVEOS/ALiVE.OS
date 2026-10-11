@@ -222,7 +222,7 @@ switch(_operation) do {
                        "anyPlayerAboard","uavControlled","onStation","targetsGone","lockHeld","lockBusy",
                        "deckHome","fixedWing","needsRunway","launchInProgress","onRunway","armed","virtualHome",
                        "atTaxiOffEnd","canMove","onTaxiway","nearStand","heldOnStand","deadAboard","pilotDead",
-                       "servicePending","settling","standClear","playersSeeHull"];
+                       "servicePending","settling","standClear","playersSeeHull","rotorsBlocked"];
             {
                 [_o, _x, 0] call ALIVE_fnc_hashSet;
             } forEach ["altAGL","altASL","speed","fuel","damage","wpRemaining","aliveCrew",
@@ -670,6 +670,18 @@ switch(_operation) do {
         // with somebody a few hundred metres away, would otherwise sit in
         // recovery with its engine off for ten minutes and then be moved anyway.
         ["nearStand", _dHome < 60] call _fnc_set;
+        // A helicopter waiting to start up with a manned vehicle under its rotors, other than the
+        // truck coming to service it. On LAN a truck crossed two Apaches' stands as they spun up
+        // and both lost their rotors, so their launches were called off.
+        private _rotorsBlocked = false;
+        if (_obj isKindOf "Helicopter" && {!isEngineOn _obj} && {((getPosATL _obj) select 2) < 5}) then {
+            private _ownTruck = _obj getVariable ["ALIVE_resupply_vehicle", objNull];
+            private _reach = ((boundingBoxReal _obj) select 2) + 2;
+            _rotorsBlocked = ((_obj nearEntities [["LandVehicle","Ship"], _reach]) findIf {
+                alive _x && {_x != _ownTruck} && {((crew _x) findIf { alive _x }) >= 0}
+            }) >= 0;
+        };
+        ["rotorsBlocked", _rotorsBlocked] call _fnc_set;
         // And the distance itself, for the one rule that needs a figure rather
         // than a yes or no: a landing is given its extra time only when the
         // aircraft is still near enough to be on its way down to this field.

@@ -480,7 +480,15 @@ switch(_operation) do {
                                 // the runway through five minutes of hovering while a
                                 // jet behind it ran out of time on NO_LOCK.
                                 private _lockOk = !_takesRunway || {"lockHeld" call _fnc_o};
-                                if (!_crewPending && {"crewSeated" call _fnc_o} && {_lockOk}) then {
+                                // A helicopter doesn't start up with a manned vehicle under its rotors.
+                                // It waits for the stand to clear, up to this state's deadline, and then
+                                // goes anyway rather than losing the sortie.
+                                private _rotorHold = ("rotorsBlocked" call _fnc_o) && {!_expired};
+                                if (_rotorHold && {!([_row,"rotorWaitSaid",false] call ALIVE_fnc_hashGet)}) then {
+                                    [_row,"rotorWaitSaid",true] call ALIVE_fnc_hashSet;
+                                    _effects pushBack "waitingForClearStand";
+                                };
+                                if (!_crewPending && {"crewSeated" call _fnc_o} && {_lockOk} && {!_rotorHold}) then {
                                     _next = "LAUNCHING";
                                 } else {
                                     // Only the runway is missing and another of our
@@ -1295,6 +1303,7 @@ switch(_operation) do {
             };
             if (_next isEqualTo "ASSIGNED") then {
                 [_row,"runwayWaits",0] call ALIVE_fnc_hashSet;
+                [_row,"rotorWaitSaid",false] call ALIVE_fnc_hashSet;
                 [_row,"crewPending",false] call ALIVE_fnc_hashSet;
             };
             if (_next isEqualTo "LAUNCHING") then {

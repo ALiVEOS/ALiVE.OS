@@ -181,6 +181,7 @@ open, which is also a fair statement of what the kernel will have to own.
                                     "broadcastStart","broadcastOnStation","broadcastReturn","broadcastLost",
                                     "landingExtended",
                                     "waitingForRunway",
+"waitingForClearStand",
                                     "refusedTeleportPlayerAboard"];
             switch (true) do {
                 case (_x isEqualTo "lock"):   { [_s, "lock",   ["rwy", "BLU_F_0", time + 150]] call ALIVE_fnc_ATOSurface };

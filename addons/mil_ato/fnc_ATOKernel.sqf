@@ -1280,6 +1280,9 @@ private _fnc_routeEffects = {
             };
             // Not debug-gated either: at most a handful per launch, two minutes
             // apart, and they are what shows a launch waited rather than failed.
+            case (_name isEqualTo "waitingForClearStand"): {
+                ["ALIVE_fnc_ATOKernel - %1 waits to start up: a manned vehicle is under its rotors", _tail] call ALiVE_fnc_dump;
+            };
             case (_name isEqualTo "waitingForRunway"): {
                 private _holderW = if (_surface isEqualTo []) then { "" } else { [_surface, "holder", _lockKey] call ALIVE_fnc_ATOSurface };
                 ["ALIVE_fnc_ATOKernel - %1 waits for the runway (wait %2), held by %3",
