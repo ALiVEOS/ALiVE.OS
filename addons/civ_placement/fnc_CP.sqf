@@ -735,6 +735,53 @@ switch(_operation) do {
             };
             // DEBUG -------------------------------------------------------------------------------------
 
+            // Sea Patrol Tasks (#426): every ten minutes, each side with players is given a task to
+            // intercept the nearest hostile patrol boat within 3 km of one of them, one task open per
+            // side at a time. One loop serves every Civilian Placement module; it starts below once a
+            // module with the setting has placed a boat.
+            if (isNil "ALiVE_CP_fnc_seaPatrolTasks") then {
+                ALiVE_CP_fnc_seaPatrolTasks = {
+                    private _open = createHashMap;   // side -> task ID raised last
+                    while {true} do {
+                        sleep (missionNamespace getVariable ["ALiVE_CP_seaPatrolTaskInterval", 600]);
+                        if (!isNil "ALIVE_eventLog" && {!isNil "ALIVE_profileHandler"}) then {
+                            ALiVE_CP_seaPatrolBoats = ALiVE_CP_seaPatrolBoats select { !isNil {[ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler} };
+                            // the tasks still running: a cancelled or failed one stays in the task list itself
+                            private _tasks = if (isNil "ALIVE_taskHandler") then {[]} else {([ALIVE_taskHandler, "activeTasks", ["", [], [], nil]] call ALIVE_fnc_hashGet) select 1};
+                            {
+                                private _sideText = _x;
+                                private _sideObj = [_sideText] call ALiVE_fnc_sideTextToObject;
+                                private _last = _open getOrDefault [_sideText, ""];
+                                private _hp = [_sideText] call ALiVE_fnc_getPlayersDataSource;
+                                if ((_last == "" || {!(_last in _tasks)}) && {count (_hp select 1) > 0}) then {
+                                    private _players = (_hp select 1) apply { [_x] call ALIVE_fnc_getPlayerByUID } select { !isNull _x };
+                                    private _best = ""; private _bestD = 3000; private _bestPos = []; private _bestFaction = "";
+                                    {
+                                        private _prof = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+                                        private _bSide = [[_prof, "side", ""] call ALIVE_fnc_hashGet] call ALiVE_fnc_sideTextToObject;
+                                        if ((_sideObj getFriend _bSide) < 0.6) then {
+                                            private _pos = [_prof, "position", [0,0,0]] call ALIVE_fnc_hashGet;
+                                            private _d = selectMin (_players apply { _x distance2D _pos });
+                                            if (_d < _bestD) then { _bestD = _d; _best = _x; _bestPos = _pos; _bestFaction = [_prof, "faction", ""] call ALIVE_fnc_hashGet };
+                                        };
+                                    } forEach ALiVE_CP_seaPatrolBoats;
+                                    if (_best != "" && {_bestFaction != ""}) then {
+                                        private _taskID = format ["seapatrol_%1_%2", _sideText, round time];
+                                        private _taskData = [_taskID, "CP", _sideText, faction (_players select 0), "DestroyVehicles", "NULL",
+                                            _bestPos getPos [random 300, random 360], [_hp select 1, _hp select 0], _bestFaction, "Y", "Side", [_best]];
+                                        private _event = ["TASK_GENERATE", _taskData, "CP"] call ALIVE_fnc_event;
+                                        [ALIVE_eventLog, "addEvent", _event] call ALIVE_fnc_eventLog;
+                                        _open set [_sideText, _taskID];
+                                        ["CP - sea patrol intercept task for %1 against %2, %3 m from the nearest player", _sideText, _best, round _bestD] call ALiVE_fnc_dump;
+                                    };
+                                };
+                            } forEach ["WEST", "EAST", "GUER"];
+                };
+            };
+                };
+            };
+
+
             if(_placement) then {
 
                 if!(ALIVE_loadProfilesPersistent) then {
@@ -750,6 +797,29 @@ switch(_operation) do {
                     };
 
                 }else{
+
+                    // Sea Patrol Tasks on a loaded mission: the boats come back as profiles but the list
+                    // the tasks pick from was only filled while placing, so it is rebuilt from the restored
+                    // boats of this module's factions once the profiles are in.
+                    if ((_logic getVariable ["seaPatrolTasks", "false"]) in [true, "true"] && {([_logic, "placeSeaPatrols"] call MAINCLASS) > 0}) then {
+                        private _seaFactions = [_faction, [_logic getVariable ["seaPatrolFaction", ""]] call CBA_fnc_trim] select { _x != "" };
+                        [_seaFactions] spawn {
+                            params ["_seaFactions"];
+                            waitUntil { sleep 2; !isNil "ALIVE_profileSystemInit" };
+                            private _ships = [ALIVE_profileHandler, "getProfilesByVehicleType", "Ship"] call ALIVE_fnc_profileHandler;
+                            if (isNil "_ships") then { _ships = [] };
+                            private _boats = _ships select {
+                                private _p = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+                                !isNil "_p" && {([_p, "faction", ""] call ALIVE_fnc_hashGet) in _seaFactions}
+                            };
+                            if (isNil "ALiVE_CP_seaPatrolBoats") then { ALiVE_CP_seaPatrolBoats = [] };
+                            { ALiVE_CP_seaPatrolBoats pushBackUnique _x } forEach _boats;
+                            if (count ALiVE_CP_seaPatrolBoats > 0 && {isNil "ALiVE_CP_seaPatrolTaskLoop"}) then {
+                                ALiVE_CP_seaPatrolTaskLoop = [] spawn ALiVE_CP_fnc_seaPatrolTasks;
+                            };
+                            ["CP - sea patrol tasks after a load: %1 boats of %2", count _boats, _seaFactions] call ALiVE_fnc_dump;
+                        };
+                    };
 
                     // Persistent load: "placement" is skipped (profiles were restored elsewhere), so the
                     // roadblock queue is the saved ALIVE_CIV_PLACEMENT_ROADBLOCK_LOCATIONS, this module's
@@ -1510,52 +1580,6 @@ switch(_operation) do {
 
             if (isNil QGVAR(ROADBLOCK_LOCATIONS)) then {
                 GVAR(ROADBLOCK_LOCATIONS) = [];
-            };
-
-            // Sea Patrol Tasks (#426): every ten minutes, each side with players is given a task to
-            // intercept the nearest hostile patrol boat within 3 km of one of them, one task open per
-            // side at a time. One loop serves every Civilian Placement module; it starts below once a
-            // module with the setting has placed a boat.
-            if (isNil "ALiVE_CP_fnc_seaPatrolTasks") then {
-                ALiVE_CP_fnc_seaPatrolTasks = {
-                    private _open = createHashMap;   // side -> task ID raised last
-                    while {true} do {
-                        sleep (missionNamespace getVariable ["ALiVE_CP_seaPatrolTaskInterval", 600]);
-                        if (!isNil "ALIVE_eventLog" && {!isNil "ALIVE_profileHandler"}) then {
-                            ALiVE_CP_seaPatrolBoats = ALiVE_CP_seaPatrolBoats select { !isNil {[ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler} };
-                            // the tasks still running: a cancelled or failed one stays in the task list itself
-                            private _tasks = if (isNil "ALIVE_taskHandler") then {[]} else {([ALIVE_taskHandler, "activeTasks", ["", [], [], nil]] call ALIVE_fnc_hashGet) select 1};
-                            {
-                                private _sideText = _x;
-                                private _sideObj = [_sideText] call ALiVE_fnc_sideTextToObject;
-                                private _last = _open getOrDefault [_sideText, ""];
-                                private _hp = [_sideText] call ALiVE_fnc_getPlayersDataSource;
-                                if ((_last == "" || {!(_last in _tasks)}) && {count (_hp select 1) > 0}) then {
-                                    private _players = (_hp select 1) apply { [_x] call ALIVE_fnc_getPlayerByUID } select { !isNull _x };
-                                    private _best = ""; private _bestD = 3000; private _bestPos = []; private _bestFaction = "";
-                                    {
-                                        private _prof = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
-                                        private _bSide = [[_prof, "side", ""] call ALIVE_fnc_hashGet] call ALiVE_fnc_sideTextToObject;
-                                        if ((_sideObj getFriend _bSide) < 0.6) then {
-                                            private _pos = [_prof, "position", [0,0,0]] call ALIVE_fnc_hashGet;
-                                            private _d = selectMin (_players apply { _x distance2D _pos });
-                                            if (_d < _bestD) then { _bestD = _d; _best = _x; _bestPos = _pos; _bestFaction = [_prof, "faction", ""] call ALIVE_fnc_hashGet };
-                                        };
-                                    } forEach ALiVE_CP_seaPatrolBoats;
-                                    if (_best != "" && {_bestFaction != ""}) then {
-                                        private _taskID = format ["seapatrol_%1_%2", _sideText, round time];
-                                        private _taskData = [_taskID, "CP", _sideText, faction (_players select 0), "DestroyVehicles", "NULL",
-                                            _bestPos getPos [random 300, random 360], [_hp select 1, _hp select 0], _bestFaction, "Y", "Side", [_best]];
-                                        private _event = ["TASK_GENERATE", _taskData, "CP"] call ALIVE_fnc_event;
-                                        [ALIVE_eventLog, "addEvent", _event] call ALIVE_fnc_eventLog;
-                                        _open set [_sideText, _taskID];
-                                        ["CP - sea patrol intercept task for %1 against %2, %3 m from the nearest player", _sideText, _best, round _bestD] call ALiVE_fnc_dump;
-                                    };
-                                };
-                            } forEach ["WEST", "EAST", "GUER"];
-                };
-            };
-                };
             };
 
             _countSeaPatrols = 0;
