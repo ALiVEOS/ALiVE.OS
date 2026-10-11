@@ -120,7 +120,7 @@ if (_parked && {alive _veh}) then {
 // ---- Phase 2: hold for the resupply truck ---------------------------------
 if (_parked && _needsService && {alive _veh} && {!(call _fnc_retasked)}) then {
     // the resupply watchdog reads ALIVE_resupply_needsService and dispatches a
-    // truck once the aircraft is parked; service restores ammo 1 / fuel 0.5 / damage 0.
+    // truck once the aircraft is parked; service restores ammo 1 / fuel 1 / damage 0.
     // "Serviced" means the SERVICE COMPLETED (lastDispatch is stamped at completion,
     // incl. the max-retries force-service), or every resource genuinely reads healthy -
     // fuel and damage alone are NOT enough: a winchester RTB parks with plenty of fuel

@@ -2599,6 +2599,12 @@ switch(_operation) do {
                 private _side = "";
                 private _grpT = group (driver _obj);
                 if (!isNull _grpT) then { _side = str (side _grpT) };
+                // With nobody aboard the side came out empty, no logistics module answered, and the
+                // aircraft waited out the whole turnaround for a truck that never came. Its class's
+                // side stands in.
+                if (_side isEqualTo "") then {
+                    _side = ["EAST", "WEST", "GUER"] param [getNumber (configFile >> "CfgVehicles" >> typeOf _obj >> "side"), ""];
+                };
 
                 if (_hasLogcom && {!isNil "ALIVE_fnc_event"} && {!isNil "ALIVE_eventLog"}) then {
                     // All three are asked for. An aircraft back from a sortie
@@ -2663,15 +2669,11 @@ switch(_operation) do {
                         call _fnc_fill;
                         _v setVehicleAmmo 1;
                     } else {
-                        // And the tank filled after a truck has been. The truck's
-                        // service only ever raises fuel to half a tank, so an
-                        // aircraft that landed with more got nothing: on LAN an
-                        // Apache was serviced by a truck at 0.61, 0.54 and 0.50
-                        // and would have dropped below the tasker's 0.5 floor on
-                        // its next sortie. How full Combat Support fills its own
-                        // assets is its own question; an aircraft of this
-                        // module leaves its turnaround full, as it does when no
-                        // truck comes.
+                        // And the tank filled after a truck has been, so an aircraft
+                        // of this module leaves its turnaround full whether or not a
+                        // truck came. The truck's service fills to full itself now
+                        // (0f7ebc59); this stays for an aircraft held on its stand,
+                        // whose fuel the service puts aside rather than in the tank.
                         call _fnc_fill;
                     };
                     _v setVariable ["ALiVE_mil_ato_servicedAt", time, false];

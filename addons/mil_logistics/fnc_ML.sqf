@@ -4793,8 +4793,14 @@ switch(_operation) do {
             // Validate target is still alive.
             if (isNull _targetVeh || {!alive _targetVeh}) exitWith {
                 ["LOGCOM_RESUPPLY: Target asset %1 no longer exists, aborting", _callsign] call ALiVE_fnc_dump;
-                private _count = missionNamespace getVariable ["ALIVE_resupply_activeCount", 1];
-                missionNamespace setVariable ["ALIVE_resupply_activeCount", (_count - 1) max 0, true];
+                // Only a dispatch Combat Support counted gives a slot back: the air commander asks for
+                // trucks too, and each of its visits used to free one of Combat Support's three. With the
+                // aircraft gone there's no telling, and the slot is given back as it always was.
+                if (isNull _targetVeh || {_targetVeh getVariable ["ALIVE_resupply_counted", false]}) then {
+                    if (!isNull _targetVeh) then { _targetVeh setVariable ["ALIVE_resupply_counted", false, true] };
+                    private _count = missionNamespace getVariable ["ALIVE_resupply_activeCount", 1];
+                    missionNamespace setVariable ["ALIVE_resupply_activeCount", (_count - 1) max 0, true];
+                };
             };
 
             // A ground resupply truck can only service a PARKED aircraft. If the asset is an
@@ -4805,8 +4811,14 @@ switch(_operation) do {
                 _targetVeh setVariable ["ALIVE_resupply_state", "deferred", true];
                 _targetVeh setVariable ["ALIVE_resupply_inProgress", false, true];
                 _targetVeh setVariable ["ALIVE_resupply_vehicle", objNull, true];
-                private _count = missionNamespace getVariable ["ALIVE_resupply_activeCount", 1];
-                missionNamespace setVariable ["ALIVE_resupply_activeCount", (_count - 1) max 0, true];
+                // Only a dispatch Combat Support counted gives a slot back: the air commander asks for
+                // trucks too, and each of its visits used to free one of Combat Support's three. With the
+                // aircraft gone there's no telling, and the slot is given back as it always was.
+                if (isNull _targetVeh || {_targetVeh getVariable ["ALIVE_resupply_counted", false]}) then {
+                    if (!isNull _targetVeh) then { _targetVeh setVariable ["ALIVE_resupply_counted", false, true] };
+                    private _count = missionNamespace getVariable ["ALIVE_resupply_activeCount", 1];
+                    missionNamespace setVariable ["ALIVE_resupply_activeCount", (_count - 1) max 0, true];
+                };
             };
 
             // Multi-ML routing: every ML module receives every LOGCOM_RESUPPLY event.
@@ -4885,8 +4897,14 @@ switch(_operation) do {
                 _targetVeh setVariable ["ALIVE_resupply_state", "failed", true];
                 _targetVeh setVariable ["ALIVE_resupply_inProgress", false, true];
                 _targetVeh setVariable ["ALIVE_resupply_vehicle", objNull, true];
-                private _count = missionNamespace getVariable ["ALIVE_resupply_activeCount", 1];
-                missionNamespace setVariable ["ALIVE_resupply_activeCount", (_count - 1) max 0, true];
+                // Only a dispatch Combat Support counted gives a slot back: the air commander asks for
+                // trucks too, and each of its visits used to free one of Combat Support's three. With the
+                // aircraft gone there's no telling, and the slot is given back as it always was.
+                if (isNull _targetVeh || {_targetVeh getVariable ["ALIVE_resupply_counted", false]}) then {
+                    if (!isNull _targetVeh) then { _targetVeh setVariable ["ALIVE_resupply_counted", false, true] };
+                    private _count = missionNamespace getVariable ["ALIVE_resupply_activeCount", 1];
+                    missionNamespace setVariable ["ALIVE_resupply_activeCount", (_count - 1) max 0, true];
+                };
             };
 
             // Deduct now. If the convoy is destroyed en route the units aren't credited back -
@@ -5145,8 +5163,14 @@ switch(_operation) do {
                             _targetVeh setVariable ["ALIVE_resupply_vehicle", objNull, true];
                             _targetVeh setVariable ["ALIVE_resupply_retries",
                                 (_targetVeh getVariable ["ALIVE_resupply_retries", 0]) + 1, true];
-                            private _count = missionNamespace getVariable ["ALIVE_resupply_activeCount", 1];
-                            missionNamespace setVariable ["ALIVE_resupply_activeCount", (_count - 1) max 0, true];
+                            // Only a dispatch Combat Support counted gives a slot back: the air commander asks for
+                            // trucks too, and each of its visits used to free one of Combat Support's three. With the
+                            // aircraft gone there's no telling, and the slot is given back as it always was.
+                            if (isNull _targetVeh || {_targetVeh getVariable ["ALIVE_resupply_counted", false]}) then {
+                                if (!isNull _targetVeh) then { _targetVeh setVariable ["ALIVE_resupply_counted", false, true] };
+                                private _count = missionNamespace getVariable ["ALIVE_resupply_activeCount", 1];
+                                missionNamespace setVariable ["ALIVE_resupply_activeCount", (_count - 1) max 0, true];
+                            };
                         };
 
                         // Protection: target asset destroyed.
@@ -5155,8 +5179,14 @@ switch(_operation) do {
                             "aborted" call _fnc_latchConvoy;
                             {deleteVehicle _x} forEach (crew _truck);
                             deleteVehicle _truck;
-                            private _count = missionNamespace getVariable ["ALIVE_resupply_activeCount", 1];
-                            missionNamespace setVariable ["ALIVE_resupply_activeCount", (_count - 1) max 0, true];
+                            // Only a dispatch Combat Support counted gives a slot back: the air commander asks for
+                            // trucks too, and each of its visits used to free one of Combat Support's three. With the
+                            // aircraft gone there's no telling, and the slot is given back as it always was.
+                            if (isNull _targetVeh || {_targetVeh getVariable ["ALIVE_resupply_counted", false]}) then {
+                                if (!isNull _targetVeh) then { _targetVeh setVariable ["ALIVE_resupply_counted", false, true] };
+                                private _count = missionNamespace getVariable ["ALIVE_resupply_activeCount", 1];
+                                missionNamespace setVariable ["ALIVE_resupply_activeCount", (_count - 1) max 0, true];
+                            };
                         };
 
                         // Protection: aircraft taxiing / took off en route. A ground truck cannot
@@ -5170,8 +5200,14 @@ switch(_operation) do {
                             _targetVeh setVariable ["ALIVE_resupply_state", "cancelled", true];
                             _targetVeh setVariable ["ALIVE_resupply_inProgress", false, true];
                             _targetVeh setVariable ["ALIVE_resupply_vehicle", objNull, true];
-                            private _count = missionNamespace getVariable ["ALIVE_resupply_activeCount", 1];
-                            missionNamespace setVariable ["ALIVE_resupply_activeCount", (_count - 1) max 0, true];
+                            // Only a dispatch Combat Support counted gives a slot back: the air commander asks for
+                            // trucks too, and each of its visits used to free one of Combat Support's three. With the
+                            // aircraft gone there's no telling, and the slot is given back as it always was.
+                            if (isNull _targetVeh || {_targetVeh getVariable ["ALIVE_resupply_counted", false]}) then {
+                                if (!isNull _targetVeh) then { _targetVeh setVariable ["ALIVE_resupply_counted", false, true] };
+                                private _count = missionNamespace getVariable ["ALIVE_resupply_activeCount", 1];
+                                missionNamespace setVariable ["ALIVE_resupply_activeCount", (_count - 1) max 0, true];
+                            };
                         };
 
                         // Protection: timeout expired.
@@ -5201,8 +5237,14 @@ switch(_operation) do {
                                 _targetVeh setVariable ["ALIVE_resupply_retries", 0, true];
                                 _targetVeh setVariable ["ALIVE_resupply_lastDispatch", serverTime, true];
                             };
-                            private _count = missionNamespace getVariable ["ALIVE_resupply_activeCount", 1];
-                            missionNamespace setVariable ["ALIVE_resupply_activeCount", (_count - 1) max 0, true];
+                            // Only a dispatch Combat Support counted gives a slot back: the air commander asks for
+                            // trucks too, and each of its visits used to free one of Combat Support's three. With the
+                            // aircraft gone there's no telling, and the slot is given back as it always was.
+                            if (isNull _targetVeh || {_targetVeh getVariable ["ALIVE_resupply_counted", false]}) then {
+                                if (!isNull _targetVeh) then { _targetVeh setVariable ["ALIVE_resupply_counted", false, true] };
+                                private _count = missionNamespace getVariable ["ALIVE_resupply_activeCount", 1];
+                                missionNamespace setVariable ["ALIVE_resupply_activeCount", (_count - 1) max 0, true];
+                            };
                         };
 
                         // Success: truck within 100m of target.
@@ -5226,8 +5268,14 @@ switch(_operation) do {
 
                             // Decrement concurrent-dispatch counter now - the delivery leg is done.
                             // RTB is fire-and-forget and shouldn't keep the asset marked busy.
-                            private _count = missionNamespace getVariable ["ALIVE_resupply_activeCount", 1];
-                            missionNamespace setVariable ["ALIVE_resupply_activeCount", (_count - 1) max 0, true];
+                            // Only a dispatch Combat Support counted gives a slot back: the air commander asks for
+                            // trucks too, and each of its visits used to free one of Combat Support's three. With the
+                            // aircraft gone there's no telling, and the slot is given back as it always was.
+                            if (isNull _targetVeh || {_targetVeh getVariable ["ALIVE_resupply_counted", false]}) then {
+                                if (!isNull _targetVeh) then { _targetVeh setVariable ["ALIVE_resupply_counted", false, true] };
+                                private _count = missionNamespace getVariable ["ALIVE_resupply_activeCount", 1];
+                                missionNamespace setVariable ["ALIVE_resupply_activeCount", (_count - 1) max 0, true];
+                            };
 
                             // --- RTB ---
                             // Clear any existing waypoints and route the truck back to its source.
@@ -5331,8 +5379,14 @@ switch(_operation) do {
                         _targetVeh setVariable ["ALIVE_resupply_inProgress", false, true];
                         _targetVeh setVariable ["ALIVE_resupply_lastDispatch", serverTime, true];
                         _targetVeh setVariable ["ALIVE_resupply_retries", 0, true];
-                        private _count = missionNamespace getVariable ["ALIVE_resupply_activeCount", 1];
-                        missionNamespace setVariable ["ALIVE_resupply_activeCount", (_count - 1) max 0, true];
+                        // Only a dispatch Combat Support counted gives a slot back: the air commander asks for
+                        // trucks too, and each of its visits used to free one of Combat Support's three. With the
+                        // aircraft gone there's no telling, and the slot is given back as it always was.
+                        if (isNull _targetVeh || {_targetVeh getVariable ["ALIVE_resupply_counted", false]}) then {
+                            if (!isNull _targetVeh) then { _targetVeh setVariable ["ALIVE_resupply_counted", false, true] };
+                            private _count = missionNamespace getVariable ["ALIVE_resupply_activeCount", 1];
+                            missionNamespace setVariable ["ALIVE_resupply_activeCount", (_count - 1) max 0, true];
+                        };
                     };
                 } else {
                     // --- HELI SLINGLOAD DISPATCH ---
@@ -5402,8 +5456,14 @@ switch(_operation) do {
                                 }, [_heli], 10] call CBA_fnc_waitAndExecute;
                             };
 
-                            private _count = missionNamespace getVariable ["ALIVE_resupply_activeCount", 1];
-                            missionNamespace setVariable ["ALIVE_resupply_activeCount", (_count - 1) max 0, true];
+                            // Only a dispatch Combat Support counted gives a slot back: the air commander asks for
+                            // trucks too, and each of its visits used to free one of Combat Support's three. With the
+                            // aircraft gone there's no telling, and the slot is given back as it always was.
+                            if (isNull _targetVeh || {_targetVeh getVariable ["ALIVE_resupply_counted", false]}) then {
+                                if (!isNull _targetVeh) then { _targetVeh setVariable ["ALIVE_resupply_counted", false, true] };
+                                private _count = missionNamespace getVariable ["ALIVE_resupply_activeCount", 1];
+                                missionNamespace setVariable ["ALIVE_resupply_activeCount", (_count - 1) max 0, true];
+                            };
                         };
 
                         // --- Main monitor loop ---
@@ -5581,8 +5641,14 @@ switch(_operation) do {
                                 };
                             }, [_heli], 120] call CBA_fnc_waitAndExecute;
 
-                            private _count = missionNamespace getVariable ["ALIVE_resupply_activeCount", 1];
-                            missionNamespace setVariable ["ALIVE_resupply_activeCount", (_count - 1) max 0, true];
+                            // Only a dispatch Combat Support counted gives a slot back: the air commander asks for
+                            // trucks too, and each of its visits used to free one of Combat Support's three. With the
+                            // aircraft gone there's no telling, and the slot is given back as it always was.
+                            if (isNull _targetVeh || {_targetVeh getVariable ["ALIVE_resupply_counted", false]}) then {
+                                if (!isNull _targetVeh) then { _targetVeh setVariable ["ALIVE_resupply_counted", false, true] };
+                                private _count = missionNamespace getVariable ["ALIVE_resupply_activeCount", 1];
+                                missionNamespace setVariable ["ALIVE_resupply_activeCount", (_count - 1) max 0, true];
+                            };
                         };
                     };
                 };

@@ -257,6 +257,7 @@ while {true} do {
             _veh setVariable ["ALIVE_resupply_state", "dispatched", true];
         };
         missionNamespace setVariable ["ALIVE_resupply_activeCount", _activeDispatches + 1, true];
+        _primaryVeh setVariable ["ALIVE_resupply_counted", true, true];
 
         private _needs = [_needsAmmo, _needsFuel, _needsRepair];
         private _sideText = str _side;
