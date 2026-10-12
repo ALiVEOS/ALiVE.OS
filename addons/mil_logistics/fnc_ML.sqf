@@ -4722,10 +4722,19 @@ switch(_operation) do {
                 default { "B_Truck_01_ammo_F" };
             };
             private _truckSpawnPos = _sourcePos;
-            private _spawnResult = [_truckClass, _sourcePos, 50, "auto"] call ALiVE_fnc_findVehicleSpawnPosition;
-            if (count _spawnResult >= 2) then { _truckSpawnPos = _spawnResult select 0; };
-            private _truck = createVehicle [_truckClass, _truckSpawnPos, [], 10, "NONE"];
-            _truck setDir (_truckSpawnPos getDir _targetPos);
+            private _spawnResult = [_truckClass, _sourcePos, 50, "auto", _sourcePos getDir _targetPos] call ALiVE_fnc_findVehicleSpawnPosition;
+            // Exactly where and how the validator checked it, as the convoy truck below is
+            private _truck = if (count _spawnResult >= 2) then {
+                _truckSpawnPos = _spawnResult select 0;
+                private _v = createVehicle [_truckClass, _truckSpawnPos, [], 0, "CAN_COLLIDE"];
+                _v setDir (_spawnResult select 1);
+                _v setPosATL _truckSpawnPos;
+                _v
+            } else {
+                private _v = createVehicle [_truckClass, _truckSpawnPos, [], 10, "NONE"];
+                _v setDir (_truckSpawnPos getDir _targetPos);
+                _v
+            };
             createVehicleCrew _truck;
             _truck allowDamage false;
             [{_this allowDamage true;}, _truck, 15] call CBA_fnc_waitAndExecute;
@@ -4972,15 +4981,22 @@ switch(_operation) do {
                 // detonate before driving off. Falls back to the
                 // original _sourcePos when the validator finds nothing.
                 private _truckSpawnPos = _sourcePos;
-                private _spawnResult = [_truckClass, _sourcePos, 50, "auto"] call ALiVE_fnc_findVehicleSpawnPosition;
-                if (count _spawnResult >= 2) then {
+                private _spawnResult = [_truckClass, _sourcePos, 50, "auto", _sourcePos getDir _targetPos] call ALiVE_fnc_findVehicleSpawnPosition;
+                // Put exactly where, and turned the way, the validator checked it. Created with a
+                // 10 m random spread and then turned to face the target, it was often no longer on
+                // the checked ground: measured on the Stratis airfield, 2 of 15 trucks landed against
+                // a cargo house or among clutter and never moved, the first one of a mission included.
+                private _truck = if (count _spawnResult >= 2) then {
                     _truckSpawnPos = _spawnResult select 0;
-                    // Direction is overwritten below to face _targetPos
-                    // - we only need the validated position here.
+                    private _v = createVehicle [_truckClass, _truckSpawnPos, [], 0, "CAN_COLLIDE"];
+                    _v setDir (_spawnResult select 1);
+                    _v setPosATL _truckSpawnPos;
+                    _v
+                } else {
+                    private _v = createVehicle [_truckClass, _truckSpawnPos, [], 10, "NONE"];
+                    _v setDir (_truckSpawnPos getDir _targetPos);
+                    _v
                 };
-
-                private _truck = createVehicle [_truckClass, _truckSpawnPos, [], 10, "NONE"];
-                _truck setDir (_truckSpawnPos getDir _targetPos);
                 createVehicleCrew _truck;
 
                 // Settle window mirroring the profile / roadblock
