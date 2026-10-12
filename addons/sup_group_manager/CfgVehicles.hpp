@@ -93,6 +93,22 @@ class CfgVehicles {
                                 defaultValue = """0""";
                                 typeName = "NUMBER";
                         };
+                        class unitCost : Edit
+                        {
+                                property = "ALiVE_sup_recruit_unitCost";
+                                displayName = "$STR_ALIVE_RECRUIT_UNIT_COST";
+                                tooltip = "$STR_ALIVE_RECRUIT_UNIT_COST_COMMENT";
+                                defaultValue = """0""";
+                                typeName = "NUMBER";
+                        };
+                        class vehicleCost : Edit
+                        {
+                                property = "ALiVE_sup_recruit_vehicleCost";
+                                displayName = "$STR_ALIVE_RECRUIT_VEHICLE_COST";
+                                tooltip = "$STR_ALIVE_RECRUIT_VEHICLE_COST_COMMENT";
+                                defaultValue = """0""";
+                                typeName = "NUMBER";
+                        };
                         class recruitCode : Edit
                         {
                                 property = "ALiVE_sup_recruit_recruitCode";

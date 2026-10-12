@@ -10,7 +10,7 @@ one object, what the selected one is, how full the player's group and vehicle al
 are, and Recruit (or a double click). Opened by the object's "Recruitment" action.
 
 Parameters:
-String - operation: "open" [object, settings], "select", "recruit", "closed"
+String - operation: "open" [object, settings], "select", "recruit", "status", "closed"
 Any - arguments
 
 Returns:
@@ -46,9 +46,12 @@ private _fnc_rows = { uiNamespace getVariable ["ALiVE_recruitRows", []] };
 private _fnc_status = {
     private _settings = (uiNamespace getVariable ["ALiVE_recruitAt", []]) param [1, []];
     if (_settings isEqualTo [] || {isNull RW_DISPLAY}) exitWith {};
-    _settings params ["", "", "_vehicles", "_max", "", "_maxVeh"];
+    _settings params ["", "", "_vehicles", "_max", "", "_maxVeh", "", "", "", "", ["_unitCost", 0], ["_vehicleCost", 0]];
     private _lines = [format [localize "STR_ALIVE_RECRUIT_UI_STATUS_GROUP", { alive _x } count units group player, _max]];
     if (_vehicles isNotEqualTo []) then { _lines pushBack format [localize "STR_ALIVE_RECRUIT_UI_STATUS_VEHICLES", count (call ALiVE_fnc_recruitVehiclesOwned), _maxVeh] };
+    // the force pool, once the server has said what is in it (-1: the faction has none)
+    private _pool = uiNamespace getVariable ["ALiVE_recruitPool", -1];
+    if ((_unitCost > 0 || {_vehicleCost > 0}) && {_pool >= 0}) then { _lines pushBack format [localize "STR_ALIVE_RECRUIT_UI_STATUS_POOL", _pool] };
     (RW_DISPLAY displayCtrl 92704) ctrlSetStructuredText ([_lines] call _fnc_lines);
 };
 
@@ -75,7 +78,12 @@ switch (_operation) do {
         } forEach _vehicles;
         uiNamespace setVariable ["ALiVE_recruitRows", _rows];
         _list lbSetCurSel 0;
+        uiNamespace setVariable ["ALiVE_recruitPool", -1];
         call _fnc_status;
+        // ask the server what is in the force pool when anything here costs
+        if ((_settings param [10, 0]) > 0 || {(_settings param [11, 0]) > 0}) then {
+            [] spawn { [0] call ALiVE_fnc_recruitAsk; ["status"] call ALiVE_fnc_recruitWindow };
+        };
     };
 
     case "select": {
@@ -93,6 +101,9 @@ switch (_operation) do {
             _lines pushBack localize "STR_ALIVE_RECRUIT_UI_DESC_SOLDIER";
             if (_weapons isNotEqualTo []) then { _lines pushBack format [localize "STR_ALIVE_RECRUIT_UI_DESC_CARRIES", _weapons joinString ", "] };
         };
+        private _settings = (uiNamespace getVariable ["ALiVE_recruitAt", []]) param [1, []];
+        private _cost = _settings param [[10, 11] select _isVehicle, 0];
+        if (_cost > 0) then { _lines pushBack format [localize "STR_ALIVE_RECRUIT_UI_DESC_COST", _cost] };
         (RW_DISPLAY displayCtrl 92703) ctrlSetStructuredText ([_lines, true] call _fnc_lines);
     };
 
@@ -102,7 +113,15 @@ switch (_operation) do {
         private _row = (call _fnc_rows) param [lbCurSel (RW_DISPLAY displayCtrl 92702), []];
         if (isNull _object || {_row isEqualTo []}) exitWith {};
         _row params ["_class", "_isVehicle"];
-        if (_isVehicle) then { [_object, _class, _settings] call ALiVE_fnc_recruitVehicle } else { [_object, _class, _settings] call ALiVE_fnc_recruitUnit };
+        // paying asks the server and waits for its answer, so this runs scheduled
+        [_object, _class, _settings, _isVehicle] spawn {
+            params ["_object", "_class", "_settings", "_isVehicle"];
+            if (_isVehicle) then { [_object, _class, _settings] call ALiVE_fnc_recruitVehicle } else { [_object, _class, _settings] call ALiVE_fnc_recruitUnit };
+            ["status"] call ALiVE_fnc_recruitWindow;
+        };
+    };
+
+    case "status": {
         call _fnc_status;
     };
 

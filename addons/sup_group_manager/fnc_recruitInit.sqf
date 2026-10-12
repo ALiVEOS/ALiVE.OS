@@ -16,8 +16,10 @@ height, so a ship's deck or a rooftop works, and a marker can be given a height)
 beside the recruiting object when there are none. The module's code runs on each one,
 with _this the new soldier or vehicle.
 
-Recruits belong to the player's group only: they are not ALiVE profiles, so they don't
-come out of or go back into any force pool. A player save keeps a player's own recruits.
+Recruits belong to the player's group only: they are not ALiVE profiles. With a Force Pool
+Cost set, each soldier or vehicle is paid for from the force pool of the player's faction
+(kept by Military Logistics on the server); a faction with no force pool recruits free.
+A player save keeps a player's own recruits.
 
 Parameters:
 _this select 0: OBJECT - the module
@@ -36,7 +38,63 @@ Jman
 
 params [["_logic", objNull, [objNull]]];
 
-if (isNull _logic || {!hasInterface}) exitWith {};
+if (isNull _logic) exitWith {};
+
+// Force pool spending. The pool lives on the server, so a player's machine asks here and is
+// told yes or no: [caller, faction, cost, ticket]. A cost of 0 only asks how much is left, a
+// negative cost is a refund. A faction with no pool (no Military Logistics, or a faction it
+// doesn't keep) is answered yes with -1 left, so recruiting stays free there.
+if (isServer && {isNil "ALiVE_recruitSpendServer"}) then {
+    ALiVE_recruitSpendServer = {
+        params ["_caller", "_faction", "_cost", "_ticket"];
+        private _ok = true;
+        private _left = -1;
+        if (!isNil "ALIVE_globalForcePool" && {_faction in (ALIVE_globalForcePool select 1)}) then {
+            _left = [ALIVE_globalForcePool, _faction, 0] call ALIVE_fnc_hashGet;
+            if (_left isEqualType "") then { _left = parseNumber _left };
+            if (_cost > _left) then { _ok = false } else {
+                _left = _left - _cost;
+                [ALIVE_globalForcePool, _faction, _left] call ALIVE_fnc_hashSet;
+            };
+        };
+        ALiVE_recruitSpendReply = [_ticket, _ok, _left];
+        if (local _caller) then { ALiVE_recruitSpendLast = ALiVE_recruitSpendReply } else { (owner _caller) publicVariableClient "ALiVE_recruitSpendReply" };
+    };
+    "ALiVE_recruitSpendRequest" addPublicVariableEventHandler { (_this select 1) call ALiVE_recruitSpendServer };
+};
+
+if (!hasInterface) exitWith {};
+
+if (isNil "ALiVE_fnc_recruitAsk") then {
+    "ALiVE_recruitSpendReply" addPublicVariableEventHandler { ALiVE_recruitSpendLast = _this select 1 };
+};
+
+// Ask the server to spend _cost from the player's faction's force pool (scheduled callers
+// only: it waits for the answer). Returns [allowed, left] (left -1 when there is no pool), or
+// [] when no answer came. Remembers what is left for the window's status line.
+ALiVE_fnc_recruitAsk = {
+    params ["_cost"];
+    private _ticket = format ["%1_%2", getPlayerUID player, diag_tickTime];
+    ALiVE_recruitSpendLast = [];
+    ALiVE_recruitSpendRequest = [player, faction player, _cost, _ticket];
+    if (isServer) then { ALiVE_recruitSpendRequest call ALiVE_recruitSpendServer } else { publicVariableServer "ALiVE_recruitSpendRequest" };
+    private _t = diag_tickTime;
+    waitUntil { ((ALiVE_recruitSpendLast param [0, ""]) isEqualTo _ticket) || {diag_tickTime - _t > 10} };
+    if !((ALiVE_recruitSpendLast param [0, ""]) isEqualTo _ticket) exitWith { [] };
+    uiNamespace setVariable ["ALiVE_recruitPool", ALiVE_recruitSpendLast select 2];
+    [ALiVE_recruitSpendLast select 1, ALiVE_recruitSpendLast select 2]
+};
+
+// Pay _cost before making something; true when it may be made. Says why when it may not.
+ALiVE_fnc_recruitPay = {
+    params ["_cost"];
+    if (_cost <= 0) exitWith { true };
+    private _answer = [_cost] call ALiVE_fnc_recruitAsk;
+    if (_answer isEqualTo []) exitWith { hint localize "STR_ALIVE_RECRUIT_UI_NO_ANSWER"; false };
+    _answer params ["_ok", "_left"];
+    if (!_ok) exitWith { hint format [localize "STR_ALIVE_RECRUIT_UI_POOL_SHORT", _left, _cost]; false };
+    true
+};
 
 // Made into one list of classes: the module's own, or failing that the infantry of the
 // player's faction that the editor would offer.
@@ -130,10 +188,15 @@ ALiVE_fnc_recruitUnit = {
     private _size = { alive _x } count units _group;
     if (_size >= _max) exitWith { hint format [localize "STR_ALIVE_RECRUIT_UI_GROUP_FULL", _max]; false };
     if (time < (player getVariable ["ALiVE_recruitNext", 0])) exitWith { hint localize "STR_ALIVE_RECRUIT_UI_WAIT"; false };
+    player setVariable ["ALiVE_recruitNext", time + 3];
+    private _cost = _settings param [10, 0];
+    if !([_cost] call ALiVE_fnc_recruitPay) exitWith { false };
     ([_object, _settings, false, _class] call ALiVE_fnc_recruitSpawnPos) params ["_pos", "_dir", "_exact"];
     private _unit = _group createUnit [_class, ASLToAGL _pos, [], [2, 0] select _exact, "NONE"];
-    if (isNull _unit) exitWith { hint localize "STR_ALIVE_RECRUIT_UI_NOBODY"; false };
-    player setVariable ["ALiVE_recruitNext", time + 3];
+    if (isNull _unit) exitWith {
+        if (_cost > 0) then { [-_cost] call ALiVE_fnc_recruitAsk };
+        hint localize "STR_ALIVE_RECRUIT_UI_NOBODY"; false
+    };
     if (_exact) then { _unit setPosASL _pos };
     _unit setDir _dir;
     [_unit] joinSilent _group;
@@ -161,9 +224,14 @@ ALiVE_fnc_recruitVehicle = {
     if (time < (player getVariable ["ALiVE_recruitNext", 0])) exitWith { hint localize "STR_ALIVE_RECRUIT_UI_WAIT"; false };
     ([_object, _settings, true, _class] call ALiVE_fnc_recruitSpawnPos) params ["_pos", "_dir", "_exact"];
     if (_pos isEqualTo []) exitWith { hint localize "STR_ALIVE_RECRUIT_UI_SPAWN_TAKEN"; false };
-    private _veh = createVehicle [_class, [0, 0, 1000 + random 500], [], 0, "CAN_COLLIDE"];
-    if (isNull _veh) exitWith { hint localize "STR_ALIVE_RECRUIT_UI_VEH_NONE"; false };
     player setVariable ["ALiVE_recruitNext", time + 5];
+    private _cost = _settings param [11, 0];
+    if !([_cost] call ALiVE_fnc_recruitPay) exitWith { false };
+    private _veh = createVehicle [_class, [0, 0, 1000 + random 500], [], 0, "CAN_COLLIDE"];
+    if (isNull _veh) exitWith {
+        if (_cost > 0) then { [-_cost] call ALiVE_fnc_recruitAsk };
+        hint localize "STR_ALIVE_RECRUIT_UI_VEH_NONE"; false
+    };
     _veh setDir _dir;
     _veh setPosASL _pos;
     _veh setVelocity [0, 0, 0];
@@ -193,7 +261,10 @@ ALiVE_fnc_recruitVehicle = {
     private _rawC = _logic getVariable ["recruitCode", ""];
     private _code = if (_rawC isEqualType "" && {_rawC != ""}) then { compile _rawC } else { {} };
     private _window = (_logic getVariable ["recruitInterface", "window"]) != "actions";
-    private _settings = [_logic, _classes, _vehicles, _max, _skill, _maxVeh, _points, _height, _code, ["", _rawC] select (_rawC isEqualType "" && {_rawC != ""})];
+    // what one soldier and one vehicle cost from the force pool; 0 is free
+    private _unitCost = ([_logic getVariable ["unitCost", 0], 0] call _num) max 0;
+    private _vehicleCost = ([_logic getVariable ["vehicleCost", 0], 0] call _num) max 0;
+    private _settings = [_logic, _classes, _vehicles, _max, _skill, _maxVeh, _points, _height, _code, ["", _rawC] select (_rawC isEqualType "" && {_rawC != ""}), _unitCost, _vehicleCost];
     private _objects = (synchronizedObjects _logic) select { !(_x isKindOf "Logic") };
     if (_objects isEqualTo [] || {(_classes + _vehicles) isEqualTo []}) exitWith {
         ["ALiVE Recruitment: nothing to do (%1 synced objects, %2 unit classes, %3 vehicle classes)", count _objects, count _classes, count _vehicles] call ALiVE_fnc_dump;

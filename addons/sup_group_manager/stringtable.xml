@@ -377,4 +377,76 @@
     <Portuguese>Fechar</Portuguese>
     <Russian>Закрыть</Russian>
 </Key>
+<Key ID="STR_ALIVE_RECRUIT_UNIT_COST">
+    <English>Force Pool Cost (Soldier)</English>
+    <Chinesesimp>兵力池消耗（士兵）</Chinesesimp>
+    <Chinese>兵力池消耗（士兵）</Chinese>
+    <Spanish>Coste en reserva de fuerzas (soldado)</Spanish>
+    <French>Coût en réserve de forces (soldat)</French>
+    <Portuguese>Custo na reserva de forças (soldado)</Portuguese>
+    <Russian>Расход резерва сил (солдат)</Russian>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_UNIT_COST_COMMENT">
+    <English>How much each recruited soldier takes from the force pool of the player's faction. 0 is free. The force pool is kept by Military Logistics; a faction it doesn't keep recruits free.</English>
+    <Chinesesimp>每招募一名士兵从玩家阵营兵力池中扣除的数量。0 为免费。兵力池由军事后勤模块维护；它不维护的阵营可免费招募。</Chinesesimp>
+    <Chinese>每招募一名士兵從玩家陣營兵力池中扣除的數量。0 為免費。兵力池由軍事後勤模組維護；它不維護的陣營可免費招募。</Chinese>
+    <Spanish>Cuánto resta cada soldado reclutado de la reserva de fuerzas de la facción del jugador. 0 es gratis. La reserva la lleva Logística Militar; una facción que no lleva recluta gratis.</Spanish>
+    <French>Ce que chaque soldat recruté retire de la réserve de forces de la faction du joueur. 0 = gratuit. La réserve est tenue par Logistique militaire ; une faction qu'elle ne tient pas recrute gratuitement.</French>
+    <Portuguese>Quanto cada soldado recrutado tira da reserva de forças da facção do jogador. 0 é grátis. A reserva é mantida pela Logística Militar; uma facção que ela não mantém recruta de graça.</Portuguese>
+    <Russian>Сколько каждый нанятый солдат забирает из резерва сил фракции игрока. 0 — бесплатно. Резерв ведёт модуль военной логистики; фракция без резерва нанимает бесплатно.</Russian>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_VEHICLE_COST">
+    <English>Force Pool Cost (Vehicle)</English>
+    <Chinesesimp>兵力池消耗（载具）</Chinesesimp>
+    <Chinese>兵力池消耗（載具）</Chinese>
+    <Spanish>Coste en reserva de fuerzas (vehículo)</Spanish>
+    <French>Coût en réserve de forces (véhicule)</French>
+    <Portuguese>Custo na reserva de forças (veículo)</Portuguese>
+    <Russian>Расход резерва сил (техника)</Russian>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_VEHICLE_COST_COMMENT">
+    <English>How much each vehicle taken costs from the force pool of the player's faction. 0 is free.</English>
+    <Chinesesimp>每领取一辆载具从玩家阵营兵力池中扣除的数量。0 为免费。</Chinesesimp>
+    <Chinese>每領取一輛載具從玩家陣營兵力池中扣除的數量。0 為免費。</Chinese>
+    <Spanish>Cuánto cuesta cada vehículo de la reserva de fuerzas de la facción del jugador. 0 es gratis.</Spanish>
+    <French>Ce que coûte chaque véhicule pris dans la réserve de forces de la faction du joueur. 0 = gratuit.</French>
+    <Portuguese>Quanto cada veículo custa da reserva de forças da facção do jogador. 0 é grátis.</Portuguese>
+    <Russian>Сколько каждая взятая машина стоит из резерва сил фракции игрока. 0 — бесплатно.</Russian>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_UI_POOL_SHORT">
+    <English>Not enough in the force pool: %1 left, and this costs %2.</English>
+    <Chinesesimp>兵力池不足：剩余 %1，此项需要 %2。</Chinesesimp>
+    <Chinese>兵力池不足：剩餘 %1，此項需要 %2。</Chinese>
+    <Spanish>No hay suficiente en la reserva de fuerzas: quedan %1 y esto cuesta %2.</Spanish>
+    <French>Réserve de forces insuffisante : il reste %1, et ceci coûte %2.</French>
+    <Portuguese>Reserva de forças insuficiente: restam %1 e isto custa %2.</Portuguese>
+    <Russian>В резерве сил не хватает: осталось %1, а нужно %2.</Russian>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_UI_NO_ANSWER">
+    <English>The force pool didn't answer. Try again in a moment.</English>
+    <Chinesesimp>兵力池没有响应。请稍后再试。</Chinesesimp>
+    <Chinese>兵力池沒有回應。請稍後再試。</Chinese>
+    <Spanish>La reserva de fuerzas no responde. Inténtalo de nuevo en un momento.</Spanish>
+    <French>La réserve de forces n'a pas répondu. Réessayez dans un instant.</French>
+    <Portuguese>A reserva de forças não respondeu. Tente de novo em instantes.</Portuguese>
+    <Russian>Резерв сил не ответил. Попробуйте ещё раз чуть позже.</Russian>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_UI_STATUS_POOL">
+    <English>Force pool: %1</English>
+    <Chinesesimp>兵力池：%1</Chinesesimp>
+    <Chinese>兵力池：%1</Chinese>
+    <Spanish>Reserva de fuerzas: %1</Spanish>
+    <French>Réserve de forces : %1</French>
+    <Portuguese>Reserva de forças: %1</Portuguese>
+    <Russian>Резерв сил: %1</Russian>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_UI_DESC_COST">
+    <English>Costs %1 from the force pool.</English>
+    <Chinesesimp>消耗兵力池 %1。</Chinesesimp>
+    <Chinese>消耗兵力池 %1。</Chinese>
+    <Spanish>Cuesta %1 de la reserva de fuerzas.</Spanish>
+    <French>Coûte %1 de la réserve de forces.</French>
+    <Portuguese>Custa %1 da reserva de forças.</Portuguese>
+    <Russian>Стоит %1 из резерва сил.</Russian>
+</Key>
 </Container></Package></Project>
