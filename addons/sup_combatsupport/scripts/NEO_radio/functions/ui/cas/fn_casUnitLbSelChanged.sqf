@@ -86,7 +86,7 @@ if (_status != "KILLED") then
     _supportMarker setMarkerAlphaLocal 0;
 
     //Sliders
-    _casFlyHeighSliderText ctrlSetStructuredText parseText "<t color='#B4B4B4' size='0.8' font='PuristaMedium'>Altitude: Medium</t>";
+    _casFlyHeighSliderText ctrlSetStructuredText parseText format ["<t color='#B4B4B4' size='0.8' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_ALT_MEDIUM"];
         _casFlyHeighSliderText ctrlSetPosition [0.397304 * _uiW + _uiX, 0.514 * _uiH + _uiY, (0.105169 * _uiW), (0.028 * _uiH)];
     _casFlyHeighSliderText ctrlCommit 0;
         _casFlyHeightSlider ctrlSetPosition [0.402708 * _uiW + _uiX, 0.5508 * _uiH + _uiY, (0.0927966 * _uiW), (0.0196 * _uiH)];
@@ -103,9 +103,9 @@ if (_status != "KILLED") then
         _casFlyHeightSliderText = (findDisplay 655555) displayCtrl 655591;
         _text = switch (_pos) do
         {
-            case 1 : { ""Altitude: Low"" };
-            case 2 : { ""Altitude: Medium"" };
-            case 3 : { ""Altitude: High"" };
+            case 1 : { localize ""STR_ALIVE_CS_UI_ALT_LOW"" };
+            case 2 : { localize ""STR_ALIVE_CS_UI_ALT_MEDIUM"" };
+            case 3 : { localize ""STR_ALIVE_CS_UI_ALT_HIGH"" };
         };
 
         _slider sliderSetPosition _pos;

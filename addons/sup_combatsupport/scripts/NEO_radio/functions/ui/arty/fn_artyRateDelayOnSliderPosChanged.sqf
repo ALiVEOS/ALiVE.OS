@@ -5,4 +5,4 @@ _pos = round (_this select 1);
 _artyRateDelayText = _display displayCtrl 655611;
 
 _slider sliderSetPosition _pos;
-_artyRateDelayText ctrlSetStructuredText parseText format ["<t color='#B4B4B4' size='0.8' font='PuristaMedium'>DELAY - %1/30s</t>", _pos];
+_artyRateDelayText ctrlSetStructuredText parseText format ["<t color='#B4B4B4' size='0.8' font='PuristaMedium'>%1</t>", format [localize "STR_ALIVE_CS_UI_DELAY", _pos]];

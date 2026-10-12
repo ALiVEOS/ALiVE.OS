@@ -132,7 +132,7 @@ if (_status != "KILLED") then
     lbClear _transportHeightCombo;
     {
         _transportHeightCombo lbAdd _x;
-    } forEach ["Altitude: Low", "Altitude: Medium", "Altitude: High"];
+    } forEach ([localize "STR_ALIVE_CS_UI_ALT_LOW", localize "STR_ALIVE_CS_UI_ALT_MEDIUM", localize "STR_ALIVE_CS_UI_ALT_HIGH"]);
     _transportHeightCombo lbSetCurSel _height;
 
     lbClear _transportSpeedCombo;

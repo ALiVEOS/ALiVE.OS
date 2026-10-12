@@ -43,7 +43,7 @@ if (toUpper (_lb lbData _index) == "SAD" || toUpper (_lb lbData _index) == "LOIT
 {
     _casAttackRunLB ctrlSetBackgroundColor _listBackground;
 
-    _casRadiusSliderText ctrlSetStructuredText parseText "<t color='#B4B4B4' size='0.8' font='PuristaMedium'>CAS Radius: 500m</t>";
+    _casRadiusSliderText ctrlSetStructuredText parseText format ["<t color='#B4B4B4' size='0.8' font='PuristaMedium'>%1</t>", format [localize "STR_ALIVE_CS_UI_CAS_RADIUS", 500]];
         _casRadiusSliderText ctrlSetPosition [0.280111 * _uiW + _uiX, 0.514 * _uiH + _uiY, (0.0927966 * _uiW), (0.028 * _uiH)];
     _casRadiusSliderText ctrlCommit 0;
         _casRadiusSlider ctrlSetPosition [0.281002 * _uiW + _uiX, 0.5504 * _uiH + _uiY, (0.0927966 * _uiW), (0.0196 * _uiH)];
@@ -64,7 +64,7 @@ if (toUpper (_lb lbData _index) == "SAD" || toUpper (_lb lbData _index) == "LOIT
         _slider = _this select 0;
         _pos = round (_this select 1);
         _casRadiusSliderText = (findDisplay 655555) displayCtrl 655593;
-        _text = format [""CAS Radius: %1m"", _pos];
+        _text = format [localize ""STR_ALIVE_CS_UI_CAS_RADIUS"", _pos];
 
         _slider sliderSetPosition _pos;
         _casRadiusSliderText ctrlSetStructuredText parseText format [""<t color='#B4B4B4' size='0.8' font='PuristaMedium'>%1</t>"", _text];

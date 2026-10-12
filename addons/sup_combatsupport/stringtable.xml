@@ -1447,4 +1447,58 @@
     <Portuguese>Negativo, mantenha a posição. Escuto.</Portuguese>
     <Russian>Отставить, оставайтесь на позиции. Приём.</Russian>
 </Key>
+<Key ID="STR_ALIVE_CS_UI_DISPERSION">
+    <English>DISPERSION - %1/500m</English>
+    <Chinesesimp>散布 - %1/500米</Chinesesimp>
+    <Chinese>散佈 - %1/500公尺</Chinese>
+    <Spanish>DISPERSIÓN - %1/500 m</Spanish>
+    <French>DISPERSION - %1/500 m</French>
+    <Portuguese>DISPERSÃO - %1/500 m</Portuguese>
+    <Russian>РАССЕИВАНИЕ - %1/500 м</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_DELAY">
+    <English>DELAY - %1/30s</English>
+    <Chinesesimp>延迟 - %1/30秒</Chinesesimp>
+    <Chinese>延遲 - %1/30秒</Chinese>
+    <Spanish>RETARDO - %1/30 s</Spanish>
+    <French>DÉLAI - %1/30 s</French>
+    <Portuguese>ATRASO - %1/30 s</Portuguese>
+    <Russian>ЗАДЕРЖКА - %1/30 с</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_CAS_RADIUS">
+    <English>CAS Radius: %1m</English>
+    <Chinesesimp>近距离空中支援半径：%1米</Chinesesimp>
+    <Chinese>近距離空中支援半徑：%1公尺</Chinese>
+    <Spanish>Radio de CAS: %1 m</Spanish>
+    <French>Rayon CAS : %1 m</French>
+    <Portuguese>Raio de CAS: %1 m</Portuguese>
+    <Russian>Радиус CAS: %1 м</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_ALT_LOW">
+    <English>Altitude: Low</English>
+    <Chinesesimp>高度：低</Chinesesimp>
+    <Chinese>高度：低</Chinese>
+    <Spanish>Altitud: baja</Spanish>
+    <French>Altitude : basse</French>
+    <Portuguese>Altitude: baixa</Portuguese>
+    <Russian>Высота: малая</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_ALT_MEDIUM">
+    <English>Altitude: Medium</English>
+    <Chinesesimp>高度：中</Chinesesimp>
+    <Chinese>高度：中</Chinese>
+    <Spanish>Altitud: media</Spanish>
+    <French>Altitude : moyenne</French>
+    <Portuguese>Altitude: média</Portuguese>
+    <Russian>Высота: средняя</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_ALT_HIGH">
+    <English>Altitude: High</English>
+    <Chinesesimp>高度：高</Chinesesimp>
+    <Chinese>高度：高</Chinese>
+    <Spanish>Altitud: alta</Spanish>
+    <French>Altitude : haute</French>
+    <Portuguese>Altitude: alta</Portuguese>
+    <Russian>Высота: большая</Russian>
+</Key>
 </Container></Package></Project>

@@ -12,7 +12,7 @@ _artyRateDelaySlider = _display displayCtrl 655612;
 
 if (_rate == "STAGGERED") then
 {
-    _artyRateDelayText ctrlSetStructuredText parseText "<t color='#B4B4B4' size='0.8' font='PuristaMedium'>DELAY - 5/30s</t>";
+    _artyRateDelayText ctrlSetStructuredText parseText format ["<t color='#B4B4B4' size='0.8' font='PuristaMedium'>%1</t>", format [localize "STR_ALIVE_CS_UI_DELAY", 5]];
 
     _artyRateDelaySlider ctrlSetPosition [0.404129 * _uiW + _uiX, 0.710018 * _uiH + _uiY, (0.105833 * _uiW), (0.0280024 * _uiH)];
     _artyRateDelaySlider sliderSetRange [5, 30];

@@ -57,7 +57,7 @@ if (count _countArray > 0) then
     //Texts
     _artyRateOfFireText ctrlSetStructuredText parseText format ["<t color='#B4B4B4' size='0.8' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_RATE_OF_FIRE"];
     _artyRoundCountText ctrlSetStructuredText parseText format ["<t color='#B4B4B4' size='0.8' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_ROUND_COUNT"];
-    _artyDispersionText ctrlSetStructuredText parseText "<t color='#B4B4B4' size='0.8' font='PuristaMedium'>DISPERSION - 0/500m</t>";
+    _artyDispersionText ctrlSetStructuredText parseText format ["<t color='#B4B4B4' size='0.8' font='PuristaMedium'>%1</t>", format [localize "STR_ALIVE_CS_UI_DISPERSION", 0]];
 
     //Rate Of Fire Type LB
     _artyRateOfFireLb ctrlEnable true;
