@@ -74,7 +74,7 @@ class NEO_RscText
     y = "safeZoneY + (safeZoneH / 6)";
     w = "safeZoneW / 5";
     h = "safeZoneH / 10";
-    text = "SUPPORT MENU";
+    text = "$STR_ALIVE_CS_UI_SUPPORT_MENU";
     class Attributes
     {
         font = "PuristaMedium";

@@ -38,7 +38,7 @@ class NEO_resourceRadio
                 class NEO_radioMainTitle : NEO_RscText
                 {
                         idc = -1;
-                        text = "Combat Support Available"; //--- ToDo: Localize;
+                        text = "$STR_ALIVE_CS_UI_AVAILABLE"; //--- ToDo: Localize;
                         x = 0.271103 * GUI_GRID_WAbs + GUI_GRID_X;
                         y = 0.1584 * GUI_GRID_HAbs + GUI_GRID_Y;
                         w = 0.159596 * GUI_GRID_WAbs;
@@ -60,7 +60,7 @@ class NEO_resourceRadio
                 class NEO_radioAbort : NEO_RscButton
                 {
                         idc = 655561;
-                        text = "Close";
+                        text = "$STR_ALIVE_CS_UI_CLOSE";
                         style = 2;
                         x = 0.519796 * GUI_GRID_WAbs + GUI_GRID_X;
                         y = 0.7184 * GUI_GRID_HAbs + GUI_GRID_Y;
@@ -181,7 +181,7 @@ class NEO_resourceRadio
                         y = 0.6848 * GUI_GRID_HAbs + GUI_GRID_Y;
                         w = GUI_GRID_WAbs / 1000;
                         h = GUI_GRID_HAbs / 1000;
-                        text = "Confirm";
+                        text = "$STR_ALIVE_CS_UI_CONFIRM";
                         colorBackground[] = {0.384,0.439,0.341,1};
                         sizeEx = CS_BTN_SIZE;
                         colorBackgroundFocused[] = {0.706,0.706,0.706,1};
@@ -196,7 +196,7 @@ class NEO_resourceRadio
                         y = 0.6512 * GUI_GRID_HAbs + GUI_GRID_Y;
                         w = GUI_GRID_WAbs / 1000;
                         h = GUI_GRID_HAbs / 1000;
-                        text = "Order Unit RTB";
+                        text = "$STR_ALIVE_CS_UI_RTB";
                         colorBackground[] = {0.173,0.173,0.173,1};
                         colorBackgroundFocused[] = {0.173,0.173,0.173,1};
                         colorFocused[] = {0.706,0.706,0.706,1};
@@ -211,7 +211,7 @@ class NEO_resourceRadio
                         y = 0.6176 * GUI_GRID_HAbs + GUI_GRID_Y;
                         w = GUI_GRID_WAbs / 1000;
                         h = GUI_GRID_HAbs / 1000;
-                        text = "Confirm Smoke";
+                        text = "$STR_ALIVE_CS_UI_CONFIRM_SMOKE";
                         colorBackground[] = {0.431,0.494,0.596,1};
                         colorBackgroundFocused[] = {0.431,0.494,0.596,1};
                         colorFocused[] = {0.706,0.706,0.706,1};
@@ -226,7 +226,7 @@ class NEO_resourceRadio
                         y = 0.584 * GUI_GRID_HAbs + GUI_GRID_Y;
                         w = GUI_GRID_WAbs / 1000;
                         h = GUI_GRID_HAbs / 1000;
-                        text = "New Smoke";
+                        text = "$STR_ALIVE_CS_UI_NEW_SMOKE";
                         colorBackground[] = {0.722,0.439,0.282,1};
                         colorBackgroundFocused[] = {0.722,0.439,0.282,1};
                         colorFocused[] = {0.706,0.706,0.706,1};
@@ -294,7 +294,7 @@ class NEO_resourceRadio
                 class NEO_radioTransportPropertiesText : NEO_radioTransportCircleSliderText
                 {
                         idc = 655633;
-                        text = "Behaviour";
+                        text = "$STR_ALIVE_CS_UI_BEHAVIOUR";
                         x = 0.363898 * GUI_GRID_WAbs + GUI_GRID_X;
                         y = 0.598 * GUI_GRID_HAbs + GUI_GRID_Y;
                         w = GUI_GRID_WAbs / 1000;
@@ -392,7 +392,7 @@ class NEO_resourceRadio
                         y = 0.6848 * GUI_GRID_HAbs + GUI_GRID_Y;
                         w = GUI_GRID_WAbs / 1000;
                         h = GUI_GRID_HAbs / 1000;
-                        text = "Confirm";
+                        text = "$STR_ALIVE_CS_UI_CONFIRM";
                         colorBackground[] = {0.384,0.439,0.341,1};
                         colorBackgroundFocused[] = {0.384,0.439,0.341,1};
                         colorFocused[] = {0.706,0.706,0.706,1};
@@ -407,7 +407,7 @@ class NEO_resourceRadio
                         y = 0.6512 * GUI_GRID_HAbs + GUI_GRID_Y;
                         w = GUI_GRID_WAbs / 1000;
                         h = GUI_GRID_HAbs / 1000;
-                        text = "Order Unit RTB";
+                        text = "$STR_ALIVE_CS_UI_RTB";
                         colorBackground[] = {0.173,0.173,0.173,1};
                         colorBackgroundFocused[] = {0.173,0.173,0.173,1};
                         colorFocused[] = {0.706,0.706,0.706,1};
@@ -421,7 +421,7 @@ class NEO_resourceRadio
                         y = 0.150015 * GUI_GRID_HAbs + GUI_GRID_Y;
                         w = 0.0597643 * GUI_GRID_WAbs;
                         h = 0.028 * GUI_GRID_HAbs;
-                        text = "SITREP";
+                        text = "$STR_ALIVE_CS_UI_SITREP";
                         action = "[] spawn fnc_getSitrep";
                         colorBackground[] = {0.384,0.439,0.341,1};
                         colorBackgroundFocused[] = {0.384,0.439,0.341,1};
@@ -439,7 +439,7 @@ class NEO_resourceRadio
                         y = 0.108 * GUI_GRID_HAbs + GUI_GRID_Y;   // on the light-grey header band (nudged down with the grid row)
                         w = 0.0597643 * GUI_GRID_WAbs;
                         h = 0.028 * GUI_GRID_HAbs;
-                        text = "Terrain";
+                        text = "$STR_ALIVE_CS_UI_TERRAIN";
                         periodFocus = 1e10; // never blink (periodFocus = 0 can fall back to the default focus-pulse)
                         periodOver = 1e10;
                         period = 1e10; // freeze the base blink too (period 0.4 pulses while the button holds focus)
@@ -459,7 +459,7 @@ class NEO_resourceRadio
                         y = 0.108 * GUI_GRID_HAbs + GUI_GRID_Y;
                         w = 0.032 * GUI_GRID_WAbs;
                         h = 0.028 * GUI_GRID_HAbs;
-                        text = "GRID";
+                        text = "$STR_ALIVE_CS_UI_GRID";
                         sizeEx = CS_BTN_SIZE;
                         colorText[] = {0.25,0.25,0.25,1}; // darker grey - more visible on the light header band
                         class Attributes
@@ -489,7 +489,7 @@ class NEO_resourceRadio
                         y = 0.108 * GUI_GRID_HAbs + GUI_GRID_Y;
                         w = 0.043 * GUI_GRID_WAbs;
                         h = 0.028 * GUI_GRID_HAbs;
-                        text = "Set";
+                        text = "$STR_ALIVE_CS_UI_SET";
                         period = 1e10; // freeze the focus blink (the inherited period 0.4 pulses while the button holds focus)
                         action = "[] call NEO_fnc_radioGridSetButton";
                 };
@@ -687,7 +687,7 @@ class NEO_resourceRadio
                         y = 0.6848 * GUI_GRID_HAbs + GUI_GRID_Y;
                         w = GUI_GRID_WAbs / 1000;
                         h = GUI_GRID_HAbs / 1000;
-                        text = "Confirm";
+                        text = "$STR_ALIVE_CS_UI_CONFIRM";
                         colorBackground[] = {0.384,0.439,0.341,1};
                         colorBackgroundFocused[] = {0.384,0.439,0.341,1};
                         colorFocused[] = {0.706,0.706,0.706,1};
@@ -700,7 +700,7 @@ class NEO_resourceRadio
                         y = 0.6512 * GUI_GRID_HAbs + GUI_GRID_Y;
                         w = GUI_GRID_WAbs / 1000;
                         h = GUI_GRID_HAbs / 1000;
-                        text = "Order Unit RTB";
+                        text = "$STR_ALIVE_CS_UI_RTB";
                         colorBackground[] = {0.173,0.173,0.173,1};
                         sizeEx = CS_BTN_SIZE;
                 };
@@ -771,7 +771,7 @@ class NEO_resourceRadio
                 class NEO_radioArtyMoveButton : NEO_radioTransportSmokeFoundButton
                 {
                         idc = 655606;
-                        text = "Get in Range";
+                        text = "$STR_ALIVE_CS_UI_GET_IN_RANGE";
                         // inherit the parent's visible focused colours - the {0,0,0,0}
                         // overrides blanked the label and fill the moment the cursor
                         // reached the button
@@ -781,7 +781,7 @@ class NEO_resourceRadio
                 class NEO_radioArtyDontMoveButton : NEO_radioTransportSmokeNotFoundButton
                 {
                         idc = 655607;
-                        text = "Don't Move";
+                        text = "$STR_ALIVE_CS_UI_DONT_MOVE";
                         // inherit the parent's visible focused colours (see the move button)
                 };
                 class NEO_radioArtyDispersionText : NEO_radioCasUnitText

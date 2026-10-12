@@ -55,13 +55,13 @@ _ord = _battery getVariable "NEO_radioArtyBatteryRounds";
 //Help Text
 _artyHelpUnitText ctrlSetStructuredText parseText (switch (toUpper _status) do
 {
-    case "NONE" : { "<t color='#627057' size='0.7' font='PuristaMedium'>Battery is available and waiting for a fire mission</t>" };
-    case "KILLED" : { "<t color='#603234' size='0.7' font='PuristaMedium'>Battery is combat ineffective</t>" };
-    case "MISSION" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Battery is on a fire mission</t>" };
-    case "MOVE" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Battery is moving to bring the target into range</t>" };
-    case "RTB" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Battery is returning to base</t>" };
-    case "RESPONSE" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Battery is out of range - order it to reposition below</t>" };
-    case "NOAMMO" : { "<t color='#603234' size='0.7' font='PuristaMedium'>Battery is out of ammunition</t>" };
+    case "NONE" : { format ["<t color='#627057' size='0.7' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_ARTY_AVAILABLE"] };
+    case "KILLED" : { format ["<t color='#603234' size='0.7' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_ARTY_INEFFECTIVE"] };
+    case "MISSION" : { format ["<t color='#FFFF73' size='0.7' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_ARTY_ON_MISSION"] };
+    case "MOVE" : { format ["<t color='#FFFF73' size='0.7' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_ARTY_MOVING"] };
+    case "RTB" : { format ["<t color='#FFFF73' size='0.7' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_ARTY_RTB"] };
+    case "RESPONSE" : { format ["<t color='#FFFF73' size='0.7' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_ARTY_OUT_OF_RANGE"] };
+    case "NOAMMO" : { format ["<t color='#603234' size='0.7' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_ARTY_NO_AMMO"] };
 });
 
 // SITREP reports on the selected battery - CAS/transport enable it in their unit
@@ -97,7 +97,7 @@ if (!(_status in ["KILLED", "MISSION", "RTB", "MOVE", "RESPONSE", "NOAMMO"]) && 
 {
     _artyOrdnanceTypeLb ctrlSetBackgroundColor [0.047, 0.047, 0.047, 0.72];
     //Ordnance
-    _artyOrdnanceTypeText ctrlSetStructuredText parseText "<t color='#B4B4B4' size='0.8' font='PuristaMedium'>ORDNANCE</t>";
+    _artyOrdnanceTypeText ctrlSetStructuredText parseText format ["<t color='#B4B4B4' size='0.8' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_ORDNANCE"];
     _artyOrdnanceTypeLb ctrlEnable true;
     lbClear _artyOrdnanceTypeLb;
     {

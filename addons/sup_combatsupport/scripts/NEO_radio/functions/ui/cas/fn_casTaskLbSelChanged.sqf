@@ -27,9 +27,9 @@ private _listBackground = [0.047, 0.047, 0.047, 0.72];
 
 _show = switch (toUpper (_lb lbData _index)) do
 {
-    case "SAD" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit will move to location, provide Close Air Support and engage all painted targets</t>" };
-    case "LOITER" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit will move to location and orbit it at the chosen altitude. With Hold Fire it only watches; with Fire At Will it covers the area and engages hostiles it sees</t>" };
-    case "ATTACK" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit engages all hostiles in the target area, including unmanned vehicles. Lase a target to designate it manually - the pilot will prioritise your laser. Automatic uses the best weapon first and switches as ammo runs out; pick a specific weapon below to force it</t>" };
+    case "SAD" : { format ["<t color='#FFFF73' size='0.7' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_CAS_DESC_ATTACK"] };
+    case "LOITER" : { format ["<t color='#FFFF73' size='0.7' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_CAS_DESC_LOITER"] };
+    case "ATTACK" : { format ["<t color='#FFFF73' size='0.7' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_CAS_DESC_ROE"] };
 };
 _veh = _casArray select (lbCurSel _casUnitLb) select 0;
 _casRadiusSlider = _display displayCtrl 655592;
@@ -76,7 +76,7 @@ if (toUpper (_lb lbData _index) == "SAD" || toUpper (_lb lbData _index) == "LOIT
 
     // Every task takes an ROE. LOITER starts on Hold Fire, so it only watches unless told to engage (#712).
     _casROELb ctrlSetBackgroundColor _listBackground;
-    _casROEText ctrlSetStructuredText parseText "<t color='#B4B4B4' size='0.8' font='PuristaMedium'>RULES OF ENGAGEMENT</t>";
+    _casROEText ctrlSetStructuredText parseText format ["<t color='#B4B4B4' size='0.8' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_ROE"];
     // sits just left of the ROE list so "RULES OF ENGAGEMENT" reads flush with it;
     // wide (transparent bg, so the extra width is invisible) to stay on one line
             _casROEText ctrlSetPosition [0.38 * _uiW + _uiX, 0.59 * _uiH + _uiY, (0.16 * _uiW), (0.028 * _uiH)];
@@ -96,7 +96,7 @@ if (toUpper (_lb lbData _index) == "SAD" || toUpper (_lb lbData _index) == "LOIT
     // designator, countermeasures, air-to-air-only missiles and no-damage dummies)
     private _usableWeapons = [_veh] call NEO_fnc_casUsableWeapons;
     if (toUpper (_lb lbData _index) == "ATTACK") then {
-        _casAttackRunText ctrlSetStructuredText parseText "<t color='#B4B4B4' size='0.8' font='PuristaMedium'>CHOOSE WEAPON</t>";
+        _casAttackRunText ctrlSetStructuredText parseText format ["<t color='#B4B4B4' size='0.8' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_CHOOSE_WEAPON"];
                 _casAttackRunText ctrlSetPosition [0.280111 * _uiW + _uiX, 0.59 * _uiH + _uiY, (0.0927966 * _uiW), (0.028 * _uiH)];
         _casAttackRunText ctrlCommit 0;
 
@@ -122,7 +122,7 @@ if (toUpper (_lb lbData _index) == "SAD" || toUpper (_lb lbData _index) == "LOIT
         if (toUpper (_lb lbData _index) == "LOITER") then {
             // loiter never delivers ordnance - reuse the freed weapon list as a
             // loiter-duration picker (lbData carries seconds; Indefinite = -1)
-            _casAttackRunText ctrlSetStructuredText parseText "<t color='#B4B4B4' size='0.8' font='PuristaMedium'>LOITER DURATION</t>";
+            _casAttackRunText ctrlSetStructuredText parseText format ["<t color='#B4B4B4' size='0.8' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_LOITER_DURATION"];
                 _casAttackRunText ctrlSetPosition [0.280111 * _uiW + _uiX, 0.59 * _uiH + _uiY, (0.0927966 * _uiW), (0.028 * _uiH)];
             _casAttackRunText ctrlCommit 0;
 

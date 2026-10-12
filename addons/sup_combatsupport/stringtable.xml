@@ -192,4 +192,482 @@
     <Portuguese>Você não é o operador de Suporte de Combate designado.</Portuguese>
     <Russian>Вы не являетесь назначенным оператором боевой поддержки.</Russian>
 </Key>
+<!-- Combat Support tablet labels (AI-translated; native-speaker review welcome) -->
+<Key ID="STR_ALIVE_CS_UI_SUPPORT_MENU">
+    <English>SUPPORT MENU</English>
+    <Chinesesimp>支援菜单</Chinesesimp>
+    <Chinese>支援選單</Chinese>
+    <Spanish>MENÚ DE APOYO</Spanish>
+    <French>MENU DE SOUTIEN</French>
+    <Portuguese>MENU DE APOIO</Portuguese>
+    <Russian>МЕНЮ ПОДДЕРЖКИ</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_AVAILABLE">
+    <English>Combat Support Available</English>
+    <Chinesesimp>可用战斗支援</Chinesesimp>
+    <Chinese>可用戰鬥支援</Chinese>
+    <Spanish>Apoyo de combate disponible</Spanish>
+    <French>Soutien au combat disponible</French>
+    <Portuguese>Apoio de combate disponível</Portuguese>
+    <Russian>Доступная огневая поддержка</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_CLOSE">
+    <English>Close</English>
+    <Chinesesimp>关闭</Chinesesimp>
+    <Chinese>關閉</Chinese>
+    <Spanish>Cerrar</Spanish>
+    <French>Fermer</French>
+    <Portuguese>Fechar</Portuguese>
+    <Russian>Закрыть</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_CONFIRM">
+    <English>Confirm</English>
+    <Chinesesimp>确认</Chinesesimp>
+    <Chinese>確認</Chinese>
+    <Spanish>Confirmar</Spanish>
+    <French>Confirmer</French>
+    <Portuguese>Confirmar</Portuguese>
+    <Russian>Подтвердить</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_RTB">
+    <English>Order Unit RTB</English>
+    <Chinesesimp>命令单位返回基地</Chinesesimp>
+    <Chinese>命令單位返回基地</Chinese>
+    <Spanish>Ordenar regreso a base</Spanish>
+    <French>Ordonner le retour à la base</French>
+    <Portuguese>Ordenar regresso à base</Portuguese>
+    <Russian>Приказать вернуться на базу</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_CONFIRM_SMOKE">
+    <English>Confirm Smoke</English>
+    <Chinesesimp>确认烟雾</Chinesesimp>
+    <Chinese>確認煙霧</Chinese>
+    <Spanish>Confirmar humo</Spanish>
+    <French>Confirmer la fumée</French>
+    <Portuguese>Confirmar fumo</Portuguese>
+    <Russian>Подтвердить дым</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_NEW_SMOKE">
+    <English>New Smoke</English>
+    <Chinesesimp>新烟雾</Chinesesimp>
+    <Chinese>新煙霧</Chinese>
+    <Spanish>Nuevo humo</Spanish>
+    <French>Nouvelle fumée</French>
+    <Portuguese>Novo fumo</Portuguese>
+    <Russian>Новый дым</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_BEHAVIOUR">
+    <English>Behaviour</English>
+    <Chinesesimp>行为</Chinesesimp>
+    <Chinese>行為</Chinese>
+    <Spanish>Comportamiento</Spanish>
+    <French>Comportement</French>
+    <Portuguese>Comportamento</Portuguese>
+    <Russian>Поведение</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_SITREP">
+    <English>SITREP</English>
+    <Chinesesimp>态势报告</Chinesesimp>
+    <Chinese>態勢報告</Chinese>
+    <Spanish>INFORME</Spanish>
+    <French>RAPPORT</French>
+    <Portuguese>RELATÓRIO</Portuguese>
+    <Russian>СВОДКА</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_TERRAIN">
+    <English>Terrain</English>
+    <Chinesesimp>地形</Chinesesimp>
+    <Chinese>地形</Chinese>
+    <Spanish>Terreno</Spanish>
+    <French>Terrain</French>
+    <Portuguese>Terreno</Portuguese>
+    <Russian>Местность</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_GRID">
+    <English>GRID</English>
+    <Chinesesimp>坐标</Chinesesimp>
+    <Chinese>座標</Chinese>
+    <Spanish>CUADRÍCULA</Spanish>
+    <French>GRILLE</French>
+    <Portuguese>QUADRÍCULA</Portuguese>
+    <Russian>КВАДРАТ</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_SET">
+    <English>Set</English>
+    <Chinesesimp>设置</Chinesesimp>
+    <Chinese>設定</Chinese>
+    <Spanish>Fijar</Spanish>
+    <French>Définir</French>
+    <Portuguese>Definir</Portuguese>
+    <Russian>Задать</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_GET_IN_RANGE">
+    <English>Get in Range</English>
+    <Chinesesimp>进入射程</Chinesesimp>
+    <Chinese>進入射程</Chinese>
+    <Spanish>Entrar en alcance</Spanish>
+    <French>Se mettre à portée</French>
+    <Portuguese>Entrar no alcance</Portuguese>
+    <Russian>Выйти на дальность</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_DONT_MOVE">
+    <English>Don't Move</English>
+    <Chinesesimp>不要移动</Chinesesimp>
+    <Chinese>不要移動</Chinese>
+    <Spanish>No moverse</Spanish>
+    <French>Ne pas bouger</French>
+    <Portuguese>Não mover</Portuguese>
+    <Russian>Не двигаться</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_UNIT">
+    <English>UNIT</English>
+    <Chinesesimp>单位</Chinesesimp>
+    <Chinese>單位</Chinese>
+    <Spanish>UNIDAD</Spanish>
+    <French>UNITÉ</French>
+    <Portuguese>UNIDADE</Portuguese>
+    <Russian>ПОДРАЗДЕЛЕНИЕ</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_SELECT_UNIT">
+    <English>Select a unit</English>
+    <Chinesesimp>选择一个单位</Chinesesimp>
+    <Chinese>選擇一個單位</Chinese>
+    <Spanish>Selecciona una unidad</Spanish>
+    <French>Choisissez une unité</French>
+    <Portuguese>Selecione uma unidade</Portuguese>
+    <Russian>Выберите подразделение</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_BATTERY">
+    <English>BATTERY</English>
+    <Chinesesimp>炮兵连</Chinesesimp>
+    <Chinese>砲兵連</Chinese>
+    <Spanish>BATERÍA</Spanish>
+    <French>BATTERIE</French>
+    <Portuguese>BATERIA</Portuguese>
+    <Russian>БАТАРЕЯ</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_SELECT_BATTERY">
+    <English>Select a battery</English>
+    <Chinesesimp>选择一个炮兵连</Chinesesimp>
+    <Chinese>選擇一個砲兵連</Chinese>
+    <Spanish>Selecciona una batería</Spanish>
+    <French>Choisissez une batterie</French>
+    <Portuguese>Selecione uma bateria</Portuguese>
+    <Russian>Выберите батарею</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_RATE_OF_FIRE">
+    <English>RATE OF FIRE</English>
+    <Chinesesimp>射速</Chinesesimp>
+    <Chinese>射速</Chinese>
+    <Spanish>CADENCIA DE FUEGO</Spanish>
+    <French>CADENCE DE TIR</French>
+    <Portuguese>CADÊNCIA DE TIRO</Portuguese>
+    <Russian>ТЕМП ОГНЯ</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_ROUND_COUNT">
+    <English>ROUND COUNT</English>
+    <Chinesesimp>弹数</Chinesesimp>
+    <Chinese>彈數</Chinese>
+    <Spanish>NÚMERO DE PROYECTILES</Spanish>
+    <French>NOMBRE D'OBUS</French>
+    <Portuguese>NÚMERO DE TIROS</Portuguese>
+    <Russian>КОЛИЧЕСТВО СНАРЯДОВ</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_ARTY_AVAILABLE">
+    <English>Battery is available and waiting for a fire mission</English>
+    <Chinesesimp>炮兵连可用，正在等待射击任务</Chinesesimp>
+    <Chinese>砲兵連可用，正在等待射擊任務</Chinese>
+    <Spanish>La batería está disponible y espera una misión de fuego</Spanish>
+    <French>La batterie est disponible et attend une mission de tir</French>
+    <Portuguese>A bateria está disponível e aguarda uma missão de fogo</Portuguese>
+    <Russian>Батарея готова и ждёт огневую задачу</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_ARTY_INEFFECTIVE">
+    <English>Battery is combat ineffective</English>
+    <Chinesesimp>炮兵连已失去战斗力</Chinesesimp>
+    <Chinese>砲兵連已失去戰鬥力</Chinese>
+    <Spanish>La batería no está en condiciones de combatir</Spanish>
+    <French>La batterie est hors de combat</French>
+    <Portuguese>A bateria está fora de combate</Portuguese>
+    <Russian>Батарея небоеспособна</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_ARTY_ON_MISSION">
+    <English>Battery is on a fire mission</English>
+    <Chinesesimp>炮兵连正在执行射击任务</Chinesesimp>
+    <Chinese>砲兵連正在執行射擊任務</Chinese>
+    <Spanish>La batería está en una misión de fuego</Spanish>
+    <French>La batterie est en mission de tir</French>
+    <Portuguese>A bateria está numa missão de fogo</Portuguese>
+    <Russian>Батарея выполняет огневую задачу</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_ARTY_MOVING">
+    <English>Battery is moving to bring the target into range</English>
+    <Chinesesimp>炮兵连正在机动以使目标进入射程</Chinesesimp>
+    <Chinese>砲兵連正在機動以使目標進入射程</Chinese>
+    <Spanish>La batería se mueve para tener el objetivo a su alcance</Spanish>
+    <French>La batterie se déplace pour mettre la cible à portée</French>
+    <Portuguese>A bateria desloca-se para ter o alvo ao alcance</Portuguese>
+    <Russian>Батарея выдвигается, чтобы цель оказалась в зоне досягаемости</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_ARTY_RTB">
+    <English>Battery is returning to base</English>
+    <Chinesesimp>炮兵连正在返回基地</Chinesesimp>
+    <Chinese>砲兵連正在返回基地</Chinese>
+    <Spanish>La batería regresa a la base</Spanish>
+    <French>La batterie rentre à la base</French>
+    <Portuguese>A bateria regressa à base</Portuguese>
+    <Russian>Батарея возвращается на базу</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_ARTY_OUT_OF_RANGE">
+    <English>Battery is out of range - order it to reposition below</English>
+    <Chinesesimp>炮兵连超出射程，请在下方命令其转移阵地</Chinesesimp>
+    <Chinese>砲兵連超出射程，請在下方命令其轉移陣地</Chinese>
+    <Spanish>La batería está fuera de alcance: ordénale reposicionarse abajo</Spanish>
+    <French>La batterie est hors de portée : ordonnez-lui de se repositionner ci-dessous</French>
+    <Portuguese>A bateria está fora de alcance: ordene-lhe que se reposicione abaixo</Portuguese>
+    <Russian>Батарея вне досягаемости — прикажите ей сменить позицию ниже</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_ARTY_NO_AMMO">
+    <English>Battery is out of ammunition</English>
+    <Chinesesimp>炮兵连弹药耗尽</Chinesesimp>
+    <Chinese>砲兵連彈藥耗盡</Chinese>
+    <Spanish>La batería se ha quedado sin munición</Spanish>
+    <French>La batterie est à court de munitions</French>
+    <Portuguese>A bateria ficou sem munições</Portuguese>
+    <Russian>У батареи кончились боеприпасы</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_ORDNANCE">
+    <English>ORDNANCE</English>
+    <Chinesesimp>弹药</Chinesesimp>
+    <Chinese>彈藥</Chinese>
+    <Spanish>MUNICIÓN</Spanish>
+    <French>MUNITIONS</French>
+    <Portuguese>MUNIÇÕES</Portuguese>
+    <Russian>БОЕПРИПАСЫ</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_CAS_DESC_ATTACK">
+    <English>Unit will move to location, provide Close Air Support and engage all painted targets</English>
+    <Chinesesimp>单位将前往该位置，提供近距离空中支援并攻击所有标定目标</Chinesesimp>
+    <Chinese>單位將前往該位置，提供近距離空中支援並攻擊所有標定目標</Chinese>
+    <Spanish>La unidad irá a la ubicación, dará apoyo aéreo cercano y atacará todos los objetivos marcados</Spanish>
+    <French>L'unité se rendra sur place, fournira un appui aérien rapproché et attaquera toutes les cibles désignées</French>
+    <Portuguese>A unidade irá ao local, dará apoio aéreo próximo e atacará todos os alvos marcados</Portuguese>
+    <Russian>Подразделение выдвинется к месту, обеспечит непосредственную авиаподдержку и атакует все отмеченные цели</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_CAS_DESC_LOITER">
+    <English>Unit will move to location and orbit it at the chosen altitude. With Hold Fire it only watches; with Fire At Will it covers the area and engages hostiles it sees</English>
+    <Chinesesimp>单位将前往该位置并在所选高度盘旋。停火时只观察；自由开火时会掩护该区域并攻击发现的敌人</Chinesesimp>
+    <Chinese>單位將前往該位置並在所選高度盤旋。停火時只觀察；自由開火時會掩護該區域並攻擊發現的敵人</Chinese>
+    <Spanish>La unidad irá a la ubicación y la orbitará a la altitud elegida. Con Alto el fuego solo observa; con Fuego a discreción cubre la zona y ataca a los hostiles que vea</Spanish>
+    <French>L'unité se rendra sur place et tournera au-dessus à l'altitude choisie. En Cessez-le-feu elle observe seulement ; en Feu à volonté elle couvre la zone et attaque les ennemis qu'elle voit</French>
+    <Portuguese>A unidade irá ao local e orbitará à altitude escolhida. Com Cessar fogo apenas observa; com Fogo à vontade cobre a área e ataca os hostis que vir</Portuguese>
+    <Russian>Подразделение выдвинется к месту и будет кружить на выбранной высоте. При «Не стрелять» только наблюдает; при «Огонь по готовности» прикрывает район и атакует замеченного противника</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_CAS_DESC_ROE">
+    <English>Unit engages all hostiles in the target area, including unmanned vehicles. Lase a target to designate it manually - the pilot will prioritise your laser. Automatic uses the best weapon first and switches as ammo runs out; pick a specific weapon below to force it</English>
+    <Chinesesimp>单位攻击目标区域内所有敌人，包括无人载具。用激光标定目标即可手动指定，飞行员会优先攻击你的激光。自动模式先用最合适的武器，弹药耗尽时切换；在下方选择具体武器可强制使用</Chinesesimp>
+    <Chinese>單位攻擊目標區域內所有敵人，包括無人載具。用雷射標定目標即可手動指定，飛行員會優先攻擊你的雷射。自動模式先用最合適的武器，彈藥耗盡時切換；在下方選擇具體武器可強制使用</Chinese>
+    <Spanish>La unidad ataca a todos los hostiles de la zona objetivo, incluidos los vehículos no tripulados. Ilumina un objetivo con láser para designarlo: el piloto dará prioridad a tu láser. Automático usa primero la mejor arma y cambia al agotarse la munición; elige un arma abajo para forzarla</Spanish>
+    <French>L'unité attaque tous les ennemis de la zone cible, véhicules sans équipage compris. Désignez une cible au laser pour la choisir : le pilote donnera la priorité à votre laser. Automatique utilise d'abord la meilleure arme et change quand les munitions s'épuisent ; choisissez une arme ci-dessous pour l'imposer</French>
+    <Portuguese>A unidade ataca todos os hostis na área alvo, incluindo veículos não tripulados. Marque um alvo com laser para o designar: o piloto dará prioridade ao seu laser. Automático usa primeiro a melhor arma e troca quando as munições acabam; escolha uma arma abaixo para a forçar</Portuguese>
+    <Russian>Подразделение атакует всех противников в районе цели, включая беспилотную технику. Подсветите цель лазером, чтобы указать её вручную — пилот отдаст приоритет вашему лазеру. «Автоматически» — сначала лучшее оружие, затем смена по мере расхода; выберите оружие ниже, чтобы задать его</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_ROE">
+    <English>RULES OF ENGAGEMENT</English>
+    <Chinesesimp>交战规则</Chinesesimp>
+    <Chinese>交戰規則</Chinese>
+    <Spanish>REGLAS DE ENFRENTAMIENTO</Spanish>
+    <French>RÈGLES D'ENGAGEMENT</French>
+    <Portuguese>REGRAS DE EMPENHAMENTO</Portuguese>
+    <Russian>ПРАВИЛА ПРИМЕНЕНИЯ ОРУЖИЯ</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_CHOOSE_WEAPON">
+    <English>CHOOSE WEAPON</English>
+    <Chinesesimp>选择武器</Chinesesimp>
+    <Chinese>選擇武器</Chinese>
+    <Spanish>ELEGIR ARMA</Spanish>
+    <French>CHOISIR L'ARME</French>
+    <Portuguese>ESCOLHER ARMA</Portuguese>
+    <Russian>ВЫБОР ОРУЖИЯ</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_LOITER_DURATION">
+    <English>LOITER DURATION</English>
+    <Chinesesimp>盘旋时长</Chinesesimp>
+    <Chinese>盤旋時長</Chinese>
+    <Spanish>DURACIÓN DE ESPERA</Spanish>
+    <French>DURÉE D'ATTENTE</French>
+    <Portuguese>DURAÇÃO DE ESPERA</Portuguese>
+    <Russian>ВРЕМЯ БАРРАЖИРОВАНИЯ</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_UNIT_AVAILABLE">
+    <English>Unit is available and waiting for task</English>
+    <Chinesesimp>单位可用，正在等待任务</Chinesesimp>
+    <Chinese>單位可用，正在等待任務</Chinese>
+    <Spanish>La unidad está disponible y espera una tarea</Spanish>
+    <French>L'unité est disponible et attend une tâche</French>
+    <Portuguese>A unidade está disponível e aguarda uma tarefa</Portuguese>
+    <Russian>Подразделение готово и ждёт задачу</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_UNIT_INEFFECTIVE">
+    <English>Unit is combat ineffective</English>
+    <Chinesesimp>单位已失去战斗力</Chinesesimp>
+    <Chinese>單位已失去戰鬥力</Chinese>
+    <Spanish>La unidad no está en condiciones de combatir</Spanish>
+    <French>L'unité est hors de combat</French>
+    <Portuguese>A unidade está fora de combate</Portuguese>
+    <Russian>Подразделение небоеспособно</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_UNIT_ON_MISSION">
+    <English>Unit is on a mission, you may abort or change the current task</English>
+    <Chinesesimp>单位正在执行任务，你可以中止或更改当前任务</Chinesesimp>
+    <Chinese>單位正在執行任務，你可以中止或更改目前任務</Chinese>
+    <Spanish>La unidad está en una misión; puedes cancelar o cambiar la tarea actual</Spanish>
+    <French>L'unité est en mission ; vous pouvez annuler ou changer la tâche en cours</French>
+    <Portuguese>A unidade está numa missão; pode cancelar ou mudar a tarefa atual</Portuguese>
+    <Russian>Подразделение на задании, можно отменить или изменить текущую задачу</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_UNIT_RTB">
+    <English>Unit is RTB</English>
+    <Chinesesimp>单位正在返回基地</Chinesesimp>
+    <Chinese>單位正在返回基地</Chinese>
+    <Spanish>La unidad regresa a la base</Spanish>
+    <French>L'unité rentre à la base</French>
+    <Portuguese>A unidade regressa à base</Portuguese>
+    <Russian>Подразделение возвращается на базу</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_TASK">
+    <English>TASK</English>
+    <Chinesesimp>任务</Chinesesimp>
+    <Chinese>任務</Chinese>
+    <Spanish>TAREA</Spanish>
+    <French>TÂCHE</French>
+    <Portuguese>TAREFA</Portuguese>
+    <Russian>ЗАДАЧА</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_SELECT_TASK">
+    <English>Select a task</English>
+    <Chinesesimp>选择一个任务</Chinesesimp>
+    <Chinese>選擇一個任務</Chinese>
+    <Spanish>Selecciona una tarea</Spanish>
+    <French>Choisissez une tâche</French>
+    <Portuguese>Selecione uma tarefa</Portuguese>
+    <Russian>Выберите задачу</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_TR_PICKUP">
+    <English>Unit will move to location and wait for a smoke visual and confirmation (EVAC)</English>
+    <Chinesesimp>单位将前往该位置，等待看到烟雾并确认（撤离）</Chinesesimp>
+    <Chinese>單位將前往該位置，等待看到煙霧並確認（撤離）</Chinese>
+    <Spanish>La unidad irá a la ubicación y esperará a ver humo y la confirmación (EVAC)</Spanish>
+    <French>L'unité se rendra sur place et attendra de voir la fumée et la confirmation (EVAC)</French>
+    <Portuguese>A unidade irá ao local e aguardará ver fumo e a confirmação (EVAC)</Portuguese>
+    <Russian>Подразделение выдвинется к месту и будет ждать дыма и подтверждения (ЭВАКУАЦИЯ)</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_TR_LAND">
+    <English>Unit will move to coordinates and land the helicopter at the pilot's discretion (DROP)</English>
+    <Chinesesimp>单位将前往坐标，由飞行员自行决定降落直升机（投送）</Chinesesimp>
+    <Chinese>單位將前往座標，由飛行員自行決定降落直升機（投送）</Chinese>
+    <Spanish>La unidad irá a las coordenadas y aterrizará el helicóptero a criterio del piloto (DESEMBARCO)</Spanish>
+    <French>L'unité se rendra aux coordonnées et posera l'hélicoptère à la discrétion du pilote (DÉPOSE)</French>
+    <Portuguese>A unidade irá às coordenadas e aterrará o helicóptero a critério do piloto (LARGADA)</Portuguese>
+    <Russian>Подразделение выдвинется к координатам и посадит вертолёт на усмотрение пилота (ВЫСАДКА)</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_TR_LAND_ENG_OFF">
+    <English>Unit will move to coordinates, land the helicopter at the pilot's discretion and shut down its engine (DROP)</English>
+    <Chinesesimp>单位将前往坐标，由飞行员自行决定降落直升机并关闭引擎（投送）</Chinesesimp>
+    <Chinese>單位將前往座標，由飛行員自行決定降落直升機並關閉引擎（投送）</Chinese>
+    <Spanish>La unidad irá a las coordenadas, aterrizará el helicóptero a criterio del piloto y apagará el motor (DESEMBARCO)</Spanish>
+    <French>L'unité se rendra aux coordonnées, posera l'hélicoptère à la discrétion du pilote et coupera le moteur (DÉPOSE)</French>
+    <Portuguese>A unidade irá às coordenadas, aterrará o helicóptero a critério do piloto e desligará o motor (LARGADA)</Portuguese>
+    <Russian>Подразделение выдвинется к координатам, посадит вертолёт на усмотрение пилота и заглушит двигатель (ВЫСАДКА)</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_TR_MOVE">
+    <English>Unit will move to designated position and wait for further orders</English>
+    <Chinesesimp>单位将前往指定位置并等待进一步命令</Chinesesimp>
+    <Chinese>單位將前往指定位置並等待進一步命令</Chinese>
+    <Spanish>La unidad irá a la posición indicada y esperará nuevas órdenes</Spanish>
+    <French>L'unité se rendra à la position indiquée et attendra de nouveaux ordres</French>
+    <Portuguese>A unidade irá à posição indicada e aguardará novas ordens</Portuguese>
+    <Russian>Подразделение выдвинется на указанную позицию и будет ждать дальнейших приказов</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_TR_CIRCLE">
+    <English>Unit will move to designated coordinates and circle the area clockwise till further notice</English>
+    <Chinesesimp>单位将前往指定坐标，并顺时针盘旋该区域直到另行通知</Chinesesimp>
+    <Chinese>單位將前往指定座標，並順時針盤旋該區域直到另行通知</Chinese>
+    <Spanish>La unidad irá a las coordenadas indicadas y rodeará la zona en sentido horario hasta nuevo aviso</Spanish>
+    <French>L'unité se rendra aux coordonnées indiquées et tournera au-dessus de la zone dans le sens horaire jusqu'à nouvel ordre</French>
+    <Portuguese>A unidade irá às coordenadas indicadas e circulará a área no sentido horário até nova ordem</Portuguese>
+    <Russian>Подразделение выдвинется к указанным координатам и будет кружить над районом по часовой стрелке до дальнейших указаний</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_TR_INSERTION">
+    <English>Unit will move to designated coordinates and will hover for rope insertion</English>
+    <Chinesesimp>单位将前往指定坐标并悬停以进行索降</Chinesesimp>
+    <Chinese>單位將前往指定座標並懸停以進行索降</Chinese>
+    <Spanish>La unidad irá a las coordenadas indicadas y se mantendrá en vuelo estacionario para la inserción por cuerda</Spanish>
+    <French>L'unité se rendra aux coordonnées indiquées et fera du stationnaire pour une insertion par corde</French>
+    <Portuguese>A unidade irá às coordenadas indicadas e pairará para inserção por corda</Portuguese>
+    <Russian>Подразделение выдвинется к указанным координатам и зависнет для десантирования по тросу</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_TR_SLINGLOAD">
+    <English>Unit will move to designated coordinates and slingload nearest available object.</English>
+    <Chinesesimp>单位将前往指定坐标并吊运最近的可用物体。</Chinesesimp>
+    <Chinese>單位將前往指定座標並吊運最近的可用物體。</Chinese>
+    <Spanish>La unidad irá a las coordenadas indicadas y cargará con eslinga el objeto disponible más cercano.</Spanish>
+    <French>L'unité se rendra aux coordonnées indiquées et élinguera l'objet disponible le plus proche.</French>
+    <Portuguese>A unidade irá às coordenadas indicadas e içará o objeto disponível mais próximo.</Portuguese>
+    <Russian>Подразделение выдвинется к указанным координатам и возьмёт на подвес ближайший доступный объект.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_TR_UNHOOK">
+    <English>Unit will move to designated coordinates and unhook current slingload</English>
+    <Chinesesimp>单位将前往指定坐标并解开当前吊运物</Chinesesimp>
+    <Chinese>單位將前往指定座標並解開目前吊運物</Chinese>
+    <Spanish>La unidad irá a las coordenadas indicadas y soltará la carga de la eslinga</Spanish>
+    <French>L'unité se rendra aux coordonnées indiquées et décrochera la charge élinguée</French>
+    <Portuguese>A unidade irá às coordenadas indicadas e soltará a carga içada</Portuguese>
+    <Russian>Подразделение выдвинется к указанным координатам и отцепит груз</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_TR_MEDEVAC">
+    <English>Unit will land at the marked position; load your wounded and clear it to leave. They're treated at base and flown back to you</English>
+    <Chinesesimp>单位将降落在标记位置；装载伤员并允许其离开。伤员会在基地接受治疗后被送回你身边</Chinesesimp>
+    <Chinese>單位將降落在標記位置；裝載傷員並允許其離開。傷員會在基地接受治療後被送回你身邊</Chinese>
+    <Spanish>La unidad aterrizará en la posición marcada; carga a tus heridos y autorízala a partir. Se les trata en la base y se les trae de vuelta</Spanish>
+    <French>L'unité se posera à la position marquée ; chargez vos blessés et autorisez-la à partir. Ils sont soignés à la base et vous sont ramenés</French>
+    <Portuguese>A unidade aterrará na posição marcada; carregue os feridos e autorize a partida. São tratados na base e trazidos de volta</Portuguese>
+    <Russian>Подразделение сядет в отмеченной точке; погрузите раненых и разрешите взлёт. Их вылечат на базе и привезут обратно</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_TR_WAIT_SMOKE">
+    <English>Unit is waiting for smoke</English>
+    <Chinesesimp>单位正在等待烟雾</Chinesesimp>
+    <Chinese>單位正在等待煙霧</Chinese>
+    <Spanish>La unidad espera el humo</Spanish>
+    <French>L'unité attend la fumée</French>
+    <Portuguese>A unidade aguarda o fumo</Portuguese>
+    <Russian>Подразделение ждёт дыма</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_TR_WAIT_SMOKE_CONFIRM">
+    <English>Unit is waiting for smoke confirmation</English>
+    <Chinesesimp>单位正在等待烟雾确认</Chinesesimp>
+    <Chinese>單位正在等待煙霧確認</Chinese>
+    <Spanish>La unidad espera la confirmación del humo</Spanish>
+    <French>L'unité attend la confirmation de la fumée</French>
+    <Portuguese>A unidade aguarda a confirmação do fumo</Portuguese>
+    <Russian>Подразделение ждёт подтверждения дыма</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_TR_WAIT_CARGO">
+    <English>Unit is waiting for cargo to board</English>
+    <Chinesesimp>单位正在等待人员登机</Chinesesimp>
+    <Chinese>單位正在等待人員登機</Chinese>
+    <Spanish>La unidad espera a que embarque la carga</Spanish>
+    <French>L'unité attend l'embarquement</French>
+    <Portuguese>A unidade aguarda o embarque</Portuguese>
+    <Russian>Подразделение ждёт посадки</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_TR_ON_MEDEVAC">
+    <English>Unit is on a medevac</English>
+    <Chinesesimp>单位正在执行医疗后送</Chinesesimp>
+    <Chinese>單位正在執行醫療後送</Chinese>
+    <Spanish>La unidad está en una evacuación médica</Spanish>
+    <French>L'unité est en évacuation sanitaire</French>
+    <Portuguese>A unidade está numa evacuação médica</Portuguese>
+    <Russian>Подразделение выполняет медэвакуацию</Russian>
+</Key>
 </Container></Package></Project>

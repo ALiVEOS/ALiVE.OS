@@ -20,15 +20,15 @@ else {
 
 _show = switch (toUpper (_lb lbText _index)) do
 {
-    case "PICKUP" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit will move to location and wait for a smoke visual and confirmation (EVAC)</t>" };
-    case "LAND" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit will move to coordinates and land the helicopter at the pilot's discretion (DROP)</t>" };
-    case "LAND (ENG OFF)" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit will move to coordinates, land the helicopter at the pilot's discretion and shut down its engine (DROP)</t>" };
-    case "MOVE" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit will move to designated position and wait for further orders</t>" };
-    case "CIRCLE" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit will move to designated coordinates and circle the area clockwise till further notice</t>" };
-    case "INSERTION" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit will move to designated coordinates and will hover for rope insertion</t>" };
-    case "SLINGLOAD" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit will move to designated coordinates and slingload nearest available object.</t>" };
-    case "UNHOOK" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit will move to designated coordinates and unhook current slingload</t>" };
-    case "MEDEVAC" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit will land at the marked position; load your wounded and clear it to leave. They're treated at base and flown back to you</t>" };
+    case "PICKUP" : { format ["<t color='#FFFF73' size='0.7' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_TR_PICKUP"] };
+    case "LAND" : { format ["<t color='#FFFF73' size='0.7' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_TR_LAND"] };
+    case "LAND (ENG OFF)" : { format ["<t color='#FFFF73' size='0.7' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_TR_LAND_ENG_OFF"] };
+    case "MOVE" : { format ["<t color='#FFFF73' size='0.7' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_TR_MOVE"] };
+    case "CIRCLE" : { format ["<t color='#FFFF73' size='0.7' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_TR_CIRCLE"] };
+    case "INSERTION" : { format ["<t color='#FFFF73' size='0.7' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_TR_INSERTION"] };
+    case "SLINGLOAD" : { format ["<t color='#FFFF73' size='0.7' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_TR_SLINGLOAD"] };
+    case "UNHOOK" : { format ["<t color='#FFFF73' size='0.7' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_TR_UNHOOK"] };
+    case "MEDEVAC" : { format ["<t color='#FFFF73' size='0.7' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_TR_MEDEVAC"] };
 };
 
 //Help Text
