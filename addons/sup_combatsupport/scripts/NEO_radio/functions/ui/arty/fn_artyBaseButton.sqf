@@ -23,7 +23,7 @@ _callsign = _artyArray select (lbCurSel _artyUnitLb) select 2; if (!isNil { NEO_
 _callSignPlayer = (format ["%1", group player]) call NEO_fnc_callsignFix;
 
 _battery setVariable ["NEO_radioArtyGoToBase", true, true];
-[player, format ["%1. Abort fire mission and return to base. Over.", _callsign, _callSignPlayer], "side"] call NEO_fnc_messageBroadcast;
+[player, ["STR_ALIVE_CS_MSG_47", _callsign, _callSignPlayer], "side"] call NEO_fnc_messageBroadcast;
 
 //Interface
 [lbCurSel 655565] call NEO_fnc_radioRefreshUi;

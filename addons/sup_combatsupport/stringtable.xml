@@ -670,4 +670,500 @@
     <Portuguese>A unidade está numa evacuação médica</Portuguese>
     <Russian>Подразделение выполняет медэвакуацию</Russian>
 </Key>
+<!-- Combat Support radio messages (AI-translated; native-speaker review welcome) -->
+<Key ID="STR_ALIVE_CS_MSG_01">
+    <English>Copy that, %1 is moving to %2%3 to provide CAS. Out.</English>
+    <Chinesesimp>收到，%1 正前往 %2%3 提供近距离空中支援。完毕。</Chinesesimp>
+    <Chinese>收到，%1 正前往 %2%3 提供近距離空中支援。完畢。</Chinese>
+    <Spanish>Recibido, %1 se dirige a %2%3 para dar apoyo aéreo cercano. Corto.</Spanish>
+    <French>Bien reçu, %1 se dirige vers %2%3 pour l'appui aérien rapproché. Terminé.</French>
+    <Portuguese>Entendido, %1 dirige-se a %2%3 para dar apoio aéreo próximo. Terminado.</Portuguese>
+    <Russian>Вас понял, %1 выдвигается к %2%3 для непосредственной авиаподдержки. Конец связи.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_02">
+    <English>%1 is RTB. Out.</English>
+    <Chinesesimp>%1 正在返回基地。完毕。</Chinesesimp>
+    <Chinese>%1 正在返回基地。完畢。</Chinese>
+    <Spanish>%1 regresa a la base. Corto.</Spanish>
+    <French>%1 rentre à la base. Terminé.</French>
+    <Portuguese>%1 regressa à base. Terminado.</Portuguese>
+    <Russian>%1 возвращается на базу. Конец связи.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_03">
+    <English>%1 is at parking position. Out.</English>
+    <Chinesesimp>%1 已到达停机位。完毕。</Chinesesimp>
+    <Chinese>%1 已到達停機位。完畢。</Chinese>
+    <Spanish>%1 está en su posición de estacionamiento. Corto.</Spanish>
+    <French>%1 est à sa place de stationnement. Terminé.</French>
+    <Portuguese>%1 está na posição de estacionamento. Terminado.</Portuguese>
+    <Russian>%1 на стоянке. Конец связи.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_04">
+    <English>%1 is at base. Out.</English>
+    <Chinesesimp>%1 已在基地。完毕。</Chinesesimp>
+    <Chinese>%1 已在基地。完畢。</Chinese>
+    <Spanish>%1 está en la base. Corto.</Spanish>
+    <French>%1 est à la base. Terminé.</French>
+    <Portuguese>%1 está na base. Terminado.</Portuguese>
+    <Russian>%1 на базе. Конец связи.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_05">
+    <English>Copy that, %1 is moving to %2%3 to loiter. Out.</English>
+    <Chinesesimp>收到，%1 正前往 %2%3 盘旋待命。完毕。</Chinesesimp>
+    <Chinese>收到，%1 正前往 %2%3 盤旋待命。完畢。</Chinese>
+    <Spanish>Recibido, %1 se dirige a %2%3 para mantenerse en espera. Corto.</Spanish>
+    <French>Bien reçu, %1 se dirige vers %2%3 pour tourner en attente. Terminé.</French>
+    <Portuguese>Entendido, %1 dirige-se a %2%3 para ficar em espera. Terminado.</Portuguese>
+    <Russian>Вас понял, %1 выдвигается к %2%3 для барражирования. Конец связи.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_06">
+    <English>%1 is holding position and waiting for further orders. Out.</English>
+    <Chinesesimp>%1 正在原地待命，等待进一步命令。完毕。</Chinesesimp>
+    <Chinese>%1 正在原地待命，等待進一步命令。完畢。</Chinese>
+    <Spanish>%1 mantiene la posición y espera nuevas órdenes. Corto.</Spanish>
+    <French>%1 tient sa position et attend de nouveaux ordres. Terminé.</French>
+    <Portuguese>%1 mantém a posição e aguarda novas ordens. Terminado.</Portuguese>
+    <Russian>%1 удерживает позицию и ждёт дальнейших приказов. Конец связи.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_07">
+    <English>Copy that, %1 is moving into position to engage target area at %2%3. Out.</English>
+    <Chinesesimp>收到，%1 正进入阵位攻击 %2%3 的目标区域。完毕。</Chinesesimp>
+    <Chinese>收到，%1 正進入陣位攻擊 %2%3 的目標區域。完畢。</Chinese>
+    <Spanish>Recibido, %1 se coloca en posición para atacar la zona objetivo en %2%3. Corto.</Spanish>
+    <French>Bien reçu, %1 se met en position pour attaquer la zone cible en %2%3. Terminé.</French>
+    <Portuguese>Entendido, %1 posiciona-se para atacar a área alvo em %2%3. Terminado.</Portuguese>
+    <Russian>Вас понял, %1 занимает позицию для атаки района цели в %2%3. Конец связи.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_08">
+    <English>Copy that, %1 is moving into position to start attack run at %2%3. Out.</English>
+    <Chinesesimp>收到，%1 正进入阵位，准备在 %2%3 开始攻击航路。完毕。</Chinesesimp>
+    <Chinese>收到，%1 正進入陣位，準備在 %2%3 開始攻擊航路。完畢。</Chinese>
+    <Spanish>Recibido, %1 se coloca en posición para iniciar la pasada de ataque en %2%3. Corto.</Spanish>
+    <French>Bien reçu, %1 se met en position pour commencer sa passe d'attaque en %2%3. Terminé.</French>
+    <Portuguese>Entendido, %1 posiciona-se para iniciar a passagem de ataque em %2%3. Terminado.</Portuguese>
+    <Russian>Вас понял, %1 занимает позицию для захода на атаку в %2%3. Конец связи.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_09">
+    <English>%1 is engaging the target area. Out.</English>
+    <Chinesesimp>%1 正在攻击目标区域。完毕。</Chinesesimp>
+    <Chinese>%1 正在攻擊目標區域。完畢。</Chinese>
+    <Spanish>%1 ataca la zona objetivo. Corto.</Spanish>
+    <French>%1 attaque la zone cible. Terminé.</French>
+    <Portuguese>%1 ataca a área alvo. Terminado.</Portuguese>
+    <Russian>%1 атакует район цели. Конец связи.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_10">
+    <English>%1 is locating enemy target. Out.</English>
+    <Chinesesimp>%1 正在搜索敌方目标。完毕。</Chinesesimp>
+    <Chinese>%1 正在搜索敵方目標。完畢。</Chinese>
+    <Spanish>%1 busca el objetivo enemigo. Corto.</Spanish>
+    <French>%1 recherche la cible ennemie. Terminé.</French>
+    <Portuguese>%1 procura o alvo inimigo. Terminado.</Portuguese>
+    <Russian>%1 ищет цель противника. Конец связи.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_11">
+    <English>Copy that, %1 is inbound to provide overwatch at %2 %3. Out.</English>
+    <Chinesesimp>收到，%1 正前往 %2 %3 提供警戒掩护。完毕。</Chinesesimp>
+    <Chinese>收到，%1 正前往 %2 %3 提供警戒掩護。完畢。</Chinese>
+    <Spanish>Recibido, %1 va de camino para dar cobertura en %2 %3. Corto.</Spanish>
+    <French>Bien reçu, %1 arrive pour assurer la couverture en %2 %3. Terminé.</French>
+    <Portuguese>Entendido, %1 a caminho para dar cobertura em %2 %3. Terminado.</Portuguese>
+    <Russian>Вас понял, %1 выдвигается для прикрытия в %2 %3. Конец связи.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_12">
+    <English>%1 is moving to %2%3 for pickup. Out.</English>
+    <Chinesesimp>%1 正前往 %2%3 接人。完毕。</Chinesesimp>
+    <Chinese>%1 正前往 %2%3 接人。完畢。</Chinese>
+    <Spanish>%1 se dirige a %2%3 para la recogida. Corto.</Spanish>
+    <French>%1 se dirige vers %2%3 pour l'embarquement. Terminé.</French>
+    <Portuguese>%1 dirige-se a %2%3 para a recolha. Terminado.</Portuguese>
+    <Russian>%1 выдвигается к %2%3 для подбора. Конец связи.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_13">
+    <English>%1 has arrived at pickup point, deploy IR marker to confirm landing position. Over.</English>
+    <Chinesesimp>%1 已到达接人点，请放置红外标记确认降落位置。请回答。</Chinesesimp>
+    <Chinese>%1 已到達接人點，請放置紅外標記確認降落位置。請回答。</Chinese>
+    <Spanish>%1 ha llegado al punto de recogida; despliega un marcador IR para confirmar la zona de aterrizaje. Cambio.</Spanish>
+    <French>%1 est arrivé au point d'embarquement, déployez un marqueur IR pour confirmer la zone d'atterrissage. À vous.</French>
+    <Portuguese>%1 chegou ao ponto de recolha; coloque um marcador IV para confirmar a zona de aterragem. Escuto.</Portuguese>
+    <Russian>%1 прибыл в точку подбора, поставьте ИК-маркер для подтверждения места посадки. Приём.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_14">
+    <English>%1 has arrived at pickup point, pop smoke to confirm landing position. Over.</English>
+    <Chinesesimp>%1 已到达接人点，请放烟确认降落位置。请回答。</Chinesesimp>
+    <Chinese>%1 已到達接人點，請放煙確認降落位置。請回答。</Chinese>
+    <Spanish>%1 ha llegado al punto de recogida; lanza humo para confirmar la zona de aterrizaje. Cambio.</Spanish>
+    <French>%1 est arrivé au point d'embarquement, lancez une fumigène pour confirmer la zone d'atterrissage. À vous.</French>
+    <Portuguese>%1 chegou ao ponto de recolha; lance fumo para confirmar a zona de aterragem. Escuto.</Portuguese>
+    <Russian>%1 прибыл в точку подбора, бросьте дым для подтверждения места посадки. Приём.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_15">
+    <English>%1 is still waiting for that IR marker. Over.</English>
+    <Chinesesimp>%1 仍在等待红外标记。请回答。</Chinesesimp>
+    <Chinese>%1 仍在等待紅外標記。請回答。</Chinese>
+    <Spanish>%1 sigue esperando ese marcador IR. Cambio.</Spanish>
+    <French>%1 attend toujours ce marqueur IR. À vous.</French>
+    <Portuguese>%1 continua à espera desse marcador IV. Escuto.</Portuguese>
+    <Russian>%1 всё ещё ждёт ИК-маркер. Приём.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_16">
+    <English>%1 is still waiting for that smoke. Over.</English>
+    <Chinesesimp>%1 仍在等待烟雾。请回答。</Chinesesimp>
+    <Chinese>%1 仍在等待煙霧。請回答。</Chinese>
+    <Spanish>%1 sigue esperando ese humo. Cambio.</Spanish>
+    <French>%1 attend toujours cette fumée. À vous.</French>
+    <Portuguese>%1 continua à espera desse fumo. Escuto.</Portuguese>
+    <Russian>%1 всё ещё ждёт дым. Приём.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_17">
+    <English>We see %1 marker, do you confirm? Over.</English>
+    <Chinesesimp>我们看到 %1 标记，请确认？请回答。</Chinesesimp>
+    <Chinese>我們看到 %1 標記，請確認？請回答。</Chinese>
+    <Spanish>Vemos un marcador %1, ¿lo confirmas? Cambio.</Spanish>
+    <French>Nous voyons un marqueur %1, confirmez-vous ? À vous.</French>
+    <Portuguese>Vemos um marcador %1, confirma? Escuto.</Portuguese>
+    <Russian>Видим маркер: %1, подтверждаете? Приём.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_18">
+    <English>We see %1 smoke, do you confirm? Over.</English>
+    <Chinesesimp>我们看到 %1 烟雾，请确认？请回答。</Chinesesimp>
+    <Chinese>我們看到 %1 煙霧，請確認？請回答。</Chinese>
+    <Spanish>Vemos humo %1, ¿lo confirmas? Cambio.</Spanish>
+    <French>Nous voyons une fumée %1, confirmez-vous ? À vous.</French>
+    <Portuguese>Vemos fumo %1, confirma? Escuto.</Portuguese>
+    <Russian>Видим дым: %1, подтверждаете? Приём.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_19">
+    <English>This is %1, please respond, is that %1 marker yours? Over.</English>
+    <Chinesesimp>这里是 %1，请回答，那个 %1 标记是你们的吗？请回答。</Chinesesimp>
+    <Chinese>這裡是 %1，請回答，那個 %1 標記是你們的嗎？請回答。</Chinese>
+    <Spanish>Aquí %1, responde, ¿ese marcador %1 es vuestro? Cambio.</Spanish>
+    <French>Ici %1, répondez, ce marqueur %1 est-il le vôtre ? À vous.</French>
+    <Portuguese>Aqui %1, responda, esse marcador %1 é vosso? Escuto.</Portuguese>
+    <Russian>Говорит %1, ответьте, маркер %1 ваш? Приём.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_20">
+    <English>This is %1, please respond, is that %1 smoke yours? Over.</English>
+    <Chinesesimp>这里是 %1，请回答，那个 %1 烟雾是你们的吗？请回答。</Chinesesimp>
+    <Chinese>這裡是 %1，請回答，那個 %1 煙霧是你們的嗎？請回答。</Chinese>
+    <Spanish>Aquí %1, responde, ¿ese humo %1 es vuestro? Cambio.</Spanish>
+    <French>Ici %1, répondez, cette fumée %1 est-elle la vôtre ? À vous.</French>
+    <Portuguese>Aqui %1, responda, esse fumo %1 é vosso? Escuto.</Portuguese>
+    <Russian>Говорит %1, ответьте, дым %1 ваш? Приём.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_21">
+    <English>Copy that, pop another marker to confirm LZ. Out.</English>
+    <Chinesesimp>收到，请再放一个标记确认降落区。完毕。</Chinesesimp>
+    <Chinese>收到，請再放一個標記確認降落區。完畢。</Chinese>
+    <Spanish>Recibido, lanza otro marcador para confirmar la zona de aterrizaje. Corto.</Spanish>
+    <French>Bien reçu, posez un autre marqueur pour confirmer la zone d'atterrissage. Terminé.</French>
+    <Portuguese>Entendido, coloque outro marcador para confirmar a zona de aterragem. Terminado.</Portuguese>
+    <Russian>Вас понял, поставьте ещё один маркер для подтверждения площадки. Конец связи.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_22">
+    <English>Copy that, secure LZ. Out.</English>
+    <Chinesesimp>收到，请确保降落区安全。完毕。</Chinesesimp>
+    <Chinese>收到，請確保降落區安全。完畢。</Chinese>
+    <Spanish>Recibido, asegurad la zona de aterrizaje. Corto.</Spanish>
+    <French>Bien reçu, sécurisez la zone d'atterrissage. Terminé.</French>
+    <Portuguese>Entendido, garantam a segurança da zona de aterragem. Terminado.</Portuguese>
+    <Russian>Вас понял, обеспечьте безопасность площадки. Конец связи.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_23">
+    <English>Copy that, %1 is RTB. Out.</English>
+    <Chinesesimp>收到，%1 正在返回基地。完毕。</Chinesesimp>
+    <Chinese>收到，%1 正在返回基地。完畢。</Chinese>
+    <Spanish>Recibido, %1 regresa a la base. Corto.</Spanish>
+    <French>Bien reçu, %1 rentre à la base. Terminé.</French>
+    <Portuguese>Entendido, %1 regressa à base. Terminado.</Portuguese>
+    <Russian>Вас понял, %1 возвращается на базу. Конец связи.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_24">
+    <English>Copy that, %1 is landing at %2 %3. Out.</English>
+    <Chinesesimp>收到，%1 正在 %2 %3 降落。完毕。</Chinesesimp>
+    <Chinese>收到，%1 正在 %2 %3 降落。完畢。</Chinese>
+    <Spanish>Recibido, %1 aterriza en %2 %3. Corto.</Spanish>
+    <French>Bien reçu, %1 atterrit en %2 %3. Terminé.</French>
+    <Portuguese>Entendido, %1 aterra em %2 %3. Terminado.</Portuguese>
+    <Russian>Вас понял, %1 садится в %2 %3. Конец связи.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_25">
+    <English>%1 is unable to Land at coordinates. Out.</English>
+    <Chinesesimp>%1 无法在该坐标降落。完毕。</Chinesesimp>
+    <Chinese>%1 無法在該座標降落。完畢。</Chinese>
+    <Spanish>%1 no puede aterrizar en esas coordenadas. Corto.</Spanish>
+    <French>%1 ne peut pas atterrir à ces coordonnées. Terminé.</French>
+    <Portuguese>%1 não consegue aterrar nessas coordenadas. Terminado.</Portuguese>
+    <Russian>%1 не может сесть в этих координатах. Конец связи.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_26">
+    <English>%1 is awaiting new orders. Out.</English>
+    <Chinesesimp>%1 正在等待新命令。完毕。</Chinesesimp>
+    <Chinese>%1 正在等待新命令。完畢。</Chinese>
+    <Spanish>%1 espera nuevas órdenes. Corto.</Spanish>
+    <French>%1 attend de nouveaux ordres. Terminé.</French>
+    <Portuguese>%1 aguarda novas ordens. Terminado.</Portuguese>
+    <Russian>%1 ждёт новых приказов. Конец связи.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_27">
+    <English>%1 is landing at coordinates. Out.</English>
+    <Chinesesimp>%1 正在该坐标降落。完毕。</Chinesesimp>
+    <Chinese>%1 正在該座標降落。完畢。</Chinese>
+    <Spanish>%1 aterriza en las coordenadas. Corto.</Spanish>
+    <French>%1 atterrit aux coordonnées. Terminé.</French>
+    <Portuguese>%1 aterra nas coordenadas. Terminado.</Portuguese>
+    <Russian>%1 садится в указанных координатах. Конец связи.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_28">
+    <English>Copy that, %1 is moving to %2%3. Out.</English>
+    <Chinesesimp>收到，%1 正前往 %2%3。完毕。</Chinesesimp>
+    <Chinese>收到，%1 正前往 %2%3。完畢。</Chinese>
+    <Spanish>Recibido, %1 se dirige a %2%3. Corto.</Spanish>
+    <French>Bien reçu, %1 se dirige vers %2%3. Terminé.</French>
+    <Portuguese>Entendido, %1 dirige-se a %2%3. Terminado.</Portuguese>
+    <Russian>Вас понял, %1 выдвигается к %2%3. Конец связи.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_29">
+    <English>This is %1, we are at %2 %3, circling the AO. Out.</English>
+    <Chinesesimp>这里是 %1，我们在 %2 %3，正在作战区域上空盘旋。完毕。</Chinesesimp>
+    <Chinese>這裡是 %1，我們在 %2 %3，正在作戰區域上空盤旋。完畢。</Chinese>
+    <Spanish>Aquí %1, estamos en %2 %3, sobrevolando la zona de operaciones. Corto.</Spanish>
+    <French>Ici %1, nous sommes en %2 %3 et tournons au-dessus de la zone. Terminé.</French>
+    <Portuguese>Aqui %1, estamos em %2 %3, a circular sobre a área de operações. Terminado.</Portuguese>
+    <Russian>Говорит %1, мы в %2 %3, кружим над районом. Конец связи.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_30">
+    <English>Copy that, %1 is moving to %2%3 for Insertion. Out.</English>
+    <Chinesesimp>收到，%1 正前往 %2%3 进行索降。完毕。</Chinesesimp>
+    <Chinese>收到，%1 正前往 %2%3 進行索降。完畢。</Chinese>
+    <Spanish>Recibido, %1 se dirige a %2%3 para la inserción. Corto.</Spanish>
+    <French>Bien reçu, %1 se dirige vers %2%3 pour l'insertion. Terminé.</French>
+    <Portuguese>Entendido, %1 dirige-se a %2%3 para a inserção. Terminado.</Portuguese>
+    <Russian>Вас понял, %1 выдвигается к %2%3 для высадки. Конец связи.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_31">
+    <English>Prepare for Insertion. Out.</English>
+    <Chinesesimp>准备索降。完毕。</Chinesesimp>
+    <Chinese>準備索降。完畢。</Chinese>
+    <Spanish>Preparaos para la inserción. Corto.</Spanish>
+    <French>Préparez-vous à l'insertion. Terminé.</French>
+    <Portuguese>Preparem-se para a inserção. Terminado.</Portuguese>
+    <Russian>Приготовиться к высадке. Конец связи.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_32">
+    <English>Go!. Go! Go!</English>
+    <Chinesesimp>出发！出发！出发！</Chinesesimp>
+    <Chinese>出發！出發！出發！</Chinese>
+    <Spanish>¡Vamos! ¡Vamos! ¡Vamos!</Spanish>
+    <French>Go ! Go ! Go !</French>
+    <Portuguese>Vai! Vai! Vai!</Portuguese>
+    <Russian>Пошёл! Пошёл! Пошёл!</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_33">
+    <English>Copy that, %1 is moving to %2%3 to provide air lift capability. Out.</English>
+    <Chinesesimp>收到，%1 正前往 %2%3 提供空运支援。完毕。</Chinesesimp>
+    <Chinese>收到，%1 正前往 %2%3 提供空運支援。完畢。</Chinese>
+    <Spanish>Recibido, %1 se dirige a %2%3 para dar capacidad de transporte aéreo. Corto.</Spanish>
+    <French>Bien reçu, %1 se dirige vers %2%3 pour assurer le transport aérien. Terminé.</French>
+    <Portuguese>Entendido, %1 dirige-se a %2%3 para dar capacidade de transporte aéreo. Terminado.</Portuguese>
+    <Russian>Вас понял, %1 выдвигается к %2%3 для воздушной перевозки. Конец связи.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_34">
+    <English>Copy that, %1 is moving to %2%3 to deliver supply drop. Out.</English>
+    <Chinesesimp>收到，%1 正前往 %2%3 投送补给。完毕。</Chinesesimp>
+    <Chinese>收到，%1 正前往 %2%3 投送補給。完畢。</Chinese>
+    <Spanish>Recibido, %1 se dirige a %2%3 para entregar el suministro. Corto.</Spanish>
+    <French>Bien reçu, %1 se dirige vers %2%3 pour livrer le ravitaillement. Terminé.</French>
+    <Portuguese>Entendido, %1 dirige-se a %2%3 para entregar o abastecimento. Terminado.</Portuguese>
+    <Russian>Вас понял, %1 выдвигается к %2%3 для доставки груза. Конец связи.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_35">
+    <English>%1 has the cargo attached and they are ready to move. Over.</English>
+    <Chinesesimp>%1 已挂好货物，准备出发。请回答。</Chinesesimp>
+    <Chinese>%1 已掛好貨物，準備出發。請回答。</Chinese>
+    <Spanish>%1 tiene la carga enganchada y está listo para moverse. Cambio.</Spanish>
+    <French>%1 a la charge accrochée et est prêt à partir. À vous.</French>
+    <Portuguese>%1 tem a carga presa e está pronto para avançar. Escuto.</Portuguese>
+    <Russian>%1 взял груз на подвес и готов к движению. Приём.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_36">
+    <English>%1 has delivered the payload. Holding position and waiting for further orders. Out.</English>
+    <Chinesesimp>%1 已投送货物。原地待命，等待进一步命令。完毕。</Chinesesimp>
+    <Chinese>%1 已投送貨物。原地待命，等待進一步命令。完畢。</Chinese>
+    <Spanish>%1 ha entregado la carga. Mantiene la posición y espera nuevas órdenes. Corto.</Spanish>
+    <French>%1 a livré la charge. Tient sa position et attend de nouveaux ordres. Terminé.</French>
+    <Portuguese>%1 entregou a carga. Mantém a posição e aguarda novas ordens. Terminado.</Portuguese>
+    <Russian>%1 доставил груз. Удерживает позицию и ждёт дальнейших приказов. Конец связи.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_37">
+    <English>%1 cannot comply with your request, they are already slingloading cargo. Out.</English>
+    <Chinesesimp>%1 无法执行你的请求，已在吊运货物。完毕。</Chinesesimp>
+    <Chinese>%1 無法執行你的請求，已在吊運貨物。完畢。</Chinese>
+    <Spanish>%1 no puede cumplir tu petición, ya lleva carga en eslinga. Corto.</Spanish>
+    <French>%1 ne peut pas répondre à votre demande, il transporte déjà une charge élinguée. Terminé.</French>
+    <Portuguese>%1 não pode cumprir o pedido, já transporta carga içada. Terminado.</Portuguese>
+    <Russian>%1 не может выполнить запрос, уже несёт груз на подвесе. Конец связи.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_38">
+    <English>%1 cannot comply with your request, they are not slingloading any cargo. Out.</English>
+    <Chinesesimp>%1 无法执行你的请求，当前没有吊运货物。完毕。</Chinesesimp>
+    <Chinese>%1 無法執行你的請求，目前沒有吊運貨物。完畢。</Chinese>
+    <Spanish>%1 no puede cumplir tu petición, no lleva carga en eslinga. Corto.</Spanish>
+    <French>%1 ne peut pas répondre à votre demande, il ne transporte aucune charge élinguée. Terminé.</French>
+    <Portuguese>%1 não pode cumprir o pedido, não transporta carga içada. Terminado.</Portuguese>
+    <Russian>%1 не может выполнить запрос, груза на подвесе нет. Конец связи.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_39">
+    <English>%1 is at Base. Out.</English>
+    <Chinesesimp>%1 已在基地。完毕。</Chinesesimp>
+    <Chinese>%1 已在基地。完畢。</Chinese>
+    <Spanish>%1 está en la base. Corto.</Spanish>
+    <French>%1 est à la base. Terminé.</French>
+    <Portuguese>%1 está na base. Terminado.</Portuguese>
+    <Russian>%1 на базе. Конец связи.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_40">
+    <English>%1 is rearmed, refuelled and ready for tasking. Out.</English>
+    <Chinesesimp>%1 已完成补弹和加油，可接受任务。完毕。</Chinesesimp>
+    <Chinese>%1 已完成補彈和加油，可接受任務。完畢。</Chinese>
+    <Spanish>%1 está rearmado, repostado y listo para tareas. Corto.</Spanish>
+    <French>%1 est réarmé, ravitaillé et prêt pour une mission. Terminé.</French>
+    <Portuguese>%1 está rearmado, reabastecido e pronto para tarefas. Terminado.</Portuguese>
+    <Russian>%1 перевооружён, заправлен и готов к заданию. Конец связи.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_41">
+    <English>%1 is airborne and available for tasking. Out.</English>
+    <Chinesesimp>%1 已升空，可接受任务。完毕。</Chinesesimp>
+    <Chinese>%1 已升空，可接受任務。完畢。</Chinese>
+    <Spanish>%1 está en el aire y disponible para tareas. Corto.</Spanish>
+    <French>%1 est en vol et disponible pour une mission. Terminé.</French>
+    <Portuguese>%1 está no ar e disponível para tarefas. Terminado.</Portuguese>
+    <Russian>%1 в воздухе и готов к заданию. Конец связи.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_42">
+    <English>%1 is out of %2, switching to %3. Out.</English>
+    <Chinesesimp>%1 的 %2 已用尽，切换到 %3。完毕。</Chinesesimp>
+    <Chinese>%1 的 %2 已用盡，切換到 %3。完畢。</Chinese>
+    <Spanish>%1 se ha quedado sin %2, cambia a %3. Corto.</Spanish>
+    <French>%1 n'a plus de %2, passe à %3. Terminé.</French>
+    <Portuguese>%1 ficou sem %2, muda para %3. Terminado.</Portuguese>
+    <Russian>У %1 кончились %2, переход на %3. Конец связи.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_43">
+    <English>%1 is Winchester, all weapons expended. Returning to base. Out.</English>
+    <Chinesesimp>%1 弹药耗尽，所有武器已用完。返回基地。完毕。</Chinesesimp>
+    <Chinese>%1 彈藥耗盡，所有武器已用完。返回基地。完畢。</Chinese>
+    <Spanish>%1 está Winchester, todas las armas agotadas. Regresa a la base. Corto.</Spanish>
+    <French>%1 est Winchester, toutes les armes épuisées. Retour à la base. Terminé.</French>
+    <Portuguese>%1 está Winchester, todas as armas esgotadas. Regressa à base. Terminado.</Portuguese>
+    <Russian>%1 «Винчестер», боекомплект израсходован. Возвращаюсь на базу. Конец связи.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_44">
+    <English>%1 has finished engaging the target area, will loiter until further orders. Out.</English>
+    <Chinesesimp>%1 已完成对目标区域的攻击，将盘旋待命。完毕。</Chinesesimp>
+    <Chinese>%1 已完成對目標區域的攻擊，將盤旋待命。完畢。</Chinese>
+    <Spanish>%1 ha terminado de atacar la zona objetivo y se mantendrá en espera. Corto.</Spanish>
+    <French>%1 a fini d'attaquer la zone cible et reste en attente. Terminé.</French>
+    <Portuguese>%1 terminou o ataque à área alvo e fica em espera. Terminado.</Portuguese>
+    <Russian>%1 завершил атаку района цели, барражирует до дальнейших приказов. Конец связи.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_45">
+    <English>%1 cannot engage any targets in the AO. Out.</English>
+    <Chinesesimp>%1 无法攻击作战区域内的任何目标。完毕。</Chinesesimp>
+    <Chinese>%1 無法攻擊作戰區域內的任何目標。完畢。</Chinese>
+    <Spanish>%1 no puede atacar ningún objetivo en la zona. Corto.</Spanish>
+    <French>%1 ne peut attaquer aucune cible dans la zone. Terminé.</French>
+    <Portuguese>%1 não consegue atacar nenhum alvo na área. Terminado.</Portuguese>
+    <Russian>%1 не может атаковать ни одну цель в районе. Конец связи.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_46">
+    <English>%1 has completed attack run, will loiter until further orders. Out.</English>
+    <Chinesesimp>%1 已完成攻击航路，将盘旋待命。完毕。</Chinesesimp>
+    <Chinese>%1 已完成攻擊航路，將盤旋待命。完畢。</Chinese>
+    <Spanish>%1 ha completado la pasada de ataque y se mantendrá en espera. Corto.</Spanish>
+    <French>%1 a terminé sa passe d'attaque et reste en attente. Terminé.</French>
+    <Portuguese>%1 concluiu a passagem de ataque e fica em espera. Terminado.</Portuguese>
+    <Russian>%1 завершил заход на атаку, барражирует до дальнейших приказов. Конец связи.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_47">
+    <English>%1. Abort fire mission and return to base. Over.</English>
+    <Chinesesimp>%1。中止射击任务并返回基地。请回答。</Chinesesimp>
+    <Chinese>%1。中止射擊任務並返回基地。請回答。</Chinese>
+    <Spanish>%1. Cancela la misión de fuego y regresa a la base. Cambio.</Spanish>
+    <French>%1. Annulez la mission de tir et rentrez à la base. À vous.</French>
+    <Portuguese>%1. Cancele a missão de fogo e regresse à base. Escuto.</Portuguese>
+    <Russian>%1. Отменить огневую задачу и вернуться на базу. Приём.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_48">
+    <English>%1, %2 needs an %5 %7 round %6 strike at grid %3%4 with %8m dispersion and %9s delay. Over.</English>
+    <Chinesesimp>%1，%2 需要在坐标 %3%4 进行 %5 %7 发 %6 打击，散布 %8 米，延迟 %9 秒。请回答。</Chinesesimp>
+    <Chinese>%1，%2 需要在座標 %3%4 進行 %5 %7 發 %6 打擊，散佈 %8 公尺，延遲 %9 秒。請回答。</Chinese>
+    <Spanish>%1, %2 necesita un ataque %5 de %7 proyectiles %6 en la cuadrícula %3%4 con %8 m de dispersión y %9 s de retardo. Cambio.</Spanish>
+    <French>%1, %2 demande une frappe %5 de %7 obus %6 en grille %3%4, dispersion %8 m et délai %9 s. À vous.</French>
+    <Portuguese>%1, %2 precisa de um ataque %5 de %7 tiros %6 na quadrícula %3%4 com %8 m de dispersão e %9 s de atraso. Escuto.</Portuguese>
+    <Russian>%1, %2 запрашивает удар: %5, %7 выстр. %6 по квадрату %3%4, рассеивание %8 м, задержка %9 с. Приём.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_49">
+    <English>%1, this is %2, return to base. Over.</English>
+    <Chinesesimp>%1，这里是 %2，返回基地。请回答。</Chinesesimp>
+    <Chinese>%1，這裡是 %2，返回基地。請回答。</Chinese>
+    <Spanish>%1, aquí %2, regresa a la base. Cambio.</Spanish>
+    <French>%1, ici %2, rentrez à la base. À vous.</French>
+    <Portuguese>%1, aqui %2, regresse à base. Escuto.</Portuguese>
+    <Russian>%1, говорит %2, вернуться на базу. Приём.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_50">
+    <English>%1, %2 needs immediate CAS at %3%4. Over.</English>
+    <Chinesesimp>%1，%2 需要在 %3%4 立即提供近距离空中支援。请回答。</Chinesesimp>
+    <Chinese>%1，%2 需要在 %3%4 立即提供近距離空中支援。請回答。</Chinese>
+    <Spanish>%1, %2 necesita apoyo aéreo cercano inmediato en %3%4. Cambio.</Spanish>
+    <French>%1, %2 demande un appui aérien rapproché immédiat en %3%4. À vous.</French>
+    <Portuguese>%1, %2 precisa de apoio aéreo próximo imediato em %3%4. Escuto.</Portuguese>
+    <Russian>%1, %2 запрашивает немедленную авиаподдержку в %3%4. Приём.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_51">
+    <English>%1, return to base. Over.</English>
+    <Chinesesimp>%1，返回基地。请回答。</Chinesesimp>
+    <Chinese>%1，返回基地。請回答。</Chinese>
+    <Spanish>%1, regresa a la base. Cambio.</Spanish>
+    <French>%1, rentrez à la base. À vous.</French>
+    <Portuguese>%1, regresse à base. Escuto.</Portuguese>
+    <Russian>%1, вернуться на базу. Приём.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_52">
+    <English>%1 fly at %2 meters height. Out.</English>
+    <Chinesesimp>%1 在 %2 米高度飞行。完毕。</Chinesesimp>
+    <Chinese>%1 在 %2 公尺高度飛行。完畢。</Chinese>
+    <Spanish>%1, vuela a %2 metros de altura. Corto.</Spanish>
+    <French>%1, volez à %2 mètres d'altitude. Terminé.</French>
+    <Portuguese>%1, voe a %2 metros de altura. Terminado.</Portuguese>
+    <Russian>%1, высота полёта %2 метров. Конец связи.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_53">
+    <English>%1 fly with a %2 speed. Out.</English>
+    <Chinesesimp>%1 以 %2 速度飞行。完毕。</Chinesesimp>
+    <Chinese>%1 以 %2 速度飛行。完畢。</Chinese>
+    <Spanish>%1, vuela a velocidad %2. Corto.</Spanish>
+    <French>%1, volez à vitesse %2. Terminé.</French>
+    <Portuguese>%1, voe a velocidade %2. Terminado.</Portuguese>
+    <Russian>%1, скорость полёта: %2. Конец связи.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_54">
+    <English>%1 you are free to engage. Out.</English>
+    <Chinesesimp>%1 可以自由开火。完毕。</Chinesesimp>
+    <Chinese>%1 可以自由開火。完畢。</Chinese>
+    <Spanish>%1, tienes vía libre para atacar. Corto.</Spanish>
+    <French>%1, vous êtes libre d'engager. Terminé.</French>
+    <Portuguese>%1, tem permissão para atacar. Terminado.</Portuguese>
+    <Russian>%1, огонь по готовности. Конец связи.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_55">
+    <English>%1 hold fire. Out.</English>
+    <Chinesesimp>%1 停止射击。完毕。</Chinesesimp>
+    <Chinese>%1 停止射擊。完畢。</Chinese>
+    <Spanish>%1, alto el fuego. Corto.</Spanish>
+    <French>%1, cessez le feu. Terminé.</French>
+    <Portuguese>%1, cessar fogo. Terminado.</Portuguese>
+    <Russian>%1, огонь не открывать. Конец связи.</Russian>
+</Key>
 </Container></Package></Project>

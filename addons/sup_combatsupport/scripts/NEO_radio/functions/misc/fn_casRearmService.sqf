@@ -146,7 +146,7 @@ if (_parked && _needsService && {alive _veh} && {!(call _fnc_retasked)}) then {
     if (alive _veh && {!(call _fnc_retasked)}) then {
         if (call _fnc_serviced) then {
             _veh setVariable ["ALIVE_resupply_needsService", false, true];
-            [[_veh, format ["%1 is rearmed, refuelled and ready for tasking. Out.", _callsign], "side"], "NEO_fnc_messageBroadcast", true, false] spawn BIS_fnc_MP;
+            [[_veh, ["STR_ALIVE_CS_MSG_40", _callsign], "side"], "NEO_fnc_messageBroadcast", true, false] spawn BIS_fnc_MP;
             if (!isNil "ALiVE_sup_combatsupport_debug" && {ALiVE_sup_combatsupport_debug}) then { ["CAS-REARM: %1 serviced by ground crew (fuel=%2 damage=%3)", _callsign, fuel _veh, damage _veh] call ALiVE_fnc_dump; };
         } else {
             // service cycle wedged (truck lost / pool empty / pathing) - force-recover:
@@ -168,7 +168,7 @@ if (_parked && _needsService && {alive _veh} && {!(call _fnc_retasked)}) then {
             sleep 3;
             _veh allowDamage true;
             _veh setVariable ["NEO_radioCasNewTask", ["LOITER", _base, 500, 150, "", "", objNull], true];
-            [[_veh, format ["%1 is airborne and available for tasking. Out.", _callsign], "side"], "NEO_fnc_messageBroadcast", true, false] spawn BIS_fnc_MP;
+            [[_veh, ["STR_ALIVE_CS_MSG_41", _callsign], "side"], "NEO_fnc_messageBroadcast", true, false] spawn BIS_fnc_MP;
         };
     };
 };

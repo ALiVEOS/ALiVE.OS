@@ -385,7 +385,7 @@ class FSM
                                          "        if (_audio) then {" \n
                                          "            leader _chopper kbTell [_player, ""ALIVE_SUPP_protocol"", ""Transport_LZ_Selected"", ""GROUP""];    " \n
                                          "        };" \n
-                                         "          [[ _chopper,format[ ""Copy that, %1 is inbound to provide overwatch at %2 %3. Out."",_callsign,_coord select 0, _coord select 1], ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;    " \n
+                                         "          [[ _chopper,[""STR_ALIVE_CS_MSG_11"",_callsign,_coord select 0, _coord select 1], ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;    " \n
                                          " " \n
                                          "};" \n
                                          "[_chopper] spawn {  " \n
@@ -662,7 +662,7 @@ class FSM
                          "" \n
                          "        sleep 2;" \n
                          "            " \n
-                         "        [[_chopper, format[""%1 is moving to %2%3 for pickup. Out."",_callsign,_coord select 0, _coord select 1], ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+                         "        [[_chopper, [""STR_ALIVE_CS_MSG_12"",_callsign,_coord select 0, _coord select 1], ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
                          "" \n
                          "    };" \n
                          "};" \n
@@ -743,10 +743,10 @@ class FSM
                          "    _speechSaidSmoke = true;" \n
                          "    " \n
                          "    if (sunOrMoon == 0) then {" \n
-                         "        [[_chopper,    format[""%1 has arrived at pickup point, deploy IR marker to confirm landing position. Over."",_callsign], ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+                         "        [[_chopper,    [""STR_ALIVE_CS_MSG_13"",_callsign], ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
                          "    } else {" \n
                          "" \n
-                         "        [[_chopper,    format[""%1 has arrived at pickup point, pop smoke to confirm landing position. Over."",_callsign], ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+                         "        [[_chopper,    [""STR_ALIVE_CS_MSG_14"",_callsign], ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
                          "" \n
                          "    };" \n
                          "" \n
@@ -762,9 +762,9 @@ class FSM
                          "        while { (_chopper getVariable ""NEO_radioTrasportUnitStatus"") == ""SMOKE"" } do" \n
                          "        {" \n
                          "            if (sunOrMoon == 0) then {" \n
-                         "                [[ _chopper, format[""%1 is still waiting for that IR marker. Over."",_callsign], ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+                         "                [[ _chopper, [""STR_ALIVE_CS_MSG_15"",_callsign], ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
                          "            } else {" \n
-                         "                [[ _chopper, format[""%1 is still waiting for that smoke. Over."",_callsign], ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+                         "                [[ _chopper, [""STR_ALIVE_CS_MSG_16"",_callsign], ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
                          "            };" \n
                          "            sleep 75;" \n
                          "        };" \n
@@ -953,9 +953,9 @@ class FSM
                         itemno = 21;
                         init = /*%FSM<STATEINIT""">*/"//We see smoke" \n
                          "if (sunOrMoon == 0) then {" \n
-                         "    [[_chopper,    format [""We see %1 marker, do you confirm? Over."", _smokeColor],    ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+                         "    [[_chopper,    [""STR_ALIVE_CS_MSG_17"", _smokeColor],    ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
                          "} else {" \n
-                         "    [[_chopper,    format [""We see %1 smoke, do you confirm? Over."", _smokeColor],    ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+                         "    [[_chopper,    [""STR_ALIVE_CS_MSG_18"", _smokeColor],    ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
                          "};" \n
                          "" \n
                          "[_chopper, _callsign, _smokeColor] spawn" \n
@@ -970,9 +970,9 @@ class FSM
                          "    while { (_chopper getVariable ""NEO_radioTrasportUnitStatus"") == ""SMOKECONF"" } do" \n
                          "    {" \n
                          "        if (sunOrMoon == 0) then {" \n
-                         "            [[_chopper, format [""This is %1, please respond, is that %1 marker yours? Over."", _smokeColor],""group""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+                         "            [[_chopper, [""STR_ALIVE_CS_MSG_19"", _smokeColor],""group""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
                          "        } else {" \n
-                         "            [[_chopper, format [""This is %1, please respond, is that %1 smoke yours? Over."", _smokeColor],""group""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+                         "            [[_chopper, [""STR_ALIVE_CS_MSG_20"", _smokeColor],""group""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
                          "        };" \n
                          "        sleep 75;" \n
                          "    };" \n
@@ -1055,11 +1055,11 @@ class FSM
                          "        " \n
                          "        if (!_goodToLand) then" \n
                          "        {" \n
-                         "                [[_chopper,""Copy that, pop another marker to confirm LZ. Out."",""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+                         "                [[_chopper,[""STR_ALIVE_CS_MSG_21""],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
                          "        }" \n
                          "        else" \n
                          "        {" \n
-                         "            [[_chopper,""Copy that, secure LZ. Out."",""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+                         "            [[_chopper,[""STR_ALIVE_CS_MSG_22""],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
                          "        };" \n
                          "    };" \n
                          "};" \n
@@ -1288,7 +1288,7 @@ class FSM
                          "		leader _chopper kbTell [_player, ""ALIVE_SUPP_protocol"", ""Transport_LZ_Selected"", ""GROUP""];    " \n
                          "	};" \n
                          "    " \n
-                         "    [[_chopper,format[""Copy that, %1 is RTB. Out."",_callsign],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+                         "    [[_chopper,[""STR_ALIVE_CS_MSG_23"",_callsign],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
                          "};" \n
                          ""/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
@@ -1392,7 +1392,7 @@ class FSM
                          "            leader _chopper kbTell [_player, ""ALIVE_SUPP_protocol"", ""Transport_LZ_Selected"", ""GROUP""];    " \n
                          "        };" \n
                          "    " \n
-                         "    [[_chopper,format[""Copy that, %1 is landing at %2 %3. Out."",_callsign,_coord select 0, _coord select 1],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+                         "    [[_chopper,[""STR_ALIVE_CS_MSG_24"",_callsign,_coord select 0, _coord select 1],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
                          "};" \n
                          ""/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
@@ -1448,7 +1448,7 @@ class FSM
                                         action=/*%FSM<ACTION""">*/"switch (_task) do" \n
                                          "{" \n
                                          "case ""LAND"" : { [_chopper,""GET OUT""] call ALiVE_fnc_landRemote;};" \n
-                                         "case ""HOVER"" : {[[_chopper,format[""%1 is unable to Land at coordinates. Out."",_callsign],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP; };" \n
+                                         "case ""HOVER"" : {[[_chopper,[""STR_ALIVE_CS_MSG_25"",_callsign],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP; };" \n
                                          "default {[_chopper,""LAND""] call ALiVE_fnc_landRemote; };" \n
                                          "};" \n
                                          ""/*%FSM</ACTION""">*/;
@@ -1464,8 +1464,8 @@ class FSM
                         itemno = 39;
                         init = /*%FSM<STATEINIT""">*/"switch (_task) do" \n
                          "{" \n
-                         "    case ""HOVER"" : {[[_chopper,format[""%1 is awaiting new orders. Out."",_callsign],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP; };" \n
-                         "    default { [[_chopper,format[""%1 is landing at coordinates. Out."",_callsign],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP; };" \n
+                         "    case ""HOVER"" : {[[_chopper,[""STR_ALIVE_CS_MSG_26"",_callsign],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP; };" \n
+                         "    default { [[_chopper,[""STR_ALIVE_CS_MSG_27"",_callsign],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP; };" \n
                          "};" \n
                          ""/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
@@ -1531,7 +1531,7 @@ class FSM
                          "        if (_audio) then {" \n
                          "            leader _chopper kbTell [_player, ""ALIVE_SUPP_protocol"", ""Transport_LZ_Selected"", ""GROUP""];    " \n
                          "        } else {" \n
-                         "            [[_chopper,format[""Copy that, %1 is moving to %2%3. Out."",_callsign,_coord select 0, _coord select 1],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+                         "            [[_chopper,[""STR_ALIVE_CS_MSG_28"",_callsign,_coord select 0, _coord select 1],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
                          "        };    " \n
                          "};" \n
                          ""/*%FSM</STATEINIT""">*/;
@@ -1596,7 +1596,7 @@ class FSM
                 {
                         name = "__13";
                         itemno = 42;
-                        init = /*%FSM<STATEINIT""">*/"[[_chopper,format[""%1 is holding position and waiting for further orders. Out."",_callsign],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+                        init = /*%FSM<STATEINIT""">*/"[[_chopper,[""STR_ALIVE_CS_MSG_06"",_callsign],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
                          ""/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
@@ -1707,7 +1707,7 @@ class FSM
                                          "{" \n
                                          "    _speechSaid = true;" \n
                                          "" \n
-                                         "    [[_chopper, format [""This is %1, we are at %2 %3, circling the AO. Out."", _callsign,_coord select 0, _coord select 1],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+                                         "    [[_chopper, [""STR_ALIVE_CS_MSG_29"", _callsign,_coord select 0, _coord select 1],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
                                          "};" \n
                                          ""/*%FSM</ACTION""">*/;
                                 };
@@ -1738,7 +1738,7 @@ class FSM
                          "    " \n
                          "    sleep 2;" \n
                          "    " \n
-                         "    [[_chopper,format[""Copy that, %1 is moving to %2%3 for Insertion. Out."",_callsign,_coord select 0, _coord select 1 ],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+                         "    [[_chopper,[""STR_ALIVE_CS_MSG_30"",_callsign,_coord select 0, _coord select 1 ],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
                          "};" \n
                          ""/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
@@ -1806,7 +1806,7 @@ class FSM
                         init = /*%FSM<STATEINIT""">*/"if (_audio) then {" \n
                          "    leader _chopper kbTell [_player, ""ALIVE_SUPP_protocol"", ""Transport_Accomplished"", ""GROUP""];    " \n
                          "} else {" \n
-                         "    [[_chopper,""Prepare for Insertion. Out."",""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+                         "    [[_chopper,[""STR_ALIVE_CS_MSG_31""],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
                          "};"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
@@ -1837,7 +1837,7 @@ class FSM
                          "        if (_audio) then {" \n
                          "            leader _chopper kbTell [_player, ""ALIVE_SUPP_protocol"", ""Transport_Accomplished"", ""GROUP""];    " \n
                          "        } else {" \n
-                         "            [[_chopper,""Go!. Go! Go!"",""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+                         "            [[_chopper,[""STR_ALIVE_CS_MSG_32""],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
                          "        };        " \n
                          "};"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
@@ -1905,7 +1905,7 @@ class FSM
                          "    " \n
                          "    sleep random(5);" \n
                          "    " \n
-                         "    [[_chopper,format[""Copy that, %1 is moving to %2%3 to provide air lift capability. Out."",_callsign,_coord select 0, _coord select 1 ],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+                         "    [[_chopper,[""STR_ALIVE_CS_MSG_33"",_callsign,_coord select 0, _coord select 1 ],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
                          "};" \n
                          "" \n
                          "" \n
@@ -1987,7 +1987,7 @@ class FSM
                          "    " \n
                          "    sleep random(5);" \n
                          "    " \n
-                         "    [[_chopper,format[""Copy that, %1 is moving to %2%3 to deliver supply drop. Out."",_callsign,_coord select 0, _coord select 1 ],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+                         "    [[_chopper,[""STR_ALIVE_CS_MSG_34"",_callsign,_coord select 0, _coord select 1 ],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
                          "};" \n
                          "" \n
                          "" \n
@@ -2052,7 +2052,7 @@ class FSM
                 {
                         name = "__20";
                         itemno = 57;
-                        init = /*%FSM<STATEINIT""">*/"[[_chopper,format[""%1 has the cargo attached and they are ready to move. Over."",_callsign],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+                        init = /*%FSM<STATEINIT""">*/"[[_chopper,[""STR_ALIVE_CS_MSG_35"",_callsign],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
                          "    " \n
                          ""/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
@@ -2108,7 +2108,7 @@ class FSM
                          "    leader _chopper kbTell [_player, ""ALIVE_SUPP_protocol"", ""CAS_Bombing_Accomplished"", ""GROUP""];    " \n
                          "};" \n
                          "" \n
-                         "[[_chopper,format[""%1 has delivered the payload. Holding position and waiting for further orders. Out."",_callsign],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+                         "[[_chopper,[""STR_ALIVE_CS_MSG_36"",_callsign],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
                          ""/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
@@ -2258,9 +2258,9 @@ class FSM
                         name = "__24";
                         itemno = 64;
                         init = /*%FSM<STATEINIT""">*/"if (_task == ""SLINGLOAD"") then {" \n
-                         "    [[_chopper,format[""%1 cannot comply with your request, they are already slingloading cargo. Out."",_callsign ],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+                         "    [[_chopper,[""STR_ALIVE_CS_MSG_37"",_callsign ],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
                          "} else {" \n
-                         "    [[_chopper,format[""%1 cannot comply with your request, they are not slingloading any cargo. Out."",_callsign ],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;    " \n
+                         "    [[_chopper,[""STR_ALIVE_CS_MSG_38"",_callsign ],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;    " \n
                          "};"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
@@ -2311,7 +2311,7 @@ class FSM
                 {
                         name = "__25";
                         itemno = 66;
-                        init = /*%FSM<STATEINIT""">*/"[[_chopper, format[""%1 is at Base. Out."",_callsign],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+                        init = /*%FSM<STATEINIT""">*/"[[_chopper, [""STR_ALIVE_CS_MSG_39"",_callsign],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
                          "" \n
                          "_chopper setVariable [""NEO_radioCurrentTask"", nil, true];" \n
                          "_chopper setVariable [""NEO_radioTrasportUnitStatus"", ""NONE"", true];" \n

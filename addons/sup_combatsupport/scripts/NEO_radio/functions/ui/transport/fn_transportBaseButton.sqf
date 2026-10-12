@@ -21,7 +21,7 @@ _pos = _chopper getVariable ["ALIVE_CombatSupport_Base", []];
 
 //New Task Assigned - RTB
 _chopper setVariable ["NEO_radioTransportNewTask", ["RTB", _pos, 0, player], true];
-[player, format ["%1, return to base. Over.", _callSign, _callSignPlayer], "side"] call NEO_fnc_messageBroadcast;
+[player, ["STR_ALIVE_CS_MSG_51", _callSign, _callSignPlayer], "side"] call NEO_fnc_messageBroadcast;
 
 //Interface
 [lbCurSel 655565] call NEO_fnc_radioRefreshUi;

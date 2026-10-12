@@ -6,6 +6,12 @@
     // notices pass it: they ran with "player" as the speaker, which is nobody on a dedicated
     // server, and nobody's side is UNKNOWN, friendly to no side (measured), so a side's "back
     // on station" and "out of assets" notices reached no one there.
+    // A message can come as [stringtable key, arguments...] instead of text, so each player reads
+    // it in their own language: it's put together here, on the machine that shows it. (Jman)
+    if (_text isEqualType []) then {
+        private _t = localize (_text param [0, ""]);
+        _text = if (count _text > 1) then { format ([_t] + (_text select [1])) } else { _t };
+    };
     _side = if (count _this > 3 && {(_this select 3) isEqualType west}) then {_this select 3} else {side group _unit};
 
     //enableRadio true;

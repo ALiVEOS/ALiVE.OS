@@ -35,7 +35,7 @@ switch (_cb) do
             [[_chopper,_h], "fnc_setFlyInHeight", false, false] spawn BIS_fnc_MP;
 
             //Dialog from player, only if unit is on a mission (flying)
-            if (_status != "NONE") then { [player, format ["%1 fly at %2 meters height. Out.", (str group _chopper call NEO_fnc_callsignFix), _h], "side"] call NEO_fnc_messageBroadcast };
+            if (_status != "NONE") then { [player, ["STR_ALIVE_CS_MSG_52", (str group _chopper call NEO_fnc_callsignFix), _h], "side"] call NEO_fnc_messageBroadcast };
         };
     };
 
@@ -58,7 +58,7 @@ switch (_cb) do
             [[_chopper,_s], "fnc_setSpeed", false, false] spawn BIS_fnc_MP;
 
             //Dialog from player, only if unit is on a mission (flying)
-            if (_status != "NONE") then { [player, format ["%1 fly with a %2 speed. Out.", (str group _chopper call NEO_fnc_callsignFix), _s], "side"] call NEO_fnc_messageBroadcast };
+            if (_status != "NONE") then { [player, ["STR_ALIVE_CS_MSG_53", (str group _chopper call NEO_fnc_callsignFix), _s], "side"] call NEO_fnc_messageBroadcast };
         };
     };
 
@@ -110,11 +110,11 @@ switch (_cb) do
             //Dialog from player, only if unit is on a mission (flying)
             if (_r) then
             {
-                if (_status != "NONE") then { [player, format ["%1 you are free to engage. Out.", (str group _chopper call NEO_fnc_callsignFix)], "side"] call NEO_fnc_messageBroadcast };
+                if (_status != "NONE") then { [player, ["STR_ALIVE_CS_MSG_54", (str group _chopper call NEO_fnc_callsignFix)], "side"] call NEO_fnc_messageBroadcast };
             }
             else
             {
-                if (_status != "NONE") then { [player, format ["%1 hold fire. Out.", (str group _chopper call NEO_fnc_callsignFix)], "side"] call NEO_fnc_messageBroadcast };
+                if (_status != "NONE") then { [player, ["STR_ALIVE_CS_MSG_55", (str group _chopper call NEO_fnc_callsignFix)], "side"] call NEO_fnc_messageBroadcast };
             };
         };
     };

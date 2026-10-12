@@ -308,7 +308,7 @@ while {
     if (([_veh, _weapon] call NEO_fnc_casWeaponAmmo) <= 0 || {!(_weapon in _usableWeapons)}) then {
         private _next = [_veh, _usableWeapons] call NEO_fnc_casNextWeapon;
         if (_next != "" && {_next != _weapon}) then {
-            [[_veh, format ["%1 is out of %2, switching to %3. Out.", _callsign, [configFile >> "CfgWeapons" >> _weapon] call bis_fnc_displayName, [configFile >> "CfgWeapons" >> _next] call bis_fnc_displayName], "side"],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;
+            [[_veh, ["STR_ALIVE_CS_MSG_42", _callsign, [configFile >> "CfgWeapons" >> _weapon] call bis_fnc_displayName, [configFile >> "CfgWeapons" >> _next] call bis_fnc_displayName], "side"],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;
             _weapon = _next;
             call _setupWeapon;
             call _retargetForWeapon;
@@ -664,16 +664,16 @@ if (!_stale) then {
 
     if (alive _veh) then {
         if (_winchester) then {
-            [[_veh,format["%1 is Winchester, all weapons expended. Returning to base. Out.",_callsign],"side"],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;
+            [[_veh,["STR_ALIVE_CS_MSG_43",_callsign],"side"],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;
         } else {
             if (_groundAttack) then {
-                [[_veh, format["%1 has finished engaging the target area, will loiter until further orders. Out.",_callsign], "side"],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;
+                [[_veh, ["STR_ALIVE_CS_MSG_44",_callsign], "side"],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;
             } else {
                 if( isNull _target) then {
                     sleep 8;
-                    [[_veh,format["%1 cannot engage any targets in the AO. Out.",_callsign],"side"],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;
+                    [[_veh,["STR_ALIVE_CS_MSG_45",_callsign],"side"],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;
                 } else {
-                    [[_veh, format["%1 has completed attack run, will loiter until further orders. Out.",_callsign], "side"],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;
+                    [[_veh, ["STR_ALIVE_CS_MSG_46",_callsign], "side"],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;
                 };
             };
         };
