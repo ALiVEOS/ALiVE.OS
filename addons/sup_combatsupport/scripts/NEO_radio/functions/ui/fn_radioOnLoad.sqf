@@ -92,11 +92,25 @@ if (count _artyArray > 0 && (_action == "radio" || _action == "talkarty")) then 
 
 lbClear _suppListBox;
 {
-    _suppListBox lbAdd format["%1", (_x select 0)];
-    _suppListBox lbSetPicture [_forEachIndex, (_x select 1)];
+    private _row = _suppListBox lbAdd format["%1", (_x select 0)];
+    _suppListBox lbSetPicture [_row, (_x select 1)];
+    _suppListBox lbSetData [_row, (_x select 0)];
 } forEach _available;
 
  lbSort _suppListBox;
+
+// The list is sorted, so a support type's row depends on which types the mission has. Rows are
+// found by their token, never by a fixed number (a fourth type, or a mission without CAS, moves them).
+private _fnc_rowOf = {
+    params ["_token"];
+    private _row = -1;
+    for "_i" from 0 to (lbSize 655565) - 1 do { if (lbData [655565, _i] == _token) exitWith { _row = _i } };
+    _row
+};
+private _fnc_keepOnly = {
+    params ["_token"];
+    for "_i" from (lbSize 655565) - 1 to 0 step -1 do { if (lbData [655565, _i] != _token) then { lbDelete [655565, _i] } };
+};
 
 //Display Event Handlers
 _suppListBox ctrlSetEventHandler ["LBSelChanged", "_this call NEO_fnc_radioLbSelChanged"];
@@ -109,16 +123,11 @@ switch (_action) do
 {
     case "talk" :
     {
-        if (count _casArray > 0) then {
-            lbDelete [655565, 0];
-        };
-        if (count _artyArray > 0) then {
-            lbDelete [655565, 2];
-        };
+        ["TRANSPORT"] call _fnc_keepOnly;
 
         [] spawn
         {
-            lbSetCurSel [655565, 1];
+            lbSetCurSel [655565, 0];
             waituntil { lbSize 655568 > 0 };
             lbSetCurSel [655568, 0];
         };
@@ -128,16 +137,11 @@ switch (_action) do
     {
         NEO_radioLogic setVariable ["NEO_radioTalkWithArty", vehicle cursorTarget];
 
-        if (count _casArray > 0) then {
-            lbDelete [655565, 0];
-        };
-        if (count _transportArray > 0) then {
-            lbDelete [655565, 1];
-        };
+        ["ARTY"] call _fnc_keepOnly;
 
         [] spawn
         {
-            lbSetCurSel [655565, 2];
+            lbSetCurSel [655565, 0];
             waituntil { lbSize 655594 > 0 };
             lbSetCurSel [655594, 0];;
         };
@@ -162,7 +166,7 @@ switch (_action) do
 
                 if ((_obj getVariable "NEO_radioTrasportUnitStatus") == "SMOKECONF") then
                 {
-                    _index = [0, _forEachIndex];
+                    _index = [["TRANSPORT"] call _fnc_rowOf, _forEachIndex];
                     _sup = _translist;
                     _count = _count + 1;
                 };
@@ -173,7 +177,7 @@ switch (_action) do
 
                 if ((_obj getVariable "NEO_radioArtyUnitStatus") == "RESPONSE") then
                 {
-                    _index = [2, _forEachIndex];
+                    _index = [["ARTY"] call _fnc_rowOf, _forEachIndex];
                     _sup = _artylist;
                     _count = _count + 1;
                 };
