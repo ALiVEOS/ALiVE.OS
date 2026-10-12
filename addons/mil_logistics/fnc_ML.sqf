@@ -4911,6 +4911,9 @@ switch(_operation) do {
                 ["LOGCOM_RESUPPLY: Force pool exhausted for %1 (faction=%2 pool=%3 need=%4), deferring",
                     _callsign, _eventFaction, _forcePool, _resupplyCost] call ALiVE_fnc_dump;
                 _targetVeh setVariable ["ALIVE_resupply_state", "failed", true];
+                // Counted as a try, so the watchdog's cooldown applies before it asks again: without
+                // it the asset was asked for every 30 s, a log line each time, until the pool grew.
+                _targetVeh setVariable ["ALIVE_resupply_lastDispatch", serverTime, true];
                 _targetVeh setVariable ["ALIVE_resupply_inProgress", false, true];
                 _targetVeh setVariable ["ALIVE_resupply_vehicle", objNull, true];
                 // Only a dispatch Combat Support counted gives a slot back: the air commander asks for
@@ -5331,10 +5334,14 @@ switch(_operation) do {
                             };
                         };
 
-                        // Update truck waypoint if target has moved (aircraft on ground).
-                        private _wp = waypoints (group (driver _truck));
-                        if (count _wp > 0) then {
-                            [(group (driver _truck)), 1] setWaypointPosition [getPos _targetVeh, 50];
+                        // Follow the target if it has moved (an aircraft taxiing on the ground). Only the
+                        // last waypoint, and only when it has gone 30 m from it: once the pathfinder has
+                        // laid a road route, waypoint 1 is its first road point, and moving that onto
+                        // the target every 10 s sent the truck straight across country.
+                        private _wps = waypoints (group (driver _truck));
+                        if (count _wps > 1) then {
+                            private _last = _wps select (count _wps - 1);
+                            if (((waypointPosition _last) distance2D _targetVeh) > 30) then { _last setWaypointPosition [getPos _targetVeh, 10] };
                         };
 
                         sleep 10;
