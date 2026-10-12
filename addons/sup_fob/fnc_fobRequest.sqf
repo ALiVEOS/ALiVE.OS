@@ -5,8 +5,8 @@ SCRIPT(fobRequest);
 Function: ALiVE_fnc_fobRequest
 
 Description:
-The only way a player's machine asks the server to change a FOB: deploy, build, repair and the
-rest. It finds who is asking from the connection, never from the request, and passes them on
+The only way a player's machine asks the server to change a FOB, and only for what a player may
+do: deploy, dismantle, build, recycle, unload, upgrade, repair, and the Field HQ requests. It finds who is asking from the connection, never from the request, and passes them on
 as the caller; the side is always the caller's own and every cost is worked out on the server,
 so a request can't name its own price or act for another side.
 
@@ -28,6 +28,12 @@ Jman
 if (!isServer) exitWith {};
 if !(_this isEqualType [] && {count _this == 2} && {(_this select 0) isEqualType ""} && {(_this select 1) isEqualType []}) exitWith {};
 params ["_op", "_args"];
+
+// Only what a player may ask for. Everything else in ALiVE_fnc_fobOps (cleanup, flip, salvage,
+// spawning profiles, tagging, restoring) is the server's own and never reachable from here.
+if !(_op in ["deploy", "dismantle", "build", "recycle", "unload", "upgrade", "repair", "fieldHQ"]) exitWith {
+    ["ALiVE Player FOBs - refused a request for %1 from machine %2: not something a player can ask for", _op, remoteExecutedOwner] call ALiVE_fnc_dumpR;
+};
 
 // Who is asking. On a hosted server the host's own requests come from machine 0; on a dedicated
 // server nothing legitimate does (a headless client doesn't build), so those are dropped.

@@ -201,7 +201,7 @@ private _tick = {
         // A tier 2 or 3 FOB keeps a garrison: a new one, paid for, when the last one is gone
         private _active = ([_entry, "status", ""] call ALIVE_fnc_hashGet) == "active";
         private _garrisoned = ["garrisonAlive", [_id]] call ALiVE_fnc_fobOps;
-        if (_active && {_tier >= 2} && {!_garrisoned} && {!isNil "ALiVE_ProfileHandler"}) then {
+        if (_active && {_tier >= 2} && {!_garrisoned} && {!isNil "ALiVE_ProfileHandler"} && {time >= ([_entry, "garrisonNext", 0] call ALIVE_fnc_hashGet)}) then {
             _garrisoned = ["garrison", [_id, false]] call ALiVE_fnc_fobOps;
         };
 
@@ -237,7 +237,8 @@ private _tick = {
             private _o = _x param [0, objNull];
             switch (true) do {
                 // a static weapon lives as long as its gun's profile does
-                case (_o in ["static", "vehicle"]): { isNil "ALiVE_ProfileHandler" || {!isNil {[ALiVE_ProfileHandler, "getProfile", _x param [3, ""]] call ALIVE_fnc_profileHandler}} };
+                // one waiting to be made again on the next start has no profile id yet
+                case (_o in ["static", "vehicle"]): { (_x param [3, ""]) == "" || {isNil "ALiVE_ProfileHandler"} || {!isNil {[ALiVE_ProfileHandler, "getProfile", _x param [3, ""]] call ALIVE_fnc_profileHandler}} };
                 case (!(_o isEqualType objNull)): { true };
                 default { !isNull _o && {alive _o} && {damage _o < 1} };
             }
@@ -264,16 +265,19 @@ if ((_this param [0, objNull]) isEqualType "") exitWith {
 params [["_logic", objNull, [objNull]]];
 if (!isNil "ALiVE_FOB_watchdog") then { terminate ALiVE_FOB_watchdog };
 
-ALiVE_FOB_watchdog = [_logic, _tick] spawn {
-    params ["_logic", "_tick"];
+// The loop calls this function for each pass rather than running _tick itself: a spawned script
+// sees none of this function's local helpers (_set, _presence, _say), so a pass has to be made
+// inside a fresh call of the function, where they exist.
+ALiVE_FOB_watchdog = [_logic] spawn {
+    params ["_logic"];
     private _last = time;
     while { !isNull _logic } do {
         sleep 30;
         private _dt = ((time - _last) max 0) min 60;
         _last = time;
         if !(_logic getVariable ["pause", false]) then {
-            // Unscheduled, so a pass is never cut in half by the scheduler
-            isNil { [_dt] call _tick };
+            // one pass, unscheduled inside, so it is never cut in half by the scheduler
+            ["tick", _dt] call ALiVE_fnc_fobWatchdog;
             if (ALiVE_FOB_dirty) then {
                 [_logic, "broadcastMirror"] call ALiVE_fnc_FOB;
                 ["save", [false]] call ALiVE_fnc_fobPersistence;

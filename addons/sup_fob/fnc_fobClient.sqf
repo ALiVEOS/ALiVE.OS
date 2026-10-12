@@ -60,8 +60,10 @@ switch (_op) do {
         if (!hasInterface) exitWith {};
         _args params [["_key", "", [""]], ["_fmt", [], [[]]]];
         if !(isLocalized _key) exitWith {};
+        // the message box reads structured text: an item name with & or < in it is made safe first
+        private _safe = _fmt apply { if (_x isEqualType "") then { ((_x regexReplace ["&", "&amp;"]) regexReplace ["<", "&lt;"]) regexReplace [">", "&gt;"] } else { _x } };
         private _text = format ([localize _key] + _fmt);
-        [localize "STR_ALIVE_FOB", _text] call ALIVE_fnc_sendHint;
+        [localize "STR_ALIVE_FOB", format ([localize _key] + _safe)] call ALIVE_fnc_sendHint;
         systemChat _text;
     };
 };

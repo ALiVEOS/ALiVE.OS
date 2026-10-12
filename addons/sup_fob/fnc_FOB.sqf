@@ -128,7 +128,7 @@ switch (_operation) do {
 
             // Objects synced to the module are Field HQs: players get FOB kits and supply crates there
             {
-                if !(_x isKindOf "Logic") then { _x setVariable ["ALiVE_FOB_fieldHQ", true, true] };
+                if !(_x isKindOf "Logic") then { ["tag", [_x, "HQ", true]] call ALiVE_fnc_fobOps };
             } forEach (synchronizedObjects _logic);
 
             if (isNil "ALiVE_FOB_registry") then { ALiVE_FOB_registry = [] call ALIVE_fnc_hashCreate };

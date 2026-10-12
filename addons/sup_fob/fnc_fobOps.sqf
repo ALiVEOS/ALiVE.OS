@@ -46,6 +46,7 @@ spawnStatic - [fobID, class, position, direction] -> [vehicle profile id, crew p
 spawnVehicle - [class, position, direction, faction] -> [vehicle profile id, group profile id], or []
 pinStatic - [profile ids] -> keeps them where they are
 removeStatic - [vehicle profile id, crew profile id] -> the static weapon and its crew gone
+tag - [object, "KIT"/"CRATE"/"HQ", value] -> makes it a FOB kit, supply crate or Field HQ
 cleanup - [fobID] -> removes a FOB and everything it made, no checks
 restore - [] -> rebuilds every loaded FOB's headquarters and objectives; the number rebuilt
 spawnHub - [fobID] -> the headquarters building, made if missing
@@ -73,17 +74,44 @@ private _tell = {
     if (_debug) then { ["ALiVE Player FOBs - %1 %2 for %3", _key, _fmt, name _caller] call ALiVE_fnc_dump };
 };
 
+// What the server itself made a FOB kit, a supply crate or a Field HQ. Kept in a list on the
+// server keyed by the object's network id: object variables can be set by any client, so the
+// public ALiVE_FOB_kit / ALiVE_FOB_crate / ALiVE_FOB_fieldHQ variables are only for players'
+// menus and never trusted here.
+if (isNil "ALiVE_FOB_tagged") then { ALiVE_FOB_tagged = createHashMap };
+private _tagOf = {
+    params ["_o", "_kind"];
+    if (isNull _o) exitWith { nil };
+    private _t = ALiVE_FOB_tagged get (netId _o);
+    if (isNil "_t" || {(_t select 0) != _kind}) exitWith { nil };
+    _t select 1
+};
+
 switch (_op) do {
+
+    // Make an object a FOB kit ("KIT", value true or a side), a supply crate ("CRATE", value the
+    // amount) or a Field HQ ("HQ"). For the server and mission scripts: never reachable from a
+    // player's machine. Mission makers can hand out kits with
+    //     ["tag", [_box, "KIT", true]] call ALiVE_fnc_fobOps;   // on the server
+    case "tag": {
+        _args params [["_o", objNull, [objNull]], ["_kind", "", [""]], ["_value", true, [true, "", 0]]];
+        _result = false;
+        if (isNull _o || {!(_kind in ["KIT", "CRATE", "HQ"])}) exitWith {};
+        ALiVE_FOB_tagged set [netId _o, [_kind, _value]];
+        _o setVariable [["ALiVE_FOB_kit", "ALiVE_FOB_crate", "ALiVE_FOB_fieldHQ"] select (["KIT", "CRATE", "HQ"] find _kind), _value, true];
+        _result = true;
+    };
 
     case "deploy": {
         _result = "";
         _args params [["_kit", objNull, [objNull]], ["_pos", [0,0,0], [[]]], ["_dir", 0, [0]]];
         if (isNull _caller || {!alive _caller}) exitWith {};
+        if !(count _pos in [2, 3] && {(_pos findIf { !(_x isEqualType 0) || {!finite _x} }) < 0} && {finite _dir}) exitWith {};
         private _side = str (side group _caller);
         if !(_side in ["WEST", "EAST", "GUER"]) exitWith { ["STR_ALIVE_FOB_REFUSED_SIDE"] call _tell };
 
         // The kit: tagged true (any side) or with a side's name
-        private _tag = if (isNull _kit) then { nil } else { _kit getVariable "ALiVE_FOB_kit" };
+        private _tag = [_kit, "KIT"] call _tagOf;
         if (isNil "_tag" || {!(_tag isEqualTo true || {_tag isEqualTo _side})}) exitWith { ["STR_ALIVE_FOB_REFUSED_KIT"] call _tell };
         if (_caller distance _kit > 50) exitWith { ["STR_ALIVE_FOB_REFUSED_KIT"] call _tell };
 
@@ -114,6 +142,7 @@ switch (_op) do {
         };
 
         ["register", [_id]] call ALiVE_fnc_fobObjectives;
+        ALiVE_FOB_tagged deleteAt (netId _kit);
         deleteVehicle _kit;
         [_logic, "broadcastMirror"] call ALiVE_fnc_FOB;
         ["save", [true]] call ALiVE_fnc_fobPersistence;
@@ -154,6 +183,16 @@ switch (_op) do {
         } forEach ([_entry, "objects", []] call ALIVE_fnc_hashGet);
         private _hub = [_entry, "hub", objNull] call ALIVE_fnc_hashGet;
         if (!isNull _hub) then { deleteVehicle _hub };
+        // and its place on Military Logistics' supply network, which only the watchdog's pass over
+        // this FOB would otherwise have taken away
+        if (!isNil "ALIVE_ML_supplyNetwork") then {
+            private _pos = [_entry, "pos", [0,0,0]] call ALIVE_fnc_hashGet;
+            {
+                private _nodes = [ALIVE_ML_supplyNetwork, _x, []] call ALIVE_fnc_hashGet;
+                private _i = _nodes findIf { ((_x select 0) distance2D _pos) < 1 && {!(_x param [2, false])} };
+                if (_i > -1) then { _nodes deleteAt _i };
+            } forEach (ALIVE_ML_supplyNetwork select 1);
+        };
         [_logic, "registryRemove", [_id]] call ALiVE_fnc_FOB;
         [_logic, "broadcastMirror"] call ALiVE_fnc_FOB;
         ["save", [true]] call ALiVE_fnc_fobPersistence;
@@ -252,7 +291,11 @@ switch (_op) do {
                 private _have = if (isNil "ALiVE_ProfileHandler") then { nil } else { [ALiVE_ProfileHandler, "getProfile", _vid] call ALIVE_fnc_profileHandler };
                 if (!isNil "_have") then { _live pushBack _x } else {
                     private _nv = ["spawnVehicle", [_class, _pos, _dir, toLower getText (configFile >> "CfgVehicles" >> _class >> "faction")]] call ALiVE_fnc_fobOps;
-                    if (_nv isNotEqualTo []) then { _live pushBack (["vehicle", _class, _cost] + _nv + [_pos, _dir]); _result = _result + 1 };
+                    if (_nv isNotEqualTo []) then { _live pushBack (["vehicle", _class, _cost] + _nv + [_pos, _dir]); _result = _result + 1 } else {
+                        // kept with no profile id, so the watchdog leaves it and the next start makes it
+                        ["ALiVE Player FOBs - %1: couldn't make the %2 again now; kept for the next start", _id, _class] call ALiVE_fnc_dumpR;
+                        _live pushBack ["vehicle", _class, _cost, "", "", _pos, _dir];
+                    };
                 };
                 continue;
             };
@@ -269,6 +312,9 @@ switch (_op) do {
                     if (_made isNotEqualTo []) then {
                         _live pushBack (["static", _class, _cost] + _made + [_pos, _dir]);
                         _result = _result + 1;
+                    } else {
+                        ["ALiVE Player FOBs - %1: couldn't make the %2 again now; kept for the next start", _id, _class] call ALiVE_fnc_dumpR;
+                        _live pushBack ["static", _class, _cost, "", "", _pos, _dir];
                     };
                 };
                 continue;
@@ -443,6 +489,7 @@ switch (_op) do {
         if !(["debit", [_id, _cost, "repair"]] call ALiVE_fnc_fobSupply) exitWith {
             ["STR_ALIVE_FOB_REFUSED_SUPPLY", [_cost, ["balance", [_id]] call ALiVE_fnc_fobSupply]] call _tell;
         };
+        private _clock = [_entry, "repairRemaining", 0] call ALIVE_fnc_hashGet;
         private _wreck = [_entry, "hub", objNull] call ALIVE_fnc_hashGet;
         if (!isNull _wreck) then { deleteVehicle _wreck };
         { if ((_x distance2D _pos) <= 10) then { deleteVehicle _x } } forEach (nearestObjects [_pos, ["Ruins_F"], 15]);
@@ -453,6 +500,7 @@ switch (_op) do {
         if (isNull _hub) exitWith {
             ["credit", [_id, _cost, "refund repair"]] call ALiVE_fnc_fobSupply;
             [_entry, "status", "damaged"] call ALIVE_fnc_hashSet;
+            [_entry, "repairRemaining", _clock] call ALIVE_fnc_hashSet;
             ["STR_ALIVE_FOB_REFUSED_SPOT"] call _tell;
         };
         ["respawn", [_id]] call ALiVE_fnc_fobOps;
@@ -503,6 +551,13 @@ switch (_op) do {
             private _factions = [];
             { if (([_x, "side", ""] call ALiVE_fnc_hashGet) == _newSide) then { _factions append ([_x, "factions", []] call ALiVE_fnc_hashGet) } } forEach (missionNamespace getVariable ["OPCOM_instances", []]);
             [_entry, "side", _newSide] call ALIVE_fnc_hashSet;
+            // no commander of that side: the faction of its men nearest the FOB, else the side's
+            // base game faction
+            if (_factions isEqualTo []) then {
+                private _sideObj = [_newSide] call ALiVE_fnc_sideTextToObject;
+                private _men = (([_entry, "pos", [0,0,0]] call ALIVE_fnc_hashGet) nearEntities [["CAManBase"], 500]) select { alive _x && {side group _x == _sideObj} };
+                _factions = [(_men apply { faction _x }) param [0, ["OPF_F", "BLU_F", "IND_F"] param [["EAST", "WEST", "GUER"] find _newSide, "BLU_F"]]];
+            };
             [_entry, "faction", _factions param [0, ""]] call ALIVE_fnc_hashSet;
             [_entry, "captureSide", ""] call ALIVE_fnc_hashSet;
             [_entry, "captureRemaining", 0] call ALIVE_fnc_hashSet;
@@ -534,8 +589,8 @@ switch (_op) do {
         _result = false;
         _args params [["_crate", objNull, [objNull]], ["_id", "", [""]]];
         if (isNull _caller || {!alive _caller} || {isNull _crate}) exitWith {};
-        private _amount = _crate getVariable ["ALiVE_FOB_crate", 0];
-        if !(_amount isEqualType 0) then { _amount = 0 };
+        private _amount = [_crate, "CRATE"] call _tagOf;
+        if (isNil "_amount" || {!(_amount isEqualType 0)}) then { _amount = 0 };
         if (_amount <= 0) exitWith { ["STR_ALIVE_FOB_REFUSED_NOTCRATE"] call _tell };
         if (_caller distance _crate > 8) exitWith { ["STR_ALIVE_FOB_REFUSED_RANGE", [8]] call _tell };
         private _entry = [ALiVE_FOB_registry, _id] call ALIVE_fnc_hashGet;
@@ -549,7 +604,7 @@ switch (_op) do {
         if (_take <= 0) exitWith { ["STR_ALIVE_FOB_REFUSED_FULL"] call _tell };
         ["credit", [_id, _take, "crate"]] call ALiVE_fnc_fobSupply;
         // what didn't fit stays in the crate
-        if (_take < _amount) then { _crate setVariable ["ALiVE_FOB_crate", _amount - _take, true] } else { deleteVehicle _crate };
+        if (_take < _amount) then { ["tag", [_crate, "CRATE", _amount - _take]] call ALiVE_fnc_fobOps } else { ALiVE_FOB_tagged deleteAt (netId _crate); deleteVehicle _crate };
         [_logic, "broadcastMirror"] call ALiVE_fnc_FOB;
         ["STR_ALIVE_FOB_UNLOADED", [_take, [_entry, "name", ""] call ALIVE_fnc_hashGet]] call _tell;
         _result = true;
@@ -606,7 +661,7 @@ switch (_op) do {
     case "fieldHQ": {
         _result = false;
         _args params [["_hq", objNull, [objNull]], ["_what", "", [""]]];
-        if (isNull _caller || {isNull _hq} || {!(_hq getVariable ["ALiVE_FOB_fieldHQ", false])}) exitWith {};
+        if (isNull _caller || {isNull _hq} || {isNil {[_hq, "HQ"] call _tagOf}}) exitWith {};
         if !(_what in ["KIT", "CRATE"]) exitWith {};
         if (_caller distance _hq > 10) exitWith { ["STR_ALIVE_FOB_REFUSED_RANGE", [10]] call _tell };
         private _side = str (side group _caller);
@@ -618,7 +673,7 @@ switch (_op) do {
         private _spot = _hq getPos [6, (getDir _hq) + 90];
         private _o = createVehicle [["B_supplyCrate_F", "Box_NATO_Support_F"] select (_what == "KIT"), _spot, [], 3, "NONE"];
         clearItemCargoGlobal _o; clearWeaponCargoGlobal _o; clearMagazineCargoGlobal _o; clearBackpackCargoGlobal _o;
-        if (_what == "KIT") then { _o setVariable ["ALiVE_FOB_kit", _side, true] } else { _o setVariable ["ALiVE_FOB_crate", _amount, true] };
+        if (_what == "KIT") then { ["tag", [_o, "KIT", _side]] call ALiVE_fnc_fobOps } else { ["tag", [_o, "CRATE", _amount]] call ALiVE_fnc_fobOps };
         [["STR_ALIVE_FOB_HQ_CRATE", "STR_ALIVE_FOB_HQ_KIT"] select (_what == "KIT")] call _tell;
         _result = _o;
     };
@@ -652,8 +707,10 @@ switch (_op) do {
         private _faction = [_entry, "faction", ""] call ALIVE_fnc_hashGet;
         private _class = [_logic, "attribute", ["fob_garrison_group"]] call ALiVE_fnc_FOB;
         if (_class == "") then { _class = ["Infantry", _faction] call ALIVE_fnc_configGetRandomGroup };
-        if (_class isEqualTo "" || {!(_class isEqualType "")}) exitWith {
-            ["ALiVE Player FOBs - %1: no infantry group for faction %2, so no garrison", _id, _faction] call ALiVE_fnc_dumpR;
+        // the group lookup answers "FALSE" when the faction has none
+        if (!(_class isEqualType "") || {_class in ["", "FALSE"]}) exitWith {
+            ["ALiVE Player FOBs - %1: no infantry group for faction %2, so no garrison; trying again in 10 minutes", _id, _faction] call ALiVE_fnc_dumpR;
+            [_entry, "garrisonNext", time + 600] call ALIVE_fnc_hashSet;
         };
         private _cost = [_logic, "attribute", ["fob_garrison_cost"]] call ALiVE_fnc_FOB;
         if (!_free && {!(["debit", [_id, _cost, "garrison"]] call ALiVE_fnc_fobSupply)}) exitWith {};
@@ -669,6 +726,7 @@ switch (_op) do {
         } forEach _made;
         if (_ids isEqualTo []) exitWith {
             if (!_free) then { ["credit", [_id, _cost, "refund garrison"]] call ALiVE_fnc_fobSupply };
+            [_entry, "garrisonNext", time + 600] call ALIVE_fnc_hashSet;
         };
         ["pinStatic", _ids] call ALiVE_fnc_fobOps;
         [_entry, "garrison", _ids] call ALIVE_fnc_hashSet;
