@@ -11,7 +11,8 @@ at once) and saves if something changed. While the module is paused (an empty se
 nothing at all, so no timer runs out overnight.
 
 Timers are seconds left, never a clock time, so they carry across a save and a pause unchanged.
-Alerts, capture and repairs join this loop in later parts of the module.
+Each pass also gives back any FOB objective a commander has lost. Alerts, capture and repairs
+join this loop in later parts of the module.
 
 Parameters:
 Object - The module, to start the loop
@@ -41,6 +42,8 @@ private _tick = {
                 ALiVE_FOB_dirty = true;
             };
         } forEach _timers;
+        // A commander that reloaded its objectives has lost the FOB's; this puts it back
+        ["reconcile", [_x]] call ALiVE_fnc_fobObjectives;
     } forEach (ALiVE_FOB_registry select 1);
     count (ALiVE_FOB_registry select 1)
 };

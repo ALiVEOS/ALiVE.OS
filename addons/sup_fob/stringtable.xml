@@ -140,6 +140,69 @@
             <Key ID="STR_ALIVE_FOB_SAVE_INTERVAL_COMMENT">
                 <English>After a change, the FOBs are saved at most this often. An autosave or SERVER SAVE AND EXIT saves them straight away.</English>
             </Key>
+            <Key ID="STR_ALIVE_FOB_ACTION_DEPLOY">
+                <English>Deploy FOB</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_ACTION_STATUS">
+                <English>FOB Status</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_ACTION_DISMANTLE">
+                <English>Dismantle FOB</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_DISMANTLE_CONFIRM">
+                <English>Dismantle %1? Choose Dismantle FOB again within 10 seconds. Its supply will be lost.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_STATUS">
+                <English>%1&lt;br/&gt;State: %2&lt;br/&gt;Tier: %3&lt;br/&gt;Supply: %4</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_STATE_ACTIVE">
+                <English>Active</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_STATE_DAMAGED">
+                <English>Damaged</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_STATE_SALVAGE">
+                <English>Being salvaged</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_SUPPLY_FREE">
+                <English>No limit</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_DEPLOYED">
+                <English>%1 deployed.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_DISMANTLED">
+                <English>%1 dismantled.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_REFUSED_SIDE">
+                <English>Only BLUFOR, OPFOR and Independent players can deploy a FOB.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_REFUSED_KIT">
+                <English>That isn't a FOB kit for your side, or you're too far from it.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_REFUSED_WATER">
+                <English>A FOB can't be deployed in water.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_REFUSED_CAP">
+                <English>Your side already has as many FOBs as it may (%1). Take and hold more objectives, or dismantle one.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_REFUSED_SLOPE">
+                <English>The ground is too steep here. Find somewhere flatter.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_REFUSED_DISTANCE">
+                <English>Too close to another FOB. FOBs must be at least %1 m apart.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_REFUSED_SPOT">
+                <English>The FOB couldn't be built here.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_REFUSED_NOTOURS">
+                <English>That FOB isn't your side's.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_REFUSED_RANGE">
+                <English>Get within %1 m of the FOB first.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_REFUSED_DAMAGED">
+                <English>A damaged FOB can't be dismantled until it's repaired.</English>
+            </Key>
         </Container>
     </Package>
 </Project>

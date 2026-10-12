@@ -56,6 +56,21 @@ class cfgFunctions {
                                 file = "\x\alive\addons\sup_fob\fnc_fobClient.sqf";
                 ALIVE_RECOMPILE;
                         };
+                        class fobObjectives {
+                                description = "A FOB as an objective for its own side's AI Commanders";
+                                file = "\x\alive\addons\sup_fob\fnc_fobObjectives.sqf";
+                ALIVE_RECOMPILE;
+                        };
+                        class fobMarkers {
+                                description = "Client: the map markers for the player's own side's FOBs";
+                                file = "\x\alive\addons\sup_fob\fnc_fobMarkers.sqf";
+                ALIVE_RECOMPILE;
+                        };
+                        class fobActions {
+                                description = "Client: Deploy FOB, FOB Status and Dismantle FOB";
+                                file = "\x\alive\addons\sup_fob\fnc_fobActions.sqf";
+                ALIVE_RECOMPILE;
+                        };
                    };
         };
 };

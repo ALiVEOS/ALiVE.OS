@@ -5,10 +5,17 @@ SCRIPT(fobOps);
 Function: ALiVE_fnc_fobOps
 
 Description:
-Every change to a FOB, done on the server: deploy, build, recycle, resupply, repair,
-dismantle, upgrade and a side taking it. Reached only through ALiVE_fnc_fobRequest (a player)
-or from the server itself (the watchdog, Military Logistics). The operations arrive in the
-next parts of the module; this part answers that it doesn't know them yet.
+Every change to a FOB, done on the server. Reached only through ALiVE_fnc_fobRequest (a
+player) or from the server itself (start-up, the watchdog). The side is always the caller's
+own, never one the request names.
+
+deploy turns a FOB kit into a FOB: a headquarters building, an entry in the registry, a map
+marker for that side and an objective for that side's AI Commanders. It is refused, with the
+reason sent back to the player, when the kit isn't a FOB kit for that side, the player is not
+by it, the spot is in water or on ground steeper than about 15 degrees, too close to another FOB of any side, or the side already has as
+many FOBs as it may.
+
+dismantle takes a FOB down: its objectives, buildings and entry go; its supply is lost.
 
 Parameters:
 String - The operation
@@ -16,7 +23,11 @@ Array - Its arguments
 Object - The player asking (objNull from the server itself)
 
 Returns:
-Any
+deploy - [kit, position, direction] -> the new FOB's id, or ""
+dismantle - [fobID] -> true when it was taken down
+cleanup - [fobID] -> removes a FOB and everything it made, no checks
+restore - [] -> rebuilds every loaded FOB's headquarters and objectives; the number rebuilt
+spawnHub - [fobID] -> the headquarters building, made if missing
 
 Author:
 Jman
@@ -27,11 +38,151 @@ if (!isServer) exitWith {};
 
 params [["_op", "", [""]], ["_args", [], [[]]], ["_caller", objNull, [objNull]]];
 
+private _logic = missionNamespace getVariable ["ALiVE_sup_fob", objNull];
+private _debug = [_logic, "attribute", ["fob_debug"]] call ALiVE_fnc_FOB;
 private _result = nil;
 
+// Tell the player why, on their own machine only
+private _tell = {
+    params ["_key", ["_fmt", []]];
+    ALiVE_FOB_lastMessage = _key;   // read by the debug output and tests
+    if (!isNull _caller && {isPlayer _caller}) then {
+        ["notify", [_key, _fmt]] remoteExecCall ["ALiVE_fnc_fobClient", _caller];
+    };
+    if (_debug) then { ["ALiVE Player FOBs - %1 %2 for %3", _key, _fmt, name _caller] call ALiVE_fnc_dump };
+};
+
 switch (_op) do {
+
+    case "deploy": {
+        _result = "";
+        _args params [["_kit", objNull, [objNull]], ["_pos", [0,0,0], [[]]], ["_dir", 0, [0]]];
+        if (isNull _caller || {!alive _caller}) exitWith {};
+        private _side = str (side group _caller);
+        if !(_side in ["WEST", "EAST", "GUER"]) exitWith { ["STR_ALIVE_FOB_REFUSED_SIDE"] call _tell };
+
+        // The kit: tagged true (any side) or with a side's name
+        private _tag = if (isNull _kit) then { nil } else { _kit getVariable "ALiVE_FOB_kit" };
+        if (isNil "_tag" || {!(_tag isEqualTo true || {_tag isEqualTo _side})}) exitWith { ["STR_ALIVE_FOB_REFUSED_KIT"] call _tell };
+        if (_caller distance _kit > 50) exitWith { ["STR_ALIVE_FOB_REFUSED_KIT"] call _tell };
+
+        _pos = [_pos param [0, 0], _pos param [1, 0], 0];
+        if (_pos distance2D _kit > 50) then { _pos = getPosATL _kit; _pos set [2, 0] };
+        if (surfaceIsWater _pos || {getTerrainHeightASL _pos < -0.5}) exitWith { ["STR_ALIVE_FOB_REFUSED_WATER"] call _tell };
+        // Steeper than about 15 degrees and the headquarters stands half in the hillside
+        if (((surfaceNormal _pos) select 2) < 0.966) exitWith { ["STR_ALIVE_FOB_REFUSED_SLOPE"] call _tell };
+
+        if !(["canDeploy", [_side]] call ALiVE_fnc_fobCap) exitWith {
+            ["STR_ALIVE_FOB_REFUSED_CAP", [["capForSide", [_side]] call ALiVE_fnc_fobCap]] call _tell;
+        };
+
+        private _minDist = [_logic, "attribute", ["fob_min_distance"]] call ALiVE_fnc_FOB;
+        private _near = (ALiVE_FOB_registry select 1) findIf {
+            (([[ALiVE_FOB_registry, _x] call ALIVE_fnc_hashGet, "pos", [0,0,0]] call ALIVE_fnc_hashGet) distance2D _pos) < _minDist
+        };
+        if (_near > -1) exitWith { ["STR_ALIVE_FOB_REFUSED_DISTANCE", [_minDist]] call _tell };
+
+        private _id = [_logic, "nextID", [_side]] call ALiVE_fnc_FOB;
+        private _entry = [_logic, "newEntry", [_id, _side, faction _caller, _pos, _dir]] call ALiVE_fnc_FOB;
+        [_logic, "registrySet", [_id, _entry]] call ALiVE_fnc_FOB;
+
+        private _hub = ["spawnHub", [_id]] call ALiVE_fnc_fobOps;
+        if (isNull _hub) exitWith {
+            [_logic, "registryRemove", [_id]] call ALiVE_fnc_FOB;
+            ["STR_ALIVE_FOB_REFUSED_SPOT"] call _tell;
+        };
+
+        ["register", [_id]] call ALiVE_fnc_fobObjectives;
+        deleteVehicle _kit;
+        [_logic, "broadcastMirror"] call ALiVE_fnc_FOB;
+        ["save", [true]] call ALiVE_fnc_fobPersistence;
+
+        ["STR_ALIVE_FOB_DEPLOYED", [[_entry, "name"] call ALIVE_fnc_hashGet]] call _tell;
+        ["ALiVE Player FOBs - %1 deployed %2 (%3) at %4", name _caller, _id, [_entry, "name"] call ALIVE_fnc_hashGet, _pos] call ALiVE_fnc_dump;
+        _result = _id;
+    };
+
+    case "dismantle": {
+        _result = false;
+        _args params [["_id", "", [""]]];
+        private _entry = [ALiVE_FOB_registry, _id] call ALIVE_fnc_hashGet;
+        if (isNil "_entry" || {isNull _caller}) exitWith {};
+        if (([_entry, "side", ""] call ALIVE_fnc_hashGet) != str (side group _caller)) exitWith { ["STR_ALIVE_FOB_REFUSED_NOTOURS"] call _tell };
+        if (_caller distance2D ([_entry, "pos", [0,0,0]] call ALIVE_fnc_hashGet) > 25) exitWith { ["STR_ALIVE_FOB_REFUSED_RANGE", [25]] call _tell };
+        if (([_entry, "status", ""] call ALIVE_fnc_hashGet) == "damaged") exitWith { ["STR_ALIVE_FOB_REFUSED_DAMAGED"] call _tell };
+
+        private _name = [_entry, "name", ""] call ALIVE_fnc_hashGet;
+        ["cleanup", [_id]] call ALiVE_fnc_fobOps;
+        ["STR_ALIVE_FOB_DISMANTLED", [_name]] call _tell;
+        ["ALiVE Player FOBs - %1 dismantled %2 (%3)", name _caller, _id, _name] call ALiVE_fnc_dump;
+        _result = true;
+    };
+
+    case "cleanup": {
+        _args params [["_id", "", [""]]];
+        private _entry = [ALiVE_FOB_registry, _id] call ALIVE_fnc_hashGet;
+        if (isNil "_entry") exitWith { _result = false };
+        ["unregister", [_id]] call ALiVE_fnc_fobObjectives;
+        {
+            private _o = _x param [0, objNull];
+            if (_o isEqualType objNull && {!isNull _o}) then { deleteVehicle _o };
+        } forEach ([_entry, "objects", []] call ALIVE_fnc_hashGet);
+        private _hub = [_entry, "hub", objNull] call ALIVE_fnc_hashGet;
+        if (!isNull _hub) then { deleteVehicle _hub };
+        [_logic, "registryRemove", [_id]] call ALiVE_fnc_FOB;
+        [_logic, "broadcastMirror"] call ALiVE_fnc_FOB;
+        ["save", [true]] call ALiVE_fnc_fobPersistence;
+        _result = true;
+    };
+
+    case "spawnHub": {
+        _args params [["_id", "", [""]]];
+        private _entry = [ALiVE_FOB_registry, _id] call ALIVE_fnc_hashGet;
+        if (isNil "_entry") exitWith { _result = objNull };
+        private _hub = [_entry, "hub", objNull] call ALIVE_fnc_hashGet;
+        if (!isNull _hub && {alive _hub}) exitWith { _result = _hub };
+
+        private _class = [_entry, "hubClass", ""] call ALIVE_fnc_hashGet;
+        private _pos = [_entry, "pos", [0,0,0]] call ALIVE_fnc_hashGet;
+        if !(isClass (configFile >> "CfgVehicles" >> _class)) exitWith {
+            ["ALiVE Player FOBs - %1: no building class %2 in this game; set another in the module", _id, _class] call ALiVE_fnc_dumpR;
+            _result = objNull;
+        };
+        _hub = createVehicle [_class, _pos, [], 0, "CAN_COLLIDE"];
+        _hub setPosATL _pos;
+        // Sits on the slope and keeps its heading: setVectorUp alone twists the heading round
+        private _d = [_entry, "dir", 0] call ALIVE_fnc_hashGet;
+        private _up = surfaceNormal _pos;
+        // the heading's own x and y, tipped up or down to lie along the slope
+        private _tip = -((sin _d) * (_up select 0) + (cos _d) * (_up select 1)) / ((_up select 2) max 0.1);
+        _hub setVectorDirAndUp [vectorNormalized [sin _d, cos _d, _tip], _up];
+        _hub setVariable ["ALiVE_FOB_id", _id, true];
+        // A destroyed headquarters marks the FOB damaged: it can't be taken down until repaired
+        _hub addEventHandler ["Killed", {
+            params ["_hub"];
+            private _e = [ALiVE_FOB_registry, _hub getVariable ["ALiVE_FOB_id", ""]] call ALIVE_fnc_hashGet;
+            if (!isNil "_e") then {
+                [_e, "status", "damaged"] call ALIVE_fnc_hashSet;
+                ALiVE_FOB_dirty = true;
+            };
+        }];
+        [_entry, "hub", _hub] call ALIVE_fnc_hashSet;
+        _result = _hub;
+    };
+
+    // After a load: the buildings and objectives a saved FOB had, made again
+    case "restore": {
+        _result = 0;
+        {
+            private _hub = ["spawnHub", [_x]] call ALiVE_fnc_fobOps;
+            ["reconcile", [_x]] call ALiVE_fnc_fobObjectives;
+            if (!isNull _hub) then { _result = _result + 1 };
+        } forEach +(ALiVE_FOB_registry select 1);
+        if (_result > 0) then { ["ALiVE Player FOBs - rebuilt %1 FOBs from the save", _result] call ALiVE_fnc_dump };
+    };
+
     default {
-        ["ALiVE Player FOBs - no operation called %1 yet", _op] call ALiVE_fnc_dump;
+        ["ALiVE Player FOBs - no operation called %1", _op] call ALiVE_fnc_dump;
     };
 };
 

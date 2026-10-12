@@ -3133,8 +3133,10 @@ switch (_operation) do {
                 _objectivesGlobal = [];
                 {
                     if ([_x,"persistent",false] call ALIVE_fnc_HashGet) then {
-                        // player-designated objectives are session-only by design
-                        _objectivesGlobal = _objectivesGlobal + (([_x, "objectives",[]] call ALiVE_fnc_HashGet) select {!([_x,"playerCreated",false] call ALiVE_fnc_HashGet)});
+                        // player-designated objectives are session-only by design; a player FOB's
+                        // objective is saved with the FOB and re-added by Player FOBs on load, so
+                        // saving it here too would give the commander two of it after a restart
+                        _objectivesGlobal = _objectivesGlobal + (([_x, "objectives",[]] call ALiVE_fnc_HashGet) select {!([_x,"playerCreated",false] call ALiVE_fnc_HashGet) && {([_x,"fobID",""] call ALiVE_fnc_HashGet) == ""}});
                     };
                 } foreach OPCOM_INSTANCES;
 

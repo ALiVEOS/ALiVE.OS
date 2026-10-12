@@ -149,6 +149,8 @@ switch (_operation) do {
                 if ([_logic, "attribute", ["fob_persistent"]] call ALIVE_fnc_FOB) then {
                     [] call ALiVE_fnc_fobLoadData;
                 };
+                // Saved FOBs get their headquarters and their commanders' objectives back
+                isNil { ["restore"] call ALiVE_fnc_fobOps };
 
                 [_logic, "broadcastMirror"] call ALIVE_fnc_FOB;
                 _logic setVariable ["startupComplete", true];
@@ -284,6 +286,8 @@ switch (_operation) do {
              ["balance", [_x]] call ALiVE_fnc_fobSupply, ["cap", [_x]] call ALiVE_fnc_fobSupply, _range]
         };
         publicVariable "ALiVE_FOB_registryMirror";
+        // A hosted server's own player gets no public variable event for its own send
+        if (hasInterface) then { [] call ALiVE_fnc_fobMarkers };
         _result = count ALiVE_FOB_registryMirror;
     };
 };

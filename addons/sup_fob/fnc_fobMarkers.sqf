@@ -1,0 +1,55 @@
+#include "\x\alive\addons\sup_fob\script_component.hpp"
+SCRIPT(fobMarkers);
+
+/* ----------------------------------------------------------------------------
+Function: ALiVE_fnc_fobMarkers
+
+Description:
+The map markers for the player's own side's FOBs, drawn on the player's machine from the FOB
+list the server sends. Each machine draws only its own side's, so the other side never sees
+where your FOBs are on its map. A marker is a flag in the side's colour named after the FOB;
+a damaged FOB's is drawn faded.
+
+Parameters:
+None
+
+Returns:
+Number - the markers drawn
+
+Author:
+Jman
+---------------------------------------------------------------------------- */
+
+if (!hasInterface) exitWith {0};
+
+private _side = str (side group player);
+private _colour = switch (_side) do {
+    case "WEST": {"ColorWEST"};
+    case "EAST": {"ColorEAST"};
+    case "GUER": {"ColorGUER"};
+    default {"ColorCIV"};
+};
+
+private _rows = (missionNamespace getVariable ["ALiVE_FOB_registryMirror", []]) select { (_x select 1) == _side };
+private _want = _rows apply { "ALiVE_FOB_" + (_x select 0) };
+
+// Gone, or now another side's
+{
+    if !(_x in _want) then { deleteMarkerLocal _x };
+} forEach (missionNamespace getVariable ["ALiVE_FOB_markers", []]);
+
+{
+    _x params ["_id", "", "_name", "_pos", "_status"];
+    private _m = "ALiVE_FOB_" + _id;
+    if (markerType _m == "") then {
+        createMarkerLocal [_m, _pos];
+        _m setMarkerTypeLocal "mil_flag";
+    };
+    _m setMarkerPosLocal _pos;
+    _m setMarkerColorLocal _colour;
+    _m setMarkerTextLocal _name;
+    _m setMarkerAlphaLocal ([1, 0.5] select (_status == "damaged"));
+} forEach _rows;
+
+ALiVE_FOB_markers = _want;
+count _want
