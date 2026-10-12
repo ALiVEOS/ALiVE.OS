@@ -281,6 +281,18 @@
             <Key ID="STR_ALIVE_FOB_RECYCLED">
                 <English>%1 recycled: %2 supply back.</English>
             </Key>
+            <Key ID="STR_ALIVE_FOB_UI_STATICS">
+                <English>Statics</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_UI_STATIC_ITEM">
+                <English>Static weapon, crewed by your side</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_REFUSED_STATIC_SIDE">
+                <English>Your side can only build its own static weapons.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_REFUSED_STATIC_PROFILES">
+                <English>Static weapons need the Virtual AI System module in the mission.</English>
+            </Key>
         </Container>
     </Package>
 </Project>

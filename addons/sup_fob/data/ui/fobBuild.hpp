@@ -1,8 +1,8 @@
 #include "fobBuild_common.hpp"
 
 // The FOB build window: opened by Build Menu within a FOB's build range. What can be built,
-// grouped as fortifications or supply, what the selected item is and costs, what the FOB has
-// in supply, and Place. ALiVE_fnc_buildMenu fills and drives it.
+// grouped as fortifications, supply or static weapons, what the selected item is and costs,
+// what the FOB has in supply, and Place. ALiVE_fnc_buildMenu fills and drives it.
 
 class ALiVE_FobBuildWindow {
     idd = 9280;
@@ -34,16 +34,25 @@ class ALiVE_FobBuildWindow {
             action = "['category', 'FORTIFICATION'] call ALiVE_fnc_buildMenu";
             x = 0.31 * safezoneW + safezoneX;
             y = 0.27 * safezoneH + safezoneY;
-            w = 0.093 * safezoneW;
+            w = 0.062 * safezoneW;
             h = 0.03 * safezoneH;
         };
         class FobUI_Supply: FobUI_RscButton {
             idc = 92808;
             text = "$STR_ALIVE_FOB_UI_SUPPLY";
             action = "['category', 'SUPPLY'] call ALiVE_fnc_buildMenu";
-            x = 0.407 * safezoneW + safezoneX;
+            x = 0.374 * safezoneW + safezoneX;
             y = 0.27 * safezoneH + safezoneY;
-            w = 0.093 * safezoneW;
+            w = 0.062 * safezoneW;
+            h = 0.03 * safezoneH;
+        };
+        class FobUI_Statics: FobUI_RscButton {
+            idc = 92810;
+            text = "$STR_ALIVE_FOB_UI_STATICS";
+            action = "['category', 'STATIC'] call ALiVE_fnc_buildMenu";
+            x = 0.438 * safezoneW + safezoneX;
+            y = 0.27 * safezoneH + safezoneY;
+            w = 0.062 * safezoneW;
             h = 0.03 * safezoneH;
         };
         class FobUI_List: FobUI_RscListBox {

@@ -29,6 +29,17 @@ if (!hasInterface) exitWith {};
 
 params [["_operation", "", [""]], ["_args", []]];
 
+// Where the item goes and whether it may: in front of the player, at the reach the item needs,
+// turned by the player's heading plus their rotation. Worked out here for the preview and again
+// for Place, so Place never sends a position the preview hadn't caught up with.
+ALiVE_FOB_placeSpot = {
+    ALiVE_FOB_placeState params ["", "_fob", "_reach", "_turn"];
+    _fob params ["", "", "", "_centre", "", "", "", "", "_range"];
+    private _pos = player getPos [_reach, getDir player];
+    _pos set [2, 0];
+    [_pos, (getDir player + _turn) % 360, (_pos distance2D _centre <= _range) && {!surfaceIsWater _pos}]
+};
+
 private _fnc_stop = {
     if (!isNil "ALiVE_FOB_placeDraw") then { removeMissionEventHandler ["Draw3D", ALiVE_FOB_placeDraw]; ALiVE_FOB_placeDraw = nil };
     { player removeAction _x } forEach (missionNamespace getVariable ["ALiVE_FOB_placeActions", []]);
@@ -58,7 +69,7 @@ switch (_operation) do {
 
         ALiVE_FOB_ghost = _g;
         ALiVE_FOB_placing = true;
-        ALiVE_FOB_placeState = [_row, _fob, _reach, 0, _slots, _bb, true];
+        ALiVE_FOB_placeState = [_row, _fob, _reach, 0, _slots, _bb, false];
 
         ALiVE_FOB_placeDraw = addMissionEventHandler ["Draw3D", {
             private _g = ALiVE_FOB_ghost;
@@ -69,14 +80,11 @@ switch (_operation) do {
                 ["cancel"] call ALiVE_fnc_fobPlacement;
                 [localize "STR_ALIVE_FOB", localize "STR_ALIVE_FOB_PLACE_LEFT"] call ALIVE_fnc_sendHint;
             };
-            private _pos = player getPos [_reach, getDir player];
-            _pos set [2, 0];
-            private _dir = getDir player + _turn;
+            (call ALiVE_FOB_placeSpot) params ["_pos", "_dir", "_ok"];
             _g setPosATL _pos;
             private _up = surfaceNormal _pos;
             private _tip = -((sin _dir) * (_up select 0) + (cos _dir) * (_up select 1)) / ((_up select 2) max 0.1);
             _g setVectorDirAndUp [vectorNormalized [sin _dir, cos _dir, _tip], _up];
-            private _ok = (_pos distance2D _centre <= _range) && {!surfaceIsWater _pos};
             if (_slots > 0) then {
                 if (_ok isNotEqualTo _wasOk || {!(_g getVariable ["ALiVE_FOB_tinted", false])}) then {
                     private _tex = ["#(rgb,8,8,3)color(1,0,0,0.6)", "#(rgb,8,8,3)color(0,1,0,0.6)"] select _ok;
@@ -113,10 +121,9 @@ switch (_operation) do {
     case "place": {
         private _g = missionNamespace getVariable ["ALiVE_FOB_ghost", objNull];
         if (isNull _g) exitWith {};
-        ALiVE_FOB_placeState params ["_row", "_fob", "", "", "", "", "_ok"];
-        if !(_ok isEqualTo true) exitWith { [localize "STR_ALIVE_FOB", localize "STR_ALIVE_FOB_PLACE_BAD", true] call ALIVE_fnc_sendHint };
-        private _pos = getPosATL _g;
-        private _dir = getDir _g;
+        ALiVE_FOB_placeState params ["_row", "_fob"];
+        (call ALiVE_FOB_placeSpot) params ["_pos", "_dir", "_ok"];
+        if !(_ok) exitWith { [localize "STR_ALIVE_FOB", localize "STR_ALIVE_FOB_PLACE_BAD", true] call ALIVE_fnc_sendHint };
         call _fnc_stop;
         ["build", [_row select 0, _pos, _dir, _fob select 0]] remoteExecCall ["ALiVE_fnc_fobRequest", 2];
     };

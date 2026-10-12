@@ -44,7 +44,15 @@ private _tick = {
         } forEach _timers;
         // Built objects that were destroyed or removed come off the list, with nothing back
         private _objects = [_entry, "objects", []] call ALIVE_fnc_hashGet;
-        private _kept = _objects select { !((_x param [0, objNull]) isEqualType objNull) || {!isNull (_x select 0) && {alive (_x select 0)} && {damage (_x select 0) < 1}} };
+        private _kept = _objects select {
+            private _o = _x param [0, objNull];
+            switch (true) do {
+                // a static weapon lives as long as its gun's profile does
+                case (_o isEqualTo "static"): { isNil "ALiVE_ProfileHandler" || {!isNil {[ALiVE_ProfileHandler, "getProfile", _x param [3, ""]] call ALIVE_fnc_profileHandler}} };
+                case (!(_o isEqualType objNull)): { true };
+                default { !isNull _o && {alive _o} && {damage _o < 1} };
+            }
+        };
         if (count _kept != count _objects) then {
             [_entry, "objects", _kept] call ALIVE_fnc_hashSet;
             ALiVE_FOB_dirty = true;

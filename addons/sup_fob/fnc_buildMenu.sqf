@@ -6,14 +6,14 @@ Function: ALiVE_fnc_buildMenu
 
 Description:
 The FOB build window on the player's machine (idd 9280). It lists the build catalog the server
-sent (fortifications or supply, cheapest first), shows the selected item's picture and price
+sent (fortifications, supply, or the player's side's static weapons, cheapest first), shows the selected item's picture and price
 and the FOB's supply, and Place closes the window and starts placing the item in the world
 (ALiVE_fnc_fobPlacement). Prices shown here are the server's; the server charges its own.
 
 Parameters:
 String - The operation: open, category, select, place, closed
 Any - Its arguments: for open, the FOB's row from ALiVE_FOB_registryMirror; for category,
-"FORTIFICATION" or "SUPPLY"
+"FORTIFICATION", "SUPPLY" or "STATIC"
 
 Returns:
 Nothing
@@ -68,7 +68,9 @@ switch (_operation) do {
         if (isNull BW_DISPLAY) exitWith {};
         private _kind = _args;
         uiNamespace setVariable ["ALiVE_FOB_buildCategory", _kind];
-        private _rows = (missionNamespace getVariable ["ALiVE_FOB_catalog", []]) select { (_x select 2) == _kind };
+        // static weapons are offered to their own side only
+        private _side = str (side group player);
+        private _rows = (missionNamespace getVariable ["ALiVE_FOB_catalog", []]) select { (_x select 2) == _kind && {_kind != "STATIC" || {(_x param [6, ""]) == _side}} };
         // cheapest first, then by name
         private _keys = [];
         { _keys pushBack [_x select 3, _x select 1, _forEachIndex] } forEach _rows;
@@ -86,7 +88,7 @@ switch (_operation) do {
         } forEach _rows;
         {
             (BW_DISPLAY displayCtrl (_x select 0)) ctrlSetTextColor ([[1,1,1,0.6], [1,1,1,1]] select (_kind == (_x select 1)));
-        } forEach [[92807, "FORTIFICATION"], [92808, "SUPPLY"]];
+        } forEach [[92807, "FORTIFICATION"], [92808, "SUPPLY"], [92810, "STATIC"]];
         _list lbSetCurSel 0;
         call _fnc_status;
     };
@@ -97,7 +99,8 @@ switch (_operation) do {
         if (_row isEqualTo []) exitWith {};
         _row params ["_class", "_name", "_kind", "_cost", "_pic"];
         (BW_DISPLAY displayCtrl 92809) ctrlSetText _pic;
-        private _lines = [[_name, _class] select (_name == ""), localize (["STR_ALIVE_FOB_UI_FORTIFICATION", "STR_ALIVE_FOB_UI_SUPPLY_ITEM"] select (_kind == "SUPPLY")), format [localize "STR_ALIVE_FOB_UI_COST", _cost]];
+        private _what = switch (_kind) do { case "SUPPLY": {"STR_ALIVE_FOB_UI_SUPPLY_ITEM"}; case "STATIC": {"STR_ALIVE_FOB_UI_STATIC_ITEM"}; default {"STR_ALIVE_FOB_UI_FORTIFICATION"} };
+        private _lines = [[_name, _class] select (_name == ""), localize _what, format [localize "STR_ALIVE_FOB_UI_COST", _cost]];
         (BW_DISPLAY displayCtrl 92803) ctrlSetStructuredText ([_lines, true] call _fnc_lines);
         call _fnc_status;
     };

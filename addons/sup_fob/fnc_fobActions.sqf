@@ -76,7 +76,7 @@ switch (_op) do {
             player addAction [localize "STR_ALIVE_FOB_ACTION_BUILD", { ["open", ALiVE_FOB_buildFob] call ALiVE_fnc_buildMenu }, nil, 1.45, false, true, "",
                 "ALiVE_FOB_buildFob isNotEqualTo [] && {vehicle _this == _this} && {!(missionNamespace getVariable ['ALiVE_FOB_placing', false])}"],
             player addAction [localize "STR_ALIVE_FOB_ACTION_RECYCLE", { ["recycle", [cursorObject]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] }, nil, 0.6, false, true, "",
-                "vehicle _this == _this && {(cursorObject getVariable ['ALiVE_FOB_object', '']) != ''} && {_this distance cursorObject < 8}"]
+                "vehicle _this == _this && {_this distance cursorObject < 8} && {(cursorObject getVariable ['ALiVE_FOB_object', '']) != '' || {cursorObject isKindOf 'StaticWeapon' && {ALiVE_FOB_buildFob isNotEqualTo []}}}"]
         ];
         player setVariable ["ALiVE_FOB_actionIDs", _ids];
 

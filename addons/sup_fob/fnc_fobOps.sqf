@@ -31,6 +31,9 @@ dismantle - [fobID] -> true when it was taken down
 build - [class, position, direction, fobID] -> true when built and paid for
 recycle - [object] -> true when taken down, with half its price back
 restoreObjects - [fobID] -> a saved FOB's built objects made again; the number made
+spawnStatic - [fobID, class, position, direction] -> [vehicle profile id, crew profile id]
+pinStatic - [profile ids] -> keeps them where they are
+removeStatic - [vehicle profile id, crew profile id] -> the static weapon and its crew gone
 cleanup - [fobID] -> removes a FOB and everything it made, no checks
 restore - [] -> rebuilds every loaded FOB's headquarters and objectives; the number rebuilt
 spawnHub - [fobID] -> the headquarters building, made if missing
@@ -132,6 +135,7 @@ switch (_op) do {
         {
             private _o = _x param [0, objNull];
             if (_o isEqualType objNull && {!isNull _o}) then { deleteVehicle _o };
+            if (_o isEqualTo "static") then { ["removeStatic", [_x param [3, ""], _x param [4, ""]]] call ALiVE_fnc_fobOps };
         } forEach ([_entry, "objects", []] call ALIVE_fnc_hashGet);
         private _hub = [_entry, "hub", objNull] call ALIVE_fnc_hashGet;
         if (!isNull _hub) then { deleteVehicle _hub };
@@ -198,6 +202,23 @@ switch (_op) do {
         _result = 0;
         private _live = [];
         {
+            if ((_x param [0, objNull]) isEqualTo "static") then {
+                // kept when its profile came back with the Virtual AI System's own save, made
+                // again otherwise
+                _x params ["", "_class", "_cost", "_vid", "_eid", "_pos", "_dir"];
+                private _have = if (isNil "ALiVE_ProfileHandler") then { nil } else { [ALiVE_ProfileHandler, "getProfile", _vid] call ALIVE_fnc_profileHandler };
+                if (!isNil "_have") then {
+                    ["pinStatic", [_vid, _eid]] call ALiVE_fnc_fobOps;
+                    _live pushBack _x;
+                } else {
+                    private _made = ["spawnStatic", [_id, _class, _pos, _dir]] call ALiVE_fnc_fobOps;
+                    if (_made isNotEqualTo []) then {
+                        _live pushBack (["static", _class, _cost] + _made + [_pos, _dir]);
+                        _result = _result + 1;
+                    };
+                };
+                continue;
+            };
             if ((_x param [0, objNull]) isEqualType "") then {
                 _x params ["_class", "_pos", "_vdir", "_vup", ["_cost", 0]];
                 if (isClass (configFile >> "CfgVehicles" >> _class)) then {
@@ -243,9 +264,26 @@ switch (_op) do {
         if (_row isEqualTo []) exitWith { ["STR_ALIVE_FOB_REFUSED_NOTBUILDABLE"] call _tell };
         (_row select 0) params ["", "_name", "_kind", "_cost", "", ["_tierMin", 1]];
         if (([_entry, "tier", 1] call ALIVE_fnc_hashGet) < _tierMin) exitWith { ["STR_ALIVE_FOB_REFUSED_TIER", [_tierMin]] call _tell };
+        private _isStatic = _kind == "STATIC";
+        if (_isStatic && {((_row select 0) param [6, ""]) != ([_entry, "side", ""] call ALIVE_fnc_hashGet)}) exitWith { ["STR_ALIVE_FOB_REFUSED_STATIC_SIDE"] call _tell };
+        if (_isStatic && {isNil "ALiVE_ProfileHandler"}) exitWith { ["STR_ALIVE_FOB_REFUSED_STATIC_PROFILES"] call _tell };
 
         if !(["debit", [_id, _cost, "build " + _class]] call ALiVE_fnc_fobSupply) exitWith {
             ["STR_ALIVE_FOB_REFUSED_SUPPLY", [_cost, ["balance", [_id]] call ALiVE_fnc_fobSupply]] call _tell;
+        };
+        // A static weapon is a crewed profile the Virtual AI System looks after, pinned in place:
+        // it spawns with its crew while players are near and is kept virtual otherwise
+        if (_isStatic) exitWith {
+            private _made = ["spawnStatic", [_id, _class, _pos, _dir]] call ALiVE_fnc_fobOps;
+            if (_made isEqualTo []) exitWith {
+                ["credit", [_id, _cost, "refund " + _class]] call ALiVE_fnc_fobSupply;
+                ["STR_ALIVE_FOB_REFUSED_SPOT"] call _tell;
+            };
+            ([_entry, "objects", []] call ALIVE_fnc_hashGet) pushBack (["static", _class, _cost] + _made + [_pos, _dir]);
+            ALiVE_FOB_dirty = true;
+            [_logic, "broadcastMirror"] call ALiVE_fnc_FOB;
+            ["STR_ALIVE_FOB_BUILT", [_name, _cost]] call _tell;
+            _result = true;
         };
         private _o = createVehicle [_class, _pos, [], 0, "CAN_COLLIDE"];
         if (isNull _o) exitWith {
@@ -272,8 +310,32 @@ switch (_op) do {
         _args params [["_o", objNull, [objNull]]];
         if (isNull _caller || {!alive _caller} || {isNull _o}) exitWith {};
         private _id = _o getVariable ["ALiVE_FOB_object", ""];
+        // a static weapon is known by its profile: the spawned gun carries the profile's id
+        private _pid = _o getVariable ["profileID", ""];
+        private _staticAt = -1;
+        if (_id == "" && {_pid != ""}) then {
+            {
+                private _fid = _x;
+                private _i = ([[ALiVE_FOB_registry, _fid] call ALIVE_fnc_hashGet, "objects", []] call ALIVE_fnc_hashGet) findIf { (_x param [0, ""]) isEqualTo "static" && {(_x param [3, ""]) == _pid} };
+                if (_i > -1) exitWith { _id = _fid; _staticAt = _i };
+            } forEach (ALiVE_FOB_registry select 1);
+        };
         private _entry = [ALiVE_FOB_registry, _id] call ALIVE_fnc_hashGet;
         if (isNil "_entry") exitWith { ["STR_ALIVE_FOB_REFUSED_NOTBUILT"] call _tell };
+        if (_staticAt > -1) exitWith {
+            if (([_entry, "side", ""] call ALIVE_fnc_hashGet) != str (side group _caller)) exitWith { ["STR_ALIVE_FOB_REFUSED_NOTOURS"] call _tell };
+            if (_caller distance _o > 8) exitWith { ["STR_ALIVE_FOB_REFUSED_RANGE", [8]] call _tell };
+            private _objects = [_entry, "objects", []] call ALIVE_fnc_hashGet;
+            (_objects select _staticAt) params ["", "_class", ["_cost", 0], "_vid", "_eid"];
+            ["removeStatic", [_vid, _eid]] call ALiVE_fnc_fobOps;
+            _objects deleteAt _staticAt;
+            private _back = floor (_cost * 0.5);
+            if (_back > 0) then { ["credit", [_id, _back, "recycle " + _class]] call ALiVE_fnc_fobSupply };
+            ALiVE_FOB_dirty = true;
+            [_logic, "broadcastMirror"] call ALiVE_fnc_FOB;
+            ["STR_ALIVE_FOB_RECYCLED", [getText (configFile >> "CfgVehicles" >> _class >> "displayName"), _back]] call _tell;
+            _result = true;
+        };
         if (([_entry, "side", ""] call ALIVE_fnc_hashGet) != str (side group _caller)) exitWith { ["STR_ALIVE_FOB_REFUSED_NOTOURS"] call _tell };
         if (_caller distance _o > 8) exitWith { ["STR_ALIVE_FOB_REFUSED_RANGE", [8]] call _tell };
         private _objects = [_entry, "objects", []] call ALIVE_fnc_hashGet;
@@ -288,6 +350,45 @@ switch (_op) do {
         [_logic, "broadcastMirror"] call ALiVE_fnc_FOB;
         ["STR_ALIVE_FOB_RECYCLED", [getText (configFile >> "CfgVehicles" >> _class >> "displayName"), _back]] call _tell;
         _result = true;
+    };
+
+    // A crewed static weapon as profiles: [vehicle profile id, crew profile id], or [] when it
+    // couldn't be made. Its own side's crew; kept where it was put and never sent elsewhere.
+    case "spawnStatic": {
+        _args params [["_id", "", [""]], ["_class", "", [""]], ["_pos", [0,0,0], [[]]], ["_dir", 0, [0]]];
+        _result = [];
+        if (isNil "ALiVE_ProfileHandler" || {!isClass (configFile >> "CfgVehicles" >> _class)}) exitWith {};
+        private _cfg = configFile >> "CfgVehicles" >> _class;
+        private _side = ["EAST", "WEST", "GUER"] param [getNumber (_cfg >> "side"), "WEST"];
+        private _made = [_class, _side, getText (_cfg >> "faction"), "PRIVATE", [_pos select 0, _pos select 1, 0], _dir, false, "", false, true] call ALIVE_fnc_createProfilesCrewedVehicle;
+        if (count _made < 2) exitWith {};
+        _made params ["_entity", "_vehicle"];
+        private _eid = [_entity, "profileID", ""] call ALIVE_fnc_hashGet;
+        private _vid = [_vehicle, "profileID", ""] call ALIVE_fnc_hashGet;
+        ["pinStatic", [_vid, _eid]] call ALiVE_fnc_fobOps;
+        _result = [_vid, _eid];
+    };
+
+    case "pinStatic": {
+        if (isNil "ALIVE_profileStationary") then { ALIVE_profileStationary = [] call ALIVE_fnc_hashCreate };
+        { if (_x != "") then { [ALIVE_profileStationary, _x, true] call ALIVE_fnc_hashSet } } forEach _args;
+        _result = true;
+    };
+
+    // A static weapon's profiles gone: crew first, then the gun, each taking its spawned
+    // units and vehicle with it
+    case "removeStatic": {
+        _args params [["_vid", "", [""]], ["_eid", "", [""]]];
+        _result = false;
+        if (isNil "ALiVE_ProfileHandler") exitWith {};
+        {
+            private _pr = [ALiVE_ProfileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+            if (!isNil "_pr") then {
+                if (([_pr, "type", ""] call ALIVE_fnc_hashGet) == "entity") then { [_pr, "destroy"] call ALIVE_fnc_profileEntity } else { [_pr, "destroy"] call ALIVE_fnc_profileVehicle };
+                _result = true;
+            };
+            if (!isNil "ALIVE_profileStationary") then { [ALIVE_profileStationary, _x] call ALIVE_fnc_hashRem };
+        } forEach [_eid, _vid];
     };
 
     default {
