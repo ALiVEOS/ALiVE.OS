@@ -403,6 +403,26 @@ _saveServer = {
         };
     };
 
+    if (["ALiVE_SUP_FOB"] call ALiVE_fnc_isModuleAvailable) then {
+
+        private ["_result","_messages"];
+
+        if!(isNil "_admin") then {
+            [["updateList","ALiVE Player FOBs - Saving Data"],"ALIVE_fnc_mainTablet",_admin,false,false] spawn BIS_fnc_MP;
+        };
+
+        ["Exit - Server Save Player FOBs"] call ALiVE_fnc_dump;
+
+        _result = [] call ALiVE_fnc_fobSaveData;
+
+        if(!(isNil "_admin") && !(isNil "_result")) then {
+            _messages = _result select 1;
+            {
+                [["updateList",_x],"ALIVE_fnc_mainTablet",_admin,false,false] spawn BIS_fnc_MP;
+            } forEach _messages;
+        };
+    };
+
     if (["ALiVE_mil_c2istar"] call ALiVE_fnc_isModuleAvailable) then {
 
         private ["_results","_result","_messages"];

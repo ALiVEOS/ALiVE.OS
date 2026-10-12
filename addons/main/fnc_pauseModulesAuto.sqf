@@ -40,6 +40,7 @@ MOD(PAUSEMODULES_EH_DISCONNECTED) = addMissionEventHandler ["PlayerDisconnected"
                 "ALIVE_SYS_PROFILE",
                 "ALIVE_MIL_OPCOM",
                 "ALiVE_MIL_CQB",
+                "ALiVE_SUP_FOB",
                 "ALIVE_AMB_CIV_POPULATION"
             ] call ALiVE_fnc_pauseModule;
 
@@ -62,6 +63,7 @@ MOD(PAUSEMODULES_EH_CONNECTED) = addMissionEventHandler ["PlayerConnected", {
             "ALIVE_SYS_PROFILE",
             "ALIVE_MIL_OPCOM",
             "ALiVE_MIL_CQB",
+            "ALiVE_SUP_FOB",
             "ALIVE_AMB_CIV_POPULATION"
         ] call ALiVE_fnc_unPauseModule;
     };

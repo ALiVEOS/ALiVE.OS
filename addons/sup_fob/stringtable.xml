@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project name="ALiVE">
+    <Package name="sup_fob">
+        <Container name="Module">
+            <Key ID="STR_ALIVE_FOB">
+                <English>Player FOBs</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_COMMENT">
+                <English>Lets players deploy forward operating bases, build them up from a supply count, and hold them. Enemy AI Commanders can find and attack them, and a FOB left undefended can be taken.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_USAGE">
+                <English>Place one Player FOBs module anywhere. It serves every side that has players. Each FOB becomes an objective for its own side's AI Commander, if that side has one.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_YES">
+                <English>Yes</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_NO">
+                <English>No</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_DEBUG">
+                <English>Debug</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_DEBUG_COMMENT">
+                <English>Writes what the FOBs are doing to the RPT log.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_PERSISTENT">
+                <English>Persistent</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_PERSISTENT_COMMENT">
+                <English>Saves the FOBs, what's built at them and their supply with the mission, and puts them back when it's loaded. Needs an ALiVE Data module; without one they're kept in the server's profile instead.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_BUILD_RANGE">
+                <English>Build Range (m)</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_BUILD_RANGE_COMMENT">
+                <English>How far from a FOB's headquarters players can build. Also the size of the objective the FOB becomes.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_MIN_DISTANCE">
+                <English>Distance Between FOBs (m)</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_MIN_DISTANCE_COMMENT">
+                <English>A new FOB can't be deployed closer than this to another FOB of the same side.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_HUB_WEST">
+                <English>Headquarters Building (BLUFOR)</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_HUB_EAST">
+                <English>Headquarters Building (OPFOR)</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_HUB_GUER">
+                <English>Headquarters Building (Independent)</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_HUB_COMMENT">
+                <English>The class name of the building a deployed FOB starts with. Lose it and the FOB is damaged until it's repaired.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_CAP_TYPE">
+                <English>FOB Limit</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_CAP_TYPE_COMMENT">
+                <English>Dynamic: each side starts with Starting FOBs and earns one more for every Objectives Per FOB it holds, up to Most FOBs. Fixed: each side can have Fixed Limit FOBs.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_CAP_DYNAMIC">
+                <English>Dynamic (grows with ground held)</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_CAP_FIXED">
+                <English>Fixed</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_CAP">
+                <English>Fixed Limit</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_CAP_COMMENT">
+                <English>How many FOBs each side can have when FOB Limit is Fixed, from 1 to 12.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_CAP_BASE">
+                <English>Starting FOBs</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_CAP_BASE_COMMENT">
+                <English>With a dynamic limit, how many FOBs a side can have before it holds any ground.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_CAP_PER">
+                <English>Objectives Per FOB</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_CAP_PER_COMMENT">
+                <English>With a dynamic limit, a side earns one more FOB for each this many objectives it holds. FOBs themselves don't count.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_CAP_MAX">
+                <English>Most FOBs</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_CAP_MAX_COMMENT">
+                <English>With a dynamic limit, the most FOBs a side can ever have.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_SUPPLY_SOURCE">
+                <English>Supply Source</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_SUPPLY_SOURCE_COMMENT">
+                <English>What building and repairs are paid from. FOB supply: each FOB has its own supply count, topped up by Military Logistics. Force pool: the side's force pool, shared with the AI Commander and Recruitment. Supply crates: each FOB's count only rises when players unload supply crates at it.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_SUPPLY_FOBPOOL">
+                <English>FOB supply</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_SUPPLY_FORCEPOOL">
+                <English>Force pool</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_SUPPLY_CRATES">
+                <English>Supply crates</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_SUPPLY_INITIAL">
+                <English>Starting Supply</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_SUPPLY_INITIAL_COMMENT">
+                <English>The supply a new FOB starts with (FOB supply and supply crates).</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_SUPPLY_TRICKLE">
+                <English>Supply Per Minute</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_SUPPLY_TRICKLE_COMMENT">
+                <English>Supply each FOB gains every minute on its own, with FOB supply. 0 for none.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_SUPPLY_CAP_T1">
+                <English>Supply Limit (Tier 1)</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_SUPPLY_CAP_T2">
+                <English>Supply Limit (Tier 2)</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_SUPPLY_CAP_T3">
+                <English>Supply Limit (Tier 3)</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_SUPPLY_CAP_COMMENT">
+                <English>The most supply a FOB of this tier can hold.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_COST_SCALE">
+                <English>Cost Multiplier</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_COST_SCALE_COMMENT">
+                <English>Every build cost is multiplied by this. 0.5 halves them, 2 doubles them.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_SAVE_INTERVAL">
+                <English>Save Interval (s)</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_SAVE_INTERVAL_COMMENT">
+                <English>After a change, the FOBs are saved at most this often. An autosave or SERVER SAVE AND EXIT saves them straight away.</English>
+            </Key>
+        </Container>
+    </Package>
+</Project>
