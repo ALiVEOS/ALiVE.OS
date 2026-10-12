@@ -2,6 +2,28 @@ params ["_side","_support","_callsign"];
 
 switch (_support) do
 {
+    // ground transport (#690): its order loop stops and it isn't replaced; off every side's list
+    case "GROUND" :
+    {
+        private _entry = (NEO_radioLogic getVariable [format ["NEO_radioGroundArray_%1", _side], []]) param [(NEO_radioLogic getVariable [format ["NEO_radioGroundArray_%1", _side], []]) findIf { (_x select 2) == _callsign }, []];
+        if (_entry isEqualTo []) exitWith { ["Support with callsign %1 not found in Ground transport units", _callsign] call ALiVE_fnc_Dump };
+        _entry params ["_vehicle", "_group"];
+        // stop its order loop first: deleting the vehicle would otherwise end it as a loss and respawn it.
+        // The handle is kept on the vehicle (server-side): the broadcast list can't carry one.
+        private _brain = _vehicle getVariable ["NEO_groundBrain", scriptNull];
+        if (_brain isEqualType scriptNull && {!isNull _brain}) then { terminate _brain };
+        _vehicle setVariable ["NEO_groundRemoved", true, true];
+        _vehicle setVariable ["NEO_radioGroundRun", -1, true];
+        {
+            private _key = format ["NEO_radioGroundArray_%1", _x];
+            private _list = (NEO_radioLogic getVariable [_key, []]) select { (_x select 0) != _vehicle };
+            NEO_radioLogic setVariable [_key, _list, true];
+        } forEach [WEST, EAST, RESISTANCE, CIVILIAN];
+        { if (!isPlayer _x) then { deleteVehicle _x } } forEach (crew _vehicle);
+        deleteVehicle _vehicle;
+        _group call ALiVE_fnc_DeleteGroupRemote;
+    };
+
     case "TRANSPORT" :
     {
         private _transportArrayString = format ["NEO_radioTrasportArray_%1", _side];

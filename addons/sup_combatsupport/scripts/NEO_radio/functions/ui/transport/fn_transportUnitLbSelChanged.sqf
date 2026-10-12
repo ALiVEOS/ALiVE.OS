@@ -66,6 +66,9 @@ _transportSmokeNotFoundButton = _display displayCtrl 655577;
 
 if (_chopper getVariable "NEO_radioTrasportUnitStatus" == "SMOKECONF") then
 {
+        // the ground transport (#690) uses these two buttons for its patrol points: give them back their own captions
+        _transportSmokeFoundButton ctrlSetText localize "STR_ALIVE_CS_UI_CONFIRM_SMOKE";
+        _transportSmokeNotFoundButton ctrlSetText localize "STR_ALIVE_CS_UI_NEW_SMOKE";
         _transportSmokeFoundButton ctrlEnable true; _transportSmokeFoundButton ctrlSetPosition [0.519796 * _uiW + _uiX, 0.6176 * _uiH + _uiY, (0.216525 * _uiW), (0.028 * _uiH)]; _transportSmokeFoundButton ctrlCommit 0;
         _transportSmokeNotFoundButton ctrlEnable true; _transportSmokeNotFoundButton ctrlSetPosition [0.519796 * _uiW + _uiX, 0.584 * _uiH + _uiY, (0.216525 * _uiW), (0.028 * _uiH)]; _transportSmokeNotFoundButton ctrlCommit 0;
 }

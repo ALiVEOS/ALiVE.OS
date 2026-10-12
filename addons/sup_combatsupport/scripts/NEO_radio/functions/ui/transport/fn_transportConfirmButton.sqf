@@ -81,6 +81,8 @@ if (_task == "SLINGLOAD" && !isNull getSlingLoad _chopper || _task == "UNHOOK" &
 
 //New Task
 _chopper setVariable ["NEO_radioTransportNewTask", _arguments, true];
+// its destination stays on this player's map while it flies the order
+if (toUpper _task != "RTB") then { [_chopper, _arguments, "NEO_radioTrasportUnitStatus", [[_pos, _callsign]]] call NEO_fnc_supportOrderMarkers };
 
 //Interface
 [lbCurSel 655565] call NEO_fnc_radioRefreshUi;

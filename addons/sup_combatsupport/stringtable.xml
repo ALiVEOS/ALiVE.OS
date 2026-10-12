@@ -2257,4 +2257,400 @@
     <Portuguese>Logística: falhou, tentando de novo...</Portuguese>
     <Russian>Снабжение: сбой, повторная попытка...</Russian>
 </Key>
+<Key ID="STR_ALIVE_GROUND_LIMIT">
+    <English>Ground Transport Respawn Limit</English>
+    <Chinesesimp>地面运输重生上限</Chinesesimp>
+    <Chinese>地面運輸重生上限</Chinese>
+    <Spanish>Límite de reapariciones del transporte terrestre</Spanish>
+    <French>Limite de réapparition du transport terrestre</French>
+    <Portuguese>Limite de reaparecimento do transporte terrestre</Portuguese>
+    <Russian>Лимит возрождений наземного транспорта</Russian>
+</Key>
+<Key ID="STR_ALIVE_GROUND_LIMIT_COMMENT">
+    <English>How many times a lost ground transport is replaced. Leave blank for no limit.</English>
+    <Chinesesimp>损失的地面运输可被替换的次数。留空表示无限制。</Chinesesimp>
+    <Chinese>損失的地面運輸可被替換的次數。留空表示無限制。</Chinese>
+    <Spanish>Cuántas veces se reemplaza un transporte terrestre perdido. Déjalo vacío para no tener límite.</Spanish>
+    <French>Combien de fois un transport terrestre perdu est remplacé. Laissez vide pour aucune limite.</French>
+    <Portuguese>Quantas vezes um transporte terrestre perdido é substituído. Deixe vazio para sem limite.</Portuguese>
+    <Russian>Сколько раз заменяется потерянный наземный транспорт. Оставьте пустым — без ограничения.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_OUT_OF_GROUND">
+    <English>All units! We are out of ground transport</English>
+    <Chinesesimp>全体单位！我们已没有地面运输</Chinesesimp>
+    <Chinese>全體單位！我們已沒有地面運輸</Chinese>
+    <Spanish>¡A todas las unidades! Nos hemos quedado sin transporte terrestre</Spanish>
+    <French>À toutes les unités ! Nous n'avons plus de transport terrestre</French>
+    <Portuguese>Todas as unidades! Estamos sem transporte terrestre</Portuguese>
+    <Russian>Всем подразделениям! Наземного транспорта больше нет</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_GR_ARRIVED">
+    <English>%1 is at %2, waiting for orders. Over.</English>
+    <Chinesesimp>%1 已到达 %2，等待命令。请回答。</Chinesesimp>
+    <Chinese>%1 已到達 %2，等待命令。請回答。</Chinese>
+    <Spanish>%1 está en %2, a la espera de órdenes. Cambio.</Spanish>
+    <French>%1 est en %2, en attente d'ordres. À vous.</French>
+    <Portuguese>%1 está em %2, aguardando ordens. Câmbio.</Portuguese>
+    <Russian>%1 в квадрате %2, ждём приказа. Приём.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_GR_WAITING">
+    <English>%1 is at %2. Load up, then give us our next order. Over.</English>
+    <Chinesesimp>%1 已到达 %2。请上车，然后下达下一个命令。请回答。</Chinesesimp>
+    <Chinese>%1 已到達 %2。請上車，然後下達下一個命令。請回答。</Chinese>
+    <Spanish>%1 está en %2. Subid y dadnos la siguiente orden. Cambio.</Spanish>
+    <French>%1 est en %2. Embarquez, puis donnez-nous l'ordre suivant. À vous.</French>
+    <Portuguese>%1 está em %2. Embarquem e deem a próxima ordem. Câmbio.</Portuguese>
+    <Russian>%1 в квадрате %2. Грузитесь и дайте следующий приказ. Приём.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_GR_HOME">
+    <English>%1 is back at base. Out.</English>
+    <Chinesesimp>%1 已返回基地。完毕。</Chinesesimp>
+    <Chinese>%1 已返回基地。完畢。</Chinese>
+    <Spanish>%1 ha vuelto a la base. Corto.</Spanish>
+    <French>%1 est de retour à la base. Terminé.</French>
+    <Portuguese>%1 está de volta à base. Desligo.</Portuguese>
+    <Russian>%1 вернулся на базу. Конец связи.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_GR_PATROL_START">
+    <English>%1 patrolling the road between %2 and %3. Out.</English>
+    <Chinesesimp>%1 正在 %2 和 %3 之间巡逻道路。完毕。</Chinesesimp>
+    <Chinese>%1 正在 %2 和 %3 之間巡邏道路。完畢。</Chinese>
+    <Spanish>%1 patrulla la carretera entre %2 y %3. Corto.</Spanish>
+    <French>%1 patrouille la route entre %2 et %3. Terminé.</French>
+    <Portuguese>%1 patrulhando a estrada entre %2 e %3. Desligo.</Portuguese>
+    <Russian>%1 патрулирует дорогу между %2 и %3. Конец связи.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_GR_STUCK">
+    <English>%1 is stuck at %2 and can't get any closer. Over.</English>
+    <Chinesesimp>%1 被困在 %2，无法再靠近。请回答。</Chinesesimp>
+    <Chinese>%1 被困在 %2，無法再靠近。請回答。</Chinese>
+    <Spanish>%1 está atascado en %2 y no puede acercarse más. Cambio.</Spanish>
+    <French>%1 est bloqué en %2 et ne peut pas approcher davantage. À vous.</French>
+    <Portuguese>%1 está preso em %2 e não consegue chegar mais perto. Câmbio.</Portuguese>
+    <Russian>%1 застрял в квадрате %2 и ближе подъехать не может. Приём.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_GR_IMMOBILE">
+    <English>%1 can't move. We need repairs. Over.</English>
+    <Chinesesimp>%1 无法移动。需要维修。请回答。</Chinesesimp>
+    <Chinese>%1 無法移動。需要維修。請回答。</Chinese>
+    <Spanish>%1 no puede moverse. Necesitamos reparaciones. Cambio.</Spanish>
+    <French>%1 ne peut plus avancer. Il nous faut des réparations. À vous.</French>
+    <Portuguese>%1 não consegue se mover. Precisamos de reparos. Câmbio.</Portuguese>
+    <Russian>%1 не может двигаться. Нужен ремонт. Приём.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_GR_MOBILE">
+    <English>%1 is moving again. Out.</English>
+    <Chinesesimp>%1 已恢复行驶。完毕。</Chinesesimp>
+    <Chinese>%1 已恢復行駛。完畢。</Chinese>
+    <Spanish>%1 vuelve a moverse. Corto.</Spanish>
+    <French>%1 roule de nouveau. Terminé.</French>
+    <Portuguese>%1 está se movendo de novo. Desligo.</Portuguese>
+    <Russian>%1 снова на ходу. Конец связи.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_GR_RESUPPLYING">
+    <English>%1 is being resupplied and stays put until that's done. Out.</English>
+    <Chinesesimp>%1 正在补给，完成前原地待命。完毕。</Chinesesimp>
+    <Chinese>%1 正在補給，完成前原地待命。完畢。</Chinese>
+    <Spanish>%1 se está reabasteciendo y no se mueve hasta terminar. Corto.</Spanish>
+    <French>%1 est en cours de ravitaillement et ne bouge pas avant la fin. Terminé.</French>
+    <Portuguese>%1 está sendo reabastecido e fica parado até terminar. Desligo.</Portuguese>
+    <Russian>%1 на пополнении и стоит, пока не закончим. Конец связи.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_GR_DEVICE_FOUND">
+    <English>%1 has spotted a device on the road at %2. Stopping to deal with it. Out.</English>
+    <Chinesesimp>%1 在 %2 的道路上发现一个爆炸装置。停车处理。完毕。</Chinesesimp>
+    <Chinese>%1 在 %2 的道路上發現一個爆炸裝置。停車處理。完畢。</Chinese>
+    <Spanish>%1 ha detectado un artefacto en la carretera en %2. Nos detenemos para ocuparnos. Corto.</Spanish>
+    <French>%1 a repéré un engin sur la route en %2. On s'arrête pour s'en occuper. Terminé.</French>
+    <Portuguese>%1 avistou um artefato na estrada em %2. Parando para cuidar disso. Desligo.</Portuguese>
+    <Russian>%1 обнаружил устройство на дороге в квадрате %2. Останавливаемся, чтобы разобраться. Конец связи.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_GR_DISARMED">
+    <English>%1: device made safe. Moving on. Out.</English>
+    <Chinesesimp>%1：装置已拆除。继续前进。完毕。</Chinesesimp>
+    <Chinese>%1：裝置已拆除。繼續前進。完畢。</Chinese>
+    <Spanish>%1: artefacto neutralizado. Seguimos. Corto.</Spanish>
+    <French>%1 : engin neutralisé. On continue. Terminé.</French>
+    <Portuguese>%1: artefato neutralizado. Seguindo. Desligo.</Portuguese>
+    <Russian>%1: устройство обезврежено. Продолжаем движение. Конец связи.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_GR_DETONATED">
+    <English>%1: it went off! Checking our damage. Out.</English>
+    <Chinesesimp>%1：它爆炸了！正在检查损伤。完毕。</Chinesesimp>
+    <Chinese>%1：它爆炸了！正在檢查損傷。完畢。</Chinese>
+    <Spanish>%1: ¡ha estallado! Revisando daños. Corto.</Spanish>
+    <French>%1 : ça a sauté ! On vérifie les dégâts. Terminé.</French>
+    <Portuguese>%1: explodiu! Verificando os danos. Desligo.</Portuguese>
+    <Russian>%1: сработало! Проверяем повреждения. Конец связи.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_GRTASK_PICKUP">
+    <English>PICKUP</English>
+    <Chinesesimp>接人</Chinesesimp>
+    <Chinese>接人</Chinese>
+    <Spanish>RECOGIDA</Spanish>
+    <French>RÉCUPÉRATION</French>
+    <Portuguese>EMBARQUE</Portuguese>
+    <Russian>ПОДБОР</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_GRTASK_MOVE">
+    <English>MOVE</English>
+    <Chinesesimp>移动</Chinesesimp>
+    <Chinese>移動</Chinese>
+    <Spanish>MOVERSE</Spanish>
+    <French>DÉPLACEMENT</French>
+    <Portuguese>MOVER</Portuguese>
+    <Russian>ПЕРЕМЕЩЕНИЕ</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_GRTASK_PATROL">
+    <English>ROAD PATROL</English>
+    <Chinesesimp>道路巡逻</Chinesesimp>
+    <Chinese>道路巡邏</Chinese>
+    <Spanish>PATRULLA DE CARRETERA</Spanish>
+    <French>PATROUILLE ROUTIÈRE</French>
+    <Portuguese>PATRULHA DE ESTRADA</Portuguese>
+    <Russian>ПАТРУЛИРОВАНИЕ ДОРОГИ</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_GR_DESC_PICKUP">
+    <English>Drives to the marked point and waits there for you to board, until you give it the next order.</English>
+    <Chinesesimp>驶往标记点并在那里等你上车，直到你下达下一个命令。</Chinesesimp>
+    <Chinese>駛往標記點並在那裡等你上車，直到你下達下一個命令。</Chinese>
+    <Spanish>Va al punto marcado y espera a que subáis, hasta la siguiente orden.</Spanish>
+    <French>Se rend au point marqué et attend que vous embarquiez, jusqu'à l'ordre suivant.</French>
+    <Portuguese>Vai ao ponto marcado e espera vocês embarcarem, até a próxima ordem.</Portuguese>
+    <Russian>Едет к отмеченной точке и ждёт посадки до следующего приказа.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_GR_DESC_MOVE">
+    <English>Drives to the marked point along the roads and waits there for orders.</English>
+    <Chinesesimp>沿道路驶往标记点并在那里等待命令。</Chinesesimp>
+    <Chinese>沿道路駛往標記點並在那裡等待命令。</Chinese>
+    <Spanish>Va al punto marcado por carretera y espera órdenes allí.</Spanish>
+    <French>Se rend au point marqué par la route et y attend les ordres.</French>
+    <Portuguese>Vai ao ponto marcado pelas estradas e aguarda ordens lá.</Portuguese>
+    <Russian>Едет по дорогам к отмеченной точке и ждёт приказа.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_GR_DESC_PATROL">
+    <English>Drives back and forth between point A and point B along the roads until you give it another order. Set both points on the map.</English>
+    <Chinesesimp>沿道路在 A 点和 B 点之间往返，直到你下达其他命令。请在地图上设置两个点。</Chinesesimp>
+    <Chinese>沿道路在 A 點和 B 點之間往返，直到你下達其他命令。請在地圖上設定兩個點。</Chinese>
+    <Spanish>Va y viene por carretera entre el punto A y el punto B hasta otra orden. Marca ambos puntos en el mapa.</Spanish>
+    <French>Fait l'aller-retour par la route entre le point A et le point B jusqu'à un autre ordre. Placez les deux points sur la carte.</French>
+    <Portuguese>Vai e volta pelas estradas entre o ponto A e o ponto B até outra ordem. Marque os dois pontos no mapa.</Portuguese>
+    <Russian>Ездит по дорогам между точками A и B до другого приказа. Отметьте обе точки на карте.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_GR_POINT_A">
+    <English>Set point A</English>
+    <Chinesesimp>设置 A 点</Chinesesimp>
+    <Chinese>設定 A 點</Chinese>
+    <Spanish>Fijar punto A</Spanish>
+    <French>Placer le point A</French>
+    <Portuguese>Definir ponto A</Portuguese>
+    <Russian>Задать точку A</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_GR_POINT_B">
+    <English>Set point B</English>
+    <Chinesesimp>设置 B 点</Chinesesimp>
+    <Chinese>設定 B 點</Chinese>
+    <Spanish>Fijar punto B</Spanish>
+    <French>Placer le point B</French>
+    <Portuguese>Definir ponto B</Portuguese>
+    <Russian>Задать точку B</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_GR_CLICK_A">
+    <English>Click the map to set point A.</English>
+    <Chinesesimp>点击地图设置 A 点。</Chinesesimp>
+    <Chinese>點擊地圖設定 A 點。</Chinese>
+    <Spanish>Haz clic en el mapa para fijar el punto A.</Spanish>
+    <French>Cliquez sur la carte pour placer le point A.</French>
+    <Portuguese>Clique no mapa para definir o ponto A.</Portuguese>
+    <Russian>Щёлкните по карте, чтобы задать точку A.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_GR_CLICK_B">
+    <English>Click the map to set point B.</English>
+    <Chinesesimp>点击地图设置 B 点。</Chinesesimp>
+    <Chinese>點擊地圖設定 B 點。</Chinese>
+    <Spanish>Haz clic en el mapa para fijar el punto B.</Spanish>
+    <French>Cliquez sur la carte pour placer le point B.</French>
+    <Portuguese>Clique no mapa para definir o ponto B.</Portuguese>
+    <Russian>Щёлкните по карте, чтобы задать точку B.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_GR_ON_PATROL">
+    <English>Unit is on road patrol</English>
+    <Chinesesimp>单位正在道路巡逻</Chinesesimp>
+    <Chinese>單位正在道路巡邏</Chinese>
+    <Spanish>La unidad está patrullando la carretera</Spanish>
+    <French>L'unité est en patrouille routière</French>
+    <Portuguese>A unidade está em patrulha de estrada</Portuguese>
+    <Russian>Подразделение патрулирует дорогу</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_GR_IMMOBILE">
+    <English>Unit can't move and needs repairs</English>
+    <Chinesesimp>单位无法移动，需要维修</Chinesesimp>
+    <Chinese>單位無法移動，需要維修</Chinese>
+    <Spanish>La unidad no puede moverse y necesita reparaciones</Spanish>
+    <French>L'unité ne peut plus avancer et doit être réparée</French>
+    <Portuguese>A unidade não consegue se mover e precisa de reparos</Portuguese>
+    <Russian>Подразделение не может двигаться, нужен ремонт</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_MARKER_GROUND">
+    <English>Ground transport</English>
+    <Chinesesimp>地面运输</Chinesesimp>
+    <Chinese>地面運輸</Chinese>
+    <Spanish>Transporte terrestre</Spanish>
+    <French>Transport terrestre</French>
+    <Portuguese>Transporte terrestre</Portuguese>
+    <Russian>Наземный транспорт</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_GR_ORDER_PICKUP">
+    <English>%1, %2 requesting pickup at %3. Over.</English>
+    <Chinesesimp>%1，%2 请求在 %3 接人。请回答。</Chinesesimp>
+    <Chinese>%1，%2 請求在 %3 接人。請回答。</Chinese>
+    <Spanish>%1, %2 solicita recogida en %3. Cambio.</Spanish>
+    <French>%1, %2 demande une récupération en %3. À vous.</French>
+    <Portuguese>%1, %2 solicita embarque em %3. Câmbio.</Portuguese>
+    <Russian>%1, %2 запрашивает подбор в квадрате %3. Приём.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_GR_ORDER_MOVE">
+    <English>%1, %2: move to %3 and wait for orders. Over.</English>
+    <Chinesesimp>%1，%2：前往 %3 待命。请回答。</Chinesesimp>
+    <Chinese>%1，%2：前往 %3 待命。請回答。</Chinese>
+    <Spanish>%1, %2: muévete a %3 y espera órdenes. Cambio.</Spanish>
+    <French>%1, %2 : rendez-vous en %3 et attendez les ordres. À vous.</French>
+    <Portuguese>%1, %2: vá para %3 e aguarde ordens. Câmbio.</Portuguese>
+    <Russian>%1, %2: выдвигайтесь в квадрат %3 и ждите приказа. Приём.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_GR_ORDER_PATROL">
+    <English>%1, %2: patrol the road between %3 and %4. Over.</English>
+    <Chinesesimp>%1，%2：在 %3 和 %4 之间巡逻道路。请回答。</Chinesesimp>
+    <Chinese>%1，%2：在 %3 和 %4 之間巡邏道路。請回答。</Chinese>
+    <Spanish>%1, %2: patrulla la carretera entre %3 y %4. Cambio.</Spanish>
+    <French>%1, %2 : patrouillez la route entre %3 et %4. À vous.</French>
+    <Portuguese>%1, %2: patrulhe a estrada entre %3 e %4. Câmbio.</Portuguese>
+    <Russian>%1, %2: патрулируйте дорогу между %3 и %4. Приём.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_WORD_GROUND_NONE">
+    <English>waiting for orders</English>
+    <Chinesesimp>等待命令</Chinesesimp>
+    <Chinese>等待命令</Chinese>
+    <Spanish>a la espera de órdenes</Spanish>
+    <French>en attente d'ordres</French>
+    <Portuguese>aguardando ordens</Portuguese>
+    <Russian>ждём приказа</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_WORD_GROUND_MISSION">
+    <English>on the move</English>
+    <Chinesesimp>行进中</Chinesesimp>
+    <Chinese>行進中</Chinese>
+    <Spanish>en marcha</Spanish>
+    <French>en route</French>
+    <Portuguese>em movimento</Portuguese>
+    <Russian>в движении</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_WORD_GROUND_RTB">
+    <English>returning to base</English>
+    <Chinesesimp>正在返回基地</Chinesesimp>
+    <Chinese>正在返回基地</Chinese>
+    <Spanish>regresando a la base</Spanish>
+    <French>retour à la base</French>
+    <Portuguese>retornando à base</Portuguese>
+    <Russian>возвращаемся на базу</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_WORD_GROUND_PATROL">
+    <English>on road patrol</English>
+    <Chinesesimp>道路巡逻中</Chinesesimp>
+    <Chinese>道路巡邏中</Chinese>
+    <Spanish>patrullando la carretera</Spanish>
+    <French>en patrouille routière</French>
+    <Portuguese>em patrulha de estrada</Portuguese>
+    <Russian>патрулируем дорогу</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_WORD_GROUND_CARGO">
+    <English>waiting for passengers</English>
+    <Chinesesimp>等待乘客</Chinesesimp>
+    <Chinese>等待乘客</Chinese>
+    <Spanish>esperando pasajeros</Spanish>
+    <French>en attente de passagers</French>
+    <Portuguese>aguardando passageiros</Portuguese>
+    <Russian>ждём пассажиров</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_WORD_GROUND_IMMOBILE">
+    <English>can't move, needs repairs</English>
+    <Chinesesimp>无法移动，需要维修</Chinesesimp>
+    <Chinese>無法移動，需要維修</Chinese>
+    <Spanish>sin poder moverse, necesita reparaciones</Spanish>
+    <French>immobilisé, réparations nécessaires</French>
+    <Portuguese>sem poder se mover, precisa de reparos</Portuguese>
+    <Russian>не можем двигаться, нужен ремонт</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_WORD_GROUND_KILLED">
+    <English>combat ineffective</English>
+    <Chinesesimp>丧失战斗力</Chinesesimp>
+    <Chinese>喪失戰鬥力</Chinese>
+    <Spanish>fuera de combate</Spanish>
+    <French>hors de combat</French>
+    <Portuguese>fora de combate</Portuguese>
+    <Russian>небоеспособны</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_WORD_GROUND_DISARMING">
+    <English>disarming a device</English>
+    <Chinesesimp>正在拆除爆炸装置</Chinesesimp>
+    <Chinese>正在拆除爆炸裝置</Chinese>
+    <Spanish>desactivando un artefacto</Spanish>
+    <French>désamorçage d'un engin</French>
+    <Portuguese>desarmando um artefato</Portuguese>
+    <Russian>обезвреживаем устройство</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_GR_SPEED">
+    <English>%1, drive at %2 speed. Out.</English>
+    <Chinesesimp>%1，%2行驶。完毕。</Chinesesimp>
+    <Chinese>%1，%2行駛。完畢。</Chinese>
+    <Spanish>%1, conduce a velocidad %2. Corto.</Spanish>
+    <French>%1, roulez à vitesse %2. Terminé.</French>
+    <Portuguese>%1, dirija em velocidade %2. Desligo.</Portuguese>
+    <Russian>%1, двигайтесь на %2 скорости. Конец связи.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_GR_MARKER_A">
+    <English>Point A</English>
+    <Chinesesimp>A 点</Chinesesimp>
+    <Chinese>A 點</Chinese>
+    <Spanish>Punto A</Spanish>
+    <French>Point A</French>
+    <Portuguese>Ponto A</Portuguese>
+    <Russian>Точка A</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_GR_MARKER_B">
+    <English>Point B</English>
+    <Chinesesimp>B 点</Chinesesimp>
+    <Chinese>B 點</Chinese>
+    <Spanish>Punto B</Spanish>
+    <French>Point B</French>
+    <Portuguese>Ponto B</Portuguese>
+    <Russian>Точка B</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_ORDERMARKERS">
+    <English>Keep Order Markers</English>
+    <Chinesesimp>保留命令标记</Chinesesimp>
+    <Chinese>保留命令標記</Chinese>
+    <Spanish>Mantener marcadores de órdenes</Spanish>
+    <French>Garder les marqueurs d'ordres</French>
+    <Portuguese>Manter marcadores de ordens</Portuguese>
+    <Russian>Сохранять маркеры приказов</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_ORDERMARKERS_COMMENT">
+    <English>A transport's destination, and both ends of a ground transport's road patrol, stay on the ordering player's map while the order runs. They go when it finishes, is replaced or the vehicle is lost.</English>
+    <Chinesesimp>运输载具的目的地以及地面运输道路巡逻的两端，在命令执行期间保留在下令玩家的地图上。命令完成、被替换或载具损失时移除。</Chinesesimp>
+    <Chinese>運輸載具的目的地以及地面運輸道路巡邏的兩端，在命令執行期間保留在下令玩家的地圖上。命令完成、被替換或載具損失時移除。</Chinese>
+    <Spanish>El destino de un transporte y los dos extremos de la patrulla de un transporte terrestre se quedan en el mapa del jugador que dio la orden mientras dura. Se quitan cuando termina, se sustituye o se pierde el vehículo.</Spanish>
+    <French>La destination d'un transport, et les deux extrémités de la patrouille routière d'un transport terrestre, restent sur la carte du joueur qui a donné l'ordre pendant son exécution. Ils disparaissent quand il se termine, est remplacé ou que le véhicule est perdu.</French>
+    <Portuguese>O destino de um transporte e as duas pontas da patrulha de um transporte terrestre ficam no mapa do jogador que deu a ordem enquanto ela dura. Somem quando termina, é substituída ou o veículo é perdido.</Portuguese>
+    <Russian>Пункт назначения транспорта и оба конца маршрута патруля наземного транспорта остаются на карте отдавшего приказ игрока, пока приказ выполняется. Они исчезают, когда приказ выполнен, заменён или машина потеряна.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_GR_WAIT_CARGO">
+    <English>Unit is waiting for passengers to board</English>
+    <Chinesesimp>单位正在等待人员上车</Chinesesimp>
+    <Chinese>單位正在等待人員上車</Chinese>
+    <Spanish>La unidad espera a que suban los pasajeros</Spanish>
+    <French>L'unité attend que les passagers embarquent</French>
+    <Portuguese>A unidade aguarda o embarque dos passageiros</Portuguese>
+    <Russian>Подразделение ждёт посадки пассажиров</Russian>
+</Key>
 </Container></Package></Project>

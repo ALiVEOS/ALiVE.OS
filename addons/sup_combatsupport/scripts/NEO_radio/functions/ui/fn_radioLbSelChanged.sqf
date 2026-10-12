@@ -91,6 +91,9 @@ private _artyControls = [_artyUnitLb, _artyUnitText, _artyHelpUnitText, _artyCon
 // order and cover or intercept the active category's rows.
 { _x ctrlShow false } forEach (_transportControls + _casControls + _artyControls);
 { (_x select 0) ctrlSetEventHandler [(_x select 1), ""] } forEach [[_map, "MouseButtonDown"]];
+// The transport panel's lists and combos are shared with the ground transport (#690): drop whichever
+// panel's handlers are on them, or filling them for the new panel would run the old one's code
+{ _x ctrlSetEventHandler ["LBSelChanged", ""] } forEach [_transportTaskLb, _transportHeightCombo, _transportSpeedCombo, _transportRoeCombo];
 uinamespace setVariable ["NEO_radioMapClickArmed", false]; // #698 map-click handler just cleared - mirror for the terrain toggle
 { _x ctrlSetPosition [1, 1, (_uiW / 1000), (_uiH / 1000)]; _x ctrlCommit 0; } forEach [_transportConfirmButton, _transportBaseButton, _transportSmokeFoundButton, _transportSmokeNotFoundButton, _transportSlider, _transportSliderText, _casConfirmButton, _casBaseButton, _casFlyHeightSlider, _casRadiusSlider, _artyConfirmButton, _artyMoveButton, _artyDontMoveButton, _artyDispersionSlider, _artyBaseButton, _artyRateDelaySlider, _transportHeightCombo, _transportSpeedCombo, _transportRoeCombo, _objectLb];
 { _x ctrlSetText "" } forEach [_transportUnitText, _transportTaskText, _transportHelpUnitText, _transportHelpTaskText, _transportSliderText, _casUnitText, _casHelpUnitText, _casTaskText, _casROEText,_casTaskHelpText, _casFlyHeighSliderText, _casRadiusSliderText, _casAttackRunText, _artyUnitText, _artyHelpUnitText, _artyOrdnanceTypeText, _artyRateOfFireText, _artyRoundCountText, _artyDispersionText, _artyRateDelayText, _transportComboText];
@@ -105,6 +108,9 @@ _sitRepButton ctrlEnable false; // no unit selected yet - each unit handler re-e
 //Markers
 { uinamespace setVariable [_x, nil] } forEach ["NEO_transportMarkerCreated", "NEO_casMarkerCreated", "NEO_artyMarkerCreated"];
 { _x setMarkerAlphaLocal 0 } forEach (_artyMarkers + [_supportMarker]);
+// the ground transport's patrol point B (#690)
+if ((NEO_radioLogic getVariable ["NEO_supportGroundMarkerB", ""]) != "") then { (NEO_radioLogic getVariable "NEO_supportGroundMarkerB") setMarkerAlphaLocal 0 };
+uinamespace setVariable ["NEO_groundPointB", nil];
 [[], 0] call NEO_fnc_supportDrawRing; // clear the area-of-influence ring when switching support type
 
 switch (toUpper (_lb lbText _index)) do
@@ -154,6 +160,31 @@ switch (toUpper (_lb lbText _index)) do
             _transportSmokeNotFoundButton ctrlSetEventHandler ["ButtonClick", "_this call NEO_fnc_transportSmokeNotFoundButton"];
 
             if (count _transportArray < 2) then { lbSetCurSel [655568, 0] };
+        };
+    };
+
+    // Ground transport (#690): the transport panel's controls, driven by NEO_fnc_groundPanel
+    case "GROUND" :
+    {
+        { _x ctrlShow true } forEach _transportControls;
+        private _groundArray = NEO_radioLogic getVariable [format ["NEO_radioGroundArray_%1", playerSide], []];
+        if (count _groundArray > 0) then
+        {
+            { _x ctrlSetBackgroundColor _listBackground } forEach [_transportUnitLb, _transportTaskLb];
+            _transportUnitText ctrlSetStructuredText parseText format ["<t color='#B4B4B4' size='0.8' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_UNIT"];
+            _transportHelpUnitText ctrlSetStructuredText parseText format ["<t color='#FFFF00' size='0.7' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_SELECT_UNIT"];
+            _transportConfirmButton ctrlEnable false; _transportConfirmButton ctrlSetPosition [0.519796 * _uiW + _uiX, 0.6848 * _uiH + _uiY, (0.216525 * _uiW), (0.028 * _uiH)]; _transportConfirmButton ctrlCommit 0;
+            _transportBaseButton ctrlEnable false; _transportBaseButton ctrlSetPosition [0.519796 * _uiW + _uiX, 0.6512 * _uiH + _uiY, (0.216525 * _uiW), (0.028 * _uiH)]; _transportBaseButton ctrlCommit 0;
+            _transportUnitLb ctrlEnable true;
+            lbClear _transportUnitLb;
+            {
+                _transportUnitLb lbAdd (_x select 2);
+                _transportUnitLb lbSetPicture [_forEachIndex, (getText (configFile >> "CfgVehicles" >> typeOf (_x select 0) >> "picture"))];
+            } forEach _groundArray;
+            _transportUnitLb ctrlSetEventHandler ["LBSelChanged", "['unit', _this] call NEO_fnc_groundPanel"];
+            _transportConfirmButton ctrlSetEventHandler ["ButtonClick", "['confirm'] call NEO_fnc_groundPanel"];
+            _transportBaseButton ctrlSetEventHandler ["ButtonClick", "['base'] call NEO_fnc_groundPanel"];
+            if (count _groundArray < 2) then { lbSetCurSel [655568, 0] };
         };
     };
 

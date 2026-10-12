@@ -90,6 +90,14 @@ private _seen = createHashMap;
                     _class isKindOf "Helicopter"
                     && {getNumber (_cfg >> "transportSoldier") > 0 || {getNumber (_cfg >> "slingLoadMaxCargoMass") > 0}}
                 };
+                // ground transport (#690): a land vehicle that carries passengers, not artillery
+                case "ground": {
+                    _class isKindOf "LandVehicle"
+                    && {!(_class isKindOf "StaticWeapon")}
+                    && {getNumber (_cfg >> "transportSoldier") > 0}
+                    && {getNumber (_cfg >> "side") in [0, 1, 2]}
+                    && {!([_cfg, _class] call _fnc_isArtillery)}
+                };
                 default { false };
             };
 

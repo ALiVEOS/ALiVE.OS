@@ -60,7 +60,8 @@ _grp setCombatMode "YELLOW";
             };
         } forEach (_chopper nearEntities [["Man","Car","Tank","Air","Ship"], 800]);
 
-        if (!isNull _t && {_chopper getVariable ["NEO_radioGunnerDefendOn", true]}) then {
+        // a ground transport (#690) holds fire while its crew deals with an IED or mine
+        if (!isNull _t && {_chopper getVariable ["NEO_radioGunnerDefendOn", true]} && {!(_chopper getVariable ["NEO_groundDefendPaused", false])}) then {
             _grp reveal [_t, 4];
             { _x doTarget _t; _x doFire _t } forEach _gunners;
         };

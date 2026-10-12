@@ -86,6 +86,7 @@ class CfgVehicles {
                         };
                         class combatsupport_casrespawnlimit : Edit { property = "ALiVE_sup_combatsupport_combatsupport_casrespawnlimit"; displayName = "$STR_ALIVE_CAS_LIMIT"; tooltip = "$STR_ALIVE_CAS_LIMIT_COMMENT"; defaultValue = """3"""; };
                         class combatsupport_transportrespawnlimit : Edit { property = "ALiVE_sup_combatsupport_combatsupport_transportrespawnlimit"; displayName = "$STR_ALIVE_TRANS_LIMIT"; tooltip = "$STR_ALIVE_TRANS_LIMIT_COMMENT"; defaultValue = """3"""; };
+                        class combatsupport_groundrespawnlimit : Edit { property = "ALiVE_sup_combatsupport_combatsupport_groundrespawnlimit"; displayName = "$STR_ALIVE_GROUND_LIMIT"; tooltip = "$STR_ALIVE_GROUND_LIMIT_COMMENT"; defaultValue = """3"""; };
                         class combatsupport_artyrespawnlimit : Edit { property = "ALiVE_sup_combatsupport_combatsupport_artyrespawnlimit"; displayName = "$STR_ALIVE_ARTY_LIMIT"; tooltip = "$STR_ALIVE_ARTY_LIMIT_COMMENT"; defaultValue = """3"""; };
 
                         class HDR_MISC : ALiVE_ModuleSubTitle { property = "ALiVE_sup_combatsupport_HDR_MISC"; displayName = "MISC"; };
@@ -101,13 +102,27 @@ class CfgVehicles {
                                     class false { name="No"; value = 0; };
                                 };
                         };
+                        // an order's destination (and a road patrol's two ends) stay on the map while it runs
+                        class combatsupport_ordermarkers : Combo
+                        {
+                                property = "ALiVE_sup_combatsupport_combatsupport_ordermarkers";
+                                displayName = "$STR_ALIVE_CS_ORDERMARKERS";
+                                tooltip = "$STR_ALIVE_CS_ORDERMARKERS_COMMENT";
+                                defaultValue = """1""";
+                                class Values
+                                {
+                                    class true { name="Yes"; value = 1; default = 1; };
+                                    class false { name="No"; value = 0; };
+                                };
+                        };
                         class ModuleDescription : ModuleDescription {};
                 };
                 class ModuleDescription
                 {
                     description[] = {"$STR_ALIVE_CS_COMMENT","","$STR_ALIVE_CS_USAGE"};
-                    sync[] = {"ALiVE_SUP_TRANSPORT","ALiVE_SUP_CAS","ALiVE_SUP_ARTILLERY"};
+                    sync[] = {"ALiVE_SUP_TRANSPORT","ALiVE_SUP_GROUND","ALiVE_SUP_CAS","ALiVE_SUP_ARTILLERY"};
                     class ALiVE_SUP_TRANSPORT { description[] = {"$STR_ALIVE_TRANSPORT_COMMENT","","$STR_ALIVE_TRANSPORT_USAGE"}; position=1; direction=1; optional=1; duplicate=1; };
+                    class ALiVE_SUP_GROUND { description[] = {"$STR_ALIVE_GROUND_COMMENT","","$STR_ALIVE_GROUND_USAGE"}; position=1; direction=1; optional=1; duplicate=1; };
                     class ALiVE_SUP_CAS { description[] = {"$STR_ALIVE_CAS_COMMENT","","$STR_ALIVE_CAS_USAGE"}; position=1; direction=1; optional=1; duplicate=1; };
                     class ALiVE_SUP_ARTILLERY { description[] = {"$STR_ALIVE_ARTILLERY_COMMENT","","$STR_ALIVE_ARTILLERY_USAGE"}; position=1; direction=1; optional=1; duplicate=1; };
                 };

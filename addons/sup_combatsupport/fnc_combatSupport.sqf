@@ -90,6 +90,8 @@ switch(_operation) do {
                         CAS_RESPAWN_LIMIT = if (_CAS_SET_RESPAWN_LIMIT isEqualTo "") then {-1} else {parsenumber(_CAS_SET_RESPAWN_LIMIT)};
                         _TRANS_SET_RESPAWN_LIMIT = NEO_radioLogic getvariable ["combatsupport_transportrespawnlimit","3"];
                         TRANS_RESPAWN_LIMIT = if (_TRANS_SET_RESPAWN_LIMIT isEqualTo "") then {-1} else {parsenumber(_TRANS_SET_RESPAWN_LIMIT)};
+                        _GROUND_SET_RESPAWN_LIMIT = NEO_radioLogic getvariable ["combatsupport_groundrespawnlimit","3"];
+                        GROUND_RESPAWN_LIMIT = if (_GROUND_SET_RESPAWN_LIMIT isEqualTo "") then {-1} else {parsenumber(_GROUND_SET_RESPAWN_LIMIT)};
                         _ARTY_SET_RESPAWN_LIMIT = NEO_radioLogic getvariable ["combatsupport_artyrespawnlimit","3"];
                         ARTY_RESPAWN_LIMIT = if (_ARTY_SET_RESPAWN_LIMIT isEqualTo "") then {-1} else {parsenumber(_ARTY_SET_RESPAWN_LIMIT)};
 
@@ -109,6 +111,10 @@ switch(_operation) do {
                         // NEO_radioLogic always see a bool and don't choke on `if (_audio) then`.
                         if !(_audio isEqualType true) then { _audio = parseNumber format ["%1", _audio] > 0; };
                         NEO_radioLogic setVariable ["combatsupport_audio", _audio, true];
+                        // Keep Order Markers: bool when binarised, "0"/"1" on a packed build, like audio
+                        private _orderMarkers = NEO_radioLogic getVariable ["combatsupport_ordermarkers", true];
+                        if !(_orderMarkers isEqualType true) then { _orderMarkers = parseNumber format ["%1", _orderMarkers] > 0; };
+                        NEO_radioLogic setVariable ["combatsupport_ordermarkers", _orderMarkers, true];
 
                         // #940 follow-up: "Support Access" attribute. Default "First player only"
                         // restricts support-calling to one operator per side; "All players" is the
@@ -154,6 +160,7 @@ switch(_operation) do {
                         };
 
                         _transportArrays = [];
+                        _groundArrays = [];
                         _casArrays = [];
                         _artyArrays = [];
                         _sides = [WEST,EAST,RESISTANCE,CIVILIAN];
@@ -425,6 +432,27 @@ switch(_operation) do {
                                         ] call ALiVE_fnc_dump;
                                     };
                                 };
+                                // Ground transport (#690): [pos, dir, class, callsign, code, logistics, logistics source, disarm chance, road check]
+                                case ("ALiVE_SUP_GROUND") : {
+                                    private _m = (synchronizedObjects _logic) select _i;
+                                    private _gType = _m getVariable ["ground_type", "B_Truck_01_covered_F"];
+                                    private _gCustom = [_m getVariable ["ground_type_custom", ""], " ", ""] call CBA_fnc_replace;
+                                    if (_gCustom != "") then { _gType = _gCustom };
+                                    private _gCallsign = _m getVariable ["ground_callsign", "MULE ONE"];
+                                    private _gCode = [_m getVariable ["ground_code", ""], "this", "(_this select 0)"] call CBA_fnc_replace;
+                                    // Combo and Edit attributes come back as strings ("0"/"1", "70"), or as
+                                    // numbers on a binarised build: read either
+                                    private _num = { if (_this isEqualType 0) then { _this } else { parseNumber format ["%1", _this] } };
+                                    private _gLogistics = ((_m getVariable ["ground_logistics", "0"]) call _num) > 0;
+                                    private _gSource = (_m getVariable ["ground_logisticssource", "0"]) call _num;
+                                    private _gChance = (_m getVariable ["ground_disarm_chance", "70"]) call _num;
+                                    private _gCheck = ((_m getVariable ["ground_mine_check", "1"]) call _num) > 0;
+                                    if (isClass (configFile >> "CfgVehicles" >> _gType)) then {
+                                        _groundArrays pushBack [getPosATL _m, getDir _m, _gType, _gCallsign, _gCode, _gLogistics, _gSource, _gChance, _gCheck];
+                                    } else {
+                                        ["COMBAT SUPPORT - Ground transport %1 ignored: vehicle class '%2' is unavailable. Load its required mod or select an available vehicle.", _gCallsign, _gType] call ALiVE_fnc_dump;
+                                    };
+                                };
                                 case ("ALiVE_sup_artillery") : {
                                     private ["_position","_callsign","_type"];
 
@@ -505,11 +533,13 @@ switch(_operation) do {
                         SUP_CASARRAYS  = _casArrays; PublicVariable "SUP_CASARRAYS";
                         SUP_TRANSPORTARRAYS  = _transportArrays; PublicVariable "SUP_TRANSPORTARRAYS";
                         SUP_ARTYARRAYS = _artyArrays; PublicVariable "SUP_ARTYARRAYS";
+                        SUP_GROUNDARRAYS = _groundArrays; PublicVariable "SUP_GROUNDARRAYS";
 
                         {
                             NEO_radioLogic setVariable [format ["NEO_radioTrasportArray_%1", _x], [],true];
                             NEO_radioLogic setVariable [format ["NEO_radioCasArray_%1", _x], [],true];
                             NEO_radioLogic setVariable [format ["NEO_radioArtyArray_%1", _x], [],true];
+                            NEO_radioLogic setVariable [format ["NEO_radioGroundArray_%1", _x], [],true];
                         } foreach _sides;
 
                         private ["_t", "_c", "_a"];
@@ -689,7 +719,12 @@ switch(_operation) do {
 
                         } forEach SUP_TRANSPORTARRAYS;
 
-
+                        // Ground transport (#690): each one is listed for its own side and every friendly side
+                        {
+                            _x params ["_gPos", "_gDir", "_gType", "_gCallsign", "_gCode", "_gLogistics", "_gSource", "_gChance", "_gCheck"];
+                            _gPos = +_gPos; _gPos set [2, 0];
+                            [_gType, _gPos, _gDir, toUpper _gCallsign, _gCode, [_gLogistics, _gSource, _gChance, _gCheck]] call NEO_fnc_groundSpawn;
+                        } forEach SUP_GROUNDARRAYS;
 
                         // CAS
 
@@ -1262,7 +1297,7 @@ switch(_operation) do {
                             if (_class != "") then {
                                 _findVehicleTypeFactions pushBackUnique getText (configFile >> "CfgVehicles" >> _class >> "faction");
                             };
-                        } forEach (SUP_CASARRAYS + SUP_TRANSPORTARRAYS);
+                        } forEach (SUP_CASARRAYS + SUP_TRANSPORTARRAYS + SUP_GROUNDARRAYS);
                         {
                             private _class = _x param [1, ""];
                             if (_class != "") then {

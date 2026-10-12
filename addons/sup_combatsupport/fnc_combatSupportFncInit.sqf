@@ -25,6 +25,16 @@ fnc_setROE = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport
 fnc_getSitrep = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_getSitrep.sqf";
 ALIVE_fnc_RespawnArtyAsset = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_RespawnArtyAsset.sqf";
 ALIVE_fnc_RespawnTransportAsset = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_RespawnTransportAsset.sqf";
+NEO_fnc_supportOrderMarkers = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_supportOrderMarkers.sqf";
+// Ground transport (#690)
+NEO_fnc_groundPanel = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\ui\ground\fn_groundPanel.sqf";
+ALIVE_fnc_RespawnGroundAsset = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_RespawnGroundAsset.sqf";
+NEO_fnc_groundSpawn = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_groundSpawn.sqf";
+NEO_fnc_groundBrain = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_groundBrain.sqf";
+NEO_fnc_groundStop = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_groundStop.sqf";
+NEO_fnc_groundDrive = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_groundDrive.sqf";
+NEO_fnc_groundRoadPatrol = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_groundRoadPatrol.sqf";
+NEO_fnc_groundMineCheck = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_groundMineCheck.sqf";
 
 ALIVE_fnc_RespawnCASAsset = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_RespawnCASAsset.sqf";
 // A two-seat jet's back seat can own pylons, the S.O.G. F-4C's bombs among them, and the CAS menu and the

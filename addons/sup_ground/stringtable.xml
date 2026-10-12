@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project name="Arma3">
+<Package name="ALiVE">
+<Container name="STR_DN">
+<Key ID="STR_ALIVE_GROUND">
+    <English>Ground Transport</English>
+    <Chinesesimp>地面运输</Chinesesimp>
+    <Chinese>地面運輸</Chinese>
+    <Spanish>Transporte terrestre</Spanish>
+    <French>Transport terrestre</French>
+    <Portuguese>Transporte terrestre</Portuguese>
+    <Russian>Наземный транспорт</Russian>
+</Key>
+<Key ID="STR_ALIVE_GROUND_COMMENT">
+    <English>A crewed ground vehicle (truck, armoured car or APC) that players order from the Combat Support tablet: pick up, move, patrol a road between two points, or return to base. While driving, the crew checks the road ahead for IEDs and mines and tries to disarm what it finds; a failed attempt sets the device off.</English>
+    <Chinesesimp>一辆有乘员的地面载具（卡车、装甲车或装甲运兵车），玩家通过战斗支援平板下达命令：接人、移动、在两点之间巡逻道路或返回基地。行驶时乘员会检查前方道路上的简易爆炸装置和地雷，并尝试拆除；失败会引爆装置。</Chinesesimp>
+    <Chinese>一輛有乘員的地面載具（卡車、裝甲車或裝甲運兵車），玩家透過戰鬥支援平板下達命令：接人、移動、在兩點之間巡邏道路或返回基地。行駛時乘員會檢查前方道路上的簡易爆炸裝置和地雷，並嘗試拆除；失敗會引爆裝置。</Chinese>
+    <Spanish>Un vehículo terrestre tripulado (camión, blindado o transporte de tropas) al que los jugadores dan órdenes desde la tableta de Apoyo de combate: recoger, moverse, patrullar una carretera entre dos puntos o volver a la base. Mientras conduce, la tripulación revisa la carretera en busca de IED y minas e intenta desactivar lo que encuentra; un intento fallido lo hace estallar.</Spanish>
+    <French>Un véhicule terrestre avec équipage (camion, blindé ou transport de troupes) que les joueurs commandent depuis la tablette d'Appui de combat : récupération, déplacement, patrouille routière entre deux points ou retour à la base. En roulant, l'équipage inspecte la route devant lui à la recherche d'EEI et de mines et tente de désamorcer ce qu'il trouve ; un échec déclenche l'engin.</French>
+    <Portuguese>Um veículo terrestre tripulado (caminhão, blindado ou transporte de tropas) que os jogadores comandam pelo tablet de Apoio de combate: buscar, mover, patrulhar uma estrada entre dois pontos ou voltar à base. Enquanto dirige, a tripulação verifica a estrada à frente em busca de IEDs e minas e tenta desarmar o que encontra; uma falha detona o artefato.</Portuguese>
+    <Russian>Наземная машина с экипажем (грузовик, бронеавтомобиль или БТР), которой игроки отдают приказы с планшета боевой поддержки: забрать, выдвинуться, патрулировать дорогу между двумя точками или вернуться на базу. В движении экипаж проверяет дорогу впереди на СВУ и мины и пытается их обезвредить; неудача приводит к подрыву.</Russian>
+</Key>
+<Key ID="STR_ALIVE_GROUND_USAGE">
+    <English>Place the module where the vehicle should start and sync it to the Combat Support module. Orders are given from the Combat Support tablet only.</English>
+    <Chinesesimp>将模块放在载具出发的位置，并与战斗支援模块同步。命令只能通过战斗支援平板下达。</Chinesesimp>
+    <Chinese>將模組放在載具出發的位置，並與戰鬥支援模組同步。命令只能透過戰鬥支援平板下達。</Chinese>
+    <Spanish>Coloca el módulo donde debe empezar el vehículo y sincronízalo con el módulo de Apoyo de combate. Las órdenes se dan solo desde la tableta de Apoyo de combate.</Spanish>
+    <French>Placez le module là où le véhicule doit démarrer et synchronisez-le avec le module Appui de combat. Les ordres se donnent uniquement depuis la tablette d'Appui de combat.</French>
+    <Portuguese>Coloque o módulo onde o veículo deve começar e sincronize-o com o módulo de Apoio de combate. As ordens são dadas apenas pelo tablet de Apoio de combate.</Portuguese>
+    <Russian>Поставьте модуль там, где машина должна начинать, и синхронизируйте его с модулем боевой поддержки. Приказы отдаются только с планшета боевой поддержки.</Russian>
+</Key>
+<Key ID="STR_ALIVE_GROUND_CALLSIGN">
+    <English>Callsign</English>
+    <Chinesesimp>呼号</Chinesesimp>
+    <Chinese>呼號</Chinese>
+    <Spanish>Indicativo</Spanish>
+    <French>Indicatif</French>
+    <Portuguese>Indicativo</Portuguese>
+    <Russian>Позывной</Russian>
+</Key>
+<Key ID="STR_ALIVE_GROUND_CALLSIGN_DESC">
+    <English>The vehicle's callsign on the tablet and on the radio. Orders come from the Combat Support tablet only.</English>
+    <Chinesesimp>载具在平板和无线电中的呼号。命令只能通过战斗支援平板下达。</Chinesesimp>
+    <Chinese>載具在平板和無線電中的呼號。命令只能透過戰鬥支援平板下達。</Chinese>
+    <Spanish>El indicativo del vehículo en la tableta y por radio. Las órdenes llegan solo desde la tableta de Apoyo de combate.</Spanish>
+    <French>L'indicatif du véhicule sur la tablette et à la radio. Les ordres viennent uniquement de la tablette d'Appui de combat.</French>
+    <Portuguese>O indicativo do veículo no tablet e no rádio. As ordens vêm apenas do tablet de Apoio de combate.</Portuguese>
+    <Russian>Позывной машины на планшете и в радиоэфире. Приказы отдаются только с планшета боевой поддержки.</Russian>
+</Key>
+<Key ID="STR_ALIVE_GROUND_TYPE">
+    <English>Vehicle</English>
+    <Chinesesimp>载具</Chinesesimp>
+    <Chinese>載具</Chinese>
+    <Spanish>Vehículo</Spanish>
+    <French>Véhicule</French>
+    <Portuguese>Veículo</Portuguese>
+    <Russian>Машина</Russian>
+</Key>
+<Key ID="STR_ALIVE_GROUND_TYPE_DESC">
+    <English>The truck, armoured car or APC to use. The list shows ground vehicles that carry passengers.</English>
+    <Chinesesimp>要使用的卡车、装甲车或装甲运兵车。列表显示可载乘客的地面载具。</Chinesesimp>
+    <Chinese>要使用的卡車、裝甲車或裝甲運兵車。清單顯示可載乘客的地面載具。</Chinese>
+    <Spanish>El camión, blindado o transporte de tropas que se usará. La lista muestra vehículos terrestres que llevan pasajeros.</Spanish>
+    <French>Le camion, blindé ou transport de troupes à utiliser. La liste montre les véhicules terrestres qui transportent des passagers.</French>
+    <Portuguese>O caminhão, blindado ou transporte de tropas a usar. A lista mostra veículos terrestres que levam passageiros.</Portuguese>
+    <Russian>Грузовик, бронеавтомобиль или БТР. В списке наземные машины, перевозящие пассажиров.</Russian>
+</Key>
+<Key ID="STR_ALIVE_GROUND_TYPE_CUSTOM">
+    <English>Vehicle (Class Name)</English>
+    <Chinesesimp>载具（类名）</Chinesesimp>
+    <Chinese>載具（類名）</Chinese>
+    <Spanish>Vehículo (nombre de clase)</Spanish>
+    <French>Véhicule (nom de classe)</French>
+    <Portuguese>Veículo (nome de classe)</Portuguese>
+    <Russian>Машина (имя класса)</Russian>
+</Key>
+<Key ID="STR_ALIVE_GROUND_TYPE_CUSTOM_DESC">
+    <English>A vehicle class name to use instead of the list choice, for vehicles the list doesn't show.</English>
+    <Chinesesimp>用于替代列表选项的载具类名，适用于列表中没有的载具。</Chinesesimp>
+    <Chinese>用於替代清單選項的載具類名，適用於清單中沒有的載具。</Chinese>
+    <Spanish>Un nombre de clase de vehículo que sustituye a la elección de la lista, para vehículos que la lista no muestra.</Spanish>
+    <French>Un nom de classe de véhicule à utiliser à la place du choix de la liste, pour les véhicules qu'elle n'affiche pas.</French>
+    <Portuguese>Um nome de classe de veículo a usar no lugar da escolha da lista, para veículos que ela não mostra.</Portuguese>
+    <Russian>Имя класса машины вместо выбора из списка, для машин, которых в списке нет.</Russian>
+</Key>
+<Key ID="STR_ALIVE_GROUND_CODE">
+    <English>Code</English>
+    <Chinesesimp>代码</Chinesesimp>
+    <Chinese>代碼</Chinese>
+    <Spanish>Código</Spanish>
+    <French>Code</French>
+    <Portuguese>Código</Portuguese>
+    <Russian>Код</Russian>
+</Key>
+<Key ID="STR_ALIVE_GROUND_CODE_DESC">
+    <English>Code run on the vehicle when it is created, with this the vehicle.</English>
+    <Chinesesimp>载具创建时运行的代码，this 为该载具。</Chinesesimp>
+    <Chinese>載具建立時執行的代碼，this 為該載具。</Chinese>
+    <Spanish>Código que se ejecuta sobre el vehículo al crearlo; this es el vehículo.</Spanish>
+    <French>Code exécuté sur le véhicule à sa création ; this est le véhicule.</French>
+    <Portuguese>Código executado no veículo ao ser criado; this é o veículo.</Portuguese>
+    <Russian>Код, выполняемый при создании машины; this — сама машина.</Russian>
+</Key>
+<Key ID="STR_ALIVE_GROUND_MINE_CHECK">
+    <English>Check Road for IEDs and Mines</English>
+    <Chinesesimp>检查道路上的简易爆炸装置和地雷</Chinesesimp>
+    <Chinese>檢查道路上的簡易爆炸裝置和地雷</Chinese>
+    <Spanish>Revisar la carretera en busca de IED y minas</Spanish>
+    <French>Inspecter la route (EEI et mines)</French>
+    <Portuguese>Verificar a estrada (IEDs e minas)</Portuguese>
+    <Russian>Проверять дорогу на СВУ и мины</Russian>
+</Key>
+<Key ID="STR_ALIVE_GROUND_MINE_CHECK_DESC">
+    <English>While driving, the crew watches the road ahead and stops for an IED or mine it finds, then tries to disarm it.</English>
+    <Chinesesimp>行驶时乘员观察前方道路，发现简易爆炸装置或地雷时停车并尝试拆除。</Chinesesimp>
+    <Chinese>行駛時乘員觀察前方道路，發現簡易爆炸裝置或地雷時停車並嘗試拆除。</Chinese>
+    <Spanish>Mientras conduce, la tripulación vigila la carretera y se detiene ante un IED o mina, e intenta desactivarlo.</Spanish>
+    <French>En roulant, l'équipage surveille la route et s'arrête devant un EEI ou une mine, puis tente de le désamorcer.</French>
+    <Portuguese>Enquanto dirige, a tripulação observa a estrada, para diante de um IED ou mina e tenta desarmá-lo.</Portuguese>
+    <Russian>В движении экипаж следит за дорогой, останавливается у найденного СВУ или мины и пытается обезвредить.</Russian>
+</Key>
+<Key ID="STR_ALIVE_GROUND_DISARM_CHANCE">
+    <English>Disarm Chance (%)</English>
+    <Chinesesimp>拆除成功率（%）</Chinesesimp>
+    <Chinese>拆除成功率（%）</Chinese>
+    <Spanish>Probabilidad de desactivar (%)</Spanish>
+    <French>Chance de désamorçage (%)</French>
+    <Portuguese>Chance de desarmar (%)</Portuguese>
+    <Russian>Шанс обезвредить (%)</Russian>
+</Key>
+<Key ID="STR_ALIVE_GROUND_DISARM_CHANCE_DESC">
+    <English>The chance, from 0 to 100, that the crew disarms a device it finds. When the roll fails, the device goes off at the vehicle.</English>
+    <Chinesesimp>乘员拆除所发现装置的概率（0 到 100）。失败时装置会在载具旁爆炸。</Chinesesimp>
+    <Chinese>乘員拆除所發現裝置的機率（0 到 100）。失敗時裝置會在載具旁爆炸。</Chinese>
+    <Spanish>La probabilidad, de 0 a 100, de que la tripulación desactive lo que encuentra. Si falla, estalla junto al vehículo.</Spanish>
+    <French>La probabilité, de 0 à 100, que l'équipage désamorce l'engin trouvé. En cas d'échec, il explose près du véhicule.</French>
+    <Portuguese>A chance, de 0 a 100, de a tripulação desarmar o artefato encontrado. Se falhar, ele explode junto ao veículo.</Portuguese>
+    <Russian>Вероятность от 0 до 100, что экипаж обезвредит найденное устройство. При неудаче оно взрывается у машины.</Russian>
+</Key>
+<Key ID="STR_ALIVE_GROUND_LOGISTICS">
+    <English>Use Military Logistics</English>
+    <Chinesesimp>使用军事后勤</Chinesesimp>
+    <Chinese>使用軍事後勤</Chinese>
+    <Spanish>Usar Logística militar</Spanish>
+    <French>Utiliser la Logistique militaire</French>
+    <Portuguese>Usar Logística militar</Portuguese>
+    <Russian>Использовать военную логистику</Russian>
+</Key>
+<Key ID="STR_ALIVE_GROUND_LOGISTICS_DESC">
+    <English>Military Logistics sends a supply truck to refuel, rearm and repair the vehicle at its base.</English>
+    <Chinesesimp>军事后勤会派补给卡车在基地为载具加油、补弹和维修。</Chinesesimp>
+    <Chinese>軍事後勤會派補給卡車在基地為載具加油、補彈和維修。</Chinese>
+    <Spanish>Logística militar envía un camión de suministros para repostar, rearmar y reparar el vehículo en su base.</Spanish>
+    <French>La Logistique militaire envoie un camion de ravitaillement pour refaire le plein, réarmer et réparer le véhicule à sa base.</French>
+    <Portuguese>A Logística militar envia um caminhão de suprimentos para reabastecer, rearmar e reparar o veículo na base.</Portuguese>
+    <Russian>Военная логистика присылает грузовик снабжения для заправки, пополнения боекомплекта и ремонта машины на базе.</Russian>
+</Key>
+<Key ID="STR_ALIVE_GROUND_LOGISTICSSOURCE">
+    <English>Logistics Source</English>
+    <Chinesesimp>后勤来源</Chinesesimp>
+    <Chinese>後勤來源</Chinese>
+    <Spanish>Origen de la logística</Spanish>
+    <French>Origine de la logistique</French>
+    <Portuguese>Origem da logística</Portuguese>
+    <Russian>Источник снабжения</Russian>
+</Key>
+<Key ID="STR_ALIVE_GROUND_LOGISTICSSOURCE_DESC">
+    <English>Where the supply truck comes from.</English>
+    <Chinesesimp>补给卡车的出发地。</Chinesesimp>
+    <Chinese>補給卡車的出發地。</Chinese>
+    <Spanish>De dónde sale el camión de suministros.</Spanish>
+    <French>D'où part le camion de ravitaillement.</French>
+    <Portuguese>De onde vem o caminhão de suprimentos.</Portuguese>
+    <Russian>Откуда выезжает грузовик снабжения.</Russian>
+</Key>
+<Key ID="STR_ALIVE_GROUND_SOURCE_STATIC">
+    <English>Static (LOGCOM Base)</English>
+    <Chinesesimp>固定（后勤指挥基地）</Chinesesimp>
+    <Chinese>固定（後勤指揮基地）</Chinese>
+    <Spanish>Fijo (base LOGCOM)</Spanish>
+    <French>Fixe (base LOGCOM)</French>
+    <Portuguese>Fixo (base LOGCOM)</Portuguese>
+    <Russian>Постоянный (база LOGCOM)</Russian>
+</Key>
+<Key ID="STR_ALIVE_GROUND_SOURCE_DYNAMIC">
+    <English>Dynamic (Nearby Objective)</English>
+    <Chinesesimp>动态（附近目标）</Chinesesimp>
+    <Chinese>動態（附近目標）</Chinese>
+    <Spanish>Dinámico (objetivo cercano)</Spanish>
+    <French>Dynamique (objectif proche)</French>
+    <Portuguese>Dinâmico (objetivo próximo)</Portuguese>
+    <Russian>Динамический (ближайшая цель)</Russian>
+</Key>
+<Key ID="STR_ALIVE_GROUND_YES">
+    <English>Yes</English>
+    <Chinesesimp>是</Chinesesimp>
+    <Chinese>是</Chinese>
+    <Spanish>Sí</Spanish>
+    <French>Oui</French>
+    <Portuguese>Sim</Portuguese>
+    <Russian>Да</Russian>
+</Key>
+<Key ID="STR_ALIVE_GROUND_NO">
+    <English>No</English>
+    <Chinesesimp>否</Chinesesimp>
+    <Chinese>否</Chinese>
+    <Spanish>No</Spanish>
+    <French>Non</French>
+    <Portuguese>Não</Portuguese>
+    <Russian>Нет</Russian>
+</Key>
+</Container></Package></Project>

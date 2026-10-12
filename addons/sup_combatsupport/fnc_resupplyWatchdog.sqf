@@ -93,6 +93,21 @@ while {true} do {
             };
         } forEach (NEO_radioLogic getVariable [format ["NEO_radioArtyArray_%1", _sideCheck], []]);
 
+        // ground transport (#690)
+        {
+            private _veh = _x select 0;
+            private _callsign = _x select 2;
+            if (!isNull _veh && {alive _veh}) then {
+                private _i = _seen find _veh;
+                if (_i < 0) then {
+                    _seen pushBack _veh;
+                    _assets pushBack [_veh, "GROUND", _sideCheck, _callsign, [_sideCheck]];
+                } else {
+                    ((_assets select _i) select 4) pushBackUnique _sideCheck;
+                };
+            };
+        } forEach (NEO_radioLogic getVariable [format ["NEO_radioGroundArray_%1", _sideCheck], []]);
+
     } forEach _sides;
 
     // Iterate the live set and check thresholds.
@@ -227,6 +242,15 @@ while {true} do {
             if (_home isEqualType objNull) then { _home = if (isNull _home) then { [] } else { getPosATL _home } };
             if (_primaryVeh isKindOf "Helicopter" && {_home isEqualType []} && {count _home >= 2} && {(_primaryVeh distance2D _home) > 300}) then { continue };
             _primaryVeh setVariable ["ALIVE_resupply_waitingRTB", false, true];
+        };
+
+        // Guard: a ground transport (#690) is serviced at home while it waits for orders, or
+        // wherever it is when it can't move (a truck brings the repair to it); never mid-order.
+        if (_type == "GROUND") then {
+            private _gs = _primaryVeh getVariable ["NEO_radioGroundUnitStatus", ""];
+            private _home = _primaryVeh getVariable ["ALIVE_CombatSupport_Base", []];
+            private _atHome = _home isEqualType [] && {count _home >= 2} && {(_primaryVeh distance2D _home) < 150};
+            if !(_gs == "IMMOBILE" || {_gs in ["NONE", "CARGO"] && {speed _primaryVeh < 3} && {_atHome}}) then { continue };
         };
 
         // Guard: only a Military Logistics module serving the side the request names answers it.

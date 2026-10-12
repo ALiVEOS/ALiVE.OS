@@ -28,6 +28,15 @@ switch (toUpper _task) do
             _callsign = _transportArray select (lbCurSel _transportUnitLb) select 2;
         };
     };
+    // ground transport (#690): the transport panel's unit list
+    case "GROUND" : {
+        private _groundArray = NEO_radioLogic getVariable [format ["NEO_radioGroundArray_%1", playerSide], []];
+        private _sel = lbCurSel (_display displayCtrl 655568);
+        if (_sel < 0 || {_sel >= count _groundArray}) exitwith {};
+        _asset = (_groundArray select _sel) select 0;
+        _grp = (_groundArray select _sel) select 1;
+        _callsign = (_groundArray select _sel) select 2;
+    };
     case "CAS" : {
         private ["_casUnitLb","_casArray"];
 
@@ -136,6 +145,13 @@ if (toUpper _task == "ARTY") then {
         case "KILLED": {"KILLED"};
         default {"STANDBY"};
     });
+};
+// a ground vehicle neither flies nor takes off: it reports what it is doing
+if (toUpper _task == "GROUND") then {
+    _statusLabel = "$STR_ALIVE_CS_WORD_STATUS";
+    _statusValue = if (_asset getVariable ["NEO_groundDisarming", false]) then { "$STR_ALIVE_CS_WORD_GROUND_DISARMING" } else {
+        "$STR_ALIVE_CS_WORD_GROUND_" + (_asset getVariable ["NEO_radioGroundUnitStatus", "NONE"])
+    };
 };
 
 // Military Logistics Simulation status.

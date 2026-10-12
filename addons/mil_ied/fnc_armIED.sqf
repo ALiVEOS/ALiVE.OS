@@ -203,6 +203,10 @@ private _gracePeriod = 15;
         } do {
             sleep 0.5;
 
+            // a Combat Support ground crew has stopped to deal with it (#690): it decides
+            // what happens to this IED, so the trip checks wait until it lets go
+            if (_ied getVariable ["ALiVE_IED_Claimed", false]) then { continue };
+
             if (isNull _ied || !alive _ied || (_ied getVariable ["ALiVE_IED_Disarmed", false])) then {
                 _detonated = true;   // reuse the loop-exit flag; container may stay alive post-disarm
             } else {

@@ -145,6 +145,10 @@ class Cfg3DEN
         class ALiVE_VehicleCombo_Transport: Combo {
             attributeLoad = "[_this, 'transport_type', 'transport'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenVehicleChoiceLoad.sqf'";
         };
+        // Ground transport (#690): land vehicles that carry passengers
+        class ALiVE_VehicleCombo_Ground: Combo {
+            attributeLoad = "[_this, 'ground_type', 'ground'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenVehicleChoiceLoad.sqf'";
+        };
 
         // Variant control classes for civilian-side single-select
         // faction attributes that store the selection under a non-

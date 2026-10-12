@@ -31,6 +31,9 @@ if (!isNil { uinamespace getVariable "NEO_radioCbVehicle" }) then
 } forEach (NEO_radioLogic getVariable "NEO_supportArtyMarkers");
 
 (NEO_radioLogic getVariable "NEO_supportMarker") setMarkerAlphaLocal 0;
+// the ground transport's patrol point B (#690)
+if ((NEO_radioLogic getVariable ["NEO_supportGroundMarkerB", ""]) != "") then { (NEO_radioLogic getVariable "NEO_supportGroundMarkerB") setMarkerAlphaLocal 0 };
+uinamespace setVariable ["NEO_groundPointB", nil];
 [[], 0] call NEO_fnc_supportDrawRing; // hide the area-of-influence ring
 
 showGPS true;

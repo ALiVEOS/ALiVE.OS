@@ -2420,7 +2420,7 @@ if (isServer) then {
             {
                 _x params ["_var", "_word"];
                 if (count (NEO_radioLogic getVariable [format [_var, _sideObj], []]) > 0) then { _kinds pushBack _word };
-            } forEach [["NEO_radioTrasportArray_%1", "transport"], ["NEO_radioCasArray_%1", "close air support"], ["NEO_radioArtyArray_%1", "artillery"]];
+            } forEach [["NEO_radioTrasportArray_%1", "transport"], ["NEO_radioGroundArray_%1", "ground transport"], ["NEO_radioCasArray_%1", "close air support"], ["NEO_radioArtyArray_%1", "artillery"]];
             _kinds
         };
 

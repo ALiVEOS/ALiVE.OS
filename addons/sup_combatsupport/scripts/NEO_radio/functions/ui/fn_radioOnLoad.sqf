@@ -86,6 +86,9 @@ _casArray = NEO_radioLogic getVariable [format ["NEO_radioCasArray_%1", playerSi
 //Available Supports
 if (count _transportArray > 0) then { _available pushback (["TRANSPORT", "\a3\Ui_f\data\GUI\Cfg\CommunicationMenu\transport_ca.paa"]) };
 if (count _casArray > 0) then { _available pushback (["CAS", "\a3\Ui_f\data\GUI\Cfg\CommunicationMenu\cas_ca.paa"]) };
+// Ground transport (#690), from the radio only
+private _groundArray = NEO_radioLogic getVariable [format ["NEO_radioGroundArray_%1", playerSide], []];
+if (count _groundArray > 0 && {_action == "radio"}) then { _available pushback (["GROUND", "\a3\Ui_f\data\GUI\Cfg\CommunicationMenu\supplydrop_ca.paa"]) };
 if (count _artyArray > 0 && (_action == "radio" || _action == "talkarty")) then { _available pushback (["ARTY", "\a3\Ui_f\data\GUI\Cfg\CommunicationMenu\artillery_ca.paa"]) };
 //Support ListBox
 
@@ -217,6 +220,7 @@ showGPS false;
                 case "ARTY":      { [655594, "NEO_radioArtyArray", "NEO_radioArtyUnitStatus"] };
                 case "CAS":       { [655582, "NEO_radioCasArray", "NEO_radioCasUnitStatus"] };
                 case "TRANSPORT": { [655568, "NEO_radioTrasportArray", "NEO_radioTrasportUnitStatus"] };
+                case "GROUND":    { [655568, "NEO_radioGroundArray", "NEO_radioGroundUnitStatus"] };
                 default           { [] };
             };
             private _curUnit = objNull;

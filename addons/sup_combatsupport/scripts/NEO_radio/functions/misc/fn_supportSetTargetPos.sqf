@@ -28,6 +28,12 @@ switch (toUpper (_lb lbText (lbCurSel _lb))) do
         [] call NEO_fnc_transportConfirmButtonEnable;
     };
 
+    // ground transport (#690): point A, or point B of a patrol
+    case "GROUND" :
+    {
+        ["target", [_pos]] call NEO_fnc_groundPanel;
+    };
+
     case "CAS" :
     {
         _marker setMarkerTextLocal "CAS";
