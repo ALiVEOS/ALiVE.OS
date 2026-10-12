@@ -821,7 +821,8 @@ class FSM
                                          "        sleep 75;" \n
                                          "        " \n
                                          "        _respmsg = [""STR_ALIVE_CS_ARTY_MSG_10"",_callsignPlayer,_callsign];" \n
-                                         "        while { (_battery getVariable ""NEO_radioArtyUnitStatus"") == ""RESPONSE"" } do" \n
+                                         "        private _asked = 0;" \n
+                                         "        while { (_battery getVariable ""NEO_radioArtyUnitStatus"") == ""RESPONSE"" && {_asked < 3} } do" \n
                                          "        {" \n
                                          "            [[" \n
                                          "                _unit," \n
@@ -829,6 +830,7 @@ class FSM
                                          "                ""side""" \n
                                          "            ],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
                                          "            " \n
+                                         "            _asked = _asked + 1;" \n
                                          "            sleep 75;" \n
                                          "        };" \n
                                          "    };" \n

@@ -10,7 +10,9 @@
     // it in their own language: it's put together here, on the machine that shows it. (Jman)
     if (_text isEqualType []) then {
         private _t = localize (_text param [0, ""]);
-        _text = if (count _text > 1) then { format ([_t] + (_text select [1])) } else { _t };
+        // a detail written as $STR_... (a speed, a mission type) is read in the player's language too
+        private _args = (_text select [1]) apply { if (_x isEqualType "" && {(_x select [0, 5]) == "$STR_"}) then { localize (_x select [1]) } else { _x } };
+        _text = if (_args isNotEqualTo []) then { format ([_t] + _args) } else { _t };
     };
     _side = if (count _this > 3 && {(_this select 3) isEqualType west}) then {_this select 3} else {side group _unit};
 

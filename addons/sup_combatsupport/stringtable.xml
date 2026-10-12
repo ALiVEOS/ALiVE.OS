@@ -834,22 +834,22 @@
     <Russian>Видим дым: %1, подтверждаете? Приём.</Russian>
 </Key>
 <Key ID="STR_ALIVE_CS_MSG_19">
-    <English>This is %1, please respond, is that %1 marker yours? Over.</English>
-    <Chinesesimp>这里是 %1，请回答，那个 %1 标记是你们的吗？请回答。</Chinesesimp>
-    <Chinese>這裡是 %1，請回答，那個 %1 標記是你們的嗎？請回答。</Chinese>
-    <Spanish>Aquí %1, responde, ¿ese marcador %1 es vuestro? Cambio.</Spanish>
-    <French>Ici %1, répondez, ce marqueur %1 est-il le vôtre ? À vous.</French>
-    <Portuguese>Aqui %1, responda, esse marcador %1 é vosso? Escuto.</Portuguese>
-    <Russian>Говорит %1, ответьте, маркер %1 ваш? Приём.</Russian>
+    <English>This is %1, please respond, is that %2 marker yours? Over.</English>
+    <Chinesesimp>这里是 %1，请回答，那个 %2 标记是你们的吗？请回答。</Chinesesimp>
+    <Chinese>這裡是 %1，請回答，那個 %2 標記是你們的嗎？請回答。</Chinese>
+    <Spanish>Aquí %1, responde, ¿ese marcador %2 es vuestro? Cambio.</Spanish>
+    <French>Ici %1, répondez, ce marqueur %2 est-il le vôtre ? À vous.</French>
+    <Portuguese>Aqui %1, responda, esse marcador %2 é vosso? Escuto.</Portuguese>
+    <Russian>Говорит %1, ответьте, маркер %2 ваш? Приём.</Russian>
 </Key>
 <Key ID="STR_ALIVE_CS_MSG_20">
-    <English>This is %1, please respond, is that %1 smoke yours? Over.</English>
-    <Chinesesimp>这里是 %1，请回答，那个 %1 烟雾是你们的吗？请回答。</Chinesesimp>
-    <Chinese>這裡是 %1，請回答，那個 %1 煙霧是你們的嗎？請回答。</Chinese>
-    <Spanish>Aquí %1, responde, ¿ese humo %1 es vuestro? Cambio.</Spanish>
-    <French>Ici %1, répondez, cette fumée %1 est-elle la vôtre ? À vous.</French>
-    <Portuguese>Aqui %1, responda, esse fumo %1 é vosso? Escuto.</Portuguese>
-    <Russian>Говорит %1, ответьте, дым %1 ваш? Приём.</Russian>
+    <English>This is %1, please respond, is that %2 smoke yours? Over.</English>
+    <Chinesesimp>这里是 %1，请回答，那个 %2 烟雾是你们的吗？请回答。</Chinesesimp>
+    <Chinese>這裡是 %1，請回答，那個 %2 煙霧是你們的嗎？請回答。</Chinese>
+    <Spanish>Aquí %1, responde, ¿ese humo %2 es vuestro? Cambio.</Spanish>
+    <French>Ici %1, répondez, cette fumée %2 est-elle la vôtre ? À vous.</French>
+    <Portuguese>Aqui %1, responda, esse fumo %2 é vosso? Escuto.</Portuguese>
+    <Russian>Говорит %1, ответьте, дым %2 ваш? Приём.</Russian>
 </Key>
 <Key ID="STR_ALIVE_CS_MSG_21">
     <English>Copy that, pop another marker to confirm LZ. Out.</English>
@@ -888,7 +888,7 @@
     <Russian>Вас понял, %1 садится в %2 %3. Конец связи.</Russian>
 </Key>
 <Key ID="STR_ALIVE_CS_MSG_25">
-    <English>%1 is unable to Land at coordinates. Out.</English>
+    <English>%1 is unable to land at the coordinates. Out.</English>
     <Chinesesimp>%1 无法在该坐标降落。完毕。</Chinesesimp>
     <Chinese>%1 無法在該座標降落。完畢。</Chinese>
     <Spanish>%1 no puede aterrizar en esas coordenadas. Corto.</Spanish>
@@ -951,7 +951,7 @@
     <Russian>Приготовиться к высадке. Конец связи.</Russian>
 </Key>
 <Key ID="STR_ALIVE_CS_MSG_32">
-    <English>Go!. Go! Go!</English>
+    <English>Go! Go! Go!</English>
     <Chinesesimp>出发！出发！出发！</Chinesesimp>
     <Chinese>出發！出發！出發！</Chinese>
     <Spanish>¡Vamos! ¡Vamos! ¡Vamos!</Spanish>
@@ -1014,7 +1014,7 @@
     <Russian>%1 не может выполнить запрос, груза на подвесе нет. Конец связи.</Russian>
 </Key>
 <Key ID="STR_ALIVE_CS_MSG_39">
-    <English>%1 is at Base. Out.</English>
+    <English>%1 is at base. Out.</English>
     <Chinesesimp>%1 已在基地。完毕。</Chinesesimp>
     <Chinese>%1 已在基地。完畢。</Chinese>
     <Spanish>%1 está en la base. Corto.</Spanish>
@@ -1131,7 +1131,7 @@
     <Russian>%1, вернуться на базу. Приём.</Russian>
 </Key>
 <Key ID="STR_ALIVE_CS_MSG_52">
-    <English>%1 fly at %2 meters height. Out.</English>
+    <English>%1, fly at %2 metres. Out.</English>
     <Chinesesimp>%1 在 %2 米高度飞行。完毕。</Chinesesimp>
     <Chinese>%1 在 %2 公尺高度飛行。完畢。</Chinese>
     <Spanish>%1, vuela a %2 metros de altura. Corto.</Spanish>
@@ -1140,7 +1140,7 @@
     <Russian>%1, высота полёта %2 метров. Конец связи.</Russian>
 </Key>
 <Key ID="STR_ALIVE_CS_MSG_53">
-    <English>%1 fly with a %2 speed. Out.</English>
+    <English>%1, fly at %2 speed. Out.</English>
     <Chinesesimp>%1 以 %2 速度飞行。完毕。</Chinesesimp>
     <Chinese>%1 以 %2 速度飛行。完畢。</Chinese>
     <Spanish>%1, vuela a velocidad %2. Corto.</Spanish>
@@ -1213,13 +1213,13 @@
     <Russian>%1, у %2 не осталось людей, чтобы унести миномёты на базу, остаётся на месте. Конец связи.</Russian>
 </Key>
 <Key ID="STR_ALIVE_CS_ARTY_MSG_06">
-    <English>%1, Battery %2 is moving back to Base. Out</English>
-    <Chinesesimp>%1，炮兵连 %2 正在返回基地。完毕</Chinesesimp>
-    <Chinese>%1，砲兵連 %2 正在返回基地。完畢</Chinese>
-    <Spanish>%1, la batería %2 regresa a la base. Corto</Spanish>
-    <French>%1, la batterie %2 rentre à la base. Terminé</French>
-    <Portuguese>%1, a bateria %2 regressa à base. Terminado</Portuguese>
-    <Russian>%1, батарея %2 возвращается на базу. Конец связи</Russian>
+    <English>%1, Battery %2 is moving back to Base. Out.</English>
+    <Chinesesimp>%1，炮兵连 %2 正在返回基地。完毕。</Chinesesimp>
+    <Chinese>%1，砲兵連 %2 正在返回基地。完畢。</Chinese>
+    <Spanish>%1, la batería %2 regresa a la base. Corto.</Spanish>
+    <French>%1, la batterie %2 rentre à la base. Terminé.</French>
+    <Portuguese>%1, a bateria %2 regressa à base. Terminado.</Portuguese>
+    <Russian>%1, батарея %2 возвращается на базу. Конец связи.</Russian>
 </Key>
 <Key ID="STR_ALIVE_CS_ARTY_MSG_07">
     <English>%2, Battery %1 is out of ammo. Out.</English>
@@ -1231,13 +1231,13 @@
     <Russian>%2, у батареи %1 кончились боеприпасы. Конец связи.</Russian>
 </Key>
 <Key ID="STR_ALIVE_CS_ARTY_MSG_08">
-    <English>%2, Battery %1 is ready for fire mission. Out</English>
-    <Chinesesimp>%2，炮兵连 %1 准备好执行射击任务。完毕</Chinesesimp>
-    <Chinese>%2，砲兵連 %1 準備好執行射擊任務。完畢</Chinese>
-    <Spanish>%2, la batería %1 está lista para una misión de fuego. Corto</Spanish>
-    <French>%2, la batterie %1 est prête pour une mission de tir. Terminé</French>
-    <Portuguese>%2, a bateria %1 está pronta para uma missão de fogo. Terminado</Portuguese>
-    <Russian>%2, батарея %1 готова к огневой задаче. Конец связи</Russian>
+    <English>%2, Battery %1 is ready for fire mission. Out.</English>
+    <Chinesesimp>%2，炮兵连 %1 准备好执行射击任务。完毕。</Chinesesimp>
+    <Chinese>%2，砲兵連 %1 準備好執行射擊任務。完畢。</Chinese>
+    <Spanish>%2, la batería %1 está lista para una misión de fuego. Corto.</Spanish>
+    <French>%2, la batterie %1 est prête pour une mission de tir. Terminé.</French>
+    <Portuguese>%2, a bateria %1 está pronta para uma missão de fogo. Terminado.</Portuguese>
+    <Russian>%2, батарея %1 готова к огневой задаче. Конец связи.</Russian>
 </Key>
 <Key ID="STR_ALIVE_CS_ARTY_MSG_09">
     <English>%1, Target is out of range of battery %2, would you like them to move into a good position? Over.</English>
@@ -1392,5 +1392,59 @@
     <French>%1, ils sont de retour avec vous. Retour à la base.</French>
     <Portuguese>%1, já estão convosco. Regresso à base.</Portuguese>
     <Russian>%1, они снова с вами. Возвращаюсь на базу.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_WORD_IMMEDIATE">
+    <English>immediate</English>
+    <Chinesesimp>即时</Chinesesimp>
+    <Chinese>即時</Chinese>
+    <Spanish>inmediato</Spanish>
+    <French>immédiat</French>
+    <Portuguese>imediato</Portuguese>
+    <Russian>немедленный</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_WORD_SPEED_LIMITED">
+    <English>limited</English>
+    <Chinesesimp>限速</Chinesesimp>
+    <Chinese>限速</Chinese>
+    <Spanish>limitada</Spanish>
+    <French>limitée</French>
+    <Portuguese>limitada</Portuguese>
+    <Russian>ограниченной</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_WORD_SPEED_NORMAL">
+    <English>normal</English>
+    <Chinesesimp>正常</Chinesesimp>
+    <Chinese>正常</Chinese>
+    <Spanish>normal</Spanish>
+    <French>normale</French>
+    <Portuguese>normal</Portuguese>
+    <Russian>обычной</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_WORD_SPEED_FULL">
+    <English>full</English>
+    <Chinesesimp>全速</Chinesesimp>
+    <Chinese>全速</Chinese>
+    <Spanish>máxima</Spanish>
+    <French>maximale</French>
+    <Portuguese>máxima</Portuguese>
+    <Russian>максимальной</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_ARTY_MOVE">
+    <English>Copy that, move into a good fire position. Over.</English>
+    <Chinesesimp>收到，转移到合适的射击阵地。请回答。</Chinesesimp>
+    <Chinese>收到，轉移到合適的射擊陣地。請回答。</Chinese>
+    <Spanish>Recibido, muévete a una buena posición de fuego. Cambio.</Spanish>
+    <French>Bien reçu, placez-vous en bonne position de tir. À vous.</French>
+    <Portuguese>Entendido, mova-se para uma boa posição de tiro. Escuto.</Portuguese>
+    <Russian>Вас понял, займите хорошую огневую позицию. Приём.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_ARTY_HOLD">
+    <English>Negative, hold position. Over.</English>
+    <Chinesesimp>否定，原地待命。请回答。</Chinesesimp>
+    <Chinese>否定，原地待命。請回答。</Chinese>
+    <Spanish>Negativo, mantén la posición. Cambio.</Spanish>
+    <French>Négatif, tenez votre position. À vous.</French>
+    <Portuguese>Negativo, mantenha a posição. Escuto.</Portuguese>
+    <Russian>Отставить, оставайтесь на позиции. Приём.</Russian>
 </Key>
 </Container></Package></Project>

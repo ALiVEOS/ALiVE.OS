@@ -58,7 +58,7 @@ switch (_cb) do
             [[_chopper,_s], "fnc_setSpeed", false, false] spawn BIS_fnc_MP;
 
             //Dialog from player, only if unit is on a mission (flying)
-            if (_status != "NONE") then { [player, ["STR_ALIVE_CS_MSG_53", (str group _chopper call NEO_fnc_callsignFix), _s], "side"] call NEO_fnc_messageBroadcast };
+            if (_status != "NONE") then { [player, ["STR_ALIVE_CS_MSG_53", (str group _chopper call NEO_fnc_callsignFix), "$STR_ALIVE_CS_WORD_SPEED_" + toUpper _s], "side"] call NEO_fnc_messageBroadcast };
         };
     };
 

@@ -4922,7 +4922,9 @@ switch(_operation) do {
                 _targetVeh setVariable ["ALIVE_resupply_state", "failed", true];
                 // Counted as a try, so the watchdog's cooldown applies before it asks again: without
                 // it the asset was asked for every 30 s, a log line each time, until the pool grew.
-                _targetVeh setVariable ["ALIVE_resupply_lastDispatch", serverTime, true];
+                // Its own stamp: lastDispatch means a service was done, and the CAS rearm service
+                // reads it so (a jet would report itself rearmed with nothing loaded).
+                _targetVeh setVariable ["ALIVE_resupply_lastRefusal", serverTime, true];
                 _targetVeh setVariable ["ALIVE_resupply_inProgress", false, true];
                 _targetVeh setVariable ["ALIVE_resupply_vehicle", objNull, true];
                 // Only a dispatch Combat Support counted gives a slot back: the air commander asks for

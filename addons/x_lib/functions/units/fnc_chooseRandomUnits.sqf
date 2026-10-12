@@ -62,7 +62,7 @@ private _fnc_unwanted = {
     // base and uniform classes, and the UAV AI, none of which carries a weapon
     || {(["spawner", "invisible", "uav_ai"] findIf { (_s find _x) >= 0 }) >= 0}
     || {(_s select [count _s - 5]) == "_base" || {(_s find "_base_f") >= 0} || {(_s find "uniform") >= 0}}
-    || {(getArray (configFile >> "CfgVehicles" >> _type >> "weapons")) isEqualTo []}
+    || {_armed && {(getArray (configFile >> "CfgVehicles" >> _type >> "weapons")) isEqualTo []}}
 };
 private _usable = _types select { !([_x] call _fnc_unwanted) };
 

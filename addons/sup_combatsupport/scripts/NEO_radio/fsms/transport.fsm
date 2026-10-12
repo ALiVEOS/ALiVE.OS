@@ -970,9 +970,9 @@ class FSM
                          "    while { (_chopper getVariable ""NEO_radioTrasportUnitStatus"") == ""SMOKECONF"" } do" \n
                          "    {" \n
                          "        if (sunOrMoon == 0) then {" \n
-                         "            [[_chopper, [""STR_ALIVE_CS_MSG_19"", _smokeColor],""group""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+                         "            [[_chopper, [""STR_ALIVE_CS_MSG_19"", _callsign, _smokeColor],""group""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
                          "        } else {" \n
-                         "            [[_chopper, [""STR_ALIVE_CS_MSG_20"", _smokeColor],""group""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+                         "            [[_chopper, [""STR_ALIVE_CS_MSG_20"", _callsign, _smokeColor],""group""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
                          "        };" \n
                          "        sleep 75;" \n
                          "    };" \n

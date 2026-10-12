@@ -119,7 +119,8 @@ while {true} do {
 
         // Guard: skip if cooldown not expired. _lastDispatch is 0 before the first
         // dispatch, so only enforce the cooldown once one has actually happened.
-        private _lastDispatch = _primaryVeh getVariable ["ALIVE_resupply_lastDispatch", 0];
+        // a refusal for an empty force pool waits the same cooldown before the next ask
+        private _lastDispatch = (_primaryVeh getVariable ["ALIVE_resupply_lastDispatch", 0]) max (_primaryVeh getVariable ["ALIVE_resupply_lastRefusal", 0]);
         if (_lastDispatch > 0 && {serverTime - _lastDispatch < COOLDOWN_SECONDS}) then { continue };
 
         // --- Threshold checks ---

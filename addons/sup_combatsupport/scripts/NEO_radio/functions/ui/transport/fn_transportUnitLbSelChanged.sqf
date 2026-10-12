@@ -127,7 +127,7 @@ if (_status != "KILLED") then
         _transportHeightCombo ctrlEnable true; _transportHeightCombo ctrlSetPosition [0.278525 * _uiW + _uiX, 0.64 * _uiH + _uiY, (0.0927966 * _uiW), (0.028 * _uiH)]; _transportHeightCombo ctrlCommit 0;
         _transportSpeedCombo ctrlEnable true; _transportSpeedCombo ctrlSetPosition [0.401017 * _uiW + _uiX, 0.64 * _uiH + _uiY, (0.0927966 * _uiW), (0.028 * _uiH)]; _transportSpeedCombo ctrlCommit 0;
         _transportRoeCombo ctrlEnable true; _transportRoeCombo ctrlSetPosition [0.339153 * _uiW + _uiX, 0.696 * _uiH + _uiY, (0.0927966 * _uiW), (0.028 * _uiH)]; _transportRoeCombo ctrlCommit 0;
-        _transportComboText ctrlSetText "Behaviour"; _transportComboText ctrlSetPosition [0.363898 * _uiW + _uiX, 0.598 * _uiH + _uiY, (0.0494915 * _uiW), (0.028 * _uiH)]; _transportComboText ctrlCommit 0;
+        _transportComboText ctrlSetText localize "STR_ALIVE_CS_UI_BEHAVIOUR"; _transportComboText ctrlSetPosition [0.363898 * _uiW + _uiX, 0.598 * _uiH + _uiY, (0.0494915 * _uiW), (0.028 * _uiH)]; _transportComboText ctrlCommit 0;
 
     lbClear _transportHeightCombo;
     {

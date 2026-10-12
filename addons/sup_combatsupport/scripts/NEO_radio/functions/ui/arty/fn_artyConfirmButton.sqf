@@ -72,7 +72,7 @@ _callsign = _artyArray select (lbCurSel _artyUnitLb) select 2; if (!isNil { NEO_
 _callsignPlayer = (format ["%1", group player]) call NEO_fnc_callsignFix;
 
 //Dislog from player
-[[player,["STR_ALIVE_CS_MSG_48", _callsign, _callSignPlayer, _coord select 0, _coord select 1, _type, _ordnanceType, _count, _dispersion, _rate],"side"],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;
+[[player,["STR_ALIVE_CS_MSG_48", _callsign, _callSignPlayer, _coord select 0, _coord select 1, "$STR_ALIVE_CS_WORD_IMMEDIATE", _ordnanceType, _count, _dispersion, _rate],"side"],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;
 
 
 if (_audio) then {

@@ -29,4 +29,5 @@ private _rounds = 0;
     _x params ["_mag", "_t", "_n"];
     if (_t isEqualTo _turret && {(toLower _mag) in _compat}) then { _rounds = _rounds + _n };
 } forEach (magazinesAllTurrets _veh);
-_rounds
+// never less than the game's own count: a mod pylon weapon whose magazines its config doesn't list
+_rounds max (_veh ammo _weapon)
