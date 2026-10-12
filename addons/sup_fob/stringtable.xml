@@ -446,6 +446,30 @@
             <Key ID="STR_ALIVE_FOB_GARRISON_GROUP_COMMENT">
                 <English>The CfgGroups class the garrison is made from. Empty: a random infantry group of the FOB's faction.</English>
             </Key>
+            <Key ID="STR_ALIVE_FOB_RADIO_TAKING">
+                <English>%1 is being taken by the enemy. Get men back inside %2 m within %3 s.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_RADIO_FALLING">
+                <English>%1 is about to fall: %2 s left.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_RADIO_CONTACT">
+                <English>%1 reports enemy movement nearby.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_RADIO_LOST_REPAIR">
+                <English>%1 couldn't be repaired in time and is lost.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_RADIO_HQ_DOWN">
+                <English>%1's headquarters is destroyed. Repair it within %2 minutes or the FOB is lost.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_RADIO_LOST">
+                <English>%1 has been lost to the enemy.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_RADIO_TAKEN">
+                <English>We have taken %1.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_RADIO_DELIVERED">
+                <English>Supplies delivered to %1.</English>
+            </Key>
         </Container>
     </Package>
 </Project>

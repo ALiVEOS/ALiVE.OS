@@ -13,8 +13,8 @@ this copy.
 
 Parameters:
 String - "init" to start, "mine" for the rows of the player's own side, "notify" to show a
-message from the server
-Array - for "notify": [stringtable key, format arguments]
+message from the server, "radio" for a radio message from HQ
+Array - for "notify" and "radio": [stringtable key, format arguments]
 
 Returns:
 Nothing, or the rows
@@ -46,6 +46,15 @@ switch (_op) do {
     case "mine": {
         private _side = str (side group player);   // WEST, EAST or GUER, as the registry stores it
         ALiVE_FOB_registryMirror select { (_x select 1) == _side }
+    };
+    // A radio message from HQ to this player, sent by the server as a stringtable key and its
+    // values so each player reads it in their own language
+    case "radio": {
+        if (!hasInterface) exitWith {};
+        _args params [["_key", "", [""]], ["_fmt", [], [[]]]];
+        if !(isLocalized _key) exitWith {};
+        ALiVE_FOB_lastRadio = format ([localize _key] + _fmt);   // read by tests
+        [player, ALiVE_FOB_lastRadio, "side", side group player, false, true, false, true, "HQ"] call ALIVE_fnc_radioBroadcast;
     };
     case "notify": {
         if (!hasInterface) exitWith {};

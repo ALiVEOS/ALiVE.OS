@@ -193,10 +193,8 @@ switch (_op) do {
                 [_e, "repairRemaining", [ALiVE_sup_fob, "attribute", ["fob_repair_time"]] call ALiVE_fnc_FOB] call ALIVE_fnc_hashSet;
                 ["respawn", [_hub getVariable ["ALiVE_FOB_id", ""]]] call ALiVE_fnc_fobOps;
                 ALiVE_FOB_dirty = true;
-                private _side = [_e, "side", "WEST"] call ALIVE_fnc_hashGet;
-                private _text = format ["%1's headquarters is destroyed. Repair it within %2 minutes or the FOB is lost.",
-                    [_e, "name", ""] call ALIVE_fnc_hashGet, round (([_e, "repairRemaining", 0] call ALIVE_fnc_hashGet) / 60)];
-                [_side, [ALiVE_sup_fob, _text, "side", [_side] call ALiVE_fnc_sideTextToObject, false, true, false, true, "HQ"]] call ALIVE_fnc_radioBroadcastToSide;
+                [ALiVE_sup_fob, "radio", [[_e, "side", "WEST"] call ALIVE_fnc_hashGet, "STR_ALIVE_FOB_RADIO_HQ_DOWN",
+                    [[_e, "name", ""] call ALIVE_fnc_hashGet, round (([_e, "repairRemaining", 0] call ALIVE_fnc_hashGet) / 60)]]] call ALiVE_fnc_FOB;
             };
         }];
         // Shot at by a side: that side has found the FOB (Contact targeting)
@@ -524,10 +522,8 @@ switch (_op) do {
         };
         [_logic, "broadcastMirror"] call ALiVE_fnc_FOB;
         ["save", [true]] call ALiVE_fnc_fobPersistence;
-        {
-            _x params ["_s", "_text"];
-            [_s, [_logic, _text, "side", [_s] call ALiVE_fnc_sideTextToObject, false, true, false, true, "HQ"]] call ALIVE_fnc_radioBroadcastToSide;
-        } forEach [[_oldSide, format ["%1 has been lost to the enemy.", _name]], [_newSide, format ["We have taken %1.", _name]]];
+        [_logic, "radio", [_oldSide, "STR_ALIVE_FOB_RADIO_LOST", [_name]]] call ALiVE_fnc_FOB;
+        [_logic, "radio", [_newSide, "STR_ALIVE_FOB_RADIO_TAKEN", [_name]]] call ALiVE_fnc_FOB;
         ["ALiVE Player FOBs - %1 (%2) taken: %3 to %4", _id, _name, _oldSide, _newSide] call ALiVE_fnc_dump;
         _result = true;
     };

@@ -23,6 +23,7 @@ Operations:
 init - start the module (server: registry, start-up, watchdog; players: the copy)
 destroy - stop it
 handleEvent - [event] a Military Logistics supply truck arrived (LOGCOM_FOB_RESUPPLY_ARRIVED)
+radio - [side, stringtable key, args] a radio message to that side's players, in their language
 pause - get or set (BOOL) the pause state; the watchdog does nothing while paused
 debug - get or set (BOOL) debug output
 attribute - [name] the module setting, parsed (numbers as numbers, clamped where it matters)
@@ -231,9 +232,16 @@ switch (_operation) do {
             ["credit", [_id, _amount, "logistics"]] call ALiVE_fnc_fobSupply;
             [_entry, "resupplyCooldown", 0] call ALIVE_fnc_hashSet;
             [_logic, "broadcastMirror"] call MAINCLASS;
-            private _text = format ["Supplies delivered to %1.", [_entry, "name", ""] call ALIVE_fnc_hashGet];
-            [_side, [_logic, _text, "side", [_side] call ALiVE_fnc_sideTextToObject, false, true, false, true, "HQ"]] call ALIVE_fnc_radioBroadcastToSide;
+            [_logic, "radio", [_side, "STR_ALIVE_FOB_RADIO_DELIVERED", [[_entry, "name", ""] call ALIVE_fnc_hashGet]]] call MAINCLASS;
         };
+    };
+
+    // A radio message to every player of a side, worded on each player's machine: [side, key, args]
+    case "radio": {
+        _args params [["_side", "", [""]], ["_key", "", [""]], ["_fmt", [], [[]]]];
+        if !(_side in ["WEST", "EAST", "GUER"]) exitWith {};
+        ["ALiVE Player FOBs - radio to %1: %2", _side, format ([localize _key] + _fmt)] call ALiVE_fnc_dump;
+        ["radio", [_key, _fmt]] remoteExecCall ["ALiVE_fnc_fobClient", [_side] call ALiVE_fnc_sideTextToObject];
     };
 
     case "debug": {

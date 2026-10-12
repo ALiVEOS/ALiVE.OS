@@ -99,9 +99,8 @@ private _presence = {
 };
 
 private _say = {
-    params ["_side", "_text"];
-    ["ALiVE Player FOBs - radio to %1: %2", _side, _text] call ALiVE_fnc_dump;
-    [_side, [_logic, _text, "side", [_side] call ALiVE_fnc_sideTextToObject, false, true, false, true, "HQ"]] call ALIVE_fnc_radioBroadcastToSide;
+    params ["_side", "_key", ["_fmt", []]];
+    [_logic, "radio", [_side, _key, _fmt]] call ALiVE_fnc_FOB;
 };
 
 private _tick = {
@@ -154,14 +153,14 @@ private _tick = {
                 [_entry, "captureSide", _taker] call ALIVE_fnc_hashSet;
                 [_entry, "captureRemaining", _capTime] call ALIVE_fnc_hashSet;
                 ALiVE_FOB_dirty = true;
-                [_side, format ["%1 is being taken by the enemy. Get men back inside %2 m within %3 s.", _name, round ("fob_capture_radius" call _set), round _capTime]] call _say;
+                [_side, "STR_ALIVE_FOB_RADIO_TAKING", [_name, round ("fob_capture_radius" call _set), round _capTime]] call _say;
             } else {
                 private _left = [_entry, "captureRemaining", 0] call ALIVE_fnc_hashGet;
                 if (_left <= 0) then {
                     ["flip", [_id, _taker]] call ALiVE_fnc_fobOps;
                     continue;
                 };
-                if (_left < _capTime / 2) then { [_side, format ["%1 is about to fall: %2 s left.", _name, round _left]] call _say };
+                if (_left < _capTime / 2) then { [_side, "STR_ALIVE_FOB_RADIO_FALLING", [_name, round _left]] call _say };
             };
         } else {
             if (_was != "") then {
@@ -172,7 +171,7 @@ private _tick = {
             // Alert: enemy near and not already said in the last two minutes
             if (_alert && {([_entry, "alertCooldown", 0] call ALIVE_fnc_hashGet) <= 0}) then {
                 [_entry, "alertCooldown", 120] call ALIVE_fnc_hashSet;
-                [_side, format ["%1 reports enemy movement nearby.", _name]] call _say;
+                [_side, "STR_ALIVE_FOB_RADIO_CONTACT", [_name]] call _say;
             };
         };
 
@@ -228,7 +227,7 @@ private _tick = {
 
         // A destroyed headquarters: repaired in time, or the FOB is lost
         if (([_entry, "status", ""] call ALIVE_fnc_hashGet) == "damaged" && {([_entry, "repairRemaining", 0] call ALIVE_fnc_hashGet) <= 0}) then {
-            [_side, format ["%1 couldn't be repaired in time and is lost.", _name]] call _say;
+            [_side, "STR_ALIVE_FOB_RADIO_LOST_REPAIR", [_name]] call _say;
             ["salvage", [_id]] call ALiVE_fnc_fobOps;
             continue;
         };
