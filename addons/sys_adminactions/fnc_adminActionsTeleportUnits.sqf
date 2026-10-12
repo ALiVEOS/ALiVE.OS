@@ -18,6 +18,7 @@ See Also:
 
 Author:
 Highhead
+Jman
 
 Peer Reviewed:
 nil
@@ -63,7 +64,7 @@ while {visibleMap} do {
 		["Unit %1 was teleported successfully to %2!",_unit,_pos] call ALiVE_fnc_DumpH;
     
     } else {
-        hint format["No unit in that area!"]; onMapSingleClick "";
+        [localize "STR_ALIVE_ADMINACTIONS", format["No unit in that area!"]] call ALIVE_fnc_sendHint; onMapSingleClick "";
     };
 	
 	sleep 1;
@@ -72,6 +73,6 @@ while {visibleMap} do {
 GVAR(SELECTED_POSITION) = nil;
 GVAR(SELECTED_UNITS) = nil;
 
-hint format["Teleporting units finished!"];
+[localize "STR_ALIVE_ADMINACTIONS", format["Teleporting units finished!"]] call ALIVE_fnc_sendHint;
 
 _unit;

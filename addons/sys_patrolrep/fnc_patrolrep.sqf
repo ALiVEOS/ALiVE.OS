@@ -372,7 +372,7 @@ switch (_operation) do {
                             // delete marker
                             [_logic, "removepatrolrep",[_check]] call ALIVE_fnc_patrolrep;
                         } else {
-                            hint "You are not authorized to delete this report";
+                            ["Patrol Report", "You are not authorized to delete this report"] call ALIVE_fnc_sendHint;
                         };
                         _result = false;
                     };

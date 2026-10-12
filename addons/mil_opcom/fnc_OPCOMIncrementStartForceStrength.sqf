@@ -46,7 +46,7 @@ if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
 
 // Execute on Server only
 if !(isServer) exitwith {
-    hint "Requesting update to OPCOM! Please have some patience, soldier!";
+    [localize "STR_ALIVE_OPCOM", "Requesting update to OPCOM! Please have some patience, soldier!"] call ALIVE_fnc_sendHint;
     [_side,_type,_incrementAmount] remoteExec ["ALIVE_fnc_OPCOMIncrementStartForceStrength",2];
 };
 

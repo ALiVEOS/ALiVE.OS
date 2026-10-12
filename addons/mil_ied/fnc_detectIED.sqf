@@ -14,7 +14,7 @@ if (_detection == 0) exitWith {};
 if (_detection == 1) exitWith {
     {
         if (_device in (items _x)) then {
-            [format["IED detected within %1 meters.", floor(_x distance _IED)], "hint", _x, false] call BIS_fnc_MP;
+            [localize "STR_ALIVE_ied", format["IED detected within %1 meters.", floor(_x distance _IED)]] remoteExec ["ALIVE_fnc_sendHint", _x];
         };
 
     } foreach _players;

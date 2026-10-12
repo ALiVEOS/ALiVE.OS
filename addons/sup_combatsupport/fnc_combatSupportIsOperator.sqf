@@ -24,7 +24,7 @@ Boolean - true if the local player may operate Combat Support
 
 Examples:
 (begin example)
-if !(call ALIVE_fnc_combatSupportIsOperator) exitWith { hint localize "STR_ALIVE_CS_NOTOPERATOR"; };
+if !(call ALIVE_fnc_combatSupportIsOperator) exitWith { [localize "STR_ALIVE_COMBATSUPPORT", localize "STR_ALIVE_CS_NOTOPERATOR"] call ALIVE_fnc_sendHint; };
 (end)
 
 Author:

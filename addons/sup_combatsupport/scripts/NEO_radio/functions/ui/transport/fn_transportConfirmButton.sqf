@@ -1,6 +1,6 @@
 private ["_display", "_map", "_transportUnitLb", "_transportTaskLb", "_transportConfirmButton", "_slider"];
 // #940 follow-up: in "first player only" mode, only the current operator may dispatch.
-if !(call ALIVE_fnc_combatSupportIsOperator) exitWith { hint localize "STR_ALIVE_CS_NOTOPERATOR"; };
+if !(call ALIVE_fnc_combatSupportIsOperator) exitWith { [localize "STR_ALIVE_COMBATSUPPORT", localize "STR_ALIVE_CS_NOTOPERATOR"] call ALIVE_fnc_sendHint; };
 _display = findDisplay 655555;
 _map = _display displayCtrl 655560;
 _transportUnitLb = _display displayCtrl 655568;

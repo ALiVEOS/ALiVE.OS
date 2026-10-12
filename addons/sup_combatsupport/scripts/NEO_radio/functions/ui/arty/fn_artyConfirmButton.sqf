@@ -5,7 +5,7 @@ private
     "_pos", "_type", "_ord", "_rate", "_count", "_dispersion", "_coord"
 ];
 // #940 follow-up: in "first player only" mode, only the current operator may dispatch.
-if !(call ALIVE_fnc_combatSupportIsOperator) exitWith { hint localize "STR_ALIVE_CS_NOTOPERATOR"; };
+if !(call ALIVE_fnc_combatSupportIsOperator) exitWith { [localize "STR_ALIVE_COMBATSUPPORT", localize "STR_ALIVE_CS_NOTOPERATOR"] call ALIVE_fnc_sendHint; };
 _display = findDisplay 655555;
 
   	    _has_SPE_leFH18 = false;

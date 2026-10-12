@@ -90,9 +90,9 @@ ALiVE_fnc_recruitPay = {
     params ["_cost"];
     if (_cost <= 0) exitWith { true };
     private _answer = [_cost] call ALiVE_fnc_recruitAsk;
-    if (_answer isEqualTo []) exitWith { hint localize "STR_ALIVE_RECRUIT_UI_NO_ANSWER"; false };
+    if (_answer isEqualTo []) exitWith { [localize "STR_ALIVE_RECRUIT", localize "STR_ALIVE_RECRUIT_UI_NO_ANSWER"] call ALIVE_fnc_sendHint; false };
     _answer params ["_ok", "_left"];
-    if (!_ok) exitWith { hint format [localize "STR_ALIVE_RECRUIT_UI_POOL_SHORT", _left, _cost]; false };
+    if (!_ok) exitWith { [localize "STR_ALIVE_RECRUIT", format [localize "STR_ALIVE_RECRUIT_UI_POOL_SHORT", _left, _cost]] call ALIVE_fnc_sendHint; false };
     true
 };
 
@@ -186,8 +186,8 @@ ALiVE_fnc_recruitUnit = {
     _settings params ["", "", "", "_max", "_skill", "", "", "", "_code"];
     private _group = group player;
     private _size = { alive _x } count units _group;
-    if (_size >= _max) exitWith { hint format [localize "STR_ALIVE_RECRUIT_UI_GROUP_FULL", _max]; false };
-    if (time < (player getVariable ["ALiVE_recruitNext", 0])) exitWith { hint localize "STR_ALIVE_RECRUIT_UI_WAIT"; false };
+    if (_size >= _max) exitWith { [localize "STR_ALIVE_RECRUIT", format [localize "STR_ALIVE_RECRUIT_UI_GROUP_FULL", _max]] call ALIVE_fnc_sendHint; false };
+    if (time < (player getVariable ["ALiVE_recruitNext", 0])) exitWith { [localize "STR_ALIVE_RECRUIT", localize "STR_ALIVE_RECRUIT_UI_WAIT"] call ALIVE_fnc_sendHint; false };
     player setVariable ["ALiVE_recruitNext", time + 3];
     private _cost = _settings param [10, 0];
     if !([_cost] call ALiVE_fnc_recruitPay) exitWith { false };
@@ -195,7 +195,7 @@ ALiVE_fnc_recruitUnit = {
     private _unit = _group createUnit [_class, ASLToAGL _pos, [], [2, 0] select _exact, "NONE"];
     if (isNull _unit) exitWith {
         if (_cost > 0) then { [-_cost] call ALiVE_fnc_recruitAsk };
-        hint localize "STR_ALIVE_RECRUIT_UI_NOBODY"; false
+        [localize "STR_ALIVE_RECRUIT", localize "STR_ALIVE_RECRUIT_UI_NOBODY"] call ALIVE_fnc_sendHint; false
     };
     if (_exact) then { _unit setPosASL _pos };
     _unit setDir _dir;
@@ -207,7 +207,7 @@ ALiVE_fnc_recruitUnit = {
     // the module's code, kept with him so a player save that brings him back runs it again
     _unit setVariable ["ALiVE_recruitCode", _settings param [9, ""], true];
     _unit call _code;
-    hint format [localize "STR_ALIVE_RECRUIT_UI_JOINED", getText (configFile >> "CfgVehicles" >> _class >> "displayName"), _size + 1, _max];
+    [localize "STR_ALIVE_RECRUIT", format [localize "STR_ALIVE_RECRUIT_UI_JOINED", getText (configFile >> "CfgVehicles" >> _class >> "displayName"), _size + 1, _max]] call ALIVE_fnc_sendHint;
     true
 };
 
@@ -220,17 +220,17 @@ ALiVE_fnc_recruitVehicle = {
     params ["_object", "_class", "_settings"];
     _settings params ["", "", "", "", "", "_maxVeh", "", "", "_code"];
     private _have = count (call ALiVE_fnc_recruitVehiclesOwned);
-    if (_have >= _maxVeh) exitWith { hint format [localize "STR_ALIVE_RECRUIT_UI_VEH_FULL", _have, _maxVeh]; false };
-    if (time < (player getVariable ["ALiVE_recruitNext", 0])) exitWith { hint localize "STR_ALIVE_RECRUIT_UI_WAIT"; false };
+    if (_have >= _maxVeh) exitWith { [localize "STR_ALIVE_RECRUIT", format [localize "STR_ALIVE_RECRUIT_UI_VEH_FULL", _have, _maxVeh]] call ALIVE_fnc_sendHint; false };
+    if (time < (player getVariable ["ALiVE_recruitNext", 0])) exitWith { [localize "STR_ALIVE_RECRUIT", localize "STR_ALIVE_RECRUIT_UI_WAIT"] call ALIVE_fnc_sendHint; false };
     ([_object, _settings, true, _class] call ALiVE_fnc_recruitSpawnPos) params ["_pos", "_dir", "_exact"];
-    if (_pos isEqualTo []) exitWith { hint localize "STR_ALIVE_RECRUIT_UI_SPAWN_TAKEN"; false };
+    if (_pos isEqualTo []) exitWith { [localize "STR_ALIVE_RECRUIT", localize "STR_ALIVE_RECRUIT_UI_SPAWN_TAKEN"] call ALIVE_fnc_sendHint; false };
     player setVariable ["ALiVE_recruitNext", time + 5];
     private _cost = _settings param [11, 0];
     if !([_cost] call ALiVE_fnc_recruitPay) exitWith { false };
     private _veh = createVehicle [_class, [0, 0, 1000 + random 500], [], 0, "CAN_COLLIDE"];
     if (isNull _veh) exitWith {
         if (_cost > 0) then { [-_cost] call ALiVE_fnc_recruitAsk };
-        hint localize "STR_ALIVE_RECRUIT_UI_VEH_NONE"; false
+        [localize "STR_ALIVE_RECRUIT", localize "STR_ALIVE_RECRUIT_UI_VEH_NONE"] call ALIVE_fnc_sendHint; false
     };
     _veh setDir _dir;
     _veh setPosASL _pos;
@@ -239,7 +239,7 @@ ALiVE_fnc_recruitVehicle = {
     // a player's own, so a Zeus virtualise doesn't hand it to an AI commander
     _veh setVariable ["ALIVE_profileIgnore", true, true];
     _veh call _code;
-    hint format [localize "STR_ALIVE_RECRUIT_UI_VEH_READY", getText (configFile >> "CfgVehicles" >> _class >> "displayName"), _have + 1, _maxVeh];
+    [localize "STR_ALIVE_RECRUIT", format [localize "STR_ALIVE_RECRUIT_UI_VEH_READY", getText (configFile >> "CfgVehicles" >> _class >> "displayName"), _have + 1, _maxVeh]] call ALIVE_fnc_sendHint;
     true
 };
 

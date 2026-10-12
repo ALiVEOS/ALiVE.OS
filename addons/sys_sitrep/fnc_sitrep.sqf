@@ -366,7 +366,7 @@ switch (_operation) do {
                             // delete marker
                             [_logic, "removesitrep",[_check]] call ALIVE_fnc_sitrep;
                         } else {
-                            hint "You are not authorized to delete this report";
+                            ["SITREP", "You are not authorized to delete this report"] call ALIVE_fnc_sendHint;
                         };
                         _result = false;
                     };

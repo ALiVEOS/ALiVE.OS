@@ -1149,7 +1149,7 @@ switch (_operation) do {
 			[MOD(civInteractHandler),"refreshContainer"] call MAINCLASS;
 		};
 
-		hint "There is no room for this item in your inventory";
+		[localize "STR_ALIVE_CIV_POP", "There is no room for this item in your inventory"] call ALIVE_fnc_sendHint;
 	};
 
 	//-- Unified verb surface (Phase 5b of amb_civ_placement arc).
@@ -1172,7 +1172,7 @@ switch (_operation) do {
 		private _alreadyDetained = _civ getVariable ["detained", false];
 		private _aceLoaded = isClass (configFile >> "CfgPatches" >> "ace_main");
 		if (_aceLoaded && {!_alreadyDetained} && {!("ACE_CableTie" in (items player))}) exitWith {
-			hintSilent localize "STR_ALIVE_CIV_INTERACT_DETAIN_NEED_CUFFS";
+			[localize "STR_ALIVE_CIV_POP", localize "STR_ALIVE_CIV_INTERACT_DETAIN_NEED_CUFFS", true] call ALIVE_fnc_sendHint;
 			// Dialog stays open so the player can pick another action.
 		};
 
@@ -1321,13 +1321,13 @@ switch (_operation) do {
 			// Dialog stays open so the player can try other actions.
 			private _refusalChance = ((((_h - 50) * 1.2) max 0) min 75);
 			if (random 100 < _refusalChance) exitWith {
-				hint (localize "STR_ALIVE_CIV_INTERACT_INTEL_REFUSED");
+				[localize "STR_ALIVE_CIV_POP", localize "STR_ALIVE_CIV_INTERACT_INTEL_REFUSED"] call ALIVE_fnc_sendHint;
 			};
 
 			// Tier 2: base chance gate (civ has any info at all)
 			// Dialog stays open so the player can try other actions.
 			if (random 100 >= _chance) exitWith {
-				hint (localize "STR_ALIVE_CIV_INTERACT_INTEL_NOTHING");
+				[localize "STR_ALIVE_CIV_POP", localize "STR_ALIVE_CIV_INTERACT_INTEL_NOTHING"] call ALIVE_fnc_sendHint;
 			};
 
 			// Tier 3 vs Tier 4: deception vs truth (hostility-driven)
@@ -1343,7 +1343,7 @@ switch (_operation) do {
 			} else {
 				[getPosATL _civ, 2000] call ALiVE_fnc_OPCOMToggleInstallations;
 			};
-			hint (localize "STR_ALIVE_CIV_INTERACT_INTEL_REVEALED");
+			[localize "STR_ALIVE_CIV_POP", localize "STR_ALIVE_CIV_INTERACT_INTEL_REVEALED"] call ALIVE_fnc_sendHint;
 		};
 	};
 

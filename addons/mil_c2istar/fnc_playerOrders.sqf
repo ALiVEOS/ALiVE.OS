@@ -51,7 +51,7 @@ switch (_operation) do {
         ];
 
         if (!isNull _player && {_message != ""}) then {
-            [_message] remoteExec ["hint", owner _player];
+            [localize "STR_ALIVE_C2ISTAR", _message] remoteExec ["ALIVE_fnc_sendHint", owner _player];
         };
     };
     case "getGroupData": {

@@ -10,7 +10,7 @@ private ["_edit", "_grid", "_pos", "_mapSize"];
 // *ConfirmButtonEnable functions do select (lbCurSel ...) on that unit list - so the grid path must
 // honour the identical precondition or it can hit a -1 index the click path structurally avoids.
 if !(uinamespace getVariable ["NEO_radioMapClickArmed", false]) exitWith {
-    hint localize "STR_ALIVE_CS_UI_HINT_SELECT_UNIT";
+    [localize "STR_ALIVE_COMBATSUPPORT", localize "STR_ALIVE_CS_UI_HINT_SELECT_UNIT"] call ALIVE_fnc_sendHint;
 };
 
 _edit = (findDisplay 655555) displayCtrl 655636;
@@ -19,13 +19,13 @@ _grid = (_grid splitString " ") joinString ""; // strip spaces - players type "0
 
 _pos = _grid call NEO_fnc_radioGridToPos;
 if (_pos isEqualTo []) exitWith {
-    hint localize "STR_ALIVE_CS_UI_HINT_GRID_FORMAT";
+    [localize "STR_ALIVE_COMBATSUPPORT", localize "STR_ALIVE_CS_UI_HINT_GRID_FORMAT"] call ALIVE_fnc_sendHint;
 };
 
 // refuse a grid that lands off the map rather than silently placing the marker in the void
 _mapSize = getNumber (configFile >> "CfgWorlds" >> worldName >> "mapSize");
 if ((_pos select 0) < 0 || {(_pos select 0) > _mapSize} || {(_pos select 1) < 0} || {(_pos select 1) > _mapSize}) exitWith {
-    hint localize "STR_ALIVE_CS_UI_HINT_GRID_OFFMAP";
+    [localize "STR_ALIVE_COMBATSUPPORT", localize "STR_ALIVE_CS_UI_HINT_GRID_OFFMAP"] call ALIVE_fnc_sendHint;
 };
 
 [_pos] call NEO_fnc_supportSetTargetPos;

@@ -130,7 +130,7 @@ if ((_enemyunits > 0) && {!(_spawningNearEnemiesAllowed)}) then {
                         if (_freePosDriver > 0) then {
                             _unit moveInDriver (vehicle _playerUnit);
                         } else {
-                            hint "The Team Leader's vehicle currently has no empty seats to teleport to.";
+                            [localize "STR_ALIVE_multispawn", "The Team Leader's vehicle currently has no empty seats to teleport to."] call ALIVE_fnc_sendHint;
                         };
                     };
                 };

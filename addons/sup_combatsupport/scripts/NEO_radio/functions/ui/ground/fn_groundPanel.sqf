@@ -156,7 +156,7 @@ switch (_op) do {
     };
 
     case "confirm": {
-        if !(call ALIVE_fnc_combatSupportIsOperator) exitWith { hint localize "STR_ALIVE_CS_NOTOPERATOR" };
+        if !(call ALIVE_fnc_combatSupportIsOperator) exitWith { [localize "STR_ALIVE_COMBATSUPPORT", localize "STR_ALIVE_CS_NOTOPERATOR"] call ALIVE_fnc_sendHint };
         if (isNull _veh) exitWith {};
         private _task = _taskLb lbData (lbCurSel _taskLb);
         private _pos = +(uiNamespace getVariable ["NEO_groundPointA", getMarkerPos (NEO_radioLogic getVariable "NEO_supportMarker")]);
@@ -176,7 +176,7 @@ switch (_op) do {
     };
 
     case "base": {
-        if !(call ALIVE_fnc_combatSupportIsOperator) exitWith { hint localize "STR_ALIVE_CS_NOTOPERATOR" };
+        if !(call ALIVE_fnc_combatSupportIsOperator) exitWith { [localize "STR_ALIVE_COMBATSUPPORT", localize "STR_ALIVE_CS_NOTOPERATOR"] call ALIVE_fnc_sendHint };
         if (isNull _veh) exitWith {};
         private _me = (format ["%1", group player]) call NEO_fnc_callsignFix;
         _veh setVariable ["NEO_radioGroundNewTask", ["RTB", _veh getVariable ["ALIVE_CombatSupport_Base", []], 0, player], true];

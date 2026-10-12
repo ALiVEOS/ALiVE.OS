@@ -25,6 +25,7 @@ See Also:
 
 Author:
 Highhead
+Jman
 
 Peer reviewed:
 nil
@@ -39,7 +40,7 @@ params [
 
 //Execute on Server only
 if !(isServer) exitwith {
-    hint "Requesting mission from OPCOM! Please have some patience, soldier!";
+    [localize "STR_ALIVE_OPCOM", "Requesting mission from OPCOM! Please have some patience, soldier!"] call ALIVE_fnc_sendHint;
     [_unit,_state] remoteExec ["ALiVE_fnc_OPCOMjoinObjective",2];
 };
 

@@ -302,7 +302,7 @@ switch (_operation) do {
                             _display = findDisplay _display;
                             _control = _display displayCtrl MAP_CONTROL;
                             _control ctrlAddEventHandler ["MouseButtonClick", "[ALiVE_SYS_marker,'mouseButton',[player, _this]] call ALiVE_fnc_marker;"];
-                            _control ctrlAddEventHandler ["MouseButtonDblClick", "if (isNil 'ALIVE_SYS_MARKER_HINT_BRIEFING') then { hint 'Only ALIVE Advanced Markers will be stored when persistent saving. Default BIS markers will not be stored by ALIVE. CTRL-ALT-LEFT MOUSE BUTTON to create an Advanced Marker. CTRL-ALT-RIGHT MOUSE BUTTON to delete an Advanced Marker.'; ALIVE_SYS_MARKER_HINT_BRIEFING = true;};"];
+                            _control ctrlAddEventHandler ["MouseButtonDblClick", "if (isNil 'ALIVE_SYS_MARKER_HINT_BRIEFING') then { [localize 'STR_ALIVE_MARKER', 'Only ALIVE Advanced Markers will be stored when persistent saving. Default BIS markers will not be stored by ALIVE. CTRL-ALT-LEFT MOUSE BUTTON to create an Advanced Marker. CTRL-ALT-RIGHT MOUSE BUTTON to delete an Advanced Marker.'] call ALIVE_fnc_sendHint; ALIVE_SYS_MARKER_HINT_BRIEFING = true;};"];
                             _control ctrlAddEventHandler ["draw", "[ALiVE_SYS_marker,'draw',[player, _this]] call ALiVE_fnc_marker;"];
                             _control ctrlAddEventHandler ["MouseMoving", {[ALiVE_SYS_marker,"mouseMoving",[player, _this]] call ALiVE_fnc_marker;}];
 
@@ -343,7 +343,7 @@ switch (_operation) do {
 
                     _control = _display displayCtrl MAP_CONTROL;
                     _control ctrlAddEventHandler ["MouseButtonClick", "[ALiVE_SYS_marker,'mouseButton',[player, _this]] call ALiVE_fnc_marker;"];
-                    _control ctrlAddEventHandler ["MouseButtonDblClick", "if (isNil 'ALIVE_SYS_MARKER_HINT_MAP') then { hint 'Only ALIVE Advanced Markers will be stored when persistent saving. Default BIS markers will not be stored by ALIVE. CTRL-ALT-LEFT MOUSE BUTTON to create an Advanced Marker. CTRL-ALT-RIGHT MOUSE BUTTON to delete an Advanced Marker.'; ALIVE_SYS_MARKER_HINT_MAP = true;};"];
+                    _control ctrlAddEventHandler ["MouseButtonDblClick", "if (isNil 'ALIVE_SYS_MARKER_HINT_MAP') then { [localize 'STR_ALIVE_MARKER', 'Only ALIVE Advanced Markers will be stored when persistent saving. Default BIS markers will not be stored by ALIVE. CTRL-ALT-LEFT MOUSE BUTTON to create an Advanced Marker. CTRL-ALT-RIGHT MOUSE BUTTON to delete an Advanced Marker.'] call ALIVE_fnc_sendHint; ALIVE_SYS_MARKER_HINT_MAP = true;};"];
                     _control ctrlAddEventHandler ["draw", "[ALiVE_SYS_marker,'draw',[player, _this]] call ALiVE_fnc_marker;"];
                     _control ctrlAddEventHandler ["MouseMoving", {[ALiVE_SYS_marker,"mouseMoving",[player, _this]] call ALiVE_fnc_marker;}];
 
@@ -438,7 +438,7 @@ switch (_operation) do {
 
                                     switch (_toggle) do {
                                         case FREE_DRAW: {           // Free Draw
-                                            hintSilent "Free Draw Mode";
+                                            [localize "STR_ALIVE_MARKER", "Free Draw Mode", true] call ALIVE_fnc_sendHint;
                                        };
                                         case ARROW_DRAW: {          // Free Arrow Draw
                                             // Create Add to the arrow list
@@ -508,7 +508,7 @@ switch (_operation) do {
 
                         };
                     } else {
-                        hint "You are not authorized to add/edit this marker";
+                        [localize "STR_ALIVE_MARKER", "You are not authorized to add/edit this marker"] call ALIVE_fnc_sendHint;
                     };
                 } else {
                     if (typeName _check != "BOOL") then {
@@ -516,7 +516,7 @@ switch (_operation) do {
                             // delete marker
                             [_logic, "removeMarker",[_check]] call ALIVE_fnc_marker;
                         } else {
-                            hint "You are not authorized to delete this marker";
+                            [localize "STR_ALIVE_MARKER", "You are not authorized to delete this marker"] call ALIVE_fnc_sendHint;
                         };
                         _result = false;
                     };
@@ -622,7 +622,7 @@ switch (_operation) do {
                         private ["_title","_control"];
                         [_logic, "drawToggle", NO_DRAW] call ALIVE_fnc_marker;
                         _title =  "DRAW MODE OFF";
-                        hintSilent _title;
+                        [localize "STR_ALIVE_MARKER", _title, true] call ALIVE_fnc_sendHint;
                         _control = _display displayCtrl SYS_MARKER_MAP_TEXT;
                         _control ctrlSetText _title;
                     } else {
@@ -630,7 +630,7 @@ switch (_operation) do {
                         [_logic, "drawToggle", _toggle + 1] call ALIVE_fnc_marker;
                         switch (_toggle + 1) do {
                             case FREE_DRAW: {           // Free Draw
-                                hintSilent "Free Draw Mode";
+                                [localize "STR_ALIVE_MARKER", "Free Draw Mode", true] call ALIVE_fnc_sendHint;
                            };
                             case ARROW_DRAW: {          // Free Arrow Draw
                                 _title = "Arrow Draw Mode";
@@ -665,7 +665,7 @@ switch (_operation) do {
                     [_logic, "drawToggle", NO_DRAW] call ALIVE_fnc_marker;
                     [_logic, "drawing", false] call ALIVE_fnc_marker;
                     _title =  "DRAW MODE OFF";
-                    hintSilent _title;
+                    [localize "STR_ALIVE_MARKER", _title, true] call ALIVE_fnc_sendHint;
                     _control = _display displayCtrl SYS_MARKER_MAP_TEXT;
                     _control ctrlSetText _title;
                     _result = true;
@@ -754,7 +754,7 @@ switch (_operation) do {
                 _toggle = [_logic, "drawToggle"] call ALIVE_fnc_marker;
                 switch _toggle do {
                     case FREE_DRAW: {            // Free Draw
-                        hintSilent "Free Draw Mode";
+                        [localize "STR_ALIVE_MARKER", "Free Draw Mode", true] call ALIVE_fnc_sendHint;
                         GVAR(endpoint) = _pos;
                     };
                     case ARROW_DRAW: {            // Free Arrow Draw

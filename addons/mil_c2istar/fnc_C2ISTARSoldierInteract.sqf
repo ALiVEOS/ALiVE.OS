@@ -57,7 +57,7 @@ private _fnc_tr = {
 private _fnc_say = {
     params ["_text"];
     _text = _text call _fnc_tr;
-    if (isNull SI_DISPLAY) exitWith { hint _text };
+    if (isNull SI_DISPLAY) exitWith { [localize "STR_ALIVE_C2ISTAR", _text] call ALIVE_fnc_sendHint };
     // plain text: a name or callsign with < or & in it would break parsed markup
     (SI_DISPLAY displayCtrl 92602) ctrlSetStructuredText text _text;
 };
@@ -158,7 +158,7 @@ switch (_operation) do {
                     [["STR_ALIVE_C2ISTAR_SI_SEARCH_CARRIES", (_counted apply { if ((_x select 1) > 1) then { format ["%1 x%2", _x select 0, _x select 1] } else { _x select 0 } }) joinString ", "]] call _fnc_say;
                 };
             };
-            case "release": { "release" call _fnc_order; closeDialog 0; hint format [localize "STR_ALIVE_C2ISTAR_SI_RELEASE", name _target] };
+            case "release": { "release" call _fnc_order; closeDialog 0; [localize "STR_ALIVE_C2ISTAR", format [localize "STR_ALIVE_C2ISTAR_SI_RELEASE", name _target]] call ALIVE_fnc_sendHint };
             case "friendlies": {
                 // once a minute per soldier, as the old action was
                 if (_target getVariable ["ALiVE_c2istar_askedRecently", false]) exitWith { [["STR_ALIVE_C2ISTAR_SI_FRIENDLIES_AGAIN"]] call _fnc_say };

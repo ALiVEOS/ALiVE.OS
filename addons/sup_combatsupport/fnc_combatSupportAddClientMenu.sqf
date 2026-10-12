@@ -101,7 +101,7 @@ NEO_radioLogic setVariable ["NEO_radioPlayerActionArray",
                 // moved in without being assigned: a pilot landed to pick men up lifts off by himself
                 // once everyone assigned to the aircraft is aboard
                 { [_x, _heli] remoteExecCall ["moveInCargo", _x] } forEach _hurt;
-                hint format ["%1 wounded loaded, %2 seats left.", count _hurt, (_room - count _hurt) max 0];
+                [localize "STR_ALIVE_COMBATSUPPORT", format ["%1 wounded loaded, %2 seats left.", count _hurt, (_room - count _hurt) max 0]] call ALIVE_fnc_sendHint;
             },
             "medevacLoad",
             -1,

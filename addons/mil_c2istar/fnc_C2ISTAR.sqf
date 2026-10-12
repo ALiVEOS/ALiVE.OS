@@ -1295,7 +1295,7 @@ switch(_operation) do {
                 if !((side group player) in _sides) exitWith {};
                 if !(player diarySubjectExists "ALiVE_AirPicture") then { player createDiarySubject ["ALiVE_AirPicture", "AIR PICTURE"] };
                 player createDiaryRecord ["ALiVE_AirPicture", [format ["%1 %2", _time, _text], format ["%1: %2.", _time, _text]]];
-                hintSilent format ["AIR PICTURE\n%1", _text];
+                [localize "STR_ALIVE_C2ISTAR", format ["AIR PICTURE\n%1", _text], true] call ALIVE_fnc_sendHint;
             };
             "ALiVE_c2istar_airLoss" addPublicVariableEventHandler { (_this select 1) call ALiVE_c2istar_fnc_showAirLoss };
         };
@@ -1356,7 +1356,7 @@ switch(_operation) do {
                     "%1: %2 friendly groups within a kilometre of here. They're on your map for the next two minutes."
                 ] select ((count _groups) min 2);
                 // the soldier window shows the answer itself
-                if (isNull findDisplay 9260) then { hint format [_say, name _target, count _groups] };
+                if (isNull findDisplay 9260) then { [localize "STR_ALIVE_C2ISTAR", format [_say, name _target, count _groups]] call ALIVE_fnc_sendHint };
                 count _groups
             };
         };
@@ -1465,7 +1465,7 @@ switch(_operation) do {
             ALiVE_c2istar_fnc_showAnswer = {
                 params ["_name", "_positions", "_side"];
                 private _prefix = switch (_side) do { case west: {"b_"}; case east: {"o_"}; case resistance: {"n_"}; default {"o_"} };
-                private _fnc_tell = { if (isNull findDisplay 9260) then { hint _this } else { ((findDisplay 9260) displayCtrl 92602) ctrlSetStructuredText text _this } };
+                private _fnc_tell = { if (isNull findDisplay 9260) then { [localize "STR_ALIVE_C2ISTAR", _this] call ALIVE_fnc_sendHint } else { ((findDisplay 9260) displayCtrl 92602) ctrlSetStructuredText text _this } };
                 if (_positions isEqualTo []) exitWith { (format ["%1 won't tell you anything.", _name]) call _fnc_tell };
                 {
                     private _m = createMarkerLocal [format ["ALiVE_c2istar_pow_%1_%2", round time, _forEachIndex], _x];
@@ -3848,7 +3848,7 @@ if (isServer) then {
                         // With Automatic Player Tasks off the choice is kept and starts once they're
                         // on again. Said here, or the button looks as if it did nothing.
                         if (_autoGenerate != "None" && {!(missionNamespace getVariable ["ALiVE_c2istar_autoPlayerTasks", true])}) then {
-                            hint "Automatic player tasks are switched off for this mission, so none will arrive until they're turned back on, on the C2ISTAR module or from the commander menu. Your choice is kept until then.";
+                            [localize "STR_ALIVE_C2ISTAR", "Automatic player tasks are switched off for this mission, so none will arrive until they're turned back on, on the C2ISTAR module or from the commander menu. Your choice is kept until then."] call ALIVE_fnc_sendHint;
                         };
 
                     };

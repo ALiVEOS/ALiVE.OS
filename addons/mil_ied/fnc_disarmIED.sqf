@@ -37,7 +37,7 @@ _IEDCharge = _IED getVariable ["charge", nil];
 // Bail immediately if this container has already been disarmed - stale addActions
 // on other clients can still fire after the charge has been recovered.
 if (_IED getVariable ["ALiVE_IED_Disarmed", false]) exitWith {
-    hint "IED already disarmed.";
+    [localize "STR_ALIVE_ied", "IED already disarmed."] call ALIVE_fnc_sendHint;
 };
 
 // Everything below needs scheduled context (sleep / waitUntil). addAction
@@ -82,17 +82,17 @@ if (_IED getVariable ["ALiVE_IED_Disarmed", false]) exitWith {
             private _chargeMag = "DemoCharge_Remote_Mag";
             if (_caller canAdd _chargeMag) then {
                 _caller addMagazine _chargeMag;
-                hint format ["%1 Charge recovered - added to inventory.", _successHint];
+                [localize "STR_ALIVE_ied", format ["%1 Charge recovered - added to inventory.", _successHint]] call ALIVE_fnc_sendHint;
             } else {
                 private _holderPos = _caller getPos [3, random 360];
                 private _holder = createVehicle ["GroundWeaponHolder", _holderPos, [], 2, "NONE"];
                 _holder addMagazineCargoGlobal [_chargeMag, 1];
-                hint format ["%1 Inventory full - charge placed on the ground nearby.", _successHint];
+                [localize "STR_ALIVE_ied", format ["%1 Inventory full - charge placed on the ground nearby.", _successHint]] call ALIVE_fnc_sendHint;
             };
         } else {
             // Dud or 3rd-party IED: no separate charge to recover. Leave the
             // container alive but announce the disarm.
-            hint _successHint;
+            [localize "STR_ALIVE_ied", _successHint] call ALIVE_fnc_sendHint;
         };
     };
 
@@ -120,7 +120,7 @@ if (_IED getVariable ["ALiVE_IED_Disarmed", false]) exitWith {
     };
 
     if (_disarmTime > 0) then {
-        hint format ["Disarming IED… (~%1s)", round _disarmTime];
+        [localize "STR_ALIVE_ied", format ["Disarming IED… (~%1s)", round _disarmTime]] call ALIVE_fnc_sendHint;
 
         // Interruptible wait. If the server-side accumulator detonates the IED
         // during disarm, our reference goes null and we bail.
@@ -131,7 +131,7 @@ if (_IED getVariable ["ALiVE_IED_Disarmed", false]) exitWith {
             _elapsed = _elapsed + 1;
         };
     } else {
-        hint "Disarming IED…";
+        [localize "STR_ALIVE_ied", "Disarming IED…"] call ALIVE_fnc_sendHint;
     };
 
     if (isNull _IED || !alive _IED) exitWith {

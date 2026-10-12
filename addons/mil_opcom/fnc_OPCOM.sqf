@@ -3773,7 +3773,7 @@ switch (_operation) do {
         if !(hasInterface) exitwith {};
 
         // Only run function if objectives are provided
-        if (count _objectives == 0) exitwith {hint "OPCOM currently has no assault objectives in his list!"};
+        if (count _objectives == 0) exitwith {[localize "STR_ALIVE_OPCOM", "OPCOM currently has no assault objectives in his list!"] call ALIVE_fnc_sendHint};
 
         // Mark objectives, this handy function should be moved to x lib
         _fnc_createMarkerArray = {
@@ -3810,10 +3810,10 @@ switch (_operation) do {
         [_positions,_color,"RECTANGLE",[500,500],"EMPTY","","FDiagonal",0.5] call _fnc_createMarkerArray;
 
         // Select position on map
-        openmap true; hint "Click on map to select objective!";
+        openmap true; [localize "STR_ALIVE_OPCOM", "Click on map to select objective!"] call ALIVE_fnc_sendHint;
         ALiVE_MIL_OPCOM_CLICKPOS = nil; onMapSingleclick "ALiVE_MIL_OPCOM_CLICKPOS = _pos; onMapSingleclick ''";
         waituntil {!isnil "ALiVE_MIL_OPCOM_CLICKPOS"}; _pos = ALiVE_MIL_OPCOM_CLICKPOS;
-        ALiVE_MIL_OPCOM_CLICKPOS = nil; hint "Objective selected! Please wait while OPCOM is preparing the operation...";
+        ALiVE_MIL_OPCOM_CLICKPOS = nil; [localize "STR_ALIVE_OPCOM", "Objective selected! Please wait while OPCOM is preparing the operation..."] call ALIVE_fnc_sendHint;
 
         // Get nearest objective from that position
         _objectives = [_objectives,[_pos],{_Input0 distance ([_x,"center"] call ALiVE_fnc_HashGet)},"ASCEND"] call ALiVE_fnc_SortBy;
@@ -3850,7 +3850,7 @@ switch (_operation) do {
         _profileUnit = _profilesById get (_unit getvariable ["profileID",""]);
         if (isnil "_profileUnit") then {_error = "OPCOM reports that players group cannot be assigned!"};
 
-        if !(isnil "_error") exitwith {hint _error; ["%1",_error] call ALiVE_fnc_Dump};
+        if !(isnil "_error") exitwith {[localize "STR_ALIVE_OPCOM", _error] call ALIVE_fnc_sendHint; ["%1",_error] call ALiVE_fnc_Dump};
 
         _players = []; {if (isPlayer _x) then {_players pushback _x}} foreach (units group _unit);
 

@@ -5,7 +5,7 @@ private
     "_Coord","_weapon","_loiterDuration"
 ];
 // #940 follow-up: in "first player only" mode, only the current operator may dispatch.
-if !(call ALIVE_fnc_combatSupportIsOperator) exitWith { hint localize "STR_ALIVE_CS_NOTOPERATOR"; };
+if !(call ALIVE_fnc_combatSupportIsOperator) exitWith { [localize "STR_ALIVE_COMBATSUPPORT", localize "STR_ALIVE_CS_NOTOPERATOR"] call ALIVE_fnc_sendHint; };
 _display = findDisplay 655555;
 _casUnitLb = _display displayCtrl 655582;
 _casTaskLb = _display displayCtrl 655587;

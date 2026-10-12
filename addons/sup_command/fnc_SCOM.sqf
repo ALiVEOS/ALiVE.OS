@@ -5758,7 +5758,7 @@ switch (_operation) do {
         // if pip is disabled, notify player
 
         if !(isPiPEnabled) then {
-            hint "PiP is disabled in your video settings. PiP must be enabled for ALiVE IMINT to function.";
+            [localize "STR_ALIVE_SCOM", "PiP is disabled in your video settings. PiP must be enabled for ALiVE IMINT to function."] call ALIVE_fnc_sendHint;
         };
 
         _commandState = [_logic,"commandState"] call MAINCLASS;
