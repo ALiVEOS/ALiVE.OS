@@ -84,7 +84,7 @@ class Cfg3DEN {
             side = 1;
             editorCategory = "ALiVE_PresetCat";
             editorSubcategory = "ALiVE_PresetSub";
-            displayName = "NATO holds one area of the island";
+            displayName = "One area: NATO holds an area you mark";
             icon = "\A3\ui_f\data\map\markers\nato\b_inf.paa";
             useSideColorOnIcon = 1;
         };
@@ -93,7 +93,7 @@ class Cfg3DEN {
             side = 1;
             editorCategory = "ALiVE_PresetCat";
             editorSubcategory = "ALiVE_PresetSub";
-            displayName = "NATO takes and holds an island";
+            displayName = "Whole island: NATO takes and holds an island";
             icon = "\A3\ui_f\data\map\markers\nato\b_inf.paa";
             useSideColorOnIcon = 1;
         };
