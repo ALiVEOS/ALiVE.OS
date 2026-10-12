@@ -1467,8 +1467,8 @@
 </Key>
 <Key ID="STR_ALIVE_CS_UI_CAS_RADIUS">
     <English>CAS Radius: %1m</English>
-    <Chinesesimp>近距离空中支援半径：%1米</Chinesesimp>
-    <Chinese>近距離空中支援半徑：%1公尺</Chinese>
+    <Chinesesimp>CAS半径：%1米</Chinesesimp>
+    <Chinese>CAS半徑：%1公尺</Chinese>
     <Spanish>Radio de CAS: %1 m</Spanish>
     <French>Rayon CAS : %1 m</French>
     <Portuguese>Raio de CAS: %1 m</Portuguese>
@@ -1551,7 +1551,7 @@
     <Chinesesimp>选择要吊运的货物：</Chinesesimp>
     <Chinese>選擇要吊運的貨物：</Chinese>
     <Spanish>Selecciona la carga a elevar:</Spanish>
-    <French>Choisissez la charge à hélitreuiller :</French>
+    <French>Choisissez la charge à élinguer :</French>
     <Portuguese>Selecione a carga a içar:</Portuguese>
     <Russian>Выберите груз для подъёма:</Russian>
 </Key>
@@ -1593,12 +1593,12 @@
 </Key>
 <Key ID="STR_ALIVE_CS_UI_TR_ROE_HOLD">
     <English>ROE: Hold Fire</English>
-    <Chinesesimp>交战规则：停火</Chinesesimp>
-    <Chinese>交戰規則：停火</Chinese>
-    <Spanish>ROE: alto el fuego</Spanish>
-    <French>ROE : cessez-le-feu</French>
-    <Portuguese>ROE: cessar fogo</Portuguese>
-    <Russian>Огонь: не стрелять</Russian>
+    <Chinesesimp>交战规则：禁止开火</Chinesesimp>
+    <Chinese>交戰規則：禁止開火</Chinese>
+    <Spanish>ROE: no abrir fuego</Spanish>
+    <French>ROE : ne pas tirer</French>
+    <Portuguese>ROE: não abrir fogo</Portuguese>
+    <Russian>Режим огня: не стрелять</Russian>
 </Key>
 <Key ID="STR_ALIVE_CS_UI_TR_ROE_FREE">
     <English>ROE: Fire At Will</English>
@@ -1607,33 +1607,33 @@
     <Spanish>ROE: fuego a discreción</Spanish>
     <French>ROE : feu à volonté</French>
     <Portuguese>ROE: fogo à vontade</Portuguese>
-    <Russian>Огонь: по готовности</Russian>
+    <Russian>Режим огня: по готовности</Russian>
 </Key>
 <Key ID="STR_ALIVE_CS_UI_ROE_BLUE">
     <English>Hold Fire</English>
-    <Chinesesimp>停火</Chinesesimp>
-    <Chinese>停火</Chinese>
-    <Spanish>Alto el fuego</Spanish>
-    <French>Cessez-le-feu</French>
-    <Portuguese>Cessar fogo</Portuguese>
+    <Chinesesimp>禁止开火</Chinesesimp>
+    <Chinese>禁止開火</Chinese>
+    <Spanish>No abrir fuego</Spanish>
+    <French>Ne pas tirer</French>
+    <Portuguese>Não abrir fogo</Portuguese>
     <Russian>Не стрелять</Russian>
 </Key>
 <Key ID="STR_ALIVE_CS_UI_ROE_GREEN">
     <English>Hold Fire - Defend</English>
-    <Chinesesimp>停火 - 防御</Chinesesimp>
-    <Chinese>停火 - 防禦</Chinese>
-    <Spanish>Alto el fuego - defender</Spanish>
-    <French>Cessez-le-feu - défendre</French>
-    <Portuguese>Cessar fogo - defender</Portuguese>
+    <Chinesesimp>禁止开火 - 防御</Chinesesimp>
+    <Chinese>禁止開火 - 防禦</Chinese>
+    <Spanish>No abrir fuego - defender</Spanish>
+    <French>Ne pas tirer - défendre</French>
+    <Portuguese>Não abrir fogo - defender</Portuguese>
     <Russian>Не стрелять - оборона</Russian>
 </Key>
 <Key ID="STR_ALIVE_CS_UI_ROE_WHITE">
     <English>Hold Fire - Return Fire</English>
-    <Chinesesimp>停火 - 还击</Chinesesimp>
-    <Chinese>停火 - 還擊</Chinese>
-    <Spanish>Alto el fuego - responder al fuego</Spanish>
-    <French>Cessez-le-feu - riposter</French>
-    <Portuguese>Cessar fogo - revidar</Portuguese>
+    <Chinesesimp>禁止开火 - 还击</Chinesesimp>
+    <Chinese>禁止開火 - 還擊</Chinese>
+    <Spanish>No abrir fuego - responder al fuego</Spanish>
+    <French>Ne pas tirer - riposter</French>
+    <Portuguese>Não abrir fogo - revidar</Portuguese>
     <Russian>Не стрелять - ответный огонь</Russian>
 </Key>
 <Key ID="STR_ALIVE_CS_UI_ROE_YELLOW">
@@ -1670,7 +1670,7 @@
     <Spanish>Último disparo: %1</Spanish>
     <French>Dernier tir : %1</French>
     <Portuguese>Último disparo: %1</Portuguese>
-    <Russian>Последний огонь: %1</Russian>
+    <Russian>Последний залп: %1</Russian>
 </Key>
 <Key ID="STR_ALIVE_CS_UI_MARKER_TRANSPORT">
     <English>Transport</English>
@@ -1866,9 +1866,9 @@
     <Chinesesimp>盘旋</Chinesesimp>
     <Chinese>盤旋</Chinese>
     <Spanish>CIRCULAR</Spanish>
-    <French>CERCLER</French>
+    <French>ORBITE</French>
     <Portuguese>CIRCULAR</Portuguese>
-    <Russian>КРУЖЕНИЕ</Russian>
+    <Russian>ПОЛЁТ ПО КРУГУ</Russian>
 </Key>
 <Key ID="STR_ALIVE_CS_UI_TRTASK_INSERTION">
     <English>INSERTION</English>
