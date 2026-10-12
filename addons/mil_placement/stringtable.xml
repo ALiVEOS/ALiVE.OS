@@ -1305,13 +1305,13 @@
     <Russian>Код SQF, выполняемый каждый раз при создании юнита этим модулем. _this = [unit, profileID, side, faction]. Выполняется на стороне сервера в запланированном потоке. Чтобы повлиять на всех клиентов, используйте remoteExec или publicVariable. hint и команды игрока не действуют. Пример: _this params ["_unit"]; ["fnc_mySetup", _unit] remoteExec ["BIS_fnc_call"];</Russian>
 </Key>
 <Key ID="STR_ALIVE_MP_ON_EACH_SPAWN_ONCE">
-    <English>Run once per unit:</English>
-    <Chinese>每個單位執行一次：</Chinese>
-    <Chinesesimp>每个单位执行一次：</Chinesesimp>
-    <Spanish>Ejecutar una vez por unidad:</Spanish>
-    <French>Exécuter une fois par unité:</French>
-    <Portuguese>Executar uma vez por unidade:</Portuguese>
-    <Russian>Выполнить один раз для юнита:</Russian>
+    <English>Run once per group:</English>
+    <Chinese>每個小組執行一次：</Chinese>
+    <Chinesesimp>每个小组执行一次：</Chinesesimp>
+    <Spanish>Ejecutar una vez por grupo:</Spanish>
+    <French>Exécuter une fois par groupe :</French>
+    <Portuguese>Executar uma vez por grupo:</Portuguese>
+    <Russian>Выполнить один раз для группы:</Russian>
 </Key>
 <Key ID="STR_ALIVE_MP_ON_EACH_SPAWN_ONCE_COMMENT">
     <English>Yes (the default): the SQF hook runs once for each group, when it first spawns, and not again when the group spawns back in after being virtual or after a load. No: it runs every time the group spawns, which keeps anything it adds to the soldiers, such as event handlers, in place, since each spawn creates new soldiers.</English>
