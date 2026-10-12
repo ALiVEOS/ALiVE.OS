@@ -175,10 +175,11 @@ private _tick = {
             };
         };
 
-        // A steady trickle of supply, when the module sets one (FOB supply mode only)
+        // A steady trickle of supply, Supply Per Minute, when the module sets one (FOB supply mode only)
         private _trickle = "fob_supply_trickle" call _set;
         if (_trickle > 0 && {("fob_supply_source" call _set) == "FOBPOOL"} && {([_entry, "status", ""] call ALIVE_fnc_hashGet) == "active"}) then {
-            ["credit", [_id, _trickle, "trickle"]] call ALiVE_fnc_fobSupply;
+            // Supply Per Minute, for the time this pass covers
+            ["credit", [_id, _trickle * _dt / 60, "trickle"]] call ALiVE_fnc_fobSupply;
         };
 
         // Running low: ask the side's Military Logistics for a supply truck, at most every 10

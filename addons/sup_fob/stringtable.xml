@@ -39,7 +39,7 @@
                 <English>Distance Between FOBs (m)</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_MIN_DISTANCE_COMMENT">
-                <English>A new FOB can't be deployed closer than this to another FOB of the same side.</English>
+                <English>A new FOB can't be deployed closer than this to another FOB, of any side.</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_HUB_WEST">
                 <English>Headquarters Building (BLUFOR)</English>
@@ -351,7 +351,7 @@
                 <English>Tier 3 Cost</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_TIER_COST_COMMENT">
-                <English>Supply to upgrade a FOB to this tier. Tier 2 can hold more supply and builds towers, machine guns and grenade launchers; tier 3 holds the most, builds mortars, AT and AA, and can be a respawn point.</English>
+                <English>Supply to upgrade a FOB to this tier. Tier 2 can hold more supply and builds towers, machine guns and grenade launchers; tier 3 holds the most, builds mortars, AT and AA launchers and vehicles, and can be a respawn point.</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_RESPAWN">
                 <English>Respawn at Tier 3</English>
