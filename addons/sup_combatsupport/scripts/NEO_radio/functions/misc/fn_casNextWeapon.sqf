@@ -13,7 +13,7 @@
 // ------------------------------------------------------------------
 params ["_veh", "_usable"];
 
-private _loaded = _usable select { (_veh ammo _x) > 0 };
+private _loaded = _usable select { ([_veh, _x] call NEO_fnc_casWeaponAmmo) > 0 };
 if (_loaded isEqualTo []) exitWith { "" };
 
 private _pick = "";

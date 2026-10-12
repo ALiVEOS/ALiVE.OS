@@ -285,7 +285,7 @@ _grp setCombatMode "BLUE";
 // superseded delivery; the loop also switches through the whole usable set before winchester.
 while {
     alive _veh
-    && {(_usableWeapons findIf { (_veh ammo _x) > 0 }) > -1}
+    && {(_usableWeapons findIf { ([_veh, _x] call NEO_fnc_casWeaponAmmo) > 0 }) > -1}
     && {(_veh getVariable ["NEO_casSortieId", 0]) == _mySortie}
     && {(_veh getVariable ["NEO_radioCurrentTask", []]) isEqualTo _myTask}
     && {!(_veh getVariable ["NEO_radioCasUnitBreakOff", false])}
@@ -305,7 +305,7 @@ while {
     // weapon (same priority as AUTO), re-run the per-family setup + re-aim, and keep
     // attacking. A specific pick no longer forces an early winchester. The while gate
     // only let this pass run because something is still loaded, so a pick always lands.
-    if ((_veh ammo _weapon) <= 0 || {!(_weapon in _usableWeapons)}) then {
+    if (([_veh, _weapon] call NEO_fnc_casWeaponAmmo) <= 0 || {!(_weapon in _usableWeapons)}) then {
         private _next = [_veh, _usableWeapons] call NEO_fnc_casNextWeapon;
         if (_next != "" && {_next != _weapon}) then {
             [[_veh, format ["%1 is out of %2, switching to %3. Out.", _callsign, [configFile >> "CfgWeapons" >> _weapon] call bis_fnc_displayName, [configFile >> "CfgWeapons" >> _next] call bis_fnc_displayName], "side"],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;
@@ -641,7 +641,7 @@ private _stale = isNull _veh
     || {(_veh getVariable ["NEO_casSortieId", 0]) != _mySortie}
     || {!((_veh getVariable ["NEO_radioCurrentTask", []]) isEqualTo _myTask)};
 // genuinely dry = every USABLE weapon is empty (a specific pick running out is a switch)
-private _winchester = isNull _veh || {(_usableWeapons findIf { (_veh ammo _x) > 0 }) == -1};
+private _winchester = isNull _veh || {(_usableWeapons findIf { ([_veh, _x] call NEO_fnc_casWeaponAmmo) > 0 }) == -1};
 
 // per-instance teardown (our own laser/dummy/EH/ACE handle - safe even when stale; a
 // superseding sortie created its OWN objects and holds a different Fired EH id)
@@ -707,6 +707,6 @@ if (!_stale) then {
         private _basePos = _veh getVariable ["ALIVE_CombatSupport_Base", _oldPos];
         _veh setVariable ["NEO_radioCasNewTask", ["RTB", _basePos, 0, 0, "", "", objNull], true];
 
-        if (!isNil "ALiVE_sup_combatsupport_debug" && {ALiVE_sup_combatsupport_debug}) then { ["CAS-RTB: %1 reason=%2 fuel=%3 damage=%4 usableAmmo=%5", _callsign, _rtbReason, fuel _veh, damage _veh, _usableWeapons apply { [_x, _veh ammo _x] }] call ALiVE_fnc_dump; };
+        if (!isNil "ALiVE_sup_combatsupport_debug" && {ALiVE_sup_combatsupport_debug}) then { ["CAS-RTB: %1 reason=%2 fuel=%3 damage=%4 usableAmmo=%5", _callsign, _rtbReason, fuel _veh, damage _veh, _usableWeapons apply { [_x, [_veh, _x] call NEO_fnc_casWeaponAmmo] }] call ALiVE_fnc_dump; };
     };
 };

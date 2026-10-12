@@ -126,6 +126,7 @@ NEO_fnc_reenableWeapons = compile preprocessFileLineNumbers "x\alive\addons\sup_
 NEO_fnc_casWeaponFamily = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_casWeaponFamily.sqf";
 NEO_fnc_casUsableWeapons = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_casUsableWeapons.sqf";
 NEO_fnc_casNextWeapon = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_casNextWeapon.sqf";
+NEO_fnc_casWeaponAmmo = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_casWeaponAmmo.sqf";
 NEO_fnc_casPrepareWeapons = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_casPrepareWeapons.sqf";
 
 //ARTY

@@ -42,7 +42,7 @@ private _ammoCount = [];
 } forEach (weapons _veh);
 
 private _weapon = _weaponPick;
-if (_weapon == "AUTO" || {!(_weapon in _usable)} || {(_veh ammo _weapon) <= 0}) then {
+if (_weapon == "AUTO" || {!(_weapon in _usable)} || {([_veh, _weapon] call NEO_fnc_casWeaponAmmo) <= 0}) then {
     _weapon = [_veh, _usable] call NEO_fnc_casNextWeapon;
 };
 // completely dry / weaponless airframe: fall back to the first real weapon so the
