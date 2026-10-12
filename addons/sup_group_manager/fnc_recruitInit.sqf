@@ -128,11 +128,11 @@ ALiVE_fnc_recruitUnit = {
     _settings params ["", "", "", "_max", "_skill", "", "", "", "_code"];
     private _group = group player;
     private _size = { alive _x } count units _group;
-    if (_size >= _max) exitWith { hint format ["Your group is full: %1 is the most it can have.", _max]; false };
-    if (time < (player getVariable ["ALiVE_recruitNext", 0])) exitWith { hint "Give the last recruit a moment."; false };
+    if (_size >= _max) exitWith { hint format [localize "STR_ALIVE_RECRUIT_UI_GROUP_FULL", _max]; false };
+    if (time < (player getVariable ["ALiVE_recruitNext", 0])) exitWith { hint localize "STR_ALIVE_RECRUIT_UI_WAIT"; false };
     ([_object, _settings, false, _class] call ALiVE_fnc_recruitSpawnPos) params ["_pos", "_dir", "_exact"];
     private _unit = _group createUnit [_class, ASLToAGL _pos, [], [2, 0] select _exact, "NONE"];
-    if (isNull _unit) exitWith { hint "Nobody is available to join you."; false };
+    if (isNull _unit) exitWith { hint localize "STR_ALIVE_RECRUIT_UI_NOBODY"; false };
     player setVariable ["ALiVE_recruitNext", time + 3];
     if (_exact) then { _unit setPosASL _pos };
     _unit setDir _dir;
@@ -144,7 +144,7 @@ ALiVE_fnc_recruitUnit = {
     // the module's code, kept with him so a player save that brings him back runs it again
     _unit setVariable ["ALiVE_recruitCode", _settings param [9, ""], true];
     _unit call _code;
-    hint format ["%1 has joined your group (%2 of %3).", getText (configFile >> "CfgVehicles" >> _class >> "displayName"), _size + 1, _max];
+    hint format [localize "STR_ALIVE_RECRUIT_UI_JOINED", getText (configFile >> "CfgVehicles" >> _class >> "displayName"), _size + 1, _max];
     true
 };
 
@@ -157,12 +157,12 @@ ALiVE_fnc_recruitVehicle = {
     params ["_object", "_class", "_settings"];
     _settings params ["", "", "", "", "", "_maxVeh", "", "", "_code"];
     private _have = count (call ALiVE_fnc_recruitVehiclesOwned);
-    if (_have >= _maxVeh) exitWith { hint format ["You have %1 of %2 vehicles already. One has to be destroyed before you can take another.", _have, _maxVeh]; false };
-    if (time < (player getVariable ["ALiVE_recruitNext", 0])) exitWith { hint "Give the last one a moment."; false };
+    if (_have >= _maxVeh) exitWith { hint format [localize "STR_ALIVE_RECRUIT_UI_VEH_FULL", _have, _maxVeh]; false };
+    if (time < (player getVariable ["ALiVE_recruitNext", 0])) exitWith { hint localize "STR_ALIVE_RECRUIT_UI_WAIT"; false };
     ([_object, _settings, true, _class] call ALiVE_fnc_recruitSpawnPos) params ["_pos", "_dir", "_exact"];
-    if (_pos isEqualTo []) exitWith { hint "The spawn point is taken. Move the vehicle that's there and try again."; false };
+    if (_pos isEqualTo []) exitWith { hint localize "STR_ALIVE_RECRUIT_UI_SPAWN_TAKEN"; false };
     private _veh = createVehicle [_class, [0, 0, 1000 + random 500], [], 0, "CAN_COLLIDE"];
-    if (isNull _veh) exitWith { hint "That vehicle isn't available."; false };
+    if (isNull _veh) exitWith { hint localize "STR_ALIVE_RECRUIT_UI_VEH_NONE"; false };
     player setVariable ["ALiVE_recruitNext", time + 5];
     _veh setDir _dir;
     _veh setPosASL _pos;
@@ -171,7 +171,7 @@ ALiVE_fnc_recruitVehicle = {
     // a player's own, so a Zeus virtualise doesn't hand it to an AI commander
     _veh setVariable ["ALIVE_profileIgnore", true, true];
     _veh call _code;
-    hint format ["%1 is ready (%2 of %3 vehicles).", getText (configFile >> "CfgVehicles" >> _class >> "displayName"), _have + 1, _maxVeh];
+    hint format [localize "STR_ALIVE_RECRUIT_UI_VEH_READY", getText (configFile >> "CfgVehicles" >> _class >> "displayName"), _have + 1, _maxVeh];
     true
 };
 
@@ -201,19 +201,19 @@ ALiVE_fnc_recruitVehicle = {
     {
         private _object = _x;
         if (_window) then {
-            _object addAction ["Recruitment", { ["open", _this select 3] call ALiVE_fnc_recruitWindow },
+            _object addAction [localize "STR_ALIVE_RECRUIT", { ["open", _this select 3] call ALiVE_fnc_recruitWindow },
                 [_object, _settings], 1.5, true, true, "", "alive _target && {vehicle _this isEqualTo _this}", 5];
         } else {
             {
                 _object addAction [
-                    format ["Recruit %1", getText (configFile >> "CfgVehicles" >> _x >> "displayName")],
+                    format [localize "STR_ALIVE_RECRUIT_UI_ACTION_RECRUIT", getText (configFile >> "CfgVehicles" >> _x >> "displayName")],
                     { (_this select 3) call ALiVE_fnc_recruitUnit },
                     [_object, _x, _settings], 1.5, false, true, "", "alive _target && {vehicle _this isEqualTo _this}", 5
                 ];
             } forEach _classes;
             {
                 _object addAction [
-                    format ["Take %1", getText (configFile >> "CfgVehicles" >> _x >> "displayName")],
+                    format [localize "STR_ALIVE_RECRUIT_UI_ACTION_TAKE", getText (configFile >> "CfgVehicles" >> _x >> "displayName")],
                     { (_this select 3) call ALiVE_fnc_recruitVehicle },
                     [_object, _x, _settings], 1.4, false, true, "", "alive _target && {vehicle _this isEqualTo _this}", 5
                 ];

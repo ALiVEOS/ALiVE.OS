@@ -47,8 +47,8 @@ private _fnc_status = {
     private _settings = (uiNamespace getVariable ["ALiVE_recruitAt", []]) param [1, []];
     if (_settings isEqualTo [] || {isNull RW_DISPLAY}) exitWith {};
     _settings params ["", "", "_vehicles", "_max", "", "_maxVeh"];
-    private _lines = [format ["Your group: %1 of %2", { alive _x } count units group player, _max]];
-    if (_vehicles isNotEqualTo []) then { _lines pushBack format ["Your vehicles: %1 of %2", count (call ALiVE_fnc_recruitVehiclesOwned), _maxVeh] };
+    private _lines = [format [localize "STR_ALIVE_RECRUIT_UI_STATUS_GROUP", { alive _x } count units group player, _max]];
+    if (_vehicles isNotEqualTo []) then { _lines pushBack format [localize "STR_ALIVE_RECRUIT_UI_STATUS_VEHICLES", count (call ALiVE_fnc_recruitVehiclesOwned), _maxVeh] };
     (RW_DISPLAY displayCtrl 92704) ctrlSetStructuredText ([_lines] call _fnc_lines);
 };
 
@@ -86,12 +86,12 @@ switch (_operation) do {
         private _cfg = configFile >> "CfgVehicles" >> _class;
         private _lines = [getText (_cfg >> "displayName")];
         if (_isVehicle) then {
-            _lines pushBack "A vehicle, empty: crew it yourselves.";
-            _lines pushBack format ["Seats for passengers: %1", getNumber (_cfg >> "transportSoldier")];
+            _lines pushBack localize "STR_ALIVE_RECRUIT_UI_DESC_VEHICLE";
+            _lines pushBack format [localize "STR_ALIVE_RECRUIT_UI_DESC_SEATS", getNumber (_cfg >> "transportSoldier")];
         } else {
             private _weapons = (getArray (_cfg >> "weapons")) select { !(_x in ["Throw", "Put"]) } apply { getText (configFile >> "CfgWeapons" >> _x >> "displayName") };
-            _lines pushBack "A soldier for your group.";
-            if (_weapons isNotEqualTo []) then { _lines pushBack format ["Carries: %1", _weapons joinString ", "] };
+            _lines pushBack localize "STR_ALIVE_RECRUIT_UI_DESC_SOLDIER";
+            if (_weapons isNotEqualTo []) then { _lines pushBack format [localize "STR_ALIVE_RECRUIT_UI_DESC_CARRIES", _weapons joinString ", "] };
         };
         (RW_DISPLAY displayCtrl 92703) ctrlSetStructuredText ([_lines, true] call _fnc_lines);
     };

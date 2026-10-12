@@ -21,7 +21,7 @@ class ALiVE_RecruitWindow {
         };
         class RecruitUI_Header: RecruitUI_RscText {
             idc = 92701;
-            text = "Recruitment";
+            text = "$STR_ALIVE_RECRUIT";
             x = 0.30 * safezoneW + safezoneX;
             y = 0.232 * safezoneH + safezoneY;
             w = 0.40 * safezoneW;
@@ -58,7 +58,7 @@ class ALiVE_RecruitWindow {
         };
         class RecruitUI_Recruit: RecruitUI_RscButton {
             idc = 92705;
-            text = "Recruit";
+            text = "$STR_ALIVE_RECRUIT_UI_BUTTON_RECRUIT";
             action = "['recruit'] call ALiVE_fnc_recruitWindow";
             x = 0.51 * safezoneW + safezoneX;
             y = 0.65 * safezoneH + safezoneY;
@@ -67,7 +67,7 @@ class ALiVE_RecruitWindow {
         };
         class RecruitUI_Close: RecruitUI_RscButton {
             idc = 92706;
-            text = "Close";
+            text = "$STR_ALIVE_RECRUIT_UI_BUTTON_CLOSE";
             action = "closeDialog 0";
             x = 0.605 * safezoneW + safezoneX;
             y = 0.65 * safezoneH + safezoneY;

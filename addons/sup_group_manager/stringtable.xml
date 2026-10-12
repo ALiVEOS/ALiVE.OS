@@ -215,4 +215,166 @@
     <Chinesesimp>团队管理</Chinesesimp>
     <Spanish>Gestión de grupos</Spanish>
 </Key>
+<Key ID="STR_ALIVE_RECRUIT_UI_GROUP_FULL">
+    <English>Your group is full: %1 is the most it can have.</English>
+    <Chinesesimp>你的小队已满：最多 %1 人。</Chinesesimp>
+    <Chinese>你的小隊已滿：最多 %1 人。</Chinese>
+    <Spanish>Tu grupo está completo: %1 es el máximo.</Spanish>
+    <French>Votre groupe est complet : %1 au maximum.</French>
+    <Portuguese>Seu grupo está cheio: o máximo é %1.</Portuguese>
+    <Russian>Ваша группа укомплектована: не больше %1.</Russian>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_UI_WAIT">
+    <English>Give the last one a moment.</English>
+    <Chinesesimp>请稍等上一个就位。</Chinesesimp>
+    <Chinese>請稍等上一個就位。</Chinese>
+    <Spanish>Dale un momento al anterior.</Spanish>
+    <French>Laissez un instant au précédent.</French>
+    <Portuguese>Dê um momento ao anterior.</Portuguese>
+    <Russian>Подождите немного после предыдущего.</Russian>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_UI_NOBODY">
+    <English>Nobody is available to join you.</English>
+    <Chinesesimp>没有人可以加入你。</Chinesesimp>
+    <Chinese>沒有人可以加入你。</Chinese>
+    <Spanish>No hay nadie disponible para unirse a ti.</Spanish>
+    <French>Personne n'est disponible pour vous rejoindre.</French>
+    <Portuguese>Ninguém está disponível para se juntar a você.</Portuguese>
+    <Russian>Никто не может присоединиться к вам.</Russian>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_UI_JOINED">
+    <English>%1 has joined your group (%2 of %3).</English>
+    <Chinesesimp>%1 已加入你的小队（%2/%3）。</Chinesesimp>
+    <Chinese>%1 已加入你的小隊（%2/%3）。</Chinese>
+    <Spanish>%1 se ha unido a tu grupo (%2 de %3).</Spanish>
+    <French>%1 a rejoint votre groupe (%2 sur %3).</French>
+    <Portuguese>%1 entrou no seu grupo (%2 de %3).</Portuguese>
+    <Russian>%1 присоединился к вашей группе (%2 из %3).</Russian>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_UI_VEH_FULL">
+    <English>You have %1 of %2 vehicles already. One has to be destroyed before you can take another.</English>
+    <Chinesesimp>你已经有 %1/%2 辆载具。必须先损毁一辆才能再领取。</Chinesesimp>
+    <Chinese>你已經有 %1/%2 輛載具。必須先損毀一輛才能再領取。</Chinese>
+    <Spanish>Ya tienes %1 de %2 vehículos. Uno debe ser destruido antes de que puedas coger otro.</Spanish>
+    <French>Vous avez déjà %1 véhicules sur %2. L'un d'eux doit être détruit avant d'en prendre un autre.</French>
+    <Portuguese>Você já tem %1 de %2 veículos. Um precisa ser destruído antes de pegar outro.</Portuguese>
+    <Russian>У вас уже %1 из %2 машин. Чтобы взять ещё, одна должна быть уничтожена.</Russian>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_UI_SPAWN_TAKEN">
+    <English>The spawn point is taken. Move the vehicle that's there and try again.</English>
+    <Chinesesimp>出生点被占用。移开那里的载具后再试。</Chinesesimp>
+    <Chinese>出生點被佔用。移開那裡的載具後再試。</Chinese>
+    <Spanish>El punto de aparición está ocupado. Mueve el vehículo que hay allí e inténtalo de nuevo.</Spanish>
+    <French>Le point d'apparition est occupé. Déplacez le véhicule qui s'y trouve et réessayez.</French>
+    <Portuguese>O ponto de surgimento está ocupado. Mova o veículo que está lá e tente de novo.</Portuguese>
+    <Russian>Точка появления занята. Уберите оттуда машину и попробуйте снова.</Russian>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_UI_VEH_NONE">
+    <English>That vehicle isn't available.</English>
+    <Chinesesimp>该载具不可用。</Chinesesimp>
+    <Chinese>該載具不可用。</Chinese>
+    <Spanish>Ese vehículo no está disponible.</Spanish>
+    <French>Ce véhicule n'est pas disponible.</French>
+    <Portuguese>Esse veículo não está disponível.</Portuguese>
+    <Russian>Эта машина недоступна.</Russian>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_UI_VEH_READY">
+    <English>%1 is ready (%2 of %3 vehicles).</English>
+    <Chinesesimp>%1 已就绪（载具 %2/%3）。</Chinesesimp>
+    <Chinese>%1 已就緒（載具 %2/%3）。</Chinese>
+    <Spanish>%1 está listo (%2 de %3 vehículos).</Spanish>
+    <French>%1 est prêt (%2 véhicules sur %3).</French>
+    <Portuguese>%1 está pronto (%2 de %3 veículos).</Portuguese>
+    <Russian>%1 готов (%2 из %3 машин).</Russian>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_UI_ACTION_RECRUIT">
+    <English>Recruit %1</English>
+    <Chinesesimp>招募 %1</Chinesesimp>
+    <Chinese>招募 %1</Chinese>
+    <Spanish>Reclutar %1</Spanish>
+    <French>Recruter %1</French>
+    <Portuguese>Recrutar %1</Portuguese>
+    <Russian>Нанять: %1</Russian>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_UI_ACTION_TAKE">
+    <English>Take %1</English>
+    <Chinesesimp>领取 %1</Chinesesimp>
+    <Chinese>領取 %1</Chinese>
+    <Spanish>Coger %1</Spanish>
+    <French>Prendre %1</French>
+    <Portuguese>Pegar %1</Portuguese>
+    <Russian>Взять: %1</Russian>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_UI_STATUS_GROUP">
+    <English>Your group: %1 of %2</English>
+    <Chinesesimp>你的小队：%1/%2</Chinesesimp>
+    <Chinese>你的小隊：%1/%2</Chinese>
+    <Spanish>Tu grupo: %1 de %2</Spanish>
+    <French>Votre groupe : %1 sur %2</French>
+    <Portuguese>Seu grupo: %1 de %2</Portuguese>
+    <Russian>Ваша группа: %1 из %2</Russian>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_UI_STATUS_VEHICLES">
+    <English>Your vehicles: %1 of %2</English>
+    <Chinesesimp>你的载具：%1/%2</Chinesesimp>
+    <Chinese>你的載具：%1/%2</Chinese>
+    <Spanish>Tus vehículos: %1 de %2</Spanish>
+    <French>Vos véhicules : %1 sur %2</French>
+    <Portuguese>Seus veículos: %1 de %2</Portuguese>
+    <Russian>Ваши машины: %1 из %2</Russian>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_UI_DESC_VEHICLE">
+    <English>A vehicle, empty: crew it yourselves.</English>
+    <Chinesesimp>一辆空载具：需自行乘员。</Chinesesimp>
+    <Chinese>一輛空載具：需自行乘員。</Chinese>
+    <Spanish>Un vehículo vacío: tripuladlo vosotros.</Spanish>
+    <French>Un véhicule vide : à vous de l'équiper.</French>
+    <Portuguese>Um veículo vazio: a tripulação é com vocês.</Portuguese>
+    <Russian>Пустая машина: экипаж ваш.</Russian>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_UI_DESC_SEATS">
+    <English>Seats for passengers: %1</English>
+    <Chinesesimp>乘客座位：%1</Chinesesimp>
+    <Chinese>乘客座位：%1</Chinese>
+    <Spanish>Asientos para pasajeros: %1</Spanish>
+    <French>Places passagers : %1</French>
+    <Portuguese>Assentos para passageiros: %1</Portuguese>
+    <Russian>Мест для пассажиров: %1</Russian>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_UI_DESC_SOLDIER">
+    <English>A soldier for your group.</English>
+    <Chinesesimp>一名加入你小队的士兵。</Chinesesimp>
+    <Chinese>一名加入你小隊的士兵。</Chinese>
+    <Spanish>Un soldado para tu grupo.</Spanish>
+    <French>Un soldat pour votre groupe.</French>
+    <Portuguese>Um soldado para o seu grupo.</Portuguese>
+    <Russian>Солдат для вашей группы.</Russian>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_UI_DESC_CARRIES">
+    <English>Carries: %1</English>
+    <Chinesesimp>携带：%1</Chinesesimp>
+    <Chinese>攜帶：%1</Chinese>
+    <Spanish>Lleva: %1</Spanish>
+    <French>Équipement : %1</French>
+    <Portuguese>Carrega: %1</Portuguese>
+    <Russian>Снаряжение: %1</Russian>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_UI_BUTTON_RECRUIT">
+    <English>Recruit</English>
+    <Chinesesimp>招募</Chinesesimp>
+    <Chinese>招募</Chinese>
+    <Spanish>Reclutar</Spanish>
+    <French>Recruter</French>
+    <Portuguese>Recrutar</Portuguese>
+    <Russian>Нанять</Russian>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_UI_BUTTON_CLOSE">
+    <English>Close</English>
+    <Chinesesimp>关闭</Chinesesimp>
+    <Chinese>關閉</Chinese>
+    <Spanish>Cerrar</Spanish>
+    <French>Fermer</French>
+    <Portuguese>Fechar</Portuguese>
+    <Russian>Закрыть</Russian>
+</Key>
 </Container></Package></Project>
