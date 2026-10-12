@@ -20,6 +20,9 @@ The player's FOB actions, on the scroll menu:
 - Unload Supplies, within 8 m of a supply crate inside a FOB's build range.
 - Request FOB Kit and Request Supply Crate, looking at a Field HQ (an object synced to the
   module) from within 8 m.
+The module's Interface setting puts them on the scroll wheel, in the ACE interaction menu
+(a Player FOBs entry in the self menu; Recycle and the Field HQ requests on the objects), or
+both; Auto uses ACE when it is loaded.
 
 The conditions read a cache refreshed every half second, never the world, so an action
 showing costs nothing per frame. The server checks everything again.
@@ -73,8 +76,19 @@ switch (_op) do {
             };
         };
 
+        // Scroll wheel, ACE interaction menu, or both: the module's Interface setting. Auto uses ACE
+        // when it is loaded and the scroll wheel when it isn't; ACE without ACE loaded falls back
+        // to the scroll wheel.
+        private _ui = toUpper str (missionNamespace getVariable ["ALiVE_sup_fob", objNull] getVariable ["fob_interface", "AUTO"]);
+        private _hasAce = isClass (configFile >> "CfgPatches" >> "ace_interact_menu");
+        private _useAce = _hasAce && {(_ui find "SCROLL") < 0};
+        private _useScroll = !_hasAce || {(_ui find "SCROLL") >= 0} || {(_ui find "BOTH") >= 0};
+        if (_useAce && {isNil "ALiVE_FOB_aceAdded"}) then { [] spawn { ["ace"] call ALiVE_fnc_fobActions } };
+
         private _ids = player getVariable ["ALiVE_FOB_actionIDs", []];
         { player removeAction _x } forEach _ids;
+        if (!_useScroll) exitWith { player setVariable ["ALiVE_FOB_actionIDs", []]; ALiVE_FOB_scroll = false };
+        ALiVE_FOB_scroll = true;
         _ids = [
             player addAction [localize "STR_ALIVE_FOB_ACTION_DEPLOY", { ["deploy"] call ALiVE_fnc_fobActions }, nil, 1.5, true, true, "",
                 "!isNull ALiVE_FOB_nearKit && {vehicle _this == _this}"],
@@ -95,13 +109,52 @@ switch (_op) do {
             player addAction [localize "STR_ALIVE_FOB_ACTION_BUILD", { ["open", ALiVE_FOB_buildFob] call ALiVE_fnc_buildMenu }, nil, 1.45, false, true, "",
                 "ALiVE_FOB_buildFob isNotEqualTo [] && {vehicle _this == _this} && {!(missionNamespace getVariable ['ALiVE_FOB_placing', false])}"],
             player addAction [localize "STR_ALIVE_FOB_ACTION_RECYCLE", { ["recycle", [cursorObject]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] }, nil, 0.6, false, true, "",
-                "vehicle _this == _this && {_this distance cursorObject < 8} && {(cursorObject getVariable ['ALiVE_FOB_object', '']) != '' || {cursorObject isKindOf 'StaticWeapon' && {ALiVE_FOB_buildFob isNotEqualTo []}}}"]
+                "vehicle _this == _this && {_this distance cursorObject < 8} && {['canRecycle', cursorObject] call ALiVE_fnc_fobActions}"]
         ];
         player setVariable ["ALiVE_FOB_actionIDs", _ids];
 
         if (isNil "ALiVE_FOB_respawnEH") then {
             ALiVE_FOB_respawnEH = player addEventHandler ["Respawn", { ["init"] call ALiVE_fnc_fobActions }];
         };
+    };
+
+    // Something built at one of the player's side's FOBs that can be recycled: a tagged object,
+    // or a static weapon or vehicle inside the side's FOB build range (the server checks it was
+    // built there)
+    case "canRecycle": {
+        private _o = _this param [1, objNull];
+        !isNull _o && {(_o getVariable ["ALiVE_FOB_object", ""]) != ""
+            || {ALiVE_FOB_buildFob isNotEqualTo [] && {_o isKindOf "StaticWeapon" || {_o isKindOf "LandVehicle"} || {_o isKindOf "Ship"}}}}
+    };
+
+    // The same actions in the ACE interaction menu: a Player FOBs entry in the self-interaction
+    // menu with the player's own FOB actions, and Recycle and the Field HQ requests on the
+    // objects themselves. Added once; ACE keeps class actions across respawns.
+    case "ace": {
+        waitUntil { sleep 1; !isNil "ace_interact_menu_fnc_createAction" && {!isNull player} };
+        if (!isNil "ALiVE_FOB_aceAdded") exitWith {};
+        ALiVE_FOB_aceAdded = true;
+        private _mk = { params ["_id", "_key", "_code", "_cond"]; [_id, localize _key, "", _code, _cond] call ace_interact_menu_fnc_createAction };
+        private _root = ["ALiVE_FOB", "STR_ALIVE_FOB", {}, { ALiVE_FOB_nearFob isNotEqualTo [] || {!isNull ALiVE_FOB_nearKit} || {ALiVE_FOB_buildFob isNotEqualTo []} || {!isNull ALiVE_FOB_nearCrate} }] call _mk;
+        ["CAManBase", 1, ["ACE_SelfActions"], _root, true] call ace_interact_menu_fnc_addActionToClass;
+        {
+            ["CAManBase", 1, ["ACE_SelfActions", "ALiVE_FOB"], _x call _mk, true] call ace_interact_menu_fnc_addActionToClass;
+        } forEach [
+            ["ALiVE_FOB_Deploy", "STR_ALIVE_FOB_ACTION_DEPLOY", { ["deploy"] call ALiVE_fnc_fobActions }, { !isNull ALiVE_FOB_nearKit && {vehicle _player == _player} }],
+            ["ALiVE_FOB_Status", "STR_ALIVE_FOB_ACTION_STATUS", { ["status"] call ALiVE_fnc_fobActions }, { ALiVE_FOB_nearFob isNotEqualTo [] }],
+            ["ALiVE_FOB_Build", "STR_ALIVE_FOB_ACTION_BUILD", { ["open", ALiVE_FOB_buildFob] call ALiVE_fnc_buildMenu }, { ALiVE_FOB_buildFob isNotEqualTo [] && {!(missionNamespace getVariable ["ALiVE_FOB_placing", false])} }],
+            ["ALiVE_FOB_Unload", "STR_ALIVE_FOB_ACTION_UNLOAD", { ["unload", [ALiVE_FOB_nearCrate, ALiVE_FOB_buildFob select 0]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] }, { !isNull ALiVE_FOB_nearCrate && {ALiVE_FOB_buildFob isNotEqualTo []} }],
+            ["ALiVE_FOB_Upgrade", "STR_ALIVE_FOB_ACTION_UPGRADE", { ["upgrade", [ALiVE_FOB_nearFob select 0]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] }, { ALiVE_FOB_nearFob isNotEqualTo [] && {(ALiVE_FOB_nearFob select 4) == "active"} && {(ALiVE_FOB_nearFob select 5) < 3} }],
+            ["ALiVE_FOB_Repair", "STR_ALIVE_FOB_ACTION_REPAIR", { ["repair", [ALiVE_FOB_nearFob select 0]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] }, { ALiVE_FOB_nearFob isNotEqualTo [] && {(ALiVE_FOB_nearFob select 4) == "damaged"} }],
+            ["ALiVE_FOB_Dismantle", "STR_ALIVE_FOB_ACTION_DISMANTLE", { ["dismantle"] call ALiVE_fnc_fobActions }, { ALiVE_FOB_nearFob isNotEqualTo [] }]
+        ];
+        private _recycle = ["ALiVE_FOB_Recycle", "STR_ALIVE_FOB_ACTION_RECYCLE", { ["recycle", [_target]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] }, { ["canRecycle", _target] call ALiVE_fnc_fobActions }] call _mk;
+        private _kit = ["ALiVE_FOB_HQKit", "STR_ALIVE_FOB_ACTION_HQ_KIT", { ["fieldHQ", [_target, "KIT"]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] }, { _target getVariable ["ALiVE_FOB_fieldHQ", false] }] call _mk;
+        private _crate = ["ALiVE_FOB_HQCrate", "STR_ALIVE_FOB_ACTION_HQ_CRATE", { ["fieldHQ", [_target, "CRATE"]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] }, { _target getVariable ["ALiVE_FOB_fieldHQ", false] }] call _mk;
+        {
+            private _cls = _x;
+            { [_cls, 0, ["ACE_MainActions"], _x, true] call ace_interact_menu_fnc_addActionToClass } forEach [_recycle, _kit, _crate];
+        } forEach ["Static", "Thing", "StaticWeapon", "LandVehicle", "Ship"];
     };
 
     case "deploy": {

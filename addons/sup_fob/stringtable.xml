@@ -470,6 +470,24 @@
             <Key ID="STR_ALIVE_FOB_RADIO_DELIVERED">
                 <English>Supplies delivered to %1.</English>
             </Key>
+            <Key ID="STR_ALIVE_FOB_INTERFACE">
+                <English>Interface</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_INTERFACE_COMMENT">
+                <English>Where players find the FOB actions: the scroll wheel, the ACE interaction menu (a Player FOBs entry in the self menu; Recycle and the Field HQ requests on the objects), or both. Auto uses ACE when ACE is loaded and the scroll wheel when it isn't.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_INTERFACE_AUTO">
+                <English>Auto</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_INTERFACE_SCROLL">
+                <English>Scroll wheel</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_INTERFACE_ACE">
+                <English>ACE</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_INTERFACE_BOTH">
+                <English>Both</English>
+            </Key>
         </Container>
     </Package>
 </Project>

@@ -37,6 +37,20 @@ class CfgVehicles {
                                     class No { name = "$STR_ALIVE_FOB_NO"; value = false; default = 1; };
                                 };
                         };
+                        class fob_interface : Combo
+                        {
+                                property = "ALiVE_sup_fob_fob_interface";
+                                displayName = "$STR_ALIVE_FOB_INTERFACE";
+                                tooltip = "$STR_ALIVE_FOB_INTERFACE_COMMENT";
+                                defaultValue = """AUTO""";
+                                class Values
+                                {
+                                    class AUTO   { name = "$STR_ALIVE_FOB_INTERFACE_AUTO";   value = "AUTO"; default = 1; };
+                                    class SCROLL { name = "$STR_ALIVE_FOB_INTERFACE_SCROLL"; value = "SCROLL"; };
+                                    class ACE    { name = "$STR_ALIVE_FOB_INTERFACE_ACE";    value = "ACE"; };
+                                    class BOTH   { name = "$STR_ALIVE_FOB_INTERFACE_BOTH";   value = "BOTH"; };
+                                };
+                        };
                         class fob_persistent : Combo
                         {
                                 property = "ALiVE_sup_fob_fob_persistent";
