@@ -35,6 +35,18 @@ params [["_operation", "", [""]], ["_args", [], [[]]]];
 private _logic = missionNamespace getVariable ["ALiVE_sup_fob", objNull];
 private _set = { [_logic, "attribute", [_this]] call ALiVE_fnc_FOB };
 private _mode = "fob_supply_source" call _set;
+// poolDebit [faction, amount]: straight from a faction's force pool, no FOB involved (a Field
+// HQ handing out a kit in force pool mode). A faction with no pool is free.
+if (_operation == "poolDebit") exitWith {
+    _args params [["_faction", "", [""]], ["_amount", 0, [0]]];
+    if (isNil "ALIVE_globalForcePool" || {!(_faction in (ALIVE_globalForcePool select 1))}) exitWith { true };
+    private _left = [ALIVE_globalForcePool, _faction, 0] call ALIVE_fnc_hashGet;
+    if (_left isEqualType "") then { _left = parseNumber _left };
+    if (_amount > _left) exitWith { false };
+    [ALIVE_globalForcePool, _faction, _left - (_amount max 0)] call ALIVE_fnc_hashSet;
+    true
+};
+
 private _entry = [ALiVE_FOB_registry, _args param [0, ""]] call ALIVE_fnc_hashGet;
 if (isNil "_entry") exitWith { if (_operation in ["canAfford", "debit"]) then {false} else {0} };
 

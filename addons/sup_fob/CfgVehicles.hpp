@@ -94,6 +94,23 @@ class CfgVehicles {
                         class fob_supply_cap_t3 : Edit { property = "ALiVE_sup_fob_fob_supply_cap_t3"; displayName = "$STR_ALIVE_FOB_SUPPLY_CAP_T3"; tooltip = "$STR_ALIVE_FOB_SUPPLY_CAP_COMMENT"; typeName = "STRING"; defaultValue = """5000"""; };
                         class fob_cost_scale : Edit { property = "ALiVE_sup_fob_fob_cost_scale"; displayName = "$STR_ALIVE_FOB_COST_SCALE"; tooltip = "$STR_ALIVE_FOB_COST_SCALE_COMMENT"; typeName = "STRING"; defaultValue = """1"""; };
 
+                        class fob_crate_amount : Edit { property = "ALiVE_sup_fob_fob_crate_amount"; displayName = "$STR_ALIVE_FOB_CRATE_AMOUNT"; tooltip = "$STR_ALIVE_FOB_CRATE_AMOUNT_COMMENT"; typeName = "STRING"; defaultValue = """1000"""; };
+                        class fob_kit_cost : Edit { property = "ALiVE_sup_fob_fob_kit_cost"; displayName = "$STR_ALIVE_FOB_KIT_COST"; tooltip = "$STR_ALIVE_FOB_KIT_COST_COMMENT"; typeName = "STRING"; defaultValue = """500"""; };
+                        class fob_tier2_cost : Edit { property = "ALiVE_sup_fob_fob_tier2_cost"; displayName = "$STR_ALIVE_FOB_TIER2_COST"; tooltip = "$STR_ALIVE_FOB_TIER_COST_COMMENT"; typeName = "STRING"; defaultValue = """1500"""; };
+                        class fob_tier3_cost : Edit { property = "ALiVE_sup_fob_fob_tier3_cost"; displayName = "$STR_ALIVE_FOB_TIER3_COST"; tooltip = "$STR_ALIVE_FOB_TIER_COST_COMMENT"; typeName = "STRING"; defaultValue = """3000"""; };
+                        class fob_respawn : Combo
+                        {
+                                property = "ALiVE_sup_fob_fob_respawn";
+                                displayName = "$STR_ALIVE_FOB_RESPAWN";
+                                tooltip = "$STR_ALIVE_FOB_RESPAWN_COMMENT";
+                                defaultValue = """true""";
+                                class Values
+                                {
+                                    class Yes { name = "$STR_ALIVE_FOB_YES"; value = true; default = 1; };
+                                    class No { name = "$STR_ALIVE_FOB_NO"; value = false; };
+                                };
+                        };
+
                         class HDR_DEFENCE : ALiVE_ModuleSubTitle { property = "ALiVE_sup_fob_HDR_DEFENCE"; displayName = "ATTACK AND CAPTURE"; };
                         class fob_alert_radius : Edit { property = "ALiVE_sup_fob_fob_alert_radius"; displayName = "$STR_ALIVE_FOB_ALERT_RADIUS"; tooltip = "$STR_ALIVE_FOB_ALERT_RADIUS_COMMENT"; typeName = "STRING"; defaultValue = """400"""; };
                         class fob_capture_radius : Edit { property = "ALiVE_sup_fob_fob_capture_radius"; displayName = "$STR_ALIVE_FOB_CAPTURE_RADIUS"; tooltip = "$STR_ALIVE_FOB_CAPTURE_RADIUS_COMMENT"; typeName = "STRING"; defaultValue = """100"""; };

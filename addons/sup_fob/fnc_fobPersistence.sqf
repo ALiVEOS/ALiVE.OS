@@ -41,7 +41,7 @@ params [["_operation", "", [""]], ["_args", [], [[]]]];
 private _logic = missionNamespace getVariable ["ALiVE_sup_fob", objNull];
 private _set = { [_logic, "attribute", [_this]] call ALiVE_fnc_FOB };
 private _debug = "fob_debug" call _set;
-private _runtime = ["hub", "engineerNear", "dirty"];
+private _runtime = ["hub", "engineerNear", "dirty", "respawn"];
 private _useData = !isNil "ALIVE_sys_data" && {!ALIVE_sys_data_DISABLED};
 private _key = (["_FOB"] call ALiVE_fnc_storeKeys) select 0;
 private _result = false;

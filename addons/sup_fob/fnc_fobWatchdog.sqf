@@ -146,6 +146,12 @@ private _tick = {
             };
         };
 
+        // A steady trickle of supply, when the module sets one (FOB supply mode only)
+        private _trickle = "fob_supply_trickle" call _set;
+        if (_trickle > 0 && {("fob_supply_source" call _set) == "FOBPOOL"} && {([_entry, "status", ""] call ALIVE_fnc_hashGet) == "active"}) then {
+            ["credit", [_id, _trickle, "trickle"]] call ALiVE_fnc_fobSupply;
+        };
+
         // A destroyed headquarters: repaired in time, or the FOB is lost
         if (([_entry, "status", ""] call ALIVE_fnc_hashGet) == "damaged" && {([_entry, "repairRemaining", 0] call ALIVE_fnc_hashGet) <= 0}) then {
             [_side, format ["%1 couldn't be repaired in time and is lost.", _name]] call _say;

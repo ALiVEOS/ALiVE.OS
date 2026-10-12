@@ -90,7 +90,12 @@ private _settings = createHashMapFromArray [
     ["fob_capture_radius", [100, [20, 1000]]],
     ["fob_capture_time", [180, [10, 3600]]],
     ["fob_repair_time", [900, [30, 7200]]],
-    ["fob_repair_cost", [1000, [0, 1000000]]]
+    ["fob_repair_cost", [1000, [0, 1000000]]],
+    ["fob_crate_amount", [1000, [1, 1000000]]],
+    ["fob_kit_cost", [500, [0, 1000000]]],
+    ["fob_tier2_cost", [1500, [0, 1000000]]],
+    ["fob_tier3_cost", [3000, [0, 1000000]]],
+    ["fob_respawn", [true, "bool"]]
 ];
 
 switch (_operation) do {
@@ -113,6 +118,11 @@ switch (_operation) do {
             };
             ALiVE_sup_fob = _logic;
             publicVariable "ALiVE_sup_fob";
+
+            // Objects synced to the module are Field HQs: players get FOB kits and supply crates there
+            {
+                if !(_x isKindOf "Logic") then { _x setVariable ["ALiVE_FOB_fieldHQ", true, true] };
+            } forEach (synchronizedObjects _logic);
 
             if (isNil "ALiVE_FOB_registry") then { ALiVE_FOB_registry = [] call ALIVE_fnc_hashCreate };
             if (isNil "ALiVE_FOB_counter") then { ALiVE_FOB_counter = 0 };
@@ -250,7 +260,7 @@ switch (_operation) do {
             ["hubClass", [_logic, "attribute", [_hubKey]] call MAINCLASS], ["hub", objNull],
             ["objects", []],
             ["repairRemaining", 0], ["captureRemaining", 0], ["alertCooldown", 0], ["resupplyCooldown", 0], ["trickleAccumulator", 0],
-            ["captureSide", ""], ["discoveredBy", []], ["objectiveIDs", []], ["garrison", []], ["respawn", ""]
+            ["captureSide", ""], ["discoveredBy", []], ["objectiveIDs", []], ["garrison", []], ["respawn", []]
         ];
     };
 

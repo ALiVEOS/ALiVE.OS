@@ -79,9 +79,14 @@ switch (_operation) do {
         uiNamespace setVariable ["ALiVE_FOB_buildRows", _rows];
         private _list = BW_DISPLAY displayCtrl 92802;
         lbClear _list;
+        private _fobTier = (call _fnc_fob) param [5, 1];
         {
-            _x params ["_class", "_name", "", "_cost"];
+            _x params ["_class", "_name", "", "_cost", "", ["_tierMin", 1]];
             private _i = _list lbAdd format ["%1  (%2)", [_name, _class] select (_name == ""), _cost];
+            if (_tierMin > _fobTier) then {
+                _list lbSetColor [_i, [0.6, 0.6, 0.6, 1]];
+                _list lbSetTextRight [_i, format [localize "STR_ALIVE_FOB_UI_TIER_SHORT", _tierMin]];
+            };
             private _icon = getText (configFile >> "CfgVehicles" >> _class >> "icon");
             if (isText (configFile >> "CfgVehicleIcons" >> _icon)) then { _icon = getText (configFile >> "CfgVehicleIcons" >> _icon) };
             if (_icon != "" && {"\" in _icon}) then { _list lbSetPicture [_i, _icon] };
@@ -97,10 +102,11 @@ switch (_operation) do {
         if (isNull BW_DISPLAY) exitWith {};
         private _row = (uiNamespace getVariable ["ALiVE_FOB_buildRows", []]) param [lbCurSel (BW_DISPLAY displayCtrl 92802), []];
         if (_row isEqualTo []) exitWith {};
-        _row params ["_class", "_name", "_kind", "_cost", "_pic"];
+        _row params ["_class", "_name", "_kind", "_cost", "_pic", ["_tierMin", 1]];
         (BW_DISPLAY displayCtrl 92809) ctrlSetText _pic;
         private _what = switch (_kind) do { case "SUPPLY": {"STR_ALIVE_FOB_UI_SUPPLY_ITEM"}; case "STATIC": {"STR_ALIVE_FOB_UI_STATIC_ITEM"}; default {"STR_ALIVE_FOB_UI_FORTIFICATION"} };
         private _lines = [[_name, _class] select (_name == ""), localize _what, format [localize "STR_ALIVE_FOB_UI_COST", _cost]];
+        if (_tierMin > ((call _fnc_fob) param [5, 1])) then { _lines pushBack format [localize "STR_ALIVE_FOB_UI_TIER_NEEDED", _tierMin] };
         (BW_DISPLAY displayCtrl 92803) ctrlSetStructuredText ([_lines, true] call _fnc_lines);
         call _fnc_status;
     };

@@ -16,6 +16,10 @@ The player's FOB actions, on the scroll menu:
   price back.
 - Repair FOB, within 25 m of one of the side's FOBs whose headquarters was destroyed: the
   server works out the price and rebuilds it.
+- Upgrade FOB, within 25 m of an active FOB below tier 3: the next tier, paid from its supply.
+- Unload Supplies, within 8 m of a supply crate inside a FOB's build range.
+- Request FOB Kit and Request Supply Crate, looking at a Field HQ (an object synced to the
+  module) from within 8 m.
 
 The conditions read a cache refreshed every half second, never the world, so an action
 showing costs nothing per frame. The server checks everything again.
@@ -42,6 +46,7 @@ switch (_op) do {
             ALiVE_FOB_nearKit = objNull;
             ALiVE_FOB_nearFob = [];
             ALiVE_FOB_buildFob = [];
+            ALiVE_FOB_nearCrate = objNull;
             ALiVE_FOB_cacheLoop = [] spawn {
                 while { true } do {
                     if (alive player) then {
@@ -51,6 +56,8 @@ switch (_op) do {
                             !isNil "_t" && {_t isEqualTo true || {_t isEqualTo _side}}
                         };
                         ALiVE_FOB_nearKit = _kits param [0, objNull];
+                        // a supply crate within 8 m
+                        ALiVE_FOB_nearCrate = ((nearestObjects [player, ["All"], 8]) select { (_x getVariable ["ALiVE_FOB_crate", 0]) isEqualType 0 && {(_x getVariable ["ALiVE_FOB_crate", 0]) > 0} }) param [0, objNull];
                         private _mine = (missionNamespace getVariable ["ALiVE_FOB_registryMirror", []]) select {
                             (_x select 1) == _side && {player distance2D (_x select 3) <= 25}
                         };
@@ -77,6 +84,14 @@ switch (_op) do {
                 "ALiVE_FOB_nearFob isNotEqualTo [] && {vehicle _this == _this}"],
             player addAction [localize "STR_ALIVE_FOB_ACTION_REPAIR", { ["repair", [ALiVE_FOB_nearFob select 0]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] }, nil, 1.46, false, true, "",
                 "ALiVE_FOB_nearFob isNotEqualTo [] && {(ALiVE_FOB_nearFob select 4) == 'damaged'} && {vehicle _this == _this}"],
+            player addAction [localize "STR_ALIVE_FOB_ACTION_UPGRADE", { ["upgrade", [ALiVE_FOB_nearFob select 0]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] }, nil, 1.42, false, true, "",
+                "ALiVE_FOB_nearFob isNotEqualTo [] && {(ALiVE_FOB_nearFob select 4) == 'active'} && {(ALiVE_FOB_nearFob select 5) < 3} && {vehicle _this == _this}"],
+            player addAction [localize "STR_ALIVE_FOB_ACTION_UNLOAD", { ["unload", [ALiVE_FOB_nearCrate, ALiVE_FOB_buildFob select 0]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] }, nil, 1.47, false, true, "",
+                "!isNull ALiVE_FOB_nearCrate && {ALiVE_FOB_buildFob isNotEqualTo []} && {vehicle _this == _this}"],
+            player addAction [localize "STR_ALIVE_FOB_ACTION_HQ_KIT", { ["fieldHQ", [cursorObject, "KIT"]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] }, nil, 1.3, false, true, "",
+                "cursorObject getVariable ['ALiVE_FOB_fieldHQ', false] && {_this distance cursorObject < 8}"],
+            player addAction [localize "STR_ALIVE_FOB_ACTION_HQ_CRATE", { ["fieldHQ", [cursorObject, "CRATE"]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] }, nil, 1.29, false, true, "",
+                "cursorObject getVariable ['ALiVE_FOB_fieldHQ', false] && {_this distance cursorObject < 8}"],
             player addAction [localize "STR_ALIVE_FOB_ACTION_BUILD", { ["open", ALiVE_FOB_buildFob] call ALiVE_fnc_buildMenu }, nil, 1.45, false, true, "",
                 "ALiVE_FOB_buildFob isNotEqualTo [] && {vehicle _this == _this} && {!(missionNamespace getVariable ['ALiVE_FOB_placing', false])}"],
             player addAction [localize "STR_ALIVE_FOB_ACTION_RECYCLE", { ["recycle", [cursorObject]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] }, nil, 0.6, false, true, "",

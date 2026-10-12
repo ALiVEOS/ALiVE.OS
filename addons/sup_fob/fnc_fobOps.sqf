@@ -31,6 +31,10 @@ dismantle - [fobID] -> true when it was taken down
 build - [class, position, direction, fobID] -> true when built and paid for
 recycle - [object] -> true when taken down, with half its price back
 restoreObjects - [fobID] -> a saved FOB's built objects made again; the number made
+unload - [crate, fobID] -> true when a supply crate went into the FOB
+upgrade - [fobID] -> true when the FOB went up a tier and was paid for
+respawn - [fobID] -> whether the FOB now has a respawn point (tier 3, active, module allows)
+fieldHQ - [object, "KIT" or "CRATE"] -> the FOB kit or supply crate handed out, or false
 repair - [fobID] -> true when a destroyed headquarters was rebuilt and paid for
 repairCost - [fobID] -> the supply a repair costs now
 salvage - [fobID] -> the FOB lost for good: everything it had removed
@@ -136,6 +140,8 @@ switch (_op) do {
         private _entry = [ALiVE_FOB_registry, _id] call ALIVE_fnc_hashGet;
         if (isNil "_entry") exitWith { _result = false };
         ["unregister", [_id]] call ALiVE_fnc_fobObjectives;
+        [_entry, "status", "removed"] call ALIVE_fnc_hashSet;
+        ["respawn", [_id]] call ALiVE_fnc_fobOps;
         {
             private _o = _x param [0, objNull];
             if (_o isEqualType objNull && {!isNull _o}) then { deleteVehicle _o };
@@ -180,6 +186,7 @@ switch (_op) do {
             if (!isNil "_e" && {([_e, "status", ""] call ALIVE_fnc_hashGet) != "damaged"}) then {
                 [_e, "status", "damaged"] call ALIVE_fnc_hashSet;
                 [_e, "repairRemaining", [ALiVE_sup_fob, "attribute", ["fob_repair_time"]] call ALiVE_fnc_FOB] call ALIVE_fnc_hashSet;
+                ["respawn", [_hub getVariable ["ALiVE_FOB_id", ""]]] call ALiVE_fnc_fobOps;
                 ALiVE_FOB_dirty = true;
                 private _side = [_e, "side", "WEST"] call ALIVE_fnc_hashGet;
                 private _text = format ["%1's headquarters is destroyed. Repair it within %2 minutes or the FOB is lost.",
@@ -200,6 +207,7 @@ switch (_op) do {
             private _hub = if (([_e, "status", ""] call ALIVE_fnc_hashGet) == "damaged") then { objNull } else { ["spawnHub", [_x]] call ALiVE_fnc_fobOps };
             ["reconcile", [_x]] call ALiVE_fnc_fobObjectives;
             ["restoreObjects", [_x]] call ALiVE_fnc_fobOps;
+            ["respawn", [_x]] call ALiVE_fnc_fobOps;
             _result = _result + 1;
         } forEach +(ALiVE_FOB_registry select 1);
         if (_result > 0) then { ["ALiVE Player FOBs - rebuilt %1 FOBs from the save", _result] call ALiVE_fnc_dump };
@@ -391,6 +399,7 @@ switch (_op) do {
             [_entry, "status", "damaged"] call ALIVE_fnc_hashSet;
             ["STR_ALIVE_FOB_REFUSED_SPOT"] call _tell;
         };
+        ["respawn", [_id]] call ALiVE_fnc_fobOps;
         ALiVE_FOB_dirty = true;
         [_logic, "broadcastMirror"] call ALiVE_fnc_FOB;
         ["save", [true]] call ALiVE_fnc_fobPersistence;
@@ -429,6 +438,11 @@ switch (_op) do {
         private _name = [_entry, "name", _id] call ALIVE_fnc_hashGet;
         isNil {
             ["unregister", [_id]] call ALiVE_fnc_fobObjectives;
+            // the old side's respawn point goes; the new side gets one if the FOB qualifies
+            private _status = [_entry, "status", "active"] call ALIVE_fnc_hashGet;
+            [_entry, "status", "flipping"] call ALIVE_fnc_hashSet;
+            ["respawn", [_id]] call ALiVE_fnc_fobOps;
+            [_entry, "status", _status] call ALIVE_fnc_hashSet;
             private _factions = [];
             { if (([_x, "side", ""] call ALiVE_fnc_hashGet) == _newSide) then { _factions append ([_x, "factions", []] call ALiVE_fnc_hashGet) } } forEach (missionNamespace getVariable ["OPCOM_instances", []]);
             [_entry, "side", _newSide] call ALIVE_fnc_hashSet;
@@ -436,7 +450,6 @@ switch (_op) do {
             [_entry, "captureSide", ""] call ALIVE_fnc_hashSet;
             [_entry, "captureRemaining", 0] call ALIVE_fnc_hashSet;
             [_entry, "discoveredBy", []] call ALIVE_fnc_hashSet;
-            [_entry, "respawn", ""] call ALIVE_fnc_hashSet;
             private _objects = [_entry, "objects", []] call ALIVE_fnc_hashGet;
             {
                 if ((_x param [0, ""]) isEqualTo "static" && {!isNil "ALIVE_profileStationary"}) then {
@@ -447,6 +460,7 @@ switch (_op) do {
             private _hub = [_entry, "hub", objNull] call ALIVE_fnc_hashGet;
             if (!isNull _hub) then { _hub setVariable ["ALiVE_FOB_id", _id, true] };
             ["reconcile", [_id]] call ALiVE_fnc_fobObjectives;
+            ["respawn", [_id]] call ALiVE_fnc_fobOps;
             ALiVE_FOB_dirty = true;
         };
         [_logic, "broadcastMirror"] call ALiVE_fnc_FOB;
@@ -457,6 +471,101 @@ switch (_op) do {
         } forEach [[_oldSide, format ["%1 has been lost to the enemy.", _name]], [_newSide, format ["We have taken %1.", _name]]];
         ["ALiVE Player FOBs - %1 (%2) taken: %3 to %4", _id, _name, _oldSide, _newSide] call ALiVE_fnc_dump;
         _result = true;
+    };
+
+    // A supply crate unloaded into a FOB: as much as the FOB has room for (in force pool mode
+    // into the pool), then the crate goes. The crate carries its amount as ALiVE_FOB_crate.
+    case "unload": {
+        _result = false;
+        _args params [["_crate", objNull, [objNull]], ["_id", "", [""]]];
+        if (isNull _caller || {!alive _caller} || {isNull _crate}) exitWith {};
+        private _amount = _crate getVariable ["ALiVE_FOB_crate", 0];
+        if !(_amount isEqualType 0) then { _amount = 0 };
+        if (_amount <= 0) exitWith { ["STR_ALIVE_FOB_REFUSED_NOTCRATE"] call _tell };
+        if (_caller distance _crate > 8) exitWith { ["STR_ALIVE_FOB_REFUSED_RANGE", [8]] call _tell };
+        private _entry = [ALiVE_FOB_registry, _id] call ALIVE_fnc_hashGet;
+        if (isNil "_entry") exitWith { ["STR_ALIVE_FOB_REFUSED_NOFOB"] call _tell };
+        if (([_entry, "side", ""] call ALIVE_fnc_hashGet) != str (side group _caller)) exitWith { ["STR_ALIVE_FOB_REFUSED_NOTOURS"] call _tell };
+        private _range = [_logic, "attribute", ["fob_build_range"]] call ALiVE_fnc_FOB;
+        if (_crate distance2D ([_entry, "pos", [0,0,0]] call ALIVE_fnc_hashGet) > _range) exitWith { ["STR_ALIVE_FOB_REFUSED_RANGE", [round _range]] call _tell };
+        private _have = ["balance", [_id]] call ALiVE_fnc_fobSupply;
+        private _cap = ["cap", [_id]] call ALiVE_fnc_fobSupply;
+        private _take = if (_cap < 0) then { _amount } else { (_cap - _have) min _amount };
+        if (_take <= 0) exitWith { ["STR_ALIVE_FOB_REFUSED_FULL"] call _tell };
+        ["credit", [_id, _take, "crate"]] call ALiVE_fnc_fobSupply;
+        // what didn't fit stays in the crate
+        if (_take < _amount) then { _crate setVariable ["ALiVE_FOB_crate", _amount - _take, true] } else { deleteVehicle _crate };
+        [_logic, "broadcastMirror"] call ALiVE_fnc_FOB;
+        ["STR_ALIVE_FOB_UNLOADED", [_take, [_entry, "name", ""] call ALIVE_fnc_hashGet]] call _tell;
+        _result = true;
+    };
+
+    // Tier 2, then tier 3: paid from the FOB's supply, more room for supply and more to build;
+    // tier 3 is also a respawn point for its side when the module allows it
+    case "upgrade": {
+        _result = false;
+        _args params [["_id", "", [""]]];
+        private _entry = [ALiVE_FOB_registry, _id] call ALIVE_fnc_hashGet;
+        if (isNil "_entry" || {isNull _caller}) exitWith {};
+        if (([_entry, "side", ""] call ALIVE_fnc_hashGet) != str (side group _caller)) exitWith { ["STR_ALIVE_FOB_REFUSED_NOTOURS"] call _tell };
+        if (([_entry, "status", ""] call ALIVE_fnc_hashGet) != "active") exitWith { ["STR_ALIVE_FOB_REFUSED_DAMAGED_BUILD"] call _tell };
+        if (_caller distance2D ([_entry, "pos", [0,0,0]] call ALIVE_fnc_hashGet) > 25) exitWith { ["STR_ALIVE_FOB_REFUSED_RANGE", [25]] call _tell };
+        private _tier = [_entry, "tier", 1] call ALIVE_fnc_hashGet;
+        if (_tier >= 3) exitWith { ["STR_ALIVE_FOB_REFUSED_TOPTIER"] call _tell };
+        private _cost = [_logic, "attribute", [format ["fob_tier%1_cost", _tier + 1]]] call ALiVE_fnc_FOB;
+        if !(["debit", [_id, _cost, "upgrade"]] call ALiVE_fnc_fobSupply) exitWith {
+            ["STR_ALIVE_FOB_REFUSED_SUPPLY", [_cost, ["balance", [_id]] call ALiVE_fnc_fobSupply]] call _tell;
+        };
+        [_entry, "tier", _tier + 1] call ALIVE_fnc_hashSet;
+        ["respawn", [_id]] call ALiVE_fnc_fobOps;
+        ALiVE_FOB_dirty = true;
+        [_logic, "broadcastMirror"] call ALiVE_fnc_FOB;
+        ["save", [true]] call ALiVE_fnc_fobPersistence;
+        ["STR_ALIVE_FOB_UPGRADED", [[_entry, "name", ""] call ALIVE_fnc_hashGet, _tier + 1, _cost]] call _tell;
+        _result = true;
+    };
+
+    // The respawn point a FOB should have: one at an active tier 3 FOB when the module allows
+    // it, none otherwise. Safe to run any number of times.
+    case "respawn": {
+        _args params [["_id", "", [""]]];
+        private _entry = [ALiVE_FOB_registry, _id] call ALIVE_fnc_hashGet;
+        if (isNil "_entry") exitWith { _result = false };
+        private _want = ([_logic, "attribute", ["fob_respawn"]] call ALiVE_fnc_FOB) && {([_entry, "tier", 1] call ALIVE_fnc_hashGet) >= 3} && {([_entry, "status", ""] call ALIVE_fnc_hashGet) == "active"};
+        private _have = [_entry, "respawn", []] call ALIVE_fnc_hashGet;
+        if !(_have isEqualType []) then { _have = [] };
+        if (!_want && {_have isNotEqualTo []}) then {
+            _have call BIS_fnc_removeRespawnPosition;
+            [_entry, "respawn", []] call ALIVE_fnc_hashSet;
+        };
+        if (_want && {_have isEqualTo []}) then {
+            private _side = [[_entry, "side", "WEST"] call ALIVE_fnc_hashGet] call ALiVE_fnc_sideTextToObject;
+            private _pos = [_entry, "pos", [0,0,0]] call ALIVE_fnc_hashGet;
+            [_entry, "respawn", [_side, _pos getPos [12, 180], [_entry, "name", ""] call ALIVE_fnc_hashGet] call BIS_fnc_addRespawnPosition] call ALIVE_fnc_hashSet;
+        };
+        _result = _want;
+    };
+
+    // A Field HQ (an object synced to the module) hands out a FOB kit or a supply crate beside
+    // it, for the asking player's side. In force pool mode it costs the faction's pool.
+    case "fieldHQ": {
+        _result = false;
+        _args params [["_hq", objNull, [objNull]], ["_what", "", [""]]];
+        if (isNull _caller || {isNull _hq} || {!(_hq getVariable ["ALiVE_FOB_fieldHQ", false])}) exitWith {};
+        if !(_what in ["KIT", "CRATE"]) exitWith {};
+        if (_caller distance _hq > 10) exitWith { ["STR_ALIVE_FOB_REFUSED_RANGE", [10]] call _tell };
+        private _side = str (side group _caller);
+        if !(_side in ["WEST", "EAST", "GUER"]) exitWith { ["STR_ALIVE_FOB_REFUSED_SIDE"] call _tell };
+        private _amount = [_logic, "attribute", ["fob_crate_amount"]] call ALiVE_fnc_FOB;
+        private _cost = if (_what == "KIT") then { [_logic, "attribute", ["fob_kit_cost"]] call ALiVE_fnc_FOB } else { _amount };
+        if (([_logic, "attribute", ["fob_supply_source"]] call ALiVE_fnc_FOB) == "FORCEPOOL"
+            && {!(["poolDebit", [faction _caller, _cost]] call ALiVE_fnc_fobSupply)}) exitWith { ["STR_ALIVE_FOB_REFUSED_POOL", [_cost]] call _tell };
+        private _spot = _hq getPos [6, (getDir _hq) + 90];
+        private _o = createVehicle [["B_supplyCrate_F", "Box_NATO_Support_F"] select (_what == "KIT"), _spot, [], 3, "NONE"];
+        clearItemCargoGlobal _o; clearWeaponCargoGlobal _o; clearMagazineCargoGlobal _o; clearBackpackCargoGlobal _o;
+        if (_what == "KIT") then { _o setVariable ["ALiVE_FOB_kit", _side, true] } else { _o setVariable ["ALiVE_FOB_crate", _amount, true] };
+        [["STR_ALIVE_FOB_HQ_CRATE", "STR_ALIVE_FOB_HQ_KIT"] select (_what == "KIT")] call _tell;
+        _result = _o;
     };
 
     // A crewed static weapon as profiles: [vehicle profile id, crew profile id], or [] when it

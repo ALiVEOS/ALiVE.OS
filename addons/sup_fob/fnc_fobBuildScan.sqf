@@ -23,6 +23,9 @@ multiplied by the module's Cost Scale and rounded, never below 1. A static weapo
 from its role (machine gun 60, grenade launcher 75, mortar 100, AT and AA 125, howitzer 250),
 moved up or down by how hard its hardest round hits, 50 to 250.
 
+Some items need a FOB of a higher tier: towers and machine guns or grenade launchers tier 2,
+mortars, AT and AA launchers and howitzers tier 3.
+
 A mission or mod can change the catalog through CfgALiVEFOBBuildables, in description.ext or a
 mod's config (the mission's wins):
     class CfgALiVEFOBBuildables {
@@ -158,7 +161,7 @@ private _staticPrice = {
             if (_ammo isKindOf ["G_40mm_HE", configFile >> "CfgAmmo"] || {_ammo isKindOf ["G_20mm_HE", configFile >> "CfgAmmo"]}) then { _grenade = true };
         } forEach (getArray (_t >> "magazines"));
     } forEach _turrets;
-    if (_maxHit <= 0) exitWith { -1 };
+    if (_maxHit <= 0) exitWith { [-1, ""] };
     ([
         [_class isKindOf "StaticMortar", ["MORTAR", 100, 60, 90, 110]],
         [getNumber (_cfg >> "artilleryScanner") == 1, ["HOWITZER", 250, 120, 200, 250]],
@@ -170,7 +173,7 @@ private _staticPrice = {
     private _c = _base * (0.85 + 0.3 * ((_maxHit / (2 * _href)) min 1));
     if (_role == "AA" && {_maxHit >= 30}) then { _c = _c * 1.2 };
     if (_role == "AT" && {_maxHit >= 500}) then { _c = _c * 1.2 };
-    round ((_c max _lo) min _hi)
+    [round ((_c max _lo) min _hi), _role]
 };
 
 private _rows = [];
@@ -182,19 +185,23 @@ private _add = {
     _seen set [_lc, true];
     private _cost = _fixed getOrDefault [_lc, -1];
     private _side = "";
+    private _tier = 1;
     if (_kind == "STATIC") then {
         _side = ["EAST", "WEST", "GUER"] param [getNumber (_cfg >> "side"), ""];
-        if (_cost < 0) then {
-            private _p = [_class, _cfg] call _staticPrice;
-            if (_p > 0) then { _cost = (round (_p * _scale)) max 1 };
-        };
-        if (_cost < 0 || {_side == ""}) exitWith { _cost = -1 };
+        ([_class, _cfg] call _staticPrice) params ["_p", "_role"];
+        if (_p < 0 && {_cost < 0}) exitWith { _cost = -1 };
+        if (_cost < 0) then { _cost = (round (_p * _scale)) max 1 };
+        // machine guns and grenade launchers from tier 2, the heavy weapons from tier 3
+        _tier = [3, 2] select (_role in ["MG", "GMG", ""]);
+        if (_side == "") exitWith { _cost = -1 };
     } else {
         if (_cost < 0) then { _cost = (round (([_class, _cfg, _kind] call _price) * _scale)) max 1 };
+        // towers from tier 2
+        if (_kind == "FORTIFICATION" && {"tower" in _lc || {"patrol" in _lc}}) then { _tier = 2 };
     };
     if (_cost < 0) exitWith {};
     private _pic = getText (_cfg >> "editorPreview");
-    _rows pushBack [_class, getText (_cfg >> "displayName"), _kind, _cost, _pic, 1, _side];
+    _rows pushBack [_class, getText (_cfg >> "displayName"), _kind, _cost, _pic, _tier, _side];
 };
 
 {

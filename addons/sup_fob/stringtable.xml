@@ -332,6 +332,75 @@
             <Key ID="STR_ALIVE_FOB_REFUSED_NOT_DAMAGED">
                 <English>That FOB doesn't need repairing.</English>
             </Key>
+            <Key ID="STR_ALIVE_FOB_CRATE_AMOUNT">
+                <English>Supply Crate Amount</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_CRATE_AMOUNT_COMMENT">
+                <English>How much supply a crate from a Field HQ holds. In Force Pool mode the faction's pool pays this for the crate.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_KIT_COST">
+                <English>FOB Kit Cost</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_KIT_COST_COMMENT">
+                <English>What a FOB kit from a Field HQ costs the faction's force pool, in Force Pool mode only; free otherwise. Sync any object to the module to make it a Field HQ.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_TIER2_COST">
+                <English>Tier 2 Cost</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_TIER3_COST">
+                <English>Tier 3 Cost</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_TIER_COST_COMMENT">
+                <English>Supply to upgrade a FOB to this tier. Tier 2 can hold more supply and builds towers, machine guns and grenade launchers; tier 3 holds the most, builds mortars, AT and AA, and can be a respawn point.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_RESPAWN">
+                <English>Respawn at Tier 3</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_RESPAWN_COMMENT">
+                <English>A tier 3 FOB is a respawn point for its side while its headquarters stands. Needs a respawn type in the mission that offers respawn positions.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_ACTION_UPGRADE">
+                <English>Upgrade FOB</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_ACTION_UNLOAD">
+                <English>Unload Supplies</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_ACTION_HQ_KIT">
+                <English>Request FOB Kit</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_ACTION_HQ_CRATE">
+                <English>Request Supply Crate</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_UI_TIER_SHORT">
+                <English>tier %1</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_UI_TIER_NEEDED">
+                <English>Needs a tier %1 FOB</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_REFUSED_NOTCRATE">
+                <English>That isn't a supply crate.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_REFUSED_FULL">
+                <English>The FOB can't hold any more supply.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_REFUSED_TOPTIER">
+                <English>The FOB is already at tier 3.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_REFUSED_POOL">
+                <English>Your side's force pool doesn't have the %1 it costs.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_UNLOADED">
+                <English>%1 supply unloaded into %2.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_UPGRADED">
+                <English>%1 is now tier %2, for %3 supply.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_HQ_KIT">
+                <English>A FOB kit is ready beside the Field HQ.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_HQ_CRATE">
+                <English>A supply crate is ready beside the Field HQ.</English>
+            </Key>
         </Container>
     </Package>
 </Project>
