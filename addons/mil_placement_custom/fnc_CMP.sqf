@@ -1727,7 +1727,9 @@ switch(_operation) do {
                         private _compResult = [];
                         private _tierUsed = -1;
                         {
-                            _compResult = [position _logic, _x, _envelope, "fieldhq", direction _logic, _debug] call ALiVE_fnc_findCompositionSpawnPosition;
+                            // The airfield's own ground counts: a module put on an airfield means a
+                            // base there, and the runway and taxiway check still keeps it off both.
+                            _compResult = [position _logic, _x, _envelope, "fieldhq", direction _logic, _debug, 1.0, [], false, false, true] call ALiVE_fnc_findCompositionSpawnPosition;
                             if (count _compResult > 0) exitWith { _tierUsed = _x };
                         } forEach _radii;
 

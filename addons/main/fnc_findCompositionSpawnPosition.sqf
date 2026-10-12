@@ -78,6 +78,12 @@ Parameters:
                               after module init in MP host). Default false.
     _this select 9: BOOL    - skip trying the centre itself first. Default false.
                               A battery sets it once a gun stands on the centre.
+    _this select 10: BOOL   - allow the airfield's own ground. Default false: every
+                              mode but ato turns away anything inside an airfield
+                              zone. True keeps only the runway and taxiway check (and lifts
+                              field mode's road rule, as aprons count as roads), for
+                              a caller the mission maker put on the airfield on
+                              purpose (Custom Military Placement's Field HQ).
 
 Returns:
     ARRAY [_pos, _dir] on success, [] on failure.
@@ -121,7 +127,11 @@ params [
     // Skip Stage 1's try of the centre itself. A battery sets it once a gun already
     // stands there: guns not yet spawned don't block the spot, so every later gun was
     // handed the same centre, failed the spacing and was dropped.
-    ["_skipCentre", false, [true]]
+    ["_skipCentre", false, [true]],
+    // The airfield's own ground is allowed (the runway and taxiway check still runs). For a
+    // Field HQ the mission maker put on an airfield: refusing the whole zone left an airport
+    // base with no Field HQ at all.
+    ["_allowAirfieldArea", false, [true]]
 ];
 
 // _runwayClearanceMul scales the runway/taxiway rejection radius. Default
@@ -296,7 +306,7 @@ if (_debug) then {
 // ------------------------------------------------------------------------
 // Mode flags - distilled boolean policy from the named mode.
 // ------------------------------------------------------------------------
-private _excludeRoads      = (_mode == "field");       // field-strict avoids ALL roads
+private _excludeRoads      = (_mode == "field") && {!_allowAirfieldArea};   // field-strict avoids ALL roads; an airfield's aprons and taxi lanes are roads, so not there
 private _excludeRunways    = true;                     // always exclude
 // "ato" mode skips the helipad check - AA / SAM compositions placed
 // on an active airbase are EXPECTED to sit near helipads they defend.
@@ -338,7 +348,7 @@ private _maxAttempts       = if (_mode == "roadblock") then { 12 } else {
 // Camps may treat completed registered-airfield bounds as authoritative. Outside
 // those bounds plus search/clearance reach, skip airfield discovery altogether.
 // Other callers keep the existing conservative zone-only narrowing and audit.
-private _excludeAirfieldArea = !(_mode in ["ato"]);
+private _excludeAirfieldArea = !(_mode in ["ato"]) && {!_allowAirfieldArea};
 private _needZones = _excludeAirfieldArea;
 
 // Held apart from _needZones so the count reported at the end still means "no place the
