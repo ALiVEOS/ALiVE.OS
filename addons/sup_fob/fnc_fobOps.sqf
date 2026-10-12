@@ -17,6 +17,9 @@ many FOBs as it may.
 
 dismantle takes a FOB down: its objectives, buildings and entry go; its supply is lost.
 
+build puts up an item from the build catalog within the FOB's build range, paid for from the
+FOB's supply at the catalog's price; recycle takes one down again for half of what was paid.
+
 Parameters:
 String - The operation
 Array - Its arguments
@@ -25,6 +28,9 @@ Object - The player asking (objNull from the server itself)
 Returns:
 deploy - [kit, position, direction] -> the new FOB's id, or ""
 dismantle - [fobID] -> true when it was taken down
+build - [class, position, direction, fobID] -> true when built and paid for
+recycle - [object] -> true when taken down, with half its price back
+restoreObjects - [fobID] -> a saved FOB's built objects made again; the number made
 cleanup - [fobID] -> removes a FOB and everything it made, no checks
 restore - [] -> rebuilds every loaded FOB's headquarters and objectives; the number rebuilt
 spawnHub - [fobID] -> the headquarters building, made if missing
@@ -149,13 +155,14 @@ switch (_op) do {
             _result = objNull;
         };
         _hub = createVehicle [_class, _pos, [], 0, "CAN_COLLIDE"];
-        _hub setPosATL _pos;
-        // Sits on the slope and keeps its heading: setVectorUp alone twists the heading round
+        // Sits on the slope and keeps its heading: setVectorUp alone twists the heading round.
+        // Turned first, then placed, as turning moves it a little
         private _d = [_entry, "dir", 0] call ALIVE_fnc_hashGet;
         private _up = surfaceNormal _pos;
         // the heading's own x and y, tipped up or down to lie along the slope
         private _tip = -((sin _d) * (_up select 0) + (cos _d) * (_up select 1)) / ((_up select 2) max 0.1);
         _hub setVectorDirAndUp [vectorNormalized [sin _d, cos _d, _tip], _up];
+        _hub setPosATL _pos;
         _hub setVariable ["ALiVE_FOB_id", _id, true];
         // A destroyed headquarters marks the FOB damaged: it can't be taken down until repaired
         _hub addEventHandler ["Killed", {
@@ -176,9 +183,111 @@ switch (_op) do {
         {
             private _hub = ["spawnHub", [_x]] call ALiVE_fnc_fobOps;
             ["reconcile", [_x]] call ALiVE_fnc_fobObjectives;
+            ["restoreObjects", [_x]] call ALiVE_fnc_fobOps;
             if (!isNull _hub) then { _result = _result + 1 };
         } forEach +(ALiVE_FOB_registry select 1);
         if (_result > 0) then { ["ALiVE Player FOBs - rebuilt %1 FOBs from the save", _result] call ALiVE_fnc_dump };
+    };
+
+    // A saved FOB's built objects, made again where they stood: a saved one is
+    // [class, posWorld, vectorDir, vectorUp, cost], a live one [object, class, cost]
+    case "restoreObjects": {
+        _args params [["_id", "", [""]]];
+        private _entry = [ALiVE_FOB_registry, _id] call ALIVE_fnc_hashGet;
+        if (isNil "_entry") exitWith { _result = 0 };
+        _result = 0;
+        private _live = [];
+        {
+            if ((_x param [0, objNull]) isEqualType "") then {
+                _x params ["_class", "_pos", "_vdir", "_vup", ["_cost", 0]];
+                if (isClass (configFile >> "CfgVehicles" >> _class)) then {
+                    private _o = createVehicle [_class, _pos, [], 0, "CAN_COLLIDE"];
+                    // the world position read at save time: unlike setPosATL, setPosWorld puts a
+                    // tilted object back exactly where it stood
+                    _o setVectorDirAndUp [_vdir, _vup];
+                    _o setPosWorld _pos;
+                    _o setVariable ["ALiVE_FOB_object", _id, true];
+                    _live pushBack [_o, _class, _cost];
+                    _result = _result + 1;
+                } else {
+                    ["ALiVE Player FOBs - %1: %2 isn't in this game any more, so it wasn't rebuilt", _id, _class] call ALiVE_fnc_dumpR;
+                };
+            } else {
+                _live pushBack _x;
+            };
+        } forEach ([_entry, "objects", []] call ALIVE_fnc_hashGet);
+        [_entry, "objects", _live] call ALIVE_fnc_hashSet;
+    };
+
+    // A player builds a catalog item at their side's FOB. Only the class, place, heading and
+    // FOB come from the player; the price comes from the server's catalog. Paid first, refunded
+    // if the object can't be made.
+    case "build": {
+        _result = false;
+        _args params [["_class", "", [""]], ["_pos", [], [[]]], ["_dir", 0, [0]], ["_id", "", [""]]];
+        if (isNull _caller || {!alive _caller}) exitWith {};
+        private _entry = [ALiVE_FOB_registry, _id] call ALIVE_fnc_hashGet;
+        if (isNil "_entry") exitWith { ["STR_ALIVE_FOB_REFUSED_NOFOB"] call _tell };
+        if (([_entry, "side", ""] call ALIVE_fnc_hashGet) != str (side group _caller)) exitWith { ["STR_ALIVE_FOB_REFUSED_NOTOURS"] call _tell };
+        if (([_entry, "status", ""] call ALIVE_fnc_hashGet) != "active") exitWith { ["STR_ALIVE_FOB_REFUSED_DAMAGED_BUILD"] call _tell };
+        if !(count _pos in [2, 3] && {(_pos findIf { !(_x isEqualType 0) || {!finite _x} }) < 0}) exitWith {};
+        _pos = [_pos select 0, _pos select 1, 0];
+        if ((_pos select 0) < 0 || {(_pos select 1) < 0} || {(_pos select 0) > worldSize} || {(_pos select 1) > worldSize}) exitWith {};
+        if !(finite _dir) exitWith {};
+        private _range = [_logic, "attribute", ["fob_build_range"]] call ALiVE_fnc_FOB;
+        private _centre = [_entry, "pos", [0,0,0]] call ALIVE_fnc_hashGet;
+        if (_pos distance2D _centre > _range || {_caller distance2D _centre > _range}) exitWith { ["STR_ALIVE_FOB_REFUSED_RANGE", [round _range]] call _tell };
+        if (surfaceIsWater _pos) exitWith { ["STR_ALIVE_FOB_REFUSED_WATER"] call _tell };
+
+        private _row = (missionNamespace getVariable ["ALiVE_FOB_catalog", []]) select { (_x select 0) == _class };
+        if (_row isEqualTo []) exitWith { ["STR_ALIVE_FOB_REFUSED_NOTBUILDABLE"] call _tell };
+        (_row select 0) params ["", "_name", "_kind", "_cost", "", ["_tierMin", 1]];
+        if (([_entry, "tier", 1] call ALIVE_fnc_hashGet) < _tierMin) exitWith { ["STR_ALIVE_FOB_REFUSED_TIER", [_tierMin]] call _tell };
+
+        if !(["debit", [_id, _cost, "build " + _class]] call ALiVE_fnc_fobSupply) exitWith {
+            ["STR_ALIVE_FOB_REFUSED_SUPPLY", [_cost, ["balance", [_id]] call ALiVE_fnc_fobSupply]] call _tell;
+        };
+        private _o = createVehicle [_class, _pos, [], 0, "CAN_COLLIDE"];
+        if (isNull _o) exitWith {
+            ["credit", [_id, _cost, "refund " + _class]] call ALiVE_fnc_fobSupply;
+            ["STR_ALIVE_FOB_REFUSED_SPOT"] call _tell;
+        };
+        // on the slope, keeping the heading the player chose; turned first, then placed
+        private _up = surfaceNormal _pos;
+        private _tip = -((sin _dir) * (_up select 0) + (cos _dir) * (_up select 1)) / ((_up select 2) max 0.1);
+        _o setVectorDirAndUp [vectorNormalized [sin _dir, cos _dir, _tip], _up];
+        _o setPosATL _pos;
+        if (((getPosATL _o) select 2) < 0) then { _o setPosATL [_pos select 0, _pos select 1, 0] };
+        _o setVariable ["ALiVE_FOB_object", _id, true];
+        ([_entry, "objects", []] call ALIVE_fnc_hashGet) pushBack [_o, _class, _cost];
+        ALiVE_FOB_dirty = true;
+        [_logic, "broadcastMirror"] call ALiVE_fnc_FOB;
+        ["STR_ALIVE_FOB_BUILT", [_name, _cost]] call _tell;
+        _result = true;
+    };
+
+    // Half the price back, worked out from what was paid, never from the object itself
+    case "recycle": {
+        _result = false;
+        _args params [["_o", objNull, [objNull]]];
+        if (isNull _caller || {!alive _caller} || {isNull _o}) exitWith {};
+        private _id = _o getVariable ["ALiVE_FOB_object", ""];
+        private _entry = [ALiVE_FOB_registry, _id] call ALIVE_fnc_hashGet;
+        if (isNil "_entry") exitWith { ["STR_ALIVE_FOB_REFUSED_NOTBUILT"] call _tell };
+        if (([_entry, "side", ""] call ALIVE_fnc_hashGet) != str (side group _caller)) exitWith { ["STR_ALIVE_FOB_REFUSED_NOTOURS"] call _tell };
+        if (_caller distance _o > 8) exitWith { ["STR_ALIVE_FOB_REFUSED_RANGE", [8]] call _tell };
+        private _objects = [_entry, "objects", []] call ALIVE_fnc_hashGet;
+        private _i = _objects findIf { (_x param [0, objNull]) isEqualTo _o };
+        if (_i < 0) exitWith { ["STR_ALIVE_FOB_REFUSED_NOTBUILT"] call _tell };
+        (_objects select _i) params ["", "_class", ["_cost", 0]];
+        _objects deleteAt _i;
+        deleteVehicle _o;
+        private _back = floor (_cost * 0.5);
+        if (_back > 0) then { ["credit", [_id, _back, "recycle " + _class]] call ALiVE_fnc_fobSupply };
+        ALiVE_FOB_dirty = true;
+        [_logic, "broadcastMirror"] call ALiVE_fnc_FOB;
+        ["STR_ALIVE_FOB_RECYCLED", [getText (configFile >> "CfgVehicles" >> _class >> "displayName"), _back]] call _tell;
+        _result = true;
     };
 
     default {

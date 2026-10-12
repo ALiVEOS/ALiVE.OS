@@ -67,8 +67,23 @@ class cfgFunctions {
                 ALIVE_RECOMPILE;
                         };
                         class fobActions {
-                                description = "Client: Deploy FOB, FOB Status and Dismantle FOB";
+                                description = "Client: Deploy FOB, FOB Status, Dismantle FOB, Build Menu and Recycle";
                                 file = "\x\alive\addons\sup_fob\fnc_fobActions.sqf";
+                ALIVE_RECOMPILE;
+                        };
+                        class fobBuildScan {
+                                description = "The build catalog and its prices, worked out from config";
+                                file = "\x\alive\addons\sup_fob\fnc_fobBuildScan.sqf";
+                ALIVE_RECOMPILE;
+                        };
+                        class buildMenu {
+                                description = "Client: the FOB build window";
+                                file = "\x\alive\addons\sup_fob\fnc_buildMenu.sqf";
+                ALIVE_RECOMPILE;
+                        };
+                        class fobPlacement {
+                                description = "Client: placing a catalog item at a FOB";
+                                file = "\x\alive\addons\sup_fob\fnc_fobPlacement.sqf";
                 ALIVE_RECOMPILE;
                         };
                    };

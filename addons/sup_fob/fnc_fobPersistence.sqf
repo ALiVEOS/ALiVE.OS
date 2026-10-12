@@ -11,7 +11,7 @@ War Room one reads "_rev" off anything whose first element is text, and a bare a
 fail there. "data" is ["v2", counter, rows], each row the entry's key/value pairs.
 
 Only what can be rebuilt is saved: the headquarters is recreated from its class and spot,
-built objects from their class, position and attitude (read off the live object at save,
+built objects from their class, world position and attitude (read off the live object at save,
 skipping anything destroyed, so a demolished wall isn't rebuilt for free), and every timer as
 the seconds it has left. Nothing depends on a wreck still being there.
 
@@ -59,7 +59,7 @@ switch (_operation) do {
                     private _v = [_entry, _k] call ALIVE_fnc_hashGet;
                     if (_k == "objects") then {
                         _v = (_v select { (_x select 0) isEqualType objNull && {!isNull (_x select 0)} && {alive (_x select 0)} && {damage (_x select 0) < 1} })
-                            apply { [_x select 1, getPosATL (_x select 0), vectorDir (_x select 0), vectorUp (_x select 0), _x select 2] };
+                            apply { [_x select 1, getPosWorld (_x select 0), vectorDir (_x select 0), vectorUp (_x select 0), _x select 2] };
                     };
                     _pairs pushBack [_k, _v];
                 };

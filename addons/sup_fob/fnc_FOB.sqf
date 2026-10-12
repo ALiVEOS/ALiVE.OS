@@ -146,6 +146,9 @@ switch (_operation) do {
                     ["ALiVE Player FOBs - gave up waiting for the AI Commanders or Military Logistics to finish starting after 300 s; starting without them"] call ALiVE_fnc_dumpR;
                 };
 
+                // What can be built and its price, before anything is loaded or requested
+                [] call ALiVE_fnc_fobBuildScan;
+
                 if ([_logic, "attribute", ["fob_persistent"]] call ALIVE_fnc_FOB) then {
                     [] call ALiVE_fnc_fobLoadData;
                 };

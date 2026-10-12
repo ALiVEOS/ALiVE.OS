@@ -42,6 +42,13 @@ private _tick = {
                 ALiVE_FOB_dirty = true;
             };
         } forEach _timers;
+        // Built objects that were destroyed or removed come off the list, with nothing back
+        private _objects = [_entry, "objects", []] call ALIVE_fnc_hashGet;
+        private _kept = _objects select { !((_x param [0, objNull]) isEqualType objNull) || {!isNull (_x select 0) && {alive (_x select 0)} && {damage (_x select 0) < 1}} };
+        if (count _kept != count _objects) then {
+            [_entry, "objects", _kept] call ALIVE_fnc_hashSet;
+            ALiVE_FOB_dirty = true;
+        };
         // A commander that reloaded its objectives has lost the FOB's; this puts it back
         ["reconcile", [_x]] call ALiVE_fnc_fobObjectives;
     } forEach (ALiVE_FOB_registry select 1);

@@ -11,6 +11,9 @@ The player's FOB actions, on the scroll menu:
 - FOB Status, within 25 m of one of the side's FOBs: its name, state, tier and supply.
 - Dismantle FOB, in the same place. It asks to be chosen again within 10 s before anything
   happens; the supply in the FOB is lost.
+- Build Menu, inside an active FOB's build range: the build window (ALiVE_fnc_buildMenu).
+- Recycle, looking at something built at a FOB from within 8 m: takes it down for half its
+  price back.
 
 The conditions read a cache refreshed every half second, never the world, so an action
 showing costs nothing per frame. The server checks everything again.
@@ -36,6 +39,7 @@ switch (_op) do {
         if (isNil "ALiVE_FOB_cacheLoop") then {
             ALiVE_FOB_nearKit = objNull;
             ALiVE_FOB_nearFob = [];
+            ALiVE_FOB_buildFob = [];
             ALiVE_FOB_cacheLoop = [] spawn {
                 while { true } do {
                     if (alive player) then {
@@ -49,6 +53,11 @@ switch (_op) do {
                             (_x select 1) == _side && {player distance2D (_x select 3) <= 25}
                         };
                         ALiVE_FOB_nearFob = _mine param [0, []];
+                        // the side's FOB whose build range the player is in
+                        private _inRange = (missionNamespace getVariable ["ALiVE_FOB_registryMirror", []]) select {
+                            (_x select 1) == _side && {(_x select 4) == "active"} && {player distance2D (_x select 3) <= (_x select 8)}
+                        };
+                        ALiVE_FOB_buildFob = _inRange param [0, []];
                     };
                     sleep 0.5;
                 };
@@ -63,7 +72,11 @@ switch (_op) do {
             player addAction [localize "STR_ALIVE_FOB_ACTION_STATUS", { ["status"] call ALiVE_fnc_fobActions }, nil, 1.4, false, true, "",
                 "ALiVE_FOB_nearFob isNotEqualTo []"],
             player addAction [localize "STR_ALIVE_FOB_ACTION_DISMANTLE", { ["dismantle"] call ALiVE_fnc_fobActions }, nil, 0.5, false, true, "",
-                "ALiVE_FOB_nearFob isNotEqualTo [] && {vehicle _this == _this}"]
+                "ALiVE_FOB_nearFob isNotEqualTo [] && {vehicle _this == _this}"],
+            player addAction [localize "STR_ALIVE_FOB_ACTION_BUILD", { ["open", ALiVE_FOB_buildFob] call ALiVE_fnc_buildMenu }, nil, 1.45, false, true, "",
+                "ALiVE_FOB_buildFob isNotEqualTo [] && {vehicle _this == _this} && {!(missionNamespace getVariable ['ALiVE_FOB_placing', false])}"],
+            player addAction [localize "STR_ALIVE_FOB_ACTION_RECYCLE", { ["recycle", [cursorObject]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] }, nil, 0.6, false, true, "",
+                "vehicle _this == _this && {(cursorObject getVariable ['ALiVE_FOB_object', '']) != ''} && {_this distance cursorObject < 8}"]
         ];
         player setVariable ["ALiVE_FOB_actionIDs", _ids];
 

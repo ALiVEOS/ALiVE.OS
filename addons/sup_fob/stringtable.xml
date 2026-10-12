@@ -203,6 +203,84 @@
             <Key ID="STR_ALIVE_FOB_REFUSED_DAMAGED">
                 <English>A damaged FOB can't be dismantled until it's repaired.</English>
             </Key>
+            <Key ID="STR_ALIVE_FOB_ACTION_BUILD">
+                <English>Build Menu</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_ACTION_RECYCLE">
+                <English>Recycle (half its price back)</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_ACTION_PLACE">
+                <English>Place %1 (%2 supply)</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_ACTION_ROTATE">
+                <English>Rotate 45 degrees</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_ACTION_CANCEL">
+                <English>Cancel placing</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_PLACE_HELP">
+                <English>Walk and turn to move it. Green: it can go here. Red: it can't.&lt;br/&gt;Place, Rotate and Cancel are on the scroll menu.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_PLACE_LEFT">
+                <English>You left the FOB's build range, so placing stopped.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_PLACE_BAD">
+                <English>It can't go here: keep it inside the FOB's build range and out of water.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_UI_TITLE">
+                <English>FOB Build</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_UI_FORTIFICATIONS">
+                <English>Fortifications</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_UI_SUPPLY">
+                <English>Supply</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_UI_PLACE">
+                <English>Place</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_UI_CLOSE">
+                <English>Close</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_UI_SUPPLY_LINE">
+                <English>Supply: %1</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_UI_NO_CATALOG">
+                <English>The build list is still being made. Try again in a moment.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_UI_FORTIFICATION">
+                <English>Fortification</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_UI_SUPPLY_ITEM">
+                <English>Supply</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_UI_COST">
+                <English>Costs %1 supply</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_REFUSED_NOFOB">
+                <English>That FOB is gone.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_REFUSED_DAMAGED_BUILD">
+                <English>Nothing can be built at a damaged FOB until it's repaired.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_REFUSED_NOTBUILDABLE">
+                <English>That can't be built at a FOB.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_REFUSED_TIER">
+                <English>The FOB has to reach tier %1 to build that.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_REFUSED_SUPPLY">
+                <English>That needs %1 supply and the FOB has %2.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_REFUSED_NOTBUILT">
+                <English>That wasn't built at a FOB.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_BUILT">
+                <English>%1 built for %2 supply.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_RECYCLED">
+                <English>%1 recycled: %2 supply back.</English>
+            </Key>
         </Container>
     </Package>
 </Project>
