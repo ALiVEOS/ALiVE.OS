@@ -1489,25 +1489,33 @@ switch(_operation) do {
         };
 
         // One "Talk to soldier" opens the soldier interaction window, on a prisoner or on a
-        // friendly soldier (ALiVE_fnc_C2ISTARSoldierInteract), from the scroll wheel or ACE.
+        // friendly soldier (ALiVE_fnc_C2ISTARSoldierInteract), from the scroll wheel, ACE or
+        // both, as Talk to Soldier Interaction says. Auto is ACE when it's loaded, else the
+        // scroll wheel; ACE without ACE loaded falls back to the scroll wheel.
         if (isNil "ALiVE_c2istar_soldierInteractInit") then {
             ALiVE_c2istar_soldierInteractInit = true;
             ["init"] call ALiVE_fnc_C2ISTARSoldierInteract;
             if (hasInterface) then {
-                [] spawn {
+                private _ui = toUpper str (_logic getVariable ["talkInterface", "AUTO"]);
+                [_ui] spawn {
+                    params ["_ui"];
+                    private _hasAce = isClass (configFile >> "CfgPatches" >> "ace_interact_menu");
+                    private _useAce = _hasAce && {(_ui find "SCROLL") < 0};
+                    private _useScroll = !_hasAce || {(_ui find "SCROLL") >= 0} || {(_ui find "BOTH") >= 0};
                     waitUntil { sleep 1; !isNull player };
-                    if (isClass (configFile >> "CfgPatches" >> "ace_interact_menu")) then {
-                        waitUntil { sleep 1; !isNil "ace_interact_menu" && {!isNull ace_player} };
-                        private _action = ["ALiVE_TalkSoldier", localize "STR_ALIVE_C2ISTAR_SI_TALK", "", { ["open", [_target]] call ALiVE_fnc_C2ISTARSoldierInteract },
-                            { ["canTalk", [_target, _player]] call ALiVE_fnc_C2ISTARSoldierInteract }] call ace_interact_menu_fnc_createAction;
-                        ["CAManBase", 0, ["ACE_MainActions"], _action, true] call ace_interact_menu_fnc_addActionToClass;
-                    } else {
+                    if (_useScroll) then {
                         ALiVE_c2istar_talkAdd = {
                             _this addAction [localize "STR_ALIVE_C2ISTAR_SI_TALK", { ["open", [cursorObject]] call ALiVE_fnc_C2ISTARSoldierInteract }, nil, 1.4, false, true, "",
                                 "['canTalk', [cursorObject, _this]] call ALiVE_fnc_C2ISTARSoldierInteract", 4];
                         };
                         player call ALiVE_c2istar_talkAdd;
                         player addEventHandler ["Respawn", { params ["_unit"]; _unit call ALiVE_c2istar_talkAdd }];
+                    };
+                    if (_useAce) then {
+                        waitUntil { sleep 1; !isNil "ace_interact_menu" && {!isNull ace_player} };
+                        private _action = ["ALiVE_TalkSoldier", localize "STR_ALIVE_C2ISTAR_SI_TALK", "", { ["open", [_target]] call ALiVE_fnc_C2ISTARSoldierInteract },
+                            { ["canTalk", [_target, _player]] call ALiVE_fnc_C2ISTARSoldierInteract }] call ace_interact_menu_fnc_createAction;
+                        ["CAManBase", 0, ["ACE_MainActions"], _action, true] call ace_interact_menu_fnc_addActionToClass;
                     };
                 };
             };

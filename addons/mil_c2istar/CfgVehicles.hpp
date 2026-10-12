@@ -609,6 +609,22 @@ class CfgVehicles {
                             defaultValue = """0""";
                             typeName = "NUMBER";
                     };
+                    // How players open Talk to soldier: ACE when it's loaded, the scroll wheel,
+                    // or both, as Civilian Interaction UI does for civilians
+                    class talkInterface : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_talkInterface";
+                            displayName = "$STR_ALIVE_C2ISTAR_TALK_UI";
+                            tooltip = "$STR_ALIVE_C2ISTAR_TALK_UI_COMMENT";
+                            defaultValue = """AUTO""";
+                            class Values
+                            {
+                                    class AUTO   { name = "$STR_ALIVE_C2ISTAR_TALK_UI_AUTO";   value = "AUTO"; default = 1; };
+                                    class SCROLL { name = "$STR_ALIVE_C2ISTAR_TALK_UI_SCROLL"; value = "SCROLL"; };
+                                    class ACE    { name = "$STR_ALIVE_C2ISTAR_TALK_UI_ACE";    value = "ACE"; };
+                                    class BOTH   { name = "$STR_ALIVE_C2ISTAR_TALK_UI_BOTH";   value = "BOTH"; };
+                            };
+                    };
                     class reportAirSituation
                     {
                             property = "ALiVE_MIL_C2ISTAR_reportAirSituation";
