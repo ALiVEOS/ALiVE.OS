@@ -107,7 +107,7 @@ if (_lastShotMarker == "") then {
     NEO_radioLogic setVariable ["NEO_supportMarkerArtyLastShot", _lastShotMarker];
 };
 _lastShotMarker setMarkerPosLocal _pos;
-_lastShotMarker setMarkerTextLocal format ["Last fire: %1", mapGridPosition _pos];
+_lastShotMarker setMarkerTextLocal format [localize "STR_ALIVE_CS_UI_MARKER_LAST_FIRE", mapGridPosition _pos];
 _lastShotMarker setMarkerAlphaLocal 1;
 
 //Interface

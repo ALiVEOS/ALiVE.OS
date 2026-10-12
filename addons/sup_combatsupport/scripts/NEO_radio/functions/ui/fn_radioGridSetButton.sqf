@@ -10,7 +10,7 @@ private ["_edit", "_grid", "_pos", "_mapSize"];
 // *ConfirmButtonEnable functions do select (lbCurSel ...) on that unit list - so the grid path must
 // honour the identical precondition or it can hit a -1 index the click path structurally avoids.
 if !(uinamespace getVariable ["NEO_radioMapClickArmed", false]) exitWith {
-    hint "Select a support unit first";
+    hint localize "STR_ALIVE_CS_UI_HINT_SELECT_UNIT";
 };
 
 _edit = (findDisplay 655555) displayCtrl 655636;
@@ -19,13 +19,13 @@ _grid = (_grid splitString " ") joinString ""; // strip spaces - players type "0
 
 _pos = _grid call NEO_fnc_radioGridToPos;
 if (_pos isEqualTo []) exitWith {
-    hint "Enter an 8-digit grid (e.g. 0284 0172)";
+    hint localize "STR_ALIVE_CS_UI_HINT_GRID_FORMAT";
 };
 
 // refuse a grid that lands off the map rather than silently placing the marker in the void
 _mapSize = getNumber (configFile >> "CfgWorlds" >> worldName >> "mapSize");
 if ((_pos select 0) < 0 || {(_pos select 0) > _mapSize} || {(_pos select 1) < 0} || {(_pos select 1) > _mapSize}) exitWith {
-    hint "That grid is off the map";
+    hint localize "STR_ALIVE_CS_UI_HINT_GRID_OFFMAP";
 };
 
 [_pos] call NEO_fnc_supportSetTargetPos;

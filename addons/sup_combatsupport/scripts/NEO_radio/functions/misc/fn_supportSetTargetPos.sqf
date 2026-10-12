@@ -19,7 +19,7 @@ switch (toUpper (_lb lbText (lbCurSel _lb))) do
 {
     case "TRANSPORT" :
     {
-        _marker setMarkerTextLocal "Transport";
+        _marker setMarkerTextLocal localize "STR_ALIVE_CS_UI_MARKER_TRANSPORT";
         _marker setMarkerTypeLocal "hd_Pickup_noShadow";
 
         [[], 0] call NEO_fnc_supportDrawRing; // transport has no area of influence
@@ -42,7 +42,7 @@ switch (toUpper (_lb lbText (lbCurSel _lb))) do
 
     case "ARTY" :
     {
-        _marker setMarkerTextLocal "STRIKE";
+        _marker setMarkerTextLocal localize "STR_ALIVE_CS_UI_MARKER_STRIKE";
         _marker setMarkerTypeLocal "hd_Objective_noShadow";
         _marker setMarkerColorLocal "ColorOrange";
 

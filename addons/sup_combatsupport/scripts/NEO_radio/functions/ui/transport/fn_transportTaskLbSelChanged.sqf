@@ -47,7 +47,7 @@ _task = switch (_lb lbText _index) do
         _objectLb ctrlEnable false;
         _slider ctrlSetPosition [0.281002 * _uiW + _uiX, 0.5504 * _uiH + _uiY, (0.0927966 * _uiW), (0.0196 * _uiH)];
         _slider ctrlCommit 0;
-        _sliderText ctrlSetText "Radius: 200/300";
+        _sliderText ctrlSetText format [localize "STR_ALIVE_CS_UI_TR_RADIUS", 200];
         _sliderText ctrlSetPosition [0.225 * _uiW + _uiX, 0.52 * _uiH + _uiY, (0.19 * _uiW), (0.028 * _uiH)];
         _sliderText ctrlCommit 0;
 
@@ -61,7 +61,7 @@ _task = switch (_lb lbText _index) do
             _pos = round (_this select 1);
             _sliderText = (findDisplay 655555) displayCtrl 655579;
 
-            _sliderText ctrlSetText format [""Radius: %1/300"", _pos];
+            _sliderText ctrlSetText format [localize ""STR_ALIVE_CS_UI_TR_RADIUS"", _pos];
         "]
     };
     CASE "INSERTION" :
@@ -71,7 +71,7 @@ _task = switch (_lb lbText _index) do
         _objectLb ctrlEnable false;
         _slider ctrlSetPosition [0.281002 * _uiW + _uiX, 0.5504 * _uiH + _uiY, (0.0927966 * _uiW), (0.0196 * _uiH)];
         _slider ctrlCommit 0;
-        _sliderText ctrlSetText "Height: 25/50";
+        _sliderText ctrlSetText format [localize "STR_ALIVE_CS_UI_TR_HEIGHT", 25];
         _sliderText ctrlSetPosition [0.225 * _uiW + _uiX, 0.52 * _uiH + _uiY, (0.19 * _uiW), (0.028 * _uiH)];
         _sliderText ctrlCommit 0;
 
@@ -85,7 +85,7 @@ _task = switch (_lb lbText _index) do
             _pos = round (_this select 1);
             _sliderText = (findDisplay 655555) displayCtrl 655579;
 
-            _sliderText ctrlSetText format [""Height: %1/50"", _pos];
+            _sliderText ctrlSetText format [localize ""STR_ALIVE_CS_UI_TR_HEIGHT"", _pos];
         "]
     };
 
@@ -96,7 +96,7 @@ _task = switch (_lb lbText _index) do
         _slider ctrlCommit 0;
         _objectLb ctrlSetPosition [0.280111 * _uiW + _uiX, 0.5504 * _uiH + _uiY, (0.22 * _uiW), (0.028 * _uiH)];
         _objectLb ctrlCommit 0;
-        _sliderText ctrlSetText "Select cargo to lift:";
+        _sliderText ctrlSetText localize "STR_ALIVE_CS_UI_TR_SELECT_CARGO";
         _sliderText ctrlSetPosition [0.280111 * _uiW + _uiX, 0.52 * _uiH + _uiY, (0.19 * _uiW), (0.028 * _uiH)]; // indent to line up with the cargo box below (was 0.225, flush with the section labels)
         _sliderText ctrlCommit 0;
 
@@ -120,7 +120,7 @@ _task = switch (_lb lbText _index) do
 
         // no liftable cargo nearby - tell the player rather than leave a blank list + silent confirm
         if (lbSize _objectLb == 0) then {
-            _sliderText ctrlSetText "No liftable cargo within 100m";
+            _sliderText ctrlSetText localize "STR_ALIVE_CS_UI_TR_NO_CARGO";
         } else {
             // only auto-select when there IS cargo; lbSetCurSel 0 on an empty list fires LBSelChanged
             // with empty lbData, and parseSimpleArray "" throws a format error

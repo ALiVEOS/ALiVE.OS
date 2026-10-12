@@ -1501,4 +1501,193 @@
     <Portuguese>Altitude: alta</Portuguese>
     <Russian>Высота: большая</Russian>
 </Key>
+<Key ID="STR_ALIVE_CS_UI_HINT_SELECT_UNIT">
+    <English>Select a support unit first</English>
+    <Chinesesimp>请先选择一个支援单位</Chinesesimp>
+    <Chinese>請先選擇一個支援單位</Chinese>
+    <Spanish>Selecciona primero una unidad de apoyo</Spanish>
+    <French>Sélectionnez d'abord une unité de soutien</French>
+    <Portuguese>Selecione primeiro uma unidade de apoio</Portuguese>
+    <Russian>Сначала выберите подразделение поддержки</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_HINT_GRID_FORMAT">
+    <English>Enter an 8-digit grid (e.g. 0284 0172)</English>
+    <Chinesesimp>请输入8位网格坐标（例如 0284 0172）</Chinesesimp>
+    <Chinese>請輸入8位網格座標（例如 0284 0172）</Chinese>
+    <Spanish>Introduce una cuadrícula de 8 dígitos (p. ej. 0284 0172)</Spanish>
+    <French>Saisissez une grille à 8 chiffres (ex. 0284 0172)</French>
+    <Portuguese>Digite uma grade de 8 dígitos (ex.: 0284 0172)</Portuguese>
+    <Russian>Введите 8-значный квадрат (напр. 0284 0172)</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_HINT_GRID_OFFMAP">
+    <English>That grid is off the map</English>
+    <Chinesesimp>该网格坐标在地图之外</Chinesesimp>
+    <Chinese>該網格座標在地圖之外</Chinese>
+    <Spanish>Esa cuadrícula está fuera del mapa</Spanish>
+    <French>Cette grille est hors de la carte</French>
+    <Portuguese>Essa grade está fora do mapa</Portuguese>
+    <Russian>Этот квадрат за пределами карты</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_TR_RADIUS">
+    <English>Radius: %1/300</English>
+    <Chinesesimp>半径：%1/300</Chinesesimp>
+    <Chinese>半徑：%1/300</Chinese>
+    <Spanish>Radio: %1/300</Spanish>
+    <French>Rayon : %1/300</French>
+    <Portuguese>Raio: %1/300</Portuguese>
+    <Russian>Радиус: %1/300</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_TR_HEIGHT">
+    <English>Height: %1/50</English>
+    <Chinesesimp>高度：%1/50</Chinesesimp>
+    <Chinese>高度：%1/50</Chinese>
+    <Spanish>Altura: %1/50</Spanish>
+    <French>Hauteur : %1/50</French>
+    <Portuguese>Altura: %1/50</Portuguese>
+    <Russian>Высота: %1/50</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_TR_SELECT_CARGO">
+    <English>Select cargo to lift:</English>
+    <Chinesesimp>选择要吊运的货物：</Chinesesimp>
+    <Chinese>選擇要吊運的貨物：</Chinese>
+    <Spanish>Selecciona la carga a elevar:</Spanish>
+    <French>Choisissez la charge à hélitreuiller :</French>
+    <Portuguese>Selecione a carga a içar:</Portuguese>
+    <Russian>Выберите груз для подъёма:</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_TR_NO_CARGO">
+    <English>No liftable cargo within 100m</English>
+    <Chinesesimp>100米内没有可吊运的货物</Chinesesimp>
+    <Chinese>100公尺內沒有可吊運的貨物</Chinese>
+    <Spanish>No hay carga elevable a menos de 100 m</Spanish>
+    <French>Aucune charge transportable à moins de 100 m</French>
+    <Portuguese>Nenhuma carga içável a menos de 100 m</Portuguese>
+    <Russian>В радиусе 100 м нет груза для подъёма</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_SPEED_SLOW">
+    <English>Speed - Slow</English>
+    <Chinesesimp>速度 - 慢</Chinesesimp>
+    <Chinese>速度 - 慢</Chinese>
+    <Spanish>Velocidad - lenta</Spanish>
+    <French>Vitesse - lente</French>
+    <Portuguese>Velocidade - lenta</Portuguese>
+    <Russian>Скорость - малая</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_SPEED_NORMAL">
+    <English>Speed - Normal</English>
+    <Chinesesimp>速度 - 正常</Chinesesimp>
+    <Chinese>速度 - 正常</Chinese>
+    <Spanish>Velocidad - normal</Spanish>
+    <French>Vitesse - normale</French>
+    <Portuguese>Velocidade - normal</Portuguese>
+    <Russian>Скорость - обычная</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_SPEED_FAST">
+    <English>Speed - Fast</English>
+    <Chinesesimp>速度 - 快</Chinesesimp>
+    <Chinese>速度 - 快</Chinese>
+    <Spanish>Velocidad - rápida</Spanish>
+    <French>Vitesse - rapide</French>
+    <Portuguese>Velocidade - rápida</Portuguese>
+    <Russian>Скорость - высокая</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_TR_ROE_HOLD">
+    <English>ROE: Hold Fire</English>
+    <Chinesesimp>交战规则：停火</Chinesesimp>
+    <Chinese>交戰規則：停火</Chinese>
+    <Spanish>ROE: alto el fuego</Spanish>
+    <French>ROE : cessez-le-feu</French>
+    <Portuguese>ROE: cessar fogo</Portuguese>
+    <Russian>Огонь: не стрелять</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_TR_ROE_FREE">
+    <English>ROE: Fire At Will</English>
+    <Chinesesimp>交战规则：自由开火</Chinesesimp>
+    <Chinese>交戰規則：自由開火</Chinese>
+    <Spanish>ROE: fuego a discreción</Spanish>
+    <French>ROE : feu à volonté</French>
+    <Portuguese>ROE: fogo à vontade</Portuguese>
+    <Russian>Огонь: по готовности</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_ROE_BLUE">
+    <English>Hold Fire</English>
+    <Chinesesimp>停火</Chinesesimp>
+    <Chinese>停火</Chinese>
+    <Spanish>Alto el fuego</Spanish>
+    <French>Cessez-le-feu</French>
+    <Portuguese>Cessar fogo</Portuguese>
+    <Russian>Не стрелять</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_ROE_GREEN">
+    <English>Hold Fire - Defend</English>
+    <Chinesesimp>停火 - 防御</Chinesesimp>
+    <Chinese>停火 - 防禦</Chinese>
+    <Spanish>Alto el fuego - defender</Spanish>
+    <French>Cessez-le-feu - défendre</French>
+    <Portuguese>Cessar fogo - defender</Portuguese>
+    <Russian>Не стрелять - оборона</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_ROE_WHITE">
+    <English>Hold Fire - Return Fire</English>
+    <Chinesesimp>停火 - 还击</Chinesesimp>
+    <Chinese>停火 - 還擊</Chinese>
+    <Spanish>Alto el fuego - responder al fuego</Spanish>
+    <French>Cessez-le-feu - riposter</French>
+    <Portuguese>Cessar fogo - revidar</Portuguese>
+    <Russian>Не стрелять - ответный огонь</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_ROE_YELLOW">
+    <English>Fire At Will</English>
+    <Chinesesimp>自由开火</Chinesesimp>
+    <Chinese>自由開火</Chinese>
+    <Spanish>Fuego a discreción</Spanish>
+    <French>Feu à volonté</French>
+    <Portuguese>Fogo à vontade</Portuguese>
+    <Russian>Огонь по готовности</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_ROE_RED">
+    <English>Fire At Will - Engage At Will</English>
+    <Chinesesimp>自由开火 - 自由交战</Chinesesimp>
+    <Chinese>自由開火 - 自由交戰</Chinese>
+    <Spanish>Fuego a discreción - atacar a discreción</Spanish>
+    <French>Feu à volonté - engager à volonté</French>
+    <Portuguese>Fogo à vontade - engajar à vontade</Portuguese>
+    <Russian>Огонь по готовности - атаковать по готовности</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_CAS_AUTO_WEAPON">
+    <English>Automatic (pilot's choice)</English>
+    <Chinesesimp>自动（飞行员选择）</Chinesesimp>
+    <Chinese>自動（飛行員選擇）</Chinese>
+    <Spanish>Automático (elige el piloto)</Spanish>
+    <French>Automatique (choix du pilote)</French>
+    <Portuguese>Automático (escolha do piloto)</Portuguese>
+    <Russian>Автоматически (на выбор пилота)</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_MARKER_LAST_FIRE">
+    <English>Last fire: %1</English>
+    <Chinesesimp>上次射击：%1</Chinesesimp>
+    <Chinese>上次射擊：%1</Chinese>
+    <Spanish>Último disparo: %1</Spanish>
+    <French>Dernier tir : %1</French>
+    <Portuguese>Último disparo: %1</Portuguese>
+    <Russian>Последний огонь: %1</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_MARKER_TRANSPORT">
+    <English>Transport</English>
+    <Chinesesimp>运输</Chinesesimp>
+    <Chinese>運輸</Chinese>
+    <Spanish>Transporte</Spanish>
+    <French>Transport</French>
+    <Portuguese>Transporte</Portuguese>
+    <Russian>Транспорт</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_MARKER_STRIKE">
+    <English>STRIKE</English>
+    <Chinesesimp>打击</Chinesesimp>
+    <Chinese>打擊</Chinese>
+    <Spanish>ATAQUE</Spanish>
+    <French>FRAPPE</French>
+    <Portuguese>ATAQUE</Portuguese>
+    <Russian>УДАР</Russian>
+</Key>
 </Container></Package></Project>

@@ -87,7 +87,7 @@ if (toUpper (_lb lbData _index) == "SAD" || toUpper (_lb lbData _index) == "LOIT
     {
         _casROELb lbAdd (_x select 0);
         _casROELb lbSetData [_foreachIndex, (_x select 1)];
-    } forEach [["Hold Fire","BLUE"], ["Hold Fire - Defend","GREEN"], ["Hold Fire - Return Fire","WHITE"],["Fire At Will","YELLOW"],["Fire At Will - Engage At Will","RED"]];
+    } forEach [[localize "STR_ALIVE_CS_UI_ROE_BLUE","BLUE"], [localize "STR_ALIVE_CS_UI_ROE_GREEN","GREEN"], [localize "STR_ALIVE_CS_UI_ROE_WHITE","WHITE"],[localize "STR_ALIVE_CS_UI_ROE_YELLOW","YELLOW"],[localize "STR_ALIVE_CS_UI_ROE_RED","RED"]];
     _casROELb lbSetCurSel ([4, 0] select (toUpper (_lb lbData _index) == "LOITER"));
 
 
@@ -104,7 +104,7 @@ if (toUpper (_lb lbData _index) == "SAD" || toUpper (_lb lbData _index) == "LOIT
         lbClear _casAttackRunLB;
         // AUTO heads the list and is the default: the pilot picks the best loaded
         // weapon and switches to another as ammo runs out
-        private _autoRow = _casAttackRunLB lbAdd "Automatic (pilot's choice)";
+        private _autoRow = _casAttackRunLB lbAdd localize "STR_ALIVE_CS_UI_CAS_AUTO_WEAPON";
         _casAttackRunLB lbSetData [_autoRow, "AUTO"];
         {
             private ["_row", "_fam", "_name"];

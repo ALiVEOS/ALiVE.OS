@@ -138,13 +138,13 @@ if (_status != "KILLED") then
     lbClear _transportSpeedCombo;
     {
         _transportSpeedCombo lbAdd _x;
-    } forEach ["Speed - Slow", "Speed - Normal", "Speed - Fast"];
+    } forEach ([localize "STR_ALIVE_CS_UI_SPEED_SLOW", localize "STR_ALIVE_CS_UI_SPEED_NORMAL", localize "STR_ALIVE_CS_UI_SPEED_FAST"]);
     _transportSpeedCombo lbSetCurSel _speed;
 
     lbClear _transportRoeCombo;
     {
         _transportRoeCombo lbAdd _x;
-    } forEach ["ROE: Hold Fire", "ROE: Fire At Will"];
+    } forEach ([localize "STR_ALIVE_CS_UI_TR_ROE_HOLD", localize "STR_ALIVE_CS_UI_TR_ROE_FREE"]);
     _transportRoeCombo lbSetCurSel _roe;
 
     //ComboBoxes EventHandlers
