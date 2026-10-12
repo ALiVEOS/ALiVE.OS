@@ -1906,4 +1906,355 @@
     <Portuguese>EVACUAÇÃO MÉDICA</Portuguese>
     <Russian>МЕДЭВАКУАЦИЯ</Russian>
 </Key>
+<Key ID="STR_ALIVE_CS_MSG_TR_PICKUP">
+    <English>%1, %2 requesting pickup at %3 %4. Over.</English>
+    <Chinesesimp>%1，%2 请求在 %3 %4 接人。请回答。</Chinesesimp>
+    <Chinese>%1，%2 請求在 %3 %4 接人。請回答。</Chinese>
+    <Spanish>%1, %2 solicita recogida en %3 %4. Cambio.</Spanish>
+    <French>%1, %2 demande une récupération en %3 %4. À vous.</French>
+    <Portuguese>%1, %2 solicita embarque em %3 %4. Câmbio.</Portuguese>
+    <Russian>%1, %2 запрашивает подбор в квадрате %3 %4. Приём.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_TR_LAND">
+    <English>%1, land at %3 %4. Over.</English>
+    <Chinesesimp>%1，在 %3 %4 降落。请回答。</Chinesesimp>
+    <Chinese>%1，在 %3 %4 降落。請回答。</Chinese>
+    <Spanish>%1, aterriza en %3 %4. Cambio.</Spanish>
+    <French>%1, atterrissez en %3 %4. À vous.</French>
+    <Portuguese>%1, pouse em %3 %4. Câmbio.</Portuguese>
+    <Russian>%1, посадка в квадрате %3 %4. Приём.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_TR_MOVE">
+    <English>%1, move to %3 %4 and wait for orders. Over.</English>
+    <Chinesesimp>%1，前往 %3 %4 待命。请回答。</Chinesesimp>
+    <Chinese>%1，前往 %3 %4 待命。請回答。</Chinese>
+    <Spanish>%1, muévete a %3 %4 y espera órdenes. Cambio.</Spanish>
+    <French>%1, rendez-vous en %3 %4 et attendez les ordres. À vous.</French>
+    <Portuguese>%1, vá para %3 %4 e aguarde ordens. Câmbio.</Portuguese>
+    <Russian>%1, выдвигайтесь в квадрат %3 %4 и ждите приказа. Приём.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_TR_CIRCLE">
+    <English>%1, move to %3 %4 and provide overwatch. Over.</English>
+    <Chinesesimp>%1，前往 %3 %4 提供掩护。请回答。</Chinesesimp>
+    <Chinese>%1，前往 %3 %4 提供掩護。請回答。</Chinese>
+    <Spanish>%1, muévete a %3 %4 y da cobertura. Cambio.</Spanish>
+    <French>%1, rendez-vous en %3 %4 et assurez la couverture. À vous.</French>
+    <Portuguese>%1, vá para %3 %4 e dê cobertura. Câmbio.</Portuguese>
+    <Russian>%1, выдвигайтесь в квадрат %3 %4 и прикройте сверху. Приём.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_TR_RTB">
+    <English>%1, return to base. Over.</English>
+    <Chinesesimp>%1，返回基地。请回答。</Chinesesimp>
+    <Chinese>%1，返回基地。請回答。</Chinese>
+    <Spanish>%1, regresa a la base. Cambio.</Spanish>
+    <French>%1, retournez à la base. À vous.</French>
+    <Portuguese>%1, retorne à base. Câmbio.</Portuguese>
+    <Russian>%1, возвращайтесь на базу. Приём.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_TR_INSERTION">
+    <English>%1, move to %3 %4 for insertion. Over.</English>
+    <Chinesesimp>%1，前往 %3 %4 进行索降。请回答。</Chinesesimp>
+    <Chinese>%1，前往 %3 %4 進行索降。請回答。</Chinese>
+    <Spanish>%1, muévete a %3 %4 para la inserción. Cambio.</Spanish>
+    <French>%1, rendez-vous en %3 %4 pour l'insertion. À vous.</French>
+    <Portuguese>%1, vá para %3 %4 para a inserção. Câmbio.</Portuguese>
+    <Russian>%1, выдвигайтесь в квадрат %3 %4 для высадки. Приём.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_TR_SLINGLOAD">
+    <English>%1, move to %3 %4 for slingloading. Over.</English>
+    <Chinesesimp>%1，前往 %3 %4 吊运货物。请回答。</Chinesesimp>
+    <Chinese>%1，前往 %3 %4 吊運貨物。請回答。</Chinese>
+    <Spanish>%1, muévete a %3 %4 para enganchar la carga. Cambio.</Spanish>
+    <French>%1, rendez-vous en %3 %4 pour l'élingage. À vous.</French>
+    <Portuguese>%1, vá para %3 %4 para içar a carga. Câmbio.</Portuguese>
+    <Russian>%1, выдвигайтесь в квадрат %3 %4 за грузом на подвеске. Приём.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_TR_UNHOOK">
+    <English>%1, move to %3 %4 to deliver sling load. Over.</English>
+    <Chinesesimp>%1，前往 %3 %4 投送吊运货物。请回答。</Chinesesimp>
+    <Chinese>%1，前往 %3 %4 投送吊運貨物。請回答。</Chinese>
+    <Spanish>%1, muévete a %3 %4 para entregar la carga. Cambio.</Spanish>
+    <French>%1, rendez-vous en %3 %4 pour livrer la charge élinguée. À vous.</French>
+    <Portuguese>%1, vá para %3 %4 para entregar a carga. Câmbio.</Portuguese>
+    <Russian>%1, выдвигайтесь в квадрат %3 %4 для доставки груза. Приём.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_TR_MEDEVAC">
+    <English>%1, %2 requesting medevac at %3 %4. Over.</English>
+    <Chinesesimp>%1，%2 请求在 %3 %4 医疗后送。请回答。</Chinesesimp>
+    <Chinese>%1，%2 請求在 %3 %4 醫療後送。請回答。</Chinese>
+    <Spanish>%1, %2 solicita evacuación médica en %3 %4. Cambio.</Spanish>
+    <French>%1, %2 demande une ÉVASAN en %3 %4. À vous.</French>
+    <Portuguese>%1, %2 solicita evacuação médica em %3 %4. Câmbio.</Portuguese>
+    <Russian>%1, %2 запрашивает медэвакуацию в квадрате %3 %4. Приём.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_SMOKE_FOUND">
+    <English>Affirmative, clear for landing. Over.</English>
+    <Chinesesimp>确认，可以降落。请回答。</Chinesesimp>
+    <Chinese>確認，可以降落。請回答。</Chinese>
+    <Spanish>Afirmativo, autorizado para aterrizar. Cambio.</Spanish>
+    <French>Affirmatif, autorisé à atterrir. À vous.</French>
+    <Portuguese>Afirmativo, liberado para pouso. Câmbio.</Portuguese>
+    <Russian>Подтверждаю, посадку разрешаю. Приём.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_SMOKE_NOT_FOUND">
+    <English>Negative, throwing another smoke. Over.</English>
+    <Chinesesimp>否定，再投一枚烟雾弹。请回答。</Chinesesimp>
+    <Chinese>否定，再投一枚煙霧彈。請回答。</Chinese>
+    <Spanish>Negativo, lanzo otro humo. Cambio.</Spanish>
+    <French>Négatif, je lance un autre fumigène. À vous.</French>
+    <Portuguese>Negativo, lançando outra fumaça. Câmbio.</Portuguese>
+    <Russian>Отрицательно, бросаю ещё дым. Приём.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_SITREP_REQUEST">
+    <English>%1 this is %2, send SITREP. Over.</English>
+    <Chinesesimp>%1，这里是 %2，报告情况。请回答。</Chinesesimp>
+    <Chinese>%1，這裡是 %2，報告情況。請回答。</Chinese>
+    <Spanish>%1, aquí %2, envíe SITREP. Cambio.</Spanish>
+    <French>%1, ici %2, envoyez un SITREP. À vous.</French>
+    <Portuguese>%1, aqui é %2, envie SITREP. Câmbio.</Portuguese>
+    <Russian>%1, я %2, доложите обстановку. Приём.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_SITREP">
+    <English>%1 this is %2! Location: %3, %4: %5, Ammo: %6, Condition: %7, Fuel: %8%9</English>
+    <Chinesesimp>%1，这里是 %2！位置：%3，%4：%5，弹药：%6，状态：%7，燃油：%8%9</Chinesesimp>
+    <Chinese>%1，這裡是 %2！位置：%3，%4：%5，彈藥：%6，狀態：%7，燃油：%8%9</Chinese>
+    <Spanish>%1, aquí %2. Posición: %3, %4: %5, munición: %6, estado: %7, combustible: %8%9</Spanish>
+    <French>%1, ici %2 ! Position : %3, %4 : %5, munitions : %6, état : %7, carburant : %8%9</French>
+    <Portuguese>%1, aqui é %2! Posição: %3, %4: %5, munição: %6, condição: %7, combustível: %8%9</Portuguese>
+    <Russian>%1, я %2! Позиция: %3, %4: %5, боекомплект: %6, состояние: %7, топливо: %8%9</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_OUT_OF_ARTY">
+    <English>All units! We are out of arty assets</English>
+    <Chinesesimp>全体单位！我们已没有炮兵力量</Chinesesimp>
+    <Chinese>全體單位！我們已沒有砲兵力量</Chinese>
+    <Spanish>¡A todas las unidades! Nos hemos quedado sin artillería</Spanish>
+    <French>À toutes les unités ! Nous n'avons plus d'artillerie</French>
+    <Portuguese>Todas as unidades! Estamos sem artilharia</Portuguese>
+    <Russian>Всем подразделениям! Артиллерии больше нет</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_OUT_OF_CAS">
+    <English>All units! We are out of CAS assets</English>
+    <Chinesesimp>全体单位！我们已没有近距离空中支援力量</Chinesesimp>
+    <Chinese>全體單位！我們已沒有近距離空中支援力量</Chinese>
+    <Spanish>¡A todas las unidades! Nos hemos quedado sin apoyo aéreo cercano</Spanish>
+    <French>À toutes les unités ! Nous n'avons plus d'appui aérien rapproché</French>
+    <Portuguese>Todas as unidades! Estamos sem apoio aéreo aproximado</Portuguese>
+    <Russian>Всем подразделениям! Авиаподдержки больше нет</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_OUT_OF_TRANSPORT">
+    <English>All units! We are out of transport assets</English>
+    <Chinesesimp>全体单位！我们已没有运输力量</Chinesesimp>
+    <Chinese>全體單位！我們已沒有運輸力量</Chinese>
+    <Spanish>¡A todas las unidades! Nos hemos quedado sin transporte</Spanish>
+    <French>À toutes les unités ! Nous n'avons plus de transport</French>
+    <Portuguese>Todas as unidades! Estamos sem transporte</Portuguese>
+    <Russian>Всем подразделениям! Транспорта больше нет</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_BACK_ON_STATION">
+    <English>All units this is %1! We are back on station and are ready for tasking</English>
+    <Chinesesimp>全体单位，这里是 %1！我们已重新就位，随时待命</Chinesesimp>
+    <Chinese>全體單位，這裡是 %1！我們已重新就位，隨時待命</Chinese>
+    <Spanish>¡A todas las unidades, aquí %1! Volvemos a estar en posición y listos para recibir tareas</Spanish>
+    <French>À toutes les unités, ici %1 ! Nous sommes de retour en position et prêts à être engagés</French>
+    <Portuguese>Todas as unidades, aqui é %1! Estamos de volta em posição e prontos para missões</Portuguese>
+    <Russian>Всем подразделениям, я %1! Снова на позиции и готовы к заданиям</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_WORD_GREEN">
+    <English>Green</English>
+    <Chinesesimp>绿</Chinesesimp>
+    <Chinese>綠</Chinese>
+    <Spanish>Verde</Spanish>
+    <French>Vert</French>
+    <Portuguese>Verde</Portuguese>
+    <Russian>Зелёный</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_WORD_AMBER">
+    <English>Amber</English>
+    <Chinesesimp>黄</Chinesesimp>
+    <Chinese>黃</Chinese>
+    <Spanish>Ámbar</Spanish>
+    <French>Orange</French>
+    <Portuguese>Âmbar</Portuguese>
+    <Russian>Жёлтый</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_WORD_RED">
+    <English>Red</English>
+    <Chinesesimp>红</Chinesesimp>
+    <Chinese>紅</Chinese>
+    <Spanish>Rojo</Spanish>
+    <French>Rouge</French>
+    <Portuguese>Vermelho</Portuguese>
+    <Russian>Красный</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_WORD_NA">
+    <English>n/a</English>
+    <Chinesesimp>无</Chinesesimp>
+    <Chinese>無</Chinese>
+    <Spanish>n/d</Spanish>
+    <French>n/d</French>
+    <Portuguese>n/d</Portuguese>
+    <Russian>н/д</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_WORD_UNKNOWN">
+    <English>unknown</English>
+    <Chinesesimp>未知</Chinesesimp>
+    <Chinese>未知</Chinese>
+    <Spanish>desconocido</Spanish>
+    <French>inconnu</French>
+    <Portuguese>desconhecido</Portuguese>
+    <Russian>неизвестно</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_WORD_TAKING_OFF">
+    <English>taking off</English>
+    <Chinesesimp>正在起飞</Chinesesimp>
+    <Chinese>正在起飛</Chinese>
+    <Spanish>despegando</Spanish>
+    <French>au décollage</French>
+    <Portuguese>decolando</Portuguese>
+    <Russian>взлетаем</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_WORD_ETA">
+    <English>ETA</English>
+    <Chinesesimp>预计到达</Chinesesimp>
+    <Chinese>預計到達</Chinese>
+    <Spanish>ETA</Spanish>
+    <French>ETA</French>
+    <Portuguese>ETA</Portuguese>
+    <Russian>Прибытие</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_WORD_STATUS">
+    <English>Status</English>
+    <Chinesesimp>状态</Chinesesimp>
+    <Chinese>狀態</Chinese>
+    <Spanish>Estado</Spanish>
+    <French>Statut</French>
+    <Portuguese>Situação</Portuguese>
+    <Russian>Статус</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_WORD_ARTY_READY">
+    <English>ready to fire</English>
+    <Chinesesimp>准备开火</Chinesesimp>
+    <Chinese>準備開火</Chinese>
+    <Spanish>listos para disparar</Spanish>
+    <French>prêts à tirer</French>
+    <Portuguese>prontos para disparar</Portuguese>
+    <Russian>готовы к стрельбе</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_WORD_ARTY_MISSION">
+    <English>on a fire mission</English>
+    <Chinesesimp>正在执行火力任务</Chinesesimp>
+    <Chinese>正在執行火力任務</Chinese>
+    <Spanish>en misión de fuego</Spanish>
+    <French>en mission de tir</French>
+    <Portuguese>em missão de fogo</Portuguese>
+    <Russian>выполняем огневую задачу</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_WORD_ARTY_MOVE">
+    <English>repositioning into range</English>
+    <Chinesesimp>正在转移至射程内</Chinesesimp>
+    <Chinese>正在轉移至射程內</Chinese>
+    <Spanish>reposicionándonos para entrar en alcance</Spanish>
+    <French>repositionnement à portée</French>
+    <Portuguese>reposicionando para o alcance</Portuguese>
+    <Russian>выходим на дальность</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_WORD_ARTY_RTB">
+    <English>returning to base</English>
+    <Chinesesimp>正在返回基地</Chinesesimp>
+    <Chinese>正在返回基地</Chinese>
+    <Spanish>regresando a la base</Spanish>
+    <French>retour à la base</French>
+    <Portuguese>retornando à base</Portuguese>
+    <Russian>возвращаемся на базу</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_WORD_ARTY_RANGE">
+    <English>out of range</English>
+    <Chinesesimp>超出射程</Chinesesimp>
+    <Chinese>超出射程</Chinese>
+    <Spanish>fuera de alcance</Spanish>
+    <French>hors de portée</French>
+    <Portuguese>fora de alcance</Portuguese>
+    <Russian>вне досягаемости</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_WORD_ARTY_NOAMMO">
+    <English>out of ammunition</English>
+    <Chinesesimp>弹药耗尽</Chinesesimp>
+    <Chinese>彈藥耗盡</Chinese>
+    <Spanish>sin munición</Spanish>
+    <French>à court de munitions</French>
+    <Portuguese>sem munição</Portuguese>
+    <Russian>боеприпасы закончились</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_WORD_ARTY_KILLED">
+    <English>combat ineffective</English>
+    <Chinesesimp>丧失战斗力</Chinesesimp>
+    <Chinese>喪失戰鬥力</Chinese>
+    <Spanish>fuera de combate</Spanish>
+    <French>hors de combat</French>
+    <Portuguese>fora de combate</Portuguese>
+    <Russian>небоеспособны</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_WORD_ARTY_STANDBY">
+    <English>standing by</English>
+    <Chinesesimp>待命中</Chinesesimp>
+    <Chinese>待命中</Chinese>
+    <Spanish>a la espera</Spanish>
+    <French>en attente</French>
+    <Portuguese>em espera</Portuguese>
+    <Russian>в ожидании</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_LOG_SUFFIX">
+    <English>, %1</English>
+    <Chinesesimp>，%1</Chinesesimp>
+    <Chinese>，%1</Chinese>
+    <Spanish>, %1</Spanish>
+    <French>, %1</French>
+    <Portuguese>, %1</Portuguese>
+    <Russian>, %1</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_LOG_READY">
+    <English>Logistics: Ready</English>
+    <Chinesesimp>后勤：就绪</Chinesesimp>
+    <Chinese>後勤：就緒</Chinese>
+    <Spanish>Logística: lista</Spanish>
+    <French>Logistique : prête</French>
+    <Portuguese>Logística: pronta</Portuguese>
+    <Russian>Снабжение: готово</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_LOG_ENROUTE">
+    <English>Logistics: Resupply en route (ETA %1:%2)</English>
+    <Chinesesimp>后勤：补给在途（预计 %1:%2）</Chinesesimp>
+    <Chinese>後勤：補給在途（預計 %1:%2）</Chinese>
+    <Spanish>Logística: reabastecimiento en camino (ETA %1:%2)</Spanish>
+    <French>Logistique : ravitaillement en route (ETA %1:%2)</French>
+    <Portuguese>Logística: reabastecimento a caminho (ETA %1:%2)</Portuguese>
+    <Russian>Снабжение: в пути (прибытие через %1:%2)</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_LOG_SERVICING">
+    <English>Logistics: Servicing...</English>
+    <Chinesesimp>后勤：正在维护……</Chinesesimp>
+    <Chinese>後勤：正在維護……</Chinese>
+    <Spanish>Logística: en servicio...</Spanish>
+    <French>Logistique : entretien en cours...</French>
+    <Portuguese>Logística: em manutenção...</Portuguese>
+    <Russian>Снабжение: обслуживание...</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_LOG_COMPLETE">
+    <English>Logistics: Complete</English>
+    <Chinesesimp>后勤：完成</Chinesesimp>
+    <Chinese>後勤：完成</Chinese>
+    <Spanish>Logística: completada</Spanish>
+    <French>Logistique : terminée</French>
+    <Portuguese>Logística: concluída</Portuguese>
+    <Russian>Снабжение: завершено</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_LOG_FAILED">
+    <English>Logistics: Failed - retrying...</English>
+    <Chinesesimp>后勤：失败，正在重试……</Chinesesimp>
+    <Chinese>後勤：失敗，正在重試……</Chinese>
+    <Spanish>Logística: fallida, reintentando...</Spanish>
+    <French>Logistique : échec, nouvelle tentative...</French>
+    <Portuguese>Logística: falhou, tentando de novo...</Portuguese>
+    <Russian>Снабжение: сбой, повторная попытка...</Russian>
+</Key>
 </Container></Package></Project>

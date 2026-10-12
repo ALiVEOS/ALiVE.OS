@@ -17,7 +17,7 @@ _chopper setVariable ["NEO_radioSmokeConfirmed", false, true];
 
 [
     player,
-    "Negative, throwing another smoke. Over.",
+    ["STR_ALIVE_CS_MSG_SMOKE_NOT_FOUND"],
     "group"
 ] call NEO_fnc_messageBroadcast;
 

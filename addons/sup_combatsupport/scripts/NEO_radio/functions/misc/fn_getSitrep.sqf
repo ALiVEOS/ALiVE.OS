@@ -96,7 +96,7 @@ _avail = 0;
 } forEach _ammoArray;
 if (count _ammoArray > 0) then { _ammo = _avail / (count _ammoArray) };
 
-_text = format ["%1 this is %2, send SITREP. Over.",_callsign, _callSignPlayer];
+_text = ["STR_ALIVE_CS_MSG_SITREP_REQUEST", _callsign, _callSignPlayer];
 
 [[player, _text, "side"],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;
 
@@ -104,37 +104,38 @@ private ["_damageamcas","_fuelamcas","_amcas","_approxTime","_ammoStr","_statusL
 
 // Condition = actual battle damage only (previously blended with ammo, so a healthy
 // battery low on shells wrongly read as damaged)
-_damageamcas = "Green";
-    if (_damage > 0.3) then {_damageamcas = "Amber"};
-    if (_damage >= 0.6) then {_damageamcas = "Red"};
+_damageamcas = "$STR_ALIVE_CS_WORD_GREEN";
+    if (_damage > 0.3) then {_damageamcas = "$STR_ALIVE_CS_WORD_AMBER"};
+    if (_damage >= 0.6) then {_damageamcas = "$STR_ALIVE_CS_WORD_RED"};
 
 // Fuel: the mid-band previously tested _damage by mistake, which could blank the field
-_fuelamcas = "Red";
-    if (_fuel > 0.3) then {_fuelamcas = "Amber"};
-    if (_fuel >= 0.6) then {_fuelamcas = "Green"};
+_fuelamcas = "$STR_ALIVE_CS_WORD_RED";
+    if (_fuel > 0.3) then {_fuelamcas = "$STR_ALIVE_CS_WORD_AMBER"};
+    if (_fuel >= 0.6) then {_fuelamcas = "$STR_ALIVE_CS_WORD_GREEN"};
 
 // Ammo as an explicit percentage of the asset's magazines; "n/a" for an unarmed asset
-_ammoStr = if (_ammo < 0) then {"n/a"} else {format ["%1%2", round (_ammo * 100), "%"]};
+_ammoStr = if (_ammo < 0) then {"$STR_ALIVE_CS_WORD_NA"} else {format ["%1%2", round (_ammo * 100), "%"]};
 
 // Movement / status field: aircraft report an ETA to their tasking; a ground battery
 // does not fly, so it reports its tasking status instead ("taking off"/ETA were nonsense)
-_approxTime = "unknown";
-    if (_speed > 0 && {(_pos select 2) > 5}) then {_approxTime = format ["%1 min", round((_distance/((_speed)/3.6))/60)]};
-    if (_speed > 0 && {(_pos select 2) < 5}) then {_approxTime = "taking off"};
-_statusLabel = "ETA";
+// sent as words for each player's own language ($STR_..., or [key, arguments])
+_approxTime = "$STR_ALIVE_CS_WORD_UNKNOWN";
+    if (_speed > 0 && {(_pos select 2) > 5}) then {_approxTime = ["STR_ALIVE_CS_UI_MINUTES", round((_distance/((_speed)/3.6))/60)]};
+    if (_speed > 0 && {(_pos select 2) < 5}) then {_approxTime = "$STR_ALIVE_CS_WORD_TAKING_OFF"};
+_statusLabel = "$STR_ALIVE_CS_WORD_ETA";
 _statusValue = _approxTime;
 if (toUpper _task == "ARTY") then {
-    _statusLabel = "Status";
-    _statusValue = switch (_asset getVariable ["NEO_radioArtyUnitStatus", ""]) do {
-        case "NONE": {"ready to fire"};
-        case "MISSION": {"on a fire mission"};
-        case "MOVE": {"repositioning into range"};
-        case "RTB": {"returning to base"};
-        case "RESPONSE": {"out of range"};
-        case "NOAMMO": {"out of ammunition"};
-        case "KILLED": {"combat ineffective"};
-        default {"standing by"};
-    };
+    _statusLabel = "$STR_ALIVE_CS_WORD_STATUS";
+    _statusValue = "$STR_ALIVE_CS_WORD_ARTY_" + (switch (_asset getVariable ["NEO_radioArtyUnitStatus", ""]) do {
+        case "NONE": {"READY"};
+        case "MISSION": {"MISSION"};
+        case "MOVE": {"MOVE"};
+        case "RTB": {"RTB"};
+        case "RESPONSE": {"RANGE"};
+        case "NOAMMO": {"NOAMMO"};
+        case "KILLED": {"KILLED"};
+        default {"STANDBY"};
+    });
 };
 
 // Military Logistics Simulation status.
@@ -142,12 +143,12 @@ if (toUpper _task == "ARTY") then {
 // because that's the object LOGCOM updates on dispatch completion. Resolve via ALIVE_resupply_primaryVehicle
 // and fall back to _asset so Transport/CAS (where _asset IS the vehicle) still works unchanged.
 private _stateHolder = _asset getVariable ["ALIVE_resupply_primaryVehicle", _asset];
-private _logisticsStatus = "";
+private _logisticsStatus = [];
 if (_asset getVariable ["ALIVE_logistics_enabled", false]) then {
     private _resupplyState = _stateHolder getVariable ["ALIVE_resupply_state", "none"];
     switch (_resupplyState) do {
         case "none": {
-            _logisticsStatus = "Logistics: Ready";
+            _logisticsStatus = ["STR_ALIVE_CS_LOG_READY"];
         };
         case "dispatched";
         case "enroute": {
@@ -157,22 +158,22 @@ if (_asset getVariable ["ALIVE_logistics_enabled", false]) then {
             private _mins = floor (_remaining / 60);
             private _secs = floor (_remaining mod 60);
             private _secsStr = if (_secs < 10) then {format ["0%1", _secs]} else {str _secs};
-            _logisticsStatus = format ["Logistics: Resupply en route (ETA %1:%2)", _mins, _secsStr];
+            _logisticsStatus = ["STR_ALIVE_CS_LOG_ENROUTE", _mins, _secsStr];
         };
         case "servicing": {
-            _logisticsStatus = "Logistics: Servicing...";
+            _logisticsStatus = ["STR_ALIVE_CS_LOG_SERVICING"];
         };
         case "complete": {
-            _logisticsStatus = "Logistics: Complete";
+            _logisticsStatus = ["STR_ALIVE_CS_LOG_COMPLETE"];
         };
         case "failed": {
-            _logisticsStatus = "Logistics: Failed - retrying...";
+            _logisticsStatus = ["STR_ALIVE_CS_LOG_FAILED"];
         };
     };
 };
 
-private _logSuffix = if (_logisticsStatus != "") then {format [", %1", _logisticsStatus]} else {""};
-_amcas = format ["%1 this is %2! Location: %3, %4: %5, Ammo: %6, Condition: %7, Fuel: %8%9",_callSignPlayer,_callsign,_assetpos,_statusLabel,_statusValue,_ammoStr,_damageamcas,_fuelamcas,_logSuffix];
+private _logSuffix = if (_logisticsStatus isNotEqualTo []) then {["STR_ALIVE_CS_LOG_SUFFIX", _logisticsStatus]} else {""};
+_amcas = ["STR_ALIVE_CS_MSG_SITREP",_callSignPlayer,_callsign,_assetpos,_statusLabel,_statusValue,_ammoStr,_damageamcas,_fuelamcas,_logSuffix];
 
 // Show resupply vehicle marker for currently selected asset.
 private _resupplyVeh = _stateHolder getVariable ["ALIVE_resupply_vehicle", objNull];

@@ -32,7 +32,7 @@ _roundsAvailable = [];
 
 //Exit if limit is reached
 if (ARTY_RESPAWN_LIMIT == 0) exitwith {
-    _replen = format ["All units! We are out of arty assets"];
+    _replen = ["STR_ALIVE_CS_MSG_OUT_OF_ARTY"];
     [[player,_replen,"side",_side],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;
 };
 
@@ -44,7 +44,7 @@ sleep _respawn;
 private _outOfAssets = false;
 isNil { if (ARTY_RESPAWN_LIMIT == 0) then { _outOfAssets = true } else { ARTY_RESPAWN_LIMIT = ARTY_RESPAWN_LIMIT - 1 } };
 if (_outOfAssets) exitwith {
-    _replen = format ["All units! We are out of arty assets"];
+    _replen = ["STR_ALIVE_CS_MSG_OUT_OF_ARTY"];
     [[player,_replen,"side",_side],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;
 };
 
@@ -207,5 +207,5 @@ _artyAsset pushback ([leader _grp, _grp, _callsign, _units, _roundsAvailable, _f
 
 NEO_radioLogic setVariable [format ["NEO_radioArtyArray_%1", _side], _artyAsset, true];
 
-_replen = format["All units this is %1! We are back on station and are ready for tasking", _callsign] ;
+_replen = ["STR_ALIVE_CS_MSG_BACK_ON_STATION", _callsign];
 [[player,_replen,"side",_side],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;

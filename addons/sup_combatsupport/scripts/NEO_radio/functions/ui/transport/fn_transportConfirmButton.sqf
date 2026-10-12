@@ -50,16 +50,16 @@ private ["_posTask", "_text"];
 _posTask = _pos call BIS_fnc_posToGrid;
 _text = switch (toUpper _task) do
 {
-    case "PICKUP" : { format ["%1, %2 requesting pickup at %3 %4. Over.", _callsign, _callSignPlayer, _posTask select 0, _posTask select 1] };
-    case "LAND" : { format ["%1, land at %3 %4. Over.", _callsign, _callSignPlayer, _posTask select 0, _posTask select 1] };
-    case "LAND (ENG OFF)" : { format ["%1, land at %3 %4. Over.", _callsign, _callSignPlayer, _posTask select 0, _posTask select 1] };
-    case "MOVE" : { format ["%1, move to %3 %4 and wait for orders. Over.", _callsign, _callSignPlayer, _posTask select 0, _posTask select 1] };
-    case "CIRCLE" : { format ["%1, move to %3 %4 and provide overwatch. Over.", _callsign, _callSignPlayer, _posTask select 0, _posTask select 1] };
-    case "RTB" : { format ["%1, return to base. Over.", _callsign, _callSignPlayer] };
-    case "INSERTION" : { format ["%1, move to %3 %4 for insertion. Over.", _callsign, _callSignPlayer, _posTask select 0, _posTask select 1] };
-    case "SLINGLOAD" : { format ["%1, move to %3 %4 for slingloading. Over.", _callsign, _callSignPlayer, _posTask select 0, _posTask select 1] };
-    case "UNHOOK" : { format ["%1, move to %3 %4 to deliver sling load. Over.", _callsign, _callSignPlayer, _posTask select 0, _posTask select 1] };
-    case "MEDEVAC" : { format ["%1, %2 requesting medevac at %3 %4. Over.", _callsign, _callSignPlayer, _posTask select 0, _posTask select 1] };
+    case "PICKUP" : { ["STR_ALIVE_CS_MSG_TR_PICKUP", _callsign, _callSignPlayer, _posTask select 0, _posTask select 1] };
+    case "LAND" : { ["STR_ALIVE_CS_MSG_TR_LAND", _callsign, _callSignPlayer, _posTask select 0, _posTask select 1] };
+    case "LAND (ENG OFF)" : { ["STR_ALIVE_CS_MSG_TR_LAND", _callsign, _callSignPlayer, _posTask select 0, _posTask select 1] };
+    case "MOVE" : { ["STR_ALIVE_CS_MSG_TR_MOVE", _callsign, _callSignPlayer, _posTask select 0, _posTask select 1] };
+    case "CIRCLE" : { ["STR_ALIVE_CS_MSG_TR_CIRCLE", _callsign, _callSignPlayer, _posTask select 0, _posTask select 1] };
+    case "RTB" : { ["STR_ALIVE_CS_MSG_TR_RTB", _callsign, _callSignPlayer] };
+    case "INSERTION" : { ["STR_ALIVE_CS_MSG_TR_INSERTION", _callsign, _callSignPlayer, _posTask select 0, _posTask select 1] };
+    case "SLINGLOAD" : { ["STR_ALIVE_CS_MSG_TR_SLINGLOAD", _callsign, _callSignPlayer, _posTask select 0, _posTask select 1] };
+    case "UNHOOK" : { ["STR_ALIVE_CS_MSG_TR_UNHOOK", _callsign, _callSignPlayer, _posTask select 0, _posTask select 1] };
+    case "MEDEVAC" : { ["STR_ALIVE_CS_MSG_TR_MEDEVAC", _callsign, _callSignPlayer, _posTask select 0, _posTask select 1] };
 };
 
 if (_audio) then {

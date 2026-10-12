@@ -8,12 +8,17 @@
     // on station" and "out of assets" notices reached no one there.
     // A message can come as [stringtable key, arguments...] instead of text, so each player reads
     // it in their own language: it's put together here, on the machine that shows it. (Jman)
-    if (_text isEqualType []) then {
-        private _t = localize (_text param [0, ""]);
-        // a detail written as $STR_... (a speed, a mission type) is read in the player's language too
-        private _args = (_text select [1]) apply { if (_x isEqualType "" && {(_x select [0, 5]) == "$STR_"}) then { localize (_x select [1]) } else { _x } };
-        _text = if (_args isNotEqualTo []) then { format ([_t] + _args) } else { _t };
+    // A detail written as $STR_... (a speed, a mission type) is read in the player's language too,
+    // and a detail that is itself [key, arguments...] is put together the same way (a SITREP's ETA).
+    private _fnc_words = {
+        if (_this isEqualType "") exitWith { if ((_this select [0, 5]) == "$STR_") then { localize (_this select [1]) } else { _this } };
+        if (_this isEqualType [] && {_this isNotEqualTo []} && {(_this select 0) isEqualType ""}) exitWith {
+            private _args = (_this select [1]) apply { _x call _fnc_words };
+            if (_args isNotEqualTo []) then { format ([localize (_this select 0)] + _args) } else { localize (_this select 0) }
+        };
+        _this
     };
+    if (_text isEqualType []) then { _text = _text call _fnc_words };
     _side = if (count _this > 3 && {(_this select 3) isEqualType west}) then {_this select 3} else {side group _unit};
 
     //enableRadio true;
