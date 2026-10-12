@@ -28,8 +28,8 @@ class CfgVehicles {
                 function = "ALIVE_fnc_recruitInit";
                 functionPriority = 153;
                 isGlobal = 2;
-                icon = "x\alive\addons\sup_group_manager\icon_sup_group_manager.paa";
-                picture = "x\alive\addons\sup_group_manager\icon_sup_group_manager.paa";
+                icon = "x\alive\addons\sup_group_manager\icon_sup_recruit.paa";
+                picture = "x\alive\addons\sup_group_manager\icon_sup_recruit.paa";
                 author = MODULE_AUTHOR;
                 class Attributes : AttributesBase
                 {
