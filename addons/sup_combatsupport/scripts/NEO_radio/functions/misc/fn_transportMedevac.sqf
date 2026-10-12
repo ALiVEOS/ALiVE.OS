@@ -18,9 +18,11 @@ params ["_chopper", "_callsign", "_pos", "_base", "_player", ["_audio", false], 
 
 if (!isServer) exitWith {};
 
+// A radio call as a stringtable key and its details, put together on each player's machine in
+// that player's language; the callsign is always the first detail.
 private _say = {
-    params ["_text"];
-    [[_chopper, format ["%1, %2", _callsign, _text], "side"], "NEO_fnc_messageBroadcast", true, false] spawn BIS_fnc_MP;
+    params ["_key", ["_args", []]];
+    [[_chopper, [_key, _callsign] + _args, "side"], "NEO_fnc_messageBroadcast", true, false] spawn BIS_fnc_MP;
 };
 // Still this run's to fly: a second MEDEVAC order keeps the status at MEDEVAC, so the run
 // number the FSM gives each order is what tells an old run it has been replaced.
@@ -41,10 +43,10 @@ private _bail = {
             if (isTouchingGround _chopper) then {
                 { [_x] remoteExecCall ["unassignVehicle", _x]; [_x] remoteExecCall ["moveOut", _x] } forEach (call _passengers);
             } else {
-                [format ["couldn't set down with %1 aboard; they're coming back to base with me.", count (call _passengers)]] call _say;
+                ["STR_ALIVE_CS_MEDEVAC_01", [count (call _passengers)]] call _say;
             };
         };
-        ["couldn't set down, returning to base."] call _say;
+        ["STR_ALIVE_CS_MEDEVAC_02"] call _say;
         _chopper setVariable ["NEO_radioTransportNewTask", ["RTB", _base, 0, _player], true];
     };
     call _cleanup;
@@ -105,37 +107,37 @@ private _fnc_heal = {
 if (_audio && {!isNull _player}) then {
     leader _chopper kbTell [_player, "ALIVE_SUPP_protocol", "Transport_Acknowledged", "GROUP"];
 };
-["Medevac inbound to your marked position."] call _say;
+["STR_ALIVE_CS_MEDEVAC_03"] call _say;
 // A plain LAND, engine off: landed with GET IN the pilot lifted off by himself as soon as men
 // boarded, before anyone had cleared him. The move to base starts the engine again.
 if !([_pos, "LAND"] call _fnc_setDown) exitWith { call _bail };
 private _lz = getPosATL _chopper;
 _chopper setVariable ["NEO_radioMedevacState", "LZ", true];
 _chopper setVariable ["NEO_radioMedevacClear", false, true];
-["on the ground. Load your wounded and give the word when we're clear to leave."] call _say;
+["STR_ALIVE_CS_MEDEVAC_04"] call _say;
 
 private _t = time;
 waitUntil { sleep 1; !(call _mine) || {_chopper getVariable ["NEO_radioMedevacClear", false]} || {time - _t > 900} };
 if !(call _mine) exitWith { call _cleanup };
 _chopper setVariable ["NEO_radioMedevacState", "AWAY", true];
 if ((call _passengers) isEqualTo []) exitWith {
-    ["nobody aboard, returning to base."] call _say;
+    ["STR_ALIVE_CS_MEDEVAC_05"] call _say;
     call _cleanup;
     _chopper setVariable ["NEO_radioTransportNewTask", ["RTB", _base, 0, _player], true];
 };
 
 // 2. base, and treatment
-[format ["lifting off with %1 aboard, heading for base.", count (call _passengers)]] call _say;
+["STR_ALIVE_CS_MEDEVAC_06", [count (call _passengers)]] call _say;
 if !([_base, "LAND"] call _fnc_setDown) exitWith { call _bail };
 call _fnc_heal;
-["at base, the wounded are being treated."] call _say;
+["STR_ALIVE_CS_MEDEVAC_07"] call _say;
 _t = time;
 waitUntil { sleep 2; !(call _mine) || {time - _t > 60} };
 if !(call _mine) exitWith { call _cleanup };
 call _fnc_heal;
 
 // 3. back to the landing zone, everyone out
-["treatment done, bringing them back to you."] call _say;
+["STR_ALIVE_CS_MEDEVAC_08"] call _say;
 if !([_lz, "GET OUT"] call _fnc_setDown) exitWith { call _bail };
 {
     [_x] remoteExecCall ["unassignVehicle", _x];
@@ -143,7 +145,7 @@ if !([_lz, "GET OUT"] call _fnc_setDown) exitWith { call _bail };
 } forEach (call _passengers);
 _t = time;
 waitUntil { sleep 1; ((call _passengers) isEqualTo []) || {time - _t > 30} };
-["they're back with you. Returning to base."] call _say;
+["STR_ALIVE_CS_MEDEVAC_09"] call _say;
 call _cleanup;
 // home as on any RTB order, so the helicopter is serviced and offered again the usual way
 _chopper setVariable ["NEO_radioTransportNewTask", ["RTB", _base, 0, _player], true];

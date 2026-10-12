@@ -1311,4 +1311,86 @@
     <Portuguese>%1, a bateria %2 está na base e pronta para uma missão de fogo. Terminado.</Portuguese>
     <Russian>%1, батарея %2 на базе и готова к огневой задаче. Конец связи.</Russian>
 </Key>
+<!-- Combat Support medevac calls (AI-translated; native-speaker review welcome) -->
+<Key ID="STR_ALIVE_CS_MEDEVAC_01">
+    <English>%1, couldn't set down with %2 aboard; they're coming back to base with me.</English>
+    <Chinesesimp>%1，无法降落，机上有 %2 人；他们会随我返回基地。</Chinesesimp>
+    <Chinese>%1，無法降落，機上有 %2 人；他們會隨我返回基地。</Chinese>
+    <Spanish>%1, no pude aterrizar con %2 a bordo; vuelven conmigo a la base.</Spanish>
+    <French>%1, impossible de me poser avec %2 à bord ; ils rentrent à la base avec moi.</French>
+    <Portuguese>%1, não consegui aterrar com %2 a bordo; voltam comigo para a base.</Portuguese>
+    <Russian>%1, не могу сесть, на борту %2; возвращаются со мной на базу.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MEDEVAC_02">
+    <English>%1, couldn't set down, returning to base.</English>
+    <Chinesesimp>%1，无法降落，返回基地。</Chinesesimp>
+    <Chinese>%1，無法降落，返回基地。</Chinese>
+    <Spanish>%1, no pude aterrizar, regreso a la base.</Spanish>
+    <French>%1, impossible de me poser, retour à la base.</French>
+    <Portuguese>%1, não consegui aterrar, regresso à base.</Portuguese>
+    <Russian>%1, сесть не могу, возвращаюсь на базу.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MEDEVAC_03">
+    <English>%1, Medevac inbound to your marked position.</English>
+    <Chinesesimp>%1，医疗后送正飞往你标记的位置。</Chinesesimp>
+    <Chinese>%1，醫療後送正飛往你標記的位置。</Chinese>
+    <Spanish>%1, evacuación médica de camino a tu posición marcada.</Spanish>
+    <French>%1, évacuation sanitaire en route vers votre position marquée.</French>
+    <Portuguese>%1, evacuação médica a caminho da posição marcada.</Portuguese>
+    <Russian>%1, медэвакуация следует к отмеченной вами точке.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MEDEVAC_04">
+    <English>%1, on the ground. Load your wounded and give the word when we're clear to leave.</English>
+    <Chinesesimp>%1，已着陆。装载伤员，可以离开时告诉我们。</Chinesesimp>
+    <Chinese>%1，已著陸。裝載傷員，可以離開時告訴我們。</Chinese>
+    <Spanish>%1, en tierra. Cargad a vuestros heridos y avisad cuando podamos salir.</Spanish>
+    <French>%1, au sol. Chargez vos blessés et prévenez-nous quand nous pouvons partir.</French>
+    <Portuguese>%1, no solo. Carreguem os feridos e avisem quando pudermos partir.</Portuguese>
+    <Russian>%1, на земле. Грузите раненых и дайте знать, когда можно взлетать.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MEDEVAC_05">
+    <English>%1, nobody aboard, returning to base.</English>
+    <Chinesesimp>%1，机上无人，返回基地。</Chinesesimp>
+    <Chinese>%1，機上無人，返回基地。</Chinese>
+    <Spanish>%1, nadie a bordo, regreso a la base.</Spanish>
+    <French>%1, personne à bord, retour à la base.</French>
+    <Portuguese>%1, ninguém a bordo, regresso à base.</Portuguese>
+    <Russian>%1, на борту никого, возвращаюсь на базу.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MEDEVAC_06">
+    <English>%1, lifting off with %2 aboard, heading for base.</English>
+    <Chinesesimp>%1，载着 %2 人起飞，飞往基地。</Chinesesimp>
+    <Chinese>%1，載著 %2 人起飛，飛往基地。</Chinese>
+    <Spanish>%1, despegando con %2 a bordo, rumbo a la base.</Spanish>
+    <French>%1, décollage avec %2 à bord, cap sur la base.</French>
+    <Portuguese>%1, a descolar com %2 a bordo, rumo à base.</Portuguese>
+    <Russian>%1, взлетаю, на борту %2, курс на базу.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MEDEVAC_07">
+    <English>%1, at base, the wounded are being treated.</English>
+    <Chinesesimp>%1，已到达基地，伤员正在接受治疗。</Chinesesimp>
+    <Chinese>%1，已到達基地，傷員正在接受治療。</Chinese>
+    <Spanish>%1, en la base, se está atendiendo a los heridos.</Spanish>
+    <French>%1, à la base, les blessés sont soignés.</French>
+    <Portuguese>%1, na base, os feridos estão a ser tratados.</Portuguese>
+    <Russian>%1, на базе, раненым оказывают помощь.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MEDEVAC_08">
+    <English>%1, treatment done, bringing them back to you.</English>
+    <Chinesesimp>%1，治疗完毕，正把他们送回你身边。</Chinesesimp>
+    <Chinese>%1，治療完畢，正把他們送回你身邊。</Chinese>
+    <Spanish>%1, tratamiento terminado, os los traemos de vuelta.</Spanish>
+    <French>%1, soins terminés, nous vous les ramenons.</French>
+    <Portuguese>%1, tratamento concluído, vamos trazê-los de volta.</Portuguese>
+    <Russian>%1, лечение закончено, возвращаем их к вам.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_MEDEVAC_09">
+    <English>%1, they're back with you. Returning to base.</English>
+    <Chinesesimp>%1，他们已回到你身边。返回基地。</Chinesesimp>
+    <Chinese>%1，他們已回到你身邊。返回基地。</Chinese>
+    <Spanish>%1, ya están contigo. Regreso a la base.</Spanish>
+    <French>%1, ils sont de retour avec vous. Retour à la base.</French>
+    <Portuguese>%1, já estão convosco. Regresso à base.</Portuguese>
+    <Russian>%1, они снова с вами. Возвращаюсь на базу.</Russian>
+</Key>
 </Container></Package></Project>
