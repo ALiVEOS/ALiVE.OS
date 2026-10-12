@@ -79,7 +79,7 @@ if (_status != "KILLED") then
     // (auto-engages everything in the area incl. empty vehicles, honouring a manual laser
     // designation); SEARCH AND DESTROY dispatches as "SAD". ATTACK leads so the default
     // selection (below) arms the weapon + ROE lists straight away.
-    } forEach [["ATTACK","ATTACK"], ["SEARCH AND DESTROY","SAD"], ["LOITER","LOITER"]];
+    } forEach [[localize "STR_ALIVE_CS_UI_CAS_TASK_ATTACK","ATTACK"], [localize "STR_ALIVE_CS_UI_CAS_TASK_SAD","SAD"], [localize "STR_ALIVE_CS_UI_CAS_TASK_LOITER","LOITER"]];
 
     //GPS
     uinamespace setVariable ["NEO_casMarkerCreated", nil];

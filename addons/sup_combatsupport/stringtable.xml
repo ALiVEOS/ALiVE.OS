@@ -1690,4 +1690,139 @@
     <Portuguese>ATAQUE</Portuguese>
     <Russian>УДАР</Russian>
 </Key>
+<Key ID="STR_ALIVE_CS_UI_RATE_RAPID">
+    <English>RAPID</English>
+    <Chinesesimp>急速</Chinesesimp>
+    <Chinese>急速</Chinese>
+    <Spanish>RÁPIDO</Spanish>
+    <French>RAPIDE</French>
+    <Portuguese>RÁPIDO</Portuguese>
+    <Russian>БЕГЛЫЙ</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_RATE_STAGGERED">
+    <English>STAGGERED</English>
+    <Chinesesimp>间隔</Chinesesimp>
+    <Chinese>間隔</Chinese>
+    <Spanish>ESCALONADO</Spanish>
+    <French>ÉCHELONNÉ</French>
+    <Portuguese>ESCALONADO</Portuguese>
+    <Russian>С ИНТЕРВАЛОМ</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_ROUNDS_1">
+    <English>%1 ROUND</English>
+    <Chinesesimp>%1 发</Chinesesimp>
+    <Chinese>%1 發</Chinese>
+    <Spanish>%1 PROYECTIL</Spanish>
+    <French>%1 OBUS</French>
+    <Portuguese>%1 DISPARO</Portuguese>
+    <Russian>%1 СНАРЯД</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_ROUNDS_N">
+    <English>%1 ROUNDS</English>
+    <Chinesesimp>%1 发</Chinesesimp>
+    <Chinese>%1 發</Chinese>
+    <Spanish>%1 PROYECTILES</Spanish>
+    <French>%1 OBUS</French>
+    <Portuguese>%1 DISPAROS</Portuguese>
+    <Russian>СНАРЯДОВ: %1</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_ORD_ROUNDS_1">
+    <English>%1 - %2 rd</English>
+    <Chinesesimp>%1 - %2 发</Chinesesimp>
+    <Chinese>%1 - %2 發</Chinese>
+    <Spanish>%1 - %2 proy.</Spanish>
+    <French>%1 - %2 obus</French>
+    <Portuguese>%1 - %2 disp.</Portuguese>
+    <Russian>%1 - %2 сн.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_ORD_ROUNDS_N">
+    <English>%1 - %2 rds</English>
+    <Chinesesimp>%1 - %2 发</Chinesesimp>
+    <Chinese>%1 - %2 發</Chinese>
+    <Spanish>%1 - %2 proy.</Spanish>
+    <French>%1 - %2 obus</French>
+    <Portuguese>%1 - %2 disp.</Portuguese>
+    <Russian>%1 - %2 сн.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_CAS_TASK_ATTACK">
+    <English>ATTACK</English>
+    <Chinesesimp>攻击</Chinesesimp>
+    <Chinese>攻擊</Chinese>
+    <Spanish>ATACAR</Spanish>
+    <French>ATTAQUE</French>
+    <Portuguese>ATACAR</Portuguese>
+    <Russian>АТАКА</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_CAS_TASK_SAD">
+    <English>SEARCH AND DESTROY</English>
+    <Chinesesimp>搜索并摧毁</Chinesesimp>
+    <Chinese>搜索並摧毀</Chinese>
+    <Spanish>BUSCAR Y DESTRUIR</Spanish>
+    <French>RECHERCHE ET DESTRUCTION</French>
+    <Portuguese>BUSCAR E DESTRUIR</Portuguese>
+    <Russian>ПОИСК И УНИЧТОЖЕНИЕ</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_CAS_TASK_LOITER">
+    <English>LOITER</English>
+    <Chinesesimp>盘旋待命</Chinesesimp>
+    <Chinese>盤旋待命</Chinese>
+    <Spanish>PATRULLA AÉREA</Spanish>
+    <French>ATTENTE EN VOL</French>
+    <Portuguese>ESPERA EM VOO</Portuguese>
+    <Russian>БАРРАЖИРОВАНИЕ</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_FAM_GUN">
+    <English>GUN</English>
+    <Chinesesimp>机炮</Chinesesimp>
+    <Chinese>機砲</Chinese>
+    <Spanish>CAÑÓN</Spanish>
+    <French>CANON</French>
+    <Portuguese>CANHÃO</Portuguese>
+    <Russian>ПУШКА</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_FAM_ROCKETS">
+    <English>ROCKETS</English>
+    <Chinesesimp>火箭</Chinesesimp>
+    <Chinese>火箭</Chinese>
+    <Spanish>COHETES</Spanish>
+    <French>ROQUETTES</French>
+    <Portuguese>FOGUETES</Portuguese>
+    <Russian>НУР</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_FAM_MISSILE">
+    <English>MISSILE</English>
+    <Chinesesimp>导弹</Chinesesimp>
+    <Chinese>飛彈</Chinese>
+    <Spanish>MISIL</Spanish>
+    <French>MISSILE</French>
+    <Portuguese>MÍSSIL</Portuguese>
+    <Russian>РАКЕТА</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_FAM_BOMB">
+    <English>BOMB</English>
+    <Chinesesimp>炸弹</Chinesesimp>
+    <Chinese>炸彈</Chinese>
+    <Spanish>BOMBA</Spanish>
+    <French>BOMBE</French>
+    <Portuguese>BOMBA</Portuguese>
+    <Russian>БОМБА</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_MINUTES">
+    <English>%1 min</English>
+    <Chinesesimp>%1 分钟</Chinesesimp>
+    <Chinese>%1 分鐘</Chinese>
+    <Spanish>%1 min</Spanish>
+    <French>%1 min</French>
+    <Portuguese>%1 min</Portuguese>
+    <Russian>%1 мин</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_INDEFINITE">
+    <English>Indefinite</English>
+    <Chinesesimp>无限期</Chinesesimp>
+    <Chinese>無限期</Chinese>
+    <Spanish>Indefinido</Spanish>
+    <French>Illimité</French>
+    <Portuguese>Indefinido</Portuguese>
+    <Russian>Без ограничения</Russian>
+</Key>
 </Container></Package></Project>

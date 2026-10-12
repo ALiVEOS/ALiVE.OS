@@ -45,11 +45,8 @@ _countArray = [];
         _count = _x select 1;
     };
 } forEach (_battery getVariable "NEO_radioArtyBatteryRounds");
-if (_count >= 1) then { _countArray pushback ("1 ROUND") };
-if (_count >= 3) then { _countArray pushback ("3 ROUNDS") };
-if (_count >= 6) then { _countArray pushback ("6 ROUNDS") };
-if (_count >= 12) then { _countArray pushback ("12 ROUNDS") };
-if (_count >= 24) then { _countArray pushback ("24 ROUNDS") };
+// the label is translated; the count itself goes in lbData, which is what the confirm button reads
+{ if (_count >= _x) then { _countArray pushback _x } } forEach [1, 3, 6, 12, 24];
 
 if (count _countArray > 0) then
 {
@@ -63,14 +60,16 @@ if (count _countArray > 0) then
     _artyRateOfFireLb ctrlEnable true;
     lbClear _artyRateOfFireLb;
     {
-        _artyRateOfFireLb lbAdd _x;
+        private _row = _artyRateOfFireLb lbAdd localize ("STR_ALIVE_CS_UI_RATE_" + _x);
+        _artyRateOfFireLb lbSetData [_row, _x];
     } forEach ["RAPID", "STAGGERED"];
 
     //Rate Of Fire Type LB
     _artyRoundCountLb ctrlEnable true;
     lbClear _artyRoundCountLb;
     {
-        _artyRoundCountLb lbAdd _x;
+        private _row = _artyRoundCountLb lbAdd format [localize (["STR_ALIVE_CS_UI_ROUNDS_N", "STR_ALIVE_CS_UI_ROUNDS_1"] select (_x == 1)), _x];
+        _artyRoundCountLb lbSetData [_row, str _x];
     } forEach _countArray;
 
     //Slider

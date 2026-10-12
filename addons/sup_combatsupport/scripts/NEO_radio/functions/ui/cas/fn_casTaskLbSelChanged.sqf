@@ -111,7 +111,7 @@ if (toUpper (_lb lbData _index) == "SAD" || toUpper (_lb lbData _index) == "LOIT
             // family tag so the player can tell a gun from a bomb at a glance, e.g. "[GUN] M230"
             _fam = [_x] call NEO_fnc_casWeaponFamily;
             _name = [(configFile >> "CfgWeapons" >> _x)] call bis_fnc_displayName;
-            if (_fam != "OTHER") then { _name = format ["[%1] %2", _fam, _name]; };
+            if (_fam != "OTHER") then { _name = format ["[%1] %2", localize ("STR_ALIVE_CS_UI_FAM_" + _fam), _name]; };
             _row = _casAttackRunLB lbAdd _name;
             _casAttackRunLB lbSetData [_row, _x];
             _casAttackRunLB lbSetTooltip [_row, _name]; // full label on hover - the narrow row can clip long modded names
@@ -131,7 +131,7 @@ if (toUpper (_lb lbData _index) == "SAD" || toUpper (_lb lbData _index) == "LOIT
             {
                 private _row = _casAttackRunLB lbAdd (_x select 0);
                 _casAttackRunLB lbSetData [_row, (_x select 1)];
-            } forEach [["10 min", "600"], ["20 min", "1200"], ["30 min", "1800"], ["Indefinite", "-1"]];
+            } forEach [[format [localize "STR_ALIVE_CS_UI_MINUTES", 10], "600"], [format [localize "STR_ALIVE_CS_UI_MINUTES", 20], "1200"], [format [localize "STR_ALIVE_CS_UI_MINUTES", 30], "1800"], [localize "STR_ALIVE_CS_UI_INDEFINITE", "-1"]];
             // default to 20 min - a sensible on-station window rather than tying the asset up forever
             _casAttackRunLB lbSetCurSel 1;
         } else {
@@ -140,7 +140,7 @@ if (toUpper (_lb lbData _index) == "SAD" || toUpper (_lb lbData _index) == "LOIT
                 private ["_row", "_fam", "_name"];
                 _fam = [_x] call NEO_fnc_casWeaponFamily;
                 _name = [(configFile >> "CfgWeapons" >> _x)] call bis_fnc_displayName;
-                if (_fam != "OTHER") then { _name = format ["[%1] %2", _fam, _name]; };
+                if (_fam != "OTHER") then { _name = format ["[%1] %2", localize ("STR_ALIVE_CS_UI_FAM_" + _fam), _name]; };
                 _row = _casAttackRunLB lbAdd _name;
                 _casAttackRunLB lbSetData [_row, _x];
                 _casAttackRunLB lbSetTooltip [_row, _name];

@@ -104,7 +104,7 @@ if (!(_status in ["KILLED", "MISSION", "RTB", "MOVE", "RESPONSE", "NOAMMO"]) && 
         if ((_x select 1) >= 1) then
         {
             // show the rounds remaining per type; keep the raw type in lbData for the consumers
-            private _oRow = _artyOrdnanceTypeLb lbAdd (format ["%1 - %2 rd%3", _x select 0, _x select 1, ["s",""] select ((_x select 1) == 1)]);
+            private _oRow = _artyOrdnanceTypeLb lbAdd (format [localize (["STR_ALIVE_CS_UI_ORD_ROUNDS_N", "STR_ALIVE_CS_UI_ORD_ROUNDS_1"] select ((_x select 1) == 1)), _x select 0, _x select 1]);
             _artyOrdnanceTypeLb lbSetData [_oRow, _x select 0];
         };
     } forEach _ord;

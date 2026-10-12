@@ -51,21 +51,13 @@ _ordnanceType = _artyOrdnanceTypeLb lbData (lbCurSel _artyOrdnanceTypeLb);
 //_ord = [_battery, _ordnanceType] CALL ALIVE_fnc_GetMagazineType;
 _ord = [_battery, _ordnanceType] CALL ALIVE_fnc_getArtyMagazineType;
 
-_rate = switch (_artyRateOfFireLb lbText (lbCurSel _artyRateOfFireLb)) do
+_rate = switch (_artyRateOfFireLb lbData (lbCurSel _artyRateOfFireLb)) do
 {
     case "RAPID" : { 0 };
     case "STAGGERED" : { round (sliderPosition _artyRateDelaySlider) };
     case DEFAULT { 0 };
 };
-_count = switch (_artyRoundCountLb lbText (lbCurSel _artyRoundCountLb)) do
-{
-    case "1 ROUND" : { 1 };
-    case "3 ROUNDS" : { 3 };
-    case "6 ROUNDS" : { 6 };
-    case "12 ROUNDS" : { 12 };
-    case "24 ROUNDS" : { 24 };
-    case DEFAULT { 1 };
-};
+_count = (parseNumber (_artyRoundCountLb lbData (lbCurSel _artyRoundCountLb))) max 1;
 _dispersion = sliderPosition _artyDispersionSlider;
 _coord = _pos call BIS_fnc_posToGrid;
 _callsign = _artyArray select (lbCurSel _artyUnitLb) select 2; if (!isNil { NEO_radioLogic getVariable "NEO_radioTalkWithArty" }) then { _callsign = ((NEO_radioLogic getVariable "NEO_radioTalkWithArty") getVariable "NEO_radioArtyModule") select 1 };

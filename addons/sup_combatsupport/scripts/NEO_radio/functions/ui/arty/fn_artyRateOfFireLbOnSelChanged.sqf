@@ -5,7 +5,7 @@ private
 ([] call ALiVE_fnc_tabletBox) params ["_uiX","_uiY","_uiW","_uiH"];
 _display = findDisplay 655555;
 _artyRateOfFireLb = _this select 0;
-_rate = _artyRateOfFireLb lbText (lbCurSel _artyRateOfFireLb);
+_rate = _artyRateOfFireLb lbData (lbCurSel _artyRateOfFireLb);
 _artyRoundCountLb = _display displayCtrl 655605;
 _artyRateDelayText = _display displayCtrl 655611;
 _artyRateDelaySlider = _display displayCtrl 655612;
