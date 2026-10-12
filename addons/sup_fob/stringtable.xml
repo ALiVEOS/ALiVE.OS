@@ -293,6 +293,45 @@
             <Key ID="STR_ALIVE_FOB_REFUSED_STATIC_PROFILES">
                 <English>Static weapons need the Virtual AI System module in the mission.</English>
             </Key>
+            <Key ID="STR_ALIVE_FOB_ALERT_RADIUS">
+                <English>Alert Radius</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_ALERT_RADIUS_COMMENT">
+                <English>How close, in metres, the enemy has to come before the FOB's side hears on the radio that it's under threat.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_CAPTURE_RADIUS">
+                <English>Capture Radius</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_CAPTURE_RADIUS_COMMENT">
+                <English>Enemy soldiers inside this many metres, with none of the FOB's side, start taking the FOB. Enemy players alone don't take it.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_CAPTURE_TIME">
+                <English>Capture Time</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_CAPTURE_TIME_COMMENT">
+                <English>Seconds the enemy has to hold the FOB, unopposed, before it becomes theirs. Any defender in the capture radius starts the count again.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_REPAIR_TIME">
+                <English>Repair Time</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_REPAIR_TIME_COMMENT">
+                <English>Seconds a FOB with a destroyed headquarters has before it's lost for good, unless repaired. The count stops while an engineer of its side is within 25 m.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_REPAIR_COST">
+                <English>Repair Cost</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_REPAIR_COST_COMMENT">
+                <English>Supply to repair a destroyed headquarters at tier 1; one and a half times at tier 2, twice at tier 3. A quarter off with an engineer present.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_ACTION_REPAIR">
+                <English>Repair FOB</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_REPAIRED">
+                <English>%1 repaired for %2 supply.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_REFUSED_NOT_DAMAGED">
+                <English>That FOB doesn't need repairing.</English>
+            </Key>
         </Container>
     </Package>
 </Project>

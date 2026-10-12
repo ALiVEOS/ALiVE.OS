@@ -94,6 +94,13 @@ class CfgVehicles {
                         class fob_supply_cap_t3 : Edit { property = "ALiVE_sup_fob_fob_supply_cap_t3"; displayName = "$STR_ALIVE_FOB_SUPPLY_CAP_T3"; tooltip = "$STR_ALIVE_FOB_SUPPLY_CAP_COMMENT"; typeName = "STRING"; defaultValue = """5000"""; };
                         class fob_cost_scale : Edit { property = "ALiVE_sup_fob_fob_cost_scale"; displayName = "$STR_ALIVE_FOB_COST_SCALE"; tooltip = "$STR_ALIVE_FOB_COST_SCALE_COMMENT"; typeName = "STRING"; defaultValue = """1"""; };
 
+                        class HDR_DEFENCE : ALiVE_ModuleSubTitle { property = "ALiVE_sup_fob_HDR_DEFENCE"; displayName = "ATTACK AND CAPTURE"; };
+                        class fob_alert_radius : Edit { property = "ALiVE_sup_fob_fob_alert_radius"; displayName = "$STR_ALIVE_FOB_ALERT_RADIUS"; tooltip = "$STR_ALIVE_FOB_ALERT_RADIUS_COMMENT"; typeName = "STRING"; defaultValue = """400"""; };
+                        class fob_capture_radius : Edit { property = "ALiVE_sup_fob_fob_capture_radius"; displayName = "$STR_ALIVE_FOB_CAPTURE_RADIUS"; tooltip = "$STR_ALIVE_FOB_CAPTURE_RADIUS_COMMENT"; typeName = "STRING"; defaultValue = """100"""; };
+                        class fob_capture_time : Edit { property = "ALiVE_sup_fob_fob_capture_time"; displayName = "$STR_ALIVE_FOB_CAPTURE_TIME"; tooltip = "$STR_ALIVE_FOB_CAPTURE_TIME_COMMENT"; typeName = "STRING"; defaultValue = """180"""; };
+                        class fob_repair_time : Edit { property = "ALiVE_sup_fob_fob_repair_time"; displayName = "$STR_ALIVE_FOB_REPAIR_TIME"; tooltip = "$STR_ALIVE_FOB_REPAIR_TIME_COMMENT"; typeName = "STRING"; defaultValue = """900"""; };
+                        class fob_repair_cost : Edit { property = "ALiVE_sup_fob_fob_repair_cost"; displayName = "$STR_ALIVE_FOB_REPAIR_COST"; tooltip = "$STR_ALIVE_FOB_REPAIR_COST_COMMENT"; typeName = "STRING"; defaultValue = """1000"""; };
+
                         class HDR_PERSIST : ALiVE_ModuleSubTitle { property = "ALiVE_sup_fob_HDR_PERSIST"; displayName = "SAVING"; };
                         class fob_save_interval : Edit { property = "ALiVE_sup_fob_fob_save_interval"; displayName = "$STR_ALIVE_FOB_SAVE_INTERVAL"; tooltip = "$STR_ALIVE_FOB_SAVE_INTERVAL_COMMENT"; typeName = "STRING"; defaultValue = """60"""; };
 

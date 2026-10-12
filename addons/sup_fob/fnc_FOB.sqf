@@ -85,7 +85,12 @@ private _settings = createHashMapFromArray [
     ["fob_supply_cap_t2", [4000, [0, 1000000]]],
     ["fob_supply_cap_t3", [5000, [0, 1000000]]],
     ["fob_cost_scale", [1, [0, 100]]],
-    ["fob_save_interval", [60, [5, 3600]]]
+    ["fob_save_interval", [60, [5, 3600]]],
+    ["fob_alert_radius", [400, [50, 3000]]],
+    ["fob_capture_radius", [100, [20, 1000]]],
+    ["fob_capture_time", [180, [10, 3600]]],
+    ["fob_repair_time", [900, [30, 7200]]],
+    ["fob_repair_cost", [1000, [0, 1000000]]]
 ];
 
 switch (_operation) do {

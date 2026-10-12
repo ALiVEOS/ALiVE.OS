@@ -31,6 +31,10 @@ dismantle - [fobID] -> true when it was taken down
 build - [class, position, direction, fobID] -> true when built and paid for
 recycle - [object] -> true when taken down, with half its price back
 restoreObjects - [fobID] -> a saved FOB's built objects made again; the number made
+repair - [fobID] -> true when a destroyed headquarters was rebuilt and paid for
+repairCost - [fobID] -> the supply a repair costs now
+salvage - [fobID] -> the FOB lost for good: everything it had removed
+flip - [fobID, side] -> true when the FOB became that side's
 spawnStatic - [fobID, class, position, direction] -> [vehicle profile id, crew profile id]
 pinStatic - [profile ids] -> keeps them where they are
 removeStatic - [vehicle profile id, crew profile id] -> the static weapon and its crew gone
@@ -168,13 +172,19 @@ switch (_op) do {
         _hub setVectorDirAndUp [vectorNormalized [sin _d, cos _d, _tip], _up];
         _hub setPosATL _pos;
         _hub setVariable ["ALiVE_FOB_id", _id, true];
-        // A destroyed headquarters marks the FOB damaged: it can't be taken down until repaired
+        // A destroyed headquarters marks the FOB damaged and starts the repair count: repaired
+        // in time it's back, otherwise the watchdog salvages the FOB
         _hub addEventHandler ["Killed", {
             params ["_hub"];
             private _e = [ALiVE_FOB_registry, _hub getVariable ["ALiVE_FOB_id", ""]] call ALIVE_fnc_hashGet;
-            if (!isNil "_e") then {
+            if (!isNil "_e" && {([_e, "status", ""] call ALIVE_fnc_hashGet) != "damaged"}) then {
                 [_e, "status", "damaged"] call ALIVE_fnc_hashSet;
+                [_e, "repairRemaining", [ALiVE_sup_fob, "attribute", ["fob_repair_time"]] call ALiVE_fnc_FOB] call ALIVE_fnc_hashSet;
                 ALiVE_FOB_dirty = true;
+                private _side = [_e, "side", "WEST"] call ALIVE_fnc_hashGet;
+                private _text = format ["%1's headquarters is destroyed. Repair it within %2 minutes or the FOB is lost.",
+                    [_e, "name", ""] call ALIVE_fnc_hashGet, round (([_e, "repairRemaining", 0] call ALIVE_fnc_hashGet) / 60)];
+                [_side, [ALiVE_sup_fob, _text, "side", [_side] call ALiVE_fnc_sideTextToObject, false, true, false, true, "HQ"]] call ALIVE_fnc_radioBroadcastToSide;
             };
         }];
         [_entry, "hub", _hub] call ALIVE_fnc_hashSet;
@@ -185,10 +195,12 @@ switch (_op) do {
     case "restore": {
         _result = 0;
         {
-            private _hub = ["spawnHub", [_x]] call ALiVE_fnc_fobOps;
+            private _e = [ALiVE_FOB_registry, _x] call ALIVE_fnc_hashGet;
+            // a damaged FOB comes back damaged, its headquarters still down
+            private _hub = if (([_e, "status", ""] call ALIVE_fnc_hashGet) == "damaged") then { objNull } else { ["spawnHub", [_x]] call ALiVE_fnc_fobOps };
             ["reconcile", [_x]] call ALiVE_fnc_fobObjectives;
             ["restoreObjects", [_x]] call ALiVE_fnc_fobOps;
-            if (!isNull _hub) then { _result = _result + 1 };
+            _result = _result + 1;
         } forEach +(ALiVE_FOB_registry select 1);
         if (_result > 0) then { ["ALiVE Player FOBs - rebuilt %1 FOBs from the save", _result] call ALiVE_fnc_dump };
     };
@@ -349,6 +361,101 @@ switch (_op) do {
         ALiVE_FOB_dirty = true;
         [_logic, "broadcastMirror"] call ALiVE_fnc_FOB;
         ["STR_ALIVE_FOB_RECYCLED", [getText (configFile >> "CfgVehicles" >> _class >> "displayName"), _back]] call _tell;
+        _result = true;
+    };
+
+    // A player repairs a destroyed headquarters: the FOB's supply pays, a quarter less with an
+    // engineer of its side within 25 m; the wreck and its ruins are cleared and a new one put up
+    case "repair": {
+        _result = false;
+        _args params [["_id", "", [""]]];
+        private _entry = [ALiVE_FOB_registry, _id] call ALIVE_fnc_hashGet;
+        if (isNil "_entry" || {isNull _caller}) exitWith {};
+        if (([_entry, "side", ""] call ALIVE_fnc_hashGet) != str (side group _caller)) exitWith { ["STR_ALIVE_FOB_REFUSED_NOTOURS"] call _tell };
+        if (([_entry, "status", ""] call ALIVE_fnc_hashGet) != "damaged") exitWith { ["STR_ALIVE_FOB_REFUSED_NOT_DAMAGED"] call _tell };
+        private _pos = [_entry, "pos", [0,0,0]] call ALIVE_fnc_hashGet;
+        if (_caller distance2D _pos > 25) exitWith { ["STR_ALIVE_FOB_REFUSED_RANGE", [25]] call _tell };
+        private _cost = ["repairCost", [_id]] call ALiVE_fnc_fobOps;
+        if !(["debit", [_id, _cost, "repair"]] call ALiVE_fnc_fobSupply) exitWith {
+            ["STR_ALIVE_FOB_REFUSED_SUPPLY", [_cost, ["balance", [_id]] call ALiVE_fnc_fobSupply]] call _tell;
+        };
+        private _wreck = [_entry, "hub", objNull] call ALIVE_fnc_hashGet;
+        if (!isNull _wreck) then { deleteVehicle _wreck };
+        { if ((_x distance2D _pos) <= 10) then { deleteVehicle _x } } forEach (nearestObjects [_pos, ["Ruins_F"], 15]);
+        [_entry, "hub", objNull] call ALIVE_fnc_hashSet;
+        [_entry, "status", "active"] call ALIVE_fnc_hashSet;
+        [_entry, "repairRemaining", 0] call ALIVE_fnc_hashSet;
+        private _hub = ["spawnHub", [_id]] call ALiVE_fnc_fobOps;
+        if (isNull _hub) exitWith {
+            ["credit", [_id, _cost, "refund repair"]] call ALiVE_fnc_fobSupply;
+            [_entry, "status", "damaged"] call ALIVE_fnc_hashSet;
+            ["STR_ALIVE_FOB_REFUSED_SPOT"] call _tell;
+        };
+        ALiVE_FOB_dirty = true;
+        [_logic, "broadcastMirror"] call ALiVE_fnc_FOB;
+        ["save", [true]] call ALiVE_fnc_fobPersistence;
+        ["STR_ALIVE_FOB_REPAIRED", [[_entry, "name", ""] call ALIVE_fnc_hashGet, _cost]] call _tell;
+        _result = true;
+    };
+
+    // What a repair costs now: the Repair Cost, x1.5 at tier 2 and x2 at tier 3, a quarter off
+    // with an engineer of the FOB's side within 25 m (the watchdog notes that each pass)
+    case "repairCost": {
+        _args params [["_id", "", [""]]];
+        private _entry = [ALiVE_FOB_registry, _id] call ALIVE_fnc_hashGet;
+        if (isNil "_entry") exitWith { _result = 0 };
+        private _c = ([_logic, "attribute", ["fob_repair_cost"]] call ALiVE_fnc_FOB) * ([1, 1.5, 2] param [(([_entry, "tier", 1] call ALIVE_fnc_hashGet) - 1) max 0, 2]);
+        if ([_entry, "engineerNear", false] call ALIVE_fnc_hashGet) then { _c = _c * 0.75 };
+        _result = round _c;
+    };
+
+    // A FOB lost for good: the wreck, everything built there and its objectives go
+    case "salvage": {
+        _args params [["_id", "", [""]]];
+        _result = ["cleanup", [_id]] call ALiVE_fnc_fobOps;
+        ["ALiVE Player FOBs - %1 was lost and salvaged", _id] call ALiVE_fnc_dump;
+    };
+
+    // The FOB becomes another side's, all at once: its objectives go to the new side's
+    // commanders, its marker to the new side's maps, its supply stays with it. The old side's
+    // static weapons are let go (no longer pinned, no longer the FOB's). Saved straight away.
+    case "flip": {
+        _args params [["_id", "", [""]], ["_newSide", "", [""]]];
+        _result = false;
+        private _entry = [ALiVE_FOB_registry, _id] call ALIVE_fnc_hashGet;
+        if (isNil "_entry" || {!(_newSide in ["WEST", "EAST", "GUER"])}) exitWith {};
+        private _oldSide = [_entry, "side", ""] call ALIVE_fnc_hashGet;
+        if (_oldSide == _newSide) exitWith {};
+        private _name = [_entry, "name", _id] call ALIVE_fnc_hashGet;
+        isNil {
+            ["unregister", [_id]] call ALiVE_fnc_fobObjectives;
+            private _factions = [];
+            { if (([_x, "side", ""] call ALiVE_fnc_hashGet) == _newSide) then { _factions append ([_x, "factions", []] call ALiVE_fnc_hashGet) } } forEach (missionNamespace getVariable ["OPCOM_instances", []]);
+            [_entry, "side", _newSide] call ALIVE_fnc_hashSet;
+            [_entry, "faction", _factions param [0, ""]] call ALIVE_fnc_hashSet;
+            [_entry, "captureSide", ""] call ALIVE_fnc_hashSet;
+            [_entry, "captureRemaining", 0] call ALIVE_fnc_hashSet;
+            [_entry, "discoveredBy", []] call ALIVE_fnc_hashSet;
+            [_entry, "respawn", ""] call ALIVE_fnc_hashSet;
+            private _objects = [_entry, "objects", []] call ALIVE_fnc_hashGet;
+            {
+                if ((_x param [0, ""]) isEqualTo "static" && {!isNil "ALIVE_profileStationary"}) then {
+                    { [ALIVE_profileStationary, _x] call ALIVE_fnc_hashRem } forEach [_x param [3, ""], _x param [4, ""]];
+                };
+            } forEach _objects;
+            [_entry, "objects", _objects select { !((_x param [0, ""]) isEqualTo "static") }] call ALIVE_fnc_hashSet;
+            private _hub = [_entry, "hub", objNull] call ALIVE_fnc_hashGet;
+            if (!isNull _hub) then { _hub setVariable ["ALiVE_FOB_id", _id, true] };
+            ["reconcile", [_id]] call ALiVE_fnc_fobObjectives;
+            ALiVE_FOB_dirty = true;
+        };
+        [_logic, "broadcastMirror"] call ALiVE_fnc_FOB;
+        ["save", [true]] call ALiVE_fnc_fobPersistence;
+        {
+            _x params ["_s", "_text"];
+            [_s, [_logic, _text, "side", [_s] call ALiVE_fnc_sideTextToObject, false, true, false, true, "HQ"]] call ALIVE_fnc_radioBroadcastToSide;
+        } forEach [[_oldSide, format ["%1 has been lost to the enemy.", _name]], [_newSide, format ["We have taken %1.", _name]]];
+        ["ALiVE Player FOBs - %1 (%2) taken: %3 to %4", _id, _name, _oldSide, _newSide] call ALiVE_fnc_dump;
         _result = true;
     };
 

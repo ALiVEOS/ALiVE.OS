@@ -14,6 +14,8 @@ The player's FOB actions, on the scroll menu:
 - Build Menu, inside an active FOB's build range: the build window (ALiVE_fnc_buildMenu).
 - Recycle, looking at something built at a FOB from within 8 m: takes it down for half its
   price back.
+- Repair FOB, within 25 m of one of the side's FOBs whose headquarters was destroyed: the
+  server works out the price and rebuilds it.
 
 The conditions read a cache refreshed every half second, never the world, so an action
 showing costs nothing per frame. The server checks everything again.
@@ -73,6 +75,8 @@ switch (_op) do {
                 "ALiVE_FOB_nearFob isNotEqualTo []"],
             player addAction [localize "STR_ALIVE_FOB_ACTION_DISMANTLE", { ["dismantle"] call ALiVE_fnc_fobActions }, nil, 0.5, false, true, "",
                 "ALiVE_FOB_nearFob isNotEqualTo [] && {vehicle _this == _this}"],
+            player addAction [localize "STR_ALIVE_FOB_ACTION_REPAIR", { ["repair", [ALiVE_FOB_nearFob select 0]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] }, nil, 1.46, false, true, "",
+                "ALiVE_FOB_nearFob isNotEqualTo [] && {(ALiVE_FOB_nearFob select 4) == 'damaged'} && {vehicle _this == _this}"],
             player addAction [localize "STR_ALIVE_FOB_ACTION_BUILD", { ["open", ALiVE_FOB_buildFob] call ALiVE_fnc_buildMenu }, nil, 1.45, false, true, "",
                 "ALiVE_FOB_buildFob isNotEqualTo [] && {vehicle _this == _this} && {!(missionNamespace getVariable ['ALiVE_FOB_placing', false])}"],
             player addAction [localize "STR_ALIVE_FOB_ACTION_RECYCLE", { ["recycle", [cursorObject]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] }, nil, 0.6, false, true, "",
