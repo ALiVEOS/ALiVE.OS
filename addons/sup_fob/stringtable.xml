@@ -407,6 +407,27 @@
             <Key ID="STR_ALIVE_FOB_RESUPPLY_THRESHOLD_COMMENT">
                 <English>In FOB Supply mode, a FOB below this share of its supply limit asks its side's Military Logistics for a supply truck, at most every 10 minutes. The truck brings a Supply Crate's worth. 0 turns it off. Needs a Military Logistics module for that side.</English>
             </Key>
+            <Key ID="STR_ALIVE_FOB_ENEMY_TARGETING">
+                <English>Enemy Targeting</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_ENEMY_TARGETING_COMMENT">
+                <English>Whether enemy AI Commanders go after FOBs. Contact: once their men have found it (came within the Discovery Radius or shot at its headquarters). Immediate: from the moment it is deployed. Off: never. Insurgent commanders go after a FOB too; a strong garrison draws attacks rather than an assault.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_TARGETING_CONTACT">
+                <English>Contact</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_TARGETING_IMMEDIATE">
+                <English>Immediate</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_TARGETING_OFF">
+                <English>Off</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_DISCOVERY_RADIUS">
+                <English>Discovery Radius</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_DISCOVERY_RADIUS_COMMENT">
+                <English>With Contact targeting, enemy men inside this many metres of a FOB give it away to their side's commanders.</English>
+            </Key>
         </Container>
     </Package>
 </Project>

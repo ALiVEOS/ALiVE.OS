@@ -88,6 +88,8 @@ private _settings = createHashMapFromArray [
     ["fob_cost_scale", [1, [0, 100]]],
     ["fob_save_interval", [60, [5, 3600]]],
     ["fob_alert_radius", [400, [50, 3000]]],
+    ["fob_enemy_targeting", ["CONTACT", "text"]],
+    ["fob_discovery_radius", [500, [50, 5000]]],
     ["fob_capture_radius", [100, [20, 1000]]],
     ["fob_capture_time", [180, [10, 3600]]],
     ["fob_repair_time", [900, [30, 7200]]],
@@ -253,7 +255,7 @@ switch (_operation) do {
             };
             case (_kind isEqualTo "text"): {
                 _value = if (_raw isEqualType "") then { _raw } else { str _raw };
-                if (_name in ["fob_cap_type", "fob_supply_source"]) then { _value = toUpper _value };
+                if (_name in ["fob_cap_type", "fob_supply_source", "fob_enemy_targeting"]) then { _value = toUpper _value };
             };
             default {
                 private _n = if (_raw isEqualType "") then { parseNumber _raw } else { _raw };

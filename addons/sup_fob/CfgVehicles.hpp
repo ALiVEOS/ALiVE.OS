@@ -113,6 +113,20 @@ class CfgVehicles {
                         };
 
                         class HDR_DEFENCE : ALiVE_ModuleSubTitle { property = "ALiVE_sup_fob_HDR_DEFENCE"; displayName = "ATTACK AND CAPTURE"; };
+                        class fob_enemy_targeting : Combo
+                        {
+                                property = "ALiVE_sup_fob_fob_enemy_targeting";
+                                displayName = "$STR_ALIVE_FOB_ENEMY_TARGETING";
+                                tooltip = "$STR_ALIVE_FOB_ENEMY_TARGETING_COMMENT";
+                                defaultValue = """CONTACT""";
+                                class Values
+                                {
+                                    class Contact { name = "$STR_ALIVE_FOB_TARGETING_CONTACT"; value = "CONTACT"; default = 1; };
+                                    class Immediate { name = "$STR_ALIVE_FOB_TARGETING_IMMEDIATE"; value = "IMMEDIATE"; };
+                                    class Off { name = "$STR_ALIVE_FOB_TARGETING_OFF"; value = "OFF"; };
+                                };
+                        };
+                        class fob_discovery_radius : Edit { property = "ALiVE_sup_fob_fob_discovery_radius"; displayName = "$STR_ALIVE_FOB_DISCOVERY_RADIUS"; tooltip = "$STR_ALIVE_FOB_DISCOVERY_RADIUS_COMMENT"; typeName = "STRING"; defaultValue = """500"""; };
                         class fob_alert_radius : Edit { property = "ALiVE_sup_fob_fob_alert_radius"; displayName = "$STR_ALIVE_FOB_ALERT_RADIUS"; tooltip = "$STR_ALIVE_FOB_ALERT_RADIUS_COMMENT"; typeName = "STRING"; defaultValue = """400"""; };
                         class fob_capture_radius : Edit { property = "ALiVE_sup_fob_fob_capture_radius"; displayName = "$STR_ALIVE_FOB_CAPTURE_RADIUS"; tooltip = "$STR_ALIVE_FOB_CAPTURE_RADIUS_COMMENT"; typeName = "STRING"; defaultValue = """100"""; };
                         class fob_capture_time : Edit { property = "ALiVE_sup_fob_fob_capture_time"; displayName = "$STR_ALIVE_FOB_CAPTURE_TIME"; tooltip = "$STR_ALIVE_FOB_CAPTURE_TIME_COMMENT"; typeName = "STRING"; defaultValue = """180"""; };

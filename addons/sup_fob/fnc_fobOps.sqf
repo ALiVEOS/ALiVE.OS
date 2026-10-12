@@ -194,6 +194,20 @@ switch (_op) do {
                 [_side, [ALiVE_sup_fob, _text, "side", [_side] call ALiVE_fnc_sideTextToObject, false, true, false, true, "HQ"]] call ALIVE_fnc_radioBroadcastToSide;
             };
         }];
+        // Shot at by a side: that side has found the FOB (Contact targeting)
+        _hub addEventHandler ["Hit", {
+            params ["_hub", "_source", "", "_instigator"];
+            private _who = if (isNull _instigator) then { _source } else { _instigator };
+            if (isNull _who) exitWith {};
+            private _s = str side group _who;
+            private _e = [ALiVE_FOB_registry, _hub getVariable ["ALiVE_FOB_id", ""]] call ALIVE_fnc_hashGet;
+            if (isNil "_e" || {!(_s in ["WEST", "EAST", "GUER"])}) exitWith {};
+            private _found = [_e, "discoveredBy", []] call ALIVE_fnc_hashGet;
+            if (_s != ([_e, "side", ""] call ALIVE_fnc_hashGet) && {!(_s in _found)}) then {
+                _found pushBack _s;
+                ALiVE_FOB_dirty = true;
+            };
+        }];
         [_entry, "hub", _hub] call ALIVE_fnc_hashSet;
         _result = _hub;
     };

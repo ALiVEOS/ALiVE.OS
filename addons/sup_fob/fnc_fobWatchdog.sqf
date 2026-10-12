@@ -10,6 +10,9 @@ The one server loop the FOBs run on, every 30 seconds. Each pass, for each FOB:
 - counts down its timers by the time that really passed (capped at 60 s, so a stall doesn't
   fire a deadline all at once);
 - tells its side on the radio when the enemy comes within the Alert Radius;
+- notes which enemy sides have found it (Contact targeting), so their commanders get it as an
+  objective, and at tier 2 or 3 reports the enemy groups it can see to its own side's
+  intelligence;
 - starts taking it for the enemy when enemy soldiers, and none of its own side, are inside the
   Capture Radius, and hands it over when the Capture Time runs out; any defender in the radius
   stops the count;
@@ -52,7 +55,10 @@ private _presence = {
     private _pos = [_entry, "pos", [0,0,0]] call ALIVE_fnc_hashGet;
     private _side = [_entry, "side", "WEST"] call ALIVE_fnc_hashGet;
     private _rCap = "fob_capture_radius" call _set;
+    private _rFind = "fob_discovery_radius" call _set;
     private _rAlert = ("fob_alert_radius" call _set) max _rCap;
+    private _rLook = _rAlert max _rFind;
+    private _seen = [];
     private _enemies = ([_side] call ALiVE_fnc_getSideAllegiances) param [0, []];
     private _taking = createHashMap;
     private _held = false;
@@ -64,11 +70,12 @@ private _presence = {
                 private _d = ([_x, "position", [0,0,0]] call ALIVE_fnc_hashGet) distance2D _pos;
                 if (_ps in _enemies) then {
                     if (_d <= _rAlert) then { _alert = true };
+                    if (_d <= _rFind) then { _seen pushBackUnique _ps };
                     if (_d <= _rCap && {!([_x, "isPlayer", false] call ALIVE_fnc_hashGet)}) then { _taking set [_ps, (_taking getOrDefault [_ps, 0]) + 1] };
                 };
                 if (_ps == _side && {_d <= _rCap}) then { _held = true };
             };
-        } forEach ([_pos, _rAlert, ["all", "entity"], true] call ALiVE_fnc_getNearProfiles);
+        } forEach ([_pos, _rLook, ["all", "entity"], true] call ALiVE_fnc_getNearProfiles);
     };
     private _engineer = false;
     {
@@ -76,7 +83,8 @@ private _presence = {
             private _us = str side group _x;
             private _d = _x distance2D _pos;
             if (_us in _enemies) then {
-                _alert = true;
+                if (_d <= _rAlert) then { _alert = true };
+                if (_d <= _rFind) then { _seen pushBackUnique _us };
                 if (_d <= _rCap && {!isPlayer _x}) then { _taking set [_us, (_taking getOrDefault [_us, 0]) + 1] };
             };
             if (_us == _side) then {
@@ -84,8 +92,8 @@ private _presence = {
                 if (_d <= 25 && {_x getUnitTrait "engineer"}) then { _engineer = true };
             };
         };
-    } forEach (_pos nearEntities [["CAManBase"], _rAlert]);
-    [_taking, _held, _alert, _engineer]
+    } forEach (_pos nearEntities [["CAManBase"], _rLook]);
+    [_taking, _held, _alert, _engineer, _seen]
 };
 
 private _say = {
@@ -102,7 +110,23 @@ private _tick = {
         if (isNil "_entry") then { continue };
         private _side = [_entry, "side", "WEST"] call ALIVE_fnc_hashGet;
         private _name = [_entry, "name", _id] call ALIVE_fnc_hashGet;
-        ([_entry] call _presence) params ["_taking", "_held", "_alert", "_engineer"];
+        ([_entry] call _presence) params ["_taking", "_held", "_alert", "_engineer", "_seen"];
+        // Contact targeting: an enemy side that came within the Discovery Radius has found the FOB
+        if (("fob_enemy_targeting" call _set) == "CONTACT") then {
+            private _found = [_entry, "discoveredBy", []] call ALIVE_fnc_hashGet;
+            { if !(_x in _found) then { _found pushBack _x; ALiVE_FOB_dirty = true } } forEach _seen;
+        };
+        // A tier 2 or 3 FOB reports the enemy groups it can see, out to its Alert Radius times its
+        // tier, to its side's commanders' intelligence
+        private _tier = [_entry, "tier", 1] call ALIVE_fnc_hashGet;
+        if (_tier >= 2 && {!isNil "ALiVE_ProfileHandler"} && {([_entry, "status", ""] call ALIVE_fnc_hashGet) == "active"}) then {
+            private _enemySides = ([_side] call ALiVE_fnc_getSideAllegiances) param [0, []];
+            private _spotted = (([[_entry, "pos", [0,0,0]] call ALIVE_fnc_hashGet, ("fob_alert_radius" call _set) * _tier, ["all", "entity"], true] call ALiVE_fnc_getNearProfiles)
+                select { ([_x, "side", ""] call ALIVE_fnc_hashGet) in _enemySides }) apply { [_x, "profileID", ""] call ALIVE_fnc_hashGet };
+            if (_spotted isNotEqualTo []) then {
+                { if (([_x, "side", ""] call ALiVE_fnc_HashGet) == _side) then { [_x, "createSpotrepForProfiles", _spotted] call ALiVE_fnc_OPCOM } } forEach (missionNamespace getVariable ["OPCOM_instances", []]);
+            };
+        };
         [_entry, "engineerNear", _engineer] call ALIVE_fnc_hashSet;
 
         // Timers; a repair count stops while an engineer is at the FOB
