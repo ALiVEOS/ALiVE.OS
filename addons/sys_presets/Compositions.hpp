@@ -106,6 +106,24 @@ class Cfg3DEN {
             icon = "\A3\ui_f\data\map\markers\nato\b_inf.paa";
             useSideColorOnIcon = 1;
         };
+        class ALiVE_Preset_persistent_campaign {
+            path = "x\alive\addons\sys_presets\compositions\persistent_campaign";
+            side = 1;
+            editorCategory = "ALiVE_PresetCat";
+            editorSubcategory = "ALiVE_PresetSub";
+            displayName = "Persistent campaign: a war that carries on where you saved";
+            icon = "\A3\ui_f\data\map\markers\nato\b_inf.paa";
+            useSideColorOnIcon = 1;
+        };
+        class ALiVE_Preset_special_operations {
+            path = "x\alive\addons\sys_presets\compositions\special_operations";
+            side = 1;
+            editorCategory = "ALiVE_PresetCat";
+            editorSubcategory = "ALiVE_PresetSub";
+            displayName = "Special operations: a small team against a held town";
+            icon = "\A3\ui_f\data\map\markers\nato\b_inf.paa";
+            useSideColorOnIcon = 1;
+        };
         class ALiVE_Preset_three_way_war {
             path = "x\alive\addons\sys_presets\compositions\three_way_war";
             side = 1;
