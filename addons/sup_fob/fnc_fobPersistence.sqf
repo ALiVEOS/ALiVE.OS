@@ -60,8 +60,8 @@ switch (_operation) do {
                     if (_k == "objects") then {
                         // static weapons as their profile ids, place and heading; built objects as
                         // class, world position and attitude, read off the live object
-                        _v = (_v select { (_x select 0) isEqualTo "static" || {(_x select 0) isEqualType objNull && {!isNull (_x select 0)} && {alive (_x select 0)} && {damage (_x select 0) < 1}} })
-                            apply { if ((_x select 0) isEqualTo "static") then { +_x } else { [_x select 1, getPosWorld (_x select 0), vectorDir (_x select 0), vectorUp (_x select 0), _x select 2] } };
+                        _v = (_v select { (_x select 0) in ["static", "vehicle"] || {(_x select 0) isEqualType objNull && {!isNull (_x select 0)} && {alive (_x select 0)} && {damage (_x select 0) < 1}} })
+                            apply { if ((_x select 0) in ["static", "vehicle"]) then { +_x } else { [_x select 1, getPosWorld (_x select 0), vectorDir (_x select 0), vectorUp (_x select 0), _x select 2] } };
                     };
                     _pairs pushBack [_k, _v];
                 };

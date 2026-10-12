@@ -288,10 +288,10 @@
                 <English>Static weapon, crewed by your side</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_REFUSED_STATIC_SIDE">
-                <English>Your side can only build its own static weapons.</English>
+                <English>Your side can only build the static weapons and vehicles its own forces use.</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_REFUSED_STATIC_PROFILES">
-                <English>Static weapons need the Virtual AI System module in the mission.</English>
+                <English>Static weapons and vehicles need the Virtual AI System module in the mission.</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_ALERT_RADIUS">
                 <English>Alert Radius</English>
@@ -427,6 +427,12 @@
             </Key>
             <Key ID="STR_ALIVE_FOB_DISCOVERY_RADIUS_COMMENT">
                 <English>With Contact targeting, enemy men inside this many metres of a FOB give it away to their side's commanders.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_UI_VEHICLES">
+                <English>Vehicles</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_UI_VEHICLE_ITEM">
+                <English>Vehicle, empty, for your side to crew</English>
             </Key>
         </Container>
     </Package>

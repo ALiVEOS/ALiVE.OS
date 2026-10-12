@@ -104,6 +104,8 @@ private _say = {
 
 private _tick = {
     params ["_dt"];
+    // the factions each side's commanders field, for static weapons and vehicles; sent on change
+    ["factions"] call ALiVE_fnc_fobBuildScan;
     {
         private _id = _x;
         private _entry = [ALiVE_FOB_registry, _id] call ALIVE_fnc_hashGet;
@@ -207,7 +209,7 @@ private _tick = {
             private _o = _x param [0, objNull];
             switch (true) do {
                 // a static weapon lives as long as its gun's profile does
-                case (_o isEqualTo "static"): { isNil "ALiVE_ProfileHandler" || {!isNil {[ALiVE_ProfileHandler, "getProfile", _x param [3, ""]] call ALIVE_fnc_profileHandler}} };
+                case (_o in ["static", "vehicle"]): { isNil "ALiVE_ProfileHandler" || {!isNil {[ALiVE_ProfileHandler, "getProfile", _x param [3, ""]] call ALIVE_fnc_profileHandler}} };
                 case (!(_o isEqualType objNull)): { true };
                 default { !isNull _o && {alive _o} && {damage _o < 1} };
             }

@@ -68,9 +68,14 @@ switch (_operation) do {
         if (isNull BW_DISPLAY) exitWith {};
         private _kind = _args;
         uiNamespace setVariable ["ALiVE_FOB_buildCategory", _kind];
-        // static weapons are offered to their own side only
+        // static weapons and vehicles from the factions the side's commanders field (its own side's
+        // when it has none)
         private _side = str (side group player);
-        private _rows = (missionNamespace getVariable ["ALiVE_FOB_catalog", []]) select { (_x select 2) == _kind && {_kind != "STATIC" || {(_x param [6, ""]) == _side}} };
+        private _allowed = ((missionNamespace getVariable ["ALiVE_FOB_sideFactions", []]) select { (_x select 0) == _side }) param [0, ["", []]] select 1;
+        private _rows = (missionNamespace getVariable ["ALiVE_FOB_catalog", []]) select {
+            (_x select 2) == _kind && {!(_kind in ["STATIC", "VEHICLE"])
+                || {[(_x param [6, ""]) == _side, (_x param [7, ""]) in _allowed] select (_allowed isNotEqualTo [])}}
+        };
         // cheapest first, then by name
         private _keys = [];
         { _keys pushBack [_x select 3, _x select 1, _forEachIndex] } forEach _rows;
@@ -93,7 +98,7 @@ switch (_operation) do {
         } forEach _rows;
         {
             (BW_DISPLAY displayCtrl (_x select 0)) ctrlSetTextColor ([[1,1,1,0.6], [1,1,1,1]] select (_kind == (_x select 1)));
-        } forEach [[92807, "FORTIFICATION"], [92808, "SUPPLY"], [92810, "STATIC"]];
+        } forEach [[92807, "FORTIFICATION"], [92808, "SUPPLY"], [92810, "STATIC"], [92811, "VEHICLE"]];
         _list lbSetCurSel 0;
         call _fnc_status;
     };
@@ -104,7 +109,7 @@ switch (_operation) do {
         if (_row isEqualTo []) exitWith {};
         _row params ["_class", "_name", "_kind", "_cost", "_pic", ["_tierMin", 1]];
         (BW_DISPLAY displayCtrl 92809) ctrlSetText _pic;
-        private _what = switch (_kind) do { case "SUPPLY": {"STR_ALIVE_FOB_UI_SUPPLY_ITEM"}; case "STATIC": {"STR_ALIVE_FOB_UI_STATIC_ITEM"}; default {"STR_ALIVE_FOB_UI_FORTIFICATION"} };
+        private _what = switch (_kind) do { case "SUPPLY": {"STR_ALIVE_FOB_UI_SUPPLY_ITEM"}; case "STATIC": {"STR_ALIVE_FOB_UI_STATIC_ITEM"}; case "VEHICLE": {"STR_ALIVE_FOB_UI_VEHICLE_ITEM"}; default {"STR_ALIVE_FOB_UI_FORTIFICATION"} };
         private _lines = [[_name, _class] select (_name == ""), localize _what, format [localize "STR_ALIVE_FOB_UI_COST", _cost]];
         if (_tierMin > ((call _fnc_fob) param [5, 1])) then { _lines pushBack format [localize "STR_ALIVE_FOB_UI_TIER_NEEDED", _tierMin] };
         (BW_DISPLAY displayCtrl 92803) ctrlSetStructuredText ([_lines, true] call _fnc_lines);

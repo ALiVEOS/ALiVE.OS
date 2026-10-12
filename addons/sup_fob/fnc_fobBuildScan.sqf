@@ -23,8 +23,13 @@ multiplied by the module's Cost Scale and rounded, never below 1. A static weapo
 from its role (machine gun 60, grenade launcher 75, mortar 100, AT and AA 125, howitzer 250),
 moved up or down by how hard its hardest round hits, 50 to 250.
 
+Vehicles: land vehicles and boats, never aircraft, priced by role and armour, 75 to 600 (see
+_vehiclePrice). Static weapons and vehicles are offered from the factions the side's AI
+Commanders field (all of its own side's when it has none), so a NATO FOB facing CSAT builds
+NATO equipment.
+
 Some items need a FOB of a higher tier: towers and machine guns or grenade launchers tier 2,
-mortars, AT and AA launchers and howitzers tier 3.
+mortars, AT and AA launchers, howitzers and vehicles tier 3.
 
 A mission or mod can change the catalog through CfgALiVEFOBBuildables, in description.ext or a
 mod's config (the mission's wins):
@@ -44,7 +49,8 @@ None
 
 Returns:
 Number - the catalog's size. Sets ALiVE_FOB_catalog on every machine:
-[[class, display name, category, cost, picture, tier needed, side for a static weapon or ""], ...]
+[[class, display name, category, cost, picture, tier needed, side, faction (lower case)], ...]
+and ALiVE_FOB_sideFactions: [[side, [factions its commanders field]], ...]
 
 Author:
 Jman
@@ -52,6 +58,25 @@ Jman
 
 if (isRemoteExecuted && {remoteExecutedOwner != 2} && {isNil "_ALiVE_fobCaller"}) exitWith {};
 if (!isServer) exitWith {0};
+
+// ["factions"]: the factions each side's AI Commanders field, lower case, sent to every machine
+// when they change. Static weapons and vehicles are offered from these factions only; a side
+// with no commander is offered its own side's.
+if ((_this param [0, ""]) isEqualTo "factions") exitWith {
+    private _bySide = ["WEST", "EAST", "GUER"] apply {
+        private _side = _x;
+        private _f = [];
+        { if (([_x, "side", ""] call ALiVE_fnc_HashGet) == _side) then { { _f pushBackUnique toLower _x } forEach ([_x, "factions", []] call ALiVE_fnc_HashGet) } } forEach (missionNamespace getVariable ["OPCOM_instances", []]);
+        _f sort true;
+        [_side, _f]
+    };
+    if !(_bySide isEqualTo (missionNamespace getVariable ["ALiVE_FOB_sideFactions", []])) then {
+        ALiVE_FOB_sideFactions = _bySide;
+        publicVariable "ALiVE_FOB_sideFactions";
+        ["ALiVE Player FOBs - factions offered static weapons and vehicles: %1", _bySide] call ALiVE_fnc_dump;
+    };
+    _bySide
+};
 
 private _logic = missionNamespace getVariable ["ALiVE_sup_fob", objNull];
 private _scale = [_logic, "attribute", ["fob_cost_scale"]] call ALiVE_fnc_FOB;
@@ -176,6 +201,40 @@ private _staticPrice = {
     [round ((_c max _lo) min _hi), _role]
 };
 
+// A vehicle's role and price, from its armour, chassis and the hardest-hitting round it carries:
+//   artillery 500-600, tank killers (a round hitting 250 or more) 450-600, tracked armed vehicles
+//   250-330, wheeled armed APCs 200-250, MRAPs (armoured cars) 150-200, light armed vehicles
+//   100-150, trucks 75-100 by seats, unarmed light vehicles 75; boats 150 armed, 75 not.
+// Within a band, more armour costs more. Aircraft are never offered.
+private _vehiclePrice = {
+    params ["_class", "_cfg"];
+    private _maxHit = 0;
+    private _turrets = [];
+    private _walk = { params ["_t"]; { _turrets pushBack _x; [_x >> "Turrets"] call _walk } forEach ("true" configClasses _t) };
+    [_cfg >> "Turrets"] call _walk;
+    private _mags = getArray (_cfg >> "magazines");
+    { _mags append (getArray (_x >> "magazines")) } forEach _turrets;
+    {
+        private _a = getText (configFile >> "CfgMagazines" >> _x >> "ammo");
+        _maxHit = _maxHit max (((getNumber (configFile >> "CfgAmmo" >> _a >> "hit")) max 0) min 5000);
+    } forEach _mags;
+    private _A = ((getNumber (_cfg >> "armor")) max 0) min 5000;
+    private _armed = _maxHit >= 25;
+    private _seats = (getNumber (_cfg >> "transportSoldier")) max 0;
+    private _c = switch (true) do {
+        case (_class isKindOf "Ship"): { [75, 100 + 50 * ((_maxHit / 25) min 1)] select _armed };
+        case (getNumber (_cfg >> "artilleryScanner") == 1): { 500 + 100 * ((_A / 600) min 1) };
+        case (_maxHit >= 250): { 450 + 150 * ((_A / 900) min 1) };
+        case (_class isKindOf "Tank" && _armed): { 250 + 80 * ((_A / 700) min 1) };
+        case (_class isKindOf "Wheeled_APC_F" && _armed): { 200 + 50 * ((_A / 500) min 1) };
+        case (_class isKindOf "Truck_F"): { 75 + 25 * ((_seats / 16) min 1) };
+        case (_A >= 150): { 150 + 50 * ((_maxHit / 50) min 1) };
+        case (_armed): { 100 + 50 * ((_maxHit / 25) min 1) };
+        default { 75 };
+    };
+    round ((_c max 75) min 600)
+};
+
 private _rows = [];
 private _seen = createHashMap;
 private _add = {
@@ -186,22 +245,31 @@ private _add = {
     private _cost = _fixed getOrDefault [_lc, -1];
     private _side = "";
     private _tier = 1;
-    if (_kind == "STATIC") then {
-        _side = ["EAST", "WEST", "GUER"] param [getNumber (_cfg >> "side"), ""];
-        ([_class, _cfg] call _staticPrice) params ["_p", "_role"];
-        if (_p < 0 && {_cost < 0}) exitWith { _cost = -1 };
-        if (_cost < 0) then { _cost = (round (_p * _scale)) max 1 };
-        // machine guns and grenade launchers from tier 2, the heavy weapons from tier 3
-        _tier = [3, 2] select (_role in ["MG", "GMG", ""]);
-        if (_side == "") exitWith { _cost = -1 };
-    } else {
-        if (_cost < 0) then { _cost = (round (([_class, _cfg, _kind] call _price) * _scale)) max 1 };
-        // towers from tier 2
-        if (_kind == "FORTIFICATION" && {"tower" in _lc || {"patrol" in _lc}}) then { _tier = 2 };
+    switch (_kind) do {
+        case "STATIC": {
+            _side = ["EAST", "WEST", "GUER"] param [getNumber (_cfg >> "side"), ""];
+            ([_class, _cfg] call _staticPrice) params ["_p", "_role"];
+            if (_p < 0 && {_cost < 0}) exitWith { _cost = -1 };
+            if (_cost < 0) then { _cost = (round (_p * _scale)) max 1 };
+            // machine guns and grenade launchers from tier 2, the heavy weapons from tier 3
+            _tier = [3, 2] select (_role in ["MG", "GMG", ""]);
+            if (_side == "") exitWith { _cost = -1 };
+        };
+        case "VEHICLE": {
+            _side = ["EAST", "WEST", "GUER"] param [getNumber (_cfg >> "side"), ""];
+            if (_side == "") exitWith { _cost = -1 };
+            if (_cost < 0) then { _cost = (round (([_class, _cfg] call _vehiclePrice) * _scale)) max 1 };
+            _tier = 3;
+        };
+        default {
+            if (_cost < 0) then { _cost = (round (([_class, _cfg, _kind] call _price) * _scale)) max 1 };
+            // towers from tier 2
+            if (_kind == "FORTIFICATION" && {"tower" in _lc || {"patrol" in _lc}}) then { _tier = 2 };
+        };
     };
     if (_cost < 0) exitWith {};
     private _pic = getText (_cfg >> "editorPreview");
-    _rows pushBack [_class, getText (_cfg >> "displayName"), _kind, _cost, _pic, _tier, _side];
+    _rows pushBack [_class, getText (_cfg >> "displayName"), _kind, _cost, _pic, _tier, _side, toLower getText (_cfg >> "faction")];
 };
 
 {
@@ -210,6 +278,13 @@ private _add = {
     // Static weapons with something to fire, crewed by their own side; not drones
     if (_class isKindOf "StaticWeapon" && {getNumber (_cfg >> "isUav") != 1} && {getNumber (_cfg >> "side") in [0, 1, 2]}) then {
         [_class, _cfg, "STATIC"] call _add;
+    };
+    // Land vehicles and boats with a driver's seat, crewed by nobody until players get in; not
+    // drones, not aircraft
+    if ((_class isKindOf "LandVehicle" || {_class isKindOf "Ship"}) && {!(_class isKindOf "StaticWeapon")} && {!(_class isKindOf "Man")}
+        && {getNumber (_cfg >> "isUav") != 1} && {getNumber (_cfg >> "hasDriver") == 1} && {getNumber (_cfg >> "side") in [0, 1, 2]}
+        && {getText (_cfg >> "model") != ""} && {!([_class, _cfg] call _isRuin)}) then {
+        [_class, _cfg, "VEHICLE"] call _add;
     };
     if (getText (_cfg >> "model") != "" && {!(_class isKindOf "AllVehicles")} && {!([_class, _cfg] call _isRuin)}) then {
         private _cat = getText (_cfg >> "editorCategory");
@@ -245,7 +320,8 @@ if (_measured > 0) then {
 
 ALiVE_FOB_catalog = _rows;
 publicVariable "ALiVE_FOB_catalog";
-["ALiVE Player FOBs - build catalog: %1 fortifications, %2 supply, %3 static weapons, %4 measured, %5 ms",
+["ALiVE Player FOBs - build catalog: %1 fortifications, %2 supply, %3 static weapons, %4 vehicles, %5 measured, %6 ms",
     { (_x select 2) == "FORTIFICATION" } count _rows, { (_x select 2) == "SUPPLY" } count _rows, { (_x select 2) == "STATIC" } count _rows,
-    _measured, round ((diag_tickTime - _t0) * 1000)] call ALiVE_fnc_dump;
+    { (_x select 2) == "VEHICLE" } count _rows, _measured, round ((diag_tickTime - _t0) * 1000)] call ALiVE_fnc_dump;
+["factions"] call ALiVE_fnc_fobBuildScan;
 count _rows
