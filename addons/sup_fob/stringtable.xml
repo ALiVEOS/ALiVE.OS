@@ -434,6 +434,18 @@
             <Key ID="STR_ALIVE_FOB_UI_VEHICLE_ITEM">
                 <English>Vehicle, empty, for your side to crew</English>
             </Key>
+            <Key ID="STR_ALIVE_FOB_GARRISON_COST">
+                <English>Garrison Cost</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_GARRISON_COST_COMMENT">
+                <English>A tier 2 or 3 FOB keeps a garrison of one infantry group of its faction, which holds the FOB and is never sent elsewhere. Each new garrison costs this much of the FOB's supply; when the last of it is killed, the next one is paid for again.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_GARRISON_GROUP">
+                <English>Garrison Group</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_GARRISON_GROUP_COMMENT">
+                <English>The CfgGroups class the garrison is made from. Empty: a random infantry group of the FOB's faction.</English>
+            </Key>
         </Container>
     </Package>
 </Project>

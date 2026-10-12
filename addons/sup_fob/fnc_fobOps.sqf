@@ -39,6 +39,9 @@ repair - [fobID] -> true when a destroyed headquarters was rebuilt and paid for
 repairCost - [fobID] -> the supply a repair costs now
 salvage - [fobID] -> the FOB lost for good: everything it had removed
 flip - [fobID, side] -> true when the FOB became that side's
+garrison - [fobID, free] -> true when a garrison was put in (paid unless free)
+releaseGarrison - [fobID] -> its garrison let go to its side's commander
+garrisonAlive - [fobID] -> whether its garrison still has anyone
 spawnStatic - [fobID, class, position, direction] -> [vehicle profile id, crew profile id]
 spawnVehicle - [class, position, direction, faction] -> [vehicle profile id, group profile id], or []
 pinStatic - [profile ids] -> keeps them where they are
@@ -141,6 +144,7 @@ switch (_op) do {
         private _entry = [ALiVE_FOB_registry, _id] call ALIVE_fnc_hashGet;
         if (isNil "_entry") exitWith { _result = false };
         ["unregister", [_id]] call ALiVE_fnc_fobObjectives;
+        ["releaseGarrison", [_id]] call ALiVE_fnc_fobOps;
         [_entry, "status", "removed"] call ALIVE_fnc_hashSet;
         ["respawn", [_id]] call ALiVE_fnc_fobOps;
         {
@@ -223,6 +227,14 @@ switch (_op) do {
             ["reconcile", [_x]] call ALiVE_fnc_fobObjectives;
             ["restoreObjects", [_x]] call ALiVE_fnc_fobOps;
             ["respawn", [_x]] call ALiVE_fnc_fobOps;
+            if (([_e, "tier", 1] call ALIVE_fnc_hashGet) >= 2) then {
+                if (["garrisonAlive", [_x]] call ALiVE_fnc_fobOps) then {
+                    ["pinStatic", [_e, "garrison", []] call ALIVE_fnc_hashGet] call ALiVE_fnc_fobOps;
+                } else {
+                    [_e, "garrison", []] call ALIVE_fnc_hashSet;
+                    ["garrison", [_x, true]] call ALiVE_fnc_fobOps;
+                };
+            };
             _result = _result + 1;
         } forEach +(ALiVE_FOB_registry select 1);
         if (_result > 0) then { ["ALiVE Player FOBs - rebuilt %1 FOBs from the save", _result] call ALiVE_fnc_dump };
@@ -484,6 +496,7 @@ switch (_op) do {
         private _name = [_entry, "name", _id] call ALIVE_fnc_hashGet;
         isNil {
             ["unregister", [_id]] call ALiVE_fnc_fobObjectives;
+            ["releaseGarrison", [_id]] call ALiVE_fnc_fobOps;
             // the old side's respawn point goes; the new side gets one if the FOB qualifies
             private _status = [_entry, "status", "active"] call ALIVE_fnc_hashGet;
             [_entry, "status", "flipping"] call ALIVE_fnc_hashSet;
@@ -629,6 +642,66 @@ switch (_op) do {
         private _vid = [_vehicle, "profileID", ""] call ALIVE_fnc_hashGet;
         ["pinStatic", [_vid, _eid]] call ALiVE_fnc_fobOps;
         _result = [_vid, _eid];
+    };
+
+    // A tier 2 or 3 FOB's garrison: one infantry group of the FOB's faction (or the module's
+    // Garrison Group), holding the FOB the way a roadblock's guards hold a checkpoint: garrisoned
+    // within 30 m, kept busy and stationary so no commander takes it elsewhere. Paid from the
+    // FOB's supply unless free (a reload making good a garrison the save didn't keep).
+    case "garrison": {
+        _args params [["_id", "", [""]], ["_free", false, [false]]];
+        _result = false;
+        private _entry = [ALiVE_FOB_registry, _id] call ALIVE_fnc_hashGet;
+        if (isNil "_entry" || {isNil "ALiVE_ProfileHandler"}) exitWith {};
+        private _faction = [_entry, "faction", ""] call ALIVE_fnc_hashGet;
+        private _class = [_logic, "attribute", ["fob_garrison_group"]] call ALiVE_fnc_FOB;
+        if (_class == "") then { _class = ["Infantry", _faction] call ALIVE_fnc_configGetRandomGroup };
+        if (_class isEqualTo "" || {!(_class isEqualType "")}) exitWith {
+            ["ALiVE Player FOBs - %1: no infantry group for faction %2, so no garrison", _id, _faction] call ALiVE_fnc_dumpR;
+        };
+        private _cost = [_logic, "attribute", ["fob_garrison_cost"]] call ALiVE_fnc_FOB;
+        if (!_free && {!(["debit", [_id, _cost, "garrison"]] call ALiVE_fnc_fobSupply)}) exitWith {};
+        private _pos = ([_entry, "pos", [0,0,0]] call ALIVE_fnc_hashGet) getPos [15, random 360];
+        private _made = [_class, _pos, random 360, true, _faction, true] call ALIVE_fnc_createProfilesFromGroupConfig;
+        private _ids = [];
+        {
+            if (([_x, "type", ""] call ALIVE_fnc_hashGet) == "entity") then {
+                [_x, "setActiveCommand", ["ALIVE_fnc_garrison", "spawn", [30, "false", [0,0,0], "", 1, 0.3, "SAFE", "LIMITED", ""]]] call ALIVE_fnc_profileEntity;
+                [_x, "busy", true] call ALIVE_fnc_hashSet;
+                _ids pushBack ([_x, "profileID", ""] call ALIVE_fnc_hashGet);
+            };
+        } forEach _made;
+        if (_ids isEqualTo []) exitWith {
+            if (!_free) then { ["credit", [_id, _cost, "refund garrison"]] call ALiVE_fnc_fobSupply };
+        };
+        ["pinStatic", _ids] call ALiVE_fnc_fobOps;
+        [_entry, "garrison", _ids] call ALIVE_fnc_hashSet;
+        ALiVE_FOB_dirty = true;
+        ["ALiVE Player FOBs - %1: garrison %2 (%3) %4", _id, _class, _ids, ["paid " + str _cost, "free"] select _free] call ALiVE_fnc_dump;
+        _result = true;
+    };
+
+    // The garrison let go: no longer pinned or kept busy, so its side's commander can use it
+    case "releaseGarrison": {
+        _args params [["_id", "", [""]]];
+        private _entry = [ALiVE_FOB_registry, _id] call ALIVE_fnc_hashGet;
+        if (isNil "_entry") exitWith { _result = false };
+        {
+            if (!isNil "ALIVE_profileStationary") then { [ALIVE_profileStationary, _x] call ALIVE_fnc_hashRem };
+            private _pr = if (isNil "ALiVE_ProfileHandler") then { nil } else { [ALiVE_ProfileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler };
+            if (!isNil "_pr") then { [_pr, "busy", false] call ALIVE_fnc_hashSet };
+        } forEach ([_entry, "garrison", []] call ALIVE_fnc_hashGet);
+        [_entry, "garrison", []] call ALIVE_fnc_hashSet;
+        ALiVE_FOB_dirty = true;
+        _result = true;
+    };
+
+    // Whether the garrison still has anyone: some of its profiles still exist
+    case "garrisonAlive": {
+        _args params [["_id", "", [""]]];
+        private _entry = [ALiVE_FOB_registry, _id] call ALIVE_fnc_hashGet;
+        _result = !isNil "_entry" && {!isNil "ALiVE_ProfileHandler"}
+            && {(([_entry, "garrison", []] call ALIVE_fnc_hashGet) findIf { !isNil {[ALiVE_ProfileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler} }) > -1};
     };
 
     // An empty vehicle as a profile at a spot: its profile id, or "" when it couldn't be made

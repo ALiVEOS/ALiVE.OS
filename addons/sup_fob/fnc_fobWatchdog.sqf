@@ -18,6 +18,8 @@ The one server loop the FOBs run on, every 30 seconds. Each pass, for each FOB:
   stops the count;
 - asks the side's Military Logistics for a supply truck when it runs below the Resupply
   Threshold, at most every 10 minutes;
+- keeps a garrison at a tier 2 or 3 FOB, paying for a new one when the last is gone, and puts a
+  garrisoned tier 3 FOB on its side's Military Logistics supply network;
 - loses it when its headquarters was destroyed and the Repair Time ran out unrepaired;
 - saves if something changed.
 While the module is paused (an empty server) it does nothing at all, so no timer runs out
@@ -195,6 +197,33 @@ private _tick = {
             [_entry, "resupplyCooldown", 600] call ALIVE_fnc_hashSet;
             ALiVE_FOB_dirty = true;
             ["ALiVE Player FOBs - %1 is low on supply; asked Military Logistics for a truck", _id] call ALiVE_fnc_dump;
+        };
+
+        // A tier 2 or 3 FOB keeps a garrison: a new one, paid for, when the last one is gone
+        private _active = ([_entry, "status", ""] call ALIVE_fnc_hashGet) == "active";
+        private _garrisoned = ["garrisonAlive", [_id]] call ALiVE_fnc_fobOps;
+        if (_active && {_tier >= 2} && {!_garrisoned} && {!isNil "ALiVE_ProfileHandler"}) then {
+            _garrisoned = ["garrison", [_id, false]] call ALiVE_fnc_fobOps;
+        };
+
+        // A garrisoned tier 3 FOB is a place its side's Military Logistics sends supplies from
+        if (!isNil "ALIVE_ML_supplyNetwork") then {
+            private _pos = [_entry, "pos", [0,0,0]] call ALIVE_fnc_hashGet;
+            private _faction = [_entry, "faction", ""] call ALIVE_fnc_hashGet;
+            private _want = _active && {_tier >= 3} && {_garrisoned} && {_faction != ""};
+            {
+                private _fac = _x;
+                private _nodes = [ALIVE_ML_supplyNetwork, _fac, []] call ALIVE_fnc_hashGet;
+                private _i = _nodes findIf { ((_x select 0) distance2D _pos) < 1 && {!(_x param [2, false])} };
+                if (_i > -1 && {!_want || {_fac != _faction}}) then { _nodes deleteAt _i };
+            } forEach (ALIVE_ML_supplyNetwork select 1);
+            if (_want) then {
+                private _nodes = [ALIVE_ML_supplyNetwork, _faction, []] call ALIVE_fnc_hashGet;
+                private _i = _nodes findIf { ((_x select 0) distance2D _pos) < 1 && {!(_x param [2, false])} };
+                private _node = [_pos, +([_entry, "garrison", []] call ALIVE_fnc_hashGet), false];
+                if (_i > -1) then { _nodes set [_i, _node] } else { _nodes pushBack _node };
+                [ALIVE_ML_supplyNetwork, _faction, _nodes] call ALIVE_fnc_hashSet;
+            };
         };
 
         // A destroyed headquarters: repaired in time, or the FOB is lost

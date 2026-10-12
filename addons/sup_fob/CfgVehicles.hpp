@@ -99,6 +99,8 @@ class CfgVehicles {
                         class fob_kit_cost : Edit { property = "ALiVE_sup_fob_fob_kit_cost"; displayName = "$STR_ALIVE_FOB_KIT_COST"; tooltip = "$STR_ALIVE_FOB_KIT_COST_COMMENT"; typeName = "STRING"; defaultValue = """500"""; };
                         class fob_tier2_cost : Edit { property = "ALiVE_sup_fob_fob_tier2_cost"; displayName = "$STR_ALIVE_FOB_TIER2_COST"; tooltip = "$STR_ALIVE_FOB_TIER_COST_COMMENT"; typeName = "STRING"; defaultValue = """1500"""; };
                         class fob_tier3_cost : Edit { property = "ALiVE_sup_fob_fob_tier3_cost"; displayName = "$STR_ALIVE_FOB_TIER3_COST"; tooltip = "$STR_ALIVE_FOB_TIER_COST_COMMENT"; typeName = "STRING"; defaultValue = """3000"""; };
+                        class fob_garrison_cost : Edit { property = "ALiVE_sup_fob_fob_garrison_cost"; displayName = "$STR_ALIVE_FOB_GARRISON_COST"; tooltip = "$STR_ALIVE_FOB_GARRISON_COST_COMMENT"; typeName = "STRING"; defaultValue = """500"""; };
+                        class fob_garrison_group : Edit { property = "ALiVE_sup_fob_fob_garrison_group"; displayName = "$STR_ALIVE_FOB_GARRISON_GROUP"; tooltip = "$STR_ALIVE_FOB_GARRISON_GROUP_COMMENT"; typeName = "STRING"; defaultValue = """"""; };
                         class fob_respawn : Combo
                         {
                                 property = "ALiVE_sup_fob_fob_respawn";

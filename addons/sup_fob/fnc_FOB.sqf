@@ -99,7 +99,9 @@ private _settings = createHashMapFromArray [
     ["fob_kit_cost", [500, [0, 1000000]]],
     ["fob_tier2_cost", [1500, [0, 1000000]]],
     ["fob_tier3_cost", [3000, [0, 1000000]]],
-    ["fob_respawn", [true, "bool"]]
+    ["fob_respawn", [true, "bool"]],
+    ["fob_garrison_cost", [500, [0, 1000000]]],
+    ["fob_garrison_group", ["", "text"]]
 ];
 
 switch (_operation) do {
