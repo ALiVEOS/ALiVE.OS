@@ -107,8 +107,13 @@ if (_status != "KILLED") then
     _sitRepButton ctrlEnable true;
     lbClear _transportTaskLb;
 
+    // the row shows the task in the player's language when there is a translation for it; the
+    // task token itself goes in lbData, which is what the task and confirm handlers read
     {
-        _transportTaskLb lbAdd (toUpper _x);
+        private _token = toUpper _x;
+        private _key = "STR_ALIVE_CS_UI_TRTASK_" + ((_token splitString " ()") joinString "_");
+        private _row = _transportTaskLb lbAdd ([_token, localize _key] select (isLocalized _key));
+        _transportTaskLb lbSetData [_row, _token];
     } forEach _tasksArray;
 
     _transportTaskLb ctrlEnable true;

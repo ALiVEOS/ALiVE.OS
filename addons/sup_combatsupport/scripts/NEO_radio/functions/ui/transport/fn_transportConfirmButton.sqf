@@ -24,7 +24,7 @@ else {
 };
 
 _callSignPlayer = (format ["%1", group player]) call NEO_fnc_callsignFix;
-_task = _transportTaskLb lbText (lbCurSel _transportTaskLb);
+_task = _transportTaskLb lbData (lbCurSel _transportTaskLb);
 _marker = NEO_radioLogic getVariable "NEO_supportMarker";
 _pos = getMarkerPos _marker;
 _pos set [2, 0];

@@ -1825,4 +1825,85 @@
     <Portuguese>Indefinido</Portuguese>
     <Russian>Без ограничения</Russian>
 </Key>
+<Key ID="STR_ALIVE_CS_UI_TRTASK_PICKUP">
+    <English>PICKUP</English>
+    <Chinesesimp>接人</Chinesesimp>
+    <Chinese>接人</Chinese>
+    <Spanish>RECOGIDA</Spanish>
+    <French>RÉCUPÉRATION</French>
+    <Portuguese>EMBARQUE</Portuguese>
+    <Russian>ПОДБОР</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_TRTASK_LAND">
+    <English>LAND</English>
+    <Chinesesimp>降落</Chinesesimp>
+    <Chinese>降落</Chinese>
+    <Spanish>ATERRIZAR</Spanish>
+    <French>ATTERRIR</French>
+    <Portuguese>POUSAR</Portuguese>
+    <Russian>ПОСАДКА</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_TRTASK_LAND_ENG_OFF">
+    <English>LAND (ENG OFF)</English>
+    <Chinesesimp>降落（关闭引擎）</Chinesesimp>
+    <Chinese>降落（關閉引擎）</Chinese>
+    <Spanish>ATERRIZAR (MOTOR APAGADO)</Spanish>
+    <French>ATTERRIR (MOTEUR COUPÉ)</French>
+    <Portuguese>POUSAR (MOTOR DESLIGADO)</Portuguese>
+    <Russian>ПОСАДКА (ДВИГ. ВЫКЛ.)</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_TRTASK_MOVE">
+    <English>MOVE</English>
+    <Chinesesimp>移动</Chinesesimp>
+    <Chinese>移動</Chinese>
+    <Spanish>MOVERSE</Spanish>
+    <French>DÉPLACEMENT</French>
+    <Portuguese>MOVER</Portuguese>
+    <Russian>ПЕРЕМЕЩЕНИЕ</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_TRTASK_CIRCLE">
+    <English>CIRCLE</English>
+    <Chinesesimp>盘旋</Chinesesimp>
+    <Chinese>盤旋</Chinese>
+    <Spanish>CIRCULAR</Spanish>
+    <French>CERCLER</French>
+    <Portuguese>CIRCULAR</Portuguese>
+    <Russian>КРУЖЕНИЕ</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_TRTASK_INSERTION">
+    <English>INSERTION</English>
+    <Chinesesimp>索降</Chinesesimp>
+    <Chinese>索降</Chinese>
+    <Spanish>INSERCIÓN</Spanish>
+    <French>INSERTION</French>
+    <Portuguese>INSERÇÃO</Portuguese>
+    <Russian>ВЫСАДКА</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_TRTASK_SLINGLOAD">
+    <English>SLINGLOAD</English>
+    <Chinesesimp>吊运</Chinesesimp>
+    <Chinese>吊運</Chinese>
+    <Spanish>CARGA EXTERNA</Spanish>
+    <French>ÉLINGAGE</French>
+    <Portuguese>CARGA EXTERNA</Portuguese>
+    <Russian>ВНЕШНЯЯ ПОДВЕСКА</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_TRTASK_UNHOOK">
+    <English>UNHOOK</English>
+    <Chinesesimp>脱钩</Chinesesimp>
+    <Chinese>脫鉤</Chinese>
+    <Spanish>DESENGANCHAR</Spanish>
+    <French>DÉCROCHER</French>
+    <Portuguese>DESENGATAR</Portuguese>
+    <Russian>ОТЦЕПИТЬ</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_TRTASK_MEDEVAC">
+    <English>MEDEVAC</English>
+    <Chinesesimp>医疗后送</Chinesesimp>
+    <Chinese>醫療後送</Chinese>
+    <Spanish>EVACUACIÓN MÉDICA</Spanish>
+    <French>ÉVASAN</French>
+    <Portuguese>EVACUAÇÃO MÉDICA</Portuguese>
+    <Russian>МЕДЭВАКУАЦИЯ</Russian>
+</Key>
 </Container></Package></Project>
