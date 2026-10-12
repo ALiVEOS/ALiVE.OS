@@ -22,6 +22,7 @@ Any - The result of the operation
 Operations:
 init - start the module (server: registry, start-up, watchdog; players: the copy)
 destroy - stop it
+handleEvent - [event] a Military Logistics supply truck arrived (LOGCOM_FOB_RESUPPLY_ARRIVED)
 pause - get or set (BOOL) the pause state; the watchdog does nothing while paused
 debug - get or set (BOOL) debug output
 attribute - [name] the module setting, parsed (numbers as numbers, clamped where it matters)
@@ -92,6 +93,7 @@ private _settings = createHashMapFromArray [
     ["fob_repair_time", [900, [30, 7200]]],
     ["fob_repair_cost", [1000, [0, 1000000]]],
     ["fob_crate_amount", [1000, [1, 1000000]]],
+    ["fob_resupply_threshold", [25, [0, 100]]],
     ["fob_kit_cost", [500, [0, 1000000]]],
     ["fob_tier2_cost", [1500, [0, 1000000]]],
     ["fob_tier3_cost", [3000, [0, 1000000]]],
@@ -171,6 +173,10 @@ switch (_operation) do {
                 isNil { ["restore"] call ALiVE_fnc_fobOps };
 
                 [_logic, "broadcastMirror"] call ALIVE_fnc_FOB;
+                // Military Logistics answers a FOB's supply request with this when its truck arrives
+                if (!isNil "ALIVE_eventLog") then {
+                    _logic setVariable ["listenerID", [ALIVE_eventLog, "addListener", [_logic, ["LOGCOM_FOB_RESUPPLY_ARRIVED"]]] call ALIVE_fnc_eventLog];
+                };
                 _logic setVariable ["startupComplete", true];
                 [_logic] call ALiVE_fnc_fobWatchdog;
 
@@ -187,6 +193,8 @@ switch (_operation) do {
         if (isServer) then {
             _logic setVariable ["pause", true];
             if (!isNil "ALiVE_FOB_watchdog") then { terminate ALiVE_FOB_watchdog; ALiVE_FOB_watchdog = nil };
+            private _lid = _logic getVariable ["listenerID", ""];
+            if (_lid != "" && {!isNil "ALIVE_eventLog"}) then { [ALIVE_eventLog, "removeListener", _lid] call ALIVE_fnc_eventLog };
             _logic setVariable ["super", nil];
             _logic setVariable ["class", nil];
             [_logic, "destroy"] call SUPERCLASS;
@@ -200,6 +208,28 @@ switch (_operation) do {
             ["ALiVE Player FOBs - paused: %1", _args] call ALiVE_fnc_dumpR;
         };
         _result = _logic getVariable ["pause", false];
+    };
+
+    // A Military Logistics supply truck reached a FOB: the FOB gets a crate's worth, if it is
+    // still the side's that asked (a FOB taken while the truck was on the road gets nothing).
+    // The event log calls this from a scheduled worker, so the credit runs in one piece.
+    case "handleEvent": {
+        if !(_args isEqualType []) exitWith {};
+        if (([_args, "type", ""] call ALIVE_fnc_hashGet) != "LOGCOM_FOB_RESUPPLY_ARRIVED") exitWith {};
+        ([_args, "data", []] call ALIVE_fnc_hashGet) params [["_id", "", [""]], ["_side", "", [""]]];
+        isNil {
+            private _entry = [ALiVE_FOB_registry, _id] call ALIVE_fnc_hashGet;
+            if (isNil "_entry") exitWith {};
+            if (([_entry, "side", ""] call ALIVE_fnc_hashGet) != _side) exitWith {
+                ["ALiVE Player FOBs - %1: a supply truck for %2 arrived but the FOB now belongs to %3; nothing unloaded", _id, _side, [_entry, "side", ""] call ALIVE_fnc_hashGet] call ALiVE_fnc_dump;
+            };
+            private _amount = [_logic, "attribute", ["fob_crate_amount"]] call MAINCLASS;
+            ["credit", [_id, _amount, "logistics"]] call ALiVE_fnc_fobSupply;
+            [_entry, "resupplyCooldown", 0] call ALIVE_fnc_hashSet;
+            [_logic, "broadcastMirror"] call MAINCLASS;
+            private _text = format ["Supplies delivered to %1.", [_entry, "name", ""] call ALIVE_fnc_hashGet];
+            [_side, [_logic, _text, "side", [_side] call ALiVE_fnc_sideTextToObject, false, true, false, true, "HQ"]] call ALIVE_fnc_radioBroadcastToSide;
+        };
     };
 
     case "debug": {

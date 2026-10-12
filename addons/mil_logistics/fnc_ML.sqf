@@ -4474,7 +4474,7 @@ switch(_operation) do {
     case "listen": {
         private["_listenerID"];
 
-        _listenerID = [ALIVE_eventLog, "addListener",[_logic, ["LOGCOM_REQUEST","LOGCOM_RESUPPLY","ARTY_RESUPPLY_REQUEST","LOGCOM_STATUS_REQUEST","LOGCOM_CANCEL_REQUEST","OPCOM_CAPTURE"]]] call ALIVE_fnc_eventLog;
+        _listenerID = [ALIVE_eventLog, "addListener",[_logic, ["LOGCOM_REQUEST","LOGCOM_RESUPPLY","ARTY_RESUPPLY_REQUEST","LOGCOM_FOB_RESUPPLY","LOGCOM_STATUS_REQUEST","LOGCOM_CANCEL_REQUEST","OPCOM_CAPTURE"]]] call ALIVE_fnc_eventLog;
         _logic setVariable ["listenerID", _listenerID];
     };
 
@@ -4645,8 +4645,15 @@ switch(_operation) do {
     // owns the ledger refill. mil_artillery also runs a fallback timer, so this
     // convoy is immersion only - if the pool is exhausted or water blocks the
     // route we simply send nothing and the battery refills on its own.
+    //
+    // LOGCOM_FOB_RESUPPLY - the same truck for a players' FOB that is running low
+    // (sup_fob). Same data, asset type "FOB" and the FOB id in the last slot; on
+    // arrival LOGCOM_FOB_RESUPPLY_ARRIVED [fobID, side] goes back to sup_fob, which
+    // credits the FOB only if it is still that side's. sup_fob asks again after 10
+    // minutes if nothing arrives, so a skipped convoy is never final either.
     // =========================================================================
-    case "ARTY_RESUPPLY_REQUEST": {
+    case "ARTY_RESUPPLY_REQUEST";
+    case "LOGCOM_FOB_RESUPPLY": {
 
         if (typeName _args == "ARRAY") then {
 
@@ -4763,9 +4770,9 @@ switch(_operation) do {
 
             ["ARTY_RESUPPLY: truck dispatched to %1 (%2m), ETA %3s", _callsign, round _distance, round _timeout] call ALiVE_fnc_dump;
 
-            // delivery monitor: on arrival (position) tell mil_artillery, then RTB
-            [_truck, _targetPos, _callsign, _entityID, _timeout, _sourcePos] spawn {
-                params ["_truck","_targetPos","_callsign","_entityID","_timeout","_sourcePos"];
+            // delivery monitor: on arrival (position) tell whoever asked, then RTB
+            [_truck, _targetPos, _callsign, _entityID, _timeout, _sourcePos, _assetType, _eventSide] spawn {
+                params ["_truck","_targetPos","_callsign","_entityID","_timeout","_sourcePos","_assetType","_eventSide"];
                 private _startTime = serverTime;
                 while {true} do {
                     if (isNull _truck || {!alive _truck}) exitWith {
@@ -4778,7 +4785,11 @@ switch(_operation) do {
                     if (_truck distance2D _targetPos < 100) exitWith {
                         ["ARTY_RESUPPLY: truck arrived at %1, resupplying battery", _callsign] call ALiVE_fnc_dump;
                         sleep RESUPPLY_SERVICE_DELAY;
-                        private _ev = ['ARTY_RESUPPLY_ARRIVED', [_entityID], "MilArtillery"] call ALIVE_fnc_event;
+                        private _ev = if (_assetType == "FOB") then {
+                            ['LOGCOM_FOB_RESUPPLY_ARRIVED', [_entityID, _eventSide], "MilLogistics"] call ALIVE_fnc_event
+                        } else {
+                            ['ARTY_RESUPPLY_ARRIVED', [_entityID], "MilArtillery"] call ALIVE_fnc_event
+                        };
                         [ALIVE_eventLog, "addEvent", _ev] call ALIVE_fnc_eventLog;
 
                         private _grp = group (driver _truck);

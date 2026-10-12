@@ -13,6 +13,8 @@ The one server loop the FOBs run on, every 30 seconds. Each pass, for each FOB:
 - starts taking it for the enemy when enemy soldiers, and none of its own side, are inside the
   Capture Radius, and hands it over when the Capture Time runs out; any defender in the radius
   stops the count;
+- asks the side's Military Logistics for a supply truck when it runs below the Resupply
+  Threshold, at most every 10 minutes;
 - loses it when its headquarters was destroyed and the Repair Time ran out unrepaired;
 - saves if something changed.
 While the module is paused (an empty server) it does nothing at all, so no timer runs out
@@ -150,6 +152,23 @@ private _tick = {
         private _trickle = "fob_supply_trickle" call _set;
         if (_trickle > 0 && {("fob_supply_source" call _set) == "FOBPOOL"} && {([_entry, "status", ""] call ALIVE_fnc_hashGet) == "active"}) then {
             ["credit", [_id, _trickle, "trickle"]] call ALiVE_fnc_fobSupply;
+        };
+
+        // Running low: ask the side's Military Logistics for a supply truck, at most every 10
+        // minutes (FOB supply mode, active FOBs; a Resupply Threshold of 0 turns it off)
+        private _threshold = "fob_resupply_threshold" call _set;
+        if (_threshold > 0 && {("fob_supply_source" call _set) == "FOBPOOL"} && {([_entry, "status", ""] call ALIVE_fnc_hashGet) == "active"}
+            && {([_entry, "resupplyCooldown", 0] call ALIVE_fnc_hashGet) <= 0}
+            && {(["balance", [_id]] call ALiVE_fnc_fobSupply) < (["cap", [_id]] call ALiVE_fnc_fobSupply) * _threshold / 100}
+            && {!isNil "ALIVE_eventLog"}
+            // a Military Logistics module of this side that has its factions (it says it has
+            // started a little before it has them, and a request before then sends nothing)
+            && {(allMissionObjects "ALiVE_mil_logistics") findIf { ([_x, "side"] call ALiVE_fnc_ML) == _side && {([_x, "factions"] call ALiVE_fnc_ML) isNotEqualTo []} } > -1}) then {
+            private _ev = ["LOGCOM_FOB_RESUPPLY", [[_entry, "pos", [0,0,0]] call ALIVE_fnc_hashGet, _side, "FOB", _name, _id], "SupFOB"] call ALIVE_fnc_event;
+            [ALIVE_eventLog, "addEvent", _ev] call ALIVE_fnc_eventLog;
+            [_entry, "resupplyCooldown", 600] call ALIVE_fnc_hashSet;
+            ALiVE_FOB_dirty = true;
+            ["ALiVE Player FOBs - %1 is low on supply; asked Military Logistics for a truck", _id] call ALiVE_fnc_dump;
         };
 
         // A destroyed headquarters: repaired in time, or the FOB is lost

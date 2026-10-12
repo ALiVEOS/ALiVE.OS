@@ -401,6 +401,12 @@
             <Key ID="STR_ALIVE_FOB_HQ_CRATE">
                 <English>A supply crate is ready beside the Field HQ.</English>
             </Key>
+            <Key ID="STR_ALIVE_FOB_RESUPPLY_THRESHOLD">
+                <English>Resupply Threshold (%)</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_RESUPPLY_THRESHOLD_COMMENT">
+                <English>In FOB Supply mode, a FOB below this share of its supply limit asks its side's Military Logistics for a supply truck, at most every 10 minutes. The truck brings a Supply Crate's worth. 0 turns it off. Needs a Military Logistics module for that side.</English>
+            </Key>
         </Container>
     </Package>
 </Project>
