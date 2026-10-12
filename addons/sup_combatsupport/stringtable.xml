@@ -1166,4 +1166,149 @@
     <Portuguese>%1, cessar fogo. Terminado.</Portuguese>
     <Russian>%1, огонь не открывать. Конец связи.</Russian>
 </Key>
+<!-- Combat Support artillery reports (AI-translated; native-speaker review welcome) -->
+<Key ID="STR_ALIVE_CS_ARTY_MSG_01">
+    <English>%1, Stand by for fire mission from %2. Out.</English>
+    <Chinesesimp>%1，准备接收来自 %2 的射击任务。完毕。</Chinesesimp>
+    <Chinese>%1，準備接收來自 %2 的射擊任務。完畢。</Chinese>
+    <Spanish>%1, preparados para la misión de fuego de %2. Corto.</Spanish>
+    <French>%1, attendez la mission de tir de %2. Terminé.</French>
+    <Portuguese>%1, aguardem a missão de fogo de %2. Terminado.</Portuguese>
+    <Russian>%1, ожидайте огневую задачу от %2. Конец связи.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_ARTY_MSG_02">
+    <English>%1, %2 is firing on target. Out.</English>
+    <Chinesesimp>%1，%2 正在向目标开火。完毕。</Chinesesimp>
+    <Chinese>%1，%2 正在向目標開火。完畢。</Chinese>
+    <Spanish>%1, %2 está disparando sobre el objetivo. Corto.</Spanish>
+    <French>%1, %2 tire sur la cible. Terminé.</French>
+    <Portuguese>%1, %2 está a disparar sobre o alvo. Terminado.</Portuguese>
+    <Russian>%1, %2 ведёт огонь по цели. Конец связи.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_ARTY_MSG_03">
+    <English>%1, Splash. Out.</English>
+    <Chinesesimp>%1，弹着。完毕。</Chinesesimp>
+    <Chinese>%1，彈著。完畢。</Chinese>
+    <Spanish>%1, impacto. Corto.</Spanish>
+    <French>%1, impact. Terminé.</French>
+    <Portuguese>%1, impacto. Terminado.</Portuguese>
+    <Russian>%1, разрыв. Конец связи.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_ARTY_MSG_04">
+    <English>%1, Battery %2 is rounds complete. Out.</English>
+    <Chinesesimp>%1，炮兵连 %2 射击完毕。完毕。</Chinesesimp>
+    <Chinese>%1，砲兵連 %2 射擊完畢。完畢。</Chinese>
+    <Spanish>%1, la batería %2 ha terminado de disparar. Corto.</Spanish>
+    <French>%1, la batterie %2 a terminé son tir. Terminé.</French>
+    <Portuguese>%1, a bateria %2 terminou os disparos. Terminado.</Portuguese>
+    <Russian>%1, батарея %2 стрельбу закончила. Конец связи.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_ARTY_MSG_05">
+    <English>%1, %2 hasn't the men left to carry its mortars back to base, staying put. Out.</English>
+    <Chinesesimp>%1，%2 已没有足够人手将迫击炮运回基地，原地留守。完毕。</Chinesesimp>
+    <Chinese>%1，%2 已沒有足夠人手將迫擊砲運回基地，原地留守。完畢。</Chinese>
+    <Spanish>%1, a %2 no le quedan hombres para llevar sus morteros a la base, se queda donde está. Corto.</Spanish>
+    <French>%1, %2 n'a plus assez d'hommes pour ramener ses mortiers à la base, il reste sur place. Terminé.</French>
+    <Portuguese>%1, %2 já não tem homens para levar os morteiros para a base, fica onde está. Terminado.</Portuguese>
+    <Russian>%1, у %2 не осталось людей, чтобы унести миномёты на базу, остаётся на месте. Конец связи.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_ARTY_MSG_06">
+    <English>%1, Battery %2 is moving back to Base. Out</English>
+    <Chinesesimp>%1，炮兵连 %2 正在返回基地。完毕</Chinesesimp>
+    <Chinese>%1，砲兵連 %2 正在返回基地。完畢</Chinese>
+    <Spanish>%1, la batería %2 regresa a la base. Corto</Spanish>
+    <French>%1, la batterie %2 rentre à la base. Terminé</French>
+    <Portuguese>%1, a bateria %2 regressa à base. Terminado</Portuguese>
+    <Russian>%1, батарея %2 возвращается на базу. Конец связи</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_ARTY_MSG_07">
+    <English>%2, Battery %1 is out of ammo. Out.</English>
+    <Chinesesimp>%2，炮兵连 %1 弹药耗尽。完毕。</Chinesesimp>
+    <Chinese>%2，砲兵連 %1 彈藥耗盡。完畢。</Chinese>
+    <Spanish>%2, la batería %1 se ha quedado sin munición. Corto.</Spanish>
+    <French>%2, la batterie %1 est à court de munitions. Terminé.</French>
+    <Portuguese>%2, a bateria %1 ficou sem munições. Terminado.</Portuguese>
+    <Russian>%2, у батареи %1 кончились боеприпасы. Конец связи.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_ARTY_MSG_08">
+    <English>%2, Battery %1 is ready for fire mission. Out</English>
+    <Chinesesimp>%2，炮兵连 %1 准备好执行射击任务。完毕</Chinesesimp>
+    <Chinese>%2，砲兵連 %1 準備好執行射擊任務。完畢</Chinese>
+    <Spanish>%2, la batería %1 está lista para una misión de fuego. Corto</Spanish>
+    <French>%2, la batterie %1 est prête pour une mission de tir. Terminé</French>
+    <Portuguese>%2, a bateria %1 está pronta para uma missão de fogo. Terminado</Portuguese>
+    <Russian>%2, батарея %1 готова к огневой задаче. Конец связи</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_ARTY_MSG_09">
+    <English>%1, Target is out of range of battery %2, would you like them to move into a good position? Over.</English>
+    <Chinesesimp>%1，目标超出炮兵连 %2 的射程，是否让其转移到合适位置？请回答。</Chinesesimp>
+    <Chinese>%1，目標超出砲兵連 %2 的射程，是否讓其轉移到合適位置？請回答。</Chinese>
+    <Spanish>%1, el objetivo está fuera del alcance de la batería %2, ¿quieres que se mueva a una buena posición? Cambio.</Spanish>
+    <French>%1, la cible est hors de portée de la batterie %2, voulez-vous qu'elle se déplace vers une bonne position ? À vous.</French>
+    <Portuguese>%1, o alvo está fora do alcance da bateria %2, quer que se mova para uma boa posição? Escuto.</Portuguese>
+    <Russian>%1, цель вне досягаемости батареи %2, сменить ей позицию? Приём.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_ARTY_MSG_10">
+    <English>%1, Should %2 move in range? Please respond. Over.</English>
+    <Chinesesimp>%1，%2 是否应进入射程？请回复。请回答。</Chinesesimp>
+    <Chinese>%1，%2 是否應進入射程？請回覆。請回答。</Chinese>
+    <Spanish>%1, ¿debe %2 moverse para tener alcance? Responde, por favor. Cambio.</Spanish>
+    <French>%1, %2 doit-il se mettre à portée ? Répondez. À vous.</French>
+    <Portuguese>%1, %2 deve mover-se para ficar ao alcance? Responda, por favor. Escuto.</Portuguese>
+    <Russian>%1, выдвигать %2 на дальность огня? Ответьте. Приём.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_ARTY_MSG_11">
+    <English>%1, Target is out of range of battery %2, choose another target. Out.</English>
+    <Chinesesimp>%1，目标超出炮兵连 %2 的射程，请选择其他目标。完毕。</Chinesesimp>
+    <Chinese>%1，目標超出砲兵連 %2 的射程，請選擇其他目標。完畢。</Chinese>
+    <Spanish>%1, el objetivo está fuera del alcance de la batería %2, elige otro objetivo. Corto.</Spanish>
+    <French>%1, la cible est hors de portée de la batterie %2, choisissez une autre cible. Terminé.</French>
+    <Portuguese>%1, o alvo está fora do alcance da bateria %2, escolha outro alvo. Terminado.</Portuguese>
+    <Russian>%1, цель вне досягаемости батареи %2, выберите другую цель. Конец связи.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_ARTY_MSG_12">
+    <English>%1, %2 hasn't the men left to carry its mortars, staying put. Out.</English>
+    <Chinesesimp>%1，%2 已没有足够人手搬运迫击炮，原地留守。完毕。</Chinesesimp>
+    <Chinese>%1，%2 已沒有足夠人手搬運迫擊砲，原地留守。完畢。</Chinese>
+    <Spanish>%1, a %2 no le quedan hombres para llevar sus morteros, se queda donde está. Corto.</Spanish>
+    <French>%1, %2 n'a plus assez d'hommes pour porter ses mortiers, il reste sur place. Terminé.</French>
+    <Portuguese>%1, %2 já não tem homens para levar os morteiros, fica onde está. Terminado.</Portuguese>
+    <Russian>%1, у %2 не осталось людей, чтобы нести миномёты, остаётся на месте. Конец связи.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_ARTY_MSG_13">
+    <English>Copy that %1, %2 moving in range of target, stand by. Out.</English>
+    <Chinesesimp>收到 %1，%2 正在进入目标射程，请稍候。完毕。</Chinesesimp>
+    <Chinese>收到 %1，%2 正在進入目標射程，請稍候。完畢。</Chinese>
+    <Spanish>Recibido %1, %2 se mueve para tener el objetivo a su alcance, espera. Corto.</Spanish>
+    <French>Bien reçu %1, %2 se met à portée de la cible, patientez. Terminé.</French>
+    <Portuguese>Entendido %1, %2 move-se para ter o alvo ao alcance, aguarde. Terminado.</Portuguese>
+    <Russian>Вас понял, %1, %2 выходит на дальность огня, ожидайте. Конец связи.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_ARTY_MSG_14">
+    <English>Copy that %1, %2 aborting fire mission. Out.</English>
+    <Chinesesimp>收到 %1，%2 中止射击任务。完毕。</Chinesesimp>
+    <Chinese>收到 %1，%2 中止射擊任務。完畢。</Chinese>
+    <Spanish>Recibido %1, %2 cancela la misión de fuego. Corto.</Spanish>
+    <French>Bien reçu %1, %2 annule la mission de tir. Terminé.</French>
+    <Portuguese>Entendido %1, %2 cancela a missão de fogo. Terminado.</Portuguese>
+    <Russian>Вас понял, %1, %2 отменяет огневую задачу. Конец связи.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_ARTY_MSG_15">
+    <English>%1, Battery %2 is at Base and out of ammo. Out.</English>
+    <Chinesesimp>%1，炮兵连 %2 已在基地，弹药耗尽。完毕。</Chinesesimp>
+    <Chinese>%1，砲兵連 %2 已在基地，彈藥耗盡。完畢。</Chinese>
+    <Spanish>%1, la batería %2 está en la base y sin munición. Corto.</Spanish>
+    <French>%1, la batterie %2 est à la base et à court de munitions. Terminé.</French>
+    <Portuguese>%1, a bateria %2 está na base e sem munições. Terminado.</Portuguese>
+    <Russian>%1, батарея %2 на базе, боеприпасов нет. Конец связи.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_ARTY_MSG_16">
+    <English>%1, Battery %2 is at Base and ready for fire mission. Out.</English>
+    <Chinesesimp>%1，炮兵连 %2 已在基地，准备好执行射击任务。完毕。</Chinesesimp>
+    <Chinese>%1，砲兵連 %2 已在基地，準備好執行射擊任務。完畢。</Chinese>
+    <Spanish>%1, la batería %2 está en la base y lista para una misión de fuego. Corto.</Spanish>
+    <French>%1, la batterie %2 est à la base et prête pour une mission de tir. Terminé.</French>
+    <Portuguese>%1, a bateria %2 está na base e pronta para uma missão de fogo. Terminado.</Portuguese>
+    <Russian>%1, батарея %2 на базе и готова к огневой задаче. Конец связи.</Russian>
+</Key>
 </Container></Package></Project>
