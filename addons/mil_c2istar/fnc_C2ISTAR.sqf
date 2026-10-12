@@ -1498,12 +1498,12 @@ switch(_operation) do {
                     waitUntil { sleep 1; !isNull player };
                     if (isClass (configFile >> "CfgPatches" >> "ace_interact_menu")) then {
                         waitUntil { sleep 1; !isNil "ace_interact_menu" && {!isNull ace_player} };
-                        private _action = ["ALiVE_TalkSoldier", "Talk to soldier", "", { ["open", [_target]] call ALiVE_fnc_C2ISTARSoldierInteract },
+                        private _action = ["ALiVE_TalkSoldier", localize "STR_ALIVE_C2ISTAR_SI_TALK", "", { ["open", [_target]] call ALiVE_fnc_C2ISTARSoldierInteract },
                             { ["canTalk", [_target, _player]] call ALiVE_fnc_C2ISTARSoldierInteract }] call ace_interact_menu_fnc_createAction;
                         ["CAManBase", 0, ["ACE_MainActions"], _action, true] call ace_interact_menu_fnc_addActionToClass;
                     } else {
                         ALiVE_c2istar_talkAdd = {
-                            _this addAction ["Talk to soldier", { ["open", [cursorObject]] call ALiVE_fnc_C2ISTARSoldierInteract }, nil, 1.4, false, true, "",
+                            _this addAction [localize "STR_ALIVE_C2ISTAR_SI_TALK", { ["open", [cursorObject]] call ALiVE_fnc_C2ISTARSoldierInteract }, nil, 1.4, false, true, "",
                                 "['canTalk', [cursorObject, _this]] call ALiVE_fnc_C2ISTARSoldierInteract", 4];
                         };
                         player call ALiVE_c2istar_talkAdd;

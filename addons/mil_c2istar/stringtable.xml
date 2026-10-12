@@ -2240,4 +2240,409 @@
     <Portuguese>Não</Portuguese>
     <Russian>Нет</Russian>
 </Key>
+<Key ID="STR_ALIVE_C2ISTAR_SI_TALK">
+    <English>Talk to soldier</English>
+    <Chinesesimp>与士兵交谈</Chinesesimp>
+    <Chinese>與士兵交談</Chinese>
+    <Spanish>Hablar con el soldado</Spanish>
+    <French>Parler au soldat</French>
+    <Portuguese>Falar com o soldado</Portuguese>
+    <Russian>Поговорить с солдатом</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SI_WINDOW">
+    <English>Soldier interaction</English>
+    <Chinesesimp>与士兵互动</Chinesesimp>
+    <Chinese>與士兵互動</Chinese>
+    <Spanish>Interacción con el soldado</Spanish>
+    <French>Interaction avec le soldat</French>
+    <Portuguese>Interação com o soldado</Portuguese>
+    <Russian>Взаимодействие с солдатом</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SI_BTN_QUESTION">
+    <English>Question</English>
+    <Chinesesimp>审问</Chinesesimp>
+    <Chinese>審問</Chinese>
+    <Spanish>Interrogar</Spanish>
+    <French>Interroger</French>
+    <Portuguese>Interrogar</Portuguese>
+    <Russian>Допросить</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SI_BTN_RESTRAIN">
+    <English>Restrain</English>
+    <Chinesesimp>束缚</Chinesesimp>
+    <Chinese>束縛</Chinese>
+    <Spanish>Inmovilizar</Spanish>
+    <French>Entraver</French>
+    <Portuguese>Imobilizar</Portuguese>
+    <Russian>Связать</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SI_BTN_FOLLOW">
+    <English>Follow me</English>
+    <Chinesesimp>跟我来</Chinesesimp>
+    <Chinese>跟我來</Chinese>
+    <Spanish>Sígueme</Spanish>
+    <French>Suivez-moi</French>
+    <Portuguese>Siga-me</Portuguese>
+    <Russian>За мной</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SI_BTN_STAY">
+    <English>Stay here</English>
+    <Chinesesimp>留在这里</Chinesesimp>
+    <Chinese>留在這裡</Chinese>
+    <Spanish>Quédate aquí</Spanish>
+    <French>Restez ici</French>
+    <Portuguese>Fique aqui</Portuguese>
+    <Russian>Оставайся здесь</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SI_BTN_SEARCH">
+    <English>Search</English>
+    <Chinesesimp>搜身</Chinesesimp>
+    <Chinese>搜身</Chinese>
+    <Spanish>Registrar</Spanish>
+    <French>Fouiller</French>
+    <Portuguese>Revistar</Portuguese>
+    <Russian>Обыскать</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SI_BTN_RELEASE">
+    <English>Release</English>
+    <Chinesesimp>释放</Chinesesimp>
+    <Chinese>釋放</Chinese>
+    <Spanish>Liberar</Spanish>
+    <French>Libérer</French>
+    <Portuguese>Libertar</Portuguese>
+    <Russian>Отпустить</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SI_BTN_FRIENDLIES">
+    <English>Friendlies</English>
+    <Chinesesimp>友军</Chinesesimp>
+    <Chinese>友軍</Chinese>
+    <Spanish>Aliados</Spanish>
+    <French>Alliés</French>
+    <Portuguese>Aliados</Portuguese>
+    <Russian>Свои</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SI_BTN_SEEN">
+    <English>Seen any?</English>
+    <Chinesesimp>看到敌人了吗？</Chinesesimp>
+    <Chinese>看到敵人了嗎？</Chinese>
+    <Spanish>¿Has visto algo?</Spanish>
+    <French>Vu quelque chose ?</French>
+    <Portuguese>Viu algo?</Portuguese>
+    <Russian>Видели кого?</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SI_BTN_HEADED">
+    <English>Heading?</English>
+    <Chinesesimp>去哪里？</Chinesesimp>
+    <Chinese>去哪裡？</Chinese>
+    <Spanish>¿Hacia dónde?</Spanish>
+    <French>Destination ?</French>
+    <Portuguese>Para onde?</Portuguese>
+    <Russian>Куда идёте?</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SI_BTN_CLOSE">
+    <English>Close</English>
+    <Chinesesimp>关闭</Chinesesimp>
+    <Chinese>關閉</Chinese>
+    <Spanish>Cerrar</Spanish>
+    <French>Fermer</French>
+    <Portuguese>Fechar</Portuguese>
+    <Russian>Закрыть</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SI_PRISONER_NAME">
+    <English>%1 (prisoner)</English>
+    <Chinesesimp>%1（俘虏）</Chinesesimp>
+    <Chinese>%1（俘虜）</Chinese>
+    <Spanish>%1 (prisionero)</Spanish>
+    <French>%1 (prisonnier)</French>
+    <Portuguese>%1 (prisioneiro)</Portuguese>
+    <Russian>%1 (пленный)</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SI_PRISONER_OPEN">
+    <English>He watches you with his hands up.</English>
+    <Chinesesimp>他举着双手看着你。</Chinesesimp>
+    <Chinese>他舉著雙手看著你。</Chinese>
+    <Spanish>Te observa con las manos en alto.</Spanish>
+    <French>Il vous regarde, les mains en l'air.</French>
+    <Portuguese>Ele observa você com as mãos para cima.</Portuguese>
+    <Russian>Он смотрит на вас, подняв руки.</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SI_QUESTION">
+    <English>You question him...</English>
+    <Chinesesimp>你审问他……</Chinesesimp>
+    <Chinese>你審問他……</Chinese>
+    <Spanish>Lo interrogas...</Spanish>
+    <French>Vous l'interrogez...</French>
+    <Portuguese>Você o interroga...</Portuguese>
+    <Russian>Вы допрашиваете его...</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SI_RESTRAIN_ACE">
+    <English>You cuff his hands. Use ACE to escort him.</English>
+    <Chinesesimp>你铐住了他的双手。用 ACE 押送他。</Chinesesimp>
+    <Chinese>你銬住了他的雙手。用 ACE 押送他。</Chinese>
+    <Spanish>Le esposas las manos. Usa ACE para escoltarlo.</Spanish>
+    <French>Vous lui menottez les mains. Utilisez ACE pour l'escorter.</French>
+    <Portuguese>Você algema as mãos dele. Use o ACE para escoltá-lo.</Portuguese>
+    <Russian>Вы надеваете ему наручники. Конвоируйте его через ACE.</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SI_RESTRAIN">
+    <English>You tie his hands behind his back.</English>
+    <Chinesesimp>你把他的双手绑在背后。</Chinesesimp>
+    <Chinese>你把他的雙手綁在背後。</Chinese>
+    <Spanish>Le atas las manos a la espalda.</Spanish>
+    <French>Vous lui attachez les mains dans le dos.</French>
+    <Portuguese>Você amarra as mãos dele nas costas.</Portuguese>
+    <Russian>Вы связываете ему руки за спиной.</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SI_FOLLOW">
+    <English>He falls in behind you.</English>
+    <Chinesesimp>他跟在你身后。</Chinesesimp>
+    <Chinese>他跟在你身後。</Chinese>
+    <Spanish>Se pone detrás de ti.</Spanish>
+    <French>Il se place derrière vous.</French>
+    <Portuguese>Ele se posiciona atrás de você.</Portuguese>
+    <Russian>Он идёт за вами.</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SI_STAY">
+    <English>He stops where he is.</English>
+    <Chinesesimp>他停在原地。</Chinesesimp>
+    <Chinese>他停在原地。</Chinese>
+    <Spanish>Se detiene donde está.</Spanish>
+    <French>Il s'arrête où il est.</French>
+    <Portuguese>Ele para onde está.</Portuguese>
+    <Russian>Он остаётся на месте.</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SI_SEARCH_NONE">
+    <English>He has nothing on him.</English>
+    <Chinesesimp>他身上什么也没有。</Chinesesimp>
+    <Chinese>他身上什麼也沒有。</Chinese>
+    <Spanish>No lleva nada encima.</Spanish>
+    <French>Il n'a rien sur lui.</French>
+    <Portuguese>Ele não tem nada consigo.</Portuguese>
+    <Russian>При нём ничего нет.</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SI_SEARCH_CARRIES">
+    <English>He carries: %1.</English>
+    <Chinesesimp>他携带：%1。</Chinesesimp>
+    <Chinese>他攜帶：%1。</Chinese>
+    <Spanish>Lleva: %1.</Spanish>
+    <French>Il porte : %1.</French>
+    <Portuguese>Ele carrega: %1.</Portuguese>
+    <Russian>При нём: %1.</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SI_RELEASE">
+    <English>%1 is free to go.</English>
+    <Chinesesimp>%1 可以走了。</Chinesesimp>
+    <Chinese>%1 可以走了。</Chinese>
+    <Spanish>%1 puede irse.</Spanish>
+    <French>%1 est libre de partir.</French>
+    <Portuguese>%1 está livre para ir.</Portuguese>
+    <Russian>%1 может идти.</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SI_FRIENDLIES_AGAIN">
+    <English>I told you a minute ago. Look at your map.</English>
+    <Chinesesimp>我一分钟前刚告诉过你。看你的地图。</Chinesesimp>
+    <Chinese>我一分鐘前剛告訴過你。看你的地圖。</Chinese>
+    <Spanish>Te lo dije hace un minuto. Mira tu mapa.</Spanish>
+    <French>Je vous l'ai dit il y a une minute. Regardez votre carte.</French>
+    <Portuguese>Eu te disse há um minuto. Olhe seu mapa.</Portuguese>
+    <Russian>Я сказал вам минуту назад. Смотрите на карту.</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SI_FRIENDLIES_0">
+    <English>No other friendly units around here that I know of.</English>
+    <Chinesesimp>据我所知这附近没有其他友军。</Chinesesimp>
+    <Chinese>據我所知這附近沒有其他友軍。</Chinese>
+    <Spanish>Que yo sepa, no hay otras unidades aliadas por aquí.</Spanish>
+    <French>Pas d'autres unités alliées par ici, à ma connaissance.</French>
+    <Portuguese>Que eu saiba, não há outras unidades aliadas por aqui.</Portuguese>
+    <Russian>Насколько я знаю, других своих поблизости нет.</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SI_FRIENDLIES_1">
+    <English>One friendly group within a kilometre of here. It's on your map for the next two minutes.</English>
+    <Chinesesimp>一公里内有一支友军小队。接下来两分钟会显示在你的地图上。</Chinesesimp>
+    <Chinese>一公里內有一支友軍小隊。接下來兩分鐘會顯示在你的地圖上。</Chinese>
+    <Spanish>Hay un grupo aliado a menos de un kilómetro. Está en tu mapa durante los próximos dos minutos.</Spanish>
+    <French>Un groupe allié à moins d'un kilomètre. Il est sur votre carte pendant deux minutes.</French>
+    <Portuguese>Há um grupo aliado a menos de um quilômetro. Ele está no seu mapa pelos próximos dois minutos.</Portuguese>
+    <Russian>В пределах километра одна наша группа. Она на вашей карте ближайшие две минуты.</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SI_FRIENDLIES_N">
+    <English>%1 friendly groups within a kilometre of here. They're on your map for the next two minutes.</English>
+    <Chinesesimp>一公里内有 %1 支友军小队。接下来两分钟会显示在你的地图上。</Chinesesimp>
+    <Chinese>一公里內有 %1 支友軍小隊。接下來兩分鐘會顯示在你的地圖上。</Chinese>
+    <Spanish>Hay %1 grupos aliados a menos de un kilómetro. Están en tu mapa durante los próximos dos minutos.</Spanish>
+    <French>%1 groupes alliés à moins d'un kilomètre. Ils sont sur votre carte pendant deux minutes.</French>
+    <Portuguese>Há %1 grupos aliados a menos de um quilômetro. Eles estão no seu mapa pelos próximos dois minutos.</Portuguese>
+    <Russian>Наших групп в пределах километра: %1. Они на вашей карте ближайшие две минуты.</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SI_SEEN_WAIT">
+    <English>He thinks about it...</English>
+    <Chinesesimp>他想了想……</Chinesesimp>
+    <Chinese>他想了想……</Chinese>
+    <Spanish>Se lo piensa...</Spanish>
+    <French>Il réfléchit...</French>
+    <Portuguese>Ele pensa um pouco...</Portuguese>
+    <Russian>Он задумывается...</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SI_HEADED_WAIT">
+    <English>He checks with his squad leader...</English>
+    <Chinesesimp>他向班长确认……</Chinesesimp>
+    <Chinese>他向班長確認……</Chinese>
+    <Spanish>Lo consulta con su jefe de escuadra...</Spanish>
+    <French>Il vérifie auprès de son chef de groupe...</French>
+    <Portuguese>Ele confere com o líder do esquadrão...</Portuguese>
+    <Russian>Он уточняет у командира отделения...</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SI_MARK_ENEMY">
+    <English>Enemy %1 (seen)</English>
+    <Chinesesimp>敌方%1（已发现）</Chinesesimp>
+    <Chinese>敵方%1（已發現）</Chinese>
+    <Spanish>Enemigo: %1 (visto)</Spanish>
+    <French>Ennemi : %1 (repéré)</French>
+    <Portuguese>Inimigo: %1 (avistado)</Portuguese>
+    <Russian>Противник: %1 (замечен)</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SI_INFANTRY">
+    <English>infantry</English>
+    <Chinesesimp>步兵</Chinesesimp>
+    <Chinese>步兵</Chinese>
+    <Spanish>infantería</Spanish>
+    <French>infanterie</French>
+    <Portuguese>infantaria</Portuguese>
+    <Russian>пехота</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SI_VEHICLE">
+    <English>vehicle</English>
+    <Chinesesimp>载具</Chinesesimp>
+    <Chinese>載具</Chinese>
+    <Spanish>vehículo</Spanish>
+    <French>véhicule</French>
+    <Portuguese>veículo</Portuguese>
+    <Russian>техника</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SI_SEEN_NONE">
+    <English>%1: we haven't seen any enemy.</English>
+    <Chinesesimp>%1：我们没看到任何敌人。</Chinesesimp>
+    <Chinese>%1：我們沒看到任何敵人。</Chinese>
+    <Spanish>%1: no hemos visto ningún enemigo.</Spanish>
+    <French>%1 : nous n'avons vu aucun ennemi.</French>
+    <Portuguese>%1: não vimos nenhum inimigo.</Portuguese>
+    <Russian>%1: мы не видели противника.</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SI_SEEN_ONE">
+    <English>%1: we've seen %2 enemy group. Marked on your map for two minutes.</English>
+    <Chinesesimp>%1：我们看到 %2 支敌方小队。已在你的地图上标记两分钟。</Chinesesimp>
+    <Chinese>%1：我們看到 %2 支敵方小隊。已在你的地圖上標記兩分鐘。</Chinese>
+    <Spanish>%1: hemos visto %2 grupo enemigo. Marcado en tu mapa durante dos minutos.</Spanish>
+    <French>%1 : nous avons vu %2 groupe ennemi. Marqué sur votre carte pendant deux minutes.</French>
+    <Portuguese>%1: vimos %2 grupo inimigo. Marcado no seu mapa por dois minutos.</Portuguese>
+    <Russian>%1: мы видели группу противника (%2). Отмечено на вашей карте на две минуты.</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SI_SEEN_N">
+    <English>%1: we've seen %2 enemy groups. Marked on your map for two minutes.</English>
+    <Chinesesimp>%1：我们看到 %2 支敌方小队。已在你的地图上标记两分钟。</Chinesesimp>
+    <Chinese>%1：我們看到 %2 支敵方小隊。已在你的地圖上標記兩分鐘。</Chinese>
+    <Spanish>%1: hemos visto %2 grupos enemigos. Marcados en tu mapa durante dos minutos.</Spanish>
+    <French>%1 : nous avons vu %2 groupes ennemis. Marqués sur votre carte pendant deux minutes.</French>
+    <Portuguese>%1: vimos %2 grupos inimigos. Marcados no seu mapa por dois minutos.</Portuguese>
+    <Russian>%1: мы видели групп противника: %2. Отмечены на вашей карте на две минуты.</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SI_HEADED_HOLD">
+    <English>%1: we're holding here for now.</English>
+    <Chinesesimp>%1：我们暂时在这里待命。</Chinesesimp>
+    <Chinese>%1：我們暫時在這裡待命。</Chinese>
+    <Spanish>%1: por ahora mantenemos la posición aquí.</Spanish>
+    <French>%1 : nous tenons la position ici pour l'instant.</French>
+    <Portuguese>%1: estamos mantendo posição aqui por enquanto.</Portuguese>
+    <Russian>%1: пока держим позицию здесь.</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SI_HEADED_TO">
+    <English>%1: we're headed to grid %2, about %3 m %4 of here.</English>
+    <Chinesesimp>%1：我们正前往网格 %2，在此处%4方约 %3 米。</Chinesesimp>
+    <Chinese>%1：我們正前往網格 %2，在此處%4方約 %3 公尺。</Chinese>
+    <Spanish>%1: vamos a la cuadrícula %2, a unos %3 m al %4 de aquí.</Spanish>
+    <French>%1 : nous allons au carré %2, à environ %3 m d'ici, direction %4.</French>
+    <Portuguese>%1: estamos indo para a grade %2, a cerca de %3 m daqui, direção %4.</Portuguese>
+    <Russian>%1: идём в квадрат %2, примерно %3 м на %4 отсюда.</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SI_MARK_HEADED">
+    <English>%1 headed here</English>
+    <Chinesesimp>%1 正前往此处</Chinesesimp>
+    <Chinese>%1 正前往此處</Chinese>
+    <Spanish>%1 se dirige aquí</Spanish>
+    <French>%1 se dirige ici</French>
+    <Portuguese>%1 está indo para cá</Portuguese>
+    <Russian>%1 идёт сюда</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SI_DIR_N">
+    <English>north</English>
+    <Chinesesimp>北</Chinesesimp>
+    <Chinese>北</Chinese>
+    <Spanish>norte</Spanish>
+    <French>nord</French>
+    <Portuguese>norte</Portuguese>
+    <Russian>север</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SI_DIR_NE">
+    <English>north-east</English>
+    <Chinesesimp>东北</Chinesesimp>
+    <Chinese>東北</Chinese>
+    <Spanish>noreste</Spanish>
+    <French>nord-est</French>
+    <Portuguese>nordeste</Portuguese>
+    <Russian>северо-восток</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SI_DIR_E">
+    <English>east</English>
+    <Chinesesimp>东</Chinesesimp>
+    <Chinese>東</Chinese>
+    <Spanish>este</Spanish>
+    <French>est</French>
+    <Portuguese>leste</Portuguese>
+    <Russian>восток</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SI_DIR_SE">
+    <English>south-east</English>
+    <Chinesesimp>东南</Chinesesimp>
+    <Chinese>東南</Chinese>
+    <Spanish>sureste</Spanish>
+    <French>sud-est</French>
+    <Portuguese>sudeste</Portuguese>
+    <Russian>юго-восток</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SI_DIR_S">
+    <English>south</English>
+    <Chinesesimp>南</Chinesesimp>
+    <Chinese>南</Chinese>
+    <Spanish>sur</Spanish>
+    <French>sud</French>
+    <Portuguese>sul</Portuguese>
+    <Russian>юг</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SI_DIR_SW">
+    <English>south-west</English>
+    <Chinesesimp>西南</Chinesesimp>
+    <Chinese>西南</Chinese>
+    <Spanish>suroeste</Spanish>
+    <French>sud-ouest</French>
+    <Portuguese>sudoeste</Portuguese>
+    <Russian>юго-запад</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SI_DIR_W">
+    <English>west</English>
+    <Chinesesimp>西</Chinesesimp>
+    <Chinese>西</Chinese>
+    <Spanish>oeste</Spanish>
+    <French>ouest</French>
+    <Portuguese>oeste</Portuguese>
+    <Russian>запад</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SI_DIR_NW">
+    <English>north-west</English>
+    <Chinesesimp>西北</Chinesesimp>
+    <Chinese>西北</Chinese>
+    <Spanish>noroeste</Spanish>
+    <French>nord-ouest</French>
+    <Portuguese>noroeste</Portuguese>
+    <Russian>северо-запад</Russian>
+</Key>
 </Container></Package></Project>

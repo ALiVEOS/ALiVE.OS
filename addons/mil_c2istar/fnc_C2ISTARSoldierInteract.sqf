@@ -45,9 +45,18 @@ params [["_operation", "", [""]], ["_args", []]];
 
 private _hasAce = isClass (configFile >> "CfgPatches" >> "ace_captives");
 
+// A line of text, or [key, arguments] read in this machine's language; an argument written
+// "$STR_..." is read in it too. Answers worked out on another machine travel as keys.
+private _fnc_tr = {
+    if (_this isEqualType "") exitWith { _this };
+    private _a = (_this select [1]) apply { if (_x isEqualType "" && {(_x find "$STR_") == 0}) then { localize (_x select [1]) } else { _x } };
+    format ([localize (_this select 0)] + _a)
+};
+
 // The window's answer box, or a hint when the window is shut
 private _fnc_say = {
     params ["_text"];
+    _text = _text call _fnc_tr;
     if (isNull SI_DISPLAY) exitWith { hint _text };
     // plain text: a name or callsign with < or & in it would break parsed markup
     (SI_DISPLAY displayCtrl 92602) ctrlSetStructuredText text _text;
@@ -88,14 +97,14 @@ switch (_operation) do {
         createDialog "ALiVE_SoldierInteraction";
         uiNamespace setVariable ["ALiVE_soldierInteractTarget", _target];
         private _prisoner = _target getVariable ["ALiVE_surrendered", false];
-        (SI_DISPLAY displayCtrl 92601) ctrlSetText format ["%1%2", name _target, ["", " (prisoner)"] select _prisoner];
+        (SI_DISPLAY displayCtrl 92601) ctrlSetText (if (_prisoner) then { format [localize "STR_ALIVE_C2ISTAR_SI_PRISONER_NAME", name _target] } else { name _target });
         { (SI_DISPLAY displayCtrl _x) ctrlShow _prisoner } forEach SI_PRISONER_BUTTONS;
         { (SI_DISPLAY displayCtrl _x) ctrlShow !_prisoner } forEach SI_FRIENDLY_BUTTONS;
         if (_prisoner) then {
             (SI_DISPLAY displayCtrl 92610) ctrlEnable !(_target getVariable ["ALiVE_questioned", false]);
             // ACE leads its prisoners with its own escort
             if (_hasAce) then { { (SI_DISPLAY displayCtrl _x) ctrlShow false } forEach [92612, 92613] };
-            ["He watches you with his hands up."] call _fnc_say;
+            [["STR_ALIVE_C2ISTAR_SI_PRISONER_OPEN"]] call _fnc_say;
         } else {
             // the friendly-units report is the module's Ask About Friendlies setting
             (SI_DISPLAY displayCtrl 92620) ctrlEnable !isNil "ALiVE_c2istar_fnc_askFriendly";
@@ -118,20 +127,20 @@ switch (_operation) do {
         switch (_op) do {
             case "question": {
                 (SI_DISPLAY displayCtrl 92610) ctrlEnable false;
-                ["You question him..."] call _fnc_say;
+                [["STR_ALIVE_C2ISTAR_SI_QUESTION"]] call _fnc_say;
                 [_target, player] call ALiVE_c2istar_fnc_askQuestion;
             };
             case "restrain": {
                 if (_hasAce) then {
                     ["ace_captives_setHandcuffed", [_target, true], _target] call CBA_fnc_targetEvent;
-                    ["You cuff his hands. Use ACE to escort him."] call _fnc_say;
+                    [["STR_ALIVE_C2ISTAR_SI_RESTRAIN_ACE"]] call _fnc_say;
                 } else {
                     "restrain" call _fnc_order;
-                    ["You tie his hands behind his back."] call _fnc_say;
+                    [["STR_ALIVE_C2ISTAR_SI_RESTRAIN"]] call _fnc_say;
                 };
             };
-            case "follow": { "follow" call _fnc_order; ["He falls in behind you."] call _fnc_say };
-            case "stay": { "stay" call _fnc_order; ["He stops where he is."] call _fnc_say };
+            case "follow": { "follow" call _fnc_order; [["STR_ALIVE_C2ISTAR_SI_FOLLOW"]] call _fnc_say };
+            case "stay": { "stay" call _fnc_order; [["STR_ALIVE_C2ISTAR_SI_STAY"]] call _fnc_say };
             case "search": {
                 private _kit = (uniformItems _target) + (vestItems _target) + (backpackItems _target) + (assignedItems _target);
                 private _names = [];
@@ -143,25 +152,25 @@ switch (_operation) do {
                     if (_n == "") then { _n = _x };
                     _names pushBack _n;
                 } forEach _kit;
-                if (_names isEqualTo []) then { ["He has nothing on him."] call _fnc_say } else {
+                if (_names isEqualTo []) then { [["STR_ALIVE_C2ISTAR_SI_SEARCH_NONE"]] call _fnc_say } else {
                     private _counted = [];
                     { private _n = _x; if (_counted findIf { (_x select 0) == _n } < 0) then { _counted pushBack [_n, { _x == _n } count _names] } } forEach _names;
-                    [format ["He carries: %1.", (_counted apply { if ((_x select 1) > 1) then { format ["%1 x%2", _x select 0, _x select 1] } else { _x select 0 } }) joinString ", "]] call _fnc_say;
+                    [["STR_ALIVE_C2ISTAR_SI_SEARCH_CARRIES", (_counted apply { if ((_x select 1) > 1) then { format ["%1 x%2", _x select 0, _x select 1] } else { _x select 0 } }) joinString ", "]] call _fnc_say;
                 };
             };
-            case "release": { "release" call _fnc_order; closeDialog 0; hint format ["%1 is free to go.", name _target] };
+            case "release": { "release" call _fnc_order; closeDialog 0; hint format [localize "STR_ALIVE_C2ISTAR_SI_RELEASE", name _target] };
             case "friendlies": {
                 // once a minute per soldier, as the old action was
-                if (_target getVariable ["ALiVE_c2istar_askedRecently", false]) exitWith { ["I told you a minute ago. Look at your map."] call _fnc_say };
+                if (_target getVariable ["ALiVE_c2istar_askedRecently", false]) exitWith { [["STR_ALIVE_C2ISTAR_SI_FRIENDLIES_AGAIN"]] call _fnc_say };
                 private _count = [_target, player] call ALiVE_c2istar_fnc_askFriendly;
                 [[
-                    "No other friendly units around here that I know of.",
-                    "One friendly group within a kilometre of here. It's on your map for the next two minutes.",
-                    format ["%1 friendly groups within a kilometre of here. They're on your map for the next two minutes.", _count]
+                    ["STR_ALIVE_C2ISTAR_SI_FRIENDLIES_0"],
+                    ["STR_ALIVE_C2ISTAR_SI_FRIENDLIES_1"],
+                    ["STR_ALIVE_C2ISTAR_SI_FRIENDLIES_N", _count]
                 ] select (_count min 2)] call _fnc_say;
             };
-            case "seen": { "seen" call _fnc_order; ["He thinks about it..."] call _fnc_say };
-            case "headed": { "headed" call _fnc_order; ["He checks with his squad leader..."] call _fnc_say };
+            case "seen": { "seen" call _fnc_order; [["STR_ALIVE_C2ISTAR_SI_SEEN_WAIT"]] call _fnc_say };
+            case "headed": { "headed" call _fnc_order; [["STR_ALIVE_C2ISTAR_SI_HEADED_WAIT"]] call _fnc_say };
         };
     };
 
@@ -270,10 +279,10 @@ switch (_operation) do {
                 private _known = ((leader group _target) targets [true, 1500]) select { alive _x && {(_side getFriend side group _x) < 0.6} };
                 private _groups = [];
                 { _groups pushBackUnique group _x } forEach _known;
-                private _marks = _groups apply { [getPosATL leader _x, "hd_dot", format ["Enemy %1 (seen)", ["infantry", "vehicle"] select (vehicle leader _x != leader _x)]] };
+                private _marks = _groups apply { [getPosATL leader _x, "hd_dot", ["STR_ALIVE_C2ISTAR_SI_MARK_ENEMY", ["$STR_ALIVE_C2ISTAR_SI_INFANTRY", "$STR_ALIVE_C2ISTAR_SI_VEHICLE"] select (vehicle leader _x != leader _x)]] };
                 [[
-                    format ["%1: we haven't seen any enemy.", name _target],
-                    format ["%1: we've seen %2 enemy %3. Marked on your map for two minutes.", name _target, count _groups, ["group", "groups"] select (count _groups > 1)]
+                    ["STR_ALIVE_C2ISTAR_SI_SEEN_NONE", name _target],
+                    [["STR_ALIVE_C2ISTAR_SI_SEEN_ONE", "STR_ALIVE_C2ISTAR_SI_SEEN_N"] select (count _groups > 1), name _target, count _groups]
                 ] select (_groups isNotEqualTo []), _marks, 120] call _fnc_reply;
             };
             case "headed": {
@@ -281,11 +290,11 @@ switch (_operation) do {
                 private _wp = [_g, currentWaypoint _g];
                 private _pos = if ((currentWaypoint _g) < count (waypoints _g)) then { waypointPosition _wp } else { expectedDestination (leader _g) select 0 };
                 if (isNil "_pos" || {_pos isEqualTo [0,0,0]} || {(_pos distance2D _target) < 50}) exitWith {
-                    [format ["%1: we're holding here for now.", name _target], [], 0] call _fnc_reply;
+                    [["STR_ALIVE_C2ISTAR_SI_HEADED_HOLD", name _target], [], 0] call _fnc_reply;
                 };
-                [format ["%1: we're headed to grid %2, about %3 m %4 of here.", name _target, mapGridPosition _pos, round ((_pos distance2D _target) / 10) * 10,
-                    ["north", "north-east", "east", "south-east", "south", "south-west", "west", "north-west"] select (round ((_target getDir _pos) / 45) mod 8)],
-                    [[_pos, "hd_objective", format ["%1 headed here", groupId _g]]], 120] call _fnc_reply;
+                [["STR_ALIVE_C2ISTAR_SI_HEADED_TO", name _target, mapGridPosition _pos, round ((_pos distance2D _target) / 10) * 10,
+                    ["$STR_ALIVE_C2ISTAR_SI_DIR_N", "$STR_ALIVE_C2ISTAR_SI_DIR_NE", "$STR_ALIVE_C2ISTAR_SI_DIR_E", "$STR_ALIVE_C2ISTAR_SI_DIR_SE", "$STR_ALIVE_C2ISTAR_SI_DIR_S", "$STR_ALIVE_C2ISTAR_SI_DIR_SW", "$STR_ALIVE_C2ISTAR_SI_DIR_W", "$STR_ALIVE_C2ISTAR_SI_DIR_NW"] select (round ((_target getDir _pos) / 45) mod 8)],
+                    [[_pos, "hd_objective", ["STR_ALIVE_C2ISTAR_SI_MARK_HEADED", groupId _g]]], 120] call _fnc_reply;
             };
         };
     };
@@ -301,7 +310,7 @@ switch (_operation) do {
             private _m = createMarkerLocal [format ["ALiVE_c2istar_si_%1", ALiVE_c2istar_siMarkerCount], _pos];
             _m setMarkerTypeLocal _type;
             _m setMarkerColorLocal (["ColorRed", "ColorBlue"] select (_type == "hd_objective"));
-            _m setMarkerTextLocal _label;
+            _m setMarkerTextLocal (_label call _fnc_tr);
             _made pushBack _m;
         } forEach _marks;
         if (_made isNotEqualTo []) then { [_made, _seconds] spawn { sleep (_this select 1); { deleteMarkerLocal _x } forEach (_this select 0) } };
