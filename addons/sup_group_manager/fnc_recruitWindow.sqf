@@ -40,7 +40,9 @@ private _fnc_picture = {
     _p
 };
 
-// The list's rows: [class, is a vehicle]
+// The list's rows: [class, is a vehicle], then a heading row ["", false, "head"] and the player's
+// own recruits [class, is a vehicle, object], which the button dismisses
+
 private _fnc_rows = { uiNamespace getVariable ["ALiVE_recruitRows", []] };
 
 private _fnc_status = {
@@ -77,6 +79,7 @@ switch (_operation) do {
             _rows pushBack [_x, true];
         } forEach _vehicles;
         uiNamespace setVariable ["ALiVE_recruitRows", _rows];
+        ["mine"] call ALiVE_fnc_recruitWindow;
         _list lbSetCurSel 0;
         uiNamespace setVariable ["ALiVE_recruitPool", -1];
         call _fnc_status;
@@ -86,10 +89,41 @@ switch (_operation) do {
         };
     };
 
+    // the player's recruits that can be dismissed, listed under the offer (#1078)
+    case "mine": {
+        if (isNull RW_DISPLAY) exitWith {};
+        private _settings = (uiNamespace getVariable ["ALiVE_recruitAt", []]) param [1, []];
+        private _list = RW_DISPLAY displayCtrl 92702;
+        private _rows = (call _fnc_rows) select { count _x < 3 };
+        while { lbSize _list > count _rows } do { _list lbDelete (lbSize _list - 1) };
+        private _mine = if (_settings param [12, true]) then { call ALiVE_fnc_recruitDismissable } else { [] };
+        if (_mine isNotEqualTo []) then {
+            private _h = _list lbAdd localize "STR_ALIVE_RECRUIT_UI_YOURS";
+            _list lbSetColor [_h, [0.788, 0.443, 0.157, 1]];
+            _rows pushBack ["", false, objNull];
+            {
+                private _i = _list lbAdd format ["   %1", getText (configFile >> "CfgVehicles" >> typeOf _x >> "displayName")];
+                _list lbSetPicture [_i, [typeOf _x, ["icon", "picture"] select !(_x isKindOf "CAManBase")] call _fnc_picture];
+                _rows pushBack [typeOf _x, !(_x isKindOf "CAManBase"), _x];
+            } forEach _mine;
+        };
+        uiNamespace setVariable ["ALiVE_recruitRows", _rows];
+    };
+
     case "select": {
         if (isNull RW_DISPLAY) exitWith {};
         private _row = (call _fnc_rows) param [lbCurSel (RW_DISPLAY displayCtrl 92702), []];
         if (_row isEqualTo []) exitWith {};
+        // one of the player's own: the button dismisses it
+        private _own = count _row > 2;
+        (RW_DISPLAY displayCtrl 92705) ctrlSetText localize (["STR_ALIVE_RECRUIT_UI_BUTTON_RECRUIT", "STR_ALIVE_RECRUIT_UI_BUTTON_DISMISS"] select _own);
+        (RW_DISPLAY displayCtrl 92705) ctrlEnable (!_own || {!isNull (_row select 2)});
+        if (_own) exitWith {
+            private _o = _row select 2;
+            (RW_DISPLAY displayCtrl 92703) ctrlSetStructuredText ([if (isNull _o) then { [localize "STR_ALIVE_RECRUIT_UI_YOURS_HINT"] } else {
+                [getText (configFile >> "CfgVehicles" >> typeOf _o >> "displayName"), format [localize "STR_ALIVE_RECRUIT_UI_YOURS_AWAY", round (player distance _o)]]
+            }, true] call _fnc_lines);
+        };
         _row params ["_class", "_isVehicle"];
         private _cfg = configFile >> "CfgVehicles" >> _class;
         private _lines = [getText (_cfg >> "displayName")];
@@ -112,12 +146,25 @@ switch (_operation) do {
         (uiNamespace getVariable ["ALiVE_recruitAt", []]) params [["_object", objNull], ["_settings", []]];
         private _row = (call _fnc_rows) param [lbCurSel (RW_DISPLAY displayCtrl 92702), []];
         if (isNull _object || {_row isEqualTo []}) exitWith {};
+        // one of the player's own: dismiss it, and list what's left
+        if (count _row > 2) exitWith {
+            if (isNull (_row select 2)) exitWith {};
+            private _i = lbCurSel (RW_DISPLAY displayCtrl 92702);
+            if ([_row select 2] call ALiVE_fnc_recruitDismiss) then {
+                ["mine"] call ALiVE_fnc_recruitWindow;
+                (RW_DISPLAY displayCtrl 92702) lbSetCurSel ((_i min (lbSize (RW_DISPLAY displayCtrl 92702) - 1)) max 0);
+                [] spawn { sleep 1; ["status"] call ALiVE_fnc_recruitWindow };
+            };
+        };
         _row params ["_class", "_isVehicle"];
         // paying asks the server and waits for its answer, so this runs scheduled
         [_object, _class, _settings, _isVehicle] spawn {
             params ["_object", "_class", "_settings", "_isVehicle"];
             if (_isVehicle) then { [_object, _class, _settings] call ALiVE_fnc_recruitVehicle } else { [_object, _class, _settings] call ALiVE_fnc_recruitUnit };
             ["status"] call ALiVE_fnc_recruitWindow;
+            private _i = lbCurSel (RW_DISPLAY displayCtrl 92702);
+            ["mine"] call ALiVE_fnc_recruitWindow;
+            (RW_DISPLAY displayCtrl 92702) lbSetCurSel _i;
         };
     };
 

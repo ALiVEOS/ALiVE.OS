@@ -184,27 +184,48 @@ ALiVE_fnc_recruitSpawnPos = {
 
 // Dismiss, on a recruit or a recruited vehicle, for the player who recruited it (#1078): it goes,
 // and what it cost goes back to the force pool. A vehicle with a player aboard can't be dismissed.
+// From the hold action below or from the Recruitment window's list of the player's recruits.
+ALiVE_fnc_recruitDismiss = {
+    params ["_thing"];
+    if (isNull _thing || {!alive _thing}) exitWith { false };
+    private _isVehicle = !(_thing isKindOf "CAManBase");
+    if (_isVehicle && {((crew _thing) findIf { isPlayer _x }) >= 0}) exitWith { false };
+    private _cost = _thing getVariable ["ALiVE_recruitCost", 0];
+    private _name = getText (configFile >> "CfgVehicles" >> typeOf _thing >> "displayName");
+    if (_isVehicle) then { { moveOut _x } forEach crew _thing };
+    deleteVehicle _thing;
+    [_cost, _name] spawn {
+        params ["_cost", "_name"];
+        private _back = (_cost > 0) && {([-_cost] call ALiVE_fnc_recruitAsk) isNotEqualTo []};
+        [localize "STR_ALIVE_RECRUIT", format [localize (["STR_ALIVE_RECRUIT_UI_DISMISSED", "STR_ALIVE_RECRUIT_UI_DISMISSED_REFUND"] select _back), _name, _cost]] call ALIVE_fnc_sendHint;
+    };
+    true
+};
+
+// This player's recruits and recruited vehicles, alive, that can be dismissed now
+ALiVE_fnc_recruitDismissable = {
+    private _uid = getPlayerUID player;
+    ((units group player) select { alive _x && {(_x getVariable ["ALiVE_recruitedBy", ""]) == _uid} })
+        + ((call ALiVE_fnc_recruitVehiclesOwned) select { ((crew _x) findIf { isPlayer _x }) < 0 })
+};
+
+// The action: held for 2 seconds, so a stray scroll click in a firefight can't dismiss anyone
 ALiVE_fnc_recruitDismissAction = {
     params ["_thing", "_cost", "_isVehicle"];
+    _thing setVariable ["ALiVE_recruitCost", _cost];
     private _name = getText (configFile >> "CfgVehicles" >> typeOf _thing >> "displayName");
-    _thing addAction [
+    [
+        _thing,
         format [localize "STR_ALIVE_RECRUIT_UI_DISMISS", _name],
-        {
-            params ["_target", "", "", "_args"];
-            _args params ["_cost", "_isVehicle", "_name"];
-            if (_isVehicle && {((crew _target) findIf { isPlayer _x }) >= 0}) exitWith {};
-            if (_isVehicle) then { { moveOut _x } forEach crew _target };
-            deleteVehicle _target;
-            [_cost, _name] spawn {
-                params ["_cost", "_name"];
-                private _back = (_cost > 0) && {([-_cost] call ALiVE_fnc_recruitAsk) isNotEqualTo []};
-                [localize "STR_ALIVE_RECRUIT", format [localize (["STR_ALIVE_RECRUIT_UI_DISMISSED", "STR_ALIVE_RECRUIT_UI_DISMISSED_REFUND"] select _back), _name, _cost]] call ALIVE_fnc_sendHint;
-            };
-        },
-        [_cost, _isVehicle, _name], 0.4, false, true, "",
-        "alive _target && {_this isEqualTo player} && {(_target getVariable ['ALiVE_recruitedBy', _target getVariable ['ALiVE_recruitedVehicleBy', '']]) isEqualTo getPlayerUID _this} && {_target isKindOf 'CAManBase' || {((crew _target) findIf { isPlayer _x }) < 0}}",
-        6
-    ];
+        "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_takeOff1_ca.paa",
+        "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_takeOff1_ca.paa",
+        "alive _target && {_this isEqualTo player} && {_this distance _target < 6} && {(_target getVariable ['ALiVE_recruitedBy', _target getVariable ['ALiVE_recruitedVehicleBy', '']]) isEqualTo getPlayerUID _this} && {_target isKindOf 'CAManBase' || {((crew _target) findIf { isPlayer _x }) < 0}}",
+        "alive _target",
+        {}, {},
+        { [_this select 0] call ALiVE_fnc_recruitDismiss },
+        {},
+        [], 2, 0.4, false, false
+    ] call BIS_fnc_holdActionAdd;
 };
 
 ALiVE_fnc_recruitUnit = {

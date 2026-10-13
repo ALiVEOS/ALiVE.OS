@@ -45,15 +45,15 @@ class ALiVE_RecruitWindow {
             x = 0.51 * safezoneW + safezoneX;
             y = 0.275 * safezoneH + safezoneY;
             w = 0.18 * safezoneW;
-            h = 0.30 * safezoneH;
+            h = 0.26 * safezoneH;
             colorBackground[] = {0,0,0,0};
         };
         class RecruitUI_Status: RecruitUI_RscStructuredText {
             idc = 92704;
             x = 0.51 * safezoneW + safezoneX;
-            y = 0.58 * safezoneH + safezoneY;
+            y = 0.54 * safezoneH + safezoneY;
             w = 0.18 * safezoneW;
-            h = 0.06 * safezoneH;
+            h = 0.10 * safezoneH;
             colorBackground[] = {0,0,0,0};
         };
         class RecruitUI_Recruit: RecruitUI_RscButton {
