@@ -279,6 +279,8 @@ ALiVE_FOB_watchdog = [_logic] spawn {
         if !(_logic getVariable ["pause", false]) then {
             // one pass, unscheduled inside, so it is never cut in half by the scheduler
             ["tick", _dt] call ALiVE_fnc_fobWatchdog;
+            // the FOB limit moves with the ground a side holds
+            [_logic, "broadcastRoom"] call ALiVE_fnc_FOB;
             if (ALiVE_FOB_dirty) then {
                 [_logic, "broadcastMirror"] call ALiVE_fnc_FOB;
                 ["save", [false]] call ALiVE_fnc_fobPersistence;

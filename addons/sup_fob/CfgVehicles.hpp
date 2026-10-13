@@ -65,9 +65,7 @@ class CfgVehicles {
                         };
                         class fob_build_range : Edit { property = "ALiVE_sup_fob_fob_build_range"; displayName = "$STR_ALIVE_FOB_BUILD_RANGE"; tooltip = "$STR_ALIVE_FOB_BUILD_RANGE_COMMENT"; typeName = "STRING"; defaultValue = """150"""; };
                         class fob_min_distance : Edit { property = "ALiVE_sup_fob_fob_min_distance"; displayName = "$STR_ALIVE_FOB_MIN_DISTANCE"; tooltip = "$STR_ALIVE_FOB_MIN_DISTANCE_COMMENT"; typeName = "STRING"; defaultValue = """500"""; };
-                        class fob_hub_west : Edit { property = "ALiVE_sup_fob_fob_hub_west"; displayName = "$STR_ALIVE_FOB_HUB_WEST"; tooltip = "$STR_ALIVE_FOB_HUB_COMMENT"; typeName = "STRING"; defaultValue = """Land_Cargo_HQ_V1_F"""; };
-                        class fob_hub_east : Edit { property = "ALiVE_sup_fob_fob_hub_east"; displayName = "$STR_ALIVE_FOB_HUB_EAST"; tooltip = "$STR_ALIVE_FOB_HUB_COMMENT"; typeName = "STRING"; defaultValue = """Land_Cargo_HQ_V3_F"""; };
-                        class fob_hub_guer : Edit { property = "ALiVE_sup_fob_fob_hub_guer"; displayName = "$STR_ALIVE_FOB_HUB_GUER"; tooltip = "$STR_ALIVE_FOB_HUB_COMMENT"; typeName = "STRING"; defaultValue = """Land_Cargo_HQ_V2_F"""; };
+                        class fob_hubs { property = "ALiVE_sup_fob_fob_hubs"; displayName = "$STR_ALIVE_FOB_HUBS"; tooltip = "$STR_ALIVE_FOB_HUBS_COMMENT"; control = "ALiVE_FOBHubChoice"; typeName = "STRING"; expression = "_this setVariable ['fob_hubs', _value, true];"; defaultValue = """Land_Cargo_HQ_V1_F|Land_Cargo_HQ_V3_F|Land_Cargo_HQ_V2_F"""; };
 
                         class HDR_CAP : ALiVE_ModuleSubTitle { property = "ALiVE_sup_fob_HDR_CAP"; displayName = "HOW MANY FOBS"; };
                         class fob_cap_type : Combo
@@ -107,6 +105,8 @@ class CfgVehicles {
                         class fob_supply_cap_t2 : Edit { property = "ALiVE_sup_fob_fob_supply_cap_t2"; displayName = "$STR_ALIVE_FOB_SUPPLY_CAP_T2"; tooltip = "$STR_ALIVE_FOB_SUPPLY_CAP_COMMENT"; typeName = "STRING"; defaultValue = """4000"""; };
                         class fob_supply_cap_t3 : Edit { property = "ALiVE_sup_fob_fob_supply_cap_t3"; displayName = "$STR_ALIVE_FOB_SUPPLY_CAP_T3"; tooltip = "$STR_ALIVE_FOB_SUPPLY_CAP_COMMENT"; typeName = "STRING"; defaultValue = """5000"""; };
                         class fob_cost_scale : Edit { property = "ALiVE_sup_fob_fob_cost_scale"; displayName = "$STR_ALIVE_FOB_COST_SCALE"; tooltip = "$STR_ALIVE_FOB_COST_SCALE_COMMENT"; typeName = "STRING"; defaultValue = """1"""; };
+                        class fob_blacklist : Edit { property = "ALiVE_sup_fob_fob_blacklist"; displayName = "$STR_ALIVE_FOB_BLACKLIST"; tooltip = "$STR_ALIVE_FOB_BLACKLIST_COMMENT"; typeName = "STRING"; defaultValue = """"""; };
+                        class fob_whitelist : Edit { property = "ALiVE_sup_fob_fob_whitelist"; displayName = "$STR_ALIVE_FOB_WHITELIST"; tooltip = "$STR_ALIVE_FOB_WHITELIST_COMMENT"; typeName = "STRING"; defaultValue = """"""; };
 
                         class fob_resupply_threshold : Edit { property = "ALiVE_sup_fob_fob_resupply_threshold"; displayName = "$STR_ALIVE_FOB_RESUPPLY_THRESHOLD"; tooltip = "$STR_ALIVE_FOB_RESUPPLY_THRESHOLD_COMMENT"; typeName = "STRING"; defaultValue = """25"""; };
                         class fob_crate_amount : Edit { property = "ALiVE_sup_fob_fob_crate_amount"; displayName = "$STR_ALIVE_FOB_CRATE_AMOUNT"; tooltip = "$STR_ALIVE_FOB_CRATE_AMOUNT_COMMENT"; typeName = "STRING"; defaultValue = """1000"""; };
@@ -114,7 +114,7 @@ class CfgVehicles {
                         class fob_tier2_cost : Edit { property = "ALiVE_sup_fob_fob_tier2_cost"; displayName = "$STR_ALIVE_FOB_TIER2_COST"; tooltip = "$STR_ALIVE_FOB_TIER_COST_COMMENT"; typeName = "STRING"; defaultValue = """1500"""; };
                         class fob_tier3_cost : Edit { property = "ALiVE_sup_fob_fob_tier3_cost"; displayName = "$STR_ALIVE_FOB_TIER3_COST"; tooltip = "$STR_ALIVE_FOB_TIER_COST_COMMENT"; typeName = "STRING"; defaultValue = """3000"""; };
                         class fob_garrison_cost : Edit { property = "ALiVE_sup_fob_fob_garrison_cost"; displayName = "$STR_ALIVE_FOB_GARRISON_COST"; tooltip = "$STR_ALIVE_FOB_GARRISON_COST_COMMENT"; typeName = "STRING"; defaultValue = """500"""; };
-                        class fob_garrison_group : Edit { property = "ALiVE_sup_fob_fob_garrison_group"; displayName = "$STR_ALIVE_FOB_GARRISON_GROUP"; tooltip = "$STR_ALIVE_FOB_GARRISON_GROUP_COMMENT"; typeName = "STRING"; defaultValue = """"""; };
+                        class fob_garrison_groups { property = "ALiVE_sup_fob_fob_garrison_groups"; displayName = "$STR_ALIVE_FOB_GARRISON_GROUPS"; tooltip = "$STR_ALIVE_FOB_GARRISON_GROUPS_COMMENT"; control = "ALiVE_FOBGroupChoice"; typeName = "STRING"; expression = "_this setVariable ['fob_garrison_groups', _value, true];"; defaultValue = """||"""; };
                         class fob_respawn : Combo
                         {
                                 property = "ALiVE_sup_fob_fob_respawn";
@@ -158,5 +158,32 @@ class CfgVehicles {
                 {
                         description[] = {"$STR_ALIVE_FOB_COMMENT","","$STR_ALIVE_FOB_USAGE"};
                 };
+        };
+        // A FOB kit and a supply crate players can order from the Player Resupply tablet, or a
+        // mission maker can place. The server makes them a kit or crate (fobOps kitInit) when it
+        // created them itself; a copy a player's machine makes stays a plain box.
+        class Box_NATO_Support_F;
+        class ALiVE_FOB_Kit : Box_NATO_Support_F
+        {
+                scope = 2;
+                scopeCurator = 2;
+                displayName = "$STR_ALIVE_FOB_KIT_NAME";
+                author = "ALiVE Mod Team";
+                class TransportMagazines {};
+                class TransportWeapons {};
+                class TransportItems {};
+                class TransportBackpacks {};
+        };
+        class B_supplyCrate_F;
+        class ALiVE_FOB_SupplyCrate : B_supplyCrate_F
+        {
+                scope = 2;
+                scopeCurator = 2;
+                displayName = "$STR_ALIVE_FOB_SUPPLYCRATE_NAME";
+                author = "ALiVE Mod Team";
+                class TransportMagazines {};
+                class TransportWeapons {};
+                class TransportItems {};
+                class TransportBackpacks {};
         };
 };

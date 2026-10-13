@@ -34,35 +34,39 @@ class ALiVE_FobBuildWindow {
             action = "['category', 'FORTIFICATION'] call ALiVE_fnc_buildMenu";
             x = 0.31 * safezoneW + safezoneX;
             y = 0.27 * safezoneH + safezoneY;
-            w = 0.046 * safezoneW;
+            w = 0.07 * safezoneW;
             h = 0.03 * safezoneH;
+            sizeEx = "(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.85)";
         };
         class FobUI_Supply: FobUI_RscButton {
             idc = 92808;
             text = "$STR_ALIVE_FOB_UI_SUPPLY";
             action = "['category', 'SUPPLY'] call ALiVE_fnc_buildMenu";
-            x = 0.358 * safezoneW + safezoneX;
+            x = 0.382 * safezoneW + safezoneX;
             y = 0.27 * safezoneH + safezoneY;
-            w = 0.046 * safezoneW;
+            w = 0.036 * safezoneW;
             h = 0.03 * safezoneH;
+            sizeEx = "(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.85)";
         };
         class FobUI_Statics: FobUI_RscButton {
             idc = 92810;
             text = "$STR_ALIVE_FOB_UI_STATICS";
             action = "['category', 'STATIC'] call ALiVE_fnc_buildMenu";
-            x = 0.406 * safezoneW + safezoneX;
+            x = 0.42 * safezoneW + safezoneX;
             y = 0.27 * safezoneH + safezoneY;
-            w = 0.046 * safezoneW;
+            w = 0.038 * safezoneW;
             h = 0.03 * safezoneH;
+            sizeEx = "(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.85)";
         };
         class FobUI_Vehicles: FobUI_RscButton {
             idc = 92811;
             text = "$STR_ALIVE_FOB_UI_VEHICLES";
             action = "['category', 'VEHICLE'] call ALiVE_fnc_buildMenu";
-            x = 0.454 * safezoneW + safezoneX;
+            x = 0.46 * safezoneW + safezoneX;
             y = 0.27 * safezoneH + safezoneY;
-            w = 0.046 * safezoneW;
+            w = 0.04 * safezoneW;
             h = 0.03 * safezoneH;
+            sizeEx = "(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.85)";
         };
         class FobUI_List: FobUI_RscListBox {
             idc = 92802;

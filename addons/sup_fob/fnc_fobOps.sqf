@@ -15,7 +15,8 @@ reason sent back to the player, when the kit isn't a FOB kit for that side, the 
 by it, the spot is in water or on ground steeper than about 15 degrees, too close to another FOB of any side, or the side already has as
 many FOBs as it may.
 
-dismantle takes a FOB down: its objectives, buildings and entry go; its supply is lost.
+dismantle takes a FOB down: its objectives, buildings and entry go; its kit comes back, with
+what was left of its supply in a crate.
 
 build puts up an item from the build catalog within the FOB's build range, paid for from the
 FOB's supply at the catalog's price; recycle takes one down again for half of what was paid.
@@ -47,6 +48,7 @@ spawnVehicle - [class, position, direction, faction] -> [vehicle profile id, gro
 pinStatic - [profile ids] -> keeps them where they are
 removeStatic - [vehicle profile id, crew profile id] -> the static weapon and its crew gone
 tag - [object, "KIT"/"CRATE"/"HQ", value] -> makes it a FOB kit, supply crate or Field HQ
+kitInit - [object] -> an ALiVE_FOB_Kit or ALiVE_FOB_SupplyCrate the server made becomes one
 cleanup - [fobID] -> removes a FOB and everything it made, no checks
 restore - [] -> rebuilds every loaded FOB's headquarters and objectives; the number rebuilt
 spawnHub - [fobID] -> the headquarters building, made if missing
@@ -99,6 +101,27 @@ switch (_op) do {
         if (isNull _o || {!(_kind in ["KIT", "CRATE", "HQ"])}) exitWith {};
         ALiVE_FOB_tagged set [netId _o, [_kind, _value]];
         _o setVariable [["ALiVE_FOB_kit", "ALiVE_FOB_crate", "ALiVE_FOB_fieldHQ"] select (["KIT", "CRATE", "HQ"] find _kind), _value, true];
+        _result = true;
+    };
+
+    // The FOB Kit and FOB Supply Crate classes, from their init event: placed in Eden, ordered
+    // from the Player Resupply tablet (Military Logistics makes them on the server) or put down
+    // by Zeus. Only one the server made itself counts; a copy a player's machine makes stays a
+    // plain box. Tagged once the module is up, a crate with the module's Crate Supply.
+    case "kitInit": {
+        _args params [["_o", objNull, [objNull]]];
+        _result = false;
+        if (isNull _o || {!local _o}) exitWith {};
+        _o spawn {
+            private _t0 = diag_tickTime;
+            waitUntil { sleep 1; (!isNil "ALiVE_sup_fob" && {ALiVE_sup_fob getVariable ["startupComplete", false]}) || {diag_tickTime - _t0 > 600} };
+            if (isNull _this || {isNil "ALiVE_sup_fob"}) exitWith {};
+            // already given its own value by the server (a dismantled FOB's kit and leftover supply)
+            if ((ALiVE_FOB_tagged getOrDefault [netId _this, []]) isNotEqualTo []) exitWith {};
+            if (_this isKindOf "ALiVE_FOB_Kit") then { ["tag", [_this, "KIT", true]] call ALiVE_fnc_fobOps } else {
+                ["tag", [_this, "CRATE", [ALiVE_sup_fob, "attribute", ["fob_crate_amount"]] call ALiVE_fnc_FOB]] call ALiVE_fnc_fobOps;
+            };
+        };
         _result = true;
     };
 
@@ -162,8 +185,19 @@ switch (_op) do {
         if (([_entry, "status", ""] call ALIVE_fnc_hashGet) == "damaged") exitWith { ["STR_ALIVE_FOB_REFUSED_DAMAGED"] call _tell };
 
         private _name = [_entry, "name", ""] call ALIVE_fnc_hashGet;
+        // packed up, not lost: the kit comes back where the headquarters stood and, in FOB supply
+        // mode, a crate with what was left in the FOB (in force pool mode the supply is the pool's)
+        private _side = [_entry, "side", ""] call ALIVE_fnc_hashGet;
+        private _at = [_entry, "pos", [0,0,0]] call ALIVE_fnc_hashGet;
+        private _left = if (([_logic, "attribute", ["fob_supply_source"]] call ALiVE_fnc_FOB) == "FORCEPOOL") then { 0 } else { floor (["balance", [_id]] call ALiVE_fnc_fobSupply) };
         ["cleanup", [_id]] call ALiVE_fnc_fobOps;
-        ["STR_ALIVE_FOB_DISMANTLED", [_name]] call _tell;
+        private _kit = createVehicle ["ALiVE_FOB_Kit", _at, [], 2, "NONE"];
+        ["tag", [_kit, "KIT", _side]] call ALiVE_fnc_fobOps;
+        if (_left > 0) then {
+            private _crate = createVehicle ["ALiVE_FOB_SupplyCrate", _at getPos [3, random 360], [], 2, "NONE"];
+            ["tag", [_crate, "CRATE", _left]] call ALiVE_fnc_fobOps;
+        };
+        if (_left > 0) then { ["STR_ALIVE_FOB_DISMANTLED_SUPPLY", [_name, _left]] call _tell } else { ["STR_ALIVE_FOB_DISMANTLED", [_name]] call _tell };
         ["ALiVE Player FOBs - %1 dismantled %2 (%3)", name _caller, _id, _name] call ALiVE_fnc_dump;
         _result = true;
     };
@@ -352,6 +386,8 @@ switch (_op) do {
         if (([_entry, "side", ""] call ALIVE_fnc_hashGet) != str (side group _caller)) exitWith { ["STR_ALIVE_FOB_REFUSED_NOTOURS"] call _tell };
         if (([_entry, "status", ""] call ALIVE_fnc_hashGet) != "active") exitWith { ["STR_ALIVE_FOB_REFUSED_DAMAGED_BUILD"] call _tell };
         if !(count _pos in [2, 3] && {(_pos findIf { !(_x isEqualType 0) || {!finite _x} }) < 0}) exitWith {};
+        // the height the player placed at (ASL), for a fortification or supply object on a roof
+        private _fromASL = _pos param [2, -1e6];
         _pos = [_pos select 0, _pos select 1, 0];
         if ((_pos select 0) < 0 || {(_pos select 1) < 0} || {(_pos select 0) > worldSize} || {(_pos select 1) > worldSize}) exitWith {};
         if !(finite _dir) exitWith {};
@@ -407,13 +443,19 @@ switch (_op) do {
             ["STR_ALIVE_FOB_BUILT", [_name, _cost]] call _tell;
             _result = true;
         };
+        // on the first surface at or below the height the player placed at: a roof, a floor or the
+        // ground, found here, never taken from the player. No higher than the player's head.
+        private _up = surfaceNormal _pos;
+        if (_fromASL > -1e5) then {
+            (["surface", [_pos, (_fromASL + 0.25) min (((eyePos _caller) select 2) + 1.5)]] call ALiVE_fnc_fobPlacement) params ["_atl", "_n"];
+            _pos = _atl; _up = _n;
+        };
         private _o = createVehicle [_class, _pos, [], 0, "CAN_COLLIDE"];
         if (isNull _o) exitWith {
             ["credit", [_id, _cost, "refund " + _class]] call ALiVE_fnc_fobSupply;
             ["STR_ALIVE_FOB_REFUSED_SPOT"] call _tell;
         };
-        // on the slope, keeping the heading the player chose; turned first, then placed
-        private _up = surfaceNormal _pos;
+        // on the slope or surface, keeping the heading the player chose; turned first, then placed
         private _tip = -((sin _dir) * (_up select 0) + (cos _dir) * (_up select 1)) / ((_up select 2) max 0.1);
         _o setVectorDirAndUp [vectorNormalized [sin _dir, cos _dir, _tip], _up];
         _o setPosATL _pos;
@@ -695,8 +737,8 @@ switch (_op) do {
         _result = [_vid, _eid];
     };
 
-    // A tier 2 or 3 FOB's garrison: one infantry group of the FOB's faction (or the module's
-    // Garrison Group), holding the FOB the way a roadblock's guards hold a checkpoint: garrisoned
+    // A tier 2 or 3 FOB's garrison: one infantry group of the FOB's faction (or the side's pick
+    // in the module's Garrison Groups), holding the FOB the way a roadblock's guards hold a checkpoint: garrisoned
     // within 30 m, kept busy and stationary so no commander takes it elsewhere. Paid from the
     // FOB's supply unless free (a reload making good a garrison the save didn't keep).
     case "garrison": {
@@ -705,7 +747,10 @@ switch (_op) do {
         private _entry = [ALiVE_FOB_registry, _id] call ALIVE_fnc_hashGet;
         if (isNil "_entry" || {isNil "ALiVE_ProfileHandler"}) exitWith {};
         private _faction = [_entry, "faction", ""] call ALIVE_fnc_hashGet;
-        private _class = [_logic, "attribute", ["fob_garrison_group"]] call ALiVE_fnc_FOB;
+        // the side's Garrison Group ("faction/group"), else a random infantry group of the FOB's faction
+        private _pick = ([_logic, "perSide", ["fob_garrison_groups", [_entry, "side", "WEST"] call ALIVE_fnc_hashGet]] call ALiVE_fnc_FOB) splitString "/";
+        private _class = "";
+        if (count _pick == 2) then { _faction = _pick select 0; _class = _pick select 1 };
         if (_class == "") then { _class = ["Infantry", _faction] call ALIVE_fnc_configGetRandomGroup };
         // the group lookup answers "FALSE" when the faction has none
         if (!(_class isEqualType "") || {_class in ["", "FALSE"]}) exitWith {

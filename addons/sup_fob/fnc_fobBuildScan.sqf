@@ -10,7 +10,8 @@ server from the game's own config, so it covers whatever mods are loaded without
 price list.
 
 Fortifications are the military walls, fences and structures the editor lists (sandbags,
-H-barriers, bunkers, towers, camo nets), plus portable lights. Supply objects are the ones that
+H-barriers, bunkers, towers, camo nets), a mod's own walls, fences and structures categories
+included, plus portable lights. Supply objects are the ones that
 rearm, refuel, repair or heal (ammo and fuel containers, repair depots, medical tents) and
 helipads. Static weapons are offered to their own side, crewed by it. Ruins, wrecks and anything
 wider than 40 m are left out.
@@ -36,10 +37,12 @@ mod's config (the mission's wins):
     class CfgALiVEFOBBuildables {
         blacklist[] = {"Land_Razorwire_F"};      // never offered
         whitelist[] = {"Land_Pallets_F"};        // offered, priced as a fortification
+        only[] = {"Land_BagFence_Short_F"};      // if set, the menu is exactly these
         class Land_HBarrier_5_F { cost = 7; };   // a fixed price (1 to 100000)
     };
 A price that isn't a whole number from 1 to 100000 is refused with a warning in the RPT and
-the worked-out price is used instead.
+the worked-out price is used instead. The module's Never Build and Also Build fields add to the
+blacklist and whitelist.
 
 Sizes come from a local, unsimulated copy of each object, measured a few at a time, and are
 kept in the server's profile, so later starts skip the measuring.
@@ -85,12 +88,15 @@ private _t0 = diag_tickTime;
 // Overrides: the mission's config first, then any mod's
 private _blacklist = [];
 private _whitelist = [];
+private _only = [];
 private _fixed = createHashMap;
 {
     private _root = _x >> "CfgALiVEFOBBuildables";
     if (isClass _root) then {
         _blacklist append ((getArray (_root >> "blacklist")) select { _x isEqualType "" } apply { toLower _x });
         _whitelist append ((getArray (_root >> "whitelist")) select { _x isEqualType "" });
+        // only[]: the menu is exactly these; the mission's list, else the first mod's
+        if (_only isEqualTo []) then { _only = (getArray (_root >> "only")) select { _x isEqualType "" } };
         {
             private _k = toLower configName _x;
             if (!(_k in _fixed) && {isNumber (_x >> "cost")}) then {
@@ -104,6 +110,11 @@ private _fixed = createHashMap;
         } forEach ("true" configClasses _root);
     };
 } forEach [missionConfigFile, configFile];
+// and the module's own Never Build and Also Build lists, class names separated by commas
+_blacklist append (([_logic, "attribute", ["fob_blacklist"]] call ALiVE_fnc_FOB) splitString ", ;" apply { toLower _x });
+_whitelist append (([_logic, "attribute", ["fob_whitelist"]] call ALiVE_fnc_FOB) splitString ", ;");
+// never the kit or supply crate themselves: one built here would be a crate of supply for its build price
+_blacklist append ["alive_fob_kit", "alive_fob_supplycrate"];
 
 // Sizes measured on earlier starts
 private _sizes = profileNamespace getVariable ["ALiVE_FOB_sizes", createHashMap];
@@ -293,7 +304,8 @@ private _add = {
         private _kind = switch (true) do {
             case (_isService && {_cat == "EdCat_Supplies" || {_sub == "EdSubcat_Military"}}): {"SUPPLY"};
             case (_sub == "EdSubcat_Helipads"): {"SUPPLY"};
-            case (_sub == "EdSubcat_Military" && {_cat in ["EdCat_Walls", "EdCat_Fences"] || {_cat find "EdCat_Structures" == 0}}): {"FORTIFICATION"};
+            // any walls, fences or structures category: a mod's own (CUP's EdCat_CUP_Walls) as well as the game's
+            case (_sub == "EdSubcat_Military" && {(["walls", "fences", "structures"] findIf { _x in toLower _cat }) >= 0} && {!("ruins" in toLower _cat)}): {"FORTIFICATION"};
             case (_sub == "EdSubcat_Lamps" && {"portablelight" in toLower _class}): {"FORTIFICATION"};
             default {""};
         };
@@ -312,6 +324,22 @@ private _add = {
     };
 } forEach _whitelist;
 
+// only[]: exactly these, each priced by the rules (or as a fortification when the rules don't
+// pick it) unless it has a cost; the blacklist still applies
+if (_only isNotEqualTo []) then {
+    private _have = _rows apply { toLower (_x select 0) };
+    {
+        private _cfg = configFile >> "CfgVehicles" >> _x;
+        if (isClass _cfg) then {
+            if !(toLower _x in _have) then { [configName _cfg, _cfg, "FORTIFICATION"] call _add };
+        } else {
+            ["ALiVE Player FOBs - CfgALiVEFOBBuildables: only class %1 isn't in this game", _x] call ALiVE_fnc_dumpR;
+        };
+    } forEach _only;
+    private _keep = _only apply { toLower _x };
+    _rows = _rows select { toLower (_x select 0) in _keep };
+};
+
 _rows sort true;
 if (_measured > 0) then {
     profileNamespace setVariable ["ALiVE_FOB_sizes", _sizes];
@@ -320,6 +348,11 @@ if (_measured > 0) then {
 
 ALiVE_FOB_catalog = _rows;
 publicVariable "ALiVE_FOB_catalog";
+// With Debug on, every row in the RPT, one per line, for the Player FOBs build list page on the
+// ALiVE website: [class, name, category, cost, tier, side, faction]
+if ([_logic, "attribute", ["fob_debug"]] call ALiVE_fnc_FOB) then {
+    { diag_log text ("ALiVE_FOB_CATALOG " + str [_x select 0, _x select 1, _x select 2, _x select 3, _x select 5, _x select 6, _x select 7]) } forEach _rows;
+};
 ["ALiVE Player FOBs - build catalog: %1 fortifications, %2 supply, %3 static weapons, %4 vehicles, %5 measured, %6 ms",
     { (_x select 2) == "FORTIFICATION" } count _rows, { (_x select 2) == "SUPPLY" } count _rows, { (_x select 2) == "STATIC" } count _rows,
     { (_x select 2) == "VEHICLE" } count _rows, _measured, round ((diag_tickTime - _t0) * 1000)] call ALiVE_fnc_dump;

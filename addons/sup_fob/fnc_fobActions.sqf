@@ -157,10 +157,17 @@ switch (_op) do {
         } forEach ["Static", "Thing", "StaticWeapon", "LandVehicle", "Ship"];
     };
 
+    // The headquarters is placed like a built item: a copy stands in front of the player, green
+    // where it can go, and Deploy FOB Here, Rotate or Cancel from the scroll menu
     case "deploy": {
         if (isNull ALiVE_FOB_nearKit) exitWith {};
-        private _pos = player getPos [8, getDir player];
-        ["deploy", [ALiVE_FOB_nearKit, _pos, getDir player]] remoteExecCall ["ALiVE_fnc_fobRequest", 2];
+        private _side = str (side group player);
+        private _class = [missionNamespace getVariable ["ALiVE_sup_fob", objNull], "perSide", ["fob_hubs", _side]] call ALiVE_fnc_FOB;
+        if !(isClass (configFile >> "CfgVehicles" >> _class)) exitWith {
+            ["deploy", [ALiVE_FOB_nearKit, player getPos [8, getDir player], getDir player]] remoteExecCall ["ALiVE_fnc_fobRequest", 2];
+        };
+        // a row like the Build Menu's, and the kit standing in for the FOB: placed within 40 m of it
+        ["start", [[_class, localize "STR_ALIVE_FOB_HQ_NAME", "DEPLOY", 0], ["", _side, "", getPosATL ALiVE_FOB_nearKit, "", 1, 0, 0, 40], ALiVE_FOB_nearKit]] call ALiVE_fnc_fobPlacement;
     };
 
     case "status": {

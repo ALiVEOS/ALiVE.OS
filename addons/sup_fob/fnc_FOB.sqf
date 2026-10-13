@@ -72,9 +72,7 @@ private _settings = createHashMapFromArray [
     ["fob_persistent", [true, "bool"]],
     ["fob_build_range", [150, [25, 1000]]],
     ["fob_min_distance", [500, [0, 10000]]],
-    ["fob_hub_west", ["Land_Cargo_HQ_V1_F", "text"]],
-    ["fob_hub_east", ["Land_Cargo_HQ_V3_F", "text"]],
-    ["fob_hub_guer", ["Land_Cargo_HQ_V2_F", "text"]],
+    ["fob_hubs", ["Land_Cargo_HQ_V1_F|Land_Cargo_HQ_V3_F|Land_Cargo_HQ_V2_F", "text"]],
     ["fob_cap_type", ["DYNAMIC", "text"]],
     ["fob_cap", [3, "number"]],
     ["fob_cap_base", [1, [0, 12]]],
@@ -87,6 +85,8 @@ private _settings = createHashMapFromArray [
     ["fob_supply_cap_t2", [4000, [0, 1000000]]],
     ["fob_supply_cap_t3", [5000, [0, 1000000]]],
     ["fob_cost_scale", [1, [0, 100]]],
+    ["fob_blacklist", ["", "text"]],
+    ["fob_whitelist", ["", "text"]],
     ["fob_save_interval", [60, [5, 3600]]],
     ["fob_alert_radius", [400, [50, 3000]]],
     ["fob_enemy_targeting", ["CONTACT", "text"]],
@@ -102,7 +102,7 @@ private _settings = createHashMapFromArray [
     ["fob_tier3_cost", [3000, [0, 1000000]]],
     ["fob_respawn", [true, "bool"]],
     ["fob_garrison_cost", [500, [0, 1000000]]],
-    ["fob_garrison_group", ["", "text"]]
+    ["fob_garrison_groups", ["||", "text"]]
 ];
 
 switch (_operation) do {
@@ -278,6 +278,22 @@ switch (_operation) do {
         _result = _value;
     };
 
+    // One side's pick from a per-side setting stored BLUFOR|OPFOR|Independent (Headquarters
+    // Buildings, Garrison Groups): "" when that side has none. Works on any machine.
+    case "perSide": {
+        _args params [["_name", "", [""]], ["_side", "WEST", [""]]];
+        private _raw = _logic getVariable [_name, (_settings getOrDefault [_name, [""]]) select 0];
+        if !(_raw isEqualType "") then { _raw = "" };
+        private _parts = [];
+        private _at = _raw find "|";
+        while {_at >= 0} do { _parts pushBack (_raw select [0, _at]); _raw = _raw select [_at + 1]; _at = _raw find "|" };
+        _parts pushBack _raw;
+        _result = _parts param [["WEST", "EAST", "GUER"] find _side, ""];
+        if (_name == "fob_hubs" && {_result == ""}) then {
+            _result = ["Land_Cargo_HQ_V1_F", "Land_Cargo_HQ_V3_F", "Land_Cargo_HQ_V2_F"] param [["WEST", "EAST", "GUER"] find _side, "Land_Cargo_HQ_V1_F"];
+        };
+    };
+
     case "nextID": {
         _args params [["_side", "WEST", [""]]];
         ALiVE_FOB_counter = ALiVE_FOB_counter + 1;
@@ -290,7 +306,6 @@ switch (_operation) do {
         private _names = ["Alpha","Bravo","Charlie","Delta","Echo","Foxtrot","Golf","Hotel","India","Juliet","Kilo","Lima","Mike",
             "November","Oscar","Papa","Quebec","Romeo","Sierra","Tango","Uniform","Victor","Whiskey","X-ray","Yankee","Zulu"];
         private _n = parseNumber ((_id splitString "_") param [2, "0"]);
-        private _hubKey = switch (_side) do { case "EAST": {"fob_hub_east"}; case "GUER": {"fob_hub_guer"}; default {"fob_hub_west"} };
         _result = [] call ALIVE_fnc_hashCreate;
         {
             [_result, _x select 0, _x select 1] call ALIVE_fnc_hashSet;
@@ -299,7 +314,7 @@ switch (_operation) do {
             ["name", "FOB " + (_names select ((_n - 1) max 0) % 26)],
             ["pos", _pos], ["dir", _dir], ["status", "active"], ["tier", 1],
             ["supply", [_logic, "attribute", ["fob_supply_initial"]] call MAINCLASS],
-            ["hubClass", [_logic, "attribute", [_hubKey]] call MAINCLASS], ["hub", objNull],
+            ["hubClass", [_logic, "perSide", ["fob_hubs", _side]] call MAINCLASS], ["hub", objNull],
             ["objects", []],
             ["repairRemaining", 0], ["captureRemaining", 0], ["alertCooldown", 0], ["resupplyCooldown", 0], ["trickleAccumulator", 0],
             ["captureSide", ""], ["discoveredBy", []], ["objectiveIDs", []], ["garrison", []], ["respawn", []]
@@ -337,6 +352,17 @@ switch (_operation) do {
     };
 
     // What players' machines see: [id, side, name, pos, status, tier, supply, supplyCap, buildRange]
+    // Each side's FOBs and its FOB limit, [[side, FOBs, limit], ...], for players' deploy
+    // previews; sent only when it changed
+    case "broadcastRoom": {
+        private _room = ["WEST", "EAST", "GUER"] apply { [_x, ["countForSide", [_x]] call ALiVE_fnc_fobCap, ["capForSide", [_x]] call ALiVE_fnc_fobCap] };
+        if !(_room isEqualTo (missionNamespace getVariable ["ALiVE_FOB_sideRoom", []])) then {
+            ALiVE_FOB_sideRoom = _room;
+            publicVariable "ALiVE_FOB_sideRoom";
+        };
+        _result = _room;
+    };
+
     case "broadcastMirror": {
         private _range = [_logic, "attribute", ["fob_build_range"]] call MAINCLASS;
         ALiVE_FOB_registryMirror = (ALiVE_FOB_registry select 1) apply {
@@ -346,6 +372,7 @@ switch (_operation) do {
              ["balance", [_x]] call ALiVE_fnc_fobSupply, ["cap", [_x]] call ALiVE_fnc_fobSupply, _range]
         };
         publicVariable "ALiVE_FOB_registryMirror";
+        [_logic, "broadcastRoom"] call MAINCLASS;
         // A hosted server's own player gets no public variable event for its own send
         if (hasInterface) then { [] call ALiVE_fnc_fobMarkers };
         _result = count ALiVE_FOB_registryMirror;

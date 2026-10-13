@@ -41,18 +41,6 @@
             <Key ID="STR_ALIVE_FOB_MIN_DISTANCE_COMMENT">
                 <English>A new FOB can't be deployed closer than this to another FOB, of any side.</English>
             </Key>
-            <Key ID="STR_ALIVE_FOB_HUB_WEST">
-                <English>Headquarters Building (BLUFOR)</English>
-            </Key>
-            <Key ID="STR_ALIVE_FOB_HUB_EAST">
-                <English>Headquarters Building (OPFOR)</English>
-            </Key>
-            <Key ID="STR_ALIVE_FOB_HUB_GUER">
-                <English>Headquarters Building (Independent)</English>
-            </Key>
-            <Key ID="STR_ALIVE_FOB_HUB_COMMENT">
-                <English>The class name of the building a deployed FOB starts with. Lose it and the FOB is damaged until it's repaired.</English>
-            </Key>
             <Key ID="STR_ALIVE_FOB_CAP_TYPE">
                 <English>FOB Limit</English>
             </Key>
@@ -134,6 +122,108 @@
             <Key ID="STR_ALIVE_FOB_COST_SCALE_COMMENT">
                 <English>Every build cost is multiplied by this. 0.5 halves them, 2 doubles them.</English>
             </Key>
+            <Key ID="STR_ALIVE_FOB_HUBS">
+                <English>Headquarters Buildings</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_HUBS_COMMENT">
+                <English>The building each side's FOB starts with: lose it and the FOB is damaged until it's repaired. Side picks BLUFOR, OPFOR or Independent; Show lists military structures or every building.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_GARRISON_GROUPS">
+                <English>Garrison Groups</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_GARRISON_GROUPS_COMMENT">
+                <English>The infantry group that garrisons each side's FOB from tier 2. Side picks BLUFOR, OPFOR or Independent; Show lists that side's groups or every side's. The first row, a random group of the FOB's faction, is the default.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_GARRISON_RANDOM">
+                <English>(A random infantry group of the FOB's faction)</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_PICK_UNKNOWN">
+                <English>%1 (not in this game)</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_PICK_SIDE">
+                <English>Side</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_PICK_SHOW">
+                <English>Show</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_PICK_BLUFOR">
+                <English>BLUFOR</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_PICK_OPFOR">
+                <English>OPFOR</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_PICK_INDEP">
+                <English>Independent</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_PICK_MILITARY">
+                <English>Military</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_PICK_ALL">
+                <English>All buildings</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_PICK_THISSIDE">
+                <English>This side</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_PICK_ALLSIDES">
+                <English>All sides</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_PICK_TYPED">
+                <English>Or type it:</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_PICK_TYPED_HUB">
+                <English>A building's class name, for one the list doesn't show. What's here is this side's pick.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_PICK_TYPED_GROUP">
+                <English>A group as faction/group, e.g. BLU_F/BUS_InfTeam, for one the list doesn't show; empty for a random group of the FOB's faction. What's here is this side's pick.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_WHY_KIT">
+                <English>It can't go here: keep it within %1 m of the FOB kit.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_WHY_RANGE">
+                <English>It can't go here: keep it inside the FOB's build range (%1 m).</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_WHY_WATER">
+                <English>It can't go here: it's in water. Move it onto land.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_WHY_SLOPE">
+                <English>The FOB can't go here: the ground slopes %1 degrees, and 15 is the most. Find flatter ground.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_WHY_NEAR">
+                <English>The FOB can't go here: %1 is only %2 m away, and FOBs must be %3 m apart. Dismantle %1 or move further away.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_WHY_CAP">
+                <English>Your side already has as many FOBs as it may (%1). Take and hold more objectives, or dismantle one.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_ACTION_DEPLOY_HERE">
+                <English>Deploy FOB Here</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_HQ_NAME">
+                <English>FOB Headquarters</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_PLACE_LEFT_KIT">
+                <English>You moved too far from the FOB kit, so deploying stopped.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_PLACE_BAD_HQ">
+                <English>The FOB can't go here: keep it within 40 m of the kit, out of water, on ground no steeper than about 15 degrees, and away from other FOBs.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_KIT_NAME">
+                <English>ALiVE FOB Kit</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_SUPPLYCRATE_NAME">
+                <English>ALiVE FOB Supply Crate</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_BLACKLIST">
+                <English>Never Build</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_BLACKLIST_COMMENT">
+                <English>Class names players can never build, separated by commas, e.g. Land_Razorwire_F, B_MBT_01_cannon_F. Added to any CfgALiVEFOBBuildables blacklist.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_WHITELIST">
+                <English>Also Build</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_WHITELIST_COMMENT">
+                <English>Class names to offer even though the Build Menu wouldn't pick them, separated by commas. They are priced as fortifications unless CfgALiVEFOBBuildables gives a price.</English>
+            </Key>
             <Key ID="STR_ALIVE_FOB_SAVE_INTERVAL">
                 <English>Save Interval (s)</English>
             </Key>
@@ -171,7 +261,10 @@
                 <English>%1 deployed.</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_DISMANTLED">
-                <English>%1 dismantled.</English>
+                <English>%1 dismantled. Its FOB kit is back.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_DISMANTLED_SUPPLY">
+                <English>%1 dismantled. Its FOB kit is back, with %2 supply in a crate.</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_REFUSED_SIDE">
                 <English>Only BLUFOR, OPFOR and Independent players can deploy a FOB.</English>
@@ -439,12 +532,6 @@
             </Key>
             <Key ID="STR_ALIVE_FOB_GARRISON_COST_COMMENT">
                 <English>A tier 2 or 3 FOB keeps a garrison of one infantry group of its faction, which holds the FOB and is never sent elsewhere. Each new garrison costs this much of the FOB's supply; when the last of it is killed, the next one is paid for again.</English>
-            </Key>
-            <Key ID="STR_ALIVE_FOB_GARRISON_GROUP">
-                <English>Garrison Group</English>
-            </Key>
-            <Key ID="STR_ALIVE_FOB_GARRISON_GROUP_COMMENT">
-                <English>The CfgGroups class the garrison is made from. Empty: a random infantry group of the FOB's faction.</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_RADIO_TAKING">
                 <English>%1 is being taken by the enemy. Get men back inside %2 m within %3 s.</English>
