@@ -244,6 +244,21 @@ switch (_operation) do {
                             ]
                     ] call CBA_fnc_flexiMenu_Add;
                 };
+
+                // The scroll actions (carry, load, tow, lift) from the start as Player Actions at Start
+                // says, and back after every respawn for a player who had them
+                [_logic] spawn {
+                    params ["_logic"];
+                    waitUntil { sleep 1; !isNull player && {alive player} };
+                    private _mode = toUpper (_logic getVariable ["ACTIONSATSTART", "NOACE"]);
+                    // ACE has its own carry, drag and cargo
+                    private _ace = isClass (configFile >> "CfgPatches" >> "ace_cargo") || {isClass (configFile >> "CfgPatches" >> "ace_dragging")};
+                    if ((_mode == "ON" || {_mode == "NOACE" && {!_ace}}) && {isNil {player getVariable QGVAR(ACTIONS)}}) then { call GVAR(ACTIONS) };
+                    player addEventHandler ["Respawn", {
+                        params ["_new", "_old"];
+                        if ((_old getVariable [QGVAR(HADACTIONS), false]) && {isNil {_new getVariable QGVAR(ACTIONS)}}) then { call GVAR(ACTIONS) };
+                    }];
+                };
             };
 
             TRACE_1("After module init",_logic);
@@ -932,7 +947,8 @@ switch (_operation) do {
 		                        [MOD(SYS_LOGISTICS),"updateObject",[vehicle _object]] call ALIVE_fnc_logistics;
                             };
 
-                            //Deactivate actions
+                            //Deactivate actions, remembering they were on so the respawned player gets them back
+                            _object setVariable [QGVAR(HADACTIONS), !isNil {_object getVariable QGVAR(ACTIONS)}];
                             [MOD(SYS_LOGISTICS),"removeActions",_object] call ALIVE_fnc_logistics;
                         };
 

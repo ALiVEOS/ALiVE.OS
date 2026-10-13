@@ -232,6 +232,21 @@
     <Russian>Отключает возможность загружать объекты в машины и выгружать их.</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_LOGISTICS_ACTIONSATSTART">
+    <English>Player Actions at Start</English>
+</Key>
+<Key ID="STR_ALIVE_LOGISTICS_ACTIONSATSTART_COMMENT">
+    <English>Whether players get the logistics scroll actions (carry, load, tow, lift) as soon as they join, and back after every respawn. Off: each player turns them on in Player Options. On without ACE: on, unless ACE is loaded, as ACE has its own carry and cargo. Players can still turn them off in Player Options.</English>
+</Key>
+<Key ID="STR_ALIVE_LOGISTICS_ACTIONSATSTART_OFF">
+    <English>Off (turned on in Player Options)</English>
+</Key>
+<Key ID="STR_ALIVE_LOGISTICS_ACTIONSATSTART_NOACE">
+    <English>On without ACE</English>
+</Key>
+<Key ID="STR_ALIVE_LOGISTICS_ACTIONSATSTART_ON">
+    <English>On</English>
+</Key>
 <Key ID="STR_ALIVE_LOGISTICS_DISABLEPERSISTENCE">
     <English>Disable Persistence:</English>
     <Chinese>停用持久化:</Chinese>
