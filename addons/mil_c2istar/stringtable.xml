@@ -552,6 +552,12 @@
 <Key ID="STR_ALIVE_C2ISTAR_REPORT_AIR_SITUATION_COMMENT">
     <English>Players are told on the AIR PICTURE page of the map diary when the air situation changes: we hold air superiority, the enemy holds it, the air is contested, or the sky is clear of armed aircraft it knows of. It counts your side's armed aircraft in the air and the enemy ones your side knows about, and only reports a change once it has lasted about a minute.</English>
 </Key>
+<Key ID="STR_ALIVE_C2ISTAR_AIR_SITUATION_NEEDS_ATO">
+    <English>Only Against An Enemy Air Commander</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_AIR_SITUATION_NEEDS_ATO_COMMENT">
+    <English>On, a side is only told about the air situation when a Military Air Tasking Order module flies for a side hostile to it, so a mission with no enemy air commander stays quiet. Off, it reports whatever armed aircraft are up.</English>
+</Key>
 <Key ID="STR_ALIVE_C2ISTAR_AIR_SITUATION_AIRCRAFT">
     <English>Air Situation Counts</English>
 </Key>

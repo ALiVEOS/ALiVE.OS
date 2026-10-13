@@ -1237,7 +1237,9 @@ switch(_operation) do {
         // hands, on the same AIR PICTURE page. Every 30 s it counts the side's own armed aircraft in
         // the air and the enemy ones it knows about; a new state is said once it has held for a
         // minute, and an empty sky only after a minute and a half, so a single pass doesn't flap it.
-        // Only what's spawned and seen counts, so it's honest about what the side can know.
+        // Only what's spawned and seen counts, so it's honest about what the side can know. A side is
+        // only told when an air commander (Military Air Tasking Order) serves a side hostile to it:
+        // with no enemy air commander there is no air war to report.
         private _reportSky = _logic getVariable ["reportAirSituation", true];
         if (_reportSky isEqualType "") then { _reportSky = (toLower _reportSky) != "false" };
         if (isServer && {_reportSky isEqualTo true}) then {
@@ -1250,9 +1252,22 @@ switch(_operation) do {
                     ["ours", "we hold air superiority"], ["theirs", "the enemy holds air superiority"],
                     ["contested", "the air is contested"], ["quiet", "the sky is clear of armed aircraft we know of"]
                 ];
+                // the sides the mission's air commanders fly for, from each one's faction
+                private _atoSides = [];
+                {
+                    private _f = _x getVariable ["faction", "OPF_F"];
+                    if (!isNil "ALiVE_fnc_factionCompilerResolveForModule") then {
+                        private _r = [_x] call ALiVE_fnc_factionCompilerResolveForModule;
+                        if (!isNil "_r" && {_r isEqualType ""} && {_r != ""}) then { _f = _r };
+                    };
+                    if (_f isEqualType "" && {_f != ""}) then { _atoSides pushBackUnique (_f call ALiVE_fnc_factionSide) };
+                } forEach (allMissionObjects "ALiVE_mil_ato");
+                ["C2ISTAR air picture: air commanders fly for %1", _atoSides] call ALiVE_fnc_dump;
                 while {true} do {
                     sleep 30;
                     // Read each time, so a mission can switch it while running.
+                    private _needsATO = _logic getVariable ["airSituationNeedsATO", true];
+                    if (_needsATO isEqualType "") then { _needsATO = (toLower _needsATO) != "false" };
                     private _fightersOnly = ((toLower str (_logic getVariable ["airSituationAircraft", "all"])) find "fighters") >= 0;
                     private _air = vehicles select {
                         _x isKindOf "Air" && {!(_x isKindOf "ParachuteBase")} && {alive _x} && {((getPosATL _x) select 2) > 20}
@@ -1261,7 +1276,8 @@ switch(_operation) do {
                     };
                     {
                         private _side = _x;
-                        if ((allPlayers findIf { side group _x isEqualTo _side }) >= 0) then {
+                        if ((allPlayers findIf { side group _x isEqualTo _side }) >= 0
+                            && {!_needsATO || {(_atoSides findIf { (_side getFriend _x) < 0.6 }) >= 0}}) then {
                             private _own = { side group (effectiveCommander _x) isEqualTo _side } count _air;
                             private _enemy = { private _s = side group (effectiveCommander _x); (_side getFriend _s) < 0.6 && {(_side knowsAbout _x) > 1} } count _air;
                             private _state = switch (true) do {

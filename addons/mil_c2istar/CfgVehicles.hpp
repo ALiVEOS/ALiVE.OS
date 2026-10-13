@@ -635,6 +635,16 @@ class CfgVehicles {
                             expression = "_this setVariable ['reportAirSituation', _value, true];";
                             defaultValue = "true";
                     };
+                    class airSituationNeedsATO
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_airSituationNeedsATO";
+                            displayName = "$STR_ALIVE_C2ISTAR_AIR_SITUATION_NEEDS_ATO";
+                            tooltip = "$STR_ALIVE_C2ISTAR_AIR_SITUATION_NEEDS_ATO_COMMENT";
+                            control = "Checkbox";
+                            typeName = "BOOL";
+                            expression = "_this setVariable ['airSituationNeedsATO', _value, true];";
+                            defaultValue = "true";
+                    };
                     class airSituationAircraft : Combo
                     {
                             property = "ALiVE_MIL_C2ISTAR_airSituationAircraft";
