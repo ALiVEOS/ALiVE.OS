@@ -995,7 +995,7 @@ ALiVE_fnc_INS_factory = {
                     _pos = if (count _positions > 0) then {(selectRandom _positions)} else {_pos};
 
                     // Create factory
-                    [_factory,_id] call ALiVE_fnc_INS_spawnIEDfactory;
+                    [_factory,_id,_faction] call ALiVE_fnc_INS_spawnIEDfactory;
 
                     // Create virtual guards
                     {[_x,"addHouse",_factory] call ALiVE_fnc_CQB} foreach _CQB;
@@ -1447,7 +1447,7 @@ ALiVE_fnc_INS_depot = {
 
                 // Establish Depot
                 if (alive _depot) then {
-                    [_depot,_id] call ALiVE_fnc_INS_spawnDepot;
+                    [_depot,_id,_faction] call ALiVE_fnc_INS_spawnDepot;
 
                     // Create virtual guards
                     {[_x,"addHouse",_depot] call ALiVE_fnc_CQB} foreach _CQB;
@@ -1529,7 +1529,7 @@ ALiVE_fnc_INS_recruit = {
                 // Establish HQ
                 if (alive _HQ) then {
                     // Create HQ
-                    [_HQ,_id] call ALiVE_fnc_INS_spawnHQ;
+                    [_HQ,_id,_faction] call ALiVE_fnc_INS_spawnHQ;
 
                     // Get indoor Housepos
                     _pos = getposATL _HQ;
@@ -1860,6 +1860,262 @@ ALiVE_fnc_INS_getBuildingInstallations = {
     _installations
 };
 
+// The Installation Props themes: [tables, things on tables, depot floor, HQ floor] (ALiVE_fnc_INS_propSet).
+// Classes that aren't loaded are dropped when used.
+if (isNil "ALiVE_INS_propThemes") then {
+    ALiVE_INS_propThemes = createHashMapFromArray [
+        ["CLASSIC", [["Land_RattanTable_01_F"], ["Land_Canteen_F","Land_TinContainer_F"], ["VirtualReammoBox_small_F"], ["VirtualReammoBox_small_F"]]],
+        ["MODERN", [
+            ["Land_CampingTable_F","Land_CampingTable_small_F","Land_WoodenTable_large_F","Land_WoodenTable_small_F","Land_TableDesk_F","Land_TableSmall_01_F","Land_Workbench_01_F"],
+            ["Land_Laptop_F","Land_PortableLongRangeRadio_F","Land_FMradio_F","Land_SatellitePhone_F","Land_Map_unfolded_F","Land_File1_F","Land_Notepad_F","Land_Wrench_F","Land_Pliers_F","Land_Battery_F","Land_DuctTape_F","Land_ButaneCanister_F","Land_Can_V1_F","Land_BottlePlastic_V1_F"],
+            ["Box_East_Ammo_F","Box_East_AmmoOrd_F","Box_East_Wps_F","Box_East_Grenades_F","Box_Syndicate_Ammo_F","Box_Syndicate_Wps_F","Land_Ammobox_rounds_F","Land_CratesWooden_F","Land_WoodenBox_F","Land_Sacks_goods_F","Land_CanisterFuel_F"],
+            ["Land_MapBoard_F","Land_ChairPlastic_F","Land_ChairWood_F","Land_CampingChair_V2_F","Land_Sleeping_bag_brown_F","Land_Ammobox_rounds_F","Box_East_Wps_F"]
+        ]],
+        ["VIETNAM", [
+            ["Land_vn_table","Land_vn_us_common_table_01","Land_vn_kitchen_table_a","Land_vn_table_drawer","Land_vn_woodentable_small_f","Land_vn_woodentable_large_f","Land_vn_tablesmall_01_f"],
+            ["vn_b_prop_typewriter_01","vn_b_prop_telephone_01","Land_vn_radio","vn_b_prop_fmradio_01","vn_o_prop_radio_m252b_01","Land_vn_map_unfolded_f","vn_o_item_map_case_01","Land_vn_us_common_lantern_01","Land_vn_candle_01","Land_vn_waterbottle_01_full_f","Land_vn_teapot_ep1"],
+            ["Land_vn_us_ammobox_small_01","Land_vn_us_ammobox_small_03","Land_vn_pavn_weapons_cache","vn_prop_60mm_crate_01","vn_prop_81mm_crate_02","Land_vn_metalcrate","Land_vn_crateswooden_f","Land_vn_woodencrate_01_f","vn_prop_food_sack_01_gh","Land_vn_sack_f"],
+            ["Land_vn_b_prop_mapstand_01","Land_vn_mapboard_f","vn_flag_vc","vn_banner_vc","vn_o_item_bedroll_01","vn_b_prop_cot_01","Land_vn_chair","vn_bar_01_campchair_01"]
+        ]],
+        ["WW2", [
+            ["SPE_Desk_01","SPE_SideTable_01","SPE_CoffeeTable","SPE_DiningTable_01","SPE_ChateauTable_01"],
+            ["SPE_Radio_Ger","Land_SPE_Onion_Lamp","Land_SPE_Ger_Lamp","Land_SPE_Cider_Bottle_01","Land_SPE_Milk_Bottle","Land_SPE_Pots_01","Land_SPE_Ammocan_German","SPE_US_TNT_half_pound","Land_Map_F","Land_File1_F"],
+            ["Land_SPE_Ammobox_German_01","Land_SPE_Ammobox_German_02","Land_SPE_Ammobox_German_03","Land_SPE_Ammocrate_US_01","SPE_BasicAmmunitionBox_GER","SPE_Weaponcrate_K98_GER","Land_SPE_Jerrycan","Land_SPE_Sack_Wheat_Pile"],
+            ["SPE_Banner_01_FFF_F","SPE_FlagCarrier_FFF","Land_SPE_Cabinet","SPE_LeatherChair","SPE_DiningChair","SPE_ChateauChair"]
+        ]],
+        ["COLDWAR", [
+            ["gm_euro_furniture_table_06_random","gm_euro_furniture_desk_01_random","Land_TableDesk_F","Land_WoodenTable_small_F"],
+            ["gm_r123m_table","gm_anprc371_table","Land_Laptop_F","Land_Map_unfolded_F","Land_File1_F","Land_Notepad_F","Land_FMradio_F"],
+            ["gm_AmmoBox_wood_01_empty","gm_AmmoBox_wood_03_empty","gm_ammobox_aluminium_01_empty","gm_ammobox_pile_small_01_empty","gm_fortification_crate_01","gm_crates_pile_01","gm_jerrycan","gm_barrel_rusty"],
+            ["gm_banner_GC","gm_flag_GC","Land_ChairWood_F","Land_Sleeping_bag_brown_F","Land_MapBoard_F"]
+        ]]
+    ];
+};
+
+// The props an installation is dressed with: [tables, things on tables, floor props]. A mission's
+// own list for this kind of installation (Factory, Depot or HQ Props on the AI Commander) is used for
+// all three; otherwise the commander's Installation Props theme. Auto picks the theme from the
+// commander's faction (SOG, Spearhead 1944, Global Mobilization) and keeps ALiVE's own props for any
+// other. Classes that aren't loaded are dropped, and an empty list falls back to ALiVE's own.
+ALiVE_fnc_INS_propSet = {
+    params [["_type", ""], ["_faction", ""]];
+    private _classic = [["Land_RattanTable_01_F"], ["Land_Canteen_F","Land_TinContainer_F"], ["VirtualReammoBox_small_F"]];
+    private _module = objNull;
+    if (!isNil "OPCOM_instances") then {
+        private _i = OPCOM_instances findIf { _faction in ([_x, "factions", []] call ALiVE_fnc_HashGet) };
+        if (_i >= 0) then { _module = [OPCOM_instances select _i, "module", objNull] call ALiVE_fnc_HashGet };
+    };
+    private _loaded = { _this select { isClass (configFile >> "CfgVehicles" >> _x) } };
+    private _own = (((_module getVariable [["insPropsFactory", "insPropsDepot", "insPropsHQ"] param [["factory", "depot", "HQ"] find _type, "insPropsFactory"], ""]) splitString ", ") call _loaded);
+    if (_own isNotEqualTo [] && {_type in ["factory", "depot", "HQ"]}) exitWith { [_own, _own, _own] };
+    private _theme = toUpper (_module getVariable ["insPropTheme", "AUTO"]);
+    if (_theme == "AUTO") then {
+        private _f = toLower _faction;
+        _theme = switch (true) do {
+            case (_f select [0, 3] == "vn_"): { "VIETNAM" };
+            case (_f select [0, 4] == "spe_"): { "WW2" };
+            case (_f select [0, 3] == "gm_"): { "COLDWAR" };
+            default { "CLASSIC" };
+        };
+    };
+    private _all = (missionNamespace getVariable ["ALiVE_INS_propThemes", createHashMap]) getOrDefault [_theme, []];
+    // the HQ's floor is its own (maps, chairs, bedrolls); the factory and depot share the crates
+    private _set = if (_all isEqualTo []) then { +_classic } else { [_all select 0, _all select 1, _all select ([2, 3] select (_type == "HQ"))] };
+    _set = _set apply { _x call _loaded };
+    { if (_x isEqualTo []) then { _set set [_forEachIndex, _classic select _forEachIndex] } } forEach _set;
+    _set
+};
+
+// The interior sets an installation can be dressed with (CfgGroups >> Empty >> ALiVE_Interiors >>
+// Factory, Depot or HQ, the mission's own first): the commander's own pick for this kind of
+// installation when it set one (Factory, Depot or HQ Interiors), otherwise those of the Installation
+// Props era. Auto takes the era from the commander's faction (SOG Vietnam, Spearhead WW2, Global
+// Mobilization Cold War, any other Modern). A set needing a class that isn't loaded is left out.
+// Returns config entries, or [] for ALiVE's own tables and props (the Classic theme, or none fit).
+ALiVE_fnc_INS_interiorSets = {
+    params [["_type", ""], ["_faction", ""]];
+    private _kind = ["Factory", "Depot", "HQ"] param [["factory", "depot", "HQ"] find _type, ""];
+    if (_kind == "") exitWith { [] };
+    private _module = objNull;
+    if (!isNil "OPCOM_instances") then {
+        private _i = OPCOM_instances findIf { _faction in ([_x, "factions", []] call ALiVE_fnc_HashGet) };
+        if (_i >= 0) then { _module = [OPCOM_instances select _i, "module", objNull] call ALiVE_fnc_HashGet };
+    };
+    private _all = [];
+    {
+        private _root = _x >> "CfgGroups" >> "Empty" >> "ALiVE_Interiors" >> _kind;
+        if (isClass _root) then {
+            {
+                // all its classes loaded, and not one the mission already gave under the same name
+                private _n = configName _x;
+                private _ok = (("true" configClasses _x) findIf { !isClass (configFile >> "CfgVehicles" >> getText (_x >> "vehicle")) }) < 0;
+                if (_ok && {(_all findIf { configName _x == _n }) < 0}) then { _all pushBack _x };
+            } forEach ("isClass _x" configClasses _root);
+        };
+    } forEach [missionConfigFile, configFile];
+    private _own = ((_module getVariable [["insPropsFactory", "insPropsDepot", "insPropsHQ"] select (["Factory", "Depot", "HQ"] find _kind), ""]) splitString ", ") apply { toLower _x };
+    private _picked = _all select { (toLower configName _x) in _own };
+    if (_picked isNotEqualTo []) exitWith { _picked };
+    private _theme = toUpper (_module getVariable ["insPropTheme", "AUTO"]);
+    if (_theme == "CLASSIC") exitWith { [] };
+    if (_theme == "AUTO") then {
+        private _f = toLower _faction;
+        _theme = switch (true) do {
+            case (_f select [0, 3] == "vn_"): { "VIETNAM" };
+            case (_f select [0, 4] == "spe_"): { "WW2" };
+            case (_f select [0, 3] == "gm_"): { "COLDWAR" };
+            default { "MODERN" };
+        };
+    };
+    private _era = _all select { toUpper getText (_x >> "era") == _theme };
+    // an era whose CDLC isn't loaded falls back to the modern sets
+    if (_era isEqualTo []) then { _era = _all select { toUpper getText (_x >> "era") == "MODERN" } };
+    _era
+};
+
+// Whether one piece of furniture fits on a floor: its footprint (its collision box, measured once per
+// class, with 10 cm to spare) centred at _centre (ASL) turned to _dir is checked at every corner for
+// floor under it at the floor's height and a roof over it, nothing between _from (ASL, the spot it's
+// reached from) and the corner, and no wall along any of its edges, at knee and chest height.
+ALiVE_fnc_INS_pieceFits = {
+    params ["_cls", "_centre", "_dir", "_from"];
+    if (isNil "ALiVE_INS_footprints") then { ALiVE_INS_footprints = createHashMap };
+    private _turn = { params ["_v", "_d"]; [(_v select 0) * cos _d + (_v select 1) * sin _d, -(_v select 0) * sin _d + (_v select 1) * cos _d, 0] };
+    private _clear = { params ["_a", "_b"]; (lineIntersectsSurfaces [_a, _b, objNull, objNull, true, 1, "GEOM", "VIEW"]) isEqualTo [] };
+    private _half = ALiVE_INS_footprints getOrDefaultCall [_cls, {
+        private _o = createSimpleObject [_cls, [0, 0, 0], true];
+        private _h = [0.3, 0.3];
+        if (!isNull _o) then {
+            private _bb = boundingBoxReal [_o, "Geometry"];
+            if (((_bb select 2) max 0) < 0.01) then { _bb = boundingBoxReal _o };
+            _h = [((((_bb select 1) select 0) - ((_bb select 0) select 0)) / 2) max 0.1, ((((_bb select 1) select 1) - ((_bb select 0) select 1)) / 2) max 0.1];
+            deleteVehicle _o;
+        };
+        _h
+    }, true];
+    _half params ["_hx", "_hy"];
+    _hx = _hx + 0.1; _hy = _hy + 0.1;
+    private _corners = [[-_hx, -_hy], [_hx, -_hy], [_hx, _hy], [-_hx, _hy]] apply { _centre vectorAdd ([[_x select 0, _x select 1, 0], _dir] call _turn) };
+    private _ok = true; private _why = "";
+    {
+        private _c = _x;
+        private _down = lineIntersectsSurfaces [_c vectorAdd [0, 0, 0.5], _c vectorAdd [0, 0, -0.6], objNull, objNull, true, 1, "GEOM", "VIEW"];
+        if (_down isEqualTo [] || {abs ((((_down select 0) select 0) select 2) - (_centre select 2)) > 0.08}) exitWith { _ok = false; _why = "floor" };
+        if ([_c vectorAdd [0, 0, 0.6], _c vectorAdd [0, 0, 12]] call _clear) exitWith { _ok = false; _why = "roof" };
+        private _next = _corners select ((_forEachIndex + 1) mod 4);
+        {
+            private _h = [0, 0, _x];
+            if !([_from vectorAdd _h, _c vectorAdd _h] call _clear) exitWith { _ok = false; _why = "reach" };
+            if !([_c vectorAdd _h, _next vectorAdd _h] call _clear) exitWith { _ok = false; _why = "edge" };
+        } forEach [0.4, 1.2];
+        if (!_ok) exitWith {};
+    } forEach _corners;
+    if (!_ok && {!isNil "ALiVE_INS_fitWhy"}) then { ALiVE_INS_fitWhy pushBack _why };
+    _ok
+};
+
+// Which of an interior set's furniture fits at an indoor spot (ATL) turned to a heading (each piece
+// checked with ALiVE_fnc_INS_pieceFits, reached from the spot). Returns the config entries that fit,
+// or [] when the set's main piece doesn't or fewer than half of its pieces do.
+ALiVE_fnc_INS_interiorFits = {
+    params ["_cfg", "_posATL", "_dir"];
+    private _floor = AGLToASL _posATL;
+    private _pieces = ("isClass _x" configClasses _cfg) select { ((getArray (_x >> "position")) param [2, 0]) < 0.3 };
+    private _fit = [];
+    {
+        private _p = getArray (_x >> "position");
+        if ([getText (_x >> "vehicle"),
+            _floor vectorAdd [(_p select 0) * cos _dir + (_p select 1) * sin _dir, -(_p select 0) * sin _dir + (_p select 1) * cos _dir, 0],
+            _dir + getNumber (_x >> "dir"), _floor] call ALiVE_fnc_INS_pieceFits) then { _fit pushBack _x } else {
+            if (_forEachIndex == 0) exitWith { _fit = [] };
+        };
+        if (_forEachIndex == 0 && {_fit isEqualTo []}) exitWith {};
+    } forEach _pieces;
+    if (count _fit * 2 < count _pieces) then { _fit = [] };
+    _fit
+};
+
+// Puts an interior set down at an indoor spot, turned to a heading: furniture stood on the floor,
+// small things set on the furniture under them. Returns [furniture, everything].
+ALiVE_fnc_INS_spawnInterior = {
+    params ["_cfg", "_posATL", "_dir", ["_only", []]];
+    private _floor = AGLToASL _posATL;
+    private _furniture = []; private _all = [];
+    {
+        private _cls = getText (_x >> "vehicle");
+        private _p = getArray (_x >> "position");
+        private _on = (_p param [2, 0]) >= 0.3;
+        // a piece of furniture that didn't fit is left out
+        if (!_on && {_only isNotEqualTo []} && {!(_x in _only)}) then { continue };
+        private _r = [(_p select 0) * cos _dir + (_p select 1) * sin _dir, -(_p select 0) * sin _dir + (_p select 1) * cos _dir, 0];
+        private _at = _floor vectorAdd _r;
+        // furniture and crates are real objects (the installation's actions sit on them); what stands
+        // on them is a plain prop
+        private _o = if (!_on || {(_cls select [0, 7]) == "Weapon_"}) then {
+            createVehicle [_cls, ASLToATL _at, [], 0, "CAN_COLLIDE"]
+        } else { createSimpleObject [_cls, _at] };
+        if (!isNull _o) then {
+            _o setDir (_dir + getNumber (_x >> "dir"));
+            private _z = _floor select 2;
+            if (_on) then {
+                private _hits = lineIntersectsSurfaces [_at vectorAdd [0, 0, 2.5], _at, _o, objNull, true, 5, "VIEW", "GEOM"];
+                private _hit = _hits select { (_x select 2) in _furniture };
+                if (_hit isNotEqualTo []) then { _z = ((_hit select 0) select 0) select 2 };
+                // its furniture was left out: so is it
+                if (_hit isEqualTo []) then { deleteVehicle _o };
+            };
+            if (isNull _o) then { continue };
+            // its lowest point on that surface
+            _o setPosASL [_at select 0, _at select 1, _z];
+            private _low = (_o modelToWorldWorld [0, 0, ((boundingBoxReal _o) select 0) select 2]) select 2;
+            _o setPosASL [_at select 0, _at select 1, _z + (_z - _low)];
+            if (!_on) then { _furniture pushBack _o; [_o] call ALiVE_fnc_INS_protectInstallationActionObject };
+            _all pushBack _o;
+        };
+    } forEach ("isClass _x" configClasses _cfg);
+    [_furniture, _all]
+};
+
+// Dresses a building with interior sets: one, or two in a building with room, at indoor spots
+// where they fit, lined up with the building. Returns [furniture, everything], or [[], []] when no
+// set fits anywhere (ALiVE_fnc_spawnFurniture then uses its own tables and props).
+ALiVE_fnc_INS_dressWithInteriors = {
+    params ["_building", "_sets", "_positions"];
+    private _furniture = []; private _all = []; private _used = [];
+    private _want = [1, 2] select (count _positions >= 6);
+    private _tries = _positions call BIS_fnc_arrayShuffle;
+    {
+        private _pos = _x;
+        if (count _used >= _want) exitWith {};
+        if ((_used findIf { (_x distance2D _pos) < 3.5 }) < 0) then {
+            // every set, each of the four turns lined up with the building, and the spot itself or
+            // half a metre off it, until one fits
+            private _fit = [];
+            {
+                private _set = _x;
+                {
+                    private _dir = (getDir _building) + _x;
+                    {
+                        private _at = _pos vectorAdd [(_x select 0) * cos _dir + (_x select 1) * sin _dir, -(_x select 0) * sin _dir + (_x select 1) * cos _dir, 0];
+                        private _pieces = [_set, _at, _dir] call ALiVE_fnc_INS_interiorFits;
+                        if (_pieces isNotEqualTo []) exitWith { _fit = [_set, _at, _dir, _pieces] };
+                    } forEach [[0, 0], [0.5, 0], [-0.5, 0], [0, 0.5], [0, -0.5]];
+                    if (_fit isNotEqualTo []) exitWith {};
+                } forEach ([0, 90, 180, 270] call BIS_fnc_arrayShuffle);
+                if (_fit isNotEqualTo []) exitWith {};
+            } forEach (_sets call BIS_fnc_arrayShuffle);
+            if (_fit isNotEqualTo []) then {
+                _fit params ["_set", "_at", "_dir", "_pieces"];
+                ([_set, _at, _dir, _pieces] call ALiVE_fnc_INS_spawnInterior) params ["_f", "_a"];
+                _furniture append _f; _all append _a; _used pushBack _pos;
+                // a second set is a different one where there's a choice
+                if (count _sets > 1) then { _sets = _sets - [_set] };
+            };
+        };
+    } forEach _tries;
+    [_furniture, _all]
+};
+
 ALiVE_fnc_spawnFurniture = {
 
     private ["_pos","_furniture","_bomb","_box","_created"];
@@ -1868,13 +2124,15 @@ ALiVE_fnc_spawnFurniture = {
     _ieds = _this select 1;
     _add = _this select 2;
     _ammo = _this select 3;
+    private _type = _this param [4, ""];
+    private _faction = _this param [5, ""];
 
     if (!(alive _building) || {count (_building getvariable [QGVAR(furnitured),[]]) > 0}) exitwith {[]};
 
-    _furnitures = ["Land_RattanTable_01_F"];
+    // tables, what sits on them, and what stands on the floor: the commander's Installation Props
+    // theme, or the mission's own list for this kind of installation (ALiVE_fnc_INS_propSet)
+    ([_type, _faction] call ALiVE_fnc_INS_propSet) params ["_furnitures", "_objects", "_boxes"];
     _bombs = ["ALIVE_IEDUrbanSmall_Remote_Ammo","ALIVE_IEDLandSmall_Remote_Ammo","ALIVE_IEDLandBig_Remote_Ammo"];
-    _objects = ["Land_Canteen_F","Land_TinContainer_F"];
-    _boxes = ["VirtualReammoBox_small_F"];
     _created = [];
 
     _pos = getposATL _building;
@@ -1885,14 +2143,51 @@ ALiVE_fnc_spawnFurniture = {
         [];
     };
 
+    // the interior sets for this kind of installation and era, where they fit (ALiVE_Interiors)
+    private _sets = [_type, _faction] call ALiVE_fnc_INS_interiorSets;
+    if (_sets isNotEqualTo []) then {
+        ([_building, _sets, _positions] call ALiVE_fnc_INS_dressWithInteriors) params ["_setFurniture", "_setAll"];
+        if (_setFurniture isNotEqualTo []) then {
+            _created append _setAll;
+            // the factory's IED sits on its first table or bench
+            if (_ieds) then {
+                private _table = _setFurniture select 0;
+                _bomb = createVehicle [(selectRandom _bombs), getposATL _table, [], 0, "CAN_COLLIDE"];
+                _charge = createVehicle ["ALIVE_DemoCharge_Remote_Ammo", getposATL _bomb, [], 0, "CAN_COLLIDE"];
+                _bomb attachTo [_table, [0, 0, _table call ALiVE_fnc_getRelativeTop]];
+                _charge attachTo [_bomb, [0, 0, 0]];
+                _ehID = _charge addeventhandler ["HandleDamage", {
+                    if (isPlayer (_this select 3)) then {
+                        _bomb = attachedTo (_this select 0);
+                        _ehID = _bomb getVariable "ehID";
+                        "M_Mo_120mm_AT" createVehicle [(getpos (_this select 0)) select 0, (getpos (_this select 0)) select 1, 0];
+                        _bomb removeEventhandler ["HandleDamage", _ehID];
+                        deletevehicle (_this select 0);
+                        deleteVehicle _bomb;
+                    };
+                }];
+                _bomb setVariable ["ehID", _ehID, true];
+                _bomb setvariable ["charge", _charge, true];
+                _created pushback _bomb;
+                _created pushback _charge;
+            };
+        };
+    };
+    if (_created isNotEqualTo []) exitWith {
+        _building setvariable [QGVAR(furnitured), _created];
+        _created
+    };
+
     {
         private ["_pos"];
 
         _pos = _x;
 
         if ({(_pos select 2) - (_x select 2) < 0.5} count _positions > 1) then {
-            if (random 1 < 0.3) then {
-                _furniture = createVehicle [(selectRandom _furnitures), _pos, [], 0, "CAN_COLLIDE"];
+            private _fits = { params ["_cls", "_p"]; [_cls, AGLToASL _p, getDir _building, AGLToASL _p] call ALiVE_fnc_INS_pieceFits };
+            private _fCls = selectRandom _furnitures;
+            if (random 1 < 0.3 && {[_fCls, _pos] call _fits}) then {
+                _furniture = createVehicle [_fCls, _pos, [], 0, "CAN_COLLIDE"];
                 _furniture setposATL _pos;
                 _furniture setdir getdir _building;
 
@@ -1933,8 +2228,8 @@ ALiVE_fnc_spawnFurniture = {
                     _created pushback _charge;
                 };
             } else {
-                if (_add && {random 1 < 0.5}) then {
-                    _furniture = createVehicle [(selectRandom _furnitures), _pos, [], 0, "CAN_COLLIDE"];
+                if (_add && {random 1 < 0.5} && {[_fCls, _pos] call _fits}) then {
+                    _furniture = createVehicle [_fCls, _pos, [], 0, "CAN_COLLIDE"];
                     _furniture setdir getdir _building;
                     [_furniture] call ALiVE_fnc_INS_protectInstallationActionObject;
 
@@ -1944,8 +2239,9 @@ ALiVE_fnc_spawnFurniture = {
                     _created pushback _furniture;
                     _created pushback _object;
                 } else {
-                    if (_ammo && {random 1 < 0.5}) then {
-                        _box = createVehicle [(selectRandom _boxes), _pos, [], 0, "CAN_COLLIDE"];
+                    private _bCls = selectRandom _boxes;
+                    if (_ammo && {random 1 < 0.5} && {[_bCls, _pos] call _fits}) then {
+                        _box = createVehicle [_bCls, _pos, [], 0, "CAN_COLLIDE"];
                         _box setdir (_building getDir _box);
                         [_box] call ALiVE_fnc_INS_protectInstallationActionObject;
 
@@ -1957,13 +2253,21 @@ ALiVE_fnc_spawnFurniture = {
     } foreach _positions;
 
     if ({_x getVariable [QGVAR(INSTALLATION_ACTION_OBJECT), false]} count _created == 0 && {count _positions > 0}) then {
-        private _anchorPos = selectRandom _positions;
-        _furniture = createVehicle [(selectRandom _furnitures), _anchorPos, [], 0, "CAN_COLLIDE"];
-        _furniture setposATL _anchorPos;
-        _furniture setdir getdir _building;
-        [_furniture] call ALiVE_fnc_INS_protectInstallationActionObject;
-
-        _created pushback _furniture;
+        // somewhere it fits: a table, or failing that a small crate. Where neither fits anywhere,
+        // nothing goes in and the installation's actions sit on the building itself
+        private _anchorCls = selectRandom _furnitures;
+        private _anchorPos = (_positions select { [_anchorCls, AGLToASL _x, getDir _building, AGLToASL _x] call ALiVE_fnc_INS_pieceFits }) param [0, []];
+        if (_anchorPos isEqualTo []) then {
+            _anchorCls = "VirtualReammoBox_small_F";
+            _anchorPos = (_positions select { [_anchorCls, AGLToASL _x, getDir _building, AGLToASL _x] call ALiVE_fnc_INS_pieceFits }) param [0, []];
+        };
+        if (_anchorPos isNotEqualTo []) then {
+            _furniture = createVehicle [_anchorCls, _anchorPos, [], 0, "CAN_COLLIDE"];
+            _furniture setposATL _anchorPos;
+            _furniture setdir getdir _building;
+            [_furniture] call ALiVE_fnc_INS_protectInstallationActionObject;
+            _created pushback _furniture;
+        };
     };
 
     _building setvariable [QGVAR(furnitured),_created];
@@ -2059,13 +2363,14 @@ ALiVE_fnc_INS_spawnIEDfactory = {
 
     _building = _this select 0;
     _id = _this select 1;
+    private _faction = _this param [2, ""];
 
     if !(alive _building) exitwith {};
 
     [_building, QGVAR(factory), _id, "ALiVE_MIL_OPCOM_FACTORY_DISABLED"] call ALiVE_fnc_INS_registerInstallationOnBuilding;
     private _duration = 10 + ((count (_building getvariable [QGVAR(furnitured),[]]))*4);
 
-    [_building,true,false,false] call ALiVE_fnc_spawnFurniture;
+    [_building,true,false,false,"factory",_faction] call ALiVE_fnc_spawnFurniture;
 
     [
         _building,
@@ -2082,14 +2387,14 @@ ALiVE_fnc_INS_spawnHQ = {
 
     _building = _this select 0;
     _id = _this select 1;
+    private _faction = _this param [2, ""];
 
     if !(alive _building) exitwith {};
 
     [_building, QGVAR(HQ), _id, "ALiVE_MIL_OPCOM_HQ_DISABLED"] call ALiVE_fnc_INS_registerInstallationOnBuilding;
     private _duration = 10 + ((count (_building getvariable [QGVAR(furnitured),[]]))*4);
 
-    [_building,true,false,false] call ALiVE_fnc_spawnFurniture;
-    [_building,true,true,false] call ALiVE_fnc_spawnFurniture;
+    [_building,true,true,true,"HQ",_faction] call ALiVE_fnc_spawnFurniture;
 
     [
         _building,
@@ -2106,13 +2411,14 @@ ALiVE_fnc_INS_spawnDepot = {
 
     _building = _this select 0;
     _id = _this select 1;
+    private _faction = _this param [2, ""];
 
     if !(alive _building) exitwith {};
 
     [_building, QGVAR(depot), _id, "ALiVE_MIL_OPCOM_DEPOT_DISABLED"] call ALiVE_fnc_INS_registerInstallationOnBuilding;
     private _duration = 10 + ((count (_building getvariable [QGVAR(furnitured),[]]))*4);
 
-    [_building,true,false,true] call ALiVE_fnc_spawnFurniture;
+    [_building,true,false,true,"depot",_faction] call ALiVE_fnc_spawnFurniture;
 
     [
         _building,
