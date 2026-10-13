@@ -242,6 +242,21 @@
     <Portuguese>Ninguém está disponível para se juntar a você.</Portuguese>
     <Russian>Никто не может присоединиться к вам.</Russian>
 </Key>
+<Key ID="STR_ALIVE_RECRUIT_DISMISS">
+    <English>Allow Dismiss</English>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_DISMISS_COMMENT">
+    <English>Yes: a player can dismiss a recruit or vehicle they recruited by mistake, with Dismiss on its scroll menu. It goes, and what it cost goes back to the force pool.</English>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_UI_DISMISS">
+    <English>Dismiss %1</English>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_UI_DISMISSED">
+    <English>%1 dismissed.</English>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_UI_DISMISSED_REFUND">
+    <English>%1 dismissed; %2 back to the force pool.</English>
+</Key>
 <Key ID="STR_ALIVE_RECRUIT_UI_JOINED">
     <English>%1 has joined your group (%2 of %3).</English>
     <Chinesesimp>%1 已加入你的小队（%2/%3）。</Chinesesimp>

@@ -129,6 +129,18 @@ class CfgVehicles {
                                         class Actions { name = "$STR_ALIVE_RECRUIT_INTERFACE_ACTIONS"; value = "actions"; };
                                 };
                         };
+                        class allowDismiss : Combo
+                        {
+                                property = "ALiVE_sup_recruit_allowDismiss";
+                                displayName = "$STR_ALIVE_RECRUIT_DISMISS";
+                                tooltip = "$STR_ALIVE_RECRUIT_DISMISS_COMMENT";
+                                defaultValue = """true""";
+                                class Values
+                                {
+                                        class Yes { name = "Yes"; value = "true"; };
+                                        class No  { name = "No";  value = "false"; };
+                                };
+                        };
                         class ModuleDescription : ModuleDescription {};
                 };
                 class ModuleDescription
