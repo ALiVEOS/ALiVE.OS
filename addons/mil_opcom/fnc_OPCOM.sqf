@@ -123,8 +123,10 @@ switch (_operation) do {
         private _type = _logic getvariable ["controltype","invasion"];
         private _occupation = (parseNumber format ["%1", _logic getvariable ["asym_occupation",-100]])/100;
         private _intelChance = (parseNumber format ["%1", _logic getvariable ["intelchance",-100]])/100;
-        // High value target (#625): how long, in seconds, new attacks pause once he's killed; 0 is off
+        // High value target (#625): how long, in seconds, new attacks pause once he's killed; 0 is off,
+        // -1 stops them for the rest of the mission, -2 takes the module's Pause After Kill (minutes)
         private _hvt = parseNumber format ["%1", _logic getvariable ["hvt", 0]];
+        if (_hvt == -2) then { _hvt = (((parseNumber format ["%1", _logic getVariable ["hvtPauseMins", 15]]) max 0) * 60) max 1 };
         // Phase 4: faction sources, all unioned below.
         //   factions       : multi-select listbox (primary UX,
         //                    ORIGINAL property so old `factions`

@@ -2,6 +2,7 @@
 #include "CfgHints.hpp"
 #include "CfgPatches.hpp"
 #include "CfgVehicles.hpp"
+#include "Cfg3DEN.hpp"
 #include "CfgWeapons.hpp"
 #include "CfgFunctions.hpp"
 #include "Eventhandlers.hpp"

@@ -189,6 +189,70 @@ class CfgVehicles {
                                 defaultValue = """10""";
                                 typeName = "NUMBER";
                         };
+                        class HDR_HVT : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_HDR_HVT"; displayName = "HIGH VALUE TARGET"; };
+                        class hvt : Combo
+                        {
+                                property = "ALiVE_mil_opcom_hvt";
+                                displayName = "$STR_ALIVE_OPCOM_HVT";
+                                tooltip = "$STR_ALIVE_OPCOM_HVT_COMMENT";
+                                defaultValue = """0""";
+                                class Values
+                                {
+                                    class none { name = "$STR_ALIVE_OPCOM_HVT_NONE"; value = 0; default = 1; };
+                                    class short { name = "$STR_ALIVE_OPCOM_HVT_10"; value = 600; };
+                                    class medium { name = "$STR_ALIVE_OPCOM_HVT_20"; value = 1200; };
+                                    class long { name = "$STR_ALIVE_OPCOM_HVT_30"; value = 1800; };
+                                    class forever { name = "$STR_ALIVE_OPCOM_HVT_FOREVER"; value = -1; };
+                                    class typed { name = "$STR_ALIVE_OPCOM_HVT_TYPED"; value = -2; };
+                                };
+                        };
+                        class hvtPauseMins : Edit
+                        {
+                                property = "ALiVE_mil_opcom_hvtPauseMins";
+                                displayName = "$STR_ALIVE_OPCOM_HVT_PAUSE";
+                                tooltip = "$STR_ALIVE_OPCOM_HVT_PAUSE_COMMENT";
+                                defaultValue = """15""";
+                                typeName = "NUMBER";
+                        };
+                        class hvtRespawn : Combo
+                        {
+                                property = "ALiVE_mil_opcom_hvtRespawn";
+                                displayName = "$STR_ALIVE_OPCOM_HVT_RESPAWN";
+                                tooltip = "$STR_ALIVE_OPCOM_HVT_RESPAWN_COMMENT";
+                                defaultValue = """false""";
+                                class Values
+                                {
+                                        class No  { name = "No";  value = "false"; };
+                                        class Yes { name = "Yes"; value = "true"; };
+                                };
+                        };
+                        class hvtClass
+                        {
+                                control = "ALiVE_HVTClassChoice";
+                                typeName = "STRING";
+                                expression = "_this setVariable ['hvtClass', _value];";
+                                property = "ALiVE_mil_opcom_hvtClass";
+                                displayName = "$STR_ALIVE_OPCOM_HVT_CLASS";
+                                tooltip = "$STR_ALIVE_OPCOM_HVT_CLASS_COMMENT";
+                                defaultValue = """""";
+                        };
+                        class hvtGuards
+                        {
+                                control = "ALiVE_HVTGuardsChoice";
+                                typeName = "STRING";
+                                expression = "_this setVariable ['hvtGuards', _value];";
+                                property = "ALiVE_mil_opcom_hvtGuards";
+                                displayName = "$STR_ALIVE_OPCOM_HVT_GUARDS";
+                                tooltip = "$STR_ALIVE_OPCOM_HVT_GUARDS_COMMENT";
+                                defaultValue = """""";
+                        };
+                        class hvtName : Edit
+                        {
+                                property = "ALiVE_mil_opcom_hvtName";
+                                displayName = "$STR_ALIVE_OPCOM_HVT_NAME";
+                                tooltip = "$STR_ALIVE_OPCOM_HVT_NAME_COMMENT";
+                                defaultValue = """""";
+                        };
                         // ----  Recruitment ----------------------------------------
                         class ASYM_SET : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_ASYM_SET"; displayName = "ASYMMETRIC SETTINGS"; };
                         class asym_occupation : Combo
@@ -218,6 +282,52 @@ class CfgVehicles {
                                     class No { name = "No"; value = 0; };
                                 };
                         };
+                        class insPropTheme : Combo
+                        {
+                                property = "ALiVE_mil_opcom_insPropTheme";
+                                displayName = "$STR_ALIVE_OPCOM_INSPROPS_THEME";
+                                tooltip = "$STR_ALIVE_OPCOM_INSPROPS_THEME_COMMENT";
+                                defaultValue = """AUTO""";
+                                class Values
+                                {
+                                        class Auto    { name = "$STR_ALIVE_OPCOM_INSPROPS_AUTO"; value = "AUTO"; };
+                                        class Classic { name = "$STR_ALIVE_OPCOM_INSPROPS_CLASSIC"; value = "CLASSIC"; };
+                                        class Modern  { name = "$STR_ALIVE_OPCOM_INSPROPS_MODERN"; value = "MODERN"; };
+                                        class Vietnam { name = "$STR_ALIVE_OPCOM_INSPROPS_VIETNAM"; value = "VIETNAM"; };
+                                        class WW2     { name = "$STR_ALIVE_OPCOM_INSPROPS_WW2"; value = "WW2"; };
+                                        class ColdWar { name = "$STR_ALIVE_OPCOM_INSPROPS_COLDWAR"; value = "COLDWAR"; };
+                                };
+                        };
+                        class insPropsFactory
+                        {
+                                control = "ALiVE_InsPropsFactoryChoice";
+                                typeName = "STRING";
+                                expression = "_this setVariable ['insPropsFactory', _value];";
+                                property = "ALiVE_mil_opcom_insPropsFactory";
+                                displayName = "$STR_ALIVE_OPCOM_INSPROPS_FACTORY";
+                                tooltip = "$STR_ALIVE_OPCOM_INSPROPS_COMMENT";
+                                defaultValue = """""";
+                        };
+                        class insPropsDepot
+                        {
+                                control = "ALiVE_InsPropsDepotChoice";
+                                typeName = "STRING";
+                                expression = "_this setVariable ['insPropsDepot', _value];";
+                                property = "ALiVE_mil_opcom_insPropsDepot";
+                                displayName = "$STR_ALIVE_OPCOM_INSPROPS_DEPOT";
+                                tooltip = "$STR_ALIVE_OPCOM_INSPROPS_COMMENT";
+                                defaultValue = """""";
+                        };
+                        class insPropsHQ
+                        {
+                                control = "ALiVE_InsPropsHQChoice";
+                                typeName = "STRING";
+                                expression = "_this setVariable ['insPropsHQ', _value];";
+                                property = "ALiVE_mil_opcom_insPropsHQ";
+                                displayName = "$STR_ALIVE_OPCOM_INSPROPS_HQ";
+                                tooltip = "$STR_ALIVE_OPCOM_INSPROPS_COMMENT";
+                                defaultValue = """""";
+                        };
                         class intelchance : Combo
                         {
                                 property = "ALiVE_mil_opcom_intelchance";
@@ -229,20 +339,6 @@ class CfgVehicles {
                                     class none { name = "None"; value = 0; default = 1; };
                                     class seldom { name = "Seldom"; value = 5; };
                                     class often { name = "Often"; value = 10; };
-                                };
-                        };
-                        class hvt : Combo
-                        {
-                                property = "ALiVE_mil_opcom_hvt";
-                                displayName = "$STR_ALIVE_OPCOM_HVT";
-                                tooltip = "$STR_ALIVE_OPCOM_HVT_COMMENT";
-                                defaultValue = """0""";
-                                class Values
-                                {
-                                    class none { name = "$STR_ALIVE_OPCOM_HVT_NONE"; value = 0; default = 1; };
-                                    class short { name = "$STR_ALIVE_OPCOM_HVT_10"; value = 600; };
-                                    class medium { name = "$STR_ALIVE_OPCOM_HVT_20"; value = 1200; };
-                                    class long { name = "$STR_ALIVE_OPCOM_HVT_30"; value = 1800; };
                                 };
                         };
                         class asym_friendlyDisableInstallations : Combo

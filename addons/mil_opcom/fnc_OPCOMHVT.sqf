@@ -49,12 +49,30 @@ if (!isServer) exitWith {};
 // left when the mission was saved, guard profile IDs]
 private _fnc_record = { params ["_h"]; [_h, "hvtRecord", []] call ALiVE_fnc_HashGet };
 
+// With the module's Replace When Pause Ends on, a new officer and guard are placed once the pause his
+// death started is over, and the cycle starts again. Not after a pause for the rest of the mission.
+private _fnc_replaceLater = {
+    params ["_h"];
+    private _module = [_h, "module", objNull] call ALiVE_fnc_HashGet;
+    private _on = _module getVariable ["hvtRespawn", false];
+    if (_on isEqualType "") then { _on = toLower _on == "true" };
+    if (!_on || {([_h, "hvt", 0] call ALiVE_fnc_HashGet) < 0}) exitWith {};
+    [_h, _module] spawn {
+        params ["_h", "_module"];
+        waitUntil { sleep 10; time >= (_module getVariable ["ALiVE_HVT_holdUntil", -1]) };
+        if ((([_h, "hvtRecord", []] call ALiVE_fnc_HashGet) param [2, ""]) != "dead") exitWith {};
+        [_h, "hvtRecord", []] call ALiVE_fnc_HashSet;
+        ["OPCOM %1: the pause is over; a new high value target is placed", [_h, "side", ""] call ALiVE_fnc_HashGet] call ALiVE_fnc_dump;
+        ["place", [_h]] call ALiVE_fnc_OPCOMHVT;
+    };
+};
+
 // Watch him: a profile that's gone, or whose men are all dead, is a dead HVT. The position is
 // kept public for the reveal while he lives.
 private _fnc_watch = {
     params ["_h"];
-    [_h] spawn {
-        params ["_h"];
+    [_h, _fnc_replaceLater] spawn {
+        params ["_h", "_fnc_replaceLater"];
         private _module = [_h, "module"] call ALiVE_fnc_HashGet;
         private _sideText = [_h, "side", "EAST"] call ALiVE_fnc_HashGet;
         private _strikes = 0;
@@ -65,6 +83,17 @@ private _fnc_watch = {
             private _dead = isNil "_prof";
             if (!_dead && {[_prof, "active", false] call ALiVE_fnc_HashGet}) then {
                 private _units = [_prof, "units", []] call ALiVE_fnc_HashGet;
+                // the man in the world wears the name the notifications use, so ACE and name tags agree;
+                // given again each time he spawns, and to players who join later
+                private _u = _units param [0, objNull];
+                if (alive _u && {!(_u getVariable ["ALiVE_HVT_named", false])}) then {
+                    _u setVariable ["ALiVE_HVT_named", true];
+                    private _full = _rec select 0;
+                    private _sp = _full find " ";
+                    private _first = if (_sp > 0) then { _full select [0, _sp] } else { _full };
+                    private _last = if (_sp > 0) then { _full select [_sp + 1] } else { "" };
+                    [_u, [_full, _first, _last]] remoteExec ["setName", 0, _u];
+                };
                 // a profile despawning between these reads has its men deleted, not killed: still
                 // spawned afterwards is what makes all-dead men a death
                 _dead = (_units isNotEqualTo []) && {(_units findIf { alive _x }) < 0} && {[_prof, "active", false] call ALiVE_fnc_HashGet};
@@ -75,7 +104,8 @@ private _fnc_watch = {
                 _rec set [2, "dead"];
                 [_h, "hvtRecord", _rec] call ALiVE_fnc_HashSet;
                 private _hold = [_h, "hvt", 0] call ALiVE_fnc_HashGet;
-                _module setVariable ["ALiVE_HVT_holdUntil", time + _hold];
+                // -1: no new attacks for the rest of the mission
+                _module setVariable ["ALiVE_HVT_holdUntil", time + ([_hold, 1e9] select (_hold < 0))];
                 deleteMarker format ["ALiVE_HVT_%1", [_h, "opcomID", ""] call ALiVE_fnc_HashGet];
                 ["OPCOM %1: high value target %2 killed; new attacks held for %3 s", _sideText, _rec select 0, _hold] call ALiVE_fnc_dump;
                 private _side = [_sideText] call ALiVE_fnc_sideTextToObject;
@@ -83,6 +113,7 @@ private _fnc_watch = {
                     private _key = ["STR_ALIVE_OPCOM_HVT_KILLED_ENEMY", "STR_ALIVE_OPCOM_HVT_KILLED_OWN"] select ((_side getFriend _x) >= 0.6);
                     ["notify", [_key, _rec select 0]] remoteExec ["ALiVE_fnc_OPCOMHVT", _x];
                 } forEach [west, east, resistance];
+                [_h] call _fnc_replaceLater;
             };
         };
     };
@@ -93,7 +124,7 @@ switch (_operation) do {
     case "place": {
         _args params [["_h", []]];
         if !([_h] call ALiVE_fnc_isHash) exitWith {};
-        if (([_h, "hvt", 0] call ALiVE_fnc_HashGet) <= 0) exitWith {};
+        if (([_h, "hvt", 0] call ALiVE_fnc_HashGet) == 0) exitWith {};
 
         // A record loaded with the commander (a saved mission): he isn't placed again. A dead one
         // stays dead, with what was left of the pause; a live one is watched again, unless his
@@ -105,6 +136,7 @@ switch (_operation) do {
                 _done = true;
                 private _left = _rec param [3, 0];
                 if (_left > 0) then { ([_h, "module"] call ALiVE_fnc_HashGet) setVariable ["ALiVE_HVT_holdUntil", time + _left] };
+                [_h] call _fnc_replaceLater;
             };
             if !(isNil {[ALIVE_profileHandler, "getProfile", _rec select 1] call ALIVE_fnc_profileHandler}) exitWith {
                 _done = true;
@@ -113,7 +145,7 @@ switch (_operation) do {
                     private _p = [ALIVE_profileHandler, "getProfile", _x select 0] call ALIVE_fnc_profileHandler;
                     if (!isNil "_p") then {
                         [_p, "busy", true] call ALiVE_fnc_HashSet;
-                        [_p, "setActiveCommand", ["ALIVE_fnc_garrison", "spawn", [_x select 1, "false", [0,0,0], "", 1, _x select 2, "SAFE", "LIMITED", [], true]]] call ALIVE_fnc_profileEntity;
+                        [_p, "setActiveCommand", ["ALIVE_fnc_garrison", "spawn", [_x select 1, "false", [0,0,0], "", 1, _x select 2, "SAFE", "LIMITED", "", true]]] call ALIVE_fnc_profileEntity;
                     };
                 } forEach ([[_rec select 1, 30, 0]] + ((_rec param [4, []]) apply { [_x, 40, 0.3] }));
                 [_h] call _fnc_watch;
@@ -153,6 +185,10 @@ switch (_operation) do {
             if (_pick isEqualTo []) then { _pick = _men select { private _c = toLower _x; (["crew", "pilot", "diver", "survivor", "unarmed"] findIf { _c find _x >= 0 }) < 0 } };
             if (_pick isNotEqualTo []) exitWith { _faction = _x; _classes = [selectRandom _pick] };
         } forEach ([_h, "factions", []] call ALiVE_fnc_HashGet);
+        // the module's High Value Target Class, when it names a soldier, beats the faction's own
+        private _module = [_h, "module", objNull] call ALiVE_fnc_HashGet;
+        private _setClass = ((_module getVariable ["hvtClass", ""]) splitString ", ") select { isClass (configFile >> "CfgVehicles" >> _x) && {_x isKindOf "CAManBase"} };
+        if (_setClass isNotEqualTo []) then { _classes = [selectRandom _setClass] };
         if (_classes isEqualTo []) exitWith { ["OPCOM %1: no officer class for %2, no high value target", _sideText, _faction] call ALiVE_fnc_dump };
 
         // A name from the officer's own name list (text, or an array on some mod units), as
@@ -168,25 +204,60 @@ switch (_operation) do {
             _name = format ["%1 %2", getText (_first select floor random count _first), getText (_last select floor random count _last)];
         };
 
+        // the module's High Value Target Name, when given, is his name in the notifications and on the map
+        private _setName = (_module getVariable ["hvtName", ""]) trim [" ", 0];
+        if (_setName != "") then { _name = _setName };
+
         // Pinned (stationary) as roadblock guards are, so a saved mission brings them back held
         // out of the commander's orders; busy from creation so no order reaches them first.
         if (isNil "ALIVE_profileStationary") then { ALIVE_profileStationary = [] call ALIVE_fnc_hashCreate };
         private _hvt = [_classes, _sideText, _faction, _pos, random 360, _faction, true] call ALIVE_fnc_createProfileEntity;
         private _hvtID = [_hvt, "profileID", ""] call ALiVE_fnc_HashGet;
         [ALIVE_profileStationary, _hvtID, true] call ALIVE_fnc_hashSet;
-        [_hvt, "setActiveCommand", ["ALIVE_fnc_garrison", "spawn", [30, "false", [0,0,0], "", 1, 0, "SAFE", "LIMITED", [], true]]] call ALIVE_fnc_profileEntity;
+        [_hvt, "setActiveCommand", ["ALIVE_fnc_garrison", "spawn", [30, "false", [0,0,0], "", 1, 0, "SAFE", "LIMITED", "", true]]] call ALIVE_fnc_profileEntity;
 
-        // His guard: one infantry group, held as he is
+        // His guard, held as he is: the module's High Value Target Guards (unit classes make one
+        // group, a group class is used as it is, "none" is no guard), else a random infantry group
         private _guardIDs = [];
-        private _grp = ["Infantry", _faction] call ALIVE_fnc_configGetRandomGroup;
+        private _guardSet = (_module getVariable ["hvtGuards", ""]) splitString ", ";
+        private _guardMen = _guardSet select { isClass (configFile >> "CfgVehicles" >> _x) && {_x isKindOf "CAManBase"} };
+        private _grp = switch (true) do {
+            case ((_guardSet apply { toLower _x }) isEqualTo ["none"]): { "FALSE" };
+            case (_guardMen isNotEqualTo []): { "" };
+            case (_guardSet isNotEqualTo []): { _guardSet select 0 };
+            default { ["Infantry", _faction] call ALIVE_fnc_configGetRandomGroup };
+        };
         if (_grp != "FALSE") then {
-            private _guards = [_grp, _pos getPos [10, random 360], random 360, true, _faction, true, false, "STEALTH"] call ALIVE_fnc_createProfilesFromGroupConfig;
+            // a group class from the module, whichever faction's it is: its soldiers' classes, so the guard
+            // is made on the commander's side like a list of unit classes
+            if (_guardMen isEqualTo [] && {_guardSet isNotEqualTo []}) then {
+                {
+                    {
+                        {
+                            private _g = _x >> _grp;
+                            if (isClass _g) exitWith {
+                                _guardMen = (("isClass _x" configClasses _g) apply { getText (_x >> "vehicle") }) select { _x isKindOf "CAManBase" };
+                            };
+                        } forEach ("true" configClasses _x);
+                        if (_guardMen isNotEqualTo []) exitWith {};
+                    } forEach ("true" configClasses _x);
+                    if (_guardMen isNotEqualTo []) exitWith {};
+                } forEach ("true" configClasses (configFile >> "CfgGroups"));
+                if (_guardMen isEqualTo []) then { ["OPCOM %1: High Value Target Guards %2 isn't a group or soldier class; no guard", _sideText, _grp] call ALiVE_fnc_dump; _grp = "FALSE" };
+            };
+            private _guards = if (_grp == "FALSE") then { [] } else {
+                if (_guardMen isNotEqualTo []) then {
+                    [[_guardMen, _sideText, _faction, _pos getPos [10, random 360], random 360, _faction, true] call ALIVE_fnc_createProfileEntity]
+                } else {
+                    [_grp, _pos getPos [10, random 360], random 360, true, _faction, true, false, "STEALTH"] call ALIVE_fnc_createProfilesFromGroupConfig
+                }
+            };
             {
                 if (([_x, "type", ""] call ALiVE_fnc_HashGet) == "entity") then {
                     private _gid = [_x, "profileID", ""] call ALiVE_fnc_HashGet;
                     _guardIDs pushBack _gid;
                     [ALIVE_profileStationary, _gid, true] call ALIVE_fnc_hashSet;
-                    [_x, "setActiveCommand", ["ALIVE_fnc_garrison", "spawn", [40, "false", [0,0,0], "", 1, 0.3, "SAFE", "LIMITED", [], true]]] call ALIVE_fnc_profileEntity;
+                    [_x, "setActiveCommand", ["ALIVE_fnc_garrison", "spawn", [40, "false", [0,0,0], "", 1, 0.3, "SAFE", "LIMITED", "", true]]] call ALIVE_fnc_profileEntity;
                 };
             } forEach _guards;
         };

@@ -180,6 +180,117 @@
     <Portuguese>Alvo de alto valor</Portuguese>
     <Russian>Важная цель</Russian>
 </Key>
+<Key ID="STR_ALIVE_OPCOM_HVT_PICK_GROUP">
+    <English>Group: %1: %2 (%3 men)</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_HVT_PICK_SIDE">
+    <English>Side</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_HVT_PICK_BLUFOR">
+    <English>BLUFOR</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_HVT_PICK_OPFOR">
+    <English>OPFOR</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_HVT_PICK_INDEP">
+    <English>Independent</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_HVT_PICK_SHOW">
+    <English>Show</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_HVT_PICK_THISSIDE">
+    <English>This side</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_HVT_PICK_ALLSIDES">
+    <English>All sides</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_HVT_PICK_TYPED">
+    <English>Or type it:</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_HVT_NAME">
+    <English>High Value Target Name</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_HVT_NAME_COMMENT">
+    <English>The officer's name, as every side is told it when he's killed and as it shows on the intel marker. The soldier in the world wears it too. Leave empty for a name from his own nationality.</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_INSPROPS_THEME">
+    <English>Installation Interiors</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_INSPROPS_THEME_COMMENT">
+    <English>What the IED factory, weapons depot and recruitment HQ are furnished with inside their building: one or two small furniture sets, placed where they fit and lined up with the room. Auto matches the commander's faction: SOG factions get the Vietnam sets, Spearhead 1944 the WW2 sets, Global Mobilization the Cold War sets, and any other faction the Modern sets. ALiVE's own puts the older loose tables and props instead. A Factory, Depot or HQ Interiors pick below replaces the era for that installation.</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_INSPROPS_AUTO">
+    <English>Auto (match the faction)</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_INSPROPS_CLASSIC">
+    <English>ALiVE's own (tables and IEDs)</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_INSPROPS_MODERN">
+    <English>Modern</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_INSPROPS_VIETNAM">
+    <English>Vietnam (needs SOG Prairie Fire)</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_INSPROPS_WW2">
+    <English>WW2 (needs Spearhead 1944)</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_INSPROPS_COLDWAR">
+    <English>Cold War (needs Global Mobilization)</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_INSPROPS_FACTORY">
+    <English>Factory Interiors</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_INSPROPS_DEPOT">
+    <English>Depot Interiors</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_INSPROPS_HQ">
+    <English>HQ Interiors</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_INSPROPS_COMMENT">
+    <English>The furniture sets this installation can be dressed with; one is picked at random each time, two in a larger building. Tick them from the list, by era, or type set class names (a mission's own sets go in description.ext under CfgGroups, Empty, ALiVE_Interiors). The factory's IED sits on the first table. Leave empty to use the Installation Interiors era.</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_INSPROPS_GROUP">
+    <English>Era</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_INSPROPS_THISGROUP">
+    <English>This era</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_INSPROPS_ALLGROUPS">
+    <English>All eras</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_INSPROPS_OTHER">
+    <English>Other</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_HVT_FOREVER">
+    <English>On, attacks stop for good</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_HVT_TYPED">
+    <English>On, pause as typed below</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_HVT_PAUSE">
+    <English>Pause After Kill (min)</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_HVT_PAUSE_COMMENT">
+    <English>With High Value Target set to pause as typed below: how many minutes the commander starts no new attacks after its officer is killed.</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_HVT_RESPAWN">
+    <English>Replace When Pause Ends</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_HVT_RESPAWN_COMMENT">
+    <English>Yes: once the pause after a kill is over, the commander places a new officer and guard, and the hunt starts again. Not when attacks stop for good.</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_HVT_CLASS">
+    <English>High Value Target Class</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_HVT_CLASS_COMMENT">
+    <English>The officer's unit class. Give several, separated by commas, and one is picked at random. Leave empty to pick an officer of the commander's faction.</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_HVT_GUARDS">
+    <English>High Value Target Guards</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_HVT_GUARDS_COMMENT">
+    <English>The officer's guard, as unit classes separated by commas (one soldier each, repeat a class for more), or a group class from the editor's group list. Leave empty for a random infantry group of the commander's faction; none for no guard.</English>
+</Key>
 <Key ID="STR_ALIVE_OPCOM_HVT_COMMENT">
     <English>Places a named officer of this commander's faction, with a guard group, at its most important objective. He stays there and takes no orders. With Intel Chance on, intel read from this side's dead sometimes marks where he was last seen. Killing him stops the commander starting new attacks for the time chosen here, and both sides are told. Saved with the mission. None = no officer.</English>
     <Chinese>在此指揮官最重要的目標處放置一名本陣營的具名軍官及一支護衛小組。他留在原地，不接受命令。啟用情報機率時，閱讀此陣營陣亡者的情報有時會標示他最後出現的位置。擊殺他後，指揮官在此處選定的時間內不會發起新攻擊，雙方都會收到通知。隨任務保存。無 = 不放置軍官。</Chinese>
