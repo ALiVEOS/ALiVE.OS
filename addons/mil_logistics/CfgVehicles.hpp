@@ -235,6 +235,18 @@ class CfgVehicles
                                     class No { name = "No"; value = false; default = 1; };
                                 };
                         };
+                        class markSupplyDrops : Combo
+                        {
+                                property = "ALiVE_mil_logistics_markSupplyDrops";
+                                displayName = "$STR_ALIVE_ML_MARK_SUPPLY_DROPS";
+                                tooltip = "$STR_ALIVE_ML_MARK_SUPPLY_DROPS_COMMENT";
+                                defaultValue = """true""";
+                                class Values
+                                {
+                                    class Yes { name = "Yes"; value = true; default = 1; };
+                                    class No { name = "No"; value = false; };
+                                };
+                        };
                         // ---- Custom Static Data ---------------------------------------------
                         class HDR_CUSTOM : ALiVE_ModuleSubTitle { property = "ALiVE_mil_logistics_HDR_CUSTOM"; displayName = "CUSTOM TRANSPORT CLASSES"; };
                         class customStaticDataMode : Combo

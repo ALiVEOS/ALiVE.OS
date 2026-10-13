@@ -461,6 +461,22 @@ switch(_operation) do {
 
         _result = _args;
     };
+    // Supplies dropped by parachute or set down by a helicopter's sling pop red smoke (an IR strobe
+    // at night) until a player comes to them. Yes by default.
+    case "markSupplyDrops": {
+        if (typeName _args == "BOOL") then {
+            _logic setVariable ["markSupplyDrops", _args];
+        } else {
+            _args = _logic getVariable ["markSupplyDrops", true];
+        };
+        if (typeName _args == "STRING") then {
+            _args = _args != "false";
+            _logic setVariable ["markSupplyDrops", _args];
+        };
+        if !(typeName _args == "BOOL") then { _args = true };
+
+        _result = _args;
+    };
     case "heliDepartFromAirfield": {
         if (typeName _args == "BOOL") then {
             _logic setVariable ["heliDepartFromAirfield", _args];
@@ -13991,7 +14007,7 @@ switch(_operation) do {
                                             missionnamespace setvariable ["bis_fnc_curatorobjectedited_paraSoundTime",time + 10]
                                         };
 
-                                        [_vehicle,_parachute] spawn {
+                                        [_vehicle,_parachute,[_logic, "markSupplyDrops"] call MAINCLASS] spawn {
                                             _vehicle = _this select 0;
                                             _parachute = _this select 1;
 
@@ -13999,7 +14015,7 @@ switch(_operation) do {
                                             _vehicle setdir direction _vehicle;
                                             deletevehicle _parachute;
 
-                                            [_vehicle] call ALIVE_fnc_MLAttachSmokeOrStrobe;
+                                            if (_this select 2) then { [_vehicle] call ALIVE_fnc_MLAttachSmokeOrStrobe; };
                                         };
                                     };
 
@@ -15998,7 +16014,7 @@ switch(_operation) do {
                                                 };
                                             } else {
                                                 // Non-profile slung object (supply crate etc) - attach smoke/strobe marker
-                                                [_slingloadVehicle] spawn ALIVE_fnc_MLAttachSmokeOrStrobe;
+                                                if ([_logic, "markSupplyDrops"] call MAINCLASS) then { [_slingloadVehicle] spawn ALIVE_fnc_MLAttachSmokeOrStrobe; };
                                             };
                                             [_heliProfile, "slingload",    []] call ALIVE_fnc_profileVehicle;
                                             [_heliProfile, "slingloading", false] call ALIVE_fnc_hashSet;

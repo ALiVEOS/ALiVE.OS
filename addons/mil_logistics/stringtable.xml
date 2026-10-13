@@ -386,6 +386,26 @@
     <Russian>Какие летательные аппараты может использовать доставка. Сторона и фракция (по умолчанию): собственные вертолёты и транспортные самолёты фракции, а технику стороны только тогда, когда у фракции нет своей подходящей. Только фракция: только своя техника фракции и никогда техника стороны; если её нет, подкрепления ИИ-командира идут по земле, а заказ игрока прибывает без летательного аппарата, на парашюте или сразу в точке назначения. Список «Перекрыть авиатранспорт» ниже задаётся по фракциям, поэтому его записи в обоих случаях считаются собственными для фракции.</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_ML_MARK_SUPPLY_DROPS">
+    <English>Mark Supply Drops:</English>
+    <Chinese>標記補給空投：</Chinese>
+    <Chinesesimp>标记补给空投：</Chinesesimp>
+    <Spanish>Marcar suministros lanzados:</Spanish>
+    <French>Marquer les largages de ravitaillement:</French>
+    <Portuguese>Marcar suprimentos lançados:</Portuguese>
+    <Russian>Отмечать сброшенные грузы:</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_ML_MARK_SUPPLY_DROPS_COMMENT">
+    <English>Yes (default): supplies dropped by parachute, or set down by a helicopter, pop red smoke by day and an IR strobe at night until a player comes to them, so they're easy to find. No: they land unmarked.</English>
+    <Chinese>是（預設）：以降落傘空投或由直升機放下的補給，白天會冒紅煙、夜間閃紅外線頻閃燈，直到有玩家靠近，方便尋找。否：落地時不作標記。</Chinese>
+    <Chinesesimp>是（默认）：以降落伞空投或由直升机放下的补给，白天会冒红烟、夜间闪红外线频闪灯，直到有玩家靠近，方便寻找。否：落地时不作标记。</Chinesesimp>
+    <Spanish>Sí (predeterminado): los suministros lanzados en paracaídas o depositados por un helicóptero sueltan humo rojo de día y una baliza IR de noche hasta que un jugador llega a ellos, para encontrarlos con facilidad. No: aterrizan sin marcar.</Spanish>
+    <French>Oui (par défaut): le ravitaillement largué en parachute ou déposé par un hélicoptère émet une fumée rouge le jour et un stroboscope IR la nuit jusqu'à ce qu'un joueur l'atteigne, pour le retrouver facilement. Non: il atterrit sans marquage.</French>
+    <Portuguese>Sim (padrão): os suprimentos lançados de paraquedas ou deixados por um helicóptero soltam fumaça vermelha de dia e um estroboscópio IV à noite até um jogador chegar até eles, para serem fáceis de encontrar. Não: pousam sem marcação.</Portuguese>
+    <Russian>Да (по умолчанию): грузы, сброшенные на парашюте или опущенные вертолётом, дают красный дым днём и ИК-стробоскоп ночью, пока к ним не подойдёт игрок, чтобы их было легко найти. Нет: они приземляются без отметки.</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ML_HELI_DEPART_AIRFIELD">
     <English>Helicopters Depart From Airfields:</English>
     <Chinese>直升機從機場出發：</Chinese>
