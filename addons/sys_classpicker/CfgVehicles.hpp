@@ -18,8 +18,8 @@ class CfgVehicles {
         author = MODULE_AUTHOR;
         functionPriority = 162;
         isGlobal = 2;
-        icon = "x\alive\addons\main\icon_requires_alive.paa";
-        picture = "x\alive\addons\main\icon_requires_alive.paa";
+        icon = "x\alive\addons\sys_classpicker\icon_sys_classpicker.paa";
+        picture = "x\alive\addons\sys_classpicker\icon_sys_classpicker.paa";
 
         class Attributes : AttributesBase
         {

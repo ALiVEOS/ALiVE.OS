@@ -21,8 +21,8 @@ class CfgVehicles {
         author = MODULE_AUTHOR;
         functionPriority = 1;
         isGlobal = 1;
-        icon = "x\alive\addons\main\icon_requires_alive.paa";
-        picture = "x\alive\addons\main\icon_requires_alive.paa";
+        icon = "x\alive\addons\sys_factioncompiler\icon_sys_factioncompiler.paa";
+        picture = "x\alive\addons\sys_factioncompiler\icon_sys_factioncompiler.paa";
         class Attributes : AttributesBase {
             class debug : Combo {
                 property = "ALiVE_sys_factioncompiler_debug";
@@ -158,8 +158,8 @@ class CfgVehicles {
         author = MODULE_AUTHOR;
         functionPriority = 2;
         isGlobal = 0;
-        icon = "x\alive\addons\main\icon_requires_alive.paa";
-        picture = "x\alive\addons\main\icon_requires_alive.paa";
+        icon = "x\alive\addons\sys_factioncompiler\icon_sys_factioncompiler_category.paa";
+        picture = "x\alive\addons\sys_factioncompiler\icon_sys_factioncompiler_category.paa";
         class Attributes : AttributesBase {
             class category : Combo {
                 property = "ALiVE_sys_factioncompiler_category_category";

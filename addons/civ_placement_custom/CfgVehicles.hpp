@@ -16,8 +16,8 @@ class CfgVehicles {
         author = MODULE_AUTHOR;
         functionPriority = 100;
         isGlobal = 1;
-        icon = "x\alive\addons\civ_placement\icon_civ_CP.paa";
-        picture = "x\alive\addons\civ_placement\icon_civ_CP.paa";
+        icon = "x\alive\addons\civ_placement_custom\icon_civ_CPC.paa";
+        picture = "x\alive\addons\civ_placement_custom\icon_civ_CPC.paa";
         class Attributes : AttributesBase {
             // ---- General --------------------------------------------------------
             class HDR_GENERAL : ALiVE_ModuleSubTitle { property = "ALiVE_civ_placement_custom_HDR_GENERAL"; displayName = "GENERAL"; };
