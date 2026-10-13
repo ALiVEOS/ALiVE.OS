@@ -251,6 +251,18 @@
 <Key ID="STR_ALIVE_RECRUIT_UI_DISMISS">
     <English>Dismiss %1</English>
 </Key>
+<Key ID="STR_ALIVE_RECRUIT_UI_BUTTON_DISMISS">
+    <English>Dismiss</English>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_UI_YOURS">
+    <English>Your recruits</English>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_UI_YOURS_HINT">
+    <English>Your recruits and recruited vehicles. Pick one and Dismiss sends it away; what it cost goes back to the force pool.</English>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_UI_YOURS_AWAY">
+    <English>%1 m from you. Dismiss sends it away; what it cost goes back to the force pool.</English>
+</Key>
 <Key ID="STR_ALIVE_RECRUIT_UI_DISMISSED">
     <English>%1 dismissed.</English>
 </Key>
@@ -463,5 +475,125 @@
     <French>Coûte %1 de la réserve de forces.</French>
     <Portuguese>Custa %1 da reserva de forças.</Portuguese>
     <Russian>Стоит %1 из резерва сил.</Russian>
+</Key>
+<Key ID="STR_ALIVE_RALLY">
+    <English>Rally Points</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_COMMENT">
+    <English>Sync to one or more objects, such as a flagpole or a tent. A player standing at one gets a Rally Points action to travel to any of the others, and a group leader brings the AI of their group. Each side's HQs and its Player FOBs can be rally points too, as set below. Name one with this setVariable ["ALiVE_rallyName", "Alpha"] in its init.</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_CLASSES">
+    <English>Rally Point Classes</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_CLASSES_COMMENT">
+    <English>Class names, separated by commas. Every object of these classes is a rally point too, including ones placed or built during the mission (looked for every 30 seconds). Leave empty for synced objects only.</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_FOBS">
+    <English>Player FOB Rally Points</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_FOBS_COMMENT">
+    <English>With the Player FOBs module placed, each FOB is a rally point for its own side from the tier chosen here. Off leaves FOBs out.</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_HQS">
+    <English>Side HQs</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_HQS_COMMENT">
+    <English>Yes: the HQ and Field HQ that Military Placement, Custom Military Placement and the air commander pick for their faction are rally points for that faction's side, found within a minute of the mission starting.</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_HQ_NAME">
+    <English>%1 HQ</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_FIELDHQ_NAME">
+    <English>%1 Field HQ</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_SIDE">
+    <English>Side</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_SIDE_COMMENT">
+    <English>Which side may use the synced and class-matched rally points. Any side lets the enemy use them too.</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_SQUAD">
+    <English>Squad Radius (m)</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_SQUAD_COMMENT">
+    <English>A group leader brings the AI of their group that are on foot within this distance. Other players always travel on their own.</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_ENEMYCHECK">
+    <English>Enemy Check</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_ENEMYCHECK_COMMENT">
+    <English>Where enemies stop a trip. Both ends: enemies near the player stop them leaving, and enemies near the rally point stop them arriving. Destination only lets players rally out of a fight but not into one. ALiVE's virtual groups count too.</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_ENEMY">
+    <English>Enemy Radius (m)</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_ENEMY_COMMENT">
+    <English>How close an enemy has to be to stop a trip, at the ends Enemy Check names. 0 turns the check off.</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_COOLDOWN">
+    <English>Wait Between Trips (s)</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_COOLDOWN_COMMENT">
+    <English>How long a player waits after one trip before the next.</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_MARKERS">
+    <English>Show On Map</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_MARKERS_COMMENT">
+    <English>Yes: each player sees a map marker on every rally point they can use, a Player FOB's as soon as it reaches the tier in Player FOB Rally Points.</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_MARKER">
+    <English>Rally: %1</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_INTERFACE">
+    <English>Interface</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_INTERFACE_COMMENT">
+    <English>Where the Rally Points action goes. Auto uses the ACE interaction menu when ACE is loaded and the scroll wheel when it isn't.</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_ACTION">
+    <English>Rally Points</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_UI_TITLE">
+    <English>Rally Points: %1</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_UI_BUTTON_TRAVEL">
+    <English>Travel</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_UI_DETAILS">
+    <English>&lt;t size='1.1'&gt;%1&lt;/t&gt;&lt;br/&gt;Grid %2&lt;br/&gt;Travelling with you: %3</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_UI_GRID">
+    <English>Grid %1</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_UI_NONE">
+    <English>There are no other rally points you can travel to.</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_UI_NOT_FIT">
+    <English>You can't travel while you're unconscious or captive.</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_UI_ON_FOOT">
+    <English>Get out of the vehicle to travel.</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_UI_WAIT">
+    <English>You can travel again in %1 s.</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_UI_ENEMY_HERE">
+    <English>There are enemies too close to you to leave.</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_UI_ENEMY_THERE">
+    <English>There are enemies too close to that rally point.</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_UI_GONE">
+    <English>That rally point is no longer there.</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_UI_NO_ROOM">
+    <English>There's no room to arrive at that rally point.</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_UI_ARRIVED">
+    <English>You're at %1.</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_UI_ARRIVED_WITH">
+    <English>You're at %1, with %2 of your group.</English>
 </Key>
 </Container></Package></Project>

@@ -46,6 +46,21 @@ class CfgFunctions {
                 file = "\x\alive\addons\sup_group_manager\fnc_recruitWindow.sqf";
                 ALIVE_RECOMPILE;
             };
+            class rallyInit {
+                description = "Rally Points module: players and their AI travel between rally points";
+                file = "\x\alive\addons\sup_group_manager\fnc_rallyInit.sqf";
+                ALIVE_RECOMPILE;
+            };
+            class rallyPoint {
+                description = "Rally points: add, remove, list and travel (scripting function)";
+                file = "\x\alive\addons\sup_group_manager\fnc_rallyPoint.sqf";
+                ALIVE_RECOMPILE;
+            };
+            class rallyWindow {
+                description = "The Rally Points window";
+                file = "\x\alive\addons\sup_group_manager\fnc_rallyWindow.sqf";
+                ALIVE_RECOMPILE;
+            };
             class recruitInit {
                 description = "Recruitment module: recruit AI into the player's group (#977)";
                 file = "\x\alive\addons\sup_group_manager\fnc_recruitInit.sqf";

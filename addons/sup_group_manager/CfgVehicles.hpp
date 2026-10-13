@@ -149,4 +149,136 @@ class CfgVehicles {
                         sync[] = {"AnyStaticObject", "AnyVehicle", "AnyPerson"};
                 };
         };
+        // Rally Points: sync to objects; players (and a leader's AI) travel between them.
+        class ALiVE_sup_rally : ModuleAliveBase
+        {
+                scope = 2;
+                displayName = "$STR_ALIVE_RALLY";
+                function = "ALIVE_fnc_rallyInit";
+                functionPriority = 154;
+                isGlobal = 2;
+                icon = "x\alive\addons\sup_group_manager\icon_sup_rally.paa";
+                picture = "x\alive\addons\sup_group_manager\icon_sup_rally.paa";
+                author = MODULE_AUTHOR;
+                class Attributes : AttributesBase
+                {
+                        class rallyClasses : Edit
+                        {
+                                property = "ALiVE_sup_rally_rallyClasses";
+                                displayName = "$STR_ALIVE_RALLY_CLASSES";
+                                tooltip = "$STR_ALIVE_RALLY_CLASSES_COMMENT";
+                                defaultValue = """""";
+                        };
+                        class rallyFOBs : Combo
+                        {
+                                property = "ALiVE_sup_rally_rallyFOBs";
+                                displayName = "$STR_ALIVE_RALLY_FOBS";
+                                tooltip = "$STR_ALIVE_RALLY_FOBS_COMMENT";
+                                defaultValue = """2""";
+                                class Values
+                                {
+                                        class Off { name = "Off"; value = "0"; };
+                                        class T1  { name = "From tier 1 (as soon as it's deployed)"; value = "1"; };
+                                        class T2  { name = "From tier 2"; value = "2"; };
+                                        class T3  { name = "From tier 3"; value = "3"; };
+                                };
+                        };
+                        class rallyHQs : Combo
+                        {
+                                property = "ALiVE_sup_rally_rallyHQs";
+                                displayName = "$STR_ALIVE_RALLY_HQS";
+                                tooltip = "$STR_ALIVE_RALLY_HQS_COMMENT";
+                                defaultValue = """true""";
+                                class Values
+                                {
+                                        class Yes { name = "Yes"; value = "true"; };
+                                        class No  { name = "No";  value = "false"; };
+                                };
+                        };
+                        class rallySide : Combo
+                        {
+                                property = "ALiVE_sup_rally_rallySide";
+                                displayName = "$STR_ALIVE_RALLY_SIDE";
+                                tooltip = "$STR_ALIVE_RALLY_SIDE_COMMENT";
+                                defaultValue = """ANY""";
+                                class Values
+                                {
+                                        class Any    { name = "Any side"; value = "ANY"; };
+                                        class Blufor { name = "BLUFOR"; value = "WEST"; };
+                                        class Opfor  { name = "OPFOR"; value = "EAST"; };
+                                        class Indfor { name = "Independent"; value = "GUER"; };
+                                };
+                        };
+                        class squadRadius : Edit
+                        {
+                                property = "ALiVE_sup_rally_squadRadius";
+                                displayName = "$STR_ALIVE_RALLY_SQUAD";
+                                tooltip = "$STR_ALIVE_RALLY_SQUAD_COMMENT";
+                                defaultValue = """150""";
+                                typeName = "NUMBER";
+                        };
+                        class enemyCheck : Combo
+                        {
+                                property = "ALiVE_sup_rally_enemyCheck";
+                                displayName = "$STR_ALIVE_RALLY_ENEMYCHECK";
+                                tooltip = "$STR_ALIVE_RALLY_ENEMYCHECK_COMMENT";
+                                defaultValue = """BOTH""";
+                                class Values
+                                {
+                                        class Both { name = "Both ends"; value = "BOTH"; };
+                                        class Dest { name = "Destination only"; value = "DEST"; };
+                                        class Here { name = "Where you are only"; value = "HERE"; };
+                                        class Off  { name = "Off"; value = "OFF"; };
+                                };
+                        };
+                        class enemyRadius : Edit
+                        {
+                                property = "ALiVE_sup_rally_enemyRadius";
+                                displayName = "$STR_ALIVE_RALLY_ENEMY";
+                                tooltip = "$STR_ALIVE_RALLY_ENEMY_COMMENT";
+                                defaultValue = """100""";
+                                typeName = "NUMBER";
+                        };
+                        class cooldown : Edit
+                        {
+                                property = "ALiVE_sup_rally_cooldown";
+                                displayName = "$STR_ALIVE_RALLY_COOLDOWN";
+                                tooltip = "$STR_ALIVE_RALLY_COOLDOWN_COMMENT";
+                                defaultValue = """60""";
+                                typeName = "NUMBER";
+                        };
+                        class rallyMarkers : Combo
+                        {
+                                property = "ALiVE_sup_rally_rallyMarkers";
+                                displayName = "$STR_ALIVE_RALLY_MARKERS";
+                                tooltip = "$STR_ALIVE_RALLY_MARKERS_COMMENT";
+                                defaultValue = """true""";
+                                class Values
+                                {
+                                        class Yes { name = "Yes"; value = "true"; };
+                                        class No  { name = "No";  value = "false"; };
+                                };
+                        };
+                        class rallyInterface : Combo
+                        {
+                                property = "ALiVE_sup_rally_rallyInterface";
+                                displayName = "$STR_ALIVE_RALLY_INTERFACE";
+                                tooltip = "$STR_ALIVE_RALLY_INTERFACE_COMMENT";
+                                defaultValue = """AUTO""";
+                                class Values
+                                {
+                                        class Auto   { name = "Auto"; value = "AUTO"; };
+                                        class Scroll { name = "Scroll wheel"; value = "SCROLL"; };
+                                        class Ace    { name = "ACE interaction menu"; value = "ACE"; };
+                                        class Both   { name = "Both"; value = "BOTH"; };
+                                };
+                        };
+                        class ModuleDescription : ModuleDescription {};
+                };
+                class ModuleDescription
+                {
+                        description[] = {"$STR_ALIVE_RALLY_COMMENT"};
+                        sync[] = {"AnyStaticObject", "AnyVehicle"};
+                };
+        };
 };
