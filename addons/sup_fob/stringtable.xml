@@ -257,6 +257,9 @@
             <Key ID="STR_ALIVE_FOB_SUPPLY_FREE">
                 <English>No limit</English>
             </Key>
+            <Key ID="STR_ALIVE_FOB_SUPPLY_POOL">
+                <English>%1 (your side's force pool)</English>
+            </Key>
             <Key ID="STR_ALIVE_FOB_DEPLOYED">
                 <English>%1 deployed.</English>
             </Key>
@@ -446,11 +449,23 @@
             <Key ID="STR_ALIVE_FOB_TIER_COST_COMMENT">
                 <English>Supply to upgrade a FOB to this tier. Tier 2 can hold more supply and builds towers, machine guns and grenade launchers; tier 3 holds the most, builds mortars, AT and AA launchers and vehicles, and can be a respawn point.</English>
             </Key>
+            <Key ID="STR_ALIVE_FOB_RESPAWN_OFF">
+                <English>Off</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_RESPAWN_T1">
+                <English>From tier 1 (as soon as it's deployed)</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_RESPAWN_T2">
+                <English>From tier 2</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_RESPAWN_T3">
+                <English>From tier 3</English>
+            </Key>
             <Key ID="STR_ALIVE_FOB_RESPAWN">
-                <English>Respawn at Tier 3</English>
+                <English>Respawn Point</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_RESPAWN_COMMENT">
-                <English>A tier 3 FOB is a respawn point for its side while its headquarters stands. Needs a respawn type in the mission that offers respawn positions.</English>
+                <English>From which tier a FOB is a respawn point for its side, while its headquarters stands. Off: never. Needs a respawn type in the mission that offers respawn positions.</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_ACTION_UPGRADE">
                 <English>Upgrade FOB</English>

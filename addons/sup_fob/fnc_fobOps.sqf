@@ -34,7 +34,7 @@ recycle - [object] -> true when taken down, with half its price back
 restoreObjects - [fobID] -> a saved FOB's built objects made again; the number made
 unload - [crate, fobID] -> true when a supply crate went into the FOB
 upgrade - [fobID] -> true when the FOB went up a tier and was paid for
-respawn - [fobID] -> whether the FOB now has a respawn point (tier 3, active, module allows)
+respawn - [fobID] -> whether the FOB now has a respawn point (active, at or above the Respawn Point tier)
 fieldHQ - [object, "KIT" or "CRATE"] -> the FOB kit or supply crate handed out, or false
 repair - [fobID] -> true when a destroyed headquarters was rebuilt and paid for
 repairCost - [fobID] -> the supply a repair costs now
@@ -167,6 +167,8 @@ switch (_op) do {
         ["register", [_id]] call ALiVE_fnc_fobObjectives;
         ALiVE_FOB_tagged deleteAt (netId _kit);
         deleteVehicle _kit;
+        // a respawn point from deployment when Respawn Point is From tier 1
+        ["respawn", [_id]] call ALiVE_fnc_fobOps;
         [_logic, "broadcastMirror"] call ALiVE_fnc_FOB;
         ["save", [true]] call ALiVE_fnc_fobPersistence;
 
@@ -677,13 +679,15 @@ switch (_op) do {
         _result = true;
     };
 
-    // The respawn point a FOB should have: one at an active tier 3 FOB when the module allows
+    // The respawn point a FOB should have: one at an active FOB at or above the module's Respawn Point tier
     // it, none otherwise. Safe to run any number of times.
     case "respawn": {
         _args params [["_id", "", [""]]];
         private _entry = [ALiVE_FOB_registry, _id] call ALIVE_fnc_hashGet;
         if (isNil "_entry") exitWith { _result = false };
-        private _want = ([_logic, "attribute", ["fob_respawn"]] call ALiVE_fnc_FOB) && {([_entry, "tier", 1] call ALIVE_fnc_hashGet) >= 3} && {([_entry, "status", ""] call ALIVE_fnc_hashGet) == "active"};
+        // a respawn point from the tier the module's Respawn Point setting gives; 0 is never
+        private _from = [_logic, "attribute", ["fob_respawn"]] call ALiVE_fnc_FOB;
+        private _want = _from > 0 && {([_entry, "tier", 1] call ALIVE_fnc_hashGet) >= _from} && {([_entry, "status", ""] call ALIVE_fnc_hashGet) == "active"};
         private _have = [_entry, "respawn", []] call ALIVE_fnc_hashGet;
         if !(_have isEqualType []) then { _have = [] };
         if (!_want && {_have isNotEqualTo []}) then {

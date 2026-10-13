@@ -48,7 +48,7 @@ private _fnc_status = {
     private _fob = call _fnc_fob;
     if (_fob isEqualTo []) exitWith {};
     _fob params ["", "", "_name", "", "", "_tier", "_supply", "_cap"];
-    private _s = if (_supply < 0) then { localize "STR_ALIVE_FOB_SUPPLY_FREE" } else { format ["%1 / %2", round _supply, round _cap] };
+    private _s = if (_supply < 0) then { localize "STR_ALIVE_FOB_SUPPLY_FREE" } else { if (_cap < 0) then { format [localize "STR_ALIVE_FOB_SUPPLY_POOL", round _supply] } else { format ["%1 / %2", round _supply, round _cap] } };
     (BW_DISPLAY displayCtrl 92804) ctrlSetStructuredText ([[_name, format [localize "STR_ALIVE_FOB_UI_SUPPLY_LINE", _s]]] call _fnc_lines);
 };
 

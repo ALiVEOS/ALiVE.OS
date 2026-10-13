@@ -100,7 +100,7 @@ private _settings = createHashMapFromArray [
     ["fob_kit_cost", [500, [0, 1000000]]],
     ["fob_tier2_cost", [1500, [0, 1000000]]],
     ["fob_tier3_cost", [3000, [0, 1000000]]],
-    ["fob_respawn", [true, "bool"]],
+    ["fob_respawn", [3, [0, 3]]],
     ["fob_garrison_cost", [500, [0, 1000000]]],
     ["fob_garrison_groups", ["||", "text"]]
 ];
@@ -147,29 +147,28 @@ switch (_operation) do {
             };
 
             // The rest waits for what it reads: the Virtual AI System, the AI Commanders and
-            // Military Logistics all finish starting after their own init returns. A commander
-            // that never finishes is waited for 300 s, then the FOBs start without it.
+            // Military Logistics all finish starting after their own init returns. A large mission
+            // takes many minutes to place its forces (16 on a full Altis), and FOBs restored before their
+            // commanders are ready would miss their objectives, so this waits as long as that takes;
+            // only a commander that never finishes is given up on, after 30 minutes.
             [_logic] spawn {
                 params ["_logic"];
                 private _t0 = diag_tickTime;
                 if (["ALiVE_sys_profile"] call ALiVE_fnc_isModuleAvailable) then {
-                    waitUntil { sleep 1; (!isNil "ALiVE_ProfileHandler" && {[ALiVE_ProfileSystem, "startupComplete", false] call ALIVE_fnc_hashGet}) || {diag_tickTime - _t0 > 300} };
+                    waitUntil { sleep 1; (!isNil "ALiVE_ProfileHandler" && {[ALiVE_ProfileSystem, "startupComplete", false] call ALIVE_fnc_hashGet}) || {diag_tickTime - _t0 > 1800} };
                 };
                 waitUntil {
                     sleep 1;
                     private _opcoms = missionNamespace getVariable ["OPCOM_instances", []];
-                    ((_opcoms findIf { !([_x, "startupComplete", false] call ALiVE_fnc_hashGet) }) < 0) || {diag_tickTime - _t0 > 300}
+                    ((_opcoms findIf { !([_x, "startupComplete", false] call ALiVE_fnc_hashGet) }) < 0) || {diag_tickTime - _t0 > 1800}
                 };
                 waitUntil {
                     sleep 1;
-                    ((allMissionObjects "ALiVE_mil_logistics") findIf { !(_x getVariable ["startupComplete", false]) } < 0) || {diag_tickTime - _t0 > 300}
+                    ((allMissionObjects "ALiVE_mil_logistics") findIf { !(_x getVariable ["startupComplete", false]) } < 0) || {diag_tickTime - _t0 > 1800}
                 };
-                if (diag_tickTime - _t0 > 300) then {
-                    ["ALiVE Player FOBs - gave up waiting for the AI Commanders or Military Logistics to finish starting after 300 s; starting without them"] call ALiVE_fnc_dumpR;
+                if (diag_tickTime - _t0 > 1800) then {
+                    ["ALiVE Player FOBs - the AI Commanders or Military Logistics still hadn't finished starting after 30 minutes; FOBs start without them"] call ALiVE_fnc_dump;
                 };
-
-                // What can be built and its price, before anything is loaded or requested
-                [] call ALiVE_fnc_fobBuildScan;
 
                 if ([_logic, "attribute", ["fob_persistent"]] call ALIVE_fnc_FOB) then {
                     [] call ALiVE_fnc_fobLoadData;
@@ -178,6 +177,10 @@ switch (_operation) do {
                 isNil { ["restore"] call ALiVE_fnc_fobOps };
 
                 [_logic, "broadcastMirror"] call ALIVE_fnc_FOB;
+                // What can be built and its price. Restoring saved FOBs doesn't need it and the scan
+                // can take half a minute with a large mod set loaded, so it runs after them; the
+                // build menu says so if a player opens it before the scan is done.
+                [] call ALiVE_fnc_fobBuildScan;
                 // Military Logistics answers a FOB's supply request with this when its truck arrives
                 if (!isNil "ALIVE_eventLog") then {
                     _logic setVariable ["listenerID", [ALIVE_eventLog, "addListener", [_logic, ["LOGCOM_FOB_RESUPPLY_ARRIVED"]]] call ALIVE_fnc_eventLog];
@@ -259,6 +262,8 @@ switch (_operation) do {
         _spec params ["_default", "_kind"];
         private _raw = _logic getVariable [_name, _default];
         private _value = _default;
+        // Respawn Point was Yes or No before it took a tier: a mission saved then reads as tier 3 or off
+        if (_name == "fob_respawn") then { _raw = switch (toLower str _raw) do { case "true"; case """true""": { 3 }; case "false"; case """false""": { 0 }; default { _raw } } };
         switch (true) do {
             case (_kind isEqualTo "bool"): {
                 _value = if (_raw isEqualType "") then { toLower _raw == "true" } else { _raw isEqualTo true };

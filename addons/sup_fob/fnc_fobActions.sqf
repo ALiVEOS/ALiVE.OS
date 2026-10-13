@@ -173,7 +173,7 @@ switch (_op) do {
     case "status": {
         if (ALiVE_FOB_nearFob isEqualTo []) exitWith {};
         ALiVE_FOB_nearFob params ["", "", "_name", "", "_status", "_tier", "_supply", "_cap"];
-        private _supplyText = if (_supply < 0) then { localize "STR_ALIVE_FOB_SUPPLY_FREE" } else { format ["%1 / %2", round _supply, round _cap] };
+        private _supplyText = if (_supply < 0) then { localize "STR_ALIVE_FOB_SUPPLY_FREE" } else { if (_cap < 0) then { format [localize "STR_ALIVE_FOB_SUPPLY_POOL", round _supply] } else { format ["%1 / %2", round _supply, round _cap] } };
         [localize "STR_ALIVE_FOB", format [localize "STR_ALIVE_FOB_STATUS", _name, localize (format ["STR_ALIVE_FOB_STATE_%1", toUpper _status]), _tier, _supplyText]] call ALIVE_fnc_sendHint;
     };
 

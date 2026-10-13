@@ -16,8 +16,8 @@ list with two cycle buttons.
 A building row's data is its class; a group row's is "faction/group" (the garrison is made from
 that faction's group), and the first row, "", is a random infantry group of the FOB's faction.
 A stored pick the list doesn't hold (a mod not loaded) is kept and shown as unrecognised. The
-typed field below the list (idc 102) always shows the current side's pick: picking a row fills
-it, and anything typed there is the pick, for a class the list doesn't show.
+typed field below the list (idc 102) starts empty, as on ALiVE's other pickers: what's typed
+there becomes the current side's pick, for a class the list doesn't show.
 
 Storage: one string, the three picks in BLUFOR|OPFOR|Independent order.
 
@@ -72,11 +72,18 @@ if (_mode == "HUB") then {
                 private _faction = configName _x;
                 private _fname = getText (configFile >> "CfgFactionClasses" >> _faction >> "displayName");
                 if (_fname == "") then { _fname = _faction };
+                // every category, not only the game's own "Infantry": mods file their foot groups
+                // under their own names (RHS, CUP...). A group counts when every unit is a soldier.
                 {
-                    private _gname = getText (_x >> "name");
-                    if (_gname == "") then { _gname = configName _x };
-                    _rows pushBack [toLower (_fname + _gname), format ["%1: %2", _fname, _gname], _faction + "/" + configName _x, _side, true];
-                } forEach ("true" configClasses (_x >> "Infantry"));
+                    {
+                        private _units = "isClass _x" configClasses _x;
+                        if (_units isNotEqualTo [] && {(_units findIf { !((getText (_x >> "vehicle")) isKindOf "CAManBase") }) < 0}) then {
+                            private _gname = getText (_x >> "name");
+                            if (_gname == "") then { _gname = configName _x };
+                            _rows pushBack [toLower (_fname + _gname), format ["%1: %2", _fname, _gname], _faction + "/" + configName _x, _side, true];
+                        };
+                    } forEach ("true" configClasses _x);
+                } forEach ("true" configClasses _x);
             } forEach ("true" configClasses _sideCfg);
         };
     } forEach ("true" configClasses (configFile >> "CfgGroups"));
@@ -113,7 +120,7 @@ private _populate = {
         _list lbSetData [_sel, _pick];
     };
     if (_sel >= 0) then { _list lbSetCurSel _sel };
-    (_display controlsGroupCtrl 102) ctrlSetText _pick;
+    (_display controlsGroupCtrl 102) ctrlSetText "";
     (_display controlsGroupCtrl 1200) ctrlSetText format ["%1: %2", localize "STR_ALIVE_FOB_PICK_SIDE",
         localize (["STR_ALIVE_FOB_PICK_BLUFOR", "STR_ALIVE_FOB_PICK_OPFOR", "STR_ALIVE_FOB_PICK_INDEP"] select _slot)];
     (_display controlsGroupCtrl 1201) ctrlSetText format ["%1: %2", localize "STR_ALIVE_FOB_PICK_SHOW",
@@ -129,10 +136,9 @@ _list ctrlAddEventHandler ["LBSelChanged", {
     private _disp = _ctrl getVariable "alive_disp";
     if (isNull _disp || {_disp getVariable ["alive_populating", false]} || {_i < 0}) exitWith {};
     (_disp getVariable "alive_fobPicks") set [_disp getVariable ["alive_currentSlot", 0], _ctrl lbData _i];
-    (_disp controlsGroupCtrl 102) ctrlSetText (_ctrl lbData _i);
 }];
 
-// The typed field: what's typed is the current side's pick
+// The typed field: what's typed is the current side's pick (empty leaves the list's)
 private _edit = _display controlsGroupCtrl 102;
 if (!isNull _edit) then {
     private _label = _display controlsGroupCtrl 103;
@@ -146,7 +152,8 @@ if (!isNull _edit) then {
             private _d = _e getVariable "alive_disp";
             if (isNull _d) exitWith {};
             private _t = (ctrlText _e) trim [" ", 0];
-            (_d getVariable "alive_fobPicks") set [_d getVariable ["alive_currentSlot", 0], _t];
+            // an empty field leaves the list's pick alone
+            if (_t != "") then { (_d getVariable "alive_fobPicks") set [_d getVariable ["alive_currentSlot", 0], _t] };
         }];
     } forEach ["KeyUp", "KillFocus"];
 };

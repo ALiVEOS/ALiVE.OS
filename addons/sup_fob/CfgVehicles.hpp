@@ -120,11 +120,13 @@ class CfgVehicles {
                                 property = "ALiVE_sup_fob_fob_respawn";
                                 displayName = "$STR_ALIVE_FOB_RESPAWN";
                                 tooltip = "$STR_ALIVE_FOB_RESPAWN_COMMENT";
-                                defaultValue = """true""";
+                                defaultValue = """3""";
                                 class Values
                                 {
-                                    class Yes { name = "$STR_ALIVE_FOB_YES"; value = true; default = 1; };
-                                    class No { name = "$STR_ALIVE_FOB_NO"; value = false; };
+                                    class Off { name = "$STR_ALIVE_FOB_RESPAWN_OFF"; value = "0"; };
+                                    class T1  { name = "$STR_ALIVE_FOB_RESPAWN_T1"; value = "1"; };
+                                    class T2  { name = "$STR_ALIVE_FOB_RESPAWN_T2"; value = "2"; };
+                                    class T3  { name = "$STR_ALIVE_FOB_RESPAWN_T3"; value = "3"; default = 1; };
                                 };
                         };
 
