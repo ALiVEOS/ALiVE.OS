@@ -95,7 +95,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PERF_SHOW_COMMENT">
-    <English>Show the server's latest performance sample, refreshed every 5 seconds</English>
+    <English>Show the server's performance, updated every 10 seconds while it's open</English>
     <Chinese>顯示伺服器最新的效能取樣，每 5 秒更新</Chinese>
     <Chinesesimp>显示服务器最新的性能采样，每 5 秒刷新</Chinesesimp>
     <Spanish>Muestra la última medición de rendimiento del servidor, actualizada cada 5 segundos</Spanish>

@@ -4,8 +4,8 @@ SCRIPT(perfShow);
 /* ----------------------------------------------------------------------------
 Function: ALIVE_fnc_perfShow
 Description:
-Turns the admin's Show Perf readout on or off (#1031). While it is on, a hint shows
-the server's latest performance sample and refreshes every 5 seconds.
+Turns the admin's Show Perf readout on or off (#1031). While it is on, the server takes a
+sample every 10 seconds for it, and a hint shows the latest one, redrawn every 5 seconds.
 
 Parameters:
 None
@@ -27,13 +27,12 @@ if (!hasInterface) exitWith {};
 
 GVAR(SHOW) = !(missionNamespace getVariable [QGVAR(SHOW), false]);
 
+["watch", [0, 1] select GVAR(SHOW)] remoteExecCall ["ALIVE_fnc_perfServer", 2];
 if (!GVAR(SHOW)) exitWith { hintSilent "" };
 
 [] spawn {
     while {missionNamespace getVariable [QGVAR(SHOW), false]} do {
-        private _text = if !(missionNamespace getVariable [QGVAR(RUNNING), false]) then {
-            parseText format ["<t size='1.1'>%1</t><br/>%2", localize "STR_ALIVE_PERF_SERVER", localize "STR_ALIVE_PERF_OFF"]
-        } else {
+        private _text = call {
             if (isNil QGVAR(LAST)) then {
                 parseText format ["<t size='1.1'>%1</t><br/>%2", localize "STR_ALIVE_PERF_SERVER", localize "STR_ALIVE_PERF_WAITING"]
             } else {

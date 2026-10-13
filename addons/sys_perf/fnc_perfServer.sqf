@@ -13,9 +13,13 @@ web-service recorder in fnc_perfInit.sqf is untouched and still off.
 An admin's Start Perf and Stop Perf reach this by remoteExecCall; a call from a machine
 whose player is not a logged-in or voted admin is refused.
 
+While an admin has Show Perf open, the server also takes a sample every 10 seconds for the
+readout alone ("watch"), whether or not monitoring runs; those aren't written to the RPT.
+
 Parameters:
-_this select 0: STRING - "start", "stop" or "sample"
-_this select 1: NUMBER - seconds between samples, for "start" (optional, default 60)
+_this select 0: STRING - "start", "stop", "sample" or "watch"
+_this select 1: NUMBER - seconds between samples, for "start" (optional, default 60); for
+"watch", 1 to start watching and 0 to stop
 
 Returns:
 Nil
@@ -36,7 +40,7 @@ Peer Reviewed:
 nil
 ---------------------------------------------------------------------------- */
 
-params [["_operation", "", [""]], ["_interval", 60, [0]]];
+params [["_operation", "", [""]], ["_interval", 60, [0]], ["_log", true, [true]]];
 
 if (!isServer) exitWith {};
 
@@ -76,7 +80,7 @@ switch (_operation) do {
             ["fsms", _scripts select 3]
         ];
 
-        diag_log text format ["ALiVE PERF | %1", (_sample apply {format ["%1=%2", _x select 0, _x select 1]}) joinString " "];
+        if (_log) then { diag_log text format ["ALiVE PERF | %1", (_sample apply {format ["%1=%2", _x select 0, _x select 1]}) joinString " "] };
 
         GVAR(LAST) = _sample;
         publicVariable QGVAR(LAST);
@@ -97,6 +101,25 @@ switch (_operation) do {
                 ["sample"] call ALIVE_fnc_perfServer;
                 sleep GVAR(INTERVAL);
             };
+        };
+    };
+
+    // An admin's Show Perf opening (1) or closing (0): while anyone watches, a fresh sample
+    // every 10 seconds for the readout. Watchers who leave are dropped.
+    case "watch": {
+        private _who = if (isRemoteExecuted) then { remoteExecutedOwner } else { clientOwner };
+        private _watchers = (missionNamespace getVariable [QGVAR(WATCHERS), []]) - [_who];
+        if (_interval > 0) then { _watchers pushBack _who };
+        GVAR(WATCHERS) = _watchers;
+        if (_watchers isEqualTo [] || {!isNil QGVAR(WATCHLOOP)}) exitWith {};
+        GVAR(WATCHLOOP) = [] spawn {
+            while { (missionNamespace getVariable [QGVAR(WATCHERS), []]) isNotEqualTo [] } do {
+                ["sample", 0, false] call ALIVE_fnc_perfServer;
+                sleep 10;
+                private _here = (allPlayers apply { owner _x }) + [2, clientOwner];
+                GVAR(WATCHERS) = GVAR(WATCHERS) select { _x in _here };
+            };
+            GVAR(WATCHLOOP) = nil;
         };
     };
 
