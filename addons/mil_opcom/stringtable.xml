@@ -223,7 +223,7 @@
     <English>Installation Types</English>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_INSTYPES_COMMENT">
-    <English>What this Asymmetric commander may set up or carry out: IED factories, weapons depots, recruitment HQs, roadside IEDs, suicide bombers, sabotage, ambushes and roadblocks. Untick a type and it is never placed at mission start or chosen later. Roadblocks also need Roadblocks set to Yes.</English>
+    <English>What this Asymmetric commander may set up or carry out: factories (IED factories, or drug labs with Drug Labs on), weapons depots, recruitment HQs, roadside IEDs, suicide bombers, sabotage, ambushes and roadblocks. Untick a type and it is never placed at mission start or chosen later. Roadblocks also need Roadblocks set to Yes.</English>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_INSPROPS_THEME">
     <English>Installation Interiors</English>

@@ -28,7 +28,7 @@ if (isNull _list) exitWith {};
 [_display, [1200, 1201, 1210, 1211, 102, 103], [[5, 5], [31, 5]]] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenPickerCutRows.sqf';
 
 private _rows = [
-    ["factory", "IED factories"],
+    ["factory", "Factories (IED or drug lab)"],
     ["depot", "Weapons depots"],
     ["recruit", "Recruitment HQs"],
     ["ied", "Roadside IEDs"],
