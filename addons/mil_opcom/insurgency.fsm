@@ -542,6 +542,7 @@ class FSM
                          "" \n
                          "// Attack always if needed" \n
                          "_unusedActions = _allActions;" \n
+                         "_unusedActions = _unusedActions select {[_OPCOM_HANDLER, _x] call ALiVE_fnc_INS_typeAllowed};" \n
                          "" \n
                          "// Get civilian agents" \n
                          "_agents = [_objective,""agents"",[]] call ALiVE_fnc_HashGet;" \n
@@ -689,6 +690,7 @@ class FSM
                          "" \n
                          "// Retreat always if needed" \n
                          "_unusedActions = _allActions;" \n
+                         "_unusedActions = _unusedActions select {[_OPCOM_HANDLER, _x] call ALiVE_fnc_INS_typeAllowed};" \n
                          "" \n
                          "// Get civilian agents" \n
                          "_agents = [_objective,""agents"",[]] call ALiVE_fnc_HashGet;" \n
@@ -808,6 +810,7 @@ class FSM
                          "" \n
                          "// Always select different style of terror" \n
                          "_unusedActions = _allActions - _actionsFulfilled;" \n
+                         "_unusedActions = _unusedActions select {[_OPCOM_HANDLER, _x] call ALiVE_fnc_INS_typeAllowed};" \n
                          "" \n
                          "// Get civilian agents" \n
                          "_agents = [_objective,""agents"",[]] call ALiVE_fnc_HashGet;" \n
@@ -1048,6 +1051,7 @@ class FSM
                          "" \n
                          "// Always select different style of occupation" \n
                          "_unusedActions = _allActions - _actionsFulfilled;" \n
+                         "_unusedActions = _unusedActions select {[_OPCOM_HANDLER, _x] call ALiVE_fnc_INS_typeAllowed};" \n
                          "" \n
                          "// Get civilian agents" \n
                          "_agents = [_objective,""agents"",[]] call ALiVE_fnc_HashGet;" \n
@@ -1058,7 +1062,7 @@ class FSM
                          "" \n
                          "// Overwrite type with Recruitment HQ if fitting" \n
                          "if (_objectiveHostility >= 0) then {_type = ""idle""};" \n
-                         "if (_objectiveHostility < 0 && {count _agents >= _minAgents && {!(""recruit"" in _actionsFulfilled)}}) then {_type = ""recruit""};" \n
+                         "if (_objectiveHostility < 0 && {count _agents >= _minAgents && {!(""recruit"" in _actionsFulfilled)} && {[_OPCOM_HANDLER, ""recruit""] call ALiVE_fnc_INS_typeAllowed}}) then {_type = ""recruit""};" \n
                          "" \n
                          "" \n
                          "if (isnil ""_actions"")  then {" \n

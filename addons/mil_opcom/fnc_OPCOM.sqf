@@ -183,6 +183,8 @@ switch (_operation) do {
         private _reinforcements = _logic getvariable ["reinforcements","0.9"];
         if !(_reinforcements isEqualType 0) then {_reinforcements = call compile _reinforcements};
         private _roadblocks = (parseNumber format ["%1", _logic getvariable ["roadblocks",1]]) > 0;
+        // Installation Types (#1081): what an Asymmetric commander may set up, as lower-case keys
+        private _insTypes = (toLower format ["%1", _logic getvariable ["asymInstallations", "factory,depot,recruit,ied,suicide,sabotage,ambush,roadblocks"]]) splitString ", ";
         // #697 Phase 2.1: AI-driven friendly destroy of enemy asymmetric
         // installations. Read the mode string here; the behavioural
         // implementation lands in follow-up commits (proximity first,
@@ -341,6 +343,7 @@ switch (_operation) do {
             ["intelchance", _intelChance],
             ["hvt", _hvt],
             ["roadblocks", _roadblocks],
+            ["insTypes", _insTypes],
             ["friendlyDisableMode", _friendlyDisableMode],
             ["asymEscalationIntensity", _asymEscalationIntensity],
             ["asymExcludeKinds", _asymExcludeKinds],
@@ -2079,12 +2082,12 @@ switch (_operation) do {
                                 private _availableRoads = _center nearRoads _size;
 
                                 if (count _availableBuildings > 0) then {
-                                    _buildingTypes = ["HQ","depot","factory"];
+                                    _buildingTypes = ["HQ","depot","factory"] select { [_logic, ["recruit", _x] select (_x != "HQ")] call ALiVE_fnc_INS_typeAllowed };
                                 };
 
                                 if (count _availableRoads > 0) then {
-                                    _roadTypes = ["ied"];
-                                    if (_roadblocks) then {_roadTypes pushBack "roadblocks"};
+                                    _roadTypes = ["ied"] select { [_logic, _x] call ALiVE_fnc_INS_typeAllowed };
+                                    if (_roadblocks && {[_logic, "roadblocks"] call ALiVE_fnc_INS_typeAllowed}) then {_roadTypes pushBack "roadblocks"};
                                 };
 
                                 private _preferredType = "";
@@ -2738,6 +2741,11 @@ switch (_operation) do {
         };
 
         if (([_logic, "controltype", ""] call ALiVE_fnc_HashGet) != "asymmetric") exitWith {
+            _result = false;
+        };
+
+        // Installation Types (#1081): every installation the commander creates comes through here
+        if !([_logic, ["recruit", toLower _installationType] select (_installationType != "HQ")] call ALiVE_fnc_INS_typeAllowed) exitWith {
             _result = false;
         };
 

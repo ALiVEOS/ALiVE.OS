@@ -213,6 +213,12 @@
 <Key ID="STR_ALIVE_OPCOM_HVT_NAME_COMMENT">
     <English>The officer's name, as every side is told it when he's killed and as it shows on the intel marker. The soldier in the world wears it too. Leave empty for a name from his own nationality.</English>
 </Key>
+<Key ID="STR_ALIVE_OPCOM_INSTYPES">
+    <English>Installation Types</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_INSTYPES_COMMENT">
+    <English>What this Asymmetric commander may set up or carry out: IED factories, weapons depots, recruitment HQs, roadside IEDs, suicide bombers, sabotage, ambushes and roadblocks. Untick a type and it is never placed at mission start or chosen later. Roadblocks also need Roadblocks set to Yes.</English>
+</Key>
 <Key ID="STR_ALIVE_OPCOM_INSPROPS_THEME">
     <English>Installation Interiors</English>
 </Key>

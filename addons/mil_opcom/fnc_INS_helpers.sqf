@@ -41,6 +41,17 @@ Jman
 
 ---------------------------------------------------------------------------- */
 
+// Whether an Asymmetric commander may set up this kind of installation or carry out this action
+// (Installation Types, #1081): factory, depot, recruit (the recruitment HQ), ied, suicide,
+// sabotage, ambush or roadblocks. Anything else, and a commander without the setting, is allowed.
+ALiVE_fnc_INS_typeAllowed = {
+                params [["_opcom", []], ["_kind", ""]];
+                private _gated = ["factory","depot","recruit","ied","suicide","sabotage","ambush","roadblocks"];
+                if !((toLower _kind) in _gated) exitWith {true};
+                private _types = if (_opcom isEqualType [] && {_opcom isNotEqualTo []}) then {[_opcom, "insTypes", _gated] call ALiVE_fnc_HashGet} else {_gated};
+                (toLower _kind) in _types
+};
+
 ALiVE_fnc_INS_getOpcomByObjective = {
                 params [["_objective",[]]];
 

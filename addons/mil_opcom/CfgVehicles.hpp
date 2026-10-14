@@ -282,6 +282,16 @@ class CfgVehicles {
                                     class No { name = "No"; value = 0; };
                                 };
                         };
+                        class asymInstallations
+                        {
+                                property = "ALiVE_mil_opcom_asymInstallations";
+                                displayName = "$STR_ALIVE_OPCOM_INSTYPES";
+                                tooltip = "$STR_ALIVE_OPCOM_INSTYPES_COMMENT";
+                                control = "ALiVE_InsTypesChoice";
+                                typeName = "STRING";
+                                expression = "_this setVariable ['asymInstallations', _value];";
+                                defaultValue = """factory,depot,recruit,ied,suicide,sabotage,ambush,roadblocks""";
+                        };
                         class insPropTheme : Combo
                         {
                                 property = "ALiVE_mil_opcom_insPropTheme";

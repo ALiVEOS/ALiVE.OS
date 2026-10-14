@@ -11,6 +11,10 @@ class Cfg3DEN {
             attributeLoad = "[_this, 'GUARDS', _value, '$STR_ALIVE_OPCOM_HVT_GUARDS'] call compile preprocessFileLineNumbers '\x\alive\addons\mil_opcom\fnc_hvtEdenChoiceLoad.sqf'";
             attributeSave = "[_this] call compile preprocessFileLineNumbers '\x\alive\addons\mil_opcom\fnc_hvtEdenChoiceSave.sqf'";
         };
+        class ALiVE_InsTypesChoice: ALiVE_FilteredMultiSelect_Base {
+            attributeLoad = "[_this, _value] call compile preprocessFileLineNumbers '\x\alive\addons\mil_opcom\fnc_insTypesEdenChoiceLoad.sqf'";
+            attributeSave = "[_this] call compile preprocessFileLineNumbers '\x\alive\addons\mil_opcom\fnc_hvtEdenChoiceSave.sqf'";
+        };
         class ALiVE_InsPropsFactoryChoice: ALiVE_FilteredMultiSelect_Base {
             attributeLoad = "[_this, _value, '$STR_ALIVE_OPCOM_INSPROPS_FACTORY', 'Factory'] call compile preprocessFileLineNumbers '\x\alive\addons\mil_opcom\fnc_insPropsEdenChoiceLoad.sqf'";
             attributeSave = "[_this] call compile preprocessFileLineNumbers '\x\alive\addons\mil_opcom\fnc_hvtEdenChoiceSave.sqf'";
