@@ -291,7 +291,7 @@ switch (_taskState) do {
                 };
                 _target setVariable ["ALIVE_Task_VIPEscortPlayers", _escortPlayers, true];
 
-                ["Task Update", format ["%1 secured the informant in %2.", name _caller, _target getVariable ["ALIVE_Task_VIPSourceTown", "the area"]]] remoteExec ["BIS_fnc_showSubtitle", side (group _caller)];
+                ["Task Update", format ["%1 secured the informant in %2.", name _caller, _target getVariable ["ALIVE_Task_VIPSourceTown", "the area"]]] remoteExec ["ALIVE_fnc_taskSubtitle", side (group _caller)];
             },
             {},
             [],

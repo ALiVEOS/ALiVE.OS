@@ -127,6 +127,10 @@ if (!hasInterface || {!_main}) exitWith {};
     // scroll wheel, ACE interaction menu or both, as the module's Interface setting says; Auto uses
     // ACE when it is loaded
     private _ui = toUpper (_logic getVariable ["rallyInterface", "AUTO"]);
+    // the player's own choice in Addon Options > ALiVE > Game wins over the module's (#1083); ACE
+    // without ACE loaded still falls back to the scroll wheel below
+    private _prefUI = missionNamespace getVariable ["ALiVE_prefInterface", "MODULE"];
+    if (_prefUI != "MODULE") then { _ui = _prefUI };
     private _hasAce = isClass (configFile >> "CfgPatches" >> "ace_interact_menu");
     private _useAce = _hasAce && {_ui in ["AUTO", "ACE", "BOTH"]};
     private _useScroll = !_useAce || {_ui == "BOTH"};

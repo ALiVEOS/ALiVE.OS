@@ -80,6 +80,10 @@ switch (_op) do {
         // when it is loaded and the scroll wheel when it isn't; ACE without ACE loaded falls back
         // to the scroll wheel.
         private _ui = toUpper str (missionNamespace getVariable ["ALiVE_sup_fob", objNull] getVariable ["fob_interface", "AUTO"]);
+        // the player's own choice in Addon Options > ALiVE > Game wins over the module's (#1083); ACE
+        // without ACE loaded still falls back to the scroll wheel below
+        private _prefUI = missionNamespace getVariable ["ALiVE_prefInterface", "MODULE"];
+        if (_prefUI != "MODULE") then { _ui = _prefUI };
         private _hasAce = isClass (configFile >> "CfgPatches" >> "ace_interact_menu");
         private _useAce = _hasAce && {(_ui find "SCROLL") < 0};
         private _useScroll = !_hasAce || {(_ui find "SCROLL") >= 0} || {(_ui find "BOTH") >= 0};

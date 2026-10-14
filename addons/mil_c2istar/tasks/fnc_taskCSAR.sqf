@@ -913,7 +913,7 @@ switch (_taskState) do {
                     [group _caller, _prevLeader] remoteExecCall ["selectLeader", _prevLeader];
                     ["pilotRelease", "", [_target], [], false] call ALIVE_fnc_taskCSAR;
 
-                    ["Rescue", format ["You have rescued %1!", name _target]] call BIS_fnc_showSubtitle;
+                    ["Rescue", format ["You have rescued %1!", name _target]] call ALIVE_fnc_taskSubtitle;
                 },
                 {},
                 [],

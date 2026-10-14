@@ -1513,6 +1513,10 @@ switch(_operation) do {
             ["init"] call ALiVE_fnc_C2ISTARSoldierInteract;
             if (hasInterface) then {
                 private _ui = toUpper str (_logic getVariable ["talkInterface", "AUTO"]);
+                // the player's own choice in Addon Options > ALiVE > Game wins over the module's (#1083); ACE
+                // without ACE loaded still falls back to the scroll wheel below
+                private _prefUI = missionNamespace getVariable ["ALiVE_prefInterface", "MODULE"];
+                if (_prefUI != "MODULE") then { _ui = _prefUI };
                 [_ui] spawn {
                     params ["_ui"];
                     private _hasAce = isClass (configFile >> "CfgPatches" >> "ace_interact_menu");

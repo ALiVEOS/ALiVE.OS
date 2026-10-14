@@ -52,7 +52,7 @@ private _showTaskUpdate = {
     {
         private _player = [_x] call ALIVE_fnc_getPlayerByUID;
         if !(isNull _player) then {
-            [_title, _message] remoteExec ["BIS_fnc_showSubtitle", _player];
+            [_title, _message] remoteExec ["ALIVE_fnc_taskSubtitle", _player];
         };
     } forEach _taskPlayers;
 };

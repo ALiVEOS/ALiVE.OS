@@ -132,6 +132,10 @@ switch(_operation) do {
                     // Eden never writes it and ada774b5 read a name nothing sets.
                     CREWINFO_DEBUG = (_logic getvariable ["debug","false"]) == "true";
                     CREWINFO_UILOC = parseNumber (_logic getvariable ["crewinfo_ui_setting","1"]);
+                    // the player's own choice (Addon Options > ALiVE > Game, #1083): right, left or off
+                    private _prefCrew = missionNamespace getVariable ["ALiVE_prefCrewInfo", "MODULE"];
+                    if (_prefCrew == "RIGHT") then { CREWINFO_UILOC = 1 };
+                    if (_prefCrew == "LEFT") then { CREWINFO_UILOC = 2 };
 
                     Waituntil {!isnil "CREWINFO_DEBUG" && {!isnil "CREWINFO_UILOC"}};
 
@@ -146,7 +150,7 @@ switch(_operation) do {
                         };
                     // DEBUG -------------------------------------------------------------------------------------
 
-                       [] spawn ALIVE_fnc_crewinfoClient;
+                       if ((missionNamespace getVariable ["ALiVE_prefCrewInfo", "MODULE"]) != "OFF") then { [] spawn ALIVE_fnc_crewinfoClient };
                 };
 
                 _result = ADDON;

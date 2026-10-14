@@ -164,6 +164,15 @@ switch(_operation) do {
                     if(viewdistance >  _maxsetvd) then {
                         setViewDistance _maxsetvd;
                     };
+                    // the player's own starting view distance (Addon Options > ALiVE > Game, #1083), kept
+                    // inside the module's minimum and maximum; 0 leaves the game's own setting
+                    private _prefVD = missionNamespace getVariable ["ALiVE_prefViewDistance", 0];
+                    if (_prefVD > 0) then {
+                        private _minsetvd = parseNumber format ["%1", ADDON getVariable ["minVD", "500"]];
+                        if (_minsetvd == 0) then { _minsetvd = 500 };
+                        _minsetvd = _minsetvd min _maxsetvd;
+                        setViewDistance ((_prefVD max _minsetvd) min _maxsetvd);
+                    };
 /*
                         // Initialise interaction key if undefined
                         if(isNil "SELF_INTERACTION_KEY") then {SELF_INTERACTION_KEY = [221,[false,false,false]];};

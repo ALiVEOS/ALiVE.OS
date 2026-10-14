@@ -2,6 +2,129 @@
 <Project name="Arma3">
 <Package name="ALiVE">
 <Container name="STR_DN">
+<Key ID="STR_ALIVE_SETTINGS_CATEGORY">
+    <English>ALiVE</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_EDEN">
+    <English>Eden Editor</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_SECTIONS">
+    <English>Opening a module section</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_SECTIONS_COMMENT">
+    <English>What happens to a module's other open sections when you open one of its settings sections in Eden's attributes window.</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_SECTIONS_CLOSE">
+    <English>Closes the other open sections</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_SECTIONS_KEEP">
+    <English>Leaves the other sections open</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_FIRSTOPEN">
+    <English>Sections of a module not opened before</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_FIRSTOPEN_COMMENT">
+    <English>Which sections are open the first time you open a module's attributes. After that the module remembers the sections you left open.</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_FIRSTOPEN_FIRST">
+    <English>First section open</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_FIRSTOPEN_NONE">
+    <English>All closed</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_FIRSTOPEN_ALL">
+    <English>All open</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_PICKERROWS">
+    <English>Picker list height</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_PICKERROWS_COMMENT">
+    <English>How many rows the tick lists in ALiVE's module settings show before they scroll (factions, compositions, interiors and the rest).</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_ROWS_4">
+    <English>4 rows</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_ROWS_6">
+    <English>6 rows</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_ROWS_8">
+    <English>8 rows</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_LOGO">
+    <English>Show the ALiVE logo</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_LOGO_COMMENT">
+    <English>Shows the ALiVE logo above the settings in an ALiVE module's attributes window.</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_GAME">
+    <English>Game</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_VD">
+    <English>Starting view distance</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_VD_COMMENT">
+    <English>Your view distance when a mission with ALiVE's Player Options starts, kept inside the mission's minimum and maximum. 0 keeps the game's own setting.</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_TAGSHIDE">
+    <English>Hide player tags</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_TAGSHIDE_COMMENT">
+    <English>Hides ALiVE's player name tags on your screen, whatever the mission sets.</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_TAGDIST">
+    <English>Player tag distance (m)</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_TAGDIST_COMMENT">
+    <English>Shows player tags only this close. It can only shorten the mission's distance, never lengthen it. 0 uses the mission's.</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_CREW">
+    <English>Vehicle crew list</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_CREW_COMMENT">
+    <English>Where ALiVE's vehicle crew list sits on your screen. If the mission turns the crew list off, it stays off.</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_MISSION">
+    <English>As the mission sets</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_RIGHT">
+    <English>Right</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_LEFT">
+    <English>Left</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_OFF">
+    <English>Off</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_MSG">
+    <English>Task updates</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_MSG_COMMENT">
+    <English>How C2ISTAR task updates reach you, including the Hearts and Minds hold countdown.</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_MSG_SUB">
+    <English>Subtitles</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_MSG_HINT">
+    <English>Hints</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_MSG_CHAT">
+    <English>Chat lines</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_UI">
+    <English>Interaction menu</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_UI_COMMENT">
+    <English>Scroll wheel, ACE interaction menu or both for rally points, talking to soldiers and FOBs. ACE without ACE loaded falls back to the scroll wheel. Applies when the mission starts.</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_UI_SCROLL">
+    <English>Scroll wheel</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_UI_ACE">
+    <English>ACE interaction menu</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_UI_BOTH">
+    <English>Both</English>
+</Key>
 <Key ID="STR_ALIVE_MODULE">
     <English>ALiVE Modules</English>
     <Chinesesimp>ALiVE 模块</Chinesesimp>

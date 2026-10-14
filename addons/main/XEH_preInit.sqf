@@ -2,6 +2,52 @@
 
 LOG(MSG_INIT);
 
+// ALiVE's entry in CBA's Addon Options, in Eden and in game (#1083). Each player's own choice, kept in
+// their profile; the setting's value is the variable of the same name.
+// Opening a module section in Eden closes the module's other open sections, or leaves them open
+// (fnc_edenSectionCollapse.sqf).
+[
+    "ALiVE_edenSectionsCloseOthers", "LIST",
+    [localize "STR_ALIVE_SETTINGS_SECTIONS", localize "STR_ALIVE_SETTINGS_SECTIONS_COMMENT"],
+    [localize "STR_ALIVE_SETTINGS_CATEGORY", localize "STR_ALIVE_SETTINGS_EDEN"],
+    [[true, false], [localize "STR_ALIVE_SETTINGS_SECTIONS_CLOSE", localize "STR_ALIVE_SETTINGS_SECTIONS_KEEP"], 0]
+] call CBA_fnc_addSetting;
+// which sections a module not opened before shows open
+[
+    "ALiVE_edenSectionsFirstOpen", "LIST",
+    [localize "STR_ALIVE_SETTINGS_FIRSTOPEN", localize "STR_ALIVE_SETTINGS_FIRSTOPEN_COMMENT"],
+    [localize "STR_ALIVE_SETTINGS_CATEGORY", localize "STR_ALIVE_SETTINGS_EDEN"],
+    [["first", "none", "all"], [localize "STR_ALIVE_SETTINGS_FIRSTOPEN_FIRST", localize "STR_ALIVE_SETTINGS_FIRSTOPEN_NONE", localize "STR_ALIVE_SETTINGS_FIRSTOPEN_ALL"], 0]
+] call CBA_fnc_addSetting;
+// how many rows ALiVE's picker lists show before they scroll (fnc_edenListToggle.sqf)
+[
+    "ALiVE_edenPickerRows", "LIST",
+    [localize "STR_ALIVE_SETTINGS_PICKERROWS", localize "STR_ALIVE_SETTINGS_PICKERROWS_COMMENT"],
+    [localize "STR_ALIVE_SETTINGS_CATEGORY", localize "STR_ALIVE_SETTINGS_EDEN"],
+    [[4, 6, 8], [localize "STR_ALIVE_SETTINGS_ROWS_4", localize "STR_ALIVE_SETTINGS_ROWS_6", localize "STR_ALIVE_SETTINGS_ROWS_8"], 0]
+] call CBA_fnc_addSetting;
+// the ALiVE logo at the top of a module's settings
+[
+    "ALiVE_edenShowLogo", "CHECKBOX",
+    [localize "STR_ALIVE_SETTINGS_LOGO", localize "STR_ALIVE_SETTINGS_LOGO_COMMENT"],
+    [localize "STR_ALIVE_SETTINGS_CATEGORY", localize "STR_ALIVE_SETTINGS_EDEN"],
+    true
+] call CBA_fnc_addSetting;
+
+// ALiVE > Game: each player's own preferences in a mission. None lets a player past a limit the
+// mission maker set (#1083).
+// starting view distance, inside the View Distance module's minimum and maximum (fnc_vDist.sqf)
+["ALiVE_prefViewDistance", "SLIDER", [localize "STR_ALIVE_SETTINGS_VD", localize "STR_ALIVE_SETTINGS_VD_COMMENT"], [localize "STR_ALIVE_SETTINGS_CATEGORY", localize "STR_ALIVE_SETTINGS_GAME"], [0, 20000, 0, 0]] call CBA_fnc_addSetting;
+// player tags hidden, or shorter than the mission's (fnc_playertags.sqf)
+["ALiVE_prefTagsHide", "CHECKBOX", [localize "STR_ALIVE_SETTINGS_TAGSHIDE", localize "STR_ALIVE_SETTINGS_TAGSHIDE_COMMENT"], [localize "STR_ALIVE_SETTINGS_CATEGORY", localize "STR_ALIVE_SETTINGS_GAME"], false] call CBA_fnc_addSetting;
+["ALiVE_prefTagDistance", "SLIDER", [localize "STR_ALIVE_SETTINGS_TAGDIST", localize "STR_ALIVE_SETTINGS_TAGDIST_COMMENT"], [localize "STR_ALIVE_SETTINGS_CATEGORY", localize "STR_ALIVE_SETTINGS_GAME"], [0, 100, 0, 0]] call CBA_fnc_addSetting;
+// the vehicle crew list's side of the screen, or off (fnc_crewinfo.sqf)
+["ALiVE_prefCrewInfo", "LIST", [localize "STR_ALIVE_SETTINGS_CREW", localize "STR_ALIVE_SETTINGS_CREW_COMMENT"], [localize "STR_ALIVE_SETTINGS_CATEGORY", localize "STR_ALIVE_SETTINGS_GAME"], [["MODULE", "RIGHT", "LEFT", "OFF"], [localize "STR_ALIVE_SETTINGS_MISSION", localize "STR_ALIVE_SETTINGS_RIGHT", localize "STR_ALIVE_SETTINGS_LEFT", localize "STR_ALIVE_SETTINGS_OFF"], 0]] call CBA_fnc_addSetting;
+// how C2ISTAR task updates are shown (ALIVE_fnc_taskSubtitle); no "off", the hold countdown needs a way in
+["ALiVE_prefTaskMessages", "LIST", [localize "STR_ALIVE_SETTINGS_MSG", localize "STR_ALIVE_SETTINGS_MSG_COMMENT"], [localize "STR_ALIVE_SETTINGS_CATEGORY", localize "STR_ALIVE_SETTINGS_GAME"], [["subtitle", "hint", "chat"], [localize "STR_ALIVE_SETTINGS_MSG_SUB", localize "STR_ALIVE_SETTINGS_MSG_HINT", localize "STR_ALIVE_SETTINGS_MSG_CHAT"], 0]] call CBA_fnc_addSetting;
+// scroll wheel or ACE for rally points, talking to soldiers and FOBs (rallyInit, C2ISTAR, fobActions)
+["ALiVE_prefInterface", "LIST", [localize "STR_ALIVE_SETTINGS_UI", localize "STR_ALIVE_SETTINGS_UI_COMMENT"], [localize "STR_ALIVE_SETTINGS_CATEGORY", localize "STR_ALIVE_SETTINGS_GAME"], [["MODULE", "SCROLL", "ACE", "BOTH"], [localize "STR_ALIVE_SETTINGS_MISSION", localize "STR_ALIVE_SETTINGS_UI_SCROLL", localize "STR_ALIVE_SETTINGS_UI_ACE", localize "STR_ALIVE_SETTINGS_UI_BOTH"], 0]] call CBA_fnc_addSetting;
+
 // Every module's own areas (TAOR, blacklist, CQB's lists, the air commander's airspace) out of sight at once, on
 // every machine with a screen, from the first module init on that machine (ALIVE_fnc_dumpModuleInit). Each module
 // also hides its own when it starts, but they start one after another, and a module late in a cold start left its

@@ -144,6 +144,15 @@ switch(_operation) do {
                 playertags_height = _logic getvariable ["playertags_height_setting",1.1];
 
                 GVAR(RADIUS) = _logic getvariable ["playertags_distance_setting",20];
+                // the player's own choice (Addon Options > ALiVE > Game, #1083): tags hidden, or a
+                // distance shorter than the module's; never longer, so a mission's limit holds
+                private _modDist = parseNumber format ["%1", GVAR(RADIUS)];
+                private _prefDist = missionNamespace getVariable ["ALiVE_prefTagDistance", 0];
+                if (missionNamespace getVariable ["ALiVE_prefTagsHide", false]) then { _prefDist = 0.01 };
+                if (_prefDist > 0 && {_prefDist < _modDist}) then {
+                    GVAR(RADIUS) = _prefDist;
+                    playertags_distance = _prefDist;
+                };
                 GVAR(STYLE) = _logic getvariable ["playertags_style_setting","default"];
                 GVAR(DEBUG) = (_logic getvariable ["debug","false"]) == "true";   // #1030, as above
                 GVAR(ONVIEW) = (_logic getvariable ["playertags_onview_setting","false"]) == "true";

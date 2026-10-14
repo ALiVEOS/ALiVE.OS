@@ -126,7 +126,7 @@ switch (_taskState) do {
                 _target setDamage 0;
                 _target setVariable [_completionVar, true, true];
 
-                ["Task Accomplished", format ["%1 restored a key service in %2.", name _caller, _target getVariable ["ALIVE_Task_ServiceTown", "the area"]]] remoteExec ["BIS_fnc_showSubtitle", side (group _caller)];
+                ["Task Accomplished", format ["%1 restored a key service in %2.", name _caller, _target getVariable ["ALIVE_Task_ServiceTown", "the area"]]] remoteExec ["ALIVE_fnc_taskSubtitle", side (group _caller)];
             },
             {},
             [_completionVar],

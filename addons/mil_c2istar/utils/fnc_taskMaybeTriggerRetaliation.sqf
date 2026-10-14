@@ -140,6 +140,6 @@ private _whatHappened = switch (_retaliationType) do {
     default                       { "spread propaganda" };
 };
 private _audience = if (_sideText in ["EAST", "WEST", "GUER"]) then { [_sideText] call ALIVE_fnc_sideTextToObject } else { 0 };
-["COIN Update", format ["Insurgents %1 near %2. Local status is now %3.", _whatHappened, _nearestTown, [_supportState, "statusBand", "Fragile"] call ALIVE_fnc_hashGet]] remoteExec ["BIS_fnc_showSubtitle", _audience];
+["COIN Update", format ["Insurgents %1 near %2. Local status is now %3.", _whatHappened, _nearestTown, [_supportState, "statusBand", "Fragile"] call ALIVE_fnc_hashGet]] remoteExec ["ALIVE_fnc_taskSubtitle", _audience];
 
 true

@@ -229,7 +229,7 @@ switch (_taskState) do {
                 _arguments params ["_completionVar"];
 
                 _target setVariable [_completionVar, true, true];
-                ["Task Accomplished", format ["%1 distributed relief supplies in %2.", name _caller, _target getVariable ["ALIVE_Task_AidTown", "the area"]]] remoteExec ["BIS_fnc_showSubtitle", side (group _caller)];
+                ["Task Accomplished", format ["%1 distributed relief supplies in %2.", name _caller, _target getVariable ["ALIVE_Task_AidTown", "the area"]]] remoteExec ["ALIVE_fnc_taskSubtitle", side (group _caller)];
             },
             {},
             [_completionVar],
