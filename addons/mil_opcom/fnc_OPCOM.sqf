@@ -120,6 +120,8 @@ switch (_operation) do {
         // parse module parameters
 
         private _customNameParam = _logic getvariable ["customName",""];
+        // War on Drugs (#1080): this commander's IED factories are drug labs
+        private _drugLabs = (toLower format ["%1", _logic getvariable ["drugLabs", "false"]]) in ["true", "1"];
         private _type = _logic getvariable ["controltype","invasion"];
         private _occupation = (parseNumber format ["%1", _logic getvariable ["asym_occupation",-100]])/100;
         private _intelChance = (parseNumber format ["%1", _logic getvariable ["intelchance",-100]])/100;
@@ -296,6 +298,9 @@ switch (_operation) do {
             _customNameParam
         };
 
+        // the civilians' answers and C2ISTAR's tasks name drug labs once any commander has them
+        if (_drugLabs) then { missionNamespace setVariable ["ALiVE_INS_drugLabsAny", true, true] };
+
         // A name the mission maker gave this commander is what its side's HQ radio messages open with
         // (ALIVE_fnc_radioBroadcast), on every machine. The first named commander of a side keeps it.
         if (!isNil "_customNameParam" && {_customNameParam isEqualType ""} && {_customNameParam != ""}) then {
@@ -354,6 +359,7 @@ switch (_operation) do {
             ["hvt", _hvt],
             ["roadblocks", _roadblocks],
             ["insTypes", _insTypes],
+            ["drugLabs", _drugLabs],
             ["friendlyDisableMode", _friendlyDisableMode],
             ["asymEscalationIntensity", _asymEscalationIntensity],
             ["asymExcludeKinds", _asymExcludeKinds],

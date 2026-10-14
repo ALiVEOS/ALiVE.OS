@@ -52,6 +52,31 @@ ALiVE_fnc_INS_typeAllowed = {
                 (toLower _kind) in _types
 };
 
+// War on Drugs (#1080): whether this commander's IED factories are drug labs
+ALiVE_fnc_INS_drugLabsOn = {
+                params [["_opcom", []]];
+                if (isNil "_opcom" || {!(_opcom isEqualType [])} || {_opcom isEqualTo []}) exitWith {false};
+                [_opcom, "drugLabs", false] call ALiVE_fnc_HashGet
+};
+// what a player calls the "factory" installation: an IED factory, or a drug lab
+ALiVE_fnc_INS_factoryName = {
+                params [["_opcom", []]];
+                ["IED factory", "drug lab"] select ([_opcom] call ALiVE_fnc_INS_drugLabsOn)
+};
+// the commander's drug labs still standing: built, not destroyed, not disabled
+ALiVE_fnc_INS_countStandingLabs = {
+                params [["_opcom", []]];
+                if !([_opcom] call ALiVE_fnc_INS_drugLabsOn) exitWith {0};
+                private _n = 0;
+                {
+                    if !([_x, "deleted", false] call ALiVE_fnc_HashGet) then {
+                        private _b = [_opcom, "convertObject", [_x, "factory", []] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;
+                        if (!isNil "_b" && {_b isEqualType objNull} && {alive _b} && {!(_b getVariable ["ALiVE_MIL_OPCOM_FACTORY_DISABLED", false])}) then { _n = _n + 1 };
+                    };
+                } forEach ([_opcom, "objectives", []] call ALiVE_fnc_HashGet);
+                _n
+};
+
 ALiVE_fnc_INS_getOpcomByObjective = {
                 params [["_objective",[]]];
 
@@ -1638,7 +1663,9 @@ ALiVE_fnc_INS_recruit = {
                         _hmPressureData params [["_hmPressure",0],["_hmPhase","Stabilize"]];
 
                         private _effectivePressure = ((_hmPressure * _civicRecruitmentMultiplier) max 0) min 100;
-                        private _delayMultiplier = 1 + (0.01 * _effectivePressure);
+                        // War on Drugs (#1080): every standing drug lab speeds recruitment, up to twice as fast with 4
+                        private _labs = if (isNil "_opcom") then {0} else {[_opcom] call ALiVE_fnc_INS_countStandingLabs};
+                        private _delayMultiplier = (1 + (0.01 * _effectivePressure)) / (1 + 0.25 * (_labs min 4));
                         private _adjustedCycleMin = _recruitCycleMin * _delayMultiplier;
                         private _adjustedCycleMax = _recruitCycleMax * _delayMultiplier;
 
@@ -1945,7 +1972,7 @@ ALiVE_fnc_INS_propSet = {
 // Returns config entries, or [] for ALiVE's own tables and props (the Classic theme, or none fit).
 ALiVE_fnc_INS_interiorSets = {
     params [["_type", ""], ["_faction", ""]];
-    private _kind = ["Factory", "Depot", "HQ"] param [["factory", "depot", "HQ"] find _type, ""];
+    private _kind = ["Factory", "Depot", "HQ", "Lab"] param [["factory", "depot", "HQ", "lab"] find _type, ""];
     if (_kind == "") exitWith { [] };
     private _module = objNull;
     if (!isNil "OPCOM_instances") then {
@@ -1964,7 +1991,9 @@ ALiVE_fnc_INS_interiorSets = {
             } forEach ("isClass _x" configClasses _root);
         };
     } forEach [missionConfigFile >> "ALiVE_Interiors", missionConfigFile >> "CfgGroups" >> "Empty" >> "ALiVE_Interiors", configFile >> "ALiVE_Interiors"];
-    private _own = ((_module getVariable [["insPropsFactory", "insPropsDepot", "insPropsHQ"] select (["Factory", "Depot", "HQ"] find _kind), ""]) splitString ", ") apply { toLower _x };
+    // the commander's own pick for the kind; a drug lab has none and goes by era
+    private _ownKey = ["insPropsFactory", "insPropsDepot", "insPropsHQ"] param [["Factory", "Depot", "HQ"] find _kind, ""];
+    private _own = (if (_ownKey == "") then { "" } else { _module getVariable [_ownKey, ""] }) splitString ", " apply { toLower _x };
     private _picked = _all select { (toLower configName _x) in _own };
     if (_picked isNotEqualTo []) exitWith { _picked };
     private _theme = toUpper (_module getVariable ["insPropTheme", "AUTO"]);
@@ -2402,14 +2431,20 @@ ALiVE_fnc_INS_spawnIEDfactory = {
     [_building, QGVAR(factory), _id, "ALiVE_MIL_OPCOM_FACTORY_DISABLED"] call ALiVE_fnc_INS_registerInstallationOnBuilding;
     private _duration = 10 + ((count (_building getvariable [QGVAR(furnitured),[]]))*4);
 
-    [_building,true,false,false,"factory",_faction] call ALiVE_fnc_spawnFurniture;
+    // War on Drugs (#1080): a drug lab gets lab furniture and no booby-trapped charge
+    private _objective = [[],"getobjectivebyid",_id] call ALiVE_fnc_OPCOM;
+    private _opcom = if (isNil "_objective") then {[]} else {[_objective] call ALiVE_fnc_INS_getOpcomByObjective};
+    private _lab = [_opcom] call ALiVE_fnc_INS_drugLabsOn;
+    private _name = [_opcom] call ALiVE_fnc_INS_factoryName;
+
+    [_building,!_lab,false,false,["factory","lab"] select _lab,_faction] call ALiVE_fnc_spawnFurniture;
 
     [
         _building,
-        "disable the IED factory!",
+        format ["disable the %1!", _name],
         "ALiVE_MIL_OPCOM_FACTORY_DISABLED",
         "Nice Job",
-        "%1 disabled the IED factory at grid %2!",
+        "%1 disabled the " + _name + " at grid %2!",
         _duration
     ] call ALiVE_fnc_INS_addInstallationHoldActions;
 };

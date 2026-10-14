@@ -98,7 +98,7 @@ switch (_taskState) do {
 
         if(count _targetFactory > 0) then {
             private _targetBuilding = [];
-            _targetBuilding pushBack ["IED Factory",_targetFactory];
+            _targetBuilding pushBack [["IED Factory", "Drug Lab"] select (missionNamespace getVariable ["ALiVE_INS_drugLabsAny", false]),_targetFactory];
             _targetBuildings pushBack _targetBuilding;
         };
 

@@ -505,7 +505,14 @@ switch (_question) do {
                 if (!(_installationArray isEqualTo []) and (isNil "_installation")) then {
                     _index = _installations find _installationArray;
                     switch (str _index) do {
-                        case "0": {_typeName = localize "STR_ALIVE_CIV_INTERACT_HIDEOUTS_TYPENAME_IEDFACTORY";_type = localize "STR_ALIVE_CIV_INTERACT_HIDEOUTS_TYPE_IEDFACTORY"};
+                        case "0": {
+                            // War on Drugs (#1080): the insurgents' factories are drug labs
+                            if (missionNamespace getVariable ["ALiVE_INS_drugLabsAny", false]) then {
+                                _typeName = localize "STR_ALIVE_CIV_INTERACT_HIDEOUTS_TYPENAME_DRUGLAB";_type = localize "STR_ALIVE_CIV_INTERACT_HIDEOUTS_TYPE_DRUGLAB";
+                            } else {
+                                _typeName = localize "STR_ALIVE_CIV_INTERACT_HIDEOUTS_TYPENAME_IEDFACTORY";_type = localize "STR_ALIVE_CIV_INTERACT_HIDEOUTS_TYPE_IEDFACTORY";
+                            };
+                        };
                         case "1": {_typeName = localize "STR_ALIVE_CIV_INTERACT_HIDEOUTS_TYPENAME_RECRUITMENTHQ";_type = localize "STR_ALIVE_CIV_INTERACT_HIDEOUTS_TYPE_RECRUITMENTHQ"};
                         case "2": {_typeName = localize "STR_ALIVE_CIV_INTERACT_HIDEOUTS_TYPENAME_MUNITIONSDEPOT";_type = localize "STR_ALIVE_CIV_INTERACT_HIDEOUTS_TYPE_MUNITIONSDEPOT"};
                         case "3": {_typeName = localize "STR_ALIVE_CIV_INTERACT_HIDEOUTS_TYPENAME_ROADBLOCK";_type = localize "STR_ALIVE_CIV_INTERACT_HIDEOUTS_TYPE_ROADBLOCK"};

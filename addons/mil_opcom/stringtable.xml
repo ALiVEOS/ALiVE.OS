@@ -213,6 +213,12 @@
 <Key ID="STR_ALIVE_OPCOM_HVT_NAME_COMMENT">
     <English>The officer's name, as every side is told it when he's killed and as it shows on the intel marker. The soldier in the world wears it too. Leave empty for a name from his own nationality.</English>
 </Key>
+<Key ID="STR_ALIVE_OPCOM_DRUGLABS">
+    <English>Drug Labs</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_DRUGLABS_COMMENT">
+    <English>War on Drugs: an Asymmetric commander's IED factories are drug labs instead, with their own furniture and no booby-trap, named as drug labs on the map, in hints and in tasks. Every standing lab speeds up the commander's recruitment, up to twice as fast with 4 labs.</English>
+</Key>
 <Key ID="STR_ALIVE_OPCOM_INSTYPES">
     <English>Installation Types</English>
 </Key>

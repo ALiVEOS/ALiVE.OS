@@ -155,6 +155,55 @@ class ALiVE_Interiors
             class Object4 {side = 8; vehicle = "Land_Pliers_F"; rank = ""; position[] = {0.350,-0.100,1.041}; dir = 120.0;};
         };
     };
+    // War on Drugs (#1080): what an Asymmetric commander's drug labs are furnished with. Modern only;
+    // any era uses these, and a mission can add its own under ALiVE_Interiors >> Lab.
+    class Lab
+    {
+        name = "Drug lab";
+        class InsLabCookBench
+        {
+            name = "Cooking bench";
+            era = "MODERN";
+            side = 8;
+            class Object0 {side = 8; vehicle = "Land_Workbench_01_F"; rank = ""; position[] = {0.000,0.000,-0.000}; dir = 0.0;};
+            class Object1 {side = 8; vehicle = "Land_BottlePlastic_V1_F"; rank = ""; position[] = {-0.350,0.000,0.801}; dir = 0.0;};
+            class Object2 {side = 8; vehicle = "Land_BottlePlastic_V1_F"; rank = ""; position[] = {-0.250,0.100,0.821}; dir = 40.0;};
+            class Object3 {side = 8; vehicle = "Land_Bucket_F"; rank = ""; position[] = {0.300,0.050,0.865}; dir = 0.0;};
+            class Object4 {side = 8; vehicle = "Land_PowderedMilk_F"; rank = ""; position[] = {-0.600,-0.150,0.784}; dir = 0.0;};
+            class Object5 {side = 8; vehicle = "Land_GasTank_01_khaki_F"; rank = ""; position[] = {0.750,-0.750,0.000}; dir = 0.0;};
+            class Object6 {side = 8; vehicle = "Land_CanisterFuel_F"; rank = ""; position[] = {-0.700,-0.750,0.186}; dir = 20.0;};
+        };
+        class InsLabStore
+        {
+            name = "Chemical store";
+            era = "MODERN";
+            side = 8;
+            class Object0 {side = 8; vehicle = "Land_MetalBarrel_F"; rank = ""; position[] = {0.000,0.000,0.000}; dir = 0.0;};
+            class Object1 {side = 8; vehicle = "Land_MetalBarrel_F"; rank = ""; position[] = {0.700,0.000,0.000}; dir = 30.0;};
+            class Object2 {side = 8; vehicle = "Land_CanisterFuel_F"; rank = ""; position[] = {-0.600,0.200,0.186}; dir = 0.0;};
+            class Object3 {side = 8; vehicle = "Land_CanisterFuel_F"; rank = ""; position[] = {-0.600,-0.250,0.186}; dir = 15.0;};
+            class Object4 {side = 8; vehicle = "Land_Sacks_goods_F"; rank = ""; position[] = {0.298,-1.127,0.025}; dir = 0.0;};
+        };
+        class InsLabPacking
+        {
+            name = "Packing table";
+            era = "MODERN";
+            side = 8;
+            class Object0 {side = 8; vehicle = "Land_TableDesk_F"; rank = ""; position[] = {0.000,0.000,0.013}; dir = 0.0;};
+            class Object1 {side = 8; vehicle = "Land_ChairWood_F"; rank = ""; position[] = {0.000,-0.700,0.000}; dir = 180.0;};
+            class Object2 {side = 8; vehicle = "Land_Money_F"; rank = ""; position[] = {0.300,0.050,0.825}; dir = 0.0;};
+            class Object3 {side = 8; vehicle = "Land_Money_F"; rank = ""; position[] = {0.716,0.326,0.823}; dir = 25.0;};
+            class Object4 {side = 8; vehicle = "Land_Money_F"; rank = ""; position[] = {-0.042,-0.292,0.815}; dir = 80.0;};
+            class Object5 {side = 8; vehicle = "Land_PowderedMilk_F"; rank = ""; position[] = {-0.600,-0.100,0.851}; dir = 0.0;};
+            class Object6 {side = 8; vehicle = "Land_PowderedMilk_F"; rank = ""; position[] = {-0.450,-0.200,0.842}; dir = 30.0;};
+            class Object7 {side = 8; vehicle = "Land_PainKillers_F"; rank = ""; position[] = {0.000,0.250,0.859}; dir = 0.0;};
+            class Object8 {side = 8; vehicle = "Land_Antibiotic_F"; rank = ""; position[] = {0.200,0.300,0.850}; dir = 45.0;};
+            class Object9 {side = 8; vehicle = "Land_Money_F"; rank = ""; position[] = {0.722,-0.203,0.781}; dir = 140.0;};
+            class Object10 {side = 8; vehicle = "Land_Money_F"; rank = ""; position[] = {-0.295,0.164,0.854}; dir = 200.0;};
+            class Object11 {side = 8; vehicle = "Land_PaperBox_closed_F"; rank = ""; position[] = {1.738,-0.969,0.000}; dir = 10.0;};
+            class Object12 {side = 8; vehicle = "Land_Sack_F"; rank = ""; position[] = {-1.303,-0.577,0.059}; dir = 0.0;};
+        };
+    };
     class Depot
     {
         name = "Weapons depot";

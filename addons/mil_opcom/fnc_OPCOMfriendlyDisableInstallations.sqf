@@ -91,6 +91,10 @@ private _installationSpecs = [
     ["HQ",      "ALiVE_MIL_OPCOM_HQ_DISABLED",      "Congratulations", "%1 disabled the Recruitment HQ at grid %2!"],
     ["depot",   "ALiVE_MIL_OPCOM_DEPOT_DISABLED",   "Good work", "%1 disabled the weapons depot at grid %2!"]
 ];
+// War on Drugs (#1080): this commander's factories are drug labs
+if (!isNil "ALiVE_fnc_INS_drugLabsOn" && {[_handler] call ALiVE_fnc_INS_drugLabsOn}) then {
+    (_installationSpecs select 0) set [3, "%1 disabled the drug lab at grid %2!"];
+};
 
 // Proximity radius around each installation building in meters. If
 // friendlies are operating within 150 m of an insurgent installation

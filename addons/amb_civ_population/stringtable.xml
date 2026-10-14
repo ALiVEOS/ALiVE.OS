@@ -2981,6 +2981,12 @@
     <Chinesesimp>我帮不了你。</Chinesesimp>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_TYPENAME_DRUGLAB">
+    <English>Drug Lab</English>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_TYPE_DRUGLAB">
+    <English>drug lab</English>
+</Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_TYPENAME_IEDFACTORY">
     <English>IED Factory</English>
     <French>Fabrique d'IED</French>

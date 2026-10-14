@@ -80,7 +80,7 @@ _markers = [];
 
                 if (alive _HQ && {!_enabled}) then {_markers append [[format["hq_%1",_id],getposATL _HQ,"ICON", [0.5,0.5],"ColorRed","Recruitment HQ", "n_installation", "FDiagonal",0,0.5] call ALIVE_fnc_createMarkerGlobal]} else {deleteMarker format["hq_%1",_id]};
                 if (alive _depot && {!_enabled}) then {_markers append [[format["depot_%1",_id],getposATL _depot,"ICON", [0.5,0.5],"ColorRed","Weapons depot", "n_installation", "FDiagonal",0,0.5] call ALIVE_fnc_createMarkerGlobal]} else {deleteMarker format["depot_%1",_id]};
-                if (alive _factory && {!_enabled}) then {_markers append [[format["factory_%1",_id],getposATL _factory,"ICON", [0.5,0.5],"ColorRed","IED factory", "n_installation", "FDiagonal",0,0.5] call ALIVE_fnc_createMarkerGlobal]} else {deleteMarker format["factory_%1",_id]};
+                if (alive _factory && {!_enabled}) then {_markers append [[format["factory_%1",_id],getposATL _factory,"ICON", [0.5,0.5],"ColorRed",([_OPCOM_HANDLER] call ALiVE_fnc_INS_factoryName), "n_installation", "FDiagonal",0,0.5] call ALIVE_fnc_createMarkerGlobal]} else {deleteMarker format["factory_%1",_id]};
                 if (alive _ambush && {!_enabled}) then {_markers append [[format["ambush_%1",_id],getposATL _ambush,"ICON", [0.5,0.5],"ColorRed","Ambush", "hd_ambush", "FDiagonal",0,0.5 ] call ALIVE_fnc_createMarkerGlobal]} else {deleteMarker format["ambush_%1",_id]};
                 if (alive _sabotage && {!_enabled}) then {_markers append [[format["sabotage_%1",_id],getposATL _sabotage,"ICON", [0.5,0.5],"ColorRed","Sabotage", "n_installation", "FDiagonal",0,0.5] call ALIVE_fnc_createMarkerGlobal]} else {deleteMarker format["sabotage_%1",_id]};
                 if (alive _ied && {!_enabled}) then {

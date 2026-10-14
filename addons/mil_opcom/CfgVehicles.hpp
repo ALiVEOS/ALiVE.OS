@@ -282,6 +282,20 @@ class CfgVehicles {
                                     class No { name = "No"; value = 0; };
                                 };
                         };
+                        class drugLabs : Combo
+                        {
+                                property = "ALiVE_mil_opcom_drugLabs";
+                                displayName = "$STR_ALIVE_OPCOM_DRUGLABS";
+                                tooltip = "$STR_ALIVE_OPCOM_DRUGLABS_COMMENT";
+                                typeName = "STRING";
+                                expression = "_this setVariable ['drugLabs', _value];";
+                                defaultValue = """false""";
+                                class Values
+                                {
+                                        class No { name = "No"; value = "false"; };
+                                        class Yes { name = "Yes"; value = "true"; };
+                                };
+                        };
                         class asymInstallations
                         {
                                 property = "ALiVE_mil_opcom_asymInstallations";
