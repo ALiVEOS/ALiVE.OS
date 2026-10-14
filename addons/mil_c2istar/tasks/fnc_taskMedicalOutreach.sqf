@@ -265,7 +265,7 @@ switch (_taskState) do {
             [_params, "chatStartDone_Deliver", true] call ALIVE_fnc_hashSet;
         };
 
-        if (isNull _target || {!alive _target}) then {
+        if (isNull _target || {!alive _target} || {[_params, "holdFailed", false] call ALIVE_fnc_hashGet}) then {
             [_params, "nextTask", ""] call ALIVE_fnc_hashSet;
             _task set [8, "Failed"];
             _task set [10, "N"];
@@ -290,7 +290,7 @@ switch (_taskState) do {
         } else {
             [_taskPosition, _taskSide, _taskPlayers, _taskID, "building", "aid supplies"] call ALIVE_fnc_taskCreateMarkersForPlayers;
 
-            if (_target getVariable [([_params, "completionVar", ""] call ALIVE_fnc_hashGet), false]) then {
+            if ((_target getVariable [([_params, "completionVar", ""] call ALIVE_fnc_hashGet), false]) && {[_params, _taskPosition, _taskSide] call ALIVE_fnc_taskCivicHold}) then {
                 [_params, "nextTask", ""] call ALIVE_fnc_hashSet;
 
                 _task set [8, "Succeeded"];

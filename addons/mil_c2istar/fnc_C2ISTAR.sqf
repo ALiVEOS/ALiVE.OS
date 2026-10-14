@@ -1649,6 +1649,10 @@ if (isServer) then {
         missionNamespace setVariable ["ALIVE_civicServicesSuccessMultiplier", (_civicServicesSuccessMultiplier max 0), true];
         missionNamespace setVariable ["ALIVE_civicServicesFailureMultiplier", (_civicServicesFailureMultiplier max 0), true];
         missionNamespace setVariable ["ALIVE_civicCooldownMultiplier", (_civicCooldownMultiplier max 0.1), true];
+        // Civic Hold Time (#1082): seconds to hold the area once a Hearts and Minds task's action is done; 0 is off
+        private _civicHold = _logic getVariable ["civicHoldDuration", 120];
+        if (_civicHold isEqualType "") then { _civicHold = parseNumber _civicHold };
+        missionNamespace setVariable ["ALIVE_civicHoldDuration", (_civicHold max 0), true];
         missionNamespace setVariable ["ALIVE_civicDuplicateTaskPenalty", ((_civicDuplicateTaskPenalty max 0) min 1), true];
         missionNamespace setVariable ["ALIVE_civicDebugIntel", _civicDebugIntel, true];
         missionNamespace setVariable ["ALIVE_civicEnabledTaskFamilies", _civicEnabledTaskFamilies];

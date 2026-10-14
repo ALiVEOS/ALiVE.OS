@@ -2105,6 +2105,12 @@
     <Russian>Множитель, применяемый к потере услуг от проваленных задач Сердца и умы. На потерю услуг от ответных действий повстанцев не влияет.</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_C2ISTAR_CIVIC_HOLD">
+    <English>Civic Hold Time (s)</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_CIVIC_HOLD_COMMENT">
+    <English>Once the clinic is opened, the leader met, the repair made or the aid handed over, players hold the area this many seconds before the task succeeds, giving the enemy time to answer it. The countdown stops while enemies are within 150 m, and the task fails if every player leaves for 30 seconds. 0 makes the task succeed as soon as the action is done, as before.</English>
+</Key>
 <Key ID="STR_ALIVE_C2ISTAR_CIVIC_COOLDOWN">
     <English>Civic Cooldown Multiplier:</English>
     <Chinese>民情冷卻倍率:</Chinese>

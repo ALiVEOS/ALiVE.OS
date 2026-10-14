@@ -261,6 +261,11 @@ class CfgFunctions {
                 file = "\x\alive\addons\mil_c2istar\utils\fnc_taskSubtitle.sqf";
                 ALIVE_RECOMPILE;
             };
+            class taskCivicHold {
+                description = "Hearts and Minds tasks: hold the area for Civic Hold Time once the action is done (#1082)";
+                file = "\x\alive\addons\mil_c2istar\utils\fnc_taskCivicHold.sqf";
+                ALIVE_RECOMPILE;
+            };
             class taskApplyPopulationEffect {
                 description = "Utility apply civilian hostility changes for Hearts and Minds tasks";
                 file = "\x\alive\addons\mil_c2istar\utils\fnc_taskApplyPopulationEffect.sqf";

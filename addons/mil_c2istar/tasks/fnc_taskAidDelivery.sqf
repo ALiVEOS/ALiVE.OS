@@ -370,7 +370,7 @@ switch (_taskState) do {
             [_params, "chatStartDone_Rally", true] call ALIVE_fnc_hashSet;
         };
 
-        if (isNull _aidVehicle || {!alive _aidVehicle}) then {
+        if (isNull _aidVehicle || {!alive _aidVehicle} || {[_params, "holdFailed", false] call ALIVE_fnc_hashGet}) then {
             [_params, "nextTask", ""] call ALIVE_fnc_hashSet;
             _task set [8, "Failed"];
             _task set [10, "N"];
@@ -514,7 +514,7 @@ switch (_taskState) do {
                 [_params, _taskPosition, _taskSide] call _applyFailurePopulationEffect;
                 [_params] call _cleanupObjects;
             } else {
-                if (_aidVehicle getVariable [_completionVar, false]) then {
+                if ((_aidVehicle getVariable [_completionVar, false]) && {[_params, _taskPosition, _taskSide] call ALIVE_fnc_taskCivicHold}) then {
                     [_params, "nextTask", ""] call ALIVE_fnc_hashSet;
 
                     _task set [8, "Succeeded"];

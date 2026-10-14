@@ -378,6 +378,14 @@ class CfgVehicles {
                             defaultValue = """1""";
                             typeName = "NUMBER";
                     };
+                    class civicHoldDuration : Edit
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_civicHoldDuration";
+                            displayName = "$STR_ALIVE_C2ISTAR_CIVIC_HOLD";
+                            tooltip = "$STR_ALIVE_C2ISTAR_CIVIC_HOLD_COMMENT";
+                            defaultValue = """120""";
+                            typeName = "NUMBER";
+                    };
                     class civicDuplicateTaskPenalty : Edit
                     {
                             property = "ALiVE_MIL_C2ISTAR_civicDuplicateTaskPenalty";

@@ -208,7 +208,7 @@ switch (_taskState) do {
             [_params, "lastState", "Meet"] call ALIVE_fnc_hashSet;
         };
 
-        if (isNull _leader || {!alive _leader}) then {
+        if (isNull _leader || {!alive _leader} || {[_params, "holdFailed", false] call ALIVE_fnc_hashGet}) then {
             [_params, "nextTask", ""] call ALIVE_fnc_hashSet;
             _task set [8, "Failed"];
             _task set [10, "N"];
@@ -233,7 +233,7 @@ switch (_taskState) do {
         } else {
             [_taskPosition, _taskSide, _taskPlayers, _taskID, "civilian", "Local Leader", _taskTitle] call ALIVE_fnc_taskCreateMarkersForPlayers;
 
-            if (_leader getVariable [([_params, "completionVar", ""] call ALIVE_fnc_hashGet), false]) then {
+            if ((_leader getVariable [([_params, "completionVar", ""] call ALIVE_fnc_hashGet), false]) && {[_params, _taskPosition, _taskSide] call ALIVE_fnc_taskCivicHold}) then {
                 [_params, "nextTask", ""] call ALIVE_fnc_hashSet;
 
                 _task set [8, "Succeeded"];
