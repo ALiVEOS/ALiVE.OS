@@ -123,9 +123,12 @@ switch (_op) do {
         // the squad's earlier one goes
         private _old = _grp getVariable ["ALiVE_rallyDeployed", objNull];
         if (!isNull _old) then { ["remove", [_old]] call ALiVE_fnc_rallyPoint; deleteVehicle _old };
-        private _obj = createVehicle ["B_Carryall_oli", _unit modelToWorld [0, 1.2, 0], [], 0, "CAN_COLLIDE"];
+        // a ground holder carrying the backpack is the rally point: a backpack made with createVehicle
+        // sits inside a holder of its own and reports a position kilometres away, so the marker went
+        // there and deleting it left the holder behind (The Horny Latino on Discord, 14 Oct)
+        private _obj = createVehicle ["GroundWeaponHolder", _unit modelToWorld [0, 1.2, 0], [], 0, "CAN_COLLIDE"];
         _obj setDir getDir _unit;
-        clearItemCargoGlobal _obj; clearMagazineCargoGlobal _obj; clearWeaponCargoGlobal _obj; clearBackpackCargoGlobal _obj;
+        _obj addBackpackCargoGlobal ["B_Carryall_oli", 1];
         _grp setVariable ["ALiVE_rallyDeployed", _obj, true];
         missionNamespace setVariable [_key, time + (["leaderCooldown", 120] call _set)];
         ["add", [_obj, format [localize "STR_ALIVE_RALLY_LEADER_NAME", groupId _grp], str side _grp, "leader", [_grp, grpNull] select (_mode == "SIDE")]] call ALiVE_fnc_rallyPoint;
