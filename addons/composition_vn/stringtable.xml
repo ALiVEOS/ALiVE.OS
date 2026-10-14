@@ -2,6 +2,9 @@
 <Project name="Arma3">
 <Package name="ALIVE_COMP_VN">
 <Container name="STR_DN">
+<Key ID="STR_ALIVE_COMP_VN_GuerrillaJungle">
+    <English>Guerrilla (Jungle)</English>
+</Key>
 <Key ID="STR_ALIVE_COMP_VN_MilitaryJungle">
     <English>Military (Jungle)</English>
     <Spanish>Militar (jungla)</Spanish>

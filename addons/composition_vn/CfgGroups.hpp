@@ -9,6 +9,12 @@ class CfgGroups
             name = "$STR_ALIVE_COMP_VN_MilitaryJungle";
             #include "military\jungle.hpp"
         };
+        // Viet Cong and PAVN compositions for an insurgent commander on a jungle terrain
+        class Guerrilla_Jungle
+        {
+            name = "$STR_ALIVE_COMP_VN_GuerrillaJungle";
+            #include "guerrilla\jungle.hpp"
+        };
     };
 
     // Single boat groups
