@@ -19,6 +19,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 private ["_taskState","_taskID","_task","_params","_debug","_result","_nextState"];
@@ -84,7 +85,10 @@ switch (_taskState) do {
                 count ([_profile,"entitiesInCommandOf",[]] call ALiVE_fnc_HashGet) > 0 && {_side == _Input1};
             }] call ALiVE_fnc_SortBy;
 
+            // skip a target another task is already aimed at, and claim this one (ALIVE_fnc_taskTargetClaim)
+            _targets = ["free", _targets] call ALIVE_fnc_taskTargetClaim;
             _targetVehicles = if (count _targets > 0) then {[_targets select 0]} else {[]};
+            if (count _targetVehicles > 0) then { ["claim", _targetVehicles select 0] call ALIVE_fnc_taskTargetClaim };
         };
 
         if(count _targetVehicles > 0) then {

@@ -19,6 +19,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 private ["_taskState","_taskID","_task","_params","_debug","_result","_nextState"];
@@ -91,6 +92,12 @@ switch (_taskState) do {
 
             _final
         },"ASCEND"] call ALiVE_fnc_SortBy;
+
+        // skip a group another task is already aimed at (ALIVE_fnc_taskTargetClaim); if every one is,
+        // the nearest is picked as before
+        private _freeTargets = ["free", _targets] call ALIVE_fnc_taskTargetClaim;
+        if (_freeTargets isNotEqualTo []) then { _targets = _freeTargets };
+        ["claim", _targets param [0, ""]] call ALIVE_fnc_taskTargetClaim;
 
         _targetEntity = [ALiVE_ProfileHandler,"getProfile",_targets select 0] call ALiVE_fnc_ProfileHandler;
 

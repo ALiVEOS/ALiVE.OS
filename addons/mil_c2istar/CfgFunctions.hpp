@@ -256,6 +256,11 @@ class CfgFunctions {
                 file = "\x\alive\addons\mil_c2istar\utils\fnc_taskCreateReward.sqf";
                 ALIVE_RECOMPILE;
             };
+            class taskTargetClaim {
+                description = "Destroy tasks skip a target another task is already aimed at";
+                file = "\x\alive\addons\mil_c2istar\utils\fnc_taskTargetClaim.sqf";
+                ALIVE_RECOMPILE;
+            };
             class taskSubtitle {
                 description = "A task update on this player's screen as they chose: subtitle, hint or chat line (#1083)";
                 file = "\x\alive\addons\mil_c2istar\utils\fnc_taskSubtitle.sqf";
