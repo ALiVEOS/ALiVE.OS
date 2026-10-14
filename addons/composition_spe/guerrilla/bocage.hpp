@@ -17,6 +17,6 @@
 
 #include "bocage\fuel.hpp"
 
-// #include "bocage\supports.hpp"
+#include "bocage\supports.hpp"
 
-// #include "bocage\outposts.hpp"
+#include "bocage\outposts.hpp"
