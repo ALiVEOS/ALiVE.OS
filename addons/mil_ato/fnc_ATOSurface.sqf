@@ -1810,8 +1810,32 @@ switch(_operation) do {
             _v setVariable ["ALiVE_mil_ato_settleFuel", nil, false];
             [_v, _men] call _fnc_crewBack;
             if (_settled) then {
-                _v allowDamage true;
                 _v setDamage 0;
+                if (_v isKindOf "Helicopter") then {
+                    // A helicopter put down from flight still has its rotor turning, and with damage
+                    // back on while it turns the rotor is wrecked at once (measured 14 Oct: main rotor
+                    // at 1.00 on every hull that came down with its engine running, AH-99 and RHS AH-64D
+                    // alike, whether damage came back at the settle or 20 s later), so the next sortie
+                    // took up an aircraft that could not fly. Damage stays off until the rotor has
+                    // stopped (its animation still for 3 s; 30 to 40 s after the hold, 90 s at most),
+                    // then the hull is repaired again and damage goes back on.
+                    [_v, _gen] spawn {
+                        params ["_v", "_gen"];
+                        private _tEnd = time + 90;
+                        private _last = -1; private _still = 0;
+                        while { time < _tEnd && {_still < 3} && {!isNull _v} } do {
+                            sleep 1;
+                            private _ph = _v animationSourcePhase "rotorH";
+                            _still = if (abs (_ph - _last) < 0.001) then { _still + 1 } else { 0 };
+                            _last = _ph;
+                        };
+                        if (isNull _v || {!alive _v} || {(_v getVariable ["ALiVE_mil_ato_settleGen", 0]) != _gen}) exitWith {};
+                        if (({isPlayer _x} count (crew _v)) == 0) then { _v setDamage 0 };
+                        _v allowDamage true;
+                    };
+                } else {
+                    _v allowDamage true;
+                };
                 _v setVariable ["ALiVE_mil_ato_settleResult", "settled", false];
                 // With the tail and both positions, so where it came to rest can be
                 // checked against its home by grid rather than by one distance.
