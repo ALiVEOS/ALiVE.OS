@@ -1973,10 +1973,21 @@ ALiVE_fnc_INS_interiorSets = {
     _era
 };
 
+// The floor under an indoor spot (ATL), as an ASL position. A building position often sits a little
+// above the floor, by a different amount on every map, so what's under it is measured rather than
+// taken as given; the spot itself when nothing is found close below it.
+ALiVE_fnc_INS_floorAt = {
+    params ["_posATL"];
+    private _at = AGLToASL _posATL;
+    private _down = lineIntersectsSurfaces [_at vectorAdd [0, 0, 0.6], _at vectorAdd [0, 0, -1.2], objNull, objNull, true, 1, "GEOM", "VIEW"];
+    if (_down isEqualTo []) exitWith { _at };
+    [_at select 0, _at select 1, ((_down select 0) select 0) select 2]
+};
+
 // Whether one piece of furniture fits on a floor: its footprint (its collision box, measured once per
 // class, with 10 cm to spare) centred at _centre (ASL) turned to _dir is checked at every corner for
 // floor under it at the floor's height and a roof over it, nothing between _from (ASL, the spot it's
-// reached from) and the corner, and no wall along any of its edges, at knee and chest height.
+// reached from) and the corner, and no wall along any of its edges or across its diagonals, at knee and chest height.
 ALiVE_fnc_INS_pieceFits = {
     params ["_cls", "_centre", "_dir", "_from"];
     if (isNil "ALiVE_INS_footprints") then { ALiVE_INS_footprints = createHashMap };
@@ -2010,6 +2021,13 @@ ALiVE_fnc_INS_pieceFits = {
         } forEach [0.4, 1.2];
         if (!_ok) exitWith {};
     } forEach _corners;
+    // and across it, corner to corner, for a post or a beam standing inside the footprint
+    if (_ok) then {
+        {
+            private _h = [0, 0, _x];
+            if (!([(_corners select 0) vectorAdd _h, (_corners select 2) vectorAdd _h] call _clear) || {!([(_corners select 1) vectorAdd _h, (_corners select 3) vectorAdd _h] call _clear)}) exitWith { _ok = false; _why = "inside" };
+        } forEach [0.4, 1.2];
+    };
     if (!_ok && {!isNil "ALiVE_INS_fitWhy"}) then { ALiVE_INS_fitWhy pushBack _why };
     _ok
 };
@@ -2019,7 +2037,7 @@ ALiVE_fnc_INS_pieceFits = {
 // or [] when the set's main piece doesn't or fewer than half of its pieces do.
 ALiVE_fnc_INS_interiorFits = {
     params ["_cfg", "_posATL", "_dir"];
-    private _floor = AGLToASL _posATL;
+    private _floor = [_posATL] call ALiVE_fnc_INS_floorAt;
     private _pieces = ("isClass _x" configClasses _cfg) select { ((getArray (_x >> "position")) param [2, 0]) < 0.3 };
     private _fit = [];
     {
@@ -2039,7 +2057,7 @@ ALiVE_fnc_INS_interiorFits = {
 // small things set on the furniture under them. Returns [furniture, everything].
 ALiVE_fnc_INS_spawnInterior = {
     params ["_cfg", "_posATL", "_dir", ["_only", []]];
-    private _floor = AGLToASL _posATL;
+    private _floor = [_posATL] call ALiVE_fnc_INS_floorAt;
     private _furniture = []; private _all = [];
     {
         private _cls = getText (_x >> "vehicle");
@@ -2137,6 +2155,9 @@ ALiVE_fnc_spawnFurniture = {
 
     _pos = getposATL _building;
     _positions = [_pos,15] call ALIVE_fnc_findIndoorHousePositions;
+    // the building's own positions when the indoor search finds none (many mod and Livonia houses):
+    // everything placed there is checked for floor, roof and walls before it goes in
+    if (count _positions == 0) then { _positions = (_building buildingPos -1) select { (_x select 2) < 30 } };
 
     if (count _positions == 0) exitwith {
         ["ALiVE MIL OPCOM Insurgency has not found indoor Houspositions to place IED Factory/HQ/depot objects for building %1 at %2",_building, getposATL _building] call ALiVE_fnc_Dump;
@@ -2184,7 +2205,7 @@ ALiVE_fnc_spawnFurniture = {
         _pos = _x;
 
         if ({(_pos select 2) - (_x select 2) < 0.5} count _positions > 1) then {
-            private _fits = { params ["_cls", "_p"]; [_cls, AGLToASL _p, getDir _building, AGLToASL _p] call ALiVE_fnc_INS_pieceFits };
+            private _fits = { params ["_cls", "_p"]; private _f = [_p] call ALiVE_fnc_INS_floorAt; [_cls, _f, getDir _building, _f] call ALiVE_fnc_INS_pieceFits };
             private _fCls = selectRandom _furnitures;
             if (random 1 < 0.3 && {[_fCls, _pos] call _fits}) then {
                 _furniture = createVehicle [_fCls, _pos, [], 0, "CAN_COLLIDE"];
@@ -2256,10 +2277,10 @@ ALiVE_fnc_spawnFurniture = {
         // somewhere it fits: a table, or failing that a small crate. Where neither fits anywhere,
         // nothing goes in and the installation's actions sit on the building itself
         private _anchorCls = selectRandom _furnitures;
-        private _anchorPos = (_positions select { [_anchorCls, AGLToASL _x, getDir _building, AGLToASL _x] call ALiVE_fnc_INS_pieceFits }) param [0, []];
+        private _anchorPos = (_positions select { [_anchorCls, [_x] call ALiVE_fnc_INS_floorAt, getDir _building, [_x] call ALiVE_fnc_INS_floorAt] call ALiVE_fnc_INS_pieceFits }) param [0, []];
         if (_anchorPos isEqualTo []) then {
             _anchorCls = "VirtualReammoBox_small_F";
-            _anchorPos = (_positions select { [_anchorCls, AGLToASL _x, getDir _building, AGLToASL _x] call ALiVE_fnc_INS_pieceFits }) param [0, []];
+            _anchorPos = (_positions select { [_anchorCls, [_x] call ALiVE_fnc_INS_floorAt, getDir _building, [_x] call ALiVE_fnc_INS_floorAt] call ALiVE_fnc_INS_pieceFits }) param [0, []];
         };
         if (_anchorPos isNotEqualTo []) then {
             _furniture = createVehicle [_anchorCls, _anchorPos, [], 0, "CAN_COLLIDE"];
