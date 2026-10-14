@@ -2,7 +2,9 @@
 // factory, weapons depot, recruitment HQ), one kind per class below, in four eras: Modern (base game),
 // Vietnam (S.O.G. Prairie Fire), WW2 (Spearhead 1944) and Cold War (Global Mobilization); era says which,
 // and a set whose classes aren't loaded is skipped. Laid out and checked for clashes on the test rig.
-// A mission can add its own under missionConfigFile >> CfgGroups >> Empty >> ALiVE_Interiors.
+// A mission can add its own under ALiVE_Interiors in its description.ext.
+// Kept out of CfgGroups: Eden reads every composition there when it opens and warns "No entry" for
+// each class of a CDLC that isn't loaded.
 class ALiVE_Interiors
 {
     name = "ALiVE Insurgent Interiors";

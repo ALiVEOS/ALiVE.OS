@@ -1926,8 +1926,8 @@ ALiVE_fnc_INS_propSet = {
     _set
 };
 
-// The interior sets an installation can be dressed with (CfgGroups >> Empty >> ALiVE_Interiors >>
-// Factory, Depot or HQ, the mission's own first): the commander's own pick for this kind of
+// The interior sets an installation can be dressed with (ALiVE_Interiors >> Factory, Depot or HQ, the
+// mission's own first, also read under its CfgGroups >> Empty): the commander's own pick for this kind of
 // installation when it set one (Factory, Depot or HQ Interiors), otherwise those of the Installation
 // Props era. Auto takes the era from the commander's faction (SOG Vietnam, Spearhead WW2, Global
 // Mobilization Cold War, any other Modern). A set needing a class that isn't loaded is left out.
@@ -1943,7 +1943,7 @@ ALiVE_fnc_INS_interiorSets = {
     };
     private _all = [];
     {
-        private _root = _x >> "CfgGroups" >> "Empty" >> "ALiVE_Interiors" >> _kind;
+        private _root = _x >> _kind;
         if (isClass _root) then {
             {
                 // all its classes loaded, and not one the mission already gave under the same name
@@ -1952,7 +1952,7 @@ ALiVE_fnc_INS_interiorSets = {
                 if (_ok && {(_all findIf { configName _x == _n }) < 0}) then { _all pushBack _x };
             } forEach ("isClass _x" configClasses _root);
         };
-    } forEach [missionConfigFile, configFile];
+    } forEach [missionConfigFile >> "ALiVE_Interiors", missionConfigFile >> "CfgGroups" >> "Empty" >> "ALiVE_Interiors", configFile >> "ALiVE_Interiors"];
     private _own = ((_module getVariable [["insPropsFactory", "insPropsDepot", "insPropsHQ"] select (["Factory", "Depot", "HQ"] find _kind), ""]) splitString ", ") apply { toLower _x };
     private _picked = _all select { (toLower configName _x) in _own };
     if (_picked isNotEqualTo []) exitWith { _picked };

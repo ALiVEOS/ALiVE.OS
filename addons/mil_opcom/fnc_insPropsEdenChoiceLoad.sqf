@@ -32,13 +32,13 @@ if (_title != "") then {
 };
 
 // The rows: [sort key, label, set class, era]. The interior sets for this kind of installation
-// (CfgGroups >> Empty >> ALiVE_Interiors >> Factory, Depot or HQ), the mission's own first; a set
+// (ALiVE_Interiors >> Factory, Depot or HQ; a mission's own, first, may also sit under CfgGroups >> Empty); a set
 // whose classes aren't all loaded is left out.
 private _eraNames = createHashMapFromArray [["MODERN", "Modern"], ["VIETNAM", "Vietnam"], ["WW2", "WW2"], ["COLDWAR", "Cold War"]];
 private _rows = [];
 private _groups = [];
 {
-    private _root = _x >> "CfgGroups" >> "Empty" >> "ALiVE_Interiors" >> _kind;
+    private _root = _x >> _kind;
     {
         private _cls = configName _x;
         private _loaded = (("true" configClasses _x) findIf { !isClass (configFile >> "CfgVehicles" >> getText (_x >> "vehicle")) }) < 0;
@@ -50,7 +50,7 @@ private _groups = [];
             _groups pushBackUnique _era;
         };
     } forEach ("isClass _x" configClasses _root);
-} forEach [missionConfigFile, configFile];
+} forEach [missionConfigFile >> "ALiVE_Interiors", missionConfigFile >> "CfgGroups" >> "Empty" >> "ALiVE_Interiors", configFile >> "ALiVE_Interiors"];
 _rows sort true;
 _groups = ["Modern", "Vietnam", "WW2", "Cold War"] select { _x in _groups };
 

@@ -36,8 +36,6 @@ class CfgGroups
 	    	#include "military\woodland.hpp"
 	    };
 
-	    // furniture sets for the insurgent installations' insides (mil_opcom)
-	    #include "interiors.hpp"
 	};
 };
 
