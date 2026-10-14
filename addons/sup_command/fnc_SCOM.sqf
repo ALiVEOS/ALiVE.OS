@@ -3816,6 +3816,11 @@ switch (_operation) do {
                 _typePrefix = "n";
                 _alpha = 0.7;
 
+                // the last list's markers go first: this view is drawn again when a group is locked or
+                // unlocked and when Instant Join is cancelled, and markers dropped from the list without
+                // being deleted stayed on the map after the tablet closed
+                private _oldMarkers = [_logic,"marker"] call MAINCLASS;
+                if (!isNil "_oldMarkers" && {_oldMarkers isEqualType []}) then { { deleteMarkerLocal _x } forEach _oldMarkers };
                 _markers = [];
 
                 // set the side color
@@ -3891,6 +3896,7 @@ switch (_operation) do {
                                     _editList lbAdd _option;
 
                                     _profileMarker = format[_markerTemplate,_typePrefix];
+                                    deleteMarkerLocal format[MTEMPLATE,_profileID];
                                     _m = createMarkerLocal [format[MTEMPLATE,_profileID],_position];
                                     _m setMarkerShapeLocal "ICON";
                                     _m setMarkerSizeLocal [0.5,0.5];
