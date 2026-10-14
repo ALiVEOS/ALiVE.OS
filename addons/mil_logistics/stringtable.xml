@@ -2,6 +2,18 @@
 <Project name="Arma3">
 <Package name="ALiVE">
 <Container name="STR_DN">
+<Key ID="STR_ALIVE_ML_ON_EACH_SPAWN">
+    <English>On unit spawn (SQF):</English>
+</Key>
+<Key ID="STR_ALIVE_ML_ON_EACH_SPAWN_COMMENT">
+    <English>SQF code run on each soldier of the reinforcements, crews and resupply groups this module sends, as Military Placement does for its forces. _this = [unit, profileID, side, faction]. Runs on the server in a scheduled thread, so use remoteExec for anything players should see. Example: _this params ["_unit"]; _unit setSkill 0.6;</English>
+</Key>
+<Key ID="STR_ALIVE_ML_ON_EACH_SPAWN_ONCE">
+    <English>Run once per group:</English>
+</Key>
+<Key ID="STR_ALIVE_ML_ON_EACH_SPAWN_ONCE_COMMENT">
+    <English>Yes (the default): the code runs once for each group, when it first spawns. No: it runs every time the group spawns back in from being virtual, which keeps anything it adds to the soldiers in place.</English>
+</Key>
 <Key ID="STR_ALIVE_ML">
     <English>Military Logistics</English>
     <Chinese>軍事後勤</Chinese>

@@ -148,6 +148,29 @@ private _fnc_snapToLand = {
     _land
 };
 
+// On unit spawn (#1083): the module's SQF hook, run on the soldiers of every group it creates, as
+// Military Placement's is. Groups made from a group config take it as arguments; crewed vehicles and
+// single units get it here, added after any hook they already carry (a faction's loadout) so neither
+// is lost. _this in the hook = [unit, profileID, side, faction].
+private _fnc_hookArgs = {
+    private _code = _logic getVariable ["onEachSpawn", ""];
+    if !(_code isEqualType "") then { _code = "" };
+    [_code, (toLower format ["%1", _logic getVariable ["onEachSpawnOnce", "true"]]) != "false"]
+};
+private _fnc_spawnHook = {
+    params [["_new", []]];
+    (call _fnc_hookArgs) params ["_code", "_once"];
+    if (_code isEqualTo "" || {!(_new isEqualType [])}) exitWith {};
+    if ([_new] call ALIVE_fnc_isHash) then { _new = [_new] };
+    {
+        if ([_x] call ALIVE_fnc_isHash && {([_x, "type", ""] call ALIVE_fnc_hashGet) == "entity"}) then {
+            private _had = [_x, "onEachSpawn", ""] call ALIVE_fnc_hashGet;
+            [_x, "onEachSpawn", [_code, _had + ";" + _code] select (_had isEqualType "" && {_had != ""})] call ALIVE_fnc_hashSet;
+            [_x, "onEachSpawnOnce", _once] call ALIVE_fnc_hashSet;
+        };
+    } forEach _new;
+};
+
 switch(_operation) do {
     default {
         _result = [_logic, _operation, _args] call SUPERCLASS;
@@ -8003,7 +8026,7 @@ switch(_operation) do {
 
                             if!(surfaceIsWater _position) then {
 
-                                _profiles = [_group, _position, random(360), false, _eventFaction, true] call ALIVE_fnc_createProfilesFromGroupConfig;
+                                _profiles = [_group, _position, random(360), false, _eventFaction, true, false, "STEALTH"] + (call _fnc_hookArgs) call ALIVE_fnc_createProfilesFromGroupConfig;
 
                                 _profileIDs = [];
                                 {
@@ -8213,7 +8236,7 @@ switch(_operation) do {
                                             };
 
                                             // Create slingloading heli (slingloading another profile!)
-                                            _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,true,true,[], [[_x], []]] call ALIVE_fnc_createProfilesCrewedVehicle;
+                                            _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,true,true,[], [[_x], []]] call ALIVE_fnc_createProfilesCrewedVehicle; [_profiles] call _fnc_spawnHook;
 
                                             // Set slingload state on profile
                                             [_slingloadProfile,"slung",[[_profiles select 1 select 2 select 4]]] call ALIVE_fnc_profileVehicle;
@@ -8374,7 +8397,7 @@ switch(_operation) do {
 
                             if!(surfaceIsWater _position) then {
 
-                                _profiles = [_group, _position, random(360), false, _eventFaction, true] call ALIVE_fnc_createProfilesFromGroupConfig;
+                                _profiles = [_group, _position, random(360), false, _eventFaction, true, false, "STEALTH"] + (call _fnc_hookArgs) call ALIVE_fnc_createProfilesFromGroupConfig;
 
                                 _profileIDs = [];
                                 {
@@ -8450,7 +8473,7 @@ switch(_operation) do {
 
                                         _vehicleClass = selectRandom _transportGroups;
 
-                                        _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,true,true] call ALIVE_fnc_createProfilesCrewedVehicle;
+                                        _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,true,true] call ALIVE_fnc_createProfilesCrewedVehicle; [_profiles] call _fnc_spawnHook;
 
                                         _transportProfiles pushback (_profiles select 0 select 2 select 4);
                                         _transportVehicleProfiles pushback (_profiles select 1 select 2 select 4);
@@ -8539,7 +8562,7 @@ switch(_operation) do {
 
                                     _vehicleClass = selectRandom _transportGroups;
 
-                                    _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_pickupLZPos,random(360),false,_eventFaction,true,true] call ALIVE_fnc_createProfilesCrewedVehicle;
+                                    _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_pickupLZPos,random(360),false,_eventFaction,true,true] call ALIVE_fnc_createProfilesCrewedVehicle; [_profiles] call _fnc_spawnHook;
 
                                     _transportProfiles pushback (_profiles select 0 select 2 select 4);
                                     _transportVehicleProfiles pushback (_profiles select 1 select 2 select 4);
@@ -8677,7 +8700,7 @@ switch(_operation) do {
 
                                         _vehicleClass = selectRandom _transportGroups;
 
-                                        _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,false,true] call ALIVE_fnc_createProfilesCrewedVehicle;
+                                        _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,false,true] call ALIVE_fnc_createProfilesCrewedVehicle; [_profiles] call _fnc_spawnHook;
 
                                         _transportProfiles pushback (_profiles select 0 select 2 select 4);
                                         _transportVehicleProfiles pushback (_profiles select 1 select 2 select 4);
@@ -8728,7 +8751,7 @@ switch(_operation) do {
 
                             if!(surfaceIsWater _position) then {
 
-                                _profiles = [_group, _position, random(360), false, _eventFaction, true] call ALIVE_fnc_createProfilesFromGroupConfig;
+                                _profiles = [_group, _position, random(360), false, _eventFaction, true, false, "STEALTH"] + (call _fnc_hookArgs) call ALIVE_fnc_createProfilesFromGroupConfig;
 
                                 _profileIDs = [];
                                 {
@@ -8784,7 +8807,7 @@ switch(_operation) do {
 
                             if!(surfaceIsWater _position) then {
 
-                                _profiles = [_group, _position, random(360), false, _eventFaction, true] call ALIVE_fnc_createProfilesFromGroupConfig;
+                                _profiles = [_group, _position, random(360), false, _eventFaction, true, false, "STEALTH"] + (call _fnc_hookArgs) call ALIVE_fnc_createProfilesFromGroupConfig;
 
                                 _profileIDs = [];
                                 {
@@ -8899,7 +8922,7 @@ switch(_operation) do {
                                                 ["ML - HELI_INSERT mechanised slingload heli spawn pos (ground): %1 class: %2 (idx=%3 minR=%4 maxR=%5)", _position, _vehicleClass, _mechSlingHeliSpawnIdx - 1, _mechSpawnMin, _mechSpawnMax] call ALiVE_fnc_dump;
                                             };
 
-                                            _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,true,true,[], [[_x], []]] call ALIVE_fnc_createProfilesCrewedVehicle;
+                                            _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,true,true,[], [[_x], []]] call ALIVE_fnc_createProfilesCrewedVehicle; [_profiles] call _fnc_spawnHook;
 
                                             [_slingLoadProfile,"slung",[[_profiles select 1 select 2 select 4]]] call ALIVE_fnc_profileVehicle;
 
@@ -8991,7 +9014,7 @@ switch(_operation) do {
 
                                     _vehicleClass = selectRandom _planeClasses;
 
-                                    _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,true,true] call ALIVE_fnc_createProfilesCrewedVehicle;
+                                    _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,true,true] call ALIVE_fnc_createProfilesCrewedVehicle; [_profiles] call _fnc_spawnHook;
 
                                     _profileIDs = [];
                                     {
@@ -9072,7 +9095,7 @@ switch(_operation) do {
                                     // mirroring the proven ATO self-create heli path. Normal reinforcement helis
                                     // (_replacementHeli false) keep engine-on 1000m air ingress. The MOVE waypoint
                                     // below still flies it in.
-                                    _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,!_replacementHeli,true] call ALIVE_fnc_createProfilesCrewedVehicle;
+                                    _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,!_replacementHeli,true] call ALIVE_fnc_createProfilesCrewedVehicle; [_profiles] call _fnc_spawnHook;
 
                                     if (_debug && _replacementHeli) then {
                                         ["ML - #460 replacement heli %1 delivered GROUNDED at %2 (engine-off; grounds + crews before flying in, no free-fall)", _vehicleClass, _position] call ALIVE_fnc_dump;
@@ -12682,7 +12705,7 @@ switch(_operation) do {
                                     };
 
                                 }else{
-                                    _profiles = [_itemClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,true,true] call ALIVE_fnc_createProfilesCrewedVehicle;
+                                    _profiles = [_itemClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,true,true] call ALIVE_fnc_createProfilesCrewedVehicle; [_profiles] call _fnc_spawnHook;
                                 };
 
                                 _profileIDs = [];
@@ -12852,7 +12875,7 @@ switch(_operation) do {
                                     };
 
                                     // Create slingloading heli (slingloading another profile!)
-                                    _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,true,true,[], [[_x select 0], []]] call ALIVE_fnc_createProfilesCrewedVehicle;
+                                    _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,true,true,[], [[_x select 0], []]] call ALIVE_fnc_createProfilesCrewedVehicle; [_profiles] call _fnc_spawnHook;
 
                                     // Set slingloaded profile
                                     [_slingloadProfile,"slung",[[_profiles select 1 select 2 select 4]]] call ALIVE_fnc_profileVehicle;
@@ -12972,7 +12995,7 @@ switch(_operation) do {
                                 _unitClasses pushback (_x select 0);
                             } forEach _staticIndividuals;
 
-                            _profile = [_unitClasses,_side,_eventFaction,_position,0,_side,true] call ALIVE_fnc_createProfileEntity;
+                            _profile = [_unitClasses,_side,_eventFaction,_position,0,_side,true] call ALIVE_fnc_createProfileEntity; [_profile] call _fnc_spawnHook;
                             _profileID = _profile select 2 select 4;
                             _staticIndividualProfiles pushback [_profileID];
                             _infantryProfiles pushback [_profileID];
@@ -13018,7 +13041,7 @@ switch(_operation) do {
                                 _unitClasses pushback (_x select 0);
                             } forEach _joinIndividuals;
 
-                            _profile = [_unitClasses,_side,_eventFaction,_position,0,_side,true] call ALIVE_fnc_createProfileEntity;
+                            _profile = [_unitClasses,_side,_eventFaction,_position,0,_side,true] call ALIVE_fnc_createProfileEntity; [_profile] call _fnc_spawnHook;
                             _profileID = _profile select 2 select 4;
                             _joinIndividualProfiles pushback [_profileID];
                             _infantryProfiles pushback [_profileID];
@@ -13063,7 +13086,7 @@ switch(_operation) do {
                                 _unitClasses pushback (_x select 0);
                             } forEach _reinforceIndividuals;
 
-                            _profile = [_unitClasses,_side,_eventFaction,_position,0,_side,true] call ALIVE_fnc_createProfileEntity;
+                            _profile = [_unitClasses,_side,_eventFaction,_position,0,_side,true] call ALIVE_fnc_createProfileEntity; [_profile] call _fnc_spawnHook;
                             _profileID = _profile select 2 select 4;
                             _reinforceIndividualProfiles pushback [_profileID];
                             _infantryProfiles pushback [_profileID];
@@ -13204,7 +13227,7 @@ switch(_operation) do {
                                         };
                                     };
 
-                                    private _profiles = [_group, _position, random(360), false, _groupFaction, true] call ALIVE_fnc_createProfilesFromGroupConfig;
+                                    private _profiles = [_group, _position, random(360), false, _groupFaction, true, false, "STEALTH"] + (call _fnc_hookArgs) call ALIVE_fnc_createProfilesFromGroupConfig;
                                     private _profileIDs = [];
                                     private _containsVehicles = 0;
 
@@ -13430,7 +13453,7 @@ switch(_operation) do {
 
                                         _vehicleClass = selectRandom _transportGroups;
 
-                                        _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,false,true] call ALIVE_fnc_createProfilesCrewedVehicle;
+                                        _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,false,true] call ALIVE_fnc_createProfilesCrewedVehicle; [_profiles] call _fnc_spawnHook;
 
                                         _transportProfiles pushback (_profiles select 0 select 2 select 4);
                                         _transportVehicleProfiles pushback (_profiles select 1 select 2 select 4);
@@ -13493,7 +13516,7 @@ switch(_operation) do {
                                         };
 
                                         // Create profiles
-                                        _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,true,true] call ALIVE_fnc_createProfilesCrewedVehicle;
+                                        _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,true,true] call ALIVE_fnc_createProfilesCrewedVehicle; [_profiles] call _fnc_spawnHook;
 
                                         _transportProfiles pushback (_profiles select 0 select 2 select 4);
                                         _transportVehicleProfiles pushback (_profiles select 1 select 2 select 4);
@@ -13641,7 +13664,7 @@ switch(_operation) do {
                                             _position set [2,PARADROP_HEIGHT];
 
                                             // Create slingloading heli (slingloading another profile!)
-                                            _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,true,true,[], [[_x], []]] call ALIVE_fnc_createProfilesCrewedVehicle;
+                                            _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,true,true,[], [[_x], []]] call ALIVE_fnc_createProfilesCrewedVehicle; [_profiles] call _fnc_spawnHook;
 
                                             // Set slingloaded profile
                                             [_slingloadProfile,"slung",[[_profiles select 1 select 2 select 4]]] call ALIVE_fnc_profileVehicle;
@@ -13782,7 +13805,7 @@ switch(_operation) do {
 
                                     _vehicleClass = selectRandom _transportGroups;
 
-                                    _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,false,true,_payload] call ALIVE_fnc_createProfilesCrewedVehicle;
+                                    _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,false,true,_payload] call ALIVE_fnc_createProfilesCrewedVehicle; [_profiles] call _fnc_spawnHook;
 
                                     _transportProfiles pushback (_profiles select 0 select 2 select 4);
                                     _transportVehicleProfiles pushback (_profiles select 1 select 2 select 4);
@@ -13859,7 +13882,7 @@ switch(_operation) do {
 
 
                                     if (!_slingload) then {
-                                        _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,true,true,_payload] call ALIVE_fnc_createProfilesCrewedVehicle;
+                                        _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,true,true,_payload] call ALIVE_fnc_createProfilesCrewedVehicle; [_profiles] call _fnc_spawnHook;
 
                                     } else {
 
@@ -13909,7 +13932,7 @@ switch(_operation) do {
                                             };
 
                                             // Create slingloading heli
-                                            _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,true,true,[], [_containerClass, _payload]] call ALIVE_fnc_createProfilesCrewedVehicle;
+                                            _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,true,true,[], [_containerClass, _payload]] call ALIVE_fnc_createProfilesCrewedVehicle; [_profiles] call _fnc_spawnHook;
 
                                         };
                                     };
@@ -14357,7 +14380,7 @@ switch(_operation) do {
                                         };
 
                                         // Create slingloading heli crew/vehicle pair
-                                        private _slingProfiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_slingSpawnPos,random(360),false,_eventFaction,true,true,[], [[_cargoID], []]] call ALIVE_fnc_createProfilesCrewedVehicle;
+                                        private _slingProfiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_slingSpawnPos,random(360),false,_eventFaction,true,true,[], [[_cargoID], []]] call ALIVE_fnc_createProfilesCrewedVehicle; [_slingProfiles] call _fnc_spawnHook;
 
                                         // Attach sling state
                                         [_slingLoadProfile,"slung",[[_slingProfiles select 1 select 2 select 4]]] call ALIVE_fnc_profileVehicle;
@@ -14423,7 +14446,7 @@ switch(_operation) do {
                                         _infSpawnPos set [2, 0]; // ground spawn -- fix 1
 
                                         private _infHeliClass = selectRandom _airdropTransportGroups;
-                                        private _infProfiles = [_infHeliClass,_side,_eventFaction,"CAPTAIN",_infSpawnPos,random(360),false,_eventFaction,true,true] call ALIVE_fnc_createProfilesCrewedVehicle;
+                                        private _infProfiles = [_infHeliClass,_side,_eventFaction,"CAPTAIN",_infSpawnPos,random(360),false,_eventFaction,true,true] call ALIVE_fnc_createProfilesCrewedVehicle; [_infProfiles] call _fnc_spawnHook;
 
                                         _airdropInfTransportProfID = _infProfiles select 0 select 2 select 4;
                                         _airdropTransportProfiles pushback _airdropInfTransportProfID;

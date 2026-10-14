@@ -8,6 +8,8 @@ class CfgVehicles
             class Edit;
             class Combo;
             class ModuleDescription;
+            class ALiVE_ModuleSubTitle;
+            class ALiVE_EditMultilineSQF;
         };
     };
     class ModuleAliveBase : Module_F
@@ -345,6 +347,27 @@ class CfgVehicles
                                     class MEDIUM { name = "6%"; value = "6"; };
                                     class HIGH { name = "8%"; value = "8"; };
                                     class VHIGH { name = "10%"; value = "10"; };
+                                };
+                        };
+                        // ---- On Spawn Hook (#1083) --------------------------------------------
+                        class HDR_HOOK : ALiVE_ModuleSubTitle { property = "ALiVE_mil_logistics_HDR_HOOK"; displayName = "ON SPAWN HOOK"; };
+                        class onEachSpawn : ALiVE_EditMultilineSQF
+                        {
+                                property = "ALiVE_mil_logistics_onEachSpawn";
+                                displayName = "$STR_ALIVE_ML_ON_EACH_SPAWN";
+                                tooltip = "$STR_ALIVE_ML_ON_EACH_SPAWN_COMMENT";
+                                defaultValue = """""";
+                        };
+                        class onEachSpawnOnce : Combo
+                        {
+                                property = "ALiVE_mil_logistics_onEachSpawnOnce";
+                                displayName = "$STR_ALIVE_ML_ON_EACH_SPAWN_ONCE";
+                                tooltip = "$STR_ALIVE_ML_ON_EACH_SPAWN_ONCE_COMMENT";
+                                defaultValue = """true""";
+                                class Values
+                                {
+                                    class Yes { name = "Yes"; value = true; default = 1; };
+                                    class No { name = "No"; value = false; };
                                 };
                         };
                         class ModuleDescription : ModuleDescription {};
