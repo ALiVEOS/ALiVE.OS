@@ -68,12 +68,31 @@ class ALiVE_FobBuildWindow {
             h = 0.03 * safezoneH;
             sizeEx = "(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.85)";
         };
+        // Search (#1085): typing narrows the list to the items whose name or class has the text in it
+        class FobUI_SearchLabel: FobUI_RscText {
+            idc = 92813;
+            text = "$STR_ALIVE_FOB_UI_SEARCH";
+            x = 0.31 * safezoneW + safezoneX;
+            y = 0.305 * safezoneH + safezoneY;
+            w = 0.04 * safezoneW;
+            h = 0.03 * safezoneH;
+            sizeEx = "(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.85)";
+        };
+        class FobUI_Search: FobUI_RscEdit {
+            idc = 92812;
+            tooltip = "$STR_ALIVE_FOB_UI_SEARCH_TIP";
+            x = 0.35 * safezoneW + safezoneX;
+            y = 0.305 * safezoneH + safezoneY;
+            w = 0.15 * safezoneW;
+            h = 0.03 * safezoneH;
+            onKeyUp = "['filter'] call ALiVE_fnc_buildMenu";
+        };
         class FobUI_List: FobUI_RscListBox {
             idc = 92802;
             x = 0.31 * safezoneW + safezoneX;
-            y = 0.305 * safezoneH + safezoneY;
+            y = 0.34 * safezoneH + safezoneY;
             w = 0.19 * safezoneW;
-            h = 0.42 * safezoneH;
+            h = 0.385 * safezoneH;
             colorBackground[] = {0,0,0,0.3};
             sizeEx = "(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.9)";
             onLBSelChanged = "['select'] call ALiVE_fnc_buildMenu";

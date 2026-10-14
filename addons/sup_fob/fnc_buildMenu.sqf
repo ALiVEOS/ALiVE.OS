@@ -11,7 +11,7 @@ and the FOB's supply, and Place closes the window and starts placing the item in
 (ALiVE_fnc_fobPlacement). Prices shown here are the server's; the server charges its own.
 
 Parameters:
-String - The operation: open, category, select, place, closed
+String - The operation: open, category, filter, select, place, closed
 Any - Its arguments: for open, the FOB's row from ALiVE_FOB_registryMirror; for category,
 "FORTIFICATION", "SUPPLY" or "STATIC"
 
@@ -81,6 +81,21 @@ switch (_operation) do {
         { _keys pushBack [_x select 3, _x select 1, _forEachIndex] } forEach _rows;
         _keys sort true;
         _rows = _keys apply { _rows select (_x select 2) };
+        uiNamespace setVariable ["ALiVE_FOB_buildAll", _rows];
+        {
+            (BW_DISPLAY displayCtrl (_x select 0)) ctrlSetTextColor ([[1,1,1,0.6], [1,1,1,1]] select (_kind == (_x select 1)));
+        } forEach [[92807, "FORTIFICATION"], [92808, "SUPPLY"], [92810, "STATIC"], [92811, "VEHICLE"]];
+        ["filter"] call ALiVE_fnc_buildMenu;
+    };
+
+    // Search (#1085): the category's items whose name or class name has the typed text in it
+    case "filter": {
+        if (isNull BW_DISPLAY) exitWith {};
+        private _find = toLower (ctrlText (BW_DISPLAY displayCtrl 92812));
+        private _rows = uiNamespace getVariable ["ALiVE_FOB_buildAll", []];
+        if (_find != "") then {
+            _rows = _rows select { ((toLower (_x select 1)) find _find) >= 0 || {((toLower (_x select 0)) find _find) >= 0} };
+        };
         uiNamespace setVariable ["ALiVE_FOB_buildRows", _rows];
         private _list = BW_DISPLAY displayCtrl 92802;
         lbClear _list;
@@ -96,9 +111,6 @@ switch (_operation) do {
             if (isText (configFile >> "CfgVehicleIcons" >> _icon)) then { _icon = getText (configFile >> "CfgVehicleIcons" >> _icon) };
             if (_icon != "" && {"\" in _icon}) then { _list lbSetPicture [_i, _icon] };
         } forEach _rows;
-        {
-            (BW_DISPLAY displayCtrl (_x select 0)) ctrlSetTextColor ([[1,1,1,0.6], [1,1,1,1]] select (_kind == (_x select 1)));
-        } forEach [[92807, "FORTIFICATION"], [92808, "SUPPLY"], [92810, "STATIC"], [92811, "VEHICLE"]];
         _list lbSetCurSel 0;
         call _fnc_status;
     };
@@ -131,5 +143,6 @@ switch (_operation) do {
 
     case "closed": {
         uiNamespace setVariable ["ALiVE_FOB_buildRows", []];
+        uiNamespace setVariable ["ALiVE_FOB_buildAll", []];
     };
 };

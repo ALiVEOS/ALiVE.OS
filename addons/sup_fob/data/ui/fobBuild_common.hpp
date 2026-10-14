@@ -40,6 +40,28 @@ class FobUI_RscText
 	linespacing = 1;
 };
 
+class FobUI_RscEdit
+{
+	access = 0;
+	type = 2;
+	style = 0;
+	idc = -1;
+	x = 0;
+	y = 0;
+	w = 0.2;
+	h = 0.03;
+	font = "PuristaMedium";
+	sizeEx = "(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.9)";
+	text = "";
+	autocomplete = "";
+	shadow = 0;
+	colorBackground[] = {0, 0, 0, 0.5};
+	colorText[] = {1, 1, 1, 1};
+	colorDisabled[] = {1, 1, 1, 0.25};
+	colorSelection[] = {1, 1, 1, 0.25};
+	canModify = 1;
+};
+
 class FobUI_RscButton
 {
 	access = 0;

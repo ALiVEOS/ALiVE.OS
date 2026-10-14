@@ -323,6 +323,12 @@
             <Key ID="STR_ALIVE_FOB_PLACE_BAD">
                 <English>It can't go here: keep it inside the FOB's build range and out of water.</English>
             </Key>
+            <Key ID="STR_ALIVE_FOB_UI_SEARCH">
+                <English>Search</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_UI_SEARCH_TIP">
+                <English>Type part of a name to show only the items that match, in the category you have open.</English>
+            </Key>
             <Key ID="STR_ALIVE_FOB_UI_TITLE">
                 <English>FOB Build</English>
             </Key>
