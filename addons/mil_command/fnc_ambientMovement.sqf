@@ -120,8 +120,9 @@ if (_debug) then {
     ] call ALiVE_fnc_Dump;
 };
 
-//if static
-if (count _waypoints == 0 && {!_parkedAir}) then {
+//if static, and not already waiting on the pathfinder for a route (with pathfinding on, the legs
+//only appear in the waypoints once their routes come back)
+if (count _waypoints == 0 && {!_parkedAir} && {([_profile,"pendingWaypointPaths",[]] call ALiVE_fnc_HashGet) isEqualTo []}) then {
     
     //get locations in case
     if (_useLocations) then {

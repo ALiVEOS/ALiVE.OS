@@ -869,6 +869,18 @@ switch(_operation) do {
     };
 
     case "clearWaypoints": {
+        // Routes still being worked out by the pathfinder go too: left queued, each one landed after
+        // the orders that replaced it, and a cell the insurgent commander re-tasked again and again
+        // ended up with every old route stacked on its new one (groups with 200+ waypoints)
+        private _pending = [_logic,"pendingWaypointPaths",[]] call ALiVE_fnc_hashGet;
+        if (_pending isNotEqualTo []) then {
+            {_x set [1,"cancelled"]} forEach _pending;
+            [_logic,"pendingWaypointPaths",[]] call ALiVE_fnc_hashSet;
+            if (!isNil "ALiVE_Pathfinder") then {
+                [ALiVE_Pathfinder,"cancelProfilePaths",[_logic,"profileID"] call ALiVE_fnc_hashGet] call ALiVE_fnc_pathfinder;
+            };
+        };
+
         [_logic, [
             ["waypoints", []],
             ["waypointsCompleted", []]
