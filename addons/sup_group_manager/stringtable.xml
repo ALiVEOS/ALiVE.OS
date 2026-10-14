@@ -563,6 +563,51 @@
 <Key ID="STR_ALIVE_RALLY_UI_DETAILS">
     <English>&lt;t size='1.1'&gt;%1&lt;/t&gt;&lt;br/&gt;Grid %2&lt;br/&gt;Travelling with you: %3</English>
 </Key>
+<Key ID="STR_ALIVE_RALLY_LEADER">
+    <English>Leader Rally Points</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_LEADER_COMMENT">
+    <English>Lets a player squad leader put down the squad's own rally point where they stand, a pack on the ground, to travel to like any other. One per squad: putting down a new one picks up the old. Refused with enemies within Enemy Radius. Squad only: just that squad can use it. Whole side: every player of the side.</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_LEADER_GROUP">
+    <English>Squad only</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_LEADER_SIDE">
+    <English>Whole side</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_LEADERCD">
+    <English>Leader Rally Point Cooldown (s)</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_LEADERCD_COMMENT">
+    <English>Seconds before a squad can put down another rally point.</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_LEADEROVERRUN">
+    <English>Leader Rally Point Overrun Time (s)</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_LEADEROVERRUN_COMMENT">
+    <English>A squad's rally point is lost once enemies have been within Enemy Radius of it for this many seconds.</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_DEPLOY">
+    <English>Deploy rally point</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_PICKUP">
+    <English>Pick up rally point</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_LEADER_NAME">
+    <English>%1 rally point</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_UI_DEPLOY_WAIT">
+    <English>Your squad can put down another rally point in %1 s.</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_UI_DEPLOY_ENEMY">
+    <English>Enemies within %1 m: no rally point here.</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_UI_DEPLOYED">
+    <English>Rally point down.</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_UI_OVERRUN">
+    <English>Your squad's rally point has been overrun.</English>
+</Key>
 <Key ID="STR_ALIVE_RALLY_UI_GRID">
     <English>Grid %1</English>
 </Key>

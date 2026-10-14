@@ -66,12 +66,12 @@ switch (_op) do {
 
     case "add": {
         if (!isServer) exitWith { [_op, _args] remoteExecCall ["ALiVE_fnc_rallyPoint", 2] };
-        _args params [["_obj", objNull, [objNull]], ["_name", "", [""]], ["_side", "ANY", [""]], ["_kind", "script", [""]]];
+        _args params [["_obj", objNull, [objNull]], ["_name", "", [""]], ["_side", "ANY", [""]], ["_kind", "script", [""]], ["_owner", grpNull, [grpNull]]];
         if (isNull _obj) exitWith { _result = false };
         if (_name == "") then { _name = _obj getVariable ["ALiVE_rallyName", ""] };
         if (_name == "") then { _name = [getPosATL _obj] call _autoName };
         private _list = (missionNamespace getVariable ["ALiVE_rallyPoints", []]) select { !isNull (_x select 0) && {(_x select 0) != _obj} };
-        _list pushBack [_obj, _name, toUpper _side, _kind];
+        _list pushBack [_obj, _name, toUpper _side, _kind, _owner];
         ALiVE_rallyPoints = _list;
         publicVariable "ALiVE_rallyPoints";
     };
@@ -103,13 +103,67 @@ switch (_op) do {
         };
     };
 
+    // a squad leader puts down the squad's own rally point where they stand (Leader Rally Points):
+    // one per squad, refused with enemies within Enemy Radius or before Leader Rally Point Cooldown
+    // has passed, and gone once enemies hold it for Leader Rally Point Overrun Time or the squad is gone
+    case "deploy": {
+        _args params [["_unit", objNull, [objNull]]];
+        if (!isServer) exitWith { [_op, _args] remoteExecCall ["ALiVE_fnc_rallyPoint", 2] };
+        private _mode = toUpper (["leaderRally", "OFF"] call _set);
+        private _grp = group _unit;
+        private _tell = { [localize "STR_ALIVE_RALLY", _this] remoteExecCall ["ALIVE_fnc_sendHint", _unit] };
+        if (_mode == "OFF" || {isNull _unit} || {leader _grp != _unit} || {!alive _unit} || {vehicle _unit != _unit}) exitWith { _result = false };
+        private _key = "ALiVE_rallyDeployNext_" + str _grp;
+        private _wait = (missionNamespace getVariable [_key, 0]) - time;
+        if (_wait > 0) exitWith { format [localize "STR_ALIVE_RALLY_UI_DEPLOY_WAIT", ceil _wait] call _tell; _result = false };
+        private _r = (["enemyRadius", 300] call _set) max 50;
+        if ([getPosATL _unit, str side _grp, _r, !isNil "ALIVE_profileHandler"] call ALIVE_fnc_isEnemyNear) exitWith {
+            format [localize "STR_ALIVE_RALLY_UI_DEPLOY_ENEMY", round _r] call _tell; _result = false
+        };
+        // the squad's earlier one goes
+        private _old = _grp getVariable ["ALiVE_rallyDeployed", objNull];
+        if (!isNull _old) then { ["remove", [_old]] call ALiVE_fnc_rallyPoint; deleteVehicle _old };
+        private _obj = createVehicle ["B_Carryall_oli", _unit modelToWorld [0, 1.2, 0], [], 0, "CAN_COLLIDE"];
+        _obj setDir getDir _unit;
+        clearItemCargoGlobal _obj; clearMagazineCargoGlobal _obj; clearWeaponCargoGlobal _obj; clearBackpackCargoGlobal _obj;
+        _grp setVariable ["ALiVE_rallyDeployed", _obj, true];
+        missionNamespace setVariable [_key, time + (["leaderCooldown", 120] call _set)];
+        ["add", [_obj, format [localize "STR_ALIVE_RALLY_LEADER_NAME", groupId _grp], str side _grp, "leader", [_grp, grpNull] select (_mode == "SIDE")]] call ALiVE_fnc_rallyPoint;
+        localize "STR_ALIVE_RALLY_UI_DEPLOYED" call _tell;
+        [_obj, _grp, _r, ["leaderOverrun", 30] call _set] spawn {
+            params ["_obj", "_grp", "_r", "_overrun"];
+            private _held = 0;
+            while { alive _obj && {!isNull _grp} && {({ alive _x } count units _grp) > 0} && {_held < _overrun} } do {
+                sleep 5;
+                _held = if ([getPosATL _obj, str side _grp, _r, !isNil "ALIVE_profileHandler"] call ALIVE_fnc_isEnemyNear) then { _held + 5 } else { 0 };
+            };
+            if (_held >= _overrun && {!isNull _grp}) then {
+                [localize "STR_ALIVE_RALLY", localize "STR_ALIVE_RALLY_UI_OVERRUN"] remoteExecCall ["ALIVE_fnc_sendHint", units _grp select { isPlayer _x }];
+            };
+            ["remove", [_obj]] call ALiVE_fnc_rallyPoint;
+            if (!isNull _obj) then { deleteVehicle _obj };
+            if (!isNull _grp) then { _grp setVariable ["ALiVE_rallyDeployed", nil, true] };
+        };
+    };
+
+    case "pickup": {
+        _args params [["_unit", objNull, [objNull]]];
+        if (!isServer) exitWith { [_op, _args] remoteExecCall ["ALiVE_fnc_rallyPoint", 2] };
+        private _grp = group _unit;
+        private _obj = _grp getVariable ["ALiVE_rallyDeployed", objNull];
+        if (isNull _obj || {leader _grp != _unit}) exitWith { _result = false };
+        ["remove", [_obj]] call ALiVE_fnc_rallyPoint;
+        deleteVehicle _obj;
+        _grp setVariable ["ALiVE_rallyDeployed", nil, true];
+    };
+
     case "list": {
         _args params [["_unit", objNull, [objNull]]];
         private _side = str side group _unit;
         _result = [];
         {
-            _x params ["_obj", "_name", "_who"];
-            if (alive _obj && {_who in ["ANY", _side]}) then { _result pushBack [_name, getPosASL _obj, _obj, ""] };
+            _x params ["_obj", "_name", "_who", "", ["_owner", grpNull]];
+            if (alive _obj && {_who in ["ANY", _side]} && {isNull _owner || {_owner == group _unit}}) then { _result pushBack [_name, getPosASL _obj, _obj, ""] };
         } forEach (missionNamespace getVariable ["ALiVE_rallyPoints", []]);
         // Player FOBs of the unit's side from the tier the module asks for; 0 is off
         private _minTier = ["rallyFOBs", 2] call _set;

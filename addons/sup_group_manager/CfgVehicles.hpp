@@ -254,7 +254,38 @@ class CfgVehicles {
                                 defaultValue = """60""";
                                 typeName = "NUMBER";
                         };
-                        class rallyMarkers : Combo
+                        class HDR_LEADER : ALiVE_ModuleSubTitle { property = "ALiVE_sup_rally_HDR_LEADER"; displayName = "LEADER RALLY POINTS"; };
+                        class leaderRally : Combo
+                    {
+                            property = "ALiVE_sup_rally_leaderRally";
+                            displayName = "$STR_ALIVE_RALLY_LEADER";
+                            tooltip = "$STR_ALIVE_RALLY_LEADER_COMMENT";
+                            defaultValue = """OFF""";
+                            class Values
+                            {
+                                    class Off   { name = "Off"; value = "OFF"; };
+                                    class Group { name = "$STR_ALIVE_RALLY_LEADER_GROUP"; value = "GROUP"; };
+                                    class Side  { name = "$STR_ALIVE_RALLY_LEADER_SIDE"; value = "SIDE"; };
+                            };
+                    };
+                    class leaderCooldown : Edit
+                    {
+                            property = "ALiVE_sup_rally_leaderCooldown";
+                            displayName = "$STR_ALIVE_RALLY_LEADERCD";
+                            tooltip = "$STR_ALIVE_RALLY_LEADERCD_COMMENT";
+                            typeName = "NUMBER";
+                            defaultValue = "120";
+                    };
+                    class leaderOverrun : Edit
+                    {
+                            property = "ALiVE_sup_rally_leaderOverrun";
+                            displayName = "$STR_ALIVE_RALLY_LEADEROVERRUN";
+                            tooltip = "$STR_ALIVE_RALLY_LEADEROVERRUN_COMMENT";
+                            typeName = "NUMBER";
+                            defaultValue = "30";
+                    };
+                    class HDR_DISPLAY : ALiVE_ModuleSubTitle { property = "ALiVE_sup_rally_HDR_DISPLAY"; displayName = "DISPLAY"; };
+                    class rallyMarkers : Combo
                         {
                                 property = "ALiVE_sup_rally_rallyMarkers";
                                 displayName = "$STR_ALIVE_RALLY_MARKERS";
