@@ -352,6 +352,16 @@ class CfgVehicles {
                                 tooltip = "$STR_ALIVE_OPCOM_INSPROPS_COMMENT";
                                 defaultValue = """""";
                         };
+                        class insPropsLab
+                        {
+                                control = "ALiVE_InsPropsLabChoice";
+                                typeName = "STRING";
+                                expression = "_this setVariable ['insPropsLab', _value];";
+                                property = "ALiVE_mil_opcom_insPropsLab";
+                                displayName = "$STR_ALIVE_OPCOM_INSPROPS_LAB";
+                                tooltip = "$STR_ALIVE_OPCOM_INSPROPS_LAB_COMMENT";
+                                defaultValue = """""";
+                        };
                         class intelchance : Combo
                         {
                                 property = "ALiVE_mil_opcom_intelchance";

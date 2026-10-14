@@ -258,6 +258,12 @@
 <Key ID="STR_ALIVE_OPCOM_INSPROPS_HQ">
     <English>HQ Interiors</English>
 </Key>
+<Key ID="STR_ALIVE_OPCOM_INSPROPS_LAB">
+    <English>Lab Interiors</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_INSPROPS_LAB_COMMENT">
+    <English>With Drug Labs on: the furniture sets a drug lab can be dressed with; one is picked at random each time, two in a larger building. The lab sets fit every era. Tick them from the list or type set class names (a mission's own sets go in description.ext under CfgGroups, Empty, ALiVE_Interiors, Lab). Leave empty to use them all.</English>
+</Key>
 <Key ID="STR_ALIVE_OPCOM_INSPROPS_COMMENT">
     <English>The furniture sets this installation can be dressed with; one is picked at random each time, two in a larger building. Tick them from the list, by era, or type set class names (a mission's own sets go in description.ext under CfgGroups, Empty, ALiVE_Interiors). The factory's IED sits on the first table. Leave empty to use the Installation Interiors era.</English>
 </Key>

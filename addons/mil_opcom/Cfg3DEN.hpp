@@ -27,5 +27,9 @@ class Cfg3DEN {
             attributeLoad = "[_this, _value, '$STR_ALIVE_OPCOM_INSPROPS_HQ', 'HQ'] call compile preprocessFileLineNumbers '\x\alive\addons\mil_opcom\fnc_insPropsEdenChoiceLoad.sqf'";
             attributeSave = "[_this] call compile preprocessFileLineNumbers '\x\alive\addons\mil_opcom\fnc_hvtEdenChoiceSave.sqf'";
         };
+        class ALiVE_InsPropsLabChoice: ALiVE_FilteredMultiSelect_Base {
+            attributeLoad = "[_this, _value, '$STR_ALIVE_OPCOM_INSPROPS_LAB', 'Lab'] call compile preprocessFileLineNumbers '\x\alive\addons\mil_opcom\fnc_insPropsEdenChoiceLoad.sqf'";
+            attributeSave = "[_this] call compile preprocessFileLineNumbers '\x\alive\addons\mil_opcom\fnc_hvtEdenChoiceSave.sqf'";
+        };
     };
 };

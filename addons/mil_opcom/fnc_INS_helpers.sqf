@@ -1991,8 +1991,8 @@ ALiVE_fnc_INS_interiorSets = {
             } forEach ("isClass _x" configClasses _root);
         };
     } forEach [missionConfigFile >> "ALiVE_Interiors", missionConfigFile >> "CfgGroups" >> "Empty" >> "ALiVE_Interiors", configFile >> "ALiVE_Interiors"];
-    // the commander's own pick for the kind; a drug lab has none and goes by era
-    private _ownKey = ["insPropsFactory", "insPropsDepot", "insPropsHQ"] param [["Factory", "Depot", "HQ"] find _kind, ""];
+    // the commander's own pick for the kind (Factory, Depot, HQ or Lab Interiors)
+    private _ownKey = ["insPropsFactory", "insPropsDepot", "insPropsHQ", "insPropsLab"] param [["Factory", "Depot", "HQ", "Lab"] find _kind, ""];
     private _own = (if (_ownKey == "") then { "" } else { _module getVariable [_ownKey, ""] }) splitString ", " apply { toLower _x };
     private _picked = _all select { (toLower configName _x) in _own };
     if (_picked isNotEqualTo []) exitWith { _picked };
@@ -2007,7 +2007,8 @@ ALiVE_fnc_INS_interiorSets = {
             default { "MODERN" };
         };
     };
-    private _era = _all select { toUpper getText (_x >> "era") == _theme };
+    // a set marked era "ANY" (the drug lab sets) fits every era
+    private _era = _all select { (toUpper getText (_x >> "era")) in [_theme, "ANY"] };
     // an era whose CDLC isn't loaded falls back to the modern sets
     if (_era isEqualTo []) then { _era = _all select { toUpper getText (_x >> "era") == "MODERN" } };
     _era

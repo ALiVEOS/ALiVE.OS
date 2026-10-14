@@ -163,7 +163,7 @@ class ALiVE_Interiors
         class InsLabCookBench
         {
             name = "Cooking bench";
-            era = "MODERN";
+            era = "ANY";
             side = 8;
             class Object0 {side = 8; vehicle = "Land_Workbench_01_F"; rank = ""; position[] = {0.000,0.000,-0.000}; dir = 0.0;};
             class Object1 {side = 8; vehicle = "Land_BottlePlastic_V1_F"; rank = ""; position[] = {-0.350,0.000,0.801}; dir = 0.0;};
@@ -176,7 +176,7 @@ class ALiVE_Interiors
         class InsLabStore
         {
             name = "Chemical store";
-            era = "MODERN";
+            era = "ANY";
             side = 8;
             class Object0 {side = 8; vehicle = "Land_MetalBarrel_F"; rank = ""; position[] = {0.000,0.000,0.000}; dir = 0.0;};
             class Object1 {side = 8; vehicle = "Land_MetalBarrel_F"; rank = ""; position[] = {0.700,0.000,0.000}; dir = 30.0;};
@@ -187,7 +187,7 @@ class ALiVE_Interiors
         class InsLabPacking
         {
             name = "Packing table";
-            era = "MODERN";
+            era = "ANY";
             side = 8;
             class Object0 {side = 8; vehicle = "Land_TableDesk_F"; rank = ""; position[] = {0.000,0.000,0.013}; dir = 0.0;};
             class Object1 {side = 8; vehicle = "Land_ChairWood_F"; rank = ""; position[] = {0.000,-0.700,0.000}; dir = 180.0;};

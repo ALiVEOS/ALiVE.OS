@@ -5,7 +5,7 @@ SCRIPT(insPropsEdenChoiceLoad);
 Function: fnc_insPropsEdenChoiceLoad
 
 Description:
-Eden attributeLoad for the AI Commander's Factory, Depot and HQ Interiors pickers: ALiVE's interior
+Eden attributeLoad for the AI Commander's Factory, Depot, HQ and Lab Interiors pickers: ALiVE's interior
 sets for that kind of installation (small furniture compositions in CfgGroups >> Empty >>
 ALiVE_Interiors, the mission's own included), one era at a time.
 
@@ -17,7 +17,7 @@ ALiVE_Interiors, the mission's own included), one era at a time.
   set this game doesn't have is listed and ticked, so it isn't lost.
 
 Parameters:
-    [_display, stored value, title, "Factory", "Depot" or "HQ"]
+    [_display, stored value, title, "Factory", "Depot", "HQ" or "Lab"]
 
 Author:
 Jman
@@ -34,7 +34,8 @@ if (_title != "") then {
 // The rows: [sort key, label, set class, era]. The interior sets for this kind of installation
 // (ALiVE_Interiors >> Factory, Depot or HQ; a mission's own, first, may also sit under CfgGroups >> Empty); a set
 // whose classes aren't all loaded is left out.
-private _eraNames = createHashMapFromArray [["MODERN", "Modern"], ["VIETNAM", "Vietnam"], ["WW2", "WW2"], ["COLDWAR", "Cold War"]];
+// a set marked era "ANY" (the drug lab sets) is listed under every era
+private _eraNames = createHashMapFromArray [["MODERN", "Modern"], ["VIETNAM", "Vietnam"], ["WW2", "WW2"], ["COLDWAR", "Cold War"], ["ANY", "Any era"]];
 private _rows = [];
 private _groups = [];
 {
@@ -53,6 +54,7 @@ private _groups = [];
 } forEach [missionConfigFile >> "ALiVE_Interiors", missionConfigFile >> "CfgGroups" >> "Empty" >> "ALiVE_Interiors", configFile >> "ALiVE_Interiors"];
 _rows sort true;
 _groups = ["Modern", "Vietnam", "WW2", "Cold War"] select { _x in _groups };
+if (_groups isEqualTo []) then { _groups = ["Any era"] };
 
 _display setVariable ["alive_propRows", _rows];
 _display setVariable ["alive_propGroups", _groups];
@@ -82,7 +84,7 @@ private _populate = {
     } forEach _sel;
     {
         _x params ["", "_label", "_data", "_grp"];
-        if (_all || {_grp == _g}) then {
+        if (_all || {_grp in [_g, "Any era"]}) then {
             private _i = _list lbAdd _label;
             _list lbSetData [_i, _data];
             if (_data in _sel) then { _list lbSetSelected [_i, true] };
