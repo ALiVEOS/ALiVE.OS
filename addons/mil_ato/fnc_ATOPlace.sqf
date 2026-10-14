@@ -2659,6 +2659,7 @@ switch(_operation) do {
         private _consumed = [];
         private _rehomed = [];
         private _unplaceable = [];
+        private _dropped = [];
 
         [_surface, "clearReservations"] call ALIVE_fnc_ATOSurface;
         [_logic] call _fnc_reserveHomes;
@@ -2707,12 +2708,23 @@ switch(_operation) do {
                         [_ledger, "setAdmission", [_tail, _roles, _caps]] call ALIVE_fnc_ATOLedger;
                     } else {
                         private _saved = [_rec, "roles", []] call ALIVE_fnc_hashGet;
+                        // Re-checked on load: a class the game no longer has, or a drone on a commander
+                        // with drones now turned off, is retired from the roster rather than rescued by
+                        // the roles it was saved with. Marked unplaceable it was retried, and logged
+                        // again, on every load for good.
+                        if (!(isClass (configFile >> "CfgVehicles" >> _class)) || {(_admitWhy find "drones are turned off") == 0}) then {
+                            [_ledger, "retire", [_tail, _admitWhy]] call ALIVE_fnc_ATOLedger;
+                            _dropped pushBack _tail;
+                            _skip = true;
+                            ["ALIVE_fnc_ATOPlace - restore dropped %1 (%2): %3", _tail, _class, _admitWhy] call ALiVE_fnc_dumpR;
+                        } else {
                         if (_saved isEqualType [] && {count _saved > 0}) then {
                             ["ALIVE_fnc_ATOPlace - %1 (%2) fails class-only admission (%3) but carries roles %4 from its adoption; kept, with its class's roles %5",
                                 _tail, _class, _admitWhy, _saved, _roles] call ALiVE_fnc_dump;
                             [_ledger, "setAdmission", [_tail, _roles, _caps]] call ALIVE_fnc_ATOLedger;
                         } else {
                             _why = format ["no longer admissible: %1", _admitWhy];
+                        };
                         };
                     };
                 };
@@ -2848,8 +2860,8 @@ switch(_operation) do {
         // A restore is a placement pass; the Tasker holds requests until one
         // has happened.
         [_logic, "firstPassDone", true] call ALIVE_fnc_hashSet;
-        ["ALIVE_fnc_ATOPlace - restore: %1 placed, %2 consumed, %3 rehomed, %4 unplaceable, %5 pending legacy",
-            count _placed, count _consumed, count _rehomed, count _unplaceable, count _pending] call ALiVE_fnc_dump;
+        ["ALIVE_fnc_ATOPlace - restore: %1 placed, %2 consumed, %3 rehomed, %4 unplaceable, %5 pending legacy, %6 dropped",
+            count _placed, count _consumed, count _rehomed, count _unplaceable, count _pending, count _dropped] call ALiVE_fnc_dump;
         _result = [_placed, _consumed, _rehomed, _unplaceable];
     };
 

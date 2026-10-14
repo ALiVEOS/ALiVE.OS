@@ -313,6 +313,40 @@ can be made to say anything; a profile that is still registered cannot.
         } forEach ((_restored select 0) + (_restored select 1) + (_restored select 2));
     };
 
+    // --- a record the current settings no longer allow ------------------------
+    // A saved aircraft whose class the game no longer has (a mod taken out), or a
+    // drone on a commander with drones now turned off, is retired from the roster
+    // on load, whatever roles it was saved with, and is not tried again on the next
+    // load. A record that passes is placed as before.
+    private _place4 = [nil, "create"] call ALIVE_fnc_ATOPlace;
+    private _ledger4 = [nil, "create"] call ALIVE_fnc_ATOLedger;
+    [_place4, "configure", [
+        ["ledger", _ledger4], ["surface", _surface], ["effect", _effect],
+        ["side", "WEST"], ["faction", "BLU_F"], ["factions", ["BLU_F"]], ["useUAVs", false],
+        ["base", [[["center", _anchor], ["isCarrier", false], ["airspace", ""]]] call ALIVE_fnc_hashCreate]
+    ]] call ALIVE_fnc_ATOPlace;
+    private _gone = [_ledger4, "createRecord", ["ALiVE_Test_NoSuchAircraft", "BLU_F", [""], [["Attack"], ["CAS"]]]] call ALIVE_fnc_ATOLedger;
+    private _drone = [_ledger4, "createRecord", ["B_UAV_02_dynamicLoadout_F", "BLU_F", [""], [["Attack"], ["CAS"]]]] call ALIVE_fnc_ATOLedger;
+    private _fine = [_ledger4, "createRecord", ["B_Heli_Attack_01_F", "BLU_F", [""], [["Attack"], ["CAS"]]]] call ALIVE_fnc_ATOLedger;
+    private _fineHome = [_surface, "cascade", ["terrain", "B_Heli_Attack_01_F", _anchor, []]] call ALIVE_fnc_ATOSurface;
+    if (count _fineHome > 2) then { [_ledger4, "setHome", [_fine, _fineHome]] call ALIVE_fnc_ATOLedger };
+    { [_ledger4, "markPresent", _x] call ALIVE_fnc_ATOLedger } forEach [_gone, _drone, _fine];
+    private _r4 = [_place4, "restoreAll", []] call ALIVE_fnc_ATOPlace;
+    private _st = { [[_ledger4, "get", _this] call ALIVE_fnc_ATOLedger, "status", ""] call ALIVE_fnc_hashGet };
+    diag_log format ["  info  settings re-check on load: missing class '%1', drone '%2', fine '%3', restore %4", _gone call _st, _drone call _st, _fine call _st, _r4];
+    ["a saved aircraft whose class the game no longer has is retired on load", (_gone call _st) isEqualTo "retired"] call _fnc_check;
+    ["a saved drone is retired when drones are turned off", (_drone call _st) isEqualTo "retired"] call _fnc_check;
+    ["neither is listed as unplaceable, so neither is tried again", !(_gone in (_r4 select 3)) && {!(_drone in (_r4 select 3))}] call _fnc_check;
+    if (count _fineHome > 2) then {
+        ["a record the settings allow is still placed", _fine in ((_r4 select 0) + (_r4 select 2))] call _fnc_check;
+    };
+    private _r4b = [_place4, "restoreAll", []] call ALIVE_fnc_ATOPlace;
+    ["a second restore leaves the retired records alone", !(_gone in ((_r4b select 0) + (_r4b select 3))) && {!(_drone in ((_r4b select 0) + (_r4b select 3)))}] call _fnc_check;
+    {
+        private _o = [_place4, "objFor", _x] call ALIVE_fnc_ATOPlace;
+        if (!isNull _o) then { _made pushBack _o };
+    } forEach [_fine];
+
     // --- a lost record's roles are read again ---------------------------------
     // Its replacement inherits them, and the tasker reads a record's roles
     // before its class, so a campaign saved under older role rules must not
