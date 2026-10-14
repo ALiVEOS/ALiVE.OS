@@ -1,6 +1,33 @@
 //----------------------
 //Misc
 //----------------------
+// A support asset's own respawn time and limit (#1079), set on its CAS, Transport, Artillery or Ground
+// Transport module and kept in ALiVE_CS_respawnReg by kind and callsign; the Combat Support module's
+// values for an asset that sets none. _kind is "CAS", "TRANS", "ARTY" or "GROUND".
+NEO_fnc_respawnTime = {
+    params ["_kind", "_callsign", "_default"];
+    private _e = (missionNamespace getVariable ["ALiVE_CS_respawnReg", createHashMap]) getOrDefault [_kind + "|" + toUpper _callsign, [-1, -1]];
+    [_default, _e select 0] select ((_e select 0) >= 0)
+};
+// replacements left for it: its own count, or the shared one for its kind (below 0: no limit)
+NEO_fnc_respawnLeft = {
+    params ["_kind", "_callsign", "_global"];
+    private _e = (missionNamespace getVariable ["ALiVE_CS_respawnReg", createHashMap]) getOrDefault [_kind + "|" + toUpper _callsign, [-1, -1]];
+    if ((_e select 1) >= 0) then { _e select 1 } else { missionNamespace getVariable [_global, -1] }
+};
+// takes one replacement; false when none is left. Call unscheduled (inside isNil) so 2 losses close
+// together can't both take the last one
+NEO_fnc_respawnTake = {
+    params ["_kind", "_callsign", "_global"];
+    private _reg = missionNamespace getVariable ["ALiVE_CS_respawnReg", createHashMap];
+    private _key = _kind + "|" + toUpper _callsign;
+    private _e = _reg getOrDefault [_key, [-1, -1]];
+    if ((_e select 1) >= 0) exitWith {
+        if ((_e select 1) == 0) then { false } else { _reg set [_key, [_e select 0, (_e select 1) - 1]]; true }
+    };
+    private _left = missionNamespace getVariable [_global, -1];
+    if (_left == 0) then { false } else { missionNamespace setVariable [_global, _left - 1]; true }
+};
 NEO_fnc_smokeColor = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_smokeColor.sqf";
 NEO_fnc_messageBroadcast = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_messageBroadcast.sqf";
 NEO_fnc_callsignFix = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_callsignFix.sqf";

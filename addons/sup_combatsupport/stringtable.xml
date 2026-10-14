@@ -124,7 +124,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CS_RESPAWN_COMMENT">
-    <English>Time before a destroyed CAS, Transport or Artillery asset is replaced.</English>
+    <English>Seconds before a lost support asset is replaced, for every asset that doesn't set its own Respawn Time on its CAS, Transport, Artillery or Ground Transport module. 600 is 10 minutes.</English>
     <Chinese>被摧毀的 CAS、運輸或火砲資產被替補前的等待時間。</Chinese>
     <Chinesesimp>被摧毁的近距空中支援、运输或火炮单位被替补前所需的时间。</Chinesesimp>
     <Spanish>Tiempo antes de que un activo destruido de CAS, Transporte o Artillería sea reemplazado.</Spanish>
@@ -132,8 +132,20 @@
     <Portuguese>Tempo até que um ativo de CAS, Transporte ou Artilharia destruído seja substituído.</Portuguese>
     <Russian>Время до замены уничтоженного средства CAS, транспорта или артиллерии.</Russian>
 </Key>
+<Key ID="STR_ALIVE_CS_ASSET_RESPAWN_TIME">
+    <English>Respawn Time (s)</English>
+</Key>
+<Key ID="STR_ALIVE_CS_ASSET_RESPAWN_TIME_COMMENT">
+    <English>Seconds before this asset is replaced once lost. Leave empty to use the Combat Support module's Respawn Time.</English>
+</Key>
+<Key ID="STR_ALIVE_CS_ASSET_RESPAWN_LIMIT">
+    <English>Respawn Limit</English>
+</Key>
+<Key ID="STR_ALIVE_CS_ASSET_RESPAWN_LIMIT_COMMENT">
+    <English>How many times this asset is replaced, counted for this asset alone. Leave empty to share the Combat Support module's limit for its kind; 0 means it is never replaced.</English>
+</Key>
 <Key ID="STR_ALIVE_CS_RESPAWN">
-    <English>Respawn Time:</English>
+    <English>Respawn Time (s)</English>
     <Chinesesimp>支援间隔时间</Chinesesimp>
     <Spanish>Tiempo de reaparición:</Spanish>
 </Key>

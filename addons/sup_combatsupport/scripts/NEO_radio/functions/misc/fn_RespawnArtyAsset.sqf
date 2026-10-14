@@ -31,18 +31,18 @@ _rounds = _availableRounds;
 _roundsAvailable = [];
 
 //Exit if limit is reached
-if (ARTY_RESPAWN_LIMIT == 0) exitwith {
+if ((["ARTY", _callsign, "ARTY_RESPAWN_LIMIT"] call NEO_fnc_respawnLeft) == 0) exitwith {
     _replen = ["STR_ALIVE_CS_MSG_OUT_OF_ARTY"];
     [[player,_replen,"side",_side],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;
 };
 
 //Start respawning if not exited
-sleep _respawn;
+sleep (["ARTY", _callsign, _respawn] call NEO_fnc_respawnTime);
 // Checked again after the wait, and taken in the same unscheduled step: 2 batteries lost close
 // together both passed the check above, both took 1 off, and the limit went below 0, where it
 // never stopped anything again.
 private _outOfAssets = false;
-isNil { if (ARTY_RESPAWN_LIMIT == 0) then { _outOfAssets = true } else { ARTY_RESPAWN_LIMIT = ARTY_RESPAWN_LIMIT - 1 } };
+isNil { _outOfAssets = !(["ARTY", _callsign, "ARTY_RESPAWN_LIMIT"] call NEO_fnc_respawnTake) };
 if (_outOfAssets) exitwith {
     _replen = ["STR_ALIVE_CS_MSG_OUT_OF_ARTY"];
     [[player,_replen,"side",_side],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;

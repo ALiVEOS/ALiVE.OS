@@ -44,6 +44,8 @@ class CfgVehicles {
                         };
                         class cas_height : Edit { property = "ALiVE_sup_cas_cas_height"; displayName = "$STR_ALIVE_CAS_HEIGHT"; tooltip = "$STR_ALIVE_CAS_HEIGHT_DESC"; defaultValue = """0"""; };
                         class cas_code : Edit { property = "ALiVE_sup_cas_cas_code"; displayName = "$STR_ALIVE_CAS_CODE"; tooltip = "$STR_ALIVE_CAS_CODE_DESC"; defaultValue = """"""; };
+                        class cas_respawn_time : Edit { property = "ALiVE_sup_cas_cas_respawn_time"; displayName = "$STR_ALIVE_CS_ASSET_RESPAWN_TIME"; tooltip = "$STR_ALIVE_CS_ASSET_RESPAWN_TIME_COMMENT"; defaultValue = """"""; };
+                        class cas_respawn_limit : Edit { property = "ALiVE_sup_cas_cas_respawn_limit"; displayName = "$STR_ALIVE_CS_ASSET_RESPAWN_LIMIT"; tooltip = "$STR_ALIVE_CS_ASSET_RESPAWN_LIMIT_COMMENT"; defaultValue = """"""; };
                         class HDR_LOGISTICS : ALiVE_ModuleSubTitle { property = "ALiVE_sup_cas_HDR_LOGISTICS"; displayName = "LOGISTICS"; };
                         class cas_logistics : Combo
                         {

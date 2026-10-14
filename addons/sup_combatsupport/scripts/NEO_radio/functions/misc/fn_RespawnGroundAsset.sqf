@@ -11,7 +11,7 @@ params ["_veh", "_grp", "_callsign", "_pos", "_dir", "_type", "_respawn", "_code
 private _side = _veh getVariable ["NEO_groundSide", switch (getNumber (configFile >> "CfgVehicles" >> _type >> "side")) do { case 1: {WEST}; case 2: {RESISTANCE}; default {EAST} }];
 private _say = { [[player, _this, "side", _side], "NEO_fnc_messageBroadcast", true, false] spawn BIS_fnc_MP };
 
-if (GROUND_RESPAWN_LIMIT == 0) exitWith { ["STR_ALIVE_CS_MSG_OUT_OF_GROUND"] call _say };
+if ((["GROUND", _callsign, "GROUND_RESPAWN_LIMIT"] call NEO_fnc_respawnLeft) == 0) exitWith { ["STR_ALIVE_CS_MSG_OUT_OF_GROUND"] call _say };
 
 // off the tablet straight away
 {
@@ -20,9 +20,9 @@ if (GROUND_RESPAWN_LIMIT == 0) exitWith { ["STR_ALIVE_CS_MSG_OUT_OF_GROUND"] cal
     NEO_radioLogic setVariable [format ["NEO_radioGroundArray_%1", _x], _list, true];
 } forEach [WEST, EAST, RESISTANCE, CIVILIAN];
 
-sleep _respawn;
+sleep (["GROUND", _callsign, _respawn] call NEO_fnc_respawnTime);
 private _out = false;
-isNil { if (GROUND_RESPAWN_LIMIT == 0) then { _out = true } else { GROUND_RESPAWN_LIMIT = GROUND_RESPAWN_LIMIT - 1 } };
+isNil { _out = !(["GROUND", _callsign, "GROUND_RESPAWN_LIMIT"] call NEO_fnc_respawnTake) };
 if (_out) exitWith { ["STR_ALIVE_CS_MSG_OUT_OF_GROUND"] call _say };
 
 // a supply truck still working on it: let it finish or give up first

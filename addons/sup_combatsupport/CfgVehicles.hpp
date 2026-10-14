@@ -70,19 +70,13 @@ class CfgVehicles {
                         };
 
                         class HDR_RESPAWN : ALiVE_ModuleSubTitle { property = "ALiVE_sup_combatsupport_HDR_RESPAWN"; displayName = "ASSET REPLACEMENT"; };
-                        class combatsupport_respawn : Combo
+                        // a typed number of seconds since #1079; the old drop-down's 60/600/1200/1800 load into it as they are
+                        class combatsupport_respawn : Edit
                         {
                                 property = "ALiVE_sup_combatsupport_combatsupport_respawn";
                                 displayName = "$STR_ALIVE_CS_RESPAWN";
                                 tooltip = "$STR_ALIVE_CS_RESPAWN_COMMENT";
                                 defaultValue = """600""";
-                                class Values
-                                {
-                                    class RESPAWN_1 { name="1 Min"; value = 60; };
-                                    class RESPAWN_10 { name="10 Mins"; value = 600; default = 1; };
-                                    class RESPAWN_20 { name="20 Mins"; value = 1200; };
-                                    class RESPAWN_30 { name="30 Mins"; value = 1800; };
-                                };
                         };
                         class combatsupport_casrespawnlimit : Edit { property = "ALiVE_sup_combatsupport_combatsupport_casrespawnlimit"; displayName = "$STR_ALIVE_CAS_LIMIT"; tooltip = "$STR_ALIVE_CAS_LIMIT_COMMENT"; defaultValue = """3"""; };
                         class combatsupport_transportrespawnlimit : Edit { property = "ALiVE_sup_combatsupport_combatsupport_transportrespawnlimit"; displayName = "$STR_ALIVE_TRANS_LIMIT"; tooltip = "$STR_ALIVE_TRANS_LIMIT_COMMENT"; defaultValue = """3"""; };

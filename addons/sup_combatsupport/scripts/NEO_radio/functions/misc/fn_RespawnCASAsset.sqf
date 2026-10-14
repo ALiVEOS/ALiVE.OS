@@ -30,18 +30,18 @@ switch ((getNumber(configfile >> "CfgVehicles" >> _type >> "side"))) do {
 };
 
 //Exit if limit is reached
-if (CAS_RESPAWN_LIMIT == 0) exitwith {
+if ((["CAS", _callsign, "CAS_RESPAWN_LIMIT"] call NEO_fnc_respawnLeft) == 0) exitwith {
     _replen = ["STR_ALIVE_CS_MSG_OUT_OF_CAS"];
     [[player,_replen,"side",_side],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;
 };
 
 //Start respawning if not exited
-sleep _respawn;
+sleep (["CAS", _callsign, _respawn] call NEO_fnc_respawnTime);
 // Checked again after the wait, and taken in the same unscheduled step: 2 aircraft lost close
 // together both passed the check above, both took 1 off, and the limit went below 0, where it
 // never stopped anything again.
 private _outOfAssets = false;
-isNil { if (CAS_RESPAWN_LIMIT == 0) then { _outOfAssets = true } else { CAS_RESPAWN_LIMIT = CAS_RESPAWN_LIMIT - 1 } };
+isNil { _outOfAssets = !(["CAS", _callsign, "CAS_RESPAWN_LIMIT"] call NEO_fnc_respawnTake) };
 if (_outOfAssets) exitwith {
     _replen = ["STR_ALIVE_CS_MSG_OUT_OF_CAS"];
     [[player,_replen,"side",_side],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;

@@ -84,6 +84,9 @@ switch(_operation) do {
                         // script-created modules respawn destroyed assets after 3 SECONDS
                         _CS_Set_Respawn = NEO_radioLogic getvariable ["combatsupport_respawn","600"];
                         CS_RESPAWN = parsenumber(_CS_Set_Respawn);
+                        // typed since #1079: a blank or nonsense value keeps the old default
+                        if (CS_RESPAWN <= 0) then { CS_RESPAWN = 600 };
+                        if (isNil "ALiVE_CS_respawnReg") then { ALiVE_CS_respawnReg = createHashMap };
                         // A blank limit means no limit, as a negative one already did (it counts down
                         // and never reaches 0): read as 0, blank turned replacement off.
                         _CAS_SET_RESPAWN_LIMIT = NEO_radioLogic getvariable ["combatsupport_casrespawnlimit","3"];
@@ -333,6 +336,18 @@ switch(_operation) do {
                                 };
                             };
 
+                            // a support module's own Respawn Time and Respawn Limit (#1079), by kind and callsign
+                            private _csMod = (synchronizedObjects _logic) select _i;
+                            private _csKind = ["alive_sup_cas", "alive_sup_transport", "alive_sup_ground", "alive_sup_artillery"] find toLower typeOf _csMod;
+                            if (_csKind >= 0) then {
+                                private _pre = ["cas", "transport", "ground", "artillery"] select _csKind;
+                                private _num = { params ["_v"]; if (_v isEqualType 0) exitWith { _v }; if (_v isEqualType "" && {(_v trim [" ", 0]) != ""}) exitWith { parseNumber _v }; -1 };
+                                private _rt = [_csMod getVariable [_pre + "_respawn_time", ""]] call _num;
+                                private _rl = [_csMod getVariable [_pre + "_respawn_limit", ""]] call _num;
+                                if (_rt >= 0 || {_rl >= 0}) then {
+                                    ALiVE_CS_respawnReg set [(["CAS", "TRANS", "GROUND", "ARTY"] select _csKind) + "|" + toUpper (_csMod getVariable [_pre + "_callsign", ""]), [[-1, _rt] select (_rt > 0), _rl]];
+                                };
+                            };
                             switch (typeOf ((synchronizedObjects _logic) select _i)) do {
                                 case ("ALiVE_sup_cas") : {
                                     private ["_position","_callsign","_type"];

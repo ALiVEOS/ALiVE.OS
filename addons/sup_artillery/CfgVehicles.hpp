@@ -66,6 +66,8 @@ class CfgVehicles {
                         class artillery_atmine : Edit { property = "ALiVE_sup_artillery_artillery_atmine"; displayName = "$STR_ALIVE_ARTILLERY_ATMINE"; tooltip = "$STR_ALIVE_ARTILLERY_ATMINE_DESC"; defaultValue = """30"""; };
                         class artillery_rockets : Edit { property = "ALiVE_sup_artillery_artillery_rockets"; displayName = "$STR_ALIVE_ARTILLERY_ROCKETS"; tooltip = "$STR_ALIVE_ARTILLERY_ROCKETS_DESC"; defaultValue = """16"""; };
                         class artillery_code : Edit { property = "ALiVE_sup_artillery_artillery_code"; displayName = "$STR_ALIVE_ARTILLERY_CODE"; tooltip = "$STR_ALIVE_ARTILLERY_CODE_DESC"; defaultValue = """"""; };
+                        class artillery_respawn_time : Edit { property = "ALiVE_sup_artillery_artillery_respawn_time"; displayName = "$STR_ALIVE_CS_ASSET_RESPAWN_TIME"; tooltip = "$STR_ALIVE_CS_ASSET_RESPAWN_TIME_COMMENT"; defaultValue = """"""; };
+                        class artillery_respawn_limit : Edit { property = "ALiVE_sup_artillery_artillery_respawn_limit"; displayName = "$STR_ALIVE_CS_ASSET_RESPAWN_LIMIT"; tooltip = "$STR_ALIVE_CS_ASSET_RESPAWN_LIMIT_COMMENT"; defaultValue = """"""; };
                         class HDR_LOGISTICS : ALiVE_ModuleSubTitle { property = "ALiVE_sup_artillery_HDR_LOGISTICS"; displayName = "LOGISTICS"; };
                         class artillery_logistics : Combo
                         {
