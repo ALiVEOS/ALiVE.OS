@@ -5,7 +5,10 @@ SCRIPT(taskVIPEscort);
 Function: ALIVE_fnc_taskVIPEscort
 
 Description:
-Escort a civilian VIP to destination and safely return them.
+Escort a civilian VIP to destination and safely return them. At the destination the VIP leaves the
+group and gets on with what they came to do while the players hold the area for Civic Hold Time
+(ALIVE_fnc_taskCivicHold, #1082), then rejoins them for the trip back. The VIP dying, or the players
+leaving the area while the VIP works, fails the task.
 
 Author:
 Javen
@@ -517,16 +520,48 @@ switch (_taskState) do {
                 [_params] call _cleanupObjects;
             } else {
                 if (_panicState == "ready") then {
-                    [_vip, _taskPlayers] call _syncVipEscortState;
+                    // At the destination the VIP leaves the group and works for Civic Hold Time while the
+                    // players hold the area (#1082); 0 seconds goes straight on to the return as before
+                    private _spot = _vip getVariable ["ALIVE_Task_VIPWorkSpot", []];
+                    if (_spot isEqualTo []) then { [_vip, _taskPlayers] call _syncVipEscortState };
 
-                    if (_vip distance2D _taskPosition <= 30) then {
-                    [_params, "nextTask", ([_params, "taskIDs"] call ALIVE_fnc_hashGet) select 3] call ALIVE_fnc_hashSet;
+                    if (_spot isNotEqualTo [] || {_vip distance2D _taskPosition <= 30}) then {
+                        private _hold = missionNamespace getVariable ["ALIVE_civicHoldDuration", 120];
+                        if (_spot isEqualTo [] && {_hold > 0}) then {
+                            _spot = [_taskPosition, 0, 15, 1, 0, 0.3, 0] call BIS_fnc_findSafePos;
+                            if (_spot isEqualTo [] || {(_spot distance2D _taskPosition) > 40}) then { _spot = +_taskPosition };
+                            _vip setVariable ["ALIVE_Task_VIPWorkSpot", _spot];
+                            if (vehicle _vip != _vip) then { unassignVehicle _vip; moveOut _vip };
+                            [_vip] joinSilent (createGroup [civilian, true]);
+                            [_vip, _spot] call ALiVE_fnc_doMoveRemote;
+                            ["Task Update", format ["The VIP is getting to work in %1. Hold the area until they're done.", _vip getVariable ["ALIVE_Task_VIPDestinationTown", "the town"]]] remoteExec ["ALIVE_fnc_taskSubtitle", [_taskSide] call ALIVE_fnc_sideTextToObject];
+                        };
+                        // a VIP that ran off from gunfire goes back to the work
+                        if (_spot isNotEqualTo [] && {vehicle _vip == _vip} && {_vip distance2D _spot > 5}) then { [_vip, _spot] call ALiVE_fnc_doMoveRemote };
 
-                    _task set [8, "Succeeded"];
-                    _task set [10, "N"];
-                    _result = _task;
+                        private _done = [_params, _taskPosition, _taskSide] call ALIVE_fnc_taskCivicHold;
+                        if ([_params, "holdFailed", false] call ALIVE_fnc_hashGet) then {
+                            [_params, "nextTask", ""] call ALIVE_fnc_hashSet;
+                            _task set [8, "Failed"];
+                            _task set [10, "N"];
+                            _result = _task;
 
-                    [_taskPlayers, _taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
+                            [_taskPlayers, _taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
+                            ["chat_failed", _currentTaskDialog, _taskSide, _taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
+                            [_params, _taskPosition, _taskSide] call _applyFailurePopulationEffect;
+                            [_params] call _cleanupObjects;
+                        } else {
+                            if (_done) then {
+                                _vip setVariable ["ALIVE_Task_VIPWorkSpot", nil];
+                                [_params, "nextTask", ([_params, "taskIDs"] call ALIVE_fnc_hashGet) select 3] call ALIVE_fnc_hashSet;
+
+                                _task set [8, "Succeeded"];
+                                _task set [10, "N"];
+                                _result = _task;
+
+                                [_taskPlayers, _taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
+                            };
+                        };
                     };
                 };
             };
