@@ -89,7 +89,17 @@ class CfgVehicles
                                     class FP200 { name = "$STR_ALIVE_ML_FORCE_POOL_200"; value = "200"; };
                                     class FP100 { name = "$STR_ALIVE_ML_FORCE_POOL_100"; value = "100"; };
                                     class FP50 { name = "$STR_ALIVE_ML_FORCE_POOL_50"; value = "50"; };
+                                    class Typed { name = "$STR_ALIVE_ML_FORCE_POOL_TYPED"; value = "-2"; };
                                 };
+                        };
+                        // #1083: the pool typed in, when Force Pool is set to Typed
+                        class forcePoolTyped : Edit
+                        {
+                                property = "ALiVE_mil_logistics_forcePoolTyped";
+                                displayName = "$STR_ALIVE_ML_FORCE_POOL_TYPED_VALUE";
+                                tooltip = "$STR_ALIVE_ML_FORCE_POOL_TYPED_VALUE_COMMENT";
+                                defaultValue = """1000""";
+                                typeName = "NUMBER";
                         };
                         // #263 - generate C2ISTAR protect/ambush tasks that ride real resupply convoys (opt-in)
                         class generateConvoyTasks : Combo

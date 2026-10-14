@@ -2,6 +2,15 @@
 <Project name="Arma3">
 <Package name="ALiVE">
 <Container name="STR_DN">
+<Key ID="STR_ALIVE_ML_FORCE_POOL_TYPED">
+    <English>Typed (set below)</English>
+</Key>
+<Key ID="STR_ALIVE_ML_FORCE_POOL_TYPED_VALUE">
+    <English>Force Pool (typed):</English>
+</Key>
+<Key ID="STR_ALIVE_ML_FORCE_POOL_TYPED_VALUE_COMMENT">
+    <English>The force pool to start with when Force Pool is set to Typed: any number, 0 or more. Ignored for the other Force Pool choices.</English>
+</Key>
 <Key ID="STR_ALIVE_ML_ON_EACH_SPAWN">
     <English>On unit spawn (SQF):</English>
 </Key>

@@ -4222,9 +4222,16 @@ switch(_operation) do {
                 _forcePool = parseNumber _forcePool;
             };
 
-            if(_forcePool == 10) then {
-                [_logic, "forcePool", 1000] call MAINCLASS;
-                [_logic, "forcePoolType", "DYNAMIC"] call MAINCLASS;
+            // Typed (#1083): the pool is the number typed in Force Pool (typed), and a typed 10 is a pool
+            // of 10, not the Dynamic choice's 10
+            if (_forcePool == -2) then {
+                _forcePool = (parseNumber format ["%1", _logic getVariable ["forcePoolTyped", 1000]]) max 0;
+                [_logic, "forcePool", _forcePool] call MAINCLASS;
+            } else {
+                if(_forcePool == 10) then {
+                    [_logic, "forcePool", 1000] call MAINCLASS;
+                    [_logic, "forcePoolType", "DYNAMIC"] call MAINCLASS;
+                };
             };
 
             _allowInfantry = [_logic, "allowInfantryReinforcement"] call MAINCLASS;
