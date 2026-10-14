@@ -110,7 +110,9 @@ private _populate = {
     } forEach _sel;
     {
         _x params ["", "_label", "_data", "_s"];
-        if (_all || {_s == _side}) then {
+        // Find (#1083)
+        private _q = _display getVariable ["alive_searchText", ""];
+        if ((_all || {_s == _side}) && {_q isEqualTo "" || {((toLower (_label + " " + _data)) find _q) >= 0}}) then {
             private _i = _list lbAdd _label;
             _list lbSetData [_i, _data];
             if (_data in _sel) then { _list lbSetSelected [_i, true] };
@@ -123,6 +125,7 @@ private _populate = {
     _display setVariable ["alive_populating", false];
 };
 _display setVariable ["alive_populateFn", _populate];
+_display setVariable ["alive_searchable", true];
 [_display] call _populate;
 
 _list setVariable ["alive_disp", _display];

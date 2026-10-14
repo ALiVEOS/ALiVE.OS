@@ -404,7 +404,10 @@ private _populateFn = {
         private _passCat    = _catLocked || (_cFilt == "All") || (_category == _cFilt);
         private _passSource = (_mFilt == "All") || (_source   == _mFilt);
 
-        if (_passSide && _passSize && _passCat && _passSource) then {
+        // Find (#1083)
+        private _q = _disp getVariable ["alive_searchText", ""];
+        private _passFind = _q isEqualTo "" || {((toLower format ["%1 %2 %3", _class, _dispName, _source]) find _q) >= 0};
+        if (_passSide && _passSize && _passCat && _passSource && _passFind) then {
             private _sizeLabel = if (_size == "") then { "?" } else { _size };
             private _label = if (_dispName != _class) then {
                 format ["%1 [%2/%3] (%4) {%5}", _dispName, _side, _sizeLabel, _class, _source]
@@ -443,6 +446,8 @@ private _populateFn = {
 
 // Initial population (All/All/All).
 [_display] call _populateFn;
+_display setVariable ["alive_populateFn", _populateFn];
+_display setVariable ["alive_searchable", true];
 
 // Override-Edit pre-fill: any saved class not in _allComps goes here.
 // Saved entries can be qualified (`class|category|size`) or legacy

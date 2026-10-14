@@ -245,6 +245,9 @@ private _populateFn = {
     private _matched = if (_filter == "All") then { _all } else {
         _all select { (_x select 3) == _filter }
     };
+    // Find (#1083)
+    private _q = _disp getVariable ["alive_searchText", ""];
+    if !(_q isEqualTo "") then { _matched = _matched select { ((toLower format ["%1 %2 %3", _x select 0, _x select 1, _x select 5]) find _q) >= 0 } };
 
     // Group by source mod, alphabetical within
     private _sources = [];
@@ -279,6 +282,8 @@ private _populateFn = {
 };
 
 [_display] call _populateFn;
+_display setVariable ["alive_populateFn", _populateFn];
+_display setVariable ["alive_searchable", true];
 
 // Override Edit pre-fill: nothing (unrecognised entries surface in
 // listbox); user types new mod classes here for missing entries

@@ -425,6 +425,7 @@ private _populateFn = {
     private _sideVals   = _disp getVariable ["alive_sideValues", [-2]];
     private _sIdx       = _disp getVariable ["alive_sideIdx", 0];
     private _sideTarget = _sideVals select _sIdx;  // -2 = no side filter
+    private _q = _disp getVariable ["alive_searchText", ""];   // Find (#1083)
     private _list = _disp controlsGroupCtrl 100;
     if (isNull _list) exitWith {};
 
@@ -463,7 +464,7 @@ private _populateFn = {
             private _sideForClass = _classToSideMap getOrDefault [toLower (_entry select 0), -1];
             _sideForClass == _sideTarget
         };
-        _catOk && _sideOk
+        _catOk && _sideOk && {_q isEqualTo "" || {((toLower format ["%1 %2 %3", _entry select 0, _entry select 1, _entry select 2]) find _q) >= 0}}
     };
 
     // Group by mod label, alphabetical within each
@@ -505,6 +506,8 @@ private _populateFn = {
 
 // Initial populate
 [_display] call _populateFn;
+_display setVariable ["alive_populateFn", _populateFn];
+_display setVariable ["alive_searchable", true];
 
 // Override Edit starts empty - unrecognised entries surface in the
 // listbox top row instead. The Edit is the user's input slot for

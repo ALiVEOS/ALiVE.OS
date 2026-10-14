@@ -1110,6 +1110,47 @@ class Cfg3DEN
                     autocomplete = "";
                     canModify = 1;
                 };
+
+                // Find (#1083): typing narrows the list to the rows whose text has it in it. It sits just
+                // below the picker's bottom edge, so it is clipped out of sight until a picker that can
+                // filter shows it (fnc_edenListToggle.sqf grows the picker to take it in).
+                class FindLabel: ctrlStatic {
+                    idc      = 105;
+                    type     = 0;
+                    style    = 1;
+                    show     = 0;
+                    x        = 0;
+                    y        = "36 * (pixelH * pixelGrid * 0.5)";
+                    w        = "48 * (pixelW * pixelGrid * 0.5)";
+                    h        = "5 * (pixelH * pixelGrid * 0.5)";
+                    colorBackground[] = {0, 0, 0, 0};
+                    colorText[]       = {1, 1, 1, 0.7};
+                    text     = "$STR_ALIVE_EDEN_PICK_FIND";
+                    font     = "RobotoCondensed";
+                    sizeEx   = "pixelH * pixelGrid * 2.2";
+                    tooltip  = "$STR_ALIVE_EDEN_PICK_FIND_COMMENT";
+                };
+
+                class Find: ctrlEdit {
+                    idc      = 104;
+                    type     = 2;
+                    style    = 0;
+                    show     = 0;
+                    x        = "48 * (pixelW * pixelGrid * 0.5)";
+                    y        = "36 * (pixelH * pixelGrid * 0.5)";
+                    w        = "82 * (pixelW * pixelGrid * 0.5)";
+                    h        = "5 * (pixelH * pixelGrid * 0.5)";
+                    text     = "";
+                    tooltip  = "$STR_ALIVE_EDEN_PICK_FIND_COMMENT";
+                    colorBackground[] = {0, 0, 0, 0.5};
+                    colorText[]       = {1, 1, 1, 1};
+                    colorSelection[]  = {1, 0.62, 0, 0.6};
+                    colorDisabled[]   = {1, 1, 1, 0.25};
+                    font     = "RobotoCondensed";
+                    sizeEx   = "pixelH * pixelGrid * 1.8";
+                    autocomplete = "";
+                    canModify = 1;
+                };
             };
         };
 
@@ -1959,6 +2000,47 @@ class Cfg3DEN
                     w        = "82 * (pixelW * pixelGrid * 0.5)";
                     h        = "5 * (pixelH * pixelGrid * 0.5)";
                     text     = "";
+                    colorBackground[] = {0, 0, 0, 0.5};
+                    colorText[]       = {1, 1, 1, 1};
+                    colorSelection[]  = {1, 0.62, 0, 0.6};
+                    colorDisabled[]   = {1, 1, 1, 0.25};
+                    font     = "RobotoCondensed";
+                    sizeEx   = "pixelH * pixelGrid * 1.8";
+                    autocomplete = "";
+                    canModify = 1;
+                };
+
+                // Find (#1083): typing narrows the list to the rows whose text has it in it. It sits just
+                // below the picker's bottom edge, so it is clipped out of sight until a picker that can
+                // filter shows it (fnc_edenListToggle.sqf grows the picker to take it in).
+                class FindLabel: ctrlStatic {
+                    idc      = 105;
+                    type     = 0;
+                    style    = 1;
+                    show     = 0;
+                    x        = 0;
+                    y        = "46 * (pixelH * pixelGrid * 0.5)";
+                    w        = "48 * (pixelW * pixelGrid * 0.5)";
+                    h        = "5 * (pixelH * pixelGrid * 0.5)";
+                    colorBackground[] = {0, 0, 0, 0};
+                    colorText[]       = {1, 1, 1, 0.7};
+                    text     = "$STR_ALIVE_EDEN_PICK_FIND";
+                    font     = "RobotoCondensed";
+                    sizeEx   = "pixelH * pixelGrid * 2.2";
+                    tooltip  = "$STR_ALIVE_EDEN_PICK_FIND_COMMENT";
+                };
+
+                class Find: ctrlEdit {
+                    idc      = 104;
+                    type     = 2;
+                    style    = 0;
+                    show     = 0;
+                    x        = "48 * (pixelW * pixelGrid * 0.5)";
+                    y        = "46 * (pixelH * pixelGrid * 0.5)";
+                    w        = "82 * (pixelW * pixelGrid * 0.5)";
+                    h        = "5 * (pixelH * pixelGrid * 0.5)";
+                    text     = "";
+                    tooltip  = "$STR_ALIVE_EDEN_PICK_FIND_COMMENT";
                     colorBackground[] = {0, 0, 0, 0.5};
                     colorText[]       = {1, 1, 1, 1};
                     colorSelection[]  = {1, 0.62, 0, 0.6};

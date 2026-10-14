@@ -52,6 +52,39 @@ if (_rows isEqualType 0 && {_rows > 4}) then {
     _grp ctrlCommit 0;
 };
 
+// Find (#1083): a picker that can refill its list by text (it sets alive_searchable and keeps its
+// ticks off the list, so a row the search hides keeps its tick) gets the Find row, which sits just
+// below its bottom edge until now. Typing refills the list through the picker's own populate.
+private _grpF = ctrlParentControlsGroup _list;
+private _find = _grpF controlsGroupCtrl 104;
+if (!isNull _find && {_grpF getVariable ["alive_searchable", false]} && {!isNil {_grpF getVariable "alive_populateFn"}}) then {
+    private _rowH = 5 * pixelH * pixelGrid * 0.5;
+    private _gp = ctrlPosition _grpF;
+    {
+        private _c = _grpF controlsGroupCtrl _x;
+        private _p = ctrlPosition _c;
+        _p set [1, _gp select 3];
+        _c ctrlSetPosition _p;
+        _c ctrlShow true;
+        _c ctrlCommit 0;
+    } forEach [104, 105];
+    _gp set [3, (_gp select 3) + _rowH];
+    _grpF ctrlSetPosition _gp;
+    _grpF ctrlCommit 0;
+    _find setVariable ["alive_grp", _grpF];
+    _find setVariable ["alive_list", _list];
+    _find ctrlAddEventHandler ["KeyUp", {
+        params ["_e"];
+        private _g = _e getVariable "alive_grp";
+        private _q = toLower (ctrlText _e);
+        if (_q isEqualTo (_g getVariable ["alive_searchText", ""])) exitWith {};
+        _g setVariable ["alive_searchText", _q];
+        [_g] call (_g getVariable "alive_populateFn");
+        private _l = _e getVariable "alive_list";
+        [_l] call (_l getVariable "alive_toggleMark");
+    }];
+};
+
 // a row's identity: its data, or its index when it has none
 private _key = { params ["_c", "_i"]; private _d = _c lbData _i; if (_d isEqualTo "") then { "#" + str _i } else { _d } };
 // "[+] " on the ticked rows, off the others
