@@ -1249,8 +1249,11 @@ if (count _found == 0 && _wideAirframe && {_preference in ["auto", "apron", "fie
     private _openDir = if (_runwayHeading >= 0) then { _runwayHeading } else { random 360 };
     for "_i" from 1 to 500 do {
         if (count _found > 0) exitWith {};
-        private _radius = (_maxDistance * ((_i - 1) / 499)) min _maxDistance;
-        private _pos = _centerPos getPos [_radius, random 360];
+        // Eight bearings, one per 45-degree sector, at each distance before it
+        // grows: one random bearing per distance could still miss open ground
+        // 60 m away and answer 300 m out.
+        private _radius = (_maxDistance * ((floor ((_i - 1) / 8)) / 62)) min _maxDistance;
+        private _pos = _centerPos getPos [_radius, (((_i - 1) mod 8) * 45) + (random 45)];
         // Whole footprint off pavement and off road - the decisive test.
         if !([_pos] call _fnc_footprintOffPavement) then { continue };
         // Slope / clear-around, identical to the field tier so behaviour matches.
@@ -1365,9 +1368,11 @@ if (count _found == 0 && {_preference in ["auto", "field"]}) then {
     // names. Reject what an aircraft genuinely should not sit on and let the
     // slope and footprint checks below do the real work.
     private _surfaceBlocked = ["beach", "sand", "mud", "seabed", "swamp", "water"];
+    // Nearest first, eight bearings per distance, as tier 2.5 does: a random
+    // distance per try sent a Blackfish 380 m out with clear ground 60 m away.
     for "_i" from 1 to 500 do {
         if (count _found > 0) exitWith {};
-        private _pos = _centerPos getPos [random _maxDistance, random 360];
+        private _pos = _centerPos getPos [(_maxDistance * ((floor ((_i - 1) / 8)) / 62)) min _maxDistance, (((_i - 1) mod 8) * 45) + (random 45)];
         private _surface = toLower (surfaceType _pos);
         if ((_surface select [0, 1]) == "#") then { _surface = _surface select [1] };
         if (_surfaceBlocked findIf {_surface find _x > -1} > -1) then { continue };

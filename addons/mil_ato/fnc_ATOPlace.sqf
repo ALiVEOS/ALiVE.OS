@@ -1438,7 +1438,10 @@ switch(_operation) do {
             if ([_baseHash] call ALIVE_fnc_isHash
                 && {!([_baseHash, "isVirtual", false] call ALIVE_fnc_hashGet)}
             ) then {
-                private _bp = [_baseHash, "basePos", [0,0,0]] call ALIVE_fnc_hashGet;
+                // "center": the base hash Placement is given (fnc_ATOBase) has no
+                // "basePos", and reading that key left every adopted aircraft at
+                // whatever spot it was placed on.
+                private _bp = [_baseHash, "center", [0,0,0]] call ALIVE_fnc_hashGet;
                 if (_bp isEqualType [] && {count _bp >= 2} && {!(_bp isEqualTo [0,0,0])}) then {
                     _anchor = [_bp select 0, _bp select 1, 0];
                     _preferAirfield = true;

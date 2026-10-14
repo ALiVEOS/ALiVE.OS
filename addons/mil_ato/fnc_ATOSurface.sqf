@@ -68,7 +68,9 @@ Jman
 
 // Trees, rocks, walls and forest borders are what a spot away from the apron
 // actually runs into. The object sweep does not see terrain-placed clutter.
-#define CLUTTER ["TREE","SMALL TREE","BUSH","FOREST","FOREST BORDER","ROCK","ROCKS","WALL","FENCE","BUILDING","HOUSE","RUIN","POWER LINES"]
+// No BUSH: a bush is soft and harms nothing parked over it, and refusing one anywhere in the span turned down 8 of
+// 9 open-ground spots the stand search offered a Blackfish on Stratis (a ficus within 23 m), which then got no home.
+#define CLUTTER ["TREE","SMALL TREE","FOREST","FOREST BORDER","ROCK","ROCKS","WALL","FENCE","BUILDING","HOUSE","RUIN","POWER LINES"]
 
 // Built things big enough that their walls reach ground their origin does not,
 // measured by their real footprint rather than by where their origin is. The
@@ -1033,11 +1035,28 @@ switch(_operation) do {
             // departure. For those only, ask again with no courtesy room, then
             // over a wider area. Ordinary airframes keep the two rungs above
             // because these searches are not cheap.
+            // An answer is only kept if it passes the same test as below. The
+            // search hands out a different spot each call (it registers the last
+            // one), so a refused answer is asked again rather than dropped to the
+            // rings: a busy airfield refused the one answer and two Blackfish on
+            // StartisTest got no home at all.
             if (count _air < 2 && {_wide}) then {
-                _air = [_class, _anchor, 400, "field", objNull, "", [], 0] call ALiVE_fnc_findAirSpawnPosition;
-                if (count _air < 2) then {
-                    _air = [_class, _anchor, 600, "field", objNull, "", [], 0] call ALiVE_fnc_findAirSpawnPosition;
-                };
+                {
+                    private _r = _x;
+                    for "_try" from 1 to 4 do {
+                        if (count _air < 2) then {
+                            private _w = [_class, _anchor, _r, "field", objNull, "", [], 0] call ALiVE_fnc_findAirSpawnPosition;
+                            if (count _w >= 2) then {
+                                private _wp = +(_w select 0);
+                                _wp set [2, 0];
+                                if (((_reserved findIf { (_wp distance2D (_x select 0)) < (_span + ((_x select 1) max 0)) }) < 0)
+                                    && {[_logic, "spotIsClear", [_wp, _span, [], _class]] call MAINCLASS}) then {
+                                    _air = _w;
+                                };
+                            };
+                        };
+                    };
+                } forEach [400, 600];
             };
         };
 
