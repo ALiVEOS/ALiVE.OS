@@ -2105,6 +2105,12 @@
     <Russian>Множитель, применяемый к потере услуг от проваленных задач Сердца и умы. На потерю услуг от ответных действий повстанцев не влияет.</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_C2ISTAR_AID_AIRLIFT">
+    <English>Aid Airlift Chance (%)</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_AID_AIRLIFT_COMMENT">
+    <English>The share of Aid Delivery tasks where the relief comes as a supply crate to sling-load under a helicopter (or carry in a vehicle) instead of a van. An Aid Delivery whose pickup has no road nearby is always an airlift. 0 keeps the van everywhere else.</English>
+</Key>
 <Key ID="STR_ALIVE_C2ISTAR_CIVIC_HOLD">
     <English>Civic Hold Time (s)</English>
 </Key>

@@ -1653,6 +1653,10 @@ if (isServer) then {
         private _civicHold = _logic getVariable ["civicHoldDuration", 120];
         if (_civicHold isEqualType "") then { _civicHold = parseNumber _civicHold };
         missionNamespace setVariable ["ALIVE_civicHoldDuration", (_civicHold max 0), true];
+        // Aid Airlift Chance: the share of Aid Delivery tasks flown in as a sling-loaded crate
+        private _airliftChance = _logic getVariable ["aidAirliftChance", 0];
+        if (_airliftChance isEqualType "") then { _airliftChance = parseNumber _airliftChance };
+        missionNamespace setVariable ["ALIVE_aidAirliftChance", (_airliftChance max 0) min 100, true];
         missionNamespace setVariable ["ALIVE_civicDuplicateTaskPenalty", ((_civicDuplicateTaskPenalty max 0) min 1), true];
         missionNamespace setVariable ["ALIVE_civicDebugIntel", _civicDebugIntel, true];
         missionNamespace setVariable ["ALIVE_civicEnabledTaskFamilies", _civicEnabledTaskFamilies];

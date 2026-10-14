@@ -378,6 +378,14 @@ class CfgVehicles {
                             defaultValue = """1""";
                             typeName = "NUMBER";
                     };
+                    class aidAirliftChance : Edit
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_aidAirliftChance";
+                            displayName = "$STR_ALIVE_C2ISTAR_AID_AIRLIFT";
+                            tooltip = "$STR_ALIVE_C2ISTAR_AID_AIRLIFT_COMMENT";
+                            defaultValue = """0""";
+                            typeName = "NUMBER";
+                    };
                     class civicHoldDuration : Edit
                     {
                             property = "ALiVE_MIL_C2ISTAR_civicHoldDuration";

@@ -148,6 +148,18 @@ switch (_taskState) do {
         };
         _aidVehiclePosition set [2, 0];
 
+        // Airlift (spooked on Discord, 13 Oct): the relief comes as a supply crate a helicopter
+        // sling-loads (or a vehicle carries) instead of the van. Always when the van finds no road
+        // near the pickup, as it would be stranded; otherwise at C2ISTAR's Aid Airlift Chance, 0 by default.
+        private _airlift = (count _spawnResult < 2) || {random 100 < (missionNamespace getVariable ["ALIVE_aidAirliftChance", 0])};
+        if (_airlift) then {
+            _aidVehicleClass = "CargoNet_01_box_F";
+            private _cratePos = [_sourceContactPosition, 6, 30, 3, 0, 0.2, 0] call BIS_fnc_findSafePos;
+            if (_cratePos isEqualTo [] || {(_cratePos distance2D _sourceContactPosition) > 60}) then { _cratePos = +_sourceContactPosition };
+            _aidVehiclePosition = _cratePos;
+            _aidVehiclePosition set [2, 0];
+        };
+
         // #925: place the rally NPC a footprint-clear distance from the van. Both
         // were anchored to _sourceContactPosition (the van is searched within 80 m
         // of it), so they routinely spawned on the exact same spot and the NPC was
@@ -239,6 +251,22 @@ switch (_taskState) do {
         private _dialogOptions = [ALIVE_generatedTasks, "AidDelivery"] call ALIVE_fnc_hashGet;
         _dialogOptions = _dialogOptions select 1;
         private _dialogOption = +(selectRandom _dialogOptions);
+        // the airlift's own words, on this task's copy of the briefing
+        if (_airlift) then {
+            private _d = [_dialogOption, "Parent"] call ALIVE_fnc_hashGet;
+            [_d, "title", "Airlift Relief from %1 to %2"] call ALIVE_fnc_hashSet;
+            [_d, "description", "Collect the relief crate at %1, fly it into %2 under a helicopter and supervise distribution."] call ALIVE_fnc_hashSet;
+            _d = [_dialogOption, "Rally"] call ALIVE_fnc_hashGet;
+            [_d, "description", "Move to %1 with a helicopter that can sling-load the relief crate, and get it ready to lift."] call ALIVE_fnc_hashSet;
+            [_d, "chat_start", [["HQ","The relief for this one goes by air. Bring a lift helicopter to %1 and hook up the crate, Over."],["PLAYERS","Roger, moving to the pickup."]]] call ALIVE_fnc_hashSet;
+            _d = [_dialogOption, "Move"] call ALIVE_fnc_hashGet;
+            [_d, "title", "Airlift the relief crate to %1"] call ALIVE_fnc_hashSet;
+            [_d, "description", "Fly the relief crate from %1 to %2 under a helicopter and set it down near the local contact."] call ALIVE_fnc_hashSet;
+            [_d, "chat_start", [["HQ","Fly the relief crate from %1 to %2 and set it down by the local contact, Over."],["PLAYERS","Roger, lifting now."]]] call ALIVE_fnc_hashSet;
+            _d = [_dialogOption, "Deliver"] call ALIVE_fnc_hashGet;
+            [_d, "description", "Set the crate down by the local contact in %1 and supervise final distribution of the supplies."] call ALIVE_fnc_hashSet;
+            [_d, "chat_start", [["HQ","The local contact is waiting in %1. Set the crate down and distribute the supplies, Over."],["PLAYERS","Roger, preparing the handover."]]] call ALIVE_fnc_hashSet;
+        };
 
         private _dialog = [_dialogOption, "Parent"] call ALIVE_fnc_hashGet;
         private _taskTitle = format [[_dialog, "title"] call ALIVE_fnc_hashGet, _sourceTown, _destinationTown];
@@ -338,6 +366,7 @@ switch (_taskState) do {
         [_taskParams, "lastState", ""] call ALIVE_fnc_hashSet;
         [_taskParams, "abandonTimeout", 300] call ALIVE_fnc_hashSet;
         [_taskParams, "contactRadius", 250] call ALIVE_fnc_hashSet;
+        [_taskParams, "airlift", _airlift] call ALIVE_fnc_hashSet;
         [_taskParams, "lastVehicleContact", serverTime] call ALIVE_fnc_hashSet;
 
         _result = [_tasks, _taskParams];
