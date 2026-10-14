@@ -509,6 +509,17 @@ switch(_operation) do {
             [_logic, "airspaces", _valid] call ALIVE_fnc_hashSet;
             [_logic, "airspaceCreated", _created] call ALIVE_fnc_hashSet;
 
+            // Airspace Blacklist (#1084): areas taken out of the airspace, so "the whole map but
+            // that airfield" needs one marker rather than many. Same checks as the airspace.
+            private _blackWanted = [_module getVariable ["airspaceBlacklist", ""]] call _fnc_parseAirspace;
+            private _black = _blackWanted select { (markerShape _x) in ["RECTANGLE", "ELLIPSE"] };
+            if (count _black < count _blackWanted) then {
+                ["ALIVE_fnc_ATOBase - airspace blacklist marker(s) %1 do not exist or are not an area and have been ignored. Check the spelling in this module's Airspace Blacklist setting.", _blackWanted - _black] call ALiVE_fnc_dumpR;
+            };
+            { _x setMarkerAlpha 0 } forEach _black;
+            [_logic, "airspaceBlacklist", _black] call ALIVE_fnc_hashSet;
+            _module setVariable ["airspaceBlacklist", +_black];
+
             // Where to fly from when there is no airfield to fly from.
             //
             // Read but not acted on here: whether it is NEEDED is not known
@@ -669,9 +680,17 @@ switch(_operation) do {
         private _isCarrier = false;
         private _carrier = objNull;
         if (_failed isEqualTo "") then {
-            private _found = [_airClusters, _airspaces] call ALIVE_fnc_clustersInsideMarker;
-            if (count _found == 0) then { _found = [_heliClusters, _airspaces] call ALIVE_fnc_clustersInsideMarker };
-            if (count _found == 0) then { _found = [_milClusters, _airspaces] call ALIVE_fnc_clustersInsideMarker };
+            // inside the airspace and outside its blacklist (#1084)
+            private _black = [_logic, "airspaceBlacklist", []] call ALIVE_fnc_hashGet;
+            private _fnc_usable = {
+                (_this call ALIVE_fnc_clustersInsideMarker) select {
+                    private _c = [_x, "center", []] call ALIVE_fnc_hashGet;
+                    (count _c < 2) || {(_black findIf { _c inArea _x }) < 0}
+                }
+            };
+            private _found = [_airClusters, _airspaces] call _fnc_usable;
+            if (count _found == 0) then { _found = [_heliClusters, _airspaces] call _fnc_usable };
+            if (count _found == 0) then { _found = [_milClusters, _airspaces] call _fnc_usable };
             if (count _found > 0) then {
                 // A cluster with no centre is sorted to the far end rather
                 // than dereferenced.
@@ -929,7 +948,7 @@ switch(_operation) do {
         [_logic, "enemySides", _enemySides] call ALIVE_fnc_hashSet;
         [_logic, "enemyFactions", _enemyFactions] call ALIVE_fnc_hashSet;
         [_logic, "task", [["factions", [_faction]], ["enemySides", +_enemySides]]] call _fnc_configure;
-        [_logic, "watch", [["airspaces", +_airspaces], ["enemySides", +_enemySides], ["enemyFactions", +_enemyFactions]]] call _fnc_configure;
+        [_logic, "watch", [["airspaces", +_airspaces], ["airspaceBlacklist", +([_logic, "airspaceBlacklist", []] call ALIVE_fnc_hashGet)], ["enemySides", +_enemySides], ["enemyFactions", +_enemyFactions]]] call _fnc_configure;
 
         // ---- the failure decision ---------------------------------------
         // Said once, with the reason, and the Tasker told so every request
@@ -1190,6 +1209,7 @@ switch(_operation) do {
                 ["factions", [_faction]],
                 ["side", _side],
                 ["airspaces", +_airspaces],
+                ["airspaceBlacklist", +([_logic, "airspaceBlacklist", []] call ALIVE_fnc_hashGet)],
                 ["base", _forPlace]
             ]] call _fnc_configure;
         } else {

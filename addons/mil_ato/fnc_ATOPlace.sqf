@@ -1102,6 +1102,15 @@ switch(_operation) do {
         // not resolve gets nothing, and that is said out loud below rather
         // than found six sweeps later.
         private _before = count _ids;
+        // nor inside the Airspace Blacklist (#1084)
+        private _black = [_logic, "airspaceBlacklist", []] call ALIVE_fnc_hashGet;
+        if (count _black > 0) then {
+            _ids = _ids select {
+                private _p = [_x] call _fnc_profile;
+                private _pos = if (_p isEqualTo []) then { [] } else { [_p, "position", []] call ALIVE_fnc_hashGet };
+                !(_pos isEqualType []) || {count _pos < 2} || {(_black findIf { _pos inArea _x }) < 0}
+            };
+        };
         if (!(_airspace isEqualTo "") || {count _airspaces > 0}) then {
             private _zones = if (_airspace isEqualTo "") then { _airspaces } else { [_airspace] };
             _ids = _ids select {

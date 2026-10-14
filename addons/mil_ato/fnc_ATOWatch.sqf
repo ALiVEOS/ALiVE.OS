@@ -171,6 +171,10 @@ switch(_operation) do {
         if (_zone isEqualTo "") then {
             _zone = [_logic, "zoneFor", _id] call MAINCLASS;
         };
+        // a threat inside the Airspace Blacklist (#1084) is nobody's to deal with
+        private _black = [_logic, "airspaceBlacklist", []] call ALIVE_fnc_hashGet;
+        private _where = [_logic, "positionOf", _id] call MAINCLASS;
+        if (count _black > 0 && {count _where >= 2} && {(_black findIf { _where inArea _x }) > -1}) exitWith { _result = false };
         if (_zone isEqualTo "" && {count _spaces > 0}) then { _zone = _spaces select 0 };
         if (_zone isEqualTo "") exitWith { _result = false };
 
@@ -220,6 +224,8 @@ switch(_operation) do {
 
         private _at = [_logic, "positionOf", _what] call MAINCLASS;
         if (count _at < 2) exitWith {};
+        // nothing inside the Airspace Blacklist (#1084) belongs to an airspace
+        if (([_logic, "airspaceBlacklist", []] call ALIVE_fnc_hashGet) findIf { _at inArea _x } > -1) exitWith {};
 
         private _inside = "";
         {
@@ -242,6 +248,7 @@ switch(_operation) do {
         private _spaces = [_logic, "airspaces", []] call ALIVE_fnc_hashGet;
         private _factions = [_logic, "enemyFactions", []] call ALIVE_fnc_hashGet;
         private _found = [] call ALIVE_fnc_hashCreate;
+        private _black = [_logic, "airspaceBlacklist", []] call ALIVE_fnc_hashGet;
 
         if (count _spaces > 0 && {count _factions > 0}) then {
             {
@@ -253,6 +260,8 @@ switch(_operation) do {
                     && {((getPosATL _bogey) select 2) > RADAR_HEIGHT}
                     && {(faction _bogey) in _factions}) then {
                     private _at = getPosATL _bogey;
+                    // over the Airspace Blacklist (#1084) is not this commander's business
+                    if ((_black findIf { _at inArea _x }) > -1) then { continue };
                     {
                         if (_at inArea _x) then {
                             private _inZone = [_found, _x, []] call ALIVE_fnc_hashGet;

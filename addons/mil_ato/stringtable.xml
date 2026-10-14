@@ -180,6 +180,12 @@
     <Chinesesimp>空域标记</Chinesesimp>
     <Spanish>Marcadores de espacio aéreo:</Spanish>
 </Key>
+<Key ID="STR_ALIVE_ATO_AIRSPACE_BLACKLIST">
+    <English>Airspace Blacklist:</English>
+</Key>
+<Key ID="STR_ALIVE_ATO_AIRSPACE_BLACKLIST_COMMENT">
+    <English>Area marker names taken out of this module's airspace, comma-separated, e.g. marker1,marker2. Nothing inside them is used: no airfield to fly from, no aircraft adopted, and no enemy aircraft or air defence there is this commander's concern. With the Airspace Markers left blank, this gives the whole map except these areas. A name that matches no area marker is skipped with a warning in the RPT.</English>
+</Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ATO_AIRSPACE_COMMENT">
     <English>Marker names bounding this module's airspace, comma-separated, no spaces or quotes, e.g. marker1,marker2. Aircraft are never synced to this module: any armed aircraft of a managed faction already sitting inside one of these markers is adopted, and so is any drone, armed or not, unless Use Drones is No. Leave blank for the whole map. A name that matches no marker is skipped with a warning in the RPT, and if none match, the whole map is used, so check the spelling.</English>

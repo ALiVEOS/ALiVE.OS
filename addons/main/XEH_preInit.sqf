@@ -61,7 +61,7 @@ ALiVE_moduleAreaFields = createHashMapFromArray [
     ["ALiVE_amb_civ_placement", ["taor", "blacklist"]],
     ["ALiVE_mil_ied", ["taor", "blacklist"]],
     ["ALiVE_mil_cqb", ["whitelist", "blacklist"]],
-    ["ALiVE_mil_ato", ["airspace"]]
+    ["ALiVE_mil_ato", ["airspace", "airspaceBlacklist"]]
 ];
 ALiVE_moduleAreaSweep = {
     if (!hasInterface || {is3DEN}) exitWith {};

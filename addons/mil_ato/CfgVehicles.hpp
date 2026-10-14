@@ -105,6 +105,13 @@ class CfgVehicles
                         tooltip = "$STR_ALIVE_ATO_AIRSPACE_COMMENT";
                         defaultValue = """""";
                 };
+                class airspaceBlacklist : Edit
+                {
+                        property = "ALiVE_mil_ato_airspaceBlacklist";
+                        displayName = "$STR_ALIVE_ATO_AIRSPACE_BLACKLIST";
+                        tooltip = "$STR_ALIVE_ATO_AIRSPACE_BLACKLIST_COMMENT";
+                        defaultValue = """""";
+                };
                 class createHQ : Combo
                 {
                         property = "ALiVE_mil_ato_createHQ";
