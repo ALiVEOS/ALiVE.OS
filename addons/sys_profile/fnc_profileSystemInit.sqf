@@ -278,7 +278,7 @@ if(isServer) then {
     // A negative parses fine but means nothing as a sleep. The selection gate carries its
     // own floor, so this only guards the per-man sleep.
     _smoothSpawn = _smoothSpawn max 0;
-    private _vehicleSpawnSettleSeconds = parseNumber (_logic getVariable ["vehicleSpawnSettleSeconds", "15"]);
+    private _vehicleSpawnSettleSeconds = (parseNumber format ["%1", _logic getVariable ["vehicleSpawnSettleSeconds", "15"]]) max 0;
 
     // Despawn Linger. These four were defined on the module and read by the despawn paths,
     // but nothing ever carried them from the module to the system, so the defaults below

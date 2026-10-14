@@ -89,19 +89,13 @@ class CfgVehicles {
                     class airCombatHelicopterVehicleRadius : Edit { property = "ALiVE_sys_profile_airCombatHelicopterVehicleRadius"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_AIR_COMBAT_HELI_RADIUS"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_AIR_COMBAT_HELI_RADIUS_COMMENT"; expression = "_this setVariable ['airCombatHelicopterVehicleRadius', _value, true];"; defaultValue = """5000"""; };
                     class SPACER_POST_AIR_COMBAT : ALiVE_ModuleSubTitle { property = "ALiVE_sys_profile_SPACER_POST_AIR_COMBAT"; displayName = " "; };
                     class smoothSpawn : Edit { property = "ALiVE_sys_profile_smoothSpawn"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_SMOOTHSPAWN"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_SMOOTHSPAWN_COMMENT"; defaultValue = """0.3"""; };
-                    class vehicleSpawnSettleSeconds : Combo
+                    class vehicleSpawnSettleSeconds : Edit
                     {
                             property = "ALiVE_sys_profile_vehicleSpawnSettleSeconds";
                             displayName = "$STR_ALIVE_PROFILE_SYSTEM_VEH_SETTLE";
                             tooltip = "$STR_ALIVE_PROFILE_SYSTEM_VEH_SETTLE_COMMENT";
                             defaultValue = """15""";
-                            class Values
-                            {
-                                class FIVE     { name = "$STR_ALIVE_PROFILE_SYSTEM_VEH_SETTLE_5";  value = "5"; };
-                                class TEN      { name = "$STR_ALIVE_PROFILE_SYSTEM_VEH_SETTLE_10"; value = "10"; };
-                                class FIFTEEN  { name = "$STR_ALIVE_PROFILE_SYSTEM_VEH_SETTLE_15"; value = "15"; default = 1; };
-                                class THIRTY   { name = "$STR_ALIVE_PROFILE_SYSTEM_VEH_SETTLE_30"; value = "30"; };
-                            };
+                            typeName = "NUMBER";
                     };
 
                     // ---- Despawn Linger -------------------------------------------------

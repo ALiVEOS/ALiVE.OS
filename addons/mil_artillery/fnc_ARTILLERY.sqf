@@ -223,7 +223,8 @@ switch(_operation) do {
     // the mission resolves virtually on the ledger. Default 3000.
     case "visualRange": {
         _args = _logic getVariable ["visualRange", _logic getVariable ["ALiVE_mil_artillery_visualRange", "3000"]];
-        if !(_args isEqualType "") then { _args = "3000"; };
+        // typed since #1083, so a number as well as the old dropdown's text; kept as text for the reader
+        _args = str ((parseNumber format ["%1", _args]) max 500);
         _logic setVariable ["visualRange", _args];
         _result = _args;
     };

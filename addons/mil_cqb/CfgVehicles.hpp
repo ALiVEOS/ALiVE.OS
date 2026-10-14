@@ -104,37 +104,21 @@ class CfgVehicles {
                                     class CQB_spawn_100 { name = "100%"; value = 1; };
                                 };
                         };
-                        class CQB_DENSITY : Combo
+                        class CQB_DENSITY : Edit
                         {
                                 property = "ALiVE_mil_cqb_CQB_DENSITY";
                                 displayName = "$STR_ALIVE_CQB_DENSITY";
                                 tooltip = "$STR_ALIVE_CQB_DENSITY_COMMENT";
                                 defaultValue = """99999""";
-                                class Values
-                                {
-                                    // Value = the guaranteed-garrison spacing in metres (see tooltip);
-                                    // 99999 disables the spacing skeleton so Probability governs alone
-                                    class CQB_DENSITY_0 { name = "None - probability only"; value = 99999; default = 1; };
-                                    class CQB_DENSITY_20 { name = "Sparse - roughly every 2000m"; value = 2000; };
-                                    class CQB_DENSITY_10 { name = "Medium - roughly every 1000m"; value = 1000; };
-                                    class CQB_DENSITY_5 { name = "Dense - roughly every 700m"; value = 700; };
-                                    class CQB_DENSITY_2 { name = "Very dense - roughly every 300m"; value = 300; };
-                                };
+                                typeName = "NUMBER";
                         };
-                        class CQB_amount : Combo
+                        class CQB_amount : Edit
                         {
                                 property = "ALiVE_mil_cqb_CQB_amount";
                                 displayName = "$STR_ALIVE_CQB_AMOUNT";
                                 tooltip = "$STR_ALIVE_CQB_AMOUNT_COMMENT";
                                 defaultValue = """2""";
-                                class Values
-                                {
-                                    class Solo     { name = "Solo (1)";        value = 1; };
-                                    class Pair     { name = "Pair (1-2)";      value = 2; default = 1; };
-                                    class Fireteam { name = "Fireteam (1-4)";  value = 4; };
-                                    class Squad    { name = "Squad (1-6)";     value = 6; };
-                                    class Section  { name = "Section (1-8)";   value = 8; };
-                                };
+                                typeName = "NUMBER";
                         };
                         // ---- Filters --------------------------------------------------------
                         class HDR_FILTERS : ALiVE_ModuleSubTitle { property = "ALiVE_mil_cqb_HDR_FILTERS"; displayName = "FILTERS"; };

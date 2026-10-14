@@ -403,7 +403,7 @@
     <Russian>Дальность видимого огня:</Russian>
 </Key>
 <Key ID="STR_ALIVE_MIL_ARTILLERY_VISUALRANGE_COMMENT">
-    <English>How close a player must be to the target or the firing battery for real shells to spawn and be seen. Beyond this range a mission resolves on the ledger with no visible shells, to save performance. Raise it for large maps or Zeus/spectator observation. Default 3 km.</English>
+    <English>How close a player must be to the target or the firing battery for real shells to spawn and be seen. Beyond this range a mission resolves on the ledger with no visible shells, to save performance. Raise it for large maps or Zeus/spectator observation. Type the range in metres, at least 500. Default 3000.</English>
     <Chinese>玩家需距離目標或開火砲兵連多近，實體砲彈才會生成並可見。超出此範圍，射擊任務將僅在帳目上結算、不產生可見砲彈，以節省效能。大型地圖或Zeus／觀戰觀察時可調高。預設3公里。</Chinese>
     <Chinesesimp>玩家需距离目标或开火炮兵连多近,实体炮弹才会生成并可见。超出此范围,射击任务将仅在账目上结算、不产生可见炮弹,以节省性能。大型地图或Zeus／观战观察时可调高。默认3公里。</Chinesesimp>
     <Spanish>Lo cerca que debe estar un jugador del objetivo o de la batería que dispara para que se generen proyectiles reales y visibles. Más allá de este alcance, la misión se resuelve en el registro sin proyectiles visibles, para ahorrar rendimiento. Auméntelo para mapas grandes u observación con Zeus/espectador. 3 km por defecto.</Spanish>

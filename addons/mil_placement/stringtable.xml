@@ -48,7 +48,7 @@
     <Russian>Случайные лагеря:</Russian>
 </Key>
 <Key ID="STR_ALIVE_MP_RANDOMCAMPS_COMMENT">
-    <English>Spawns random field camps in flat open terrain within the TAOR. The setting controls camp density via the minimum spacing between camps: None = off, Low = 2500m apart (sparse), Medium = 1500m apart, High = 1000m apart (dense). Higher density adds more unpredictable forward operating bases beyond fixed military objectives.</English>
+    <English>Spawns random field camps in flat open terrain within the TAOR. The setting controls camp density via the minimum spacing between camps: type the metres between camps, for example 2500 (sparse), 1500 or 1000 (dense); 0 is off. Higher density adds more unpredictable forward operating bases beyond fixed military objectives.</English>
     <Chinese>在 TAOR 內的平坦開闊地形上生成隨機野戰營地。該設定透過營地之間的最小間距控制密度：無 = 關閉，低 = 相距 2500 公尺（稀疏），中 = 相距 1500 公尺，高 = 相距 1000 公尺（密集）。密度越高，會在固定軍事目標之外增加更多不可預測的前進作戰基地。</Chinese>
     <Chinesesimp>在 TAOR 内的平坦开阔地形上生成随机野战营地。该设置通过营地之间的最小间距控制密度：无 = 关闭，低 = 相距 2500 米（稀疏），中 = 相距 1500 米，高 = 相距 1000 米（密集）。密度越高，会在固定军事目标之外增加更多不可预测的前进作战基地。</Chinesesimp>
     <Spanish>Genera campamentos de campaña aleatorios en terreno llano y abierto dentro del TAOR. El ajuste controla la densidad mediante el espaciado mínimo entre campamentos: Ninguno = apagado, Bajo = a 2500 m de distancia (escaso), Medio = a 1500 m, Alto = a 1000 m (denso). Una densidad mayor añade más bases operativas avanzadas impredecibles más allá de los objetivos militares fijos.</Spanish>

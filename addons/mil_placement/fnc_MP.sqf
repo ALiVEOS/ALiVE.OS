@@ -666,7 +666,7 @@ switch(_operation) do {
                 _blacklist = [_logic,"blacklist"] call MAINCLASS;
                 _sizeFilter = parseNumber ([_logic,"sizeFilter"] call MAINCLASS);
                 _priorityFilter = parseNumber ([_logic,"priorityFilter"] call MAINCLASS);
-                _randomCampsMil = parseNumber ([_logic,"randomCamps"] call MAINCLASS);
+                _randomCampsMil = (parseNumber format ["%1", [_logic,"randomCamps"] call MAINCLASS]) max 0;
 
                 // A name that matches no marker is dropped, and with every TAOR name wrong the
                 // module places over the whole map, so say which names went.
@@ -774,7 +774,7 @@ switch(_operation) do {
                 // 100 on Medium or 200 on High. Altis keeps about the 200 it already had on High. Above the cap an
                 // even share is kept, picked at random, so the camps still spread across the area.
                 if (_randomCampsMil > 0) then {
-                    private _campCap = ((2 * count _clusters) max 25) min ([200, 100, 50] select ((([1000, 1500, 2500] find _randomCampsMil)) max 0));
+                    private _campCap = ((2 * count _clusters) max 25) min ([200, 100, 50] select (if (_randomCampsMil >= 2500) then {2} else {[0, 1] select (_randomCampsMil >= 1500)}));
                     if (count _landClusters > _campCap) then {
                         ["ALiVE MP [%1] - Random Camps: %2 sites found, %3 kept (twice the %4 military objectives, at least 25)", _faction, count _landClusters, _campCap, count _clusters] call ALiVE_fnc_dump;
                         _landClusters = _landClusters call BIS_fnc_arrayShuffle;

@@ -200,20 +200,13 @@ class CfgVehicles
                 // real-fire radius: how close a player must be (to target or
                 // battery) for shells to actually spawn and be visible. Beyond
                 // it the mission resolves on the ledger. Default 3 km.
-                class visualRange : Combo
+                class visualRange : Edit
                 {
                         property = "ALiVE_mil_artillery_visualRange";
                         displayName = "$STR_ALIVE_MIL_ARTILLERY_VISUALRANGE";
                         tooltip = "$STR_ALIVE_MIL_ARTILLERY_VISUALRANGE_COMMENT";
                         defaultValue = """3000""";
-                        class Values
-                        {
-                            class R1500 { name = "1.5 km"; value = "1500"; };
-                            class R3000 { name = "3 km"; value = "3000"; default = 1; };
-                            class R5000 { name = "5 km"; value = "5000"; };
-                            class R8000 { name = "8 km"; value = "8000"; };
-                            class R12000 { name = "12 km"; value = "12000"; };
-                        };
+                        typeName = "NUMBER";
                 };
                 // call-for-fire rate: above Normal, commanders fan fire missions
                 // across several known contacts per scan (needs OPCOM + batteries).

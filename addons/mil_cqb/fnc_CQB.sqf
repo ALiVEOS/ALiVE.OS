@@ -171,7 +171,9 @@ switch(_operation) do {
             _logic setVariable ["CQB_spawn", _CQB_spawn];
 
             private _CQB_density = _logic getvariable ["CQB_DENSITY","99999"];
-            if (_CQB_density isequaltype "") then {_CQB_density = call compile _CQB_density};
+            // typed since #1083: a number, or the old dropdown's text; nothing typed is no spacing
+            _CQB_density = parseNumber format ["%1", _CQB_density];
+            if (_CQB_density <= 0) then {_CQB_density = 99999};
             _logic setVariable ["CQB_DENSITY", _CQB_density];
 
             private _CQB_patrolChance = _logic getvariable ["CQB_patrol_chance","0.30"];
@@ -231,7 +233,7 @@ switch(_operation) do {
             _logic setVariable ["spawnDistanceJet", _spawnJet];
 
             private _amount = _logic getvariable ["CQB_amount","2"];
-            if (_amount isequaltype "") then {_amount = call compile _amount};
+            _amount = (round (parseNumber format ["%1", _amount])) max 1;
             _logic setVariable ["CQB_amount", _amount];
 
             private _staticWeaponsIntensity = _logic getvariable ["CQB_staticWeapons","0"];

@@ -189,7 +189,14 @@ class CfgVehicles {
 
             // ---- Humanitarian ---------------------------------------------------
             class HDR_HUMANITARIAN : ALiVE_ModuleSubTitle { property = "ALiVE_amb_civ_population_HDR_HUMANITARIAN"; displayName = "HUMANITARIAN"; };
-            class humanitarianHostilityChance : Combo { property = "ALiVE_amb_civ_population_humanitarianHostilityChance"; displayName = "$STR_ALIVE_CIV_POP_HOSTILITY_CHANCE"; tooltip = "$STR_ALIVE_CIV_POP_HOSTILITY_CHANCE_COMMENT"; defaultValue = """20"""; class Values { class LOW{name="$STR_ALIVE_CIV_POP_HOSTILITY_CHANCE_LOW";value="20";default=1;}; class MEDIUM{name="$STR_ALIVE_CIV_POP_HOSTILITY_CHANCE_MEDIUM";value="40";}; class HIGH{name="$STR_ALIVE_CIV_POP_HOSTILITY_CHANCE_HIGH";value="60";}; class EXTREME{name="$STR_ALIVE_CIV_POP_HOSTILITY_CHANCE_EXTREME";value="80";}; }; };
+            class humanitarianHostilityChance : Edit
+            {
+                    property = "ALiVE_amb_civ_population_humanitarianHostilityChance";
+                    displayName = "$STR_ALIVE_CIV_POP_HOSTILITY_CHANCE";
+                    tooltip = "$STR_ALIVE_CIV_POP_HOSTILITY_CHANCE_COMMENT";
+                    defaultValue = """20""";
+                    typeName = "NUMBER";
+            };
             class maxAllowAid : Edit { property = "ALiVE_amb_civ_population_maxAllowAid"; displayName = "$STR_ALIVE_CIV_POP_MAX_ALLOWED_AID"; tooltip = "$STR_ALIVE_CIV_POP_MAX_ALLOWED_AID_COMMENT"; defaultValue = """3"""; };
             // Consolidated Humanitarian Items picker (replaces the
             // previous four-attribute layout: per-category listbox +

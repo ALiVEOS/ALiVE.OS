@@ -183,20 +183,13 @@ class CfgVehicles {
                                         class Instant { name="Instant (0.05)"; value=0.05; };
                                 };
                         };
-                        class IED_Engineer_Disarm_BaseTime : Combo
+                        class IED_Engineer_Disarm_BaseTime : Edit
                         {
                                 property = "ALiVE_mil_ied_IED_Engineer_Disarm_BaseTime";
                                 displayName = "$STR_ALIVE_IED_ENGINEER_DISARM_BASETIME";
                                 tooltip = "$STR_ALIVE_IED_ENGINEER_DISARM_BASETIME_COMMENT";
                                 defaultValue = """60""";
-                                class Values
-                                {
-                                        class Fast { name="Fast (30s)"; value=30; };
-                                        class Default { name="Default (60s)"; value=60; default=1; };
-                                        class Slow { name="Slow (90s)"; value=90; };
-                                        class VSlow { name="Very Slow (120s)"; value=120; };
-                                        class Brutal { name="Brutal (180s)"; value=180; };
-                                };
+                                typeName = "NUMBER";
                         };
                         class IED_Engineer_Disarm_NewDeviceBase : Combo
                         {

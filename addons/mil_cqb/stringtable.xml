@@ -94,7 +94,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_AMOUNT_COMMENT">
-    <English>Number of units per CQB group. The actual count is picked at random between 1 and this value when a house is garrisoned, and the house keeps that group while the same faction holds it; a different faction rolls a new one.</English>
+    <English>Number of units per CQB group. The actual count is picked at random between 1 and this value when a house is garrisoned, and the house keeps that group while the same faction holds it; a different faction rolls a new one. At least 1. Default 2.</English>
     <Chinese>每個 CQB 小組的單位數量。房屋被駐守時，實際數量於 1 至此數值之間隨機決定；只要由同一派系駐守，該房屋就沿用同一小組，換成其他派系則重新決定。</Chinese>
     <Chinesesimp>每个 CQB 小组的单位数量。房屋被驻守时，实际数量于 1 至此数值之间随机决定；只要由同一派系驻守，该房屋就沿用同一小组，换成其他派系则重新决定。</Chinesesimp>
     <Spanish>Número de unidades por grupo CQB. La cantidad real se elige al azar entre 1 y este valor cuando se guarnece una casa, y la casa conserva ese grupo mientras la ocupe la misma facción; otra facción elige uno nuevo.</Spanish>
@@ -333,7 +333,7 @@
 <!-- AI-translated; native-speaker review welcome -->
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_DENSITY_COMMENT">
-    <English>Guarantees an occupied house at least every N metres: any house further than N from all existing garrisons is always occupied, while houses closer than N are decided by the Probability chance. None (default): no guaranteed spacing - every house is decided by Probability alone. With Type set to Strategic this setting does nothing: every strategic building is occupied, and Probability decides only those within 60 m of one already occupied.</English>
+    <English>Guarantees an occupied house at least every N metres: any house further than N from all existing garrisons is always occupied, while houses closer than N are decided by the Probability chance. Type the spacing in metres. 99999, the default, means no guaranteed spacing: every house is decided by Probability alone. With Type set to Strategic this setting does nothing: every strategic building is occupied, and Probability decides only those within 60 m of one already occupied.</English>
     <Chinesesimp>保证至少每 N 米有一栋被占用的房屋：距离所有已有驻军超过 N 米的房屋必定被占用，而更近的房屋则由概率决定。无（默认）：不保证间距——每栋房屋仅由概率决定。类型设为 Strategic 时此设置无效：每栋战略建筑都会被占用，概率只决定距离已占用建筑 60 米以内的建筑。</Chinesesimp>
     <Chinese>保證至少每 N 公尺有一棟被佔用的建築：距離所有已有駐軍超過 N 公尺的建築必定被佔用，而更近的建築則由機率決定。無（預設）：不保證間距——每棟建築僅由機率決定。類型設為 Strategic 時此設定無效：每棟戰略建築都會被佔用，機率只決定距離已佔用建築 60 公尺以內的建築。</Chinese>
     <Spanish>Garantiza una casa ocupada al menos cada N metros: toda casa a más de N de todas las guarniciones existentes se ocupa siempre, mientras que las casas a menos de N se deciden por la Probabilidad. Ninguna (predeterminado): sin espaciado garantizado; cada casa se decide solo por la Probabilidad. Con el Tipo en Strategic este ajuste no hace nada: todos los edificios estratégicos se ocupan, y la Probabilidad solo decide los que están a menos de 60 m de uno ya ocupado.</Spanish>

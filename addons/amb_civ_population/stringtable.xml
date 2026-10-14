@@ -785,7 +785,7 @@
 • Low (20%): one handout in five helps.
 • Medium (40%): two in five help.
 • High (60%): aid usually helps.
-• Extreme (80%): aid almost always helps.</English>
+• Extreme (80%): aid almost always helps. Type a percentage, 0 to 100. Default 20.</English>
 
     <Chinese>向平民提供口糧或飲水見效的機率。見效時,該平民自身的敵意下降 7 點,最低為 0,除了對話框之外,ACE 選單、接近時的姿勢、武器瞄準反應與「蒐集情報」也會採用新數值。對話框、ACE 選單與姿勢仍不會低於上方為玩家陣營設定的敵意值。之後會以敵意衰減速率逐漸回到 30。處於反抗狀態的平民仍可接受援助,敵對狀態的則不行。對於來自 Civilian Placement 的平民,其城鎮情緒只會下降 1 至 4 點,且僅持續數秒。
 

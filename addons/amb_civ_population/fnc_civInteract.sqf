@@ -122,7 +122,7 @@ switch (_operation) do {
 				};
 			} forEach (_factionsArr + _manualArr);
 
-			_humanitarianDecrease = parseNumber (_logic getVariable["humanitarianHostilityChance", "20"]);
+			_humanitarianDecrease = ((parseNumber format ["%1", _logic getVariable["humanitarianHostilityChance", "20"]]) max 0) min 100;
 			_maxAllowAid = parseNumber (_logic getVariable["maxAllowAid", "3"]);
 			_authorized = (_logic getVariable "limitInteraction") call ALiVE_fnc_stringListToArray;
 

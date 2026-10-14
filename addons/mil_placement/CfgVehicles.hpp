@@ -151,10 +151,13 @@ class CfgVehicles {
 
                         // ---- Ambient Presence -----------------------------------------------
                         class HDR_AMBIENT : ALiVE_ModuleSubTitle { property = "ALiVE_mil_placement_HDR_AMBIENT"; displayName = "AMBIENT PRESENCE"; };
-                        class randomcamps : Combo
+                        class randomcamps : Edit
                         {
-                                property = "ALiVE_mil_placement_randomcamps"; displayName = "$STR_ALIVE_MP_RANDOMCAMPS"; tooltip = "$STR_ALIVE_MP_RANDOMCAMPS_COMMENT"; defaultValue = """0""";
-                                class Values { class NONE{name="None";value="0";default=1;}; class LOW{name="Low";value="2500";}; class MEDIUM{name="Medium";value="1500";}; class HIGH{name="High";value="1000";}; };
+                                property = "ALiVE_mil_placement_randomcamps";
+                                displayName = "$STR_ALIVE_MP_RANDOMCAMPS";
+                                tooltip = "$STR_ALIVE_MP_RANDOMCAMPS_COMMENT";
+                                defaultValue = """0""";
+                                typeName = "NUMBER";
                         };
                         class guardProbability : Combo
                         {
