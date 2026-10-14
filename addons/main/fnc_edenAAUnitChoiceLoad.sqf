@@ -336,3 +336,9 @@ _listCtrl ctrlAddEventHandler ["LBSelChanged", {
     "ALIVE AAUnitChoice LOAD: varName='%1' faction='%2' sqm='%3' aaUnits=%4 selected=%5",
     _varName, _faction, _sqmValue, count _aaUnits, count _selectedClasses
 ] call ALiVE_fnc_dump;
+
+// no side to filter by here: the side row is hidden and the picker closes up the space (#1083)
+[_display, [1201, 1211], [[5, 5]]] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenPickerCutRows.sqf';
+
+// a plain click ticks or unticks just that row, and ticked rows read [+] (#1083)
+[_display controlsGroupCtrl 100] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenListToggle.sqf';

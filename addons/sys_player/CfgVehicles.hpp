@@ -25,6 +25,7 @@ class CfgVehicles {
                 };
                 class Attributes : AttributesBase
                 {
+                        class HDR_OPTIONS : ALiVE_ModuleSubTitle { property = "ALiVE_sys_player_HDR_OPTIONS"; displayName = "PLAYER OPTIONS"; };
                         class allowReset : Combo
                         {
                                 property = "ALiVE_sys_player_allowReset";
@@ -61,6 +62,7 @@ class CfgVehicles {
                                     class No { name = "No"; value = false; default = 1; };
                                 };
                         };
+                        class HDR_STORED : ALiVE_ModuleSubTitle { property = "ALiVE_sys_player_HDR_STORED"; displayName = "WHAT IS STORED"; };
                         class saveLoadout : Combo
                         {
                                 property = "ALiVE_sys_player_saveLoadout";
@@ -121,6 +123,7 @@ class CfgVehicles {
                                     class No { name = "No"; value = false; };
                                 };
                         };
+                        class HDR_SAVING : ALiVE_ModuleSubTitle { property = "ALiVE_sys_player_HDR_SAVING"; displayName = "SAVING"; };
                         class storeToDB : Combo
                         {
                                 property = "ALiVE_sys_player_storeToDB";

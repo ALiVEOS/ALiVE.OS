@@ -130,3 +130,6 @@ if (!isNull _edit) then {
     [1210, { private _d = (_this select 0) getVariable "alive_disp"; _d setVariable ["alive_propGroup", ((_d getVariable ["alive_propGroup", 0]) + 1) mod ((count (_d getVariable ["alive_propGroups", []])) max 1)]; [_d] call (_d getVariable "alive_populateFn") }],
     [1211, { private _d = (_this select 0) getVariable "alive_disp"; _d setVariable ["alive_propAll", !(_d getVariable ["alive_propAll", false])]; [_d] call (_d getVariable "alive_populateFn") }]
 ];
+
+// a plain click ticks or unticks just that row, and ticked rows read [+] (#1083)
+[_display controlsGroupCtrl 100] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenListToggle.sqf';

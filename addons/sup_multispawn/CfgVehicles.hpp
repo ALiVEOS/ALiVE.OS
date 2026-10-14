@@ -21,6 +21,7 @@ class CfgVehicles {
                 picture = "x\alive\addons\sup_multispawn\icon_sup_multispawn.paa";
                 class Attributes : AttributesBase
                 {
+                        class HDR_GENERAL : ALiVE_ModuleSubTitle { property = "ALiVE_sup_multispawn_HDR_GENERAL"; displayName = "GENERAL"; };
                         class debug : Combo
                         {
                                 property = "ALiVE_sup_multispawn_debug";

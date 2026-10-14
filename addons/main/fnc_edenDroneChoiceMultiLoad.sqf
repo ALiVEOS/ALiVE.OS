@@ -217,3 +217,6 @@ lbClear _listCtrl;
     _sideSource,
     count (lbSelection _listCtrl)
 ] call ALiVE_fnc_dump;
+
+// a plain click ticks or unticks just that row, and ticked rows read [+] (#1083)
+[_display controlsGroupCtrl 100] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenListToggle.sqf';

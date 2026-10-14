@@ -21,6 +21,7 @@ class CfgVehicles {
                 picture = "x\alive\addons\mil_intelligence\icon_mil_MI.paa";
                 class Attributes : AttributesBase
                 {
+                        class HDR_GENERAL : ALiVE_ModuleSubTitle { property = "ALiVE_mil_intelligence_HDR_GENERAL"; displayName = "GENERAL"; };
                         class debug : Combo
                         {
                                 property = "ALiVE_mil_intelligence_debug";
@@ -47,6 +48,7 @@ class CfgVehicles {
                                     class TOTAL { name = "$STR_ALIVE_MI_INTEL_CHANCE_TOTAL"; value = "1"; default = 1; };
                                 };
                         };
+                        class HDR_FRIENDLY : ALiVE_ModuleSubTitle { property = "ALiVE_mil_intelligence_HDR_FRIENDLY"; displayName = "FRIENDLY INTEL"; };
                         class friendlyIntel : Combo
                         {
                                 property = "ALiVE_mil_intelligence_friendlyIntel";
@@ -81,6 +83,7 @@ class CfgVehicles {
                 picture = "x\alive\addons\mil_intelligence\icon_mil_SD.paa";
                 class Attributes : AttributesBase
                 {
+                    class HDR_GENERAL : ALiVE_ModuleSubTitle { property = "ALiVE_mil_intelligence2_HDR_GENERAL"; displayName = "GENERAL"; };
                     class runEvery : Edit
                     {
                             property = "ALiVE_mil_intelligence_runEvery";

@@ -33,6 +33,7 @@ class CfgVehicles {
                 author = MODULE_AUTHOR;
                 class Attributes : AttributesBase
                 {
+                        class HDR_UNITS : ALiVE_ModuleSubTitle { property = "ALiVE_sup_recruit_HDR_UNITS"; displayName = "UNITS"; };
                         class unitClasses : Edit
                         {
                                 property = "ALiVE_sup_recruit_unitClasses";
@@ -63,6 +64,7 @@ class CfgVehicles {
                                         class Elite   { name = "Elite (1.0)";  value = "1"; };
                                 };
                         };
+                        class HDR_VEHICLES : ALiVE_ModuleSubTitle { property = "ALiVE_sup_recruit_HDR_VEHICLES"; displayName = "VEHICLES"; };
                         class vehicleClasses : Edit
                         {
                                 property = "ALiVE_sup_recruit_vehicleClasses";
@@ -78,6 +80,7 @@ class CfgVehicles {
                                 defaultValue = """2""";
                                 typeName = "NUMBER";
                         };
+                        class HDR_SPAWNING : ALiVE_ModuleSubTitle { property = "ALiVE_sup_recruit_HDR_SPAWNING"; displayName = "SPAWNING"; };
                         class spawnPoints : Edit
                         {
                                 property = "ALiVE_sup_recruit_spawnPoints";
@@ -93,6 +96,7 @@ class CfgVehicles {
                                 defaultValue = """0""";
                                 typeName = "NUMBER";
                         };
+                        class HDR_FORCEPOOL : ALiVE_ModuleSubTitle { property = "ALiVE_sup_recruit_HDR_FORCEPOOL"; displayName = "FORCE POOL"; };
                         class unitCost : Edit
                         {
                                 property = "ALiVE_sup_recruit_unitCost";
@@ -109,6 +113,7 @@ class CfgVehicles {
                                 defaultValue = """0""";
                                 typeName = "NUMBER";
                         };
+                        class HDR_OPTIONS : ALiVE_ModuleSubTitle { property = "ALiVE_sup_recruit_HDR_OPTIONS"; displayName = "OPTIONS"; };
                         class recruitCode : Edit
                         {
                                 property = "ALiVE_sup_recruit_recruitCode";
@@ -162,6 +167,7 @@ class CfgVehicles {
                 author = MODULE_AUTHOR;
                 class Attributes : AttributesBase
                 {
+                        class HDR_POINTS : ALiVE_ModuleSubTitle { property = "ALiVE_sup_rally_HDR_POINTS"; displayName = "RALLY POINTS"; };
                         class rallyClasses : Edit
                         {
                                 property = "ALiVE_sup_rally_rallyClasses";
@@ -209,6 +215,7 @@ class CfgVehicles {
                                         class Indfor { name = "Independent"; value = "GUER"; };
                                 };
                         };
+                        class HDR_TRAVEL : ALiVE_ModuleSubTitle { property = "ALiVE_sup_rally_HDR_TRAVEL"; displayName = "TRAVEL RULES"; };
                         class squadRadius : Edit
                         {
                                 property = "ALiVE_sup_rally_squadRadius";

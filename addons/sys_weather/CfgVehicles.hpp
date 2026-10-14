@@ -22,6 +22,7 @@ class CfgVehicles {
         picture = "\x\alive\addons\sys_weather\icon_sys_weather.paa";
         class Attributes : AttributesBase
         {
+            class HDR_GENERAL : ALiVE_ModuleSubTitle { property = "ALiVE_sys_weather_HDR_GENERAL"; displayName = "GENERAL"; };
             class weather_debug_setting : Combo
             {
                     property = "ALiVE_sys_weather_weather_debug_setting";
@@ -35,6 +36,7 @@ class CfgVehicles {
                     };
             };
             class weather_debug_cycle_setting : Edit { property = "ALiVE_sys_weather_weather_debug_cycle_setting"; displayName = "$STR_ALIVE_WEATHER_DEBUG_CYCLE"; tooltip = "$STR_ALIVE_WEATHER_DEBUG_CYCLE_COMMENT"; defaultValue = """60"""; typeName = "NUMBER"; };
+            class HDR_WEATHER : ALiVE_ModuleSubTitle { property = "ALiVE_sys_weather_HDR_WEATHER"; displayName = "WEATHER"; };
             class weather_initial_setting : Combo
             {
                     property = "ALiVE_sys_weather_weather_initial_setting";

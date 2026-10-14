@@ -25,6 +25,7 @@ class CfgVehicles {
                 };
                 class Attributes : AttributesBase
                 {
+                        class HDR_GENERAL : ALiVE_ModuleSubTitle { property = "ALiVE_sys_data_HDR_GENERAL"; displayName = "GENERAL"; };
                         class debug : Combo { property = "ALiVE_sys_data_debug"; displayName = "$STR_ALIVE_data_DEBUG"; tooltip = "$STR_ALIVE_data_DEBUG_COMMENT"; defaultValue = """false"""; class Values { class Yes{name="Yes";value=true;}; class No{name="No";value=false;default=1;}; }; };
                         class source : Combo
                         {
@@ -38,6 +39,7 @@ class CfgVehicles {
                                     class COUCHDB { name = "Cloud"; value = "CouchDB"; };
                                 };
                         };
+                        class HDR_SAVING : ALiVE_ModuleSubTitle { property = "ALiVE_sys_data_HDR_SAVING"; displayName = "SAVING"; };
                         class saveDateTime : Combo { property = "ALiVE_sys_data_saveDateTime"; displayName = "$STR_ALIVE_data_SAVEDATETIME"; tooltip = "$STR_ALIVE_data_SAVEDATETIME_COMMENT"; defaultValue = """false"""; class Values { class Yes{name="Yes";value=true;}; class No{name="No";value=false;default=1;}; }; };
                         class saveCompositions : Combo { property = "ALiVE_sys_data_saveCompositions"; displayName = "$STR_ALIVE_data_SAVECOMPOSITIONS"; tooltip = "$STR_ALIVE_data_SAVECOMPOSITIONS_COMMENT"; defaultValue = """true"""; class Values { class Yes{name="Yes";value=true;default=1;}; class No{name="No";value=false;}; }; };
                         class autoSaveInterval : Combo
@@ -56,6 +58,7 @@ class CfgVehicles {
                                     class M60 { name = "Every 60 minutes"; value = "60"; };
                                 };
                         };
+                        class HDR_FEEDS : ALiVE_ModuleSubTitle { property = "ALiVE_sys_data_HDR_FEEDS"; displayName = "KILL FEED AND STATISTICS"; };
                         class killFeed : Combo
                         {
                                 property = "ALiVE_sys_data_killFeed";
@@ -71,6 +74,7 @@ class CfgVehicles {
                         };
                         class disableStats : Combo { property = "ALiVE_sys_data_disableStats"; displayName = "$STR_ALIVE_data_disableStats"; tooltip = "$STR_ALIVE_data_disableStats_COMMENT"; defaultValue = """false"""; class Values { class Yes{name="Yes";value=true;}; class No{name="No";value=false;default=1;}; }; };
                         class disableAAR : Combo { property = "ALiVE_sys_data_disableAAR"; displayName = "$STR_ALIVE_data_disableAAR"; tooltip = "$STR_ALIVE_data_disableAAR_COMMENT"; defaultValue = """false"""; class Values { class Yes{name="Yes";value=true;}; class No{name="No";value=false;default=1;}; }; };
+                        class HDR_PERF : ALiVE_ModuleSubTitle { property = "ALiVE_sys_data_HDR_PERF"; displayName = "PERFORMANCE MONITORING"; };
                         class disablePerf : Combo { property = "ALiVE_sys_data_disablePerf"; displayName = "$STR_ALIVE_data_disablePerf"; tooltip = "$STR_ALIVE_data_disablePerf_COMMENT"; defaultValue = """false"""; class Values { class Yes{name="Yes";value=true;}; class No{name="No";value=false;default=1;}; }; };
                         class disablePerfMon : Combo { property = "ALiVE_sys_data_disablePerfMon"; displayName = "$STR_ALIVE_data_disablePerfMon"; tooltip = "$STR_ALIVE_data_disablePerfMon_COMMENT"; defaultValue = """true"""; class Values { class Yes{name="Yes";value=true;default=1;}; class No{name="No";value=false;}; }; };
                         class customPerfMonCode : Edit
@@ -80,6 +84,7 @@ class CfgVehicles {
                                 tooltip = "$STR_ALIVE_data_customPerfMonCode_COMMENT";
                                 defaultValue = """[['entities',150],['vehicles',300],['agents',450],['allDead',600],['objects',750],['triggers',900],['activeScripts',1050]]""";
                         };
+                        class HDR_ACCESS : ALiVE_ModuleSubTitle { property = "ALiVE_sys_data_HDR_ACCESS"; displayName = "ACCESS"; };
                         class saveAllowlist : Edit
                         {
                                 property = "ALiVE_sys_data_saveAllowlist";

@@ -21,6 +21,7 @@ class CfgVehicles {
                 picture = "x\alive\addons\sys_indexer\icon_sys_indexer.paa";
                 class Attributes : AttributesBase
                 {
+                        class HDR_GENERAL : ALiVE_ModuleSubTitle { property = "ALiVE_sys_indexer_HDR_GENERAL"; displayName = "GENERAL"; };
                         class customStatic : Combo
                         {
                                 property = "ALiVE_sys_indexer_customStatic";

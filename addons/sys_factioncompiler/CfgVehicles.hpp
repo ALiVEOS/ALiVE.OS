@@ -24,6 +24,7 @@ class CfgVehicles {
         icon = "x\alive\addons\sys_factioncompiler\icon_sys_factioncompiler.paa";
         picture = "x\alive\addons\sys_factioncompiler\icon_sys_factioncompiler.paa";
         class Attributes : AttributesBase {
+            class HDR_GENERAL : ALiVE_ModuleSubTitle { property = "ALiVE_sys_factioncompiler_HDR_GENERAL"; displayName = "GENERAL"; };
             class debug : Combo {
                 property = "ALiVE_sys_factioncompiler_debug";
                 displayName = "Debug";
@@ -161,6 +162,7 @@ class CfgVehicles {
         icon = "x\alive\addons\sys_factioncompiler\icon_sys_factioncompiler_category.paa";
         picture = "x\alive\addons\sys_factioncompiler\icon_sys_factioncompiler_category.paa";
         class Attributes : AttributesBase {
+            class HDR_GENERAL : ALiVE_ModuleSubTitle { property = "ALiVE_sys_factioncompiler_category_HDR_GENERAL"; displayName = "GENERAL"; };
             class category : Combo {
                 property = "ALiVE_sys_factioncompiler_category_category";
                 displayName = "Category";

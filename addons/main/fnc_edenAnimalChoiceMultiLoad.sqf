@@ -237,3 +237,6 @@ private _tickIdxs = +_unrecognisedTickIdxs;
     _varName, _category, _sqmValue, _value, _selectedItems,
     lbSize _ctrl, count _tickIdxs, count _unrecognisedTickIdxs
 ] call ALiVE_fnc_dump;
+
+// a plain click ticks or unticks just that row, and ticked rows read [+] (#1083)
+[_display controlsGroupCtrl 100] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenListToggle.sqf';

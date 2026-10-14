@@ -21,6 +21,7 @@ class CfgVehicles {
                 picture = "x\alive\addons\sys_GC\icon_sys_GC.paa";
                 class Attributes : AttributesBase
                 {
+                        class HDR_GENERAL : ALiVE_ModuleSubTitle { property = "ALiVE_sys_gc_HDR_GENERAL"; displayName = "GENERAL"; };
                         class debug : Combo
                         {
                                 property = "ALiVE_sys_gc_debug";

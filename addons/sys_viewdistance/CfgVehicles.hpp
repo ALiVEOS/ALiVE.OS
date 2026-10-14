@@ -22,6 +22,7 @@ class CfgVehicles {
                 picture = "x\alive\addons\sys_viewdistance\icon_sys_viewdistance.paa";
                 class Attributes : AttributesBase
                 {
+                        class HDR_GENERAL : ALiVE_ModuleSubTitle { property = "ALiVE_sys_viewdistance_HDR_GENERAL"; displayName = "GENERAL"; };
                         class minVD : Edit { property = "ALiVE_sys_viewdistance_minVD"; displayName = "$STR_ALIVE_VDIST_MIN"; tooltip = "$STR_ALIVE_VDIST_MIN_COMMENT"; defaultValue = """500"""; };
                         class maxVD : Edit { property = "ALiVE_sys_viewdistance_maxVD"; displayName = "$STR_ALIVE_VDIST_MAX"; tooltip = "$STR_ALIVE_VDIST_MAX_COMMENT"; defaultValue = """20000"""; };
                         class minTG : Edit { property = "ALiVE_sys_viewdistance_minTG"; displayName = "$STR_ALIVE_TGRID_MIN"; tooltip = "$STR_ALIVE_TGRID_MIN_COMMENT"; defaultValue = """1"""; };

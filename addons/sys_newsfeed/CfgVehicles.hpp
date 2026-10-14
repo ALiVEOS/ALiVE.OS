@@ -21,6 +21,7 @@ class CfgVehicles {
                 picture = "x\alive\addons\sys_newsfeed\icon_sys_newsfeed.paa";
                 class Attributes : AttributesBase
                 {
+                        class HDR_GENERAL : ALiVE_ModuleSubTitle { property = "ALiVE_sys_newsfeed_HDR_GENERAL"; displayName = "GENERAL"; };
                         class Enabled : Combo
                         {
                                 property = "ALiVE_sys_newsfeed_Enabled";

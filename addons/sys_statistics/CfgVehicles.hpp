@@ -21,6 +21,7 @@ class CfgVehicles {
         picture = "x\alive\addons\sys_statistics\icon_sys_statistics.paa";
         class Attributes : AttributesBase
         {
+            class HDR_GENERAL : ALiVE_ModuleSubTitle { property = "ALiVE_sys_statistics_HDR_GENERAL"; displayName = "GENERAL"; };
             class Condition : Edit
             {
                     property = "ALiVE_sys_statistics_Condition";

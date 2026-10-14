@@ -29,6 +29,7 @@ class CfgVehicles {
                 picture = "x\alive\addons\sup_transport\icon_sup_transport.paa";
                 class Attributes : AttributesBase
                 {
+                        class HDR_GENERAL : ALiVE_ModuleSubTitle { property = "ALiVE_mil_convoy_HDR_GENERAL"; displayName = "GENERAL"; };
                         class conv_debug_setting : Combo
                         {
                                 property = "ALiVE_mil_convoy_conv_debug_setting";

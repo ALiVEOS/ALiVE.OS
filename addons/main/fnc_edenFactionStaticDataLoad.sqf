@@ -476,3 +476,6 @@ if (count _moduleFactions > 0) then {
     "ALIVE FactionStaticData LOAD: kind=%1 varName=%2 sqm='%3' resolved='%4' moduleFactions=%5 storedKeys=%6",
     _kind, _varName, _sqmValue, _value, _moduleFactions, keys _hashByFaction
 ] call ALiVE_fnc_dump;
+
+// a plain click ticks or unticks just that row, and ticked rows read [+] (#1083)
+[_display controlsGroupCtrl 100] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenListToggle.sqf';

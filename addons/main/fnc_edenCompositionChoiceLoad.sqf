@@ -515,9 +515,8 @@ private _attachCycle = {
 // When category is hard-locked, the Category row is dead UI - cycling
 // has nothing to advance to and the picker context (e.g. "Roadblock
 // Compositions:" Eden label) already implies the lock. Hide the label
-// and Next button, then reflow the layout: Source row shifts up to
-// the freed slot, and the listbox grows upward to claim the recovered
-// 5 grid units. Override row at y=63 stays put.
+// and Next button, then reflow the layout: the Source row, the list and
+// the Override row move up into the freed slot and the picker shrinks.
 //
 // Reflow uses ctrlSetPosition + ctrlCommit at runtime rather than
 // touching the shared base's positions in CfgVehicles, so the camp
@@ -530,29 +529,9 @@ if (_categoryPatterns != "") then {
     private _sourceBtn   = _display controlsGroupCtrl 1213;
     private _listbox     = _display controlsGroupCtrl 100;
 
-    if (!isNull _catLabel) then { _catLabel ctrlShow false };
-    if (!isNull _catBtn)   then { _catBtn   ctrlShow false };
-
-    // 5 grid units = same delta the Category row used. Use the same
-    // pixel-grid math the CfgVehicles definitions use so positions
-    // stay aligned with the rest of the layout.
-    private _shift = 5 * (pixelH * pixelGrid * 0.5);
-    {
-        if (!isNull _x) then {
-            private _pos = ctrlPosition _x;
-            _pos set [1, (_pos select 1) - _shift];
-            _x ctrlSetPosition _pos;
-            _x ctrlCommit 0;
-        };
-    } forEach [_sourceLabel, _sourceBtn];
-
-    if (!isNull _listbox) then {
-        private _pos = ctrlPosition _listbox;
-        _pos set [1, (_pos select 1) - _shift];
-        _pos set [3, (_pos select 3) + _shift];
-        _listbox ctrlSetPosition _pos;
-        _listbox ctrlCommit 0;
-    };
+    // the Category row (y=10) goes and everything below moves up into it; the list keeps the
+    // same four-row height as every other ALiVE picker and the picker itself shrinks (#1083)
+    [_display, [1202, 1212], [[10, 5]]] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenPickerCutRows.sqf';
 };
 
 // Wire LBSelChanged on the listbox to keep _selectedClasses in sync with
@@ -589,3 +568,6 @@ if (!isNull _list) then {
     "ALIVE CompositionChoice LOAD: varName=%1 faction=%2 sqm='%3' resolved='%4' allComps=%5 sides=%6 sizes=%7 categories=%8 sources=%9 selected=%10 missing=%11",
     _varName, _faction, _sqmValue, _value, count _allComps, count _sideOptions - 1, count _sizeOptions - 1, count _categoryOptions - 1, count _sourceOptions - 1, count _selectedClasses, count _missing
 ] call ALiVE_fnc_dump;
+
+// a plain click ticks or unticks just that row, and ticked rows read [+] (#1083)
+[_display controlsGroupCtrl 100] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenListToggle.sqf';

@@ -22,6 +22,7 @@ class CfgVehicles {
                 picture = "\x\alive\addons\sys_crewinfo\icon_sys_crewinfo.paa";
                 class Attributes : AttributesBase
                 {
+                        class HDR_GENERAL : ALiVE_ModuleSubTitle { property = "ALiVE_sys_crewinfo_HDR_GENERAL"; displayName = "GENERAL"; };
                         class crewinfo_debug_setting : Combo
                         {
                                 property = "ALiVE_sys_crewinfo_crewinfo_debug_setting";

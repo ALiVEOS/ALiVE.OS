@@ -20,6 +20,7 @@ class CfgVehicles {
                 function = "ALiVE_fnc_quickstartInit";
             class Attributes : AttributesBase
             {
+                class HDR_GENERAL : ALiVE_ModuleSubTitle { property = "ALiVE_sys_quickstart_HDR_GENERAL"; displayName = "GENERAL"; };
                 class debug : Combo { property = "ALiVE_sys_quickstart_debug"; displayName = "$STR_ALIVE_DEBUG"; tooltip = "$STR_ALIVE_DEBUG_COMMENT"; defaultValue = """true"""; class Values { class Yes{name="Yes";value=true;default=1;}; class No{name="No";value=false;}; }; };
                 class ALiVE_Versioning : Combo
                 {
@@ -34,12 +35,12 @@ class CfgVehicles {
                         };
                 };
                 class ALiVE_DISABLESAVE : Combo { property = "ALiVE_sys_quickstart_ALiVE_DISABLESAVE"; displayName = "$STR_ALIVE_DISABLESAVE"; tooltip = "$STR_ALIVE_DISABLESAVE_COMMENT"; defaultValue = """true"""; class Values { class Yes{name="Yes";value=true;default=1;}; class No{name="No";value=false;}; }; };
-                class AISKILL : Combo { property = "ALiVE_sys_quickstart_AISKILL"; displayName = ""; tooltip = ""; defaultValue = """"""; class Values { class Divider{name="----- AI Skill Levels ------------------------------------------------";value="";}; }; };
+                class AISKILL : ALiVE_ModuleSubTitle { property = "ALiVE_sys_quickstart_AISKILL"; displayName = "AI SKILL LEVELS"; };
                 class skillFactionsRecruit : Edit { property = "ALiVE_sys_quickstart_skillFactionsRecruit"; displayName = "$STR_ALIVE_AISKILL_RECRUIT"; tooltip = "$STR_ALIVE_AISKILL_RECRUIT_COMMENT"; defaultValue = """CIV_F"""; };
                 class skillFactionsRegular : Edit { property = "ALiVE_sys_quickstart_skillFactionsRegular"; displayName = "$STR_ALIVE_AISKILL_REGULAR"; tooltip = "$STR_ALIVE_AISKILL_REGULAR_COMMENT"; defaultValue = """IND_F,IND_G_F,BLU_G_F,OPF_G_F"""; };
                 class skillFactionsVeteran : Edit { property = "ALiVE_sys_quickstart_skillFactionsVeteran"; displayName = "$STR_ALIVE_AISKILL_VETERAN"; tooltip = "$STR_ALIVE_AISKILL_VETERAN_COMMENT"; defaultValue = """BLU_F,OPF_F"""; };
                 class skillFactionsExpert : Edit { property = "ALiVE_sys_quickstart_skillFactionsExpert"; displayName = "$STR_ALIVE_AISKILL_EXPERT"; tooltip = "$STR_ALIVE_AISKILL_EXPERT_COMMENT"; defaultValue = """"""; };
-                class CIVILIANS : Combo { property = "ALiVE_sys_quickstart_CIVILIANS"; displayName = ""; tooltip = ""; defaultValue = """"""; class Values { class Divider{name="----- Civilians ------------------------------------------------------";value="";}; }; };
+                class CIVILIANS : ALiVE_ModuleSubTitle { property = "ALiVE_sys_quickstart_CIVILIANS"; displayName = "CIVILIANS"; };
                 class hostilityWest : Combo
                 {
                         property = "ALiVE_sys_quickstart_hostilityWest"; displayName = "$STR_ALIVE_CIV_POP_HOSTILITY_WEST"; tooltip = "$STR_ALIVE_CIV_POP_HOSTILITY_WEST_COMMENT"; defaultValue = """0""";
