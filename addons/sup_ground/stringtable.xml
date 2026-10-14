@@ -3,7 +3,7 @@
 <Package name="ALiVE">
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_GROUND">
-    <English>Ground Transport</English>
+    <English>Player Combat Support (Ground Transport)</English>
     <Chinesesimp>地面运输</Chinesesimp>
     <Chinese>地面運輸</Chinese>
     <Spanish>Transporte terrestre</Spanish>
