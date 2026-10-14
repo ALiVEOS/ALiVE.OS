@@ -2210,8 +2210,9 @@ ALiVE_fnc_spawnFurniture = {
         ([_building, _sets, _positions] call ALiVE_fnc_INS_dressWithInteriors) params ["_setFurniture", "_setAll"];
         if (_setFurniture isNotEqualTo []) then {
             _created append _setAll;
-            // the factory's IED sits on its first table or bench
-            if (_ieds) then {
+            // the factory's IED sits on its first table or bench; the HQ and depot sets get none, as their
+            // first piece can be a sleeping bag or a crate (kawi0756 on Discord, 14 Oct)
+            if (_ieds && {_type == "factory"}) then {
                 private _table = _setFurniture select 0;
                 _bomb = createVehicle [(selectRandom _bombs), getposATL _table, [], 0, "CAN_COLLIDE"];
                 _charge = createVehicle ["ALIVE_DemoCharge_Remote_Ammo", getposATL _bomb, [], 0, "CAN_COLLIDE"];
