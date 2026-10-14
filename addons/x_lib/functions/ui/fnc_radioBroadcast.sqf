@@ -53,6 +53,7 @@ See Also:
 
 Author:
 ARJay, Gunny
+Jman
 ---------------------------------------------------------------------------- */
 private ["_unit","_message","_channel","_side","_fromUnit","_toUnit","_toHQ","_fromHQ","_hqClass","_fromGroup","_toGroup"];
 
@@ -110,6 +111,12 @@ if(_fromGroup || _toGroup) then {
         _message = format["%1 %2",_group,_message];
     };
 
+};
+
+// a message from HQ opens with the name the mission maker gave that side's AI Commander, if any
+if(_fromHQ) then {
+    private _commander = (missionNamespace getVariable ["ALiVE_commanderCallsigns", createHashMap]) getOrDefault [if (_side isEqualType "") then { toUpper _side } else { str _side }, ""];
+    if (_commander != "") then { _message = format["This is %1. %2", _commander, _message] };
 };
 
 // if to HQ get the callSign of the HQ identity

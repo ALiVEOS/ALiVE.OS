@@ -296,6 +296,16 @@ switch (_operation) do {
             _customNameParam
         };
 
+        // A name the mission maker gave this commander is what its side's HQ radio messages open with
+        // (ALIVE_fnc_radioBroadcast), on every machine. The first named commander of a side keeps it.
+        if (!isNil "_customNameParam" && {_customNameParam isEqualType ""} && {_customNameParam != ""}) then {
+            private _callsigns = missionNamespace getVariable ["ALiVE_commanderCallsigns", createHashMap];
+            if !(_side in _callsigns) then {
+                _callsigns set [_side, _customNameParam];
+                missionNamespace setVariable ["ALiVE_commanderCallsigns", _callsigns, true];
+            };
+        };
+
         if (_usedDefaultFaction) then {
             [
                 "ALiVE OPCOM init WARNING: AI Commander '%1' has no factions configured (Factions multi-select empty AND Additional Factions empty). Defaulting to ['BLU_F']. Pick at least one faction in the Factions multi-select to silence this.",
