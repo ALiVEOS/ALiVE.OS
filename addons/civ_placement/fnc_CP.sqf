@@ -955,7 +955,7 @@ switch(_operation) do {
 
                                     if (_taken) then {
                                         _spawnChecks = _spawnChecks + 1;
-                                        private _thisroadblockResult = [_position, _size + 150, ceil(_roadBlocks / 30), _debug, _roadblockComps, _roadblockGuardPatrol, _roadblockFaction, _roadblockOnSpawn, _roadblockOnSpawnOnce] call ALiVE_fnc_createRoadblock;
+                                        private _thisroadblockResult = [_position, _size + 150, ceil(_roadBlocks / 30), _debug, _roadblockComps, _roadblockGuardPatrol, _roadblockFaction, _roadblockOnSpawn, _roadblockOnSpawnOnce, true] call ALiVE_fnc_createRoadblock;
                                         if (_debug) then { ["_thisroadblockResult: %1, count: %2", _thisroadblockResult, count _thisroadblockResult] call ALiVE_fnc_dump };
 
                                         // off the queue once built or given up on, else back for another try

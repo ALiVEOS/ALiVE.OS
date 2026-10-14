@@ -845,6 +845,8 @@ switch (_operation) do {
                             // no clear ground near this one: it is tried again on a later pass
                             if ((_pos distance2D _c) > (_size + 200) || {(_pos nearRoads (_r + 4)) isNotEqualTo []} || {([_pos, 300] call ALiVE_fnc_anyPlayersInRange) > 0} || {!isNil "ALiVE_fnc_isAirside" && {[_pos, _r] call ALiVE_fnc_isAirside}}) then { continue };
                             [_comp, _pos, _dir, _faction] call ALiVE_fnc_spawnComposition;
+                            // players can take it apart once they've cleared the area (ALIVE_fnc_addDismantleAction)
+                            [_pos, _r + 5, "fortifications"] call ALIVE_fnc_addDismantleAction;
                             _built pushBack _oid;
                             ["OPCOM %1: prepared defences (%2) built at %3, facing %4", _side, configName _comp, mapGridPosition _pos, round _dir] call ALiVE_fnc_dump;
                             break;
@@ -890,6 +892,8 @@ switch (_operation) do {
                                     private _pos = _site select 0;
                                     if ((_pos distance2D _c) > (_size + 200) || {(_pos nearRoads (_rFull + 4)) isNotEqualTo []} || {([_pos, 300] call ALiVE_fnc_anyPlayersInRange) > 0} || {!isNil "ALiVE_fnc_isAirside" && {[_pos, _rFull] call ALiVE_fnc_isAirside}}) then { continue };
                                     [_comp, _pos, _c getDir _pos, _faction] call ALiVE_fnc_spawnComposition;
+                                    // players can take it apart once they've cleared the area (ALIVE_fnc_addDismantleAction)
+                                    [_pos, _rFull + 5, "fortifications"] call ALIVE_fnc_addDismantleAction;
                                     _medium pushBack _oid;
                                     ["OPCOM %1: prepared defences extended (%2) at %3", _sideText, configName _comp, mapGridPosition _pos] call ALiVE_fnc_dump;
                                     break;

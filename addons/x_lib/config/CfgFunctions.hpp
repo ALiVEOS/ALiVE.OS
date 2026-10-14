@@ -452,6 +452,13 @@ class spawnComposition
 	ALIVE_RECOMPILE;
 };
 
+class addDismantleAction
+{
+	file = "\x\alive\addons\x_lib\functions\composition\fnc_addDismantleAction.sqf";
+	ext = ".sqf";
+	ALIVE_RECOMPILE;
+};
+
 class removeComposition
 {
 	file = "\x\alive\addons\x_lib\functions\composition\fnc_removeComposition.sqf";

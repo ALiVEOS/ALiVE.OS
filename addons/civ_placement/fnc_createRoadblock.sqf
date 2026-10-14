@@ -77,7 +77,10 @@ params [
     // come from whoever dominates the road, as they always did (the insurgent commander's way).
     ["_moduleFaction", "", [""]],
     ["_onEachSpawn", "", [""]],
-    ["_onEachSpawnOnce", true, [true]]
+    ["_onEachSpawnOnce", true, [true]],
+    // Military Placement roadblocks can be dismantled once the area is clear (ALIVE_fnc_addDismantleAction);
+    // the insurgent commander leaves this off and adds its own action
+    ["_dismantle", false, [true]]
 ];
 
 private _result = [];
@@ -357,6 +360,7 @@ for "_j" from 1 to (count _roadpoints) do {
 
     // Spawn composition
     [_checkpoint,_spawnedSafePos,_direction,_fac] spawn {[_this select 0, _this select 1, _this select 2, _this select 3] call ALiVE_fnc_spawnComposition};
+    if (_dismantle) then { [_spawnedSafePos, 30, "roadblock"] call ALIVE_fnc_addDismantleAction };
 
     _result pushback _roadpos;
 

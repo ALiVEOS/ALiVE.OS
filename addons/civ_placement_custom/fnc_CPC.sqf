@@ -524,7 +524,7 @@ switch (_operation) do {
                                         _spawnChecks = _spawnChecks + 1;
                                         private _roadblockFactions = _logic getVariable ["ALiVE_CPC_resolvedFactions", []];
                                         private _roadblockFaction = if (count _roadblockFactions > 0) then {selectRandom _roadblockFactions} else {""};
-                                        private _roadblockResult = [_position, _size + 150, ceil(_roadBlocks / 30), _debug, _roadblockComps, _roadblockGuardPatrol, _roadblockFaction, _roadblockOnSpawn, _roadblockOnSpawnOnce] call ALiVE_fnc_createRoadblock;
+                                        private _roadblockResult = [_position, _size + 150, ceil(_roadBlocks / 30), _debug, _roadblockComps, _roadblockGuardPatrol, _roadblockFaction, _roadblockOnSpawn, _roadblockOnSpawnOnce, true] call ALiVE_fnc_createRoadblock;
 
                                         // off the queue once built or given up on, else back for another try
                                         private _attempts = (_entry param [2, 0]) + 1;
