@@ -68,13 +68,13 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_OPCOM_NAME_COMMENT">
-    <English>Optional custom name for this AI Commander, shown in the commander list on the ALiVE tablet and in log messages. Leave blank to name it after its side (for example BLUFOR Commander).</English>
-    <Chinese>此 AI 指揮官的可選自訂名稱，顯示於 ALiVE 平板電腦的指揮官列表和日誌訊息中。留空則以其陣營命名（例如 BLUFOR Commander）。</Chinese>
-    <Chinesesimp>此 AI 指挥官的可选自定义名称，显示于 ALiVE 平板电脑的指挥官列表和日志信息中。留空则以其阵营命名（例如 BLUFOR Commander）。</Chinesesimp>
-    <Spanish>Nombre personalizado opcional para este Comandante IA, que se muestra en la lista de comandantes de la tableta ALiVE y en los mensajes de registro. Déjalo en blanco para nombrarlo según su bando (por ejemplo BLUFOR Commander).</Spanish>
-    <French>Nom personnalisé facultatif pour ce Commandant IA, affiché dans la liste des commandants de la tablette ALiVE et dans les messages du journal. Laissez vide pour le nommer d'après son camp (par exemple BLUFOR Commander).</French>
-    <Portuguese>Nome personalizado opcional para este Comandante IA, exibido na lista de comandantes do tablet ALiVE e nas mensagens de registo. Deixe em branco para o nomear a partir do seu lado (por exemplo BLUFOR Commander).</Portuguese>
-    <Russian>Необязательное собственное имя для этого ИИ-командира, отображается в списке командиров на планшете ALiVE и в сообщениях журнала. Оставьте пустым, чтобы назвать его по стороне (например, BLUFOR Commander).</Russian>
+    <English>Optional custom name for this AI Commander, shown in the commander list on the ALiVE tablet and in log messages, and used to open its side's HQ radio messages. Only the first named commander of a side is heard on the radio. Leave blank to name it after its side (for example BLUFOR Commander).</English>
+    <Chinese>此 AI 指揮官的可選自訂名稱，顯示於 ALiVE 平板電腦的指揮官列表和日誌訊息中，並作為其陣營總部無線電訊息的開頭。每個陣營只有第一個命名的指揮官會在無線電中使用。留空則以其陣營命名（例如 BLUFOR Commander）。</Chinese>
+    <Chinesesimp>此 AI 指挥官的可选自定义名称，显示于 ALiVE 平板电脑的指挥官列表和日志信息中，并作为其阵营总部无线电信息的开头。每个阵营只有第一个命名的指挥官会在无线电中使用。留空则以其阵营命名（例如 BLUFOR Commander）。</Chinesesimp>
+    <Spanish>Nombre personalizado opcional para este Comandante IA, que se muestra en la lista de comandantes de la tableta ALiVE y en los mensajes de registro, y con el que empiezan los mensajes de radio del cuartel general de su bando. Solo se usa en la radio el primer comandante con nombre de cada bando. Déjalo en blanco para nombrarlo según su bando (por ejemplo BLUFOR Commander).</Spanish>
+    <French>Nom personnalisé facultatif pour ce Commandant IA, affiché dans la liste des commandants de la tablette ALiVE et dans les messages du journal, et utilisé en tête des messages radio du QG de son camp. Seul le premier commandant nommé d'un camp est utilisé à la radio. Laissez vide pour le nommer d'après son camp (par exemple BLUFOR Commander).</French>
+    <Portuguese>Nome personalizado opcional para este Comandante IA, exibido na lista de comandantes do tablet ALiVE e nas mensagens de registo, e usado no início das mensagens de rádio do QG do seu lado. Só o primeiro comandante com nome de cada lado é usado no rádio. Deixe em branco para o nomear a partir do seu lado (por exemplo BLUFOR Commander).</Portuguese>
+    <Russian>Необязательное собственное имя для этого ИИ-командира, отображается в списке командиров на планшете ALiVE и в сообщениях журнала, а также открывает радиосообщения штаба его стороны. По радио используется только первый названный командир каждой стороны. Оставьте пустым, чтобы назвать его по стороне (например, BLUFOR Commander).</Russian>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_CONTROLTYPE">
     <English>Control Type:</English>
