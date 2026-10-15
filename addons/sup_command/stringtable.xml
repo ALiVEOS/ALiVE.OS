@@ -27,4 +27,491 @@
     <Chinesesimp>命令/控制</Chinesesimp>
     <Spanish>Mando y control</Spanish>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_SCOM_UI_CLICK_FOCUS">
+    <English>Click on map to select center of image focus</English>
+    <Chinesesimp>点击地图选择图像焦点中心</Chinesesimp>
+    <Chinese>點擊地圖選擇影像焦點中心</Chinese>
+    <Spanish>Haz clic en el mapa para elegir el centro de la imagen</Spanish>
+    <French>Cliquez sur la carte pour choisir le centre de l'image</French>
+    <Portuguese>Clique no mapa para escolher o centro da imagem</Portuguese>
+    <Russian>Щёлкните по карте, чтобы выбрать центр изображения</Russian>
+</Key>
+<Key ID="STR_ALIVE_SCOM_UI_BACK">
+    <English>Back</English>
+    <Chinesesimp>返回</Chinesesimp>
+    <Chinese>返回</Chinese>
+    <Spanish>Atrás</Spanish>
+    <French>Retour</French>
+    <Portuguese>Voltar</Portuguese>
+    <Russian>Назад</Russian>
+</Key>
+<Key ID="STR_ALIVE_SCOM_UI_CAMERA_CATEGORY">
+    <English>Select camera option category</English>
+    <Chinesesimp>选择摄像机选项类别</Chinesesimp>
+    <Chinese>選擇攝影機選項類別</Chinese>
+    <Spanish>Elige una categoría de cámara</Spanish>
+    <French>Choisissez une catégorie de caméra</French>
+    <Portuguese>Escolha uma categoria de câmara</Portuguese>
+    <Russian>Выберите категорию настроек камеры</Russian>
+</Key>
+<Key ID="STR_ALIVE_SCOM_UI_ZOOM">
+    <English>Zoom</English>
+    <Chinesesimp>缩放</Chinesesimp>
+    <Chinese>縮放</Chinese>
+    <Spanish>Zoom</Spanish>
+    <French>Zoom</French>
+    <Portuguese>Zoom</Portuguese>
+    <Russian>Масштаб</Russian>
+</Key>
+<Key ID="STR_ALIVE_SCOM_UI_EFFECTS">
+    <English>Effects</English>
+    <Chinesesimp>效果</Chinesesimp>
+    <Chinese>效果</Chinese>
+    <Spanish>Efectos</Spanish>
+    <French>Effets</French>
+    <Portuguese>Efeitos</Portuguese>
+    <Russian>Эффекты</Russian>
+</Key>
+<Key ID="STR_ALIVE_SCOM_UI_ZOOM_OPTION">
+    <English>Select zoom option</English>
+    <Chinesesimp>选择缩放选项</Chinesesimp>
+    <Chinese>選擇縮放選項</Chinese>
+    <Spanish>Elige el zoom</Spanish>
+    <French>Choisissez le zoom</French>
+    <Portuguese>Escolha o zoom</Portuguese>
+    <Russian>Выберите масштаб</Russian>
+</Key>
+<Key ID="STR_ALIVE_SCOM_UI_ZOOM_IN">
+    <English>Zoom in</English>
+    <Chinesesimp>放大</Chinesesimp>
+    <Chinese>放大</Chinese>
+    <Spanish>Acercar</Spanish>
+    <French>Zoom avant</French>
+    <Portuguese>Aproximar</Portuguese>
+    <Russian>Приблизить</Russian>
+</Key>
+<Key ID="STR_ALIVE_SCOM_UI_ZOOM_OUT">
+    <English>Zoom Out</English>
+    <Chinesesimp>缩小</Chinesesimp>
+    <Chinese>縮小</Chinese>
+    <Spanish>Alejar</Spanish>
+    <French>Zoom arrière</French>
+    <Portuguese>Afastar</Portuguese>
+    <Russian>Отдалить</Russian>
+</Key>
+<Key ID="STR_ALIVE_SCOM_UI_CAMERA_EFFECT">
+    <English>Select camera effect</English>
+    <Chinesesimp>选择摄像机效果</Chinesesimp>
+    <Chinese>選擇攝影機效果</Chinese>
+    <Spanish>Elige el efecto de cámara</Spanish>
+    <French>Choisissez l'effet de caméra</French>
+    <Portuguese>Escolha o efeito da câmara</Portuguese>
+    <Russian>Выберите эффект камеры</Russian>
+</Key>
+<Key ID="STR_ALIVE_SCOM_UI_NORMAL">
+    <English>Normal</English>
+    <Chinesesimp>正常</Chinesesimp>
+    <Chinese>正常</Chinese>
+    <Spanish>Normal</Spanish>
+    <French>Normal</French>
+    <Portuguese>Normal</Portuguese>
+    <Russian>Обычный</Russian>
+</Key>
+<Key ID="STR_ALIVE_SCOM_UI_NIGHT_VISION">
+    <English>Night Vision</English>
+    <Chinesesimp>夜视</Chinesesimp>
+    <Chinese>夜視</Chinese>
+    <Spanish>Visión nocturna</Spanish>
+    <French>Vision nocturne</French>
+    <Portuguese>Visão noturna</Portuguese>
+    <Russian>Ночное видение</Russian>
+</Key>
+<Key ID="STR_ALIVE_SCOM_UI_THERMAL">
+    <English>Thermal</English>
+    <Chinesesimp>热成像</Chinesesimp>
+    <Chinese>熱成像</Chinese>
+    <Spanish>Térmica</Spanish>
+    <French>Thermique</French>
+    <Portuguese>Térmica</Portuguese>
+    <Russian>Тепловизор</Russian>
+</Key>
+<Key ID="STR_ALIVE_SCOM_UI_PREPARING_JOIN">
+    <English>Operations: Preparing Instant Join</English>
+    <Chinesesimp>行动：正在准备立即加入</Chinesesimp>
+    <Chinese>行動：正在準備立即加入</Chinese>
+    <Spanish>Operaciones: preparando la unión inmediata</Spanish>
+    <French>Opérations : préparation du ralliement immédiat</French>
+    <Portuguese>Operações: a preparar a entrada imediata</Portuguese>
+    <Russian>Операции: подготовка мгновенного вступления</Russian>
+</Key>
+<Key ID="STR_ALIVE_SCOM_UI_BACK_GROUPS">
+    <English>Back to Groups</English>
+    <Chinesesimp>返回小组</Chinesesimp>
+    <Chinese>返回小組</Chinese>
+    <Spanish>Volver a los grupos</Spanish>
+    <French>Retour aux groupes</French>
+    <Portuguese>Voltar aos grupos</Portuguese>
+    <Russian>Назад к группам</Russian>
+</Key>
+<Key ID="STR_ALIVE_SCOM_UI_CANCEL">
+    <English>Cancel</English>
+    <Chinesesimp>取消</Chinesesimp>
+    <Chinese>取消</Chinese>
+    <Spanish>Cancelar</Spanish>
+    <French>Annuler</French>
+    <Portuguese>Cancelar</Portuguese>
+    <Russian>Отмена</Russian>
+</Key>
+<Key ID="STR_ALIVE_SCOM_UI_TAKE_CONTROL">
+    <English>Take Control</English>
+    <Chinesesimp>接管控制</Chinesesimp>
+    <Chinese>接管控制</Chinese>
+    <Spanish>Tomar el control</Spanish>
+    <French>Prendre le contrôle</French>
+    <Portuguese>Assumir o controlo</Portuguese>
+    <Russian>Взять управление</Russian>
+</Key>
+<Key ID="STR_ALIVE_SCOM_UI_CLOSE">
+    <English>Close</English>
+    <Chinesesimp>关闭</Chinesesimp>
+    <Chinese>關閉</Chinese>
+    <Spanish>Cerrar</Spanish>
+    <French>Fermer</French>
+    <Portuguese>Fechar</Portuguese>
+    <Russian>Закрыть</Russian>
+</Key>
+<Key ID="STR_ALIVE_SCOM_UI_VIEW_UNITS">
+    <English>View units</English>
+    <Chinesesimp>查看单位</Chinesesimp>
+    <Chinese>查看單位</Chinese>
+    <Spanish>Ver unidades</Spanish>
+    <French>Voir les unités</French>
+    <Portuguese>Ver unidades</Portuguese>
+    <Russian>Показать бойцов</Russian>
+</Key>
+<Key ID="STR_ALIVE_SCOM_UI_ORDERS_TITLE">
+    <English>Operations: Orders - click map to add; select an order to edit</English>
+    <Chinesesimp>行动：命令 - 点击地图添加；选择命令进行编辑</Chinesesimp>
+    <Chinese>行動：命令 - 點擊地圖新增；選擇命令進行編輯</Chinese>
+    <Spanish>Operaciones: órdenes - clic en el mapa para añadir; elige una orden para editarla</Spanish>
+    <French>Opérations : ordres - cliquez sur la carte pour ajouter ; choisissez un ordre pour le modifier</French>
+    <Portuguese>Operações: ordens - clique no mapa para adicionar; escolha uma ordem para editar</Portuguese>
+    <Russian>Операции: приказы - щелчок по карте добавляет, выберите приказ для правки</Russian>
+</Key>
+<Key ID="STR_ALIVE_SCOM_UI_DISCARD_ORDERS">
+    <English>Discard Order Changes</English>
+    <Chinesesimp>放弃命令更改</Chinesesimp>
+    <Chinese>放棄命令變更</Chinese>
+    <Spanish>Descartar los cambios de órdenes</Spanish>
+    <French>Annuler les changements d'ordres</French>
+    <Portuguese>Descartar as alterações às ordens</Portuguese>
+    <Russian>Отменить изменения приказов</Russian>
+</Key>
+<Key ID="STR_ALIVE_SCOM_UI_APPLY_ORDERS">
+    <English>Apply Orders</English>
+    <Chinesesimp>应用命令</Chinesesimp>
+    <Chinese>套用命令</Chinese>
+    <Spanish>Aplicar órdenes</Spanish>
+    <French>Appliquer les ordres</French>
+    <Portuguese>Aplicar ordens</Portuguese>
+    <Russian>Применить приказы</Russian>
+</Key>
+<Key ID="STR_ALIVE_SCOM_UI_CONFIRM_POSITION">
+    <English>Confirm Position</English>
+    <Chinesesimp>确认位置</Chinesesimp>
+    <Chinese>確認位置</Chinese>
+    <Spanish>Confirmar posición</Spanish>
+    <French>Confirmer la position</French>
+    <Portuguese>Confirmar posição</Portuguese>
+    <Russian>Подтвердить позицию</Russian>
+</Key>
+<Key ID="STR_ALIVE_SCOM_UI_CANCEL_DESIGNATION">
+    <English>Cancel Designation</English>
+    <Chinesesimp>取消指定</Chinesesimp>
+    <Chinese>取消指定</Chinese>
+    <Spanish>Cancelar la designación</Spanish>
+    <French>Annuler la désignation</French>
+    <Portuguese>Cancelar a designação</Portuguese>
+    <Russian>Отменить назначение</Russian>
+</Key>
+<Key ID="STR_ALIVE_SCOM_UI_INTEL">
+    <English>Intel</English>
+    <Chinesesimp>情报</Chinesesimp>
+    <Chinese>情報</Chinese>
+    <Spanish>Inteligencia</Spanish>
+    <French>Renseignement</French>
+    <Portuguese>Informações</Portuguese>
+    <Russian>Разведка</Russian>
+</Key>
+<Key ID="STR_ALIVE_SCOM_UI_INTEL_TYPE">
+    <English>Intel Type</English>
+    <Chinesesimp>情报类型</Chinesesimp>
+    <Chinese>情報類型</Chinese>
+    <Spanish>Tipo de inteligencia</Spanish>
+    <French>Type de renseignement</French>
+    <Portuguese>Tipo de informações</Portuguese>
+    <Russian>Тип разведданных</Russian>
+</Key>
+<Key ID="STR_ALIVE_SCOM_UI_SELECT_COMMANDER_DISPLAY">
+    <English>Select Commander to display</English>
+    <Chinesesimp>选择要显示的指挥官</Chinesesimp>
+    <Chinese>選擇要顯示的指揮官</Chinese>
+    <Spanish>Elige el comandante que mostrar</Spanish>
+    <French>Choisissez le commandant à afficher</French>
+    <Portuguese>Escolha o comandante a mostrar</Portuguese>
+    <Russian>Выберите командира для показа</Russian>
+</Key>
+<Key ID="STR_ALIVE_SCOM_UI_SELECT_IMINT">
+    <English>Select IMINT source to display</English>
+    <Chinesesimp>选择要显示的图像情报来源</Chinesesimp>
+    <Chinese>選擇要顯示的影像情報來源</Chinese>
+    <Spanish>Elige la fuente de IMINT que mostrar</Spanish>
+    <French>Choisissez la source IMINT à afficher</French>
+    <Portuguese>Escolha a fonte IMINT a mostrar</Portuguese>
+    <Russian>Выберите источник видовой разведки</Russian>
+</Key>
+<Key ID="STR_ALIVE_SCOM_UI_NO_IMINT">
+    <English>No IMINT sources found</English>
+    <Chinesesimp>未找到图像情报来源</Chinesesimp>
+    <Chinese>未找到影像情報來源</Chinese>
+    <Spanish>No hay fuentes de IMINT</Spanish>
+    <French>Aucune source IMINT trouvée</French>
+    <Portuguese>Nenhuma fonte IMINT encontrada</Portuguese>
+    <Russian>Источники видовой разведки не найдены</Russian>
+</Key>
+<Key ID="STR_ALIVE_SCOM_UI_OPERATIONS">
+    <English>Operations</English>
+    <Chinesesimp>行动</Chinesesimp>
+    <Chinese>行動</Chinese>
+    <Spanish>Operaciones</Spanish>
+    <French>Opérations</French>
+    <Portuguese>Operações</Portuguese>
+    <Russian>Операции</Russian>
+</Key>
+<Key ID="STR_ALIVE_SCOM_UI_CANCEL_JOIN">
+    <English>Cancel Instant Join</English>
+    <Chinesesimp>取消立即加入</Chinesesimp>
+    <Chinese>取消立即加入</Chinese>
+    <Spanish>Cancelar la unión inmediata</Spanish>
+    <French>Annuler le ralliement immédiat</French>
+    <Portuguese>Cancelar a entrada imediata</Portuguese>
+    <Russian>Отменить мгновенное вступление</Russian>
+</Key>
+<Key ID="STR_ALIVE_SCOM_UI_CANCEL_SPECTATE">
+    <English>Cancel Spectate</English>
+    <Chinesesimp>取消观战</Chinesesimp>
+    <Chinese>取消觀戰</Chinese>
+    <Spanish>Cancelar la observación</Spanish>
+    <French>Annuler l'observation</French>
+    <Portuguese>Cancelar a observação</Portuguese>
+    <Russian>Прекратить наблюдение</Russian>
+</Key>
+<Key ID="STR_ALIVE_SCOM_UI_SELECT_COMMANDER_TITLE">
+    <English>Operations: Select Commander</English>
+    <Chinesesimp>行动：选择指挥官</Chinesesimp>
+    <Chinese>行動：選擇指揮官</Chinese>
+    <Spanish>Operaciones: elegir comandante</Spanish>
+    <French>Opérations : choisir le commandant</French>
+    <Portuguese>Operações: escolher o comandante</Portuguese>
+    <Russian>Операции: выбор командира</Russian>
+</Key>
+<Key ID="STR_ALIVE_SCOM_UI_SELECT_COMMANDER_USE">
+    <English>Select Commander to use</English>
+    <Chinesesimp>选择要使用的指挥官</Chinesesimp>
+    <Chinese>選擇要使用的指揮官</Chinese>
+    <Spanish>Elige el comandante que usar</Spanish>
+    <French>Choisissez le commandant à utiliser</French>
+    <Portuguese>Escolha o comandante a usar</Portuguese>
+    <Russian>Выберите командира</Russian>
+</Key>
+<Key ID="STR_ALIVE_SCOM_UI_GROUPS_TITLE">
+    <English>Operations: Groups - double-click a group to issue orders</English>
+    <Chinesesimp>行动：小组 - 双击小组下达命令</Chinesesimp>
+    <Chinese>行動：小組 - 雙擊小組下達命令</Chinese>
+    <Spanish>Operaciones: grupos - doble clic en un grupo para dar órdenes</Spanish>
+    <French>Opérations : groupes - double-cliquez sur un groupe pour donner des ordres</French>
+    <Portuguese>Operações: grupos - duplo clique num grupo para dar ordens</Portuguese>
+    <Russian>Операции: группы - двойной щелчок по группе отдаёт приказы</Russian>
+</Key>
+<Key ID="STR_ALIVE_SCOM_UI_CHANGE_COMMANDER">
+    <English>Change Commander</English>
+    <Chinesesimp>更换指挥官</Chinesesimp>
+    <Chinese>更換指揮官</Chinese>
+    <Spanish>Cambiar de comandante</Spanish>
+    <French>Changer de commandant</French>
+    <Portuguese>Mudar de comandante</Portuguese>
+    <Russian>Сменить командира</Russian>
+</Key>
+<Key ID="STR_ALIVE_SCOM_UI_GROUP_LIST_TIP">
+    <English>Select for group actions. Double-click to issue orders.</English>
+    <Chinesesimp>选择以执行小组操作。双击下达命令。</Chinesesimp>
+    <Chinese>選擇以執行小組操作。雙擊下達命令。</Chinese>
+    <Spanish>Selecciona para acciones de grupo. Doble clic para dar órdenes.</Spanish>
+    <French>Sélectionnez pour les actions de groupe. Double-cliquez pour donner des ordres.</French>
+    <Portuguese>Selecione para ações de grupo. Duplo clique para dar ordens.</Portuguese>
+    <Russian>Выберите для действий с группой. Двойной щелчок отдаёт приказы.</Russian>
+</Key>
+<Key ID="STR_ALIVE_SCOM_UI_VIEW_OBJECTIVES">
+    <English>View Objectives</English>
+    <Chinesesimp>查看目标</Chinesesimp>
+    <Chinese>查看目標</Chinese>
+    <Spanish>Ver objetivos</Spanish>
+    <French>Voir les objectifs</French>
+    <Portuguese>Ver objetivos</Portuguese>
+    <Russian>Показать цели</Russian>
+</Key>
+<Key ID="STR_ALIVE_SCOM_UI_OBJECTIVES_TITLE">
+    <English>Operations: Commander Objectives</English>
+    <Chinesesimp>行动：指挥官目标</Chinesesimp>
+    <Chinese>行動：指揮官目標</Chinese>
+    <Spanish>Operaciones: objetivos del comandante</Spanish>
+    <French>Opérations : objectifs du commandant</French>
+    <Portuguese>Operações: objetivos do comandante</Portuguese>
+    <Russian>Операции: цели командира</Russian>
+</Key>
+<Key ID="STR_ALIVE_SCOM_UI_DESIGNATE">
+    <English>Designate Objective</English>
+    <Chinesesimp>指定目标</Chinesesimp>
+    <Chinese>指定目標</Chinese>
+    <Spanish>Designar objetivo</Spanish>
+    <French>Désigner un objectif</French>
+    <Portuguese>Designar objetivo</Portuguese>
+    <Russian>Назначить цель</Russian>
+</Key>
+<Key ID="STR_ALIVE_SCOM_UI_REFRESH">
+    <English>Refresh</English>
+    <Chinesesimp>刷新</Chinesesimp>
+    <Chinese>重新整理</Chinese>
+    <Spanish>Actualizar</Spanish>
+    <French>Actualiser</French>
+    <Portuguese>Atualizar</Portuguese>
+    <Russian>Обновить</Russian>
+</Key>
+<Key ID="STR_ALIVE_SCOM_UI_VIEW_GROUPS">
+    <English>View Groups</English>
+    <Chinesesimp>查看小组</Chinesesimp>
+    <Chinese>查看小組</Chinese>
+    <Spanish>Ver grupos</Spanish>
+    <French>Voir les groupes</French>
+    <Portuguese>Ver grupos</Portuguese>
+    <Russian>Показать группы</Russian>
+</Key>
+<Key ID="STR_ALIVE_SCOM_UI_PRIORITY_UP">
+    <English>Move Priority Up</English>
+    <Chinesesimp>提高优先级</Chinesesimp>
+    <Chinese>提高優先級</Chinese>
+    <Spanish>Subir prioridad</Spanish>
+    <French>Monter la priorité</French>
+    <Portuguese>Subir prioridade</Portuguese>
+    <Russian>Повысить приоритет</Russian>
+</Key>
+<Key ID="STR_ALIVE_SCOM_UI_PRIORITY_DOWN">
+    <English>Move Priority Down</English>
+    <Chinesesimp>降低优先级</Chinesesimp>
+    <Chinese>降低優先級</Chinese>
+    <Spanish>Bajar prioridad</Spanish>
+    <French>Baisser la priorité</French>
+    <Portuguese>Baixar prioridade</Portuguese>
+    <Russian>Понизить приоритет</Russian>
+</Key>
+<Key ID="STR_ALIVE_SCOM_UI_CANCEL_OBJECTIVE">
+    <English>Cancel Objective</English>
+    <Chinesesimp>取消目标</Chinesesimp>
+    <Chinese>取消目標</Chinese>
+    <Spanish>Cancelar objetivo</Spanish>
+    <French>Annuler l'objectif</French>
+    <Portuguese>Cancelar objetivo</Portuguese>
+    <Russian>Отменить цель</Russian>
+</Key>
+<Key ID="STR_ALIVE_SCOM_UI_ISSUE_ORDERS">
+    <English>Issue Orders</English>
+    <Chinesesimp>下达命令</Chinesesimp>
+    <Chinese>下達命令</Chinese>
+    <Spanish>Dar órdenes</Spanish>
+    <French>Donner des ordres</French>
+    <Portuguese>Dar ordens</Portuguese>
+    <Russian>Отдать приказы</Russian>
+</Key>
+<Key ID="STR_ALIVE_SCOM_UI_INSTANT_JOIN">
+    <English>Instant Join Group</English>
+    <Chinesesimp>立即加入小组</Chinesesimp>
+    <Chinese>立即加入小組</Chinese>
+    <Spanish>Unirse al grupo ya</Spanish>
+    <French>Rejoindre le groupe immédiatement</French>
+    <Portuguese>Entrar no grupo já</Portuguese>
+    <Russian>Мгновенно вступить в группу</Russian>
+</Key>
+<Key ID="STR_ALIVE_SCOM_UI_SPECTATE">
+    <English>Spectate Group</English>
+    <Chinesesimp>观战小组</Chinesesimp>
+    <Chinese>觀戰小組</Chinese>
+    <Spanish>Observar grupo</Spanish>
+    <French>Observer le groupe</French>
+    <Portuguese>Observar grupo</Portuguese>
+    <Russian>Наблюдать за группой</Russian>
+</Key>
+<Key ID="STR_ALIVE_SCOM_UI_UNLOCK_GROUP">
+    <English>Unlock Group for AI Commander Control</English>
+    <Chinesesimp>解锁小组供 AI 指挥官控制</Chinesesimp>
+    <Chinese>解鎖小組供 AI 指揮官控制</Chinese>
+    <Spanish>Desbloquear el grupo para el comandante IA</Spanish>
+    <French>Rendre le groupe au commandant IA</French>
+    <Portuguese>Desbloquear o grupo para o comandante IA</Portuguese>
+    <Russian>Вернуть группу ИИ-командиру</Russian>
+</Key>
+<Key ID="STR_ALIVE_SCOM_UI_LOCK_GROUP">
+    <English>Lock Group from AI Commander Control</English>
+    <Chinesesimp>锁定小组不受 AI 指挥官控制</Chinesesimp>
+    <Chinese>鎖定小組不受 AI 指揮官控制</Chinese>
+    <Spanish>Bloquear el grupo al comandante IA</Spanish>
+    <French>Soustraire le groupe au commandant IA</French>
+    <Portuguese>Bloquear o grupo ao comandante IA</Portuguese>
+    <Russian>Закрыть группу от ИИ-командира</Russian>
+</Key>
+<Key ID="STR_ALIVE_SCOM_UI_CLEAR_ORDERS">
+    <English>Clear All Orders</English>
+    <Chinesesimp>清除所有命令</Chinesesimp>
+    <Chinese>清除所有命令</Chinese>
+    <Spanish>Borrar todas las órdenes</Spanish>
+    <French>Effacer tous les ordres</French>
+    <Portuguese>Limpar todas as ordens</Portuguese>
+    <Russian>Очистить все приказы</Russian>
+</Key>
+<Key ID="STR_ALIVE_SCOM_UI_DELETE">
+    <English>Delete</English>
+    <Chinesesimp>删除</Chinesesimp>
+    <Chinese>刪除</Chinese>
+    <Spanish>Eliminar</Spanish>
+    <French>Supprimer</French>
+    <Portuguese>Eliminar</Portuguese>
+    <Russian>Удалить</Russian>
+</Key>
+<Key ID="STR_ALIVE_SCOM_UI_DELETE_ORDER_TIP">
+    <English>Delete Selected Order</English>
+    <Chinesesimp>删除所选命令</Chinesesimp>
+    <Chinese>刪除所選命令</Chinese>
+    <Spanish>Eliminar la orden seleccionada</Spanish>
+    <French>Supprimer l'ordre sélectionné</French>
+    <Portuguese>Eliminar a ordem selecionada</Portuguese>
+    <Russian>Удалить выбранный приказ</Russian>
+</Key>
+<Key ID="STR_ALIVE_SCOM_UI_JOIN_UNIT_TITLE">
+    <English>Operations: Choose Instant Join Unit</English>
+    <Chinesesimp>行动：选择立即加入的单位</Chinesesimp>
+    <Chinese>行動：選擇立即加入的單位</Chinese>
+    <Spanish>Operaciones: elegir unidad para unirse ya</Spanish>
+    <French>Opérations : choisir l'unité du ralliement immédiat</French>
+    <Portuguese>Operações: escolher a unidade para entrar já</Portuguese>
+    <Russian>Операции: выбор бойца для мгновенного вступления</Russian>
+</Key>
+<Key ID="STR_ALIVE_SCOM_UI_TERRAIN">
+    <English>Terrain</English>
+    <Chinesesimp>地形</Chinesesimp>
+    <Chinese>地形</Chinese>
+    <Spanish>Terreno</Spanish>
+    <French>Terrain</French>
+    <Portuguese>Terreno</Portuguese>
+    <Russian>Местность</Russian>
+</Key>
 </Container></Package></Project>

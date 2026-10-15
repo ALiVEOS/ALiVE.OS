@@ -1022,7 +1022,7 @@ switch (_operation) do {
                         _intelTypeTitle = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_IntelTypeTitle);
                         _intelTypeTitle ctrlShow true;
 
-                        _intelTypeTitle ctrlSetText "Click on map to select center of image focus";
+                        _intelTypeTitle ctrlSetText localize "STR_ALIVE_SCOM_UI_CLICK_FOCUS";
 
                         _listValues = [_commandState,"intelListValues"] call ALIVE_fnc_hashGet;
                         _source = _listValues select _selectedIndex;
@@ -1041,7 +1041,7 @@ switch (_operation) do {
                         _back = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_SubMenuBack);
                         _back ctrlShow true;
 
-                        _back ctrlSetText "Back";
+                        _back ctrlSetText localize "STR_ALIVE_SCOM_UI_BACK";
 
                         _back ctrlSetEventHandler ["MouseButtonClick", "['INTEL_RESET',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
@@ -1120,7 +1120,7 @@ switch (_operation) do {
                     _intelTypeTitle = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_IntelTypeTitle);
                     _intelTypeTitle ctrlShow true;
 
-                    _intelTypeTitle ctrlSetText "Select camera option category";
+                    _intelTypeTitle ctrlSetText localize "STR_ALIVE_SCOM_UI_CAMERA_CATEGORY";
 
                     _intelTypeList = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_IntelTypeList);
                     _intelTypeList ctrlShow true;
@@ -1130,10 +1130,10 @@ switch (_operation) do {
 
                     // add camera effect options to list
 
-                    _index = _intelTypeList lbAdd "Zoom";
+                    _index = _intelTypeList lbAdd localize "STR_ALIVE_SCOM_UI_ZOOM";
                     _intelTypeList lbSetData [_index,"zoom"];
 
-                    _index = _intelTypeList lbAdd "Effects";
+                    _index = _intelTypeList lbAdd localize "STR_ALIVE_SCOM_UI_EFFECTS";
                     _intelTypeList lbSetData [_index,"effects"];
 
                     _intelTypeList ctrlSetEventHandler ["LBSelChanged", "['INTEL_IMINT_CAMERA_OPTION_CATEGORY_SELECT',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
@@ -1141,7 +1141,7 @@ switch (_operation) do {
                     _back = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_SubMenuBack);
                     _back ctrlShow true;
 
-                    _back ctrlSetText "Back";
+                    _back ctrlSetText localize "STR_ALIVE_SCOM_UI_BACK";
 
                     _back ctrlSetEventHandler ["MouseButtonClick", "['INTEL_IMINT_CANCEL_IMAGE_VIEWING',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
@@ -1165,15 +1165,15 @@ switch (_operation) do {
 
                         case "zoom": {
 
-                            _intelTypeTitle ctrlSetText "Select zoom option";
+                            _intelTypeTitle ctrlSetText localize "STR_ALIVE_SCOM_UI_ZOOM_OPTION";
 
                             lbClear _intelTypeList;
                             _intelTypeList lbSetCurSel -1;
 
-                            _index = _intelTypeList lbAdd "Zoom in";
+                            _index = _intelTypeList lbAdd localize "STR_ALIVE_SCOM_UI_ZOOM_IN";
                             _intelTypeList lbSetData [_index,"zoom_in"];
 
-                            _index = _intelTypeList lbAdd "Zoom Out";
+                            _index = _intelTypeList lbAdd localize "STR_ALIVE_SCOM_UI_ZOOM_OUT";
                             _intelTypeList lbSetData [_index,"zoom_out"];
 
                             _intelTypeList ctrlSetEventHandler ["LBSelChanged", "['INTEL_IMINT_CAMERA_ZOOM_SELECT',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
@@ -1182,18 +1182,18 @@ switch (_operation) do {
 
                         case "effects": {
 
-                            _intelTypeTitle ctrlSetText "Select camera effect";
+                            _intelTypeTitle ctrlSetText localize "STR_ALIVE_SCOM_UI_CAMERA_EFFECT";
 
                             lbClear _intelTypeList;
                             _intelTypeList lbSetCurSel -1;
 
-                            _index = _intelTypeList lbAdd "Normal";
+                            _index = _intelTypeList lbAdd localize "STR_ALIVE_SCOM_UI_NORMAL";
                             _intelTypeList lbSetData [_index,"normal"];
 
-                            _index = _intelTypeList lbAdd "Night Vision";
+                            _index = _intelTypeList lbAdd localize "STR_ALIVE_SCOM_UI_NIGHT_VISION";
                             _intelTypeList lbSetData [_index,"nvg"];
 
-                            _index = _intelTypeList lbAdd "Thermal";
+                            _index = _intelTypeList lbAdd localize "STR_ALIVE_SCOM_UI_THERMAL";
                             _intelTypeList lbSetData [_index,"thermal"];
 
                             _intelTypeList ctrlSetEventHandler ["LBSelChanged", "['INTEL_IMINT_CAMERA_EFFECT_SELECT',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
@@ -1204,7 +1204,7 @@ switch (_operation) do {
 
                     _back = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_SubMenuBack);
                     _back ctrlShow true;
-                    _back ctrlSetText "Back";
+                    _back ctrlSetText localize "STR_ALIVE_SCOM_UI_BACK";
                     _back ctrlSetEventHandler ["MouseButtonClick", "['INTEL_IMINT_DISPLAY_CAMERA_OPTION_CATEGORIES',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
                 };
@@ -1519,15 +1519,15 @@ switch (_operation) do {
                     } forEach [SCOMTablet_CTRL_BL1,SCOMTablet_CTRL_BL2,SCOMTablet_CTRL_BL3,SCOMTablet_CTRL_BR1,SCOMTablet_CTRL_BR2,SCOMTablet_CTRL_BR3];
 
                     private _title = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_Title);
-                    _title ctrlSetText "Operations: Preparing Instant Join";
+                    _title ctrlSetText localize "STR_ALIVE_SCOM_UI_PREPARING_JOIN";
 
                     private _back = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_SubMenuBack);
                     _back ctrlShow true;
-                    _back ctrlSetText "Back to Groups";
+                    _back ctrlSetText localize "STR_ALIVE_SCOM_UI_BACK_GROUPS";
                     _back ctrlSetEventHandler ["MouseButtonClick","['OPS_CANCEL_JOIN_SELECTION',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
                     private _abort = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_SubMenuAbort);
-                    _abort ctrlSetText "Cancel";
+                    _abort ctrlSetText localize "STR_ALIVE_SCOM_UI_CANCEL";
                     _abort buttonSetAction "['OPS_CANCEL_JOIN_SELECTION',[]] call ALIVE_fnc_SCOMTabletOnAction";
 
                     ["OPS_JOIN_GROUP", [_playerID,_profileID]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToServer", 2];
@@ -1546,7 +1546,7 @@ switch (_operation) do {
 
                         private _buttonL1 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BL1);
                         _buttonL1 ctrlShow true;
-                        _buttonL1 ctrlSetText "Take Control";
+                        _buttonL1 ctrlSetText localize "STR_ALIVE_SCOM_UI_TAKE_CONTROL";
                         _buttonL1 ctrlSetEventHandler ["MouseButtonClick","['OPS_JOIN_SELECTED_UNIT',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
                         private _unit = _candidates select _selectedIndex;
@@ -1615,7 +1615,7 @@ switch (_operation) do {
                     };
 
                     private _abort = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_SubMenuAbort);
-                    _abort ctrlSetText "Close";
+                    _abort ctrlSetText localize "STR_ALIVE_SCOM_UI_CLOSE";
                     _abort buttonSetAction "closeDialog 0";
 
                     private _groups = [_commandState,"opsGroups",[]] call ALiVE_fnc_hashGet;
@@ -1699,7 +1699,7 @@ switch (_operation) do {
 
                     private _buttonL1 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BL1);
                     _buttonL1 ctrlSetEventHandler ["MouseButtonClick", "['OPS_GROUP_VIEW_UNITS',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
-                    _buttonL1 ctrlSetText "View units";
+                    _buttonL1 ctrlSetText localize "STR_ALIVE_SCOM_UI_VIEW_UNITS";
 
                     private _buttonL2 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BL2);
                     _buttonL2 ctrlShow false;
@@ -1778,14 +1778,14 @@ switch (_operation) do {
                     } foreach [SCOMTablet_CTRL_BL1,SCOMTablet_CTRL_BL2,SCOMTablet_CTRL_BL3,SCOMTablet_CTRL_BR1,SCOMTablet_CTRL_BR2,SCOMTablet_CTRL_BR3];
 
                     private _title = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_Title);
-                    _title ctrlSetText "Operations: Orders - click map to add; select an order to edit";
+                    _title ctrlSetText localize "STR_ALIVE_SCOM_UI_ORDERS_TITLE";
 
                     private _editMap = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_EditMap);
                     _editMap ctrlSetEventHandler ["MouseButtonDblClick",""];
 
                     private _back = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_SubMenuBack);
                     _back ctrlShow true;
-                    _back ctrlSetText "Back to Groups";
+                    _back ctrlSetText localize "STR_ALIVE_SCOM_UI_BACK_GROUPS";
                     _back ctrlSetEventHandler ["MouseButtonClick", "['OPS_CANCEL_EDIT_WAYPOINTS',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
                     // show waiting until response comes back
@@ -1941,12 +1941,12 @@ switch (_operation) do {
 
                         _buttonR2 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR2);
                         _buttonR2 ctrlShow true;
-                        _buttonR2 ctrlSetText "Discard Order Changes";
+                        _buttonR2 ctrlSetText localize "STR_ALIVE_SCOM_UI_DISCARD_ORDERS";
                         _buttonR2 ctrlSetEventHandler ["MouseButtonClick", "['OPS_CANCEL_WAYPOINTS',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
                         _buttonR3 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR3);
                         _buttonR3 ctrlShow true;
-                        _buttonR3 ctrlSetText "Apply Orders";
+                        _buttonR3 ctrlSetText localize "STR_ALIVE_SCOM_UI_APPLY_ORDERS";
                         _buttonR3 ctrlSetEventHandler ["MouseButtonClick", "['OPS_APPLY_WAYPOINTS',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
                     };
@@ -2063,12 +2063,12 @@ switch (_operation) do {
                     [_logic,"setOpsStatus", "Click map to place objective"] call MAINCLASS;
 
                     private _buttonR1 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR1);
-                    _buttonR1 ctrlSetText "Confirm Position";
+                    _buttonR1 ctrlSetText localize "STR_ALIVE_SCOM_UI_CONFIRM_POSITION";
                     _buttonR1 ctrlEnable false;
                     _buttonR1 ctrlSetEventHandler ["MouseButtonClick", "['OPS_OBJECTIVE_CONFIRM',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
                     private _buttonR2 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR2);
-                    _buttonR2 ctrlSetText "Cancel Designation";
+                    _buttonR2 ctrlSetText localize "STR_ALIVE_SCOM_UI_CANCEL_DESIGNATION";
                     _buttonR2 ctrlSetEventHandler ["MouseButtonClick", "['OPS_OBJECTIVE_DESIGNATE_CANCEL',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
                 };
@@ -2293,12 +2293,12 @@ switch (_operation) do {
 
                         private _buttonR2 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR2);
                         _buttonR2 ctrlShow true;
-                        _buttonR2 ctrlSetText "Discard Order Changes";
+                        _buttonR2 ctrlSetText localize "STR_ALIVE_SCOM_UI_DISCARD_ORDERS";
                         _buttonR2 ctrlSetEventHandler ["MouseButtonClick", "['OPS_CANCEL_WAYPOINTS',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
                         private _buttonR3 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR3);
                         _buttonR3 ctrlShow true;
-                        _buttonR3 ctrlSetText "Apply Orders";
+                        _buttonR3 ctrlSetText localize "STR_ALIVE_SCOM_UI_APPLY_ORDERS";
                         _buttonR3 ctrlSetEventHandler ["MouseButtonClick", "['OPS_APPLY_WAYPOINTS',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
                     };
@@ -2352,12 +2352,12 @@ switch (_operation) do {
 
                         _buttonR2 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR2);
                         _buttonR2 ctrlShow true;
-                        _buttonR2 ctrlSetText "Discard Order Changes";
+                        _buttonR2 ctrlSetText localize "STR_ALIVE_SCOM_UI_DISCARD_ORDERS";
                         _buttonR2 ctrlSetEventHandler ["MouseButtonClick", "['OPS_CANCEL_WAYPOINTS',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
                         _buttonR3 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR3);
                         _buttonR3 ctrlShow true;
-                        _buttonR3 ctrlSetText "Apply Orders";
+                        _buttonR3 ctrlSetText localize "STR_ALIVE_SCOM_UI_APPLY_ORDERS";
                         _buttonR3 ctrlSetEventHandler ["MouseButtonClick", "['OPS_APPLY_WAYPOINTS',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
                     };
@@ -2402,12 +2402,12 @@ switch (_operation) do {
 
                         _buttonR2 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR2);
                         _buttonR2 ctrlShow true;
-                        _buttonR2 ctrlSetText "Discard Order Changes";
+                        _buttonR2 ctrlSetText localize "STR_ALIVE_SCOM_UI_DISCARD_ORDERS";
                         _buttonR2 ctrlSetEventHandler ["MouseButtonClick", "['OPS_CANCEL_WAYPOINTS',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
                         _buttonR3 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR3);
                         _buttonR3 ctrlShow true;
-                        _buttonR3 ctrlSetText "Apply Orders";
+                        _buttonR3 ctrlSetText localize "STR_ALIVE_SCOM_UI_APPLY_ORDERS";
                         _buttonR3 ctrlSetEventHandler ["MouseButtonClick", "['OPS_APPLY_WAYPOINTS',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
                     };
@@ -2452,12 +2452,12 @@ switch (_operation) do {
 
                         _buttonR2 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR2);
                         _buttonR2 ctrlShow true;
-                        _buttonR2 ctrlSetText "Discard Order Changes";
+                        _buttonR2 ctrlSetText localize "STR_ALIVE_SCOM_UI_DISCARD_ORDERS";
                         _buttonR2 ctrlSetEventHandler ["MouseButtonClick", "['OPS_CANCEL_WAYPOINTS',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
                         _buttonR3 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR3);
                         _buttonR3 ctrlShow true;
-                        _buttonR3 ctrlSetText "Apply Orders";
+                        _buttonR3 ctrlSetText localize "STR_ALIVE_SCOM_UI_APPLY_ORDERS";
                         _buttonR3 ctrlSetEventHandler ["MouseButtonClick", "['OPS_APPLY_WAYPOINTS',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
                     };
@@ -2502,12 +2502,12 @@ switch (_operation) do {
 
                         _buttonR2 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR2);
                         _buttonR2 ctrlShow true;
-                        _buttonR2 ctrlSetText "Discard Order Changes";
+                        _buttonR2 ctrlSetText localize "STR_ALIVE_SCOM_UI_DISCARD_ORDERS";
                         _buttonR2 ctrlSetEventHandler ["MouseButtonClick", "['OPS_CANCEL_WAYPOINTS',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
                         _buttonR3 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR3);
                         _buttonR3 ctrlShow true;
-                        _buttonR3 ctrlSetText "Apply Orders";
+                        _buttonR3 ctrlSetText localize "STR_ALIVE_SCOM_UI_APPLY_ORDERS";
                         _buttonR3 ctrlSetEventHandler ["MouseButtonClick", "['OPS_APPLY_WAYPOINTS',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
                     };
@@ -2662,7 +2662,7 @@ switch (_operation) do {
         _title = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_Title);
         _title ctrlShow true;
 
-        _title ctrlSetText "Intel";
+        _title ctrlSetText localize "STR_ALIVE_SCOM_UI_INTEL";
 
         _abortButton = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_SubMenuAbort);
         _abortButton ctrlShow true;
@@ -2758,7 +2758,7 @@ switch (_operation) do {
         _intelTypeTitle = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_IntelTypeTitle);
         _intelTypeTitle ctrlShow true;
 
-        _intelTypeTitle ctrlSetText "Intel Type";
+        _intelTypeTitle ctrlSetText localize "STR_ALIVE_SCOM_UI_INTEL_TYPE";
 
         _intelTypeList = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_IntelTypeList);
 
@@ -2789,7 +2789,7 @@ switch (_operation) do {
         _back = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_SubMenuBack);
         _back ctrlShow true;
 
-        _back ctrlSetText "Back";
+        _back ctrlSetText localize "STR_ALIVE_SCOM_UI_BACK";
 
         _back ctrlSetEventHandler ["MouseButtonClick", "['INTEL_RESET',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
@@ -2821,7 +2821,7 @@ switch (_operation) do {
                 _intelTypeTitle = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_IntelTypeTitle);
                 _intelTypeTitle ctrlShow true;
 
-                _intelTypeTitle ctrlSetText "Select Commander to display";
+                _intelTypeTitle ctrlSetText localize "STR_ALIVE_SCOM_UI_SELECT_COMMANDER_DISPLAY";
 
                 _intelTypeList = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_IntelTypeList);
                 _intelTypeList ctrlShow true;
@@ -2860,7 +2860,7 @@ switch (_operation) do {
         _back = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_SubMenuBack);
         _back ctrlShow true;
 
-        _back ctrlSetText "Back";
+        _back ctrlSetText localize "STR_ALIVE_SCOM_UI_BACK";
 
         _back ctrlSetEventHandler ["MouseButtonClick", "['INTEL_RESET',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
@@ -3200,7 +3200,7 @@ switch (_operation) do {
             _intelTypeTitle = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_IntelTypeTitle);
             _intelTypeTitle ctrlShow true;
 
-            _intelTypeTitle ctrlSetText "Select IMINT source to display";
+            _intelTypeTitle ctrlSetText localize "STR_ALIVE_SCOM_UI_SELECT_IMINT";
 
             _intelTypeList = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_IntelTypeList);
             _intelTypeList ctrlShow true;
@@ -3222,7 +3222,7 @@ switch (_operation) do {
                 } foreach _sources;
 
             } else {
-                _intelTypeTitle ctrlSetText "No IMINT sources found";
+                _intelTypeTitle ctrlSetText localize "STR_ALIVE_SCOM_UI_NO_IMINT";
             };
 
             [_commandState,"intelListValues", _listValues] call ALIVE_fnc_hashSet;
@@ -3234,7 +3234,7 @@ switch (_operation) do {
         _back = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_SubMenuBack);
         _back ctrlShow true;
 
-        _back ctrlSetText "Back";
+        _back ctrlSetText localize "STR_ALIVE_SCOM_UI_BACK";
 
         _back ctrlSetEventHandler ["MouseButtonClick", "['INTEL_RESET',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
@@ -3497,7 +3497,7 @@ switch (_operation) do {
         _title = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_Title);
         _title ctrlShow true;
 
-        _title ctrlSetText "Operations";
+        _title ctrlSetText localize "STR_ALIVE_SCOM_UI_OPERATIONS";
 
         _abortButton = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_SubMenuAbort);
         _abortButton ctrlShow true;
@@ -3522,7 +3522,7 @@ switch (_operation) do {
 
             if(_isInstantJoinMode) then {
 
-                _back ctrlSetText "Cancel Instant Join";
+                _back ctrlSetText localize "STR_ALIVE_SCOM_UI_CANCEL_JOIN";
 
                 _back ctrlSetEventHandler ["MouseButtonClick", "['OPS_CANCEL_JOIN_GROUP',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
@@ -3530,7 +3530,7 @@ switch (_operation) do {
 
             if(_isSpectateMode) then {
 
-                _back ctrlSetText "Cancel Spectate";
+                _back ctrlSetText localize "STR_ALIVE_SCOM_UI_CANCEL_SPECTATE";
 
                 _back ctrlSetEventHandler ["MouseButtonClick", "['OPS_CANCEL_SPECTATE_GROUP',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
@@ -3691,7 +3691,7 @@ switch (_operation) do {
         // display the available OPCOM sides
 
         private _title = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_Title);
-        _title ctrlSetText "Operations: Select Commander";
+        _title ctrlSetText localize "STR_ALIVE_SCOM_UI_SELECT_COMMANDER_TITLE";
 
         // this is the first page; Close already provides the exit action
 
@@ -3726,7 +3726,7 @@ switch (_operation) do {
                 _opsTypeTitle = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_IntelTypeTitle);
                 _opsTypeTitle ctrlShow true;
 
-                _opsTypeTitle ctrlSetText "Select Commander to use";
+                _opsTypeTitle ctrlSetText localize "STR_ALIVE_SCOM_UI_SELECT_COMMANDER_USE";
 
                 _opsTypeList = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_IntelTypeList);
                 _opsTypeList ctrlShow true;
@@ -3773,11 +3773,11 @@ switch (_operation) do {
             _groupData = _args select 2;
 
             private _title = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_Title);
-            _title ctrlSetText "Operations: Groups - double-click a group to issue orders";
+            _title ctrlSetText localize "STR_ALIVE_SCOM_UI_GROUPS_TITLE";
 
             private _back = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_SubMenuBack);
             _back ctrlShow true;
-            _back ctrlSetText "Change Commander";
+            _back ctrlSetText localize "STR_ALIVE_SCOM_UI_CHANGE_COMMANDER";
             _back ctrlSetEventHandler ["MouseButtonClick", "['OPS_RESET',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
             if(count(_groupData) > 0) then {
@@ -3928,7 +3928,7 @@ switch (_operation) do {
 
                 _editList ctrlSetEventHandler ["LBSelChanged", "['OPS_GROUP_LIST_SELECT',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
                 _editList ctrlSetEventHandler ["LBDblClick", "['OPS_EDIT_WAYPOINTS',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
-                _editList ctrlSetTooltip "Select for group actions. Double-click to issue orders.";
+                _editList ctrlSetTooltip localize "STR_ALIVE_SCOM_UI_GROUP_LIST_TIP";
 
                 private _returnProfileID = [_commandState,"opsGroupsReturnProfileID",""] call ALiVE_fnc_hashGet;
                 private _returnGroupIndex = if (_returnProfileID != "") then {
@@ -3970,7 +3970,7 @@ switch (_operation) do {
             if ([_logic,"scomOpsAllowPlayerObjectives"] call MAINCLASS) then {
                 private _buttonR3 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR3);
                 _buttonR3 ctrlShow true;
-                _buttonR3 ctrlSetText "View Objectives";
+                _buttonR3 ctrlSetText localize "STR_ALIVE_SCOM_UI_VIEW_OBJECTIVES";
                 _buttonR3 ctrlSetEventHandler ["MouseButtonClick", "['OPS_VIEW_OBJECTIVES',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
             };
 
@@ -4011,7 +4011,7 @@ switch (_operation) do {
         private _commandState = [_logic,"commandState"] call MAINCLASS;
 
         private _title = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_Title);
-        _title ctrlSetText "Operations: Commander Objectives";
+        _title ctrlSetText localize "STR_ALIVE_SCOM_UI_OBJECTIVES_TITLE";
 
         private _objectiveData = [_commandState,"opsObjectivesData"] call ALIVE_fnc_hashGet;
         private _meta = [_commandState,"opsObjectivesMeta"] call ALIVE_fnc_hashGet;
@@ -4086,19 +4086,19 @@ switch (_operation) do {
 
         private _buttonR1 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR1);
         _buttonR1 ctrlShow true;
-        _buttonR1 ctrlSetText "Designate Objective";
+        _buttonR1 ctrlSetText localize "STR_ALIVE_SCOM_UI_DESIGNATE";
         _buttonR1 ctrlSetEventHandler ["MouseButtonClick", "['OPS_OBJECTIVE_DESIGNATE',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
         _buttonR1 ctrlEnable (_playerObjectivesEnabled && {!_maxReached} && {_cooldownRemaining <= 0});
 
         private _buttonR2 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR2);
         _buttonR2 ctrlShow true;
         _buttonR2 ctrlEnable true;
-        _buttonR2 ctrlSetText "Refresh";
+        _buttonR2 ctrlSetText localize "STR_ALIVE_SCOM_UI_REFRESH";
         _buttonR2 ctrlSetEventHandler ["MouseButtonClick", "['OPS_VIEW_OBJECTIVES',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
         private _buttonR3 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR3);
         _buttonR3 ctrlShow true;
-        _buttonR3 ctrlSetText "View Groups";
+        _buttonR3 ctrlSetText localize "STR_ALIVE_SCOM_UI_VIEW_GROUPS";
         _buttonR3 ctrlSetEventHandler ["MouseButtonClick", "['OPS_VIEW_GROUPS',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
         {
@@ -4156,13 +4156,13 @@ switch (_operation) do {
 
         private _buttonL1 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BL1);
         _buttonL1 ctrlShow true;
-        _buttonL1 ctrlSetText "Move Priority Up";
+        _buttonL1 ctrlSetText localize "STR_ALIVE_SCOM_UI_PRIORITY_UP";
         _buttonL1 ctrlSetEventHandler ["MouseButtonClick", "['OPS_OBJECTIVE_MOVE_UP',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
         _buttonL1 ctrlEnable (_selectedIndex > 0);
 
         private _buttonL2 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BL2);
         _buttonL2 ctrlShow true;
-        _buttonL2 ctrlSetText "Move Priority Down";
+        _buttonL2 ctrlSetText localize "STR_ALIVE_SCOM_UI_PRIORITY_DOWN";
         _buttonL2 ctrlSetEventHandler ["MouseButtonClick", "['OPS_OBJECTIVE_MOVE_DOWN',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
         _buttonL2 ctrlEnable (_selectedIndex < (count _objectiveData - 1));
 
@@ -4170,7 +4170,7 @@ switch (_operation) do {
 
         if (_playerCreated) then {
             _buttonL3 ctrlShow true;
-            _buttonL3 ctrlSetText "Cancel Objective";
+            _buttonL3 ctrlSetText localize "STR_ALIVE_SCOM_UI_CANCEL_OBJECTIVE";
             _buttonL3 ctrlSetEventHandler ["MouseButtonClick", "['OPS_OBJECTIVE_CANCEL',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
         } else {
             _buttonL3 ctrlShow false;
@@ -4251,7 +4251,7 @@ switch (_operation) do {
 
         private _buttonL1 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BL1);
         _buttonL1 ctrlShow true;
-        _buttonL1 ctrlSetText "Issue Orders";
+        _buttonL1 ctrlSetText localize "STR_ALIVE_SCOM_UI_ISSUE_ORDERS";
         _buttonL1 ctrlSetEventHandler ["MouseButtonClick", "['OPS_EDIT_WAYPOINTS',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
         private _allowSpectate = [_logic,"scomOpsAllowSpectate"] call MAINCLASS;
@@ -4261,7 +4261,7 @@ switch (_operation) do {
 
             private _buttonR1 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR1);
             _buttonR1 ctrlShow true;
-            _buttonR1 ctrlSetText "Instant Join Group";
+            _buttonR1 ctrlSetText localize "STR_ALIVE_SCOM_UI_INSTANT_JOIN";
             _buttonR1 ctrlSetEventHandler ["MouseButtonClick", "['OPS_JOIN_GROUP',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
         };
@@ -4270,7 +4270,7 @@ switch (_operation) do {
 
             private _buttonR2 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR2);
             _buttonR2 ctrlShow true;
-            _buttonR2 ctrlSetText "Spectate Group";
+            _buttonR2 ctrlSetText localize "STR_ALIVE_SCOM_UI_SPECTATE";
             _buttonR2 ctrlSetEventHandler ["MouseButtonClick", "['OPS_SPECTATE_GROUP',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
         };
@@ -4280,12 +4280,12 @@ switch (_operation) do {
 
         if (_profileBusy) then {
 
-            _buttonL2 ctrlSetText "Unlock Group for AI Commander Control";
+            _buttonL2 ctrlSetText localize "STR_ALIVE_SCOM_UI_UNLOCK_GROUP";
             _buttonL2 ctrlSetEventHandler ["MouseButtonClick", "['OPS_LOCK_GROUP',[_this,false]] call ALIVE_fnc_SCOMTabletOnAction"];
 
         } else {
 
-            _buttonL2 ctrlSetText "Lock Group from AI Commander Control";
+            _buttonL2 ctrlSetText localize "STR_ALIVE_SCOM_UI_LOCK_GROUP";
             _buttonL2 ctrlSetEventHandler ["MouseButtonClick", "['OPS_LOCK_GROUP',[_this,true]] call ALIVE_fnc_SCOMTabletOnAction"];
 
         };
@@ -4313,7 +4313,7 @@ switch (_operation) do {
             if (([_commandState,"opsViewMode","GROUPS"] call ALIVE_fnc_hashGet) != "WAYPOINTS") exitwith {};
 
             private _title = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_Title);
-            _title ctrlSetText "Operations: Orders - click map to add; select an order to edit";
+            _title ctrlSetText localize "STR_ALIVE_SCOM_UI_ORDERS_TITLE";
 
             // hide the loading status text
 
@@ -4445,12 +4445,12 @@ switch (_operation) do {
 
                 _buttonR1 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR1);
                 _buttonR1 ctrlShow true;
-                _buttonR1 ctrlSetText "Clear All Orders";
+                _buttonR1 ctrlSetText localize "STR_ALIVE_SCOM_UI_CLEAR_ORDERS";
                 _buttonR1 ctrlSetEventHandler ["MouseButtonClick", "['OPS_CLEAR_WAYPOINTS',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
                 _backButton = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_SubMenuBack);
                 _backButton ctrlShow true;
-                _backButton ctrlSetText "Back to Groups";
+                _backButton ctrlSetText localize "STR_ALIVE_SCOM_UI_BACK_GROUPS";
                 _backButton ctrlSetEventHandler ["MouseButtonClick", "['OPS_CANCEL_EDIT_WAYPOINTS',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
                 // disable interface elements for interacting with profile
@@ -4775,13 +4775,13 @@ switch (_operation) do {
         _buttonL1 ctrlSetPosition [_deleteX,_deleteY,_deleteWidth,_deleteHeight];
         _buttonL1 ctrlCommit 0;
         _buttonL1 ctrlShow true;
-        _buttonL1 ctrlSetText "Delete";
-        _buttonL1 ctrlSetTooltip "Delete Selected Order";
+        _buttonL1 ctrlSetText localize "STR_ALIVE_SCOM_UI_DELETE";
+        _buttonL1 ctrlSetTooltip localize "STR_ALIVE_SCOM_UI_DELETE_ORDER_TIP";
         _buttonL1 ctrlSetEventHandler ["MouseButtonClick", "['OPS_DELETE_WAYPOINT',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
         private _backButton = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_SubMenuBack);
         _backButton ctrlShow true;
-        _backButton ctrlSetText "Back to Groups";
+        _backButton ctrlSetText localize "STR_ALIVE_SCOM_UI_BACK_GROUPS";
         _backButton ctrlSetEventHandler ["MouseButtonClick", "['OPS_CANCEL_EDIT_WAYPOINTS',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
     };
@@ -4820,7 +4820,7 @@ switch (_operation) do {
             [_logic,"commandState",_commandState] call MAINCLASS;
 
             private _abort = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_SubMenuAbort);
-            _abort ctrlSetText "Close";
+            _abort ctrlSetText localize "STR_ALIVE_SCOM_UI_CLOSE";
             _abort buttonSetAction "closeDialog 0";
 
             private _groups = [_commandState,"opsGroups",[]] call ALiVE_fnc_hashGet;
@@ -4839,7 +4839,7 @@ switch (_operation) do {
         [_logic,"setOpsStatus","Select a unit or double-click to take control"] call MAINCLASS;
 
         private _title = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_Title);
-        _title ctrlSetText "Operations: Choose Instant Join Unit";
+        _title ctrlSetText localize "STR_ALIVE_SCOM_UI_JOIN_UNIT_TITLE";
 
         private _list = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_EditList);
         _list ctrlShow true;
@@ -4901,11 +4901,11 @@ switch (_operation) do {
 
         private _back = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_SubMenuBack);
         _back ctrlShow true;
-        _back ctrlSetText "Back to Groups";
+        _back ctrlSetText localize "STR_ALIVE_SCOM_UI_BACK_GROUPS";
         _back ctrlSetEventHandler ["MouseButtonClick","['OPS_CANCEL_JOIN_SELECTION',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
         private _abort = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_SubMenuAbort);
-        _abort ctrlSetText "Cancel";
+        _abort ctrlSetText localize "STR_ALIVE_SCOM_UI_CANCEL";
         _abort buttonSetAction "['OPS_CANCEL_JOIN_SELECTION',[]] call ALIVE_fnc_SCOMTabletOnAction";
 
     };

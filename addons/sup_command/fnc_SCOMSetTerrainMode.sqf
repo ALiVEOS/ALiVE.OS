@@ -42,7 +42,7 @@ params [["_terrainOn", true]];
                 };
                 case "OBJECTIVES": {
                     private _display = findDisplay 12001;
-                    private _placingObjective = ctrlText (_display displayCtrl 12017) == "Confirm Position";
+                    private _placingObjective = ctrlText (_display displayCtrl 12017) == localize "STR_ALIVE_SCOM_UI_CONFIRM_POSITION";
                     private _clickHandler = if (_placingObjective) then {
                         "['OP_OBJECTIVE_MAP_CLICK',[_this]] call ALIVE_fnc_SCOMTabletOnAction"
                     } else {
