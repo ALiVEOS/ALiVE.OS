@@ -152,7 +152,9 @@ for "_j" from 1 to _numIEDs do {
                     //Seems to cause a crash lateley if _clutter is empty (trigger-related?)
                     //Fixme: @Tup: why is clutter clutterClasses empty?
                     if (count _clutter > 0) then {
-                        _clut = createVehicle [(selectRandom _clutter),_IEDpos, [], 40, "NONE"];
+                        // On the ground: the spot still carries the height of whatever it was taken
+                        // from (a house's position is often metres up), and clutter made there floated.
+                        _clut = createVehicle [(selectRandom _clutter), [_IEDpos select 0, _IEDpos select 1, 0], [], 40, "NONE"];
                         _clut setvariable [QUOTE(ADDON), true];
 
                         // Bounded retry: in dense urban areas with
@@ -192,7 +194,7 @@ for "_j" from 1 to _numIEDs do {
             _clutter = ADDON getVariable ["resolvedClutterClasses", [ADDON, "clutterClasses"] call MAINCLASS];
             for "_roadC" from 1 to (1 + (ceil (random 2))) do {
                 if (count _clutter > 0) then {
-                    _roadClut = createVehicle [(selectRandom _clutter), _IEDpos, [], 8, "NONE"];
+                    _roadClut = createVehicle [(selectRandom _clutter), [_IEDpos select 0, _IEDpos select 1, 0], [], 8, "NONE"];
                     _roadClut setvariable [QUOTE(ADDON), true];
 
                     // Nudge off tarmac if it landed on a road. Bounded retry
