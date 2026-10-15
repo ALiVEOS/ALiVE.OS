@@ -38,6 +38,20 @@ class CfgVehicles {
                                     class No { name = "No"; value = 0; };
                                 };
                         };
+                        class knownCategories : Combo
+                        {
+                                property = "ALiVE_sys_indexer_knownCategories";
+                                displayName = "$STR_ALIVE_INDEXER_KNOWNCATEGORIES";
+                                tooltip = "$STR_ALIVE_INDEXER_KNOWNCATEGORIES_COMMENT";
+                                // Read with a boolean default, as customStatic above.
+                                typeName = "BOOL";
+                                defaultValue = "true";
+                                class Values
+                                {
+                                    class Yes { name = "Yes"; value = 1; };
+                                    class No { name = "No"; value = 0; };
+                                };
+                        };
                         class mapPath : Edit
                         {
                                 property = "ALiVE_sys_indexer_mapPath";

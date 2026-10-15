@@ -41,6 +41,7 @@ private _launch = _this select 2;
     _path = _this select 0;
     _custom = _this select 1;
     private _launch = _this select 2;
+    private _known = _this param [3, true];
 
     // On a dedicated server, as the web indexer runs it, there is no player to wait for and nobody
     // to press a key. The object categories then have to be in the static data file already,
@@ -91,7 +92,7 @@ private _launch = _this select 2;
         ["ALiVE Map Indexer","Starting Object Categorization"] call ALiVE_fnc_sendHint;
         [">>>>>>>>>>>>>>>>>> Starting Object Categorization"] call ALiVE_fnc_dump;
 
-        [_custom] call ALiVE_fnc_auto_staticObjects;
+        [_custom, _known] call ALiVE_fnc_auto_staticObjects;
 
     };
 

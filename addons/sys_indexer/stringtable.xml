@@ -22,6 +22,16 @@
     <Chinesesimp>如果启用，地图上的每个唯一对象都需要分类</Chinesesimp>
     <Spanish>Si se activa, habrá que categorizar cada objeto único del mapa</Spanish>
 </Key>
+<Key ID="STR_ALIVE_INDEXER_KNOWNCATEGORIES">
+    <English>Known Categories:</English>
+    <Chinesesimp>已知分类:</Chinesesimp>
+    <Spanish>Categorías conocidas:</Spanish>
+</Key>
+<Key ID="STR_ALIVE_INDEXER_KNOWNCATEGORIES_COMMENT">
+    <English>When categorising objects yourself, objects the shipped terrain indexes all categorise the same way are filled in for you and skipped, so you only categorise the rest. Set to No to categorise every object.</English>
+    <Chinesesimp>自行分类对象时，所有随附地形索引分类一致的对象会自动填入并跳过，因此只需分类其余对象。设为“否”则逐一分类每个对象。</Chinesesimp>
+    <Spanish>Al categorizar los objetos tú mismo, los objetos que todos los índices de terreno incluidos categorizan igual se rellenan por ti y se omiten, así que solo categorizas el resto. Ponlo en No para categorizar cada objeto.</Spanish>
+</Key>
 <Key ID="STR_ALIVE_INDEXER_MAPPATH">
     <English>Map PBO file path:</English>
     <Chinesesimp>地图PBO文件路径:</Chinesesimp>

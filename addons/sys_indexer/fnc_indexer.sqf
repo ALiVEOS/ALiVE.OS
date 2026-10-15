@@ -170,6 +170,10 @@ switch(_operation) do {
             _result = [_logic,_operation,_args,true] call ALIVE_fnc_OOsimpleOperation;
         };
 
+        case "knownCategories": {
+            _result = [_logic,_operation,_args,true] call ALIVE_fnc_OOsimpleOperation;
+        };
+
         case "OS": {
             _result = [_logic,_operation,_args,false] call ALIVE_fnc_OOsimpleOperation;
         };
@@ -188,6 +192,7 @@ switch(_operation) do {
                 _customMapBound = [_logic, "customMapBound"] call MAINCLASS;
                 private _launch = [_logic, "OS"] call MAINCLASS;
                 private _environment = [_logic, "environment"] call MAINCLASS;
+                private _known = [_logic, "knownCategories"] call MAINCLASS;
 
                 // Make the selected composition environment available to the
                 // static data export (and composition searches) without having
@@ -202,7 +207,7 @@ switch(_operation) do {
                 };
 
                 // start index
-                _result = [_mapPath,_customStatic,_launch] call ALiVE_fnc_indexMap;
+                _result = [_mapPath,_customStatic,_launch,_known] call ALiVE_fnc_indexMap;
 
             };
         };

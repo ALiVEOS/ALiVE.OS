@@ -1,6 +1,7 @@
 private ["_categories","_result","_custom"];
 
 _custom = _this select 0;
+private _known = _this param [1, true];
 
 _categories = [
 
@@ -38,10 +39,28 @@ if (_custom) then {
         missionNameSpace setVariable [_x select 0, []];
     } foreach _categories;
 
+    // Models every shipped terrain index that lists them categorises the same way (#499): filled in here and
+    // not asked about, unless the indexer's Known Categories setting is No.
+    private _settled = createHashMap;
+    if (_known) then {
+        {
+            _x params ["_m", "_arrays"];
+            _settled set [toLower _m, _arrays];
+        } forEach (call compile preprocessFileLineNumbers "\x\alive\addons\sys_indexer\data\settledModels.sqf");
+    };
+    private _filled = 0;
+
     {
         private ["_model","_samples","_idc"];
         _model = _x select 0;
         _samples = _x select 1;
+
+        private _arrays = _settled getOrDefault [toLower _model, []];
+        if (_arrays isNotEqualTo []) then {
+            { (missionNamespace getVariable _x) pushBack _model } forEach _arrays;
+            _filled = _filled + 1;
+            continue;
+        };
         ALiVE_wrp_model = _model;
         // The object on screen, so the Fieldworks tick can check it has building positions
         ALiVE_wrp_object = objNull;
@@ -87,6 +106,7 @@ if (_custom) then {
         closeDialog 0;
 
     } foreach wrp_objects;
+    [">>>>>>>>>>>>>>>>>> %1 of %2 objects filled in from the shipped terrain indexes, %3 categorised by hand", _filled, count wrp_objects, (count wrp_objects) - _filled] call ALiVE_fnc_dump;
 } else {
     [">>>>>>>>>>>>>>>>>> Using default static data set"] call ALiVE_fnc_dump;
 
