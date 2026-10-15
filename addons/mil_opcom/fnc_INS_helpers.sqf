@@ -2195,7 +2195,13 @@ ALiVE_fnc_spawnFurniture = {
     _created = [];
 
     _pos = getposATL _building;
-    _positions = [_pos,15] call ALIVE_fnc_findIndoorHousePositions;
+    // Indoor spots in this building only, the same roof check ALIVE_fnc_findIndoorHousePositions makes: that
+    // function takes every house within its radius, so where huts stand close together (SOG) a second set of
+    // furniture went into the neighbour and it carried the installation's action too (A. Ares on Discord, 15 Oct).
+    _positions = ([_building] call ALIVE_fnc_getBuildingPositions) select {
+        private _a = ATLtoASL _x;
+        lineIntersects [_a vectorAdd [0, 0, 0.5], _a vectorAdd [0, 0, 2.5]]
+    };
     // the building's own positions when the indoor search finds none (many mod and Livonia houses):
     // everything placed there is checked for floor, roof and walls before it goes in
     if (count _positions == 0) then { _positions = (_building buildingPos -1) select { (_x select 2) < 30 } };
