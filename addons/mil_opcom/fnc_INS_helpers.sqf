@@ -1865,8 +1865,12 @@ ALiVE_fnc_INS_registerInstallationOnBuilding = {
     // a building already carries some, and the hold action is refused when one of the same kind
     // is already on it. A class name cannot tell two huts apart, so the log could not show a
     // collision. The object reference carries a unique id and can.
-    diag_log format ["[ALiVE DIAG-STRIP INS-CONTACT] %1 spawned man/men within 50m of %2, %3 civilian(s) flagged, installations on it: %4",
-        count _nearMen, _building, _civFlagged, _building getVariable [_installationVar, []]];
+    // Opt-in (set ALiVE_DIAG_INS = true): written for every installation, it filled a tester's RPT with
+    // 229 lines in one evening with Debug off (A. Ares on Discord, 15 Oct).
+    if (!isNil "ALiVE_DIAG_INS" && {ALiVE_DIAG_INS}) then {
+        diag_log format ["[ALiVE DIAG-STRIP INS-CONTACT] %1 spawned man/men within 50m of %2, %3 civilian(s) flagged, installations on it: %4",
+            count _nearMen, _building, _civFlagged, _building getVariable [_installationVar, []]];
+    };
 };
 
 ALiVE_fnc_INS_getBuildingInstallations = {
