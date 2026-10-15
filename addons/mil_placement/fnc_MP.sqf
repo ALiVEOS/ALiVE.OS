@@ -458,8 +458,12 @@ switch(_operation) do {
     case "reserveOrphanCrewBehaviour": {
         _result = [_logic,_operation,_args,DEFAULT_RESERVE_ORPHAN_CREW_BEHAVIOUR] call ALIVE_fnc_OOsimpleOperation;
     };
-    // Return the random camps
+    // Return the random camps. Eden stores a number since the setting became a typed number
+    // (#1083), and text in missions saved before it; both are settled on the text the default is,
+    // or the accessor swaps a number for "0" and no camps are placed.
     case "randomCamps": {
+        if (_args isEqualTo objNull) then { _args = _logic getVariable ["randomCamps", DEFAULT_RANDOMCAMPS] };
+        if (_args isEqualType 0) then { _args = str _args };
         _result = [_logic,_operation,_args,DEFAULT_RANDOMCAMPS] call ALIVE_fnc_OOsimpleOperation;
     };
 
