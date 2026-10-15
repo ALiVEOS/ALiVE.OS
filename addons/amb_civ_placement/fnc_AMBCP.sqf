@@ -491,7 +491,7 @@ switch(_operation) do {
                                 [_x, "debug", [_logic, "debug"] call MAINCLASS] call ALIVE_fnc_cluster;
                             } forEach _retry;
                             [_logic, "objectives", _retry] call MAINCLASS;
-                            ["AMBCP - No settlement of %1 m or more inside the TAOR, so civilians use the %2 settlements of %3 m or more instead", _sizeFilter, count _retry, _relaxed] call ALiVE_fnc_dumpR;
+                            ["AMBCP - No settlement of %1 m or more inside the TAOR, so civilians use the %2 settlements of %3 m or more instead", _sizeFilter, count _retry, _relaxed] call ALiVE_fnc_dump;
                         };
                     } forEach ([160, 0] select {_x < _sizeFilter});
                 };
