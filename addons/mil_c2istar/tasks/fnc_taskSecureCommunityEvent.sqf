@@ -88,6 +88,9 @@ private _spawnWaveProfiles = {
     {
         private _spawnPosition = (_remotePosition getPos [random 200, random 360]);
         private _profiles = [_x, _spawnPosition, random 360, true, _enemyFaction, true] call ALIVE_fnc_createProfilesFromGroupConfig;
+        // a wave is left out of simulated combat for 15 minutes, or until players are near enough for it to
+        // spawn, so it isn't fought and lost as virtual groups before anybody sees it (sys_profile simulator)
+        if (_profiles isNotEqualTo []) then { [_profiles select 0, "simProtectUntil", time + 900] call ALIVE_fnc_hashSet };
         if (count _profiles > 0) then {
             private _profileID = _profiles select 0 select 2 select 4;
             private _waypointPosition = (_taskPosition getPos [random 40, random 360]);
@@ -105,6 +108,9 @@ private _spawnWaveProfiles = {
             if !(_vehicleGroup in ALiVE_PLACEMENT_GROUPBLACKLIST) then {
                 private _spawnPosition = (_remotePosition getPos [random 200, random 360]);
                 private _profiles = [_vehicleGroup, _spawnPosition, random 360, true, _enemyFaction, true] call ALIVE_fnc_createProfilesFromGroupConfig;
+                // a wave is left out of simulated combat for 15 minutes, or until players are near enough for it to
+                // spawn, so it isn't fought and lost as virtual groups before anybody sees it (sys_profile simulator)
+                if (_profiles isNotEqualTo []) then { [_profiles select 0, "simProtectUntil", time + 900] call ALIVE_fnc_hashSet };
                 if (count _profiles > 0) then {
                     private _profileID = _profiles select 0 select 2 select 4;
                     private _waypointPosition = (_taskPosition getPos [random 40, random 360]);

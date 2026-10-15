@@ -442,6 +442,9 @@ switch (_taskState) do {
 
                 _position = (_anchor getPos [(random 200), (random 200)]);
                 _profiles = [_x, _position, random(360), true, _enemyFaction, true] call ALIVE_fnc_createProfilesFromGroupConfig;
+                // a wave is left out of simulated combat for 15 minutes, or until players are near enough for it to
+                // spawn, so it isn't fought and lost as virtual groups before anybody sees it (sys_profile simulator)
+                if (_profiles isNotEqualTo []) then { [_profiles select 0, "simProtectUntil", time + 900] call ALIVE_fnc_hashSet };
                 _profileID = _profiles select 0 select 2 select 4;
 
                 // Two-waypoint chain: aggressive ingress to an
@@ -500,6 +503,9 @@ switch (_taskState) do {
 
                     _position = (_anchor getPos [(random 200), (random 200)]);
                     _profiles = [_x, _position, random(360), true, _enemyFaction, true] call ALIVE_fnc_createProfilesFromGroupConfig;
+                    // a wave is left out of simulated combat for 15 minutes, or until players are near enough for it to
+                    // spawn, so it isn't fought and lost as virtual groups before anybody sees it (sys_profile simulator)
+                    if (_profiles isNotEqualTo []) then { [_profiles select 0, "simProtectUntil", time + 900] call ALIVE_fnc_hashSet };
                     _profileID = _profiles select 0 select 2 select 4;
 
                     // Two-waypoint chain (matches the infantry path

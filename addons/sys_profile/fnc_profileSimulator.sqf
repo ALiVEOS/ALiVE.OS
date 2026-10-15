@@ -243,7 +243,10 @@ if (!_simAttacks) then {
                     PROFILE_SCOPE(SCANFORCOMBATDEFINITION, "Defining _scanForCombat")
                     private _scanForCombat = {
                         PROFILE_SCOPE(COMBATSCAN, "ALiVE profileSimulator: combat scan")
-                        if (!_vehicleCargo && !_isPlayer && !_isAir && !_combat) then {
+                        // A profile protected until a time (simProtectUntil, set on C2ISTAR task waves) neither
+                        // starts a fight here nor is picked as a target below, so a wave isn't fought and lost as
+                        // virtual groups before players are near enough for it to spawn.
+                        if (!_vehicleCargo && !_isPlayer && !_isAir && !_combat && {([_profile, "simProtectUntil", -1] call ALiVE_fnc_hashGet) <= time}) then {
                             // get enemy sides
                             private _side = _profile select 2 select 3;
                             private _sidesEnemy = _enemySidesBySide getOrDefaultCall [_side, {
@@ -261,6 +264,10 @@ if (!_simAttacks) then {
                             if !(_sidesEnemy isEqualTo []) then {
                                 private _combatPosition = _profile select 2 select 2;
                                 _nearEnemies = _spacialGridProfiles call ["findCombatTargets", [_combatPosition,_combatRange,_sidesEnemy]];
+                                _nearEnemies = _nearEnemies select {
+                                    private _target = _profilesById get _x;
+                                    isNil "_target" || {([_target, "simProtectUntil", -1] call ALiVE_fnc_hashGet) <= time}
+                                };
                             };
 
                             if !(_nearEnemies isEqualTo []) then {
