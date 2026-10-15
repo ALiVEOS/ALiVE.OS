@@ -122,6 +122,18 @@
 <Key ID="STR_ALIVE_SETTINGS_UI_COMMENT">
     <English>Scroll wheel, ACE interaction menu or both for rally points, talking to soldiers and FOBs. ACE without ACE loaded falls back to the scroll wheel. Applies when the mission starts.</English>
 </Key>
+<Key ID="STR_ALIVE_SETTINGS_ACTCOL_ON">
+    <English>Colour ALiVE actions</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_ACTCOL_ON_COMMENT">
+    <English>Show ALiVE's scroll-wheel actions in the colour below, so they stand out from the game's and other mods' actions. Actions that already have their own colour keep it. Applies to actions added after the change, so after a respawn or at the next mission.</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_ACTCOL">
+    <English>Action colour</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_ACTCOL_COMMENT">
+    <English>The colour of ALiVE's scroll-wheel actions when Colour ALiVE actions is ticked.</English>
+</Key>
 <Key ID="STR_ALIVE_SETTINGS_UI_SCROLL">
     <English>Scroll wheel</English>
 </Key>

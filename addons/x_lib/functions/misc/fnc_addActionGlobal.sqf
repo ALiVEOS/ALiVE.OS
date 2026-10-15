@@ -25,6 +25,7 @@ See Also:
 
 Author:
 Highhead
+Jman
 
 Peer reviewed:
 nil
@@ -37,4 +38,4 @@ params [
 ];
 private _target = _this param [3, _object, [objNull]];
 
-_object addAction [_name, {private _target = _this select 3 select 0; _action = _this select 3 select 1; (_this select 1) action [_action, _target]}, [_target,_action]];
+_object addAction [_name call ALiVE_fnc_actionTitle, {private _target = _this select 3 select 0; _action = _this select 3 select 1; (_this select 1) action [_action, _target]}, [_target,_action]];

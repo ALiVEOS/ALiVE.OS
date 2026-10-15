@@ -153,9 +153,9 @@ switch (_operation) do {
         }];
 
         ALiVE_FOB_placeActions = [
-            player addAction [[format [localize "STR_ALIVE_FOB_ACTION_PLACE", [_name, _class] select (_name == ""), _cost], localize "STR_ALIVE_FOB_ACTION_DEPLOY_HERE"] select (_kind == "DEPLOY"), { ["place"] call ALiVE_fnc_fobPlacement }, nil, 10, true, true, "", "ALiVE_FOB_placing"],
-            player addAction [localize "STR_ALIVE_FOB_ACTION_ROTATE", { ["rotate"] call ALiVE_fnc_fobPlacement }, nil, 9.9, false, false, "", "ALiVE_FOB_placing"],
-            player addAction [localize "STR_ALIVE_FOB_ACTION_CANCEL", { ["cancel"] call ALiVE_fnc_fobPlacement }, nil, 9.8, false, true, "", "ALiVE_FOB_placing"]
+            player addAction [([format [localize "STR_ALIVE_FOB_ACTION_PLACE", [_name, _class] select (_name == ""), _cost], localize "STR_ALIVE_FOB_ACTION_DEPLOY_HERE"] select (_kind == "DEPLOY")) call ALiVE_fnc_actionTitle, { ["place"] call ALiVE_fnc_fobPlacement }, nil, 10, true, true, "", "ALiVE_FOB_placing"],
+            player addAction [(localize "STR_ALIVE_FOB_ACTION_ROTATE") call ALiVE_fnc_actionTitle, { ["rotate"] call ALiVE_fnc_fobPlacement }, nil, 9.9, false, false, "", "ALiVE_FOB_placing"],
+            player addAction [(localize "STR_ALIVE_FOB_ACTION_CANCEL") call ALiVE_fnc_actionTitle, { ["cancel"] call ALiVE_fnc_fobPlacement }, nil, 9.8, false, true, "", "ALiVE_FOB_placing"]
         ];
         [localize "STR_ALIVE_FOB", localize "STR_ALIVE_FOB_PLACE_HELP", true] call ALIVE_fnc_sendHint;
     };

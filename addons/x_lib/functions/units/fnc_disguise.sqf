@@ -32,6 +32,7 @@ See Also:
 
 Author:
 Highhead
+Jman
 ---------------------------------------------------------------------------- */
 
 ///////////////////////////////////////////
@@ -63,7 +64,7 @@ if (isNil "_EH") then {
 		waituntil {!isnull _unit && {!isNull player}};
 
 		private _action = player addAction [
-			"Disguise as the enemy",
+			("Disguise as the enemy") call ALiVE_fnc_actionTitle,
 			{
 				[cursortarget, player] call ALiVE_fnc_disGuise;
 			},
@@ -98,7 +99,7 @@ private _action = player getvariable [QGVAR(DISGUISE_ACTION),-1];
 if !(_action in (actionIds player)) then {
 	
 	_action = player addAction [
-		"Disguise as the enemy",
+		("Disguise as the enemy") call ALiVE_fnc_actionTitle,
 		{
 			[cursortarget, player] call ALiVE_fnc_disGuise;
 		},

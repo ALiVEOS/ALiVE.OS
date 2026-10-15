@@ -324,19 +324,19 @@ ALiVE_fnc_recruitVehicle = {
     {
         private _object = _x;
         if (_window) then {
-            _object addAction [localize "STR_ALIVE_RECRUIT", { ["open", _this select 3] call ALiVE_fnc_recruitWindow },
+            _object addAction [(localize "STR_ALIVE_RECRUIT") call ALiVE_fnc_actionTitle, { ["open", _this select 3] call ALiVE_fnc_recruitWindow },
                 [_object, _settings], 1.5, true, true, "", "alive _target && {vehicle _this isEqualTo _this}", 5];
         } else {
             {
                 _object addAction [
-                    format [localize "STR_ALIVE_RECRUIT_UI_ACTION_RECRUIT", getText (configFile >> "CfgVehicles" >> _x >> "displayName")],
+                    (format [localize "STR_ALIVE_RECRUIT_UI_ACTION_RECRUIT", getText (configFile >> "CfgVehicles" >> _x >> "displayName")]) call ALiVE_fnc_actionTitle,
                     { (_this select 3) call ALiVE_fnc_recruitUnit },
                     [_object, _x, _settings], 1.5, false, true, "", "alive _target && {vehicle _this isEqualTo _this}", 5
                 ];
             } forEach _classes;
             {
                 _object addAction [
-                    format [localize "STR_ALIVE_RECRUIT_UI_ACTION_TAKE", getText (configFile >> "CfgVehicles" >> _x >> "displayName")],
+                    (format [localize "STR_ALIVE_RECRUIT_UI_ACTION_TAKE", getText (configFile >> "CfgVehicles" >> _x >> "displayName")]) call ALiVE_fnc_actionTitle,
                     { (_this select 3) call ALiVE_fnc_recruitVehicle },
                     [_object, _x, _settings], 1.4, false, true, "", "alive _target && {vehicle _this isEqualTo _this}", 5
                 ];

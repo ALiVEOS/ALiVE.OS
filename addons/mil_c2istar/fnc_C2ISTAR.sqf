@@ -1525,7 +1525,7 @@ switch(_operation) do {
                     waitUntil { sleep 1; !isNull player };
                     if (_useScroll) then {
                         ALiVE_c2istar_talkAdd = {
-                            _this addAction [localize "STR_ALIVE_C2ISTAR_SI_TALK", { ["open", [cursorObject]] call ALiVE_fnc_C2ISTARSoldierInteract }, nil, 1.4, false, true, "",
+                            _this addAction [(localize "STR_ALIVE_C2ISTAR_SI_TALK") call ALiVE_fnc_actionTitle, { ["open", [cursorObject]] call ALiVE_fnc_C2ISTARSoldierInteract }, nil, 1.4, false, true, "",
                                 "['canTalk', [cursorObject, _this]] call ALiVE_fnc_C2ISTARSoldierInteract", 4];
                         };
                         player call ALiVE_c2istar_talkAdd;

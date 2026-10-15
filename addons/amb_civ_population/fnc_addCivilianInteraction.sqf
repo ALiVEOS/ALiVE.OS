@@ -78,7 +78,7 @@ if (_unit getVariable ["ALiVE_civInteract_resolved", false]) exitWith {};
         case "CLASSIC": {
             if (!_hasAdvCiv) then {
                 _unit addAction [
-                    "Interact",
+                    ("Interact") call ALiVE_fnc_actionTitle,
                     {[ALiVE_civInteractHandler, "openMenu", _this select 0] call ALiVE_fnc_civInteract},
                     "",
                     50,
@@ -103,7 +103,7 @@ if (_unit getVariable ["ALiVE_civInteract_resolved", false]) exitWith {};
         default {
             if (_uiMode != "ACE") then {
                 _unit addAction [
-                    "Talk to Civilian",
+                    ("Talk to Civilian") call ALiVE_fnc_actionTitle,
                     {[ALiVE_civInteractHandler, "openMenu", _this select 0] call ALiVE_fnc_civInteract},
                     "",
                     50,

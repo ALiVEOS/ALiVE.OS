@@ -815,7 +815,7 @@ switch (_operation) do {
             if !(isnil "_die") exitwith {_result = -1};
 
             _id = _object addAction [
-                _text,
+                (_text) call ALiVE_fnc_actionTitle,
                 {[MOD(SYS_LOGISTICS), (_this select 3 select 0), [_this call (_this select 3 select 1),
                     _this call (_this select 3 select 2)]] call ALiVE_fnc_logistics},
                 [_operation,_input,_container],

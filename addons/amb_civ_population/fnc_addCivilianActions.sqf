@@ -47,7 +47,7 @@ private _code = {_object = _this select 0; _caller = _this select 1; _params = _
 private _condition = "alive _target && {_target getvariable ['townelder',false]}";
 
 private _id = _object addAction [
-    _text,
+    (_text) call ALiVE_fnc_actionTitle,
     _code,
     _params,
     1,
@@ -65,7 +65,7 @@ _code = {_object = _this select 0; _caller = _this select 1; _params = _this sel
 _condition = "alive _target && {_target getvariable ['major',false]}";
 
 _id = _object addAction [
-    _text,
+    (_text) call ALiVE_fnc_actionTitle,
     _code,
     _params,
     1,
@@ -83,7 +83,7 @@ _code = {_object = _this select 0; _caller = _this select 1; _params = _this sel
 _condition = "alive _target && {_target getvariable ['priest',false]}";
 
 _id = _object addAction [
-    _text,
+    (_text) call ALiVE_fnc_actionTitle,
     _code,
     _params,
     1,
@@ -101,7 +101,7 @@ _code = {_object = _this select 0; _caller = _this select 1; _params = _this sel
 _condition = "alive _target && {_target getvariable ['muezzin',false]}";
 
 _id = _object addAction [
-    _text,
+    (_text) call ALiVE_fnc_actionTitle,
     _code,
     _params,
     1,
@@ -119,7 +119,7 @@ _code = {_object = _this select 0; _caller = _this select 1; _params = _this sel
 _condition = "alive _target && {_target getvariable ['politician',false]}";
 
 _id = _object addAction [
-    _text,
+    (_text) call ALiVE_fnc_actionTitle,
     _code,
     _params,
     1,
@@ -137,7 +137,7 @@ _code = {_object = _this select 0; _caller = _this select 1; _params = _this sel
 _condition = "alive _target";
 
 _id = _object addAction [
-    _text,
+    (_text) call ALiVE_fnc_actionTitle,
     _code,
     _params,
     1,
@@ -155,7 +155,7 @@ _code = {_object = _this select 0; _caller = _this select 1; _params = _this sel
 _condition = "alive _target" + "&&" + "!(_target getvariable ['detained',false])";
 
 _id = _object addAction [
-    _text,
+    (_text) call ALiVE_fnc_actionTitle,
     _code,
     _params,
     1,
@@ -172,7 +172,7 @@ _code = {_object = _this select 0; _caller = _this select 1; _params = _this sel
 _condition = "alive _target" + "&&" + "(_target getvariable ['detained',false])";
 
 _id = _object addAction [
-    _text,
+    (_text) call ALiVE_fnc_actionTitle,
     _code,
     _params,
     1,
@@ -193,7 +193,7 @@ _code = {_object = _this select 0; _caller = _this select 1; _params = _this sel
 _condition = "alive _target" + "&&" + "_target getvariable ['detained',false]";
 
 _id = _object addAction [
-    _text,
+    (_text) call ALiVE_fnc_actionTitle,
     _code,
     _params,
     1,
@@ -210,7 +210,7 @@ _code = {_object = _this select 0; _caller = _this select 1; _params = _this sel
 _condition = "alive _target";
 
 _id = _object addAction [
-    _text,
+    (_text) call ALiVE_fnc_actionTitle,
     _code,
     _params,
     1,
@@ -228,7 +228,7 @@ if (random 1 > 0.9) then {
     _condition = "alive _target && {isnil {_target getvariable 'intelGathered'}}";
 
     _id = _object addAction [
-        _text,
+        (_text) call ALiVE_fnc_actionTitle,
         _code,
         _params,
         1,

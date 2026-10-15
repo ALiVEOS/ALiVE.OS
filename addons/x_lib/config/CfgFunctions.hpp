@@ -1642,6 +1642,13 @@ class roundDecimal
 	ALIVE_RECOMPILE;
 };
 
+class actionTitle
+{
+	file = "\x\alive\addons\x_lib\functions\misc\fnc_actionTitle.sqf";
+	ext = ".sqf";
+	ALIVE_RECOMPILE;
+};
+
 class addActionGlobal
 {
 	file = "\x\alive\addons\x_lib\functions\misc\fnc_addActionGlobal.sqf";
