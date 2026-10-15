@@ -380,7 +380,10 @@ for "_j" from 1 to (count _roadpoints) do {
                     private _parkPosition = _parkingPosition select 0;
                     private _parkDirection = _parkingPosition select 1;
                     if !(isnil "ALiVE_ProfileHandler") then {
-                        _vehicle = [_vehtype, [_fac call ALiVE_fnc_factionSide] call ALiVE_fnc_sideToSideText, _fac, _parkPosition, _parkDirection, true, _fac, [], true] call ALiVE_fnc_createProfileVehicle;
+                        // isSPE false: true skipped the spawn validator, so a car parked against a tree or
+                        // wall was created there with CAN_COLLIDE and blew up (Jman 14 Oct 2026). The
+                        // validator keeps a clear spot and its heading as they are, so the parking still holds.
+                        _vehicle = [_vehtype, [_fac call ALiVE_fnc_factionSide] call ALiVE_fnc_sideToSideText, _fac, _parkPosition, _parkDirection, true, _fac, [], false] call ALiVE_fnc_createProfileVehicle;
                     } else {
                         // No-profile-handler fallback path: route through the
                         // unified vehicle spawn validator (#850 Phase 2) so
