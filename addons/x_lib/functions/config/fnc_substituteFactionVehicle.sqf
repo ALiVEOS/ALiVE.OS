@@ -130,16 +130,33 @@ if (isNil "ALiVE_factionVehiclePoolCache") then {
 private _classify = {
     params ["_v"];
 
-    // Statics: finer dispatch by weapon role.
+    // Statics: role read from what the main gun fires, not from the class tree. Mods file their
+    // guns under whatever parent suits them (SOG puts recoilless rifles, AT cannons, howitzers and
+    // AA guns under the plain StaticWeapon base, and vanilla's own AT launcher and GMG do not land
+    // in the StaticAT / StaticGMG parents either), so the class tree swapped an AT gun for an M2 and
+    // a GMG for a howitzer (measured 15 Oct with the CDLCs). A static with no gun (a SOG spider hole)
+    // is not a weapon and is left out.
     if (_v isKindOf "StaticWeapon") exitWith {
-        switch (true) do {
-            case (_v isKindOf "StaticMortar")     : { "StaticMortar" };
-            case (_v isKindOf "StaticATWeapon")   : { "StaticATWeapon" };
-            case (_v isKindOf "StaticAAWeapon")   : { "StaticAAWeapon" };
-            case (_v isKindOf "StaticGMGWeapon")  : { "StaticGMGWeapon" };
-            case (_v isKindOf "StaticMGWeapon")   : { "StaticMGWeapon" };
-            default                               { "StaticWeapon" };
+        private _cfg = configFile >> "CfgVehicles" >> _v;
+        private _turret = _cfg >> "Turrets" >> "MainTurret";
+        if ((getArray (_turret >> "weapons")) isEqualTo []) exitWith { "Vehicle" };
+        if (getNumber (_cfg >> "artilleryScanner") == 1) exitWith { "StaticMortar" };
+        private _sims = (getArray (_turret >> "magazines")) apply {
+            private _ammo = configFile >> "CfgAmmo" >> getText (configFile >> "CfgMagazines" >> _x >> "ammo");
+            [toLower getText (_ammo >> "simulation"), getNumber (_ammo >> "airLock"), getNumber (_ammo >> "hit")]
         };
+        // a gun with nothing to fire (a GM border-guard searchlight) is not a weapon either
+        if ((_sims findIf { (_x select 2) > 0 }) < 0) exitWith { "Vehicle" };
+        private _missile = _sims select { (_x select 0) in ["shotmissile", "shotrocket"] };
+        if (_missile isNotEqualTo []) exitWith {
+            if ((_missile findIf { (_x select 1) >= 2 }) >= 0) then { "StaticAAWeapon" } else { "StaticATWeapon" }
+        };
+        private _shells = _sims select { (_x select 0) == "shotshell" };
+        if (_shells isNotEqualTo []) exitWith {
+            // a heavy shell is an AT gun or recoilless rifle; a light one is a grenade launcher
+            if ((_shells findIf { (_x select 2) >= 90 }) >= 0) then { "StaticATWeapon" } else { "StaticGMGWeapon" }
+        };
+        "StaticMGWeapon"
     };
 
     // Truck before Car (Truck inherits Car in A3 - more specific wins). Arma 3's own trucks
@@ -252,6 +269,12 @@ if (_sourceKind == "Vehicle") exitWith { _sourceVehicle };
 //    factions just keep their vanilla A3 source for missing categories.
 // ------------------------------------------------------------------------
 private _candidates = _pool getOrDefault [_sourceKind, []];
+// One exception for statics: an AT, AA or grenade launcher position the faction has no gun for
+// takes the faction's own machine gun, which looks right and still defends, rather than keeping
+// a vanilla CSAT gun in, say, a Cold War German position. Never artillery.
+if (count _candidates == 0 && {_sourceKind in ["StaticATWeapon", "StaticAAWeapon", "StaticGMGWeapon"]}) then {
+    _candidates = _pool getOrDefault ["StaticMGWeapon", []];
+};
 if (count _candidates == 0) exitWith {
     // Target faction has no vehicles of this kindOf - keep source
     // unchanged. Same outcome as Phase 3c.1 redirect-only behaviour.
