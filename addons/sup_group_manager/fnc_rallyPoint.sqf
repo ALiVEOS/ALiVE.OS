@@ -22,6 +22,7 @@ Operations:
                                 variable, else the nearest place's name. Side "ANY" (default),
                                 "WEST", "EAST" or "GUER": who may use it.
 "remove"  [object]
+"rename"  [unit, name]          a squad leader's new name for the squad's own rally point
 "list"    [unit]                the rally points the unit may use:
                                 [[name, posASL, object or objNull, FOB id or ""], ...]
 "near"    [unit]                the rally point the unit stands at, or []
@@ -147,6 +148,29 @@ switch (_op) do {
             if (!isNull _obj) then { deleteVehicle _obj };
             if (!isNull _grp) then { _grp setVariable ["ALiVE_rallyDeployed", nil, true] };
         };
+    };
+
+    // a squad leader renames the squad's own rally point, standing at it. The name is cleaned here:
+    // no control characters, no < > & (it is shown as structured text), 32 characters at most
+    case "rename": {
+        _args params [["_unit", objNull, [objNull]], ["_name", "", [""]]];
+        if (!isServer) exitWith { [_op, _args] remoteExecCall ["ALiVE_fnc_rallyPoint", 2] };
+        // from a player's machine, only for that player's own unit
+        if (isNull _unit || {isRemoteExecuted && {remoteExecutedOwner != owner _unit}}) exitWith { _result = false };
+        private _grp = group _unit;
+        private _obj = _grp getVariable ["ALiVE_rallyDeployed", objNull];
+        if (isNull _obj || {leader _grp != _unit} || {_unit distance _obj >= 5}) exitWith { _result = false };
+        private _tell = { [localize "STR_ALIVE_RALLY", _this] remoteExecCall ["ALIVE_fnc_sendHint", _unit] };
+        _name = trim toString ((toArray _name) select { _x >= 32 && {!(_x in [38, 60, 62])} });
+        _name = trim toString ((toArray _name) select [0, 32]);
+        if (_name == "") exitWith { format [localize "STR_ALIVE_RALLY_UI_RENAME_EMPTY", 32] call _tell; _result = false };
+        private _list = missionNamespace getVariable ["ALiVE_rallyPoints", []];
+        private _i = _list findIf { (_x select 0) == _obj };
+        if (_i < 0) exitWith { _result = false };
+        (_list select _i) set [1, _name];
+        ALiVE_rallyPoints = _list;
+        publicVariable "ALiVE_rallyPoints";
+        format [localize "STR_ALIVE_RALLY_UI_RENAMED", _name] call _tell;
     };
 
     case "pickup": {

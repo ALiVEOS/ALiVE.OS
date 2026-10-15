@@ -76,3 +76,81 @@ class ALiVE_RallyWindow {
         };
     };
 };
+
+// A text box for the rename window; the recruitment window's controls have none
+class RallyUI_RscEdit
+{
+	access = 0;
+	type = 2;
+	style = 0;
+	idc = -1;
+	x = 0;
+	y = 0;
+	w = 0.2;
+	h = 0.03;
+	font = "PuristaMedium";
+	sizeEx = "(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.9)";
+	text = "";
+	autocomplete = "";
+	shadow = 0;
+	colorBackground[] = {0, 0, 0, 0.5};
+	colorText[] = {1, 1, 1, 1};
+	colorDisabled[] = {1, 1, 1, 0.25};
+	colorSelection[] = {1, 1, 1, 0.25};
+	canModify = 1;
+};
+
+// Rename Rally Point: a squad leader's name for the squad's own rally point. Rename (or Enter) sends
+// it, Cancel (or Escape) closes. ALiVE_fnc_rallyWindow fills it and sends the name.
+class ALiVE_RallyRenameWindow {
+    idd = 9282;
+    movingEnable = 1;
+
+    class controls {
+        class RallyRename_Background: RecruitUI_RscText {
+            idc = -1;
+            x = 0.38 * safezoneW + safezoneX;
+            y = 0.42 * safezoneH + safezoneY;
+            w = 0.24 * safezoneW;
+            h = 0.12 * safezoneH;
+            colorBackground[] = {0,0,0,0.65};
+        };
+        class RallyRename_Header: RecruitUI_RscText {
+            idc = 92830;
+            text = "$STR_ALIVE_RALLY_RENAME";
+            x = 0.38 * safezoneW + safezoneX;
+            y = 0.392 * safezoneH + safezoneY;
+            w = 0.24 * safezoneW;
+            h = 0.028 * safezoneH;
+            colorBackground[] = {0.788,0.443,0.157,0.65};
+            sizeEx = "(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.9)";
+        };
+        class RallyRename_Edit: RallyUI_RscEdit {
+            idc = 92831;
+            maxChars = 32;
+            x = 0.39 * safezoneW + safezoneX;
+            y = 0.435 * safezoneH + safezoneY;
+            w = 0.22 * safezoneW;
+            h = 0.035 * safezoneH;
+        };
+        class RallyRename_OK: RecruitUI_RscButton {
+            idc = 92832;
+            default = 1;
+            text = "$STR_ALIVE_RALLY_UI_BUTTON_RENAME";
+            action = "['renameSend'] call ALiVE_fnc_rallyWindow";
+            x = 0.39 * safezoneW + safezoneX;
+            y = 0.49 * safezoneH + safezoneY;
+            w = 0.105 * safezoneW;
+            h = 0.035 * safezoneH;
+        };
+        class RallyRename_Cancel: RecruitUI_RscButton {
+            idc = 92833;
+            text = "$STR_ALIVE_RALLY_UI_BUTTON_CANCEL";
+            action = "closeDialog 2";
+            x = 0.505 * safezoneW + safezoneX;
+            y = 0.49 * safezoneH + safezoneY;
+            w = 0.105 * safezoneW;
+            h = 0.035 * safezoneH;
+        };
+    };
+};

@@ -750,4 +750,19 @@
     <Portuguese>Terreno</Portuguese>
     <Russian>Местность</Russian>
 </Key>
+<Key ID="STR_ALIVE_RALLY_RENAME">
+    <English>Rename rally point</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_UI_BUTTON_RENAME">
+    <English>Rename</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_UI_BUTTON_CANCEL">
+    <English>Cancel</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_UI_RENAMED">
+    <English>Rally point renamed to %1.</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_UI_RENAME_EMPTY">
+    <English>Give the rally point a name of up to %1 characters.</English>
+</Key>
 </Container></Package></Project>

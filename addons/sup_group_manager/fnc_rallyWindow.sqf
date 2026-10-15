@@ -9,7 +9,8 @@ The Rally Points window: the other rally points the player may use, with how far
 way each is, and Travel.
 
 Parameters:
-_this select 0: STRING - "open", "select", "travel" or "closed"
+_this select 0: STRING - "open", "select", "travel" or "closed"; "rename" and "renameSend" for
+the Rename Rally Point window
 
 Author:
 Jman
@@ -69,5 +70,20 @@ switch (_op) do {
     };
     case "closed": {
         uiNamespace setVariable ["ALiVE_rallyRows", nil];
+    };
+    // Rename Rally Point: the rename window with the squad's rally point's name in it
+    case "rename": {
+        private _obj = group player getVariable ["ALiVE_rallyDeployed", objNull];
+        if (isNull _obj || {!createDialog "ALiVE_RallyRenameWindow"}) exitWith {};
+        private _row = (missionNamespace getVariable ["ALiVE_rallyPoints", []]) select { (_x select 0) == _obj };
+        private _r = findDisplay 9282;
+        (_r displayCtrl 92831) ctrlSetText ((_row param [0, []]) param [1, ""]);
+        ctrlSetFocus (_r displayCtrl 92831);
+    };
+    case "renameSend": {
+        private _r = findDisplay 9282;
+        if (isNull _r) exitWith {};
+        ["rename", [player, ctrlText (_r displayCtrl 92831)]] call ALiVE_fnc_rallyPoint;
+        closeDialog 1;
     };
 };
