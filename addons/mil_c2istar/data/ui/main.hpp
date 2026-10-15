@@ -50,7 +50,7 @@ class C2Tablet
         class C2Tablet_subMenuBackButton : C2Tablet_RscButton
         {
             idc = 70006;
-            text = "Back";
+            text = "$STR_ALIVE_C2ISTAR_UI_BACK";
             style = 0x02;
             x = 0.519796 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.7000 * GUI_GRID_HAbs + GUI_GRID_Y;
@@ -66,7 +66,7 @@ class C2Tablet
         class C2Tablet_subMenuAbortButton : C2Tablet_RscButton
         {
             idc = 70010;
-            text = "Close";
+            text = "$STR_ALIVE_C2ISTAR_UI_CLOSE";
             style = 0x02;
             x = 0.519796 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.7350 * GUI_GRID_HAbs + GUI_GRID_Y;
@@ -89,7 +89,7 @@ class C2Tablet
             y = 0.098 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.0597643 * GUI_GRID_WAbs;
             h = 0.028 * GUI_GRID_HAbs;
-            text = "Terrain";
+            text = "$STR_ALIVE_C2ISTAR_UI_TERRAIN";
             periodFocus = 1e10;
             periodOver = 1e10;
             period = 1e10; // #698 freeze the focus blink too (period drives the pulse while focused; periodFocus/Over alone left it flashing until focus moved away)
@@ -120,7 +120,7 @@ class C2Tablet
             y = 0.5150 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.465 * GUI_GRID_WAbs;
             h = 0.028 * GUI_GRID_HAbs;
-            text = "Create task";
+            text = "$STR_ALIVE_C2ISTAR_UI_CREATE_TASK_BTN";
             sizeEx = 0.5 * GUI_GRID_H;
             colorBackground[] = {0.384,0.439,0.341,1};
             colorBackgroundFocused[] = {0.706,0.706,0.706,1};
@@ -134,7 +134,7 @@ class C2Tablet
             y = 0.5480 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.465 * GUI_GRID_WAbs;
             h = 0.028 * GUI_GRID_HAbs;
-            text = "Generate a task";
+            text = "$STR_ALIVE_C2ISTAR_UI_GENERATE_A_TASK";
             sizeEx = 0.5 * GUI_GRID_H;
             colorBackground[] = {0.384,0.439,0.341,1};
             colorBackgroundFocused[] = {0.706,0.706,0.706,1};
@@ -148,7 +148,7 @@ class C2Tablet
             y = 0.5820 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.465 * GUI_GRID_WAbs;
             h = 0.028 * GUI_GRID_HAbs;
-            text = "Auto generate tasks for my side";
+            text = "$STR_ALIVE_C2ISTAR_UI_AUTO_ENABLE";
             sizeEx = 0.5 * GUI_GRID_H;
             colorBackground[] = {0.384,0.439,0.341,1};
             colorBackgroundFocused[] = {0.706,0.706,0.706,1};
@@ -158,7 +158,7 @@ class C2Tablet
         class C2Tablet_taskingCurrentTaskListEditButton : C2Tablet_RscButton
         {
             idc = 70026;
-            text = "Edit Task";
+            text = "$STR_ALIVE_C2ISTAR_UI_EDIT_TASK";
             style = 0x02;
             x = 0.271102 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.6160 * GUI_GRID_HAbs + GUI_GRID_Y;
@@ -173,7 +173,7 @@ class C2Tablet
         class C2Tablet_taskingCurrentTaskListDeleteButton : C2Tablet_RscButton
         {
             idc = 70027;
-            text = "Delete Task";
+            text = "$STR_ALIVE_C2ISTAR_UI_DELETE_TASK";
             style = 0x02;
             x = 0.271102 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.6500 * GUI_GRID_HAbs + GUI_GRID_Y;
@@ -206,7 +206,7 @@ class C2Tablet
             y = 0.2900 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.465 * GUI_GRID_WAbs;
             h = 0.028 * GUI_GRID_HAbs;
-            text = "Select all group members";
+            text = "$STR_ALIVE_C2ISTAR_UI_SELECT_GROUP";
             sizeEx = 0.5 * GUI_GRID_H;
             colorBackground[] = {0.384,0.439,0.341,1};
             colorBackgroundFocused[] = {0.706,0.706,0.706,1};
@@ -216,7 +216,7 @@ class C2Tablet
         class C2Tablet_taskSelectedPlayerTitle : C2Tablet_RscText
         {
             idc = 70012;
-            text = "Selected Players";
+            text = "$STR_ALIVE_C2ISTAR_UI_SELECTED_PLAYERS";
             x = 0.271203 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.3290 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.159596 * GUI_GRID_WAbs;
@@ -254,7 +254,7 @@ class C2Tablet
             y = 0.4770 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.465 * GUI_GRID_WAbs;
             h = 0.028 * GUI_GRID_HAbs;
-            text = "Delete";
+            text = "$STR_ALIVE_C2ISTAR_UI_DELETE";
             sizeEx = 0.5 * GUI_GRID_H;
             colorBackground[] = {0.384,0.439,0.341,1};
             colorBackgroundFocused[] = {0.706,0.706,0.706,1};
@@ -268,7 +268,7 @@ class C2Tablet
             y = 0.5100 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.465 * GUI_GRID_WAbs;
             h = 0.028 * GUI_GRID_HAbs;
-            text = "Clear selected players";
+            text = "$STR_ALIVE_C2ISTAR_UI_CLEAR_SELECTED";
             sizeEx = 0.5 * GUI_GRID_H;
             colorBackground[] = {0.384,0.439,0.341,1};
             colorBackgroundFocused[] = {0.706,0.706,0.706,1};
@@ -278,7 +278,7 @@ class C2Tablet
         class C2Tablet_taskingAddTaskTitleEditTitle : C2Tablet_RscText
         {
             idc = 70018;
-            text = "Task Title";
+            text = "$STR_ALIVE_C2ISTAR_UI_TASK_TITLE";
             x = 0.271203 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.1600 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.159596 * GUI_GRID_WAbs;
@@ -308,7 +308,7 @@ class C2Tablet
         class C2Tablet_taskingAddTaskDescriptionEditTitle : C2Tablet_RscText
         {
             idc = 70020;
-            text = "Task Description";
+            text = "$STR_ALIVE_C2ISTAR_UI_TASK_DESC";
             x = 0.271203 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.2100 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.159596 * GUI_GRID_WAbs;
@@ -339,7 +339,7 @@ class C2Tablet
         class C2Tablet_taskingAddTaskStateEditTitle : C2Tablet_RscText
         {
             idc = 70030;
-            text = "Task State";
+            text = "$STR_ALIVE_C2ISTAR_UI_TASK_STATE";
             x = 0.271203 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.3600 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.159596 * GUI_GRID_WAbs;
@@ -382,7 +382,7 @@ class C2Tablet
         class C2Tablet_taskingAddTaskCreateButton : C2Tablet_RscButton
         {
             idc = 70023;
-            text = "Create Task";
+            text = "$STR_ALIVE_C2ISTAR_UI_CREATE_TASK";
             style = 0x02;
             x = 0.519796 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.6650 * GUI_GRID_HAbs + GUI_GRID_Y;
@@ -397,7 +397,7 @@ class C2Tablet
         class C2Tablet_taskingEditTaskUpdateButton : C2Tablet_RscButton
         {
             idc = 70028;
-            text = "Update Task";
+            text = "$STR_ALIVE_C2ISTAR_UI_UPDATE_TASK";
             style = 0x02;
             x = 0.519796 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.6650 * GUI_GRID_HAbs + GUI_GRID_Y;
@@ -412,7 +412,7 @@ class C2Tablet
         class C2Tablet_taskingEditTaskManagePlayersButton : C2Tablet_RscButton
         {
             idc = 70032;
-            text = "Assign Players";
+            text = "$STR_ALIVE_C2ISTAR_UI_ASSIGN_PLAYERS";
             style = 0x02;
             x = 0.519796 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.6300 * GUI_GRID_HAbs + GUI_GRID_Y;
@@ -427,7 +427,7 @@ class C2Tablet
         class C2Tablet_taskingAddTaskApplyEditTitle : C2Tablet_RscText
         {
             idc = 70033;
-            text = "Applied to players";
+            text = "$STR_ALIVE_C2ISTAR_UI_APPLIED_TO";
             x = 0.271203 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.4800 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.159596 * GUI_GRID_WAbs;
@@ -461,7 +461,7 @@ class C2Tablet
         class C2Tablet_taskingAddTaskSetCurrent : C2Tablet_RscText
         {
             idc = 70035;
-            text = "Set Current";
+            text = "$STR_ALIVE_C2ISTAR_UI_SET_CURRENT";
             x = 0.271203 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.5600 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.159596 * GUI_GRID_WAbs;
@@ -495,7 +495,7 @@ class C2Tablet
         class C2Tablet_taskingAddTaskStatus : C2Tablet_RscText
         {
             idc = 70037;
-            text = "STATUS";
+            text = "$STR_ALIVE_C2ISTAR_UI_STATUS";
             x = 0.519796 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.5800 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.216525 * GUI_GRID_WAbs;
@@ -516,7 +516,7 @@ class C2Tablet
         class C2Tablet_taskingAddTaskSelectParent : C2Tablet_RscText
         {
             idc = 70039;
-            text = "Select Parent Task";
+            text = "$STR_ALIVE_C2ISTAR_UI_PARENT_TASK";
             x = 0.271203 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.6250 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.159596 * GUI_GRID_WAbs;
@@ -550,7 +550,7 @@ class C2Tablet
         class C2Tablet_taskingGenerateTaskTypeEditTitle : C2Tablet_RscText
         {
             idc = 70041;
-            text = "Task Type";
+            text = "$STR_ALIVE_C2ISTAR_UI_TASK_TYPE";
             x = 0.271203 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.1600 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.159596 * GUI_GRID_WAbs;
@@ -584,7 +584,7 @@ class C2Tablet
         class C2Tablet_taskingGenerateTaskCreateButton : C2Tablet_RscButton
         {
             idc = 70043;
-            text = "Generate Task";
+            text = "$STR_ALIVE_C2ISTAR_UI_GENERATE_TASK";
             style = 0x02;
             x = 0.519796 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.6650 * GUI_GRID_HAbs + GUI_GRID_Y;
@@ -599,7 +599,7 @@ class C2Tablet
         class C2Tablet_taskingGenerateTaskLocationEditTitle : C2Tablet_RscText
         {
             idc = 70044;
-            text = "Task Location";
+            text = "$STR_ALIVE_C2ISTAR_UI_TASK_LOCATION";
             x = 0.271203 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.2900 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.159596 * GUI_GRID_WAbs;
@@ -633,7 +633,7 @@ class C2Tablet
         class C2Tablet_taskingGenerateTaskFactionEditTitle : C2Tablet_RscText
         {
             idc = 70046;
-            text = "Task Enemy Faction";
+            text = "$STR_ALIVE_C2ISTAR_UI_ENEMY_FACTION";
             x = 0.271203 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.3900 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.159596 * GUI_GRID_WAbs;
@@ -667,7 +667,7 @@ class C2Tablet
         class C2Tablet_taskingAutoGenerateTaskFactionEditTitle : C2Tablet_RscText
         {
             idc = 70049;
-            text = "Task Enemy Faction";
+            text = "$STR_ALIVE_C2ISTAR_UI_ENEMY_FACTION";
             x = 0.271203 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.1600 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.159596 * GUI_GRID_WAbs;
@@ -701,7 +701,7 @@ class C2Tablet
         class C2Tablet_taskingAutoGenerateTaskCreateButton : C2Tablet_RscButton
         {
             idc = 70051;
-            text = "Enable Tactical Tasks";
+            text = "$STR_ALIVE_C2ISTAR_UI_TACTICAL_ENABLE";
             style = 0x02;
             x = 0.519796 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.6650 * GUI_GRID_HAbs + GUI_GRID_Y;
@@ -716,7 +716,7 @@ class C2Tablet
         class C2Tablet_taskingAutoGenerateTaskStrategicCreateButton : C2Tablet_RscButton
         {
             idc = 70056;
-            text = "Enable Strategic Tasks";
+            text = "$STR_ALIVE_C2ISTAR_UI_STRATEGIC_ENABLE";
             style = 0x02;
             x = 0.631321 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.6650 * GUI_GRID_HAbs + GUI_GRID_Y;
@@ -731,7 +731,7 @@ class C2Tablet
         class C2Tablet_taskingGenerateApplyEditTitle : C2Tablet_RscText
         {
             idc = 70052;
-            text = "Applied to players";
+            text = "$STR_ALIVE_C2ISTAR_UI_APPLIED_TO";
             x = 0.271203 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.5300 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.159596 * GUI_GRID_WAbs;
@@ -765,7 +765,7 @@ class C2Tablet
         class C2Tablet_taskingGenerateSetCurrent : C2Tablet_RscText
         {
             idc = 70054;
-            text = "Set Current";
+            text = "$STR_ALIVE_C2ISTAR_UI_SET_CURRENT";
             x = 0.271203 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.6100 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.159596 * GUI_GRID_WAbs;

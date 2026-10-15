@@ -3631,7 +3631,7 @@ if (isServer) then {
                         private _statusText = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAddStatusText);
                         private _taskingState = [_logic,"taskingState"] call MAINCLASS;
                         if (([_taskingState,"generateTypeListSelectedValue",""] call ALIVE_fnc_hashGet) != "Rescue") exitWith {
-                            _statusText ctrlSetText "A return point is only for a Rescue task";
+                            _statusText ctrlSetText localize "STR_ALIVE_C2ISTAR_UI_RETURN_ONLY_RESCUE";
                             _statusText ctrlSetTextColor [0.729,0.216,0.235,1];
                         };
 
@@ -3647,7 +3647,7 @@ if (isServer) then {
 
                         ALiVE_C2ISTAR_taskReturnPoint = _position;
 
-                        _statusText ctrlSetText "Return point set for a Rescue task";
+                        _statusText ctrlSetText localize "STR_ALIVE_C2ISTAR_UI_RETURN_SET";
                         _statusText ctrlSetTextColor [1,1,1,1];
 
                     };
@@ -4054,7 +4054,7 @@ if (isServer) then {
         _title = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_Title);
         _title ctrlShow true;
 
-        _title ctrlSetText "Current Tasks";
+        _title ctrlSetText localize "STR_ALIVE_C2ISTAR_UI_CURRENT_TASKS";
 
         _abortButton = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_SubMenuAbort);
         _abortButton ctrlShow true;
@@ -4073,9 +4073,9 @@ if (isServer) then {
         _autoGenerateTaskButton ctrlShow true;
 
         if(_autoGenerate == "Constant" || _autoGenerate == "Strategic") then {
-            _autoGenerateTaskButton ctrlSetText "Disable auto generated tasks for my side";
+            _autoGenerateTaskButton ctrlSetText localize "STR_ALIVE_C2ISTAR_UI_AUTO_DISABLE";
         } else {
-            _autoGenerateTaskButton ctrlSetText "Auto generate tasks for my side";
+            _autoGenerateTaskButton ctrlSetText localize "STR_ALIVE_C2ISTAR_UI_AUTO_ENABLE";
         };
 
         _autoGenerateTaskButton ctrlSetEventHandler ["MouseButtonClick", "['TASK_AUTO_GENERATE_BUTTON_CLICK',[_this]] call ALIVE_fnc_C2TabletOnAction"];
@@ -4146,7 +4146,7 @@ if (isServer) then {
         _title = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_Title);
         _title ctrlShow true;
 
-        _title ctrlSetText "Setup Auto Task Generation";
+        _title ctrlSetText localize "STR_ALIVE_C2ISTAR_UI_AUTO_SETUP";
 
         _backButton = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_SubMenuBack);
         _backButton ctrlShow true;
@@ -4192,13 +4192,13 @@ if (isServer) then {
             private _createButton = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAutoGenerateCreateButton);
 
             if(_autoGenerate == "Constant") then {
-                _createButton ctrlSetText "Disable Tactical Tasks";
-                _statusText ctrlSetText "Auto generated tasks are enabled";
+                _createButton ctrlSetText localize "STR_ALIVE_C2ISTAR_UI_TACTICAL_DISABLE";
+                _statusText ctrlSetText localize "STR_ALIVE_C2ISTAR_UI_AUTO_ON";
                 _statusText ctrlSetTextColor [0.384,0.439,0.341,1];
 
             }else{
-                _createButton ctrlSetText "Enable Tactical Tasks";
-                _statusText ctrlSetText "Auto generated tasks are disabled";
+                _createButton ctrlSetText localize "STR_ALIVE_C2ISTAR_UI_TACTICAL_ENABLE";
+                _statusText ctrlSetText localize "STR_ALIVE_C2ISTAR_UI_AUTO_OFF";
                 _statusText ctrlSetTextColor [0.729,0.216,0.235,1];
             };
             _createButton ctrlShow true;
@@ -4211,13 +4211,13 @@ if (isServer) then {
             private _createButton = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAutoGenerateStrategicCreateButton);
 
             if(_autoGenerate == "Strategic") then {
-                _createButton ctrlSetText "Disable Strategic Tasks";
-                _statusText ctrlSetText "Auto generated tasks are enabled";
+                _createButton ctrlSetText localize "STR_ALIVE_C2ISTAR_UI_STRATEGIC_DISABLE";
+                _statusText ctrlSetText localize "STR_ALIVE_C2ISTAR_UI_AUTO_ON";
                 _statusText ctrlSetTextColor [0.384,0.439,0.341,1];
 
             }else{
-                _createButton ctrlSetText "Enable Strategic Tasks";
-                _statusText ctrlSetText "Auto generated tasks are disabled";
+                _createButton ctrlSetText localize "STR_ALIVE_C2ISTAR_UI_STRATEGIC_ENABLE";
+                _statusText ctrlSetText localize "STR_ALIVE_C2ISTAR_UI_AUTO_OFF";
                 _statusText ctrlSetTextColor [0.729,0.216,0.235,1];
             };
             _createButton ctrlShow true;
@@ -4280,7 +4280,7 @@ if (isServer) then {
         _title = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_Title);
         _title ctrlShow true;
 
-        _title ctrlSetText "Generate Task";
+        _title ctrlSetText localize "STR_ALIVE_C2ISTAR_UI_GENERATE_TASK";
 
         _backButton = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_SubMenuBack);
         _backButton ctrlShow true;
@@ -4413,7 +4413,7 @@ if (isServer) then {
         // back (#274); with another type it clears its own hint and leaves anything else.
         private _statusText = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAddStatusText);
         private _taskingState = [_logic,"taskingState"] call MAINCLASS;
-        private _hints = ["Rescue: Alt+click the map to set the return point", "Return point set for a Rescue task"];
+        private _hints = [localize "STR_ALIVE_C2ISTAR_UI_RETURN_HINT", localize "STR_ALIVE_C2ISTAR_UI_RETURN_SET"];
 
         if (([_taskingState,"generateTypeListSelectedValue",""] call ALIVE_fnc_hashGet) == "Rescue") then {
             _statusText ctrlSetText (_hints select (!isNil "ALiVE_C2ISTAR_taskReturnPoint"));
@@ -4517,7 +4517,7 @@ if (isServer) then {
         _title = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_Title);
         _title ctrlShow true;
 
-        _title ctrlSetText "Assign players to this task";
+        _title ctrlSetText localize "STR_ALIVE_C2ISTAR_UI_ASSIGN_TITLE";
 
         _backButton = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_SubMenuBack);
         _backButton ctrlShow true;
@@ -4631,7 +4631,7 @@ if (isServer) then {
         _title = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_Title);
         _title ctrlShow true;
 
-        _title ctrlSetText "Add Task";
+        _title ctrlSetText localize "STR_ALIVE_C2ISTAR_UI_ADD_TASK";
 
         _backButton = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_SubMenuBack);
         _backButton ctrlShow true;
@@ -4827,7 +4827,7 @@ if (isServer) then {
         _title = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_Title);
         _title ctrlShow true;
 
-        _title ctrlSetText "Assign players to this task";
+        _title ctrlSetText localize "STR_ALIVE_C2ISTAR_UI_ASSIGN_TITLE";
 
         _backButton = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_SubMenuBack);
         _backButton ctrlShow true;
@@ -4957,7 +4957,7 @@ if (isServer) then {
         _title = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_Title);
         _title ctrlShow true;
 
-        _title ctrlSetText "Edit Task";
+        _title ctrlSetText localize "STR_ALIVE_C2ISTAR_UI_EDIT_TASK";
 
         _backButton = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_SubMenuBack);
         _backButton ctrlShow true;
@@ -5226,7 +5226,7 @@ if (isServer) then {
         _title = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_Title);
         _title ctrlShow true;
 
-        _title ctrlSetText "Update assigned players for this task";
+        _title ctrlSetText localize "STR_ALIVE_C2ISTAR_UI_UPDATE_ASSIGNED";
 
         _backButton = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_SubMenuBack);
         _backButton ctrlShow true;

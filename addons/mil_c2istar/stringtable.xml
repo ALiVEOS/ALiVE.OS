@@ -2681,4 +2681,374 @@
     <Portuguese>noroeste</Portuguese>
     <Russian>северо-запад</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_C2ISTAR_UI_RETURN_ONLY_RESCUE">
+    <English>A return point is only for a Rescue task</English>
+    <Chinesesimp>返回点仅用于营救任务</Chinesesimp>
+    <Chinese>返回點僅用於營救任務</Chinese>
+    <Spanish>Un punto de regreso solo sirve para una tarea de rescate</Spanish>
+    <French>Un point de retour ne sert qu'à une tâche de sauvetage</French>
+    <Portuguese>Um ponto de regresso só serve para uma tarefa de resgate</Portuguese>
+    <Russian>Точка возврата нужна только для задачи спасения</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_UI_RETURN_SET">
+    <English>Return point set for a Rescue task</English>
+    <Chinesesimp>已为营救任务设置返回点</Chinesesimp>
+    <Chinese>已為營救任務設定返回點</Chinese>
+    <Spanish>Punto de regreso fijado para la tarea de rescate</Spanish>
+    <French>Point de retour défini pour la tâche de sauvetage</French>
+    <Portuguese>Ponto de regresso definido para a tarefa de resgate</Portuguese>
+    <Russian>Точка возврата для задачи спасения задана</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_UI_RETURN_HINT">
+    <English>Rescue: Alt+click the map to set the return point</English>
+    <Chinesesimp>营救：Alt+点击地图设置返回点</Chinesesimp>
+    <Chinese>營救：Alt+點擊地圖設定返回點</Chinese>
+    <Spanish>Rescate: Alt+clic en el mapa para fijar el punto de regreso</Spanish>
+    <French>Sauvetage : Alt+clic sur la carte pour définir le point de retour</French>
+    <Portuguese>Resgate: Alt+clique no mapa para definir o ponto de regresso</Portuguese>
+    <Russian>Спасение: Alt+щелчок по карте задаёт точку возврата</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_UI_CURRENT_TASKS">
+    <English>Current Tasks</English>
+    <Chinesesimp>当前任务</Chinesesimp>
+    <Chinese>目前任務</Chinese>
+    <Spanish>Tareas actuales</Spanish>
+    <French>Tâches en cours</French>
+    <Portuguese>Tarefas atuais</Portuguese>
+    <Russian>Текущие задачи</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_UI_AUTO_DISABLE">
+    <English>Disable auto generated tasks for my side</English>
+    <Chinesesimp>为我方禁用自动生成任务</Chinesesimp>
+    <Chinese>為我方停用自動生成任務</Chinese>
+    <Spanish>Desactivar las tareas automáticas de mi bando</Spanish>
+    <French>Désactiver les tâches automatiques de mon camp</French>
+    <Portuguese>Desativar as tarefas automáticas do meu lado</Portuguese>
+    <Russian>Отключить автозадачи для моей стороны</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_UI_AUTO_ENABLE">
+    <English>Auto generate tasks for my side</English>
+    <Chinesesimp>为我方自动生成任务</Chinesesimp>
+    <Chinese>為我方自動生成任務</Chinese>
+    <Spanish>Generar tareas automáticas para mi bando</Spanish>
+    <French>Générer des tâches automatiques pour mon camp</French>
+    <Portuguese>Gerar tarefas automáticas para o meu lado</Portuguese>
+    <Russian>Автозадачи для моей стороны</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_UI_AUTO_SETUP">
+    <English>Setup Auto Task Generation</English>
+    <Chinesesimp>设置自动任务生成</Chinesesimp>
+    <Chinese>設定自動任務生成</Chinese>
+    <Spanish>Configurar la generación automática de tareas</Spanish>
+    <French>Configurer la génération automatique de tâches</French>
+    <Portuguese>Configurar a geração automática de tarefas</Portuguese>
+    <Russian>Настройка автозадач</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_UI_TACTICAL_DISABLE">
+    <English>Disable Tactical Tasks</English>
+    <Chinesesimp>禁用战术任务</Chinesesimp>
+    <Chinese>停用戰術任務</Chinese>
+    <Spanish>Desactivar tareas tácticas</Spanish>
+    <French>Désactiver les tâches tactiques</French>
+    <Portuguese>Desativar tarefas táticas</Portuguese>
+    <Russian>Отключить тактические задачи</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_UI_TACTICAL_ENABLE">
+    <English>Enable Tactical Tasks</English>
+    <Chinesesimp>启用战术任务</Chinesesimp>
+    <Chinese>啟用戰術任務</Chinese>
+    <Spanish>Activar tareas tácticas</Spanish>
+    <French>Activer les tâches tactiques</French>
+    <Portuguese>Ativar tarefas táticas</Portuguese>
+    <Russian>Включить тактические задачи</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_UI_STRATEGIC_DISABLE">
+    <English>Disable Strategic Tasks</English>
+    <Chinesesimp>禁用战略任务</Chinesesimp>
+    <Chinese>停用戰略任務</Chinese>
+    <Spanish>Desactivar tareas estratégicas</Spanish>
+    <French>Désactiver les tâches stratégiques</French>
+    <Portuguese>Desativar tarefas estratégicas</Portuguese>
+    <Russian>Отключить стратегические задачи</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_UI_STRATEGIC_ENABLE">
+    <English>Enable Strategic Tasks</English>
+    <Chinesesimp>启用战略任务</Chinesesimp>
+    <Chinese>啟用戰略任務</Chinese>
+    <Spanish>Activar tareas estratégicas</Spanish>
+    <French>Activer les tâches stratégiques</French>
+    <Portuguese>Ativar tarefas estratégicas</Portuguese>
+    <Russian>Включить стратегические задачи</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_UI_AUTO_ON">
+    <English>Auto generated tasks are enabled</English>
+    <Chinesesimp>自动生成任务已启用</Chinesesimp>
+    <Chinese>自動生成任務已啟用</Chinese>
+    <Spanish>Las tareas automáticas están activadas</Spanish>
+    <French>Les tâches automatiques sont activées</French>
+    <Portuguese>As tarefas automáticas estão ativadas</Portuguese>
+    <Russian>Автозадачи включены</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_UI_AUTO_OFF">
+    <English>Auto generated tasks are disabled</English>
+    <Chinesesimp>自动生成任务已禁用</Chinesesimp>
+    <Chinese>自動生成任務已停用</Chinese>
+    <Spanish>Las tareas automáticas están desactivadas</Spanish>
+    <French>Les tâches automatiques sont désactivées</French>
+    <Portuguese>As tarefas automáticas estão desativadas</Portuguese>
+    <Russian>Автозадачи отключены</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_UI_GENERATE_TASK">
+    <English>Generate Task</English>
+    <Chinesesimp>生成任务</Chinesesimp>
+    <Chinese>生成任務</Chinese>
+    <Spanish>Generar tarea</Spanish>
+    <French>Générer une tâche</French>
+    <Portuguese>Gerar tarefa</Portuguese>
+    <Russian>Создать задачу автоматически</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_UI_ASSIGN_TITLE">
+    <English>Assign players to this task</English>
+    <Chinesesimp>为此任务分配玩家</Chinesesimp>
+    <Chinese>為此任務分配玩家</Chinese>
+    <Spanish>Asignar jugadores a esta tarea</Spanish>
+    <French>Affecter des joueurs à cette tâche</French>
+    <Portuguese>Atribuir jogadores a esta tarefa</Portuguese>
+    <Russian>Назначить игроков на задачу</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_UI_ADD_TASK">
+    <English>Add Task</English>
+    <Chinesesimp>添加任务</Chinesesimp>
+    <Chinese>新增任務</Chinese>
+    <Spanish>Añadir tarea</Spanish>
+    <French>Ajouter une tâche</French>
+    <Portuguese>Adicionar tarefa</Portuguese>
+    <Russian>Добавить задачу</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_UI_EDIT_TASK">
+    <English>Edit Task</English>
+    <Chinesesimp>编辑任务</Chinesesimp>
+    <Chinese>編輯任務</Chinese>
+    <Spanish>Editar tarea</Spanish>
+    <French>Modifier la tâche</French>
+    <Portuguese>Editar tarefa</Portuguese>
+    <Russian>Изменить задачу</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_UI_UPDATE_ASSIGNED">
+    <English>Update assigned players for this task</English>
+    <Chinesesimp>更新此任务的已分配玩家</Chinesesimp>
+    <Chinese>更新此任務的已分配玩家</Chinese>
+    <Spanish>Actualizar los jugadores asignados a esta tarea</Spanish>
+    <French>Mettre à jour les joueurs affectés à cette tâche</French>
+    <Portuguese>Atualizar os jogadores atribuídos a esta tarefa</Portuguese>
+    <Russian>Обновить назначенных игроков</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_UI_BACK">
+    <English>Back</English>
+    <Chinesesimp>返回</Chinesesimp>
+    <Chinese>返回</Chinese>
+    <Spanish>Atrás</Spanish>
+    <French>Retour</French>
+    <Portuguese>Voltar</Portuguese>
+    <Russian>Назад</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_UI_CLOSE">
+    <English>Close</English>
+    <Chinesesimp>关闭</Chinesesimp>
+    <Chinese>關閉</Chinese>
+    <Spanish>Cerrar</Spanish>
+    <French>Fermer</French>
+    <Portuguese>Fechar</Portuguese>
+    <Russian>Закрыть</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_UI_TERRAIN">
+    <English>Terrain</English>
+    <Chinesesimp>地形</Chinesesimp>
+    <Chinese>地形</Chinese>
+    <Spanish>Terreno</Spanish>
+    <French>Terrain</French>
+    <Portuguese>Terreno</Portuguese>
+    <Russian>Местность</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_UI_CREATE_TASK_BTN">
+    <English>Create task</English>
+    <Chinesesimp>创建任务</Chinesesimp>
+    <Chinese>建立任務</Chinese>
+    <Spanish>Crear tarea</Spanish>
+    <French>Créer une tâche</French>
+    <Portuguese>Criar tarefa</Portuguese>
+    <Russian>Создать задачу</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_UI_GENERATE_A_TASK">
+    <English>Generate a task</English>
+    <Chinesesimp>生成一个任务</Chinesesimp>
+    <Chinese>生成一個任務</Chinese>
+    <Spanish>Generar una tarea</Spanish>
+    <French>Générer une tâche</French>
+    <Portuguese>Gerar uma tarefa</Portuguese>
+    <Russian>Создать задачу автоматически</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_UI_DELETE_TASK">
+    <English>Delete Task</English>
+    <Chinesesimp>删除任务</Chinesesimp>
+    <Chinese>刪除任務</Chinese>
+    <Spanish>Eliminar tarea</Spanish>
+    <French>Supprimer la tâche</French>
+    <Portuguese>Eliminar tarefa</Portuguese>
+    <Russian>Удалить задачу</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_UI_SELECT_GROUP">
+    <English>Select all group members</English>
+    <Chinesesimp>选择所有小组成员</Chinesesimp>
+    <Chinese>選擇所有小組成員</Chinese>
+    <Spanish>Seleccionar a todo el grupo</Spanish>
+    <French>Sélectionner tout le groupe</French>
+    <Portuguese>Selecionar todo o grupo</Portuguese>
+    <Russian>Выбрать всю группу</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_UI_SELECTED_PLAYERS">
+    <English>Selected Players</English>
+    <Chinesesimp>已选玩家</Chinesesimp>
+    <Chinese>已選玩家</Chinese>
+    <Spanish>Jugadores seleccionados</Spanish>
+    <French>Joueurs sélectionnés</French>
+    <Portuguese>Jogadores selecionados</Portuguese>
+    <Russian>Выбранные игроки</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_UI_DELETE">
+    <English>Delete</English>
+    <Chinesesimp>删除</Chinesesimp>
+    <Chinese>刪除</Chinese>
+    <Spanish>Eliminar</Spanish>
+    <French>Supprimer</French>
+    <Portuguese>Eliminar</Portuguese>
+    <Russian>Удалить</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_UI_CLEAR_SELECTED">
+    <English>Clear selected players</English>
+    <Chinesesimp>清除已选玩家</Chinesesimp>
+    <Chinese>清除已選玩家</Chinese>
+    <Spanish>Quitar los jugadores seleccionados</Spanish>
+    <French>Effacer les joueurs sélectionnés</French>
+    <Portuguese>Limpar os jogadores selecionados</Portuguese>
+    <Russian>Сбросить выбор игроков</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_UI_TASK_TITLE">
+    <English>Task Title</English>
+    <Chinesesimp>任务标题</Chinesesimp>
+    <Chinese>任務標題</Chinese>
+    <Spanish>Título de la tarea</Spanish>
+    <French>Titre de la tâche</French>
+    <Portuguese>Título da tarefa</Portuguese>
+    <Russian>Название задачи</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_UI_TASK_DESC">
+    <English>Task Description</English>
+    <Chinesesimp>任务描述</Chinesesimp>
+    <Chinese>任務描述</Chinese>
+    <Spanish>Descripción de la tarea</Spanish>
+    <French>Description de la tâche</French>
+    <Portuguese>Descrição da tarefa</Portuguese>
+    <Russian>Описание задачи</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_UI_TASK_STATE">
+    <English>Task State</English>
+    <Chinesesimp>任务状态</Chinesesimp>
+    <Chinese>任務狀態</Chinese>
+    <Spanish>Estado de la tarea</Spanish>
+    <French>État de la tâche</French>
+    <Portuguese>Estado da tarefa</Portuguese>
+    <Russian>Состояние задачи</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_UI_CREATE_TASK">
+    <English>Create Task</English>
+    <Chinesesimp>创建任务</Chinesesimp>
+    <Chinese>建立任務</Chinese>
+    <Spanish>Crear tarea</Spanish>
+    <French>Créer la tâche</French>
+    <Portuguese>Criar tarefa</Portuguese>
+    <Russian>Создать задачу</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_UI_UPDATE_TASK">
+    <English>Update Task</English>
+    <Chinesesimp>更新任务</Chinesesimp>
+    <Chinese>更新任務</Chinese>
+    <Spanish>Actualizar tarea</Spanish>
+    <French>Mettre à jour la tâche</French>
+    <Portuguese>Atualizar tarefa</Portuguese>
+    <Russian>Обновить задачу</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_UI_ASSIGN_PLAYERS">
+    <English>Assign Players</English>
+    <Chinesesimp>分配玩家</Chinesesimp>
+    <Chinese>分配玩家</Chinese>
+    <Spanish>Asignar jugadores</Spanish>
+    <French>Affecter des joueurs</French>
+    <Portuguese>Atribuir jogadores</Portuguese>
+    <Russian>Назначить игроков</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_UI_APPLIED_TO">
+    <English>Applied to players</English>
+    <Chinesesimp>适用玩家</Chinesesimp>
+    <Chinese>適用玩家</Chinese>
+    <Spanish>Aplicada a jugadores</Spanish>
+    <French>Appliquée aux joueurs</French>
+    <Portuguese>Aplicada a jogadores</Portuguese>
+    <Russian>Для игроков</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_UI_SET_CURRENT">
+    <English>Set Current</English>
+    <Chinesesimp>设为当前</Chinesesimp>
+    <Chinese>設為目前</Chinese>
+    <Spanish>Fijar como actual</Spanish>
+    <French>Définir comme actuelle</French>
+    <Portuguese>Definir como atual</Portuguese>
+    <Russian>Сделать текущей</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_UI_STATUS">
+    <English>STATUS</English>
+    <Chinesesimp>状态</Chinesesimp>
+    <Chinese>狀態</Chinese>
+    <Spanish>ESTADO</Spanish>
+    <French>ÉTAT</French>
+    <Portuguese>ESTADO</Portuguese>
+    <Russian>СТАТУС</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_UI_PARENT_TASK">
+    <English>Select Parent Task</English>
+    <Chinesesimp>选择上级任务</Chinesesimp>
+    <Chinese>選擇上級任務</Chinese>
+    <Spanish>Seleccionar tarea principal</Spanish>
+    <French>Choisir la tâche parente</French>
+    <Portuguese>Selecionar tarefa principal</Portuguese>
+    <Russian>Выбрать родительскую задачу</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_UI_TASK_TYPE">
+    <English>Task Type</English>
+    <Chinesesimp>任务类型</Chinesesimp>
+    <Chinese>任務類型</Chinese>
+    <Spanish>Tipo de tarea</Spanish>
+    <French>Type de tâche</French>
+    <Portuguese>Tipo de tarefa</Portuguese>
+    <Russian>Тип задачи</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_UI_TASK_LOCATION">
+    <English>Task Location</English>
+    <Chinesesimp>任务地点</Chinesesimp>
+    <Chinese>任務地點</Chinese>
+    <Spanish>Ubicación de la tarea</Spanish>
+    <French>Lieu de la tâche</French>
+    <Portuguese>Local da tarefa</Portuguese>
+    <Russian>Место задачи</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_UI_ENEMY_FACTION">
+    <English>Task Enemy Faction</English>
+    <Chinesesimp>任务敌方派系</Chinesesimp>
+    <Chinese>任務敵方派系</Chinese>
+    <Spanish>Facción enemiga de la tarea</Spanish>
+    <French>Faction ennemie de la tâche</French>
+    <Portuguese>Fação inimiga da tarefa</Portuguese>
+    <Russian>Вражеская фракция задачи</Russian>
+</Key>
 </Container></Package></Project>
