@@ -279,8 +279,9 @@ private _fnc_refresh = {
         _x params ["_name", "_description", "_text", "_shipped"];
         // Numbered, so a preset can be referred to by number in Discord or in a
         // report rather than by reading its whole title out.
+        // No tooltip: the description is in the picked pane beside the list, and the game draws a
+        // tooltip as one line, which ran the full width of the screen and over the window
         private _row = _lb lbAdd format ["%1. %2", _forEachIndex + 1, _name];
-        _lb lbSetTooltip [_row, _description];
         if (!_shipped) then { _lb lbSetColor [_row, [0.72, 0.82, 0.55, 1]] };
     } forEach _entries;
     if (count _entries > 0) then {

@@ -95,6 +95,7 @@ class ALiVE_PresetLibrary {
 };
 
 class ctrlMenu;
+class ctrlMenuStrip;
 class display3DEN {
     class ContextMenu: ctrlMenu {
         class Items {
@@ -109,7 +110,7 @@ class display3DEN {
             // when they can do something.
             class ALIVE_Menu {
                 conditionShow = "";
-                items[] += {"ALIVE_PresetLibrary", "ALIVE_SharePreset", "ALIVE_LoadPreset"};
+                items[] += {"ALIVE_PresetLibrary", "ALIVE_SharePreset", "ALIVE_LoadPreset", "ALIVE_IndexTerrain"};
             };
 
             class ALIVE_PresetLibrary {
@@ -130,6 +131,53 @@ class display3DEN {
             class ALIVE_LoadPreset {
                 text = "$STR_ALIVE_PRESETS_LOAD";
                 action = "[] call ALIVE_fnc_presetLoad;";
+            };
+
+            // The top menu's Index this terrain, here as well. Greyed by default like the top menu's;
+            // ALIVE_fnc_indexTerrainMenu gives it the same text, state and link each time this menu
+            // opens (it is built fresh from config every time), found by its data.
+            class ALIVE_IndexTerrain {
+                text = "$STR_ALIVE_INDEX_TERRAIN";
+                data = "ALIVE_IndexTerrainCtx";
+                picture = "\a3\3DEN\Data\Controls\ctrlMenu\link_ca.paa";
+                weblink = "https://www.alivemod.com/public/alive3/index_terrain.htm";
+                opensNewWindow = 1;
+                enable = 0;
+            };
+        };
+    };
+
+    // And the other way round: the right click menu's ALiVE entries in the ALiVE menu at the top
+    // of the editor, after Index this terrain. The top menu has no conditions, so the Apply entries,
+    // which need a placement module selected, are always there; with none selected they say so in
+    // the editor's notification. In the same class as the right click menu: a config can't
+    // declare display3DEN twice.
+    class Controls {
+        class MenuStrip: ctrlMenuStrip {
+            class Items {
+                class ALIVE_Strip {
+                    items[] += {"Separator", "ALIVE_StripPresetLibrary", "ALIVE_StripSharePreset", "ALIVE_StripLoadPreset", "Separator", "ALIVE_StripApplyGarrisonList", "ALIVE_StripApplyBlacklist"};
+                };
+                class ALIVE_StripPresetLibrary {
+                    text = "$STR_ALIVE_PRESETS_LIBRARY";
+                    action = "[] call ALIVE_fnc_presetWindow;";
+                };
+                class ALIVE_StripSharePreset {
+                    text = "$STR_ALIVE_PRESETS_SHARE";
+                    action = "[] call ALIVE_fnc_presetChoose;";
+                };
+                class ALIVE_StripLoadPreset {
+                    text = "$STR_ALIVE_PRESETS_LOAD";
+                    action = "[] call ALIVE_fnc_presetLoad;";
+                };
+                class ALIVE_StripApplyGarrisonList {
+                    text = "Apply Picked Garrison List";
+                    action = "[get3DENSelected 'logic'] call ALIVE_fnc_edenApplyGarrisonList;";
+                };
+                class ALIVE_StripApplyBlacklist {
+                    text = "Apply Picked Blacklist";
+                    action = "[get3DENSelected 'logic', false, 'blacklist'] call ALIVE_fnc_edenApplyGarrisonList;";
+                };
             };
         };
     };

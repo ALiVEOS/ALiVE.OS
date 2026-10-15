@@ -149,6 +149,45 @@ if (_enabled) then {
     _ctrl menuSetURL [_path, _url];
 };
 
+// -------------------------------------------------------------------
+// 7. The same entry in the right click menu's ALiVE folder (sys_presets
+// config, data "ALIVE_IndexTerrainCtx", greyed there by default). That
+// menu (control 1100) is built from config each time it opens, so the
+// state is kept here and a watcher, one per editor display, puts it on
+// the entry each time the menu shows. It ends with the display.
+// -------------------------------------------------------------------
+uiNamespace setVariable ["ALiVE_indexTerrainState", [_text, _enabled, _url]];
+private _disp = findDisplay 313;
+if !(_disp getVariable ["ALiVE_indexTerrainCtxWatch", false]) then {
+    _disp setVariable ["ALiVE_indexTerrainCtxWatch", true];
+    _disp spawn {
+        private _done = false;
+        while { !isNull _this } do {
+            private _menu = _this displayCtrl 1100;
+            if (isNull _menu || {!ctrlShown _menu}) then {
+                _done = false;
+            } else {
+                if (!_done) then {
+                    private _at = [];
+                    for "_i" from 0 to ((_menu menuSize []) - 1) do {
+                        for "_j" from 0 to ((_menu menuSize [_i]) - 1) do {
+                            if ((_menu menuData [_i, _j]) isEqualTo "ALIVE_IndexTerrainCtx") then { _at = [_i, _j] };
+                        };
+                    };
+                    if (_at isNotEqualTo []) then {
+                        (uiNamespace getVariable ["ALiVE_indexTerrainState", ["", false, ""]]) params ["_t", "_on", "_u"];
+                        _menu menuSetText [_at, _t];
+                        _menu menuEnable [_at, _on];
+                        if (_on) then { _menu menuSetURL [_at, _u] };
+                        _done = true;
+                    };
+                };
+            };
+            uiSleep 0.05;
+        };
+    };
+};
+
 ["ALiVE Index terrain menu: world=%1 mod=%2 worldMod=%3 addons=%4 id=%5 dlc=%6 version=%7 indexed=%8 state=%9 path=%10 url=%11",
     worldName, _mod, _worldMod, _addons, _id, _isDLC, _version, _indexed, _stateName, _path, [_url, ""] select (!_enabled)
 ] call ALiVE_fnc_dump;
