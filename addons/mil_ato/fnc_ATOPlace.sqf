@@ -133,6 +133,10 @@ Jman
 // counts real parking badly, tent hangars being hangars in name only.
 #define PLANE_CAP 8
 
+// How far from the base's centre another military cluster's hangars still count as this airfield's, for D3. Stratis
+// Air Base spans about 1000 m and the base centre sits near its middle.
+#define AIRFIELD_REACH 600
+
 // How old a pass flag or an adoption claim may be before it is taken for
 // abandoned. SQF has no finally, so a script error between a claim and its
 // release leaves the claim standing, and the first version of this file had
@@ -2412,6 +2416,35 @@ switch(_operation) do {
             if (!isNil "ALIVE_airBuildingTypes" && {!isNil "ALIVE_militaryAirBuildingTypes"} && {count _nodes > 0}) then {
                 _anchors = [_nodes, ALIVE_airBuildingTypes + ALIVE_militaryAirBuildingTypes] call ALIVE_fnc_findBuildingsInClusterNodes;
                 if !(_anchors isEqualType []) then { _anchors = [] };
+            };
+            // The hangars of the military clusters beside the base cluster too, nearest first, after its own. An index
+            // can split one airfield into several clusters: Stratis since the 5 Oct 2026 re-index is six, and the one
+            // the base stands on holds 4 objects and 2 of the field's 14 hangars, so 2 planes were all it ever had
+            // (Jman 15 Oct 2026; 639 objects in one cluster before).
+            if (!isNil "ALIVE_airBuildingTypes" && {!isNil "ALIVE_militaryAirBuildingTypes"}) then {
+                private _black = [_logic, "airspaceBlacklist", []] call ALIVE_fnc_hashGet;
+                if !(_black isEqualType []) then { _black = [] };
+                private _more = [];
+                {
+                    private _h = missionNamespace getVariable [_x, []];
+                    if (_h isEqualType [] && {count _h > 2} && {[_h] call ALIVE_fnc_isHash}) then {
+                        {
+                            private _c = [_x, "center", []] call ALIVE_fnc_hashGet;
+                            if (_c isEqualType [] && {count _c >= 2} && {(_c distance2D _center) < AIRFIELD_REACH}) then {
+                                private _n = [_x, "nodes", []] call ALIVE_fnc_hashGet;
+                                if (_n isEqualType []) then { { if (_x isEqualType objNull && {!isNull _x}) then { _more pushBackUnique _x } } forEach _n };
+                            };
+                        } forEach (_h select 2);
+                    };
+                } forEach ["ALIVE_clustersMilAir", "ALIVE_clustersMil"];
+                _more = _more - _nodes;
+                if (count _more > 0) then {
+                    private _extra = [_more, ALIVE_airBuildingTypes + ALIVE_militaryAirBuildingTypes] call ALIVE_fnc_findBuildingsInClusterNodes;
+                    if !(_extra isEqualType []) then { _extra = [] };
+                    _extra = (_extra - _anchors) select { private _o = _x; (_black findIf { _o inArea _x }) < 0 };
+                    _extra = [_extra, [_center], { _input0 distance2D _x }, "ASCEND"] call ALiVE_fnc_SortBy;
+                    _anchors append _extra;
+                };
             };
             if (count _anchors == 0 && {!isNull _hq}) then { _anchors = [_hq] };
 
