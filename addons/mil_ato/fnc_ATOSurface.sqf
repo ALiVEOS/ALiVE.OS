@@ -1751,6 +1751,9 @@ switch(_operation) do {
             private _reseats = 0;
             private _gearAsked = false;
             private _settled = false;
+            private _moving = true;
+            private _refP = getPosASL _v;
+            private _refT = time;
             private _fnc_z = {
                 if (_deck) then { ((getPosASL _v) select 2) - (_tgt select 2) } else { (getPosATL _v) select 2 }
             };
@@ -1773,9 +1776,15 @@ switch(_operation) do {
                 private _z = call _fnc_z;
                 _peak = _peak max _z;
                 private _vel = velocity _v;
-                private _moving = ((vectorMagnitude _vel) >= 0.5)
-                    || {(vectorMagnitude (angularVelocity _v)) >= 0.1}
-                    || {(abs (_z - _zLast)) >= 0.05};
+                // Judged by where it has got to over a second, not by its speed at this instant:
+                // a hull caught against something shakes in place at 2 to 18 m/s while going
+                // nowhere (measured 14 Oct, 6.8 m off its stand for the whole 30 s), and read as
+                // moving it was never put back and never settled.
+                if (time - _refT >= 1) then {
+                    private _p = getPosASL _v;
+                    _moving = ((_p distance2D _refP) >= 0.25) || {(abs ((_p select 2) - (_refP select 2))) >= 0.15};
+                    _refP = _p; _refT = time;
+                };
                 _zLast = _z;
                 private _done = false;
                 if (_moving) then {
@@ -1815,6 +1824,7 @@ switch(_operation) do {
                             _v setAngularVelocity [0,0,0];
                             _stillSince = -1;
                             _zLast = -1e9;
+                            _moving = true; _refP = getPosASL _v; _refT = time;
                         };
                     };
                 };

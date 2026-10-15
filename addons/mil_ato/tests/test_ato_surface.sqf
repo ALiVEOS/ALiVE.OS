@@ -420,11 +420,28 @@ refused rather than guessed at.
     [_surface, "place", [_pushed, _airHome]] call ALIVE_fnc_ATOSurface;
     private _tgtP = +(_airHome select 0);
     _tgtP set [2, 0];
+    // Pushed onto ground the aircraft fits on, hangars counted as walls: on this stand, inside a tent hangar,
+    // a plain 4.5 m sideways push put the wings into the hangar wall, and a hull jammed in a wall is rightly
+    // never settled with damage on (measured 15 Oct). The nearest clear spot 4.5 to 10 m off is used.
     private _offP = _tgtP getPos [4.5, ((_airHome select 1) + 90)];
+    private _clearOff = [];
+    {
+        private _d = _x;
+        {
+            private _c = _tgtP getPos [_d, (_airHome select 1) + _x];
+            _c set [2, 0];
+            if (_clearOff isEqualTo [] && {[_surface, "spotIsClear", [_c, _span, [_pushed] + (crew _pushed), _class, false]] call ALIVE_fnc_ATOSurface}) then { _clearOff = _c };
+        } forEach [90, 270, 0, 180, 45, 135, 225, 315];
+    } forEach [4.5, 6, 8, 10];
+    if (_clearOff isNotEqualTo []) then { _offP = _clearOff };
+    diag_log format ["  info  pushed-off spot %1 m from the stand (clear: %2)", round (_offP distance2D _tgtP), _clearOff isNotEqualTo []];
     _offP set [2, 0];
     private _moves = 0;
     private _tP = time;
-    while { (time - _tP) < 20 && {_moves < 4} } do {
+    // With no clear ground beside the stand the push stops at the 3 put-backs the hold allows, so the hull
+    // ends back on its stand; a fourth push would leave it jammed in the hangar wall.
+    private _maxMoves = if (_clearOff isNotEqualTo []) then { 4 } else { 3 };
+    while { (time - _tP) < 20 && {_moves < _maxMoves} } do {
         if ((_pushed distance2D _tgtP) < 1.5) then {
             _pushed setPosATL _offP;
             _pushed setVectorUp (surfaceNormal _offP);
@@ -437,7 +454,7 @@ refused rather than guessed at.
     diag_log format ["  info  pushed off %1 times: %2, %3 m off, damage allowed %4",
         _moves, _pushed getVariable ["ALiVE_mil_ato_settleResult", "none"],
         (round ((_pushed distance2D _tgtP) * 10)) / 10, isDamageAllowed _pushed];
-    ["a hull still and upright off its stand once it cannot be put back is settled",
+    [["a hull pushed off its stand is put back and settled with damage on", "a hull still and upright off its stand once it cannot be put back is settled"] select (_clearOff isNotEqualTo []),
         ((_pushed getVariable ["ALiVE_mil_ato_settleResult", ""]) isEqualTo "settled") && {isDamageAllowed _pushed}] call _fnc_check;
     _spawned pushBack _pushed;
 
