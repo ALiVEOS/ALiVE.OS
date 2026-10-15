@@ -38,7 +38,7 @@ class PRTablet
         class PRTablet_status : PRTablet_RscButton
         {
             idc = 60025;
-            text = "Show Status";
+            text = "$STR_ALIVE_PR_UI_SHOW_STATUS";
             style = 0x02;
             x = 0.519796 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.7000 * GUI_GRID_HAbs + GUI_GRID_Y;
@@ -53,7 +53,7 @@ class PRTablet
         class PRTablet_request : PRTablet_RscButton
         {
             idc = 60003;
-            text = "Send Request";
+            text = "$STR_ALIVE_PR_UI_SEND_REQUEST";
             style = 0x02;
             x = 0.519796 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.6650 * GUI_GRID_HAbs + GUI_GRID_Y;
@@ -68,7 +68,7 @@ class PRTablet
         class PRTablet_abort : PRTablet_RscButton
         {
             idc = 60004;
-            text = "Close";
+            text = "$STR_ALIVE_PR_UI_CLOSE";
             style = 0x02;
             x = 0.519796 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.7350 * GUI_GRID_HAbs + GUI_GRID_Y;
@@ -91,7 +91,7 @@ class PRTablet
             y = 0.098 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.0597643 * GUI_GRID_WAbs;
             h = 0.028 * GUI_GRID_HAbs;
-            text = "Terrain";
+            text = "$STR_ALIVE_PR_UI_TERRAIN";
             periodFocus = 1e10; // never blink
             periodOver = 1e10;
             period = 1e10; // #698 freeze the focus blink too (period drives the pulse while focused; periodFocus/Over alone left it flashing until focus moved away)
@@ -252,7 +252,7 @@ class PRTablet
         class PRTablet_deliveryTitle : PRTablet_RscText
         {
             idc = 60017;
-            text = "Delivery Type  -  How your request will be transported";
+            text = "$STR_ALIVE_PR_UI_DELIVERY_HDR";
             x = 0.271203 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.1430 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.241271 * GUI_GRID_WAbs;
@@ -286,7 +286,7 @@ class PRTablet
         class PRTablet_supplyTitle : PRTablet_RscText
         {
             idc = 60018;
-            text = "Supply List  -  Vehicles and equipment to include in the payload";
+            text = "$STR_ALIVE_PR_UI_SUPPLY_HDR";
             x = 0.271203 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.2230 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.241271 * GUI_GRID_WAbs;
@@ -320,7 +320,7 @@ class PRTablet
         class PRTablet_reinforceTitle : PRTablet_RscText
         {
             idc = 60019;
-            text = "Reinforce  -  Personnel and groups to include in the payload";
+            text = "$STR_ALIVE_PR_UI_REINFORCE_HDR";
             x = 0.271203 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.3730 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.241271 * GUI_GRID_WAbs;
@@ -354,7 +354,7 @@ class PRTablet
         class PRTablet_selectedTitle : PRTablet_RscText
         {
             idc = 60020;
-            text = "Payload  -  Your current request contents";
+            text = "$STR_ALIVE_PR_UI_PAYLOAD_HDR";
             x = 0.271203 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.5230 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.241271 * GUI_GRID_WAbs;
@@ -413,7 +413,7 @@ class PRTablet
             y = 0.6400 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.241271 * GUI_GRID_WAbs;
             h = 0.028 * GUI_GRID_HAbs;
-            text = "Delete";
+            text = "$STR_ALIVE_PR_UI_DELETE";
             sizeEx = 0.5 * GUI_GRID_H;
             colorBackground[] = {0.384,0.439,0.341,1};
             colorBackgroundFocused[] = {0.706,0.706,0.706,1};

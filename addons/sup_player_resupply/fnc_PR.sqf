@@ -2216,7 +2216,7 @@ switch(_operation) do {
                                 // If cache is still building show message and abort
                                 if (isNil "ALIVE_PR_vehicleCacheReady" || {!ALIVE_PR_vehicleCacheReady}) then {
                                     lbClear _supplyList;
-                                    _supplyList lbAdd "Please wait, loading data...";
+                                    _supplyList lbAdd localize "STR_ALIVE_PR_UI_LOADING";
                                     // Store the pending category so the spawn can auto-refresh when ready
                                     ALIVE_PR_pendingSupplyCategory = _selectedValue;
                                     _updateList = false;
@@ -2231,7 +2231,7 @@ switch(_operation) do {
                                             sleep 0.5;
                                             private _pct = if (isNil "ALIVE_PR_vehicleCachePercent") then { 0 } else { ALIVE_PR_vehicleCachePercent };
                                             if (_pct != _lastPct && {!isNull _ctrl} && {lbSize _ctrl > 0}) then {
-                                                _ctrl lbSetText [0, format ["Please wait, loading %1%%...", _pct]];
+                                                _ctrl lbSetText [0, format [localize "STR_ALIVE_PR_UI_LOADING_PCT", _pct]];
                                                 _lastPct = _pct;
                                             };
                                             (!isNil "ALIVE_PR_vehicleCacheReady" && {ALIVE_PR_vehicleCacheReady})
@@ -2982,7 +2982,7 @@ switch(_operation) do {
 
                         if(_payloadReady) then {
 
-                            _status ctrlSetText "Sending payload request";
+                            _status ctrlSetText localize "STR_ALIVE_PR_UI_SENDING";
                             _status ctrlSetTextColor [0.384,0.439,0.341,1];
 
                             // prepare the payload
@@ -3179,12 +3179,12 @@ switch(_operation) do {
                             // Reset after a succesful request
                             [_logic,"resetRequest"] call MAINCLASS;
                         }else{
-                            _status ctrlSetText "Payload refused adjust payload settings";
+                            _status ctrlSetText localize "STR_ALIVE_PR_UI_REFUSED";
                             _status ctrlSetTextColor [0.729,0.216,0.235,1];
                         };
 
                     }else{
-                        _status ctrlSetText "Select destination point on map";
+                        _status ctrlSetText localize "STR_ALIVE_PR_UI_SELECT_DEST";
                         _status ctrlSetTextColor [0.729,0.216,0.235,1];
                     };
 
@@ -3271,14 +3271,14 @@ switch(_operation) do {
                     _payloadType = _selectedOption select 0;
 
                     _payloadStatusButtonL1 = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_ButtonL1);
-                    _payloadStatusButtonL1 ctrlSetText "Cancel Request";
+                    _payloadStatusButtonL1 ctrlSetText localize "STR_ALIVE_PR_UI_CANCEL_REQUEST";
                     _payloadStatusButtonL1 ctrlShow true;
                     _payloadStatusButtonL1 ctrlSetEventHandler ["MouseButtonClick", "['STATUS_CANCEL_CLICK',[_this]] call ALIVE_fnc_PRTabletOnAction"];
 
                     if(_payloadType == 'PR_STANDARD' || _payloadType == 'PR_HELI_INSERT') then {
 
                         _payloadStatusButtonR1 = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_ButtonR1);
-                        _payloadStatusButtonR1 ctrlSetText "Show Details";
+                        _payloadStatusButtonR1 ctrlSetText localize "STR_ALIVE_PR_UI_SHOW_DETAILS";
                         _payloadStatusButtonR1 ctrlShow true;
                         _payloadStatusButtonR1 ctrlSetEventHandler ["MouseButtonClick", "['STATUS_DETAILS_SHOW',[_this]] call ALIVE_fnc_PRTabletOnAction"];
 
@@ -3335,7 +3335,7 @@ switch(_operation) do {
                     _payloadStatusButtonL1 ctrlShow false;
 
                     _payloadStatusButtonR1 = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_ButtonR1);
-                    _payloadStatusButtonR1 ctrlSetText "Hide Details";
+                    _payloadStatusButtonR1 ctrlSetText localize "STR_ALIVE_PR_UI_HIDE_DETAILS";
                     _payloadStatusButtonR1 ctrlShow true;
                     _payloadStatusButtonR1 ctrlSetEventHandler ["MouseButtonClick", "['STATUS_DETAILS_HIDE',[_this]] call ALIVE_fnc_PRTabletOnAction"];
 
@@ -3391,7 +3391,7 @@ switch(_operation) do {
                     _payloadStatusButtonL1 ctrlShow true;
 
                     _payloadStatusButtonR1 = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_ButtonR1);
-                    _payloadStatusButtonR1 ctrlSetText "Show Details";
+                    _payloadStatusButtonR1 ctrlSetText localize "STR_ALIVE_PR_UI_SHOW_DETAILS";
                     _payloadStatusButtonR1 ctrlShow true;
                     _payloadStatusButtonR1 ctrlSetEventHandler ["MouseButtonClick", "['STATUS_DETAILS_SHOW',[_this]] call ALIVE_fnc_PRTabletOnAction"];
 
@@ -3564,7 +3564,7 @@ switch(_operation) do {
 
         private ["_forcePool","_forcePoolStatus"];
         _forcePoolStatus = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_ForcePool);
-        _forcePoolStatus ctrlSetText "Current Force Pool: Fetching...";
+        _forcePoolStatus ctrlSetText localize "STR_ALIVE_PR_UI_FORCEPOOL_FETCHING";
         _forcePoolStatus ctrlShow true;
 
         [nil,"getForcePool", [player, faction player]] remoteExecCall [QUOTE(MAINCLASS),2];
@@ -3632,7 +3632,7 @@ switch(_operation) do {
 
         _payloadStatusButton = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_ButtonStatus);
         _payloadStatusButton ctrlShow true;
-        _payloadStatusButton ctrlSetText "Show Status";
+        _payloadStatusButton ctrlSetText localize "STR_ALIVE_PR_UI_SHOW_STATUS";
         _payloadStatusButton ctrlSetEventHandler ["MouseButtonClick", "['SHOW_STATUS_CLICK',[_this]] call ALIVE_fnc_PRTabletOnAction"];
 
         _payloadStatusTitle = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_StatusTitle);
@@ -3692,7 +3692,7 @@ switch(_operation) do {
         disableSerialization;
         private _forcePoolStatus = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_ForcePool);
         if (!isNull _forcePoolStatus) then {
-            _forcePoolStatus ctrlSetText format ["Current Force Pool: %1", _forcePool];
+            _forcePoolStatus ctrlSetText format [localize "STR_ALIVE_PR_UI_FORCEPOOL", _forcePool];
             _forcePoolStatus ctrlShow true;
         };
 
@@ -3879,7 +3879,7 @@ switch(_operation) do {
 
         _payloadRequestButton = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_ButtonRequest);
         _payloadRequestButton ctrlShow true;
-        _payloadRequestButton ctrlSetText "Send Request";
+        _payloadRequestButton ctrlSetText localize "STR_ALIVE_PR_UI_SEND_REQUEST";
         _payloadRequestButton ctrlSetEventHandler ["MouseButtonClick", "['PAYLOAD_REQUEST_CLICK',[_this]] call ALIVE_fnc_PRTabletOnAction"];
 
         // disable the request status fields
@@ -3888,7 +3888,7 @@ switch(_operation) do {
 
         _payloadStatusButton = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_ButtonStatus);
         _payloadStatusButton ctrlShow true;
-        _payloadStatusButton ctrlSetText "Show Status";
+        _payloadStatusButton ctrlSetText localize "STR_ALIVE_PR_UI_SHOW_STATUS";
         _payloadStatusButton ctrlSetEventHandler ["MouseButtonClick", "['SHOW_STATUS_CLICK',[_this]] call ALIVE_fnc_PRTabletOnAction"];
 
         _payloadStatusTitle = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_StatusTitle);
@@ -4101,7 +4101,7 @@ switch(_operation) do {
 
         _payloadRequestButton = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_ButtonRequest);
         _payloadRequestButton ctrlShow true;
-        _payloadRequestButton ctrlSetText "Send Request";
+        _payloadRequestButton ctrlSetText localize "STR_ALIVE_PR_UI_SEND_REQUEST";
         _payloadRequestButton ctrlSetEventHandler ["MouseButtonClick", "['PAYLOAD_REQUEST_CLICK',[_this]] call ALIVE_fnc_PRTabletOnAction"];
 
         // disable the request status fields
@@ -4112,7 +4112,7 @@ switch(_operation) do {
 
         _payloadStatusButton = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_ButtonStatus);
         _payloadStatusButton ctrlShow true;
-        _payloadStatusButton ctrlSetText "Show Status";
+        _payloadStatusButton ctrlSetText localize "STR_ALIVE_PR_UI_SHOW_STATUS";
         _payloadStatusButton ctrlSetEventHandler ["MouseButtonClick", "['SHOW_STATUS_CLICK',[_this]] call ALIVE_fnc_PRTabletOnAction"];
 
         _payloadStatusTitle = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_StatusTitle);
@@ -4214,7 +4214,7 @@ switch(_operation) do {
 
             _payloadStatusButton = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_ButtonStatus);
             _payloadStatusButton ctrlShow true;
-            _payloadStatusButton ctrlSetText "Back to Requests";
+            _payloadStatusButton ctrlSetText localize "STR_ALIVE_PR_UI_BACK";
             _payloadStatusButton ctrlSetEventHandler ["MouseButtonClick", "['SHOW_REQUEST_CLICK',[_this]] call ALIVE_fnc_PRTabletOnAction"];
 
             _payloadStatusList = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_StatusList);
@@ -4222,7 +4222,7 @@ switch(_operation) do {
 
             _payloadStatusTitle = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_StatusTitle);
             _payloadStatusTitle ctrlShow true;
-            _payloadStatusTitle ctrlSetText "Request Status";
+            _payloadStatusTitle ctrlSetText localize "STR_ALIVE_PR_UI_STATUS_TITLE";
 
             _payloadStatusButtonL1 = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_ButtonL1);
             _payloadStatusButtonL1 ctrlShow false;

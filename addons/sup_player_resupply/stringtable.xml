@@ -330,4 +330,194 @@
     <Portuguese>%1 reforços estão a regressar.</Portuguese>
     <Russian>Подкрепление (%1) возвращается.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_PR_UI_LOADING">
+    <English>Please wait, loading data...</English>
+    <Chinesesimp>请稍候，正在加载数据...</Chinesesimp>
+    <Chinese>請稍候，正在載入資料...</Chinese>
+    <Spanish>Espera, cargando datos...</Spanish>
+    <French>Veuillez patienter, chargement des données...</French>
+    <Portuguese>Aguarde, a carregar dados...</Portuguese>
+    <Russian>Подождите, загрузка данных...</Russian>
+</Key>
+<Key ID="STR_ALIVE_PR_UI_LOADING_PCT">
+    <English>Please wait, loading %1%%...</English>
+    <Chinesesimp>请稍候，正在加载 %1%%...</Chinesesimp>
+    <Chinese>請稍候，正在載入 %1%%...</Chinese>
+    <Spanish>Espera, cargando %1%%...</Spanish>
+    <French>Veuillez patienter, chargement %1%%...</French>
+    <Portuguese>Aguarde, a carregar %1%%...</Portuguese>
+    <Russian>Подождите, загрузка %1%%...</Russian>
+</Key>
+<Key ID="STR_ALIVE_PR_UI_SENDING">
+    <English>Sending payload request</English>
+    <Chinesesimp>正在发送物资请求</Chinesesimp>
+    <Chinese>正在發送物資請求</Chinese>
+    <Spanish>Enviando la solicitud de carga</Spanish>
+    <French>Envoi de la demande de chargement</French>
+    <Portuguese>A enviar o pedido de carga</Portuguese>
+    <Russian>Отправка запроса на груз</Russian>
+</Key>
+<Key ID="STR_ALIVE_PR_UI_REFUSED">
+    <English>Payload refused, adjust the payload settings</English>
+    <Chinesesimp>物资请求被拒绝，请调整物资设置</Chinesesimp>
+    <Chinese>物資請求被拒絕，請調整物資設定</Chinese>
+    <Spanish>Carga rechazada, ajusta los ajustes de la carga</Spanish>
+    <French>Chargement refusé, ajustez les paramètres du chargement</French>
+    <Portuguese>Carga recusada, ajuste as definições da carga</Portuguese>
+    <Russian>Груз отклонён, измените параметры груза</Russian>
+</Key>
+<Key ID="STR_ALIVE_PR_UI_SELECT_DEST">
+    <English>Select destination point on map</English>
+    <Chinesesimp>在地图上选择目的地</Chinesesimp>
+    <Chinese>在地圖上選擇目的地</Chinese>
+    <Spanish>Selecciona el punto de destino en el mapa</Spanish>
+    <French>Sélectionnez le point de destination sur la carte</French>
+    <Portuguese>Selecione o ponto de destino no mapa</Portuguese>
+    <Russian>Выберите точку назначения на карте</Russian>
+</Key>
+<Key ID="STR_ALIVE_PR_UI_CANCEL_REQUEST">
+    <English>Cancel Request</English>
+    <Chinesesimp>取消请求</Chinesesimp>
+    <Chinese>取消請求</Chinese>
+    <Spanish>Cancelar solicitud</Spanish>
+    <French>Annuler la demande</French>
+    <Portuguese>Cancelar pedido</Portuguese>
+    <Russian>Отменить запрос</Russian>
+</Key>
+<Key ID="STR_ALIVE_PR_UI_SHOW_DETAILS">
+    <English>Show Details</English>
+    <Chinesesimp>显示详情</Chinesesimp>
+    <Chinese>顯示詳情</Chinese>
+    <Spanish>Mostrar detalles</Spanish>
+    <French>Afficher les détails</French>
+    <Portuguese>Mostrar detalhes</Portuguese>
+    <Russian>Показать детали</Russian>
+</Key>
+<Key ID="STR_ALIVE_PR_UI_HIDE_DETAILS">
+    <English>Hide Details</English>
+    <Chinesesimp>隐藏详情</Chinesesimp>
+    <Chinese>隱藏詳情</Chinese>
+    <Spanish>Ocultar detalles</Spanish>
+    <French>Masquer les détails</French>
+    <Portuguese>Ocultar detalhes</Portuguese>
+    <Russian>Скрыть детали</Russian>
+</Key>
+<Key ID="STR_ALIVE_PR_UI_FORCEPOOL_FETCHING">
+    <English>Current Force Pool: Fetching...</English>
+    <Chinesesimp>当前兵力池：获取中...</Chinesesimp>
+    <Chinese>目前兵力池：取得中...</Chinese>
+    <Spanish>Reserva de fuerzas actual: obteniendo...</Spanish>
+    <French>Réserve de forces actuelle : récupération...</French>
+    <Portuguese>Reserva de forças atual: a obter...</Portuguese>
+    <Russian>Текущий резерв сил: получение...</Russian>
+</Key>
+<Key ID="STR_ALIVE_PR_UI_FORCEPOOL">
+    <English>Current Force Pool: %1</English>
+    <Chinesesimp>当前兵力池：%1</Chinesesimp>
+    <Chinese>目前兵力池：%1</Chinese>
+    <Spanish>Reserva de fuerzas actual: %1</Spanish>
+    <French>Réserve de forces actuelle : %1</French>
+    <Portuguese>Reserva de forças atual: %1</Portuguese>
+    <Russian>Текущий резерв сил: %1</Russian>
+</Key>
+<Key ID="STR_ALIVE_PR_UI_SHOW_STATUS">
+    <English>Show Status</English>
+    <Chinesesimp>显示状态</Chinesesimp>
+    <Chinese>顯示狀態</Chinese>
+    <Spanish>Mostrar estado</Spanish>
+    <French>Afficher l'état</French>
+    <Portuguese>Mostrar estado</Portuguese>
+    <Russian>Показать статус</Russian>
+</Key>
+<Key ID="STR_ALIVE_PR_UI_SEND_REQUEST">
+    <English>Send Request</English>
+    <Chinesesimp>发送请求</Chinesesimp>
+    <Chinese>發送請求</Chinese>
+    <Spanish>Enviar solicitud</Spanish>
+    <French>Envoyer la demande</French>
+    <Portuguese>Enviar pedido</Portuguese>
+    <Russian>Отправить запрос</Russian>
+</Key>
+<Key ID="STR_ALIVE_PR_UI_BACK">
+    <English>Back to Requests</English>
+    <Chinesesimp>返回请求</Chinesesimp>
+    <Chinese>返回請求</Chinese>
+    <Spanish>Volver a las solicitudes</Spanish>
+    <French>Retour aux demandes</French>
+    <Portuguese>Voltar aos pedidos</Portuguese>
+    <Russian>Назад к запросам</Russian>
+</Key>
+<Key ID="STR_ALIVE_PR_UI_STATUS_TITLE">
+    <English>Request Status</English>
+    <Chinesesimp>请求状态</Chinesesimp>
+    <Chinese>請求狀態</Chinese>
+    <Spanish>Estado de la solicitud</Spanish>
+    <French>État de la demande</French>
+    <Portuguese>Estado do pedido</Portuguese>
+    <Russian>Статус запроса</Russian>
+</Key>
+<Key ID="STR_ALIVE_PR_UI_CLOSE">
+    <English>Close</English>
+    <Chinesesimp>关闭</Chinesesimp>
+    <Chinese>關閉</Chinese>
+    <Spanish>Cerrar</Spanish>
+    <French>Fermer</French>
+    <Portuguese>Fechar</Portuguese>
+    <Russian>Закрыть</Russian>
+</Key>
+<Key ID="STR_ALIVE_PR_UI_TERRAIN">
+    <English>Terrain</English>
+    <Chinesesimp>地形</Chinesesimp>
+    <Chinese>地形</Chinese>
+    <Spanish>Terreno</Spanish>
+    <French>Terrain</French>
+    <Portuguese>Terreno</Portuguese>
+    <Russian>Местность</Russian>
+</Key>
+<Key ID="STR_ALIVE_PR_UI_DELIVERY_HDR">
+    <English>Delivery Type  -  How your request will be transported</English>
+    <Chinesesimp>运送方式 - 你的请求将如何运送</Chinesesimp>
+    <Chinese>運送方式 - 你的請求將如何運送</Chinese>
+    <Spanish>Tipo de entrega  -  Cómo se transportará tu solicitud</Spanish>
+    <French>Type de livraison  -  Comment votre demande sera acheminée</French>
+    <Portuguese>Tipo de entrega  -  Como o seu pedido será transportado</Portuguese>
+    <Russian>Способ доставки  -  Как будет доставлен ваш запрос</Russian>
+</Key>
+<Key ID="STR_ALIVE_PR_UI_SUPPLY_HDR">
+    <English>Supply List  -  Vehicles and equipment to include in the payload</English>
+    <Chinesesimp>补给清单 - 要加入物资的车辆和装备</Chinesesimp>
+    <Chinese>補給清單 - 要加入物資的車輛和裝備</Chinese>
+    <Spanish>Lista de suministros  -  Vehículos y equipo para incluir en la carga</Spanish>
+    <French>Liste de ravitaillement  -  Véhicules et équipement à inclure dans le chargement</French>
+    <Portuguese>Lista de abastecimentos  -  Veículos e equipamento a incluir na carga</Portuguese>
+    <Russian>Список снабжения  -  Техника и снаряжение для груза</Russian>
+</Key>
+<Key ID="STR_ALIVE_PR_UI_REINFORCE_HDR">
+    <English>Reinforce  -  Personnel and groups to include in the payload</English>
+    <Chinesesimp>增援 - 要加入物资的人员和小组</Chinesesimp>
+    <Chinese>增援 - 要加入物資的人員和小組</Chinese>
+    <Spanish>Refuerzos  -  Personal y grupos para incluir en la carga</Spanish>
+    <French>Renforts  -  Personnel et groupes à inclure dans le chargement</French>
+    <Portuguese>Reforços  -  Pessoal e grupos a incluir na carga</Portuguese>
+    <Russian>Подкрепление  -  Личный состав и группы для груза</Russian>
+</Key>
+<Key ID="STR_ALIVE_PR_UI_PAYLOAD_HDR">
+    <English>Payload  -  Your current request contents</English>
+    <Chinesesimp>物资 - 你当前请求的内容</Chinesesimp>
+    <Chinese>物資 - 你目前請求的內容</Chinese>
+    <Spanish>Carga  -  El contenido actual de tu solicitud</Spanish>
+    <French>Chargement  -  Le contenu actuel de votre demande</French>
+    <Portuguese>Carga  -  O conteúdo atual do seu pedido</Portuguese>
+    <Russian>Груз  -  Текущее содержимое запроса</Russian>
+</Key>
+<Key ID="STR_ALIVE_PR_UI_DELETE">
+    <English>Delete</English>
+    <Chinesesimp>删除</Chinesesimp>
+    <Chinese>刪除</Chinese>
+    <Spanish>Eliminar</Spanish>
+    <French>Supprimer</French>
+    <Portuguese>Eliminar</Portuguese>
+    <Russian>Удалить</Russian>
+</Key>
 </Container></Package></Project>
