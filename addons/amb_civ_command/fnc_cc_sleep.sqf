@@ -23,6 +23,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 params ["_agentData","_commandState","_commandName","_args","_state","_debug"];
@@ -101,10 +102,21 @@ switch (_state) do {
                 };
             };
 
-            _agent playMove "AinjPpneMstpSnonWnonDnon_injuredHealed";
-
-            _nextState = "sleep";
-            _nextStateArgs = _args;
+            // Only under a roof. A house with no indoor positions gives its exit as the home, and a
+            // civilian who can't get in stops at the door: lying down there left civilians asleep on
+            // their front steps (A. Ares on Discord, 15 Oct, Weferlinger and Altis). Outside, he just
+            // finishes and goes on to something else.
+            private _eye = eyePos _agent;
+            private _over = lineIntersectsSurfaces [_eye, _eye vectorAdd [0, 0, 15], _agent, objNull, true, 1, "GEOM", "NONE"];
+            // and only at night: in the evening he goes home but doesn't lie down
+            if (_dayState == "NIGHT" && {_over isNotEqualTo []} && {((_over select 0) select 2) isKindOf "House"}) then {
+                _agent playMove "AinjPpneMstpSnonWnonDnon_injuredHealed";
+                _nextState = "sleep";
+                _nextStateArgs = _args;
+            } else {
+                _nextState = "done";
+                _nextStateArgs = [];
+            };
 
             [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
         };
@@ -121,7 +133,8 @@ switch (_state) do {
 
         _args params ["_timeout","_timer"];
 
-        if(_timer > _timeout || ((call ALIVE_fnc_getEnvironment) select 0 == "DAY")) then
+        // awake again once night is over
+        if(_timer > _timeout || ((call ALIVE_fnc_getEnvironment) select 0 != "NIGHT")) then
         {
             _agent playMove "";
             _nextState = "done";
