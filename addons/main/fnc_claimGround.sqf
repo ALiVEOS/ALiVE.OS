@@ -56,4 +56,7 @@ if (isNil "ALiVE_groundClaims") then {
 };
 
 private _box = [_class] call ALiVE_fnc_getVehicleBoundingBox;
+// The watch can end the phase between the check above and here (a roadblock's car claimed at 0:15:17
+// on Jman's run, 14 Oct 2026, and found the list already gone): the phase is over, nothing to claim.
+if (isNil "ALiVE_groundClaims") exitWith {};
 ALiVE_groundClaims pushBack [_position, ((_box select 0) max (_box select 1)) / 2];
