@@ -5,7 +5,7 @@
 class RscMapControl;
 
 class ALiVE_RallyWindow {
-    idd = 9280;
+    idd = 9284;   // its own: 9280 is the FOB build window's
     movingEnable = 1;
     onUnload = "['closed'] call ALiVE_fnc_rallyWindow";
 

@@ -18,7 +18,7 @@ Jman
 
 params [["_op", "", [""]]];
 
-private _d = findDisplay 9280;
+private _d = findDisplay 9284;
 
 switch (_op) do {
     case "open": {
@@ -30,7 +30,7 @@ switch (_op) do {
         uiNamespace setVariable ["ALiVE_rallyRows", _rows];
         uiNamespace setVariable ["ALiVE_rallyMapShown", nil];
         createDialog "ALiVE_RallyWindow";
-        _d = findDisplay 9280;
+        _d = findDisplay 9284;
         (_d displayCtrl 92801) ctrlSetText format [localize "STR_ALIVE_RALLY_UI_TITLE", _here select 0];
         private _list = _d displayCtrl 92802;
         {
