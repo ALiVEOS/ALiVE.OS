@@ -35,6 +35,7 @@ restoreObjects - [fobID] -> a saved FOB's built objects made again; the number m
 unload - [crate, fobID] -> true when a supply crate went into the FOB
 upgrade - [fobID] -> true when the FOB went up a tier and was paid for
 respawn - [fobID] -> whether the FOB now has a respawn point (active, at or above the Respawn Point tier)
+rename - [fobID, name] -> true when the FOB took the new name
 fieldHQ - [object, "KIT" or "CRATE"] -> the FOB kit or supply crate handed out, or false
 repair - [fobID] -> true when a destroyed headquarters was rebuilt and paid for
 repairCost - [fobID] -> the supply a repair costs now
@@ -700,6 +701,37 @@ switch (_op) do {
             [_entry, "respawn", [_side, _pos getPos [12, 180], [_entry, "name", ""] call ALIVE_fnc_hashGet] call BIS_fnc_addRespawnPosition] call ALIVE_fnc_hashSet;
         };
         _result = _want;
+    };
+
+    // A new name for a FOB, from a player of its side standing at it. The map marker and the rally
+    // point read the name from the FOB list, so they follow it; the respawn point keeps the name it
+    // was made with, so it is made again. The name is cleaned here, never trusted from the request:
+    // no control characters, no < > & (the name is shown as structured text), at most 32 characters.
+    case "rename": {
+        _result = false;
+        _args params [["_id", "", [""]], ["_new", "", [""]]];
+        private _entry = [ALiVE_FOB_registry, _id] call ALIVE_fnc_hashGet;
+        if (isNil "_entry" || {isNull _caller}) exitWith {};
+        if (([_entry, "side", ""] call ALIVE_fnc_hashGet) != str (side group _caller)) exitWith { ["STR_ALIVE_FOB_REFUSED_NOTOURS"] call _tell };
+        if (_caller distance2D ([_entry, "pos", [0,0,0]] call ALIVE_fnc_hashGet) > 25) exitWith { ["STR_ALIVE_FOB_REFUSED_RANGE", [25]] call _tell };
+        _new = trim toString ((toArray _new) select { _x >= 32 && {!(_x in [38, 60, 62])} });
+        _new = trim toString ((toArray _new) select [0, 32]);
+        if (_new == "") exitWith { ["STR_ALIVE_FOB_REFUSED_NAME", [32]] call _tell };
+        private _old = [_entry, "name", ""] call ALIVE_fnc_hashGet;
+        if (_new isEqualTo _old) exitWith {};
+        [_entry, "name", _new] call ALIVE_fnc_hashSet;
+        private _have = [_entry, "respawn", []] call ALIVE_fnc_hashGet;
+        if (_have isEqualType [] && {_have isNotEqualTo []}) then {
+            _have call BIS_fnc_removeRespawnPosition;
+            [_entry, "respawn", []] call ALIVE_fnc_hashSet;
+            ["respawn", [_id]] call ALiVE_fnc_fobOps;
+        };
+        ALiVE_FOB_dirty = true;
+        [_logic, "broadcastMirror"] call ALiVE_fnc_FOB;
+        ["save", [true]] call ALiVE_fnc_fobPersistence;
+        ["STR_ALIVE_FOB_RENAMED", [_old, _new]] call _tell;
+        ["ALiVE Player FOBs - %1 renamed %2 from %3 to %4", name _caller, _id, _old, _new] call ALiVE_fnc_dump;
+        _result = true;
     };
 
     // A Field HQ (an object synced to the module) hands out a FOB kit or a supply crate beside

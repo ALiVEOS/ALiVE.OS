@@ -8,15 +8,17 @@ Description:
 The player's FOB actions, on the scroll menu:
 - Deploy FOB, standing within 8 m of a FOB kit for the player's side. The FOB goes 8 m in
   front of the player, facing the way they face.
-- FOB Status, within 25 m of one of the side's FOBs: its name, state, tier and supply.
-- Dismantle FOB, in the same place. It asks to be chosen again within 10 s before anything
-  happens; the supply in the FOB is lost.
-- Build Menu, inside an active FOB's build range: the build window (ALiVE_fnc_buildMenu).
+- Manage FOB, within 25 m of one of the side's FOBs: the FOB window (data\ui\fobManage.hpp),
+  with its state, tier and supply, and in one place:
+  - Rename: the map marker, rally point and respawn point take the new name too.
+  - Build Menu: the build window (ALiVE_fnc_buildMenu).
+  - Upgrade: the next tier, paid from its supply, while it is active and below tier 3.
+  - Repair: when its headquarters was destroyed; the server works out the price.
+  - Dismantle: asks to be pressed again within 10 s; the supply in the FOB is lost.
+  The server's answer to each shows on the window as well as in the usual message.
+- Build Menu, inside an active FOB's build range: the build window.
 - Recycle, looking at something built at a FOB from within 8 m: takes it down for half its
   price back.
-- Repair FOB, within 25 m of one of the side's FOBs whose headquarters was destroyed: the
-  server works out the price and rebuilds it.
-- Upgrade FOB, within 25 m of an active FOB below tier 3: the next tier, paid from its supply.
 - Unload Supplies, within 8 m of a supply crate inside a FOB's build range.
 - Request FOB Kit and Request Supply Crate, looking at a Field HQ (an object synced to the
   module) from within 8 m.
@@ -94,25 +96,19 @@ switch (_op) do {
         if (!_useScroll) exitWith { player setVariable ["ALiVE_FOB_actionIDs", []]; ALiVE_FOB_scroll = false };
         ALiVE_FOB_scroll = true;
         _ids = [
-            player addAction [localize "STR_ALIVE_FOB_ACTION_DEPLOY", { ["deploy"] call ALiVE_fnc_fobActions }, nil, 1.5, true, true, "",
+            player addAction [(localize "STR_ALIVE_FOB_ACTION_DEPLOY") call ALiVE_fnc_actionTitle, { ["deploy"] call ALiVE_fnc_fobActions }, nil, 1.5, true, true, "",
                 "!isNull ALiVE_FOB_nearKit && {vehicle _this == _this}"],
-            player addAction [localize "STR_ALIVE_FOB_ACTION_STATUS", { ["status"] call ALiVE_fnc_fobActions }, nil, 1.4, false, true, "",
-                "ALiVE_FOB_nearFob isNotEqualTo []"],
-            player addAction [localize "STR_ALIVE_FOB_ACTION_DISMANTLE", { ["dismantle"] call ALiVE_fnc_fobActions }, nil, 0.5, false, true, "",
+            player addAction [(localize "STR_ALIVE_FOB_ACTION_MANAGE") call ALiVE_fnc_actionTitle, { ["manage"] call ALiVE_fnc_fobActions }, nil, 1.4, false, true, "",
                 "ALiVE_FOB_nearFob isNotEqualTo [] && {vehicle _this == _this}"],
-            player addAction [localize "STR_ALIVE_FOB_ACTION_REPAIR", { ["repair", [ALiVE_FOB_nearFob select 0]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] }, nil, 1.46, false, true, "",
-                "ALiVE_FOB_nearFob isNotEqualTo [] && {(ALiVE_FOB_nearFob select 4) == 'damaged'} && {vehicle _this == _this}"],
-            player addAction [localize "STR_ALIVE_FOB_ACTION_UPGRADE", { ["upgrade", [ALiVE_FOB_nearFob select 0]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] }, nil, 1.42, false, true, "",
-                "ALiVE_FOB_nearFob isNotEqualTo [] && {(ALiVE_FOB_nearFob select 4) == 'active'} && {(ALiVE_FOB_nearFob select 5) < 3} && {vehicle _this == _this}"],
-            player addAction [localize "STR_ALIVE_FOB_ACTION_UNLOAD", { ["unload", [ALiVE_FOB_nearCrate, ALiVE_FOB_buildFob select 0]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] }, nil, 1.47, false, true, "",
+            player addAction [(localize "STR_ALIVE_FOB_ACTION_UNLOAD") call ALiVE_fnc_actionTitle, { ["unload", [ALiVE_FOB_nearCrate, ALiVE_FOB_buildFob select 0]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] }, nil, 1.47, false, true, "",
                 "!isNull ALiVE_FOB_nearCrate && {ALiVE_FOB_buildFob isNotEqualTo []} && {vehicle _this == _this}"],
-            player addAction [localize "STR_ALIVE_FOB_ACTION_HQ_KIT", { ["fieldHQ", [cursorObject, "KIT"]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] }, nil, 1.3, false, true, "",
+            player addAction [(localize "STR_ALIVE_FOB_ACTION_HQ_KIT") call ALiVE_fnc_actionTitle, { ["fieldHQ", [cursorObject, "KIT"]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] }, nil, 1.3, false, true, "",
                 "cursorObject getVariable ['ALiVE_FOB_fieldHQ', false] && {_this distance cursorObject < 8}"],
-            player addAction [localize "STR_ALIVE_FOB_ACTION_HQ_CRATE", { ["fieldHQ", [cursorObject, "CRATE"]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] }, nil, 1.29, false, true, "",
+            player addAction [(localize "STR_ALIVE_FOB_ACTION_HQ_CRATE") call ALiVE_fnc_actionTitle, { ["fieldHQ", [cursorObject, "CRATE"]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] }, nil, 1.29, false, true, "",
                 "cursorObject getVariable ['ALiVE_FOB_fieldHQ', false] && {_this distance cursorObject < 8}"],
-            player addAction [localize "STR_ALIVE_FOB_ACTION_BUILD", { ["open", ALiVE_FOB_buildFob] call ALiVE_fnc_buildMenu }, nil, 1.45, false, true, "",
+            player addAction [(localize "STR_ALIVE_FOB_ACTION_BUILD") call ALiVE_fnc_actionTitle, { ["open", ALiVE_FOB_buildFob] call ALiVE_fnc_buildMenu }, nil, 1.45, false, true, "",
                 "ALiVE_FOB_buildFob isNotEqualTo [] && {vehicle _this == _this} && {!(missionNamespace getVariable ['ALiVE_FOB_placing', false])}"],
-            player addAction [localize "STR_ALIVE_FOB_ACTION_RECYCLE", { ["recycle", [cursorObject]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] }, nil, 0.6, false, true, "",
+            player addAction [(localize "STR_ALIVE_FOB_ACTION_RECYCLE") call ALiVE_fnc_actionTitle, { ["recycle", [cursorObject]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] }, nil, 0.6, false, true, "",
                 "vehicle _this == _this && {_this distance cursorObject < 8} && {['canRecycle', cursorObject] call ALiVE_fnc_fobActions}"]
         ];
         player setVariable ["ALiVE_FOB_actionIDs", _ids];
@@ -145,12 +141,9 @@ switch (_op) do {
             ["CAManBase", 1, ["ACE_SelfActions", "ALiVE_FOB"], _x call _mk, true] call ace_interact_menu_fnc_addActionToClass;
         } forEach [
             ["ALiVE_FOB_Deploy", "STR_ALIVE_FOB_ACTION_DEPLOY", { ["deploy"] call ALiVE_fnc_fobActions }, { !isNull ALiVE_FOB_nearKit && {vehicle _player == _player} }],
-            ["ALiVE_FOB_Status", "STR_ALIVE_FOB_ACTION_STATUS", { ["status"] call ALiVE_fnc_fobActions }, { ALiVE_FOB_nearFob isNotEqualTo [] }],
+            ["ALiVE_FOB_Manage", "STR_ALIVE_FOB_ACTION_MANAGE", { ["manage"] call ALiVE_fnc_fobActions }, { ALiVE_FOB_nearFob isNotEqualTo [] && {vehicle _player == _player} }],
             ["ALiVE_FOB_Build", "STR_ALIVE_FOB_ACTION_BUILD", { ["open", ALiVE_FOB_buildFob] call ALiVE_fnc_buildMenu }, { ALiVE_FOB_buildFob isNotEqualTo [] && {!(missionNamespace getVariable ["ALiVE_FOB_placing", false])} }],
-            ["ALiVE_FOB_Unload", "STR_ALIVE_FOB_ACTION_UNLOAD", { ["unload", [ALiVE_FOB_nearCrate, ALiVE_FOB_buildFob select 0]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] }, { !isNull ALiVE_FOB_nearCrate && {ALiVE_FOB_buildFob isNotEqualTo []} }],
-            ["ALiVE_FOB_Upgrade", "STR_ALIVE_FOB_ACTION_UPGRADE", { ["upgrade", [ALiVE_FOB_nearFob select 0]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] }, { ALiVE_FOB_nearFob isNotEqualTo [] && {(ALiVE_FOB_nearFob select 4) == "active"} && {(ALiVE_FOB_nearFob select 5) < 3} }],
-            ["ALiVE_FOB_Repair", "STR_ALIVE_FOB_ACTION_REPAIR", { ["repair", [ALiVE_FOB_nearFob select 0]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] }, { ALiVE_FOB_nearFob isNotEqualTo [] && {(ALiVE_FOB_nearFob select 4) == "damaged"} }],
-            ["ALiVE_FOB_Dismantle", "STR_ALIVE_FOB_ACTION_DISMANTLE", { ["dismantle"] call ALiVE_fnc_fobActions }, { ALiVE_FOB_nearFob isNotEqualTo [] }]
+            ["ALiVE_FOB_Unload", "STR_ALIVE_FOB_ACTION_UNLOAD", { ["unload", [ALiVE_FOB_nearCrate, ALiVE_FOB_buildFob select 0]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] }, { !isNull ALiVE_FOB_nearCrate && {ALiVE_FOB_buildFob isNotEqualTo []} }]
         ];
         private _recycle = ["ALiVE_FOB_Recycle", "STR_ALIVE_FOB_ACTION_RECYCLE", { ["recycle", [_target]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] }, { ["canRecycle", _target] call ALiVE_fnc_fobActions }] call _mk;
         private _kit = ["ALiVE_FOB_HQKit", "STR_ALIVE_FOB_ACTION_HQ_KIT", { ["fieldHQ", [_target, "KIT"]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] }, { _target getVariable ["ALiVE_FOB_fieldHQ", false] }] call _mk;
@@ -174,11 +167,76 @@ switch (_op) do {
         ["start", [[_class, localize "STR_ALIVE_FOB_HQ_NAME", "DEPLOY", 0], ["", _side, "", getPosATL ALiVE_FOB_nearKit, "", 1, 0, 0, 40], ALiVE_FOB_nearKit]] call ALiVE_fnc_fobPlacement;
     };
 
-    case "status": {
-        if (ALiVE_FOB_nearFob isEqualTo []) exitWith {};
-        ALiVE_FOB_nearFob params ["", "", "_name", "", "_status", "_tier", "_supply", "_cap"];
+    // The FOB window for the side's FOB the player stands at (data\ui\fobManage.hpp)
+    case "manage": {
+        if (ALiVE_FOB_nearFob isEqualTo [] || {!createDialog "ALiVE_FobWindow"}) exitWith {};
+        uiNamespace setVariable ["ALiVE_FOB_manageId", ALiVE_FOB_nearFob select 0];
+        ALiVE_FOB_dismantleArmed = ["", -100];
+        ((findDisplay 9283) displayCtrl 92842) ctrlSetText (ALiVE_FOB_nearFob select 2);
+        ["manageRefresh"] call ALiVE_fnc_fobActions;
+    };
+
+    // The window filled from the FOB list: when it opens, and each time the server sends the list
+    case "manageRefresh": {
+        private _d = findDisplay 9283;
+        if (isNull _d) exitWith {};
+        private _id = uiNamespace getVariable ["ALiVE_FOB_manageId", ""];
+        private _row = ((missionNamespace getVariable ["ALiVE_FOB_registryMirror", []]) select { (_x select 0) == _id }) param [0, []];
+        // dismantled, lost or taken while the window was open
+        if (_row isEqualTo [] || {(_row select 1) != str (side group player)}) exitWith { closeDialog 0 };
+        _row params ["", "", "_name", "", "_status", "_tier", "_supply", "_cap"];
         private _supplyText = if (_supply < 0) then { localize "STR_ALIVE_FOB_SUPPLY_FREE" } else { if (_cap < 0) then { format [localize "STR_ALIVE_FOB_SUPPLY_POOL", round _supply] } else { format ["%1 / %2", round _supply, round _cap] } };
-        [localize "STR_ALIVE_FOB", format [localize "STR_ALIVE_FOB_STATUS", _name, localize (format ["STR_ALIVE_FOB_STATE_%1", toUpper _status]), _tier, _supplyText]] call ALIVE_fnc_sendHint;
+        (_d displayCtrl 92840) ctrlSetText _name;
+        (_d displayCtrl 92841) ctrlSetStructuredText parseText format [localize "STR_ALIVE_FOB_STATUS", _name, localize (format ["STR_ALIVE_FOB_STATE_%1", toUpper _status]), _tier, _supplyText];
+        private _up = _d displayCtrl 92845;
+        if (_tier >= 3) then {
+            _up ctrlSetText localize "STR_ALIVE_FOB_UI_TOP_TIER";
+        } else {
+            private _cost = [missionNamespace getVariable ["ALiVE_sup_fob", objNull], "attribute", [format ["fob_tier%1_cost", _tier + 1]]] call ALiVE_fnc_FOB;
+            _up ctrlSetText format [localize "STR_ALIVE_FOB_UI_UPGRADE_TO", _tier + 1, _cost];
+        };
+        _up ctrlEnable (_status == "active" && {_tier < 3});
+        (_d displayCtrl 92844) ctrlEnable (_status == "active");
+        (_d displayCtrl 92846) ctrlEnable (_status == "damaged");
+        // a damaged FOB is repaired or lost, not packed up
+        (_d displayCtrl 92847) ctrlEnable (_status != "damaged");
+    };
+
+    // A button on the window. The server checks everything again and its answer shows on the
+    // window's last line (ALiVE_fnc_fobClient "notify").
+    case "manageDo": {
+        private _d = findDisplay 9283;
+        if (isNull _d) exitWith {};
+        private _id = uiNamespace getVariable ["ALiVE_FOB_manageId", ""];
+        (_d displayCtrl 92848) ctrlSetStructuredText parseText "";
+        switch (_this param [1, ""]) do {
+            case "RENAME": { ["rename", [_id, ctrlText (_d displayCtrl 92842)]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] };
+            case "UPGRADE": { ["upgrade", [_id]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] };
+            case "REPAIR": { ["repair", [_id]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] };
+            case "BUILD": {
+                private _row = ((missionNamespace getVariable ["ALiVE_FOB_registryMirror", []]) select { (_x select 0) == _id }) param [0, []];
+                closeDialog 0;
+                // the build window opens once this one has gone
+                if (_row isNotEqualTo []) then { _row spawn { uiSleep 0.1; ["open", _this] call ALiVE_fnc_buildMenu } };
+            };
+            // pressed twice within 10 s, as Dismantle FOB always has been
+            case "DISMANTLE": {
+                private _armed = missionNamespace getVariable ["ALiVE_FOB_dismantleArmed", ["", -100]];
+                if ((_armed select 0) == _id && {time - (_armed select 1) <= 10}) then {
+                    ALiVE_FOB_dismantleArmed = ["", -100];
+                    ["dismantle", [_id]] remoteExecCall ["ALiVE_fnc_fobRequest", 2];
+                } else {
+                    ALiVE_FOB_dismantleArmed = [_id, time];
+                    (_d displayCtrl 92847) ctrlSetText localize "STR_ALIVE_FOB_UI_DISMANTLE_AGAIN";
+                    (_d displayCtrl 92848) ctrlSetStructuredText parseText format [localize "STR_ALIVE_FOB_DISMANTLE_CONFIRM", ctrlText (_d displayCtrl 92840)];
+                };
+            };
+        };
+    };
+
+    case "manageClosed": {
+        uiNamespace setVariable ["ALiVE_FOB_manageId", nil];
+        ALiVE_FOB_dismantleArmed = ["", -100];
     };
 
     case "dismantle": {

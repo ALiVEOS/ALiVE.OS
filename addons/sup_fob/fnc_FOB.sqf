@@ -379,7 +379,7 @@ switch (_operation) do {
         publicVariable "ALiVE_FOB_registryMirror";
         [_logic, "broadcastRoom"] call MAINCLASS;
         // A hosted server's own player gets no public variable event for its own send
-        if (hasInterface) then { [] call ALiVE_fnc_fobMarkers };
+        if (hasInterface) then { [] call ALiVE_fnc_fobMarkers; ["manageRefresh"] call ALiVE_fnc_fobActions };
         _result = count ALiVE_FOB_registryMirror;
     };
 };

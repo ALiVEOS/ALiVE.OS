@@ -34,6 +34,7 @@ switch (_op) do {
             "ALiVE_FOB_registryMirror" addPublicVariableEventHandler {
                 ALiVE_FOB_registryMirror = _this select 1;
                 [] call ALiVE_fnc_fobMarkers;
+                ["manageRefresh"] call ALiVE_fnc_fobActions;
             };
             // The player object may not be there yet on a joining machine
             [] spawn {
@@ -64,6 +65,9 @@ switch (_op) do {
         private _safe = _fmt apply { if (_x isEqualType "") then { ((_x regexReplace ["&", "&amp;"]) regexReplace ["<", "&lt;"]) regexReplace [">", "&gt;"] } else { _x } };
         private _text = format ([localize _key] + _fmt);
         [localize "STR_ALIVE_FOB", format ([localize _key] + _safe)] call ALIVE_fnc_sendHint;
+        // and on the FOB window's last line when it is open
+        private _fw = findDisplay 9283;
+        if (!isNull _fw) then { (_fw displayCtrl 92848) ctrlSetStructuredText parseText format ([localize _key] + _safe) };
         systemChat _text;
     };
 };

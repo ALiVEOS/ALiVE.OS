@@ -83,9 +83,20 @@ class ALiVE_FobBuildWindow {
             tooltip = "$STR_ALIVE_FOB_UI_SEARCH_TIP";
             x = 0.35 * safezoneW + safezoneX;
             y = 0.305 * safezoneH + safezoneY;
-            w = 0.15 * safezoneW;
+            w = 0.085 * safezoneW;
             h = 0.03 * safezoneH;
             onKeyUp = "['filter'] call ALiVE_fnc_buildMenu";
+        };
+        // Tier filter: what this FOB can build now (the default), one tier's items, or every tier.
+        // Items the FOB's tier is too low for are listed greyed, and Place stays off for them.
+        class FobUI_Tier: FobUI_RscCombo {
+            idc = 92814;
+            tooltip = "$STR_ALIVE_FOB_UI_TIER_TIP";
+            x = 0.44 * safezoneW + safezoneX;
+            y = 0.305 * safezoneH + safezoneY;
+            w = 0.06 * safezoneW;
+            h = 0.03 * safezoneH;
+            onLBSelChanged = "['filter'] call ALiVE_fnc_buildMenu";
         };
         class FobUI_List: FobUI_RscListBox {
             idc = 92802;

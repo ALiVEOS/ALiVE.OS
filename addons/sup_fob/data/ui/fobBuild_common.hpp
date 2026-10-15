@@ -269,3 +269,45 @@ class FobUI_RscListBox
 	autoScrollDelay = 5;
 	autoScrollRewind = 0;
 };
+
+// The tier filter's drop-down, after the Group Manager's combo box in the build window's colours
+class FobUI_RscCombo
+{
+	access = 0;
+	type = 4;
+	style = 0;
+	idc = -1;
+	x = 0;
+	y = 0;
+	w = 0.1;
+	h = 0.03;
+	font = "PuristaMedium";
+	sizeEx = "(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.85)";
+	shadow = 0;
+	colorText[] = {1,1,1,1};
+	colorSelect[] = {1,1,1,1};
+	colorBackground[] = {0,0,0,0.85};
+	colorSelectBackground[] = {0.788,0.443,0.157,0.8};
+	colorScrollbar[] = {1,1,1,0.6};
+	colorDisabled[] = {1,1,1,0.25};
+	colorActive[] = {1,1,1,1};
+	color[] = {1,1,1,0.6};
+	soundSelect[] = {"",0.1,1};
+	soundExpand[] = {"",0.1,1};
+	soundCollapse[] = {"",0.1,1};
+	maxHistoryDelay = 1;
+	wholeHeight = 0.3;
+	arrowEmpty = "\A3\ui_f\data\GUI\RscCommon\rsccombo\arrow_combo_ca.paa";
+	arrowFull = "\A3\ui_f\data\GUI\RscCommon\rsccombo\arrow_combo_active_ca.paa";
+	class ComboScrollBar
+	{
+		color[] = {1,1,1,0.6};
+		colorActive[] = {1,1,1,1};
+		colorDisabled[] = {1,1,1,0.3};
+		shadow = 0;
+		arrowEmpty = "\A3\ui_f\data\gui\cfg\scrollbar\arrowEmpty_ca.paa";
+		arrowFull = "\A3\ui_f\data\gui\cfg\scrollbar\arrowFull_ca.paa";
+		border = "\A3\ui_f\data\gui\cfg\scrollbar\border_ca.paa";
+		thumb = "\A3\ui_f\data\gui\cfg\scrollbar\thumb_ca.paa";
+	};
+};

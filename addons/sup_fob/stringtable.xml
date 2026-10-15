@@ -596,6 +596,42 @@
             <Key ID="STR_ALIVE_FOB_INTERFACE_BOTH">
                 <English>Both</English>
             </Key>
+            <Key ID="STR_ALIVE_FOB_RENAME_OK">
+                <English>Rename</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_RENAMED">
+                <English>%1 is now %2.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_REFUSED_NAME">
+                <English>Give the FOB a name of up to %1 characters.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_UI_TIER_AVAILABLE">
+                <English>Available</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_UI_TIER_N">
+                <English>Tier %1</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_UI_TIER_ALL">
+                <English>All tiers</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_UI_TIER_TIP">
+                <English>Which items to list: what this FOB can build now, the items that need one tier, or every tier. Greyed items need a higher tier FOB.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_ACTION_MANAGE">
+                <English>Manage FOB</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_UI_NAME">
+                <English>Name</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_UI_UPGRADE_TO">
+                <English>Upgrade to tier %1 (%2)</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_UI_TOP_TIER">
+                <English>Top tier</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_UI_DISMANTLE_AGAIN">
+                <English>Press again to dismantle</English>
+            </Key>
         </Container>
     </Package>
 </Project>

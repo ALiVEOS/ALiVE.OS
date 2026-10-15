@@ -61,6 +61,16 @@ switch (_operation) do {
         };
         uiNamespace setVariable ["ALiVE_FOB_buildAt", _args select 0];
         createDialog "ALiVE_FobBuildWindow";
+        // the tier filter, starting on what this FOB can build now; filled before the category
+        // so the first list is already filtered
+        private _tier = BW_DISPLAY displayCtrl 92814;
+        {
+            _tier lbSetValue [_tier lbAdd (_x select 0), _x select 1];
+        } forEach [[localize "STR_ALIVE_FOB_UI_TIER_AVAILABLE", 0], [format [localize "STR_ALIVE_FOB_UI_TIER_N", 1], 1],
+            [format [localize "STR_ALIVE_FOB_UI_TIER_N", 2], 2], [format [localize "STR_ALIVE_FOB_UI_TIER_N", 3], 3], [localize "STR_ALIVE_FOB_UI_TIER_ALL", 9]];
+        uiNamespace setVariable ["ALiVE_FOB_buildFilling", true];
+        _tier lbSetCurSel 0;
+        uiNamespace setVariable ["ALiVE_FOB_buildFilling", false];
         ["category", uiNamespace getVariable ["ALiVE_FOB_buildCategory", "FORTIFICATION"]] call ALiVE_fnc_buildMenu;
     };
 
@@ -89,17 +99,30 @@ switch (_operation) do {
     };
 
     // Search (#1085): the category's items whose name or class name has the typed text in it
+    // and the tier filter: 0 what this FOB can build now, 1 to 3 the items that need that tier, 9 all
     case "filter": {
-        if (isNull BW_DISPLAY) exitWith {};
+        if (isNull BW_DISPLAY || {uiNamespace getVariable ["ALiVE_FOB_buildFilling", false]}) exitWith {};
         private _find = toLower (ctrlText (BW_DISPLAY displayCtrl 92812));
         private _rows = uiNamespace getVariable ["ALiVE_FOB_buildAll", []];
         if (_find != "") then {
             _rows = _rows select { ((toLower (_x select 1)) find _find) >= 0 || {((toLower (_x select 0)) find _find) >= 0} };
         };
+        private _fobTier = (call _fnc_fob) param [5, 1];
+        private _combo = BW_DISPLAY displayCtrl 92814;
+        private _pick = if (lbCurSel _combo < 0) then { 0 } else { _combo lbValue (lbCurSel _combo) };
+        _rows = _rows select {
+            private _t = _x param [5, 1];
+            switch (_pick) do { case 0: { _t <= _fobTier }; case 9: { true }; default { _t == _pick } }
+        };
         uiNamespace setVariable ["ALiVE_FOB_buildRows", _rows];
         private _list = BW_DISPLAY displayCtrl 92802;
         lbClear _list;
-        private _fobTier = (call _fnc_fob) param [5, 1];
+        // nothing to show: no item to describe or place
+        if (_rows isEqualTo []) then {
+            (BW_DISPLAY displayCtrl 92803) ctrlSetStructuredText parseText "";
+            (BW_DISPLAY displayCtrl 92809) ctrlSetText "";
+            (BW_DISPLAY displayCtrl 92805) ctrlEnable false;
+        };
         {
             _x params ["_class", "_name", "", "_cost", "", ["_tierMin", 1]];
             private _i = _list lbAdd format ["%1  (%2)", [_name, _class] select (_name == ""), _cost];
@@ -123,7 +146,10 @@ switch (_operation) do {
         (BW_DISPLAY displayCtrl 92809) ctrlSetText _pic;
         private _what = switch (_kind) do { case "SUPPLY": {"STR_ALIVE_FOB_UI_SUPPLY_ITEM"}; case "STATIC": {"STR_ALIVE_FOB_UI_STATIC_ITEM"}; case "VEHICLE": {"STR_ALIVE_FOB_UI_VEHICLE_ITEM"}; default {"STR_ALIVE_FOB_UI_FORTIFICATION"} };
         private _lines = [[_name, _class] select (_name == ""), localize _what, format [localize "STR_ALIVE_FOB_UI_COST", _cost]];
-        if (_tierMin > ((call _fnc_fob) param [5, 1])) then { _lines pushBack format [localize "STR_ALIVE_FOB_UI_TIER_NEEDED", _tierMin] };
+        private _locked = _tierMin > ((call _fnc_fob) param [5, 1]);
+        if (_locked) then { _lines pushBack format [localize "STR_ALIVE_FOB_UI_TIER_NEEDED", _tierMin] };
+        // a greyed item can be looked at but not placed
+        (BW_DISPLAY displayCtrl 92805) ctrlEnable !_locked;
         (BW_DISPLAY displayCtrl 92803) ctrlSetStructuredText ([_lines, true] call _fnc_lines);
         call _fnc_status;
     };
@@ -133,6 +159,8 @@ switch (_operation) do {
         private _row = (uiNamespace getVariable ["ALiVE_FOB_buildRows", []]) param [lbCurSel (BW_DISPLAY displayCtrl 92802), []];
         private _fob = call _fnc_fob;
         if (_row isEqualTo [] || {_fob isEqualTo []}) exitWith {};
+        // a double click on a greyed item does nothing, as the Place button does
+        if ((_row param [5, 1]) > (_fob param [5, 1])) exitWith {};
         closeDialog 0;
         ["start", [_row, _fob]] call ALiVE_fnc_fobPlacement;
     };
