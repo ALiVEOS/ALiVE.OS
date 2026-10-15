@@ -30,6 +30,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 #define SUPERCLASS ALIVE_fnc_baseClass
@@ -84,8 +85,21 @@ switch(_operation) do {
         _result = [_logic,_operation,_args,DEFAULT_INTEL_CHANCE] call ALIVE_fnc_OOsimpleOperation;
     };
     // Return the Friendly Intel
+    // Eden stores Yes/No as the text "true"/"false"; handed to the accessor with a true/false
+    // default, the text was swapped for true, so No never took. Settled to true/false here, as
+    // C2ISTAR's own Friendly Intel does.
     case "friendlyIntel": {
-        _result = [_logic,_operation,_args,DEFAULT_FRIENDLY_INTEL] call ALIVE_fnc_OOsimpleOperation;
+        if (_args isEqualType true) then {
+            _logic setVariable ["friendlyIntel", _args];
+        } else {
+            _args = _logic getVariable ["friendlyIntel", DEFAULT_FRIENDLY_INTEL];
+        };
+        if (_args isEqualType "") then {
+            _args = (toLower _args) in ["true", "yes", "1"];
+            _logic setVariable ["friendlyIntel", _args];
+        };
+        if !(_args isEqualType true) then { _args = DEFAULT_FRIENDLY_INTEL };
+        _result = _args;
     };
     // Return the Friendly Intel
     case "friendlyIntelRadius": {
