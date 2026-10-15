@@ -641,4 +641,113 @@
 <Key ID="STR_ALIVE_RALLY_UI_ARRIVED_WITH">
     <English>You're at %1, with %2 of your group.</English>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_GM_UI_TITLE">
+    <English>Group Manager</English>
+    <Chinesesimp>小组管理</Chinesesimp>
+    <Chinese>小組管理</Chinese>
+    <Spanish>Gestor de grupos</Spanish>
+    <French>Gestion des groupes</French>
+    <Portuguese>Gestor de grupos</Portuguese>
+    <Russian>Управление группами</Russian>
+</Key>
+<Key ID="STR_ALIVE_GM_UI_HIDE_DETAIL">
+    <English>Hide Group Detail</English>
+    <Chinesesimp>隐藏小组详情</Chinesesimp>
+    <Chinese>隱藏小組詳情</Chinese>
+    <Spanish>Ocultar detalles del grupo</Spanish>
+    <French>Masquer le détail du groupe</French>
+    <Portuguese>Ocultar detalhes do grupo</Portuguese>
+    <Russian>Скрыть сведения о группе</Russian>
+</Key>
+<Key ID="STR_ALIVE_GM_UI_PROMOTE">
+    <English>Promote to Leader</English>
+    <Chinesesimp>提升为队长</Chinesesimp>
+    <Chinese>提升為隊長</Chinese>
+    <Spanish>Ascender a líder</Spanish>
+    <French>Promouvoir chef</French>
+    <Portuguese>Promover a líder</Portuguese>
+    <Russian>Назначить командиром</Russian>
+</Key>
+<Key ID="STR_ALIVE_GM_UI_LEAVE">
+    <English>Leave Group</English>
+    <Chinesesimp>离开小组</Chinesesimp>
+    <Chinese>離開小組</Chinese>
+    <Spanish>Abandonar grupo</Spanish>
+    <French>Quitter le groupe</French>
+    <Portuguese>Sair do grupo</Portuguese>
+    <Russian>Покинуть группу</Russian>
+</Key>
+<Key ID="STR_ALIVE_GM_UI_SHOW_DETAILS">
+    <English>Show Group Details</English>
+    <Chinesesimp>显示小组详情</Chinesesimp>
+    <Chinese>顯示小組詳情</Chinese>
+    <Spanish>Mostrar detalles del grupo</Spanish>
+    <French>Afficher les détails du groupe</French>
+    <Portuguese>Mostrar detalhes do grupo</Portuguese>
+    <Russian>Показать сведения о группе</Russian>
+</Key>
+<Key ID="STR_ALIVE_GM_UI_SHOW_POSITION">
+    <English>Show Group Position</English>
+    <Chinesesimp>显示小组位置</Chinesesimp>
+    <Chinese>顯示小組位置</Chinese>
+    <Spanish>Mostrar posición del grupo</Spanish>
+    <French>Afficher la position du groupe</French>
+    <Portuguese>Mostrar posição do grupo</Portuguese>
+    <Russian>Показать позицию группы</Russian>
+</Key>
+<Key ID="STR_ALIVE_GM_UI_JOIN_RIGHT">
+    <English>Join Group &gt;</English>
+    <Chinesesimp>加入小组 &gt;</Chinesesimp>
+    <Chinese>加入小組 &gt;</Chinese>
+    <Spanish>Unirse al grupo &gt;</Spanish>
+    <French>Rejoindre le groupe &gt;</French>
+    <Portuguese>Juntar-se ao grupo &gt;</Portuguese>
+    <Russian>Вступить в группу &gt;</Russian>
+</Key>
+<Key ID="STR_ALIVE_GM_UI_JOIN_LEFT">
+    <English>Join Group &lt;</English>
+    <Chinesesimp>加入小组 &lt;</Chinesesimp>
+    <Chinese>加入小組 &lt;</Chinese>
+    <Spanish>Unirse al grupo &lt;</Spanish>
+    <French>Rejoindre le groupe &lt;</French>
+    <Portuguese>Juntar-se ao grupo &lt;</Portuguese>
+    <Russian>Вступить в группу &lt;</Russian>
+</Key>
+<Key ID="STR_ALIVE_GM_UI_HIDE_MAP">
+    <English>Hide Map</English>
+    <Chinesesimp>隐藏地图</Chinesesimp>
+    <Chinese>隱藏地圖</Chinese>
+    <Spanish>Ocultar mapa</Spanish>
+    <French>Masquer la carte</French>
+    <Portuguese>Ocultar mapa</Portuguese>
+    <Russian>Скрыть карту</Russian>
+</Key>
+<Key ID="STR_ALIVE_GM_UI_BACK">
+    <English>Back</English>
+    <Chinesesimp>返回</Chinesesimp>
+    <Chinese>返回</Chinese>
+    <Spanish>Atrás</Spanish>
+    <French>Retour</French>
+    <Portuguese>Voltar</Portuguese>
+    <Russian>Назад</Russian>
+</Key>
+<Key ID="STR_ALIVE_GM_UI_CLOSE">
+    <English>Close</English>
+    <Chinesesimp>关闭</Chinesesimp>
+    <Chinese>關閉</Chinese>
+    <Spanish>Cerrar</Spanish>
+    <French>Fermer</French>
+    <Portuguese>Fechar</Portuguese>
+    <Russian>Закрыть</Russian>
+</Key>
+<Key ID="STR_ALIVE_GM_UI_TERRAIN">
+    <English>Terrain</English>
+    <Chinesesimp>地形</Chinesesimp>
+    <Chinese>地形</Chinese>
+    <Spanish>Terreno</Spanish>
+    <French>Terrain</French>
+    <Portuguese>Terreno</Portuguese>
+    <Russian>Местность</Russian>
+</Key>
 </Container></Package></Project>

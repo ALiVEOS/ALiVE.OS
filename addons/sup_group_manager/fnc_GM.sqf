@@ -900,7 +900,7 @@ switch(_operation) do {
 
         _buttonR3 = GM_getControl(GMTablet_CTRL_MainDisplay,GMTablet_CTRL_BR3);
         _buttonR3 ctrlShow true;
-        _buttonR3 ctrlSetText "Hide Group Detail";
+        _buttonR3 ctrlSetText localize "STR_ALIVE_GM_UI_HIDE_DETAIL";
         _buttonR3 ctrlSetEventHandler ["MouseButtonClick", "['HIDE_GROUP_DETAIL',[_this]] call ALIVE_fnc_GMTabletOnAction"];
 
     };
@@ -927,7 +927,7 @@ switch(_operation) do {
         _title = GM_getControl(GMTablet_CTRL_MainDisplay,GMTablet_CTRL_Title);
         _title ctrlShow true;
 
-        _title ctrlSetText "Group Manager";
+        _title ctrlSetText localize "STR_ALIVE_GM_UI_TITLE";
 
         _abortButton = GM_getControl(GMTablet_CTRL_MainDisplay,GMTablet_CTRL_SubMenuAbort);
         _abortButton ctrlShow true;
@@ -1081,7 +1081,7 @@ switch(_operation) do {
 
                         _buttonL1 = GM_getControl(GMTablet_CTRL_MainDisplay,GMTablet_CTRL_BL1);
                         _buttonL1 ctrlShow true;
-                        _buttonL1 ctrlSetText "Promote to Leader";
+                        _buttonL1 ctrlSetText localize "STR_ALIVE_GM_UI_PROMOTE";
                         _buttonL1 ctrlSetEventHandler ["MouseButtonClick", "['LEADER_PROMOTE_LEFT',[_this]] call ALIVE_fnc_GMTabletOnAction"];
 
                     }else{
@@ -1093,7 +1093,7 @@ switch(_operation) do {
 
                     _buttonL2 = GM_getControl(GMTablet_CTRL_MainDisplay,GMTablet_CTRL_BL2);
                     _buttonL2 ctrlShow true;
-                    _buttonL2 ctrlSetText "Leave Group";
+                    _buttonL2 ctrlSetText localize "STR_ALIVE_GM_UI_LEAVE";
                     _buttonL2 ctrlSetEventHandler ["MouseButtonClick", "['LEAVE_GROUP_LEFT',[_this]] call ALIVE_fnc_GMTabletOnAction"];
 
                 };
@@ -1107,12 +1107,12 @@ switch(_operation) do {
 
                     _buttonL1 = GM_getControl(GMTablet_CTRL_MainDisplay,GMTablet_CTRL_BL1);
                     _buttonL1 ctrlShow true;
-                    _buttonL1 ctrlSetText "Show Group Details";
+                    _buttonL1 ctrlSetText localize "STR_ALIVE_GM_UI_SHOW_DETAILS";
                     _buttonL1 ctrlSetEventHandler ["MouseButtonClick", "['SHOW_GROUP_DETAIL_LEFT',[_this]] call ALIVE_fnc_GMTabletOnAction"];
 
                     _buttonL2 = GM_getControl(GMTablet_CTRL_MainDisplay,GMTablet_CTRL_BL2);
                     _buttonL2 ctrlShow true;
-                    _buttonL2 ctrlSetText "Show Group Position";
+                    _buttonL2 ctrlSetText localize "STR_ALIVE_GM_UI_SHOW_POSITION";
                     _buttonL2 ctrlSetEventHandler ["MouseButtonClick", "['SHOW_GROUP_MAP_RIGHT',[_this]] call ALIVE_fnc_GMTabletOnAction"];
 
                 }else{
@@ -1137,7 +1137,7 @@ switch(_operation) do {
 
                         _buttonR1 = GM_getControl(GMTablet_CTRL_MainDisplay,GMTablet_CTRL_BR1);
                         _buttonR1 ctrlShow true;
-                        _buttonR1 ctrlSetText "Promote to Leader";
+                        _buttonR1 ctrlSetText localize "STR_ALIVE_GM_UI_PROMOTE";
                         _buttonR1 ctrlSetEventHandler ["MouseButtonClick", "['LEADER_PROMOTE_RIGHT',[_this]] call ALIVE_fnc_GMTabletOnAction"];
 
                     }else{
@@ -1149,7 +1149,7 @@ switch(_operation) do {
 
                     _buttonR2 = GM_getControl(GMTablet_CTRL_MainDisplay,GMTablet_CTRL_BR2);
                     _buttonR2 ctrlShow true;
-                    _buttonR2 ctrlSetText "Leave Group";
+                    _buttonR2 ctrlSetText localize "STR_ALIVE_GM_UI_LEAVE";
                     _buttonR2 ctrlSetEventHandler ["MouseButtonClick", "['LEAVE_GROUP_RIGHT',[_this]] call ALIVE_fnc_GMTabletOnAction"];
 
                 };
@@ -1163,12 +1163,12 @@ switch(_operation) do {
 
                     _buttonR1 = GM_getControl(GMTablet_CTRL_MainDisplay,GMTablet_CTRL_BR1);
                     _buttonR1 ctrlShow true;
-                    _buttonR1 ctrlSetText "Show Group Details";
+                    _buttonR1 ctrlSetText localize "STR_ALIVE_GM_UI_SHOW_DETAILS";
                     _buttonR1 ctrlSetEventHandler ["MouseButtonClick", "['SHOW_GROUP_DETAIL_RIGHT',[_this]] call ALIVE_fnc_GMTabletOnAction"];
 
                     _buttonR2 = GM_getControl(GMTablet_CTRL_MainDisplay,GMTablet_CTRL_BR2);
                     _buttonR2 ctrlShow true;
-                    _buttonR2 ctrlSetText "Show Group Position";
+                    _buttonR2 ctrlSetText localize "STR_ALIVE_GM_UI_SHOW_POSITION";
                     _buttonR2 ctrlSetEventHandler ["MouseButtonClick", "['SHOW_GROUP_MAP_LEFT',[_this]] call ALIVE_fnc_GMTabletOnAction"];
 
                 }else{
@@ -1184,7 +1184,7 @@ switch(_operation) do {
 
             _buttonL3 = GM_getControl(GMTablet_CTRL_MainDisplay,GMTablet_CTRL_BL3);
             _buttonL3 ctrlShow true;
-            _buttonL3 ctrlSetText "Join Group >";
+            _buttonL3 ctrlSetText localize "STR_ALIVE_GM_UI_JOIN_RIGHT";
             _buttonL3 ctrlSetEventHandler ["MouseButtonClick", "['JOIN_GROUP_LEFT',[_this]] call ALIVE_fnc_GMTabletOnAction"];
 
         }else{
@@ -1198,7 +1198,7 @@ switch(_operation) do {
 
             _buttonR3 = GM_getControl(GMTablet_CTRL_MainDisplay,GMTablet_CTRL_BR3);
             _buttonR3 ctrlShow true;
-            _buttonR3 ctrlSetText "Join Group <";
+            _buttonR3 ctrlSetText localize "STR_ALIVE_GM_UI_JOIN_LEFT";
             _buttonR3 ctrlSetEventHandler ["MouseButtonClick", "['JOIN_GROUP_RIGHT',[_this]] call ALIVE_fnc_GMTabletOnAction"];
 
         }else{
@@ -1264,7 +1264,7 @@ switch(_operation) do {
 
         _buttonL1 = GM_getControl(GMTablet_CTRL_MainDisplay,GMTablet_CTRL_BL1);
         _buttonL1 ctrlShow true;
-        _buttonL1 ctrlSetText "Hide Map";
+        _buttonL1 ctrlSetText localize "STR_ALIVE_GM_UI_HIDE_MAP";
         _buttonL1 ctrlSetEventHandler ["MouseButtonClick", "['HIDE_GROUP_MAP_LEFT',[_this]] call ALIVE_fnc_GMTabletOnAction"];
 
         _buttonL2 = GM_getControl(GMTablet_CTRL_MainDisplay,GMTablet_CTRL_BL2);
@@ -1296,7 +1296,7 @@ switch(_operation) do {
 
         _buttonR1 = GM_getControl(GMTablet_CTRL_MainDisplay,GMTablet_CTRL_BR1);
         _buttonR1 ctrlShow true;
-        _buttonR1 ctrlSetText "Hide Map";
+        _buttonR1 ctrlSetText localize "STR_ALIVE_GM_UI_HIDE_MAP";
         _buttonR1 ctrlSetEventHandler ["MouseButtonClick", "['HIDE_GROUP_MAP_RIGHT',[_this]] call ALIVE_fnc_GMTabletOnAction"];
 
         _buttonL1 = GM_getControl(GMTablet_CTRL_MainDisplay,GMTablet_CTRL_BL1);

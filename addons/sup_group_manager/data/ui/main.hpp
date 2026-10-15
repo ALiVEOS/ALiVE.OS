@@ -50,7 +50,7 @@ class GMTablet
         class GMTablet_subMenuBackButton : GMTablet_RscButton
         {
             idc = 11006;
-            text = "Back";
+            text = "$STR_ALIVE_GM_UI_BACK";
             style = 0x02;
             x = 0.519796 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.7000 * GUI_GRID_HAbs + GUI_GRID_Y;
@@ -66,7 +66,7 @@ class GMTablet
         class GMTablet_subMenuAbortButton : GMTablet_RscButton
         {
             idc = 11010;
-            text = "Close";
+            text = "$STR_ALIVE_GM_UI_CLOSE";
             style = 0x02;
             x = 0.519796 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.7350 * GUI_GRID_HAbs + GUI_GRID_Y;
@@ -89,7 +89,7 @@ class GMTablet
             y = 0.098 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.0597643 * GUI_GRID_WAbs;
             h = 0.028 * GUI_GRID_HAbs;
-            text = "Terrain";
+            text = "$STR_ALIVE_GM_UI_TERRAIN";
             periodFocus = 1e10;
             periodOver = 1e10;
             period = 1e10; // #698 freeze the focus blink too (period drives the pulse while focused; periodFocus/Over alone left it flashing until focus moved away)
