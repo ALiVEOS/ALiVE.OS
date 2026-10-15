@@ -277,7 +277,9 @@ switch(_operation) do {
     };
 
     case "state": {
-        if !(_args isEqualTo []) then {
+        // Asked with nothing (the default objNull) it hands back its state; handed a state hash it restores it.
+        // The test was the wrong way round, so a state passed in was saved over and the restore never ran.
+        if (!(_args isEqualType []) || {_args isEqualTo []}) then {
             // Save state
 
             private _state = [] call ALIVE_fnc_hashCreate;
