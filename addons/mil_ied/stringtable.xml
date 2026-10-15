@@ -319,6 +319,12 @@
 <Key ID="STR_ALIVE_IED_DICKER_CHANCE_COMMENT">
     <English>How many IEDs get a civilian trigger man watching from 60 to 150 m away. While he is free he sets the IED off himself when anyone comes near, so a careful approach won't save you. Kill him, detain him or make him surrender and it won't go off when approached; disarm it as usual. ALiVE IEDs only.</English>
 </Key>
+<Key ID="STR_ALIVE_IED_AMBUSH_CHANCE">
+    <English>Ambush Chance After a Blast</English>
+</Key>
+<Key ID="STR_ALIVE_IED_AMBUSH_CHANCE_COMMENT">
+    <English>How often a squad comes in after an IED goes off near players, to finish the survivors. It is the nearest hostile force's, so it matches whoever holds the area. It appears 150 to 300 m away out of sight, attacks, then pulls back after a few minutes or once half of it is down. Needs the profile system and a hostile force within 3 km; costs the commander nothing.</English>
+</Key>
 <Key ID="STR_ALIVE_IED_ENGINEER_CHALLENGE">
     <English>Engineer Challenge:</English>
     <Chinese>工兵挑戰：</Chinese>

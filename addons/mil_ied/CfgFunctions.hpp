@@ -41,6 +41,11 @@ class cfgFunctions {
                                 file = "\x\alive\addons\mil_ied\fnc_placeVBIED.sqf";
                                                                 ALIVE_RECOMPILE;
                         };
+                        class IEDAmbush {
+                                description = "A squad that comes in after an IED goes off";
+                                file = "\x\alive\addons\mil_ied\fnc_IEDAmbush.sqf";
+                                ALIVE_RECOMPILE;
+                        };
                         class armIED {
                                 description = "Arm an IED";
                                 file = "\x\alive\addons\mil_ied\fnc_armIED.sqf";

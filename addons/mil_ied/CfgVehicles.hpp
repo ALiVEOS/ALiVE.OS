@@ -127,6 +127,22 @@ class CfgVehicles {
                                         class All  { name="All"; value=100; };
                                 };
                         };
+                        // A squad of the nearest hostile force comes in after a blast (ALiVE_fnc_IEDAmbush)
+                        class IED_Ambush_Chance : Combo
+                        {
+                                property = "ALiVE_mil_ied_IED_Ambush_Chance";
+                                displayName = "$STR_ALIVE_IED_AMBUSH_CHANCE";
+                                tooltip = "$STR_ALIVE_IED_AMBUSH_CHANCE_COMMENT";
+                                defaultValue = """0""";
+                                class Values
+                                {
+                                        class None { name="None"; value=0; default=1; };
+                                        class Few  { name="10%"; value=10; };
+                                        class Some { name="25%"; value=25; };
+                                        class Half { name="50%"; value=50; };
+                                        class All  { name="All"; value=100; };
+                                };
+                        };
                         class IED_Engineer_Trip_Base : Combo
                         {
                                 property = "ALiVE_mil_ied_IED_Engineer_Trip_Base";

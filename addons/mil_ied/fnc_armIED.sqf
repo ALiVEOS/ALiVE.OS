@@ -447,6 +447,10 @@ private _gracePeriod = 15;
                     };
                     deletevehicle _ied;
                     _detonated = true;
+                    // a squad of the nearest hostile force may come in to finish the survivors
+                    private _ambush = ADDON getVariable ["IED_Ambush_Chance", 0];
+                    if (_ambush isEqualType "") then { _ambush = parseNumber _ambush };
+                    if (_ambush > 0 && {random 100 < _ambush}) then { [_explosionPos] spawn ALiVE_fnc_IEDAmbush };
                 };
 
             }; // end isNull check
