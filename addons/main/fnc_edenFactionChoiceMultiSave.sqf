@@ -64,17 +64,21 @@ if (isNull _ctrl) exitWith {
 };
 
 // ------------------------------------------------------------------------
-// 1. Read multi-selection. lbSelection returns ARRAY of selected indices
-//    on a multi-select listbox. Map each to lbData (the faction classname).
+// 1. What is ticked. The load keeps it on the picker (alive_selectedClasses), so a faction Find
+//    (#1083) has hidden is still in it; the rows on show are read again in case the last click's
+//    handler has not run. Written in the order the list shows the factions.
 // ------------------------------------------------------------------------
+private _sel = +(_display getVariable ["alive_selectedClasses", []]);
 private _selectedIdxs = lbSelection _ctrl;
-private _selectedFactions = [];
-{
-    private _data = _ctrl lbData _x;
-    if (typeName _data == "STRING" && {_data != ""}) then {
-        _selectedFactions pushBack _data;
+for "_i" from 0 to (lbSize _ctrl - 1) do {
+    private _data = _ctrl lbData _i;
+    if (_data isEqualType "" && {_data != ""}) then {
+        if (_i in _selectedIdxs) then { _sel pushBackUnique _data } else { _sel = _sel - [_data] };
     };
-} forEach _selectedIdxs;
+};
+private _rows = _display getVariable ["alive_facRows", []];
+private _selectedFactions = (_rows apply { _x select 1 }) select { _x in _sel };
+{ _selectedFactions pushBackUnique _x } forEach _sel;
 
 // ------------------------------------------------------------------------
 // 2. Format as SQF array literal string. Each entry quoted with double

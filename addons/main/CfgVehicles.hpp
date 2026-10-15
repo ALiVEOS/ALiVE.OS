@@ -143,19 +143,28 @@ class Cfg3DEN
             };
         };
 
-        class EditMulti3; // Forward declaration of native A3 multiline edit control
-        class EditMulti5; // Forward declaration of native A3 5-line multiline edit control
+        // The native multiline edit chain, declared down to its parts so ALiVE_EditMultilineSQF can
+        // size them (EditMulti5 : EditMulti3 : Edit : Title : Default, read from the game 14 Oct 2026).
+        class Title: Default { class Controls { class Title; }; };
+        class Edit: Title { class Controls: Controls { class Value; }; };
+        class EditMulti3: Edit { class Controls: Controls { class Background; }; };
+        class EditMulti5: EditMulti3 { class Controls: Controls { class Background; class Title; class Value; }; };
 
-        // Multiline SQF code input — used for onEachSpawn hook fields across all placement modules.
-        // Inherits the native EditMulti5 control (5 visible rows) rather than EditMulti3.
-        // The 3-line variant was causing mission-makers to perceive the field as broken:
-        // typing past line 3 scrolls cursor + content off-screen invisibly (no visible
-        // scrollbar on BI Edit controls), and the lack of visual feedback reads as "input
-        // is being lost". 5 visible rows makes it obvious input is being accepted; for the
-        // rare script that exceeds 5 lines, the edit still accepts input via keyboard
-        // navigation within its own buffer.
+        // Multiline SQF code input — used for onEachSpawn hook fields and the garrison building
+        // lists across the placement modules. Built on EditMulti5 rather than EditMulti3: the 3-line
+        // variant was perceived as broken, typing past line 3 scrolls off-screen with no scrollbar.
+        // Its parts are sized here (Jman 14 Oct 2026): the native 6-row box took most of the window
+        // for a field that usually holds a line or two. Native: group 6, frame 5.5, background
+        // 0.4 + 5.1, value 1 + 4.5 rows.
         class ALiVE_EditMultilineSQF: EditMulti5
         {
+            h = "2.6 * 5 * (pixelH * pixelGrid * 0.50)";
+            class Controls: Controls
+            {
+                class Background: Background { h = "2 * 5 * (pixelH * pixelGrid * 0.50)"; };
+                class Title: Title { h = "2.4 * 5 * (pixelH * pixelGrid * 0.50)"; };
+                class Value: Value { h = "1.5 * 5 * (pixelH * pixelGrid * 0.50)"; };
+            };
         };
 
 
@@ -496,6 +505,46 @@ class Cfg3DEN
                         border     = "\A3\ui_f\data\gui\cfg\scrollbar\border_ca.paa";
                         thumb      = "\A3\ui_f\data\gui\cfg\scrollbar\thumb_ca.paa";
                     };
+                };
+
+                // Find (#1083), as on the other long pickers: below the list's bottom edge until
+                // fnc_edenListToggle.sqf shows it and grows the picker to take it in.
+                class FindLabel: ctrlStatic {
+                    idc      = 105;
+                    type     = 0;
+                    style    = 1;
+                    show     = 0;
+                    x        = 0;
+                    y        = "25 * (pixelH * pixelGrid * 0.5)";
+                    w        = "48 * (pixelW * pixelGrid * 0.5)";
+                    h        = "5 * (pixelH * pixelGrid * 0.5)";
+                    colorBackground[] = {0, 0, 0, 0};
+                    colorText[]       = {1, 1, 1, 0.7};
+                    text     = "$STR_ALIVE_EDEN_PICK_FIND";
+                    font     = "RobotoCondensed";
+                    sizeEx   = "pixelH * pixelGrid * 2.2";
+                    tooltip  = "$STR_ALIVE_EDEN_PICK_FIND_COMMENT";
+                };
+
+                class Find: ctrlEdit {
+                    idc      = 104;
+                    type     = 2;
+                    style    = 0;
+                    show     = 0;
+                    x        = "48 * (pixelW * pixelGrid * 0.5)";
+                    y        = "25 * (pixelH * pixelGrid * 0.5)";
+                    w        = "82 * (pixelW * pixelGrid * 0.5)";
+                    h        = "5 * (pixelH * pixelGrid * 0.5)";
+                    text     = "";
+                    tooltip  = "$STR_ALIVE_EDEN_PICK_FIND_COMMENT";
+                    colorBackground[] = {0, 0, 0, 0.5};
+                    colorText[]       = {1, 1, 1, 1};
+                    colorSelection[]  = {1, 0.62, 0, 0.6};
+                    colorDisabled[]   = {1, 1, 1, 0.25};
+                    font     = "RobotoCondensed";
+                    sizeEx   = "pixelH * pixelGrid * 1.8";
+                    autocomplete = "";
+                    canModify = 1;
                 };
             };
         };
@@ -1520,6 +1569,46 @@ class Cfg3DEN
                     w        = "82 * (pixelW * pixelGrid * 0.5)";
                     h        = "5 * (pixelH * pixelGrid * 0.5)";
                     text     = "";
+                    colorBackground[] = {0, 0, 0, 0.5};
+                    colorText[]       = {1, 1, 1, 1};
+                    colorSelection[]  = {1, 0.62, 0, 0.6};
+                    colorDisabled[]   = {1, 1, 1, 0.25};
+                    font     = "RobotoCondensed";
+                    sizeEx   = "pixelH * pixelGrid * 1.8";
+                    autocomplete = "";
+                    canModify = 1;
+                };
+
+                // Find (#1083): below the override row until fnc_edenListToggle.sqf shows it and grows
+                // the picker to take it in. Narrows the current faction's page; Next keeps the text.
+                class FindLabel: ctrlStatic {
+                    idc      = 105;
+                    type     = 0;
+                    style    = 1;
+                    show     = 0;
+                    x        = 0;
+                    y        = "33 * (pixelH * pixelGrid * 0.5)";
+                    w        = "48 * (pixelW * pixelGrid * 0.5)";
+                    h        = "5 * (pixelH * pixelGrid * 0.5)";
+                    colorBackground[] = {0, 0, 0, 0};
+                    colorText[]       = {1, 1, 1, 0.7};
+                    text     = "$STR_ALIVE_EDEN_PICK_FIND";
+                    font     = "RobotoCondensed";
+                    sizeEx   = "pixelH * pixelGrid * 2.2";
+                    tooltip  = "$STR_ALIVE_EDEN_PICK_FIND_COMMENT";
+                };
+
+                class Find: ctrlEdit {
+                    idc      = 104;
+                    type     = 2;
+                    style    = 0;
+                    show     = 0;
+                    x        = "48 * (pixelW * pixelGrid * 0.5)";
+                    y        = "33 * (pixelH * pixelGrid * 0.5)";
+                    w        = "82 * (pixelW * pixelGrid * 0.5)";
+                    h        = "5 * (pixelH * pixelGrid * 0.5)";
+                    text     = "";
+                    tooltip  = "$STR_ALIVE_EDEN_PICK_FIND_COMMENT";
                     colorBackground[] = {0, 0, 0, 0.5};
                     colorText[]       = {1, 1, 1, 1};
                     colorSelection[]  = {1, 0.62, 0, 0.6};

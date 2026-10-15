@@ -96,7 +96,6 @@ class CfgVehicles {
                         defaultValue = """[]""";
                     };
                     class pr_factionWhitelistManual : Edit { property = "ALiVE_sup_player_resupply_pr_factionWhitelistManual"; displayName = "$STR_ALIVE_PR_FACTION_WHITELIST_MANUAL"; tooltip = "$STR_ALIVE_PR_FACTION_WHITELIST_MANUAL_COMMENT"; defaultValue = """"""; typeName = "STRING"; };
-                    class SPACER_FACTIONS : ALiVE_ModuleSubTitle { property = "ALiVE_sup_player_resupply_SPACER_FACTIONS"; displayName = " "; };
                     class filterFriendlyFactions : Combo
                     {
                             property = "ALiVE_sup_player_resupply_filterFriendlyFactions";

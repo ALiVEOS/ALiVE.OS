@@ -309,8 +309,12 @@ private _flushView = {
     private _listCtrl = _d controlsGroupCtrl 100;
     private _editCtrl = _d controlsGroupCtrl 102;
 
+    // The rows on show decide their own classes; a class Find (#1083) has hidden keeps the tick it had.
     private _picks = [];
     if (!isNull _listCtrl) then {
+        private _shown = [];
+        for "_i" from 0 to (lbSize _listCtrl - 1) do { _shown pushBack (_listCtrl lbData _i) };
+        _picks = (((_state getOrDefault [_curFac, [[], ""]]) select 0) select { !(_x in _shown) });
         {
             private _data = _listCtrl lbData _x;
             if (_data != "") then { _picks pushBackUnique _data };
@@ -339,6 +343,7 @@ private _loadView = {
     private _savedOverride = _saved select 1;
 
     private _surfacedSet = createHashMap;
+    private _q = _d getVariable ["alive_searchText", ""];
     if (!isNull _listCtrl) then {
         lbClear _listCtrl;
         // CfgFunctions-registered helpers aren't reliably available in
@@ -366,9 +371,15 @@ private _loadView = {
                 // mission-makers who need to type it elsewhere.
                 private _dn = getText (configFile >> "CfgVehicles" >> _cls >> "displayName");
                 private _label = if (_dn != "" && {_dn != _cls}) then { format ["%1 (%2)", _dn, _cls] } else { _cls };
-                private _idx = _listCtrl lbAdd _label;
-                _listCtrl lbSetData [_idx, _cls];
-                _surfacedSet set [_cls, _idx];
+                // Find (#1083): only rows with the text are listed, but every class the faction has
+                // counts as surfaced, so one Find hides is not pushed into the override field below
+                if (_q isEqualTo "" || {((toLower _label) find _q) >= 0}) then {
+                    private _idx = _listCtrl lbAdd _label;
+                    _listCtrl lbSetData [_idx, _cls];
+                    _surfacedSet set [_cls, _idx];
+                } else {
+                    _surfacedSet set [_cls, -1];
+                };
             } forEach _classes;
         };
 
@@ -397,6 +408,16 @@ private _loadView = {
 
 _display setVariable ["customFlushView", _flushView];
 _display setVariable ["customLoadView", _loadView];
+
+// Find (#1083): the current faction's page refilled with the rows that have the text, its ticks kept
+_display setVariable ["alive_populateFn", {
+    params ["_d"];
+    private _cur = _d getVariable ["customCurrentFaction", ""];
+    if (_cur isEqualTo "") exitWith {};
+    [_d] call (_d getVariable "customFlushView");
+    [_d, _cur] call (_d getVariable "customLoadView");
+}];
+_display setVariable ["alive_searchable", true];
 
 // ------------------------------------------------------------------------
 // Populate the faction-picker (static label + Next button) and attach

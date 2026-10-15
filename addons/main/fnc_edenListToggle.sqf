@@ -83,6 +83,17 @@ if (!isNull _find && {_grpF getVariable ["alive_searchable", false]} && {!isNil 
         private _l = _e getVariable "alive_list";
         [_l] call (_l getVariable "alive_toggleMark");
     }];
+} else {
+    // not shown here: folded to nothing at the top, as fnc_edenPickerCutRows does with the rows it
+    // hides, or the hidden row below the picker's bottom gives it a second scrollbar
+    {
+        private _c = _grpF controlsGroupCtrl _x;
+        if (!isNull _c) then {
+            _c ctrlShow false;
+            _c ctrlSetPosition [0, 0, 0, 0];
+            _c ctrlCommit 0;
+        };
+    } forEach [104, 105];
 };
 
 // a row's identity: its data, or its index when it has none

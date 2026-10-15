@@ -279,6 +279,12 @@ switch (_mode) do {
                         _row setVariable ["alive_secInnerHidden", (allControls _display) select { (ctrlParentControlsGroup _x) isEqualTo _row && {!ctrlShown _x} }];
                         _row setVariable ["alive_secHidden", true];
                         _row ctrlShow false;
+                        // moved up to the top, height kept: a hidden row left lower down still counts toward how far
+                        // the settings can scroll, and they scrolled inside the window. Its height is never set to
+                        // nothing: a row given its height back that way showed its space but drew none of its
+                        // settings (Jman 15 Oct 2026)
+                        [_row, 1, _top] call _place;
+                        _row ctrlCommit 0;
                     };
                 };
             } forEach _rows;

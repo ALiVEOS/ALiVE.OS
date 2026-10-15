@@ -443,19 +443,20 @@ private _configPaths = [
 private _entriesLowerSet = createHashMap;
 { _entriesLowerSet set [toLower (_x select 0), true] } forEach _entries;
 
-private _unrecognisedTickIdxs = [];
+// The rows, in the order shown: unrecognised first, then each side's factions sorted. Kept on the
+// picker, with what is ticked, so Find (#1083) can narrow the list and a faction it hides stays ticked.
+private _rows = [];
+private _unrecognised = [];
 {
-    private _selFactionLower = toLower _x;
-    if !(_selFactionLower in _entriesLowerSet) then {
-        private _idx = _ctrl lbAdd format ["(unrecognised) %1", _x];
-        _ctrl lbSetData [_idx, _x];
-        _unrecognisedTickIdxs pushBack _idx;
+    if !((toLower _x) in _entriesLowerSet) then {
+        _rows pushBack [format ["(unrecognised) %1", _x], _x];
+        _unrecognised pushBack _x;
     };
 } forEach _selectedFactions;
 
 // ------------------------------------------------------------------------
-// 6. Populate listbox grouped by side, sorted alphabetically within each
-//    bucket. Same ordering as single-select handler.
+// 6. Rows grouped by side, sorted alphabetically within each bucket.
+//    Same ordering as single-select handler.
 // ------------------------------------------------------------------------
 private _selectedLowerSet = createHashMap;
 { _selectedLowerSet set [toLower _x, true] } forEach _selectedFactions;
@@ -467,7 +468,7 @@ private _sideBuckets = [
     [3, "CIVILIAN"]
 ];
 
-private _tickIdxs = +_unrecognisedTickIdxs;
+private _ticked = +_unrecognised;
 
 {
     _x params ["_sideValue", "_sideLabel"];
@@ -485,21 +486,56 @@ private _tickIdxs = +_unrecognisedTickIdxs;
         } else {
             format ["%1 - %2 (%3)", _sideLabel, _dn, _cn]
         };
-        private _idx = _ctrl lbAdd _label;
-        _ctrl lbSetData [_idx, _cn];
-        if ((toLower _cn) in _selectedLowerSet) then {
-            _tickIdxs pushBack _idx;
-        };
+        _rows pushBack [_label, _cn];
+        if ((toLower _cn) in _selectedLowerSet) then { _ticked pushBack _cn };
     } forEach _bucketEntries;
 } forEach _sideBuckets;
 
+_display setVariable ["alive_facRows", _rows];
+_display setVariable ["alive_selectedClasses", _ticked];
+
 // ------------------------------------------------------------------------
-// 7. Apply multi-selection. lbSetSelected (idx, true) ticks each item.
-//    For multi-select listboxes (style flag LB_MULTI = 32) this allows
-//    multiple items to be selected simultaneously; the user's
-//    Ctrl+click / Shift+click then adds/removes from the selection.
+// 7. Fill the list, rows matching the Find text only, ticking the chosen ones. Every lbSetSelected
+//    fires LBSelChanged, so the sync below is held off while the list is refilled.
 // ------------------------------------------------------------------------
-{ _ctrl lbSetSelected [_x, true] } forEach _tickIdxs;
+private _populate = {
+    params ["_disp"];
+    private _list = _disp controlsGroupCtrl 100;
+    if (isNull _list) exitWith {};
+    private _q = _disp getVariable ["alive_searchText", ""];
+    private _selL = (_disp getVariable ["alive_selectedClasses", []]) apply { toLower _x };
+    _disp setVariable ["alive_populating", true];
+    lbClear _list;
+    {
+        _x params ["_label", "_cn"];
+        if (_q isEqualTo "" || {((toLower (_label + " " + _cn)) find _q) >= 0}) then {
+            private _i = _list lbAdd _label;
+            _list lbSetData [_i, _cn];
+            if ((toLower _cn) in _selL) then { _list lbSetSelected [_i, true] };
+        };
+    } forEach (_disp getVariable ["alive_facRows", []]);
+    _disp setVariable ["alive_populating", false];
+};
+_display setVariable ["alive_populateFn", _populate];
+_display setVariable ["alive_searchable", true];
+[_display] call _populate;
+
+// the ticks the list shows are copied into the kept set; rows Find has hidden keep theirs
+_ctrl setVariable ["alive_disp", _display];
+_ctrl ctrlAddEventHandler ["LBSelChanged", {
+    params ["_lb"];
+    private _disp = _lb getVariable "alive_disp";
+    if (_disp getVariable ["alive_populating", false]) exitWith {};
+    private _sel = _disp getVariable ["alive_selectedClasses", []];
+    private _selIdx = lbSelection _lb;
+    for "_i" from 0 to (lbSize _lb - 1) do {
+        private _cn = _lb lbData _i;
+        if (_cn isEqualType "" && {_cn != ""}) then {
+            if (_i in _selIdx) then { _sel pushBackUnique _cn } else { _sel = _sel - [_cn] };
+        };
+    };
+    _disp setVariable ["alive_selectedClasses", _sel];
+}];
 
 // Whatever is ticked here, suggested or chosen, is saved as it stands. Deciding on the way out
 // whether a tick was really meant was tried and is a trap: by then the field beside the list may
@@ -519,8 +555,8 @@ private _tickIdxs = +_unrecognisedTickIdxs;
     _value,
     _selectedFactions,
     lbSize _ctrl,
-    count _tickIdxs,
-    count _unrecognisedTickIdxs
+    count _ticked,
+    count _unrecognised
 ] call ALiVE_fnc_dump;
 
 // a plain click ticks or unticks just that row, and ticked rows read [+] (#1083)

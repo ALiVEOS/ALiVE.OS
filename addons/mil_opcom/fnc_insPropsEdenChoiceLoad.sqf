@@ -98,7 +98,8 @@ private _populate = {
     _display setVariable ["alive_populating", false];
 };
 _display setVariable ["alive_populateFn", _populate];
-_display setVariable ["alive_searchable", true];
+// no Find row (Jman 14 Oct 2026): a few sets per era, so the filter is clutter; the populate keeps
+// its text match in case a long list ever wants it back
 [_display] call _populate;
 
 _list setVariable ["alive_disp", _display];
