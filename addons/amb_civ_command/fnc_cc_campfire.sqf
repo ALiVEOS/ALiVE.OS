@@ -23,6 +23,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 params ["_agentData","_commandState","_commandName","_args","_state","_debug"];
@@ -95,10 +96,28 @@ switch (_state) do {
             // at night-spawned (invisible-looking) campfires.
             private _agentPos = position _agent;
             private _agentDir = direction _agent;
-            private _firePos = _agentPos vectorAdd [sin(_agentDir) * 2, cos(_agentDir) * 2, 0];
-            private _fire = "FirePlace_burning_F" createVehicle _firePos;
-
-            _agent lookAt _fire;
+            // One fire per gathering, not one per civilian: a fire another civilian already has going
+            // within 30 m is joined rather than a new one lit beside it, so a town in the evening has a
+            // few fires instead of one outside every house (A. Ares on Discord, 15 Oct). A joined fire
+            // is not this civilian's to put out.
+            private _near = (nearestObjects [_agentPos, ["FirePlace_burning_F"], 30]) select { _x getVariable ["ALiVE_civFire", false] };
+            private _fire = objNull;
+            if (_near isNotEqualTo []) then {
+                private _shared = _near select 0;
+                _agent setDir (_agent getDir _shared);
+                _agent lookAt _shared;
+            } else {
+                private _firePos = _agentPos vectorAdd [sin(_agentDir) * 2, cos(_agentDir) * 2, 0];
+                _fire = "FirePlace_burning_F" createVehicle _firePos;
+                _fire setVariable ["ALiVE_civFire", true];
+                // put out with the civilian if he is despawned before he gets up, rather than left burning
+                _agent setVariable ["ALiVE_civFireLit", _fire];
+                if !(_agent getVariable ["ALiVE_civFireEH", false]) then {
+                    _agent setVariable ["ALiVE_civFireEH", true];
+                    _agent addEventHandler ["Deleted", { deleteVehicle ((_this select 0) getVariable ["ALiVE_civFireLit", objNull]) }];
+                };
+                _agent lookAt _fire;
+            };
 
             _agent action ["SITDOWN",_agent];
 
@@ -124,6 +143,7 @@ switch (_state) do {
         {
             _agent playMove "";
             deleteVehicle _fire;
+            _agent setVariable ["ALiVE_civFireLit", nil];
             _nextState = "done";
             [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
         }else{
