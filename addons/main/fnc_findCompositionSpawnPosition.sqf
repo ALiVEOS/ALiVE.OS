@@ -1168,8 +1168,26 @@ if (count _result == 0 && {_radius >= 50 || _callerDebug || _debug}) then {
         };
     } forEach _rejectCounts;
     if (_reasons == "") then { _reasons = "none recorded" };
-    ["[ALiVE CompSpawn] FAIL centre=%1 mode=%2 radius=%3m envelope=%4m after %5 tries - turned away by: %6",
-        _centerPos, _mode, _radius, _envelope, _maxAttempts, _reasons] call ALiVE_fnc_dump;
+    // the why in words: the rules grouped by what they mean on the ground, the
+    // biggest first, so the line reads without knowing the rule names
+    private _plain = [
+        ["outside the area", [0]], ["on or by a runway or helipad", [1, 2]], ["on a road", [3]],
+        ["something in the way", [4]], ["in or beside water", [5, 6]], ["ground too steep", [7, 8, 9]],
+        ["wrong kind of ground", [10]], ["on rock", [11]], ["already taken by another placement", [12]]
+    ] apply { private _n = 0; { _n = _n + (_rejectCounts select _x) } forEach (_x select 1); [_n, _x select 0] };
+    _plain = _plain select { (_x select 0) > 0 };
+    _plain sort false;
+    private _total = 0; { _total = _total + (_x select 0) } forEach _plain;
+    private _why = if (_total == 0) then { "no reason recorded" } else {
+        ((_plain select [0, 2]) apply { format ["%1 (%2 of %3 not positioned)", _x select 1, round (_x select 0), _total] }) joinString ", then "
+    };
+    private _places = (nearestLocations [_centerPos, ["NameCityCapital", "NameCity", "NameVillage", "NameLocal", "NameMarine", "Hill"], 3000])
+        select { !((text _x) isEqualTo "") };
+    private _near = if (_places isEqualTo []) then { "" } else {
+        format [" near %1 (%2 m)", text (_places select 0), round ((locationPosition (_places select 0)) distance2D _centerPos)]
+    };
+    ["[ALiVE CompSpawn] FAIL: no spot for a %2 composition within %3 m of %1%7. Why: %8. Details: envelope=%4m after %5 tries - not positioned: %6",
+        _centerPos, _mode, _radius, _envelope, _maxAttempts, _reasons, _near, _why] call ALiVE_fnc_dump;
 };
 
 call _fnc_profDone;
