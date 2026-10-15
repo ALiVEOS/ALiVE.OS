@@ -318,6 +318,15 @@
     <Portuguese>Coloca um oficial com nome da facção deste comandante, com um grupo de guarda, no seu objetivo mais importante. Ele fica lá e não recebe ordens. Com a chance de inteligência ativa, a inteligência lida dos mortos deste lado às vezes marca onde ele foi visto pela última vez. Matá-lo impede o comandante de iniciar novos ataques durante o tempo escolhido aqui, e ambos os lados são avisados. Guardado com a missão. Nenhum = sem oficial.</Portuguese>
     <Russian>Размещает именного офицера фракции этого командира с группой охраны на его самом важном объекте. Он остаётся там и не получает приказов. При включённом шансе разведданных разведданные, прочитанные у погибших этой стороны, иногда отмечают, где его видели в последний раз. Его гибель не даёт командиру начинать новые атаки в течение выбранного здесь времени, и обе стороны получают оповещение. Сохраняется вместе с миссией. Нет = без офицера.</Russian>
 </Key>
+<Key ID="STR_ALIVE_OPCOM_HVT_KILLED_SHORT">
+    <English>%1 killed</English>
+    <Chinese>%1 已被擊殺</Chinese>
+    <Chinesesimp>%1 已被击杀</Chinesesimp>
+    <Spanish>%1 ha muerto</Spanish>
+    <French>%1 a été tué</French>
+    <Portuguese>%1 foi morto</Portuguese>
+    <Russian>%1 убит</Russian>
+</Key>
 <Key ID="STR_ALIVE_OPCOM_HVT_KILLED_ENEMY">
     <English>%1, the enemy high value target, has been killed. Their commander has stopped new attacks for now.</English>
     <Chinese>敵方高價值目標 %1 已被擊殺。敵方指揮官暫時停止發起新攻擊。</Chinese>

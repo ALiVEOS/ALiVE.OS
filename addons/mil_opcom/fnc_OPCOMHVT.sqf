@@ -40,7 +40,14 @@ params [["_operation", "", [""]], ["_args", []]];
 if (_operation == "notify") exitWith {
     if (!hasInterface) exitWith {};
     _args params [["_key", "", [""]], ["_name", "", [""]]];
-    [["TaskSucceeded", "TaskFailed"] select (_key == "STR_ALIVE_OPCOM_HVT_KILLED_OWN"), ["", format [localize _key, _name]]] call BIS_fnc_showNotification;
+    // The popup holds one short line and cut the sentence off at the bottom (Jman 15 Oct 2026), so it says who
+    // was killed and the whole sentence goes the way the player chose for task updates
+    private _own = _key == "STR_ALIVE_OPCOM_HVT_KILLED_OWN";
+    [["TaskSucceeded", "TaskFailed"] select _own, ["", format [localize "STR_ALIVE_OPCOM_HVT_KILLED_SHORT", _name]]] call BIS_fnc_showNotification;
+    private _text = format [localize _key, _name];
+    if (isNil "ALIVE_fnc_taskSubtitle") then { systemChat _text } else {
+        [["Task Accomplished", "Task Failed"] select _own, _text] call ALIVE_fnc_taskSubtitle;
+    };
 };
 
 if (!isServer) exitWith {};
