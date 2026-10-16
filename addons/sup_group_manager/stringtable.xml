@@ -246,7 +246,10 @@
     <English>Allow Dismiss</English>
 </Key>
 <Key ID="STR_ALIVE_RECRUIT_DISMISS_COMMENT">
-    <English>Yes: a player can dismiss a recruit or vehicle they recruited by mistake, with Dismiss on its scroll menu. It goes, and what it cost goes back to the force pool.</English>
+    <English>Yes: a player can dismiss a recruit or vehicle they recruited by mistake, with Dismiss on its scroll menu. It goes, and what it cost goes back to the force pool. At the recruitment point: Dismiss only works within 50 m of one of this module's recruitment objects, so a squad can't be cashed in out in the field. No: recruits can't be dismissed.</English>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_DISMISS_BASE">
+    <English>At the recruitment point</English>
 </Key>
 <Key ID="STR_ALIVE_RECRUIT_UI_DISMISS">
     <English>Dismiss %1</English>

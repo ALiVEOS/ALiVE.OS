@@ -211,15 +211,17 @@ ALiVE_fnc_recruitDismissable = {
 
 // The action: held for 2 seconds, so a stray scroll click in a firefight can't dismiss anyone
 ALiVE_fnc_recruitDismissAction = {
-    params ["_thing", "_cost", "_isVehicle"];
+    params ["_thing", "_cost", "_isVehicle", ["_near", []]];
     _thing setVariable ["ALiVE_recruitCost", _cost];
+    // the recruitment objects the player has to be near to dismiss it; none, anywhere
+    _thing setVariable ["ALiVE_recruitDismissAt", _near];
     private _name = getText (configFile >> "CfgVehicles" >> typeOf _thing >> "displayName");
     [
         _thing,
         format [localize "STR_ALIVE_RECRUIT_UI_DISMISS", _name],
         "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_takeOff1_ca.paa",
         "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_takeOff1_ca.paa",
-        "alive _target && {_this isEqualTo player} && {_this distance _target < 6} && {(_target getVariable ['ALiVE_recruitedBy', _target getVariable ['ALiVE_recruitedVehicleBy', '']]) isEqualTo getPlayerUID _this} && {_target isKindOf 'CAManBase' || {((crew _target) findIf { isPlayer _x }) < 0}}",
+        "alive _target && {_this isEqualTo player} && {_this distance _target < 6} && {(_target getVariable ['ALiVE_recruitedBy', _target getVariable ['ALiVE_recruitedVehicleBy', '']]) isEqualTo getPlayerUID _this} && {_target isKindOf 'CAManBase' || {((crew _target) findIf { isPlayer _x }) < 0}} && {(_target getVariable ['ALiVE_recruitDismissAt', []]) isEqualTo [] || {((_target getVariable ['ALiVE_recruitDismissAt', []]) findIf { _this distance _x < 50 }) > -1}}",
         "alive _target",
         {}, {},
         { [_this select 0] call ALiVE_fnc_recruitDismiss },
@@ -254,7 +256,7 @@ ALiVE_fnc_recruitUnit = {
     // the module's code, kept with him so a player save that brings him back runs it again
     _unit setVariable ["ALiVE_recruitCode", _settings param [9, ""], true];
     _unit call _code;
-    if (_settings param [12, true]) then { [_unit, _cost, false] call ALiVE_fnc_recruitDismissAction };
+    if (_settings param [12, true]) then { [_unit, _cost, false, _settings param [13, []]] call ALiVE_fnc_recruitDismissAction };
     [localize "STR_ALIVE_RECRUIT", format [localize "STR_ALIVE_RECRUIT_UI_JOINED", getText (configFile >> "CfgVehicles" >> _class >> "displayName"), _size + 1, _max]] call ALIVE_fnc_sendHint;
     true
 };
@@ -287,7 +289,7 @@ ALiVE_fnc_recruitVehicle = {
     // a player's own, so a Zeus virtualise doesn't hand it to an AI commander
     _veh setVariable ["ALIVE_profileIgnore", true, true];
     _veh call _code;
-    if (_settings param [12, true]) then { [_veh, _cost, true] call ALiVE_fnc_recruitDismissAction };
+    if (_settings param [12, true]) then { [_veh, _cost, true, _settings param [13, []]] call ALiVE_fnc_recruitDismissAction };
     [localize "STR_ALIVE_RECRUIT", format [localize "STR_ALIVE_RECRUIT_UI_VEH_READY", getText (configFile >> "CfgVehicles" >> _class >> "displayName"), _have + 1, _maxVeh]] call ALIVE_fnc_sendHint;
     true
 };
@@ -313,11 +315,16 @@ ALiVE_fnc_recruitVehicle = {
     // what one soldier and one vehicle cost from the force pool; 0 is free
     private _unitCost = ([_logic getVariable ["unitCost", 0], 0] call _num) max 0;
     private _vehicleCost = ([_logic getVariable ["vehicleCost", 0], 0] call _num) max 0;
-    // players can dismiss their own recruits and recruited vehicles (#1078)
+    // players can dismiss their own recruits and recruited vehicles (#1078): anywhere, only at the
+    // recruitment point (within 50 m of one of this module's objects, so a squad can't be cashed in
+    // mid-field; A. Ares on Discord, 16 Oct), or not at all
     private _rawD = _logic getVariable ["allowDismiss", true];
-    private _dismiss = if (_rawD isEqualType "") then { toLower _rawD != "false" } else { _rawD isNotEqualTo false };
+    private _dismissAt = if (_rawD isEqualType "") then { toLower _rawD } else { ["false", "true"] select (_rawD isNotEqualTo false) };
+    private _dismiss = _dismissAt != "false";
     private _settings = [_logic, _classes, _vehicles, _max, _skill, _maxVeh, _points, _height, _code, ["", _rawC] select (_rawC isEqualType "" && {_rawC != ""}), _unitCost, _vehicleCost, _dismiss];
     private _objects = (synchronizedObjects _logic) select { !(_x isKindOf "Logic") };
+    // where the Dismiss hold action works: anywhere (empty), or near these objects only
+    _settings pushBack ([[], _objects] select (_dismissAt == "base"));
     if (_objects isEqualTo [] || {(_classes + _vehicles) isEqualTo []}) exitWith {
         ["ALiVE Recruitment: nothing to do (%1 synced objects, %2 unit classes, %3 vehicle classes)", count _objects, count _classes, count _vehicles] call ALiVE_fnc_dump;
     };

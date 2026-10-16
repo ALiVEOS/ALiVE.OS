@@ -143,6 +143,7 @@ class CfgVehicles {
                                 class Values
                                 {
                                         class Yes { name = "Yes"; value = "true"; };
+                                        class Base { name = "$STR_ALIVE_RECRUIT_DISMISS_BASE"; value = "base"; };
                                         class No  { name = "No";  value = "false"; };
                                 };
                         };
