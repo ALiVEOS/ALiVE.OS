@@ -291,13 +291,13 @@
                 <English>The FOB couldn't be built here.</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_REFUSED_NOTALLOWED">
-                <English>You aren't allowed to take this FOB down, recycle at it or rename it.</English>
+                <English>You aren't allowed to dismantle this FOB, recycle at it or rename it.</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_REFUSED_ADMIN">
-                <English>Only an admin can change who can take FOBs down.</English>
+                <English>Only an admin can change who can dismantle FOBs.</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_PERMISSIONS_SET">
-                <English>Who can take FOBs down has been changed, for every FOB until the mission restarts.</English>
+                <English>Who can dismantle FOBs has been changed, for every FOB until the mission restarts.</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_MANAGE_WHO">
                 <English>Who Can Dismantle</English>

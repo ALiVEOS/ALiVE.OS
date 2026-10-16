@@ -763,7 +763,7 @@ switch (_op) do {
         _logic setVariable ["ALiVE_FOB_perm", [_rules, _names], true];
         [_logic, "broadcastMirror"] call ALiVE_fnc_FOB;
         ["STR_ALIVE_FOB_PERMISSIONS_SET"] call _tell;
-        ["ALiVE Player FOBs - %1 set who can take FOBs down to [%2], list [%3]", name _caller, _rules, _names] call ALiVE_fnc_dump;
+        ["ALiVE Player FOBs - %1 set who can dismantle FOBs to [%2], list [%3]", name _caller, _rules, _names] call ALiVE_fnc_dump;
         _result = true;
     };
 
