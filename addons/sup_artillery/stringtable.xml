@@ -14,7 +14,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ARTILLERY_USAGE">
-    <English>Place the module and sync it to a Player Combat Support module.</English>
+    <English>Place the module and sync it to a Player Combat Support module. The battery is built at the module, or sync a gun you placed to this module and the first synced gun and its group become the battery where they stand. An empty gun is given a crew.</English>
     <Chinese>放置此模組並將其同步至玩家戰鬥支援模組。</Chinese>
     <Chinesesimp>放置该模块并将其同步至玩家战斗支援模块。</Chinesesimp>
     <Spanish>Coloque el módulo y sincronícelo con un módulo de Apoyo de Combate para Jugadores.</Spanish>
@@ -44,7 +44,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ARTILLERY_TYPE_DESC">
-    <English>Pick the vehicle from the list of suitable classes across all loaded factions (use the Side button to narrow the list). Type a classname into the Override field for vehicles the list doesn't show.</English>
+    <English>Pick the vehicle from the list of suitable classes across all loaded factions (use the Side button to narrow the list). Type a classname into the Override field for vehicles the list doesn't show. A gun synced to this module is used in place of this setting.</English>
     <Chinese>從所有已載入陣營的適用類別清單中選取載具（使用「陣營」按鈕縮小清單範圍）。若清單未列出所需載具，可在覆寫欄位中輸入類別名稱。</Chinese>
     <Chinesesimp>从所有已加载阵营的适用类别列表中选择载具(使用阵营按钮缩小列表范围)。若列表中未显示所需载具,可在覆盖字段中输入其类名。</Chinesesimp>
     <Spanish>Elija el vehículo de la lista de clases adecuadas de todas las facciones cargadas (use el botón de Bando para acotar la lista). Escriba un nombre de clase en el campo de Anulación para vehículos que la lista no muestre.</Spanish>

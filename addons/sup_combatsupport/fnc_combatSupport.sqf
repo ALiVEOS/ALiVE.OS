@@ -477,6 +477,22 @@ switch(_operation) do {
                                     // custom classname override always wins when filled
                                     private _classCustom = [((synchronizedObjects _logic) select _i) getvariable ["artillery_type_custom",""], " ", ""] call CBA_fnc_replace;
                                     if (_classCustom != "") then { _class = _classCustom };
+                                    // A gun synced to this artillery module is the battery: its group is taken
+                                    // over where it stands, whatever class the module names. Without one the
+                                    // battery is built at the module, adopting only a gun of its class within
+                                    // 5 m of it. sys_profile leaves synced guns to Combat Support.
+                                    private _syncedGuns = ((synchronizedObjects ((synchronizedObjects _logic) select _i)) apply { vehicle _x })
+                                        select { (_x isKindOf "StaticWeapon" || {_x isKindOf "LandVehicle"}) && {alive _x} };
+                                    if (_syncedGuns isNotEqualTo []) then {
+                                        private _gun = _syncedGuns select 0;
+                                        _position = getPosATL _gun;
+                                        _class = typeOf _gun;
+                                        // the battery is the first gun's group, so a gun outside it, or any gun
+                                        // when the first is empty, is not part of it
+                                        private _left = (_syncedGuns - [_gun]) select { isNull group _gun || {!(group _x isEqualTo group _gun)} };
+                                        ["COMBAT SUPPORT - Artillery %1 uses the %2 synced to it at %3%4", _callsign, _class, mapGridPosition _gun,
+                                            ["", format ["; %1 other synced gun(s) are not in its group and are not used", count _left]] select (_left isNotEqualTo [])] call ALiVE_fnc_dump;
+                                    };
                                     _setherounds = ((synchronizedObjects _logic) select _i) getvariable ["artillery_he","30"];
                                     _setillumrounds = ((synchronizedObjects _logic) select _i) getvariable ["artillery_illum","30"];
                                     _setsmokerounds = ((synchronizedObjects _logic) select _i) getvariable ["artillery_smoke","30"];
@@ -936,6 +952,16 @@ switch(_operation) do {
                              	 if (count _veh > 0) then {_veh = _veh select 0; _grp = group _veh} else {_veh = nil; _grp = createGroup playerSide};
                              } else {
                                if (count _veh > 0) then {_veh = _veh select 0; _grp = group _veh} else {_veh = nil; _grp = createGroup _side};
+                             };
+                             // an empty gun placed for the battery gets its crew here, in a group of the
+                             // battery's side (an enemy-side leFH18 serves the players, as above)
+                             if (!isNil "_veh" && {(crew _veh) isEqualTo []}) then {
+                                 createVehicleCrew _veh;
+                                 if ((crew _veh) isEqualTo []) exitWith {
+                                     ["COMBAT SUPPORT - Artillery %1: the %2 has no crew and none could be made for it", _callsign, _class] call ALiVE_fnc_dump;
+                                 };
+                                 if (isNull _grp) then { _grp = createGroup ([_side, playerSide] select (_class == "SPE_leFH18" && {_side != playerSide})) };
+                                 (crew _veh) joinSilent _grp;
                              };
                              
 

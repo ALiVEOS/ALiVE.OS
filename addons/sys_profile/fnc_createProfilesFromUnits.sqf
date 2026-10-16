@@ -102,6 +102,22 @@ if(_createMode == "IGNORE") then {
     _vehicles = _vehicles - _createModeVehicles;
 };
 
+// A gun synced to a Combat Support artillery module is that battery (sup_combatsupport takes it
+// over), not a force for the AI Commanders. Combat Support starts after this pass, so it is
+// marked here or it would already be a profile by the time Combat Support looks for it. Only the
+// gun Combat Support will use, picked the same way (the first synced one), and only when the module
+// is synced to a Combat Support module; any other synced gun is left to the profiles as before.
+{
+    if ((synchronizedObjects _x) findIf { _x isKindOf "ALiVE_sup_combatsupport" } > -1) then {
+        private _guns = ((synchronizedObjects _x) apply { vehicle _x }) select { (_x isKindOf "StaticWeapon" || {_x isKindOf "LandVehicle"}) && {alive _x} };
+        if (_guns isNotEqualTo []) then {
+            private _gun = _guns select 0;
+            _gun setVariable ["ALIVE_profileIgnore", true];
+            if (!isNull group _gun) then { (group _gun) setVariable ["ALIVE_profileIgnore", true] };
+        };
+    };
+} forEach (allMissionObjects "ALiVE_sup_artillery");
+
 // Anything already marked to be left alone is left alone, whichever mode this is.
 // ALIVE_profileIgnore is honoured by every virtualisation pass that runs DURING a
 // mission, and it was the one thing this pass ignored: it only ever subtracted
