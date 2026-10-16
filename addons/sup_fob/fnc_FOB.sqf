@@ -320,7 +320,8 @@ switch (_operation) do {
             || {"DEPLOYER" in _who && {if (_deployer == "") then { _leads } else { getPlayerUID _unit == _deployer }}}
             || {"LIST" in _who && {
                 private _list = (toLower _names) splitString (",; " + toString [9, 10, 13]);
-                (getPlayerUID _unit) in _list || {(toLower typeOf _unit) in _list}
+                // a player ID, a unit class, or the slot's variable name from Eden (P1, jtac...)
+                (getPlayerUID _unit) in _list || {(toLower typeOf _unit) in _list} || {(toLower vehicleVarName _unit) in _list}
             }};
     };
 
