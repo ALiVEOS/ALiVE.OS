@@ -326,6 +326,18 @@ switch (_operation) do {
                         };
                     } forEach [["ace_refuel_currentFuelCargo", QGVAR(ACEFUEL)], ["ace_rearm_currentSupply", QGVAR(ACEAMMO)]];
 
+                    //A vehicle bought at a Recruitment point keeps its buyer and price, so after a load it
+                    //still counts towards the buyer's allowance and can still be dismissed for a refund
+                    private _boughtBy = _x getVariable ["ALiVE_recruitedVehicleBy", ""];
+                    if (_boughtBy isEqualType "" && {_boughtBy != ""}) then {
+                        //a letter in front so a database save can't read the all-digit Steam ID as a number
+                        [_args,QGVAR(RECRUITEDBY),"U" + _boughtBy] call ALiVE_fnc_HashSet;
+                        [_args,QGVAR(RECRUITCOST),_x getVariable ["ALiVE_recruitCost",0]] call ALiVE_fnc_HashSet;
+                    } else {
+                        [_args,QGVAR(RECRUITEDBY)] call ALiVE_fnc_HashRem;
+                        [_args,QGVAR(RECRUITCOST)] call ALiVE_fnc_HashRem;
+                    };
+
                     //Only stored when opted in, so default saves are unchanged
                     if ((_x getVariable [QGVAR(NOREMAP),false]) isEqualTo true) then {
                         [_args,QGVAR(NOREMAP),true] call ALiVE_fnc_HashSet;
@@ -1302,6 +1314,9 @@ switch (_operation) do {
                 // ACE fuel and ammo cargo (#869); a key left off this list is dropped from the save
                 [QGVAR(ACEFUEL),"ASL_AF"],
                 [QGVAR(ACEAMMO),"ASL_AA"],
+                // who bought a Recruitment vehicle, and for how much
+                [QGVAR(RECRUITEDBY),"ASL_RB"],
+                [QGVAR(RECRUITCOST),"ASL_RC"],
                 ["_rev","_rev"]
             ];
 

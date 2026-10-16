@@ -193,6 +193,11 @@ ALiVE_fnc_recruitDismiss = {
     private _cost = _thing getVariable ["ALiVE_recruitCost", 0];
     private _name = getText (configFile >> "CfgVehicles" >> typeOf _thing >> "displayName");
     if (_isVehicle) then { { moveOut _x } forEach crew _thing };
+    // out of the Player Logistics save too, or the next load would bring it back
+    private _logisticsId = _thing getVariable ["ALiVE_sys_logistics_ID", ""];
+    if (_isVehicle && {_logisticsId != ""} && {!isNil "ALiVE_SYS_LOGISTICS"}) then {
+        [ALiVE_SYS_LOGISTICS, "removeObject", [_logisticsId]] call ALIVE_fnc_logistics;
+    };
     deleteVehicle _thing;
     [_cost, _name] spawn {
         params ["_cost", "_name"];
@@ -212,9 +217,13 @@ ALiVE_fnc_recruitDismissable = {
 // The action: held for 2 seconds, so a stray scroll click in a firefight can't dismiss anyone
 ALiVE_fnc_recruitDismissAction = {
     params ["_thing", "_cost", "_isVehicle", ["_near", []]];
+    // once per machine: the after-a-load pass can reach a vehicle while the buy is still finishing it
+    if (_thing getVariable ["ALiVE_recruitDismissHere", false]) exitWith {};
     _thing setVariable ["ALiVE_recruitCost", _cost];
     // the recruitment objects the player has to be near to dismiss it; none, anywhere
     _thing setVariable ["ALiVE_recruitDismissAt", _near];
+    // this machine has the action, so the after-a-load pass below doesn't add a second one
+    _thing setVariable ["ALiVE_recruitDismissHere", true];
     private _name = getText (configFile >> "CfgVehicles" >> typeOf _thing >> "displayName");
     [
         _thing,
@@ -288,6 +297,29 @@ ALiVE_fnc_recruitVehicle = {
     _veh setVariable ["ALiVE_recruitedVehicleBy", getPlayerUID player, true];
     // a player's own, so a Zeus virtualise doesn't hand it to an AI commander
     _veh setVariable ["ALIVE_profileIgnore", true, true];
+    _veh setVariable ["ALiVE_recruitCost", _cost, true];
+    // Player Logistics saves only what it has been handed, and a bought vehicle never was, so it was
+    // lost on load (A. Ares, 16 Oct). Handed over a moment later, once its owner has reached the
+    // server, so the save keeps who bought it and what it cost.
+    if (!isNil "ALiVE_SYS_LOGISTICS") then {
+        // a save record of its own: Player Logistics names a record by class and position, and every
+        // vehicle bought at one spot stands on the same spot, so a second one took over the first's
+        _veh setVariable ["ALiVE_sys_logistics_ID", format ["%1_recruit_%2_%3", typeOf _veh, getPlayerUID player, round (diag_tickTime * 1000)], true];
+        // destroyed, it leaves the save: the hooks that record a wreck run on the server, and a vehicle
+        // bought here belongs to the buyer's machine, so one blown up empty came back whole on load
+        _veh addMPEventHandler ["MPKilled", {
+            if (isServer && {!isNil "ALiVE_SYS_LOGISTICS"}) then {
+                private _id = (_this select 0) getVariable ["ALiVE_sys_logistics_ID", ""];
+                if (_id != "") then { [ALiVE_SYS_LOGISTICS, "removeObject", [_id]] call ALIVE_fnc_logistics };
+            };
+        }];
+        _veh spawn {
+            sleep 2;
+            if (isNull _this || {!alive _this}) exitWith {};
+            [[ALiVE_SYS_LOGISTICS, "setEH", [_this]], "ALIVE_fnc_logistics", false, false] call BIS_fnc_MP;
+            [ALiVE_SYS_LOGISTICS, "updateObject", [_this]] call ALIVE_fnc_logistics;
+        };
+    };
     _veh call _code;
     if (_settings param [12, true]) then { [_veh, _cost, true, _settings param [13, []]] call ALiVE_fnc_recruitDismissAction };
     [localize "STR_ALIVE_RECRUIT", format [localize "STR_ALIVE_RECRUIT_UI_VEH_READY", getText (configFile >> "CfgVehicles" >> _class >> "displayName"), _have + 1, _maxVeh]] call ALIVE_fnc_sendHint;
@@ -350,5 +382,25 @@ ALiVE_fnc_recruitVehicle = {
             } forEach _vehicles;
         };
     } forEach _objects;
+    // a vehicle this player bought before a save comes back from Player Logistics without its Dismiss
+    // action, which lives on the buyer's machine; give it back
+    // Only vehicles this module sells, so a mission with two recruitment points gives each one back
+    // its own point's Dismiss rule.
+    if (_dismiss && {_vehicles isNotEqualTo []}) then {
+        [_settings param [13, []], _vehicles apply { toLower _x }] spawn {
+            params ["_near", "_sold"];
+            while {true} do {
+                {
+                    if (!(_x getVariable ["ALiVE_recruitDismissHere", false]) && {(toLower typeOf _x) in _sold}) then {
+                        private _paid = _x getVariable ["ALiVE_recruitCost", 0];
+                        if (_paid isEqualType "") then { _paid = parseNumber _paid };
+                        if !(_paid isEqualType 0) then { _paid = 0 };
+                        [_x, _paid, true, _near] call ALiVE_fnc_recruitDismissAction;
+                    };
+                } forEach (call ALiVE_fnc_recruitVehiclesOwned);
+                sleep 10;
+            };
+        };
+    };
     _logic setVariable ["ALiVE_recruitReady", [count _objects, _classes, _vehicles], false];
 };

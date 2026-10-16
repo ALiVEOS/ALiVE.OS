@@ -52,6 +52,26 @@ if (_aceAmmo isEqualType 0 && {_aceAmmo >= 0}) then {
 };
 
 
+// A Recruitment vehicle keeps its buyer and price, and stays out of the profile system as it was
+private _boughtBy = [_state, QGVAR(RECRUITEDBY), ""] call ALiVE_fnc_HashGet;
+if (_boughtBy isEqualType "" && {(_boughtBy select [0, 1]) == "U"}) then { _boughtBy = _boughtBy select [1] };
+if (_boughtBy isEqualType "" && {_boughtBy != ""}) then {
+    private _paid = [_state, QGVAR(RECRUITCOST), 0] call ALiVE_fnc_HashGet;
+    if (_paid isEqualType "") then { _paid = parseNumber _paid };
+    if !(_paid isEqualType 0) then { _paid = 0 };
+    _object setVariable ["ALiVE_recruitedVehicleBy", _boughtBy, true];
+    _object setVariable ["ALiVE_recruitCost", _paid, true];
+    _object setVariable ["ALIVE_profileIgnore", true, true];
+    // destroyed, it leaves the save, as when it was bought: the buyer's machine can own it, where the
+    // server's own hooks don't fire, so an empty one blown up would come back whole
+    _object addMPEventHandler ["MPKilled", {
+        if (isServer && {!isNil "ALiVE_SYS_LOGISTICS"}) then {
+            private _id = (_this select 0) getVariable ["ALiVE_sys_logistics_ID", ""];
+            if (_id != "") then { [ALiVE_SYS_LOGISTICS, "removeObject", [_id]] call ALIVE_fnc_logistics };
+        };
+    }];
+};
+
 _damageModel = [_state,QGVAR(POINTDAMAGE)] call ALiVE_fnc_HashGet;
 
 
