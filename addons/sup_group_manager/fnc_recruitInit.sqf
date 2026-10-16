@@ -264,6 +264,8 @@ ALiVE_fnc_recruitUnit = {
     if (_skill > 0) then { _unit setSkill _skill };
     // the module's code, kept with him so a player save that brings him back runs it again
     _unit setVariable ["ALiVE_recruitCode", _settings param [9, ""], true];
+    // what he cost, kept with him so a player save keeps the refund
+    _unit setVariable ["ALiVE_recruitCost", _cost, true];
     _unit call _code;
     if (_settings param [12, true]) then { [_unit, _cost, false, _settings param [13, []]] call ALiVE_fnc_recruitDismissAction };
     [localize "STR_ALIVE_RECRUIT", format [localize "STR_ALIVE_RECRUIT_UI_JOINED", getText (configFile >> "CfgVehicles" >> _class >> "displayName"), _size + 1, _max]] call ALIVE_fnc_sendHint;
@@ -382,22 +384,25 @@ ALiVE_fnc_recruitVehicle = {
             } forEach _vehicles;
         };
     } forEach _objects;
-    // a vehicle this player bought before a save comes back from Player Logistics without its Dismiss
-    // action, which lives on the buyer's machine; give it back
-    // Only vehicles this module sells, so a mission with two recruitment points gives each one back
+    // Soldiers and vehicles this player recruited before a save come back (the player save, Player
+    // Logistics) without their Dismiss action, which lives on the recruiter's machine; give it back.
+    // Only classes this module offers, so a mission with two recruitment points gives each one back
     // its own point's Dismiss rule.
-    if (_dismiss && {_vehicles isNotEqualTo []}) then {
-        [_settings param [13, []], _vehicles apply { toLower _x }] spawn {
-            params ["_near", "_sold"];
+    if (_dismiss) then {
+        [_settings param [13, []], (_classes + _vehicles) apply { toLower _x }] spawn {
+            params ["_near", "_offered"];
+            private _uid = getPlayerUID player;
             while {true} do {
+                private _mine = (call ALiVE_fnc_recruitVehiclesOwned)
+                    + ((units group player) select { alive _x && {!isPlayer _x} && {(_x getVariable ["ALiVE_recruitedBy", ""]) == _uid} });
                 {
-                    if (!(_x getVariable ["ALiVE_recruitDismissHere", false]) && {(toLower typeOf _x) in _sold}) then {
+                    if (!(_x getVariable ["ALiVE_recruitDismissHere", false]) && {(toLower typeOf _x) in _offered}) then {
                         private _paid = _x getVariable ["ALiVE_recruitCost", 0];
                         if (_paid isEqualType "") then { _paid = parseNumber _paid };
                         if !(_paid isEqualType 0) then { _paid = 0 };
-                        [_x, _paid, true, _near] call ALiVE_fnc_recruitDismissAction;
+                        [_x, _paid, !(_x isKindOf "CAManBase"), _near] call ALiVE_fnc_recruitDismissAction;
                     };
-                } forEach (call ALiVE_fnc_recruitVehiclesOwned);
+                } forEach _mine;
                 sleep 10;
             };
         };
