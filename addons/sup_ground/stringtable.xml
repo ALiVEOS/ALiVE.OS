@@ -21,7 +21,7 @@
     <Russian>Наземная машина с экипажем (грузовик, бронеавтомобиль или БТР), которой игроки отдают приказы с планшета боевой поддержки: забрать, выдвинуться, патрулировать дорогу между двумя точками или вернуться на базу. В движении экипаж проверяет дорогу впереди на СВУ и мины и пытается их обезвредить; неудача приводит к подрыву.</Russian>
 </Key>
 <Key ID="STR_ALIVE_GROUND_USAGE">
-    <English>Place the module where the vehicle should start and sync it to the Combat Support module. Orders are given from the Combat Support tablet only.</English>
+    <English>Place the module where the vehicle should start and sync it to the Combat Support module, or sync a vehicle you placed to this module and it is used where it stands (an empty one is given a crew). Orders are given from the Combat Support tablet only.</English>
     <Chinesesimp>将模块放在载具出发的位置，并与战斗支援模块同步。命令只能通过战斗支援平板下达。</Chinesesimp>
     <Chinese>將模組放在載具出發的位置，並與戰鬥支援模組同步。命令只能透過戰鬥支援平板下達。</Chinese>
     <Spanish>Coloca el módulo donde debe empezar el vehículo y sincronízalo con el módulo de Apoyo de combate. Las órdenes se dan solo desde la tableta de Apoyo de combate.</Spanish>

@@ -14,7 +14,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CAS_USAGE">
-    <English>Place the module and sync it to a Player Combat Support module.</English>
+    <English>Place the module and sync it to a Player Combat Support module. The aircraft is built at the module, or sync an aircraft you placed to this module and it is used where it stands. An empty one is given a crew.</English>
     <Chinese>放置此模組並將其同步至玩家戰鬥支援模組。</Chinese>
     <Chinesesimp>放置该模块并将其同步至玩家战斗支援模块。</Chinesesimp>
     <Spanish>Coloque el módulo y sincronícelo con un módulo de Apoyo de Combate para Jugadores.</Spanish>

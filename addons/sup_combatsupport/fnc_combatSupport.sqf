@@ -348,6 +348,28 @@ switch(_operation) do {
                                     ALiVE_CS_respawnReg set [(["CAS", "TRANS", "GROUND", "ARTY"] select _csKind) + "|" + toUpper (_csMod getVariable [_pre + "_callsign", ""]), [[-1, _rt] select (_rt > 0), _rl]];
                                 };
                             };
+                            // A vehicle synced to a support module is that asset, used where it stands:
+                            // the first one of the right kind (aircraft for CAS and Transport, a ground
+                            // vehicle for Ground, a gun for Artillery). sys_profile leaves it alone.
+                            private _fnc_syncedAsset = {
+                                params ["_mod", "_callsign", "_what", "_kind"];
+                                private _found = ((synchronizedObjects _mod) apply { vehicle _x }) select {
+                                    alive _x && {switch (_what) do {
+                                        case "air": { _x isKindOf "Air" };
+                                        case "ground": { _x isKindOf "LandVehicle" && {!(_x isKindOf "StaticWeapon")} };
+                                        default { _x isKindOf "LandVehicle" };
+                                    }}
+                                };
+                                if (_found isEqualTo []) exitWith { objNull };
+                                private _asset = _found select 0;
+                                private _left = (_found - [_asset]) select { _what != "gun" || {isNull group _asset} || {!(group _x isEqualTo group _asset)} };
+                                // tagged so the build below takes this one, wherever it stands (a deck, a roof),
+                                // by kind and callsign as the respawn register keys them
+                                _asset setVariable ["ALiVE_CS_syncedFor", _kind + "|" + toUpper _callsign];
+                                ["COMBAT SUPPORT - %1 uses the %2 synced to it at %3%4", _callsign, typeOf _asset, mapGridPosition _asset,
+                                    ["", format ["; %1 other synced vehicle(s) are not used", count _left]] select (_left isNotEqualTo [])] call ALiVE_fnc_dump;
+                                _asset
+                            };
                             switch (typeOf ((synchronizedObjects _logic) select _i)) do {
                                 case ("ALiVE_sup_cas") : {
                                     private ["_position","_callsign","_type"];
@@ -360,6 +382,8 @@ switch(_operation) do {
                                     if (_typeCustom != "") then { _type = _typeCustom };
                                     _heightset = ((synchronizedObjects _logic) select _i) getvariable ["cas_height","0"];
                                     _direction =  getDir ((synchronizedObjects _logic) select _i);
+                                    private _synced = [(synchronizedObjects _logic) select _i, _callsign, "air", "CAS"] call _fnc_syncedAsset;
+                                    if (!isNull _synced) then { _position = getPosATL _synced; _type = typeOf _synced; _direction = getDir _synced };
                                     _id = [_position] call ALiVE_fnc_getNearestAirportID;
                                     _height = parsenumber(_heightset);
                                     _code = ((synchronizedObjects _logic) select _i) getvariable ["cas_code",""];
@@ -399,6 +423,8 @@ switch(_operation) do {
                                     _heightset = ((synchronizedObjects _logic) select _i) getvariable ["transport_height","0"];
                                     _height = parsenumber(_heightset);
                                     _direction =  getDir ((synchronizedObjects _logic) select _i);
+                                    private _synced = [(synchronizedObjects _logic) select _i, _callsign, "air", "TRANS"] call _fnc_syncedAsset;
+                                    if (!isNull _synced) then { _position = getPosATL _synced; _type = typeOf _synced; _direction = getDir _synced };
                                     _code = ((synchronizedObjects _logic) select _i) getvariable ["transport_code",""];
                                     _code = [_code,"this","(_this select 0)"] call CBA_fnc_replace;
 
@@ -462,8 +488,12 @@ switch(_operation) do {
                                     private _gSource = (_m getVariable ["ground_logisticssource", "0"]) call _num;
                                     private _gChance = (_m getVariable ["ground_disarm_chance", "70"]) call _num;
                                     private _gCheck = ((_m getVariable ["ground_mine_check", "1"]) call _num) > 0;
+                                    private _gPos = getPosATL _m;
+                                    private _gDir = getDir _m;
+                                    private _synced = [_m, _gCallsign, "ground", "GROUND"] call _fnc_syncedAsset;
+                                    if (!isNull _synced) then { _gPos = getPosATL _synced; _gType = typeOf _synced; _gDir = getDir _synced };
                                     if (isClass (configFile >> "CfgVehicles" >> _gType)) then {
-                                        _groundArrays pushBack [getPosATL _m, getDir _m, _gType, _gCallsign, _gCode, _gLogistics, _gSource, _gChance, _gCheck];
+                                        _groundArrays pushBack [_gPos, _gDir, _gType, _gCallsign, _gCode, _gLogistics, _gSource, _gChance, _gCheck];
                                     } else {
                                         ["COMBAT SUPPORT - Ground transport %1 ignored: vehicle class '%2' is unavailable. Load its required mod or select an available vehicle.", _gCallsign, _gType] call ALiVE_fnc_dump;
                                     };
@@ -481,18 +511,8 @@ switch(_operation) do {
                                     // over where it stands, whatever class the module names. Without one the
                                     // battery is built at the module, adopting only a gun of its class within
                                     // 5 m of it. sys_profile leaves synced guns to Combat Support.
-                                    private _syncedGuns = ((synchronizedObjects ((synchronizedObjects _logic) select _i)) apply { vehicle _x })
-                                        select { (_x isKindOf "StaticWeapon" || {_x isKindOf "LandVehicle"}) && {alive _x} };
-                                    if (_syncedGuns isNotEqualTo []) then {
-                                        private _gun = _syncedGuns select 0;
-                                        _position = getPosATL _gun;
-                                        _class = typeOf _gun;
-                                        // the battery is the first gun's group, so a gun outside it, or any gun
-                                        // when the first is empty, is not part of it
-                                        private _left = (_syncedGuns - [_gun]) select { isNull group _gun || {!(group _x isEqualTo group _gun)} };
-                                        ["COMBAT SUPPORT - Artillery %1 uses the %2 synced to it at %3%4", _callsign, _class, mapGridPosition _gun,
-                                            ["", format ["; %1 other synced gun(s) are not in its group and are not used", count _left]] select (_left isNotEqualTo [])] call ALiVE_fnc_dump;
-                                    };
+                                    private _gun = [(synchronizedObjects _logic) select _i, _callsign, "gun", "ARTY"] call _fnc_syncedAsset;
+                                    if (!isNull _gun) then { _position = getPosATL _gun; _class = typeOf _gun };
                                     _setherounds = ((synchronizedObjects _logic) select _i) getvariable ["artillery_he","30"];
                                     _setillumrounds = ((synchronizedObjects _logic) select _i) getvariable ["artillery_illum","30"];
                                     _setsmokerounds = ((synchronizedObjects _logic) select _i) getvariable ["artillery_smoke","30"];
@@ -631,7 +651,8 @@ switch(_operation) do {
 
                             private ["_veh","_grp","_crew"];
 
-                            _veh = nearestObjects [_pos, [_type], 5];
+                            _veh = vehicles select { alive _x && {(_x getVariable ["ALiVE_CS_syncedFor", ""]) == "TRANS|" + _callsign} };
+                            if (_veh isEqualTo []) then { _veh = nearestObjects [_pos, [_type], 5] };
 
                             if (count _veh == 0) then {
                                 _grp = createGroup _side;
@@ -648,6 +669,16 @@ switch(_operation) do {
 
                              } else {
                                 _veh = _veh select 0;
+                                // an empty aircraft placed for it gets its crew here
+                                if (isNull driver _veh) then {
+                                    _grp = createGroup _side;
+                                    createVehicleCrew _veh;
+                                    (crew _veh) joinSilent _grp;
+                                    _grp addVehicle _veh;
+                                } else {
+                                    // one placed with a crew serves its crew's side, as a ground transport does
+                                    _side = side group driver _veh;
+                                };
                                 _grp = group (driver _veh);
                             };
 
@@ -782,7 +813,8 @@ switch(_operation) do {
 
                             private ["_veh","_grp","_crew"];
 
-                            _veh = nearestObjects [_pos, [_type], 5];
+                            _veh = vehicles select { alive _x && {(_x getVariable ["ALiVE_CS_syncedFor", ""]) == "CAS|" + _callsign} };
+                            if (_veh isEqualTo []) then { _veh = nearestObjects [_pos, [_type], 5] };
 
                             if (count _veh == 0) then {
                                 _grp = createGroup _side;
@@ -802,6 +834,18 @@ switch(_operation) do {
                                 };
                              } else {
                                 _veh = _veh select 0;
+                                // an empty aircraft placed for it gets its crew here
+                                if (isNull driver _veh) then {
+                                    createVehicleCrew _veh;
+                                    if (getNumber (configFile >> "CfgVehicles" >> _type >> "isUav") != 1) then {
+                                        _grp = createGroup _side;
+                                        (crew _veh) joinSilent _grp;
+                                        _grp addVehicle _veh;
+                                    };
+                                } else {
+                                    // one placed with a crew serves its crew's side, as a ground transport does
+                                    _side = side group driver _veh;
+                                };
                                 _grp = group (driver _veh);
                             };
 
