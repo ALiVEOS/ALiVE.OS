@@ -1585,23 +1585,46 @@ ALiVE_fnc_INS_recruit = {
                     if (_hvtChance > 0 && {!([_objective,"recruiterTaskRaised",false] call ALiVE_fnc_HashGet)} && {random 100 < _hvtChance} && {!isNil "ALIVE_eventLog"}) then {
                         [_objective,"recruiterTaskRaised",true] call ALiVE_fnc_HashSet;
                         private _insSide = if (_side isEqualType "") then {[_side] call ALiVE_fnc_sideTextToObject} else {_side};
-                        {
-                            private _hSideText = _x;
-                            private _hSide = [_hSideText] call ALiVE_fnc_sideTextToObject;
-                            if ((_hSide getFriend _insSide) < 0.6) then {
-                                private _hp = [_hSideText] call ALiVE_fnc_getPlayersDataSource;
-                                if (count (_hp select 1) > 0) then {
-                                    private _pObj = [(_hp select 1) select 0] call ALIVE_fnc_getPlayerByUID;
-                                    if (!isNull _pObj) then {
-                                        private _taskData = [format ["%1_recruiter_%2", _id, round time], "OPCOM", _hSideText, faction _pObj,
+                        // One recruiter task open per side at a time. The commander sets up most of its
+                        // Recruitment HQs in the first minutes, and each one raised a task at once, so a side
+                        // started with ten HVT tasks. Now an HQ waits until its side has none open, then raises
+                        // its own, for as long as the HQ stands, so the HQs come up one after another. A task
+                        // counts as open while its HVT step (_c1) is neither done nor failed, or for two minutes
+                        // after it is raised, before the task handler has it.
+                        [_HQ, _id, _faction, _insSide] spawn {
+                            params ["_HQ", "_id", "_faction", "_insSide"];
+                            private _waiting = (["EAST","WEST","GUER"] - [str _insSide]) select {
+                                (([_x] call ALiVE_fnc_sideTextToObject) getFriend _insSide) < 0.6
+                            };
+                            while {alive _HQ && {_waiting isNotEqualTo []}} do {
+                                {
+                                    private _hSideText = _x;
+                                    private _hp = [_hSideText] call ALiVE_fnc_getPlayersDataSource;
+                                    private _pObj = if (count (_hp select 1) > 0) then {[(_hp select 1) select 0] call ALIVE_fnc_getPlayerByUID} else {objNull};
+                                    private _recruiterTaskId = format ["%1_recruiter_%2_%3", _id, _hSideText, round time];
+                                    // checked and claimed in one unscheduled step, so two HQs waking together can't both
+                                    // see the side free; a task nobody goes after stops counting as open after an hour
+                                    private _claimed = !isNull _pObj && {isNil {
+                                        private _openKey = format ["ALiVE_INS_recruiterTask_%1", _hSideText];
+                                        (missionNamespace getVariable [_openKey, ["", -1e6]]) params ["_openId", "_openAt"];
+                                        private _open = (time - _openAt) < 120 || {(time - _openAt) < 3600 && {!isNil "ALIVE_taskHandler"} && {
+                                            private _hvtStep = [ALIVE_taskHandler, "getTask", _openId + "_c1"] call ALIVE_fnc_taskHandler;
+                                            !isNil "_hvtStep" && {!((_hvtStep select 8) in ["Succeeded", "Failed", "Canceled"])}
+                                        }};
+                                        if (_open) then { false } else { missionNamespace setVariable [_openKey, [_recruiterTaskId, time]]; nil }
+                                    }};
+                                    if (_claimed) then {
+                                        private _taskData = [_recruiterTaskId, "OPCOM", _hSideText, faction _pObj,
                                             "Assassination", "NULL", getPosATL _HQ, [_hp select 1, _hp select 0], _faction, "Y", "Side"];
                                         private _tEvent = ["TASK_GENERATE", _taskData, "OPCOM"] call ALIVE_fnc_event;
                                         [ALIVE_eventLog, "addEvent", _tEvent] call ALIVE_fnc_eventLog;
                                         ["ALiVE OPCOM: recruiter task raised for %1 at the Recruitment HQ near %2", _hSideText, mapGridPosition _HQ] call ALiVE_fnc_dump;
+                                        _waiting = _waiting - [_hSideText];
                                     };
-                                };
+                                } forEach +_waiting;
+                                if (_waiting isNotEqualTo []) then { sleep 30 };
                             };
-                        } forEach (["EAST","WEST","GUER"] - [str _insSide]);
+                        };
                     };
                 };
 
