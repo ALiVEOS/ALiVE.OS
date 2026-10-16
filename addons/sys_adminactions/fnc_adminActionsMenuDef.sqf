@@ -171,6 +171,16 @@ private _menuDef = switch (_menuName) do {
                     1,
                     !isnil "ALiVE_mil_OPCOM"
                 ],
+                // Player FOBs: who can take FOBs down, from anywhere on the map
+                [localize "STR_ALIVE_ADMINACTIONS_FOB_PERMISSIONS",
+                    {["permOpen"] call ALiVE_fnc_fobActions;},
+                    "",
+                    localize "STR_ALIVE_ADMINACTIONS_FOB_PERMISSIONS_COMMENT",
+                    "",
+                    -1,
+                    1,
+                    !isNil "ALiVE_sup_fob" && {!isNull ALiVE_sup_fob}
+                ],
                 [localize "STR_ALIVE_ADMINACTIONS_CONSOLE_ENABLE",
                     {createDialog "RscDisplayDebugPublic"},
                     "",

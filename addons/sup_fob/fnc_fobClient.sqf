@@ -7,7 +7,7 @@ Function: ALiVE_fnc_fobClient
 Description:
 The player's machine's side of the FOBs: a read-only copy of the list the server sends
 (ALiVE_FOB_registryMirror, one row per FOB: id, side, name, position, status, tier, supply,
-supply limit, build range). It arrives with every change and to players who join later, as a
+supply limit, build range, the player ID of who deployed it). It arrives with every change and to players who join later, as a
 public variable; each arrival redraws the side's FOB markers. The player's actions read only
 this copy.
 

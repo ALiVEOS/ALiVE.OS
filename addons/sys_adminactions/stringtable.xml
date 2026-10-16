@@ -114,4 +114,10 @@
 	<Chinesesimp>在地图上显示所有 AI 指挥官的目标与设施约 40 秒,之后逐渐消失</Chinesesimp>
     <Spanish>Muestra en el mapa los objetivos e instalaciones de todos los comandantes IA durante unos 40 segundos; luego se desvanecen</Spanish>
 </Key>
+<Key ID="STR_ALIVE_ADMINACTIONS_FOB_PERMISSIONS">
+    <English>FOB Permissions</English>
+</Key>
+<Key ID="STR_ALIVE_ADMINACTIONS_FOB_PERMISSIONS_COMMENT">
+    <English>Choose who can dismantle FOBs, recycle at them and rename them, for every FOB, from anywhere on the map</English>
+</Key>
 </Container></Package></Project>

@@ -290,6 +290,60 @@
             <Key ID="STR_ALIVE_FOB_REFUSED_SPOT">
                 <English>The FOB couldn't be built here.</English>
             </Key>
+            <Key ID="STR_ALIVE_FOB_REFUSED_NOTALLOWED">
+                <English>You aren't allowed to take this FOB down, recycle at it or rename it.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_REFUSED_ADMIN">
+                <English>Only an admin can change who can take FOBs down.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_PERMISSIONS_SET">
+                <English>Who can take FOBs down has been changed, for every FOB until the mission restarts.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_MANAGE_WHO">
+                <English>Who Can Dismantle</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_MANAGE_WHO_COMMENT">
+                <English>Who on the FOB's side may dismantle it, recycle what was built there and rename it. Tick as many as you like: any one of them lets a player in. Admins always can, so with nothing ticked only admins can. Admins can change this in game from the FOB window's Permissions button or the ALiVE admin menu.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_MANAGE_SIDE">
+                <English>Anyone on the side</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_MANAGE_SIDE_COMMENT">
+                <English>Every player on the FOB's side. With this ticked the others make no difference.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_MANAGE_LEADER">
+                <English>Group leaders</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_MANAGE_LEADER_COMMENT">
+                <English>A player who leads a group with at least one other player in it. Someone alone in a group of their own doesn't count.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_MANAGE_DEPLOYER">
+                <English>The player who deployed it</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_MANAGE_DEPLOYER_COMMENT">
+                <English>The player who deployed that FOB, known by their player ID, so it still counts after they reconnect. A FOB saved before FOBs recorded this, or one taken from another side, lets in group leaders instead.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_MANAGE_LIST">
+                <English>Players on the list</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_MANAGE_LIST_COMMENT">
+                <English>Players named in Allowed Players, by player ID or by unit class.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_MANAGE_LIST_EDIT">
+                <English>Allowed Players</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_MANAGE_LIST_EDIT_COMMENT">
+                <English>For Players on the list: player IDs (the 17-digit Steam ID) and unit classes, separated by commas, e.g. 76561198000000000, B_officer_F. A unit class lets in every player in that slot.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_UI_PERMISSIONS">
+                <English>Permissions</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_UI_PERMISSIONS_NOTE">
+                <English>For every FOB, until the mission restarts. Admins always can.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_UI_APPLY">
+                <English>Apply</English>
+            </Key>
             <Key ID="STR_ALIVE_FOB_REFUSED_NOTOURS">
                 <English>That FOB isn't your side's.</English>
             </Key>

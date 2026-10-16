@@ -87,6 +87,8 @@ private _settings = createHashMapFromArray [
     ["fob_cost_scale", [1, [0, 100]]],
     ["fob_blacklist", ["", "text"]],
     ["fob_whitelist", ["", "text"]],
+    ["fob_manage_who", ["SIDE", "text"]],
+    ["fob_manage_list", ["", "text"]],
     ["fob_save_interval", [60, [5, 3600]]],
     ["fob_alert_radius", [400, [50, 3000]]],
     ["fob_enemy_targeting", ["CONTACT", "text"]],
@@ -283,6 +285,45 @@ switch (_operation) do {
         _result = _value;
     };
 
+    // A logged-in or voted admin, or anyone in single player. Works on any machine for the
+    // player there, and on the server for anyone.
+    case "isAdmin": {
+        _args params [["_unit", objNull, [objNull]]];
+        _result = !isNull _unit && {if (hasInterface && {_unit isEqualTo player}) then { call ALiVE_fnc_isServerAdmin } else { !isMultiplayer || {isServer && {(admin owner _unit) > 0}} }};
+    };
+
+    // Who Can Dismantle and its list, as [rules, list]: what an admin set in game ("permissions" in
+    // ALiVE_fnc_fobOps) or else the module's settings. Works on any machine.
+    case "manageRules": {
+        _result = _logic getVariable ["ALiVE_FOB_perm", []];
+        if !(_result isEqualTypeArray ["", ""]) then {
+            _result = [[_logic, "attribute", ["fob_manage_who"]] call MAINCLASS, [_logic, "attribute", ["fob_manage_list"]] call MAINCLASS];
+        };
+    };
+
+    // Whether a player may dismantle a FOB, recycle what was built there or rename it (Who Can
+    // Dismantle): an admin always may; otherwise any ticked rule lets them in. A FOB saved before
+    // FOBs recorded who deployed them has no deployer, and The Player Who Deployed It then lets in
+    // group leaders. The server's answer is the one that counts; players' machines ask the same
+    // question only to grey out what would be refused.
+    case "mayManage": {
+        _args params [["_unit", objNull, [objNull]], ["_deployer", "", [""]]];
+        _result = false;
+        if (isNull _unit) exitWith {};
+        if ([_logic, "isAdmin", [_unit]] call MAINCLASS) exitWith { _result = true };
+        ([_logic, "manageRules"] call MAINCLASS) params ["_rules", "_names"];
+        private _who = (toUpper _rules) splitString "[]""', ";
+        // leading a group with another player in it: anyone alone in a group of their own leads it
+        private _leads = leader group _unit isEqualTo _unit && {(units group _unit) findIf { isPlayer _x && {_x != _unit} } > -1};
+        _result = "SIDE" in _who
+            || {"LEADER" in _who && {_leads}}
+            || {"DEPLOYER" in _who && {if (_deployer == "") then { _leads } else { getPlayerUID _unit == _deployer }}}
+            || {"LIST" in _who && {
+                private _list = (toLower _names) splitString (",; " + toString [9, 10, 13]);
+                (getPlayerUID _unit) in _list || {(toLower typeOf _unit) in _list}
+            }};
+    };
+
     // One side's pick from a per-side setting stored BLUFOR|OPFOR|Independent (Headquarters
     // Buildings, Garrison Groups): "" when that side has none. Works on any machine.
     case "perSide": {
@@ -374,7 +415,8 @@ switch (_operation) do {
             private _e = [ALiVE_FOB_registry, _x] call ALIVE_fnc_hashGet;
             [_x, [_e, "side"] call ALIVE_fnc_hashGet, [_e, "name"] call ALIVE_fnc_hashGet, [_e, "pos"] call ALIVE_fnc_hashGet,
              [_e, "status"] call ALIVE_fnc_hashGet, [_e, "tier"] call ALIVE_fnc_hashGet,
-             ["balance", [_x]] call ALiVE_fnc_fobSupply, ["cap", [_x]] call ALiVE_fnc_fobSupply, _range]
+             ["balance", [_x]] call ALiVE_fnc_fobSupply, ["cap", [_x]] call ALiVE_fnc_fobSupply, _range,
+             [_e, "deployedBy", ""] call ALIVE_fnc_hashGet]
         };
         publicVariable "ALiVE_FOB_registryMirror";
         [_logic, "broadcastRoom"] call MAINCLASS;

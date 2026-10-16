@@ -6,7 +6,8 @@ Function: ALiVE_fnc_fobRequest
 
 Description:
 The only way a player's machine asks the server to change a FOB, and only for what a player may
-do: deploy, dismantle, build, recycle, unload, upgrade, repair, rename, and the Field HQ requests. It finds who is asking from the connection, never from the request, and passes them on
+do: deploy, dismantle, build, recycle, unload, upgrade, repair, rename, the Field HQ requests, and
+an admin's change to who may take FOBs down. It finds who is asking from the connection, never from the request, and passes them on
 as the caller; the side is always the caller's own and every cost is worked out on the server,
 so a request can't name its own price or act for another side.
 
@@ -31,7 +32,7 @@ params ["_op", "_args"];
 
 // Only what a player may ask for. Everything else in ALiVE_fnc_fobOps (cleanup, flip, salvage,
 // spawning profiles, tagging, restoring) is the server's own and never reachable from here.
-if !(_op in ["deploy", "dismantle", "build", "recycle", "unload", "upgrade", "repair", "fieldHQ", "rename"]) exitWith {
+if !(_op in ["deploy", "dismantle", "build", "recycle", "unload", "upgrade", "repair", "fieldHQ", "rename", "permissions"]) exitWith {
     ["ALiVE Player FOBs - refused a request for %1 from machine %2: not something a player can ask for", _op, remoteExecutedOwner] call ALiVE_fnc_dumpR;
 };
 

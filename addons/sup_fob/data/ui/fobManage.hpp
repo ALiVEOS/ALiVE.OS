@@ -108,11 +108,120 @@ class ALiVE_FobWindow {
             h = 0.075 * safezoneH;
             colorBackground[] = {0,0,0,0.3};
         };
+        // admins only (shown by ALiVE_fnc_fobActions): opens the Permissions window
+        class FobManage_Perm: FobUI_RscButton {
+            idc = 92860;
+            text = "$STR_ALIVE_FOB_UI_PERMISSIONS";
+            action = "['permOpen'] call ALiVE_fnc_fobActions";
+            x = 0.38 * safezoneW + safezoneX;
+            y = 0.655 * safezoneH + safezoneY;
+            w = 0.1 * safezoneW;
+            h = 0.035 * safezoneH;
+        };
         class FobManage_Close: FobUI_RscButton {
             idc = 92849;
             text = "$STR_ALIVE_FOB_UI_CLOSE";
             action = "closeDialog 0";
             x = 0.555 * safezoneW + safezoneX;
+            y = 0.655 * safezoneH + safezoneY;
+            w = 0.065 * safezoneW;
+            h = 0.035 * safezoneH;
+        };
+    };
+};
+
+// The Permissions window, for admins: Who Can Dismantle and its list, for every FOB. Opened from
+// the FOB window's Permissions button or from the ALiVE admin menu, wherever the admin is.
+// ALiVE_fnc_fobActions fills and drives it; the server checks the sender is an admin.
+class ALiVE_FobPermWindow {
+    idd = 9285;
+    movingEnable = 1;
+    onUnload = "ALiVE_FOB_permDraft = nil";
+
+    class controls {
+        class FobPerm_Background: FobUI_RscText {
+            idc = 92850;
+            x = 0.4 * safezoneW + safezoneX;
+            y = 0.31 * safezoneH + safezoneY;
+            w = 0.2 * safezoneW;
+            h = 0.39 * safezoneH;
+            colorBackground[] = {0,0,0,0.65};
+        };
+        class FobPerm_Header: FobUI_RscText {
+            idc = 92851;
+            text = "$STR_ALIVE_FOB_MANAGE_WHO";
+            x = 0.4 * safezoneW + safezoneX;
+            y = 0.282 * safezoneH + safezoneY;
+            w = 0.2 * safezoneW;
+            h = 0.028 * safezoneH;
+            colorBackground[] = {0.788,0.443,0.157,0.65};
+            sizeEx = "(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.9)";
+        };
+        class FobPerm_Note: FobUI_RscStructuredText {
+            idc = 92852;
+            text = "$STR_ALIVE_FOB_UI_PERMISSIONS_NOTE";
+            x = 0.41 * safezoneW + safezoneX;
+            y = 0.32 * safezoneH + safezoneY;
+            w = 0.18 * safezoneW;
+            h = 0.065 * safezoneH;
+            colorBackground[] = {0,0,0,0};
+        };
+        class FobPerm_Side: FobUI_RscButton {
+            idc = 92853;
+            action = "['permToggle', 'SIDE'] call ALiVE_fnc_fobActions";
+            style = 0;
+            x = 0.41 * safezoneW + safezoneX;
+            y = 0.39 * safezoneH + safezoneY;
+            w = 0.18 * safezoneW;
+            h = 0.035 * safezoneH;
+        };
+        class FobPerm_Leader: FobPerm_Side {
+            idc = 92854;
+            action = "['permToggle', 'LEADER'] call ALiVE_fnc_fobActions";
+            y = 0.43 * safezoneH + safezoneY;
+        };
+        class FobPerm_Deployer: FobPerm_Side {
+            idc = 92855;
+            action = "['permToggle', 'DEPLOYER'] call ALiVE_fnc_fobActions";
+            y = 0.47 * safezoneH + safezoneY;
+        };
+        class FobPerm_List: FobPerm_Side {
+            idc = 92856;
+            action = "['permToggle', 'LIST'] call ALiVE_fnc_fobActions";
+            y = 0.51 * safezoneH + safezoneY;
+        };
+        class FobPerm_Names: FobUI_RscEdit {
+            idc = 92857;
+            maxChars = 2000;
+            tooltip = "$STR_ALIVE_FOB_MANAGE_LIST_EDIT_COMMENT";
+            x = 0.41 * safezoneW + safezoneX;
+            y = 0.585 * safezoneH + safezoneY;
+            w = 0.18 * safezoneW;
+            h = 0.035 * safezoneH;
+        };
+        class FobPerm_NamesLabel: FobUI_RscText {
+            idc = 92858;
+            text = "$STR_ALIVE_FOB_MANAGE_LIST_EDIT";
+            x = 0.41 * safezoneW + safezoneX;
+            y = 0.553 * safezoneH + safezoneY;
+            w = 0.18 * safezoneW;
+            h = 0.03 * safezoneH;
+            sizeEx = "(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.85)";
+        };
+        class FobPerm_Apply: FobUI_RscButton {
+            idc = 92859;
+            text = "$STR_ALIVE_FOB_UI_APPLY";
+            action = "['permApply'] call ALiVE_fnc_fobActions";
+            x = 0.455 * safezoneW + safezoneX;
+            y = 0.655 * safezoneH + safezoneY;
+            w = 0.065 * safezoneW;
+            h = 0.035 * safezoneH;
+        };
+        class FobPerm_Close: FobUI_RscButton {
+            idc = 92861;
+            text = "$STR_ALIVE_FOB_UI_CLOSE";
+            action = "closeDialog 0";
+            x = 0.525 * safezoneW + safezoneX;
             y = 0.655 * safezoneH + safezoneY;
             w = 0.065 * safezoneW;
             h = 0.035 * safezoneH;

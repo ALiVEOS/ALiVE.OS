@@ -67,6 +67,10 @@ class CfgVehicles {
                         class fob_min_distance : Edit { property = "ALiVE_sup_fob_fob_min_distance"; displayName = "$STR_ALIVE_FOB_MIN_DISTANCE"; tooltip = "$STR_ALIVE_FOB_MIN_DISTANCE_COMMENT"; typeName = "STRING"; defaultValue = """500"""; };
                         class fob_hubs { property = "ALiVE_sup_fob_fob_hubs"; displayName = "$STR_ALIVE_FOB_HUBS"; tooltip = "$STR_ALIVE_FOB_HUBS_COMMENT"; control = "ALiVE_FOBHubChoice"; typeName = "STRING"; expression = "_this setVariable ['fob_hubs', _value, true];"; defaultValue = """Land_Cargo_HQ_V1_F|Land_Cargo_HQ_V3_F|Land_Cargo_HQ_V2_F"""; };
 
+                        class HDR_MANAGE : ALiVE_ModuleSubTitle { property = "ALiVE_sup_fob_HDR_MANAGE"; displayName = "WHO CAN TAKE A FOB DOWN"; };
+                        class fob_manage_who { property = "ALiVE_sup_fob_fob_manage_who"; displayName = "$STR_ALIVE_FOB_MANAGE_WHO"; tooltip = "$STR_ALIVE_FOB_MANAGE_WHO_COMMENT"; control = "ALiVE_FOBManageChoice"; typeName = "STRING"; expression = "_this setVariable ['fob_manage_who', _value, true];"; defaultValue = """SIDE"""; };
+                        class fob_manage_list : Edit { property = "ALiVE_sup_fob_fob_manage_list"; displayName = "$STR_ALIVE_FOB_MANAGE_LIST_EDIT"; tooltip = "$STR_ALIVE_FOB_MANAGE_LIST_EDIT_COMMENT"; typeName = "STRING"; defaultValue = """"""; };
+
                         class HDR_CAP : ALiVE_ModuleSubTitle { property = "ALiVE_sup_fob_HDR_CAP"; displayName = "HOW MANY FOBS"; };
                         class fob_cap_type : Combo
                         {

@@ -16,9 +16,12 @@ The player's FOB actions, on the scroll menu:
   - Repair: when its headquarters was destroyed; the server works out the price.
   - Dismantle: asks to be pressed again within 10 s; the supply in the FOB is lost.
   The server's answer to each shows on the window as well as in the usual message.
+  Rename and Dismantle are greyed out for a player the module's Who Can Dismantle doesn't let
+  in, and admins get a Permissions button for the Permissions window, which the ALiVE admin
+  menu opens too, from anywhere.
 - Build Menu, inside an active FOB's build range: the build window.
 - Recycle, looking at something built at a FOB from within 8 m: takes it down for half its
-  price back.
+  price back, for a player Who Can Dismantle lets in.
 - Unload Supplies, within 8 m of a supply crate inside a FOB's build range.
 - Request FOB Kit and Request Supply Crate, looking at a Field HQ (an object synced to the
   module) from within 8 m.
@@ -52,6 +55,7 @@ switch (_op) do {
             ALiVE_FOB_nearFob = [];
             ALiVE_FOB_buildFob = [];
             ALiVE_FOB_nearCrate = objNull;
+            ALiVE_FOB_mayAt = createHashMap;
             ALiVE_FOB_cacheLoop = [] spawn {
                 while { true } do {
                     if (alive player) then {
@@ -72,6 +76,10 @@ switch (_op) do {
                             (_x select 1) == _side && {(_x select 4) == "active"} && {player distance2D (_x select 3) <= (_x select 8)}
                         };
                         ALiVE_FOB_buildFob = _inRange param [0, []];
+                        // which of the side's FOBs Who Can Dismantle lets this player recycle at
+                        private _logic = missionNamespace getVariable ["ALiVE_sup_fob", objNull];
+                        ALiVE_FOB_mayAt = createHashMapFromArray (((missionNamespace getVariable ["ALiVE_FOB_registryMirror", []]) select { (_x select 1) == _side })
+                            apply { [_x select 0, [_logic, "mayManage", [player, _x param [9, ""]]] call ALiVE_fnc_FOB] });
                     };
                     sleep 0.5;
                 };
@@ -120,11 +128,16 @@ switch (_op) do {
 
     // Something built at one of the player's side's FOBs that can be recycled: a tagged object,
     // or a static weapon or vehicle inside the side's FOB build range (the server checks it was
-    // built there)
+    // built there), where Who Can Dismantle lets this player recycle
     case "canRecycle": {
         private _o = _this param [1, objNull];
-        !isNull _o && {(_o getVariable ["ALiVE_FOB_object", ""]) != ""
-            || {ALiVE_FOB_buildFob isNotEqualTo [] && {_o isKindOf "StaticWeapon" || {_o isKindOf "LandVehicle"} || {_o isKindOf "Ship"}}}}
+        if (isNull _o) exitWith { false };
+        // read from the cache the half-second loop keeps, as this runs every frame; a FOB the cache
+        // doesn't hold still shows the action, and the server says why it can't
+        private _fid = _o getVariable ["ALiVE_FOB_object", ""];
+        if (_fid != "") exitWith { ALiVE_FOB_mayAt getOrDefault [_fid, true] };
+        ALiVE_FOB_buildFob isNotEqualTo [] && {_o isKindOf "StaticWeapon" || {_o isKindOf "LandVehicle"} || {_o isKindOf "Ship"}}
+            && {ALiVE_FOB_mayAt getOrDefault [ALiVE_FOB_buildFob select 0, true]}
     };
 
     // The same actions in the ACE interaction menu: a Player FOBs entry in the self-interaction
@@ -178,13 +191,16 @@ switch (_op) do {
 
     // The window filled from the FOB list: when it opens, and each time the server sends the list
     case "manageRefresh": {
+        ["permFill"] call ALiVE_fnc_fobActions;
         private _d = findDisplay 9283;
         if (isNull _d) exitWith {};
         private _id = uiNamespace getVariable ["ALiVE_FOB_manageId", ""];
         private _row = ((missionNamespace getVariable ["ALiVE_FOB_registryMirror", []]) select { (_x select 0) == _id }) param [0, []];
         // dismantled, lost or taken while the window was open
         if (_row isEqualTo [] || {(_row select 1) != str (side group player)}) exitWith { closeDialog 0 };
-        _row params ["", "", "_name", "", "_status", "_tier", "_supply", "_cap"];
+        _row params ["", "", "_name", "", "_status", "_tier", "_supply", "_cap", "", ["_deployer", ""]];
+        private _logic = missionNamespace getVariable ["ALiVE_sup_fob", objNull];
+        private _may = [_logic, "mayManage", [player, _deployer]] call ALiVE_fnc_FOB;
         private _supplyText = if (_supply < 0) then { localize "STR_ALIVE_FOB_SUPPLY_FREE" } else { if (_cap < 0) then { format [localize "STR_ALIVE_FOB_SUPPLY_POOL", round _supply] } else { format ["%1 / %2", round _supply, round _cap] } };
         (_d displayCtrl 92840) ctrlSetText _name;
         (_d displayCtrl 92841) ctrlSetStructuredText parseText format [localize "STR_ALIVE_FOB_STATUS", _name, localize (format ["STR_ALIVE_FOB_STATE_%1", toUpper _status]), _tier, _supplyText];
@@ -198,8 +214,13 @@ switch (_op) do {
         _up ctrlEnable (_status == "active" && {_tier < 3});
         (_d displayCtrl 92844) ctrlEnable (_status == "active");
         (_d displayCtrl 92846) ctrlEnable (_status == "damaged");
-        // a damaged FOB is repaired or lost, not packed up
-        (_d displayCtrl 92847) ctrlEnable (_status != "damaged");
+        // a damaged FOB is repaired or lost, not packed up; and only who Who Can Dismantle lets in
+        (_d displayCtrl 92847) ctrlEnable (_may && {_status != "damaged"});
+        { (_d displayCtrl _x) ctrlEnable _may } forEach [92842, 92843];
+        (_d displayCtrl 92843) ctrlSetTooltip (["", localize "STR_ALIVE_FOB_REFUSED_NOTALLOWED"] select !_may);
+        (_d displayCtrl 92847) ctrlSetTooltip (["", localize "STR_ALIVE_FOB_REFUSED_NOTALLOWED"] select !_may);
+        // admins get the Permissions button, which opens the Permissions window
+        (_d displayCtrl 92860) ctrlShow ([_logic, "isAdmin", [player]] call ALiVE_fnc_FOB);
     };
 
     // A button on the window. The server checks everything again and its answer shows on the
@@ -232,6 +253,57 @@ switch (_op) do {
                 };
             };
         };
+    };
+
+    // The Permissions window (data\ui\fobManage.hpp), for admins: Who Can Dismantle and its list
+    // for every FOB, sent to the server with Apply. Opened from the FOB window or the ALiVE admin
+    // menu, wherever the admin is. The server checks the sender is an admin.
+    case "permOpen": {
+        if !([missionNamespace getVariable ["ALiVE_sup_fob", objNull], "isAdmin", [player]] call ALiVE_fnc_FOB) exitWith {};
+        closeDialog 0;
+        [] spawn {
+            uiSleep 0.1;
+            if (!createDialog "ALiVE_FobPermWindow") exitWith {};
+            ALiVE_FOB_permDraft = nil;
+            ["permFill"] call ALiVE_fnc_fobActions;
+        };
+    };
+
+    case "permFill": {
+        private _d = findDisplay 9285;
+        if (isNull _d) exitWith {};
+        if (isNil "ALiVE_FOB_permDraft") then {
+            ([missionNamespace getVariable ["ALiVE_sup_fob", objNull], "manageRules"] call ALiVE_fnc_FOB) params ["_rules", "_names"];
+            ALiVE_FOB_permDraft = [(toUpper _rules) splitString "[]""', ", _names];
+            (_d displayCtrl 92857) ctrlSetText _names;
+        };
+        private _ticked = ALiVE_FOB_permDraft select 0;
+        {
+            _x params ["_idc", "_token", "_key"];
+            private _b = _d displayCtrl _idc;
+            _b ctrlSetText format ["%1  %2", ["[  ]", "[+]"] select (_token in _ticked), localize _key];
+            _b ctrlSetTooltip localize (_key + "_COMMENT");
+        } forEach [
+            [92853, "SIDE", "STR_ALIVE_FOB_MANAGE_SIDE"],
+            [92854, "LEADER", "STR_ALIVE_FOB_MANAGE_LEADER"],
+            [92855, "DEPLOYER", "STR_ALIVE_FOB_MANAGE_DEPLOYER"],
+            [92856, "LIST", "STR_ALIVE_FOB_MANAGE_LIST"]
+        ];
+    };
+
+    case "permToggle": {
+        if (isNil "ALiVE_FOB_permDraft") exitWith {};
+        private _token = _this param [1, ""];
+        private _ticked = ALiVE_FOB_permDraft select 0;
+        if (_token in _ticked) then { _ticked deleteAt (_ticked find _token) } else { _ticked pushBack _token };
+        ["permFill"] call ALiVE_fnc_fobActions;
+    };
+
+    // the server's answer comes back as the usual message
+    case "permApply": {
+        private _d = findDisplay 9285;
+        if (isNull _d || {isNil "ALiVE_FOB_permDraft"}) exitWith {};
+        ["permissions", [(ALiVE_FOB_permDraft select 0) joinString ",", ctrlText (_d displayCtrl 92857)]] remoteExecCall ["ALiVE_fnc_fobRequest", 2];
     };
 
     case "manageClosed": {

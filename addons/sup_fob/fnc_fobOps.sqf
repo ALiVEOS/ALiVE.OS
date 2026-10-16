@@ -21,6 +21,9 @@ what was left of its supply in a crate.
 build puts up an item from the build catalog within the FOB's build range, paid for from the
 FOB's supply at the catalog's price; recycle takes one down again for half of what was paid.
 
+Dismantle, recycle and rename also need the module's Who Can Dismantle to let the player in
+(ALiVE_fnc_FOB "mayManage"); an admin can change it in game with permissions.
+
 Parameters:
 String - The operation
 Array - Its arguments
@@ -36,6 +39,7 @@ unload - [crate, fobID] -> true when a supply crate went into the FOB
 upgrade - [fobID] -> true when the FOB went up a tier and was paid for
 respawn - [fobID] -> whether the FOB now has a respawn point (active, at or above the Respawn Point tier)
 rename - [fobID, name] -> true when the FOB took the new name
+permissions - [rules, list] -> true when an admin changed Who Can Dismantle and its list
 fieldHQ - [object, "KIT" or "CRATE"] -> the FOB kit or supply crate handed out, or false
 repair - [fobID] -> true when a destroyed headquarters was rebuilt and paid for
 repairCost - [fobID] -> the supply a repair costs now
@@ -88,6 +92,12 @@ private _tagOf = {
     private _t = ALiVE_FOB_tagged get (netId _o);
     if (isNil "_t" || {(_t select 0) != _kind}) exitWith { nil };
     _t select 1
+};
+
+// Who Can Dismantle: whether the caller may take this FOB down, recycle at it or rename it
+private _mayManage = {
+    params ["_entry"];
+    [_logic, "mayManage", [_caller, [_entry, "deployedBy", ""] call ALIVE_fnc_hashGet]] call ALiVE_fnc_FOB
 };
 
 switch (_op) do {
@@ -157,6 +167,7 @@ switch (_op) do {
 
         private _id = [_logic, "nextID", [_side]] call ALiVE_fnc_FOB;
         private _entry = [_logic, "newEntry", [_id, _side, faction _caller, _pos, _dir]] call ALiVE_fnc_FOB;
+        [_entry, "deployedBy", getPlayerUID _caller] call ALIVE_fnc_hashSet;
         [_logic, "registrySet", [_id, _entry]] call ALiVE_fnc_FOB;
 
         private _hub = ["spawnHub", [_id]] call ALiVE_fnc_fobOps;
@@ -186,6 +197,7 @@ switch (_op) do {
         if (([_entry, "side", ""] call ALIVE_fnc_hashGet) != str (side group _caller)) exitWith { ["STR_ALIVE_FOB_REFUSED_NOTOURS"] call _tell };
         if (_caller distance2D ([_entry, "pos", [0,0,0]] call ALIVE_fnc_hashGet) > 25) exitWith { ["STR_ALIVE_FOB_REFUSED_RANGE", [25]] call _tell };
         if (([_entry, "status", ""] call ALIVE_fnc_hashGet) == "damaged") exitWith { ["STR_ALIVE_FOB_REFUSED_DAMAGED"] call _tell };
+        if !([_entry] call _mayManage) exitWith { ["STR_ALIVE_FOB_REFUSED_NOTALLOWED"] call _tell };
 
         private _name = [_entry, "name", ""] call ALIVE_fnc_hashGet;
         // packed up, not lost: the kit comes back where the headquarters stood and, in FOB supply
@@ -492,6 +504,7 @@ switch (_op) do {
         if (_staticAt > -1) exitWith {
             if (([_entry, "side", ""] call ALIVE_fnc_hashGet) != str (side group _caller)) exitWith { ["STR_ALIVE_FOB_REFUSED_NOTOURS"] call _tell };
             if (_caller distance _o > 8) exitWith { ["STR_ALIVE_FOB_REFUSED_RANGE", [8]] call _tell };
+            if !([_entry] call _mayManage) exitWith { ["STR_ALIVE_FOB_REFUSED_NOTALLOWED"] call _tell };
             private _objects = [_entry, "objects", []] call ALIVE_fnc_hashGet;
             (_objects select _staticAt) params ["", "_class", ["_cost", 0], "_vid", "_eid"];
             ["removeStatic", [_vid, _eid]] call ALiVE_fnc_fobOps;
@@ -505,6 +518,7 @@ switch (_op) do {
         };
         if (([_entry, "side", ""] call ALIVE_fnc_hashGet) != str (side group _caller)) exitWith { ["STR_ALIVE_FOB_REFUSED_NOTOURS"] call _tell };
         if (_caller distance _o > 8) exitWith { ["STR_ALIVE_FOB_REFUSED_RANGE", [8]] call _tell };
+        if !([_entry] call _mayManage) exitWith { ["STR_ALIVE_FOB_REFUSED_NOTALLOWED"] call _tell };
         private _objects = [_entry, "objects", []] call ALIVE_fnc_hashGet;
         private _i = _objects findIf { (_x param [0, objNull]) isEqualTo _o };
         if (_i < 0) exitWith { ["STR_ALIVE_FOB_REFUSED_NOTBUILT"] call _tell };
@@ -607,6 +621,9 @@ switch (_op) do {
             [_entry, "captureSide", ""] call ALIVE_fnc_hashSet;
             [_entry, "captureRemaining", 0] call ALIVE_fnc_hashSet;
             [_entry, "discoveredBy", []] call ALIVE_fnc_hashSet;
+            // taken, so its deployer is on the other side now: Who Can Dismantle's The Player Who
+            // Deployed It falls back to group leaders for it
+            [_entry, "deployedBy", ""] call ALIVE_fnc_hashSet;
             private _objects = [_entry, "objects", []] call ALIVE_fnc_hashGet;
             {
                 if ((_x param [0, ""]) isEqualTo "static" && {!isNil "ALIVE_profileStationary"}) then {
@@ -714,6 +731,7 @@ switch (_op) do {
         if (isNil "_entry" || {isNull _caller}) exitWith {};
         if (([_entry, "side", ""] call ALIVE_fnc_hashGet) != str (side group _caller)) exitWith { ["STR_ALIVE_FOB_REFUSED_NOTOURS"] call _tell };
         if (_caller distance2D ([_entry, "pos", [0,0,0]] call ALIVE_fnc_hashGet) > 25) exitWith { ["STR_ALIVE_FOB_REFUSED_RANGE", [25]] call _tell };
+        if !([_entry] call _mayManage) exitWith { ["STR_ALIVE_FOB_REFUSED_NOTALLOWED"] call _tell };
         _new = trim toString ((toArray _new) select { _x >= 32 && {!(_x in [38, 60, 62])} });
         _new = trim toString ((toArray _new) select [0, 32]);
         if (_new == "") exitWith { ["STR_ALIVE_FOB_REFUSED_NAME", [32]] call _tell };
@@ -731,6 +749,21 @@ switch (_op) do {
         ["save", [true]] call ALiVE_fnc_fobPersistence;
         ["STR_ALIVE_FOB_RENAMED", [_old, _new]] call _tell;
         ["ALiVE Player FOBs - %1 renamed %2 from %3 to %4", name _caller, _id, _old, _new] call ALiVE_fnc_dump;
+        _result = true;
+    };
+
+    // An admin changes Who Can Dismantle and its list in game, from the Permissions window. It
+    // holds for every FOB until the mission restarts, when the module's settings apply again.
+    case "permissions": {
+        _result = false;
+        _args params [["_rules", "", [""]], ["_names", "", [""]]];
+        if (isNull _caller || {!([_logic, "isAdmin", [_caller]] call ALiVE_fnc_FOB)}) exitWith { ["STR_ALIVE_FOB_REFUSED_ADMIN"] call _tell };
+        _rules = (((toUpper _rules) splitString "[]""', ") select { _x in ["SIDE", "LEADER", "DEPLOYER", "LIST"] }) joinString ",";
+        _names = toString (((toArray _names) select { _x >= 32 && {!(_x in [34, 38, 39, 60, 62])} }) select [0, 2000]);
+        _logic setVariable ["ALiVE_FOB_perm", [_rules, _names], true];
+        [_logic, "broadcastMirror"] call ALiVE_fnc_FOB;
+        ["STR_ALIVE_FOB_PERMISSIONS_SET"] call _tell;
+        ["ALiVE Player FOBs - %1 set who can take FOBs down to [%2], list [%3]", name _caller, _rules, _names] call ALiVE_fnc_dump;
         _result = true;
     };
 
