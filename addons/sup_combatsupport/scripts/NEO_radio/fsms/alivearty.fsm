@@ -847,7 +847,9 @@ class FSM
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
                                         condition=/*%FSM<CONDITION""">*/"true" \n
                                          ""/*%FSM</CONDITION""">*/;
-                                        action=/*%FSM<ACTION""">*/"[(_units select 0), _callsignPlayer, _callsign] spawn" \n
+                                        action=/*%FSM<ACTION""">*/"// a battery that may not move is free again at once: the tablet marked it on a fire mission when Confirm was pressed" \n
+                                         "_battery setVariable [""NEO_radioArtyUnitStatus"", ""NONE"", true];" \n
+                                         "[(_units select 0), _callsignPlayer, _callsign] spawn" \n
                                          "{" \n
                                          "    private ""_msg"";" \n
                                          "    _msg = [""STR_ALIVE_CS_ARTY_MSG_11"", _this select 1, _this select 2];" \n
