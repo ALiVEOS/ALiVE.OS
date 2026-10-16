@@ -669,7 +669,13 @@
     <English>Recruiter HVT Task Chance</English>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_RECRUITER_TASK_CHANCE_COMMENT">
-    <English>Insurgency commander only. Chance, 0 to 100, that a new Recruitment HQ gives every hostile side with players a task to kill the recruiter there. Needs a C2ISTAR module. 0 turns it off.</English>
+    <English>Insurgency commander only. Chance, 0 to 100, that a new Recruitment HQ gives every hostile side with players a task to kill the recruiter there. Each side has one such task open at a time; the next HQ's task follows once it is done or failed. Needs a C2ISTAR module. 0 turns it off.</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_RECRUITERS">
+    <English>Recruiters</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_RECRUITERS_COMMENT">
+    <English>Insurgency commander only. A recruiter stands in each Recruitment HQ while players are within 800 m. Kill him and that town skips its next recruitment, and a new recruiter turns up after one Recruit Cycle Max. Killing the target of a recruiter HVT task does the same.</English>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_PREPARED_DEFENCES">
     <English>Prepared Defences</English>

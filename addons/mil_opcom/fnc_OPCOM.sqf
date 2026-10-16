@@ -160,6 +160,8 @@ switch (_operation) do {
         private _recruitSuccessChance = ((parseNumber format ["%1", _logic getvariable ["recruitSuccessChance",50]]) max 0) min 100;
         // Chance a new Recruitment HQ raises a task to kill its recruiter (#426).
         private _recruiterTaskChance = ((parseNumber format ["%1", _logic getvariable ["recruiterTaskChance",0]]) max 0) min 100;
+        // Recruiters: a recruiter in each Recruitment HQ, and killing him stops that town recruiting for a while.
+        private _recruiters = (toLower format ["%1", _logic getvariable ["recruiters", "false"]]) in ["true", "1"];
         // Frontline Minefields (#979): none, few or many.
         private _frontlineMinefields = toLower format ["%1", _logic getvariable ["frontlineMinefields","none"]];
         // Prepared Defences (#233): none, few or many.
@@ -337,6 +339,7 @@ switch (_operation) do {
             ["recruitAttemptLimit", _recruitAttemptLimit],
             ["recruitSuccessChance", _recruitSuccessChance],
             ["recruiterTaskChance", _recruiterTaskChance],
+            ["recruiters", _recruiters],
             ["frontlineMinefields", _frontlineMinefields],
             ["preparedDefences", _preparedDefences],
             ["hostilityPresenceMultiplier", _hostilityPresenceMultiplier],

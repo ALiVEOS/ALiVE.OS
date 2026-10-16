@@ -1578,6 +1578,11 @@ ALiVE_fnc_INS_recruit = {
                     // Set HQ
                     [_objective,"HQ",[[],"convertObject",_HQ] call ALiVE_fnc_OPCOM] call ALiVE_fnc_HashSet;
 
+                    // Recruiters: one stands in the HQ while players are near, and his death stops the town recruiting.
+                    if (!isNil "_opcom" && {[_opcom, "recruiters", false] call ALiVE_fnc_HashGet}) then {
+                        [_HQ, _faction, _pos, _recruitCycleMax max 600] spawn ALiVE_fnc_INS_recruiterPresence;
+                    };
+
                     // A recruiter worth killing (#426): with the commander's Recruiter HVT Task
                     // Chance, every hostile side with players is given an Assassination task at the
                     // new Recruitment HQ, through the same direct channel the convoy tasks use. Once per town.
@@ -1619,6 +1624,9 @@ ALiVE_fnc_INS_recruit = {
                                         private _tEvent = ["TASK_GENERATE", _taskData, "OPCOM"] call ALIVE_fnc_event;
                                         [ALIVE_eventLog, "addEvent", _tEvent] call ALIVE_fnc_eventLog;
                                         ["ALiVE OPCOM: recruiter task raised for %1 at the Recruitment HQ near %2", _hSideText, mapGridPosition _HQ] call ALiVE_fnc_dump;
+                                        private _tasks = _HQ getVariable ["ALiVE_INS_recruiterTasks", []];
+                                        _tasks pushBack [_recruiterTaskId, time];
+                                        _HQ setVariable ["ALiVE_INS_recruiterTasks", _tasks];
                                         _waiting = _waiting - [_hSideText];
                                     };
                                 } forEach +_waiting;
@@ -1697,6 +1705,12 @@ ALiVE_fnc_INS_recruit = {
 
                         // Only recruit while the HQ still exists.
                         if (!alive _HQ || {_HQ getVariable ["ALiVE_MIL_OPCOM_HQ_DISABLED", false]} || {(_HQ getVariable ["ALiVE_MIL_OPCOM_HQ_RECRUITLOOP", _loopToken]) != _loopToken}) exitwith {};
+
+                        // Its recruiter was killed since the last attempt (Recruiters): this attempt doesn't happen.
+                        if (_HQ getVariable ["ALiVE_INS_recruitSkipNext", false]) then {
+                            _HQ setVariable ["ALiVE_INS_recruitSkipNext", false];
+                            continue
+                        };
 
                         // Positive values are finite attempt counts, negative values are unlimited.
                         if (_attemptsRemaining > 0) then {
@@ -1801,6 +1815,7 @@ ALiVE_fnc_INS_recruit = {
                             };
                         };
                     };
+                    _HQ setVariable ["ALiVE_INS_recruitLoopEnded", _loopToken];
                 };
 
                 _event = ['OPCOM_RESERVE',[_side,_objective],"OPCOM"] call ALIVE_fnc_event;
@@ -2482,6 +2497,98 @@ ALiVE_fnc_INS_spawnIEDfactory = {
         "%1 disabled the " + _name + " at grid %2!",
         _duration
     ] call ALiVE_fnc_INS_addInstallationHoldActions;
+};
+
+// A recruiter stands in a Recruitment HQ while a player is within 800 m (the commander's Recruiters
+// setting), and goes when none is within 1200 m. Killed, he costs the town its next recruitment attempt,
+// and a new one turns up after _pause seconds. While a recruiter HVT task from this HQ is open its target
+// is the recruiter, and that task succeeding counts as his death. Runs as long as the town's recruiting
+// does. [HQ building, faction, position, pause]
+ALiVE_fnc_INS_recruiterPresence = {
+    params ["_HQ", "_faction", "_pos", "_pause"];
+    private _classes = [[_faction], 1, missionNamespace getVariable ["ALiVE_MIL_CQB_UNITBLACKLIST", []]] call ALiVE_fnc_taskGetHVTUnits;
+    if (_classes isEqualTo []) exitWith {};
+    private _class = _classes select 0;
+    private _sideObj = _faction call ALiVE_fnc_factionSide;
+    if (_sideObj isEqualType "") then { _sideObj = [_sideObj] call ALiVE_fnc_sideTextToObject };
+    // the recruiting loop this recruiter belongs to: it starts just after this, and a newer one taking
+    // the building, or this one finishing, ends the recruiter too
+    private _t = time;
+    waitUntil { sleep 1; !isNil {_HQ getVariable "ALiVE_MIL_OPCOM_HQ_RECRUITLOOP"} || {time - _t > 60} };
+    private _token = _HQ getVariable ["ALiVE_MIL_OPCOM_HQ_RECRUITLOOP", -1];
+    private _unit = objNull;
+    private _players = { (allPlayers - entities "HeadlessClient_F") findIf { _x distance _HQ < _this } > -1 };
+    while {
+        alive _HQ && {!(_HQ getVariable ["ALiVE_MIL_OPCOM_HQ_DISABLED", false])}
+        && {(_HQ getVariable ["ALiVE_MIL_OPCOM_HQ_RECRUITLOOP", -1]) == _token}
+        && {(_HQ getVariable ["ALiVE_INS_recruitLoopEnded", -2]) != _token}
+    } do {
+        // recruiter HVT tasks from this HQ, one per hostile side: while one is open its target is the recruiter
+        private _taskOpen = false;
+        private _tasks = (_HQ getVariable ["ALiVE_INS_recruiterTasks", []]) select {
+            _x params ["_id", "_raisedAt"];
+            private _hvtStep = if (isNil "ALIVE_taskHandler") then {nil} else {[ALIVE_taskHandler, "getTask", _id + "_c1"] call ALIVE_fnc_taskHandler};
+            private _doneKey = format ["ALiVE_taskSucceeded_%1", _id + "_c1"];
+            if (missionNamespace getVariable [_doneKey, false]) then {
+                // the HVT killed: the task is taken down as it succeeds, so this is how it is seen
+                missionNamespace setVariable [_doneKey, nil];
+                _hvtStep = nil;
+                _HQ setVariable ["ALiVE_INS_recruitSkipNext", true];
+                _HQ setVariable ["ALiVE_INS_recruiterBackAt", time + _pause];
+                ["ALiVE OPCOM: the recruiter at the Recruitment HQ near %1 was killed in a task; that town skips its next recruitment", mapGridPosition _HQ] call ALiVE_fnc_dump;
+                _raisedAt = -1e6;
+            };
+            if (isNil "_hvtStep") then {
+                // not handed over yet, or gone: kept for three minutes, as a new task takes a while to register
+                (time - _raisedAt) < 180
+            } else {
+                private _state = _hvtStep select 8;
+                if (_state == "Succeeded") then {
+                    _HQ setVariable ["ALiVE_INS_recruitSkipNext", true];
+                    _HQ setVariable ["ALiVE_INS_recruiterBackAt", time + _pause];
+                    ["ALiVE OPCOM: the recruiter at the Recruitment HQ near %1 was killed in a task; that town skips its next recruitment", mapGridPosition _HQ] call ALiVE_fnc_dump;
+                };
+                private _open = !(_state in ["Succeeded", "Failed", "Canceled"]);
+                if (_open) then { _taskOpen = true };
+                _open
+            };
+        };
+        _HQ setVariable ["ALiVE_INS_recruiterTasks", _tasks];
+        if (!isNull _unit && {!alive _unit}) then { _unit = objNull };
+        if (isNull _unit) then {
+            if (!_taskOpen && {time >= (_HQ getVariable ["ALiVE_INS_recruiterBackAt", 0])} && {800 call _players}) then {
+                private _grp = createGroup [_sideObj, true];
+                _unit = _grp createUnit [_class, _pos, [], 0, "CAN_COLLIDE"];
+                _unit setPosATL _pos;
+                _unit disableAI "PATH";
+                _unit setUnitPos "UP";
+                _unit setVariable ["ALIVE_profileIgnore", true, true];
+                _grp setVariable ["ALIVE_profileIgnore", true];
+                _unit setVariable ["ALiVE_INS_recruiterOf", [_HQ, _pause]];
+                // counted the moment he dies, wherever he is local, so a body cleaned up before the next
+                // look still counts
+                _unit addMPEventHandler ["MPKilled", {
+                    if (!isServer) exitWith {};
+                    ((_this select 0) getVariable ["ALiVE_INS_recruiterOf", [objNull, 0]]) params ["_hq", "_pause"];
+                    if (isNull _hq) exitWith {};
+                    _hq setVariable ["ALiVE_INS_recruitSkipNext", true];
+                    _hq setVariable ["ALiVE_INS_recruiterBackAt", time + _pause];
+                    ["ALiVE OPCOM: the recruiter at the Recruitment HQ near %1 was killed; that town skips its next recruitment", mapGridPosition _hq] call ALiVE_fnc_dump;
+                }];
+                ["ALiVE OPCOM: a recruiter (%1) is in the Recruitment HQ near %2", _class, mapGridPosition _HQ] call ALiVE_fnc_dump;
+            };
+        } else {
+            // he goes when no one is near; when a task opens he waits until no player can see him go
+            if ((_taskOpen && {!(300 call _players)}) || {!(1200 call _players)}) then {
+                private _grp = group _unit;
+                deleteVehicle _unit;
+                deleteGroup _grp;
+                _unit = objNull;
+            };
+        };
+        sleep 10;
+    };
+    if (!isNull _unit && {alive _unit}) then { private _grp = group _unit; deleteVehicle _unit; deleteGroup _grp };
 };
 
 ALiVE_fnc_INS_spawnHQ = {

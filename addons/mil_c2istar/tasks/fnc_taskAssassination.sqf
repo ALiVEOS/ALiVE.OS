@@ -611,6 +611,10 @@ switch (_taskState) do {
 
                 [_params,"nextTask",""] call ALIVE_fnc_hashSet;
 
+                // the task is taken down in the same pass, so whoever raised it (the Insurgency commander's
+                // recruiters) reads the success from here
+                missionNamespace setVariable [format ["ALiVE_taskSucceeded_%1", _taskID], true];
+
                 _task set [8,"Succeeded"];
                 _task set [10, "N"];
                 _result = _task;
