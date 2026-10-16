@@ -91,6 +91,13 @@ switch (_taskState) do {
             if (count _targetVehicles > 0) then { ["claim", _targetVehicles select 0] call ALIVE_fnc_taskTargetClaim };
         };
 
+        // An aircraft whose profile has gone since it was chosen (shot down, or landed and taken out of the
+        // simulator) can't be described or tracked: no task, rather than one whose radio call reads
+        // "Intercept  over . BRAA scalar NaN degrees" (A. Ares on Discord, 16 Oct).
+        if (count _targetVehicles > 0 && {isNil {[ALIVE_profileHandler, "getProfile", _targetVehicles select 0] call ALIVE_fnc_profileHandler}}) then {
+            _targetVehicles = [];
+        };
+
         if(count _targetVehicles > 0) then {
 
             private["_targetVehicle","_vehicleProfile","_vehiclePosition","_vehicleType","_vehicleName"];
@@ -125,8 +132,11 @@ switch (_taskState) do {
                 _player = [_player] call ALIVE_fnc_getPlayerByUID;
             };
 
-            private _bearing = round(_player getRelDir _vehiclePosition);
-            private _range = round((_vehiclePosition distance _player) / 1000);
+            // BRAA is a compass bearing from the player (getRelDir gave it relative to the way they faced); from
+            // the task's position when no player object is to hand
+            private _from = if (isNull _player) then {_taskLocation} else {getPosATL _player};
+            private _bearing = round(_from getDir _vehiclePosition);
+            private _range = round((_vehiclePosition distance2D _from) / 1000);
             private _height = ceil(((ATLtoASL _vehiclePosition) select 2) / 1000);
 
             _dialog = [_dialogOption,"Parent"] call ALIVE_fnc_hashGet;
