@@ -22,7 +22,8 @@ Parameters:
 2: ARRAY  - extra tokens always accepted (e.g. ["ALIVE_Tablet"]), [] for none
 
 Returns:
-BOOL - true when the player carries at least one matching item
+BOOL - true when the player carries at least one matching item, or stands at a command post
+(an object with ALiVE_accessPoint set: true for 10 m, or a radius in metres)
 
 Examples:
 (begin example)
@@ -33,6 +34,17 @@ Author: Jman
 ---------------------------------------------------------------------------- */
 
 params [["_itemsCsv", "", [""]], ["_customCsv", "", [""]], ["_extraTokens", [], [[]]]];
+
+// A command post: standing near an object the mission marked as one counts as carrying the items, so
+// commanding can be done from an HQ map board rather than a carried tablet (AshTray on Discord, 16 Oct).
+// Mark it in its init with  this setVariable ["ALiVE_accessPoint", true, true];  for 10 m, or a number
+// for that many metres. For HQ-only commanding, set the access items to something players don't carry.
+private _post = (player nearObjects 50) findIf {
+    private _r = _x getVariable ["ALiVE_accessPoint", false];
+    if (_r isEqualType true) then { _r = [0, 10] select _r };
+    _r isEqualType 0 && {_r > 0} && {(player distance _x) <= _r}
+};
+if (_post > -1) exitWith { true };
 
 private _tokens = _itemsCsv call ALiVE_fnc_stringListToArray;
 { _tokens pushBack _x } forEach _extraTokens;
