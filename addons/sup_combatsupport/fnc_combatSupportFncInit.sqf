@@ -100,7 +100,7 @@ NEO_fnc_casHoldWhenParked = {
                     _veh setFuel 0;
                 };
             } else {
-                if (isTouchingGround _veh && {((getPosATL _veh) select 2) < 2} && {isEngineOn _veh || {(abs speed _veh) > 2}}) then {
+                if (isTouchingGround _veh && {((getPos _veh) select 2) < 2} && {isEngineOn _veh || {(abs speed _veh) > 2}}) then {
                     _veh setVariable ["NEO_casHeldFuel", fuel _veh, true];
                     _veh allowCrewInImmobile true;
                     _veh setFuel 0;

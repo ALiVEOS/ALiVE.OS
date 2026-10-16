@@ -1394,7 +1394,7 @@ class FSM
                                         to="__3";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
                                         condition=/*%FSM<CONDITION""">*/"// Landed and waiting at starting position" \n
-                                         "(((getposATL _veh) select 2) < 1 && {_veh distance _base < 20}) || {_veh getVariable [""ALIVE_cas_parked"", false]};"/*%FSM</CONDITION""">*/;
+                                         "(((getPos _veh) select 2) < 1 && {_veh distance _base < 20}) || {_veh getVariable [""ALIVE_cas_parked"", false]};"/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/

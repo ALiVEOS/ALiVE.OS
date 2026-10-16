@@ -46,7 +46,7 @@ _supportMarker setMarkerAlphaLocal 0;
 [[], 0] call NEO_fnc_supportDrawRing; // clear any ring from the previous asset/target
 
 //Base Button
-if (_status == "RTB" || _status == "NONE" || _status == "KILLED" || getPosATL _veh select 2 < 10) then
+if (_status == "RTB" || _status == "NONE" || _status == "KILLED" || getPos _veh select 2 < 10) then
 {
     _casBaseButton ctrlEnable false;
 }

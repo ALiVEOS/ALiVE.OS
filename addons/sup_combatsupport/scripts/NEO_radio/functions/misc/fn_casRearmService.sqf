@@ -53,14 +53,14 @@ private _t0 = time;
 private _parked = false;
 private _heldDown = false;
 while {alive _veh && {!_parked} && {!(call _fnc_retasked)} && {time - _t0 < 300}} do {
-    if (((getPosATL _veh) select 2) < 1 && {(abs speed _veh) < 2}) then {
+    if (((getPos _veh) select 2) < 1 && {(abs speed _veh) < 2}) then {
         _parked = true;
     } else {
         // A plane down on the runway is held there. Its group still had a move order to its stand and the AI flew
         // there rather than taxi, so a jet that had just landed went straight back up and circled. Once its rollout
         // is under 60 km/h its own spot becomes the order, the pilot stops and the engine goes off, so it rolls to a
         // halt and is then moved off the runway below; the next task restarts it.
-        if (!_isHeli && {!_heldDown} && {((getPosATL _veh) select 2) < 1} && {isTouchingGround _veh}
+        if (!_isHeli && {!_heldDown} && {((getPos _veh) select 2) < 1} && {isTouchingGround _veh}
             && {(abs speed _veh) < 60} && {!(call _fnc_retasked)}) then {
             _heldDown = true;
             [group _veh, 0] setWaypointPosition [getPosATL _veh, 0];
