@@ -104,7 +104,17 @@ if (_airCapable) exitWith {
 // unarmed hull with a high-elevation mount out of the result.
 private _maxElev = getNumber (configFile >> "CfgVehicles" >> _class >> "Turrets" >> "MainTurret" >> "maxElev");
 private _isArtillery = getNumber (configFile >> "CfgVehicles" >> _class >> "artilleryScanner") > 0;
-private _result = (_maxElev > 65) && {!_isArtillery};
+// The elevation test is for gun air defence (an autocannon's rounds don't lock on, so the ammo test above
+// misses it). A missile launcher whose missiles failed that test is AT, however high it aims: static AT
+// launchers (Titan AT, Mini-Spike, AT-3) point near straight up and were all called air defence, so each
+// one became an air defence task (A. Ares on Discord, 16 Oct). Only a vehicle with a gun counts here.
+// (not the engine's FakeAmmo: every static launcher carries that dummy, and it is a bullet with hit 13)
+private _hasGun = (_magazines findIf {
+    private _ammo = getText (configFile >> "CfgMagazines" >> _x >> "ammo");
+    !(_ammo isKindOf ["FakeAmmo", configFile >> "CfgAmmo"])
+    && {(getText (configFile >> "CfgAmmo" >> _ammo >> "simulation")) in ["shotBullet", "shotShell", "shotSpread"]}
+}) > -1;
+private _result = (_maxElev > 65) && {!_isArtillery} && {_hasGun};
 
 ALIVE_isAntiAirCapableCache set [_class, _result];
 
