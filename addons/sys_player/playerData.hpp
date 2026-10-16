@@ -257,7 +257,18 @@ GVAR(HEALTH_DATA) = [
     ["legs",{(_this select 0) getVariable ["legs",0];}, {(_this select 0) setVariable ["legs",(_this select 1),true];}],
     ["fatigue",{ getFatigue (_this select 0);}, {(_this select 0) setFatigue (_this select 1);}],
     ["bleeding",{ getBleedingRemaining (_this select 0);}, {(_this select 0) setBleedingRemaining (_this select 1);}],
-    ["oxygen",{ getOxygenRemaining (_this select 0);}, {(_this select 0) setOxygenRemaining (_this select 1);}]
+    ["oxygen",{ getOxygenRemaining (_this select 0);}, {(_this select 0) setOxygenRemaining (_this select 1);}],
+    // ACE medical (wounds, bandages, stitches, fractures, blood, pain, medication, tourniquets), with ACE's own
+    // save and restore, so a player comes back as hurt as they left (AshTray on Discord, 16 Oct). Last in the
+    // list so it is applied after the plain damage above.
+    ["aceMedical",{
+        if (isNil "ace_medical_fnc_serializeState") then {""} else {[_this select 0] call ace_medical_fnc_serializeState};
+    }, {
+        private _state = _this select 1;
+        if (!isNil "ace_medical_fnc_deserializeState" && {_state isEqualType ""} && {_state != ""}) then {
+            [_this select 0, _state] call ace_medical_fnc_deserializeState;
+        };
+    }]
 ];
 
 GVAR(LOADOUT_DATA) = [
