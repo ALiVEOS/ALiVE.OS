@@ -2098,7 +2098,8 @@ switch (_operation) do {
                             if (isnil "_dominantFaction" || {!(([[_dominantFaction call ALiVE_fnc_factionSide] call ALiVE_fnc_SideObjectToNumber] call ALiVE_fnc_SideNumberToText) in _sidesEnemy)}) then {
                                 private _buildingTypes = [];
                                 private _roadTypes = [];
-                                private _availableBuildings = [_center,_size] call ALiVE_fnc_INS_filterObjectiveBuildings;
+                                // whether any building here can take one: the first suitable building is enough
+                                private _availableBuildings = [_center,_size,1] call ALiVE_fnc_INS_filterObjectiveBuildings;
                                 private _availableRoads = _center nearRoads _size;
 
                                 if (count _availableBuildings > 0) then {
@@ -2868,7 +2869,6 @@ switch (_operation) do {
         private _created = false;
 
         if (_installationType in ["HQ", "factory", "depot"]) then {
-            private _buildings = [_center, _size] call ALiVE_fnc_INS_filterObjectiveBuildings;
             private _locallyUsedBuildings = [];
             private _externallyUsedBuildings = [];
 
@@ -2891,31 +2891,21 @@ switch (_operation) do {
                 };
             } foreach ([_logic, "objectives", []] call ALiVE_fnc_HashGet);
 
-            private _candidateBuildings = [];
-            {
-                if !(_x in _externallyUsedBuildings) then {
-                    _candidateBuildings pushBack _x;
-                };
-            } foreach _buildings;
-
-            private _preferredBuildings = _candidateBuildings select {
-                !(_x in _locallyUsedBuildings)
-            };
-            private _selectionBuildings = if (count _preferredBuildings > 0) then {
-                _preferredBuildings
-            } else {
-                _candidateBuildings
-            };
-
-            if (_target isEqualType objNull && {!isNull _target} && {alive _target} && {_target in _candidateBuildings}) then {
+            // The nearest suitable building to the anchor that no objective uses; failing that, the nearest
+            // one only this objective uses. Found nearest first, stopping at the first that passes, rather than
+            // checking every building in the objective and sorting them (the same choice, far fewer checks).
+            if (_target isEqualType objNull && {!isNull _target} && {alive _target} && {!(_target in _externallyUsedBuildings)} && {[_target] call ALiVE_fnc_INS_buildingSuitable}) then {
                 _selectedTarget = _target;
             };
 
             if (isNull _selectedTarget) then {
-                private _sortedBuildings = [_selectionBuildings, [_anchorPos], {_Input0 distance2D _x}, "ASCEND"] call ALiVE_fnc_SortBy;
-                if (count _sortedBuildings > 0) then {
-                    if (_useClosestBuilding || {(_anchorPos distance2D (_sortedBuildings select 0)) <= 15}) then {
-                        _selectedTarget = _sortedBuildings select 0;
+                private _nearest = [_center, _size, 1, _anchorPos, _externallyUsedBuildings + _locallyUsedBuildings] call ALiVE_fnc_INS_filterObjectiveBuildings;
+                if (_nearest isEqualTo []) then {
+                    _nearest = [_center, _size, 1, _anchorPos, _externallyUsedBuildings] call ALiVE_fnc_INS_filterObjectiveBuildings;
+                };
+                if (_nearest isNotEqualTo []) then {
+                    if (_useClosestBuilding || {(_anchorPos distance2D (_nearest select 0)) <= 15}) then {
+                        _selectedTarget = _nearest select 0;
                     };
                 };
             };

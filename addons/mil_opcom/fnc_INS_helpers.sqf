@@ -2609,18 +2609,16 @@ ALiVE_fnc_INS_compileList = {
             _list;
 };
 
-ALiVE_fnc_INS_filterObjectiveBuildings = {
-
-    params ["_center","_size"];
-
-    private _buildings = [_center, _size] call ALiVE_fnc_getEnterableHouses;
-
-    //["Enterable buildings total: %1",_buildings] call ALiVE_fnc_DumpR;
-
-    {
-        private _h = _x;
+// Whether one building can carry an asymmetric installation: free, destructible, with indoor positions,
+// big enough and not a tower or other blacklisted kind. Split out of the filter below so a caller after
+// one building can stop at the first that passes (A. Ares on Discord, 16 Oct: on Normandy's 400-800 m
+// objectives checking every building took 0.5 to 4 s an objective, and an Asymmetric commander with
+// 176 objectives took 5 to 8 minutes to start).
+ALiVE_fnc_INS_buildingSuitable = {
+    params ["_h"];
+    private _ok = true;
+    scopeName "suitable";
         private _type = typeOf _h;
-        private _index = _foreachIndex;
         private _blacklist = ["tower","cage","platform","trench","bridge"];
 
         //["Building selected: %1 | %2",typeOf _h, _h] call ALiVE_fnc_DumpR;
@@ -2636,8 +2634,7 @@ ALiVE_fnc_INS_filterObjectiveBuildings = {
         // Checked first because it is the cheapest test here, and because a building that is
         // already taken should not cost an indoor-position sweep to reject.
         if !(([_h] call ALiVE_fnc_INS_getBuildingInstallations) isEqualTo []) then {
-            _buildings set [_index,objNull];
-            continue
+            false breakOut "suitable"
         };
 
         // A building players cannot bring down is no place for an installation: the way to end
@@ -2646,15 +2643,14 @@ ALiVE_fnc_INS_filterObjectiveBuildings = {
         // for good. Measured on Malden: 114 of 2,534 enterable buildings, and 5 demolition charges
         // left one at damage 0 while the destructible ones beside it went down.
         if ((getText (configOf _h >> "destrType")) == "DestructNo" || {!isDamageAllowed _h}) then {
-            _buildings set [_index,objNull];
-            continue
+            false breakOut "suitable"
         };
 
         private _buildingPositions = [getposATL _h,5] call ALIVE_fnc_findIndoorHousePositions;
         
         if (count _buildingPositions == 0) then {
             //["Deleted buildingtype %1! No indoor houseposition!",typeof _h] call ALiVE_fnc_DumpR;
-            _buildings set [_index,objNull];
+            _ok = false;
         } else {          
             private _dimensions = _h call BIS_fnc_boundingBoxDimensions;
 
@@ -2662,7 +2658,7 @@ ALiVE_fnc_INS_filterObjectiveBuildings = {
             if (((_dimensions select 0) + (_dimensions select 1)) < 10) then {
                 //["Deleted buildingtype %1! Building is too small!",typeof _h] call ALiVE_fnc_DumpR;
 
-                _buildings set [_index,objNull];
+                _ok = false;
             } else {
                 if (
                     //Building is double as high as broad and is very likely a tower, or contains a blacklisted class
@@ -2671,15 +2667,37 @@ ALiVE_fnc_INS_filterObjectiveBuildings = {
                     {{[_type , _x] call CBA_fnc_find != -1} count _blacklist > 0}
                 ) then {
                     //["Deleted buildingtype %1! Building is a tower or blacklisted!",typeof _h] call ALiVE_fnc_DumpR;
-                    _buildings set [_index,objNull];
+                    _ok = false;
                 };
             };
         };
-    } foreach _buildings;
+    _ok
+};
 
-    _buildings = _buildings - [objNull];
+// The buildings in an objective that can carry an installation. With nothing more it checks them all.
+// Optional: _want stops once that many are found; _from checks them nearest that point first, so with
+// _want 1 the answer is the nearest suitable one; _skip leaves those buildings out unchecked.
+ALiVE_fnc_INS_filterObjectiveBuildings = {
 
-    //["Enterable buildings filtered: %1",_buildings] call ALiVE_fnc_DumpR;
+    params ["_center","_size",["_want", -1],["_from", []],["_skip", []]];
 
-    _buildings;
+    // Every House and Building in reach, nearest first (nearestObjects sorts them), tested one at a time and
+    // only until enough are found: on Normandy an 800 m objective holds thousands of walls, fences and sheds, and
+    // testing them all for being enterable cost 0.3 to 1.4 s a call before any of them was looked at. Searching
+    // from _from takes in what is within the objective around that point instead.
+    private _origin = if (_from isNotEqualTo []) then {_from} else {_center};
+    private _reach = if (_from isNotEqualTo []) then {_size + (_from distance2D _center)} else {_size};
+    private _near = nearestObjects [_origin, ["House","Building","land_vn_cave_base"], _reach];
+    if (_from isNotEqualTo []) then { _near = _near select { (_x distance2D _center) <= _size } };
+    if (_skip isNotEqualTo []) then { _near = _near - _skip };
+
+    private _found = [];
+    {
+        if ([_x] call ALIVE_fnc_isHouseEnterable && {[_x] call ALiVE_fnc_INS_buildingSuitable}) then {
+            _found pushBack _x;
+            if (_want > 0 && {count _found >= _want}) then { break };
+        };
+    } forEach _near;
+
+    _found
 };
