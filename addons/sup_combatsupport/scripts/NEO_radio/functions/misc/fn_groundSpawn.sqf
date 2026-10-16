@@ -11,16 +11,24 @@ params ["_type", "_pos", "_dir", "_callsign", "_code", ["_settings", []]];
 _settings params [["_logistics", false], ["_logisticsSource", 0], ["_disarm", 70], ["_mineCheck", true]];
 private _side = switch (getNumber (configFile >> "CfgVehicles" >> _type >> "side")) do { case 1: {WEST}; case 2: {RESISTANCE}; default {EAST} };
 
+// a kept deck or roof height needs something still under it (a building can be destroyed since):
+// with nothing there the asset comes back on the ground below, as it always did
+_pos = +_pos;
+if ((_pos select 2) >= 1.5 && {(lineIntersectsSurfaces [(ATLToASL _pos) vectorAdd [0, 0, 0.5], (ATLToASL _pos) vectorAdd [0, 0, -3], objNull, objNull, true, 1, "GEOM", "NONE"]) isEqualTo []}) then { _pos set [2, 0] };
+
 // an editor-placed one at the module is adopted, but never one another ground transport already runs
-// (two parked side by side) or a lost one left where it stopped
-private _veh = ((nearestObjects [_pos, [_type], 5]) select {
+// (two parked side by side) or a lost one left where it stopped.
+// _pos is above the ground, kept for one on a deck or pier; a search reads above the surface there
+private _near = ASLToAGL ATLToASL _pos;
+private _veh = ((nearestObjects [_near, [_type], 5]) select {
     alive _x && {isNil {_x getVariable "NEO_groundBrain"}} && {(_x getVariable ["NEO_radioGroundRun", 0]) != -1}
 }) param [0, objNull];
 private _grp = grpNull;
 if (isNull _veh) then {
     // anything already standing on the spot (a kept wreck, another vehicle): set it down beside it
     private _at = _pos;
-    if ((nearestObjects [_pos, ["LandVehicle", "Air"], 6]) isNotEqualTo []) then {
+    // (not on a deck or pier: the free spot found is on the ground below)
+    if ((_pos select 2) < 1.5 && {(nearestObjects [_near, ["LandVehicle", "Air"], 6]) isNotEqualTo []}) then {
         private _free = _pos findEmptyPosition [6, 40, _type];
         if (_free isNotEqualTo []) then { _at = _free };
     };

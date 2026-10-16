@@ -113,7 +113,14 @@ if (!_keepAsset) then { waitUntil {isNull _veh} };
 
 private ["_veh","_grp"];
 
-_veh = nearestObjects [_pos, [_type], 5];
+// a kept deck or roof height needs something still under it (a building can be destroyed since):
+// with nothing there the asset comes back on the ground below, as it always did
+_pos = +_pos;
+if ((_pos select 2) >= 1.5 && {(lineIntersectsSurfaces [(ATLToASL _pos) vectorAdd [0, 0, 0.5], (ATLToASL _pos) vectorAdd [0, 0, -3], objNull, objNull, true, 1, "GEOM", "NONE"]) isEqualTo []}) then { _pos set [2, 0] };
+
+// only one of ours: a stranger's aircraft parked close by (on a deck they stand close) never
+// becomes a Combat Support asset, and waiting for it below would hang this respawn for good
+_veh = (nearestObjects [ASLToAGL ATLToASL _pos, [_type], 5]) select { _x getVariable ["ALIVE_CombatSupport", false] };
 
 if (count _veh == 0) then {
     _grp = createGroup _side;

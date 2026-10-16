@@ -294,7 +294,7 @@ switch(_operation) do {
                                         _code = [_code,"this","(_this select 0)"] call CBA_fnc_replace;
                                         _code = [_entry, _code] call _appendPylonLoadOutCode;
 
-                                        _position = getposATL _entry;
+                                        _position = getposATL _entry; if !(isTouchingGround _entry) then { _position set [2, 0] }; // kept on a deck or roof, not in flight
                                         _id = [_position] call ALiVE_fnc_getNearestAirportID;
                                         _type = typeOf _entry;
                                         _direction =  getDir _entry;
@@ -314,7 +314,7 @@ switch(_operation) do {
                                         _slingloading = _entry getvariable ["CS_SLINGLOADING",true];
                                         _containers = _entry getvariable ["CS_CONTAINERS",0];
 
-                                        _position = getposATL _entry;
+                                        _position = getposATL _entry; if !(isTouchingGround _entry) then { _position set [2, 0] }; // kept on a deck or roof, not in flight
                                         _id = [_position] call ALiVE_fnc_getNearestAirportID;
                                         _type = typeOf _entry;
                                         _direction =  getDir _entry;
@@ -341,7 +341,7 @@ switch(_operation) do {
                                         _slingloading = _entry getvariable ["CS_SLINGLOADING",true];
                                         _containers = _entry getvariable ["CS_CONTAINERS",0];
 
-                                        _position = getposATL _entry;
+                                        _position = getposATL _entry; if !(isTouchingGround _entry) then { _position set [2, 0] }; // kept on a deck or roof, not in flight
                                         _id = [_position] call ALiVE_fnc_getNearestAirportID;
                                         _type = typeOf _entry;
                                         _direction =  getDir _entry;
@@ -366,7 +366,7 @@ switch(_operation) do {
                                    case ("arty") : {
                                         private ["_position","_callsign","_type"];
 
-                                        _position = getposATL _entry;
+                                        _position = getposATL _entry; if !(isTouchingGround _entry) then { _position set [2, 0] }; // kept on a deck or roof, not in flight
                                         _direction =  getDir _entry;
                                         _class = typeOf _entry;
 
@@ -472,6 +472,8 @@ switch(_operation) do {
                                     _direction =  getDir ((synchronizedObjects _logic) select _i);
                                     private _synced = [(synchronizedObjects _logic) select _i, _callsign, "air", "CAS"] call _fnc_syncedAsset;
                                     if (!isNull _synced) then { _position = getPosATL _synced; _type = typeOf _synced; _direction = getDir _synced };
+                                    // one placed flying comes back on the ground below, as before: its height is kept only on a deck or roof
+                                    if (!isNull _synced && {!isTouchingGround _synced}) then { _position set [2, 0] };
                                     _id = [_position] call ALiVE_fnc_getNearestAirportID;
                                     _height = parsenumber(_heightset);
                                     _code = ((synchronizedObjects _logic) select _i) getvariable ["cas_code",""];
@@ -513,6 +515,8 @@ switch(_operation) do {
                                     _direction =  getDir ((synchronizedObjects _logic) select _i);
                                     private _synced = [(synchronizedObjects _logic) select _i, _callsign, "air", "TRANS"] call _fnc_syncedAsset;
                                     if (!isNull _synced) then { _position = getPosATL _synced; _type = typeOf _synced; _direction = getDir _synced };
+                                    // one placed flying comes back on the ground below, as before: its height is kept only on a deck or roof
+                                    if (!isNull _synced && {!isTouchingGround _synced}) then { _position set [2, 0] };
                                     _code = ((synchronizedObjects _logic) select _i) getvariable ["transport_code",""];
                                     _code = [_code,"this","(_this select 0)"] call CBA_fnc_replace;
 
@@ -716,7 +720,9 @@ switch(_operation) do {
 
                         {
                             private ["_pos", "_dir", "_type", "_callsign", "_tasks", "_code","_Height","_side","_slingloading","_cont"];
-                            _pos = _x select 0; _pos set [2, 0];
+                            // the height is kept when it stands on something (a carrier deck, a rooftop pad): set to 0 it
+                            // came back on the sea floor or inside the building
+                            _pos = _x select 0; if ((_pos select 2) < 1.5) then { _pos set [2, 0] };
                             _dir = _x select 1;
                             _type = _x select 2;
                             _callsign = toUpper (_x select 3);
@@ -740,7 +746,7 @@ switch(_operation) do {
                             private ["_veh","_grp","_crew"];
 
                             _veh = vehicles select { alive _x && {(_x getVariable ["ALiVE_CS_syncedFor", ""]) == "TRANS|" + _callsign} };
-                            if (_veh isEqualTo []) then { _veh = nearestObjects [_pos, [_type], 5] };
+                            if (_veh isEqualTo []) then { _veh = nearestObjects [ASLToAGL ATLToASL _pos, [_type], 5] };
 
                             if (count _veh == 0) then {
                                 _grp = createGroup _side;
@@ -872,7 +878,7 @@ switch(_operation) do {
                         // Ground transport (#690): each one is listed for its own side and every friendly side
                         {
                             _x params ["_gPos", "_gDir", "_gType", "_gCallsign", "_gCode", "_gLogistics", "_gSource", "_gChance", "_gCheck"];
-                            _gPos = +_gPos; _gPos set [2, 0];
+                            _gPos = +_gPos; if ((_gPos select 2) < 1.5) then { _gPos set [2, 0] }; // a deck or pier height is kept
                             [_gType, _gPos, _gDir, toUpper _gCallsign, _gCode, [_gLogistics, _gSource, _gChance, _gCheck]] call NEO_fnc_groundSpawn;
                         } forEach SUP_GROUNDARRAYS;
 
@@ -880,7 +886,9 @@ switch(_operation) do {
 
                         {
                             private ["_pos", "_dir", "_type", "_callsign", "_airport", "_code","_side"];
-                            _pos = _x select 0; _pos set [2, 0];
+                            // the height is kept when it stands on something (a carrier deck, a rooftop pad): set to 0 it
+                            // came back on the sea floor or inside the building
+                            _pos = _x select 0; if ((_pos select 2) < 1.5) then { _pos set [2, 0] };
                             _dir = _x select 1;
                             _type = _x select 2;
                             _callsign = toUpper (_x select 3);
@@ -902,7 +910,7 @@ switch(_operation) do {
                             private ["_veh","_grp","_crew"];
 
                             _veh = vehicles select { alive _x && {(_x getVariable ["ALiVE_CS_syncedFor", ""]) == "CAS|" + _callsign} };
-                            if (_veh isEqualTo []) then { _veh = nearestObjects [_pos, [_type], 5] };
+                            if (_veh isEqualTo []) then { _veh = nearestObjects [ASLToAGL ATLToASL _pos, [_type], 5] };
 
                             if (count _veh == 0) then {
                                 _grp = createGroup _side;

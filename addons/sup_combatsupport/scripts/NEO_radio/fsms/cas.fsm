@@ -731,7 +731,7 @@ class FSM
                 {
                         name = "__4";
                         itemno = 17;
-                        init = /*%FSM<STATEINIT""">*/"_h = createVehicle [""Land_HelipadEmpty_F"", _pos, [], 0, ""CAN_COLLIDE""];"/*%FSM</STATEINIT""">*/;
+                        init = /*%FSM<STATEINIT""">*/"_h = createVehicle [""Land_HelipadEmpty_F"", _pos, [], 0, ""CAN_COLLIDE""]; _h setPosATL _pos;"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
