@@ -47,6 +47,8 @@ _artyRateDelaySlider = _display displayCtrl 655612;
 _sitRepButton = _display displayCtrl 655625;
 _supportMarker = NEO_radioLogic getVariable "NEO_supportMarker";
 _artyMarkers = NEO_radioLogic getVariable "NEO_supportArtyMarkers";
+// the AI Commander's guns (F509) have no battery object behind their row
+if (["selected"] call NEO_fnc_artyCmdrBoard) exitWith { [] call NEO_fnc_artyCmdrUnitSelected };
 _battery = _artyArray select (lbCurSel _artyUnitLb) select 0; if (!isNil { NEO_radioLogic getVariable "NEO_radioTalkWithArty" }) then { _battery = ((NEO_radioLogic getVariable "NEO_radioTalkWithArty") getVariable "NEO_radioArtyModule") select 0 };
 _status = _battery getVariable "NEO_radioArtyUnitStatus";
 _class = typeOf (((_artyArray select (lbCurSel _artyUnitLb)) select 3) select 0); if (!isNil { NEO_radioLogic getVariable "NEO_radioTalkWithArty" }) then { _class = typeOf (NEO_radioLogic getVariable "NEO_radioTalkWithArty") };

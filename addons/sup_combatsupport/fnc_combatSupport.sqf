@@ -127,6 +127,14 @@ switch(_operation) do {
                         if !(_singleOperator isEqualType true) then { _singleOperator = parseNumber format ["%1", _singleOperator] > 0; };
                         NEO_radioLogic setVariable ["combatsupport_singleoperator", _singleOperator, true];
 
+                        // Commander artillery on call: 0 off, 1 the AI Commander's mortars, 2 all its
+                        // batteries. A number or "0"/"1"/"2" depending on the build; normalise and PV.
+                        private _artyCmdr = NEO_radioLogic getVariable ["combatsupport_artycommander", 0];
+                        if (_artyCmdr isEqualType true) then { _artyCmdr = [0, 1] select _artyCmdr };
+                        _artyCmdr = parseNumber format ["%1", _artyCmdr];
+                        if !(_artyCmdr in [0, 1, 2]) then { _artyCmdr = 0 };
+                        NEO_radioLogic setVariable ["combatsupport_artycommander", _artyCmdr, true];
+
                         // Access items are set on the module logic by the Eden attribute expression, which runs
                         // server-side with no broadcast flag. The client menu gates read them off NEO_radioLogic,
                         // so on a dedicated server they never arrive and fall back to the LaserDesignators
@@ -160,6 +168,86 @@ switch(_operation) do {
                             };
                             call _csOperatorMaintenance;
                             [_csOperatorMaintenance, 3] call CBA_fnc_addPerFrameHandler;
+                        };
+
+                        // Commander's guns (F509): the tablet may call the AI Commander's own batteries.
+                        // The ordnance a battery can offer, by vehicle class (or its live gun), cached with
+                        // an empty answer kept so a class the config walk cannot read is not walked every
+                        // 10 s. An empty answer still offers HE: the fire mission's live-gun fallback finds
+                        // the magazine, as it does for the commander's own missions.
+                        ALiVE_CS_cmdrOrdCache = createHashMap;
+                        ALiVE_CS_fnc_cmdrOrdnance = {
+                            params ["_vClass", ["_veh", objNull]];
+                            if (_vClass == "") exitWith { ["HE"] };
+                            private _ords = ALiVE_CS_cmdrOrdCache get _vClass;
+                            if (isNil "_ords" || {_ords isEqualTo [] && {!isNull _veh}}) then {
+                                _ords = ([_vClass, _veh] select (!isNull _veh)) call ALiVE_fnc_GetArtyRounds;
+                                _ords = ["HE", "SMOKE", "ILLUM"] select { _x in _ords };
+                                ALiVE_CS_cmdrOrdCache set [_vClass, _ords];
+                            };
+                            if (_ords isEqualTo []) then { ["HE"] } else { _ords }
+                        };
+                        // Each side's commander batteries as the tablet needs them, published on
+                        // NEO_radioLogic every 10 s when they change (players who join later get them too):
+                        // [position, reach, minimum reach, kind, ordnance, rounds per mission, ready]
+                        if (_artyCmdr > 0) then {
+                            private _fnc_cmdrBoard = {
+                                if (isNil "ALIVE_profileHandler") exitWith {};
+                                private _mode = NEO_radioLogic getVariable ["combatsupport_artycommander", 0];
+                                {
+                                    private _side = _x;
+                                    private _sideText = toUpper str _side;
+                                    private _board = [];
+                                    {
+                                        private _inst = _x;
+                                        private _prof = _inst getVariable ["intensityProfile", [420,120,75,6,2,1,90]];
+                                        private _free = (_inst getVariable ["activeMissions", 0]) < (_prof select 5);
+                                        // an asymmetric commander answers with mortars only, as its own requests do
+                                        private _mortarsOnly = _mode == 1 || {_sideText in (_inst getVariable ["asymSides", []])} || {
+                                            ((missionNamespace getVariable ["OPCOM_instances", []]) findIf {
+                                                _x isEqualType [] && {toUpper ([_x, "side", ""] call ALiVE_fnc_hashGet) == _sideText} && {([_x, "controltype", ""] call ALiVE_fnc_hashGet) == "asymmetric"}
+                                            }) >= 0
+                                        };
+                                        {
+                                            private _rec = _x;
+                                            private _recSide = [_rec, "side", ""] call ALiVE_fnc_hashGet;
+                                            private _recSideText = if (_recSide isEqualType west) then { toUpper str _recSide } else { toUpper _recSide };
+                                            private _kind = [_rec, "kind", "gun"] call ALiVE_fnc_hashGet;
+                                            if (_recSideText == _sideText && {!_mortarsOnly || {_kind == "mortar"}}) then {
+                                                private _ep = [ALIVE_profileHandler, "getProfile", [_rec, "entityID", ""] call ALiVE_fnc_hashGet] call ALIVE_fnc_profileHandler;
+                                                if (!isNil "_ep") then {
+                                                    private _pos = [_ep, "position"] call ALiVE_fnc_hashGet;
+                                                    private _vClass = "";
+                                                    private _veh = objNull;
+                                                    private _vp = [ALIVE_profileHandler, "getProfile", ([_rec, "vehicleIDs", []] call ALiVE_fnc_hashGet) param [0, ""]] call ALIVE_fnc_profileHandler;
+                                                    if (!isNil "_vp") then {
+                                                        _vClass = [_vp, "vehicleClass", ""] call ALiVE_fnc_hashGet;
+                                                        if ([_vp, "active", false] call ALiVE_fnc_hashGet) then { _veh = [_vp, "vehicle", objNull] call ALiVE_fnc_hashGet };
+                                                    };
+                                                    // a battery that has not yet measured its reach has only a rough
+                                                    // default; the fire mission's own range check has the last word
+                                                    private _reach = ([_rec, "maxRange", 0] call ALiVE_fnc_hashGet) * ([1.25, 0.95] select ([_rec, "probed", false] call ALiVE_fnc_hashGet));
+                                                    private _ready = ([_rec, "state", ""] call ALiVE_fnc_hashGet) == "IDLE"
+                                                        && {time > ([_rec, "cooldownUntil", 0] call ALiVE_fnc_hashGet)}
+                                                        && {([_rec, "rounds", 0] call ALiVE_fnc_hashGet) > 0}
+                                                        && {_free};
+                                                    _board pushBack [
+                                                        [10 * round ((_pos select 0) / 10), 10 * round ((_pos select 1) / 10)],
+                                                        round _reach,
+                                                        round (([_rec, "minRange", 300] call ALiVE_fnc_hashGet) max 300),
+                                                        _kind, [_vClass, _veh] call ALiVE_CS_fnc_cmdrOrdnance, _prof select 3, _ready
+                                                    ];
+                                                };
+                                            };
+                                        } forEach (_inst getVariable ["batteryRegistry", []]);
+                                    } forEach (missionNamespace getVariable ["ALIVE_MilArtilleryInstances", []]);
+                                    private _key = format ["NEO_radioCmdrArtyBoard_%1", _side];
+                                    if !(_board isEqualTo (NEO_radioLogic getVariable [_key, []])) then {
+                                        NEO_radioLogic setVariable [_key, _board, true];
+                                    };
+                                } forEach [WEST, EAST, RESISTANCE];
+                            };
+                            [_fnc_cmdrBoard, 10] call CBA_fnc_addPerFrameHandler;
                         };
 
                         _transportArrays = [];

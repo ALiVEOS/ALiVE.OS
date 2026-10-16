@@ -71,6 +71,8 @@ switch (toUpper _task) do
 	      };
 
         if ((lbCurSel _artyUnitLb) < 0) exitwith {};
+        // the AI Commander's guns (F509) have no battery to report on
+        if (["selected"] call NEO_fnc_artyCmdrBoard) exitWith {};
 
         _asset = _artyArray select (lbCurSel _artyUnitLb) select 0;
         _grp = _artyArray select (lbCurSel _artyUnitLb) select 1;

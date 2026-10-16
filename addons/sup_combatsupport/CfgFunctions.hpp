@@ -36,6 +36,11 @@ class cfgFunctions {
                                 file = "\x\alive\addons\sup_combatsupport\fnc_combatSupportIsOperator.sqf";
                                 ALIVE_RECOMPILE;
                         };
+                        class combatSupportCmdrArtyRequest {
+                                description = "Server side: a tablet operator asks the AI Commander's guns to fire at a grid";
+                                file = "\x\alive\addons\sup_combatsupport\fnc_combatSupportCmdrArtyRequest.sqf";
+                                ALIVE_RECOMPILE;
+                        };
                         class packMortar {
                                 description = "Enables a group to pack a mortar";
                                 file = "\x\alive\addons\sup_combatsupport\fnc_packMortar.sqf";

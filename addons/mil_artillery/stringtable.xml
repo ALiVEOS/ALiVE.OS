@@ -529,6 +529,21 @@
     <Portuguese>%1: Atenção a todos os indicativos, missão de tiro em andamento. Artilharia amiga engajando a grade %2. Manter distância da área alvo. Câmbio, desligo.</Portuguese>
     <Russian>%1: Внимание всем позывным, выполняется огневая задача. Своя артиллерия ведёт огонь по квадрату %2. Держаться в стороне от района цели. Приём окончен.</Russian>
 </Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_CALL_SHOT">
+    <English>%1: Shot, over. Rounds on the way to grid %2.</English>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_CALL_COMPLETE">
+    <English>%1: Rounds complete on grid %2. Out.</English>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_CALL_NOGUNS">
+    <English>%1: No guns available for grid %2. Out.</English>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_CALL_RANGE">
+    <English>%1: Grid %2 is out of range of the guns. Out.</English>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_CALL_FRIENDLIES">
+    <English>%1: Cannot fire on grid %2, friendlies are inside the impact area. Out.</English>
+</Key>
 </Container>
 </Package>
 </Project>

@@ -32,6 +32,8 @@ _artyRateOfFireLb = _display displayCtrl 655603;
 _artyRoundCountLb = _display displayCtrl 655605;
 _artyDispersionSlider = _display displayCtrl 655609;
 _artyRateDelaySlider = _display displayCtrl 655612;
+// the AI Commander's guns (F509) go to the server, not to a battery of the players' own
+if (["selected"] call NEO_fnc_artyCmdrBoard) exitWith { [] call NEO_fnc_artyCmdrConfirm };
 _battery = _artyArray select (lbCurSel _artyUnitLb) select 0; if (!isNil { NEO_radioLogic getVariable "NEO_radioTalkWithArty" }) then { _battery = ((NEO_radioLogic getVariable "NEO_radioTalkWithArty") getVariable "NEO_radioArtyModule") select 0 };
 _unit = _artyArray select (lbCurSel _artyUnitLb) select 1;
 

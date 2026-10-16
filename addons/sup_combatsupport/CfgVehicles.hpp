@@ -109,6 +109,20 @@ class CfgVehicles {
                                     class false { name="No"; value = 0; };
                                 };
                         };
+                        // the tablet may call the AI Commander's own batteries (mil_artillery) at a grid
+                        class combatsupport_artycommander : Combo
+                        {
+                                property = "ALiVE_sup_combatsupport_combatsupport_artycommander";
+                                displayName = "$STR_ALIVE_CS_ARTYCOMMANDER";
+                                tooltip = "$STR_ALIVE_CS_ARTYCOMMANDER_COMMENT";
+                                defaultValue = """0""";
+                                class Values
+                                {
+                                    class off { name = "$STR_ALIVE_CS_ARTYCOMMANDER_OFF"; value = 0; default = 1; };
+                                    class mortars { name = "$STR_ALIVE_CS_ARTYCOMMANDER_MORTARS"; value = 1; };
+                                    class all { name = "$STR_ALIVE_CS_ARTYCOMMANDER_ALL"; value = 2; };
+                                };
+                        };
                         class ModuleDescription : ModuleDescription {};
                 };
                 class ModuleDescription

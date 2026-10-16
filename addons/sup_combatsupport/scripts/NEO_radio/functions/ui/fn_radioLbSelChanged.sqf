@@ -243,7 +243,9 @@ switch (toUpper (_lb lbText _index)) do
 	      };
 				
 
-        if ((count _artyArray > 0) && (isNil { NEO_radioLogic getVariable "NEO_radioTalkWithPilot" })) then
+        // the AI Commander's guns (F509) are one extra row after the batteries, data "CMDR"
+        private _cmdrAdded = false;
+        if ((count _artyArray > 0 || {["available"] call NEO_fnc_artyCmdrBoard}) && (isNil { NEO_radioLogic getVariable "NEO_radioTalkWithPilot" })) then
         {
             { _x ctrlSetBackgroundColor _listBackground } forEach [_artyUnitLb, _artyOrdnanceTypeLb];
             _artyUnitText ctrlSetStructuredText parseText format ["<t color='#B4B4B4' size='0.8' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_BATTERY"];
@@ -272,13 +274,19 @@ switch (toUpper (_lb lbText _index)) do
                     _artyUnitLb lbAdd (_x select 2);
                     _artyUnitLb lbSetPicture [_forEachIndex, (getText (configFile >> "CfgVehicles" >> typeOf ((_x select 3) select 0) >> "picture"))];
                 } forEach _artyArray;
+                if (["available"] call NEO_fnc_artyCmdrBoard) then {
+                    private _cRow = _artyUnitLb lbAdd (localize "STR_ALIVE_CS_UI_CMDR_GUNS");
+                    _artyUnitLb lbSetData [_cRow, "CMDR"];
+                    _artyUnitLb lbSetPicture [_cRow, "\a3\Ui_f\data\GUI\Cfg\CommunicationMenu\artillery_ca.paa"];
+                    _cmdrAdded = true;
+                };
             };
 
             _artyUnitLb ctrlSetEventHandler ["LBSelChanged", "_this call NEO_fnc_artyUnitLbSelChanged"];
             _artyConfirmButton ctrlSetEventHandler ["ButtonClick", "_this call NEO_fnc_artyConfirmButton"];
             _artyBaseButton ctrlSetEventHandler ["ButtonClick", "_this call NEO_fnc_artyBaseButton"];
 
-            if (count _artyArray < 2) then { lbSetCurSel [655594, 0] };
+            if ((count _artyArray + ([0, 1] select _cmdrAdded)) < 2) then { lbSetCurSel [655594, 0] };
         };
     };
 };

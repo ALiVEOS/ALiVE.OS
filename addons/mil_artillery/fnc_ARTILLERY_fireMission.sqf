@@ -17,6 +17,10 @@ Object - module logic
 Hash - battery registry record
 String - target profile ID
 Array - target position (as known at request time)
+Boolean - optional, a forced debug strike (skips the friendly check)
+String - optional, the round: HE (default), SMOKE or ILLUM
+Number - optional, rounds for this mission, capped by the commander's own volley (default the volley)
+Object - optional, the player who called it from the Combat Support tablet; they get the HQ's answers
 
 Returns:
 Nil
@@ -25,13 +29,18 @@ Author:
 Jman
 ---------------------------------------------------------------------------- */
 
-params ["_logic","_record","_targetID","_targetPos",["_force", false, [false]]];
+params ["_logic","_record","_targetID","_targetPos",["_force", false, [false]],["_ordnance", "HE", [""]],["_rounds", -1, [0]],["_caller", objNull, [objNull]]];
 
 // _force = a debug/test strike: skip the friendly-fire abort so the strike is
 // always observable (the caller accepts firing near friendlies)
 private _debug = [_logic, "debug"] call ALIVE_fnc_MilArtillery;
 private _settings = _logic getVariable ["intensityProfile", [420,120,75,6,2,1,90]];
 _settings params ["_cooldownBase","_cooldownJitter","_dispersion","_roundsPerMission","_minContacts","_maxConcurrent","_ledgerSize"];
+// a player's call from the Combat Support tablet names its round and count; the commander's own
+// missions fire HE and the full volley
+_ordnance = toUpper _ordnance;
+if !(_ordnance in ["HE", "SMOKE", "ILLUM"]) then { _ordnance = "HE" };
+private _roundsThisMission = if (_rounds > 0) then { _rounds min _roundsPerMission } else { _roundsPerMission };
 // danger-close: when on, batteries fire even with friendlies in the impact
 // area (the module's ignore-nearby-friendlies toggle - use with caution)
 private _dangerClose = [_logic, "dangerClose"] call ALIVE_fnc_MilArtillery;
@@ -92,6 +101,17 @@ private _fnc_release = {
     _logic setVariable ["activeMissions", ((_logic getVariable ["activeMissions", 1]) - 1) max 0];
 };
 
+// the HQ's answer to a player who called this mission from the Combat Support tablet
+private _fnc_tell = {
+    params ["_key"];
+    if (isNull _caller) exitWith {};
+    private _s = side group _caller;
+    private _hqClass = switch (_s) do { case west: {"BLU"}; case east: {"OPF"}; case resistance: {"IND"}; default {"HQ"} };
+    private _hqid = getText (configFile >> "CfgHQIdentities" >> _hqClass >> "name");
+    if (_hqid == "") then { _hqid = "HQ" };
+    [str _s, [objNull, format [localize _key, _hqid, mapGridPosition _targetPos], "side", _s, false, false, false, true, _hqClass]] call ALIVE_fnc_radioBroadcastToSide;
+};
+
 if (_debug) then {
     ["ALiVE MIL_ARTILLERY - fire mission: battery %1 (%2 gun(s)) -> %3", _entityID, count _vehicleIDs, _targetPos] call ALiVE_fnc_dump;
 };
@@ -99,7 +119,7 @@ if (_debug) then {
 // activate battery and target - the same preventDespawn pattern the air
 // component uses, so the profile system keeps both ends physical until release
 private _entityProfile = [ALIVE_profileHandler, "getProfile", _entityID] call ALIVE_fnc_profileHandler;
-if (isNil "_entityProfile") exitWith { [1] call _fnc_release; };
+if (isNil "_entityProfile") exitWith { ["STR_ALIVE_MIL_ARTILLERY_CALL_NOGUNS"] call _fnc_tell; [1] call _fnc_release; };
 
 [_entityProfile, _entityID, "entity"] call _fnc_hold;
 {
@@ -156,12 +176,20 @@ if (count _guns == 0) exitWith {
     if (_debug) then {
         ["ALiVE MIL_ARTILLERY - fire mission aborted: battery %1 never produced a crewed gun", _entityID] call ALiVE_fnc_dump;
     };
+    ["STR_ALIVE_MIL_ARTILLERY_CALL_NOGUNS"] call _fnc_tell;
     [0.5] call _fnc_release;
 };
 
-// resolve the magazine - HE first, then whatever the gun actually carries
+// resolve the magazine - the round asked for (HE unless a player chose otherwise), then whatever the gun carries
 private _gunLead = _guns select 0;
-private _mag = [_gunLead, "HE"] call ALIVE_fnc_getArtyMagazineType;
+private _mag = [_gunLead, _ordnance] call ALIVE_fnc_getArtyMagazineType;
+if (_mag == "" && {_ordnance != "HE"}) then {
+    if (_debug) then {
+        ["ALiVE MIL_ARTILLERY - %1 has no %2 round, firing HE instead", typeOf _gunLead, _ordnance] call ALiVE_fnc_dump;
+    };
+    _ordnance = "HE";
+    _mag = [_gunLead, "HE"] call ALIVE_fnc_getArtyMagazineType;
+};
 if (_mag == "") then {
     private _types = (typeOf _gunLead) call ALiVE_fnc_GetArtyRounds;
     if (count _types > 0) then {
@@ -175,7 +203,7 @@ if (_mag == "") then {
     // Prefer an HE-classified magazine, else take the first offered.
     private _liveMags = getArtilleryAmmo [_gunLead];
     if (count _liveMags > 0) then {
-        private _idx = _liveMags findIf { ["HE", _x] call ALIVE_fnc_isMagazineOfOrdnanceType };
+        private _idx = _liveMags findIf { [_ordnance, _x] call ALIVE_fnc_isMagazineOfOrdnanceType };
         _mag = _liveMags select (_idx max 0);
         if (_debug) then {
             ["ALiVE MIL_ARTILLERY - ordnance resolved from the live gun for %1: %2", typeOf _gunLead, _mag] call ALiVE_fnc_dump;
@@ -195,6 +223,7 @@ if (_mag == "") then {
 };
 if (_mag == "") exitWith {
     ["ALiVE MIL_ARTILLERY - fire mission aborted: no usable ordnance found for %1 - battery stood down", typeOf _gunLead] call ALiVE_fnc_dump;
+    ["STR_ALIVE_MIL_ARTILLERY_CALL_NOGUNS"] call _fnc_tell;
     [1] call _fnc_release;
 };
 
@@ -206,7 +235,7 @@ if (_mag == "") exitWith {
 // a carried magazine (preferring HE) so the range check and the shot agree.
 private _liveMags = getArtilleryAmmo [_gunLead];
 if (count _liveMags > 0 && {!(_mag in _liveMags)}) then {
-    private _idx = _liveMags findIf { ["HE", _x] call ALIVE_fnc_isMagazineOfOrdnanceType };
+    private _idx = _liveMags findIf { [_ordnance, _x] call ALIVE_fnc_isMagazineOfOrdnanceType };
     if (_debug) then {
         ["ALiVE MIL_ARTILLERY - %1: config named %2 but the gun carries %3 - firing a carried round instead", typeOf _gunLead, _mag, _liveMags] call ALiVE_fnc_dump;
     };
@@ -249,9 +278,11 @@ private _aimBase = [_targetPos select 0, _targetPos select 1, 0];
 if !(_aimBase inRangeOfArtillery [_guns, _mag]) exitWith {
     private _dist = _gunLead distance2D _aimBase;
     private _maxRange = [_record,"maxRange"] call ALiVE_fnc_hashGet;
-    // only revise unprobed defaults - a measured envelope is authoritative
-    if (!([_record,"probed",false] call ALiVE_fnc_hashGet) && {_dist > _maxRange * 0.5}) then {
-        [_record,"maxRange", ((_dist * 0.9) max 1500)] call ALiVE_fnc_hashSet;
+    // only revise unprobed defaults - a measured envelope is authoritative - and only from an HE
+    // round: a smoke or flare round a player called has its own, usually shorter, reach
+    if (_ordnance == "HE" && {!([_record,"probed",false] call ALiVE_fnc_hashGet)} && {_dist > _maxRange * 0.5}) then {
+        // never above what it was: a player's call can ask beyond the commander's own reach
+        [_record,"maxRange", (((_dist * 0.9) min _maxRange) max 1500)] call ALiVE_fnc_hashSet;
     };
     if (_debug) then {
         // name the round, and say what the gun is actually carrying. What refused
@@ -268,6 +299,7 @@ if !(_aimBase inRangeOfArtillery [_guns, _mag]) exitWith {
             round ([_record,"minRange",300] call ALiVE_fnc_hashGet),
             [_record,"maxRange"] call ALiVE_fnc_hashGet] call ALiVE_fnc_dump;
     };
+    ["STR_ALIVE_MIL_ARTILLERY_CALL_RANGE"] call _fnc_tell;
     [0.5] call _fnc_release;
 };
 
@@ -302,6 +334,7 @@ if (_ffBlocked) exitWith {
     if (_debug) then {
         ["ALiVE MIL_ARTILLERY - fire mission aborted: friendlies inside the impact area at %1", _aimBase] call ALiVE_fnc_dump;
     };
+    ["STR_ALIVE_MIL_ARTILLERY_CALL_FRIENDLIES"] call _fnc_tell;
     [0.5] call _fnc_release;
 };
 
@@ -375,10 +408,11 @@ if (count _victimPlayers > 0) then {
 };
 
 // the battery's own side hears the fire-support call too - players allied
-// with the guns get the HQ announcement wherever they are on the map
-private _friendlyPlayers = (allPlayers - entities "HeadlessClient_F") select {
+// with the guns get the HQ announcement wherever they are on the map. A mission a player called
+// from the tablet is answered to that player's side instead ("Shot", below)
+private _friendlyPlayers = if (isNull _caller) then { (allPlayers - entities "HeadlessClient_F") select {
     [side group _x, _sideObject] call BIS_fnc_sideIsFriendly
-};
+} } else { [] };
 if (count _friendlyPlayers > 0) then {
     private _friendlySides = [];
     { _friendlySides pushBackUnique (side group _x) } forEach _friendlyPlayers;
@@ -399,15 +433,19 @@ if (count _friendlyPlayers > 0) then {
 // client) and publish the count so the server-side watchdog reads it
 {
     _x setVariable ["ALiVE_artyMissionFired", 0, true];
-    [_x, {
+    [[_x, _mag], {
+        params ["_gun", "_missionMag"];
+        // a smoke or illumination mission a player called counts its own rounds: they are not
+        // lethal ordnance, so the test below would read the volley as never fired
+        _gun setVariable ["ALiVE_artyMissionMag", _missionMag];
         // count only artillery ordnance - a battery defending itself with its
         // machine gun must not satisfy the volley watchdog (or feed the enemy
         // counter-battery watch a volley that never flew). Classify by the
         // fired AMMO's simulation family: shells/rockets/missiles count,
         // bullets and countermeasure smoke do not. Judging the round that
         // actually flew needs no config read at all, so nothing can hide
-        private _eh = _this addEventHandler ["Fired", {
-            params ["_unit","","","","_ammo"];
+        private _eh = _gun addEventHandler ["Fired", {
+            params ["_unit","","","","_ammo","_magazine"];
             // #876 - flares excluded: the night illumination pre-shot must not
             // satisfy the volley watchdog - only lethal ordnance proves the
             // volley flew. Vanilla flares usually fail the tests below anyway;
@@ -415,11 +453,12 @@ if (count _friendlyPlayers > 0) then {
             if ((_ammo isKindOf ["ShellBase", configFile >> "CfgAmmo"]
                 || {_ammo isKindOf ["RocketBase", configFile >> "CfgAmmo"]}
                 || {_ammo isKindOf ["MissileBase", configFile >> "CfgAmmo"]})
-                && {!(_ammo isKindOf ["FlareCore", configFile >> "CfgAmmo"])}) then {
+                && {!(_ammo isKindOf ["FlareCore", configFile >> "CfgAmmo"])}
+                || {_magazine == (_unit getVariable ["ALiVE_artyMissionMag", ""])}) then {
                 _unit setVariable ["ALiVE_artyMissionFired", (_unit getVariable ["ALiVE_artyMissionFired", 0]) + 1, true];
             };
         }];
-        _this setVariable ["ALiVE_artyMissionFiredEH", _eh];
+        _gun setVariable ["ALiVE_artyMissionFiredEH", _eh];
     }] remoteExec ["call", _x];
 } forEach _guns;
 
@@ -439,7 +478,7 @@ private _volleyStart = time;
 // This runs only on the real-fire path (a player is near), so a flare is always
 // seen; virtual missions never reach this file.
 private _sunOrMoon = sunOrMoon;
-private _illumMag = if (_sunOrMoon < 0.3) then {
+private _illumMag = if (_sunOrMoon < 0.3 && {_ordnance != "ILLUM"}) then {
     [_gunLead, "ILLUM"] call ALIVE_fnc_getArtyMagazineType
 } else { "" };
 // illum magazines have their own (usually shorter) firing solution - if the
@@ -468,11 +507,12 @@ private _rangingAim = _aimBase getPos [random _dispersion, random 360];
 if (_debug) then {
     ["ALiVE MIL_ARTILLERY - ranging round ordered: %1 firing %2 at %3", typeOf _gunLead, _mag, _rangingAim] call ALiVE_fnc_dump;
 };
+["STR_ALIVE_MIL_ARTILLERY_CALL_SHOT"] call _fnc_tell;
 
 sleep 25;
 
 // main volley - every gun, per-round aim offset via the mission dispersion
-private _roundsPerGun = 1 max ceil (_roundsPerMission / count _guns);
+private _roundsPerGun = 1 max ceil (_roundsThisMission / count _guns);
 {
     private _volleyAim = _aimBase getPos [random _dispersion, random 360];
     [_x, [_volleyAim, _mag, _roundsPerGun]] remoteExec ["doArtilleryFire", _x];
@@ -498,22 +538,24 @@ if (_fired > 0 && {!isNil "ALIVE_artyShellEvents"}) then {
     private _events = ALIVE_artyShellEvents;
     if ((_events findIf { (_x select 0) in _vehicleIDs && {(_x select 3) > _volleyStart} }) == -1) then {
         // IN-PLACE mutation only - see the watch installer in the monitor
-        _events pushBack [_vehicleIDs param [0, ""], getPosATL _gunLead, toUpper str _sideObject, time, _roundsPerMission + 1, time];
+        _events pushBack [_vehicleIDs param [0, ""], getPosATL _gunLead, toUpper str _sideObject, time, _roundsThisMission + 1, time];
         while {count _events > 30} do { _events deleteAt 0; };
         if (_debug) then {
-            ["ALiVE MIL_ARTILLERY - counter-battery: fallback fire event recorded for battery %1 (%2 shell(s))", _entityID, _roundsPerMission + 1] call ALiVE_fnc_dump;
+            ["ALiVE MIL_ARTILLERY - counter-battery: fallback fire event recorded for battery %1 (%2 shell(s))", _entityID, _roundsThisMission + 1] call ALiVE_fnc_dump;
         };
     };
 };
 
 if (_fired == 0) then {
     ["ALiVE MIL_ARTILLERY - battery %1 (%2) took a fire order but never fired - stood down for a full cooldown", _entityID, typeOf _gunLead] call ALiVE_fnc_dump;
+    ["STR_ALIVE_MIL_ARTILLERY_CALL_NOGUNS"] call _fnc_tell;
 } else {
     // dwell so the rounds land and the AI settles before anything despawns,
     // then re-read the true total (the waitUntil above exits on the FIRST
     // round, so _fired would otherwise report 1 for the whole volley)
     sleep 90;
     _fired = call _fnc_firedCount;
+    ["STR_ALIVE_MIL_ARTILLERY_CALL_COMPLETE"] call _fnc_tell;
 };
 
 {
@@ -521,11 +563,12 @@ if (_fired == 0) then {
         private _eh = _this getVariable ["ALiVE_artyMissionFiredEH", -1];
         if (_eh >= 0) then { _this removeEventHandler ["Fired", _eh]; };
         _this setVariable ["ALiVE_artyMissionFiredEH", nil];
+        _this setVariable ["ALiVE_artyMissionMag", nil];
     }] remoteExec ["call", _x];
 } forEach _guns;
 
 // logical ammunition ledger - the long-term cadence cap
-[_record,"rounds", (([_record,"rounds"] call ALiVE_fnc_hashGet) - (_roundsPerMission + 1)) max 0] call ALiVE_fnc_hashSet;
+[_record,"rounds", (([_record,"rounds"] call ALiVE_fnc_hashGet) - (_roundsThisMission + 1)) max 0] call ALiVE_fnc_hashSet;
 
 if (_debug) then {
     ["ALiVE MIL_ARTILLERY - fire mission complete: battery %1 fired %2 round(s), %3 left in the ledger", _entityID, _fired, [_record,"rounds"] call ALiVE_fnc_hashGet] call ALiVE_fnc_dump;

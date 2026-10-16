@@ -2665,4 +2665,52 @@
     <Portuguese>A unidade aguarda o embarque dos passageiros</Portuguese>
     <Russian>Подразделение ждёт посадки пассажиров</Russian>
 </Key>
+<Key ID="STR_ALIVE_CS_ARTYCOMMANDER">
+    <English>Commander artillery on call</English>
+</Key>
+<Key ID="STR_ALIVE_CS_ARTYCOMMANDER_COMMENT">
+    <English>Lets the tablet call the AI Commander's own batteries at a grid. Off keeps the tablet to its own batteries. Mortars only offers the commander's mortar teams. All offers every battery, rockets included (an Insurgency commander still answers with mortars only). The commander's cooldown, ammunition and friendly check still apply, and each call spends the commander's rounds.</English>
+</Key>
+<Key ID="STR_ALIVE_CS_ARTYCOMMANDER_OFF">
+    <English>Off</English>
+</Key>
+<Key ID="STR_ALIVE_CS_ARTYCOMMANDER_MORTARS">
+    <English>Mortars only</English>
+</Key>
+<Key ID="STR_ALIVE_CS_ARTYCOMMANDER_ALL">
+    <English>All</English>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_CMDR_GUNS">
+    <English>Commander's guns</English>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_CMDR_HELP">
+    <English>The AI Commander's batteries. Pick a round and click the map: Confirm comes on when one of them reaches that grid. The rings are the battery nearest you.</English>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_CMDR_BUSY">
+    <English>A commander battery reaches that grid, but none is free right now</English>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_CMDR_OUT_OF_RANGE">
+    <English>No commander battery reaches that grid</English>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_CMDR_SENT">
+    <English>Request sent, waiting for the commander's answer</English>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_CMDR_DISPERSION">
+    <English>Dispersion is set by the commander</English>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_CMDR_REQUEST_1">
+    <English>%1, %2 requests 1 round of %4 at grid %5%6. Over.</English>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_CMDR_REQUEST">
+    <English>%1, %2 requests %3 rounds of %4 at grid %5%6. Over.</English>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_CMDR_NOGUNS">
+    <English>%1, no guns available for grid %2. Out.</English>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_CMDR_FRIENDLIES">
+    <English>%1, cannot fire on grid %2, friendlies are too close. Out.</English>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_CMDR_STANDBY">
+    <English>%1, the commander's guns are laying on grid %2, stand by. Out.</English>
+</Key>
 </Container></Package></Project>

@@ -18,6 +18,8 @@ _artyUnitLb = _display displayCtrl 655594;
 	        };
 	      };
 
+// the AI Commander's guns (F509) have no battery to send home
+if (["selected"] call NEO_fnc_artyCmdrBoard) exitWith {};
 _battery = _artyArray select (lbCurSel _artyUnitLb) select 0; if (!isNil { NEO_radioLogic getVariable "NEO_radioTalkWithArty" }) then { _battery = ((NEO_radioLogic getVariable "NEO_radioTalkWithArty") getVariable "NEO_radioArtyModule") select 0 };
 _callsign = _artyArray select (lbCurSel _artyUnitLb) select 2; if (!isNil { NEO_radioLogic getVariable "NEO_radioTalkWithArty" }) then { _callsign = ((NEO_radioLogic getVariable "NEO_radioTalkWithArty") getVariable "NEO_radioArtyModule") select 1 };
 _callSignPlayer = (format ["%1", group player]) call NEO_fnc_callsignFix;

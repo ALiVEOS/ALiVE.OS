@@ -89,7 +89,9 @@ if (count _casArray > 0) then { _available pushback (["CAS", "\a3\Ui_f\data\GUI\
 // Ground transport (#690), from the radio only
 private _groundArray = NEO_radioLogic getVariable [format ["NEO_radioGroundArray_%1", playerSide], []];
 if (count _groundArray > 0 && {_action == "radio"}) then { _available pushback (["GROUND", "\a3\Ui_f\data\GUI\Cfg\CommunicationMenu\supplydrop_ca.paa"]) };
-if (count _artyArray > 0 && (_action == "radio" || _action == "talkarty")) then { _available pushback (["ARTY", "\a3\Ui_f\data\GUI\Cfg\CommunicationMenu\artillery_ca.paa"]) };
+// the AI Commander's guns (F509) give the radio an Artillery entry of their own; talking to one
+// battery never offers them
+if ((count _artyArray > 0 && (_action == "radio" || _action == "talkarty")) || {_action == "radio" && {["available"] call NEO_fnc_artyCmdrBoard}}) then { _available pushback (["ARTY", "\a3\Ui_f\data\GUI\Cfg\CommunicationMenu\artillery_ca.paa"]) };
 //Support ListBox
 
 
@@ -211,6 +213,7 @@ showGPS false;
 [] spawn {
     private _lastUnit = objNull;
     private _lastStatus = "";
+    private _lastCmdrKey = [];
     while { !isNull (findDisplay 655555) } do {
         uiSleep 1;
         private _disp = findDisplay 655555;
@@ -228,6 +231,12 @@ showGPS false;
             if !(_cfg isEqualTo []) then {
                 _cfg params ["_ulbIdc", "_arrPrefix", "_statVar"];
                 private _sel = lbCurSel (_disp displayCtrl _ulbIdc);
+                // the Commander's guns row has no battery object: refresh Confirm when the board
+                // changes or the 15 s wait after a request ends
+                if (_ulbIdc == 655594 && {_sel >= 0} && {((_disp displayCtrl _ulbIdc) lbData _sel) == "CMDR"}) then {
+                    private _key = [["board"] call NEO_fnc_artyCmdrBoard, floor ((time - (missionNamespace getVariable ["NEO_artyCmdrSentAt", -100])) / 15)];
+                    if !(_key isEqualTo _lastCmdrKey) then { _lastCmdrKey = _key; [] call NEO_fnc_artyConfirmButtonEnable };
+                };
                 if (_sel >= 0) then {
                     private _arr = NEO_radioLogic getVariable [format ["%1_%2", _arrPrefix, playerSide], []];
                     if (_sel < count _arr) then {

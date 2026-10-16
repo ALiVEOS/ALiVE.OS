@@ -1018,6 +1018,15 @@ switch(_operation) do {
             };
         };
 
+        // a player's call on the commander's guns (Combat Support tablet) runs unscheduled and may
+        // have taken this battery, or the last free mission slot, while this thread was suspended
+        // above. Checked before both the virtual and the real mission
+        if (([_best,"state"] call ALiVE_fnc_hashGet) != "IDLE" || {(_logic getVariable ["activeMissions", 0]) >= _maxConcurrent}) exitWith {
+            if (_debug) then {
+                ["ALiVE MIL_ARTILLERY - request dropped: battery %1 or the last mission slot was taken while the pick was in flight", [_best,"entityID"] call ALiVE_fnc_hashGet] call ALiVE_fnc_dump;
+            };
+        };
+
         // no players anywhere near either end: nothing would be seen or heard.
         // Resolve the mission virtually - casualties on the ledger, ammunition
         // spent, full cooldown, counter-battery event - with no spawning at all

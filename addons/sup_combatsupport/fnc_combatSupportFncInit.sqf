@@ -176,5 +176,9 @@ NEO_fnc_artyOrdLbSelChanged = compile preprocessFileLineNumbers "x\alive\addons\
 NEO_fnc_artyDispersionOnSliderPosChanged = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\ui\arty\fn_artyDispersionOnSliderPosChanged.sqf";
 NEO_fnc_artyRateDelayOnSliderPosChanged = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\ui\arty\fn_artyRateDelayOnSliderPosChanged.sqf";
 NEO_fnc_artyRateOfFireLbOnSelChanged = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\ui\arty\fn_artyRateOfFireLbOnSelChanged.sqf";
+// Commander's guns (F509): the AI Commander's batteries on the tablet's Artillery list
+NEO_fnc_artyCmdrBoard = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_artyCmdrBoard.sqf";
+NEO_fnc_artyCmdrUnitSelected = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\ui\arty\fn_artyCmdrUnitSelected.sqf";
+NEO_fnc_artyCmdrConfirm = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\ui\arty\fn_artyCmdrConfirm.sqf";
 ALIVE_fnc_ExecuteMission = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_ExecuteMission.sqf";
 ALIVE_fnc_GetMagazineType = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_GetMagazineType.sqf";
