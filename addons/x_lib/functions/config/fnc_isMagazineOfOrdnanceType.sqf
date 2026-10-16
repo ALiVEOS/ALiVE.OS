@@ -246,6 +246,9 @@ switch (_ordnanceType) do {
         // Grad) often has its own class tree but always simulates as a rocket
         (_ammo isKindOf ["RocketBase", _cfgAmmoRoot])
             || {(toLower getText (_ammoCfg >> "simulation")) in ["shotrocket","shotmissile"]}
+            // the vanilla MLRS rocket flies as a submunition carrier; it counts by its magazine's name, but
+            // a mod round built on it (RHS and 3CB M31/M26) does not, so the 3CB M270 HE read as CLUSTER only
+            || {_ammo isKindOf ["R_230mm_HE", _cfgAmmoRoot]}
     };
     case "HE": {
         // plain shell only - anything smoke / flare / guided / dispenser /

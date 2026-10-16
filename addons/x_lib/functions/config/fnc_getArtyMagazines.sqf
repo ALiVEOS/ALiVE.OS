@@ -17,7 +17,8 @@ Parameters:
 String - vehicle classname
 
 Returns:
-Array of magazine classnames (may contain duplicates across turrets)
+Array of magazine classnames (may contain duplicates across turrets); only those
+whose ammo has artilleryLock, unless the gun has none
 
 Examples:
 (begin example)
@@ -103,5 +104,14 @@ private _vehCfg = configFile >> "CfgVehicles" >> _class;
 if (isClass (_vehCfg >> "Turrets")) then {
     [_vehCfg >> "Turrets"] call _fnc_walkTurrets;
 };
+
+// only rounds the artillery computer can aim. The walk also finds smoke launchers, the RHS
+// pod and fuel tank a 3CB M270 inherits, and the like: none can fire a mission, but they
+// read as SMOKE or ROCKETS, so the tablet offered rounds the gun refused as out of range
+// at every distance. A gun with no locked round at all keeps the whole list.
+private _aimed = _mags select {
+    getNumber (configFile >> "CfgAmmo" >> getText (configFile >> "CfgMagazines" >> _x >> "ammo") >> "artilleryLock") > 0
+};
+if (_aimed isNotEqualTo []) then { _mags = _aimed };
 
 _mags
