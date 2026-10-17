@@ -1201,7 +1201,8 @@ switch(_operation) do {
         case "bomberDispatch": {
             // An insurgent group that has spotted a player sends one suicide bomber at him: every 30 s, a
             // player on the ground with an insurgent group 150 to 800 m away that knows about him has an even
-            // chance of drawing one, at most one at a time each and then not for 10 minutes. Insurgents are
+            // chance of drawing one, at most one at a time each and then not for 10 minutes; with car bombs on (a
+            // VB-IED threat above None) half come as a car bomb driven at him. Insurgents are
             // the sides of the asymmetric AI Commanders. The bomber comes from that group's position,
             // dressed as a civilian like the town bombers, and goes after the player the same way.
             if (!isServer) exitWith {};
@@ -1234,8 +1235,15 @@ switch(_operation) do {
                             if (_spotters isNotEqualTo [] && {random 1 < 0.5}) then {
                                 private _from = getPos leader (selectRandom _spotters);
                                 private _faction = ADDON getVariable ["bomberFaction", "CIV_F"];
+                                // with car bombs on, half of them come in a car driven at him; otherwise on foot,
                                 // after the spotted player himself, not a squadmate
-                                private _bomber = [[_from, 60, _faction], [_player], true] call ALIVE_fnc_createBomber;
+                                private _bomber = objNull;
+                                if ((_logic getVariable ["VB_IED_Threat", 0]) > 0 && {random 1 < 0.5}) then {
+                                    _bomber = [_from, _player, _faction] call ALIVE_fnc_createDrivenVBIED;
+                                };
+                                if (isNull _bomber) then {
+                                    _bomber = [[_from, 60, _faction], [_player], true] call ALIVE_fnc_createBomber;
+                                };
                                 // the wait starts only once one is on his way
                                 if (!isNil "_bomber" && {_bomber isEqualType objNull} && {alive _bomber}) then {
                                     _player setVariable ["ALiVE_IED_dispatchBomber", _bomber];

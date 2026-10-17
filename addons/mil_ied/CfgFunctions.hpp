@@ -16,6 +16,11 @@ class cfgFunctions {
                                 file = "\x\alive\addons\mil_ied\fnc_iedMenuDef.sqf";
                                 ALIVE_RECOMPILE;
                         };
+                        class createDrivenVBIED {
+                                description = "A car bomb driven at a player";
+                                file = "\x\alive\addons\mil_ied\fnc_createDrivenVBIED.sqf";
+                                ALIVE_RECOMPILE;
+                        };
                         class createBomber {
                                 description = "Create an ambient suicide bomber";
                                 file = "\x\alive\addons\mil_ied\fnc_createBomber.sqf";

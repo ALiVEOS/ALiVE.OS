@@ -262,7 +262,7 @@
     <English>Insurgents Send Bombers</English>
 </Key>
 <Key ID="STR_ALIVE_IED_BOMBER_DISPATCH_COMMENT">
-    <English>With an asymmetric AI Commander and a Bomber Threat above None: an insurgent group that has spotted a player 150 to 800 m away may send a suicide bomber at him. At most one at a time for each player, then none for him for 10 minutes.</English>
+    <English>With an asymmetric AI Commander and a Bomber Threat above None: an insurgent group that has spotted a player 150 to 800 m away may send a suicide bomber at him, and with a VB-IED Threat above None, half the time a car bomb driven at him. At most one at a time for each player, then none for him for 10 minutes.</English>
 </Key>
 <Key ID="STR_ALIVE_IED_VB_IED_THREAT">
     <English>Vehicle Borne IED Threat:</English>
