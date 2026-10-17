@@ -419,6 +419,19 @@ switch (_operation) do {
             };
         };
 
+        // An insurgent commander marks the civilians its groups have been among, every minute
+        if (_type == "asymmetric") then {
+            [_handler] spawn {
+                params ["_handler"];
+                while {true} do {
+                    sleep 60;
+                    private _module = [_handler, "module", objNull] call ALiVE_fnc_HashGet;
+                    if (isNull _module) exitWith {};
+                    if (!isNil "ALiVE_fnc_INS_contactSweep") then { [_handler] call ALiVE_fnc_INS_contactSweep };
+                };
+            };
+        };
+
         // Security Patrols (#1087): every 2 minutes, once the commander has had 10 to settle its reserves
         if (_securityPatrols > 0) then {
             [_handler] spawn {

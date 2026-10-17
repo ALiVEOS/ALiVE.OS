@@ -2831,3 +2831,26 @@ ALiVE_fnc_INS_filterObjectiveBuildings = {
 
     _found
 };
+
+// Civilians who have had insurgents among them: every spawned civilian within 30 m of one of this insurgent
+// commander's groups is marked ALiVE_CivPop_InsurgentContact, which makes "Has anyone been pressuring you?" a yes.
+// The installation and bomber marks cover where insurgents set up; this covers where their patrols walk. Only
+// spawned groups and spawned civilians, so it costs nothing where no player is. [commander's handler]; returns how
+// many it marked.
+ALiVE_fnc_INS_contactSweep = {
+    params ["_handler"];
+    private _side = [[_handler, "side", ""] call ALiVE_fnc_HashGet] call ALIVE_fnc_sideTextToObject;
+    private _marked = 0;
+    {
+        private _leader = leader _x;
+        if (side _x == _side && {alive _leader} && {!isPlayer _leader} && {vehicle _leader == _leader || {(speed vehicle _leader) < 20}}) then {
+            {
+                if (side group _x == civilian && {!isPlayer _x} && {alive _x} && {!(_x getVariable ["ALiVE_CivPop_InsurgentContact", false])}) then {
+                    _x setVariable ["ALiVE_CivPop_InsurgentContact", true, true];
+                    _marked = _marked + 1;
+                };
+            } forEach (_leader nearEntities ["CAManBase", 30]);
+        };
+    } forEach allGroups;
+    _marked
+};
