@@ -166,6 +166,10 @@ switch (_operation) do {
         private _frontlineMinefields = toLower format ["%1", _logic getvariable ["frontlineMinefields","none"]];
         // Prepared Defences (#233): none, few or many.
         private _preparedDefences = toLower format ["%1", _logic getvariable ["preparedDefences","none"]];
+        // Security Patrols (#1087): the share of reserve groups that patrol between rear objectives.
+        private _securityPatrols = switch (toLower format ["%1", _logic getvariable ["securityPatrols","none"]]) do {
+            case "few": { 0.25 }; case "some": { 0.5 }; case "many": { 0.75 }; default { 0 };
+        };
         private _hostilityPresenceMultiplier = (parseNumber format ["%1", _logic getvariable ["hostilityPresenceMultiplier",1]]) max 0;
         private _hostilityInstallationMultiplier = (parseNumber format ["%1", _logic getvariable ["hostilityInstallationMultiplier",1]]) max 0;
         private _hostilityInstallationInterval = ((parseNumber format ["%1", _logic getvariable ["hostilityInstallationInterval",10]]) max 0) * 60;
@@ -342,6 +346,7 @@ switch (_operation) do {
             ["recruiters", _recruiters],
             ["frontlineMinefields", _frontlineMinefields],
             ["preparedDefences", _preparedDefences],
+            ["securityPatrols", _securityPatrols],
             ["hostilityPresenceMultiplier", _hostilityPresenceMultiplier],
             ["hostilityInstallationMultiplier", _hostilityInstallationMultiplier],
             ["hostilityInstallationInterval", _hostilityInstallationInterval],
@@ -410,6 +415,22 @@ switch (_operation) do {
                     private _module = [_handler, "module", objNull] call ALiVE_fnc_HashGet;
                     if (isNull _module) exitWith {};
                     [_handler] call ALIVE_fnc_OPCOMfriendlyDisableInstallations;
+                };
+            };
+        };
+
+        // Security Patrols (#1087): every 2 minutes, once the commander has had 10 to settle its reserves
+        if (_securityPatrols > 0) then {
+            [_handler] spawn {
+                params ["_handler"];
+                sleep 600;
+                while {true} do {
+                    private _module = [_handler, "module", objNull] call ALiVE_fnc_HashGet;
+                    if (isNull _module) exitWith {};
+                    if !([_handler, "pause", false] call ALiVE_fnc_HashGet) then {
+                        [_handler] call ALIVE_fnc_OPCOMsecurityPatrols;
+                    };
+                    sleep 120;
                 };
             };
         };

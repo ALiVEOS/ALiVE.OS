@@ -215,6 +215,20 @@ class CfgVehicles {
                                         class Many { name = "Many"; value = "many"; };
                                 };
                         };
+                        class securityPatrols : Combo
+                        {
+                                property = "ALiVE_mil_opcom_securityPatrols";
+                                displayName = "$STR_ALIVE_OPCOM_SECURITY_PATROLS";
+                                tooltip = "$STR_ALIVE_OPCOM_SECURITY_PATROLS_COMMENT";
+                                defaultValue = """none""";
+                                class Values
+                                {
+                                        class None { name = "None"; value = "none"; };
+                                        class Few  { name = "Few";  value = "few"; };
+                                        class Some { name = "Some"; value = "some"; };
+                                        class Many { name = "Many"; value = "many"; };
+                                };
+                        };
                         class HDR_HVT : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_HDR_HVT"; displayName = "HIGH VALUE TARGET"; };
                         class hvt : Combo
                         {

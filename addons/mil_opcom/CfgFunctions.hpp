@@ -86,6 +86,11 @@ class cfgFunctions {
                                 file = "\x\alive\addons\mil_opcom\fnc_OPCOMdecrementStartForceStrength.sqf";
                                 ALIVE_RECOMPILE;
                         };
+                        class OPCOMsecurityPatrols {
+                                description = "Issue #1087: reserve groups patrol between quiet rear objectives";
+                                file = "\x\alive\addons\mil_opcom\fnc_OPCOMsecurityPatrols.sqf";
+                                ALIVE_RECOMPILE;
+                        };
                         class OPCOMfriendlyDisableInstallations {
                                 description = "Issue #697: friendly AI disables enemy asymmetric installations via proximity presence and/or friendly OPCOM capture of the objective";
                                 file = "\x\alive\addons\mil_opcom\fnc_OPCOMfriendlyDisableInstallations.sqf";
