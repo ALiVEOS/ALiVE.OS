@@ -69,7 +69,7 @@ Jman
 // do nothing at all, so they are refused and reported instead. releaseHold is not
 // here on purpose: it sets the tank wherever the hull lives, so a player who took
 // the aircraft is never left with it empty.
-#define LOCAL_ONLY ["engineOn","engineOff","airborneStart","forceLaunch","virtualLaunch","taxiOut","placeOnSlot","forceLanded","spawnAtHome","seatCrew","recrewInPlace","standDownCrew","issueOrders","clearOrders","land","taxiTo","revealTargets","releaseTargets","catapult","tailhook","deckRecover","landOnRunway","holdOnStand","sleep"]
+#define LOCAL_ONLY ["engineOn","engineOff","airborneStart","forceLaunch","virtualLaunch","taxiOut","placeOnSlot","forceLanded","spawnAtHome","seatCrew","recrewInPlace","standDownCrew","issueOrders","clearOrders","land","taxiTo","revealTargets","revealAir","releaseTargets","catapult","tailhook","deckRecover","landOnRunway","holdOnStand","sleep"]
 
 // Refused on a hull this module has put out of sight on its stand, whoever
 // asks: a crew made in it or a launch from it would happen where nobody can see
@@ -194,7 +194,7 @@ switch(_operation) do {
     case "vocabulary": {
         _result = ["spawnAtHome","airborneStart","mintCrew","mintDroneCrew","seatCrew","recrewInPlace",
                    "standDownCrew","takeOwnership","engineOn","engineOff","issueOrders","clearOrders",
-                   "revealTargets","releaseTargets","landAtPad","releaseApproach",
+                   "revealTargets","revealAir","releaseTargets","landAtPad","releaseApproach",
                    "taxiTo","taxiOut","land","forceLaunch","forceLanded","placeOnSlot","shield",
                    "broadcast","broadcastStart","broadcastOnStation","broadcastReturn",
                    "broadcastLost","retryLanding","emergencyLanding","turnaround",
@@ -786,12 +786,33 @@ switch(_operation) do {
                     _matched = true; _detail = "unchanged";
                 };
 
+                // A fighter going to or on a patrol (CAP, DCA) flies at a set height: given none, it climbed on its
+                // loiter to whatever the engine and any flight mod chose, as high as ten kilometres, where it never
+                // saw the enemy aircraft it was there for (A. Ares on Discord, 17 Oct). ALiVE_ATO_patrolHeight, 1500 m.
+                // The height stays on the hull, so once the patrol is over it's set back to a plain cruise height
+                // (300 m) for whatever it flies next; the landing code takes it lower near the field.
+                private _patrolHeight = -1;
+                if (_obj isKindOf "Plane" && {(_extra param [1, ""]) in ["CAP","DCA"]} && {(_extra param [2, ""]) in ["ENROUTE","ON_STATION"]}) then {
+                    _patrolHeight = missionNamespace getVariable ["ALiVE_ATO_patrolHeight", 1500];
+                    _obj flyInHeight _patrolHeight;
+                    _obj setVariable ["ALiVE_mil_ato_patrolHeight", true];
+                } else {
+                    if (_obj getVariable ["ALiVE_mil_ato_patrolHeight", false]) then {
+                        _obj flyInHeight 300;
+                        _obj setVariable ["ALiVE_mil_ato_patrolHeight", nil];
+                    };
+                };
+
                 private _wps = waypoints _grp;
                 for "_i" from (count _wps - 1) to 0 step -1 do { deleteWaypoint [_grp, _i] };
                 {
                     _x params [["_type","MOVE",[""]], ["_pos",[0,0,0],[[]]]];
                     private _wp = _grp addWaypoint [_pos, 0];
                     _wp setWaypointType _type;
+                    if (_patrolHeight > 0 && {_type isEqualTo "LOITER"}) then {
+                        _wp setWaypointLoiterAltitude _patrolHeight;
+                        _wp setWaypointLoiterRadius 2500;
+                    };
                 } forEach _chain;
 
                 // Point the group back at the FIRST of the new orders. Emptying
@@ -890,6 +911,20 @@ switch(_operation) do {
                 } forEach _targets;
                 _grp setVariable ["ALiVE_mil_ato_revealed", _targets, false];
                 _detail = str (count _targets);
+            };
+
+            // A patrol's air picture: enemy aircraft it hasn't been told about yet are revealed, nothing more. No
+            // doTarget, so the crew chooses whom to fight, and the order the list comes in doesn't matter.
+            case "revealAir": {
+                private _targets = (_extra param [0, [], [[]]]) select { !isNull _x && {alive _x} };
+                private _grp = group (driver _obj);
+                if (isNull _grp) exitWith { _status = "refused"; _detail = "no group" };
+                private _held = (_grp getVariable ["ALiVE_mil_ato_airPicture", []]) select { !isNull _x && {alive _x} };
+                private _new = _targets - _held;
+                if (_new isEqualTo []) exitWith { _matched = true; _detail = "nothing new" };
+                { _grp reveal [_x, 4] } forEach _new;
+                _grp setVariable ["ALiVE_mil_ato_airPicture", _held + _new, false];
+                _detail = str (count _new);
             };
 
             case "releaseTargets": {

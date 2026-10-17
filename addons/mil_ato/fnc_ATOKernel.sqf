@@ -1424,7 +1424,8 @@ private _fnc_issueOrders = {
     };
     private _chain = [_orders, _obj, _home, _tuple, _state, _aim] call _fnc_resolveOrders;
     if (count _chain == 0) exitWith { false };
-    private _r = [_effect, "apply", ["issueOrders", _obj, _home, [_chain]]] call ALIVE_fnc_ATOEffect;
+    // the sortie's type and state ride along, so the effect can set a fighter on patrol at its height
+    private _r = [_effect, "apply", ["issueOrders", _obj, _home, [_chain, _tuple param [0, ""], _state]]] call ALIVE_fnc_ATOEffect;
     if !(_r isEqualType []) then { _r = ["refused", false, "no answer"] };
     [_logic, _tail, "issueOrders", _r, _state] call _fnc_noteRefusal;
     true
@@ -3381,6 +3382,28 @@ switch(_operation) do {
             if (_to in FLYING_STATES || {[_obs, "airborne", false] call ALIVE_fnc_hashGet}) then { _anyFlying = true };
             if (!isNull _obj && {alive _obj} && {[_obs, "airborne", false] call ALIVE_fnc_hashGet}) then {
                 _airborneNow pushBack [_obj, _airborneSide];
+                // A fighter on patrol is told about the enemy aircraft in the air within 8 km, every pass, as its
+                // radar would: it was only ever given the targets planned when the sortie was asked for, none for a
+                // patrol, and left to spot the rest itself (A. Ares on Discord, 17 Oct). Only ones it hasn't been
+                // told about yet, and the crew picks its own target. Where the hull lives, as every effect on it.
+                if (_to isEqualTo "ON_STATION" && {local _obj}) then {
+                    private _patrolTuple = [_row2] call _fnc_tupleOf;
+                    if (count _patrolTuple > 0 && {(_patrolTuple select 0) in ["CAP","DCA"]}) then {
+                        private _ourSide = [_airborneSide] call ALIVE_fnc_sideTextToObject;
+                        // flying: off the ground and 20 m up over land or sea (a jet parked on a carrier reads tens of
+                        // metres above the sea bed); parachutes are aircraft to the engine and are left out
+                        private _air = (_obj nearEntities [["Air"], 8000]) select {
+                            alive _x && {!isTouchingGround _x} && {((getPos _x) select 2) > 20}
+                            && {!(_x isKindOf "ParachuteBase")} && {(_ourSide getFriend side _x) < 0.6}
+                        };
+                        if (_air isNotEqualTo []) then {
+                            private _patrolEffect = [_logic, "effect"] call _fnc_piece;
+                            if !(_patrolEffect isEqualTo []) then {
+                                [_patrolEffect, "apply", ["revealAir", _obj, _home, [_air]]] call ALIVE_fnc_ATOEffect;
+                            };
+                        };
+                    };
+                };
             };
         } forEach _stepped;
 
