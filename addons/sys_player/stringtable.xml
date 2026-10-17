@@ -84,6 +84,12 @@
 	<Chinesesimp>在断开连接和重新连接之间保存您的播放器数据。 如果启用 DB,将在服务器重新启动之间存储玩家状态。</Chinesesimp>
     <Spanish>Guarda tus datos de jugador entre la desconexión y la reconexión. Si la base de datos está activada, conservará el estado del jugador entre reinicios del servidor.</Spanish>
 </Key>
+<Key ID="STR_ALIVE_player_persistBy">
+    <English>Persist By</English>
+</Key>
+<Key ID="STR_ALIVE_player_persistBy_COMMENT">
+    <English>Player keeps each player's own kit, position and health, whichever slot he takes. Slot keeps them with the slot instead, for units whose players change slots from one session to the next: whoever takes a slot gets its kit, position and health, while name, face, rank and scores stay with the player and the class check doesn't apply. Name the playable units in Eden (Variable Name) for Slot; a slot with no name is saved by player. Switching keeps the other mode's saves untouched.</English>
+</Key>
 <Key ID="STR_ALIVE_player_allowDiffClass">
     <English>Allow Different Class Rejoin:</English>
 	<Chinesesimp>允许不同的兵种重新加入：</Chinesesimp>

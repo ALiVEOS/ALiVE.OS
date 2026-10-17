@@ -25,6 +25,7 @@ See Also:
 Author:
 Tupolov
 Goldwep
+Jman
 
 Peer reviewed:
 nil
@@ -107,9 +108,15 @@ if (_puid != "") then {
     [_playerHash, "puid", _puid] call CBA_fnc_hashSet;
 };
 
+// Persisting by slot, the record is the slot's: the occupant's name, voice, face, rank and rating aren't kept in it
+// (they are never put back by slot either)
+if ((MOD(sys_player) getVariable ["persistBy", "player"]) == "slot") then {
+    { [_playerHash, _x] call CBA_fnc_hashRem } forEach ["name","speaker","nameSound","pitch","face","rating","rank"];
+};
+
 // Add gear data to player's hash
 private ["_gearHash","_addGear"];
-_gearHash = [GVAR(gear_data), _puid, "NONE"] call ALIVE_fnc_hashGet;
+_gearHash = [GVAR(gear_data), [_player, _puid] call ALiVE_fnc_playerKey, "NONE"] call ALIVE_fnc_hashGet;
 
 _addGear = {
     [_playerHash, _key, _value] call ALIVE_fnc_hashSet;

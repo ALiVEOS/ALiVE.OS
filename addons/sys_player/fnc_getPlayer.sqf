@@ -58,8 +58,14 @@ if (local _player) then {
     _saveScores = _logic getvariable ["saveScores",true];
     _saveAmmo = _logic getvariable ["saveAmmo",false];
 
-    // Create Data Command Array
+    // Create Data Command Array. Persisting by slot, the slot's state is put back and the last occupant's own is
+    // not: his name, voice, face, rank, rating and scores stay his, and the class check doesn't apply (the slot's
+    // class is the slot).
+    private _bySlot = (MOD(sys_player) getVariable ["persistBy", "player"]) == "slot";
     _data = GVAR(UNIT_DATA);
+    if (_bySlot) then {
+        _data = _data select { !((_x select 0) in ["name","speaker","nameSound","pitch","face","class","rating","rank"]) };
+    };
 
     if ( _savePosition) then {
         _data = _data + GVAR(POSITION_DATA);
@@ -73,7 +79,7 @@ if (local _player) then {
         _data =_data + GVAR(LOADOUT_DATA);
     };
 
-    if ( _saveScores) then {
+    if ( _saveScores && {!_bySlot}) then {
         _data =_data + GVAR(SCORE_DATA);
     };
 

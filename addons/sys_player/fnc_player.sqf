@@ -126,6 +126,9 @@ switch(_operation) do {
             MOD(sys_player) setVariable ["saveHealth", call compile (_logic getvariable ["saveHealth", "true"])];
             MOD(sys_player) setVariable ["savePosition", call compile (_logic getvariable ["savePosition", "true"])];
             MOD(sys_player) setVariable ["saveScores", call compile (_logic getvariable ["saveScores", "true"])];
+            // Persist By: "player" (each player's own state, the default) or "slot" (the state of the slot played);
+            // read through ALiVE_fnc_playerKey
+            MOD(sys_player) setVariable ["persistBy", toLower (_logic getvariable ["persistBy", "player"])];
 
             MOD(sys_player) setVariable ["saved", false];
 
@@ -508,10 +511,10 @@ switch(_operation) do {
                     _unit  = _args select 0;
 
                     // Check that the hash is found
-                     if ([GVAR(gear_data), (getPlayerUID _unit)] call CBA_fnc_hashHasKey) then {
+                     if ([GVAR(gear_data), ([_unit] call ALiVE_fnc_playerKey)] call CBA_fnc_hashHasKey) then {
 
                             // Grab player data from memory store
-                            _gearHash = [GVAR(gear_data), getPlayerUID _unit] call ALIVE_fnc_hashGet;
+                            _gearHash = [GVAR(gear_data), [_unit] call ALiVE_fnc_playerKey] call ALIVE_fnc_hashGet;
                             TRACE_1("GET GEAR", _gearHash);
 
                             // Execute getGear on local client
@@ -531,8 +534,8 @@ switch(_operation) do {
                         if (isNil QGVAR(gear_data)) then {
                             GVAR(gear_data) = [] call ALIVE_fnc_hashCreate;
                         };
-                        [GVAR(gear_data), getplayerUID _unit] call ALIVE_fnc_hashRem;
-                        [GVAR(gear_data), getplayerUID _unit, _gearHash] call ALIVE_fnc_hashSet;
+                        [GVAR(gear_data), [_unit] call ALiVE_fnc_playerKey] call ALIVE_fnc_hashRem;
+                        [GVAR(gear_data), [_unit] call ALiVE_fnc_playerKey, _gearHash] call ALIVE_fnc_hashSet;
                         _result = _gearHash;
         };
         case "updateGear": {
@@ -544,8 +547,8 @@ switch(_operation) do {
                     if (isNil QGVAR(gear_data)) then {
                         GVAR(gear_data) = [] call ALIVE_fnc_hashCreate;
                     };
-                    [GVAR(gear_data), getplayerUID _unit] call ALIVE_fnc_hashRem;
-                    [GVAR(gear_data), getplayerUID _unit, _gearHash] call ALIVE_fnc_hashSet;
+                    [GVAR(gear_data), [_unit] call ALiVE_fnc_playerKey] call ALIVE_fnc_hashRem;
+                    [GVAR(gear_data), [_unit] call ALiVE_fnc_playerKey, _gearHash] call ALIVE_fnc_hashSet;
                     // A restore sends its gear with a third element set. The player counts as
                     // restored for timed saves once that gear is in, marked in the same message,
                     // so a timed save can never pair the restore with the gear from before it.
@@ -571,10 +574,10 @@ switch(_operation) do {
                     _owner = _args select 1;
 
                     // Check that the hash is found
-                     if ([GVAR(player_data), (getPlayerUID _unit)] call CBA_fnc_hashHasKey) then {
+                     if ([GVAR(player_data), ([_unit] call ALiVE_fnc_playerKey)] call CBA_fnc_hashHasKey) then {
 
                             // Grab player data from memory store
-                            _playerHash = [GVAR(player_data), getPlayerUID _unit] call ALIVE_fnc_hashGet;
+                            _playerHash = [GVAR(player_data), [_unit] call ALiVE_fnc_playerKey] call ALIVE_fnc_hashGet;
                             TRACE_1("GET PLAYER", _playerHash);
 
                             // Execute getplayer on local client using CBA_fnc_remoteLocalEvent
@@ -681,8 +684,10 @@ switch(_operation) do {
                                 _result = false;
                             } else {
                                 _playerHash = [_logic, [_unit, _puid]] call ALIVE_fnc_setPlayer;
-                                [GVAR(player_data), _puid] call ALIVE_fnc_hashRem;
-                                [GVAR(player_data), _puid, _playerHash] call ALIVE_fnc_hashSet;
+                                // kept under the slot when persisting by slot, else under the player
+                                private _key = [_unit, _puid] call ALiVE_fnc_playerKey;
+                                [GVAR(player_data), _key] call ALIVE_fnc_hashRem;
+                                [GVAR(player_data), _key, _playerHash] call ALIVE_fnc_hashSet;
                                 _result = _playerHash;
                             };
                         };

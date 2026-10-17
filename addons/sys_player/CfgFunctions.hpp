@@ -1,6 +1,11 @@
 class cfgFunctions {
         class PREFIX {
                 class COMPONENT {
+                        class playerKey {
+                                description = "The key a player's saved state is kept under: player or slot";
+                                file = "\x\alive\addons\sys_player\fnc_playerKey.sqf";
+                ALIVE_RECOMPILE;
+                        };
                         class player {
                                 description = "The main class";
                                 file = "\x\alive\addons\sys_player\fnc_player.sqf";
