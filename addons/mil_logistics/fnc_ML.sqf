@@ -3715,6 +3715,19 @@ switch(_operation) do {
 
             private _dropRadius = 350;
             private _transitTimeout = 900;
+            // How long a virtual (unspawned) flight may take before the men are dropped anyway: the time the
+            // profile's own normal speed needs for the distance, half again, and never under 3 minutes, so a
+            // helicopter from a far airfield isn't made to drop short of the drop zone
+            private _virtualTimeout = 180;
+            private _tp0 = [ALIVE_profileHandler, "getProfile", _tProfID] call ALIVE_fnc_profileHandler;
+            if (!isNil "_tp0") then {
+                private _speeds = _tp0 select 2 select 22;
+                private _vNormal = if (_speeds isEqualType [] && {count _speeds > 1}) then { (_speeds select 1) max 1 } else { 20 };
+                private _from = _tp0 select 2 select 2;
+                if (_from isEqualType [] && {count _from > 1}) then {
+                    _virtualTimeout = (180 max (ceil ((_from distance2D _destPos) / _vNormal) * 1.5)) min _transitTimeout;
+                };
+            };
             private _phaseTimer = 0;
             private _phase = 0;
             private _dropped = false;
@@ -4057,7 +4070,7 @@ switch(_operation) do {
                                     _tProfID, round _dist2D] call ALiVE_fnc_dump;
                                 _phase = 1;
                             } else {
-                                if (_phaseTimer > 180) then {
+                                if (_phaseTimer > _virtualTimeout) then {
                                     ["ML - heliParadropWatchdog: %1 virtual timeout at %2s dist=%3m. Forcing drop.",
                                         _tProfID, _phaseTimer, round _dist2D] call ALiVE_fnc_dump;
                                     _phase = 1;
@@ -7921,11 +7934,11 @@ switch(_operation) do {
                                         };
                                     };
 
-                                    // Airfield departure override: launch this insertion from
-                                    // the held objective sitting on a fixed airfield (primary
-                                    // or secondary runway) instead of the supply-line departure
-                                    // base. Combat paradrops keep the default departure.
-                                    if (_heliDepartFromAirfield && _eventType == "HELI_INSERT") then {
+                                    // Airfield departure override: launch this insertion or combat paradrop
+                                    // from the held objective sitting on a fixed airfield (primary or
+                                    // secondary runway) instead of the supply-line departure base. A paradrop
+                                    // from further away gets the longer flight time the watchdog now allows.
+                                    if (_heliDepartFromAirfield && {_eventType in ["HELI_INSERT", "HELI_PARADROP"]}) then {
                                         private _airfieldPick = [_logic, "findNearestFriendlyAirfieldObjective", [
                                             _heldObjectives,
                                             _destPos
@@ -12211,7 +12224,11 @@ switch(_operation) do {
                             _vProfID = _eventTransportVehiclesProfiles select _tIdx;
                         };
 
-                        private _returnPos = [_reinforcementPrimaryObjective, "center"] call ALIVE_fnc_hashGet;
+                        // home to the airfield it launched from, when it launched from one
+                        private _returnPos = [_event, "departurePosition", []] call ALIVE_fnc_hashGet;
+                        if (isNil "_returnPos" || {!(_returnPos isEqualType [])} || {_returnPos isEqualTo []}) then {
+                            _returnPos = [_reinforcementPrimaryObjective, "center"] call ALIVE_fnc_hashGet;
+                        };
 
                         [_logic, "spawnHeliParadropWatchdog", [
                             _x, _vProfID, _eventPosition, _returnPos, _groupInfantryIDs, _paradropHeight, _debug
@@ -12308,7 +12325,12 @@ switch(_operation) do {
 
                 // Mirror heliTransportReturn: 3-waypoint egress to avoid AI hover issues.
                 // Profile waypoints must use 2D/terrain positions -- explicit Z causes descent.
-                private _reinforcementPosition = [_reinforcementPrimaryObjective, "center"] call ALIVE_fnc_hashGet;
+                // home to the airfield it launched from when it launched from one (Helicopters Depart From
+                // Airfields), as heliTransportReturn does, else the primary objective as before
+                private _reinforcementPosition = [_event, "departurePosition", []] call ALIVE_fnc_hashGet;
+                if (isNil "_reinforcementPosition" || {!(_reinforcementPosition isEqualType [])} || {count _reinforcementPosition < 2}) then {
+                    _reinforcementPosition = [_reinforcementPrimaryObjective, "center"] call ALIVE_fnc_hashGet;
+                };
                 private _eventDestination = [_event, "finalDestination"] call ALIVE_fnc_hashGet;
                 private _returnDest = if (count _eventDestination > 1) then {
                     private _egressDir = _eventDestination getDir _reinforcementPosition;
