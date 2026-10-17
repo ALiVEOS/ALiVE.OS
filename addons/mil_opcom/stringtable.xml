@@ -695,6 +695,12 @@
 <Key ID="STR_ALIVE_OPCOM_RECRUITER_SKIPS_COMMENT">
     <English>With Recruiters on: how many of the town's recruitment attempts are lost each time its recruiter is killed. 1 by default.</English>
 </Key>
+<Key ID="STR_ALIVE_OPCOM_RECRUITER_WALKS">
+    <English>Recruiter Walks The Town</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_RECRUITER_WALKS_COMMENT">
+    <English>With Recruiters on: No (default), he stays in the Recruitment HQ. Yes, he walks between the town's buildings within 150 m of it with his guards, out finding recruits, so he can be caught away from the HQ.</English>
+</Key>
 <Key ID="STR_ALIVE_OPCOM_PREPARED_DEFENCES">
     <English>Prepared Defences</English>
 </Key>

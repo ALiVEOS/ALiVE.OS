@@ -549,6 +549,20 @@ class CfgVehicles {
                                 defaultValue = """1""";
                                 typeName = "NUMBER";
                         };
+                        class recruiterWalks : Combo
+                        {
+                                property = "ALiVE_mil_opcom_recruiterWalks";
+                                displayName = "$STR_ALIVE_OPCOM_RECRUITER_WALKS";
+                                tooltip = "$STR_ALIVE_OPCOM_RECRUITER_WALKS_COMMENT";
+                                typeName = "STRING";
+                                expression = "_this setVariable ['recruiterWalks', _value];";
+                                defaultValue = """false""";
+                                class Values
+                                {
+                                        class No { name = "No"; value = "false"; };
+                                        class Yes { name = "Yes"; value = "true"; };
+                                };
+                        };
                         // ----  Task Overrides ----------------------------------------
                         class TSK_OVR : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_TSK_OVR"; displayName = "TASK OVERRIDES"; };
                         class taskProfileCountOverrides : Edit

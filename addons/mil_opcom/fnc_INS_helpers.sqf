@@ -2520,6 +2520,7 @@ ALiVE_fnc_INS_recruiterPresence = {
     private _class = selectRandom _classes;
     private _guardCount = [_opcom, "recruiterGuards", 2] call ALiVE_fnc_HashGet;
     private _skips = [_opcom, "recruiterSkips", 1] call ALiVE_fnc_HashGet;
+    private _walks = [_opcom, "recruiterWalks", false] call ALiVE_fnc_HashGet;
     private _guardClasses = if (_guardCount > 0) then {
         [[_faction], _guardCount, missionNamespace getVariable ["ALiVE_MIL_CQB_UNITBLACKLIST", []], true] call ALiVE_fnc_chooseRandomUnits
     } else { [] };
@@ -2611,7 +2612,18 @@ ALiVE_fnc_INS_recruiterPresence = {
                     _g setVariable ["ALiVE_ignore_HC", true, true];
                     _guards pushBack _g;
                 } forEach ([[], _guardClasses] select (_guards isEqualTo []));
-                ["ALiVE OPCOM: a recruiter (%1) is in the Recruitment HQ near %2, with %3 guard(s)", _class, mapGridPosition _HQ, count _guards] call ALiVE_fnc_dump;
+                // Recruiter Walks The Town: he and his guards walk a round of the town's buildings within 150 m of
+                // the HQ, back to it, and round again
+                if (_walks) then {
+                    { _x enableAI "PATH" } forEach (units _grp);
+                    _grp setBehaviour "SAFE";
+                    _grp setSpeedMode "LIMITED";
+                    private _stops = ((nearestObjects [_pos, ["House", "Building"], 150]) select { (_x buildingPos 0) isNotEqualTo [0,0,0] }) call BIS_fnc_arrayShuffle;
+                    { private _w = _grp addWaypoint [_x buildingPos 0, 0]; _w setWaypointType "MOVE"; _w setWaypointTimeout [20, 40, 60] } forEach (_stops select [0, 4]);
+                    private _home = _grp addWaypoint [_pos, 0];
+                    _home setWaypointType "CYCLE";
+                };
+                ["ALiVE OPCOM: a recruiter (%1) is in the Recruitment HQ near %2, with %3 guard(s)%4", _class, mapGridPosition _HQ, count _guards, ["", ", walking the town"] select _walks] call ALiVE_fnc_dump;
             };
         } else {
             // he goes when no one is near; when a task opens he waits until no player can see him go
