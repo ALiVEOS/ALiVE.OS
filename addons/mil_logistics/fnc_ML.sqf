@@ -6243,6 +6243,17 @@ switch(_operation) do {
                                             deleteVehicle _x;
                                         } forEach _eventAssets;
 
+                                        // The units already made were paid for from the force pool; deleted on a cancel, their
+                                        // cost goes back to it (A. Ares, 17 Oct: a cancelled request lost the points).
+                                        private _charged = [_x, "poolCharged", 0] call ALIVE_fnc_hashGet;
+                                        if (_charged isEqualType 0 && {_charged > 0} && {!isNil "ALIVE_globalForcePool"}) then {
+                                            private _pool = [ALIVE_globalForcePool, _eventFaction, 0] call ALIVE_fnc_hashGet;
+                                            if (_pool isEqualType "") then { _pool = parseNumber _pool };
+                                            [ALIVE_MLGlobalRegistry, "updateGlobalForcePool", [[_logic, "registryID"] call MAINCLASS, _pool + _charged]] call ALIVE_fnc_MLGlobalRegistry;
+                                            [_x, "poolCharged", 0] call ALIVE_fnc_hashSet;
+                                            ["ML - LOGCOM_CANCEL_REQUEST: %1 given back to the %2 force pool for a cancelled request", _charged, _eventFaction] call ALiVE_fnc_dump;
+                                        };
+
                                         // set state to event complete
                                         [_x, "state", "eventComplete"] call ALIVE_fnc_hashSet;
                                         [_eventQueue, _eventID, _x] call ALIVE_fnc_hashSet;
@@ -14105,6 +14116,8 @@ switch(_operation) do {
                             _forcePool = _forcePool - _totalCount;
                             // update the global force pool
                             [ALIVE_MLGlobalRegistry,"updateGlobalForcePool",[_registryID,_forcePool]] call ALIVE_fnc_MLGlobalRegistry;
+                            // what these units cost, so a player who cancels before they arrive gets it back
+                            [_event, "poolCharged", _totalCount] call ALIVE_fnc_hashSet;
 
                             switch(_eventType) do {
                                 case "PR_STANDARD": {
