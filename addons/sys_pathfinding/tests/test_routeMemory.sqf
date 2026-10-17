@@ -253,6 +253,97 @@ if (isNil "ALiVE_profileHandler") then {
     ["stallPass returns with no profile handler", isNil { [nil, "stallPass"] call ALiVE_fnc_pathfinderRouteMemory }] call _fnc_check;
 };
 
+// --- sizeClass on a live group (an empty world will do) ------------------------------
+private _testPos = [worldSize / 2, worldSize / 2, 0];
+private _liveTruck = createVehicle ["B_Truck_01_covered_F", _testPos, [], 0, "CAN_COLLIDE"];
+private _liveGroup = createGroup [west, true];
+private _liveDriver = _liveGroup createUnit ["B_Soldier_F", _testPos, [], 0, "CAN_COLLIDE"];
+_liveDriver moveInDriver _liveTruck;
+["sizeClass of a group in a truck is truck", ([nil, "sizeClass", _liveGroup] call ALiVE_fnc_pathfinderRouteMemory) == "truck"] call _fnc_check;
+moveOut _liveDriver;
+["sizeClass of a group on foot is man", ([nil, "sizeClass", _liveGroup] call ALiVE_fnc_pathfinderRouteMemory) == "man"] call _fnc_check;
+
+// --- with a profile system: registered profiles, the by-air victim, and one stall pass ---
+if (!isNil "ALiVE_profileSystem" && {!isNil "ALiVE_profileHandler"}) then {
+    // an aircraft profile and the group that flies it, registered the way sys_profile's own tests do
+    private _planeID = format ["rm_test_plane_%1", floor random 100000];
+    private _plane = [nil, "create"] call ALIVE_fnc_profileVehicle;
+    [_plane, "init"] call ALIVE_fnc_profileVehicle;
+    [_plane, "profileID", _planeID] call ALIVE_fnc_profileVehicle;
+    [_plane, "vehicleClass", "B_Plane_CAS_01_F"] call ALIVE_fnc_profileVehicle;
+    [_plane, "objectType", "B_Plane_CAS_01_F"] call ALIVE_fnc_profileVehicle;
+    [_plane, "position", _testPos] call ALIVE_fnc_profileVehicle;
+    [_plane, "side", "WEST"] call ALIVE_fnc_profileVehicle;
+    [ALIVE_profileHandler, "registerProfile", _plane] call ALIVE_fnc_profileHandler;
+    private _crew = [nil, "create"] call ALIVE_fnc_profileEntity;
+    [_crew, "init"] call ALIVE_fnc_profileEntity;
+    [_crew, "profileID", format ["rm_test_crew_%1", floor random 100000]] call ALIVE_fnc_profileEntity;
+    [_crew, "vehiclesInCommandOf", [_planeID]] call ALiVE_fnc_hashSet;
+    [_crew, "position", _epos] call ALIVE_fnc_profileEntity;
+    [_crew, "side", "WEST"] call ALIVE_fnc_profileEntity;
+    ["sizeClass of a profile commanding an aircraft falls back to truck", ([nil, "sizeClass", _crew] call ALiVE_fnc_pathfinderRouteMemory) == "truck"] call _fnc_check;
+    private _beforeAir = ((ALiVE_routeMemory_danger get "WEST") get _ekey) select 0;
+    [nil, "handleEvent", ["PROFILE_KILLED", [_epos, "BLU_F", "WEST", "EAST", _crew]] call _fnc_event] call ALiVE_fnc_pathfinderRouteMemory;
+    ["a group lost with its aircraft adds nothing", [(((ALiVE_routeMemory_danger get "WEST") get _ekey) select 0), _beforeAir, 0.002] call _fnc_near] call _fnc_check;
+    [ALIVE_profileHandler, "unregisterProfile", _plane] call ALIVE_fnc_profileHandler;
+    // a truck profile the same way, to take the profile branch of sizeClass through to a real class
+    private _truckID = format ["rm_test_truck_%1", floor random 100000];
+    private _truckProfile = [nil, "create"] call ALIVE_fnc_profileVehicle;
+    [_truckProfile, "init"] call ALIVE_fnc_profileVehicle;
+    [_truckProfile, "profileID", _truckID] call ALIVE_fnc_profileVehicle;
+    [_truckProfile, "vehicleClass", "B_Truck_01_covered_F"] call ALIVE_fnc_profileVehicle;
+    [_truckProfile, "position", _testPos] call ALIVE_fnc_profileVehicle;
+    [_truckProfile, "side", "WEST"] call ALIVE_fnc_profileVehicle;
+    [ALIVE_profileHandler, "registerProfile", _truckProfile] call ALIVE_fnc_profileHandler;
+    [_crew, "vehiclesInCommandOf", [_truckID]] call ALiVE_fnc_hashSet;
+    ["sizeClass of a profile commanding a truck is truck", ([nil, "sizeClass", _crew] call ALiVE_fnc_pathfinderRouteMemory) == "truck"] call _fnc_check;
+    // an attack on that group adds a tenth where it stands
+    [ALIVE_profileHandler, "registerProfile", _crew] call ALIVE_fnc_profileHandler;
+    private _crewID = _crew select 2 select 4;
+    private _beforeHit = ((ALiVE_routeMemory_danger get "WEST") get _ekey) select 0;
+    [nil, "handleEvent", ["PROFILE_ATTACK_START", ["atk_2", "attacker_x", [_crewID]]] call _fnc_event] call ALiVE_fnc_pathfinderRouteMemory;
+    ["an attack on a known group adds a tenth at its position", [(((ALiVE_routeMemory_danger get "WEST") get _ekey) select 0), _beforeHit + 0.1, 0.002] call _fnc_near] call _fnc_check;
+
+    // one stall pass over this group: registered as active with a far MOVE order and a stale stall entry,
+    // so the pass either records why it is standing still or marks ground blocked and asks for a detour
+    [_crew, "group", _liveGroup] call ALIVE_fnc_profileEntity;
+    [_crew, "active", true] call ALIVE_fnc_profileEntity;
+    [_crew, "vehiclesInCommandOf", []] call ALiVE_fnc_hashSet;
+    private _order = _liveGroup addWaypoint [_testPos getPos [3000, 0], 0];
+    _order setWaypointType "MOVE";
+    _liveGroup setCurrentWaypoint _order;
+    private _activeList = [ALiVE_profileHandler, "entitiesActive"] call ALiVE_fnc_hashGet;
+    private _wasListed = _crewID in _activeList;
+    if (!_wasListed) then { _activeList pushBack _crewID };
+    private _here = getPosATL _liveDriver;
+    private _dist = _here distance2D (waypointPosition _order);
+    private _now = missionNamespace getVariable ["ALiVE_simulationTime", time];
+    ALiVE_routeMemory_stall set [_crewID, [_dist, _now - 1000, [count waypoints _liveGroup, currentWaypoint _liveGroup, waypointPosition _order], [], ""]];
+    private _blockedBefore = count (ALiVE_routeMemory_blocked getOrDefault ["man", createHashMap]);
+    [nil, "stallPass"] call ALiVE_fnc_pathfinderRouteMemory;
+    private _entry = ALiVE_routeMemory_stall get _crewID;
+    ["the stall pass looked at the active group", !isNil "_entry"] call _fnc_check;
+    if (!isNil "_entry") then {
+        private _why = _entry param [4, ""];
+        diag_log format ["  info  stall pass outcome for the test group: %1", ["detour", _why] select (_why != "")];
+        if (_why == "detour") then {
+            ["a detour marked ground ahead blocked for men", count (ALiVE_routeMemory_blocked getOrDefault ["man", createHashMap]) > _blockedBefore] call _fnc_check;
+            ["a detour is counted in the group's history", count (_entry param [3, []]) == 1] call _fnc_check;
+        } else {
+            ["a group with a reason to wait keeps a fresh entry and no detour", (_entry select 1) >= _now && {(_entry param [3, []]) isEqualTo []}] call _fnc_check;
+        };
+    };
+    ALiVE_routeMemory_stall deleteAt _crewID;
+    if (!_wasListed) then { _activeList deleteAt (_activeList find _crewID) };
+    [ALIVE_profileHandler, "unregisterProfile", _crew] call ALIVE_fnc_profileHandler;
+    [ALIVE_profileHandler, "unregisterProfile", _truckProfile] call ALIVE_fnc_profileHandler;
+} else {
+    diag_log "  skip  registered-profile and stall-pass cases (no profile system in this world)";
+};
+deleteVehicle _liveDriver;
+deleteVehicle _liveTruck;
+deleteGroup _liveGroup;
+
 // --- live pathfinder: Off routes as before, danger bends the route ----------------
 private _fnc_finish = {
     params ["_fails", "_saved", "_stubbedPathfinder"];
