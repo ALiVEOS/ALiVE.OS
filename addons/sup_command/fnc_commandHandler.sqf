@@ -311,7 +311,8 @@ switch(_operation) do {
 
                 case "OPS_ADD_OBJECTIVE": {
 
-                    [_logic,"opsAddObjective", _data] call MAINCLASS;
+                    // a marker is only ever linked by the server's own marker watch
+                    [_logic,"opsAddObjective", _data select [0, 4]] call MAINCLASS;
 
                 };
 
@@ -2579,15 +2580,27 @@ switch(_operation) do {
 
         if (_args isEqualType []) then {
 
-            _args params [["_playerID","",[""]],["_selOpcom",[],[[]]],["_pos",[],[[]]]];
+            // intent: "take" or "hold" (the tablet's two buttons, or a map marker's text); "" leaves the
+            // commander to judge from who's there, as before. A marker's request also gets its answer in chat.
+            _args params [["_playerID","",[""]],["_selOpcom",[],[[]]],["_pos",[],[[]]],["_intent","",[""]],["_marker","",[""]]];
 
             if (count _selOpcom < 3 || {count _pos < 2}) exitwith {};
+            if !(_intent in ["", "take", "hold"]) then { _intent = "" };
+
+            private _fnc_reply = {
+                params ["_text"];
+                [_logic,"opsSendObjectives",[_playerID,_selOpcom,_text]] call MAINCLASS;
+                if (_marker != "" && {_text != ""}) then {
+                    private _who = [_playerID] call ALiVE_fnc_getPlayerByUID;
+                    if (!isNull _who) then { [format ["ALiVE: %1", _text]] remoteExecCall ["systemChat", _who] };
+                };
+            };
 
             // server-side enforcement - the client greying is cosmetic only
 
             private _enabled = [_logic,"playerObjectivesEnabled",false] call ALiVE_fnc_hashGet;
             if !(_enabled) exitwith {
-                [_logic,"opsSendObjectives",[_playerID,_selOpcom,"Player objectives are disabled"]] call MAINCLASS;
+                ["Player objectives are disabled"] call _fnc_reply;
             };
 
             // resolve + authorize the commander first, so the quota and side used
@@ -2597,10 +2610,11 @@ switch(_operation) do {
 
             if !([_logic,"opsCallerAuthorizedForOpcom",[_playerID,_opcom,"opsLimit"]] call MAINCLASS) exitwith {
                 [_logic,"opsSendObjectivesDenied",[_playerID,_selOpcom]] call MAINCLASS;
+                if (_marker != "") then { ["You can't direct that commander"] call _fnc_reply };
             };
 
             if (isnil "_opcom") exitwith {
-                [_logic,"opsSendObjectives",[_playerID,_selOpcom,""]] call MAINCLASS;
+                ["No commander to take it"] call _fnc_reply;
             };
 
             private _opcomSide = [_opcom,"side",""] call ALiVE_fnc_hashGet;
@@ -2611,14 +2625,14 @@ switch(_operation) do {
 
             if (time - _lastDesignation < _cooldown) exitwith {
                 private _remaining = ceil (_cooldown - (time - _lastDesignation));
-                [_logic,"opsSendObjectives",[_playerID,_selOpcom,format ["Objective cooldown: %1s remaining", _remaining]]] call MAINCLASS;
+                [format ["Objective cooldown: %1s remaining", _remaining]] call _fnc_reply;
             };
 
             private _maxObjectives = [_logic,"maxPlayerObjectives",3] call ALiVE_fnc_hashGet;
             private _playerObjectiveCount = [_logic,"opsCountPlayerObjectives", _opcomSide] call MAINCLASS;
 
             if (_playerObjectiveCount >= _maxObjectives) exitwith {
-                [_logic,"opsSendObjectives",[_playerID,_selOpcom,"Maximum player objectives reached"]] call MAINCLASS;
+                ["Maximum player objectives reached"] call _fnc_reply;
             };
 
             // front-insert as unassigned - OPCOM classifies it on the next
@@ -2634,12 +2648,95 @@ switch(_operation) do {
             private _opcomID = [_opcom,"opcomID",""] call ALiVE_fnc_hashGet;
             private _objectiveID = format ["%1_player_obj_%2", _opcomID, _counter];
 
-            [_opcom,"addObjective",[_objectiveID,_pos,100,"custom",100,"unassigned","none",_opcomID,true,true]] call ALiVE_fnc_OPCOM;
+            // taken or held as the player asked, or judged by the commander when he didn't say
+            private _state = ["unassigned", "attack"] select (_intent == "take");
+            private _objective = [_opcom,"addObjective",[_objectiveID,_pos,100,"custom",100,_state,"none",_opcomID,true,true]] call ALiVE_fnc_OPCOM;
+            if (!isNil "_objective" && {_intent != ""}) then { [_objective,"playerIntent",_intent] call ALiVE_fnc_hashSet };
             [_cooldowns,_playerID,time] call ALiVE_fnc_hashSet;
 
-            [_logic,"opsSendObjectives",[_playerID,_selOpcom,"Objective designated"]] call MAINCLASS;
+            // a marker that made it: deleting the marker takes the objective away again
+            if (_marker != "") then {
+                private _byMarker = [_logic,"playerObjectiveMarkers",[] call ALiVE_fnc_hashCreate] call ALiVE_fnc_hashGet;
+                [_byMarker,_marker,[_objectiveID,_playerID,+_selOpcom]] call ALiVE_fnc_hashSet;
+                [_logic,"playerObjectiveMarkers",_byMarker] call ALiVE_fnc_hashSet;
+            };
+
+            [switch (_intent) do { case "take": {"Objective designated: take it"}; case "hold": {"Objective designated: hold it"}; default {"Objective designated"} }] call _fnc_reply;
 
         };
+
+    };
+
+    case "opsWatchMarkers": {
+
+        // A player can also set an objective from the map: a marker whose text starts "obj take" or "obj hold" is
+        // sent through opsAddObjective for his side's commander, with every check the tablet's request gets.
+        // Deleting that marker cancels the objective. Server only, installed once. Note: like everything a
+        // client's own scripts can do, a marker can be made in another player's name by a client running script.
+
+        if (!isServer || {!isNil "ALiVE_SCOM_markerWatch"}) exitWith {};
+        ALiVE_SCOM_markerWatch = true;
+
+        // the player who placed a marker: the engine names him, or a player-made marker's name carries his
+        // owner id ("_USER_DEFINED #<id>/...")
+        ALiVE_fnc_SCOMMarkerOwner = {
+            params ["_marker", ["_owner", objNull]];
+            private _m = _marker splitString "#/";
+            if (count _m < 2 || {(_m select 0) != "_USER_DEFINED "}) exitWith { objNull };
+            private _id = _m select 1;
+            private _i = allPlayers findIf { getPlayerID _x == _id };
+            private _named = if (_i < 0) then { objNull } else { allPlayers select _i };
+            // the engine's word and the name's must agree when the engine gives one
+            if (!isNull _owner && {_owner != _named}) exitWith { objNull };
+            _named
+        };
+
+        addMissionEventHandler ["MarkerCreated", {
+            params ["_marker", "_channel", ["_owner", objNull]];
+            if ((_marker find "_USER_DEFINED") != 0) exitWith {};
+            [_marker, _owner] spawn {
+                params ["_marker", "_owner"];
+                // the text can arrive just after the marker
+                sleep 0.5;
+                private _words = (toLower (markerText _marker)) splitString " ";
+                if (count _words < 2 || {(_words select 0) != "obj"} || {!((_words select 1) in ["take", "hold"])}) exitWith {};
+                private _player = [_marker, _owner] call ALiVE_fnc_SCOMMarkerOwner;
+                if (isNull _player || {isNil "ALIVE_commandHandler"}) exitWith {};
+                private _h = ALIVE_commandHandler;
+                private _sideText = [_h,"opsPlayerSideText",_player] call ALiVE_fnc_commandHandler;
+                private _uid = getPlayerUID _player;
+                // the first commander of his side that he's allowed to direct
+                private _mine = (missionNamespace getVariable ["OPCOM_instances", []]) select {
+                    ([_x,"side",""] call ALiVE_fnc_hashGet) == _sideText
+                    && {[_h,"opsCallerAuthorizedForOpcom",[_uid,_x,"opsLimit"]] call ALiVE_fnc_commandHandler}
+                };
+                if (_mine isEqualTo []) exitWith {
+                    ["ALiVE: no commander of your side takes objectives from you"] remoteExecCall ["systemChat", _player];
+                };
+                private _opcom = _mine select 0;
+                private _intent = _words select 1;
+                private _sel = [[_opcom,"opcomID",""] call ALiVE_fnc_hashGet, [_opcom,"name",""] call ALiVE_fnc_hashGet, _sideText];
+                // in one go, so two markers at once can't both pass the cooldown and the cap
+                isNil { [_h,"opsAddObjective",[_uid,_sel,getMarkerPos _marker,_intent,_marker]] call ALiVE_fnc_commandHandler };
+            };
+        }];
+
+        addMissionEventHandler ["MarkerDeleted", {
+            params ["_marker"];
+            if (isNil "ALIVE_commandHandler") exitWith {};
+            private _byMarker = [ALIVE_commandHandler,"playerObjectiveMarkers",[] call ALiVE_fnc_hashCreate] call ALiVE_fnc_hashGet;
+            private _entry = [_byMarker,_marker] call ALiVE_fnc_hashGet;
+            if (isNil "_entry") exitWith {};
+            _entry params ["_objectiveID", "_uid", "_sel"];
+            [_byMarker,_marker] call ALiVE_fnc_hashRem;
+            // taken away here on the server, so it goes even when the player who set it has left
+            private _opcom = [ALIVE_commandHandler,"opsFindOPCOM", _sel select 0] call ALiVE_fnc_commandHandler;
+            if (isNil "_opcom") exitWith {};
+            private _objective = [_opcom,"getObjectiveByID",_objectiveID] call ALiVE_fnc_OPCOM;
+            if (!isNil "_objective" && {[_objective,"playerCreated",false] call ALiVE_fnc_hashGet}) then {
+                [_opcom,"removeObjective",_objectiveID] call ALiVE_fnc_OPCOM;
+            };
+        }];
 
     };
 

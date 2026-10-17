@@ -465,7 +465,7 @@
     <Spanish>Permitir objetivos de jugador:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_SCOM_OPS_ALLOW_PLAYER_OBJECTIVES_COMMENT">
-    <English>Allow players to designate, cancel and reprioritise commander objectives from the Operations tablet view</English>
+    <English>Allow players to designate, cancel and reprioritise commander objectives from the Operations tablet view, choosing whether each is to be taken or held. They can also set one from the map: a marker whose text starts obj take or obj hold goes to their side's commander, and deleting the marker cancels it.</English>
     <Spanish>Permite a los jugadores designar, cancelar y repriorizar objetivos del comandante desde la vista de Operaciones de la tableta</Spanish>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_SCOM_OPS_OBJECTIVE_COOLDOWN">

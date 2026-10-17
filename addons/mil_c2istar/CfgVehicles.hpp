@@ -509,7 +509,7 @@ class CfgVehicles {
                             property = "ALiVE_MIL_C2ISTAR_scomOpsAllowPlayerObjectives";
                             displayName = "$STR_ALIVE_C2ISTAR_SCOM_OPS_ALLOW_PLAYER_OBJECTIVES";
                             tooltip = "$STR_ALIVE_C2ISTAR_SCOM_OPS_ALLOW_PLAYER_OBJECTIVES_COMMENT";
-                            defaultValue = """false""";
+                            defaultValue = """true""";
                             class Values
                             {
                                     class No  { name = "No";  value = "false"; };

@@ -3994,6 +3994,23 @@ switch (_operation) do {
                 };
             } forEach _candidates;
 
+            // A player's objective set to be taken or held (sup_command): taken once only the side's own are
+            // there, so it settles like any held objective; until then, while nobody's on it, take is an attack.
+            // Hold is an attack too while only the enemy is there (through the same caps and holds as any attack)
+            // and a defence otherwise.
+            private _intent = [_objective,"playerIntent",""] call ALiVE_fnc_HashGet;
+            if (_intent != "") then {
+                private _ownOnly = _nearFriendlies isnotequalto [] && {_nearEnemies isequalto []};
+                private _enemyOnly = _nearFriendlies isequalto [] && {_nearEnemies isnotequalto []};
+                if (_intent == "take" && {_ownOnly}) then {
+                    [_objective,"playerIntent",""] call ALiVE_fnc_HashSet;
+                } else {
+                    if (_section isequalto []) then {
+                        [_objective,"opcom_state", ["defend", "attack"] select (_intent == "take" || {_enemyOnly})] call ALiVE_fnc_HashSet;
+                    };
+                };
+            };
+
             // determine objective state from near entities
 
             if (_nearFriendlies isnotequalto []) then {

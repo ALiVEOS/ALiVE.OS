@@ -429,7 +429,7 @@ switch(_operation) do {
         if (typeName _args == "BOOL") then {
             _logic setVariable ["scomOpsAllowPlayerObjectives", _args];
         } else {
-            _args = _logic getVariable ["scomOpsAllowPlayerObjectives", false];
+            _args = _logic getVariable ["scomOpsAllowPlayerObjectives", true];
         };
         if (typeName _args == "STRING") then {
                 if(_args == "true") then {_args = true;} else {_args = false;};

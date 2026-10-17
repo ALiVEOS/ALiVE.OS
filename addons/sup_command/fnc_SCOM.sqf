@@ -190,7 +190,7 @@ switch (_operation) do {
         if (typeName _args == "BOOL") then {
             _logic setVariable ["scomOpsAllowPlayerObjectives", _args];
         } else {
-            _args = _logic getVariable ["scomOpsAllowPlayerObjectives", false];
+            _args = _logic getVariable ["scomOpsAllowPlayerObjectives", true];
         };
         if (typeName _args == "STRING") then {
                 if(_args == "true") then {_args = true;} else {_args = false;};
@@ -323,6 +323,10 @@ switch (_operation) do {
             [ALIVE_commandHandler, "playerObjectiveCooldown", [_logic,"scomOpsObjectiveCooldown"] call MAINCLASS] call ALiVE_fnc_hashSet;
             [ALIVE_commandHandler, "maxPlayerObjectives", [_logic,"scomOpsMaxPlayerObjectives"] call MAINCLASS] call ALiVE_fnc_hashSet;
             [ALIVE_commandHandler, "playerObjectiveCooldowns", [] call ALIVE_fnc_hashCreate] call ALiVE_fnc_hashSet;
+            // objectives can also be set from the map, with a marker whose text starts with "obj"
+            if ([ALIVE_commandHandler, "playerObjectivesEnabled", false] call ALiVE_fnc_hashGet) then {
+                [ALIVE_commandHandler, "opsWatchMarkers"] call ALIVE_fnc_commandHandler;
+            };
 
             // mirror the tab limits onto the server handler so caller-side authorization
             // reads the authoritative Eden value, never a client-supplied one
@@ -2062,14 +2066,23 @@ switch (_operation) do {
 
                     [_logic,"setOpsStatus", "Click map to place objective"] call MAINCLASS;
 
+                    // take the place or hold it, once a spot is clicked
                     private _buttonR1 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR1);
-                    _buttonR1 ctrlSetText localize "STR_ALIVE_SCOM_UI_CONFIRM_POSITION";
+                    _buttonR1 ctrlSetText localize "STR_ALIVE_SCOM_UI_TAKE_POSITION";
                     _buttonR1 ctrlEnable false;
-                    _buttonR1 ctrlSetEventHandler ["MouseButtonClick", "['OPS_OBJECTIVE_CONFIRM',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
+                    _buttonR1 ctrlSetEventHandler ["MouseButtonClick", "['OPS_OBJECTIVE_CONFIRM',[_this,'take']] call ALIVE_fnc_SCOMTabletOnAction"];
 
                     private _buttonR2 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR2);
-                    _buttonR2 ctrlSetText localize "STR_ALIVE_SCOM_UI_CANCEL_DESIGNATION";
-                    _buttonR2 ctrlSetEventHandler ["MouseButtonClick", "['OPS_OBJECTIVE_DESIGNATE_CANCEL',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
+                    _buttonR2 ctrlSetText localize "STR_ALIVE_SCOM_UI_HOLD_POSITION";
+                    _buttonR2 ctrlEnable false;
+                    _buttonR2 ctrlShow true;
+                    _buttonR2 ctrlSetEventHandler ["MouseButtonClick", "['OPS_OBJECTIVE_CONFIRM',[_this,'hold']] call ALIVE_fnc_SCOMTabletOnAction"];
+
+                    private _buttonR3 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR3);
+                    _buttonR3 ctrlSetText localize "STR_ALIVE_SCOM_UI_CANCEL_DESIGNATION";
+                    _buttonR3 ctrlEnable true;
+                    _buttonR3 ctrlShow true;
+                    _buttonR3 ctrlSetEventHandler ["MouseButtonClick", "['OPS_OBJECTIVE_DESIGNATE_CANCEL',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
                 };
 
@@ -2109,6 +2122,8 @@ switch (_operation) do {
 
                         private _buttonR1 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR1);
                         _buttonR1 ctrlEnable true;
+                        private _buttonR2 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR2);
+                        _buttonR2 ctrlEnable true;
 
                     };
 
@@ -2133,7 +2148,10 @@ switch (_operation) do {
                     private _selOpcom = [_commandState,"opsOPCOMSelectedValue"] call ALIVE_fnc_hashGet;
                     private _playerID = getPlayerUID player;
 
-                    ["OPS_ADD_OBJECTIVE", [_playerID,_selOpcom,_position]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToServer", 2];
+                    // the button pressed: take or hold
+                    private _intent = (_args param [1, ""]);
+                    if !(_intent in ["take", "hold"]) then { _intent = "" };
+                    ["OPS_ADD_OBJECTIVE", [_playerID,_selOpcom,_position,_intent]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToServer", 2];
 
                 };
 

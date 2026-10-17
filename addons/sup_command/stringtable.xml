@@ -217,6 +217,12 @@
     <Portuguese>Aplicar ordens</Portuguese>
     <Russian>Применить приказы</Russian>
 </Key>
+<Key ID="STR_ALIVE_SCOM_UI_TAKE_POSITION">
+    <English>Take Position</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_UI_HOLD_POSITION">
+    <English>Hold Position</English>
+</Key>
 <Key ID="STR_ALIVE_SCOM_UI_CONFIRM_POSITION">
     <English>Confirm Position</English>
     <Chinesesimp>确认位置</Chinesesimp>
