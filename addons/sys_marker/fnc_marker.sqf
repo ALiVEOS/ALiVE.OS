@@ -309,8 +309,11 @@ switch (_operation) do {
                             _display displayAddEventHandler ["keyDown", {[ALiVE_SYS_marker,"keyDown",[player, _this]] call ALiVE_fnc_marker;}];
                             ["Registered controls for NON-JIP on briefing screen: %1", player] call ALiVE_fnc_Dump;
 
-                            // Restore Markers on map for non JIPs
-                            [_logic, "restoreMarkers", [GVAR(STORE)]] call ALiVE_fnc_marker;
+                            // Restore Markers on map for non JIPs, once the player's side is known (see below)
+                            if ((str side group player) != "UNKNOWN" && {isNil QGVAR(restored)}) then {
+                                GVAR(restored) = true;
+                                [_logic, "restoreMarkers", [GVAR(STORE)]] call ALiVE_fnc_marker;
+                            };
                         } else {
                             ["Did not Register Adv Marker controls for briefing screen: %1", player] call ALiVE_fnc_Dump;
                         };
@@ -324,6 +327,15 @@ switch (_operation) do {
                 waitUntil {
                     sleep 1;
                     ((str side group player) != "UNKNOWN")
+                };
+
+                // Players who started with the mission got the saved markers only through the briefing screen above,
+                // and only if their side was known by then: with no briefing screen, or a dedicated server where the
+                // player isn't in his group that early, they never saw them until someone edited one (kawi0756 on
+                // Discord, 17 Oct). Restore here once the side is known, if the briefing didn't.
+                if (isMultiplayer && {!didJIP} && {isNil QGVAR(restored)}) then {
+                    GVAR(restored) = true;
+                    [_logic, "restoreMarkers", [GVAR(STORE)]] call ALiVE_fnc_marker;
                 };
 
                 // Wait until game map is opened and register map controls

@@ -199,7 +199,17 @@ switch (_operation) do {
                     };
                 } else {
                       // Restore Markers on map based on initial store
-                    [_logic, "restorepatrolreps", [GVAR(STORE)]] call ALiVE_fnc_patrolrep;
+                    // Kept until the player's side is known: the restore keeps only the side's own, and on a dedicated
+                    // server the player isn't in his group yet this early, so it kept none and the players who
+                    // started with the mission never saw what was saved (kawi0756 on Discord, 17 Oct)
+                    [_logic] spawn {
+                        params ["_logic"];
+                        waitUntil { sleep 0.5; (str side group player) != "UNKNOWN" };
+                        // and C2ISTAR, which says whether reports go in the diary; a mission without it goes on after 30 s
+                        private _deadline = diag_tickTime + 30;
+                        waitUntil { sleep 0.5; !isNil "ALIVE_MIL_C2ISTAR" || {diag_tickTime > _deadline} };
+                        [_logic, "restorepatrolreps", [GVAR(STORE)]] call ALiVE_fnc_patrolrep;
+                    };
                 };
                  TRACE_1("Initial STORE", GVAR(STORE));
 
