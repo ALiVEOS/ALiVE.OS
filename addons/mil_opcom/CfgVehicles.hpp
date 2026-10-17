@@ -523,6 +523,32 @@ class CfgVehicles {
                                         class Yes { name = "Yes"; value = "true"; };
                                 };
                         };
+                        class recruiterClass
+                        {
+                                control = "ALiVE_RecruiterClassChoice";
+                                typeName = "STRING";
+                                expression = "_this setVariable ['recruiterClass', _value];";
+                                property = "ALiVE_mil_opcom_recruiterClass";
+                                displayName = "$STR_ALIVE_OPCOM_RECRUITER_CLASS";
+                                tooltip = "$STR_ALIVE_OPCOM_RECRUITER_CLASS_COMMENT";
+                                defaultValue = """""";
+                        };
+                        class recruiterGuards : Edit
+                        {
+                                property = "ALiVE_mil_opcom_recruiterGuards";
+                                displayName = "$STR_ALIVE_OPCOM_RECRUITER_GUARDS";
+                                tooltip = "$STR_ALIVE_OPCOM_RECRUITER_GUARDS_COMMENT";
+                                defaultValue = """2""";
+                                typeName = "NUMBER";
+                        };
+                        class recruiterSkips : Edit
+                        {
+                                property = "ALiVE_mil_opcom_recruiterSkips";
+                                displayName = "$STR_ALIVE_OPCOM_RECRUITER_SKIPS";
+                                tooltip = "$STR_ALIVE_OPCOM_RECRUITER_SKIPS_COMMENT";
+                                defaultValue = """1""";
+                                typeName = "NUMBER";
+                        };
                         // ----  Task Overrides ----------------------------------------
                         class TSK_OVR : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_TSK_OVR"; displayName = "TASK OVERRIDES"; };
                         class taskProfileCountOverrides : Edit

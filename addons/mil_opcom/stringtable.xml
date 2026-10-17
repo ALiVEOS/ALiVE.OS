@@ -675,7 +675,25 @@
     <English>Recruiters</English>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_RECRUITERS_COMMENT">
-    <English>Insurgency commander only. A recruiter stands in each Recruitment HQ while players are within 800 m. Kill him and that town skips its next recruitment, and a new recruiter turns up after one Recruit Cycle Max. Killing the target of a recruiter HVT task does the same.</English>
+    <English>Insurgency commander only. A recruiter stands in each Recruitment HQ while players are within 800 m. Kill him and that town skips its next recruitment (Recruitments Skipped sets how many), and a new recruiter turns up after one Recruit Cycle Max. Killing the target of a recruiter HVT task does the same. If the Recruitment HQ is disabled while he's there and players are near, he runs for it.</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_RECRUITER_CLASS">
+    <English>Recruiter Class</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_RECRUITER_CLASS_COMMENT">
+    <English>With Recruiters on: the unit class, or several separated by commas, a recruiter is made from. Empty picks one of the faction's officers as the High Value Target does.</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_RECRUITER_GUARDS">
+    <English>Recruiter Guards</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_RECRUITER_GUARDS_COMMENT">
+    <English>With Recruiters on: how many of the faction's men stand guard over a recruiter in his Recruitment HQ. 0 for none.</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_RECRUITER_SKIPS">
+    <English>Recruitments Skipped</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_RECRUITER_SKIPS_COMMENT">
+    <English>With Recruiters on: how many of the town's recruitment attempts are lost each time its recruiter is killed. 1 by default.</English>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_PREPARED_DEFENCES">
     <English>Prepared Defences</English>

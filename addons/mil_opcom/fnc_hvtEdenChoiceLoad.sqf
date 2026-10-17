@@ -25,7 +25,7 @@ Author:
 Jman
 ---------------------------------------------------------------------------- */
 
-params [["_display", controlNull], ["_mode", "CLASS"], ["_value", ""], ["_title", ""]];
+params [["_display", controlNull], ["_mode", "CLASS"], ["_value", ""], ["_title", ""], ["_tipKey", ""]];
 if (isNull _display) exitWith {};
 private _list = _display controlsGroupCtrl 100;
 if (isNull _list) exitWith {};
@@ -149,7 +149,8 @@ if (!isNull _edit) then {
     _edit ctrlSetText "";
     private _label = _display controlsGroupCtrl 103;
     _label ctrlSetText localize "STR_ALIVE_OPCOM_HVT_PICK_TYPED";
-    private _tip = localize (["STR_ALIVE_OPCOM_HVT_CLASS_COMMENT", "STR_ALIVE_OPCOM_HVT_GUARDS_COMMENT"] select (_mode == "GUARDS"));
+    // the caller's own tooltip when it gives one (the Recruiter Class picker shares this one)
+    private _tip = localize ([(["STR_ALIVE_OPCOM_HVT_CLASS_COMMENT", "STR_ALIVE_OPCOM_HVT_GUARDS_COMMENT"] select (_mode == "GUARDS")), _tipKey] select (_tipKey != ""));
     _label ctrlSetTooltip _tip;
     _edit ctrlSetTooltip _tip;
 };

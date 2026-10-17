@@ -1580,7 +1580,7 @@ ALiVE_fnc_INS_recruit = {
 
                     // Recruiters: one stands in the HQ while players are near, and his death stops the town recruiting.
                     if (!isNil "_opcom" && {[_opcom, "recruiters", false] call ALiVE_fnc_HashGet}) then {
-                        [_HQ, _faction, _pos, _recruitCycleMax max 600] spawn ALiVE_fnc_INS_recruiterPresence;
+                        [_HQ, _faction, _pos, _recruitCycleMax max 600, _opcom] spawn ALiVE_fnc_INS_recruiterPresence;
                     };
 
                     // A recruiter worth killing (#426): with the commander's Recruiter HVT Task
@@ -1706,9 +1706,12 @@ ALiVE_fnc_INS_recruit = {
                         // Only recruit while the HQ still exists.
                         if (!alive _HQ || {_HQ getVariable ["ALiVE_MIL_OPCOM_HQ_DISABLED", false]} || {(_HQ getVariable ["ALiVE_MIL_OPCOM_HQ_RECRUITLOOP", _loopToken]) != _loopToken}) exitwith {};
 
-                        // Its recruiter was killed since the last attempt (Recruiters): this attempt doesn't happen.
-                        if (_HQ getVariable ["ALiVE_INS_recruitSkipNext", false]) then {
-                            _HQ setVariable ["ALiVE_INS_recruitSkipNext", false];
+                        // Its recruiter was killed since the last attempt (Recruiters): this attempt doesn't happen, nor
+                        // as many after it as the commander's Recruitments Skipped says.
+                        private _skip = _HQ getVariable ["ALiVE_INS_recruitSkipNext", 0];
+                        if (_skip isEqualType true) then { _skip = [0, 1] select _skip };
+                        if (_skip > 0) then {
+                            _HQ setVariable ["ALiVE_INS_recruitSkipNext", _skip - 1];
                             continue
                         };
 
@@ -2503,12 +2506,29 @@ ALiVE_fnc_INS_spawnIEDfactory = {
 // setting), and goes when none is within 1200 m. Killed, he costs the town its next recruitment attempt,
 // and a new one turns up after _pause seconds. While a recruiter HVT task from this HQ is open its target
 // is the recruiter, and that task succeeding counts as his death. Runs as long as the town's recruiting
-// does. [HQ building, faction, position, pause]
+// does. With the commander's Recruiter Class he's made from that; Recruiter Guards stand with him; and if the
+// HQ is disabled while he's there and players are near, he runs for it (#1088).
+// [HQ building, faction, position, pause, commander's handler]
 ALiVE_fnc_INS_recruiterPresence = {
-    params ["_HQ", "_faction", "_pos", "_pause"];
-    private _classes = [[_faction], 1, missionNamespace getVariable ["ALiVE_MIL_CQB_UNITBLACKLIST", []]] call ALiVE_fnc_taskGetHVTUnits;
+    params ["_HQ", "_faction", "_pos", "_pause", ["_opcom", []]];
+    if !([_opcom] call ALIVE_fnc_isHash) then { _opcom = [] call ALiVE_fnc_hashCreate };
+    private _setClass = (([_opcom, "recruiterClass", ""] call ALiVE_fnc_HashGet) splitString ", ") select { isClass (configFile >> "CfgVehicles" >> _x) && {_x isKindOf "CAManBase"} };
+    private _classes = if (_setClass isNotEqualTo []) then { _setClass } else {
+        [[_faction], 1, missionNamespace getVariable ["ALiVE_MIL_CQB_UNITBLACKLIST", []]] call ALiVE_fnc_taskGetHVTUnits
+    };
     if (_classes isEqualTo []) exitWith {};
-    private _class = _classes select 0;
+    private _class = selectRandom _classes;
+    private _guardCount = [_opcom, "recruiterGuards", 2] call ALiVE_fnc_HashGet;
+    private _skips = [_opcom, "recruiterSkips", 1] call ALiVE_fnc_HashGet;
+    private _guardClasses = if (_guardCount > 0) then {
+        [[_faction], _guardCount, missionNamespace getVariable ["ALiVE_MIL_CQB_UNITBLACKLIST", []], true] call ALiVE_fnc_chooseRandomUnits
+    } else { [] };
+    private _guards = [];
+    private _fnc_clear = {
+        { if (!isNull _x) then { private _g = group _x; deleteVehicle _x; if (!isNull _g && {units _g isEqualTo []}) then { deleteGroup _g } } } forEach (_guards + [_unit]);
+        _guards = [];
+        _unit = objNull;
+    };
     private _sideObj = _faction call ALiVE_fnc_factionSide;
     if (_sideObj isEqualType "") then { _sideObj = [_sideObj] call ALiVE_fnc_sideTextToObject };
     // the recruiting loop this recruiter belongs to: it starts just after this, and a newer one taking
@@ -2533,9 +2553,9 @@ ALiVE_fnc_INS_recruiterPresence = {
                 // the HVT killed: the task is taken down as it succeeds, so this is how it is seen
                 missionNamespace setVariable [_doneKey, nil];
                 _hvtStep = nil;
-                _HQ setVariable ["ALiVE_INS_recruitSkipNext", true];
+                _HQ setVariable ["ALiVE_INS_recruitSkipNext", _skips];
                 _HQ setVariable ["ALiVE_INS_recruiterBackAt", time + _pause];
-                ["ALiVE OPCOM: the recruiter at the Recruitment HQ near %1 was killed in a task; that town skips its next recruitment", mapGridPosition _HQ] call ALiVE_fnc_dump;
+                ["ALiVE OPCOM: the recruiter at the Recruitment HQ near %1 was killed in a task; that town skips %2 recruitment(s)", mapGridPosition _HQ, _skips] call ALiVE_fnc_dump;
                 _raisedAt = -1e6;
             };
             if (isNil "_hvtStep") then {
@@ -2544,9 +2564,9 @@ ALiVE_fnc_INS_recruiterPresence = {
             } else {
                 private _state = _hvtStep select 8;
                 if (_state == "Succeeded") then {
-                    _HQ setVariable ["ALiVE_INS_recruitSkipNext", true];
+                    _HQ setVariable ["ALiVE_INS_recruitSkipNext", _skips];
                     _HQ setVariable ["ALiVE_INS_recruiterBackAt", time + _pause];
-                    ["ALiVE OPCOM: the recruiter at the Recruitment HQ near %1 was killed in a task; that town skips its next recruitment", mapGridPosition _HQ] call ALiVE_fnc_dump;
+                    ["ALiVE OPCOM: the recruiter at the Recruitment HQ near %1 was killed in a task; that town skips %2 recruitment(s)", mapGridPosition _HQ, _skips] call ALiVE_fnc_dump;
                 };
                 private _open = !(_state in ["Succeeded", "Failed", "Canceled"]);
                 if (_open) then { _taskOpen = true };
@@ -2555,6 +2575,9 @@ ALiVE_fnc_INS_recruiterPresence = {
         };
         _HQ setVariable ["ALiVE_INS_recruiterTasks", _tasks];
         if (!isNull _unit && {!alive _unit}) then { _unit = objNull };
+        // guards left after their recruiter died stay and fight, and go once no player is near
+        _guards = _guards select { alive _x };
+        if (isNull _unit && {_guards isNotEqualTo []} && {!(1200 call _players)}) then { call _fnc_clear };
         if (isNull _unit) then {
             if (!_taskOpen && {time >= (_HQ getVariable ["ALiVE_INS_recruiterBackAt", 0])} && {800 call _players}) then {
                 private _grp = createGroup [_sideObj, true];
@@ -2563,32 +2586,75 @@ ALiVE_fnc_INS_recruiterPresence = {
                 _unit disableAI "PATH";
                 _unit setUnitPos "UP";
                 _unit setVariable ["ALIVE_profileIgnore", true, true];
+                // kept on the server: a headless client given the group would run none of what's done to him here
+                _unit setVariable ["ALiVE_ignore_HC", true, true];
                 _grp setVariable ["ALIVE_profileIgnore", true];
-                _unit setVariable ["ALiVE_INS_recruiterOf", [_HQ, _pause]];
+                _unit setVariable ["ALiVE_INS_recruiterOf", [_HQ, _pause, _skips]];
                 // counted the moment he dies, wherever he is local, so a body cleaned up before the next
                 // look still counts
                 _unit addMPEventHandler ["MPKilled", {
                     if (!isServer) exitWith {};
-                    ((_this select 0) getVariable ["ALiVE_INS_recruiterOf", [objNull, 0]]) params ["_hq", "_pause"];
+                    ((_this select 0) getVariable ["ALiVE_INS_recruiterOf", [objNull, 0, 1]]) params ["_hq", "_pause", ["_skips", 1]];
                     if (isNull _hq) exitWith {};
-                    _hq setVariable ["ALiVE_INS_recruitSkipNext", true];
+                    _hq setVariable ["ALiVE_INS_recruitSkipNext", _skips];
                     _hq setVariable ["ALiVE_INS_recruiterBackAt", time + _pause];
-                    ["ALiVE OPCOM: the recruiter at the Recruitment HQ near %1 was killed; that town skips its next recruitment", mapGridPosition _hq] call ALiVE_fnc_dump;
+                    ["ALiVE OPCOM: the recruiter at the Recruitment HQ near %1 was killed; that town skips %2 recruitment(s)", mapGridPosition _hq, _skips] call ALiVE_fnc_dump;
                 }];
-                ["ALiVE OPCOM: a recruiter (%1) is in the Recruitment HQ near %2", _class, mapGridPosition _HQ] call ALiVE_fnc_dump;
+                // his guards, at the building's own positions where it has them, in his group so they stay by him
+                private _spots = (_HQ buildingPos -1) call BIS_fnc_arrayShuffle;
+                {
+                    private _at = _spots param [_forEachIndex, _pos getPos [3 + random 6, random 360]];
+                    private _g = _grp createUnit [_x, _at, [], 0, "CAN_COLLIDE"];
+                    _g setPosATL _at;
+                    _g disableAI "PATH";
+                    _g setVariable ["ALIVE_profileIgnore", true, true];
+                    _g setVariable ["ALiVE_ignore_HC", true, true];
+                    _guards pushBack _g;
+                } forEach ([[], _guardClasses] select (_guards isEqualTo []));
+                ["ALiVE OPCOM: a recruiter (%1) is in the Recruitment HQ near %2, with %3 guard(s)", _class, mapGridPosition _HQ, count _guards] call ALiVE_fnc_dump;
             };
         } else {
             // he goes when no one is near; when a task opens he waits until no player can see him go
             if ((_taskOpen && {!(300 call _players)}) || {!(1200 call _players)}) then {
-                private _grp = group _unit;
-                deleteVehicle _unit;
-                deleteGroup _grp;
-                _unit = objNull;
+                call _fnc_clear;
             };
         };
         sleep 10;
     };
-    if (!isNull _unit && {alive _unit}) then { private _grp = group _unit; deleteVehicle _unit; deleteGroup _grp };
+    // the HQ disabled or the town's recruiting over: with players near he runs for it, then is gone once out of
+    // their sight (or after 5 minutes); otherwise he and his guards just go
+    if (!isNull _unit && {alive _unit} && {400 call _players}) then {
+        private _runner = _unit;
+        private _runGroup = createGroup [side group _runner, true];
+        _runGroup setVariable ["ALIVE_profileIgnore", true];
+        [_runner] joinSilent _runGroup;
+        _runner enableAI "PATH";
+        _runner setBehaviour "AWARE";
+        _runner setSpeedMode "FULL";
+        // away from the nearest player
+        private _near = (allPlayers - entities "HeadlessClient_F") apply { [_x distance _runner, _x] };
+        _near sort true;
+        private _from = (_near param [0, [0, objNull]]) select 1;
+        private _away = (getPos _runner) getPos [800, if (isNull _from) then { random 360 } else { _from getDir _runner }];
+        _runner doMove _away;
+        ["ALiVE OPCOM: the recruiter at the Recruitment HQ near %1 runs for it", mapGridPosition _HQ] call ALiVE_fnc_dump;
+        _unit = objNull;
+        // his guards hold the building and fight, and go once no player is near
+        private _left = _guards select { alive _x };
+        { _x enableAI "PATH" } forEach _left;
+        _guards = [];
+        [_runner, _left] spawn {
+            params ["_runner", "_left"];
+            private _t = time;
+            private _noneNear = { params ["_who", "_d"]; ((allPlayers - entities "HeadlessClient_F") findIf { _x distance _who < _d }) < 0 };
+            waitUntil { sleep 5; !alive _runner || {time - _t > 300} || {[_runner, 1000] call _noneNear} };
+            if (alive _runner) then { private _g = group _runner; deleteVehicle _runner; deleteGroup _g };
+            waitUntil { sleep 10; _left = _left select { alive _x }; _left isEqualTo [] || {(_left findIf { !([_x, 1200] call _noneNear) }) < 0} };
+            { private _g = group _x; deleteVehicle _x; if (units _g isEqualTo []) then { deleteGroup _g } } forEach _left;
+        };
+    } else {
+        call _fnc_clear;
+    };
 };
 
 ALiVE_fnc_INS_spawnHQ = {

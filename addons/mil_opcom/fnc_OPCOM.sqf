@@ -162,6 +162,10 @@ switch (_operation) do {
         private _recruiterTaskChance = ((parseNumber format ["%1", _logic getvariable ["recruiterTaskChance",0]]) max 0) min 100;
         // Recruiters: a recruiter in each Recruitment HQ, and killing him stops that town recruiting for a while.
         private _recruiters = (toLower format ["%1", _logic getvariable ["recruiters", "false"]]) in ["true", "1"];
+        // ... his class (empty: an officer, as the HVT), his guards and how many recruitments a kill costs (#1088)
+        private _recruiterClass = format ["%1", _logic getvariable ["recruiterClass", ""]];
+        private _recruiterGuards = ((parseNumber format ["%1", _logic getvariable ["recruiterGuards", 2]]) max 0) min 8;
+        private _recruiterSkips = ((parseNumber format ["%1", _logic getvariable ["recruiterSkips", 1]]) max 1) min 10;
         // Frontline Minefields (#979): none, few or many.
         private _frontlineMinefields = toLower format ["%1", _logic getvariable ["frontlineMinefields","none"]];
         // Prepared Defences (#233): none, few or many.
@@ -344,6 +348,9 @@ switch (_operation) do {
             ["recruitSuccessChance", _recruitSuccessChance],
             ["recruiterTaskChance", _recruiterTaskChance],
             ["recruiters", _recruiters],
+            ["recruiterClass", _recruiterClass],
+            ["recruiterGuards", _recruiterGuards],
+            ["recruiterSkips", _recruiterSkips],
             ["frontlineMinefields", _frontlineMinefields],
             ["preparedDefences", _preparedDefences],
             ["securityPatrols", _securityPatrols],
