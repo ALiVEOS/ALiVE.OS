@@ -859,6 +859,18 @@
     <Russian>Создаёт самолёты в ангарах в пределах военных объектов. Требует наличия подходящей посадочной инфраструктуры на объектах.</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_MP_PLACE_SEAPATROLS">
+    <English>Sea Patrols</English>
+</Key>
+<Key ID="STR_ALIVE_MP_PLACE_SEAPATROLS_COMMENT">
+    <English>The chance each harbour inside the module's area gets a sea patrol: a naval group of the faction on the nearest water, patrolling 1 km round it. None by default. With every group count above set to 0, the module can place only sea patrols, anti-air and artillery.</English>
+</Key>
+<Key ID="STR_ALIVE_MP_SEAPATROL_FACTION">
+    <English>Sea Patrol Faction</English>
+</Key>
+<Key ID="STR_ALIVE_MP_SEAPATROL_FACTION_COMMENT">
+    <English>Most factions have no boats. A faction on the same side whose naval groups crew the sea patrols instead, e.g. CSAT (OPF_F) for an FIA force. Empty uses the module's own faction.</English>
+</Key>
 <Key ID="STR_ALIVE_MP_PLACE_ARTILLERY">
     <English>Place artillery units:</English>
     <Chinese>放置砲兵單位:</Chinese>

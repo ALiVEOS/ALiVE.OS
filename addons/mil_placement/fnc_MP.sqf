@@ -166,6 +166,13 @@ switch(_operation) do {
     case "aaCount": {
         _result = [_logic,_operation,_args,DEFAULT_NO_TEXT] call ALIVE_fnc_OOsimpleOperation;
     };
+    case "placeSeaPatrols": {
+        // the chance a harbour in the module's area gets a sea patrol, 0 to 1, from the editor's text or number
+        if (isNil "_args" || {_args isEqualType objNull}) then { _args = _logic getVariable ["placeSeaPatrols", 0] };
+        if (_args isEqualType "") then { _args = parseNumber _args };
+        if !(_args isEqualType 0) then { _args = 0 };
+        _result = (_args max 0) min 1;
+    };
     case "aaBehaviour": {
         _result = [_logic,_operation,_args,"static"] call ALIVE_fnc_OOsimpleOperation;
     };
@@ -2196,6 +2203,52 @@ switch(_operation) do {
                     if (_debug) then {
                         ["MP [%1] - AA spawn skipped: picker empty AND no ALIVE_factionDefaultAA entry for this faction", _faction] call ALiVE_fnc_dump;
                     };
+                };
+            };
+
+            // Sea patrols, as Civilian Placement places them: at each harbour inside the module's area, by the
+            // Sea Patrols chance, a naval group of the faction (or the Sea Patrol Faction on the same side, as
+            // most factions have no boats) on the nearest water, patrolling 1 km round it.
+            private _seaChance = [_logic, "placeSeaPatrols"] call MAINCLASS;
+            if (_seaChance > 0 && {!isNil "ALIVE_clustersCivMarine"}) then {
+                private _seaTaor = ([_logic, "taor"] call MAINCLASS) select { [_x] call ALIVE_fnc_markerExists };
+                private _seaBlacklist = ([_logic, "blacklist"] call MAINCLASS) select { [_x] call ALIVE_fnc_markerExists };
+                private _harbours = [ALIVE_clustersCivMarine select 2, 0, 0] call ALIVE_fnc_copyClusters;
+                _harbours = [_harbours, _seaTaor] call ALIVE_fnc_clustersInsideMarker;
+                _harbours = [_harbours, _seaBlacklist] call ALIVE_fnc_clustersOutsideMarker;
+                private _seaFaction = _faction;
+                private _borrowed = [_logic getVariable ["seaPatrolFaction", ""]] call CBA_fnc_trim;
+                if (_borrowed != "") then {
+                    if (isClass (configFile >> "CfgFactionClasses" >> _borrowed)
+                        && {(_borrowed call ALiVE_fnc_factionSide) == (_faction call ALiVE_fnc_factionSide)}
+                        && {(["Naval", _borrowed] call ALIVE_fnc_configGetRandomGroup) != "FALSE"}) then {
+                        _seaFaction = _borrowed;
+                    } else {
+                        ["MP [%1] - Sea Patrol Faction '%2' isn't a faction on the same side with boats, so the module's own faction is used", _faction, _borrowed] call ALiVE_fnc_dump;
+                    };
+                };
+                private _seaHook = [_logic, "onEachSpawn"] call MAINCLASS;
+                private _seaHookOnce = [_logic, "onEachSpawnOnce"] call MAINCLASS;
+                private _seaPlaced = 0;
+                {
+                    private _seaGroup = ["Naval", _seaFaction] call ALIVE_fnc_configGetRandomGroup;
+                    if (_seaGroup == "FALSE") exitWith {
+                        ["MP [%1] - no Naval group for faction %2, so no sea patrols", _faction, _seaFaction] call ALiVE_fnc_dump;
+                    };
+                    private _harbour = [_x, "center"] call ALIVE_fnc_hashGet;
+                    private _at = [_harbour, true] call ALiVE_fnc_getClosestSea;
+                    if (surfaceIsWater _at && {random 1 < _seaChance}) then {
+                        private _patrol = [_seaGroup, _at, random 360, true, _seaFaction, true, false, "STEALTH", _seaHook, _seaHookOnce] call ALIVE_fnc_createProfilesFromGroupConfig;
+                        {
+                            if (([_x, "type"] call ALiVE_fnc_HashGet) == "entity") then {
+                                [_x, "setActiveCommand", ["ALiVE_fnc_SeaPatrol", "spawn", [1000, "AWARE", _harbour]]] call ALIVE_fnc_profileEntity;
+                                _seaPlaced = _seaPlaced + 1;
+                            };
+                        } forEach _patrol;
+                    };
+                } forEach _harbours;
+                if (_debug) then {
+                    ["MP [%1] - sea patrols placed: %2 at %3 harbour(s) in the area", _faction, _seaPlaced, count _harbours] call ALiVE_fnc_dump;
                 };
             };
             PROFILE_SCOPE_END(MPANTIAIR)
