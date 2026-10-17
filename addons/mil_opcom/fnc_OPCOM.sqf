@@ -2525,6 +2525,108 @@ switch (_operation) do {
             };
     };
 
+    // A player's search-and-destroy or ambush order (NeisAEL on Discord, 17 Oct): the given groups are taken off the
+    // commander's hands under a one-off objective, as addTask does, but given their orders here rather than through
+    // TACOM, and handed back after _seconds (or when the objective has gone, the group dead).
+    //   "sad":    to the place, then search and destroy within 150 m, weapons free, then stay there
+    //   "ambush": to the place, then hide and hold fire (a hold that never completes on its own) until an enemy comes
+    //             within 80 m or the group is already fighting, then fight
+    // Both end in a hold that never completes, so the commander's sweep of finished orders doesn't hand the group back
+    // early and turn the place into an ordinary objective. On hand-back the orders are cleared and the group set back
+    // to its usual combat mode, so it doesn't sit there holding fire.
+    case "addTimedTask": {
+        _args params [["_type", "", [""]], ["_pos", [], [[]]], ["_section", [], [[]]], ["_seconds", 600, [0]]];
+        if !(_type in ["sad", "ambush"]) exitWith {};
+        if ((count _pos) < 2 || {_section isEqualTo []}) exitWith {};
+        _section = (_section select {_x isEqualType ""}) arrayIntersect _section;
+
+        private _objectivesByID = [_logic,"objectivesByID"] call ALiVE_fnc_HashGet;
+        private _manualTaskSequence = [_logic,"manualTaskSequence",0] call ALiVE_fnc_HashGet;
+        private _manualObjectiveID = "";
+        while {
+            _manualTaskSequence = _manualTaskSequence + 1;
+            _manualObjectiveID = format ["%1_manual_%2",[_logic,"opcomID","OPCOM"] call ALiVE_fnc_HashGet,_manualTaskSequence];
+            !(isNil {_objectivesByID get _manualObjectiveID})
+        } do {};
+        [_logic,"manualTaskSequence",_manualTaskSequence] call ALiVE_fnc_HashSet;
+
+        _objective = [_logic,"addObjective",[_manualObjectiveID,_pos,100,"internal",100,"internal"]] call ALiVE_fnc_OPCOM;
+        [_objective,"manualTask",true] call ALiVE_fnc_HashSet;
+        [_objective,"manualSince",time] call ALiVE_fnc_HashSet;
+        // the commander now counts these groups as busy and leaves them alone
+        [_logic,"setObjectiveSection",[_objective,_section]] call ALiVE_fnc_OPCOM;
+
+        {
+            private _profile = [ALIVE_profileHandler,"getProfile",_x] call ALIVE_fnc_profileHandler;
+            if (!isNil "_profile") then {
+                [_profile,"clearWaypoints"] call ALIVE_fnc_profileEntity;
+                [_profile,"clearActiveCommands"] call ALIVE_fnc_profileEntity;
+                private _approach = _pos getPos [random 30, random 360];
+                [_profile,"addWaypoint",[_approach,15,"MOVE","NORMAL",30,[],"NO CHANGE","NO CHANGE","AWARE"] call ALIVE_fnc_createProfileWaypoint] call ALIVE_fnc_profileEntity;
+                if (_type == "sad") then {
+                    [_profile,"addWaypoint",[_pos,150,"SAD","NORMAL",50,[],"LINE","RED","COMBAT"] call ALIVE_fnc_createProfileWaypoint] call ALIVE_fnc_profileEntity;
+                    private _stay = [_pos,50,"HOLD","NORMAL",10,[],"NO CHANGE","RED","COMBAT"] call ALIVE_fnc_createProfileWaypoint;
+                    [_stay,"statements",["false",""]] call ALiVE_fnc_hashSet;
+                    [_profile,"addWaypoint",_stay] call ALIVE_fnc_profileEntity;
+                } else {
+                    private _hold = [_approach,0,"HOLD","LIMITED",10,[],"NO CHANGE","GREEN","STEALTH"] call ALIVE_fnc_createProfileWaypoint;
+                    // never completes by itself, spawned or virtual: the group stays put until handed back
+                    [_hold,"statements",["false",""]] call ALiVE_fnc_hashSet;
+                    [_profile,"addWaypoint",_hold] call ALIVE_fnc_profileEntity;
+                };
+            };
+        } forEach _section;
+
+        // handed back on the clock; an ambush is sprung by enemies coming close
+        [_logic, _manualObjectiveID, _section, _type, _seconds] spawn {
+            params ["_logic", "_id", "_section", "_type", "_seconds"];
+            private _until = time + _seconds;
+            while { time < _until && {!isNil {([_logic,"objectivesByID"] call ALiVE_fnc_HashGet) get _id}} } do {
+                sleep 5;
+                // checked every time: a group that despawns and spawns again comes back holding fire
+                if (_type == "ambush") then {
+                    {
+                        private _profile = [ALIVE_profileHandler,"getProfile",_x] call ALIVE_fnc_profileHandler;
+                        if (!isNil "_profile" && {_profile select 2 select 1}) then {
+                            private _g = _profile select 2 select 13;
+                            if (_g isEqualType grpNull && {!isNull _g} && {combatMode _g != "RED"}) then {
+                                private _leader = leader _g;
+                                // a parked vehicle has no side of its own: only men, or vehicles with a live crew
+                                private _near = (_leader nearEntities [["CAManBase","LandVehicle"], 80]) findIf {
+                                    alive _x && {_x isKindOf "CAManBase" || {(crew _x) findIf {alive _x} > -1}} && {(side _g getFriend side _x) < 0.6}
+                                } > -1;
+                                if (_near || {behaviour _leader == "COMBAT"}) then {
+                                    // where the group lives, which can be a headless client
+                                    [_g, "RED"] remoteExec ["setCombatMode", groupOwner _g];
+                                    [_g, "COMBAT"] remoteExec ["setBehaviour", groupOwner _g];
+                                };
+                            };
+                        };
+                    } forEach _section;
+                };
+            };
+            if (!isNil {([_logic,"objectivesByID"] call ALiVE_fnc_HashGet) get _id}) then {
+                // as releaseOrder does: the never-ending hold would otherwise keep the group there for good
+                {
+                    private _profile = [ALIVE_profileHandler,"getProfile",_x] call ALIVE_fnc_profileHandler;
+                    if (!isNil "_profile") then {
+                        [_profile,"clearWaypoints"] call ALIVE_fnc_profileEntity;
+                        [_profile,"clearActiveCommands"] call ALIVE_fnc_profileEntity;
+                        private _g = _profile select 2 select 13;
+                        if (_profile select 2 select 1 && {_g isEqualType grpNull} && {!isNull _g}) then {
+                            [_g, "YELLOW"] remoteExec ["setCombatMode", groupOwner _g];
+                            [_g, "AWARE"] remoteExec ["setBehaviour", groupOwner _g];
+                            [_g, "NORMAL"] remoteExec ["setSpeedMode", groupOwner _g];
+                        };
+                    };
+                } forEach _section;
+                [_logic,"removeObjective",_id] call ALiVE_fnc_OPCOM;
+            };
+        };
+
+        _result = _objective;
+    };
+
     case "addTask": {
         _args params [
             ["_operation", "", [""]],
@@ -3218,7 +3320,7 @@ switch (_operation) do {
                         // player-designated objectives are session-only by design; a player FOB's
                         // objective is saved with the FOB and re-added by Player FOBs on load, so
                         // saving it here too would give the commander two of it after a restart
-                        _objectivesGlobal = _objectivesGlobal + (([_x, "objectives",[]] call ALiVE_fnc_HashGet) select {!([_x,"playerCreated",false] call ALiVE_fnc_HashGet) && {([_x,"fobID",""] call ALiVE_fnc_HashGet) == ""}});
+                        _objectivesGlobal = _objectivesGlobal + (([_x, "objectives",[]] call ALiVE_fnc_HashGet) select {!([_x,"playerCreated",false] call ALiVE_fnc_HashGet) && {!([_x,"manualTask",false] call ALiVE_fnc_HashGet)} && {([_x,"fobID",""] call ALiVE_fnc_HashGet) == ""}});
                     };
                 } foreach OPCOM_INSTANCES;
 

@@ -2585,7 +2585,7 @@ switch(_operation) do {
             _args params [["_playerID","",[""]],["_selOpcom",[],[[]]],["_pos",[],[[]]],["_intent","",[""]],["_marker","",[""]]];
 
             if (count _selOpcom < 3 || {count _pos < 2}) exitwith {};
-            if !(_intent in ["", "take", "hold", "recon"]) then { _intent = "" };
+            if !(_intent in ["", "take", "hold", "recon", "sad", "ambush"]) then { _intent = "" };
 
             private _fnc_reply = {
                 params ["_text"];
@@ -2631,11 +2631,12 @@ switch(_operation) do {
             // Recon (NeisAEL on Discord, 17 Oct): the commander sends its nearest free foot group to look at the place
             // and report, as its own recon orders do. It isn't an objective the commander keeps, so the cap doesn't
             // count it and deleting the marker doesn't call the group back.
-            if (_intent == "recon") exitwith {
+            // obj sad and obj ambush go the same way, given their orders by the commander's addTimedTask
+            if (_intent in ["recon", "sad", "ambush"]) exitwith {
                 // an insurgency commander has no TACOM to send scouts with; two at a time per commander at most
-                if (([_opcom,"controltype",""] call ALiVE_fnc_hashGet) == "asymmetric") exitwith { ["This commander doesn't send scouts"] call _fnc_reply };
+                if (([_opcom,"controltype",""] call ALiVE_fnc_hashGet) == "asymmetric") exitwith { ["This commander doesn't take orders like that"] call _fnc_reply };
                 if ({ [_x,"manualTask",false] call ALiVE_fnc_hashGet && {!([_x,"deleted",false] call ALiVE_fnc_hashGet)} } count ([_opcom,"objectives",[]] call ALiVE_fnc_hashGet) >= 2) exitwith {
-                    ["Two recons are already out: wait for one to finish"] call _fnc_reply;
+                    ["Two of your orders are already out: wait for one to finish"] call _fnc_reply;
                 };
                 // the group the commander itself would pick: nearest, not on another objective, not ordered, not in
                 // reserve, not fixed in place, not across water; never a player's, nor one already queued for an order
@@ -2669,13 +2670,21 @@ switch(_operation) do {
                     } forEach ([_opcom,"objectives",[]] call ALiVE_fnc_hashGet);
                     _free = [_free, [], { ((_profilesById get _x) select 2 select 2) distance2D _pos }, "ASCEND"] call BIS_fnc_sortBy;
                 };
-                if (_free isEqualTo []) exitwith { ["No group is free to scout it"] call _fnc_reply };
+                if (_free isEqualTo []) exitwith { ["No group is free to send"] call _fnc_reply };
                 private _scout = _free select 0;
                 private _from = round (((_profilesById get _scout) select 2 select 2) distance2D _pos);
-                private _task = [_opcom,"addTask",["recon",_pos,[_scout]]] call ALiVE_fnc_OPCOM;
+                private _task = if (_intent == "recon") then {
+                    [_opcom,"addTask",["recon",_pos,[_scout]]] call ALiVE_fnc_OPCOM
+                } else {
+                    [_opcom,"addTimedTask",[_intent,_pos,[_scout],600]] call ALiVE_fnc_OPCOM
+                };
                 if (isNil "_task") exitwith { ["The commander can't take orders just now"] call _fnc_reply };
                 [_cooldowns,_playerID,time] call ALiVE_fnc_hashSet;
-                [format ["Recon ordered: a group %1 m away is going to look at it from a distance", _from]] call _fnc_reply;
+                [format [switch (_intent) do {
+                    case "sad": {"Search and destroy ordered: a group %1 m away is on its way, for ten minutes"};
+                    case "ambush": {"Ambush ordered: a group %1 m away will lie in wait there for ten minutes"};
+                    default {"Recon ordered: a group %1 m away is going to look at it from a distance"};
+                }, _from]] call _fnc_reply;
             };
 
             private _maxObjectives = [_logic,"maxPlayerObjectives",3] call ALiVE_fnc_hashGet;
@@ -2750,7 +2759,7 @@ switch(_operation) do {
                 // the text can arrive just after the marker
                 sleep 0.5;
                 private _words = (toLower (markerText _marker)) splitString " ";
-                if (count _words < 2 || {(_words select 0) != "obj"} || {!((_words select 1) in ["take", "hold", "recon"])}) exitWith {};
+                if (count _words < 2 || {(_words select 0) != "obj"} || {!((_words select 1) in ["take", "hold", "recon", "sad", "ambush"])}) exitWith {};
                 private _player = [_marker, _owner] call ALiVE_fnc_SCOMMarkerOwner;
                 if (isNull _player || {isNil "ALIVE_commandHandler"}) exitWith {};
                 private _h = ALIVE_commandHandler;

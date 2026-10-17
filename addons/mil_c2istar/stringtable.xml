@@ -477,7 +477,7 @@
     <Spanish>Permitir objetivos de jugador:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_SCOM_OPS_ALLOW_PLAYER_OBJECTIVES_COMMENT">
-    <English>Allow players to designate, cancel and reprioritise commander objectives from the Operations tablet view, choosing whether each is to be taken or held. They can also set one from the map: a marker whose text starts obj take or obj hold goes to their side's commander, and deleting the marker cancels it. A marker starting obj recon has a conventional commander send its nearest free foot group to look at the place from a distance, two at a time at most; deleting that one doesn't call them back.</English>
+    <English>Allow players to designate, cancel and reprioritise commander objectives from the Operations tablet view, choosing whether each is to be taken or held. They can also set one from the map: a marker whose text starts obj take or obj hold goes to their side's commander, and deleting the marker cancels it. A marker starting obj recon has a conventional commander send its nearest free foot group to look at the place from a distance; obj sad sends one to search and destroy there for ten minutes, and obj ambush one to lie in wait there for ten minutes and open up on enemies who come close. Two of these at a time at most; deleting the marker doesn't call them back.</English>
     <Spanish>Permite a los jugadores designar, cancelar y repriorizar objetivos del comandante desde la vista de Operaciones de la tableta</Spanish>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_SCOM_OPS_OBJECTIVE_COOLDOWN">
