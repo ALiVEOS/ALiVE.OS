@@ -147,6 +147,31 @@ class CfgVehicles {
                                     class LOW { name = "25%"; value = "0.25"; };
                                 };
                         };
+                        // ---- Anti-Air -------------------------------------------------------
+                        class HDR_ANTIAIR : ALiVE_ModuleSubTitle { property = "ALiVE_civ_placement_HDR_ANTIAIR"; displayName = "$STR_ALIVE_MP_HDR_ANTIAIR"; };
+                        class aaCount : Edit { property = "ALiVE_civ_placement_aaCount"; displayName = "$STR_ALIVE_MP_AA_COUNT"; tooltip = "$STR_ALIVE_MP_AA_COUNT_COMMENT"; defaultValue = """0"""; };
+                        class aaBehaviour : Combo
+                        {
+                                property = "ALiVE_civ_placement_aaBehaviour";
+                                displayName = "$STR_ALIVE_MP_AA_BEHAVIOUR";
+                                tooltip = "$STR_ALIVE_MP_AA_BEHAVIOUR_COMMENT";
+                                defaultValue = """static""";
+                                class Values
+                                {
+                                    class STATIC  { name = "$STR_ALIVE_MP_AA_BEHAVIOUR_STATIC";  value = "static"; default = 1; };
+                                    class ROAMING { name = "$STR_ALIVE_MP_AA_BEHAVIOUR_ROAMING"; value = "roaming"; };
+                                };
+                        };
+                        class aaClasses
+                        {
+                                property     = "ALiVE_civ_placement_aaClasses";
+                                displayName  = "$STR_ALIVE_MP_AA_CLASSES";
+                                tooltip      = "$STR_ALIVE_MP_AA_CLASSES_COMMENT";
+                                control      = "ALiVE_AAUnitChoiceMulti";
+                                typeName     = "STRING";
+                                expression   = "_this setVariable ['aaClasses', _value];";
+                                defaultValue = """""";
+                        };
                         // ---- AI Artillery (#949, ported from mil_placement #887) ------------
                         // Opt-in artillery batteries at CIVILIAN objectives. Same toggle +
                         // donor-faction + section-size triplet as mil_placement. Stringtable

@@ -6,6 +6,11 @@ class cfgFunctions {
                                 file = "\x\alive\addons\mil_placement\fnc_MP.sqf";
                                 ALIVE_RECOMPILE;
                         };
+                        class MPplaceAA {
+                                description = "Places a placement module's anti-air";
+                                file = "\x\alive\addons\mil_placement\fnc_MPplaceAA.sqf";
+                                ALIVE_RECOMPILE;
+                        };
                         class MPInit {
                                 description = "The module initialisation function";
                                 file = "\x\alive\addons\mil_placement\fnc_MPInit.sqf";

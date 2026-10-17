@@ -313,6 +313,15 @@ switch(_operation) do {
     };
 
     // #949 - opt-in AI artillery batteries at civilian objectives (ported from mil_placement #887)
+    case "aaCount": {
+        _result = [_logic,_operation,_args,DEFAULT_NO_TEXT] call ALIVE_fnc_OOsimpleOperation;
+    };
+    case "aaBehaviour": {
+        _result = [_logic,_operation,_args,"static"] call ALIVE_fnc_OOsimpleOperation;
+    };
+    case "aaClasses": {
+        _result = [_logic,_operation,_args,DEFAULT_NO_TEXT] call ALIVE_fnc_OOsimpleOperation;
+    };
     case "placeArtillery": {
         if (typeName _args == "BOOL") then {
             _logic setVariable ["placeArtillery", _args];
@@ -1583,6 +1592,16 @@ switch(_operation) do {
 
             if (isNil QGVAR(ROADBLOCK_LOCATIONS)) then {
                 GVAR(ROADBLOCK_LOCATIONS) = [];
+            };
+
+            // Anti-air, placed as Military Placement places it (ALiVE_fnc_MPplaceAA)
+            private _aaCountCP = [_logic, "aaCount"] call MAINCLASS;
+            _aaCountCP = if (_aaCountCP isEqualType 0) then { _aaCountCP } else { parseNumber format ["%1", _aaCountCP] };
+            if (_aaCountCP > 0) then {
+                private _aaBehaviourCP = [_logic, "aaBehaviour"] call MAINCLASS;
+                if (_aaBehaviourCP == "") then { _aaBehaviourCP = "static" };
+                _countProfiles = _countProfiles + ([_logic, _clusters, _faction, _sideCP, _aaCountCP, _aaBehaviourCP, [_logic, "aaClasses"] call MAINCLASS, _debug,
+                    [_logic, "onEachSpawn"] call MAINCLASS, [_logic, "onEachSpawnOnce"] call MAINCLASS] call ALiVE_fnc_MPplaceAA);
             };
 
             _countSeaPatrols = 0;
