@@ -35,8 +35,8 @@ if ((count _targetPos) == 2) then
 sleep 15;
 
 // "firing on target" and "splash" wait for the first round that actually leaves, and the splash is timed
-// from it. They used to follow the order on a timer, so a gun that never fired (the 3CB M270 and RHS M142
-// launchers ignore the engine's artillery orders) still reported firing, splash and rounds complete.
+// from it. They used to follow the order on a timer, so a gun that never fired (the 3CB M270's launcher
+// ignores the engine's artillery orders) still reported firing, splash and rounds complete.
 [_battery,_targetPos,_ordnance] spawn {
 
     _battery = _this select 0;
@@ -55,6 +55,8 @@ sleep 15;
     _dummy = "Land_HelipadEmpty_F" createVehicleLocal (_this select 1);
     _eta = (vehicle _battery) getArtilleryETA [getPos _dummy, _this select 2];
     deleteVehicle _dummy;
+    // rounds launched by script (below) carry their own flight time
+    _eta = _battery getVariable ["ALiVE_CS_scriptETA", _eta];
     //["BATTERY: %1 due in %2 seconds", _battery, _eta] call ALiVE_fnc_dump;
 
     // no answer (the leader's own vehicle can't fire this round): give the rounds a little time anyway
@@ -74,6 +76,93 @@ private _guns = [];
     private _gun = vehicle _x;
     if (!isNull _gun && {!(_gun in _guns)}) then { _guns pushBack _gun };
 } forEach (_units + [_battery]);
+_battery setVariable ["ALiVE_CS_scriptETA", nil];
+
+// Some launchers ignore the engine's artillery orders: the 3CB M270 has its rocket launcher off the turret the
+// AI aims, so its crew never fires. Their rounds are launched from them by script instead, with
+// the drag-free launch for the distance, which is how the engine's own artillery flies (within 5 m at 3 km and
+// 50 m at 6 km).
+// The weapon holding this round on a gun, and where it points: a gun whose AI is aiming turns it within seconds.
+private _fnc_aim = {
+    params ["_gun"];
+    // every turret's weapons: weapons on a vehicle lists only the driver's, and a gun sits on a turret.
+    // [] when no weapon is found to take the round, which reads as can't tell, not as stuck
+    private _dir = [];
+    {
+        private _turret = _x;
+        { if (_dir isEqualTo [] && {_ordnance in compatibleMagazines _x}) then { _dir = _gun weaponDirection _x } } forEach (_gun weaponsTurret _turret);
+    } forEach ([[-1]] + allTurrets [_gun, false]);
+    _dir
+};
+// Whether a gun may have its rounds launched by script: standing, crewed at the gun, holding the round, the
+// target on land and in its reach as the engine reckons it, and a round the engine flies as a shell or a
+// submunition carrier (a script-made one keeps to the worked-out launch), not a rocket or missile.
+private _fnc_canScript = {
+    params ["_gun"];
+    private _ammo = getText (configFile >> "CfgMagazines" >> _ordnance >> "ammo");
+    alive _gun
+    && {alive (gunner _gun) || {alive (effectiveCommander _gun)}}
+    && {(magazinesAllTurrets _gun) findIf { (_x select 0) == _ordnance && {(_x select 2) > 0} } > -1}
+    && {!surfaceIsWater _targetPos}
+    && {_targetPos inRangeOfArtillery [[_gun], _ordnance]}
+    && {_ammo != ""}
+    && {(toLower getText (configFile >> "CfgAmmo" >> _ammo >> "simulation")) in ["shotshell", "shotsubmunitions"]}
+};
+// [gun, rounds]; returns the rounds launched
+private _fnc_scriptFire = {
+    params ["_gun", "_rounds"];
+    private _ammo = getText (configFile >> "CfgMagazines" >> _ordnance >> "ammo");
+    private _shooter = [gunner _gun, effectiveCommander _gun] select (!alive (gunner _gun));
+    private _launched = 0;
+    for "_i" from 1 to _rounds do {
+        // the magazine to draw from, read each round, so a launcher holding several moves on to the next
+        private _mag = (magazinesAllTurrets _gun) select { (_x select 0) == _ordnance && {(_x select 2) > 0} };
+        if (!alive _gun || {_mag isEqualTo []}) exitWith {};
+        (_mag select 0) params ["", "_path", "_count"];
+        // the engine adds its own spread to an aimed round; a launched one gets the same, at least 50 m
+        private _at = _targetPos getPos [random (_dispersion max 50), random 360];
+        private _from = (getPosASL _gun) vectorAdd [0, 0, 4];
+        private _d = _from distance2D _at;
+        private _dh = (getTerrainHeightASL _at) - (_from select 2);
+        // the lower of 45 and 60 degrees that clears the climb to the target
+        private _sol = [];
+        { private _den = 2 * ((cos _x) ^ 2) * (_d * (tan _x) - _dh); if (_den > 0 && {_sol isEqualTo []}) then { _sol = [_x, sqrt (9.80665 * _d * _d / _den)] } } forEach [45, 60];
+        if (_sol isEqualTo []) exitWith {};
+        _sol params ["_a", "_v"];
+        private _bearing = _from getDir _at;
+        private _dir = [(sin _bearing) * (cos _a), (cos _bearing) * (cos _a), sin _a];
+        private _round = createVehicle [_ammo, ASLToAGL _from, [], 0, "CAN_COLLIDE"];
+        _round setPosASL _from;
+        _round setVectorDirAndUp [_dir, [0, 0, 1]];
+        _round setVelocity (_dir vectorMultiply _v);
+        // the gun and its gunner fired it, for kills, friendly fire and anything that asks who shot
+        _round setShotParents [_gun, _shooter];
+        _gun setMagazineTurretAmmo [_ordnance, _count - 1, _path];
+        _launched = _launched + 1;
+        _battery setVariable ["ALiVE_CS_scriptETA", round (_d / (_v * (cos _a)))];
+        _battery setVariable ["ALiVE_CS_shotsFired", (_battery getVariable ["ALiVE_CS_shotsFired", 0]) + 1];
+        sleep 1.5;
+    };
+    _launched
+};
+// the mission's rounds shared out over the guns that may launch by script; returns [rounds launched, guns used]
+private _fnc_scriptMission = {
+    params [["_only", objNull]];
+    private _holders = (if (_only isEqualType objNull) then { _guns } else { _only }) select { [_x] call _fnc_canScript };
+    if (_holders isEqualTo []) exitWith { [0, 0] };
+    private _each = ceil (_missionRoundCount / count _holders);
+    private _left = _missionRoundCount;
+    private _total = 0;
+    {
+        if (_left <= 0) exitWith {};
+        private _n = [_x, _each min _left] call _fnc_scriptFire;
+        _left = _left - _n;
+        _total = _total + _n;
+    } forEach _holders;
+    [_total, count _holders]
+};
+ALiVE_CS_scriptFireClasses = missionNamespace getVariable ["ALiVE_CS_scriptFireClasses", []];
+private _scriptFirst = (typeOf vehicle _battery) in ALiVE_CS_scriptFireClasses;
 _battery setVariable ["ALiVE_CS_shotsFired", 0];
 _battery setVariable ["ALiVE_CS_shotMagazine", _ordnance];
 private _firedEHs = _guns apply {
@@ -87,6 +176,9 @@ private _firedEHs = _guns apply {
     }]]
 };
 
+if (_scriptFirst) then {
+    [] call _fnc_scriptMission;
+} else {
 if(_missionRoundCount == 1) then {
     _battery DOArtilleryFire [_targetPos, _ordnance, _missionRoundCount];
 
@@ -116,6 +208,9 @@ if(_missionRoundCount == 1) then {
         };
     };
 };
+};
+
+private _aimAtOrder = _guns apply { [_x] call _fnc_aim };
 
 // The firing is over once every round asked for has left, nothing has left for 30 s since the last shot,
 // nothing has left at all after 90 s (the guns can't reach, or won't aim there), or the mission runs too long.
@@ -130,6 +225,26 @@ waitUntil {
     || {_seen == 0 && {time - _t0 > 90}}
     || {_seen > 0 && {time - _lastShot > 30}}
     || {time - _t0 > 120 + 20 * _missionRoundCount}
+};
+// Nothing left the guns on the AI's orders: launched by script, if the guns stand, are crewed and hold the
+// round, and the gun is remembered so its next mission doesn't wait. Only if that launches nothing either does
+// the radio say it couldn't fire.
+// Only guns whose weapon never moved: a gun that is turning is slow, not stuck, and would fire twice.
+if (_seen == 0 && {!_scriptFirst}) then {
+    // counted before the launch, which can empty a gun
+    private _eligible = _guns select { [_x] call _fnc_canScript };
+    private _stuck = _eligible select {
+        private _now = [_x] call _fnc_aim;
+        private _then = _aimAtOrder select (_guns find _x);
+        _now isNotEqualTo [] && {_then isNotEqualTo []} && {(_now vectorDistance _then) < 0.01}
+    };
+    (([_stuck] call _fnc_scriptMission)) params ["_launched", "_used"];
+    // remembered only when every gun that could have fired was stuck
+    if (_launched > 0 && {count _stuck == count _eligible}) then {
+        ALiVE_CS_scriptFireClasses pushBackUnique (typeOf vehicle _battery);
+        ["ALiVE Combat Support: %1 ignored the artillery order, so its rounds were launched by script, and will be from now on", typeOf vehicle _battery] call ALiVE_fnc_dump;
+    };
+    _seen = _battery getVariable ["ALiVE_CS_shotsFired", 0];
 };
 // nothing left at all: the radio says it couldn't fire, not that the rounds landed
 if (_seen == 0) then { _battery setVariable ["ARTY_NOSHOTS", true, true] };
