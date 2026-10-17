@@ -619,7 +619,7 @@ switch (_operation) do {
 
             _currentJobData = [false, [false,false,false], _layer1Data, _layer2Data, _startSector, _goalSector, _startSubSector, _goalSubSector, []];
             // Slot 10: route memory for this request (#1086), [] when it is off or not a ground route.
-            _currentJobData set [10, [nil, "jobContext", [_procedure select 1, _nextJob param [7, ""]]] call ALiVE_fnc_pathfinderRouteMemory];
+            _currentJobData set [10, [nil, "jobContext", [_procedure select 1, _nextJob param [7, ""], _callbackArgs]] call ALiVE_fnc_pathfinderRouteMemory];
 
             _logic set ["currentJobData", _currentJobData];
         } else {
@@ -716,7 +716,6 @@ switch (_operation) do {
             private _rmContext = _currentJobData param [10, []];
             private _rmActive = _rmContext isNotEqualTo [];
             private _rmFloor = if (_rmActive) then { 1 - (_rmContext select 0) } else { 1 };
-            private _rmRatio = round (_sectorSize / _subSectorSize);
             // The fine search gave up though the coarse search had reached the goal's sector, and it had
             // barely got away from where it started: no nearer the goal than its first cell, or under a
             // coarse sector nearer while still more than a sector short (dense ground all round with no
@@ -1006,9 +1005,9 @@ switch (_operation) do {
                             };
                         };
                         if (_rmActive) then {
-                            // the coarse sector this cell lies in: both index spaces are floor(pos / size) from the same origin
+                            // its coarse sector's factor, times any blockage for this size of group (#1086 step 2)
                             private _fineIndex = _neighSubSector select 0;
-                            _moveCost = _moveCost * ([nil, "factor", [_rmContext, [floor ((_fineIndex select 0) / _rmRatio), floor ((_fineIndex select 1) / _rmRatio)]]] call ALiVE_fnc_pathfinderRouteMemory);
+                            _moveCost = _moveCost * ([nil, "fineFactor", [_rmContext, _fineIndex]] call ALiVE_fnc_pathfinderRouteMemory);
                         };
                         private _newCostSoFar = _moveCost + _currentCost;
                         private _finalCostCanImprove = isNil "_knownCost" || {_newCostSoFar < _knownCost};
