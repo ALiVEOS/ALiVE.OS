@@ -1554,6 +1554,163 @@ switch(_operation) do {
         };
     };
 
+    case "airdropParaFlyby": {
+        // Paratroopers of an Airdrop jump from a transport aircraft over the destination, the way airdropVivFlyby
+        // drops a vehicle: the aircraft is made about 4 km out and flown over at 350 m, and at its closest to the drop
+        // spot each group is made behind its tail, over 300 m up, where the spawner puts every man under a parachute.
+        // A group that's spawned somewhere is taken away from there first; one the profile system is part way through
+        // making is tried again on the next pass; one that's gone is skipped. Groups the aircraft never got over go down
+        // at the destination as airdropCarrierless puts them. Once they're down they're no longer kept from despawning.
+        // The first man's profile ID goes on ALIVE_ML_vivDone whatever happened, which airdropFly waits for.
+        // [groups of profile IDs, aircraft class, drop spot, departure, side, debug, its place among the delivery's aircraft]
+        _args params ["_groups", "_carrierClass", "_dropPos", "_fromPos", "_side", ["_debug", false], ["_index", 0]];
+        if (isNil "ALIVE_ML_vivDone") then { ALIVE_ML_vivDone = []; };
+        private _doneKey = (_groups param [0, []]) param [0, ""];
+        private _inDir = _fromPos getDir _dropPos;
+        private _start = _dropPos getPos [4000 + 1000 * _index, _inDir + 180];
+        _start set [2, 0];
+        private _height = 350 + 50 * _index;
+        [_logic, _groups, _doneKey, _carrierClass, _dropPos, _inDir, _start, _height, _side, _debug] spawn {
+            params ["_logic", "_groups", "_doneKey", "_carrierClass", "_dropPos", "_inDir", "_start", "_height", "_side", "_debug"];
+            private _left = +_groups;       // groups not yet out of the aircraft
+            private _out = [];              // groups made behind it
+            // [group, where]: "out" when moved there, "gone" when it has no profile left, "busy" while the profile
+            // system is part way through making it. Run in one go so it can't be made again where it was in between;
+            // the making behind the aircraft follows outside, as the spawner pauses between men.
+            private _fnc_jump = {
+                params ["_grpIDs", "_at"];
+                private _profs = _grpIDs apply { [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler } select { !isNil "_x" };
+                if (_profs isEqualTo []) exitWith { "gone" };
+                if ((_profs findIf { !(_x select 2 select 1) && {[_x, "locked", false] call ALIVE_fnc_hashGet} }) >= 0) exitWith { "busy" };
+                {
+                    if (_x select 2 select 1) then {
+                        [_x, "spawnType", []] call ALIVE_fnc_profileEntity;
+                        [_x, "despawn"] call ALIVE_fnc_profileEntity;
+                    };
+                } forEach _profs;
+                // one the profile system won't take away (a player nearby has just died, say) is tried again next pass
+                if ((_profs findIf { _x select 2 select 1 }) >= 0) exitWith { "busy" };
+                {
+                    [_x, "clearWaypoints"] call ALIVE_fnc_profileEntity;
+                    [_x, "position", +_at] call ALIVE_fnc_profileEntity;
+                    // each man's own position still holds the departure, and the spawner prefers it
+                    [_x, "mergePositions"] call ALIVE_fnc_profileEntity;
+                    [_x, "spawnType", ["preventDespawn"]] call ALIVE_fnc_profileEntity;
+                } forEach _profs;
+                "out"
+            };
+            private _startASL = +_start;
+            _startASL set [2, ((getTerrainHeightASL _start) max 0) + _height];
+            private _grp = createGroup [[_side] call ALIVE_fnc_sideTextToObject, true];
+            private _plane = createVehicle [_carrierClass, _startASL, [], 0, "FLY"];
+            _plane setPosASL _startASL;
+            _plane setDir _inDir;
+            _plane setVelocityModelSpace [0, 80, 0];
+            createVehicleCrew _plane;
+            (crew _plane) joinSilent _grp;
+            _grp setBehaviour "CARELESS";
+            _grp setCombatMode "BLUE";
+            _grp allowFleeing 0;
+            { _x disableAI "AUTOTARGET"; _x disableAI "TARGET"; _x disableAI "AUTOCOMBAT"; } forEach (units _grp);
+            private _ramps = ((configProperties [configFile >> "CfgVehicles" >> _carrierClass >> "AnimationSources", "isClass _x", true])
+                select { private _n = toLower configName _x; "ramp" in _n || {"door" in _n} }) apply { [configName _x, getText (_x >> "source") == "door"] };
+            private _fnc_ramps = {
+                params ["_plane", "_ramps", "_phase"];
+                {
+                    _x params ["_name", "_isDoor"];
+                    if (_isDoor) then { _plane animateDoor [_name, _phase]; } else { _plane animateSource [_name, _phase]; };
+                } forEach _ramps;
+            };
+            private _closest = 1e9;
+            private _rampOpen = false;
+            private _past = _dropPos getPos [10000, _inDir];
+            _plane flyInHeight _height;
+            _plane doMove _dropPos;
+            private _t = 0;
+            while { _t < 240 && {alive _plane} && {_left isNotEqualTo []} } do {
+                sleep 0.5;
+                _t = _t + 0.5;
+                private _d = _plane distance2D _dropPos;
+                if (!_rampOpen && {_d < 1500}) then {
+                    [_plane, _ramps, 1] call _fnc_ramps;
+                    _rampOpen = true;
+                };
+                if (_d < 200 || {_d > _closest && {_closest < 800}}) then {
+                    // every group's spot worked out in one go, from where the aircraft is now, then the groups made
+                    private _jumped = [];
+                    isNil {
+                        missionNamespace setVariable ["bis_fnc_curatorobjectedited_paraSoundTime", time + 10];
+                        {
+                            private _n = count _out + count _jumped;
+                            // 40 m behind the tail, each group 30 m further back, 15 m below and over 300 m up; over
+                            // water the spawner would put the group ashore with no parachutes, so by the drop spot then
+                            private _at = (getPosATL _plane) getPos [40 + 30 * _n, (getDir _plane) + 180];
+                            if (surfaceIsWater _at) then { _at = _dropPos getPos [30 * _n, random 360]; };
+                            _at set [2, (((getPosATL _plane) select 2) - 15) max 310];
+                            private _grpIDs = _x;
+                            private _how = [_grpIDs, _at] call _fnc_jump;
+                            if (_how == "out") then { _jumped pushBack _grpIDs; };
+                            // anything else stays to be tried again, and goes down at the destination if the pass ends
+                            if (_how in ["out", "gone"]) then { _left = _left - [_grpIDs]; };
+                        } forEach +_left;
+                    };
+                    {
+                        _out pushBack _x;
+                        {
+                            private _p = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+                            if (!isNil "_p" && {!(_p select 2 select 1)}) then { [_p, "spawn"] call ALIVE_fnc_profileEntity; };
+                        } forEach _x;
+                    } forEach _jumped;
+                };
+                _closest = _closest min _d;
+                if (_d > _closest + 1000) exitWith {};
+            };
+            _plane flyInHeight _height;
+            _plane doMove _past;
+            if (_debug) then {
+                ["ML - airdropParaFlyby: %1 group(s) jumped from %2, %3 not (it came within %4 m of the drop spot)", count _out, _carrierClass, count _left, round _closest] call ALiVE_fnc_dump;
+            };
+            // groups it never got over go down at the destination
+            if (_left isNotEqualTo []) then {
+                [_logic, "airdropCarrierless", [_left, _dropPos, _debug]] call ALIVE_fnc_ML;
+                ["ML - airdropParaFlyby: %1's aircraft (%2) never got over them, so they go down at the destination instead", _left, _carrierClass] call ALiVE_fnc_dump;
+            };
+            [_plane, _grp, _ramps, _fnc_ramps] spawn {
+                params ["_plane", "_grp", "_ramps", "_fnc_ramps"];
+                sleep 10;
+                [_plane, _ramps, 0] call _fnc_ramps;
+                private _t = 10;
+                waitUntil { sleep 5; _t = _t + 5; !alive _plane || {([getPosATL _plane, 6000] call ALiVE_fnc_anyPlayersInRange) == 0} || {_t > 240} };
+                if (alive _plane) then {
+                    { deleteVehicle _x } forEach (crew _plane);
+                    deleteVehicle _plane;
+                    deleteGroup _grp;
+                };
+            };
+            // once every man is down (or after 3 minutes) the groups may despawn again
+            if (_out isNotEqualTo []) then {
+                private _t2 = 0;
+                waitUntil {
+                    sleep 2; _t2 = _t2 + 2;
+                    private _units = [];
+                    {
+                        { private _p = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+                          if (!isNil "_p") then { private _g = _p select 2 select 13; if (!isNull _g) then { _units append (units _g) } } } forEach _x;
+                    } forEach _out;
+                    _t2 > 180 || {_t2 > 10 && {(_units findIf { alive _x && {vehicle _x != _x || {((getPos _x) select 2) > 2}} }) < 0}}
+                };
+                {
+                    { private _p = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+                      if (!isNil "_p") then { [_p, "spawnType", []] call ALIVE_fnc_profileEntity } } forEach _x;
+                } forEach _out;
+                if (_debug) then {
+                    ["ML - airdropParaFlyby: paratroopers down after %1 s", _t2] call ALiVE_fnc_dump;
+                };
+            };
+            ALIVE_ML_vivDone pushBackUnique _doneKey;
+        };
+    };
+
     // ============================================================
     // NEW OPERATION: findBestDeliveryObjective
     // Scores OPCOM objectives by tactical need and friendly unit
@@ -14453,13 +14610,51 @@ switch(_operation) do {
                                         ]] call MAINCLASS;
                                     } forEach _slingItems;
 
+                                    // ---- Part B0: paratroopers jump from a transport aircraft ----
+                                    // When players are near the drop zone and the faction (or, when transport isn't limited to it,
+                                    // its side) has a fixed-wing aircraft with seats for them, the men jump from it as it flies
+                                    // over (airdropParaFlyby), the smallest that seats them all, else the roomiest. A helicopter
+                                    // only when there's no such aircraft, or nobody near to see the drop.
+                                    private _paraGroups = [];
+                                    private _paraClass = "";
+                                    if (count _infantryProfiles > 0 && {_playersNearDZ}) then {
+                                        if (isNil "ALIVE_ML_paraPlanes") then { ALIVE_ML_paraPlanes = createHashMap; };
+                                        private _paraKey = format ["%1|%2|%3", _eventFaction, _side, _limitTransportToFaction];
+                                        if !(_paraKey in ALIVE_ML_paraPlanes) then {
+                                            private _sideNum = [_side] call ALIVE_fnc_sideTextToNumber;
+                                            private _found = ("getNumber (_x >> 'scope') == 2 && {getNumber (_x >> 'transportSoldier') >= 6}" configClasses (configFile >> "CfgVehicles")) select {
+                                                (configName _x) isKindOf "Plane"
+                                                    && {getText (_x >> "faction") == _eventFaction || {getNumber (_x >> "side") == _sideNum}}
+                                            };
+                                            private _own = _found select { getText (_x >> "faction") == _eventFaction };
+                                            if (_own isNotEqualTo [] || _limitTransportToFaction) then { _found = _own; };
+                                            ALIVE_ML_paraPlanes set [_paraKey, _found apply { [getNumber (_x >> "transportSoldier"), configName _x] }];
+                                        };
+                                        private _planes = ALIVE_ML_paraPlanes get _paraKey;
+                                        if (_planes isNotEqualTo []) then {
+                                            private _men = 0;
+                                            {
+                                                { private _p = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+                                                  if (!isNil "_p") then { _men = _men + count ([_p, "unitClasses", []] call ALIVE_fnc_hashGet) } } forEach _x;
+                                            } forEach _infantryProfiles;
+                                            private _fits = _planes select { (_x select 0) >= _men };
+                                            _fits sort true;
+                                            private _all = +_planes;
+                                            _all sort false;
+                                            _paraClass = ((if (_fits isNotEqualTo []) then { _fits } else { _all }) select 0) select 1;
+                                            _paraGroups = +_infantryProfiles;
+                                            if (_debug) then {
+                                                ["ML - PR_AIRDROP paratroopers: %1 men in %2 group(s) jump from a %3", _men, count _paraGroups, _paraClass] call ALiVE_fnc_dump;
+                                            };
+                                        };
+                                    };
                                     // ---- Part B: infantry heli for all infantry profiles ----
                                     // #947: with Faction Only air transport and a faction with no helicopters the pool is empty
                                     // on purpose, so no aircraft at all: the men go down at the destination with the rest.
-                                    if (count _infantryProfiles > 0 && {count _airdropTransportGroups == 0}) then {
+                                    if (count _infantryProfiles > 0 && {_paraGroups isEqualTo []} && {count _airdropTransportGroups == 0}) then {
                                         _carrierlessGroups append _infantryProfiles;
                                     };
-                                    if (count _infantryProfiles > 0 && {count _airdropTransportGroups > 0}) then {
+                                    if (count _infantryProfiles > 0 && {_paraGroups isEqualTo []} && {count _airdropTransportGroups > 0}) then {
                                         private _infSpawnPos = [_logic, "findHelicopterLandingPos", [
                                             _remotePosition, 200, 500
                                         ]] call MAINCLASS;
@@ -14517,6 +14712,13 @@ switch(_operation) do {
                                         [_logic, "airdropVivFlyby", [_vivProfile select 2 select 4, _vivClass, _vivDrop, _remotePosition, _side, _debug, _forEachIndex]] call MAINCLASS;
                                         _airdropVivCargo pushBack (_vivProfile select 2 select 4);
                                     } forEach _vivItems;
+                                    if (_paraGroups isNotEqualTo []) then {
+                                        private _paraDrop = _eventPosition getPos [random(DESTINATION_VARIANCE), random(360)];
+                                        if (surfaceIsWater _paraDrop) then { _paraDrop = +_eventPosition; };
+                                        _paraDrop set [2, 0];
+                                        [_logic, "airdropParaFlyby", [_paraGroups, _paraClass, _paraDrop, _remotePosition, _side, _debug, count _vivItems]] call MAINCLASS;
+                                        _airdropVivCargo pushBack ((_paraGroups select 0) select 0);
+                                    };
                                     [_event, "airdropVivCargo", _airdropVivCargo] call ALIVE_fnc_hashSet;
 
                                     // everything no helicopter carries goes down at the destination now, ahead of the aircraft
