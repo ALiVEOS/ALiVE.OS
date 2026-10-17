@@ -1185,6 +1185,21 @@
     <Chinese>最近有看到叛軍活動嗎?</Chinese>
     <Chinesesimp>你最近看到叛乱活动了吗？</Chinesesimp>
 </Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_QUESTIONS_SOLDIERS">
+    <English>Have you seen any soldiers nearby?</English>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_SOLDIERS_PRESENCE_1">
+    <English>Some soldiers are near %1.</English>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_SOLDIERS_PRESENCE_2">
+    <English>Don't tell them it was me (Soldiers marked on map).</English>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_SOLDIERS_PRESENCE_3">
+    <English>Yes, let me show you where I saw them (Soldiers marked on map).</English>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_SOLDIERS_PRESENCE_4">
+    <English>Yes, but you must keep this secret (Soldiers marked on map).</English>
+</Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_INTERACT_QUESTIONS_HIDEOUTS">
     <English>Do you know the location of any insurgent hideouts?</English>

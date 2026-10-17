@@ -429,7 +429,14 @@ switch (_operation) do {
 		CIVINTERACT_QUESTIONLIST lbAdd (localize "STR_ALIVE_CIV_INTERACT_QUESTIONS_IEDS");
 		CIVINTERACT_QUESTIONLIST lbSetData [2, "IEDs"];
 
-		CIVINTERACT_QUESTIONLIST lbAdd (localize "STR_ALIVE_CIV_INTERACT_QUESTIONS_INSURGENTS");
+		// a player fighting for the insurgents asks about the soldiers instead
+		private _insFactions = [MOD(civInteractHandler), "InsurgentFaction", []] call ALiVE_fnc_hashGet;
+		private _askerInsurgent = false;
+		if !(isNil "_insFactions") then {
+			if !(_insFactions isEqualType []) then { _insFactions = [_insFactions] };
+			_askerInsurgent = (side group player) in ((_insFactions select { isClass (configFile >> "CfgFactionClasses" >> _x) }) apply { [east, west, independent, civilian] param [getNumber (configFile >> "CfgFactionClasses" >> _x >> "side"), sideUnknown] });
+		};
+		CIVINTERACT_QUESTIONLIST lbAdd (localize (["STR_ALIVE_CIV_INTERACT_QUESTIONS_INSURGENTS", "STR_ALIVE_CIV_INTERACT_QUESTIONS_SOLDIERS"] select _askerInsurgent));
 		CIVINTERACT_QUESTIONLIST lbSetData [3, "Insurgents"];
 
 		CIVINTERACT_QUESTIONLIST lbAdd (localize "STR_ALIVE_CIV_INTERACT_QUESTIONS_HIDEOUTS");

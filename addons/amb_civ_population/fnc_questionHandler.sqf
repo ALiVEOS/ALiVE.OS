@@ -354,16 +354,34 @@ switch (_question) do {
         _pos = getPos _civ;
         _town = [_pos] call ALIVE_fnc_taskGetNearestLocationName;
 
+        // Asked by a player fighting for the insurgents, the same question is about the soldiers hunting them:
+        // the groups of any side hostile to his, weighed by the same trust as ever
+        // (his side is that of one of the module's insurgent factions)
+        if (isNil "_insurgentFaction") then { _insurgentFaction = [] };
+        private _insFactions = if (_insurgentFaction isEqualType []) then { _insurgentFaction } else { [_insurgentFaction] };
+        private _askerInsurgent = (side group player) in ((_insFactions select { isClass (configFile >> "CfgFactionClasses" >> _x) }) apply { [east, west, independent, civilian] param [getNumber (configFile >> "CfgFactionClasses" >> _x >> "side"), sideUnknown] });
+        private _mySide = side group player;
+
         //-- Get nearby insurgents (multi-faction: leader's faction must be
-        //   one of the insurgent factions configured on the module)
+        //   one of the insurgent factions configured on the module), or for an insurgent asker the soldiers
         _insurgents = [];
         {
             _leader = leader _x;
 
-            if ((faction _leader in _insurgentFaction) and {_leader distance2D _pos < 1100}) then {
-                _insurgents pushBack _leader;
+            if (_askerInsurgent) then {
+                // a military side hostile to his, and not one of the insurgent factions themselves
+                if (alive _leader && {side _x in [west, east, independent]} && {(_mySide getFriend (side _x)) < 0.6}
+                    && {!(faction _leader in _insurgentFaction)} && {_leader distance2D _pos < 1100}) then {
+                    _insurgents pushBack _leader;
+                };
+            } else {
+                if ((faction _leader in _insurgentFaction) and {_leader distance2D _pos < 1100}) then {
+                    _insurgents pushBack _leader;
+                };
             };
         } forEach allGroups;
+        private _who = ["Insurgents", "Soldiers"] select _askerInsurgent;
+        private _fnc_whoColor = { params ["_leader"]; if (!_askerInsurgent) exitWith { "ColorEAST" }; switch (side group _leader) do { case west: {"ColorWEST"}; case east: {"ColorEAST"}; case independent: {"ColorGUER"}; default {"ColorUNKNOWN"} } };
 
         if (count _insurgents == 0) then {
             //-- Insurgents are not nearby
@@ -401,10 +419,10 @@ switch (_question) do {
                 //-- Random chance to reveal insurgents
                 if ([50, _intelChanceBonus] call _passesIntelRoll) then {
                     //-- Reveal location
-                    _response1 = format [localize "STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_NOTHOSTILE_1", _town];
-                    _response2 = localize "STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_NOTHOSTILE_2";
-                    _response3 = localize "STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_NOTHOSTILE_3";
-                    _response4 = localize "STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_NOTHOSTILE_4";
+                    _response1 = format [localize (["STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_NOTHOSTILE_1", "STR_ALIVE_CIV_INTERACT_SOLDIERS_PRESENCE_1"] select _askerInsurgent), _town];
+                    _response2 = localize (["STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_NOTHOSTILE_2", "STR_ALIVE_CIV_INTERACT_SOLDIERS_PRESENCE_2"] select _askerInsurgent);
+                    _response3 = localize (["STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_NOTHOSTILE_3", "STR_ALIVE_CIV_INTERACT_SOLDIERS_PRESENCE_3"] select _askerInsurgent);
+                    _response4 = localize (["STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_NOTHOSTILE_4", "STR_ALIVE_CIV_INTERACT_SOLDIERS_PRESENCE_4"] select _askerInsurgent);
                     _response = [_response1, _response2, _response3, _response4] call BIS_fnc_selectRandom;
                     CIVINTERACT_RESPONSELIST ctrlSetText _response;
                     _answersGiven pushBack "Insurgents";_answerGiven = true;
@@ -412,7 +430,7 @@ switch (_question) do {
                     //-- Create marker on insurgent group
                     _insurgentLeaders = [_insurgents,[getPos player],{_Input0 distance2D getPos _x},"ASCEND"] call BIS_fnc_sortBy;
                     _insurgentPos = getPos (_insurgentLeaders select 0);
-                    [_insurgentPos, "Insurgents", "ColorEAST", 100, 18, "mil_dot", _pos, false] call _placeThreatIntelMarker;
+                    [_insurgentPos, _who, [_insurgentLeaders select 0] call _fnc_whoColor, 100, 18, "mil_dot", _pos, false] call _placeThreatIntelMarker;
                 } else {
                     //-- Don't reveal location
                     _response1 = localize "STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_BADLUCK_1";
@@ -426,17 +444,17 @@ switch (_question) do {
                 };
             } else {
                 if ([_intelChanceBonus, 30] call _passesHostileIntelRoll) then {
-                    _response1 = format [localize "STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_NOTHOSTILE_1", _town];
-                    _response2 = localize "STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_NOTHOSTILE_2";
-                    _response3 = localize "STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_NOTHOSTILE_3";
-                    _response4 = localize "STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_NOTHOSTILE_4";
+                    _response1 = format [localize (["STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_NOTHOSTILE_1", "STR_ALIVE_CIV_INTERACT_SOLDIERS_PRESENCE_1"] select _askerInsurgent), _town];
+                    _response2 = localize (["STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_NOTHOSTILE_2", "STR_ALIVE_CIV_INTERACT_SOLDIERS_PRESENCE_2"] select _askerInsurgent);
+                    _response3 = localize (["STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_NOTHOSTILE_3", "STR_ALIVE_CIV_INTERACT_SOLDIERS_PRESENCE_3"] select _askerInsurgent);
+                    _response4 = localize (["STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_NOTHOSTILE_4", "STR_ALIVE_CIV_INTERACT_SOLDIERS_PRESENCE_4"] select _askerInsurgent);
                     _response = [_response1, _response2, _response3, _response4] call BIS_fnc_selectRandom;
                     CIVINTERACT_RESPONSELIST ctrlSetText _response;
                     _answersGiven pushBack "Insurgents";_answerGiven = true;
 
                     _insurgentLeaders = [_insurgents,[getPos player],{_Input0 distance2D getPos _x},"ASCEND"] call BIS_fnc_sortBy;
                     _insurgentPos = getPos (_insurgentLeaders select 0);
-                    [_insurgentPos, "Insurgents", "ColorEAST", 125, 20, "mil_dot", _pos, true] call _placeThreatIntelMarker;
+                    [_insurgentPos, _who, [_insurgentLeaders select 0] call _fnc_whoColor, 125, 20, "mil_dot", _pos, !_askerInsurgent] call _placeThreatIntelMarker;
                 } else {
                     _response1 = localize "STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_HOSTILE_1";
                     _response2 = localize "STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_HOSTILE_2";
