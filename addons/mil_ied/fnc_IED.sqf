@@ -758,9 +758,31 @@ switch(_operation) do {
                             };
                         };
 
-                        [[GVAR(STORE), "locations"] call ALiVE_fnc_hashGet, _locs] call CBA_fnc_hashEachPair;
+                        [[GVAR(STORE), "locations", [] call ALiVE_fnc_hashCreate] call ALiVE_fnc_hashGet, _locs] call CBA_fnc_hashEachPair;
                         ["ALiVE MIL IED - Setting up new SBIED & VBIED Locations"] call ALiVE_fnc_dump;
-                        [_logic, "setupTriggers", [_locations, "regular", true]] call MAINCLASS;
+                        // A save with no towns in it but bombers or car bombs wanted: one made before they were placed
+                        // with an AI Commander synced (631f6c90) saved none. Its towns are found again as at a first
+                        // start and get their bombers and car bombs, and are saved with the rest; its IEDs are left as
+                        // the save had them. Random locations only, as the other two need the commanders to have started.
+                        if (_locations isEqualTo []
+                            && {((_logic getVariable ["Bomber_Threat", 0]) > 0) || {(_logic getVariable ["VB_IED_Threat", 0]) > 0}}
+                            && {([_logic, "Locs_IED"] call MAINCLASS) isEqualTo 0}) then {
+                            private _mapInfo = [] call ALIVE_fnc_getMapInfo;
+                            private _fresh = [_mapInfo select 0, _mapInfo select 2, _debug] call ALIVE_fnc_IEDLocationSource;
+                            if (count _blacklist > 0) then {
+                                _fresh = _fresh select { private _pos = _x select 0; ({ [_pos, _x] call ALiVE_fnc_inArea } count _blacklist) == 0 };
+                            };
+                            if (count _taor > 0) then {
+                                _fresh = _fresh select { private _pos = _x select 0; ({ [_pos, _x] call ALiVE_fnc_inArea } count _taor) > 0 };
+                            };
+                            ["ALiVE MIL IED - the save has no bomber or car bomb towns: placing them on %1 town(s) as at a first start", count _fresh] call ALiVE_fnc_dump;
+                            // as a first start does, so each town rolls its own chances and is saved
+                            GVAR(Loaded) = false;
+                            [_logic, "setupTriggers", [_fresh, "regular", true]] call MAINCLASS;
+                            GVAR(Loaded) = true;
+                        } else {
+                            [_logic, "setupTriggers", [_locations, "regular", true]] call MAINCLASS;
+                        };
                     };
                     // Data has already been loaded & triggers restored, ensure we don't loop a second time
                     _locations = [];
