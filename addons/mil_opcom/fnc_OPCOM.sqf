@@ -1120,6 +1120,7 @@ switch (_operation) do {
         private _factions = [_logic,"factions"] call ALiVE_fnc_HashGet;
 
         private _idlestates = ["unassigned","idle"];
+        private _emptyManual = [];
 
         {
             private _objective = _x;
@@ -1142,7 +1143,17 @@ switch (_operation) do {
                 {[_logic,"resetProfileOrders", _x] call ALiVE_fnc_OPCOM} forEach (+_section);
                 [_logic,"resetObjective", ([_objective,"objectiveID"] call ALiVE_fnc_HashGet)] call ALiVE_fnc_OPCOM;
             };
+            // a one-off order (addTask: a player's recon, say) whose group has died has nothing left to do; not one
+            // still waiting for its group
+            if (
+                [_objective,"manualTask",false] call ALiVE_fnc_HashGet
+                && {([_objective,"section",[]] call ALiVE_fnc_HashGet) isEqualTo []}
+                && {time - ([_objective,"manualSince",time] call ALiVE_fnc_HashGet) > 300}
+            ) then {
+                _emptyManual pushBack ([_objective,"objectiveID",""] call ALiVE_fnc_HashGet);
+            };
         } foreach _objectives;
+        { [_logic,"removeObjective",_x] call ALiVE_fnc_OPCOM } forEach _emptyManual;
 
         private _pendingOrders = [_logic,"pendingorders",[]] call ALiVE_fnc_HashGet;
         private _ordersToRemove = [];
@@ -2549,6 +2560,9 @@ switch (_operation) do {
 
         _objective = [_logic,"addObjective",[_manualObjectiveID,_pos,100,"internal",100,"internal"]] call ALiVE_fnc_OPCOM;
         [_objective,"manualTask",true] call ALiVE_fnc_HashSet;
+        // when it was given: empty until TACOM hands it its group, so cleanupduplicatesections waits before
+        // taking one with no group left away
+        [_objective,"manualSince",time] call ALiVE_fnc_HashSet;
 
         // The request is self-contained. TACOM assigns the supplied section only
         // when this FIFO entry reaches the head of its queue.

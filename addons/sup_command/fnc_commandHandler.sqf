@@ -2580,12 +2580,12 @@ switch(_operation) do {
 
         if (_args isEqualType []) then {
 
-            // intent: "take" or "hold" (the tablet's two buttons, or a map marker's text); "" leaves the
+            // intent: "take" or "hold"; "recon" from a map marker sends a group to look (the tablet's two buttons, or a map marker's text); "" leaves the
             // commander to judge from who's there, as before. A marker's request also gets its answer in chat.
             _args params [["_playerID","",[""]],["_selOpcom",[],[[]]],["_pos",[],[[]]],["_intent","",[""]],["_marker","",[""]]];
 
             if (count _selOpcom < 3 || {count _pos < 2}) exitwith {};
-            if !(_intent in ["", "take", "hold"]) then { _intent = "" };
+            if !(_intent in ["", "take", "hold", "recon"]) then { _intent = "" };
 
             private _fnc_reply = {
                 params ["_text"];
@@ -2626,6 +2626,56 @@ switch(_operation) do {
             if (time - _lastDesignation < _cooldown) exitwith {
                 private _remaining = ceil (_cooldown - (time - _lastDesignation));
                 [format ["Objective cooldown: %1s remaining", _remaining]] call _fnc_reply;
+            };
+
+            // Recon (NeisAEL on Discord, 17 Oct): the commander sends its nearest free foot group to look at the place
+            // and report, as its own recon orders do. It isn't an objective the commander keeps, so the cap doesn't
+            // count it and deleting the marker doesn't call the group back.
+            if (_intent == "recon") exitwith {
+                // an insurgency commander has no TACOM to send scouts with; two at a time per commander at most
+                if (([_opcom,"controltype",""] call ALiVE_fnc_hashGet) == "asymmetric") exitwith { ["This commander doesn't send scouts"] call _fnc_reply };
+                if ({ [_x,"manualTask",false] call ALiVE_fnc_hashGet && {!([_x,"deleted",false] call ALiVE_fnc_hashGet)} } count ([_opcom,"objectives",[]] call ALiVE_fnc_hashGet) >= 2) exitwith {
+                    ["Two recons are already out: wait for one to finish"] call _fnc_reply;
+                };
+                // the group the commander itself would pick: nearest, not on another objective, not ordered, not in
+                // reserve, not fixed in place, not across water; never a player's, nor one already queued for an order
+                private _TACOM = [_opcom,"TACOM_FSM",-1] call ALiVE_fnc_hashGet;
+                private _queued = [];
+                if (_TACOM isEqualType 0 && {_TACOM > 0}) then {
+                    { _queued append ((_x param [1, []]) param [2, []]) } forEach (_TACOM getFSMVariable ["_TACOM_QUEUE",[]]);
+                };
+                private _profilesById = [ALiVE_profileHandler,"profilesById"] call ALiVE_fnc_hashGet;
+                private _free = ([_opcom,"NearestAvailableSection",[_pos,4,["infantry"]]] call ALiVE_fnc_OPCOM) select {
+                    private _p = _profilesById get _x;
+                    !isNil "_p" && {!((_p select 2) param [30, false])} && {!(_x in _queued)}
+                };
+                // none free: one from a quiet objective (in reserve or idle) that keeps at least one other group,
+                // so no garrison is left empty
+                if (_free isEqualTo []) then {
+                    private _infantry = [_opcom,"infantry",[]] call ALiVE_fnc_hashGet;
+                    {
+                        if (([_x,"opcom_state",""] call ALiVE_fnc_hashGet) in ["reserve","reserving","idle"]) then {
+                            private _section = ([_x,"section",[]] call ALiVE_fnc_hashGet) select { _x in _infantry };
+                            if (count ([_x,"section",[]] call ALiVE_fnc_hashGet) >= 2) then {
+                                _free append (_section select {
+                                    private _p = _profilesById get _x;
+                                    !isNil "_p" && {!((_p select 2) param [30, false])} && {!(_x in _queued)}
+                                    && {!([_p,"busy",false] call ALiVE_fnc_hashGet)}
+                                    && {isNil "ALIVE_profileStationary" || {!([ALIVE_profileStationary, _x, false] call ALiVE_fnc_hashGet)}}
+                                    && {!([(_p select 2 select 2), _pos] call ALiVE_fnc_crossesSea)}
+                                });
+                            };
+                        };
+                    } forEach ([_opcom,"objectives",[]] call ALiVE_fnc_hashGet);
+                    _free = [_free, [], { ((_profilesById get _x) select 2 select 2) distance2D _pos }, "ASCEND"] call BIS_fnc_sortBy;
+                };
+                if (_free isEqualTo []) exitwith { ["No group is free to scout it"] call _fnc_reply };
+                private _scout = _free select 0;
+                private _from = round (((_profilesById get _scout) select 2 select 2) distance2D _pos);
+                private _task = [_opcom,"addTask",["recon",_pos,[_scout]]] call ALiVE_fnc_OPCOM;
+                if (isNil "_task") exitwith { ["The commander can't take orders just now"] call _fnc_reply };
+                [_cooldowns,_playerID,time] call ALiVE_fnc_hashSet;
+                [format ["Recon ordered: a group %1 m away is going to look at it from a distance", _from]] call _fnc_reply;
             };
 
             private _maxObjectives = [_logic,"maxPlayerObjectives",3] call ALiVE_fnc_hashGet;
@@ -2671,7 +2721,8 @@ switch(_operation) do {
 
         // A player can also set an objective from the map: a marker whose text starts "obj take" or "obj hold" is
         // sent through opsAddObjective for his side's commander, with every check the tablet's request gets.
-        // Deleting that marker cancels the objective. Server only, installed once. Note: like everything a
+        // Deleting that marker cancels the objective. "obj recon" sends a group to look instead,
+        // and deleting that marker does nothing. Server only, installed once. Note: like everything a
         // client's own scripts can do, a marker can be made in another player's name by a client running script.
 
         if (!isServer || {!isNil "ALiVE_SCOM_markerWatch"}) exitWith {};
@@ -2699,7 +2750,7 @@ switch(_operation) do {
                 // the text can arrive just after the marker
                 sleep 0.5;
                 private _words = (toLower (markerText _marker)) splitString " ";
-                if (count _words < 2 || {(_words select 0) != "obj"} || {!((_words select 1) in ["take", "hold"])}) exitWith {};
+                if (count _words < 2 || {(_words select 0) != "obj"} || {!((_words select 1) in ["take", "hold", "recon"])}) exitWith {};
                 private _player = [_marker, _owner] call ALiVE_fnc_SCOMMarkerOwner;
                 if (isNull _player || {isNil "ALIVE_commandHandler"}) exitWith {};
                 private _h = ALIVE_commandHandler;
