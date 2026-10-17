@@ -470,6 +470,103 @@ private _fnc_firedCount = {
 
 private _volleyStart = time;
 
+// The 3CB M270 ignores the engine's artillery orders: its rocket launcher is off the turret the AI aims, so the
+// crew never fires. Its rounds are launched from it by script instead, with the drag-free launch for the
+// distance, which is how the engine's own artillery flies (within 5 m at 3 km and 50 m at 6 km).
+// The weapon holding the mission's round on a gun, and where it points: a gun whose AI is aiming turns it.
+private _fnc_aim = {
+    params ["_gun"];
+    // every turret's weapons: weapons on a vehicle lists only the driver's, and a gun sits on a turret.
+    // [] when no weapon is found to take the round, which reads as can't tell, not as stuck
+    private _dir = [];
+    {
+        private _turret = _x;
+        { if (_dir isEqualTo [] && {_mag in compatibleMagazines _x}) then { _dir = _gun weaponDirection _x } } forEach (_gun weaponsTurret _turret);
+    } forEach ([[-1]] + allTurrets [_gun, false]);
+    _dir
+};
+// Whether a gun may have its rounds launched by script: standing, crewed at the gun, holding the round, the
+// target on land and in its reach as the engine reckons it, and a round the engine flies as a shell or a
+// submunition carrier (a script-made one keeps to the worked-out launch), not a rocket or missile.
+private _fnc_canScript = {
+    params ["_gun"];
+    private _ammo = getText (configFile >> "CfgMagazines" >> _mag >> "ammo");
+    alive _gun
+    && {alive (gunner _gun) || {alive (effectiveCommander _gun)}}
+    && {(magazinesAllTurrets _gun) findIf { (_x select 0) == _mag && {(_x select 2) > 0} } > -1}
+    && {!surfaceIsWater _aimBase}
+    && {_aimBase inRangeOfArtillery [[_gun], _mag]}
+    && {_ammo != ""}
+    && {(toLower getText (configFile >> "CfgAmmo" >> _ammo >> "simulation")) in ["shotshell", "shotsubmunitions"]}
+};
+// [gun, aim point, rounds]; returns the rounds launched. Each one counts on the gun's fired watchdog, as an
+// aimed round does through its Fired handler.
+private _fnc_scriptFire = {
+    params ["_gun", "_aim", "_rounds"];
+    private _ammo = getText (configFile >> "CfgMagazines" >> _mag >> "ammo");
+    private _shooter = [gunner _gun, effectiveCommander _gun] select (!alive (gunner _gun));
+    // the rounds the gun holds, counted once here: a gun on a headless client reports its magazines to the
+    // server late, so a fresh read each round could launch more than it carries
+    private _held = 0;
+    { if ((_x select 0) == _mag) then { _held = _held + (_x select 2) } } forEach (magazinesAllTurrets _gun);
+    private _launched = 0;
+    for "_i" from 1 to (_rounds min _held) do {
+        if (!alive _gun) exitWith {};
+        // the engine adds its own spread to an aimed round; a launched one gets the same, at least 50 m
+        private _at = _aim getPos [random (_dispersion max 50), random 360];
+        private _from = (getPosASL _gun) vectorAdd [0, 0, 4];
+        private _d = _from distance2D _at;
+        private _dh = (getTerrainHeightASL _at) - (_from select 2);
+        // the lower of 45 and 60 degrees that clears the climb to the target
+        private _sol = [];
+        { private _den = 2 * ((cos _x) ^ 2) * (_d * (tan _x) - _dh); if (_den > 0 && {_sol isEqualTo []}) then { _sol = [_x, sqrt (9.80665 * _d * _d / _den)] } } forEach [45, 60];
+        if (_sol isEqualTo []) exitWith {};
+        _sol params ["_a", "_v"];
+        private _bearing = _from getDir _at;
+        private _dir = [(sin _bearing) * (cos _a), (cos _bearing) * (cos _a), sin _a];
+        private _round = createVehicle [_ammo, ASLToAGL _from, [], 0, "CAN_COLLIDE"];
+        _round setPosASL _from;
+        _round setVectorDirAndUp [_dir, [0, 0, 1]];
+        _round setVelocity (_dir vectorMultiply _v);
+        // the gun and its gunner fired it, for kills, friendly fire and anything that asks who shot
+        _round setShotParents [_gun, _shooter];
+        // one round off the gun's magazine, read and set where the gun is local (it can be a headless client)
+        [[_gun, _mag], {
+            params ["_gun", "_mag"];
+            private _in = (magazinesAllTurrets _gun) select { (_x select 0) == _mag && {(_x select 2) > 0} };
+            if (_in isNotEqualTo []) then {
+                (_in select 0) params ["", "_path", "_count"];
+                _gun setMagazineTurretAmmo [_mag, _count - 1, _path];
+            };
+        }] remoteExec ["call", _gun];
+        _gun setVariable ["ALiVE_artyMissionFired", (_gun getVariable ["ALiVE_artyMissionFired", 0]) + 1, true];
+        _launched = _launched + 1;
+        sleep 1.5;
+    };
+    _launched
+};
+// [guns, rounds]: the rounds shared out over those guns that may launch by script; returns [launched, guns used]
+private _fnc_scriptVolley = {
+    params ["_from", "_rounds"];
+    private _holders = _from select { [_x] call _fnc_canScript };
+    if (_holders isEqualTo []) exitWith { [0, 0] };
+    private _each = ceil (_rounds / count _holders);
+    private _left = _rounds;
+    private _total = 0;
+    {
+        if (_left <= 0) exitWith {};
+        private _n = [_x, _aimBase, _each min _left] call _fnc_scriptFire;
+        _left = _left - _n;
+        _total = _total + _n;
+    } forEach _holders;
+    [_total, count _holders]
+};
+// a gun type that needed it once is launched by script at once on later missions, gun by gun, so a mixed
+// battery still gives its other guns the AI's orders; Combat Support learns the same
+ALiVE_artyScriptFireClasses = missionNamespace getVariable ["ALiVE_artyScriptFireClasses", []];
+private _scriptGuns = _guns select { (typeOf _x) in ALiVE_artyScriptFireClasses };
+private _scriptFirst = _gunLead in _scriptGuns;
+
 // #876 - when it's properly dark, put one illumination round dead-centre on the
 // target ahead of everything else, so the ranging round and HE volley that
 // follow land under the flare. sunOrMoon < 0.3 = genuinely dark (skips dusk/dawn
@@ -478,7 +575,7 @@ private _volleyStart = time;
 // This runs only on the real-fire path (a player is near), so a flare is always
 // seen; virtual missions never reach this file.
 private _sunOrMoon = sunOrMoon;
-private _illumMag = if (_sunOrMoon < 0.3 && {_ordnance != "ILLUM"}) then {
+private _illumMag = if (_sunOrMoon < 0.3 && {_ordnance != "ILLUM"} && {!_scriptFirst}) then {
     [_gunLead, "ILLUM"] call ALIVE_fnc_getArtyMagazineType
 } else { "" };
 // illum magazines have their own (usually shorter) firing solution - if the
@@ -502,7 +599,11 @@ if (_illumMag != "") then {
 
 // ranging round next - it doubles as the audible warning at the target end
 private _rangingAim = _aimBase getPos [random _dispersion, random 360];
-[_gunLead, [_rangingAim, _mag, 1]] remoteExec ["doArtilleryFire", _gunLead];
+if (_scriptFirst && {[_gunLead] call _fnc_canScript}) then {
+    [_gunLead, _rangingAim, 1] call _fnc_scriptFire;
+} else {
+    [_gunLead, [_rangingAim, _mag, 1]] remoteExec ["doArtilleryFire", _gunLead];
+};
 
 if (_debug) then {
     ["ALiVE MIL_ARTILLERY - ranging round ordered: %1 firing %2 at %3", typeOf _gunLead, _mag, _rangingAim] call ALiVE_fnc_dump;
@@ -516,7 +617,12 @@ private _roundsPerGun = 1 max ceil (_roundsThisMission / count _guns);
 {
     private _volleyAim = _aimBase getPos [random _dispersion, random 360];
     [_x, [_volleyAim, _mag, _roundsPerGun]] remoteExec ["doArtilleryFire", _x];
-} forEach _guns;
+} forEach (_guns - _scriptGuns);
+if (_scriptGuns isNotEqualTo []) then {
+    [_scriptGuns, _roundsPerGun * count _scriptGuns] call _fnc_scriptVolley;
+};
+// where each gun's weapon points just after the orders, to tell a gun whose AI is aiming from one that is stuck
+private _aimAtOrder = _guns apply { [_x] call _fnc_aim };
 
 if (_debug) then {
     ["ALiVE MIL_ARTILLERY - volley ordered: %1 gun(s), %2 round(s) each, dispersion %3m", count _guns, _roundsPerGun, _dispersion] call ALiVE_fnc_dump;
@@ -529,6 +635,24 @@ waitUntil {
 };
 
 private _fired = call _fnc_firedCount;
+
+// Nothing left the guns on the AI's orders: the rounds are launched by script from the guns whose weapon never
+// moved (a gun that is turning is slow, not stuck, and would fire twice), and their types are remembered when
+// every gun that could have fired was stuck. Counted before the launch, which can empty a gun.
+if (_fired == 0 && {_scriptGuns isEqualTo []}) then {
+    private _eligible = _guns select { [_x] call _fnc_canScript };
+    private _stuck = _eligible select {
+        private _now = [_x] call _fnc_aim;
+        private _then = _aimAtOrder select (_guns find _x);
+        _now isNotEqualTo [] && {_then isNotEqualTo []} && {(_now vectorDistance _then) < 0.01}
+    };
+    ([_stuck, _roundsThisMission + 1] call _fnc_scriptVolley) params ["_launched", "_used"];
+    if (_launched > 0 && {count _stuck == count _eligible}) then {
+        { ALiVE_artyScriptFireClasses pushBackUnique (typeOf _x) } forEach _stuck;
+        ["ALiVE MIL_ARTILLERY - %1 ignored the artillery order, so its rounds were launched by script, and will be from now on", typeOf _gunLead] call ALiVE_fnc_dump;
+    };
+    _fired = call _fnc_firedCount;
+};
 
 // counter-battery self-verification: if the shell watch missed THIS volley
 // (wrong event name or params, per-client locality, guns local to a headless
