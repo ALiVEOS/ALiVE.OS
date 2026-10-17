@@ -116,6 +116,11 @@ class CfgVehicles {
                         };
                         class Bomber_Type : Edit { property = "ALiVE_mil_ied_Bomber_Type"; displayName = "$STR_ALIVE_IED_BOMBER_TYPE"; tooltip = "$STR_ALIVE_IED_BOMBER_TYPE_COMMENT"; defaultValue = """"""; };
                         class Bomber_Vest : Edit { property = "ALiVE_mil_ied_Bomber_Vest"; displayName = "$STR_ALIVE_IED_BOMBER_VEST"; tooltip = "$STR_ALIVE_IED_BOMBER_VEST_COMMENT"; defaultValue = """V_ALiVE_Suicide_Vest"""; };
+                        class Bomber_Dispatch : Combo
+                        {
+                                property = "ALiVE_mil_ied_Bomber_Dispatch"; displayName = "$STR_ALIVE_IED_BOMBER_DISPATCH"; tooltip = "$STR_ALIVE_IED_BOMBER_DISPATCH_COMMENT"; defaultValue = """true""";
+                                class Values { class Yes{name="Yes";value="true";default=1;}; class No{name="No";value="false";}; };
+                        };
                         // ---- Vehicle-Borne IED ----------------------------------------------
                         class HDR_VBIED : ALiVE_ModuleSubTitle { property = "ALiVE_mil_ied_HDR_VBIED"; displayName = "VEHICLE-BORNE IED"; };
                         class VB_IED_Threat : Combo

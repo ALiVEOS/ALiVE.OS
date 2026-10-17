@@ -42,8 +42,13 @@ if(isnil "_debug") then {_debug = false};
 // Create suicide bomber
 private ["_grp","_side","_pos","_time","_marker","_class","_btype"];
 
+// a third argument of true: after that one person, not someone from his group (a bomber insurgents sent)
+private _exactVictim = _this param [2, false];
+
 if (isNil "_bomber") then {
     _pos = [_location, 0, _size - 10, 3, 0, 0, 0] call BIS_fnc_findSafePos;
+    // with no clear spot there it gives the map's centre: the bomber starts at the place itself instead
+    if ((_pos distance2D _location) > _size + 100) then { _pos = +_location; };
     _side = _faction call ALiVE_fnc_factionSide;
     _grp = createGroup _side;
     _btype = ADDON getVariable ["Bomber_Type", ""];
@@ -128,13 +133,29 @@ _bomber addItemToVest "DemoCharge_Remote_Mag";
 // Unwrap to the actual person and pick a random squadmate
 if (isNil "_victim" || {isNull _victim}) exitWith { deleteVehicle _bomber; };
 private _victimUnit = if (vehicle _victim != _victim) then { driver (vehicle _victim) } else { _victim };
-_victim = selectRandom (units (group _victimUnit));
+_victim = if (_exactVictim) then { _victimUnit } else { selectRandom (units (group _victimUnit)) };
 if (isNil "_victim" || {isNull _victim}) exitWith { deleteVehicle _bomber; };
 
 // Add debug marker
 if (_debug) then {
     ["ALIVE-%1 Suicide Bomber: created at %2 going after %3", time, _pos, name _victim] call ALiVE_fnc_dump;
 };
+
+// Kept on the server, as a headless client given his group would run neither the handler below nor the
+// orders the chase gives him.
+_bomber setVariable ["ALiVE_ignore_HC", true, true];
+
+// Killed with the vest still on, it goes off three times in ten. Not once he has stripped it to detonate
+// (that blast is his own), and not when the blast that killed him was that one.
+_bomber addEventHandler ["Killed", {
+    params ["_unit"];
+    if (_unit getVariable ["ALiVE_bomberArmed", false] || {vest _unit == ""} || {random 1 >= 0.3}) exitWith {};
+    _unit setVariable ["ALiVE_bomberArmed", true];
+    private _at = getPosATL _unit;
+    private _shell = [["R_60mm_HE","Bomb_03_F","Bomb_04_F"],[8,1,1]] call BIS_fnc_selectRandomWeighted;
+    _shell createVehicle [_at select 0, _at select 1, 0];
+    ["ALIVE-%1 Suicide Bomber: killed, and his vest went off at %2", time, _at] call ALiVE_fnc_dump;
+}];
 
 [_victim,_bomber, _pos] spawn {
 
@@ -201,6 +222,7 @@ if (_debug) then {
         _bomber disableAI "ANIM";
         _bomber disableAI "MOVE";
         _bomber disableAI "FSM";
+        _bomber setVariable ["ALiVE_bomberArmed", true];
         removeVest _bomber;
 
         _bomber playMoveNow "AmovPercMstpSsurWnonDnon";
@@ -237,6 +259,7 @@ if (_debug) then {
         // inert -- confirmed in-game 2026-05-30 that only R_60mm_HE / Bomb_03_F
         // / Bomb_04_F explode on createVehicle.
         _shell = [["R_60mm_HE","Bomb_03_F","Bomb_04_F"],[8,1,1]] call BIS_fnc_selectRandomWeighted;
+            _bomber setVariable ["ALiVE_bomberArmed", true];
             _shell createVehicle [(getpos _bomber) select 0, (getpos _bomber) select 1,0];
             ["ALIVE-%1 Suicide Bomber: dead man switch DETONATED at %2", time, getpos _bomber] call ALiVE_fnc_dump;
             sleep 0.3;
@@ -249,3 +272,5 @@ if (_debug) then {
         };
     };
 };
+
+_bomber

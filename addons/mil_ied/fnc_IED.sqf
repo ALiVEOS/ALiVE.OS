@@ -722,7 +722,8 @@ switch(_operation) do {
                         };
                     };
                 } else {
-                    if (count synchronizedObjects _logic == 0) then {
+                    // with or without an AI Commander synced: both place bombers and car bombs now
+                    if (true) then {
                         // Setup SBIEDs & VBIEDs as they're not yet persisted. Once these are persisted this code can be removed along with the locations hash
                         _locations = [];
                         _locs = {
@@ -788,6 +789,11 @@ switch(_operation) do {
 
                 // set module as started
                 _logic setVariable ["startupComplete", true];
+
+                // insurgents who have spotted players send a bomber at them
+                if ([_logic, "Bomber_Dispatch"] call MAINCLASS && {(_logic getVariable ["Bomber_Threat", 0]) > 0}) then {
+                    [_logic, "bomberDispatch"] spawn MAINCLASS;
+                };
             };
         };
         case "setupTriggers": {
@@ -906,6 +912,7 @@ switch(_operation) do {
                     };
 
                     _faction = (selectRandom _factions);
+                    ADDON setVariable ["bomberFaction", _faction];
 
                     //Roll the dice - use 0-100 range so threat values are true percentages.
                     // On a reload the location's saved roll is used again, so it gets back the
@@ -942,8 +949,9 @@ switch(_operation) do {
                         [GVAR(STORE), "locations", _locs] call ALiVE_fnc_hashSet;
                     };
 
-                    // Bombers
-                    if (_fateBomber < _logic getvariable ["Bomber_Threat", DEFAULT_BOMBER_THREAT] && !(_startupIED)) then {
+                    // Bombers. Placed with an AI Commander synced too: the starting threat only changes how many
+                    // IEDs a town gets, and skipping bombers there left Bomber Threat doing nothing in an insurgency.
+                    if (_fateBomber < _logic getvariable ["Bomber_Threat", DEFAULT_BOMBER_THREAT]) then {
 
                         // Place Suicide Bomber trigger
 
@@ -962,7 +970,7 @@ switch(_operation) do {
                     };
 
                     // VBIEDs
-                    if (_fateVB < _logic getvariable ["VB_IED_Threat", DEFAULT_VB_IED_THREAT] && !(_startupIED)) then {
+                    if (_fateVB < _logic getvariable ["VB_IED_Threat", DEFAULT_VB_IED_THREAT]) then {
 
                         // Place VBIED
                         _trg = createTrigger["EmptyDetector", _pos];
@@ -1180,6 +1188,67 @@ switch(_operation) do {
             };
             ASSERT_TRUE(typeName _args == "STRING", str _args);
             _result = _args;
+        };
+        case "Bomber_Dispatch": {
+            // Yes or No from the editor, as text, a number or true/false; Yes when never set. A read passes no
+            // value, which arrives as objNull
+            if (isNil "_args" || {_args isEqualType objNull}) then { _args = _logic getVariable ["Bomber_Dispatch", true] };
+            if (_args isEqualType 0) then { _args = _args > 0 };
+            if (_args isEqualType "") then { _args = !((toLower _args) in ["0", "false"]) };
+            if !(_args isEqualType true) then { _args = true };
+            _result = _args;
+        };
+        case "bomberDispatch": {
+            // An insurgent group that has spotted a player sends one suicide bomber at him: every 30 s, a
+            // player on the ground with an insurgent group 150 to 800 m away that knows about him has an even
+            // chance of drawing one, at most one at a time each and then not for 10 minutes. Insurgents are
+            // the sides of the asymmetric AI Commanders. The bomber comes from that group's position,
+            // dressed as a civilian like the town bombers, and goes after the player the same way.
+            if (!isServer) exitWith {};
+            private _debug = [_logic, "debug"] call MAINCLASS;
+            while { !isNull _logic } do {
+                sleep 30;
+                private _insSides = [];
+                {
+                    if (([_x, "controltype", ""] call ALiVE_fnc_hashGet) == "asymmetric") then {
+                        private _sideText = [_x, "side", ""] call ALiVE_fnc_hashGet;
+                        if (_sideText isEqualType "") then { _sideText = [_sideText] call ALIVE_fnc_sideTextToObject };
+                        _insSides pushBackUnique _sideText;
+                    };
+                } forEach (missionNamespace getVariable ["OPCOM_instances", []]);
+                if (_insSides isNotEqualTo []) then {
+                    {
+                        private _player = _x;
+                        private _veh = vehicle _player;
+                        if (alive _player
+                            && {isNull (getAssignedCuratorLogic _player)}
+                            && {((getPosATL _veh) select 2) < 25}
+                            && {time > (_player getVariable ["ALiVE_IED_dispatchNext", 0])}
+                            && {!alive (_player getVariable ["ALiVE_IED_dispatchBomber", objNull])}) then {
+                            private _spotters = allGroups select {
+                                private _l = leader _x;
+                                (side _x) in _insSides && {alive _l} && {!isPlayer _l}
+                                && {(_l distance _veh) > 150} && {(_l distance _veh) < 800}
+                                && {(_l knowsAbout _veh) >= 1.5}
+                            };
+                            if (_spotters isNotEqualTo [] && {random 1 < 0.5}) then {
+                                private _from = getPos leader (selectRandom _spotters);
+                                private _faction = ADDON getVariable ["bomberFaction", "CIV_F"];
+                                // after the spotted player himself, not a squadmate
+                                private _bomber = [[_from, 60, _faction], [_player], true] call ALIVE_fnc_createBomber;
+                                // the wait starts only once one is on his way
+                                if (!isNil "_bomber" && {_bomber isEqualType objNull} && {alive _bomber}) then {
+                                    _player setVariable ["ALiVE_IED_dispatchBomber", _bomber];
+                                    _player setVariable ["ALiVE_IED_dispatchNext", time + 600];
+                                    if (_debug) then {
+                                        ["ALIVE-%1 Suicide Bomber: insurgents near %2 who spotted %3 sent a bomber", time, mapGridPosition _from, name _player] call ALiVE_fnc_dump;
+                                    };
+                                };
+                            };
+                        };
+                    } forEach (allPlayers - entities "HeadlessClient_F");
+                };
+            };
         };
         case "aiTriggerable": {
             // The editor hands the choice over as 0 or 1, and the shared setter keeps only a true or

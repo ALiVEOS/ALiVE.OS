@@ -258,6 +258,12 @@
     <Portuguese>Classe de colete colocada nos homens-bomba. Aceita um único nome de classe ou uma lista separada por vírgulas — um é escolhido aleatoriamente por homem-bomba. Deixe em branco para o colete suicida padrão do ALiVE. Exemplo: V_ALiVE_Suicide_Vest,V_Chestrig_khk,V_BandollierBag_cbr</Portuguese>
     <Russian>Класс жилета, надеваемый на смертников. Принимает одно classname или список через запятую — один выбирается случайно на каждого смертника. Оставьте пустым для пояса смертника ALiVE по умолчанию. Пример: V_ALiVE_Suicide_Vest,V_Chestrig_khk,V_BandollierBag_cbr</Russian>
 </Key>
+<Key ID="STR_ALIVE_IED_BOMBER_DISPATCH">
+    <English>Insurgents Send Bombers</English>
+</Key>
+<Key ID="STR_ALIVE_IED_BOMBER_DISPATCH_COMMENT">
+    <English>With an asymmetric AI Commander and a Bomber Threat above None: an insurgent group that has spotted a player 150 to 800 m away may send a suicide bomber at him. At most one at a time for each player, then none for him for 10 minutes.</English>
+</Key>
 <Key ID="STR_ALIVE_IED_VB_IED_THREAT">
     <English>Vehicle Borne IED Threat:</English>
     <Chinese>車載 IED 威脅：</Chinese>

@@ -29,7 +29,8 @@ class cfgWeapons
                 model = "\A3\Characters_F\OPFOR\equip_o_vest_gl";
                 class ItemInfo: VestItem
                 {
-                        uniformModel = "-";
+                        // drawn when worn, so a bomber can be spotted
+                        uniformModel = "\A3\Characters_F\OPFOR\equip_o_vest_gl";
                         containerClass = "Supply50"; // or what ever space it got
                         mass = 25;
                         armor = "5*0.5"; // if body armor various values can be used
