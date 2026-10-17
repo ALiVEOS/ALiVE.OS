@@ -173,6 +173,22 @@ class CfgVehicles {
                                 class AutoLow { name = "Auto - Performance"; value = "low"; };
                             };
                     };
+                    // Route memory (#1086): ground routes avoid where their side has been hurt and vary
+                    // from one request to the next. Off routes exactly as before.
+                    class routeMemory : Combo
+                    {
+                            property = "ALiVE_sys_profile_routeMemory";
+                            displayName = "$STR_ALIVE_PROFILE_SYSTEM_ROUTEMEMORY";
+                            tooltip = "$STR_ALIVE_PROFILE_SYSTEM_ROUTEMEMORY_COMMENT";
+                            typeName = "STRING";
+                            defaultValue = """off""";
+                            class Values
+                            {
+                                class Off  { name = "Off"; value = "off"; default = 1; };
+                                class Low  { name = "Low"; value = "low"; };
+                                class High { name = "High"; value = "high"; };
+                            };
+                    };
                     // Debug-draw toggles (independent of the module Debug flag).
                     // Both can also be flipped live by a logged-in admin via the
                     // ALiVE menu (Admin Options -> Profile System).

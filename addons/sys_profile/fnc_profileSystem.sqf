@@ -172,6 +172,7 @@ switch(_operation) do {
             private _drawPaths = [_logic,"pathfindingDrawPaths"] call ALIVE_fnc_profileSystem;
             if (_drawPaths) then { [alive_pathfinder,"setDrawPaths", true] call ALiVE_fnc_pathfinder; };
             if (_drawGrid)  then { [alive_pathfinder,"setDrawGrid", true] call ALiVE_fnc_pathfinder; };
+            [nil, "init", [_logic,"routeMemory"] call ALIVE_fnc_profileSystem] call ALiVE_fnc_pathfinderRouteMemory;
         };
 
         // create the profile handler
@@ -386,6 +387,13 @@ switch(_operation) do {
                    [_logic,"pathfindingDrawGrid",_args] call ALIVE_fnc_hashSet;
             };
             _result = [_logic,"pathfindingDrawGrid",false] call ALIVE_fnc_hashGet;
+    };
+    case "routeMemory": {
+            // Route memory (#1086): "off" / "low" / "high" (STRING).
+            if(typeName _args == "STRING") then {
+                   [_logic,"routeMemory",_args] call ALIVE_fnc_hashSet;
+            };
+            _result = [_logic,"routeMemory","off"] call ALIVE_fnc_hashGet;
     };
     case "pathfindingDrawPaths": {
             if(typeName _args == "BOOL") then {

@@ -4980,7 +4980,7 @@ switch(_operation) do {
                                 _pw setWaypointType "MOVE"; _pw setWaypointSpeed "FULL"; _pw setWaypointBehaviour "SAFE";
                             } forEach _path;
                         };
-                    }]] call ALiVE_fnc_pathfinder;
+                    }, str side _truckGrp]] call ALiVE_fnc_pathfinder;
                 };
             };
 
@@ -5268,7 +5268,7 @@ switch(_operation) do {
                                     _pw setWaypointBehaviour "SAFE";
                                 } forEach _path;
                             };
-                        }]] call ALiVE_fnc_pathfinder;
+                        }, str side _truckGrp]] call ALiVE_fnc_pathfinder;
                     };
                 };
 

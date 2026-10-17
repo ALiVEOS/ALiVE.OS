@@ -307,6 +307,12 @@
     <Portuguese>Desenhar Rotas de Navegação:</Portuguese>
     <Russian>Отображать маршруты поиска пути:</Russian>
 </Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_ROUTEMEMORY">
+    <English>Route Memory:</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_ROUTEMEMORY_COMMENT">
+    <English>Routes on foot and by land vehicle remember where their side has lost men or vehicles, or come under attack, and go round those places for a while. The memory fades by half every two hours and starts empty when a saved game is loaded. Each route also varies a little, so groups sent the same way don't all walk the same line. Low: a little variation, dangerous ground up to three times dearer. High: more variation, up to five times dearer. Needs Pathfinding on. Default Off, which routes exactly as before.</English>
+</Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_DRAWPATHS_COMMENT">
     <English>Debug: draw each computed route on the map as a connected line through its nodes, as profiles request paths. Lines are coloured by the requesting side (BLUFOR blue, OPFOR red, Independent green, Civilian purple). Independent of the module Debug setting. A logged-in admin can also toggle this live from the ALiVE menu (Admin Options - Profile System). Default No.</English>

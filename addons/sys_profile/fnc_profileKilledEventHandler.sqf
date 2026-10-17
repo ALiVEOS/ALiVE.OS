@@ -37,6 +37,12 @@ switch(_profileType) do {
     case "entity": {
         private _allProfileUnitsDead = [_profile,"handleDeath", _unit] call ALIVE_fnc_profileEntity;
 
+        // Route memory (#1086): each man lost marks his ground a little dangerous for his side; losing the
+        // whole group adds a full mark through PROFILE_KILLED below. Not for men lost in an aircraft or boat.
+        if (!isNil "ALiVE_routeMemory_danger" && {!(objectParent _unit isKindOf "Air" || {objectParent _unit isKindOf "Ship"})}) then {
+            [nil, "deposit", [getPosATL _unit, _profile select 2 select 3, 0.25]] call ALiVE_fnc_pathfinderRouteMemory;
+        };
+
         if !(_allProfileUnitsDead) then {
             // free any vehicle this crew was assigned to first: without it the dead crew's ID stayed on
             // the vehicle, was saved with it, and the AI Commander picked it up on every load (#1073)
@@ -98,6 +104,12 @@ switch(_profileType) do {
                 // The class itself: _vClass here is the profile's broad type ("Plane"), which can't say fighter or attack.
                 [if (isNull _unit) then { _profile select 2 select 11 } else { typeOf _unit }, _vPos, [_profile select 2 select 3] call ALIVE_fnc_sideTextToObject, _vId] call ALiVE_c2istar_fnc_reportAirLoss;
             };
+        };
+
+        // Route memory (#1086): a ground vehicle lost marks its sector dangerous for its side. Called directly,
+        // since this branch raises no PROFILE_KILLED and that event's listeners expect a group's data.
+        if (!isNil "ALiVE_routeMemory_danger" && {isNil "_vClass" || {!(_vClass isEqualType "" && {_vClass isKindOf "Air" || {_vClass isKindOf "Ship"}})}}) then {
+            [nil, "deposit", [if (!isNull _unit) then { getPosATL _unit } else { _profile select 2 select 2 }, _profile select 2 select 3, 1]] call ALiVE_fnc_pathfinderRouteMemory;
         };
 
         // not sure about this, it will remove the profile and the vehicle wreck will remain

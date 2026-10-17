@@ -245,6 +245,7 @@ if(isServer) then {
     // the grid/route overlay never activates from the Eden defaults.
     private _pathfindingDrawGrid  = (_logic getVariable ["pathfindingDrawGrid",  "false"]) == "true";
     private _pathfindingDrawPaths = (_logic getVariable ["pathfindingDrawPaths", "false"]) == "true";
+    private _routeMemory = _logic getVariable ["routeMemory", "off"];
     // Sea-transport mode: Auto / Always / Never. Legacy missions stored the old
     // Yes/No combo as "true"/"false" - map those to always/never.
     private _seaTransport = switch (toLower (_logic getVariable ["seaTransport", "auto"])) do {
@@ -318,6 +319,7 @@ if(isServer) then {
     [ALIVE_profileSystem, "pathfindingSize", _pathfindingSize] call ALIVE_fnc_profileSystem;
     [ALIVE_profileSystem, "pathfindingDrawGrid",  _pathfindingDrawGrid]  call ALIVE_fnc_profileSystem;
     [ALIVE_profileSystem, "pathfindingDrawPaths", _pathfindingDrawPaths] call ALIVE_fnc_profileSystem;
+    [ALIVE_profileSystem, "routeMemory", _routeMemory] call ALIVE_fnc_profileSystem;
     [ALIVE_profileSystem, "seaTransport", _seaTransport] call ALIVE_fnc_profileSystem;
     [ALIVE_profileSystem, "smoothSpawn", _smoothSpawn] call ALIVE_fnc_profileSystem;
     [ALIVE_profileSystem, "vehicleSpawnSettleSeconds", _vehicleSpawnSettleSeconds] call ALIVE_fnc_profileSystem;

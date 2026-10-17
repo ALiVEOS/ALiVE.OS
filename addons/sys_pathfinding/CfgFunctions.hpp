@@ -86,6 +86,12 @@ class CfgFunctions {
                 ALIVE_RECOMPILE;
             };
 
+            class pathfinderRouteMemory {
+                description = "Route memory: danger by side and per-request variation for ground routes";
+                file = "\x\alive\addons\sys_pathfinding\fnc_pathfinderRouteMemory.sqf";
+                ALIVE_RECOMPILE;
+            };
+
             class pathfindingSector {
                 description = "";
                 file = "\x\alive\addons\sys_pathfinding\fnc_pathfindingSector.sqf";

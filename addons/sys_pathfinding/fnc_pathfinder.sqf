@@ -488,16 +488,21 @@ switch (_operation) do {
     ////////// JOB FUNCTIONS //////////
     case "findPath": {
 
-        _args params ["_startPos","_procedure","_waypoint","_previousWaypoint","_callbackArgs","_callback"];
-        
+        // _side (optional, side text) is who the route is for, read by route memory (#1086).
+        // Profiles already pass it third in their callback arguments, so that is the fallback.
+        _args params ["_startPos","_procedure","_waypoint","_previousWaypoint","_callbackArgs","_callback",["_side",""]];
+
         private _pathJobs = _logic get "pathJobs";
         // Copy only the outer array. Waypoints and callback
         // arguments must keep their shared references: the callback marks the
         // profile's original pending-path record ready. Unary + deep-copies it.
-        private _newJob = _args + [];
+        private _newJob = _args select [0, 6];
         // Cache the route type once when queuing the request.
         private _isNaval = (_procedure select 1) isEqualTo [false,false,false,true,false];
         _newJob pushBack _isNaval;
+        if (_side isEqualTo "" && {_callbackArgs isEqualType []}) then { _side = _callbackArgs param [2, ""] };
+        if (_side isEqualType west) then { _side = str _side };
+        _newJob pushBack _side;
         _pathJobs pushBack _newJob;
 
         if (count _pathJobs == 1) then {
@@ -613,6 +618,8 @@ switch (_operation) do {
             private _layer2Data = [_cameFromMapLayer2, _costSoFarMapLayer2, _frontierLayer2, _pathLayer2, _closestSubSector, _itersSinceClosest];
 
             _currentJobData = [false, [false,false,false], _layer1Data, _layer2Data, _startSector, _goalSector, _startSubSector, _goalSubSector, []];
+            // Slot 10: route memory for this request (#1086), [] when it is off or not a ground route.
+            _currentJobData set [10, [nil, "jobContext", [_procedure select 1, _nextJob param [7, ""]]] call ALiVE_fnc_pathfinderRouteMemory];
 
             _logic set ["currentJobData", _currentJobData];
         } else {
@@ -703,6 +710,13 @@ switch (_operation) do {
                 && {!((_capabilities select 4))}
                 && {!(ALiVE_airsideFields isEqualTo [])};
             private _airsideCanDiscount = _airsideActive && {ALiVE_pathfinding_airsideWeight < 1};
+            // Route memory (#1086): one factor per coarse sector for this request. The variation can make a
+            // sector cheaper, by at most the amplitude, so the cheap pre-filter below allows for that floor;
+            // danger only makes it dearer. Off leaves the floor at 1 and both searches unchanged.
+            private _rmContext = _currentJobData param [10, []];
+            private _rmActive = _rmContext isNotEqualTo [];
+            private _rmFloor = if (_rmActive) then { 1 - (_rmContext select 0) } else { 1 };
+            private _rmRatio = round (_sectorSize / _subSectorSize);
             // The fine search gave up though the coarse search had reached the goal's sector, and it had
             // barely got away from where it started: no nearer the goal than its first cell, or under a
             // coarse sector nearer while still more than a sector short (dense ground all round with no
@@ -817,7 +831,7 @@ switch (_operation) do {
                     private _distanceToGoal = _centerPos distance (_goalSector select 2);
                     private _moveCost = [_currentSector, _neighSector, _sectorSize] call ALiVE_fnc_pathfinderGetMovementCost;
                     private _knownCost = _costSoFarMapLayer1 get (_neighSector select 0);
-                    private _baseCostCanImprove = isNil "_knownCost" || {_currentCost + _moveCost < _knownCost};
+                    private _baseCostCanImprove = isNil "_knownCost" || {_currentCost + _moveCost * _rmFloor < _knownCost};
                     private _mustCheckTraversal =
                         _neighSector isEqualTo _goalSector
                         || {_distanceToGoal > (_closestSector select 0) * 5};
@@ -838,6 +852,9 @@ switch (_operation) do {
                             } else {
                                 _moveCost = [_neighSector, _sectorSize, _moveCost] call ALiVE_fnc_pathfinderGetFinalMovementCost;
                             };
+                        };
+                        if (_rmActive) then {
+                            _moveCost = _moveCost * ([nil, "factor", [_rmContext, _neighSector select 0]] call ALiVE_fnc_pathfinderRouteMemory);
                         };
                         private _newCostSoFar = _moveCost + _currentCost;
                         private _finalCostCanImprove = isNil "_knownCost" || {_newCostSoFar < _knownCost};
@@ -966,7 +983,7 @@ switch (_operation) do {
                     private _isGoalNeighbor = (_neighSubSector select 0) isEqualTo (_goalSubSector select 0);
                     private _moveCost = _fineNeighborCosts select _forEachIndex;
                     private _knownCost = _costSoFarMapLayer2 get (_neighSubSector select 0);
-                    private _baseCostCanImprove = isNil "_knownCost" || {_currentCost + _moveCost < _knownCost};
+                    private _baseCostCanImprove = isNil "_knownCost" || {_currentCost + _moveCost * _rmFloor < _knownCost};
                     private _mustCheckTraversal =
                         _isGoalNeighbor
                         || {_itersSinceClosest > 500};
@@ -987,6 +1004,11 @@ switch (_operation) do {
                             } else {
                                 _moveCost = [_neighSubSector, _subSectorSize, _moveCost] call ALiVE_fnc_pathfinderGetFinalMovementCost;
                             };
+                        };
+                        if (_rmActive) then {
+                            // the coarse sector this cell lies in: both index spaces are floor(pos / size) from the same origin
+                            private _fineIndex = _neighSubSector select 0;
+                            _moveCost = _moveCost * ([nil, "factor", [_rmContext, [floor ((_fineIndex select 0) / _rmRatio), floor ((_fineIndex select 1) / _rmRatio)]]] call ALiVE_fnc_pathfinderRouteMemory);
                         };
                         private _newCostSoFar = _moveCost + _currentCost;
                         private _finalCostCanImprove = isNil "_knownCost" || {_newCostSoFar < _knownCost};
