@@ -1465,11 +1465,14 @@ switch(_operation) do {
                 private _pSide = _prisoner getVariable ["ALiVE_prisonerSide", side group _prisoner];
                 private _sideText = str _pSide;
                 private _found = [];
-                if (random 100 >= 30) then {
-                    private _profiles = [getPosATL _prisoner, 2000, [_sideText, "entity"]] call ALIVE_fnc_getNearProfiles;
+                // an insurgent recruiter who gave himself up always talks, and knows the ground further out
+                private _recruiter = _prisoner getVariable ["ALiVE_INS_recruiterCaptured", false];
+                private _reach = [2000, 3000] select _recruiter;
+                if (_recruiter || {random 100 >= 30}) then {
+                    private _profiles = [getPosATL _prisoner, _reach, [_sideText, "entity"]] call ALIVE_fnc_getNearProfiles;
                     _found = (_profiles call BIS_fnc_arrayShuffle) select [0, 4];
                     _found = _found apply { [_x, "position", [0, 0, 0]] call ALIVE_fnc_hashGet };
-                    [getPosATL _prisoner, 2000, _pSide] call ALIVE_fnc_OPCOMToggleInstallations;
+                    [getPosATL _prisoner, _reach, _pSide] call ALIVE_fnc_OPCOMToggleInstallations;
                 };
                 ALiVE_c2istar_questionAnswer = [name _prisoner, _found, _pSide];
                 if (isPlayer _caller && {!(local _caller)}) then { (owner _caller) publicVariableClient "ALiVE_c2istar_questionAnswer" } else { ALiVE_c2istar_questionAnswer call ALiVE_c2istar_fnc_showAnswer };

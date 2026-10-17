@@ -2562,9 +2562,11 @@ ALiVE_fnc_INS_recruiterPresence = {
                 // the HVT killed: the task is taken down as it succeeds, so this is how it is seen
                 missionNamespace setVariable [_doneKey, nil];
                 _hvtStep = nil;
-                _HQ setVariable ["ALiVE_INS_recruitSkipNext", _skips];
-                _HQ setVariable ["ALiVE_INS_recruiterBackAt", time + _pause];
-                ["ALiVE OPCOM: the recruiter at the Recruitment HQ near %1 was killed in a task; that town skips %2 recruitment(s)", mapGridPosition _HQ, _skips] call ALiVE_fnc_dump;
+                if (time - (_HQ getVariable ["ALiVE_INS_recruiterTakenAt", -1e9]) > 1800) then {
+                    _HQ setVariable ["ALiVE_INS_recruitSkipNext", _skips];
+                    _HQ setVariable ["ALiVE_INS_recruiterBackAt", time + _pause];
+                    ["ALiVE OPCOM: the recruiter at the Recruitment HQ near %1 was killed in a task; that town skips %2 recruitment(s)", mapGridPosition _HQ, _skips] call ALiVE_fnc_dump;
+                };
                 _raisedAt = -1e6;
             };
             if (isNil "_hvtStep") then {
@@ -2572,7 +2574,7 @@ ALiVE_fnc_INS_recruiterPresence = {
                 (time - _raisedAt) < 180
             } else {
                 private _state = _hvtStep select 8;
-                if (_state == "Succeeded") then {
+                if (_state == "Succeeded" && {time - (_HQ getVariable ["ALiVE_INS_recruiterTakenAt", -1e9]) > 1800}) then {
                     _HQ setVariable ["ALiVE_INS_recruitSkipNext", _skips];
                     _HQ setVariable ["ALiVE_INS_recruiterBackAt", time + _pause];
                     ["ALiVE OPCOM: the recruiter at the Recruitment HQ near %1 was killed in a task; that town skips %2 recruitment(s)", mapGridPosition _HQ, _skips] call ALiVE_fnc_dump;
@@ -2634,9 +2636,29 @@ ALiVE_fnc_INS_recruiterPresence = {
                 ["ALiVE OPCOM: a recruiter (%1) is in the Recruitment HQ near %2, with %3 guard(s)%4", _class, mapGridPosition _HQ, count _guards, ["", ", walking the town"] select _walks] call ALiVE_fnc_dump;
             };
         } else {
-            // he goes when no one is near; when a task opens he waits until no player can see him go
-            if ((_taskOpen && {!(300 call _players)}) || {!(1200 call _players)}) then {
-                call _fnc_clear;
+            // Cornered, with his guards down (or none given him) and a hostile player within 25 m, he gives himself
+            // up (Ando on Discord, 17 Oct): a prisoner like any other, to detain and question through C2ISTAR.
+            // Taken, he costs the town its recruiting as his death would; his kill handler and any recruiter task
+            // still open are told, so it isn't counted again.
+            if (
+                !isNil "ALiVE_c2istar_fnc_surrender"
+                && {(_guards select { alive _x }) isEqualTo []}
+                && {(allPlayers findIf { alive _x && {(_x distance _unit) < 25} && {(_sideObj getFriend side group _x) < 0.6} }) > -1}
+            ) then {
+                _unit setVariable ["ALiVE_INS_recruiterOf", [objNull, 0, 1]];
+                _HQ setVariable ["ALiVE_INS_recruiterTakenAt", time];
+                _unit setVariable ["ALiVE_INS_recruiterCaptured", true, true];
+                [_unit] call ALiVE_c2istar_fnc_surrender;
+                _HQ setVariable ["ALiVE_INS_recruitSkipNext", _skips];
+                _HQ setVariable ["ALiVE_INS_recruiterBackAt", time + _pause];
+                ["ALiVE OPCOM: the recruiter at the Recruitment HQ near %1 gave himself up; that town skips %2 recruitment(s)", mapGridPosition _HQ, _skips] call ALiVE_fnc_dump;
+                // the players' now: nothing here deletes him
+                _unit = objNull;
+            } else {
+                // he goes when no one is near; when a task opens he waits until no player can see him go
+                if ((_taskOpen && {!(300 call _players)}) || {!(1200 call _players)}) then {
+                    call _fnc_clear;
+                };
             };
         };
         sleep 10;
