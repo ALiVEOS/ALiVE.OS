@@ -843,6 +843,8 @@ switch(_operation) do {
                         private _filtered = _classList select {
                             private _vFaction = getText (configFile >> "CfgVehicles" >> _x >> "faction");
                             _vFaction in _sideFactions || {_vFaction == "Default" && {_x isKindOf "ReammoBox_F"}}
+                            // a crate the mission names in its whitelist, whatever it's built on (AshTray on Discord)
+                            || {_x in ALiVE_PR_WHITELIST && {!(_x isKindOf "AllVehicles")}}
                         };
                         if (count _filtered > 0) then {
                             [_sortedVehicles, _category, _filtered] call ALiVE_fnc_hashSet;
@@ -2189,7 +2191,10 @@ switch(_operation) do {
                                                     // Arma 3's ammo and supply crates descend from ReammoBox_F, a
                                                     // separate base from ReammoBox, so without it no crate counted
                                                     // and the category holding them was never offered.
-                                                    if (_x isKindOf "Ammo" || {_x isKindOf "ReammoBox"} || {_x isKindOf "AmmoBox"} || {_x isKindOf "ReammoBox_F"}) exitWith {
+                                                    // A box the mission whitelists counts too: cardboard and wooden
+                                                    // boxes are plain objects, not ammo crates (AshTray on Discord).
+                                                    if (_x isKindOf "Ammo" || {_x isKindOf "ReammoBox"} || {_x isKindOf "AmmoBox"} || {_x isKindOf "ReammoBox_F"}
+                                                        || {_x in ALiVE_PR_WHITELIST && {!(_x isKindOf "AllVehicles")}}) exitWith {
                                                         _hasAmmo = true;
                                                     };
                                                 } forEach _classList;
@@ -2252,6 +2257,7 @@ switch(_operation) do {
                                 if (!isNil "_vehicleClasses" && {(_selectedSupplyListParents param [0, ""]) == "Combat Supplies"}) then {
                                     _vehicleClasses = _vehicleClasses select {
                                         _x isKindOf "Ammo" || {_x isKindOf "ReammoBox"} || {_x isKindOf "AmmoBox"} || {_x isKindOf "ReammoBox_F"}
+                                        || {_x in ALiVE_PR_WHITELIST && {!(_x isKindOf "AllVehicles")}}
                                     };
                                 };
 
