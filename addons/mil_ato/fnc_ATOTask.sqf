@@ -990,7 +990,26 @@ switch(_operation) do {
 
         private _offered = _already apply { _x select 0 };
         private _target = nil;
-        { if !(_x in _offered) exitWith { _target = _x } } forEach _wanted;
+        // An air defence site is several vehicles (launchers, a radar), each a threat of its own, so each watch
+        // pass offered the next one at the same place and players got a stack of tasks for one site (A. Ares on
+        // Discord, 17 Oct). For SEAD, anything within 500 m of a target already offered counts as offered.
+        private _fnc_where = {
+            if (_this isEqualType "") exitWith {
+                private _p = if (isNil "ALiVE_profileHandler") then { nil } else { [ALiVE_profileHandler, "getProfile", _this] call ALiVE_fnc_ProfileHandler };
+                if (isNil "_p") then { [] } else { [_p, "position", []] call ALiVE_fnc_hashGet }
+            };
+            if (_this isEqualType objNull && {!isNull _this}) exitWith { getPosATL _this };
+            []
+        };
+        private _offeredAt = if (_type isEqualTo "SEAD") then { (_offered apply { _x call _fnc_where }) select { count _x > 1 } } else { [] };
+        {
+            if !(_x in _offered) then {
+                private _at = _x call _fnc_where;
+                // a SEAD target with no position is passed over: it would be refused below and stand in front of the rest
+                if (!(_type isEqualTo "SEAD") || {count _at > 1 && {(_offeredAt findIf { (_x distance2D _at) < 500 }) < 0}}) exitWith { _target = _x };
+            };
+            if (!isNil "_target") exitWith {};
+        } forEach _wanted;
         if (isNil "_target") exitWith { _result = ["denied", "already offered"] };
 
         // Where the task points, and whose it is. A target is either a profile
