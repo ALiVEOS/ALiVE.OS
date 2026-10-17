@@ -695,6 +695,12 @@
 <Key ID="STR_ALIVE_OPCOM_RECRUITER_SKIPS_COMMENT">
     <English>With Recruiters on: how many of the town's recruitment attempts are lost each time its recruiter is killed. 1 by default.</English>
 </Key>
+<Key ID="STR_ALIVE_OPCOM_RECRUITER_BOOST">
+    <English>Recruiter Boost</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_RECRUITER_BOOST_COMMENT">
+    <English>With Recruiters on: while a town's recruiter is alive (not killed and not waiting to come back), its Recruitment HQ recruits this much faster and with this much better a chance. None by default; Some is a quarter, More a half, Double twice.</English>
+</Key>
 <Key ID="STR_ALIVE_OPCOM_RECRUITER_WALKS">
     <English>Recruiter Walks The Town</English>
 </Key>

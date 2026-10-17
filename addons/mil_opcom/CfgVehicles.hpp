@@ -549,6 +549,22 @@ class CfgVehicles {
                                 defaultValue = """1""";
                                 typeName = "NUMBER";
                         };
+                        class recruiterBoost : Combo
+                        {
+                                property = "ALiVE_mil_opcom_recruiterBoost";
+                                displayName = "$STR_ALIVE_OPCOM_RECRUITER_BOOST";
+                                tooltip = "$STR_ALIVE_OPCOM_RECRUITER_BOOST_COMMENT";
+                                typeName = "STRING";
+                                expression = "_this setVariable ['recruiterBoost', _value];";
+                                defaultValue = """1""";
+                                class Values
+                                {
+                                        class None   { name = "None";   value = "1"; };
+                                        class Some   { name = "Some";   value = "1.25"; };
+                                        class More   { name = "More";   value = "1.5"; };
+                                        class Double { name = "Double"; value = "2"; };
+                                };
+                        };
                         class recruiterWalks : Combo
                         {
                                 property = "ALiVE_mil_opcom_recruiterWalks";

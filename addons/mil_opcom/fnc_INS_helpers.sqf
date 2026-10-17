@@ -1697,6 +1697,14 @@ ALiVE_fnc_INS_recruit = {
                         // War on Drugs (#1080): every standing drug lab speeds recruitment, up to twice as fast with 4
                         private _labs = if (isNil "_opcom") then {0} else {[_opcom] call ALiVE_fnc_INS_countStandingLabs};
                         private _delayMultiplier = (1 + (0.01 * _effectivePressure)) / (1 + 0.25 * (_labs min 4));
+                        // Recruiter Boost (#1088): while the town's recruiter is alive (Recruiters on, not killed and not
+                        // waiting to come back) this HQ recruits faster, and below with a better chance
+                        private _boost = 1;
+                        if (!isNil "_opcom" && {[_opcom, "recruiters", false] call ALiVE_fnc_HashGet}
+                            && {time >= (_HQ getVariable ["ALiVE_INS_recruiterBackAt", 0])}) then {
+                            _boost = [_opcom, "recruiterBoost", 1] call ALiVE_fnc_HashGet;
+                        };
+                        _delayMultiplier = _delayMultiplier / _boost;
                         private _adjustedCycleMin = _recruitCycleMin * _delayMultiplier;
                         private _adjustedCycleMax = _recruitCycleMax * _delayMultiplier;
 
@@ -1736,7 +1744,7 @@ ALiVE_fnc_INS_recruit = {
                                 default {1};
                             };
                             private _pressureChanceMultiplier = (1 - (0.007 * _effectivePressure)) max 0.2;
-                            private _effectiveRecruitChance = (_recruitSuccessChance * _phaseChanceMultiplier * _pressureChanceMultiplier) min 1;
+                            private _effectiveRecruitChance = (_recruitSuccessChance * _phaseChanceMultiplier * _pressureChanceMultiplier * _boost) min 1;
 
                             // Use the configured chance for a successful recruitment spawn.
                             if (random 1 < _effectiveRecruitChance) then {
