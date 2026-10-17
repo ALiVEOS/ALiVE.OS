@@ -92,6 +92,18 @@
     <Portuguese>Itens de Acesso Personalizados (classnames):</Portuguese>
     <Russian>Дополнительные предметы доступа (классы):</Russian>
 </Key>
+<Key ID="STR_ALIVE_C2ISTAR_ACCESSPOINT_CLASSES">
+    <English>Command Point Classes</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_ACCESSPOINT_CLASSES_COMMENT">
+    <English>Comma-separated object classnames that act as command points: a player within Command Point Radius of any object of these classes (or a class that inherits from one) has the C2ISTAR, Combat Support and Player Combat Logistics menus as if carrying an access item, however the object was placed: in Eden, by Zeus, by a script or as part of a FOB. Any side can use them, so pick a class only your mission places: ALiVE's own base layouts and many terrains already have map boards, and a broad parent class would take in far more than you meant. Combat Support's operator rule still applies. Example: "Land_PortableDesk_01_olive_F". For commanding only from these points, set the access items to something players don't carry. Leave empty for none.</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_ACCESSPOINT_RADIUS">
+    <English>Command Point Radius</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_ACCESSPOINT_RADIUS_COMMENT">
+    <English>How close, in metres, a player has to stand to an object of the Command Point Classes. Default 10, at most 200.</English>
+</Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_CUSTOM_ITEMS_COMMENT">
     <English>Comma-separated list of additional item classnames that should grant C2ISTAR menu access on top of the Access Item Categories above. Use this for mod-supplied items that don't fit a registered category (e.g. a custom faction's command tablet, a campaign-specific intel device). Each entry matches any item whose classname contains that text, ignoring case, so a short entry can match more items than you meant. Checked against the player's assigned items, uniform / vest / backpack contents and the backpack itself. Example: "MyMod_CommandTablet, AnotherMod_FieldRadio". Leave empty for none.</English>

@@ -23,7 +23,8 @@ Parameters:
 
 Returns:
 BOOL - true when the player carries at least one matching item, or stands at a command post
-(an object with ALiVE_accessPoint set: true for 10 m, or a radius in metres)
+(an object with ALiVE_accessPoint set: true for 10 m, or a radius in metres; or an object of one
+of C2ISTAR's Command Point Classes, within its Command Point Radius)
 
 Examples:
 (begin example)
@@ -39,12 +40,22 @@ params [["_itemsCsv", "", [""]], ["_customCsv", "", [""]], ["_extraTokens", [], 
 // commanding can be done from an HQ map board rather than a carried tablet (AshTray on Discord, 16 Oct).
 // Mark it in its init with  this setVariable ["ALiVE_accessPoint", true, true];  for 10 m, or a number
 // for that many metres. For HQ-only commanding, set the access items to something players don't carry.
+// C2ISTAR's Command Point Classes make every object of those classes (or a class inheriting from one) a
+// command post within Command Point Radius, however it got there: Eden, Zeus, a script or a FOB (A. Ares
+// on Discord, 17 Oct). An object's own ALiVE_accessPoint still wins, so a script can widen or switch one off.
+// The engine finds the objects of each class (and its children) within the radius, so the ACE menus, which
+// ask every frame they're open, never loop over a town's worth of objects. The player's own unit is never one.
 private _post = (player nearObjects 50) findIf {
     private _r = _x getVariable ["ALiVE_accessPoint", false];
     if (_r isEqualType true) then { _r = [0, 10] select _r };
     _r isEqualType 0 && {_r > 0} && {(player distance _x) <= _r}
 };
 if (_post > -1) exitWith { true };
+private _classes = missionNamespace getVariable ["ALiVE_accessPointClasses", []];
+private _classRadius = missionNamespace getVariable ["ALiVE_accessPointRadius", 10];
+if (_classes findIf {
+    ((player nearObjects [_x, _classRadius]) findIf { _x != player && {isNil {_x getVariable "ALiVE_accessPoint"}} }) > -1
+} > -1) exitWith { true };
 
 private _tokens = _itemsCsv call ALiVE_fnc_stringListToArray;
 { _tokens pushBack _x } forEach _extraTokens;

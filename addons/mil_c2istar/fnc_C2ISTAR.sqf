@@ -1562,6 +1562,23 @@ if (isServer) then { publicVariable "ALiVE_c2istar_orderRepeatBlock" };
 if (isServer) then {
     _logic setVariable ["c2_item", _logic getVariable ["c2_item", DEFAULT_C2_ITEM], true];
     _logic setVariable ["c2_item_custom", _logic getVariable ["c2_item_custom", DEFAULT_C2_ITEM_CUSTOM], true];
+
+    // Command Point Classes: every object of these classes is a command post within the radius, read by
+    // ALiVE_fnc_playerHasAccessItems on each player's machine, so broadcast once here.
+    private _pointClasses = _logic getVariable ["accessPointClasses", ""];
+    ALiVE_accessPointClasses = if (_pointClasses isEqualType "") then {
+        (_pointClasses call ALiVE_fnc_stringListToArray) select {
+            private _known = _x != "" && {isClass (configFile >> "CfgVehicles" >> _x)};
+            if (!_known && {_x != ""}) then { ["ALiVE C2ISTAR: Command Point Classes has %1, which isn't a vehicle or object class, so it's left out", _x] call ALiVE_fnc_dump };
+            _known
+        }
+    } else { [] };
+    // capped at 200 m: the menus ask every frame they're open, and that's a search of this radius per class
+    private _pointRadius = _logic getVariable ["accessPointRadius", 10];
+    if (_pointRadius isEqualType "") then { _pointRadius = parseNumber _pointRadius };
+    ALiVE_accessPointRadius = if (_pointRadius isEqualType 0 && {_pointRadius > 0}) then { _pointRadius min 200 } else { 10 };
+    publicVariable "ALiVE_accessPointClasses";
+    publicVariable "ALiVE_accessPointRadius";
 };
 
         private _taskMinDistance = [_logic, "taskMinDistance"] call MAINCLASS;

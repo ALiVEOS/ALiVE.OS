@@ -62,6 +62,24 @@ class CfgVehicles {
                             expression   = "_this setVariable ['c2_item_custom', _value];";
                             defaultValue = """""";
                     };
+                    class accessPointClasses : Edit
+                    {
+                            property     = "ALiVE_MIL_C2ISTAR_accessPointClasses";
+                            displayName  = "$STR_ALIVE_C2ISTAR_ACCESSPOINT_CLASSES";
+                            tooltip      = "$STR_ALIVE_C2ISTAR_ACCESSPOINT_CLASSES_COMMENT";
+                            typeName     = "STRING";
+                            expression   = "_this setVariable ['accessPointClasses', _value];";
+                            defaultValue = """""";
+                    };
+                    class accessPointRadius : Edit
+                    {
+                            property     = "ALiVE_MIL_C2ISTAR_accessPointRadius";
+                            displayName  = "$STR_ALIVE_C2ISTAR_ACCESSPOINT_RADIUS";
+                            tooltip      = "$STR_ALIVE_C2ISTAR_ACCESSPOINT_RADIUS_COMMENT";
+                            typeName     = "NUMBER";
+                            expression   = "_this setVariable ['accessPointRadius', _value];";
+                            defaultValue = "10";
+                    };
 
                     // ---- Faction filters ------------------------------------------------
                     class HDR_FACTION_FILTERS : ALiVE_ModuleSubTitle { property = "ALiVE_mil_c2istar_HDR_FACTION_FILTERS"; displayName = "FACTION FILTERS"; };
