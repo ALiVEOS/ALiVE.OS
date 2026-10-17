@@ -840,9 +840,23 @@ switch(_operation) do {
         _waypoints = [_waypoints, [_waypoint], 0] call BIS_fnc_arrayInsert;
         [_logic,"waypoints",_waypoints] call ALIVE_fnc_hashSet;
 
+        // On the live group it goes in where the group is now and becomes the one it heads for. It used to be
+        // added at the end like any other, so on a group walking a looping patrol it landed after the CYCLE and
+        // was never reached: each order to go and help a fight added a whole route there, and a group could
+        // show 50 waypoints and more. A route is inserted from its last point back, each at the same place,
+        // so it ends up in order with its first point current.
         private _active = _logic select 2 select 1; //[_logic,"active"] call ALIVE_fnc_hashGet
         if (_active) then {
-            [_logic,"profileWaypointToWaypoint", _waypoint] call MAINCLASS;
+            private _group = _logic select 2 select 13;
+            if !(_group isEqualType grpNull && {!isNull _group}) then {
+                private _units = _logic select 2 select 21;
+                _group = if (_units isEqualType []) then { group ((_units select { alive _x }) param [0, objNull]) } else { grpNull };
+            };
+            if (isNull _group) exitWith {
+                ["ALiVE profileEntity insertWaypointInternal: profile %1 is active but has no group to give the waypoint to", _logic select 2 select 4] call ALiVE_fnc_dump;
+            };
+            private _at = ((currentWaypoint _group) max 0) min (count waypoints _group);
+            [_waypoint, _group, true, _at] call ALIVE_fnc_profileWaypointToWaypoint;
         };
       };
     };

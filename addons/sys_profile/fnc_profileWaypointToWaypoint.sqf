@@ -10,6 +10,8 @@ Takes a profile waypoint and creates a real waypoint
 Parameters:
 Hash - profile waypoint
 Group - The group
+Bool - make it the group's current waypoint (default false)
+Number - where to put it in the group's waypoints, -1 for the end (default -1)
 
 Returns:
 A waypoint
@@ -24,9 +26,10 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
-params ["_profileWaypoint","_group",["_setCurrent", false]];
+params ["_profileWaypoint","_group",["_setCurrent", false],["_index", -1]];
 
 if (isnil "_profileWaypoint" || {!(_profileWaypoint isequaltype [])}) exitwith {
     ["- ALiVE_fnc_ProfileWaypointToWaypoint retrieved wrong input: %1!",_this] call ALiVE_fnc_dump;
@@ -71,7 +74,8 @@ if (_navalRoute) then {
     _position set [2,0];
 };
 
-private _waypoint = _group addWaypoint [_position, _radius];
+// an index puts it there instead of at the end: a waypoint inserted ahead of a live group's route
+private _waypoint = if (_index >= 0) then { _group addWaypoint [_position, _radius, _index] } else { _group addWaypoint [_position, _radius] };
 _waypoint setWaypointDescription _description;
 _waypoint setWaypointType _type;
 _waypoint setWaypointFormation _formation;
