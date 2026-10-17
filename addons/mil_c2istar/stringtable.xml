@@ -2118,10 +2118,10 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_AID_AIRLIFT">
-    <English>Aid Airlift Chance (%)</English>
+    <English>Aid Crate Chance (%)</English>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_AID_AIRLIFT_COMMENT">
-    <English>The share of Aid Delivery tasks where the relief comes as a supply crate to sling-load under a helicopter (or carry in a vehicle) instead of a van. An Aid Delivery whose pickup has no road nearby is always an airlift. 0 keeps the van everywhere else.</English>
+    <English>The share of Aid Delivery tasks where the relief comes as a supply crate instead of a van, to bring in a vehicle that can carry it or sling-load under a helicopter. An Aid Delivery whose pickup has no road nearby always comes as a crate. 0 keeps the van everywhere else.</English>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_CIVIC_HOLD">
     <English>Civic Hold Time (s)</English>

@@ -251,18 +251,19 @@ switch (_taskState) do {
         private _dialogOptions = [ALIVE_generatedTasks, "AidDelivery"] call ALIVE_fnc_hashGet;
         _dialogOptions = _dialogOptions select 1;
         private _dialogOption = +(selectRandom _dialogOptions);
-        // the airlift's own words, on this task's copy of the briefing
+        // the crate's own words, on this task's copy of the briefing: a helicopter or a vehicle can bring it, so
+        // nothing says "airlift" (NeisAEL on Discord, 17 Oct)
         if (_airlift) then {
             private _d = [_dialogOption, "Parent"] call ALIVE_fnc_hashGet;
-            [_d, "title", "Airlift Relief from %1 to %2"] call ALIVE_fnc_hashSet;
-            [_d, "description", "Collect the relief crate at %1, fly it into %2 under a helicopter and supervise distribution."] call ALIVE_fnc_hashSet;
+            [_d, "title", "Deliver the Relief Crate from %1 to %2"] call ALIVE_fnc_hashSet;
+            [_d, "description", "Collect the relief crate at %1, bring it to %2 under a helicopter or in a vehicle, and supervise distribution."] call ALIVE_fnc_hashSet;
             _d = [_dialogOption, "Rally"] call ALIVE_fnc_hashGet;
-            [_d, "description", "Move to %1 with a helicopter that can sling-load the relief crate, and get it ready to lift."] call ALIVE_fnc_hashSet;
-            [_d, "chat_start", [["HQ","The relief for this one goes by air. Bring a lift helicopter to %1 and hook up the crate, Over."],["PLAYERS","Roger, moving to the pickup."]]] call ALIVE_fnc_hashSet;
+            [_d, "description", "Move to %1 with a helicopter that can sling-load the relief crate, or a vehicle that can carry it, and pick it up."] call ALIVE_fnc_hashSet;
+            [_d, "chat_start", [["HQ","The relief for this one comes as a crate. Bring a lift helicopter or a vehicle that can carry it to %1, Over."],["PLAYERS","Roger, moving to the pickup."]]] call ALIVE_fnc_hashSet;
             _d = [_dialogOption, "Move"] call ALIVE_fnc_hashGet;
-            [_d, "title", "Airlift the relief crate to %1"] call ALIVE_fnc_hashSet;
-            [_d, "description", "Fly the relief crate from %1 to %2 under a helicopter and set it down near the local contact."] call ALIVE_fnc_hashSet;
-            [_d, "chat_start", [["HQ","Fly the relief crate from %1 to %2 and set it down by the local contact, Over."],["PLAYERS","Roger, lifting now."]]] call ALIVE_fnc_hashSet;
+            [_d, "title", "Deliver the relief crate to %1"] call ALIVE_fnc_hashSet;
+            [_d, "description", "Bring the relief crate from %1 to %2 and set it down near the local contact."] call ALIVE_fnc_hashSet;
+            [_d, "chat_start", [["HQ","Bring the relief crate from %1 to %2 and set it down by the local contact, Over."],["PLAYERS","Roger, on our way."]]] call ALIVE_fnc_hashSet;
             _d = [_dialogOption, "Deliver"] call ALIVE_fnc_hashGet;
             [_d, "description", "Set the crate down by the local contact in %1 and supervise final distribution of the supplies."] call ALIVE_fnc_hashSet;
             [_d, "chat_start", [["HQ","The local contact is waiting in %1. Set the crate down and distribute the supplies, Over."],["PLAYERS","Roger, preparing the handover."]]] call ALIVE_fnc_hashSet;
