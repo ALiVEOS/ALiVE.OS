@@ -21,6 +21,9 @@ if (!isNil "ALiVE_sup_combatsupport_debug" && {ALiVE_sup_combatsupport_debug}) t
 _battery setVariable ["ARTY_SHOTCALLED", false, true];
 _battery setVariable ["ARTY_SPLASH", false, true];
 _battery setVariable ["ARTY_COMPLETE", false, true];
+_battery setVariable ["ARTY_NOSHOTS", false, true];
+// counted from this mission only, before anything waits on it
+_battery setVariable ["ALiVE_CS_shotsFired", 0];
 _battery setVariable ["ARTY_ONMISSION", true, true];
 
 // Ensure that the target position is 3d.
@@ -31,19 +34,31 @@ if ((count _targetPos) == 2) then
 
 sleep 15;
 
-_battery setVariable ["ARTY_SHOTCALLED", true, true];
-
-sleep 2;
-
+// "firing on target" and "splash" wait for the first round that actually leaves, and the splash is timed
+// from it. They used to follow the order on a timer, so a gun that never fired (the 3CB M270 and RHS M142
+// launchers ignore the engine's artillery orders) still reported firing, splash and rounds complete.
 [_battery,_targetPos,_ordnance] spawn {
 
     _battery = _this select 0;
+    // the shot count below decides whether nothing left the guns (ARTY_NOSHOTS), once every order is out, so a
+    // staggered mission's late first round is never called a failure. The guns are the server's own crews, where
+    // their Fired handlers run.
+    waitUntil { sleep 0.5; (_battery getVariable ["ALiVE_CS_shotsFired", 0]) > 0 || {_battery getVariable ["ARTY_NOSHOTS", false]} };
+    if ((_battery getVariable ["ALiVE_CS_shotsFired", 0]) == 0) exitWith {
+        // nothing left the guns: the radio says so instead of calling a splash
+        _battery setVariable ["ARTY_SHOTCALLED", true, true];
+        sleep 2;
+        _battery setVariable ["ARTY_SPLASH", true, true];
+    };
+    _battery setVariable ["ARTY_SHOTCALLED", true, true];
     //Get position for ETA
     _dummy = "Land_HelipadEmpty_F" createVehicleLocal (_this select 1);
     _eta = (vehicle _battery) getArtilleryETA [getPos _dummy, _this select 2];
     deleteVehicle _dummy;
     //["BATTERY: %1 due in %2 seconds", _battery, _eta] call ALiVE_fnc_dump;
 
+    // no answer (the leader's own vehicle can't fire this round): give the rounds a little time anyway
+    if (_eta < 0) then { _eta = 10 };
     sleep _eta;
 
     _battery setVariable ["ARTY_SPLASH", true, true];
@@ -116,6 +131,8 @@ waitUntil {
     || {_seen > 0 && {time - _lastShot > 30}}
     || {time - _t0 > 120 + 20 * _missionRoundCount}
 };
+// nothing left at all: the radio says it couldn't fire, not that the rounds landed
+if (_seen == 0) then { _battery setVariable ["ARTY_NOSHOTS", true, true] };
 {
     _x params ["_gun", "_eh"];
     if (!isNull _gun) then {

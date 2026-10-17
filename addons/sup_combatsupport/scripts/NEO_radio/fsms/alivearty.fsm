@@ -467,11 +467,14 @@ class FSM
                                          "time > _delay" \n
                                          ""/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/"private ""_msg"";" \n
+                                         "// called only once a round has left (fn_ExecuteMission); nothing said when none did" \n
+                                         "if !(_battery getVariable [""ARTY_NOSHOTS"", false]) then {" \n
                                          "if (_audio) then {" \n
                                          "    leader (_units select 0) kbTell [_player, ""ALIVE_SUPP_protocol"", ""Artillery_Acknowledged"", ""GROUP""];    " \n
                                          "} else {" \n
                                          "    _msg = [""STR_ALIVE_CS_ARTY_MSG_02"",_callsignPlayer, _callsign];" \n
                                          "    [[(_units select 0), _msg, ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+                                         "};" \n
                                          "};"/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
@@ -512,11 +515,17 @@ class FSM
                                         condition=/*%FSM<CONDITION""">*/"_battery getVariable ""ARTY_SPLASH""" \n
                                          ""/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/"private ""_msg"";" \n
+                                         "if (_battery getVariable [""ARTY_NOSHOTS"", false]) then {" \n
+                                         "    // no round left the guns: said plainly, not as a splash" \n
+                                         "    _msg = [""STR_ALIVE_CS_ARTY_MSG_NOFIRE"",_callsignPlayer, _callsign];" \n
+                                         "    [[(_units select 0), _msg, ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+                                         "} else {" \n
                                          "if (_audio) then {" \n
                                          "    leader (_units select 0) kbTell [_player, ""ALIVE_SUPP_protocol"", ""Artillery_Accomplished"", ""GROUP""];" \n
                                          "} else {" \n
                                          "    _msg = [""STR_ALIVE_CS_ARTY_MSG_03"",_callsignPlayer, _callsign];" \n
                                          "    [[(_units select 0), _msg, ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+                                         "};" \n
                                          "};"/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
@@ -561,11 +570,13 @@ class FSM
                                          "time > _delay" \n
                                          ""/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/"private ""_msg"";" \n
+                                         "if !(_battery getVariable [""ARTY_NOSHOTS"", false]) then {" \n
                                          "if (_audio) then {" \n
                                          "    leader (_units select 0) kbTell [_player, ""ALIVE_SUPP_protocol"", ""Artillery_Rounds_Complete"", ""GROUP""];" \n
                                          "} else {" \n
                                          "    _msg = [""STR_ALIVE_CS_ARTY_MSG_04"",_callsignPlayer, _callsign];" \n
                                          "    [[(_units select 0), _msg, ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+                                         "};" \n
                                          "};" \n
                                          ""/*%FSM</ACTION""">*/;
                                 };

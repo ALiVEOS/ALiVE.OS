@@ -1197,6 +1197,9 @@
     <Portuguese>%1, %2 está a disparar sobre o alvo. Terminado.</Portuguese>
     <Russian>%1, %2 ведёт огонь по цели. Конец связи.</Russian>
 </Key>
+<Key ID="STR_ALIVE_CS_ARTY_MSG_NOFIRE">
+    <English>%1, %2 could not fire on that target, nothing left the guns. Choose another battery or round. Out.</English>
+</Key>
 <Key ID="STR_ALIVE_CS_ARTY_MSG_03">
     <English>%1, Splash. Out.</English>
     <Chinesesimp>%1，弹着。完毕。</Chinesesimp>
