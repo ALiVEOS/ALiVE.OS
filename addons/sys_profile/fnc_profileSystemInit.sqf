@@ -196,6 +196,10 @@ if(isServer) then {
         _airCombatHelicopterVehicleRadius = ([_standardValue, _airCombatHelicopterVehicleRadius] call _asNumber) max 0;
     };
 
+    // MACC aircraft wake the enemy's anti-air near them: on unless the mission turns it off
+    private _airDefenceSpawning = [_logic getVariable ["airDefenceSpawning", true], true] call _asBool;
+    private _airDefenceRadius = ([_logic getVariable ["airDefenceRadius", 4000], 4000] call _asNumber) max 0;
+
     private _activeLimiter = parseNumber (_logic getVariable ["activeLimiter","144"]);
     private _zeusSpawn = (_logic getvariable ["zeusSpawn", "true"]) == "true";
     private _speedModifier = (_logic getVariable ["speedModifier","1"]) call BIS_fnc_parseNumber;
@@ -309,6 +313,9 @@ if(isServer) then {
     [ALIVE_profileSystem, "proximitySpawning", _proximitySpawning] call ALIVE_fnc_profileSystem;
     if (_airCombatSpawning) then {
         [ALIVE_profileSystem, "createAirCombatActivator", [_airCombatPlaneVehicleRadius, _airCombatHelicopterVehicleRadius]] call ALIVE_fnc_profileSystem;
+    };
+    if (_airDefenceSpawning) then {
+        [ALIVE_profileSystem, "createAirDefenceActivator", [_airDefenceRadius]] call ALIVE_fnc_profileSystem;
     };
     [ALIVE_profileSystem, "activeLimiter", _activeLimiter] call ALIVE_fnc_profileSystem;
     [ALIVE_profileSystem, "zeusSpawn", _zeusSpawn] call ALIVE_fnc_profileSystem;

@@ -1611,6 +1611,22 @@ private _fnc_drain = {
     _planned
 };
 
+// The key this commander's aircraft go under in ALiVE_ATO_airborne (read by the Virtual AI System's air defence
+// activator): its registry ID once it has one, the module until then
+private _fnc_airborneKey = {
+    params ["_logic"];
+    private _key = _logic getVariable ["registryID", ""];
+    if (_key isEqualTo "") then { _key = str _logic };
+    _key
+};
+// Takes them off the list: a paused or stopped commander's aircraft must not keep the enemy's anti-air awake
+private _fnc_airborneClear = {
+    params ["_logic"];
+    if (isNil "ALiVE_ATO_airborne") exitWith {};
+    ALiVE_ATO_airborne deleteAt ([_logic] call _fnc_airborneKey);
+    ALiVE_ATO_airborne deleteAt (str _logic);
+};
+
 switch(_operation) do {
 
     // ======================================================================
@@ -2773,6 +2789,7 @@ switch(_operation) do {
         _result = _args;
         if (_args isEqualTo _state) exitWith {};
         [_logic, "pause", _args, false] call ALIVE_fnc_OOsimpleOperation;
+        if (_args) then { [_logic] call _fnc_airborneClear };
         ["Pausing state of %1 instance set to %2!", QMOD(ADDON), _args] call ALiVE_fnc_dumpR;
 
         private _k = [_logic] call _fnc_kernel;
@@ -3333,6 +3350,9 @@ switch(_operation) do {
         private _changed = false;
         private _drop = [];
         private _anyFlying = false;
+        private _airborneNow = [];
+        // the commander's side, not the crew's: a hull whose crew is dead reads as civilian
+        private _airborneSide = [_logic, "side"] call MAINCLASS;
         {
             _x params ["_tail", "_row", "_row2", "_orders", "_effects", "_obj", "_home", "_obs", "_failedSortie"];
             private _from = [_row, "state", ""] call ALIVE_fnc_hashGet;
@@ -3359,7 +3379,15 @@ switch(_operation) do {
             [_logic, _tail, _row2, _orders, _obj, _home] call _fnc_issueOrders;
 
             if (_to in FLYING_STATES || {[_obs, "airborne", false] call ALIVE_fnc_hashGet}) then { _anyFlying = true };
+            if (!isNull _obj && {alive _obj} && {[_obs, "airborne", false] call ALIVE_fnc_hashGet}) then {
+                _airborneNow pushBack [_obj, _airborneSide];
+            };
         } forEach _stepped;
+
+        // this commander's aircraft in the air, for the Virtual AI System's air defence activator: enemy anti-air
+        // near them is spawned so it can shoot at them (sys_profile/fnc_profileActivatorAirDefence.sqf)
+        if (isNil "ALiVE_ATO_airborne") then { ALiVE_ATO_airborne = createHashMap };
+        ALiVE_ATO_airborne set [[_logic] call _fnc_airborneKey, _airborneNow];
 
         // ---- a sortie only PART of its aircraft took ---------------------
         // Answered per SORTIE rather than per aircraft.
@@ -3627,6 +3655,7 @@ switch(_operation) do {
         [_logic, "debug", false] call MAINCLASS;
         if (isServer) then {
             private _k = [_logic] call _fnc_kernel;
+            [_logic] call _fnc_airborneClear;
             if !(_k isEqualTo []) then {
                 [_k, "stopped", true] call ALIVE_fnc_hashSet;
                 private _id = _logic getVariable ["listenerID", ""];

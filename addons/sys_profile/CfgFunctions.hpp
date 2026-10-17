@@ -231,6 +231,12 @@ class cfgFunctions {
                 file = "\x\alive\addons\sys_profile\fnc_profileActivatorPlayerProximity.sqf";
                 ALIVE_RECOMPILE;
             };
+            class profileActivatorAirDefence {
+                description = "Spawns enemy anti-air near airborne MACC aircraft";
+                file = "\x\alive\addons\sys_profile\fnc_profileActivatorAirDefence.sqf";
+                ALIVE_RECOMPILE;
+            };
+
             class profileActivatorAirCombat {
                 description = "Optional air-combat profile activator";
                 file = "\x\alive\addons\sys_profile\fnc_profileActivatorAirCombat.sqf";

@@ -87,6 +87,18 @@ class CfgVehicles {
                     };
                     class airCombatPlaneVehicleRadius : Edit { property = "ALiVE_sys_profile_airCombatPlaneVehicleRadius"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_AIR_COMBAT_PLANE_RADIUS"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_AIR_COMBAT_PLANE_RADIUS_COMMENT"; expression = "_this setVariable ['airCombatPlaneVehicleRadius', _value, true];"; defaultValue = """7000"""; };
                     class airCombatHelicopterVehicleRadius : Edit { property = "ALiVE_sys_profile_airCombatHelicopterVehicleRadius"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_AIR_COMBAT_HELI_RADIUS"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_AIR_COMBAT_HELI_RADIUS_COMMENT"; expression = "_this setVariable ['airCombatHelicopterVehicleRadius', _value, true];"; defaultValue = """5000"""; };
+                    // AI Commanders' (MACC) aircraft spawn the enemy's anti-air near them (sys_profile/fnc_profileActivatorAirDefence.sqf)
+                    class airDefenceSpawning
+                    {
+                            property = "ALiVE_sys_profile_airDefenceSpawning";
+                            displayName = "$STR_ALIVE_PROFILE_SYSTEM_AIR_DEFENCE_SPAWNING";
+                            tooltip = "$STR_ALIVE_PROFILE_SYSTEM_AIR_DEFENCE_SPAWNING_COMMENT";
+                            control = "Checkbox";
+                            typeName = "BOOL";
+                            expression = "_this setVariable ['airDefenceSpawning', _value, true];";
+                            defaultValue = "true";
+                    };
+                    class airDefenceRadius : Edit { property = "ALiVE_sys_profile_airDefenceRadius"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_AIR_DEFENCE_RADIUS"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_AIR_DEFENCE_RADIUS_COMMENT"; expression = "_this setVariable ['airDefenceRadius', _value, true];"; defaultValue = """4000"""; };
                     class SPACER_POST_AIR_COMBAT : ALiVE_ModuleSubTitle { property = "ALiVE_sys_profile_SPACER_POST_AIR_COMBAT"; displayName = " "; };
                     class smoothSpawn : Edit { property = "ALiVE_sys_profile_smoothSpawn"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_SMOOTHSPAWN"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_SMOOTHSPAWN_COMMENT"; defaultValue = """0.3"""; };
                     class vehicleSpawnSettleSeconds : Edit

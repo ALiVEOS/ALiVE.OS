@@ -487,6 +487,11 @@ switch(_operation) do {
 
         _result = [_logic,"proximitySpawning", true] call ALiVE_fnc_hashGet;
     };
+    case "createAirDefenceActivator": {
+        private _profileActivationCoordinator = [_logic,"profileActivationCoordinator"] call ALiVE_fnc_hashGet;
+        private _airDefenceActivator = [nil,"create",_args] call ALiVE_fnc_profileActivatorAirDefence;
+        _result = [_profileActivationCoordinator,"registerActivator", _airDefenceActivator] call ALiVE_fnc_profileActivationCoordinator;
+    };
     case "createAirCombatActivator": {
         private _profileActivationCoordinator = [_logic,"profileActivationCoordinator"] call ALiVE_fnc_hashGet;
         private _airCombatActivator = [nil,"create",_args] call ALiVE_fnc_profileActivatorAirCombat;

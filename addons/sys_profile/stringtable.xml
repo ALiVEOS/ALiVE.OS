@@ -150,6 +150,18 @@
     <Chinesesimp>玩家控制的飞机周围生成地面载具的距离。设为0可禁用。</Chinesesimp>
     <Spanish>Distancia alrededor de un avión controlado por un jugador a la que aparecen los vehículos terrestres. Ponlo a 0 para desactivarlo.</Spanish>
 </Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_AIR_DEFENCE_SPAWNING">
+    <English>Air Defence Spawning</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_AIR_DEFENCE_SPAWNING_COMMENT">
+    <English>While an AI Commander's aircraft is in the air, the enemy's anti-air vehicles near it are spawned with their crews so they can shoot at it, with no player needed nearby, as the Active Limiter allows. Only the anti-air is spawned, and it goes back to virtual a minute and a half after the aircraft has gone. Without this, anti-air nobody is near stays virtual and can't touch a flying aircraft. Default on.</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_AIR_DEFENCE_RADIUS">
+    <English>Air Defence Radius</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_AIR_DEFENCE_RADIUS_COMMENT">
+    <English>How close, in metres, an enemy anti-air vehicle has to be to an AI Commander's aircraft in the air to be spawned. Default 4000. Set to 0 to disable.</English>
+</Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_AIR_COMBAT_HELI_RADIUS">
     <English>Helicopter Vehicle Radius (m):</English>
     <Chinesesimp>直升机载具半径 (米):</Chinesesimp>
