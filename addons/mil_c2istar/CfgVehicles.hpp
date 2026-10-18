@@ -637,6 +637,14 @@ class CfgVehicles {
                             defaultValue = """0""";
                             typeName = "NUMBER";
                     };
+                    class fieldLieChance : Edit
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_fieldLieChance";
+                            displayName = "$STR_ALIVE_C2ISTAR_FIELD_LIES";
+                            tooltip = "$STR_ALIVE_C2ISTAR_FIELD_LIES_COMMENT";
+                            defaultValue = """0""";
+                            typeName = "NUMBER";
+                    };
                     // How players open Talk to soldier: ACE when it's loaded, the scroll wheel,
                     // or both, as Civilian Interaction UI does for civilians
                     class talkInterface : Combo

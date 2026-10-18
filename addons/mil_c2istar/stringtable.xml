@@ -598,7 +598,13 @@
     <English>AI Surrender Chance</English>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_AI_SURRENDER_COMMENT">
-    <English>Once an AI group has lost half its men, each survivor on foot with an enemy player within 200 m has this chance to surrender. He drops his weapons and puts his hands up (an ACE captive when ACE is loaded). Players can question each prisoner once: he may mark enemy groups within 2 km on that player's map and reveal his side's installations nearby. A percentage from 0 (never) to 100.</English>
+    <English>Once an AI group has lost half its men, each survivor on foot with an enemy player within 200 m has this chance to surrender. He drops his weapons and puts his hands up (an ACE captive when ACE is loaded). Players can question each prisoner once: he may mark enemy groups within 2 km on that player's map and reveal his side's installations nearby. Questioned at a prison, a map marker placed in the editor whose name or text has prison as its first word (inside it, or within 50 m of a marker that isn't an area), he always talks, marks up to 6 groups within 3 km of where he was taken, and can be questioned there once more if he was first questioned in the field. A percentage from 0 (never) to 100.</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_FIELD_LIES">
+    <English>Field Questioning Lies (%)</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_FIELD_LIES_COMMENT">
+    <English>The chance that a prisoner questioned in the field lies: the enemy positions he marks are all 800 m to 2 km off the real ones, and he reveals no installations. Questioned at a prison he never lies, nor does an insurgent recruiter who gave himself up. 0, the default, means prisoners never lie.</English>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_TALK_UI">
     <English>Talk to Soldier Interaction</English>

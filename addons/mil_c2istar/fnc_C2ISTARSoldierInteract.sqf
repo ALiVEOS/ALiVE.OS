@@ -101,7 +101,8 @@ switch (_operation) do {
         { (SI_DISPLAY displayCtrl _x) ctrlShow _prisoner } forEach SI_PRISONER_BUTTONS;
         { (SI_DISPLAY displayCtrl _x) ctrlShow !_prisoner } forEach SI_FRIENDLY_BUTTONS;
         if (_prisoner) then {
-            (SI_DISPLAY displayCtrl 92610) ctrlEnable !(_target getVariable ["ALiVE_questioned", false]);
+            // once, or once more at a prison after being questioned in the field
+            (SI_DISPLAY displayCtrl 92610) ctrlEnable ([_target, [getPosATL _target] call ALiVE_c2istar_fnc_atPrison] call ALiVE_c2istar_fnc_canBeQuestioned);
             // ACE leads its prisoners with its own escort
             if (_hasAce) then { { (SI_DISPLAY displayCtrl _x) ctrlShow false } forEach [92612, 92613] };
             [["STR_ALIVE_C2ISTAR_SI_PRISONER_OPEN"]] call _fnc_say;

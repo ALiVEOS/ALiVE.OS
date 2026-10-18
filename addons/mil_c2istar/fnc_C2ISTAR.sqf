@@ -1395,6 +1395,29 @@ switch(_operation) do {
         // Read live from the global, so a mission can change it while running; the handler and
         // the actions cost nothing while it is 0.
         if (isServer) then { missionNamespace setVariable ["ALiVE_c2istar_surrenderChance", _surrenderChance, true] };
+        // Questioning at a prison (Will501 on Discord, 18 Oct). A prisoner questioned at a prison, a map marker placed in
+        // the editor whose name or text has "prison" as its first word (inside it for an area marker, within 50 m of
+        // any other), always talks, about the ground round where he was taken rather than where he stands, gives up
+        // more, and can be questioned there once more if he was questioned in the field first. Players can't draw one:
+        // a marker dropped where he stands would make every prisoner a prison's. In the field he may lie: Field
+        // Questioning Lies, 0 by default as before.
+        private _lieChance = _logic getVariable ["fieldLieChance", 0];
+        if (_lieChance isEqualType "") then { _lieChance = parseNumber _lieChance };
+        if (isServer) then { missionNamespace setVariable ["ALiVE_c2istar_fieldLieChance", (_lieChance max 0) min 100, true] };
+        ALiVE_c2istar_fnc_atPrison = {
+            params ["_pos"];
+            allMapMarkers findIf {
+                private _m = _x;
+                ((_m find "_USER_DEFINED") != 0)
+                && {(((toLower _m) splitString " _-") param [0, ""]) == "prison" || {(((toLower markerText _m) splitString " _-") param [0, ""]) == "prison"}}
+                && {if (markerShape _m in ["RECTANGLE", "ELLIPSE"]) then { _pos inArea _m } else { (_pos distance2D markerPos _m) < 50 }}
+            } > -1
+        };
+        ALiVE_c2istar_fnc_canBeQuestioned = {
+            params ["_prisoner", ["_atPrison", false]];
+            !(_prisoner getVariable ["ALiVE_questioned", false])
+            || {_atPrison && {(_prisoner getVariable ["ALiVE_questionedAt", ""]) == "field"}}
+        };
         if (isServer) then {
             ALiVE_c2istar_fnc_surrender = {
                 params ["_u"];
@@ -1402,6 +1425,8 @@ switch(_operation) do {
                 _u setVariable ["ALiVE_surrendered", true, true];
                 // his own side, kept: told to follow a player he joins that player's group
                 _u setVariable ["ALiVE_prisonerSide", side group _u, true];
+                // where he was taken: what he knows is about that ground, wherever he is questioned
+                _u setVariable ["ALiVE_capturePos", getPosATL _u, true];
                 // Off his profile first, the way the CSAR task and a takeover do, or the profile
                 // deletes him from the players' hands when it despawns and brings him back armed.
                 private _pid = _u getVariable ["profileID", ""];
@@ -1460,21 +1485,52 @@ switch(_operation) do {
             // Asked by a player's machine: answer with what the prisoner knows.
             ALiVE_c2istar_fnc_interrogate = {
                 params ["_prisoner", "_caller"];
-                if (!alive _prisoner || {_prisoner getVariable ["ALiVE_questioned", false]}) exitWith {};
-                _prisoner setVariable ["ALiVE_questioned", true, true];
+                if (!alive _prisoner) exitWith {};
+                private _atPrison = [getPosATL _prisoner] call ALiVE_c2istar_fnc_atPrison;
                 private _pSide = _prisoner getVariable ["ALiVE_prisonerSide", side group _prisoner];
                 private _sideText = str _pSide;
                 private _found = [];
-                // an insurgent recruiter who gave himself up always talks, and knows the ground further out
-                private _recruiter = _prisoner getVariable ["ALiVE_INS_recruiterCaptured", false];
-                private _reach = [2000, 3000] select _recruiter;
-                if (_recruiter || {random 100 >= 30}) then {
-                    private _profiles = [getPosATL _prisoner, _reach, [_sideText, "entity"]] call ALIVE_fnc_getNearProfiles;
-                    _found = (_profiles call BIS_fnc_arrayShuffle) select [0, 4];
-                    _found = _found apply { [_x, "position", [0, 0, 0]] call ALIVE_fnc_hashGet };
-                    [getPosATL _prisoner, _reach, _pSide] call ALIVE_fnc_OPCOMToggleInstallations;
+                // how it went, for the answer: "refused", "talked", or "asked" (already questioned, the second of two
+                // players asking at once, or the prison not seen alike here and on the asker's machine)
+                private _outcome = "refused";
+                if !([_prisoner, _atPrison] call ALiVE_c2istar_fnc_canBeQuestioned) then {
+                    _outcome = "asked";
+                } else {
+                    _prisoner setVariable ["ALiVE_questioned", true, true];
+                    _prisoner setVariable ["ALiVE_questionedAt", ["field", "prison"] select _atPrison, true];
+                    // at a prison he is asked about the ground where he was taken; in the field, where he stands
+                    private _from = if (_atPrison) then { _prisoner getVariable ["ALiVE_capturePos", getPosATL _prisoner] } else { getPosATL _prisoner };
+                    // an insurgent recruiter who gave himself up always talks, and knows the ground further out; so
+                    // does any prisoner questioned at a prison, and he gives up more. In the field a prisoner who lies
+                    // always talks; the rest talk seven times in ten, as before.
+                    private _recruiter = _prisoner getVariable ["ALiVE_INS_recruiterCaptured", false];
+                    private _reach = [2000, 3000] select (_recruiter || _atPrison);
+                    private _lie = !_atPrison && {!_recruiter} && {random 100 < (missionNamespace getVariable ["ALiVE_c2istar_fieldLieChance", 0])};
+                    if (_lie || {_recruiter} || {_atPrison} || {random 100 >= 30}) then {
+                        _outcome = "talked";
+                        private _profiles = [_from, _reach, [_sideText, "entity"]] call ALIVE_fnc_getNearProfiles;
+                        _found = (_profiles call BIS_fnc_arrayShuffle) select [0, [4, 6] select _atPrison];
+                        _found = _found apply { [_x, "position", [0, 0, 0]] call ALIVE_fnc_hashGet };
+                        if (_lie) then {
+                            // a lie: as many places, none of them right, 800 m to 2 km off (on land when one of eight
+                            // tries finds some, on the map); and no installations
+                            _found = _found apply {
+                                private _p = _x;
+                                private _fake = _p;
+                                for "_i" from 1 to 8 do {
+                                    _fake = _p getPos [800 + random 1200, random 360];
+                                    _fake = [((_fake select 0) max 0) min worldSize, ((_fake select 1) max 0) min worldSize, 0];
+                                    if (!surfaceIsWater _fake) exitWith {};
+                                };
+                                _fake
+                            };
+                            ["C2ISTAR: %1 lied under questioning", name _prisoner] call ALiVE_fnc_dump;
+                        } else {
+                            [_from, _reach, _pSide] call ALIVE_fnc_OPCOMToggleInstallations;
+                        };
+                    };
                 };
-                ALiVE_c2istar_questionAnswer = [name _prisoner, _found, _pSide];
+                ALiVE_c2istar_questionAnswer = [name _prisoner, _found, _pSide, _outcome];
                 if (isPlayer _caller && {!(local _caller)}) then { (owner _caller) publicVariableClient "ALiVE_c2istar_questionAnswer" } else { ALiVE_c2istar_questionAnswer call ALiVE_c2istar_fnc_showAnswer };
             };
             // Asked and answered by broadcast, so a mission's remote-execution whitelist can't stop it.
@@ -1482,10 +1538,16 @@ switch(_operation) do {
         };
         if (hasInterface) then {
             ALiVE_c2istar_fnc_showAnswer = {
-                params ["_name", "_positions", "_side"];
+                params ["_name", "_positions", "_side", ["_outcome", "refused"]];
                 private _prefix = switch (_side) do { case west: {"b_"}; case east: {"o_"}; case resistance: {"n_"}; default {"o_"} };
                 private _fnc_tell = { if (isNull findDisplay 9260) then { [localize "STR_ALIVE_C2ISTAR", _this] call ALIVE_fnc_sendHint } else { ((findDisplay 9260) displayCtrl 92602) ctrlSetStructuredText text _this } };
-                if (_positions isEqualTo []) exitWith { (format ["%1 won't tell you anything.", _name]) call _fnc_tell };
+                if (_positions isEqualTo []) exitWith {
+                    (format [switch (_outcome) do {
+                        case "asked": { "%1 has already told you what he knows." };
+                        case "talked": { "%1 talked, but knows of no enemy near there." };
+                        default { "%1 won't tell you anything." };
+                    }, _name]) call _fnc_tell
+                };
                 {
                     private _m = createMarkerLocal [format ["ALiVE_c2istar_pow_%1_%2", round time, _forEachIndex], _x];
                     _m setMarkerTypeLocal (_prefix + "unknown");
@@ -1503,7 +1565,7 @@ switch(_operation) do {
             ALiVE_c2istar_fnc_canQuestion = {
                 params ["_target", "_caller"];
                 !isNull _target && {alive _target} && {_target getVariable ["ALiVE_surrendered", false]}
-                && {!(_target getVariable ["ALiVE_questioned", false])} && {(_caller distance _target) < 3}
+                && {[_target, [getPosATL _target] call ALiVE_c2istar_fnc_atPrison] call ALiVE_c2istar_fnc_canBeQuestioned} && {(_caller distance _target) < 3}
             };
         };
 
