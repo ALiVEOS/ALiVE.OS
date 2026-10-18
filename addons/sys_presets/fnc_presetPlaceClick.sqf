@@ -42,8 +42,8 @@ Author:
 params [["_preset", [], [[]]]];
 
 if (!is3DEN) exitWith { false };
-if (!((count _preset) in [7, 8, 9])) exitWith {
-    ["ALIVE_fnc_presetPlaceClick - a preset of %1 part(s) cannot be read; 7, 8 or 9 expected",
+if (!((count _preset) in [7, 8, 9, 10])) exitWith {
+    ["ALIVE_fnc_presetPlaceClick - a preset of %1 part(s) cannot be read; 7 to 10 expected",
         count _preset] call ALiVE_fnc_dump;
     false
 };
@@ -74,9 +74,9 @@ uiNamespace setVariable ["ALiVE_presetPending", nil];
 // things. Set on every call, so the handler never finds it missing.
 uiNamespace setVariable ["ALiVE_presetPlaceReport", {
     params ["_result", "_where"];
-    _result params ["_placed", "_settings", "_links", "_skipped", ["_areas", 0], ["_renamed", []], ["_trims", []]];
+    _result params ["_placed", "_settings", "_links", "_skipped", ["_areas", 0], ["_renamed", []], ["_trims", []], ["_objects", 0]];
 
-    if (_placed == 0 && {_areas == 0}) exitWith {
+    if (_placed == 0 && {_areas == 0} && {_objects == 0}) exitWith {
         format ["Everything in that preset is already in this scenario: %1.", _skipped joinString ", "]
     };
 
@@ -93,6 +93,11 @@ uiNamespace setVariable ["ALiVE_presetPlaceReport", {
     };
     if (_placed > 0 && {_areas > 0}) then {
         _said = _said + format [" %1 area%2 came with it.", _areas, ["s", ""] select (_areas == 1)];
+    };
+    // the objects some modules work from: Field HQs, rally and recruitment points and the like
+    if (_objects > 0) then {
+        _said = _said + format [" %1 object%2 synced to %3 module%4.", _objects, ["s", ""] select (_objects == 1),
+            ["their", "its"] select (_objects == 1), ["s", ""] select (_objects == 1)];
     };
     // A renamed area is worth saying out loud. The modules were pointed at the
     // new name, so it works, but the person would otherwise find an area in
@@ -191,9 +196,10 @@ private _id = _eden displayAddEventHandler ["MouseButtonDown", {
     private _preset = uiNamespace getVariable ["ALiVE_presetPending", []];
     uiNamespace setVariable ["ALiVE_presetPending", nil];
     // Seven parts, eight once it carries areas, nine once it carries a mod
-    // record. This one used to exit true and say nothing at all, so a preset
-    // that got this far and failed looked exactly like a click that worked.
-    if (!((count _preset) in [7, 8, 9])) exitWith {
+    // record, ten once it carries objects. This one used to exit true and say
+    // nothing at all, so a preset that got this far and failed looked exactly
+    // like a click that worked.
+    if (!((count _preset) in [7, 8, 9, 10])) exitWith {
         ["That preset could not be read, so nothing was placed.", 2, 10] call BIS_fnc_3DENNotification;
         true
     };

@@ -55,6 +55,19 @@ class CfgALiVEPresets {
         "runwayendpos"
     };
 
+    // Modules that work from objects synced to them, so a preset carries those
+    // objects with them (version 4): Field HQs for Player FOBs, rally points,
+    // recruitment points, the multispawn vehicle, and objects kept out of player
+    // logistics. An object synced to anything else is not carried: it would
+    // place and do nothing. The site tooling keeps the same list.
+    objectModules[] = {
+        "ALiVE_SUP_FOB",
+        "ALiVE_sup_rally",
+        "ALiVE_sup_recruit",
+        "ALiVE_sup_multispawn",
+        "ALiVE_SYS_LOGISTICSDISABLE"
+    };
+
     // Settings that name an area marker. These used to be refused outright, for
     // the good reason that a name meaning nothing on the recipient's map leaves a
     // module looking configured while doing nothing. They are carried now because

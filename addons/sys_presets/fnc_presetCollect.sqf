@@ -49,7 +49,8 @@ Returns:
                 has something to put there and stays readable by older builds
                 otherwise: seven parts and version 1 plain, eight and version 2
                 once it carries areas, nine and version 3 once it carries the
-                record of which mods it needs. When anything in it has a place,
+                record of which mods it needs, ten and version 4 once it carries
+                objects synced to its modules. When anything in it has a place,
                 its description part also says where the middle of it all was,
                 so on the map it came from it can go back there.
       _report - [_moduleCount, _settingCount, _linkCount, _dropped, _mods, _missing]
@@ -244,8 +245,35 @@ private _links = [];
     } forEach (get3DENConnections _x);
 } forEach _modules;
 
+// The objects a few modules work from rather than settings: Field HQs for Player
+// FOBs, rally points, recruitment points, the multispawn vehicle, objects kept out
+// of player logistics. Each is carried with its class, where it stands, which way
+// it faces and which module it is synced to. Only for those modules: an object
+// synced to anything else would place and do nothing. Never a unit, because a
+// preset carries no people, and a playable unit is the mission maker's own; nor a
+// trigger, which Eden keeps as a different kind of thing and would not remake.
+private _objectModules = getArray (configFile >> "CfgALiVEPresets" >> "objectModules");
+if (count _objectModules == 0) then {
+    _objectModules = ["ALiVE_SUP_FOB", "ALiVE_sup_rally", "ALiVE_sup_recruit", "ALiVE_sup_multispawn", "ALiVE_SYS_LOGISTICSDISABLE"];
+};
+_objectModules = _objectModules apply { toLower _x };
+private _objectRows = [];
+{
+    private _owner = _forEachIndex;
+    if ((toLower (typeOf _x)) in _objectModules) then {
+        {
+            private _o = _x param [1, objNull];
+            if ((_x param [0, ""]) isEqualTo "Sync" && {_o isEqualType objNull} && {!isNull _o}
+                && {!(_o isKindOf "Logic")} && {!(_o isKindOf "CAManBase")} && {!(_o isKindOf "EmptyDetector")}) then {
+                private _rot = (_o get3DENAttribute "rotation") param [0, [0, 0, 0]];
+                _objectRows pushBack [typeOf _o, getPosATL _o, round (_rot param [2, 0]), _owner];
+            };
+        } forEach (get3DENConnections _x);
+    };
+} forEach _modules;
+
 // Everything that has a place is placed relative to ONE middle, worked out from
-// the modules and the areas together.
+// the modules, the areas and the objects together.
 //
 // Centring each kind on its own middle would be the obvious thing and would be
 // wrong: a TAOR drawn around a custom objective would come out centred on the
@@ -271,6 +299,7 @@ if (_keepLayout) then {
     { _places pushBack (_x select 2) } forEach _out;
 };
 { _places pushBack (_x select 3) } forEach _rows;
+{ _places pushBack (_x select 1) } forEach _objectRows;
 
 private _midX = 0;
 private _midY = 0;
@@ -306,6 +335,10 @@ private _markers = [];
     _markers pushBack _row;
 } forEach _rows;
 
+private _objects = _objectRows apply { [_x select 0, [_x select 1] call _fnc_offset, _x select 2, _x select 3] };
+// The object classes count towards what the preset needs loaded, as the module
+// classes do: a Field HQ from a mod needs that mod.
+
 // Seven parts and version 1 when there are no areas, so a preset that gains
 // nothing from the new slot stays readable by every build that already ships.
 // Eight and version 2 only when there is something in it.
@@ -330,7 +363,7 @@ private _stamp = format ["%1-%2-%3", _now select 0,
 // finished rather than while it is being built. Done here it also sees the
 // module classes, so a module from somewhere else counts, where the scan this
 // replaced only ever looked at faction settings.
-private _mods = [_out] call ALIVE_fnc_presetAddons;
+private _mods = [_out + (_objects apply { [_x select 0, []] })] call ALIVE_fnc_presetAddons;
 
 // And the mod behind each of those addons, by NAME and Steam id, recorded now
 // while this machine has them loaded.
@@ -348,7 +381,7 @@ private _carried = [];
     if (!(_name isEqualTo "") && {count _addons > 0}) then {
         _carried pushBack [_name, _id, _isDLC, _addons];
     };
-} forEach ([_out, [], "mods"] call ALIVE_fnc_presetAddons);
+} forEach ([_out + (_objects apply { [_x select 0, []] }), [], "mods"] call ALIVE_fnc_presetAddons);
 
 private _meta = [
     format ["%1 preset, %2", worldName, _stamp],
@@ -371,6 +404,11 @@ if (count _places > 0) then { _meta pushBack [_midX, _midY] };
 // carries a mod record. A version 3 preset always has the areas slot, empty if
 // there are no areas, because the mod record sits after it.
 private _preset = switch (true) do {
+    // Version 4, ten parts, only when there are objects: a build that reads 3 still
+    // reads every preset without them.
+    case (count _objects > 0): {
+        ["ALIVEPRESET", 4, _meta, _out, _links, _mods, _dropped, _markers, _carried, _objects]
+    };
     case (count _carried > 0): {
         ["ALIVEPRESET", 3, _meta, _out, _links, _mods, _dropped, _markers, _carried]
     };

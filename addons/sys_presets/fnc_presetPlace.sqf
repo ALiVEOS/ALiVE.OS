@@ -6,7 +6,15 @@ Function: ALIVE_fnc_presetPlace
 
 Description:
 Puts a checked preset into the open scenario: one module per entry, its chosen
-settings on it, and the sync lines between them.
+settings on it, the sync lines between them, and the objects synced to them.
+
+Objects (version 4) are the things a few modules work from rather than settings:
+Field HQs for Player FOBs, rally points, recruitment points, the multispawn
+vehicle, objects kept out of player logistics. Each goes where the preset says,
+facing the way it says, synced to its module. An object whose module was left out
+because the scenario already had one is left out with it, so placing a preset
+twice does not double its objects. One object synced to two of those modules is
+carried as a row for each, and placed once with both sync lines.
 
 A module goes back where it sat, if the preset remembered. That used to be
 discarded, on the grounds that where an ALiVE module sits means nothing, and that
@@ -43,7 +51,7 @@ Parameters:
               the view.
 
 Returns:
-    ARRAY [_placed, _settings, _links, _skipped, _areas, _renamed, _trims]
+    ARRAY [_placed, _settings, _links, _skipped, _areas, _renamed, _trims, _objects]
       _placed   - NUMBER of modules created
       _settings - NUMBER of settings applied
       _links    - NUMBER of sync lines drawn
@@ -51,6 +59,7 @@ Returns:
       _areas    - NUMBER of areas created
       _renamed  - ARRAY of STRING, areas that had to come in under another name
       _trims    - ARRAY of STRING, areas too big for this map, cut down to fit
+      _objects  - NUMBER of objects placed
 
 Examples:
     (begin example)
@@ -66,20 +75,21 @@ Author:
 
 params [["_preset", [], [[]]], ["_where", [], [[]]]];
 
-if (!is3DEN) exitWith { [0, 0, 0, [], 0, [], []] };
-if (!((count _preset) in [7, 8, 9])) exitWith {
+if (!is3DEN) exitWith { [0, 0, 0, [], 0, [], [], 0] };
+if (!((count _preset) in [7, 8, 9, 10])) exitWith {
     // Never silent. Nine parts arrived here from a version 3 preset while this
     // read 7 or 8, and placing simply did nothing with nothing in the log to
     // say why. If a fourth part is ever added, this is the line that has to know.
-    ["ALIVE_fnc_presetPlace - a preset of %1 part(s) cannot be read; 7, 8 or 9 expected",
+    ["ALIVE_fnc_presetPlace - a preset of %1 part(s) cannot be read; 7 to 10 expected",
         count _preset] call ALiVE_fnc_dump;
-    [0, 0, 0, [], 0, [], []]
+    [0, 0, 0, [], 0, [], [], 0]
 };
 
 _preset params ["_magic", "_version", "_meta", "_modules", "_links"];
 // param, not select: every preset written before areas existed has seven parts,
 // and this runs on all of them.
 private _markers = _preset param [7, []];
+private _objects = _preset param [9, []];
 
 // What the scenario already has, so nothing is doubled up.
 private _have = [];
@@ -136,6 +146,7 @@ private _areas = 0;
 private _madeAreas = [];
 private _renamed = [];
 private _trims = [];
+private _madeObjects = [];
 
 // The areas go down first, because the settings that name them have to be
 // rewritten before they are applied. A name already in use is taken by the
@@ -232,6 +243,36 @@ collect3DENHistory {
             _drawn = _drawn + 1;
         };
     } forEach _links;
+
+    // The objects, each synced to the module just placed. One whose module was
+    // left out (the scenario already had it) is left out too: placing a preset
+    // twice would otherwise add its objects a second time. The same object synced
+    // to two modules arrives as two matching rows and is placed once.
+    private _made = [];        // [[class, offset, dir], object]
+    {
+        _x params ["_class", "_offset", "_dir", "_owner"];
+        private _module = _created param [_owner, objNull];
+        if (isNull _module) then { continue };
+        private _key = [_class, _offset, _dir];
+        private _at = _made findIf { (_x select 0) isEqualTo _key };
+        if (_at >= 0) then {
+            add3DENConnection ["Sync", [(_made select _at) select 1], _module];
+            continue;
+        };
+        // Held on the map, the same as a module.
+        private _pos = [
+            (((_anchor param [0, 0]) + (_offset param [0, 0])) max 1) min (worldSize - 1),
+            (((_anchor param [1, 0]) + (_offset param [1, 0])) max 1) min (worldSize - 1),
+            0
+        ];
+        private _obj = create3DENEntity ["Object", _class, _pos];
+        if (!isNull _obj) then {
+            _obj set3DENAttribute ["rotation", [0, 0, _dir]];
+            add3DENConnection ["Sync", [_obj], _module];
+            _madeObjects pushBack _obj;
+            _made pushBack [_key, _obj];
+        };
+    } forEach _objects;
 };
 
 private _live = _created select { !isNull _x };
@@ -239,13 +280,14 @@ private _live = _created select { !isNull _x };
 // TAOR is never left behind at the spot its modules were dragged away from. The
 // editor takes a marker by its name here, the same way its own mission statistics
 // window selects every marker in a scenario.
-private _pick = _live + _madeAreas;
+private _pick = _live + _madeObjects + _madeAreas;
 if (count _pick > 0) then { set3DENSelected _pick };
 
 // Said out loud, with where they went. "Nothing happened" is the one report that
 // cannot be acted on, and modules placed somewhere off screen look exactly like
 // modules not placed at all.
-["ALIVE_fnc_presetPlace - placed %1 module(s), %2 setting(s), %3 link(s), %4 area(s) at %5, taken from %6; already present: %7; renamed: %8; trimmed to fit the map: %9",
-    count _live, _applied, _drawn, _areas, _anchor apply { round _x }, _source, _skipped, _renamed, _trims] call ALiVE_fnc_dump;
+["ALIVE_fnc_presetPlace - placed %1 module(s), %2 setting(s), %3 link(s), %4 area(s), %10 of %11 object(s) at %5, taken from %6; already present: %7; renamed: %8; trimmed to fit the map: %9",
+    count _live, _applied, _drawn, _areas, _anchor apply { round _x }, _source, _skipped, _renamed, _trims,
+    count _madeObjects, count _objects] call ALiVE_fnc_dump;
 
-[count _live, _applied, _drawn, _skipped, _areas, _renamed, _trims]
+[count _live, _applied, _drawn, _skipped, _areas, _renamed, _trims, count _madeObjects]

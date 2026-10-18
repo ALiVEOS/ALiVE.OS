@@ -63,7 +63,8 @@ disableSerialization;
 
 // One row per mod somebody downloads, NOT per addon. RHS USAF alone ships a
 // dozen addons, so counting addons reported sixteen mods where there were six.
-private _rows = [_preset param [3, []], _preset param [5, []], "mods",
+// the objects' classes count as the modules' do: a Field HQ from a mod needs that mod
+private _rows = [(_preset param [3, []]) + ((_preset param [9, []]) apply { [_x param [0, ""], []] }), _preset param [5, []], "mods",
     _preset param [8, []]] call ALIVE_fnc_presetAddons;
 private _missing = count (_rows select { !(_x select 2) });
 

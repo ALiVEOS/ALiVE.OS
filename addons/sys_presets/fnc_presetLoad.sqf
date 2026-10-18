@@ -58,9 +58,9 @@ if ([_preset] call ALIVE_fnc_presetPlaceClick) exitWith { true };
 
 // No editor display to click on, which should not happen, but placing it
 // somewhere beats refusing with nothing said.
-([_preset] call ALIVE_fnc_presetPlace) params ["_placed", "_settings", "_links", "_skipped", ["_areas", 0], ["_renamed", []], ["_trims", []]];
+([_preset] call ALIVE_fnc_presetPlace) params ["_placed", "_settings", "_links", "_skipped", ["_areas", 0], ["_renamed", []], ["_trims", []], ["_objects", 0]];
 
-if (_placed == 0) exitWith {
+if (_placed == 0 && {_objects == 0}) exitWith {
     private _none = format ["Everything in that preset is already in this scenario, so nothing was added: %1.", _skipped joinString ", "];
     [_none, 1, 10] call BIS_fnc_3DENNotification;
     // Logged like every other outcome. Without this the one case that does
@@ -76,6 +76,11 @@ private _msg = format ["Preset placed: %1 module%2, %3 setting%4, %5 sync line%6
     _links, ["s", ""] select (_links == 1)];
 if (_areas > 0) then {
     _msg = _msg + format [" %1 area%2 came with it.", _areas, ["s", ""] select (_areas == 1)];
+};
+// the objects some modules work from: Field HQs, rally and recruitment points and the like
+if (_objects > 0) then {
+    _msg = _msg + format [" %1 object%2 synced to %3 module%4.", _objects, ["s", ""] select (_objects == 1),
+        ["their", "its"] select (_objects == 1), ["s", ""] select (_objects == 1)];
 };
 // An area that had to come in under another name is worth saying. It works,
 // because the modules were pointed at the new name, but the person would

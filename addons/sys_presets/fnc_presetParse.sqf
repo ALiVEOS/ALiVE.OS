@@ -57,8 +57,8 @@ if !((_trimmed select [0, 13]) isEqualTo "[""ALIVEPRESET") exitWith {
 };
 
 // Seven parts, eight once it carries areas, nine once it carries the record of
-// which mods it needs. Anything else is not a preset, or is a preset that was cut
-// short on its way here.
+// which mods it needs, ten once it carries objects synced to its modules. Anything
+// else is not a preset, or is a preset that was cut short on its way here.
 private _preset = parseSimpleArray _trimmed;
 
 // It began like a preset and still would not parse, so it was cut short on the
@@ -69,7 +69,7 @@ if (isNil "_preset" || {!(_preset isEqualType [])}) exitWith {
     ["This preset is damaged. It looks like it was cut short when it was copied."] call _no
 };
 
-if (!((count _preset) in [7, 8, 9])) exitWith {
+if (!((count _preset) in [7, 8, 9, 10])) exitWith {
     ["That is not a preset. Copy the whole line, starting with [""ALIVEPRESET""."] call _no
 };
 
@@ -78,13 +78,16 @@ private _markers = _preset param [7, []];
 // What the preset was told about its own mods when it was made, by name and
 // Steam id. The only thing that can name a mod this machine does not have.
 private _carried = _preset param [8, []];
+// Objects synced to a module (version 4): Field HQs, rally points, recruitment
+// points, a multispawn vehicle, objects kept out of player logistics.
+private _objects = _preset param [9, []];
 
 if !(_magic isEqualTo "ALIVEPRESET") exitWith {
     ["That is not a preset. Copy the whole line, starting with [""ALIVEPRESET""."] call _no
 };
 if !(_version isEqualType 0) exitWith { ["This preset does not say which version it is."] call _no };
-if (_version > 3) exitWith {
-    [format ["This preset was written for a newer ALiVE (it says version %1, this build reads 3). Update ALiVE.", _version]] call _no
+if (_version > 4) exitWith {
+    [format ["This preset was written for a newer ALiVE (it says version %1, this build reads 4). Update ALiVE.", _version]] call _no
 };
 if (!(_modules isEqualType []) || {!(_links isEqualType [])} || {!(_meta isEqualType [])}) exitWith {
     ["This preset is damaged. It may have been cut short when it was copied."] call _no
@@ -274,6 +277,53 @@ if !(_carried isEqualType []) then {
             (count _carried) - (count _clean), count _carried] call ALiVE_fnc_dump;
         if (count _preset > 8) then { _preset set [8, _clean] };
     };
+};
+
+// The objects. Four columns: a class this game has, where it stands from the
+// middle, which way it faces, and the module it is synced to by its place in the
+// list. Only a module that works from synced objects may have one, and never a
+// unit: a preset carries no people. A class from a mod that is not running is
+// said by name, as a missing module class is.
+private _objectModules = getArray (configFile >> "CfgALiVEPresets" >> "objectModules");
+if (count _objectModules == 0) then {
+    _objectModules = ["ALiVE_SUP_FOB", "ALiVE_sup_rally", "ALiVE_sup_recruit", "ALiVE_sup_multispawn", "ALiVE_SYS_LOGISTICSDISABLE"];
+};
+_objectModules = _objectModules apply { toLower _x };
+if !(_objects isEqualType []) then {
+    _problems pushBack "The objects in this preset are damaged.";
+} else {
+    {
+        private _at = _forEachIndex + 1;
+        if (!(_x isEqualType []) || {count _x != 4}) then {
+            _problems pushBack format ["Object %1 in this preset is damaged.", _at];
+        } else {
+            _x params ["_class", "_offset", "_dir", "_owner"];
+            // the module it is synced to, read only once the place is a whole number inside the list
+            private _ownerOk = _owner isEqualType 0 && {_owner == floor _owner} && {_owner >= 0} && {_owner < count _modules};
+            private _ownerEntry = if (_ownerOk) then { _modules select _owner } else { [] };
+            private _ownerCls = if (_ownerEntry isEqualType [] && {count _ownerEntry > 0} && {(_ownerEntry select 0) isEqualType ""}) then { _ownerEntry select 0 } else { "" };
+            private _pairOk = (_offset isEqualType []) && {count _offset isEqualTo 2}
+                && {(_offset select 0) isEqualType 0} && {(_offset select 1) isEqualType 0};
+            switch (false) do {
+                case (_class isEqualType "" && {!(_class isEqualTo "")} && {_pairOk} && {_dir isEqualType 0}): {
+                    _problems pushBack format ["Object %1 in this preset is damaged.", _at];
+                };
+                case (_ownerOk): {
+                    _problems pushBack format ["Object %1 is synced to a module that is not in this preset.", _at];
+                };
+                case (isClass (configFile >> "CfgVehicles" >> _class)): {
+                    _problems pushBack format ["This game does not have the object %1. It may come from a mod you are not running.", _class];
+                };
+                case (!(_class isKindOf "CAManBase") && {!(_class isKindOf "Logic")} && {!(_class isKindOf "EmptyDetector")}): {
+                    _problems pushBack format ["%1 cannot be carried in a preset: only objects and vehicles can.", _class];
+                };
+                case ((toLower _ownerCls) in _objectModules): {
+                    _problems pushBack format ["The object %1 is synced to %2, which does not use synced objects.", _class, _ownerCls];
+                };
+                default {};
+            };
+        };
+    } forEach _objects;
 };
 
 if (count _problems > 0) exitWith { [false, [], _problems] };

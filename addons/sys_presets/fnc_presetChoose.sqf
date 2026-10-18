@@ -381,7 +381,19 @@ uiNamespace setVariable ["ALiVE_presetChooseSetAll", _fnc_setAll];
     // makes it wrong, and dropping it would lose the only thing that can name a
     // mod the next reader does not have.
     private _carried = _preset param [8, []];
+    // The objects of the modules kept, pointed at those modules' new places; an
+    // object whose module was left out goes with it, as a sync line does.
+    private _objects = [];
+    {
+        _x params ["_class", "_offset", "_dir", "_owner"];
+        private _now = _pickModules find _owner;
+        if (_now >= 0) then { _objects pushBack [_class, _offset, _dir, _now] };
+    } forEach (_preset param [9, []]);
     private _cut = switch (true) do {
+        case (count _objects > 0): {
+            ["ALIVEPRESET", 4, _meta, _modules, _links, _preset param [5, []],
+                _preset param [6, []], _keptMarkers, _carried, _objects]
+        };
         case (count _carried > 0): {
             ["ALIVEPRESET", 3, _meta, _modules, _links, _preset param [5, []],
                 _preset param [6, []], _keptMarkers, _carried]
