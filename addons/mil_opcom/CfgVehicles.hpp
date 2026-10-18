@@ -241,6 +241,18 @@ class CfgVehicles {
                                         class Yes { name = "Yes"; value = "true"; };
                                 };
                         };
+                        class prepFire : Combo
+                        {
+                                property = "ALiVE_mil_opcom_prepFire";
+                                displayName = "$STR_ALIVE_OPCOM_PREP_FIRE";
+                                tooltip = "$STR_ALIVE_OPCOM_PREP_FIRE_COMMENT";
+                                defaultValue = """false""";
+                                class Values
+                                {
+                                        class No  { name = "No";  value = "false"; };
+                                        class Yes { name = "Yes"; value = "true"; };
+                                };
+                        };
                         class HDR_HVT : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_HDR_HVT"; displayName = "HIGH VALUE TARGET"; };
                         class hvt : Combo
                         {

@@ -178,6 +178,8 @@ switch (_operation) do {
         };
         // Attacks Arrive Together (#207): on each leg of an attack the faster groups wait before setting off.
         private _arriveTogether = (toLower format ["%1", _logic getvariable ["arriveTogether","false"]]) == "true";
+        // Preparation Fire (#207): the commander's guns fire on an objective's defenders before it is assaulted.
+        private _prepFire = (toLower format ["%1", _logic getvariable ["prepFire","false"]]) == "true";
         private _hostilityPresenceMultiplier = (parseNumber format ["%1", _logic getvariable ["hostilityPresenceMultiplier",1]]) max 0;
         private _hostilityInstallationMultiplier = (parseNumber format ["%1", _logic getvariable ["hostilityInstallationMultiplier",1]]) max 0;
         private _hostilityInstallationInterval = ((parseNumber format ["%1", _logic getvariable ["hostilityInstallationInterval",10]]) max 0) * 60;
@@ -361,6 +363,7 @@ switch (_operation) do {
             ["preparedDefences", _preparedDefences],
             ["securityPatrols", _securityPatrols],
             ["arriveTogether", _arriveTogether],
+            ["prepFire", _prepFire],
             ["hostilityPresenceMultiplier", _hostilityPresenceMultiplier],
             ["hostilityInstallationMultiplier", _hostilityInstallationMultiplier],
             ["hostilityInstallationInterval", _hostilityInstallationInterval],
@@ -1716,6 +1719,41 @@ switch (_operation) do {
                 } forEach _etas;
             };
         };
+        // Preparation Fire (#207). The assault on an objective where recon found the enemy is preceded by a call
+        // for fire on its defenders: the group nearest its centre, weighted by the others within 200 m of it, as
+        // the commander's contact reports ask. The artillery module decides whether a battery answers (range,
+        // rounds, cooldown, its friendly check). Its check is made once, before a ranging round and the volley, so
+        // the assault holds where it stands for 150 s first, by the same wait as Attacks Arrive Together, rather
+        // than closing on the target under its own guns. Not asked with a friendly group already within 250 m of
+        // the target (the section on the objective as the order is issued again), nor more than once per
+        // objective in 15 minutes.
+        private _prepHold = 0;
+        if ([_logic,"prepFire",false] call ALiVE_fnc_HashGet && {_orders == "capture"} && {!isNil "_targetObjective"} && {_targetObjective isNotEqualTo []}
+            && {([_targetObjective,"danger",-1] call ALiVE_fnc_HashGet) > 0}
+            && {time - ([_targetObjective,"prepFireAt",-1e9] call ALiVE_fnc_HashGet) > 900}
+            && {(_orderBatch findIf { !isNil {_profilesByID get (_x select 1)} }) > -1}
+            && {["ALiVE_mil_artillery"] call ALiVE_fnc_IsModuleAvailable}) then {
+            private _center = [_targetObjective,"center",[0,0,0]] call ALiVE_fnc_HashGet;
+            private _sidesEnemy = [_logic,"sidesenemy",[]] call ALiVE_fnc_HashGet;
+            private _defenders = ([_logic,"findProfilesNearPosition",[_center,_sidesEnemy,false]] call MAINCLASS) select { ((_x select 1) distance2D _center) < 250 };
+            if (_defenders isEqualTo []) exitWith {};
+            _defenders = [_defenders, [], { (_x select 1) distance2D _center }, "ASCEND"] call BIS_fnc_sortBy;
+            (_defenders select 0) params ["_targetID","_targetPos"];
+            private _side = [_logic,"side","EAST"] call ALiVE_fnc_HashGet;
+            private _ownSides = ([_logic,"sidesfriendly",[]] call ALiVE_fnc_HashGet) + [_side];
+            if (([_targetPos, 250, [_ownSides,"entity"]] call ALIVE_fnc_getNearProfiles) isNotEqualTo []) exitWith {};
+            private _contacts = { ((_x select 1) distance2D _targetPos) < 200 } count _defenders;
+            private _factions = [_logic,"factions",[]] call ALiVE_fnc_HashGet;
+            private _asym = ([_logic,"controltype",""] call ALiVE_fnc_HashGet) == "asymmetric";
+            [_targetObjective,"prepFireAt",time] call ALiVE_fnc_HashSet;
+            private _event = ['ARTY_REQUEST', [_targetID, _targetPos, _contacts, [_side] call ALiVE_fnc_sideTextToObject, _factions param [0, ""], _asym],"OPCOM"] call ALIVE_fnc_event;
+            [ALIVE_eventLog,"addEvent", _event] call ALIVE_fnc_eventLog;
+            _prepHold = 150;
+            ["OPCOM %1 - preparation fire asked on objective %2: %3 contact(s) at the nearest defenders (%6), %4 m from its centre; the assault holds %5 s", _side, _objectiveID,
+                _contacts, round (_targetPos distance2D _center), _prepHold, _targetID] call ALiVE_fnc_dump;
+        };
+        // aircraft don't hold (a spawned helicopter would take off and hover)
+        private _airIDs = [_logic,"air",[]] call ALiVE_fnc_HashGet;
         private _issuedAt = time;
 
         {
@@ -1735,7 +1773,7 @@ switch (_operation) do {
                     ["speed","NORMAL"]
                 ]] call ALiVE_fnc_hashSetMany;
 
-                private _wait = _delays getOrDefault [_profileID, 0];
+                private _wait = (_delays getOrDefault [_profileID, 0]) + ([_prepHold, 0] select (_profileID in _airIDs));
                 if (_wait > 0) then {
                     // a waypoint where the group stands that completes only once the wait is over, then the order
                     // itself. It keeps the group on a waypoint meanwhile (the sweep of finished orders would
@@ -1752,6 +1790,7 @@ switch (_operation) do {
                 _profileWaypoints pushBack _profileWaypoint;
             };
         } forEach _orderBatch;
+
 
         _result = _profileWaypoints;
     };
