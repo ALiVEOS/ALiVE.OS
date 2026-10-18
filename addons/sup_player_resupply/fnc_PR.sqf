@@ -1035,8 +1035,14 @@ switch(_operation) do {
                 // The HQ speaks the player's own language: another voice that shares the language of the
                 // player's. The side's voice above is only the fallback, and on its own it gave an OPFOR
                 // player a Farsi HQ whatever their faction speaks, Russian included.
+                // The language comes from the player's own unit class first, which is the faction's language
+                // and always there (AshTray on Discord, 18 Oct: still Farsi for an East faction); when the player's own
+                // voice gave no language, the side's voice was left.
                 private _myVoice = speaker player;
-                private _langs = (getArray (configFile >> "CfgVoice" >> _myVoice >> "identityTypes")) select { (_x find "Language") == 0 };
+                private _langs = (getArray (configFile >> "CfgVehicles" >> typeOf player >> "identityTypes")) select { (_x find "Language") == 0 };
+                if (_langs isEqualTo []) then {
+                    _langs = (getArray (configFile >> "CfgVoice" >> _myVoice >> "identityTypes")) select { (_x find "Language") == 0 };
+                };
                 // Left alone when the side's HQ voice already speaks it, so a NATO player keeps the HQ voice.
                 private _hqLangs = getArray (configFile >> "CfgVoice" >> (speaker ALIVE_PR_HQ) >> "identityTypes");
                 if (count _langs > 0 && {(_langs findIf { _x in _hqLangs }) < 0}) then {
