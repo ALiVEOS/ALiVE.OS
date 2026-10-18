@@ -115,6 +115,44 @@ if (isNil "ALiVE_ML_fnc_keepCrewOnServer") then {
     };
 };
 
+// The truck a resupply run sends (AshTray on Discord, 18 Oct): one of the faction's own, so a Cold War or RHS
+// side doesn't send an Arma 3 Typhoon to its guns. The faction's first car or truck that carries ammunition, else
+// its first truck, else the side's stock ammo truck as before. Worked out once per faction.
+if (isNil "ALiVE_ML_fnc_supplyTruck") then {
+    ALiVE_ML_fnc_supplyTruck = {
+        params [["_faction", ""], ["_sideText", ""]];
+        if (isNil "ALiVE_ML_supplyTrucks") then { ALiVE_ML_supplyTrucks = createHashMap };
+        private _key = _faction + "|" + _sideText;
+        private _known = ALiVE_ML_supplyTrucks get _key;
+        if (!isNil "_known") exitWith { _known };
+        private _pick = "";
+        if (_faction != "") then {
+            // the faction's support vehicles when ALiVE lists them, else every car it has; trucks only, no
+            // artillery (a rocket launcher is a truck), and unarmed before armed
+            private _fnc_trucks = {
+                _this select { isClass (configFile >> "CfgVehicles" >> _x) && {_x isKindOf "Truck_F"} && {getNumber (configFile >> "CfgVehicles" >> _x >> "artilleryScanner") == 0} }
+            };
+            private _trucks = (if (isNil "ALIVE_factionDefaultSupports") then { [] } else { [ALIVE_factionDefaultSupports, _faction, []] call ALiVE_fnc_hashGet }) call _fnc_trucks;
+            // a list with no ammo truck in it: look through all the faction's cars as well
+            if ((_trucks findIf { getNumber (configFile >> "CfgVehicles" >> _x >> "transportAmmo") > 0 }) < 0) then {
+                _trucks = _trucks + (([0, _faction, "Car"] call ALiVE_fnc_findVehicleType) call _fnc_trucks);
+            };
+            private _ammo = _trucks select { getNumber (configFile >> "CfgVehicles" >> _x >> "transportAmmo") > 0 };
+            private _unarmed = { _this select { !([_x] call ALiVE_fnc_isArmed) } };
+            _pick = ((_ammo call _unarmed) + _ammo + (_trucks call _unarmed)) param [0, ""];
+        };
+        if (_pick == "") then {
+            _pick = switch (_sideText) do {
+                case "EAST": { "O_Truck_03_ammo_F" };
+                case "WEST": { "B_Truck_01_ammo_F" };
+                case "GUER": { "I_Truck_02_ammo_F" };
+                default { "B_Truck_01_ammo_F" };
+            };
+        };
+        ALiVE_ML_supplyTrucks set [_key, _pick];
+        _pick
+    };
+};
 
 params [
     ["_logic", objNull, [objNull]],
@@ -4938,12 +4976,7 @@ switch(_operation) do {
             };
 
             // truck dispatch (mirrors LOGCOM_RESUPPLY's truck path)
-            private _truckClass = switch (_eventSide) do {
-                case "EAST": { "O_Truck_03_ammo_F" };
-                case "WEST": { "B_Truck_01_ammo_F" };
-                case "GUER": { "I_Truck_02_ammo_F" };
-                default { "B_Truck_01_ammo_F" };
-            };
+            private _truckClass = [_eventFaction, _eventSide] call ALiVE_ML_fnc_supplyTruck;
             private _truckSpawnPos = _sourcePos;
             private _spawnResult = [_truckClass, _sourcePos, 50, "auto", _sourcePos getDir _targetPos] call ALiVE_fnc_findVehicleSpawnPosition;
             // Exactly where and how the validator checked it, as the convoy truck below is
@@ -5196,12 +5229,7 @@ switch(_operation) do {
 
             if (!_waterBlocked) then {
                 // --- TRUCK DISPATCH ---
-                private _truckClass = switch (_eventSide) do {
-                    case "EAST": { "O_Truck_03_ammo_F" };
-                    case "WEST": { "B_Truck_01_ammo_F" };
-                    case "GUER": { "I_Truck_02_ammo_F" };
-                    default { "B_Truck_01_ammo_F" };
-                };
+                private _truckClass = [_eventFaction, _eventSide] call ALiVE_ML_fnc_supplyTruck;
 
                 // Route through the unified vehicle spawn validator
                 // (#850). _sourcePos is an installation marker that's
