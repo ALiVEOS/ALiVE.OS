@@ -127,12 +127,15 @@ if (isNil "ALiVE_ML_fnc_supplyTruck") then {
         if (!isNil "_known") exitWith { _known };
         private _pick = "";
         if (_faction != "") then {
-            // the faction's support vehicles when ALiVE lists them, else every car it has; trucks only, no
-            // artillery (a rocket launcher is a truck), and unarmed before armed
+            // the faction's support and transport vehicles as ALiVE lists them (a mission maker can set either for
+            // the faction), else every car it has; trucks only, no artillery (a rocket launcher is a truck), and
+            // unarmed before armed
             private _fnc_trucks = {
                 _this select { isClass (configFile >> "CfgVehicles" >> _x) && {_x isKindOf "Truck_F"} && {getNumber (configFile >> "CfgVehicles" >> _x >> "artilleryScanner") == 0} }
             };
-            private _trucks = (if (isNil "ALIVE_factionDefaultSupports") then { [] } else { [ALIVE_factionDefaultSupports, _faction, []] call ALiVE_fnc_hashGet }) call _fnc_trucks;
+            private _listed = (if (isNil "ALIVE_factionDefaultSupports") then { [] } else { [ALIVE_factionDefaultSupports, _faction, []] call ALiVE_fnc_hashGet })
+                + (if (isNil "ALIVE_factionDefaultTransport") then { [] } else { [ALIVE_factionDefaultTransport, _faction, []] call ALiVE_fnc_hashGet });
+            private _trucks = _listed call _fnc_trucks;
             // a list with no ammo truck in it: look through all the faction's cars as well
             if ((_trucks findIf { getNumber (configFile >> "CfgVehicles" >> _x >> "transportAmmo") > 0 }) < 0) then {
                 _trucks = _trucks + (([0, _faction, "Car"] call ALiVE_fnc_findVehicleType) call _fnc_trucks);
