@@ -2730,7 +2730,10 @@ switch (_operation) do {
         _editMap ctrlShow false;
 
         _backButton = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_SubMenuBack);
-        _backButton ctrlShow false;
+        // the first page: Back goes back to the C2ISTAR menu, for another tablet (#1089)
+        _backButton ctrlShow true;
+        _backButton ctrlSetText localize "STR_ALIVE_SCOM_UI_BACK";
+        _backButton ctrlSetEventHandler ["MouseButtonClick", "if (isNil 'ALiVE_c2istar_fnc_backToMenu') then { closeDialog 0 } else { [] call ALiVE_c2istar_fnc_backToMenu }"];
 
         _editList = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_EditList);
         _editList ctrlShow false;
@@ -3595,7 +3598,10 @@ switch (_operation) do {
             _editMap ctrlShow true;
 
             _backButton = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_SubMenuBack);
-            _backButton ctrlShow false;
+            // the first page: Back goes back to the C2ISTAR menu, for another tablet (#1089)
+            _backButton ctrlShow true;
+            _backButton ctrlSetText localize "STR_ALIVE_SCOM_UI_BACK";
+            _backButton ctrlSetEventHandler ["MouseButtonClick", "if (isNil 'ALiVE_c2istar_fnc_backToMenu') then { closeDialog 0 } else { [] call ALiVE_c2istar_fnc_backToMenu }"];
 
             _editMap ctrlSetEventHandler ["MouseButtonDown", "['OP_MAP_CLICK_NULL',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
@@ -3743,10 +3749,12 @@ switch (_operation) do {
         private _title = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_Title);
         _title ctrlSetText localize "STR_ALIVE_SCOM_UI_SELECT_COMMANDER_TITLE";
 
-        // this is the first page; Close already provides the exit action
 
         _back = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_SubMenuBack);
-        _back ctrlShow false;
+        // the first page: Back goes back to the C2ISTAR menu, for another tablet (#1089)
+        _back ctrlShow true;
+        _back ctrlSetText localize "STR_ALIVE_SCOM_UI_BACK";
+        _back ctrlSetEventHandler ["MouseButtonClick", "if (isNil 'ALiVE_c2istar_fnc_backToMenu') then { closeDialog 0 } else { [] call ALiVE_c2istar_fnc_backToMenu }"];
 
         if(typeName _args == "ARRAY") then {
 

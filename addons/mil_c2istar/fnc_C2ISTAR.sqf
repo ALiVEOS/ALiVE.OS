@@ -1537,6 +1537,18 @@ switch(_operation) do {
             "ALiVE_c2istar_questionAsk" addPublicVariableEventHandler { (_this select 1) call ALiVE_c2istar_fnc_interrogate };
         };
         if (hasInterface) then {
+            // A tablet's Back on its first page (#1089): closes it and opens the C2ISTAR menu again, at its list of
+            // tablets, rather than leaving the player to close it and find the menu key. The menu is CBA's popup,
+            // opened with the parameters it was added with; it waits for the tablet to have gone first.
+            ALiVE_c2istar_fnc_backToMenu = {
+                closeDialog 0;
+                [] spawn {
+                    private _t = diag_tickTime;
+                    waitUntil { !dialog || {diag_tickTime - _t > 2} };
+                    uiSleep 0.05;
+                    ["player", [] call ALiVE_fnc_menuKeys, -9500, ["call ALiVE_fnc_C2MenuDef", ["C2ISTAR", "alive_flexiMenu_rscPopup"]]] call CBA_fnc_flexiMenu_openMenuByDef;
+                };
+            };
             ALiVE_c2istar_fnc_showAnswer = {
                 params ["_name", "_positions", "_side", ["_outcome", "refused"]];
                 private _prefix = switch (_side) do { case west: {"b_"}; case east: {"o_"}; case resistance: {"n_"}; default {"o_"} };
@@ -4137,6 +4149,12 @@ if (isServer) then {
         _title ctrlShow true;
 
         _title ctrlSetText localize "STR_ALIVE_C2ISTAR_UI_CURRENT_TASKS";
+
+        _backButton = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_SubMenuBack);
+        // the first page: Back goes back to the C2ISTAR menu, for another tablet (#1089)
+        _backButton ctrlShow true;
+        _backButton ctrlSetText localize "STR_ALIVE_C2ISTAR_UI_BACK";
+        _backButton ctrlSetEventHandler ["MouseButtonClick", "if (isNil 'ALiVE_c2istar_fnc_backToMenu') then { closeDialog 0 } else { [] call ALiVE_c2istar_fnc_backToMenu }"];
 
         _abortButton = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_SubMenuAbort);
         _abortButton ctrlShow true;

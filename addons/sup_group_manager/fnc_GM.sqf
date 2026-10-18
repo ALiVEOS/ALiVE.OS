@@ -929,6 +929,12 @@ switch(_operation) do {
 
         _title ctrlSetText localize "STR_ALIVE_GM_UI_TITLE";
 
+        _backButton = GM_getControl(GMTablet_CTRL_MainDisplay,GMTablet_CTRL_SubMenuBack);
+        // the first page: Back goes back to the C2ISTAR menu, for another tablet (#1089)
+        _backButton ctrlShow true;
+        _backButton ctrlSetText localize "STR_ALIVE_GM_UI_BACK";
+        _backButton ctrlSetEventHandler ["MouseButtonClick", "if (isNil 'ALiVE_c2istar_fnc_backToMenu') then { closeDialog 0 } else { [] call ALiVE_c2istar_fnc_backToMenu }"];
+
         _abortButton = GM_getControl(GMTablet_CTRL_MainDisplay,GMTablet_CTRL_SubMenuAbort);
         _abortButton ctrlShow true;
 
