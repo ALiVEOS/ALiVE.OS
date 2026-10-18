@@ -26,6 +26,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 
 Peer reviewed:
 nil
@@ -147,6 +148,41 @@ switch(_operation) do {
             _parent = _task select 8;
             _source = _task select 9;
 
+            // A task this player already has is updated, not built a second time: a second createSimpleTask left the
+            // first as an orphan in the list (A. Ares, 18 Oct)
+            if !(isNil {[_logic, "getTask", _taskID] call MAINCLASS}) exitWith {
+                [_logic, "updateTask", _task] call MAINCLASS;
+            };
+            // a task the server sends again (a player back on its list after leaving it) is wanted again, so it comes
+            // off the removed list that stops late updates rebuilding it
+            private _removed = [_logic, "removedTasks", []] call ALIVE_fnc_hashGet;
+            if (_taskID in _removed) then { _removed deleteAt (_removed find _taskID); [_logic, "removedTasks", _removed] call ALIVE_fnc_hashSet };
+
+            // A subtask whose parent hasn't reached this player yet waits for it (up to 10 s) rather than being made a
+            // top-level task: an HVT task's "Eliminate the target" showed un-nested under "Assassinate the HVT"
+            // (A. Ares, 18 Oct). One waiter per task: an event for it during the wait replaces the copy it will use,
+            // so the task is built once, from its latest state.
+            if (_parent != "None" && {isNil {[_logic, "getTask", _parent] call MAINCLASS}} && {!(_task param [11, false])}) exitWith {
+                private _pending = [_logic, "pendingTasks", [] call ALIVE_fnc_hashCreate] call ALIVE_fnc_hashGet;
+                private _waiting = !isNil {[_pending, _taskID] call ALIVE_fnc_hashGet};
+                [_pending, _taskID, _task] call ALIVE_fnc_hashSet;
+                [_logic, "pendingTasks", _pending] call ALIVE_fnc_hashSet;
+                if (_waiting) exitWith {};
+                [_logic, _taskID, _parent] spawn {
+                    params ["_logic", "_taskID", "_parent"];
+                    private _until = diag_tickTime + 10;
+                    waitUntil { sleep 0.25; !(isNil {[_logic, "getTask", _parent] call ALiVE_fnc_taskHandlerClient}) || {diag_tickTime > _until} };
+                    private _pending = [_logic, "pendingTasks"] call ALIVE_fnc_hashGet;
+                    private _latest = [_pending, _taskID] call ALIVE_fnc_hashGet;
+                    [_pending, _taskID] call ALIVE_fnc_hashRem;
+                    if (isNil "_latest") exitWith {};
+                    // removed while it waited (its task ended): nothing to build
+                    if (_taskID in ([_logic, "removedTasks", []] call ALIVE_fnc_hashGet)) exitWith {};
+                    private _late = +_latest; _late resize 12; _late set [11, true];
+                    [_logic, "registerTask", _late] call ALiVE_fnc_taskHandlerClient;
+                };
+            };
+
             if(_parent != "None") then {
                 _parentTask = [_logic,"getTask",_parent] call MAINCLASS;
 
@@ -229,7 +265,13 @@ switch(_operation) do {
             _task = [_logic, "getTask", _taskID] call MAINCLASS;
 
             if(isNil "_task") exitWith {
-                [_logic, "registerTask", _updatedTask] call MAINCLASS;
+                // an update for a task this player doesn't have builds it, unless it or its parent was removed here
+                // (a late update after the task ended made an orphan top-level task). A genuine re-send comes as a
+                // create, which registerTask accepts whatever this list says.
+                private _removed = [_logic, "removedTasks", []] call ALIVE_fnc_hashGet;
+                if !(_taskID in _removed || {_parent in _removed}) then {
+                    [_logic, "registerTask", _updatedTask] call MAINCLASS;
+                };
             };
 
             _taskObject = _task select 10;
@@ -315,7 +357,20 @@ switch(_operation) do {
 
             _taskID = _args;
 
+            // remembered as removed, so a late event can't build it again (kept to the last 200)
+            private _removed = [_logic, "removedTasks", []] call ALIVE_fnc_hashGet;
+            _removed pushBackUnique _taskID;
+            if (count _removed > 200) then { _removed deleteRange [0, count _removed - 200] };
+            [_logic, "removedTasks", _removed] call ALIVE_fnc_hashSet;
+
             _task = [_logic, "getTask", _taskID] call MAINCLASS;
+            if (isNil "_task") exitWith {};
+
+            // its subtasks go with it: removing only the parent left them in the list as top-level tasks
+            _tasks = [_logic, "tasks"] call ALIVE_fnc_hashGet;
+            private _children = [];
+            { if ((_x param [8, ""]) isEqualTo _taskID) then { _children pushBack (_x select 1) } } forEach (_tasks select 2);
+            { [_logic, "unregisterTask", _x] call MAINCLASS } forEach _children;
 
             _taskObject = _task select 10;
 
