@@ -83,6 +83,32 @@ NEO_radioLogic setVariable ["NEO_radioPlayerActionArray",
                 _vehicle_found;
             "
         ],
+        // Talk To Driver: Talk To Pilot only looks in the air transport list, so riding in a
+        // ground transport offered nothing. This opens the radio on the ground transport page, the vehicle picked.
+        [
+            ("<t color=""#700000"">" + ("Talk To Driver") + "</t>"),
+            {
+                private _caller = _this select 1;
+                // the vehicle you ride in when it is a ground transport, otherwise the one you look at (as the condition picks)
+                private _ground = (NEO_radioLogic getVariable [format ["NEO_radioGroundArray_%1", playerSide], []]) apply { _x select 0 };
+                private _vehicle = if (vehicle _caller in _ground) then { vehicle _caller } else { cursorTarget };
+                NEO_radioLogic setVariable ["NEO_radioTalkWithDriver", _vehicle];
+                ["talkground"] call ALIVE_fnc_radioAction;
+            },
+            "talkground",
+            -1,
+            false,
+            true,
+            "",
+            "
+                private _vehicle = objNull;
+                {
+                    if (_x select 0 == vehicle _this) exitWith { _vehicle = _x select 0 };
+                    if (_x select 0 == cursorTarget && {_this distance cursorTarget <= 50}) exitWith { _vehicle = _x select 0 };
+                } forEach (NEO_radioLogic getVariable [format [""NEO_radioGroundArray_%1"", playerSide], []]);
+                !isNull _vehicle && {alive (driver _vehicle)}
+            "
+        ],
         // Medevac (#694): on a helicopter waiting at its landing zone, load the group's wounded
         // within 50 m, and send it off.
         [

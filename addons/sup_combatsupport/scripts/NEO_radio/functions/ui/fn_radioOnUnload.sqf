@@ -11,6 +11,11 @@ if (!isNil { NEO_radioLogic getVariable "NEO_radioTalkWithPilot" }) then
     NEO_radioLogic setVariable ["NEO_radioTalkWithPilot", nil];
 };
 
+if (!isNil { NEO_radioLogic getVariable "NEO_radioTalkWithDriver" }) then
+{
+    NEO_radioLogic setVariable ["NEO_radioTalkWithDriver", nil];
+};
+
 if (!isNil { NEO_radioLogic getVariable "NEO_radioTalkWithArty" }) then
 {
     NEO_radioLogic setVariable ["NEO_radioTalkWithArty", nil];

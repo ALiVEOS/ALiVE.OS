@@ -86,9 +86,9 @@ _casArray = NEO_radioLogic getVariable [format ["NEO_radioCasArray_%1", playerSi
 //Available Supports
 if (count _transportArray > 0) then { _available pushback (["TRANSPORT", "\a3\Ui_f\data\GUI\Cfg\CommunicationMenu\transport_ca.paa"]) };
 if (count _casArray > 0) then { _available pushback (["CAS", "\a3\Ui_f\data\GUI\Cfg\CommunicationMenu\cas_ca.paa"]) };
-// Ground transport (#690), from the radio only
+// Ground transport (#690), from the radio or Talk To Driver
 private _groundArray = NEO_radioLogic getVariable [format ["NEO_radioGroundArray_%1", playerSide], []];
-if (count _groundArray > 0 && {_action == "radio"}) then { _available pushback (["GROUND", "\a3\Ui_f\data\GUI\Cfg\CommunicationMenu\supplydrop_ca.paa"]) };
+if (count _groundArray > 0 && {_action in ["radio", "talkground"]}) then { _available pushback (["GROUND", "\a3\Ui_f\data\GUI\Cfg\CommunicationMenu\supplydrop_ca.paa"]) };
 // the AI Commander's guns (F509) give the radio an Artillery entry of their own; talking to one
 // battery never offers them
 if ((count _artyArray > 0 && (_action == "radio" || _action == "talkarty")) || {_action == "radio" && {["available"] call NEO_fnc_artyCmdrBoard}}) then { _available pushback (["ARTY", "\a3\Ui_f\data\GUI\Cfg\CommunicationMenu\artillery_ca.paa"]) };
@@ -135,6 +135,23 @@ switch (_action) do
             lbSetCurSel [655565, 0];
             waituntil { lbSize 655568 > 0 };
             lbSetCurSel [655568, 0];
+        };
+    };
+
+    // Talk To Driver: the ground transport page, on the vehicle talked to
+    case "talkground" :
+    {
+        ["GROUND"] call _fnc_keepOnly;
+
+        [] spawn
+        {
+            lbSetCurSel [655565, 0];
+            // stop waiting if the tablet is closed first
+            waituntil { isNull findDisplay 655555 || {lbSize 655568 > 0} };
+            if (isNull findDisplay 655555) exitWith {};
+            private _vehicle = NEO_radioLogic getVariable ["NEO_radioTalkWithDriver", objNull];
+            private _row = (NEO_radioLogic getVariable [format ["NEO_radioGroundArray_%1", playerSide], []]) findIf { (_x select 0) == _vehicle };
+            lbSetCurSel [655568, _row max 0];
         };
     };
 
