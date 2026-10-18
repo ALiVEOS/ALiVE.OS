@@ -1,7 +1,30 @@
+class ctrlButton;
+
 // The Player FOBs pickers: one pick per side, on ALiVE's slot picker (ALiVE_FactionSlotChoice),
 // and who may take a FOB down, on ALiVE's compact multi-select (ALiVE_SideChoiceMulti)
 class Cfg3DEN {
     class Attributes {
+        // A button that opens the FOB Build List page in the browser: every object players can build, with
+        // its class name and cost, which are the names Never Build and Also Build take. Saves nothing.
+        class Default;
+        class Title: Default { class Controls { class Title; }; };
+        class ALiVE_FOBBuildListLink: Title {
+            attributeLoad = "";
+            attributeSave = "''";
+            class Controls: Controls {
+                class Title: Title {};
+                class Link: ctrlButton {
+                    idc = 310;
+                    x = "48 * (pixelW * pixelGrid * 0.50)";
+                    y = "0.5 * (pixelH * pixelGrid * 0.50)";
+                    w = "82 * (pixelW * pixelGrid * 0.50)";
+                    h = "4 * (pixelH * pixelGrid * 0.50)";
+                    text = "$STR_ALIVE_FOB_BUILDLIST_OPEN";
+                    tooltip = "$STR_ALIVE_FOB_BUILDLIST_COMMENT";
+                    url = "https://www.alivemod.com/public/alive3/sup_fob_buildlist.htm";
+                };
+            };
+        };
         class ALiVE_FactionSlotChoice;
         class ALiVE_SideChoiceMulti;
         class ALiVE_FOBManageChoice: ALiVE_SideChoiceMulti {

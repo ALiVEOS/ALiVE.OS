@@ -212,6 +212,18 @@
             <Key ID="STR_ALIVE_FOB_SUPPLYCRATE_NAME">
                 <English>ALiVE FOB Supply Crate</English>
             </Key>
+            <Key ID="STR_ALIVE_FOB_BUILDLIST">
+                <English>Build List</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_BUILDLIST_COMMENT">
+                <English>Opens the FOB Build List in your browser: everything players can build, with its class name and cost. Use those class names in Never Build and Also Build.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_BUILDLIST_OPEN">
+                <English>Open the build list</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_BUILDLIST_MENU">
+                <English>FOB Build List</English>
+            </Key>
             <Key ID="STR_ALIVE_FOB_BLACKLIST">
                 <English>Never Build</English>
             </Key>

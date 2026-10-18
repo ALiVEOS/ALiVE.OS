@@ -3,7 +3,7 @@ class CfgPatches {
         units[] = {"ALiVE_FOB_Kit", "ALiVE_FOB_SupplyCrate"};
         weapons[] = {};
         requiredVersion = REQUIRED_VERSION;
-        requiredAddons[] = {"ALIVE_main", "A3_Weapons_F_Ammoboxes"};
+        requiredAddons[] = {"ALIVE_main", "A3_Weapons_F_Ammoboxes", "ALIVE_fnc_analysis", "ALIVE_sys_presets"};
         versionDesc = "ALiVE";
         VERSION_CONFIG;
         author = MODULE_AUTHOR;

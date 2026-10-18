@@ -2,7 +2,7 @@ class CfgVehicles {
     class Logic;
     class Module_F : Logic
     {
-        class AttributesBase { class Edit; class Combo; class ModuleDescription; };
+        class AttributesBase { class Default; class Edit; class Combo; class ModuleDescription; };
     };
     class ModuleAliveBase : Module_F
     {
@@ -109,6 +109,7 @@ class CfgVehicles {
                         class fob_supply_cap_t2 : Edit { property = "ALiVE_sup_fob_fob_supply_cap_t2"; displayName = "$STR_ALIVE_FOB_SUPPLY_CAP_T2"; tooltip = "$STR_ALIVE_FOB_SUPPLY_CAP_COMMENT"; typeName = "STRING"; defaultValue = """4000"""; };
                         class fob_supply_cap_t3 : Edit { property = "ALiVE_sup_fob_fob_supply_cap_t3"; displayName = "$STR_ALIVE_FOB_SUPPLY_CAP_T3"; tooltip = "$STR_ALIVE_FOB_SUPPLY_CAP_COMMENT"; typeName = "STRING"; defaultValue = """5000"""; };
                         class fob_cost_scale : Edit { property = "ALiVE_sup_fob_fob_cost_scale"; displayName = "$STR_ALIVE_FOB_COST_SCALE"; tooltip = "$STR_ALIVE_FOB_COST_SCALE_COMMENT"; typeName = "STRING"; defaultValue = """1"""; };
+                        class fob_buildlist : Default { property = "ALiVE_sup_fob_fob_buildlist"; displayName = "$STR_ALIVE_FOB_BUILDLIST"; tooltip = "$STR_ALIVE_FOB_BUILDLIST_COMMENT"; control = "ALiVE_FOBBuildListLink"; typeName = "STRING"; defaultValue = "''"; };
                         class fob_blacklist : Edit { property = "ALiVE_sup_fob_fob_blacklist"; displayName = "$STR_ALIVE_FOB_BLACKLIST"; tooltip = "$STR_ALIVE_FOB_BLACKLIST_COMMENT"; typeName = "STRING"; defaultValue = """"""; };
                         class fob_whitelist : Edit { property = "ALiVE_sup_fob_fob_whitelist"; displayName = "$STR_ALIVE_FOB_WHITELIST"; tooltip = "$STR_ALIVE_FOB_WHITELIST_COMMENT"; typeName = "STRING"; defaultValue = """"""; };
 
