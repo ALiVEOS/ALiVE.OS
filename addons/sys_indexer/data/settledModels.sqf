@@ -1,5 +1,5 @@
-// Generated 2026-10-16 from 170 terrain indexes in addons/main/static: every model at least two indexes list and
-// all of them categorise the same way (5509 models: 2484 categorised, 3025 blacklist only). The in-game indexer
+// Generated 2026-10-18 from 171 terrain indexes in addons/main/static: every model at least two indexes list and
+// all of them categorise the same way (5513 models: 2484 categorised, 3029 blacklist only). The in-game indexer
 // fills these in without asking when its Known Categories setting is Yes. Regenerated, not edited by hand.
 [
     ["a3\air_f_jets\plane_fighter_02\plane_fighter_02_wreck_f.p3d", ["ALIVE_Indexing_Blacklist"]],
@@ -80,6 +80,7 @@
     ["a3\props_f_enoch\military\decontamination\spinalboard_01_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\props_f_enoch\military\decontamination\sponge_01_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\props_f_enoch\military\decontamination\stretcherrollersystem_01_f.p3d", ["ALIVE_Indexing_Blacklist"]],
+    ["a3\props_f_enoch\military\decontamination\tarp_01_large_green_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\props_f_enoch\military\decontamination\tarp_01_large_yellow_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\props_f_enoch\military\decontamination\tarp_01_small_green_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\props_f_enoch\military\decontamination\tarp_01_small_red_f.p3d", ["ALIVE_Indexing_Blacklist"]],
@@ -146,6 +147,7 @@
     ["a3\props_f_orange\furniture\tablebig_01_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\props_f_orange\furniture\tablesmall_01_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\props_f_orange\furniture\woodenbed_01_f.p3d", ["ALIVE_Indexing_Blacklist"]],
+    ["a3\props_f_orange\humanitarian\camps\airconditioner_01_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\props_f_orange\humanitarian\camps\airconditioner_01_folded_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\props_f_orange\humanitarian\camps\bodybag_01_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\props_f_orange\humanitarian\camps\bodybag_01_folded_f.p3d", ["ALIVE_Indexing_Blacklist"]],
@@ -657,6 +659,7 @@
     ["a3\structures_f_argo\walls\city\wallcity_01_4m_grey_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\structures_f_argo\walls\city\wallcity_01_4m_pink_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\structures_f_argo\walls\city\wallcity_01_4m_plain_blue_f.p3d", ["ALIVE_Indexing_Blacklist"]],
+    ["a3\structures_f_argo\walls\city\wallcity_01_4m_plain_dmg_blue_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\structures_f_argo\walls\city\wallcity_01_4m_plain_dmg_grey_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\structures_f_argo\walls\city\wallcity_01_4m_plain_dmg_whiteblue_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\structures_f_argo\walls\city\wallcity_01_4m_plain_dmg_yellow_f.p3d", ["ALIVE_Indexing_Blacklist"]],
@@ -900,6 +903,7 @@
     ["a3\structures_f_enoch\furniture\school_equipment\lab_bench.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\structures_f_enoch\furniture\school_equipment\long_bench.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\structures_f_enoch\furniture\school_equipment\radiator.p3d", ["ALIVE_Indexing_Blacklist"]],
+    ["a3\structures_f_enoch\furniture\school_equipment\school_cage.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\structures_f_enoch\furniture\school_equipment\school_clock.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\structures_f_enoch\furniture\school_equipment\vaulting_box_small.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\structures_f_enoch\furniture\school_equipment\yellow_star.p3d", ["ALIVE_Indexing_Blacklist"]],
