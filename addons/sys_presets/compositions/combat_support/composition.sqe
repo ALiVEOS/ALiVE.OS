@@ -347,11 +347,24 @@ class items
 		type="ALiVE_sup_artillery";
 		class CustomAttributes
 		{
-			nAttributes=1;
+			nAttributes=2;
 			class Attribute0
 			{
 				property="ALiVE_sup_artillery_artillery_logistics";
 				expression="_this setVariable ['artillery_logistics',_value,true];";
+				class Value
+				{
+					class data
+					{
+						singleType="STRING";
+						value="1";
+					};
+				};
+			};
+			class Attribute1
+			{
+				property="ALiVE_sup_artillery_artillery_relocate";
+				expression="_this setVariable ['artillery_relocate',_value,true];";
 				class Value
 				{
 					class data

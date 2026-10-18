@@ -538,8 +538,8 @@ class items
 				{
 					class data
 					{
-						singleType="STRING";
-						value="40";
+						singleType="SCALAR";
+						value=40;
 					};
 				};
 			};

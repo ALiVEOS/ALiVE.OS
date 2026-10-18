@@ -34,6 +34,15 @@ class Cfg3DEN {
             icon = "\A3\ui_f\data\map\markers\nato\b_inf.paa";
             useSideColorOnIcon = 1;
         };
+        class ALiVE_Preset_combined_arms {
+            path = "x\alive\addons\sys_presets\compositions\combined_arms";
+            side = 1;
+            editorCategory = "ALiVE_PresetCat";
+            editorSubcategory = "ALiVE_PresetSub";
+            displayName = "Combined arms assault: guns, armour and infantry";
+            icon = "\A3\ui_f\data\map\markers\nato\b_inf.paa";
+            useSideColorOnIcon = 1;
+        };
         class ALiVE_Preset_defensive {
             path = "x\alive\addons\sys_presets\compositions\defensive";
             side = 1;
@@ -76,6 +85,15 @@ class Cfg3DEN {
             editorCategory = "ALiVE_PresetCat";
             editorSubcategory = "ALiVE_PresetSub";
             displayName = "Hearts and minds: NATO wins over the towns";
+            icon = "\A3\ui_f\data\map\markers\nato\b_inf.paa";
+            useSideColorOnIcon = 1;
+        };
+        class ALiVE_Preset_hunt_recruiters {
+            path = "x\alive\addons\sys_presets\compositions\hunt_recruiters";
+            side = 1;
+            editorCategory = "ALiVE_PresetCat";
+            editorSubcategory = "ALiVE_PresetSub";
+            displayName = "Hunt the recruiters: NATO against FIA";
             icon = "\A3\ui_f\data\map\markers\nato\b_inf.paa";
             useSideColorOnIcon = 1;
         };

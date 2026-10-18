@@ -28,7 +28,7 @@ class items
 		type="ALiVE_sys_profile";
 		class CustomAttributes
 		{
-			nAttributes=1;
+			nAttributes=2;
 			class Attribute0
 			{
 				property="ALiVE_sys_profile_virtualcombat_speedmodifier";
@@ -39,6 +39,19 @@ class items
 					{
 						singleType="STRING";
 						value="0.75";
+					};
+				};
+			};
+			class Attribute1
+			{
+				property="ALiVE_sys_profile_routeMemory";
+				expression="_this setVariable ['routeMemory',_value,true];";
+				class Value
+				{
+					class data
+					{
+						singleType="STRING";
+						value="low";
 					};
 				};
 			};

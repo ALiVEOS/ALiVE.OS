@@ -174,7 +174,7 @@ class items
 		type="ALiVE_mil_OPCOM";
 		class CustomAttributes
 		{
-			nAttributes=6;
+			nAttributes=8;
 			class Attribute0
 			{
 				property="ALiVE_mil_opcom_customName";
@@ -250,6 +250,32 @@ class items
 					{
 						singleType="STRING";
 						value="capture";
+					};
+				};
+			};
+			class Attribute6
+			{
+				property="ALiVE_mil_opcom_recruiters";
+				expression="_this setVariable ['recruiters', _value];";
+				class Value
+				{
+					class data
+					{
+						singleType="STRING";
+						value="true";
+					};
+				};
+			};
+			class Attribute7
+			{
+				property="ALiVE_mil_opcom_recruiterWalks";
+				expression="_this setVariable ['recruiterWalks', _value];";
+				class Value
+				{
+					class data
+					{
+						singleType="STRING";
+						value="true";
 					};
 				};
 			};
