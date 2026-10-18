@@ -29,6 +29,7 @@ _show = switch (toUpper (_lb lbData _index)) do
     case "SLINGLOAD" : { format ["<t color='#FFFF73' size='0.7' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_TR_SLINGLOAD"] };
     case "UNHOOK" : { format ["<t color='#FFFF73' size='0.7' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_TR_UNHOOK"] };
     case "MEDEVAC" : { format ["<t color='#FFFF73' size='0.7' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_TR_MEDEVAC"] };
+    case "PARADROP" : { format ["<t color='#FFFF73' size='0.7' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_TR_PARADROP"] };
 };
 
 //Help Text
@@ -86,6 +87,32 @@ _task = switch (_lb lbData _index) do
             _sliderText = (findDisplay 655555) displayCtrl 655579;
 
             _sliderText ctrlSetText format [localize ""STR_ALIVE_CS_UI_TR_HEIGHT"", _pos];
+        "]
+    };
+
+    // the height the passengers jump from, above the ground
+    CASE "PARADROP" :
+    {
+        _objectLb ctrlSetPosition [_uiX + (_uiW / 2.275), _uiY + (_uiH / 1.45), (_uiW / 1000), (_uiH / 1000)];
+        _objectLb ctrlCommit 0;
+        _objectLb ctrlEnable false;
+        _slider ctrlSetPosition [0.281002 * _uiW + _uiX, 0.5504 * _uiH + _uiY, (0.0927966 * _uiW), (0.0196 * _uiH)];
+        _slider ctrlCommit 0;
+        _sliderText ctrlSetText format [localize "STR_ALIVE_CS_UI_TR_DROPHEIGHT", 250];
+        _sliderText ctrlSetPosition [0.225 * _uiW + _uiX, 0.52 * _uiH + _uiY, (0.19 * _uiW), (0.028 * _uiH)];
+        _sliderText ctrlCommit 0;
+
+        _slider sliderSetRange [150, 500];
+        _slider sliderSetspeed [25, 50];
+        _slider sliderSetPosition 250;
+        _slider ctrlSetEventHandler ["SliderPosChanged",
+        "
+            private [""_slider"", ""_pos"", ""_sliderText""];
+            _slider = _this select 0;
+            _pos = round (_this select 1);
+            _sliderText = (findDisplay 655555) displayCtrl 655579;
+
+            _sliderText ctrlSetText format [localize ""STR_ALIVE_CS_UI_TR_DROPHEIGHT"", _pos];
         "]
     };
 

@@ -44,6 +44,10 @@ if (toUpper _task == "INSERTION") then
 {
     _arguments = [_task, _pos,_amnt, player];
 };
+if (toUpper _task == "PARADROP") then
+{
+    _arguments = [_task, _pos,_amnt, player];
+};
 
 //Player dialog
 private ["_posTask", "_text"];
@@ -60,6 +64,7 @@ _text = switch (toUpper _task) do
     case "SLINGLOAD" : { ["STR_ALIVE_CS_MSG_TR_SLINGLOAD", _callsign, _callSignPlayer, _posTask select 0, _posTask select 1] };
     case "UNHOOK" : { ["STR_ALIVE_CS_MSG_TR_UNHOOK", _callsign, _callSignPlayer, _posTask select 0, _posTask select 1] };
     case "MEDEVAC" : { ["STR_ALIVE_CS_MSG_TR_MEDEVAC", _callsign, _callSignPlayer, _posTask select 0, _posTask select 1] };
+    case "PARADROP" : { ["STR_ALIVE_CS_MSG_TR_PARADROP", _callsign, _callSignPlayer, _posTask select 0, _posTask select 1] };
 };
 
 if (_audio) then {

@@ -93,6 +93,10 @@ if ([(configFile >> "CfgVehicles" >> typeOf _chopper >> "slingLoadMaxCargoMass")
 if (getNumber (configFile >> "CfgVehicles" >> typeOf _chopper >> "transportSoldier") == 0 || {!(_chopper isKindOf "Helicopter")}) then {
     _tasksArray = _tasksArray - ["Medevac"];
 };
+// Paradrop needs passenger seats to drop anyone from, and a helicopter to hold over the drop zone
+if (getNumber (configFile >> "CfgVehicles" >> typeOf _chopper >> "transportSoldier") == 0 || {!(_chopper isKindOf "Helicopter")}) then {
+    _tasksArray = _tasksArray - ["Paradrop"];
+};
 
 
 //Re-initialize Controls

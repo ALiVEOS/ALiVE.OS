@@ -440,6 +440,22 @@ class FSM
                                          "[_chopper, _callsign, _pos, _base, _player, _audio, _chopper getVariable ""NEO_radioMedevacRun""] spawn NEO_fnc_transportMedevac;"/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
+                                /*%FSM<LINK "paradrop">*/
+                                class paradrop
+                                {
+                                        itemno = 96;
+                                        priority = 0.000000;
+                                        to="__7";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"_task == ""PARADROP""" \n
+                                         ""/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/"_chopper setVariable [""NEO_radioTrasportUnitStatus"", ""MISSION"", true];" \n
+                                         "// the drop runs as its own script; this waits in Pickup's holding state, where a new" \n
+                                         "// tablet order still takes over (the script sees the task change and stops)" \n
+                                         "_chopper setVariable [""NEO_radioParadropRun"", (_chopper getVariable [""NEO_radioParadropRun"", 0]) + 1];" \n
+                                         "[_chopper, _callsign, _pos, (_chopper getVariable [""NEO_radioCurrentTask"", []]) param [2, 250], _chopper getVariable ""NEO_radioParadropRun""] spawn NEO_fnc_transportParadrop;"/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
                                 /*%FSM<LINK "pickup">*/
                                 class pickup
                                 {

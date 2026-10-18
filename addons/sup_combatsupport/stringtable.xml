@@ -2014,6 +2014,30 @@
     <Portuguese>%1, vá para %3 %4 para entregar a carga. Câmbio.</Portuguese>
     <Russian>%1, выдвигайтесь в квадрат %3 %4 для доставки груза. Приём.</Russian>
 </Key>
+<Key ID="STR_ALIVE_CS_UI_TRTASK_PARADROP">
+    <English>PARADROP</English>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_TR_PARADROP">
+    <English>Unit will fly over the designated coordinates at the chosen height and drop its passengers on static-line parachutes, backpacks and all</English>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_TR_DROPHEIGHT">
+    <English>Drop height: %1 m</English>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_TR_PARADROP">
+    <English>%1, %2 requesting a parachute drop over %3 %4. Over.</English>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_PARADROP_GO">
+    <English>%1: over the drop zone. Green light, go, go, go!</English>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_PARADROP_ABORT">
+    <English>%1: can't make a safe drop over the drop zone, nobody jumps. Holding position and waiting for further orders. Out.</English>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_PARADROP_EMPTY">
+    <English>%1: over the drop zone, but there's nobody aboard to drop. Holding position and waiting for further orders. Out.</English>
+</Key>
+<Key ID="STR_ALIVE_CS_PARADROP_HINT">
+    <English>Static line: your parachute is open. Steer it down to the drop zone.</English>
+</Key>
 <Key ID="STR_ALIVE_CS_MSG_TR_MEDEVAC">
     <English>%1, %2 requesting medevac at %3 %4. Over.</English>
     <Chinesesimp>%1，%2 请求在 %3 %4 医疗后送。请回答。</Chinesesimp>

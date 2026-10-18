@@ -38,7 +38,7 @@ Jman
 ---------------------------------------------------------------------------- */
 
 #define SUPERCLASS nil
-#define DEFAULT_TRANSPORT_TASKS ["Pickup", "Land", "Land (Eng off)", "Move", "Circle", "Insertion", "Slingload", "Unhook", "Medevac"]
+#define DEFAULT_TRANSPORT_TASKS ["Pickup", "Land", "Land (Eng off)", "Move", "Circle", "Insertion", "Paradrop", "Slingload", "Unhook", "Medevac"]
 
 private ["_logic","_operation","_args"];
 
