@@ -122,6 +122,21 @@ class CfgVehicles
                     };
                 };
             };
+            // Persist By, with the other persistence settings (A. Ares, Jman 18 Oct 2026). The player options are
+            // handed out by name in fnc_playeroptions.sqf, so attributes can sit in any order.
+            class persistBy: Combo
+            {
+                property = "ALiVE_sys_playeroptions_persistBy";
+                displayName = "$STR_ALIVE_player_persistBy";
+                tooltip = "$STR_ALIVE_player_persistBy_COMMENT";
+                typeName = "STRING";
+                defaultValue = """player""";
+                class Values
+                {
+                    class Player { name = "Player"; value = "player"; default = 1; };
+                    class Slot { name = "Slot"; value = "slot"; };
+                };
+            };
             class allowReset: Combo
             {
                 property = MVAR(allowReset);
@@ -546,20 +561,6 @@ class CfgVehicles
                 typeName = "STRING";
             };
 
-            // Persist By, last so no other attribute moves (the player options are handed out by position)
-            class persistBy: Combo
-            {
-                property = "ALiVE_sys_playeroptions_persistBy";
-                displayName = "$STR_ALIVE_player_persistBy";
-                tooltip = "$STR_ALIVE_player_persistBy_COMMENT";
-                typeName = "STRING";
-                defaultValue = """player""";
-                class Values
-                {
-                    class Player { name = "Player"; value = "player"; default = 1; };
-                    class Slot { name = "Slot"; value = "slot"; };
-                };
-            };
             class ModuleDescription: ModuleDescription{};
         };
 

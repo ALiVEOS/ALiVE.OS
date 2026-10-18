@@ -119,11 +119,19 @@ switch (_operation) do {
 
             TRACE_1("Logic Parameters",_logicVariables);
 
+            // Each system's settings by name, not by their place in the module's attribute list, so a setting can
+            // be moved in Eden (Persist By went into the persistence section, Jman 18 Oct 2026) without another
+            // system being handed the wrong value.
             _playerOptionLogics = [
-                    ["ALiVE_fnc_player",[1,8,9,10,11,12,13,14,15,16,17,18,37]],
-                    ["ALiVE_fnc_vdist",[1,3,4,5,6]],
-                    ["ALiVE_fnc_crewinfo",[1,20]],
-                    ["ALiVE_fnc_playertags",[1,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36]]
+                    ["ALiVE_fnc_player",["debug","enablePlayerPersistence","allowReset","allowManualSave","allowDiffClass",
+                        "saveLoadout","saveAmmo","saveHealth","savePosition","saveScores","storeToDB","autoSaveTime","persistBy"]],
+                    ["ALiVE_fnc_vdist",["debug","minVD","maxVD","minTG","maxTG"]],
+                    ["ALiVE_fnc_crewinfo",["debug","crewinfo_ui_setting"]],
+                    ["ALiVE_fnc_playertags",["debug","playertags_style_setting","playertags_onview_setting","playertags_displayrank_setting",
+                        "playertags_displaygroup_setting","playertags_invehicle_setting","playertags_restricttofriendly_setting",
+                        "playertags_targets_setting","playertags_distance_setting","playertags_tolerance_setting","playertags_scale_setting",
+                        "playertags_height_setting","playertags_namecolour_setting","playertags_groupcolour_setting",
+                        "playertags_thisgroupleadernamecolour_setting","playertags_thisgroupcolour_setting"]]
             ];
 
             {
@@ -137,9 +145,9 @@ switch (_operation) do {
                 TRACE_1("Module Created",_moduleLogic);
                 // Set
                 {
-                    _value = _logic getVariable (_logicVariables select _x);
-                    TRACE_2("Logic Variable ",(_logicVariables select _x), _value);
-                    _moduleLogic setVariable [(_logicVariables select _x), _logic getVariable (_logicVariables select _x)];
+                    _value = _logic getVariable _x;
+                    TRACE_2("Logic Variable ",_x, _value);
+                    _moduleLogic setVariable [_x, _value];
                 } foreach _vars;
 
                 // Init
