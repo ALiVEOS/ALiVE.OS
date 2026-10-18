@@ -223,6 +223,15 @@
 <Key ID="STR_ALIVE_SCOM_UI_HOLD_POSITION">
     <English>Hold Position</English>
 </Key>
+<Key ID="STR_ALIVE_SCOM_UI_RECON_POSITION">
+    <English>Recon Position</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_UI_SAD_POSITION">
+    <English>Search and Destroy</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_UI_AMBUSH_POSITION">
+    <English>Ambush Position</English>
+</Key>
 <Key ID="STR_ALIVE_SCOM_UI_CONFIRM_POSITION">
     <English>Confirm Position</English>
     <Chinesesimp>确认位置</Chinesesimp>

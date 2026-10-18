@@ -2078,6 +2078,22 @@ switch (_operation) do {
                     _buttonR2 ctrlShow true;
                     _buttonR2 ctrlSetEventHandler ["MouseButtonClick", "['OPS_OBJECTIVE_CONFIRM',[_this,'hold']] call ALIVE_fnc_SCOMTabletOnAction"];
 
+                    // or send one group there (#1089): recon, search and destroy or an ambush, as the obj recon, obj sad
+                    // and obj ambush map markers do. Set again on each click, as picking an objective in the list
+                    // meanwhile gives these buttons that objective's actions.
+                    {
+                        _x params ["_ctrl", "_label", "_intent"];
+                        private _button = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,_ctrl);
+                        _button ctrlSetText localize _label;
+                        _button ctrlShow true;
+                        _button ctrlEnable false;
+                        _button ctrlSetEventHandler ["MouseButtonClick", format ["['OPS_OBJECTIVE_CONFIRM',[_this,'%1']] call ALIVE_fnc_SCOMTabletOnAction", _intent]];
+                    } forEach [
+                        [SCOMTablet_CTRL_BL1, "STR_ALIVE_SCOM_UI_RECON_POSITION", "recon"],
+                        [SCOMTablet_CTRL_BL2, "STR_ALIVE_SCOM_UI_SAD_POSITION", "sad"],
+                        [SCOMTablet_CTRL_BL3, "STR_ALIVE_SCOM_UI_AMBUSH_POSITION", "ambush"]
+                    ];
+
                     private _buttonR3 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR3);
                     _buttonR3 ctrlSetText localize "STR_ALIVE_SCOM_UI_CANCEL_DESIGNATION";
                     _buttonR3 ctrlEnable true;
@@ -2125,6 +2141,22 @@ switch (_operation) do {
                         private _buttonR2 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR2);
                         _buttonR2 ctrlEnable true;
 
+                        // or send one group there (#1089): recon, search and destroy or an ambush, as the obj recon, obj sad
+                        // and obj ambush map markers do. Set again on each click, as picking an objective in the list
+                        // meanwhile gives these buttons that objective's actions.
+                        {
+                            _x params ["_ctrl", "_label", "_intent"];
+                            private _button = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,_ctrl);
+                            _button ctrlSetText localize _label;
+                            _button ctrlShow true;
+                            _button ctrlEnable true;
+                            _button ctrlSetEventHandler ["MouseButtonClick", format ["['OPS_OBJECTIVE_CONFIRM',[_this,'%1']] call ALIVE_fnc_SCOMTabletOnAction", _intent]];
+                        } forEach [
+                            [SCOMTablet_CTRL_BL1, "STR_ALIVE_SCOM_UI_RECON_POSITION", "recon"],
+                            [SCOMTablet_CTRL_BL2, "STR_ALIVE_SCOM_UI_SAD_POSITION", "sad"],
+                            [SCOMTablet_CTRL_BL3, "STR_ALIVE_SCOM_UI_AMBUSH_POSITION", "ambush"]
+                        ];
+
                     };
 
                 };
@@ -2148,9 +2180,9 @@ switch (_operation) do {
                     private _selOpcom = [_commandState,"opsOPCOMSelectedValue"] call ALIVE_fnc_hashGet;
                     private _playerID = getPlayerUID player;
 
-                    // the button pressed: take or hold
+                    // the button pressed: take or hold, or send a group for recon, search and destroy or an ambush
                     private _intent = (_args param [1, ""]);
-                    if !(_intent in ["take", "hold"]) then { _intent = "" };
+                    if !(_intent in ["take", "hold", "recon", "sad", "ambush"]) then { _intent = "" };
                     ["OPS_ADD_OBJECTIVE", [_playerID,_selOpcom,_position,_intent]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToServer", 2];
 
                 };
