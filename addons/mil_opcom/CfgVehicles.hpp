@@ -229,6 +229,18 @@ class CfgVehicles {
                                         class Many { name = "Many"; value = "many"; };
                                 };
                         };
+                        class arriveTogether : Combo
+                        {
+                                property = "ALiVE_mil_opcom_arriveTogether";
+                                displayName = "$STR_ALIVE_OPCOM_ARRIVE_TOGETHER";
+                                tooltip = "$STR_ALIVE_OPCOM_ARRIVE_TOGETHER_COMMENT";
+                                defaultValue = """false""";
+                                class Values
+                                {
+                                        class No  { name = "No";  value = "false"; };
+                                        class Yes { name = "Yes"; value = "true"; };
+                                };
+                        };
                         class HDR_HVT : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_HDR_HVT"; displayName = "HIGH VALUE TARGET"; };
                         class hvt : Combo
                         {

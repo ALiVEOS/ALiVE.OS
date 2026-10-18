@@ -176,6 +176,8 @@ switch (_operation) do {
         private _securityPatrols = switch (toLower format ["%1", _logic getvariable ["securityPatrols","none"]]) do {
             case "few": { 0.25 }; case "some": { 0.5 }; case "many": { 0.75 }; default { 0 };
         };
+        // Attacks Arrive Together (#207): on each leg of an attack the faster groups wait before setting off.
+        private _arriveTogether = (toLower format ["%1", _logic getvariable ["arriveTogether","false"]]) == "true";
         private _hostilityPresenceMultiplier = (parseNumber format ["%1", _logic getvariable ["hostilityPresenceMultiplier",1]]) max 0;
         private _hostilityInstallationMultiplier = (parseNumber format ["%1", _logic getvariable ["hostilityInstallationMultiplier",1]]) max 0;
         private _hostilityInstallationInterval = ((parseNumber format ["%1", _logic getvariable ["hostilityInstallationInterval",10]]) max 0) * 60;
@@ -358,6 +360,7 @@ switch (_operation) do {
             ["frontlineMinefields", _frontlineMinefields],
             ["preparedDefences", _preparedDefences],
             ["securityPatrols", _securityPatrols],
+            ["arriveTogether", _arriveTogether],
             ["hostilityPresenceMultiplier", _hostilityPresenceMultiplier],
             ["hostilityInstallationMultiplier", _hostilityInstallationMultiplier],
             ["hostilityInstallationInterval", _hostilityInstallationInterval],
@@ -1682,6 +1685,39 @@ switch (_operation) do {
         private _profilesByID = [ALiVE_profileHandler,"profilesById"] call ALiVE_fnc_hashGet;
         private _profileWaypoints = [];
 
+        // Attacks Arrive Together (#207). The groups of an attack set off at once at their own speed, so the
+        // armour reached the objective minutes before the infantry. Each ground group's time to its point is
+        // estimated from the straight distance and its normal speed (a vehicle's by 1.3, for the roads it keeps
+        // to), and a group that would arrive 20 s or more before the slowest waits where it is for the difference
+        // (at most 15 minutes) before setting off. Only the two legs of an attack: the move to the points round
+        // the objective, and the capture from there. Aircraft are left as they were: held, a spawned helicopter
+        // would take off and hover where it stood.
+        private _delays = createHashMap;
+        if ([_logic,"arriveTogether",false] call ALiVE_fnc_HashGet && {_orders in ["recon","capture"]} && {count _orderBatch > 1}) then {
+            private _air = [_logic,"air",[]] call ALiVE_fnc_HashGet;
+            private _foot = [_logic,"infantry",[]] call ALiVE_fnc_HashGet;
+            private _etas = [];
+            {
+                _x params ["_pos","_profileID"];
+                private _profile = _profilesByID get _profileID;
+                if (!isNil "_profile" && {!(_profileID in _air)}) then {
+                    private _speed = (([_profile,"speedPerSecond",[1,1,1]] call ALiVE_fnc_HashGet) param [1, 1]) max 0.5;
+                    private _eta = (([_profile,"position",_pos] call ALiVE_fnc_HashGet) distance2D _pos) / _speed;
+                    if !(_profileID in _foot) then { _eta = _eta * 1.3 };
+                    _etas pushBack [_profileID, _eta];
+                };
+            } forEach _orderBatch;
+            if (_etas isNotEqualTo []) then {
+                private _slowest = selectMax (_etas apply { _x select 1 });
+                {
+                    _x params ["_profileID","_eta"];
+                    private _wait = (_slowest - _eta) min 900;
+                    if (_wait >= 20) then { _delays set [_profileID, _wait] };
+                } forEach _etas;
+            };
+        };
+        private _issuedAt = time;
+
         {
             _x params ["_pos","_profileID"];
             private _profile = _profilesByID get _profileID;
@@ -1699,8 +1735,20 @@ switch (_operation) do {
                     ["speed","NORMAL"]
                 ]] call ALiVE_fnc_hashSetMany;
 
+                private _wait = _delays getOrDefault [_profileID, 0];
+                if (_wait > 0) then {
+                    // a waypoint where the group stands that completes only once the wait is over, then the order
+                    // itself. It keeps the group on a waypoint meanwhile (the sweep of finished orders would
+                    // otherwise hand it back) and needs nothing to release it, so an order reset or replaced
+                    // meanwhile can't leave the group stuck. Time starts again after a saved game is loaded, so
+                    // an earlier time than the order's means a reload, and the group goes at once.
+                    private _here = +([_profile,"position",_pos] call ALiVE_fnc_HashGet);
+                    private _waitPoint = [_here,0,"MOVE","NORMAL",0,[],"NO CHANGE","NO CHANGE","AWARE"] call ALIVE_fnc_createProfileWaypoint;
+                    [_waitPoint,"statements",[format ["time > %1 || {time < %2}", _issuedAt + _wait, _issuedAt], ""]] call ALiVE_fnc_hashSet;
+                    [_profile,"addWaypoint",_waitPoint] call ALIVE_fnc_profileEntity;
+                };
                 [_profile,"addWaypoint",_profileWaypoint] call ALIVE_fnc_profileEntity;
-                _pendingOrders pushBack [_pos,_profileID,_objectiveID,time,_orderID];
+                _pendingOrders pushBack [_pos,_profileID,_objectiveID,_issuedAt,_orderID];
                 _profileWaypoints pushBack _profileWaypoint;
             };
         } forEach _orderBatch;

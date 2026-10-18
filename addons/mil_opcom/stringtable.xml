@@ -719,6 +719,12 @@
 <Key ID="STR_ALIVE_OPCOM_SECURITY_PATROLS_COMMENT">
     <English>Some of the infantry the commander keeps at quiet objectives walk a route through the rear objectives within 3 km and back home, so the ground between objectives isn't empty. Few sends a quarter of them, Some half, Many three quarters, and one group always stays at an objective that has more than one. Nowhere within 2 km of a fight, and the commander takes them back whenever it needs them.</English>
 </Key>
+<Key ID="STR_ALIVE_OPCOM_ARRIVE_TOGETHER">
+    <English>Attacks Arrive Together</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_ARRIVE_TOGETHER_COMMENT">
+    <English>The groups the commander sends against an objective usually set off at once, each at its own speed, so tanks get there minutes before the infantry. With this on, a faster group waits where it is before setting off, by the estimated difference in travel time (up to 15 minutes), so the attack arrives at about the same time: first at the points round the objective, then on the objective itself. Aircraft aren't held.</English>
+</Key>
 <Key ID="STR_ALIVE_OPCOM_FRONTLINE_MINEFIELDS">
     <English>Frontline Minefields</English>
 </Key>
