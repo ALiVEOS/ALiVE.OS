@@ -2,6 +2,15 @@
 <Project name="Arma3">
 <Package name="ALiVE">
 <Container name="STR_DN">
+<Key ID="STR_ALIVE_IED_DETAIN_TRIGGERMAN">
+    <English>Detain</English>
+    <Chinese>拘留</Chinese>
+    <Chinesesimp>拘留</Chinesesimp>
+    <Spanish>Detener</Spanish>
+    <French>Arrêter</French>
+    <Portuguese>Deter</Portuguese>
+    <Russian>Задержать</Russian>
+</Key>
 <Key ID="STR_ALIVE_IED">
     <English>Military IED Threat</English>
     <Chinese>軍事 IED 威脅</Chinese>

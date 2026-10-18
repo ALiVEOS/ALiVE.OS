@@ -158,6 +158,38 @@ private _gracePeriod = 15;
             if (_near isEqualTo "") then { _near = mapGridPosition _ied };
             [_d, "STR_ALIVE_TARGETID_TRIGGERMAN", _near] call ALiVE_fnc_giveTargetPapers;
         };
+        // Detain, with or without ACE (Jman, 18 Oct 2026): a hold action makes him a prisoner. Captive, he can no longer
+        // set the IED off. With C2ISTAR he is its prisoner like any other, the insurgency's man rather than a civilian,
+        // so its Question action asks him about the insurgents round about.
+        [_d, localize "STR_ALIVE_IED_DETAIN_TRIGGERMAN",
+            "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_secure_ca.paa", "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_secure_ca.paa",
+            "alive _target && {!(_target getVariable ['ALiVE_surrendered', false])} && {(_this distance _target) < 3} && {side group _this != civilian}",
+            "alive _target && {(_caller distance _target) < 3}",
+            {}, {},
+            {
+                params ["_target", "_caller"];
+                [[_target, _caller], {
+                    params ["_d", "_by"];
+                    if (!alive _d || {_d getVariable ["ALiVE_surrendered", false]}) exitWith {};
+                    if (!isNil "ALiVE_c2istar_fnc_surrender") then {
+                        [_d] call ALiVE_c2istar_fnc_surrender;
+                    } else {
+                        _d setVariable ["ALiVE_surrendered", true, true];
+                        [_d, true] remoteExecCall ["setCaptive", _d];
+                        [_d, ["Surrender", _d]] remoteExecCall ["action", _d];
+                    };
+                    // the insurgency's man: questioned, he talks about the asymmetric commander's ground, not the town's
+                    private _ins = civilian;
+                    {
+                        if (([_x, "controltype", ""] call ALiVE_fnc_hashGet) == "asymmetric") exitWith {
+                            _ins = [[_x, "side", "EAST"] call ALiVE_fnc_hashGet] call ALiVE_fnc_sideTextToObject;
+                        };
+                    } forEach (missionNamespace getVariable ["OPCOM_instances", []]);
+                    if !(_ins isEqualTo civilian) then { _d setVariable ["ALiVE_prisonerSide", _ins, true] };
+                    ["ALIVE-%1 IED: trigger man %2 detained by %3 at %4", time, name _d, name _by, mapGridPosition _d] call ALiVE_fnc_dump;
+                }] remoteExecCall ["call", 2];
+            },
+            {}, [], 2, 10, true, false] remoteExec ["BIS_fnc_holdActionAdd", 0, _d];
         if (ADDON getVariable ["debug", false]) then {
             ["ALIVE-%1 IED: trigger man %2 (%3) watching IED at %4 from %5 m", time, name _d, _cls, getPosATL _ied, round (_d distance _ied)] call ALiVE_fnc_dump;
         };
