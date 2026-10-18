@@ -152,6 +152,12 @@ private _gracePeriod = 15;
         _d setVariable ["ALiVE_IED_DickerOf", _ied, true];
         _ied setVariable ["ALiVE_IED_Dicker", _d, true];
         _ied setVariable ["ALiVE_IED_DickerMode", true, true];
+        // papers that say who he is (ALiVE_fnc_giveTargetPapers): take them from his body or from him as a prisoner
+        if (!isNil "ALiVE_fnc_giveTargetPapers") then {
+            private _near = if (isNil "ALIVE_fnc_taskGetNearestLocationName") then { "" } else { [getPosATL _ied] call ALIVE_fnc_taskGetNearestLocationName };
+            if (_near isEqualTo "") then { _near = mapGridPosition _ied };
+            [_d, "STR_ALIVE_TARGETID_TRIGGERMAN", _near] call ALiVE_fnc_giveTargetPapers;
+        };
         if (ADDON getVariable ["debug", false]) then {
             ["ALIVE-%1 IED: trigger man %2 (%3) watching IED at %4 from %5 m", time, name _d, _cls, getPosATL _ied, round (_d distance _ied)] call ALiVE_fnc_dump;
         };

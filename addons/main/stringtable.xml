@@ -493,6 +493,15 @@
     <Portuguese>o líder local</Portuguese>
     <Russian>местный лидер</Russian>
 </Key>
+<Key ID="STR_ALIVE_TARGETID_TRIGGERMAN">
+    <English>the trigger man for an IED near %1</English>
+    <Chinese>%1 附近一枚簡易爆炸裝置的引爆者</Chinese>
+    <Chinesesimp>%1 附近一枚简易爆炸装置的引爆者</Chinesesimp>
+    <Spanish>el que activa un IED cerca de %1</Spanish>
+    <French>l'homme qui déclenche un EEI près de %1</French>
+    <Portuguese>o homem que aciona um IED perto de %1</Portuguese>
+    <Russian>тот, кто подрывает СВУ около %1</Russian>
+</Key>
 <Key ID="STR_ALIVE_TARGETID_CONTACT">
     <English>the contact you were sent to meet</English>
     <Chinese>你被派去會見的聯絡人</Chinese>
