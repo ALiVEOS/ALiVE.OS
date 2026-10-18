@@ -68,6 +68,7 @@ item63[] = {"",7,210,-368.245575,1432.007813,-360.245575,1440.007813,0.000000,""
 item64[] = {"not_mortar",4,218,71.240044,1330.887329,161.240051,1380.887329,0.000000,"not mortar"};
 item65[] = {"resupplied",4,218,-463.550537,-181.837433,-373.550507,-131.837433,50.000000,"resupplied"};
 item66[] = {"dead_noammo",4,218,-600.550537,-101.837433,-510.550507,-51.837440,100.000000,"dead noammo"};
+item67[] = {"relocate",4,218,120.000000,-20.000000,210.000000,30.000000,1.000000,"relocate"};
 version=1;
 class LayoutItems
 {
@@ -167,6 +168,8 @@ link82[] = {28,65};
 link83[] = {28,66};
 link84[] = {65,2};
 link85[] = {66,20};
+link86[] = {2,67};
+link87[] = {67,14};
 globals[] = {0.000000,0,0,0,0,640,480,1,81,6316128,1,-730.424255,836.463684,837.353271,-340.838837,1165,876,1};
 window[] = {2,-1,-1,-1,-1,964,78,1770,78,3,1183};
 *//*%FSM</HEAD>*/
@@ -235,6 +238,8 @@ class FSM
                          "" \n
                          "//Battery Status" \n
                          "_battery setVariable [""NEO_radioArtyUnitStatus"", ""NONE"", true];" \n
+                         "// for the radio's Relocate button" \n
+                         "_battery setVariable [""NEO_radioArtyCanMove"", _canMove, true];" \n
                          ""/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
@@ -305,6 +310,45 @@ class FSM
                                          "||" \n
                                          "_grp getVariable [""supportWeaponCount"",3] == 0"/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "relocate">*/
+                                class relocate
+                                {
+                                        itemno = 67;
+                                        priority = 1.000000;
+                                        to="__5";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"_canMove && {!isNil { _battery getVariable ""NEO_radioArtyRelocate"" }}" \n
+                                         ""/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/"// A player's Relocate (#1089): the battery's home becomes the place he picked, and it goes there the way it" \n
+                                         "// goes back to base after a move into range: a gun drives, a mortar team packs its tubes, carries them and sets" \n
+                                         "// them up again. Fired at or called on again later, it comes back here, not to where the mission put it." \n
+                                         "private _req = _battery getVariable ""NEO_radioArtyRelocate"";" \n
+                                         "_battery setVariable [""NEO_radioArtyRelocate"", nil, true];" \n
+                                         "_callsignPlayer = _req select 1;" \n
+                                         "_player = _req select 2;" \n
+                                         "// a Mk6 team is flagged as one only once it has moved into range; relocated first, it needs it now, or its" \n
+                                         "// tubes would be told to drive" \n
+                                         "_grp setVariable [""mortar"", (typeOf (vehicle _battery)) in [""O_Mortar_01_F"", ""B_Mortar_01_F"", ""I_Mortar_01_F""]];" \n
+                                         "private _tubesUp = (_grp getVariable [""supportWeaponArray"",[]]) select { alive _x && {alive gunner _x} };" \n
+                                         "private _carriers = (units _grp) select { alive _x && {vehicle _x == _x} && {_x != leader _grp} && {!(_x getVariable [""packAssistant"", false])} };" \n
+                                         "if (_grp getVariable [""mortar"", false] && {count _carriers < count _tubesUp}) then {" \n
+                                         "    // nobody to carry the tubes: it stays, home unchanged, and says so" \n
+                                         "    [[(leader _grp), [""STR_ALIVE_CS_ARTY_MSG_RELOCATE_REFUSED"", _callsignPlayer, _callsign], ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+                                         "} else {" \n
+                                         "    private _to = +(_req select 0); _to set [2, 0];" \n
+                                         "    // somewhere a gun of this class fits, near the spot picked" \n
+                                         "    private _room = _to findEmptyPosition [0, 60, typeOf (_units select 0)];" \n
+                                         "    if (_room isNotEqualTo []) then { _to = _room; _to set [2, 0] };" \n
+                                         "    // a mortar team sets its tubes up facing the way it went" \n
+                                         "    _target = _to getPos [200, (getPosATL (leader _grp)) getDir _to];" \n
+                                         "    _pos = _to;" \n
+                                         "    _isFlat = _to;" \n
+                                         "    (leader _grp) setVariable [""ALIVE_CombatSupport_Base"", _pos, true];" \n
+                                         "    _grp setVariable [""ALiVE_CS_relocating"", true];" \n
+                                         "    _grp setVariable [""NEO_radioArtyNotInBase"", true];" \n
+                                         "};"/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
                                 /*%FSM<LINK "new_task">*/
@@ -730,7 +774,7 @@ class FSM
                                          "};" \n
                                          "" \n
                                          "private ""_msg"";" \n
-                                         "_msg = [""STR_ALIVE_CS_ARTY_MSG_06"",_callsignPlayer, _callsign];" \n
+                                         "_msg = [[""STR_ALIVE_CS_ARTY_MSG_06"", ""STR_ALIVE_CS_ARTY_MSG_RELOCATING""] select (_grp getVariable [""ALiVE_CS_relocating"", false]),_callsignPlayer, _callsign];" \n
                                          "if !(_grp getVariable [""ALiVE_CS_refused"", false]) then { [[(leader _grp),_msg, ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP };" \n
                                          ""/*%FSM</ACTION""">*/;
                                 };
@@ -1260,6 +1304,8 @@ class FSM
                                          ""/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/"_grp setVariable [""NEO_radioArtyNotInBase"", nil];" \n
                                          "private _stayed = _grp getVariable [""ALiVE_CS_refused"", false];" \n
+                                         "private _relocated = _grp getVariable [""ALiVE_CS_relocating"", false];" \n
+                                         "_grp setVariable [""ALiVE_CS_relocating"", nil];" \n
                                          "_grp setVariable [""ALiVE_CS_refused"", nil];" \n
                                          "" \n
                                          "// IF its a mortar team, get them to assemble mortars" \n
@@ -1296,7 +1342,7 @@ class FSM
                                          "{" \n
                                          "    _battery setVariable [""NEO_radioArtyUnitStatus"", ""NONE"", true];" \n
                                          "    private ""_msg"";" \n
-                                         "    _msg = [""STR_ALIVE_CS_ARTY_MSG_16"",_callsignPlayer, _callsign];" \n
+                                         "    _msg = [[""STR_ALIVE_CS_ARTY_MSG_16"", ""STR_ALIVE_CS_ARTY_MSG_RELOCATED""] select _relocated,_callsignPlayer, _callsign];" \n
                                          "    if (!_stayed) then { [[(leader _grp), _msg, ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP };" \n
                                          "};" \n
                                          ""/*%FSM</ACTION""">*/;

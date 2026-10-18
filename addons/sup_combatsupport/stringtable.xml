@@ -241,6 +241,15 @@
     <Portuguese>Confirmar</Portuguese>
     <Russian>Подтвердить</Russian>
 </Key>
+<Key ID="STR_ALIVE_CS_UI_RELOCATE">
+    <English>Relocate Battery</English>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_RELOCATE_CLICK">
+    <English>Click the map where the battery is to go, then Relocate Battery.</English>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_RELOCATE_WATER">
+    <English>A battery can't set up in the water: pick a spot on land.</English>
+</Key>
 <Key ID="STR_ALIVE_CS_UI_RTB">
     <English>Order Unit RTB</English>
     <Chinesesimp>命令单位返回基地</Chinesesimp>
@@ -1097,6 +1106,9 @@
     <Portuguese>%1 concluiu a passagem de ataque e fica em espera. Terminado.</Portuguese>
     <Russian>%1 завершил заход на атаку, барражирует до дальнейших приказов. Конец связи.</Russian>
 </Key>
+<Key ID="STR_ALIVE_CS_MSG_RELOCATE">
+    <English>%1. Relocate to grid %3 and set up there. Over.</English>
+</Key>
 <Key ID="STR_ALIVE_CS_MSG_47">
     <English>%1. Abort fire mission and return to base. Over.</English>
     <Chinesesimp>%1。中止射击任务并返回基地。请回答。</Chinesesimp>
@@ -1226,6 +1238,15 @@
     <French>%1, %2 n'a plus assez d'hommes pour ramener ses mortiers à la base, il reste sur place. Terminé.</French>
     <Portuguese>%1, %2 já não tem homens para levar os morteiros para a base, fica onde está. Terminado.</Portuguese>
     <Russian>%1, у %2 не осталось людей, чтобы унести миномёты на базу, остаётся на месте. Конец связи.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_ARTY_MSG_RELOCATING">
+    <English>%1, Battery %2 is relocating to the new position. Out.</English>
+</Key>
+<Key ID="STR_ALIVE_CS_ARTY_MSG_RELOCATE_REFUSED">
+    <English>%1, Battery %2 has too few men to carry its mortars and stays where it is. Out.</English>
+</Key>
+<Key ID="STR_ALIVE_CS_ARTY_MSG_RELOCATED">
+    <English>%1, Battery %2 is set up at its new position and ready for fire mission. Out.</English>
 </Key>
 <Key ID="STR_ALIVE_CS_ARTY_MSG_06">
     <English>%1, Battery %2 is moving back to Base. Out.</English>

@@ -156,5 +156,14 @@ if (!(_status in ["KILLED", "MISSION", "RTB", "MOVE", "RESPONSE", "NOAMMO"]) && 
 };
 
 //Buttons
-if (_status == "MOVE") then { _artyBaseButton ctrlEnable true } else { _artyBaseButton ctrlEnable false };
+// RTB while it is on the move; idle, the same button relocates a battery that can move (#1089) to the spot
+// clicked on the map
+if (_status == "MOVE") then {
+    _artyBaseButton ctrlSetText localize "STR_ALIVE_CS_UI_RTB";
+    _artyBaseButton ctrlEnable true;
+} else {
+    private _canRelocate = _status == "NONE" && {_battery getVariable ["NEO_radioArtyCanMove", false]};
+    _artyBaseButton ctrlSetText localize (["STR_ALIVE_CS_UI_RTB", "STR_ALIVE_CS_UI_RELOCATE"] select _canRelocate);
+    _artyBaseButton ctrlEnable _canRelocate;
+};
 [] call NEO_fnc_artyConfirmButtonEnable;

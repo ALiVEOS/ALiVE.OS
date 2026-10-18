@@ -35,7 +35,7 @@ _artyHelpUnitText ctrlSetStructuredText parseText format ["<t color='#627057' si
 _sitRepButton ctrlEnable false;
 _artyMoveButton ctrlEnable false; _artyMoveButton ctrlSetPosition [_uiX + (_uiW / 1000), _uiY + (_uiH / 1.425), (_uiW / 1000), (_uiH / 1000)]; _artyMoveButton ctrlCommit 0;
 _artyDontMoveButton ctrlEnable false; _artyDontMoveButton ctrlSetPosition [_uiX + (_uiW / 1000), _uiY + (_uiH / 1.375), (_uiW / 1000), (_uiH / 1000)]; _artyDontMoveButton ctrlCommit 0;
-_artyBaseButton ctrlEnable false;
+_artyBaseButton ctrlEnable false; _artyBaseButton ctrlSetText localize "STR_ALIVE_CS_UI_RTB";
 
 // Markers
 uinamespace setVariable ["NEO_artyMarkerCreated", nil];
