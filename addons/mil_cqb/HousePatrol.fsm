@@ -163,7 +163,11 @@ class FSM
        "" \n
        "if (count _bldgpos == 0) exitwith {" \n
        "    [""CQB error: Group %1 has no buildingpositions! Deleting..."",_grp] call ALiVE_fnc_dump;" \n
-       "    [_logic, ""delGroup"", _grp] call ALiVE_fnc_CQB;" \n
+       "    // Started with the group's leader, not the group, and delGroup takes a group (asserted since the" \n
+       "    // spatial-grid rework): turn it into its group, as the despawn below does. A leader already deleted" \n
+       "    // leaves no group to look up, and the despawn queue clears its house." \n
+       "    private _grpToDel = if (_grp isEqualType objNull) then {group _grp} else {_grp};" \n
+       "    if (!isNull _grpToDel) then {[_logic, ""delGroup"", _grpToDel] call ALiVE_fnc_CQB};" \n
        "    _abort = true;" \n
        "};"/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
