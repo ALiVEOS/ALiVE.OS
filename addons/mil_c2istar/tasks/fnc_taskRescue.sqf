@@ -493,6 +493,8 @@ switch (_taskState) do {
                         removeHeadgear _hostage;
                         removeVest _hostage;
                         removeAllAssignedItems _hostage;
+                        // papers that say who he is, so he can be told from anyone else at the site
+                        [_hostage, "STR_ALIVE_TARGETID_HOSTAGE"] call ALiVE_fnc_giveTargetPapers;
                         if ((random 1) > 0.6) then {
                             _hostage setDamage (random 0.4);
                         };

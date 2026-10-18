@@ -173,6 +173,8 @@ switch (_taskState) do {
         private _sourceContactGroup = createGroup [civilian, true];
         private _sourceContact = _sourceContactGroup createUnit [selectRandom ([] call ALiVE_fnc_taskGetCivilianClasses), _sourceContactSpawnPos, [], 0, "NONE"];
         removeAllWeapons _sourceContact;
+        // papers that say who he is, so he can be told from the townsfolk
+        [_sourceContact, "STR_ALIVE_TARGETID_CONTACT"] call ALiVE_fnc_giveTargetPapers;
         _sourceContact disableAI "AUTOTARGET";
         _sourceContact disableAI "TARGET";
         _sourceContact disableAI "FSM";
@@ -187,6 +189,8 @@ switch (_taskState) do {
         private _destinationContactGroup = createGroup [civilian, true];
         private _destinationContact = _destinationContactGroup createUnit [selectRandom ([] call ALiVE_fnc_taskGetCivilianClasses), _destinationContactPosition, [], 0, "NONE"];
         removeAllWeapons _destinationContact;
+        // papers that say who he is, so he can be told from the townsfolk
+        [_destinationContact, "STR_ALIVE_TARGETID_CONTACT"] call ALiVE_fnc_giveTargetPapers;
         _destinationContact disableAI "AUTOTARGET";
         _destinationContact disableAI "TARGET";
         _destinationContact disableAI "FSM";

@@ -2077,6 +2077,13 @@ class getSidePlayerNear
 	ALIVE_RECOMPILE;
 };
 
+class giveTargetPapers
+{
+	file = "\x\alive\addons\x_lib\functions\units\fnc_giveTargetPapers.sqf";
+	ext = ".sqf";
+	ALIVE_RECOMPILE;
+};
+
 class isArmed
 {
 	file = "\x\alive\addons\x_lib\functions\units\fnc_isArmed.sqf";

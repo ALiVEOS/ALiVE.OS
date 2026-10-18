@@ -647,6 +647,13 @@ switch (_taskState) do {
                         _position = getPos leader _group;
                         [_position,_taskEnemySide,_taskPlayers,_taskID,"HVT"] call ALIVE_fnc_taskCreateMarkersForPlayers;
 
+                        // papers that say who he is, found on his body or by searching him as a prisoner; given
+                        // again each time he spawns, as a despawn takes them with him
+                        // only he carries them: at a meeting the man across the table has none, so the papers pick him out
+                        if ((_profile select 2 select 4) == (_entityProfiles select 0)) then {
+                            [leader _group, "STR_ALIVE_TARGETID_HVT"] call ALiVE_fnc_giveTargetPapers;
+                        };
+
                     }else{
 
                         if(count _inCargo > 0) then {

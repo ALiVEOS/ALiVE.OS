@@ -258,6 +258,8 @@ switch (_taskState) do {
             _vipPosition set [2, 0];
             private _vip = _civGroup createUnit [selectRandom ([] call ALiVE_fnc_taskGetCivilianClasses), _vipPosition, [], 0, "NONE"];
             removeAllWeapons _vip;
+            // papers that say who he is, so he can be told from the crowd
+            [_vip, "STR_ALIVE_TARGETID_VIP"] call ALiVE_fnc_giveTargetPapers;
             _vip disableAI "AUTOTARGET";
             _vip disableAI "TARGET";
             _vip disableAI "FSM";

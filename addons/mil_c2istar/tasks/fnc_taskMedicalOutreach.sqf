@@ -82,6 +82,8 @@ switch (_taskState) do {
         private _contactGroup = createGroup [civilian, true];
         private _contact = _contactGroup createUnit [selectRandom ([] call ALiVE_fnc_taskGetCivilianClasses), _contactPosition, [], 0, "NONE"];
         removeAllWeapons _contact;
+        // papers that say who he is, so he can be told from the townsfolk
+        [_contact, "STR_ALIVE_TARGETID_CONTACT"] call ALiVE_fnc_giveTargetPapers;
         _contact disableAI "AUTOTARGET";
         _contact disableAI "TARGET";
         _contact disableAI "FSM";

@@ -291,6 +291,8 @@ switch (_taskState) do {
 
             _unit setVariable ["ALIVE_csarTracked", true, true];
             _unit setVariable ["ALIVE_csarAircraft", _class, true];
+            // papers that say who he is, found on him by whoever reaches him
+            [_unit, "STR_ALIVE_TARGETID_PILOT"] call ALiVE_fnc_giveTargetPapers;
 
             ALiVE_c2istar_csarTracked pushBack [_unit, _now, _hullKey, _class, 0, _sideText];
 

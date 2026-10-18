@@ -2526,6 +2526,10 @@ ALiVE_fnc_INS_recruiterPresence = {
     };
     if (_classes isEqualTo []) exitWith {};
     private _class = selectRandom _classes;
+    // the town he recruits for, as players are told it: the nearest named place, else the grid
+    private _town = if (isNil "ALIVE_fnc_taskGetNearestLocationName") then { "" } else { [getPos _HQ] call ALIVE_fnc_taskGetNearestLocationName };
+    if (_town == "") then { _town = mapGridPosition _HQ };
+    _HQ setVariable ["ALiVE_INS_recruiterTown", _town];
     private _guardCount = [_opcom, "recruiterGuards", 2] call ALiVE_fnc_HashGet;
     private _skips = [_opcom, "recruiterSkips", 1] call ALiVE_fnc_HashGet;
     private _walks = [_opcom, "recruiterWalks", false] call ALiVE_fnc_HashGet;
@@ -2585,6 +2589,8 @@ ALiVE_fnc_INS_recruiterPresence = {
             };
         };
         _HQ setVariable ["ALiVE_INS_recruiterTasks", _tasks];
+        // read by his kill handler: while a task is out on him, the task's own success tells the players
+        _HQ setVariable ["ALiVE_INS_recruiterTaskOpen", _taskOpen];
         if (!isNull _unit && {!alive _unit}) then { _unit = objNull };
         // guards left after their recruiter died stay and fight, and go once no player is near
         _guards = _guards select { alive _x };
@@ -2601,15 +2607,23 @@ ALiVE_fnc_INS_recruiterPresence = {
                 _unit setVariable ["ALiVE_ignore_HC", true, true];
                 _grp setVariable ["ALIVE_profileIgnore", true];
                 _unit setVariable ["ALiVE_INS_recruiterOf", [_HQ, _pause, _skips]];
+                // papers that say who he is, found on his body or by searching him as a prisoner
+                if (!isNil "ALiVE_fnc_giveTargetPapers") then { [_unit, "STR_ALIVE_TARGETID_RECRUITER", _town] call ALiVE_fnc_giveTargetPapers };
                 // counted the moment he dies, wherever he is local, so a body cleaned up before the next
-                // look still counts
+                // look still counts; the side of the player who killed him is told
                 _unit addMPEventHandler ["MPKilled", {
                     if (!isServer) exitWith {};
-                    ((_this select 0) getVariable ["ALiVE_INS_recruiterOf", [objNull, 0, 1]]) params ["_hq", "_pause", ["_skips", 1]];
+                    params ["_dead", "_killer", ["_instigator", objNull]];
+                    (_dead getVariable ["ALiVE_INS_recruiterOf", [objNull, 0, 1]]) params ["_hq", "_pause", ["_skips", 1]];
                     if (isNull _hq) exitWith {};
                     _hq setVariable ["ALiVE_INS_recruitSkipNext", _skips];
                     _hq setVariable ["ALiVE_INS_recruiterBackAt", time + _pause];
                     ["ALiVE OPCOM: the recruiter at the Recruitment HQ near %1 was killed; that town skips %2 recruitment(s)", mapGridPosition _hq, _skips] call ALiVE_fnc_dump;
+                    if (isNull _instigator) then { _instigator = _killer };
+                    // told only to a side that's his enemy: a player on his own side who shoots him gets no success
+                    if (isPlayer _instigator && {((side group _dead) getFriend (side group _instigator)) < 0.6} && {!(_hq getVariable ["ALiVE_INS_recruiterTaskOpen", false])}) then {
+                        ["notify", ["STR_ALIVE_OPCOM_RECRUITER_KILLED", _hq getVariable ["ALiVE_INS_recruiterTown", mapGridPosition _hq], "STR_ALIVE_OPCOM_RECRUITER_KILLED_SHORT"]] remoteExec ["ALiVE_fnc_OPCOMHVT", side group _instigator];
+                    };
                 }];
                 // his guards, at the building's own positions where it has them, in his group so they stay by him
                 private _spots = (_HQ buildingPos -1) call BIS_fnc_arrayShuffle;
@@ -2652,6 +2666,11 @@ ALiVE_fnc_INS_recruiterPresence = {
                 _HQ setVariable ["ALiVE_INS_recruitSkipNext", _skips];
                 _HQ setVariable ["ALiVE_INS_recruiterBackAt", time + _pause];
                 ["ALiVE OPCOM: the recruiter at the Recruitment HQ near %1 gave himself up; that town skips %2 recruitment(s)", mapGridPosition _HQ, _skips] call ALiVE_fnc_dump;
+                // the side of the player who cornered him is told
+                private _taker = allPlayers select { alive _x && {(_x distance _unit) < 25} && {(_sideObj getFriend side group _x) < 0.6} };
+                if (_taker isNotEqualTo []) then {
+                    ["notify", ["STR_ALIVE_OPCOM_RECRUITER_TAKEN", _town,"STR_ALIVE_OPCOM_RECRUITER_TAKEN_SHORT"]] remoteExec ["ALiVE_fnc_OPCOMHVT", side group (_taker select 0)];
+                };
                 // the players' now: nothing here deletes him
                 _unit = objNull;
             } else {

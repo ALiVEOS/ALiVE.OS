@@ -345,6 +345,42 @@
     <Portuguese>%1, o nosso alvo de alto valor, foi morto. O nosso comandante parou novos ataques por agora.</Portuguese>
     <Russian>%1, наша важная цель, убит. Наш командир пока прекратил новые атаки.</Russian>
 </Key>
+<Key ID="STR_ALIVE_OPCOM_RECRUITER_KILLED_SHORT">
+    <English>Recruiter killed</English>
+    <Chinese>招募者已被擊殺</Chinese>
+    <Chinesesimp>招募者已被击杀</Chinesesimp>
+    <Spanish>Reclutador abatido</Spanish>
+    <French>Recruteur tué</French>
+    <Portuguese>Recrutador morto</Portuguese>
+    <Russian>Вербовщик убит</Russian>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_RECRUITER_KILLED">
+    <English>The insurgent recruiter for %1 has been killed. Recruiting there is set back.</English>
+    <Chinese>%1 的叛亂分子招募者已被擊殺。當地的招募受到了延誤。</Chinese>
+    <Chinesesimp>%1 的叛乱分子招募者已被击杀。当地的招募受到了延误。</Chinesesimp>
+    <Spanish>El reclutador insurgente de %1 ha sido abatido. El reclutamiento allí se retrasa.</Spanish>
+    <French>Le recruteur insurgé de %1 a été tué. Le recrutement y est retardé.</French>
+    <Portuguese>O recrutador insurgente de %1 foi morto. O recrutamento ali foi atrasado.</Portuguese>
+    <Russian>Вербовщик повстанцев в %1 убит. Вербовка там задерживается.</Russian>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_RECRUITER_TAKEN_SHORT">
+    <English>Recruiter captured</English>
+    <Chinese>招募者已被俘虜</Chinese>
+    <Chinesesimp>招募者已被俘虏</Chinesesimp>
+    <Spanish>Reclutador capturado</Spanish>
+    <French>Recruteur capturé</French>
+    <Portuguese>Recrutador capturado</Portuguese>
+    <Russian>Вербовщик захвачен</Russian>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_RECRUITER_TAKEN">
+    <English>The insurgent recruiter for %1 has given himself up. Recruiting there is set back, and he can be questioned.</English>
+    <Chinese>%1 的叛亂分子招募者已投降。當地的招募受到了延誤，並且可以審問他。</Chinese>
+    <Chinesesimp>%1 的叛乱分子招募者已投降。当地的招募受到了延误，并且可以审问他。</Chinesesimp>
+    <Spanish>El reclutador insurgente de %1 se ha rendido. El reclutamiento allí se retrasa y se le puede interrogar.</Spanish>
+    <French>Le recruteur insurgé de %1 s'est rendu. Le recrutement y est retardé, et il peut être interrogé.</French>
+    <Portuguese>O recrutador insurgente de %1 rendeu-se. O recrutamento ali foi atrasado e ele pode ser interrogado.</Portuguese>
+    <Russian>Вербовщик повстанцев в %1 сдался. Вербовка там задерживается, его можно допросить.</Russian>
+</Key>
 <Key ID="STR_ALIVE_OPCOM_HVT_NONE">
     <English>None</English>
     <Chinese>無</Chinese>

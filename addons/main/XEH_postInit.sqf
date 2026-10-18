@@ -82,6 +82,22 @@ if (isServer) then {
     };
 };
 
+// A player who takes a Wallet (ID) from someone a task or a commander is about (ALiVE_fnc_giveTargetPapers),
+// from his body or from him as a prisoner, is told who he was
+if (hasInterface) then {
+    ["CAManBase", "Take", {
+        params ["_unit", "_container", "_item"];
+        if (_item != "Wallet_ID" || {_unit != player}) exitWith {};
+        // the container is his body, his uniform or vest, or the ground by him: the owner is the man there who
+        // carries an identity and no longer has his wallet
+        private _from = [_container, objectParent _container] + (nearestObjects [_unit, ["CAManBase"], 6]);
+        private _i = _from findIf { !isNull _x && {_x != _unit} && {!isNil {_x getVariable "ALiVE_targetIdentity"}} && {!("Wallet_ID" in magazines _x)} };
+        if (_i < 0) exitWith {};
+        ((_from select _i) getVariable "ALiVE_targetIdentity") params ["_name", "_role", ["_arg", ""]];
+        [localize "STR_ALIVE_TARGETID_TITLE", format [localize "STR_ALIVE_TARGETID_TEXT", _name, format [localize _role, _arg]]] call ALIVE_fnc_sendHint;
+    }, true, [], true] call CBA_fnc_addClassEventHandler;
+};
+
 //Automated tests (define in script_mod.hpp)
 #ifdef AUTOMATED_TESTS
 [AUTOMATED_TESTS] spawn {

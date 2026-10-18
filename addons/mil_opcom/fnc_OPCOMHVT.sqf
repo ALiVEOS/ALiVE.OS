@@ -39,11 +39,12 @@ params [["_operation", "", [""]], ["_args", []]];
 
 if (_operation == "notify") exitWith {
     if (!hasInterface) exitWith {};
-    _args params [["_key", "", [""]], ["_name", "", [""]]];
+    // the popup's own short line can be given: the Insurgency commander's recruiter uses this too
+    _args params [["_key", "", [""]], ["_name", "", [""]], ["_shortKey", "STR_ALIVE_OPCOM_HVT_KILLED_SHORT", [""]]];
     // The popup holds one short line and cut the sentence off at the bottom (Jman 15 Oct 2026), so it says who
     // was killed and the whole sentence goes the way the player chose for task updates
     private _own = _key == "STR_ALIVE_OPCOM_HVT_KILLED_OWN";
-    [["TaskSucceeded", "TaskFailed"] select _own, ["", format [localize "STR_ALIVE_OPCOM_HVT_KILLED_SHORT", _name]]] call BIS_fnc_showNotification;
+    [["TaskSucceeded", "TaskFailed"] select _own, ["", format [localize _shortKey, _name]]] call BIS_fnc_showNotification;
     private _text = format [localize _key, _name];
     if (isNil "ALIVE_fnc_taskSubtitle") then { systemChat _text } else {
         [["Task Accomplished", "Task Failed"] select _own, _text] call ALIVE_fnc_taskSubtitle;
@@ -100,6 +101,8 @@ private _fnc_watch = {
                     private _first = if (_sp > 0) then { _full select [0, _sp] } else { _full };
                     private _last = if (_sp > 0) then { _full select [_sp + 1] } else { "" };
                     [_u, [_full, _first, _last]] remoteExec ["setName", 0, _u];
+                    // and carries papers that say who he is, found on his body or by searching him as a prisoner
+                    if (!isNil "ALiVE_fnc_giveTargetPapers") then { [_u, "STR_ALIVE_TARGETID_HVT", "", _full] call ALiVE_fnc_giveTargetPapers };
                 };
                 // a profile despawning between these reads has its men deleted, not killed: still
                 // spawned afterwards is what makes all-dead men a death

@@ -326,6 +326,7 @@ units
 	ALiVE_fnc_getSideManNear
 	ALiVE_fnc_getSideManOrPlayerNear
 	ALiVE_fnc_getSidePlayerNear
+	ALiVE_fnc_giveTargetPapers
 	ALiVE_fnc_isArmed
 	ALiVE_fnc_isEnemyNear
 	ALiVE_fnc_landAtRemote

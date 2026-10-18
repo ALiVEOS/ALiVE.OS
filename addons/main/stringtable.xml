@@ -411,4 +411,95 @@
     <Portuguese>Perímetro</Portuguese>
     <Russian>Периметр</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_TARGETID_TITLE">
+    <English>Identity confirmed</English>
+    <Chinese>身分已確認</Chinese>
+    <Chinesesimp>身份已确认</Chinesesimp>
+    <Spanish>Identidad confirmada</Spanish>
+    <French>Identité confirmée</French>
+    <Portuguese>Identidade confirmada</Portuguese>
+    <Russian>Личность установлена</Russian>
+</Key>
+<Key ID="STR_ALIVE_TARGETID_TEXT">
+    <English>%1: %2.</English>
+    <Chinese>%1：%2。</Chinese>
+    <Chinesesimp>%1：%2。</Chinesesimp>
+    <Spanish>%1: %2.</Spanish>
+    <French>%1 : %2.</French>
+    <Portuguese>%1: %2.</Portuguese>
+    <Russian>%1: %2.</Russian>
+</Key>
+<Key ID="STR_ALIVE_TARGETID_RECRUITER">
+    <English>the insurgent recruiter for %1</English>
+    <Chinese>%1 的叛亂分子招募者</Chinese>
+    <Chinesesimp>%1 的叛乱分子招募者</Chinesesimp>
+    <Spanish>el reclutador insurgente de %1</Spanish>
+    <French>le recruteur insurgé de %1</French>
+    <Portuguese>o recrutador insurgente de %1</Portuguese>
+    <Russian>вербовщик повстанцев в %1</Russian>
+</Key>
+<Key ID="STR_ALIVE_TARGETID_HVT">
+    <English>the high value target</English>
+    <Chinese>高價值目標</Chinese>
+    <Chinesesimp>高价值目标</Chinesesimp>
+    <Spanish>el objetivo de alto valor</Spanish>
+    <French>la cible de haute valeur</French>
+    <Portuguese>o alvo de alto valor</Portuguese>
+    <Russian>важная цель</Russian>
+</Key>
+<Key ID="STR_ALIVE_TARGETID_HOSTAGE">
+    <English>the hostage</English>
+    <Chinese>人質</Chinese>
+    <Chinesesimp>人质</Chinesesimp>
+    <Spanish>el rehén</Spanish>
+    <French>l'otage</French>
+    <Portuguese>o refém</Portuguese>
+    <Russian>заложник</Russian>
+</Key>
+<Key ID="STR_ALIVE_TARGETID_PILOT">
+    <English>a downed pilot</English>
+    <Chinese>一名墜機飛行員</Chinese>
+    <Chinesesimp>一名坠机飞行员</Chinesesimp>
+    <Spanish>un piloto derribado</Spanish>
+    <French>un pilote abattu</French>
+    <Portuguese>um piloto abatido</Portuguese>
+    <Russian>сбитый пилот</Russian>
+</Key>
+<Key ID="STR_ALIVE_TARGETID_VIP">
+    <English>the VIP</English>
+    <Chinese>要人</Chinese>
+    <Chinesesimp>要人</Chinesesimp>
+    <Spanish>el VIP</Spanish>
+    <French>le VIP</French>
+    <Portuguese>o VIP</Portuguese>
+    <Russian>VIP-персона</Russian>
+</Key>
+<Key ID="STR_ALIVE_TARGETID_INFORMANT">
+    <English>the informant</English>
+    <Chinese>線人</Chinese>
+    <Chinesesimp>线人</Chinesesimp>
+    <Spanish>el informante</Spanish>
+    <French>l'informateur</French>
+    <Portuguese>o informante</Portuguese>
+    <Russian>информатор</Russian>
+</Key>
+<Key ID="STR_ALIVE_TARGETID_LEADER">
+    <English>the local leader</English>
+    <Chinese>當地領袖</Chinese>
+    <Chinesesimp>当地领袖</Chinesesimp>
+    <Spanish>el líder local</Spanish>
+    <French>le chef local</French>
+    <Portuguese>o líder local</Portuguese>
+    <Russian>местный лидер</Russian>
+</Key>
+<Key ID="STR_ALIVE_TARGETID_CONTACT">
+    <English>the contact you were sent to meet</English>
+    <Chinese>你被派去會見的聯絡人</Chinese>
+    <Chinesesimp>你被派去会见的联络人</Chinesesimp>
+    <Spanish>el contacto con el que debías reunirte</Spanish>
+    <French>le contact que vous deviez rencontrer</French>
+    <Portuguese>o contacto que deviam encontrar</Portuguese>
+    <Russian>связной, с которым вас послали встретиться</Russian>
+</Key>
 </Container></Package></Project>

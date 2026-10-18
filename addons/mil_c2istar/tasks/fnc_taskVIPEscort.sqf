@@ -219,6 +219,8 @@ switch (_taskState) do {
         private _vipGroup = createGroup [civilian, true];
         private _vip = _vipGroup createUnit [_vipClass, _vipPosition, [], 0, "NONE"];
         removeAllWeapons _vip;
+        // papers that say who he is, so he can be told from the townsfolk
+        [_vip, "STR_ALIVE_TARGETID_VIP"] call ALiVE_fnc_giveTargetPapers;
         _vip disableAI "AUTOTARGET";
         _vip disableAI "TARGET";
         _vip disableAI "FSM";

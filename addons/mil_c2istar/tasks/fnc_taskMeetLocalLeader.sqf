@@ -79,6 +79,8 @@ switch (_taskState) do {
         private _leaderGroup = createGroup [civilian, true];
         private _leader = _leaderGroup createUnit [selectRandom ([] call ALiVE_fnc_taskGetCivilianClasses), _leaderPosition, [], 0, "NONE"];
         removeAllWeapons _leader;
+        // papers that say who he is, so he can be told from the townsfolk
+        [_leader, "STR_ALIVE_TARGETID_LEADER"] call ALiVE_fnc_giveTargetPapers;
         _leader disableAI "AUTOTARGET";
         _leader disableAI "TARGET";
         _leader disableAI "FSM";
