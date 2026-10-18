@@ -12168,6 +12168,18 @@ switch(_operation) do {
                             ["ML - heliTransportReturnWait: RTB complete. anyActive=%1 anyAlive=%2 iterations=%3/%4. Moving to eventComplete. Event: %5",
                                 _anyActive, _anyAlive, _waitIterations, _waitTotalIterations, _eventID] call ALiVE_fnc_dump;
                         };
+                        // A ground delivery's trucks still spawned when its wait ends were left where they stood, driver
+                        // aboard, for the rest of the mission (AshTray on Discord, 18 Oct: trucks piling up at the supply
+                        // point), and busy, so the commander never used them either. They go as a helicopter does, once
+                        // no player is within the ground spawn distance of them.
+                        if (_eventState == "transportReturnWait") then {
+                            private _groundRadius = (missionNamespace getVariable ["ALIVE_spawnRadius", 1000]) max 1000;
+                            {
+                                if !(isNil {[ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler}) then {
+                                    [_logic, "removeTransportUnseen", [_x, _groundRadius, _debug]] call MAINCLASS;
+                                };
+                            } forEach _eventTransportVehiclesProfiles;
+                        };
                         _eventStateData set [0, 0];
                         [_event, "stateData", _eventStateData] call ALIVE_fnc_hashSet;
                         [_event, "state", "eventComplete"] call ALIVE_fnc_hashSet;
