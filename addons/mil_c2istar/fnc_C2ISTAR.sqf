@@ -1527,6 +1527,43 @@ switch(_operation) do {
                             ["C2ISTAR: %1 lied under questioning", name _prisoner] call ALiVE_fnc_dump;
                         } else {
                             [_from, _reach, _pSide] call ALIVE_fnc_OPCOMToggleInstallations;
+                            // What he gives up at a prison becomes a task for the asker's side (Will501 on Discord, 18 Oct):
+                            // destroy an insurgent installation he named, else the nearest group he named. One per
+                            // prisoner, one per side every 20 minutes, and none while the module's unasked player tasks
+                            // are off. Raised as the commander raises its own (the recruiter's Assassination).
+                            if (_atPrison && {!(_prisoner getVariable ["ALiVE_questionTaskRaised", false])} && {!isNull _caller}
+                                && {missionNamespace getVariable ["ALiVE_c2istar_autoPlayerTasks", true]}
+                                && {!isNil "ALIVE_eventLog"} && {!isNil "ALIVE_taskHandler"}) then {
+                                private _askSide = str side group _caller;
+                                private _cooldownVar = format ["ALiVE_c2istar_intelTaskAt_%1", _askSide];
+                                if (time < (missionNamespace getVariable [_cooldownVar, -1e9]) + 1200) exitWith {};
+                                private _type = "";
+                                private _where = [];
+                                {
+                                    private _opcom = _x;
+                                    if (_where isEqualTo [] && {([_opcom, "side", ""] call ALiVE_fnc_HashGet) == _sideText}
+                                        && {([_opcom, "controltype", ""] call ALiVE_fnc_HashGet) == "asymmetric"}) then {
+                                        {
+                                            private _obj = _x;
+                                            private _c = [_obj, "center", [0,0,0]] call ALiVE_fnc_HashGet;
+                                            if (_where isEqualTo [] && {(_c distance2D _from) < _reach}
+                                                && {(["HQ", "depot", "factory"] findIf {
+                                                    alive ([_opcom, "convertObject", [_obj, _x, []] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM)
+                                                }) > -1}) then { _type = "InsurgencyDestroyAssets"; _where = _c };
+                                        } forEach ([_opcom, "objectives", []] call ALiVE_fnc_HashGet);
+                                    };
+                                } forEach (missionNamespace getVariable ["OPCOM_instances", []]);
+                                if (_where isEqualTo [] && {_found isNotEqualTo []}) then { _type = "DestroyInfantry"; _where = _found select 0 };
+                                if (_where isEqualTo []) exitWith {};
+                                private _players = [_askSide] call ALiVE_fnc_getPlayersDataSource;
+                                if ((_players select 1) isEqualTo []) exitWith {};
+                                _prisoner setVariable ["ALiVE_questionTaskRaised", true];
+                                missionNamespace setVariable [_cooldownVar, time];
+                                private _taskData = [format ["intel_%1_%2", _askSide, round time], "C2ISTAR", _askSide, faction _caller, _type, "Map", +_where,
+                                    [_players select 1, _players select 0], faction _prisoner, "Y", "Side"];
+                                [ALIVE_eventLog, "addEvent", ["TASK_GENERATE", _taskData, "C2ISTAR"] call ALIVE_fnc_event] call ALIVE_fnc_eventLog;
+                                ["C2ISTAR: %1's questioning raised a %2 task for %3 at %4", name _prisoner, _type, _askSide, mapGridPosition _where] call ALiVE_fnc_dump;
+                            };
                         };
                     };
                 };
