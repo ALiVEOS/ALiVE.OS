@@ -234,10 +234,12 @@ switch (_operation) do {
                 ["ALiVE Player FOBs - %1: a supply truck for %2 arrived but the FOB now belongs to %3; nothing unloaded", _id, _side, [_entry, "side", ""] call ALIVE_fnc_hashGet] call ALiVE_fnc_dump;
             };
             private _amount = [_logic, "attribute", ["fob_crate_amount"]] call MAINCLASS;
-            ["credit", [_id, _amount, "logistics"]] call ALiVE_fnc_fobSupply;
+            private _before = ["balance", [_id]] call ALiVE_fnc_fobSupply;
+            private _now = ["credit", [_id, _amount, "logistics"]] call ALiVE_fnc_fobSupply;
             [_entry, "resupplyCooldown", 0] call ALIVE_fnc_hashSet;
+            [_entry, "lowTold", false] call ALIVE_fnc_hashSet;
             [_logic, "broadcastMirror"] call MAINCLASS;
-            [_logic, "radio", [_side, "STR_ALIVE_FOB_RADIO_DELIVERED", [[_entry, "name", ""] call ALIVE_fnc_hashGet]]] call MAINCLASS;
+            [_logic, "radio", [_side, "STR_ALIVE_FOB_RADIO_DELIVERED", [[_entry, "name", ""] call ALIVE_fnc_hashGet, round (_now - _before), round _now]]] call MAINCLASS;
         };
     };
 

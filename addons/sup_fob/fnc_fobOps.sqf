@@ -846,6 +846,12 @@ switch (_op) do {
         [_entry, "garrison", _ids] call ALIVE_fnc_hashSet;
         ALiVE_FOB_dirty = true;
         ["ALiVE Player FOBs - %1: garrison %2 (%3) %4", _id, _class, _ids, ["paid " + str _cost, "free"] select _free] call ALiVE_fnc_dump;
+        // told to the side when it cost something (a faction with no force pool pays nothing)
+        private _left = ["balance", [_id]] call ALiVE_fnc_fobSupply;
+        if (!_free && {_cost > 0} && {_left >= 0}) then {
+            [_logic, "radio", [[_entry, "side", "WEST"] call ALIVE_fnc_hashGet, "STR_ALIVE_FOB_RADIO_GARRISON",
+                [[_entry, "name", _id] call ALIVE_fnc_hashGet, round _cost, round _left]]] call ALiVE_fnc_FOB;
+        };
         _result = true;
     };
 

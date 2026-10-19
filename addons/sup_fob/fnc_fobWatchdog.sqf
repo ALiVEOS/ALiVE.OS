@@ -197,6 +197,11 @@ private _tick = {
             [_entry, "resupplyCooldown", 600] call ALIVE_fnc_hashSet;
             ALiVE_FOB_dirty = true;
             ["ALiVE Player FOBs - %1 is low on supply; asked Military Logistics for a truck", _id] call ALiVE_fnc_dump;
+            // told once until a truck gets there, not every 10 minutes while none comes
+            if !([_entry, "lowTold", false] call ALIVE_fnc_hashGet) then {
+                [_entry, "lowTold", true] call ALIVE_fnc_hashSet;
+                [_side, "STR_ALIVE_FOB_RADIO_LOW", [_name, round (["balance", [_id]] call ALiVE_fnc_fobSupply)]] call _say;
+            };
         };
 
         // A tier 2 or 3 FOB keeps a garrison: a new one, paid for, when the last one is gone

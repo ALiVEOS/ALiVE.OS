@@ -642,7 +642,13 @@
                 <English>We have taken %1.</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_RADIO_DELIVERED">
-                <English>Supplies delivered to %1.</English>
+                <English>Supplies delivered to %1: %2 added, %3 now in stock.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_RADIO_LOW">
+                <English>%1 is low on supply, %2 left. Logistics has been asked for a supply truck.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_RADIO_GARRISON">
+                <English>%1 has a new garrison: %2 supply spent, %3 left.</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_INTERFACE">
                 <English>Interface</English>
