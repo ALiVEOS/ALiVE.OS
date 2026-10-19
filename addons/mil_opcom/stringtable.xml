@@ -219,6 +219,18 @@
 <Key ID="STR_ALIVE_OPCOM_HVT_NAME_COMMENT">
     <English>The officer's name, as every side is told it when he's killed and as it shows on the intel marker. The soldier in the world wears it too. Leave empty for a name from his own nationality.</English>
 </Key>
+<Key ID="STR_ALIVE_OPCOM_HVT_KILLED_TEXT">
+    <English>Killed Message, His Enemies</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_HVT_KILLED_TEXT_COMMENT">
+    <English>What his enemies are told when the officer is killed, in place of the standard message. %1 is his name and %2 the map grid where he was last seen. Leave empty for the standard message.</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_HVT_KILLED_OWN_TEXT">
+    <English>Killed Message, His Own Side</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_HVT_KILLED_OWN_TEXT_COMMENT">
+    <English>What his own side is told when the officer is killed, in place of the standard message. %1 is his name and %2 the map grid where he was last seen. Leave empty for the standard message.</English>
+</Key>
 <Key ID="STR_ALIVE_OPCOM_DRUGLABS">
     <English>Drug Labs</English>
 </Key>

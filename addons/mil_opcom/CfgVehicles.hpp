@@ -318,6 +318,20 @@ class CfgVehicles {
                                 tooltip = "$STR_ALIVE_OPCOM_HVT_NAME_COMMENT";
                                 defaultValue = """""";
                         };
+                        class hvtKilledText : Edit
+                        {
+                                property = "ALiVE_mil_opcom_hvtKilledText";
+                                displayName = "$STR_ALIVE_OPCOM_HVT_KILLED_TEXT";
+                                tooltip = "$STR_ALIVE_OPCOM_HVT_KILLED_TEXT_COMMENT";
+                                defaultValue = """""";
+                        };
+                        class hvtKilledOwnText : Edit
+                        {
+                                property = "ALiVE_mil_opcom_hvtKilledOwnText";
+                                displayName = "$STR_ALIVE_OPCOM_HVT_KILLED_OWN_TEXT";
+                                tooltip = "$STR_ALIVE_OPCOM_HVT_KILLED_OWN_TEXT_COMMENT";
+                                defaultValue = """""";
+                        };
                         // ----  Recruitment ----------------------------------------
                         class ASYM_SET : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_ASYM_SET"; displayName = "ASYMMETRIC SETTINGS"; };
                         class asym_occupation : Combo

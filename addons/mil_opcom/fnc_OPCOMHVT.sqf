@@ -17,7 +17,8 @@ String - operation: "place", "reveal", "notify"
 Array - arguments
     place:  [handler]
     reveal: [side object of the dead man whose intel was read]
-    notify: [stringtable key, officer's name] (run on clients, so each reads it in its own language)
+    notify: [stringtable key, officer's name, short line key, the mission's own text] (run on clients, so
+            each reads it in its own language; the mission's own text, when given, is shown as written)
 
 Returns:
 Nothing
@@ -40,12 +41,12 @@ params [["_operation", "", [""]], ["_args", []]];
 if (_operation == "notify") exitWith {
     if (!hasInterface) exitWith {};
     // the popup's own short line can be given: the Insurgency commander's recruiter uses this too
-    _args params [["_key", "", [""]], ["_name", "", [""]], ["_shortKey", "STR_ALIVE_OPCOM_HVT_KILLED_SHORT", [""]]];
+    _args params [["_key", "", [""]], ["_name", "", [""]], ["_shortKey", "STR_ALIVE_OPCOM_HVT_KILLED_SHORT", [""]], ["_custom", "", [""]]];
     // The popup holds one short line and cut the sentence off at the bottom (Jman 15 Oct 2026), so it says who
     // was killed and the whole sentence goes the way the player chose for task updates
     private _own = _key == "STR_ALIVE_OPCOM_HVT_KILLED_OWN";
     [["TaskSucceeded", "TaskFailed"] select _own, ["", format [localize _shortKey, _name]]] call BIS_fnc_showNotification;
-    private _text = format [localize _key, _name];
+    private _text = [_custom, format [localize _key, _name]] select (_custom == "");
     if (isNil "ALIVE_fnc_taskSubtitle") then { systemChat _text } else {
         [["Task Accomplished", "Task Failed"] select _own, _text] call ALIVE_fnc_taskSubtitle;
     };
@@ -84,11 +85,13 @@ private _fnc_watch = {
         private _module = [_h, "module"] call ALiVE_fnc_HashGet;
         private _sideText = [_h, "side", "EAST"] call ALiVE_fnc_HashGet;
         private _strikes = 0;
+        private _lastPos = [];
         while { ((([_h, "hvtRecord", []] call ALiVE_fnc_HashGet) param [2, ""]) == "alive") } do {
             sleep 15;
             private _rec = [_h, "hvtRecord", []] call ALiVE_fnc_HashGet;
             private _prof = [ALIVE_profileHandler, "getProfile", _rec select 1] call ALIVE_fnc_profileHandler;
             private _dead = isNil "_prof";
+            if (!_dead) then { _lastPos = [_prof, "position", _lastPos] call ALiVE_fnc_HashGet };
             if (!_dead && {[_prof, "active", false] call ALiVE_fnc_HashGet}) then {
                 private _units = [_prof, "units", []] call ALiVE_fnc_HashGet;
                 // the man in the world wears the name the notifications use, so ACE and name tags agree;
@@ -119,9 +122,17 @@ private _fnc_watch = {
                 deleteMarker format ["ALiVE_HVT_%1", [_h, "opcomID", ""] call ALiVE_fnc_HashGet];
                 ["OPCOM %1: high value target %2 killed; new attacks held for %3 s", _sideText, _rec select 0, _hold] call ALiVE_fnc_dump;
                 private _side = [_sideText] call ALiVE_fnc_sideTextToObject;
+                // the mission's own words, when its maker typed them (Eric on Discord, 19 Oct 2026): %1 his name, %2 the grid
+                private _grid = if (_lastPos isEqualTo []) then { "" } else { mapGridPosition _lastPos };
                 {
-                    private _key = ["STR_ALIVE_OPCOM_HVT_KILLED_ENEMY", "STR_ALIVE_OPCOM_HVT_KILLED_OWN"] select ((_side getFriend _x) >= 0.6);
-                    ["notify", [_key, _rec select 0]] remoteExec ["ALiVE_fnc_OPCOMHVT", _x];
+                    private _own = (_side getFriend _x) >= 0.6;
+                    private _key = ["STR_ALIVE_OPCOM_HVT_KILLED_ENEMY", "STR_ALIVE_OPCOM_HVT_KILLED_OWN"] select _own;
+                    private _custom = (format ["%1", _module getVariable [["hvtKilledText", "hvtKilledOwnText"] select _own, ""]]) trim [" ", 0];
+                    if (_custom != "") then {
+                        _custom = format [_custom, _rec select 0, _grid];
+                        ["OPCOM %1: high value target killed, the mission's message to %2: %3", _sideText, _x, _custom] call ALiVE_fnc_dump;
+                    };
+                    ["notify", [_key, _rec select 0, "STR_ALIVE_OPCOM_HVT_KILLED_SHORT", _custom]] remoteExec ["ALiVE_fnc_OPCOMHVT", _x];
                 } forEach [west, east, resistance];
                 [_h] call _fnc_replaceLater;
             };
