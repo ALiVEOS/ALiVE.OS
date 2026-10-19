@@ -200,6 +200,9 @@ switch (_operation) do {
         // call compile on a number throws.
         private _reinforcements = _logic getvariable ["reinforcements","0.9"];
         if !(_reinforcements isEqualType 0) then {_reinforcements = call compile _reinforcements};
+        // a percentage typed beside the dropdown wins when filled in (19 Oct 2026); 1 or less is read as a fraction
+        private _reinforcementsTyped = format ["%1", _logic getVariable ["reinforcementsTyped", ""]];
+        if (_reinforcementsTyped != "") then { _reinforcements = parseNumber _reinforcementsTyped; if (_reinforcements > 1) then { _reinforcements = _reinforcements / 100 } };
         private _roadblocks = (parseNumber format ["%1", _logic getvariable ["roadblocks",1]]) > 0;
         // Installation Types (#1081): what an Asymmetric commander may set up, as lower-case keys
         private _insTypes = (toLower format ["%1", _logic getvariable ["asymInstallations", "factory,depot,recruit,ied,suicide,sabotage,ambush,roadblocks"]]) splitString ", ";

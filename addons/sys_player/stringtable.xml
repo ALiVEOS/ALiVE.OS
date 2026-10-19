@@ -183,9 +183,9 @@
     <Spanish>Activa o desactiva el guardado de la puntuación del jugador en la misión actual</Spanish>
 </Key>
 <Key ID="STR_ALIVE_player_autoSaveTime">
-    <English>Auto Save Interval:</English>
-	<Chinesesimp>自动保存间隔</Chinesesimp>
-    <Spanish>Intervalo de guardado automático:</Spanish>
+    <English>Auto Save Interval (s):</English>
+	<Chinesesimp>自动保存间隔 (s)</Chinesesimp>
+    <Spanish>Intervalo de guardado automático (s):</Spanish>
 </Key>
 <Key ID="STR_ALIVE_player_autoSaveTime_SET">
     <English>Set Auto Save Interval</English>

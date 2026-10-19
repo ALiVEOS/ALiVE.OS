@@ -160,13 +160,13 @@ switch(_operation) do {
             _logic setVariable ["debug", _debug];
 
             private _CQB_spawn = _logic getvariable ["CQB_spawn_setting", "0.01"];
-            if (_CQB_spawn isequaltype "") then {_CQB_spawn = call compile _CQB_spawn};
+            private _CQB_spawnRaw = _CQB_spawn; _CQB_spawn = parseNumber format ["%1", _CQB_spawnRaw]; if ((_CQB_spawnRaw isEqualType "" && {(_CQB_spawnRaw find ".") < 0}) || {_CQB_spawn > 1}) then {_CQB_spawn = _CQB_spawn / 100};
             //// For backward compatibility, remove after some months ////
             //// Please update the list when this code is read, but not changed
             ////	- 6/2/2019
             // Over 1 only: the editor's 100% is stored as 1, and dividing that by 100 as well
             // left a module set to 100% garrisoning 1% of its houses.
-            if (_CQB_spawn > 1) then {_CQB_spawn = _CQB_spawn / 100};
+            // a whole number or anything over 1 is a percentage, handled where it is read above (19 Oct 2026)
             /////////////////////////////////////////////////////////////
             _logic setVariable ["CQB_spawn", _CQB_spawn];
 
@@ -177,7 +177,7 @@ switch(_operation) do {
             _logic setVariable ["CQB_DENSITY", _CQB_density];
 
             private _CQB_patrolChance = _logic getvariable ["CQB_patrol_chance","0.30"];
-            if (_CQB_patrolChance isequaltype "") then {_CQB_patrolChance = call compile _CQB_patrolChance};
+            private _CQB_patrolChanceRaw = _CQB_patrolChance; _CQB_patrolChance = parseNumber format ["%1", _CQB_patrolChanceRaw]; if ((_CQB_patrolChanceRaw isEqualType "" && {(_CQB_patrolChanceRaw find ".") < 0}) || {_CQB_patrolChance > 1}) then {_CQB_patrolChance = _CQB_patrolChance / 100};
             _logic setVariable ["CQB_patrol_chance", _CQB_patrolChance];
 
             private _CQB_patrolMinDist = _logic getvariable ["CQB_patrol_mindist","50"];
@@ -189,7 +189,7 @@ switch(_operation) do {
             _logic setVariable ["CQB_patrol_maxist", _CQB_patrolMaxDist];
 
             private _CQB_patrolSearchChance = _logic getvariable ["CQB_patrol_searchchance","0.30"];
-            if (_CQB_patrolSearchChance isequaltype "") then {_CQB_patrolSearchChance = call compile _CQB_patrolSearchChance};
+            private _CQB_patrolSearchChanceRaw = _CQB_patrolSearchChance; _CQB_patrolSearchChance = parseNumber format ["%1", _CQB_patrolSearchChanceRaw]; if ((_CQB_patrolSearchChanceRaw isEqualType "" && {(_CQB_patrolSearchChanceRaw find ".") < 0}) || {_CQB_patrolSearchChance > 1}) then {_CQB_patrolSearchChance = _CQB_patrolSearchChance / 100};
             _logic setVariable ["CQB_patrol_searchchance", _CQB_patrolSearchChance];
 
             private _CQB_patrolMinWaitTime = _logic getvariable ["CQB_patrol_minwaittime","0"];

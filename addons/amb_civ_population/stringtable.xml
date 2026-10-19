@@ -770,14 +770,14 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_HOSTILITY_CHANCE">
-    <English>Humanitarian Hostility Decrease:</English>
+    <English>Humanitarian Hostility Decrease (%):</English>
 
-    <Chinese>人道援助敵意降低:</Chinese>
-    <Chinesesimp>人道援助敌意降低:</Chinesesimp>
-    <Spanish>Reducción hostilidad humanitaria:</Spanish>
-    <French>Baisse hostilité humanitaire:</French>
-    <Portuguese>Redução hostilidade humanitária:</Portuguese>
-    <Russian>Снижение враждебности от помощи:</Russian></Key>
+    <Chinese>人道援助敵意降低 (%):</Chinese>
+    <Chinesesimp>人道援助敌意降低 (%):</Chinesesimp>
+    <Spanish>Reducción hostilidad humanitaria (%):</Spanish>
+    <French>Baisse hostilité humanitaire (%):</French>
+    <Portuguese>Redução hostilidade humanitária (%):</Portuguese>
+    <Russian>Снижение враждебности от помощи (%):</Russian></Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_HOSTILITY_CHANCE_COMMENT">
     <English>The chance that handing a civilian rations or water works. When it does, that civilian's own hostility drops by 7 points, never below 0, and the ACE menu, the approach gesture, weapon-aim reactions and Gather Intel use it as well as the dialog. The dialog, the ACE menu and the gesture still never read lower than the Hostility setting above for the player's side. It then drifts back toward 30 at the Hostility decay rate. Aid can still be given to a Defiant civilian, though not a Hostile one. For civilians from Civilian Placement, their town's mood only dips by 1 to 4 for a few seconds.

@@ -111,13 +111,13 @@
     <Russian>Где появляются новобранцы и техника: имена маркеров или переменных объектов через запятую, каждый раз выбирается случайная. Объект задаёт свою высоту, так что подойдут палуба корабля или крыша. Если пусто — появляются рядом с объектом вербовки.</Russian>
 </Key>
 <Key ID="STR_ALIVE_RECRUIT_SPAWN_HEIGHT">
-    <English>Marker Height</English>
-    <Chinesesimp>标记高度</Chinesesimp>
-    <Chinese>標記高度</Chinese>
-    <Spanish>Altura del marcador</Spanish>
-    <French>Hauteur du marqueur</French>
-    <Portuguese>Altura do marcador</Portuguese>
-    <Russian>Высота маркера</Russian>
+    <English>Marker Height (m)</English>
+    <Chinesesimp>标记高度 (m)</Chinesesimp>
+    <Chinese>標記高度 (m)</Chinese>
+    <Spanish>Altura del marcador (m)</Spanish>
+    <French>Hauteur du marqueur (m)</French>
+    <Portuguese>Altura do marcador (m)</Portuguese>
+    <Russian>Высота маркера (m)</Russian>
 </Key>
 <Key ID="STR_ALIVE_RECRUIT_SPAWN_HEIGHT_COMMENT">
     <English>Metres above the ground (or the sea) at a marker spawn point, for a marker on a ship or a building. 0 puts them on the ground. Objects used as spawn points give their own height instead.</English>

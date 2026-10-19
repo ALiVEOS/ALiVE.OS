@@ -317,21 +317,7 @@ class CfgVehicles
                                     class Yes { name = "Yes"; value = true; };
                                 };
                         };
-                        class startForceStrengthIncFactor : Combo
-                        {
-                                property = "ALiVE_mil_logistics_startForceStrengthIncFactor";
-                                displayName = "$STR_ALIVE_ML_START_FORCE_STRENGTH_INC_FACTOR";
-                                tooltip = "$STR_ALIVE_ML_START_FORCE_STRENGTH_INC_FACTOR_COMMENT";
-                                defaultValue = """1""";
-                                class Values
-                                {
-                                    class LOWEST { name = "1%"; value = "1"; default = 1; };
-                                    class LOW { name = "4%"; value = "4"; };
-                                    class MEDIUM { name = "6%"; value = "6"; };
-                                    class HIGH { name = "8%"; value = "8"; };
-                                    class VHIGH { name = "10%"; value = "10"; };
-                                };
-                        };
+                        class startForceStrengthIncFactor : Edit { property = "ALiVE_mil_logistics_startForceStrengthIncFactor"; displayName = "$STR_ALIVE_ML_START_FORCE_STRENGTH_INC_FACTOR"; tooltip = "$STR_ALIVE_ML_START_FORCE_STRENGTH_INC_FACTOR_COMMENT"; defaultValue = """1"""; };
                         class startForceStrengthDec : Combo
                         {
                                 property = "ALiVE_mil_logistics_startForceStrengthDec";
@@ -344,21 +330,7 @@ class CfgVehicles
                                     class Yes { name = "Yes"; value = true; };
                                 };
                         };
-                        class startForceStrengthDecFactor : Combo
-                        {
-                                property = "ALiVE_mil_logistics_startForceStrengthDecFactor";
-                                displayName = "$STR_ALIVE_ML_START_FORCE_STRENGTH_DEC_FACTOR";
-                                tooltip = "$STR_ALIVE_ML_START_FORCE_STRENGTH_DEC_FACTOR_COMMENT";
-                                defaultValue = """1""";
-                                class Values
-                                {
-                                    class LOWEST { name = "1%"; value = "1"; default = 1; };
-                                    class LOW { name = "4%"; value = "4"; };
-                                    class MEDIUM { name = "6%"; value = "6"; };
-                                    class HIGH { name = "8%"; value = "8"; };
-                                    class VHIGH { name = "10%"; value = "10"; };
-                                };
-                        };
+                        class startForceStrengthDecFactor : Edit { property = "ALiVE_mil_logistics_startForceStrengthDecFactor"; displayName = "$STR_ALIVE_ML_START_FORCE_STRENGTH_DEC_FACTOR"; tooltip = "$STR_ALIVE_ML_START_FORCE_STRENGTH_DEC_FACTOR_COMMENT"; defaultValue = """1"""; };
                         // ---- On Spawn Hook (#1083) --------------------------------------------
                         class HDR_HOOK : ALiVE_ModuleSubTitle { property = "ALiVE_mil_logistics_HDR_HOOK"; displayName = "ON SPAWN HOOK"; };
                         class onEachSpawn : ALiVE_EditMultilineSQF

@@ -18,9 +18,9 @@
     <Spanish>El módulo de ajustes de visión te permite cambiar dinámicamente la distancia de visión y la cuadrícula de terreno durante la partida. ¡También puedes forzar una distancia de visión fija poniendo el mismo valor máximo y mínimo!</Spanish>
 </Key>
 <Key ID="STR_ALIVE_VDIST_MAX">
-    <English>Max View Distance:</English>
-    <Chinesesimp>最大视距：</Chinesesimp>
-    <Spanish>Distancia de visión máxima:</Spanish>
+    <English>Max View Distance (m):</English>
+    <Chinesesimp>最大视距 (m)：</Chinesesimp>
+    <Spanish>Distancia de visión máxima (m):</Spanish>
 </Key>
 <Key ID="STR_ALIVE_VDIST_MAX_COMMENT">
     <English>Maximum view distance allowed in Game</English>

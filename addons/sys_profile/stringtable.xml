@@ -157,7 +157,7 @@
     <English>While an AI Commander's aircraft is in the air, the enemy's anti-air vehicles near it are spawned with their crews so they can shoot at it, with no player needed nearby, as the Active Limiter allows. Only the anti-air is spawned, and it goes back to virtual a minute and a half after the aircraft has gone. Without this, anti-air nobody is near stays virtual and can't touch a flying aircraft. Default on.</English>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_AIR_DEFENCE_RADIUS">
-    <English>Air Defence Radius</English>
+    <English>Air Defence Radius (m)</English>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_AIR_DEFENCE_RADIUS_COMMENT">
     <English>How close, in metres, an enemy anti-air vehicle has to be to an AI Commander's aircraft in the air to be spawned. Default 4000. Set to 0 to disable.</English>
@@ -255,9 +255,9 @@
     <Spanish>Define el ritmo del combate virtual. El más rápido resuelve el combate el doble de rápido que el normal.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_VIRTUAL_COMBAT_RANGE_MODIFIER">
-    <English>Virtual Combat Range:</English>
-    <Chinesesimp>虚拟单位战斗距离</Chinesesimp>
-    <Spanish>Alcance del combate virtual:</Spanish>
+    <English>Virtual Combat Range (m):</English>
+    <Chinesesimp>虚拟单位战斗距离 (m)</Chinesesimp>
+    <Spanish>Alcance del combate virtual (m):</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_VIRTUAL_COMBAT_RANGE_MODIFIER_COMMENT">
     <English>Sets the range of virtual combat in metres.</English>

@@ -49,11 +49,7 @@ class CfgVehicles {
                         };
                         class priority : Edit { property = "ALiVE_mil_placement_custom_priority"; displayName = "$STR_ALIVE_CMP_PRIORITY"; tooltip = "$STR_ALIVE_CMP_PRIORITY_COMMENT"; defaultValue = """50"""; };
                         class size : Edit { property = "ALiVE_mil_placement_custom_size"; displayName = "$STR_ALIVE_CMP_SIZE"; tooltip = "$STR_ALIVE_CMP_SIZE_COMMENT"; defaultValue = """300"""; };
-                        class readinessLevel : Combo
-                        {
-                                property = "ALiVE_mil_placement_custom_readinessLevel"; displayName = "$STR_ALIVE_CMP_READINESS_LEVEL"; tooltip = "$STR_ALIVE_CMP_READINESS_LEVEL_COMMENT"; defaultValue = """1""";
-                                class Values { class NONE{name="100%";value="1";default=1;}; class HIGH{name="75%";value="0.75";}; class MEDIUM{name="50%";value="0.5";}; class LOW{name="25%";value="0.25";}; };
-                        };
+                        class readinessLevel : Edit { property = "ALiVE_mil_placement_custom_readinessLevel"; displayName = "$STR_ALIVE_CMP_READINESS_LEVEL"; tooltip = "$STR_ALIVE_CMP_READINESS_LEVEL_COMMENT"; defaultValue = """100"""; };
                         // ambientVehicleAmount + allowPlayerTasking moved up to
                         // bottom of GENERAL 2026-05-08 so they don't trail
                         // the OBJECTIVE OBJECTS section without their own
@@ -69,16 +65,8 @@ class CfgVehicles {
                         // and cross-referenced here; keeps a single source of truth across
                         // the four placement modules that have a Readiness attribute.
                         class HDR_RESERVE : ALiVE_ModuleSubTitle { property = "ALiVE_mil_placement_custom_HDR_RESERVE"; displayName = "$STR_ALIVE_MP_HDR_RESERVE"; };
-                        class activePatrolPercent : Combo
-                        {
-                                property = "ALiVE_mil_placement_custom_activePatrolPercent"; displayName = "$STR_ALIVE_MP_ACTIVE_PATROL_PERCENT"; tooltip = "$STR_ALIVE_MP_ACTIVE_PATROL_PERCENT_COMMENT"; defaultValue = """0.75""";
-                                class Values { class FULL{name="100%";value="1";}; class HIGH{name="75%";value="0.75";default=1;}; class MEDIUM{name="50%";value="0.5";}; class LOW{name="25%";value="0.25";}; class ZERO{name="0%";value="0";}; };
-                        };
-                        class reserveActivationThreshold : Combo
-                        {
-                                property = "ALiVE_mil_placement_custom_reserveActivationThreshold"; displayName = "$STR_ALIVE_MP_RESERVE_ACTIVATION_THRESHOLD"; tooltip = "$STR_ALIVE_MP_RESERVE_ACTIVATION_THRESHOLD_COMMENT"; defaultValue = """0.5""";
-                                class Values { class HEAVY{name="25%";value="0.25";}; class MEDIUM{name="50%";value="0.5";default=1;}; class EARLY{name="75%";value="0.75";}; class IMMEDIATE{name="100%";value="1";}; };
-                        };
+                        class activePatrolPercent : Edit { property = "ALiVE_mil_placement_custom_activePatrolPercent"; displayName = "$STR_ALIVE_MP_ACTIVE_PATROL_PERCENT"; tooltip = "$STR_ALIVE_MP_ACTIVE_PATROL_PERCENT_COMMENT"; defaultValue = """75"""; };
+                        class reserveActivationThreshold : Edit { property = "ALiVE_mil_placement_custom_reserveActivationThreshold"; displayName = "$STR_ALIVE_MP_RESERVE_ACTIVATION_THRESHOLD"; tooltip = "$STR_ALIVE_MP_RESERVE_ACTIVATION_THRESHOLD_COMMENT"; defaultValue = """50"""; };
                         class reserveActivationCooldown : Edit { property = "ALiVE_mil_placement_custom_reserveActivationCooldown"; displayName = "$STR_ALIVE_MP_RESERVE_ACTIVATION_COOLDOWN"; tooltip = "$STR_ALIVE_MP_RESERVE_ACTIVATION_COOLDOWN_COMMENT"; defaultValue = """30"""; };
                         class reserveEngagementMultiplier : Combo
                         {
@@ -174,12 +162,9 @@ class CfgVehicles {
                                 property = "ALiVE_mil_placement_custom_guardProbability"; displayName = "$STR_ALIVE_MP_AMBIENT_GUARD_AMOUNT"; tooltip = "$STR_ALIVE_CMP_GUARD_AMOUNT_COMMENT"; defaultValue = """0.2""";
                                 class Values { class NONE{name="$STR_ALIVE_MP_AMBIENT_GUARD_AMOUNT_NONE";value="0";}; class LOW{name="$STR_ALIVE_MP_AMBIENT_GUARD_AMOUNT_LOW";value="0.2";default=1;}; class MEDIUMLOW{name="$STR_ALIVE_MP_AMBIENT_GUARD_AMOUNT_MEDIUMLOW";value="0.4";}; class MEDIUM{name="$STR_ALIVE_MP_AMBIENT_GUARD_AMOUNT_MEDIUM";value="0.6";}; class MEDIUMHIGH{name="$STR_ALIVE_MP_AMBIENT_GUARD_AMOUNT_MEDIUMHIGH";value="0.8";}; class HIGH{name="$STR_ALIVE_MP_AMBIENT_GUARD_AMOUNT_HIGH";value="1";}; };
                         };
+                        class guardCount : Edit { property = "ALiVE_mil_placement_custom_guardCount"; displayName = "$STR_ALIVE_MP_AMBIENT_GUARD_COUNT"; tooltip = "$STR_ALIVE_MP_AMBIENT_GUARD_COUNT_COMMENT"; defaultValue = """"""; };
                         class guardRadius : Edit { property = "ALiVE_mil_placement_custom_guardRadius"; displayName = "$STR_ALIVE_MP_AMBIENT_GUARD_RADIUS"; tooltip = "$STR_ALIVE_MP_AMBIENT_GUARD_RADIUS_COMMENT"; defaultValue = """200"""; };
-                        class guardPatrolPercentage : Combo
-                        {
-                                property = "ALiVE_mil_placement_custom_guardPatrolPercentage"; displayName = "$STR_ALIVE_MP_AMBIENT_GUARD_PATROL_PERCENT"; tooltip = "$STR_ALIVE_MP_AMBIENT_GUARD_PATROL_PERCENT_COMMENT"; defaultValue = """50""";
-                                class Values { class NONE{name="$STR_ALIVE_MP_AMBIENT_PATROL_PERCENT_NONE";value="0";}; class LOW{name="$STR_ALIVE_MP_AMBIENT_PATROL_PERCENT_LOW";value="25";}; class MEDIUM{name="$STR_ALIVE_MP_AMBIENT_PATROL_PERCENT_MEDIUM";value="50";default=1;}; class HIGH{name="$STR_ALIVE_MP_AMBIENT_PATROL_PERCENT_HIGH";value="75";}; class ALL{name="$STR_ALIVE_MP_AMBIENT_PATROL_PERCENT_ALL";value="100";}; };
-                        };
+                        class guardPatrolPercentage : Edit { property = "ALiVE_mil_placement_custom_guardPatrolPercentage"; displayName = "$STR_ALIVE_MP_AMBIENT_GUARD_PATROL_PERCENT"; tooltip = "$STR_ALIVE_MP_AMBIENT_GUARD_PATROL_PERCENT_COMMENT"; defaultValue = """50"""; };
                         class garrisonPatrolBehaviour : Combo
                         {
                                 property = "ALiVE_mil_placement_custom_garrisonPatrolBehaviour";

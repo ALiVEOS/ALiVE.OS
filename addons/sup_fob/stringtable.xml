@@ -462,25 +462,25 @@
                 <English>Static weapons and vehicles need the Virtual AI System module in the mission.</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_ALERT_RADIUS">
-                <English>Alert Radius</English>
+                <English>Alert Radius (m)</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_ALERT_RADIUS_COMMENT">
                 <English>How close, in metres, the enemy has to come before the FOB's side hears on the radio that it's under threat.</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_CAPTURE_RADIUS">
-                <English>Capture Radius</English>
+                <English>Capture Radius (m)</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_CAPTURE_RADIUS_COMMENT">
                 <English>Enemy soldiers inside this many metres, with none of the FOB's side, start taking the FOB. Enemy players alone don't take it.</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_CAPTURE_TIME">
-                <English>Capture Time</English>
+                <English>Capture Time (s)</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_CAPTURE_TIME_COMMENT">
                 <English>Seconds the enemy has to hold the FOB, unopposed, before it becomes theirs. Any defender in the capture radius starts the count again.</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_REPAIR_TIME">
-                <English>Repair Time</English>
+                <English>Repair Time (s)</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_REPAIR_TIME_COMMENT">
                 <English>Seconds a FOB with a destroyed headquarters has before it's lost for good, unless repaired. The count stops while an engineer of its side is within 25 m.</English>
@@ -603,7 +603,7 @@
                 <English>Off</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_DISCOVERY_RADIUS">
-                <English>Discovery Radius</English>
+                <English>Discovery Radius (m)</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_DISCOVERY_RADIUS_COMMENT">
                 <English>With Contact targeting, enemy men inside this many metres of a FOB give it away to their side's commanders.</English>

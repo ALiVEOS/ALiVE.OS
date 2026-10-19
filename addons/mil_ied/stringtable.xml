@@ -329,16 +329,16 @@
     <Russian>Где могут размещаться СВУ, VB-IED и смертники. Случайно = любой населённый пункт в зоне. Территории, занятые противником = только населённые пункты, где у вражеского ИИ-командира есть силы после его запуска: командира, синхронизированного с этим модулем, или любого командира, враждебного игрокам. Пока у него ещё нет сил на местах, как у повстанцев в начале, размещение идёт как при «Случайно». Не занятые = только населённые пункты, где ни у одного ИИ-командира нет сил.</Russian>
 </Key>
 <Key ID="STR_ALIVE_IED_DICKER_CHANCE">
-    <English>Trigger Man Chance</English>
+    <English>Trigger Man Chance (%)</English>
 </Key>
 <Key ID="STR_ALIVE_IED_DICKER_CHANCE_COMMENT">
-    <English>How many IEDs get a civilian trigger man watching from 60 to 150 m away. While he is free he sets the IED off himself when anyone comes near, so a careful approach won't save you. Kill him, detain him or make him surrender and it won't go off when approached; disarm it as usual. ALiVE IEDs only.</English>
+    <English>How many IEDs get a civilian trigger man watching from 60 to 150 m away. While he is free he sets the IED off himself when anyone comes near, so a careful approach won't save you. Kill him, detain him or make him surrender and it won't go off when approached; disarm it as usual. ALiVE IEDs only. Type a percentage, 0 to 100.</English>
 </Key>
 <Key ID="STR_ALIVE_IED_AMBUSH_CHANCE">
-    <English>Ambush Chance After a Blast</English>
+    <English>Ambush Chance After a Blast (%)</English>
 </Key>
 <Key ID="STR_ALIVE_IED_AMBUSH_CHANCE_COMMENT">
-    <English>How often a squad comes in after an IED goes off near players, to finish the survivors. It is the nearest hostile force's, so it matches whoever holds the area. It appears 150 to 300 m away out of sight, attacks, then pulls back after a few minutes or once half of it is down. Needs the profile system and a hostile force within 3 km; costs the commander nothing.</English>
+    <English>How often a squad comes in after an IED goes off near players, to finish the survivors. It is the nearest hostile force's, so it matches whoever holds the area. It appears 150 to 300 m away out of sight, attacks, then pulls back after a few minutes or once half of it is down. Needs the profile system and a hostile force within 3 km; costs the commander nothing. Type a percentage, 0 to 100.</English>
 </Key>
 <Key ID="STR_ALIVE_IED_ENGINEER_CHALLENGE">
     <English>Engineer Challenge:</English>
@@ -432,13 +432,13 @@
     <Russian>Затухание накопленного давления срабатывания за такт (0,5 с) после того, как сапёр покидает радиус близости к СВУ. Больше = отступление быстрее сбрасывает давление.</Russian>
 </Key>
 <Key ID="STR_ALIVE_IED_ENGINEER_DISARM_BASETIME">
-    <English>Disarm Base Time:</English>
-    <Chinese>解除基礎時間：</Chinese>
-    <Chinesesimp>解除基础时间：</Chinesesimp>
-    <Spanish>Tiempo base de desactivación:</Spanish>
-    <French>Temps de désamorçage de base:</French>
-    <Portuguese>Tempo base de desarme:</Portuguese>
-    <Russian>Базовое время обезвреживания:</Russian>
+    <English>Disarm Base Time (s):</English>
+    <Chinese>解除基礎時間 (s)：</Chinese>
+    <Chinesesimp>解除基础时间 (s)：</Chinesesimp>
+    <Spanish>Tiempo base de desactivación (s):</Spanish>
+    <French>Temps de désamorçage de base (s):</French>
+    <Portuguese>Tempo base de desarme (s):</Portuguese>
+    <Russian>Базовое время обезвреживания (s):</Russian>
 </Key>
 <Key ID="STR_ALIVE_IED_ENGINEER_DISARM_BASETIME_COMMENT">
     <English>Seconds required to disarm an IED at skill 1.0 (scales up to 1.5x at skill 0, floored at 50%% of base). The IED remains vulnerable to detonation throughout this window.</English>

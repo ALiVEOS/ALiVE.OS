@@ -34,13 +34,13 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CPC_OBJECTIVE_SIZE">
-    <English>Objective size:</English>
-    <Chinese>目標大小:</Chinese>
-    <Chinesesimp>目标大小:</Chinesesimp>
-    <Spanish>Tamaño del objetivo:</Spanish>
-    <French>Taille de l'objectif:</French>
-    <Portuguese>Tamanho do objetivo:</Portuguese>
-    <Russian>Размер цели:</Russian>
+    <English>Objective size (m):</English>
+    <Chinese>目標大小 (m):</Chinese>
+    <Chinesesimp>目标大小 (m):</Chinesesimp>
+    <Spanish>Tamaño del objetivo (m):</Spanish>
+    <French>Taille de l'objectif (m):</French>
+    <Portuguese>Tamanho do objetivo (m):</Portuguese>
+    <Russian>Размер цели (m):</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CPC_OBJECTIVE_SIZE_COMMENT">

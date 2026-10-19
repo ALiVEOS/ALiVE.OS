@@ -36,9 +36,9 @@
 </Key>
 
 <Key ID="STR_ALIVE_WEATHER_DEBUG_CYCLE">
-    <English>Debug Output Delay:</English>
-    <Chinesesimp>调试输出延迟:</Chinesesimp>
-    <Spanish>Intervalo de salida de depuración:</Spanish>
+    <English>Debug Output Delay (s):</English>
+    <Chinesesimp>调试输出延迟 (s):</Chinesesimp>
+    <Spanish>Intervalo de salida de depuración (s):</Spanish>
 </Key>
 
 <Key ID="STR_ALIVE_WEATHER_DEBUG_CYCLE_COMMENT">
@@ -89,9 +89,9 @@
 </Key>
 
 <Key ID="STR_ALIVE_WEATHER_CYCLE_DELAY">
-    <English>Cycle Delay:</English>
-    <Chinesesimp>周期延迟:</Chinesesimp>
-    <Spanish>Duración del ciclo:</Spanish>
+    <English>Cycle Delay (s):</English>
+    <Chinesesimp>周期延迟 (s):</Chinesesimp>
+    <Spanish>Duración del ciclo (s):</Spanish>
 </Key>
 
 <Key ID="STR_ALIVE_WEATHER_CYCLE_DELAY_COMMENT">

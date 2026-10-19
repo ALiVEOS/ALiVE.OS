@@ -85,25 +85,7 @@ class CfgVehicles {
                                     class CIV { name = "Civilian"; value = "regular"; default = 1; };
                                 };
                         };
-                        class CQB_spawn_setting : Combo
-                        {
-                                property = "ALiVE_mil_cqb_CQB_spawn_setting";
-                                displayName = "$STR_ALIVE_CQB_SPAWN";
-                                tooltip = "$STR_ALIVE_CQB_SPAWN_COMMENT";
-                                defaultValue = """0.01""";
-                                class Values
-                                {
-                                    // Trimmed from 13 steps to 7 (2026-07-06 audit). Old in-between
-                                    // values still work at runtime; they just have no Eden label.
-                                    class CQB_spawn_1 { name = "1%"; value = 0.01; default = 1; };
-                                    class CQB_spawn_5 { name = "5%"; value = 0.05; };
-                                    class CQB_spawn_10 { name = "10%"; value = 0.1; };
-                                    class CQB_spawn_25 { name = "25%"; value = 0.25; };
-                                    class CQB_spawn_50 { name = "50%"; value = 0.5; };
-                                    class CQB_spawn_75 { name = "75%"; value = 0.75; };
-                                    class CQB_spawn_100 { name = "100%"; value = 1; };
-                                };
-                        };
+                        class CQB_spawn_setting : Edit { property = "ALiVE_mil_cqb_CQB_spawn_setting"; displayName = "$STR_ALIVE_CQB_SPAWN"; tooltip = "$STR_ALIVE_CQB_SPAWN_COMMENT"; defaultValue = """1"""; };
                         class CQB_DENSITY : Edit
                         {
                                 property = "ALiVE_mil_cqb_CQB_DENSITY";
@@ -214,50 +196,8 @@ class CfgVehicles {
                                     class Full { name = "Full (run)"; value = "FULL"; };
                                 };
                         };
-                        class CQB_patrol_chance : Combo
-                        {
-                                property = "ALiVE_mil_cqb_CQB_patrol_chance";
-                                displayName = "$STR_ALIVE_CQB_PATROLCHANCE";
-                                tooltip = "$STR_ALIVE_CQB_PATROLCHANCE_COMMENT";
-                                defaultValue = """0.3""";
-                                class Values
-                                {
-                                    class CQB_patrol_chance_1  { name = "1%";  value = 0.01; };
-                                    class CQB_patrol_chance_5  { name = "5%";  value = 0.05; };
-                                    class CQB_patrol_chance_10 { name = "10%"; value = 0.1; };
-                                    class CQB_patrol_chance_20 { name = "20%"; value = 0.2; };
-                                    class CQB_patrol_chance_30 { name = "30%"; value = 0.3; default = 1; };
-                                    class CQB_patrol_chance_40 { name = "40%"; value = 0.4; };
-                                    class CQB_patrol_chance_50 { name = "50%"; value = 0.5; };
-                                    class CQB_patrol_chance_60 { name = "60%"; value = 0.6; };
-                                    class CQB_patrol_chance_70 { name = "70%"; value = 0.7; };
-                                    class CQB_patrol_chance_80 { name = "80%"; value = 0.8; };
-                                    class CQB_patrol_chance_90 { name = "90%"; value = 0.9; };
-                                    class CQB_patrol_chance_100 { name = "100%"; value = 1; };
-                                };
-                        };
-                        class CQB_patrol_searchchance : Combo
-                        {
-                                property = "ALiVE_mil_cqb_CQB_patrol_searchchance";
-                                displayName = "$STR_ALIVE_CQB_PATROLSEARCHCHANCE";
-                                tooltip = "$STR_ALIVE_CQB_PATROLSEARCHCHANCE_COMMENT";
-                                defaultValue = """0.3""";
-                                class Values
-                                {
-                                    class CQB_patrol_searchchance_1  { name = "1%";  value = 0.01; };
-                                    class CQB_patrol_searchchance_5  { name = "5%";  value = 0.05; };
-                                    class CQB_patrol_searchchance_10 { name = "10%"; value = 0.1; };
-                                    class CQB_patrol_searchchance_20 { name = "20%"; value = 0.2; };
-                                    class CQB_patrol_searchchance_30 { name = "30%"; value = 0.3; default = 1; };
-                                    class CQB_patrol_searchchance_40 { name = "40%"; value = 0.4; };
-                                    class CQB_patrol_searchchance_50 { name = "50%"; value = 0.5; };
-                                    class CQB_patrol_searchchance_60 { name = "60%"; value = 0.6; };
-                                    class CQB_patrol_searchchance_70 { name = "70%"; value = 0.7; };
-                                    class CQB_patrol_searchchance_80 { name = "80%"; value = 0.8; };
-                                    class CQB_patrol_searchchance_90 { name = "90%"; value = 0.9; };
-                                    class CQB_patrol_searchchance_100 { name = "100%"; value = 1; };
-                                };
-                        };
+                        class CQB_patrol_chance : Edit { property = "ALiVE_mil_cqb_CQB_patrol_chance"; displayName = "$STR_ALIVE_CQB_PATROLCHANCE"; tooltip = "$STR_ALIVE_CQB_PATROLCHANCE_COMMENT"; defaultValue = """30"""; };
+                        class CQB_patrol_searchchance : Edit { property = "ALiVE_mil_cqb_CQB_patrol_searchchance"; displayName = "$STR_ALIVE_CQB_PATROLSEARCHCHANCE"; tooltip = "$STR_ALIVE_CQB_PATROLSEARCHCHANCE_COMMENT"; defaultValue = """30"""; };
                         class CQB_patrol_minwaittime : Edit { property = "ALiVE_mil_cqb_CQB_patrol_minwaittime"; displayName = "$STR_ALIVE_CQB_MINWAITTIME"; tooltip = "$STR_ALIVE_CQB_MINWAITTIME_COMMENT"; defaultValue = """0"""; };
                         class CQB_patrol_midwaittime : Edit { property = "ALiVE_mil_cqb_CQB_patrol_midwaittime"; displayName = "$STR_ALIVE_CQB_MIDWAITTIME"; tooltip = "$STR_ALIVE_CQB_MIDWAITTIME_COMMENT"; defaultValue = """15"""; };
                         class CQB_patrol_maxwaittime : Edit { property = "ALiVE_mil_cqb_CQB_patrol_maxwaittime"; displayName = "$STR_ALIVE_CQB_MAXWAITTIME"; tooltip = "$STR_ALIVE_CQB_MAXWAITTIME_COMMENT"; defaultValue = """30"""; };

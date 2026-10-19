@@ -433,14 +433,20 @@ switch(_operation) do {
     // Return the Readiness Level
     case "readinessLevel": {
         _result = [_logic,_operation,_args,DEFAULT_READINESS_LEVEL] call ALIVE_fnc_OOsimpleOperation;
+        // typed as a percentage since 19 Oct 2026; 1 or less is a fraction, as the old dropdown stored it
+        private _v = parseNumber format ["%1", _result]; if (_v > 1) then { _result = str (_v / 100) };
     };
     // Return the Active Patrol Percent (fraction of active units that patrol vs garrison)
     case "activePatrolPercent": {
         _result = [_logic,_operation,_args,DEFAULT_ACTIVE_PATROL_PERCENT] call ALIVE_fnc_OOsimpleOperation;
+        // typed as a percentage since 19 Oct 2026; 1 or less is a fraction, as the old dropdown stored it
+        private _v = parseNumber format ["%1", _result]; if (_v > 1) then { _result = str (_v / 100) };
     };
     // Return the Reserve Activation Threshold (active-force fraction at which reserves wake)
     case "reserveActivationThreshold": {
         _result = [_logic,_operation,_args,DEFAULT_RESERVE_ACTIVATION_THRESHOLD] call ALIVE_fnc_OOsimpleOperation;
+        // typed as a percentage since 19 Oct 2026; 1 or less is a fraction, as the old dropdown stored it
+        private _v = parseNumber format ["%1", _result]; if (_v > 1) then { _result = str (_v / 100) };
     };
     // Return the Reserve Activation Cooldown (seconds between reserve wake-ups)
     case "reserveActivationCooldown": {
@@ -2350,6 +2356,9 @@ switch(_operation) do {
 
           
             private _guardProbabilityCount = [_countInfantry,[_logic, "guardProbability"] call MAINCLASS] call ALIVE_fnc_infantryGuardProbabilityCount;
+            // an exact count typed beside the dropdown wins, capped like the dropdown by the infantry there is (19 Oct 2026)
+            private _guardCountTyped = format ["%1", _logic getVariable ["guardCount", ""]];
+            if (_guardCountTyped != "") then { _guardProbabilityCount = ((round parseNumber _guardCountTyped) min (_countInfantry - 1)) max 0 };
 
             if(_debug) then {
 	            ["MP [%1] - Garrison _guardProbabilityCount: %2", _faction, _guardProbabilityCount] call ALIVE_fnc_dump;

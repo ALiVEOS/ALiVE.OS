@@ -63,9 +63,9 @@
     <Spanish>Muestra las unidades aliadas cercanas</Spanish>
 </Key>
 <Key ID="STR_ALIVE_MI_FRIENDLY_INTEL_RADIUS">
-    <English>Friendly Radius:</English>
-    <Chinesesimp>友方半径:</Chinesesimp>
-    <Spanish>Radio aliado:</Spanish>
+    <English>Friendly Radius (m):</English>
+    <Chinesesimp>友方半径 (m):</Chinesesimp>
+    <Spanish>Radio aliado (m):</Spanish>
 </Key>
 <Key ID="STR_ALIVE_MI_FRIENDLY_INTEL_RADIUS_COMMENT">
     <English>Display friendly units within this radius around players</English>
@@ -83,9 +83,9 @@
     <Spanish>Visualización de sectores militares - ¡OBSOLETO! ELIMÍNALO DE TUS MISIONES</Spanish>
 </Key>
 <Key ID="STR_ALIVE_SD_RUN_EVERY">
-    <English>Update time</English>
-    <Chinesesimp>更新时间</Chinesesimp>
-    <Spanish>Intervalo de actualización</Spanish>
+    <English>Update time (min)</English>
+    <Chinesesimp>更新时间 (min)</Chinesesimp>
+    <Spanish>Intervalo de actualización (min)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_SD_RUN_EVERY_COMMENT">
     <English>Update sector markings every number of minutes entered</English>

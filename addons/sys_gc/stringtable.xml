@@ -33,9 +33,9 @@
     <Spanish>Incluye en la recolección ciertos objetos que no son unidades ni vehículos, p. ej.: ["Box_NATO_Wps_F","Box_NATO_AmmoOrd_F"]</Spanish>
 </Key>
 <Key ID="STR_ALIVE_GC_INTERVAL">
-    <English>Garbage Collector Interval:</English>
-    <Chinesesimp>垃圾回收间隔:</Chinesesimp>
-    <Spanish>Intervalo del recolector de basura:</Spanish>
+    <English>Garbage Collector Interval (s):</English>
+    <Chinesesimp>垃圾回收间隔 (s):</Chinesesimp>
+    <Spanish>Intervalo del recolector de basura (s):</Spanish>
 </Key>
 <Key ID="STR_ALIVE_GC_INTERVAL_COMMENT">
     <English>Interval in which to clean killed objects! Use 0 to turn off GC completely!</English>

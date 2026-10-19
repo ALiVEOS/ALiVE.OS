@@ -83,7 +83,7 @@
                 <Spanish>Guardar controles y puestos avanzados:</Spanish>
             </Key>
             <Key ID="STR_ALIVE_data_AUTOSAVEINTERVAL">
-                <English>Autosave:</English>
+                <English>Autosave (min):</English>
             </Key>
             <Key ID="STR_ALIVE_data_AUTOSAVEINTERVAL_COMMENT">
                 <English>How often the server saves the mission on its own: the AI forces, objectives, players and the air commander, as Save and Exit does. Local storage only, on a dedicated or hosted server. Off by default. A mission that already calls ALiVE_fnc_AutoSave_PNS itself keeps working; whichever starts last sets the interval. Type the minutes between saves; 0 is off.</English>

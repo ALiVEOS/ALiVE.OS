@@ -132,6 +132,12 @@
     <Portuguese>Requer o módulo de Logística militar. Define o limite de força no qual o Comandante IA solicita reforços. Agressivo (90%) = solicita cedo, ainda perto da força total. Moderado (75%) = solicita quando notavelmente enfraquecido. Conservador (50%) = só solicita quando muito reduzido. Não é usado por um comandante assimétrico.</Portuguese>
     <Russian>Требуется модуль «Военная логистика». Задаёт порог силы, при котором ИИ-командир запрашивает подкрепления. Агрессивно (90%) = запрашивает рано, ещё при почти полной силе. Умеренно (75%) = запрашивает при заметном ослаблении. Консервативно (50%) = запрашивает только при сильном истощении. Асимметричный командир этот параметр не использует.</Russian>
 </Key>
+<Key ID="STR_ALIVE_OPCOM_REINFORCEMENTS_TYPED">
+    <English>Reinforcements, exact (%):</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_REINFORCEMENTS_TYPED_COMMENT">
+    <English>Requires Military Logistics Module. Type the force strength, 0 to 100, at which the AI Commander asks for reinforcements, to use instead of the setting above. Leave it empty to use the setting above. 1 or less is read as a fraction (0.8 is 80%).</English>
+</Key>
 <Key ID="STR_ALIVE_OPCOM_FACTIONS">
     <English>Factions:</English>
     <Chinese>陣營：</Chinese>
@@ -702,7 +708,7 @@
     <Russian>Вероятность за каждую попытку вербовки, что новая повстанческая группа будет успешно создана. 0 отключает спавн через вербовку, 100 делает каждую попытку успешной.</Russian>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_RECRUITER_TASK_CHANCE">
-    <English>Recruiter HVT Task Chance</English>
+    <English>Recruiter HVT Task Chance (%)</English>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_RECRUITER_TASK_CHANCE_COMMENT">
     <English>Insurgency commander only. Chance, 0 to 100, that a new Recruitment HQ gives every hostile side with players a task to kill the recruiter there. Each side has one such task open at a time; the next HQ's task follows once it is done or failed. Needs a C2ISTAR module. 0 turns it off.</English>

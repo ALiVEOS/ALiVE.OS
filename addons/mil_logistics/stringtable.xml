@@ -548,16 +548,16 @@
     <Russian>При захвате объекта OPCOM увеличивает предел сил, используемый для ввода «пополнений» до полной численности</Russian>
 </Key>
 <Key ID="STR_ALIVE_ML_START_FORCE_STRENGTH_INC_FACTOR">
-    <English>Inc. Force Strength Factor:</English>
-    <Chinese>兵力增加係數：</Chinese>
-    <Chinesesimp>兵力增加系数：</Chinesesimp>
-    <Spanish>Factor de aumento de fuerza:</Spanish>
-    <French>Facteur d'augmentation de force:</French>
-    <Portuguese>Fator de aumento de força:</Portuguese>
-    <Russian>Коэф. увеличения силы:</Russian>
+    <English>Inc. Force Strength Factor (%):</English>
+    <Chinese>兵力增加係數 (%)：</Chinese>
+    <Chinesesimp>兵力增加系数 (%)：</Chinesesimp>
+    <Spanish>Factor de aumento de fuerza (%):</Spanish>
+    <French>Facteur d'augmentation de force (%):</French>
+    <Portuguese>Fator de aumento de força (%):</Portuguese>
+    <Russian>Коэф. увеличения силы (%):</Russian>
 </Key>
 <Key ID="STR_ALIVE_ML_START_FORCE_STRENGTH_INC_FACTOR_COMMENT">
-    <English>Factor amount to increase startForceStrength on objective capture. Will only increase where value > 0</English>
+    <English>Factor amount to increase startForceStrength on objective capture. Will only increase where value > 0 Type a percentage, 0 to 100.</English>
     <Chinese>佔領目標時用於增加 startForceStrength 的係數值。僅在值 &gt; 0 時生效</Chinese>
     <Chinesesimp>占领目标时用于增加 startForceStrength 的系数值。仅在值 &gt; 0 时生效</Chinesesimp>
     <Spanish>Factor con el que se aumenta startForceStrength al capturar un objetivo. Solo aumenta cuando el valor es &gt; 0</Spanish>
@@ -584,16 +584,16 @@
     <Russian>При потере объекта OPCOM уменьшает предел сил, используемый для ввода «пополнений» — доступные силы сокращаются по мере уступки территории.</Russian>
 </Key>
 <Key ID="STR_ALIVE_ML_START_FORCE_STRENGTH_DEC_FACTOR">
-    <English>Dec. Force Strength Factor:</English>
-    <Chinese>兵力減少係數：</Chinese>
-    <Chinesesimp>兵力减少系数：</Chinesesimp>
-    <Spanish>Factor de reducción de fuerza:</Spanish>
-    <French>Facteur de réduction de force:</French>
-    <Portuguese>Fator de redução de força:</Portuguese>
-    <Russian>Коэф. уменьшения силы:</Russian>
+    <English>Dec. Force Strength Factor (%):</English>
+    <Chinese>兵力減少係數 (%)：</Chinese>
+    <Chinesesimp>兵力减少系数 (%)：</Chinesesimp>
+    <Spanish>Factor de reducción de fuerza (%):</Spanish>
+    <French>Facteur de réduction de force (%):</French>
+    <Portuguese>Fator de redução de força (%):</Portuguese>
+    <Russian>Коэф. уменьшения силы (%):</Russian>
 </Key>
 <Key ID="STR_ALIVE_ML_START_FORCE_STRENGTH_DEC_FACTOR_COMMENT">
-    <English>Factor amount to decrement startForceStrength on objective loss. Will only decrease where value > 0</English>
+    <English>Factor amount to decrement startForceStrength on objective loss. Will only decrease where value > 0 Type a percentage, 0 to 100.</English>
     <Chinese>失去目標時用於減少 startForceStrength 的係數值。僅在值 &gt; 0 時生效</Chinese>
     <Chinesesimp>失去目标时用于减少 startForceStrength 的系数值。仅在值 &gt; 0 时生效</Chinesesimp>
     <Spanish>Factor con el que se reduce startForceStrength al perder un objetivo. Solo reduce cuando el valor es &gt; 0</Spanish>

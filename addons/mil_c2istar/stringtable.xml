@@ -99,7 +99,7 @@
     <English>Comma-separated object classnames that act as command points: a player within Command Point Radius of any object of these classes (or a class that inherits from one) has the C2ISTAR, Combat Support and Player Combat Logistics menus as if carrying an access item, however the object was placed: in Eden, by Zeus, by a script or as part of a FOB. Any side can use them, so pick a class only your mission places: ALiVE's own base layouts and many terrains already have map boards, and a broad parent class would take in far more than you meant. Combat Support's operator rule still applies. Example: "Land_PortableDesk_01_olive_F". For commanding only from these points, set the access items to something players don't carry. Leave empty for none.</English>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_ACCESSPOINT_RADIUS">
-    <English>Command Point Radius</English>
+    <English>Command Point Radius (m)</English>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_ACCESSPOINT_RADIUS_COMMENT">
     <English>How close, in metres, a player has to stand to an object of the Command Point Classes. Default 10, at most 200.</English>
@@ -481,8 +481,8 @@
     <Spanish>Permite a los jugadores designar, cancelar y repriorizar objetivos del comandante desde la vista de Operaciones de la tableta</Spanish>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_SCOM_OPS_OBJECTIVE_COOLDOWN">
-    <English>Player Objective Cooldown:</English>
-    <Spanish>Espera entre objetivos de jugador:</Spanish>
+    <English>Player Objective Cooldown (s):</English>
+    <Spanish>Espera entre objetivos de jugador (s):</Spanish>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_SCOM_OPS_OBJECTIVE_COOLDOWN_COMMENT">
     <English>Seconds a player must wait between designating objectives</English>
@@ -595,7 +595,7 @@
     <English>Players can walk up to an AI soldier of their side who isn't in their group and ask about friendly units. Every other friendly group within a kilometre of him is marked on that player's map for two minutes. Each soldier can be asked once a minute.</English>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_AI_SURRENDER">
-    <English>AI Surrender Chance</English>
+    <English>AI Surrender Chance (%)</English>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_AI_SURRENDER_COMMENT">
     <English>Once an AI group has lost half its men, each survivor on foot with an enemy player within 200 m has this chance to surrender. He drops his weapons and puts his hands up (an ACE captive when ACE is loaded). Players can question each prisoner once: he may mark enemy groups within 2 km on that player's map and reveal his side's installations nearby. Questioned at a prison, a map marker placed in the editor whose name or text has prison as its first word (inside it, or within 50 m of a marker that isn't an area), he always talks, marks up to 6 groups within 3 km of where he was taken, and can be questioned there once more if he was first questioned in the field. A percentage from 0 (never) to 100.</English>
@@ -625,7 +625,7 @@
     <English>Both</English>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_AI_TASK_TAKEOVER">
-    <English>AI Takes Over Slow Tasks</English>
+    <English>AI Takes Over Slow Tasks (min)</English>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_AI_TASK_TAKEOVER_COMMENT">
     <English>When a player task is still open after this long, the nearest friendly AI group within 3 km that isn't busy is sent to the task area to search and destroy, and the side is told on the radio. The task stays open for players to finish. The group goes back to its AI Commander when the task ends. One group per task. Type the minutes; 0 is never.</English>
@@ -1098,13 +1098,13 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_COP_UPDATE_INTERVAL">
-    <English>COP Update Interval:</English>
-    <Chinese>COP 更新間隔:</Chinese>
-    <Chinesesimp>COP 更新间隔:</Chinesesimp>
-    <Spanish>Intervalo de Actualización de COP:</Spanish>
-    <French>Intervalle de mise à jour du COP:</French>
-    <Portuguese>Intervalo de Atualização do COP:</Portuguese>
-    <Russian>Интервал обновления COP:</Russian>
+    <English>COP Update Interval (s):</English>
+    <Chinese>COP 更新間隔 (s):</Chinese>
+    <Chinesesimp>COP 更新间隔 (s):</Chinesesimp>
+    <Spanish>Intervalo de Actualización de COP (s):</Spanish>
+    <French>Intervalle de mise à jour du COP (s):</French>
+    <Portuguese>Intervalo de Atualização do COP (s):</Portuguese>
+    <Russian>Интервал обновления COP (s):</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_COP_UPDATE_INTERVAL_COMMENT">
@@ -1438,13 +1438,13 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_COP_ANCHOR_DISTANCE">
-    <English>COP Anchor Distance:</English>
-    <Chinese>COP 錨點距離:</Chinese>
-    <Chinesesimp>COP 锚点距离:</Chinesesimp>
-    <Spanish>Distancia de Anclaje de COP:</Spanish>
-    <French>Distance d'ancrage COP:</French>
-    <Portuguese>Distância de Ancoragem COP:</Portuguese>
-    <Russian>Дистанция привязки COP:</Russian>
+    <English>COP Anchor Distance (m):</English>
+    <Chinese>COP 錨點距離 (m):</Chinese>
+    <Chinesesimp>COP 锚点距离 (m):</Chinesesimp>
+    <Spanish>Distancia de Anclaje de COP (m):</Spanish>
+    <French>Distance d'ancrage COP (m):</French>
+    <Portuguese>Distância de Ancoragem COP (m):</Portuguese>
+    <Russian>Дистанция привязки COP (m):</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_COP_ANCHOR_DISTANCE_COMMENT">

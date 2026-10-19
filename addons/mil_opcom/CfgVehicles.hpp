@@ -83,6 +83,7 @@ class CfgVehicles {
                                     class Conservative { name = "Conservative (50%)"; value = "0.5";  };
                                 };
                         };
+                        class reinforcementsTyped : Edit { property = "ALiVE_mil_opcom_reinforcementsTyped"; displayName = "$STR_ALIVE_OPCOM_REINFORCEMENTS_TYPED"; tooltip = "$STR_ALIVE_OPCOM_REINFORCEMENTS_TYPED_COMMENT"; defaultValue = """"""; };
 
                         // ---- Factions -------------------------------------------------------
                         // Phase 4 design:

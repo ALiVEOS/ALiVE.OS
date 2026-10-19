@@ -39,13 +39,13 @@
     <Russian>Включает отладку модуля военного размещения</Russian>
 </Key>
 <Key ID="STR_ALIVE_MP_RANDOMCAMPS">
-    <English>Random Camps:</English>
-    <Chinese>隨機營地：</Chinese>
-    <Chinesesimp>随机营地：</Chinesesimp>
-    <Spanish>Campamentos aleatorios:</Spanish>
-    <French>Camps aléatoires:</French>
-    <Portuguese>Acampamentos aleatórios:</Portuguese>
-    <Russian>Случайные лагеря:</Russian>
+    <English>Random Camps (m):</English>
+    <Chinese>隨機營地 (m)：</Chinese>
+    <Chinesesimp>随机营地 (m)：</Chinesesimp>
+    <Spanish>Campamentos aleatorios (m):</Spanish>
+    <French>Camps aléatoires (m):</French>
+    <Portuguese>Acampamentos aleatórios (m):</Portuguese>
+    <Russian>Случайные лагеря (m):</Russian>
 </Key>
 <Key ID="STR_ALIVE_MP_RANDOMCAMPS_COMMENT">
     <English>Spawns random field camps in flat open terrain within the TAOR. The setting controls camp density via the minimum spacing between camps: type the metres between camps, for example 2500 (sparse), 1500 or 1000 (dense); 0 is off. Higher density adds more unpredictable forward operating bases beyond fixed military objectives.</English>
@@ -229,17 +229,17 @@
     <Russian>Только объекты высокого приоритета</Russian>
 </Key>
 <Key ID="STR_ALIVE_MP_READINESS_LEVEL">
-    <English>Readiness:</English>
-    <Chinese>戰備：</Chinese>
-    <Chinesesimp>战备：</Chinesesimp>
-    <Spanish>Disponibilidad:</Spanish>
-    <French>Disponibilité:</French>
-    <Portuguese>Prontidão:</Portuguese>
-    <Russian>Готовность:</Russian>
+    <English>Readiness (%):</English>
+    <Chinese>戰備 (%)：</Chinese>
+    <Chinesesimp>战备 (%)：</Chinesesimp>
+    <Spanish>Disponibilidad (%):</Spanish>
+    <French>Disponibilité (%):</French>
+    <Portuguese>Prontidão (%):</Portuguese>
+    <Russian>Готовность (%):</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_MP_READINESS_LEVEL_COMMENT">
-    <English>Percentage of this module's infantry and armoured, mechanised, motorised and artillery groups that are active at mission start. It is shared out across the module's objectives, so each one gets its share of the active groups and of the reserve (reserve vehicles sit parked and empty). A reserve wakes to defend its objective when players are near and the active force there has taken losses (see Reserve activation threshold), or as soon as players are near if nothing there started active. Air groups, Garrisoned Infantry Groups and any group with a static weapon or artillery piece always start active. Air groups, Garrisoned Infantry Groups and groups with guns take no share of Readiness and don't count as the active force, so they never keep a reserve waiting. Use 'Active patrol percent' to control how the active infantry splits between patrolling and garrisoning buildings.</English>
+    <English>Percentage of this module's infantry and armoured, mechanised, motorised and artillery groups that are active at mission start. It is shared out across the module's objectives, so each one gets its share of the active groups and of the reserve (reserve vehicles sit parked and empty). A reserve wakes to defend its objective when players are near and the active force there has taken losses (see Reserve activation threshold), or as soon as players are near if nothing there started active. Air groups, Garrisoned Infantry Groups and any group with a static weapon or artillery piece always start active. Air groups, Garrisoned Infantry Groups and groups with guns take no share of Readiness and don't count as the active force, so they never keep a reserve waiting. Use 'Active patrol percent' to control how the active infantry splits between patrolling and garrisoning buildings. Type a percentage, 0 to 100; 1 or less is read as a fraction, as older missions stored it (1 is 100%).</English>
     <Chinese>此模組的步兵以及裝甲、機械化、摩托化和炮兵組在任務開始時處於現役狀態的百分比。此比例按整個模組計算，而非按每個目標計算，因此預備隊會集中在部分目標中，其他目標可能完全沒有（預備車輛空載停放）。當玩家在附近且該目標的現役部隊已遭受損失時，預備隊會被喚醒以保衛其目標（請參閱「預備隊啟動閾值」）；若該處沒有任何部隊在開始時處於現役狀態，則玩家一接近就會喚醒。空中群組、駐防步兵組以及任何帶有固定武器或火炮的群組始終在開始時處於現役狀態。空中群組、駐防步兵組和帶有火炮的群組不佔用戰備比例，也不計入現役部隊，因此不會讓預備隊延遲喚醒。使用「現役巡邏百分比」來控制現役步兵在巡邏和駐守建築物之間的分配。</Chinese>
     <Chinesesimp>此模块的步兵以及装甲、机械化、摩托化和炮兵组在任务开始时处于现役状态的百分比。此比例按整个模块计算，而非按每个目标计算，因此预备队会集中在部分目标中，其他目标可能完全没有（预备车辆空载停放）。当玩家在附近且该目标的现役部队已遭受损失时，预备队会被唤醒以防御其目标（参见"预备队激活阈值"）；若该处没有任何部队在开始时处于现役状态，则玩家一接近就会唤醒。空中群组、驻防步兵组以及任何带有固定武器或火炮的群组始终在开始时处于现役状态。空中群组、驻防步兵组和带有火炮的群组不占用战备比例，也不计入现役部队，因此不会让预备队延迟唤醒。使用"现役巡逻百分比"控制现役步兵在巡逻和驻守建筑之间的分配。</Chinesesimp>
     <Spanish>Porcentaje de los grupos de infantería y de los grupos acorazados, mecanizados, motorizados y de artillería de este módulo que están activos al inicio de la misión. Se cuenta sobre todo el módulo, no por objetivo, así que la reserva se concentra en algunos objetivos mientras que otros pueden no tener ninguna (los vehículos de reserva quedan estacionados y vacíos). Una reserva se activa para defender su objetivo cuando hay jugadores cerca y la fuerza activa de ese lugar ha sufrido bajas (ver Umbral de activación de reservas), o en cuanto hay jugadores cerca si allí nada empezó activo. Los grupos aéreos, los grupos de infantería de guarnición y cualquier grupo con un arma estática o una pieza de artillería siempre empiezan activos. Los grupos aéreos, los grupos de infantería de guarnición y los grupos con armas no ocupan parte de la Disponibilidad ni cuentan como fuerza activa, así que nunca hacen esperar a una reserva. Usa 'Porcentaje de patrulla activa' para controlar cómo se divide la infantería activa entre patrullar y guarnecer edificios.</Spanish>
@@ -267,7 +267,7 @@
     <Russian>Процент активного патрулирования:</Russian>
 </Key>
 <Key ID="STR_ALIVE_MP_ACTIVE_PATROL_PERCENT_COMMENT">
-    <English>Of the units active at mission start, what percentage actively patrols (vs garrisons buildings near the objective). 100% = all patrol; 0% = all garrison. Only affects active units; see 'Readiness' for the active vs reserve split.</English>
+    <English>Of the units active at mission start, what percentage actively patrols (vs garrisons buildings near the objective). 100% = all patrol; 0% = all garrison. Only affects active units; see 'Readiness' for the active vs reserve split. Type a percentage, 0 to 100; 1 or less is read as a fraction, as older missions stored it (1 is 100%).</English>
     <Chinese>任務開始時現役單位中，主動巡邏的百分比（相對於駐守目標附近建築物）。100% = 全部巡邏；0% = 全部駐守。僅影響現役單位 — 請參閱「戰備」以了解現役與預備隊的分配。</Chinese>
     <Chinesesimp>任务开始时现役单位中，主动巡逻的百分比（相对于驻守目标附近建筑）。100% = 全部巡逻；0% = 全部驻守。仅影响现役单位 — 参见"战备"了解现役与预备队的分配。</Chinesesimp>
     <Spanish>De las unidades activas al inicio de la misión, qué porcentaje patrulla activamente (en lugar de guarnecer edificios cerca del objetivo). 100% = todas patrullan; 0% = todas guarnecen. Solo afecta a unidades activas — ver 'Disponibilidad' para la división activa vs reserva.</Spanish>
@@ -276,16 +276,16 @@
     <Russian>Из юнитов, активных в начале миссии, какой процент активно патрулирует (вместо гарнизона зданий возле объекта). 100% = все патрулируют; 0% = все в гарнизоне. Влияет только на активные юниты — см. «Готовность» для деления активные / резерв.</Russian>
 </Key>
 <Key ID="STR_ALIVE_MP_RESERVE_ACTIVATION_THRESHOLD">
-    <English>Reserve activation threshold:</English>
-    <Chinese>預備隊啟動閾值：</Chinese>
-    <Chinesesimp>预备队激活阈值：</Chinesesimp>
-    <Spanish>Umbral de activación de reservas:</Spanish>
-    <French>Seuil d'activation des réserves:</French>
-    <Portuguese>Limite de ativação de reservas:</Portuguese>
-    <Russian>Порог активации резерва:</Russian>
+    <English>Reserve activation threshold (%):</English>
+    <Chinese>預備隊啟動閾值 (%)：</Chinese>
+    <Chinesesimp>预备队激活阈值 (%)：</Chinesesimp>
+    <Spanish>Umbral de activación de reservas (%):</Spanish>
+    <French>Seuil d'activation des réserves (%):</French>
+    <Portuguese>Limite de ativação de reservas (%):</Portuguese>
+    <Russian>Порог активации резерва (%):</Russian>
 </Key>
 <Key ID="STR_ALIVE_MP_RESERVE_ACTIVATION_THRESHOLD_COMMENT">
-    <English>Active force level at which reserves wake to defend the objective. 25% = wait until heavily depleted. 50% = wake when half are lost. 75% = wake early. 100% = wake on first loss. Infantry reserves step out beside a building at least 80 m from every player and walk to the objective's buildings; a parked reserve vehicle is crewed once no player is within 80 m of it. For long-range vehicle reinforcements see the OPCOM module's Reinforcements setting.</English>
+    <English>Active force level at which reserves wake to defend the objective. 25% = wait until heavily depleted. 50% = wake when half are lost. 75% = wake early. 100% = wake on first loss. Infantry reserves step out beside a building at least 80 m from every player and walk to the objective's buildings; a parked reserve vehicle is crewed once no player is within 80 m of it. For long-range vehicle reinforcements see the OPCOM module's Reinforcements setting. Type a percentage, 0 to 100; 1 or less is read as a fraction, as older missions stored it (1 is 100%).</English>
     <Chinese>預備隊喚醒以保衛目標的現役部隊水平。25% = 等待嚴重損耗。50% = 損失一半時喚醒。75% = 提早喚醒。100% = 首次損失即喚醒。步兵預備隊在距所有玩家至少 80 公尺的建築物旁出現，並步行進入目標的建築物；停放的預備車輛在其 80 公尺內沒有玩家時才會配置乘員。遠程車輛增援請參閱 OPCOM 模組的「增援」設定。</Chinese>
     <Chinesesimp>预备队唤醒以防御目标的现役部队水平。25% = 等待严重损耗。50% = 损失一半时唤醒。75% = 提早唤醒。100% = 首次损失即唤醒。步兵预备队在距所有玩家至少 80 米的建筑旁出现，并步行进入目标的建筑；停放的预备车辆在其 80 米内没有玩家时才会配置乘员。远程车辆增援参见 OPCOM 模块的"增援"设置。</Chinesesimp>
     <Spanish>Nivel de la fuerza activa en el que las reservas se activan para defender el objetivo. 25% = esperar hasta gran pérdida. 50% = activar al perder la mitad. 75% = activar pronto. 100% = activar a la primera baja. Las reservas de infantería aparecen junto a un edificio a al menos 80 m de cualquier jugador y caminan hasta los edificios del objetivo; un vehículo de reserva estacionado recibe su tripulación cuando no hay ningún jugador a menos de 80 m. Para refuerzos de vehículos de largo alcance ver la opción Refuerzos del módulo OPCOM.</Spanish>
@@ -1125,13 +1125,19 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_MP_AMBIENT_GUARD_PATROL_PERCENT_COMMENT">
-    <English>Share of the men in each garrison group who patrol between nearby buildings instead of holding a position; reserve infantry that wakes during play and a Mil. Obj. module's HQ guards have at most one man patrolling. Higher values create more visible activity but increase CPU load. Also governs every garrison placed without a module of its own: the ones the commander orders during play, insurgent and airbase guards, the guards a task spawns with its camp, Military Logistics garrisons and SPE placement guards. Where Military Placement (Mil. Obj.) and (Cust. Obj.) modules set different values the smallest applies to those, and None holds them all at their posts.</English>
+    <English>Share of the men in each garrison group who patrol between nearby buildings instead of holding a position; reserve infantry that wakes during play and a Mil. Obj. module's HQ guards have at most one man patrolling. Higher values create more visible activity but increase CPU load. Also governs every garrison placed without a module of its own: the ones the commander orders during play, insurgent and airbase guards, the guards a task spawns with its camp, Military Logistics garrisons and SPE placement guards. Where Military Placement (Mil. Obj.) and (Cust. Obj.) modules set different values the smallest applies to those, and None holds them all at their posts. Type a percentage, 0 to 100.</English>
     <Chinese>每個駐防組中在附近建築物之間巡邏、而非堅守位置的人員比例；遊戲中被喚醒的預備步兵與軍事部署（軍事目標）模組的指揮部守衛最多只有一人巡邏。較高的值會產生更多可見活動但會增加 CPU 負載。也控制所有沒有自身模組的駐防：指揮官在遊戲中下令的駐防、叛軍與空軍基地守衛、任務隨營地生成的守衛、軍事後勤的駐防以及 SPE 部署的守衛。若軍事部署（軍事目標）與（自訂目標）模組設定不同的值，則對這些駐防採用最小值，而「無」會讓它們全部堅守崗位。</Chinese>
     <Chinesesimp>每个驻防组中在附近建筑物之间巡逻、而非坚守位置的人员比例；游戏中被唤醒的预备步兵与军事部署（军事目标）模块的指挥部守卫最多只有一人巡逻。较高的值会产生更多可见活动但会增加 CPU 负载。也控制所有没有自身模块的驻防：指挥官在游戏中下令的驻防、叛军与空军基地守卫、任务随营地生成的守卫、军事后勤的驻防以及 SPE 部署的守卫。若军事部署（军事目标）与（自定义目标）模块设置了不同的值，则对这些驻防采用最小值，而「无」会让它们全部坚守岗位。</Chinesesimp>
     <Spanish>Proporción de los hombres de cada grupo de guarnición que patrullan entre los edificios cercanos en lugar de mantener una posición; la infantería de reserva que despierta durante la partida y los guardias del cuartel general de un módulo obj. mil. tienen como máximo un hombre patrullando. Valores mayores generan más actividad visible pero aumentan la carga de CPU. También rige cada guarnición colocada sin un módulo propio: las que el comandante ordena durante la partida, los guardias insurgentes y de base aérea, los guardias que una tarea genera con su campamento, las guarniciones de Logística Militar y los guardias de colocación SPE. Si los módulos de despliegue militar (obj. mil. y obj. personalizado) fijan valores distintos, a esas guarniciones se les aplica el menor, y Ninguno las mantiene a todas en sus puestos.</Spanish>
     <French>Part des hommes de chaque groupe de garnison qui patrouillent entre les bâtiments voisins au lieu de tenir une position; l'infanterie de réserve qui se réveille en cours de partie et les gardes du QG d'un module obj. mil. n'ont au plus qu'un homme en patrouille. Des valeurs plus élevées génèrent plus d'activité visible mais augmentent la charge CPU. Régit aussi chaque garnison placée sans module propre: celles que le commandant ordonne en cours de partie, les gardes insurgés et de base aérienne, les gardes qu'une tâche fait apparaître avec son camp, les garnisons de la Logistique militaire et les gardes du placement SPE. Si les modules de déploiement militaire (obj. mil. et obj. personnalisé) fixent des valeurs différentes, la plus petite s'applique à ces garnisons, et Aucun les maintient toutes à leur poste.</French>
     <Portuguese>Proporção dos homens de cada grupo de guarnição que patrulham entre os edifícios próximos em vez de manter uma posição; a infantaria de reserva que desperta durante o jogo e os guardas do QG de um módulo obj. mil. têm no máximo um homem patrulhando. Valores mais altos geram mais atividade visível mas aumentam a carga de CPU. Também rege toda guarnição posicionada sem um módulo próprio: as que o comandante ordena durante o jogo, guardas insurgentes e de base aérea, os guardas que uma tarefa gera com seu acampamento, guarnições da Logística Militar e guardas do posicionamento SPE. Se os módulos de posicionamento militar (obj. mil. e obj. personalizado) definirem valores diferentes, o menor vale para essas guarnições, e Nenhum mantém todas em seus postos.</Portuguese>
     <Russian>Доля бойцов в каждой гарнизонной группе, которые патрулируют между ближайшими зданиями, а не удерживают позицию; у резервной пехоты, пробуждающейся во время игры, и у охраны штаба модуля воен. объектов патрулирует не больше одного бойца. Более высокие значения создают больше видимой активности, но увеличивают нагрузку на CPU. Также действует на все гарнизоны, размещённые без собственного модуля: приказанные командиром во время игры, охрану повстанцев и авиабаз, охрану, которую задание создаёт вместе со своим лагерем, гарнизоны военной логистики и охрану размещения SPE. Если модули военного размещения (воен. объекты и польз. объекты) задают разные значения, для этих гарнизонов действует наименьшее, а "Нет" держит их всех на постах.</Russian>
+</Key>
+<Key ID="STR_ALIVE_MP_AMBIENT_GUARD_COUNT">
+    <English>Garrisoned Infantry Groups, exact:</English>
+</Key>
+<Key ID="STR_ALIVE_MP_AMBIENT_GUARD_COUNT_COMMENT">
+    <English>Type an exact number of garrisoned infantry groups per objective to use instead of the setting above. Leave it empty to use the setting above. It is never more than the objective's infantry allows, as with the setting above.</English>
 </Key>
 <Key ID="STR_ALIVE_MP_GARRISON_PATROL_BEHAVIOUR">
     <English>Garrison Patrol Behaviour:</English>

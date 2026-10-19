@@ -181,18 +181,18 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_SPAWN">
-    <English>Probability:</English>
-    <Chinesesimp>概率:</Chinesesimp>
-    <Chinese>機率：</Chinese>
-    <Spanish>Probabilidad:</Spanish>
-    <French>Probabilité:</French>
-    <Portuguese>Probabilidade:</Portuguese>
-    <Russian>Вероятность:</Russian>
+    <English>Probability (%):</English>
+    <Chinesesimp>概率 (%):</Chinesesimp>
+    <Chinese>機率 (%)：</Chinese>
+    <Spanish>Probabilidad (%):</Spanish>
+    <French>Probabilité (%):</French>
+    <Portuguese>Probabilidade (%):</Portuguese>
+    <Russian>Вероятность (%):</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_SPAWN_COMMENT">
-    <English>Chance that a house near an existing garrison is also occupied. With Density set to None (the default), this chance applies to every house in the area instead. With Type set to Strategic it only decides buildings within 60 m of one already occupied, and every other strategic building is occupied.</English>
+    <English>Chance that a house near an existing garrison is also occupied. With Density set to None (the default), this chance applies to every house in the area instead. With Type set to Strategic it only decides buildings within 60 m of one already occupied, and every other strategic building is occupied. Type a percentage, 0 to 100 (1 is 1%); a decimal such as 0.05, as older missions stored it, is read as a fraction.</English>
     <Chinesesimp>已有驻军附近的房屋同样被占用的概率。密度设为"无"（默认）时，该概率适用于区域内的每栋房屋。类型设为 Strategic 时，它只决定距离已占用建筑 60 米以内的建筑，其他战略建筑一律被占用。</Chinesesimp>
     <Chinese>已有駐軍附近的建築同樣被佔用的機率。密度設為「無」（預設）時，該機率適用於區域內的每棟建築。類型設為 Strategic 時，它只決定距離已佔用建築 60 公尺以內的建築，其他戰略建築一律被佔用。</Chinese>
     <Spanish>Probabilidad de que una casa cercana a una guarnición existente también esté ocupada. Con la Densidad en Ninguna (predeterminado), esta probabilidad se aplica a todas las casas de la zona. Con el Tipo en Strategic solo decide los edificios a menos de 60 m de uno ya ocupado, y todos los demás edificios estratégicos se ocupan.</Spanish>
@@ -322,13 +322,13 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_DENSITY">
-    <English>Density:</English>
-    <Chinesesimp>密度:</Chinesesimp>
-    <Chinese>密度：</Chinese>
-    <Spanish>Densidad:</Spanish>
-    <French>Densité:</French>
-    <Portuguese>Densidade:</Portuguese>
-    <Russian>Плотность:</Russian>
+    <English>Density (m):</English>
+    <Chinesesimp>密度 (m):</Chinesesimp>
+    <Chinese>密度 (m)：</Chinese>
+    <Spanish>Densidad (m):</Spanish>
+    <French>Densité (m):</French>
+    <Portuguese>Densidade (m):</Portuguese>
+    <Russian>Плотность (m):</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <!-- AI-translated; native-speaker review welcome -->
@@ -343,17 +343,17 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_PATROLCHANCE">
-    <English>Patrol chance:</English>
-    <Chinesesimp>巡逻几率</Chinesesimp>
-    <Chinese>巡邏機率：</Chinese>
-    <Spanish>Probabilidad de patrulla:</Spanish>
-    <French>Probabilité de patrouille:</French>
-    <Portuguese>Probabilidade de patrulha:</Portuguese>
-    <Russian>Вероятность патрулирования:</Russian>
+    <English>Patrol chance (%):</English>
+    <Chinesesimp>巡逻几率 (%)</Chinesesimp>
+    <Chinese>巡邏機率 (%)：</Chinese>
+    <Spanish>Probabilidad de patrulla (%):</Spanish>
+    <French>Probabilité de patrouille (%):</French>
+    <Portuguese>Probabilidade de patrulha (%):</Portuguese>
+    <Russian>Вероятность патрулирования (%):</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_PATROLCHANCE_COMMENT">
-    <English>Percentage chance units might patrol around their spawn point.</English>
+    <English>Percentage chance units might patrol around their spawn point. Type a percentage, 0 to 100 (1 is 1%); a decimal such as 0.05, as older missions stored it, is read as a fraction.</English>
     <Chinesesimp>单位可能在刷新点附近巡逻</Chinesesimp>
     <Chinese>單位可能在其生成點周圍巡邏的機率百分比。</Chinese>
     <Spanish>Porcentaje de probabilidad de que las unidades patrullen alrededor de su punto de aparición.</Spanish>
@@ -403,17 +403,17 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_PATROLSEARCHCHANCE">
-    <English>Patrol search chance:</English>
-    <Chinesesimp>巡逻搜查几率</Chinesesimp>
-    <Chinese>巡邏搜索機率：</Chinese>
-    <Spanish>Probabilidad de búsqueda en patrulla:</Spanish>
-    <French>Probabilité de fouille en patrouille:</French>
-    <Portuguese>Probabilidade de busca em patrulha:</Portuguese>
-    <Russian>Вероятность обыска при патрулировании:</Russian>
+    <English>Patrol search chance (%):</English>
+    <Chinesesimp>巡逻搜查几率 (%)</Chinesesimp>
+    <Chinese>巡邏搜索機率 (%)：</Chinese>
+    <Spanish>Probabilidad de búsqueda en patrulla (%):</Spanish>
+    <French>Probabilité de fouille en patrouille (%):</French>
+    <Portuguese>Probabilidade de busca em patrulha (%):</Portuguese>
+    <Russian>Вероятность обыска при патрулировании (%):</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_PATROLSEARCHCHANCE_COMMENT">
-    <English>Percentage chance units will search nearby houses at a patrol waypoint.</English>
+    <English>Percentage chance units will search nearby houses at a patrol waypoint. Type a percentage, 0 to 100 (1 is 1%); a decimal such as 0.05, as older missions stored it, is read as a fraction.</English>
     <Chinesesimp>单位在巡逻航路点搜索附近房屋的几率</Chinesesimp>
     <Chinese>單位於巡邏路徑點時搜索附近建築的機率百分比。</Chinese>
     <Spanish>Porcentaje de probabilidad de que las unidades registren las casas cercanas en un waypoint de patrulla.</Spanish>

@@ -76,37 +76,9 @@ class CfgVehicles {
                                 class Values { class None{name="None";value=0;}; class Text{name="Text";value=1;default=1;}; class Audio{name="Audio";value=2;}; };
                         };
                         class IED_Detection_Device : Edit { property = "ALiVE_mil_ied_IED_Detection_Device"; displayName = "$STR_ALIVE_IED_IED_DETECTION_DEVICE"; tooltip = "$STR_ALIVE_IED_IED_DETECTION_DEVICE_COMMENT"; defaultValue = """MineDetector"""; };
-                        class IED_Dicker_Chance : Combo
-                        {
-                                property = "ALiVE_mil_ied_IED_Dicker_Chance";
-                                displayName = "$STR_ALIVE_IED_DICKER_CHANCE";
-                                tooltip = "$STR_ALIVE_IED_DICKER_CHANCE_COMMENT";
-                                defaultValue = """0""";
-                                class Values
-                                {
-                                        class None { name="None"; value=0; default=1; };
-                                        class Few  { name="10%"; value=10; };
-                                        class Some { name="25%"; value=25; };
-                                        class Half { name="50%"; value=50; };
-                                        class All  { name="All"; value=100; };
-                                };
-                        };
+                        class IED_Dicker_Chance : Edit { property = "ALiVE_mil_ied_IED_Dicker_Chance"; displayName = "$STR_ALIVE_IED_DICKER_CHANCE"; tooltip = "$STR_ALIVE_IED_DICKER_CHANCE_COMMENT"; defaultValue = """0"""; };
                         // A squad of the nearest hostile force comes in after a blast (ALiVE_fnc_IEDAmbush)
-                        class IED_Ambush_Chance : Combo
-                        {
-                                property = "ALiVE_mil_ied_IED_Ambush_Chance";
-                                displayName = "$STR_ALIVE_IED_AMBUSH_CHANCE";
-                                tooltip = "$STR_ALIVE_IED_AMBUSH_CHANCE_COMMENT";
-                                defaultValue = """0""";
-                                class Values
-                                {
-                                        class None { name="None"; value=0; default=1; };
-                                        class Few  { name="10%"; value=10; };
-                                        class Some { name="25%"; value=25; };
-                                        class Half { name="50%"; value=50; };
-                                        class All  { name="All"; value=100; };
-                                };
-                        };
+                        class IED_Ambush_Chance : Edit { property = "ALiVE_mil_ied_IED_Ambush_Chance"; displayName = "$STR_ALIVE_IED_AMBUSH_CHANCE"; tooltip = "$STR_ALIVE_IED_AMBUSH_CHANCE_COMMENT"; defaultValue = """0"""; };
                         // ---- Suicide Bombers ------------------------------------------------
                         class HDR_BOMBER : ALiVE_ModuleSubTitle { property = "ALiVE_mil_ied_HDR_BOMBER"; displayName = "SUICIDE BOMBERS"; };
                         class Bomber_Threat : Combo

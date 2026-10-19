@@ -113,9 +113,9 @@
     <Spanish>Define los tipos de objetivo de las etiquetas</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_DISTANCE">
-    <English>Player Tag Distance:</English>
-    <Chinesesimp>玩家标签距离:</Chinesesimp>
-    <Spanish>Distancia de las etiquetas:</Spanish>
+    <English>Player Tag Distance (m):</English>
+    <Chinesesimp>玩家标签距离 (m):</Chinesesimp>
+    <Spanish>Distancia de las etiquetas (m):</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_DISTANCE_COMMENT">
     <English>Sets Name Tag Distance</English>

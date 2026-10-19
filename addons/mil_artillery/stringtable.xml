@@ -394,13 +394,13 @@
     <Russian>Сколько целей противника командиры берут под огонь за одно сканирование. Normal сохраняет текущее поведение - только ведущая цель, примерно один запрос каждые 90 с. High распределяет огонь по 3 известным целям за сканирование с откатом 45 с; Surge до 6 целей с откатом 20 с - более плотные одновременные заградительные огни. Требуются ИИ-батареи и OPCOM.</Russian>
 </Key>
 <Key ID="STR_ALIVE_MIL_ARTILLERY_VISUALRANGE">
-    <English>Visible-fire range:</English>
-    <Chinese>可見射擊範圍:</Chinese>
-    <Chinesesimp>可见射击范围:</Chinesesimp>
-    <Spanish>Alcance de fuego visible:</Spanish>
-    <French>Portée de tir visible:</French>
-    <Portuguese>Alcance de fogo visível:</Portuguese>
-    <Russian>Дальность видимого огня:</Russian>
+    <English>Visible-fire range (m):</English>
+    <Chinese>可見射擊範圍 (m):</Chinese>
+    <Chinesesimp>可见射击范围 (m):</Chinesesimp>
+    <Spanish>Alcance de fuego visible (m):</Spanish>
+    <French>Portée de tir visible (m):</French>
+    <Portuguese>Alcance de fogo visível (m):</Portuguese>
+    <Russian>Дальность видимого огня (m):</Russian>
 </Key>
 <Key ID="STR_ALIVE_MIL_ARTILLERY_VISUALRANGE_COMMENT">
     <English>How close a player must be to the target or the firing battery for real shells to spawn and be seen. Beyond this range a mission resolves on the ledger with no visible shells, to save performance. Raise it for large maps or Zeus/spectator observation. Type the range in metres, at least 500. Default 3000.</English>
