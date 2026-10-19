@@ -25,6 +25,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 private _position = _this select 0;
@@ -49,7 +50,9 @@ while {
     	_roads = _roads - [-1];
     };
 
-    count (_roads) == 0 || {_radius > _maxRadius};
+    // on while nothing is found and the radius is within the limit: an OR here never ended once a road
+    // turned up past the limit (a 150 m search whose nearest road was 100-200 m away), so the caller hung
+    count (_roads) == 0 && {_radius <= _maxRadius};
 } do {
     _radius = _radius + _inc;
 };
