@@ -503,10 +503,16 @@ switch (_operation) do {
         if (_side isEqualTo "" && {_callbackArgs isEqualType []}) then { _side = _callbackArgs param [2, ""] };
         if (_side isEqualType west) then { _side = str _side };
         _newJob pushBack _side;
-        _pathJobs pushBack _newJob;
 
-        if (count _pathJobs == 1) then {
-            [_logic,"loadCurrentJobData"] call MAINCLASS;
+        // Queue and load in one unscheduled step. From a scheduled caller the
+        // per-frame worker could otherwise run between the two and step a job
+        // whose data is still empty, and two callers queueing together could
+        // each see two jobs and both skip the load, stalling the queue.
+        isNil {
+            _pathJobs pushBack _newJob;
+            if (count _pathJobs == 1) then {
+                [_logic,"loadCurrentJobData"] call MAINCLASS;
+            };
         };
     };
 
