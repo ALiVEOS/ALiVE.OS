@@ -271,7 +271,7 @@ if (!isNil "ALiVE_profileSystem" && {!isNil "ALiVE_profileHandler"}) then {
     [_plane, "init"] call ALIVE_fnc_profileVehicle;
     [_plane, "profileID", _planeID] call ALIVE_fnc_profileVehicle;
     [_plane, "vehicleClass", "B_Plane_CAS_01_F"] call ALIVE_fnc_profileVehicle;
-    [_plane, "objectType", "B_Plane_CAS_01_F"] call ALIVE_fnc_profileVehicle;
+    [_plane, "objectType", "Plane"] call ALIVE_fnc_profileVehicle;   // the kind: registerProfile files vehicle profiles by it
     [_plane, "position", _testPos] call ALIVE_fnc_profileVehicle;
     [_plane, "side", "WEST"] call ALIVE_fnc_profileVehicle;
     [ALIVE_profileHandler, "registerProfile", _plane] call ALIVE_fnc_profileHandler;
@@ -292,6 +292,7 @@ if (!isNil "ALiVE_profileSystem" && {!isNil "ALiVE_profileHandler"}) then {
     [_truckProfile, "init"] call ALIVE_fnc_profileVehicle;
     [_truckProfile, "profileID", _truckID] call ALIVE_fnc_profileVehicle;
     [_truckProfile, "vehicleClass", "B_Truck_01_covered_F"] call ALIVE_fnc_profileVehicle;
+    [_truckProfile, "objectType", "Truck"] call ALIVE_fnc_profileVehicle;
     [_truckProfile, "position", _testPos] call ALIVE_fnc_profileVehicle;
     [_truckProfile, "side", "WEST"] call ALIVE_fnc_profileVehicle;
     [ALIVE_profileHandler, "registerProfile", _truckProfile] call ALIVE_fnc_profileHandler;
