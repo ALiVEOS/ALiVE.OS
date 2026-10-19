@@ -518,15 +518,20 @@ switch (_operation) do {
 
     case "cancelProfilePaths": {
         private _pathJobs = _logic get "pathJobs";
-        private _cancelCurrent = count _pathJobs > 0
-            && {((_pathJobs select 0 select 4) param [0,""]) isEqualTo _args};
-        for "_i" from (count _pathJobs - 1) to 0 step -1 do {
-            if (((_pathJobs select _i select 4) param [0,""]) isEqualTo _args) then {
-                _pathJobs deleteAt _i;
+        // One unscheduled step, as findPath: the per-frame worker must not run
+        // between the check, the deletes and the reload, or it steps the next
+        // job with the cancelled one's data.
+        isNil {
+            private _cancelCurrent = count _pathJobs > 0
+                && {((_pathJobs select 0 select 4) param [0,""]) isEqualTo _args};
+            for "_i" from (count _pathJobs - 1) to 0 step -1 do {
+                if (((_pathJobs select _i select 4) param [0,""]) isEqualTo _args) then {
+                    _pathJobs deleteAt _i;
+                };
             };
-        };
-        if (_cancelCurrent) then {
-            [_logic,"loadCurrentJobData"] call MAINCLASS;
+            if (_cancelCurrent) then {
+                [_logic,"loadCurrentJobData"] call MAINCLASS;
+            };
         };
     };
 
