@@ -429,7 +429,7 @@ uiNamespace setVariable ["ALiVE_presetChooseSetAll", _fnc_setAll];
 if (_placing) then {
     ["Back to your presets", 0.02, 0.20, {
         (ctrlParent (_this select 0)) closeDisplay 1;
-        [] call ALIVE_fnc_presetWindow;
+        [true] call ALIVE_fnc_presetWindow;
     }] call _fnc_button;
 };
 

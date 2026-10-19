@@ -16,6 +16,60 @@ class CfgEditorSubcategories {
 
 class Cfg3DEN {
     class Compositions {
+        class ALiVE_Preset_first_steps {
+            path = "x\alive\addons\sys_presets\compositions\first_steps";
+            side = 0;
+            editorCategory = "ALiVE_PresetCat";
+            editorSubcategory = "ALiVE_PresetSub";
+            displayName = "First steps: one enemy commander";
+            icon = "\A3\ui_f\data\map\markers\nato\b_inf.paa";
+            useSideColorOnIcon = 1;
+        };
+        class ALiVE_Preset_offensive {
+            path = "x\alive\addons\sys_presets\compositions\offensive";
+            side = 1;
+            editorCategory = "ALiVE_PresetCat";
+            editorSubcategory = "ALiVE_PresetSub";
+            displayName = "Offensive: NATO attacks CSAT-held ground";
+            icon = "\A3\ui_f\data\map\markers\nato\b_inf.paa";
+            useSideColorOnIcon = 1;
+        };
+        class ALiVE_Preset_defensive {
+            path = "x\alive\addons\sys_presets\compositions\defensive";
+            side = 1;
+            editorCategory = "ALiVE_PresetCat";
+            editorSubcategory = "ALiVE_PresetSub";
+            displayName = "Defensive: CSAT invades, NATO holds";
+            icon = "\A3\ui_f\data\map\markers\nato\b_inf.paa";
+            useSideColorOnIcon = 1;
+        };
+        class ALiVE_Preset_insurgency {
+            path = "x\alive\addons\sys_presets\compositions\insurgency";
+            side = 1;
+            editorCategory = "ALiVE_PresetCat";
+            editorSubcategory = "ALiVE_PresetSub";
+            displayName = "Insurgency: FIA against NATO";
+            icon = "\A3\ui_f\data\map\markers\nato\b_inf.paa";
+            useSideColorOnIcon = 1;
+        };
+        class ALiVE_Preset_hearts_minds {
+            path = "x\alive\addons\sys_presets\compositions\hearts_minds";
+            side = 1;
+            editorCategory = "ALiVE_PresetCat";
+            editorSubcategory = "ALiVE_PresetSub";
+            displayName = "Hearts and minds: NATO wins over the towns";
+            icon = "\A3\ui_f\data\map\markers\nato\b_inf.paa";
+            useSideColorOnIcon = 1;
+        };
+        class ALiVE_Preset_three_way_war {
+            path = "x\alive\addons\sys_presets\compositions\three_way_war";
+            side = 1;
+            editorCategory = "ALiVE_PresetCat";
+            editorSubcategory = "ALiVE_PresetSub";
+            displayName = "Three-way war: NATO, CSAT and AAF";
+            icon = "\A3\ui_f\data\map\markers\nato\b_inf.paa";
+            useSideColorOnIcon = 1;
+        };
         class ALiVE_Preset_air_war {
             path = "x\alive\addons\sys_presets\compositions\air_war";
             side = 1;
@@ -31,105 +85,6 @@ class Cfg3DEN {
             editorCategory = "ALiVE_PresetCat";
             editorSubcategory = "ALiVE_PresetSub";
             displayName = "Combat support: CAS, transport and artillery on call";
-            icon = "\A3\ui_f\data\map\markers\nato\b_inf.paa";
-            useSideColorOnIcon = 1;
-        };
-        class ALiVE_Preset_combined_arms {
-            path = "x\alive\addons\sys_presets\compositions\combined_arms";
-            side = 1;
-            editorCategory = "ALiVE_PresetCat";
-            editorSubcategory = "ALiVE_PresetSub";
-            displayName = "Combined arms assault: guns, armour and infantry";
-            icon = "\A3\ui_f\data\map\markers\nato\b_inf.paa";
-            useSideColorOnIcon = 1;
-        };
-        class ALiVE_Preset_defensive {
-            path = "x\alive\addons\sys_presets\compositions\defensive";
-            side = 1;
-            editorCategory = "ALiVE_PresetCat";
-            editorSubcategory = "ALiVE_PresetSub";
-            displayName = "Defensive: CSAT invades, NATO holds";
-            icon = "\A3\ui_f\data\map\markers\nato\b_inf.paa";
-            useSideColorOnIcon = 1;
-        };
-        class ALiVE_Preset_first_steps {
-            path = "x\alive\addons\sys_presets\compositions\first_steps";
-            side = 0;
-            editorCategory = "ALiVE_PresetCat";
-            editorSubcategory = "ALiVE_PresetSub";
-            displayName = "First steps: one enemy commander";
-            icon = "\A3\ui_f\data\map\markers\nato\b_inf.paa";
-            useSideColorOnIcon = 1;
-        };
-        class ALiVE_Preset_fob_outpost {
-            path = "x\alive\addons\sys_presets\compositions\fob_outpost";
-            side = 1;
-            editorCategory = "ALiVE_PresetCat";
-            editorSubcategory = "ALiVE_PresetSub";
-            displayName = "Forward bases: build and hold FOBs";
-            icon = "\A3\ui_f\data\map\markers\nato\b_inf.paa";
-            useSideColorOnIcon = 1;
-        };
-        class ALiVE_Preset_ground_convoy {
-            path = "x\alive\addons\sys_presets\compositions\ground_convoy";
-            side = 1;
-            editorCategory = "ALiVE_PresetCat";
-            editorSubcategory = "ALiVE_PresetSub";
-            displayName = "Ground convoy: transport, escort and recruits";
-            icon = "\A3\ui_f\data\map\markers\nato\b_inf.paa";
-            useSideColorOnIcon = 1;
-        };
-        class ALiVE_Preset_hearts_minds {
-            path = "x\alive\addons\sys_presets\compositions\hearts_minds";
-            side = 1;
-            editorCategory = "ALiVE_PresetCat";
-            editorSubcategory = "ALiVE_PresetSub";
-            displayName = "Hearts and minds: NATO wins over the towns";
-            icon = "\A3\ui_f\data\map\markers\nato\b_inf.paa";
-            useSideColorOnIcon = 1;
-        };
-        class ALiVE_Preset_hunt_recruiters {
-            path = "x\alive\addons\sys_presets\compositions\hunt_recruiters";
-            side = 1;
-            editorCategory = "ALiVE_PresetCat";
-            editorSubcategory = "ALiVE_PresetSub";
-            displayName = "Hunt the recruiters: NATO against FIA";
-            icon = "\A3\ui_f\data\map\markers\nato\b_inf.paa";
-            useSideColorOnIcon = 1;
-        };
-        class ALiVE_Preset_insurgency {
-            path = "x\alive\addons\sys_presets\compositions\insurgency";
-            side = 1;
-            editorCategory = "ALiVE_PresetCat";
-            editorSubcategory = "ALiVE_PresetSub";
-            displayName = "Insurgency: FIA against NATO";
-            icon = "\A3\ui_f\data\map\markers\nato\b_inf.paa";
-            useSideColorOnIcon = 1;
-        };
-        class ALiVE_Preset_nato_holds_one_area {
-            path = "x\alive\addons\sys_presets\compositions\nato_holds_one_area";
-            side = 1;
-            editorCategory = "ALiVE_PresetCat";
-            editorSubcategory = "ALiVE_PresetSub";
-            displayName = "One area: NATO holds an area you mark";
-            icon = "\A3\ui_f\data\map\markers\nato\b_inf.paa";
-            useSideColorOnIcon = 1;
-        };
-        class ALiVE_Preset_nato_occupies_stratis {
-            path = "x\alive\addons\sys_presets\compositions\nato_occupies_stratis";
-            side = 1;
-            editorCategory = "ALiVE_PresetCat";
-            editorSubcategory = "ALiVE_PresetSub";
-            displayName = "Whole island: NATO takes and holds an island";
-            icon = "\A3\ui_f\data\map\markers\nato\b_inf.paa";
-            useSideColorOnIcon = 1;
-        };
-        class ALiVE_Preset_offensive {
-            path = "x\alive\addons\sys_presets\compositions\offensive";
-            side = 1;
-            editorCategory = "ALiVE_PresetCat";
-            editorSubcategory = "ALiVE_PresetSub";
-            displayName = "Offensive: NATO attacks CSAT-held ground";
             icon = "\A3\ui_f\data\map\markers\nato\b_inf.paa";
             useSideColorOnIcon = 1;
         };
@@ -151,12 +106,57 @@ class Cfg3DEN {
             icon = "\A3\ui_f\data\map\markers\nato\b_inf.paa";
             useSideColorOnIcon = 1;
         };
-        class ALiVE_Preset_three_way_war {
-            path = "x\alive\addons\sys_presets\compositions\three_way_war";
+        class ALiVE_Preset_ground_convoy {
+            path = "x\alive\addons\sys_presets\compositions\ground_convoy";
             side = 1;
             editorCategory = "ALiVE_PresetCat";
             editorSubcategory = "ALiVE_PresetSub";
-            displayName = "Three-way war: NATO, CSAT and AAF";
+            displayName = "Ground convoy: transport, escort and recruits";
+            icon = "\A3\ui_f\data\map\markers\nato\b_inf.paa";
+            useSideColorOnIcon = 1;
+        };
+        class ALiVE_Preset_combined_arms {
+            path = "x\alive\addons\sys_presets\compositions\combined_arms";
+            side = 1;
+            editorCategory = "ALiVE_PresetCat";
+            editorSubcategory = "ALiVE_PresetSub";
+            displayName = "Combined arms assault: guns, armour and infantry";
+            icon = "\A3\ui_f\data\map\markers\nato\b_inf.paa";
+            useSideColorOnIcon = 1;
+        };
+        class ALiVE_Preset_hunt_recruiters {
+            path = "x\alive\addons\sys_presets\compositions\hunt_recruiters";
+            side = 1;
+            editorCategory = "ALiVE_PresetCat";
+            editorSubcategory = "ALiVE_PresetSub";
+            displayName = "Hunt the recruiters: NATO against FIA";
+            icon = "\A3\ui_f\data\map\markers\nato\b_inf.paa";
+            useSideColorOnIcon = 1;
+        };
+        class ALiVE_Preset_fob_outpost {
+            path = "x\alive\addons\sys_presets\compositions\fob_outpost";
+            side = 1;
+            editorCategory = "ALiVE_PresetCat";
+            editorSubcategory = "ALiVE_PresetSub";
+            displayName = "Forward bases: build and hold FOBs";
+            icon = "\A3\ui_f\data\map\markers\nato\b_inf.paa";
+            useSideColorOnIcon = 1;
+        };
+        class ALiVE_Preset_nato_holds_one_area {
+            path = "x\alive\addons\sys_presets\compositions\nato_holds_one_area";
+            side = 1;
+            editorCategory = "ALiVE_PresetCat";
+            editorSubcategory = "ALiVE_PresetSub";
+            displayName = "One area: NATO holds an area you mark";
+            icon = "\A3\ui_f\data\map\markers\nato\b_inf.paa";
+            useSideColorOnIcon = 1;
+        };
+        class ALiVE_Preset_nato_occupies_stratis {
+            path = "x\alive\addons\sys_presets\compositions\nato_occupies_stratis";
+            side = 1;
+            editorCategory = "ALiVE_PresetCat";
+            editorSubcategory = "ALiVE_PresetSub";
+            displayName = "Whole island: NATO takes and holds an island";
             icon = "\A3\ui_f\data\map\markers\nato\b_inf.paa";
             useSideColorOnIcon = 1;
         };

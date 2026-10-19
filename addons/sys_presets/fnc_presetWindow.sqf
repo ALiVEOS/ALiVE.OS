@@ -18,7 +18,9 @@ screenful of config. Only the window itself is declared, which keeps the config
 for this to a handful of lines and keeps the layout where it can be read.
 
 Parameters:
-    None.
+    BOOL - true when coming back from placing or from Mods required: the list
+    reopens on the preset that was picked. Default false: a fresh open starts at
+    the top, with the first preset picked.
 
 Returns:
     BOOL - whether the window opened
@@ -36,6 +38,7 @@ Author:
 ---------------------------------------------------------------------------- */
 
 if (!is3DEN) exitWith { false };
+params [["_returning", false, [false]]];
 
 #define IDD_LIBRARY 88100
 #define IDC_LIST    88101
@@ -46,6 +49,7 @@ if (!is3DEN) exitWith { false };
 #define IDC_SUBMIT  88106
 #define IDC_CLIP    88107
 #define IDC_AUTHOR  88108
+#define IDC_LISTLABEL 88109
 
 disableSerialization;
 
@@ -160,7 +164,7 @@ _hint ctrlSetText "Pick one and place it, then change whatever you like.";
 // list by default: the save button read as an action on whatever was selected,
 // which is not what it does. Naming the list fixes the cause rather than moving
 // the button somewhere else.
-private _listLabel = _display ctrlCreate ["RscText", -1];
+private _listLabel = _display ctrlCreate ["RscText", IDC_LISTLABEL];
 _listLabel ctrlSetText "Your presets  (double click to place one)";
 _listLabel ctrlSetTextColor [0.62, 0.66, 0.58, 1];
 [_listLabel, 0.02, 0.155, 0.45, 0.04] call _fnc_at;
@@ -249,6 +253,7 @@ private _fnc_button = {
 // global: a control cannot be stored in the mission namespace, and the window is
 // the natural owner of what it is showing.
 _display setVariable ["entries", []];
+_display setVariable ["returning", _returning];
 
 private _fnc_refresh = {
     params ["_d", ["_keep", ""]];
@@ -266,8 +271,10 @@ private _fnc_refresh = {
         // display it is replacing is already destroyed, so the last pick is kept
         // outside the window as well. Going off to place a preset or to see what
         // it needs and coming back used to drop you at the top of the list, which
-        // reads as the window having forgotten what you were doing.
-        if (_keep isEqualTo "") then {
+        // reads as the window having forgotten what you were doing. Opened afresh
+        // from the menu it starts at the top instead: a list kept scrolled down to
+        // an old pick hid the first presets and looked short (Jman 19 Oct).
+        if (_keep isEqualTo "" && {_d getVariable ["returning", false]}) then {
             _keep = uiNamespace getVariable ["ALiVE_presetWindowPicked", ""];
         };
     };
@@ -288,6 +295,8 @@ private _fnc_refresh = {
         private _at = _entries findIf { (_x select 0) isEqualTo _keep };
         _lb lbSetCurSel (_at max 0);
     };
+    // how many there are, so a list scrolled part way down doesn't look short
+    (_d displayCtrl IDC_LISTLABEL) ctrlSetText format ["Your presets  (%1, double click to place one)", count _entries];
     (_d displayCtrl IDC_DETAIL) ctrlSetStructuredText parseText (
         if (count _entries == 0) then {
             "<t size='1'>Nothing here yet.<br/><br/>Copy a preset from alivemod.com or from somebody in Discord, then use Load from clipboard. It stays in your profile.</t>"

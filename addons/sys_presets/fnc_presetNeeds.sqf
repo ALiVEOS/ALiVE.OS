@@ -338,7 +338,7 @@ private _fnc_button = {
 
 ["Back to your presets", 0.02, 0.20, {
     (ctrlParent (_this select 0)) closeDisplay 1;
-    [] call ALIVE_fnc_presetWindow;
+    [true] call ALIVE_fnc_presetWindow;
 }] call _fnc_button;
 
 ["Close", 0.88, 0.10, { (ctrlParent (_this select 0)) closeDisplay 1 }] call _fnc_button;
