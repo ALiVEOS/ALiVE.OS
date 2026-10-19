@@ -366,6 +366,12 @@
     <Portuguese>Alta (18%)</Portuguese>
     <Russian>Высокая (18%)</Russian>
 </Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_NIGHTILLUM">
+    <English>Night illumination:</English>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_NIGHTILLUM_COMMENT">
+    <English>When it's dark, the guns put a flare over a fight their own side's men are in, where a player can see it. One flare from one gun at a time, only while a fire mission slot is free, never twice within 600 m in 150 seconds, and 12 an hour at most. Each flare takes the battery out of action for a minute or two. Only guns that carry flares fire them. Default No.</English>
+</Key>
 <Key ID="STR_ALIVE_MIL_ARTILLERY_DANGERCLOSE">
     <English>Ignore nearby friendlies:</English>
     <Chinese>無視附近友軍:</Chinese>

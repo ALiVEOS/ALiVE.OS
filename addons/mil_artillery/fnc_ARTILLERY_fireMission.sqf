@@ -21,6 +21,8 @@ Boolean - optional, a forced debug strike (skips the friendly check)
 String - optional, the round: HE (default), SMOKE or ILLUM
 Number - optional, rounds for this mission, capped by the commander's own volley (default the volley)
 Object - optional, the player who called it from the Combat Support tablet; they get the HQ's answers
+Boolean - optional, a flare over a night fight (Night Illumination): illumination only, never HE, no
+          friendly-fire abort, no warnings or announcements, and a short cooldown after
 
 Returns:
 Nil
@@ -29,7 +31,7 @@ Author:
 Jman
 ---------------------------------------------------------------------------- */
 
-params ["_logic","_record","_targetID","_targetPos",["_force", false, [false]],["_ordnance", "HE", [""]],["_rounds", -1, [0]],["_caller", objNull, [objNull]]];
+params ["_logic","_record","_targetID","_targetPos",["_force", false, [false]],["_ordnance", "HE", [""]],["_rounds", -1, [0]],["_caller", objNull, [objNull]],["_illumOnly", false, [false]]];
 
 // _force = a debug/test strike: skip the friendly-fire abort so the strike is
 // always observable (the caller accepts firing near friendlies)
@@ -40,6 +42,7 @@ _settings params ["_cooldownBase","_cooldownJitter","_dispersion","_roundsPerMis
 // missions fire HE and the full volley
 _ordnance = toUpper _ordnance;
 if !(_ordnance in ["HE", "SMOKE", "ILLUM"]) then { _ordnance = "HE" };
+if (_illumOnly) then { _ordnance = "ILLUM" };
 private _roundsThisMission = if (_rounds > 0) then { _rounds min _roundsPerMission } else { _roundsPerMission };
 // danger-close: when on, batteries fire even with friendlies in the impact
 // area (the module's ignore-nearby-friendlies toggle - use with caution)
@@ -183,6 +186,16 @@ if (count _guns == 0) exitWith {
 // resolve the magazine - the round asked for (HE unless a player chose otherwise), then whatever the gun carries
 private _gunLead = _guns select 0;
 private _mag = [_gunLead, _ordnance] call ALIVE_fnc_getArtyMagazineType;
+// a flare over a night fight is never swapped for a shell
+if (_illumOnly && {_mag == "" || {!([_targetPos select 0, _targetPos select 1, 0] inRangeOfArtillery [[_gunLead], _mag])}}) exitWith {
+    if (_debug) then {
+        ["ALiVE MIL_ARTILLERY - night illumination dropped: %1 has no flare that reaches %2", typeOf _gunLead, _targetPos] call ALiVE_fnc_dump;
+    };
+    // a gun whose config lists flares but that carries none isn't asked again for half an hour; one whose flare
+    // can't reach this spot (too close or too far for it) sits out 5 minutes, as the next fight may be in reach
+    [_record, "noFlareUntil", time + ([1800, 300] select (_mag != ""))] call ALiVE_fnc_hashSet;
+    [0.1] call _fnc_release;
+};
 if (_mag == "" && {_ordnance != "HE"}) then {
     if (_debug) then {
         ["ALiVE MIL_ARTILLERY - %1 has no %2 round, firing HE instead", typeOf _gunLead, _ordnance] call ALiVE_fnc_dump;
@@ -309,7 +322,8 @@ private _sideObject = [_sideText] call ALIVE_fnc_sideTextToObject;
 private _ffRadius = _dispersion + 150;
 private _ffBlocked = false;
 
-if (!_force && !_dangerClose) then {
+// a flare harms nobody, and lighting a fight its own side is in is the point of it
+if (!_force && !_dangerClose && !_illumOnly) then {
 {
     if (!_ffBlocked && {([_x,"type",""] call ALiVE_fnc_hashGet) in ["entity","vehicle"]}) then {
         private _pSide = [_x,"side",""] call ALiVE_fnc_hashGet;
@@ -341,9 +355,9 @@ if (_ffBlocked) exitWith {
 // players about to be shelled get a radio warning from their HQ, and being
 // shelled reveals the battery: a destroy-artillery task is raised for the
 // victim side (approximate position - counter-battery intel, not psychic)
-private _victimPlayers = (allPlayers - entities "HeadlessClient_F") select {
+private _victimPlayers = if (_illumOnly) then { [] } else { (allPlayers - entities "HeadlessClient_F") select {
     (_x distance2D _aimBase < 600) && {!([side group _x, _sideObject] call BIS_fnc_sideIsFriendly)}
-};
+} };
 if (count _victimPlayers > 0) then {
     private _victimSides = [];
     { _victimSides pushBackUnique (side group _x) } forEach _victimPlayers;
@@ -410,7 +424,7 @@ if (count _victimPlayers > 0) then {
 // the battery's own side hears the fire-support call too - players allied
 // with the guns get the HQ announcement wherever they are on the map. A mission a player called
 // from the tablet is answered to that player's side instead ("Shot", below)
-private _friendlyPlayers = if (isNull _caller) then { (allPlayers - entities "HeadlessClient_F") select {
+private _friendlyPlayers = if (isNull _caller && {!_illumOnly}) then { (allPlayers - entities "HeadlessClient_F") select {
     [side group _x, _sideObject] call BIS_fnc_sideIsFriendly
 } } else { [] };
 if (count _friendlyPlayers > 0) then {
@@ -595,6 +609,36 @@ if (_illumMag != "") then {
     // let the flare leave the tube before the same gun takes its next order -
     // a fresh doArtilleryFire overrides one still being laid
     sleep 20;
+};
+
+// a flare over a night fight: one round from the lead gun, then done. No ranging round, volley or settle,
+// one round off the ledger, and the gun is marked so the shell watch doesn't hand the battery to the
+// enemy's counter-battery for a flare
+if (_illumOnly) exitWith {
+    _gunLead setVariable ["ALiVE_artyIllumOnly", true, true];
+    [_gunLead, [_aimBase, _mag, 1]] remoteExec ["doArtilleryFire", _gunLead];
+    private _illumDeadline = time + 60;
+    waitUntil { sleep 3; ((call _fnc_firedCount) > 0) || {time > _illumDeadline} };
+    private _illumFired = call _fnc_firedCount;
+    sleep 5;
+    _gunLead setVariable ["ALiVE_artyIllumOnly", nil, true];
+    {
+        [_x, {
+            private _eh = _this getVariable ["ALiVE_artyMissionFiredEH", -1];
+            if (_eh >= 0) then { _this removeEventHandler ["Fired", _eh]; };
+            _this setVariable ["ALiVE_artyMissionFiredEH", nil];
+            _this setVariable ["ALiVE_artyMissionMag", nil];
+        }] remoteExec ["call", _x];
+    } forEach _guns;
+    if (_illumFired > 0) then {
+        [_record,"rounds", (([_record,"rounds"] call ALiVE_fnc_hashGet) - 1) max 0] call ALiVE_fnc_hashSet;
+    } else {
+        [_record, "noFlareUntil", time + 1800] call ALiVE_fnc_hashSet;
+    };
+    if (_debug) then {
+        ["ALiVE MIL_ARTILLERY - night illumination: battery %1 fired %2 flare(s) at %3", _entityID, _illumFired, _aimBase] call ALiVE_fnc_dump;
+    };
+    [0.15] call _fnc_release;
 };
 
 // ranging round next - it doubles as the audible warning at the target end

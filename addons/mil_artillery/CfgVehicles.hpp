@@ -185,6 +185,18 @@ class CfgVehicles
                 };
                 // Safety override: fire even with friendlies in the impact area.
                 // Default off; the tooltip flags the friendly-fire risk.
+                class nightIllumination : Combo
+                {
+                        property = "ALiVE_mil_artillery_nightIllumination";
+                        displayName = "$STR_ALIVE_MIL_ARTILLERY_NIGHTILLUM";
+                        tooltip = "$STR_ALIVE_MIL_ARTILLERY_NIGHTILLUM_COMMENT";
+                        defaultValue = """false""";
+                        class Values
+                        {
+                            class No { name = "No"; value = false; default = 1; };
+                            class Yes { name = "Yes"; value = true; };
+                        };
+                };
                 class dangerClose : Combo
                 {
                         property = "ALiVE_mil_artillery_dangerClose";

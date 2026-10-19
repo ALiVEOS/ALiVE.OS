@@ -218,6 +218,15 @@ switch(_operation) do {
         _result = _args;
     };
 
+    // Night Illumination (The Horny Latino on Discord, 18 Oct 2026): in the dark the guns put a flare over
+    // a fight their side's men are in, where a player can see it. Default off.
+    case "nightIllumination": {
+        _args = _logic getVariable ["nightIllumination", _logic getVariable ["ALiVE_mil_artillery_nightIllumination", false]];
+        if (_args isEqualType "") then { _args = (toLower _args) == "true" };
+        if !(_args isEqualType true) then { _args = false };
+        _result = _args;
+    };
+
     // real-fire radius (metres): a mission spawns visible guns and shells only
     // if a player is within this range of the target or the battery; beyond it
     // the mission resolves virtually on the ledger. Default 3000.
@@ -686,6 +695,8 @@ switch(_operation) do {
                         params ["_vehicle","_weapon","_ammo","_gunner"];
                         private _pid = _vehicle getVariable ["profileID", ""];
                         if (_pid == "") exitWith {};
+                        // a flare over a night fight (Night Illumination) doesn't give the battery away
+                        if (_vehicle getVariable ["ALiVE_artyIllumOnly", false]) exitWith {};
                         private _events = ALIVE_artyShellEvents;
                         private _idx = _events findIf { (_x select 0) == _pid && {time - (_x select 3) < 60} };
                         if (_idx >= 0) then {
@@ -763,6 +774,10 @@ switch(_operation) do {
                     [_logic,"cbScan"] call ALIVE_fnc_MilArtillery;
                     if (_tick mod 4 == 0) then {
                         [_logic,"cbConvert"] call ALIVE_fnc_MilArtillery;
+                    };
+                    // a flare over a night fight (Night Illumination), about once a minute
+                    if (_tick mod 3 == 1) then {
+                        [_logic,"illumScan"] call ALIVE_fnc_MilArtillery;
                     };
 
                     // dry batteries request resupply, capped so they don't all
@@ -1049,6 +1064,88 @@ switch(_operation) do {
         _logic setVariable ["activeMissions", (_logic getVariable ["activeMissions", 0]) + 1];
 
         [_logic, _best, _targetID, _targetPos] spawn ALIVE_fnc_MilArtilleryFireMission;
+    };
+
+    // A flare over a night fight: when it's dark, one of the side's own groups in combat with an enemy it
+    // knows of, where a player can see it, gets an illumination round from the nearest idle battery that
+    // carries flares. One at a time, only while a fire mission slot is free, none within 600 m of a flare in
+    // the last 150 s, 12 an hour at most. A flare is one round from one gun, and leaves the battery a short cooldown.
+    case "illumScan": {
+        if !([_logic, "nightIllumination"] call MAINCLASS) exitWith {};
+        if (sunOrMoon >= 0.3) exitWith {};
+        private _debug = [_logic, "debug"] call MAINCLASS;
+        private _maxConcurrent = (_logic getVariable ["intensityProfile", [420,120,75,6,2,1,90]]) select 5;
+        if ((_logic getVariable ["activeMissions", 0]) >= _maxConcurrent) exitWith {};
+        private _lit = (_logic getVariable ["illumLog", []]) select { time - (_x select 1) < 3600 };
+        _logic setVariable ["illumLog", _lit];
+        if (count _lit >= 12) exitWith {};
+        private _humanPlayers = allPlayers - entities "HeadlessClient_F";
+        if (_humanPlayers isEqualTo []) exitWith {};
+        private _visualRange = parseNumber ([_logic, "visualRange"] call MAINCLASS);
+        if (_visualRange <= 0) then { _visualRange = 3000 };
+        private _registry = _logic getVariable ["batteryRegistry", []];
+        private _sides = [];
+        {
+            private _s = [_x, "side", ""] call ALiVE_fnc_hashGet;
+            if (_s isEqualType west) then { _s = str _s };
+            if (([_x, "state"] call ALiVE_fnc_hashGet) == "IDLE") then { _sides pushBackUnique toUpper _s };
+        } forEach _registry;
+        private _fired = false;
+        {
+            private _sideText = _x;
+            if (_fired) exitWith {};
+            private _sideObj = [_sideText] call ALiVE_fnc_sideTextToObject;
+            {
+                if (_fired) exitWith {};
+                private _group = _x;
+                private _lead = leader _group;
+                private _enemy = if (alive _lead && {!isPlayer _lead} && {behaviour _lead == "COMBAT"}) then { _lead findNearestEnemy _lead } else { objNull };
+                if (!isNull _enemy && {(_enemy distance2D _lead) < 400}) then {
+                    private _pos = getPosATL _enemy;
+                    _pos set [2, 0];
+                    if ((_humanPlayers findIf { _x distance2D _pos < _visualRange }) > -1
+                        && {(_lit findIf { ((_x select 0) distance2D _pos) < 600 && {time - (_x select 1) < 150} }) < 0}) then {
+                        // the nearest idle battery of the side, in range, with flares
+                        private _best = [];
+                        private _bestDist = 1e9;
+                        {
+                            private _record = _x;
+                            private _recSide = [_record, "side"] call ALiVE_fnc_hashGet;
+                            if (_recSide isEqualType west) then { _recSide = str _recSide };
+                            if (([_record, "state"] call ALiVE_fnc_hashGet) == "IDLE"
+                                && {toUpper _recSide == _sideText}
+                                && {time > ([_record, "cooldownUntil"] call ALiVE_fnc_hashGet)}
+                                && {time > ([_record, "noFlareUntil", 0] call ALiVE_fnc_hashGet)}
+                                && {([_record, "rounds"] call ALiVE_fnc_hashGet) > 0}) then {
+                                private _ep = [ALIVE_profileHandler, "getProfile", [_record, "entityID"] call ALiVE_fnc_hashGet] call ALIVE_fnc_profileHandler;
+                                private _vp = [ALIVE_profileHandler, "getProfile", ([_record, "vehicleIDs", []] call ALiVE_fnc_hashGet) param [0, ""]] call ALIVE_fnc_profileHandler;
+                                if (!isNil "_ep" && {!isNil "_vp"}) then {
+                                    private _d = ([_ep, "position"] call ALiVE_fnc_hashGet) distance2D _pos;
+                                    if (_d < (([_record, "maxRange"] call ALiVE_fnc_hashGet) * 0.95)
+                                        && {_d > (([_record, "minRange", 300] call ALiVE_fnc_hashGet) max 300)}
+                                        && {_d < _bestDist}
+                                        && {([[_vp, "vehicleClass", ""] call ALiVE_fnc_hashGet, "ILLUM"] call ALIVE_fnc_getArtyMagazineType) != ""}) then {
+                                        _best = _record;
+                                        _bestDist = _d;
+                                    };
+                                };
+                            };
+                        } forEach _registry;
+                        if (_best isNotEqualTo []) then {
+                            _fired = true;
+                            _lit pushBack [_pos, time];
+                            _logic setVariable ["illumLog", _lit];
+                            [_best, "state", "FIRING"] call ALiVE_fnc_hashSet;
+                            _logic setVariable ["activeMissions", (_logic getVariable ["activeMissions", 0]) + 1];
+                            if (_debug) then {
+                                ["ALiVE MIL_ARTILLERY - night illumination: battery %1 lights the fight of %2 at %3 (%4 m)", [_best, "entityID"] call ALiVE_fnc_hashGet, groupId _group, mapGridPosition _pos, round _bestDist] call ALiVE_fnc_dump;
+                            };
+                            [_logic, _best, "", _pos, false, "ILLUM", 1, objNull, true] spawn ALIVE_fnc_MilArtilleryFireMission;
+                        };
+                    };
+                };
+            } forEach (allGroups select { side _x == _sideObj });
+        } forEach _sides;
     };
 
     // virtual resolution -------------------------------------------------------
