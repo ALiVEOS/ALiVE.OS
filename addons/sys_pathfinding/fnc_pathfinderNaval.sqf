@@ -28,6 +28,9 @@ switch (_operation) do {
         private _steps = [];
         {_steps pushBackUnique ((round (_x / _spacing)) max 1)} forEach [25,10,_spacing];
         private _maxNodes = ["maxNodes", 12000] call _option;
+        // how strongly the search heads for the goal: 1 is shortest-route A*, higher reaches round a long detour with
+        // far fewer nodes for a slightly longer route (F514)
+        private _weight = (["weight", missionNamespace getVariable ["ALiVE_pathfinding_navalWeight", 1.15]] call _option) max 1;
         private _frontier = [];
         [_frontier, _startPoint distance2D _goalPoint, [[0,0],_startPoint,0], 0] call ALiVE_fnc_pathfinderPriorityAdd;
         _result = createHashMapFromArray [
@@ -39,7 +42,15 @@ switch (_operation) do {
             ["frontier", _frontier], ["costs", createHashMapFromArray [[[0,0],0]]],
             ["points", createHashMapFromArray [[[0,0],_startPoint]]], ["span", 200],
             ["bounds", if ("bounds" in _options) then {_options get "bounds"} else {worldSize}],
-            ["maxNodes", _maxNodes],
+            ["maxNodes", _maxNodes], ["weight", _weight],
+            // F514: a long request that needs a search (its straight line fails, or its goal is not open water)
+            // finds its way on a coarse water grid first, then the fine search runs leg by leg along that
+            // corridor (a request made for one leg never does this again)
+            ["corridor", (["corridor", missionNamespace getVariable ["ALiVE_pathfinding_navalCorridor", true]] call _option)
+                && {(_startPoint distance2D _goalPoint) > (["corridorMin", 1500] call _option)}],
+            ["corridorCell", (["corridorCell", 250] call _option) max 50], ["legLength", (["legLength", 1000] call _option) max 250],
+            ["corridorNodes", (["corridorNodes", 6000] call _option) max 100],
+            ["options", _options],
             ["coarseLimit", 512 min ((floor (_maxNodes / 4)) max 1)],
             ["shoreRadius", ["shoreRadius", 100] call _option],
             ["createdAt", _createdAt], ["workMs", 0],
@@ -103,6 +114,20 @@ switch (_operation) do {
                 };
 
                 case "search": {
+                    if (_state get "corridor") exitWith {
+                        _state set ["corridor", false];
+                        private _cell = _state get "corridorCell";
+                        private _startCell = [floor ((_start select 0) / _cell), floor ((_start select 1) / _cell)];
+                        private _goalCell = [floor ((_goal select 0) / _cell), floor ((_goal select 1) / _cell)];
+                        private _heap = [];
+                        [_heap, _start distance2D _goal, [_startCell, +_start], 0] call ALiVE_fnc_pathfinderPriorityAdd;
+                        _state set ["coarse", createHashMapFromArray [
+                            ["heap", _heap], ["costs", createHashMapFromArray [[_startCell, 0]]], ["parents", createHashMap],
+                            ["points", createHashMapFromArray [[_startCell, +_start], [_goalCell, +_goal]]], ["closed", createHashMap],
+                            ["water", createHashMap], ["steps", createHashMap], ["startCell", _startCell], ["goalCell", _goalCell], ["expanded", 0]
+                        ]];
+                        _state set ["phase", "coarse"];
+                    };
                     private _frontier = _state get "frontier";
                     private _deferred = _state get "deferred";
                     private _costs = _state get "costs";
@@ -153,6 +178,7 @@ switch (_operation) do {
                     private _parents = _state get "parents";
                     private _points = _state get "points";
                     private _offsets = [[-1,-1],[0,-1],[1,-1],[-1,0],[1,0],[-1,1],[0,1],[1,1]];
+                    private _weight = _state get "weight";
                     private _tryNode = {
                         params ["_nextKey"];
                         if (_nextKey isEqualTo _key) exitWith {false};
@@ -177,7 +203,7 @@ switch (_operation) do {
                             // Requested refinement must not leak into the
                             // initial coarse pass when a cost improves.
                             private _nextLevel = if (!_coarseOnly && {_nextKey in _nodeLevels}) then {_nodeLevels get _nextKey} else {0};
-                            [_frontier, _newCost + 1.15 * (_next distance2D _goal), [_nextKey,_next,_nextLevel], _newCost] call ALiVE_fnc_pathfinderPriorityAdd;
+                            [_frontier, _newCost + _weight * (_next distance2D _goal), [_nextKey,_next,_nextLevel], _newCost] call ALiVE_fnc_pathfinderPriorityAdd;
                         };
                         true
                     };
@@ -233,9 +259,159 @@ switch (_operation) do {
                         // avoiding fine-node flooding of wide water.
                         private _penalty = [0,5 * _span * (_resolved + 1)] select (_validConnections > 2);
                         private _refinementQueue = [_frontier,_deferred] select _coarseOnly;
-                        [_refinementQueue, _cost + 1.15 * _distance + _penalty,
+                        [_refinementQueue, _cost + _weight * _distance + _penalty,
                             [_key,_position,_resolved + 1], _cost] call ALiVE_fnc_pathfinderPriorityAdd;
                     };
+                };
+
+                // A* on a coarse grid of water cells: a cell counts as water where the ground at its centre lies below
+                // the keel line, a step between cells where the ground sampled every 25 m along it does. Cheap height
+                // reads only, no rays, so a long detour costs a few thousand light nodes instead of the fine search's
+                // 12,000 heavy ones. The fine search still checks every leg properly.
+                case "coarse": {
+                    private _c = _state get "coarse";
+                    private _cell = _state get "corridorCell";
+                    // a metre deeper than the fine search's keel line, so the corridor keeps off water it can barely pass
+                    private _z = (_settings select 0) - (_settings select 1) - 1;
+                    private _heap = _c get "heap";
+                    private _costs = _c get "costs";
+                    private _parents = _c get "parents";
+                    private _points = _c get "points";
+                    private _closed = _c get "closed";
+                    private _water = _c get "water";
+                    private _goalCell = _c get "goalCell";
+                    private _bounds = _state get "bounds";
+                    private _height = _geometry param [0, {getTerrainHeightASL _this}];
+                    private _wet = {
+                        params ["_a", "_b"];
+                        private _len = _a distance2D _b;
+                        private _n = (ceil (_len / 25)) max 1;
+                        private _ok = true;
+                        for "_i" from 1 to (_n - 1) do {
+                            private _f = _i / _n;
+                            if (([(_a select 0) + ((_b select 0) - (_a select 0)) * _f, (_a select 1) + ((_b select 1) - (_a select 1)) * _f] call _height) >= _z) exitWith {_ok = false};
+                        };
+                        _ok
+                    };
+                    private _began2 = diag_tickTime;
+                    private _found = false;
+                    private _failed = false;
+                    while {!_found && {!_failed} && {1000 * (diag_tickTime - _began2) < (_budget max 1)}} do {
+                        private _cur = [_heap, _costs] call ALiVE_fnc_pathfinderPriorityPullFresh;
+                        if (isNil "_cur" || {(_c get "expanded") >= (_state get "corridorNodes")}) exitWith {_failed = true};
+                        _cur params ["_key", "_pos"];
+                        if (!(_key in _closed)) then {
+                            _closed set [_key, true];
+                            _c set ["expanded", (_c get "expanded") + 1];
+                            // a goal on land ends at the first water cell beside it, as the fine search's shore ending does
+                            if (_key isEqualTo _goalCell || {!(_state get "goalValid") && {(_pos distance2D _goal) <= 1.5 * _cell}}) then {_found = true; _c set ["endCell", _key]} else {
+                                private _g = _costs get _key;
+                                {
+                                    private _nk = [(_key select 0) + (_x select 0), (_key select 1) + (_x select 1)];
+                                    if !(_nk in _closed) then {
+                                        private _np = if (_nk in _points) then {_points get _nk} else {[((_nk select 0) + 0.5) * _cell, ((_nk select 1) + 0.5) * _cell, 0]};
+                                        if ((_np select 0) >= 0 && {(_np select 1) >= 0} && {(_np select 0) < _bounds} && {(_np select 1) < _bounds}) then {
+                                            private _isWater = if (_nk in _water) then {_water get _nk} else {
+                                                private _w = (_nk isEqualTo _goalCell) || {(_np call _height) < _z};
+                                                _water set [_nk, _w]; _w
+                                            };
+                                            private _stepKey = [_key, _nk];
+                                            private _isWet = _isWater && {
+                                                private _steps = _c get "steps";
+                                                if (_stepKey in _steps) then {_steps get _stepKey} else {
+                                                    private _w = [_pos, _np] call _wet;
+                                                    _steps set [_stepKey, _w]; _steps set [[_nk, _key], _w]; _w
+                                                }
+                                            };
+                                            if (_isWet) then {
+                                                private _ng = _g + (_pos distance2D _np);
+                                                private _old = if (_nk in _costs) then {_costs get _nk} else {1e15};
+                                                if (_ng < _old) then {
+                                                    _costs set [_nk, _ng];
+                                                    _parents set [_nk, _key];
+                                                    _points set [_nk, _np];
+                                                    [_heap, _ng + (_np distance2D _goal), [_nk, _np], _ng] call ALiVE_fnc_pathfinderPriorityAdd;
+                                                };
+                                            };
+                                        };
+                                    };
+                                } forEach [[-1,-1],[0,-1],[1,-1],[-1,0],[1,0],[-1,1],[0,1],[1,1]];
+                            };
+                        };
+                    };
+                    if (_failed) exitWith {
+                        // no corridor: the fine search as it always was, with its whole node budget (the coarse nodes
+                        // are kept apart, or they would count against it)
+                        _state set ["coarseExpanded", _c get "expanded"];
+                        _state deleteAt "coarse";
+                        _state set ["phase", "search"];
+                    };
+                    if (_found) then {
+                        // the corridor's cells, start to goal, and a waypoint every legLength along it
+                        private _cells = [];
+                        private _k = _c get "endCell";
+                        while {!isNil "_k"} do {
+                            _cells pushBack (_points get _k);
+                            _k = _parents get _k;
+                        };
+                        reverse _cells;
+                        private _every = (round ((_state get "legLength") / _cell)) max 1;
+                        private _legs = [];
+                        for "_i" from _every to (count _cells - 2) step _every do {_legs pushBack (_cells select _i)};
+                        _legs pushBack +_goal;
+                        _state set ["expanded", (_state get "expanded") + (_c get "expanded")];
+                        _state deleteAt "coarse";
+                        _state set ["legs", _legs];
+                        _state set ["legIndex", 0];
+                        _state set ["legFrom", +_start];
+                        _state set ["legPath", []];
+                        _state set ["phase", "legs"];
+                    };
+                };
+
+                // The fine search, one leg at a time: each leg is a request of its own, from the end of the last
+                // leg to the next corridor waypoint, so it is short and nearly straight.
+                case "legs": {
+                    private _sub = _state getOrDefault ["sub", nil];
+                    if (isNil "_sub") then {
+                        private _opts = +(_state get "options");
+                        _opts set ["corridor", false];
+                        _opts set ["maxNodes", _state get "maxNodes"];
+                        _sub = [nil, "create", [_state get "legFrom", (_state get "legs") select (_state get "legIndex"), _opts, _geometry]] call ALiVE_fnc_pathfinderNaval;
+                        _state set ["sub", _sub];
+                    };
+                    if ([_sub, "step"] call ALiVE_fnc_pathfinderNaval) then {
+                        _state deleteAt "sub";
+                        private _status = _sub get "status";
+                        private _r = _sub get "result";
+                        _state set ["expanded", (_state get "expanded") + (_sub get "expanded")];
+                        _state set ["spacing", (_state get "spacing") min (_sub get "spacing")];
+                        private _ok = _status in ["complete", "shore"];
+                        // a leg the fine search can't follow (a gap the coarse grid saw as water) gets one plain search
+                        // from where the route stands to the real goal, as the request would have had without a corridor
+                        // (not when that leg was already the one to the goal: the same search again finds nothing new)
+                        if (!_ok && {!(_state getOrDefault ["legFallback", false])} && {(_state get "legIndex") < (count (_state get "legs") - 1)}) exitWith {
+                            _state set ["legFallback", true];
+                            _state set ["legs", [+_goal]];
+                            _state set ["legIndex", 0];
+                        };
+                        // a leg's points start after its own start, so the joins carry no duplicates
+                        if (count _r > 0 && {_ok || {!((_r select (count _r - 1)) isEqualTo (_state get "legFrom"))}}) then {
+                            (_state get "legPath") append _r;
+                        };
+                        private _last = (_state get "legIndex") >= (count (_state get "legs") - 1);
+                        if (!_ok || {_last}) then {
+                            if ((_state get "legPath") isEqualTo []) then {(_state get "legPath") pushBack +(_state get "legFrom")};
+                            _state set ["result", _state get "legPath"];
+                            _state set ["status", [_status, "partial"] select !_ok];
+                            _state set ["phase", "done"];
+                        } else {
+                            if (count _r > 0) then {_state set ["legFrom", +(_r select (count _r - 1))]};
+                            _state set ["legIndex", (_state get "legIndex") + 1];
+                        };
+                    };
+                    // a leg uses the frame's budget itself
+                    _work = 8;
                 };
 
                 case "reconstruct": {
