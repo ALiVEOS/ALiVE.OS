@@ -58,7 +58,7 @@ if ([_preset] call ALIVE_fnc_presetPlaceClick) exitWith { true };
 
 // No editor display to click on, which should not happen, but placing it
 // somewhere beats refusing with nothing said.
-([_preset] call ALIVE_fnc_presetPlace) params ["_placed", "_settings", "_links", "_skipped", ["_areas", 0], ["_renamed", []], ["_trims", []], ["_objects", 0]];
+([_preset] call ALIVE_fnc_presetPlace) params ["_placed", "_settings", "_links", "_skipped", ["_areas", 0], ["_renamed", []], ["_trims", []], ["_objects", 0], ["_moved", []]];
 
 if (_placed == 0 && {_objects == 0}) exitWith {
     private _none = format ["Everything in that preset is already in this scenario, so nothing was added: %1.", _skipped joinString ", "];
@@ -76,6 +76,10 @@ private _msg = format ["Preset placed: %1 module%2, %3 setting%4, %5 sync line%6
     _links, ["s", ""] select (_links == 1)];
 if (_areas > 0) then {
     _msg = _msg + format [" %1 area%2 came with it.", _areas, ["s", ""] select (_areas == 1)];
+};
+// an object that landed in a building, a rock, water or a steep slope was moved to the nearest clear spot
+if ((_moved select { (_x select 1) >= 0 }) isNotEqualTo []) then {
+    _msg = _msg + format [" Moved to the nearest clear spot: %1.", ((_moved select { (_x select 1) >= 0 }) apply { format ["%1 (%2 m)", _x select 0, _x select 1] }) joinString ", "];
 };
 // the objects some modules work from: Field HQs, rally and recruitment points and the like
 if (_objects > 0) then {

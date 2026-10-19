@@ -74,7 +74,7 @@ uiNamespace setVariable ["ALiVE_presetPending", nil];
 // things. Set on every call, so the handler never finds it missing.
 uiNamespace setVariable ["ALiVE_presetPlaceReport", {
     params ["_result", "_where"];
-    _result params ["_placed", "_settings", "_links", "_skipped", ["_areas", 0], ["_renamed", []], ["_trims", []], ["_objects", 0]];
+    _result params ["_placed", "_settings", "_links", "_skipped", ["_areas", 0], ["_renamed", []], ["_trims", []], ["_objects", 0], ["_moved", []]];
 
     if (_placed == 0 && {_areas == 0} && {_objects == 0}) exitWith {
         format ["Everything in that preset is already in this scenario: %1.", _skipped joinString ", "]
@@ -98,6 +98,17 @@ uiNamespace setVariable ["ALiVE_presetPlaceReport", {
     if (_objects > 0) then {
         _said = _said + format [" %1 object%2 synced to %3 module%4.", _objects, ["s", ""] select (_objects == 1),
             ["their", "its"] select (_objects == 1), ["s", ""] select (_objects == 1)];
+    };
+    // An object that landed in a building, a rock or the water was moved, and how far is said, so a Field HQ
+    // that is not quite where it was drawn isn't a surprise
+    private _shifted = _moved select { (_x select 1) >= 0 };
+    private _stuck = _moved select { (_x select 1) < 0 };
+    if (count _shifted > 0) then {
+        _said = _said + format [" Moved to the nearest clear spot, off a building, rock, wall, tree, water or steep ground: %1.",
+            (_shifted apply { format ["%1 (%2 m)", _x select 0, _x select 1] }) joinString ", "];
+    };
+    if (count _stuck > 0) then {
+        _said = _said + format [" No clear spot within 60 m, so left where the preset put it: %1.", (_stuck apply { _x select 0 }) joinString ", "];
     };
     // A renamed area is worth saying out loud. The modules were pointed at the
     // new name, so it works, but the person would otherwise find an area in

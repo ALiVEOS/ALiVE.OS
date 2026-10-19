@@ -51,7 +51,7 @@ Parameters:
               the view.
 
 Returns:
-    ARRAY [_placed, _settings, _links, _skipped, _areas, _renamed, _trims, _objects]
+    ARRAY [_placed, _settings, _links, _skipped, _areas, _renamed, _trims, _objects, _moved]
       _placed   - NUMBER of modules created
       _settings - NUMBER of settings applied
       _links    - NUMBER of sync lines drawn
@@ -60,6 +60,9 @@ Returns:
       _renamed  - ARRAY of STRING, areas that had to come in under another name
       _trims    - ARRAY of STRING, areas too big for this map, cut down to fit
       _objects  - NUMBER of objects placed
+      _moved    - ARRAY of [STRING class, NUMBER metres], objects whose spot was in a building,
+                  rock, wall, tree, water or steep ground, moved to the nearest clear spot (a
+                  negative distance: none within 60 m, left where the preset put it)
 
 Examples:
     (begin example)
@@ -147,6 +150,7 @@ private _madeAreas = [];
 private _renamed = [];
 private _trims = [];
 private _madeObjects = [];
+private _moved = [];
 
 // The areas go down first, because the settings that name them have to be
 // rewritten before they are applied. A name already in use is taken by the
@@ -249,6 +253,27 @@ collect3DENHistory {
     // twice would otherwise add its objects a second time. The same object synced
     // to two modules arrives as two matching rows and is placed once.
     private _made = [];        // [[class, offset, dir], object]
+    // A spot the preset gives can be inside a building, a rock or a wall, in water or on a slope the map
+    // it was built on was too coarse to show (Jman 19 Oct 2026). Each object is checked against what is
+    // really there, by each blocker's own outline and facing, and moved to the nearest clear spot.
+    private _blockers = ["BUILDING", "HOUSE", "CHURCH", "CHAPEL", "BUNKER", "FORTRESS", "FOUNTAIN", "LIGHTHOUSE",
+        "FUELSTATION", "HOSPITAL", "TOWER", "VIEW-TOWER", "TRANSMITTER", "WATERTOWER", "POWERSOLAR", "POWERWAVE",
+        "POWERWIND", "SHIPWRECK", "STACK", "RUIN", "WALL", "FENCE", "ROCK", "ROCKS", "TREE", "SMALL TREE"];
+    private _fnc_blocked = {
+        params ["_p", "_r", "_boat", "_self"];
+        if ((surfaceIsWater _p) isNotEqualTo _boat) exitWith { true };
+        if (!_boat && {((surfaceNormal _p) select 2) < 0.9}) exitWith { true };
+        private _at = [_p select 0, _p select 1, 0];
+        if ((nearestTerrainObjects [_at, _blockers, _r + 40, false, true]) findIf {
+            // the solid shape, not the drawn one: a tree is its trunk, not its whole crown
+            private _bb = boundingBoxReal [_x, "Geometry"];
+            private _rel = _x worldToModel _at;
+            (_rel select 0) > ((_bb select 0 select 0) - _r) && {(_rel select 0) < ((_bb select 1 select 0) + _r)}
+                && {(_rel select 1) > ((_bb select 0 select 1) - _r)} && {(_rel select 1) < ((_bb select 1 select 1) + _r)}
+        } >= 0) exitWith { true };
+        // and the other objects this preset has put down
+        (_madeObjects findIf { _x != _self && {(_x distance2D _at) < (_r + ((boundingBoxReal _x) select 2) * 0.6)} }) >= 0
+    };
     {
         _x params ["_class", "_offset", "_dir", "_owner"];
         private _module = _created param [_owner, objNull];
@@ -268,6 +293,26 @@ collect3DENHistory {
         private _obj = create3DENEntity ["Object", _class, _pos];
         if (!isNull _obj) then {
             _obj set3DENAttribute ["rotation", [0, 0, _dir]];
+            private _bb = boundingBoxReal _obj;
+            private _r = ((((_bb select 1 select 0) - (_bb select 0 select 0)) max ((_bb select 1 select 1) - (_bb select 0 select 1))) / 2) max 0.5;
+            private _boat = _class isKindOf "Ship";
+            if ([_pos, _r, _boat, _obj] call _fnc_blocked) then {
+                private _to = [];
+                for "_d" from 2.5 to 60 step 2.5 do {
+                    if (_to isEqualTo []) then {
+                        for "_b" from 0 to 345 step 15 do {
+                            private _p = _pos getPos [_d, _b + _d * 7];
+                            if (_to isEqualTo [] && {!([_p, _r, _boat, _obj] call _fnc_blocked)}) then { _to = _p };
+                        };
+                    };
+                };
+                if (_to isEqualTo []) then {
+                    _moved pushBack [_class, -1];
+                } else {
+                    _obj set3DENAttribute ["position", [_to select 0, _to select 1, 0]];
+                    _moved pushBack [_class, round (_to distance2D _pos)];
+                };
+            };
             add3DENConnection ["Sync", [_obj], _module];
             _madeObjects pushBack _obj;
             _made pushBack [_key, _obj];
@@ -289,5 +334,8 @@ if (count _pick > 0) then { set3DENSelected _pick };
 ["ALIVE_fnc_presetPlace - placed %1 module(s), %2 setting(s), %3 link(s), %4 area(s), %10 of %11 object(s) at %5, taken from %6; already present: %7; renamed: %8; trimmed to fit the map: %9",
     count _live, _applied, _drawn, _areas, _anchor apply { round _x }, _source, _skipped, _renamed, _trims,
     count _madeObjects, count _objects] call ALiVE_fnc_dump;
+if (_moved isNotEqualTo []) then {
+    ["ALIVE_fnc_presetPlace - objects moved off a building, rock, wall, tree, water or steep ground: %1", _moved] call ALiVE_fnc_dump;
+};
 
-[count _live, _applied, _drawn, _skipped, _areas, _renamed, _trims, count _madeObjects]
+[count _live, _applied, _drawn, _skipped, _areas, _renamed, _trims, count _madeObjects, _moved]
