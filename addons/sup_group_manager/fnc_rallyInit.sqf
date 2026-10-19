@@ -71,9 +71,22 @@ if (isServer && {_main} && {_hqs}) then {
                         private _b = _mod getVariable [_x, objNull];
                         if (_b isEqualType objNull && {!isNull _b} && {alive _b} && {!(_b in _done)}) then {
                             _done pushBack _b;
-                            private _loc = nearestLocations [getPosATL _b, ["NameCityCapital", "NameCity", "NameVillage", "NameLocal", "Airport"], 1500];
-                            private _place = if (_loc isNotEqualTo []) then { text (_loc select 0) } else { mapGridPosition _b };
-                            ["add", [_b, format [localize (["STR_ALIVE_RALLY_HQ_NAME", "STR_ALIVE_RALLY_FIELDHQ_NAME"] select (_x == "FieldHQBuilding")), _place], _side, "hq"]] call ALiVE_fnc_rallyPoint;
+                            // the side's rally points already listed (Will501 on Discord, 19 Oct: two flags both
+                            // called "The Villa HQ"): an HQ within 100 m of one adds nothing, and one whose name is
+                            // taken gets a number, "The Villa HQ 2"
+                            private _have = (missionNamespace getVariable ["ALiVE_rallyPoints", []]) select { alive (_x select 0) && {(_x select 2) in ["ANY", _side]} };
+                            if ((_have findIf { ((_x select 0) distance2D _b) < 100 }) < 0) then {
+                                private _loc = nearestLocations [getPosATL _b, ["NameCityCapital", "NameCity", "NameVillage", "NameLocal", "Airport"], 1500];
+                                private _place = if (_loc isNotEqualTo []) then { text (_loc select 0) } else { mapGridPosition _b };
+                                private _name = format [localize (["STR_ALIVE_RALLY_HQ_NAME", "STR_ALIVE_RALLY_FIELDHQ_NAME"] select (_x == "FieldHQBuilding")), _place];
+                                private _names = _have apply { _x select 1 };
+                                if (_name in _names) then {
+                                    private _n = 2;
+                                    while { (format ["%1 %2", _name, _n]) in _names } do { _n = _n + 1 };
+                                    _name = format ["%1 %2", _name, _n];
+                                };
+                                ["add", [_b, _name, _side, "hq"]] call ALiVE_fnc_rallyPoint;
+                            };
                         };
                     } forEach ["HQBuilding", "FieldHQBuilding"];
                 };
