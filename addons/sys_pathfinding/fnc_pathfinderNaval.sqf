@@ -70,6 +70,9 @@ switch (_operation) do {
             ["options", _options],
             ["coarseLimit", 512 min ((floor (_maxNodes / 4)) max 1)],
             ["shoreRadius", _shoreRadius],
+            // a land goal the search can't reach ends 'shore' at a coast; off for the legs of a corridor route,
+            // whose 'partial' starts the plain search to the real goal
+            ["landShore", ["landShore", true] call _option],
             ["createdAt", _createdAt], ["workMs", 0],
             ["parents", createHashMap], ["closed", createHashMap], ["edges", createHashMap],
             ["expanded", 0], ["best", [_startPoint distance2D _goalPoint, [0,0]]],
@@ -162,7 +165,28 @@ switch (_operation) do {
                     private _current = [_queue, _costs] call ALiVE_fnc_pathfinderPriorityPullFresh;
                     if ((_state get "expanded") >= (_state get "maxNodes")
                         || {isNil "_current" && {count _frontier == 0} && {count _deferred == 0}}) exitWith {
-                        [(_state get "best") select 1, "partial"] call _finishSearch;
+                        // A goal on land the sea doesn't reach (a lake, or water cut off from the start) ends at the
+                        // nearest water the search found, as 'shore', so the order completes there instead of the boat
+                        // holding at that point for good, when that nearest point is at a coast (land within 200 m).
+                        // Stopped out at sea, or a goal in water, it still ends 'partial' and the boat holds there.
+                        private _bestKey = (_state get "best") select 1;
+                        private _status = "partial";
+                        if (!(_state get "goalValid") && {_state get "landShore"}) then {
+                            private _bestPos = (_state get "points") getOrDefault [_bestKey, _start];
+                            private _atCoast = false;
+                            {
+                                private _r = _x;
+                                for "_b" from 0 to 315 step 45 do {
+                                    if (!_atCoast && {!surfaceIsWater (_bestPos getPos [_r, _b])}) then { _atCoast = true };
+                                };
+                            } forEach [100, 200];
+                            if (_atCoast) then {
+                                _status = "shore";
+                                ["ALiVE naval route: land goal %1 not reached after %2 nodes; ending at the nearest water found, %3 m from it",
+                                    _goal, _state get "expanded", round ((_state get "best") select 0)] call ALiVE_fnc_dump;
+                            };
+                        };
+                        [_bestKey, _status] call _finishSearch;
                     };
                     // A stale heap can drain while the other frontier still has work.
                     if (isNil "_current") exitWith {};
@@ -393,6 +417,7 @@ switch (_operation) do {
                     if (isNil "_sub") then {
                         private _opts = +(_state get "options");
                         _opts set ["corridor", false];
+                        _opts set ["landShore", false];
                         _opts set ["maxNodes", _state get "maxNodes"];
                         _sub = [nil, "create", [_state get "legFrom", (_state get "legs") select (_state get "legIndex"), _opts, _geometry]] call ALiVE_fnc_pathfinderNaval;
                         _state set ["sub", _sub];
