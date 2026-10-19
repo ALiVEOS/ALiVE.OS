@@ -11,6 +11,9 @@
 <Key ID="STR_ALIVE_PRESETS_LIBRARY">
     <English>ALiVE Presets...</English>
 </Key>
+<Key ID="STR_ALIVE_PRESETS_MISSION_BUILDER">
+    <English>Online Mission Builder...</English>
+</Key>
 </Container>
 </Package>
 </Project>

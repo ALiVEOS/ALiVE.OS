@@ -169,7 +169,7 @@ class display3DEN {
         class MenuStrip: ctrlMenuStrip {
             class Items {
                 class ALIVE_Strip {
-                    items[] += {"Separator", "ALIVE_StripPresetLibrary", "ALIVE_StripSharePreset", "ALIVE_StripLoadPreset", "Separator", "ALIVE_StripApplyGarrisonList", "ALIVE_StripApplyBlacklist"};
+                    items[] += {"Separator", "ALIVE_StripPresetLibrary", "ALIVE_StripSharePreset", "ALIVE_StripLoadPreset", "ALIVE_StripMissionBuilder", "Separator", "ALIVE_StripApplyGarrisonList", "ALIVE_StripApplyBlacklist"};
                 };
                 class ALIVE_StripPresetLibrary {
                     text = "$STR_ALIVE_PRESETS_LIBRARY";
@@ -182,6 +182,14 @@ class display3DEN {
                 class ALIVE_StripLoadPreset {
                     text = "$STR_ALIVE_PRESETS_LOAD";
                     action = "[] call ALIVE_fnc_presetLoad;";
+                };
+                // The online Mission Builder, which writes a preset to load with Load Preset above. Opened the way the
+                // engine's own Help entries open a page; alivemod.com is whitelisted in CfgCommands at the top.
+                class ALIVE_StripMissionBuilder {
+                    text = "$STR_ALIVE_PRESETS_MISSION_BUILDER";
+                    picture = "\a3\3DEN\Data\Controls\ctrlMenu\link_ca.paa";
+                    weblink = "https://www.alivemod.com/public/alive3/mission_builder.htm";
+                    opensNewWindow = 1;
                 };
                 class ALIVE_StripApplyGarrisonList {
                     text = "Apply Picked Garrison List";
