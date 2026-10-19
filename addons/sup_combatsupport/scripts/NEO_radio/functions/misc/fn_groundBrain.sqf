@@ -78,7 +78,8 @@ while { alive _veh && {(call _fnc_crewAboard) isNotEqualTo []} } do {
                 _veh setVariable ["NEO_radioGroundUnitStatus", "MISSION", true];
                 [_veh, _task, _posA, _run, _fnc_say] spawn {
                     params ["_veh", "_task", "_posA", "_run", "_fnc_say"];
-                    private _arrived = [_veh, _posA, _run] call NEO_fnc_groundDrive;
+                    // by road, then off it for the last stretch to the point itself, up to 150 m
+                    private _arrived = [_veh, _posA, _run, true, 150] call NEO_fnc_groundDrive;
                     if (!_arrived || {(_veh getVariable ["NEO_radioGroundRun", -1]) != _run}) exitWith {};
                     if (_task == "PICKUP") then {
                         _veh setVariable ["NEO_radioGroundUnitStatus", "CARGO", true];
