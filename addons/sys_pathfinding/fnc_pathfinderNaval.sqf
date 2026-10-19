@@ -31,6 +31,23 @@ switch (_operation) do {
         // how strongly the search heads for the goal: 1 is shortest-route A*, higher reaches round a long detour with
         // far fewer nodes for a slightly longer route (F514)
         private _weight = (["weight", missionNamespace getVariable ["ALiVE_pathfinding_navalWeight", 1.15]] call _option) max 1;
+        // A goal on land ends at the shore: the search stops within shoreRadius of it. A goal further inland than
+        // that could never be reached and would run to the node cap (F517), so the radius grows to the nearest
+        // water below the keel line, found on rings every 25 m out to 2 km, plus 50 m.
+        private _shoreRadius = ["shoreRadius", 100] call _option;
+        if (!_goalValid && {!("shoreRadius" in _options)}) then {
+            private _height = _geometry param [0, {getTerrainHeightASL _this}];
+            private _keel = _seaLevel - _depth;
+            private _near = -1;
+            for "_r" from 25 to 2000 step 25 do {
+                if (_near < 0) then {
+                    for "_b" from 0 to 345 step 15 do {
+                        if (_near < 0 && {([(_goalPoint select 0) + _r * sin _b, (_goalPoint select 1) + _r * cos _b] call _height) < _keel}) then {_near = _r};
+                    };
+                };
+            };
+            if (_near > 0) then {_shoreRadius = _shoreRadius max (_near + 50)};
+        };
         private _frontier = [];
         [_frontier, _startPoint distance2D _goalPoint, [[0,0],_startPoint,0], 0] call ALiVE_fnc_pathfinderPriorityAdd;
         _result = createHashMapFromArray [
@@ -52,7 +69,7 @@ switch (_operation) do {
             ["corridorNodes", (["corridorNodes", 6000] call _option) max 100],
             ["options", _options],
             ["coarseLimit", 512 min ((floor (_maxNodes / 4)) max 1)],
-            ["shoreRadius", ["shoreRadius", 100] call _option],
+            ["shoreRadius", _shoreRadius],
             ["createdAt", _createdAt], ["workMs", 0],
             ["parents", createHashMap], ["closed", createHashMap], ["edges", createHashMap],
             ["expanded", 0], ["best", [_startPoint distance2D _goalPoint, [0,0]]],
