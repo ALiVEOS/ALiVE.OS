@@ -232,6 +232,15 @@
     <Portuguese>Fechar</Portuguese>
     <Russian>Закрыть</Russian>
 </Key>
+<Key ID="STR_ALIVE_CS_UI_BACK">
+    <English>Back to Requests</English>
+    <Chinesesimp>返回请求</Chinesesimp>
+    <Chinese>返回請求</Chinese>
+    <Spanish>Volver a las solicitudes</Spanish>
+    <French>Retour aux demandes</French>
+    <Portuguese>Voltar aos pedidos</Portuguese>
+    <Russian>Назад к запросам</Russian>
+</Key>
 <Key ID="STR_ALIVE_CS_UI_CONFIRM">
     <English>Confirm</English>
     <Chinesesimp>确认</Chinesesimp>

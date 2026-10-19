@@ -38,15 +38,32 @@ class RscDisplayALiVESITREP
             y = 0.162713 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.159596 * GUI_GRID_WAbs;
         };
+        // BACK, like the other C2ISTAR tablets (Jman 19 Oct): CANCEL's old slot is shared, so nothing else moves
+        class SITREP_Back: SITREP_RscButton
+        {
+            idc = 90010;
+            style = 2;
+            action = "if !(isNil 'ALIVE_SYS_sitrep_mapStartMarker') then {deleteMarkerLocal ALIVE_SYS_sitrep_mapStartMarker;}; if (isNil 'ALiVE_c2istar_fnc_backToMenu') then { closeDialog 0 } else { [] call ALiVE_c2istar_fnc_backToMenu }";
+            text = "BACK"; //--- ToDo: Localize;
+            x = 0.586496 * GUI_GRID_WAbs + GUI_GRID_X;
+            y = 0.742019 * GUI_GRID_HAbs + GUI_GRID_Y;
+            w = 0.0782 * GUI_GRID_WAbs;
+            h = 0.0220017 * GUI_GRID_HAbs;
+            colorBackground[] = {0.384,0.439,0.341,1};
+            colorText[] = {0.706,0.706,0.706,1};
+            colorBackgroundFocused[] = {0.706,0.706,0.706,1};
+            colorFocused[] = {0.706,0.706,0.706,1};
+            sizeEx = 0.5 * GUI_GRID_H;
+        };
         class SITREP_Abort: SITREP_RscButton
         {
             idc = 3;
             style = 2;
             action = "if !(isNil 'ALIVE_SYS_sitrep_mapStartMarker') then {deleteMarkerLocal ALIVE_SYS_sitrep_mapStartMarker;}; closeDialog 0";
             text = "CANCEL"; //--- ToDo: Localize;
-            x = 0.586496 * GUI_GRID_WAbs + GUI_GRID_X;
+            x = 0.668096 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.742019 * GUI_GRID_HAbs + GUI_GRID_Y;
-            w = 0.159796 * GUI_GRID_WAbs;
+            w = 0.0782 * GUI_GRID_WAbs;
             h = 0.0220017 * GUI_GRID_HAbs;
             colorBackground[] = {0.376,0.196,0.204,1};
             colorText[] = {0.706,0.706,0.706,1};

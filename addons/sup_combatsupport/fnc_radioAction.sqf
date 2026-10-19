@@ -29,3 +29,6 @@ switch (MOD(TABLET_MODEL)) do {
         createDialog "NEO_resourceRadio";
     };
 };
+
+// Back only means something where there is a C2ISTAR menu to go back to
+((findDisplay 655555) displayCtrl 655598) ctrlShow !(isNil "ALiVE_c2istar_fnc_backToMenu");

@@ -356,11 +356,13 @@ class SCOMTablet
             x = 0.271203 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.6810 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.2325 * GUI_GRID_WAbs;
-            h = 0.082 * GUI_GRID_HAbs;
+            // ends above the Back button (y 0.735), which shows on the Intel tablet's first page since #1089:
+            // three rows of 0.41 fit, so Commander Objectives, Unit Marking and Imagery are all clear of it
+            h = 0.050 * GUI_GRID_HAbs;
             colorBackground[] = {0.173,0.173,0.173,1};
             colorActive[] = {0.384,0.439,0.341,1};
-            sizeEx = 0.5 * GUI_GRID_H;
-            rowHeight = 0.55 * GUI_GRID_H;
+            sizeEx = 0.4 * GUI_GRID_H;
+            rowHeight = 0.41 * GUI_GRID_H;
         };
 
         class SCOMTablet_intelStatus : SCOMTablet_RscText

@@ -3835,8 +3835,15 @@ switch (_operation) do {
 
             private _back = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_SubMenuBack);
             _back ctrlShow true;
-            _back ctrlSetText localize "STR_ALIVE_SCOM_UI_CHANGE_COMMANDER";
-            _back ctrlSetEventHandler ["MouseButtonClick", "['OPS_RESET',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
+            // Back, like every other page (Jman 19 Oct): to the commander list when there are several to pick from,
+            // and straight to the C2ISTAR menu when there is one, because that list picks a lone commander by
+            // itself and would only bring the player back here
+            _back ctrlSetText localize "STR_ALIVE_SCOM_UI_BACK";
+            if (count ([_commandState,"opsOPCOMOptions",[]] call ALIVE_fnc_hashGet) > 1) then {
+                _back ctrlSetEventHandler ["MouseButtonClick", "['OPS_RESET',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
+            } else {
+                _back ctrlSetEventHandler ["MouseButtonClick", "if (isNil 'ALiVE_c2istar_fnc_backToMenu') then { closeDialog 0 } else { [] call ALiVE_c2istar_fnc_backToMenu }"];
+            };
 
             if(count(_groupData) > 0) then {
 

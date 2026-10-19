@@ -87,6 +87,7 @@ Peer Reviewed:
 #define PRTablet_CTRL_StatusText 60022
 #define PRTablet_CTRL_StatusList 60024
 #define PRTablet_CTRL_ButtonStatus 60025
+#define PRTablet_CTRL_ButtonBack 60029
 #define PRTablet_CTRL_ButtonL1 60026
 #define PRTablet_CTRL_ButtonR1 60027
 #define PRTablet_CTRL_StatusMap 60028
@@ -3647,6 +3648,11 @@ switch(_operation) do {
         _payloadStatusButton ctrlSetText localize "STR_ALIVE_PR_UI_SHOW_STATUS";
         _payloadStatusButton ctrlSetEventHandler ["MouseButtonClick", "['SHOW_STATUS_CLICK',[_this]] call ALIVE_fnc_PRTabletOnAction"];
 
+        // the first page: Back goes to the C2ISTAR menu, like the other tablets (Jman 19 Oct)
+        private _backButton = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_ButtonBack);
+        _backButton ctrlShow !(isNil "ALiVE_c2istar_fnc_backToMenu");
+        _backButton ctrlSetEventHandler ["MouseButtonClick", "if (isNil 'ALiVE_c2istar_fnc_backToMenu') then { closeDialog 0 } else { [] call ALiVE_c2istar_fnc_backToMenu }"];
+
         _payloadStatusTitle = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_StatusTitle);
         _payloadStatusTitle ctrlShow false;
 
@@ -3903,6 +3909,11 @@ switch(_operation) do {
         _payloadStatusButton ctrlSetText localize "STR_ALIVE_PR_UI_SHOW_STATUS";
         _payloadStatusButton ctrlSetEventHandler ["MouseButtonClick", "['SHOW_STATUS_CLICK',[_this]] call ALIVE_fnc_PRTabletOnAction"];
 
+        // the first page: Back goes to the C2ISTAR menu, like the other tablets (Jman 19 Oct)
+        private _backButton = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_ButtonBack);
+        _backButton ctrlShow !(isNil "ALiVE_c2istar_fnc_backToMenu");
+        _backButton ctrlSetEventHandler ["MouseButtonClick", "if (isNil 'ALiVE_c2istar_fnc_backToMenu') then { closeDialog 0 } else { [] call ALiVE_c2istar_fnc_backToMenu }"];
+
         _payloadStatusTitle = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_StatusTitle);
         _payloadStatusTitle ctrlShow false;
 
@@ -4127,6 +4138,11 @@ switch(_operation) do {
         _payloadStatusButton ctrlSetText localize "STR_ALIVE_PR_UI_SHOW_STATUS";
         _payloadStatusButton ctrlSetEventHandler ["MouseButtonClick", "['SHOW_STATUS_CLICK',[_this]] call ALIVE_fnc_PRTabletOnAction"];
 
+        // the first page: Back goes to the C2ISTAR menu, like the other tablets (Jman 19 Oct)
+        private _backButton = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_ButtonBack);
+        _backButton ctrlShow !(isNil "ALiVE_c2istar_fnc_backToMenu");
+        _backButton ctrlSetEventHandler ["MouseButtonClick", "if (isNil 'ALiVE_c2istar_fnc_backToMenu') then { closeDialog 0 } else { [] call ALiVE_c2istar_fnc_backToMenu }"];
+
         _payloadStatusTitle = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_StatusTitle);
         _payloadStatusTitle ctrlShow false;
 
@@ -4224,10 +4240,12 @@ switch(_operation) do {
             _payloadRequestButton = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_ButtonRequest);
             _payloadRequestButton ctrlShow false;
 
+            // Back steps back to the request page; Show Status, which used to turn into Back here, steps aside
             _payloadStatusButton = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_ButtonStatus);
-            _payloadStatusButton ctrlShow true;
-            _payloadStatusButton ctrlSetText localize "STR_ALIVE_PR_UI_BACK";
-            _payloadStatusButton ctrlSetEventHandler ["MouseButtonClick", "['SHOW_REQUEST_CLICK',[_this]] call ALIVE_fnc_PRTabletOnAction"];
+            _payloadStatusButton ctrlShow false;
+            private _backButton = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_ButtonBack);
+            _backButton ctrlShow true;
+            _backButton ctrlSetEventHandler ["MouseButtonClick", "['SHOW_REQUEST_CLICK',[_this]] call ALIVE_fnc_PRTabletOnAction"];
 
             _payloadStatusList = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_StatusList);
             _payloadStatusList ctrlShow true;

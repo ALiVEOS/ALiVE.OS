@@ -57,14 +57,32 @@ class NEO_resourceRadio
                 };
 
                 //Abort Button
+                // Back to the C2ISTAR menu, like the other tablets (Jman 19 Oct); shares Close's old slot, and is
+                // hidden by fnc_radioAction where C2ISTAR isn't in the mission
+                class NEO_radioBack : NEO_RscButton
+                {
+                        idc = 655598;
+                        text = "$STR_ALIVE_CS_UI_BACK";
+                        style = 2;
+                        x = 0.519796 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.7184 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        w = 0.10650 * GUI_GRID_WAbs;
+                        h = 0.028 * GUI_GRID_HAbs;
+                        sizeEx = CS_BTN_SIZE;
+                        colorBackground[] = {0.384,0.439,0.341,1};
+                        colorText[] = {0.706,0.706,0.706,1};
+                        colorBackgroundFocused[] = {0.706,0.706,0.706,1};
+                        colorFocused[] = {0.706,0.706,0.706,1};
+                        action = "if (isNil 'ALiVE_c2istar_fnc_backToMenu') then { closeDialog 0 } else { [] call ALiVE_c2istar_fnc_backToMenu }";
+                };
                 class NEO_radioAbort : NEO_RscButton
                 {
                         idc = 655561;
                         text = "$STR_ALIVE_CS_UI_CLOSE";
                         style = 2;
-                        x = 0.519796 * GUI_GRID_WAbs + GUI_GRID_X;
+                        x = 0.629821 * GUI_GRID_WAbs + GUI_GRID_X;
                         y = 0.7184 * GUI_GRID_HAbs + GUI_GRID_Y;
-                        w = 0.216525 * GUI_GRID_WAbs;
+                        w = 0.106500 * GUI_GRID_WAbs;
                         h = 0.028 * GUI_GRID_HAbs;
                         sizeEx = CS_BTN_SIZE;
                         colorBackground[] = {0.376,0.196,0.204,1};

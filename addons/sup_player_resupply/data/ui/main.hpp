@@ -65,14 +65,31 @@ class PRTablet
             colorFocused[] = {0.706,0.706,0.706,1};
         };
 
+        // Back, like the other C2ISTAR tablets (Jman 19 Oct): it shares Close's old slot, so nothing else moves
+        class PRTablet_back : PRTablet_RscButton
+        {
+            idc = 60029;
+            text = "$STR_ALIVE_PR_UI_BACK";
+            style = 0x02;
+            x = 0.519796 * GUI_GRID_WAbs + GUI_GRID_X;
+            y = 0.7350 * GUI_GRID_HAbs + GUI_GRID_Y;
+            w = 0.10650 * GUI_GRID_WAbs;
+            h = 0.028 * GUI_GRID_HAbs;
+            sizeEx = 0.5 * GUI_GRID_H;
+            colorBackground[] = {0.384,0.439,0.341,1};
+            colorText[] = {0.706,0.706,0.706,1};
+            colorBackgroundFocused[] = {0.706,0.706,0.706,1};
+            colorFocused[] = {0.706,0.706,0.706,1};
+        };
+
         class PRTablet_abort : PRTablet_RscButton
         {
             idc = 60004;
             text = "$STR_ALIVE_PR_UI_CLOSE";
             style = 0x02;
-            x = 0.519796 * GUI_GRID_WAbs + GUI_GRID_X;
+            x = 0.629821 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.7350 * GUI_GRID_HAbs + GUI_GRID_Y;
-            w = 0.216525 * GUI_GRID_WAbs;
+            w = 0.106500 * GUI_GRID_WAbs;
             h = 0.028 * GUI_GRID_HAbs;
             sizeEx = 0.5 * GUI_GRID_H;
             colorBackground[] = {0.376,0.196,0.204,1};

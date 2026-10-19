@@ -21,6 +21,7 @@ See Also:
 
 Author:
 Whigital
+Jman
 
 Peer reviewed:
 nil
@@ -60,11 +61,14 @@ private _c2Cond = {
 
 
 // Add "ALiVE_C2ISTAR" parent //
+// Clicking the parent itself opens the C2ISTAR menu, the same one a tablet's Back goes to (Jman 19 Oct), so the
+// list of tablets is one click away from ACE too. Its children keep their own access conditions, and the menu
+// checks access itself; the function only exists where C2ISTAR is in the mission.
 private _action = [
     _menu,
     "C2ISTAR",
     QMENUICON(c2),
-    {},
+    { if (!isNil "ALiVE_c2istar_fnc_backToMenu") then { [] call ALiVE_c2istar_fnc_backToMenu } },
     {true}
 ] call ace_interact_menu_fnc_createAction;
 

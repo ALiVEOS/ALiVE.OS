@@ -180,7 +180,9 @@ _menus =
 if (_menuName == "C2ISTAR") then {
         _menus set [count _menus,
         [
-            ["C2ISTAR", localize "STR_ALIVE_C2ISTAR", "popup"],
+            // the style it was asked for: reopened on its own from a tablet (ALiVE_c2istar_fnc_backToMenu) it is
+            // alive_flexiMenu_rscPopup, the ALiVE menu's own look, not CBA's default "popup" (Jman 19 Oct)
+            ["C2ISTAR", localize "STR_ALIVE_C2ISTAR", _menuRsc],
             [
 
                 ["Personnel",
