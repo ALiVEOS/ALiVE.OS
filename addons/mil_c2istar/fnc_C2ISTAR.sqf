@@ -1451,13 +1451,19 @@ switch(_operation) do {
                 };
                 [_u, { removeAllWeapons _this; _this disableAI "PATH"; _this disableAI "AUTOTARGET"; _this disableAI "TARGET" }] remoteExecCall ["call", _u];
                 ["C2ISTAR: %1 (%2) surrendered at %3", name _u, side _g, mapGridPosition _u] call ALiVE_fnc_dump;
-                // Gone once nobody is about, unless players have taken him with them.
+                // Gone once nobody is about, unless players have taken him with them: tied up, or
+                // walking in a player's group. Checked until he's gone, so one left tied up and
+                // released later is still removed.
                 [_u] spawn {
                     params ["_u"];
-                    waitUntil { sleep 30; !alive _u || {([getPosATL _u, 1000] call ALiVE_fnc_anyPlayersInRange) == 0} };
-                    // ...or tied up, or walking in a player's group
-                    if (alive _u && {!(_u getVariable ["ace_captives_isHandcuffed", false])} && {!(_u getVariable ["ALiVE_restrained", false])}
-                        && {!isPlayer leader group _u}) then { deleteVehicle _u };
+                    waitUntil {
+                        sleep 30;
+                        !alive _u || {
+                            !(_u getVariable ["ace_captives_isHandcuffed", false]) && {!(_u getVariable ["ALiVE_restrained", false])}
+                            && {!isPlayer leader group _u} && {([getPosATL _u, 1000] call ALiVE_fnc_anyPlayersInRange) == 0}
+                        }
+                    };
+                    if (alive _u) then { deleteVehicle _u };
                 };
             };
             addMissionEventHandler ["EntityKilled", {
