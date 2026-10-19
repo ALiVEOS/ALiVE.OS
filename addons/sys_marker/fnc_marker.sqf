@@ -231,18 +231,6 @@ switch (_operation) do {
 
                  waituntil {!isnil QGVAR(STORE)};
 
-                 if (didJIP) then {
-                    ["Registering Advanced Marker PVEH for %1. JIP: %2 ", player, didJIP] call ALiVE_fnc_Dump;
-
-                    // [ADDON, "restoreMarkers", [GVAR(STORE)]] call ALiVE_fnc_marker;
-
-                    QGVAR(STORE) addPublicVariableEventHandler {
-                        // Restore Markers on map for JIP
-                        [ADDON, "restoreMarkers", [(_this select 1)]] call ALiVE_fnc_marker;
-                        // ["PVEH FIRING %1", _this] call ALiVE_fnc_dump;
-                    };
-
-                };
 
                 TRACE_1("Initial STORE", GVAR(STORE));
                 GVAR(HINT) = false;
@@ -332,8 +320,11 @@ switch (_operation) do {
                 // Players who started with the mission got the saved markers only through the briefing screen above,
                 // and only if their side was known by then: with no briefing screen, or a dedicated server where the
                 // player isn't in his group that early, they never saw them until someone edited one (kawi0756 on
-                // Discord, 17 Oct). Restore here once the side is known, if the briefing didn't.
-                if (isMultiplayer && {!didJIP} && {isNil QGVAR(restored)}) then {
+                // Discord, 17 Oct). Restore here once the side is known, if the briefing didn't. A player who joins a
+                // mission already running gets them here too: his came from a handler that only fired if the store reached
+                // him after it was set up, and kept only his side's when his side might not be known yet, so it was hit
+                // and miss (kawi0756 on Discord, 19 Oct). His copy of the store is the server's as it is now.
+                if (isMultiplayer && {isNil QGVAR(restored)}) then {
                     GVAR(restored) = true;
                     [_logic, "restoreMarkers", [GVAR(STORE)]] call ALiVE_fnc_marker;
                 };

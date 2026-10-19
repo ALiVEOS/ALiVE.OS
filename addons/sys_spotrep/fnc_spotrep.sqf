@@ -53,6 +53,7 @@ See Also:
 
 Author:
 Tupolov
+Jman
 
 In memory of Peanut
 
@@ -183,25 +184,20 @@ switch (_operation) do {
 
                  waituntil {!isnil QGVAR(STORE)};
 
-                if (didJIP) then {
-                    // If JIP then also restore when STORE is rebroadcast
-                    QGVAR(STORE) addPublicVariableEventHandler {
-                        // Restore Markers on map for JIP
-                        [ADDON, "restorespotreps", [(_this select 1)]] call ALiVE_fnc_spotrep;
-                    };
-                } else {
-                      // Restore Markers on map based on initial store
-                    // Kept until the player's side is known: the restore keeps only the side's own, and on a dedicated
-                    // server the player isn't in his group yet this early, so it kept none and the players who
-                    // started with the mission never saw what was saved (kawi0756 on Discord, 17 Oct)
-                    [_logic] spawn {
-                        params ["_logic"];
-                        waitUntil { sleep 0.5; (str side group player) != "UNKNOWN" };
-                        // and C2ISTAR, which says whether reports go in the diary; a mission without it goes on after 30 s
-                        private _deadline = diag_tickTime + 30;
-                        waitUntil { sleep 0.5; !isNil "ALIVE_MIL_C2ISTAR" || {diag_tickTime > _deadline} };
-                        [_logic, "restorespotreps", [GVAR(STORE)]] call ALiVE_fnc_spotrep;
-                    };
+                // Restore Markers on map based on initial store, for every player, those who join a mission already
+                // running too: theirs came from a handler that only fired if the store reached them after it was set up,
+                // and kept only their side's when the side might not be known yet, so it was hit and miss (kawi0756 on
+                // Discord, 19 Oct). Their copy of the store is the server's as it is now
+                // Kept until the player's side is known: the restore keeps only the side's own, and on a dedicated
+                // server the player isn't in his group yet this early, so it kept none and the players who
+                // started with the mission never saw what was saved (kawi0756 on Discord, 17 Oct)
+                [_logic] spawn {
+                    params ["_logic"];
+                    waitUntil { sleep 0.5; (str side group player) != "UNKNOWN" };
+                    // and C2ISTAR, which says whether reports go in the diary; a mission without it goes on after 30 s
+                    private _deadline = diag_tickTime + 30;
+                    waitUntil { sleep 0.5; !isNil "ALIVE_MIL_C2ISTAR" || {diag_tickTime > _deadline} };
+                    [_logic, "restorespotreps", [GVAR(STORE)]] call ALiVE_fnc_spotrep;
                 };
                  TRACE_1("Initial STORE", GVAR(STORE));
 
