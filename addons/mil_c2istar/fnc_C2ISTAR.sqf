@@ -1451,16 +1451,24 @@ switch(_operation) do {
                 };
                 [_u, { removeAllWeapons _this; _this disableAI "PATH"; _this disableAI "AUTOTARGET"; _this disableAI "TARGET" }] remoteExecCall ["call", _u];
                 ["C2ISTAR: %1 (%2) surrendered at %3", name _u, side _g, mapGridPosition _u] call ALiVE_fnc_dump;
-                // Gone once nobody is about, unless players have taken him with them: tied up, or
-                // walking in a player's group. Checked until he's gone, so one left tied up and
-                // released later is still removed.
+                // Gone once nobody is about, unless players have taken him with them: walking in a player's
+                // group, or at a prison. Untied, nobody within 1 km; tied up or cuffed and left behind, nobody
+                // within the Virtual AI System's spawn radius (A. Ares on Discord, 19 Oct: a tied prisoner left
+                // where he was taken stayed for the whole mission). Checked until he's gone, so one left tied up
+                // and released later is still removed.
                 [_u] spawn {
                     params ["_u"];
                     waitUntil {
                         sleep 30;
                         !alive _u || {
-                            !(_u getVariable ["ace_captives_isHandcuffed", false]) && {!(_u getVariable ["ALiVE_restrained", false])}
-                            && {!isPlayer leader group _u} && {([getPosATL _u, 1000] call ALiVE_fnc_anyPlayersInRange) == 0}
+                            !isPlayer leader group _u && {
+                                if (_u getVariable ["ace_captives_isHandcuffed", false] || {_u getVariable ["ALiVE_restrained", false]}) then {
+                                    private _r = if (isNil "ALIVE_spawnRadius" || {!(ALIVE_spawnRadius isEqualType 0)}) then { 1500 } else { ALIVE_spawnRadius };
+                                    !([getPosATL _u] call ALiVE_c2istar_fnc_atPrison) && {([getPosATL _u, _r max 1000] call ALiVE_fnc_anyPlayersInRange) == 0}
+                                } else {
+                                    ([getPosATL _u, 1000] call ALiVE_fnc_anyPlayersInRange) == 0
+                                }
+                            }
                         }
                     };
                     if (alive _u) then { deleteVehicle _u };
