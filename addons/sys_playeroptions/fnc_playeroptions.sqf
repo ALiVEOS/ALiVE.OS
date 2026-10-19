@@ -144,10 +144,12 @@ switch (_operation) do {
                 _moduleLogic = [nil,"create"] call _code;
                 TRACE_1("Module Created",_moduleLogic);
                 // Set
+                // A setting the mission was saved before it existed isn't on the logic: left unset, the
+                // system takes its own default, instead of the copy stopping on a nil
                 {
-                    _value = _logic getVariable _x;
-                    TRACE_2("Logic Variable ",_x, _value);
-                    _moduleLogic setVariable [_x, _value];
+                    private _value = _logic getVariable _x;
+                    TRACE_2("Logic Variable ",_x, if (isNil "_value") then {"<unset>"} else {_value});
+                    if (!isNil "_value") then { _moduleLogic setVariable [_x, _value] };
                 } foreach _vars;
 
                 // Init
