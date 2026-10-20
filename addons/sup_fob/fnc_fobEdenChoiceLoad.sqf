@@ -19,6 +19,9 @@ A stored pick the list doesn't hold (a mod not loaded) is kept and shown as unre
 typed field below the list (idc 102) starts empty, as on ALiVE's other pickers: what's typed
 there becomes the current side's pick, for a class the list doesn't show.
 
+Buildings tick (Lenahan, 20 Oct): a click ticks or unticks a building, and each side can have
+several, stored comma-separated; players choose one when they deploy a FOB. Groups stay single.
+
 Storage: one string, the three picks in BLUFOR|OPFOR|Independent order.
 
 Parameters:
@@ -27,6 +30,9 @@ Parameters:
 Author:
 Jman
 ---------------------------------------------------------------------------- */
+
+#define CHECK_ON "\a3\3DEN\Data\Controls\ctrlCheckbox\textureChecked_ca.paa"
+#define CHECK_OFF "\a3\3DEN\Data\Controls\ctrlCheckbox\textureUnchecked_ca.paa"
 
 params [["_display", controlNull], ["_mode", "HUB"], ["_value", ""], ["_title", ""]];
 if (isNull _display) exitWith {};
@@ -103,6 +109,7 @@ private _populate = {
     private _slot = _display getVariable ["alive_currentSlot", 0];
     private _all = _display getVariable ["alive_fobAll", false];
     private _pick = (_display getVariable ["alive_fobPicks", ["", "", ""]]) select _slot;
+    private _ticked = (_pick splitString ", ;") apply { toLower _x };
     private _side = [1, 0, 2] select _slot;   // the slot's side, in CfgGroups' order (0 east, 1 west, 2 indep)
     _display setVariable ["alive_populating", true];
     lbClear _list;
@@ -112,14 +119,34 @@ private _populate = {
         if (_all || {if (_mode == "HUB") then { _mil } else { _rowSide < 0 || {_rowSide == _side} }}) then {
             private _i = _list lbAdd _label;
             _list lbSetData [_i, _data];
-            if (_data == _pick) then { _sel = _i };
+            if (_mode == "HUB") then {
+                _list lbSetPicture [_i, [CHECK_OFF, CHECK_ON] select (toLower _data in _ticked)];
+            } else {
+                if (_data == _pick) then { _sel = _i };
+            };
         };
     } forEach (_display getVariable ["alive_fobRows", []]);
-    if (_sel < 0 && {_pick != ""}) then {
-        _sel = _list lbAdd format [localize "STR_ALIVE_FOB_PICK_UNKNOWN", _pick];
-        _list lbSetData [_sel, _pick];
+    if (_mode == "HUB") then {
+        // ticked classes not in the list: one the Show filter hides keeps its own name, one the game
+        // doesn't have (a mod not loaded, or typed) is kept and shown as unrecognised
+        private _shown = [];
+        for "_i" from 0 to (lbSize _list - 1) do { _shown pushBack toLower (_list lbData _i) };
+        {
+            if !(toLower _x in _shown) then {
+                private _c = _x;
+                private _row = (_display getVariable ["alive_fobRows", []]) select { toLower (_x select 2) == toLower _c };
+                private _i = _list lbAdd (if (_row isEqualTo []) then { format [localize "STR_ALIVE_FOB_PICK_UNKNOWN", _c] } else { _row select 0 select 1 });
+                _list lbSetData [_i, _c]; _list lbSetPicture [_i, CHECK_ON];
+            };
+        } forEach (_pick splitString ", ;");
+        _list lbSetCurSel -1;
+    } else {
+        if (_sel < 0 && {_pick != ""}) then {
+            _sel = _list lbAdd format [localize "STR_ALIVE_FOB_PICK_UNKNOWN", _pick];
+            _list lbSetData [_sel, _pick];
+        };
+        if (_sel >= 0) then { _list lbSetCurSel _sel };
     };
-    if (_sel >= 0) then { _list lbSetCurSel _sel };
     (_display controlsGroupCtrl 102) ctrlSetText "";
     (_display controlsGroupCtrl 1200) ctrlSetText format ["%1: %2", localize "STR_ALIVE_FOB_PICK_SIDE",
         localize (["STR_ALIVE_FOB_PICK_BLUFOR", "STR_ALIVE_FOB_PICK_OPFOR", "STR_ALIVE_FOB_PICK_INDEP"] select _slot)];
@@ -135,7 +162,21 @@ _list ctrlAddEventHandler ["LBSelChanged", {
     params ["_ctrl", "_i"];
     private _disp = _ctrl getVariable "alive_disp";
     if (isNull _disp || {_disp getVariable ["alive_populating", false]} || {_i < 0}) exitWith {};
-    (_disp getVariable "alive_fobPicks") set [_disp getVariable ["alive_currentSlot", 0], _ctrl lbData _i];
+    private _slot = _disp getVariable ["alive_currentSlot", 0];
+    if ((_disp getVariable ["alive_fobMode", "HUB"]) == "HUB") then {
+        // tick or untick the building, then clear the selection so the same row can be clicked again
+        private _picks = ((_disp getVariable "alive_fobPicks") select _slot) splitString ", ;";
+        private _data = _ctrl lbData _i;
+        private _at = _picks findIf { _x == _data };
+        if (_at >= 0) then { _picks deleteAt _at } else { _picks pushBack _data };
+        _ctrl lbSetPicture [_i, [CHECK_OFF, CHECK_ON] select (_at < 0)];
+        (_disp getVariable "alive_fobPicks") set [_slot, _picks joinString ", "];
+        _disp setVariable ["alive_populating", true];
+        _ctrl lbSetCurSel -1;
+        _disp setVariable ["alive_populating", false];
+    } else {
+        (_disp getVariable "alive_fobPicks") set [_slot, _ctrl lbData _i];
+    };
 }];
 
 // The typed field: what's typed is the current side's pick (empty leaves the list's)
@@ -146,16 +187,40 @@ if (!isNull _edit) then {
     _label ctrlSetTooltip localize (["STR_ALIVE_FOB_PICK_TYPED_HUB", "STR_ALIVE_FOB_PICK_TYPED_GROUP"] select (_mode != "HUB"));
     _edit ctrlSetTooltip localize (["STR_ALIVE_FOB_PICK_TYPED_HUB", "STR_ALIVE_FOB_PICK_TYPED_GROUP"] select (_mode != "HUB"));
     _edit setVariable ["alive_disp", _display];
-    {
-        _edit ctrlAddEventHandler [_x, {
+    if (_mode == "HUB") then {
+        // buildings: what's typed is ADDED to the side's ticked ones (Jman 20 Oct), one class or several
+        // separated by commas, when the field is left; until then it's held for the save, so typing a
+        // class and pressing OK straight away still keeps it
+        _edit ctrlAddEventHandler ["KeyUp", {
             private _e = _this select 0;
             private _d = _e getVariable "alive_disp";
             if (isNull _d) exitWith {};
-            private _t = (ctrlText _e) trim [" ", 0];
-            // an empty field leaves the list's pick alone
-            if (_t != "") then { (_d getVariable "alive_fobPicks") set [_d getVariable ["alive_currentSlot", 0], _t] };
+            _d setVariable ["alive_fobTyped", (ctrlText _e) trim [" ", 0]];
         }];
-    } forEach ["KeyUp", "KillFocus"];
+        _edit ctrlAddEventHandler ["KillFocus", {
+            private _e = _this select 0;
+            private _d = _e getVariable "alive_disp";
+            if (isNull _d) exitWith {};
+            private _slot = _d getVariable ["alive_currentSlot", 0];
+            private _picks = ((_d getVariable "alive_fobPicks") select _slot) splitString ", ;";
+            private _low = _picks apply { toLower _x };
+            { if !(toLower _x in _low) then { _picks pushBack _x; _low pushBack toLower _x } } forEach ((ctrlText _e) splitString ", ;");
+            (_d getVariable "alive_fobPicks") set [_slot, _picks joinString ", "];
+            _d setVariable ["alive_fobTyped", ""];
+            [_d] call (_d getVariable "alive_populateFn");
+        }];
+    } else {
+        {
+            _edit ctrlAddEventHandler [_x, {
+                private _e = _this select 0;
+                private _d = _e getVariable "alive_disp";
+                if (isNull _d) exitWith {};
+                private _t = (ctrlText _e) trim [" ", 0];
+                // an empty field leaves the list's pick alone
+                if (_t != "") then { (_d getVariable "alive_fobPicks") set [_d getVariable ["alive_currentSlot", 0], _t] };
+            }];
+        } forEach ["KeyUp", "KillFocus"];
+    };
 };
 {
     _x params ["_idc", "_code"];

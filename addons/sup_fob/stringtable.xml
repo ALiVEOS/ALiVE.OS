@@ -126,7 +126,7 @@
                 <English>Headquarters Buildings</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_HUBS_COMMENT">
-                <English>The building each side's FOB starts with: lose it and the FOB is damaged until it's repaired. Side picks BLUFOR, OPFOR or Independent; Show lists military structures or every building. Type several class names separated by commas to let players choose one when they deploy a FOB.</English>
+                <English>The building each side's FOB starts with: lose it and the FOB is damaged until it's repaired. Side picks BLUFOR, OPFOR or Independent; Show lists military structures or every building. Click a building to tick or untick it: tick several and players choose one when they deploy a FOB.</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_GARRISON_GROUPS">
                 <English>Garrison Groups</English>
@@ -171,7 +171,7 @@
                 <English>Or type it:</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_PICK_TYPED_HUB">
-                <English>A building's class name, for one the list doesn't show, or several separated by commas for players to choose from when they deploy. What's here is this side's pick.</English>
+                <English>A building's class name, for one the list doesn't show, added to this side's ticked buildings when you leave the box. Several can be typed, separated by commas.</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_PICK_TYPED_GROUP">
                 <English>A group as faction/group, e.g. BLU_F/BUS_InfTeam, for one the list doesn't show; empty for a random group of the FOB's faction. What's here is this side's pick.</English>
