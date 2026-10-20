@@ -18,6 +18,9 @@ Description:
 
     Each segment is a [startPos, endPos, halfWidth] tuple. halfWidth is
     used by the validator to compute the wing-clearance exclusion radius.
+    A tier-3 runway piece that is only a concrete slab (runway_beton) carries
+    a fourth value, true: on Chernarus those slabs also pave the apron down the
+    hangar row, so a centreline fit prefers runway_main / runway_secondary.
     BI runways default to 12 m half-width, taxiways to 4 m, when no
     explicit width is supplied.
 
@@ -235,8 +238,9 @@ if (count _retainedSurvey > 0) then {
     } forEach (_retainedSurvey select 2);
     _orderedMatches sort true;
     {
-        private _pos = position (_taggedObjs select (_x select 0));
-        if (_x select 1) then { _runways pushBack [_pos, _pos, 12] };
+        private _obj = _taggedObjs select (_x select 0);
+        private _pos = position _obj;
+        if (_x select 1) then { _runways pushBack [_pos, _pos, 12, (count ((str _obj) regexFind ["runway_(?:main|secondary)/i"])) == 0] };
         if (_x select 2) then { _taxiways pushBack [_pos, _pos, 4] };
     } forEach _orderedMatches;
     PROFILE_SCOPE_END(AIRGEOMRETAINED)
@@ -260,7 +264,7 @@ if (count _retainedSurvey > 0) then {
             if (_isRunway) then {
                 if (_retainSurvey) then { _retainedTerrain pushBack [_x, true, _isTaxiway] };
                 private _pos = position _x;
-                _runways pushBack [_pos, _pos, 12];
+                _runways pushBack [_pos, _pos, 12, (_matches findIf { toLower ((_x select 0) select 0) in ["runway_main", "runway_secondary"] }) < 0];
             };
             if (_isTaxiway) then {
                 if (_retainSurvey && {!_isRunway}) then { _retainedTerrain pushBack [_x, false, true] };
@@ -270,6 +274,27 @@ if (count _retainedSurvey > 0) then {
         };
     } forEach _taggedObjs;
     PROFILE_SCOPE_END(AIRGEOMCLASSIFY)
+};
+
+// Slabs lying on the runway's own line are its ends (Stratis lays runway_beton_end pieces
+// there, 240 m of its 1080), so they lose the slab mark and a centreline fit keeps them;
+// only slabs off that line, an apron, are left for it to pass over. The line is the
+// farthest pair of runway_main / runway_secondary pieces, when they span 200 m or more.
+private _mainPts = (_runways select { !(_x param [3, false]) }) apply { _x select 0 };
+private _ma = []; private _mb = []; private _mspan = 0;
+{
+    private _p = _x; private _i = _forEachIndex;
+    { if (_forEachIndex > _i && {(_p distance2D _x) > _mspan}) then { _mspan = _p distance2D _x; _ma = _p; _mb = _x } } forEach _mainPts;
+} forEach _mainPts;
+if (_mspan >= 200) then {
+    private _ux = ((_mb select 0) - (_ma select 0)) / _mspan;
+    private _uy = ((_mb select 1) - (_ma select 1)) / _mspan;
+    {
+        if (_x param [3, false]) then {
+            private _q = _x select 0;
+            if (abs ((((_q select 0) - (_ma select 0)) * _uy) - (((_q select 1) - (_ma select 1)) * _ux)) < 30) then { _x set [3, false] };
+        };
+    } forEach _runways;
 };
 
 PROFILE_SCOPE_END(AIRGEOMTERRAIN)

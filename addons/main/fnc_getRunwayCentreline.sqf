@@ -133,13 +133,22 @@ if (count _authored > 0) exitWith {
 // lands rather than every frame, so the cost is irrelevant; a smarter
 // principal-axis fit would add failure modes for no practical gain.
 // ------------------------------------------------------------------------
-private _points = [];
-{
-    private _p = _x select 0;
-    if (!isNil "_p" && {_p isEqualType []} && {count _p >= 2}) then {
-        _points pushBack _p;
-    };
-} forEach _runways;
+// Runway pieces before concrete slabs, as ALiVE_fnc_buildAirsideCache does: on
+// Chernarus the runway_beton slabs also pave the apron by the hangars (Jman 20 Oct)
+private _fnc_points = {
+    private _out = [];
+    {
+        private _p = _x select 0;
+        if (!isNil "_p" && {_p isEqualType []} && {count _p >= 2}) then {
+            _out pushBack _p;
+        };
+    } forEach _this;
+    _out
+};
+private _points = (_runways select { !(_x param [3, false]) }) call _fnc_points;
+private _mainSpan = 0;
+{ private _a = _x; { _mainSpan = _mainSpan max (_a distance2D _x) } forEach _points } forEach _points;
+if (_mainSpan < 200) then { _points = _runways call _fnc_points };
 
 if (count _points < 2) exitWith { [] };
 

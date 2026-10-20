@@ -265,9 +265,22 @@ private _fnc_buildOne = {
         // ran off the end of the field into the sea bed, while this fit answers
         // 1080 m of concrete at 13 of 13. The synthesis is a guess about
         // direction; this is the ground.
+        //
+        // Runway pieces before concrete slabs (Jman 20 Oct). Chernarus's north-west
+        // airfield lays runway_main down its runway and runway_beton slabs down the
+        // apron 240 m east, by the hangars; the slab line is the longer of the two
+        // (1100 m against 760 m), so the farthest pair over both ran corner to corner
+        // and the strip lay along the hangar row. The slabs only count where the
+        // runway pieces alone don't span a runway.
         if (_rwA isEqualTo [] && {count _runways > 1}) then {
             private _pts = [];
-            { _pts pushBack (_x select 0); _pts pushBack (_x select 1); } forEach _runways;
+            { _pts pushBack (_x select 0); _pts pushBack (_x select 1); } forEach (_runways select { !(_x param [3, false]) });
+            private _span = 0;
+            { private _p = _x; { _span = _span max (_p distance2D _x) } forEach _pts } forEach _pts;
+            if (_span < 200) then {
+                _pts = [];
+                { _pts pushBack (_x select 0); _pts pushBack (_x select 1); } forEach _runways;
+            };
             private _bestSpan = 0;
             {
                 private _p = _x;
@@ -287,15 +300,14 @@ private _fnc_buildOne = {
         // field gets no runway capsule and nothing keeps ground movement off its
         // strip, which is the fault this whole cache exists to prevent.
         //
-        // Laid SYMMETRICALLY about the touchdown point rather than 1200 m in the
-        // direction ilsDirection gives. That direction was read as pointing along
-        // the runway from the threshold, and on Stratis it points off the field
-        // and out over the water, so the strip was almost entirely wrong. Which
-        // way it really points is not established, and this tier only runs where
-        // there is no concrete to measure against, so the honest shape is one
-        // that cannot be wholly wrong either way: 600 m each side of a touchdown
-        // point that sits near one end of a real runway covers that runway's near
-        // half and its overrun.
+        // Laid 1000 m from the touchdown point AGAINST ilsDirection. That direction
+        // points out along the approach, away from the runway: on 208 of 211
+        // airfields whose runway was measured from its pieces, the runway lies on
+        // the opposite side (Jman 20 Oct; on Stratis it points out over the water,
+        // which is where aircraft come in from). The old strip, 600 m each side of
+        // the point, had half its length off the field; Chernarus's Balota strip
+        // lay 240 m from its runway. 1000 m covers three runways in four whole
+        // (measured lengths: median 735 m, upper quartile 1080 m).
         if (_rwA isEqualTo []) then {
             private _bestCfg = configNull;
             private _bestD = 1e9;
@@ -317,8 +329,8 @@ private _fnc_buildOne = {
                     private _uy = _dir select 2;
                     private _ul = sqrt ((_ux * _ux) + (_uy * _uy));
                     if (_ul > 0.01) then {
-                        private _sA = [(_p select 0) - (_ux / _ul * 600), (_p select 1) - (_uy / _ul * 600), 0];
-                        private _sB = [(_p select 0) + (_ux / _ul * 600), (_p select 1) + (_uy / _ul * 600), 0];
+                        private _sA = [_p select 0, _p select 1, 0];
+                        private _sB = [(_p select 0) - (_ux / _ul * 1000), (_p select 1) - (_uy / _ul * 1000), 0];
 
                         // The guess checks itself against the ground before it
                         // is believed. A runway, a taxiway and an apron are all
@@ -342,6 +354,21 @@ private _fnc_buildOne = {
                                 (_sA select 1) + (((_sB select 1) - (_sA select 1)) * _f),
                                 0
                             ]) then { _onRoad = _onRoad + 1 };
+                        };
+
+                        // Chernarus's runways are neither roads nor main runway pieces: its
+                        // smaller fields have only concrete slabs, 50 to 100 m from the line
+                        // laid from the approach. A runway piece within 120 m of the strip
+                        // counts as ground under it too (Jman 20 Oct).
+                        if (_onRoad == 0) then {
+                            private _vx = (_sB select 0) - (_sA select 0);
+                            private _vy = (_sB select 1) - (_sA select 1);
+                            private _v2 = (_vx * _vx) + (_vy * _vy);
+                            if ((_runways findIf {
+                                private _q = _x select 0;
+                                private _f = (((((_q select 0) - (_sA select 0)) * _vx) + (((_q select 1) - (_sA select 1)) * _vy)) / _v2) max 0 min 1;
+                                (_q distance2D [(_sA select 0) + (_vx * _f), (_sA select 1) + (_vy * _f)]) < 120
+                            }) >= 0) then { _onRoad = 1 };
                         };
 
                         if (_onRoad > 0) then {
