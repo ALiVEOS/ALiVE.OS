@@ -285,6 +285,14 @@ class CfgVehicles {
                             typeName = "NUMBER";
                             defaultValue = "30";
                     };
+                    class leaderRallyClass : Edit
+                    {
+                            property = "ALiVE_sup_rally_leaderRallyClass";
+                            displayName = "$STR_ALIVE_RALLY_LEADERCLASS";
+                            tooltip = "$STR_ALIVE_RALLY_LEADERCLASS_COMMENT";
+                            typeName = "STRING";
+                            defaultValue = """""";
+                    };
                     class HDR_DISPLAY : ALiVE_ModuleSubTitle { property = "ALiVE_sup_rally_HDR_DISPLAY"; displayName = "DISPLAY"; };
                     class rallyMarkers : Combo
                         {

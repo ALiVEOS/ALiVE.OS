@@ -43,6 +43,23 @@ Jman
 
 params [["_op", "", [""]], ["_args", [], [[]]]];
 
+// An object class from a module setting (AshTray and A. Ares on Discord, 20 Oct): one class for every side, or per side as
+// "WEST=ClassA, EAST=ClassB, GUER=ClassC"; the side's own entry, else a plain one, else the default. A class the game
+// doesn't have is reported and the default used.
+private _pickClass = {
+    params [["_raw", "", [""]], ["_side", "", [""]], ["_default", "", [""]]];
+    private _plain = ""; private _mine = "";
+    {
+        private _p = _x splitString "= ";
+        if (count _p == 1 && {_plain == ""}) then { _plain = _p select 0 };
+        if (count _p >= 2 && {toUpper (_p select 0) == toUpper _side}) then { _mine = _p select 1 };
+    } forEach (_raw splitString ",;");
+    private _c = [_mine, _plain] select (_mine == "");
+    if (_c != "" && {isClass (configFile >> "CfgVehicles" >> _c)}) exitWith { _c };
+    if (_c != "") then { ["ALiVE - %1 is not an object class the game has; %2 is used instead", _c, [_default, "the usual one"] select (_default == "")] call ALiVE_fnc_dump };
+    _default
+};
+
 // the module's setting, or a default when the function is used without the module
 private _set = {
     params ["_name", "_default"];
@@ -127,9 +144,19 @@ switch (_op) do {
         // a ground holder carrying the backpack is the rally point: a backpack made with createVehicle
         // sits inside a holder of its own and reports a position kilometres away, so the marker went
         // there and deleting it left the holder behind (The Horny Latino on Discord, 14 Oct)
-        private _obj = createVehicle ["GroundWeaponHolder", _unit modelToWorld [0, 1.2, 0], [], 0, "CAN_COLLIDE"];
-        _obj setDir getDir _unit;
-        _obj addBackpackCargoGlobal ["B_Carryall_oli", 1];
+        // the mission's own object if it sets one (A. Ares, 20 Oct): a backpack goes in a holder as the usual one does,
+        // anything else stands there itself
+        private _rc = [["leaderRallyClass", ""] call _set, str side _grp, ""] call _pickClass;
+        private _obj = objNull;
+        if (_rc == "" || {_rc isKindOf "Bag_Base"}) then {
+            _obj = createVehicle ["GroundWeaponHolder", _unit modelToWorld [0, 1.2, 0], [], 0, "CAN_COLLIDE"];
+            _obj setDir getDir _unit;
+            _obj addBackpackCargoGlobal [[_rc, "B_Carryall_oli"] select (_rc == ""), 1];
+        } else {
+            _obj = createVehicle [_rc, _unit modelToWorld [0, 1.5, 0], [], 0, "CAN_COLLIDE"];
+            _obj setDir getDir _unit;
+            clearItemCargoGlobal _obj; clearWeaponCargoGlobal _obj; clearMagazineCargoGlobal _obj; clearBackpackCargoGlobal _obj;
+        };
         _grp setVariable ["ALiVE_rallyDeployed", _obj, true];
         missionNamespace setVariable [_key, time + (["leaderCooldown", 120] call _set)];
         ["add", [_obj, format [localize "STR_ALIVE_RALLY_LEADER_NAME", groupId _grp], str side _grp, "leader", [_grp, grpNull] select (_mode == "SIDE")]] call ALiVE_fnc_rallyPoint;
