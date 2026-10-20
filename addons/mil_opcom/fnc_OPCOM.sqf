@@ -129,6 +129,13 @@ switch (_operation) do {
         // -1 stops them for the rest of the mission, -2 takes the module's Pause After Kill (minutes)
         private _hvt = parseNumber format ["%1", _logic getvariable ["hvt", 0]];
         if (_hvt == -2) then { _hvt = (((parseNumber format ["%1", _logic getVariable ["hvtPauseMins", 15]]) max 0) * 60) max 1 };
+        // Occupation pause (The Horny Latino on Discord, 19 Oct): minutes an Occupation commander holds new attacks after
+        // each capture while players clear up and meet the locals; 0 (the default) is off
+        private _occPauseMins = (parseNumber format ["%1", _logic getVariable ["occPauseMins", 0]]) max 0;
+        // Preparation tasks (The Horny Latino on Discord, 19 Oct): an Invasion commander's attacks wait for a player
+        // wiretap task at the objective, or for Preparation Timeout minutes; off by default
+        private _prepTasks = (toLower format ["%1", _logic getVariable ["prepTasks", "false"]]) in ["true", "1"];
+        private _prepTimeout = ((parseNumber format ["%1", _logic getVariable ["prepTimeoutMins", 15]]) max 1) * 60;
         // Phase 4: faction sources, all unioned below.
         //   factions       : multi-select listbox (primary UX,
         //                    ORIGINAL property so old `factions`
@@ -385,6 +392,9 @@ switch (_operation) do {
             ["controltype", _type],
             ["intelchance", _intelChance],
             ["hvt", _hvt],
+            ["occPauseMins", _occPauseMins],
+            ["prepTasks", _prepTasks && {_type == "invasion"}],
+            ["prepTimeout", _prepTimeout],
             ["roadblocks", _roadblocks],
             ["insTypes", _insTypes],
             ["drugLabs", _drugLabs],
@@ -4553,6 +4563,207 @@ switch (_operation) do {
     };
 
     ///////////////////////////////////////////////////
+    // Preparation tasks (The Horny Latino on Discord, 19 Oct): before an Invasion commander attacks a new objective,
+    // players on its side are tasked with wiretapping the enemy's communications there, and the attack waits for that
+    // task or the module's Preparation Timeout, whichever comes first. One preparation at a time per commander. True
+    // when the attack may go ahead; anything that stops a task being given (no players, no C2ISTAR, nobody there to
+    // wiretap) means no wait at all.
+    ///////////////////////////////////////////////////
+    case "prepReady": {
+        private _objective = _args;
+        _result = true;
+        if !([_logic, "prepTasks", false] call ALiVE_fnc_HashGet) exitWith {};
+        private _module = [_logic, "module"] call ALiVE_fnc_HashGet;
+        private _objectiveID = [_objective, "objectiveID", ""] call ALiVE_fnc_HashGet;
+        private _state = _module getVariable ["ALiVE_prep_state", ""];
+        private _prepFor = _module getVariable ["ALiVE_prep_objectiveID", ""];
+        // finished for this objective, either way: it goes ahead (kept per objective, as one is asked about both
+        // before its recon and before its attack, with others' in between)
+        private _cleared = _module getVariable ["ALiVE_prep_cleared", []];
+        if (_objectiveID in _cleared || {_prepFor == _objectiveID && {_state in ["done", "expired"]}}) exitWith {};
+        // one in hand for another objective holds this one back, so players get one at a time
+        if (_state == "requested" && {_prepFor != _objectiveID}) exitWith {
+            // unless that one has run out of time
+            if (time <= (_module getVariable ["ALiVE_prep_deadline", -1])) then { _result = false } else {
+                _module setVariable ["ALiVE_prep_state", "expired"];
+                _cleared pushBackUnique _prepFor;
+                _module setVariable ["ALiVE_prep_cleared", _cleared];
+                ["OPCOM %1: the preparation for %2 ran out of time", [_logic, "side", ""] call ALiVE_fnc_HashGet, _prepFor] call ALiVE_fnc_dump;
+                _result = false;
+            };
+        };
+        if (_state == "requested") exitWith {
+            private _taskID = _module getVariable ["ALiVE_prep_taskID", ""];
+            private _records = (([ALiVE_TaskHandler, "tasks", ["", [], [], nil]] call ALiVE_fnc_HashGet) select 2) select { ((_x select 0) find _taskID) == 0 };
+            private _states = _records apply { _x select 8 };
+            private _why = "";
+            if ("Succeeded" in _states) then { _why = "done" };
+            if (_why == "" && {_states isNotEqualTo []} && {(_states findIf { !(_x in ["Failed", "Canceled"]) }) < 0}) then { _why = "failed" };
+            if (_why == "" && {time > (_module getVariable ["ALiVE_prep_deadline", -1])}) then { _why = "time up" };
+            // C2ISTAR made nothing in 2 minutes: don't wait the whole timeout for it
+            if (_why == "" && {_records isEqualTo []} && {time - (_module getVariable ["ALiVE_prep_requestedAt", -1]) > 120}) then { _why = "no task made" };
+            if (_why == "") exitWith { _result = false };
+            _module setVariable ["ALiVE_prep_state", ["expired", "done"] select (_why == "done")];
+            _cleared pushBackUnique _objectiveID;
+            _module setVariable ["ALiVE_prep_cleared", _cleared];
+            ["OPCOM %1: the attack on %2 goes ahead (preparation %3)", [_logic, "side", ""] call ALiVE_fnc_HashGet, _objectiveID, _why] call ALiVE_fnc_dump;
+        };
+        // a new objective: ask for the task
+        private _side = [_logic, "side", "WEST"] call ALiVE_fnc_HashGet;
+        private _players = [_logic, "prepTestPlayers", []] call ALiVE_fnc_HashGet;      // a test sets this; empty in play
+        if (_players isEqualTo []) then {
+            private _p = [_side] call ALiVE_fnc_getPlayersDataSource;
+            _players = [_p select 1, _p select 0];
+        };
+        private _center = [_objective, "center", [0,0,0]] call ALiVE_fnc_HashGet;
+        // the faction holding the objective, from the enemy groups within 500 m
+        private _enemyFaction = "";
+        {
+            private _near = [_center, 500, [_x, "entity"]] call ALIVE_fnc_getNearProfiles;
+            if (_enemyFaction == "" && {_near isNotEqualTo []}) then { _enemyFaction = [_near select 0, "faction", ""] call ALiVE_fnc_HashGet };
+        } forEach ([_logic, "sidesenemy", []] call ALiVE_fnc_HashGet);
+        if (isNil "ALIVE_MIL_C2ISTAR" || {isNil "ALiVE_TaskHandler"} || {isNil "ALIVE_eventLog"} || {(_players select 0) isEqualTo []}
+            || {!(missionNamespace getVariable ["ALiVE_c2istar_autoPlayerTasks", true])} || {_enemyFaction == ""}) exitWith {
+            // nobody to give it to: the attack goes ahead, and the objective is asked about again once players are on;
+            // nobody holding it: no task to set, ever
+            if (_enemyFaction == "") then {
+                _cleared pushBackUnique _objectiveID;
+                _module setVariable ["ALiVE_prep_cleared", _cleared];
+                ["OPCOM %1: no preparation task for %2 (no enemy groups there), the attack goes ahead", _side, _objectiveID] call ALiVE_fnc_dump;
+            };
+        };
+        // a comms building at the objective if there is one (matched by model, as C2ISTAR's own index does); with none,
+        // the task puts up its own comms site
+        private _comms = (missionNamespace getVariable ["ALIVE_civilianCommsBuildingTypes", []]) apply { toLower _x };
+        private _building = objNull;
+        if (_comms isNotEqualTo []) then {
+            {
+                private _m = toLower ((getModelInfo _x) select 1);
+                if (alive _x && {(_comms findIf { (_m find _x) > -1 }) > -1}) exitWith { _building = _x };
+            } forEach (nearestObjects [_center, ["House", "Building"], ([_objective, "size", 150] call ALiVE_fnc_HashGet) max 150]);
+        };
+        private _taskID = format ["PREP_%1_%2", _objectiveID, floor time];
+        private _faction = ([_logic, "factions", [""]] call ALiVE_fnc_HashGet) param [0, ""];
+        private _taskData = [_taskID, "OPCOM", _side, _faction, "Wiretap", "Map", +_center, _players, _enemyFaction, "Y", "Side", [_building]];
+        [ALIVE_eventLog, "addEvent", ["TASK_GENERATE", _taskData, "OPCOM"] call ALIVE_fnc_event] call ALIVE_fnc_eventLog;
+        _module setVariable ["ALiVE_prep_objectiveID", _objectiveID];
+        _module setVariable ["ALiVE_prep_taskID", _taskID];
+        _module setVariable ["ALiVE_prep_requestedAt", time];
+        _module setVariable ["ALiVE_prep_deadline", time + ([_logic, "prepTimeout", 900] call ALiVE_fnc_HashGet)];
+        _module setVariable ["ALiVE_prep_state", "requested"];
+        ["OPCOM %1: the attack on %2 waits for a wiretap task at %3", _side, _objectiveID, mapGridPosition _center] call ALiVE_fnc_dump;
+        _result = false;
+    };
+
+    ///////////////////////////////////////////////////
+    // Occupation pause (The Horny Latino on Discord, 19 Oct): after a capture the commander holds new attacks for the
+    // module's Pause After Capture and gives players clean-up or hearts-and-minds tasks round the place it took. It moves
+    // on when those tasks are all closed or the timer runs out, whichever comes first; with no tasks the timer governs.
+    // Defence, reserve and reinforcement go on as usual.
+    ///////////////////////////////////////////////////
+    case "occPauseStart": {
+        private _objective = _args;
+        private _mins = [_logic,"occPauseMins",0] call ALiVE_fnc_HashGet;
+        if (!(_mins isEqualType 0) || {_mins <= 0} || {([_logic,"controltype",""] call ALiVE_fnc_HashGet) != "occupation"}) exitWith {};
+        private _module = [_logic,"module"] call ALiVE_fnc_HashGet;
+        private _sideText = [_logic,"side","WEST"] call ALiVE_fnc_HashGet;
+        // a second capture while paused extends the hold rather than starting it again
+        _module setVariable ["ALiVE_Occ_holdUntil", (time + _mins * 60) max (_module getVariable ["ALiVE_Occ_holdUntil", -1])];
+        _module setVariable ["ALiVE_Occ_raisedAt", time];
+        private _center = [_objective,"center",[0,0,0]] call ALiVE_fnc_HashGet;
+        private _objID = [_objective,"objectiveID","obj"] call ALiVE_fnc_HashGet;
+        private _civ = ([_objective,"objectiveType","MIL"] call ALiVE_fnc_HashGet) in ["CIV","CCU"];
+        private _types = [["RemoveIED","DestroyVehicles"],["AidDelivery","MeetLocalLeader"]] select _civ;
+        if (_civ) then {
+            // only the civic families the mission left switched on
+            // (unset when C2ISTAR hasn't said: no filter; set and empty means the mission switched them all off)
+            if (!isNil "ALIVE_civicEnabledTaskFamilies") then {
+                private _families = ALIVE_civicEnabledTaskFamilies apply { toUpper _x };
+                _types = _types select { (toUpper _x) in _families };
+            };
+        };
+        private _players = [_sideText] call ALiVE_fnc_getPlayersDataSource;
+        // this capture's own tasks only: one left open from a pause the timer ended doesn't hold this one
+        _module setVariable ["ALiVE_Occ_pauseTasks", []];
+        if (!(missionNamespace getVariable ["ALiVE_c2istar_autoPlayerTasks", true]) || {isNil "ALIVE_eventLog"}
+            || {isNil "ALIVE_taskHandler"} || {(_players select 1) isEqualTo []} || {_types isEqualTo []}) then {
+            ["OPCOM %1: holding new attacks for %2 min after taking %3 (no tasks to give, so the timer decides)", _sideText, _mins, _objID] call ALiVE_fnc_dump;
+        } else {
+            // the clean-up tasks look for the first hostile commander's lead faction
+            private _mySide = [_sideText] call ALiVE_fnc_sideTextToObject;
+            private _enemyFaction = "";
+            {
+                private _theirSide = [[_x,"side","CIV"] call ALiVE_fnc_HashGet] call ALiVE_fnc_sideTextToObject;
+                if (_enemyFaction == "" && {(_mySide getFriend _theirSide) < 0.6}) then {
+                    _enemyFaction = ([_x,"factions",[]] call ALiVE_fnc_HashGet) param [0, ""];
+                };
+            } forEach (missionNamespace getVariable ["OPCOM_instances", []]);
+            private _ids = [];
+            private _faction = ([_logic,"factions",[]] call ALiVE_fnc_HashGet) param [0, ""];
+            {
+                private _id = format ["occpause_%1_%2_%3", [_logic,"opcomID",""] call ALiVE_fnc_HashGet, round time, _forEachIndex];
+                private _taskData = [_id, "OPCOM", _sideText, _faction, _x, "Map", +_center,
+                    [_players select 1, _players select 0], _enemyFaction, "Y", "Side"];
+                [ALIVE_eventLog, "addEvent", ["TASK_GENERATE", _taskData, "OPCOM"] call ALIVE_fnc_event] call ALIVE_fnc_eventLog;
+                _ids pushBack _id;
+            } forEach _types;
+            _module setVariable ["ALiVE_Occ_pauseTasks", _ids];
+            ["OPCOM %1: holding new attacks for up to %2 min after taking %3; tasks %4 at %5", _sideText, _mins, _objID, _types, mapGridPosition _center] call ALiVE_fnc_dump;
+        };
+        // one watcher wakes the commander as soon as the hold ends, rather than at its next 5 minute cycle
+        if !(_module getVariable ["ALiVE_Occ_watcher", false]) then {
+            _module setVariable ["ALiVE_Occ_watcher", true];
+            [_logic, _module] spawn {
+                params ["_h", "_module"];
+                waitUntil { sleep 10; [_h,"occPauseOpen"] call ALiVE_fnc_OPCOM };
+                _module setVariable ["ALiVE_Occ_watcher", false];
+                private _fsm = [_h,"OPCOM_FSM",-1] call ALiVE_fnc_HashGet;
+                if (_fsm isEqualType 0 && {_fsm > -1}) then {
+                    private _q = _fsm getFSMVariable ["_OPCOM_QUEUE", []];
+                    _q pushBack ["analyze", nil];
+                    _fsm setFSMVariable ["_OPCOM_QUEUE", _q];
+                };
+                ["OPCOM %1: the pause after a capture is over (%2), moving on", [_h,"side",""] call ALiVE_fnc_HashGet,
+                    _module getVariable ["ALiVE_Occ_endWhy", "the time is up"]] call ALiVE_fnc_dump;
+            };
+        };
+    };
+
+    // true while no pause is running: the time is up, or every task it gave players is closed
+    case "occPauseOpen": {
+        private _module = [_logic,"module"] call ALiVE_fnc_HashGet;
+        _result = true;
+        if (time < (_module getVariable ["ALiVE_Occ_holdUntil", -1])) then {
+            private _ids = _module getVariable ["ALiVE_Occ_pauseTasks", []];
+            if (_ids isNotEqualTo [] && {!([_logic,"occPauseTasksOpen"] call ALiVE_fnc_OPCOM)}) then {
+                _module setVariable ["ALiVE_Occ_holdUntil", -1];
+                _module setVariable ["ALiVE_Occ_pauseTasks", []];
+                _module setVariable ["ALiVE_Occ_endWhy", "its tasks are done"];
+            } else {
+                _result = false;
+                _module setVariable ["ALiVE_Occ_endWhy", "the time is up"];
+            };
+        };
+    };
+
+    // true while one of the pause's tasks is still open; one that never appeared (nothing to find there) is given
+    // 2 minutes, then counts as closed
+    case "occPauseTasksOpen": {
+        private _module = [_logic,"module"] call ALiVE_fnc_HashGet;
+        private _ids = _module getVariable ["ALiVE_Occ_pauseTasks", []];
+        _result = false;
+        if (_ids isEqualTo [] || {isNil "ALIVE_taskHandler"}) exitWith {};
+        private _records = (([ALIVE_taskHandler,"tasks",["",[],[],nil]] call ALiVE_fnc_HashGet) select 2) select {
+            private _rid = _x select 0;
+            (_ids findIf { (_rid find _x) == 0 }) >= 0
+        };
+        if (_records isEqualTo []) exitWith {
+            _result = time < ((_module getVariable ["ALiVE_Occ_raisedAt", -1]) + 120);
+        };
+        _result = (_records findIf { !((_x select 8) in ["Succeeded","Failed","Canceled"]) }) >= 0;
+    };
+
+    ///////////////////////////////////////////////////
     // Finds the highest priority objective with the passed state
     // and determines its next orders
     ///////////////////////////////////////////////////
@@ -4567,7 +4778,8 @@ switch (_operation) do {
 
         // Synced triggers all fired, and no pause after the high value target was killed (#625)
         private _allSyncedTriggersActivated = {((typeof _x) == "EmptyDetector") && {!(triggerActivated _x)}} count (synchronizedObjects _module) == 0
-            && {time >= (_module getVariable ["ALiVE_HVT_holdUntil", -1])};
+            && {time >= (_module getVariable ["ALiVE_HVT_holdUntil", -1])}
+            && {[_logic,"occPauseOpen"] call ALiVE_fnc_OPCOM};
 
         private _targetObjectiveIndex = _objectives findIf {
             private _objectiveID = [_x, "objectiveID"] call AliVE_fnc_HashGet;
@@ -4575,7 +4787,7 @@ switch (_operation) do {
 
             !(_objectiveID in _OPCOM_SKIP_OBJECTIVES) &&
             _objectiveState == _state &&
-            { _allSyncedTriggersActivated || { !(_objectiveState in ["attack","unassigned"]) } }
+            { !(_objectiveState in ["attack","unassigned"]) || { _allSyncedTriggersActivated && {[_logic, "prepReady", _x] call ALiVE_fnc_OPCOM} } }
         };
 
         if (_targetObjectiveIndex != -1) then {

@@ -254,6 +254,34 @@ class CfgVehicles {
                                         class Yes { name = "Yes"; value = "true"; };
                                 };
                         };
+                        class prepTasks : Combo
+                        {
+                                property = "ALiVE_mil_opcom_prepTasks";
+                                displayName = "$STR_ALIVE_OPCOM_PREP";
+                                tooltip = "$STR_ALIVE_OPCOM_PREP_COMMENT";
+                                defaultValue = """false""";
+                                class Values
+                                {
+                                        class No  { name = "No";  value = "false"; };
+                                        class Yes { name = "Yes"; value = "true"; };
+                                };
+                        };
+                        class prepTimeoutMins : Edit
+                        {
+                                property = "ALiVE_mil_opcom_prepTimeoutMins";
+                                displayName = "$STR_ALIVE_OPCOM_PREP_TIMEOUT";
+                                tooltip = "$STR_ALIVE_OPCOM_PREP_TIMEOUT_COMMENT";
+                                defaultValue = """15""";
+                                typeName = "NUMBER";
+                        };
+                        class occPauseMins : Edit
+                        {
+                                property = "ALiVE_mil_opcom_occPauseMins";
+                                displayName = "$STR_ALIVE_OPCOM_OCC_PAUSE";
+                                tooltip = "$STR_ALIVE_OPCOM_OCC_PAUSE_COMMENT";
+                                defaultValue = """0""";
+                                typeName = "NUMBER";
+                        };
                         class HDR_HVT : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_HDR_HVT"; displayName = "HIGH VALUE TARGET"; };
                         class hvt : Combo
                         {

@@ -60,12 +60,16 @@ switch (_taskState) do {
         if (_taskEnemyFaction == "") exitwith {["C2ISTAR - Task Wiretap - Wrong input for _taskEnemyFaction!"] call ALiVE_fnc_Dump};
         if (_taskApplyType == "") exitwith {["C2ISTAR - Task Wiretap - Wrong input for _taskApplyType!"] call ALiVE_fnc_Dump};
 
-        if (isNil "_targetBuilding") then {_targetBuilding = objNull} else {_targetBuildings = [_targetBuilding];};
+        if (isNil "_targetBuilding") then {_targetBuilding = objNull};
+        // a caller can hand it the building as [building] (the AI Commander's preparation tasks, 20 Oct); it was
+        // read as an array and dropped, and the list it went into was emptied again just below
+        if (_targetBuilding isEqualType []) then { _targetBuilding = _targetBuilding param [0, objNull] };
+        if !(_targetBuilding isEqualType objNull) then { _targetBuilding = objNull };
 
         private _taskEnemySide = _taskEnemyFaction call ALiVE_fnc_factionSide;
         _taskEnemySide = [_taskEnemySide] call ALIVE_fnc_sideObjectToNumber;
         _taskEnemySide = [_taskEnemySide] call ALIVE_fnc_sideNumberToText;
-        private _targetBuildings = [];
+        private _targetBuildings = if (isNull _targetBuilding) then { [] } else { [_targetBuilding] };
         private _blacklist = ["Land_dp_smallFactory_F","Land_Garbage_square5_F","Land_vn_garbage_square5_f"];
 
         // establish the location for the task

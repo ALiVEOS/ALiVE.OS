@@ -309,6 +309,24 @@
 <Key ID="STR_ALIVE_OPCOM_HVT_PAUSE_COMMENT">
     <English>With High Value Target set to pause as typed below: how many minutes the commander starts no new attacks after its officer is killed.</English>
 </Key>
+<Key ID="STR_ALIVE_OPCOM_PREP">
+    <English>Preparation Tasks Before Attacks</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_PREP_COMMENT">
+    <English>Invasion only. Before each new attack, players on this commander's side are tasked with wiretapping the enemy's communications at the objective. The attack waits for the task, or for the timeout below, whichever is first. With no players about it doesn't wait.</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_PREP_TIMEOUT">
+    <English>Preparation Timeout (min)</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_PREP_TIMEOUT_COMMENT">
+    <English>How many minutes an attack waits for its preparation task before going in anyway.</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_OCC_PAUSE">
+    <English>Pause After Capture (min)</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_OCC_PAUSE_COMMENT">
+    <English>Occupation only. After taking an objective the commander starts no new attacks for this many minutes, or until the clean-up and hearts-and-minds tasks it gives players there are done, whichever is first. Defence and reinforcement go on as usual. 0 (default) is off.</English>
+</Key>
 <Key ID="STR_ALIVE_OPCOM_HVT_RESPAWN">
     <English>Replace When Pause Ends</English>
 </Key>

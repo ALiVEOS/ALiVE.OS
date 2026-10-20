@@ -447,10 +447,12 @@ class FSM
                          "                switch (_controltype) do {" \n
                          "                    case (""invasion"") : {" \n
                          "" \n
+                         "                        // an attack waiting on its preparation task (Preparation Tasks) isn't picked, so defence" \n
+                         "                        // and reserve orders go on meanwhile" \n
                          "                        _priorities = [" \n
                          "                            [(count _res > 0),""reserve""]," \n
-                         "                            [(count _un > 0) && _attackCapacityAvailable,""unassigned""]," \n
-                         "                            [(count _at > 0) && _attackCapacityAvailable,""attack""]," \n
+                         "                            [(count _un > 0) && _attackCapacityAvailable && {[_OPCOM_HANDLER,""prepReady"",_un select 0] call ALiVE_fnc_OPCOM},""unassigned""]," \n
+                         "                            [(count _at > 0) && _attackCapacityAvailable && {[_OPCOM_HANDLER,""prepReady"",_at select 0] call ALiVE_fnc_OPCOM},""attack""]," \n
                          "                            [(count _def > 0),""defend""]" \n
                          "                        ];" \n
                          "                    };" \n
@@ -484,7 +486,8 @@ class FSM
                          "                if (_selectedState in [""attack"",""unassigned""]) then {" \n
                          "                    private _module = [_OPCOM_HANDLER,""module""] call ALiVE_fnc_HashGet;" \n
                          "                    _selectionAllowed = {((typeof _x) == ""EmptyDetector"") && {!(triggerActivated _x)}} count (synchronizedObjects _module) == 0" \n
-                         "                        && {time >= (_module getVariable [""ALiVE_HVT_holdUntil"", -1])};" \n
+                         "                        && {time >= (_module getVariable [""ALiVE_HVT_holdUntil"", -1])}" \n
+                         "                        && {[_OPCOM_HANDLER,""occPauseOpen""] call ALiVE_fnc_OPCOM};" \n
                          "                };" \n
                          "" \n
                          "                if (_selectionAllowed) then {" \n
@@ -520,6 +523,7 @@ class FSM
                          "" \n
                          "        case (""completed"") : {" \n
                          "            _DATA_VALUE params [[""_completedOperation"",""""],[""_completedObjective"",[]]];" \n
+                         "            if (_completedOperation == ""capture"" && {_completedObjective isNotEqualTo []}) then { [_OPCOM_HANDLER,""occPauseStart"",_completedObjective] call ALiVE_fnc_OPCOM };" \n
                          "            private _nextOperation = switch (_completedOperation) do {" \n
                          "                case (""recon"") : {""attack""};" \n
                          "                case (""capture"") : {""reserve""};" \n
