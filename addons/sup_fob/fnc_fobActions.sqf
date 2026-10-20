@@ -172,12 +172,21 @@ switch (_op) do {
     case "deploy": {
         if (isNull ALiVE_FOB_nearKit) exitWith {};
         private _side = str (side group player);
-        private _class = [missionNamespace getVariable ["ALiVE_sup_fob", objNull], "perSide", ["fob_hubs", _side]] call ALiVE_fnc_FOB;
+        // one of the side's headquarters buildings: the one last shown, which Next Headquarters steps through
+        private _hubs = [missionNamespace getVariable ["ALiVE_sup_fob", objNull], "hubChoices", [_side]] call ALiVE_fnc_FOB;
+        private _class = _hubs select ((missionNamespace getVariable ["ALiVE_FOB_hubIndex", 0]) mod (count _hubs));
         if !(isClass (configFile >> "CfgVehicles" >> _class)) exitWith {
             ["deploy", [ALiVE_FOB_nearKit, player getPos [8, getDir player], getDir player]] remoteExecCall ["ALiVE_fnc_fobRequest", 2];
         };
         // a row like the Build Menu's, and the kit standing in for the FOB: placed within 40 m of it
         ["start", [[_class, localize "STR_ALIVE_FOB_HQ_NAME", "DEPLOY", 0], ["", _side, "", getPosATL ALiVE_FOB_nearKit, "", 1, 0, 0, 40], ALiVE_FOB_nearKit]] call ALiVE_fnc_fobPlacement;
+    };
+
+    // The next of the side's headquarters buildings, while placing one (Lenahan, 20 Oct)
+    case "nextHub": {
+        ALiVE_FOB_hubIndex = (missionNamespace getVariable ["ALiVE_FOB_hubIndex", 0]) + 1;
+        ["cancel"] call ALiVE_fnc_fobPlacement;
+        ["deploy"] call ALiVE_fnc_fobActions;
     };
 
     // The FOB window for the side's FOB the player stands at (data\ui\fobManage.hpp)

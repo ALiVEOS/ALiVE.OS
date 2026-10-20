@@ -155,7 +155,7 @@ switch (_op) do {
 
     case "deploy": {
         _result = "";
-        _args params [["_kit", objNull, [objNull]], ["_pos", [0,0,0], [[]]], ["_dir", 0, [0]]];
+        _args params [["_kit", objNull, [objNull]], ["_pos", [0,0,0], [[]]], ["_dir", 0, [0]], ["_hubClass", "", [""]]];
         if (isNull _caller || {!alive _caller}) exitWith {};
         if !(count _pos in [2, 3] && {(_pos findIf { !(_x isEqualType 0) || {!finite _x} }) < 0} && {finite _dir}) exitWith {};
         private _side = str (side group _caller);
@@ -183,7 +183,7 @@ switch (_op) do {
         if (_near > -1) exitWith { ["STR_ALIVE_FOB_REFUSED_DISTANCE", [_minDist]] call _tell };
 
         private _id = [_logic, "nextID", [_side]] call ALiVE_fnc_FOB;
-        private _entry = [_logic, "newEntry", [_id, _side, faction _caller, _pos, _dir]] call ALiVE_fnc_FOB;
+        private _entry = [_logic, "newEntry", [_id, _side, faction _caller, _pos, _dir, _hubClass]] call ALiVE_fnc_FOB;
         [_entry, "deployedBy", getPlayerUID _caller] call ALIVE_fnc_hashSet;
         [_logic, "registrySet", [_id, _entry]] call ALiVE_fnc_FOB;
 

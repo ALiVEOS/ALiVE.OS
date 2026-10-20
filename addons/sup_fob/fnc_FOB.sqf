@@ -345,6 +345,18 @@ switch (_operation) do {
         };
     };
 
+    // The headquarters buildings a side may deploy (Lenahan on Discord, 20 Oct: patrol bases all looked the same): the
+    // side's pick from Headquarters Buildings, which can name several classes separated by commas. Only classes the
+    // game has; the side's default when none is usable.
+    case "hubChoices": {
+        _args params [["_side", "WEST", [""]]];
+        private _raw = [_logic, "perSide", ["fob_hubs", _side]] call MAINCLASS;
+        _result = (_raw splitString ", ;") select { isClass (configFile >> "CfgVehicles" >> _x) };
+        if (_result isEqualTo []) then {
+            _result = [["Land_Cargo_HQ_V1_F", "Land_Cargo_HQ_V3_F", "Land_Cargo_HQ_V2_F"] param [["WEST", "EAST", "GUER"] find _side, "Land_Cargo_HQ_V1_F"]];
+        };
+    };
+
     case "nextID": {
         _args params [["_side", "WEST", [""]]];
         ALiVE_FOB_counter = ALiVE_FOB_counter + 1;
@@ -353,7 +365,10 @@ switch (_operation) do {
 
     // A new entry, every key present so readers never meet a missing field
     case "newEntry": {
-        _args params [["_id", "", [""]], ["_side", "WEST", [""]], ["_faction", "", [""]], ["_pos", [0,0,0], [[]]], ["_dir", 0, [0]]];
+        _args params [["_id", "", [""]], ["_side", "WEST", [""]], ["_faction", "", [""]], ["_pos", [0,0,0], [[]]], ["_dir", 0, [0]], ["_hub", "", [""]]];
+        // the building the player chose, if it's one this side may deploy; else the side's first
+        private _hubs = [_logic, "hubChoices", [_side]] call MAINCLASS;
+        if !(_hub in _hubs) then { _hub = _hubs select 0 };
         private _names = ["Alpha","Bravo","Charlie","Delta","Echo","Foxtrot","Golf","Hotel","India","Juliet","Kilo","Lima","Mike",
             "November","Oscar","Papa","Quebec","Romeo","Sierra","Tango","Uniform","Victor","Whiskey","X-ray","Yankee","Zulu"];
         private _n = parseNumber ((_id splitString "_") param [2, "0"]);
@@ -365,7 +380,7 @@ switch (_operation) do {
             ["name", "FOB " + (_names select ((_n - 1) max 0) % 26)],
             ["pos", _pos], ["dir", _dir], ["status", "active"], ["tier", 1],
             ["supply", [_logic, "attribute", ["fob_supply_initial"]] call MAINCLASS],
-            ["hubClass", [_logic, "perSide", ["fob_hubs", _side]] call MAINCLASS], ["hub", objNull],
+            ["hubClass", _hub], ["hub", objNull],
             ["objects", []],
             ["repairRemaining", 0], ["captureRemaining", 0], ["alertCooldown", 0], ["resupplyCooldown", 0], ["trickleAccumulator", 0],
             ["captureSide", ""], ["discoveredBy", []], ["objectiveIDs", []], ["garrison", []], ["respawn", []]

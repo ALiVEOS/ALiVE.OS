@@ -157,6 +157,17 @@ switch (_operation) do {
             player addAction [(localize "STR_ALIVE_FOB_ACTION_ROTATE") call ALiVE_fnc_actionTitle, { ["rotate"] call ALiVE_fnc_fobPlacement }, nil, 9.9, false, false, "", "ALiVE_FOB_placing"],
             player addAction [(localize "STR_ALIVE_FOB_ACTION_CANCEL") call ALiVE_fnc_actionTitle, { ["cancel"] call ALiVE_fnc_fobPlacement }, nil, 9.8, false, true, "", "ALiVE_FOB_placing"]
         ];
+        // a side with several headquarters buildings steps through them before deploying
+        if (_kind == "DEPLOY") then {
+            private _hubs = [missionNamespace getVariable ["ALiVE_sup_fob", objNull], "hubChoices", [str (side group player)]] call ALiVE_fnc_FOB;
+            if (count _hubs > 1) then {
+                private _at = _hubs find _class;
+                private _next = _hubs select ((_at + 1) mod (count _hubs));
+                private _nm = getText (configFile >> "CfgVehicles" >> _next >> "displayName");
+                ALiVE_FOB_placeActions pushBack (player addAction [(format [localize "STR_ALIVE_FOB_ACTION_NEXT_HQ", [_nm, _next] select (_nm == ""), _at + 1, count _hubs]) call ALiVE_fnc_actionTitle,
+                    { ["nextHub"] call ALiVE_fnc_fobActions }, nil, 9.85, false, true, "", "ALiVE_FOB_placing"]);
+            };
+        };
         [localize "STR_ALIVE_FOB", localize "STR_ALIVE_FOB_PLACE_HELP", true] call ALIVE_fnc_sendHint;
     };
 
@@ -173,7 +184,7 @@ switch (_operation) do {
         private _deploying = (_row select 2) == "DEPLOY";
         if !(_ok) exitWith { [localize "STR_ALIVE_FOB", format ([localize (_why select 0)] + (_why select 1)), true] call ALIVE_fnc_sendHint };
         call _fnc_stop;
-        if (_deploying) exitWith { ["deploy", [_kit, _pos, _dir]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] };
+        if (_deploying) exitWith { ["deploy", [_kit, _pos, _dir, _row select 0]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] };
         // the height as ASL: the server looks for a surface there itself rather than taking it on trust
         ["build", [_row select 0, ATLToASL _pos, _dir, _fob select 0]] remoteExecCall ["ALiVE_fnc_fobRequest", 2];
     };
