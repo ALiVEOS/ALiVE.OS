@@ -127,6 +127,45 @@ private _gracePeriod = 15;
     if (_dickerChance > 0 && {(ADDON getVariable ["resolvedIntegrationMode", "alive"]) != "mine"} && {random 100 < _dickerChance}) then {
         private _target = (getPosASL _ied) vectorAdd [0, 0, 0.5];
         private _spot = [];
+        // Indoors first (A. Ares on Discord, 19 Oct): a man stood in a field 100 m from the road is the only civilian in
+        // the open, and players learn to shoot him on sight. So he takes a ground-floor spot in a house 40-150 m off
+        // with a view of the IED through a door or window, and only stands outside when no house round about sees it.
+        // At most 12 houses and 40 rays, as this runs once per IED.
+        private _indoor = false;
+        private _houses = ((nearestObjects [getPosATL _ied, ["House"], 150]) select { (_x distance _ied) >= 40 && {!(_x isKindOf "spe_bocage_base")} })
+            call BIS_fnc_arrayShuffle;
+        private _tried = 0;
+        private _rays = 0;
+        {
+            private _h = _x;
+            // ground floor: buildingPos gives height above the ground at that spot
+            private _bps = (_h buildingPos -1) select { !(_x isEqualTo [0,0,0]) && {(_x select 2) < 2.5} && {(_x distance2D _ied) >= 40} };
+            if (_bps isNotEqualTo []) then {
+                _tried = _tried + 1;
+                {
+                    if (_rays >= 40) exitWith {};
+                    _rays = _rays + 1;
+                    private _foot = AGLToASL _x;
+                    private _eye = _foot vectorAdd [0, 0, 1.6];
+                    // under a roof, so he's inside rather than on a porch or a ruin's floor slab
+                    private _roofed = (lineIntersectsSurfaces [_foot vectorAdd [0, 0, 0.5], _foot vectorAdd [0, 0, 15], objNull, objNull, true, 1, "GEOM", "NONE"]) isNotEqualTo [];
+                    // a clear view: nothing in the way, or only his own house's window or door frame right at his eyes
+                    // (within 1.5 m) with nothing beyond it, so he can't see through a wall
+                    private _hits = lineIntersectsSurfaces [_eye, _target, _ied, objNull, true, 1, "VIEW", "FIRE"];
+                    private _clear = _hits isEqualTo [] || {
+                        private _hit = _hits select 0;
+                        (_h in [_hit select 2, _hit select 3]) && {((_hit select 0) distance _eye) < 1.5}
+                        && {(lineIntersectsSurfaces [(_hit select 0) vectorAdd ((_eye vectorFromTo _target) vectorMultiply 0.3), _target, _ied, objNull, true, 1, "VIEW", "FIRE"]) isEqualTo []}
+                    };
+                    if (_roofed
+                        && {!(terrainIntersectASL [_eye, _target])}
+                        && {_clear}
+                        && {([_x, 300] call ALiVE_fnc_anyPlayersInRange) == 0}) exitWith { _spot = _x; _indoor = true };
+                } forEach (_bps call BIS_fnc_arrayShuffle);
+            };
+            if (_indoor || {_tried >= 12} || {_rays >= 40}) exitWith {};
+        } forEach _houses;
+        if (!_indoor) then {
         for "_i" from 1 to 30 do {
             private _p = (getPosATL _ied) getPos [60 + random 90, random 360];
             _p set [2, 0];
@@ -135,16 +174,20 @@ private _gracePeriod = 15;
                 && {(lineIntersectsSurfaces [_eye, _target, _ied, objNull, true, 1, "VIEW", "FIRE"]) isEqualTo []}
                 && {([_p, 300] call ALiVE_fnc_anyPlayersInRange) == 0}) exitWith { _spot = _p };
         };
+        };
         if (_spot isEqualTo []) exitWith {};
         // Dressed like the people of the place: the class of a civilian already about, if any.
         private _civs = (allUnits + (agents apply { agent _x })) select { (side group _x) isEqualTo civilian && {_x isKindOf "CAManBase"} && {!isPlayer _x} };
         private _cls = if (_civs isNotEqualTo []) then { typeOf (selectRandom _civs) } else { "C_man_1" };
         private _d = (createGroup [civilian, true]) createUnit [_cls, _spot, [], 0, "CAN_COLLIDE"];
         if (isNull _d) exitWith {};
+        // createUnit can nudge him out of the doorway: back onto the floor spot, standing, as the view was tested from there
+        if (_indoor) then { _d setPosASL (AGLToASL _spot) };
         _d setDir (_d getDir _ied);
         _d disableAI "PATH";
         _d setBehaviour "CARELESS";
-        _d setUnitPos (selectRandom ["UP", "MIDDLE"]);
+        _d setUnitPos (if (_indoor) then { "UP" } else { selectRandom ["UP", "MIDDLE"] });
+        _ied setVariable ["ALiVE_IED_DickerIndoor", _indoor];
         _d doWatch (getPosATL _ied);
         if (isClass (configFile >> "CfgWeapons" >> "ACE_Cellphone")) then { _d addItem "ACE_Cellphone" };
         _d setVariable ["ALiVE_advciv_blacklist", true, true];
@@ -191,7 +234,7 @@ private _gracePeriod = 15;
             },
             {}, [], 2, 10, true, false] remoteExec ["BIS_fnc_holdActionAdd", 0, _d];
         if (ADDON getVariable ["debug", false]) then {
-            ["ALIVE-%1 IED: trigger man %2 (%3) watching IED at %4 from %5 m", time, name _d, _cls, getPosATL _ied, round (_d distance _ied)] call ALiVE_fnc_dump;
+            ["ALIVE-%1 IED: trigger man %2 (%3) watching IED at %4 from %5 m, %6", time, name _d, _cls, getPosATL _ied, round (_d distance _ied), ["in the open", "indoors"] select _indoor] call ALiVE_fnc_dump;
         };
     };
 
