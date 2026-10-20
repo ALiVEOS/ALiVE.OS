@@ -802,6 +802,22 @@ private _fnc_playerResponse = {
     true
 };
 
+// A ground commander asks again about each air contact every 90 s, so with nothing to fly the side heard "has requested"
+// and "denied" over and over (Pugzofwar on Discord, 20 Oct). A request a player made is always read out; any other is read
+// out at most once in 5 minutes for the same message and kind of sortie.
+private _fnc_radioOnce = {
+    params [["_logic", objNull, [objNull]], ["_key", "", [""]], ["_say", [], [[]]], ["_type", "", [""]], ["_requester", [], [[]]]];
+    if ([_requester] call ALIVE_fnc_isHash && {([_requester, "kind", ""] call ALIVE_fnc_hashGet) isEqualTo "player"}) exitWith {
+        [_logic, _key, _say] call _fnc_radio
+    };
+    private _said = _logic getVariable ["ALiVE_ato_radioSaid", createHashMap];
+    private _k = _key + "|" + _type;
+    if (time < (_said getOrDefault [_k, -1e9]) + 300) exitWith { false };
+    _said set [_k, time];
+    _logic setVariable ["ALiVE_ato_radioSaid", _said];
+    [_logic, _key, _say] call _fnc_radio
+};
+
 // Tell the side, and the player if it was theirs, that a request is refused.
 // The unavailable key when the fleet is the reason, the denied key otherwise:
 // they are different messages and the old module chose between them.
@@ -809,9 +825,9 @@ private _fnc_denyOnRadio = {
     params [["_logic", objNull, [objNull]], ["_type", "", [""]], ["_targetPos", [], [[]]], ["_requester", [], [[]]], ["_reason", "", [""]]];
     private _hqName = [_logic] call _fnc_hqName;
     if (_reason isEqualTo "not enough aircraft for an operation") then {
-        [_logic, "STR_ALIVE_ATO_UNAVAILABLE", [_hqName]] call _fnc_radio;
+        [_logic, "STR_ALIVE_ATO_UNAVAILABLE", [_hqName], _type, _requester] call _fnc_radioOnce;
     } else {
-        [_logic, "STR_ALIVE_ATO_REQUEST_DENIED", [_hqName, _type, [_targetPos] call _fnc_grid]] call _fnc_radio;
+        [_logic, "STR_ALIVE_ATO_REQUEST_DENIED", [_hqName, _type, [_targetPos] call _fnc_grid], _type, _requester] call _fnc_radioOnce;
     };
     [_requester, "DENIED_ATO_UNAVAILABLE", []] call _fnc_playerResponse;
     true
@@ -2670,7 +2686,7 @@ switch(_operation) do {
         if (_r isEqualType "") then {
             private _factionName = getText ((_faction call ALiVE_fnc_configGetFactionClass) >> "displayName");
             if (_factionName isEqualTo "") then { _factionName = _faction };
-            [_logic, "STR_ALIVE_ATO_REQUEST_ACKNOWLEDGED", [[_logic] call _fnc_hqName, _factionName, _type, [_targetPos] call _fnc_grid]] call _fnc_radio;
+            [_logic, "STR_ALIVE_ATO_REQUEST_ACKNOWLEDGED", [[_logic] call _fnc_hqName, _factionName, _type, [_targetPos] call _fnc_grid], _type, _requester] call _fnc_radioOnce;
             if ([_logic] call _fnc_debugOn) then {
                 ["ALIVE_fnc_ATOKernel - %1 request %2 from %3 accepted as sortie %4", _type, _requestId, _from, _r] call ALiVE_fnc_dump;
             };
