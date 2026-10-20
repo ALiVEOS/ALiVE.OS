@@ -368,6 +368,18 @@
     <Portuguese>Lista separada por vírgulas de nomes de classes do CfgVehicles. Cada entrada pode ser uma categoria pai ampla (ex. "Tank", "Plane", "Helicopter") OU um classname de veículo específico (ex. "B_MBT_01_TUSK_F"). Qualquer grupo de reforço que contenha uma unidade cujo veículo corresponda ou herde de uma das classes listadas é excluído do conjunto de candidatos. Misture livremente para bloquear categorias inteiras ou alvejar veículos problemáticos específicos, sem desativar os interruptores Permitir acima. Vazio = nada excluído.</Portuguese>
     <Russian>Список через запятую имён классов CfgVehicles. Каждая запись может быть как широкой родительской категорией (например, "Tank", "Plane", "Helicopter"), так и конкретным именем класса техники (например, "B_MBT_01_TUSK_F"). Любая группа подкрепления, содержащая юнит, чей транспорт совпадает или наследуется от одного из перечисленных классов, исключается из пула кандидатов. Свободно сочетайте, чтобы заблокировать целые категории или отдельные проблемные машины, не отключая переключатели «Разрешить» выше. Пусто = ничего не исключено.</Russian>
 </Key>
+<Key ID="STR_ALIVE_ML_TRUCK_POOL_CAP">
+    <English>Trucks Kept per Supply Point:</English>
+</Key>
+<Key ID="STR_ALIVE_ML_TRUCK_POOL_CAP_COMMENT">
+    <English>0 (default): every ground delivery brings new trucks, which go once it's done. Above 0: each faction keeps up to this many trucks at each supply point. They drive back after a delivery and carry the next one, a delivery waits for enough of them to be free, and a truck that's lost is replaced at a cost of 1 to the force pool.</English>
+</Key>
+<Key ID="STR_ALIVE_ML_TRUCK_POOL_MAX_WAIT">
+    <English>Longest Wait for Trucks (s):</English>
+</Key>
+<Key ID="STR_ALIVE_ML_TRUCK_POOL_MAX_WAIT_COMMENT">
+    <English>With trucks kept per supply point, the longest a ground delivery waits for enough of them to be free, in seconds. After that it brings its own extra trucks, which go once it's done. Default 600.</English>
+</Key>
 <Key ID="STR_ALIVE_ML_ENABLE_AIR_TRANSPORT">
     <English>Enable Air Transport:</English>
     <Chinese>啟用空中運輸：</Chinese>

@@ -1196,6 +1196,140 @@ switch(_operation) do {
         };
     };
 
+    // Reinforcement truck pool (AshTray on Discord, 18 Oct: every ground delivery made new trucks, which piled up at
+    // the supply point and cost nothing). With a cap set, a faction keeps up to that many trucks at each supply point:
+    // after a delivery they drive back and carry the next one, a delivery waits for enough free trucks (up to the
+    // longest wait, then it makes its own as before), and a lost truck is replaced at a cost to the force pool.
+    // ALIVE_ML_truckPool: key -> entries [vehicle profile ID, driver profile ID, state, since, supply point, event ID]
+    case "truckPoolCap": {
+        if (_args isEqualType 0) then { _logic setVariable ["truckPoolCap", _args]; } else { _args = _logic getVariable ["truckPoolCap", 0]; };
+        if (_args isEqualType "") then { _args = parseNumber _args; _logic setVariable ["truckPoolCap", _args]; };
+        _result = _args;
+    };
+    case "truckPoolMaxWait": {
+        if (_args isEqualType 0) then { _logic setVariable ["truckPoolMaxWait", _args]; } else { _args = _logic getVariable ["truckPoolMaxWait", 600]; };
+        if (_args isEqualType "") then { _args = parseNumber _args; _logic setVariable ["truckPoolMaxWait", _args]; };
+        _result = _args;
+    };
+    case "truckPoolReplaceCost": {
+        if (_args isEqualType 0) then { _logic setVariable ["truckPoolReplaceCost", _args]; } else { _args = _logic getVariable ["truckPoolReplaceCost", 1]; };
+        if (_args isEqualType "") then { _args = parseNumber _args; _logic setVariable ["truckPoolReplaceCost", _args]; };
+        _result = _args;
+    };
+    case "truckPoolKey": {
+        _args params ["_faction", "_pos"];
+        _result = format ["%1_%2_%3", _faction, round ((_pos select 0) / 50) * 50, round ((_pos select 1) / 50) * 50];
+    };
+    // [vehicle or driver profile ID] -> [key, index], or [] when it isn't a pooled truck
+    case "truckPoolFind": {
+        _result = [];
+        if (!isNil "ALIVE_ML_truckPool") then {
+            private _id = _args;
+            {
+                private _k = _x;
+                private _i = _y findIf { (_x select 0) == _id || {(_x select 1) == _id} };
+                if (_i >= 0) exitWith { _result = [_k, _i] };
+            } forEach ALIVE_ML_truckPool;
+        };
+    };
+    case "truckPoolHas": {
+        _result = ([_logic, "truckPoolFind", _args] call MAINCLASS) isNotEqualTo [];
+    };
+    // A pooled truck whose delivery is over drives back to its supply point rather than being removed. True when the
+    // truck is pooled (the caller then leaves it alone). Only a truck still in use, by that delivery when one is
+    // named, is sent: a delivery waiting on its other trucks goes over this one every cycle, and by then it may be
+    // parked, or carrying the next delivery. [vehicle profile ID, debug, event ID]
+    // The pool itself isn't saved. Saved profiles come back without their busy flag, so after a load the trucks
+    // are ordinary transport for the AI Commander and the pool starts again.
+    case "truckPoolRelease": {
+        _args params ["_vID", ["_dbg", false], ["_evID", ""]];
+        private _at = [_logic, "truckPoolFind", _vID] call MAINCLASS;
+        _result = _at isNotEqualTo [];
+        private _entry = if (_result) then { (ALIVE_ML_truckPool get (_at select 0)) select (_at select 1) } else { [] };
+        if (_result && {(_entry select 2) == "inUse"} && {_evID isEqualTo "" || {(_entry param [5, ""]) isEqualTo _evID}}) then {
+            private _e = [ALIVE_profileHandler, "getProfile", _entry select 1] call ALIVE_fnc_profileHandler;
+            if (!isNil "_e") then {
+                [_e, "clearWaypoints"] call ALIVE_fnc_profileEntity;
+                private _home = [(_entry select 4) getPos [random 100, random 360]] call ALIVE_fnc_getClosestRoad;
+                [_e, "addWaypoint", [_home, 50, "MOVE", "NORMAL", 300, [], "LINE"] call ALIVE_fnc_createProfileWaypoint] call ALIVE_fnc_profileEntity;
+            };
+            _entry set [2, "returning"];
+            _entry set [3, time];
+            if (_dbg) then { ["ML - truckPool: truck %1 heads back to %2", _vID, _at select 0] call ALiVE_fnc_dump; };
+        };
+    };
+    // Brings one supply point's trucks up to date: one lost is dropped and its replacement charged to the force pool,
+    // one home again is parked, and one whose delivery ended without handing it back is sent home.
+    // [key, faction] -> [parked entries, trucks kept]
+    case "truckPoolPrune": {
+        _args params ["_key", "_faction"];
+        if (isNil "ALIVE_ML_truckPool") then { ALIVE_ML_truckPool = createHashMap; };
+        private _entries = ALIVE_ML_truckPool getOrDefault [_key, []];
+        private _cost = [_logic, "truckPoolReplaceCost"] call MAINCLASS;
+        private _queue = [_logic, "eventQueue"] call MAINCLASS;
+        private _kept = [];
+        {
+            _x params ["_vehID", "_entID", "_state", "_since", "_node", ["_evID", ""]];
+            private _v = [ALIVE_profileHandler, "getProfile", _vehID] call ALIVE_fnc_profileHandler;
+            private _e = [ALIVE_profileHandler, "getProfile", _entID] call ALIVE_fnc_profileHandler;
+            private _wreck = !isNil "_v" && {private _o = _v select 2 select 10; !isNull _o && {!alive _o}};
+            if (isNil "_v" || {isNil "_e"} || {_wreck}) then {
+                // what's left of it: a virtual remnant goes, a spawned driver is free for the commander, a wreck stays
+                if (!isNil "_e") then {
+                    if (_e select 2 select 1) then { [_e, "busy", false] call ALIVE_fnc_hashSet; } else { [_e, "destroy"] call ALIVE_fnc_profileEntity; };
+                };
+                if (!isNil "_v" && {!_wreck}) then {
+                    if (_v select 2 select 1) then {
+                        [_logic, "removeTransportUnseen", [_vehID, (missionNamespace getVariable ["ALIVE_spawnRadius", 1000]) max 1000, false]] call MAINCLASS;
+                    } else { [_v, "destroy"] call ALIVE_fnc_profileVehicle; };
+                };
+                if (_cost > 0 && {!isNil "ALIVE_globalForcePool"}) then {
+                    private _pool = [ALIVE_globalForcePool, _faction, 0] call ALIVE_fnc_hashGet;
+                    if (_pool isEqualType "") then { _pool = parseNumber _pool };
+                    [ALIVE_MLGlobalRegistry, "updateGlobalForcePool", [[_logic, "registryID"] call MAINCLASS, (_pool - _cost) max 0]] call ALIVE_fnc_MLGlobalRegistry;
+                };
+                ["ML - truckPool: truck %1 at %2 lost, %3 taken from the %4 force pool to replace it", _vehID, _key, _cost, _faction] call ALiVE_fnc_dump;
+            } else {
+                _kept pushBack _x;
+                if (_state == "inUse") then {
+                    private _ev = if (_evID isNotEqualTo "" && {!isNil "_queue"}) then { [_queue, _evID] call ALIVE_fnc_hashGet };
+                    if (isNil "_ev" || {([_ev, "state", ""] call ALIVE_fnc_hashGet) == "eventComplete"}) then {
+                        [_logic, "truckPoolRelease", [_vehID, false, _evID]] call MAINCLASS;
+                    };
+                };
+                // a parked one found away from home (driven off while spawned) heads back
+                if ((_x select 2) == "parked" && {((_e select 2 select 2) distance2D _node) > 500}) then {
+                    _x set [2, "inUse"];
+                    [_logic, "truckPoolRelease", [_vehID]] call MAINCLASS;
+                };
+                if ((_x select 2) == "returning") then {
+                    if (((_e select 2 select 2) distance2D _node) < 300) then {
+                        [_e, "clearWaypoints"] call ALIVE_fnc_profileEntity;
+                        _x set [2, "parked"]; _x set [3, time];
+                    } else {
+                        // a virtual one not home after 15 minutes (stuck on the way) is put there
+                        if (!(_e select 2 select 1) && {!(_v select 2 select 1)} && {time - (_x select 3) > 900}) then {
+                            [_e, "clearWaypoints"] call ALIVE_fnc_profileEntity;
+                            [_e, "position", +_node] call ALIVE_fnc_profileEntity;
+                            [_v, "position", +_node] call ALIVE_fnc_profileVehicle;
+                            _x set [2, "parked"]; _x set [3, time];
+                        } else {
+                            // a spawned one stuck for half an hour leaves the pool, and goes once no player is near it;
+                            // a new truck takes its place, at no cost as nothing was lost
+                            if (time - (_x select 3) > 1800) then {
+                                _kept deleteAt (count _kept - 1);
+                                [_logic, "removeTransportUnseen", [_vehID, (missionNamespace getVariable ["ALIVE_spawnRadius", 1000]) max 1000, false]] call MAINCLASS;
+                                ["ML - truckPool: truck %1 stuck on its way back to %2, replaced", _vehID, _key] call ALiVE_fnc_dump;
+                            };
+                        };
+                    };
+                };
+            };
+        } forEach _entries;
+        ALIVE_ML_truckPool set [_key, _kept];
+        _result = [_kept select { (_x select 2) == "parked" }, count _kept];
+    };
+
     case "removeTransportUnseen": {
         // A delivery's transport helicopter that's due to go while a player is near it (its flight home ran out of time, or
         // it was stuck hovering) isn't taken away in front of them: it goes once no player is within the given distance of
@@ -6430,10 +6564,15 @@ switch(_operation) do {
 
                                         {
                                             _profileType = _x select 2 select 5;
+                                            // a pooled truck and its driver go back to their supply point instead
+                                            if ([_logic, "truckPoolHas", _x select 2 select 4] call MAINCLASS) then {
+                                                if (_profileType != 'entity') then { [_logic, "truckPoolRelease", [_x select 2 select 4]] call MAINCLASS; };
+                                            } else {
                                             if(_profileType == 'entity') then {
                                                 [_x, "destroy"] call ALIVE_fnc_profileEntity;
                                             }else{
                                                 [_x, "destroy"] call ALIVE_fnc_profileVehicle;
+                                            };
                                             };
 
                                         } forEach _allRequestedProfiles;
@@ -8172,6 +8311,29 @@ switch(_operation) do {
                             };
                         };
 
+                        // A delivery by truck waits for its supply point's pooled trucks to be free (truck pool, above), or
+                        // makes its own once it has waited the longest wait. It waits for enough for every squad.
+                        private _truckPoolKey = "";
+                        if (!_heliThrottleExceeded && {_eventType == "STANDARD"} && {!_paraDrop} && {_eventForceInfantry > 0}
+                            && {([_logic, "truckPoolCap"] call MAINCLASS) > 0}) then {
+                            private _cap = [_logic, "truckPoolCap"] call MAINCLASS;
+                            _truckPoolKey = [_logic, "truckPoolKey", [_eventFaction, _reinforcementPosition]] call MAINCLASS;
+                            ([_logic, "truckPoolPrune", [_truckPoolKey, _eventFaction]] call MAINCLASS) params ["_parked", "_kept"];
+                            if (count _parked + ((_cap - _kept) max 0) < (_eventForceInfantry min _cap)) then {
+                                private _since = [_event, "truckPoolWaitSince", -1] call ALIVE_fnc_hashGet;
+                                if (_since < 0) then { _since = time; [_event, "truckPoolWaitSince", _since] call ALIVE_fnc_hashSet; };
+                                if (time - _since < ([_logic, "truckPoolMaxWait"] call MAINCLASS)) then {
+                                    // the heli throttle's deferral: nothing is made, and the event is tried again next cycle
+                                    _heliThrottleExceeded = true;
+                                    if (_debug) then {
+                                        ["ML - truckPool: %1 of %2 trucks free at %3, %4 squads to carry, event %5 waits", count _parked, _kept, _truckPoolKey, _eventForceInfantry, _eventID] call ALiVE_fnc_dump;
+                                    };
+                                } else {
+                                    ["ML - truckPool: event %1 waited %2 s for trucks at %3, makes its own", _eventID, round (time - _since), _truckPoolKey] call ALiVE_fnc_dump;
+                                };
+                            };
+                        };
+
                         if (!_heliThrottleExceeded) then {
 
                         // wait time complete create profiles
@@ -8900,6 +9062,15 @@ switch(_operation) do {
                                 ["ML - %1: no GROUND transport assets found for faction=%2 side=%3, so nothing was created. Check ALIVE_factionDefaultTransport / ALIVE_sideDefaultTransport registration for that faction.",
                                     "STANDARD payload", _eventFaction, _side] call ALiVE_fnc_dump;
                             };
+                            // free pooled trucks at this supply point, used before any is made
+                            private _poolFree = [];
+                            private _poolKept = 0;
+                            if (_truckPoolKey != "") then {
+                                ([_logic, "truckPoolPrune", [_truckPoolKey, _eventFaction]] call MAINCLASS) params ["_parkedNow", "_keptNow"];
+                                _poolFree = _parkedNow;
+                                _poolKept = _keptNow;
+                                [_event, "truckPoolWaitSince"] call ALIVE_fnc_hashRem;
+                            };
                             if(count _transportGroups > 0) then {
                                 for "_i" from 0 to _groupCount -1 do {
 
@@ -8915,6 +9086,22 @@ switch(_operation) do {
                                         _spawnSeed getPos [random(200), random(360)], 80
                                     ]] call MAINCLASS;
 
+                                    if (count _poolFree > 0) then {
+                                        // a pooled truck: a virtual one is brought to the squads, a spawned one drives to them
+                                        private _entry = _poolFree deleteAt 0;
+                                        private _pv = [ALIVE_profileHandler, "getProfile", _entry select 0] call ALIVE_fnc_profileHandler;
+                                        private _pe = [ALIVE_profileHandler, "getProfile", _entry select 1] call ALIVE_fnc_profileHandler;
+                                        [_pe, "clearWaypoints"] call ALIVE_fnc_profileEntity;
+                                        [_pe, "alive_ml_dismounted", false] call ALIVE_fnc_hashSet;
+                                        if (!(_pe select 2 select 1) && {!(_pv select 2 select 1)}) then {
+                                            [_pe, "position", +_position] call ALIVE_fnc_profileEntity;
+                                            [_pv, "position", +_position] call ALIVE_fnc_profileVehicle;
+                                        };
+                                        _entry set [2, "inUse"]; _entry set [3, time]; _entry set [5, _eventID];
+                                        _transportProfiles pushback (_entry select 1);
+                                        _transportVehicleProfiles pushback (_entry select 0);
+                                        if (_debug) then { ["ML - truckPool: event %1 takes truck %2 from %3", _eventID, _entry select 0, _truckPoolKey] call ALiVE_fnc_dump; };
+                                    } else {
                                     if(count _transportGroups > 0) then {
 
                                         _vehicleClass = selectRandom _transportGroups;
@@ -8924,6 +9111,14 @@ switch(_operation) do {
                                         _transportProfiles pushback (_profiles select 0 select 2 select 4);
                                         _transportVehicleProfiles pushback (_profiles select 1 select 2 select 4);
 
+                                        // kept for the pool while it has room; one beyond the cap goes after the delivery as before
+                                        if (_truckPoolKey != "" && {_poolKept < ([_logic, "truckPoolCap"] call MAINCLASS)}) then {
+                                            private _list = ALIVE_ML_truckPool getOrDefault [_truckPoolKey, [], true];
+                                            _list pushBack [_profiles select 1 select 2 select 4, _profiles select 0 select 2 select 4, "inUse", time, +_reinforcementPosition, _eventID];
+                                            _poolKept = _poolKept + 1;
+                                        };
+
+                                    };
                                     };
 
                                 };
@@ -11856,7 +12051,8 @@ switch(_operation) do {
                             if (_active || _pilotActive || _hasLiveVehicle) then {
                                 _anyActive = _anyActive + 1;
                             } else {
-                                // Truly virtual - no live object, safe to destroy
+                                // Truly virtual - no live object, safe to destroy; a pooled truck heads home instead
+                                if !([_logic, "truckPoolRelease", [_x, _debug, _eventID]] call MAINCLASS) then {
                                 if (_debug) then {
                                     ["ML - heliTransportComplete: Transport vehicle %1 virtual (no live object), destroying profile.", _x] call ALiVE_fnc_dump;
                                 };
@@ -11873,6 +12069,7 @@ switch(_operation) do {
                                 };
 
                                 [_transportProfile, "destroy"] call ALIVE_fnc_profileVehicle;
+                                };
                             };
                         };
                     } forEach _eventTransportVehiclesProfiles;
@@ -12145,7 +12342,8 @@ switch(_operation) do {
 
                                 _anyActive = _anyActive + 1;
                             } else {
-                                // if not active dispose of transport profiles
+                                // if not active dispose of transport profiles; a pooled truck heads home instead
+                                if !([_logic, "truckPoolRelease", [_x, _debug, _eventID]] call MAINCLASS) then {
                                 _inCommand = _transportProfile select 2 select 8;
 
                                 if (count _inCommand > 0) then {
@@ -12158,6 +12356,7 @@ switch(_operation) do {
                                 };
 
                                 [_transportProfile, "destroy"] call ALIVE_fnc_profileVehicle;
+                                };
                             };
                         };
                     } forEach _eventTransportVehiclesProfiles;
@@ -12179,7 +12378,9 @@ switch(_operation) do {
                             private _groundRadius = (missionNamespace getVariable ["ALIVE_spawnRadius", 1000]) max 1000;
                             {
                                 if !(isNil {[ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler}) then {
-                                    [_logic, "removeTransportUnseen", [_x, _groundRadius, _debug]] call MAINCLASS;
+                                    if !([_logic, "truckPoolRelease", [_x, _debug, _eventID]] call MAINCLASS) then {
+                                        [_logic, "removeTransportUnseen", [_x, _groundRadius, _debug]] call MAINCLASS;
+                                    };
                                 };
                             } forEach _eventTransportVehiclesProfiles;
                         };

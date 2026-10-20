@@ -259,6 +259,22 @@ class CfgVehicles
                                     class No { name = "No"; value = false; };
                                 };
                         };
+                        class truckPoolCap : Edit
+                        {
+                                property = "ALiVE_mil_logistics_truckPoolCap";
+                                displayName = "$STR_ALIVE_ML_TRUCK_POOL_CAP";
+                                tooltip = "$STR_ALIVE_ML_TRUCK_POOL_CAP_COMMENT";
+                                defaultValue = """0""";
+                                typeName = "NUMBER";
+                        };
+                        class truckPoolMaxWait : Edit
+                        {
+                                property = "ALiVE_mil_logistics_truckPoolMaxWait";
+                                displayName = "$STR_ALIVE_ML_TRUCK_POOL_MAX_WAIT";
+                                tooltip = "$STR_ALIVE_ML_TRUCK_POOL_MAX_WAIT_COMMENT";
+                                defaultValue = """600""";
+                                typeName = "NUMBER";
+                        };
                         // ---- Custom Static Data ---------------------------------------------
                         class HDR_CUSTOM : ALiVE_ModuleSubTitle { property = "ALiVE_mil_logistics_HDR_CUSTOM"; displayName = "CUSTOM TRANSPORT CLASSES"; };
                         class customStaticDataMode : Combo
