@@ -65,6 +65,12 @@ if(isServer) then {
     private _hostilityWest = parseNumber (_logic getVariable ["hostilityWest","0"]);
     private _hostilityEast = parseNumber (_logic getVariable ["hostilityEast","0"]);
     private _hostilityIndep = parseNumber (_logic getVariable ["hostilityIndep","0"]);
+    // Hostility Floor: the lowest hostility a player's side ever sees on a civilian. None by default, so the Hostility
+    // setting above is where each town starts and players can win civilians over (A. Ares on Discord, 19 Oct; it used
+    // to floor every civilian too). Missions saved before this setting read the default, so they get no floor either.
+    private _hostilityFloorWest = parseNumber (_logic getVariable ["hostilityFloorWest","0"]);
+    private _hostilityFloorEast = parseNumber (_logic getVariable ["hostilityFloorEast","0"]);
+    private _hostilityFloorIndep = parseNumber (_logic getVariable ["hostilityFloorIndep","0"]);
     private _ambientCivilianRoles = call compile (_logic getVariable ["ambientCivilianRoles","[]"]);
     private _ambientCrowdSpawn = parseNumber (_logic getVariable ["ambientCrowdSpawn","0"]);
     private _ambientCrowdDensity = parseNumber (_logic getVariable ["ambientCrowdDensity","4"]);
@@ -446,11 +452,17 @@ if(isServer) then {
     [ALIVE_civilianHostility, "WEST", _hostilityWest] call ALIVE_fnc_hashSet;
     [ALIVE_civilianHostility, "EAST", _hostilityEast] call ALIVE_fnc_hashSet;
     [ALIVE_civilianHostility, "GUER", _hostilityIndep] call ALIVE_fnc_hashSet;
+    // where each town starts (the clusters copy it) and the insurgency's baseline; sent to players as before
+    publicVariable "ALIVE_civilianHostility";
+    ALIVE_civilianHostilityFloor = [] call ALIVE_fnc_hashCreate;
+    [ALIVE_civilianHostilityFloor, "WEST", _hostilityFloorWest] call ALIVE_fnc_hashSet;
+    [ALIVE_civilianHostilityFloor, "EAST", _hostilityFloorEast] call ALIVE_fnc_hashSet;
+    [ALIVE_civilianHostilityFloor, "GUER", _hostilityFloorIndep] call ALIVE_fnc_hashSet;
     // Players' machines floor the dialog's hostility indicator, the ACE menu tiers, the
     // approach gesture, the reaction to a raised weapon, Gather Intel and the vehicle
     // stop at their side's figure here, so they need a copy; on a dedicated server they
     // otherwise read 0 whatever the mission sets. A player who joins later gets it as well.
-    publicVariable "ALIVE_civilianHostility";
+    publicVariable "ALIVE_civilianHostilityFloor";
 
     ALIVE_civilianPopulationSystem = [nil, "create"] call ALIVE_fnc_civilianPopulationSystem;
     [ALIVE_civilianPopulationSystem, "init"] call ALIVE_fnc_civilianPopulationSystem;

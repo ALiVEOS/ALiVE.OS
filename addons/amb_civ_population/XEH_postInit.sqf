@@ -395,8 +395,8 @@ if (hasInterface) then {
                         // disposition cue from the wave / head-shake choice.
                         private _civHostility = _civ getVariable ["ALiVE_CivPop_Hostility", 30];
                         private _playerSide = str (side (group player));
-                        private _sideBaseline = if (!isNil "ALIVE_civilianHostility") then {
-                            [ALIVE_civilianHostility, _playerSide, 0] call ALiVE_fnc_hashGet
+                        private _sideBaseline = if (!isNil "ALIVE_civilianHostilityFloor") then {
+                            [ALIVE_civilianHostilityFloor, _playerSide, 0] call ALiVE_fnc_hashGet
                         } else { 0 };
                         private _hostility = (_civHostility max _sideBaseline) max 0 min 100;
                         private _gesture = switch (true) do {
@@ -502,8 +502,8 @@ if (hasInterface) then {
             // player's side, as the approach gesture and the vehicle stop read it.
             private _civHostility = _civ getVariable ["ALiVE_CivPop_Hostility", 30];
             private _playerSide = str (side (group player));
-            private _sideBaseline = if (!isNil "ALIVE_civilianHostility") then {
-                [ALIVE_civilianHostility, _playerSide, 0] call ALiVE_fnc_hashGet
+            private _sideBaseline = if (!isNil "ALIVE_civilianHostilityFloor") then {
+                [ALIVE_civilianHostilityFloor, _playerSide, 0] call ALiVE_fnc_hashGet
             } else { 0 };
             private _hostility = (_civHostility max _sideBaseline) max 0 min 100;
             // Dynamic mode: scale the hold time by the civ's
@@ -665,8 +665,8 @@ if (hasInterface) then {
                                 if (_angle < 10) then {
                                     private _civHostility = _drv getVariable ["ALiVE_CivPop_Hostility", 30];
                                     private _playerSide = str (side (group player));
-                                    private _sideBaseline = if (!isNil "ALIVE_civilianHostility") then {
-                                        [ALIVE_civilianHostility, _playerSide, 0] call ALiVE_fnc_hashGet
+                                    private _sideBaseline = if (!isNil "ALIVE_civilianHostilityFloor") then {
+                                        [ALIVE_civilianHostilityFloor, _playerSide, 0] call ALiVE_fnc_hashGet
                                     } else { 0 };
                                     private _h = (_civHostility max _sideBaseline) max 0 min 100;
 

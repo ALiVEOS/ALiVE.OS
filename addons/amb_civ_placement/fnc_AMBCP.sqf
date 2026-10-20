@@ -1046,6 +1046,14 @@ switch(_operation) do {
                             // Preserve position normalization and the position setter's debug refresh.
                             [_agent, "position", _buildingPosition] call ALIVE_fnc_civilianAgent;
                             [_agent, "homePosition", _buildingPosition] call ALIVE_fnc_civilianAgent;
+                            // The Civilian Population module's Hostility is where civilians start (A. Ares on Discord, 19 Oct:
+                            // it used to be a floor under them all): the least-liked side's figure, from which they calm
+                            // towards the resting 30 over time unless given cause. Low and Medium (0, 30) change nothing.
+                            if (!isNil "ALIVE_civilianHostility") then {
+                                private _start = 0;
+                                { if (_x isEqualType 0) then { _start = _start max _x } } forEach (ALIVE_civilianHostility select 2);
+                                if (_start > 30) then { [_agent, "posture", _start min 100] call ALIVE_fnc_hashSet };
+                            };
 
                             // Add persistent name to civ. Defensive path:
                             // genericNames may be defined as either text (class

@@ -9,8 +9,8 @@ Description:
     given threshold, i.e. when the entry should remain visible.
 
     Reads the civilian's `ALiVE_CivPop_Hostility`, floored by the module's
-    per-side baseline from `ALIVE_civilianHostility` for the player's
-    side, as the approach gesture does. The dialog can differ: it also
+    per-side Hostility Floor (`ALIVE_civilianHostilityFloor`, none by default)
+    for the player's side, as the approach gesture does. The dialog can differ: it also
     counts the town's current threat.
 
     The companion ACE menu in addons/sys_acemenu/fnc_aceMenuCiv.sqf
@@ -40,8 +40,8 @@ if (isNull _civ) exitWith { false };
 
 private _civHostility = _civ getVariable ["ALiVE_CivPop_Hostility", 30];
 private _playerSide = str (side (group player));
-private _sideBaseline = if (!isNil "ALIVE_civilianHostility") then {
-    [ALIVE_civilianHostility, _playerSide, 0] call ALiVE_fnc_hashGet
+private _sideBaseline = if (!isNil "ALIVE_civilianHostilityFloor") then {
+    [ALIVE_civilianHostilityFloor, _playerSide, 0] call ALiVE_fnc_hashGet
 } else { 0 };
 private _h = (_civHostility max _sideBaseline) max 0 min 100;
 

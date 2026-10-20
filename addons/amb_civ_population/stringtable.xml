@@ -427,6 +427,25 @@
     <Chinese>極高</Chinese>
     <Chinesesimp>极大</Chinesesimp>
 </Key>
+<Key ID="STR_ALIVE_CIV_POP_HOSTILITY_FLOOR_WEST">
+    <English>BLUFOR Hostility Floor:</English>
+</Key>
+<Key ID="STR_ALIVE_CIV_POP_HOSTILITY_FLOOR_EAST">
+    <English>OPFOR Hostility Floor:</English>
+</Key>
+<Key ID="STR_ALIVE_CIV_POP_HOSTILITY_FLOOR_INDEP">
+    <English>Independent Hostility Floor:</English>
+</Key>
+<Key ID="STR_ALIVE_CIV_POP_HOSTILITY_FLOOR_NONE">
+    <English>None</English>
+</Key>
+<Key ID="STR_ALIVE_CIV_POP_HOSTILITY_FLOOR_COMMENT">
+    <English>The friendliest a civilian ever shows this side, whatever their own mood. The Hostility setting above is where each town starts; this is a floor under every civilian.
+
+• None (default): no floor, civilians can be won over all the way.
+• Medium (30) / High (60): civilians never show friendlier than this.
+• Extreme (130): always hostile.</English>
+</Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_ERROR1">
     <English>Only one Civilian Population System module can be used</English>
