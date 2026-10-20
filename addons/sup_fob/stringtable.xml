@@ -224,6 +224,18 @@
             <Key ID="STR_ALIVE_FOB_BUILDLIST_MENU">
                 <English>FOB Build List</English>
             </Key>
+            <Key ID="STR_ALIVE_FOB_KIT_CLASS">
+                <English>Kit Object</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_KIT_CLASS_COMMENT">
+                <English>The object a FOB kit is, in place of the ALiVE kit box: one class name for every side, or per side as WEST=ClassA, EAST=ClassB, GUER=ClassC. Empty (default) keeps the ALiVE kit, and a class the game doesn't have falls back to it.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_CRATE_CLASS">
+                <English>Supply Crate Object</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_CRATE_CLASS_COMMENT">
+                <English>The object a FOB supply crate is, in place of the ALiVE crate: one class name for every side, or per side as WEST=ClassA, EAST=ClassB, GUER=ClassC. Empty (default) keeps the ALiVE crate.</English>
+            </Key>
             <Key ID="STR_ALIVE_FOB_BLACKLIST">
                 <English>Never Build</English>
             </Key>

@@ -111,6 +111,8 @@ class CfgVehicles {
                         class fob_cost_scale : Edit { property = "ALiVE_sup_fob_fob_cost_scale"; displayName = "$STR_ALIVE_FOB_COST_SCALE"; tooltip = "$STR_ALIVE_FOB_COST_SCALE_COMMENT"; typeName = "STRING"; defaultValue = """1"""; };
                         class fob_buildlist : Default { property = "ALiVE_sup_fob_fob_buildlist"; displayName = "$STR_ALIVE_FOB_BUILDLIST"; tooltip = "$STR_ALIVE_FOB_BUILDLIST_COMMENT"; control = "ALiVE_FOBBuildListLink"; typeName = "STRING"; defaultValue = "''"; };
                         class fob_blacklist : Edit { property = "ALiVE_sup_fob_fob_blacklist"; displayName = "$STR_ALIVE_FOB_BLACKLIST"; tooltip = "$STR_ALIVE_FOB_BLACKLIST_COMMENT"; typeName = "STRING"; defaultValue = """"""; };
+                        class fob_kit_class : Edit { property = "ALiVE_sup_fob_fob_kit_class"; displayName = "$STR_ALIVE_FOB_KIT_CLASS"; tooltip = "$STR_ALIVE_FOB_KIT_CLASS_COMMENT"; typeName = "STRING"; defaultValue = """"""; };
+                        class fob_crate_class : Edit { property = "ALiVE_sup_fob_fob_crate_class"; displayName = "$STR_ALIVE_FOB_CRATE_CLASS"; tooltip = "$STR_ALIVE_FOB_CRATE_CLASS_COMMENT"; typeName = "STRING"; defaultValue = """"""; };
                         class fob_whitelist : Edit { property = "ALiVE_sup_fob_fob_whitelist"; displayName = "$STR_ALIVE_FOB_WHITELIST"; tooltip = "$STR_ALIVE_FOB_WHITELIST_COMMENT"; typeName = "STRING"; defaultValue = """"""; };
 
                         class fob_resupply_threshold : Edit { property = "ALiVE_sup_fob_fob_resupply_threshold"; displayName = "$STR_ALIVE_FOB_RESUPPLY_THRESHOLD"; tooltip = "$STR_ALIVE_FOB_RESUPPLY_THRESHOLD_COMMENT"; typeName = "STRING"; defaultValue = """25"""; };

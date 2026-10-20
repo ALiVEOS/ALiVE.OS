@@ -115,6 +115,10 @@ _blacklist append (([_logic, "attribute", ["fob_blacklist"]] call ALiVE_fnc_FOB)
 _whitelist append (([_logic, "attribute", ["fob_whitelist"]] call ALiVE_fnc_FOB) splitString ", ;");
 // never the kit or supply crate themselves: one built here would be a crate of supply for its build price
 _blacklist append ["alive_fob_kit", "alive_fob_supplycrate"];
+// and the mission's own kit and crate objects, if it sets any
+{
+    { private _p = _x splitString "= "; if (_p isNotEqualTo []) then { _blacklist pushBack toLower (_p select (count _p - 1)) } } forEach (([_logic, "attribute", [_x]] call ALiVE_fnc_FOB) splitString ",;");
+} forEach ["fob_kit_class", "fob_crate_class"];
 
 // Sizes measured on earlier starts
 private _sizes = profileNamespace getVariable ["ALiVE_FOB_sizes", createHashMap];

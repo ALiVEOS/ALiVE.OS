@@ -86,6 +86,8 @@ private _settings = createHashMapFromArray [
     ["fob_supply_cap_t3", [5000, [0, 1000000]]],
     ["fob_cost_scale", [1, [0, 100]]],
     ["fob_blacklist", ["", "text"]],
+    ["fob_kit_class", ["", "text"]],
+    ["fob_crate_class", ["", "text"]],
     ["fob_whitelist", ["", "text"]],
     ["fob_manage_who", ["SIDE", "text"]],
     ["fob_manage_list", ["", "text"]],

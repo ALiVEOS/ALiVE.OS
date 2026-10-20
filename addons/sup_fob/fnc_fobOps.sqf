@@ -68,6 +68,23 @@ if (!isServer) exitWith {};
 params [["_op", "", [""]], ["_args", [], [[]]], ["_caller", objNull, [objNull]]];
 
 private _logic = missionNamespace getVariable ["ALiVE_sup_fob", objNull];
+
+// An object class from a module setting (AshTray and A. Ares on Discord, 20 Oct): one class for every side, or per side as
+// "WEST=ClassA, EAST=ClassB, GUER=ClassC"; the side's own entry, else a plain one, else the default. A class the game
+// doesn't have is reported and the default used.
+private _pickClass = {
+    params [["_raw", "", [""]], ["_side", "", [""]], ["_default", "", [""]]];
+    private _plain = ""; private _mine = "";
+    {
+        private _p = _x splitString "= ";
+        if (count _p == 1 && {_plain == ""}) then { _plain = _p select 0 };
+        if (count _p >= 2 && {toUpper (_p select 0) == toUpper _side}) then { _mine = _p select 1 };
+    } forEach (_raw splitString ",;");
+    private _c = [_mine, _plain] select (_mine == "");
+    if (_c != "" && {isClass (configFile >> "CfgVehicles" >> _c)}) exitWith { _c };
+    if (_c != "") then { ["ALiVE - %1 is not an object class the game has; %2 is used instead", _c, [_default, "the usual one"] select (_default == "")] call ALiVE_fnc_dump };
+    _default
+};
 private _debug = [_logic, "attribute", ["fob_debug"]] call ALiVE_fnc_FOB;
 private _result = nil;
 
@@ -206,10 +223,15 @@ switch (_op) do {
         private _at = [_entry, "pos", [0,0,0]] call ALIVE_fnc_hashGet;
         private _left = if (([_logic, "attribute", ["fob_supply_source"]] call ALiVE_fnc_FOB) == "FORCEPOOL") then { 0 } else { floor (["balance", [_id]] call ALiVE_fnc_fobSupply) };
         ["cleanup", [_id]] call ALiVE_fnc_fobOps;
-        private _kit = createVehicle ["ALiVE_FOB_Kit", _at, [], 2, "NONE"];
+        private _kitClass = [[_logic, "attribute", ["fob_kit_class"]] call ALiVE_fnc_FOB, _side, "ALiVE_FOB_Kit"] call _pickClass;
+        private _kit = createVehicle [_kitClass, _at, [], 2, "NONE"];
+        // one of the mission's own objects comes empty, as the ALiVE kit does
+        if (_kitClass != "ALiVE_FOB_Kit") then { clearItemCargoGlobal _kit; clearWeaponCargoGlobal _kit; clearMagazineCargoGlobal _kit; clearBackpackCargoGlobal _kit };
         ["tag", [_kit, "KIT", _side]] call ALiVE_fnc_fobOps;
         if (_left > 0) then {
-            private _crate = createVehicle ["ALiVE_FOB_SupplyCrate", _at getPos [3, random 360], [], 2, "NONE"];
+            private _crateClass = [[_logic, "attribute", ["fob_crate_class"]] call ALiVE_fnc_FOB, _side, "ALiVE_FOB_SupplyCrate"] call _pickClass;
+            private _crate = createVehicle [_crateClass, _at getPos [3, random 360], [], 2, "NONE"];
+            if (_crateClass != "ALiVE_FOB_SupplyCrate") then { clearItemCargoGlobal _crate; clearWeaponCargoGlobal _crate; clearMagazineCargoGlobal _crate; clearBackpackCargoGlobal _crate };
             ["tag", [_crate, "CRATE", _left]] call ALiVE_fnc_fobOps;
         };
         if (_left > 0) then { ["STR_ALIVE_FOB_DISMANTLED_SUPPLY", [_name, _left]] call _tell } else { ["STR_ALIVE_FOB_DISMANTLED", [_name]] call _tell };
@@ -782,7 +804,8 @@ switch (_op) do {
         if (([_logic, "attribute", ["fob_supply_source"]] call ALiVE_fnc_FOB) == "FORCEPOOL"
             && {!(["poolDebit", [faction _caller, _cost]] call ALiVE_fnc_fobSupply)}) exitWith { ["STR_ALIVE_FOB_REFUSED_POOL", [_cost]] call _tell };
         private _spot = _hq getPos [6, (getDir _hq) + 90];
-        private _o = createVehicle [["B_supplyCrate_F", "Box_NATO_Support_F"] select (_what == "KIT"), _spot, [], 3, "NONE"];
+        private _o = createVehicle [[[_logic, "attribute", [["fob_crate_class", "fob_kit_class"] select (_what == "KIT")]] call ALiVE_fnc_FOB, _side,
+            ["B_supplyCrate_F", "Box_NATO_Support_F"] select (_what == "KIT")] call _pickClass, _spot, [], 3, "NONE"];
         clearItemCargoGlobal _o; clearWeaponCargoGlobal _o; clearMagazineCargoGlobal _o; clearBackpackCargoGlobal _o;
         if (_what == "KIT") then { ["tag", [_o, "KIT", _side]] call ALiVE_fnc_fobOps } else { ["tag", [_o, "CRATE", _amount]] call ALiVE_fnc_fobOps };
         [["STR_ALIVE_FOB_HQ_CRATE", "STR_ALIVE_FOB_HQ_KIT"] select (_what == "KIT")] call _tell;
