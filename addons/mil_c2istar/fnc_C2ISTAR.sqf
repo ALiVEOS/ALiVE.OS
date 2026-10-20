@@ -1504,6 +1504,10 @@ switch(_operation) do {
                 private _pSide = _prisoner getVariable ["ALiVE_prisonerSide", side group _prisoner];
                 private _sideText = str _pSide;
                 private _found = [];
+                // for each place in _found: where that group is heading ([] when it holds its ground), and its profile
+                // (Will501 on Discord, 20 Oct: a mark on a group that had moved on was empty when players got there)
+                private _dests = [];
+                private _ids = [];
                 // how it went, for the answer: "refused", "talked", or "asked" (already questioned, the second of two
                 // players asking at once, or the prison not seen alike here and on the asker's machine)
                 private _outcome = "refused";
@@ -1522,9 +1526,18 @@ switch(_operation) do {
                     private _lie = !_atPrison && {!_recruiter} && {random 100 < (missionNamespace getVariable ["ALiVE_c2istar_fieldLieChance", 0])};
                     if (_lie || {_recruiter} || {_atPrison} || {random 100 >= 30}) then {
                         _outcome = "talked";
-                        private _profiles = [_from, _reach, [_sideText, "entity"]] call ALIVE_fnc_getNearProfiles;
-                        _found = (_profiles call BIS_fnc_arrayShuffle) select [0, [4, 6] select _atPrison];
-                        _found = _found apply { [_x, "position", [0, 0, 0]] call ALIVE_fnc_hashGet };
+                        private _profiles = ([_from, _reach, [_sideText, "entity"]] call ALIVE_fnc_getNearProfiles) call BIS_fnc_arrayShuffle;
+                        // groups holding their ground first: he knows where they are, and they'll still be there. Measured
+                        // on Altis, over half the groups moved more than 300 m in the ten minutes a mark stays
+                        private _moving = { count ([_this, "waypoints", []] call ALIVE_fnc_hashGet) > 0 };
+                        _profiles = (_profiles select { !(_x call _moving) }) + (_profiles select { _x call _moving });
+                        _profiles = _profiles select [0, [4, 6] select _atPrison];
+                        _found = _profiles apply { +([_x, "position", [0, 0, 0]] call ALIVE_fnc_hashGet) };
+                        _dests = _profiles apply {
+                            private _w = [_x, "waypoints", []] call ALIVE_fnc_hashGet;
+                            if (_w isEqualTo []) then { [] } else { +([_w select 0, "position", []] call ALIVE_fnc_hashGet) }
+                        };
+                        _ids = _profiles apply { [_x, "profileID", ""] call ALIVE_fnc_hashGet };
                         if (_lie) then {
                             // a lie: as many places, none of them right, 800 m to 2 km off (on land when one of eight
                             // tries finds some, on the map); and no installations
@@ -1538,6 +1551,8 @@ switch(_operation) do {
                                 };
                                 _fake
                             };
+                            _dests = _found apply { [] };
+                            _ids = [];
                             ["C2ISTAR: %1 lied under questioning", name _prisoner] call ALiVE_fnc_dump;
                         } else {
                             [_from, _reach, _pSide] call ALIVE_fnc_OPCOMToggleInstallations;
@@ -1581,8 +1596,36 @@ switch(_operation) do {
                         };
                     };
                 };
-                ALiVE_c2istar_questionAnswer = [name _prisoner, _found, _pSide, _outcome];
-                if (isPlayer _caller && {!(local _caller)}) then { (owner _caller) publicVariableClient "ALiVE_c2istar_questionAnswer" } else { ALiVE_c2istar_questionAnswer call ALiVE_c2istar_fnc_showAnswer };
+                private _key = format ["%1_%2", round time, floor random 100000];
+                ALiVE_c2istar_questionAnswer = [name _prisoner, _found, _pSide, _outcome, _dests, _key];
+                private _remote = isPlayer _caller && {!(local _caller)};
+                if (_remote) then { (owner _caller) publicVariableClient "ALiVE_c2istar_questionAnswer" } else { ALiVE_c2istar_questionAnswer call ALiVE_c2istar_fnc_showAnswer };
+                // a group on the move: its mark goes with it, and the place it's heading with its next waypoint, every
+                // 10 s for the ten minutes the marks stay. A group that's gone keeps its last place
+                if (_ids isNotEqualTo [] && {_dests findIf { _x isNotEqualTo [] } > -1}) then {
+                    [_key, _ids, _dests, _caller, _remote] spawn {
+                        params ["_key", "_ids", "_dests", "_caller", "_remote"];
+                        private _end = time + 600;
+                        while { time < _end && {!isNull _caller} } do {
+                            sleep 10;
+                            private _rows = [];
+                            {
+                                if ((_dests select _forEachIndex) isNotEqualTo []) then {
+                                    private _p = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+                                    if (!isNil "_p" && {_p isEqualType []}) then {
+                                        private _w = [_p, "waypoints", []] call ALIVE_fnc_hashGet;
+                                        _rows pushBack [_forEachIndex, +([_p, "position", [0, 0, 0]] call ALIVE_fnc_hashGet),
+                                            if (_w isEqualTo []) then { [] } else { +([_w select 0, "position", []] call ALIVE_fnc_hashGet) }];
+                                    };
+                                };
+                            } forEach _ids;
+                            if (_rows isNotEqualTo []) then {
+                                ALiVE_c2istar_intelTrack = [_key, _rows];
+                                if (_remote) then { (owner _caller) publicVariableClient "ALiVE_c2istar_intelTrack" } else { ALiVE_c2istar_intelTrack call ALiVE_c2istar_fnc_trackIntel };
+                            };
+                        };
+                    };
+                };
             };
             // Asked and answered by broadcast, so a mission's remote-execution whitelist can't stop it.
             "ALiVE_c2istar_questionAsk" addPublicVariableEventHandler { (_this select 1) call ALiVE_c2istar_fnc_interrogate };
@@ -1601,7 +1644,8 @@ switch(_operation) do {
                 };
             };
             ALiVE_c2istar_fnc_showAnswer = {
-                params ["_name", "_positions", "_side", ["_outcome", "refused"]];
+                params ["_name", "_positions", "_side", ["_outcome", "refused"], ["_dests", []], ["_key", ""]];
+                if (_key == "") then { _key = str round time };
                 private _prefix = switch (_side) do { case west: {"b_"}; case east: {"o_"}; case resistance: {"n_"}; default {"o_"} };
                 private _fnc_tell = { if (isNull findDisplay 9260) then { [localize "STR_ALIVE_C2ISTAR", _this] call ALIVE_fnc_sendHint } else { ((findDisplay 9260) displayCtrl 92602) ctrlSetStructuredText text _this } };
                 if (_positions isEqualTo []) exitWith {
@@ -1611,15 +1655,42 @@ switch(_operation) do {
                         default { "%1 won't tell you anything." };
                     }, _name]) call _fnc_tell
                 };
+                private _movingCount = 0;
                 {
-                    private _m = createMarkerLocal [format ["ALiVE_c2istar_pow_%1_%2", round time, _forEachIndex], _x];
+                    private _dest = _dests param [_forEachIndex, []];
+                    private _m = createMarkerLocal [format ["ALiVE_c2istar_pow_%1_%2", _key, _forEachIndex], _x];
                     _m setMarkerTypeLocal (_prefix + "unknown");
-                    _m setMarkerTextLocal format ["%1 says: enemy here", _name];
-                    [_m] spawn { sleep 600; deleteMarkerLocal (_this select 0) };
+                    _m setMarkerTextLocal format [["%1 says: enemy here", "%1 says: enemy moving"] select (_dest isNotEqualTo []), _name];
+                    private _gone = [_m];
+                    if (_dest isNotEqualTo []) then {
+                        _movingCount = _movingCount + 1;
+                        private _d = createMarkerLocal [format ["ALiVE_c2istar_pow_%1_%2_to", _key, _forEachIndex], _dest];
+                        _d setMarkerTypeLocal "mil_end";
+                        _d setMarkerColorLocal (["ColorWEST", "ColorEAST", "ColorGUER"] param [[west, east, resistance] find _side, "ColorEAST"]);
+                        _d setMarkerAlphaLocal 0.6;
+                        _d setMarkerTextLocal format ["%1 says: heading here", _name];
+                        _gone pushBack _d;
+                    };
+                    [_gone] spawn { sleep 600; { deleteMarkerLocal _x } forEach (_this select 0) };
                 } forEach _positions;
-                (format ["%1 talked: %2 enemy positions he knows of are on your map for ten minutes.", _name, count _positions]) call _fnc_tell;
+                (format ["%1 talked: %2 enemy positions he knows of are on your map for ten minutes%3.", _name, count _positions,
+                    ["", format ["; %1 of them on the move, and their marks follow them", _movingCount]] select (_movingCount > 0)]) call _fnc_tell;
             };
             "ALiVE_c2istar_questionAnswer" addPublicVariableEventHandler { (_this select 1) call ALiVE_c2istar_fnc_showAnswer };
+            // where the groups on the move are now: their marks follow them, until the marks are gone
+            ALiVE_c2istar_fnc_trackIntel = {
+                params ["_key", "_rows"];
+                {
+                    _x params ["_i", "_pos", "_dest"];
+                    private _m = format ["ALiVE_c2istar_pow_%1_%2", _key, _i];
+                    if (getMarkerType _m != "") then {
+                        _m setMarkerPosLocal _pos;
+                        private _d = _m + "_to";
+                        if (getMarkerType _d != "" && {_dest isNotEqualTo []}) then { _d setMarkerPosLocal _dest };
+                    };
+                } forEach _rows;
+            };
+            "ALiVE_c2istar_intelTrack" addPublicVariableEventHandler { (_this select 1) call ALiVE_c2istar_fnc_trackIntel };
             ALiVE_c2istar_fnc_askQuestion = {
                 params ["_target", "_caller"];
                 ALiVE_c2istar_questionAsk = [_target, _caller];
