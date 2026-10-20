@@ -702,6 +702,9 @@ switch(_operation) do {
 
                 private _assignedProfiles = _objectiveSection apply { [ALiVE_profileHandler,"getProfile", _x] call ALiVE_fnc_profileHandler };
                 private _profilePositions = _assignedProfiles apply { _x select 2 select 2 };
+                // every group on the order gone by the time the report is drawn (killed, or merged into others): no front
+                // line, as the middle of no positions divides by zero and leaves the markers nowhere (TheBigDog90, 20 Oct)
+                if (_profilePositions isEqualTo []) exitWith { _report set ["markers", []]; };
                 private _profilePositionsMidpoint = _profilePositions call ALiVE_fnc_findMidpoint;
                 if (_assignedProfiles isequalto []) then {
                     systemchat format ["Assigned Profiles is Empty"];
@@ -766,6 +769,9 @@ switch(_operation) do {
 
                 private _assignedProfiles = (_objectiveSection apply { [ALiVE_profileHandler,"getProfile", _x] call ALiVE_fnc_profileHandler }) select { !isnil "_x" };
                 private _profilePositions = _assignedProfiles apply { _x select 2 select 2 };
+                // every group on the order gone by the time the report is drawn (killed, or merged into others): no front
+                // line, as the middle of no positions divides by zero and leaves the markers nowhere (TheBigDog90, 20 Oct)
+                if (_profilePositions isEqualTo []) exitWith { _report set ["markers", []]; };
                 private _profilePositionsMidpoint = _profilePositions call ALiVE_fnc_findMidpoint;
                 private _dirToAttackers = _objectivePosition getdir _profilePositionsMidpoint;
                 private _dirToObjective = _dirToAttackers - 180;
