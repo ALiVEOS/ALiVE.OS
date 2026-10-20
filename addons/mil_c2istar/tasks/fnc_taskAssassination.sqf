@@ -273,13 +273,19 @@ switch (_taskState) do {
             _tasks = [];
             _taskIDs = [];
 
+            // A recruiter task (raised by the Insurgency commander's Recruitment HQ, its ID holds "_recruiter_") has no
+            // destination and no marker until players have found the man, so the HQ and the recruiter are two jobs (A. Ares
+            // on Discord, 19 Oct). The HQ area still decides where he spawns: it's kept in the params as HVTArea.
+            private _hidden = (_taskID find "_recruiter_") > -1;
+            private _shownPosition = [_targetPosition, []] select _hidden;
+
             // create the parent task
 
             _dialog = [_dialogOption,"Parent"] call ALIVE_fnc_hashGet;
             _taskTitle = [_dialog,"title"] call ALIVE_fnc_hashGet;
             _taskDescription = [_dialog,"description"] call ALIVE_fnc_hashGet;
             _taskSource = format["%1-Assassination-Parent",_taskID];
-            _newTask = [_taskID,_requestPlayerID,_taskSide,_targetPosition,_taskFaction,_taskTitle,_taskDescription,_taskPlayers,_state,_taskApplyType,"N","None",_taskSource,false];
+            _newTask = [_taskID,_requestPlayerID,_taskSide,_shownPosition,_taskFaction,_taskTitle,_taskDescription,_taskPlayers,_state,_taskApplyType,"N","None",_taskSource,false];
 
             _tasks pushback _newTask;
             _taskIDs pushback _taskID;
@@ -289,9 +295,12 @@ switch (_taskState) do {
             _dialog = [_dialogOption,"Destroy"] call ALIVE_fnc_hashGet;
             _taskTitle = [_dialog,"title"] call ALIVE_fnc_hashGet;
             _taskDescription = [_dialog,"description"] call ALIVE_fnc_hashGet;
+            if (_hidden) then {
+                _taskDescription = _taskDescription + "<br/><br/>His exact whereabouts aren't known: search the area. The task points at him once your side has spotted him or one of you is within 200 m.";
+            };
             _newTaskID = format["%1_c1",_taskID];
             _taskSource = format["%1-Assassination-Destroy",_taskID];
-            _newTask = [_newTaskID,_requestPlayerID,_taskSide,_targetPosition,_taskFaction,_taskTitle,_taskDescription,_taskPlayers,_state,_taskApplyType,_taskCurrent,_taskID,_taskSource,true];
+            _newTask = [_newTaskID,_requestPlayerID,_taskSide,_shownPosition,_taskFaction,_taskTitle,_taskDescription,_taskPlayers,_state,_taskApplyType,_taskCurrent,_taskID,_taskSource,true];
 
             _tasks pushback _newTask;
             _taskIDs pushback _newTaskID;
@@ -301,7 +310,9 @@ switch (_taskState) do {
             private["_spawnTypes","_spawnType"];
 
             _spawnTypes = ["static","insertion","extraction"];
-            _spawnType = (selectRandom _spawnTypes);
+            // a hidden recruiter waits where he is: driven in or away, he'd show players where to look, or leave the
+            // task to fail before anyone could find him
+            _spawnType = if (_hidden) then { "static" } else { selectRandom _spawnTypes };
 
             // store task data in the params for this task set
 
@@ -314,6 +325,10 @@ switch (_taskState) do {
             [_taskParams,"HVTSpawned",false] call ALIVE_fnc_hashSet;
             [_taskParams,"HVTSpawnType",_spawnType] call ALIVE_fnc_hashSet;
             [_taskParams,"unit",[_units, _firstName, _surName, _unitRank]] call ALIVE_fnc_hashSet;
+            [_taskParams,"HVTArea",_targetPosition] call ALIVE_fnc_hashSet;
+            [_taskParams,"HVTHidden",_hidden] call ALIVE_fnc_hashSet;
+            [_taskParams,"HVTFound",!_hidden] call ALIVE_fnc_hashSet;
+            [_taskParams,"HVTSentPos",[]] call ALIVE_fnc_hashSet;
             // return the created tasks and params
 
             _result = [_tasks,_taskParams];
@@ -337,6 +352,8 @@ switch (_taskState) do {
         _taskTitle = _task select 5;
         _taskDescription = _task select 6;
         _taskPlayers = _task select 7 select 0;
+        // a recruiter task shows no position until he's found; its spawn and reach tests use the HQ area
+        if (_taskPosition isEqualTo []) then { _taskPosition = [_params,"HVTArea",[0,0,0]] call ALIVE_fnc_hashGet };
 
         _lastState = [_params,"lastState"] call ALIVE_fnc_hashGet;
         _taskDialog = [_params,"dialog"] call ALIVE_fnc_hashGet;
@@ -634,6 +651,37 @@ switch (_taskState) do {
 
                 _profiles = [_entitiesState,"profiles"] call ALIVE_fnc_hashGet;
 
+                // where the HVT himself is (picked out by his profile ID: at a meeting there are two men) and his unit
+                // when he's spawned
+                private _fnc_hvt = {
+                    params ["_p"];
+                    if (_p select 2 select 1) then {
+                        private _l = leader (_p select 2 select 13);
+                        // his group gone between ticks: no position this time
+                        if (isNull _l) then { [[], objNull] } else { [getPosATL _l, _l] }
+                    } else {
+                        private _c = _p select 2 select 9;
+                        private _cp = if (count _c > 0) then { [ALIVE_profileHandler, "getProfile", _c select 0] call ALIVE_fnc_profileHandler } else { nil };
+                        [if (isNil "_cp") then { _p select 2 select 2 } else { _cp select 2 select 2 }, objNull]
+                    }
+                };
+                private _hvtProfile = _profiles findIf { (_x select 2 select 4) == (_entityProfiles select 0) };
+                // a hidden recruiter is found when one of the task's players comes within 200 m of him, or the task's
+                // side has spotted him (a side's knowledge is held on the server; a remote player's own isn't)
+                private _found = [_params,"HVTFound",true] call ALIVE_fnc_hashGet;
+                if (!_found && {_hvtProfile > -1}) then {
+                    ([_profiles select _hvtProfile] call _fnc_hvt) params ["_hvtPos", "_hvtUnit"];
+                    private _players = (_taskPlayers apply { [_x] call ALIVE_fnc_getPlayerByUID }) select { !isNull _x };
+                    _found = _hvtPos isNotEqualTo [] && {
+                        (_players findIf { (_x distance _hvtPos) < 200 }) > -1
+                        || {!isNull _hvtUnit && {(([_taskSide] call ALiVE_fnc_sideTextToObject) knowsAbout _hvtUnit) > 1.5}}
+                    };
+                    if (_found) then {
+                        [_params,"HVTFound",true] call ALIVE_fnc_hashSet;
+                        ["ALiVE C2ISTAR: recruiter task %1: the man has been found at %2", _taskID, mapGridPosition _hvtPos] call ALiVE_fnc_dump;
+                    };
+                };
+
                 {
 
                     _profile = _x;
@@ -645,7 +693,7 @@ switch (_taskState) do {
 
                         _group = _profile select 2 select 13;
                         _position = getPos leader _group;
-                        [_position,_taskEnemySide,_taskPlayers,_taskID,"HVT"] call ALIVE_fnc_taskCreateMarkersForPlayers;
+                        if (_found) then { [_position,_taskEnemySide,_taskPlayers,_taskID,"HVT"] call ALIVE_fnc_taskCreateMarkersForPlayers };
 
                         // papers that say who he is, found on his body or by searching him as a prisoner; given
                         // again each time he spawns, as a despawn takes them with him
@@ -663,7 +711,7 @@ switch (_taskState) do {
 
                                 if!(isNil "_cargoProfile") then {
                                     _position = _cargoProfile select 2 select 2;
-                                    [_position,_taskEnemySide,_taskPlayers,_taskID,"HVT"] call ALIVE_fnc_taskCreateMarkersForPlayers;
+                                    if (_found) then { [_position,_taskEnemySide,_taskPlayers,_taskID,"HVT"] call ALIVE_fnc_taskCreateMarkersForPlayers };
 
                                     if(_HVTSpawnType == "extraction") then {
                                         _distance = [_position,_taskPlayers] call ALIVE_fnc_taskGetClosestPlayerDistanceToDestination;
@@ -687,7 +735,7 @@ switch (_taskState) do {
                         }else{
 
                             _position = _x select 2 select 2;
-                            [_position,_taskEnemySide,_taskPlayers,_taskID,"HVT"] call ALIVE_fnc_taskCreateMarkersForPlayers;
+                            if (_found) then { [_position,_taskEnemySide,_taskPlayers,_taskID,"HVT"] call ALIVE_fnc_taskCreateMarkersForPlayers };
 
                             if(_HVTSpawnType == "extraction") then {
                                 _distance = [_position,_taskPlayers] call ALIVE_fnc_taskGetClosestPlayerDistanceToDestination;
@@ -710,6 +758,18 @@ switch (_taskState) do {
                     };
 
                 } forEach _profiles;
+
+                // found, the task's destination follows him, sent again when he has moved 100 m. Sent directly rather
+                // than returned: a returned task is re-assigned every tick
+                if (_found && {_result isEqualTo []} && {_hvtProfile > -1} && {[_params,"HVTHidden",false] call ALIVE_fnc_hashGet}) then {
+                    ([_profiles select _hvtProfile] call _fnc_hvt) params ["_hvtPos"];
+                    private _sent = [_params,"HVTSentPos",[]] call ALIVE_fnc_hashGet;
+                    if (_hvtPos isNotEqualTo [] && {_sent isEqualTo [] || {(_sent distance2D _hvtPos) > 100}}) then {
+                        [_params,"HVTSentPos",+_hvtPos] call ALIVE_fnc_hashSet;
+                        _task set [3, +_hvtPos];
+                        [ALiVE_TaskHandler,"TASK_UPDATE",_task] call ALiVE_fnc_TaskHandler;
+                    };
+                };
 
             }
 

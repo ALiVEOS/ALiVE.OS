@@ -127,7 +127,8 @@ if (typeName _radius != "SCALAR" || {_radius <= 0}) exitWith {
 };
 
 private _pos = taskDestination _ct;
-if (typeName _pos != "ARRAY" || {count _pos < 2}) exitWith {
+// a task with no destination yet (a recruiter task before he's found) reads [0,0,0]: no area at the map's corner
+if (typeName _pos != "ARRAY" || {count _pos < 2} || {_pos isEqualTo [0,0,0]}) exitWith {
     deleteMarkerLocal _markerName;
     deleteMarkerLocal _textMarkerName;
 };

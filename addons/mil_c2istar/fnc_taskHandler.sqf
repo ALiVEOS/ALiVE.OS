@@ -2144,6 +2144,8 @@ switch (_operation) do {
                                 // handled once per task, whether or not a group was found
                                 ALiVE_c2istar_taskTakeover set [_rootTaskID, -2];
                                 private _taskPos = _mainTask select 3;
+                                // a recruiter task with no position yet: its HQ area
+                                if (_taskPos isEqualTo []) then { _taskPos = [_taskParams,"HVTArea",[0,0,0]] call ALIVE_fnc_hashGet };
                                 private _best = [];
                                 private _bestDist = 3001;
                                 {

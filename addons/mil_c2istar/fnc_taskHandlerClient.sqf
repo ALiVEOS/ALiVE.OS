@@ -197,7 +197,8 @@ switch(_operation) do {
             };
 
             _taskObject setSimpleTaskDescription [_description,_title,_title];
-            _taskObject setSimpleTaskDestination _position;
+            // a task can start with no destination (a recruiter task until the man is found)
+            if (_position isEqualType [] && {count _position >= 2}) then { _taskObject setSimpleTaskDestination _position };
             _taskObject setTaskState _state;
 
             switch(_state) do {

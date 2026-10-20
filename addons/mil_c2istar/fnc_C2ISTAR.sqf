@@ -1556,6 +1556,16 @@ switch(_operation) do {
                             ["C2ISTAR: %1 lied under questioning", name _prisoner] call ALiVE_fnc_dump;
                         } else {
                             [_from, _reach, _pSide] call ALIVE_fnc_OPCOMToggleInstallations;
+                            // a captured recruiter names his own Recruitment HQ exactly, however far away it is, while it
+                            // still stands (A. Ares on Discord, 19 Oct): it's revealed, marked first, and is what a prison
+                            // answer's task goes after
+                            private _ownHQ = _prisoner getVariable ["ALiVE_INS_recruiterHQ", objNull];
+                            if (_recruiter && {!isNull _ownHQ} && {alive _ownHQ}) then {
+                                [getPosATL _ownHQ, 50, _pSide] call ALIVE_fnc_OPCOMToggleInstallations;
+                                _found = [getPosATL _ownHQ] + _found;
+                                _dests = [[]] + _dests;
+                                _ids = [""] + _ids;
+                            };
                             // What he gives up at a prison becomes a task for the asker's side (Will501 on Discord, 18 Oct):
                             // destroy an insurgent installation he named, else the nearest group he named. One per
                             // prisoner, one per side every 20 minutes, and none while the module's unasked player tasks
@@ -1568,6 +1578,8 @@ switch(_operation) do {
                                 if (time < (missionNamespace getVariable [_cooldownVar, -1e9]) + 1200) exitWith {};
                                 private _type = "";
                                 private _where = [];
+                                private _ownHQ = _prisoner getVariable ["ALiVE_INS_recruiterHQ", objNull];
+                                if (_recruiter && {!isNull _ownHQ} && {alive _ownHQ}) then { _type = "InsurgencyDestroyAssets"; _where = getPosATL _ownHQ };
                                 {
                                     private _opcom = _x;
                                     if (_where isEqualTo [] && {([_opcom, "side", ""] call ALiVE_fnc_HashGet) == _sideText}

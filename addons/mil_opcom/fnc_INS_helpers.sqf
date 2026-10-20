@@ -2662,6 +2662,8 @@ ALiVE_fnc_INS_recruiterPresence = {
                 _unit setVariable ["ALiVE_INS_recruiterOf", [objNull, 0, 1]];
                 _HQ setVariable ["ALiVE_INS_recruiterTakenAt", time];
                 _unit setVariable ["ALiVE_INS_recruiterCaptured", true, true];
+                // questioned, he gives up his own Recruitment HQ wherever it is (A. Ares on Discord, 19 Oct)
+                _unit setVariable ["ALiVE_INS_recruiterHQ", _HQ, true];
                 [_unit] call ALiVE_c2istar_fnc_surrender;
                 _HQ setVariable ["ALiVE_INS_recruitSkipNext", _skips];
                 _HQ setVariable ["ALiVE_INS_recruiterBackAt", time + _pause];
