@@ -650,6 +650,14 @@ switch (_operation) do {
                 [_handler,"hvtRecord", [_result,"data"] call CBA_fnc_hashGet] call CBA_fnc_hashSet;
             };
 
+            // the operation in hand at the save (The Horny Latino on Discord, 21 Oct: a pause's clean-up tasks were
+            // gone after a load, and the commander moved straight on): its pause and preparations carry on
+            _key = format ["%1-OPCOM_%2-opstate", ([""] call ALiVE_fnc_storeKeys) select 0, [_handler,"opcomID"] call CBA_fnc_hashGet];
+            _result = [GVAR(DATAHANDLER),"read", ["mil_opcom", [], _key]] call ALIVE_fnc_Data;
+            if (_result isEqualType [] && {!isNil {[_result,"data"] call CBA_fnc_hashGet}}) then {
+                [_handler, "opResume", [_result,"data"] call CBA_fnc_hashGet] call MAINCLASS;
+            };
+
             [_handler,"objectives", _objectives] call ALiVE_fnc_hashSet;
             [_handler,"rebuildObjectiveIndexes"] call MAINCLASS;
         };
@@ -3535,6 +3543,17 @@ switch (_operation) do {
                 [GVAR(DATAHANDLER), "write", ["mil_opcom", _data, false, _key]] call ALIVE_fnc_Data;
             };
 
+            // the operation in hand: what's left of a pause after a capture and where, and the objectives whose
+            // preparations are already done (written every save, so a finished pause isn't brought back)
+            private _opKey = format ["%1-OPCOM_%2-opstate", _missionName, [_logic, "opcomID"] call CBA_fnc_hashGet];
+            private _opPrev = [GVAR(DATAHANDLER), "read", ["mil_opcom", [], _opKey]] call ALIVE_fnc_Data;
+            private _opData = [[["data", [_logic, "opState"] call MAINCLASS]]] call CBA_fnc_hashCreate;
+            if (_opPrev isEqualType []) then {
+                private _rev = [_opPrev, "_rev"] call CBA_fnc_hashGet;
+                if (!isNil {_rev}) then { [_opData, "_rev", _rev] call CBA_fnc_hashSet };
+            };
+            [GVAR(DATAHANDLER), "write", ["mil_opcom", _opData, false, _opKey]] call ALIVE_fnc_Data;
+
             if(ALiVE_SYS_DATA_DEBUG_ON) then {
                 ["OPCOM - SAVE DATA RESULT (maybe truncated in RPT, dont worry): %1",_saveResult] call ALiVE_fnc_dump;
                 ["OPCOM - SAVE DATA SAVING COMPLETE!"] call ALiVE_fnc_dump;
@@ -4755,14 +4774,18 @@ switch (_operation) do {
     // Defence, reserve and reinforcement go on as usual.
     ///////////////////////////////////////////////////
     case "occPauseStart": {
+        // [objective, seconds left] when a saved pause is resumed after a load; the objective alone otherwise
         private _objective = _args;
+        private _left = -1;
+        if (_args isEqualType [] && {count _args == 2} && {(_args select 1) isEqualType 0}) then { _objective = _args select 0; _left = _args select 1 };
         private _mins = [_logic,"occPauseMins",0] call ALiVE_fnc_HashGet;
         if (!(_mins isEqualType 0) || {_mins <= 0} || {([_logic,"controltype",""] call ALiVE_fnc_HashGet) != "occupation"}) exitWith {};
         private _module = [_logic,"module"] call ALiVE_fnc_HashGet;
         private _sideText = [_logic,"side","WEST"] call ALiVE_fnc_HashGet;
         // a second capture while paused extends the hold rather than starting it again
-        _module setVariable ["ALiVE_Occ_holdUntil", (time + _mins * 60) max (_module getVariable ["ALiVE_Occ_holdUntil", -1])];
+        _module setVariable ["ALiVE_Occ_holdUntil", (time + ([_mins * 60, _left] select (_left > 0))) max (_module getVariable ["ALiVE_Occ_holdUntil", -1])];
         _module setVariable ["ALiVE_Occ_raisedAt", time];
+        _module setVariable ["ALiVE_Occ_objectiveID", [_objective,"objectiveID",""] call ALiVE_fnc_HashGet];
         private _center = [_objective,"center",[0,0,0]] call ALiVE_fnc_HashGet;
         private _objID = [_objective,"objectiveID","obj"] call ALiVE_fnc_HashGet;
         private _civ = ([_objective,"objectiveType","MIL"] call ALiVE_fnc_HashGet) in ["CIV","CCU"];
@@ -4840,6 +4863,42 @@ switch (_operation) do {
                     [_h, "opRadio", format ["Operations at %1 are complete. The operation moves on.", _place]] call ALiVE_fnc_OPCOM;
                 };
             };
+        };
+    };
+
+    // the operation in hand, for a persistent save: [seconds left on a pause after a capture, its objective, the
+    // objectives whose preparations are done]
+    case "opState": {
+        private _module = [_logic,"module"] call ALiVE_fnc_HashGet;
+        private _left = (((_module getVariable ["ALiVE_Occ_holdUntil", -1]) - time) max 0);
+        _result = [round _left, [_module getVariable ["ALiVE_Occ_objectiveID", ""], ""] select (_left <= 0), +(_module getVariable ["ALiVE_prep_cleared", []])];
+    };
+
+    // after a load: the preparations already done stay done, and a pause that was running holds attacks again at once
+    // and, once a player of the side is in (or the time runs out first), gives its tasks again for the time it had left
+    case "opResume": {
+        private _st = _args;
+        if !(_st isEqualType []) exitWith {};
+        _st params [["_left", 0], ["_objID", ""], ["_cleared", []]];
+        private _module = [_logic,"module"] call ALiVE_fnc_HashGet;
+        if (_cleared isEqualType [] && {_cleared isNotEqualTo []}) then { _module setVariable ["ALiVE_prep_cleared", +_cleared] };
+        if (!(_left isEqualType 0) || {_left <= 0} || {_objID == ""}) exitWith {};
+        private _deadline = time + _left;
+        _module setVariable ["ALiVE_Occ_holdUntil", _deadline];
+        _module setVariable ["ALiVE_Occ_objectiveID", _objID];
+        ["OPCOM %1: a pause after taking %2 carries on after the load, %3 s left", [_logic,"side",""] call ALiVE_fnc_HashGet, _objID, round _left] call ALiVE_fnc_dump;
+        [_logic, _deadline, _objID] spawn {
+            params ["_h", "_deadline", "_objID"];
+            private _side = [_h,"side","WEST"] call ALiVE_fnc_HashGet;
+            waitUntil {
+                sleep 5;
+                time > _deadline || {!isNil "ALIVE_taskHandler" && {(([_h, "prepTestPlayers", []] call ALiVE_fnc_HashGet) isNotEqualTo []
+                    || {((([_side] call ALiVE_fnc_getPlayersDataSource) select 1) isNotEqualTo [])})}}
+            };
+            if (time >= _deadline) exitWith {};
+            private _i = ([_h,"objectives",[]] call ALiVE_fnc_HashGet) findIf { ([_x,"objectiveID",""] call ALiVE_fnc_HashGet) == _objID };
+            if (_i < 0) exitWith {};
+            [_h, "occPauseStart", [([_h,"objectives",[]] call ALiVE_fnc_HashGet) select _i, _deadline - time]] call ALiVE_fnc_OPCOM;
         };
     };
 
