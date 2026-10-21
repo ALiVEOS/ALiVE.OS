@@ -254,6 +254,15 @@
 <Key ID="STR_ALIVE_ATO_PLAYERS_CAN_USE_COMMENT">
     <English>With Yes, players can get into this commander's aircraft and fly them, and an aircraft goes back to the commander once they have got out. With No, every aircraft of this commander is locked to players. AI crews are not affected.</English>
 </Key>
+<Key ID="STR_ALIVE_ATO_CAS_PLAYER_CLEAR">
+    <English>Keep Commander CAS Away From Players:</English>
+</Key>
+<Key ID="STR_ALIVE_ATO_CAS_PLAYER_CLEAR_COMMENT">
+    <English>The AI Commander asks this commander for CAS on enemy armour and aircraft it knows about. With a distance set, such a request is turned down, without a radio call, while a friendly player is that close to its target, so players working quietly or running their own JTAC aren't joined by aircraft they didn't ask for. CAS goes on everywhere else, and a player's own request always goes through. The commander may ask again once the players have moved on. Off: the commander's CAS goes wherever it's asked.</English>
+</Key>
+<Key ID="STR_ALIVE_ATO_CAS_PLAYER_CLEAR_OFF">
+    <English>Off</English>
+</Key>
 <Key ID="STR_ALIVE_ATO_RETURN_AFTER">
     <English>Return To ATO After (s):</English>
 </Key>

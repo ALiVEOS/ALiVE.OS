@@ -2651,6 +2651,26 @@ switch(_operation) do {
             [_logic, _type, _targetPos, _requester, "type not enabled on this commander"] call _fnc_denyOnRadio;
         };
 
+        // ---- players near the target (#1093) ----------------------------
+        // Keep Commander CAS Away From Players: the commander's own CAS is turned
+        // down while a friendly player is within that distance of the target, so a
+        // player working quietly or running their own JTAC isn't joined by aircraft
+        // they didn't ask for. A player's request always goes through. No radio call:
+        // the refusal is there to keep things quiet, and the commander may ask again
+        // once the players have moved on.
+        private _clear = parseNumber format ["%1", _logic getVariable ["casPlayerClear", 0]];
+        private _byPlayer = ([_requester, "kind", ""] call ALIVE_fnc_hashGet) isEqualTo "player";
+        private _ownSide = [[_logic, "side"] call MAINCLASS] call ALiVE_fnc_sideTextToObject;
+        // (a test sets ALiVE_ATO_testPlayers to stand in for players on a server with none; empty in play)
+        private _players = missionNamespace getVariable ["ALiVE_ATO_testPlayers", allPlayers];
+        private _nearPlayer = if (_clear > 0 && {_type isEqualTo "CAS"} && {!_byPlayer}) then {
+            _players findIf { alive _x && {(_x distance2D _targetPos) <= _clear} && {((side group _x) getFriend _ownSide) >= 0.6} }
+        } else { -1 };
+        if (_nearPlayer > -1) exitWith {
+            ["ALIVE_fnc_ATOKernel - CAS request %1 from %2 at %3 turned down: %4 is within %5 m of the target (Keep Commander CAS Away From Players)",
+                _requestId, _from, [_targetPos] call _fnc_grid, name (_players select _nearPlayer), _clear] call ALiVE_fnc_dump;
+        };
+
         // ---- the record -------------------------------------------------
         private _sideText = "";
         if (!isNil "_sideRaw") then {

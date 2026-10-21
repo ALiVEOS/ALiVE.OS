@@ -310,6 +310,25 @@ class CfgVehicles
                         };
                 };
                 // Blank by default, and blank keeps the profile system's own figure.
+                // #1093 (Javen99 for Will501, 21 Oct): the AI Commander's own CAS requests are turned
+                // down while a friendly player is this close to the target, so stealth play and a
+                // player's own JTAC aren't interrupted. Player requests always go through. Off keeps
+                // the old behaviour.
+                class casPlayerClear : Combo
+                {
+                        property = "ALiVE_mil_ato_casPlayerClear";
+                        displayName = "$STR_ALIVE_ATO_CAS_PLAYER_CLEAR";
+                        tooltip = "$STR_ALIVE_ATO_CAS_PLAYER_CLEAR_COMMENT";
+                        defaultValue = """0""";
+                        class Values
+                        {
+                            class off { name = "$STR_ALIVE_ATO_CAS_PLAYER_CLEAR_OFF"; value = 0; default = 1; };
+                            class m500 { name = "500 m"; value = 500; };
+                            class m1000 { name = "1 km"; value = 1000; };
+                            class m2000 { name = "2 km"; value = 2000; };
+                            class m5000 { name = "5 km"; value = 5000; };
+                        };
+                };
                 class returnToATOAfter : Edit
                 {
                         property = "ALiVE_mil_ato_returnToATOAfter";
