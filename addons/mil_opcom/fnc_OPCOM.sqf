@@ -136,6 +136,11 @@ switch (_operation) do {
         // wiretap task at the objective, or for Preparation Timeout minutes; off by default
         private _prepTasks = (toLower format ["%1", _logic getVariable ["prepTasks", "false"]]) in ["true", "1"];
         private _prepTimeout = ((parseNumber format ["%1", _logic getVariable ["prepTimeoutMins", 15]]) max 1) * 60;
+        // how many tasks an operation hands out (The Horny Latino on Discord, 20 Oct): Invasion preparation tasks per
+        // objective, and Occupation clean-up tasks per capture. 0 and 0 (the default) keep one wiretap for Invasion and
+        // every clean-up kind for Occupation
+        private _opTasksMin = (parseNumber format ["%1", _logic getVariable ["opTasksMin", 0]]) max 0;
+        private _opTasksMax = (parseNumber format ["%1", _logic getVariable ["opTasksMax", 0]]) max 0;
         // Phase 4: faction sources, all unioned below.
         //   factions       : multi-select listbox (primary UX,
         //                    ORIGINAL property so old `factions`
@@ -395,6 +400,8 @@ switch (_operation) do {
             ["occPauseMins", _occPauseMins],
             ["prepTasks", _prepTasks && {_type == "invasion"}],
             ["prepTimeout", _prepTimeout],
+            ["opTasksMin", _opTasksMin],
+            ["opTasksMax", _opTasksMax],
             ["roadblocks", _roadblocks],
             ["insTypes", _insTypes],
             ["drugLabs", _drugLabs],
@@ -4564,10 +4571,13 @@ switch (_operation) do {
 
     ///////////////////////////////////////////////////
     // Preparation tasks (The Horny Latino on Discord, 19 Oct): before an Invasion commander attacks a new objective,
-    // players on its side are tasked with wiretapping the enemy's communications there, and the attack waits for that
-    // task or the module's Preparation Timeout, whichever comes first. One preparation at a time per commander. True
-    // when the attack may go ahead; anything that stops a task being given (no players, no C2ISTAR, nobody there to
-    // wiretap) means no wait at all.
+    // players on its side are given preparation tasks there, and the attack waits for them or the module's Preparation
+    // Timeout, whichever comes first. One preparation at a time per commander. True when the attack may go ahead;
+    // anything that stops a task being given (no players, no C2ISTAR, nobody there) means no wait at all.
+    // 20 Oct: Fewest and Most Tasks per Operation set how many; besides the wiretap a task can be to destroy the AA and
+    // mortar emplacements there, the enemy vehicles there, or an insurgent installation nearby, each only where there is
+    // something to destroy; and the side is told on the radio when the preparations are asked for and when the assault
+    // goes ahead.
     ///////////////////////////////////////////////////
     case "prepReady": {
         private _objective = _args;
@@ -4589,26 +4599,44 @@ switch (_operation) do {
                 _cleared pushBackUnique _prepFor;
                 _module setVariable ["ALiVE_prep_cleared", _cleared];
                 ["OPCOM %1: the preparation for %2 ran out of time", [_logic, "side", ""] call ALiVE_fnc_HashGet, _prepFor] call ALiVE_fnc_dump;
+                [_logic, "opRadio", format ["Out of time at %1. The assault goes ahead without the preparations.", _module getVariable ["ALiVE_prep_place", "the objective"]]] call ALiVE_fnc_OPCOM;
                 _result = false;
             };
         };
         if (_state == "requested") exitWith {
-            private _taskID = _module getVariable ["ALiVE_prep_taskID", ""];
-            private _records = (([ALiVE_TaskHandler, "tasks", ["", [], [], nil]] call ALiVE_fnc_HashGet) select 2) select { ((_x select 0) find _taskID) == 0 };
-            private _states = _records apply { _x select 8 };
+            // every task asked for: one still open holds the attack; one C2ISTAR never made is given 2 minutes
+            private _ids = _module getVariable ["ALiVE_prep_taskIDs", [_module getVariable ["ALiVE_prep_taskID", ""]]];
+            private _all = ([ALiVE_TaskHandler, "tasks", ["", [], [], nil]] call ALiVE_fnc_HashGet) select 2;
+            private _young = time - (_module getVariable ["ALiVE_prep_requestedAt", -1]) <= 120;
+            private _open = 0; private _made = 0; private _won = 0;
+            {
+                private _id = _x;
+                private _states = (_all select { ((_x select 0) find _id) == 0 }) apply { _x select 8 };
+                if (_states isEqualTo []) then { if (_young) then { _open = _open + 1 } } else {
+                    _made = _made + 1;
+                    if ("Succeeded" in _states) then { _won = _won + 1 } else {
+                        if ((_states findIf { !(_x in ["Failed", "Canceled"]) }) >= 0) then { _open = _open + 1 };
+                    };
+                };
+            } forEach _ids;
             private _why = "";
-            if ("Succeeded" in _states) then { _why = "done" };
-            if (_why == "" && {_states isNotEqualTo []} && {(_states findIf { !(_x in ["Failed", "Canceled"]) }) < 0}) then { _why = "failed" };
+            if (_open == 0) then { _why = ["no task made", ["failed", "done"] select (_won > 0)] select (_made > 0) };
             if (_why == "" && {time > (_module getVariable ["ALiVE_prep_deadline", -1])}) then { _why = "time up" };
-            // C2ISTAR made nothing in 2 minutes: don't wait the whole timeout for it
-            if (_why == "" && {_records isEqualTo []} && {time - (_module getVariable ["ALiVE_prep_requestedAt", -1]) > 120}) then { _why = "no task made" };
             if (_why == "") exitWith { _result = false };
             _module setVariable ["ALiVE_prep_state", ["expired", "done"] select (_why == "done")];
             _cleared pushBackUnique _objectiveID;
             _module setVariable ["ALiVE_prep_cleared", _cleared];
-            ["OPCOM %1: the attack on %2 goes ahead (preparation %3)", [_logic, "side", ""] call ALiVE_fnc_HashGet, _objectiveID, _why] call ALiVE_fnc_dump;
+            ["OPCOM %1: the attack on %2 goes ahead (preparation %3, %4 of %5 tasks done)", [_logic, "side", ""] call ALiVE_fnc_HashGet, _objectiveID, _why, _won, count _ids] call ALiVE_fnc_dump;
+            private _place = _module getVariable ["ALiVE_prep_place", "the objective"];
+            private _say = switch (_why) do {
+                case "done": { format ["Preparations at %1 are complete. All units, the assault is going ahead.", _place] };
+                case "time up": { format ["Out of time at %1. The assault goes ahead without the preparations.", _place] };
+                case "failed": { format ["The preparations at %1 have failed. The assault goes ahead regardless.", _place] };
+                default { "" };
+            };
+            if (_say != "") then { [_logic, "opRadio", _say] call ALiVE_fnc_OPCOM };
         };
-        // a new objective: ask for the task
+        // a new objective: ask for the tasks
         private _side = [_logic, "side", "WEST"] call ALiVE_fnc_HashGet;
         private _players = [_logic, "prepTestPlayers", []] call ALiVE_fnc_HashGet;      // a test sets this; empty in play
         if (_players isEqualTo []) then {
@@ -4616,12 +4644,13 @@ switch (_operation) do {
             _players = [_p select 1, _p select 0];
         };
         private _center = [_objective, "center", [0,0,0]] call ALiVE_fnc_HashGet;
+        private _sidesEnemy = [_logic, "sidesenemy", []] call ALiVE_fnc_HashGet;
         // the faction holding the objective, from the enemy groups within 500 m
         private _enemyFaction = "";
         {
             private _near = [_center, 500, [_x, "entity"]] call ALIVE_fnc_getNearProfiles;
             if (_enemyFaction == "" && {_near isNotEqualTo []}) then { _enemyFaction = [_near select 0, "faction", ""] call ALiVE_fnc_HashGet };
-        } forEach ([_logic, "sidesenemy", []] call ALiVE_fnc_HashGet);
+        } forEach _sidesEnemy;
         if (isNil "ALIVE_MIL_C2ISTAR" || {isNil "ALiVE_TaskHandler"} || {isNil "ALIVE_eventLog"} || {(_players select 0) isEqualTo []}
             || {!(missionNamespace getVariable ["ALiVE_c2istar_autoPlayerTasks", true])} || {_enemyFaction == ""}) exitWith {
             // nobody to give it to: the attack goes ahead, and the objective is asked about again once players are on;
@@ -4632,8 +4661,9 @@ switch (_operation) do {
                 ["OPCOM %1: no preparation task for %2 (no enemy groups there), the attack goes ahead", _side, _objectiveID] call ALiVE_fnc_dump;
             };
         };
-        // a comms building at the objective if there is one (matched by model, as C2ISTAR's own index does); with none,
-        // the task puts up its own comms site
+        // what there is to do there, the wiretap always: a comms building at the objective if there is one (matched by
+        // model, as C2ISTAR's own index does); with none, the task puts up its own comms site
+        private _radius = ([_objective, "size", 150] call ALiVE_fnc_HashGet) max 300;
         private _comms = (missionNamespace getVariable ["ALIVE_civilianCommsBuildingTypes", []]) apply { toLower _x };
         private _building = objNull;
         if (_comms isNotEqualTo []) then {
@@ -4642,17 +4672,80 @@ switch (_operation) do {
                 if (alive _x && {(_comms findIf { (_m find _x) > -1 }) > -1}) exitWith { _building = _x };
             } forEach (nearestObjects [_center, ["House", "Building"], ([_objective, "size", 150] call ALiVE_fnc_HashGet) max 150]);
         };
-        private _taskID = format ["PREP_%1_%2", _objectiveID, floor time];
+        private _kinds = [["Wiretap", [_building]]];
+        // the enemy's vehicles there: AA and mortar emplacements (static AA, mortars, and AA vehicles) apart from the rest;
+        // up to 3 of each, aircraft and boats left out
+        private _empl = [];
+        private _vehs = [];
+        {
+            {
+                private _cls = [_x, "vehicleClass", ""] call ALiVE_fnc_HashGet;
+                private _id = [_x, "profileID", ""] call ALiVE_fnc_HashGet;
+                if (_cls != "" && {_id != ""} && {!(_cls isKindOf "Air")} && {!(_cls isKindOf "Ship")}) then {
+                    if (_cls isKindOf "StaticMortar" || {_cls isKindOf "StaticAAWeapon"}
+                        || {getText (configFile >> "CfgVehicles" >> _cls >> "editorSubcategory") == "EdSubcat_AAs"}) then {
+                        if (count _empl < 3) then { _empl pushBack _id };
+                    } else {
+                        if (count _vehs < 3 && {!(_cls isKindOf "StaticWeapon")}) then { _vehs pushBack _id };
+                    };
+                };
+            } forEach ([_center, _radius, [_x, "vehicle"]] call ALIVE_fnc_getNearProfiles);
+        } forEach _sidesEnemy;
+        if (_empl isNotEqualTo []) then { _kinds pushBack ["DestroyVehicles", _empl, "AA and mortar emplacements"] };
+        if (_vehs isNotEqualTo []) then { _kinds pushBack ["DestroyVehicles", _vehs, "enemy vehicles"] };
+        // an insurgent installation within 2 km (recruitment HQ, arms cache or IED factory)
+        if (!isNil "ALIVE_fnc_taskGetInsurgencyLocation") then {
+            private _found = false;
+            {
+                private _ins = [_center, "Map", _x] call ALIVE_fnc_taskGetInsurgencyLocation;
+                if (!_found && {_ins isEqualType []} && {count _ins > 1} && {(_ins select 1) isEqualType []} && {count (_ins select 1) >= 2}
+                    && {((_ins select 1) distance2D _center) < 2000}) then { _found = true };
+            } forEach _sidesEnemy;
+            if (_found) then { _kinds pushBack ["InsurgencyDestroyAssets", [], "insurgent installation"] };
+        };
+        // how many: 0 and 0 keep the wiretap alone; otherwise between the fewest and the most, no more than there are kinds
+        private _lo = [_logic, "opTasksMin", 0] call ALiVE_fnc_HashGet;
+        private _hi = [_logic, "opTasksMax", 0] call ALiVE_fnc_HashGet;
+        private _chosen = [_kinds select 0];
+        if (_lo > 0 || {_hi > 0}) then {
+            if (_hi < _lo) then { _hi = _lo };
+            private _n = ((_lo + floor random (_hi - _lo + 1)) max 1) min (count _kinds);
+            _chosen = (_kinds call BIS_fnc_arrayShuffle) select [0, _n];
+        };
         private _faction = ([_logic, "factions", [""]] call ALiVE_fnc_HashGet) param [0, ""];
-        private _taskData = [_taskID, "OPCOM", _side, _faction, "Wiretap", "Map", +_center, _players, _enemyFaction, "Y", "Side", [_building]];
-        [ALIVE_eventLog, "addEvent", ["TASK_GENERATE", _taskData, "OPCOM"] call ALIVE_fnc_event] call ALIVE_fnc_eventLog;
+        private _ids = [];
+        {
+            _x params ["_type", "_extra"];
+            private _taskID = format ["PREP_%1_%2_%3", _objectiveID, floor time, _forEachIndex];
+            private _taskData = [_taskID, "OPCOM", _side, _faction, _type, "Map", +_center, _players, _enemyFaction, "Y", "Side"];
+            if (_extra isNotEqualTo []) then { _taskData pushBack _extra };
+            [ALIVE_eventLog, "addEvent", ["TASK_GENERATE", _taskData, "OPCOM"] call ALIVE_fnc_event] call ALIVE_fnc_eventLog;
+            _ids pushBack _taskID;
+        } forEach _chosen;
+        private _place = [_center] call ALIVE_fnc_taskGetNearestLocationName;
+        if (isNil "_place" || {!(_place isEqualType "")} || {_place == ""}) then { _place = "grid " + mapGridPosition _center };
         _module setVariable ["ALiVE_prep_objectiveID", _objectiveID];
-        _module setVariable ["ALiVE_prep_taskID", _taskID];
+        _module setVariable ["ALiVE_prep_taskIDs", _ids];
+        _module setVariable ["ALiVE_prep_taskID", _ids select 0];
+        _module setVariable ["ALiVE_prep_place", _place];
         _module setVariable ["ALiVE_prep_requestedAt", time];
         _module setVariable ["ALiVE_prep_deadline", time + ([_logic, "prepTimeout", 900] call ALiVE_fnc_HashGet)];
         _module setVariable ["ALiVE_prep_state", "requested"];
-        ["OPCOM %1: the attack on %2 waits for a wiretap task at %3", _side, _objectiveID, mapGridPosition _center] call ALiVE_fnc_dump;
+        ["OPCOM %1: the attack on %2 waits for %3 at %4", _side, _objectiveID, _chosen apply { _x param [2, _x select 0] }, mapGridPosition _center] call ALiVE_fnc_dump;
+        [_logic, "opRadio", format ["The operation at %1 is not ready until the preparations are complete. %2 issued.", _place,
+            [format ["%1 tasks", count _ids], "1 task"] select (count _ids == 1)]] call ALiVE_fnc_OPCOM;
         _result = false;
+    };
+
+    // a radio call to the commander's side from its HQ (The Horny Latino on Discord, 20 Oct); the last one sent is kept
+    // on the module for tests
+    case "opRadio": {
+        private _text = _args;
+        if (!(_text isEqualType "") || {_text == ""}) exitWith {};
+        private _side = [_logic, "side", "WEST"] call ALiVE_fnc_HashGet;
+        ([_logic, "module"] call ALiVE_fnc_HashGet) setVariable ["ALiVE_op_lastRadio", _text];
+        if (isNil "ALIVE_fnc_radioBroadcastToSide") exitWith {};
+        [_side, [objNull, _text, "side", [_side] call ALiVE_fnc_sideTextToObject, false, false, false, true, "HQ"]] call ALIVE_fnc_radioBroadcastToSide;
     };
 
     ///////////////////////////////////////////////////
@@ -4682,7 +4775,16 @@ switch (_operation) do {
                 _types = _types select { (toUpper _x) in _families };
             };
         };
-        private _players = [_sideText] call ALiVE_fnc_getPlayersDataSource;
+        // Fewest and Most Tasks per Operation pick how many of them (0 and 0: all of them)
+        private _lo = [_logic, "opTasksMin", 0] call ALiVE_fnc_HashGet;
+        private _hi = [_logic, "opTasksMax", 0] call ALiVE_fnc_HashGet;
+        if ((_lo > 0 || {_hi > 0}) && {_types isNotEqualTo []}) then {
+            if (_hi < _lo) then { _hi = _lo };
+            _types = (_types call BIS_fnc_arrayShuffle) select [0, ((_lo + floor random (_hi - _lo + 1)) max 1) min (count _types)];
+        };
+        // a test's stand-in players ([ids, names], as for the preparation tasks); in play, the side's own
+        private _tp = [_logic, "prepTestPlayers", []] call ALiVE_fnc_HashGet;
+        private _players = if (_tp isEqualTo []) then { [_sideText] call ALiVE_fnc_getPlayersDataSource } else { [_tp select 1, _tp select 0] };
         // this capture's own tasks only: one left open from a pause the timer ended doesn't hold this one
         _module setVariable ["ALiVE_Occ_pauseTasks", []];
         if (!(missionNamespace getVariable ["ALiVE_c2istar_autoPlayerTasks", true]) || {isNil "ALIVE_eventLog"}
@@ -4709,6 +4811,12 @@ switch (_operation) do {
             } forEach _types;
             _module setVariable ["ALiVE_Occ_pauseTasks", _ids];
             ["OPCOM %1: holding new attacks for up to %2 min after taking %3; tasks %4 at %5", _sideText, _mins, _objID, _types, mapGridPosition _center] call ALiVE_fnc_dump;
+            // and tell the side what comes next
+            private _place = [_center] call ALIVE_fnc_taskGetNearestLocationName;
+            if (isNil "_place" || {!(_place isEqualType "")} || {_place == ""}) then { _place = "grid " + mapGridPosition _center };
+            _module setVariable ["ALiVE_Occ_place", _place];
+            [_logic, "opRadio", [format ["%1 is secured. All units, clear the area before the operation moves on.", _place],
+                format ["%1 is secured. All units prepare for aid relief to the affected area.", _place]] select _civ] call ALiVE_fnc_OPCOM;
         };
         // one watcher wakes the commander as soon as the hold ends, rather than at its next 5 minute cycle
         if !(_module getVariable ["ALiVE_Occ_watcher", false]) then {
@@ -4725,6 +4833,12 @@ switch (_operation) do {
                 };
                 ["OPCOM %1: the pause after a capture is over (%2), moving on", [_h,"side",""] call ALiVE_fnc_HashGet,
                     _module getVariable ["ALiVE_Occ_endWhy", "the time is up"]] call ALiVE_fnc_dump;
+                // the side hears it only when it was told the pause began (tasks were given)
+                private _place = _module getVariable ["ALiVE_Occ_place", ""];
+                if (_place != "") then {
+                    _module setVariable ["ALiVE_Occ_place", ""];
+                    [_h, "opRadio", format ["Operations at %1 are complete. The operation moves on.", _place]] call ALiVE_fnc_OPCOM;
+                };
             };
         };
     };

@@ -282,6 +282,22 @@ class CfgVehicles {
                                 defaultValue = """0""";
                                 typeName = "NUMBER";
                         };
+                        class opTasksMin : Edit
+                        {
+                                property = "ALiVE_mil_opcom_opTasksMin";
+                                displayName = "$STR_ALIVE_OPCOM_OP_TASKS_MIN";
+                                tooltip = "$STR_ALIVE_OPCOM_OP_TASKS_MIN_COMMENT";
+                                defaultValue = """0""";
+                                typeName = "NUMBER";
+                        };
+                        class opTasksMax : Edit
+                        {
+                                property = "ALiVE_mil_opcom_opTasksMax";
+                                displayName = "$STR_ALIVE_OPCOM_OP_TASKS_MAX";
+                                tooltip = "$STR_ALIVE_OPCOM_OP_TASKS_MAX_COMMENT";
+                                defaultValue = """0""";
+                                typeName = "NUMBER";
+                        };
                         class HDR_HVT : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_HDR_HVT"; displayName = "HIGH VALUE TARGET"; };
                         class hvt : Combo
                         {

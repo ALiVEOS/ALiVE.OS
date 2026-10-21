@@ -330,6 +330,18 @@
 <Key ID="STR_ALIVE_OPCOM_OCC_PAUSE_COMMENT">
     <English>Occupation only. After taking an objective the commander starts no new attacks for this many minutes, or until the clean-up and hearts-and-minds tasks it gives players there are done, whichever is first. Defence and reinforcement go on as usual. 0 (default) is off.</English>
 </Key>
+<Key ID="STR_ALIVE_OPCOM_OP_TASKS_MIN">
+    <English>Fewest Tasks per Operation</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_OP_TASKS_MIN_COMMENT">
+    <English>The fewest tasks players are given for each operation: preparation tasks before each Invasion attack (Preparation Tasks), or clean-up tasks after each Occupation capture (Pause After Capture). Each operation gets a number between this and Most Tasks per Operation. Preparation tasks can be a wiretap, destroying AA and mortar emplacements or enemy vehicles at the objective, or an insurgent installation near it, where there is one to destroy. Leave both at 0 for one wiretap per Invasion attack and every clean-up task after a capture.</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_OP_TASKS_MAX">
+    <English>Most Tasks per Operation</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_OP_TASKS_MAX_COMMENT">
+    <English>The most tasks players are given for each operation (see Fewest Tasks per Operation). An operation never gets more than there are kinds of task to give there. Leave both at 0 for the usual number.</English>
+</Key>
 <Key ID="STR_ALIVE_OPCOM_HVT_RESPAWN">
     <English>Replace When Pause Ends</English>
 </Key>
