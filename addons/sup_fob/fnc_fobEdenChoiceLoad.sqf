@@ -171,9 +171,13 @@ _list ctrlAddEventHandler ["LBSelChanged", {
         if (_at >= 0) then { _picks deleteAt _at } else { _picks pushBack _data };
         _ctrl lbSetPicture [_i, [CHECK_OFF, CHECK_ON] select (_at < 0)];
         (_disp getVariable "alive_fobPicks") set [_slot, _picks joinString ", "];
+        // clearing the selection scrolls the list back to its top, so the place it was scrolled to is put back
+        // (AshTray, 20 Oct: ticking a building far down the list jumped it to the beginning)
+        private _scroll = ctrlScrollValues _ctrl;
         _disp setVariable ["alive_populating", true];
         _ctrl lbSetCurSel -1;
         _disp setVariable ["alive_populating", false];
+        if ((_scroll select 0) >= 0) then { _ctrl ctrlSetScrollValues _scroll };
     } else {
         (_disp getVariable "alive_fobPicks") set [_slot, _ctrl lbData _i];
     };
