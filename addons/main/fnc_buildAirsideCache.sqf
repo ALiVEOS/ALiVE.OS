@@ -384,52 +384,66 @@ if (_rwA isNotEqualTo []) then {
                     private _uy = _dir select 2;
                     private _ul = sqrt ((_ux * _ux) + (_uy * _uy));
                     if (_ul > 0.01) then {
-                        private _sA = [_p select 0, _p select 1, 0];
-                        private _sB = [(_p select 0) - (_ux / _ul * 1000), (_p select 1) - (_uy / _ul * 1000), 0];
+                        // Three tries, each checked against the ground as below (Jman 21 Oct): 1000 m against
+                        // ilsDirection, as on 208 of 211 measured fields; 1000 m along it, for the fields
+                        // whose direction is recorded the other way round; and 600 m either side of the
+                        // touchdown point, the strip this tier laid before 20 Oct. Taking only the first
+                        // left 12 workshop terrains (Kujari, Isla Pera, Staszow...) with no runway at all,
+                        // where the 600 m one had found the ground.
+                        private _ex = _ux / _ul;
+                        private _ey = _uy / _ul;
+                        {
+                            _x params ["_a0", "_a1"];
+                            if (_rwA isEqualTo []) then {
+                                private _sA = [(_p select 0) + (_ex * _a0), (_p select 1) + (_ey * _a0), 0];
+                                private _sB = [(_p select 0) + (_ex * _a1), (_p select 1) + (_ey * _a1), 0];
 
-                        // The guess checks itself against the ground before it
-                        // is believed. A runway, a taxiway and an apron are all
-                        // road segments, so a synthesised strip that touches no
-                        // road anywhere along its whole length is not lying on a
-                        // runway: the field has an instrument approach recorded
-                        // but no strip this can find. Measured on Altis, where
-                        // one of the six fields answers nothing on road over
-                        // 1200 m of dead ground, while the four real secondary
-                        // strips answer on road repeatedly.
-                        //
-                        // Nine samples and a threshold of zero, deliberately.
-                        // Zero is the one threshold that is a principle rather
-                        // than a number tuned on the handful of fields to hand:
-                        // it rejects only a strip with no road under it at all.
-                        private _onRoad = 0;
-                        for "_i" from 0 to 8 do {
-                            private _f = _i / 8;
-                            if (isOnRoad [
-                                (_sA select 0) + (((_sB select 0) - (_sA select 0)) * _f),
-                                (_sA select 1) + (((_sB select 1) - (_sA select 1)) * _f),
-                                0
-                            ]) then { _onRoad = _onRoad + 1 };
-                        };
+                                // The guess checks itself against the ground before it
+                                // is believed. A runway, a taxiway and an apron are all
+                                // road segments, so a synthesised strip that touches no
+                                // road anywhere along its whole length is not lying on a
+                                // runway: the field has an instrument approach recorded
+                                // but no strip this can find. Measured on Altis, where
+                                // one of the six fields answers nothing on road over
+                                // 1200 m of dead ground, while the four real secondary
+                                // strips answer on road repeatedly.
+                                //
+                                // Nine samples and a threshold of zero, deliberately.
+                                // Zero is the one threshold that is a principle rather
+                                // than a number tuned on the handful of fields to hand:
+                                // it rejects only a strip with no road under it at all.
+                                private _onRoad = 0;
+                                for "_i" from 0 to 8 do {
+                                    private _f = _i / 8;
+                                    if (isOnRoad [
+                                        (_sA select 0) + (((_sB select 0) - (_sA select 0)) * _f),
+                                        (_sA select 1) + (((_sB select 1) - (_sA select 1)) * _f),
+                                        0
+                                    ]) then { _onRoad = _onRoad + 1 };
+                                };
 
-                        // Chernarus's runways are neither roads nor main runway pieces: its
-                        // smaller fields have only concrete slabs, 50 to 100 m from the line
-                        // laid from the approach. A runway piece within 120 m of the strip
-                        // counts as ground under it too (Jman 20 Oct).
-                        if (_onRoad == 0) then {
-                            private _vx = (_sB select 0) - (_sA select 0);
-                            private _vy = (_sB select 1) - (_sA select 1);
-                            private _v2 = (_vx * _vx) + (_vy * _vy);
-                            if ((_runways findIf {
-                                private _q = _x select 0;
-                                private _f = (((((_q select 0) - (_sA select 0)) * _vx) + (((_q select 1) - (_sA select 1)) * _vy)) / _v2) max 0 min 1;
-                                (_q distance2D [(_sA select 0) + (_vx * _f), (_sA select 1) + (_vy * _f)]) < 120
-                            }) >= 0) then { _onRoad = 1 };
-                        };
+                                // Chernarus's runways are neither roads nor main runway pieces: its
+                                // smaller fields have only concrete slabs, 50 to 100 m from the line
+                                // laid from the approach. A runway piece within 120 m of the strip
+                                // counts as ground under it too (Jman 20 Oct).
+                                if (_onRoad == 0) then {
+                                    private _vx = (_sB select 0) - (_sA select 0);
+                                    private _vy = (_sB select 1) - (_sA select 1);
+                                    private _v2 = (_vx * _vx) + (_vy * _vy);
+                                    if ((_runways findIf {
+                                        private _q = _x select 0;
+                                        private _f = (((((_q select 0) - (_sA select 0)) * _vx) + (((_q select 1) - (_sA select 1)) * _vy)) / _v2) max 0 min 1;
+                                        (_q distance2D [(_sA select 0) + (_vx * _f), (_sA select 1) + (_vy * _f)]) < 120
+                                    }) >= 0) then { _onRoad = 1 };
+                                };
 
-                        if (_onRoad > 0) then {
-                            _rwA = _sA;
-                            _rwB = _sB;
-                        } else {
+                                if (_onRoad > 0) then {
+                                    _rwA = _sA;
+                                    _rwB = _sB;
+                                };
+                            };
+                        } forEach [[0, -1000], [0, 1000], [-600, 600]];
+                        if (_rwA isEqualTo []) then {
                             ["ALiVE airside: field at %1 has an approach recorded but no runway under it, so none is marked",
                                 [round (_centre select 0), round (_centre select 1)]] call ALiVE_fnc_dump;
                         };
