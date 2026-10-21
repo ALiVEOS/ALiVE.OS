@@ -295,6 +295,61 @@ private _fnc_buildOne = {
             if (_bestSpan < 200) then { _rwA = []; _rwB = []; };
         };
 
+// Onto the airfield's ILS heading where the ground agrees (Jman 21 Oct). Taxiway and apron pieces can tilt the fitted
+// line a few degrees: Chernarus Redux's main runway came out 4.1 degrees off its ILS, Sahatra's H-52 2.5. Where the
+// ILS point sits on the fitted runway and points 2 to 25 degrees away from it, a line along the ILS heading (same
+// length, through the ILS line) is tried, and kept only if clearly more of it is paved, sampled every 25 m the way
+// the Mission Builder's map does. Some terrains copy one ILS direction to every airfield, so the config alone isn't
+// trusted.
+if (_rwA isNotEqualTo []) then {
+    private _fnc_paved = {
+        params ["_a", "_b"];
+        private _n = (floor ((_a distance2D _b) / 25)) max 2;
+        private _hit = 0;
+        for "_k" from 0 to _n do {
+            private _p = [(_a select 0) + ((_b select 0) - (_a select 0)) * _k / _n, (_a select 1) + ((_b select 1) - (_a select 1)) * _k / _n];
+            private _st = toLower surfaceType _p;
+            if (!(surfaceIsWater _p) && {"asphalt" in _st || {"concrete" in _st} || {"tarmac" in _st} || {"pavement" in _st} || {"runway" in _st}}) then { _hit = _hit + 1 };
+        };
+        _hit / (_n + 1)
+    };
+    private _len = _rwA distance2D _rwB;
+    private _ux = ((_rwB select 0) - (_rwA select 0)) / _len;
+    private _uy = ((_rwB select 1) - (_rwA select 1)) / _len;
+    private _mid = [((_rwA select 0) + (_rwB select 0)) / 2, ((_rwA select 1) + (_rwB select 1)) / 2];
+    private _cfgW = configFile >> "CfgWorlds" >> worldName;
+    private _turned = false;
+    {
+        private _ils = getArray (_x >> "ilsPosition");
+        private _dir = getArray (_x >> "ilsDirection");
+        if (!_turned && {count _ils >= 2} && {count _dir >= 3} && {!((_ils select [0, 2]) isEqualTo [0, 0])}) then {
+            private _ox = _ils select 0; private _oy = _ils select 1;
+            private _s = (_ox - (_rwA select 0)) * _ux + (_oy - (_rwA select 1)) * _uy;
+            private _off = abs (-(_ox - (_rwA select 0)) * _uy + (_oy - (_rwA select 1)) * _ux);
+            private _dn = sqrt (((_dir select 0) ^ 2) + ((_dir select 2) ^ 2));
+            if (_off <= 120 && {_s > -300} && {_s < _len + 300} && {_dn > 0}) then {
+                private _vx = (_dir select 0) / _dn; private _vy = (_dir select 2) / _dn;
+                private _dot = _ux * _vx + _uy * _vy;
+                private _angle = acos ((abs _dot) min 1);
+                if (_angle >= 2 && {_angle <= 25}) then {
+                    if (_dot < 0) then { _vx = -_vx; _vy = -_vy };
+                    private _t = ((_mid select 0) - _ox) * _vx + ((_mid select 1) - _oy) * _vy;
+                    private _cx = _ox + _vx * _t; private _cy = _oy + _vy * _t;
+                    private _na = [_cx - _vx * _len / 2, _cy - _vy * _len / 2, 0];
+                    private _nb = [_cx + _vx * _len / 2, _cy + _vy * _len / 2, 0];
+                    private _was = [_rwA, _rwB] call _fnc_paved;
+                    private _now = [_na, _nb] call _fnc_paved;
+                    if (_now >= _was + 0.15) then {
+                        ["ALiVE airfield survey: runway at %1 turned %2 degrees onto its ILS heading (paved %3 -> %4)", mapGridPosition _na, round (_angle * 10) / 10, round (_was * 100) / 100, round (_now * 100) / 100] call ALiVE_fnc_dump;
+                        _rwA = _na; _rwB = _nb; _turned = true;
+                    };
+                };
+            };
+        };
+    } forEach ([_cfgW] + ("true" configClasses (_cfgW >> "SecondaryAirports")));
+};
+
+
         // Last resort, for a field whose survey found no runway pieces at all:
         // synthesise an axis about the ILS touchdown point. Without this such a
         // field gets no runway capsule and nothing keeps ground movement off its
