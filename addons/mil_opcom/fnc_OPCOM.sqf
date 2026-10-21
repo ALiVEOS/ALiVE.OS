@@ -627,6 +627,13 @@ switch (_operation) do {
         // Mission's Data, and moves a save from before saves were kept per map to
         // this map's name before the load below reads it.
         [format ["-OPCOM_%1-starting-forces", [_handler,"opcomID"] call CBA_fnc_hashGet]] call ALiVE_fnc_storeMigrate;
+        // the high value target and the operation in hand are saved the same way, so Clear Current Mission's Data
+        // has to know their names too, or a cleared mission loads a dead target and a leftover pause. Both came after
+        // saves were kept per map, so there is nothing old to move: listing the names is enough, without two more
+        // passes over the store.
+        if (isNil "ALiVE_storeSuffixes") then { ALiVE_storeSuffixes = [] };
+        ALiVE_storeSuffixes pushBackUnique format ["-OPCOM_%1-hvt", [_handler,"opcomID"] call CBA_fnc_hashGet];
+        ALiVE_storeSuffixes pushBackUnique format ["-OPCOM_%1-opstate", [_handler,"opcomID"] call CBA_fnc_hashGet];
 
         //Load Data from DB
         if (_persistent && { !isNil "ALIVE_sys_data" } && {!ALIVE_sys_data_DISABLED}) then {
