@@ -560,6 +560,10 @@ if (!_simAttacks) then {
                                             [_profile,"position", _newPosition] call ALiVE_fnc_profileEntity;
                                             [_profile,"mergePositions"] call ALiVE_fnc_profileEntity;
                                             _profileMoved = true;
+                                            // a security patrol in Coverage mode marks the sector it is in for its commander (#1092)
+                                            if ([_profile,"securityPatrol",false] call ALiVE_fnc_hashGet && {!isNil "ALIVE_fnc_OPCOMcoverage"}) then {
+                                                [nil,"mark",[_profile select 2 select 3, _newPosition, _profile select 2 select 4]] call ALIVE_fnc_OPCOMcoverage;
+                                            };
                                         };
                                         PROFILE_SCOPE_END(INACTIVEENTITYMOVE)
                                     };
