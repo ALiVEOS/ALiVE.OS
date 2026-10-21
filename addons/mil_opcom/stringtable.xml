@@ -147,6 +147,9 @@
     <Portuguese>Facções:</Portuguese>
     <Russian>Фракции:</Russian>
 </Key>
+<Key ID="STR_ALIVE_OPCOM_FACTIONS_COMMENT">
+    <English>Pick one or more factions for this AI Commander to control. Click to pick one, Ctrl+click to add or drop one, Shift+click to pick a range. The list holds the factions of the mods loaded now, and is combined with the manual field below.</English>
+</Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_OPCOM_USAGE">
     <English>Place a Military AI Commander module in the editor. Pick one or more factions in the Factions multi-select listbox (auto-populated from loaded mods; Ctrl+click to toggle, Shift+click for range). Use the Additional Factions (by name) field to add factions from mods not currently loaded; they are added to the ones picked above. Pick a Control Type (Invasion, Occupation, or Asymmetric). The commander will take command of all virtual profiles belonging to its selected factions, so at least one synced Placement Module and the Virtual AI module are required.</English>
