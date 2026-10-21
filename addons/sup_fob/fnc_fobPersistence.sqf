@@ -8,7 +8,10 @@ Description:
 Saves the FOBs and loads them back. The document is a CBA hash holding "data", the shape the
 AI Commander saves its extras in (fnc_OPCOM.sqf), so both ALiVE Data backends take it: the
 War Room one reads "_rev" off anything whose first element is text, and a bare array would
-fail there. "data" is ["v2", counter, rows], each row the entry's key/value pairs.
+fail there. "data" is ["v2", counter, rows, loose], each row the entry's key/value pairs, and
+loose the kits and supply crates the module made itself (a dismantled FOB's, a Field HQ's) as
+[kind, value, class, world position, direction, up], so a restart keeps them and what they hold.
+A save without the fourth part, from before it was added, loads with no loose kits.
 
 Only what can be rebuilt is saved: the headquarters is recreated from its class and spot,
 built objects from their class, world position and attitude (read off the live object at save,
@@ -74,7 +77,15 @@ switch (_operation) do {
             } forEach (_entry select 1);
             _rows pushBack _pairs;
         } forEach (ALiVE_FOB_registry select 1);
-        _result = ["v2", ALiVE_FOB_counter, _rows];
+        // the kits and crates the module made, still there and still a kit or a crate
+        private _loose = [];
+        {
+            private _o = objectFromNetId _x;
+            if (!isNull _o && {alive _o} && {_o getVariable ["ALiVE_FOB_loose", false]} && {(_y select 0) in ["KIT", "CRATE"]}) then {
+                _loose pushBack [_y select 0, _y select 1, typeOf _o, getPosWorld _o, vectorDir _o, vectorUp _o];
+            };
+        } forEach ALiVE_FOB_tagged;
+        _result = ["v2", ALiVE_FOB_counter, _rows, _loose];
     };
 
     case "deserialise": {
@@ -90,6 +101,8 @@ switch (_operation) do {
             private _id = [_entry, "id", ""] call ALIVE_fnc_hashGet;
             if (_id != "") then { [ALiVE_FOB_registry, _id, _entry] call ALIVE_fnc_hashSet };
         } forEach (_data param [2, []]);
+        // the loose kits and crates, made again once the module is up ("load" below)
+        ALiVE_FOB_looseLoad = _data param [3, []];
         _result = true;
     };
 
@@ -145,6 +158,19 @@ switch (_operation) do {
             if (_debug) then { ["ALiVE Player FOBs - nothing saved under %1", _key] call ALiVE_fnc_dump };
         };
         _result = ["deserialise", [_plain]] call ALiVE_fnc_fobPersistence;
+        {
+            _x params [["_kind", "", [""]], ["_value", true, [true, "", 0]], ["_class", "", [""]], ["_pw", [], [[]], 3], ["_vd", [0,1,0], [[]], 3], ["_vu", [0,0,1], [[]], 3]];
+            if (_kind in ["KIT", "CRATE"] && {isClass (configFile >> "CfgVehicles" >> _class)}) then {
+                private _o = createVehicle [_class, [0, 0, 0], [], 0, "CAN_COLLIDE"];
+                _o setPosWorld _pw;
+                _o setVectorDirAndUp [_vd, _vu];
+                if !(_class in ["ALiVE_FOB_Kit", "ALiVE_FOB_SupplyCrate"]) then { clearItemCargoGlobal _o; clearWeaponCargoGlobal _o; clearMagazineCargoGlobal _o; clearBackpackCargoGlobal _o };
+                _o setVariable ["ALiVE_FOB_loose", true];
+                ["tag", [_o, _kind, _value]] call ALiVE_fnc_fobOps;
+            };
+        } forEach (missionNamespace getVariable ["ALiVE_FOB_looseLoad", []]);
+        if (_debug) then { ["ALiVE Player FOBs - put back %1 kits and crates", count (missionNamespace getVariable ["ALiVE_FOB_looseLoad", []])] call ALiVE_fnc_dump };
+        ALiVE_FOB_looseLoad = nil;
         ["ALiVE Player FOBs - loaded %1 FOBs from %2", count (ALiVE_FOB_registry select 1), _key] call ALiVE_fnc_dump;
     };
 };

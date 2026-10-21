@@ -129,6 +129,8 @@ switch (_op) do {
         if (isNull _o || {!(_kind in ["KIT", "CRATE", "HQ"])}) exitWith {};
         ALiVE_FOB_tagged set [netId _o, [_kind, _value]];
         _o setVariable [["ALiVE_FOB_kit", "ALiVE_FOB_crate", "ALiVE_FOB_fieldHQ"] select (["KIT", "CRATE", "HQ"] find _kind), _value, true];
+        // a kit or crate the module made itself is saved with the FOBs, so a change to one is a change to save
+        if (_o getVariable ["ALiVE_FOB_loose", false]) then { ALiVE_FOB_dirty = true };
         _result = true;
     };
 
@@ -227,11 +229,14 @@ switch (_op) do {
         private _kit = createVehicle [_kitClass, _at, [], 2, "NONE"];
         // one of the mission's own objects comes empty, as the ALiVE kit does
         if (_kitClass != "ALiVE_FOB_Kit") then { clearItemCargoGlobal _kit; clearWeaponCargoGlobal _kit; clearMagazineCargoGlobal _kit; clearBackpackCargoGlobal _kit };
+        // saved with the FOBs (fnc_fobPersistence), so a restart doesn't lose the kit or the supply left in the crate
+        _kit setVariable ["ALiVE_FOB_loose", true];
         ["tag", [_kit, "KIT", _side]] call ALiVE_fnc_fobOps;
         if (_left > 0) then {
             private _crateClass = [[_logic, "attribute", ["fob_crate_class"]] call ALiVE_fnc_FOB, _side, "ALiVE_FOB_SupplyCrate"] call _pickClass;
             private _crate = createVehicle [_crateClass, _at getPos [3, random 360], [], 2, "NONE"];
             if (_crateClass != "ALiVE_FOB_SupplyCrate") then { clearItemCargoGlobal _crate; clearWeaponCargoGlobal _crate; clearMagazineCargoGlobal _crate; clearBackpackCargoGlobal _crate };
+            _crate setVariable ["ALiVE_FOB_loose", true];
             ["tag", [_crate, "CRATE", _left]] call ALiVE_fnc_fobOps;
         };
         if (_left > 0) then { ["STR_ALIVE_FOB_DISMANTLED_SUPPLY", [_name, _left]] call _tell } else { ["STR_ALIVE_FOB_DISMANTLED", [_name]] call _tell };
@@ -807,6 +812,7 @@ switch (_op) do {
         private _o = createVehicle [[[_logic, "attribute", [["fob_crate_class", "fob_kit_class"] select (_what == "KIT")]] call ALiVE_fnc_FOB, _side,
             ["B_supplyCrate_F", "Box_NATO_Support_F"] select (_what == "KIT")] call _pickClass, _spot, [], 3, "NONE"];
         clearItemCargoGlobal _o; clearWeaponCargoGlobal _o; clearMagazineCargoGlobal _o; clearBackpackCargoGlobal _o;
+        _o setVariable ["ALiVE_FOB_loose", true];
         if (_what == "KIT") then { ["tag", [_o, "KIT", _side]] call ALiVE_fnc_fobOps } else { ["tag", [_o, "CRATE", _amount]] call ALiVE_fnc_fobOps };
         [["STR_ALIVE_FOB_HQ_CRATE", "STR_ALIVE_FOB_HQ_KIT"] select (_what == "KIT")] call _tell;
         _result = _o;
