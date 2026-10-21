@@ -225,8 +225,8 @@ switch (_taskState) do {
         [
             _convoyVehicle,
             "Unload Supplies",
-            "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unloadVehicle_ca.paa",
-            "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unloadVehicle_ca.paa",
+            "\a3\missions_f_oldman\data\img\holdactions\holdAction_box_ca.paa",
+            "\a3\missions_f_oldman\data\img\holdactions\holdAction_box_ca.paa",
             format ["_this distance2D _target < 4 && (_target getVariable ['ALIVE_Task_ConvoyDeliveryEnabled', false]) && !(_target getVariable ['%1', false]) && {_target distance2D (_target getVariable ['ALIVE_Task_ConvoyDestination', [0,0,0]]) < 35}", _completionVar],
             "_caller distance2D _target < 4",
             {},
