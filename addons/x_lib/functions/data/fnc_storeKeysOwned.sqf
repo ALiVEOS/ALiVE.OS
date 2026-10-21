@@ -88,7 +88,9 @@ private _fnc_addDictionary = {
 // suffix any module saves under belongs in this list and in the one below.
 {
     [_base + _x, "", "self"] call _fnc_add;
-} forEach (["", "_DATA", "_COMPOSITIONS", "_TASK", "_TASK_OPTOUT", "_FORCE_POOL", "_ATO"] + _suffixes);
+// _FOB, Player FOBs' own save, was on neither list, so clearing a mission's data left its FOBs to come back
+// on the next load (AshTray, Discord 21 Oct)
+} forEach (["", "_DATA", "_COMPOSITIONS", "_TASK", "_TASK_OPTOUT", "_FORCE_POOL", "_ATO", "_FOB"] + _suffixes);
 ["dictionary_" + _base, "self"] call _fnc_addDictionary;
 
 // Then the old names.
