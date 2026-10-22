@@ -179,8 +179,8 @@ class CfgVehicles {
                 // before Player FOBs (195), which reads it
                 functionPriority = 194;
                 isGlobal = 2;
-                icon = "x\alive\addons\sup_fob\icon_sup_fob.paa";
-                picture = "x\alive\addons\sup_fob\icon_sup_fob.paa";
+                icon = "x\alive\addons\sup_fob\icon_sup_fob_types.paa";
+                picture = "x\alive\addons\sup_fob\icon_sup_fob_types.paa";
                 class Attributes : AttributesBase
                 {
                         class HDR_TYPES : ALiVE_ModuleSubTitle { property = "ALiVE_sup_fob_types_HDR_TYPES"; displayName = "FOB TYPES"; };
