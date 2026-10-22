@@ -316,7 +316,7 @@
     <English>Preparation Tasks Before Attacks</English>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_PREP_COMMENT">
-    <English>Invasion only. Before each new attack, players on this commander's side are tasked with wiretapping the enemy's communications at the objective. The attack waits for the task, or for the timeout below, whichever is first. With no players about it doesn't wait.</English>
+    <English>Invasion only. Before each new attack, players on this commander's side are given preparation tasks at the objective: a wiretap of the enemy's communications, and with Fewest and Most Tasks per Operation set, destroying the AA and mortar emplacements or enemy vehicles there or an insurgent installation nearby. The attack waits for the tasks, or for the timeout below, whichever is first. With no players about it doesn't wait.</English>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_PREP_TIMEOUT">
     <English>Preparation Timeout (min)</English>
@@ -840,7 +840,7 @@
     <English>Frontline Minefields</English>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_FRONTLINE_MINEFIELDS_COMMENT">
-    <English>Invasion and occupation commanders only. The commander lays small minefields in front of the objectives it holds that face the enemy: anti-tank mines on the roads in, anti-personnel mines elsewhere. Few allows 2 fields, Many 6, one per objective, never near a player. Its own side and friendly sides know where they are. Fields stay until cleared and are not saved.</English>
+    <English>Invasion and occupation commanders only. The commander lays small minefields in front of the objectives it holds that face the enemy: anti-tank mines on the roads in, anti-personnel mines elsewhere. Few allows 2 fields, Many 6, one per objective, never near a player. Its own side and friendly sides know where they are. Fields stay until cleared, and a saved game lays them again where they were.</English>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_HOSTILITY_PRESENCE_MULTIPLIER">
     <English>Hostility presence multiplier:</English>
