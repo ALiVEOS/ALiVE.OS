@@ -22,6 +22,7 @@ See Also:
 
 Author:
 Highhead
+Jman
 
 Peer Reviewed:
 nil
@@ -144,15 +145,24 @@ _typesLogistics = [[_cargoR,"stowObject"],[_cargoT,"towObject"],[_cargoL,"liftOb
 
         _id = _contents select _i;
 
-        _pos = [[GVAR(STORE),_id] call ALiVE_fnc_HashGet,QGVAR(POSITION)] call ALiVE_fnc_HashGet;
-        _type = [[GVAR(STORE),_id] call ALiVE_fnc_HashGet,QGVAR(TYPE)] call ALiVE_fnc_HashGet;
-        _cargo = [[GVAR(STORE),_id] call ALiVE_fnc_HashGet,QGVAR(CARGO)] call ALiVE_fnc_HashGet;
-        _object = (nearestObjects [_pos,[_type],3]) select 0;
+        // An object saved inside another can be gone by the time the save loads: destroyed in an
+        // earlier session (and deleted above) or never stored. It has no record, or no object of
+        // its type stands where it was, so it's skipped rather than stowed as nothing, which
+        // threw "Undefined variable _object" on load (comand99 on Discord, 22 Oct 2026).
+        private _stored = [GVAR(STORE),_id] call ALiVE_fnc_HashGet;
+        if (!isNil "_stored" && {_stored isEqualType []}) then {
+            _pos = [_stored,QGVAR(POSITION)] call ALiVE_fnc_HashGet;
+            _type = [_stored,QGVAR(TYPE)] call ALiVE_fnc_HashGet;
+            _cargo = [_stored,QGVAR(CARGO)] call ALiVE_fnc_HashGet;
+            _object = if (isNil "_pos" || {isNil "_type"}) then { objNull } else { (nearestObjects [_pos,[_type],3]) param [0, objNull] };
 
-        [_object,_cargo] call ALiVE_fnc_setObjectCargo;
+            if (!isNull _object) then {
+                if (!isNil "_cargo") then { [_object,_cargo] call ALiVE_fnc_setObjectCargo };
 
-        //Perform operation
-        [MOD(SYS_LOGISTICS),_operation,[_object,_container]] call ALiVE_fnc_logistics;
+                //Perform operation
+                [MOD(SYS_LOGISTICS),_operation,[_object,_container]] call ALiVE_fnc_logistics;
+            };
+        };
     };
 } foreach _typesLogistics;
 
