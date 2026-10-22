@@ -2240,6 +2240,11 @@ switch (_operation) do {
                                 // each one left open at its current stage for the rest of the
                                 // mission. Same source is used for the Constant regeneration
                                 // below, which had the identical problem.
+                                // its outcome is kept by its id, as the rows go: an AI Commander waiting on a preparation
+                                // task reads it there (F529)
+                                private _finished = missionNamespace getVariable ["ALiVE_c2istar_finishedTasks", createHashMap];
+                                _finished set [_rootTaskID, _taskState];
+                                ALiVE_c2istar_finishedTasks = _finished;
                                 [_logic, "TASK_DELETE", [_rootTaskID, (_mainTask select 1), _taskSide]] call MAINCLASS;
 
                                 // DIAG-STRIP #942: prove the teardown really removed the root task --

@@ -4663,9 +4663,16 @@ switch (_operation) do {
             private _all = ([ALiVE_TaskHandler, "tasks", ["", [], [], nil]] call ALiVE_fnc_HashGet) select 2;
             private _young = time - (_module getVariable ["ALiVE_prep_requestedAt", -1]) <= 120;
             private _open = 0; private _made = 0; private _won = 0;
+            // a task's own (root) row says how it stands: its stages' rows are marked Succeeded as each ends, so the
+            // first stage done used to count as the task done. A finished task's rows are deleted, so its outcome comes
+            // from what C2ISTAR kept when it finished (F529)
+            private _finished = missionNamespace getVariable ["ALiVE_c2istar_finishedTasks", createHashMap];
             {
                 private _id = _x;
-                private _states = (_all select { ((_x select 0) find _id) == 0 }) apply { _x select 8 };
+                private _root = _all select { (_x select 0) == _id };
+                private _states = if (_root isNotEqualTo []) then { [(_root select 0) select 8] } else {
+                    if (_id in _finished) then { [_finished get _id] } else { (_all select { ((_x select 0) find _id) == 0 }) apply { _x select 8 } }
+                };
                 if (_id == _reconID) then {
                     private _obs = (_all select { (_x select 0) == _id + "_c2" }) apply { _x select 8 };
                     if (_obs isNotEqualTo [] && {!((_obs select 0) in ["Succeeded", "Failed", "Canceled"])}) then { _states = ["Assigned"] };
