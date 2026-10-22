@@ -1144,6 +1144,56 @@ switch (_question) do {
         };
     };
 
+    //-- Where can I find the town elder (or mayor: the first role in the module's list)
+    //   The contact was looked up on the server with the rest of the civilian's data: the
+    //   nearest one in their town, the asked-for role first. A willing civilian marks the
+    //   house; a hostile one mostly refuses, and when they do answer it goes through the
+    //   same marker path as the threat questions, so it may be vague or a lie.
+    case "FindRole": {
+        private _contact = [_civData, "RoleContact", []] call ALiVE_fnc_hashGet;
+        private _wanted = (missionNamespace getVariable ["ALiVE_amb_civ_population_ROLES", []]) param [0, "townelder"];
+        private _wantedWord = localize format ["STR_ALIVE_CIV_INTERACT_ACTIONS_ROLE_%1", toUpper _wanted];
+
+        if (_contact isEqualTo []) then {
+            _response1 = format [localize "STR_ALIVE_CIV_INTERACT_FINDROLE_NONE_1", _wantedWord];
+            _response2 = format [localize "STR_ALIVE_CIV_INTERACT_FINDROLE_NONE_2", _wantedWord];
+            _response3 = format [localize "STR_ALIVE_CIV_INTERACT_FINDROLE_NONE_3", _wantedWord];
+            _response = [_response1, _response2, _response3] call BIS_fnc_selectRandom;
+            CIVINTERACT_RESPONSELIST ctrlSetText _response;
+            _answersGiven pushBack "FindRole"; _answerGiven = true;
+        } else {
+            _contact params ["_flag", "_pos", "_homePos", "_name"];
+            private _roleWord = localize format ["STR_ALIVE_CIV_INTERACT_ACTIONS_ROLE_%1", toUpper _flag];
+            private _markerText = format ["%1 (%2)", _name, [_roleWord] call CBA_fnc_capitalize];
+            _response1 = format [localize "STR_ALIVE_CIV_INTERACT_FINDROLE_NOTHOSTILE_1", _name, _roleWord];
+            _response2 = format [localize "STR_ALIVE_CIV_INTERACT_FINDROLE_NOTHOSTILE_2", _name, _roleWord];
+            _response3 = format [localize "STR_ALIVE_CIV_INTERACT_FINDROLE_NOTHOSTILE_3", _name, _roleWord];
+
+            if (!(_hostile) and (floor random 100 > 15)) then {
+                _response = [_response1, _response2, _response3] call BIS_fnc_selectRandom;
+                CIVINTERACT_RESPONSELIST ctrlSetText _response;
+                _answersGiven pushBack "FindRole"; _answerGiven = true;
+
+                private _marker = [format ["ALiVE_findRole_%1", str _homePos], _homePos, "ICON", [.35, .35], "ColorCIV", _markerText, "mil_circle", "Solid", 0, .5] call ALIVE_fnc_createMarkerGlobal;
+                [_marker,_intelMarkerDuration] spawn {params ["_marker","_duration"]; sleep _duration; deleteMarker _marker};
+            } else {
+                if (_hostile && {[_intelChanceBonus, 35] call _passesHostileIntelRoll}) then {
+                    _response = [_response1, _response2, _response3] call BIS_fnc_selectRandom;
+                    CIVINTERACT_RESPONSELIST ctrlSetText _response;
+                    _answersGiven pushBack "FindRole"; _answerGiven = true;
+
+                    [_homePos, _markerText, "ColorCIV", 60, 15, "mil_circle", getPos _civ, false] call _placeThreatIntelMarker;
+                } else {
+                    _response1 = format [localize "STR_ALIVE_CIV_INTERACT_FINDROLE_HOSTILE_1", _wantedWord];
+                    _response2 = format [localize "STR_ALIVE_CIV_INTERACT_FINDROLE_HOSTILE_2", _wantedWord];
+                    _response3 = format [localize "STR_ALIVE_CIV_INTERACT_FINDROLE_HOSTILE_3", _wantedWord];
+                    _response = [_response1, _response2, _response3] call BIS_fnc_selectRandom;
+                    CIVINTERACT_RESPONSELIST ctrlSetText _response;
+                };
+            };
+        };
+    };
+
 };
 
 //-- Check if civilian is irritated, once per question: no case rolls it itself

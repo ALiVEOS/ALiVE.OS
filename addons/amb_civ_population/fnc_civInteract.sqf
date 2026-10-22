@@ -68,6 +68,7 @@ private ["_result"];
 #define CIVINTERACT_GETIN			(CIVINTERACT_DISPLAY displayCtrl 92326)
 #define CIVINTERACT_STOP			(CIVINTERACT_DISPLAY displayCtrl 92310)
 #define CIVINTERACT_GETDOWN			(CIVINTERACT_DISPLAY displayCtrl 92312)
+#define CIVINTERACT_AIDCRATE		(CIVINTERACT_DISPLAY displayCtrl 92328)
 
 switch (_operation) do {
 
@@ -209,7 +210,7 @@ switch (_operation) do {
 		//-- Exit if the menu has been closed
 		if (isNull findDisplay 923) exitWith {};
 
-		_arguments params ["_objectiveInstallations","_objectiveActions","_civInfo","_hostileCivInfo",["_intelQuality", [0,1,0,"Stabilize",10,0], [[]]]];
+		_arguments params ["_objectiveInstallations","_objectiveActions","_civInfo","_hostileCivInfo",["_intelQuality", [0,1,0,"Stabilize",10,0], [[]]],["_roleContact", [], [[]]]];
 
 		_logic = MOD(civInteractHandler);
 
@@ -224,6 +225,7 @@ switch (_operation) do {
 		[_civData, "CivInfo", _civInfo] call ALiVE_fnc_hashSet;				//-- [_homePos, reading (own max town), _townHostility, _name, own]
 		[_civData, "HostileCivInfo", _hostileCivInfo] call ALiVE_fnc_hashSet;			//-- [_civ,_homePos,_activeCommands]
 		[_civData, "IntelQuality", _intelQuality] call ALiVE_fnc_hashSet;				//-- [chanceBonus, radiusMultiplier, markerDurationBonus, phase, exactMarkerChance, deceptionChance]
+		[_civData, "RoleContact", _roleContact] call ALiVE_fnc_hashSet;				//-- [flag, position, homePosition, name] of the nearest town elder or the like, or []
 		[_civData, "AnswersGiven", _answersGiven] call ALiVE_fnc_hashSet;			//-- Default []
 		[_civData, "Asked", 0] call ALiVE_fnc_hashSet;					//-- Default - 0
 		[_logic, "CivData", _civData] call ALiVE_fnc_hashSet;
@@ -397,6 +399,16 @@ switch (_operation) do {
 			};
 		};
 
+		// Hand Over Crate goes to the town, not this civilian, so their mood doesn't grey it out.
+		// It needs a box with enough food and water in it within 15 m of them.
+		private _aidOn = missionNamespace getVariable ["ALiVE_amb_civ_population_AidCrateEnabled", false];
+		CIVINTERACT_AIDCRATE ctrlShow _aidOn;
+		if (_aidOn) then {
+			private _crateNear = !isNull (["nearest", [_civ, 15]] call ALiVE_fnc_aidCrate);
+			CIVINTERACT_AIDCRATE ctrlEnable _crateNear;
+			CIVINTERACT_AIDCRATE ctrlSetTooltip ([localize "STR_ALIVE_CIV_POP_AIDCRATE_NOCRATE_TOOLTIP", ""] select _crateNear);
+		};
+
 		// Advanced Civilians' brain carries these orders out and puts the civilian back after,
 		// so one it leaves alone (a town elder or priest, a protected one) was left marked
 		// ORDERED, or standing with its movement switched off. Offered only while it runs the
@@ -456,6 +468,14 @@ switch (_operation) do {
 
 		CIVINTERACT_QUESTIONLIST lbAdd (localize "STR_ALIVE_CIV_INTERACT_QUESTIONS_PRESSURE");
 		CIVINTERACT_QUESTIONLIST lbSetData [9, "Pressure"];
+
+		// Where to find the town's senior figure: the first role in the module's list (the mayor
+		// for Western roles, the town elder for Eastern). Only asked when roles are on.
+		private _roles = missionNamespace getVariable [QGVAR(ROLES), []];
+		if (!(missionNamespace getVariable [QGVAR(ROLES_DISABLED), true]) && {_roles isEqualType []} && {count _roles > 0}) then {
+			private _index = CIVINTERACT_QUESTIONLIST lbAdd (format [localize "STR_ALIVE_CIV_INTERACT_QUESTIONS_FINDROLE", localize format ["STR_ALIVE_CIV_INTERACT_ACTIONS_ROLE_%1", toUpper (_roles select 0)]]);
+			CIVINTERACT_QUESTIONLIST lbSetData [_index, "FindRole"];
+		};
 
 		CIVINTERACT_QUESTIONLIST ctrlAddEventHandler ["LBSelChanged","
 			params ['_control','_index'];
@@ -723,7 +743,11 @@ switch (_operation) do {
 			_intelQuality = [_chanceBonus, _precisionMultiplier, _durationBonus, _supportPhase, _exactMarkerChance, _deceptionChance];
 		};
 
-		_civData = [_objectiveInstallations, _objectiveActions, _civInfo,_hostileCivInfo,_intelQuality];
+		// The nearest town elder, mayor or the like in this civilian's town, for "Where can I find..."
+		if (isNil "_clusterID") then {_clusterID = ""};
+		private _roleContact = [nil, "findRoleContact", [_clusterID, _civ getVariable ["agentID", ""], getPosATL _civ]] call MAINCLASS;
+
+		_civData = [_objectiveInstallations, _objectiveActions, _civInfo,_hostileCivInfo,_intelQuality,_roleContact];
 
 		// _civData call ALiVE_fnc_inspectArray;
 
@@ -743,6 +767,124 @@ switch (_operation) do {
 			_role = localize format ["STR_ALIVE_CIV_INTERACT_ACTIONS_ROLE_%1", toUpper _role];
 		};
 		_result = ([_role] call CBA_fnc_capitalize);
+	};
+
+	//-- Server: the nearest civilian with a role (town elder, mayor, priest, muezzin,
+	//   politician) living in a town, read from the agent records so one nobody has spawned
+	//   counts too. The senior role the player asks for (the first in the module's list) wins
+	//   over the others; distance decides between equals. Answers [flag, position,
+	//   homePosition, name] or [] when roles are off or nobody has one.
+	case "findRoleContact": {
+		_arguments params [["_clusterID", "", [""]], ["_excludeID", "", [""]], ["_fromPos", [0,0,0], [[]]]];
+		_result = [];
+		if (missionNamespace getVariable [QGVAR(ROLES_DISABLED), true]) exitWith {};
+		if (_clusterID == "" || {isNil "ALIVE_agentHandler"}) exitWith {};
+		private _townAgents = [[ALIVE_agentHandler, "agentsByCluster"] call ALIVE_fnc_hashGet, _clusterID] call ALIVE_fnc_hashGet;
+		if (isNil "_townAgents") exitWith {};
+
+		private _roleFlags = ["townelder", "major", "priest", "muezzin", "politician"];
+		private _wanted = (missionNamespace getVariable [QGVAR(ROLES), []]) param [0, ""];
+		private _bestRank = 1e10;
+		{
+			private _profile = _x;
+			// Cars are agents too, and the civilian being asked doesn't send you to themselves.
+			if ((((_profile select 2) select 4) == "agent") && {((_profile select 2) select 3) != _excludeID}) then {
+				private _i = _roleFlags findIf {([_profile, _x, false] call ALIVE_fnc_hashGet) isEqualTo true};
+				if (_i > -1) then {
+					private _flag = _roleFlags select _i;
+					private _homePos = (_profile select 2) select 10;
+					private _unit = (_profile select 2) select 5;
+					private _pos = if (((_profile select 2) select 1) && {!isNull _unit} && {alive _unit}) then {getPosATL _unit} else {_homePos};
+					// The wanted role always ranks ahead of any other.
+					private _rank = (_fromPos distance2D _pos) + ([1e6, 0] select (_flag == _wanted));
+					if (_rank < _bestRank) then {
+						_bestRank = _rank;
+						private _name = [_profile, "ALiVE_PersistentName", ""] call ALIVE_fnc_hashGet;
+						if (_name == "") then {_name = format ["%1 %2", (_profile select 2) select 13, (_profile select 2) select 14]};
+						_result = [_flag, _pos, _homePos, _name];
+					};
+				};
+			};
+		} forEach (_townAgents select 2);
+	};
+
+	//-- Server: the role contact for a civilian outside the dialog (ACE menu, scroll menu).
+	//   The town is found as getData finds it, bar its last resort of searching every town.
+	//   Answers the asking player with case "FindRoleAnswer" and returns the contact.
+	case "getRoleContact": {
+		_arguments params [["_player", objNull], ["_civ", objNull]];
+		_result = [];
+		if (isNull _civ) exitWith {};
+		private _clusterID = "";
+		private _civID = _civ getVariable ["agentID", ""];
+		if (_civID != "" && {!isNil "ALIVE_agentHandler"}) then {
+			private _profile = [ALIVE_agentHandler, "getAgent", _civID] call ALIVE_fnc_agentHandler;
+			if !(isNil "_profile") then {_clusterID = (_profile select 2) select 9};
+		};
+		if (_clusterID == "") then {_clusterID = _civ getVariable ["ALiVE_clusterID", ""]};
+		if (_clusterID == "") then {
+			private _nearestAgent = [position _civ] call ALiVE_fnc_getNearestActiveAgent;
+			if (count _nearestAgent > 0) then {_clusterID = [_nearestAgent, "homeCluster", ""] call ALiVE_fnc_hashGet};
+		};
+		_result = [nil, "findRoleContact", [_clusterID, _civID, getPosATL _civ]] call MAINCLASS;
+		if (!isNull _player) then {
+			[nil, "FindRoleAnswer", [_civ, _result]] remoteExecCall [QUOTE(MAINCLASS), _player];
+		};
+	};
+
+	//-- "Where can I find the town elder?" from the ACE menu or the scroll menu: the server
+	//   looks the contact up and answers in case "FindRoleAnswer".
+	case "FindRole": {
+		private _civ = if (_arguments isEqualType objNull) then {_arguments} else {[_logic, "Civ"] call ALiVE_fnc_hashGet};
+		if (isNil "_civ" || {isNull _civ}) exitWith {};
+		[nil, "getRoleContact", [player, _civ]] remoteExecCall [QUOTE(MAINCLASS), 2];
+	};
+
+	//-- The answer, as a hint and a map marker. The same rules as the dialog's questions: a
+	//   civilian willing to talk usually tells the truth; a hostile one mostly refuses, and when
+	//   they do answer, may send you to the wrong place.
+	case "FindRoleAnswer": {
+		_arguments params [["_civ", objNull], ["_contact", []]];
+		if (!hasInterface || {isNull _civ}) exitWith {};
+		private _wanted = (missionNamespace getVariable [QGVAR(ROLES), []]) param [0, "townelder"];
+		private _wantedWord = localize format ["STR_ALIVE_CIV_INTERACT_ACTIONS_ROLE_%1", toUpper _wanted];
+
+		// Their own hostility above the resting 30, floored by the player's side, as Gather Intel reads it.
+		private _sideBaseline = if (!isNil "ALIVE_civilianHostilityFloor") then {
+			[ALIVE_civilianHostilityFloor, str (side (group player)), 0] call ALiVE_fnc_hashGet
+		} else { 0 };
+		private _h = ((_civ getVariable ["ALiVE_CivPop_Hostility", 30]) max _sideBaseline) max 0 min 100;
+		private _hostile = random 100 < ((_h - 30) max 0);
+		private _text = "";
+
+		if (_contact isEqualTo []) then {
+			_text = format [localize format ["STR_ALIVE_CIV_INTERACT_FINDROLE_NONE_%1", 1 + floor random 3], _wantedWord];
+		} else {
+			_contact params ["_flag", "_pos", "_homePos", "_name"];
+			private _roleWord = localize format ["STR_ALIVE_CIV_INTERACT_ACTIONS_ROLE_%1", toUpper _flag];
+			private _truthful = !_hostile && {random 100 > 15};
+			private _answers = _truthful || {_hostile && {random 100 > (_h max 35)}};
+			if (_answers) then {
+				_text = format [localize format ["STR_ALIVE_CIV_INTERACT_FINDROLE_NOTHOSTILE_%1", 1 + floor random 3], _name, _roleWord];
+				// A hostile civilian who answers may send you somewhere else entirely.
+				private _markerPos = +_homePos;
+				if (!_truthful && {(random 100) < ((((_h - 25) * 0.6) max 0) min 50)}) then {
+					_markerPos = [_homePos, 250 + ceil random 350] call CBA_fnc_randPos;
+				};
+				// on the asking player's map only, named so two answers never share a marker
+				private _marker = createMarkerLocal [format ["ALiVE_findRole_%1_%2", str _markerPos, diag_tickTime], _markerPos];
+				_marker setMarkerShapeLocal "ICON";
+				_marker setMarkerTypeLocal "mil_circle";
+				_marker setMarkerColorLocal "ColorCIV";
+				_marker setMarkerSizeLocal [.35, .35];
+				_marker setMarkerAlphaLocal .5;
+				_marker setMarkerTextLocal format ["%1 (%2)", _name, [_roleWord] call CBA_fnc_capitalize];
+				[_marker] spawn {params ["_marker"]; sleep 60; deleteMarkerLocal _marker};
+			} else {
+				_text = format [localize format ["STR_ALIVE_CIV_INTERACT_FINDROLE_HOSTILE_%1", 1 + floor random 3], _wantedWord];
+			};
+		};
+		[localize "STR_ALIVE_CIV_POP", _text] call ALIVE_fnc_sendHint;
 	};
 
 	case "isIrritated": {
@@ -1274,6 +1416,18 @@ switch (_operation) do {
 			// with the civInteract dialog.
 			[_civ, player] call ALIVE_fnc_selectRoleAction;
 		};
+	};
+
+	//-- HandOverCrate: hands the nearest box of food and water within 15 m of the civilian to
+	//   their town (ALiVE_fnc_aidCrate "handover", on the server). Shared by the dialog
+	//   button, the ACE civilian menu and the classic scroll menu. The server answers on the
+	//   side panel, so the dialog stays open.
+	case "HandOverCrate": {
+		private _civ = if (_arguments isEqualType objNull) then {_arguments} else {[_logic, "Civ"] call ALiVE_fnc_hashGet};
+		if (isNil "_civ" || {isNull _civ}) exitWith {};
+		private _crate = ["nearest", [_civ, 15]] call ALiVE_fnc_aidCrate;
+		if (isNull _crate) exitWith { ["notify", ["STR_ALIVE_CIV_POP_AIDCRATE_NOCRATE_TOOLTIP"]] call ALiVE_fnc_aidCrate };
+		["handover", [_crate, str (side (group player)), player]] remoteExecCall ["ALiVE_fnc_aidCrate", 2];
 	};
 
 	//-- GatherIntel: hostility-aware intel reveal shared by the dialog

@@ -231,6 +231,11 @@ class cfgFunctions {
                 file = "\x\alive\addons\amb_civ_population\fnc_civAceAuthGate.sqf";
                 ALIVE_RECOMPILE;
             };
+            class aidCrate {
+                description = "Hands a container of food and water to the nearest town";
+                file = "\x\alive\addons\amb_civ_population\fnc_aidCrate.sqf";
+                ALIVE_RECOMPILE;
+            };
             class civSetHostility {
                 description = "Moves a civilian's hostility by an amount, both copies, kept 0 to 100, from any machine";
                 file = "\x\alive\addons\amb_civ_population\fnc_civSetHostility.sqf";

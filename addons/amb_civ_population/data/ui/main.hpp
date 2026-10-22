@@ -332,6 +332,23 @@ class ALiVE_CivilianInteraction {
 			colorActive[] = {0,0,0,0.5};
 		};
 
+		// Hand a nearby box of food and water to the civilian's town (ALiVE_fnc_aidCrate).
+		// Enabled only while one is within 15 m of the civilian; see case
+		// "refreshHostilityIndicator" in fnc_civInteract.
+		class CivInteract_AidCrate: CivInteract_RscButton
+		{
+			idc = 92328;
+			action = "[ALiVE_civInteractHandler,'HandOverCrate'] call ALiVE_fnc_civInteract";
+
+			text = "$STR_ALIVE_CIV_POP_AIDCRATE_BUTTON";
+			x = 0.17 * safezoneW + safezoneX;
+			y = 0.775 * safezoneH + safezoneY;
+			w = 0.065625 * safezoneW;
+			h = 0.0280001 * safezoneH;
+			sizeEx = "0.021 * safezoneH";
+			colorActive[] = {0,0,0,0.5};
+		};
+
 		class CivInteract_Close: CivInteract_RscButton {
 			idc = 9237;
 			action = "closeDialog 0";

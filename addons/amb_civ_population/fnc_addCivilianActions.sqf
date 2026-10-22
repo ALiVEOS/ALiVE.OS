@@ -27,7 +27,7 @@ Jman
 
 private _object = _this select 0;
 
-if ((side group _object) != CIVILIAN || {isnil QGVAR(ROLES_DISABLED)} || {GVAR(ROLES_DISABLED)}) exitWith {}; // only add actions if civilian roles module field != none
+if ((side group _object) != CIVILIAN) exitWith {};
 
 // Skip the legacy role-talk + detain / search / intel scroll-wheel
 // sprawl unless the mission-maker explicitly selected CLASSIC mode on
@@ -36,6 +36,38 @@ if ((side group _object) != CIVILIAN || {isnil QGVAR(ROLES_DISABLED)} || {GVAR(R
 // (`Negotiate` button + gear browser) or the ACE branch, avoiding the
 // ~10-item addAction list that motivated the UX consolidation.
 if ((missionNamespace getVariable ["ALiVE_amb_civ_population_UIMode", "AUTO"]) != "CLASSIC") exitWith {};
+
+// Hand over aid to the town, as the dialog and the ACE menu offer it. It needs no roles.
+_object addAction [
+    (localize "STR_ALIVE_CIV_POP_AIDCRATE_ACTION") call ALiVE_fnc_actionTitle,
+    {[ALiVE_civInteractHandler, "HandOverCrate", _this select 0] call ALiVE_fnc_civInteract},
+    [],
+    1,
+    false,
+    true,
+    "",
+    "alive _target && {missionNamespace getVariable ['ALiVE_amb_civ_population_AidCrateEnabled', false]} && {!isNull (['nearest', [_target, 15]] call ALiVE_fnc_aidCrate)}",
+    5
+];
+
+// The rest only with civilian roles on (the module's Civilian Roles field isn't None).
+if (isnil QGVAR(ROLES_DISABLED) || {GVAR(ROLES_DISABLED)}) exitWith {};
+
+// Where can I find the town elder (or mayor: the first role in the module's list), as the
+// dialog and the ACE menu ask it.
+private _wantedRole = (missionNamespace getVariable [QGVAR(ROLES), []]) param [0, "townelder"];
+_object addAction [
+    (format [localize "STR_ALIVE_CIV_INTERACT_QUESTIONS_FINDROLE", localize format ["STR_ALIVE_CIV_INTERACT_ACTIONS_ROLE_%1", toUpper _wantedRole]]) call ALiVE_fnc_actionTitle,
+    {[ALiVE_civInteractHandler, "FindRole", _this select 0] call ALiVE_fnc_civInteract},
+    [],
+    1,
+    false,
+    true,
+    "",
+    // not asked of a hostile civilian, as the dialog and the ACE menu hold it back
+    "alive _target && {[_target, 60] call ALiVE_fnc_civAceTierGate}",
+    5
+];
 
 // Each Talk to entry shows for a civilian carrying that role's flag. The flag was looked up by
 // the translated role word, which is the flag's name only in English, and not even there for

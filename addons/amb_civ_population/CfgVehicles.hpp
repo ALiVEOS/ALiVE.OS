@@ -200,6 +200,10 @@ class CfgVehicles {
                     typeName = "NUMBER";
             };
             class maxAllowAid : Edit { property = "ALiVE_amb_civ_population_maxAllowAid"; displayName = "$STR_ALIVE_CIV_POP_MAX_ALLOWED_AID"; tooltip = "$STR_ALIVE_CIV_POP_MAX_ALLOWED_AID_COMMENT"; defaultValue = """3"""; };
+            // Aid crates: a box of food and water handed to a town, no C2ISTAR task needed.
+            class aidCrateEnabled : Combo { property = "ALiVE_amb_civ_population_aidCrateEnabled"; displayName = "$STR_ALIVE_CIV_POP_AIDCRATE_ENABLED"; tooltip = "$STR_ALIVE_CIV_POP_AIDCRATE_ENABLED_COMMENT"; defaultValue = """true"""; class Values { class Yes{name="Yes";value=true;default=1;}; class No{name="No";value=false;}; }; };
+            class aidCrateCooldown : Edit { property = "ALiVE_amb_civ_population_aidCrateCooldown"; displayName = "$STR_ALIVE_CIV_POP_AIDCRATE_COOLDOWN_LABEL"; tooltip = "$STR_ALIVE_CIV_POP_AIDCRATE_COOLDOWN_COMMENT"; defaultValue = """1800"""; };
+            class aidCrateMaxEffect : Edit { property = "ALiVE_amb_civ_population_aidCrateMaxEffect"; displayName = "$STR_ALIVE_CIV_POP_AIDCRATE_MAXEFFECT"; tooltip = "$STR_ALIVE_CIV_POP_AIDCRATE_MAXEFFECT_COMMENT"; defaultValue = """35"""; };
             // Consolidated Humanitarian Items picker (replaces the
             // previous four-attribute layout: per-category listbox +
             // per-category Manual edit + spacer). Stored in structured

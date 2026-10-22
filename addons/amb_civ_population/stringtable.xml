@@ -902,6 +902,24 @@
     <Chinese>單位平民可接收人道口糧/飲水瓶的最大數量</Chinese>
     <Chinesesimp>一个平民最多可以得到多少人道主义口粮/水瓶</Chinesesimp>
 </Key>
+<Key ID="STR_ALIVE_CIV_POP_AIDCRATE_ENABLED">
+    <English>Aid Crates:</English>
+</Key>
+<Key ID="STR_ALIVE_CIV_POP_AIDCRATE_ENABLED_COMMENT">
+    <English>Lets players hand a box of food and water to the nearest town, with no C2ISTAR task needed. Any ammo or supply box holding at least 10 of the Humanitarian Items (the ALiVE Humanitarian Crate comes stocked) offers Hand over aid to the town, and so do the dialog, the ACE menu and the classic scroll menu on a civilian within 15 m of one. The town's centre must be within 200 m of the box. Tension towards the giver's side drops across the sector as a successful Negotiate does, and everyone living in that town calms down a little. The food and water are taken out; anything else stays in the box. Default: Yes.</English>
+</Key>
+<Key ID="STR_ALIVE_CIV_POP_AIDCRATE_COOLDOWN_LABEL">
+    <English>Aid Crate Cooldown (s):</English>
+</Key>
+<Key ID="STR_ALIVE_CIV_POP_AIDCRATE_COOLDOWN_COMMENT">
+    <English>How long a town waits after taking an aid crate before it takes another, in seconds. Default: 1800 (30 minutes).</English>
+</Key>
+<Key ID="STR_ALIVE_CIV_POP_AIDCRATE_MAXEFFECT">
+    <English>Aid Crate Max Effect (points):</English>
+</Key>
+<Key ID="STR_ALIVE_CIV_POP_AIDCRATE_MAXEFFECT_COMMENT">
+    <English>The most one aid crate can lower the town's hostility towards the giver's side, in points; the other sides' goes up by the same, as with Negotiate. A crate is worth 5 points plus 1 for every 5 food and water items in it, up to this figure: 10 items give 7, 25 give 10, and a full ALiVE Humanitarian Crate reaches the cap. Each civilian living in the town also calms by a fifth of it. Default: 35, the same as a successful Negotiate with a town elder.</English>
+</Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_HUMANITARIAN_ITEMS">
     <English>Humanitarian Items:</English>
@@ -1278,6 +1296,63 @@
     <Spanish>Alguien lo ha estado presionando?</Spanish>
     <Chinese>有人在向你施壓嗎?</Chinese>
     <Chinesesimp>有人在向你施压吗?</Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_QUESTIONS_FINDROLE">
+    <English>Where can I find the %1?</English>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_FINDROLE_NOTHOSTILE_1">
+    <English>%1, our %2, lives in the house I've marked for you.</English>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_FINDROLE_NOTHOSTILE_2">
+    <English>%1, our %2, can help you. I've marked the house on your map.</English>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_FINDROLE_NOTHOSTILE_3">
+    <English>%1 is our %2. I'll show you the house on your map.</English>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_FINDROLE_HOSTILE_1">
+    <English>I won't send you to our %1.</English>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_FINDROLE_HOSTILE_2">
+    <English>Find our %1 yourself.</English>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_FINDROLE_HOSTILE_3">
+    <English>Leave our %1 out of this.</English>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_FINDROLE_NONE_1">
+    <English>There's no %1 here.</English>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_FINDROLE_NONE_2">
+    <English>We don't have a %1 in this town.</English>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_FINDROLE_NONE_3">
+    <English>No %1 lives around here.</English>
+</Key>
+<Key ID="STR_ALIVE_CIV_POP_AIDCRATE_ACTION">
+    <English>Hand over aid to the town</English>
+</Key>
+<Key ID="STR_ALIVE_CIV_POP_AIDCRATE_BUTTON">
+    <English>Hand Over Aid</English>
+</Key>
+<Key ID="STR_ALIVE_CIV_POP_AIDCRATE_TITLE">
+    <English>HUMANITARIAN AID</English>
+</Key>
+<Key ID="STR_ALIVE_CIV_POP_AIDCRATE_DELIVERED">
+    <English>The people of %1 accept the aid. Tension towards your forces eases.</English>
+</Key>
+<Key ID="STR_ALIVE_CIV_POP_AIDCRATE_COOLDOWN">
+    <English>This town has had aid recently.</English>
+</Key>
+<Key ID="STR_ALIVE_CIV_POP_AIDCRATE_NOTOWN">
+    <English>There is no town close enough to hand this to.</English>
+</Key>
+<Key ID="STR_ALIVE_CIV_POP_AIDCRATE_TOOFEW">
+    <English>There isn't enough food or water in here to make a difference.</English>
+</Key>
+<Key ID="STR_ALIVE_CIV_POP_AIDCRATE_GONE">
+    <English>That aid has already been handed over, or you're too far from it.</English>
+</Key>
+<Key ID="STR_ALIVE_CIV_POP_AIDCRATE_NOCRATE_TOOLTIP">
+    <English>Bring a box holding at least 10 food or water items within 15 m of this civilian.</English>
 </Key>
 <!-- ==== Needs responses (no hostile-tier branch needed - the dialog
      greys the Question listbox at Defiant+; this case only runs at

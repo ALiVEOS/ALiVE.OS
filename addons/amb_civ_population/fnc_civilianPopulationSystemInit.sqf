@@ -255,6 +255,11 @@ if(isServer) then {
     private _civWeaponAimHoldTimeDyn = (_logic getVariable ["civWeaponAimHoldTimeDynamic", "false"]) isEqualTo "true";
     private _civVehicleStopOnAim     = (_logic getVariable ["civVehicleStopOnAim",     "true"]) isEqualTo "true";
     private _civHostilityDecayRate   = parseNumber (_logic getVariable ["civHostilityDecayRate",   "1"]);
+    // Aid crates (ALiVE_fnc_aidCrate). The switch may come as a string or a bool.
+    private _aidCrateEnabledRaw      = _logic getVariable ["aidCrateEnabled", "true"];
+    private _aidCrateEnabled         = (_aidCrateEnabledRaw isEqualTo "true") || {_aidCrateEnabledRaw isEqualTo true};
+    private _aidCrateCooldown        = (parseNumber format ["%1", _logic getVariable ["aidCrateCooldown", "1800"]]) max 0;
+    private _aidCrateMaxEffect       = (parseNumber format ["%1", _logic getVariable ["aidCrateMaxEffect", "35"]]) max 0;
 
     private _advciv_vehicleEscape       = (_logic getVariable ["advciv_vehicleEscape",       "true"])  isEqualTo "true";
     private _advciv_vehicleEscapeChance = parseNumber (_logic getVariable ["advciv_vehicleEscapeChance", "0.3"]);
@@ -317,6 +322,9 @@ if(isServer) then {
     ALiVE_amb_civ_population_WeaponAimHoldTimeDynamic = _civWeaponAimHoldTimeDyn; publicVariable "ALiVE_amb_civ_population_WeaponAimHoldTimeDynamic";
     ALiVE_amb_civ_population_VehicleStopOnAim = _civVehicleStopOnAim; publicVariable "ALiVE_amb_civ_population_VehicleStopOnAim";
     ALiVE_amb_civ_population_HostilityDecayRate = _civHostilityDecayRate; publicVariable "ALiVE_amb_civ_population_HostilityDecayRate";
+    ALiVE_amb_civ_population_AidCrateEnabled = _aidCrateEnabled; publicVariable "ALiVE_amb_civ_population_AidCrateEnabled";
+    ALiVE_amb_civ_population_AidCrateCooldown = _aidCrateCooldown; publicVariable "ALiVE_amb_civ_population_AidCrateCooldown";
+    ALiVE_amb_civ_population_AidCrateMaxEffect = _aidCrateMaxEffect; publicVariable "ALiVE_amb_civ_population_AidCrateMaxEffect";
 
     ALiVE_advciv_vehicleEscape       = _advciv_vehicleEscape;       publicVariable "ALiVE_advciv_vehicleEscape";
     ALiVE_advciv_vehicleEscapeChance = _advciv_vehicleEscapeChance; publicVariable "ALiVE_advciv_vehicleEscapeChance";
@@ -480,6 +488,9 @@ if(isServer) then {
 
     if (count _ambientCivilianRoles == 0) then {GVAR(ROLES_DISABLED) = true} else {GVAR(ROLES_DISABLED) = false};
     PublicVariable QGVAR(ROLES_DISABLED);
+    // The role list, so a player can ask where to find the town's senior one (its first entry).
+    GVAR(ROLES) = _ambientCivilianRoles;
+    publicVariable QGVAR(ROLES);
 
     _logic setVariable ["handler",ALIVE_civilianPopulationSystem];
 

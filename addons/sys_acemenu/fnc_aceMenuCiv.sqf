@@ -28,7 +28,9 @@ Description:
           |    `-- Detain / Release
           `-- Intel
                |-- Negotiate
-               `-- Gather Intel
+               |-- Gather Intel
+               |-- Where can I find the <role>?
+               `-- Hand over aid to the town
 
     Civilian identification uses the class CONFIG side (CfgVehicles side
     == 3) rather than the unit's runtime side. This matters because
@@ -318,6 +320,48 @@ _a = ["ALiVE_Civ_GatherIntel", "Gather Intel", "",
         {!(_target getVariable ["ALiVE_advciv_blacklist", false])} &&
         {[_target, 60] call ALiVE_fnc_civAceTierGate} &&
         {isNil {_target getVariable "intelGathered"}}
+    }
+] call ace_interact_menu_fnc_createAction;
+["CAManBase", 0, _pIntel, _a, true] call ace_interact_menu_fnc_addActionToClass;
+
+// Where can I find the town elder (or mayor: the first role in the module's list) - shown only
+// with roles on, and hidden at Defiant+ as the dialog's questions are. The title is worked out
+// when the menu opens, as the role list comes from the server.
+_a = ["ALiVE_Civ_FindRole", "Where is the town elder?", "",
+    { [ALiVE_civInteractHandler, "FindRole", _target] call ALiVE_fnc_civInteract },
+    {
+        alive _target &&
+        {(getNumber (configFile >> "CfgVehicles" >> typeOf _target >> "side")) == 3} &&
+        {!(_target getVariable ["ALiVE_advciv_blacklist", false])} &&
+        {call ALiVE_fnc_civAceAuthGate} &&
+        {[_target, 60] call ALiVE_fnc_civAceTierGate} &&
+        {!(missionNamespace getVariable ["ALiVE_amb_civ_population_ROLES_DISABLED", true])} &&
+        {count (missionNamespace getVariable ["ALiVE_amb_civ_population_ROLES", []]) > 0}
+    },
+    {},
+    [],
+    [0,0,0],
+    2,
+    [false, false, false, false, false],
+    {
+        params ["_target", "_player", "_params", "_actionData"];
+        private _role = (missionNamespace getVariable ["ALiVE_amb_civ_population_ROLES", []]) param [0, "townelder"];
+        _actionData set [1, format [localize "STR_ALIVE_CIV_INTERACT_QUESTIONS_FINDROLE", localize format ["STR_ALIVE_CIV_INTERACT_ACTIONS_ROLE_%1", toUpper _role]]];
+    }
+] call ace_interact_menu_fnc_createAction;
+["CAManBase", 0, _pIntel, _a, true] call ace_interact_menu_fnc_addActionToClass;
+
+// Hand Over Aid - gives a nearby box of food and water to the civilian's town. Not tier-gated:
+// the town takes it, whatever this civilian thinks of you.
+_a = ["ALiVE_Civ_AidCrate", localize "STR_ALIVE_CIV_POP_AIDCRATE_ACTION", "",
+    { [ALiVE_civInteractHandler, "HandOverCrate", _target] call ALiVE_fnc_civInteract },
+    {
+        alive _target &&
+        {(getNumber (configFile >> "CfgVehicles" >> typeOf _target >> "side")) == 3} &&
+        {!(_target getVariable ["ALiVE_advciv_blacklist", false])} &&
+        {call ALiVE_fnc_civAceAuthGate} &&
+        {missionNamespace getVariable ["ALiVE_amb_civ_population_AidCrateEnabled", false]} &&
+        {!isNull (["nearest", [_target, 15]] call ALiVE_fnc_aidCrate)}
     }
 ] call ace_interact_menu_fnc_createAction;
 ["CAManBase", 0, _pIntel, _a, true] call ace_interact_menu_fnc_addActionToClass;
