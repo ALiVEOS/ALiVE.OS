@@ -804,7 +804,7 @@
     <English>Security Patrols</English>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_SECURITY_PATROLS_COMMENT">
-    <English>Some of the infantry the commander keeps at quiet objectives walk a route through the rear objectives within 3 km and back home, so the ground between objectives isn't empty. Few sends a quarter of them, Some half, Many three quarters, and one group always stays at an objective that has more than one. Nowhere within 2 km of a fight, and the commander takes them back whenever it needs them.</English>
+    <English>Some of the infantry the commander keeps at quiet objectives walk a route through the rear objectives within the patrol reach and back home, so the ground between objectives isn't empty. In Objectives mode Few sends a quarter of them, Some half, Many three quarters, and one group always stays at an objective that has more than one; Coverage counts its own way, see its tooltip. Nowhere within 2 km of a fight, and the commander takes them back whenever it needs them.</English>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_SECURITY_PATROL_MODE">
     <English>Security Patrol Mode</English>
@@ -816,7 +816,7 @@
     <English>Security Patrol Reach</English>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_SECURITY_PATROL_REACH_COMMENT">
-    <English>How far a patrol goes from its home objective, in metres. In Coverage the commander's territory reaches the same distance from each objective it holds.</English>
+    <English>How far a patrol goes from its home objective, in metres, from 500 to 10000 (3000 by default). In Coverage the commander's territory reaches the same distance from each objective it holds.</English>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_PREP_FIRE">
     <English>Preparation Fire</English>

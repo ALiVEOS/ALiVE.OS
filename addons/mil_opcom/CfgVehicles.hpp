@@ -222,8 +222,8 @@ class CfgVehicles {
                                 property = "ALiVE_mil_opcom_securityPatrolReach";
                                 displayName = "$STR_ALIVE_OPCOM_SECURITY_PATROL_REACH";
                                 tooltip = "$STR_ALIVE_OPCOM_SECURITY_PATROL_REACH_COMMENT";
-                                typeName = "STRING";
                                 defaultValue = """3000""";
+                                typeName = "NUMBER";
                         };
                         class preparedDefences : Combo
                         {

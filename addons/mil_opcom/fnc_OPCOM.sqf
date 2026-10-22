@@ -191,6 +191,8 @@ switch (_operation) do {
         // Security Patrols mode (#1092): Objectives walks the rear objectives, Coverage walks the coldest ground; and the reach of a patrol from home in either
         private _securityPatrolMode = if ((toLower format ["%1", _logic getvariable ["securityPatrolMode","objectives"]]) == "coverage") then { "coverage" } else { "objectives" };
         private _securityPatrolReach = ((parseNumber format ["%1", _logic getvariable ["securityPatrolReach", 3000]]) max 500) min 10000;
+        // read first on the profile simulator's busiest path, so a mission without Coverage pays nothing for it
+        if (_securityPatrolMode == "coverage" && {_securityPatrols > 0}) then { ALiVE_coverageActive = true };
         // Attacks Arrive Together (#207): on each leg of an attack the faster groups wait before setting off.
         private _arriveTogether = (toLower format ["%1", _logic getvariable ["arriveTogether","false"]]) == "true";
         // Preparation Fire (#207): the commander's guns fire on an objective's defenders before it is assaulted.

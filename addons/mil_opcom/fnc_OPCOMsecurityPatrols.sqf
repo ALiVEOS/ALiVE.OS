@@ -92,6 +92,7 @@ private _fnc_drop = {
     _ledger deleteAt _id;
     private _p = _profilesById get _id;
     if (!isNil "_p") then { [_p, "securityPatrol"] call ALiVE_fnc_hashRem };
+    if (!isNil "ALiVE_coverageLastSector") then { ALiVE_coverageLastSector deleteAt _id };
 };
 
 // the patrols already out: dropped, sent home, or rested and sent out again
@@ -162,8 +163,7 @@ if (_coverage) then {
     private _groups = count _section;
     private _want = if (_coverage) then {
         // the surplus above the objective's minimum, times the share as a bias: a quarter is a third, half two thirds, three quarters all
-        private _minimum = [1, 2] select (([_home, "size", 100] call ALiVE_fnc_HashGet) >= PATROL_LARGE_SIZE);
-        floor (((_groups - _minimum) max 0) * (_share / 0.75)) - count _out
+        [nil, "surplus", [_groups, [_home, "size", 100] call ALiVE_fnc_HashGet, _share, count _out]] call ALIVE_fnc_OPCOMcoverage
     } else {
         if (_groups >= 2) then { (ceil (_groups * _share) min (_groups - 1)) - count _out } else { [0, 1] select (random 1 < _share) }
     };

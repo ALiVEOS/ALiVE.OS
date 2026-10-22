@@ -130,10 +130,11 @@ private _stops = [_handler, "coldest", ["WEST", _homePos, _reach, _fnc_rearAll]]
 private _apart = true;
 for "_i" from 0 to (count _stops - 1) do {
     for "_j" from (_i + 1) to (count _stops - 1) do {
-        if (((_stops select _i select 0) distance2D (_stops select _j select 0)) < 3 * _size - 1) then { _apart = false };
+        if (((_stops select _i select 0) distance2D (_stops select _j select 0)) < (750 max _size) - 1) then { _apart = false };
     };
 };
-["stops are at least three sectors apart", _apart] call _fnc_check;
+["stops are at least 750 m apart (a sector on a coarse grid)", _apart] call _fnc_check;
+["no stop within 500 m of home", (_stops findIf { ((_x select 0) distance2D _homePos) <= 500 - _size }) < 0] call _fnc_check;
 ["stops avoid watched ground", (_stops findIf { ((_x select 0) distance2D _homePos) < 800 }) < 0 || {_size > 800}] call _fnc_check;
 private _ordered = true;
 private _from = _homePos;
@@ -154,14 +155,22 @@ private _again = [_handler, "coldest", ["WEST", _homePos, _reach, _fnc_rearAll]]
 private _none = [_handler, "coldest", ["WEST", _homePos, _reach, { false }]] call ALIVE_fnc_OPCOMcoverage;
 ["nothing near a fight is a stop", _none isEqualTo []] call _fnc_check;
 
-// --- the surplus rule, as fnc_OPCOMsecurityPatrols applies it in Coverage ---------------
-private _fnc_want = { params ["_groups", "_objSize", "_share"]; private _minimum = [1, 2] select (_objSize >= 150); floor (((_groups - _minimum) max 0) * (_share / 0.75)) };
+// --- the map edge: no territory past it ------------------------------------------------
+private _edge = ["obj_edge", 0, _by, 100, "idle"] call _fnc_objective;
+private _edgeLand = [_handler, "territory", [[_edge], _reach]] call ALIVE_fnc_OPCOMcoverage;
+private _maxIx = floor (worldSize / _size);
+["no sector off the map", ((keys _edgeLand) findIf { (_x select 0) < 0 || {(_x select 1) < 0} || {(_x select 0) > _maxIx} || {(_x select 1) > _maxIx} }) < 0] call _fnc_check;
+[_handler, "territory", [[_a, _b], _reach]] call ALIVE_fnc_OPCOMcoverage;
+
+// --- the surplus rule: the same "surplus" operation fnc_OPCOMsecurityPatrols calls -------
+private _fnc_want = { params ["_groups", "_objSize", "_share", ["_out", 0]]; [nil, "surplus", [_groups, _objSize, _share, _out]] call ALIVE_fnc_OPCOMcoverage };
 ["a large objective keeps two", ([2, 200, 0.75] call _fnc_want) == 0] call _fnc_check;
 ["a small objective keeps one", ([2, 100, 0.75] call _fnc_want) == 1] call _fnc_check;
 ["Many sends all the surplus", ([5, 200, 0.75] call _fnc_want) == 3] call _fnc_check;
 ["Some sends two thirds of it", ([5, 200, 0.5] call _fnc_want) == 2] call _fnc_check;
 ["Few sends a third", ([5, 200, 0.25] call _fnc_want) == 1] call _fnc_check;
 ["Few with one spare sends none", ([3, 200, 0.25] call _fnc_want) == 0] call _fnc_check;
+["patrols already out count against it", ([5, 200, 0.75, 2] call _fnc_want) == 1] call _fnc_check;
 
 // --- put everything back ---------------------------------------------------------------
 ALiVE_coveragePresence = _saved select 0;

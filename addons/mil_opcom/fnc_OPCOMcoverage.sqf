@@ -22,7 +22,7 @@ goes out with a saved profile but the import path drops it, so a reload starts c
 
 Parameters:
 Any - nil, or the commander's handler for the per-commander operations
-String - operation: "sectorSize", "territory", "watch", "mark", "presence", "coldest"
+String - operation: "sectorSize", "territory", "watch", "mark", "presence", "coldest", "surplus"
 Any - arguments, see each operation
 
 Returns:
@@ -30,12 +30,15 @@ Any - see each operation
 
 Author:
 Goldwep
+Jman
 ---------------------------------------------------------------------------- */
 
 #define COVERAGE_WATCH_PER_GROUP 400
 #define COVERAGE_WATCH_MAX 1000
 #define COVERAGE_STOPS 4
-#define COVERAGE_STOP_GAP 3
+// in metres, not sectors: the route memory grid's sectors are 250 m on small maps but 480 m to 1 km on large ones
+#define COVERAGE_NEAR_HOME 500
+#define COVERAGE_STOP_GAP 750
 
 params ["_handler", ["_operation", ""], ["_args", []]];
 
@@ -84,7 +87,9 @@ switch (_operation) do {
                         private _best = _claimed getOrDefault [_sector, 1e9];
                         if (_d2 < _best) then {
                             private _p = [(_ix + _dx + 0.5) * _size, (_iy + _dy + 0.5) * _size, 0];
-                            if (!surfaceIsWater _p) then {
+                            // on the map only: past its edge the engine carries the edge's land on, and a stop there
+                            // would send a patrol off the map
+                            if ((_p select 0) >= 0 && {(_p select 1) >= 0} && {(_p select 0) <= worldSize} && {(_p select 1) <= worldSize} && {!surfaceIsWater _p}) then {
                                 _claimed set [_sector, _d2];
                                 _territory set [_sector, _oid];
                             };
@@ -170,6 +175,8 @@ switch (_operation) do {
         private _watch = [_handler, "coverageWatch", createHashMap] call ALiVE_fnc_HashGet;
         private _r = _reach / _size;
         private _r2 = _r * _r;
+        private _near2 = (COVERAGE_NEAR_HOME / _size) ^ 2;
+        private _gap = COVERAGE_STOP_GAP max _size;
         private _hx = (_homePos select 0) / _size;
         private _hy = (_homePos select 1) / _size;
         private _candidates = [];
@@ -178,7 +185,7 @@ switch (_operation) do {
             private _dx = (_sector select 0) + 0.5 - _hx;
             private _dy = (_sector select 1) + 0.5 - _hy;
             private _d2 = _dx * _dx + _dy * _dy;
-            if (_d2 <= _r2 && {_d2 > 4} && {isNil { _watch get _sector }}) then {
+            if (_d2 <= _r2 && {_d2 > _near2} && {isNil { _watch get _sector }}) then {
                 private _p = [((_sector select 0) + 0.5) * _size, ((_sector select 1) + 0.5) * _size, 0];
                 if ([_p] call _fnc_rear) then {
                     private _presence = [nil, "presence", [_side, _sector]] call ALIVE_fnc_OPCOMcoverage;
@@ -190,7 +197,7 @@ switch (_operation) do {
         private _picked = [];
         {
             _x params ["", "_sector", "_p"];
-            if ((_picked findIf { ((_x select 0) distance2D _p) < COVERAGE_STOP_GAP * _size }) < 0) then { _picked pushBack [_p, _sector] };
+            if ((_picked findIf { ((_x select 0) distance2D _p) < _gap }) < 0) then { _picked pushBack [_p, _sector] };
             if (count _picked >= COVERAGE_STOPS) exitWith {};
         } forEach _candidates;
         // nearest first from home, then from each stop, so the walk is a loop and not a star
@@ -208,6 +215,15 @@ switch (_operation) do {
             _picked deleteAt _i;
         };
         _result = _tour;
+    };
+
+    // [groups at the objective, objective size, share, patrols already out]: how many more a Coverage patrol can
+    // take, the surplus above the objective's minimum (2 at a large one, 1 at a small one) times the share as a bias:
+    // Few a third, Some two thirds, Many all. One place, so the patrol code and the test use the same rule
+    case "surplus": {
+        _args params [["_groups", 0], ["_objSize", 100], ["_share", 0], ["_out", 0]];
+        private _minimum = [1, 2] select (_objSize >= 150);
+        _result = floor (((_groups - _minimum) max 0) * (_share / 0.75)) - _out;
     };
 };
 
