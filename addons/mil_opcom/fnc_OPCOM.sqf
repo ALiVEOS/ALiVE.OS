@@ -141,6 +141,9 @@ switch (_operation) do {
         // every clean-up kind for Occupation
         private _opTasksMin = (parseNumber format ["%1", _logic getVariable ["opTasksMin", 0]]) max 0;
         private _opTasksMax = (parseNumber format ["%1", _logic getVariable ["opTasksMax", 0]]) max 0;
+        // Tasks Only Against Known Enemy (A. Ares on Discord, 21 Oct): those tasks aim only at what this commander has
+        // found, so they don't give hidden positions away; off by default
+        private _opTasksKnownOnly = (toLower format ["%1", _logic getVariable ["opTasksKnownOnly", "false"]]) in ["true", "1"];
         // Phase 4: faction sources, all unioned below.
         //   factions       : multi-select listbox (primary UX,
         //                    ORIGINAL property so old `factions`
@@ -409,6 +412,7 @@ switch (_operation) do {
             ["prepTimeout", _prepTimeout],
             ["opTasksMin", _opTasksMin],
             ["opTasksMax", _opTasksMax],
+            ["opTasksKnownOnly", _opTasksKnownOnly],
             ["roadblocks", _roadblocks],
             ["insTypes", _insTypes],
             ["drugLabs", _drugLabs],
@@ -4381,6 +4385,13 @@ switch (_operation) do {
         } foreach _controlledProfileIDs;
 
         if (_publishResult) then {
+            // remembered for Tasks Only Against Known Enemy: [id, last seen position, when], so what was spotted
+            // stays known for a while after it goes out of sight, whether or not C2ISTAR shows intel
+            if ([_logic, "opTasksKnownOnly", false] call ALiVE_fnc_HashGet) then {
+                private _seen = [_logic, "knownSeen"] call ALiVE_fnc_HashGet;
+                if (isNil "_seen") then { _seen = createHashMap; [_logic, "knownSeen", _seen] call ALiVE_fnc_HashSet };
+                { _seen set [_x select 0, [_x select 1, time]] } forEach _knownEntities;
+            };
             private _knownEntitiesIds = _knownEntities apply {_x select 0};
             [_logic,"createSpotrepForProfiles",_knownEntitiesIds] call MAINCLASS;
             [_logic,"knownentities",_knownEntities] call ALiVE_fnc_HashSet;
@@ -4710,11 +4721,15 @@ switch (_operation) do {
         // up to 3 of each, aircraft and boats left out
         private _empl = [];
         private _vehs = [];
+        // Tasks Only Against Known Enemy: only the vehicles whose crews this commander has spotted
+        private _knownOnly = [_logic, "opTasksKnownOnly", false] call ALiVE_fnc_HashGet;
+        private _known = if (_knownOnly) then { [_logic, "knownEnemy"] call ALiVE_fnc_OPCOM } else { [[], []] };
         {
             {
                 private _cls = [_x, "vehicleClass", ""] call ALiVE_fnc_HashGet;
                 private _id = [_x, "profileID", ""] call ALiVE_fnc_HashGet;
-                if (_cls != "" && {_id != ""} && {!(_cls isKindOf "Air")} && {!(_cls isKindOf "Ship")}) then {
+                if (_cls != "" && {_id != ""} && {!(_cls isKindOf "Air")} && {!(_cls isKindOf "Ship")}
+                    && {!_knownOnly || {[_logic, "knownVehicle", [_x, _known]] call ALiVE_fnc_OPCOM}}) then {
                     if (_cls isKindOf "StaticMortar" || {_cls isKindOf "StaticAAWeapon"}
                         || {getText (configFile >> "CfgVehicles" >> _cls >> "editorSubcategory") == "EdSubcat_AAs"}) then {
                         if (count _empl < 3) then { _empl pushBack _id };
@@ -4729,11 +4744,16 @@ switch (_operation) do {
         // an insurgent installation within 2 km (recruitment HQ, arms cache or IED factory)
         if (!isNil "ALIVE_fnc_taskGetInsurgencyLocation") then {
             private _found = false;
+            // with Tasks Only Against Known Enemy, only the side holding the objective: the task looks for that side's
+            // nearest installation, so that's the one that has to be known
+            private _insSides = _sidesEnemy;
+            if (_knownOnly) then { _insSides = [[[(_enemyFaction call ALiVE_fnc_factionSide)] call ALIVE_fnc_sideObjectToNumber] call ALIVE_fnc_sideNumberToText] };
             {
                 private _ins = [_center, "Map", _x] call ALIVE_fnc_taskGetInsurgencyLocation;
                 if (!_found && {_ins isEqualType []} && {count _ins > 1} && {(_ins select 1) isEqualType []} && {count (_ins select 1) >= 2}
-                    && {((_ins select 1) distance2D _center) < 2000}) then { _found = true };
-            } forEach _sidesEnemy;
+                    && {((_ins select 1) distance2D _center) < 2000}
+                    && {!_knownOnly || {[_logic, "knownPlace", [_ins select 1, _known]] call ALiVE_fnc_OPCOM}}) then { _found = true };
+            } forEach _insSides;
             if (_found) then { _kinds pushBack ["InsurgencyDestroyAssets", [], "insurgent installation"] };
         };
         // how many: 0 and 0 keep the wiretap alone; otherwise between the fewest and the most, no more than there are kinds
@@ -4768,6 +4788,61 @@ switch (_operation) do {
         [_logic, "opRadio", format ["The operation at %1 is not ready until the preparations are complete. %2 issued.", _place,
             [format ["%1 tasks", count _ids], "1 task"] select (count _ids == 1)]] call ALiVE_fnc_OPCOM;
         _result = false;
+    };
+
+    // What this commander knows of the enemy (A. Ares on Discord, 21 Oct), for Tasks Only Against Known Enemy:
+    // [entity profile IDs, their last known positions], from what its units have seen in the last 30 minutes, its spot
+    // reports (when C2ISTAR shows intel) and the groups its units can see now
+    case "knownEnemy": {
+        private _ids = [];
+        private _pos = [];
+        private _seen = [_logic, "knownSeen"] call ALiVE_fnc_HashGet;
+        if (!isNil "_seen") then {
+            {
+                if (time - (_y select 1) > 1800) then { _seen deleteAt _x } else { _ids pushBack _x; _pos pushBack (_y select 0) };
+            } forEach +_seen;
+        };
+        private _G2 = [_logic, "G2"] call ALiVE_fnc_HashGet;
+        if (!isNil "_G2") then {
+            private _reports = _G2 getVariable ["spotrepsByProfileID", createHashMap];
+            {
+                if !(_x in _ids) then {
+                    _ids pushBack _x;
+                    _pos pushBack (_y getOrDefault ["position", [0,0,0]]);
+                };
+            } forEach _reports;
+        };
+        {
+            if (_x isEqualType [] && {count _x > 1} && {!((_x select 0) in _ids)}) then {
+                _ids pushBack (_x select 0);
+                _pos pushBack (_x select 1);
+            };
+        } forEach ([_logic, "knownentities", []] call ALiVE_fnc_HashGet);
+        _result = [_ids, _pos];
+    };
+
+    // [vehicle profile, knownEnemy's answer]: true when a group crewing it has been seen, or it stands within 100 m of
+    // where a seen group was (they saw the gun, not just the gunners: an empty or uncrewed one too)
+    case "knownVehicle": {
+        _args params ["_vehicle", "_known"];
+        private _crew = [_vehicle, "entitiesInCommandOf", []] call ALiVE_fnc_HashGet;
+        _result = (_crew findIf { _x in (_known select 0) }) > -1;
+        if (!_result) then {
+            private _vp = [_vehicle, "position", []] call ALiVE_fnc_HashGet;
+            if (_vp isEqualType [] && {count _vp > 1}) then {
+                _result = ((_known select 1) findIf { _x isEqualType [] && {count _x > 1} && {(_x distance2D _vp) < 100} }) > -1;
+            };
+        };
+    };
+
+    // [position, knownEnemy's answer]: true when the commander can know what is at a place: a spotted enemy group was
+    // last seen within 300 m of it, or one of its own groups is within 500 m (as close as its units see, scanning)
+    case "knownPlace": {
+        _args params ["_place", "_known"];
+        _result = ((_known select 1) findIf { _x isEqualType [] && {count _x > 1} && {(_x distance2D _place) < 300} }) > -1;
+        if (!_result) then {
+            _result = ([_place, 500, [[_logic, "side", "WEST"] call ALiVE_fnc_HashGet, "entity"]] call ALIVE_fnc_getNearProfiles) isNotEqualTo [];
+        };
     };
 
     // a radio call to the commander's side from its HQ (The Horny Latino on Discord, 20 Oct); the last one sent is kept
@@ -4812,6 +4887,25 @@ switch (_operation) do {
                 _types = _types select { (toUpper _x) in _families };
             };
         };
+        // Tasks Only Against Known Enemy (A. Ares on Discord, 21 Oct): the vehicles to destroy are the spotted ones round
+        // the objective, up to 3, and with none that task isn't given (left to itself it picks the nearest enemy vehicle,
+        // seen or not). Removing IEDs is left out: its IED is the nearest one the IED module placed, which nobody has seen.
+        // Before the Fewest and Most pick, so it chooses among what can be given
+        private _knownVehs = [];
+        if ([_logic, "opTasksKnownOnly", false] call ALiVE_fnc_HashGet) then {
+            private _known = [_logic, "knownEnemy"] call ALiVE_fnc_OPCOM;
+            private _radius = ([_objective, "size", 150] call ALiVE_fnc_HashGet) max 300;
+            {
+                {
+                    private _id = [_x, "profileID", ""] call ALiVE_fnc_HashGet;
+                    private _cls = [_x, "vehicleClass", ""] call ALiVE_fnc_HashGet;
+                    if (count _knownVehs < 3 && {_id != ""} && {!(_cls isKindOf "Air")} && {!(_cls isKindOf "Ship")}
+                        && {[_logic, "knownVehicle", [_x, _known]] call ALiVE_fnc_OPCOM}) then { _knownVehs pushBack _id };
+                } forEach ([_center, _radius, [_x, "vehicle"]] call ALIVE_fnc_getNearProfiles);
+            } forEach ([_logic, "sidesenemy", []] call ALiVE_fnc_HashGet);
+            _types = _types - ["RemoveIED"];
+            if (_knownVehs isEqualTo []) then { _types = _types - ["DestroyVehicles"] };
+        };
         // Fewest and Most Tasks per Operation pick how many of them (0 and 0: all of them)
         private _lo = [_logic, "opTasksMin", 0] call ALiVE_fnc_HashGet;
         private _hi = [_logic, "opTasksMax", 0] call ALiVE_fnc_HashGet;
@@ -4843,6 +4937,7 @@ switch (_operation) do {
                 private _id = format ["occpause_%1_%2_%3", [_logic,"opcomID",""] call ALiVE_fnc_HashGet, round time, _forEachIndex];
                 private _taskData = [_id, "OPCOM", _sideText, _faction, _x, "Map", +_center,
                     [_players select 1, _players select 0], _enemyFaction, "Y", "Side"];
+                if (_x == "DestroyVehicles" && {_knownVehs isNotEqualTo []}) then { _taskData pushBack _knownVehs };
                 [ALIVE_eventLog, "addEvent", ["TASK_GENERATE", _taskData, "OPCOM"] call ALIVE_fnc_event] call ALIVE_fnc_eventLog;
                 _ids pushBack _id;
             } forEach _types;

@@ -320,6 +320,18 @@ class CfgVehicles {
                                 defaultValue = """0""";
                                 typeName = "NUMBER";
                         };
+                        class opTasksKnownOnly : Combo
+                        {
+                                property = "ALiVE_mil_opcom_opTasksKnownOnly";
+                                displayName = "$STR_ALIVE_OPCOM_OP_TASKS_KNOWN";
+                                tooltip = "$STR_ALIVE_OPCOM_OP_TASKS_KNOWN_COMMENT";
+                                defaultValue = """false""";
+                                class Values
+                                {
+                                        class No  { name = "No";  value = "false"; };
+                                        class Yes { name = "Yes"; value = "true"; };
+                                };
+                        };
                         class HDR_HVT : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_HDR_HVT"; displayName = "HIGH VALUE TARGET"; };
                         class hvt : Combo
                         {

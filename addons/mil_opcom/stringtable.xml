@@ -342,6 +342,12 @@
 <Key ID="STR_ALIVE_OPCOM_OP_TASKS_MAX_COMMENT">
     <English>The most tasks players are given for each operation (see Fewest Tasks per Operation). An operation never gets more than there are kinds of task to give there. Leave both at 0 for the usual number.</English>
 </Key>
+<Key ID="STR_ALIVE_OPCOM_OP_TASKS_KNOWN">
+    <English>Tasks Only Against Known Enemy</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_OP_TASKS_KNOWN_COMMENT">
+    <English>No (the default) aims the preparation and clean-up tasks at what is really at the objective, whether or not anyone has seen it. Yes aims them only at what this commander has found: enemy vehicles and emplacements whose crews its units have seen in the last 30 minutes, and an insurgent installation only once a seen enemy group or one of its own groups has been near it. A kind with nothing known is left out, and so is removing IEDs after a capture, as nobody has seen those. The wiretap is always offered, as gathering intel is the point of it.</English>
+</Key>
 <Key ID="STR_ALIVE_OPCOM_HVT_RESPAWN">
     <English>Replace When Pause Ends</English>
 </Key>
