@@ -11,6 +11,11 @@ class cfgFunctions {
                                 file = "\x\alive\addons\sup_fob\fnc_FOBInit.sqf";
                 ALIVE_RECOMPILE;
                         };
+                        class FOBTypesInit {
+                                description = "The FOB Types module initialisation function";
+                                file = "\x\alive\addons\sup_fob\fnc_FOBTypesInit.sqf";
+                ALIVE_RECOMPILE;
+                        };
                         class fobCap {
                                 description = "How many FOBs a side may have";
                                 file = "\x\alive\addons\sup_fob\fnc_fobCap.sqf";

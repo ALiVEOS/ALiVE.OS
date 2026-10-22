@@ -39,12 +39,12 @@ private _want = _rows apply { "ALiVE_FOB_" + (_x select 0) };
 } forEach (missionNamespace getVariable ["ALiVE_FOB_markers", []]);
 
 {
-    _x params ["_id", "", "_name", "_pos", "_status"];
+    _x params ["_id", "", "_name", "_pos", "_status", "", "", "", "", "", ["_type", ""]];
     private _m = "ALiVE_FOB_" + _id;
-    if (markerType _m == "") then {
-        createMarkerLocal [_m, _pos];
-        _m setMarkerTypeLocal "mil_flag";
-    };
+    if (markerType _m == "") then { createMarkerLocal [_m, _pos] };
+    // its FOB type's marker (FOB Types), a flag for a plain FOB
+    private _icon = ([missionNamespace getVariable ["ALiVE_sup_fob", objNull], "typeSpec", [_type]] call ALiVE_fnc_FOB) param [3, "mil_flag"];
+    if (markerType _m != _icon) then { _m setMarkerTypeLocal _icon };
     _m setMarkerPosLocal _pos;
     _m setMarkerColorLocal _colour;
     _m setMarkerTextLocal _name;

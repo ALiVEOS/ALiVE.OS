@@ -157,8 +157,15 @@ switch (_op) do {
 
     case "deploy": {
         _result = "";
-        _args params [["_kit", objNull, [objNull]], ["_pos", [0,0,0], [[]]], ["_dir", 0, [0]], ["_hubClass", "", [""]]];
+        _args params [["_kit", objNull, [objNull]], ["_pos", [0,0,0], [[]]], ["_dir", 0, [0]], ["_hubClass", "", [""]], ["_type", "", [""]]];
         if (isNull _caller || {!alive _caller}) exitWith {};
+        // the FOB type the player picked: none when the mission has no FOB Types
+        private _types = missionNamespace getVariable ["ALiVE_FOB_types", []];
+        if (_types isEqualTo []) then { _type = "" };
+        private _spec = [_logic, "typeSpec", [_type]] call ALiVE_fnc_FOB;
+        if (_spec isEqualTo [] || {_type == "" && {_types isNotEqualTo []} && {!(missionNamespace getVariable ["ALiVE_FOB_typesGeneral", true])}}) exitWith {
+            ["STR_ALIVE_FOB_REFUSED_TYPE"] call _tell;
+        };
         if !(count _pos in [2, 3] && {(_pos findIf { !(_x isEqualType 0) || {!finite _x} }) < 0} && {finite _dir}) exitWith {};
         private _side = str (side group _caller);
         if !(_side in ["WEST", "EAST", "GUER"]) exitWith { ["STR_ALIVE_FOB_REFUSED_SIDE"] call _tell };
@@ -177,6 +184,12 @@ switch (_op) do {
         if !(["canDeploy", [_side]] call ALiVE_fnc_fobCap) exitWith {
             ["STR_ALIVE_FOB_REFUSED_CAP", [["capForSide", [_side]] call ALiVE_fnc_fobCap]] call _tell;
         };
+        if !([_logic, "mayDeployType", [_caller, _type]] call ALiVE_fnc_FOB) exitWith {
+            ["STR_ALIVE_FOB_REFUSED_TYPE_WHO", [_spec select 1]] call _tell;
+        };
+        if !(["canDeployType", [_side, _type]] call ALiVE_fnc_fobCap) exitWith {
+            ["STR_ALIVE_FOB_REFUSED_TYPE_CAP", [_spec select 1, _spec select 11]] call _tell;
+        };
 
         private _minDist = [_logic, "attribute", ["fob_min_distance"]] call ALiVE_fnc_FOB;
         private _near = (ALiVE_FOB_registry select 1) findIf {
@@ -185,12 +198,20 @@ switch (_op) do {
         if (_near > -1) exitWith { ["STR_ALIVE_FOB_REFUSED_DISTANCE", [_minDist]] call _tell };
 
         private _id = [_logic, "nextID", [_side]] call ALiVE_fnc_FOB;
-        private _entry = [_logic, "newEntry", [_id, _side, faction _caller, _pos, _dir, _hubClass]] call ALiVE_fnc_FOB;
+        private _entry = [_logic, "newEntry", [_id, _side, faction _caller, _pos, _dir, _hubClass, _type]] call ALiVE_fnc_FOB;
         [_entry, "deployedBy", getPlayerUID _caller] call ALIVE_fnc_hashSet;
         [_logic, "registrySet", [_id, _entry]] call ALiVE_fnc_FOB;
 
+        // a type's cost: from the faction's force pool, or out of the new FOB's starting supply
+        private _typeCost = _spec select 10;
+        if (_typeCost > 0 && {!(["debit", [_id, _typeCost, "FOB type " + _type]] call ALiVE_fnc_fobSupply)}) exitWith {
+            [_logic, "registryRemove", [_id]] call ALiVE_fnc_FOB;
+            ["STR_ALIVE_FOB_REFUSED_TYPE_COST", [_spec select 1, _typeCost]] call _tell;
+        };
+
         private _hub = ["spawnHub", [_id]] call ALiVE_fnc_fobOps;
         if (isNull _hub) exitWith {
+            if (_typeCost > 0) then { ["credit", [_id, _typeCost, "refund FOB type " + _type]] call ALiVE_fnc_fobSupply };
             [_logic, "registryRemove", [_id]] call ALiVE_fnc_FOB;
             ["STR_ALIVE_FOB_REFUSED_SPOT"] call _tell;
         };
@@ -335,6 +356,15 @@ switch (_op) do {
         _result = 0;
         {
             private _e = [ALiVE_FOB_registry, _x] call ALIVE_fnc_hashGet;
+            // a FOB of a type the mission no longer has (or saved before FOBs had types) is a plain FOB
+            private _t = [_e, "type", ""] call ALIVE_fnc_hashGet;
+            if !(_t isEqualType "") then { _t = "" };
+            if (_t != "" && {([_logic, "typeSpec", [_t]] call ALiVE_fnc_FOB) isEqualTo []}) then {
+                ["ALiVE Player FOBs - %1 (%2) was a %3, a type this mission doesn't have; it's a plain FOB now", _x, [_e, "name", ""] call ALIVE_fnc_hashGet, _t] call ALiVE_fnc_dump;
+                _t = "";
+                ALiVE_FOB_dirty = true;
+            };
+            [_e, "type", _t] call ALIVE_fnc_hashSet;
             // a damaged FOB comes back damaged, its headquarters still down
             private _hub = if (([_e, "status", ""] call ALIVE_fnc_hashGet) == "damaged") then { objNull } else { ["spawnHub", [_x]] call ALiVE_fnc_fobOps };
             ["reconcile", [_x]] call ALiVE_fnc_fobObjectives;
@@ -440,6 +470,10 @@ switch (_op) do {
 
         private _row = (missionNamespace getVariable ["ALiVE_FOB_catalog", []]) select { (_x select 0) == _class };
         if (_row isEqualTo []) exitWith { ["STR_ALIVE_FOB_REFUSED_NOTBUILDABLE"] call _tell };
+        // a FOB type's build list: its removals never, another type's extras only there
+        if !([_logic, "typeAllows", [[_entry, "type", ""] call ALIVE_fnc_hashGet, _class]] call ALiVE_fnc_FOB) exitWith {
+            ["STR_ALIVE_FOB_REFUSED_TYPE_ITEM", [[_entry, "name", ""] call ALIVE_fnc_hashGet]] call _tell;
+        };
         (_row select 0) params ["", "_name", "_kind", "_cost", "", ["_tierMin", 1]];
         if (([_entry, "tier", 1] call ALIVE_fnc_hashGet) < _tierMin) exitWith { ["STR_ALIVE_FOB_REFUSED_TIER", [_tierMin]] call _tell };
         private _isStatic = _kind == "STATIC";

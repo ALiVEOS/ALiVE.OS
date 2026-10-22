@@ -6,7 +6,7 @@ class CfgVehicles {
     };
     class ModuleAliveBase : Module_F
     {
-        class AttributesBase : AttributesBase { class ALiVE_ModuleSubTitle; };
+        class AttributesBase : AttributesBase { class ALiVE_ModuleSubTitle; class ALiVE_EditMultilineSQF; };
         class ModuleDescription;
     };
         // Player FOBs (#882, #693): forward bases players deploy, build up and keep supplied, which
@@ -166,6 +166,50 @@ class CfgVehicles {
                 class ModuleDescription
                 {
                         description[] = {"$STR_ALIVE_FOB_COMMENT","","$STR_ALIVE_FOB_USAGE"};
+                };
+        };
+        // FOB Types (NeisAEL on Discord, 20 Oct): synced to Player FOBs, a kit can become one of
+        // these types. Player FOBs reads it at start (ALiVE_fnc_FOB "typesParse").
+        class ALiVE_sup_fob_types : ModuleAliveBase
+        {
+                scope = 2;
+                displayName = "$STR_ALIVE_FOB_TYPES";
+                function = "ALIVE_fnc_FOBTypesInit";
+                author = MODULE_AUTHOR;
+                // before Player FOBs (195), which reads it
+                functionPriority = 194;
+                isGlobal = 2;
+                icon = "x\alive\addons\sup_fob\icon_sup_fob.paa";
+                picture = "x\alive\addons\sup_fob\icon_sup_fob.paa";
+                class Attributes : AttributesBase
+                {
+                        class HDR_TYPES : ALiVE_ModuleSubTitle { property = "ALiVE_sup_fob_types_HDR_TYPES"; displayName = "FOB TYPES"; };
+                        class fob_types_link : Default { property = "ALiVE_sup_fob_types_fob_types_link"; displayName = "$STR_ALIVE_FOB_TYPES"; tooltip = "$STR_ALIVE_FOB_TYPES_OPEN_COMMENT"; control = "ALiVE_FOBTypesLink"; typeName = "STRING"; defaultValue = "''"; };
+                        class fob_types : ALiVE_EditMultilineSQF
+                        {
+                                property = "ALiVE_sup_fob_types_fob_types";
+                                displayName = "$STR_ALIVE_FOB_TYPES_LIST";
+                                tooltip = "$STR_ALIVE_FOB_TYPES_LIST_COMMENT";
+                                defaultValue = """""";
+                        };
+                        class fob_types_general : Combo
+                        {
+                                property = "ALiVE_sup_fob_types_fob_types_general";
+                                displayName = "$STR_ALIVE_FOB_TYPES_GENERAL";
+                                tooltip = "$STR_ALIVE_FOB_TYPES_GENERAL_COMMENT";
+                                defaultValue = """true""";
+                                class Values
+                                {
+                                    class Yes { name = "$STR_ALIVE_FOB_YES"; value = true; default = 1; };
+                                    class No { name = "$STR_ALIVE_FOB_NO"; value = false; };
+                                };
+                        };
+                        class ModuleDescription : ModuleDescription {};
+                };
+                class ModuleDescription
+                {
+                        description[] = {"$STR_ALIVE_FOB_TYPES_COMMENT","","$STR_ALIVE_FOB_TYPES_USAGE"};
+                        sync[] = {"ALiVE_sup_fob"};
                 };
         };
         // A FOB kit and a supply crate players can order from the Player Resupply tablet, or a

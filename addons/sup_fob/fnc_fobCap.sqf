@@ -111,6 +111,20 @@ switch (_operation) do {
         _result = count ([_logic, "registryIDs", [_side]] call ALiVE_fnc_FOB);
     };
 
+    // A FOB type's own limit (FOB Types' cap, 0 for none), on top of the side's
+    case "countForType": {
+        _args params [["_side", "WEST", [""]], ["_type", "", [""]]];
+        _result = {
+            ([[ALiVE_FOB_registry, _x] call ALIVE_fnc_hashGet, "type", ""] call ALIVE_fnc_hashGet) == _type
+        } count ([_logic, "registryIDs", [_side]] call ALiVE_fnc_FOB);
+    };
+
+    case "canDeployType": {
+        _args params [["_side", "WEST", [""]], ["_type", "", [""]]];
+        private _cap = ([_logic, "typeSpec", [_type]] call ALiVE_fnc_FOB) param [11, 0];
+        _result = _type == "" || {_cap <= 0} || {(["countForType", [_side, _type]] call ALiVE_fnc_fobCap) < _cap};
+    };
+
     case "canDeploy": {
         _args params [["_side", "WEST", [""]]];
         _result = (["countForSide", [_side]] call ALiVE_fnc_fobCap) < (["capForSide", [_side]] call ALiVE_fnc_fobCap);

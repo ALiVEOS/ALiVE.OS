@@ -82,9 +82,13 @@ switch (_operation) do {
         // when it has none)
         private _side = str (side group player);
         private _allowed = ((missionNamespace getVariable ["ALiVE_FOB_sideFactions", []]) select { (_x select 0) == _side }) param [0, ["", []]] select 1;
+        // and only what this FOB's type may build (FOB Types)
+        private _logic = missionNamespace getVariable ["ALiVE_sup_fob", objNull];
+        private _type = (call _fnc_fob) param [10, ""];
         private _rows = (missionNamespace getVariable ["ALiVE_FOB_catalog", []]) select {
             (_x select 2) == _kind && {!(_kind in ["STATIC", "VEHICLE"])
                 || {[(_x param [6, ""]) == _side, (_x param [7, ""]) in _allowed] select (_allowed isNotEqualTo [])}}
+                && {[_logic, "typeAllows", [_type, _x select 0]] call ALiVE_fnc_FOB}
         };
         // cheapest first, then by name
         private _keys = [];

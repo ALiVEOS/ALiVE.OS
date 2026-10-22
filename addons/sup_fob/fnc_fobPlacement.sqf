@@ -157,9 +157,31 @@ switch (_operation) do {
             player addAction [(localize "STR_ALIVE_FOB_ACTION_ROTATE") call ALiVE_fnc_actionTitle, { ["rotate"] call ALiVE_fnc_fobPlacement }, nil, 9.9, false, false, "", "ALiVE_FOB_placing"],
             player addAction [(localize "STR_ALIVE_FOB_ACTION_CANCEL") call ALiVE_fnc_actionTitle, { ["cancel"] call ALiVE_fnc_fobPlacement }, nil, 9.8, false, true, "", "ALiVE_FOB_placing"]
         ];
+        // a mission with FOB types steps through the ones this player may deploy, and the
+        // deploy action names the one shown
+        if (_kind == "DEPLOY" && {(missionNamespace getVariable ["ALiVE_FOB_types", []]) isNotEqualTo []}) then {
+            private _offer = ["typeOffer"] call ALiVE_fnc_fobActions;
+            private _ids = _offer apply { _x select 0 };
+            private _at = _ids find (missionNamespace getVariable ["ALiVE_FOB_deployType", ""]);
+            private _spec = _offer param [_at, ["", "FOB", "", "", [], [], [], "", "", "", 0]];
+            // a cost comes off the force pool in Force Pool mode, else off the new FOB's own starting supply
+            private _source = (missionNamespace getVariable ["ALiVE_sup_fob", objNull]) getVariable ["fob_supply_source", "FOBPOOL"];
+            if !(_source isEqualType "") then { _source = str _source };
+            private _title = switch (true) do {
+                case ((_spec select 10) <= 0): { format [localize "STR_ALIVE_FOB_ACTION_DEPLOY_TYPE_FREE", _spec select 1] };
+                case (toUpper _source == "FORCEPOOL"): { format [localize "STR_ALIVE_FOB_ACTION_DEPLOY_TYPE", _spec select 1, _spec select 10] };
+                default { format [localize "STR_ALIVE_FOB_ACTION_DEPLOY_TYPE_SUPPLY", _spec select 1, _spec select 10] };
+            };
+            player setUserActionText [ALiVE_FOB_placeActions select 0, _title call ALiVE_fnc_actionTitle];
+            if (count _offer > 1) then {
+                private _next = _offer select ((_at + 1) mod (count _offer));
+                ALiVE_FOB_placeActions pushBack (player addAction [(format [localize "STR_ALIVE_FOB_ACTION_NEXT_TYPE", _next select 1, _at + 1, count _offer]) call ALiVE_fnc_actionTitle,
+                    { ["nextType"] call ALiVE_fnc_fobActions }, nil, 9.86, false, true, "", "ALiVE_FOB_placing"]);
+            };
+        };
         // a side with several headquarters buildings steps through them before deploying
         if (_kind == "DEPLOY") then {
-            private _hubs = [missionNamespace getVariable ["ALiVE_sup_fob", objNull], "hubChoices", [str (side group player)]] call ALiVE_fnc_FOB;
+            private _hubs = [missionNamespace getVariable ["ALiVE_sup_fob", objNull], "hubChoicesFor", [str (side group player), missionNamespace getVariable ["ALiVE_FOB_deployType", ""]]] call ALiVE_fnc_FOB;
             if (count _hubs > 1) then {
                 private _at = _hubs find _class;
                 private _next = _hubs select ((_at + 1) mod (count _hubs));
@@ -184,7 +206,7 @@ switch (_operation) do {
         private _deploying = (_row select 2) == "DEPLOY";
         if !(_ok) exitWith { [localize "STR_ALIVE_FOB", format ([localize (_why select 0)] + (_why select 1)), true] call ALIVE_fnc_sendHint };
         call _fnc_stop;
-        if (_deploying) exitWith { ["deploy", [_kit, _pos, _dir, _row select 0]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] };
+        if (_deploying) exitWith { ["deploy", [_kit, _pos, _dir, _row select 0, missionNamespace getVariable ["ALiVE_FOB_deployType", ""]]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] };
         // the height as ASL: the server looks for a surface there itself rather than taking it on trust
         ["build", [_row select 0, ATLToASL _pos, _dir, _fob select 0]] remoteExecCall ["ALiVE_fnc_fobRequest", 2];
     };

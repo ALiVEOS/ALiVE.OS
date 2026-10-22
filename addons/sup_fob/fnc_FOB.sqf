@@ -35,6 +35,12 @@ registryRemove - [id] remove an entry
 registryIDs - [side string or ""] the ids, for one side or all
 markDirty - flag that the FOBs need saving
 broadcastMirror - send every player the plain copy
+typesParse / typesReload - read the synced FOB Types module's list into ALiVE_FOB_types
+typeSpec - [type id] that type's row ("" the plain FOB, [] none such)
+types - the types a kit can become
+hubChoicesFor - [side, type id] the headquarters buildings for that type
+typeAllows - [type id, class] whether a FOB of that type may build it
+mayDeployType - [unit, type id] whether that player may deploy that type
 
 Examples:
 (begin example)
@@ -149,6 +155,16 @@ switch (_operation) do {
             if ([_logic, "attribute", ["fob_debug"]] call MAINCLASS) then {
                 ["ALiVE Player FOBs - settings: %1", (keys _settings) apply { [_x, _logic getVariable ["ALiVE_FOB_set_" + _x, "?"]] }] call ALiVE_fnc_dump;
             };
+
+            // FOB types (NeisAEL on Discord, 20 Oct): a FOB Types module synced to this one. None
+            // synced and every FOB is the plain FOB it always was.
+            private _typeMods = (synchronizedObjects _logic) select { (typeOf _x) == "ALiVE_sup_fob_types" };
+            if (count _typeMods > 1) then { ["ALiVE Player FOBs - %1 FOB Types modules are synced to Player FOBs; only the first is used", count _typeMods] call ALiVE_fnc_dumpR };
+            {
+                if !(_x in _typeMods) then { ["ALiVE Player FOBs - a FOB Types module isn't synced to Player FOBs, so it does nothing"] call ALiVE_fnc_dumpR };
+            } forEach (allMissionObjects "ALiVE_sup_fob_types");
+            _logic setVariable ["ALiVE_FOB_typesModule", _typeMods param [0, objNull]];
+            [_logic, "typesParse"] call MAINCLASS;
 
             // The rest waits for what it reads: the Virtual AI System, the AI Commanders and
             // Military Logistics all finish starting after their own init returns. A large mission
@@ -316,6 +332,15 @@ switch (_operation) do {
         if (isNull _unit) exitWith {};
         if ([_logic, "isAdmin", [_unit]] call MAINCLASS) exitWith { _result = true };
         ([_logic, "manageRules"] call MAINCLASS) params ["_rules", "_names"];
+        _result = [_logic, "mayWho", [_unit, _rules, _names, _deployer]] call MAINCLASS;
+    };
+
+    // Whether rules in the Who Can Dismantle form (SIDE, LEADER, DEPLOYER, LIST and a names list)
+    // let a player in. No admin test: the callers make that.
+    case "mayWho": {
+        _args params [["_unit", objNull, [objNull]], ["_rules", "", [""]], ["_names", "", [""]], ["_deployer", "", [""]]];
+        _result = false;
+        if (isNull _unit) exitWith {};
         private _who = (toUpper _rules) splitString "[]""', ";
         // leading a group with another player in it: anyone alone in a group of their own leads it
         private _leads = leader group _unit isEqualTo _unit && {(units group _unit) findIf { isPlayer _x && {_x != _unit} } > -1};
@@ -357,6 +382,169 @@ switch (_operation) do {
         };
     };
 
+    // The FOB Types module's list, read once at start (and by typesReload): one type per line, or
+    // types separated by |, each a set of key=value pairs separated by ; in any order. Published
+    // as ALiVE_FOB_types, one row per type:
+    // [id, name, prefix, marker, hubs, extras, removals, role, who, names, cost, cap]
+    case "typesParse": {
+        private _tm = _logic getVariable ["ALiVE_FOB_typesModule", objNull];
+        private _raw = if (isNull _tm) then { "" } else { _tm getVariable ["fob_types", ""] };
+        if !(_raw isEqualType "") then { _raw = "" };
+        private _general = if (isNull _tm) then { true } else { _tm getVariable ["fob_types_general", true] };
+        if (_general isEqualType "") then { _general = toLower _general != "false" };
+        if !(_general isEqualType true) then { _general = true };
+        private _okChars = "abcdefghijklmnopqrstuvwxyz0123456789_";
+        private _rows = [];
+        {
+            private _line = trim _x;
+            if (_line != "" && {(_line select [0, 2]) != "//"}) then {
+                private _h = createHashMap;
+                {
+                    private _at = _x find "=";
+                    if (_at > 0) then { _h set [toLower trim (_x select [0, _at]), trim (_x select [_at + 1])] };
+                } forEach (_line splitString ";");
+                private _name = (_h getOrDefault ["name", ""]) select [0, 24];
+                private _id = toLower (_h getOrDefault ["id", _name]);
+                _id = (_id splitString "") apply { [_x, "_"] select ((_okChars find _x) < 0) } joinString "";
+                if (_name == "") then { _name = _id };
+                switch (true) do {
+                    case (_id == "" || {_id == "general"}): {
+                        ["ALiVE Player FOBs - FOB Types: the type '%1' has no usable id (general is kept for the plain FOB); left out", _line] call ALiVE_fnc_dumpR;
+                    };
+                    case ((_rows findIf { (_x select 0) == _id }) >= 0): {
+                        ["ALiVE Player FOBs - FOB Types: two types have the id %1; only the first is used", _id] call ALiVE_fnc_dumpR;
+                    };
+                    default {
+                        private _prefix = (_h getOrDefault ["prefix", "FOB"]) select [0, 8];
+                        if (_prefix == "") then { _prefix = "FOB" };
+                        private _marker = _h getOrDefault ["marker", ""];
+                        if (_marker == "" || {!isClass (configFile >> "CfgMarkers" >> _marker)}) then {
+                            if (_marker != "") then { ["ALiVE Player FOBs - FOB Types: %1's marker %2 isn't a map marker in this game; using a flag", _id, _marker] call ALiVE_fnc_dumpR };
+                            _marker = "mil_flag";
+                        };
+                        private _hubs = (_h getOrDefault ["hubs", ""]) splitString ", ";
+                        {
+                            ["ALiVE Player FOBs - FOB Types: %1's headquarters %2 isn't in this game; left out", _id, _x] call ALiVE_fnc_dumpR;
+                        } forEach (_hubs select { !isClass (configFile >> "CfgVehicles" >> _x) });
+                        _hubs = _hubs select { isClass (configFile >> "CfgVehicles" >> _x) };
+                        private _plus = [];
+                        private _minus = [];
+                        {
+                            switch (_x select [0, 1]) do {
+                                case "-": { _minus pushBackUnique toLower (_x select [1]) };
+                                case "+": { _plus pushBackUnique toLower (_x select [1]) };
+                                default { _plus pushBackUnique toLower _x };
+                            };
+                        } forEach ((_h getOrDefault ["build", ""]) splitString ", ");
+                        _plus = _plus - [""]; _minus = _minus - [""];
+                        private _role = toLower (_h getOrDefault ["role", "none"]);
+                        if !(_role in ["none", "fire_base", "logistics", "medical", "patrol_base"]) then { _role = "none" };
+                        // who: SIDE, LEADER or LIST; anything else is said, and none left means SIDE,
+                        // so a typo never hides a type from everyone
+                        private _words = (toUpper (_h getOrDefault ["who", "SIDE"])) splitString "[]""', ";
+                        {
+                            ["ALiVE Player FOBs - FOB Types: %1's who has %2, which isn't SIDE, LEADER or LIST; left out", _id, _x] call ALiVE_fnc_dumpR;
+                        } forEach (_words - ["SIDE", "LEADER", "LIST"]);
+                        _words = _words arrayIntersect ["SIDE", "LEADER", "LIST"];
+                        if (_words isEqualTo []) then {
+                            if ((_h getOrDefault ["who", ""]) != "") then { ["ALiVE Player FOBs - FOB Types: %1 names nobody who may deploy it; anyone on the side may", _id] call ALiVE_fnc_dumpR };
+                            _words = ["SIDE"];
+                        };
+                        private _who = _words joinString ",";
+                        private _cost = (parseNumber (_h getOrDefault ["cost", "0"])) max 0;
+                        private _cap = ((round parseNumber (_h getOrDefault ["cap", "0"])) max 0) min 12;
+                        _rows pushBack [_id, _name, _prefix, _marker, _hubs, _plus, _minus, _role, _who, _h getOrDefault ["list", ""], _cost, _cap];
+                    };
+                };
+            };
+        } forEach (_raw splitString (toString [10, 13] + "|"));
+        if (!isNull _tm && {_rows isEqualTo []}) then {
+            ["ALiVE Player FOBs - FOB Types is synced but lists no usable type; every FOB is a plain FOB"] call ALiVE_fnc_dumpR;
+        };
+        // in the FOB's own supply a type cost more than a new FOB starts with can never be paid
+        if (([_logic, "attribute", ["fob_supply_source"]] call MAINCLASS) != "FORCEPOOL") then {
+            private _start = [_logic, "attribute", ["fob_supply_initial"]] call MAINCLASS;
+            {
+                if ((_x select 10) > _start) then {
+                    ["ALiVE Player FOBs - FOB Types: %1 costs %2 but a new FOB starts with %3 supply, so it can never be deployed", _x select 0, _x select 10, _start] call ALiVE_fnc_dumpR;
+                };
+            } forEach _rows;
+        };
+        ALiVE_FOB_types = _rows;
+        ALiVE_FOB_typesGeneral = _general || {_rows isEqualTo []};
+        publicVariable "ALiVE_FOB_types";
+        publicVariable "ALiVE_FOB_typesGeneral";
+        if (_rows isNotEqualTo []) then {
+            ["ALiVE Player FOBs - FOB types: %1%2", _rows apply { _x select 0 }, ["", " and the plain FOB"] select ALiVE_FOB_typesGeneral] call ALiVE_fnc_dump;
+        };
+        _result = count _rows;
+    };
+
+    // The FOB Types module's list read again, for a probe. Only the list: an extra it adds isn't in
+    // the build catalog until the next start, and FOBs keep the type they have until then.
+    case "typesReload": {
+        _result = [_logic, "typesParse"] call MAINCLASS;
+    };
+
+    // A type's row: "" is the plain FOB; [] for a type the mission doesn't have. Works on any machine.
+    case "typeSpec": {
+        _args params [["_id", "", [""]]];
+        _result = if (_id == "") then {
+            ["", localize "STR_ALIVE_FOB_TYPE_GENERAL", "FOB", "mil_flag", [], [], [], "none", "SIDE", "", 0, 0]
+        } else {
+            private _types = missionNamespace getVariable ["ALiVE_FOB_types", []];
+            _types param [_types findIf { (_x select 0) == _id }, []]
+        };
+    };
+
+    // The types a FOB kit can become, plain FOB first when it's offered. Works on any machine.
+    case "types": {
+        private _types = missionNamespace getVariable ["ALiVE_FOB_types", []];
+        _result = +_types;
+        if (_types isEqualTo [] || {missionNamespace getVariable ["ALiVE_FOB_typesGeneral", true]}) then {
+            _result = [[_logic, "typeSpec", [""]] call MAINCLASS] + _result;
+        };
+    };
+
+    // The headquarters buildings for a type: its own, else the side's (hubChoices)
+    case "hubChoicesFor": {
+        _args params [["_side", "WEST", [""]], ["_type", "", [""]]];
+        private _spec = [_logic, "typeSpec", [_type]] call MAINCLASS;
+        _result = (_spec param [4, []]) select { isClass (configFile >> "CfgVehicles" >> _x) };
+        if (_result isEqualTo []) then { _result = [_logic, "hubChoices", [_side]] call MAINCLASS };
+    };
+
+    // Whether a FOB of a type may build a class: a type's removals never, its extras always, and an
+    // extra only a type brings (one the catalog didn't have anyway, ALiVE_FOB_typeOnly) only at the
+    // types that list it. With no types, everything. Works on any machine.
+    case "typeAllows": {
+        _args params [["_type", "", [""]], ["_class", "", [""]]];
+        private _types = missionNamespace getVariable ["ALiVE_FOB_types", []];
+        _result = true;
+        if (_types isEqualTo []) exitWith {};
+        private _c = toLower _class;
+        private _spec = [_logic, "typeSpec", [_type]] call MAINCLASS;
+        if (_spec isEqualTo []) then { _spec = [_logic, "typeSpec", [""]] call MAINCLASS };
+        if (_c in (_spec select 6)) exitWith { _result = false };
+        if (_c in (_spec select 5)) exitWith {};
+        // before the build scan has run every extra counts as a type's own
+        private _typeOnly = missionNamespace getVariable ["ALiVE_FOB_typeOnly", nil];
+        _result = if (isNil "_typeOnly") then { (_types findIf { _c in (_x select 5) }) < 0 } else { !(_c in _typeOnly) };
+    };
+
+    // Whether a player may deploy a type: an admin always, the plain FOB anyone, a type by its own
+    // who and names (The Player Who Deployed It means nothing before there is a FOB)
+    case "mayDeployType": {
+        _args params [["_unit", objNull, [objNull]], ["_type", "", [""]]];
+        _result = false;
+        if (isNull _unit) exitWith {};
+        if (_type == "" || {[_logic, "isAdmin", [_unit]] call MAINCLASS}) exitWith { _result = true };
+        private _spec = [_logic, "typeSpec", [_type]] call MAINCLASS;
+        if (_spec isEqualTo []) exitWith {};
+        private _rules = (((_spec select 8) splitString "[]""', ") - ["DEPLOYER"]) joinString ",";
+        _result = [_logic, "mayWho", [_unit, _rules, _spec select 9, "~"]] call MAINCLASS;
+    };
+
     case "nextID": {
         _args params [["_side", "WEST", [""]]];
         ALiVE_FOB_counter = ALiVE_FOB_counter + 1;
@@ -365,9 +553,11 @@ switch (_operation) do {
 
     // A new entry, every key present so readers never meet a missing field
     case "newEntry": {
-        _args params [["_id", "", [""]], ["_side", "WEST", [""]], ["_faction", "", [""]], ["_pos", [0,0,0], [[]]], ["_dir", 0, [0]], ["_hub", "", [""]]];
-        // the building the player chose, if it's one this side may deploy; else the side's first
-        private _hubs = [_logic, "hubChoices", [_side]] call MAINCLASS;
+        _args params [["_id", "", [""]], ["_side", "WEST", [""]], ["_faction", "", [""]], ["_pos", [0,0,0], [[]]], ["_dir", 0, [0]], ["_hub", "", [""]], ["_type", "", [""]]];
+        private _spec = [_logic, "typeSpec", [_type]] call MAINCLASS;
+        if (_spec isEqualTo []) then { _type = ""; _spec = [_logic, "typeSpec", [""]] call MAINCLASS };
+        // the building the player chose, if it's one this side (or this type) may deploy; else the first
+        private _hubs = [_logic, "hubChoicesFor", [_side, _type]] call MAINCLASS;
         if !(_hub in _hubs) then { _hub = _hubs select 0 };
         private _names = ["Alpha","Bravo","Charlie","Delta","Echo","Foxtrot","Golf","Hotel","India","Juliet","Kilo","Lima","Mike",
             "November","Oscar","Papa","Quebec","Romeo","Sierra","Tango","Uniform","Victor","Whiskey","X-ray","Yankee","Zulu"];
@@ -377,7 +567,7 @@ switch (_operation) do {
             [_result, _x select 0, _x select 1] call ALIVE_fnc_hashSet;
         } forEach [
             ["id", _id], ["side", _side], ["faction", _faction],
-            ["name", "FOB " + (_names select ((_n - 1) max 0) % 26)],
+            ["name", (_spec select 2) + " " + (_names select ((_n - 1) max 0) % 26)], ["type", _type],
             ["pos", _pos], ["dir", _dir], ["status", "active"], ["tier", 1],
             ["supply", [_logic, "attribute", ["fob_supply_initial"]] call MAINCLASS],
             ["hubClass", _hub], ["hub", objNull],
@@ -417,7 +607,7 @@ switch (_operation) do {
         ALiVE_FOB_dirty = true;
     };
 
-    // What players' machines see: [id, side, name, pos, status, tier, supply, supplyCap, buildRange]
+    // What players' machines see: [id, side, name, pos, status, tier, supply, supplyCap, buildRange, deployedBy, type]
     // Each side's FOBs and its FOB limit, [[side, FOBs, limit], ...], for players' deploy
     // previews; sent only when it changed
     case "broadcastRoom": {
@@ -436,7 +626,7 @@ switch (_operation) do {
             [_x, [_e, "side"] call ALIVE_fnc_hashGet, [_e, "name"] call ALIVE_fnc_hashGet, [_e, "pos"] call ALIVE_fnc_hashGet,
              [_e, "status"] call ALIVE_fnc_hashGet, [_e, "tier"] call ALIVE_fnc_hashGet,
              ["balance", [_x]] call ALiVE_fnc_fobSupply, ["cap", [_x]] call ALiVE_fnc_fobSupply, _range,
-             [_e, "deployedBy", ""] call ALIVE_fnc_hashGet]
+             [_e, "deployedBy", ""] call ALIVE_fnc_hashGet, [_e, "type", ""] call ALIVE_fnc_hashGet]
         };
         publicVariable "ALiVE_FOB_registryMirror";
         [_logic, "broadcastRoom"] call MAINCLASS;

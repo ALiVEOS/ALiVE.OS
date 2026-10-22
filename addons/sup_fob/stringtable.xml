@@ -719,6 +719,66 @@
             <Key ID="STR_ALIVE_FOB_UI_DISMANTLE_AGAIN">
                 <English>Press again to dismantle</English>
             </Key>
+            <Key ID="STR_ALIVE_FOB_TYPES">
+                <English>FOB Types</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_TYPES_COMMENT">
+                <English>Gives a FOB kit a choice of types, such as a fire base or a patrol base, each with its own headquarters buildings, build list, map marker, limit, cost and who may deploy it.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_TYPES_USAGE">
+                <English>Place one and sync it to the Player FOBs module. Use the button to open the FOB Types editor in your browser and paste what it makes into Types. Not synced, it does nothing. A type changes what a FOB can build and who may deploy it; how a FOB is supplied, its tiers and its respawn point stay the Player FOBs module's settings.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_TYPES_OPEN">
+                <English>Open the FOB Types editor (paste below)</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_TYPES_OPEN_COMMENT">
+                <English>Nothing to fill in here. This opens the FOB Types editor in your browser, which makes the text for Types, just below.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_TYPES_LIST">
+                <English>Types</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_TYPES_LIST_COMMENT">
+                <English>One type per line, each a set of key=value pairs separated by semicolons: id, name, prefix (the start of its FOBs' names, FOB by default), marker (a map marker class), hubs (headquarters classes, separated by commas), build (+class adds it, -class removes it; an added class no FOB could build before is kept for the types that add it), who (SIDE, LEADER or LIST, several separated by commas), list (player IDs, unit classes or Eden variable names, separated by commas, never semicolons), cost (taken when it's deployed), cap (most at once per side, 0 for no limit) and role (not used yet). The FOB Types editor writes it for you.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_TYPES_GENERAL">
+                <English>Offer the Plain FOB</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_TYPES_GENERAL_COMMENT">
+                <English>Yes and a kit can still become the plain FOB, with the usual build list and no type limit, alongside the types. No and players must pick one of the types.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_TYPE_GENERAL">
+                <English>FOB</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_TYPE_NONE_FREE">
+                <English>You can't deploy any FOB type here: each is at its limit or kept for other players.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_ACTION_DEPLOY_TYPE">
+                <English>Deploy %1 Here (costs %2)</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_ACTION_DEPLOY_TYPE_FREE">
+                <English>Deploy %1 Here</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_ACTION_DEPLOY_TYPE_SUPPLY">
+                <English>Deploy %1 Here (starts with %2 less supply)</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_ACTION_NEXT_TYPE">
+                <English>Next FOB Type: %1 (now %2 of %3)</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_REFUSED_TYPE">
+                <English>That FOB type isn't one this mission has. Pick another.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_REFUSED_TYPE_WHO">
+                <English>You can't deploy the %1 type: it's kept for other players.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_REFUSED_TYPE_CAP">
+                <English>Your side already has as many of the %1 type as it may (%2).</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_REFUSED_TYPE_COST">
+                <English>There isn't enough supply to deploy the %1 type (it costs %2).</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_REFUSED_TYPE_ITEM">
+                <English>%1 can't build that: it isn't on this FOB type's build list.</English>
+            </Key>
         </Container>
     </Package>
 </Project>

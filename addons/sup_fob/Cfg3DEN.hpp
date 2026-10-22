@@ -25,6 +25,17 @@ class Cfg3DEN {
                 };
             };
         };
+        // The same for the FOB Types editor, which makes the FOB Types module's list
+        class ALiVE_FOBTypesLink: ALiVE_FOBBuildListLink {
+            class Controls: Controls {
+                class Title: Title {};
+                class Link: Link {
+                    text = "$STR_ALIVE_FOB_TYPES_OPEN";
+                    tooltip = "$STR_ALIVE_FOB_TYPES_OPEN_COMMENT";
+                    url = "https://www.alivemod.com/public/alive3/sup_fob_types.htm";
+                };
+            };
+        };
         class ALiVE_FactionSlotChoice;
         class ALiVE_SideChoiceMulti;
         class ALiVE_FOBManageChoice: ALiVE_SideChoiceMulti {

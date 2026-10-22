@@ -328,6 +328,19 @@ private _add = {
     };
 } forEach _whitelist;
 
+// Every FOB type's extras (FOB Types). One the catalog already has stays everyone's; one only a
+// type brings is priced as a fortification and kept for the types that list it (ALiVE_FOB_typeOnly).
+private _typeOnly = [];
+{
+    {
+        private _cfg = configFile >> "CfgVehicles" >> _x;
+        if (isClass _cfg && {!(toLower _x in _seen)} && {!(toLower _x in _blacklist)}) then {
+            [configName _cfg, _cfg, "FORTIFICATION"] call _add;
+            _typeOnly pushBackUnique toLower _x;
+        };
+    } forEach (_x select 5);
+} forEach (missionNamespace getVariable ["ALiVE_FOB_types", []]);
+
 // only[]: exactly these, each priced by the rules (or as a fortification when the rules don't
 // pick it) unless it has a cost; the blacklist still applies
 if (_only isNotEqualTo []) then {
@@ -352,6 +365,18 @@ if (_measured > 0) then {
 
 ALiVE_FOB_catalog = _rows;
 publicVariable "ALiVE_FOB_catalog";
+ALiVE_FOB_typeOnly = _typeOnly;
+publicVariable "ALiVE_FOB_typeOnly";
+// a type's extra that can't be built after all says why, rather than just not being in the menu
+{
+    private _tid = _x select 0;
+    {
+        private _c = _x;
+        if ((_rows findIf { toLower (_x select 0) == _c }) < 0) then {
+            ["ALiVE Player FOBs - FOB Types: %1's extra %2 can't be built (not in this game, on Never Build, or left off the mission's only list)", _tid, _c] call ALiVE_fnc_dumpR;
+        };
+    } forEach (_x select 5);
+} forEach (missionNamespace getVariable ["ALiVE_FOB_types", []]);
 // With Debug on, every row in the RPT, one per line, for the Player FOBs build list page on the
 // ALiVE website: [class, name, category, cost, tier, side, faction]
 if ([_logic, "attribute", ["fob_debug"]] call ALiVE_fnc_FOB) then {

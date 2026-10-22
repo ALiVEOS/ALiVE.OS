@@ -172,14 +172,45 @@ switch (_op) do {
     case "deploy": {
         if (isNull ALiVE_FOB_nearKit) exitWith {};
         private _side = str (side group player);
-        // one of the side's headquarters buildings: the one last shown, which Next Headquarters steps through
-        private _hubs = [missionNamespace getVariable ["ALiVE_sup_fob", objNull], "hubChoices", [_side]] call ALiVE_fnc_FOB;
+        // the FOB type: the one last shown, which Next FOB Type steps through, from those this player may deploy now
+        private _offer = ["typeOffer"] call ALiVE_fnc_fobActions;
+        if (_offer isEqualTo []) exitWith { [localize "STR_ALIVE_FOB", localize "STR_ALIVE_FOB_TYPE_NONE_FREE", true] call ALIVE_fnc_sendHint };
+        private _ids = _offer apply { _x select 0 };
+        ALiVE_FOB_deployType = missionNamespace getVariable ["ALiVE_FOB_deployType", ""];
+        if !(ALiVE_FOB_deployType in _ids) then { ALiVE_FOB_deployType = _ids select 0 };
+        // one of the type's (or the side's) headquarters buildings: the one last shown, which Next Headquarters steps through
+        private _hubs = [missionNamespace getVariable ["ALiVE_sup_fob", objNull], "hubChoicesFor", [_side, ALiVE_FOB_deployType]] call ALiVE_fnc_FOB;
         private _class = _hubs select ((missionNamespace getVariable ["ALiVE_FOB_hubIndex", 0]) mod (count _hubs));
         if !(isClass (configFile >> "CfgVehicles" >> _class)) exitWith {
-            ["deploy", [ALiVE_FOB_nearKit, player getPos [8, getDir player], getDir player]] remoteExecCall ["ALiVE_fnc_fobRequest", 2];
+            ["deploy", [ALiVE_FOB_nearKit, player getPos [8, getDir player], getDir player, "", ALiVE_FOB_deployType]] remoteExecCall ["ALiVE_fnc_fobRequest", 2];
         };
         // a row like the Build Menu's, and the kit standing in for the FOB: placed within 40 m of it
         ["start", [[_class, localize "STR_ALIVE_FOB_HQ_NAME", "DEPLOY", 0], ["", _side, "", getPosATL ALiVE_FOB_nearKit, "", 1, 0, 0, 40], ALiVE_FOB_nearKit]] call ALiVE_fnc_fobPlacement;
+    };
+
+    // The FOB types this player may deploy now: the module's list less those who-may-deploy
+    // shuts them out of and those at their own limit, as the last FOB list showed it. The server
+    // checks again.
+    case "typeOffer": {
+        private _logic = missionNamespace getVariable ["ALiVE_sup_fob", objNull];
+        private _side = str (side group player);
+        private _mine = (missionNamespace getVariable ["ALiVE_FOB_registryMirror", []]) select { (_x select 1) == _side };
+        // the case's value is what this function returns, as canRecycle's is
+        ([_logic, "types", []] call ALiVE_fnc_FOB) select {
+            private _t = _x select 0;
+            [_logic, "mayDeployType", [player, _t]] call ALiVE_fnc_FOB
+                && {(_x select 11) <= 0 || {({ (_x param [10, ""]) == _t } count _mine) < (_x select 11)}}
+        };
+    };
+
+    // The next FOB type, while placing a headquarters
+    case "nextType": {
+        private _ids = (["typeOffer"] call ALiVE_fnc_fobActions) apply { _x select 0 };
+        if (_ids isEqualTo []) exitWith {};
+        ALiVE_FOB_deployType = _ids select (((_ids find (missionNamespace getVariable ["ALiVE_FOB_deployType", ""])) + 1) mod (count _ids));
+        ALiVE_FOB_hubIndex = 0;
+        ["cancel"] call ALiVE_fnc_fobPlacement;
+        ["deploy"] call ALiVE_fnc_fobActions;
     };
 
     // The next of the side's headquarters buildings, while placing one (Lenahan, 20 Oct)
