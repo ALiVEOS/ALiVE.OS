@@ -66,6 +66,9 @@ private _profilesById = [ALiVE_profileHandler, "profilesById"] call ALiVE_fnc_ha
 private _assignment = [_handler, "profileObjectiveAssignment", createHashMap] call ALiVE_fnc_HashGet;
 private _pendingIDs = ([_handler, "pendingorders", []] call ALiVE_fnc_HashGet) apply { _x select 1 };
 private _infantry = [_handler, "infantry", []] call ALiVE_fnc_HashGet;
+// groups TACOM parked at an objective when a reserve order completed. The commander holds them back from new orders
+// (fnc_OPCOM "NearestAvailableSection" leaves them out) and takes them when it needs them, so they are the mobile ones
+private _reserveIDs = [_handler, "ProfileIDsReserve", []] call ALiVE_fnc_HashGet;
 private _objectives = ([_handler, "objectives", []] call ALiVE_fnc_HashGet) select { !([_x, "deleted", false] call ALiVE_fnc_HashGet) };
 private _objectivesByID = [_handler, "objectivesByID", createHashMap] call ALiVE_fnc_HashGet;
 
@@ -162,8 +165,13 @@ if (_coverage) then {
     };
     private _groups = count _section;
     private _want = if (_coverage) then {
-        // the surplus above the objective's minimum, times the share as a bias: a quarter is a third, half two thirds, three quarters all
-        [nil, "surplus", [_groups, [_home, "size", 100] call ALiVE_fnc_HashGet, _share, count _out]] call ALIVE_fnc_OPCOMcoverage
+        // the surplus above the objective's minimum, times the share as a bias: a quarter is a third, half two thirds, three quarters all.
+        // Reserve groups are spare over and above the minimum, and go out first
+        private _reserve = count (_section select { _x in _reserveIDs });
+        if (_reserve > 0) then {
+            _free = (_free select { _x in _reserveIDs }) + (_free select { !(_x in _reserveIDs) });
+        };
+        [nil, "surplus", [_groups, [_home, "size", 100] call ALiVE_fnc_HashGet, _share, count _out, _reserve]] call ALIVE_fnc_OPCOMcoverage
     } else {
         if (_groups >= 2) then { (ceil (_groups * _share) min (_groups - 1)) - count _out } else { [0, 1] select (random 1 < _share) }
     };
