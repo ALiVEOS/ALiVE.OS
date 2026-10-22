@@ -68,7 +68,10 @@ if (_unit getVariable ["ALiVE_civInteract_resolved", false]) exitWith {};
     };
     // Not while the player drags or carries a body with ACE, and not on a civilian who is
     // unconscious (ACE or vanilla): a carried unconscious civilian otherwise showed the action (#1025).
-    private _cond = format ["alive _target && !(_target getVariable ['ALiVE_advciv_blacklist', false]) && _this distance _target < %1 && !(_this getVariable ['ace_dragging_isDragging', false]) && !(_this getVariable ['ace_dragging_isCarrying', false]) && !(_target getVariable ['ACE_isUnconscious', false]) && lifeState _target != 'INCAPACITATED'", _range];
+    // And only on the civilian under the crosshair: cursorObject is the first thing the view line hits, so a
+    // civilian behind a wall or a closed door no longer offers the action through it (A. Ares, 22 Oct). Last, and
+    // lazy, so it only runs once the cheaper checks have passed.
+    private _cond = format ["alive _target && !(_target getVariable ['ALiVE_advciv_blacklist', false]) && _this distance _target < %1 && !(_this getVariable ['ace_dragging_isDragging', false]) && !(_this getVariable ['ace_dragging_isCarrying', false]) && !(_target getVariable ['ACE_isUnconscious', false]) && lifeState _target != 'INCAPACITATED' && {cursorObject isEqualTo _target}", _range];
 
     switch (_uiMode) do {
 
