@@ -359,6 +359,16 @@ class NEO_resourceRadio
                         h = GUI_GRID_HAbs / 1000;
                 };
 
+                //Escort (Eric on Discord, 22 Oct): placed by the transport and ground panels when a unit is picked
+                class NEO_radioTransportEscortCb : NEO_radioTransportHeightCb
+                {
+                        idc = 655638;
+                        x = 0.278525 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.752 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        w = GUI_GRID_WAbs / 1000;
+                        h = GUI_GRID_HAbs / 1000;
+                };
+
                 //=======================
                 //Cas Unit ListBox
                 class NEO_radioCasUnitList : NEO_RscGUIListBox

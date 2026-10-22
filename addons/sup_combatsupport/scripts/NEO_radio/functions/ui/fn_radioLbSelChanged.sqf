@@ -31,6 +31,7 @@ _transportHeightCombo = _display displayCtrl 655630;
 _transportSpeedCombo = _display displayCtrl 655631;
 _transportRoeCombo = _display displayCtrl 655632;
 _transportComboText = _display displayCtrl 655633;
+private _transportEscortCombo = _display displayCtrl 655638;
 _objectLb = _display displayCtrl 655580;
 
 //CAS Controls
@@ -81,7 +82,7 @@ _artyDispersionSlider = _display displayCtrl 655609;
 _artyRateDelayText = _display displayCtrl 655611;
 _artyRateDelaySlider = _display displayCtrl 655612;
 private _listBackground = [0.047, 0.047, 0.047, 0.72];
-private _transportControls = [_transportUnitLb, _transportTaskLb, _transportUnitText, _transportTaskText, _transportHelpUnitText, _transportHelpTaskText, _transportConfirmButton, _transportBaseButton, _transportSmokeFoundButton, _transportSmokeNotFoundButton, _transportSlider, _transportSliderText, _transportHeightCombo, _transportSpeedCombo, _transportRoeCombo, _transportComboText, _objectLb];
+private _transportControls = [_transportUnitLb, _transportTaskLb, _transportUnitText, _transportTaskText, _transportHelpUnitText, _transportHelpTaskText, _transportConfirmButton, _transportBaseButton, _transportSmokeFoundButton, _transportSmokeNotFoundButton, _transportSlider, _transportSliderText, _transportHeightCombo, _transportSpeedCombo, _transportRoeCombo, _transportComboText, _objectLb, _transportEscortCombo];
 private _casControls = [_casUnitLb, _casUnitText, _casHelpUnitText, _casConfirmButton, _casBaseButton, _casTaskLb, _casTaskText, _casTaskHelpText, _casFlyHeightSlider, _casFlyHeighSliderText, _casRadiusSlider, _casRadiusSliderText, _casAttackRunText, _casAttackRunLB, _casROELb, _casROEText];
 private _artyControls = [_artyUnitLb, _artyUnitText, _artyHelpUnitText, _artyConfirmButton, _artyBaseButton, _artyOrdnanceTypeText, _artyOrdnanceTypeLb, _artyRateOfFireText, _artyRateOfFireLb, _artyRoundCountText, _artyRoundCountLb, _artyMoveButton, _artyDontMoveButton, _artyDispersionText, _artyDispersionSlider, _artyRateDelayText, _artyRateDelaySlider];
 
@@ -95,11 +96,11 @@ private _artyControls = [_artyUnitLb, _artyUnitText, _artyHelpUnitText, _artyCon
 // panel's handlers are on them, or filling them for the new panel would run the old one's code
 { _x ctrlSetEventHandler ["LBSelChanged", ""] } forEach [_transportTaskLb, _transportHeightCombo, _transportSpeedCombo, _transportRoeCombo];
 uinamespace setVariable ["NEO_radioMapClickArmed", false]; // #698 map-click handler just cleared - mirror for the terrain toggle
-{ _x ctrlSetPosition [1, 1, (_uiW / 1000), (_uiH / 1000)]; _x ctrlCommit 0; } forEach [_transportConfirmButton, _transportBaseButton, _transportSmokeFoundButton, _transportSmokeNotFoundButton, _transportSlider, _transportSliderText, _casConfirmButton, _casBaseButton, _casFlyHeightSlider, _casRadiusSlider, _artyConfirmButton, _artyMoveButton, _artyDontMoveButton, _artyDispersionSlider, _artyBaseButton, _artyRateDelaySlider, _transportHeightCombo, _transportSpeedCombo, _transportRoeCombo, _objectLb];
+{ _x ctrlSetPosition [1, 1, (_uiW / 1000), (_uiH / 1000)]; _x ctrlCommit 0; } forEach [_transportConfirmButton, _transportBaseButton, _transportSmokeFoundButton, _transportSmokeNotFoundButton, _transportSlider, _transportSliderText, _casConfirmButton, _casBaseButton, _casFlyHeightSlider, _casRadiusSlider, _artyConfirmButton, _artyMoveButton, _artyDontMoveButton, _artyDispersionSlider, _artyBaseButton, _artyRateDelaySlider, _transportHeightCombo, _transportSpeedCombo, _transportRoeCombo, _objectLb, _transportEscortCombo];
 { _x ctrlSetText "" } forEach [_transportUnitText, _transportTaskText, _transportHelpUnitText, _transportHelpTaskText, _transportSliderText, _casUnitText, _casHelpUnitText, _casTaskText, _casROEText,_casTaskHelpText, _casFlyHeighSliderText, _casRadiusSliderText, _casAttackRunText, _artyUnitText, _artyHelpUnitText, _artyOrdnanceTypeText, _artyRateOfFireText, _artyRoundCountText, _artyDispersionText, _artyRateDelayText, _transportComboText];
-{ _x ctrlEnable false; } forEach [_transportUnitLb, _transportTaskLb, _casUnitLb, _casTaskLb, _casROELb, _casAttackRunLB, _artyUnitLb, _artyOrdnanceTypeLb, _artyRateOfFireLb, _artyRoundCountLb, _transportHeightCombo, _transportSpeedCombo, _transportRoeCombo, _objectLb];
+{ _x ctrlEnable false; } forEach [_transportUnitLb, _transportTaskLb, _casUnitLb, _casTaskLb, _casROELb, _casAttackRunLB, _artyUnitLb, _artyOrdnanceTypeLb, _artyRateOfFireLb, _artyRoundCountLb, _transportHeightCombo, _transportSpeedCombo, _transportRoeCombo, _objectLb, _transportEscortCombo];
 _sitRepButton ctrlEnable false; // no unit selected yet - each unit handler re-enables it
-{ lbClear _x } forEach [_transportUnitLb, _transportTaskLb, _casUnitLb, _casTaskLb, _casROELb, _casAttackRunLB, _artyUnitLb, _artyOrdnanceTypeLb, _artyRateOfFireLb, _artyRoundCountLb, _transportHeightCombo, _transportSpeedCombo, _transportRoeCombo, _objectLb];
+{ lbClear _x } forEach [_transportUnitLb, _transportTaskLb, _casUnitLb, _casTaskLb, _casROELb, _casAttackRunLB, _artyUnitLb, _artyOrdnanceTypeLb, _artyRateOfFireLb, _artyRoundCountLb, _transportHeightCombo, _transportSpeedCombo, _transportRoeCombo, _objectLb, _transportEscortCombo];
 // Transport, CAS and artillery controls deliberately occupy the same layout slots.
 // Disabled list boxes still paint their background, so clear every category before
 // enabling the selected one to prevent opaque panels from stacking over its content.

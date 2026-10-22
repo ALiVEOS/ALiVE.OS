@@ -100,7 +100,9 @@ if (getNumber (configFile >> "CfgVehicles" >> typeOf _chopper >> "transportSoldi
 
 
 //Re-initialize Controls
-        { _x ctrlSetPosition [1, 1, (_uiW / 1000), (_uiH / 1000)]; _x ctrlCommit 0; } forEach [_slider, _sliderText, _transportHeightCombo, _transportSpeedCombo, _transportRoeCombo];
+        private _transportEscortCombo = _display displayCtrl 655638;
+        { _x ctrlSetPosition [1, 1, (_uiW / 1000), (_uiH / 1000)]; _x ctrlCommit 0; } forEach [_slider, _sliderText, _transportHeightCombo, _transportSpeedCombo, _transportRoeCombo, _transportEscortCombo];
+lbClear _transportEscortCombo; _transportEscortCombo ctrlEnable false;
 { _x ctrlSetText "" } forEach [_sliderText, _transportTaskText, _transportHelpTaskText, _transportComboText];
 { lbClear _x } forEach [_transportTaskLb, _transportHeightCombo, _transportSpeedCombo, _transportRoeCombo];
 
@@ -158,6 +160,10 @@ if (_status != "KILLED") then
         _transportRoeCombo lbAdd _x;
     } forEach ([localize "STR_ALIVE_CS_UI_TR_ROE_HOLD", localize "STR_ALIVE_CS_UI_TR_ROE_FREE"]);
     _transportRoeCombo lbSetCurSel _roe;
+
+    // an escort for it, from the side's attack and armed helicopters standing by (Eric on Discord, 22 Oct)
+    _transportEscortCombo ctrlSetPosition [0.278525 * _uiW + _uiX, 0.752 * _uiH + _uiY, (0.215 * _uiW), (0.028 * _uiH)]; _transportEscortCombo ctrlCommit 0;
+    [_transportEscortCombo, "AIR", _chopper] call NEO_fnc_transportEscortList;
 
     //ComboBoxes EventHandlers
     {

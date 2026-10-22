@@ -32,6 +32,7 @@ private _helpTask = _d displayCtrl 655573;
 private _heightCb = _d displayCtrl 655630;
 private _speedCb = _d displayCtrl 655631;
 private _roeCb = _d displayCtrl 655632;
+private _escortCb = _d displayCtrl 655638;
 private _comboText = _d displayCtrl 655633;
 private _list = NEO_radioLogic getVariable [format ["NEO_radioGroundArray_%1", playerSide], []];
 private _entry = _list param [lbCurSel _unitLb, []];
@@ -55,9 +56,9 @@ switch (_op) do {
             default { ["#FFFF73", "STR_ALIVE_CS_UI_UNIT_ON_MISSION"] call _t };
         });
         _baseBtn ctrlEnable !(_status in ["RTB", "NONE", "KILLED", "IMMOBILE"]);
-        [_ptA, _ptB, _heightCb] call _hide;
+        [_ptA, _ptB, _heightCb, _escortCb] call _hide;
         lbClear _taskLb;
-        { lbClear _x } forEach [_speedCb, _roeCb];
+        { lbClear _x } forEach [_speedCb, _roeCb, _escortCb];
         _taskText ctrlSetText ""; _helpTask ctrlSetText ""; _comboText ctrlSetText "";
         if (_status == "KILLED") exitWith { ["enable"] call NEO_fnc_groundPanel };
         _taskText ctrlSetStructuredText (["#B4B4B4", "STR_ALIVE_CS_UI_TASK", "0.8"] call _t);
@@ -88,6 +89,9 @@ switch (_op) do {
         _speedCb lbSetCurSel _speed;
         { _roeCb lbAdd localize _x } forEach ["STR_ALIVE_CS_UI_TR_ROE_HOLD", "STR_ALIVE_CS_UI_TR_ROE_FREE"];
         _roeCb lbSetCurSel _roe;
+        // an escort for it, from the side's armed ground transports standing by (Eric on Discord, 22 Oct)
+        _escortCb ctrlSetPosition [0.278525 * _uiW + _uiX, 0.696 * _uiH + _uiY, 0.215 * _uiW, 0.028 * _uiH]; _escortCb ctrlCommit 0;
+        [_escortCb, "GROUND", _veh] call NEO_fnc_transportEscortList;
         ["enable"] call NEO_fnc_groundPanel;
     };
 
@@ -168,6 +172,9 @@ switch (_op) do {
         [[player, _args, "side"], "NEO_fnc_messageBroadcast", true, false] spawn BIS_fnc_MP;
         private _order = [_task, _pos, 0, player, _posB];
         _veh setVariable ["NEO_radioGroundNewTask", _order, true];
+        // its escort, from the Escort box (a new order with none lets the old one go)
+        private _escortId = if (lbCurSel _escortCb > -1) then { _escortCb lbData (lbCurSel _escortCb) } else { "" };
+        [[_veh, _escortId, "GROUND", player], "NEO_fnc_transportEscort", false, false] spawn BIS_fnc_MP;
         // the destination, or both ends of the patrol, stay on this player's map while the order runs
         [_veh, _order, "NEO_radioGroundUnitStatus", if (_task == "PATROL") then {
             [[_pos, format ["%1 %2", _entry select 2, localize "STR_ALIVE_CS_UI_GR_MARKER_A"]], [_posB, format ["%1 %2", _entry select 2, localize "STR_ALIVE_CS_UI_GR_MARKER_B"]]]

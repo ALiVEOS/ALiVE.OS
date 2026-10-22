@@ -55,6 +55,9 @@ fnc_getSitrep = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupp
 ALIVE_fnc_RespawnArtyAsset = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_RespawnArtyAsset.sqf";
 ALIVE_fnc_RespawnTransportAsset = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_RespawnTransportAsset.sqf";
 NEO_fnc_supportOrderMarkers = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_supportOrderMarkers.sqf";
+// Escorts for transport (Eric on Discord, 22 Oct)
+NEO_fnc_transportEscortList = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\ui\transport\fn_transportEscortList.sqf";
+NEO_fnc_transportEscort = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_transportEscort.sqf";
 // Ground transport (#690)
 NEO_fnc_groundPanel = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\ui\ground\fn_groundPanel.sqf";
 ALIVE_fnc_RespawnGroundAsset = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_RespawnGroundAsset.sqf";

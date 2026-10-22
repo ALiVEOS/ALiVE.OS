@@ -1645,6 +1645,18 @@
     <Portuguese>ROE: não abrir fogo</Portuguese>
     <Russian>Режим огня: не стрелять</Russian>
 </Key>
+<Key ID="STR_ALIVE_CS_UI_ESCORT_NONE">
+    <English>Escort: none</English>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_ESCORT">
+    <English>Escort: %1</English>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_ESCORT_BUSY">
+    <English>That escort is no longer standing by. Pick another.</English>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_ESCORT">
+    <English>%1, escort %2. Weapons free. Over.</English>
+</Key>
 <Key ID="STR_ALIVE_CS_UI_TR_ROE_FREE">
     <English>ROE: Fire At Will</English>
     <Chinesesimp>交战规则：自由开火</Chinesesimp>

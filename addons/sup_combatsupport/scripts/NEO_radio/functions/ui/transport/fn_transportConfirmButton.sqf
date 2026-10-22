@@ -86,6 +86,12 @@ if (_task == "SLINGLOAD" && !isNull getSlingLoad _chopper || _task == "UNHOOK" &
 
 //New Task
 _chopper setVariable ["NEO_radioTransportNewTask", _arguments, true];
+// its escort, from the Escort box (Eric on Discord, 22 Oct); heading home takes the escort home too
+if (toUpper _task != "RTB") then {
+    private _escortCb = _display displayCtrl 655638;
+    private _escortId = if (lbCurSel _escortCb > -1) then { _escortCb lbData (lbCurSel _escortCb) } else { "" };
+    [[_chopper, _escortId, "AIR", player], "NEO_fnc_transportEscort", false, false] spawn BIS_fnc_MP;
+};
 // its destination stays on this player's map while it flies the order
 if (toUpper _task != "RTB") then { [_chopper, _arguments, "NEO_radioTrasportUnitStatus", [[_pos, _callsign]]] call NEO_fnc_supportOrderMarkers };
 
