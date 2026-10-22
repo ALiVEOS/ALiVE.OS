@@ -228,6 +228,8 @@ switch (_operation) do {
         private _minimum = [1, 2] select (_objSize >= 150);
         _reserve = (_reserve max 0) min _groups;
         _result = floor ((((_groups - _reserve - _minimum) max 0) + _reserve) * (_share / 0.75)) - _out;
+        // one group always stays home (#1092): an objective held only by reserve groups keeps one of them
+        _result = _result min ((_groups - 1) - _out);
     };
 };
 

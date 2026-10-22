@@ -172,8 +172,10 @@ private _fnc_want = { params ["_groups", "_objSize", "_share", ["_out", 0], ["_r
 ["Few with one spare sends none", ([3, 200, 0.25] call _fnc_want) == 0] call _fnc_check;
 ["patrols already out count against it", ([5, 200, 0.75, 2] call _fnc_want) == 1] call _fnc_check;
 ["a reserve group is spare over the minimum", ([3, 200, 0.75, 0, 1] call _fnc_want) == 1] call _fnc_check;
-["a large objective held by reserve alone sends them all", ([2, 200, 0.75, 0, 2] call _fnc_want) == 2] call _fnc_check;
-["reserve beyond the garrison is capped at it", ([2, 200, 0.75, 0, 5] call _fnc_want) == 2] call _fnc_check;
+["a large objective held by reserve alone keeps one home", ([2, 200, 0.75, 0, 2] call _fnc_want) == 1] call _fnc_check;
+["reserve beyond the garrison is capped at it, one still home", ([2, 200, 0.75, 0, 5] call _fnc_want) == 1] call _fnc_check;
+["three reserve groups alone send two", ([3, 100, 0.75, 0, 3] call _fnc_want) == 2] call _fnc_check;
+["a lone group never goes", ([1, 100, 0.75, 0, 1] call _fnc_want) == 0] call _fnc_check;
 ["Few sends a third of the reserve too", ([5, 200, 0.25, 0, 3] call _fnc_want) == 1] call _fnc_check;
 ["patrols out count against reserve surplus", ([3, 100, 0.75, 2, 2] call _fnc_want) == 0] call _fnc_check;
 
