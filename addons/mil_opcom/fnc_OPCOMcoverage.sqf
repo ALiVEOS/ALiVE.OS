@@ -217,13 +217,17 @@ switch (_operation) do {
         _result = _tour;
     };
 
-    // [groups at the objective, objective size, share, patrols already out]: how many more a Coverage patrol can
-    // take, the surplus above the objective's minimum (2 at a large one, 1 at a small one) times the share as a bias:
-    // Few a third, Some two thirds, Many all. One place, so the patrol code and the test use the same rule
+    // [groups at the objective, objective size, share, patrols already out, reserve groups among them]: how many
+    // more a Coverage patrol can take, the surplus above the objective's minimum (2 at a large one, 1 at a small one)
+    // times the share as a bias: Few a third, Some two thirds, Many all. A reserve group is one TACOM parked there
+    // when its reserve order completed, held back from new orders until the commander needs it; it is not the
+    // garrison, so it never counts towards the minimum and is all surplus. One place, so the patrol code and the
+    // test use the same rule
     case "surplus": {
-        _args params [["_groups", 0], ["_objSize", 100], ["_share", 0], ["_out", 0]];
+        _args params [["_groups", 0], ["_objSize", 100], ["_share", 0], ["_out", 0], ["_reserve", 0]];
         private _minimum = [1, 2] select (_objSize >= 150);
-        _result = floor (((_groups - _minimum) max 0) * (_share / 0.75)) - _out;
+        _reserve = (_reserve max 0) min _groups;
+        _result = floor ((((_groups - _reserve - _minimum) max 0) + _reserve) * (_share / 0.75)) - _out;
     };
 };
 

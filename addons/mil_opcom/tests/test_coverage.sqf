@@ -163,7 +163,7 @@ private _maxIx = floor (worldSize / _size);
 [_handler, "territory", [[_a, _b], _reach]] call ALIVE_fnc_OPCOMcoverage;
 
 // --- the surplus rule: the same "surplus" operation fnc_OPCOMsecurityPatrols calls -------
-private _fnc_want = { params ["_groups", "_objSize", "_share", ["_out", 0]]; [nil, "surplus", [_groups, _objSize, _share, _out]] call ALIVE_fnc_OPCOMcoverage };
+private _fnc_want = { params ["_groups", "_objSize", "_share", ["_out", 0], ["_reserve", 0]]; [nil, "surplus", [_groups, _objSize, _share, _out, _reserve]] call ALIVE_fnc_OPCOMcoverage };
 ["a large objective keeps two", ([2, 200, 0.75] call _fnc_want) == 0] call _fnc_check;
 ["a small objective keeps one", ([2, 100, 0.75] call _fnc_want) == 1] call _fnc_check;
 ["Many sends all the surplus", ([5, 200, 0.75] call _fnc_want) == 3] call _fnc_check;
@@ -171,6 +171,11 @@ private _fnc_want = { params ["_groups", "_objSize", "_share", ["_out", 0]]; [ni
 ["Few sends a third", ([5, 200, 0.25] call _fnc_want) == 1] call _fnc_check;
 ["Few with one spare sends none", ([3, 200, 0.25] call _fnc_want) == 0] call _fnc_check;
 ["patrols already out count against it", ([5, 200, 0.75, 2] call _fnc_want) == 1] call _fnc_check;
+["a reserve group is spare over the minimum", ([3, 200, 0.75, 0, 1] call _fnc_want) == 1] call _fnc_check;
+["a large objective held by reserve alone sends them all", ([2, 200, 0.75, 0, 2] call _fnc_want) == 2] call _fnc_check;
+["reserve beyond the garrison is capped at it", ([2, 200, 0.75, 0, 5] call _fnc_want) == 2] call _fnc_check;
+["Few sends a third of the reserve too", ([5, 200, 0.25, 0, 3] call _fnc_want) == 1] call _fnc_check;
+["patrols out count against reserve surplus", ([3, 100, 0.75, 2, 2] call _fnc_want) == 0] call _fnc_check;
 
 // --- put everything back ---------------------------------------------------------------
 ALiVE_coveragePresence = _saved select 0;
