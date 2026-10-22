@@ -756,16 +756,22 @@
 	[_tasksData,"Parent",_taskData] call ALIVE_fnc_hashSet;
 
 	_taskData = [] call ALIVE_fnc_hashCreate;
-	[_taskData,"title","Move to overwatch near %1"] call ALIVE_fnc_hashSet;
-	[_taskData,"description","Get to an overwatch position near %1 without being seen."] call ALIVE_fnc_hashSet;
-	[_taskData,"chat_start",[["HQ","We have no picture of what the enemy holds at %1. Move to overwatch and take a look, Over."],["PLAYERS","Roger, moving to overwatch"]]] call ALIVE_fnc_hashSet;
+	[_taskData,"title","Move to the FRV near %1"] call ALIVE_fnc_hashSet;
+	[_taskData,"description","Reach the final rendezvous point short of %1 without being seen. The observation posts are marked from there."] call ALIVE_fnc_hashSet;
+	[_taskData,"chat_start",[["HQ","We have no picture of what the enemy holds at %1. Move to the FRV and get ready to put eyes on it, Over."],["PLAYERS","Roger, moving to the FRV"]]] call ALIVE_fnc_hashSet;
 	[_tasksData,"Travel",_taskData] call ALIVE_fnc_hashSet;
 
 	_taskData = [] call ALIVE_fnc_hashCreate;
-	[_taskData,"title","Observe %1"] call ALIVE_fnc_hashSet;
-	[_taskData,"description","Keep eyes on %1 from within 600 m for a minute and report what you see."] call ALIVE_fnc_hashSet;
-	[_taskData,"chat_start",[["HQ","Eyes on %1. Report enemy positions when you have them, Over."],["PLAYERS","Wilco"]]] call ALIVE_fnc_hashSet;
-	[_taskData,"chat_success",[["PLAYERS","Recon complete, sending what we saw now, Over."],["HQ","Good work. We'll plan against those positions."]]] call ALIVE_fnc_hashSet;
+	[_taskData,"title","Man OP 1 over %1"] call ALIVE_fnc_hashSet;
+	[_taskData,"description","Occupy the first observation post and watch %1 for at least a minute. Only enemy you actually spot is reported."] call ALIVE_fnc_hashSet;
+	[_taskData,"chat_start",[["HQ","Push to OP 1 and get eyes on %1, Over."],["PLAYERS","Wilco"]]] call ALIVE_fnc_hashSet;
+	[_tasksData,"Observe1",_taskData] call ALIVE_fnc_hashSet;
+
+	_taskData = [] call ALIVE_fnc_hashCreate;
+	[_taskData,"title","Man OP 2 over %1"] call ALIVE_fnc_hashSet;
+	[_taskData,"description","Occupy the second observation post, on another side of %1, and watch for at least a minute. Stay longer to spot more."] call ALIVE_fnc_hashSet;
+	[_taskData,"chat_start",[["HQ","OP 1 reports in. Move round to OP 2 and confirm %1 from the other side, Over."],["PLAYERS","Wilco"]]] call ALIVE_fnc_hashSet;
+	[_taskData,"chat_success",[["PLAYERS","Recon complete, sending what we spotted now, Over."],["HQ","Good work. We'll plan against those positions."]]] call ALIVE_fnc_hashSet;
 	[_taskData,"reward",["forcePool",10]] call ALIVE_fnc_hashSet;
 	[_tasksData,"Observe",_taskData] call ALIVE_fnc_hashSet;
 

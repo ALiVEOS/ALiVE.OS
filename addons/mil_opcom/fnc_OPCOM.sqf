@@ -4673,9 +4673,10 @@ switch (_operation) do {
                 private _states = if (_root isNotEqualTo []) then { [(_root select 0) select 8] } else {
                     if (_id in _finished) then { [_finished get _id] } else { (_all select { ((_x select 0) find _id) == 0 }) apply { _x select 8 } }
                 };
+                // the recon is still watching while any of its OP stages is open (OP 1 is _c2, OP 2 _c3)
                 if (_id == _reconID) then {
-                    private _obs = (_all select { (_x select 0) == _id + "_c2" }) apply { _x select 8 };
-                    if (_obs isNotEqualTo [] && {!((_obs select 0) in ["Succeeded", "Failed", "Canceled"])}) then { _states = ["Assigned"] };
+                    private _obs = (_all select { (_x select 0) in [_id + "_c2", _id + "_c3"] }) apply { _x select 8 };
+                    if ((_obs findIf { !(_x in ["Succeeded", "Failed", "Canceled"]) }) >= 0) then { _states = ["Assigned"] };
                 };
                 if (_states isEqualTo []) then { if (_young) then { _open = _open + 1 } } else {
                     _made = _made + 1;
