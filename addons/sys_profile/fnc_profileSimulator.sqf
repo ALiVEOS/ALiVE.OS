@@ -560,6 +560,10 @@ if (!_simAttacks) then {
                                             [_profile,"position", _newPosition] call ALiVE_fnc_profileEntity;
                                             [_profile,"mergePositions"] call ALiVE_fnc_profileEntity;
                                             _profileMoved = true;
+                                            // a security patrol in Coverage mode marks the sector it is in for its commander (#1092)
+                                            if (!isNil "ALiVE_coverageActive" && {[_profile,"securityPatrol",false] call ALiVE_fnc_hashGet}) then {
+                                                [nil,"mark",[_profile select 2 select 3, _newPosition, _profile select 2 select 4]] call ALIVE_fnc_OPCOMcoverage;
+                                            };
                                         };
                                         PROFILE_SCOPE_END(INACTIVEENTITYMOVE)
                                     };
@@ -698,6 +702,10 @@ if (!_simAttacks) then {
                                             // set the entity position and merge all unit positions to group position
                                             [_profile,"position", _newPosition] call ALiVE_fnc_profileEntity;
                                             [_profile,"mergePositions"] call ALiVE_fnc_profileEntity;
+                                            // a spawned security patrol marks its sector too (#1092): the ground walked near players counts
+                                            if (!isNil "ALiVE_coverageActive" && {[_profile,"securityPatrol",false] call ALiVE_fnc_hashGet}) then {
+                                                [nil,"mark",[_profile select 2 select 3, _newPosition, _profile select 2 select 4]] call ALIVE_fnc_OPCOMcoverage;
+                                            };
 
                                         };
                                     };

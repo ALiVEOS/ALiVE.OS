@@ -188,6 +188,11 @@ switch (_operation) do {
         private _securityPatrols = switch (toLower format ["%1", _logic getvariable ["securityPatrols","none"]]) do {
             case "few": { 0.25 }; case "some": { 0.5 }; case "many": { 0.75 }; default { 0 };
         };
+        // Security Patrols mode (#1092): Objectives walks the rear objectives, Coverage walks the coldest ground; and the reach of a patrol from home in either
+        private _securityPatrolMode = if ((toLower format ["%1", _logic getvariable ["securityPatrolMode","objectives"]]) == "coverage") then { "coverage" } else { "objectives" };
+        private _securityPatrolReach = ((parseNumber format ["%1", _logic getvariable ["securityPatrolReach", 3000]]) max 500) min 10000;
+        // read first on the profile simulator's busiest path, so a mission without Coverage pays nothing for it
+        if (_securityPatrolMode == "coverage" && {_securityPatrols > 0}) then { ALiVE_coverageActive = true };
         // Attacks Arrive Together (#207): on each leg of an attack the faster groups wait before setting off.
         private _arriveTogether = (toLower format ["%1", _logic getvariable ["arriveTogether","false"]]) == "true";
         // Preparation Fire (#207): the commander's guns fire on an objective's defenders before it is assaulted.
@@ -377,6 +382,8 @@ switch (_operation) do {
             ["frontlineMinefields", _frontlineMinefields],
             ["preparedDefences", _preparedDefences],
             ["securityPatrols", _securityPatrols],
+            ["securityPatrolMode", _securityPatrolMode],
+            ["securityPatrolReach", _securityPatrolReach],
             ["arriveTogether", _arriveTogether],
             ["prepFire", _prepFire],
             ["hostilityPresenceMultiplier", _hostilityPresenceMultiplier],

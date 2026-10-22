@@ -17,6 +17,14 @@ AA, a recruiter, anything stationary). An objective is rear when nothing within
 objective, the setting's share of them go out and one always stays; with one,
 it goes out on that share of ticks.
 
+Coverage (#1092) is a second mode. The stops are the coldest sectors of the
+commander's territory within reach of home instead of the rear objectives, and
+what goes out is the surplus: the groups above the objective's minimum, 2 at a
+large objective and 1 at a small one, times the setting's share. Patrols carry
+a securityPatrol flag while they are listed, and the profile simulator marks
+the sectors they pass through. The territory, watch and presence live in
+fnc_OPCOMcoverage. The patrol reach setting is the route radius in both modes.
+
 The commander keeps its claim: a new order (setSectionOrders) replaces the
 patrol's waypoints and puts the group on its pending orders, or moves it to
 another objective, and the patrol is dropped from the list the next tick
@@ -37,7 +45,7 @@ Jman
 ---------------------------------------------------------------------------- */
 
 #define PATROL_HOT_RADIUS 2000
-#define PATROL_ROUTE_RADIUS 3000
+#define PATROL_LARGE_SIZE 150
 #define PATROL_REST_MIN 600
 #define PATROL_REST_MAX 1200
 #define PATROL_TIMEOUT 5400
@@ -50,6 +58,9 @@ if (_share <= 0) exitWith {};
 
 private _ledger = [_handler, "securityPatrolLedger", createHashMap] call ALiVE_fnc_HashGet;
 [_handler, "securityPatrolLedger", _ledger] call ALiVE_fnc_HashSet;
+private _coverage = ([_handler, "securityPatrolMode", "objectives"] call ALiVE_fnc_HashGet) == "coverage";
+private _reach = ([_handler, "securityPatrolReach", 3000] call ALiVE_fnc_HashGet) max 500;
+private _side = [_handler, "side", "WEST"] call ALiVE_fnc_HashGet;
 private _debug = [_handler, "debug", false] call ALiVE_fnc_HashGet;
 private _profilesById = [ALiVE_profileHandler, "profilesById"] call ALiVE_fnc_hashGet;
 private _assignment = [_handler, "profileObjectiveAssignment", createHashMap] call ALiVE_fnc_HashGet;
@@ -75,6 +86,14 @@ private _fnc_sendHome = {
     [_profile, "clearWaypoints"] call ALIVE_fnc_profileEntity;
     [_profile, "addWaypoint", _wp] call ALIVE_fnc_profileEntity;
 };
+// the flag the profile simulator reads to mark presence: on while the group is in the ledger, off when it leaves it
+private _fnc_drop = {
+    params ["_id"];
+    _ledger deleteAt _id;
+    private _p = _profilesById get _id;
+    if (!isNil "_p") then { [_p, "securityPatrol"] call ALiVE_fnc_hashRem };
+    if (!isNil "ALiVE_coverageLastSector") then { ALiVE_coverageLastSector deleteAt _id };
+};
 
 // the patrols already out: dropped, sent home, or rested and sent out again
 {
@@ -83,9 +102,9 @@ private _fnc_sendHome = {
     private _p = _profilesById get _id;
     private _home = _objectivesByID get _homeID;
     call {
-        if (isNil "_p" || {isNil "_home"} || {[_home, "deleted", false] call ALiVE_fnc_HashGet}) exitWith { _ledger deleteAt _id };
+        if (isNil "_p" || {isNil "_home"} || {[_home, "deleted", false] call ALiVE_fnc_HashGet}) exitWith { [_id] call _fnc_drop };
         // taken for an order, or moved to another objective: the commander's now
-        if ((_assignment getOrDefault [_id, ""]) != _homeID || {_id in _pendingIDs}) exitWith { _ledger deleteAt _id };
+        if ((_assignment getOrDefault [_id, ""]) != _homeID || {_id in _pendingIDs}) exitWith { [_id] call _fnc_drop };
         private _homePos = [_home, "center", [0,0,0]] call ALiVE_fnc_HashGet;
         if (_phase in ["out", "recalled"]) then {
             private _back = (time - _since) > 60 && {([_p] call _fnc_wpsLeft) == 0 || {(time - _since) > 300 && {(([_p, "position", [0,0,0]] call ALIVE_fnc_hashGet) distance2D _homePos) < 100}}};
@@ -101,7 +120,7 @@ private _fnc_sendHome = {
             };
         } else {
             // resting at home: the next tick out picks it again once the rest is over
-            if (time > _nextAt) then { _ledger deleteAt _id };
+            if (time > _nextAt) then { [_id] call _fnc_drop };
         };
     };
 } forEach +_ledger;
@@ -109,6 +128,18 @@ private _fnc_sendHome = {
 // new patrols from each rear, held objective
 private _rearHeld = _objectives select {
     ([_x, "opcom_state", ""] call ALiVE_fnc_HashGet) == "idle" && {[[_x, "center", [0,0,0]] call ALiVE_fnc_HashGet] call _fnc_rear}
+};
+if (_coverage) then {
+    // the territory from everything held, the watch from the groups still at each idle objective
+    private _held = _objectives select { ([_x, "opcom_state", ""] call ALiVE_fnc_HashGet) in ["idle", "reserve", "reserving"] };
+    [_handler, "territory", [_held, _reach]] call ALIVE_fnc_OPCOMcoverage;
+    private _homes = _rearHeld apply {
+        private _obj = _x;
+        private _section = ([_obj, "section", []] call ALiVE_fnc_HashGet) select { _x isEqualType "" };
+        private _away = _section select { private _e = _ledger getOrDefault [_x, []]; _e isNotEqualTo [] && {(_e select 2) in ["out", "recalled"]} };
+        [_obj, count _section - count _away]
+    };
+    [_handler, "watch", [_homes]] call ALIVE_fnc_OPCOMcoverage;
 };
 {
     private _home = _x;
@@ -130,16 +161,26 @@ private _rearHeld = _objectives select {
         && {isNil "ALIVE_aaProfileBehaviour" || {([ALIVE_aaProfileBehaviour, _x, ""] call ALIVE_fnc_hashGet) != "static"}}
     };
     private _groups = count _section;
-    private _want = if (_groups >= 2) then { (ceil (_groups * _share) min (_groups - 1)) - count _out } else { [0, 1] select (random 1 < _share) };
+    private _want = if (_coverage) then {
+        // the surplus above the objective's minimum, times the share as a bias: a quarter is a third, half two thirds, three quarters all
+        [nil, "surplus", [_groups, [_home, "size", 100] call ALiVE_fnc_HashGet, _share, count _out]] call ALIVE_fnc_OPCOMcoverage
+    } else {
+        if (_groups >= 2) then { (ceil (_groups * _share) min (_groups - 1)) - count _out } else { [0, 1] select (random 1 < _share) }
+    };
     if (_want > 0 && {_free isNotEqualTo []}) then {
-        // the stops: the nearest two or three other rear objectives the commander holds within 3 km, over land,
-        // in a shuffled order (an unassigned one can be the enemy's)
-        private _stops = (_rearHeld + (_objectives select { ([_x, "opcom_state", ""] call ALiVE_fnc_HashGet) in ["reserve", "reserving"] }))
-            select { _x isNotEqualTo _home }
-            apply { [[_x, "center", [0,0,0]] call ALiVE_fnc_HashGet, [_x, "size", 100] call ALiVE_fnc_HashGet] }
-            select { ((_x select 0) distance2D _homePos) < PATROL_ROUTE_RADIUS && {[_x select 0] call _fnc_rear} && {!([_homePos, _x select 0] call ALiVE_fnc_crossesSea)} };
-        _stops = [_stops, [], { (_x select 0) distance2D _homePos }, "ASCEND"] call BIS_fnc_sortBy;
-        _stops = (_stops select [0, 2 + floor random 2]) call BIS_fnc_arrayShuffle;
+        // the stops. Coverage: the coldest sectors of the territory within reach, nearest first. Objectives: the
+        // nearest two or three other rear objectives the commander holds within reach, over land, in a shuffled
+        // order (an unassigned one can be the enemy's)
+        private _stops = if (_coverage) then {
+            [_handler, "coldest", [_side, _homePos, _reach, _fnc_rear]] call ALIVE_fnc_OPCOMcoverage
+        } else {
+            private _list = (_rearHeld + (_objectives select { ([_x, "opcom_state", ""] call ALiVE_fnc_HashGet) in ["reserve", "reserving"] }))
+                select { _x isNotEqualTo _home }
+                apply { [[_x, "center", [0,0,0]] call ALiVE_fnc_HashGet, [_x, "size", 100] call ALiVE_fnc_HashGet] }
+                select { ((_x select 0) distance2D _homePos) < _reach && {[_x select 0] call _fnc_rear} && {!([_homePos, _x select 0] call ALiVE_fnc_crossesSea)} };
+            _list = [_list, [], { (_x select 0) distance2D _homePos }, "ASCEND"] call BIS_fnc_sortBy;
+            (_list select [0, 2 + floor random 2]) call BIS_fnc_arrayShuffle
+        };
         // every leg over land, back home included: a stop that would cross water from the last one is left out
         private _route = [];
         private _from = _homePos;
@@ -162,8 +203,9 @@ private _rearHeld = _objectives select {
                 private _wpHome = [_homePos, 30, "MOVE", "LIMITED", 50, [], "NO CHANGE", "NO CHANGE", "SAFE"] call ALIVE_fnc_createProfileWaypoint;
                 [_p, "addWaypoint", _wpHome] call ALIVE_fnc_profileEntity;
                 _ledger set [_x, [_homeID, time, "out", 0]];
+                if (_coverage) then { [_p, "securityPatrol", true] call ALiVE_fnc_hashSet };
                 if (_debug) then {
-                    ["ALiVE OPCOM SECURITY PATROL: %1 from %2 through %3 stop(s)", _x, _homeID, count _stops] call ALiVE_fnc_dump;
+                    ["ALiVE OPCOM SECURITY PATROL: %1 from %2 through %3 stop(s) (%4)", _x, _homeID, count _stops, ["objectives", "coverage"] select _coverage] call ALiVE_fnc_dump;
                 };
             } forEach _free;
         };

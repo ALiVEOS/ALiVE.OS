@@ -91,6 +91,11 @@ class cfgFunctions {
                                 file = "\x\alive\addons\mil_opcom\fnc_OPCOMsecurityPatrols.sqf";
                                 ALIVE_RECOMPILE;
                         };
+                        class OPCOMcoverage {
+                                description = "Issue #1092: the territory, presence and garrison watch Coverage patrols walk by";
+                                file = "\x\alive\addons\mil_opcom\fnc_OPCOMcoverage.sqf";
+                                ALIVE_RECOMPILE;
+                        };
                         class OPCOMfriendlyDisableInstallations {
                                 description = "Issue #697: friendly AI disables enemy asymmetric installations via proximity presence and/or friendly OPCOM capture of the objective";
                                 file = "\x\alive\addons\mil_opcom\fnc_OPCOMfriendlyDisableInstallations.sqf";

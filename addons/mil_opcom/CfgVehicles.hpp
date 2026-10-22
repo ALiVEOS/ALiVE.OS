@@ -203,6 +203,28 @@ class CfgVehicles {
                                         class Many { name = "Many"; value = "many"; };
                                 };
                         };
+                        // Security Patrols mode (#1092): a second mode where patrols walk the coldest ground of the commander's territory
+                        class securityPatrolMode : Combo
+                        {
+                                property = "ALiVE_mil_opcom_securityPatrolMode";
+                                displayName = "$STR_ALIVE_OPCOM_SECURITY_PATROL_MODE";
+                                tooltip = "$STR_ALIVE_OPCOM_SECURITY_PATROL_MODE_COMMENT";
+                                defaultValue = """objectives""";
+                                class Values
+                                {
+                                        class Objectives { name = "Objectives"; value = "objectives"; };
+                                        class Coverage { name = "Coverage"; value = "coverage"; };
+                                };
+                        };
+                        // how far a patrol goes from its home objective, in either mode; the territory in Coverage reaches the same distance
+                        class securityPatrolReach : Edit
+                        {
+                                property = "ALiVE_mil_opcom_securityPatrolReach";
+                                displayName = "$STR_ALIVE_OPCOM_SECURITY_PATROL_REACH";
+                                tooltip = "$STR_ALIVE_OPCOM_SECURITY_PATROL_REACH_COMMENT";
+                                defaultValue = """3000""";
+                                typeName = "NUMBER";
+                        };
                         class preparedDefences : Combo
                         {
                                 property = "ALiVE_mil_opcom_preparedDefences";
