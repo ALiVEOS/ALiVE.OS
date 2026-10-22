@@ -534,8 +534,10 @@ switch (_operation) do {
 		//-- Get nearest objective properties
 		//  Multi-faction: accept this OPCOM if ANY of its factions overlaps
 		//  the insurgent-faction list from this module.
-		for "_i" from 0 to (count OPCOM_instances - 1) step 1 do {
-			_opcom = OPCOM_instances select _i;
+		// a mission with no AI Commander has no OPCOM_instances: the talk window then never filled in
+		private _opcoms = missionNamespace getVariable ["OPCOM_instances", []];
+		for "_i" from 0 to (count _opcoms - 1) step 1 do {
+			_opcom = _opcoms select _i;
 
 			private _opcomFactions = [_opcom, "factions"] call ALiVE_fnc_hashGet;
 			if ((_insurgentFaction arrayIntersect _opcomFactions) isNotEqualTo []) exitWith {
