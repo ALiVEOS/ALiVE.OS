@@ -332,7 +332,7 @@
     <English>Trigger Man Chance (%)</English>
 </Key>
 <Key ID="STR_ALIVE_IED_DICKER_CHANCE_COMMENT">
-    <English>How many IEDs get a civilian trigger man watching from 60 to 150 m away. While he is free he sets the IED off himself when anyone comes near, so a careful approach won't save you. Kill him, detain him or make him surrender and it won't go off when approached; disarm it as usual. ALiVE IEDs only. Type a percentage, 0 to 100.</English>
+    <English>How many IEDs get a civilian trigger man watching from 40 to 150 m away, from inside a house among the civilians where there is one. While he is free he sets the IED off himself when anyone comes near, so a careful approach won't save you. Kill him, detain him or make him surrender and it won't go off when approached; disarm it as usual. ALiVE IEDs only. Type a percentage, 0 to 100.</English>
 </Key>
 <Key ID="STR_ALIVE_IED_AMBUSH_CHANCE">
     <English>Ambush Chance After a Blast (%)</English>
