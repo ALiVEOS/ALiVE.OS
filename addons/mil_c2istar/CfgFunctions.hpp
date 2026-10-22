@@ -436,6 +436,11 @@ class CfgFunctions {
                 file = "\x\alive\addons\mil_c2istar\tasks\fnc_taskWiretap.sqf";
                 ALIVE_RECOMPILE;
             };
+            class taskReconObjective {
+                description = "Task Reconnoitre Objective";
+                file = "\x\alive\addons\mil_c2istar\tasks\fnc_taskReconObjective.sqf";
+                ALIVE_RECOMPILE;
+            };
             class taskRemoveIED {
                 description = "Task IED Disposal (EOD)";
                 file = "\x\alive\addons\mil_c2istar\tasks\fnc_taskRemoveIED.sqf";

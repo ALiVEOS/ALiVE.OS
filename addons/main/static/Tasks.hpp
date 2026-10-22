@@ -744,6 +744,35 @@
 
 	[ALIVE_generatedTasks, "Wiretap", ["Wiretap Comms Post",_options]] call ALIVE_fnc_hashSet;
 
+// Reconnaissance Task (Javen on Discord, 22 Oct): watch an objective so the commander knows what is there
+
+	_options = [];
+
+	_tasksData = [] call ALIVE_fnc_hashCreate;
+
+	_taskData = [] call ALIVE_fnc_hashCreate;
+	[_taskData,"title","Reconnoitre %1"] call ALIVE_fnc_hashSet;
+	[_taskData,"description","Find out what the enemy holds at %1 before the attack goes in."] call ALIVE_fnc_hashSet;
+	[_tasksData,"Parent",_taskData] call ALIVE_fnc_hashSet;
+
+	_taskData = [] call ALIVE_fnc_hashCreate;
+	[_taskData,"title","Move to overwatch near %1"] call ALIVE_fnc_hashSet;
+	[_taskData,"description","Get to an overwatch position near %1 without being seen."] call ALIVE_fnc_hashSet;
+	[_taskData,"chat_start",[["HQ","We have no picture of what the enemy holds at %1. Move to overwatch and take a look, Over."],["PLAYERS","Roger, moving to overwatch"]]] call ALIVE_fnc_hashSet;
+	[_tasksData,"Travel",_taskData] call ALIVE_fnc_hashSet;
+
+	_taskData = [] call ALIVE_fnc_hashCreate;
+	[_taskData,"title","Observe %1"] call ALIVE_fnc_hashSet;
+	[_taskData,"description","Keep eyes on %1 from within 600 m for a minute and report what you see."] call ALIVE_fnc_hashSet;
+	[_taskData,"chat_start",[["HQ","Eyes on %1. Report enemy positions when you have them, Over."],["PLAYERS","Wilco"]]] call ALIVE_fnc_hashSet;
+	[_taskData,"chat_success",[["PLAYERS","Recon complete, sending what we saw now, Over."],["HQ","Good work. We'll plan against those positions."]]] call ALIVE_fnc_hashSet;
+	[_taskData,"reward",["forcePool",10]] call ALIVE_fnc_hashSet;
+	[_tasksData,"Observe",_taskData] call ALIVE_fnc_hashSet;
+
+	_options set [count _options,_tasksData];
+
+	[ALIVE_generatedTasks, "ReconObjective", ["Reconnoitre Objective",_options]] call ALIVE_fnc_hashSet;
+
 // Aid Delivery Task
 
 	_options = [];

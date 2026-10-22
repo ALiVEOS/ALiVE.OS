@@ -4647,7 +4647,17 @@ switch (_operation) do {
                 _result = false;
             };
         };
-        if (_state == "requested") exitWith {
+        // Recon first (Javen on Discord, 22 Oct): with Tasks Only Against Known Enemy and nothing known, the players were
+        // sent to reconnoitre. Once they have reported, a second round of tasks goes after what they found, inside the
+        // same Preparation Timeout
+        private _reconID = _module getVariable ["ALiVE_prep_reconID", ""];
+        private _round2 = false;
+        // (told by the recon's report, which names its task: the task's rows are deleted the moment it finishes)
+        if (_state == "requested" && {_prepFor == _objectiveID} && {_reconID != ""} && {!(_module getVariable ["ALiVE_prep_round2Done", false])}
+            && {time <= (_module getVariable ["ALiVE_prep_deadline", -1])}) then {
+            _round2 = ((missionNamespace getVariable ["ALiVE_reconReports", []]) findIf { (_x param [5, ""]) == _reconID }) >= 0;
+        };
+        if (_state == "requested" && {!_round2}) exitWith {
             // every task asked for: one still open holds the attack; one C2ISTAR never made is given 2 minutes
             private _ids = _module getVariable ["ALiVE_prep_taskIDs", [_module getVariable ["ALiVE_prep_taskID", ""]]];
             private _all = ([ALiVE_TaskHandler, "tasks", ["", [], [], nil]] call ALiVE_fnc_HashGet) select 2;
@@ -4656,6 +4666,10 @@ switch (_operation) do {
             {
                 private _id = _x;
                 private _states = (_all select { ((_x select 0) find _id) == 0 }) apply { _x select 8 };
+                if (_id == _reconID) then {
+                    private _obs = (_all select { (_x select 0) == _id + "_c2" }) apply { _x select 8 };
+                    if (_obs isNotEqualTo [] && {!((_obs select 0) in ["Succeeded", "Failed", "Canceled"])}) then { _states = ["Assigned"] };
+                };
                 if (_states isEqualTo []) then { if (_young) then { _open = _open + 1 } } else {
                     _made = _made + 1;
                     if ("Succeeded" in _states) then { _won = _won + 1 } else {
@@ -4698,7 +4712,9 @@ switch (_operation) do {
         if (isNil "ALIVE_MIL_C2ISTAR" || {isNil "ALiVE_TaskHandler"} || {isNil "ALIVE_eventLog"} || {(_players select 0) isEqualTo []}
             || {!(missionNamespace getVariable ["ALiVE_c2istar_autoPlayerTasks", true])} || {_enemyFaction == ""}) exitWith {
             // nobody to give it to: the attack goes ahead, and the objective is asked about again once players are on;
-            // nobody holding it: no task to set, ever
+            // nobody holding it: no task to set, ever. In the middle of a preparation (a recon's second round) it keeps
+            // waiting for the tasks already out, and the round is tried again on a later check
+            if (_round2) exitWith { _result = false };
             if (_enemyFaction == "") then {
                 _cleared pushBackUnique _objectiveID;
                 _module setVariable ["ALiVE_prep_cleared", _cleared];
@@ -4756,6 +4772,33 @@ switch (_operation) do {
             } forEach _insSides;
             if (_found) then { _kinds pushBack ["InsurgencyDestroyAssets", [], "insurgent installation"] };
         };
+        // the second round, after a recon: only what it has made known, every kind of it
+        if (_round2) exitWith {
+            _module setVariable ["ALiVE_prep_round2Done", true];
+            private _more = _kinds select { !((_x select 0) in ["Wiretap", "ReconObjective"]) };
+            private _place2 = _module getVariable ["ALiVE_prep_place", "the objective"];
+            if (_more isEqualTo []) exitWith {
+                ["OPCOM %1: the recon at %2 found nothing to add to the preparations", _side, _objectiveID] call ALiVE_fnc_dump;
+                [_logic, "opRadio", format ["Recon at %1 is complete. Nothing there for further preparations.", _place2]] call ALiVE_fnc_OPCOM;
+                _result = false;
+            };
+            private _faction2 = ([_logic, "factions", [""]] call ALiVE_fnc_HashGet) param [0, ""];
+            private _ids2 = _module getVariable ["ALiVE_prep_taskIDs", []];
+            {
+                _x params ["_type", "_extra"];
+                private _taskID = format ["PREP_%1_%2_r%3", _objectiveID, floor time, _forEachIndex];
+                private _taskData = [_taskID, "OPCOM", _side, _faction2, _type, "Map", +_center, _players, _enemyFaction, "Y", "Side"];
+                if (_extra isNotEqualTo []) then { _taskData pushBack _extra };
+                [ALIVE_eventLog, "addEvent", ["TASK_GENERATE", _taskData, "OPCOM"] call ALIVE_fnc_event] call ALIVE_fnc_eventLog;
+                _ids2 pushBack _taskID;
+            } forEach _more;
+            _module setVariable ["ALiVE_prep_taskIDs", _ids2];
+            _module setVariable ["ALiVE_prep_requestedAt", time];
+            ["OPCOM %1: the recon at %2 found %3; tasks added", _side, _objectiveID, _more apply { _x param [2, _x select 0] }] call ALiVE_fnc_dump;
+            [_logic, "opRadio", format ["Recon at %1 is complete. %2 issued against what it found.", _place2,
+                [format ["%1 more tasks", count _more], "1 more task"] select (count _more == 1)]] call ALiVE_fnc_OPCOM;
+            _result = false;
+        };
         // how many: 0 and 0 keep the wiretap alone; otherwise between the fewest and the most, no more than there are kinds
         private _lo = [_logic, "opTasksMin", 0] call ALiVE_fnc_HashGet;
         private _hi = [_logic, "opTasksMax", 0] call ALiVE_fnc_HashGet;
@@ -4764,6 +4807,15 @@ switch (_operation) do {
             if (_hi < _lo) then { _hi = _lo };
             private _n = ((_lo + floor random (_hi - _lo + 1)) max 1) min (count _kinds);
             _chosen = (_kinds call BIS_fnc_arrayShuffle) select [0, _n];
+        };
+        // Recon first (Javen on Discord, 22 Oct): with Tasks Only Against Known Enemy and nothing known there, the players
+        // are sent to reconnoitre it as well, whatever Fewest and Most say, and what they report brings a second round
+        _module setVariable ["ALiVE_prep_reconID", ""];
+        _module setVariable ["ALiVE_prep_round2Done", false];
+        private _reconKind = [];
+        if (_knownOnly && {count _kinds == 1} && {!isNil "ALIVE_fnc_taskReconObjective"}) then {
+            _reconKind = ["ReconObjective", [], "reconnaissance"];
+            _chosen = [_reconKind] + _chosen;
         };
         private _faction = ([_logic, "factions", [""]] call ALiVE_fnc_HashGet) param [0, ""];
         private _ids = [];
@@ -4774,6 +4826,7 @@ switch (_operation) do {
             if (_extra isNotEqualTo []) then { _taskData pushBack _extra };
             [ALIVE_eventLog, "addEvent", ["TASK_GENERATE", _taskData, "OPCOM"] call ALIVE_fnc_event] call ALIVE_fnc_eventLog;
             _ids pushBack _taskID;
+            if (_x isEqualTo _reconKind) then { _module setVariable ["ALiVE_prep_reconID", _taskID] };
         } forEach _chosen;
         private _place = [_center] call ALIVE_fnc_taskGetNearestLocationName;
         if (isNil "_place" || {!(_place isEqualType "")} || {_place == ""}) then { _place = "grid " + mapGridPosition _center };
@@ -4818,6 +4871,15 @@ switch (_operation) do {
                 _pos pushBack (_x select 1);
             };
         } forEach ([_logic, "knownentities", []] call ALiVE_fnc_HashGet);
+        // and what players reported from a reconnaissance task (ALIVE_fnc_taskReconObjective): [side, position, time,
+        // group ids, group positions], for this side, in the last 30 minutes
+        private _mySide = [_logic, "side", "WEST"] call ALiVE_fnc_HashGet;
+        {
+            _x params ["_rSide", "", "_rTime", ["_rIds", []], ["_rPos", []]];
+            if (_rSide == _mySide && {time - _rTime <= 1800}) then {
+                { if !(_x in _ids) then { _ids pushBack _x; _pos pushBack (_rPos param [_forEachIndex, [0,0,0]]) } } forEach _rIds;
+            };
+        } forEach (missionNamespace getVariable ["ALiVE_reconReports", []]);
         _result = [_ids, _pos];
     };
 
