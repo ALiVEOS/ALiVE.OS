@@ -88,7 +88,7 @@
     <English>Persist By</English>
 </Key>
 <Key ID="STR_ALIVE_player_persistBy_COMMENT">
-    <English>Player keeps each player's own kit, position and health, whichever slot he takes. Slot keeps them with the slot instead, for units whose players change slots from one session to the next: whoever takes a slot gets its kit, position and health, while name, face, rank and scores stay with the player and the class check doesn't apply. Name the playable units in Eden (Variable Name) for Slot; a slot with no name is saved by player. Switching keeps the other mode's saves untouched.</English>
+    <English>Player keeps each player's own kit, position and health, whichever slot he takes. Slot keeps them with the slot instead, for units whose players change slots from one session to the next: whoever takes a slot gets its kit, position and health, while name, face, rank and scores stay with the player and the class check doesn't apply. Name the playable units in Eden (Variable Name) for Slot; a slot with no name is saved by player. Switching keeps the other mode's saves untouched, and on switching to Slot each player's own save is carried over, once, to the first slot he takes that has no save yet.</English>
 </Key>
 <Key ID="STR_ALIVE_player_allowDiffClass">
     <English>Allow Different Class Rejoin:</English>

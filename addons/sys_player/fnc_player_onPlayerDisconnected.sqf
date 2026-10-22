@@ -76,7 +76,8 @@ if (!isNil QMOD(sys_player) && isServer) then {
 
             // Work out when the last player save was and report the difference
 
-            _lastPlayerSaveTime = [MOD(sys_player), "getPlayerSaveTime", [_uid]] call ALIVE_fnc_player;
+            // the key his record was read under when he joined: by slot it is the slot's, which the UID doesn't find
+            _lastPlayerSaveTime = [MOD(sys_player), "getPlayerSaveTime", [MOD(sys_player) getVariable [_uid + "_key", _uid]]] call ALIVE_fnc_player;
             _timeDiff = (dateToNumber date) - _lastPlayerSaveTime;
 
             ["SYS_PLAYER - Have not saved player state for %2 for %1 seconds",_timeDiff,_name] call ALiVE_fnc_dump;
@@ -97,6 +98,7 @@ if (!isNil QMOD(sys_player) && isServer) then {
     };
 
     MOD(sys_player) setVariable [_uid, false, true];
+    MOD(sys_player) setVariable [_uid + "_key", nil];
 
     _test = MOD(sys_player) getVariable [_uid, false];
     TRACE_1("REMOVING PLAYER GUID FROM LOGIC", _test);

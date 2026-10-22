@@ -573,11 +573,38 @@ switch(_operation) do {
                     _unit  = _args select 0;
                     _owner = _args select 1;
 
+                    // Persisting by slot, a slot with no save of its own yet takes the joining player's own save
+                    // (from persisting by player) instead, so a campaign switched from player to slot doesn't
+                    // start everyone from scratch. Once per player save: it is marked with the slot it went to,
+                    // and setPlayer writes a fresh record without the mark if persisting by player is ever
+                    // turned back on.
+                    private _key = [_unit] call ALiVE_fnc_playerKey;
+                    private _uid = getPlayerUID _unit;
+                    if (_uid != "") then { MOD(sys_player) setVariable [_uid + "_key", _key] };
+                    if (
+                        _key != _uid
+                        && {_uid != ""}
+                        && {!([GVAR(player_data), _key] call CBA_fnc_hashHasKey)}
+                        && {[GVAR(player_data), _uid] call CBA_fnc_hashHasKey}
+                    ) then {
+                        private _own = [GVAR(player_data), _uid] call ALIVE_fnc_hashGet;
+                        if (([_own, "carriedToSlot", ""] call ALIVE_fnc_hashGet) isEqualTo "") then {
+                            // a copy, without the database's document id and revision, which belong to the player's
+                            // own document (the slot's is a new one), and without his old class, which by slot is
+                            // the slot's: left in, a different one stops his AI squad being brought to him below
+                            private _copy = [_own] call ALIVE_fnc_hashCopy;
+                            { [_copy, _x] call ALIVE_fnc_hashRem } forEach ["_id", "_rev", "class"];
+                            [_own, "carriedToSlot", _key] call ALIVE_fnc_hashSet;
+                            [GVAR(player_data), _key, _copy] call ALIVE_fnc_hashSet;
+                            ["SYS_PLAYER - %1 has no save yet, so %2's own save from persisting by player is carried over to it (once)", _key, name _unit] call ALiVE_fnc_dump;
+                        };
+                    };
+
                     // Check that the hash is found
-                     if ([GVAR(player_data), ([_unit] call ALiVE_fnc_playerKey)] call CBA_fnc_hashHasKey) then {
+                     if ([GVAR(player_data), _key] call CBA_fnc_hashHasKey) then {
 
                             // Grab player data from memory store
-                            _playerHash = [GVAR(player_data), [_unit] call ALiVE_fnc_playerKey] call ALIVE_fnc_hashGet;
+                            _playerHash = [GVAR(player_data), _key] call ALIVE_fnc_hashGet;
                             TRACE_1("GET PLAYER", _playerHash);
 
                             // Execute getplayer on local client using CBA_fnc_remoteLocalEvent
@@ -686,6 +713,12 @@ switch(_operation) do {
                                 _playerHash = [_logic, [_unit, _puid]] call ALIVE_fnc_setPlayer;
                                 // kept under the slot when persisting by slot, else under the player
                                 private _key = [_unit, _puid] call ALiVE_fnc_playerKey;
+                                // a player's own save that was carried over to a slot keeps saying so when an unnamed slot
+                                // (saved by player) rewrites it, so it is carried only once
+                                if ((MOD(sys_player) getVariable ["persistBy", "player"]) == "slot" && {[GVAR(player_data), _key] call CBA_fnc_hashHasKey}) then {
+                                    private _carried = [[GVAR(player_data), _key] call ALIVE_fnc_hashGet, "carriedToSlot", ""] call ALIVE_fnc_hashGet;
+                                    if (_carried isNotEqualTo "") then { [_playerHash, "carriedToSlot", _carried] call ALIVE_fnc_hashSet };
+                                };
                                 [GVAR(player_data), _key] call ALIVE_fnc_hashRem;
                                 [GVAR(player_data), _key, _playerHash] call ALIVE_fnc_hashSet;
                                 _result = _playerHash;
