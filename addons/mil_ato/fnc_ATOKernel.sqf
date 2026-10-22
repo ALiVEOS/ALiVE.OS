@@ -2431,6 +2431,50 @@ switch(_operation) do {
         _result = [_task, "csar", [_tail, _class, _pos]] call ALIVE_fnc_ATOTask;
     };
 
+    // A player asking for air support from the tablet (A. Ares and Javen on Discord, 21 Oct): [player, type, target
+    // position], sent to the server from the C2ISTAR menu with any of the mission's air commanders as the logic. It goes
+    // to the first commander that flies for the player's side (or failing that an allied side), has started and has that
+    // type in its Available ATOs, as
+    // the same request a player always could make (its own id, so a status or cancel can quote it), filed under that
+    // commander's own faction so it is taken whatever faction the player is. The side hears it acknowledged or turned
+    // down on the radio as for any player request; with no commander to ask, the player is told so.
+    case "playerRequest": {
+        _result = false;
+        if (!isServer || {!(_args isEqualType [])}) exitWith {};
+        _args params [["_unit", objNull, [objNull]], ["_type", "CAS", [""]], ["_pos", [], [[]]]];
+        if (isNull _unit || {count _pos < 2} || {isNil "ALIVE_eventLog"}) exitWith {};
+        private _playerSide = side group _unit;
+        private _chosen = objNull;
+        private _chosenSide = _playerSide;
+        // the player's own side's commander first; failing that, an allied side's
+        private _maccs = (entities "Module_F") select { (typeOf _x) isEqualTo "ALiVE_mil_ato" && {!(([_x] call _fnc_kernel) isEqualTo [])} };
+        {
+            private _friendly = _x;
+            {
+                private _m = _x;
+                if (isNull _chosen) then {
+                    private _mSide = [[_m, "side"] call MAINCLASS] call ALiVE_fnc_sideTextToObject;
+                    private _mTypes = [_m, "types"] call MAINCLASS;
+                    private _sideOk = if (_friendly) then { [_playerSide, _mSide] call BIS_fnc_sideIsFriendly } else { _mSide isEqualTo _playerSide };
+                    if (_sideOk && {_mTypes isEqualType []} && {_type in _mTypes}) then { _chosen = _m; _chosenSide = _mSide };
+                };
+            } forEach _maccs;
+        } forEach [false, true];
+        if (isNull _chosen) exitWith {
+            [format ["No air commander takes %1 requests for your side.", _type]] remoteExec ["hint", _unit];
+            ["ALIVE_fnc_ATOKernel - %1 asked for %2 at %3, but no air commander of side %4 flies it", name _unit, _type, mapGridPosition _pos, _playerSide] call ALiVE_fnc_dump;
+        };
+        private _faction = ([_chosen, "factions"] call MAINCLASS) param [0, [_chosen, "faction"] call MAINCLASS];
+        private _uid = getPlayerUID _unit;
+        // numbered too, so two clicks in the same second are two requests
+        ALiVE_ATO_playerReqSeq = (missionNamespace getVariable ["ALiVE_ATO_playerReqSeq", 0]) + 1;
+        private _requestId = format ["PLAYER_%1_%2_%3_%4", _type, _uid, round time, ALiVE_ATO_playerReqSeq];
+        private _event = ["ATO_REQUEST", [_type, _chosenSide, _faction, [_pos select 0, _pos select 1, 0], [], _requestId, _uid], "PLAYER"] call ALIVE_fnc_event;
+        [ALIVE_eventLog, "addEvent", _event] call ALIVE_fnc_eventLog;
+        ["ALIVE_fnc_ATOKernel - %1 asked for %2 at %3 (request %4, to %5)", name _unit, _type, mapGridPosition _pos, _requestId, _faction] call ALiVE_fnc_dump;
+        _result = true;
+    };
+
     // Somebody saw an air defence. An object or a profile id; the watch files
     // it under the airspace it is in.
     case "registerThreat": {

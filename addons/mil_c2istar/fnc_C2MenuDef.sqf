@@ -222,6 +222,41 @@ if (_menuName == "C2ISTAR") then {
                      true,
                      _result
                 ],
+                // Ask the Air Component Commander for close air support (A. Ares and Javen on Discord, 21 Oct): click the
+                // target on the map and the server hands it to the commander that flies for your side. Shown when the
+                // mission has one; the side hears it acknowledged or turned down on the radio.
+                ["Request CAS",
+                    {
+                        openMap [true, false];
+                        // armed only once the map is open, and gone when it closes: an ordinary click later is just a click.
+                        // A mission event handler, not onMapSingleClick, which the admin teleport takes over
+                        [] spawn {
+                            private _t = diag_tickTime + 3;
+                            waitUntil { sleep 0.1; visibleMap || {diag_tickTime > _t} };
+                            if (!visibleMap) exitWith { hint "The map didn't open, so no air support was requested." };
+                            hint "Click the map where you want close air support.";
+                            if (!isNil "ALiVE_ATO_casClickEH") then { removeMissionEventHandler ["MapSingleClick", ALiVE_ATO_casClickEH] };
+                            ALiVE_ATO_casClickEH = addMissionEventHandler ["MapSingleClick", {
+                                params ["", "_pos"];
+                                removeMissionEventHandler ["MapSingleClick", _thisEventHandler];
+                                ALiVE_ATO_casClickEH = nil;
+                                private _macc = (entities "Module_F") select { (typeOf _x) isEqualTo "ALiVE_mil_ato" };
+                                if (_macc isNotEqualTo []) then {
+                                    [_macc select 0, "playerRequest", [player, "CAS", _pos]] remoteExec ["ALiVE_fnc_ATOKernel", 2];
+                                    hint format ["Close air support requested at grid %1.", mapGridPosition _pos];
+                                };
+                            }];
+                            waitUntil { sleep 0.2; !visibleMap };
+                            if (!isNil "ALiVE_ATO_casClickEH") then { removeMissionEventHandler ["MapSingleClick", ALiVE_ATO_casClickEH]; ALiVE_ATO_casClickEH = nil };
+                        };
+                    },
+                    "",
+                    "Ask the Air Component Commander for close air support where you click on the map",
+                     "",
+                     -1,
+                     true,
+                     _result && {((entities "Module_F") findIf { (typeOf _x) isEqualTo "ALiVE_mil_ato" }) > -1}
+                ],
                 [
                     // Caption reflects current state — flexi menu re-runs
                     // C2MenuDef on each open, so the label flips correctly
