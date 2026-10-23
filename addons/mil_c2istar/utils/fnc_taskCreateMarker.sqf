@@ -176,7 +176,34 @@ if (!isNil "ALiVE_mil_c2istar_debug" && {ALiVE_mil_c2istar_debug}) then {
     ["DIAG-STRIP taskCreateMarker: taskID=%1 markerText='%2' markerShape=%3 markerType=%4", _taskID, _markerText, _markerShape, _markerType] call ALiVE_fnc_dump;
 };
 private _mText = "";
-if(_markerText != "" && {_markerShape == "ICON"}) then {
+// With the map label layer on (Addon Options > Tidy map labels) the layer writes the name in black
+// beside the icon, clear of other names, so no second marker is needed (ALiVE_fnc_mapPins)
+private _layer = _markerText != "" && {_markerShape == "ICON"} && {["enabled"] call ALiVE_fnc_mapPins};
+if (_layer) then {
+    // turned off later, the name goes back where it was before the layer: a black text marker 30 m
+    // east of the pin, the same one made below, kept with the task's markers; turned on, it goes
+    ["adopt", [_m, _markerText, 60, "ColorBlack", {
+        params ["_m", "_on", "_args"];
+        _args params ["_taskID", "_text", "_alpha"];
+        private _s = _m + "_text";
+        _m setMarkerTextLocal "";
+        if (_on) exitWith { deleteMarkerLocal _s };
+        if (markerType _s != "") exitWith {};
+        private _p = markerPos _m;
+        _s = createMarkerLocal [_s, [(_p select 0) + 30, _p select 1, 0]];
+        _s setMarkerShapeLocal "ICON";
+        _s setMarkerTypeLocal "EmptyIcon";
+        _s setMarkerColorLocal "ColorBlack";
+        _s setMarkerSizeLocal [0.5, 0.5];
+        _s setMarkerAlphaLocal _alpha;
+        _s setMarkerTextLocal _text;
+        if (!isNil "ALIVE_taskMarkers" && {_taskID in (ALIVE_taskMarkers select 1)}) then {
+            private _list = [ALIVE_taskMarkers, _taskID] call ALIVE_fnc_hashGet;
+            if !(_s in _list) then { _list pushBack _s };
+        };
+    }, [_taskID, _markerText, _markerAlpha]]] call ALiVE_fnc_mapPins;
+};
+if(!_layer && {_markerText != ""} && {_markerShape == "ICON"}) then {
     // Offset the sibling text marker 30m east of the icon so the
     // text renders to the right of the icon instead of underneath
     // it (Arma anchors marker text at the marker position; without
@@ -204,7 +231,7 @@ if(_markerText != "" && {_markerShape == "ICON"}) then {
     if (!isNil "ALiVE_mil_c2istar_debug" && {ALiVE_mil_c2istar_debug}) then {
         ["DIAG-STRIP taskCreateMarker: sibling SKIPPED taskID=%1 markerText='%2' markerShape=%3 - reason=%4", _taskID, _markerText, _markerShape, if (_markerText == "") then { "empty markerText" } else { format ["non-ICON shape (%1)", _markerShape] }] call ALiVE_fnc_dump;
     };
-    if(_markerText != "") then {
+    if(_markerText != "" && {!_layer}) then {
         // Non-ICON shape (ELLIPSE / RECTANGLE) - keep text on the
         // primary since the sibling-overlay trick is icon-specific.
         _m setMarkerTextLocal _markerText;

@@ -131,6 +131,12 @@
 <Key ID="STR_ALIVE_SETTINGS_PINS_DEFAULT">
     <English>Arma default</English>
 </Key>
+<Key ID="STR_ALIVE_SETTINGS_MAPLAYER">
+    <English>Tidy map labels</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_MAPLAYER_COMMENT">
+    <English>ALiVE writes the names of its own map markers (FOBs, rally points, tasks) itself and moves each one to a free spot beside its marker, so names don't print over each other. A name with no room beside its marker is left off until you zoom in, apart from FOBs, which always keep theirs. With Task pins on, FOBs and rally points use ALiVE's pins too. Off shows them the way Arma draws them.</English>
+</Key>
 <Key ID="STR_ALIVE_SETTINGS_UI">
     <English>Interaction menu</English>
 </Key>

@@ -6,6 +6,21 @@ class cfgFunctions {
                 file = "\x\alive\addons\main\fnc_buttonAbort.sqf";
                 ALIVE_RECOMPILE;
             };
+            class mapPins {
+                description = "The map label layer: names of ALiVE markers placed clear of each other";
+                file = "\x\alive\addons\main\fnc_mapPins.sqf";
+                ALIVE_RECOMPILE;
+            };
+            class mapPinsLayout {
+                description = "Where each adopted marker name goes on one map";
+                file = "\x\alive\addons\main\fnc_mapPinsLayout.sqf";
+                ALIVE_RECOMPILE;
+            };
+            class mapPinsDraw {
+                description = "Draw handler for the map label layer";
+                file = "\x\alive\addons\main\fnc_mapPinsDraw.sqf";
+                ALIVE_RECOMPILE;
+            };
             class aliveInit {
                 description = "ALiVE init function";
                 file = "\x\alive\addons\main\fnc_aliveInit.sqf";

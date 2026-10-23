@@ -4,6 +4,7 @@
 #include "CfgSettings.hpp"
 #include "CfgVehicles.hpp"
 #include "CfgFunctions.hpp"
+#include "CfgMarkers.hpp"
 #include "Eventhandlers.hpp"
 #include "CfgHints.hpp"
 #include "Cfg3rdPartyFactions.hpp"

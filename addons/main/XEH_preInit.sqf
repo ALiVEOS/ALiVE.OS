@@ -46,7 +46,14 @@ LOG(MSG_INIT);
 // how C2ISTAR task updates are shown (ALIVE_fnc_taskSubtitle); no "off", the hold countdown needs a way in
 ["ALiVE_prefTaskMessages", "LIST", [localize "STR_ALIVE_SETTINGS_MSG", localize "STR_ALIVE_SETTINGS_MSG_COMMENT"], [localize "STR_ALIVE_SETTINGS_CATEGORY", localize "STR_ALIVE_SETTINGS_GAME"], [["subtitle", "hint", "chat"], [localize "STR_ALIVE_SETTINGS_MSG_SUB", localize "STR_ALIVE_SETTINGS_MSG_HINT", localize "STR_ALIVE_SETTINGS_MSG_CHAT"], 0]] call CBA_fnc_addSetting;
 // ALiVE's hand-drawn pin for each C2ISTAR task type on the map and in the task list, or Arma's own (ALIVE_fnc_taskCreateMarker, ALIVE_fnc_taskHandlerClient)
-["ALiVE_prefTaskPins", "LIST", [localize "STR_ALIVE_SETTINGS_PINS", localize "STR_ALIVE_SETTINGS_PINS_COMMENT"], [localize "STR_ALIVE_SETTINGS_CATEGORY", localize "STR_ALIVE_SETTINGS_GAME"], [["alive", "default"], [localize "STR_ALIVE_SETTINGS_PINS_ALIVE", localize "STR_ALIVE_SETTINGS_PINS_DEFAULT"], 0]] call CBA_fnc_addSetting;
+["ALiVE_prefTaskPins", "LIST", [localize "STR_ALIVE_SETTINGS_PINS", localize "STR_ALIVE_SETTINGS_PINS_COMMENT"], [localize "STR_ALIVE_SETTINGS_CATEGORY", localize "STR_ALIVE_SETTINGS_GAME"], [["alive", "default"], [localize "STR_ALIVE_SETTINGS_PINS_ALIVE", localize "STR_ALIVE_SETTINGS_PINS_DEFAULT"], 0], 0, {
+    // FOBs and rally points pick their pin from this too, so they redraw straight away
+    if (!isNil "ALiVE_mapPins_reg") then { ["refresh"] call ALiVE_fnc_mapPins };
+}] call CBA_fnc_addSetting;
+// ALiVE writes the names of its own map markers itself, each moved clear of other names and icons (ALiVE_fnc_mapPins)
+["ALiVE_prefMapLayer", "CHECKBOX", [localize "STR_ALIVE_SETTINGS_MAPLAYER", localize "STR_ALIVE_SETTINGS_MAPLAYER_COMMENT"], [localize "STR_ALIVE_SETTINGS_CATEGORY", localize "STR_ALIVE_SETTINGS_GAME"], true, 0, {
+    if (!isNil "ALiVE_mapPins_reg") then { ["refresh"] call ALiVE_fnc_mapPins };
+}] call CBA_fnc_addSetting;
 // scroll wheel or ACE for rally points, talking to soldiers and FOBs (rallyInit, C2ISTAR, fobActions)
 ["ALiVE_prefInterface", "LIST", [localize "STR_ALIVE_SETTINGS_UI", localize "STR_ALIVE_SETTINGS_UI_COMMENT"], [localize "STR_ALIVE_SETTINGS_CATEGORY", localize "STR_ALIVE_SETTINGS_GAME"], [["MODULE", "SCROLL", "ACE", "BOTH"], [localize "STR_ALIVE_SETTINGS_MISSION", localize "STR_ALIVE_SETTINGS_UI_SCROLL", localize "STR_ALIVE_SETTINGS_UI_ACE", localize "STR_ALIVE_SETTINGS_UI_BOTH"], 0]] call CBA_fnc_addSetting;
 // ALiVE's scroll-wheel actions in a colour of the player's choosing, off by default (ALiVE_fnc_actionTitle)

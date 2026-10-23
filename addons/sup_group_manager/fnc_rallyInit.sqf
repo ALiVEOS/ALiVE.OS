@@ -121,8 +121,14 @@ if (!hasInterface || {!_main}) exitWith {};
             while { true } do {
                 private _rows = ["list", [player]] call ALiVE_fnc_rallyPoint;
                 private _now = _rows apply { [_x select 0, (_x select 1) apply { round _x }] };
-                if (_now isNotEqualTo _sig) then {
+                // ALiVE_rallyMarkerRedraw: the player changed the map label options (ALiVE_fnc_mapPins)
+                if (_now isNotEqualTo _sig || {missionNamespace getVariable ["ALiVE_rallyMarkerRedraw", false]}) then {
                     _sig = _now;
+                    ALiVE_rallyMarkerRedraw = false;
+                    // ALiVE's rally pin with its name written by the map label layer, or Arma's yellow flag
+                    private _pin = (missionNamespace getVariable ["ALiVE_prefMapLayer", true])
+                        && {missionNamespace getVariable ["ALiVE_prefTaskPins", "alive"] == "alive"}
+                        && {isClass (configFile >> "CfgMarkers" >> "alive_pin_rally")};
                     { deleteMarkerLocal _x } forEach _had;
                     _had = [];
                     // a Player FOB already has its own marker on the same spot, so it gets no second
@@ -133,9 +139,9 @@ if (!hasInterface || {!_main}) exitWith {};
                             _fobIds pushBack (_x select 3);
                         } else {
                             private _m = createMarkerLocal [format ["ALiVE_rally_%1", _forEachIndex], ASLToAGL (_x select 1)];
-                            _m setMarkerTypeLocal "mil_flag";
-                            _m setMarkerColorLocal "ColorYellow";
-                            _m setMarkerTextLocal format [localize "STR_ALIVE_RALLY_MARKER", _x select 0];
+                            _m setMarkerTypeLocal (["mil_flag", "alive_pin_rally"] select _pin);
+                            _m setMarkerColorLocal (["ColorYellow", "Default"] select _pin);
+                            ["adopt", [_m, format [localize "STR_ALIVE_RALLY_MARKER", _x select 0], 70, "ColorYellow"]] call ALiVE_fnc_mapPins;
                             _had pushBack _m;
                         };
                     } forEach _rows;
