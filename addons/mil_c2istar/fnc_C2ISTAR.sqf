@@ -1407,6 +1407,18 @@ switch(_operation) do {
         private _lieChance = _logic getVariable ["fieldLieChance", 0];
         if (_lieChance isEqualType "") then { _lieChance = parseNumber _lieChance };
         if (isServer) then { missionNamespace setVariable ["ALiVE_c2istar_fieldLieChance", (_lieChance max 0) min 100, true] };
+        // Questioning Reveals Hostages and HVTs (Will501 on Discord, 23 Oct): the chance a prison answer's task is a
+        // hostage rescue or an HVT at the place named, rather than a destroy task. Informant Extraction and Informant
+        // Hunt Time: the kinds of Extract Informant (fnc_taskInformantExfiltration)
+        private _variety = _logic getVariable ["intelTaskVariety", 20];
+        if (_variety isEqualType "") then { _variety = parseNumber _variety };
+        private _huntTime = _logic getVariable ["informantHuntTime", 900];
+        if (_huntTime isEqualType "") then { _huntTime = parseNumber _huntTime };
+        if (isServer) then {
+            missionNamespace setVariable ["ALiVE_c2istar_intelTaskVariety", (_variety max 0) min 100];
+            missionNamespace setVariable ["ALiVE_c2istar_informantExtractKind", toLower (_logic getVariable ["informantExtractKind", "classic"])];
+            missionNamespace setVariable ["ALiVE_c2istar_informantHuntTime", (_huntTime max 120)];
+        };
         ALiVE_c2istar_fnc_atPrison = {
             params ["_pos"];
             allMapMarkers findIf {
@@ -1500,6 +1512,78 @@ switch(_operation) do {
                 } forEach _alive;
             }];
             // Asked by a player's machine: answer with what the prisoner knows.
+            // A task from what someone gave up (a prisoner at a prison, an informant at his debrief), for the asking side:
+            // destroy an insurgent installation he named (his own Recruitment HQ first, for a recruiter), else the
+            // nearest group he named; at Questioning Reveals Hostages and HVTs' chance a hostage rescue or an HVT
+            // assassination at that place instead (Will501 on Discord, 23 Oct). One per side every 20 minutes, none
+            // while the module's unasked player tasks are off. Returns [type, "hostage" | "hvt" | ""], or [] when none
+            ALiVE_c2istar_fnc_raiseIntelTask = {
+                params ["_from", "_reach", "_sideText", "_found", "_askSide", "_askFaction", "_enemyFaction", "_name", ["_ownHQ", objNull]];
+                if !(missionNamespace getVariable ["ALiVE_c2istar_autoPlayerTasks", true]) exitWith {[]};
+                if (isNil "ALIVE_eventLog" || {isNil "ALIVE_taskHandler"}) exitWith {[]};
+                // every task this can raise needs the enemy's faction: none, and the side's 20-minute gap isn't spent
+                if !(_enemyFaction isEqualType "" && {_enemyFaction != ""}) exitWith {[]};
+                private _cooldownVar = format ["ALiVE_c2istar_intelTaskAt_%1", _askSide];
+                if (time < (missionNamespace getVariable [_cooldownVar, -1e9]) + 1200) exitWith {[]};
+                private _type = "";
+                private _where = [];
+                if (!isNull _ownHQ && {alive _ownHQ}) then { _type = "InsurgencyDestroyAssets"; _where = getPosATL _ownHQ };
+                {
+                    private _opcom = _x;
+                    if (_where isEqualTo [] && {([_opcom, "side", ""] call ALiVE_fnc_HashGet) == _sideText}
+                        && {([_opcom, "controltype", ""] call ALiVE_fnc_HashGet) == "asymmetric"}) then {
+                        {
+                            private _obj = _x;
+                            private _c = [_obj, "center", [0,0,0]] call ALiVE_fnc_HashGet;
+                            if (_where isEqualTo [] && {(_c distance2D _from) < _reach}
+                                && {(["HQ", "depot", "factory"] findIf {
+                                    alive ([_opcom, "convertObject", [_obj, _x, []] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM)
+                                }) > -1}) then { _type = "InsurgencyDestroyAssets"; _where = _c };
+                        } forEach ([_opcom, "objectives", []] call ALiVE_fnc_HashGet);
+                    };
+                } forEach (missionNamespace getVariable ["OPCOM_instances", []]);
+                if (_where isEqualTo [] && {_found isNotEqualTo []}) then { _type = "DestroyInfantry"; _where = _found select 0 };
+                if (_where isEqualTo []) exitWith {[]};
+                // a hostage or an HVT where he said, at the module's chance; not instead of a recruiter's own HQ
+                private _told = "";
+                if (isNull _ownHQ && {random 100 < (missionNamespace getVariable ["ALiVE_c2istar_intelTaskVariety", 20])}) then {
+                    _type = selectRandom ["Rescue", "Assassination"];
+                    _told = ["hvt", "hostage"] select (_type == "Rescue");
+                };
+                private _players = [_askSide] call ALiVE_fnc_getPlayersDataSource;
+                if ((_players select 1) isEqualTo []) exitWith {[]};
+                missionNamespace setVariable [_cooldownVar, time];
+                private _taskData = [format ["intel_%1_%2", _askSide, round time], "C2ISTAR", _askSide, _askFaction, _type, "Map", +_where,
+                    [_players select 1, _players select 0], _enemyFaction, "Y", "Side"];
+                [ALIVE_eventLog, "addEvent", ["TASK_GENERATE", _taskData, "C2ISTAR"] call ALIVE_fnc_event] call ALIVE_fnc_eventLog;
+                ["C2ISTAR: %1's answer raised a %2 task for %3 at %4", _name, _type, _askSide, mapGridPosition _where] call ALiVE_fnc_dump;
+                [_type, _told]
+            };
+            // Extract Informant, cold kind (fnc_taskInformantExfiltration): handed over, he is debriefed as a prisoner
+            // at a prison is. The enemy round his town (3 km, six groups, those holding their ground first) go on the
+            // task players' maps with the usual answer popup, their installations are revealed, and a task can follow
+            ALiVE_c2istar_fnc_debriefInformant = {
+                params ["_from", "_askSide", "_askFaction", "_enemyFaction", "_name", ["_playerUIDs", []]];
+                private _eSide = if (_enemyFaction isEqualType "" && {_enemyFaction != ""}) then { _enemyFaction call ALiVE_fnc_factionSide } else { east };
+                private _sideText = str _eSide;
+                private _profiles = ([_from, 3000, [_sideText, "entity"]] call ALIVE_fnc_getNearProfiles) call BIS_fnc_arrayShuffle;
+                private _moving = { count ([_this, "waypoints", []] call ALIVE_fnc_hashGet) > 0 };
+                _profiles = (_profiles select { !(_x call _moving) }) + (_profiles select { _x call _moving });
+                _profiles = _profiles select [0, 6];
+                private _found = _profiles apply { +([_x, "position", [0, 0, 0]] call ALIVE_fnc_hashGet) };
+                [_from, 3000, _eSide] call ALIVE_fnc_OPCOMToggleInstallations;
+                private _raised = [_from, 3000, _sideText, _found, _askSide, _askFaction, _enemyFaction, _name] call ALiVE_c2istar_fnc_raiseIntelTask;
+                private _told = if (_raised isEqualTo []) then { "" } else { _raised select 1 };
+                // where the groups are now; the marks don't follow them (no tracking here), so none is called "on the move"
+                ALiVE_c2istar_questionAnswer = [_name, _found, _eSide, "talked", _found apply { [] }, format ["%1_%2", round time, floor random 100000], _told];
+                {
+                    private _p = [_x] call ALIVE_fnc_getPlayerByUID;
+                    if (!isNull _p) then {
+                        if (local _p) then { ALiVE_c2istar_questionAnswer call ALiVE_c2istar_fnc_showAnswer } else { (owner _p) publicVariableClient "ALiVE_c2istar_questionAnswer" };
+                    };
+                } forEach _playerUIDs;
+                ["C2ISTAR: informant %1 debriefed: %2 enemy positions, task %3", _name, count _found, if (_raised isEqualTo []) then {"none"} else {_raised select 0}] call ALiVE_fnc_dump;
+            };
             ALiVE_c2istar_fnc_interrogate = {
                 params ["_prisoner", "_caller"];
                 if (!alive _prisoner) exitWith {};
@@ -1514,6 +1598,8 @@ switch(_operation) do {
                 // how it went, for the answer: "refused", "talked", or "asked" (already questioned, the second of two
                 // players asking at once, or the prison not seen alike here and on the asker's machine)
                 private _outcome = "refused";
+                // "hostage" or "hvt" when the task his answer raised is a rescue or an assassination
+                private _told = "";
                 if !([_prisoner, _atPrison] call ALiVE_c2istar_fnc_canBeQuestioned) then {
                     _outcome = "asked";
                 } else {
@@ -1570,49 +1656,21 @@ switch(_operation) do {
                                 _ids = [""] + _ids;
                             };
                             // What he gives up at a prison becomes a task for the asker's side (Will501 on Discord, 18 Oct):
-                            // destroy an insurgent installation he named, else the nearest group he named. One per
-                            // prisoner, one per side every 20 minutes, and none while the module's unasked player tasks
-                            // are off. Raised as the commander raises its own (the recruiter's Assassination).
-                            if (_atPrison && {!(_prisoner getVariable ["ALiVE_questionTaskRaised", false])} && {!isNull _caller}
-                                && {missionNamespace getVariable ["ALiVE_c2istar_autoPlayerTasks", true]}
-                                && {!isNil "ALIVE_eventLog"} && {!isNil "ALIVE_taskHandler"}) then {
-                                private _askSide = str side group _caller;
-                                private _cooldownVar = format ["ALiVE_c2istar_intelTaskAt_%1", _askSide];
-                                if (time < (missionNamespace getVariable [_cooldownVar, -1e9]) + 1200) exitWith {};
-                                private _type = "";
-                                private _where = [];
-                                private _ownHQ = _prisoner getVariable ["ALiVE_INS_recruiterHQ", objNull];
-                                if (_recruiter && {!isNull _ownHQ} && {alive _ownHQ}) then { _type = "InsurgencyDestroyAssets"; _where = getPosATL _ownHQ };
-                                {
-                                    private _opcom = _x;
-                                    if (_where isEqualTo [] && {([_opcom, "side", ""] call ALiVE_fnc_HashGet) == _sideText}
-                                        && {([_opcom, "controltype", ""] call ALiVE_fnc_HashGet) == "asymmetric"}) then {
-                                        {
-                                            private _obj = _x;
-                                            private _c = [_obj, "center", [0,0,0]] call ALiVE_fnc_HashGet;
-                                            if (_where isEqualTo [] && {(_c distance2D _from) < _reach}
-                                                && {(["HQ", "depot", "factory"] findIf {
-                                                    alive ([_opcom, "convertObject", [_obj, _x, []] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM)
-                                                }) > -1}) then { _type = "InsurgencyDestroyAssets"; _where = _c };
-                                        } forEach ([_opcom, "objectives", []] call ALiVE_fnc_HashGet);
-                                    };
-                                } forEach (missionNamespace getVariable ["OPCOM_instances", []]);
-                                if (_where isEqualTo [] && {_found isNotEqualTo []}) then { _type = "DestroyInfantry"; _where = _found select 0 };
-                                if (_where isEqualTo []) exitWith {};
-                                private _players = [_askSide] call ALiVE_fnc_getPlayersDataSource;
-                                if ((_players select 1) isEqualTo []) exitWith {};
-                                _prisoner setVariable ["ALiVE_questionTaskRaised", true];
-                                missionNamespace setVariable [_cooldownVar, time];
-                                private _taskData = [format ["intel_%1_%2", _askSide, round time], "C2ISTAR", _askSide, faction _caller, _type, "Map", +_where,
-                                    [_players select 1, _players select 0], faction _prisoner, "Y", "Side"];
-                                [ALIVE_eventLog, "addEvent", ["TASK_GENERATE", _taskData, "C2ISTAR"] call ALIVE_fnc_event] call ALIVE_fnc_eventLog;
-                                ["C2ISTAR: %1's questioning raised a %2 task for %3 at %4", name _prisoner, _type, _askSide, mapGridPosition _where] call ALiVE_fnc_dump;
+                            // one per prisoner, raised by ALiVE_c2istar_fnc_raiseIntelTask (which also holds the side's
+                            // 20-minute gap and the module's player-tasks switch)
+                            if (_atPrison && {!(_prisoner getVariable ["ALiVE_questionTaskRaised", false])} && {!isNull _caller}) then {
+                                private _raised = [_from, _reach, _sideText, _found, str side group _caller, faction _caller, faction _prisoner, name _prisoner,
+                                    [objNull, _prisoner getVariable ["ALiVE_INS_recruiterHQ", objNull]] select _recruiter] call ALiVE_c2istar_fnc_raiseIntelTask;
+                                if (_raised isNotEqualTo []) then {
+                                    _prisoner setVariable ["ALiVE_questionTaskRaised", true];
+                                    _told = _raised select 1;
+                                };
                             };
                         };
                     };
                 };
                 private _key = format ["%1_%2", round time, floor random 100000];
-                ALiVE_c2istar_questionAnswer = [name _prisoner, _found, _pSide, _outcome, _dests, _key];
+                ALiVE_c2istar_questionAnswer = [name _prisoner, _found, _pSide, _outcome, _dests, _key, _told];
                 private _remote = isPlayer _caller && {!(local _caller)};
                 if (_remote) then { (owner _caller) publicVariableClient "ALiVE_c2istar_questionAnswer" } else { ALiVE_c2istar_questionAnswer call ALiVE_c2istar_fnc_showAnswer };
                 // a group on the move: its mark goes with it, and the place it's heading with its next waypoint, every
@@ -1659,16 +1717,21 @@ switch(_operation) do {
                 };
             };
             ALiVE_c2istar_fnc_showAnswer = {
-                params ["_name", "_positions", "_side", ["_outcome", "refused"], ["_dests", []], ["_key", ""]];
+                params ["_name", "_positions", "_side", ["_outcome", "refused"], ["_dests", []], ["_key", ""], ["_told", ""]];
                 if (_key == "") then { _key = str round time };
                 private _prefix = switch (_side) do { case west: {"b_"}; case east: {"o_"}; case resistance: {"n_"}; default {"o_"} };
                 private _fnc_tell = { if (isNull findDisplay 9260) then { [localize "STR_ALIVE_C2ISTAR", _this] call ALIVE_fnc_sendHint } else { ((findDisplay 9260) displayCtrl 92602) ctrlSetStructuredText text _this } };
+                private _toldLine = switch (_told) do {
+                    case "hostage": { " He also told you where they hold a hostage: the rescue is on your tablet." };
+                    case "hvt": { " He also told you where one of their commanders is: the task is on your tablet." };
+                    default { "" };
+                };
                 if (_positions isEqualTo []) exitWith {
-                    (format [switch (_outcome) do {
+                    ((format [switch (_outcome) do {
                         case "asked": { "%1 has already told you what he knows." };
                         case "talked": { "%1 talked, but knows of no enemy near there." };
                         default { "%1 won't tell you anything." };
-                    }, _name]) call _fnc_tell
+                    }, _name]) + _toldLine) call _fnc_tell
                 };
                 private _movingCount = 0;
                 {
@@ -1688,8 +1751,9 @@ switch(_operation) do {
                     };
                     [_gone] spawn { sleep 600; { deleteMarkerLocal _x } forEach (_this select 0) };
                 } forEach _positions;
-                (format ["%1 talked: %2 enemy positions he knows of are on your map for ten minutes%3.", _name, count _positions,
-                    ["", format ["; %1 of them on the move, and their marks follow them", _movingCount]] select (_movingCount > 0)]) call _fnc_tell;
+                (format ["%1 talked: %2 enemy positions he knows of are on your map for ten minutes%3.%4", _name, count _positions,
+                    ["", format ["; %1 of them on the move, and their marks follow them", _movingCount]] select (_movingCount > 0),
+                    _toldLine]) call _fnc_tell;
             };
             "ALiVE_c2istar_questionAnswer" addPublicVariableEventHandler { (_this select 1) call ALiVE_c2istar_fnc_showAnswer };
             // where the groups on the move are now: their marks follow them, until the marks are gone

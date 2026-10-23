@@ -7,6 +7,16 @@ Function: ALIVE_fnc_taskInformantExfiltration
 Description:
 Recover a cooperating informant and move them to a protected debrief site.
 
+Three kinds (Will501 on Discord, 23 Oct), picked by the C2ISTAR module's Informant Extraction setting
+(ALiVE_c2istar_informantExtractKind: classic by default, or random, hot, timed or cold):
+  hot     enemy infantry are already in the town when the task starts
+  timed   once a task player is within 2 km of his town, a hunter group sets out to kill him: if it reaches him, or
+          the clock (Informant Hunt Time) runs out, before he is secured, he is killed and the task fails; once
+          secured, it keeps coming. Hunters wiped out: the clock stops
+  cold    no threat; at the hand-over he is debriefed: what he knows goes on the map and can raise a task, as a
+          prisoner questioned at a prison does (ALiVE_c2istar_fnc_debriefInformant)
+  classic as before any of these
+
 Author:
 Javen
 Jman
@@ -22,8 +32,59 @@ params [
 
 private _result = [];
 
+// enemy infantry for the hot and timed kinds: [where round, how far out, how many groups, where they go, faction],
+// left out of simulated combat for 15 minutes as Secure Community Event's waves are. Returns their profile IDs
+private _spawnInfantry = {
+    params ["_near", "_dist", "_count", "_goal", "_enemyFaction"];
+    private _ids = [];
+    for "_i" from 1 to _count do {
+        private _group = ["Infantry", _enemyFaction] call ALIVE_fnc_configGetRandomGroup;
+        if (_group != "FALSE" && {!(_group in ALiVE_PLACEMENT_GROUPBLACKLIST)}) then {
+            private _at = _near getPos [_dist + random 100, random 360];
+            private _profiles = [_group, _at, random 360, true, _enemyFaction, true] call ALIVE_fnc_createProfilesFromGroupConfig;
+            if (_profiles isNotEqualTo []) then {
+                [_profiles select 0, "simProtectUntil", time + 900] call ALIVE_fnc_hashSet;
+                private _wp = [_goal getPos [random 30, random 360], 50, "MOVE", "FULL", 50, [], "LINE", "NO CHANGE", "AWARE"] call ALIVE_fnc_createProfileWaypoint;
+                [_profiles select 0, "addWaypoint", _wp] call ALIVE_fnc_profileEntity;
+                _ids pushBack (_profiles select 0 select 2 select 4);
+            };
+        };
+    };
+    _ids
+};
+
+// the hunters (timed kind) go where the informant is now: re-aimed only when he has moved more than 150 m from where
+// they were last sent, and not while a route is still being worked out for them (clearing would cancel it)
+private _retargetHunters = {
+    params ["_taskParams", "_vip"];
+    if (([_taskParams, "kind", "classic"] call ALIVE_fnc_hashGet) != "timed" || {isNull _vip}) exitWith {};
+    if (serverTime < ([_taskParams, "huntersRetargetAt", 0] call ALIVE_fnc_hashGet)) exitWith {};
+    [_taskParams, "huntersRetargetAt", serverTime + 30] call ALIVE_fnc_hashSet;
+    private _last = [_taskParams, "huntersTarget", []] call ALIVE_fnc_hashGet;
+    if (_last isNotEqualTo [] && {(_last distance2D _vip) < 150}) exitWith {};
+    [_taskParams, "huntersTarget", getPosATL _vip] call ALIVE_fnc_hashSet;
+    {
+        private _prof = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+        if (!isNil "_prof" && {([_prof, "pendingWaypointPaths", []] call ALIVE_fnc_hashGet) isEqualTo []}) then {
+            [_prof, "clearWaypoints"] call ALIVE_fnc_profileEntity;
+            [_prof, "addWaypoint", [getPosATL _vip, 20, "MOVE", "FULL", 20, [], "LINE", "NO CHANGE", "AWARE"] call ALIVE_fnc_createProfileWaypoint] call ALIVE_fnc_profileEntity;
+        };
+    } forEach ([_taskParams, "hunterIDs", []] call ALIVE_fnc_hashGet);
+};
+
 private _cleanupObjects = {
     params ["_taskParams"];
+    // the enemy the hot and timed kinds brought in: those still out of sight (virtual) go; a group players can see
+    // stays and fights on as any other, rather than vanishing in front of them
+    private _spawned = [_taskParams, "entityProfileIDs", []] call ALIVE_fnc_hashGet;
+    if (_spawned isNotEqualTo []) then {
+        private _virtual = _spawned select {
+            private _pr = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+            !isNil "_pr" && {!(_pr select 2 select 1)}
+        };
+        if (_virtual isNotEqualTo []) then { [_virtual] call ALIVE_fnc_taskDestroyEntityProfiles };
+        [_taskParams, "entityProfileIDs", []] call ALIVE_fnc_hashSet;
+    };
     {
         if !(isNull _x) then {
             deleteVehicle _x;
@@ -417,6 +478,31 @@ switch (_taskState) do {
         [_taskParams, "panicTimeout", (_panicTimeout max 30)] call ALIVE_fnc_hashSet;
         [_taskParams, "lastState", ""] call ALIVE_fnc_hashSet;
 
+        // the kind of extraction (header): random picks hot, timed or cold each time
+        private _kind = toLower (missionNamespace getVariable ["ALiVE_c2istar_informantExtractKind", "classic"]);
+        if (_kind == "random") then { _kind = selectRandom ["hot", "timed", "cold"] };
+        if !(_kind in ["hot", "timed", "cold", "classic"]) then { _kind = "classic" };
+        private _suffix = switch (_kind) do {
+            case "hot": { " (hot area)" };
+            case "timed": { " (against the clock)" };
+            case "cold": { " (debrief)" };
+            default { "" };
+        };
+        (_tasks select 0) set [5, ((_tasks select 0) select 5) + _suffix];
+        [_taskParams, "kind", _kind] call ALIVE_fnc_hashSet;
+        private _enemyFaction = if (_taskEnemyFaction isEqualType "" && {_taskEnemyFaction != ""}) then { _taskEnemyFaction } else { "OPF_F" };
+        switch (_kind) do {
+            case "hot": {
+                [_taskParams, "entityProfileIDs", [_sourceCenter, 150, 1 + floor random 2, _sourceCenter, _enemyFaction] call _spawnInfantry] call ALIVE_fnc_hashSet;
+            };
+            case "timed": {
+                // the hunters set out, and the clock starts, once a task player is near the town (Pickup)
+                [_taskParams, "enemyFactionUsed", _enemyFaction] call ALIVE_fnc_hashSet;
+            };
+        };
+        [_taskParams, "sourceTown", _sourceTown] call ALIVE_fnc_hashSet;
+        ["C2ISTAR - Task InformantExfiltration %1: %2 extraction from %3", _taskID, _kind, _sourceTown] call ALiVE_fnc_Dump;
+
         _result = [_tasks, _taskParams];
     };
     case "Parent": {
@@ -458,6 +544,46 @@ switch (_taskState) do {
             [_params, _taskPosition, _taskSide] call _applyFailurePopulationEffect;
             [_params] call _cleanupObjects;
         } else {
+            // against the clock: the hunters head for him, and kill him if they reach him or the time runs out
+            // before he is secured (the dead-informant fail above then ends the task on the next pass)
+            if (([_params, "kind", "classic"] call ALIVE_fnc_hashGet) == "timed" && {!(_vip getVariable ["ALIVE_Task_VIPPicked", false])}) then {
+                private _players = (_taskPlayers apply { [_x] call ALIVE_fnc_getPlayerByUID }) select { !isNull _x };
+                private _town = [_params, "sourceTown", "the town"] call ALIVE_fnc_hashGet;
+                private _arrive = [_params, "huntersArriveAt", -1] call ALIVE_fnc_hashGet;
+                // not started: the hunters set out, and the clock starts, once a task player is within 2 km of the
+                // town, so a player busy elsewhere doesn't lose him before he could have got there
+                if (_arrive < 0) then {
+                    if ((_players findIf { (_x distance2D _vip) < 2000 }) >= 0) then {
+                        private _hunters = [getPosATL _vip, 1500 + random 900, 1, getPosATL _vip, [_params, "enemyFactionUsed", "OPF_F"] call ALIVE_fnc_hashGet] call _spawnInfantry;
+                        [_params, "hunterIDs", _hunters] call ALIVE_fnc_hashSet;
+                        [_params, "huntersTarget", getPosATL _vip] call ALIVE_fnc_hashSet;
+                        [_params, "entityProfileIDs", ([_params, "entityProfileIDs", []] call ALIVE_fnc_hashGet) + _hunters] call ALIVE_fnc_hashSet;
+                        _arrive = serverTime + ((missionNamespace getVariable ["ALiVE_c2istar_informantHuntTime", 900]) max 120);
+                        [_params, "huntersArriveAt", _arrive] call ALIVE_fnc_hashSet;
+                        ["Task Update", format ["HQ: A hunter team is moving on the informant in %1. Secure him within about %2 minutes.", _town, ceil ((_arrive - serverTime) / 60)]] remoteExec ["ALIVE_fnc_taskSubtitle", _players];
+                    };
+                } else {
+                    [_params, _vip] call _retargetHunters;
+                    private _hunters = ([_params, "hunterIDs", []] call ALIVE_fnc_hashGet) apply { [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler };
+                    _hunters = _hunters select { !isNil "_x" };
+                    // none ever came (no group for that faction): nothing to watch, so it plays as classic
+                    if (([_params, "hunterIDs", []] call ALIVE_fnc_hashGet) isEqualTo []) then {} else {
+                    if (_hunters isEqualTo []) then {
+                        // the hunters are down: the clock stops
+                        if (([_params, "huntersArriveAt", -1] call ALIVE_fnc_hashGet) < 1e9) then {
+                            [_params, "huntersArriveAt", 1e10] call ALIVE_fnc_hashSet;
+                            ["Task Update", "HQ: The hunter team is down. The informant is safe for now."] remoteExec ["ALIVE_fnc_taskSubtitle", _players];
+                        };
+                    } else {
+                        private _near = _hunters findIf { (([_x, "position", [0, 0, 0]] call ALIVE_fnc_hashGet) distance2D _vip) < 50 };
+                        if (serverTime > _arrive || {_near >= 0}) then {
+                            _vip setDamage 1;
+                            ["Task Update", ["HQ: Time's up. We've lost the informant.", "HQ: The hunters got to the informant first."] select (_near >= 0)] remoteExec ["ALIVE_fnc_taskSubtitle", _players];
+                        };
+                    };
+                    };
+                };
+            };
             // the pin follows the informant, who may run or be moved before he is secured
             [getPosATL _vip, _taskSide, _taskPlayers, _taskID, "civilian", "Informant"] call ALIVE_fnc_taskCreateMarkersForPlayers;
             [ALiVE_TaskHandler, "followTaskPosition", [_task, _params, getPosATL _vip]] call ALiVE_fnc_TaskHandler;
@@ -520,6 +646,19 @@ switch (_taskState) do {
             [_params] call _cleanupObjects;
         } else {
             [_taskPosition, _taskSide, _taskPlayers, _taskID, "building", "safe site"] call ALIVE_fnc_taskCreateMarkersForPlayers;
+            // against the clock: secured or not, the hunters keep coming after him. Secured before they ever set out
+            // (a helicopter in and out within one check): they set out now, with no clock, as he is already in hand
+            if (([_params, "kind", "classic"] call ALIVE_fnc_hashGet) == "timed" && {([_params, "huntersArriveAt", -1] call ALIVE_fnc_hashGet) < 0}) then {
+                private _hunters = [getPosATL _vip, 1500 + random 900, 1, getPosATL _vip, [_params, "enemyFactionUsed", "OPF_F"] call ALIVE_fnc_hashGet] call _spawnInfantry;
+                [_params, "hunterIDs", _hunters] call ALIVE_fnc_hashSet;
+                [_params, "huntersTarget", getPosATL _vip] call ALIVE_fnc_hashSet;
+                [_params, "entityProfileIDs", ([_params, "entityProfileIDs", []] call ALIVE_fnc_hashGet) + _hunters] call ALIVE_fnc_hashSet;
+                [_params, "huntersArriveAt", 1e10] call ALIVE_fnc_hashSet;
+                if (_hunters isNotEqualTo []) then {
+                    ["Task Update", "HQ: A hunter team is coming after the informant. Get him out quickly."] remoteExec ["ALIVE_fnc_taskSubtitle", (_taskPlayers apply { [_x] call ALIVE_fnc_getPlayerByUID }) select { !isNull _x }];
+                };
+            };
+            [_params, _vip] call _retargetHunters;
 
             private _panicState = [_vip, _taskPlayers] call _updateVipPanicState;
             if (_panicState == "failed") then {
@@ -613,6 +752,13 @@ switch (_taskState) do {
 
                     ["chat_success", _currentTaskDialog, _taskSide, _taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
                     [_currentTaskDialog, _taskSide, _taskFaction] call ALIVE_fnc_taskCreateReward;
+
+                    // cold: he is debriefed at the hand-over, as a prisoner questioned at a prison is: what he knows
+                    // of the ground round his town goes on the map and can raise a task (ALiVE_c2istar_fnc_debriefInformant)
+                    if (([_params, "kind", "classic"] call ALIVE_fnc_hashGet) == "cold" && {!isNil "ALiVE_c2istar_fnc_debriefInformant"}) then {
+                        [[_params, "supportEffectPosition", _taskPosition] call ALIVE_fnc_hashGet, _taskSide, _taskFaction,
+                            [_params, "enemyFaction", ""] call ALIVE_fnc_hashGet, name _vip, _taskPlayers] call ALiVE_c2istar_fnc_debriefInformant;
+                    };
 
                     [
                         ([_params, "supportEffectPosition", _taskPosition] call ALIVE_fnc_hashGet),

@@ -671,6 +671,39 @@ class CfgVehicles {
                             defaultValue = """0""";
                             typeName = "NUMBER";
                     };
+                    // A prison answer's task can be a hostage rescue or an HVT (Will501 on Discord, 23 Oct)
+                    class intelTaskVariety : Edit
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_intelTaskVariety";
+                            displayName = "$STR_ALIVE_C2ISTAR_INTEL_VARIETY";
+                            tooltip = "$STR_ALIVE_C2ISTAR_INTEL_VARIETY_COMMENT";
+                            defaultValue = """20""";
+                            typeName = "NUMBER";
+                    };
+                    // The kinds of Extract Informant (Will501 and NeisAEL on Discord, 23 Oct)
+                    class informantExtractKind : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_informantExtractKind";
+                            displayName = "$STR_ALIVE_C2ISTAR_EXTRACT_KIND";
+                            tooltip = "$STR_ALIVE_C2ISTAR_EXTRACT_KIND_COMMENT";
+                            defaultValue = """classic""";
+                            class Values
+                            {
+                                    class Random  { name = "$STR_ALIVE_C2ISTAR_EXTRACT_RANDOM";  value = "random"; };
+                                    class Hot     { name = "$STR_ALIVE_C2ISTAR_EXTRACT_HOT";     value = "hot"; };
+                                    class Timed   { name = "$STR_ALIVE_C2ISTAR_EXTRACT_TIMED";   value = "timed"; };
+                                    class Cold    { name = "$STR_ALIVE_C2ISTAR_EXTRACT_COLD";    value = "cold"; };
+                                    class Classic { name = "$STR_ALIVE_C2ISTAR_EXTRACT_CLASSIC"; value = "classic"; default = 1; };
+                            };
+                    };
+                    class informantHuntTime : Edit
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_informantHuntTime";
+                            displayName = "$STR_ALIVE_C2ISTAR_HUNT_TIME";
+                            tooltip = "$STR_ALIVE_C2ISTAR_HUNT_TIME_COMMENT";
+                            defaultValue = """900""";
+                            typeName = "NUMBER";
+                    };
                     // How players open Talk to soldier: ACE when it's loaded, the scroll wheel,
                     // or both, as Civilian Interaction UI does for civilians
                     class talkInterface : Combo

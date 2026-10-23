@@ -606,6 +606,39 @@
 <Key ID="STR_ALIVE_C2ISTAR_FIELD_LIES_COMMENT">
     <English>The chance that a prisoner questioned in the field lies: the enemy positions he marks are all 800 m to 2 km off the real ones, and he reveals no installations. Questioned at a prison he never lies, nor does an insurgent recruiter who gave himself up. 0, the default, means prisoners never lie.</English>
 </Key>
+<Key ID="STR_ALIVE_C2ISTAR_INTEL_VARIETY">
+    <English>Questioning Reveals Hostages and HVTs (%)</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_INTEL_VARIETY_COMMENT">
+    <English>When a prisoner questioned at a prison, or an informant at his debrief, gives up something that becomes a task, the chance it is a hostage rescue or an HVT to take out at the place he named, rather than a destroy task. 0 keeps destroy tasks only; 20 by default.</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_EXTRACT_KIND">
+    <English>Informant Extraction</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_EXTRACT_KIND_COMMENT">
+    <English>What an Extract Informant task is like. Classic (the default): no extra enemy and no debrief. Hot: enemy infantry are already in his town. Timed: once one of you is within 2 km of his town, a hunter team sets out to kill him, and he dies if it reaches him or Informant Hunt Time runs out before you secure him. Cold: no extra enemy, and at the hand-over he is debriefed, marking the enemy round his town and sometimes giving you a new task. Random picks hot, timed or cold each time.</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_EXTRACT_RANDOM">
+    <English>Random</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_EXTRACT_HOT">
+    <English>Hot</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_EXTRACT_TIMED">
+    <English>Timed</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_EXTRACT_COLD">
+    <English>Cold</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_EXTRACT_CLASSIC">
+    <English>Classic</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_HUNT_TIME">
+    <English>Informant Hunt Time (s)</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_HUNT_TIME_COMMENT">
+    <English>For a Timed Extract Informant: how long you have to secure him once the clock starts, which is when one of you first comes within 2 km of his town. 900 (15 minutes) by default; at least 120.</English>
+</Key>
 <Key ID="STR_ALIVE_C2ISTAR_TALK_UI">
     <English>Talk to Soldier Interaction</English>
 </Key>
