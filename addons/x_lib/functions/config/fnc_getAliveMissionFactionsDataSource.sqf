@@ -75,6 +75,16 @@ private _missionFactions = [];
         };
     };
 } forEach (missionNamespace getVariable ["OPCOM_instances", []]);
+// a player's machine on a dedicated server has no commanders of its own: the server publishes what each one fights
+// as [sides enemy, factions] (NeisAEL on Discord, 23 Oct: the filter listed every faction there)
+if ((missionNamespace getVariable ["OPCOM_instances", []]) isEqualTo []) then {
+    {
+        _x params [["_sidesEnemy", []], ["_factions", []]];
+        if (_playerSideText in _sidesEnemy) then {
+            { if ((_x isEqualType "") && {!(_x isEqualTo "")} && {!(_x in _missionFactions)}) then { _missionFactions pushBack _x } } forEach _factions;
+        };
+    } forEach (missionNamespace getVariable ["ALiVE_OPCOM_factionsPublic", []]);
+};
 
 // Debug logging
 if (missionNamespace getVariable ["ALIVE_c2istar_filterEnemyFactions_debug", false]) then {

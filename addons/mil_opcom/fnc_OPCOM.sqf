@@ -446,6 +446,11 @@ switch (_operation) do {
             OPCOM_instances = [];
         };
         OPCOM_instances pushback _handler;
+        // what each commander fights, published for players' tablets: on a dedicated server OPCOM_instances is the
+        // server's alone, so C2ISTAR's enemy faction filter found nothing there and listed every faction (NeisAEL on
+        // Discord, 23 Oct)
+        ALiVE_OPCOM_factionsPublic = (OPCOM_instances select { _x isEqualType [] }) apply { [[_x, "sidesenemy", []] call ALiVE_fnc_HashGet, [_x, "factions", []] call ALiVE_fnc_HashGet] };
+        publicVariable "ALiVE_OPCOM_factionsPublic";
 
         missionnamespace setvariable [
             format ["OPCOM_%1", (count OPCOM_instances) - 1], // -1 to maintain zero index
@@ -5373,6 +5378,11 @@ switch (_operation) do {
         _OPCOM_FSM setFSMvariable ["_exitFSM", true];
 
         OPCOM_instances = OPCOM_instances - [_logic];
+        // what each commander fights, published for players' tablets: on a dedicated server OPCOM_instances is the
+        // server's alone, so C2ISTAR's enemy faction filter found nothing there and listed every faction (NeisAEL on
+        // Discord, 23 Oct)
+        ALiVE_OPCOM_factionsPublic = (OPCOM_instances select { _x isEqualType [] }) apply { [[_x, "sidesenemy", []] call ALiVE_fnc_HashGet, [_x, "factions", []] call ALiVE_fnc_HashGet] };
+        publicVariable "ALiVE_OPCOM_factionsPublic";
 
         _module setVariable ["super", nil];
         _module setVariable ["class", nil];
