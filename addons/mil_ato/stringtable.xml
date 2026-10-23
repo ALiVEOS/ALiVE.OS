@@ -233,6 +233,12 @@
     <English>When anti-air sites are detected and this commander has no aircraft with anti-radar missiles ready to attack them itself, offers them to players as a task instead. Needs Generate Player Tasks set to Yes, Suppression of Enemy Air Defences ticked in Available ATOs, and the C2ISTAR module. Aircraft that can attack the sites do so whatever this is set to.</English>
     <Spanish>Cuando se detectan emplazamientos antiaéreos y este comandante no tiene ninguna aeronave con misiles antirradar lista para atacarlos, los ofrece a los jugadores como tarea. Requiere «Generar tareas de jugador» en «Sí», la supresión de defensas antiaéreas enemigas marcada en «ATO disponibles» y el módulo C2ISTAR. Las aeronaves capaces de atacar los emplazamientos lo hacen sea cual sea este ajuste.</Spanish>
 </Key>
+<Key ID="STR_ALIVE_ATO_HOLD_SITES">
+    <English>Leave Players' Sites to Players:</English>
+</Key>
+<Key ID="STR_ALIVE_ATO_HOLD_SITES_COMMENT">
+    <English>Yes (the default): once an air defence site has been given to players as a Destroy AA task, this commander's own SEAD jets leave it, and anything within 500 m of it, alone while the task stands. No: the jets go after it anyway. Either way, if someone else destroys it first, the players are told who did and get no reward for it.</English>
+</Key>
 <Key ID="STR_ALIVE_ATO_RESUPPLY">
     <English>Resupply:</English>
     <Chinesesimp>重新补给</Chinesesimp>

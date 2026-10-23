@@ -93,6 +93,7 @@ switch(_operation) do {
 
             ["generateTasks", false],
             ["generateSEADTasks", false],
+            ["holdSitesForPlayers", true],
 
             // Zone to the time its last patrol went up. Kept per instance and
             // mirrored to the public name, so two commanders over one map do
@@ -512,6 +513,8 @@ switch(_operation) do {
                                 };
                             } forEach (missionNamespace getVariable ["ALiVE_C2_seadHeld", createHashMap]);
                             _held = _held select { count _x >= 2 };
+                            // Hold Sites For Players off: the jets go after them regardless (the players are still told who did it)
+                            if !([_logic, "holdSitesForPlayers", true] call ALIVE_fnc_hashGet) then { _held = [] };
                             {
                                 private _p = [_logic, "positionOf", _x] call MAINCLASS;
                                 if (count _p >= 2 && {(_held findIf { (_x distance2D _p) < 500 }) < 0}) then { _at pushBack _p };

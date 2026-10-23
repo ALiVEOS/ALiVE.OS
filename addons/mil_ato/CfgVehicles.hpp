@@ -160,6 +160,19 @@ class CfgVehicles
                             class Yes { name = "Yes"; value = true; };
                         };
                 };
+                // Whether this commander's own SEAD jets leave alone a site players have a task for (A. Ares on Discord, 23 Oct)
+                class holdSitesForPlayers : Combo
+                {
+                        property = "ALiVE_mil_ato_holdSitesForPlayers";
+                        displayName = "$STR_ALIVE_ATO_HOLD_SITES";
+                        tooltip = "$STR_ALIVE_ATO_HOLD_SITES_COMMENT";
+                        defaultValue = """true""";
+                        class Values
+                        {
+                            class Yes { name = "Yes"; value = true; default = 1; };
+                            class No { name = "No"; value = false; };
+                        };
+                };
                 // Defaults to Yes. Ground forces are reinforced through the Logistics
                 // Commander as a matter of course, so air was the only arm that could
                 // only ever shrink - every loss permanent, and a commander with nothing

@@ -1687,6 +1687,14 @@ switch(_operation) do {
         if (_set) then { [_logic, "watch", [["generateSEADTasks", _result]]] call _fnc_configure };
     };
 
+    // Whether this commander's own SEAD jets keep off an air defence site players have a task for (A. Ares on Discord,
+    // 23 Oct: some would rather they carried on). Default Yes
+    case "holdSitesForPlayers": {
+        private _set = _args isEqualType true;
+        _result = [_logic, "holdSitesForPlayers", _args, true] call _fnc_boolAttr;
+        if (_set) then { [_logic, "watch", [["holdSitesForPlayers", _result]]] call _fnc_configure };
+    };
+
     // Stored under the operation name, as the old file did, and default TRUE
     // to match Eden. Keeping the two defaults apart is what made offensive
     // counter-air unreachable for years.
@@ -2986,7 +2994,7 @@ switch(_operation) do {
             [_logic, "airspace", _logic getVariable ["airspace", DEFAULT_AIRSPACE]] call MAINCLASS;
             {
                 [_logic, _x] call MAINCLASS;
-            } forEach ["persistent","createHQ","placeAir","generateTasks","generateSEADTasks","resupply","broadcastOnRadio",
+            } forEach ["persistent","createHQ","placeAir","generateTasks","generateSEADTasks","holdSitesForPlayers","resupply","broadcastOnRadio",
                        "showSupportTrucks","playersCanUseAircraft","returnToATOAfter",
                        "placeDrones","useUAVs","droneTypes","aircraftWhitelist","aircraftBlacklist","sortieDuration","minAssetsForOffensive","maxConcurrentSorties",
                        "pilotbuilding","runwaystartpos","runwayendpos","runwaywidth","objectiveObjects","objectiveObjectsCount",
@@ -3140,6 +3148,7 @@ switch(_operation) do {
             ["types", +_types],
             ["generateTasks", _generateTasks],
             ["generateSEADTasks", [_logic, "generateSEADTasks"] call MAINCLASS],
+            ["holdSitesForPlayers", [_logic, "holdSitesForPlayers"] call MAINCLASS],
             ["task", _task],
             ["key", _key]
         ]] call ALIVE_fnc_ATOWatch;
