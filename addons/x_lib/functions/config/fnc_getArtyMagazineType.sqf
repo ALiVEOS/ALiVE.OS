@@ -52,6 +52,12 @@ private _liveMags = if (_class isEqualType objNull) then { getArtilleryAmmo [veh
 
 private _ord = "";
 
+// a missile launcher with no artillery computer (the MK41 VLS, 23 Oct): the guided missile for HE or CLUSTER
+if (getNumber (configFile >> "CfgVehicles" >> _weaponType >> "artilleryScanner") == 0) then {
+    { if (_ord == "" && {[_type, _x, true] call ALIVE_fnc_isMagazineOfOrdnanceType}) then { _ord = _x } } forEach _mags;
+};
+if (_ord != "") exitWith { _ord };
+
 {
     if (
         ([_type, _x] call ALIVE_fnc_isMagazineOfOrdnanceType)

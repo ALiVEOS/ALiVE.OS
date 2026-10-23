@@ -1321,6 +1321,13 @@ switch(_operation) do {
                                 };
                             } forEach _rounds;
 
+                            // a missile launcher (the MK41 VLS, 23 Oct): no more rounds than the missiles it carries, and
+                            // nobody takes it over with a UAV terminal (it's a UAV to the game), which would leave the
+                            // radio unable to fire it and its count wrong
+                            if (!isNull _probeGun) then {
+                                _roundsAvailable = [_probeGun, _artyBatteries + [_probeGun], _roundsAvailable] call NEO_fnc_artyLauncherSetup;
+                            };
+
                             ["CS - _roundsAvailable: %1",_roundsAvailable] call ALiVE_fnc_dump;
 
                             leader _grp setVariable ["NEO_radioArtyBatteryRounds", _roundsAvailable, true];

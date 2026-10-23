@@ -36,6 +36,14 @@ private _fnc_classify = {
 
 private _roundsAvail = _mags call _fnc_classify;
 
+// a missile launcher with no artillery computer (the MK41 VLS, 23 Oct): HE and CLUSTER from its guided missiles,
+// when it carries any; anything else it carries can't be fired as artillery
+if (getNumber (configFile >> "CfgVehicles" >> _class >> "artilleryScanner") == 0) then {
+    private _l = [];
+    { private _m = _x; { if ([_x, _m, true] call ALIVE_fnc_isMagazineOfOrdnanceType) then { _l pushBackUnique _x } } forEach ["HE", "CLUSTER"] } forEach _mags;
+    if (_l isNotEqualTo []) then { _roundsAvail = _l };
+};
+
 // #950 - rocket artillery mounts its launcher at spawn: the Spearhead Calliope
 // reports only its hull machine guns to a config walk and the RHS BM-21 reports
 // nothing at all, so both offer no rounds and their tablet comes up empty. Given

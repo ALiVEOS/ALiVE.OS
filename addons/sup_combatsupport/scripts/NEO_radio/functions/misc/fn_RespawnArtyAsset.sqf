@@ -152,6 +152,8 @@ _roundsUnit = (if (count _artyBatteries > 0) then {_artyBatteries select 0} else
     };
 } forEach _rounds;
 
+// a missile launcher (the MK41 VLS, 23 Oct): its count capped and the new launcher locked against UAV terminals
+_roundsAvailable = [(if (count _artyBatteries > 0) then {_artyBatteries select 0} else {_type}), _artyBatteries, _roundsAvailable] call NEO_fnc_artyLauncherSetup;
 leader _grp setVariable ["NEO_radioArtyBatteryRounds", _roundsAvailable, true];
 
 // Carry the Military Logistics Simulation settings from the old leader, read at the top, onto

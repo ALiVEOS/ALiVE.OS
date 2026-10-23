@@ -24,7 +24,8 @@ _targets = _pos nearEntities [_classList, _radius];
 [_targets,true] call CBA_fnc_shuffle;
 
 {
-    if ((side _x) == (side _veh) && {_x isKindOf "LaserTargetBase"}) exitWith {_target = _x};
+    // a script's laser (a missile battery's, on a helper) isn't a player's lase
+    if ((side _x) == (side _veh) && {_x isKindOf "LaserTargetBase"} && {isNull attachedTo _x}) exitWith {_target = _x};
 
     if (alive _x && {(side _x) in _enemySides}) then {
         if(isNull _target && {random 1 > .5}) then {

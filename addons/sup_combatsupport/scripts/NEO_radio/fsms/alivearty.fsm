@@ -233,7 +233,8 @@ class FSM
                          "_viable = false;" \n
                          "" \n
                          "_grp setBehaviour ""COMBAT"";" \n
-                         "_grp setCombatMode ""RED"";" \n
+                         "// a missile launcher holds its fire: it would launch at anything shared over the datalink (23 Oct)" \n
+                         "_grp setCombatMode ([""RED"", ""BLUE""] select (_class call NEO_fnc_artyIsMissileLauncher));" \n
                          "_grp setSpeedMode ""FULL"";" \n
                          "" \n
                          "//Battery Status" \n
@@ -391,7 +392,8 @@ class FSM
                                          "" \n
                                          "_inRange = false;" \n
                                          "if (_target distance2D (position (leader _grp)) > _minRange) then {" \n
-                                         "    _inRange = _target inRangeOfArtillery [units _grp, _ordnance];" \n
+                                         "    // a missile launcher (the MK41 VLS) has no artillery computer: in range when inside its missiles' lock range" \n
+                                         "    _inRange = if (_classCopy call NEO_fnc_artyIsMissileLauncher) then { _target distance2D (position (leader _grp)) <= (([_units, _ordnance, _classCopy] call NEO_fnc_artyUnitFiringDistance) select 1) } else { _target inRangeOfArtillery [units _grp, _ordnance] };" \n
                                          "    [""ARTY FSM (NEW TASK): (inRangeOfArtillery) _inRange: %1, _target: %2, units _grp: %3, _ordnance: %4"", _inRange, _target, units _grp, _ordnance] call ALiVE_fnc_dump;" \n
                                          "};" \n
                                          "_available = true;" \n

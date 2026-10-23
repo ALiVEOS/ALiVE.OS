@@ -356,7 +356,7 @@ while {
     // player's LaserTargetW reports side EAST, which is what blinded the earlier side-based filter)
     private _ownLaserClass = if (_sideCas getFriend WEST > 0.6) then {"LaserTargetW"} else {"LaserTargetE"};
     private _pLazes = _pRaw select {
-        _x != _laze && {_x isKindOf _ownLaserClass}
+        _x != _laze && {_x isKindOf _ownLaserClass} && {isNull attachedTo _x}
     };
     // second route: ask each friendly player directly what they are lasing (engine laserTarget command) -
     // robust when the laser object's side reads oddly or the object hunt misses it

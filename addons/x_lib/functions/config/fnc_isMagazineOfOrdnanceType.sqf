@@ -54,6 +54,28 @@ Jman
 
 private _ordnanceType      = param [0];
 private _magazineClassName = param [1];
+// A missile launcher with no artillery computer (the MK41 VLS, 23 Oct): its long-range guided missiles are its
+// HE, or its CLUSTER when they carry submunitions, and nothing else is. Only getArtyRounds and getArtyMagazineType
+// ask this, and only for a vehicle with no artillery computer, so no gun's answers change.
+if (param [2, false]) exitWith {
+    private _ammo = getText (configFile >> "CfgMagazines" >> _magazineClassName >> "ammo");
+    private _a = configFile >> "CfgAmmo" >> _ammo;
+    private _lock = _a >> "weaponLockSystem";
+    private _out = false;
+    if (_ammo != "" && {isClass _a}
+        && {_ammo isKindOf ["MissileBase", configFile >> "CfgAmmo"]}
+        && {(toLower getText (_a >> "simulation")) == "shotmissile"}
+        && {getNumber (_a >> "artilleryLock") == 0}
+        && {getNumber (_a >> "missileLockMaxDistance") >= 5000}
+        && {if (isNumber _lock) then { getNumber _lock > 0 } else { isText _lock && {!((getText _lock) in ["", "0"])} }}) then {
+        _out = switch (_ordnanceType) do {
+            case "HE": { !isArray (_a >> "submunitionAmmo") && {getNumber (_a >> "indirectHit") > 0} };
+            case "CLUSTER": { isArray (_a >> "submunitionAmmo") };
+            default { false };
+        };
+    };
+    _out
+};
 
 private _substrings = switch (_ordnanceType) do {
     case "HE":      { HE_SUBSTRINGS };

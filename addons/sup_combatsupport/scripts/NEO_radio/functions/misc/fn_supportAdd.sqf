@@ -354,6 +354,8 @@ switch (_support) do
         };
         private _roundsUnit = _roundsProbe call ALiVE_fnc_GetArtyRounds;
         private _roundsAvailable = _rounds select { (_x select 0) in _roundsUnit };
+        // a missile launcher (the MK41 VLS, 23 Oct): its count capped and its launchers locked against UAV terminals
+        _roundsAvailable = [_roundsProbe, _artyBatteries, _roundsAvailable] call NEO_fnc_artyLauncherSetup;
 
         leader _grp setVariable ["NEO_radioArtyBatteryRounds", _roundsAvailable, true];
         
