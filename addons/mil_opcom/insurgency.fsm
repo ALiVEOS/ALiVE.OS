@@ -543,6 +543,8 @@ class FSM
                          "// Attack always if needed" \n
                          "_unusedActions = _allActions;" \n
                          "_unusedActions = _unusedActions select {[_OPCOM_HANDLER, _x] call ALiVE_fnc_INS_typeAllowed};" \n
+                         "// Harassing Fire (Eric on Discord, 22 Oct): now and then a mortar attack on enemy troops near the objective" \n
+                         "if (([_OPCOM_HANDLER,""harassFire"",false] call ALiVE_fnc_HashGet) && {time > ([_OPCOM_HANDLER,""harassNextAt"",0] call ALiVE_fnc_HashGet)} && {!isNil ""_enemies""} && {count _enemies > 0}) then {_unusedActions = _unusedActions + [""harass""]};" \n
                          "" \n
                          "// Get civilian agents" \n
                          "_agents = [_objective,""agents"",[]] call ALiVE_fnc_HashGet;" \n
@@ -578,6 +580,34 @@ class FSM
                          "" \n
                          "            _paramsActions = [time,_center,_id,_size,_faction,_sidesEnemy,_agents];" \n
                          "            _codeActions = ""ALiVE_fnc_INS_assault"";" \n
+                         "" \n
+                         "            _paramsConditionSuccess = [time];" \n
+                         "            _codeConditionSuccess = ""time - (_this select 0) > 120"";" \n
+                         "" \n
+                         "            _paramsConditionFail = [time];" \n
+                         "            _codeConditionFail = ""time - (_this select 0) < 120"";" \n
+                         "        };" \n
+                         "" \n
+                         "        case (""harass"") : {" \n
+                         "            private _cycle = [_OPCOM_HANDLER,""harassCycle"",20] call ALiVE_fnc_HashGet;" \n
+                         "            [_OPCOM_HANDLER,""harassNextAt"",time + 60 * (_cycle + random _cycle)] call ALiVE_fnc_HashSet;" \n
+                         "            private _near = [_enemies,[_center],{_Input0 distance (_x select 1)},""ASCEND""] call ALiVE_fnc_SortBy;" \n
+                         "            private _targetID = (_near select 0) select 0;" \n
+                         "            private _tp = [ALIVE_profileHandler,""getProfile"",_targetID] call ALIVE_fnc_profileHandler;" \n
+                         "            _target = if (isNil ""_tp"") then {(_near select 0) select 1} else {[_tp,""position"",(_near select 0) select 1] call ALiVE_fnc_HashGet};" \n
+                         "            _pos = _target getPos [400 + random 300, _target getDir _center];" \n
+                         "            // on land and on the map, or the cell can never reach it: the objective instead" \n
+                         "            if (surfaceIsWater _pos || {(_pos select 0) < 0} || {(_pos select 1) < 0} || {(_pos select 0) > worldSize} || {(_pos select 1) > worldSize}) then {_pos = _center};" \n
+                         "            _switch = false;" \n
+                         "            _types = [""motorized"",""infantry""];" \n
+                         "            _groupsize = 1;" \n
+                         "            _behaviour = ""AWARE"";" \n
+                         "            _speed = ""NORMAL"";" \n
+                         "            _command = [""ALIVE_fnc_ambientMovement"",[30,""AWARE"",[0,0,0]]];" \n
+                         "            _faction = (selectRandom _factions);" \n
+                         "" \n
+                         "            _paramsActions = [time,_pos,_id,_size,_faction,_target,_targetID,_center];" \n
+                         "            _codeActions = ""ALiVE_fnc_INS_harass"";" \n
                          "" \n
                          "            _paramsConditionSuccess = [time];" \n
                          "            _codeConditionSuccess = ""time - (_this select 0) > 120"";" \n

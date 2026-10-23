@@ -457,6 +457,25 @@ if (_menuName == "C2_PLAYER_ORDERS") then {
                     _hasOrder,
                     _result
                 ],
+                // Choice After Recon (Will501 on Discord, 22 Oct): only while the commander is waiting for the answer
+                ["Take the Targets Ourselves",
+                    {["prepAnswer", [player, "take"]] call ALiVE_fnc_playerOrders},
+                    "",
+                    "Your side deals with what the recon found, with further preparation tasks against any vehicles and emplacements. The attack waits for them.",
+                    "",
+                    -1,
+                    missionNamespace getVariable [format ["ALiVE_prep_choicePending_%1", str side group player], false],
+                    _result
+                ],
+                ["Hand the Targets to the Commander",
+                    {["prepAnswer", [player, "hand"]] call ALiVE_fnc_playerOrders},
+                    "",
+                    "The commander sends its own units against what the recon found, where it has any in reach. Stay in overwatch.",
+                    "",
+                    -1,
+                    missionNamespace getVariable [format ["ALiVE_prep_choicePending_%1", str side group player], false],
+                    _result
+                ],
                 [_autoTasksLabel,
                     {["toggleAutoPlayerTasks", []] call ALiVE_fnc_playerOrders},
                     "",

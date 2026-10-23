@@ -903,6 +903,111 @@ ALiVE_fnc_INS_ambush = {
                 [_ambushKey, getposATL _roadObject] call ALiVE_fnc_INS_clearIEDs;
 };
 
+// Harassing Fire (Eric on Discord, 22 Oct): the cell has reached its firing point, 400 to 700 m from enemy troops near
+// the objective. With a player near enough for it to be on the map it sets up a mortar, fires a few rounds at them,
+// packs up and drives back towards the objective; otherwise the attack is only counted. The gun never outlives the
+// action: every way out goes through one release
+ALiVE_fnc_INS_harass = {
+                params ["_timeTaken", "_pos", "_id", "_size", "_faction", "_target", "_targetID", "_center"];
+                private _objective = [[],"getobjectivebyid",_id] call ALiVE_fnc_OPCOM;
+                private _side = _faction call ALiVE_fnc_factionSide;
+                private _sideText = [[_side] call ALiVE_fnc_sideObjectToNumber] call ALiVE_fnc_sideNumberToText;
+                private _say = { ["ALiVE [INS_harass] objective %1: %2", _id, _this] call ALiVE_fnc_dump };
+                // where the enemy is now, not where they were when the attack was picked; gone, nothing to fire at
+                if (_targetID != "") then {
+                    private _tp = [ALIVE_profileHandler, "getProfile", _targetID] call ALIVE_fnc_profileHandler;
+                    if (isNil "_tp") then { _target = [] } else { _target = [_tp, "position", _target] call ALiVE_fnc_HashGet };
+                };
+                if (isNil "_objective") exitWith { "objective gone" call _say };
+                if (_target isEqualTo []) exitWith { "the enemy it was after is gone" call _say };
+                private _section = [_objective,"section",[]] call ALiVE_fnc_HashGet;
+                if (_section isEqualTo []) exitWith { "no cell" call _say };
+                private _profile = [ALIVE_profileHandler, "getProfile", _section select 0] call ALIVE_fnc_profileHandler;
+                if (isNil "_profile") exitWith { "cell gone" call _say };
+
+                // not on the map: nobody is near enough to see it, so the attack is only counted
+                if !([_profile,"active",false] call ALiVE_fnc_HashGet) exitWith {
+                    format ["no player near, attack on %1 counted, nothing fired", mapGridPosition _target] call _say;
+                    [_timeTaken,_target,[_side],20,["EAST","WEST","GUER"],_objective] call ALiVE_fnc_INS_updateHostilityByPresence;
+                    sleep 120;
+                };
+
+                // the mortar: the faction's own, else the side's standard one
+                private _class = ((_faction call ALIVE_fnc_configGetFactionArtilleryVehicles) select { _x isKindOf "StaticMortar" }) param [0, ""];
+                if (_class == "") then { _class = switch (_sideText) do { case "WEST": {"B_Mortar_01_F"}; case "GUER": {"I_Mortar_01_F"}; default {"O_Mortar_01_F"} } };
+                private _group = [_profile,"group",grpNull] call ALiVE_fnc_HashGet;
+                private _units = (units _group) select { alive _x };
+                if (isNull _group || {_units isEqualTo []}) exitWith { "cell has no one left" call _say };
+
+                // the gunner: not the leader where there is anyone else, so the cell's moves don't pull him off the tube
+                private _gunner = if (count _units > 1) then { _units select 1 } else { _units select 0 };
+                [_profile, "clearActiveCommands"] call ALIVE_fnc_profileEntity;
+                [_profile, "clearWaypoints"] call ALIVE_fnc_profileEntity;
+                private _spot = getPosATL _gunner getPos [5, random 360];
+                private _gun = createVehicle [_class, _spot, [], 0, "NONE"];
+                _gun setDir (_spot getDir _target);
+                _gun setVariable ["ALiVE_INS_harassGun", _id, true];
+                [_gunner, "PATH"] remoteExec ["disableAI", _gunner];
+                [_gunner, _gun] remoteExec ["moveInGunner", _gunner];
+
+                private _release = {
+                    if (!isNull _gunner && {alive _gunner}) then {
+                        [_gunner, "PATH"] remoteExec ["enableAI", _gunner];
+                        if (vehicle _gunner == _gun) then { _gunner remoteExec ["moveOut", _gunner] };
+                    };
+                    if (!isNull _gun) then {
+                        private _eh = _gun getVariable ["ALiVE_INS_harassEH", -1];
+                        if (_eh >= 0) then { [_gun, ["Fired", _eh]] remoteExec ["removeEventHandler", _gun] };
+                        // deleting a crewed gun deletes its crew: the gunner is out first (or dead, or 10 s gone by)
+                        private _w = time;
+                        waitUntil { sleep 0.5; isNull _gunner || {!alive _gunner} || {vehicle _gunner != _gun} || {time - _w > 10} };
+                        deleteVehicle _gun;
+                    };
+                };
+                private _gone = { isNull _gun || {!alive _gun} || {!alive _gunner} || {isNull _group} };
+
+                private _t0 = time;
+                waitUntil { sleep 1; (gunner _gun == _gunner) || {call _gone} || {time - _t0 > 30} };
+                if (call _gone || {gunner _gun != _gunner}) exitWith { "the gunner never got to the mortar" call _say; call _release };
+
+                // a round it carries, and the target within its reach
+                private _mag = (getArtilleryAmmo [_gun]) param [0, ""];
+                if (_mag == "" || {!(_target inRangeOfArtillery [[_gun], _mag])}) exitWith {
+                    format ["target %1 out of the mortar's reach from %2", mapGridPosition _target, mapGridPosition _gun] call _say; call _release
+                };
+
+                // counted where the gun is local (a headless client may own it), read here from the public count
+                _gun setVariable ["ALiVE_INS_harassFired", 0, true];
+                [[_gun], {
+                    params ["_g"];
+                    private _eh = _g addEventHandler ["Fired", { (_this select 0) setVariable ["ALiVE_INS_harassFired", ((_this select 0) getVariable ["ALiVE_INS_harassFired", 0]) + 1, true] }];
+                    _g setVariable ["ALiVE_INS_harassEH", _eh, true];
+                }] remoteExec ["call", _gun];
+
+                private _rounds = 3 + floor random 3;
+                format ["team %1 sets up at %2, %3 rounds at %4", _section select 0, mapGridPosition _gun, _rounds, mapGridPosition _target] call _say;
+                [_gun, [_target, _mag, _rounds]] remoteExec ["doArtilleryFire", _gun];
+                _t0 = time;
+                waitUntil { sleep 2; ((_gun getVariable ["ALiVE_INS_harassFired", 0]) >= _rounds) || {call _gone} || {time - _t0 > 120} };
+                format ["%1 rounds fired at %2", _gun getVariable ["ALiVE_INS_harassFired", 0], mapGridPosition _target] call _say;
+                [_timeTaken,_target,[_side],20,["EAST","WEST","GUER"],_objective] call ALiVE_fnc_INS_updateHostilityByPresence;
+
+                // scoot: pack up, and the commander's own moves take the cell back towards the objective, as it would any
+                // section whose point has moved
+                sleep 20;
+                call _release;
+                private _exfil = +_center;
+                private _actions = [_objective,"actions",[]] call ALiVE_fnc_HashGet;
+                if (_actions isNotEqualTo []) then { _actions set [1, _exfil] };
+                "packed up" call _say;
+                _t0 = time;
+                waitUntil {
+                    sleep 5;
+                    private _p = [ALIVE_profileHandler, "getProfile", _section select 0] call ALIVE_fnc_profileHandler;
+                    isNil "_p" || {([_p,"position",_exfil] call ALiVE_fnc_HashGet) distance2D _exfil < 100} || {time - _t0 > 300}
+                };
+};
+
 ALiVE_fnc_INS_retreat = {
                 private ["_timeTaken","_pos","_id","_size","_faction","_sides","_agents","_objective","_event","_eventID"];
 

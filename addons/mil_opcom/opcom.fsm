@@ -461,8 +461,8 @@ class FSM
                          "                        _priorities = [" \n
                          "                            [(count _res > 0),""reserve""]," \n
                          "                            [(count _def > 0),""defend""]," \n
-                         "                            [(count _at > 0) && _attackCapacityAvailable,""attack""]," \n
-                         "                            [(count _un > 0) && _attackCapacityAvailable,""unassigned""]" \n
+                         "                            [(count _at > 0) && _attackCapacityAvailable && {[_OPCOM_HANDLER,""prepReady"",_at select 0] call ALiVE_fnc_OPCOM},""attack""]," \n
+                         "                            [(count _un > 0) && _attackCapacityAvailable && {[_OPCOM_HANDLER,""prepReady"",_un select 0] call ALiVE_fnc_OPCOM},""unassigned""]" \n
                          "                        ];" \n
                          "                    };" \n
                          "                };" \n

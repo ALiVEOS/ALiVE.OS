@@ -296,6 +296,18 @@ class CfgVehicles {
                                 defaultValue = """15""";
                                 typeName = "NUMBER";
                         };
+                        class prepChoice : Combo
+                        {
+                                property = "ALiVE_mil_opcom_prepChoice";
+                                displayName = "$STR_ALIVE_OPCOM_PREP_CHOICE";
+                                tooltip = "$STR_ALIVE_OPCOM_PREP_CHOICE_COMMENT";
+                                defaultValue = """false""";
+                                class Values
+                                {
+                                        class No  { name = "No";  value = "false"; };
+                                        class Yes { name = "Yes"; value = "true"; };
+                                };
+                        };
                         class occPauseMins : Edit
                         {
                                 property = "ALiVE_mil_opcom_occPauseMins";
@@ -584,6 +596,26 @@ class CfgVehicles {
                                 displayName = "$STR_ALIVE_OPCOM_ASYM_FORCE_LIMIT";
                                 tooltip = "$STR_ALIVE_OPCOM_ASYM_FORCE_LIMIT_COMMENT";
                                 defaultValue = """-1""";
+                                typeName = "NUMBER";
+                        };
+                        class asymHarassFire : Combo
+                        {
+                                property = "ALiVE_mil_opcom_asymHarassFire";
+                                displayName = "$STR_ALIVE_OPCOM_ASYM_HARASS";
+                                tooltip = "$STR_ALIVE_OPCOM_ASYM_HARASS_COMMENT";
+                                defaultValue = """false""";
+                                class Values
+                                {
+                                        class No  { name = "No";  value = "false"; };
+                                        class Yes { name = "Yes"; value = "true"; };
+                                };
+                        };
+                        class asymHarassCycle : Edit
+                        {
+                                property = "ALiVE_mil_opcom_asymHarassCycle";
+                                displayName = "$STR_ALIVE_OPCOM_ASYM_HARASS_CYCLE";
+                                tooltip = "$STR_ALIVE_OPCOM_ASYM_HARASS_CYCLE_COMMENT";
+                                defaultValue = """20""";
                                 typeName = "NUMBER";
                         };
                         class recruitCycleMin : Edit

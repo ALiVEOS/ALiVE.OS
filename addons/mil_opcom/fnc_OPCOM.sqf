@@ -136,6 +136,8 @@ switch (_operation) do {
         // wiretap task at the objective, or for Preparation Timeout minutes; off by default
         private _prepTasks = (toLower format ["%1", _logic getVariable ["prepTasks", "false"]]) in ["true", "1"];
         private _prepTimeout = ((parseNumber format ["%1", _logic getVariable ["prepTimeoutMins", 15]]) max 1) * 60;
+        // Choice After Recon (Will501 on Discord, 22 Oct): after a recon, players take the targets or hand them over
+        private _prepChoice = (toLower format ["%1", _logic getVariable ["prepChoice", "false"]]) in ["true", "1"];
         // how many tasks an operation hands out (The Horny Latino on Discord, 20 Oct): Invasion preparation tasks per
         // objective, and Occupation clean-up tasks per capture. 0 and 0 (the default) keep one wiretap for Invasion and
         // every clean-up kind for Occupation
@@ -167,6 +169,9 @@ switch (_operation) do {
         private _minAgents = parseNumber format ["%1", _logic getvariable ["minAgents",2]];
         private _asymForceLimit = floor (parseNumber format ["%1", _logic getvariable ["asymForceLimit",-1]]);
         private _recruitCycleMin = (parseNumber format ["%1", _logic getvariable ["recruitCycleMin",30]]) max 0;
+        // Harassing Fire (Eric on Discord, 22 Oct): an Asymmetric commander's mortar attacks, and the shortest wait between them
+        private _harassFire = (toLower format ["%1", _logic getVariable ["asymHarassFire", "false"]]) in ["true", "1"];
+        private _harassCycle = (parseNumber format ["%1", _logic getVariable ["asymHarassCycle", 20]]) max 1;
         private _recruitCycleMax = (parseNumber format ["%1", _logic getvariable ["recruitCycleMax",60]]) max _recruitCycleMin;
 
         private _recruitAttemptLimit = floor (parseNumber format ["%1", _logic getvariable ["recruitAttemptLimit",0]]);
@@ -372,6 +377,10 @@ switch (_operation) do {
             ["minAgents", _minAgents],
             ["asymForceLimit", _asymForceLimit],
             ["recruitCycleMin", _recruitCycleMin],
+            ["harassFire", _harassFire],
+            ["harassCycle", _harassCycle],
+            // the first not before one interval has gone by
+            ["harassNextAt", time + 60 * _harassCycle],
             ["recruitCycleMax", _recruitCycleMax],
             ["recruitAttemptLimit", _recruitAttemptLimit],
             ["recruitSuccessChance", _recruitSuccessChance],
@@ -408,7 +417,10 @@ switch (_operation) do {
             ["intelchance", _intelChance],
             ["hvt", _hvt],
             ["occPauseMins", _occPauseMins],
-            ["prepTasks", _prepTasks && {_type == "invasion"}],
+            // Invasion and Occupation both (A. Ares on Discord, 22 Oct); the type is checked when an attack is picked,
+            // so a commander switched from one to the other part way through keeps it
+            ["prepTasks", _prepTasks],
+            ["prepChoice", _prepChoice],
             ["prepTimeout", _prepTimeout],
             ["opTasksMin", _opTasksMin],
             ["opTasksMax", _opTasksMax],
@@ -4614,7 +4626,8 @@ switch (_operation) do {
     };
 
     ///////////////////////////////////////////////////
-    // Preparation tasks (The Horny Latino on Discord, 19 Oct): before an Invasion commander attacks a new objective,
+    // Preparation tasks (The Horny Latino on Discord, 19 Oct): before an Invasion or Occupation commander (Occupation
+    // from 22 Oct, A. Ares on Discord) attacks a new objective,
     // players on its side are given preparation tasks there, and the attack waits for them or the module's Preparation
     // Timeout, whichever comes first. One preparation at a time per commander. True when the attack may go ahead;
     // anything that stops a task being given (no players, no C2ISTAR, nobody there) means no wait at all.
@@ -4627,16 +4640,122 @@ switch (_operation) do {
         private _objective = _args;
         _result = true;
         if !([_logic, "prepTasks", false] call ALiVE_fnc_HashGet) exitWith {};
+        // a conventional commander only: an insurgent one has no attacks to prepare
+        if !(([_logic, "controltype", ""] call ALiVE_fnc_HashGet) in ["invasion", "occupation"]) exitWith {};
         private _module = [_logic, "module"] call ALiVE_fnc_HashGet;
+        // no attack while a pause after a capture or a high value target hold is on, so nothing is prepared then
+        // either: the preparation and its timeout would run out inside the hold
+        if (time < (_module getVariable ["ALiVE_HVT_holdUntil", -1]) || {!([_logic, "occPauseOpen"] call ALiVE_fnc_OPCOM)}) exitWith { _result = false };
         private _objectiveID = [_objective, "objectiveID", ""] call ALiVE_fnc_HashGet;
         private _state = _module getVariable ["ALiVE_prep_state", ""];
         private _prepFor = _module getVariable ["ALiVE_prep_objectiveID", ""];
         // finished for this objective, either way: it goes ahead (kept per objective, as one is asked about both
         // before its recon and before its attack, with others' in between)
         private _cleared = _module getVariable ["ALiVE_prep_cleared", []];
+        // Choice After Recon (Will501 on Discord, 22 Oct): once the recon has reported, players say whether they take
+        // the targets themselves (the second round of tasks, as before) or hand them to the commander, which sends its
+        // own units against what they found while they stay in overwatch. Their answer is only recorded (prepAnswer);
+        // it is acted on here, in the commander's own pass. No answer by the Preparation Timeout counts as handing over
+        private _prepEnd = {
+            params ["_why", "_say"];
+            private _pf = _module getVariable ["ALiVE_prep_objectiveID", ""];
+            private _cl = _module getVariable ["ALiVE_prep_cleared", []];
+            _cl pushBackUnique _pf;
+            _module setVariable ["ALiVE_prep_cleared", _cl];
+            _module setVariable ["ALiVE_prep_state", "done"];
+            _module setVariable ["ALiVE_prep_choice", ""];
+            [_logic, "prepFlag"] call ALiVE_fnc_OPCOM;
+            ["OPCOM %1: the attack on %2 goes ahead (%3)", [_logic, "side", ""] call ALiVE_fnc_HashGet, _pf, _why] call ALiVE_fnc_dump;
+            if (_say != "") then { [_logic, "opRadio", _say] call ALiVE_fnc_OPCOM };
+        };
+        // the recon's targets still worth sending anyone at (A. Ares on Discord, 22 Oct): a group with someone alive in
+        // it, a vehicle or emplacement with a crew; a group wiped out is gone from the profiles altogether
+        private _prepAlive = {
+            (_module getVariable ["ALiVE_prep_choiceTargets", []]) select {
+                private _p = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+                if (isNil "_p") then { false } else {
+                    if (([_p, "type", ""] call ALiVE_fnc_HashGet) == "vehicle") then {
+                        ([_p, "entitiesInCommandOf", []] call ALiVE_fnc_HashGet) isNotEqualTo []
+                    } else {
+                        !([_p, "active", false] call ALiVE_fnc_HashGet) || {({alive _x} count units ([_p, "group", grpNull] call ALiVE_fnc_HashGet)) > 0}
+                    }
+                }
+            }
+        };
+        // one step of a choice in hand; true while it still holds the attack
+        private _prepChoiceStep = {
+            private _c = _module getVariable ["ALiVE_prep_choice", ""];
+            private _place = _module getVariable ["ALiVE_prep_place", "the objective"];
+            private _late = _c == "pending" && {time > (_module getVariable ["ALiVE_prep_deadline", -1])};
+            private _hold = false;
+            if (_c == "pending" && {!_late}) then { _hold = true };
+            if (_c == "hand" || {_late}) then {
+                private _alive = call _prepAlive;
+                if (_alive isEqualTo []) then {
+                    ["handed over, nothing left", format ["Nothing left of the targets at %1. The assault goes ahead.", _place]] call _prepEnd;
+                } else {
+                    // up to 4 targets, each from the first pool with a free section in reach (motorized and armour
+                    // reach 3 km, infantry and mechanized 1 km)
+                    // one order per target (each raises a fire request where there is artillery), from the first pool
+                    // with one of its sections in that pool's reach
+                    private _sent = [];
+                    private _pools = [_logic, ["infantry", "motorized", "mechanized", "armored"]] call ALiVE_fnc_hashGetMany;
+                    private _mySide = [_logic, "side", "WEST"] call ALiVE_fnc_HashGet;
+                    {
+                        private _t = _x;
+                        private _tp = [ALIVE_profileHandler, "getProfile", _t] call ALIVE_fnc_profileHandler;
+                        if (count _sent < 4 && {!isNil "_tp"}) then {
+                            private _tpos = [_tp, "position", [0,0,0]] call ALiVE_fnc_HashGet;
+                            private _near = ([_tpos, 3000, [_mySide, "entity"]] call ALIVE_fnc_getNearProfiles) apply {
+                                [[_x, "profileID", ""] call ALiVE_fnc_HashGet, ([_x, "position", [0,0,0]] call ALiVE_fnc_HashGet) distance _tpos]
+                            };
+                            private _type = "";
+                            {
+                                private _pool = _x;
+                                private _reach = [1000, 3000, 1000, 3000] select _forEachIndex;
+                                if (_type == "" && {!isNil "_pool"} && {_pool isEqualType []} && {(_near findIf { (_x select 1) < _reach && {(_x select 0) in _pool} }) >= 0}) then {
+                                    _type = ["infantry", "motorized", "mechanized", "armored"] select _forEachIndex;
+                                };
+                            } forEach _pools;
+                            if (_type != "") then {
+                                private _g = [_logic, "attackEntity", [_t, 1, _type]] call ALiVE_fnc_OPCOM;
+                                if (!isNil "_g" && {_g isEqualType []}) then { _sent append _g };
+                            };
+                        };
+                    } forEach _alive;
+                    if (_sent isEqualTo []) then {
+                        ["handed over, no units free", format ["No units free to take the targets at %1. The assault goes ahead.", _place]] call _prepEnd;
+                    } else {
+                        // the main assault waits a while, so it doesn't take the same sections off their targets
+                        _module setVariable ["ALiVE_prep_choice", "handed"];
+                        _module setVariable ["ALiVE_prep_handedUntil", time + 300];
+                        [_logic, "prepFlag"] call ALiVE_fnc_OPCOM;
+                        ["OPCOM %1: %2 handed over (%3): %4 of %5 targets alive, sections %6 sent", [_logic, "side", ""] call ALiVE_fnc_HashGet,
+                            _module getVariable ["ALiVE_prep_objectiveID", ""], ["by the players", "no answer"] select _late, count _alive,
+                            count (_module getVariable ["ALiVE_prep_choiceTargets", []]), _sent] call ALiVE_fnc_dump;
+                        private _who = [format ["%1 sections are", count _sent], "1 section is"] select (count _sent == 1);
+                        [_logic, "opRadio", [
+                            format ["Understood. %1 moving on the targets at %2. Stay in overwatch.", _who, _place],
+                            format ["No answer from the recon at %1. The commander takes the targets itself: %2 moving in.", _place, toLower _who]
+                        ] select _late] call ALiVE_fnc_OPCOM;
+                        _hold = true;
+                    };
+                };
+            };
+            if (_c == "handed") then {
+                private _alive = call _prepAlive;
+                if (_alive isNotEqualTo [] && {time < (_module getVariable ["ALiVE_prep_handedUntil", -1])}) then { _hold = true } else {
+                    ["handed over", [format ["The assault at %1 is going ahead.", _place],
+                        format ["The targets at %1 are down. The assault is going ahead.", _place]] select (_alive isEqualTo [])] call _prepEnd;
+                };
+            };
+            _hold
+        };
         if (_objectiveID in _cleared || {_prepFor == _objectiveID && {_state in ["done", "expired"]}}) exitWith {};
         // one in hand for another objective holds this one back, so players get one at a time
         if (_state == "requested" && {_prepFor != _objectiveID}) exitWith {
+            // a recon's choice in hand is settled first, through to its hand-over
+            if ((_module getVariable ["ALiVE_prep_choice", ""]) in ["pending", "hand", "handed"]) exitWith { call _prepChoiceStep; _result = false };
             // unless that one has run out of time
             if (time <= (_module getVariable ["ALiVE_prep_deadline", -1])) then { _result = false } else {
                 _module setVariable ["ALiVE_prep_state", "expired"];
@@ -4656,6 +4775,29 @@ switch (_operation) do {
         if (_state == "requested" && {_prepFor == _objectiveID} && {_reconID != ""} && {!(_module getVariable ["ALiVE_prep_round2Done", false])}
             && {time <= (_module getVariable ["ALiVE_prep_deadline", -1])}) then {
             _round2 = ((missionNamespace getVariable ["ALiVE_reconReports", []]) findIf { (_x param [5, ""]) == _reconID }) >= 0;
+        };
+        // Choice After Recon: the recon has reported, so the players are asked before any second round
+        private _choiceRow = [];
+        if (_round2) then {
+            private _reports = missionNamespace getVariable ["ALiVE_reconReports", []];
+            _choiceRow = _reports select (_reports findIf { (_x param [5, ""]) == _reconID });
+        };
+        // asked only when the recon found something to take or hand over
+        if (_round2 && {[_logic, "prepChoice", false] call ALiVE_fnc_HashGet} && {(_module getVariable ["ALiVE_prep_choice", ""]) == ""}
+            && {(_choiceRow param [3, []]) isNotEqualTo []}) then {
+            private _row = _choiceRow;
+            // the targets the players were told about, kept here (a report row is dropped after an hour)
+            _module setVariable ["ALiVE_prep_choiceTargets", +(_row param [3, []])];
+            _module setVariable ["ALiVE_prep_choice", "pending"];
+            private _sideText = [_logic, "side", "WEST"] call ALiVE_fnc_HashGet;
+            [_logic, "prepFlag"] call ALiVE_fnc_OPCOM;
+            private _n = count (_row param [3, []]);
+            ["OPCOM %1: the recon at %2 reported %3 targets, asking the players (choice pending)", _sideText, _objectiveID, _n] call ALiVE_fnc_dump;
+            [_logic, "opRadio", format ["Recon at %1 is complete, %2 spotted. Take the targets yourselves, or hand them to the commander? Answer from the OPCOM Orders menu.",
+                _module getVariable ["ALiVE_prep_place", "the objective"], [format ["%1 targets", _n], "1 target"] select (_n == 1)]] call ALiVE_fnc_OPCOM;
+        };
+        if (_state == "requested" && {_prepFor == _objectiveID} && {(_module getVariable ["ALiVE_prep_choice", ""]) in ["pending", "hand", "handed"]}) exitWith {
+            _result = !(call _prepChoiceStep);
         };
         if (_state == "requested" && {!_round2}) exitWith {
             // every task asked for: one still open holds the attack; one C2ISTAR never made is given 2 minutes
@@ -4820,6 +4962,8 @@ switch (_operation) do {
         // are sent to reconnoitre it as well, whatever Fewest and Most say, and what they report brings a second round
         _module setVariable ["ALiVE_prep_reconID", ""];
         _module setVariable ["ALiVE_prep_round2Done", false];
+        _module setVariable ["ALiVE_prep_choice", ""];
+        _module setVariable ["ALiVE_prep_choiceTargets", []];
         private _reconKind = [];
         if (_knownOnly && {count _kinds == 1} && {!isNil "ALIVE_fnc_taskReconObjective"}) then {
             _reconKind = ["ReconObjective", [], "reconnaissance"];
@@ -4849,6 +4993,31 @@ switch (_operation) do {
         [_logic, "opRadio", format ["The operation at %1 is not ready until the preparations are complete. %2 issued.", _place,
             [format ["%1 tasks", count _ids], "1 task"] select (count _ids == 1)]] call ALiVE_fnc_OPCOM;
         _result = false;
+    };
+
+    // Choice After Recon: whether any commander on this side is waiting for the players' answer, published for the
+    // OPCOM Orders menu (one flag per side, so it stays up while any of them is still waiting)
+    case "prepFlag": {
+        private _sideText = [_logic, "side", "WEST"] call ALiVE_fnc_HashGet;
+        private _any = (missionNamespace getVariable ["OPCOM_instances", []]) findIf {
+            private _m = [_x, "module"] call ALiVE_fnc_HashGet;
+            ([_x, "side", ""] call ALiVE_fnc_HashGet) == _sideText && {!isNil "_m"} && {(_m getVariable ["ALiVE_prep_choice", ""]) == "pending"}
+        };
+        missionNamespace setVariable [format ["ALiVE_prep_choicePending_%1", _sideText], _any >= 0, true];
+        _result = _any >= 0;
+    };
+
+    // Choice After Recon: a player's answer, "take" or "hand", only recorded while one is asked for; prepReady acts on
+    // it in the commander's own pass. True when it was taken
+    case "prepAnswer": {
+        private _module = [_logic, "module"] call ALiVE_fnc_HashGet;
+        _result = false;
+        if (!isNil "_module" && {_args in ["take", "hand"]} && {(_module getVariable ["ALiVE_prep_choice", ""]) == "pending"}) then {
+            _module setVariable ["ALiVE_prep_choice", _args];
+            [_logic, "prepFlag"] call ALiVE_fnc_OPCOM;
+            ["OPCOM %1: the players answered %2 for %3", [_logic, "side", ""] call ALiVE_fnc_HashGet, _args, _module getVariable ["ALiVE_prep_objectiveID", ""]] call ALiVE_fnc_dump;
+            _result = true;
+        };
     };
 
     // What this commander knows of the enemy (A. Ares on Discord, 21 Oct), for Tasks Only Against Known Enemy:
@@ -5382,6 +5551,15 @@ switch (_operation) do {
         [_logic,"pendingorders", []] call ALiVE_fnc_hashSet;
 
         [_logic,"controltype", _newControlType] call ALiVE_fnc_hashSet;
+
+        // a preparation in hand (and a question to the players) doesn't carry over to the new type; what is cleared stays
+        private _prepModule = [_logic, "module"] call ALiVE_fnc_HashGet;
+        if (!isNil "_prepModule") then {
+            _prepModule setVariable ["ALiVE_prep_state", ""];
+            _prepModule setVariable ["ALiVE_prep_choice", ""];
+            _prepModule setVariable ["ALiVE_prep_choiceTargets", []];
+            [_logic, "prepFlag"] call ALiVE_fnc_OPCOM;
+        };
 
         // reboot FSMs
 

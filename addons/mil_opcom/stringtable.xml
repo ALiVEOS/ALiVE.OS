@@ -316,13 +316,31 @@
     <English>Preparation Tasks Before Attacks</English>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_PREP_COMMENT">
-    <English>Invasion only. Before each new attack, players on this commander's side are given preparation tasks at the objective: a wiretap of the enemy's communications, and with Fewest and Most Tasks per Operation set, destroying the AA and mortar emplacements or enemy vehicles there or an insurgent installation nearby. The attack waits for the tasks, or for the timeout below, whichever is first. With no players about it doesn't wait.</English>
+    <English>Invasion and Occupation. Before each new attack, players on this commander's side are given preparation tasks at the objective: a wiretap of the enemy's communications, and with Fewest and Most Tasks per Operation set, destroying the AA and mortar emplacements or enemy vehicles there or an insurgent installation nearby. The attack waits for the tasks, or for the timeout below, whichever is first. With no players about it doesn't wait.</English>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_PREP_TIMEOUT">
     <English>Preparation Timeout (min)</English>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_PREP_TIMEOUT_COMMENT">
     <English>How many minutes an attack waits for its preparation task before going in anyway.</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_ASYM_HARASS">
+    <English>Harassing Fire</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_ASYM_HARASS_COMMENT">
+    <English>Asymmetric only. Yes: now and then one of this commander's cells drives to a spot 400 to 700 m from enemy troops near one of its objectives, sets up a mortar, fires a few rounds at them, packs it up and drives off. The rounds are fired for real when a player is near enough for the cell to be on the map; otherwise the attack is only counted. No (default) is off.</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_ASYM_HARASS_CYCLE">
+    <English>Harassing Fire Interval (min)</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_ASYM_HARASS_CYCLE_COMMENT">
+    <English>The shortest wait between two mortar attacks from this commander. The next one comes between this many minutes and twice this many. Default 20.</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_PREP_CHOICE">
+    <English>Choice After Recon</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_PREP_CHOICE_COMMENT">
+    <English>Needs Preparation Tasks and Tasks Only Against Known Enemy. When the players' reconnaissance has reported, they choose from the OPCOM Orders menu (it needs the C2ISTAR item): take the targets themselves, with further preparation tasks against any vehicles and emplacements, or hand them to the commander, which sends its own units against up to four of the targets still alive that its units can reach, while the players stay in overwatch. The assault waits up to 5 minutes for those units. Nothing found, nothing asked. No answer by the Preparation Timeout counts as handing over. With Military AI Commander Artillery present, the commander may also call fire on the targets.</English>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_OCC_PAUSE">
     <English>Pause After Capture (min)</English>
@@ -334,7 +352,7 @@
     <English>Fewest Tasks per Operation</English>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_OP_TASKS_MIN_COMMENT">
-    <English>The fewest tasks players are given for each operation: preparation tasks before each Invasion attack (Preparation Tasks), or clean-up tasks after each Occupation capture (Pause After Capture). Each operation gets a number between this and Most Tasks per Operation. Preparation tasks can be a wiretap, destroying AA and mortar emplacements or enemy vehicles at the objective, or an insurgent installation near it, where there is one to destroy. Leave both at 0 for one wiretap per Invasion attack and every clean-up task after a capture.</English>
+    <English>The fewest tasks players are given for each operation: preparation tasks before each Invasion or Occupation attack (Preparation Tasks), or clean-up tasks after each Occupation capture (Pause After Capture). Each operation gets a number between this and Most Tasks per Operation. Preparation tasks can be a wiretap, destroying AA and mortar emplacements or enemy vehicles at the objective, or an insurgent installation near it, where there is one to destroy. Leave both at 0 for one wiretap per attack and every clean-up task after a capture.</English>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_OP_TASKS_MAX">
     <English>Most Tasks per Operation</English>
@@ -346,7 +364,7 @@
     <English>Tasks Only Against Known Enemy</English>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_OP_TASKS_KNOWN_COMMENT">
-    <English>No (the default) aims the preparation and clean-up tasks at what is really at the objective, whether or not anyone has seen it. Yes aims them only at what this commander has found: enemy vehicles and emplacements whose crews its units have seen in the last 30 minutes, and an insurgent installation only once a seen enemy group or one of its own groups has been near it. A kind with nothing known is left out, and so is removing IEDs after a capture, as nobody has seen those. The wiretap is always offered, as gathering intel is the point of it. With nothing known at an Invasion objective, players are also sent to reconnoitre it, and what they report brings a second round of tasks before the Preparation Timeout.</English>
+    <English>No (the default) aims the preparation and clean-up tasks at what is really at the objective, whether or not anyone has seen it. Yes aims them only at what this commander has found: enemy vehicles and emplacements whose crews its units have seen in the last 30 minutes, and an insurgent installation only once a seen enemy group or one of its own groups has been near it. A kind with nothing known is left out, and so is removing IEDs after a capture, as nobody has seen those. The wiretap is always offered, as gathering intel is the point of it. With nothing known at an objective about to be attacked, players are also sent to reconnoitre it, and what they report brings a second round of tasks before the Preparation Timeout.</English>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_HVT_RESPAWN">
     <English>Replace When Pause Ends</English>

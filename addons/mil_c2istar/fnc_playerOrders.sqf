@@ -911,6 +911,32 @@ switch (_operation) do {
             ["notify", [_player, _keptMessage]] call MAINCLASS;
         };
     };
+    // Choice After Recon (Will501 on Discord, 22 Oct): a player's answer to the commander's question after a recon,
+    // "take" or "hand", passed to their side's commander, which records it and acts on it in its own pass
+    case "prepAnswer": {
+        if !(isServer) exitWith {
+            [_operation, _args] remoteExec ["ALiVE_fnc_playerOrders", 2];
+        };
+
+        _args params [
+            ["_player", objNull, [objNull]],
+            ["_answer", "", [""]]
+        ];
+
+        if (isNull _player) exitWith {};
+
+        // every commander on the side that is waiting for one takes it
+        private _side = str side group _player;
+        private _taken = false;
+        {
+            if (([_x, "side", ""] call ALiVE_fnc_HashGet) == _side && {[_x, "prepAnswer", _answer] call ALiVE_fnc_OPCOM}) then { _taken = true };
+        } forEach (missionNamespace getVariable ["OPCOM_instances", []]);
+
+        ["notify", [_player, [
+            "Nothing is waiting for an answer now.",
+            ["Understood. The targets are yours.", "Understood. The commander is sending its own units."] select (_answer == "hand")
+        ] select _taken]] call MAINCLASS;
+    };
     case "toggleOptOut": {
         if !(isServer) exitWith {
             [_operation, _args] remoteExec ["ALiVE_fnc_playerOrders", 2];
