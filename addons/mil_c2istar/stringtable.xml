@@ -2790,7 +2790,7 @@
     <Russian>Настройка автозадач</Russian>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_UI_TACTICAL_DISABLE">
-    <English>Disable Tactical Tasks</English>
+    <English>Disable Tactical</English>
     <Chinesesimp>禁用战术任务</Chinesesimp>
     <Chinese>停用戰術任務</Chinese>
     <Spanish>Desactivar tareas tácticas</Spanish>
@@ -2799,7 +2799,7 @@
     <Russian>Отключить тактические задачи</Russian>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_UI_TACTICAL_ENABLE">
-    <English>Enable Tactical Tasks</English>
+    <English>Enable Tactical</English>
     <Chinesesimp>启用战术任务</Chinesesimp>
     <Chinese>啟用戰術任務</Chinese>
     <Spanish>Activar tareas tácticas</Spanish>
@@ -2808,7 +2808,7 @@
     <Russian>Включить тактические задачи</Russian>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_UI_STRATEGIC_DISABLE">
-    <English>Disable Strategic Tasks</English>
+    <English>Disable Strategic</English>
     <Chinesesimp>禁用战略任务</Chinesesimp>
     <Chinese>停用戰略任務</Chinese>
     <Spanish>Desactivar tareas estratégicas</Spanish>
@@ -2817,7 +2817,7 @@
     <Russian>Отключить стратегические задачи</Russian>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_UI_STRATEGIC_ENABLE">
-    <English>Enable Strategic Tasks</English>
+    <English>Enable Strategic</English>
     <Chinesesimp>启用战略任务</Chinesesimp>
     <Chinese>啟用戰略任務</Chinese>
     <Spanish>Activar tareas estratégicas</Spanish>
