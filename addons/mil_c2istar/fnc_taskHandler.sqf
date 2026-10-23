@@ -330,7 +330,9 @@ switch (_operation) do {
 			private _parent = _value select 11;
 			private _curentState = _value select 8;
 
-			if ((_parent == _taskID) && (_state != _curentState)) then {
+			// a stage that has already ended keeps how it ended: a recon whose OP 2 was manned first (Succeeded) and
+			// whose task is then cancelled shows OP 2 done, not a second "cancelled" popup
+			if ((_parent == _taskID) && (_state != _curentState) && {!(_curentState in ["Succeeded", "Failed", "Canceled"])}) then {
 				_value params [
 						"",
 						"_requestingPlayer",

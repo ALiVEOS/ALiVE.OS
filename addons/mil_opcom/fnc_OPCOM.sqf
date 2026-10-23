@@ -4674,6 +4674,7 @@ switch (_operation) do {
             _module setVariable ["ALiVE_prep_choice", ""];
             [_logic, "prepFlag"] call ALiVE_fnc_OPCOM;
             ["OPCOM %1: the attack on %2 goes ahead (%3)", [_logic, "side", ""] call ALiVE_fnc_HashGet, _pf, _why] call ALiVE_fnc_dump;
+            if (([_logic, "prepCancelTasks"] call ALiVE_fnc_OPCOM) > 0 && {_say != ""}) then { _say = _say + " Remaining preparation tasks are cancelled." };
             if (_say != "") then { [_logic, "opRadio", _say] call ALiVE_fnc_OPCOM };
         };
         // the recon's targets still worth sending anyone at (A. Ares on Discord, 22 Oct): a group with someone alive in
@@ -4770,7 +4771,8 @@ switch (_operation) do {
                 _cleared pushBackUnique _prepFor;
                 _module setVariable ["ALiVE_prep_cleared", _cleared];
                 ["OPCOM %1: the preparation for %2 ran out of time", [_logic, "side", ""] call ALiVE_fnc_HashGet, _prepFor] call ALiVE_fnc_dump;
-                [_logic, "opRadio", format ["Out of time at %1. The assault goes ahead without the preparations.", _module getVariable ["ALiVE_prep_place", "the objective"]]] call ALiVE_fnc_OPCOM;
+                private _gone = ([_logic, "prepCancelTasks"] call ALiVE_fnc_OPCOM) > 0;
+                [_logic, "opRadio", format ["Out of time at %1. The assault goes ahead without the preparations.%2", _module getVariable ["ALiVE_prep_place", "the objective"], ["", " Remaining preparation tasks are cancelled."] select _gone]] call ALiVE_fnc_OPCOM;
                 _result = false;
             };
         };
@@ -4838,6 +4840,13 @@ switch (_operation) do {
             private _why = "";
             if (_open == 0) then { _why = ["no task made", ["failed", "done"] select (_won > 0)] select (_made > 0) };
             if (_why == "" && {time > (_module getVariable ["ALiVE_prep_deadline", -1])}) then { _why = "time up" };
+            // two minutes before the deadline, tasks still open: HQ says so once, as what is unfinished then is
+            // cancelled when the assault goes in (prepCancelTasks)
+            private _deadline = _module getVariable ["ALiVE_prep_deadline", -1];
+            if (_why == "" && {_open > 0} && {time > _deadline - 120} && {(_module getVariable ["ALiVE_prep_warned", -1]) != _deadline}) then {
+                _module setVariable ["ALiVE_prep_warned", _deadline];
+                [_logic, "opRadio", format ["Two minutes to the assault at %1. Finish what you can, Over.", _module getVariable ["ALiVE_prep_place", "the objective"]]] call ALiVE_fnc_OPCOM;
+            };
             if (_why == "") exitWith { _result = false };
             _module setVariable ["ALiVE_prep_state", ["expired", "done"] select (_why == "done")];
             _cleared pushBackUnique _objectiveID;
@@ -4846,7 +4855,7 @@ switch (_operation) do {
             private _place = _module getVariable ["ALiVE_prep_place", "the objective"];
             private _say = switch (_why) do {
                 case "done": { format ["Preparations at %1 are complete. All units, the assault is going ahead.", _place] };
-                case "time up": { format ["Out of time at %1. The assault goes ahead without the preparations.", _place] };
+                case "time up": { format ["Out of time at %1. The assault goes ahead without the preparations.%2", _place, ["", " Remaining preparation tasks are cancelled."] select (([_logic, "prepCancelTasks"] call ALiVE_fnc_OPCOM) > 0)] };
                 case "failed": { format ["The preparations at %1 have failed. The assault goes ahead regardless.", _place] };
                 default { "" };
             };
@@ -5028,6 +5037,43 @@ switch (_operation) do {
         };
         missionNamespace setVariable [format ["ALiVE_prep_choicePending_%1", _sideText], _any >= 0, true];
         _result = _any >= 0;
+    };
+
+    // The attack goes ahead before every preparation task is done (A. Ares on Discord, 23 Oct: a Wiretap stayed open
+    // after the assault went in): each still open is taken off the task handler as a player's cancelled order is
+    // (locks released, rows and markers gone), and its players get one "Task cancelled" popup for it, not one per
+    // stage. HQ warns two minutes before (prepReady). Returns how many were cancelled
+    case "prepCancelTasks": {
+        private _module = [_logic, "module"] call ALiVE_fnc_HashGet;
+        _result = 0;
+        if (isNil "_module" || {isNil "ALiVE_TaskHandler"}) exitWith {};
+        private _ids = _module getVariable ["ALiVE_prep_taskIDs", []];
+        private _all = ([ALiVE_TaskHandler, "tasks", ["", [], [], nil]] call ALiVE_fnc_HashGet) select 2;
+        private _managed = [ALiVE_TaskHandler, "managedTaskParams", [] call ALiVE_fnc_hashCreate] call ALiVE_fnc_HashGet;
+        {
+            private _id = _x;
+            private _root = _all select { (_x select 0) == _id };
+            if (_root isNotEqualTo [] && {!(((_root select 0) select 8) in ["Succeeded", "Failed", "Canceled"])}) then {
+                private _row = +(_root select 0);
+                // a Wiretap's "Setup Wiretap" action stays on its building otherwise, and finishing it would announce
+                // a wiretap with no task behind it: marked done, which hides the action everywhere
+                if ("Wiretap" in (_row param [12, ""]) && {_id in (_managed select 1)}) then {
+                    private _tp = [_managed, _id] call ALiVE_fnc_hashGet;
+                    { if (_x isEqualType objNull && {!isNull _x}) then { _x setVariable ["ALiVE_Task_Wiretapped", true, true] } } forEach ([_tp, "targets", []] call ALiVE_fnc_hashGet);
+                };
+                {
+                    private _p = [_x] call ALIVE_fnc_getPlayerByUID;
+                    if (!isNull _p) then { ["TaskCanceled", ["", _row select 5]] remoteExecCall ["BIS_fnc_showNotification", _p] };
+                } forEach ((_row select 7) param [0, []]);
+                private _event = ["TASK_DELETE", [_id, _row select 1, _row select 2], "OPCOM"] call ALiVE_fnc_event;
+                [ALIVE_eventLog, "addEvent", _event] call ALiVE_fnc_eventLog;
+                _result = _result + 1;
+            };
+        } forEach _ids;
+        _module setVariable ["ALiVE_prep_taskIDs", []];
+        if (_result > 0) then {
+            ["OPCOM %1: preparation for %2 over, %3 tasks cancelled", [_logic, "side", ""] call ALiVE_fnc_HashGet, _module getVariable ["ALiVE_prep_objectiveID", ""], _result] call ALiVE_fnc_dump;
+        };
     };
 
     // Choice After Recon: a player's answer, "take" or "hand", only recorded while one is asked for; prepReady acts on
