@@ -231,17 +231,36 @@ switch (_mode) do {
                     private _light = (_icon select [0, count _icon - 4]) + "_light.paa";
                     if (fileExists _light) then { _icon = _light };
                 };
+                private _lp = ctrlPosition _logo;
+                // the icon is square, as tall as the logo
+                private _iw = (_lp select 3) * pixelW / pixelH;
+                // the right side of the logo row, level with the end of the section header bands (a
+                // setting row is 130 grid units wide from its own left edge)
+                private _right = ((ctrlPosition (_rows select 0)) select 0) + 130 * (pixelW * pixelGrid * 0.50);
                 if (_icon != "") then {
-                    private _lp = ctrlPosition _logo;
                     private _pic = _display ctrlCreate ["ctrlStaticPictureKeepAspect", -1, _attrs];
                     _pic ctrlSetText _icon;
                     _pic ctrlSetTextColor [1, 1, 1, 0.8];
-                    // at the right, its right side level with the end of the section header bands (a
-                    // setting row is 130 grid units wide from its own left edge)
-                    private _iw = (_lp select 3) * pixelW / pixelH;
-                    private _rowX = (ctrlPosition (_rows select 0)) select 0;
-                    _pic ctrlSetPosition [_rowX + 130 * (pixelW * pixelGrid * 0.50) - _iw, _lp select 1, _iw, _lp select 3];
+                    _pic ctrlSetPosition [_right - _iw, _lp select 1, _iw, _lp select 3];
                     _pic ctrlCommit 0;
+                    _right = _right - _iw - 3 * (pixelW * pixelGrid * 0.50);
+                };
+                // a help button just left of the module's icon that opens the module's page on the
+                // docs site; none for a module with no page. The address goes on the button now: a
+                // link only opens from a click on a control already holding it (fnc_presetNeeds)
+                private _url = [typeOf _ent] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenDocsPage.sqf';
+                if (_url != "") then {
+                    private _help = _display ctrlCreate ["ctrlButtonToolbar", -1, _attrs];
+                    // the circled question mark of the map's Unknown marker
+                    _help ctrlSetText "\a3\ui_f\data\map\markers\military\unknown_ca.paa";
+                    _help ctrlSetTextColor [1, 1, 1, 0.8];
+                    _help ctrlSetTooltip (if (isLocalized "STR_ALIVE_EDEN_DOCS") then { localize "STR_ALIVE_EDEN_DOCS" } else { "Open the online docs for this module" });
+                    _help ctrlSetURL _url;
+                    // a little smaller than the icon, centred on its row and nudged down 3 pixels to line up with it
+                    private _hh = 0.75 * (_lp select 3);
+                    private _hw = _hh * pixelW / pixelH;
+                    _help ctrlSetPosition [_right - _hw - ((_iw - _hw) / 2), (_lp select 1) + ((_lp select 3) - _hh) / 2 + 3 * pixelH, _hw, _hh];
+                    _help ctrlCommit 0;
                 };
             };
             // the logo with 3 grid units of space above and below it

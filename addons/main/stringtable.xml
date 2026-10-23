@@ -8,6 +8,9 @@
 <Key ID="STR_ALIVE_EDEN_PICK_FIND_COMMENT">
     <English>Type part of a name, class or mod to show only the rows that have it. Ticks on rows it hides are kept.</English>
 </Key>
+<Key ID="STR_ALIVE_EDEN_DOCS">
+    <English>Open the online docs for this module</English>
+</Key>
 <Key ID="STR_ALIVE_SETTINGS_CATEGORY">
     <English>ALiVE</English>
 </Key>
