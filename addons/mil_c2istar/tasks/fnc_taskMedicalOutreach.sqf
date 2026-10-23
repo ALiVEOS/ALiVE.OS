@@ -256,6 +256,15 @@ switch (_taskState) do {
 
         _taskPlayers = _taskPlayers select 0;
 
+        // the pin follows the crate (it moves this record's position), so the town hold and the town's support
+        // keep reading the town: the position the stage started with
+        private _townPosition = [_params, "townPosition", []] call ALIVE_fnc_hashGet;
+        if (_townPosition isEqualTo []) then {
+            _townPosition = +_taskPosition;
+            [_params, "townPosition", _townPosition] call ALIVE_fnc_hashSet;
+        };
+        _taskPosition = _townPosition;
+
         private _lastState = [_params, "lastState"] call ALIVE_fnc_hashGet;
         private _taskDialog = [_params, "dialog"] call ALIVE_fnc_hashGet;
         private _currentTaskDialog = [_taskDialog, "Deliver"] call ALIVE_fnc_hashGet;
@@ -290,7 +299,9 @@ switch (_taskState) do {
 
             [_params] call _cleanupObjects;
         } else {
-            [_taskPosition, _taskSide, _taskPlayers, _taskID, "building", "aid supplies"] call ALIVE_fnc_taskCreateMarkersForPlayers;
+            // the pin follows the aid crate when players carry or load it
+            [getPosATL _target, _taskSide, _taskPlayers, _taskID, "building", "aid supplies"] call ALIVE_fnc_taskCreateMarkersForPlayers;
+            [ALiVE_TaskHandler, "followTaskPosition", [_task, _params, getPosATL _target]] call ALiVE_fnc_TaskHandler;
 
             if ((_target getVariable [([_params, "completionVar", ""] call ALIVE_fnc_hashGet), false]) && {[_params, _taskPosition, _taskSide] call ALIVE_fnc_taskCivicHold}) then {
                 [_params, "nextTask", ""] call ALIVE_fnc_hashSet;

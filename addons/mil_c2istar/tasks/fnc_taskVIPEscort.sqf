@@ -448,7 +448,9 @@ switch (_taskState) do {
             [_params, _taskPosition, _taskSide] call _applyFailurePopulationEffect;
             [_params] call _cleanupObjects;
         } else {
-            [_taskPosition, _taskSide, _taskPlayers, _taskID, "civilian", "VIP"] call ALIVE_fnc_taskCreateMarkersForPlayers;
+            // the pin follows the VIP, who may run or be moved before he is secured
+            [getPosATL _vip, _taskSide, _taskPlayers, _taskID, "civilian", "VIP"] call ALIVE_fnc_taskCreateMarkersForPlayers;
+            [ALiVE_TaskHandler, "followTaskPosition", [_task, _params, getPosATL _vip]] call ALiVE_fnc_TaskHandler;
 
             if (_vip getVariable ["ALIVE_Task_VIPPicked", false]) then {
                 if !(_vip getVariable ["ALIVE_Task_VIPActivated", false]) then {

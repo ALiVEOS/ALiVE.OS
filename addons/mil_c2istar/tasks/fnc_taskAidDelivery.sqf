@@ -417,6 +417,7 @@ switch (_taskState) do {
         } else {
             private _vehiclePosition = getPosATL _aidVehicle;
             [_vehiclePosition, _taskSide, _taskPlayers, _taskID, "vehicle", "aid vehicle"] call ALIVE_fnc_taskCreateMarkersForPlayers;
+            [ALiVE_TaskHandler, "followTaskPosition", [_task, _params, _vehiclePosition]] call ALiVE_fnc_TaskHandler;
 
             private _closestPlayer = [position _aidVehicle, _taskPlayers] call ALIVE_fnc_taskGetClosestPlayerToPosition;
             private _vehicleSecured = false;

@@ -295,6 +295,18 @@ switch (_operation) do {
         [_logic, "registerTask", _eventData] call MAINCLASS;
         [_logic, "updateTaskState", _eventData] call MAINCLASS;
     };
+    case "followTaskPosition": {
+        // The task pin follows a person or object the players have to collect (an informant, a VIP, an aid vehicle
+        // or crate), sent again once it has moved more than the threshold. Sent directly: a stage that returned
+        // the task would end the stage (NeisAEL on Discord, 23 Oct)
+        _args params ["_task", "_params", "_position", ["_threshold", 20]];
+        private _sent = [_params, "pinSentPos", []] call ALIVE_fnc_hashGet;
+        if (_position isNotEqualTo [] && {_sent isEqualTo [] || {(_sent distance2D _position) > _threshold}}) then {
+            [_params, "pinSentPos", +_position] call ALIVE_fnc_hashSet;
+            _task set [3, +_position];
+            [_logic, "TASK_UPDATE", _task] call MAINCLASS;
+        };
+    };
     case "TASK_UPDATE": {
         private _debug = [_logic, "debug", false] call ALIVE_fnc_hashGet;
         private _eventData = _args;
