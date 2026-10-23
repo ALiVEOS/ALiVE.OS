@@ -491,9 +491,30 @@ switch(_operation) do {
                             // threat known only as a profile is still somewhere
                             // the sortie can be aimed.
                             private _at = [];
+                            // Not a site players hold a task for (A. Ares on Discord, 23 Oct): a jet that got
+                            // there first ticked their task off with no word of who did it. A site counts as
+                            // held for players for 10 minutes after it is offered to them (fnc_ATOTask playerTask),
+                            // and while a C2ISTAR Destroy AA task stands for it (ALiVE_C2_seadHeld, fnc_taskSEAD:
+                            // let go when it succeeds, or 5 minutes after it stops being checked), 500 m round it.
+                            private _held = [];
+                            private _offers = if (isNil QGVAR(playerRequests)) then { [] } else { [GVAR(playerRequests), "SEAD", []] call ALiVE_fnc_hashGet };
+                            if !(_offers isEqualType []) then { _offers = [] };
+                            {
+                                if (_x isEqualType [] && {count _x > 1} && {(_x select 1) isEqualType 0} && {(time - (_x select 1)) < 600}) then {
+                                    private _p = [_logic, "positionOf", _x select 0] call MAINCLASS;
+                                    if (count _p >= 2) then { _held pushBack _p };
+                                };
+                            } forEach _offers;
+                            {
+                                if (_y > serverTime && {!isNil "ALiVE_profileHandler"}) then {
+                                    private _pr = [ALiVE_profileHandler, "getProfile", _x] call ALiVE_fnc_profileHandler;
+                                    if (!isNil "_pr") then { _held pushBack ([_pr, "position", []] call ALiVE_fnc_hashGet) };
+                                };
+                            } forEach (missionNamespace getVariable ["ALiVE_C2_seadHeld", createHashMap]);
+                            _held = _held select { count _x >= 2 };
                             {
                                 private _p = [_logic, "positionOf", _x] call MAINCLASS;
-                                if (count _p >= 2) then { _at pushBack _p };
+                                if (count _p >= 2 && {(_held findIf { (_x distance2D _p) < 500 }) < 0}) then { _at pushBack _p };
                             } forEach _seen;
                             if (count _at > 0) then {
                                 private _answer = [_task, "raiseSEAD", [_zone, _at, _now]] call ALIVE_fnc_ATOTask;

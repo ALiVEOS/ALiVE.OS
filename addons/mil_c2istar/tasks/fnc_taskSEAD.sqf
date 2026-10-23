@@ -107,6 +107,12 @@ switch (_taskState) do {
             if (count _targetVehicles > 0) then { ["claim", _targetVehicles select 0] call ALIVE_fnc_taskTargetClaim };
         };
 
+        // held for the players: the air commander's own SEAD jets leave these alone while this task stands
+        // (fnc_ATOWatch); let go when the task succeeds; each check while it stands renews it, so it lapses 5 minutes after the task ends
+        private _seadHeld = missionNamespace getVariable ["ALiVE_C2_seadHeld", createHashMap];
+        missionNamespace setVariable ["ALiVE_C2_seadHeld", _seadHeld];
+        { if (_x isEqualType "") then { _seadHeld set [_x, serverTime + 1800] } } forEach _targetVehicles;
+
         if(count _targetVehicles > 0) then {
 
             private["_targetVehicle","_vehicleProfile","_vehiclePosition","_vehicleType","_vehicleName"];
@@ -281,6 +287,19 @@ switch (_taskState) do {
 
         if(_allDestroyed) then {
 
+            // Who destroyed them (fnc_profileKilledEventHandler and the virtual combat keep the record). When
+            // nobody playing did, the task doesn't just tick itself off with a "well done" (A. Ares, 23 Oct):
+            // HQ says who did it if it was a friendly, or only that they are gone, and there is no reward.
+            // A player's kill among them, or no known killer at all, is the usual success.
+            // a target held as an object is looked up by the profile ID it carries (a wreck keeps its variables)
+            private _ids = (_vehicleProfiles apply { if (_x isEqualType "") then {_x} else { _x getVariable ["profileID", ""] } }) select { _x != "" };
+            private _seadHeldNow = missionNamespace getVariable ["ALiVE_C2_seadHeld", createHashMap];
+            { _seadHeldNow deleteAt _x } forEach _ids;
+            private _killedBy = missionNamespace getVariable ["ALiVE_profileKilledBy", createHashMap];
+            private _recs = (_ids apply { _killedBy getOrDefault [_x, []] }) select { _x isNotEqualTo [] };
+            // all unknown (no killer, a hull burning out): the players get the benefit of the doubt
+            private _byOthers = (_recs findIf { _x select 0 }) < 0 && {(_recs findIf { (_x select 1) != "" }) >= 0};
+
             [_params,"nextTask",""] call ALIVE_fnc_hashSet;
 
             _task set [8,"Succeeded"];
@@ -289,13 +308,39 @@ switch (_taskState) do {
 
             [_taskPlayers,_taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
 
-            ["chat_success",_currentTaskDialog,_taskSide,_taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
+            if (_byOthers) then {
+                private _ourSide = [_taskSide] call ALIVE_fnc_sideTextToObject;
+                private _friendly = _recs select {
+                    (_x select 1) != "" && {(_ourSide getFriend ([_x select 1] call ALIVE_fnc_sideTextToObject)) >= 0.6}
+                };
+                private _line = if (_friendly isEqualTo []) then {
+                    "The enemy air defences you were tasked with are confirmed destroyed. Task complete."
+                } else {
+                    private _what = (_friendly select { (_x select 2) != "" }) apply { _x select 2 };
+                    format ["The enemy air defences you were tasked with have been destroyed by %1. Task complete.",
+                        if (_what isEqualTo []) then { "friendly forces" } else { format ["friendly %1", _what select 0] }]
+                };
+                private _d = [] call ALIVE_fnc_hashCreate;
+                [_d, "chat_others", [["HQ", _line]]] call ALIVE_fnc_hashSet;
+                ["chat_others", _d, _taskSide, _taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
+            } else {
+                ["chat_success",_currentTaskDialog,_taskSide,_taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
 
-            [_currentTaskDialog,_taskSide,_taskFaction] call ALIVE_fnc_taskCreateReward;
+                [_currentTaskDialog,_taskSide,_taskFaction] call ALIVE_fnc_taskCreateReward;
+            };
 
         }else{
 
             private["_taskEnemyFaction","_taskEnemySide","_profiles","_position","_objectType"];
+
+            // still standing and still the players' job: the air commander's SEAD jets keep off it
+            // (fnc_ATOWatch) until 5 minutes after this task stops being checked
+            private _seadHeldNow = missionNamespace getVariable ["ALiVE_C2_seadHeld", createHashMap];
+            missionNamespace setVariable ["ALiVE_C2_seadHeld", _seadHeldNow];
+            {
+                private _hid = if (_x isEqualType "") then {_x} else { _x getVariable ["profileID", ""] };
+                if (_hid != "") then { _seadHeldNow set [_hid, serverTime + 300] };
+            } forEach _vehicleProfiles;
 
             _taskEnemyFaction = [_params,"enemyFaction"] call ALIVE_fnc_hashGet;
             _taskEnemySide = _taskEnemyFaction call ALiVE_fnc_factionSide;

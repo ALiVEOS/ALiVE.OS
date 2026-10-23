@@ -24,7 +24,7 @@ Jman
 ---------------------------------------------------------------------------- */
 if (!isserver) exitwith {};
 
-params ["_unit","_killer"];
+params ["_unit","_killer",["_instigator",objNull]];
 
 private _profileID = _unit getvariable "profileID";
 private _profile = [ALIVE_profileHandler,"getProfile", _profileID] call ALIVE_fnc_profileHandler;
@@ -111,6 +111,30 @@ switch(_profileType) do {
         if (!isNil "ALiVE_routeMemory_danger" && {isNil "_vClass" || {!(_vClass isEqualType "" && {_vClass isKindOf "Air" || {_vClass isKindOf "Ship"}})}}) then {
             [nil, "deposit", [if (!isNull _unit) then { getPosATL _unit } else { _profile select 2 select 2 }, _profile select 2 select 3, 1]] call ALiVE_fnc_pathfinderRouteMemory;
         };
+
+        // Who destroyed it, for a task aimed at this vehicle to tell its players when someone else got
+        // there first (ALIVE_fnc_taskSEAD): [by a player, killer's side, what killed it, when]
+        if (isNil "ALiVE_profileKilledBy") then { ALiVE_profileKilledBy = createHashMap };
+        // past 200, those older than 15 minutes go (a task reads its record within seconds)
+        if (count ALiVE_profileKilledBy > 200) then {
+            { if (time - (_y select 3) > 900) then { ALiVE_profileKilledBy deleteAt _x } } forEach +ALiVE_profileKilledBy;
+        };
+        // The one who pulled the trigger (the instigator: a UAV's operator, a gunner rather than his vehicle)
+        // where Arma gives one. No killer, the vehicle itself or its own crew (a hull burning out after the
+        // crew bailed): not known, side "" and nothing is said about who did it.
+        private _who = [_killer, _instigator] select (!isNull _instigator);
+        private _kVeh = vehicle _who;
+        private _known = !isNull _who && {_who != _unit} && {_kVeh != _unit} && {!(_who in crew _unit)};
+        private _kSide = side group _who;
+        if (_kSide == sideUnknown) then { _kSide = side _kVeh };
+        ALiVE_profileKilledBy set [_profile select 2 select 4, [
+            _known && {isPlayer _who
+                || {isPlayer leader group _who}
+                || {(crew _kVeh) findIf { isPlayer _x } >= 0}
+                || {isPlayer ((UAVControl _kVeh) param [0, objNull])}},
+            if (_known && {_kSide != sideUnknown}) then {str _kSide} else {""},
+            if (_known && {_kVeh != _who}) then { getText (configOf _kVeh >> "displayName") } else {""},
+            time]];
 
         // not sure about this, it will remove the profile and the vehicle wreck will remain
         // will need to have dead vehicle cleanup scripts
