@@ -2300,6 +2300,9 @@ switch(_operation) do {
             private _lossEH = _obj getVariable ["ALiVE_mil_ato_lossEH", -1];
             if (_lossEH isEqualType 0 && {_lossEH >= 0}) then { _obj removeMPEventHandler ["MPKilled", _lossEH] };
             _obj setVariable ["ALiVE_mil_ato_lossEH", nil, false];
+            private _hitEH = _obj getVariable ["ALiVE_mil_ato_hitEH", -1];
+            if (_hitEH isEqualType 0 && {_hitEH >= 0}) then { _obj removeMPEventHandler ["MPHit", _hitEH] };
+            _obj setVariable ["ALiVE_mil_ato_hitEH", nil, false];
         };
         if !(_surface isEqualTo []) then {
             [_surface, "unlock", _tail] call ALIVE_fnc_ATOSurface;

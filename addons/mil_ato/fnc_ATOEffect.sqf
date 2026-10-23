@@ -2733,17 +2733,40 @@ switch(_operation) do {
                     // what state it was in: asleep, held or put down. MPKilled, so it is heard here even when
                     // the hull is local elsewhere (a player took it); taken off when the module lets go.
                     if (isNil { _obj getVariable "ALiVE_mil_ato_lossEH" }) then {
+                        // the last hit someone else gave it, for a hull hit and then crashed (the loss line below)
+                        _obj setVariable ["ALiVE_mil_ato_hitEH", _obj addMPEventHandler ["MPHit", {
+                            if (!isServer) exitWith {};
+                            params ["_v", "_src", "_dmg", ["_inst", objNull]];
+                            private _by = [_src, _inst] select (!isNull _inst);
+                            // only a hostile side's hit counts (a friendly bump on the taxiway is not a kill); the hull's own side from its
+                            // config, as an empty one reads civilian
+                            private _vs = [east, west, resistance, civilian] param [getNumber (configOf _v >> "side"), civilian];
+                            if (_dmg < 0.01 || {isNull _by} || {_by == _v} || {vehicle _by == _v} || {_by in crew _v} || {(_vs getFriend (side group _by)) >= 0.6}) exitWith {};
+                            _v setVariable ["ALiVE_lastHitBy", [_src, _inst, time, str (side group _by), getText (configOf (vehicle _by) >> "displayName"), isPlayer _by || {(crew vehicle _by) findIf { isPlayer _x } >= 0}]];
+                        }], false];
                         _obj setVariable ["ALiVE_mil_ato_lossEH", _obj addMPEventHandler ["MPKilled", {
                             if (!isServer) exitWith {};
                             params ["_hull", "_killer", "_instigator"];
                             private _by = if (isNull _instigator) then { _killer } else { _instigator };
-                            ["ALIVE_fnc_ATOEffect - %1 (%2) destroyed at %3 (%4) by %5 (side %6, %7 m away); asleep %8, hidden %9, simulated %10, put down %11, damage allowed %12",
+                            // hit and then crashed: Arma names nobody, the hull or its crew, so the last hit anyone
+                            // else gave it in the last 2 minutes is the real killer
+                            private _viaHit = -1;
+                            private _facts = [];
+                            if (isNull _by || {_by == _hull} || {vehicle _by == _hull} || {_by in crew _hull}) then {
+                                private _lh = _hull getVariable "ALiVE_lastHitBy";
+                                if (!isNil "_lh" && {time - (_lh select 2) <= 120}) then {
+                                    _by = [_lh select 0, _lh select 1] select (!isNull (_lh select 1));
+                                    _viaHit = round (time - (_lh select 2));
+                                    _facts = _lh select [3, 3];
+                                };
+                            };
+                            ["ALIVE_fnc_ATOEffect - %1 (%2) destroyed at %3 (%4) by %5 (side %6, %7 m away, hit %13 s before, -1 for none); asleep %8, hidden %9, simulated %10, put down %11, damage allowed %12",
                                 typeOf _hull, _hull getVariable ["ALiVE_mil_ato_tail", "no tail"], (getPosATL _hull) apply { round _x }, mapGridPosition _hull,
-                                if (isNull _by) then { "nobody recorded" } else { if (_by isEqualTo _hull) then { "itself" } else { typeOf _by } },
-                                if (isNull _by || {_by isEqualTo _hull}) then { "-" } else { if (isNull group _by) then { side _by } else { side group _by } },
+                                if (isNull _by) then { if (count _facts == 3) then { format ["%1 (gone since its hit)", _facts select 1] } else { "nobody recorded" } } else { if (_by isEqualTo _hull) then { "itself" } else { typeOf _by } },
+                                if (isNull _by || {_by isEqualTo _hull}) then { if (count _facts == 3) then { _facts select 0 } else { "-" } } else { if (isNull group _by) then { side _by } else { side group _by } },
                                 if (isNull _by) then { -1 } else { round (_by distance _hull) },
                                 (_hull getVariable ["ALiVE_mil_ato_asleep", false]) isEqualTo true, isObjectHidden _hull, simulationEnabled _hull,
-                                _hull getVariable ["ALiVE_mil_ato_settleResult", "no"], isDamageAllowed _hull] call ALiVE_fnc_dump;
+                                _hull getVariable ["ALiVE_mil_ato_settleResult", "no"], isDamageAllowed _hull, _viaHit] call ALiVE_fnc_dump;
                         }], false];
                     };
                 };

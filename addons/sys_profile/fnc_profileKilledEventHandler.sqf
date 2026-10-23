@@ -69,6 +69,23 @@ switch(_profileType) do {
     case "vehicle": {
         [_profile, "handleDeath"] call ALIVE_fnc_profileVehicle;
 
+        // An aircraft hit and then crashed is put down by Arma to nobody, itself or its own crew: the last hit
+        // anyone else gave it within the last 2 minutes (kept by its MPHit handler, fnc_profileVehicle) is the
+        // real killer, for the loss line and the task record below
+        private _viaHit = -1;
+        // what the hit was, kept at the time of it: the shooter may have despawned before the crash
+        private _hitFacts = [];
+        private _k0 = [_killer, _instigator] select (!isNull _instigator);
+        if (isNull _k0 || {_k0 == _unit} || {vehicle _k0 == _unit} || {_k0 in crew _unit}) then {
+            private _lh = _unit getVariable "ALiVE_lastHitBy";
+            if (!isNil "_lh" && {time - (_lh select 2) <= 120}) then {
+                _killer = _lh select 0;
+                _instigator = _lh select 1;
+                _viaHit = round (time - (_lh select 2));
+                _hitFacts = _lh select [3, 3];
+            };
+        };
+
         // Airframe-loss visibility: unlike the entity branch above, the vehicle branch unregisters a
         // killed vehicle profile SILENTLY (no PROFILE_KILLED event), so a destroyed ATO airframe left
         // NO rpt trace and had to be reverse-engineered from Un-Register lines + coordinates. Log AIR
@@ -82,8 +99,8 @@ switch(_profileType) do {
             // took off from - which made three in-flight crashes 2km out read as if they had happened
             // on their own parking spots, to the centimetre. Read the object.
             private _vPos = if (!isNull _unit) then { getPosATL _unit } else { _profile select 2 select 2 };
-            private _killerType = if (isNull _killer) then {"unknown"} else {typeOf _killer};
-            private _killerSide = if (isNull _killer) then {"?"} else {str side group _killer};
+            private _killerType = if (isNull _killer) then { if (count _hitFacts == 3) then { format ["%1 (gone since its hit)", _hitFacts select 1] } else {"unknown"} } else {typeOf _killer};
+            private _killerSide = if (isNull _killer) then { if (count _hitFacts == 3) then { _hitFacts select 0 } else {"?"} } else {str side group _killer};
             // Disambiguate the loss so the RPT is not left to interpretation (which caused fixes
             // for events that never happened). The extra fields tell the four cases apart:
             //   self=true, dist~0            -> SELF-inflicted (own crew crashed it, e.g. clipping a
@@ -98,7 +115,7 @@ switch(_profileType) do {
             private _killerVeh = if (isNull _killer) then {"none"} else {typeOf (vehicle _killer)};
             private _killerDist = if (isNull _killer) then {-1} else {round (_killer distance _unit)};
             private _nearBldg  = (nearestObjects [(getPosATL _unit), ["Building","House"], 6]) apply {typeOf _x};
-            ["ALIVE airframe-loss: %1 (%2) DESTROYED at %3 by %4 (side %5) [self=%6 killerVeh=%7 dist=%8m victimSpeed=%9 nearBldg=%10]", _vId, _vClass, _vPos, _killerType, _killerSide, _self, _killerVeh, _killerDist, round (speed _unit), _nearBldg] call ALIVE_fnc_dump;
+            ["ALIVE airframe-loss: %1 (%2) DESTROYED at %3 by %4 (side %5) [self=%6 killerVeh=%7 dist=%8m victimSpeed=%9 nearBldg=%10 hitBefore=%11s]", _vId, _vClass, _vPos, _killerType, _killerSide, _self, _killerVeh, _killerDist, round (speed _unit), _nearBldg, _viaHit] call ALIVE_fnc_dump;
             // Told to the other sides' players as an enemy loss (#968), when C2ISTAR reports them.
             if (!isNil "ALiVE_c2istar_fnc_reportAirLoss") then {
                 // The class itself: _vClass here is the profile's broad type ("Plane"), which can't say fighter or attack.
@@ -127,6 +144,10 @@ switch(_profileType) do {
         private _known = !isNull _who && {_who != _unit} && {_kVeh != _unit} && {!(_who in crew _unit)};
         private _kSide = side group _who;
         if (_kSide == sideUnknown) then { _kSide = side _kVeh };
+        // the hit's shooter gone by the crash: what was kept at the hit stands in
+        if (!_known && {count _hitFacts == 3}) then {
+            ALiVE_profileKilledBy set [_profile select 2 select 4, [_hitFacts select 2, _hitFacts select 0, _hitFacts select 1, time]];
+        } else {
         ALiVE_profileKilledBy set [_profile select 2 select 4, [
             _known && {isPlayer _who
                 || {isPlayer leader group _who}
@@ -135,6 +156,7 @@ switch(_profileType) do {
             if (_known && {_kSide != sideUnknown}) then {str _kSide} else {""},
             if (_known && {_kVeh != _who}) then { getText (configOf _kVeh >> "displayName") } else {""},
             time]];
+        };
 
         // not sure about this, it will remove the profile and the vehicle wreck will remain
         // will need to have dead vehicle cleanup scripts

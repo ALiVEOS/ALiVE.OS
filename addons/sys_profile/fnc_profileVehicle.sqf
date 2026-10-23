@@ -1051,6 +1051,22 @@ switch (_operation) do {
             // killed event handler
             _eventID = _vehicle addMPEventHandler["MPKilled", ALIVE_fnc_profileKilledEventHandler];
 
+            // an aircraft remembers the last hit someone else gave it: one hit on its take-off run and then
+            // crashed is credited by Arma to the ground or its own pilot, and the killed handler then names
+            // whoever hit it instead (fnc_profileKilledEventHandler)
+            if (_vehicle isKindOf "Air") then {
+                _vehicle addMPEventHandler ["MPHit", {
+                if (!isServer) exitWith {};
+                params ["_v", "_src", "_dmg", ["_inst", objNull]];
+                private _by = [_src, _inst] select (!isNull _inst);
+                // only a hostile side's hit counts (a friendly bump on the taxiway is not a kill); the hull's own side from its
+                // config, as an empty one reads civilian
+                private _vs = [east, west, resistance, civilian] param [getNumber (configOf _v >> "side"), civilian];
+                if (_dmg < 0.01 || {isNull _by} || {_by == _v} || {vehicle _by == _v} || {_by in crew _v} || {(_vs getFriend (side group _by)) >= 0.6}) exitWith {};
+                _v setVariable ["ALiVE_lastHitBy", [_src, _inst, time, str (side group _by), getText (configOf (vehicle _by) >> "displayName"), isPlayer _by || {(crew vehicle _by) findIf { isPlayer _x } >= 0}]];
+            }];
+            };
+
             // getin event handler
             _vehicle addEventHandler ["getIn", ALIVE_fnc_profileGetInEventHandler];
 
