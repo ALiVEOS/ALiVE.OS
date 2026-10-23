@@ -92,9 +92,14 @@ switch (_taskState) do {
         // Check to see if targetbuildings is set
         if (count _targetBuildings == 0) then {
             // Find a building based on the location type
-            private _clusterPos = [_taskLocation, _taskLocationType, _taskEnemySide, "MIL"] call ALIVE_fnc_taskGetSideCluster;
+            private _clusterPos = [_taskLocation, _taskLocationType, _taskEnemySide, "MIL", false, [], _taskSide] call ALIVE_fnc_taskGetSideCluster;
             // no enemy military objective to aim at answers an empty position: give up quietly below, as
             // nearestObjects on an empty position is a script error
+            // Tasks Only Against Known Enemy (C2ISTAR module): only an objective the side knows of
+            if (count _clusterPos >= 2 && {_taskLocationType != "Map"} && {!(["place", _taskSide, _clusterPos] call ALIVE_fnc_taskKnownEnemy)}) then {
+                ["C2ISTAR - Task DestroyBuilding - nothing known to %1 at %2", _taskSide, mapGridPosition _clusterPos] call ALiVE_fnc_Dump;
+                _clusterPos = [];
+            };
             if (count _clusterPos >= 2) then {
                 _targetBuildings = nearestObjects [_clusterPos, ["House", "Building"], 300];
             };

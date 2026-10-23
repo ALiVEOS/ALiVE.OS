@@ -19,6 +19,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 private ["_taskState","_taskID","_task","_params","_debug","_result","_nextState"];
@@ -64,9 +65,13 @@ switch (_taskState) do {
         // establish the location for the task
         // get insurgency objective
 
-        _targetObjective = [_taskLocation,_taskLocationType,_taskEnemySide] call ALIVE_fnc_taskGetInsurgencyLocation;
+        _targetObjective = [_taskLocation,_taskLocationType,_taskEnemySide,_taskSide] call ALIVE_fnc_taskGetInsurgencyLocation;
 
         if(count _targetObjective == 0) exitwith {["C2ISTAR - Task InsurgencyDestroyAssets - No targets found!"] call ALiVE_fnc_Dump};
+        // Tasks Only Against Known Enemy (C2ISTAR module): only an installation the side knows of; another kind of task otherwise
+        if (_taskLocationType != "Map" && {!(["place", _taskSide, _targetObjective select 1] call ALIVE_fnc_taskKnownEnemy)}) exitWith {
+            ["C2ISTAR - Task InsurgencyDestroyAssets - nothing known to %1 at %2", _taskSide, mapGridPosition (_targetObjective select 1)] call ALiVE_fnc_Dump
+        };
 
         // _targetObjective call ALIVE_fnc_inspectArray;
         _targetPosition = _targetObjective select 1;

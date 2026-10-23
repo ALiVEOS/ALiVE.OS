@@ -4406,8 +4406,9 @@ switch (_operation) do {
 
         if (_publishResult) then {
             // remembered for Tasks Only Against Known Enemy: [id, last seen position, when], so what was spotted
-            // stays known for a while after it goes out of sight, whether or not C2ISTAR shows intel
-            if ([_logic, "opTasksKnownOnly", false] call ALiVE_fnc_HashGet) then {
+            // stays known for a while after it goes out of sight, whether or not C2ISTAR shows intel. The C2ISTAR
+            // module's own Tasks Only Against Known Enemy reads it too (ALIVE_fnc_taskKnownEnemy)
+            if ([_logic, "opTasksKnownOnly", false] call ALiVE_fnc_HashGet || {missionNamespace getVariable ["ALiVE_c2istar_tasksKnownOnly", false]}) then {
                 private _seen = [_logic, "knownSeen"] call ALiVE_fnc_HashGet;
                 if (isNil "_seen") then { _seen = createHashMap; [_logic, "knownSeen", _seen] call ALiVE_fnc_HashSet };
                 { _seen set [_x select 0, [_x select 1, time]] } forEach _knownEntities;
@@ -5127,6 +5128,21 @@ switch (_operation) do {
             };
         } forEach (missionNamespace getVariable ["ALiVE_reconReports", []]);
         _result = [_ids, _pos];
+    };
+
+    // What players tell this commander (A. Ares on Discord, 23 Oct): [entity profile IDs, their positions, the places
+    // reported] from a spot report, a prisoner's or a civilian's answer, remembered as if its own units had seen them
+    // (ALIVE_fnc_taskKnownEnemy "report"). Each place is kept too, under a key no profile has, so a hideout or a parked
+    // vehicle reported with no group beside it still counts as known (knownPlace, knownVehicle). Known for the next 30
+    // minutes, like the rest of "knownEnemy"; older entries are dropped here as well
+    case "reportSeen": {
+        _args params [["_ids", [], [[]]], ["_poss", [], [[]]], ["_places", [], [[]]]];
+        private _seen = [_logic, "knownSeen"] call ALiVE_fnc_HashGet;
+        if (isNil "_seen") then { _seen = createHashMap; [_logic, "knownSeen", _seen] call ALiVE_fnc_HashSet };
+        { if (time - (_y select 1) > 1800) then { _seen deleteAt _x } } forEach +_seen;
+        { if (_x isEqualType "") then { _seen set [_x, [_poss param [_forEachIndex, [0,0,0]], time]] } } forEach _ids;
+        { if (_x isEqualType [] && {count _x > 1}) then { _seen set [format ["report_%1_%2", round (_x select 0), round (_x select 1)], [_x, time]] } } forEach _places;
+        _result = count _ids;
     };
 
     // [vehicle profile, knownEnemy's answer]: true when a group crewing it has been seen, or it stands within 100 m of

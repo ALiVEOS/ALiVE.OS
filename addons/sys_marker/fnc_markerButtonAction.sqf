@@ -18,6 +18,7 @@ See Also:
 
 Author:
 Tupolov
+Jman
 
 Peer Reviewed:
 nil
@@ -179,6 +180,8 @@ if (cbChecked _spotrepCheck) then {
     };
 
     [MOD(sys_spotrep), "addspotrep", [_spotrepName, _spotrepHash]] call ALiVE_fnc_spotrep;
+    // what's reported here becomes known to the side's AI Commander (ALIVE_fnc_taskKnownEnemy "report")
+    if (!isNil "ALIVE_fnc_taskKnownEnemy") then { ["report", str side group player, [_pos]] call ALIVE_fnc_taskKnownEnemy };
 
     [_markersHash, QGVAR(spotrep), _spotrepName] call ALIVE_fnc_hashSet;
 

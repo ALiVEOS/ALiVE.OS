@@ -103,6 +103,9 @@ switch (_taskState) do {
                 count ([_profile,"entitiesInCommandOf",[]] call ALiVE_fnc_HashGet) > 0 && {_side == _Input1};
             }] call ALiVE_fnc_SortBy;
 
+            // Tasks Only Against Known Enemy (C2ISTAR module): only what the side knows of (ALIVE_fnc_taskKnownEnemy);
+            // a task placed on the map is the player's own choice
+            if (_taskLocationType != "Map") then { _targets = ["vehicles", _taskSide, _targets] call ALIVE_fnc_taskKnownEnemy };
             // skip a target another task is already aimed at, and claim this one (ALIVE_fnc_taskTargetClaim)
             _targets = ["free", _targets] call ALIVE_fnc_taskTargetClaim;
             _targetVehicles = if (count _targets > 0) then {[_targets select 0]} else {[]};

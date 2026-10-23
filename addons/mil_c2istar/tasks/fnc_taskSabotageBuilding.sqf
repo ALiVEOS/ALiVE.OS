@@ -124,6 +124,13 @@ switch (_taskState) do {
 							&& {[_pos, _Input1, 500, true] call ALiVE_fnc_isEnemyNear};
 						}] call ALiVE_fnc_SortBy;
 
+                    // Tasks Only Against Known Enemy (C2ISTAR module): the band is picked among the objectives the side
+                    // knows of; none known, and the check below turns the task down
+                    private _knownMask = ["places", _taskSide, _objectives apply { [_x, "center", []] call ALiVE_fnc_HashGet }] call ALIVE_fnc_taskKnownEnemy;
+                    private _knownObjs = [];
+                    { if (_knownMask select _forEachIndex) then { _knownObjs pushBack _x } } forEach _objectives;
+                    if (_knownObjs isNotEqualTo []) then { _objectives = _knownObjs };
+
                     private _totalIndexes = (count _objectives)-1;
                     private _index = 0;
 
@@ -193,6 +200,10 @@ switch (_taskState) do {
         };
 
         if (isNil "_taskLocation") exitwith {["C2ISTAR - Task SabotageBuilding - No location selected!"] call ALiVE_fnc_Dump};
+        // Tasks Only Against Known Enemy (C2ISTAR module): only a place the side knows of; another kind of task otherwise
+        if (_taskLocationType != "Map" && {!(["place", _taskSide, _taskLocation] call ALIVE_fnc_taskKnownEnemy)}) exitWith {
+            ["C2ISTAR - Task SabotageBuilding - nothing known to %1 at %2", _taskSide, mapGridPosition _taskLocation] call ALiVE_fnc_Dump
+        };
 
         if (count _targetBuildings == 0) then {
             ["C2ISTAR - No buildings given for this sabotage location! Defaulting to houses within 500m"] call ALiVE_fnc_Dump;

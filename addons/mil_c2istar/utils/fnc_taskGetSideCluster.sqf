@@ -35,7 +35,8 @@ params [
     "_side",
     ["_type", ""],
     ["_checkMilCustom", false],
-    ["_excludedPositions", []]
+    ["_excludedPositions", []],
+    ["_knownTo", ""]
 ];
 
 if(_type != "") then {
@@ -103,6 +104,15 @@ if(count _sideClusters > 0) then {
             private _clusterPos = [_x, "position", []] call ALIVE_fnc_hashGet;
             _clusterPos isEqualTo [] || {(_taskBlacklist findIf {_clusterPos inArea _x}) < 0}
         };
+    };
+
+    // Tasks Only Against Known Enemy (C2ISTAR module): with _knownTo, the clusters that side knows of; none known, the
+    // list stays and the task's own check turns it down (ALIVE_fnc_taskKnownEnemy)
+    if (_knownTo != "" && {_taskLocationType != "Map"} && {_candidateClusters isNotEqualTo []}) then {
+        private _mask = ["places", _knownTo, _candidateClusters apply { [_x, "position", []] call ALIVE_fnc_hashGet }] call ALIVE_fnc_taskKnownEnemy;
+        private _knownClusters = [];
+        { if (_mask select _forEachIndex) then { _knownClusters pushBack _x } } forEach _candidateClusters;
+        if (_knownClusters isNotEqualTo []) then { _candidateClusters = _knownClusters };
     };
 
     _countClusters = count _candidateClusters;

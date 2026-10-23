@@ -93,6 +93,10 @@ switch (_taskState) do {
             _final
         },"ASCEND"] call ALiVE_fnc_SortBy;
 
+        // Tasks Only Against Known Enemy (C2ISTAR module): only groups the side knows of (ALIVE_fnc_taskKnownEnemy);
+        // none, and another kind of task is picked. A task placed on the map is the player's own choice
+        if (_taskLocationType != "Map") then { _targets = ["groups", _taskSide, _targets] call ALIVE_fnc_taskKnownEnemy };
+        if (_targets isEqualTo []) exitWith { ["C2ISTAR - Task DestroyInfantry - no enemy group known to %1", _taskSide] call ALiVE_fnc_Dump };
         // skip a group another task is already aimed at (ALIVE_fnc_taskTargetClaim); if every one is,
         // the nearest is picked as before
         private _freeTargets = ["free", _targets] call ALIVE_fnc_taskTargetClaim;

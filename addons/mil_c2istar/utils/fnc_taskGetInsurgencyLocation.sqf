@@ -28,6 +28,8 @@ private ["_taskLocation","_taskLocationType","_side","_opcomModules","_moduleTyp
 _taskLocation = _this select 0;
 _taskLocationType = _this select 1;
 _side = _this select 2;
+// Tasks Only Against Known Enemy (C2ISTAR module): the side the installation must be known to
+private _knownTo = _this param [3, ""];
 
 _opcomModules = [];
 
@@ -113,6 +115,14 @@ if(count _objectives > 0) then {
     private _taskBlacklist = missionNamespace getVariable ["ALIVE_taskBlacklistMarkers", []];
     if (_taskBlacklist isNotEqualTo []) then {
         _sortedObjectives = _sortedObjectives select { private _c = _x select 1; (_taskBlacklist findIf {_c inArea _x}) < 0 };
+    };
+
+    // only installations _knownTo knows of; none known, the list stays and the task's own check turns it down
+    if (_knownTo != "" && {_taskLocationType != "Map"} && {_sortedObjectives isNotEqualTo []}) then {
+        private _mask = ["places", _knownTo, _sortedObjectives apply { _x select 1 }] call ALIVE_fnc_taskKnownEnemy;
+        private _knownObjs = [];
+        { if (_mask select _forEachIndex) then { _knownObjs pushBack _x } } forEach _sortedObjectives;
+        if (_knownObjs isNotEqualTo []) then { _sortedObjectives = _knownObjs };
     };
 
     private _countObjectives = count _sortedObjectives;

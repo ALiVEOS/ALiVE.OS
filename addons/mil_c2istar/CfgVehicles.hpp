@@ -135,6 +135,27 @@ class CfgVehicles {
                             defaultValue = """0""";
                             typeName = "NUMBER";
                     };
+                    // Tasks against enemy assets only on what the side knows (A. Ares on Discord, 23 Oct)
+                    class tasksKnownOnly : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_tasksKnownOnly";
+                            displayName = "$STR_ALIVE_C2ISTAR_TASKS_KNOWN_ONLY";
+                            tooltip = "$STR_ALIVE_C2ISTAR_TASKS_KNOWN_ONLY_COMMENT";
+                            defaultValue = """false""";
+                            class Values
+                            {
+                                    class No  { name = "No";  value = "false"; };
+                                    class Yes { name = "Yes"; value = "true"; };
+                            };
+                    };
+                    class assetTaskCap : Edit
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_assetTaskCap";
+                            displayName = "$STR_ALIVE_C2ISTAR_ASSET_TASK_CAP";
+                            tooltip = "$STR_ALIVE_C2ISTAR_ASSET_TASK_CAP_COMMENT";
+                            defaultValue = """0""";
+                            typeName = "NUMBER";
+                    };
                     // Where hand-over tasks end (NeisAEL and A. Ares on Discord, 23 Oct)
                     class deliveryDestination : Combo
                     {

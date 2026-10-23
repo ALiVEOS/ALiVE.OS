@@ -64,6 +64,31 @@ if (isServer && {_taskEnemyFaction != ""}) then {
     };
 };
 
+// Open Asset Tasks cap on the C2ISTAR module (ALIVE_c2istar_assetTaskCap, 0 = no cap): with that many
+// tasks against enemy kit or installations open for this side, no further one is picked. Each task is
+// counted once by the id in its source ("<id>-SEAD-Parent"), read from the end since a Player Orders id
+// carries the group's name, which can hold a hyphen ("OPORD_AUTO_B_Alpha_1-1_...")
+private _assetCap = missionNamespace getVariable ["ALIVE_c2istar_assetTaskCap", 0];
+if (_assetCap > 0) then {
+    private _assetTypes = ["SEAD", "DestroyVehicles", "DestroyInfantry", "DestroyBuilding", "SabotageBuilding", "InsurgencyDestroyAssets"];
+    private _norm = { if (_this isEqualType sideUnknown) then { str _this } else { _this } };
+    private _sideText = _taskSide call _norm;
+    private _openIds = [];
+    {
+        private _parts = (_x param [12, ""]) splitString "-";
+        private _n = count _parts;
+        if (
+            _n >= 3
+            && {((_x param [2, ""]) call _norm) isEqualTo _sideText}
+            && {(_x param [8, ""]) in ["Created", "Assigned"]}
+            && {(_parts select (_n - 2)) in _assetTypes}
+        ) then { _openIds pushBackUnique ((_parts select [0, _n - 2]) joinString "-") };
+    } forEach _tasksCurrent;
+    if (count _openIds >= _assetCap) then {
+        { if !(_x in _excludedTaskTypes) then { _excludedTaskTypes pushBack _x } } forEach _assetTypes;
+    };
+};
+
 private _excludedTaskTypeLookup = _excludedTaskTypes apply {toUpper _x};
 private _filteredTaskPool = _taskPool select {!((toUpper _x) in _excludedTaskTypeLookup)};
 if (_filteredTaskPool isEqualTo []) exitWith {""};

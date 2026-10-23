@@ -831,6 +831,8 @@ switch (_operation) do {
                 };
             };
 
+            // set by ALIVE_fnc_taskKnownEnemy when Tasks Only Against Known Enemy turns a target down
+            ALiVE_c2istar_knownFiltered = false;
             private _taskSet = ["init", _taskID, _taskData, [], _debug] call (missionNamespace getVariable [format["ALIVE_fnc_task%1", _taskType],{}]);
 
             // If the selected type couldn't find a target on this map (init returns []),
@@ -972,6 +974,15 @@ switch (_operation) do {
                         _heldTargets deleteAt _heldIndex;
                         [GVAR(playerRequests), _reservationTaskType, _heldTargets] call ALiVE_fnc_hashSet;
                     };
+                };
+
+                // A player asked for a task against enemy kit and Tasks Only Against Known Enemy turned its target
+                // down: say so, rather than leave them waiting (ALIVE_fnc_taskKnownEnemy). Not for the automatic
+                // tasks or Player Orders, which go on to pick another kind
+                if (!_autoGenRetry && {missionNamespace getVariable ["ALiVE_c2istar_knownFiltered", false]}
+                    && {_taskID find "OPORD_AUTO_" != 0}) then {
+                    private _asker = [_requestPlayerID] call ALIVE_fnc_getPlayerByUID;
+                    if (!isNull _asker) then { [localize "STR_ALIVE_C2ISTAR_NOTHING_KNOWN"] remoteExecCall ["systemChat", _asker] };
                 };
 
                 private _autoGenerateSides = [_logic, "autoGenerateSides"] call ALIVE_fnc_hashGet;

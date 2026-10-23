@@ -431,6 +431,8 @@ switch (_question) do {
                     _insurgentLeaders = [_insurgents,[getPos player],{_Input0 distance2D getPos _x},"ASCEND"] call BIS_fnc_sortBy;
                     _insurgentPos = getPos (_insurgentLeaders select 0);
                     [_insurgentPos, _who, [_insurgentLeaders select 0] call _fnc_whoColor, 100, 18, "mil_dot", _pos, false] call _placeThreatIntelMarker;
+                    // what the civilian tells becomes known to the side's AI Commander (ALIVE_fnc_taskKnownEnemy "report")
+                    if (!isNil "ALIVE_fnc_taskKnownEnemy") then { ["report", str side group player, [_insurgentPos]] call ALIVE_fnc_taskKnownEnemy };
                 } else {
                     //-- Don't reveal location
                     _response1 = localize "STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_BADLUCK_1";
@@ -455,6 +457,7 @@ switch (_question) do {
                     _insurgentLeaders = [_insurgents,[getPos player],{_Input0 distance2D getPos _x},"ASCEND"] call BIS_fnc_sortBy;
                     _insurgentPos = getPos (_insurgentLeaders select 0);
                     [_insurgentPos, _who, [_insurgentLeaders select 0] call _fnc_whoColor, 125, 20, "mil_dot", _pos, !_askerInsurgent] call _placeThreatIntelMarker;
+                    if (!isNil "ALIVE_fnc_taskKnownEnemy") then { ["report", str side group player, [_insurgentPos]] call ALIVE_fnc_taskKnownEnemy };
                 } else {
                     _response1 = localize "STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_HOSTILE_1";
                     _response2 = localize "STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_HOSTILE_2";
@@ -569,6 +572,7 @@ switch (_question) do {
 
                         _installationPos = getPos _installation;
                         [_installationPos, _typeName, "ColorEAST", 100, 18, "n_installation", getPos _civ, false] call _placeThreatIntelMarker;
+                        if (!isNil "ALIVE_fnc_taskKnownEnemy") then { ["report", str side group player, [_installationPos]] call ALIVE_fnc_taskKnownEnemy };
                     } else {
                         _response1 = format [localize "STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_NOTHOSTILE_1", _type];
                         _response2 = format [localize "STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_NOTHOSTILE_2", _type];
@@ -610,6 +614,7 @@ switch (_question) do {
 
                     _installationPos = getPos _installation;
                     [_installationPos, _typeName, "ColorEAST", 125, 20, "n_installation", getPos _civ, true] call _placeThreatIntelMarker;
+                    if (!isNil "ALIVE_fnc_taskKnownEnemy") then { ["report", str side group player, [_installationPos]] call ALIVE_fnc_taskKnownEnemy };
                 } else {
                     _response1 = localize "STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_HOSTILE_1";
                     _response2 = localize "STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_HOSTILE_2";

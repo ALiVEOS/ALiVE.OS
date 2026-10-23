@@ -1978,6 +1978,21 @@
 <Key ID="STR_ALIVE_C2ISTAR_TASK_MAX_DISTANCE">
     <English>Maximum Task Distance (m):</English>
 </Key>
+<Key ID="STR_ALIVE_C2ISTAR_TASKS_KNOWN_ONLY">
+    <English>Tasks Only Against Known Enemy:</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_TASKS_KNOWN_ONLY_COMMENT">
+    <English>Yes: tasks against enemy vehicles, air defences, infantry, buildings and installations are only aimed at what your side's AI Commander knows of. That is what its units have seen lately, plus what players report: spot reports, and what prisoners and civilians tell them. When nothing is known, another kind of task is picked. A task a player places on the map is not affected. Needs an AI Commander on the players' side. No (the default): any enemy target can be picked.</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_NOTHING_KNOWN">
+    <English>HQ: nothing is known of the enemy for that task yet. Send a spot report, or question prisoners and locals.</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_ASSET_TASK_CAP">
+    <English>Open Asset Tasks Cap:</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_ASSET_TASK_CAP_COMMENT">
+    <English>The most tasks against enemy vehicles, air defences, infantry, buildings and installations a side can have open at once. While that many are open, auto-generated tasks are of other kinds. 0 (the default) is no cap.</English>
+</Key>
 <Key ID="STR_ALIVE_C2ISTAR_TASK_MAX_DISTANCE_COMMENT">
     <English>How far from the players generated tasks may be, so they lead players across the map in steps instead of jumping from one edge to the other. Auto-generated and Short / Medium / Long tasks are picked within this distance of the player they're built round, and the next auto task is built round the player nearest the last one. Supply Convoy, VIP Escort and Informant Exfiltration keep their drop-off within it of the pickup, so a drop-off can be up to twice this from you; a FOB, base or picked point chosen as Delivery Destination is used wherever it is. If nothing is in range, the nearest beyond it is used. 0 (the default) is off; it must be above Minimum Task Distance. Not capped: Sabotage, Clear an IED, Wiretap, the air tasks, Capture and Protect a Convoy.</English>
 </Key>
