@@ -149,6 +149,22 @@ if (typeName _customText == "STRING" && {_customText != ""} && {count _markerDef
     _markerDefinition set [3, _customText];
 };
 
+// The kind of task this marker stands for, from the task's source ("<id>-<TaskType>-<Stage>"), handed to each
+// player's machine so it can draw ALiVE's pin for it when that player has Task Pins on (ALIVE_fnc_taskCreateMarker).
+// A stage's ID ("12_c1") is tried first, then its parent's. The start and extraction markers of an HVT task keep
+// their own icons: they mark the route, not the task.
+private _pinKey = "";
+if (!isNil "ALIVE_taskHandler" && {!(_taskType in ["Insertion","Extraction"])}) then {
+    private _record = [ALIVE_taskHandler, "getTask", _taskID] call ALIVE_fnc_taskHandler;
+    if (isNil "_record" && {_taskID isEqualType ""}) then { _record = [ALIVE_taskHandler, "getTask", (_taskID splitString "_") param [0, ""]] call ALIVE_fnc_taskHandler };
+    if (!isNil "_record" && {count _record > 12} && {(_record select 12) isEqualType ""}) then {
+        private _sourceParts = (_record select 12) splitString "-";
+        if (count _sourceParts >= 3) then { _pinKey = toLower (_sourceParts select (count _sourceParts - 2)) };
+    };
+};
+_markerDefinition set [8, "SOLID"];
+_markerDefinition set [9, _pinKey];
+
 {
     _player = [_x] call ALIVE_fnc_getPlayerByUID;
 

@@ -83,6 +83,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 private ["_position","_taskID","_markerColour","_markerText","_markerType","_markerDimensions",
@@ -98,6 +99,8 @@ _markerDimensions = if(count _this > 5) then {_this select 5} else {[0.8, 0.8]};
 _markerAlpha = if(count _this > 6) then {_this select 6} else {1};
 _markerShape = if(count _this > 7) then {_this select 7} else {"ICON"};
 _markerBrush = if(count _this > 8) then {_this select 8} else {"SOLID"};
+// the kind of task the marker stands for (ALIVE_fnc_taskCreateMarkersForPlayers), "" for none
+private _pinKey = _this param [9, "", [""]];
 
 // if the clients task markers hash
 // does not exist create it
@@ -145,6 +148,14 @@ _m setMarkerAlphaLocal _markerAlpha;
 _m setMarkerShapeLocal _markerShape;
 
 if(_markerShape == "ICON") then {
+    // ALiVE's pin for the kind of task when this player has Task Pins on (Addon Options, read here because this
+    // runs on the player's own machine). Colour "Default" takes the pin's white config colour, so Arma draws it
+    // in its own colours instead of tinting it by side.
+    private _pinType = format ["alive_pin_%1", _pinKey];
+    if (_pinKey != "" && {missionNamespace getVariable ["ALiVE_prefTaskPins", "alive"] == "alive"} && {isClass (configFile >> "CfgMarkers" >> _pinType)}) exitWith {
+        _m setMarkerTypeLocal _pinType;
+        _m setMarkerColorLocal "Default";
+    };
     // a mil_ or hd_ icon's _noShadow twin: the same icon without the drop shadow
     private _flatType = _markerType + "_noShadow";
     _m setMarkerTypeLocal (if (isClass (configFile >> "CfgMarkers" >> _flatType)) then {_flatType} else {_markerType});
