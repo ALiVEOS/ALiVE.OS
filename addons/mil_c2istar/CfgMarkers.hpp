@@ -18,7 +18,7 @@ class CfgMarkers
         name = "Aid Delivery";
         icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_aiddelivery.paa";
         color[] = {1,1,1,1};
-        size = 32;
+        size = 40;
         shadow = 0;
         markerClass = "ALiVE_TaskPins";
         showEditorMarkerColor = 0;
@@ -29,7 +29,7 @@ class CfgMarkers
         name = "Medical Outreach";
         icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_medicaloutreach.paa";
         color[] = {1,1,1,1};
-        size = 32;
+        size = 40;
         shadow = 0;
         markerClass = "ALiVE_TaskPins";
         showEditorMarkerColor = 0;
@@ -40,7 +40,7 @@ class CfgMarkers
         name = "Market Reopening";
         icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_marketreopening.paa";
         color[] = {1,1,1,1};
-        size = 32;
+        size = 40;
         shadow = 0;
         markerClass = "ALiVE_TaskPins";
         showEditorMarkerColor = 0;
@@ -51,7 +51,7 @@ class CfgMarkers
         name = "Secure Community Event";
         icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_securecommunityevent.paa";
         color[] = {1,1,1,1};
-        size = 32;
+        size = 40;
         shadow = 0;
         markerClass = "ALiVE_TaskPins";
         showEditorMarkerColor = 0;
@@ -62,7 +62,7 @@ class CfgMarkers
         name = "Meet Local Leader";
         icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_meetlocalleader.paa";
         color[] = {1,1,1,1};
-        size = 32;
+        size = 40;
         shadow = 0;
         markerClass = "ALiVE_TaskPins";
         showEditorMarkerColor = 0;
@@ -73,7 +73,7 @@ class CfgMarkers
         name = "Repair Critical Service";
         icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_repaircriticalservice.paa";
         color[] = {1,1,1,1};
-        size = 32;
+        size = 40;
         shadow = 0;
         markerClass = "ALiVE_TaskPins";
         showEditorMarkerColor = 0;
@@ -84,7 +84,7 @@ class CfgMarkers
         name = "Checkpoint Partnership";
         icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_checkpointpartnership.paa";
         color[] = {1,1,1,1};
-        size = 32;
+        size = 40;
         shadow = 0;
         markerClass = "ALiVE_TaskPins";
         showEditorMarkerColor = 0;
@@ -95,7 +95,7 @@ class CfgMarkers
         name = "Civilian Assault";
         icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_civassault.paa";
         color[] = {1,1,1,1};
-        size = 32;
+        size = 40;
         shadow = 0;
         markerClass = "ALiVE_TaskPins";
         showEditorMarkerColor = 0;
@@ -106,7 +106,7 @@ class CfgMarkers
         name = "Informant Exfiltration";
         icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_informantexfiltration.paa";
         color[] = {1,1,1,1};
-        size = 32;
+        size = 40;
         shadow = 0;
         markerClass = "ALiVE_TaskPins";
         showEditorMarkerColor = 0;
@@ -117,7 +117,7 @@ class CfgMarkers
         name = "VIP Escort";
         icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_vipescort.paa";
         color[] = {1,1,1,1};
-        size = 32;
+        size = 40;
         shadow = 0;
         markerClass = "ALiVE_TaskPins";
         showEditorMarkerColor = 0;
@@ -128,7 +128,7 @@ class CfgMarkers
         name = "Rescue";
         icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_rescue.paa";
         color[] = {1,1,1,1};
-        size = 32;
+        size = 40;
         shadow = 0;
         markerClass = "ALiVE_TaskPins";
         showEditorMarkerColor = 0;
@@ -139,7 +139,7 @@ class CfgMarkers
         name = "Combat Search and Rescue";
         icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_csar.paa";
         color[] = {1,1,1,1};
-        size = 32;
+        size = 40;
         shadow = 0;
         markerClass = "ALiVE_TaskPins";
         showEditorMarkerColor = 0;
@@ -150,7 +150,7 @@ class CfgMarkers
         name = "Transport Insertion";
         icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_transportinsertion.paa";
         color[] = {1,1,1,1};
-        size = 32;
+        size = 40;
         shadow = 0;
         markerClass = "ALiVE_TaskPins";
         showEditorMarkerColor = 0;
@@ -161,7 +161,7 @@ class CfgMarkers
         name = "Supply Convoy";
         icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_supplyconvoy.paa";
         color[] = {1,1,1,1};
-        size = 32;
+        size = 40;
         shadow = 0;
         markerClass = "ALiVE_TaskPins";
         showEditorMarkerColor = 0;
@@ -172,7 +172,7 @@ class CfgMarkers
         name = "Protect Convoy";
         icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_protectconvoy.paa";
         color[] = {1,1,1,1};
-        size = 32;
+        size = 40;
         shadow = 0;
         markerClass = "ALiVE_TaskPins";
         showEditorMarkerColor = 0;
@@ -183,7 +183,7 @@ class CfgMarkers
         name = "Assassination";
         icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_assassination.paa";
         color[] = {1,1,1,1};
-        size = 32;
+        size = 40;
         shadow = 0;
         markerClass = "ALiVE_TaskPins";
         showEditorMarkerColor = 0;
@@ -194,7 +194,7 @@ class CfgMarkers
         name = "Destroy Vehicles";
         icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_destroyvehicles.paa";
         color[] = {1,1,1,1};
-        size = 32;
+        size = 40;
         shadow = 0;
         markerClass = "ALiVE_TaskPins";
         showEditorMarkerColor = 0;
@@ -205,7 +205,7 @@ class CfgMarkers
         name = "Destroy Infantry";
         icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_destroyinfantry.paa";
         color[] = {1,1,1,1};
-        size = 32;
+        size = 40;
         shadow = 0;
         markerClass = "ALiVE_TaskPins";
         showEditorMarkerColor = 0;
@@ -216,7 +216,7 @@ class CfgMarkers
         name = "Destroy Building";
         icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_destroybuilding.paa";
         color[] = {1,1,1,1};
-        size = 32;
+        size = 40;
         shadow = 0;
         markerClass = "ALiVE_TaskPins";
         showEditorMarkerColor = 0;
@@ -227,7 +227,7 @@ class CfgMarkers
         name = "Sabotage Building";
         icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_sabotagebuilding.paa";
         color[] = {1,1,1,1};
-        size = 32;
+        size = 40;
         shadow = 0;
         markerClass = "ALiVE_TaskPins";
         showEditorMarkerColor = 0;
@@ -238,7 +238,7 @@ class CfgMarkers
         name = "Remove IED";
         icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_removeied.paa";
         color[] = {1,1,1,1};
-        size = 32;
+        size = 40;
         shadow = 0;
         markerClass = "ALiVE_TaskPins";
         showEditorMarkerColor = 0;
@@ -249,7 +249,7 @@ class CfgMarkers
         name = "Destroy Insurgent Assets";
         icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_insurgencydestroyassets.paa";
         color[] = {1,1,1,1};
-        size = 32;
+        size = 40;
         shadow = 0;
         markerClass = "ALiVE_TaskPins";
         showEditorMarkerColor = 0;
@@ -260,7 +260,7 @@ class CfgMarkers
         name = "Insurgency Patrol";
         icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_insurgencypatrol.paa";
         color[] = {1,1,1,1};
-        size = 32;
+        size = 40;
         shadow = 0;
         markerClass = "ALiVE_TaskPins";
         showEditorMarkerColor = 0;
@@ -271,7 +271,7 @@ class CfgMarkers
         name = "Close Air Support";
         icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_cas.paa";
         color[] = {1,1,1,1};
-        size = 32;
+        size = 40;
         shadow = 0;
         markerClass = "ALiVE_TaskPins";
         showEditorMarkerColor = 0;
@@ -282,7 +282,7 @@ class CfgMarkers
         name = "Suppress Air Defences";
         icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_sead.paa";
         color[] = {1,1,1,1};
-        size = 32;
+        size = 40;
         shadow = 0;
         markerClass = "ALiVE_TaskPins";
         showEditorMarkerColor = 0;
@@ -293,7 +293,7 @@ class CfgMarkers
         name = "Defensive Counter Air";
         icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_dca.paa";
         color[] = {1,1,1,1};
-        size = 32;
+        size = 40;
         shadow = 0;
         markerClass = "ALiVE_TaskPins";
         showEditorMarkerColor = 0;
@@ -304,7 +304,7 @@ class CfgMarkers
         name = "Offensive Counter Air";
         icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_oca.paa";
         color[] = {1,1,1,1};
-        size = 32;
+        size = 40;
         shadow = 0;
         markerClass = "ALiVE_TaskPins";
         showEditorMarkerColor = 0;
@@ -315,7 +315,7 @@ class CfgMarkers
         name = "Laze Target";
         icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_laze.paa";
         color[] = {1,1,1,1};
-        size = 32;
+        size = 40;
         shadow = 0;
         markerClass = "ALiVE_TaskPins";
         showEditorMarkerColor = 0;
@@ -326,7 +326,7 @@ class CfgMarkers
         name = "Recon Objective";
         icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_reconobjective.paa";
         color[] = {1,1,1,1};
-        size = 32;
+        size = 40;
         shadow = 0;
         markerClass = "ALiVE_TaskPins";
         showEditorMarkerColor = 0;
@@ -337,7 +337,7 @@ class CfgMarkers
         name = "Wiretap";
         icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_wiretap.paa";
         color[] = {1,1,1,1};
-        size = 32;
+        size = 40;
         shadow = 0;
         markerClass = "ALiVE_TaskPins";
         showEditorMarkerColor = 0;
@@ -348,7 +348,7 @@ class CfgMarkers
         name = "Capture Objective";
         icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_captureobjective.paa";
         color[] = {1,1,1,1};
-        size = 32;
+        size = 40;
         shadow = 0;
         markerClass = "ALiVE_TaskPins";
         showEditorMarkerColor = 0;
@@ -359,7 +359,7 @@ class CfgMarkers
         name = "Assault";
         icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_milassault.paa";
         color[] = {1,1,1,1};
-        size = 32;
+        size = 40;
         shadow = 0;
         markerClass = "ALiVE_TaskPins";
         showEditorMarkerColor = 0;
@@ -370,7 +370,7 @@ class CfgMarkers
         name = "Defence";
         icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_mildefence.paa";
         color[] = {1,1,1,1};
-        size = 32;
+        size = 40;
         shadow = 0;
         markerClass = "ALiVE_TaskPins";
         showEditorMarkerColor = 0;
