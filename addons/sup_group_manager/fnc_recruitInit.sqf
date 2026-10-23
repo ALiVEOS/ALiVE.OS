@@ -22,6 +22,10 @@ Cost set, each soldier or vehicle is paid for from the force pool of the player'
 A player save keeps a player's own recruits. The player who recruited a soldier or vehicle
 can Dismiss it, and what it cost goes back to the pool (#1078; Allow Dismiss turns this off).
 
+With Offer Synced Units and Vehicles on, the men and vehicles synced to the module are the
+offer instead of recruitment points: the server notes each one as placed (his loadout, its
+paint), removes it, and publishes the list and the remaining recruitment points on the module.
+
 Parameters:
 _this select 0: OBJECT - the module
 
@@ -64,6 +68,96 @@ if (isServer && {isNil "ALiVE_recruitSpendServer"}) then {
     "ALiVE_recruitSpendRequest" addPublicVariableEventHandler { (_this select 1) call ALiVE_recruitSpendServer };
 };
 
+// Offer Synced Units and Vehicles: off by default, when synced objects are only recruitment points
+private _rawT = _logic getVariable ["syncedTemplates", "false"];
+private _synced = if (_rawT isEqualType "") then { toLower _rawT == "true" } else { _rawT isEqualTo true };
+
+// The synced men and vehicles become the offer, each kept as it was placed: a man as [class, name,
+// loadout, rank, skill], a vehicle as [class, name, textures]. Done on the server, which removes the
+// placed ones and publishes the offer and the remaining recruitment points on the module, because a
+// player's machine can't see a deleted object through synchronizedObjects; a late joiner reads the
+// module's variables. The profile system leaves these alone (fnc_createProfilesFromUnits), whichever
+// module starts first.
+if (isServer && {_synced}) then {
+    private _playable = playableUnits + switchableUnits;
+    // with Max Vehicles below 1 no vehicle is offered, so a synced vehicle stays a recruitment point
+    private _maxV = _logic getVariable ["maxVehicles", 2];
+    if (_maxV isEqualType "") then { _maxV = parseNumber _maxV };
+    if !(_maxV isEqualType 0) then { _maxV = 2 };
+    private _men = [];
+    private _vehs = [];
+    private _points = [];
+    {
+        switch (true) do {
+            case (_x isKindOf "Logic"): {};
+            case (_x isKindOf "CAManBase"): {
+                if (alive _x && {!isPlayer _x} && {!(_x in _playable)}) then { _men pushBack _x };
+            };
+            case (_x isKindOf "LandVehicle" || {_x isKindOf "Air"} || {_x isKindOf "Ship"}): {
+                // one with a player's slot aboard stays where it is
+                if (alive _x && {((crew _x) findIf { isPlayer _x || {_x in _playable} }) < 0}) then {
+                    if (_maxV < 1) then { _points pushBack _x } else { _vehs pushBack _x };
+                };
+            };
+            default { _points pushBack _x };
+        };
+    } forEach (synchronizedObjects _logic);
+    // the man's Eden Description (less any "@group" the lobby adds), or the class's name; numbered
+    // where two would read the same
+    private _fnc_number = {
+        private _base = _this apply { _x select 1 };
+        private _seen = createHashMap;
+        {
+            private _b = _x select 1;
+            if (({ _x == _b } count _base) > 1) then {
+                private _n = (_seen getOrDefault [_b, 0]) + 1;
+                _seen set [_b, _n];
+                _x set [1, format ["%1 %2", _b, _n]];
+            };
+        } forEach _this;
+        _this
+    };
+    private _menT = (_men apply {
+        private _desc = ((roleDescription _x) splitString "@") param [0, ""];
+        if (_desc == "") then { _desc = getText (configFile >> "CfgVehicles" >> typeOf _x >> "displayName") };
+        [typeOf _x, _desc, getUnitLoadout _x, rank _x, skill _x]
+    }) call _fnc_number;
+    private _vehT = (_vehs apply {
+        [typeOf _x, getText (configFile >> "CfgVehicles" >> typeOf _x >> "displayName"), getObjectTextures _x]
+    }) call _fnc_number;
+    // Removed as the Faction Compiler removes its templates; a group mate who wasn't synced stays
+    private _groups = [];
+    {
+        { if (!isPlayer _x && {!(_x in _playable)}) then { _groups pushBackUnique group _x; deleteVehicle _x } } forEach crew _x;
+        deleteVehicle _x;
+    } forEach _vehs;
+    { _groups pushBackUnique group _x; deleteVehicle _x } forEach _men;
+    // a deleted man leaves his group at the end of the frame, so the emptied groups go a moment later
+    [_groups] spawn {
+        params ["_groups"];
+        sleep 1;
+        { if (!isNull _x && {(units _x) isEqualTo []}) then { _x call ALiVE_fnc_DeleteGroupRemote } } forEach _groups;
+    };
+    _logic setVariable ["ALiVE_recruitPoints", _points, true];
+    _logic setVariable ["ALiVE_recruitTemplates", [_menT, _vehT], true];
+    ["ALiVE Recruitment: offering %1 synced men and %2 synced vehicles (%3) at %4 recruitment points", count _menT, count _vehT, _vehT apply { _x select 0 }, count _points] call ALiVE_fnc_dump;
+};
+
+// Gives a recruit the loadout, rank and skill of the synced man he copies, or a vehicle the paint of
+// the synced vehicle it copies. Made before the player's-machine check below, so a server can use it.
+ALiVE_fnc_recruitApplyTemplate = {
+    params ["_thing", "_template"];
+    if (_template isEqualTo [] || {isNull _thing}) exitWith {};
+    if (_thing isKindOf "CAManBase") then {
+        _template params ["", "", ["_loadout", []], ["_rank", ""], ["_skill", -1]];
+        if (_loadout isNotEqualTo []) then { _thing setUnitLoadout _loadout };
+        if (_rank != "") then { _thing setRank _rank };
+        if (_skill >= 0) then { _thing setSkill _skill };
+    } else {
+        { if (_x != "") then { _thing setObjectTextureGlobal [_forEachIndex, _x] } } forEach (_template param [2, []]);
+    };
+};
+
 if (!hasInterface) exitWith {};
 
 if (isNil "ALiVE_fnc_recruitAsk") then {
@@ -98,13 +192,14 @@ ALiVE_fnc_recruitPay = {
 };
 
 // Made into one list of classes: the module's own, or failing that the infantry of the
-// player's faction that the editor would offer.
+// player's faction that the editor would offer. _noFallback: the module's own or none (the synced
+// men are the offer then, not the faction's roster).
 ALiVE_fnc_recruitClasses = {
-    params ["_logic"];
+    params ["_logic", ["_noFallback", false]];
     private _raw = _logic getVariable ["unitClasses", ""];
     private _classes = if (_raw isEqualType "") then { (_raw splitString ", ") select { _x != "" } } else { [] };
     _classes = _classes select { isClass (configFile >> "CfgVehicles" >> _x) && {getNumber (configFile >> "CfgVehicles" >> _x >> "scope") >= 1} };
-    if (_classes isEqualTo []) then {
+    if (_classes isEqualTo [] && {!_noFallback}) then {
         private _faction = faction player;
         _classes = ("getText (_x >> 'faction') == _faction && {getNumber (_x >> 'scope') == 2} && {configName _x isKindOf 'CAManBase'} && {getText (_x >> 'vehicleClass') != 'MenDiver'}" configClasses (configFile >> "CfgVehicles")) apply { configName _x };
         // The usual roles first, so the short list is the useful one.
@@ -239,8 +334,9 @@ ALiVE_fnc_recruitDismissAction = {
     ] call BIS_fnc_holdActionAdd;
 };
 
+// _template: one of the synced men the module offers (index 14 of the settings), [] for a class
 ALiVE_fnc_recruitUnit = {
-    params ["_object", "_class", "_settings"];
+    params ["_object", "_class", "_settings", ["_template", []]];
     _settings params ["", "", "", "_max", "_skill", "", "", "", "_code"];
     private _group = group player;
     private _size = { alive _x } count units _group;
@@ -257,6 +353,8 @@ ALiVE_fnc_recruitUnit = {
     };
     if (_exact) then { _unit setPosASL _pos };
     _unit setDir _dir;
+    // the synced man's own kit, rank and skill; the module's Skill, when set, still has the last word
+    [_unit, _template] call ALiVE_fnc_recruitApplyTemplate;
     [_unit] joinSilent _group;
     _unit setVariable ["ALiVE_recruited", true, true];
     // whose recruit he is, so a player save keeps only that player's own
@@ -268,7 +366,7 @@ ALiVE_fnc_recruitUnit = {
     _unit setVariable ["ALiVE_recruitCost", _cost, true];
     _unit call _code;
     if (_settings param [12, true]) then { [_unit, _cost, false, _settings param [13, []]] call ALiVE_fnc_recruitDismissAction };
-    [localize "STR_ALIVE_RECRUIT", format [localize "STR_ALIVE_RECRUIT_UI_JOINED", getText (configFile >> "CfgVehicles" >> _class >> "displayName"), _size + 1, _max]] call ALIVE_fnc_sendHint;
+    [localize "STR_ALIVE_RECRUIT", format [localize "STR_ALIVE_RECRUIT_UI_JOINED", _template param [1, getText (configFile >> "CfgVehicles" >> _class >> "displayName")], _size + 1, _max]] call ALIVE_fnc_sendHint;
     true
 };
 
@@ -277,8 +375,9 @@ ALiVE_fnc_recruitVehiclesOwned = {
     vehicles select { alive _x && {(_x getVariable ["ALiVE_recruitedVehicleBy", ""]) == getPlayerUID player} }
 };
 
+// _template: one of the synced vehicles the module offers (index 15 of the settings), [] for a class
 ALiVE_fnc_recruitVehicle = {
-    params ["_object", "_class", "_settings"];
+    params ["_object", "_class", "_settings", ["_template", []]];
     _settings params ["", "", "", "", "", "_maxVeh", "", "", "_code"];
     private _have = count (call ALiVE_fnc_recruitVehiclesOwned);
     if (_have >= _maxVeh) exitWith { [localize "STR_ALIVE_RECRUIT", format [localize "STR_ALIVE_RECRUIT_UI_VEH_FULL", _have, _maxVeh]] call ALIVE_fnc_sendHint; false };
@@ -296,6 +395,8 @@ ALiVE_fnc_recruitVehicle = {
     _veh setDir _dir;
     _veh setPosASL _pos;
     _veh setVelocity [0, 0, 0];
+    // the synced vehicle's own paint
+    [_veh, _template] call ALiVE_fnc_recruitApplyTemplate;
     _veh setVariable ["ALiVE_recruitedVehicleBy", getPlayerUID player, true];
     // a player's own, so a Zeus virtualise doesn't hand it to an AI commander
     _veh setVariable ["ALIVE_profileIgnore", true, true];
@@ -324,23 +425,37 @@ ALiVE_fnc_recruitVehicle = {
     };
     _veh call _code;
     if (_settings param [12, true]) then { [_veh, _cost, true, _settings param [13, []]] call ALiVE_fnc_recruitDismissAction };
-    [localize "STR_ALIVE_RECRUIT", format [localize "STR_ALIVE_RECRUIT_UI_VEH_READY", getText (configFile >> "CfgVehicles" >> _class >> "displayName"), _have + 1, _maxVeh]] call ALIVE_fnc_sendHint;
+    [localize "STR_ALIVE_RECRUIT", format [localize "STR_ALIVE_RECRUIT_UI_VEH_READY", _template param [1, getText (configFile >> "CfgVehicles" >> _class >> "displayName")], _have + 1, _maxVeh]] call ALIVE_fnc_sendHint;
     true
 };
 
-[_logic] spawn {
-    params ["_logic"];
+[_logic, _synced] spawn {
+    params ["_logic", "_synced"];
     waitUntil { sleep 1; !isNull player };
+    // the synced men and vehicles, as the server noted them; a player's machine can start before the
+    // server has published them
+    private _menT = [];
+    private _vehT = [];
+    if (_synced) then {
+        private _t = diag_tickTime;
+        waitUntil { sleep 0.5; (!isNil { _logic getVariable "ALiVE_recruitTemplates" } && {!isNil { _logic getVariable "ALiVE_recruitPoints" }}) || {diag_tickTime - _t > 60} };
+        if (isNil { _logic getVariable "ALiVE_recruitTemplates" }) then {
+            ["ALiVE Recruitment: the server's list of synced units and vehicles did not arrive within 60 s, offering the class lists only"] call ALiVE_fnc_dump;
+        };
+        (_logic getVariable ["ALiVE_recruitTemplates", [[], []]]) params [["_m", []], ["_v", []]];
+        _menT = _m;
+        _vehT = _v;
+    };
     private _num = { params ["_v", "_d"]; if (_v isEqualType "") then { _v = parseNumber _v }; if (_v isEqualType 0) then { _v } else { _d } };
     private _max = [_logic getVariable ["maxGroupSize", 8], 8] call _num;
     if (_max < 1) then { _max = 8 };
     private _skill = [_logic getVariable ["recruitSkill", 0], 0] call _num;
     private _maxVeh = [_logic getVariable ["maxVehicles", 2], 2] call _num;
     private _height = [_logic getVariable ["spawnHeight", 0], 0] call _num;
-    private _classes = [_logic] call ALiVE_fnc_recruitClasses;
+    private _classes = [_logic, _synced] call ALiVE_fnc_recruitClasses;
     private _rawV = _logic getVariable ["vehicleClasses", ""];
     private _vehicles = if (_rawV isEqualType "") then { (_rawV splitString ", ") select { _x != "" && {isClass (configFile >> "CfgVehicles" >> _x)} && {getNumber (configFile >> "CfgVehicles" >> _x >> "scope") >= 1} } } else { [] };
-    if (_maxVeh < 1) then { _vehicles = [] };
+    if (_maxVeh < 1) then { _vehicles = []; _vehT = [] };
     private _rawP = _logic getVariable ["spawnPoints", ""];
     private _points = if (_rawP isEqualType "") then { (_rawP splitString ", ") select { _x != "" } } else { [] };
     private _rawC = _logic getVariable ["recruitCode", ""];
@@ -356,11 +471,19 @@ ALiVE_fnc_recruitVehicle = {
     private _dismissAt = if (_rawD isEqualType "") then { toLower _rawD } else { ["false", "true"] select (_rawD isNotEqualTo false) };
     private _dismiss = _dismissAt != "false";
     private _settings = [_logic, _classes, _vehicles, _max, _skill, _maxVeh, _points, _height, _code, ["", _rawC] select (_rawC isEqualType "" && {_rawC != ""}), _unitCost, _vehicleCost, _dismiss];
-    private _objects = (synchronizedObjects _logic) select { !(_x isKindOf "Logic") };
+    // the recruitment objects; with the synced men and vehicles on offer, the ones the server left
+    private _objects = if (_synced) then {
+        (_logic getVariable ["ALiVE_recruitPoints", []]) select { !isNull _x }
+    } else {
+        (synchronizedObjects _logic) select { !(_x isKindOf "Logic") }
+    };
     // where the Dismiss hold action works: anywhere (empty), or near these objects only
     _settings pushBack ([[], _objects] select (_dismissAt == "base"));
-    if (_objects isEqualTo [] || {(_classes + _vehicles) isEqualTo []}) exitWith {
-        ["ALiVE Recruitment: nothing to do (%1 synced objects, %2 unit classes, %3 vehicle classes)", count _objects, count _classes, count _vehicles] call ALiVE_fnc_dump;
+    // 14 and 15: the synced men and vehicles on offer, each as the server noted it
+    _settings pushBack _menT;
+    _settings pushBack _vehT;
+    if (_objects isEqualTo [] || {(_classes + _vehicles + _menT + _vehT) isEqualTo []}) exitWith {
+        ["ALiVE Recruitment: nothing to do (%1 synced objects, %2 unit classes, %3 vehicle classes, %4 synced men, %5 synced vehicles)", count _objects, count _classes, count _vehicles, count _menT, count _vehT] call ALiVE_fnc_dump;
     };
     {
         private _object = _x;
@@ -382,6 +505,20 @@ ALiVE_fnc_recruitVehicle = {
                     [_object, _x, _settings], 1.4, false, true, "", "alive _target && {vehicle _this isEqualTo _this}", 5
                 ];
             } forEach _vehicles;
+            {
+                _object addAction [
+                    (format [localize "STR_ALIVE_RECRUIT_UI_ACTION_RECRUIT", _x select 1]) call ALiVE_fnc_actionTitle,
+                    { (_this select 3) call ALiVE_fnc_recruitUnit },
+                    [_object, _x select 0, _settings, _x], 1.5, false, true, "", "alive _target && {vehicle _this isEqualTo _this}", 5
+                ];
+            } forEach _menT;
+            {
+                _object addAction [
+                    (format [localize "STR_ALIVE_RECRUIT_UI_ACTION_TAKE", _x select 1]) call ALiVE_fnc_actionTitle,
+                    { (_this select 3) call ALiVE_fnc_recruitVehicle },
+                    [_object, _x select 0, _settings, _x], 1.4, false, true, "", "alive _target && {vehicle _this isEqualTo _this}", 5
+                ];
+            } forEach _vehT;
         };
     } forEach _objects;
     // Soldiers and vehicles this player recruited before a save come back (the player save, Player
@@ -389,7 +526,7 @@ ALiVE_fnc_recruitVehicle = {
     // Only classes this module offers, so a mission with two recruitment points gives each one back
     // its own point's Dismiss rule.
     if (_dismiss) then {
-        [_settings param [13, []], (_classes + _vehicles) apply { toLower _x }] spawn {
+        [_settings param [13, []], (_classes + _vehicles + ((_menT + _vehT) apply { _x select 0 })) apply { toLower _x }] spawn {
             params ["_near", "_offered"];
             private _uid = getPlayerUID player;
             while {true} do {
@@ -407,5 +544,5 @@ ALiVE_fnc_recruitVehicle = {
             };
         };
     };
-    _logic setVariable ["ALiVE_recruitReady", [count _objects, _classes, _vehicles], false];
+    _logic setVariable ["ALiVE_recruitReady", [count _objects, _classes, _vehicles, count _menT, count _vehT], false];
 };

@@ -147,6 +147,18 @@ class CfgVehicles {
                                         class No  { name = "No";  value = "false"; };
                                 };
                         };
+                        class syncedTemplates : Combo
+                        {
+                                property = "ALiVE_sup_recruit_syncedTemplates";
+                                displayName = "$STR_ALIVE_RECRUIT_SYNCED";
+                                tooltip = "$STR_ALIVE_RECRUIT_SYNCED_COMMENT";
+                                defaultValue = """false""";
+                                class Values
+                                {
+                                        class No  { name = "No";  value = "false"; };
+                                        class Yes { name = "Yes"; value = "true"; };
+                                };
+                        };
                         class ModuleDescription : ModuleDescription {};
                 };
                 class ModuleDescription

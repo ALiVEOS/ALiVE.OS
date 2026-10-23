@@ -128,6 +128,32 @@ if(_createMode == "IGNORE") then {
     } forEach (allMissionObjects _moduleClass);
 } forEach [["ALiVE_sup_cas", "air"], ["ALiVE_SUP_TRANSPORT", "air"], ["ALiVE_SUP_GROUND", "ground"], ["ALiVE_sup_artillery", "gun"]];
 
+// A man or vehicle synced to a Recruitment module with Offer Synced Units and Vehicles on is one of
+// its offers (sup_group_manager notes it as placed and removes it), not a force. The two modules start
+// side by side, so whichever gets there first, this pass must not take it: profiled, it would be gone
+// before the Recruitment module could note it. A man's group is marked, so a group mate who isn't
+// synced stays live AI.
+{
+    private _rawT = _x getVariable ["syncedTemplates", "false"];
+    private _offers = if (_rawT isEqualType "") then { toLower _rawT == "true" } else { _rawT isEqualTo true };
+    if (_offers) then {
+        {
+            if (_x isKindOf "CAManBase") then {
+                if (!isNull group _x) then { (group _x) setVariable ["ALIVE_profileIgnore", true] };
+                // a vehicle he sits in stays too, or it is profiled from under him and his group mates
+                if (vehicle _x != _x) then { (vehicle _x) setVariable ["ALIVE_profileIgnore", true] };
+            } else {
+                if (_x isKindOf "LandVehicle" || {_x isKindOf "Air"} || {_x isKindOf "Ship"}) then {
+                    _x setVariable ["ALIVE_profileIgnore", true];
+                    // and its crew's group: placed crewed (Eden's default), the group pass would otherwise
+                    // profile the vehicle with them and delete it
+                    { if (!isPlayer _x && {!isNull group _x}) then { (group _x) setVariable ["ALIVE_profileIgnore", true] } } forEach (crew _x);
+                };
+            };
+        } forEach (synchronizedObjects _x);
+    };
+} forEach (allMissionObjects "ALiVE_sup_recruit");
+
 // Anything already marked to be left alone is left alone, whichever mode this is.
 // ALIVE_profileIgnore is honoured by every virtualisation pass that runs DURING a
 // mission, and it was the one thing this pass ignored: it only ever subtracted

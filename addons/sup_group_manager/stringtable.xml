@@ -251,6 +251,12 @@
 <Key ID="STR_ALIVE_RECRUIT_DISMISS_BASE">
     <English>At the recruitment point</English>
 </Key>
+<Key ID="STR_ALIVE_RECRUIT_SYNCED">
+    <English>Offer Synced Units and Vehicles</English>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_SYNCED_COMMENT">
+    <English>Yes: every man and vehicle synced to this module is offered for recruitment as placed, the man with his own loadout and the vehicle with its own paint, named by the man's Description when he has one. The placed ones are removed when the mission starts; a group mate who isn't synced stays. Don't sync a vehicle a player's slot sits in, or it is taken as an offer. Sync a flag, crate or other object as the recruitment point. The unit and vehicle classes above are still offered if filled, but not the player's faction's soldiers. No: everything synced is a recruitment point.</English>
+</Key>
 <Key ID="STR_ALIVE_RECRUIT_UI_DISMISS">
     <English>Dismiss %1</English>
 </Key>

@@ -50,7 +50,7 @@ private _fnc_status = {
     if (_settings isEqualTo [] || {isNull RW_DISPLAY}) exitWith {};
     _settings params ["", "", "_vehicles", "_max", "", "_maxVeh", "", "", "", "", ["_unitCost", 0], ["_vehicleCost", 0]];
     private _lines = [format [localize "STR_ALIVE_RECRUIT_UI_STATUS_GROUP", { alive _x } count units group player, _max]];
-    if (_vehicles isNotEqualTo []) then { _lines pushBack format [localize "STR_ALIVE_RECRUIT_UI_STATUS_VEHICLES", count (call ALiVE_fnc_recruitVehiclesOwned), _maxVeh] };
+    if ((_vehicles + (_settings param [15, []])) isNotEqualTo []) then { _lines pushBack format [localize "STR_ALIVE_RECRUIT_UI_STATUS_VEHICLES", count (call ALiVE_fnc_recruitVehiclesOwned), _maxVeh] };
     // the force pool, once the server has said what is in it (-1: the faction has none)
     private _pool = uiNamespace getVariable ["ALiVE_recruitPool", -1];
     if ((_unitCost > 0 || {_vehicleCost > 0}) && {_pool >= 0}) then { _lines pushBack format [localize "STR_ALIVE_RECRUIT_UI_STATUS_POOL", _pool] };
@@ -78,6 +78,20 @@ switch (_operation) do {
             _list lbSetColor [_i, [0.85, 0.75, 0.55, 1]];
             _rows pushBack [_x, true];
         } forEach _vehicles;
+        // the synced men and vehicles, by name; the row's data is the one's place in its list
+        {
+            private _i = _list lbAdd (_x select 1);
+            _list lbSetPicture [_i, [_x select 0, "icon"] call _fnc_picture];
+            _list lbSetData [_i, str _forEachIndex];
+            _rows pushBack [_x select 0, false];
+        } forEach (_settings param [14, []]);
+        {
+            private _i = _list lbAdd (_x select 1);
+            _list lbSetPicture [_i, [_x select 0, "picture"] call _fnc_picture];
+            _list lbSetColor [_i, [0.85, 0.75, 0.55, 1]];
+            _list lbSetData [_i, str _forEachIndex];
+            _rows pushBack [_x select 0, true];
+        } forEach (_settings param [15, []]);
         uiNamespace setVariable ["ALiVE_recruitRows", _rows];
         ["mine"] call ALiVE_fnc_recruitWindow;
         _list lbSetCurSel 0;
@@ -126,16 +140,24 @@ switch (_operation) do {
         };
         _row params ["_class", "_isVehicle"];
         private _cfg = configFile >> "CfgVehicles" >> _class;
-        private _lines = [getText (_cfg >> "displayName")];
+        private _settings = (uiNamespace getVariable ["ALiVE_recruitAt", []]) param [1, []];
+        // one of the synced men or vehicles: his name and the kit he was placed with
+        private _data = (RW_DISPLAY displayCtrl 92702) lbData (lbCurSel (RW_DISPLAY displayCtrl 92702));
+        private _template = if (_data != "") then { (_settings param [[14, 15] select _isVehicle, []]) param [parseNumber _data, []] } else { [] };
+        private _lines = [_template param [1, getText (_cfg >> "displayName")]];
         if (_isVehicle) then {
             _lines pushBack localize "STR_ALIVE_RECRUIT_UI_DESC_VEHICLE";
             _lines pushBack format [localize "STR_ALIVE_RECRUIT_UI_DESC_SEATS", getNumber (_cfg >> "transportSoldier")];
         } else {
-            private _weapons = (getArray (_cfg >> "weapons")) select { !(_x in ["Throw", "Put"]) } apply { getText (configFile >> "CfgWeapons" >> _x >> "displayName") };
+            private _weapons = if (_template isEqualTo []) then {
+                (getArray (_cfg >> "weapons")) select { !(_x in ["Throw", "Put"]) } apply { getText (configFile >> "CfgWeapons" >> _x >> "displayName") }
+            } else {
+                // primary, launcher, handgun from the loadout; an empty slot is []
+                ((_template param [2, []]) select [0, 3]) apply { _x param [0, ""] } select { _x != "" } apply { getText (configFile >> "CfgWeapons" >> _x >> "displayName") }
+            };
             _lines pushBack localize "STR_ALIVE_RECRUIT_UI_DESC_SOLDIER";
             if (_weapons isNotEqualTo []) then { _lines pushBack format [localize "STR_ALIVE_RECRUIT_UI_DESC_CARRIES", _weapons joinString ", "] };
         };
-        private _settings = (uiNamespace getVariable ["ALiVE_recruitAt", []]) param [1, []];
         private _cost = _settings param [[10, 11] select _isVehicle, 0];
         if (_cost > 0) then { _lines pushBack format [localize "STR_ALIVE_RECRUIT_UI_DESC_COST", _cost] };
         (RW_DISPLAY displayCtrl 92703) ctrlSetStructuredText ([_lines, true] call _fnc_lines);
@@ -157,10 +179,13 @@ switch (_operation) do {
             };
         };
         _row params ["_class", "_isVehicle"];
+        // one of the synced men or vehicles: recruited as he was placed
+        private _data = (RW_DISPLAY displayCtrl 92702) lbData (lbCurSel (RW_DISPLAY displayCtrl 92702));
+        private _template = if (_data != "") then { (_settings param [[14, 15] select _isVehicle, []]) param [parseNumber _data, []] } else { [] };
         // paying asks the server and waits for its answer, so this runs scheduled
-        [_object, _class, _settings, _isVehicle] spawn {
-            params ["_object", "_class", "_settings", "_isVehicle"];
-            if (_isVehicle) then { [_object, _class, _settings] call ALiVE_fnc_recruitVehicle } else { [_object, _class, _settings] call ALiVE_fnc_recruitUnit };
+        [_object, _class, _settings, _isVehicle, _template] spawn {
+            params ["_object", "_class", "_settings", "_isVehicle", "_template"];
+            if (_isVehicle) then { [_object, _class, _settings, _template] call ALiVE_fnc_recruitVehicle } else { [_object, _class, _settings, _template] call ALiVE_fnc_recruitUnit };
             ["status"] call ALiVE_fnc_recruitWindow;
             private _i = lbCurSel (RW_DISPLAY displayCtrl 92702);
             ["mine"] call ALiVE_fnc_recruitWindow;
