@@ -157,6 +157,8 @@ switch (_op) do {
             _obj setDir getDir _unit;
             clearItemCargoGlobal _obj; clearWeaponCargoGlobal _obj; clearMagazineCargoGlobal _obj; clearBackpackCargoGlobal _obj;
         };
+        // stood flush with the slope it is on rather than upright (A. Ares on Discord, 23 Oct)
+        _obj setVectorUp (surfaceNormal (getPosATL _obj));
         _grp setVariable ["ALiVE_rallyDeployed", _obj, true];
         missionNamespace setVariable [_key, time + (["leaderCooldown", 120] call _set)];
         ["add", [_obj, format [localize "STR_ALIVE_RALLY_LEADER_NAME", groupId _grp], str side _grp, "leader", [_grp, grpNull] select (_mode == "SIDE")]] call ALiVE_fnc_rallyPoint;
