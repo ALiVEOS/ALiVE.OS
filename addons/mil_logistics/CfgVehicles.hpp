@@ -127,6 +127,22 @@ class CfgVehicles
                                     class No { name = "No"; value = "false"; default = 1; };
                                 };
                         };
+                        // an armed helicopter of the convoy's own faction flying ahead of some ground resupply convoys (opt-in)
+                        class convoyEscortChance : Combo
+                        {
+                                property = "ALiVE_mil_logistics_convoyEscortChance";
+                                displayName = "$STR_ALIVE_ML_CONVOY_ESCORT";
+                                tooltip = "$STR_ALIVE_ML_CONVOY_ESCORT_COMMENT";
+                                defaultValue = """0""";
+                                class Values
+                                {
+                                    class Off { name = "Off"; value = "0"; default = 1; };
+                                    class P25 { name = "25%"; value = "25"; };
+                                    class P50 { name = "50%"; value = "50"; };
+                                    class P75 { name = "75%"; value = "75"; };
+                                    class P100 { name = "100%"; value = "100"; };
+                                };
+                        };
                         // ---- Reinforcement Types --------------------------------------------
                         class HDR_REINF : ALiVE_ModuleSubTitle { property = "ALiVE_mil_logistics_HDR_REINF"; displayName = "REINFORCEMENT TYPES"; };
                         class allowInfantryReinforcement : Combo

@@ -58,6 +58,8 @@ ARJay & Jman
 #define WAIT_TIME_MARINE 30
 #define WAIT_TIME_DROP 40
 #define START_FORCE_STRENGTH_INC false
+// in the profile IDs of a convoy's escort helicopter and its crew ("BLU_F-mlescort-vehicle_12")
+#define ML_ESCORT_TAG "-mlescort"
 #define START_FORCE_STRENGTH_INC_FACTOR "1"
 #define START_FORCE_STRENGTH_DEC false
 #define START_FORCE_STRENGTH_DEC_FACTOR "1"
@@ -212,6 +214,173 @@ private _fnc_spawnHook = {
     } forEach _new;
 };
 
+// Convoy air escort (Convoy Air Escort Chance, off by default): a ground convoy may get an armed helicopter of
+// its own faction that keeps just ahead of its lead vehicle, the first of its trucks still on the road (one whose
+// men got out early drives on as overwatch, so it leads only when no other truck is left). [event] -> the lead's
+// entity profile, or [] when the convoy has no truck left.
+private _fnc_escortLead = {
+    params ["_ev"];
+    private _lead = [];
+    private _spare = [];
+    {
+        private _p = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+        if (!isNil "_p") then {
+            private _vIDs = _p select 2 select 8;
+            private _vp = if (_vIDs isEqualTo []) then { nil } else { [ALIVE_profileHandler, "getProfile", _vIDs select 0] call ALIVE_fnc_profileHandler };
+            if (!isNil "_vp" && {(_vp select 2 select 11) isKindOf "LandVehicle"}) then {
+                if ([_p, "alive_ml_dismounted", false] call ALIVE_fnc_hashGet) then {
+                    if (_spare isEqualTo []) then { _spare = _p; };
+                } else {
+                    _lead = _p;
+                };
+            };
+        };
+        if (_lead isNotEqualTo []) exitWith {};
+    } forEach ([_ev, "transportProfiles", []] call ALIVE_fnc_hashGet);
+    [_lead, _spare] select (_lead isEqualTo [])
+};
+
+// Keeps a convoy's escort helicopter 120 m ahead of its lead vehicle, run each time the convoy's event is looked
+// at (every 10 s). One nobody can see is moved there with it, 80 m up and with no waypoints, so the profile
+// system leaves it where it's put and it's made flying there when a player comes near. One that's in the world
+// is sent there at 60 m and no faster than 70 km/h, ready to fire but keeping its place, and sent again only once
+// the spot has moved 50 m, so it isn't re-ordered every time while it hovers. [event, debug]
+private _fnc_escortTick = {
+    params ["_ev", ["_dbg", false]];
+    private _esc = [_ev, "escortProfiles", []] call ALIVE_fnc_hashGet;
+    if (_esc isEqualTo []) exitWith {};
+    _esc params ["_escEntID", "_escVehID"];
+    private _entP = [ALIVE_profileHandler, "getProfile", _escEntID] call ALIVE_fnc_profileHandler;
+    private _vehP = [ALIVE_profileHandler, "getProfile", _escVehID] call ALIVE_fnc_profileHandler;
+    if (isNil "_entP" || {isNil "_vehP"}) exitWith {};
+    private _lead = [_ev] call _fnc_escortLead;
+    if (_lead isEqualTo []) exitWith {};
+
+    // where the lead is and which way it's heading: the way it's driving when it's in the world and moving,
+    // else towards its next waypoint, else the way it faces
+    private _leader = _lead select 2 select 10;
+    private _leadObj = if ((_lead select 2 select 1) && {!isNull _leader} && {alive _leader}) then { vehicle _leader } else { objNull };
+    private _leadPos = if (isNull _leadObj) then { +(_lead select 2 select 2) } else { getPosATL _leadObj };
+    private _dir = -1;
+    if (!isNull _leadObj && {speed _leadObj > 5}) then { _dir = getDir _leadObj; };
+    if (_dir < 0) then {
+        private _wps = _lead select 2 select 16;
+        if (_wps isNotEqualTo []) then {
+            private _wpPos = [_wps select 0, "position"] call ALIVE_fnc_hashGet;
+            if (!isNil "_wpPos" && {_wpPos isEqualType []} && {count _wpPos > 1} && {(_leadPos distance2D _wpPos) > 30}) then { _dir = _leadPos getDir _wpPos; };
+        };
+    };
+    if (_dir < 0) then {
+        if (!isNull _leadObj) then { _dir = getDir _leadObj; } else {
+            private _vIDs = _lead select 2 select 8;
+            private _lv = if (_vIDs isEqualTo []) then { nil } else { [ALIVE_profileHandler, "getProfile", _vIDs select 0] call ALIVE_fnc_profileHandler };
+            if (!isNil "_lv") then { _dir = _lv select 2 select 12; };
+            if !(_dir isEqualType 0) then { _dir = 0; };
+            _dir = 0 max _dir;
+        };
+    };
+    private _target = _leadPos getPos [120, _dir];
+    _target set [2, 80];
+
+    if !(_vehP select 2 select 1) then {
+        // nobody near it: it goes with the convoy as a record
+        if ((_entP select 2 select 16) isNotEqualTo []) then { [_entP, "clearWaypoints"] call ALIVE_fnc_profileEntity; };
+        [_entP, "position", +_target] call ALIVE_fnc_profileEntity;
+        [_vehP, "position", +_target] call ALIVE_fnc_profileVehicle;
+        // despawnPosition too: once it has been in the world and gone, the spawner puts it back there, not here
+        [_entP, "despawnPosition", +_target] call ALIVE_fnc_profileEntity;
+        [_vehP, "despawnPosition", +_target] call ALIVE_fnc_profileVehicle;
+    } else {
+        private _heli = _vehP select 2 select 10;
+        if (isNull _heli || {!alive _heli}) exitWith {};
+        if !(local _heli) exitWith {
+            if (_dbg) then { ["ML - convoy escort %1 isn't local to the server, can't send it on.", _escVehID] call ALiVE_fnc_dump; };
+        };
+        private _grp = group (driver _heli);
+        if (isNull _grp) then { _grp = _entP select 2 select 13; };
+        if (isNull _grp) exitWith {};
+        _grp setBehaviour "AWARE";
+        _grp setCombatMode "YELLOW";
+        _heli flyInHeight 60;
+        _heli limitSpeed 70;
+        private _last = _heli getVariable ["alive_ml_escortTarget", []];
+        if (_last isEqualTo [] || {(_last distance2D _target) > 50}) then {
+            _heli setVariable ["alive_ml_escortTarget", +_target];
+            _grp move _target;
+        };
+    };
+};
+
+// The escort goes when its convoy's run is over, however it ended. One in the world goes once no player is near
+// it, as a delivery helicopter does; one nobody can see goes at once. Its crew's profile is taken away by its own
+// ID, not looked up through the helicopter: deleting the crew first can leave the helicopter listing no crew, and
+// the crew's profile was left behind that way. If the helicopter was shot down, the wreck is left to the profile
+// system and a crew that got out to the commander. [event, debug]
+private _fnc_escortRemove = {
+    params ["_ev", ["_dbg", false]];
+    private _esc = [_ev, "escortProfiles", []] call ALIVE_fnc_hashGet;
+    if (_esc isEqualTo []) exitWith {};
+    [_ev, "escortProfiles", []] call ALIVE_fnc_hashSet;
+    _esc params ["_escEntID", "_escVehID"];
+    [_escEntID, _escVehID, (missionNamespace getVariable ["ALIVE_spawnRadiusHeli", 1500]) max 1500] spawn {
+        params ["_eID", "_vID", "_radius"];
+        // one in the world waits until nobody's near it, or until it's gone out of the world; checked every 10 s
+        waitUntil {
+            private _vp = [ALIVE_profileHandler, "getProfile", _vID] call ALIVE_fnc_profileHandler;
+            if (isNil "_vp" || {!(_vp select 2 select 1)}) exitWith { true };
+            private _veh = _vp select 2 select 10;
+            if (isNil "_veh" || {!(_veh isEqualType objNull)} || {isNull _veh} || {!alive _veh}) exitWith { true };
+            if (([getPos _veh, _radius] call ALiVE_fnc_anyPlayersInRange) == 0) exitWith { true };
+            sleep 10;
+            false
+        };
+        private _vp = [ALIVE_profileHandler, "getProfile", _vID] call ALIVE_fnc_profileHandler;
+        private _ep = [ALIVE_profileHandler, "getProfile", _eID] call ALIVE_fnc_profileHandler;
+        private _veh = if (isNil "_vp") then { objNull } else { _vp select 2 select 10 };
+        if (isNil "_veh" || {!(_veh isEqualType objNull)}) then { _veh = objNull; };
+        private _wreck = !isNull _veh && {!alive _veh};
+        // anyone still aboard goes first: deleting the helicopter with them seated throws them out
+        if (!_wreck && {!isNull _veh}) then {
+            { if (vehicle _x == _veh) then { deleteVehicle _x; }; } forEach (crew _veh);
+        };
+        if (!isNil "_ep") then {
+            if (_wreck && {_ep select 2 select 1}) then { [_ep, "busy", false] call ALIVE_fnc_hashSet; } else { [_ep, "destroy"] call ALIVE_fnc_profileEntity; };
+        };
+        if (!isNil "_vp" && {!_wreck}) then {
+            [_vp, "vehicleAssignments", [] call ALIVE_fnc_hashCreate] call ALIVE_fnc_hashSet;
+            [_vp, "destroy"] call ALIVE_fnc_profileVehicle;
+        };
+        ["ML - convoy escort %1 / %2 removed with its convoy's event%3.", _vID, _eID, ["", " (shot down, the wreck is left)"] select _wreck] call ALiVE_fnc_dump;
+    };
+};
+
+// Whether a helicopter class can fly as a convoy's escort: a manned one (not a drone) with a real weapon, a gun,
+// rockets or missiles, on itself, a turret or a pylon. Flares, smoke, a laser designator or a horn don't count:
+// ALiVE_fnc_isArmed passed the medical drone. [class] -> true/false
+private _fnc_escortArmed = {
+    params ["_cls"];
+    private _cfg = configFile >> "CfgVehicles" >> _cls;
+    if (!isClass _cfg || {getNumber (_cfg >> "isUav") == 1} || {getNumber (_cfg >> "hasDriver") != 1}) exitWith { false };
+    private _crewCls = getText (_cfg >> "crew");
+    if (_crewCls == "" || {_crewCls isKindOf "UAV_AI_base_F"}) exitWith { false };
+    private _fnc_turretWeapons = {
+        params ["_tc"];
+        private _out = [];
+        {
+            _out append (getArray (_x >> "weapons"));
+            _out append ([_x >> "Turrets"] call _fnc_turretWeapons);
+        } forEach ("isClass _x" configClasses _tc);
+        _out
+    };
+    private _weapons = (getArray (_cfg >> "weapons")) + ([_cfg >> "Turrets"] call _fnc_turretWeapons);
+    private _real = _weapons findIf {
+        private _w = toLower _x;
+        isClass (configFile >> "CfgWeapons" >> _x)
+        && {({ (_w find _x) >= 0 } count ["flare", "smoke", "laserdesignator", "horn", "fakeweapon", "medical", "searchlight"]) == 0}
+    };
+    _real >= 0 || {count ("isClass _x" configClasses (_cfg >> "Components" >> "TransportPylonsComponent" >> "pylons")) > 0}
+};
+
 switch(_operation) do {
     default {
         _result = [_logic, _operation, _args] call SUPERCLASS;
@@ -272,6 +441,21 @@ switch(_operation) do {
         if (_args isEqualType "") then { _args = (toLower _args) == "true"; };
         if !(_args isEqualType true) then { _args = false; };
         _logic setVariable ["generateHeliTasks", _args];
+        _result = _args;
+    };
+    case "convoyEscortChance": {
+        // The chance, 0 to 100, that a ground resupply convoy gets an armed helicopter of its own faction
+        // flying ahead of it. Short name first, then the 3DEN property name, same as generateConvoyTasks;
+        // the editor writes it as a string. 0 (the default) means never.
+        if (_args isEqualType 0) then {
+            _logic setVariable ["convoyEscortChance", _args];
+        } else {
+            _args = _logic getVariable ["convoyEscortChance", _logic getVariable ["ALiVE_mil_logistics_convoyEscortChance", 0]];
+        };
+        if (_args isEqualType "") then { _args = parseNumber _args; };
+        if !(_args isEqualType 0) then { _args = 0; };
+        _args = 0 max _args min 100;
+        _logic setVariable ["convoyEscortChance", _args];
         _result = _args;
     };
     case "persistent": {
@@ -4727,6 +4911,31 @@ switch(_operation) do {
                 ["Military Logistics reports that Virtual AI module or OPCOM module not placed! Exiting..."] call ALiVE_fnc_DumpR;
             };
             waituntil {!(isnil "ALiVE_ProfileHandler") && {[ALiVE_ProfileSystem,"startupComplete",false] call ALIVE_fnc_hashGet}};
+
+            // A convoy's escort helicopter brought back by a reload: the run it flew with isn't saved, and the load
+            // frees it, so it would be an armed helicopter the commander could send anywhere. Taken away once, before
+            // any Military Logistics module looks at its deliveries. Its IDs carry ML_ESCORT_TAG.
+            if (isNil "ALiVE_ML_escortsCleared") then {
+                ALiVE_ML_escortsCleared = true;
+                private _escAll = [ALIVE_profileHandler, "getProfiles"] call ALIVE_fnc_profileHandler;
+                private _escIDs = if (isNil "_escAll") then { [] } else { (_escAll select 1) select { (_x find (ML_ESCORT_TAG + "-")) >= 0 } };
+                private _escEnts = [];
+                private _escVehs = [];
+                {
+                    private _p = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+                    if (!isNil "_p") then {
+                        if (([_p, "type", ""] call ALIVE_fnc_hashGet) == "entity") then { _escEnts pushBack _p } else { _escVehs pushBack _p };
+                    };
+                } forEach _escIDs;
+                { [_x, "destroy"] call ALIVE_fnc_profileEntity; } forEach _escEnts;
+                {
+                    [_x, "vehicleAssignments", [] call ALIVE_fnc_hashCreate] call ALIVE_fnc_hashSet;
+                    [_x, "destroy"] call ALIVE_fnc_profileVehicle;
+                } forEach _escVehs;
+                if (_escIDs isNotEqualTo []) then {
+                    ["ML - %1 convoy escort profile(s) left by a reload removed: %2", count _escIDs, _escIDs] call ALiVE_fnc_dump;
+                };
+            };
 
             // if civ cluster data not loaded, load it
             // Keep the load guard, index compilation and completion flag in one unscheduled call.
@@ -11382,6 +11591,57 @@ switch(_operation) do {
 
                 } forEach _heliProfiles;
 
+                // Convoy air escort (Convoy Air Escort Chance, off by default): a ground convoy with trucks may get an
+                // armed helicopter of its own faction that flies just ahead of its lead truck for the whole run. It's
+                // made here, as a helicopter reinforcement is, not taken from anyone, and costs one from the force pool.
+                // Kept out of the event's cargo and transport lists, so nothing waits on it or counts it as a truck.
+                // Only a ground run gets here (a helicopter delivery has its own states), whatever type the request came
+                // in as: one asked for as HELI_INSERT or AIRDROP can be sent by road, and the lead must be a land vehicle.
+                if (([_event, "escortProfiles", []] call ALIVE_fnc_hashGet) isEqualTo []) then {
+                    private _escChance = [_logic, "convoyEscortChance"] call MAINCLASS;
+                    if (_escChance <= 0 || {random 100 >= _escChance}) exitWith {};
+                    private _escWhyNot = "";
+                    private _escLead = [_event] call _fnc_escortLead;
+                    private _escClasses = [];
+                    private _escPool = 0;
+                    if !([_logic, "allowHeliReinforcement"] call MAINCLASS) then { _escWhyNot = "helicopter reinforcement isn't allowed"; };
+                    if (_escWhyNot == "" && {_escLead isEqualTo []}) then { _escWhyNot = "the convoy has no truck to follow"; };
+                    if (_escWhyNot == "") then {
+                        _escClasses = [0,_eventFaction,"Helicopter"] call ALiVE_fnc_findVehicleType;
+                        _escClasses = _escClasses - ALiVE_PLACEMENT_VEHICLEBLACKLIST;
+                        _escClasses = [_escClasses, "", ([_logic, "excludeKinds"] call MAINCLASS), "vehicles"] call ALIVE_fnc_MLExcludeKindsFilter;
+                        _escClasses = _escClasses select { [_x] call _fnc_escortArmed };
+                        // a gunship before a transport with door guns, where the faction has one
+                        private _escGunships = _escClasses select { getNumber (configFile >> "CfgVehicles" >> _x >> "transportSoldier") <= 4 };
+                        if (_escGunships isNotEqualTo []) then { _escClasses = _escGunships; };
+                        if (_escClasses isEqualTo []) then { _escWhyNot = "the faction has no manned armed helicopter"; };
+                    };
+                    if (_escWhyNot == "") then {
+                        _escPool = [ALIVE_globalForcePool, _eventFaction, 0] call ALIVE_fnc_hashGet;
+                        if (_escPool isEqualType "") then { _escPool = parseNumber _escPool };
+                        if !(_escPool isEqualType 0) then { _escPool = 0; };
+                        if (_escPool < 1) then { _escWhyNot = "the force pool is empty"; };
+                    };
+                    if (_escWhyNot != "") exitWith {
+                        ["ML - convoy escort: none for event %1, %2.", _eventID, _escWhyNot] call ALiVE_fnc_dump;
+                    };
+
+                    private _escClass = selectRandom _escClasses;
+                    private _escPos = +(_escLead select 2 select 2);
+                    _escPos set [2, 80];
+                    // its profile IDs carry ML_ESCORT_TAG, which a save keeps (no other mark on the profile survives a
+                    // load), so start-up can take away an escort whose convoy a reload ended
+                    private _escProfiles = [_escClass,_side,_eventFaction,"CAPTAIN",_escPos,_escPos getDir _eventPosition,false,_eventFaction + ML_ESCORT_TAG,true,true] call ALIVE_fnc_createProfilesCrewedVehicle; [_escProfiles] call _fnc_spawnHook;
+                    { [_x, "alive_ml_escort", true] call ALIVE_fnc_hashSet; } forEach _escProfiles;
+                    private _escIDs = _escProfiles apply { _x select 2 select 4 };
+                    [_event, "escortProfiles", _escIDs] call ALIVE_fnc_hashSet;
+                    [_escIDs select 0] call ALiVE_ML_fnc_keepCrewOnServer;
+                    [ALIVE_MLGlobalRegistry, "updateGlobalForcePool", [_registryID, (_escPool - 1) max 0]] call ALIVE_fnc_MLGlobalRegistry;
+                    ["ML - convoy escort: %1 (%2) flies with event %3, force pool %4 -> %5.", _escIDs select 1, _escClass, _eventID, _escPool, (_escPool - 1) max 0] call ALiVE_fnc_dump;
+                    // straight to its place ahead of the lead truck
+                    [_event, _debug] call _fnc_escortTick;
+                };
+
 
                 // DEBUG -------------------------------------------------------------------------------------
                 if(_debug) then {
@@ -11602,6 +11862,9 @@ switch(_operation) do {
                 // ---------------------------------------------------------------
                 // END EARLY DISMOUNT
                 // ---------------------------------------------------------------
+
+                // the convoy's escort helicopter, if it has one, keeps ahead of the lead truck
+                [_event, _debug] call _fnc_escortTick;
 
                 // check waypoints
 
@@ -11838,6 +12101,9 @@ switch(_operation) do {
                     [_event, "state", "eventComplete"] call ALIVE_fnc_hashSet;
                     [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
                 };
+
+                // a convoy's escort helicopter, if it has one, keeps over the lead truck while it unloads
+                if (_eventState == "transportUnloadWait") then { [_event, _debug] call _fnc_escortTick; };
 
                 // mechanism for aborting this state
                 // once set time limit has passed
@@ -12184,6 +12450,9 @@ switch(_operation) do {
                     [_event, "state", "eventComplete"] call ALIVE_fnc_hashSet;
                     [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
                 };
+
+                // a convoy's escort helicopter, if it has one, keeps ahead of the lead truck on the way home
+                if (_eventState == "transportReturnWait") then { [_event, _debug] call _fnc_escortTick; };
 
                 if (count _eventTransportProfiles > 0) then {
                     _anyActive = 0;
@@ -17485,6 +17754,8 @@ switch(_operation) do {
                 [_evR, "poolReservation", 0] call ALIVE_fnc_hashSet;
                 ["ML - Request %1 turned down: %2 group(s) given back to the force pool (now %3).", _eventID, _reservationR, _poolR + _reservationR] call ALiVE_fnc_dump;
             };
+            // a convoy's escort helicopter goes with its event, however the run ended
+            [_evR, [_logic, "debug"] call MAINCLASS] call _fnc_escortRemove;
         };
 
         [_eventQueue,_eventID] call ALIVE_fnc_hashRem;

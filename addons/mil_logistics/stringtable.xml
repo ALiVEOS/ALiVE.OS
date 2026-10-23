@@ -653,4 +653,10 @@
     <Portuguese>Gera tarefas C2ISTAR sobre voos reais de helicópteros de reforço: pede-se ao lado que entrega para proteger o helicóptero e aos lados hostis para abatê-lo antes da entrega. Apenas voos acima de 1 km geram uma tarefa. Requer um módulo C2ISTAR.</Portuguese>
     <Russian>Создаёт задачи C2ISTAR на реальных рейсах вертолётов подкрепления: доставляющей стороне поручается защитить вертолёт, враждебным сторонам — сбить его до доставки. Задача создаётся только для рейсов длиннее 1 км. Требуется модуль C2ISTAR.</Russian>
 </Key>
+<Key ID="STR_ALIVE_ML_CONVOY_ESCORT">
+    <English>Convoy Air Escort Chance:</English>
+</Key>
+<Key ID="STR_ALIVE_ML_CONVOY_ESCORT_COMMENT">
+    <English>Chance that a ground resupply convoy gets an armed helicopter of its own faction flying just ahead of the lead vehicle for the whole run. The helicopter costs one unit from the force pool. Needs Allow Helicopter Reinforcement set to Yes and an armed helicopter in the faction.</English>
+</Key>
 </Container></Package></Project>
