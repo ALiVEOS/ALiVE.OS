@@ -491,10 +491,17 @@ switch(_operation) do {
             [[_logic,"disablePlayer",_player], "ALiVE_fnc_MultiSpawn", owner _player, false] call BIS_fnc_MP;
 
             sleep 2;
+            // never left on the waiting screen: 5 minutes past the insertion wait and still not aboard, the player
+            // is let go where he respawned
+            private _giveUpAt = time + ([_factionData,QGVAR(TIMEOUT),60] call ALiVE_fnc_HashGet) + 300;
             waituntil {
                 sleep 1;
 
                 _transport = [_factionData,QGVAR(INSERTION_TRANSPORT)] call ALiVE_fnc_HashGet;
+                if (time > _giveUpAt) exitWith {
+                    ["ALiVE_SUP_MULTISPAWN - %1 waited too long for an insertion; let go where he respawned", name _player] call ALiVE_fnc_Dump;
+                    true
+                };
 
                 // Player obvject must be existing and alive
                 if (!isnil "_player" && {alive _player}) then {
@@ -680,15 +687,26 @@ switch(_operation) do {
 
                 deleteVehicle (_data select 0);
             } else {
+                // The insertion is over once its passengers are out: the next one goes with a helicopter of its own
+                // rather than waiting for this one to get home. It used to wait, and a helicopter told to land at
+                // the drop-off often never took off again, so a second respawn sat on the waiting screen for good
+                // (milfmadness on Discord, 23 Oct)
+                _data = +_dataSet;
+                (_data select 0) setvariable [QGVAR(INSERTION_TRANSPORT),nil];
+                [_factionData,QGVAR(INSERTION_TRANSPORT)] call ALiVE_fnc_HashRem;
+
+                _transport land "NONE";
                 _wp = _group addWaypoint [_StartPos, 0];
                 _wp setWaypointType "MOVE";
                 _wp setWaypointSpeed "FULL";
                 _wp setWaypointBehaviour "CARELESS";
 
                 _group setCurrentWaypoint _wp;
+                _group move _StartPos;
 
                 //////////////////////////////////////////////
-                // Conditions for finished insertion
+                // Home, or gone after 3 minutes whatever happens
+                private _leftAt = time;
                 waituntil {
                     sleep 1;
 
@@ -697,13 +715,12 @@ switch(_operation) do {
                     ||
 
                     {_transport distance2D _StartPos < 100}
+
+                    ||
+
+                    {time - _leftAt > 180}
                 };
                 //////////////////////////////////////////////
-
-                _data = +_dataSet;
-
-                (_data select 0) setvariable [QGVAR(INSERTION_TRANSPORT),nil];
-                [_factionData,QGVAR(INSERTION_TRANSPORT)] call ALiVE_fnc_HashRem;
 
                 {deleteVehicle _x} foreach (_data select 1);
                 (_data select 2) call ALiVE_fnc_DeleteGroupRemote;
