@@ -177,7 +177,9 @@ switch (_taskState) do {
         // A return point the player picked on the tablet map comes first (#274).
         _returnPosition = _task param [13, []];
         if !(_returnPosition isEqualType [] && {count _returnPosition >= 2}) then {
-            _returnPosition = [_taskSide] call ALIVE_fnc_taskGetReturnPosition;
+            // C2ISTAR's Delivery Destination can send it to the nearest Player FOB or friendly base, never one
+            // within 1 km of the hostage
+            _returnPosition = [_taskSide, [], _taskLocation, false, _targetPosition, 1000, true] call ALIVE_fnc_taskGetReturnPosition;
         };
 
         if (count _returnPosition == 0) then {

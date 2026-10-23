@@ -210,6 +210,18 @@ switch (_taskState) do {
         };
         _destinationCenter set [2, 0];
 
+        // A Player FOB, a friendly base or a point the OP lead picked on the tablet map can be the meeting place
+        // instead of a settlement, which can be full of hostiles. The pickup stays where it is, and a FOB or
+        // base too close to it is passed over (NeisAEL and A. Ares on Discord, 23 Oct)
+        private _fixedEnd = [_taskSide, _task param [13, []], _sourceCenter, true, _sourceCenter,
+            ((missionNamespace getVariable ["ALIVE_taskMinDistance", 0]) max 1200), false] call ALIVE_fnc_taskGetReturnPosition;
+        _fixedEnd params ["_fixedPosition", "_fixedName"];
+        if (count _fixedPosition >= 2) then {
+            _destinationCenter = +_fixedPosition;
+            _destinationCenter set [2, 0];
+            _destinationClusterID = "";
+        };
+
         private _vipPosition = [_sourceCenter, 5, 20, 2, 0, 0.25, 0] call BIS_fnc_findSafePos;
         if (_vipPosition isEqualTo []) then {
             _vipPosition = +_sourceCenter;
@@ -261,7 +273,10 @@ switch (_taskState) do {
             _sourceTown = "the origin settlement";
         };
 
-        private _destinationTown = [_destinationCenter] call ALIVE_fnc_taskGetNearestLocationName;
+        private _destinationTown = _fixedName;
+        if (_destinationTown == "") then {
+            _destinationTown = [_destinationCenter] call ALIVE_fnc_taskGetNearestLocationName;
+        };
         if (_destinationTown == "") then {
             _destinationTown = "the destination settlement";
         };

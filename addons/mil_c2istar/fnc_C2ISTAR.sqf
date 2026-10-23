@@ -77,6 +77,9 @@ Peer Reviewed:
 // different one. Two gives something else at least twice before the same kind can return.
 #define DEFAULT_ORDER_REPEAT_BLOCK 2
 #define DEFAULT_VIP_PANIC_TIMEOUT 180
+// Task types the OP lead can Alt+click an end point for on the tablet map (#274; the hand-over tasks
+// from NeisAEL and A. Ares on Discord, 23 Oct)
+#define RETURN_POINT_TYPES ["Rescue","InformantExfiltration","VIPEscort","AidDelivery","SupplyConvoy"]
 // Seconds a downed pilot waits for rescue before the task, the pilot and his
 // strobe are cleared away. Never less than five minutes.
 #define DEFAULT_CSAR_TIMEOUT 1800
@@ -1885,6 +1888,11 @@ if (isServer) then {
         private _airliftChance = _logic getVariable ["aidAirliftChance", 0];
         if (_airliftChance isEqualType "") then { _airliftChance = parseNumber _airliftChance };
         missionNamespace setVariable ["ALIVE_aidAirliftChance", (_airliftChance max 0) min 100, true];
+        // Delivery Destination: where hand-over tasks end, a settlement as before, the nearest Player FOB or the
+        // nearest friendly base (NeisAEL and A. Ares on Discord, 23 Oct)
+        private _deliveryDestination = _logic getVariable ["deliveryDestination", "settlement"];
+        if !(_deliveryDestination in ["settlement", "fob", "base"]) then { _deliveryDestination = "settlement" };
+        missionNamespace setVariable ["ALIVE_taskDeliveryDestination", _deliveryDestination, true];
         missionNamespace setVariable ["ALIVE_civicDuplicateTaskPenalty", ((_civicDuplicateTaskPenalty max 0) min 1), true];
         missionNamespace setVariable ["ALIVE_civicDebugIntel", _civicDebugIntel, true];
         missionNamespace setVariable ["ALIVE_civicEnabledTaskFamilies", _civicEnabledTaskFamilies];
@@ -3875,12 +3883,14 @@ if (isServer) then {
 
                     // Alt+click picks where a rescued hostage is brought back (#274); a right button
                     // would fire on every right-drag pan. Left unset, the Rescue task uses the
-                    // side's AI Commander HQ as before.
+                    // side's AI Commander HQ as before. It also sets where an informant or a VIP is
+                    // taken, or where an aid run or a supply convoy sets off (NeisAEL and A. Ares on
+                    // Discord, 23 Oct).
                     if(_button == 0 && {_alt}) then {
 
                         private _statusText = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAddStatusText);
                         private _taskingState = [_logic,"taskingState"] call MAINCLASS;
-                        if (([_taskingState,"generateTypeListSelectedValue",""] call ALIVE_fnc_hashGet) != "Rescue") exitWith {
+                        if !(([_taskingState,"generateTypeListSelectedValue",""] call ALIVE_fnc_hashGet) in RETURN_POINT_TYPES) exitWith {
                             _statusText ctrlSetText localize "STR_ALIVE_C2ISTAR_UI_RETURN_ONLY_RESCUE";
                             _statusText ctrlSetTextColor [0.729,0.216,0.235,1];
                         };
@@ -3891,14 +3901,13 @@ if (isServer) then {
                         deleteMarkerLocal format["%1%2",MTEMPLATE,"return"];
                         _marker = createMarkerLocal [format["%1%2",MTEMPLATE,"return"],_position];
                         _marker setMarkerAlphaLocal 1;
-                        _marker setMarkerTextLocal "Return point";
                         _marker setMarkerTypeLocal "hd_pickup_noShadow";
                         _marker setMarkerColorLocal "ColorWhite";
 
                         ALiVE_C2ISTAR_taskReturnPoint = _position;
 
-                        _statusText ctrlSetText localize "STR_ALIVE_C2ISTAR_UI_RETURN_SET";
-                        _statusText ctrlSetTextColor [1,1,1,1];
+                        // labels the marker for the task type and says the point is set
+                        [_logic,"generateTaskReturnHint"] call MAINCLASS;
 
                     };
 
@@ -3998,9 +4007,9 @@ if (isServer) then {
 
                         // A return point picked on the map rides at 13; 11 and 12 belong to the
                         // commander's targets and claim key, so they go empty (#274).
-                        // Only a Rescue gets it: Destroy Vehicles, DCA and SEAD read 11 as their targets.
+                        // Only the RETURN_POINT_TYPES get it: Destroy Vehicles, DCA and SEAD read 11 as their targets.
                         if (!isNil "ALiVE_C2ISTAR_taskReturnPoint") then {
-                            if (_type == "Rescue") then {
+                            if (_type in RETURN_POINT_TYPES) then {
                                 _eventData append [[], [], ALiVE_C2ISTAR_taskReturnPoint];
                             };
                             ALiVE_C2ISTAR_taskReturnPoint = nil;
@@ -4665,13 +4674,21 @@ if (isServer) then {
 
     case "generateTaskReturnHint": {
 
-        // With Rescue picked, the status line says how to set where the hostage is brought
-        // back (#274); with another type it clears its own hint and leaves anything else.
+        // With Rescue or a hand-over task picked, the status line says how to set where it ends
+        // (#274); with another type it clears its own hint and leaves anything else.
         private _statusText = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAddStatusText);
         private _taskingState = [_logic,"taskingState"] call MAINCLASS;
         private _hints = [localize "STR_ALIVE_C2ISTAR_UI_RETURN_HINT", localize "STR_ALIVE_C2ISTAR_UI_RETURN_SET"];
+        private _type = [_taskingState,"generateTypeListSelectedValue",""] call ALIVE_fnc_hashGet;
 
-        if (([_taskingState,"generateTypeListSelectedValue",""] call ALIVE_fnc_hashGet) == "Rescue") then {
+        // The map point's label follows the task type, set here for an Alt+click and for a change of type:
+        // for an aid run or a supply convoy the point is where it sets off
+        private _returnMarker = format["%1%2",MTEMPLATE,"return"];
+        if (markerType _returnMarker != "") then {
+            _returnMarker setMarkerTextLocal (["Return point", "Pickup point"] select (_type in ["AidDelivery","SupplyConvoy"]));
+        };
+
+        if (_type in RETURN_POINT_TYPES) then {
             _statusText ctrlSetText (_hints select (!isNil "ALiVE_C2ISTAR_taskReturnPoint"));
             _statusText ctrlSetTextColor [1,1,1,1];
         } else {

@@ -754,7 +754,9 @@ switch (_taskState) do {
         // OPCOM is placed, fall back to the legacy friendly-cluster ->
         // random-safe-pos -> spawn-camp chain.
         if (_taskLocationType == "NULL") then {_taskLocationType = "MEDIUM";};
-        private _returnPosition = [_taskSide] call ALIVE_fnc_taskGetReturnPosition;
+        // C2ISTAR's Delivery Destination can send it to the nearest Player FOB or friendly base, never one
+        // within 1 km of the pilot
+        private _returnPosition = [_taskSide, [], _taskLocation, false, _taskLocation, 1000, true] call ALIVE_fnc_taskGetReturnPosition;
 
         if (count _returnPosition == 0) then {
             // legacy fallback - friendly cluster

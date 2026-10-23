@@ -126,6 +126,20 @@ class CfgVehicles {
                             defaultValue = """0""";
                             typeName = "NUMBER";
                     };
+                    // Where hand-over tasks end (NeisAEL and A. Ares on Discord, 23 Oct)
+                    class deliveryDestination : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_deliveryDestination";
+                            displayName = "$STR_ALIVE_C2ISTAR_DELIVERY_DESTINATION";
+                            tooltip = "$STR_ALIVE_C2ISTAR_DELIVERY_DESTINATION_COMMENT";
+                            defaultValue = """settlement""";
+                            class Values
+                            {
+                                    class Settlement { name = "Nearest settlement"; value = "settlement"; };
+                                    class FOB        { name = "Nearest Player FOB"; value = "fob"; };
+                                    class Base       { name = "Nearest friendly base"; value = "base"; };
+                            };
+                    };
                     class taskBlacklist : Edit
                     {
                             property = "ALiVE_MIL_C2ISTAR_taskBlacklist";

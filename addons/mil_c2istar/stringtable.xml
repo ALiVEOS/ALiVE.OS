@@ -1943,6 +1943,26 @@
     <Russian>Минимальное расстояние по всей миссии от игрока при выборе локаций для автоматически сгенерированных задач Ближней / Средней / Дальней дистанции; для задач Конвой снабжения, Сопровождение VIP и Эвакуация информатора оно также задаёт минимальную длину маршрута. 0 отключает его для большинства задач, но Конвой снабжения, Открытие рынка, Партнёрство на блокпосту и Охрана общественного мероприятия в этом случае стремятся к 4-6 км, а Сопровождение VIP и Эвакуация информатора к 4 км. Для Сопровождения VIP и Эвакуации информатора любое другое значение меньше 1200 м считается равным 1200 м.</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_C2ISTAR_DELIVERY_DESTINATION">
+    <English>Delivery Destination:</English>
+    <Chinese>交付目的地:</Chinese>
+    <Chinesesimp>交付目的地:</Chinesesimp>
+    <Spanish>Destino de Entrega:</Spanish>
+    <French>Destination de livraison :</French>
+    <Portuguese>Destino de Entrega:</Portuguese>
+    <Russian>Пункт доставки:</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_C2ISTAR_DELIVERY_DESTINATION_COMMENT">
+    <English>Where Informant Exfiltration and VIP Escort take their passenger, where Rescue and CSAR bring theirs back, and where Aid Delivery and Supply Convoy set off. Nearest settlement keeps the old choice. Nearest Player FOB uses the side's closest active Player FOB; Nearest friendly base also takes an objective the side's AI Commander holds. Both fall back to the AI Commander HQ, then to a settlement, and pass over a FOB or base too close to the pickup. An Alt+click on the tablet's task map always comes first.</English>
+    <Chinese>線人撤離與 VIP 護送任務把人送往何處、營救與戰鬥搜救任務把人帶回何處,以及援助運送與補給車隊從何處出發。「最近的聚落」保留舊有選擇。「最近的玩家 FOB」使用該陣營最近的啟用中玩家 FOB;「最近的友方基地」也會採用該陣營 AI 指揮官所控制的目標。兩者都會先退回 AI 指揮官總部,再退回聚落,並略過離接應點太近的 FOB 或基地。在平板任務地圖上 Alt+點擊永遠優先。</Chinese>
+    <Chinesesimp>线人撤离和 VIP 护送任务把人送往何处、营救和战斗搜救任务把人带回何处,以及援助运送和补给车队从何处出发。“最近的聚落”保留旧有选择。“最近的玩家 FOB”使用该阵营最近的启用中玩家 FOB;“最近的友方基地”也会采用该阵营 AI 指挥官所控制的目标。两者都会先退回 AI 指挥官总部,再退回聚落,并跳过离接应点太近的 FOB 或基地。在平板任务地图上 Alt+点击始终优先。</Chinesesimp>
+    <Spanish>Adónde llevan a su pasajero Exfiltración de Informante y Escolta de VIP, adónde traen de vuelta al suyo Rescate y CSAR, y desde dónde parten Entrega de Ayuda y Convoy de Suministros. Asentamiento más cercano mantiene la elección anterior. FOB de jugadores más cercana usa la FOB de jugadores activa más próxima del bando; Base amiga más cercana también acepta un objetivo que tiene el Comandante IA del bando. Ambas recurren al cuartel general del Comandante IA y luego a un asentamiento, y descartan una FOB o base demasiado cerca de la recogida. Un Alt+clic en el mapa de tareas de la tableta siempre tiene prioridad.</Spanish>
+    <French>Où Exfiltration d'informateur et Escorte de VIP emmènent leur passager, où Sauvetage et CSAR ramènent le leur, et d'où partent Livraison d'aide et Convoi de ravitaillement. Localité la plus proche garde l'ancien choix. FOB joueur la plus proche utilise la FOB joueur active la plus proche du camp ; Base amie la plus proche accepte aussi un objectif tenu par le Commandant IA du camp. Les deux se rabattent sur le QG du Commandant IA, puis sur une localité, et écartent une FOB ou une base trop proche du point de prise en charge. Un Alt+clic sur la carte des tâches de la tablette passe toujours en premier.</French>
+    <Portuguese>Para onde Exfiltração de Informante e Escolta de VIP levam o seu passageiro, para onde Resgate e CSAR trazem o seu de volta, e de onde partem Entrega de Ajuda e Comboio de Suprimentos. Povoação mais próxima mantém a escolha antiga. FOB de jogadores mais próxima usa a FOB de jogadores ativa mais próxima do lado; Base amiga mais próxima também aceita um objetivo que o Comandante IA do lado controla. Ambas recorrem ao QG do Comandante IA e depois a uma povoação, e ignoram uma FOB ou base demasiado perto da recolha. Um Alt+clique no mapa de tarefas do tablet tem sempre prioridade.</Portuguese>
+    <Russian>Куда задачи Эвакуация информатора и Сопровождение VIP везут пассажира, куда Спасение и CSAR возвращают своих, и откуда выходят Доставка помощи и Конвой снабжения. Ближайший населённый пункт сохраняет прежний выбор. Ближайший FOB игроков берёт ближайший действующий FOB игроков этой стороны; Ближайшая дружественная база также принимает цель, которую удерживает ИИ-командир стороны. Оба варианта при необходимости переходят к штабу ИИ-командира, затем к населённому пункту, и пропускают FOB или базу слишком близко к точке подбора. Alt+щелчок по карте задач на планшете всегда имеет приоритет.</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_VIP_PANIC_TIMEOUT">
     <English>VIP Panic Timeout (s):</English>
     <Chinese>VIP 恐慌逾時(秒):</Chinese>
@@ -2707,31 +2727,31 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_UI_RETURN_ONLY_RESCUE">
-    <English>A return point is only for a Rescue task</English>
-    <Chinesesimp>返回点仅用于营救任务</Chinesesimp>
-    <Chinese>返回點僅用於營救任務</Chinese>
-    <Spanish>Un punto de regreso solo sirve para una tarea de rescate</Spanish>
-    <French>Un point de retour ne sert qu'à une tâche de sauvetage</French>
-    <Portuguese>Um ponto de regresso só serve para uma tarefa de resgate</Portuguese>
-    <Russian>Точка возврата нужна только для задачи спасения</Russian>
+    <English>A map point is only for Rescue, Informant Exfiltration, VIP Escort, Aid Delivery and Supply Convoy tasks</English>
+    <Chinesesimp>地图点仅用于营救、线人撤离、VIP 护送、援助运送和补给车队任务</Chinesesimp>
+    <Chinese>地圖點僅用於營救、線人撤離、VIP 護送、援助運送與補給車隊任務</Chinese>
+    <Spanish>Un punto en el mapa solo sirve para tareas de Rescate, Exfiltración de Informante, Escolta de VIP, Entrega de Ayuda y Convoy de Suministros</Spanish>
+    <French>Un point sur la carte ne sert qu'aux tâches Sauvetage, Exfiltration d'informateur, Escorte de VIP, Livraison d'aide et Convoi de ravitaillement</French>
+    <Portuguese>Um ponto no mapa só serve para tarefas de Resgate, Exfiltração de Informante, Escolta de VIP, Entrega de Ajuda e Comboio de Suprimentos</Portuguese>
+    <Russian>Точка на карте нужна только для задач Спасение, Эвакуация информатора, Сопровождение VIP, Доставка помощи и Конвой снабжения</Russian>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_UI_RETURN_SET">
-    <English>Return point set for a Rescue task</English>
-    <Chinesesimp>已为营救任务设置返回点</Chinesesimp>
-    <Chinese>已為營救任務設定返回點</Chinese>
-    <Spanish>Punto de regreso fijado para la tarea de rescate</Spanish>
-    <French>Point de retour défini pour la tâche de sauvetage</French>
-    <Portuguese>Ponto de regresso definido para a tarefa de resgate</Portuguese>
-    <Russian>Точка возврата для задачи спасения задана</Russian>
+    <English>Map point set for this task</English>
+    <Chinesesimp>已为此任务设置地图点</Chinesesimp>
+    <Chinese>已為此任務設定地圖點</Chinese>
+    <Spanish>Punto en el mapa fijado para esta tarea</Spanish>
+    <French>Point sur la carte défini pour cette tâche</French>
+    <Portuguese>Ponto no mapa definido para esta tarefa</Portuguese>
+    <Russian>Точка на карте для этой задачи задана</Russian>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_UI_RETURN_HINT">
-    <English>Rescue: Alt+click the map to set the return point</English>
-    <Chinesesimp>营救：Alt+点击地图设置返回点</Chinesesimp>
-    <Chinese>營救：Alt+點擊地圖設定返回點</Chinese>
-    <Spanish>Rescate: Alt+clic en el mapa para fijar el punto de regreso</Spanish>
-    <French>Sauvetage : Alt+clic sur la carte pour définir le point de retour</French>
-    <Portuguese>Resgate: Alt+clique no mapa para definir o ponto de regresso</Portuguese>
-    <Russian>Спасение: Alt+щелчок по карте задаёт точку возврата</Russian>
+    <English>Alt+click the map to set where the hostage or passenger is taken, or where the aid or convoy sets off</English>
+    <Chinesesimp>Alt+点击地图，设置人质或乘客被送往的地点，或援助、车队的出发地点</Chinesesimp>
+    <Chinese>Alt+點擊地圖，設定人質或乘客被送往的地點，或援助、車隊的出發地點</Chinese>
+    <Spanish>Alt+clic en el mapa para fijar adónde se lleva al rehén o pasajero, o desde dónde parte la ayuda o el convoy</Spanish>
+    <French>Alt+clic sur la carte pour définir où l'otage ou le passager est emmené, ou d'où part l'aide ou le convoi</French>
+    <Portuguese>Alt+clique no mapa para definir para onde o refém ou passageiro é levado, ou de onde parte a ajuda ou o comboio</Portuguese>
+    <Russian>Alt+щелчок по карте задаёт, куда доставить заложника или пассажира, или откуда выходит помощь или конвой</Russian>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_UI_CURRENT_TASKS">
     <English>Current Tasks</English>

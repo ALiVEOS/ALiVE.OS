@@ -113,8 +113,27 @@ switch (_taskState) do {
         };
         _sourceCenter set [2, 0];
 
+        // A Player FOB, a friendly base or a point the OP lead picked on the tablet map can be where the aid is
+        // collected. The settlement that asked for it stays the destination, so the Hearts and Minds effect
+        // still lands there; a FOB or base in the settlement itself is passed over (NeisAEL and A. Ares on
+        // Discord, 23 Oct)
+        private _fixedEnd = [_taskSide, _task param [13, []], _clusterCenter, true, _clusterCenter, 500, false] call ALIVE_fnc_taskGetReturnPosition;
+        _fixedEnd params ["_fixedPosition", "_fixedName"];
+        if (count _fixedPosition >= 2) then {
+            _sourceCenter = +_fixedPosition;
+            _sourceCenter set [2, 0];
+            // a FOB's position is its hub building, often off the road: start from the nearest road within 150 m
+            // so the van has a road to spawn on and is not placed among the FOB's objects
+            private _road = [_sourceCenter, 150] call BIS_fnc_nearestRoad;
+            if !(isNull _road) then {
+                _sourceCenter = getPosATL _road;
+                _sourceCenter set [2, 0];
+            };
+        };
+
         private _sourceContactPosition = [_sourceCenter, 5, 25, 2, 0, 0.25, 0] call BIS_fnc_findSafePos;
-        if (_sourceContactPosition isEqualTo []) then {
+        // a failed search returns the map's centre, not []: likely beside a FOB's buildings, so check the distance
+        if (_sourceContactPosition isEqualTo [] || {(_sourceContactPosition distance2D _sourceCenter) > 60}) then {
             _sourceContactPosition = +_sourceCenter;
         };
 
@@ -215,7 +234,10 @@ switch (_taskState) do {
 
         private _completionVar = format ["ALIVE_Task_%1_AidDelivered", _taskID];
 
-        private _sourceTown = [_sourceCenter] call ALIVE_fnc_taskGetNearestLocationName;
+        private _sourceTown = _fixedName;
+        if (_sourceTown == "") then {
+            _sourceTown = [_sourceCenter] call ALIVE_fnc_taskGetNearestLocationName;
+        };
         if (_sourceTown == "") then {
             _sourceTown = "the friendly depot";
         };

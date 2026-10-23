@@ -99,6 +99,27 @@ switch (_taskState) do {
         private _sourceClusterID = [_sourceCluster, "clusterID", ""] call ALIVE_fnc_hashGet;
         if (_sourceCenter isEqualTo []) exitWith {["C2ISTAR - Task SupplyConvoy - Invalid source cluster center!"] call ALiVE_fnc_Dump};
 
+        // A Player FOB, a friendly base or a point the OP lead picked on the tablet map can be where the convoy
+        // sets off. The settlement the task was asked for then becomes the destination when it is far enough
+        // away; otherwise one is chosen from the pickup as before (NeisAEL and A. Ares on Discord, 23 Oct)
+        private _aoCenter = +_sourceCenter;
+        private _aoClusterID = _sourceClusterID;
+        private _fixedEnd = [_taskSide, _task param [13, []], _sourceCenter, true, [], 0, false] call ALIVE_fnc_taskGetReturnPosition;
+        _fixedEnd params ["_fixedPosition", "_fixedName"];
+        private _fixedPickup = count _fixedPosition >= 2;
+        if (_fixedPickup) then {
+            _sourceCenter = +_fixedPosition;
+            _sourceCenter set [2, 0];
+            _sourceClusterID = "";
+            // a FOB's position is its hub building, often off the road: start from the nearest road within 150 m
+            // so the van has a road to spawn on and is not placed among the FOB's objects
+            private _road = [_sourceCenter, 150] call BIS_fnc_nearestRoad;
+            if !(isNull _road) then {
+                _sourceCenter = getPosATL _road;
+                _sourceCenter set [2, 0];
+            };
+        };
+
         private _destinationClusterData = [_sourceCenter, "Long", _taskSide, 20, 100000, _taskFaction, _tasksCurrent] call ALIVE_fnc_taskGetCivilianCluster;
         if (_destinationClusterData isEqualTo []) then {
             _destinationClusterData = [_taskLocation, "Long", _taskSide, 20, 100000, _taskFaction, _tasksCurrent] call ALIVE_fnc_taskGetCivilianCluster;
@@ -124,10 +145,15 @@ switch (_taskState) do {
                 _destinationCenter = [_sourceCenter, _minDistance, random 360] call BIS_fnc_relPos;
             };
         };
+        if (_fixedPickup && {(_aoCenter distance2D _sourceCenter) >= _minDistance}) then {
+            _destinationCenter = +_aoCenter;
+            _destinationClusterID = _aoClusterID;
+        };
         _destinationCenter set [2, 0];
 
         private _sourceContactPosition = [_sourceCenter, 5, 25, 2, 0, 0.25, 0] call BIS_fnc_findSafePos;
-        if (_sourceContactPosition isEqualTo []) then {
+        // a failed search returns the map's centre, not []: likely beside a FOB's buildings, so check the distance
+        if (_sourceContactPosition isEqualTo [] || {(_sourceContactPosition distance2D _sourceCenter) > 60}) then {
             _sourceContactPosition = +_sourceCenter;
         };
 
@@ -206,7 +232,10 @@ switch (_taskState) do {
 
         private _completionVar = format ["ALIVE_Task_%1_ConvoyDelivered", _taskID];
 
-        private _sourceTown = [_sourceCenter] call ALIVE_fnc_taskGetNearestLocationName;
+        private _sourceTown = _fixedName;
+        if (_sourceTown == "") then {
+            _sourceTown = [_sourceCenter] call ALIVE_fnc_taskGetNearestLocationName;
+        };
         if (_sourceTown == "") then {
             _sourceTown = "the departure settlement";
         };
