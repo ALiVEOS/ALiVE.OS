@@ -56,6 +56,17 @@ if(count _sideSectors > 0) then {
         };
     };
 
+    // Maximum Task Distance (TheLogatron on Discord, 23 Oct): only those within it of the player; none within
+    // it (blacklisted spots aside), the whole list stays and the nearest beyond is used, as Minimum Task Distance falls back
+    private _maxDistance = missionNamespace getVariable ["ALIVE_taskMaxDistance", 0];
+    if (_taskLocationType in ["Short", "Medium", "Long"] && {_maxDistance > 0} && {count _candidateSectors > 0}) then {
+        private _bl = missionNamespace getVariable ["ALIVE_taskBlacklistMarkers", []];
+        private _within = _candidateSectors select { private _p = [_x, "position", []] call ALIVE_fnc_hashGet; _p isNotEqualTo [] && {(_taskLocation distance2D _p) <= _maxDistance} && {(_bl findIf { _p inArea _x }) < 0} };
+        _candidateSectors = if (_within isEqualTo []) then {
+            ["C2ISTAR - nothing within Maximum Task Distance %1 of %2, so the nearest beyond it is used", _maxDistance, mapGridPosition _taskLocation] call ALiVE_fnc_dump; _candidateSectors
+        } else { _within };
+    };
+
     _countSectors = count _candidateSectors;
 
     if(_countSectors > 0) then {

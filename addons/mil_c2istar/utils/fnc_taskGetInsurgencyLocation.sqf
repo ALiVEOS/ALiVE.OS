@@ -98,6 +98,17 @@ if(count _objectives > 0) then {
         };
     };
 
+    // Maximum Task Distance (TheLogatron on Discord, 23 Oct): only those within it of the player; none within
+    // it (blacklisted spots aside), the whole list stays and the nearest beyond is used, as Minimum Task Distance falls back
+    private _maxDistance = missionNamespace getVariable ["ALIVE_taskMaxDistance", 0];
+    if (_taskLocationType in ["Short", "Medium", "Long"] && {_maxDistance > 0} && {count _sortedObjectives > 0}) then {
+        private _bl = missionNamespace getVariable ["ALIVE_taskBlacklistMarkers", []];
+        private _within = _sortedObjectives select { private _p = _x select 1; _p isNotEqualTo [] && {(_taskLocation distance2D _p) <= _maxDistance} && {(_bl findIf { _p inArea _x }) < 0} };
+        _sortedObjectives = if (_within isEqualTo []) then {
+            ["C2ISTAR - nothing within Maximum Task Distance %1 of %2, so the nearest beyond it is used", _maxDistance, mapGridPosition _taskLocation] call ALiVE_fnc_dump; _sortedObjectives
+        } else { _within };
+    };
+
     // Areas the mission keeps generated tasks out of (Task Blacklist on the C2ISTAR module, #729).
     private _taskBlacklist = missionNamespace getVariable ["ALIVE_taskBlacklistMarkers", []];
     if (_taskBlacklist isNotEqualTo []) then {

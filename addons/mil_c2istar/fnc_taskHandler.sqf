@@ -613,6 +613,19 @@ switch (_operation) do {
                     _player = objNull;
                 };
 
+                // With a Maximum Task Distance set, the next task is built round the player nearest where the last one was
+                // built, so tasks lead one group across the map in steps rather than swapping between groups far apart
+                // (TheLogatron on Discord, 23 Oct). Otherwise a player taking auto tasks is picked at random, as before
+                private _lastAnchorVar = format ["ALiVE_c2istar_autoAnchor_%1", _taskSide];
+                if (isNull _player && {count _taskPlayerIDs > 0} && {(missionNamespace getVariable ["ALIVE_taskMaxDistance", 0]) > 0}) then {
+                    private _last = missionNamespace getVariable [_lastAnchorVar, []];
+                    if (_last isNotEqualTo []) then {
+                        private _cands = (_taskPlayerIDs apply { [_x] call ALIVE_fnc_getPlayerByUID }) select { !isNull _x };
+                        if (_cands isNotEqualTo []) then {
+                            _player = ([_cands, [], { _x distance2D _last }, "ASCEND"] call ALiVE_fnc_SortBy) select 0;
+                        };
+                    };
+                };
                 if (isNull _player && {count _taskPlayerIDs > 0}) then {
                     _player = [selectRandom _taskPlayerIDs] call ALIVE_fnc_getPlayerByUID;
                 };
@@ -621,6 +634,7 @@ switch (_operation) do {
                     _taskLocation = position _player;
                     _requestPlayerID = getPlayerUID _player;
                     _taskFaction = faction _player;
+                    missionNamespace setVariable [_lastAnchorVar, +_taskLocation];
                 };
 
                 private _tasksCurrent = ([_logic, "tasks", ["", [], [], nil]] call ALIVE_fnc_hashGet) select 2;

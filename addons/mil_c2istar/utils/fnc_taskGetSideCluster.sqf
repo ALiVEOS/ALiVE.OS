@@ -75,6 +75,17 @@ if(count _sideClusters > 0) then {
         };
     };
 
+    // Maximum Task Distance (TheLogatron on Discord, 23 Oct): only those within it of the player; none within
+    // it (blacklisted spots aside), the whole list stays and the nearest beyond is used, as Minimum Task Distance falls back
+    private _maxDistance = missionNamespace getVariable ["ALIVE_taskMaxDistance", 0];
+    if (_taskLocationType in ["Short", "Medium", "Long"] && {_maxDistance > 0} && {count _candidateClusters > 0}) then {
+        private _bl = missionNamespace getVariable ["ALIVE_taskBlacklistMarkers", []];
+        private _within = _candidateClusters select { private _p = [_x, "position", []] call ALIVE_fnc_hashGet; _p isNotEqualTo [] && {(_taskLocation distance2D _p) <= _maxDistance} && {(_bl findIf { _p inArea _x }) < 0} };
+        _candidateClusters = if (_within isEqualTo []) then {
+            ["C2ISTAR - nothing within Maximum Task Distance %1 of %2, so the nearest beyond it is used", _maxDistance, mapGridPosition _taskLocation] call ALiVE_fnc_dump; _candidateClusters
+        } else { _within };
+    };
+
     // Clusters another task already holds are left out. A caller that passes no list sees
     // no change. If every cluster is held the result is empty, the same as a side holding
     // none, and the callers already fall back from there.

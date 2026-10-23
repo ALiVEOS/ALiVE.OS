@@ -126,6 +126,15 @@ class CfgVehicles {
                             defaultValue = """0""";
                             typeName = "NUMBER";
                     };
+                    // Generated tasks no further than this from the player (TheLogatron on Discord, 23 Oct)
+                    class taskMaxDistance : Edit
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_taskMaxDistance";
+                            displayName = "$STR_ALIVE_C2ISTAR_TASK_MAX_DISTANCE";
+                            tooltip = "$STR_ALIVE_C2ISTAR_TASK_MAX_DISTANCE_COMMENT";
+                            defaultValue = """0""";
+                            typeName = "NUMBER";
+                    };
                     // Where hand-over tasks end (NeisAEL and A. Ares on Discord, 23 Oct)
                     class deliveryDestination : Combo
                     {

@@ -73,6 +73,7 @@ Peer Reviewed:
 // Default sector-update interval, in MINUTES (case "runEvery" multiplies by 60 to seconds)
 #define DEFAULT_RUN_EVERY 2
 #define DEFAULT_TASK_MIN_DISTANCE 0
+#define DEFAULT_TASK_MAX_DISTANCE 0
 // How many requests back a kind of order stays ruled out for when a player asks for a
 // different one. Two gives something else at least twice before the same kind can return.
 #define DEFAULT_ORDER_REPEAT_BLOCK 2
@@ -860,6 +861,19 @@ switch(_operation) do {
 
         _result = _logic getVariable ["taskMinDistance", DEFAULT_TASK_MIN_DISTANCE];
         // Module attribute system may store value as string — coerce to scalar
+        if (typeName _result == "STRING") then { _result = parseNumber _result; };
+    };
+    // Maximum Task Distance (TheLogatron on Discord, 23 Oct): generated tasks no further than this from the player
+    case "taskMaxDistance": {
+        if (typeName _args == "STRING") then {
+            _args = parseNumber _args;
+        };
+        if (typeName _args == "SCALAR") then {
+            _args = (_args max 0);
+            _logic setVariable ["taskMaxDistance", _args];
+        };
+
+        _result = _logic getVariable ["taskMaxDistance", DEFAULT_TASK_MAX_DISTANCE];
         if (typeName _result == "STRING") then { _result = parseNumber _result; };
     };
     case "vipPanicTimeout": {
@@ -1860,6 +1874,7 @@ if (isServer) then {
 };
 
         private _taskMinDistance = [_logic, "taskMinDistance"] call MAINCLASS;
+        private _taskMaxDistance = [_logic, "taskMaxDistance"] call MAINCLASS;
         private _vipPanicTimeout = [_logic, "vipPanicTimeout"] call MAINCLASS;
         private _csarTimeout = [_logic, "csarTimeout"] call MAINCLASS;
         private _filterEnemyFactions = [_logic, "filterEnemyFactions"] call MAINCLASS;
@@ -1924,6 +1939,12 @@ if (isServer) then {
         } forEach _allCivicTasks;
 
         missionNamespace setVariable ["ALIVE_taskMinDistance", (_taskMinDistance max 0), true];
+        // a maximum not above the minimum would leave nothing in range: ignored, and said so
+        if (_taskMaxDistance > 0 && {_taskMinDistance > 0} && {_taskMaxDistance <= _taskMinDistance}) then {
+            ["C2ISTAR - Maximum Task Distance %1 is not above Minimum Task Distance %2, so it is ignored", _taskMaxDistance, _taskMinDistance] call ALiVE_fnc_dump;
+            _taskMaxDistance = 0;
+        };
+        missionNamespace setVariable ["ALIVE_taskMaxDistance", (_taskMaxDistance max 0), true];
 
         // Task Blacklist (#729): marker names, comma separated. Generated tasks don't pick a target
         // inside any of them. A name with no marker is reported once and left out.

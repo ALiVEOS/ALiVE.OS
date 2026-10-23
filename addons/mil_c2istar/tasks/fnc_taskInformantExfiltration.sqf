@@ -258,11 +258,27 @@ switch (_taskState) do {
         if (_minDistance <= 0) then {
             _minDistance = 4000;
         };
-        if (_destinationCenter isEqualTo [] || {_destinationCenter distance2D _sourceCenter < (_minDistance max 1200)} || {_destinationClusterID == _sourceClusterID}) then {
-            _destinationCenter = [_sourceCenter, (_minDistance max 2000), (_minDistance max 2000) + 5000, 2, 0, 0.25, 0, [], [_sourceCenter]] call BIS_fnc_findSafePos;
+        // Maximum Task Distance (TheLogatron on Discord, 23 Oct): with no minimum set, a route of half the cap at least
+        // rather than the 4 to 6 km default, and no floor or search ring past the cap
+        private _capR = missionNamespace getVariable ["ALIVE_taskMaxDistance", 0];
+        if (_capR > 0 && {(missionNamespace getVariable ["ALIVE_taskMinDistance", 0]) <= 0}) then { _minDistance = _capR * 0.5 };
+        if (_capR <= 0) then { _capR = 1e9 };
+        if (_destinationCenter isEqualTo [] || {_destinationCenter distance2D _sourceCenter < ((_minDistance max 1200) min _capR)} || {_destinationClusterID == _sourceClusterID}) then {
+            _destinationCenter = [_sourceCenter, ((_minDistance max 2000) min _capR), (((_minDistance max 2000) + 5000) min _capR), 2, 0, 0.25, 0, [], [_sourceCenter]] call BIS_fnc_findSafePos;
             if (_destinationCenter isEqualTo []) then {
-                _destinationCenter = [_sourceCenter, (_minDistance max 3000), random 360] call BIS_fnc_relPos;
+                _destinationCenter = [_sourceCenter, ((_minDistance max 3000) min _capR), random 360] call BIS_fnc_relPos;
             };
+        };
+        // Maximum Task Distance (TheLogatron on Discord, 23 Oct): the route no longer than it
+        private _maxDistance = missionNamespace getVariable ["ALIVE_taskMaxDistance", 0];
+        if (_maxDistance > 0 && {_destinationCenter isNotEqualTo []} && {(_destinationCenter distance2D _sourceCenter) > _maxDistance}) then {
+            private _capped = [_sourceCenter, _maxDistance * 0.5, _maxDistance, 2, 0, 0.25, 0, [], [_sourceCenter]] call BIS_fnc_findSafePos;
+            // a failed search gives back its default (the pickup itself): only a spot 0.4 to 1 times the cap out counts
+            if (_capped isEqualTo [] || {(_capped distance2D _sourceCenter) > _maxDistance} || {(_capped distance2D _sourceCenter) < _maxDistance * 0.4}) then {
+                _capped = [_sourceCenter, _maxDistance * 0.75, random 360] call BIS_fnc_relPos;
+            };
+            _destinationCenter = _capped;
+            _destinationClusterID = "";
         };
         _destinationCenter set [2, 0];
 

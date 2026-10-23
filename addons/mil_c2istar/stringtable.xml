@@ -1975,6 +1975,12 @@
     <Portuguese>Distância mínima em relação ao jogador, válida para toda a missão, ao escolher locais de tarefas Curta / Média / Longa geradas automaticamente; para Comboio de Suprimentos, Escolta de VIP e Exfiltração de Informante também define o comprimento mínimo da rota. 0 a desativa para a maioria das tarefas, mas Comboio de Suprimentos, Reabertura do Mercado, Parceria de Posto de Controle e Segurança de Evento Comunitário passam a buscar de 4 a 6 km, e Escolta de VIP e Exfiltração de Informante, 4 km. Para Escolta de VIP e Exfiltração de Informante, qualquer outro valor abaixo de 1200 m conta como 1200 m.</Portuguese>
     <Russian>Минимальное расстояние по всей миссии от игрока при выборе локаций для автоматически сгенерированных задач Ближней / Средней / Дальней дистанции; для задач Конвой снабжения, Сопровождение VIP и Эвакуация информатора оно также задаёт минимальную длину маршрута. 0 отключает его для большинства задач, но Конвой снабжения, Открытие рынка, Партнёрство на блокпосту и Охрана общественного мероприятия в этом случае стремятся к 4-6 км, а Сопровождение VIP и Эвакуация информатора к 4 км. Для Сопровождения VIP и Эвакуации информатора любое другое значение меньше 1200 м считается равным 1200 м.</Russian>
 </Key>
+<Key ID="STR_ALIVE_C2ISTAR_TASK_MAX_DISTANCE">
+    <English>Maximum Task Distance (m):</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_TASK_MAX_DISTANCE_COMMENT">
+    <English>How far from the players generated tasks may be, so they lead players across the map in steps instead of jumping from one edge to the other. Auto-generated and Short / Medium / Long tasks are picked within this distance of the player they're built round, and the next auto task is built round the player nearest the last one. Supply Convoy, VIP Escort and Informant Exfiltration keep their drop-off within it of the pickup, so a drop-off can be up to twice this from you; a FOB, base or picked point chosen as Delivery Destination is used wherever it is. If nothing is in range, the nearest beyond it is used. 0 (the default) is off; it must be above Minimum Task Distance. Not capped: Sabotage, Clear an IED, Wiretap, the air tasks, Capture and Protect a Convoy.</English>
+</Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_DELIVERY_DESTINATION">
     <English>Delivery Destination:</English>

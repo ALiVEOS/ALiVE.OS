@@ -174,6 +174,10 @@ switch (_taskState) do {
         if (_minDistance <= 0) then {
             _minDistance = 4000 + floor (random 2000);
         };
+        // Maximum Task Distance set and no minimum: pushed out to half the cap at most, not 4 to 6 km (TheLogatron on Discord, 23 Oct)
+        if ((missionNamespace getVariable ["ALIVE_taskMaxDistance", 0]) > 0 && {(missionNamespace getVariable ["ALIVE_taskMinDistance", 0]) <= 0}) then {
+            _minDistance = _minDistance min ((missionNamespace getVariable ["ALIVE_taskMaxDistance", 0]) * 0.5);
+        };
 
         if (_taskLocationType in ["Short", "Medium", "Long"] && {_taskLocation distance2D _clusterCenter < _minDistance}) then {
             private _longClusterData = [_taskLocation, "Long", _taskSide, 15, 85, _taskFaction, _tasksCurrent] call ALIVE_fnc_taskGetCivilianCluster;
