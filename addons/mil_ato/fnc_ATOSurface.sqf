@@ -401,9 +401,11 @@ switch(_operation) do {
 
     // Everything about one carrier's deck, worked out once and kept.
     //
-    // Returns [deckLevelASL, landFrom, landTo, taxiSegments, spots, partClasses]
-    // where the land and taxi geometry and the spots are all in the SHIP's own
-    // model space, so every later test happens in one frame.
+    // Returns [deckLevelASL, landFrom, landTo, taxiSegments, spots, partClasses,
+    // bowRelativeHeading] where the land and taxi geometry and the spots are all
+    // in the SHIP's own model space, so every later test happens in one frame.
+    // The last entry is where the bow points relative to the ship's getDir: 180
+    // on a USS Freedom, whose getDir points at its stern.
     //
     // The spots are ordered by how far they are from the landing strip, the
     // farthest first. That is where aircraft are actually parked on a carrier,
@@ -455,6 +457,10 @@ switch(_operation) do {
                 private _landA = [];
                 private _landB = [];
                 private _taxi = [];
+                // The bow's heading relative to the ship's getDir. Zero, the
+                // old assumption, when the ship carries no landing data to
+                // read it from.
+                private _bowRel = 0;
                 if (!isNull _airObj) then {
                     private _ac = configFile >> "CfgVehicles" >> typeOf _airObj;
                     // The airport object has its own model space. Converted
@@ -478,6 +484,29 @@ switch(_operation) do {
                         private _dy = _idir select 2;
                         _landA = [(_ils select 0) - (_dx * 400), (_ils select 1) - (_dy * 400)] call _fnc_toShip;
                         _landB = [(_ils select 0) + (_dx * 400), (_ils select 1) + (_dy * 400)] call _fnc_toShip;
+
+                        // Which way the bow is. ilsDirection points from the
+                        // threshold back up the glide slope (its height part is
+                        // the 3 degree slope, and positive), so an aircraft
+                        // LANDS the opposite way, and a carrier is landed on
+                        // towards the bow. Snapped to the ship's own axis, since
+                        // the strip is angled eight degrees off it.
+                        //
+                        // A USS Freedom's getDir points at its STERN: its model
+                        // runs bow at y -190, stern at +190, with the threshold
+                        // at y +125 and the island at x -30, which is starboard
+                        // only with the bow at minus y. The engine's own
+                        // catapult lock says the same (getDir part - dirOffset
+                        // - 180, fn_carrier01catapultlockto.sqf). Taking the
+                        // ship's getDir as the bow parked every aircraft facing
+                        // aft.
+                        private _lA = [_ils select 0, _ils select 1] call _fnc_toShip;
+                        private _lB = [(_ils select 0) - _dx, (_ils select 1) - _dy] call _fnc_toShip;
+                        private _ldx = (_lB select 0) - (_lA select 0);
+                        private _ldy = (_lB select 1) - (_lA select 1);
+                        if ((abs _ldx) + (abs _ldy) > 0) then {
+                            _bowRel = if (_ldy < 0) then { 180 } else { 0 };
+                        };
                     };
                     {
                         private _flat = getArray (_ac >> _x);
@@ -534,11 +563,11 @@ switch(_operation) do {
                 // Timed because this is hundreds of traces in one go and a
                 // caller may be unscheduled, in which case they all land in
                 // one frame. It happens once per ship and the answer is kept.
-                ["ALIVE_fnc_ATOSurface - %1: deck at %2 m, %3 parking offsets, %4 taxi segments, worked out in %5 ms",
-                    typeOf _ship, round _deckZ, count _spots, count _taxi,
+                ["ALIVE_fnc_ATOSurface - %1: deck at %2 m, %3 parking offsets, %4 taxi segments, bow at %5 from its heading, worked out in %6 ms",
+                    typeOf _ship, round _deckZ, count _spots, count _taxi, _bowRel,
                     round (((diag_tickTime - _began) * 1000))] call ALiVE_fnc_dump;
 
-                _result = [_deckZ, _landA, _landB, _taxi, _spots, _partClasses];
+                _result = [_deckZ, _landA, _landB, _taxi, _spots, _partClasses, _bowRel];
                 [_decks, _key, _result] call ALIVE_fnc_hashSet;
             };
         };
@@ -865,6 +894,8 @@ switch(_operation) do {
                 private _geom = [_logic, "deckGeometry", _ship] call MAINCLASS;
                 private _deckZ = _geom param [0, -9999];
                 private _spots = _geom param [4, []];
+                private _bowRel = _geom param [6, 0];
+                if !(_bowRel isEqualType 0) then { _bowRel = 0 };
                 private _handle = [_logic, "carrierHandle", _ship] call MAINCLASS;
 
                 // No deck level, no home. Every position below is built on
@@ -890,8 +921,10 @@ switch(_operation) do {
                             // world position beside it is the value as it
                             // stands now, kept so that anything reading the
                             // first three entries of a home still works.
-                            _found = [_p, getDir _ship, "deck", _handle,
-                                [_spot select 0, _spot select 1, 0], 0];
+                            // Facing the bow, which is not the ship's getDir
+                            // on every ship (see deckGeometry).
+                            _found = [_p, ((getDir _ship) + _bowRel) mod 360, "deck", _handle,
+                                [_spot select 0, _spot select 1, 0], _bowRel];
                         };
                     };
                 } forEach _spots;

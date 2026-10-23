@@ -301,11 +301,10 @@ Jman
             _launchEntry = _cats select _li;
             _launchEntry params ["_cPart", "_cMem", "_cOff", "_cAnims"];
             private _cPos = [_surface, "catapultPos", _launchEntry] call ALIVE_fnc_ATOSurface;
-            // The part's heading less the catapult's offset, and NOT less a
-            // further 180. Measured: with the extra 180 the jet is thrown down
-            // the deck towards the stern and ends up in the sea; without it, it
-            // leaves at 409 km/h and climbs away.
-            private _want = ((((getDir _cPart) - _cOff) % 360) + 360) % 360;
+            // The part's heading less the catapult's offset, less a further
+            // 180, as the engine's own catapult lock has it: the parts face the
+            // stern, so without the 180 the jet is shot off the stern.
+            private _want = ((((getDir _cPart) - _cOff - 180) % 360) + 360) % 360;
 
             // Wait for the tow to finish rather than sleeping a fixed time:
             // how long it takes depends on where the stand is and how far

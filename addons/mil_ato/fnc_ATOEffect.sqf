@@ -1587,28 +1587,20 @@ switch(_operation) do {
                     _detail = format ["%1 m is too far to tow to %2", round _towDist, _mem];
                 };
 
-                // The launch heading. The part's own heading less the
-                // catapult's offset, brought back into 0 to 360 because SQF's
-                // remainder keeps the sign.
+                // The launch heading: the part's own heading less the
+                // catapult's offset, less a further 180, brought back into 0
+                // to 360 because SQF's remainder keeps the sign. The 180 is the
+                // engine's own (fn_carrier01catapultlockto.sqf), and the old
+                // module used it too.
                 //
-                // NOT less a further 180, which the engine's own carrier
-                // functions do and which is where that came from. Those orient
-                // an aircraft to LOCK ON to the shuttle, and it faces the other
-                // way to do that; it is not the direction it leaves in.
-                //
-                // Measured, both ways, on the test carrier with its bow at
-                // model y plus 190 and the catapult at y minus 63:
-                //
-                //   with the extra 180, heading 178   thrown down the deck
-                //                                     towards the STERN, ends at
-                //                                     model y minus 199, twelve
-                //                                     metres above the sea doing
-                //                                     nothing
-                //   without it, heading 358           409 km/h at 104 m four
-                //                                     seconds out, climbing
-                //                                     away, 1980 m from the
-                //                                     ship at 434 km/h, alive
-                private _launchDir = ((((getDir _part) - _dirOffset) % 360) + 360) % 360;
+                // A USS Freedom and its parts face their STERN: the bow is at
+                // model y minus 190, the landing threshold at plus 125, the
+                // island on the starboard side at x minus 30. Leaving the 180
+                // out pointed every jet aft, so it was towed round, run 250 m
+                // down the deck the wrong way and shot off the stern. It still
+                // flew, because of the kick below, which is why it read as
+                // working when it was measured.
+                private _launchDir = ((((getDir _part) - _dirOffset - 180) % 360) + 360) % 360;
 
                 _pilot disableAI "MOVE";
                 _obj allowDamage false;
@@ -1797,8 +1789,8 @@ switch(_operation) do {
                     // Eight tenths of a second, not two and two tenths.
                     //
                     // The catapults sit at model y minus sixty three and the
-                    // bow is at plus a hundred and ninety, so an aircraft shot
-                    // from one travels about two hundred and fifty metres ALONG
+                    // bow is at minus a hundred and ninety, so an aircraft shot
+                    // from one travels about a hundred and thirty metres ALONG
                     // the deck before it clears the ship. Measured at the old
                     // two and two tenths: twenty four metres above sea level
                     // against a deck at twenty three and a half, so it had

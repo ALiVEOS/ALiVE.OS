@@ -117,6 +117,9 @@ Jman
         count _taxi > 0] call _fnc_check;
     ["there is somewhere to park",
         count _spots > 3] call _fnc_check;
+    // A USS Freedom's getDir points at its stern; its bow is at model y -190.
+    ["the bow is read as opposite the ship's own heading",
+        (_geom param [6, -1]) isEqualTo 180] call _fnc_check;
 
     // Asked of itself: every offset the sweep kept has to be a deck when
     // something asks again. A spot that cannot answer twice was never a spot.
@@ -203,8 +206,10 @@ Jman
         ([_surface, "resolve", _home] call ALIVE_fnc_ATOSurface) params ["_rPos", "_rDir"];
         ["resolving a deck home gives back the place it was chosen",
             (_rPos distance2D (_home select 0)) < 1] call _fnc_check;
-        ["and a heading relative to the ship's own",
-            (abs (_rDir - (getDir _ship))) < 1 || {(abs (_rDir - (getDir _ship))) > 359}] call _fnc_check;
+        // Facing the bow, which on a USS Freedom is getDir plus 180.
+        private _bowW = ((getDir _ship) + (_geom param [6, 0])) mod 360;
+        ["and a heading relative to the ship's own, facing the bow",
+            (abs (_rDir - _bowW)) < 1 || {(abs (_rDir - _bowW)) > 359}] call _fnc_check;
         ["and the height is the deck, not the sea bed",
             (abs ((_rPos select 2) - _deckZ)) < 2] call _fnc_check;
 
