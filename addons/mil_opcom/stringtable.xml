@@ -336,6 +336,12 @@
 <Key ID="STR_ALIVE_OPCOM_ASYM_HARASS_CYCLE_COMMENT">
     <English>The shortest wait between two mortar attacks from this commander. The next one comes between this many minutes and twice this many. Default 20.</English>
 </Key>
+<Key ID="STR_ALIVE_OPCOM_PREP_OFTEN">
+    <English>Preparation Tasks How Often</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_PREP_OFTEN_COMMENT">
+    <English>How many of the commander's attacks get preparation tasks (and the recon before them, with Tasks Only Against Known Enemy): every attack (default), many (about 2 in 3) or a few (about 1 in 3). An attack without them goes ahead as usual. A group that opts out of automatic orders in the OPCOM Orders menu gets no preparation tasks either.</English>
+</Key>
 <Key ID="STR_ALIVE_OPCOM_PREP_CHOICE">
     <English>Choice After Recon</English>
 </Key>

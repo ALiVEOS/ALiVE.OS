@@ -138,6 +138,8 @@ switch (_operation) do {
         private _prepTimeout = ((parseNumber format ["%1", _logic getVariable ["prepTimeoutMins", 15]]) max 1) * 60;
         // Choice After Recon (Will501 on Discord, 22 Oct): after a recon, players take the targets or hand them over
         private _prepChoice = (toLower format ["%1", _logic getVariable ["prepChoice", "false"]]) in ["true", "1"];
+        // Preparation Tasks How Often (Eric and Will501 on Discord, 23 Oct): the share of attacks that get them
+        private _prepOften = switch (toLower format ["%1", _logic getVariable ["prepOften", "all"]]) do { case "many": { 2/3 }; case "few": { 1/3 }; default { 1 } };
         // how many tasks an operation hands out (The Horny Latino on Discord, 20 Oct): Invasion preparation tasks per
         // objective, and Occupation clean-up tasks per capture. 0 and 0 (the default) keep one wiretap for Invasion and
         // every clean-up kind for Occupation
@@ -421,6 +423,7 @@ switch (_operation) do {
             // so a commander switched from one to the other part way through keeps it
             ["prepTasks", _prepTasks],
             ["prepChoice", _prepChoice],
+            ["prepOften", _prepOften],
             ["prepTimeout", _prepTimeout],
             ["opTasksMin", _opTasksMin],
             ["opTasksMax", _opTasksMax],
@@ -4851,10 +4854,25 @@ switch (_operation) do {
         };
         // a new objective: ask for the tasks
         private _side = [_logic, "side", "WEST"] call ALiVE_fnc_HashGet;
+        // Preparation Tasks How Often: only some attacks get them; one that doesn't goes ahead as usual
+        if (random 1 >= ([_logic, "prepOften", 1] call ALiVE_fnc_HashGet)) exitWith {
+            _cleared pushBackUnique _objectiveID;
+            _module setVariable ["ALiVE_prep_cleared", _cleared];
+            ["OPCOM %1: no preparation tasks for %2 this time (Preparation Tasks How Often), the attack goes ahead", _side, _objectiveID] call ALiVE_fnc_dump;
+        };
         private _players = [_logic, "prepTestPlayers", []] call ALiVE_fnc_HashGet;      // a test sets this; empty in play
         if (_players isEqualTo []) then {
             private _p = [_side] call ALiVE_fnc_getPlayersDataSource;
             _players = [_p select 1, _p select 0];
+            // a group that opted out of automatic orders (OPCOM Orders menu) gets no preparation tasks either
+            // (Will501 on Discord, 23 Oct)
+            private _keep = [];
+            {
+                private _uid = _x;
+                private _i = allPlayers findIf { getPlayerUID _x == _uid };
+                if (_i < 0 || {!((group (allPlayers select _i)) getVariable ["ALiVE_mil_c2istar_playerOrdersOptOut", false])}) then { _keep pushBack _forEachIndex };
+            } forEach (_players select 0);
+            _players = [_keep apply { (_players select 0) select _x }, _keep apply { (_players select 1) select _x }];
         };
         private _center = [_objective, "center", [0,0,0]] call ALiVE_fnc_HashGet;
         private _sidesEnemy = [_logic, "sidesenemy", []] call ALiVE_fnc_HashGet;

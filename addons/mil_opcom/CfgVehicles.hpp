@@ -296,6 +296,19 @@ class CfgVehicles {
                                 defaultValue = """15""";
                                 typeName = "NUMBER";
                         };
+                        class prepOften : Combo
+                        {
+                                property = "ALiVE_mil_opcom_prepOften";
+                                displayName = "$STR_ALIVE_OPCOM_PREP_OFTEN";
+                                tooltip = "$STR_ALIVE_OPCOM_PREP_OFTEN_COMMENT";
+                                defaultValue = """all""";
+                                class Values
+                                {
+                                        class All  { name = "Every attack"; value = "all"; };
+                                        class Many { name = "Many attacks (2 in 3)"; value = "many"; };
+                                        class Few  { name = "A few attacks (1 in 3)"; value = "few"; };
+                                };
+                        };
                         class prepChoice : Combo
                         {
                                 property = "ALiVE_mil_opcom_prepChoice";

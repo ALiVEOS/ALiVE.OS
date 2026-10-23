@@ -488,7 +488,7 @@ if (_menuName == "C2_PLAYER_ORDERS") then {
                 [_toggleLabel,
                     {["toggleOptOut", [player]] call ALiVE_fnc_playerOrders},
                     "",
-                    "Toggle whether your group receives automatic OPCOM orders.",
+                    "Toggle whether your group receives automatic OPCOM orders, preparation tasks included.",
                     "",
                     -1,
                     true,
