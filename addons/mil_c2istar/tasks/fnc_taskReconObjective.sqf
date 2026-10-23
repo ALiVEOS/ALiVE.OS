@@ -12,6 +12,7 @@ reported to the side (ALiVE_reconReports), which an AI Commander with Tasks Only
 its next preparation tasks go after them. Watching longer, from either OP, spots more.
 
 Stages: Parent, Travel (reach the FRV), Observe1 (a minute at OP 1), Observe (a minute at OP 2, then report).
+The OPs can be manned in either order: OP 2 done first is ticked off at once and OP 1 then closes the task.
 
 Parameters:
 The usual task parameters (see ALIVE_fnc_taskWiretap).
@@ -211,6 +212,8 @@ switch (_taskState) do {
         [_taskParams, "frv", _frv] call ALIVE_fnc_hashSet;
         [_taskParams, "ops", _ops] call ALIVE_fnc_hashSet;
         [_taskParams, "opDwell", [0, 0]] call ALIVE_fnc_hashSet;
+        // OP 2 manned and ticked off before OP 1 (either OP can be done first)
+        [_taskParams, "op2Done", false] call ALIVE_fnc_hashSet;
         // what the players have spotted: unit -> [its group's profile id, position, class, how well]
         [_taskParams, "seen", createHashMap] call ALIVE_fnc_hashSet;
         [_taskParams, "lastState", ""] call ALIVE_fnc_hashSet;
@@ -240,8 +243,9 @@ switch (_taskState) do {
         };
     };
 
-    // a minute at OP 1, then a minute at OP 2 and the report. Both OPs count whichever stage is open, so players who
-    // reach OP 2 first don't waste the time, and every tick with someone at an OP adds what they can see
+    // a minute at each OP, in either order, then the report. Both OPs count whichever stage is open, and every tick
+    // with someone at an OP adds what they can see. OP 2 manned first is ticked off straight away (A. Ares on Discord,
+    // 23 Oct: it sat by the FRV and waited for OP 1); OP 1 then closes the task with the report
     case "Observe1";
     case "Observe": {
         private _taskSide = _task select 2;
@@ -270,6 +274,22 @@ switch (_taskState) do {
             if (_at isNotEqualTo []) then { _dwell set [_forEachIndex, (_dwell select _forEachIndex) + _dt]; _watchers append _at };
         } forEach _ops;
         [_params, "opDwell", _dwell] call ALIVE_fnc_hashSet;
+
+        // OP 2 done while OP 1 is still the open stage: tick it off now and say so
+        if (!_final && {(_dwell select 1) >= RECON_WATCH_SECONDS} && {!([_params, "op2Done", false] call ALIVE_fnc_hashGet)}) then {
+            private _op2 = [ALiVE_TaskHandler, "getTask", ([_params, "taskIDs"] call ALIVE_fnc_hashGet) select 3] call ALiVE_fnc_TaskHandler;
+            if (!isNil "_op2") then {
+                _op2 set [8, "Succeeded"];
+                _op2 set [10, "N"];
+                [ALiVE_TaskHandler, "TASK_UPDATE", _op2] call ALiVE_fnc_TaskHandler;
+            };
+            [_params, "op2Done", true] call ALIVE_fnc_hashSet;
+            // said only while OP 1 still needs time: a team split over both OPs closing together just gets the report
+            if ((_dwell select 0) < RECON_WATCH_SECONDS) then {
+                ["chat_early", [[_params, "dialog"] call ALIVE_fnc_hashGet, "Observe"] call ALIVE_fnc_hashGet, _taskSide, _taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
+            };
+            ["C2ISTAR - Task ReconObjective %1: OP 2 manned before OP 1", _taskID] call ALiVE_fnc_Dump;
+        };
 
         // what is spotted from the OPs: an enemy unit round the objective that the side knows about, or that a player
         // at an OP has a clear line of sight to within 600 m (a remote player's own knowledge isn't held on the server)
@@ -312,7 +332,7 @@ switch (_taskState) do {
 
         private _index = [0, 1] select _final;
         if ((_dwell select _index) >= RECON_WATCH_SECONDS) then {
-            if (!_final) exitWith {
+            if (!_final && {!([_params, "op2Done", false] call ALIVE_fnc_hashGet)}) exitWith {
                 [_params, "nextTask", ([_params, "taskIDs"] call ALIVE_fnc_hashGet) select 3] call ALIVE_fnc_hashSet;
                 _task set [8, "Succeeded"];
                 _task set [10, "N"];
@@ -342,8 +362,10 @@ switch (_taskState) do {
             _task set [8, "Succeeded"];
             _task set [10, "N"];
             _result = _task;
-            ["chat_success", _currentTaskDialog, _taskSide, _taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
-            [_currentTaskDialog, _taskSide, _taskFaction] call ALIVE_fnc_taskCreateReward;
+            // the closing exchange and the reward sit on the OP 2 stage, whichever OP closed the task
+            private _endDialog = [[_params, "dialog"] call ALIVE_fnc_hashGet, "Observe"] call ALIVE_fnc_hashGet;
+            ["chat_success", _endDialog, _taskSide, _taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
+            [_endDialog, _taskSide, _taskFaction] call ALIVE_fnc_taskCreateReward;
         };
     };
 };

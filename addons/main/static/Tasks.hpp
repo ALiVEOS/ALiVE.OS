@@ -772,6 +772,8 @@
 	[_taskData,"description","Occupy the second observation post, on another side of %1, and watch for at least a minute. Stay longer to spot more."] call ALIVE_fnc_hashSet;
 	[_taskData,"chat_start",[["HQ","OP 1 reports in. Move round to OP 2 and confirm %1 from the other side, Over."],["PLAYERS","Wilco"]]] call ALIVE_fnc_hashSet;
 	[_taskData,"chat_success",[["PLAYERS","Recon complete, sending what we spotted now, Over."],["HQ","Good work. We'll plan against those positions."]]] call ALIVE_fnc_hashSet;
+	// OP 2 manned before OP 1 (either order counts, fnc_taskReconObjective)
+	[_taskData,"chat_early",[["PLAYERS","OP 2 done, we've had a good look from this side. OP 1 still to go, Over."],["HQ","Copy, get eyes on from OP 1."]]] call ALIVE_fnc_hashSet;
 	[_taskData,"reward",["forcePool",10]] call ALIVE_fnc_hashSet;
 	[_tasksData,"Observe",_taskData] call ALIVE_fnc_hashSet;
 
