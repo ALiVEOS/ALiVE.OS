@@ -197,6 +197,20 @@ class CfgVehicles
                             class Yes { name = "Yes"; value = true; };
                         };
                 };
+                // Missile launchers with no artillery computer (the MK41 VLS) as
+                // batteries: each round is one guided missile. Default off.
+                class missileLaunchers : Combo
+                {
+                        property = "ALiVE_mil_artillery_missileLaunchers";
+                        displayName = "$STR_ALIVE_MIL_ARTILLERY_MISSILELAUNCHERS";
+                        tooltip = "$STR_ALIVE_MIL_ARTILLERY_MISSILELAUNCHERS_COMMENT";
+                        defaultValue = """false""";
+                        class Values
+                        {
+                            class No { name = "No"; value = false; default = 1; };
+                            class Yes { name = "Yes"; value = true; };
+                        };
+                };
                 class dangerClose : Combo
                 {
                         property = "ALiVE_mil_artillery_dangerClose";

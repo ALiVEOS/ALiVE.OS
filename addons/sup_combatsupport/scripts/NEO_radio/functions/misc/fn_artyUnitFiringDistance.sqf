@@ -31,10 +31,9 @@ if (_this isEqualType []) then
     if (_mag == "") exitWith {};
     // a missile launcher (the MK41 VLS, 23 Oct): no artillery computer to ask, so its guided missiles' own lock range
     if (_type call NEO_fnc_artyIsMissileLauncher) exitWith {
-        private _a = configFile >> "CfgAmmo" >> getText (configFile >> "CfgMagazines" >> _mag >> "ammo");
-        _min = ((getNumber (_a >> "missileLockMinDistance")) max 50) + 50;
-        _max = getNumber (_a >> "missileLockMaxDistance");
-        if (_max <= 0) then { _max = 100000 };
+        private _band = [[_type, _mag], "range"] call ALIVE_fnc_missileArtillery;
+        _min = _band select 0;
+        _max = _band select 1;
     };
 
     if (isNil "ALiVE_CS_artyRanges") then { ALiVE_CS_artyRanges = createHashMap };

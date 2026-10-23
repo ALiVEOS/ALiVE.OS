@@ -227,6 +227,15 @@ switch(_operation) do {
         _result = _args;
     };
 
+    // Missile launchers (The Horny Latino on Discord, 23 Oct 2026): a launcher with no artillery computer, such
+    // as the MK41 VLS, is a battery too, each round one guided missile at a laser on the target. Default off.
+    case "missileLaunchers": {
+        _args = _logic getVariable ["missileLaunchers", _logic getVariable ["ALiVE_mil_artillery_missileLaunchers", false]];
+        if (_args isEqualType "") then { _args = (toLower _args) == "true" };
+        if !(_args isEqualType true) then { _args = false };
+        _result = _args;
+    };
+
     // real-fire radius (metres): a mission spawns visible guns and shells only
     // if a player is within this range of the target or the battery; beyond it
     // the mission resolves virtually on the ledger. Default 3000.
@@ -387,6 +396,9 @@ switch(_operation) do {
         private _debug = [_logic, "debug"] call MAINCLASS;
         private _registry = _logic getVariable ["batteryRegistry", []];
         private _ledgerSize = (_logic getVariable ["intensityProfile", [420,120,75,6,2,1,90]]) select 6;
+        // Missile launchers: a launcher with no artillery computer (the MK41 VLS) is a battery too. Read
+        // once per sweep; with it off a launcher is never even tested
+        private _missileOn = [_logic, "missileLaunchers"] call MAINCLASS;
 
         private _knownEntityIDs = [];
         {
@@ -428,7 +440,9 @@ switch(_operation) do {
             if (([_profile,"type",""] call ALiVE_fnc_hashGet) == "vehicle") then {
                 private _class = [_profile,"vehicleClass",""] call ALiVE_fnc_hashGet;
 
-                if (_class != "" && {[_class] call ALIVE_fnc_isArtillery}) then {
+                private _classMissile = _class != "" && {_missileOn} && {[_class, "isLauncher"] call ALIVE_fnc_missileArtillery};
+
+                if (_class != "" && {_classMissile || {[_class] call ALIVE_fnc_isArtillery}}) then {
                     private _entities = [_profile,"entitiesInCommandOf",[]] call ALiVE_fnc_hashGet;
 
                     // static weapons (towed guns, mortars) have no driver seat,
@@ -439,6 +453,15 @@ switch(_operation) do {
                         if (_assignments isEqualType [] && {count _assignments > 1} && {count (_assignments select 1) > 0}) then {
                             _entities = +(_assignments select 1);
                         };
+                    };
+
+                    // a launcher crewed by UAV AI (the MK41 VLS) has no crew profile: the profile system never
+                    // profiles UAV crews, and the launcher spawns with its own. The launcher itself stands in
+                    // for the crew, so the record names its vehicle profile as the battery
+                    private _crewless = false;
+                    if (count _entities == 0 && {_classMissile}) then {
+                        _entities = [[_profile,"profileID",""] call ALiVE_fnc_hashGet];
+                        _crewless = true;
                     };
 
                     if (count _entities > 0) then {
@@ -454,7 +477,7 @@ switch(_operation) do {
                             }) then {
                                 // same static-weapon caveat as above: fall back
                                 // to the entity's assignment keys (vehicle IDs)
-                                private _candidateVehicles = [_entityProfile,"vehiclesInCommandOf",[]] call ALiVE_fnc_hashGet;
+                                private _candidateVehicles = if (_crewless) then { [_entityID] } else { [_entityProfile,"vehiclesInCommandOf",[]] call ALiVE_fnc_hashGet };
                                 if (count _candidateVehicles == 0) then {
                                     private _eAssignments = [_entityProfile,"vehicleAssignments",[[],[],[]]] call ALiVE_fnc_hashGet;
                                     if (_eAssignments isEqualType [] && {count _eAssignments > 1}) then {
@@ -466,16 +489,50 @@ switch(_operation) do {
                                     private _vp = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
                                     if (!isNil "_vp") then {
                                         private _vc = [_vp,"vehicleClass",""] call ALiVE_fnc_hashGet;
-                                        if (_vc != "" && {[_vc] call ALIVE_fnc_isArtillery}) then {
+                                        // a battery is all launchers or all guns: each kind fires its own way
+                                        if (_vc != "" && {if (_classMissile) then { [_vc, "isLauncher"] call ALIVE_fnc_missileArtillery } else { [_vc] call ALIVE_fnc_isArtillery }}) then {
                                             _vehicleIDs pushBack _x;
                                         };
                                     };
                                 } forEach _candidateVehicles;
 
+                                // a missile launcher at sea profiled at the waterline: noted once, never a battery
+                                if (_classMissile && {count _vehicleIDs > 0}) then {
+                                    private _vp0 = [ALIVE_profileHandler, "getProfile", _vehicleIDs select 0] call ALIVE_fnc_profileHandler;
+                                    if (surfaceIsWater ([_vp0,"position",[0,0,0]] call ALiVE_fnc_hashGet) && {([_logic, "launcherDeckASL", _vp0] call MAINCLASS) < 2}) then {
+                                        private _skipped = _logic getVariable ["awashLaunchers", []];
+                                        if !((_vehicleIDs select 0) in _skipped) then {
+                                            _skipped pushBack (_vehicleIDs select 0);
+                                            _logic setVariable ["awashLaunchers", _skipped];
+                                            ["ALiVE MIL_ARTILLERY - %1 (%2) is at sea with no deck under it, so it can't fire and isn't used. Place it on a ship's deck or on land", _class, _vehicleIDs select 0] call ALiVE_fnc_dump;
+                                        };
+                                        _vehicleIDs = [];
+                                    };
+                                };
+
                                 if (count _vehicleIDs > 0) then {
                                     private _kind = "gun";
                                     private _range = DEFAULT_RANGE_GUN;
                                     private _minRange = DEFAULT_MINRANGE_GUN;
+                                    private _probed = false;
+                                    private _deckASL = -1;
+                                    if (_classMissile) then {
+                                        // the missile's own lock range, read from config: nothing to measure
+                                        // later, so the battery counts as probed
+                                        _kind = "missile";
+                                        private _mMag = [_class, "HE"] call ALIVE_fnc_getArtyMagazineType;
+                                        if (_mMag == "") then { _mMag = [_class, "CLUSTER"] call ALIVE_fnc_getArtyMagazineType };
+                                        ([[_class, _mMag], "range"] call ALIVE_fnc_missileArtillery) params ["_mMin", "_mMax"];
+                                        _range = _mMax;
+                                        _minRange = _mMin;
+                                        _probed = true;
+                                        // a launcher at sea stands on a deck; one profiled at the waterline can't
+                                        // fire (its missiles go into the sea), so it's no battery
+                                        private _vp0 = [ALIVE_profileHandler, "getProfile", _vehicleIDs select 0] call ALIVE_fnc_profileHandler;
+                                        if (surfaceIsWater ([_vp0,"position",[0,0,0]] call ALiVE_fnc_hashGet)) then {
+                                            _deckASL = [_logic, "launcherDeckASL", _vp0] call MAINCLASS;
+                                        };
+                                    } else {
                                     if (_class isKindOf "StaticMortar") then {
                                         _kind = "mortar";
                                         _range = DEFAULT_RANGE_MORTAR;
@@ -493,6 +550,7 @@ switch(_operation) do {
                                             _minRange = DEFAULT_MINRANGE_ROCKET;
                                         };
                                     };
+                                    };
 
                                     private _record = [] call ALIVE_fnc_hashCreate;
                                     [_record,"entityID",_entityID] call ALiVE_fnc_hashSet;
@@ -502,9 +560,13 @@ switch(_operation) do {
                                     [_record,"kind",_kind] call ALiVE_fnc_hashSet;
                                     [_record,"maxRange",_range] call ALiVE_fnc_hashSet;
                                     [_record,"minRange",_minRange] call ALiVE_fnc_hashSet;
-                                    [_record,"rounds",_ledgerSize] call ALiVE_fnc_hashSet;
+                                    // a missile battery's ledger is the missiles its launchers carry
+                                    [_record,"rounds", if (_kind == "missile") then { (count _vehicleIDs) * ([_logic, "launcherLoad", _class] call MAINCLASS) } else { _ledgerSize }] call ALiVE_fnc_hashSet;
                                     [_record,"cooldownUntil",0] call ALiVE_fnc_hashSet;
                                     [_record,"state","IDLE"] call ALiVE_fnc_hashSet;
+                                    if (_probed) then { [_record,"probed",true] call ALiVE_fnc_hashSet };
+                                    if (_crewless) then { [_record,"crewless",true] call ALiVE_fnc_hashSet };
+                                    if (_deckASL >= 0) then { [_record,"deckASL",_deckASL] call ALiVE_fnc_hashSet };
 
                                     // crew the profile is carrying across all its guns - a
                                     // battery with crew < guns is short a gunner somewhere
@@ -595,6 +657,82 @@ switch(_operation) do {
         };
 
         _result = _registry;
+    };
+
+    // A missile launcher the commander fires (Missile launchers) is a UAV to the game, and a new object each
+    // time the profile system spawns it. Each one is locked against UAV terminals for every player and holds
+    // its fire as soon as it's seen, so nobody takes it over between missions (a launcher taken over sits its
+    // missions out) and it doesn't launch at whatever the datalink shows. The fire mission does the same again
+    // before it fires.
+    // [launcher, its vehicle profile]: a launcher placed at sea stands on a ship's deck (BI's own missions mount
+    // the MK41 on a destroyer, 11.66 m ASL). It's a static weapon to the game, not a ship, so when the profile
+    // system spawns it nothing puts it back up there: it came up 10 m under water, and a launcher under water or
+    // awash launches its missiles into the sea (they ended 3 m from it after 0.1 s). It's put back at the height
+    // it was profiled at, read from where it was last despawned (the live profile's position follows the
+    // vehicle down). Leaves a launcher on land alone. Returns true when it moved one
+    case "floatLauncher": {
+        _result = false;
+        _args params ["_veh", "_vp", ["_want", -1]];
+        if (isNull _veh) exitWith {};
+        private _asl = getPosASL _veh;
+        if (!surfaceIsWater _asl) exitWith {};
+        // the height kept on the battery's record when it was registered, so a despawn on the sea bed can't lose it
+        if (_want < 0) then { _want = [_logic, "launcherDeckASL", _vp] call MAINCLASS };
+        if ((_asl select 2) > _want - 1) exitWith {};
+        _veh setVelocity [0, 0, 0];
+        _veh setPosASL [_asl select 0, _asl select 1, _want];
+        _result = true;
+        if ([_logic, "debug"] call MAINCLASS) then {
+            ["ALiVE MIL_ARTILLERY - %1 put back on its deck: was %2 m ASL, now %3 m", typeOf _veh, round (_asl select 2), round _want] call ALiVE_fnc_dump;
+        };
+    };
+
+    // a launcher's vehicle profile -> the height (m ASL) it was profiled at, from where it was placed or last
+    // despawned; a position stored with no height counts as sea level
+    case "launcherDeckASL": {
+        private _vp = _args;
+        private _p = +([_vp,"despawnPosition",[0,0,0]] call ALiVE_fnc_hashGet);
+        if (((_p select 0) + (_p select 1)) == 0) then { _p = +([_vp,"position",[0,0,0]] call ALiVE_fnc_hashGet) };
+        if (count _p < 3) then { _p set [2, 0] };
+        _result = if ((_p select 2) == 0) then { 0 } else { (ATLToASL _p) select 2 };
+    };
+
+    // a launcher class -> the missiles it carries when full, HE and cluster: its ledger, which neither a virtual
+    // mission nor a refill may take past what it can really fire
+    case "launcherLoad": {
+        private _mags = (_args call ALIVE_fnc_getArtyMagazines);
+        _mags = _mags arrayIntersect _mags;
+        private _n = 0;
+        {
+            if ((["HE", _x, true] call ALIVE_fnc_isMagazineOfOrdnanceType) || {["CLUSTER", _x, true] call ALIVE_fnc_isMagazineOfOrdnanceType}) then {
+                _n = _n + getNumber (configFile >> "CfgMagazines" >> _x >> "count");
+            };
+        } forEach _mags;
+        _result = _n;
+    };
+
+    case "lockLaunchers": {
+        if !([_logic, "missileLaunchers"] call MAINCLASS) exitWith {};
+        {
+            if (([_x,"kind",""] call ALiVE_fnc_hashGet) == "missile") then {
+                private _rec = _x;
+                {
+                    private _vp = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+                    if (!isNil "_vp" && {[_vp,"active",false] call ALiVE_fnc_hashGet}) then {
+                        private _veh = [_vp,"vehicle",objNull] call ALiVE_fnc_hashGet;
+                        if (!isNil "_veh" && {!isNull _veh} && {alive _veh} && {!isNull gunner _veh}
+                            && {!(_veh getVariable ["ALiVE_artyLocked", false])}) then {
+                            _veh setVariable ["ALiVE_artyLocked", true];
+                            [_logic, "floatLauncher", [_veh, _vp, [_rec,"deckASL",-1] call ALiVE_fnc_hashGet]] call MAINCLASS;
+                            [[_veh, [_veh], []], "setup"] call ALIVE_fnc_missileArtillery;
+                            // set where the crew's group is local (a headless client can own it)
+                            private _g = group gunner _veh;
+                            [_g, "BLUE"] remoteExec ["setCombatMode", groupOwner _g];
+                        };
+                    };
+                } forEach ([_x,"vehicleIDs",[]] call ALiVE_fnc_hashGet);
+            };
+        } forEach (_logic getVariable ["batteryRegistry", []]);
     };
 
     // events -------------------------------------------------------------------
@@ -779,6 +917,8 @@ switch(_operation) do {
                     if (_tick mod 3 == 1) then {
                         [_logic,"illumScan"] call ALIVE_fnc_MilArtillery;
                     };
+                    // a missile launcher just spawned is locked against UAV terminals and holds its fire
+                    [_logic,"lockLaunchers"] call ALIVE_fnc_MilArtillery;
 
                     // dry batteries request resupply, capped so they don't all
                     // dispatch at once (reuses the concurrency dial)
@@ -854,7 +994,26 @@ switch(_operation) do {
         if (([_record,"state"] call ALiVE_fnc_hashGet) != "RESUPPLYING") exitWith {};
 
         private _profileSettings = _logic getVariable ["intensityProfile", [420,120,75,6,2,1,90]];
-        [_record,"rounds",_profileSettings select 6] call ALiVE_fnc_hashSet;
+        private _refill = _profileSettings select 6;
+        // a missile launcher is rearmed for real, or the next mission would find it empty and go dry again at once:
+        // a spawned one where it's local, a virtual one by dropping the load its profile saved, so it spawns full.
+        // Its ledger is the missiles that gives it
+        if (([_record,"kind",""] call ALiVE_fnc_hashGet) == "missile") then {
+            _refill = 0;
+            {
+                private _vp = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+                if (!isNil "_vp") then {
+                    _refill = _refill + ([_logic, "launcherLoad", [_vp,"vehicleClass",""] call ALiVE_fnc_hashGet] call MAINCLASS);
+                    private _veh = [_vp,"vehicle",objNull] call ALiVE_fnc_hashGet;
+                    if ([_vp,"active",false] call ALiVE_fnc_hashGet && {!isNil "_veh"} && {!isNull _veh}) then {
+                        [_veh, { _this setVehicleAmmo 1 }] remoteExec ["call", _veh];
+                    } else {
+                        [_vp,"ammo",[]] call ALIVE_fnc_profileVehicle;
+                    };
+                };
+            } forEach ([_record,"vehicleIDs",[]] call ALiVE_fnc_hashGet);
+        };
+        [_record,"rounds",_refill] call ALiVE_fnc_hashSet;
         [_record,"cooldownUntil",0] call ALiVE_fnc_hashSet;
         // deaf to counter-battery for one cooldown cycle: without this a
         // resupplied battery rejoins a counter-battery duel immediately and
@@ -864,7 +1023,7 @@ switch(_operation) do {
         [_record,"state","IDLE"] call ALiVE_fnc_hashSet;
 
         if ([_logic, "debug"] call MAINCLASS) then {
-            ["ALiVE MIL_ARTILLERY - battery %1 resupplied, %2 rounds back in the ledger", _entityID, _profileSettings select 6] call ALiVE_fnc_dump;
+            ["ALiVE MIL_ARTILLERY - battery %1 resupplied, %2 rounds back in the ledger", _entityID, _refill] call ALiVE_fnc_dump;
         };
     };
 
@@ -1170,7 +1329,8 @@ switch(_operation) do {
         // authored volley model, calibrated so an unobserved mission matches
         // what a real one typically achieves: prune 1-3 of a squad, rarely
         // wipe; soft vehicles sometimes die, armor is nearly immune
-        private _n = _roundsPerMission + 1;
+        // a missile battery has no ranging round, and fires no more than its ledger (the missiles it carries)
+        private _n = if (_kind == "missile") then { _roundsPerMission min ([_record,"rounds"] call ALiVE_fnc_hashGet) } else { _roundsPerMission + 1 };
         private _kindF = switch (_kind) do { case "mortar": {0.75}; case "rocket": {1.25}; default {1.0} };
         private _pRound = 0.04 * ((75 / (_dispersion max 1)) ^ 2) * _kindF;
         private _pKill = (1 - (1 - _pRound) ^ _n) min 0.5;

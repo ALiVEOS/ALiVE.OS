@@ -2238,6 +2238,13 @@ class isArtillery
 	ALIVE_RECOMPILE;
 };
 
+class missileArtillery
+{
+	file = "\x\alive\addons\x_lib\functions\vehicles\fnc_missileArtillery.sqf";
+	ext = ".sqf";
+	ALIVE_RECOMPILE;
+};
+
 class vehicleAssignGroup
 {
 	file = "\x\alive\addons\x_lib\functions\vehicles\fnc_vehicleAssignGroup.sqf";

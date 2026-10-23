@@ -51,6 +51,9 @@ private _dangerClose = [_logic, "dangerClose"] call ALIVE_fnc_MilArtillery;
 private _entityID = [_record,"entityID"] call ALiVE_fnc_hashGet;
 private _vehicleIDs = [_record,"vehicleIDs"] call ALiVE_fnc_hashGet;
 private _sideText = [_record,"side"] call ALiVE_fnc_hashGet;
+// a missile launcher with no artillery computer (Missile launchers, the MK41 VLS): each round is one guided
+// missile at a laser put on the target, fired by ALIVE_fnc_missileArtillery where the launcher is local
+private _missile = ([_record,"kind",""] call ALiVE_fnc_hashGet) == "missile";
 private _released = false;
 
 // every profile this mission holds is recorded with the spawnType it had
@@ -124,7 +127,12 @@ if (_debug) then {
 private _entityProfile = [ALIVE_profileHandler, "getProfile", _entityID] call ALIVE_fnc_profileHandler;
 if (isNil "_entityProfile") exitWith { ["STR_ALIVE_MIL_ARTILLERY_CALL_NOGUNS"] call _fnc_tell; [1] call _fnc_release; };
 
-[_entityProfile, _entityID, "entity"] call _fnc_hold;
+// a launcher crewed by UAV AI has no crew profile, so its record names the launcher's own vehicle profile:
+// nothing to hold but the launcher, which brings its crew with it when it spawns
+private _crewless = ([_entityProfile,"type",""] call ALiVE_fnc_hashGet) == "vehicle";
+if (!_crewless) then {
+    [_entityProfile, _entityID, "entity"] call _fnc_hold;
+};
 {
     private _vp = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
     if (!isNil "_vp") then {
@@ -132,8 +140,17 @@ if (isNil "_entityProfile") exitWith { ["STR_ALIVE_MIL_ARTILLERY_CALL_NOGUNS"] c
     };
 } forEach _vehicleIDs;
 
-if !([_entityProfile,"active"] call ALiVE_fnc_hashGet) then {
-    [_entityProfile,"spawn"] call ALiVE_fnc_profileEntity;
+if (_crewless) then {
+    {
+        private _vp = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+        if (!isNil "_vp" && {!([_vp,"active"] call ALiVE_fnc_hashGet)}) then {
+            [_vp,"spawn"] call ALiVE_fnc_profileVehicle;
+        };
+    } forEach _vehicleIDs;
+} else {
+    if !([_entityProfile,"active"] call ALiVE_fnc_hashGet) then {
+        [_entityProfile,"spawn"] call ALiVE_fnc_profileEntity;
+    };
 };
 
 // _targetID "" = a position-only strike (the debug force-fire path passes no
@@ -181,6 +198,30 @@ if (count _guns == 0) exitWith {
     };
     ["STR_ALIVE_MIL_ARTILLERY_CALL_NOGUNS"] call _fnc_tell;
     [0.5] call _fnc_release;
+};
+
+// a missile launcher at sea comes up under water, where it can't fire: put back on its deck, and given a
+// moment to settle there before anything is aimed. It holds its fire, so it doesn't launch at whatever the
+// datalink shows (set where its crew's group is local)
+if (_missile) then {
+    private _deckASL = [_record,"deckASL",-1] call ALiVE_fnc_hashGet;
+    private _moved = false;
+    {
+        private _vp = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+        if (!isNil "_vp") then {
+            private _veh = [_vp,"vehicle",objNull] call ALiVE_fnc_hashGet;
+            if (!isNil "_veh" && {_veh in _guns}) then {
+                if ([_logic, "floatLauncher", [_veh, _vp, _deckASL]] call ALIVE_fnc_MilArtillery) then { _moved = true };
+            };
+        };
+    } forEach _vehicleIDs;
+    { private _g = group gunner _x; if (!isNull _g) then { [_g, "BLUE"] remoteExec ["setCombatMode", groupOwner _g] } } forEach _guns;
+    if (_moved) then { sleep 5 };
+    if (_debug) then {
+        ["ALiVE MIL_ARTILLERY - missile launchers %1: %2 m ASL, gunners %3, local %4, loaded %5", _guns apply { typeOf _x },
+            _guns apply { round ((getPosASL _x) select 2) }, _guns apply { typeOf gunner _x },
+            _guns apply { local _x }, _guns apply { currentMagazine _x }] call ALiVE_fnc_dump;
+    };
 };
 
 // resolve the magazine - the round asked for (HE unless a player chose otherwise), then whatever the gun carries
@@ -255,11 +296,35 @@ if (count _liveMags > 0 && {!(_mag in _liveMags)}) then {
     _mag = _liveMags select (_idx max 0);
 };
 
+// a missile launcher fires no more missiles than it carries, HE first and its cluster missiles once those
+// are gone, and is locked against UAV terminals (again: the registry's own lock may not have reached it yet)
+if (_missile) then {
+    private _carried = [[_gunLead, _guns, [[_ordnance, 1e6], ["CLUSTER", 1e6]]], "setup"] call ALIVE_fnc_missileArtillery;
+    private _pick = _carried param [0, ["", 0]];
+    if ((_pick select 0) != "" && {(_pick select 0) != _ordnance}) then {
+        _ordnance = _pick select 0;
+        _mag = [_gunLead, _ordnance] call ALIVE_fnc_getArtyMagazineType;
+    };
+    _roundsThisMission = _roundsThisMission min (_pick select 1);
+    // the ledger holds every missile it carries, HE and cluster alike
+    private _all = 0;
+    { _all = _all + (_x select 1) } forEach _carried;
+    [_record,"rounds", ([_record,"rounds"] call ALiVE_fnc_hashGet) min _all] call ALiVE_fnc_hashSet;
+};
+if (_missile && {_roundsThisMission <= 0}) exitWith {
+    if (_debug) then {
+        ["ALiVE MIL_ARTILLERY - fire mission aborted: missile battery %1 (%2) has no missiles left", _entityID, typeOf _gunLead] call ALiVE_fnc_dump;
+    };
+    ["STR_ALIVE_MIL_ARTILLERY_CALL_NOGUNS"] call _fnc_tell;
+    [1] call _fnc_release;
+};
+
 // first-activation capability probe: measure the gun's real engagement
 // envelope, because no config heuristic predicts it - the RHS Grad turned out
 // to be an 8-20km system, nothing like the howitzer defaults. Cached on the
-// record so battery picks stop offering it unreachable targets.
-if !([_record,"probed",false] call ALiVE_fnc_hashGet) then {
+// record so battery picks stop offering it unreachable targets. A missile
+// launcher has no artillery computer to ask; its range came from config
+if (!_missile && {!([_record,"probed",false] call ALiVE_fnc_hashGet)}) then {
     private _probeMag = (getArtilleryAmmo [_gunLead]) param [0, _mag];
     if (_probeMag != "") then {
         private _minR = -1;
@@ -287,8 +352,12 @@ if !([_record,"probed",false] call ALiVE_fnc_hashGet) then {
 private _aimBase = [_targetPos select 0, _targetPos select 1, 0];
 
 // real range check now a crewed gun exists; refine the coarse default so the
-// next battery pick knows this battery's true reach
-if !(_aimBase inRangeOfArtillery [_guns, _mag]) exitWith {
+// next battery pick knows this battery's true reach. A missile launcher, which
+// the engine never calls in range, is held to its missiles' lock range
+if !(if (_missile) then {
+        private _d = _gunLead distance2D _aimBase;
+        _d >= ([_record,"minRange",0] call ALiVE_fnc_hashGet) && {_d <= ([_record,"maxRange"] call ALiVE_fnc_hashGet)}
+    } else { _aimBase inRangeOfArtillery [_guns, _mag] }) exitWith {
     private _dist = _gunLead distance2D _aimBase;
     private _maxRange = [_record,"maxRange"] call ALiVE_fnc_hashGet;
     // only revise unprobed defaults - a measured envelope is authoritative - and only from an HE
@@ -589,7 +658,7 @@ private _scriptFirst = _gunLead in _scriptGuns;
 // This runs only on the real-fire path (a player is near), so a flare is always
 // seen; virtual missions never reach this file.
 private _sunOrMoon = sunOrMoon;
-private _illumMag = if (_sunOrMoon < 0.3 && {_ordnance != "ILLUM"} && {!_scriptFirst}) then {
+private _illumMag = if (_sunOrMoon < 0.3 && {_ordnance != "ILLUM"} && {!_scriptFirst} && {!_missile}) then {
     [_gunLead, "ILLUM"] call ALIVE_fnc_getArtyMagazineType
 } else { "" };
 // illum magazines have their own (usually shorter) firing solution - if the
@@ -641,6 +710,25 @@ if (_illumOnly) exitWith {
     [0.15] call _fnc_release;
 };
 
+private _aimAtOrder = [];
+if (_missile) then {
+    // no ranging round: every round is a missile, one after another from the launchers in turn, run where the
+    // lead launcher is local (it sleeps, so it is spawned there). Its end is published on the lead launcher with
+    // the last missile's flight time; cleared first, so an earlier mission's answer isn't read as this one's
+    _gunLead setVariable ["ALiVE_artyMissileDone", nil, true];
+    [[[_guns, _mag, _aimBase, _dispersion, _roundsThisMission, 2], _gunLead], {
+        _this spawn {
+            params ["_fireArgs", "_lead"];
+            private _r = [_fireArgs, "fire"] call ALIVE_fnc_missileArtillery;
+            if (isNil "_r") then { _r = [0, 0] };
+            _lead setVariable ["ALiVE_artyMissileDone", _r, true];
+        };
+    }] remoteExec ["call", _gunLead];
+    if (_debug) then {
+        ["ALiVE MIL_ARTILLERY - missiles ordered: %1 launcher(s), %2 %3 at %4, dispersion %5m", count _guns, _roundsThisMission, _mag, _aimBase, _dispersion] call ALiVE_fnc_dump;
+    };
+    ["STR_ALIVE_MIL_ARTILLERY_CALL_SHOT"] call _fnc_tell;
+} else {
 // ranging round next - it doubles as the audible warning at the target end
 private _rangingAim = _aimBase getPos [random _dispersion, random 360];
 if (_scriptFirst && {[_gunLead] call _fnc_canScript}) then {
@@ -666,24 +754,26 @@ if (_scriptGuns isNotEqualTo []) then {
     [_scriptGuns, _roundsPerGun * count _scriptGuns] call _fnc_scriptVolley;
 };
 // where each gun's weapon points just after the orders, to tell a gun whose AI is aiming from one that is stuck
-private _aimAtOrder = _guns apply { [_x] call _fnc_aim };
+_aimAtOrder = _guns apply { [_x] call _fnc_aim };
 
 if (_debug) then {
     ["ALiVE MIL_ARTILLERY - volley ordered: %1 gun(s), %2 round(s) each, dispersion %3m", count _guns, _roundsPerGun, _dispersion] call ALiVE_fnc_dump;
 };
+};
 
-_deadline = time + 90;
+// a missile can take up to 5 minutes to leave: a launcher changing missile type reloads for about 3
+private _missileDone = { _missile && {isNull _gunLead || {!isNil { _gunLead getVariable "ALiVE_artyMissileDone" }}} };
+_deadline = time + ([90, 330] select _missile);
 waitUntil {
     sleep 5;
-    ((call _fnc_firedCount) > 0) || {time > _deadline}
+    ((call _fnc_firedCount) > 0) || {time > _deadline} || _missileDone
 };
 
 private _fired = call _fnc_firedCount;
-
 // Nothing left the guns on the AI's orders: the rounds are launched by script from the guns whose weapon never
 // moved (a gun that is turning is slow, not stuck, and would fire twice), and their types are remembered when
 // every gun that could have fired was stuck. Counted before the launch, which can empty a gun.
-if (_fired == 0 && {_scriptGuns isEqualTo []}) then {
+if (_fired == 0 && {_scriptGuns isEqualTo []} && {!_missile}) then {
     private _eligible = _guns select { [_x] call _fnc_canScript };
     private _stuck = _eligible select {
         private _now = [_x] call _fnc_aim;
@@ -706,10 +796,12 @@ if (_fired > 0 && {!isNil "ALIVE_artyShellEvents"}) then {
     private _events = ALIVE_artyShellEvents;
     if ((_events findIf { (_x select 0) in _vehicleIDs && {(_x select 3) > _volleyStart} }) == -1) then {
         // IN-PLACE mutation only - see the watch installer in the monitor
-        _events pushBack [_vehicleIDs param [0, ""], getPosATL _gunLead, toUpper str _sideObject, time, _roundsThisMission + 1, time];
+        // a missile mission has no ranging round
+        private _shells = _roundsThisMission + ([1, 0] select _missile);
+        _events pushBack [_vehicleIDs param [0, ""], getPosATL _gunLead, toUpper str _sideObject, time, _shells, time];
         while {count _events > 30} do { _events deleteAt 0; };
         if (_debug) then {
-            ["ALiVE MIL_ARTILLERY - counter-battery: fallback fire event recorded for battery %1 (%2 shell(s))", _entityID, _roundsThisMission + 1] call ALiVE_fnc_dump;
+            ["ALiVE MIL_ARTILLERY - counter-battery: fallback fire event recorded for battery %1 (%2 shell(s))", _entityID, _shells] call ALiVE_fnc_dump;
         };
     };
 };
@@ -721,7 +813,16 @@ if (_fired == 0) then {
     // dwell so the rounds land and the AI settles before anything despawns,
     // then re-read the true total (the waitUntil above exits on the FIRST
     // round, so _fired would otherwise report 1 for the whole volley)
-    sleep 90;
+    if (_missile) then {
+        // the missiles leave one at a time, each allowed 5 minutes to go, and the last is still flying when
+        // the launchers are done: both ends stay spawned until it has landed
+        private _start = time;
+        waitUntil { sleep 5; call _missileDone || {time > _start + 300 * _roundsThisMission + 60} };
+        private _eta = if (isNull _gunLead) then { 0 } else { (_gunLead getVariable ["ALiVE_artyMissileDone", [0, 0]]) param [1, 0] };
+        sleep ((_eta max 30) + 10);
+    } else {
+        sleep 90;
+    };
     _fired = call _fnc_firedCount;
     ["STR_ALIVE_MIL_ARTILLERY_CALL_COMPLETE"] call _fnc_tell;
 };
@@ -735,8 +836,10 @@ if (_fired == 0) then {
     }] remoteExec ["call", _x];
 } forEach _guns;
 
-// logical ammunition ledger - the long-term cadence cap
-[_record,"rounds", (([_record,"rounds"] call ALiVE_fnc_hashGet) - (_roundsThisMission + 1)) max 0] call ALiVE_fnc_hashSet;
+// logical ammunition ledger - the long-term cadence cap. A missile battery's ledger was capped at the missiles
+// it carries, so only the missiles that left come off it
+[_record,"rounds", (([_record,"rounds"] call ALiVE_fnc_hashGet) - ([_roundsThisMission + 1, _fired min _roundsThisMission] select _missile)) max 0] call ALiVE_fnc_hashSet;
+if (_missile && {!isNull _gunLead}) then { _gunLead setVariable ["ALiVE_artyMissileDone", nil, true] };
 
 if (_debug) then {
     ["ALiVE MIL_ARTILLERY - fire mission complete: battery %1 fired %2 round(s), %3 left in the ledger", _entityID, _fired, [_record,"rounds"] call ALiVE_fnc_hashGet] call ALiVE_fnc_dump;

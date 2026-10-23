@@ -632,7 +632,16 @@ switch (_operation) do {
                         // is found in the search radius - the existing
                         // 5 s allowDamage window catches the residual
                         // bad-spawn cases.
-                        if !(_isSPE) then {
+                        // A static weapon over water near a ship stands on its deck (an MK41 launcher on a USS
+                        // Liberty). The validator rejects any spot over water and would move it ashore to the
+                        // nearest road or field, so it keeps its stored position and direction, as an aircraft
+                        // on a carrier does; the height is the owning module's to restore (mil_artillery puts
+                        // a launcher back on its deck)
+                        private _onShip = tolower _vehicleType == "staticweapon" && {surfaceIsWater _position} && {[_position] call ALiVE_fnc_nearShip};
+                        if (_onShip && {_debug}) then {
+                            ["SPAWN STATIC WEAPON ON SHIP [%1] pos: %2",_profileID,_position] call ALIVE_fnc_dump;
+                        };
+                        if (!_isSPE && {!_onShip}) then {
                             // Pass the profile's stored direction so Stage 1
                             // (centre accept) preserves the original parking
                             // orientation instead of rotating the vehicle to
@@ -650,7 +659,7 @@ switch (_operation) do {
                         // Direction fallback / refinement. Only run when
                         // the unified validator didn't already supply a
                         // direction (SPE branch above, or empty result).
-                        if (_direction == 0 || _isSPE) then {
+                        if (!_onShip && {_direction == 0 || _isSPE}) then {
                             _roads = _position nearRoads 25;
                             if (count _roads > 0) then {
                                 _roadsConnected = roadsConnectedTo (_roads select 0);

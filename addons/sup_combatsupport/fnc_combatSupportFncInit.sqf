@@ -36,56 +36,13 @@ NEO_fnc_artyUnitFiringDistance = compile preprocessFileLineNumbers "x\alive\addo
 // Whether a battery is a missile launcher with no artillery computer, such as the MK41 VLS (The Horny Latino on
 // Discord, 23 Oct): the engine won't aim it at a map position, so it fires its guided missiles at a laser target
 // instead. Takes a classname, a gun or a crewman, or a list of them (the first vehicle in it). Kept per class.
-NEO_fnc_artyIsMissileLauncher = {
-    private _c = _this;
-    if (_c isEqualType []) then {
-        private _v = "";
-        { if (_v == "" && {_x isEqualType objNull} && {!isNull _x} && {!((vehicle _x) isKindOf "CAManBase")}) then { _v = typeOf vehicle _x } } forEach _c;
-        _c = _v;
-    };
-    if (_c isEqualType objNull) then { _c = if (isNull _c) then { "" } else { typeOf vehicle _c } };
-    if (!(_c isEqualType "") || {_c == ""}) exitWith { false };
-    if (isNil "ALiVE_CS_missileLaunchers") then { ALiVE_CS_missileLaunchers = createHashMap };
-    private _known = ALiVE_CS_missileLaunchers get _c;
-    if (!isNil "_known") exitWith { _known };
-    private _r = getNumber (configFile >> "CfgVehicles" >> _c >> "artilleryScanner") == 0
-        && {((_c call ALIVE_fnc_getArtyMagazines) findIf { (["HE", _x, true] call ALIVE_fnc_isMagazineOfOrdnanceType) || {["CLUSTER", _x, true] call ALIVE_fnc_isMagazineOfOrdnanceType} }) >= 0};
-    ALiVE_CS_missileLaunchers set [_c, _r];
-    _r
-};
+// Shared with the AI Commander's artillery, in x_lib.
+NEO_fnc_artyIsMissileLauncher = { [_this, "isLauncher"] call ALIVE_fnc_missileArtillery };
 // [probe (a gun or class), the battery's guns, its rounds] -> its rounds. For a missile launcher battery: no more rounds
 // than the missiles its launchers carry, and the launchers locked against UAV terminals for every player (it's a UAV
 // to the game, and one taken over can't be fired by the radio), now, after the player respawns and for anyone joining
 // later. Called wherever a battery is built: at the start, on a respawn, and when one is added during the mission.
-NEO_fnc_artyLauncherSetup = {
-    params ["_probe", "_guns", "_rounds"];
-    if !(_probe call NEO_fnc_artyIsMissileLauncher) exitWith { _rounds };
-    private _launchers = [];
-    { if (_x isEqualType objNull && {!isNull _x}) then { _launchers pushBackUnique (vehicle _x) } } forEach _guns;
-    _launchers = _launchers select { !(_x isKindOf "CAManBase") };
-    if (_launchers isEqualTo []) exitWith { _rounds };
-    private _out = _rounds apply {
-        private _mag = [_launchers select 0, _x select 0] call ALIVE_fnc_getArtyMagazineType;
-        private _have = 0;
-        { { if ((_x select 0) == _mag) then { _have = _have + (_x select 2) } } forEach (magazinesAllTurrets _x) } forEach _launchers;
-        [_x select 0, (_x select 1) min _have]
-    };
-    {
-        [_x, {
-            if (!hasInterface) exitWith {};
-            _this spawn {
-                waitUntil { sleep 1; !isNull player };
-                player disableUAVConnectability [_this, true];
-                if (isNil "ALiVE_CS_noUavLaunchers") then {
-                    ALiVE_CS_noUavLaunchers = [];
-                    player addEventHandler ["Respawn", { { if (!isNull _x) then { (_this select 0) disableUAVConnectability [_x, true] } } forEach ALiVE_CS_noUavLaunchers }];
-                };
-                ALiVE_CS_noUavLaunchers pushBackUnique _this;
-            };
-        }] remoteExec ["call", 0, _x];
-    } forEach _launchers;
-    _out select { (_x select 1) > 0 }
-};
+NEO_fnc_artyLauncherSetup = { [_this, "setup"] call ALIVE_fnc_missileArtillery };
 NEO_fnc_supportDrawRing = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_supportDrawRing.sqf";
 NEO_fnc_supportSetTargetPos = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_supportSetTargetPos.sqf";
 NEO_fnc_radioGridToPos = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_radioGridToPos.sqf";

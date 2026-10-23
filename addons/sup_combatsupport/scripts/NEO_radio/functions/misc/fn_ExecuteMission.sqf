@@ -166,84 +166,6 @@ private _fnc_scriptMission = {
 // The laser sits on a hidden helper so close air support and the laze task take it for a script's, and the side
 // knows of it only while the missile flies. Run where the crew is: a gun taken over or moved elsewhere fires nothing.
 private _missile = _guns call NEO_fnc_artyIsMissileLauncher;
-private _fnc_missileMission = {
-    private _holds = { params ["_g"]; alive _g && {alive gunner _g} && {local _g} && {!isUAVConnected _g}
-        && {(magazinesAllTurrets _g) findIf { (_x select 0) == _ordnance && {(_x select 2) > 0} } > -1} };
-    private _launchers = _guns select { [_x] call _holds };
-    if (_launchers isEqualTo []) exitWith { ["ALiVE Combat Support: missile battery %1 has no launcher able to fire %2", typeOf vehicle _battery, _ordnance] call ALiVE_fnc_dump };
-    private _side = side group gunner (_launchers select 0);
-    private _ltClass = if (_side getFriend WEST > 0.6) then { "LaserTargetW" } else { "LaserTargetE" };
-    private _ammo = getText (configFile >> "CfgMagazines" >> _ordnance >> "ammo");
-    private _speed = (getNumber (configFile >> "CfgAmmo" >> _ammo >> "maxSpeed")) max 100;
-    private _life = ((getNumber (configFile >> "CfgAmmo" >> _ammo >> "timeToLive")) max 60) + 10;
-    // each missile as it leaves, so its laser stays only as long as it flies
-    private _projEHs = _launchers apply { [_x, _x addEventHandler ["Fired", { (_this select 0) setVariable ["ALiVE_CS_lastMissile", _this select 6] }]] };
-    private _next = 0;
-    for "_i" from 1 to _missionRoundCount do {
-        // the next launcher still able to fire, in turn
-        private _gun = objNull;
-        for "_k" from 0 to (count _launchers - 1) do {
-            private _g = _launchers select ((_next + _k) mod (count _launchers));
-            if (isNull _gun && {[_g] call _holds}) then { _gun = _g; _next = _next + _k + 1 };
-        };
-        if (isNull _gun) exitWith {};
-        // the weapon and turret holding the round, with the round loaded
-        private _wt = [];
-        { private _t = _x; { if (_wt isEqualTo [] && {_ordnance in compatibleMagazines _x}) then { _wt = [_x, _t] } } forEach (_gun weaponsTurret _t) } forEach ([[-1]] + allTurrets [_gun, false]);
-        if (_wt isEqualTo []) exitWith {};
-        _wt params ["_weapon", "_path"];
-        if ((_gun currentMagazineTurret _path) != _ordnance) then { _gun loadMagazine [_path, _weapon, _ordnance]; sleep 1 };
-        if ((_gun currentMagazineTurret _path) != _ordnance) exitWith {
-            ["ALiVE Combat Support: missile battery %1 couldn't load %2", typeOf _gun, _ordnance] call ALiVE_fnc_dump;
-        };
-        private _at = if (_dispersion > 50) then { _targetPos getPos [(_dispersion - 50), random 360] } else { +_targetPos };
-        _at set [2, 0];
-        private _helper = createVehicle ["Land_HelipadEmpty_F", _at, [], 0, "CAN_COLLIDE"];
-        private _lt = createVehicle [_ltClass, _at, [], 0, "CAN_COLLIDE"];
-        _lt attachTo [_helper, [0, 0, 1]];
-        // the flight, for the splash call: straight out at the missile's speed, and a little for the climb and dive
-        private _eta = round ((_gun distance2D _at) / _speed + 15);
-        _side reportRemoteTarget [_lt, 320];
-        _lt confirmSensorTarget [_side, true];
-        (gunner _gun) reveal [_lt, 4];
-        (gunner _gun) doTarget _lt;
-        sleep 1;
-        _battery setVariable ["ALiVE_CS_scriptETA", _eta];
-        _gun setVariable ["ALiVE_CS_lastMissile", objNull];
-        private _before = _battery getVariable ["ALiVE_CS_shotsFired", 0];
-        // asked again every 2 s until it fires, for up to 5 minutes: a launcher that has just fired, or changed missile
-        // type, is still reloading (the MK41 takes about 3 minutes to change between its HE and cluster missiles, and
-        // nothing it reports says when it's ready, so it's simply asked until it fires)
-        private _t = time;
-        private _asked = -1;
-        waitUntil {
-            if (time - _asked >= 2) then { _asked = time; _gun fireAtTarget [_lt, _weapon] };
-            sleep 0.5;
-            (_battery getVariable ["ALiVE_CS_shotsFired", 0]) > _before || {time - _t > 300} || {isNull _battery} || {!([_gun] call _holds)}
-        };
-        if (time - _t > 10) then { ["ALiVE Combat Support: missile battery %1 fired %2 after %3 s", typeOf _gun, _ordnance, round (time - _t)] call ALiVE_fnc_dump };
-        // a missile that doesn't leave ends the mission, so the radio says it couldn't fire rather than waiting on
-        // every round in turn
-        if ((_battery getVariable ["ALiVE_CS_shotsFired", 0]) == _before) exitWith {
-            ["ALiVE Combat Support: missile battery %1 didn't fire at %2", typeOf _gun, mapGridPosition _at] call ALiVE_fnc_dump;
-            _side reportRemoteTarget [_lt, 0];
-            deleteVehicle _lt; deleteVehicle _helper;
-        };
-        // away: the missile steers by the side's report of the laser all the way in (withdrawn at launch, it landed
-        // 131 m off instead of 2 to 4 m), so the report and the laser are kept until the missile is gone, then dropped
-        _side reportRemoteTarget [_lt, _life];
-        [_helper, _lt, _gun getVariable ["ALiVE_CS_lastMissile", objNull], _life, _side] spawn {
-            params ["_h", "_l", "_p", "_life", "_s"];
-            private _t = time;
-            waitUntil { sleep 1; isNull _p || {time - _t > _life} };
-            sleep 5;
-            _s reportRemoteTarget [_l, 0];
-            deleteVehicle _l; deleteVehicle _h;
-        };
-        sleep (_rateOfFire max 2);
-    };
-    { _x params ["_g", "_eh"]; if (!isNull _g) then { _g removeEventHandler ["Fired", _eh] } } forEach _projEHs;
-};
 ALiVE_CS_scriptFireClasses = missionNamespace getVariable ["ALiVE_CS_scriptFireClasses", []];
 private _scriptFirst = (typeOf vehicle _battery) in ALiVE_CS_scriptFireClasses;
 _battery setVariable ["ALiVE_CS_shotsFired", 0];
@@ -260,7 +182,8 @@ private _firedEHs = _guns apply {
 };
 
 if (_missile) then {
-    call _fnc_missileMission;
+    // shared with the AI Commander's artillery (x_lib); each missile's flight time goes on the battery for the splash call
+    [[_guns, _ordnance, _targetPos, _dispersion, _missionRoundCount, _rateOfFire, [_battery, "ALiVE_CS_scriptETA"]], "fire"] call ALIVE_fnc_missileArtillery;
 } else {
 if (_scriptFirst) then {
     [] call _fnc_scriptMission;
