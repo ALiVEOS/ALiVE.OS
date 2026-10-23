@@ -779,6 +779,9 @@
             <Key ID="STR_ALIVE_FOB_REFUSED_TYPE_ITEM">
                 <English>%1 can't build that: it isn't on this FOB type's build list.</English>
             </Key>
+            <Key ID="STR_ALIVE_FOB_MARKER_RALLY">
+                <English>%1 (rally point)</English>
+            </Key>
         </Container>
     </Package>
 </Project>

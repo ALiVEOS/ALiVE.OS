@@ -125,13 +125,24 @@ if (!hasInterface || {!_main}) exitWith {};
                     _sig = _now;
                     { deleteMarkerLocal _x } forEach _had;
                     _had = [];
+                    // a Player FOB already has its own marker on the same spot, so it gets no second
+                    // flag: its own marker's name says it's a rally point instead (ALiVE_fnc_fobMarkers)
+                    private _fobIds = [];
                     {
-                        private _m = createMarkerLocal [format ["ALiVE_rally_%1", _forEachIndex], ASLToAGL (_x select 1)];
-                        _m setMarkerTypeLocal "mil_flag";
-                        _m setMarkerColorLocal "ColorYellow";
-                        _m setMarkerTextLocal format [localize "STR_ALIVE_RALLY_MARKER", _x select 0];
-                        _had pushBack _m;
+                        if ((_x select 3) != "") then {
+                            _fobIds pushBack (_x select 3);
+                        } else {
+                            private _m = createMarkerLocal [format ["ALiVE_rally_%1", _forEachIndex], ASLToAGL (_x select 1)];
+                            _m setMarkerTypeLocal "mil_flag";
+                            _m setMarkerColorLocal "ColorYellow";
+                            _m setMarkerTextLocal format [localize "STR_ALIVE_RALLY_MARKER", _x select 0];
+                            _had pushBack _m;
+                        };
                     } forEach _rows;
+                    if (_fobIds isNotEqualTo (missionNamespace getVariable ["ALiVE_rallyFOBIds", []])) then {
+                        ALiVE_rallyFOBIds = _fobIds;
+                        if (!isNil "ALiVE_fnc_fobMarkers") then { [] call ALiVE_fnc_fobMarkers };
+                    };
                 };
                 sleep 5;
             };

@@ -784,6 +784,17 @@ ALIVE_fnc_COPDrawAll = {
     // ----- Layer 4: OPCOM objectives + axis arrows -----
     if (ALIVE_COP_LAYER_OBJECTIVES) then {
         private _objSeen = createHashMap;   // rounded-pos key -> labels already stacked there
+        // A Player FOB is also an objective for the AI Commanders, centred on the FOB, and
+        // this machine already draws the FOB's own map marker (and its name) on that spot.
+        // Count that name as the first line there so the objective's label goes under it
+        // instead of over it.
+        private _mySide = str (side group player);
+        {
+            if ((_x select 1) == _mySide) then {
+                private _fp = _x select 3;
+                _objSeen set [format ["%1x%2", round ((_fp select 0) / 50), round ((_fp select 1) / 50)], 1];
+            };
+        } forEach (missionNamespace getVariable ["ALiVE_FOB_registryMirror", []]);
         {
             private _entry     = _x;
             private _entryPos  = _entry select 0;

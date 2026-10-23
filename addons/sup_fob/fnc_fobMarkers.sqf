@@ -47,7 +47,9 @@ private _want = _rows apply { "ALiVE_FOB_" + (_x select 0) };
     if (markerType _m != _icon) then { _m setMarkerTypeLocal _icon };
     _m setMarkerPosLocal _pos;
     _m setMarkerColorLocal _colour;
-    _m setMarkerTextLocal _name;
+    // a FOB the Rally Points module lets this player travel to says so here rather than with a
+    // second marker of its own on the same spot (ALiVE_rallyFOBIds, kept by ALiVE_fnc_rallyInit)
+    _m setMarkerTextLocal ([_name, format [localize "STR_ALIVE_FOB_MARKER_RALLY", _name]] select (_id in (missionNamespace getVariable ["ALiVE_rallyFOBIds", []])));
     _m setMarkerAlphaLocal ([1, 0.5] select (_status == "damaged"));
 } forEach _rows;
 
