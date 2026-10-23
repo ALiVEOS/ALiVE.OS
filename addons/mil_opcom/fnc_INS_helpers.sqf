@@ -1355,9 +1355,12 @@ ALiVE_fnc_INS_getRoadblockCompositionHandlers = {
                 params [["_roadblockSource", objNull, [objNull, []]]];
 
                 private _roadblockPos = [_roadblockSource] call ALiVE_fnc_INS_getRoadblockPosition;
-                (nearestObjects [_roadblockPos, ["ALIVE_DemoCharge_Remote_Ammo"], 5]) select {
+                // the nearest one within 30 m: a composition can be placed well off its road point to find room, and
+                // at 5 m it was missed, which put the disable action on a cone or a loose gate elsewhere (NeisAEL on
+                // Discord, 23 Oct). Roadblocks are at least 100 m apart, so this can't find a neighbour's
+                ((nearestObjects [_roadblockPos, ["ALIVE_DemoCharge_Remote_Ammo"], 30]) select {
                     !((_x getVariable ["ALiVE_X_LIB_COMPOSITION_OBJECTS", []]) isEqualTo [])
-                }
+                }) select [0, 1]
 };
 
 ALiVE_fnc_INS_getRoadblockActionObject = {
@@ -1384,6 +1387,23 @@ ALiVE_fnc_INS_getRoadblockActionObject = {
                     // Only scan loose gates for legacy roadblocks without composition data.
                     if (_compositionHandlers isEqualTo []) then {
                         _barGates = nearestObjects [_roadblockPos, ["Land_BarGate_F"], 20];
+                    };
+                };
+
+                // no bar gate (the FIA roadblocks are all junk, NeisAEL on Discord, 23 Oct): the biggest piece of the
+                // roadblock itself, near the road. The cone this used to fall back to stood 6 m off to the side,
+                // small among the junk, and was easy to miss altogether
+                // The biggest within 6 m of the road, as the action shows within 8 m of the object it's on (the biggest
+                // overall can be a patrol tower 11 m off); with none that close, the nearest piece
+                if (_barGates isEqualTo []) then {
+                    private _pieces = _compositionObjects select { !(_x isKindOf "CAManBase") && {!(_x isKindOf "ALIVE_DemoCharge_Remote_Ammo")} && {(boundingBoxReal _x) select 2 > 0.8} };
+                    private _close = _pieces select { _x distance2D _roadblockPos < 6 };
+                    if (_close isNotEqualTo []) then {
+                        _barGates = [([_close, [], { (boundingBoxReal _x) select 2 }, "DESCEND"] call BIS_fnc_sortBy) select 0];
+                    } else {
+                        if (_pieces isNotEqualTo []) then {
+                            _barGates = [([_pieces, [_roadblockPos], { _input0 distance2D _x }, "ASCEND"] call BIS_fnc_sortBy) select 0];
+                        };
                     };
                 };
 
