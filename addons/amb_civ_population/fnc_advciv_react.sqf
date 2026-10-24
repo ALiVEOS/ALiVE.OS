@@ -42,6 +42,14 @@ Parameters:
     _this select 1: STRING - The reaction type (see above)
     _this select 2: ANY    - Optional extra parameter (vehicle OBJECT for GETIN
                              and STOP_VEHICLE)
+Locality:
+    Call from any machine. The player orders (orderMenu, civInteract) are
+    issued on the player's machine, but the civilian is usually the
+    server's, and doStop, enableAI, setUnitPos and playMove only act where
+    he is local. So Stay, Hands up, Get down, Kneel, Calm, Get in and Get
+    out hand the whole order to his owner; Go home runs on the server so
+    the group he rejoins is the server's; Follow stays with the player
+    (it needs his group) and waits for the join to land.
 Returns:
     Nil
 See Also:
@@ -59,7 +67,28 @@ if (isPlayer _unit) exitWith {};
 if (_unit getVariable ["ALiVE_advciv_blacklist", false]) exitWith {};
 if (vehicle _unit != _unit && {_type == "HIT"}) exitWith {};   // Don't react to HIT while in a vehicle
 
+// Orders run where the civilian is local (see Locality above): on a dedicated
+// server the player's copy of this call would otherwise do nothing to him.
+if (
+    !local _unit &&
+    {_type in ["STAY", "HANDSUP", "GETDOWN", "KNEEL", "CALM", "GETIN", "GETOUT"]}
+) exitWith {
+    private _args = [_unit, _type];
+    if (!isNil "_extraParam") then { _args pushBack _extraParam };
+    _args remoteExec ["ALIVE_fnc_advciv_react", _unit];
+};
+if (_type == "GOHOME" && {!isServer}) exitWith {
+    [_unit, "GOHOME", player] remoteExec ["ALIVE_fnc_advciv_react", 2];
+};
+
 private _inVehicle = (vehicle _unit != _unit);
+
+// switchMove shows only on the machine that runs it, so in multiplayer the
+// pose is sent to every machine (playMove and playAction already are)
+private _fnc_switchMove = {
+    params ["_unit", "_anim"];
+    if (isMultiplayer) then { [_unit, _anim] remoteExec ["switchMove", 0] } else { _unit switchMove _anim };
+};
 
 // Shared voice helper: plays a random line from the given pool, rate-limited
 // and chance-gated. Defined locally so all cases can call it cleanly.
@@ -91,7 +120,7 @@ if (
     _priorOrder == "HANDSUP" &&
     {_type in ["FOLLOW", "STAY", "GOHOME", "CALM", "KNEEL", "GETDOWN", "GETIN"]}
 ) then {
-    _unit switchMove "";
+    [_unit, ""] call _fnc_switchMove;
 };
 
 // Stand-up transition from a low-pose order to a stand-pose order.
@@ -108,7 +137,8 @@ if (
     _priorOrder in ["KNEEL", "GETDOWN"] &&
     {_type in ["FOLLOW", "STAY", "GOHOME", "CALM", "GETIN"]}
 ) then {
-    _unit playAction "Stand";
+    // Follow is the one order still run on the player's machine before the join lands
+    if (local _unit) then { _unit playAction "Stand" } else { [_unit, "Stand"] remoteExec ["playAction", _unit] };
 };
 
 switch (_type) do {
@@ -415,8 +445,11 @@ switch (_type) do {
         _unit setVariable ["ALiVE_advciv_nearShots", 0, true];
         _unit setVariable ["ALiVE_advciv_hidingPos", [], true];
 
-        // Remove from player's group so the player doesn't lose a squad member
-        if (group _unit == group player) then {
+        // Remove from player's group so the player doesn't lose a squad member.
+        // Runs on the server (see the top), so the new group is the server's and
+        // his brain can drive him again; the asking player comes as the extra parameter.
+        private _requester = if (!isNil "_extraParam" && {_extraParam isEqualType objNull}) then { _extraParam } else { player };
+        if (!isNull _requester && {group _unit == group _requester}) then {
             [_unit] joinSilent (createGroup civilian);
         };
 
@@ -425,6 +458,27 @@ switch (_type) do {
         // setUnitPos "UP" not "AUTO" - see CALM case for rationale.
         _unit setUnitPos "UP";
         _unit setSpeedMode "LIMITED";
+        // A follower belongs to the player's machine until the join above hands him
+        // to the server, so the lines above may have done nothing. Again once he is
+        // local, or on his owner if the handover has not happened within 5 s.
+        if (!local _unit) then {
+            [_unit] spawn {
+                params ["_unit"];
+                private _t = diag_tickTime;
+                waitUntil { sleep 0.25; isNull _unit || {local _unit} || {(diag_tickTime - _t) > 5} };
+                if (isNull _unit || {!alive _unit}) exitWith {};
+                if (local _unit) then {
+                    _unit enableAI "MOVE";
+                    _unit enableAI "PATH";
+                    _unit setUnitPos "UP";
+                    _unit setSpeedMode "LIMITED";
+                } else {
+                    { [_unit, _x] remoteExec ["enableAI", _unit] } forEach ["MOVE", "PATH"];
+                    [_unit, "UP"] remoteExec ["setUnitPos", _unit];
+                    [_unit, "LIMITED"] remoteExec ["setSpeedMode", _unit];
+                };
+            };
+        };
     };
 
     // -----------------------------------------------------------------------
@@ -459,7 +513,7 @@ switch (_type) do {
                 alive _unit &&
                 {_unit getVariable ["ALiVE_advciv_order", "NONE"] == "HANDSUP"}
             ) then {
-                _unit switchMove "AmovPercMstpSsurWnonDnon";
+                if (isMultiplayer) then { [_unit, "AmovPercMstpSsurWnonDnon"] remoteExec ["switchMove", 0] } else { _unit switchMove "AmovPercMstpSsurWnonDnon" };
             };
         }, [_unit], 2] call CBA_fnc_waitAndExecute;
     };

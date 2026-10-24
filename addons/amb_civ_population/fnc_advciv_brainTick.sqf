@@ -272,7 +272,7 @@ switch (_state) do {
                 // machine path (HIDING -> ALERT -> CALM via state-timer expiry,
                 // no order change) had no equivalent and left civs visually
                 // stuck in surrender / cower poses while reporting CALM.
-                _unit switchMove "";
+                [_unit, ""] remoteExec ["switchMove", 0];
             };
             _unit enableAI "PATH";
             // Reset escape/panic flags so they're clean for the next threat
@@ -300,7 +300,7 @@ switch (_state) do {
                 // for the full rationale. ALERT is a stand-and-watch state, so
                 // any prior surrender / cower anim from HIDING / HANDSUP needs
                 // clearing for the unit to actually face / track the threat.
-                _unit switchMove "";
+                [_unit, ""] remoteExec ["switchMove", 0];
             };
             _unit setVariable ["ALiVE_advciv_stateTimer", ALiVE_simulationTime + 8 + random 12];
             _unit setVariable ["ALiVE_advciv_vehicleEscapeTried", false];
