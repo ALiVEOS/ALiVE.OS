@@ -47,58 +47,60 @@ class ALiVE_SoldierInteraction {
             colorBackground[] = {0,0,0,0};
         };
 
+        // The buttons sit inside the window's margin (0.31 to 0.69): a prisoner's six in one row, a friendly
+        // soldier's three wider ones, so "Friendlies near?" fits its button (Jman)
         class SoldierInteract_Question: SoldierInteract_RscButton {
             idc = 92610;
             text = "$STR_ALIVE_C2ISTAR_SI_BTN_QUESTION";
             action = "['button', 'question'] call ALiVE_fnc_C2ISTARSoldierInteract";
-            x = 0.3000 * safezoneW + safezoneX;
+            x = 0.3100 * safezoneW + safezoneX;
             y = 0.525 * safezoneH + safezoneY;
-            w = 0.0647 * safezoneW;
+            w = 0.0600 * safezoneW;
             h = 0.035 * safezoneH;
         };
         class SoldierInteract_Restrain: SoldierInteract_RscButton {
             idc = 92611;
             text = "$STR_ALIVE_C2ISTAR_SI_BTN_RESTRAIN";
             action = "['button', 'restrain'] call ALiVE_fnc_C2ISTARSoldierInteract";
-            x = 0.3667 * safezoneW + safezoneX;
+            x = 0.3740 * safezoneW + safezoneX;
             y = 0.525 * safezoneH + safezoneY;
-            w = 0.0647 * safezoneW;
+            w = 0.0600 * safezoneW;
             h = 0.035 * safezoneH;
         };
         class SoldierInteract_Follow: SoldierInteract_RscButton {
             idc = 92612;
             text = "$STR_ALIVE_C2ISTAR_SI_BTN_FOLLOW";
             action = "['button', 'follow'] call ALiVE_fnc_C2ISTARSoldierInteract";
-            x = 0.4334 * safezoneW + safezoneX;
+            x = 0.4380 * safezoneW + safezoneX;
             y = 0.525 * safezoneH + safezoneY;
-            w = 0.0647 * safezoneW;
+            w = 0.0600 * safezoneW;
             h = 0.035 * safezoneH;
         };
         class SoldierInteract_Stay: SoldierInteract_RscButton {
             idc = 92613;
             text = "$STR_ALIVE_C2ISTAR_SI_BTN_STAY";
             action = "['button', 'stay'] call ALiVE_fnc_C2ISTARSoldierInteract";
-            x = 0.5001 * safezoneW + safezoneX;
+            x = 0.5020 * safezoneW + safezoneX;
             y = 0.525 * safezoneH + safezoneY;
-            w = 0.0647 * safezoneW;
+            w = 0.0600 * safezoneW;
             h = 0.035 * safezoneH;
         };
         class SoldierInteract_Search: SoldierInteract_RscButton {
             idc = 92614;
             text = "$STR_ALIVE_C2ISTAR_SI_BTN_SEARCH";
             action = "['button', 'search'] call ALiVE_fnc_C2ISTARSoldierInteract";
-            x = 0.5668 * safezoneW + safezoneX;
+            x = 0.5660 * safezoneW + safezoneX;
             y = 0.525 * safezoneH + safezoneY;
-            w = 0.0647 * safezoneW;
+            w = 0.0600 * safezoneW;
             h = 0.035 * safezoneH;
         };
         class SoldierInteract_Release: SoldierInteract_RscButton {
             idc = 92615;
             text = "$STR_ALIVE_C2ISTAR_SI_BTN_RELEASE";
             action = "['button', 'release'] call ALiVE_fnc_C2ISTARSoldierInteract";
-            x = 0.6335 * safezoneW + safezoneX;
+            x = 0.6300 * safezoneW + safezoneX;
             y = 0.525 * safezoneH + safezoneY;
-            w = 0.0647 * safezoneW;
+            w = 0.0600 * safezoneW;
             h = 0.035 * safezoneH;
         };
         class SoldierInteract_Friendly: SoldierInteract_RscButton {
@@ -106,9 +108,9 @@ class ALiVE_SoldierInteraction {
             text = "$STR_ALIVE_C2ISTAR_SI_BTN_FRIENDLIES";
             tooltip = "$STR_ALIVE_C2ISTAR_SI_TIP_FRIENDLIES";
             action = "['button', 'friendlies'] call ALiVE_fnc_C2ISTARSoldierInteract";
-            x = 0.3000 * safezoneW + safezoneX;
+            x = 0.3100 * safezoneW + safezoneX;
             y = 0.525 * safezoneH + safezoneY;
-            w = 0.0647 * safezoneW;
+            w = 0.1240 * safezoneW;
             h = 0.035 * safezoneH;
         };
         class SoldierInteract_Seen: SoldierInteract_RscButton {
@@ -116,9 +118,9 @@ class ALiVE_SoldierInteraction {
             text = "$STR_ALIVE_C2ISTAR_SI_BTN_SEEN";
             tooltip = "$STR_ALIVE_C2ISTAR_SI_TIP_SEEN";
             action = "['button', 'seen'] call ALiVE_fnc_C2ISTARSoldierInteract";
-            x = 0.3667 * safezoneW + safezoneX;
+            x = 0.4380 * safezoneW + safezoneX;
             y = 0.525 * safezoneH + safezoneY;
-            w = 0.0647 * safezoneW;
+            w = 0.1240 * safezoneW;
             h = 0.035 * safezoneH;
         };
         class SoldierInteract_Headed: SoldierInteract_RscButton {
@@ -126,9 +128,9 @@ class ALiVE_SoldierInteraction {
             text = "$STR_ALIVE_C2ISTAR_SI_BTN_HEADED";
             tooltip = "$STR_ALIVE_C2ISTAR_SI_TIP_HEADED";
             action = "['button', 'headed'] call ALiVE_fnc_C2ISTARSoldierInteract";
-            x = 0.4334 * safezoneW + safezoneX;
+            x = 0.5660 * safezoneW + safezoneX;
             y = 0.525 * safezoneH + safezoneY;
-            w = 0.0647 * safezoneW;
+            w = 0.1240 * safezoneW;
             h = 0.035 * safezoneH;
         };
 
@@ -136,9 +138,9 @@ class ALiVE_SoldierInteraction {
             idc = 92609;
             text = "$STR_ALIVE_C2ISTAR_SI_BTN_CLOSE";
             action = "closeDialog 0";
-            x = 0.6333 * safezoneW + safezoneX;
+            x = 0.6300 * safezoneW + safezoneX;
             y = 0.567 * safezoneH + safezoneY;
-            w = 0.0647 * safezoneW;
+            w = 0.0600 * safezoneW;
             h = 0.035 * safezoneH;
         };
     };
