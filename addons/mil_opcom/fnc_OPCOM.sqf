@@ -151,6 +151,8 @@ switch (_operation) do {
         // Start From Ship (Ando on Discord, 24 Oct): the starting force is aboard a static ship and lands by helicopter
         private _shipStart = (toLower format ["%1", _logic getVariable ["shipStart", "false"]]) in ["true", "1"];
         private _shipInf = floor ((parseNumber format ["%1", _logic getVariable ["shipInfantry", 6]]) max 0);
+        // motorised groups aboard too: their vehicles are flown ashore under heavy lift helicopters
+        private _shipMot = floor ((parseNumber format ["%1", _logic getVariable ["shipMotorised", 0]]) max 0);
         // Phase 4: faction sources, all unioned below.
         //   factions       : multi-select listbox (primary UX,
         //                    ORIGINAL property so old `factions`
@@ -435,8 +437,12 @@ switch (_operation) do {
             ["opTasksKnownOnly", _opTasksKnownOnly],
             // the force aboard as [infantry, motorised, 0 x 6], in getForceStrength's order; checked after the handler is made
             ["shipStart", _shipStart],
-            // infantry only for now: a motorised group's vehicle would have to be made at sea and carried slung
-            ["shipAboard", [_shipInf, 0, 0, 0, 0, 0, 0, 0]],
+            ["shipAboard", [_shipInf, _shipMot, 0, 0, 0, 0, 0, 0]],
+            // waves whose vehicles no helicopter could lift: three and the motorised groups are left out
+            ["shipMotRefused", 0],
+            // motorised waves that came back empty with no reason given (enemy at the landing, the lift throttled):
+            // six in a row and the motorised groups are left out, so ordinary reinforcement can start again
+            ["shipMotWaits", 0],
             ["shipPads", []],
             ["shipEvents", []],
             ["shipSent", createHashMap],
@@ -5817,6 +5823,19 @@ switch (_operation) do {
         private _factions = [_logic, "factions", []] call ALiVE_fnc_HashGet;
         private _side = [_logic, "side", "WEST"] call ALiVE_fnc_HashGet;
 
+        // the motorised groups can't leave the ship: they come off the force aboard and the starting strength
+        private _dropMotorised = {
+            params ["_why"];
+            private _aboard = +([_logic, "shipAboard", [0,0,0,0,0,0,0,0]] call ALiVE_fnc_HashGet);
+            private _left = _aboard select 1;
+            if (_left <= 0) exitWith {};
+            private _start = +([_logic, "startForceStrength", []] call ALiVE_fnc_HashGet);
+            if (count _start > 1) then { _start set [1, ((_start select 1) - _left) max 0]; [_logic, "startForceStrength", _start] call ALiVE_fnc_HashSet };
+            _aboard set [1, 0];
+            [_logic, "shipAboard", _aboard] call ALiVE_fnc_HashSet;
+            ["AI Commander '%1' is set to Start From Ship with %2 motorised groups aboard, but %3, so they are left out", _name, _left, _why] call ALiVE_fnc_dumpR;
+        };
+
         // credit the waves Logistics has sent (it writes them into shipSent by token, as the event it holds is a
         // copy of ours); a wave it no longer holds and never sent was refused, and is asked for again. A wave it
         // still holds, waiting for a player to move off the ship or for helicopters, stays counted however long
@@ -5839,14 +5858,35 @@ switch (_operation) do {
                     _aboard set [0, ((_aboard select 0) - (_sent select 0)) max 0];
                     _aboard set [1, ((_aboard select 1) - (_sent select 1)) max 0];
                     ["OPCOM SHIP - %1: a wave left the ship with %2 infantry and %3 motorised groups; still aboard %4", _name, _sent select 0, _sent select 1, _aboard select [0, 2]] call ALiVE_fnc_dump;
+                    // no helicopter could lift this wave's vehicles: asked again, up to three times in a row
+                    if (_sent param [2, false]) then {
+                        private _refused = ([_logic, "shipMotRefused", 0] call ALiVE_fnc_HashGet) + 1;
+                        [_logic, "shipMotRefused", _refused] call ALiVE_fnc_HashSet;
+                        ["OPCOM SHIP - %1: no helicopter could lift a wave's vehicles (%2 of 3)", _name, _refused] call ALiVE_fnc_dump;
+                    };
+                    if ((_sent select 1) > 0) then {
+                        [_logic, "shipMotRefused", 0] call ALiVE_fnc_HashSet;
+                        [_logic, "shipMotWaits", 0] call ALiVE_fnc_HashSet;
+                    };
                 } else {
                     if ((_id in _held) || {time - _at < 120}) then { _keep pushBack _x } else {
-                        ["OPCOM SHIP - %1: Military Logistics turned down a wave of %2 infantry groups; it is asked for again", _name, _asked select 0] call ALiVE_fnc_dump;
+                        ["OPCOM SHIP - %1: Military Logistics turned down a wave of %2 infantry and %3 motorised groups; it is asked for again", _name, _asked select 0, _asked select 1] call ALiVE_fnc_dump;
+                        if ((_asked select 1) > 0) then {
+                            [_logic, "shipMotWaits", ([_logic, "shipMotWaits", 0] call ALiVE_fnc_HashGet) + 1] call ALiVE_fnc_HashSet;
+                        };
                     };
                 };
             } forEach _events;
             [_logic, "shipEvents", _keep] call ALiVE_fnc_HashSet;
             [_logic, "shipAboard", _aboard] call ALiVE_fnc_HashSet;
+            if (([_logic, "shipMotRefused", 0] call ALiVE_fnc_HashGet) >= 3) then {
+                [_logic, "shipMotRefused", 0] call ALiVE_fnc_HashSet;
+                ["no helicopter could lift their vehicles after three tries"] call _dropMotorised;
+            };
+            if (([_logic, "shipMotWaits", 0] call ALiVE_fnc_HashGet) >= 6) then {
+                [_logic, "shipMotWaits", 0] call ALiVE_fnc_HashSet;
+                ["Military Logistics turned down six waves of them in a row"] call _dropMotorised;
+            };
             _keep
         };
 
@@ -5873,6 +5913,11 @@ switch (_operation) do {
             [_logic, "shipAboard", [0,0,0,0,0,0,0,0]] call ALiVE_fnc_HashSet;
             call _fsmDone;
         };
+        // a vehicle goes ashore slung under a helicopter: one that can lift more than a tonne, as Military Logistics
+        // asks of its sling helicopters
+        private _lift = 0;
+        { _lift = _lift max getNumber (configFile >> "CfgVehicles" >> _x >> "slingLoadMaxCargoMass") } forEach (_heli select { _x isKindOf "Helicopter" });
+        if (_lift <= 1000) then { [format ["no helicopter of %1 or its side can lift a vehicle", _factions]] call _dropMotorised };
 
         private _pending = call _credit;
         private _aboard = [_logic, "shipAboard", [0,0,0,0,0,0,0,0]] call ALiVE_fnc_HashGet;
@@ -5880,7 +5925,7 @@ switch (_operation) do {
         private _askedInf = 0; private _askedMot = 0;
         { _askedInf = _askedInf + ((_x select 1) select 0); _askedMot = _askedMot + ((_x select 1) select 1) } forEach _pending;
         private _infantry = (((_aboard select 0) - _askedInf) max 0) min 8;
-        private _motorized = 0;
+        private _motorized = (((_aboard select 1) - _askedMot) max 0) min 4;
 
         // the landing: the objective nearest the ship that the commander is attacking or holding, else the nearest of all
         private _objectives = [_logic, "objectives", []] call ALiVE_fnc_HashGet;
@@ -5904,11 +5949,12 @@ switch (_operation) do {
         [_logic, "shipBeachheadID", [_beach, "objectiveID", ""] call ALiVE_fnc_HashGet] call ALiVE_fnc_HashSet;
         ["OPCOM SHIP - %1 lands %2 infantry and %3 motorised groups at %4 (%5 m from the ship)", _name, _infantry, _motorized, [_position] call ALIVE_fnc_taskGetNearestLocationName, round _best] call ALiVE_fnc_dump;
 
-        // the stock pacing: two infantry and two motorised groups a wave, 200 seconds apart
+        // the stock pacing, two groups a wave and 200 seconds apart: the infantry first, then the motorised groups in
+        // waves of their own, as Logistics would seat infantry in the sling helicopters of a mixed wave
         private _wave = 0;
         while { _infantry + _motorized > 0 } do {
             private _inf = _infantry min 2;
-            private _mot = _motorized min 2;
+            private _mot = if (_inf > 0) then { 0 } else { _motorized min 2 };
             _infantry = _infantry - _inf;
             _motorized = _motorized - _mot;
             private _from = _pads select (_wave mod (count _pads));

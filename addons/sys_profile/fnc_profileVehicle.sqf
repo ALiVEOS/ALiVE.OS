@@ -466,6 +466,8 @@ switch (_operation) do {
             [_logic] call ALIVE_fnc_profileGetGoodSpawnPosition;
             _position = +(_logic select 2 select 2); //[_entityProfile,"position"] call ALIVE_fnc_hashGet;
             _special = "NONE";
+            // a car or tank made on a ship's deck (Start From Ship: the vehicle waits on a helipad for its lift)
+            private _onDeck = false;
 
             if (tolower _vehicleType == "ship") then {
                 // Profiles store ATL, but createVehicle expects AGL for boats
@@ -636,8 +638,9 @@ switch (_operation) do {
                         // Liberty). The validator rejects any spot over water and would move it ashore to the
                         // nearest road or field, so it keeps its stored position and direction, as an aircraft
                         // on a carrier does; the height is the owning module's to restore (mil_artillery puts
-                        // a launcher back on its deck)
-                        private _onShip = tolower _vehicleType == "staticweapon" && {surfaceIsWater _position} && {[_position] call ALiVE_fnc_nearShip};
+                        // a launcher back on its deck). A car or tank there is put on the deck below once made
+                        private _onShip = (surfaceIsWater _position) && {[_position] call ALiVE_fnc_nearShip};
+                        _onDeck = _onShip && {tolower _vehicleType != "staticweapon"};
                         if (_onShip && {_debug}) then {
                             ["SPAWN STATIC WEAPON ON SHIP [%1] pos: %2",_profileID,_position] call ALIVE_fnc_dump;
                         };
@@ -687,6 +690,38 @@ switch (_operation) do {
             _vehicle = createVehicle [_vehicleClass, _position, [], 0, _special];
 
             _vehicle allowDamage false;
+
+            // createVehicle puts a car at sea on the sea bed, under the ship: stand it on the deck straight
+            // below, found by looking down from above the ship. A group's vehicles are spread around its
+            // position, so one can come out past the deck's edge: then the deck is looked for closer to the ship
+            if (_onDeck) then {
+                private _fnc_deck = {
+                    private _h = lineIntersectsSurfaces [[_this select 0, _this select 1, 60], [_this select 0, _this select 1, -1], _vehicle, objNull, true, 1, "GEOM", "NONE"];
+                    _h select { !isNull (_x select 2) || {!isNull (_x select 3)} }
+                };
+                private _hits = _position call _fnc_deck;
+                if (_hits isEqualTo []) then {
+                    private _ships = nearestObjects [[_position select 0, _position select 1, 0], ["StaticShip"], 300];
+                    if (_ships isNotEqualTo []) then {
+                        private _toShip = _position getDir (_ships select 0);
+                        for "_step" from 5 to 100 step 5 do {
+                            _hits = (_position getPos [_step, _toShip]) call _fnc_deck;
+                            // the edge is found: 10 m further in, so the vehicle is not left hanging over it
+                            if (_hits isNotEqualTo []) exitWith {
+                                private _in = (_position getPos [_step + 10, _toShip]) call _fnc_deck;
+                                if (_in isNotEqualTo []) then { _hits = _in };
+                            };
+                        };
+                    };
+                };
+                if (_hits isNotEqualTo []) then {
+                    _vehicle setVelocity [0, 0, 0];
+                    _vehicle setPosASL (((_hits select 0) select 0) vectorAdd [0, 0, 0.3]);
+                };
+                if (_debug) then {
+                    ["SPAWN VEHICLE ON SHIP DECK [%1] %2 at %3 ASL", _profileID, _vehicleClass, getPosASL _vehicle] call ALIVE_fnc_dump;
+                };
+            };
 
             // #1024 - retain the bottom-resting hull fallback for legacy profiles.
             // Boat creation uses AGL, so zero-height water-search results already

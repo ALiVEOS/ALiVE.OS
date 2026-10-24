@@ -7068,6 +7068,15 @@ switch(_operation) do {
                         };
 
                         if!(_allowMotorised) then {
+                            // Start From Ship: the commander is told at once, and leaves its motorised groups out after three
+                            if (_shipLaunch && {_eventForceMotorised > 0}) then {
+                                ["ML - SHIP: motorised reinforcement is off, so the %1 motorised groups stay aboard", _eventForceMotorised] call ALiVE_fnc_dump;
+                                {
+                                if (_x isEqualType [] && {([_x, "opcomID", ""] call ALIVE_fnc_hashGet) == ([_event, "shipOpcomID", ""] call ALIVE_fnc_hashGet)}) exitWith {
+                                    ([_x, "shipSent", createHashMap] call ALIVE_fnc_hashGet) set [[_event, "shipToken", ""] call ALIVE_fnc_hashGet, [0, 0, true]];
+                                };
+                            } forEach (missionNamespace getVariable ["OPCOM_instances", []]);
+                            };
                             _forceMakeupTotal = _forceMakeupTotal - _eventForceMotorised;
                             _eventForceMakeup set [1,0];
                         };
@@ -7731,6 +7740,18 @@ switch(_operation) do {
         private _shipFrom = [_event, "departurePosition", []] call ALIVE_fnc_hashGet;
         private _shipDest = [_event, "shipDestination", []] call ALIVE_fnc_hashGet;
         private _shipPads = [_event, "shipPads", []] call ALIVE_fnc_hashGet;
+        // a ship wave whose vehicles can't be flown: they stay aboard and the commander is told at once (it asks again,
+        // and leaves them out after three), as nothing may go ashore by road from a ship
+        private _fnc_shipMotDropped = {
+            params ["_why"];
+            [_event, "shipMotDropped", true] call ALIVE_fnc_hashSet;
+            ["ML - SHIP: %1; the vehicles stay aboard", _why] call ALiVE_fnc_dump;
+            {
+                                if (_x isEqualType [] && {([_x, "opcomID", ""] call ALIVE_fnc_hashGet) == ([_event, "shipOpcomID", ""] call ALIVE_fnc_hashGet)}) exitWith {
+                                    ([_x, "shipSent", createHashMap] call ALIVE_fnc_hashGet) set [[_event, "shipToken", ""] call ALIVE_fnc_hashGet, [0, 0, true]];
+                                };
+                            } forEach (missionNamespace getVariable ["OPCOM_instances", []]);
+        };
 
         private _reinforcementPriorityTotal = [_reinforcementAnalysis, "priorityTotal"] call ALIVE_fnc_hashGet;
         private _reinforcementType = [_reinforcementAnalysis, "type"] call ALIVE_fnc_hashGet;
@@ -8047,6 +8068,10 @@ switch(_operation) do {
                             };
                             private _dzEnemyCount = (count _dzEnemyNear) + (count ([_shipDest, 500, [_dzEnemySides, "entity"], true] call ALIVE_fnc_getNearProfiles));
                             if (_dzEnemyCount > 0) then {
+                                if (_eventForceMotorised > 0) then {
+                                    _eventForceMotorised = 0;
+                                    ["ML - SHIP: enemy at the landing, the vehicles wait aboard until the infantry have cleared it"] call ALiVE_fnc_dump;
+                                };
                                 _eventType = "HELI_PARADROP";
                                 ["ML - HELI_PARADROP selected: enemy=%1 dzEnemy=%2 objState=%3 at destination.", 0, _dzEnemyCount, "ship landing"] call ALiVE_fnc_dump;
                             };
@@ -8560,8 +8585,8 @@ switch(_operation) do {
                                 // Too many slingloads in flight - send vehicles by ground this cycle
                                 _eventForceMotorised  = 0;
                                 _eventForceMechanised = 0;
-                                // If no infantry either, fall back to pure STANDARD
-                                if (_eventForceInfantry == 0) then {
+                                // If no infantry either, fall back to pure STANDARD (a ship wave just waits for the next ask)
+                                if (_eventForceInfantry == 0 && {!_shipLaunch}) then {
                                     _eventType = "STANDARD";
                                     // Undo the airfield departure swap so the ground path
                                     // stages from the baseline supply-line departure.
@@ -8636,6 +8661,9 @@ switch(_operation) do {
                         _motorisedGroups = _motorisedGroups - ALiVE_PLACEMENT_GROUPBLACKLIST;
                         _motorisedGroups = [_motorisedGroups, _eventFaction, ([_logic, "excludeKinds"] call MAINCLASS), "groups"] call ALIVE_fnc_MLExcludeKindsFilter;
                         _groupCount = count _motorisedGroups;
+                        if (_shipLaunch && {_eventForceMotorised > 0} && {_groupCount == 0}) then {
+                            [format ["%1 has no motorised group to send", _eventFaction]] call _fnc_shipMotDropped;
+                        };
                         _totalCount = _totalCount + _groupCount;
 
                         // FIX: Track skipped motorised groups
@@ -8646,9 +8674,10 @@ switch(_operation) do {
                             _group = _motorisedGroups select _i;
 
                             if (_eventType == "HELI_INSERT") then {
-                                _position = [_logic, "prepareHelicopterLZ", [
+                                // Start From Ship: the vehicle is made on a helipad of the ship's deck
+                                _position = if (_shipLaunch && {_shipPads isNotEqualTo []}) then { +(_shipPads select (_i mod (count _shipPads))) } else { [_logic, "prepareHelicopterLZ", [
                                     _reinforcementPosition getPos [random(200), random(360)], 60
-                                ]] call MAINCLASS;
+                                ]] call MAINCLASS };
                                 if (_debug) then {
                                     ["ML - HELI_INSERT motorised pickup LZ prepared at %1", _position] call ALiVE_fnc_dump;
                                 };
@@ -8668,7 +8697,7 @@ switch(_operation) do {
                                 };
                             };
 
-                            if!(surfaceIsWater _position) then {
+                            if(!(surfaceIsWater _position) || _shipLaunch) then {
 
                                 _profiles = [_group, _position, random(360), false, _eventFaction, true, false, "STEALTH"] + (call _fnc_hookArgs) call ALIVE_fnc_createProfilesFromGroupConfig;
 
@@ -8806,6 +8835,23 @@ switch(_operation) do {
                                 // In test mode, log the failure explicitly so it is visible in RPT
                                 // rather than silently degrading to ground convoy.
                                 if (_requiresStandardDelivery) exitWith {
+                                    // Start From Ship: no road from a ship, so the groups just made on the deck are taken back
+                                    if (_shipLaunch) exitWith {
+                                        {
+                                            {
+                                                private _pr = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+                                                if (!isNil "_pr") then {
+                                                    // already made real on the deck: taken off it first
+                                                    if (_pr select 2 select 1) then { if ((_pr select 2 select 5) == "entity") then { [_pr, "despawn"] call ALIVE_fnc_profileEntity } else { [_pr, "despawn"] call ALIVE_fnc_profileVehicle } };
+                                                    [ALIVE_profileHandler, "unregisterProfile", _pr] call ALIVE_fnc_profileHandler;
+                                                };
+                                            } forEach _x;
+                                        } forEach _motorisedProfiles;
+                                        _totalCount = _totalCount - (count _motorisedProfiles);
+                                        _motorisedProfiles = [];
+                                        [_eventCargoProfiles, "motorised", []] call ALIVE_fnc_hashSet;
+                                        [format ["no helicopter of %1 can lift the vehicle", _eventFaction]] call _fnc_shipMotDropped;
+                                    };
                                     if (!isNil "ALIVE_ML_TEST_REQUEST" && { ALIVE_ML_TEST_REQUEST == _eventID }) then {
                                         ["ML - TEST BYPASS: Slingload weight check FAILED -- no heli class in _transportGroups can lift the vehicle. _transportGroups=%1 faction=%2. Verify slingLoadMaxCargoMass config and faction air transport registration. Falling back to STANDARD for event %3.",
                                             _transportGroups, _eventFaction, _eventID] call ALiVE_fnc_dump;
@@ -8863,9 +8909,12 @@ switch(_operation) do {
                                             // hillside; getTerrainHeightASL corrects for this.
                                             private _spawnMin = 400 + (_slingHeliSpawnIdx * 400);
                                             private _spawnMax = _spawnMin + 300;
-                                            _position = [_logic, "findHelicopterLandingPos", [
-                                                _reinforcementPosition, _spawnMin, _spawnMax
-                                            ]] call MAINCLASS;
+                                            _position = if (_shipLaunch && {count _shipFrom > 1} && {count _shipDest > 1}) then {
+                                                // Start From Ship: out at sea beyond the ship, away from the beach
+                                                _shipFrom getPos [_spawnMin, _shipDest getDir _shipFrom]
+                                            } else {
+                                                [_logic, "findHelicopterLandingPos", [_reinforcementPosition, _spawnMin, _spawnMax]] call MAINCLASS
+                                            };
                                             // Spawn at ground level (Z=0). Spawning at altitude with slung
                                             // truck already attached causes immediate in-air collision --
                                             // the Arma engine resolves the combined slung mass as a ground
@@ -8975,6 +9024,21 @@ switch(_operation) do {
                                 // if(_eventType == "HELI_INSERT" && motorisedProfiles > 0) block
                                 // and are therefore completely unaffected.
                                 ["ML - HELI_INSERT slingload: No air transport assets found for faction=%1 side=%2 (limitToFaction=%3). Check ALIVE_factionDefaultAirTransport / ALIVE_sideDefaultAirTransport registration. Falling back to STANDARD for event %4.", _eventFaction, _side, _limitTransportToFaction, _eventID] call ALiVE_fnc_dump;
+                                if (_shipLaunch) exitWith {
+                                    {
+                                        {
+                                            private _pr = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+                                            if (!isNil "_pr") then {
+                                                if (_pr select 2 select 1) then { if ((_pr select 2 select 5) == "entity") then { [_pr, "despawn"] call ALIVE_fnc_profileEntity } else { [_pr, "despawn"] call ALIVE_fnc_profileVehicle } };
+                                                [ALIVE_profileHandler, "unregisterProfile", _pr] call ALIVE_fnc_profileHandler;
+                                            };
+                                        } forEach _x;
+                                    } forEach _motorisedProfiles;
+                                    _totalCount = _totalCount - (count _motorisedProfiles);
+                                    _motorisedProfiles = [];
+                                    [_eventCargoProfiles, "motorised", []] call ALIVE_fnc_hashSet;
+                                    [format ["no helicopter of %1 can lift the vehicle", _eventFaction]] call _fnc_shipMotDropped;
+                                };
                                 _eventType = "STANDARD";
                                 // Undo the airfield departure swap for the ground fallback.
                                 if (_airfieldDepartureApplied) then { _reinforcementPosition = _fallbackDeparturePos; };
@@ -9907,7 +9971,7 @@ switch(_operation) do {
                                 private _shipToken = [_event, "shipToken", ""] call ALIVE_fnc_hashGet;
                                 {
                                     if (_x isEqualType [] && {([_x, "opcomID", ""] call ALIVE_fnc_hashGet) == _shipID}) exitWith {
-                                        ([_x, "shipSent", createHashMap] call ALIVE_fnc_hashGet) set [_shipToken, [count _infantryProfiles, 0]];
+                                        ([_x, "shipSent", createHashMap] call ALIVE_fnc_hashGet) set [_shipToken, [count _infantryProfiles, count _motorisedProfiles, [_event, "shipMotDropped", false] call ALIVE_fnc_hashGet]];
                                     };
                                 } forEach (missionNamespace getVariable ["OPCOM_instances", []]);
                             };

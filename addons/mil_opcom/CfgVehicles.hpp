@@ -378,6 +378,14 @@ class CfgVehicles {
                                 defaultValue = """6""";
                                 typeName = "NUMBER";
                         };
+                        class shipMotorised : Edit
+                        {
+                                property = "ALiVE_mil_opcom_shipMotorised";
+                                displayName = "$STR_ALIVE_OPCOM_SHIP_MOT";
+                                tooltip = "$STR_ALIVE_OPCOM_SHIP_MOT_COMMENT";
+                                defaultValue = """0""";
+                                typeName = "NUMBER";
+                        };
                         class HDR_HVT : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_HDR_HVT"; displayName = "HIGH VALUE TARGET"; };
                         class hvt : Combo
                         {
