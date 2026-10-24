@@ -1,5 +1,5 @@
-// Generated 2026-10-24 from 169 terrain indexes in addons/main/static: every model at least two indexes list and
-// all of them categorise the same way (5538 models: 2490 categorised, 3048 blacklist only). The in-game indexer
+// Generated 2026-10-24 from 170 terrain indexes in addons/main/static: every model at least two indexes list and
+// all of them categorise the same way (5540 models: 2491 categorised, 3049 blacklist only). The in-game indexer
 // fills these in without asking when its Known Categories setting is Yes. Regenerated, not edited by hand.
 [
     ["a3\air_f_jets\plane_fighter_02\plane_fighter_02_wreck_f.p3d", ["ALIVE_Indexing_Blacklist"]],
@@ -898,6 +898,7 @@
     ["a3\structures_f_enoch\furniture\radar_equipment\radar_rack_quad.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\structures_f_enoch\furniture\school_equipment\anatomy_poster_1.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\structures_f_enoch\furniture\school_equipment\class_case_b_open.p3d", ["ALIVE_Indexing_Blacklist"]],
+    ["a3\structures_f_enoch\furniture\school_equipment\flag_chernarus_pole.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\structures_f_enoch\furniture\school_equipment\lab_bench.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\structures_f_enoch\furniture\school_equipment\long_bench.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\structures_f_enoch\furniture\school_equipment\radiator.p3d", ["ALIVE_Indexing_Blacklist"]],
@@ -2174,6 +2175,7 @@
     ["ca\misc2\sr_border.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["ca\misc2\table\table.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["ca\misc3\a_tent.p3d", ["ALIVE_Indexing_Blacklist"]],
+    ["ca\misc3\camonet_east.p3d", ["ALIVE_militaryBuildingTypes"]],
     ["ca\misc3\camonet_east_var1.p3d", ["ALIVE_militaryBuildingTypes"]],
     ["ca\misc3\camonetb_east.p3d", ["ALIVE_militaryBuildingTypes"]],
     ["ca\misc3\fort_artillery_nest.p3d", ["ALIVE_militaryBuildingTypes"]],
