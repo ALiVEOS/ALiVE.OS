@@ -175,9 +175,13 @@ switch (_op) do {
             if (_held >= _overrun && {!isNull _grp}) then {
                 [localize "STR_ALIVE_RALLY", localize "STR_ALIVE_RALLY_UI_OVERRUN"] remoteExecCall ["ALIVE_fnc_sendHint", units _grp select { isPlayer _x }];
             };
+            // only forget the squad's rally point if it is still this one: when the leader puts a new one down the old one
+            // is deleted, and clearing here then wiped the new one, so it lost Rename and Pick Up and the next one put down
+            // left it standing (A. Ares on Discord, 24 Oct)
+            private _mine = !isNull _grp && {(_grp getVariable ["ALiVE_rallyDeployed", objNull]) isEqualTo _obj};
             ["remove", [_obj]] call ALiVE_fnc_rallyPoint;
             if (!isNull _obj) then { deleteVehicle _obj };
-            if (!isNull _grp) then { _grp setVariable ["ALiVE_rallyDeployed", nil, true] };
+            if (_mine) then { _grp setVariable ["ALiVE_rallyDeployed", nil, true] };
         };
     };
 
