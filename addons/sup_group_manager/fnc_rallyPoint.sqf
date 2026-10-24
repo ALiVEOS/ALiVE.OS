@@ -148,10 +148,12 @@ switch (_op) do {
         // anything else stands there itself
         private _rc = [["leaderRallyClass", ""] call _set, str side _grp, ""] call _pickClass;
         private _obj = objNull;
+        // the backpack is a simple object, a picture of the bag with no inventory: a real one in a ground holder
+        // came with Arma's own "Take" action, which no script can take off (Jman, 24 Oct). The rally point's
+        // own actions are on the player, so nothing needs the object to carry one.
         if (_rc == "" || {_rc isKindOf "Bag_Base"}) then {
-            _obj = createVehicle ["GroundWeaponHolder", _unit modelToWorld [0, 1.2, 0], [], 0, "CAN_COLLIDE"];
+            _obj = createSimpleObject [[_rc, "B_Carryall_oli"] select (_rc == ""), AGLToASL (_unit modelToWorld [0, 1.2, 0])];
             _obj setDir getDir _unit;
-            _obj addBackpackCargoGlobal [[_rc, "B_Carryall_oli"] select (_rc == ""), 1];
         } else {
             _obj = createVehicle [_rc, _unit modelToWorld [0, 1.5, 0], [], 0, "CAN_COLLIDE"];
             _obj setDir getDir _unit;
