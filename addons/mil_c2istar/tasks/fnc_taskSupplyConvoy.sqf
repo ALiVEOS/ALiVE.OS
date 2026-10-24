@@ -143,7 +143,13 @@ switch (_taskState) do {
         if (_capR > 0 && {(missionNamespace getVariable ["ALIVE_taskMinDistance", 0]) <= 0}) then { _minDistance = _capR * 0.5 };
         if (_capR <= 0) then { _capR = 1e9 };
 
-        if (_destinationCenter isEqualTo [] || {_destinationClusterID == _sourceClusterID} || {_destinationCenter distance2D _sourceCenter < _minDistance}) then {
+        // The farthest town short of the default 4 to 6 km still beats open ground, which put drop-offs in forests
+        // (NeisAEL on Discord, 24 Oct); on a smaller map no town is that far. A Minimum Task Distance set on the
+        // module is still kept to.
+        private _townOk = _destinationCenter isNotEqualTo [] && {_destinationClusterID != _sourceClusterID}
+            && {(missionNamespace getVariable ["ALIVE_taskMinDistance", 0]) <= 0}
+            && {(_destinationCenter distance2D _sourceCenter) >= (1500 min _capR)};
+        if (!_townOk && {_destinationCenter isEqualTo [] || {_destinationClusterID == _sourceClusterID} || {_destinationCenter distance2D _sourceCenter < _minDistance}}) then {
             _destinationCenter = [_sourceCenter, _minDistance, ((_minDistance + 4000) min _capR), 2, 0, 0.25, 0, [], [_sourceCenter]] call BIS_fnc_findSafePos;
             _destinationClusterID = "";
             if (_destinationCenter isEqualTo []) then {
@@ -164,6 +170,20 @@ switch (_taskState) do {
         if (_fixedPickup && {(_aoCenter distance2D _sourceCenter) >= _minDistance}) then {
             _destinationCenter = +_aoCenter;
             _destinationClusterID = _aoClusterID;
+        };
+        // A drop-off on open ground goes to the nearest road, a place a convoy can be met, and stays out of the areas
+        // in Task Blacklist (towns are already kept out of them by the search)
+        if (_destinationClusterID == "" && {_destinationCenter isNotEqualTo []}) then {
+            private _bl = missionNamespace getVariable ["ALIVE_taskBlacklistMarkers", []];
+            private _base = +_destinationCenter;
+            private _d = _base distance2D _sourceCenter;
+            private _dir = _sourceCenter getDir _base;
+            {
+                private _try = if (_x == 0) then { _base } else { _sourceCenter getPos [_d, _dir + _x] };
+                private _road = [_try, 1000] call BIS_fnc_nearestRoad;
+                private _p = if (isNull _road) then { _try } else { getPosATL _road };
+                if ((_bl findIf { _p inArea _x }) < 0) exitWith { _destinationCenter = _p };
+            } forEach [0, 30, -30, 60, -60, 90, -90, 135, -135, 180];
         };
         _destinationCenter set [2, 0];
 
