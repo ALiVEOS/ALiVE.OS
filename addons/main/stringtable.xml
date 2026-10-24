@@ -126,10 +126,10 @@
     <English>Off</English>
 </Key>
 <Key ID="STR_ALIVE_SETTINGS_MSG">
-    <English>Task updates</English>
+    <English>Task and radio updates</English>
 </Key>
 <Key ID="STR_ALIVE_SETTINGS_MSG_COMMENT">
-    <English>How C2ISTAR task updates reach you, including the Hearts and Minds hold countdown.</English>
+    <English>How C2ISTAR task updates, the Hearts and Minds hold countdown and Combat Support's radio messages reach you. Chat lines keep the radio in side chat, as it always was.</English>
 </Key>
 <Key ID="STR_ALIVE_SETTINGS_MSG_SUB">
     <English>Subtitles</English>

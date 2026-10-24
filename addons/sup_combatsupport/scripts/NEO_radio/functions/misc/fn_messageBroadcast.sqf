@@ -31,7 +31,16 @@
     switch (_radio) do
     {
         case "global" : { _unit globalChat _text };
-        case "side" : { {[_x,"HQ"] sideChat _text} foreach _friendlySides };
+        case "side" : {
+            // A player on a friendly side gets it the way they chose for task updates (Addon Options, ALiVE,
+            // Game, Task and radio updates): a subtitle or a hint from HQ, or side chat as it always was. (Jman)
+            private _style = missionNamespace getVariable ["ALiVE_prefTaskMessages", "chat"];
+            if (hasInterface && {!isNull player} && {_style != "chat"} && {!isNil "ALIVE_fnc_taskSubtitle"} && {(side group player) in _friendlySides}) then {
+                ["HQ", _text] call ALIVE_fnc_taskSubtitle;
+            } else {
+                {[_x,"HQ"] sideChat _text} foreach _friendlySides;
+            };
+        };
         case "group" : { _unit groupChat _text };
         case "vehicle" : { _unit vehicleChat _text };
         case "sideRadio" : { _unit sideRadio _text };
