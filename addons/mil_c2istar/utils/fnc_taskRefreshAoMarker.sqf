@@ -69,6 +69,17 @@ if (isNil "ALIVE_taskHandlerClient") exitWith {
     deleteMarkerLocal _textMarkerName;
 };
 private _tasks = [ALIVE_taskHandlerClient, "tasks"] call ALIVE_fnc_hashGet;
+// The shared entry over several targets of one kind (fnc_taskHandlerClient) has no place of its own: a player who
+// assigns it is given its first open target instead, which has a waypoint and an area
+if (!isNil "ALiVE_C2_taskGroups") then {
+    private _shared = (values ALiVE_C2_taskGroups) select { (_x select 0) isEqualTo _ct };
+    if (_shared isEqualTo []) exitWith {};
+    _tasks = [];
+    private _members = (_shared select 0) select 1;
+    private _all = [ALIVE_taskHandlerClient, "tasks"] call ALIVE_fnc_hashGet;
+    private _open = ((_all select 2) select { ((_x param [8, ""]) in _members) && {(_x param [6, ""]) in ["Created", "Assigned"]} }) param [0, []];
+    if (_open isNotEqualTo [] && {!isNull (_open param [10, taskNull])}) then { player setCurrentTask (_open select 10) };
+};
 private _isC2istarTask = false;
 private _matchedTitle = "";
 private _matchedTaskID = "";

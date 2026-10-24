@@ -49,6 +49,16 @@ params [
 
 if (count _logic == 0) exitwith {};
 
+// A target's line under the shared entry for its kind (registerTask) carries the town it is near, or its grid, so
+// three "Destroy the infantry" lines can be told apart: _title is changed in place.
+private _fnc_groupedTitle = {
+    params ["_parentID", "_pos"];
+    if (_parentID == "None" || {isNil "ALiVE_C2_taskGroups"} || {!(_pos isEqualType [])} || {count _pos < 2}) exitWith {};
+    if ((values ALiVE_C2_taskGroups) findIf { _parentID in (_x select 1) } < 0) exitWith {};
+    private _near = nearestLocations [_pos, ["NameCityCapital", "NameCity", "NameVillage", "NameLocal"], 2000];
+    _title = format ["%1, %2", _title, if (_near isEqualTo []) then { mapGridPosition _pos } else { text (_near select 0) }];
+};
+
 switch(_operation) do {
     case "destroy": {
         [_logic, "debug", false] call MAINCLASS;
@@ -83,6 +93,7 @@ switch(_operation) do {
         // set defaults
         [_logic,"debug",false] call ALIVE_fnc_hashSet;
         [_logic,"tasks",[] call ALIVE_fnc_hashCreate] call ALIVE_fnc_hashSet;
+        ALiVE_C2_taskGroups = createHashMap;
 
     };
     case "handleEvent": {
@@ -183,17 +194,46 @@ switch(_operation) do {
                 };
             };
 
-            if(_parent != "None") then {
-                _parentTask = [_logic,"getTask",_parent] call MAINCLASS;
+            // Target tasks of one kind (every SEAD, every HVT, ...) share one entry in the task list, each target a line
+            // under it, so they don't bury the rest of the list (A. Ares, 24 Oct). The shared entry is this player's own
+            // and goes with the last of its targets. Off in Addon Options: one entry per target, as before.
+            private _groupKey = "";
+            if (_parent == "None" && {_source isEqualType ""} && {missionNamespace getVariable ["ALiVE_prefTaskGroup", true]}) then {
+                private _parts = _source splitString "-";
+                if (count _parts >= 3 && {(_parts select (count _parts - 1)) == "Parent"}) then {
+                    private _kind = _parts select (count _parts - 2);
+                    if (_kind in ["SEAD", "Assassination", "DestroyVehicles", "DestroyInfantry", "InsurgencyDestroyAssets"]) then { _groupKey = _kind };
+                };
+            };
 
-                if !(isnil "_parentTask") then {
-                    _parentTaskObject = _parentTask select 10;
-                    _taskObject = player createSimpleTask [_title,_parentTaskObject];
-                } else {
+            [_parent, _position] call _fnc_groupedTitle;
+
+            if (_groupKey != "") then {
+                if (isNil "ALiVE_C2_taskGroups") then { ALiVE_C2_taskGroups = createHashMap };
+                private _entry = ALiVE_C2_taskGroups getOrDefault [_groupKey, []];
+                if (_entry isEqualTo [] || {isNull (_entry select 0)}) then {
+                    private _groupTitle = localize format ["STR_ALIVE_C2ISTAR_TASKGROUP_%1", toUpper _groupKey];
+                    private _groupObject = player createSimpleTask [_groupTitle];
+                    _groupObject setSimpleTaskDescription [localize "STR_ALIVE_C2ISTAR_TASKGROUP_DESC", _groupTitle, _groupTitle];
+                    _groupObject setTaskState "Created";
+                    _entry = [_groupObject, []];
+                    ALiVE_C2_taskGroups set [_groupKey, _entry];
+                };
+                (_entry select 1) pushBackUnique _taskID;
+                _taskObject = _entry select 0;
+            } else {
+                if(_parent != "None") then {
+                    _parentTask = [_logic,"getTask",_parent] call MAINCLASS;
+
+                    if !(isnil "_parentTask") then {
+                        _parentTaskObject = _parentTask select 10;
+                        _taskObject = player createSimpleTask [_title,_parentTaskObject];
+                    } else {
+                        _taskObject = player createSimpleTask [_title];
+                    };
+                }else{
                     _taskObject = player createSimpleTask [_title];
                 };
-            }else{
-                _taskObject = player createSimpleTask [_title];
             };
 
             // ALiVE's pin for the kind of task, read from its source ("<id>-<TaskType>-<Stage>"), so a stage shows its
@@ -207,12 +247,18 @@ switch(_operation) do {
                 };
             };
 
-            _taskObject setSimpleTaskDescription [_description,_title,_title];
-            // a task can start with no destination (a recruiter task until the man is found)
-            if (_position isEqualType [] && {count _position >= 2}) then { _taskObject setSimpleTaskDestination _position };
-            _taskObject setTaskState _state;
+            if (_groupKey == "") then {
+                _taskObject setSimpleTaskDescription [_description,_title,_title];
+                // a task can start with no destination (a recruiter task until the man is found)
+                if (_position isEqualType [] && {count _position >= 2}) then { _taskObject setSimpleTaskDestination _position };
+                _taskObject setTaskState _state;
+            } else {
+                // the shared entry has no place of its own (its targets have), and only ever reads open or assigned
+                if (_state in ["Created", "Assigned"] && {taskState _taskObject != "Assigned"}) then { _taskObject setTaskState _state };
+            };
 
-            switch(_state) do {
+            // a target under the shared entry has its own line and popup; the shared entry gets none
+            switch ([_state, ""] select (_groupKey != "")) do {
                 case "Created": {
                     ["TaskCreated",["",_title]] call BIS_fnc_showNotification;
                 };
@@ -233,7 +279,7 @@ switch(_operation) do {
                 };
             };
 
-            if(_current == "Y") then {
+            if(_current == "Y" && {_groupKey == ""}) then {
                 player setCurrentTask _taskObject;
             };
 
@@ -301,7 +347,12 @@ switch(_operation) do {
             private _previousState = _task select 6;
             private _previousPosition = _task select 3;
 
-            _taskObject setSimpleTaskDescription [_description,_title,_title];
+            // a target's entry that is the shared one for its kind (registerTask) keeps its own title and no place
+            private _grouped = !isNil "ALiVE_C2_taskGroups" && {(values ALiVE_C2_taskGroups) findIf { _taskID in (_x select 1) } > -1};
+            if (_grouped) then { _position = [] } else {
+                [_parent, _position] call _fnc_groupedTitle;
+                _taskObject setSimpleTaskDescription [_description,_title,_title];
+            };
 
             // Only call setSimpleTaskDestination when the position actually
             // changed. Cuts the work for centroid-drift updates that didn't
@@ -319,9 +370,9 @@ switch(_operation) do {
             // notification + task-list update. Only call it on a state
             // CHANGE so position-only updates don't re-fire the chain.
             if (_previousState != _state) then {
-                _taskObject setTaskState _state;
+                if (!_grouped || {_state == "Assigned"}) then { _taskObject setTaskState _state };
 
-                switch(_state) do {
+                switch ([_state, ""] select _grouped) do {
                     case "Created": {
                         ["TaskCreated",["",_title]] call BIS_fnc_showNotification;
                     };
@@ -343,7 +394,7 @@ switch(_operation) do {
                 };
             };
 
-            if(_current == "Y") then {
+            if(_current == "Y" && {!_grouped}) then {
                 player setCurrentTask _taskObject;
             };
 
@@ -386,7 +437,18 @@ switch(_operation) do {
 
             _taskObject = _task select 10;
 
-            player removeSimpleTask _taskObject;
+            // the shared entry for its kind stays while another target is under it
+            private _keep = false;
+            if (!isNil "ALiVE_C2_taskGroups") then {
+                {
+                    private _members = _y select 1;
+                    if (_taskID in _members) exitWith {
+                        _members deleteAt (_members find _taskID);
+                        if (_members isNotEqualTo []) then { _keep = true } else { ALiVE_C2_taskGroups deleteAt _x };
+                    };
+                } forEach ALiVE_C2_taskGroups;
+            };
+            if (!_keep) then { player removeSimpleTask _taskObject };
 
             // remove from main tasks hash
             _tasks = [_logic, "tasks"] call ALIVE_fnc_hashGet;

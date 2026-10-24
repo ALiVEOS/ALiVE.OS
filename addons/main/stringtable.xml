@@ -140,6 +140,12 @@
 <Key ID="STR_ALIVE_SETTINGS_MSG_CHAT">
     <English>Chat lines</English>
 </Key>
+<Key ID="STR_ALIVE_SETTINGS_TASKGROUP">
+    <English>Group target tasks</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_TASKGROUP_COMMENT">
+    <English>Puts target tasks of one kind (air defences to suppress, high-value targets, vehicles, infantry, insurgent assets) under one entry in your task list, each target a task under it. Off gives every target its own entry. Tasks you already have stay where they are.</English>
+</Key>
 <Key ID="STR_ALIVE_SETTINGS_PINS">
     <English>Map pins and markers</English>
 </Key>

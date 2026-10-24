@@ -3176,4 +3176,58 @@
     <Portuguese>Fação inimiga da tarefa</Portuguese>
     <Russian>Вражеская фракция задачи</Russian>
 </Key>
+<Key ID="STR_ALIVE_C2ISTAR_TASKGROUP_SEAD">
+    <English>Suppress Enemy Air Defenses</English>
+    <Chinesesimp>压制敌方防空</Chinesesimp>
+    <Chinese>壓制敵方防空</Chinese>
+    <Spanish>Suprimir las defensas antiaéreas enemigas</Spanish>
+    <French>Neutraliser les défenses antiaériennes ennemies</French>
+    <Portuguese>Suprimir as defesas antiaéreas inimigas</Portuguese>
+    <Russian>Подавление ПВО противника</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_TASKGROUP_ASSASSINATION">
+    <English>Eliminate High-Value Targets</English>
+    <Chinesesimp>清除高价值目标</Chinesesimp>
+    <Chinese>清除高價值目標</Chinese>
+    <Spanish>Eliminar objetivos de alto valor</Spanish>
+    <French>Éliminer les cibles de haute valeur</French>
+    <Portuguese>Eliminar alvos de alto valor</Portuguese>
+    <Russian>Ликвидация важных целей</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_TASKGROUP_DESTROYVEHICLES">
+    <English>Search and Destroy Vehicles</English>
+    <Chinesesimp>搜索并摧毁车辆</Chinesesimp>
+    <Chinese>搜索並摧毀車輛</Chinese>
+    <Spanish>Buscar y destruir vehículos</Spanish>
+    <French>Rechercher et détruire les véhicules</French>
+    <Portuguese>Procurar e destruir veículos</Portuguese>
+    <Russian>Найти и уничтожить технику</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_TASKGROUP_DESTROYINFANTRY">
+    <English>Destroy Enemy Infantry</English>
+    <Chinesesimp>摧毁敌方步兵</Chinesesimp>
+    <Chinese>摧毀敵方步兵</Chinese>
+    <Spanish>Destruir la infantería enemiga</Spanish>
+    <French>Détruire l'infanterie ennemie</French>
+    <Portuguese>Destruir a infantaria inimiga</Portuguese>
+    <Russian>Уничтожить пехоту противника</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_TASKGROUP_INSURGENCYDESTROYASSETS">
+    <English>Insurgent Assets Located</English>
+    <Chinesesimp>已发现叛军设施</Chinesesimp>
+    <Chinese>已發現叛軍設施</Chinese>
+    <Spanish>Recursos insurgentes localizados</Spanish>
+    <French>Ressources insurgées localisées</French>
+    <Portuguese>Recursos insurgentes localizados</Portuguese>
+    <Russian>Обнаружены объекты повстанцев</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_TASKGROUP_DESC">
+    <English>Each target is a task of its own under this one.</English>
+    <Chinesesimp>每个目标都是其下的一项独立任务。</Chinesesimp>
+    <Chinese>每個目標都是其下的一項獨立任務。</Chinese>
+    <Spanish>Cada objetivo es una tarea propia dentro de esta.</Spanish>
+    <French>Chaque cible est une tâche à part entière sous celle-ci.</French>
+    <Portuguese>Cada alvo é uma tarefa própria dentro desta.</Portuguese>
+    <Russian>Каждая цель — отдельная задача внутри этой.</Russian>
+</Key>
 </Container></Package></Project>
