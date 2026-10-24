@@ -148,6 +148,9 @@ switch (_operation) do {
         // Tasks Only Against Known Enemy (A. Ares on Discord, 21 Oct): those tasks aim only at what this commander has
         // found, so they don't give hidden positions away; off by default
         private _opTasksKnownOnly = (toLower format ["%1", _logic getVariable ["opTasksKnownOnly", "false"]]) in ["true", "1"];
+        // Start From Ship (Ando on Discord, 24 Oct): the starting force is aboard a static ship and lands by helicopter
+        private _shipStart = (toLower format ["%1", _logic getVariable ["shipStart", "false"]]) in ["true", "1"];
+        private _shipInf = floor ((parseNumber format ["%1", _logic getVariable ["shipInfantry", 6]]) max 0);
         // Phase 4: faction sources, all unioned below.
         //   factions       : multi-select listbox (primary UX,
         //                    ORIGINAL property so old `factions`
@@ -428,6 +431,15 @@ switch (_operation) do {
             ["opTasksMin", _opTasksMin],
             ["opTasksMax", _opTasksMax],
             ["opTasksKnownOnly", _opTasksKnownOnly],
+            // the force aboard as [infantry, motorised, 0 x 6], in getForceStrength's order; checked after the handler is made
+            ["shipStart", _shipStart],
+            // infantry only for now: a motorised group's vehicle would have to be made at sea and carried slung
+            ["shipAboard", [_shipInf, 0, 0, 0, 0, 0, 0, 0]],
+            ["shipPads", []],
+            ["shipEvents", []],
+            ["shipSent", createHashMap],
+            ["shipLaunchBusy", false],
+            ["shipBeachheadID", ""],
             ["roadblocks", _roadblocks],
             ["insTypes", _insTypes],
             ["drugLabs", _drugLabs],
@@ -459,6 +471,45 @@ switch (_operation) do {
             format ["OPCOM_%1", (count OPCOM_instances) - 1], // -1 to maintain zero index
             _handler
         ];
+
+        // Start From Ship: find the ship and its helipads, and check the force can leave it; any gap starts on land
+        if (_shipStart) then {
+            private _why = "";
+            private _ship = objNull;
+            if !(_type in ["invasion", "occupation"]) then {
+                _why = "which needs an Invasion or Occupation commander";
+            } else {
+                _ship = nearestObjects [_position, ["StaticShip"], 400] param [0, objNull];
+                if (isNull _ship) then { _why = "but no ship lies within 400 m of the module" };
+                if (_why == "" && {(allMissionObjects "ALiVE_mil_logistics") isEqualTo []}) then { _why = "but there is no Military Logistics module to fly the force ashore" };
+            };
+            // the transport helicopters are checked at the first wave, once Military Logistics has added any of its own
+            if (_why != "") exitWith {
+                ["AI Commander '%1' is set to Start From Ship, %2; starting on land instead", _customName, _why] call ALiVE_fnc_dumpR;
+                [_handler, "shipStart", false] call ALiVE_fnc_hashSet;
+                [_handler, "shipAboard", [0, 0, 0, 0, 0, 0, 0, 0]] call ALiVE_fnc_hashSet;
+            };
+            // the helipads are memory points on the ship's parts (helipad_1_pos to helipad_6_pos on the EF ship)
+            private _pads = [];
+            private _parts = (getArray (configFile >> "CfgVehicles" >> typeOf _ship >> "multiStructureParts")) apply { if (_x isEqualType []) then { _x select 0 } else { _x } };
+            _parts = _parts select { _x isEqualType "" };
+            {
+                private _part = nearestObjects [getPosASL _ship, [_x], 400] param [0, objNull];
+                if (!isNull _part) then {
+                    for "_i" from 1 to 6 do {
+                        private _rel = _part selectionPosition [format ["helipad_%1_pos", _i], "Memory"];
+                        if (_rel isNotEqualTo [0, 0, 0]) then {
+                            private _p = _part modelToWorldWorld _rel;
+                            _pads pushBack [_p select 0, _p select 1, (_p select 2) + 1];
+                        };
+                    };
+                };
+            } forEach _parts;
+            if (_pads isEqualTo []) then { private _p = getPosASL _ship; _pads = [[_p select 0, _p select 1, (_p select 2) + 20]] };
+            [_handler, "shipPads", _pads] call ALiVE_fnc_hashSet;
+            [_handler, "shipHandle", [typeOf _ship, getPosASL _ship, netId _ship]] call ALiVE_fnc_hashSet;
+            ["OPCOM SHIP - AI Commander '%1' starts aboard %2 (%3): %4 parts, %5 helipads, aboard %6", _customName, typeOf _ship, netId _ship, count _parts, count _pads, [_handler, "shipAboard"] call ALiVE_fnc_hashGet] call ALiVE_fnc_dump;
+        };
 
         // Issue #697 Phases 2.2 + 2.3: periodic scan lets
         // friendly AI automatically disable this OPCOM's
@@ -665,6 +716,7 @@ switch (_operation) do {
         if (isNil "ALiVE_storeSuffixes") then { ALiVE_storeSuffixes = [] };
         ALiVE_storeSuffixes pushBackUnique format ["-OPCOM_%1-hvt", [_handler,"opcomID"] call CBA_fnc_hashGet];
         ALiVE_storeSuffixes pushBackUnique format ["-OPCOM_%1-opstate", [_handler,"opcomID"] call CBA_fnc_hashGet];
+        ALiVE_storeSuffixes pushBackUnique format ["-OPCOM_%1-ship", [_handler,"opcomID"] call CBA_fnc_hashGet];
 
         //Load Data from DB
         if (_persistent && { !isNil "ALIVE_sys_data" } && {!ALIVE_sys_data_DISABLED}) then {
@@ -694,6 +746,13 @@ switch (_operation) do {
             _result = [GVAR(DATAHANDLER),"read", ["mil_opcom", [], _key]] call ALIVE_fnc_Data;
             if (_result isEqualType [] && {!isNil {[_result,"data"] call CBA_fnc_hashGet}}) then {
                 [_handler, "opResume", [_result,"data"] call CBA_fnc_hashGet] call MAINCLASS;
+            };
+
+            // Start From Ship: what is still aboard at the save
+            _key = format ["%1-OPCOM_%2-ship", ([""] call ALiVE_fnc_storeKeys) select 0, [_handler,"opcomID"] call CBA_fnc_hashGet];
+            _result = [GVAR(DATAHANDLER),"read", ["mil_opcom", [], _key]] call ALIVE_fnc_Data;
+            if ([_handler, "shipStart", false] call ALiVE_fnc_hashGet && {_result isEqualType []} && {([_result,"data"] call CBA_fnc_hashGet) isEqualType []}) then {
+                [_handler, "shipAboard", [_result,"data"] call CBA_fnc_hashGet] call ALiVE_fnc_hashSet;
             };
 
             [_handler,"objectives", _objectives] call ALiVE_fnc_hashSet;
@@ -3592,6 +3651,18 @@ switch (_operation) do {
             };
             [GVAR(DATAHANDLER), "write", ["mil_opcom", _opData, false, _opKey]] call ALIVE_fnc_Data;
 
+            // Start From Ship: the groups still aboard
+            if ([_logic, "shipStart", false] call ALiVE_fnc_hashGet) then {
+                private _shipKey = format ["%1-OPCOM_%2-ship", _missionName, [_logic, "opcomID"] call CBA_fnc_hashGet];
+                private _shipPrev = [GVAR(DATAHANDLER), "read", ["mil_opcom", [], _shipKey]] call ALIVE_fnc_Data;
+                private _shipData = [[["data", +([_logic, "shipAboard", [0,0,0,0,0,0,0,0]] call ALiVE_fnc_hashGet)]]] call CBA_fnc_hashCreate;
+                if (_shipPrev isEqualType []) then {
+                    private _rev = [_shipPrev, "_rev"] call CBA_fnc_hashGet;
+                    if (!isNil {_rev}) then { [_shipData, "_rev", _rev] call CBA_fnc_hashSet };
+                };
+                [GVAR(DATAHANDLER), "write", ["mil_opcom", _shipData, false, _shipKey]] call ALIVE_fnc_Data;
+            };
+
             if(ALiVE_SYS_DATA_DEBUG_ON) then {
                 ["OPCOM - SAVE DATA RESULT (maybe truncated in RPT, dont worry): %1",_saveResult] call ALiVE_fnc_dump;
                 ["OPCOM - SAVE DATA SAVING COMPLETE!"] call ALiVE_fnc_dump;
@@ -4598,7 +4669,13 @@ switch (_operation) do {
         ];
 
         if (isnil {[_logic,"startForceStrength"] call ALiVE_fnc_HashGet}) then {
-            [_logic,"startForceStrength", +_count] call ALiVE_fnc_HashSet
+            // Start From Ship: the force aboard counts in the starting strength, so losses ashore are made up later
+            private _start = +_count;
+            if ([_logic, "shipStart", false] call ALiVE_fnc_HashGet) then {
+                private _aboard = [_logic, "shipAboard", [0,0,0,0,0,0,0,0]] call ALiVE_fnc_HashGet;
+                { _start set [_forEachIndex, _x + (_aboard select _forEachIndex)] } forEach _count;
+            };
+            [_logic,"startForceStrength", _start] call ALiVE_fnc_HashSet
         };
         _currentForceStrength = [_logic,"currentForceStrength",_count] call ALiVE_fnc_HashSet;
 
@@ -5598,6 +5675,12 @@ switch (_operation) do {
 
         private _existingControlType = [_logic,"controltype"] call ALiVE_fnc_hashGet;
         if (_newControlType == _existingControlType) exitwith {};
+        // Start From Ship needs a conventional commander: an Asymmetric one leaves anything still aboard there
+        if (!(_newControlType in ["invasion","occupation"]) && {[_logic, "shipStart", false] call ALiVE_fnc_hashGet}) then {
+            ["AI Commander %1 switched to %2: Start From Ship is off and the groups still aboard stay there", [_logic, "name", ""] call ALiVE_fnc_hashGet, _newControlType] call ALiVE_fnc_dump;
+            [_logic, "shipStart", false] call ALiVE_fnc_hashSet;
+            [_logic, "shipAboard", [0,0,0,0,0,0,0,0]] call ALiVE_fnc_hashSet;
+        };
 
         private _conventionalTypes = ["invasion","occupation"];
 
@@ -5709,6 +5792,149 @@ switch (_operation) do {
 
             _result = _state;
         };
+    };
+
+    ///////////////////////////////////////////////////
+    // Start From Ship (Ando on Discord, 24 Oct): fly the force still aboard ashore in helicopter waves. Called spawned
+    // from the OPCOM FSM in place of a reinforcement request while anything is aboard. A group leaves the count only
+    // once Military Logistics stamps the wave as sent, so a refused or lost wave is asked for again next cycle
+    ///////////////////////////////////////////////////
+    case "shipLaunch": {
+        if ([_logic, "shipLaunchBusy", false] call ALiVE_fnc_HashGet) exitWith {};
+        [_logic, "shipLaunchBusy", true] call ALiVE_fnc_HashSet;
+        // read again at the end: a switch between Invasion and Occupation mid-landing starts a new FSM
+        private _fsmDone = {
+            [_logic, "shipLaunchBusy", false] call ALiVE_fnc_HashSet;
+            private _f = [_logic, "OPCOM_FSM", -1] call ALiVE_fnc_HashGet;
+            if (_f isEqualType 0 && {_f != -1}) then { _f setFSMVariable ["_reinforcementsInProgress", false] };
+        };
+        private _name = [_logic, "name", ""] call ALiVE_fnc_HashGet;
+        private _pads = [_logic, "shipPads", []] call ALiVE_fnc_HashGet;
+        private _handle = [_logic, "shipHandle", ["", [0,0,0], ""]] call ALiVE_fnc_HashGet;
+        private _shipPos = _handle select 1;
+        private _factions = [_logic, "factions", []] call ALiVE_fnc_HashGet;
+        private _side = [_logic, "side", "WEST"] call ALiVE_fnc_HashGet;
+
+        // credit the waves Logistics has sent (it writes them into shipSent by token, as the event it holds is a
+        // copy of ours); a wave it no longer holds and never sent was refused, and is asked for again. A wave it
+        // still holds, waiting for a player to move off the ship or for helicopters, stays counted however long
+        private _credit = {
+            private _events = [_logic, "shipEvents", []] call ALiVE_fnc_HashGet;
+            private _sentMap = [_logic, "shipSent", createHashMap] call ALiVE_fnc_HashGet;
+            private _aboard = +([_logic, "shipAboard", [0,0,0,0,0,0,0,0]] call ALiVE_fnc_HashGet);
+            private _held = [];
+            {
+                private _q = [_x, "eventQueue"] call ALIVE_fnc_ML;
+                if (!isNil "_q") then { _held append ((_q select 1)) };
+            } forEach (allMissionObjects "ALiVE_mil_logistics");
+            private _keep = [];
+            {
+                _x params ["_ev", "_asked", "_at", "_token"];
+                private _sent = _sentMap getOrDefault [_token, -1];
+                private _id = [_ev, "id", -1] call ALiVE_fnc_HashGet;
+                if (_sent isEqualType []) then {
+                    _sentMap deleteAt _token;
+                    _aboard set [0, ((_aboard select 0) - (_sent select 0)) max 0];
+                    _aboard set [1, ((_aboard select 1) - (_sent select 1)) max 0];
+                    ["OPCOM SHIP - %1: a wave left the ship with %2 infantry and %3 motorised groups; still aboard %4", _name, _sent select 0, _sent select 1, _aboard select [0, 2]] call ALiVE_fnc_dump;
+                } else {
+                    if ((_id in _held) || {time - _at < 120}) then { _keep pushBack _x } else {
+                        ["OPCOM SHIP - %1: Military Logistics turned down a wave of %2 infantry groups; it is asked for again", _name, _asked select 0] call ALiVE_fnc_dump;
+                    };
+                };
+            } forEach _events;
+            [_logic, "shipEvents", _keep] call ALiVE_fnc_HashSet;
+            [_logic, "shipAboard", _aboard] call ALiVE_fnc_HashSet;
+            _keep
+        };
+
+        // nothing leaves the ship without a transport helicopter: picked as Military Logistics picks them, the
+        // factions' own, else the side's unless Limit Transport To Faction is on
+        private _heli = [];
+        if (!isNil "ALIVE_factionDefaultAirTransport") then {
+            { _heli append ([ALIVE_factionDefaultAirTransport, _x, []] call ALIVE_fnc_hashGet) } forEach _factions;
+        };
+        if (_heli isEqualTo [] && {!isNil "ALIVE_sideDefaultAirTransport"}) then {
+            _heli = +([ALIVE_sideDefaultAirTransport, _side, []] call ALIVE_fnc_hashGet);
+        };
+        if ((_heli select { _x isKindOf "Helicopter" }) isEqualTo []) exitWith {
+            ["AI Commander '%1' is set to Start From Ship but neither faction %2 nor its side has a transport helicopter, so nothing can leave the ship", _name, _factions] call ALiVE_fnc_dumpR;
+            // the force aboard is gone, so it leaves the starting strength too
+            private _start = [_logic, "startForceStrength", []] call ALiVE_fnc_HashGet;
+            private _aboard = [_logic, "shipAboard", [0,0,0,0,0,0,0,0]] call ALiVE_fnc_HashGet;
+            if (count _start == count _aboard) then {
+                private _less = +_start;
+                { _less set [_forEachIndex, (_x - (_aboard select _forEachIndex)) max 0] } forEach _start;
+                [_logic, "startForceStrength", _less] call ALiVE_fnc_HashSet;
+            };
+            [_logic, "shipStart", false] call ALiVE_fnc_HashSet;
+            [_logic, "shipAboard", [0,0,0,0,0,0,0,0]] call ALiVE_fnc_HashSet;
+            call _fsmDone;
+        };
+
+        private _pending = call _credit;
+        private _aboard = [_logic, "shipAboard", [0,0,0,0,0,0,0,0]] call ALiVE_fnc_HashGet;
+        // groups already asked for and not yet stamped are not asked for twice
+        private _askedInf = 0; private _askedMot = 0;
+        { _askedInf = _askedInf + ((_x select 1) select 0); _askedMot = _askedMot + ((_x select 1) select 1) } forEach _pending;
+        private _infantry = (((_aboard select 0) - _askedInf) max 0) min 8;
+        private _motorized = 0;
+
+        // the landing: the objective nearest the ship that the commander is attacking or holding, else the nearest of all
+        private _objectives = [_logic, "objectives", []] call ALiVE_fnc_HashGet;
+        private _ordered = _objectives select { ([_x, "opcom_orders", ""] call ALiVE_fnc_HashGet) in ["attack", "defend"] };
+        if (_ordered isEqualTo []) then { _ordered = _objectives };
+        private _beach = [];
+        private _best = 1e10;
+        {
+            private _c = [_x, "center", []] call ALiVE_fnc_HashGet;
+            if (count _c > 1 && {(_c distance2D _shipPos) < _best}) then { _best = _c distance2D _shipPos; _beach = _x };
+        } forEach _ordered;
+
+        if (_beach isEqualTo [] || {_infantry + _motorized == 0}) exitWith {
+            if (_beach isEqualTo []) then { ["OPCOM SHIP - %1: no objective to land at; the force stays aboard until one is synced", _name] call ALiVE_fnc_dumpR };
+            // waves already asked for and still held: wait for them before asking again
+            if (_pending isNotEqualTo []) then { sleep 60 };
+            call _fsmDone;
+        };
+
+        private _position = [_beach, "center"] call ALiVE_fnc_HashGet;
+        [_logic, "shipBeachheadID", [_beach, "objectiveID", ""] call ALiVE_fnc_HashGet] call ALiVE_fnc_HashSet;
+        ["OPCOM SHIP - %1 lands %2 infantry and %3 motorised groups at %4 (%5 m from the ship)", _name, _infantry, _motorized, [_position] call ALIVE_fnc_taskGetNearestLocationName, round _best] call ALiVE_fnc_dump;
+
+        // the stock pacing: two infantry and two motorised groups a wave, 200 seconds apart
+        private _wave = 0;
+        while { _infantry + _motorized > 0 } do {
+            private _inf = _infantry min 2;
+            private _mot = _motorized min 2;
+            _infantry = _infantry - _inf;
+            _motorized = _motorized - _mot;
+            private _from = _pads select (_wave mod (count _pads));
+            private _event = ['LOGCOM_REQUEST', [_position, selectRandom _factions, _side, [_inf, _mot, 0, 0, 0, 0], "HELI_INSERT"], "OPCOM"] call ALIVE_fnc_event;
+            [_event, "shipLaunch", true] call ALiVE_fnc_HashSet;
+            [_event, "departurePosition", _from] call ALiVE_fnc_HashSet;
+            [_event, "shipPads", _pads] call ALiVE_fnc_HashSet;
+            [_event, "shipDestination", _position] call ALiVE_fnc_HashSet;
+            // Military Logistics answers by this token, into this commander's shipSent
+            private _token = format ["%1-%2-%3", [_logic, "opcomID", ""] call ALiVE_fnc_HashGet, round time, _wave];
+            [_event, "shipToken", _token] call ALiVE_fnc_HashSet;
+            [_event, "shipOpcomID", [_logic, "opcomID", ""] call ALiVE_fnc_HashGet] call ALiVE_fnc_HashSet;
+            private _events = [_logic, "shipEvents", []] call ALiVE_fnc_HashGet;
+            _events pushBack [_event, [_inf, _mot], time, _token];
+            [ALIVE_eventLog, "addEvent", _event] call ALIVE_fnc_eventLog;
+            _wave = _wave + 1;
+            sleep (if (_infantry + _motorized > 0) then { 200 } else { 10 });
+        };
+
+        // wait for the stamps, then the next cycle raises any wave still owed
+        private _until = time + 900;
+        waitUntil { sleep 10; call _credit; ([_logic, "shipEvents", []] call ALiVE_fnc_HashGet) isEqualTo [] || {time > _until} };
+        _aboard = [_logic, "shipAboard", [0,0,0,0,0,0,0,0]] call ALiVE_fnc_HashGet;
+        if ((_aboard select 0) + (_aboard select 1) == 0) then {
+            ["OPCOM SHIP - %1: everyone is ashore; reinforcements now come from the ground it holds", _name] call ALiVE_fnc_dump;
+            [_logic, "shipBeachheadID", ""] call ALiVE_fnc_HashSet;
+        };
+        call _fsmDone;
     };
 
     case "validateStartupState": {
@@ -5834,7 +6060,7 @@ switch (_operation) do {
             };
         } foreach _factions;
 
-        if (_factionsWithNoGroups isnotequalto []) then {
+        if (_factionsWithNoGroups isnotequalto [] && {!([_logic, "shipStart", false] call ALiVE_fnc_HashGet)}) then {
             private _syncedHint = "";
             if (_availableFactions isNotEqualTo [] && {(_factionsWithNoGroups findIf {!(_x in _availableFactions)}) >= 0}) then {
                 _syncedHint = format [" The placement modules synced to AI Commander '%1' place [%2]: set one to the missing faction, or leave a synced custom objective's Force Factions empty so it takes this Commander's.",
@@ -5850,7 +6076,10 @@ switch (_operation) do {
             ] call ([ALIVE_fnc_dump, ALIVE_fnc_dumpR] select (_debug isEqualTo true));
         };
 
-        if (_opcomProfileCount == 0) exitwith {
+        // Start From Ship: the force is aboard, so a commander with no groups ashore yet still starts
+        private _shipAboard = [_logic, "shipAboard", [0,0,0,0,0,0,0,0]] call ALiVE_fnc_HashGet;
+        private _fromShip = ([_logic, "shipStart", false] call ALiVE_fnc_HashGet) && {(_shipAboard select 0) + (_shipAboard select 1) > 0};
+        if (_opcomProfileCount == 0 && {!_fromShip}) exitwith {
             ["Aborting OPCOM Init... There are no groups for OPCOM with factions %1", _factions] call ALIVE_fnc_dumpR;
         };
 

@@ -357,6 +357,27 @@ class CfgVehicles {
                                         class Yes { name = "Yes"; value = "true"; };
                                 };
                         };
+                        class HDR_SHIP : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_HDR_SHIP"; displayName = "START FROM SHIP"; };
+                        class shipStart : Combo
+                        {
+                                property = "ALiVE_mil_opcom_shipStart";
+                                displayName = "$STR_ALIVE_OPCOM_SHIP_START";
+                                tooltip = "$STR_ALIVE_OPCOM_SHIP_START_COMMENT";
+                                defaultValue = """false""";
+                                class Values
+                                {
+                                        class No  { name = "No";  value = "false"; };
+                                        class Yes { name = "Yes"; value = "true"; };
+                                };
+                        };
+                        class shipInfantry : Edit
+                        {
+                                property = "ALiVE_mil_opcom_shipInfantry";
+                                displayName = "$STR_ALIVE_OPCOM_SHIP_INF";
+                                tooltip = "$STR_ALIVE_OPCOM_SHIP_INF_COMMENT";
+                                defaultValue = """6""";
+                                typeName = "NUMBER";
+                        };
                         class HDR_HVT : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_HDR_HVT"; displayName = "HIGH VALUE TARGET"; };
                         class hvt : Combo
                         {

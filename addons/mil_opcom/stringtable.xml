@@ -372,6 +372,18 @@
 <Key ID="STR_ALIVE_OPCOM_OP_TASKS_KNOWN_COMMENT">
     <English>No (the default) aims the preparation and clean-up tasks at what is really at the objective, whether or not anyone has seen it. Yes aims them only at what this commander has found: enemy vehicles and emplacements whose crews its units have seen in the last 30 minutes, and an insurgent installation only once a seen enemy group or one of its own groups has been near it. A kind with nothing known is left out, and so is removing IEDs after a capture, as nobody has seen those. The wiretap is always offered, as gathering intel is the point of it. With nothing known at an objective about to be attacked, players are also sent to reconnoitre it, and what they report brings a second round of tasks before the Preparation Timeout.</English>
 </Key>
+<Key ID="STR_ALIVE_OPCOM_SHIP_START">
+    <English>Start From Ship</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_SHIP_START_COMMENT">
+    <English>Yes puts this commander's starting force aboard a ship that never moves (any static ship, such as the Expeditionary Forces amphibious ship) and lands it by helicopter at the objective nearest the ship. Place this module on the ship's deck, sync Military Logistics, and sync a Location or a Custom Objective on the shore for the landing. Only infantry start aboard. Needs an Invasion or Occupation commander and a faction with transport helicopters; otherwise it starts on land and says why in the RPT. Once everyone is ashore the ship plays no further part: later reinforcements come from the ground the commander holds.</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_SHIP_INF">
+    <English>Infantry Groups Aboard</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_SHIP_INF_COMMENT">
+    <English>How many infantry groups start aboard the ship with Start From Ship on. They are flown ashore two groups a helicopter wave, a few minutes apart. Only infantry start aboard; vehicles start on land as usual.</English>
+</Key>
 <Key ID="STR_ALIVE_OPCOM_HVT_RESPAWN">
     <English>Replace When Pause Ends</English>
 </Key>

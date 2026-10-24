@@ -4872,8 +4872,13 @@ switch(_operation) do {
                             // anything from. Unlike a node left behind by a delivery, this one is
                             // the mission maker's to move, so it is worth saying out loud.
                             if (surfaceIsWater _opcomHQPos) then {
+                                // Start From Ship: the module is meant to be on the ship; later supplies leave the ground it takes
+                                if (!isNil "_opcomHandler" && {[_opcomHandler, "shipStart", false] call ALIVE_fnc_hashGet}) then {
+                                    ["ML - The AI Commander for %1 starts from a ship; its landing waves leave the ship and later supplies leave the ground it holds.", _fac] call ALiVE_fnc_dump;
+                                } else {
                                 ["ML - The AI Commander module for %1 is over water at %2, and that is where logistics departs from. Move it onto ground the side holds.",
                                     _fac, _opcomHQPos] call ALiVE_fnc_dumpR;
+                                };
                             };
                             if (_debug) then {
                                 ["ML - Supply network init: OPCOM HQ node registered for faction %1 at %2",
@@ -7014,8 +7019,11 @@ switch(_operation) do {
                     ["ML - TEST BYPASS: Force pool overridden to %1 for test request.", _forcePool] call ALiVE_fnc_dump;
                 };
 
+                // Start From Ship (24 Oct): a landing wave is the commander's starting force, not the pool's
+                private _shipLaunch = [_event, "shipLaunch", false] call ALIVE_fnc_hashGet;
+
                 // if there are still forces available
-                if(_forcePool > 0) then {
+                if(_forcePool > 0 || _shipLaunch) then {
 
                     _eventID = [_event, "id"] call ALIVE_fnc_hashGet;
                     _eventData = [_event, "data"] call ALIVE_fnc_hashGet;
@@ -7183,7 +7191,7 @@ switch(_operation) do {
                         // reservation difference.
                         // -----------------------------------------------------------------
                         private _reservationAmount = _forceMakeupTotal;
-                        if(_eventType != "PR_STANDARD" && _eventType != "PR_AIRDROP" && _eventType != "PR_HELI_INSERT") then {
+                        if(_eventType != "PR_STANDARD" && _eventType != "PR_AIRDROP" && _eventType != "PR_HELI_INSERT" && !_shipLaunch) then {
                             private _registryID = [_logic, "registryID"] call MAINCLASS;
                             _forcePool = _forcePool - _reservationAmount;
                             [ALIVE_MLGlobalRegistry,"updateGlobalForcePool",[_registryID,_forcePool]] call ALIVE_fnc_MLGlobalRegistry;
@@ -7718,6 +7726,11 @@ switch(_operation) do {
         private _eventTransportVehiclesProfiles = [_event, "transportVehiclesProfiles"] call ALIVE_fnc_hashGet;
         private _playerRequested = [_event, "playerRequested"] call ALIVE_fnc_hashGet;
         private _playerRequestProfiles = [_event, "playerRequestProfiles"] call ALIVE_fnc_hashGet;
+        // Start From Ship: the wave flies from a helipad on the ship to the commander's landing objective
+        private _shipLaunch = [_event, "shipLaunch", false] call ALIVE_fnc_hashGet;
+        private _shipFrom = [_event, "departurePosition", []] call ALIVE_fnc_hashGet;
+        private _shipDest = [_event, "shipDestination", []] call ALIVE_fnc_hashGet;
+        private _shipPads = [_event, "shipPads", []] call ALIVE_fnc_hashGet;
 
         private _reinforcementPriorityTotal = [_reinforcementAnalysis, "priorityTotal"] call ALIVE_fnc_hashGet;
         private _reinforcementType = [_reinforcementAnalysis, "type"] call ALIVE_fnc_hashGet;
@@ -7799,9 +7812,20 @@ switch(_operation) do {
                 // if the reinforcement objective is
                 // not available, cancel the event
 
-                if(_reinforcementAvailable) then {
+                // a group made at sea with a player in spawn range would be put ashore by the profile system, so a
+                // ship wave waits until nobody is near the ship
+                private _shipHold = false;
+                if (_shipLaunch && {count _shipFrom > 1}) then {
+                    _shipHold = [_shipFrom, (missionNamespace getVariable ["ALIVE_spawnRadiusHeli", 1500]) max 1500] call ALiVE_fnc_anyPlayersInRange > 0;
+                    if (_shipHold && {!([_event, "shipHoldLogged", false] call ALIVE_fnc_hashGet)}) then {
+                        [_event, "shipHoldLogged", true] call ALIVE_fnc_hashSet;
+                        ["ML - SHIP: a player is near the ship, holding the wave (event %1) until they move off", _eventID] call ALiVE_fnc_dump;
+                    };
+                };
 
-                    if((time - _eventTime) > _waitTime) then {
+                if(_reinforcementAvailable || _shipLaunch) then {
+
+                    if((time - _eventTime) > _waitTime && {!_shipHold}) then {
 
                         private ["_reinforcementPosition","_playersInRange","_paraDrop","_remotePosition","_airTrans","_noHeavy","_slingAvailable","_water","_AA","_newPos","_routeDistance","_routeDirection"];
 
@@ -7811,8 +7835,13 @@ switch(_operation) do {
                         _water = false; // water is in the way
 
                         // Check route
+                        if (_shipLaunch) then {
+                            _routeDistance = _shipFrom distance2D _shipDest;
+                            _routeDirection = _shipDest getDir _shipFrom;
+                        } else {
                         _routeDistance = _eventPosition distance ([_reinforcementPrimaryObjective,"center"] call ALIVE_fnc_hashGet);
                         _routeDirection = (_eventPosition getDir ([_reinforcementPrimaryObjective,"center"] call ALIVE_fnc_hashGet));
+                        };
                         _newPos = _eventPosition;
                         for "_i" from 0 to _routeDistance step 20 do {
                             _newPos = _newPos getpos [20, _routeDirection];
@@ -7864,9 +7893,9 @@ switch(_operation) do {
                         // "No reinforcements have been created!".
                         private _atoRequest = (([_event, "from", ""] call ALIVE_fnc_hashGet) == "ATO");
 
-                        if ((!isNil "ALIVE_ML_TEST_REQUEST" && { ALIVE_ML_TEST_REQUEST == _eventID }) || _atoRequest) then {
+                        if ((!isNil "ALIVE_ML_TEST_REQUEST" && { ALIVE_ML_TEST_REQUEST == _eventID }) || _atoRequest || _shipLaunch) then {
                             ["ML - Preserving requested eventType=%1 (%2), skipping delivery type decision.",
-                                _eventType, if (_atoRequest) then {"ATO airframe replacement"} else {"TEST BYPASS"}] call ALiVE_fnc_dump;
+                                _eventType, if (_atoRequest) then {"ATO airframe replacement"} else { if (_shipLaunch) then {"ship launch"} else {"TEST BYPASS"} }] call ALiVE_fnc_dump;
                         } else {
                         private _reserveCount = [_reinforcementAnalysis, "reserveCount", 99] call ALIVE_fnc_hashGet;
                         private _hasVehicles  = (_eventForceMechanised > 0 || _eventForceMotorised > 0);
@@ -7964,6 +7993,16 @@ switch(_operation) do {
                                     _fromName, _testFromPos, _toName, _testDestPos] call ALiVE_fnc_dump;
                             };
                         };
+                        // Start From Ship: the same pinning, from the helipad to the landing objective
+                        if (_shipLaunch && {count _shipFrom > 1} && {count _shipDest > 1}) then {
+                            _testFromPos = _shipFrom;
+                            _testDestPos = _shipDest;
+                            _reinforcementPosition = _shipFrom;
+                            _eventPosition = _shipDest;
+                            _eventData set [0, _eventPosition];
+                            [_event, "data", _eventData] call ALIVE_fnc_hashSet;
+                            _remotePosition = _shipFrom;
+                        };
 
                         // Both STANDARD and HELI_INSERT depart from a held objective.
                         // Anchor _reinforcementPosition to the nearest valid supply network
@@ -7994,9 +8033,24 @@ switch(_operation) do {
                             _eventForceArmour = 0;
                         };
 
-                        // players near check
+                        // players near check (a ship wave already waited for the ship to be clear)
 
-                        _playersInRange = [_reinforcementPosition, 500] call ALiVE_fnc_anyPlayersInRange;
+                        _playersInRange = if (_shipLaunch) then { 0 } else { [_reinforcementPosition, 500] call ALiVE_fnc_anyPlayersInRange };
+
+                        // Start From Ship: enemy at the landing makes it a parachute drop, as for any helicopter insert
+                        if (_shipLaunch && {_eventType == "HELI_INSERT"}) then {
+                            ([_side] call ALiVE_fnc_getSideAllegiances) params [["_dzEnemySides", [], [[]]]];
+                            private _dzEnemySideObjs = _dzEnemySides apply { [_x] call ALIVE_fnc_sideTextToObject };
+                            private _dzEnemyNear = (_shipDest nearEntities [["Man","Car","Tank"], 500]) select {
+                                private _s = side _x;
+                                (_s in _dzEnemySideObjs) || {_s isEqualTo sideEnemy}
+                            };
+                            private _dzEnemyCount = (count _dzEnemyNear) + (count ([_shipDest, 500, [_dzEnemySides, "entity"], true] call ALIVE_fnc_getNearProfiles));
+                            if (_dzEnemyCount > 0) then {
+                                _eventType = "HELI_PARADROP";
+                                ["ML - HELI_PARADROP selected: enemy=%1 dzEnemy=%2 objState=%3 at destination.", 0, _dzEnemyCount, "ship landing"] call ALiVE_fnc_dump;
+                            };
+                        };
 
                         // if players are in visible range
                         // para drop groups instead of
@@ -8985,7 +9039,8 @@ switch(_operation) do {
                                 };
                             };
 
-                            if!(surfaceIsWater _position) then {
+                            // Start From Ship: the groups are made at the helipad, out at sea, and board straight away
+                            if(!(surfaceIsWater _position) || _shipLaunch) then {
 
                                 _profiles = [_group, _position, random(360), false, _eventFaction, true, false, "STEALTH"] + (call _fnc_hookArgs) call ALIVE_fnc_createProfilesFromGroupConfig;
 
@@ -9043,9 +9098,9 @@ switch(_operation) do {
 
                                 for "_i" from 0 to _groupCount -1 do {
 
-                                    private _pickupLZPos = [_logic, "prepareHelicopterLZ", [
+                                    private _pickupLZPos = if (_shipLaunch && {_shipPads isNotEqualTo []}) then { +(_shipPads select (_i mod (count _shipPads))) } else { [_logic, "prepareHelicopterLZ", [
                                         _remotePosition getPos [random(200), random(360)], 80
-                                    ]] call MAINCLASS;
+                                    ]] call MAINCLASS };
 
                                     if (_paraDrop) then {
                                         _position = +_pickupLZPos;
@@ -9131,13 +9186,15 @@ switch(_operation) do {
 
                                 for "_i" from 0 to _groupCount -1 do {
 
-                                    private _pickupLZPos = [_logic, "prepareHelicopterLZ", [
+                                    private _pickupLZPos = if (_shipLaunch && {_shipPads isNotEqualTo []}) then { +(_shipPads select (_i mod (count _shipPads))) } else { [_logic, "prepareHelicopterLZ", [
                                         _remotePosition getPos [random(200), random(360)], 80
-                                    ]] call MAINCLASS;
+                                    ]] call MAINCLASS };
 
                                     // Push back from any already-claimed pickup position
                                     private _tooClose = false;
                                     { if (_pickupLZPos distance _x < 50) then { _tooClose = true; }; } forEach _usedPickupPositions;
+                                    // the ship's pads are a deck apart, and the push-back would put the helicopter ashore
+                                    if (_shipLaunch) then { _tooClose = false };
                                     if (_tooClose) then {
                                         _pickupLZPos = [_logic, "prepareHelicopterLZ", [
                                             _remotePosition getPos [random(300), random(360)], 80
@@ -9842,7 +9899,18 @@ switch(_operation) do {
                             // -----------------------------------------------------------------
                             private _reservation = [_event, "poolReservation", 0] call ALIVE_fnc_hashGet;
                             _forcePool = _forcePool + _reservation;
-                            _forcePool = _forcePool - _totalCount;
+                            // a landing from the ship is the commander's starting force, so the pool pays nothing
+                            if (!_shipLaunch) then { _forcePool = _forcePool - _totalCount };
+                            if (_shipLaunch) then {
+                                // the commander holds the original event, not this copy, so the answer goes to it
+                                private _shipID = [_event, "shipOpcomID", ""] call ALIVE_fnc_hashGet;
+                                private _shipToken = [_event, "shipToken", ""] call ALIVE_fnc_hashGet;
+                                {
+                                    if (_x isEqualType [] && {([_x, "opcomID", ""] call ALIVE_fnc_hashGet) == _shipID}) exitWith {
+                                        ([_x, "shipSent", createHashMap] call ALIVE_fnc_hashGet) set [_shipToken, [count _infantryProfiles, 0]];
+                                    };
+                                } forEach (missionNamespace getVariable ["OPCOM_instances", []]);
+                            };
                             // settled: removing the request later has nothing to give back
                             [_event, "poolReservation", 0] call ALIVE_fnc_hashSet;
 
@@ -10061,7 +10129,7 @@ switch(_operation) do {
                             _vProfID = _eventTransportVehiclesProfiles select _tIdx;
                         };
                         if (_vProfID != "") then {
-                            private _returnPos = [_reinforcementPrimaryObjective, "center"] call ALIVE_fnc_hashGet;
+                            private _returnPos = if (_shipLaunch && {count _shipFrom > 1}) then { _shipFrom getPos [1500, _shipDest getDir _shipFrom] } else { [_reinforcementPrimaryObjective, "center"] call ALIVE_fnc_hashGet };
 
                             // #426 - protect/shoot-down tasks ride this transport heli.
                             // Same side/faction resolution as the convoy raise, with the
@@ -12742,6 +12810,8 @@ switch(_operation) do {
                         if (isNil "_returnPos" || {!(_returnPos isEqualType [])} || {_returnPos isEqualTo []}) then {
                             _returnPos = [_reinforcementPrimaryObjective, "center"] call ALIVE_fnc_hashGet;
                         };
+                        // Start From Ship: out to sea past the ship, so the helicopter is removed out of sight
+                        if (_shipLaunch && {count _shipFrom > 1}) then { _returnPos = _shipFrom getPos [1500, _shipDest getDir _shipFrom] };
 
                         [_logic, "spawnHeliParadropWatchdog", [
                             _x, _vProfID, _eventPosition, _returnPos, _groupInfantryIDs, _paradropHeight, _debug

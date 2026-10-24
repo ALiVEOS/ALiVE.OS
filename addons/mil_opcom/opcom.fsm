@@ -1283,6 +1283,13 @@ class FSM
                          "" \n
                          "    private [""_position"",""_forceMakeup"",""_forceMakeupAir"",""_event"",""_eventID"",""_base""];" \n
                          "    " \n
+                         "    // Start From Ship: the groups aboard fly ashore; nothing is held yet, so there is no base to send from" \n
+                         "    private _shipAboard = [_OPCOM_HANDLER,""shipAboard"",[0,0,0,0,0,0,0,0]] call ALiVE_fnc_HashGet;" \n
+                         "    if (([_OPCOM_HANDLER,""shipStart"",false] call ALiVE_fnc_HashGet) && {(_shipAboard select 0) + (_shipAboard select 1) > 0}) exitWith {" \n
+                         "        _reinforcementsInProgress = true;" \n
+                         "        if !([_OPCOM_HANDLER,""shipLaunchBusy"",false] call ALiVE_fnc_HashGet) then {[_OPCOM_HANDLER,""shipLaunch""] spawn ALiVE_fnc_OPCOM};" \n
+                         "    };" \n
+                         "" \n
                          "    _base = [_OPCOM_HANDLER,""findReinforcementBase""] call ALiVE_fnc_OPCOM;" \n
                          "" \n
                          "    if (isnil ""_base"") exitwith {" \n
@@ -1497,6 +1504,12 @@ class FSM
                          "      " \n
                          "    if ((_currentCount / _startCount) < _reinforcementRatio) then {_reinforce = +_diff};" \n
                          "  };" \n
+                         "};" \n
+                         "" \n
+                         "// Start From Ship: while groups are aboard they land by helicopter, whatever the force ratio" \n
+                         "if (([_OPCOM_HANDLER,""shipStart"",false] call ALiVE_fnc_HashGet) && {!_reinforcementsInProgress}) then {" \n
+                         "    private _aboard = [_OPCOM_HANDLER,""shipAboard"",[0,0,0,0,0,0,0,0]] call ALiVE_fnc_HashGet;" \n
+                         "    if ((_aboard select 0) + (_aboard select 1) > 0) then {_reinforce = +_aboard};" \n
                          "};" \n
                          ""/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
