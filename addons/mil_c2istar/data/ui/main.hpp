@@ -499,7 +499,8 @@ class C2Tablet
             x = 0.519796 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.5800 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.216525 * GUI_GRID_WAbs;
-            h = 0.0208 * GUI_GRID_HAbs;
+            // two lines: the Alt+click hint for a task's map point runs to a second line (NeisAEL on Discord, 24 Oct)
+            h = 0.042 * GUI_GRID_HAbs;
             colorBackground[] = {0,0,0,0};
             class Attributes
             {
