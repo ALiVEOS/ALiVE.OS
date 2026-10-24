@@ -453,7 +453,29 @@ switch (_operation) do {
                         private _who = _words joinString ",";
                         private _cost = (parseNumber (_h getOrDefault ["cost", "0"])) max 0;
                         private _cap = ((round parseNumber (_h getOrDefault ["cap", "0"])) max 0) min 12;
-                        _rows pushBack [_id, _name, _prefix, _marker, _hubs, _plus, _minus, _role, _who, _h getOrDefault ["list", ""], _cost, _cap];
+                        // A type's own Player FOBs settings, in place of the module's (A. Ares on Discord, 23 Oct):
+                        // respawn (the tier its respawn point comes at, 0 or off for none), supply (what a new one
+                        // starts with) and trickle (supply per minute). Left out, the module's setting.
+                        private _own = [];
+                        {
+                            _x params ["_key", "_attr"];
+                            private _v = trim (_h getOrDefault [_key, ""]);
+                            if (_key == "respawn" && {(toLower _v) in ["off", "none", "no"]}) then { _v = "0" };
+                            if (_v != "") then {
+                                if (_v regexMatch "\d+(\.\d+)?") then {
+                                    private _range = (_settings get _attr) select 1;
+                                    private _n = ((parseNumber _v) max (_range select 0)) min (_range select 1);
+                                    if (_key == "respawn") then { _n = round _n };
+                                    if (_n != parseNumber _v) then {
+                                        ["ALiVE Player FOBs - FOB Types: %1's %2 of %3 is out of range, so %4 is used", _id, _key, _v, _n] call ALiVE_fnc_dumpR;
+                                    };
+                                    _own pushBack [_attr, _n];
+                                } else {
+                                    ["ALiVE Player FOBs - FOB Types: %1's %2 is %3, which isn't 0 or more; the Player FOBs setting is used", _id, _key, _v] call ALiVE_fnc_dumpR;
+                                };
+                            };
+                        } forEach [["respawn", "fob_respawn"], ["supply", "fob_supply_initial"], ["trickle", "fob_supply_trickle"]];
+                        _rows pushBack [_id, _name, _prefix, _marker, _hubs, _plus, _minus, _role, _who, _h getOrDefault ["list", ""], _cost, _cap, _own];
                     };
                 };
             };
@@ -465,8 +487,15 @@ switch (_operation) do {
         if (([_logic, "attribute", ["fob_supply_source"]] call MAINCLASS) != "FORCEPOOL") then {
             private _start = [_logic, "attribute", ["fob_supply_initial"]] call MAINCLASS;
             {
-                if ((_x select 10) > _start) then {
-                    ["ALiVE Player FOBs - FOB Types: %1 costs %2 but a new FOB starts with %3 supply, so it can never be deployed", _x select 0, _x select 10, _start] call ALiVE_fnc_dumpR;
+                private _own = _x select 12;
+                private _i = _own findIf { (_x select 0) == "fob_supply_initial" };
+                private _from = if (_i < 0) then { _start } else { (_own select _i) select 1 };
+                private _cap1 = [_logic, "attribute", ["fob_supply_cap_t1"]] call MAINCLASS;
+                if (_i >= 0 && {_from > _cap1}) then {
+                    ["ALiVE Player FOBs - FOB Types: %1 starts with %2 supply, above the Tier 1 supply limit of %3, so it gains none until it spends below it", _x select 0, _from, _cap1] call ALiVE_fnc_dumpR;
+                };
+                if ((_x select 10) > _from) then {
+                    ["ALiVE Player FOBs - FOB Types: %1 costs %2 but a new FOB starts with %3 supply, so it can never be deployed", _x select 0, _x select 10, _from] call ALiVE_fnc_dumpR;
                 };
             } forEach _rows;
         };
@@ -490,11 +519,19 @@ switch (_operation) do {
     case "typeSpec": {
         _args params [["_id", "", [""]]];
         _result = if (_id == "") then {
-            ["", localize "STR_ALIVE_FOB_TYPE_GENERAL", "FOB", "mil_flag", [], [], [], "none", "SIDE", "", 0, 0]
+            ["", localize "STR_ALIVE_FOB_TYPE_GENERAL", "FOB", "mil_flag", [], [], [], "none", "SIDE", "", 0, 0, []]
         } else {
             private _types = missionNamespace getVariable ["ALiVE_FOB_types", []];
             _types param [_types findIf { (_x select 0) == _id }, []]
         };
+    };
+
+    // A Player FOBs setting for a FOB of this type: the type's own when it sets one (typesParse), else the module's
+    case "typeAttribute": {
+        _args params [["_type", "", [""]], ["_name", "", [""]]];
+        private _own = ([_logic, "typeSpec", [_type]] call MAINCLASS) param [12, []];
+        private _at = _own findIf { (_x select 0) == _name };
+        _result = if (_at < 0) then { [_logic, "attribute", [_name]] call MAINCLASS } else { (_own select _at) select 1 };
     };
 
     // The types a FOB kit can become, plain FOB first when it's offered. Works on any machine.
@@ -569,7 +606,7 @@ switch (_operation) do {
             ["id", _id], ["side", _side], ["faction", _faction],
             ["name", (_spec select 2) + " " + (_names select ((_n - 1) max 0) % 26)], ["type", _type],
             ["pos", _pos], ["dir", _dir], ["status", "active"], ["tier", 1],
-            ["supply", [_logic, "attribute", ["fob_supply_initial"]] call MAINCLASS],
+            ["supply", [_logic, "typeAttribute", [_type, "fob_supply_initial"]] call MAINCLASS],
             ["hubClass", _hub], ["hub", objNull],
             ["objects", []],
             ["repairRemaining", 0], ["captureRemaining", 0], ["alertCooldown", 0], ["resupplyCooldown", 0], ["trickleAccumulator", 0],

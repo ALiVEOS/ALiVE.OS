@@ -764,8 +764,8 @@ switch (_op) do {
         _args params [["_id", "", [""]]];
         private _entry = [ALiVE_FOB_registry, _id] call ALIVE_fnc_hashGet;
         if (isNil "_entry") exitWith { _result = false };
-        // a respawn point from the tier the module's Respawn Point setting gives; 0 is never
-        private _from = [_logic, "attribute", ["fob_respawn"]] call ALiVE_fnc_FOB;
+        // a respawn point from the tier the Respawn Point setting gives (the FOB type's own, else the module's); 0 is never
+        private _from = [_logic, "typeAttribute", [[_entry, "type", ""] call ALIVE_fnc_hashGet, "fob_respawn"]] call ALiVE_fnc_FOB;
         private _want = _from > 0 && {([_entry, "tier", 1] call ALIVE_fnc_hashGet) >= _from} && {([_entry, "status", ""] call ALIVE_fnc_hashGet) == "active"};
         private _have = [_entry, "respawn", []] call ALIVE_fnc_hashGet;
         if !(_have isEqualType []) then { _have = [] };

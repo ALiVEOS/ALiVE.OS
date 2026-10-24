@@ -96,13 +96,13 @@
                 <English>Starting Supply</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_SUPPLY_INITIAL_COMMENT">
-                <English>The supply a new FOB starts with (FOB supply and supply crates).</English>
+                <English>The supply a new FOB starts with (FOB supply and supply crates). A FOB type can set its own (FOB Types).</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_SUPPLY_TRICKLE">
                 <English>Supply Per Minute</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_SUPPLY_TRICKLE_COMMENT">
-                <English>Supply each FOB gains every minute on its own, with FOB supply. 0 for none.</English>
+                <English>Supply each FOB gains every minute on its own, with FOB supply. 0 for none. A FOB type can set its own (FOB Types).</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_SUPPLY_CAP_T1">
                 <English>Supply Limit (Tier 1)</English>
@@ -552,7 +552,7 @@
                 <English>Respawn Point</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_RESPAWN_COMMENT">
-                <English>From which tier a FOB is a respawn point for its side, while its headquarters stands. Off: never. Needs a respawn type in the mission that offers respawn positions.</English>
+                <English>From which tier a FOB is a respawn point for its side, while its headquarters stands. Off: never. Needs a respawn type in the mission that offers respawn positions. A FOB type can set its own tier (FOB Types).</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_ACTION_UPGRADE">
                 <English>Upgrade FOB</English>
@@ -726,7 +726,7 @@
                 <English>Gives a FOB kit a choice of types, such as a fire base or a patrol base, each with its own headquarters buildings, build list, map marker, limit, cost and who may deploy it.</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_TYPES_USAGE">
-                <English>Place one and sync it to the Player FOBs module. Use the button to open the FOB Types editor in your browser and paste what it makes into Types. Not synced, it does nothing. A type changes what a FOB can build and who may deploy it; how a FOB is supplied, its tiers and its respawn point stay the Player FOBs module's settings.</English>
+                <English>Place one and sync it to the Player FOBs module. Use the button to open the FOB Types editor in your browser and paste what it makes into Types. Not synced, it does nothing. A type changes what a FOB can build and who may deploy it, and can set its own respawn tier, starting supply and supply per minute; anything it leaves out, and the rest of how a FOB is supplied and upgraded, stays the Player FOBs module's settings.</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_TYPES_OPEN">
                 <English>Open the FOB Types editor (paste below)</English>
@@ -738,7 +738,7 @@
                 <English>Types</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_TYPES_LIST_COMMENT">
-                <English>One type per line, each a set of key=value pairs separated by semicolons: id, name, prefix (the start of its FOBs' names, FOB by default), marker (a map marker class), hubs (headquarters classes, separated by commas), build (+class adds it, -class removes it; an added class no FOB could build before is kept for the types that add it), who (SIDE, LEADER or LIST, several separated by commas), list (player IDs, unit classes or Eden variable names, separated by commas, never semicolons), cost (taken when it's deployed), cap (most at once per side, 0 for no limit) and role (not used yet). The FOB Types editor writes it for you.</English>
+                <English>One type per line, each a set of key=value pairs separated by semicolons: id, name, prefix (the start of its FOBs' names, FOB by default), marker (a map marker class), hubs (headquarters classes, separated by commas), build (+class adds it, -class removes it; an added class no FOB could build before is kept for the types that add it), who (SIDE, LEADER or LIST, several separated by commas), list (player IDs, unit classes or Eden variable names, separated by commas, never semicolons), cost (taken when it's deployed), cap (most at once per side, 0 for no limit), respawn (the tier its respawn point comes at, 1 to 3, or 0 for none), supply (what a new one starts with, with FOB supply), trickle (supply per minute, with FOB supply) and role (not used yet). Respawn, supply and trickle left out use the Player FOBs settings. The FOB Types editor writes it for you.</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_TYPES_GENERAL">
                 <English>Offer the Plain FOB</English>

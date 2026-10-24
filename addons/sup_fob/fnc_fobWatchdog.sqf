@@ -176,7 +176,7 @@ private _tick = {
         };
 
         // A steady trickle of supply, Supply Per Minute, when the module sets one (FOB supply mode only)
-        private _trickle = "fob_supply_trickle" call _set;
+        private _trickle = if (("fob_supply_source" call _set) == "FOBPOOL") then { [_logic, "typeAttribute", [[_entry, "type", ""] call ALIVE_fnc_hashGet, "fob_supply_trickle"]] call ALiVE_fnc_FOB } else { 0 };
         if (_trickle > 0 && {("fob_supply_source" call _set) == "FOBPOOL"} && {([_entry, "status", ""] call ALIVE_fnc_hashGet) == "active"}) then {
             // Supply Per Minute, for the time this pass covers
             ["credit", [_id, _trickle * _dt / 60, "trickle"]] call ALiVE_fnc_fobSupply;
