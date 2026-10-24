@@ -491,6 +491,11 @@ class CfgFunctions {
                 file = "\x\alive\addons\mil_c2istar\tasks\fnc_taskInformantExfiltration.sqf";
                 ALIVE_RECOMPILE;
             };
+            class taskStopSaboteur {
+                description = "Task Stop the Saboteur";
+                file = "\x\alive\addons\mil_c2istar\tasks\fnc_taskStopSaboteur.sqf";
+                ALIVE_RECOMPILE;
+            };
             class taskMarketReopening {
                 description = "Task Market Reopening";
                 file = "\x\alive\addons\mil_c2istar\tasks\fnc_taskMarketReopening.sqf";

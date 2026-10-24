@@ -124,6 +124,12 @@ class CfgTaskTypes
         icon = "\A3\ui_f\data\map\vehicleicons\iconexplosivegp_ca.paa";
         icon3D = "\A3\ui_f\data\map\vehicleicons\iconexplosivegp_ca.paa";
     };
+    class alive_pin_stopsaboteur
+    {
+        displayName = "Stop the Saboteur";
+        icon = "\A3\ui_f\data\map\vehicleicons\iconexplosivegp_ca.paa";
+        icon3D = "\A3\ui_f\data\map\vehicleicons\iconexplosivegp_ca.paa";
+    };
     class alive_pin_removeied
     {
         displayName = "Remove IED";

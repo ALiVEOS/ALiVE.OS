@@ -538,6 +538,9 @@
     <Portuguese>o informante</Portuguese>
     <Russian>информатор</Russian>
 </Key>
+<Key ID="STR_ALIVE_TARGETID_SABOTEUR">
+    <English>the saboteur</English>
+</Key>
 <Key ID="STR_ALIVE_TARGETID_LEADER">
     <English>the local leader</English>
     <Chinese>當地領袖</Chinese>

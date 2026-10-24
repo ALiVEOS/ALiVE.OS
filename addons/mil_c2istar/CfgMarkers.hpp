@@ -893,6 +893,50 @@ class CfgMarkers
         markerClass = "ALiVE_TaskPins";
         showEditorMarkerColor = 0;
     };
+    class alive_pin_stopsaboteur_w
+    {
+        scope = 2;
+        name = "StopSaboteur (BLUFOR)";
+        icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_sabotagebuilding_w.paa";
+        color[] = {1,1,1,1};
+        size = 40;
+        shadow = 0;
+        markerClass = "ALiVE_TaskPins";
+        showEditorMarkerColor = 0;
+    };
+    class alive_pin_stopsaboteur_e
+    {
+        scope = 2;
+        name = "StopSaboteur (OPFOR)";
+        icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_sabotagebuilding_e.paa";
+        color[] = {1,1,1,1};
+        size = 40;
+        shadow = 0;
+        markerClass = "ALiVE_TaskPins";
+        showEditorMarkerColor = 0;
+    };
+    class alive_pin_stopsaboteur_i
+    {
+        scope = 2;
+        name = "StopSaboteur (Independent)";
+        icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_sabotagebuilding_i.paa";
+        color[] = {1,1,1,1};
+        size = 40;
+        shadow = 0;
+        markerClass = "ALiVE_TaskPins";
+        showEditorMarkerColor = 0;
+    };
+    class alive_pin_stopsaboteur_c
+    {
+        scope = 2;
+        name = "StopSaboteur (Civilian)";
+        icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_sabotagebuilding_c.paa";
+        color[] = {1,1,1,1};
+        size = 40;
+        shadow = 0;
+        markerClass = "ALiVE_TaskPins";
+        showEditorMarkerColor = 0;
+    };
     class alive_pin_removeied_w
     {
         scope = 2;
