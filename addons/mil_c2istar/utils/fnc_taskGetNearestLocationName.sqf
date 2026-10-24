@@ -29,7 +29,8 @@ _distance = if(count _this > 1) then {_this select 1} else {1000};
 
 if(isnil "_taskLocation" || {count _taskLocation == 0}) exitWith {""};
 
-_nearLocations = nearestLocations [_taskLocation, ["NameVillage","NameCity","NameCityCapital","NameLocal"], _distance];
+// a location with no name (some terrains have nameless NameLocal ones) is no use in a sentence
+_nearLocations = (nearestLocations [_taskLocation, ["NameVillage","NameCity","NameCityCapital","NameLocal"], _distance]) select {text _x != ""};
 
 // Bounded expansion. Without an upper bound, callers passing an
 // off-map position get a location name from far away that bears
@@ -43,7 +44,7 @@ _nearLocations = nearestLocations [_taskLocation, ["NameVillage","NameCity","Nam
 private _maxDistance = 5000;
 while {count _nearLocations < 1 && {_distance < _maxDistance}} do {
     _distance = _distance + 500;
-    _nearLocations = nearestLocations [_taskLocation, ["NameVillage","NameCity","NameCityCapital","NameLocal"], _distance];
+    _nearLocations = (nearestLocations [_taskLocation, ["NameVillage","NameCity","NameCityCapital","NameLocal"], _distance]) select {text _x != ""};
 };
 
 if (count _nearLocations < 1) exitWith {""};

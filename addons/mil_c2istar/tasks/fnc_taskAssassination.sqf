@@ -236,6 +236,14 @@ switch (_taskState) do {
             _units = [[_taskEnemyFaction], 1, ALiVE_MIL_CQB_UNITBLACKLIST] call ALiVE_fnc_taskGetHVTUnits;
 
             _nearestTown = [_targetPosition] call ALIVE_fnc_taskGetNearestLocationName;
+            // no named place within 5 km: the 1 km grid square instead, so the briefing never reads "near !"
+            // (A. Ares on Discord, 24 Oct). About as precise as a town name, so a hidden recruiter stays hidden.
+            if (_nearestTown == "") then {
+                private _grid = mapGridPosition _targetPosition;
+                private _half = floor ((count _grid) / 2);
+                // two figures each way, a 1 km square on the usual grid, however many figures the terrain's grid has
+                _nearestTown = format ["grid %1%2", _grid select [0, 2 min _half], _grid select [_half, 2 min _half]];
+            };
 
             _dialog = [_dialogOption,"Destroy"] call ALIVE_fnc_hashGet;
 
