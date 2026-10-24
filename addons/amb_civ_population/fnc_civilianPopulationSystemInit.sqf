@@ -350,6 +350,10 @@ if(isServer) then {
         // over, but the start-up sweep, the new-unit handler, the catch-all loops and the order
         // menu all come through here. The flags are broadcast when true, so clients see them.
         if ((["townElder", "major", "muezzin", "priest", "politician"] findIf { (_unit getVariable [_x, false]) isEqualTo true }) > -1) exitWith { true };
+        // A captive soldier reads as civilian (side of a captive unit is civilian) while his group keeps
+        // its side: a downed pilot waiting for rescue, a hostage, a prisoner. Without this the brain took
+        // him over and left him frozen in its talking animation once he was freed and joined the players.
+        if (captive _unit && {side group _unit != civilian}) exitWith { true };
         if (!ALiVE_advciv_missionCriticalCheck) exitWith { false };
 
         private _grp = group _unit;
