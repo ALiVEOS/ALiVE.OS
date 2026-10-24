@@ -157,6 +157,14 @@ switch(_operation) do {
                         setTerrainGrid (TGARRAY select (terrainGrid - 1));
                     };
 
+                    // the player's own starting terrain detail (Addon Options > ALiVE > Game), a tier from 1 (grid 50)
+                    // to 5 (grid 3.125) kept inside the module's minimum and maximum; 0 leaves the mission's start
+                    private _prefTG = missionNamespace getVariable ["ALiVE_prefTerrainGrid", 0];
+                    if (_prefTG > 0) then {
+                        terrainGrid = (_prefTG max _minsettg) min _maxsettg;
+                        setTerrainGrid ([50, 25, 12.5, 6.25, 3.125] select (terrainGrid - 1));
+                    };
+
                     _maxgetvd = (ADDON getVariable ["maxVD", "20000"]); // get the maximum view distance se in the module (editor default 20000; it was the text "2", 2 m)
                     _maxsetvd = parseNumber format ["%1", _maxgetvd]; // convert the maximum variable to a number
 

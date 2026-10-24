@@ -74,6 +74,27 @@
 <Key ID="STR_ALIVE_SETTINGS_VD_COMMENT">
     <English>Your view distance when a mission with ALiVE's Player Options starts, kept inside the mission's minimum and maximum. 0 keeps the game's own setting.</English>
 </Key>
+<Key ID="STR_ALIVE_SETTINGS_TG">
+    <English>Starting terrain detail</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_TG_COMMENT">
+    <English>Your terrain detail when a mission with ALiVE's Player Options starts, kept inside the mission's minimum and maximum. Higher detail shows the ground's shape further out, at some cost to frame rate. "As the mission sets" keeps the mission's own starting level.</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_TG_1">
+    <English>1 - Low</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_TG_2">
+    <English>2 - Standard</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_TG_3">
+    <English>3 - High</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_TG_4">
+    <English>4 - Very high</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_TG_5">
+    <English>5 - Ultra</English>
+</Key>
 <Key ID="STR_ALIVE_SETTINGS_TAGSHIDE">
     <English>Hide player tags</English>
 </Key>
