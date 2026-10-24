@@ -46,6 +46,7 @@ switch (_op) do {
     case "unit": {
         if (isNull _veh) exitWith {};
         uiNamespace setVariable ["NEO_radioCbVehicle", _veh];
+        [_veh] call NEO_fnc_supportFocusMap; // show the player where the vehicle is
         _helpUnit ctrlSetStructuredText (switch (_status) do {
             case "NONE": { ["#627057", "STR_ALIVE_CS_UI_UNIT_AVAILABLE"] call _t };
             case "KILLED": { ["#603234", "STR_ALIVE_CS_UI_UNIT_INEFFECTIVE"] call _t };

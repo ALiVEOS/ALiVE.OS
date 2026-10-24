@@ -23,6 +23,7 @@ else {
 };
 
 _status = _chopper getVariable "NEO_radioTrasportUnitStatus";
+[_chopper] call NEO_fnc_supportFocusMap; // show the player where the helicopter is
 _supportMarker = NEO_radioLogic getVariable "NEO_supportMarker";
 _slider = _display displayCtrl 655578;
 _sliderText = _display displayCtrl 655579;

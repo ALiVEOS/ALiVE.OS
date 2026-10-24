@@ -44,6 +44,7 @@ NEO_fnc_artyIsMissileLauncher = { [_this, "isLauncher"] call ALIVE_fnc_missileAr
 // later. Called wherever a battery is built: at the start, on a respawn, and when one is added during the mission.
 NEO_fnc_artyLauncherSetup = { [_this, "setup"] call ALIVE_fnc_missileArtillery };
 NEO_fnc_supportDrawRing = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_supportDrawRing.sqf";
+NEO_fnc_supportFocusMap = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_supportFocusMap.sqf";
 NEO_fnc_supportSetTargetPos = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_supportSetTargetPos.sqf";
 NEO_fnc_radioGridToPos = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_radioGridToPos.sqf";
 NEO_fnc_radioPosToGrid = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_radioPosToGrid.sqf";

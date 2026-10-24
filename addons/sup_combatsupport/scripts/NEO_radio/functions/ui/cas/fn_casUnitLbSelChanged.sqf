@@ -30,6 +30,7 @@ _casROEText = _display displayCtrl 655616;
 _supportMarker = NEO_radioLogic getVariable "NEO_supportMarker";
 _veh = _casArray select (lbCurSel _casUnitLb) select 0;
 _status = _veh getVariable "NEO_radioCasUnitStatus";
+[_veh] call NEO_fnc_supportFocusMap; // show the player where the aircraft is
 
 //Status Text
 _casHelpUnitText ctrlSetStructuredText parseText (switch (_status) do
