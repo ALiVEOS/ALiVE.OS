@@ -199,7 +199,7 @@ switch(_operation) do {
             // ALiVE's pin for the kind of task, read from its source ("<id>-<TaskType>-<Stage>"), so a stage shows its
             // parent's pin. Arma's own pin when the player picked it in Addon Options, or for a task with no type
             // (one a player placed by hand) or a type with no pin.
-            if (missionNamespace getVariable ["ALiVE_prefTaskPins", "alive"] == "alive" && {_source isEqualType ""}) then {
+            if ((["pinSet"] call ALiVE_fnc_mapPins) != "off" && {_source isEqualType ""}) then {
                 private _sourceParts = _source splitString "-";
                 if (count _sourceParts >= 3) then {
                     private _pinType = format ["alive_pin_%1", toLower (_sourceParts select (count _sourceParts - 2))];

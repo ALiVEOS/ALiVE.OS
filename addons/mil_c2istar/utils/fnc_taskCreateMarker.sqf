@@ -148,11 +148,12 @@ _m setMarkerAlphaLocal _markerAlpha;
 _m setMarkerShapeLocal _markerShape;
 
 if(_markerShape == "ICON") then {
-    // ALiVE's pin for the kind of task when this player has Task Pins on (Addon Options, read here because this
-    // runs on the player's own machine). Colour "Default" takes the pin's white config colour, so Arma draws it
-    // in its own colours instead of tinting it by side.
-    private _pinType = format ["alive_pin_%1", _pinKey];
-    if (_pinKey != "" && {missionNamespace getVariable ["ALiVE_prefTaskPins", "alive"] == "alive"} && {isClass (configFile >> "CfgMarkers" >> _pinType)}) exitWith {
+    // ALiVE's pin for the kind of task, on this player's side's NATO frame (alive_pin_<task>_<side>), when they
+    // have ALiVE pins on (Addon Options, read here because this runs on the player's own machine). Colour
+    // "Default" takes the pin's white config colour, so Arma draws it as it is instead of tinting it.
+    private _set = ["pinSet"] call ALiVE_fnc_mapPins;
+    private _pinType = format ["alive_pin_%1%2", _pinKey, _set];
+    if (_pinKey != "" && {_set != "off"} && {isClass (configFile >> "CfgMarkers" >> _pinType)}) exitWith {
         _m setMarkerTypeLocal _pinType;
         _m setMarkerColorLocal "Default";
     };
@@ -201,7 +202,7 @@ if (_layer) then {
             private _list = [ALIVE_taskMarkers, _taskID] call ALIVE_fnc_hashGet;
             if !(_s in _list) then { _list pushBack _s };
         };
-    }, [_taskID, _markerText, _markerAlpha]]] call ALiVE_fnc_mapPins;
+    }, [_taskID, _markerText, _markerAlpha], "auto"]] call ALiVE_fnc_mapPins;
 };
 if(!_layer && {_markerText != ""} && {_markerShape == "ICON"}) then {
     // Offset the sibling text marker 30m east of the icon so the

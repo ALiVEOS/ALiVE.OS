@@ -876,8 +876,8 @@ switch (_operation) do {
 				// on the asking player's map only, named so two answers never share a marker
 				private _marker = createMarkerLocal [format ["ALiVE_findRole_%1_%2", str _markerPos, diag_tickTime], _markerPos];
 				_marker setMarkerShapeLocal "ICON";
-				_marker setMarkerTypeLocal "mil_circle";
-				_marker setMarkerColorLocal "ColorCIV";
+				// ALiVE's civilian pin if the player has its pins on, Arma's circle otherwise (ALiVE_fnc_mapPins)
+				["pin", [_marker, "mil_circle", "civilian", "ColorCIV"]] call ALiVE_fnc_mapPins;
 				_marker setMarkerSizeLocal [.35, .35];
 				_marker setMarkerAlphaLocal .5;
 				_marker setMarkerTextLocal format ["%1 (%2)", _name, [_roleWord] call CBA_fnc_capitalize];

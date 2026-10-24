@@ -125,6 +125,8 @@ private _placeThreatIntelMarker = {
     ];
 
     private _searchRadius = [_baseRadius, _intelRadiusMultiplier, _minimumRadius] call _scaledIntelRadius;
+    // the ALiVE pin each player sees in place of the icon, if they have ALiVE's pins on
+    private _pinKey = switch (_iconType) do { case "mil_circle": {["threat", "civilian"] select (_markerColor == "ColorCIV")}; case "n_installation": {"installation"}; default {"threat"} };
     private _markerPos = +_actualPos;
     private _isDeceptive = _hostile && {floor random 100 < _hostileDeceptionChance};
 
@@ -133,8 +135,8 @@ private _placeThreatIntelMarker = {
     };
 
     if (!_isDeceptive && {floor random 100 < _exactIntelChance}) then {
-        private _marker = [str _markerPos, _markerPos, "ICON", [1,1], _markerColor, _markerName, _iconType, "Solid", 0, 0.5] call ALIVE_fnc_createMarkerGlobal;
-        [_marker,_intelMarkerDuration] spawn {params ["_marker","_duration"]; sleep _duration; deleteMarker _marker};
+        private _marker = [str _markerPos, _markerPos, "ICON", [1,1], _markerColor, _markerName, _iconType, "Solid", 0, 0.5, _pinKey] call ALIVE_fnc_createMarkerGlobal;
+        [_marker,_intelMarkerDuration] spawn {params ["_marker","_duration"]; sleep _duration; deleteMarker _marker; remoteExec ["", "ALiVE_pin_" + _marker]};
 
         "exact"
     } else {
@@ -212,8 +214,8 @@ switch (_question) do {
             //-- Create marker on home
             _answersGiven pushBack "Home";_answerGiven = true;
             _markerName = format ["%1's home", _civName];
-            _marker = [str _homePos, _homePos, "ICON", [.35, .35], "ColorCIV", _markerName, "mil_circle", "Solid", 0, .5] call ALIVE_fnc_createMarkerGlobal;
-            [_marker,_intelMarkerDuration] spawn {params ["_marker","_duration"]; sleep _duration; deleteMarker _marker};
+            _marker = [str _homePos, _homePos, "ICON", [.35, .35], "ColorCIV", _markerName, "mil_circle", "Solid", 0, .5, "civilian"] call ALIVE_fnc_createMarkerGlobal;
+            [_marker,_intelMarkerDuration] spawn {params ["_marker","_duration"]; sleep _duration; deleteMarker _marker; remoteExec ["", "ALiVE_pin_" + _marker]};
         } else {
             _response1 = localize "STR_ALIVE_CIV_INTERACT_HOME_HOSTILE_1";
             _response2 = localize "STR_ALIVE_CIV_INTERACT_HOME_HOSTILE_2";
@@ -1179,8 +1181,8 @@ switch (_question) do {
                 CIVINTERACT_RESPONSELIST ctrlSetText _response;
                 _answersGiven pushBack "FindRole"; _answerGiven = true;
 
-                private _marker = [format ["ALiVE_findRole_%1", str _homePos], _homePos, "ICON", [.35, .35], "ColorCIV", _markerText, "mil_circle", "Solid", 0, .5] call ALIVE_fnc_createMarkerGlobal;
-                [_marker,_intelMarkerDuration] spawn {params ["_marker","_duration"]; sleep _duration; deleteMarker _marker};
+                private _marker = [format ["ALiVE_findRole_%1", str _homePos], _homePos, "ICON", [.35, .35], "ColorCIV", _markerText, "mil_circle", "Solid", 0, .5, "civilian"] call ALIVE_fnc_createMarkerGlobal;
+                [_marker,_intelMarkerDuration] spawn {params ["_marker","_duration"]; sleep _duration; deleteMarker _marker; remoteExec ["", "ALiVE_pin_" + _marker]};
             } else {
                 if (_hostile && {[_intelChanceBonus, 35] call _passesHostileIntelRoll}) then {
                     _response = [_response1, _response2, _response3] call BIS_fnc_selectRandom;

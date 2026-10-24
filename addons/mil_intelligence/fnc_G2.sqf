@@ -888,7 +888,14 @@ switch(_operation) do {
 
                     if (!isnil "_brush") then {
                         _marker setMarkerBrushLocal _brush;
-                    }
+                    };
+                    // a unit's spot report as ALiVE's unit pin, grouped with others nearby by the map
+                    // label layer (ALiVE_fnc_mapPins); the shapes above fall through to here too
+                    // not on a hosted server's own machine: its decay pass sets these markers' alpha
+                    // with a global command, which could carry the host's hidden copy to everyone
+                    if (!isServer && {_shape == "ICON"} && {!isNil "_type"} && {(_type select [0, 2]) in ["b_", "o_", "n_"]}) then {
+                        ["adopt", [_marker, if (isNil "_text") then {""} else {_text}, 45, "auto", {}, [], "auto"]] call ALiVE_fnc_mapPins;
+                    };
                 };
                 case "POLYLINE": {
                     private _path = _x get "path";

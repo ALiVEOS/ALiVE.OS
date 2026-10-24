@@ -32,6 +32,7 @@ Returns:
 
 Author:
     Goldwep (ALiVE Mod Team)
+    Jman
 ---------------------------------------------------------------------------- */
 
 TRACE_1("COPClient - input",_this);
@@ -158,12 +159,21 @@ if (isNil "ALIVE_COP_MapMEHIndex") then {
             ["warn", "client", "Map display exists but ctrl 51 is null — cannot attach"] call ALIVE_fnc_COPLog;
         };
 
-        _mapCtrl ctrlAddEventHandler ["Draw", {
+        ALIVE_COP_DrawEHIndex = _mapCtrl ctrlAddEventHandler ["Draw", {
             params ["_mapCtrl"];
             [_mapCtrl] call ALIVE_fnc_COPDrawAll;
         }];
 
         ALIVE_COP_DrawEHAttached = true;
+
+        // ALiVE's map label layer (ALiVE_fnc_mapPins) is often on this map already, from the first
+        // FOB or rally marker. Handlers draw in the order they were added, so it goes on again after
+        // this one: its pins and names then sit over the COP's rings and shading, not under them.
+        private _layerEH = _mapCtrl getVariable "ALiVE_mapPins_eh";
+        if (!isNil "_layerEH") then {
+            _mapCtrl ctrlRemoveEventHandler ["Draw", _layerEH];
+            _mapCtrl setVariable ["ALiVE_mapPins_eh", _mapCtrl ctrlAddEventHandler ["Draw", { _this call ALiVE_fnc_mapPinsDraw }]];
+        };
 
         // Snapshot data counts on attach for diagnostic visibility.
         private _intelW = missionNamespace getVariable ["ALiVE_COP_IntelData_WEST", []];

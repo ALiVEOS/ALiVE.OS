@@ -7,7 +7,10 @@ Description:
 Creates a marker all at once. A mil_ or hd_ icon is drawn without its drop shadow.
 
 Parameters:
-array - marker values
+array - marker values: name, position, shape, size, colour, text, type, brush, direction, alpha, and
+        optionally an ALiVE pin key ("installation", "civilian" and so on): each player's machine then
+        shows ALiVE's pin for it in place of the type if that player has ALiVE's pins on (ALiVE_fnc_mapPins),
+        and optionally the side the marked thing belongs to, whose frame the pin is drawn on
 
 Returns:
 bool
@@ -71,6 +74,11 @@ if (count _this > 9) then {
     _marker setMarkerAlpha (_this select 9);
 } else {
     _marker setMarkerAlpha 1;
+};
+if (count _this > 10 && {(_this select 10) != ""}) then {
+    // the JIP entry is named after the marker, so making it again replaces the old one; the stock type goes
+    // with it, since a player's machine may already show this marker's pin from before it was made again
+    ["pin", [_marker, markerType _marker, _this select 10, _this select 4, _this param [11, ""]]] remoteExecCall ["ALiVE_fnc_mapPins", 0, "ALiVE_pin_" + _marker];
 };
 
 _marker

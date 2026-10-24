@@ -18,9 +18,12 @@ private _made = [];
     _x params ["_pos", "_text"];
     NEO_orderMarkerCount = (missionNamespace getVariable ["NEO_orderMarkerCount", 0]) + 1;
     private _m = createMarkerLocal [format ["NEO_orderMk_%1", NEO_orderMarkerCount], _pos];
-    _m setMarkerTypeLocal "hd_Pickup_noShadow";
-    _m setMarkerColorLocal "ColorBlue";
+    // ALiVE's pickup pin when the player has its pins on, Arma's otherwise; the label layer writes the
+    // callsign in blue beside it (ALiVE_fnc_mapPins)
+    // (and back to Arma's if the player turns the pins off while the order runs)
+    ["pin", [_m, "hd_Pickup_noShadow", "pickup", "ColorBlue"]] call ALiVE_fnc_mapPins;
     _m setMarkerTextLocal _text;
+    ["adopt", [_m, _text, 55, "ColorBlue", {}, [], "auto"]] call ALiVE_fnc_mapPins;
     _made pushBack _m;
 } forEach _points;
 _veh setVariable ["NEO_orderMarkers", _made];

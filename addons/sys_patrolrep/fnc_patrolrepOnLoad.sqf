@@ -140,13 +140,13 @@ _eyes = [
         _markers = createMarkerLocal [_markerName + "START", GVAR(spos)];
         _markers setMarkerAlphaLocal 1;
         _markers setMarkerTextLocal "PATROLREP START";
-        _markers setMarkerTypeLocal "mil_marker_noShadow";
+        ["pin", [_markers, "mil_marker_noShadow", "report", markerColor _markers]] call ALiVE_fnc_mapPins;
         GVAR(mapStartMarker) = _markers;
 
         _markere = createMarkerLocal [_markerName + "END", (position player)];
         _markere setMarkerAlphaLocal 1;
         _markere setMarkerTextLocal "PATROLREP END";
-        _markere setMarkerTypeLocal "mil_marker_noShadow";
+        ["pin", [_markere, "mil_marker_noShadow", "report", markerColor _markere]] call ALiVE_fnc_mapPins;
         GVAR(mapEndMarker) = _markere;
 };
 

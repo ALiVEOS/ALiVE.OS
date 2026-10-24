@@ -34,8 +34,8 @@ missionNamespace setVariable ["NEO_artyCmdrSentAt", time];
 private _lastShotMarker = NEO_radioLogic getVariable ["NEO_supportMarkerArtyLastShot", ""];
 if (_lastShotMarker == "") then {
     _lastShotMarker = createMarkerLocal ["NEO_supportMarkerArtyLastShot", _pos];
-    _lastShotMarker setMarkerTypeLocal "hd_Destroy_noShadow";
-    _lastShotMarker setMarkerColorLocal "ColorOrange";
+    // ALiVE's strike target pin when the player has its pins on, Arma's otherwise (ALiVE_fnc_mapPins)
+    ["pin", [_lastShotMarker, "hd_Destroy_noShadow", "strikeTarget", "ColorOrange"]] call ALiVE_fnc_mapPins;
     NEO_radioLogic setVariable ["NEO_supportMarkerArtyLastShot", _lastShotMarker];
 };
 _lastShotMarker setMarkerPosLocal _pos;

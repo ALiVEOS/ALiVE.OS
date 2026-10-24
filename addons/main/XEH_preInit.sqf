@@ -47,13 +47,17 @@ LOG(MSG_INIT);
 ["ALiVE_prefCrewInfo", "LIST", [localize "STR_ALIVE_SETTINGS_CREW", localize "STR_ALIVE_SETTINGS_CREW_COMMENT"], [localize "STR_ALIVE_SETTINGS_CATEGORY", localize "STR_ALIVE_SETTINGS_GAME"], [["MODULE", "RIGHT", "LEFT", "OFF"], [localize "STR_ALIVE_SETTINGS_MISSION", localize "STR_ALIVE_SETTINGS_RIGHT", localize "STR_ALIVE_SETTINGS_LEFT", localize "STR_ALIVE_SETTINGS_OFF"], 0]] call CBA_fnc_addSetting;
 // how C2ISTAR task updates are shown (ALIVE_fnc_taskSubtitle); no "off", the hold countdown needs a way in
 ["ALiVE_prefTaskMessages", "LIST", [localize "STR_ALIVE_SETTINGS_MSG", localize "STR_ALIVE_SETTINGS_MSG_COMMENT"], [localize "STR_ALIVE_SETTINGS_CATEGORY", localize "STR_ALIVE_SETTINGS_GAME"], [["subtitle", "hint", "chat"], [localize "STR_ALIVE_SETTINGS_MSG_SUB", localize "STR_ALIVE_SETTINGS_MSG_HINT", localize "STR_ALIVE_SETTINGS_MSG_CHAT"], 0]] call CBA_fnc_addSetting;
-// ALiVE's hand-drawn pin for each C2ISTAR task type on the map and in the task list, or Arma's own (ALIVE_fnc_taskCreateMarker, ALIVE_fnc_taskHandlerClient)
-["ALiVE_prefTaskPins", "LIST", [localize "STR_ALIVE_SETTINGS_PINS", localize "STR_ALIVE_SETTINGS_PINS_COMMENT"], [localize "STR_ALIVE_SETTINGS_CATEGORY", localize "STR_ALIVE_SETTINGS_GAME"], [["alive", "default"], [localize "STR_ALIVE_SETTINGS_PINS_ALIVE", localize "STR_ALIVE_SETTINGS_PINS_DEFAULT"], 0], 0, {
+// ALiVE's pins for tasks, units, FOBs and rally points on the map and in the task list (Arma's own icons on the side's NATO frame), (the default), or Arma's own markers (ALIVE_fnc_taskCreateMarker, ALIVE_fnc_taskHandlerClient, ALiVE_fnc_mapPins)
+["ALiVE_prefTaskPins", "LIST", [localize "STR_ALIVE_SETTINGS_PINS", localize "STR_ALIVE_SETTINGS_PINS_COMMENT"], [localize "STR_ALIVE_SETTINGS_CATEGORY", localize "STR_ALIVE_SETTINGS_GAME"], [["default", "alive"], [localize "STR_ALIVE_SETTINGS_PINS_DEFAULT", localize "STR_ALIVE_SETTINGS_PINS_ALIVE"], 1], 0, {
     // FOBs and rally points pick their pin from this too, so they redraw straight away
     if (!isNil "ALiVE_mapPins_reg") then { ["refresh"] call ALiVE_fnc_mapPins };
 }] call CBA_fnc_addSetting;
 // ALiVE writes the names of its own map markers itself, each moved clear of other names and icons (ALiVE_fnc_mapPins)
 ["ALiVE_prefMapLayer", "CHECKBOX", [localize "STR_ALIVE_SETTINGS_MAPLAYER", localize "STR_ALIVE_SETTINGS_MAPLAYER_COMMENT"], [localize "STR_ALIVE_SETTINGS_CATEGORY", localize "STR_ALIVE_SETTINGS_GAME"], true, 0, {
+    if (!isNil "ALiVE_mapPins_reg") then { ["refresh"] call ALiVE_fnc_mapPins };
+}] call CBA_fnc_addSetting;
+// how solid ALiVE's map pins are, 20 to 100 percent; their names stay solid (ALiVE_fnc_mapPinsLayout, ALiVE_fnc_mapPinsDraw)
+["ALiVE_prefPinOpacity", "SLIDER", [localize "STR_ALIVE_SETTINGS_PINALPHA", localize "STR_ALIVE_SETTINGS_PINALPHA_COMMENT"], [localize "STR_ALIVE_SETTINGS_CATEGORY", localize "STR_ALIVE_SETTINGS_GAME"], [20, 100, 100, 0], 0, {
     if (!isNil "ALiVE_mapPins_reg") then { ["refresh"] call ALiVE_fnc_mapPins };
 }] call CBA_fnc_addSetting;
 // scroll wheel or ACE for rally points, talking to soldiers and FOBs (rallyInit, C2ISTAR, fobActions)

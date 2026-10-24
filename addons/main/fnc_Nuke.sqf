@@ -359,6 +359,9 @@ NUKE_fnc_RadiationServer = {
         _markernameicon setMarkerColor "ColorRed";
         _markernameicon setMarkerType "mil_destroy_noShadow";
         _markernameicon setMarkerText "Nuclear Radiation";
+        // the global commands above share this marker with everyone: each player's machine swaps in ALiVE's
+        // radiation pin if that player has its pins on, late joiners too (ALiVE_fnc_mapPins)
+        ["pin", [_markernameicon, "mil_destroy_noShadow", "radiation", "ColorRed"]] remoteExecCall ["ALiVE_fnc_mapPins", 0, "ALiVE_pin_" + _markernameicon];
 
         //Radiation damage
         _radiationStart = time;

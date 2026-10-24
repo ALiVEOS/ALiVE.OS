@@ -101,4 +101,4 @@ _marker setMarkerPosLocal (_params select 17);
 _marker setMarkerAlphaLocal 1;
 
 _marker setMarkerTextLocal format["SITREP %1",_params select 0];
-_marker setMarkerTypeLocal "mil_marker_noShadow";
+["pin", [_marker, "mil_marker_noShadow", "report", markerColor _marker]] call ALiVE_fnc_mapPins;

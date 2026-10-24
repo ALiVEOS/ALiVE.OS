@@ -20,7 +20,8 @@ switch (toUpper (_lb lbText (lbCurSel _lb))) do
     case "TRANSPORT" :
     {
         _marker setMarkerTextLocal localize "STR_ALIVE_CS_UI_MARKER_TRANSPORT";
-        _marker setMarkerTypeLocal "hd_Pickup_noShadow";
+        // ALiVE's pickup pin when the player has its pins on, Arma's otherwise (ALiVE_fnc_mapPins)
+        ["pin", [_marker, "hd_Pickup_noShadow", "pickup", markerColor _marker]] call ALiVE_fnc_mapPins;
 
         [[], 0] call NEO_fnc_supportDrawRing; // transport has no area of influence
 
@@ -37,7 +38,7 @@ switch (toUpper (_lb lbText (lbCurSel _lb))) do
     case "CAS" :
     {
         _marker setMarkerTextLocal "CAS";
-        _marker setMarkerTypeLocal "hd_Destroy_noShadow";
+        ["pin", [_marker, "hd_Destroy_noShadow", "strikeTarget", markerColor _marker]] call ALiVE_fnc_mapPins;
 
         // area-of-influence ring at the CAS engagement radius (slider 655592)
         [_pos, sliderPosition (_display displayCtrl 655592), "ColorBlue"] call NEO_fnc_supportDrawRing;
@@ -49,8 +50,7 @@ switch (toUpper (_lb lbText (lbCurSel _lb))) do
     case "ARTY" :
     {
         _marker setMarkerTextLocal localize "STR_ALIVE_CS_UI_MARKER_STRIKE";
-        _marker setMarkerTypeLocal "hd_Objective_noShadow";
-        _marker setMarkerColorLocal "ColorOrange";
+        ["pin", [_marker, "hd_Objective_noShadow", "strikeTarget", "ColorOrange"]] call ALiVE_fnc_mapPins;
 
         // area-of-influence ring at the dispersion / beaten zone (slider 655609); 0 = pinpoint
         [_pos, sliderPosition (_display displayCtrl 655609), "ColorOrange"] call NEO_fnc_supportDrawRing;

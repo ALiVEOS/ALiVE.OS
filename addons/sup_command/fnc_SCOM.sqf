@@ -2124,8 +2124,8 @@ switch (_operation) do {
 
                         private _m = createMarkerLocal ["ALiVE_SCOM_OBJ_DESIGNATE", _position];
                         _m setMarkerShapeLocal "ICON";
-                        _m setMarkerTypeLocal "mil_objective_noShadow";
-                        _m setMarkerColorLocal "ColorOrange";
+                        // ALiVE's objective pin when the player has its pins on, Arma's otherwise (ALiVE_fnc_mapPins)
+                        ["pin", [_m, "mil_objective_noShadow", "objective", "ColorOrange"]] call ALiVE_fnc_mapPins;
                         _m setMarkerTextLocal "New Objective";
 
                         private _objMarkers = [_logic,"objMarkers"] call MAINCLASS;
@@ -2978,6 +2978,8 @@ switch (_operation) do {
                         _m setMarkerTypeLocal _profileMarker;
                         _m setMarkerColorLocal _color;
 
+                        // the map layer draws it as its side's NATO frame when ALiVE's pins are on, grouped with others close by (ALiVE_fnc_mapPins)
+                        ["adopt", [_m, markerText _m, 45, "auto", {}, [], "auto"]] call ALiVE_fnc_mapPins;
                         _markers pushback _m;
                         _profileCount = _profileCount + 1;
 
@@ -2985,8 +2987,7 @@ switch (_operation) do {
                             _m = createMarkerLocal [format[MTEMPLATE,_attackID], [_position select 0,(_position select 1) + 15]];
                             _m setMarkerShapeLocal "ICON";
                             _m setMarkerSizeLocal [0.6,0.6];
-                            _m setMarkerTypeLocal "mil_warning_noShadow";
-                            _m setMarkerColorLocal _color;
+                            ["pin", [_m, "mil_warning_noShadow", "threat", _color, ["w", "e", "i"] select (["b", "o", "n"] find _typePrefix)]] call ALiVE_fnc_mapPins;
                             _m setMarkerTextLocal "Combat";
                             _markers pushback _m;
                         };
@@ -3004,6 +3005,8 @@ switch (_operation) do {
                         _m setMarkerTypeLocal _profileMarker;
                         _m setMarkerColorLocal _color;
 
+                        // the map layer draws it as its side's NATO frame when ALiVE's pins are on, grouped with others close by (ALiVE_fnc_mapPins)
+                        ["adopt", [_m, markerText _m, 45, "auto", {}, [], "auto"]] call ALiVE_fnc_mapPins;
                         _markers pushback _m;
                         _profileCount = _profileCount + 1;
 
@@ -3011,8 +3014,7 @@ switch (_operation) do {
                             _m = createMarkerLocal [format[MTEMPLATE,_attackID], [_position select 0,(_position select 1) + 15]];
                             _m setMarkerShapeLocal "ICON";
                             _m setMarkerSizeLocal [0.6,0.6];
-                            _m setMarkerTypeLocal "mil_warning_noShadow";
-                            _m setMarkerColorLocal _color;
+                            ["pin", [_m, "mil_warning_noShadow", "threat", _color, ["w", "e", "i"] select (["b", "o", "n"] find _typePrefix)]] call ALiVE_fnc_mapPins;
                             _m setMarkerTextLocal "Combat";
                             _markers pushback _m;
                         };
@@ -3030,6 +3032,8 @@ switch (_operation) do {
                         _m setMarkerTypeLocal _profileMarker;
                         _m setMarkerColorLocal _color;
 
+                        // the map layer draws it as its side's NATO frame when ALiVE's pins are on, grouped with others close by (ALiVE_fnc_mapPins)
+                        ["adopt", [_m, markerText _m, 45, "auto", {}, [], "auto"]] call ALiVE_fnc_mapPins;
                         _markers pushback _m;
                         _profileCount = _profileCount + 1;
 
@@ -3037,8 +3041,7 @@ switch (_operation) do {
                             _m = createMarkerLocal [format[MTEMPLATE,_attackID], [_position select 0,(_position select 1) + 15]];
                             _m setMarkerShapeLocal "ICON";
                             _m setMarkerSizeLocal [0.6,0.6];
-                            _m setMarkerTypeLocal "mil_warning_noShadow";
-                            _m setMarkerColorLocal _color;
+                            ["pin", [_m, "mil_warning_noShadow", "threat", _color, ["w", "e", "i"] select (["b", "o", "n"] find _typePrefix)]] call ALiVE_fnc_mapPins;
                             _m setMarkerTextLocal "Combat";
                             _markers pushback _m;
                         };
@@ -3056,6 +3059,8 @@ switch (_operation) do {
                         _m setMarkerTypeLocal _profileMarker;
                         _m setMarkerColorLocal _color;
 
+                        // the map layer draws it as its side's NATO frame when ALiVE's pins are on, grouped with others close by (ALiVE_fnc_mapPins)
+                        ["adopt", [_m, markerText _m, 45, "auto", {}, [], "auto"]] call ALiVE_fnc_mapPins;
                         _markers pushback _m;
                         _profileCount = _profileCount + 1;
 
@@ -3063,8 +3068,7 @@ switch (_operation) do {
                             _m = createMarkerLocal [format[MTEMPLATE,_attackID], [_position select 0,(_position select 1) + 15]];
                             _m setMarkerShapeLocal "ICON";
                             _m setMarkerSizeLocal [0.6,0.6];
-                            _m setMarkerTypeLocal "mil_warning_noShadow";
-                            _m setMarkerColorLocal _color;
+                            ["pin", [_m, "mil_warning_noShadow", "threat", _color, ["w", "e", "i"] select (["b", "o", "n"] find _typePrefix)]] call ALiVE_fnc_mapPins;
                             _m setMarkerTextLocal "Combat";
                             _markers pushback _m;
                         };
@@ -3082,6 +3086,8 @@ switch (_operation) do {
                         _m setMarkerTypeLocal _profileMarker;
                         _m setMarkerColorLocal _color;
 
+                        // the map layer draws it as its side's NATO frame when ALiVE's pins are on, grouped with others close by (ALiVE_fnc_mapPins)
+                        ["adopt", [_m, markerText _m, 45, "auto", {}, [], "auto"]] call ALiVE_fnc_mapPins;
                         _markers pushback _m;
                         _profileCount = _profileCount + 1;
 
@@ -3089,8 +3095,7 @@ switch (_operation) do {
                             _m = createMarkerLocal [format[MTEMPLATE,_attackID], [_position select 0,(_position select 1) + 15]];
                             _m setMarkerShapeLocal "ICON";
                             _m setMarkerSizeLocal [0.6,0.6];
-                            _m setMarkerTypeLocal "mil_warning_noShadow";
-                            _m setMarkerColorLocal _color;
+                            ["pin", [_m, "mil_warning_noShadow", "threat", _color, ["w", "e", "i"] select (["b", "o", "n"] find _typePrefix)]] call ALiVE_fnc_mapPins;
                             _m setMarkerTextLocal "Combat";
                             _markers pushback _m;
                         };
@@ -3108,6 +3113,8 @@ switch (_operation) do {
                         _m setMarkerTypeLocal _profileMarker;
                         _m setMarkerColorLocal _color;
 
+                        // the map layer draws it as its side's NATO frame when ALiVE's pins are on, grouped with others close by (ALiVE_fnc_mapPins)
+                        ["adopt", [_m, markerText _m, 45, "auto", {}, [], "auto"]] call ALiVE_fnc_mapPins;
                         _markers pushback _m;
                         _profileCount = _profileCount + 1;
 
@@ -3115,8 +3122,7 @@ switch (_operation) do {
                             _m = createMarkerLocal [format[MTEMPLATE,_attackID], [_position select 0,(_position select 1) + 15]];
                             _m setMarkerShapeLocal "ICON";
                             _m setMarkerSizeLocal [0.6,0.6];
-                            _m setMarkerTypeLocal "mil_warning_noShadow";
-                            _m setMarkerColorLocal _color;
+                            ["pin", [_m, "mil_warning_noShadow", "threat", _color, ["w", "e", "i"] select (["b", "o", "n"] find _typePrefix)]] call ALiVE_fnc_mapPins;
                             _m setMarkerTextLocal "Combat";
                             _markers pushback _m;
                         };
@@ -3134,6 +3140,8 @@ switch (_operation) do {
                         _m setMarkerTypeLocal _profileMarker;
                         _m setMarkerColorLocal _color;
 
+                        // the map layer draws it as its side's NATO frame when ALiVE's pins are on, grouped with others close by (ALiVE_fnc_mapPins)
+                        ["adopt", [_m, markerText _m, 45, "auto", {}, [], "auto"]] call ALiVE_fnc_mapPins;
                         _markers pushback _m;
                         _profileCount = _profileCount + 1;
 
@@ -3141,8 +3149,7 @@ switch (_operation) do {
                             _m = createMarkerLocal [format[MTEMPLATE,_attackID], [_position select 0,(_position select 1) + 15]];
                             _m setMarkerShapeLocal "ICON";
                             _m setMarkerSizeLocal [0.75,0.75];
-                            _m setMarkerTypeLocal "mil_warning_noShadow";
-                            _m setMarkerColorLocal _color;
+                            ["pin", [_m, "mil_warning_noShadow", "threat", _color, ["w", "e", "i"] select (["b", "o", "n"] find _typePrefix)]] call ALiVE_fnc_mapPins;
                             _m setMarkerTextLocal "Combat";
                             _markers pushback _m;
                         };
@@ -3160,6 +3167,8 @@ switch (_operation) do {
                         _m setMarkerTypeLocal _profileMarker;
                         _m setMarkerColorLocal _color;
 
+                        // the map layer draws it as its side's NATO frame when ALiVE's pins are on, grouped with others close by (ALiVE_fnc_mapPins)
+                        ["adopt", [_m, markerText _m, 45, "auto", {}, [], "auto"]] call ALiVE_fnc_mapPins;
                         _markers pushback _m;
                         _profileCount = _profileCount + 1;
 
@@ -3167,8 +3176,7 @@ switch (_operation) do {
                             _m = createMarkerLocal [format[MTEMPLATE,_attackID], [_position select 0,(_position select 1) + 15]];
                             _m setMarkerShapeLocal "ICON";
                             _m setMarkerSizeLocal [0.75,0.75];
-                            _m setMarkerTypeLocal "mil_warning_noShadow";
-                            _m setMarkerColorLocal _color;
+                            ["pin", [_m, "mil_warning_noShadow", "threat", _color, ["w", "e", "i"] select (["b", "o", "n"] find _typePrefix)]] call ALiVE_fnc_mapPins;
                             _m setMarkerTextLocal "Combat";
                             _markers pushback _m;
                         };
@@ -3207,6 +3215,8 @@ switch (_operation) do {
                     _m setMarkerSizeLocal [.5, .5];
                     _m setMarkerColorLocal _color;
 
+                    // the map layer draws it as its side's NATO frame when ALiVE's pins are on, grouped with others close by (ALiVE_fnc_mapPins)
+                    ["adopt", [_m, markerText _m, 45, "auto", {}, [], "auto"]] call ALiVE_fnc_mapPins;
                     _markers pushback _m;
                     _profileCount = _profileCount + 1;
 
@@ -3405,6 +3415,8 @@ switch (_operation) do {
                         _m setMarkerColorLocal _color;
                         _m setMarkerAlphaLocal _alpha;
 
+                        // the map layer draws it as its side's NATO frame when ALiVE's pins are on, grouped with others close by (ALiVE_fnc_mapPins)
+                        ["adopt", [_m, markerText _m, 45, "auto", {}, [], "auto"]] call ALiVE_fnc_mapPins;
                         _markers pushback _m;
 
                         if (!isnil "_tacom_state") then {
@@ -3969,6 +3981,8 @@ switch (_operation) do {
                                     _m setMarkerColorLocal (if (_sectionLocked) then {"ColorOrange"} else {_color});
                                     _m setMarkerAlphaLocal _alpha;
                                     _m setMarkerTextLocal format["%1%2",if (_sectionLocked) then {"P"} else {"e"},_label];
+                                    // the map layer draws it as its side's NATO frame when ALiVE's pins are on, grouped with others close by (ALiVE_fnc_mapPins)
+                                    ["adopt", [_m, markerText _m, 45, "auto", {}, [], "auto"]] call ALiVE_fnc_mapPins;
                                     _markers pushback _m;
                                 };
                             } forEach _categoryGroups;
@@ -4117,8 +4131,7 @@ switch (_operation) do {
 
             private _icon = createMarkerLocal [format["ALiVE_SCOM_OBJ_%1_icon",_forEachIndex], _center];
             _icon setMarkerShapeLocal "ICON";
-            _icon setMarkerTypeLocal "mil_objective_noShadow";
-            _icon setMarkerColorLocal (if (_playerCreated) then {"ColorOrange"} else {_opcomColor});
+            ["pin", [_icon, "mil_objective_noShadow", "objective", if (_playerCreated) then {"ColorOrange"} else {_opcomColor}]] call ALiVE_fnc_mapPins;
             _icon setMarkerSizeLocal [0.7,0.7];
             _icon setMarkerTextLocal (format["%1%2", _forEachIndex + 1, if (_playerCreated) then {" P"} else {""}]);
 

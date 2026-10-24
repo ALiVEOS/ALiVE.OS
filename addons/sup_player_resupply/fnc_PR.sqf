@@ -1358,8 +1358,7 @@ switch(_operation) do {
                         _marker = createMarkerLocal ["PR_DESTINATION_M1", _position];
                         _marker setMarkerShapeLocal "Icon";
                         _marker setMarkerSizeLocal [0.75, 0.75];
-                        _marker setMarkerTypeLocal "mil_dot_noShadow";
-                        _marker setMarkerColorLocal "ColorYellow";
+                        ["pin", [_marker, "mil_dot_noShadow", "supplyRequest", "ColorYellow"]] call ALiVE_fnc_mapPins;
                         _marker setMarkerTextLocal _markerLabel;
                         _markers pushback _marker;
 
@@ -2960,7 +2959,7 @@ switch(_operation) do {
                         _marker = createMarkerLocal [format["%1%2",MTEMPLATE,"marker"],_position];
                         _marker setMarkerAlphaLocal 1;
                         _marker setMarkerTextLocal _markerLabel;
-                        _marker setMarkerTypeLocal "hd_End_noShadow";
+                        ["pin", [_marker, "hd_End_noShadow", "routeEnd", markerColor _marker]] call ALiVE_fnc_mapPins;
 
                         [_logic,"marker",[_marker]] call MAINCLASS;
                         [_logic,"destination",_position] call MAINCLASS;
@@ -3368,8 +3367,7 @@ switch(_operation) do {
                         _marker = createMarkerLocal ["PR_STATUS_M1", _position];
                         _marker setMarkerShapeLocal "Icon";
                         _marker setMarkerSizeLocal [0.75, 0.75];
-                        _marker setMarkerTypeLocal "mil_dot_noShadow";
-                        _marker setMarkerColorLocal "ColorYellow";
+                        ["pin", [_marker, "mil_dot_noShadow", "supplyRequest", "ColorYellow"]] call ALiVE_fnc_mapPins;
                         _marker setMarkerTextLocal "Request Location";
                         _markers pushback _marker;
 

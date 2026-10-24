@@ -73,7 +73,7 @@ for "_i" from 0 to (_count - 1) do {
     if (random 1 < 0.75) then {
         private _inst = selectRandom [["Recruitment HQ", "n_installation"], ["Weapons depot", "n_installation"], ["IED factory", "n_installation"], ["Sabotage", "n_installation"], ["Ambush", "hd_ambush"]];
         private _instPos = _decoyPos getPos [random 60, random 360];
-        _createdMarkers pushBack ([_baseId + "H", _instPos, "ICON", [0.5, 0.5], "ColorRed", _inst select 0, _inst select 1, "FDiagonal", 0, 0.5] call ALIVE_fnc_createMarkerGlobal);
+        _createdMarkers pushBack ([_baseId + "H", _instPos, "ICON", [0.5, 0.5], "ColorRed", _inst select 0, _inst select 1, "FDiagonal", 0, 0.5, ["installation", "ambush"] select ((_inst select 1) == "hd_ambush")] call ALIVE_fnc_createMarkerGlobal);
     };
 };
 
@@ -88,6 +88,7 @@ if (count _createdMarkers > 0) then {
             {_x setMarkerAlpha ((markerAlpha _x) - 0.01)} forEach _this;
             markerAlpha (_this select 0) < 0.1
         };
-        {deleteMarker _x} forEach _this;
+        // and their pins' entries for players joining later (ALIVE_fnc_createMarkerGlobal)
+        {deleteMarker _x; remoteExec ["", "ALiVE_pin_" + _x]} forEach _this;
     };
 };

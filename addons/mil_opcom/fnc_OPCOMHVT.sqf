@@ -311,6 +311,9 @@ switch (_operation) do {
                     _mk setMarkerType "hd_unknown";
                     _mk setMarkerColor "ColorRed";
                     _mk setMarkerText format ["%1 ?", _rec select 0];
+                    // each player's machine swaps in ALiVE's HVT pin if that player has its pins on;
+                    // the JIP entry (named after the marker, so a new sighting replaces it) covers late joiners
+                    ["pin", [_mk, "hd_unknown", "hvt", "ColorRed", _side]] remoteExecCall ["ALiVE_fnc_mapPins", 0, "ALiVE_pin_" + _mk];
                     private _stamp = diag_tickTime;
                     missionNamespace setVariable [_mk, _stamp];
                     [_mk, _stamp] spawn {

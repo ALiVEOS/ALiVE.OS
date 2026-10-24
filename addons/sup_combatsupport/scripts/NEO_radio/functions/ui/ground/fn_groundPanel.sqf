@@ -124,7 +124,7 @@ switch (_op) do {
         if ((uiNamespace getVariable ["NEO_groundPointSel", "A"]) == "B" && {(_taskLb lbData (lbCurSel _taskLb)) == "PATROL"}) then {
             if (_markerB == "") then {
                 _markerB = createMarkerLocal ["NEO_supportGroundMarkerB", _pos];
-                _markerB setMarkerTypeLocal "hd_Pickup_noShadow";
+                ["pin", [_markerB, "hd_Pickup_noShadow", "pickup", markerColor _markerB]] call ALiVE_fnc_mapPins;
                 NEO_radioLogic setVariable ["NEO_supportGroundMarkerB", _markerB];
             };
             _markerB setMarkerPosLocal _pos;
@@ -141,7 +141,7 @@ switch (_op) do {
             _m setMarkerPosLocal _pos;
             _m setMarkerAlphaLocal 1;
             _m setMarkerTextLocal localize (["STR_ALIVE_CS_UI_MARKER_GROUND", "STR_ALIVE_CS_UI_GR_MARKER_A"] select ((_taskLb lbData (lbCurSel _taskLb)) == "PATROL"));
-            _m setMarkerTypeLocal "hd_Pickup_noShadow";
+            ["pin", [_m, "hd_Pickup_noShadow", "pickup", markerColor _m]] call ALiVE_fnc_mapPins;
             uiNamespace setVariable ["NEO_transportMarkerCreated", _m];
             uiNamespace setVariable ["NEO_groundPointA", _pos];
         };

@@ -1374,6 +1374,8 @@ switch(_operation) do {
                     private _m = createMarkerLocal [format ["ALiVE_c2istar_ask_%1_%2", round time, _forEachIndex], getPosATL leader _x];
                     _m setMarkerTypeLocal (_prefix + _kind);
                     _m setMarkerTextLocal format ["%1 (%2)", groupId _x, { alive _x } count units _x];
+                    // ALiVE's unit pin in the side's colour, grouped with others nearby (ALiVE_fnc_mapPins)
+                    ["adopt", [_m, markerText _m, 55, "auto", {}, [], "auto"]] call ALiVE_fnc_mapPins;
                     _markers pushBack _m;
                 } forEach _groups;
                 missionNamespace setVariable ["ALiVE_c2istar_askMarkers", _markers];
@@ -1767,14 +1769,19 @@ switch(_operation) do {
                     private _m = createMarkerLocal [format ["ALiVE_c2istar_pow_%1_%2", _key, _forEachIndex], _x];
                     _m setMarkerTypeLocal (_prefix + "unknown");
                     _m setMarkerTextLocal format [["%1 says: enemy here", "%1 says: enemy moving"] select (_dest isNotEqualTo []), _name];
+                    ["adopt", [_m, markerText _m, 55, "auto", {}, [], "auto"]] call ALiVE_fnc_mapPins;
                     private _gone = [_m];
                     if (_dest isNotEqualTo []) then {
                         _movingCount = _movingCount + 1;
                         private _d = createMarkerLocal [format ["ALiVE_c2istar_pow_%1_%2_to", _key, _forEachIndex], _dest];
-                        _d setMarkerTypeLocal "mil_end";
-                        _d setMarkerColorLocal (["ColorWEST", "ColorEAST", "ColorGUER"] param [[west, east, resistance] find _side, "ColorEAST"]);
+                        // ALiVE's route-end pin when the player has its pins on, Arma's mil_end otherwise
+                        private _dType = ["pinType", ["mil_end", "routeend"]] call ALiVE_fnc_mapPins;
+                        private _sideCol = ["ColorWEST", "ColorEAST", "ColorGUER"] param [[west, east, resistance] find _side, "ColorEAST"];
+                        _d setMarkerTypeLocal _dType;
+                        _d setMarkerColorLocal ([_sideCol, "Default"] select (_dType != "mil_end"));
                         _d setMarkerAlphaLocal 0.6;
                         _d setMarkerTextLocal format ["%1 says: heading here", _name];
+                        ["adopt", [_d, markerText _d, 50, _sideCol, {}, [], "auto"]] call ALiVE_fnc_mapPins;
                         _gone pushBack _d;
                     };
                     [_gone] spawn { sleep 600; { deleteMarkerLocal _x } forEach (_this select 0) };
@@ -3276,7 +3283,9 @@ if (isServer) then {
                         _marker = createMarkerLocal [format["%1%2",MTEMPLATE,"marker"],_position];
                         _marker setMarkerAlphaLocal 1;
                         _marker setMarkerTextLocal "Destination";
-                        _marker setMarkerTypeLocal "hd_Objective_noShadow";
+                        // ALiVE's destination pin when the player has its pins on, named by the map label layer
+                        _marker setMarkerTypeLocal (["pinType", ["hd_Objective_noShadow", "destination"]] call ALiVE_fnc_mapPins);
+                        ["adopt", [_marker, markerText _marker, 65, "ColorBlack", {}, [], "auto"]] call ALiVE_fnc_mapPins;
 
                         [_logic,"taskMarker",[_marker]] call MAINCLASS;
                         [_logic,"taskDestination",_position] call MAINCLASS;
@@ -3973,7 +3982,9 @@ if (isServer) then {
                         _marker = createMarkerLocal [format["%1%2",MTEMPLATE,"marker"],_position];
                         _marker setMarkerAlphaLocal 1;
                         _marker setMarkerTextLocal "Area of Operation";
-                        _marker setMarkerTypeLocal "hd_Objective_noShadow";
+                        // ALiVE's destination pin when the player has its pins on, named by the map label layer
+                        _marker setMarkerTypeLocal (["pinType", ["hd_Objective_noShadow", "destination"]] call ALiVE_fnc_mapPins);
+                        ["adopt", [_marker, markerText _marker, 65, "ColorBlack", {}, [], "auto"]] call ALiVE_fnc_mapPins;
 
                         [_logic,"taskMarker",[_marker]] call MAINCLASS;
                         [_logic,"taskDestination",_position] call MAINCLASS;
@@ -4000,8 +4011,11 @@ if (isServer) then {
                         deleteMarkerLocal format["%1%2",MTEMPLATE,"return"];
                         _marker = createMarkerLocal [format["%1%2",MTEMPLATE,"return"],_position];
                         _marker setMarkerAlphaLocal 1;
-                        _marker setMarkerTypeLocal "hd_pickup_noShadow";
-                        _marker setMarkerColorLocal "ColorWhite";
+                        // ALiVE's pickup pin when the player has its pins on, Arma's white pickup otherwise
+                        private _rType = ["pinType", ["hd_pickup_noShadow", "pickup"]] call ALiVE_fnc_mapPins;
+                        _marker setMarkerTypeLocal _rType;
+                        _marker setMarkerColorLocal (["ColorWhite", "Default"] select (_rType != "hd_pickup_noShadow"));
+                        ["adopt", [_marker, "", 65, "ColorBlack", {}, [], "auto"]] call ALiVE_fnc_mapPins;
 
                         ALiVE_C2ISTAR_taskReturnPoint = _position;
 
@@ -4784,7 +4798,10 @@ if (isServer) then {
         // for an aid run or a supply convoy the point is where it sets off
         private _returnMarker = format["%1%2",MTEMPLATE,"return"];
         if (markerType _returnMarker != "") then {
-            _returnMarker setMarkerTextLocal (["Return point", "Pickup point"] select (_type in ["AidDelivery","SupplyConvoy"]));
+            private _rText = ["Return point", "Pickup point"] select (_type in ["AidDelivery","SupplyConvoy"]);
+            _returnMarker setMarkerTextLocal _rText;
+            // the map label layer writes the name when it draws this pin (ALiVE_fnc_mapPins)
+            ["text", [_returnMarker, _rText]] call ALiVE_fnc_mapPins;
         };
 
         if (_type in RETURN_POINT_TYPES) then {
@@ -5503,7 +5520,9 @@ if (isServer) then {
             _marker = createMarkerLocal [format["%1%2",MTEMPLATE,"marker"],_position];
             _marker setMarkerAlphaLocal 1;
             _marker setMarkerTextLocal "Destination";
-            _marker setMarkerTypeLocal "hd_Objective_noShadow";
+            // ALiVE's destination pin when the player has its pins on, named by the map label layer
+            _marker setMarkerTypeLocal (["pinType", ["hd_Objective_noShadow", "destination"]] call ALiVE_fnc_mapPins);
+            ["adopt", [_marker, markerText _marker, 65, "ColorBlack", {}, [], "auto"]] call ALiVE_fnc_mapPins;
 
             [_logic,"taskMarker",[_marker]] call MAINCLASS;
             [_logic,"taskDestination",_position] call MAINCLASS;

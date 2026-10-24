@@ -1,204 +1,205 @@
-// One task type per C2ISTAR task: the plain white pin, so the task list and the on-screen task pin tint it
-// by task state like Arma's own types. Used by ALiVE_fnc_taskHandlerClient (setSimpleTaskType) when the
-// player's Task Pins option is on.
+// One task type per C2ISTAR task, showing Arma's own icon for that kind of task (the same one as its map
+// pin), so the task list and the on-screen task pin tint it by task state like Arma's own types. The
+// icons are the game's, not copies. Used by ALiVE_fnc_taskHandlerClient (setSimpleTaskType) when the
+// player has ALiVE pins on in Map pins and markers.
 class CfgTaskTypes
 {
     class alive_pin_aiddelivery
     {
         displayName = "Aid Delivery";
-        icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_aiddelivery_w.paa";
-        icon3D = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_aiddelivery_w.paa";
+        icon = "\A3\ui_f\data\map\vehicleicons\iconparachute_ca.paa";
+        icon3D = "\A3\ui_f\data\map\vehicleicons\iconparachute_ca.paa";
     };
     class alive_pin_medicaloutreach
     {
         displayName = "Medical Outreach";
-        icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_medicaloutreach_w.paa";
-        icon3D = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_medicaloutreach_w.paa";
+        icon = "\A3\ui_f\data\igui\cfg\simpleTasks\types\heal_ca.paa";
+        icon3D = "\A3\ui_f\data\igui\cfg\simpleTasks\types\heal_ca.paa";
     };
     class alive_pin_marketreopening
     {
         displayName = "Market Reopening";
-        icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_marketreopening_w.paa";
-        icon3D = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_marketreopening_w.paa";
+        icon = "\A3\ui_f\data\igui\cfg\simpleTasks\types\container_ca.paa";
+        icon3D = "\A3\ui_f\data\igui\cfg\simpleTasks\types\container_ca.paa";
     };
     class alive_pin_securecommunityevent
     {
         displayName = "Secure Community Event";
-        icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_securecommunityevent_w.paa";
-        icon3D = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_securecommunityevent_w.paa";
+        icon = "\A3\ui_f\data\igui\cfg\simpleTasks\types\meet_ca.paa";
+        icon3D = "\A3\ui_f\data\igui\cfg\simpleTasks\types\meet_ca.paa";
     };
     class alive_pin_meetlocalleader
     {
         displayName = "Meet Local Leader";
-        icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_meetlocalleader_w.paa";
-        icon3D = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_meetlocalleader_w.paa";
+        icon = "\A3\ui_f\data\igui\cfg\simpleTasks\types\talk_ca.paa";
+        icon3D = "\A3\ui_f\data\igui\cfg\simpleTasks\types\talk_ca.paa";
     };
     class alive_pin_repaircriticalservice
     {
         displayName = "Repair Critical Service";
-        icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_repaircriticalservice_w.paa";
-        icon3D = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_repaircriticalservice_w.paa";
+        icon = "\A3\ui_f\data\igui\cfg\simpleTasks\types\repair_ca.paa";
+        icon3D = "\A3\ui_f\data\igui\cfg\simpleTasks\types\repair_ca.paa";
     };
     class alive_pin_checkpointpartnership
     {
         displayName = "Checkpoint Partnership";
-        icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_checkpointpartnership_w.paa";
-        icon3D = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_checkpointpartnership_w.paa";
+        icon = "\A3\ui_f\data\igui\cfg\simpleTasks\types\documents_ca.paa";
+        icon3D = "\A3\ui_f\data\igui\cfg\simpleTasks\types\documents_ca.paa";
     };
     class alive_pin_civassault
     {
         displayName = "Civilian Assault";
-        icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_civassault_w.paa";
-        icon3D = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_civassault_w.paa";
+        icon = "\A3\ui_f\data\igui\cfg\simpleTasks\types\danger_ca.paa";
+        icon3D = "\A3\ui_f\data\igui\cfg\simpleTasks\types\danger_ca.paa";
     };
     class alive_pin_informantexfiltration
     {
         displayName = "Informant Exfiltration";
-        icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_informantexfiltration_w.paa";
-        icon3D = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_informantexfiltration_w.paa";
+        icon = "\A3\ui_f\data\igui\cfg\simpleTasks\types\exit_ca.paa";
+        icon3D = "\A3\ui_f\data\igui\cfg\simpleTasks\types\exit_ca.paa";
     };
     class alive_pin_vipescort
     {
         displayName = "VIP Escort";
-        icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_vipescort_w.paa";
-        icon3D = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_vipescort_w.paa";
+        icon = "\A3\ui_f\data\map\vehicleicons\iconmancommander_ca.paa";
+        icon3D = "\A3\ui_f\data\map\vehicleicons\iconmancommander_ca.paa";
     };
     class alive_pin_rescue
     {
         displayName = "Rescue";
-        icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_rescue_w.paa";
-        icon3D = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_rescue_w.paa";
+        icon = "\A3\ui_f\data\igui\cfg\simpleTasks\types\help_ca.paa";
+        icon3D = "\A3\ui_f\data\igui\cfg\simpleTasks\types\help_ca.paa";
     };
     class alive_pin_csar
     {
         displayName = "Combat Search and Rescue";
-        icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_csar_w.paa";
-        icon3D = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_csar_w.paa";
+        icon = "\A3\ui_f\data\igui\cfg\simpleTasks\types\heli_ca.paa";
+        icon3D = "\A3\ui_f\data\igui\cfg\simpleTasks\types\heli_ca.paa";
     };
     class alive_pin_transportinsertion
     {
         displayName = "Transport Insertion";
-        icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_transportinsertion_w.paa";
-        icon3D = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_transportinsertion_w.paa";
+        icon = "\A3\ui_f\data\igui\cfg\simpleTasks\types\land_ca.paa";
+        icon3D = "\A3\ui_f\data\igui\cfg\simpleTasks\types\land_ca.paa";
     };
     class alive_pin_supplyconvoy
     {
         displayName = "Supply Convoy";
-        icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_supplyconvoy_w.paa";
-        icon3D = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_supplyconvoy_w.paa";
+        icon = "\A3\ui_f\data\igui\cfg\simpleTasks\types\truck_ca.paa";
+        icon3D = "\A3\ui_f\data\igui\cfg\simpleTasks\types\truck_ca.paa";
     };
     class alive_pin_protectconvoy
     {
         displayName = "Protect Convoy";
-        icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_protectconvoy_w.paa";
-        icon3D = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_protectconvoy_w.paa";
+        icon = "\A3\ui_f\data\map\vehicleicons\icontruck_ca.paa";
+        icon3D = "\A3\ui_f\data\map\vehicleicons\icontruck_ca.paa";
     };
     class alive_pin_assassination
     {
         displayName = "Assassination";
-        icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_assassination_w.paa";
-        icon3D = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_assassination_w.paa";
+        icon = "\A3\ui_f\data\igui\cfg\simpleTasks\types\kill_ca.paa";
+        icon3D = "\A3\ui_f\data\igui\cfg\simpleTasks\types\kill_ca.paa";
     };
     class alive_pin_destroyvehicles
     {
         displayName = "Destroy Vehicles";
-        icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_destroyvehicles_w.paa";
-        icon3D = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_destroyvehicles_w.paa";
+        icon = "\A3\ui_f\data\igui\cfg\simpleTasks\types\destroy_ca.paa";
+        icon3D = "\A3\ui_f\data\igui\cfg\simpleTasks\types\destroy_ca.paa";
     };
     class alive_pin_destroyinfantry
     {
         displayName = "Destroy Infantry";
-        icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_destroyinfantry_w.paa";
-        icon3D = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_destroyinfantry_w.paa";
+        icon = "\A3\ui_f\data\igui\cfg\simpleTasks\types\rifle_ca.paa";
+        icon3D = "\A3\ui_f\data\igui\cfg\simpleTasks\types\rifle_ca.paa";
     };
     class alive_pin_destroybuilding
     {
         displayName = "Destroy Building";
-        icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_destroybuilding_w.paa";
-        icon3D = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_destroybuilding_w.paa";
+        icon = "\A3\ui_f\data\igui\cfg\simpleTasks\types\mine_ca.paa";
+        icon3D = "\A3\ui_f\data\igui\cfg\simpleTasks\types\mine_ca.paa";
     };
     class alive_pin_sabotagebuilding
     {
         displayName = "Sabotage Building";
-        icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_sabotagebuilding_w.paa";
-        icon3D = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_sabotagebuilding_w.paa";
+        icon = "\A3\ui_f\data\map\vehicleicons\iconexplosivegp_ca.paa";
+        icon3D = "\A3\ui_f\data\map\vehicleicons\iconexplosivegp_ca.paa";
     };
     class alive_pin_removeied
     {
         displayName = "Remove IED";
-        icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_removeied_w.paa";
-        icon3D = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_removeied_w.paa";
+        icon = "\A3\ui_f\data\igui\cfg\simpleTasks\types\search_ca.paa";
+        icon3D = "\A3\ui_f\data\igui\cfg\simpleTasks\types\search_ca.paa";
     };
     class alive_pin_insurgencydestroyassets
     {
         displayName = "Destroy Insurgent Assets";
-        icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_insurgencydestroyassets_w.paa";
-        icon3D = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_insurgencydestroyassets_w.paa";
+        icon = "\A3\ui_f\data\map\vehicleicons\iconcratewpns_ca.paa";
+        icon3D = "\A3\ui_f\data\map\vehicleicons\iconcratewpns_ca.paa";
     };
     class alive_pin_insurgencypatrol
     {
         displayName = "Insurgency Patrol";
-        icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_insurgencypatrol_w.paa";
-        icon3D = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_insurgencypatrol_w.paa";
+        icon = "\A3\ui_f\data\igui\cfg\simpleTasks\types\walk_ca.paa";
+        icon3D = "\A3\ui_f\data\igui\cfg\simpleTasks\types\walk_ca.paa";
     };
     class alive_pin_cas
     {
         displayName = "Close Air Support";
-        icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_cas_w.paa";
-        icon3D = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_cas_w.paa";
+        icon = "\A3\ui_f\data\igui\cfg\simpleTasks\types\plane_ca.paa";
+        icon3D = "\A3\ui_f\data\igui\cfg\simpleTasks\types\plane_ca.paa";
     };
     class alive_pin_sead
     {
         displayName = "Suppress Air Defences";
-        icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_sead_w.paa";
-        icon3D = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_sead_w.paa";
+        icon = "\A3\ui_f\data\igui\cfg\simpleTasks\types\target_ca.paa";
+        icon3D = "\A3\ui_f\data\igui\cfg\simpleTasks\types\target_ca.paa";
     };
     class alive_pin_dca
     {
         displayName = "Defensive Counter Air";
-        icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_dca_w.paa";
-        icon3D = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_dca_w.paa";
+        icon = "\A3\ui_f\data\map\vehicleicons\iconstaticaa_ca.paa";
+        icon3D = "\A3\ui_f\data\map\vehicleicons\iconstaticaa_ca.paa";
     };
     class alive_pin_oca
     {
         displayName = "Offensive Counter Air";
-        icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_oca_w.paa";
-        icon3D = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_oca_w.paa";
+        icon = "\A3\ui_f\data\igui\cfg\simpleTasks\types\takeoff_ca.paa";
+        icon3D = "\A3\ui_f\data\igui\cfg\simpleTasks\types\takeoff_ca.paa";
     };
     class alive_pin_laze
     {
         displayName = "Laze Target";
-        icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_laze_w.paa";
-        icon3D = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_laze_w.paa";
+        icon = "\A3\ui_f\data\igui\cfg\simpleTasks\types\navigate_ca.paa";
+        icon3D = "\A3\ui_f\data\igui\cfg\simpleTasks\types\navigate_ca.paa";
     };
     class alive_pin_reconobjective
     {
         displayName = "Recon Objective";
-        icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_reconobjective_w.paa";
-        icon3D = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_reconobjective_w.paa";
+        icon = "\A3\ui_f\data\igui\cfg\simpleTasks\types\scout_ca.paa";
+        icon3D = "\A3\ui_f\data\igui\cfg\simpleTasks\types\scout_ca.paa";
     };
     class alive_pin_wiretap
     {
         displayName = "Wiretap";
-        icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_wiretap_w.paa";
-        icon3D = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_wiretap_w.paa";
+        icon = "\A3\ui_f\data\igui\cfg\simpleTasks\types\listen_ca.paa";
+        icon3D = "\A3\ui_f\data\igui\cfg\simpleTasks\types\listen_ca.paa";
     };
     class alive_pin_captureobjective
     {
         displayName = "Capture Objective";
-        icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_captureobjective_w.paa";
-        icon3D = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_captureobjective_w.paa";
+        icon = "\A3\ui_f\data\map\markers\military\objective_ca.paa";
+        icon3D = "\A3\ui_f\data\map\markers\military\objective_ca.paa";
     };
     class alive_pin_milassault
     {
         displayName = "Assault";
-        icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_milassault_w.paa";
-        icon3D = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_milassault_w.paa";
+        icon = "\A3\ui_f\data\igui\cfg\simpleTasks\types\attack_ca.paa";
+        icon3D = "\A3\ui_f\data\igui\cfg\simpleTasks\types\attack_ca.paa";
     };
     class alive_pin_mildefence
     {
         displayName = "Defence";
-        icon = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_mildefence_w.paa";
-        icon3D = "\x\alive\addons\mil_c2istar\data\pins\alive_pin_mildefence_w.paa";
+        icon = "\A3\ui_f\data\igui\cfg\simpleTasks\types\defend_ca.paa";
+        icon3D = "\A3\ui_f\data\igui\cfg\simpleTasks\types\defend_ca.paa";
     };
 };

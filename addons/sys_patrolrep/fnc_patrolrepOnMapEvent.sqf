@@ -47,4 +47,4 @@ _marker setMarkerPosLocal _pos;
 _marker setMarkerAlphaLocal 1;
 
 _marker setMarkerTextLocal _text;
-_marker setMarkerTypeLocal "mil_marker_noShadow";
+["pin", [_marker, "mil_marker_noShadow", "report", markerColor _marker]] call ALiVE_fnc_mapPins;

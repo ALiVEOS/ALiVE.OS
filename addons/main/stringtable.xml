@@ -141,13 +141,13 @@
     <English>Chat lines</English>
 </Key>
 <Key ID="STR_ALIVE_SETTINGS_PINS">
-    <English>Task pins</English>
+    <English>Map pins and markers</English>
 </Key>
 <Key ID="STR_ALIVE_SETTINGS_PINS_COMMENT">
-    <English>The pin each C2ISTAR task shows on the map and in the task list. ALiVE's are hand drawn, one per kind of task. Applies to tasks you receive after the change.</English>
+    <English>How ALiVE's markers look on the map: tasks (also in the task list), units, FOBs, rally points and soldiers' reports. ALiVE pins, the default, show Arma's own icon for each kind of task, place or unit in white on your side's NATO frame: a blue box for BLUFOR, a red diamond for OPFOR, a green square for Independent and a purple box for civilians. Arma default uses the game's own markers instead. Pins that mark the enemy, such as a threat or an ambush, use the enemy's frame. Tasks you already have keep their pin until they change.</English>
 </Key>
 <Key ID="STR_ALIVE_SETTINGS_PINS_ALIVE">
-    <English>ALiVE task pins</English>
+    <English>ALiVE pins</English>
 </Key>
 <Key ID="STR_ALIVE_SETTINGS_PINS_DEFAULT">
     <English>Arma default</English>
@@ -157,6 +157,12 @@
 </Key>
 <Key ID="STR_ALIVE_SETTINGS_MAPLAYER_COMMENT">
     <English>ALiVE writes the names of its own map markers (FOBs, rally points, tasks) itself and moves each one to a free spot beside its marker, so names don't print over each other. A name with no room beside its marker is left off until you zoom in, apart from FOBs, which always keep theirs. With Task pins on, FOBs and rally points use ALiVE's pins too. Off shows them the way Arma draws them.</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_PINALPHA">
+    <English>Map pin opacity (%)</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_PINALPHA_COMMENT">
+    <English>How solid ALiVE's pins and unit markers look on the map. Lower lets more of the terrain show through them; their names stay fully readable. 100 is fully solid.</English>
 </Key>
 <Key ID="STR_ALIVE_SETTINGS_UI">
     <English>Interaction menu</English>
