@@ -43,6 +43,10 @@ private _sideHandlers = {
 // for this setting and for their own Tasks Only Against Known Enemy. Called from any machine
 if (_what == "report") exitWith {
     if (!isServer) exitWith { ["report", _side, _arg] remoteExecCall ["ALIVE_fnc_taskKnownEnemy", 2] };
+    // the same report narrows the search for an HVT hiding near it (HVT Manhunt Chance)
+    if (!isNil "ALiVE_c2istar_manhunts" && {count ALiVE_c2istar_manhunts > 0}) then {
+        ["clue", [_mySide, _arg, "", 1500]] call ALIVE_fnc_taskManhunt;
+    };
     if (isNil "ALiVE_profileSystem") exitWith {};
     {
         private _h = _x;

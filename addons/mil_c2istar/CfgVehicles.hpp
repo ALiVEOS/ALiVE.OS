@@ -156,6 +156,15 @@ class CfgVehicles {
                             defaultValue = """0""";
                             typeName = "NUMBER";
                     };
+                    // A share of HVT tasks is a step-by-step manhunt (Eric and A. Ares on Discord, 24 Oct)
+                    class hvtManhuntChance : Edit
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_hvtManhuntChance";
+                            displayName = "$STR_ALIVE_C2ISTAR_HVT_MANHUNT";
+                            tooltip = "$STR_ALIVE_C2ISTAR_HVT_MANHUNT_COMMENT";
+                            defaultValue = """0""";
+                            typeName = "NUMBER";
+                    };
                     // Where hand-over tasks end (NeisAEL and A. Ares on Discord, 23 Oct)
                     class deliveryDestination : Combo
                     {

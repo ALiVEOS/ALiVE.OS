@@ -43,6 +43,10 @@ _enabled = false;
 
 // Intel read from the commander's men can also mark where its high value target was last seen (#625)
 if (!isNil "_sideIn") then { ["reveal", [_sideIn]] call ALiVE_fnc_OPCOMHVT };
+// and narrows the search for an HVT of that side hiding near where it was read (HVT Manhunt Chance on C2ISTAR)
+if (!isNil "_sideIn" && {!isNil "_pos"} && {!isNil "ALiVE_c2istar_manhunts"} && {count ALiVE_c2istar_manhunts > 0}) then {
+    ["clue", ["", [_pos], str _sideIn, if (isNil "_radius") then {1500} else {_radius}]] call ALIVE_fnc_taskManhunt;
+};
 
 _markers = [];
 

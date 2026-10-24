@@ -400,6 +400,7 @@ switch (_operation) do {
 
         [_logic, "unregisterTask", _taskID] call MAINCLASS;
         [_logic, "updateTaskState", _eventData] call MAINCLASS;
+        if (!isNil "ALiVE_c2istar_manhunts") then { ["end", _taskID] call ALIVE_fnc_taskManhunt };
 
         private _deleteChildTask = {
 			private _parent = _value select 11;

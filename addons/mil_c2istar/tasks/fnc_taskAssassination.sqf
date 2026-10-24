@@ -284,8 +284,15 @@ switch (_taskState) do {
             // A recruiter task (raised by the Insurgency commander's Recruitment HQ, its ID holds "_recruiter_") has no
             // destination and no marker until players have found the man, so the HQ and the recruiter are two jobs (A. Ares
             // on Discord, 19 Oct). The HQ area still decides where he spawns: it's kept in the params as HVTArea.
-            private _hidden = (_taskID find "_recruiter_") > -1;
-            private _shownPosition = [_targetPosition, []] select _hidden;
+            // HVT Manhunt Chance on the C2ISTAR module (Eric and A. Ares on Discord, 24 Oct): this share of HVT tasks is a
+            // manhunt. He is hidden as a recruiter is, and the task shows a search area that clues narrow (ALIVE_fnc_taskManhunt)
+            private _manhuntChance = missionNamespace getVariable ["ALiVE_c2istar_hvtManhuntChance", 0];
+            // not a recruiter: he waits at his Recruitment HQ, which a manhunt would move him away from
+            private _manhunt = _manhuntChance > 0 && {(_taskID find "_recruiter_") < 0} && {random 100 < _manhuntChance} && {!isNil "ALIVE_fnc_taskManhunt"};
+            private _hidden = _manhunt || {(_taskID find "_recruiter_") > -1};
+            // the search area's centre, up to 1000 m off his hideout, so he is inside its 1500 m
+            private _searchCenter = _targetPosition getPos [random 1000, random 360];
+            private _shownPosition = if (_manhunt) then { _searchCenter } else { [_targetPosition, []] select _hidden };
 
             // create the parent task
 
@@ -303,8 +310,13 @@ switch (_taskState) do {
             _dialog = [_dialogOption,"Destroy"] call ALIVE_fnc_hashGet;
             _taskTitle = [_dialog,"title"] call ALIVE_fnc_hashGet;
             _taskDescription = [_dialog,"description"] call ALIVE_fnc_hashGet;
+            private _manhuntBaseDesc = _taskDescription;
             if (_hidden) then {
-                _taskDescription = _taskDescription + "<br/><br/>His exact whereabouts aren't known: search the area. The task points at him once your side has spotted him or one of you is within 200 m.";
+                _taskDescription = _taskDescription + "<br/><br/>" + (if (_manhunt) then {
+                    format [localize "STR_ALIVE_C2ISTAR_MANHUNT_DESC_AREA", 1500]
+                } else {
+                    "His exact whereabouts aren't known: search the area. The task points at him once your side has spotted him or one of you is within 200 m."
+                });
             };
             _newTaskID = format["%1_c1",_taskID];
             _taskSource = format["%1-Assassination-Destroy",_taskID];
@@ -337,6 +349,9 @@ switch (_taskState) do {
             [_taskParams,"HVTHidden",_hidden] call ALIVE_fnc_hashSet;
             [_taskParams,"HVTFound",!_hidden] call ALIVE_fnc_hashSet;
             [_taskParams,"HVTSentPos",[]] call ALIVE_fnc_hashSet;
+            if (_manhunt) then {
+                ["start", [_taskParams, _taskID, _taskSide, _taskEnemySide, _searchCenter, _manhuntBaseDesc]] call ALIVE_fnc_taskManhunt;
+            };
             // return the created tasks and params
 
             _result = [_tasks,_taskParams];
@@ -360,8 +375,11 @@ switch (_taskState) do {
         _taskTitle = _task select 5;
         _taskDescription = _task select 6;
         _taskPlayers = _task select 7 select 0;
-        // a recruiter task shows no position until he's found; its spawn and reach tests use the HQ area
-        if (_taskPosition isEqualTo []) then { _taskPosition = [_params,"HVTArea",[0,0,0]] call ALIVE_fnc_hashGet };
+        // a recruiter task shows no position until he's found; its spawn and reach tests use the HQ area. A manhunt's
+        // shows the search area's centre or where he's expected; he is wherever HVTArea says
+        private _manhunt = [_params,"Manhunt",false] call ALIVE_fnc_hashGet;
+        if (_taskPosition isEqualTo [] || {_manhunt}) then { _taskPosition = [_params,"HVTArea",[0,0,0]] call ALIVE_fnc_hashGet };
+        if (_manhunt) then { ["tick", [_task, _params, _taskPlayers]] call ALIVE_fnc_taskManhunt };
 
         _lastState = [_params,"lastState"] call ALIVE_fnc_hashGet;
         _taskDialog = [_params,"dialog"] call ALIVE_fnc_hashGet;
@@ -639,6 +657,7 @@ switch (_taskState) do {
                 // the task is taken down in the same pass, so whoever raised it (the Insurgency commander's
                 // recruiters) reads the success from here
                 missionNamespace setVariable [format ["ALiVE_taskSucceeded_%1", _taskID], true];
+                if (_manhunt) then { ["end", _task select 11] call ALIVE_fnc_taskManhunt };
 
                 _task set [8,"Succeeded"];
                 _task set [10, "N"];

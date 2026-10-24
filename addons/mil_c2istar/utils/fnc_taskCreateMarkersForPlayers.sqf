@@ -78,6 +78,10 @@ switch(_taskType) do {
     case "hostage":{
         _markerDefinition = [_taskPosition,_taskID,_colour,"Hostage","b_inf",[1,1],1,"ICON"];
     };
+    case "search":{
+        // an HVT manhunt's search area (ALIVE_fnc_taskManhunt); _type is its radius
+        _markerDefinition = [_taskPosition,_taskID,_colour,"Search area","",[_type,_type],0.3,"ELLIPSE"];
+    };
     case "csar":{
         _markerDefinition = [_taskPosition,_taskID,_colour,"Beacon","mil_warning",[1,1],1,"ICON"];
     };

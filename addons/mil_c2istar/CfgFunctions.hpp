@@ -266,6 +266,11 @@ class CfgFunctions {
                 file = "\x\alive\addons\mil_c2istar\utils\fnc_taskKnownEnemy.sqf";
                 ALIVE_RECOMPILE;
             };
+            class taskManhunt {
+                description = "HVT Manhunt Chance: an HVT task as a manhunt, a search area narrowed by clues";
+                file = "\x\alive\addons\mil_c2istar\utils\fnc_taskManhunt.sqf";
+                ALIVE_RECOMPILE;
+            };
             class taskSubtitle {
                 description = "A task update on this player's screen as they chose: subtitle, hint or chat line (#1083)";
                 file = "\x\alive\addons\mil_c2istar\utils\fnc_taskSubtitle.sqf";

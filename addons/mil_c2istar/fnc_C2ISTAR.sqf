@@ -1440,7 +1440,11 @@ switch(_operation) do {
         private _knownOnly = _logic getVariable ["tasksKnownOnly", "false"];
         private _assetCap = _logic getVariable ["assetTaskCap", 0];
         if (_assetCap isEqualType "") then { _assetCap = parseNumber _assetCap };
+        // HVT Manhunt Chance (%), read by ALIVE_fnc_taskAssassination; 0 is off
+        private _manhunt = _logic getVariable ["hvtManhuntChance", 0];
+        if (_manhunt isEqualType "") then { _manhunt = parseNumber _manhunt };
         if (isServer) then {
+            missionNamespace setVariable ["ALiVE_c2istar_hvtManhuntChance", (_manhunt max 0) min 100];
             missionNamespace setVariable ["ALiVE_c2istar_tasksKnownOnly", _knownOnly in ["true", true]];
             missionNamespace setVariable ["ALiVE_c2istar_assetTaskCap", floor (_assetCap max 0)];
         };

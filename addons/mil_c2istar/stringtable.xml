@@ -1993,6 +1993,30 @@
 <Key ID="STR_ALIVE_C2ISTAR_ASSET_TASK_CAP_COMMENT">
     <English>The most tasks against enemy vehicles, air defences, infantry, buildings and installations a side can have open at once. While that many are open, auto-generated tasks are of other kinds. 0 (the default) is no cap.</English>
 </Key>
+<Key ID="STR_ALIVE_C2ISTAR_HVT_MANHUNT">
+    <English>HVT Manhunt Chance (%):</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_HVT_MANHUNT_COMMENT">
+    <English>The chance that an HVT task is a manhunt rather than a tip-off. A manhunt shows a search area instead of a target. Civilians telling you of enemies near it, intel read from his men, and prisoners' or informants' answers each narrow it. After three, a Wiretap task comes up near him; done, it tells you where he will be and when, for about ten minutes. Miss him and he moves, and half of what was known goes with him. Clues come from the Civilian Population and AI Commander modules; without them, players can still search the area. 0 (the default) keeps every HVT task as it is.</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_MANHUNT_DESC_AREA">
+    <English>His whereabouts aren't known. Intel places him inside the %1 m search area on your map. Ask civilians about enemies near it, read intel from his men and question prisoners: each clue narrows the search. With enough, a wiretap can tell us where he will be and when.</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_MANHUNT_DESC_WIRETAP">
+    <English>The search has narrowed to %1 m. A Wiretap task on his network near %2 is on your task list: set it up and we can tell where he will be next.</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_MANHUNT_DESC_WINDOW">
+    <English>Intercept: %1 is expected at %2 (grid %3) from %4 to %5. Be there. Miss him and he goes to ground.</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_MANHUNT_MSG_CLUE">
+    <English>Intel on %1: the search area has narrowed to %2 m.</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_MANHUNT_MSG_WINDOW">
+    <English>Wiretap intercept: %1 will be at %2 from %3 to %4.</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_MANHUNT_MSG_SLIPPED">
+    <English>%1 was not caught at %2. He has gone to ground elsewhere, and much of what we knew is out of date.</English>
+</Key>
 <Key ID="STR_ALIVE_C2ISTAR_TASK_MAX_DISTANCE_COMMENT">
     <English>How far from the players generated tasks may be, so they lead players across the map in steps instead of jumping from one edge to the other. Auto-generated and Short / Medium / Long tasks are picked within this distance of the player they're built round, and the next auto task is built round the player nearest the last one. Supply Convoy, VIP Escort and Informant Exfiltration keep their drop-off within it of the pickup, so a drop-off can be up to twice this from you; a FOB, base or picked point chosen as Delivery Destination is used wherever it is. If nothing is in range, the nearest beyond it is used. 0 (the default) is off; it must be above Minimum Task Distance. Not capped: Sabotage, Clear an IED, Wiretap, the air tasks, Capture and Protect a Convoy.</English>
 </Key>
