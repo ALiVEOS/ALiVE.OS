@@ -440,6 +440,24 @@
     <Portuguese>Custo na reserva de forças (veículo)</Portuguese>
     <Russian>Расход резерва сил (техника)</Russian>
 </Key>
+<Key ID="STR_ALIVE_RECRUIT_COST_CLASSES">
+    <English>Force Pool Cost per Class</English>
+    <Chinesesimp>按类名的兵力池消耗</Chinesesimp>
+    <Chinese>按類名的兵力池消耗</Chinese>
+    <Spanish>Coste en reserva de fuerzas por clase</Spanish>
+    <French>Coût en réserve de forces par classe</French>
+    <Portuguese>Custo na reserva de forças por classe</Portuguese>
+    <Russian>Расход резерва сил по классу</Russian>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_COST_CLASSES_COMMENT">
+    <English>A cost for particular soldiers or vehicles, in place of the two costs above. Class=cost pairs separated by commas, such as B_Soldier_AT_F=3, B_MRAP_01_F=10, or an array such as [["B_Soldier_AT_F", 3], ["B_MRAP_01_F", 10]]. A synced soldier or vehicle goes by its class. Anything not listed costs the soldier or vehicle cost.</English>
+    <Chinesesimp>为特定士兵或载具单独设定消耗，取代上面两项消耗。用逗号分隔的 类名=消耗 对，例如 B_Soldier_AT_F=3, B_MRAP_01_F=10，或数组，例如 [["B_Soldier_AT_F", 3], ["B_MRAP_01_F", 10]]。同步的士兵或载具按其类名计算。未列出的按士兵或载具消耗计算。</Chinesesimp>
+    <Chinese>為特定士兵或載具單獨設定消耗，取代上面兩項消耗。用逗號分隔的 類名=消耗 對，例如 B_Soldier_AT_F=3, B_MRAP_01_F=10，或陣列，例如 [["B_Soldier_AT_F", 3], ["B_MRAP_01_F", 10]]。同步的士兵或載具按其類名計算。未列出的按士兵或載具消耗計算。</Chinese>
+    <Spanish>Un coste para soldados o vehículos concretos, en lugar de los dos costes de arriba. Pares clase=coste separados por comas, como B_Soldier_AT_F=3, B_MRAP_01_F=10, o una matriz como [["B_Soldier_AT_F", 3], ["B_MRAP_01_F", 10]]. Un soldado o vehículo sincronizado cuenta por su clase. Lo que no figure cuesta el coste de soldado o de vehículo.</Spanish>
+    <French>Un coût pour certains soldats ou véhicules, à la place des deux coûts ci-dessus. Paires classe=coût séparées par des virgules, comme B_Soldier_AT_F=3, B_MRAP_01_F=10, ou un tableau comme [["B_Soldier_AT_F", 3], ["B_MRAP_01_F", 10]]. Un soldat ou véhicule synchronisé compte selon sa classe. Ce qui n'est pas listé coûte le coût soldat ou véhicule.</French>
+    <Portuguese>Um custo para soldados ou veículos específicos, no lugar dos dois custos acima. Pares classe=custo separados por vírgulas, como B_Soldier_AT_F=3, B_MRAP_01_F=10, ou uma matriz como [["B_Soldier_AT_F", 3], ["B_MRAP_01_F", 10]]. Um soldado ou veículo sincronizado conta pela sua classe. O que não estiver listado custa o custo de soldado ou de veículo.</Portuguese>
+    <Russian>Отдельная стоимость для конкретных солдат или техники вместо двух стоимостей выше. Пары класс=стоимость через запятую, например B_Soldier_AT_F=3, B_MRAP_01_F=10, или массив, например [["B_Soldier_AT_F", 3], ["B_MRAP_01_F", 10]]. Синхронизированный солдат или техника считается по своему классу. Всё, чего нет в списке, стоит как солдат или техника.</Russian>
+</Key>
 <Key ID="STR_ALIVE_RECRUIT_VEHICLE_COST_COMMENT">
     <English>How much each vehicle taken costs from the force pool of the player's faction. 0 is free.</English>
     <Chinesesimp>每领取一辆载具从玩家阵营兵力池中扣除的数量。0 为免费。</Chinesesimp>

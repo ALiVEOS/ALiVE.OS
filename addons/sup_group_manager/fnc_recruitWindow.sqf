@@ -39,6 +39,12 @@ private _fnc_picture = {
     if (isClass (configFile >> "CfgVehicleIcons" >> _p) || {isText (configFile >> "CfgVehicleIcons" >> _p)}) then { _p = getText (configFile >> "CfgVehicleIcons" >> _p) };
     _p
 };
+// What a row costs from the force pool, on its right when it costs anything (settings 10, 11 and 16)
+private _fnc_costText = {
+    params ["_list", "_i", "_class", "_isVehicle", "_settings"];
+    private _cost = (_settings param [16, createHashMap]) getOrDefault [toLower _class, _settings param [[10, 11] select _isVehicle, 0]];
+    if (_cost > 0) then { _list lbSetTextRight [_i, str _cost] };
+};
 
 // The list's rows: [class, is a vehicle], then a heading row ["", false, "head"] and the player's
 // own recruits [class, is a vehicle, object], which the button dismisses
@@ -53,7 +59,7 @@ private _fnc_status = {
     if ((_vehicles + (_settings param [15, []])) isNotEqualTo []) then { _lines pushBack format [localize "STR_ALIVE_RECRUIT_UI_STATUS_VEHICLES", count (call ALiVE_fnc_recruitVehiclesOwned), _maxVeh] };
     // the force pool, once the server has said what is in it (-1: the faction has none)
     private _pool = uiNamespace getVariable ["ALiVE_recruitPool", -1];
-    if ((_unitCost > 0 || {_vehicleCost > 0}) && {_pool >= 0}) then { _lines pushBack format [localize "STR_ALIVE_RECRUIT_UI_STATUS_POOL", _pool] };
+    if ((_unitCost > 0 || {_vehicleCost > 0} || {count (_settings param [16, createHashMap]) > 0}) && {_pool >= 0}) then { _lines pushBack format [localize "STR_ALIVE_RECRUIT_UI_STATUS_POOL", _pool] };
     (RW_DISPLAY displayCtrl 92704) ctrlSetStructuredText ([_lines] call _fnc_lines);
 };
 
@@ -70,12 +76,14 @@ switch (_operation) do {
         {
             private _i = _list lbAdd getText (configFile >> "CfgVehicles" >> _x >> "displayName");
             _list lbSetPicture [_i, [_x, "icon"] call _fnc_picture];
+            [_list, _i, _x, false, _settings] call _fnc_costText;
             _rows pushBack [_x, false];
         } forEach _classes;
         {
             private _i = _list lbAdd getText (configFile >> "CfgVehicles" >> _x >> "displayName");
             _list lbSetPicture [_i, [_x, "picture"] call _fnc_picture];
             _list lbSetColor [_i, [0.85, 0.75, 0.55, 1]];
+            [_list, _i, _x, true, _settings] call _fnc_costText;
             _rows pushBack [_x, true];
         } forEach _vehicles;
         // the synced men and vehicles, by name; the row's data is the one's place in its list
@@ -83,6 +91,7 @@ switch (_operation) do {
             private _i = _list lbAdd (_x select 1);
             _list lbSetPicture [_i, [_x select 0, "icon"] call _fnc_picture];
             _list lbSetData [_i, str _forEachIndex];
+            [_list, _i, _x select 0, false, _settings] call _fnc_costText;
             _rows pushBack [_x select 0, false];
         } forEach (_settings param [14, []]);
         {
@@ -90,6 +99,7 @@ switch (_operation) do {
             _list lbSetPicture [_i, [_x select 0, "picture"] call _fnc_picture];
             _list lbSetColor [_i, [0.85, 0.75, 0.55, 1]];
             _list lbSetData [_i, str _forEachIndex];
+            [_list, _i, _x select 0, true, _settings] call _fnc_costText;
             _rows pushBack [_x select 0, true];
         } forEach (_settings param [15, []]);
         uiNamespace setVariable ["ALiVE_recruitRows", _rows];
@@ -98,7 +108,7 @@ switch (_operation) do {
         uiNamespace setVariable ["ALiVE_recruitPool", -1];
         call _fnc_status;
         // ask the server what is in the force pool when anything here costs
-        if ((_settings param [10, 0]) > 0 || {(_settings param [11, 0]) > 0}) then {
+        if ((_settings param [10, 0]) > 0 || {(_settings param [11, 0]) > 0} || {count (_settings param [16, createHashMap]) > 0}) then {
             [] spawn { [0] call ALiVE_fnc_recruitAsk; ["status"] call ALiVE_fnc_recruitWindow };
         };
     };
@@ -158,7 +168,7 @@ switch (_operation) do {
             _lines pushBack localize "STR_ALIVE_RECRUIT_UI_DESC_SOLDIER";
             if (_weapons isNotEqualTo []) then { _lines pushBack format [localize "STR_ALIVE_RECRUIT_UI_DESC_CARRIES", _weapons joinString ", "] };
         };
-        private _cost = _settings param [[10, 11] select _isVehicle, 0];
+        private _cost = (_settings param [16, createHashMap]) getOrDefault [toLower _class, _settings param [[10, 11] select _isVehicle, 0]];
         if (_cost > 0) then { _lines pushBack format [localize "STR_ALIVE_RECRUIT_UI_DESC_COST", _cost] };
         (RW_DISPLAY displayCtrl 92703) ctrlSetStructuredText ([_lines, true] call _fnc_lines);
     };

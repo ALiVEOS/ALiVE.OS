@@ -113,6 +113,13 @@ class CfgVehicles {
                                 defaultValue = """0""";
                                 typeName = "NUMBER";
                         };
+                        class costOverrides : Edit
+                        {
+                                property = "ALiVE_sup_recruit_costOverrides";
+                                displayName = "$STR_ALIVE_RECRUIT_COST_CLASSES";
+                                tooltip = "$STR_ALIVE_RECRUIT_COST_CLASSES_COMMENT";
+                                defaultValue = """""";
+                        };
                         class HDR_OPTIONS : ALiVE_ModuleSubTitle { property = "ALiVE_sup_recruit_HDR_OPTIONS"; displayName = "OPTIONS"; };
                         class recruitCode : Edit
                         {

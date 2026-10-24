@@ -343,7 +343,7 @@ ALiVE_fnc_recruitUnit = {
     if (_size >= _max) exitWith { [localize "STR_ALIVE_RECRUIT", format [localize "STR_ALIVE_RECRUIT_UI_GROUP_FULL", _max]] call ALIVE_fnc_sendHint; false };
     if (time < (player getVariable ["ALiVE_recruitNext", 0])) exitWith { [localize "STR_ALIVE_RECRUIT", localize "STR_ALIVE_RECRUIT_UI_WAIT"] call ALIVE_fnc_sendHint; false };
     player setVariable ["ALiVE_recruitNext", time + 3];
-    private _cost = _settings param [10, 0];
+    private _cost = (_settings param [16, createHashMap]) getOrDefault [toLower _class, _settings param [10, 0]];
     if !([_cost] call ALiVE_fnc_recruitPay) exitWith { false };
     ([_object, _settings, false, _class] call ALiVE_fnc_recruitSpawnPos) params ["_pos", "_dir", "_exact"];
     private _unit = _group createUnit [_class, ASLToAGL _pos, [], [2, 0] select _exact, "NONE"];
@@ -385,7 +385,7 @@ ALiVE_fnc_recruitVehicle = {
     ([_object, _settings, true, _class] call ALiVE_fnc_recruitSpawnPos) params ["_pos", "_dir", "_exact"];
     if (_pos isEqualTo []) exitWith { [localize "STR_ALIVE_RECRUIT", localize "STR_ALIVE_RECRUIT_UI_SPAWN_TAKEN"] call ALIVE_fnc_sendHint; false };
     player setVariable ["ALiVE_recruitNext", time + 5];
-    private _cost = _settings param [11, 0];
+    private _cost = (_settings param [16, createHashMap]) getOrDefault [toLower _class, _settings param [11, 0]];
     if !([_cost] call ALiVE_fnc_recruitPay) exitWith { false };
     private _veh = createVehicle [_class, [0, 0, 1000 + random 500], [], 0, "CAN_COLLIDE"];
     if (isNull _veh) exitWith {
@@ -464,6 +464,28 @@ ALiVE_fnc_recruitVehicle = {
     // what one soldier and one vehicle cost from the force pool; 0 is free
     private _unitCost = ([_logic getVariable ["unitCost", 0], 0] call _num) max 0;
     private _vehicleCost = ([_logic getVariable ["vehicleCost", 0], 0] call _num) max 0;
+    // a cost per class name in place of those two (A. Ares on Discord, 24 Oct): "class=cost, class=cost"
+    // or [["class", cost], ...]; settings index 16, lower-case class -> cost
+    private _costs = createHashMap;
+    private _rawO = _logic getVariable ["costOverrides", ""];
+    if (_rawO isEqualType "" && {trim _rawO != ""}) then {
+        private _pairs = if ((trim _rawO) select [0, 1] == "[") then { parseSimpleArray _rawO } else { (_rawO splitString ",;") apply { (trim _x) splitString "= " } };
+        // an array with a slip in it (a class name without its quotes) doesn't read at all
+        if (isNil "_pairs" || {!(_pairs isEqualType [])} || {_pairs isEqualTo [] && {(trim _rawO) select [0, 1] == "["}}) then {
+            ["ALiVE Recruitment: Force Pool Cost per Class could not be read, write it as ClassName=cost, ClassName=cost: %1", _rawO] call ALiVE_fnc_dump;
+            _pairs = [];
+        };
+        {
+            private _ok = false;
+            if (_x isEqualType [] && {count _x == 2}) then {
+                _x params ["_c", "_n"];
+                // a typo ("3O") would read as 0 and make the class free, so only a number counts
+                if (_n isEqualType "") then { _n = if ((trim _n) regexMatch "\d+(\.\d+)?") then { parseNumber _n } else { "" } };
+                if (_c isEqualType "" && {trim _c != ""} && {_n isEqualType 0}) then { _costs set [toLower (trim _c), _n max 0]; _ok = true };
+            };
+            if (!_ok) then { ["ALiVE Recruitment: Force Pool Cost per Class entry %1 skipped, write it as ClassName=cost", _x] call ALiVE_fnc_dump };
+        } forEach _pairs;
+    };
     // players can dismiss their own recruits and recruited vehicles (#1078): anywhere, only at the
     // recruitment point (within 50 m of one of this module's objects, so a squad can't be cashed in
     // mid-field; A. Ares on Discord, 16 Oct), or not at all
@@ -482,6 +504,8 @@ ALiVE_fnc_recruitVehicle = {
     // 14 and 15: the synced men and vehicles on offer, each as the server noted it
     _settings pushBack _menT;
     _settings pushBack _vehT;
+    // 16: the costs per class
+    _settings pushBack _costs;
     if (_objects isEqualTo [] || {(_classes + _vehicles + _menT + _vehT) isEqualTo []}) exitWith {
         ["ALiVE Recruitment: nothing to do (%1 synced objects, %2 unit classes, %3 vehicle classes, %4 synced men, %5 synced vehicles)", count _objects, count _classes, count _vehicles, count _menT, count _vehT] call ALiVE_fnc_dump;
     };
