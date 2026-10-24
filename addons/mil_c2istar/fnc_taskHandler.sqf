@@ -93,6 +93,16 @@ switch (_operation) do {
             [_logic,"managerHandle",scriptNull] call ALIVE_fnc_hashSet;
             [_logic,"listenerID",""] call ALIVE_fnc_hashSet;
 
+            // the Task Pins a mission maker placed in Eden (alive_pin_<task>_<side>), read now, before any task has a
+            // marker of its own; generateTask sends an automatic task of that type and side to one of them. Hidden
+            // from players: a pin with no task on it would read as a task, and tell them where the next one goes.
+            private _edenPins = allMapMarkers select { ((toLower markerType _x) select [0, 10]) == "alive_pin_" };
+            ALiVE_C2_edenTaskPins = _edenPins apply { [toLower markerType _x, markerPos _x] };
+            { _x setMarkerAlpha 0 } forEach _edenPins;
+            if (_edenPins isNotEqualTo []) then {
+                ["C2ISTAR - %1 Task Pins placed in Eden, hidden from players: automatic tasks of their type and side go to them first", count _edenPins] call ALiVE_fnc_dump;
+            };
+
             _tasksBySide = [] call ALIVE_fnc_hashCreate;
             [_tasksBySide, "EAST", [] call ALIVE_fnc_hashCreate] call ALIVE_fnc_hashSet;
             [_tasksBySide, "WEST", [] call ALIVE_fnc_hashCreate] call ALIVE_fnc_hashSet;
@@ -835,7 +845,49 @@ switch (_operation) do {
 
             // set by ALIVE_fnc_taskKnownEnemy when Tasks Only Against Known Enemy turns a target down
             ALiVE_c2istar_knownFiltered = false;
+
+            // A Task Pin placed in Eden for this type and side is where an automatic task goes first: the nearest pin to
+            // the player with no task of that type already on it (within the Maximum Task Distance, when one is set).
+            // It is built as a task placed on the map, at that spot, so the Minimum and Maximum Task Distance can't push
+            // it off the pin. Only automatic tasks: a player's request, a commander's order and a clean-up after an
+            // attack keep their own place (A. Ares on Discord, 24 Oct). Nothing to build at the pin, and the task is
+            // built round the player as before.
+            private _anchor = +(_taskData select 6);
+            private _anchorType = _taskData select 5;
+            private _fnc_pin = {
+                params ["_type"];
+                private _pins = missionNamespace getVariable ["ALiVE_C2_edenTaskPins", []];
+                if (!_autoGenRetry || {_pins isEqualTo []} || {!(_anchor isEqualType [])} || {count _anchor < 2}) exitWith { [] };
+                private _letter = switch (_taskSide) do { case "WEST": {"w"}; case "EAST": {"e"}; case "GUER": {"i"}; default {"c"} };
+                private _want = format ["alive_pin_%1_%2", toLower _type, _letter];
+                private _max = missionNamespace getVariable ["ALIVE_taskMaxDistance", 0];
+                // where tasks of this type already are ("<id>-<Type>-<Stage>" at 12, read from the end)
+                private _taken = ((([_logic, "tasks", ["", [], [], nil]] call ALIVE_fnc_hashGet) select 2) select {
+                    private _parts = (_x param [12, ""]) splitString "-";
+                    count _parts >= 3 && {(_parts select (count _parts - 2)) == _type}
+                }) apply { _x param [3, []] };
+                private _spots = (_pins select {
+                    private _p = _x select 1;
+                    (_x select 0) == _want
+                    && {_max <= 0 || {(_p distance2D _anchor) <= _max}}
+                    && {(_taken findIf { _x isEqualType [] && {count _x >= 2} && {(_x distance2D _p) < 300} }) < 0}
+                }) apply { _x select 1 };
+                if (_spots isEqualTo []) exitWith { [] };
+                +(([_spots, [], { _x distance2D _anchor }, "ASCEND"] call ALiVE_fnc_SortBy) select 0)
+            };
+            private _pinPos = [_taskType] call _fnc_pin;
+            if (_pinPos isNotEqualTo []) then {
+                _taskData set [5, "Map"];
+                _taskData set [6, _pinPos];
+                if (_debug) then { ["C2ISTAR - generateTask: %1 task %2 for %3 goes to the Task Pin at %4", _taskType, _taskID, _taskSide, mapGridPosition _pinPos] call ALiVE_fnc_dump };
+            };
             private _taskSet = ["init", _taskID, _taskData, [], _debug] call (missionNamespace getVariable [format["ALIVE_fnc_task%1", _taskType],{}]);
+            if (_pinPos isNotEqualTo [] && {isNil "_taskSet" || {!(_taskSet isEqualType [])} || {_taskSet isEqualTo []}}) then {
+                ["C2ISTAR - generateTask: nothing to build for %1 task %2 at the Task Pin at %3, so it is built round the player", _taskType, _taskID, mapGridPosition _pinPos] call ALiVE_fnc_dump;
+                _taskData set [5, _anchorType];
+                _taskData set [6, +_anchor];
+                _taskSet = ["init", _taskID, _taskData, [], _debug] call (missionNamespace getVariable [format["ALIVE_fnc_task%1", _taskType],{}]);
+            };
 
             // If the selected type couldn't find a target on this map (init returns []),
             // exclude it and try another configured type within the SAME cycle instead of
@@ -858,6 +910,9 @@ switch (_operation) do {
                     if (_retryType == "") exitWith {};
                     _taskType = _retryType;
                     _taskData set [4, _taskType];
+                    private _retryPin = [_taskType] call _fnc_pin;
+                    _taskData set [5, [_anchorType, "Map"] select (_retryPin isNotEqualTo [])];
+                    _taskData set [6, [+_anchor, _retryPin] select (_retryPin isNotEqualTo [])];
                     _taskSet = ["init", _taskID, _taskData, [], _debug] call (missionNamespace getVariable [format["ALIVE_fnc_task%1", _taskType],{}]);
                     _genOK = !isNil "_taskSet" && {_taskSet isEqualType []} && {!(_taskSet isEqualTo [])};
                     if (!_genOK) then { _excludedTypes pushBack _taskType; };
