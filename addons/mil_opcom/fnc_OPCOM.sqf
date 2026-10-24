@@ -5845,7 +5845,9 @@ switch (_operation) do {
                 _factionsWithNoGroups,
                 "Please ensure you have configured a Mil Placement or Mil Placement (Civ Obj) module for this faction (or faction units are synced to Virtual AI module). If so, please check groups are correctly configured for this faction.",
                 _syncedHint
-            ] call ALIVE_fnc_dumpR;
+            // side chat only with the commander's debug on: a faction kept as a placeholder is a mission maker's
+            // choice, and the single player or the host was being told about it at the start. The RPT always gets it.
+            ] call ([ALIVE_fnc_dump, ALIVE_fnc_dumpR] select (_debug isEqualTo true));
         };
 
         if (_opcomProfileCount == 0) exitwith {
