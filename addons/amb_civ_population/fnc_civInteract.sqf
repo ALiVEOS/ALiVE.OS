@@ -1333,6 +1333,17 @@ switch (_operation) do {
 			//-- Join caller group
 			[_civ] joinSilent (group player);
 			_civ setVariable ["detained", true, true];
+			// Walking up to him stopped him (doStop) and walking off only gives his MOVE back, so in the
+			// group he stood where he was detained. Once he is local to the group's leader, follow.
+			[_civ] spawn {
+				params ["_civ"];
+				private _t = diag_tickTime;
+				waitUntil { sleep 0.25; isNull _civ || {local _civ} || {(diag_tickTime - _t) > 5} };
+				if (isNull _civ || {!alive _civ}) exitWith {};
+				[_civ, "MOVE"] remoteExec ["enableAI", _civ];
+				[_civ, objNull] remoteExec ["doWatch", _civ];
+				[_civ, leader group _civ] remoteExec ["doFollow", _civ];
+			};
 		} else {
 			//-- Join civilian group
 			[_civ] joinSilent (createGroup civilian);

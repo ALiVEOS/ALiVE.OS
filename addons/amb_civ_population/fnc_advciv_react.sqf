@@ -359,6 +359,26 @@ switch (_type) do {
             _unit enableAI "MOVE";
             _unit enableAI "PATH";
             _unit setSpeedMode "NORMAL";
+            // This runs on the player's machine, and in multiplayer the civilian is still the server's until the
+            // join moves him to the group's leader: the lines above then did nothing, and a Stay, Hands up or
+            // Get down hold (doStop, MOVE or PATH off) outlived the order. Again once he is local, and follow.
+            [_unit] spawn {
+                params ["_unit"];
+                private _t = diag_tickTime;
+                waitUntil { sleep 0.25; isNull _unit || {local _unit} || {(diag_tickTime - _t) > 5} };
+                if (isNull _unit || {!alive _unit}) exitWith {};
+                if (local _unit) then {
+                    _unit setUnitPos "UP";
+                    _unit enableAI "MOVE";
+                    _unit enableAI "PATH";
+                    _unit setSpeedMode "NORMAL";
+                    _unit doFollow (leader group _unit);
+                } else {
+                    { [_unit, _x] remoteExec ["enableAI", _unit] } forEach ["MOVE", "PATH"];
+                    [_unit, "UP"] remoteExec ["setUnitPos", _unit];
+                    [_unit, leader group _unit] remoteExec ["doFollow", _unit];
+                };
+            };
         };
     };
 
