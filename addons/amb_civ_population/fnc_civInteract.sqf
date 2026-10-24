@@ -210,7 +210,7 @@ switch (_operation) do {
 		//-- Exit if the menu has been closed
 		if (isNull findDisplay 923) exitWith {};
 
-		_arguments params ["_objectiveInstallations","_objectiveActions","_civInfo","_hostileCivInfo",["_intelQuality", [0,1,0,"Stabilize",10,0], [[]]],["_roleContact", [], [[]]]];
+		_arguments params ["_objectiveInstallations","_objectiveActions","_civInfo","_hostileCivInfo",["_intelQuality", [0,1,0,"Stabilize",10,0], [[]]],["_roleContact", [], [[]]],["_recruiterTip", [], [[]]]];
 
 		_logic = MOD(civInteractHandler);
 
@@ -226,6 +226,7 @@ switch (_operation) do {
 		[_civData, "HostileCivInfo", _hostileCivInfo] call ALiVE_fnc_hashSet;			//-- [_civ,_homePos,_activeCommands]
 		[_civData, "IntelQuality", _intelQuality] call ALiVE_fnc_hashSet;				//-- [chanceBonus, radiusMultiplier, markerDurationBonus, phase, exactMarkerChance, deceptionChance]
 		[_civData, "RoleContact", _roleContact] call ALiVE_fnc_hashSet;				//-- [flag, position, homePosition, name] of the nearest town elder or the like, or []
+		[_civData, "RecruiterTip", _recruiterTip] call ALiVE_fnc_hashSet;			//-- [position, out walking] of the recruiter at the Recruitment HQ named below, while he is there, or []
 		[_civData, "AnswersGiven", _answersGiven] call ALiVE_fnc_hashSet;			//-- Default []
 		[_civData, "Asked", 0] call ALiVE_fnc_hashSet;					//-- Default - 0
 		[_logic, "CivData", _civData] call ALiVE_fnc_hashSet;
@@ -749,7 +750,18 @@ switch (_operation) do {
 		if (isNil "_clusterID") then {_clusterID = ""};
 		private _roleContact = [nil, "findRoleContact", [_clusterID, _civ getVariable ["agentID", ""], getPosATL _civ]] call MAINCLASS;
 
-		_civData = [_objectiveInstallations, _objectiveActions, _civInfo,_hostileCivInfo,_intelQuality,_roleContact];
+		// The Insurgency's recruiter at that Recruitment HQ, while he is there (A. Ares on Discord, 24 Oct): the
+		// HQ holds him on the server only, so where he is goes out with the rest
+		private _recruiterTip = [];
+		private _tipHQ = _objectiveInstallations param [1, []];
+		if (_tipHQ isEqualType objNull && {!isNull _tipHQ}) then {
+			private _recruiter = _tipHQ getVariable ["ALiVE_INS_recruiterUnit", objNull];
+			if (alive _recruiter && {!(_recruiter getVariable ["ALiVE_INS_recruiterCaptured", false])}) then {
+				_recruiterTip = [getPosATL _recruiter, (_recruiter distance _tipHQ) > 20];
+			};
+		};
+
+		_civData = [_objectiveInstallations, _objectiveActions, _civInfo,_hostileCivInfo,_intelQuality,_roleContact,_recruiterTip];
 
 		// _civData call ALiVE_fnc_inspectArray;
 

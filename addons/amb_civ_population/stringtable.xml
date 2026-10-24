@@ -3106,6 +3106,15 @@
     <Chinesesimp>IED工厂</Chinesesimp>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_RECRUITER_IN">
+    <English>The man who does their recruiting is in there right now.</English>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_RECRUITER_WALKING">
+    <English>The man who does their recruiting is out on the streets with his minders as we speak.</English>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_RECRUITER_MARK">
+    <English>Recruiter</English>
+</Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_TYPENAME_RECRUITMENTHQ">
     <English>Recruitment HQ</English>
     <French>QG de recrutement</French>

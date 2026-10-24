@@ -522,6 +522,20 @@ switch (_question) do {
         } else {
 
             private ["_installation","_type","_typeName","_installationData"];
+            // with the recruiter in his Recruitment HQ right now, that is what people talk about, 2 times in 3
+            private _recruiterTip = [_civData, "RecruiterTip", []] call ALiVE_fnc_hashGet;
+            if (isNil "_recruiterTip" || {!(_recruiterTip isEqualType [])}) then { _recruiterTip = [] };
+            if (_recruiterTip isNotEqualTo [] && {!(_HQ isEqualTo [])} && {random 1 < 0.67}) then {
+                _typeName = localize "STR_ALIVE_CIV_INTERACT_HIDEOUTS_TYPENAME_RECRUITMENTHQ";_type = localize "STR_ALIVE_CIV_INTERACT_HIDEOUTS_TYPE_RECRUITMENTHQ";
+                _installation = _HQ;
+            };
+            // the recruiter, named with his HQ once it has been given away: a line more and a marker on him
+            private _fnc_recruiterTip = {
+                if (_recruiterTip isEqualTo [] || {!(_installation isEqualTo _HQ)}) exitWith {};
+                _recruiterTip params ["_tipPos", "_tipWalking"];
+                CIVINTERACT_RESPONSELIST ctrlSetText (_response + " " + localize (["STR_ALIVE_CIV_INTERACT_HIDEOUTS_RECRUITER_IN", "STR_ALIVE_CIV_INTERACT_HIDEOUTS_RECRUITER_WALKING"] select _tipWalking));
+                [_tipPos, localize "STR_ALIVE_CIV_INTERACT_HIDEOUTS_RECRUITER_MARK", "ColorEAST", 60, 10, "mil_dot", getPos _civ, false] call _placeThreatIntelMarker;
+            };
             for "_i" from 0 to 3 do {
                 _installationArray = _installations call BIS_fnc_selectRandom;
 
@@ -575,6 +589,7 @@ switch (_question) do {
                         _installationPos = getPos _installation;
                         [_installationPos, _typeName, "ColorEAST", 100, 18, "n_installation", getPos _civ, false] call _placeThreatIntelMarker;
                         if (!isNil "ALIVE_fnc_taskKnownEnemy") then { ["report", str side group player, [_installationPos]] call ALIVE_fnc_taskKnownEnemy };
+                        call _fnc_recruiterTip;
                     } else {
                         _response1 = format [localize "STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_NOTHOSTILE_1", _type];
                         _response2 = format [localize "STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_NOTHOSTILE_2", _type];
@@ -617,6 +632,7 @@ switch (_question) do {
                     _installationPos = getPos _installation;
                     [_installationPos, _typeName, "ColorEAST", 125, 20, "n_installation", getPos _civ, true] call _placeThreatIntelMarker;
                     if (!isNil "ALIVE_fnc_taskKnownEnemy") then { ["report", str side group player, [_installationPos]] call ALIVE_fnc_taskKnownEnemy };
+                    call _fnc_recruiterTip;
                 } else {
                     _response1 = localize "STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_HOSTILE_1";
                     _response2 = localize "STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_HOSTILE_2";

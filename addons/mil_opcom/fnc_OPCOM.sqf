@@ -192,6 +192,7 @@ switch (_operation) do {
         private _recruiterGuards = ((parseNumber format ["%1", _logic getvariable ["recruiterGuards", 2]]) max 0) min 8;
         private _recruiterSkips = ((parseNumber format ["%1", _logic getvariable ["recruiterSkips", 1]]) max 1) min 10;
         private _recruiterWalks = (toLower format ["%1", _logic getvariable ["recruiterWalks", "false"]]) in ["true", "1"];
+        private _recruiterFlees = (toLower format ["%1", _logic getvariable ["recruiterFlees", "false"]]) in ["true", "1"];
         private _recruiterBoost = ((parseNumber format ["%1", _logic getvariable ["recruiterBoost", 1]]) max 1) min 2;
         // Frontline Minefields (#979): none, few or many.
         private _frontlineMinefields = toLower format ["%1", _logic getvariable ["frontlineMinefields","none"]];
@@ -395,6 +396,7 @@ switch (_operation) do {
             ["recruiterGuards", _recruiterGuards],
             ["recruiterSkips", _recruiterSkips],
             ["recruiterWalks", _recruiterWalks],
+            ["recruiterFlees", _recruiterFlees],
             ["recruiterBoost", _recruiterBoost],
             ["frontlineMinefields", _frontlineMinefields],
             ["preparedDefences", _preparedDefences],

@@ -2658,6 +2658,7 @@ ALiVE_fnc_INS_recruiterPresence = {
     private _guardCount = [_opcom, "recruiterGuards", 2] call ALiVE_fnc_HashGet;
     private _skips = [_opcom, "recruiterSkips", 1] call ALiVE_fnc_HashGet;
     private _walks = [_opcom, "recruiterWalks", false] call ALiVE_fnc_HashGet;
+    private _flees = [_opcom, "recruiterFlees", false] call ALiVE_fnc_HashGet;
     private _guardClasses = if (_guardCount > 0) then {
         [[_faction], _guardCount, missionNamespace getVariable ["ALiVE_MIL_CQB_UNITBLACKLIST", []], true] call ALiVE_fnc_chooseRandomUnits
     } else { [] };
@@ -2666,7 +2667,45 @@ ALiVE_fnc_INS_recruiterPresence = {
         { if (!isNull _x) then { private _g = group _x; deleteVehicle _x; if (!isNull _g && {units _g isEqualTo []}) then { deleteGroup _g } } } forEach (_guards + [_unit]);
         _guards = [];
         _unit = objNull;
+        _HQ setVariable ["ALiVE_INS_recruiterUnit", objNull];
     };
+    // he runs for it, away from the nearest player, and is gone once out of their sight (or after 5 minutes);
+    // his guards hold the building and fight, and go once no player is near. Run while the recruiting goes on
+    // (true), they stay with this loop, so the next recruiter takes them over rather than bringing more.
+    private _fnc_runFor = {
+        params [["_keepGuards", false]];
+        private _runner = _unit;
+        private _runGroup = createGroup [side group _runner, true];
+        _runGroup setVariable ["ALIVE_profileIgnore", true];
+        [_runner] joinSilent _runGroup;
+        _runner enableAI "PATH";
+        _runner setBehaviour "AWARE";
+        _runner setSpeedMode "FULL";
+        private _near = (allPlayers - entities "HeadlessClient_F") apply { [_x distance _runner, _x] };
+        _near sort true;
+        private _from = (_near param [0, [0, objNull]]) select 1;
+        private _away = (getPos _runner) getPos [800, if (isNull _from) then { random 360 } else { _from getDir _runner }];
+        _runner doMove _away;
+        ["ALiVE OPCOM: the recruiter at the Recruitment HQ near %1 runs for it", mapGridPosition _HQ] call ALiVE_fnc_dump;
+        _unit = objNull;
+        _HQ setVariable ["ALiVE_INS_recruiterUnit", objNull];
+        private _left = _guards select { alive _x };
+        { _x enableAI "PATH" } forEach _left;
+        if (_keepGuards) then { _left = [] } else { _guards = [] };
+        [_runner, _left] spawn {
+            params ["_runner", "_left"];
+            private _t = time;
+            private _noneNear = { params ["_who", "_d"]; ((allPlayers - entities "HeadlessClient_F") findIf { _x distance _who < _d }) < 0 };
+            waitUntil { sleep 5; !alive _runner || {time - _t > 300} || {[_runner, 1000] call _noneNear} };
+            if (alive _runner) then { private _g = group _runner; deleteVehicle _runner; deleteGroup _g };
+            waitUntil { sleep 10; _left = _left select { alive _x }; _left isEqualTo [] || {(_left findIf { !([_x, 1200] call _noneNear) }) < 0} };
+            { private _g = group _x; deleteVehicle _x; if (units _g isEqualTo []) then { deleteGroup _g } } forEach _left;
+        };
+    };
+    // a hostile player within this many metres of him
+    private _hostileWithin = { (allPlayers findIf { alive _x && {(_x distance _unit) < _this} && {(_sideObj getFriend side group _x) < 0.6} }) > -1 };
+    private _guardsSpawned = 0;
+    private _closeLooks = 0;
     private _sideObj = _faction call ALiVE_fnc_factionSide;
     if (_sideObj isEqualType "") then { _sideObj = [_sideObj] call ALiVE_fnc_sideTextToObject };
     // the recruiting loop this recruiter belongs to: it starts just after this, and a newer one taking
@@ -2732,6 +2771,13 @@ ALiVE_fnc_INS_recruiterPresence = {
                 _unit setVariable ["ALiVE_ignore_HC", true, true];
                 _grp setVariable ["ALIVE_profileIgnore", true];
                 _unit setVariable ["ALiVE_INS_recruiterOf", [_HQ, _pause, _skips]];
+                // server only: a civilian asked about hideouts can say he is there right now
+                _HQ setVariable ["ALiVE_INS_recruiterUnit", _unit];
+                // Recruiter Runs When Pressured: shots fired near him by someone not with him
+                _unit addEventHandler ["FiredNear", {
+                    params ["_u", "_firer", "_d"];
+                    if (_d < 60 && {!isNull _firer} && {((side group _u) getFriend (side group _firer)) < 0.6}) then { _u setVariable ["ALiVE_INS_recruiterShotAt", time] };
+                }];
                 // papers that say who he is, found on his body or by searching him as a prisoner
                 if (!isNil "ALiVE_fnc_giveTargetPapers") then { [_unit, "STR_ALIVE_TARGETID_RECRUITER", _town] call ALiVE_fnc_giveTargetPapers };
                 // counted the moment he dies, wherever he is local, so a body cleaned up before the next
@@ -2761,6 +2807,8 @@ ALiVE_fnc_INS_recruiterPresence = {
                     _g setVariable ["ALiVE_ignore_HC", true, true];
                     _guards pushBack _g;
                 } forEach ([[], _guardClasses] select (_guards isEqualTo []));
+                _guardsSpawned = count _guards;
+                _closeLooks = 0;
                 // Recruiter Walks The Town: he and his guards walk a round of the town's buildings within 150 m of
                 // the HQ, back to it, and round again
                 if (_walks) then {
@@ -2800,10 +2848,27 @@ ALiVE_fnc_INS_recruiterPresence = {
                 };
                 // the players' now: nothing here deletes him
                 _unit = objNull;
+                _HQ setVariable ["ALiVE_INS_recruiterUnit", objNull];
             } else {
-                // he goes when no one is near; when a task opens he waits until no player can see him go
-                if ((_taskOpen && {!(300 call _players)}) || {!(1200 call _players)}) then {
-                    call _fnc_clear;
+                // Recruiter Runs When Pressured (A. Ares on Discord, 24 Oct): with a hostile player within 150 m and
+                // a guard lost since the last look or enemy shots near him, or a hostile player within 60 m for three
+                // looks running, he runs for it while the HQ still stands. One already within 30 m has him cornered,
+                // so he stays and can still give himself up. A new one comes after the usual pause; killed on the
+                // run, he counts as ever (his kill handler goes with him).
+                _closeLooks = if (_flees && {60 call _hostileWithin}) then { _closeLooks + 1 } else { 0 };
+                private _guardLost = count _guards < _guardsSpawned;
+                _guardsSpawned = count _guards;
+                if (
+                    _flees && {alive _unit} && {150 call _hostileWithin} && {!(30 call _hostileWithin)}
+                    && {_guardLost || {(time - (_unit getVariable ["ALiVE_INS_recruiterShotAt", -1e9])) < 20} || {_closeLooks >= 3}}
+                ) then {
+                    _HQ setVariable ["ALiVE_INS_recruiterBackAt", time + _pause];
+                    [true] call _fnc_runFor;
+                } else {
+                    // he goes when no one is near; when a task opens he waits until no player can see him go
+                    if ((_taskOpen && {!(300 call _players)}) || {!(1200 call _players)}) then {
+                        call _fnc_clear;
+                    };
                 };
             };
         };
@@ -2812,34 +2877,7 @@ ALiVE_fnc_INS_recruiterPresence = {
     // the HQ disabled or the town's recruiting over: with players near he runs for it, then is gone once out of
     // their sight (or after 5 minutes); otherwise he and his guards just go
     if (!isNull _unit && {alive _unit} && {400 call _players}) then {
-        private _runner = _unit;
-        private _runGroup = createGroup [side group _runner, true];
-        _runGroup setVariable ["ALIVE_profileIgnore", true];
-        [_runner] joinSilent _runGroup;
-        _runner enableAI "PATH";
-        _runner setBehaviour "AWARE";
-        _runner setSpeedMode "FULL";
-        // away from the nearest player
-        private _near = (allPlayers - entities "HeadlessClient_F") apply { [_x distance _runner, _x] };
-        _near sort true;
-        private _from = (_near param [0, [0, objNull]]) select 1;
-        private _away = (getPos _runner) getPos [800, if (isNull _from) then { random 360 } else { _from getDir _runner }];
-        _runner doMove _away;
-        ["ALiVE OPCOM: the recruiter at the Recruitment HQ near %1 runs for it", mapGridPosition _HQ] call ALiVE_fnc_dump;
-        _unit = objNull;
-        // his guards hold the building and fight, and go once no player is near
-        private _left = _guards select { alive _x };
-        { _x enableAI "PATH" } forEach _left;
-        _guards = [];
-        [_runner, _left] spawn {
-            params ["_runner", "_left"];
-            private _t = time;
-            private _noneNear = { params ["_who", "_d"]; ((allPlayers - entities "HeadlessClient_F") findIf { _x distance _who < _d }) < 0 };
-            waitUntil { sleep 5; !alive _runner || {time - _t > 300} || {[_runner, 1000] call _noneNear} };
-            if (alive _runner) then { private _g = group _runner; deleteVehicle _runner; deleteGroup _g };
-            waitUntil { sleep 10; _left = _left select { alive _x }; _left isEqualTo [] || {(_left findIf { !([_x, 1200] call _noneNear) }) < 0} };
-            { private _g = group _x; deleteVehicle _x; if (units _g isEqualTo []) then { deleteGroup _g } } forEach _left;
-        };
+        [false] call _fnc_runFor;
     } else {
         call _fnc_clear;
     };

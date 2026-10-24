@@ -836,6 +836,12 @@
 <Key ID="STR_ALIVE_OPCOM_RECRUITER_WALKS_COMMENT">
     <English>With Recruiters on: No (default), he stays in the Recruitment HQ. Yes, he walks between the town's buildings within 150 m of it with his guards, out finding recruits, so he can be caught away from the HQ.</English>
 </Key>
+<Key ID="STR_ALIVE_OPCOM_RECRUITER_FLEES">
+    <English>Recruiter Runs When Pressured</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_RECRUITER_FLEES_COMMENT">
+    <English>With Recruiters on: No (default), he stays put whatever happens. Yes, he runs out of town when a hostile player within 150 m kills one of his guards or shoots near him, or stays within 60 m of him for half a minute. Kill him on the run and it counts as ever; let him get out of sight and he is gone, and a new recruiter turns up after the usual pause. Get within 30 m and he is cornered: with his guards down, he still gives himself up.</English>
+</Key>
 <Key ID="STR_ALIVE_OPCOM_PREPARED_DEFENCES">
     <English>Prepared Defences</English>
 </Key>
