@@ -2447,31 +2447,58 @@
     <Russian>Отпустить</Russian>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_SI_BTN_FRIENDLIES">
-    <English>Friendlies</English>
-    <Chinesesimp>友军</Chinesesimp>
-    <Chinese>友軍</Chinese>
-    <Spanish>Aliados</Spanish>
-    <French>Alliés</French>
-    <Portuguese>Aliados</Portuguese>
-    <Russian>Свои</Russian>
+    <English>Friendlies near?</English>
+    <Chinesesimp>附近有友军吗？</Chinesesimp>
+    <Chinese>附近有友軍嗎？</Chinese>
+    <Spanish>¿Aliados cerca?</Spanish>
+    <French>Alliés proches ?</French>
+    <Portuguese>Aliados perto?</Portuguese>
+    <Russian>Свои рядом?</Russian>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_SI_BTN_SEEN">
-    <English>Seen any?</English>
+    <English>Enemy seen?</English>
     <Chinesesimp>看到敌人了吗？</Chinesesimp>
     <Chinese>看到敵人了嗎？</Chinese>
-    <Spanish>¿Has visto algo?</Spanish>
-    <French>Vu quelque chose ?</French>
-    <Portuguese>Viu algo?</Portuguese>
-    <Russian>Видели кого?</Russian>
+    <Spanish>¿Enemigos vistos?</Spanish>
+    <French>Ennemis vus ?</French>
+    <Portuguese>Viu inimigos?</Portuguese>
+    <Russian>Видели врага?</Russian>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_SI_BTN_HEADED">
-    <English>Heading?</English>
-    <Chinesesimp>去哪里？</Chinesesimp>
-    <Chinese>去哪裡？</Chinese>
-    <Spanish>¿Hacia dónde?</Spanish>
-    <French>Destination ?</French>
-    <Portuguese>Para onde?</Portuguese>
+    <English>Where to?</English>
+    <Chinesesimp>你们去哪里？</Chinesesimp>
+    <Chinese>你們去哪裡？</Chinese>
+    <Spanish>¿A dónde vais?</Spanish>
+    <French>Où allez-vous ?</French>
+    <Portuguese>Para onde vão?</Portuguese>
     <Russian>Куда идёте?</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SI_TIP_FRIENDLIES">
+    <English>Ask him which friendly units are near here. They go on your map.</English>
+    <Chinesesimp>问他附近有哪些友军。会标在你的地图上。</Chinesesimp>
+    <Chinese>問他附近有哪些友軍。會標在你的地圖上。</Chinese>
+    <Spanish>Pregúntale qué unidades aliadas hay cerca. Aparecen en tu mapa.</Spanish>
+    <French>Demandez-lui quelles unités alliées sont proches. Elles apparaissent sur votre carte.</French>
+    <Portuguese>Pergunte quais unidades aliadas estão por perto. Aparecem no seu mapa.</Portuguese>
+    <Russian>Спросить, какие свои подразделения рядом. Они появятся на карте.</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SI_TIP_SEEN">
+    <English>Ask him what enemy his group has seen. They go on your map.</English>
+    <Chinesesimp>问他的小组看到了哪些敌人。会标在你的地图上。</Chinesesimp>
+    <Chinese>問他的小組看到了哪些敵人。會標在你的地圖上。</Chinese>
+    <Spanish>Pregúntale qué enemigos ha visto su grupo. Aparecen en tu mapa.</Spanish>
+    <French>Demandez-lui quels ennemis son groupe a vus. Ils apparaissent sur votre carte.</French>
+    <Portuguese>Pergunte quais inimigos o grupo dele viu. Aparecem no seu mapa.</Portuguese>
+    <Russian>Спросить, каких врагов видела его группа. Они появятся на карте.</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SI_TIP_HEADED">
+    <English>Ask him where his group is going. It goes on your map.</English>
+    <Chinesesimp>问他的小组要去哪里。会标在你的地图上。</Chinesesimp>
+    <Chinese>問他的小組要去哪裡。會標在你的地圖上。</Chinese>
+    <Spanish>Pregúntale a dónde va su grupo. Aparece en tu mapa.</Spanish>
+    <French>Demandez-lui où va son groupe. Cela apparaît sur votre carte.</French>
+    <Portuguese>Pergunte para onde o grupo dele vai. Aparece no seu mapa.</Portuguese>
+    <Russian>Спросить, куда идёт его группа. Это появится на карте.</Russian>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_SI_BTN_CLOSE">
     <English>Close</English>
@@ -2690,13 +2717,13 @@
     <Russian>%1: пока держим позицию здесь.</Russian>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_SI_HEADED_TO">
-    <English>%1: we're headed to grid %2, about %3 m %4 of here.</English>
-    <Chinesesimp>%1：我们正前往网格 %2，在此处%4方约 %3 米。</Chinesesimp>
-    <Chinese>%1：我們正前往網格 %2，在此處%4方約 %3 公尺。</Chinese>
-    <Spanish>%1: vamos a la cuadrícula %2, a unos %3 m al %4 de aquí.</Spanish>
-    <French>%1 : nous allons au carré %2, à environ %3 m d'ici, direction %4.</French>
-    <Portuguese>%1: estamos indo para a grade %2, a cerca de %3 m daqui, direção %4.</Portuguese>
-    <Russian>%1: идём в квадрат %2, примерно %3 м на %4 отсюда.</Russian>
+    <English>%1: we're headed to grid %2, about %3 m %4 of here. Marked on your map for two minutes.</English>
+    <Chinesesimp>%1：我们正前往网格 %2，在此处%4方约 %3 米。已在你的地图上标记两分钟。</Chinesesimp>
+    <Chinese>%1：我們正前往網格 %2，在此處%4方約 %3 公尺。已在你的地圖上標記兩分鐘。</Chinese>
+    <Spanish>%1: vamos a la cuadrícula %2, a unos %3 m al %4 de aquí. Marcado en tu mapa durante dos minutos.</Spanish>
+    <French>%1 : nous allons au carré %2, à environ %3 m d'ici, direction %4. Marqué sur votre carte pendant deux minutes.</French>
+    <Portuguese>%1: estamos indo para a grade %2, a cerca de %3 m daqui, direção %4. Marcado no seu mapa por dois minutos.</Portuguese>
+    <Russian>%1: идём в квадрат %2, примерно %3 м на %4 отсюда. Отмечено на вашей карте на две минуты.</Russian>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_SI_MARK_HEADED">
     <English>%1 headed here</English>

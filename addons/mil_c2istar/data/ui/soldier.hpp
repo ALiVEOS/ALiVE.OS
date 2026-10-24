@@ -104,6 +104,7 @@ class ALiVE_SoldierInteraction {
         class SoldierInteract_Friendly: SoldierInteract_RscButton {
             idc = 92620;
             text = "$STR_ALIVE_C2ISTAR_SI_BTN_FRIENDLIES";
+            tooltip = "$STR_ALIVE_C2ISTAR_SI_TIP_FRIENDLIES";
             action = "['button', 'friendlies'] call ALiVE_fnc_C2ISTARSoldierInteract";
             x = 0.3000 * safezoneW + safezoneX;
             y = 0.525 * safezoneH + safezoneY;
@@ -113,6 +114,7 @@ class ALiVE_SoldierInteraction {
         class SoldierInteract_Seen: SoldierInteract_RscButton {
             idc = 92621;
             text = "$STR_ALIVE_C2ISTAR_SI_BTN_SEEN";
+            tooltip = "$STR_ALIVE_C2ISTAR_SI_TIP_SEEN";
             action = "['button', 'seen'] call ALiVE_fnc_C2ISTARSoldierInteract";
             x = 0.3667 * safezoneW + safezoneX;
             y = 0.525 * safezoneH + safezoneY;
@@ -122,6 +124,7 @@ class ALiVE_SoldierInteraction {
         class SoldierInteract_Headed: SoldierInteract_RscButton {
             idc = 92622;
             text = "$STR_ALIVE_C2ISTAR_SI_BTN_HEADED";
+            tooltip = "$STR_ALIVE_C2ISTAR_SI_TIP_HEADED";
             action = "['button', 'headed'] call ALiVE_fnc_C2ISTARSoldierInteract";
             x = 0.4334 * safezoneW + safezoneX;
             y = 0.525 * safezoneH + safezoneY;

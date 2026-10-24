@@ -170,8 +170,10 @@ switch (_operation) do {
                     ["STR_ALIVE_C2ISTAR_SI_FRIENDLIES_N", _count]
                 ] select (_count min 2)] call _fnc_say;
             };
-            case "seen": { "seen" call _fnc_order; [["STR_ALIVE_C2ISTAR_SI_SEEN_WAIT"]] call _fnc_say };
-            case "headed": { "headed" call _fnc_order; [["STR_ALIVE_C2ISTAR_SI_HEADED_WAIT"]] call _fnc_say };
+            // the waiting line first: in single player or on a hosted game the answer comes back at once, and
+            // written after it the waiting line hid it
+            case "seen": { [["STR_ALIVE_C2ISTAR_SI_SEEN_WAIT"]] call _fnc_say; "seen" call _fnc_order };
+            case "headed": { [["STR_ALIVE_C2ISTAR_SI_HEADED_WAIT"]] call _fnc_say; "headed" call _fnc_order };
         };
     };
 
@@ -304,16 +306,24 @@ switch (_operation) do {
         if (!hasInterface) exitWith {};
         _args params [["_text", ""], ["_marks", []], ["_seconds", 0]];
         [_text] call _fnc_say;
+        // one set of marks per question: asking again replaces the last answer's marks, so pressing the
+        // button repeatedly no longer stacks copies on the map
+        private _kind = ["seen", "headed"] select (_marks isNotEqualTo [] && {((_marks select 0) select 1) == "hd_objective"});
+        { deleteMarkerLocal _x } forEach (missionNamespace getVariable ["ALiVE_c2istar_siMarks_" + _kind, []]);
         private _made = [];
         {
             _x params ["_pos", "_type", "_label"];
             ALiVE_c2istar_siMarkerCount = (missionNamespace getVariable ["ALiVE_c2istar_siMarkerCount", 0]) + 1;
             private _m = createMarkerLocal [format ["ALiVE_c2istar_si_%1", ALiVE_c2istar_siMarkerCount], _pos];
-            _m setMarkerTypeLocal _type;
-            _m setMarkerColorLocal (["ColorRed", "ColorBlue"] select (_type == "hd_objective"));
+            private _colour = ["ColorRed", "ColorBlue"] select (_type == "hd_objective");
+            // ALiVE's destination or threat pin when the player has its pins on, the stock marker otherwise; the
+            // label layer writes the name in the mark's colour (ALiVE_fnc_mapPins)
+            ["pin", [_m, _type, ["threat", "destination"] select (_type == "hd_objective"), _colour]] call ALiVE_fnc_mapPins;
             _m setMarkerTextLocal (_label call _fnc_tr);
+            ["adopt", [_m, markerText _m, 55, _colour, {}, [], "auto"]] call ALiVE_fnc_mapPins;
             _made pushBack _m;
         } forEach _marks;
+        missionNamespace setVariable ["ALiVE_c2istar_siMarks_" + _kind, _made];
         if (_made isNotEqualTo []) then { [_made, _seconds] spawn { sleep (_this select 1); { deleteMarkerLocal _x } forEach (_this select 0) } };
     };
 };
