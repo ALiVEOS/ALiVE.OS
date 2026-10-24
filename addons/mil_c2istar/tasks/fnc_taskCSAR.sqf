@@ -616,6 +616,7 @@ switch (_taskState) do {
             private _start = diag_tickTime;
             waitUntil {sleep 0.25; isNull _unit || {local _unit} || {(diag_tickTime - _start) > 10}};
 
+            ["C2ISTAR - Task CSAR - release %1: alive %2, local %3, group %4, leader %5, hop %6", _unit, alive _unit, local _unit, group _unit, leader group _unit, _hops] call ALiVE_fnc_dump;
             if (isNull _unit || {!alive _unit}) exitWith {};
             if !(local _unit) exitWith {
                 if (_hops < 3) then {
@@ -630,8 +631,36 @@ switch (_taskState) do {
             // Combat Support CAS and the air commander's quiet aircraft, and a CARELESS man
             // ignores the enemy. He takes his new group's.
             _unit setCombatBehaviour (combatBehaviour (group _unit));
+            // A pilot held with nothing in his hands sits in the panic kneel (ApanPknl..., hands on his head),
+            // and nothing moves him out of it: he answers "roger" to every order and stays put, with all his AI
+            // on (measured on a rescued A-10 pilot carrying an M9). Back to a normal stance, his gun in hand.
+            if ((toLowerANSI (animationState _unit)) select [0, 4] == "apan") then {
+                [_unit, ""] remoteExec ["switchMove", 0];
+            };
+            private _gun = [primaryWeapon _unit, handgunWeapon _unit] select (primaryWeapon _unit == "");
+            if (_gun != "") then { _unit selectWeapon _gun };
+            // A pilot usually outranks the players, so on joining he leads for a moment until the player is
+            // made leader again (the hold action's selectLeader). Wait for that, then end the hold's doStop:
+            // checked straight away he was his own leader, got no follow order and stayed put.
+            private _wait = diag_tickTime;
+            waitUntil {sleep 0.25; isNull _unit || {leader group _unit != _unit} || {(diag_tickTime - _wait) > 5}};
+            if (isNull _unit) exitWith {};
             if (leader group _unit != _unit) then {
                 _unit doFollow (leader group _unit);
+            };
+            ["C2ISTAR - Task CSAR - release %1 done: group %2, leader %3, anim %4, behaviour %5, captive %6, PATH %7, FSM %8", _unit, group _unit, leader group _unit, animationState _unit, combatBehaviour _unit, captive _unit, _unit checkAIFeature "PATH", _unit checkAIFeature "FSM"] call ALiVE_fnc_dump;
+            // He can fall back into the panic kneel whenever danger comes back. While he is with the players
+            // and his task runs, every 3 s: out of it, gun in hand, follow the leader.
+            while {!isNull _unit && {alive _unit} && {local _unit} && {_unit getVariable ["ALIVE_csarRescued", false]}
+                && {!(_unit getVariable ["ALIVE_csarRetiring", false])} && {((units group _unit) findIf {isPlayer _x}) > -1}} do {
+                sleep 3;
+                if (alive _unit && {(toLowerANSI (animationState _unit)) select [0, 4] == "apan"}) then {
+                    [_unit, ""] remoteExec ["switchMove", 0];
+                    private _g = [primaryWeapon _unit, handgunWeapon _unit] select (primaryWeapon _unit == "");
+                    if (_g != "") then { _unit selectWeapon _g };
+                    if (leader group _unit != _unit) then { _unit doFollow (leader group _unit) };
+                    ["C2ISTAR - Task CSAR - %1 out of the panic kneel again (behaviour %2)", _unit, combatBehaviour _unit] call ALiVE_fnc_dump;
+                };
             };
         };
     };
@@ -915,6 +944,7 @@ switch (_taskState) do {
                     private _prevLeader = leader group _caller;
                     [_target] joinSilent (group _caller);
                     [group _caller, _prevLeader] remoteExecCall ["selectLeader", _prevLeader];
+                    ["C2ISTAR - Task CSAR - %1 rescued by %2: now in %3 (caller's group %4, local %5)", _target, _caller, group _target, group _caller, local _target] call ALiVE_fnc_dump;
                     ["pilotRelease", "", [_target], [], false] call ALIVE_fnc_taskCSAR;
 
                     ["Rescue", format ["You have rescued %1!", name _target]] call ALIVE_fnc_taskSubtitle;
