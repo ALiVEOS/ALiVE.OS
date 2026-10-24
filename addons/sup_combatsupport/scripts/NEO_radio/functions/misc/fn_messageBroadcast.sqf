@@ -36,7 +36,25 @@
             // Game, Task and radio updates): a subtitle or a hint from HQ, or side chat as it always was. (Jman)
             private _style = missionNamespace getVariable ["ALiVE_prefTaskMessages", "chat"];
             if (hasInterface && {!isNull player} && {_style != "chat"} && {!isNil "ALIVE_fnc_taskSubtitle"} && {(side group player) in _friendlySides}) then {
-                ["HQ", _text] call ALIVE_fnc_taskSubtitle;
+                // one at a time: a SITREP or a CAS run sends several lines seconds apart, and each subtitle or
+                // hint would replace the one before it was read
+                // (the queue and its reader's flag change only inside isNil, which nothing interrupts)
+                isNil {
+                    if (isNil "ALiVE_NEO_radioQueue") then { ALiVE_NEO_radioQueue = []; ALiVE_NEO_radioBusy = false };
+                    ALiVE_NEO_radioQueue pushBack _text;
+                    if !(ALiVE_NEO_radioBusy) then {
+                        ALiVE_NEO_radioBusy = true;
+                        [] spawn {
+                            while { true } do {
+                                private _line = nil;
+                                isNil { if (ALiVE_NEO_radioQueue isEqualTo []) then { ALiVE_NEO_radioBusy = false } else { _line = ALiVE_NEO_radioQueue deleteAt 0 } };
+                                if (isNil "_line") exitWith {};
+                                ["HQ", _line] call ALIVE_fnc_taskSubtitle;
+                                sleep (((count _line) / 20) max 4 min 10);
+                            };
+                        };
+                    };
+                };
             } else {
                 {[_x,"HQ"] sideChat _text} foreach _friendlySides;
             };
