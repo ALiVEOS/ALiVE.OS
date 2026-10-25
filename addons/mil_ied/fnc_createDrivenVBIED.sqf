@@ -95,7 +95,9 @@ private _charge = createVehicle ["ALIVE_DemoCharge_Remote_Ammo", getPosATL _car,
 _charge attachTo [_car, [0, -1, -1.08]];
 _charge setVectorUp [0, 0, -1];
 _charge addEventHandler ["HandleDamage", {
-    params ["_charge"];
+    params ["_charge", "", "_damage"];
+    // a stray fragment from another blast doesn't set it off (see createVBIED)
+    if (_damage < 0.3) exitWith { 0 };
     private _car = attachedTo _charge;
     if (!isNull _car && {!(_car getVariable ["ALiVE_carBombGone", false])}) then {
         _car setVariable ["ALiVE_carBombGone", true];

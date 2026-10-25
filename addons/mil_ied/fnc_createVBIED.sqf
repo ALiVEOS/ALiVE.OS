@@ -109,6 +109,11 @@ _IED setVectorUp [0,0,-1];
 _ehID = _IED addeventhandler ["HandleDamage",{
 //    diag_log str(_this);
 
+    // A stray scrap doesn't set it off: with ACE, fragments from another blast touch a charge 150 m away
+    // with 0.002 to 0.025 damage, and every one of them set off a second car bomb (Eric on Discord, 25 Oct).
+    // A blast close enough to count, or a hit on the charge itself, carries far more.
+    if ((_this select 2) < 0.3) exitWith { 0 };
+
     if (MOD(mil_IED) getVariable "debug") then {
         ["ALIVE-%1 IED: %2 explodes due to damage by %3", time, (_this select 0), (_this select 3)] call ALiVE_fnc_dump;
         [(_this select 0) getvariable "Marker"] call cba_fnc_deleteEntity;
