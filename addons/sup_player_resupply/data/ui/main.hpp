@@ -291,9 +291,9 @@ class PRTablet
         {
             idc = 60005;
             x = 0.271102 * GUI_GRID_WAbs + GUI_GRID_X;
-            y = 0.1600 * GUI_GRID_HAbs + GUI_GRID_Y;
+            y = 0.1660 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.241271 * GUI_GRID_WAbs;
-            h = 0.06 * GUI_GRID_HAbs;
+            h = 0.054 * GUI_GRID_HAbs;
             colorBackground[] = {0.173,0.173,0.173,1};
             colorActive[] = {0.384,0.439,0.341,1};
             sizeEx = 0.5 * GUI_GRID_H;
@@ -305,7 +305,7 @@ class PRTablet
             idc = 60018;
             text = "$STR_ALIVE_PR_UI_SUPPLY_HDR";
             x = 0.271203 * GUI_GRID_WAbs + GUI_GRID_X;
-            y = 0.2230 * GUI_GRID_HAbs + GUI_GRID_Y;
+            y = 0.2170 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.241271 * GUI_GRID_WAbs;
             h = 0.0308 * GUI_GRID_HAbs;
             colorBackground[] = {0,0,0,0};
@@ -339,7 +339,7 @@ class PRTablet
             idc = 60019;
             text = "$STR_ALIVE_PR_UI_REINFORCE_HDR";
             x = 0.271203 * GUI_GRID_WAbs + GUI_GRID_X;
-            y = 0.3730 * GUI_GRID_HAbs + GUI_GRID_Y;
+            y = 0.3666 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.241271 * GUI_GRID_WAbs;
             h = 0.0308 * GUI_GRID_HAbs;
             colorBackground[] = {0,0,0,0};
@@ -373,7 +373,7 @@ class PRTablet
             idc = 60020;
             text = "$STR_ALIVE_PR_UI_PAYLOAD_HDR";
             x = 0.271203 * GUI_GRID_WAbs + GUI_GRID_X;
-            y = 0.5230 * GUI_GRID_HAbs + GUI_GRID_Y;
+            y = 0.5174 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.241271 * GUI_GRID_WAbs;
             h = 0.0308 * GUI_GRID_HAbs;
             colorBackground[] = {0,0,0,0};
