@@ -146,20 +146,22 @@ _blacklist append ["alive_fob_kit", "alive_fob_supplycrate"];
 private _arsenal = [_logic, "attribute", ["fob_arsenal"]] call ALiVE_fnc_FOB;
 if !(_arsenal) then { _blacklist pushBack "alive_fob_arsenal" };
 // the same lists set the Arsenal's gear: a weapon, magazine, item, glasses or backpack class is the
-// Arsenal's, anything else the build menu's, and a list naming only one kind leaves the other alone
-// (with the Arsenal setting off nothing is split, so the build menu reads the lists as it always has)
+// Arsenal's, anything else the build menu's, and a list naming only one kind leaves the other alone.
+// Gear never reaches the build menu, Arsenal setting on or off: a list made on the Build List page
+// with gear ticked, used with the setting off, would otherwise leave the menu holding only gear,
+// which can't be built, so nothing at all.
+private _isGear = {
+    params ["_c"];
+    private _v = configFile >> "CfgVehicles" >> _c;
+    // something that can be built stays the build menu's, whatever else shares its name
+    if (isClass _v && {getNumber (_v >> "isBackpack") != 1}) exitWith { false };
+    isClass _v || {isClass (configFile >> "CfgWeapons" >> _c)} || {isClass (configFile >> "CfgMagazines" >> _c)} || {isClass (configFile >> "CfgGlasses" >> _c)}
+};
+private _gearOnly = _only select { [_x] call _isGear };
+private _gearAlso = _whitelist select { [_x] call _isGear };
+_only = _only - _gearOnly;
+_whitelist = _whitelist - _gearAlso;
 if (_arsenal) then {
-    private _isGear = {
-        params ["_c"];
-        private _v = configFile >> "CfgVehicles" >> _c;
-        // something that can be built stays the build menu's, whatever else shares its name
-        if (isClass _v && {getNumber (_v >> "isBackpack") != 1}) exitWith { false };
-        isClass _v || {isClass (configFile >> "CfgWeapons" >> _c)} || {isClass (configFile >> "CfgMagazines" >> _c)} || {isClass (configFile >> "CfgGlasses" >> _c)}
-    };
-    private _gearOnly = _only select { [_x] call _isGear };
-    private _gearAlso = _whitelist select { [_x] call _isGear };
-    _only = _only - _gearOnly;
-    _whitelist = _whitelist - _gearAlso;
     ALiVE_FOB_gearOverrides = [+_blacklist, _gearOnly, _gearAlso, +_fixed];
 };
 
