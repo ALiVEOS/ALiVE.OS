@@ -382,19 +382,19 @@
     <English>Start From Ship</English>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_SHIP_START_COMMENT">
-    <English>Yes puts this commander's starting force aboard a ship that never moves (any static ship, such as the Expeditionary Forces amphibious ship) and lands it by helicopter at the objective nearest the ship. Place this module on the ship's deck, sync Military Logistics, and sync a Location or a Custom Objective on the shore for the landing. Only infantry start aboard. Needs an Invasion or Occupation commander and a faction with transport helicopters; otherwise it starts on land and says why in the RPT. Once everyone is ashore the ship plays no further part: later reinforcements come from the ground the commander holds.</English>
+    <English>Yes puts this commander's starting force aboard a ship that never moves (any static ship, such as the Expeditionary Forces amphibious ship) and lands it by helicopter at the objective nearest the ship. A faction with no transport helicopter of its own, such as a WWII faction, goes ashore in its own boats instead, landing on the beach nearest the objective. Place this module on the ship's deck, sync Military Logistics, and sync a Location or a Custom Objective on the shore for the landing. Needs an Invasion or Occupation commander and a faction with transport helicopters or boats; otherwise it starts on land and says why in the RPT. Once everyone is ashore the ship plays no further part: later reinforcements come from the ground the commander holds.</English>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_SHIP_INF">
     <English>Infantry Groups Aboard</English>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_SHIP_INF_COMMENT">
-    <English>How many infantry groups start aboard the ship with Start From Ship on. They are flown ashore two groups a helicopter wave, a few minutes apart. Mechanised and armoured groups start on land as usual.</English>
+    <English>How many infantry groups start aboard the ship with Start From Ship on. They go ashore two groups a wave, a few minutes apart, by helicopter or by boat. Mechanised and armoured groups start on land as usual.</English>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_SHIP_MOT">
     <English>Motorised Groups Aboard</English>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_SHIP_MOT_COMMENT">
-    <English>How many motorised groups start aboard the ship with Start From Ship on, 0 by default. They fly ashore after the infantry, two groups a wave, each vehicle carried under a heavy lift helicopter. The faction or its side needs a helicopter that can lift the vehicle. If none can, or the landing stays closed to them for a long while, these groups are left out and the usual reinforcements resume.</English>
+    <English>How many motorised groups start aboard the ship with Start From Ship on, 0 by default. They fly ashore after the infantry, two groups a wave, each vehicle carried under a heavy lift helicopter. The faction or its side needs a helicopter that can lift the vehicle; boats carry infantry only. If none can, or the landing stays closed to them for a long while, these groups are left out and the usual reinforcements resume.</English>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_HVT_RESPAWN">
     <English>Replace When Pause Ends</English>

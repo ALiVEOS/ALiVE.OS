@@ -6001,6 +6001,13 @@ switch (_operation) do {
                         [_logic, "shipMotRefused", 0] call ALiVE_fnc_HashSet;
                         [_logic, "shipMotWaits", 0] call ALiVE_fnc_HashSet;
                     };
+                    // landing craft: Logistics found no beach its boats could reach (asked again, up to three times)
+                    if (_sent param [3, false]) then {
+                        private _seaRefused = ([_logic, "shipSeaRefused", 0] call ALiVE_fnc_HashGet) + 1;
+                        [_logic, "shipSeaRefused", _seaRefused] call ALiVE_fnc_HashSet;
+                        ["OPCOM SHIP - %1: Military Logistics found no beach for the boats (%2 of 3)", _name, _seaRefused] call ALiVE_fnc_dump;
+                    };
+                    if ((_sent select 0) > 0) then { [_logic, "shipSeaRefused", 0] call ALiVE_fnc_HashSet };
                 } else {
                     if ((_id in _held) || {time - _at < 120}) then { _keep pushBack _x } else {
                         ["OPCOM SHIP - %1: Military Logistics turned down a wave of %2 infantry and %3 motorised groups; it is asked for again", _name, _asked select 0, _asked select 1] call ALiVE_fnc_dump;
@@ -6029,12 +6036,25 @@ switch (_operation) do {
         if (!isNil "ALIVE_factionDefaultAirTransport") then {
             { _heli append ([ALIVE_factionDefaultAirTransport, _x, []] call ALIVE_fnc_hashGet) } forEach _factions;
         };
-        if (_heli isEqualTo [] && {!isNil "ALIVE_sideDefaultAirTransport"}) then {
+        // Landing craft (TheBigDog90 on Discord, 24 Oct): a faction with no transport helicopter of its own, as in a
+        // WWII faction, puts its infantry ashore in its own boats (seating at least 4) before it borrows the side's
+        // helicopters, which for a WWII side are the game's modern ones. With neither, the side's helicopters, then the
+        // boats of the side's other commanders (whose factions Military Logistics serves) unless Limit Transport To
+        // Faction is on. A faction with a helicopter of its own never uses boats.
+        private _fnc_boats = {
+            private _found = ([4, _this, "Ship"] call ALiVE_fnc_findVehicleType) - ALiVE_PLACEMENT_VEHICLEBLACKLIST;
+            _found select { _x isKindOf "Ship" && {!(_x isKindOf "StaticShip")} && {!(_x isKindOf "Submarine")}
+                && {getNumber (configFile >> "CfgVehicles" >> _x >> "transportSoldier") >= 4} }
+        };
+        private _boats = [];
+        if ((_heli select { _x isKindOf "Helicopter" }) isEqualTo []) then { _boats = _factions call _fnc_boats };
+        if (_boats isEqualTo [] && {(_heli select { _x isKindOf "Helicopter" }) isEqualTo []} && {!isNil "ALIVE_sideDefaultAirTransport"}) then {
             _heli = +([ALIVE_sideDefaultAirTransport, _side, []] call ALIVE_fnc_hashGet);
         };
-        if ((_heli select { _x isKindOf "Helicopter" }) isEqualTo []) exitWith {
-            ["AI Commander '%1' is set to Start From Ship but neither faction %2 nor its side has a transport helicopter, so nothing can leave the ship", _name, _factions] call ALiVE_fnc_dumpR;
-            // the force aboard is gone, so it leaves the starting strength too
+        // nothing can leave the ship: the force aboard is gone, so it leaves the starting strength too
+        private _dropAll = {
+            params ["_why"];
+            ["AI Commander '%1' is set to Start From Ship but %2, so nothing can leave the ship", _name, _why] call ALiVE_fnc_dumpR;
             private _start = [_logic, "startForceStrength", []] call ALiVE_fnc_HashGet;
             private _aboard = [_logic, "shipAboard", [0,0,0,0,0,0,0,0]] call ALiVE_fnc_HashGet;
             if (count _start == count _aboard) then {
@@ -6044,13 +6064,33 @@ switch (_operation) do {
             };
             [_logic, "shipStart", false] call ALiVE_fnc_HashSet;
             [_logic, "shipAboard", [0,0,0,0,0,0,0,0]] call ALiVE_fnc_HashSet;
+        };
+
+        if (_boats isEqualTo [] && {(_heli select { _x isKindOf "Helicopter" }) isEqualTo []}) then {
+            if (((allMissionObjects "ALiVE_mil_logistics") findIf { [_x, "limitTransportToFaction"] call ALIVE_fnc_ML }) < 0) then {
+                private _sideFacs = [];
+                {
+                    if (_x isEqualType [] && {([_x, "side", ""] call ALiVE_fnc_HashGet) == _side}) then {
+                        { _sideFacs pushBackUnique _x } forEach ([_x, "factions", []] call ALiVE_fnc_HashGet);
+                    };
+                } forEach OPCOM_instances;
+                _sideFacs = _sideFacs - _factions;
+                if (_sideFacs isNotEqualTo []) then { _boats = _sideFacs call _fnc_boats };
+            };
+        };
+        if ((_heli select { _x isKindOf "Helicopter" }) isEqualTo [] && {_boats isEqualTo []}) exitWith {
+            [format ["neither faction %1 nor its side has a transport helicopter or a boat that carries troops", _factions]] call _dropAll;
             call _fsmDone;
         };
+        if (_boats isNotEqualTo []) then {
+            ["boats carry infantry only"] call _dropMotorised;
+        } else {
         // a vehicle goes ashore slung under a helicopter: one that can lift more than a tonne, as Military Logistics
         // asks of its sling helicopters
         private _lift = 0;
         { _lift = _lift max getNumber (configFile >> "CfgVehicles" >> _x >> "slingLoadMaxCargoMass") } forEach (_heli select { _x isKindOf "Helicopter" });
         if (_lift <= 1000) then { [format ["no helicopter of %1 or its side can lift a vehicle", _factions]] call _dropMotorised };
+        };
 
         private _pending = call _credit;
         private _aboard = [_logic, "shipAboard", [0,0,0,0,0,0,0,0]] call ALiVE_fnc_HashGet;
@@ -6079,6 +6119,29 @@ switch (_operation) do {
         };
 
         private _position = [_beach, "center"] call ALiVE_fnc_HashGet;
+
+        // boats need a beach: the shore between the ship and the landing, else the shore nearest it (within
+        // 1.5 km). None, or three waves Logistics couldn't land, and nothing can leave the ship.
+        if (_boats isNotEqualTo []) then {
+            private _shore = [_shipPos, _position] call ALIVE_fnc_findNearestShore;
+            if (_shore isEqualTo [0,0,0] || {(_shore distance2D _position) > 1500}) then {
+                _shore = [0,0,0];
+                for "_r" from 250 to 1500 step 250 do {
+                    {
+                        private _w = _position getPos [_r, _x];
+                        if (surfaceIsWater _w && {(getTerrainHeightASL _w) < -2}) exitWith { _shore = [_w, _position] call ALIVE_fnc_findNearestShore };
+                    } forEach [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330];
+                    if (_shore isNotEqualTo [0,0,0]) exitWith {};
+                };
+            };
+            if (_shore isEqualTo [0,0,0]) then { _boats = [] };
+        };
+        if ((_boats isEqualTo [] && {(_heli select { _x isKindOf "Helicopter" }) isEqualTo []}) || {([_logic, "shipSeaRefused", 0] call ALiVE_fnc_HashGet) >= 3}) exitWith {
+            [format ["its boats have no beach to land on within 1.5 km of %1", [_position] call ALIVE_fnc_taskGetNearestLocationName]] call _dropAll;
+            [_logic, "shipSeaRefused", 0] call ALiVE_fnc_HashSet;
+            call _fsmDone;
+        };
+
         [_logic, "shipBeachheadID", [_beach, "objectiveID", ""] call ALiVE_fnc_HashGet] call ALiVE_fnc_HashSet;
         ["OPCOM SHIP - %1 lands %2 infantry and %3 motorised groups at %4 (%5 m from the ship)", _name, _infantry, _motorized, [_position] call ALIVE_fnc_taskGetNearestLocationName, round _best] call ALiVE_fnc_dump;
 
@@ -6091,8 +6154,9 @@ switch (_operation) do {
             _infantry = _infantry - _inf;
             _motorized = _motorized - _mot;
             private _from = _pads select (_wave mod (count _pads));
-            private _event = ['LOGCOM_REQUEST', [_position, selectRandom _factions, _side, [_inf, _mot, 0, 0, 0, 0], "HELI_INSERT"], "OPCOM"] call ALIVE_fnc_event;
+            private _event = ['LOGCOM_REQUEST', [_position, selectRandom _factions, _side, [_inf, _mot, 0, 0, 0, 0], ["HELI_INSERT", "SEA_INSERT"] select (_boats isNotEqualTo [])], "OPCOM"] call ALIVE_fnc_event;
             [_event, "shipLaunch", true] call ALiVE_fnc_HashSet;
+            [_event, "shipBoats", _boats] call ALiVE_fnc_HashSet;
             [_event, "departurePosition", _from] call ALiVE_fnc_HashSet;
             [_event, "shipPads", _pads] call ALiVE_fnc_HashSet;
             [_event, "shipDestination", _position] call ALiVE_fnc_HashSet;
