@@ -451,6 +451,17 @@ switch (_type) do {
         private _requester = if (!isNil "_extraParam" && {_extraParam isEqualType objNull}) then { _extraParam } else { player };
         if (!isNull _requester && {group _unit == group _requester}) then {
             [_unit] joinSilent (createGroup civilian);
+            // In the player's group he was the player's side, so the brain let him go. It takes
+            // him back now rather than at its 15 s catch-up, so an order given in between (Stay,
+            // say) isn't wiped by that late start.
+            [_unit] spawn {
+                params ["_unit"];
+                private _t = diag_tickTime;
+                waitUntil { sleep 0.25; isNull _unit || {side group _unit == civilian} || {(diag_tickTime - _t) > 5} };
+                if (alive _unit && {side group _unit == civilian} && {!(_unit getVariable ["ALiVE_advciv_active", false])}) then {
+                    [_unit] call ALiVE_fnc_advciv_initUnit;
+                };
+            };
         };
 
         _unit enableAI "MOVE";

@@ -85,6 +85,12 @@ if (_stateChanged) then {
     // Open-ground retries belong to the current panic episode only.
     _unit setVariable ["ALiVE_advciv_openFleeRetryAt", nil];
 };
+// A new order given while another is in force (Stay, then Go home) changes no state, so an
+// order's first-tick actions also run when the order itself changes
+private _prevOrder = _unit getVariable ["ALiVE_advciv_prevOrder", ""];
+private _orderChanged = (_order != _prevOrder);
+if (_orderChanged) then { _unit setVariable ["ALiVE_advciv_prevOrder", _order] };
+private _entered = _stateChanged || _orderChanged;
 
 // Update the 3D debug label visible when ALiVE_advciv_debug is enabled
 if (ALiVE_advciv_debug) then {
@@ -130,7 +136,7 @@ if (_state == "ORDERED") exitWith {
 
         // STAY: halt once on state entry; nothing to do on subsequent ticks
         case "STAY": {
-            if (_stateChanged) then { doStop _unit; };
+            if (_entered) then { doStop _unit; };
         };
 
         // GOHOME: nudge the unit toward home on entry; clear order on arrival
@@ -141,20 +147,20 @@ if (_state == "ORDERED") exitWith {
                 _unit setVariable ["ALiVE_advciv_state", "CALM", true];
                 doStop _unit;
             } else {
-                if (_stateChanged) then { _unit doMove _homePos; };
+                if (_entered) then { _unit doMove _homePos; };
             };
         };
 
         // HANDSUP / GETDOWN / KNEEL: lock movement on entry, no per-tick work needed
         case "HANDSUP": {
-            if (_stateChanged) then {
+            if (_entered) then {
                 doStop _unit;
                 _unit disableAI "PATH";
             };
         };
 
         case "GETDOWN": {
-            if (_stateChanged) then {
+            if (_entered) then {
                 doStop _unit;
                 _unit disableAI "PATH";
                 if (vehicle _unit == _unit) then { _unit setUnitPos "DOWN"; };
@@ -162,7 +168,7 @@ if (_state == "ORDERED") exitWith {
         };
 
         case "KNEEL": {
-            if (_stateChanged) then {
+            if (_entered) then {
                 doStop _unit;
                 _unit disableAI "PATH";
                 if (vehicle _unit == _unit) then { _unit setUnitPos "MIDDLE"; };

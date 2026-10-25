@@ -121,13 +121,21 @@ if ([_unit] call ALiVE_fnc_advciv_isMissionCritical) exitWith {};      // Protec
 // =========================================================================
 // State variable initialisation
 // =========================================================================
+// A civilian the brain let go and takes back in has a home already: one who followed a
+// player, or was detained, was in the player's group and counted as the player's side, so
+// the brain dropped him. Told Go home, he keeps that order and that home, or he would be
+// "home" wherever he stood and never set off. Otherwise (released where he was detained)
+// home becomes where he is, as before, rather than a walk back across the map.
+private _again = !isNil {_unit getVariable "ALiVE_advciv_homePos"};
+private _goingHome = _again && {(_unit getVariable ["ALiVE_advciv_order", "NONE"]) == "GOHOME"};
 _unit setVariable ["ALiVE_advciv_active", true, true];
-_unit setVariable ["ALiVE_advciv_state", "CALM", true];
+_unit setVariable ["ALiVE_advciv_state", ["CALM", "ORDERED"] select _goingHome, true];
 if (ALiVE_advciv_debug) then {
-    _unit setVariable ["ALiVE_advciv_dbgState", "CALM", true];
+    _unit setVariable ["ALiVE_advciv_dbgState", ["CALM", "ORDERED"] select _goingHome, true];
 };
 _unit setVariable ["ALiVE_advciv_prevState", "", true];
-_unit setVariable ["ALiVE_advciv_homePos", getPos _unit, true];
+_unit setVariable ["ALiVE_advciv_prevOrder", ""];
+if (!_goingHome) then { _unit setVariable ["ALiVE_advciv_homePos", getPos _unit, true] };
 _unit setVariable ["ALiVE_advciv_nearShots", 0];
 _unit setVariable ["ALiVE_advciv_stateTimer", 0];
 _unit setVariable ["ALiVE_advciv_panicSource", [0,0,0], true];
@@ -141,7 +149,7 @@ _unit setVariable ["ALiVE_advciv_actionType", "NONE", true];
 _unit setVariable ["ALiVE_advciv_lastVoice", 0];
 _unit setVariable ["ALiVE_advciv_vehicleEscaping", false, true];
 _unit setVariable ["ALiVE_advciv_vehicleEscapeTried", false];
-_unit setVariable ["ALiVE_advciv_order", "NONE", true];
+if (!_goingHome) then { _unit setVariable ["ALiVE_advciv_order", "NONE", true] };
 _unit setVariable ["ALiVE_advciv_orderTarget", objNull, true];
 _unit setVariable ["ALiVE_advciv_orderVehicle", objNull, true];
 _unit setVariable ["ALiVE_advciv_boarding", false, true];
