@@ -394,6 +394,15 @@
     <Portuguese>Designar objetivo</Portuguese>
     <Russian>Назначить цель</Russian>
 </Key>
+<Key ID="STR_ALIVE_SCOM_UI_INTEL_LOG">
+    <English>Intel Log</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_UI_INTEL_LOG_EMPTY">
+    <English>No intel reported yet</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_UI_INTEL_LOG_COUNT">
+    <English>%1 reports, newest first. Pick one to see it on the map</English>
+</Key>
 <Key ID="STR_ALIVE_SCOM_UI_REFRESH">
     <English>Refresh</English>
     <Chinesesimp>刷新</Chinesesimp>

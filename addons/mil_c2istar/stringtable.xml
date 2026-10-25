@@ -488,6 +488,12 @@
     <English>Seconds a player must wait between designating objectives</English>
     <Spanish>Segundos que un jugador debe esperar entre designaciones de objetivos</Spanish>
 </Key>
+<Key ID="STR_ALIVE_C2ISTAR_SCOM_INTEL_LOG">
+    <English>Tablet Intel Log</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SCOM_INTEL_LOG_COMMENT">
+    <English>Adds an Intel Log button to the tablet's Intel page. It lists the intel your side has been given: installations, ambush and IED sites revealed, what civilians, prisoners and informants said, spot reports, HVT sightings, manhunt clues and trigger men detained, each with its time and grid, and kept after its marker leaves the map. Up to 150 reports a side. Saved with the tasks when the mission is saved locally.</English>
+</Key>
 <Key ID="STR_ALIVE_C2ISTAR_SCOM_OPS_MAX_PLAYER_OBJECTIVES">
     <English>Max Player Objectives:</English>
     <Spanish>Máx. objetivos de jugador:</Spanish>

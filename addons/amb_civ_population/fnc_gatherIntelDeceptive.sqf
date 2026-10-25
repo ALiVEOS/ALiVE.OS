@@ -66,7 +66,8 @@ for "_i" from 0 to (_count - 1) do {
     // and most also show one installation, with its own label and icon, a short way inside the ellipse.
     // A decoy used to be the only marker labelled "installation" and the only one with no installation
     // icon, so it could be told apart at a glance (F106).
-    private _mIcon    = [_baseId + "I", _decoyPos, "ICON", [0.1, 0.1], "ColorRed", selectRandom ["CIV", "MIL"], "mil_dot", "FDiagonal", 0, 0.5] call ALIVE_fnc_createMarkerGlobal;
+    private _type = selectRandom ["CIV", "MIL"];
+    private _mIcon    = [_baseId + "I", _decoyPos, "ICON", [0.1, 0.1], "ColorRed", _type, "mil_dot", "FDiagonal", 0, 0.5] call ALIVE_fnc_createMarkerGlobal;
 
     _createdMarkers append [_mEllipse, _mIcon];
 
@@ -74,6 +75,11 @@ for "_i" from 0 to (_count - 1) do {
         private _inst = selectRandom [["Recruitment HQ", "n_installation"], ["Weapons depot", "n_installation"], ["IED factory", "n_installation"], ["Sabotage", "n_installation"], ["Ambush", "hd_ambush"]];
         private _instPos = _decoyPos getPos [random 60, random 360];
         _createdMarkers pushBack ([_baseId + "H", _instPos, "ICON", [0.5, 0.5], "ColorRed", _inst select 0, _inst select 1, "FDiagonal", 0, 0.5, ["installation", "ambush"] select ((_inst select 1) == "hd_ambush")] call ALIVE_fnc_createMarkerGlobal);
+        // Tablet Intel Log: written as a real reveal's row is, so the log can't tell a decoy apart either
+        if (!isNil "ALIVE_fnc_intelLog" && {missionNamespace getVariable ["ALiVE_c2istar_intelLogEnabled", false]}) then {
+            ["add", [str side group player, faction player, ["installation", "ambush"] select ((_inst select 1) == "hd_ambush"), _instPos, _inst select 0,
+                format ["From a civilian. Part of a %1 objective at grid %2", _type, mapGridPosition _decoyPos], "a civilian", _baseId]] call ALIVE_fnc_intelLog;
+        };
     };
 };
 

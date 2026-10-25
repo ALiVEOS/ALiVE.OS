@@ -134,9 +134,23 @@ private _placeThreatIntelMarker = {
         _markerPos = [_originPos, _actualPos, _preferTrap] call _selectFalseIntelPosition;
     };
 
+    // Tablet Intel Log (Eric on Discord, 25 Oct): the answer as it was drawn, the ellipse's centre and size for a
+    // rough one, so the log never shows more than the map did, nor tells a lie apart
+    private _fnc_log = {
+        params ["_at", "_detail"];
+        if (isNil "ALIVE_fnc_intelLog" || {!(missionNamespace getVariable ["ALiVE_c2istar_intelLogEnabled", false])}) exitWith {};
+        private _kind = switch (true) do {
+            case (_iconType == "n_installation"): { "installation" };
+            case (_markerName == "IED"): { "ied" };
+            default { "civilian" };
+        };
+        ["add", [str side group player, faction player, _kind, _at, format ["%1: %2", name _civ, _markerName], _detail, "a civilian"]] call ALIVE_fnc_intelLog;
+    };
+
     if (!_isDeceptive && {floor random 100 < _exactIntelChance}) then {
         private _marker = [str _markerPos, _markerPos, "ICON", [1,1], _markerColor, _markerName, _iconType, "Solid", 0, 0.5, _pinKey] call ALIVE_fnc_createMarkerGlobal;
         [_marker,_intelMarkerDuration] spawn {params ["_marker","_duration"]; sleep _duration; deleteMarker _marker; remoteExec ["", "ALiVE_pin_" + _marker]};
+        [_markerPos, "Pointed out the spot"] call _fnc_log;
 
         "exact"
     } else {
@@ -145,6 +159,7 @@ private _placeThreatIntelMarker = {
         private _marker = [str _markerCenter, _markerCenter, "ELLIPSE", _markerSize, _markerColor, _markerName, "n_installation", "FDiagonal", 0, 0.5] call ALIVE_fnc_createMarkerGlobal;
         private _text = [str (str _markerCenter),_markerCenter,"ICON", [0.1,0.1],_markerColor,_markerName, "mil_dot", "FDiagonal",0,0.5] call ALIVE_fnc_createMarkerGlobal;
         [_marker,_text,_intelMarkerDuration] spawn {params ["_marker","_text","_duration"]; sleep _duration; deleteMarker _marker; deleteMarker _text};
+        [_markerCenter, format ["Somewhere within %1 m of here", round (_searchRadius max 35)]] call _fnc_log;
 
         if (_isDeceptive) then {"deceptive"} else {"approximate"};
     };

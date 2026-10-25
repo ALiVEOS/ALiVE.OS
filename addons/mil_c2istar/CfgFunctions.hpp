@@ -266,6 +266,11 @@ class CfgFunctions {
                 file = "\x\alive\addons\mil_c2istar\utils\fnc_taskKnownEnemy.sqf";
                 ALIVE_RECOMPILE;
             };
+            class intelLog {
+                description = "Tablet Intel Log: the intel each side's players were shown, listed on the tablet";
+                file = "\x\alive\addons\mil_c2istar\utils\fnc_intelLog.sqf";
+                ALIVE_RECOMPILE;
+            };
             class taskManhunt {
                 description = "HVT Manhunt Chance: an HVT task as a manhunt, a search area narrowed by clues";
                 file = "\x\alive\addons\mil_c2istar\utils\fnc_taskManhunt.sqf";

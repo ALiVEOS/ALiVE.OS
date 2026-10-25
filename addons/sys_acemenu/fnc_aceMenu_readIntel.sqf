@@ -24,6 +24,7 @@ ALIVE_fnc_OPCOMdropIntel
 
 Author:
 Whigital
+Jman
 
 Peer reviewed:
 nil
@@ -56,7 +57,7 @@ private _actCode = {
     private _side = (_params select 1);
 
     openmap true;
-    [_pos, 1500, _side] call ALiVE_fnc_OPCOMToggleInstallations;
+    [_pos, 1500, _side, str side group _player, "captured documents", faction _player] call ALiVE_fnc_OPCOMToggleInstallations;
 
     [_target, 0, ["ACE_MainActions", "ALiVE_Intel"]] call ace_interact_menu_fnc_removeActionFromObject;
 };

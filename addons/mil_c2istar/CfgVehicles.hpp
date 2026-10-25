@@ -630,6 +630,19 @@ class CfgVehicles {
                                     class ALL     { name = "$STR_ALIVE_C2ISTAR_SCOM_INTEL_LIMIT_ALL";     value = "ALL"; };
                             };
                     };
+                    // Eric on Discord, 25 Oct: the intel a side was given, in one list on the tablet
+                    class scomIntelLog : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_scomIntelLog";
+                            displayName = "$STR_ALIVE_C2ISTAR_SCOM_INTEL_LOG";
+                            tooltip = "$STR_ALIVE_C2ISTAR_SCOM_INTEL_LOG_COMMENT";
+                            defaultValue = """false""";
+                            class Values
+                            {
+                                    class No  { name = "No";  value = "false"; };
+                                    class Yes { name = "Yes"; value = "true"; };
+                            };
+                    };
 
                     // ---- Map intel (SQM-marker spotreps + diary entries + sector overlays) -----
                     // Persistent SQM markers + diary entries created by `ALIVE_fnc_militaryIntel`

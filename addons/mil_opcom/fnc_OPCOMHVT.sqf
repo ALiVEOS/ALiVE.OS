@@ -16,7 +16,8 @@ Parameters:
 String - operation: "place", "reveal", "notify"
 Array - arguments
     place:  [handler]
-    reveal: [side object of the dead man whose intel was read]
+    reveal: [side object of the dead man whose intel was read, (optional, for the Tablet Intel Log) side text,
+            faction and source of whoever read it]
     notify: [stringtable key, officer's name, short line key, the mission's own text] (run on clients, so
             each reads it in its own language; the mission's own text, when given, is shown as written)
 
@@ -291,7 +292,7 @@ switch (_operation) do {
     case "reveal": {
         // A third of the intel read from the commander's men marks where he was last seen,
         // within a couple of hundred metres, for ten minutes.
-        _args params [["_side", sideUnknown, [sideUnknown]]];
+        _args params [["_side", sideUnknown, [sideUnknown]], ["_forSide", "", [""]], ["_forFaction", "", [""]], ["_source", "intel", [""]]];
         if (isNil "OPCOM_instances") exitWith {};
         {
             private _h = _x;
@@ -314,6 +315,11 @@ switch (_operation) do {
                     // each player's machine swaps in ALiVE's HVT pin if that player has its pins on;
                     // the JIP entry (named after the marker, so a new sighting replaces it) covers late joiners
                     ["pin", [_mk, "hd_unknown", "hvt", "ColorRed", _side]] remoteExecCall ["ALiVE_fnc_mapPins", 0, "ALiVE_pin_" + _mk];
+                    // Tablet Intel Log: the sighting as players were shown it, the offset position included
+                    if (!isNil "ALIVE_fnc_intelLog" && {_forSide != ""}) then {
+                        ["add", [_forSide, _forFaction, "hvt", _at, format ["%1 sighted?", _rec select 0],
+                            format ["From %1. Last seen within about 200 m of here", _source], _source, "hvt_" + (_rec select 1)]] call ALIVE_fnc_intelLog;
+                    };
                     private _stamp = diag_tickTime;
                     missionNamespace setVariable [_mk, _stamp];
                     [_mk, _stamp] spawn {

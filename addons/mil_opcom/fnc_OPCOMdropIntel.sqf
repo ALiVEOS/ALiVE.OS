@@ -22,6 +22,7 @@ See Also:
 
 Author:
 Highhead
+Jman
 ---------------------------------------------------------------------------- */
 
 private ["_data","_chance","_globalChance"];
@@ -56,7 +57,7 @@ if (!isNull _object) then {
     //Add Action globally
     _args = [
         "Read Intel", //Action Text
-        {_object = _this select 0; _caller = _this select 1; _params = _this select 3; openmap true; [_params select 0, 1500, _params select 1] call ALiVE_fnc_OPCOMToggleInstallations; deleteVehicle _object}, //Action Code
+        {_object = _this select 0; _caller = _this select 1; _params = _this select 3; openmap true; [_params select 0, 1500, _params select 1, str side group _caller, "captured documents", faction _caller] call ALiVE_fnc_OPCOMToggleInstallations; deleteVehicle _object}, //Action Code
         [_position,_side], //Params
         1, //Prio
         false, //showWindow

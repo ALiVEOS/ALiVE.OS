@@ -182,6 +182,11 @@ if (cbChecked _spotrepCheck) then {
     [MOD(sys_spotrep), "addspotrep", [_spotrepName, _spotrepHash]] call ALiVE_fnc_spotrep;
     // what's reported here becomes known to the side's AI Commander (ALIVE_fnc_taskKnownEnemy "report")
     if (!isNil "ALIVE_fnc_taskKnownEnemy") then { ["report", str side group player, [_pos]] call ALIVE_fnc_taskKnownEnemy };
+    // and goes in the side's Tablet Intel Log, when it was shared with the whole side
+    if (_eyes == "SIDE" && {!isNil "ALIVE_fnc_intelLog"} && {missionNamespace getVariable ["ALiVE_c2istar_intelLogEnabled", false]}) then {
+        ["add", [str side group player, faction player, "spotrep", _pos, format ["SPOTREP from %1: %2 %3", _callsign, _size, _type],
+            format ["%1, %2. %3", _faction, _activity, _remarks], "spotrep"]] call ALIVE_fnc_intelLog;
+    };
 
     [_markersHash, QGVAR(spotrep), _spotrepName] call ALIVE_fnc_hashSet;
 

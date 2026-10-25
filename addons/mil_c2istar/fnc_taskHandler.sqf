@@ -140,6 +140,9 @@ switch (_operation) do {
             // The groups opted out of automatic orders. Put back on any group already
             // here; a player who joins later gets it back in syncTasks.
             if (!isNil QGVAR(DATAHANDLER) && {(toLower (missionNamespace getVariable ["ALiVE_sys_data_source", "pns"])) isEqualTo "pns"}) then {
+                // the tablet's Intel Log
+                private _intel = [GVAR(DATAHANDLER), "bulkLoad", ["sys_intellog", (["_INTEL"] call ALiVE_fnc_storeKeys) select 0, false]] call ALIVE_fnc_Data;
+                if (!isNil "_intel" && {[_intel] call ALIVE_fnc_isHash}) then { ["restore", [_intel]] call ALIVE_fnc_intelLog };
                 private _optOut = [GVAR(DATAHANDLER), "bulkLoad", ["sys_tasks_optout", (["_TASK_OPTOUT"] call ALiVE_fnc_storeKeys) select 0, false]] call ALIVE_fnc_Data;
                 if (!isNil "_optOut" && {[_optOut] call ALIVE_fnc_isHash}) then {
                     ALIVE_C2ISTAR_optOutGroups = _optOut;

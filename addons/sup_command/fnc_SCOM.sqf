@@ -282,6 +282,24 @@ switch (_operation) do {
 
     };
 
+    case "logMarkers": {
+
+        // the Intel Log's markers, a slot of their own like objMarkers
+
+        _result = [_logic,_operation,_args,DEFAULT_MARKER] call ALIVE_fnc_OOsimpleOperation;
+
+    };
+
+    case "clearLogMarkers": {
+
+        {
+            deleteMarkerLocal _x;
+        } foreach ([_logic,"logMarkers"] call MAINCLASS);
+
+        [_logic,"logMarkers",[]] call MAINCLASS;
+
+    };
+
     case "clearObjMarkers": {
 
         {
@@ -741,6 +759,12 @@ switch (_operation) do {
 
                 };
 
+                case "INTEL_LOG": {
+
+                    [_logic,"enableIntelLog", _data] call MAINCLASS;
+
+                };
+
                 default {
 
                     [_logic,_type, _data] call MAINCLASS;
@@ -868,6 +892,8 @@ switch (_operation) do {
             } foreach _markers;
 
             [_logic,"clearObjMarkers"] call MAINCLASS;
+            [_logic,"clearLogMarkers"] call MAINCLASS;
+            [_commandState,"intelViewMode",""] call ALIVE_fnc_hashSet;
 
             [_commandState,"opsGroupWaypoints", []] call ALIVE_fnc_hashSet;
             [_commandState,"opsGroupPlannedWaypoints", []] call ALIVE_fnc_hashSet;
@@ -978,6 +1004,9 @@ switch (_operation) do {
                     (_args select 0) params ["_selectedList","_selectedIndex"];
 
                     if (_selectedIndex >= 0) then {
+
+                        // the Intel Log button belongs to the first page only
+                        (SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR3)) ctrlShow false;
 
                         // store selected item
 
@@ -1321,6 +1350,62 @@ switch (_operation) do {
                 case "INTEL_RESET": {
 
                     [_logic,"enableIntelInterface"] call MAINCLASS;
+
+                };
+
+                case "INTEL_VIEW_LOG": {
+
+                    // Tablet Intel Log: ask the server for this side's log; the list and its map replace the type list
+
+                    private _commandState = [_logic,"commandState"] call MAINCLASS;
+                    [_commandState,"intelViewMode","LOG"] call ALIVE_fnc_hashSet;
+                    [_logic,"commandState",_commandState] call MAINCLASS;
+
+                    {
+                        (SCOM_getControl(SCOMTablet_CTRL_MainDisplay,_x)) ctrlShow false;
+                    } foreach [SCOMTablet_CTRL_MainMap,SCOMTablet_CTRL_IntelTypeTitle,SCOMTablet_CTRL_IntelTypeList,SCOMTablet_CTRL_BL1,SCOMTablet_CTRL_BL2,SCOMTablet_CTRL_BL3,SCOMTablet_CTRL_BR1,SCOMTablet_CTRL_BR3];
+
+                    private _editList = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_EditList);
+                    lbClear _editList;
+                    _editList ctrlShow true;
+                    _editList ctrlSetEventHandler ["LBSelChanged", "['INTEL_LOG_LIST_SELECT',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
+
+                    private _editMap = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_EditMap);
+                    _editMap ctrlShow true;
+                    _editMap ctrlSetEventHandler ["MouseButtonDown", ""];
+                    _editMap ctrlSetEventHandler ["MouseButtonDblClick", ""];
+
+                    private _back = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_SubMenuBack);
+                    _back ctrlShow true;
+                    _back ctrlSetText localize "STR_ALIVE_SCOM_UI_BACK";
+                    _back ctrlSetEventHandler ["MouseButtonClick", "['INTEL_RESET',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
+
+                    private _title = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_Title);
+                    _title ctrlSetText localize "STR_ALIVE_SCOM_UI_INTEL_LOG";
+
+                    [_logic,"setOpsStatus", "Waiting..."] call MAINCLASS;
+
+                    ["INTEL_GET_LOG", [getPlayerUID player]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToServer", 2];
+
+                };
+
+                case "INTEL_LOG_LIST_SELECT": {
+
+                    // a row picked: the map goes to it and its detail shows below
+
+                    (_args select 0) params ["_selectedList","_selectedIndex"];
+
+                    private _commandState = [_logic,"commandState"] call MAINCLASS;
+                    private _rows = [_commandState,"intelLogRows",[]] call ALIVE_fnc_hashGet;
+
+                    if (_selectedIndex >= 0 && {_selectedIndex < count _rows}) then {
+                        (_rows select _selectedIndex) params ["_dtg","_grid","_kind","_pos","_title","_detail","_times"];
+                        private _map = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_EditMap);
+                        ctrlMapAnimClear _map;
+                        _map ctrlMapAnimAdd [0.5, ctrlMapScale _map, _pos];
+                        ctrlMapAnimCommit _map;
+                        [_logic,"setOpsStatus", if (_times > 1) then { format ["%1 (reported %2 times)", _detail, _times] } else { _detail }] call MAINCLASS;
+                    };
 
                 };
 
@@ -2790,6 +2875,17 @@ switch (_operation) do {
             deleteMarkerLocal _x;
         } foreach _markers;
 
+        // Tablet Intel Log (Eric on Discord, 25 Oct): its button on the first page, with C2ISTAR's setting on
+        [_logic,"clearLogMarkers"] call MAINCLASS;
+        private _commandStateLog = [_logic,"commandState"] call MAINCLASS;
+        [_commandStateLog,"intelViewMode",""] call ALIVE_fnc_hashSet;
+        if (missionNamespace getVariable ["ALiVE_c2istar_intelLogEnabled", false]) then {
+            _buttonR3 ctrlShow true;
+            _buttonR3 ctrlEnable true;
+            _buttonR3 ctrlSetText localize "STR_ALIVE_SCOM_UI_INTEL_LOG";
+            _buttonR3 ctrlSetEventHandler ["MouseButtonClick", "['INTEL_VIEW_LOG',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
+        };
+
         // call reset
 
         [_logic,"resetIntel"] call MAINCLASS;
@@ -4052,6 +4148,67 @@ switch (_operation) do {
                 _buttonR3 ctrlSetText localize "STR_ALIVE_SCOM_UI_VIEW_OBJECTIVES";
                 _buttonR3 ctrlSetEventHandler ["MouseButtonClick", "['OPS_VIEW_OBJECTIVES',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
             };
+
+        };
+
+    };
+
+    case "enableIntelLog": {
+
+        // Tablet Intel Log: the server's rows, newest first: [dtg, grid, kind, position, title, detail, times reported]
+
+        if (_args isEqualType []) then {
+
+            private _commandState = [_logic,"commandState"] call MAINCLASS;
+
+            // a reply that arrives after the player has left the log is dropped
+            if (([_commandState,"intelViewMode",""] call ALIVE_fnc_hashGet) != "LOG") exitwith {};
+
+            private _rows = _args param [1, []];
+            [_commandState,"intelLogRows",_rows] call ALIVE_fnc_hashSet;
+            [_logic,"commandState",_commandState] call MAINCLASS;
+
+            [_logic,"clearLogMarkers"] call MAINCLASS;
+
+            private _editList = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_EditList);
+            lbClear _editList;
+
+            private _markers = [];
+            {
+                _x params ["_dtg","_grid","_kind","_pos","_title","_detail","_times"];
+
+                private _i = _editList lbAdd format ["%1  %2  %3", _dtg, _grid, _title];
+                _editList lbSetTooltip [_i, _detail];
+
+                private _m = createMarkerLocal [format ["ALiVE_SCOM_log_%1", _forEachIndex], _pos];
+                _m setMarkerShapeLocal "ICON";
+                _m setMarkerTypeLocal (switch (_kind) do {
+                    case "installation": {"n_installation"};
+                    case "ambush": {"hd_ambush"};
+                    case "ied";
+                    case "triggerman": {"mil_triangle"};
+                    case "spotrep": {"mil_warning"};
+                    case "manhunt": {"mil_objective"};
+                    case "hvt";
+                    case "prisoner";
+                    case "informant": {"hd_unknown"};
+                    default {"mil_dot"};
+                });
+                _m setMarkerColorLocal (if (_kind in ["prisoner","informant","spotrep"]) then {"ColorBlack"} else {"ColorRed"});
+                _m setMarkerSizeLocal [0.6,0.6];
+                _m setMarkerTextLocal _grid;
+                _markers pushBack _m;
+            } forEach _rows;
+
+            [_logic,"logMarkers",_markers] call MAINCLASS;
+
+            private _buttonR2 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR2);
+            _buttonR2 ctrlShow true;
+            _buttonR2 ctrlEnable true;
+            _buttonR2 ctrlSetText localize "STR_ALIVE_SCOM_UI_REFRESH";
+            _buttonR2 ctrlSetEventHandler ["MouseButtonClick", "['INTEL_VIEW_LOG',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
+
+            [_logic,"setOpsStatus", if (_rows isEqualTo []) then { localize "STR_ALIVE_SCOM_UI_INTEL_LOG_EMPTY" } else { format [localize "STR_ALIVE_SCOM_UI_INTEL_LOG_COUNT", count _rows] }] call MAINCLASS;
 
         };
 

@@ -1447,6 +1447,8 @@ switch(_operation) do {
             missionNamespace setVariable ["ALiVE_c2istar_hvtManhuntChance", (_manhunt max 0) min 100];
             missionNamespace setVariable ["ALiVE_c2istar_tasksKnownOnly", _knownOnly in ["true", true]];
             missionNamespace setVariable ["ALiVE_c2istar_assetTaskCap", floor (_assetCap max 0)];
+            // Tablet Intel Log (Eric on Discord, 25 Oct): read by ALIVE_fnc_intelLog and by the tablet on each machine
+            missionNamespace setVariable ["ALiVE_c2istar_intelLogEnabled", (_logic getVariable ["scomIntelLog", "false"]) in ["true", true], true];
         };
         ALiVE_c2istar_fnc_atPrison = {
             params ["_pos"];
@@ -1602,7 +1604,7 @@ switch(_operation) do {
                 private _found = _profiles apply { +([_x, "position", [0, 0, 0]] call ALIVE_fnc_hashGet) };
                 // what he tells becomes known to the side's AI Commander (ALIVE_fnc_taskKnownEnemy "report")
                 ["report", _askSide, _found] call ALIVE_fnc_taskKnownEnemy;
-                [_from, 3000, _eSide] call ALIVE_fnc_OPCOMToggleInstallations;
+                [_from, 3000, _eSide, _askSide, format ["informant %1", _name], _askFaction] call ALIVE_fnc_OPCOMToggleInstallations;
                 private _raised = [_from, 3000, _sideText, _found, _askSide, _askFaction, _enemyFaction, _name] call ALiVE_c2istar_fnc_raiseIntelTask;
                 private _told = if (_raised isEqualTo []) then { "" } else { _raised select 1 };
                 // where the groups are now; the marks don't follow them (no tracking here), so none is called "on the move"
@@ -1614,6 +1616,9 @@ switch(_operation) do {
                     };
                 } forEach _playerUIDs;
                 ["C2ISTAR: informant %1 debriefed: %2 enemy positions, task %3", _name, count _found, if (_raised isEqualTo []) then {"none"} else {_raised select 0}] call ALiVE_fnc_dump;
+                // Tablet Intel Log: where he was debriefed and how much he gave
+                ["add", [_askSide, _askFaction, "informant", _from, format ["Informant %1 debriefed", _name],
+                    format ["Marked %1 enemy positions within 3 km", count _found], "informant"]] call ALIVE_fnc_intelLog;
             };
             ALiVE_c2istar_fnc_interrogate = {
                 params ["_prisoner", "_caller"];
@@ -1622,6 +1627,8 @@ switch(_operation) do {
                 private _pSide = _prisoner getVariable ["ALiVE_prisonerSide", side group _prisoner];
                 private _sideText = str _pSide;
                 private _found = [];
+                // at a prison he is asked about the ground where he was taken; in the field, where he stands
+                private _from = if (_atPrison) then { _prisoner getVariable ["ALiVE_capturePos", getPosATL _prisoner] } else { getPosATL _prisoner };
                 // for each place in _found: where that group is heading ([] when it holds its ground), and its profile
                 // (Will501 on Discord, 20 Oct: a mark on a group that had moved on was empty when players got there)
                 private _dests = [];
@@ -1636,8 +1643,6 @@ switch(_operation) do {
                 } else {
                     _prisoner setVariable ["ALiVE_questioned", true, true];
                     _prisoner setVariable ["ALiVE_questionedAt", ["field", "prison"] select _atPrison, true];
-                    // at a prison he is asked about the ground where he was taken; in the field, where he stands
-                    private _from = if (_atPrison) then { _prisoner getVariable ["ALiVE_capturePos", getPosATL _prisoner] } else { getPosATL _prisoner };
                     // an insurgent recruiter who gave himself up always talks, and knows the ground further out; so
                     // does any prisoner questioned at a prison, and he gives up more. In the field a prisoner who lies
                     // always talks; the rest talk seven times in ten, as before.
@@ -1675,7 +1680,7 @@ switch(_operation) do {
                             _ids = [];
                             ["C2ISTAR: %1 lied under questioning", name _prisoner] call ALiVE_fnc_dump;
                         } else {
-                            [_from, _reach, _pSide] call ALIVE_fnc_OPCOMToggleInstallations;
+                            [_from, _reach, _pSide, if (isNull _caller) then {""} else {str side group _caller}, format ["prisoner %1", name _prisoner], if (isNull _caller) then {""} else {faction _caller}] call ALIVE_fnc_OPCOMToggleInstallations;
                             // what he gives up becomes known to the asker's AI Commander (ALIVE_fnc_taskKnownEnemy "report");
                             // a lie above doesn't
                             if (!isNull _caller) then { ["report", str side group _caller, _found] call ALIVE_fnc_taskKnownEnemy };
@@ -1684,7 +1689,7 @@ switch(_operation) do {
                             // answer's task goes after
                             private _ownHQ = _prisoner getVariable ["ALiVE_INS_recruiterHQ", objNull];
                             if (_recruiter && {!isNull _ownHQ} && {alive _ownHQ}) then {
-                                [getPosATL _ownHQ, 50, _pSide] call ALIVE_fnc_OPCOMToggleInstallations;
+                                [getPosATL _ownHQ, 50, _pSide, if (isNull _caller) then {""} else {str side group _caller}, format ["prisoner %1", name _prisoner], if (isNull _caller) then {""} else {faction _caller}] call ALIVE_fnc_OPCOMToggleInstallations;
                                 _found = [getPosATL _ownHQ] + _found;
                                 _dests = [[]] + _dests;
                                 _ids = [""] + _ids;
@@ -1702,6 +1707,16 @@ switch(_operation) do {
                             };
                         };
                     };
+                };
+                // Tablet Intel Log: where he was questioned and what came of it; a lie is logged as an answer like any other
+                if (!isNull _caller) then {
+                    ["add", [str side group _caller, faction _caller, "prisoner", _from,
+                        format ["Prisoner %1 questioned (%2)", name _prisoner, ["in the field", "at a prison"] select _atPrison],
+                        switch (_outcome) do {
+                            case "talked": { format ["Talked: marked %1 enemy positions", count _found] };
+                            case "asked": { "Already questioned" };
+                            default { "Refused to talk" };
+                        }, "prisoner"]] call ALIVE_fnc_intelLog;
                 };
                 private _key = format ["%1_%2", round time, floor random 100000];
                 ALiVE_c2istar_questionAnswer = [name _prisoner, _found, _pSide, _outcome, _dests, _key, _told];

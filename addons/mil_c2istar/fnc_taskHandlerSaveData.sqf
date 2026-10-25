@@ -56,6 +56,15 @@ if (!isNil "ALIVE_C2ISTAR_optOutGroups" && {(toLower (missionNamespace getVariab
     [GVAR(DATAHANDLER), "bulkSave", ["sys_tasks_optout", ALIVE_C2ISTAR_optOutGroups, (["_TASK_OPTOUT"] call ALiVE_fnc_storeKeys) select 0, _async]] call ALIVE_fnc_Data;
 };
 
+// The tablet's Intel Log, local saves only as above. Written once it holds a report.
+if (!isNil "ALiVE_c2istar_intelLog" && {count (ALiVE_c2istar_intelLog select 1) > 0} && {(toLower (missionNamespace getVariable ["ALiVE_sys_data_source", "pns"])) isEqualTo "pns"}) then {
+    if (isNil QGVAR(DATAHANDLER)) then {
+        GVAR(DATAHANDLER) = [nil, "create"] call ALIVE_fnc_Data;
+        [GVAR(DATAHANDLER),"storeType",true] call ALIVE_fnc_Data;
+    };
+    [GVAR(DATAHANDLER), "bulkSave", ["sys_intellog", ["state"] call ALIVE_fnc_intelLog, (["_INTEL"] call ALiVE_fnc_storeKeys) select 0, _async]] call ALIVE_fnc_Data;
+};
+
 // Taken and cleared before the export: a delete that lands after this sets it again.
 private _saveEmpty = [ALIVE_taskHandler, "saveEmptyStore", false] call ALIVE_fnc_hashGet;
 [ALIVE_taskHandler, "saveEmptyStore", false] call ALIVE_fnc_hashSet;

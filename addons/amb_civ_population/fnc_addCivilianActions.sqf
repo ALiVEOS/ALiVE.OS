@@ -256,7 +256,7 @@ _id = _object addAction [
 if (random 1 > 0.9) then {
     _text = localize "STR_ALIVE_CIV_INTERACT_ACTIONS_GATHERINTEL";
     _params = [];
-    _code = {_object = _this select 0; _caller = _this select 1; _params = _this select 3; openmap true; [getposATL _object, 2000] call ALiVE_fnc_OPCOMToggleInstallations; _object setvariable ["intelGathered",true]};
+    _code = {_object = _this select 0; _caller = _this select 1; _params = _this select 3; openmap true; [getposATL _object, 2000, "", str side group _caller, "a civilian", faction _caller] call ALiVE_fnc_OPCOMToggleInstallations; _object setvariable ["intelGathered",true]};
     _condition = "alive _target && {isnil {_target getvariable 'intelGathered'}}";
 
     _id = _object addAction [

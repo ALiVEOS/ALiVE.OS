@@ -309,6 +309,12 @@ switch(_operation) do {
 
                 };
 
+                case "INTEL_GET_LOG": {
+
+                    [_logic,"intelGetLog", _data] call MAINCLASS;
+
+                };
+
                 case "OPS_ADD_OBJECTIVE": {
 
                     // a marker is only ever linked by the server's own marker watch
@@ -2553,6 +2559,29 @@ switch(_operation) do {
         };
 
         _result = _count;
+
+    };
+
+    case "intelGetLog": {
+
+        // Tablet Intel Log (Eric on Discord, 25 Oct): the caller's side and faction and the Intel limit are
+        // the server's own, never the client's
+
+        if (_args isEqualType []) then {
+
+            _args params [["_playerID","",[""]]];
+
+            private _player = [_playerID] call ALiVE_fnc_getPlayerByUID;
+            if (isNull _player) exitWith {};
+
+            private _rows = [];
+            if (!isNil "ALIVE_fnc_intelLog" && {missionNamespace getVariable ["ALiVE_c2istar_intelLogEnabled", false]}) then {
+                _rows = ["list", [[_logic,"opsPlayerSideText",_player] call MAINCLASS, faction _player, [_logic,"intelLimit","SIDE"] call ALiVE_fnc_hashGet]] call ALIVE_fnc_intelLog;
+            };
+
+            ["INTEL_LOG", [_playerID, _rows]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToClient", _player];
+
+        };
 
     };
 

@@ -230,6 +230,12 @@ private _gracePeriod = 15;
                     } forEach (missionNamespace getVariable ["OPCOM_instances", []]);
                     if !(_ins isEqualTo civilian) then { _d setVariable ["ALiVE_prisonerSide", _ins, true] };
                     ["ALIVE-%1 IED: trigger man %2 detained by %3 at %4", time, name _d, name _by, mapGridPosition _d] call ALiVE_fnc_dump;
+                    // Tablet Intel Log (Eric on Discord, 25 Oct): where he was detained. Not the IED he was watching:
+                    // nothing on the map shows that, so neither does the log
+                    if (!isNil "ALIVE_fnc_intelLog") then {
+                        ["add", [str side group _by, faction _by, "triggerman", getPosATL _d, format ["Trigger man %1 detained", name _d],
+                            "Detained here. He was watching an IED nearby", "trigger man"]] call ALIVE_fnc_intelLog;
+                    };
                 }] remoteExecCall ["call", 2];
             },
             {}, [], 2, 10, true, false] remoteExec ["BIS_fnc_holdActionAdd", 0, _d];

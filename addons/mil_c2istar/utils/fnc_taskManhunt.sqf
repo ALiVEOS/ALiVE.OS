@@ -143,6 +143,11 @@ switch (_mode) do {
         private _fnc_radio = {
             [_taskSide, [objNull, _this, "side", _sideObj, false, false, false, true, _hq]] call ALIVE_fnc_radioBroadcastToSide;
         };
+        // Tablet Intel Log: each step of the hunt the side is told of, with the radio line as its detail
+        private _fnc_log = {
+            params ["_at", "_title", "_detail"];
+            ["add", [_taskSide, "", "manhunt", _at, _title, _detail, "manhunt"]] call ALIVE_fnc_intelLog;
+        };
         private _fnc_update = {
             params ["_pos", "_extra"];
             // the task taken down while this tick ran (a player cancelling it): nothing to update
@@ -215,6 +220,7 @@ switch (_mode) do {
             [_taskPlayers, _stageID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
             [_meet, format [localize "STR_ALIVE_C2ISTAR_MANHUNT_DESC_WINDOW", _name, _place, mapGridPosition _meet, _at, _to]] call _fnc_update;
             (format [localize "STR_ALIVE_C2ISTAR_MANHUNT_MSG_WINDOW", _name, _place, _at, _to]) call _fnc_radio;
+            [_meet, format ["%1 expected at %2", _name, _place], format [localize "STR_ALIVE_C2ISTAR_MANHUNT_MSG_WINDOW", _name, _place, _at, _to]] call _fnc_log;
             ["C2ISTAR - HVT manhunt %1: he is expected at %2 from %3 (in %4 s)", _rootID, mapGridPosition _meet, _at, round (_start - time)] call ALiVE_fnc_dump;
         };
 
@@ -238,6 +244,7 @@ switch (_mode) do {
                 call _fnc_recentre;
                 [[_params, "ManhuntCenter", [0,0,0]] call _fnc_get, format [localize "STR_ALIVE_C2ISTAR_MANHUNT_DESC_AREA", _r]] call _fnc_update;
                 (format [localize "STR_ALIVE_C2ISTAR_MANHUNT_MSG_CLUE", _name, _r]) call _fnc_radio;
+                [[_params, "ManhuntCenter", [0,0,0]] call _fnc_get, format ["%1: search area now %2 m", _name, _r], format [localize "STR_ALIVE_C2ISTAR_MANHUNT_MSG_CLUE", _name, _r]] call _fnc_log;
             };
             ["C2ISTAR - HVT manhunt %1: clue %2, search area %3 m", _rootID, _clues, _r] call ALiVE_fnc_dump;
         };
@@ -336,6 +343,7 @@ switch (_mode) do {
                 private _r = [_params, "ManhuntRadius", 1500] call _fnc_get;
                 [[_params, "ManhuntCenter", [0,0,0]] call _fnc_get, format [localize "STR_ALIVE_C2ISTAR_MANHUNT_DESC_AREA", _r]] call _fnc_update;
                 (format [localize "STR_ALIVE_C2ISTAR_MANHUNT_MSG_SLIPPED", _name, _place]) call _fnc_radio;
+                [[_params, "ManhuntCenter", [0,0,0]] call _fnc_get, format ["%1 slipped away", _name], format [localize "STR_ALIVE_C2ISTAR_MANHUNT_MSG_SLIPPED", _name, _place]] call _fnc_log;
                 ["C2ISTAR - HVT manhunt %1: missed at %2, he has moved to %3 with %4 clue(s) left", _rootID, _place, mapGridPosition _new, floor (_clues / 2)] call ALiVE_fnc_dump;
             };
         };

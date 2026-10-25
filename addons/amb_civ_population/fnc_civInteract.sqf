@@ -1527,7 +1527,7 @@ switch (_operation) do {
 			if (_deceptive) then {
 				[getPosATL _civ] call ALiVE_fnc_gatherIntelDeceptive;
 			} else {
-				[getPosATL _civ, 2000] call ALiVE_fnc_OPCOMToggleInstallations;
+				[getPosATL _civ, 2000, "", str side group player, "a civilian", faction player] call ALiVE_fnc_OPCOMToggleInstallations;
 			};
 			[localize "STR_ALIVE_CIV_POP", localize "STR_ALIVE_CIV_INTERACT_INTEL_REVEALED"] call ALIVE_fnc_sendHint;
 		};
