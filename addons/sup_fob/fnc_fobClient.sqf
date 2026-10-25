@@ -57,6 +57,78 @@ switch (_op) do {
         ALiVE_FOB_lastRadio = format ([localize _key] + _fmt);   // read by tests
         [player, ALiVE_FOB_lastRadio, "side", side group player, false, true, false, true, "HQ"] call ALIVE_fnc_radioBroadcast;
     };
+    // The server let this player into a FOB Arsenal: stock the box on this machine only, with the
+    // gear list and whatever the player already carries (so the arsenal strips nothing from them),
+    // and open it. The box is bare again as soon as it closes.
+    case "arsenalOpen": {
+        if (!hasInterface) exitWith {};
+        _args params [["_box", objNull, [objNull]], ["_list", [], [[]]]];
+        if (_list isNotEqualTo []) then { ALiVE_FOB_gearList = _list };
+        // nothing to stock it with: hand the visit straight back
+        if (isNull _box || {isNil "ALiVE_FOB_gearList"}) exitWith { ["arsenalClose", [getUnitLoadout player]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] };
+        ALiVE_FOB_gearList params ["_w", "_m", "_i", "_b"];
+        _w = +_w; _m = +_m; _i = +_i; _b = +_b;
+        {
+            if (_x isEqualType "" && {_x != ""}) then {
+                switch (true) do {
+                    case (isClass (configFile >> "CfgMagazines" >> _x)): { _m pushBackUnique _x };
+                    case (isClass (configFile >> "CfgVehicles" >> _x)): { _b pushBackUnique _x };
+                    case (isClass (configFile >> "CfgWeapons" >> _x) && {getNumber (configFile >> "CfgWeapons" >> _x >> "type") in [1, 2, 4, 4096]}): { _w pushBackUnique _x };
+                    case (isClass (configFile >> "CfgWeapons" >> _x) || {isClass (configFile >> "CfgGlasses" >> _x)}): { _i pushBackUnique _x };
+                };
+            };
+        } forEach (flatten getUnitLoadout player);
+        ALiVE_FOB_arsenalBox = _box;
+        // what the arsenal screens say when they close, set up once
+        if (isNil "ALiVE_FOB_arsenalEH") then {
+            ALiVE_FOB_arsenalEH = true;
+            [missionNamespace, "arsenalClosed", { ["arsenalClosed"] call ALiVE_fnc_fobClient }] call BIS_fnc_addScriptedEventHandler;
+            if (isClass (configFile >> "CfgPatches" >> "ace_arsenal")) then {
+                ["ace_arsenal_displayClosed", { ["arsenalClosed"] call ALiVE_fnc_fobClient }] call CBA_fnc_addEventHandler;
+            };
+        };
+        if (isClass (configFile >> "CfgPatches" >> "ace_arsenal")) then {
+            [_box, _w + _m + _i + _b, false] call ace_arsenal_fnc_initBox;
+            [_box, player] call ace_arsenal_fnc_openBox;
+        } else {
+            if (isNil "ALiVE_FOB_arsenalPreloaded") then { ALiVE_FOB_arsenalPreloaded = true; ["Preload"] call BIS_fnc_arsenal };
+            [_box, _w, false] call BIS_fnc_addVirtualWeaponCargo;
+            [_box, _m, false] call BIS_fnc_addVirtualMagazineCargo;
+            [_box, _i, false] call BIS_fnc_addVirtualItemCargo;
+            [_box, _b, false] call BIS_fnc_addVirtualBackpackCargo;
+            ["Open", [false, _box, player]] call BIS_fnc_arsenal;
+        };
+    };
+    // The server settled the visit first (the player moved, the FOB went, a long visit): shut
+    // the arsenal and bare the box without asking to be charged again
+    case "arsenalShut": {
+        if (!hasInterface) exitWith {};
+        ALiVE_FOB_arsenalSilent = true;
+        { if (!isNull _x) then { _x closeDisplay 2 } } forEach [uiNamespace getVariable ["ace_arsenal_display", displayNull], uiNamespace getVariable ["RscDisplayArsenal", displayNull]];
+        ["arsenalClosed"] call ALiVE_fnc_fobClient;
+        ALiVE_FOB_arsenalSilent = false;
+    };
+    // An arsenal screen closed: if it was a FOB Arsenal, bare the box and tell the server
+    case "arsenalClosed": {
+        private _box = missionNamespace getVariable ["ALiVE_FOB_arsenalBox", objNull];
+        if (isNull _box) exitWith {};
+        ALiVE_FOB_arsenalBox = objNull;
+        if (isClass (configFile >> "CfgPatches" >> "ace_arsenal")) then { [_box, false] call ace_arsenal_fnc_removeBox } else {
+            [_box, _box call BIS_fnc_getVirtualWeaponCargo, false] call BIS_fnc_removeVirtualWeaponCargo;
+            [_box, _box call BIS_fnc_getVirtualMagazineCargo, false] call BIS_fnc_removeVirtualMagazineCargo;
+            [_box, _box call BIS_fnc_getVirtualItemCargo, false] call BIS_fnc_removeVirtualItemCargo;
+            [_box, _box call BIS_fnc_getVirtualBackpackCargo, false] call BIS_fnc_removeVirtualBackpackCargo;
+        };
+        if !(missionNamespace getVariable ["ALiVE_FOB_arsenalSilent", false]) then {
+            ["arsenalClose", [getUnitLoadout player]] remoteExecCall ["ALiVE_fnc_fobRequest", 2];
+        };
+    };
+    // The FOB couldn't pay, or the player came away with something the arsenal doesn't offer:
+    // the kit they had when they opened it
+    case "arsenalRevert": {
+        _args params [["_unit", objNull, [objNull]], ["_loadout", [], [[]]]];
+        if (!isNull _unit && {local _unit} && {_loadout isNotEqualTo []}) then { _unit setUnitLoadout _loadout };
+    };
     case "notify": {
         if (!hasInterface) exitWith {};
         _args params [["_key", "", [""]], ["_fmt", [], [[]]]];

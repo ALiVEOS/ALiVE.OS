@@ -32,7 +32,7 @@ params ["_op", "_args"];
 
 // Only what a player may ask for. Everything else in ALiVE_fnc_fobOps (cleanup, flip, salvage,
 // spawning profiles, tagging, restoring) is the server's own and never reachable from here.
-if !(_op in ["deploy", "dismantle", "build", "recycle", "unload", "upgrade", "repair", "fieldHQ", "rename", "permissions"]) exitWith {
+if !(_op in ["deploy", "dismantle", "build", "recycle", "unload", "upgrade", "repair", "fieldHQ", "rename", "permissions", "arsenalOpen", "arsenalClose"]) exitWith {
     ["ALiVE Player FOBs - refused a request for %1 from machine %2: not something a player can ask for", _op, remoteExecutedOwner] call ALiVE_fnc_dumpR;
 };
 
@@ -50,11 +50,15 @@ if (isNull _caller) exitWith {
     ["ALiVE Player FOBs - refused a request (%1) from machine %2: not a player", _op, _owner] call ALiVE_fnc_dump;
 };
 
-// One request in flight per player, and no faster than one every 2 s
-if (isNil "ALiVE_FOB_inflight") then { ALiVE_FOB_inflight = createHashMap };
+// One request in flight per player, and no faster than one every 2 s; opening and closing the
+// FOB Arsenal on a limit of their own, every half second
 private _uid = getPlayerUID _caller;
-if (time - (ALiVE_FOB_inflight getOrDefault [_uid, -10]) < 2) exitWith {};
-ALiVE_FOB_inflight set [_uid, time];
+private _limit = ["ALiVE_FOB_inflight", "ALiVE_FOB_arsenalInflight"] select (_op in ["arsenalOpen", "arsenalClose"]);
+if (isNil _limit) then { missionNamespace setVariable [_limit, createHashMap] };
+private _seen = missionNamespace getVariable _limit;
+// (a close is never dropped: it does nothing without an open visit of the player's own)
+if (_op != "arsenalClose" && {time - (_seen getOrDefault [_uid, -10]) < ([2, 0.5] select (_limit == "ALiVE_FOB_arsenalInflight"))}) exitWith {};
+_seen set [_uid, time];
 
 // The server functions only accept a call that comes through here, which is how they tell it
 // from a direct remote call: this name is visible down the call chain and nowhere else.

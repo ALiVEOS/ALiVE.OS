@@ -1,6 +1,6 @@
 class CfgPatches {
     class ADDON {
-        units[] = {"ALiVE_FOB_Kit", "ALiVE_FOB_SupplyCrate"};
+        units[] = {"ALiVE_FOB_Kit", "ALiVE_FOB_SupplyCrate", "ALiVE_FOB_Arsenal"};
         weapons[] = {};
         requiredVersion = REQUIRED_VERSION;
         requiredAddons[] = {"ALIVE_main", "A3_Weapons_F_Ammoboxes", "ALIVE_fnc_analysis", "ALIVE_sys_presets"};

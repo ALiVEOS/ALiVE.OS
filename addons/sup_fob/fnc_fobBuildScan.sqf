@@ -13,7 +13,8 @@ Fortifications are the military walls, fences and structures the editor lists (s
 H-barriers, bunkers, towers, camo nets), a mod's own walls, fences and structures categories
 included, plus portable lights. Supply objects are the ones that
 rearm, refuel, repair or heal (ammo and fuel containers, repair depots, medical tents) and
-helipads (not a mod's copy of the invisible one). Static weapons are offered to their own side, crewed by it. Ruins, wrecks and anything
+helipads (not a mod's copy of the invisible one), and the FOB Arsenal when the Arsenal setting is on
+(60 supply, tier 2, kept with Build Only These set). Static weapons are offered to their own side, crewed by it. Ruins, wrecks and anything
 wider than 40 m are left out.
 
 A fortification's price grows with how tough it is and how big:
@@ -141,6 +142,26 @@ _blacklist append ["alive_fob_kit", "alive_fob_supplycrate"];
 {
     { private _p = _x splitString "= "; if (_p isNotEqualTo []) then { _blacklist pushBack toLower (_p select (count _p - 1)) } } forEach (([_logic, "attribute", [_x]] call ALiVE_fnc_FOB) splitString ",;");
 } forEach ["fob_kit_class", "fob_crate_class"];
+// the FOB Arsenal, only with the Arsenal setting on (scope 1 keeps it out of the main pass below)
+private _arsenal = [_logic, "attribute", ["fob_arsenal"]] call ALiVE_fnc_FOB;
+if !(_arsenal) then { _blacklist pushBack "alive_fob_arsenal" };
+// the same lists set the Arsenal's gear: a weapon, magazine, item, glasses or backpack class is the
+// Arsenal's, anything else the build menu's, and a list naming only one kind leaves the other alone
+// (with the Arsenal setting off nothing is split, so the build menu reads the lists as it always has)
+if (_arsenal) then {
+    private _isGear = {
+        params ["_c"];
+        private _v = configFile >> "CfgVehicles" >> _c;
+        // something that can be built stays the build menu's, whatever else shares its name
+        if (isClass _v && {getNumber (_v >> "isBackpack") != 1}) exitWith { false };
+        isClass _v || {isClass (configFile >> "CfgWeapons" >> _c)} || {isClass (configFile >> "CfgMagazines" >> _c)} || {isClass (configFile >> "CfgGlasses" >> _c)}
+    };
+    private _gearOnly = _only select { [_x] call _isGear };
+    private _gearAlso = _whitelist select { [_x] call _isGear };
+    _only = _only - _gearOnly;
+    _whitelist = _whitelist - _gearAlso;
+    ALiVE_FOB_gearOverrides = [+_blacklist, _gearOnly, _gearAlso, +_fixed];
+};
 
 // Sizes measured on earlier starts
 private _sizes = profileNamespace getVariable ["ALiVE_FOB_sizes", createHashMap];
@@ -172,6 +193,7 @@ private _price = {
     params ["_class", "_cfg", "_kind"];
     private _lc = toLower _class;
     if (_kind == "SUPPLY") exitWith {
+        if (_lc == "alive_fob_arsenal") exitWith { 60 };
         if ("helipad" in _lc) exitWith { 25 };
         if (getNumber (_cfg >> "attendant") > 0) exitWith { 35 };
         private _u = ((getNumber (_cfg >> "transportAmmo")) max 0 min 2000) / 2000
@@ -302,6 +324,8 @@ private _add = {
             if (_cost < 0) then { _cost = (round (([_class, _cfg, _kind] call _price) * _scale)) max 1 };
             // towers from tier 2
             if (_kind == "FORTIFICATION" && {"tower" in _lc || {"patrol" in _lc}}) then { _tier = 2 };
+            // and the Arsenal
+            if (_lc == "alive_fob_arsenal") then { _tier = 2 };
         };
     };
     if (_cost < 0) exitWith {};
@@ -343,6 +367,7 @@ private _add = {
         };
     };
 } forEach ("getNumber (_x >> 'scope') == 2" configClasses (configFile >> "CfgVehicles"));
+if (_arsenal && {isClass (configFile >> "CfgVehicles" >> "ALiVE_FOB_Arsenal")}) then { ["ALiVE_FOB_Arsenal", configFile >> "CfgVehicles" >> "ALiVE_FOB_Arsenal", "SUPPLY"] call _add };
 
 // Whitelisted classes the rules didn't pick, priced as fortifications
 {
@@ -378,6 +403,8 @@ if (_only isNotEqualTo []) then {
         };
     } forEach _only;
     private _keep = _only apply { toLower _x };
+    // the Arsenal is the setting's, not the list's: a list made before it was turned on keeps it
+    if (_arsenal) then { _keep pushBack "alive_fob_arsenal" };
     // a FOB type's extras still count (Jman, 25 Oct): one the list doesn't have is that type's own,
     // so Build Only These sets the plain FOB's menu and each type adds to it
     {

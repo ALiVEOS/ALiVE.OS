@@ -55,6 +55,9 @@ removeStatic - [vehicle profile id, crew profile id] -> the static weapon and it
 tag - [object, "KIT"/"CRATE"/"HQ", value] -> makes it a FOB kit, supply crate or Field HQ
 kitInit - [object] -> an ALiVE_FOB_Kit or ALiVE_FOB_SupplyCrate the server made becomes one
 cleanup - [fobID] -> removes a FOB and everything it made, no checks
+arsenalOpen - [box, haveList] -> true when the player may use that FOB Arsenal now
+arsenalClose - [loadout] -> true when the visit is being settled
+arsenalSettle - [uid, why, loadout] -> the visit paid for from the FOB's supply, or the kit put back
 restore - [] -> rebuilds every loaded FOB's headquarters and objectives; the number rebuilt
 spawnHub - [fobID] -> the headquarters building, made if missing
 
@@ -239,6 +242,10 @@ switch (_op) do {
         if (([_entry, "status", ""] call ALIVE_fnc_hashGet) == "damaged") exitWith { ["STR_ALIVE_FOB_REFUSED_DAMAGED"] call _tell };
         if !([_entry] call _mayManage) exitWith { ["STR_ALIVE_FOB_REFUSED_NOTALLOWED"] call _tell };
 
+        // anyone in this FOB's arsenal pays first, while it still has its supply
+        private _inArsenal = [];
+        { if ((_y select 1) == _id) then { _inArsenal pushBack _x } } forEach (missionNamespace getVariable ["ALiVE_FOB_arsenalSessions", createHashMap]);
+        { ["arsenalSettle", [_x, "fob"]] call ALiVE_fnc_fobOps } forEach _inArsenal;
         private _name = [_entry, "name", ""] call ALIVE_fnc_hashGet;
         // packed up, not lost: the kit comes back where the headquarters stood and, in FOB supply
         // mode, a crate with what was left in the FOB (in force pool mode the supply is the pool's)
@@ -269,6 +276,10 @@ switch (_op) do {
         _args params [["_id", "", [""]]];
         private _entry = [ALiVE_FOB_registry, _id] call ALIVE_fnc_hashGet;
         if (isNil "_entry") exitWith { _result = false };
+        // anyone in this FOB's arsenal pays first, while it still has its supply
+        private _inArsenal = [];
+        { if ((_y select 1) == _id) then { _inArsenal pushBack _x } } forEach (missionNamespace getVariable ["ALiVE_FOB_arsenalSessions", createHashMap]);
+        { ["arsenalSettle", [_x, "fob"]] call ALiVE_fnc_fobOps } forEach _inArsenal;
         ["unregister", [_id]] call ALiVE_fnc_fobObjectives;
         ["releaseGarrison", [_id]] call ALiVE_fnc_fobOps;
         [_entry, "status", "removed"] call ALIVE_fnc_hashSet;
@@ -594,6 +605,261 @@ switch (_op) do {
         _result = true;
     };
 
+    // The FOB Arsenal (Jman, 25 Oct): a player opens an arsenal built at their FOB, takes what
+    // they want, and the FOB's supply pays for it when they close it. The server keeps what they
+    // had on opening and charges only what they have more of; gear handed back earns nothing.
+    case "arsenalOpen": {
+        _result = false;
+        _args params [["_box", objNull, [objNull]], ["_haveList", false, [false]]];
+        if (isNull _caller || {!alive _caller} || {isNull _box}) exitWith {};
+        // an arsenal saved with the setting on and loaded with it off is a plain crate
+        if !([_logic, "attribute", ["fob_arsenal"]] call ALiVE_fnc_FOB) exitWith { ["STR_ALIVE_FOB_ARSENAL_OFF"] call _tell };
+        // the gear list is worked out after start-up
+        if (isNil "ALiVE_FOB_gearPrice") exitWith { ["STR_ALIVE_FOB_ARSENAL_LOADING"] call _tell };
+        if (isNil "ALiVE_FOB_arsenalSessions") then { ALiVE_FOB_arsenalSessions = createHashMap };
+        private _uid = getPlayerUID _caller;
+        // a visit still open from before (its close never arrived) is settled first
+        if (_uid in ALiVE_FOB_arsenalSessions) then { ["arsenalSettle", [_uid, "reopen"]] call ALiVE_fnc_fobOps };
+        // the box's FOB, found as recycle finds it
+        private _id = _box getVariable ["ALiVE_FOB_object", ""];
+        private _entry = [ALiVE_FOB_registry, _id] call ALIVE_fnc_hashGet;
+        if (isNil "_entry" || {!(_box isKindOf "ALiVE_FOB_Arsenal")} || {(([_entry, "objects", []] call ALIVE_fnc_hashGet) findIf { (_x param [0, objNull]) isEqualTo _box }) < 0}) exitWith { ["STR_ALIVE_FOB_REFUSED_NOTBUILT"] call _tell };
+        if (([_entry, "side", ""] call ALIVE_fnc_hashGet) != str (side group _caller)) exitWith { ["STR_ALIVE_FOB_REFUSED_NOTOURS"] call _tell };
+        if (([_entry, "status", ""] call ALIVE_fnc_hashGet) != "active") exitWith { ["STR_ALIVE_FOB_REFUSED_DAMAGED"] call _tell };
+        if (_caller distance _box > 8 || {vehicle _caller != _caller}) exitWith { ["STR_ALIVE_FOB_REFUSED_RANGE", [8]] call _tell };
+        private _loadout = getUnitLoadout _caller;
+        private _balance = floor (["balance", [_id]] call ALiVE_fnc_fobSupply);
+        // the game's own arsenal fills every part-used magazine as it opens (ACE's doesn't), and
+        // that is charged with the rest: say what it costs, and don't open if the FOB can't pay it
+        private _topUp = 0;
+        if !(isClass (configFile >> "CfgPatches" >> "ace_arsenal")) then {
+            private _part = 0;
+            {
+                {
+                    if (_x isEqualType [] && {count _x >= 2} && {(_x select 0) isEqualType ""} && {(_x select 1) isEqualType 0}) then {
+                        private _p = ALiVE_FOB_gearPrice getOrDefault [toLower (_x select 0), []];
+                        if (_p isNotEqualTo [] && {(_p select 2) > 0}) then {
+                            private _n = _x param [2, 1];
+                            private _per = _p select 2;
+                            // [mag, rounds] in a weapon, [mag, count, rounds] in a container
+                            private _short = if (count _x >= 3 && {(_x select 2) isEqualType 0}) then { ((_per - (_x select 2)) max 0) * (_x select 1) } else { (_per - (_x select 1)) max 0 };
+                            _part = _part + (_p select 0) * _short / _per;
+                        };
+                    };
+                } forEach _x;
+            } forEach ([(_loadout param [0, []]), (_loadout param [1, []]), (_loadout param [2, []])] + (((_loadout select [3, 3]) select { _x isEqualType [] && {count _x >= 2} }) apply { _x select 1 }));
+            _topUp = ceil ((round (_part * 1000)) / 1000);
+        };
+        if (_topUp > _balance) exitWith { ["STR_ALIVE_FOB_ARSENAL_REFUSED_TOPUP", [_topUp, _balance]] call _tell };
+        ALiVE_FOB_arsenalSessions set [_uid, [_caller, _id, _box, _loadout, getPosASL _caller, time]];
+        // one loop for every open arsenal: both arsenal screens hold the player still, so one who
+        // has moved, got in a vehicle or died has closed it, whatever their machine said
+        if (isNil "ALiVE_FOB_arsenalLoop" || {scriptDone ALiVE_FOB_arsenalLoop}) then {
+            ALiVE_FOB_arsenalLoop = [] spawn {
+                while { count ALiVE_FOB_arsenalSessions > 0 } do {
+                    sleep 1;
+                    private _done = [];
+                    {
+                        _y params ["_u", "", "", "", "_at", "_t"];
+                        if (isNull _u || {!alive _u} || {vehicle _u != _u} || {((getPosASL _u) distance _at) > 5}) then { _done pushBack [_x, "moved"] };
+                        if (time - _t > 1800) then { _done pushBack [_x, "timeout"] };
+                    } forEach ALiVE_FOB_arsenalSessions;
+                    { ["arsenalSettle", _x] call ALiVE_fnc_fobOps } forEach _done;
+                };
+            };
+        };
+        // the class list goes once to each machine, with its first open
+        if (isNil "ALiVE_FOB_arsenalListSent") then { ALiVE_FOB_arsenalListSent = createHashMap };
+        private _sent = _haveList && {ALiVE_FOB_arsenalListSent getOrDefault [_uid, -1] == owner _caller};
+        ALiVE_FOB_arsenalListSent set [_uid, owner _caller];
+        ["arsenalOpen", [_box, [ALiVE_FOB_gearClasses, []] select _sent]] remoteExecCall ["ALiVE_fnc_fobClient", _caller];
+        if (_topUp > 0) then {
+            ["STR_ALIVE_FOB_ARSENAL_OPEN_TOPUP", [[_entry, "name", ""] call ALIVE_fnc_hashGet, _balance, _topUp]] call _tell;
+        } else {
+            ["STR_ALIVE_FOB_ARSENAL_OPEN", [[_entry, "name", ""] call ALIVE_fnc_hashGet, _balance]] call _tell;
+        };
+        _result = true;
+    };
+
+    // The player closed the arsenal; their loadout as their machine saw it says when the
+    // server's own copy has caught up
+    case "arsenalClose": {
+        _args params [["_hint", [], [[]]]];
+        _result = false;
+        if (isNull _caller) exitWith {};
+        private _uid = getPlayerUID _caller;
+        private _s = (missionNamespace getVariable ["ALiVE_FOB_arsenalSessions", createHashMap]) getOrDefault [_uid, []];
+        if (_s isEqualTo []) exitWith {
+            ["ALiVE Player FOBs - FOB Arsenal: %1 closed an arsenal they hadn't opened", name _caller] call ALiVE_fnc_dump;
+        };
+        // a close from away from the box is no close: the loop settles them as moved
+        if (!isNull (_s select 2) && {_caller distance (_s select 2) > 10}) exitWith {};
+        _result = ["arsenalSettle", [_uid, "close", _hint]] call ALiVE_fnc_fobOps;
+    };
+
+    // Pay for an arsenal visit, or put the kit back: the server's own. "close" waits up to 3 s
+    // for the player's loadout to reach the server; the others (moved, died, left, FOB gone)
+    // settle at once.
+    case "arsenalSettle": {
+        _args params [["_uid", "", [""]], ["_why", "", [""]], ["_hint", [], [[]]]];
+        _result = false;
+        // taken and removed in one step, so a settle already under way can't be run twice
+        private _s = (missionNamespace getVariable ["ALiVE_FOB_arsenalSessions", createHashMap]) deleteAt _uid;
+        if (isNil "_s") exitWith {};
+        _s params ["_unit", "_id", "_box", "_before"];
+        // the arsenal shuts on the player's machine whenever the server settles first
+        if (_why != "close" && {!isNull _unit}) then { ["arsenalShut", []] remoteExecCall ["ALiVE_fnc_fobClient", _unit] };
+
+        // a loadout as [counts, rounds] by gear-list class: weapons by their base class, a TFAR
+        // radio by its parent, an ACRE radio without its _ID_n
+        private _flatten = {
+            params ["_lo"];
+            private _n = createHashMap; private _r = createHashMap;
+            private _key = {
+                params ["_c"];
+                private _lc = toLower _c;
+                private _cfg = configFile >> "CfgWeapons" >> _c;
+                if (_lc in ALiVE_FOB_gearPrice || {!isClass _cfg}) exitWith { _lc };
+                private _p = getText (_cfg >> "tf_parent");
+                if (_p != "") exitWith { toLower _p };
+                private _i = _lc find "_id_";
+                if (_i > 0) exitWith { _lc select [0, _i] };
+                toLower ([_c] call BIS_fnc_baseWeapon)
+            };
+            private _add = {
+                params ["_c", ["_k", 1], ["_rounds", -1]];
+                if !(_c isEqualType "" && {_c != ""}) exitWith {};
+                private _kc = [_c] call _key;
+                _n set [_kc, (_n getOrDefault [_kc, 0]) + _k];
+                if (_rounds >= 0) then { _r set [_kc, (_r getOrDefault [_kc, 0]) + _rounds] };
+            };
+            private _weapon = {
+                params ["_w", ["_k", 1]];
+                if !(_w isEqualType [] && {count _w > 0}) exitWith {};
+                [_w select 0, _k] call _add;
+                { if (_x isEqualType "") then { [_x, _k] call _add } } forEach [_w param [1, ""], _w param [2, ""], _w param [3, ""], _w param [6, ""]];
+                { if (_x isEqualType [] && {count _x >= 2}) then { [_x select 0, _k, (_x select 1) * _k] call _add } } forEach [_w param [4, []], _w param [5, []]];
+            };
+            { [_x] call _weapon } forEach [_lo param [0, []], _lo param [1, []], _lo param [2, []], _lo param [8, []]];
+            {
+                if (_x isEqualType [] && {count _x >= 2}) then {
+                    [_x select 0] call _add;
+                    {
+                        switch (true) do {
+                            case ((_x select 0) isEqualType []): { [_x select 0, _x param [1, 1]] call _weapon };
+                            case (count _x >= 3 && {(_x select 2) isEqualType 0}): { [_x select 0, _x select 1, (_x select 1) * (_x select 2)] call _add };
+                            case ((_x param [1, 1]) isEqualType 0): { [_x select 0, _x param [1, 1]] call _add };
+                            default { [_x select 0] call _add };
+                        };
+                    } forEach (_x select 1);
+                };
+            } forEach [_lo param [3, []], _lo param [4, []], _lo param [5, []]];
+            { [_x] call _add } forEach ([_lo param [6, ""], _lo param [7, ""]] + (_lo param [9, []]));
+            [_n, _r]
+        };
+
+        // what the visit costs: [supply, classes not on the gear list that the player has more of]
+        private _bill = {
+            params ["_b", "_a"];
+            _b params ["_nb", "_rb"];
+            _a params ["_na", "_ra"];
+            private _cost = 0; private _mags = 0; private _bad = [];
+            {
+                private _rose = _y - (_nb getOrDefault [_x, 0]);
+                private _p = ALiVE_FOB_gearPrice getOrDefault [_x, []];
+                // more of the player's own kit the gear list leaves out (the arsenal offers what they
+                // walked in with): a magazine 1 a full one, anything else by its mass
+                if (_p isEqualTo [] && {_rose > 0} && {(_nb getOrDefault [_x, 0]) > 0}) then {
+                    private _m = configFile >> "CfgMagazines" >> _x;
+                    _p = if (isClass _m) then { [1, "OWN", (getNumber (_m >> "count")) max 1] } else {
+                        private _c = configFile >> "CfgWeapons" >> _x;
+                        if !(isClass _c) then { _c = configFile >> "CfgVehicles" >> _x };
+                        if !(isClass _c) then { _c = configFile >> "CfgGlasses" >> _x };
+                        [((ceil (((getNumber (_c >> "ItemInfo" >> "mass")) max (getNumber (_c >> "WeaponSlotsInfo" >> "mass")) max (getNumber (_c >> "mass"))) / 10)) max 1) min 25, "OWN", 0]
+                    };
+                };
+                if (_p isEqualTo []) then { if (_rose > 0) then { _bad pushBack _x } } else {
+                    _p params ["_price", "", "_per"];
+                    // a magazine by the rounds taken, so topping one up costs only what went in
+                    if (_per > 0) then {
+                        _mags = _mags + _price * (((_ra getOrDefault [_x, 0]) - (_rb getOrDefault [_x, 0])) max 0) / _per;
+                    } else {
+                        _cost = _cost + _price * (_rose max 0);
+                    };
+                };
+            } forEach _na;
+            [_cost + ceil ((round (_mags * 1000)) / 1000), _bad]
+        };
+
+        private _settle = {
+            params ["_uid", "_why", "_unit", "_id", "_before", "_after"];
+            ([[_before] call _flatten, [_after] call _flatten] call _bill) params ["_cost", "_bad"];
+            private _who = if (isNull _unit) then { _uid } else { name _unit };
+            private _say = { params ["_k", ["_f", []]]; if (!isNull _unit && {isPlayer _unit}) then { ["notify", [_k, _f]] remoteExecCall ["ALiVE_fnc_fobClient", _unit] } };
+            private _back = {
+                if (!isNull _unit) then { ["arsenalRevert", [_unit, _before]] remoteExecCall ["ALiVE_fnc_fobClient", _unit] };
+            };
+            isNil {
+                switch (true) do {
+                    // gear the arsenal never offered can only have been put on by a script: the kit
+                    // the player opened with, unless they are gone already
+                    case (_bad isNotEqualTo []): {
+                        if (_why == "disconnect") then {
+                            // gone, so nothing to put back: the FOB pays for what was on the list
+                            private _pay = _cost min (floor (["balance", [_id]] call ALiVE_fnc_fobSupply));
+                            if (_pay > 0) then { ["debit", [_id, _pay, "arsenal " + _who]] call ALiVE_fnc_fobSupply };
+                        } else { call _back; ["STR_ALIVE_FOB_ARSENAL_REVERTED_LIST"] call _say };
+                        ["ALiVE Player FOBs - FOB Arsenal: %1 came away with gear the arsenal doesn't offer (%2) (%3)", _who, _bad select [0, 5], _why] call ALiVE_fnc_dumpR;
+                    };
+                    case (_cost <= 0): {
+                        if (_why == "close") then { ["STR_ALIVE_FOB_ARSENAL_FREE"] call _say };
+                    };
+                    case (["debit", [_id, _cost, "arsenal " + _who]] call ALiVE_fnc_fobSupply): {
+                        ["STR_ALIVE_FOB_ARSENAL_CHARGED", [_cost, floor (["balance", [_id]] call ALiVE_fnc_fobSupply)]] call _say;
+                        ["ALiVE Player FOBs - FOB Arsenal: %1 took %2 supply of gear at %3 (%4)", _who, _cost, _id, _why] call ALiVE_fnc_dump;
+                    };
+                    // more than the FOB has: it pays what it has. Putting the kit back instead would
+                    // let a player drop what they took before the put-back and keep both
+                    default {
+                        private _have = floor (["balance", [_id]] call ALiVE_fnc_fobSupply);
+                        if (_have > 0) then { ["debit", [_id, _have, "arsenal " + _who]] call ALiVE_fnc_fobSupply };
+                        ["STR_ALIVE_FOB_ARSENAL_SHORT", [_cost, _have]] call _say;
+                        ["ALiVE Player FOBs - FOB Arsenal: %1 took %2 supply of gear at %3 (%4), which had %5", _who, _cost, _id, _why, _have] call ALiVE_fnc_dump;
+                    };
+                };
+            };
+        };
+
+        if (isNull _unit) exitWith {
+            ["ALiVE Player FOBs - FOB Arsenal: %1's unit was gone before their visit could be settled", _uid] call ALiVE_fnc_dump;
+        };
+        if (_why != "close") exitWith {
+            [_uid, _why, _unit, _id, _before, getUnitLoadout _unit] call _settle;
+            _result = true;
+        };
+        // the loadout this machine has for a player catches up a moment after theirs: read it until
+        // it matches what they sent, three times at most, and settle on the dearest
+        [_uid, _unit, _id, _before, _hint, _settle, _flatten, _bill] spawn {
+            params ["_uid", "_unit", "_id", "_before", "_hint", "_settle", "_flatten", "_bill"];
+            private _fb = [_before] call _flatten;
+            private _best = getUnitLoadout _unit;
+            private _bestBill = [_fb, [_best] call _flatten] call _bill;
+            for "_i" from 1 to 3 do {
+                // the player's own copy ends the wait only once the server's has moved off the opening
+                // kit, so a close sent straight after opening can't settle on a stale read
+                if (isNull _unit || {_best isEqualTo _hint && {_best isNotEqualTo _before}}) exitWith {};
+                sleep 1;
+                if (isNull _unit) exitWith {};
+                private _now = getUnitLoadout _unit;
+                private _b = [_fb, [_now] call _flatten] call _bill;
+                if (count (_b select 1) > count (_bestBill select 1) || {(_b select 0) > (_bestBill select 0)}) then { _best = _now; _bestBill = _b };
+                if (_now isEqualTo _hint && {_now isNotEqualTo _before}) exitWith { _best = _now };
+            };
+            [_uid, "close", _unit, _id, _before, _best] call _settle;
+        };
+        _result = true;
+    };
+
     // A player repairs a destroyed headquarters: the FOB's supply pays, a quarter less with an
     // engineer of its side within 25 m; the wreck and its ruins are cleared and a new one put up
     case "repair": {
@@ -659,6 +925,10 @@ switch (_op) do {
         if (isNil "_entry" || {!(_newSide in ["WEST", "EAST", "GUER"])}) exitWith {};
         private _oldSide = [_entry, "side", ""] call ALIVE_fnc_hashGet;
         if (_oldSide == _newSide) exitWith {};
+        // anyone in this FOB's arsenal pays first, while it still has its supply
+        private _inArsenal = [];
+        { if ((_y select 1) == _id) then { _inArsenal pushBack _x } } forEach (missionNamespace getVariable ["ALiVE_FOB_arsenalSessions", createHashMap]);
+        { ["arsenalSettle", [_x, "fob"]] call ALiVE_fnc_fobOps } forEach _inArsenal;
         private _name = [_entry, "name", _id] call ALIVE_fnc_hashGet;
         isNil {
             ["unregister", [_id]] call ALiVE_fnc_fobObjectives;

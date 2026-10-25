@@ -138,6 +138,32 @@ class CfgVehicles {
                                 };
                         };
 
+                        class HDR_ARSENAL : ALiVE_ModuleSubTitle { property = "ALiVE_sup_fob_HDR_ARSENAL"; displayName = "ARSENAL"; };
+                        class fob_arsenal : Combo
+                        {
+                                property = "ALiVE_sup_fob_fob_arsenal";
+                                displayName = "$STR_ALIVE_FOB_ARSENAL";
+                                tooltip = "$STR_ALIVE_FOB_ARSENAL_COMMENT";
+                                defaultValue = """false""";
+                                class Values
+                                {
+                                    class Yes { name = "$STR_ALIVE_FOB_YES"; value = true; };
+                                    class No { name = "$STR_ALIVE_FOB_NO"; value = false; default = 1; };
+                                };
+                        };
+                        class fob_arsenal_explosives : Combo
+                        {
+                                property = "ALiVE_sup_fob_fob_arsenal_explosives";
+                                displayName = "$STR_ALIVE_FOB_ARSENAL_EXPLOSIVES";
+                                tooltip = "$STR_ALIVE_FOB_ARSENAL_EXPLOSIVES_COMMENT";
+                                defaultValue = """false""";
+                                class Values
+                                {
+                                    class Yes { name = "$STR_ALIVE_FOB_YES"; value = true; };
+                                    class No { name = "$STR_ALIVE_FOB_NO"; value = false; default = 1; };
+                                };
+                        };
+
                         class HDR_DEFENCE : ALiVE_ModuleSubTitle { property = "ALiVE_sup_fob_HDR_DEFENCE"; displayName = "ATTACK AND CAPTURE"; };
                         class fob_enemy_targeting : Combo
                         {
@@ -235,6 +261,21 @@ class CfgVehicles {
                 scopeCurator = 2;
                 displayName = "$STR_ALIVE_FOB_SUPPLYCRATE_NAME";
                 author = "ALiVE Mod Team";
+                class TransportMagazines {};
+                class TransportWeapons {};
+                class TransportItems {};
+                class TransportBackpacks {};
+        };
+        // The FOB Arsenal (Player FOBs' Arsenal setting): built at a FOB like any supply object, never
+        // placed in Eden or Zeus, and empty; its gear is offered only while a player has it open
+        class ALiVE_FOB_Arsenal : B_supplyCrate_F
+        {
+                scope = 1;
+                scopeCurator = 0;
+                displayName = "$STR_ALIVE_FOB_ARSENAL_NAME";
+                author = "ALiVE Mod Team";
+                // no inventory of its own: a box gear could be dropped into is a way round paying
+                maximumLoad = 0;
                 class TransportMagazines {};
                 class TransportWeapons {};
                 class TransportItems {};

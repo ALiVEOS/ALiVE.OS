@@ -81,6 +81,11 @@ class cfgFunctions {
                                 file = "\x\alive\addons\sup_fob\fnc_fobBuildScan.sqf";
                 ALIVE_RECOMPILE;
                         };
+                        class fobGearScan {
+                                description = "The FOB Arsenal's gear and its prices, worked out from config";
+                                file = "\x\alive\addons\sup_fob\fnc_fobGearScan.sqf";
+                ALIVE_RECOMPILE;
+                        };
                         class buildMenu {
                                 description = "Client: the FOB build window";
                                 file = "\x\alive\addons\sup_fob\fnc_buildMenu.sqf";

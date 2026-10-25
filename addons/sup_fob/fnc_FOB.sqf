@@ -113,7 +113,9 @@ private _settings = createHashMapFromArray [
     ["fob_tier3_cost", [3000, [0, 1000000]]],
     ["fob_respawn", [3, [0, 3]]],
     ["fob_garrison_cost", [500, [0, 1000000]]],
-    ["fob_garrison_groups", ["||", "text"]]
+    ["fob_garrison_groups", ["||", "text"]],
+    ["fob_arsenal", [false, "bool"]],
+    ["fob_arsenal_explosives", [false, "bool"]]
 ];
 
 switch (_operation) do {
@@ -207,6 +209,27 @@ switch (_operation) do {
                     _logic setVariable ["listenerID", [ALIVE_eventLog, "addListener", [_logic, ["LOGCOM_FOB_RESUPPLY_ARRIVED"]]] call ALIVE_fnc_eventLog];
                 };
                 _logic setVariable ["startupComplete", true];
+                // the FOB Arsenal's gear, only with the Arsenal setting on: up to a quarter of a minute
+                // with a large mod set, so after the FOBs are ready (an arsenal says so if opened sooner)
+                if ([_logic, "attribute", ["fob_arsenal"]] call ALIVE_fnc_FOB) then {
+                    [] spawn ALiVE_fnc_fobGearScan;
+                    // players' machines show the Open Arsenal action only with the setting on
+                    ALiVE_FOB_arsenalOn = true;
+                    publicVariable "ALiVE_FOB_arsenalOn";
+                    // a player who dies or leaves with the arsenal open pays there and then
+                    addMissionEventHandler ["EntityKilled", {
+                        params ["_u"];
+                        private _sessions = missionNamespace getVariable ["ALiVE_FOB_arsenalSessions", createHashMap];
+                        private _uid = "";
+                        { if ((_y select 0) isEqualTo _u) exitWith { _uid = _x } } forEach _sessions;
+                        if (_uid != "") then { ["arsenalSettle", [_uid, "killed"]] call ALiVE_fnc_fobOps };
+                    }];
+                    addMissionEventHandler ["HandleDisconnect", {
+                        params ["", "", "_uid"];
+                        if (_uid in (missionNamespace getVariable ["ALiVE_FOB_arsenalSessions", createHashMap])) then { ["arsenalSettle", [_uid, "disconnect"]] call ALiVE_fnc_fobOps };
+                        false
+                    }];
+                };
                 [_logic] call ALiVE_fnc_fobWatchdog;
 
                 ["ALiVE Player FOBs - ready after %1 s: %2 FOBs", round (diag_tickTime - _t0), count (ALiVE_FOB_registry select 1)] call ALiVE_fnc_dump;

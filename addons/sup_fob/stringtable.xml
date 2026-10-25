@@ -215,6 +215,21 @@
             <Key ID="STR_ALIVE_FOB_SUPPLYCRATE_NAME">
                 <English>ALiVE FOB Supply Crate</English>
             </Key>
+            <Key ID="STR_ALIVE_FOB_ARSENAL_NAME">
+                <English>Arsenal</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_ARSENAL">
+                <English>FOB Arsenal</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_ARSENAL_COMMENT">
+                <English>Yes: players can build an Arsenal at a FOB from tier 2, for 60 supply before Cost Scale. It offers the infantry gear of every loaded mod, and whatever a player takes is charged to the FOB's supply when they close it. Gear handed back earns nothing. Build Only These, Never Build and CfgALiVEFOBBuildables can limit the gear and set its prices, as they do for the build menu. No: no Arsenal.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_ARSENAL_EXPLOSIVES">
+                <English>Arsenal Grenades and Explosives</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_ARSENAL_EXPLOSIVES_COMMENT">
+                <English>Yes: the FOB Arsenal also offers grenades, mines and explosive charges. No: it leaves them out.</English>
+            </Key>
             <Key ID="STR_ALIVE_FOB_BUILDLIST">
                 <English>Build List</English>
             </Key>
@@ -392,6 +407,9 @@
             <Key ID="STR_ALIVE_FOB_ACTION_RECYCLE">
                 <English>Recycle (half its price back)</English>
             </Key>
+            <Key ID="STR_ALIVE_FOB_ACTION_ARSENAL">
+                <English>Open Arsenal (gear paid for on closing)</English>
+            </Key>
             <Key ID="STR_ALIVE_FOB_ACTION_PLACE">
                 <English>Place %1 (%2 supply)</English>
             </Key>
@@ -469,6 +487,33 @@
             </Key>
             <Key ID="STR_ALIVE_FOB_RECYCLED">
                 <English>%1 recycled: %2 supply back.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_ARSENAL_OPEN">
+                <English>Arsenal at %1: %2 supply available. What you take is paid for when you close it; gear handed back earns nothing.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_ARSENAL_LOADING">
+                <English>The arsenal is still working out its gear. Try again in a moment.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_ARSENAL_CHARGED">
+                <English>Arsenal: %1 supply for your gear. %2 left.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_ARSENAL_FREE">
+                <English>Arsenal: nothing taken, nothing paid.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_ARSENAL_SHORT">
+                <English>Arsenal: your gear came to %1 supply and the FOB only had %2. It's empty now.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_ARSENAL_OFF">
+                <English>The Arsenal is turned off in this mission.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_ARSENAL_REFUSED_TOPUP">
+                <English>Opening the arsenal fills your part-used magazines, which costs %1 supply. The FOB has %2.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_ARSENAL_OPEN_TOPUP">
+                <English>Arsenal at %1: %2 supply available. Opening it fills your part-used magazines for %3. What you take is paid for when you close it; gear handed back earns nothing.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_ARSENAL_REVERTED_LIST">
+                <English>Arsenal: you came away with gear this arsenal doesn't offer. Your kit was put back.</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_UI_STATICS">
                 <English>Statics</English>

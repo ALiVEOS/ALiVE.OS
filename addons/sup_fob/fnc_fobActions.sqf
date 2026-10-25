@@ -117,7 +117,9 @@ switch (_op) do {
             player addAction [(localize "STR_ALIVE_FOB_ACTION_BUILD") call ALiVE_fnc_actionTitle, { ["open", ALiVE_FOB_buildFob] call ALiVE_fnc_buildMenu }, nil, 1.45, false, true, "",
                 "ALiVE_FOB_buildFob isNotEqualTo [] && {vehicle _this == _this} && {!(missionNamespace getVariable ['ALiVE_FOB_placing', false])}"],
             player addAction [(localize "STR_ALIVE_FOB_ACTION_RECYCLE") call ALiVE_fnc_actionTitle, { ["recycle", [cursorObject]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] }, nil, 0.6, false, true, "",
-                "vehicle _this == _this && {_this distance cursorObject < 8} && {['canRecycle', cursorObject] call ALiVE_fnc_fobActions}"]
+                "vehicle _this == _this && {_this distance cursorObject < 8} && {['canRecycle', cursorObject] call ALiVE_fnc_fobActions}"],
+            player addAction [(localize "STR_ALIVE_FOB_ACTION_ARSENAL") call ALiVE_fnc_actionTitle, { ["arsenalOpen", [cursorObject, !isNil "ALiVE_FOB_gearList"]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] }, nil, 1.46, true, true, "",
+                "vehicle _this == _this && {_this distance cursorObject < 8} && {cursorObject isKindOf 'ALiVE_FOB_Arsenal'} && {missionNamespace getVariable ['ALiVE_FOB_arsenalOn', false]}"]
         ];
         player setVariable ["ALiVE_FOB_actionIDs", _ids];
 
@@ -165,6 +167,8 @@ switch (_op) do {
             private _cls = _x;
             { [_cls, 0, ["ACE_MainActions"], _x, true] call ace_interact_menu_fnc_addActionToClass } forEach [_recycle, _kit, _crate];
         } forEach ["Static", "Thing", "StaticWeapon", "LandVehicle", "Ship"];
+        // the FOB Arsenal
+        ["ALiVE_FOB_Arsenal", 0, ["ACE_MainActions"], ["ALiVE_FOB_OpenArsenal", "STR_ALIVE_FOB_ACTION_ARSENAL", { ["arsenalOpen", [_target, !isNil "ALiVE_FOB_gearList"]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] }, { missionNamespace getVariable ["ALiVE_FOB_arsenalOn", false] }] call _mk, true] call ace_interact_menu_fnc_addActionToClass;
     };
 
     // The headquarters is placed like a built item: a copy stands in front of the player, green
