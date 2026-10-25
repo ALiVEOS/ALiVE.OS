@@ -585,6 +585,8 @@ class FSM
                          "                    //transmit to OPCOM as objective was completed" \n
                          "                    [_objective,""opcom_state"",""idle""] call AliVE_fnc_HashSet;" \n
                          "                    [_objective,""opcom_orders"",""none""] call AliVE_fnc_HashSet;" \n
+                         "                    //Garrisoned once: with Follow The Players Up on, a place it held is still retaken if lost" \n
+                         "                    [_objective,""followHeld"",true] call AliVE_fnc_HashSet;" \n
                          "                    if (_debug) then {format [""ALiVE_OPCOM_%1"",[_objective,""objectiveID""] call AliVE_fnc_HashGet] setMarkerColor _colorside};" \n
                          "" \n
                          "                    _events pushBack (['OPCOM_RESERVE', [_side,_objective],""OPCOM""] call ALIVE_fnc_event);" \n

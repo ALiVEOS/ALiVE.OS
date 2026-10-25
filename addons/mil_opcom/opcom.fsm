@@ -417,6 +417,10 @@ class FSM
                          "            _res = [];" \n
                          "            // Pending attack requests already consume a simultaneous-objective slot." \n
                          "            _active = {((_x select 1) isEqualTo ""attack"")} count _unconfirmedOrders;" \n
+                         "            // Follow The Players Up (Occupation): no attack of its own. Only an objective players ordered" \n
+                         "            // taken or held, or one it had garrisoned and lost, is still attacked (kawi0756, 25 Oct)" \n
+                         "            private _followUp = ([_OPCOM_HANDLER,""controltype"",""""] call ALiVE_fnc_HashGet) == ""occupation"" && {[_OPCOM_HANDLER,""followPlayers"",false] call ALiVE_fnc_HashGet};" \n
+                         "            private _fnc_mayAttack = {!_followUp || {([_this,""playerIntent"",""""] call ALiVE_fnc_HashGet) != """"} || {[_this,""followHeld"",false] call ALiVE_fnc_HashGet}};" \n
                          "" \n
                          "            {" \n
                          "                private _candidateObjective = _x;" \n
@@ -429,8 +433,8 @@ class FSM
                          "                    _state = _x select 2 select 5;" \n
                          "" \n
                          "                    switch (_state) do {" \n
-                         "                        case (""unassigned"") : {if (_un isEqualTo []) then {_un pushBack _x}};" \n
-                         "                        case (""attack"") : {if (_at isEqualTo []) then {_at pushBack _x}};" \n
+                         "                        case (""unassigned"") : {if (_un isEqualTo [] && {_x call _fnc_mayAttack}) then {_un pushBack _x}};" \n
+                         "                        case (""attack"") : {if (_at isEqualTo [] && {_x call _fnc_mayAttack}) then {_at pushBack _x}};" \n
                          "                        case (""defend"") : {if (_def isEqualTo []) then {_def pushBack _x}};" \n
                          "                        case (""reserve"") : {if (_res isEqualTo []) then {_res pushBack _x}};" \n
                          "                    };" \n

@@ -148,6 +148,8 @@ switch (_operation) do {
         // Tasks Only Against Known Enemy (A. Ares on Discord, 21 Oct): those tasks aim only at what this commander has
         // found, so they don't give hidden positions away; off by default
         private _opTasksKnownOnly = (toLower format ["%1", _logic getVariable ["opTasksKnownOnly", "false"]]) in ["true", "1"];
+        // Follow The Players Up (Occupation): no attack of its own; it garrisons what players clear (kawi0756, 25 Oct)
+        private _followPlayers = (toLower format ["%1", _logic getVariable ["followPlayers", "false"]]) in ["true", "1"];
         // Start From Ship (Ando on Discord, 24 Oct): the starting force is aboard a static ship and lands by helicopter
         private _shipStart = (toLower format ["%1", _logic getVariable ["shipStart", "false"]]) in ["true", "1"];
         private _shipInf = floor ((parseNumber format ["%1", _logic getVariable ["shipInfantry", 6]]) max 0);
@@ -435,6 +437,7 @@ switch (_operation) do {
             ["opTasksMin", _opTasksMin],
             ["opTasksMax", _opTasksMax],
             ["opTasksKnownOnly", _opTasksKnownOnly],
+            ["followPlayers", _followPlayers],
             // the force aboard as [infantry, motorised, 0 x 6], in getForceStrength's order; checked after the handler is made
             ["shipStart", _shipStart],
             ["shipAboard", [_shipInf, _shipMot, 0, 0, 0, 0, 0, 0]],
@@ -5497,13 +5500,17 @@ switch (_operation) do {
             && {time >= (_module getVariable ["ALiVE_HVT_holdUntil", -1])}
             && {[_logic,"occPauseOpen"] call ALiVE_fnc_OPCOM};
 
+        // Follow The Players Up: an attack only where players ordered one or to retake a place it had garrisoned
+        private _followUp = [_logic, "followPlayers", false] call ALiVE_fnc_HashGet && {([_logic, "controltype", ""] call ALiVE_fnc_HashGet) == "occupation"};
+
         private _targetObjectiveIndex = _objectives findIf {
             private _objectiveID = [_x, "objectiveID"] call AliVE_fnc_HashGet;
             private _objectiveState = [_x, "opcom_state"] call AliVE_fnc_HashGet;
 
             !(_objectiveID in _OPCOM_SKIP_OBJECTIVES) &&
             _objectiveState == _state &&
-            { !(_objectiveState in ["attack","unassigned"]) || { _allSyncedTriggersActivated && {[_logic, "prepReady", _x] call ALiVE_fnc_OPCOM} } }
+            { !(_objectiveState in ["attack","unassigned"]) || { _allSyncedTriggersActivated && {[_logic, "prepReady", _x] call ALiVE_fnc_OPCOM} } } &&
+            { !_followUp || {!(_objectiveState in ["attack","unassigned"])} || {([_x, "playerIntent", ""] call ALiVE_fnc_HashGet) != ""} || {[_x, "followHeld", false] call ALiVE_fnc_HashGet} }
         };
 
         if (_targetObjectiveIndex != -1) then {

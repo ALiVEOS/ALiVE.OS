@@ -357,6 +357,20 @@ class CfgVehicles {
                                         class Yes { name = "Yes"; value = "true"; };
                                 };
                         };
+                        // An Occupation commander that leaves the attacking to the players and garrisons
+                        // what they clear (kawi0756 on Discord, 25 Oct)
+                        class followPlayers : Combo
+                        {
+                                property = "ALiVE_mil_opcom_followPlayers";
+                                displayName = "$STR_ALIVE_OPCOM_FOLLOW_PLAYERS";
+                                tooltip = "$STR_ALIVE_OPCOM_FOLLOW_PLAYERS_COMMENT";
+                                defaultValue = """false""";
+                                class Values
+                                {
+                                        class No  { name = "No";  value = "false"; };
+                                        class Yes { name = "Yes"; value = "true"; };
+                                };
+                        };
                         class HDR_SHIP : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_HDR_SHIP"; displayName = "START FROM SHIP"; };
                         class shipStart : Combo
                         {

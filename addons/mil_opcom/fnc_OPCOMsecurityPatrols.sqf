@@ -72,7 +72,14 @@ private _reserveIDs = [_handler, "ProfileIDsReserve", []] call ALiVE_fnc_HashGet
 private _objectives = ([_handler, "objectives", []] call ALiVE_fnc_HashGet) select { !([_x, "deleted", false] call ALiVE_fnc_HashGet) };
 private _objectivesByID = [_handler, "objectivesByID", createHashMap] call ALiVE_fnc_HashGet;
 
-private _hot = (_objectives select { ([_x, "opcom_state", ""] call ALiVE_fnc_HashGet) in ["attack", "attacking", "defend", "defending"] })
+// With Follow The Players Up on, an enemy place this commander will never attack isn't a fight to keep clear of:
+// only one players ordered, or one it is retaking, counts (kawi0756 on Discord, 25 Oct)
+private _followUp = [_handler, "followPlayers", false] call ALiVE_fnc_HashGet && {([_handler, "controltype", ""] call ALiVE_fnc_HashGet) == "occupation"};
+private _hot = (_objectives select {
+    private _st = [_x, "opcom_state", ""] call ALiVE_fnc_HashGet;
+    _st in ["attacking", "defend", "defending"]
+    || {_st == "attack" && {!_followUp || {([_x, "playerIntent", ""] call ALiVE_fnc_HashGet) != ""} || {[_x, "followHeld", false] call ALiVE_fnc_HashGet}}}
+})
     apply { [_x, "center", [0,0,0]] call ALiVE_fnc_HashGet };
 private _fnc_rear = {
     params ["_pos"];
