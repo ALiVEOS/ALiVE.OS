@@ -445,9 +445,9 @@ nothing changed and it said so.
         private _keptR = _held getVariable ["ALiVE_mil_ato_heldFuel", -1];
         diag_log format ["  info  after the truck's service the tank reads %1 and %2 is kept for the launch", fuel _held, _keptR];
         ["a truck's fuel on a held plane waits for its launch: the tank stays empty",
-            (fuel _held) == 0 && {_keptR isEqualType 0} && {abs (_keptR - 0.5) < 0.01}] call _fnc_check;
+            (fuel _held) == 0 && {_keptR isEqualType 0} && {abs (_keptR - 1) < 0.01}] call _fnc_check;
         [_e, "apply", ["releaseHold", _held, _heldHome, []]] call ALIVE_fnc_ATOEffect;
-        ["and it has the truck's fuel once let go", abs ((fuel _held) - 0.5) < 0.01] call _fnc_check;
+        ["and it has the truck's fuel once let go", abs ((fuel _held) - 1) < 0.01] call _fnc_check;
     };
     deleteVehicle _held;
 
