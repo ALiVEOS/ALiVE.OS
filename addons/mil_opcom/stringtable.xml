@@ -884,6 +884,12 @@
 <Key ID="STR_ALIVE_OPCOM_PREP_FIRE_COMMENT">
     <English>With a Military AI Commander Artillery module in the mission, the commander calls for fire on an objective's defenders before it sends its groups in to take it, once its scouts have found the enemy there, and the assault waits two and a half minutes for the guns first. The artillery module decides whether a battery answers, by its own settings: in range, with rounds, off its cooldown, enough enemy there (a lone group may not be fired on) and its friendly check. Its guns answer these calls ahead of the commander's other calls for fire while they are busy.</English>
 </Key>
+<Key ID="STR_ALIVE_OPCOM_FLANKING">
+    <English>Flanking Attacks</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_FLANKING_COMMENT">
+    <English>Invasion and occupation commanders only. When its scouts have found defenders on an objective and it sends three or more ground groups to take it, one group (the heaviest vehicles, else the infantry nearest the objective) stops about 300 m short and holds the defenders in place, while the others swing round to its side, about 90 degrees off, before all of them close in together. A group already standing off to the side goes straight in. Attacks with fewer groups, or where the scouts found nobody, go straight in as before. Aircraft aren't involved, and a group swinging round isn't sent to help elsewhere until the objective is taken.</English>
+</Key>
 <Key ID="STR_ALIVE_OPCOM_ARRIVE_TOGETHER">
     <English>Attacks Arrive Together</English>
 </Key>

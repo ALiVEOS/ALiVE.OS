@@ -215,6 +215,8 @@ switch (_operation) do {
         private _arriveTogether = (toLower format ["%1", _logic getvariable ["arriveTogether","false"]]) == "true";
         // Preparation Fire (#207): the commander's guns fire on an objective's defenders before it is assaulted.
         private _prepFire = (toLower format ["%1", _logic getvariable ["prepFire","false"]]) == "true";
+        // Flanking Attacks (A. Ares on Discord, 24 Oct): one group holds the defenders, the others go round the side.
+        private _flanking = (toLower format ["%1", _logic getvariable ["flanking","false"]]) == "true";
         private _hostilityPresenceMultiplier = (parseNumber format ["%1", _logic getvariable ["hostilityPresenceMultiplier",1]]) max 0;
         private _hostilityInstallationMultiplier = (parseNumber format ["%1", _logic getvariable ["hostilityInstallationMultiplier",1]]) max 0;
         private _hostilityInstallationInterval = ((parseNumber format ["%1", _logic getvariable ["hostilityInstallationInterval",10]]) max 0) * 60;
@@ -409,6 +411,7 @@ switch (_operation) do {
             ["securityPatrolReach", _securityPatrolReach],
             ["arriveTogether", _arriveTogether],
             ["prepFire", _prepFire],
+            ["flanking", _flanking],
             ["hostilityPresenceMultiplier", _hostilityPresenceMultiplier],
             ["hostilityInstallationMultiplier", _hostilityInstallationMultiplier],
             ["hostilityInstallationInterval", _hostilityInstallationInterval],
@@ -1849,6 +1852,72 @@ switch (_operation) do {
         private _profilesByID = [ALiVE_profileHandler,"profilesById"] call ALiVE_fnc_hashGet;
         private _profileWaypoints = [];
 
+        // Flanking Attacks (A. Ares on Discord, 24 Oct). A capture where recon found defenders, by three or more
+        // ground groups, is split. One group holds: the heaviest (armour, then mechanised, motorised, infantry),
+        // nearest the objective. It moves to a point 300 m short on its own line, waits there for the others and then
+        // closes in with them, so it never charges in alone. Its line is the main approach. Every other group within 60
+        // degrees of that line swings round on the side it stands on: a point 500 m out at 45 degrees off the line,
+        // then one 400 m out at 90 degrees, then the objective. One standing further round already flanks and goes
+        // straight in. A point that falls in water, or too near or far from the objective, drops that group's swing.
+        // Asymmetric commanders send single groups, so never flank. A group on its swing has more waypoints than a
+        // quick reaction call takes, so it isn't sent to help elsewhere until the capture is over.
+        private _supportID = "";
+        private _supportHold = [];
+        private _legs = createHashMap;
+        if ([_logic,"flanking",false] call ALiVE_fnc_HashGet && {_orders == "capture"} && {!isNil "_targetObjective"} && {_targetObjective isNotEqualTo []}
+            && {([_targetObjective,"danger",-1] call ALiVE_fnc_HashGet) > 0}
+            && {([_logic,"controltype",""] call ALiVE_fnc_HashGet) != "asymmetric"}) then {
+            private _air = [_logic,"air",[]] call ALiVE_fnc_HashGet;
+            private _ground = (_orderBatch apply { _x select 1 }) select { !(_x in _air) && {!isNil {_profilesByID get _x}} };
+            if (count _ground < 3) exitWith {};
+            private _center = [_targetObjective,"center",[0,0,0]] call ALiVE_fnc_HashGet;
+            private _posOf = { [_profilesByID get _this,"position",_center] call ALiVE_fnc_HashGet };
+            {
+                private _pool = _ground arrayIntersect ([_logic,_x,[]] call ALiVE_fnc_HashGet);
+                if (_pool isNotEqualTo []) exitWith {
+                    _pool = [_pool, [], { (_x call _posOf) distance2D _center }, "ASCEND"] call BIS_fnc_sortBy;
+                    _supportID = _pool select 0;
+                };
+            } forEach ["armored","mechanized","motorized","infantry"];
+            if (_supportID == "") then { _supportID = _ground select 0 };
+            private _supportPos = _supportID call _posOf;
+            private _approach = _center getDir _supportPos;
+            _supportHold = if ((_supportPos distance2D _center) <= 300) then { +_supportPos } else { _center getPos [300, _approach] };
+            if (surfaceIsWater _supportHold) then { _supportHold = +_supportPos };
+            private _fnc_point = {
+                params ["_dist","_dir"];
+                private _p = _center getPos [_dist, _dir];
+                if (surfaceIsWater _p) then { _p = [_p, 0, 150, 5, 0, 0.5, 0, [], [_p, _p]] call BIS_fnc_findSafePos };
+                if (surfaceIsWater _p || {(_p distance2D _center) < 200} || {(_p distance2D _center) > 600}) then { [] } else { [_p select 0, _p select 1, 0] }
+            };
+            private _left = 0;
+            private _right = 0;
+            {
+                if (_x != _supportID) then {
+                    private _off = (((_center getDir (_x call _posOf)) - _approach) + 540) mod 360 - 180;
+                    if (abs _off <= 60) then {
+                        private _side = if (_off < 0 || {_off == 0 && {random 1 < 0.5}}) then { -1 } else { 1 };
+                        private _arc = [500, _approach + 45 * _side] call _fnc_point;
+                        private _flank = [400, _approach + 90 * _side] call _fnc_point;
+                        if (_arc isNotEqualTo [] && {_flank isNotEqualTo []}) then {
+                            _legs set [_x, [_arc, _flank]];
+                            if (_side < 0) then { _left = _left + 1 } else { _right = _right + 1 };
+                        };
+                    };
+                };
+            } forEach _ground;
+            ["OPCOM %1 - flanking attack on objective %2: %3 holds %4 m out, %5 swing left, %6 right, %7 straight in", [_logic,"side",""] call ALiVE_fnc_HashGet,
+                _objectiveID, _supportID, round (_supportHold distance2D _center), _left, _right, count _ground - 1 - _left - _right] call ALiVE_fnc_dump;
+        };
+        // the length of a group's way in: its own position, its swing points, the objective
+        private _fnc_pathLength = {
+            params ["_from","_profileID","_to"];
+            private _pts = [_from] + (_legs getOrDefault [_profileID, []]) + [_to];
+            private _len = 0;
+            for "_i" from 1 to (count _pts - 1) do { _len = _len + ((_pts select (_i - 1)) distance2D (_pts select _i)) };
+            _len
+        };
+
         // Attacks Arrive Together (#207). The groups of an attack set off at once at their own speed, so the
         // armour reached the objective minutes before the infantry. Each ground group's time to its point is
         // estimated from the straight distance and its normal speed (a vehicle's by 1.3, for the roads it keeps
@@ -1864,9 +1933,10 @@ switch (_operation) do {
             {
                 _x params ["_pos","_profileID"];
                 private _profile = _profilesByID get _profileID;
-                if (!isNil "_profile" && {!(_profileID in _air)}) then {
+                // the group that holds waits for the others anyway (Flanking Attacks)
+                if (!isNil "_profile" && {!(_profileID in _air)} && {_profileID != _supportID}) then {
                     private _speed = (([_profile,"speedPerSecond",[1,1,1]] call ALiVE_fnc_HashGet) param [1, 1]) max 0.5;
-                    private _eta = (([_profile,"position",_pos] call ALiVE_fnc_HashGet) distance2D _pos) / _speed;
+                    private _eta = ([[_profile,"position",_pos] call ALiVE_fnc_HashGet, _profileID, _pos] call _fnc_pathLength) / _speed;
                     if !(_profileID in _foot) then { _eta = _eta * 1.3 };
                     _etas pushBack [_profileID, _eta];
                 };
@@ -1917,6 +1987,24 @@ switch (_operation) do {
         private _airIDs = [_logic,"air",[]] call ALiVE_fnc_HashGet;
         private _issuedAt = time;
 
+        // Flanking Attacks: the holding group goes in once the last group swinging round should be at its side
+        private _supportRelease = 0;
+        if (_supportID != "") then {
+            private _foot = [_logic,"infantry",[]] call ALiVE_fnc_HashGet;
+            private _center = [_targetObjective,"center",[0,0,0]] call ALiVE_fnc_HashGet;
+            {
+                private _profile = _profilesByID get _x;
+                private _speed = (([_profile,"speedPerSecond",[1,1,1]] call ALiVE_fnc_HashGet) param [1, 1]) max 0.5;
+                // to its flank point: the last leg in is about as long as the holding group's own
+                private _pts = [[_profile,"position",_center] call ALiVE_fnc_HashGet] + (_legs get _x);
+                private _len = 0;
+                for "_i" from 1 to (count _pts - 1) do { _len = _len + ((_pts select (_i - 1)) distance2D (_pts select _i)) };
+                private _eta = (_len / _speed) * ([1.3, 1] select (_x in _foot));
+                _supportRelease = _supportRelease max ((_delays getOrDefault [_x, 0]) + _eta);
+            } forEach (keys _legs);
+            _supportRelease = (_supportRelease + _prepHold) min 1200;
+        };
+
         {
             _x params ["_pos","_profileID"];
             private _profile = _profilesByID get _profileID;
@@ -1945,6 +2033,19 @@ switch (_operation) do {
                     private _waitPoint = [_here,0,"MOVE","NORMAL",0,[],"NO CHANGE","NO CHANGE","AWARE"] call ALIVE_fnc_createProfileWaypoint;
                     [_waitPoint,"statements",[format ["time > %1 || {time < %2}", _issuedAt + _wait, _issuedAt], ""]] call ALiVE_fnc_hashSet;
                     [_profile,"addWaypoint",_waitPoint] call ALIVE_fnc_profileEntity;
+                };
+                // Flanking Attacks: the swing round the side, or the holding group's stop short of the objective and its
+                // wait there for the others (the same wait as above)
+                {
+                    [_profile,"addWaypoint",[_x,0,"MOVE","NORMAL",30,[],"NO CHANGE","NO CHANGE","AWARE"] call ALIVE_fnc_createProfileWaypoint] call ALIVE_fnc_profileEntity;
+                } forEach (_legs getOrDefault [_profileID, []]);
+                if (_profileID == _supportID) then {
+                    [_profile,"addWaypoint",[_supportHold,0,"MOVE","NORMAL",30,[],"NO CHANGE","NO CHANGE","AWARE"] call ALIVE_fnc_createProfileWaypoint] call ALIVE_fnc_profileEntity;
+                    if (_supportRelease > 0) then {
+                        private _holdPoint = [_supportHold,0,"MOVE","NORMAL",0,[],"NO CHANGE","NO CHANGE","AWARE"] call ALIVE_fnc_createProfileWaypoint;
+                        [_holdPoint,"statements",[format ["time > %1 || {time < %2}", _issuedAt + _supportRelease, _issuedAt], ""]] call ALiVE_fnc_hashSet;
+                        [_profile,"addWaypoint",_holdPoint] call ALIVE_fnc_profileEntity;
+                    };
                 };
                 [_profile,"addWaypoint",_profileWaypoint] call ALIVE_fnc_profileEntity;
                 _pendingOrders pushBack [_pos,_profileID,_objectiveID,_issuedAt,_orderID];

@@ -276,6 +276,19 @@ class CfgVehicles {
                                         class Yes { name = "Yes"; value = "true"; };
                                 };
                         };
+                        // A. Ares on Discord, 24 Oct: one group holds the defenders, the others go round the side
+                        class flanking : Combo
+                        {
+                                property = "ALiVE_mil_opcom_flanking";
+                                displayName = "$STR_ALIVE_OPCOM_FLANKING";
+                                tooltip = "$STR_ALIVE_OPCOM_FLANKING_COMMENT";
+                                defaultValue = """false""";
+                                class Values
+                                {
+                                        class No  { name = "No";  value = "false"; };
+                                        class Yes { name = "Yes"; value = "true"; };
+                                };
+                        };
                         class prepTasks : Combo
                         {
                                 property = "ALiVE_mil_opcom_prepTasks";
