@@ -1154,4 +1154,43 @@ class Cfg3rdPartyIEDs {
         stompRadius       = 0;
     };
 
+    // IEDD Notebook (workshop mod, needs CBA and ACE). IEDD runs its own IEDs
+    // from start to finish: a script-made IEDD IED wires itself within a
+    // fraction of a second, goes off when a player walks within 10-15 m (or
+    // drives past faster than 8 km/h), and is defused by cutting its wires in
+    // order with the notebook. So ALiVE only places them (passive mode): no
+    // ALiVE arming, charge or Disarm action, which would fight IEDD's own.
+    //
+    // IEDD swaps some of its IEDs for harmless look-alike decoys on purpose
+    // (its "fake" CBA setting). A defused one stays where it is with
+    // iedd_ied_bomb false; removeIED drops it from the store so it is not
+    // brought back armed on the next visit.
+    //
+    //   roadIEDClasses  - barrels, fuel canister and cinder block (roadside)
+    //   urbanIEDClasses - bucket, plastic canister and cardboard box
+    // Training variants left out (they make a harmless bang).
+    class IEDD_Notebook {
+        cfgPatchesName = "iedd_ied";
+        displayName    = "IEDD Notebook";
+        mode           = "passive";
+        roadIEDClasses[] = {
+            "iedd_ied_Barrel",
+            "iedd_ied_Barrel_Grey",
+            "iedd_ied_Metal",
+            "iedd_ied_Metal_English",
+            "iedd_ied_CanisterFuel",
+            "iedd_ied_Cinder"
+        };
+        urbanIEDClasses[] = {
+            "iedd_ied_Bucket",
+            "iedd_ied_CanisterPlastic",
+            "iedd_ied_Cardboard"
+        };
+        clutterClasses[]  = {};   // ALiVE clutter defaults
+        detonator[]       = {};
+        placementZ        = 0;    // visible objects, sit on the ground
+        chargeOffsetZ     = 0;
+        stompRadius       = 0;
+    };
+
 };

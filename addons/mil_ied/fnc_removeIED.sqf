@@ -36,19 +36,21 @@ _removeIED = {
 
     // If no object found at exact position, remove from store and skip
     if (count _IEDObjArr == 0) then {
-        [_IEDs, _key] call ALiVE_fnc_hashRem;
-        [[GVAR(STORE), "IEDs"] call ALiVE_fnc_hashGet, _town, _IEDs] call ALiVE_fnc_hashSet;
+        _forget pushBack _key;
     } else {
 
     _IEDObj = _IEDObjArr select 0;
 
+    // An IEDD Notebook IED that players defused stays in place with iedd_ied_bomb false: forget
+    // it too, or the next visit brings it back armed. Every other IED leaves that variable unset.
+    private _defused = !((_IEDObj getVariable ["iedd_ied_bomb", true]) isEqualTo true);
+
     // Assuming 3rd party IED mods are using mines
-    if (isNil "_IEDObj" || {(!(mineActive _IEDObj) && (_thirdParty))}) then {
+    if (isNil "_IEDObj" || {_defused} || {(!(mineActive _IEDObj) && (_thirdParty))}) then {
         //["IED NOT FOUND at %1 for %2", _IEDpos, _IEDskin] call ALiVE_fnc_dump;
 
         // Remove the IED from the store
-        [_IEDs, _key] call ALiVE_fnc_hashRem;
-        [[GVAR(STORE), "IEDs"] call ALiVE_fnc_hashGet, _town, _IEDs] call ALiVE_fnc_hashSet;
+        _forget pushBack _key;
     };
 
     if (ADDON getVariable "debug") then {
@@ -80,7 +82,14 @@ _removeIED = {
 
 };
 
+// Keys are forgotten after the walk, not during it: taking one out mid-walk shifted the rest, so the
+// next IED was skipped, left standing, and placed a second time on the next visit.
+private _forget = [];
 [_IEDs, _removeIED] call CBA_fnc_hashEachPair;
+if (_forget isNotEqualTo []) then {
+    { [_IEDs, _x] call ALiVE_fnc_hashRem } forEach _forget;
+    [[GVAR(STORE), "IEDs"] call ALiVE_fnc_hashGet, _town, _IEDs] call ALiVE_fnc_hashSet;
+};
 
 if ([ADDON, "debug"] call MAINCLASS) then {
     ["Removed IEDs at %1 (%2)", _town, _position ] call ALIVE_fnc_dump;
