@@ -2203,6 +2203,14 @@ ALiVE_fnc_INS_floorAt = {
     [_at select 0, _at select 1, ((_down select 0) select 0) select 2]
 };
 
+// Stands an object on a surface: its lowest point at _at (ASL), wherever its model's origin is.
+ALiVE_fnc_INS_standOn = {
+    params ["_o", "_at"];
+    _o setPosASL _at;
+    private _low = (_o modelToWorldWorld [0, 0, ((boundingBoxReal _o) select 0) select 2]) select 2;
+    _o setPosASL [_at select 0, _at select 1, (_at select 2) + ((_at select 2) - _low)];
+};
+
 // Whether one piece of furniture fits on a floor: its footprint (its collision box, measured once per
 // class, with 10 cm to spare) centred at _centre (ASL) turned to _dir is checked at every corner for
 // floor under it at the floor's height and a roof over it, nothing between _from (ASL, the spot it's
@@ -2303,9 +2311,7 @@ ALiVE_fnc_INS_spawnInterior = {
             };
             if (isNull _o) then { continue };
             // its lowest point on that surface
-            _o setPosASL [_at select 0, _at select 1, _z];
-            private _low = (_o modelToWorldWorld [0, 0, ((boundingBoxReal _o) select 0) select 2]) select 2;
-            _o setPosASL [_at select 0, _at select 1, _z + (_z - _low)];
+            [_o, [_at select 0, _at select 1, _z]] call ALiVE_fnc_INS_standOn;
             if (!_on) then { _furniture pushBack _o; [_o] call ALiVE_fnc_INS_protectInstallationActionObject };
             _all pushBack _o;
         };
@@ -2431,12 +2437,15 @@ ALiVE_fnc_spawnFurniture = {
         _pos = _x;
 
         if ({(_pos select 2) - (_x select 2) < 0.5} count _positions > 1) then {
+            // the floor under the spot, measured before anything stands on it: a building position sits
+            // up to 0.4 m above it on Tanoa, and the furniture went in at that height (#1097)
+            private _floor = [_pos] call ALiVE_fnc_INS_floorAt;
             private _fits = { params ["_cls", "_p"]; private _f = [_p] call ALiVE_fnc_INS_floorAt; [_cls, _f, getDir _building, _f] call ALiVE_fnc_INS_pieceFits };
             private _fCls = selectRandom _furnitures;
             if (random 1 < 0.3 && {[_fCls, _pos] call _fits}) then {
                 _furniture = createVehicle [_fCls, _pos, [], 0, "CAN_COLLIDE"];
-                _furniture setposATL _pos;
                 _furniture setdir getdir _building;
+                [_furniture, _floor] call ALiVE_fnc_INS_standOn;
 
                 // Keep action anchors stable. Bombs are not affected and still exploding.
                 // Once the building is destroyed or site is disabled, the furniture gets deleted.
@@ -2478,6 +2487,7 @@ ALiVE_fnc_spawnFurniture = {
                 if (_add && {random 1 < 0.5} && {[_fCls, _pos] call _fits}) then {
                     _furniture = createVehicle [_fCls, _pos, [], 0, "CAN_COLLIDE"];
                     _furniture setdir getdir _building;
+                    [_furniture, _floor] call ALiVE_fnc_INS_standOn;
                     [_furniture] call ALiVE_fnc_INS_protectInstallationActionObject;
 
                     _object = createVehicle [(selectRandom _objects), _pos, [], 0, "CAN_COLLIDE"];
@@ -2489,7 +2499,9 @@ ALiVE_fnc_spawnFurniture = {
                     private _bCls = selectRandom _boxes;
                     if (_ammo && {random 1 < 0.5} && {[_bCls, _pos] call _fits}) then {
                         _box = createVehicle [_bCls, _pos, [], 0, "CAN_COLLIDE"];
-                        _box setdir (_building getDir _box);
+                        // turned the way its fit was checked, and on the floor
+                        _box setdir getdir _building;
+                        [_box, _floor] call ALiVE_fnc_INS_standOn;
                         [_box] call ALiVE_fnc_INS_protectInstallationActionObject;
 
                         _created pushback _box;
@@ -2509,9 +2521,10 @@ ALiVE_fnc_spawnFurniture = {
             _anchorPos = (_positions select { [_anchorCls, [_x] call ALiVE_fnc_INS_floorAt, getDir _building, [_x] call ALiVE_fnc_INS_floorAt] call ALiVE_fnc_INS_pieceFits }) param [0, []];
         };
         if (_anchorPos isNotEqualTo []) then {
+            private _floor = [_anchorPos] call ALiVE_fnc_INS_floorAt;
             _furniture = createVehicle [_anchorCls, _anchorPos, [], 0, "CAN_COLLIDE"];
-            _furniture setposATL _anchorPos;
             _furniture setdir getdir _building;
+            [_furniture, _floor] call ALiVE_fnc_INS_standOn;
             [_furniture] call ALiVE_fnc_INS_protectInstallationActionObject;
             _created pushback _furniture;
         };
