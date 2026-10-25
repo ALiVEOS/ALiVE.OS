@@ -295,21 +295,21 @@ switch(_operation) do {
         // loaded: a plane the ATO crewed on its stand went from AWARE and YELLOW
         // to CARELESS and BLUE, weapons held, within six seconds, and it takes
         // an aircraft only the first time it is crewed, so that is the crew the
-        // first sortie flies with. The mod's own way to be left alone is its
-        // daoIgnore list, read before anything else it does to an aircraft, and
-        // a daoExclude mark it also reads: the hull goes on the list before its
-        // crew exists, so there is no window, and the group as soon as there is
-        // one. Put on the list that way, the same plane stayed AWARE and YELLOW.
+        // first sortie flies with. The mod looks at each crewed vehicle once and
+        // marks it daoRegistered, so the hull is marked that way before its crew
+        // exists and the mod never takes it: the same plane stayed AWARE and
+        // YELLOW. daoExclude on the hull and the group keeps it off the mod's
+        // tablet. Nothing goes on the mod's daoIgnore list: its tablet runs
+        // "isKindOf" over that list, which only takes class names, so an aircraft
+        // or group there threw "Type Object, expected Array,String" and the
+        // tablet opened with no aircraft on it (Eric on Discord, 25 Oct).
         // Nothing happens without the mod.
         private _fnc_keepOffAirOps = {
             params ["_o", ["_g", grpNull, [grpNull]]];
-            if (isNil "daoIgnore" || {!(daoIgnore isEqualType [])}) exitWith { false };
-            daoIgnore pushBackUnique _o;
+            if (isNil "daoIgnore") exitWith { false };
+            _o setVariable ["daoRegistered", true, true];
             _o setVariable ["daoExclude", true, true];
-            if (!isNull _g) then {
-                daoIgnore pushBackUnique _g;
-                _g setVariable ["daoExclude", true, true];
-            };
+            if (!isNull _g) then { _g setVariable ["daoExclude", true, true] };
             true
         };
 

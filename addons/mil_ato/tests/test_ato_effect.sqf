@@ -299,16 +299,18 @@ nothing changed and it said so.
 
     // --- kept off another air commander -----------------------------------------
     // Drongo's Air Operations takes every crewed aircraft it sees unless the hull
-    // or its group is on its daoIgnore list. That list is faked here so the rig
-    // can check it without the mod; without the mod nothing may be made.
+    // is already marked daoRegistered. Its daoIgnore list (the mod's sign that it
+    // is loaded) is faked here so the rig can check it without the mod; nothing
+    // may go on that list, as its tablet breaks on anything but class names.
     private _hadList = !isNil "daoIgnore";
     if (!_hadList) then { daoIgnore = [] };
     private _keptOff = createVehicle ["B_Heli_Transport_01_F", _spot getPos [90, 0], [], 0, "CAN_COLLIDE"];
     sleep 1;
     [_e, "apply", ["mintCrew", _keptOff, _home, []]] call ALIVE_fnc_ATOEffect;
     sleep 1;
-    ["a crew the ATO makes goes on Drongo's ignore list, hull and group",
-        (_keptOff in daoIgnore) && {(group (driver _keptOff)) in daoIgnore}
+    ["a crew the ATO makes is marked as Drongo's own, and kept off its ignore list",
+        !(_keptOff in daoIgnore) && {!((group (driver _keptOff)) in daoIgnore)}
+        && {_keptOff getVariable ["daoRegistered", false]}
         && {_keptOff getVariable ["daoExclude", false]} && {(group (driver _keptOff)) getVariable ["daoExclude", false]}] call _fnc_check;
     { deleteVehicle _x } forEach (crew _keptOff);
     deleteVehicle _keptOff;
