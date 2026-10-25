@@ -243,7 +243,7 @@
                 <English>Build Only These</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_ONLY_COMMENT">
-                <English>Class names separated by commas. When set, the Build Menu offers exactly these and nothing else, each priced by the module's own rules (as a fortification when the rules wouldn't pick it) unless CfgALiVEFOBBuildables gives a price. The Build List page on the ALiVE website writes this list for you. Never Build still applies.</English>
+                <English>Class names separated by commas. When set, the Build Menu offers exactly these and nothing else, each priced by the module's own rules (as a fortification when the rules wouldn't pick it) unless CfgALiVEFOBBuildables gives a price. Add =price to set one here, such as Land_HBarrier_5_F=12. The Build List page on the ALiVE website writes this list for you. Never Build still applies.</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_BLACKLIST">
                 <English>Never Build</English>

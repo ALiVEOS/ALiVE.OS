@@ -42,7 +42,8 @@ mod's config (the mission's wins):
     };
 A price that isn't a whole number from 1 to 100000 is refused with a warning in the RPT and
 the worked-out price is used instead. The module's Never Build and Also Build fields add to the
-blacklist and whitelist, and its Build Only These field to only[].
+blacklist and whitelist, and its Build Only These field to only[]. A class in Build Only These
+can carry its price, Class=463, which wins over a cost in CfgALiVEFOBBuildables.
 
 Sizes come from a local, unsimulated copy of each object, measured a few at a time, and are
 kept in the server's profile, so later starts skip the measuring.
@@ -114,8 +115,23 @@ private _fixed = createHashMap;
 _blacklist append (([_logic, "attribute", ["fob_blacklist"]] call ALiVE_fnc_FOB) splitString ", ;" apply { toLower _x });
 _whitelist append (([_logic, "attribute", ["fob_whitelist"]] call ALiVE_fnc_FOB) splitString ", ;");
 // Build Only These (Jman, 25 Oct): an inclusion list set in Eden, as the website's Build List page
-// writes it, added to any only[]; each class once, whatever its case
-_only append (([_logic, "attribute", ["fob_only"]] call ALiVE_fnc_FOB) splitString ", ;");
+// writes it, added to any only[]; each class once, whatever its case. Class=463 also sets its price,
+// in place of any cost in CfgALiVEFOBBuildables (spaces round the = are allowed)
+{
+    private _p = _x splitString "=";
+    if (_p isNotEqualTo []) then {
+        private _cls = _p select 0;
+        _only pushBack _cls;
+        if (count _p > 1) then {
+            private _c = parseNumber (_p select 1);
+            if (_c >= 1 && {_c <= 100000} && {_c == floor _c}) then {
+                _fixed set [toLower _cls, _c];
+            } else {
+                ["ALiVE Player FOBs - Build Only These: price %1 for %2 isn't a whole number from 1 to 100000; ignored", _p select 1, _cls] call ALiVE_fnc_dumpR;
+            };
+        };
+    };
+} forEach ((([_logic, "attribute", ["fob_only"]] call ALiVE_fnc_FOB) regexReplace [" *= *", "="]) splitString ", ;");
 private _onlySeen = [];
 _only = _only select { private _k = toLower _x; if (_k in _onlySeen) then { false } else { _onlySeen pushBack _k; true } };
 // never the kit or supply crate themselves: one built here would be a crate of supply for its build price
