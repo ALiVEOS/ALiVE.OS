@@ -35,16 +35,23 @@ addMissionEventHandler ["Map", {
     [
         { visibleMap },
         {
-            if (isNil "ALIVE_profileHandler") exitWith {};
-            
             // Only bother if debug is actually on — nothing to refresh otherwise.
-            private _debugOn = [ALIVE_profileHandler,"debug"] call ALiVE_fnc_profileHandler;
-            if (!_debugOn) exitWith {};
-
             // Re-toggle debug: the existing case "debug" path in fnc_profileHandler
             // enumerates every registered profile, deletes its markers, then (because
             // we pass true) recreates them. This is the map-open full-refresh sweep.
-            [ALIVE_profileHandler, "debug", true] call ALIVE_fnc_profileHandler;
+            if (!isNil "ALIVE_profileHandler" && {[ALIVE_profileHandler,"debug"] call ALiVE_fnc_profileHandler}) then {
+                [ALIVE_profileHandler, "debug", true] call ALIVE_fnc_profileHandler;
+            };
+
+            // The Civilian Population module's debug draws its civilians the same
+            // visibleMap-gated way, so they need the same sweep: without it a civilian
+            // only showed if the map happened to be open when he spawned, despawned
+            // or moved, and virtual ones that never changed state never showed
+            // (Rob_FZ1 on Discord, 25 Oct). The flag is read from the hash: asking the
+            // agent handler for it rebuilds every marker on the way.
+            if (!isNil "ALIVE_agentHandler" && {[ALIVE_agentHandler,"debug",false] call ALIVE_fnc_hashGet}) then {
+                [ALIVE_agentHandler, "debug", true] call ALIVE_fnc_agentHandler;
+            };
         }
     ] call CBA_fnc_waitUntilAndExecute;
 }];
