@@ -13,7 +13,7 @@ Fortifications are the military walls, fences and structures the editor lists (s
 H-barriers, bunkers, towers, camo nets), a mod's own walls, fences and structures categories
 included, plus portable lights. Supply objects are the ones that
 rearm, refuel, repair or heal (ammo and fuel containers, repair depots, medical tents) and
-helipads. Static weapons are offered to their own side, crewed by it. Ruins, wrecks and anything
+helipads (not a mod's copy of the invisible one). Static weapons are offered to their own side, crewed by it. Ruins, wrecks and anything
 wider than 40 m are left out.
 
 A fortification's price grows with how tough it is and how big:
@@ -329,7 +329,9 @@ private _add = {
         private _isService = (_service findIf { getNumber (_cfg >> _x) > 0 }) > -1;
         private _kind = switch (true) do {
             case (_isService && {_cat == "EdCat_Supplies" || {_sub == "EdSubcat_Military"}}): {"SUPPLY"};
-            case (_sub == "EdSubcat_Helipads"): {"SUPPLY"};
+            // a mod's copy of the invisible helipad is something else with nothing to see (Firewill's
+            // FIR_I_TGT_FAKE is a lock-on target), so only the game's own invisible pad is offered
+            case (_sub == "EdSubcat_Helipads" && {!(_class isKindOf "Land_HelipadEmpty_F") || {_class == "Land_HelipadEmpty_F"}}): {"SUPPLY"};
             // any walls, fences or structures category: a mod's own (CUP's EdCat_CUP_Walls) as well as the game's
             case (_sub == "EdSubcat_Military" && {(["walls", "fences", "structures"] findIf { _x in toLower _cat }) >= 0} && {!("ruins" in toLower _cat)}): {"FORTIFICATION"};
             case (_sub == "EdSubcat_Lamps" && {"portablelight" in toLower _class}): {"FORTIFICATION"};
