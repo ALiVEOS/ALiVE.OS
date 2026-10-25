@@ -463,8 +463,8 @@ class NEO_resourceRadio
                 class NEO_radioTerrainButton : NEO_radioCasConfirmButton
                 {
                         idc = 655634;
-                        x = 0.686 * GUI_GRID_WAbs + GUI_GRID_X;   // top-right of the header bezel (mirrors the logo), above the map
-                        y = 0.108 * GUI_GRID_HAbs + GUI_GRID_Y;   // on the light-grey header band (nudged down with the grid row)
+                        x = 0.676557 * GUI_GRID_WAbs + GUI_GRID_X;   // right edge on the map's right edge
+                        y = 0.1148 * GUI_GRID_HAbs + GUI_GRID_Y;   // bottom on the screen's top edge (0.1428)
                         w = 0.0597643 * GUI_GRID_WAbs;
                         h = 0.028 * GUI_GRID_HAbs;
                         text = "$STR_ALIVE_CS_UI_TERRAIN";
@@ -483,8 +483,8 @@ class NEO_resourceRadio
                 class NEO_radioGridLabel : NEO_RscText
                 {
                         idc = 655635;
-                        x = 0.5198 * GUI_GRID_WAbs + GUI_GRID_X;
-                        y = 0.108 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        x = 0.510357 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.1148 * GUI_GRID_HAbs + GUI_GRID_Y;
                         w = 0.032 * GUI_GRID_WAbs;
                         h = 0.028 * GUI_GRID_HAbs;
                         text = "$STR_ALIVE_CS_UI_GRID";
@@ -498,8 +498,8 @@ class NEO_resourceRadio
                 class NEO_radioGridEdit : NEO_RscEdit
                 {
                         idc = 655636;
-                        x = 0.5518 * GUI_GRID_WAbs + GUI_GRID_X;
-                        y = 0.10 * GUI_GRID_HAbs + GUI_GRID_Y; // extend up from the button row (bottom stays aligned at 0.136) for a taller, readable box
+                        x = 0.542357 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.1068 * GUI_GRID_HAbs + GUI_GRID_Y; // taller than the buttons, bottoms aligned at 0.1428
                         w = 0.086 * GUI_GRID_WAbs;
                         h = 0.036 * GUI_GRID_HAbs;
                         text = "";
@@ -513,8 +513,8 @@ class NEO_resourceRadio
                 class NEO_radioGridButton : NEO_radioTerrainButton
                 {
                         idc = 655637;
-                        x = 0.640 * GUI_GRID_WAbs + GUI_GRID_X;
-                        y = 0.108 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        x = 0.630557 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.1148 * GUI_GRID_HAbs + GUI_GRID_Y;
                         w = 0.043 * GUI_GRID_WAbs;
                         h = 0.028 * GUI_GRID_HAbs;
                         text = "$STR_ALIVE_CS_UI_SET";

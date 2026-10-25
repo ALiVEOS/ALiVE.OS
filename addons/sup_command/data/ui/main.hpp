@@ -85,8 +85,8 @@ class SCOMTablet
         class SCOMTablet_TerrainButton : SCOMTablet_RscRealButton
         {
             idc = 12050;
-            x = 0.686 * GUI_GRID_WAbs + GUI_GRID_X;
-            y = 0.098 * GUI_GRID_HAbs + GUI_GRID_Y;
+            x = 0.676338 * GUI_GRID_WAbs + GUI_GRID_X;
+            y = 0.1148 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.0597643 * GUI_GRID_WAbs;
             h = 0.028 * GUI_GRID_HAbs;
             text = "$STR_ALIVE_SCOM_UI_TERRAIN";

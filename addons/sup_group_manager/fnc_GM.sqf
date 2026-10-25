@@ -415,6 +415,14 @@ switch(_operation) do {
                                 1.372 * _uiH
                             ];
                             _ctrlBackground ctrlCommit 0;
+                            // the header row sits on the map bag's flap, which ends a little higher than the toughbook's screen edge
+                            {
+                                private _ctrl = (findDisplay 11001) displayCtrl _x;
+                                private _pos = ctrlPosition _ctrl;
+                                _pos set [1, (_pos select 1) - 0.0106 * _uiH];
+                                _ctrl ctrlSetPosition _pos;
+                                _ctrl ctrlCommit 0;
+                            } forEach [11050];
                         };
 
                         default {
