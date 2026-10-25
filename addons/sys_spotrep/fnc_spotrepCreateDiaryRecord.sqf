@@ -34,6 +34,7 @@ See Also:
 
 Author:
 Tupolov
+Jman
 Peer Reviewed:
 nil
 ---------------------------------------------------------------------------- */
@@ -44,8 +45,9 @@ if !(player diarySubjectExists "SPOTREP") then {
     player createDiarySubject ["SPOTREP","SPOTREP"];
 };
 
-player createDiaryRecord ["SPOTREP", [
-    format ["DTG:%1 - %2", ( _params select 2), ( _params select 0)],
+// Titled by DTG and grid: the SPOTREP's own id meant nothing to players (kawi0756 on Discord, 25 Oct)
+private _record = player createDiaryRecord ["SPOTREP", [
+    format ["%1 - %2", ( _params select 2), ( _params select 4)],
     format [
         "Callsign: %1<br/>" +
         "Timing: %2<br/>" +
@@ -71,3 +73,28 @@ player createDiaryRecord ["SPOTREP", [
     ]
 ]];
 
+// Clicking a SPOTREP's marker on the map opens its entry. Clicking the grid in an entry already moved the map to
+// the marker, but not the other way (kawi0756 on Discord, 25 Oct). Shift and Alt clicks are left to the game.
+private _marker = _params select 11;
+if (_marker isEqualType "" && {_marker != "NONE"}) then {
+    if (isNil "ALiVE_spotrep_markerRecords") then { ALiVE_spotrep_markerRecords = createHashMap };
+    ALiVE_spotrep_markerRecords set [_marker, _record];
+    if (isNil "ALiVE_spotrep_mapClickEH") then {
+        ALiVE_spotrep_mapClickEH = addMissionEventHandler ["MapSingleClick", {
+            params ["", "_pos", "_alt", "_shift"];
+            if (_alt || _shift) exitWith {};
+            private _map = (findDisplay 12) displayCtrl 51;
+            if (isNull _map) exitWith {};
+            private _at = _map ctrlMapWorldToScreen _pos;
+            private _best = [];
+            private _bestD = 0.025;
+            {
+                if (getMarkerColor _x != "") then {
+                    private _d = (_map ctrlMapWorldToScreen (markerPos _x)) distance2D _at;
+                    if (_d < _bestD) then { _bestD = _d; _best = [_y] };
+                };
+            } forEach ALiVE_spotrep_markerRecords;
+            if (_best isNotEqualTo []) then { processDiaryLink createDiaryLink ["SPOTREP", _best select 0, ""] };
+        }];
+    };
+};
