@@ -629,7 +629,7 @@ switch(_operation) do {
                                 && {count _savedPos > 1}
                                 && {leader group _unit == _unit}
                                 && {([_playerHash, "vehicle", "NONE"] call ALIVE_fnc_hashGet) == "NONE"}
-                                && {typeOf _unit == ([_playerHash, "class", typeOf _unit] call ALIVE_fnc_hashGet) || {_logic getVariable ["allowDiffClass", false]}}
+                                && {typeOf _unit == ([_playerHash, "class", typeOf _unit] call ALIVE_fnc_hashGet) || {!isMultiplayer} || {_logic getVariable ["allowDiffClass", false]}}
                             ) then {
                                 private _moved = 0;
                                 {
@@ -730,7 +730,11 @@ switch(_operation) do {
                 private ["_unit","_type","_trigger"];
                 _unit = _args select 0;
                 _type = _args select 1;
-                if (typeOf _unit != _type && _unit == player && !(MOD(sys_player) getVariable ["allowDiffClass",false])) then {
+                // Only on a server: turning the player away there sends them back to the slot list, but in
+                // single player the player is the whole mission, so the trigger below ended it with Mission
+                // Passed on every load of a save made as another unit (after a team switch, say). There the
+                // save goes onto the unit being played, as Allow Different Class does.
+                if (typeOf _unit != _type && _unit == player && isMultiplayer && !(MOD(sys_player) getVariable ["allowDiffClass",false])) then {
                     cutText [format["You cannot rejoin this server with a different class (expected %1)", getText (configFile>>"cfgVehicles">>_type>>"displayName")] , "PLAIN DOWN"];
                     _unit setVariable [QGVAR(kicked), true, true];
                     _trigger = createtrigger ["emptydetector", [0,0]];
