@@ -43,7 +43,8 @@ mod's config (the mission's wins):
 A price that isn't a whole number from 1 to 100000 is refused with a warning in the RPT and
 the worked-out price is used instead. The module's Never Build and Also Build fields add to the
 blacklist and whitelist, and its Build Only These field to only[]. A class in Build Only These
-can carry its price, Class=463, which wins over a cost in CfgALiVEFOBBuildables.
+can carry its price, Class=463, which wins over a cost in CfgALiVEFOBBuildables. With an only list,
+a FOB type's extras are still built, and one the list doesn't have is that type's alone.
 
 Sizes come from a local, unsimulated copy of each object, measured a few at a time, and are
 kept in the server's profile, so later starts skip the measuring.
@@ -375,6 +376,13 @@ if (_only isNotEqualTo []) then {
         };
     } forEach _only;
     private _keep = _only apply { toLower _x };
+    // a FOB type's extras still count (Jman, 25 Oct): one the list doesn't have is that type's own,
+    // so Build Only These sets the plain FOB's menu and each type adds to it
+    {
+        {
+            if !(_x in _keep) then { _typeOnly pushBackUnique _x; _keep pushBack _x };
+        } forEach ((_x select 5) - _blacklist);
+    } forEach (missionNamespace getVariable ["ALiVE_FOB_types", []]);
     _rows = _rows select { toLower (_x select 0) in _keep };
 };
 
@@ -394,7 +402,7 @@ publicVariable "ALiVE_FOB_typeOnly";
     {
         private _c = _x;
         if ((_rows findIf { toLower (_x select 0) == _c }) < 0) then {
-            ["ALiVE Player FOBs - FOB Types: %1's extra %2 can't be built (not in this game, on Never Build, or left off the mission's only list)", _tid, _c] call ALiVE_fnc_dumpR;
+            ["ALiVE Player FOBs - FOB Types: %1's extra %2 can't be built (not in this game, or on Never Build)", _tid, _c] call ALiVE_fnc_dumpR;
         };
     } forEach (_x select 5);
 } forEach (missionNamespace getVariable ["ALiVE_FOB_types", []]);
