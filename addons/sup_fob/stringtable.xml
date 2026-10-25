@@ -239,6 +239,12 @@
             <Key ID="STR_ALIVE_FOB_CRATE_CLASS_COMMENT">
                 <English>The object a FOB supply crate is, in place of the ALiVE crate: one class name for every side, or one per side with the side first, for example WEST=B_CargoNet_01_ammo_F, EAST=O_CargoNet_01_ammo_F, GUER=I_CargoNet_01_ammo_F (WEST is BLUFOR, EAST OPFOR, GUER Independent; a side left out uses a class given without a side, if there is one). Empty (default) keeps the ALiVE crate.</English>
             </Key>
+            <Key ID="STR_ALIVE_FOB_ONLY">
+                <English>Build Only These</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_ONLY_COMMENT">
+                <English>Class names separated by commas. When set, the Build Menu offers exactly these and nothing else, each priced by the module's own rules (as a fortification when the rules wouldn't pick it) unless CfgALiVEFOBBuildables gives a price. The Build List page on the ALiVE website writes this list for you. Never Build still applies.</English>
+            </Key>
             <Key ID="STR_ALIVE_FOB_BLACKLIST">
                 <English>Never Build</English>
             </Key>

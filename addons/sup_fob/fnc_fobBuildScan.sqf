@@ -42,7 +42,7 @@ mod's config (the mission's wins):
     };
 A price that isn't a whole number from 1 to 100000 is refused with a warning in the RPT and
 the worked-out price is used instead. The module's Never Build and Also Build fields add to the
-blacklist and whitelist.
+blacklist and whitelist, and its Build Only These field to only[].
 
 Sizes come from a local, unsimulated copy of each object, measured a few at a time, and are
 kept in the server's profile, so later starts skip the measuring.
@@ -113,6 +113,11 @@ private _fixed = createHashMap;
 // and the module's own Never Build and Also Build lists, class names separated by commas
 _blacklist append (([_logic, "attribute", ["fob_blacklist"]] call ALiVE_fnc_FOB) splitString ", ;" apply { toLower _x });
 _whitelist append (([_logic, "attribute", ["fob_whitelist"]] call ALiVE_fnc_FOB) splitString ", ;");
+// Build Only These (Jman, 25 Oct): an inclusion list set in Eden, as the website's Build List page
+// writes it, added to any only[]; each class once, whatever its case
+_only append (([_logic, "attribute", ["fob_only"]] call ALiVE_fnc_FOB) splitString ", ;");
+private _onlySeen = [];
+_only = _only select { private _k = toLower _x; if (_k in _onlySeen) then { false } else { _onlySeen pushBack _k; true } };
 // never the kit or supply crate themselves: one built here would be a crate of supply for its build price
 _blacklist append ["alive_fob_kit", "alive_fob_supplycrate"];
 // and the mission's own kit and crate objects, if it sets any
