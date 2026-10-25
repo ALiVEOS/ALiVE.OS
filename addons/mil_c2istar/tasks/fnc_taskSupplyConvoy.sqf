@@ -150,8 +150,17 @@ switch (_taskState) do {
             && {(missionNamespace getVariable ["ALIVE_taskMinDistance", 0]) <= 0}
             && {(_destinationCenter distance2D _sourceCenter) >= (1500 min _capR)};
         if (!_townOk && {_destinationCenter isEqualTo [] || {_destinationClusterID == _sourceClusterID} || {_destinationCenter distance2D _sourceCenter < _minDistance}}) then {
-            _destinationCenter = [_sourceCenter, _minDistance, ((_minDistance + 4000) min _capR), 2, 0, 0.25, 0, [], [_sourceCenter]] call BIS_fnc_findSafePos;
             _destinationClusterID = "";
+            // A failed search hands back its default, the pickup itself, so a minimum no spot on a small map meets
+            // (5 km on Stratis) put the drop-off within metres of the pickup (F530). Only a spot out at the distance
+            // asked for counts; failing that the distance is halved, down to 500 m.
+            private _r = _minDistance;
+            _destinationCenter = [];
+            while {_destinationCenter isEqualTo [] && {_r >= 500}} do {
+                private _p = [_sourceCenter, _r, ((_r + 4000) min _capR) max _r, 2, 0, 0.25, 0, [], [_sourceCenter]] call BIS_fnc_findSafePos;
+                if ((_p distance2D _sourceCenter) >= _r * 0.9) then { _destinationCenter = _p };
+                _r = _r * 0.5;
+            };
             if (_destinationCenter isEqualTo []) then {
                 _destinationCenter = [_sourceCenter, _minDistance, random 360] call BIS_fnc_relPos;
             };
