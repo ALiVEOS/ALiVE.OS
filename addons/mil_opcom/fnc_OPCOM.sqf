@@ -513,6 +513,31 @@ switch (_operation) do {
                     };
                 };
             } forEach _parts;
+            // no helipad points (the base game carrier and destroyer, A. Ares on Discord, 24 Oct): flat open deck found by
+            // looking straight down on the ship, up to 6 spots 30 m apart. The ship's middle 20 m up, used before, is
+            // inside the carrier's hull and the destroyer's superstructure.
+            if (_pads isEqualTo []) then {
+                private _c = getPosASL _ship;
+                private _down = {
+                    private _h = lineIntersectsSurfaces [[_this select 0, _this select 1, (_c select 2) + 80], [_this select 0, _this select 1, (_c select 2) - 2], objNull, objNull, true, 1, "GEOM", "NONE"];
+                    if (_h isEqualTo [] || {isNull ((_h select 0) select 2) && {isNull ((_h select 0) select 3)}}) then { -999 } else { ((_h select 0) select 0) select 2 }
+                };
+                private _flat = [];
+                for "_dx" from -200 to 200 step 10 do {
+                    for "_dy" from -200 to 200 step 10 do {
+                        private _p = [(_c select 0) + _dx, (_c select 1) + _dy];
+                        private _z = _p call _down;
+                        if (_z > (_c select 2) + 3 && {[0, 45, 90, 135, 180, 225, 270, 315] findIf { abs ((([_p select 0, _p select 1, 0] getPos [7, _x]) call _down) - _z) > 0.6 } < 0}) then {
+                            _flat pushBack [_p select 0, _p select 1, _z + 1];
+                        };
+                    };
+                };
+                {
+                    private _p = _x;
+                    if (count _pads < 6 && {_pads findIf { (_x distance2D _p) < 30 } < 0}) then { _pads pushBack _p };
+                } forEach _flat;
+                if (_pads isNotEqualTo []) then { ["OPCOM SHIP - AI Commander '%1': %2 has no helipad points, %3 flat spots found on deck: %4", _customName, typeOf _ship, count _pads, _pads apply { _x apply { round _x } }] call ALiVE_fnc_dump };
+            };
             if (_pads isEqualTo []) then { private _p = getPosASL _ship; _pads = [[_p select 0, _p select 1, (_p select 2) + 20]] };
             [_handler, "shipPads", _pads] call ALiVE_fnc_hashSet;
             [_handler, "shipHandle", [typeOf _ship, getPosASL _ship, netId _ship]] call ALiVE_fnc_hashSet;
