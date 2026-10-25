@@ -10,5 +10,7 @@ _groupID = _this param [1, "none", [""]];
 
 _group = if (typeName _group == "OBJECT") then {group _group} else {_group};
 
-_group setGroupId [_groupID,"GroupColor0"];
+// Global, so every player sees the callsign set on the module: setGroupId only renames the group on the
+// server, and players kept seeing names like "Alpha 3-6" (#1096)
+_group setGroupIdGlobal [_groupID,"GroupColor0"];
 
