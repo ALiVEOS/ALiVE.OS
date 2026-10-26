@@ -41,7 +41,12 @@ private _fnc_preferGuns = {
     if (count _guns > 0) then { _guns } else { _this }
 };
 private _fnc_anyOrder = {
-    private _c = _this call _fnc_preferGuns;
+    // mortars only where the faction has nothing else, or on a small map where all else is out-ranged rockets
+    private _mortars = _this select { ([_x] call ALIVE_fnc_getArtilleryType) == "MORTAR" };
+    private _c = _this - _mortars;
+    if (count _c == 0) exitWith { _mortars };
+    _c = _c call _fnc_preferGuns;
+    if (_smallMap && {count _mortars > 0} && {(_c findIf { !([_x] call ALIVE_fnc_isRocketArtillery) }) < 0}) exitWith { _mortars };
     private _sp = _c select { !(_x isKindOf "StaticWeapon") };
     if (count _sp > 0) then { _sp } else { _c }
 };

@@ -44,7 +44,8 @@ if ([_class] call ALIVE_fnc_isArtillery) then {
         // caught by name, then by the barrel: a tube can't depress below about 45 degrees, a howitzer
         // can fire flat
         private _sig = toLower format ["%1 %2", _class, getText (configFile >> "CfgVehicles" >> _class >> "model")];
-        private _mortarNames = ["mortar","m252","2b14","podnos","l16","m224","m29","type63","type_63","type53","mk6","60mm","81mm","82mm","120mm"];
+        // no "type63": the Type 63 is a rocket launcher as well as a mortar, so a static one is left to the barrel test
+        private _mortarNames = ["mortar","m252","2b14","podnos","l16","m224","m29","type53","mk6","60mm","81mm","82mm","120mm"];
         private _gunNames = ["d30","d-30","2a18","m119","m101","m777","l118","m198","fh70","howitz","105mm","155mm","122mm","152mm"];
         _result = switch (true) do {
             // a ship's gun or launcher (the Hammer, the VLS) is artillery but no placed battery should use it
