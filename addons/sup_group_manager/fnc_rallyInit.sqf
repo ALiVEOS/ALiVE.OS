@@ -38,12 +38,12 @@ if (isServer) then {
     // objects of the listed classes, those built later included: looked for every 30 s, and the
     // list sent only when it changed
     if (_classes isNotEqualTo []) then {
-        [_classes, _side] spawn {
-            params ["_classes", "_side"];
+        [_classes, _side, _logic] spawn {
+            params ["_classes", "_side", "_logic"];
             while { true } do {
                 private _now = [];
                 { _now append (allMissionObjects _x) } forEach _classes;
-                ["sync", [_now, _side]] call ALiVE_fnc_rallyPoint;
+                ["sync", [_now, _side, _logic]] call ALiVE_fnc_rallyPoint;
                 sleep 30;
             };
         };

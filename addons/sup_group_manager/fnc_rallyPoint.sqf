@@ -107,14 +107,16 @@ switch (_op) do {
     // already listed (synced, added by a script) keep their own name and side; one broadcast per change
     case "sync": {
         if (!isServer) exitWith {};
-        _args params ["_now", "_side"];
+        _args params ["_now", "_side", ["_module", objNull, [objNull]]];
         private _removed = missionNamespace getVariable ["ALiVE_rallyRemoved", []];
         _now = _now select { alive _x && {!(_x in _removed)} };
         private _list = missionNamespace getVariable ["ALiVE_rallyPoints", []];
-        private _keep = _list select { !isNull (_x select 0) && {alive (_x select 0)} && {(_x select 3) != "class" || {(_x select 0) in _now}} };
+        // only this module's own class points are dropped when gone: with two modules (a side each), each
+        // scan dropped the other's points until its next scan (A. Ares on Discord, 26 Oct)
+        private _keep = _list select { !isNull (_x select 0) && {alive (_x select 0)} && {(_x select 3) != "class" || {!((_x param [5, objNull]) isEqualTo _module)} || {(_x select 0) in _now}} };
         private _known = _keep apply { _x select 0 };
         private _new = _now select { !(_x in _known) };
-        { _keep pushBack [_x, (_x getVariable ["ALiVE_rallyName", ""]) call { if (_this != "") then { _this } else { [getPosATL _x] call _autoName } }, toUpper _side, "class"] } forEach _new;
+        { _keep pushBack [_x, (_x getVariable ["ALiVE_rallyName", ""]) call { if (_this != "") then { _this } else { [getPosATL _x] call _autoName } }, toUpper _side, "class", grpNull, _module] } forEach _new;
         if (count _keep != count _list || {_new isNotEqualTo []}) then {
             ALiVE_rallyPoints = _keep;
             publicVariable "ALiVE_rallyPoints";
