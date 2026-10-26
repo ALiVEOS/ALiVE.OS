@@ -165,7 +165,9 @@ _id = _object addAction [
 
 _text = localize "STR_ALIVE_CIV_INTERACT_ACTIONS_STOP";
 _params = [];
-_code = {_object = _this select 0; _caller = _this select 1; _params = _this select 3;  _group = if (side (group _object) == Civilian) then {group _object} else {createGroup Civilian}; _object disableAI "MOVE"; sleep (60 + (ceil random 20)); _object enableAI "MOVE"; _object setUnitPos "AUTO";};
+_code = {_object = _this select 0; _caller = _this select 1; _params = _this select 3;  [_object, "MOVE"] remoteExec ["disableAI", _object]; sleep (60 + (ceil random 20)); [_object, "MOVE"] remoteExec ["enableAI", _object]; [_object, "AUTO"] remoteExec ["setUnitPos", _object];};
+// Stop and Release act on the machine that owns the civilian, and a released one goes back to the server:
+// run on the player's machine, Stop left a server's civilian walking and Release kept him the player's (F536, F537)
 _condition = "alive _target";
 
 _id = _object addAction [
@@ -217,7 +219,7 @@ _id = _object addAction [
 
 _text = localize "STR_ALIVE_CIV_INTERACT_ACTIONS_RELEASE";
 _params = [];
-_code = {_object = _this select 0; _caller = _this select 1; _params = _this select 3; _group = if (side (group _object) == Civilian) then {group _object} else {createGroup Civilian}; [_object] joinsilent _group; _object setvariable ['detained',false,true]; _object enableAI "PATH"};
+_code = {_object = _this select 0; _caller = _this select 1; _params = _this select 3; [objNull, "ReturnToServer", _object] remoteExec ["ALiVE_fnc_civInteract", 2]};
 /*
 // Causes units to return to group leader and pile up there - #277)
 _code = {_object = _this select 0; _caller = _this select 1; _params = _this select 3; _group = [ALIVE_civilianPopulationSystem, "civGroup"] call ALiVE_fnc_HashSet; [_object] joinsilent _group; _object setvariable ['detained',false,true]};

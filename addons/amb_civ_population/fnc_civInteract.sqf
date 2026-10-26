@@ -1357,9 +1357,50 @@ switch (_operation) do {
 				[_civ, leader group _civ] remoteExec ["doFollow", _civ];
 			};
 		} else {
-			//-- Join civilian group
-			[_civ] joinSilent (createGroup civilian);
-			_civ setVariable ["detained", false, true];
+			//-- Back to a civilian group on the server: made here, he stayed this player's in multiplayer
+			// and the server's brain could never move him again (F536)
+			[objNull, "ReturnToServer", _civ] remoteExec ["ALiVE_fnc_civInteract", 2];
+		};
+	};
+
+	case "ReturnToServer": {
+		// The server's side of a release: he joins a civilian group of the server's, handed to the
+		// server at once. Left to itself the group followed him to the player's machine; handed over
+		// once, it sometimes still went there and took 9 s to come back, so it is checked until it
+		// has stayed the server's for two checks.
+		if (!isServer || {!(_arguments isEqualType objNull)}) exitWith {};
+		private _civ = _arguments;
+		if (isNull _civ || {!alive _civ}) exitWith {};
+		private _oldGroup = group _civ;
+		private _group = createGroup civilian;
+		[_civ] joinSilent _group;
+		// released only once out of the player's group: cleared first, the despawn could take him there
+		_civ setVariable ["detained", false, true];
+		// the group Arrest made for him on the player's machine; the player's own group still has people in it
+		if (!isNull _oldGroup && {(units _oldGroup) isEqualTo []}) then { _oldGroup call ALiVE_fnc_DeleteGroupRemote };
+		if (!isMultiplayer) exitWith { _civ enableAI "PATH" };
+		_group setGroupOwner 2;
+		[_civ, _group] spawn {
+			params ["_civ", "_group"];
+			private _start = diag_tickTime;
+			private _held = 0;
+			waitUntil {
+				sleep 0.5;
+				if (isNull _civ || {!alive _civ} || {isNull _group}) then {
+					_held = 2;
+				} else {
+					private _owner = groupOwner _group;
+					if (_owner == 2 && {owner _civ == 2}) then {
+						_held = _held + 1;
+					} else {
+						_held = 0;
+						if (_owner != 0) then { _group setGroupOwner 2 };
+					};
+				};
+				_held >= 2 || {(diag_tickTime - _start) > 30}
+			};
+			// Arrest stopped him walking on the player's machine
+			if (!isNull _civ && {alive _civ}) then { [_civ, "PATH"] remoteExec ["enableAI", _civ] };
 		};
 	};
 
@@ -1373,10 +1414,11 @@ switch (_operation) do {
 				params ["_civ"];
 				sleep 1;
 				_civ setVariable ["ALiVE_civ_dialogHold", true, true];   // the approach freeze leaves it be
-				_civ disableAI "MOVE";
+				// on the machine that owns him: run here, a server's civilian walked on (F537)
+				[_civ, "MOVE"] remoteExec ["disableAI", _civ];
 				sleep (60 + (ceil random 20));
-				_civ enableAI "MOVE";
-				_civ setUnitPos "AUTO";
+				[_civ, "MOVE"] remoteExec ["enableAI", _civ];
+				[_civ, "AUTO"] remoteExec ["setUnitPos", _civ];
 				_civ setVariable ["ALiVE_civ_dialogHold", false, true];
 			};
 		};
