@@ -150,6 +150,8 @@ switch (_operation) do {
         private _opTasksKnownOnly = (toLower format ["%1", _logic getVariable ["opTasksKnownOnly", "false"]]) in ["true", "1"];
         // Follow The Players Up (Occupation): no attack of its own; it garrisons what players clear (kawi0756, 25 Oct)
         private _followPlayers = (toLower format ["%1", _logic getVariable ["followPlayers", "false"]]) in ["true", "1"];
+        // Groups Call For Help (A. Ares on Discord, 26 Oct): a group losing a fight asks for the nearest free group
+        private _callForHelp = (toLower format ["%1", _logic getVariable ["callForHelp", "false"]]) in ["true", "1"];
         // Start From Ship (Ando on Discord, 24 Oct): the starting force is aboard a static ship and lands by helicopter
         private _shipStart = (toLower format ["%1", _logic getVariable ["shipStart", "false"]]) in ["true", "1"];
         private _shipInf = floor ((parseNumber format ["%1", _logic getVariable ["shipInfantry", 6]]) max 0);
@@ -441,6 +443,11 @@ switch (_operation) do {
             ["opTasksMax", _opTasksMax],
             ["opTasksKnownOnly", _opTasksKnownOnly],
             ["followPlayers", _followPlayers],
+            ["callForHelp", _callForHelp],
+            // per group: [peak men, men last pass, time of the last loss, time it last asked]; runtime only, not saved
+            ["helpState", createHashMap],
+            // per group that was answered: [enemy, helpers, time]
+            ["helpSent", createHashMap],
             // the force aboard as [infantry, motorised, 0 x 6], in getForceStrength's order; checked after the handler is made
             ["shipStart", _shipStart],
             ["shipAboard", [_shipInf, _shipMot, 0, 0, 0, 0, 0, 0]],
@@ -586,6 +593,23 @@ switch (_operation) do {
                     private _module = [_handler, "module", objNull] call ALiVE_fnc_HashGet;
                     if (isNull _module) exitWith {};
                     if (!isNil "ALiVE_fnc_INS_contactSweep") then { [_handler] call ALiVE_fnc_INS_contactSweep };
+                };
+            };
+        };
+
+        // Groups Call For Help: a minute-by-minute check of the commander's own groups. Not for an insurgent
+        // commander: insurgency.fsm has no contact response to reuse. Quiet while the commander is paused
+        if (_callForHelp && {_type != "asymmetric"}) then {
+            [_handler] spawn {
+                params ["_handler"];
+                sleep 120; // let scanTroops fill the pools first
+                while {true} do {
+                    sleep 60;
+                    private _module = [_handler, "module", objNull] call ALiVE_fnc_HashGet;
+                    if (isNull _module) exitWith {};
+                    if !([_handler, "pause", false] call ALiVE_fnc_HashGet) then {
+                        [_handler, "callForHelp"] call ALiVE_fnc_OPCOM;
+                    };
                 };
             };
         };
@@ -1482,6 +1506,9 @@ switch (_operation) do {
         _target = _args select 0;
         _size = _args select 1;
         _type = _args select 2;
+        // Groups Call For Help: profiles never to send (the hurt group asking for help); the three-argument
+        // callers are unchanged
+        private _exclude = _args param [3, []];
 
         _section = [];
         _profileIDs = [];
@@ -1496,8 +1523,9 @@ switch (_operation) do {
         _side = [_logic,"side"] call ALiVE_fnc_HashGet;
         _factions = [_logic,"factions"] call ALiVE_fnc_HashGet;
         _sides = [_logic,"sidesenemy",["EAST"]] call ALiVE_fnc_HashGet;
-        _knownE = [_logic,"knownentities",[]] call ALiVE_fnc_HashGet;
-        _attackedE = [_logic,"attackedentities",[]] call ALiVE_fnc_HashGet;
+        // copies: the pruning below marks entries in place, and the help loop may be reading the stored arrays
+        _knownE = +([_logic,"knownentities",[]] call ALiVE_fnc_HashGet);
+        _attackedE = +([_logic,"attackedentities",[]] call ALiVE_fnc_HashGet);
         _reserved = [_logic,"ProfileIDsReserve",[]] call ALiVE_fnc_HashGet;
         _pos = [_profile,"position"] call ALiVE_fnc_HashGet;
 
@@ -1724,7 +1752,7 @@ switch (_operation) do {
                         private _isStaticAA = !isNil "_aaBehVal" && {typeName _aaBehVal == "STRING"} && {_aaBehVal == "static"};
 
                         private _candidateDistance = _pos distance _candidatePos;
-                        if (_candidateDistance < _dist && {!(_profileID in _reserved)} && {!_isStaticAA} && {!(!isNil "ALIVE_profileStationary" && {[ALIVE_profileStationary, _profileID, false] call ALIVE_fnc_hashGet})}) then {
+                        if (_candidateDistance < _dist && {!(_profileID in _exclude)} && {!(_profileID in _reserved)} && {!_isStaticAA} && {!(!isNil "ALIVE_profileStationary" && {[ALIVE_profileStationary, _profileID, false] call ALIVE_fnc_hashGet})}) then {
                             private _candidateWaypoints = [_candidateProfile,"waypoints"] call ALIVE_fnc_hashGet;
 
                             if (({!(isnil "_x") && {_profileID in (_x select 2)}} count _attackedE) < 1 && {count _candidateWaypoints <= 2}) then {
@@ -1792,6 +1820,148 @@ switch (_operation) do {
         };
 
         _result = _section;
+    };
+
+    ///////////////////////////////////////////////////
+    // Groups Call For Help (A. Ares on Discord, 26 Oct): a group that has lost
+    // half the men it had when the fight started, with an enemy still within
+    // 500 m, asks for two free groups that can reach that enemy. The answer is
+    // attackEntity aimed at the enemy with the hurt group excluded, so it keeps
+    // that case's reach rules and artillery request. Its own cooldown lives in
+    // helpState; an enemy already in attackedentities is skipped, and help asks
+    // for the same 2 sections TACOM sends, so whichever answers first the enemy
+    // gets the full response.
+    // Returns [[hurtID, enemyID, helpers], ...] for this pass.
+    ///////////////////////////////////////////////////
+
+    case "callForHelp": {
+        if (!isServer) exitWith { _result = [] };
+
+        private _HELP_RATIO    = 0.5;  // ask once strength is at or below this share of the peak
+        private _HELP_MIN_LOST = 2;    // and at least this many men are gone (no 2-man false alarms)
+        private _HELP_RECENT   = 120;  // seconds since the last loss for the fight to count as live
+        private _HELP_RESET    = 300;  // seconds without a loss before what is left counts as full strength
+        private _HELP_COOLDOWN = 120;  // seconds between asks by the same group
+        private _HELP_MAX      = 2;    // attackEntity calls per pass, answered or not
+        private _HELP_RANGE    = 500;  // the enemy has to be this close to the hurt group
+
+        private _factions  = [_logic, "factions", []] call ALiVE_fnc_HashGet;
+        private _state     = [_logic, "helpState", createHashMap] call ALiVE_fnc_HashGet;
+        private _sentMap   = [_logic, "helpSent", createHashMap] call ALiVE_fnc_HashGet;
+        private _reserved  = [_logic, "ProfileIDsReserve", []] call ALiVE_fnc_HashGet;
+        private _mySide    = [_logic, "side", "WEST"] call ALiVE_fnc_HashGet;
+        private _profilesById = [ALiVE_ProfileHandler, "profilesById"] call ALiVE_fnc_hashGet;
+        private _playerIDs = allPlayers apply { _x getVariable ["profileID", ""] };
+        private _poolNames = ["infantry", "motorized", "mechanized", "armored"];
+        private _pools = [_logic, _poolNames] call ALiVE_fnc_hashGetMany;
+        private _poolReach = [1000, 3000, 1000, 3000]; // attackEntity's _dist for each kind
+
+        private _ids = [];
+        { _ids append ([ALiVE_ProfileHandler, "getProfilesByFaction", _x] call ALiVE_fnc_ProfileHandler) } forEach _factions;
+
+        private _sent = [];
+        private _calls = 0;
+        private _seen = createHashMap;
+        {
+            private _id = _x;
+            private _profile = _profilesById get _id;
+            if (!isNil "_profile" && {([_profile, "type", ""] call ALiVE_fnc_HashGet) == "entity"} && {!(_id in _playerIDs)}) then {
+                private _count = [_profile, "unitCount", 0] call ALiVE_fnc_HashGet;
+                _seen set [_id, true];
+
+                // [peak, last count, time of the last loss, time it last asked]
+                private _s = _state getOrDefault [_id, [_count, _count, -1e9, -1e9]];
+                _s params ["_peak", "_last", "_lostAt", "_askedAt"];
+                if (_count < _last) then { _lostAt = time };
+                if (_count > _peak) then { _peak = _count };
+                // the fight is over: what is left is the new full strength
+                if (_count < _peak && {time - _lostAt > _HELP_RESET}) then { _peak = _count };
+                _state set [_id, [_peak, _count, _lostAt, _askedAt]];
+
+                if (_calls < _HELP_MAX
+                    && {_count > 0}
+                    && {_peak - _count >= _HELP_MIN_LOST}
+                    && {_count <= _peak * _HELP_RATIO}
+                    && {time - _lostAt <= _HELP_RECENT}
+                    && {time - _askedAt > _HELP_COOLDOWN}
+                    && {!(_id in _reserved)}) then {
+
+                    private _pos = [_profile, "position", [0,0,0]] call ALiVE_fnc_HashGet;
+
+                    // the enemy it is fighting: what TACOM's last scan found within range, else a fresh look.
+                    // Both give [id, pos] pairs. Only a group that lost men in the last 2 minutes gets this far
+                    private _near = ([_logic, "knownentities", []] call ALiVE_fnc_HashGet) select {
+                        !isNil "_x" && {_x isEqualType []} && {count _x > 1} && {!isNil {_profilesById get (_x select 0)}}
+                        && {((_x select 1) distance2D _pos) < _HELP_RANGE}
+                    };
+                    if (_near isEqualTo []) then {
+                        _near = ([_logic, "scanForNearEnemies", [_pos, true]] call MAINCLASS) select { ((_x select 1) distance2D _pos) < _HELP_RANGE };
+                    };
+                    _near = [_near, [], { (_x select 1) distance2D _pos }, "ASCEND"] call BIS_fnc_sortBy;
+
+                    // an enemy the commander is already dealing with (an attackedentities entry under 90 s old) is
+                    // skipped and nothing is stamped, so the group asks again next minute once that entry has aged out
+                    private _attacked = ([_logic, "attackedentities", []] call ALiVE_fnc_HashGet) select {
+                        !isNil "_x" && {_x isEqualType []} && {count _x > 3} && {time - (_x select 3) <= 90}
+                    };
+                    private _enemyID = "";
+                    {
+                        private _cID = _x select 0;
+                        if ((_attacked findIf { (_x select 0) == _cID }) < 0) exitWith { _enemyID = _cID };
+                    } forEach _near;
+
+                    if (_enemyID != "") then {
+                        private _enemyPos = (_near select (_near findIf { (_x select 0) == _enemyID })) select 1;
+
+                        // the hurt group's own kind first, then the others, each only when it has a group in reach of
+                        // the enemy; a kind whose groups turn out to be busy hands on to the next
+                        private _own = _pools findIf { !isNil "_x" && {_x isEqualType []} && {_id in _x} };
+                        private _order = if (_own < 0) then { [0, 1, 2, 3] } else { [_own] + ([0, 1, 2, 3] - [_own]) };
+                        private _candidates = ([_enemyPos, 3000, [_mySide, "entity"]] call ALIVE_fnc_getNearProfiles) apply {
+                            [[_x, "profileID", ""] call ALiVE_fnc_HashGet, ([_x, "position", [0,0,0]] call ALiVE_fnc_HashGet) distance _enemyPos]
+                        };
+                        _candidates = _candidates select { (_x select 0) != _id };
+                        private _helpers = [];
+                        private _helpType = "";
+                        private _tried = [];
+                        {
+                            private _pool = _pools select _x;
+                            private _reach = _poolReach select _x;
+                            if (_helpers isEqualTo [] && {_calls < _HELP_MAX} && {!isNil "_pool"} && {_pool isEqualType []}
+                                && {(_candidates findIf { (_x select 1) < _reach && {(_x select 0) in _pool} }) >= 0}) then {
+                                _helpType = _poolNames select _x;
+                                _tried pushBack _helpType;
+                                _calls = _calls + 1;
+                                // 2 sections, as TACOM sends to an infantry contact: whichever answers first holds the
+                                // enemy's attackedentities entry for 90 s, so help must not answer with less
+                                private _r = [_logic, "attackEntity", [_enemyID, 2, _helpType, [_id]]] call MAINCLASS;
+                                if (!isNil "_r" && {_r isEqualType []}) then { _helpers = _r };
+                            };
+                        } forEach _order;
+
+                        // the cooldown starts only once someone is on the way; a group nobody could answer asks
+                        // again next minute, for as long as its losses are recent
+                        if (_helpers isNotEqualTo []) then {
+                            _askedAt = time;
+                            _state set [_id, [_peak, _count, _lostAt, _askedAt]];
+                            _sent pushBack [_id, _enemyID, _helpers];
+                            _sentMap set [_id, [_enemyID, _helpers, time]];
+                            ["OPCOM HELP - %1: group %2 down to %3 of %4 asked for help against %5, %6 sent (%7)",
+                                _mySide, _id, _count, _peak, _enemyID, _helpers, _helpType] call ALiVE_fnc_dump;
+                        } else {
+                            ["OPCOM HELP - %1: group %2 down to %3 of %4 asked for help against %5, nobody free (tried %6)",
+                                _mySide, _id, _count, _peak, _enemyID, _tried] call ALiVE_fnc_dump;
+                        };
+                    };
+                };
+            };
+        } forEach _ids;
+
+        // forget groups that no longer exist, so the maps don't grow for the life of the mission
+        { if !(_x in _seen) then { _state deleteAt _x } } forEach (keys _state);
+        { if !(_x in _seen) then { _sentMap deleteAt _x } } forEach (keys _sentMap);
+
+        _result = _sent;
     };
 
     ///////////////////////////////////////////////////

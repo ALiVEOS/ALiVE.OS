@@ -384,6 +384,19 @@ class CfgVehicles {
                                         class Yes { name = "Yes"; value = "true"; };
                                 };
                         };
+                        // Groups Call For Help (A. Ares on Discord, 26 Oct): a group losing a fight asks for the nearest free group
+                        class callForHelp : Combo
+                        {
+                                property = "ALiVE_mil_opcom_callForHelp";
+                                displayName = "$STR_ALIVE_OPCOM_CALL_FOR_HELP";
+                                tooltip = "$STR_ALIVE_OPCOM_CALL_FOR_HELP_COMMENT";
+                                defaultValue = """false""";
+                                class Values
+                                {
+                                        class No  { name = "No";  value = "false"; };
+                                        class Yes { name = "Yes"; value = "true"; };
+                                };
+                        };
                         class HDR_SHIP : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_HDR_SHIP"; displayName = "START FROM SHIP"; };
                         class shipStart : Combo
                         {

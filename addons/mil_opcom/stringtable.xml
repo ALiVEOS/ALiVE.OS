@@ -378,6 +378,12 @@
 <Key ID="STR_ALIVE_OPCOM_FOLLOW_PLAYERS_COMMENT">
     <English>Occupation only. Yes stops the commander attacking on its own: it leaves enemy-held places to the players. Once players of its side are in an objective with no enemy left within 500 m, it sends a group to garrison it, and Security Patrols then walk it. It still defends a place under attack, takes an objective players order it to (OPCOM Orders), and retakes a place it had garrisoned. Players need to be on foot there: a player who stays in a vehicle isn't counted.</English>
 </Key>
+<Key ID="STR_ALIVE_OPCOM_CALL_FOR_HELP">
+    <English>Groups Call For Help</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_CALL_FOR_HELP_COMMENT">
+    <English>Invasion and Occupation. Yes lets a group that has lost half its men in a fight ask the commander for help. The nearest free group that can reach the enemy (the hurt group's own kind first) is sent to that enemy at full speed, and the Military Artillery module, if placed, is asked for a fire mission on it. Each hurt group asks at most once every 2 minutes, the commander answers at most 2 calls a minute, and an enemy it is already dealing with isn't asked about again. Player groups never ask. No (the default) leaves things as they are: the commander only sends help when it spots a new enemy itself.</English>
+</Key>
 <Key ID="STR_ALIVE_OPCOM_SHIP_START">
     <English>Start From Ship</English>
 </Key>
