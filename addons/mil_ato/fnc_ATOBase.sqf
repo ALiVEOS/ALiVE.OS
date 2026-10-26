@@ -717,7 +717,9 @@ switch(_operation) do {
 
             if (_kind isEqualTo "deck") then {
                 _isCarrier = true;
-                _carrier = (nearestObjects [_position, ["StaticShip"], SHIP_SEARCH]) param [0, objNull];
+                // Surface's own lookup, which also knows a carrier that is not
+                // a StaticShip (a Nimitz).
+                _carrier = [_surface, "shipAt", _position] call ALIVE_fnc_ATOSurface;
                 // The ship's own parts make the base cluster, as the old
                 // module did it. When nothing strategic is found the deck
                 // is still an airbase, so a nominal cluster is built from

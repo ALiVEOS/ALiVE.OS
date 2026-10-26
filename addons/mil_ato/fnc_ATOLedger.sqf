@@ -499,16 +499,17 @@ switch(_operation) do {
                             if !(_startPos isEqualTo []) then {
                                 _home = [_startPos, _startDir, "terrain"];
                                 if (_onCarrier) then {
-                                    private _ship = (nearestObjects [_startPos, ["StaticShip"], 400]) param [0, objNull];
+                                    private _ship = [objNull, "shipAt", _startPos] call ALIVE_fnc_ATOSurface;
                                     if (isNull _ship) then {
                                         ["ALIVE_fnc_ATOLedger - %1 was recorded on a carrier and there is no ship near %2; imported as terrain",
                                             _tail, _startPos] call ALiVE_fnc_dump;
                                     } else {
-                                        private _m = _ship worldToModel _startPos;
+                                        private _frame = [objNull, "shipFrame", _ship] call ALIVE_fnc_ATOSurface;
+                                        private _m = _frame worldToModel _startPos;
                                         _home = [_startPos, _startDir, "deck",
                                             [typeOf _ship, getPosASL _ship, netId _ship],
                                             [_m select 0, _m select 1, 0],
-                                            (_startDir - (getDir _ship)) mod 360];
+                                            (_startDir - (getDir _frame)) mod 360];
                                     };
                                 };
                             };

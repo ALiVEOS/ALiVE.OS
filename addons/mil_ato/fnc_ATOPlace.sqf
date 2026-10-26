@@ -358,11 +358,12 @@ private _fnc_homeFor = {
             // and falls through to the cascade.
             ["ALIVE_fnc_ATOPlace - %1 is on a deck at %2 and no ship was found to attach it to", _class, _flat] call ALiVE_fnc_dump;
         } else {
-            private _m = _ship worldToModel _flat;
+            private _frame = [_surface, "shipFrame", _ship] call ALIVE_fnc_ATOSurface;
+            private _m = _frame worldToModel _flat;
             _cand = [_flat, _dir, "deck",
                 [_surface, "carrierHandle", _ship] call ALIVE_fnc_ATOSurface,
                 [_m select 0, _m select 1, 0],
-                (_dir - (getDir _ship)) mod 360];
+                (_dir - (getDir _frame)) mod 360];
         };
     };
     // A hangar beats a spot that is merely acceptable.

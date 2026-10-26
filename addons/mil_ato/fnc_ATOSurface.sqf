@@ -218,6 +218,58 @@ private _fnc_offRunway = {
     _q distance2D [_ax + (_t * _dx), _ay + (_t * _dy), 0]
 };
 
+// ---- a carrier that is not a StaticShip -------------------------------------
+// The USS Nimitz (Steam Workshop 643530417) is built differently from the
+// game's own USS Freedom. What a mission maker places is a Ship called
+// JDG_carrier_Spawner with an empty model. Its init creates the deck, the
+// island, the hangars and the lifts as separate objects (CarrierParts, which
+// are HouseBase), keeps their class names in its own carrierParts variable and
+// keeps each object in a variable named after its class. Neither the spawner
+// nor any part is a StaticShip, so a commander placed on its deck used to be
+// told it stood on terrain.
+//
+// Recognised by that variable rather than by the class name, so nothing here
+// needs the mod loaded, and a carrier built the same way is picked up too.
+private _fnc_isShip = {
+    params ["_o"];
+    !isNull _o && {(_o isKindOf "StaticShip") || {count (_o getVariable ["carrierParts", []]) > 0}}
+};
+private _fnc_shipsNear = {
+    params ["_p", "_r"];
+    (nearestObjects [_p, ["StaticShip", "Ship"], _r]) select { [_x] call _fnc_isShip }
+};
+
+// The classes a ship is made of: the config pairs a USS Freedom declares,
+// reduced to class names, and the list a Nimitz keeps on itself.
+private _fnc_partClasses = {
+    params ["_ship"];
+    private _c = (getArray (configFile >> "CfgVehicles" >> typeOf _ship >> "multiStructureParts")) apply {
+        if (_x isEqualType []) then { _x param [0, ""] } else { _x }
+    };
+    private _v = _ship getVariable ["carrierParts", []];
+    if (_v isEqualType []) then {
+        { if (_x isEqualType "") then { _c pushBackUnique _x } } forEach _v;
+    };
+    _c
+};
+
+// The object a ship's model space is read from. A StaticShip is its own.
+//
+// A Nimitz's spawner cannot be trusted for it. Its parts take the spawner's
+// heading at the moment it is created and never again, so a spawner created by
+// script and then turned, or one aligned with the mod's own aligner object
+// (which turns the parts and leaves the spawner at zero), faces one way while
+// its deck faces another. Measured: a spawner created and then set to sixty
+// degrees left every part at zero, and traces a hundred metres fore and aft
+// along its heading found open water. The parts all share one frame, so the
+// mod's own reference part is used, nimspots, the object its catapult points
+// hang on.
+private _fnc_frame = {
+    params ["_ship"];
+    private _f = _ship getVariable ["nimspots", objNull];
+    if (_f isEqualType objNull && {!isNull _f}) then { _f } else { _ship }
+};
+
 TRACE_1("ATO Surface - input",_this);
 
 params [
@@ -253,7 +305,7 @@ switch(_operation) do {
         private _pos = _args;
         _result = "terrain";
 
-        private _ships = nearestObjects [_pos, ["StaticShip"], SHIP_SEARCH];
+        private _ships = [_pos, SHIP_SEARCH] call _fnc_shipsNear;
         if (count _ships == 0) exitWith { _result = "terrain" };
 
         private _ship = _ships select 0;
@@ -271,10 +323,9 @@ switch(_operation) do {
         // bare class name, so the list has to be reduced to its class names
         // before a class can be looked for in it. Measured on a USS Freedom:
         // twenty pairs, entry zero
-        // ["Land_Carrier_01_hull_01_F", "pos_hull_1"].
-        private _partClasses = (getArray (configFile >> "CfgVehicles" >> typeOf _ship >> "multiStructureParts")) apply {
-            if (_x isEqualType []) then { _x param [0, ""] } else { _x }
-        };
+        // ["Land_Carrier_01_hull_01_F", "pos_hull_1"]. A Nimitz keeps its
+        // list on itself instead.
+        private _partClasses = [_ship] call _fnc_partClasses;
         // Kept as well, in case something stamps the objects one day.
         private _partObjects = _ship getVariable ["multiStructureParts", []];
         if !(_partObjects isEqualType []) then { _partObjects = [] };
@@ -339,7 +390,14 @@ switch(_operation) do {
     };
 
     case "shipAt": {
-        _result = (nearestObjects [_args, ["StaticShip"], SHIP_SEARCH]) param [0, objNull];
+        _result = ([_args, SHIP_SEARCH] call _fnc_shipsNear) param [0, objNull];
+    };
+
+    // The object whose model space a ship's deck offsets and headings are in.
+    // On its own so that nothing outside this file has to know that a Nimitz's
+    // spawner and its deck can face different ways.
+    case "shipFrame": {
+        _result = if (_args isEqualType objNull && {!isNull _args}) then { [_args] call _fnc_frame } else { objNull };
     };
 
     case "carrierHandle": {
@@ -361,12 +419,12 @@ switch(_operation) do {
                 private _o = objNull;
                 if !(_net isEqualTo "") then {
                     private _try = objectFromNetId _net;
-                    if (!isNull _try && {_try isKindOf "StaticShip"}) then { _o = _try };
+                    if ([_try] call _fnc_isShip) then { _o = _try };
                 };
                 if (isNull _o && {count _pos > 1}) then {
                     _o = (nearestObjects [_pos, [_cls], SHIP_SEARCH]) param [0, objNull];
                     if (isNull _o) then {
-                        _o = (nearestObjects [_pos, ["StaticShip"], SHIP_SEARCH]) param [0, objNull];
+                        _o = ([_pos, SHIP_SEARCH] call _fnc_shipsNear) param [0, objNull];
                     };
                 };
                 _result = _o;
@@ -430,16 +488,17 @@ switch(_operation) do {
                 // Each config entry is a PAIR, [class, memory point], so the
                 // list has to be reduced to class names before a class can be
                 // looked for in it.
-                private _partClasses = (getArray (configFile >> "CfgVehicles" >> typeOf _ship >> "multiStructureParts")) apply {
-                    if (_x isEqualType []) then { _x param [0, ""] } else { _x }
-                };
+                private _partClasses = [_ship] call _fnc_partClasses;
+                // Every offset below is in this object's model space, which is
+                // the ship itself except on a Nimitz (see _fnc_frame).
+                private _frame = [_ship] call _fnc_frame;
 
                 // Deck level, read off the ship. Five samples down the middle
                 // and the middle one taken, so an aircraft or a crate standing
                 // on one of them cannot move the answer.
                 private _zs = [];
                 {
-                    private _w = _ship modelToWorld [_x select 0, _x select 1, 0];
+                    private _w = _frame modelToWorld [_x select 0, _x select 1, 0];
                     private _t = ([_logic, "deckTop", [[_w select 0, _w select 1, 0], []]] call MAINCLASS) select 0;
                     if (_t > -9000) then { _zs pushBack _t };
                 } forEach [[0,0],[0,-60],[0,60],[18,-20],[-18,20]];
@@ -470,7 +529,7 @@ switch(_operation) do {
                     private _fnc_toShip = {
                         params ["_mx", "_my"];
                         private _w = _airObj modelToWorld [_mx, _my, 0];
-                        private _m = _ship worldToModel [_w select 0, _w select 1, _w select 2];
+                        private _m = _frame worldToModel [_w select 0, _w select 1, _w select 2];
                         [_m select 0, _m select 1, 0]
                     };
                     private _ils = getArray (_ac >> "ilsPosition");
@@ -527,7 +586,7 @@ switch(_operation) do {
                 if (_deckZ > -9000) then {
                     for "_mx" from -DECK_REACH_X to DECK_REACH_X step DECK_STEP_X do {
                         for "_my" from -DECK_REACH_Y to DECK_REACH_Y step DECK_STEP_Y do {
-                            private _w = _ship modelToWorld [_mx, _my, 0];
+                            private _w = _frame modelToWorld [_mx, _my, 0];
                             private _flat = [_w select 0, _w select 1, 0];
                             ([_logic, "deckTop", [_flat, []]] call MAINCLASS) params ["_tz", "_to"];
                             private _isDeck = _tz > -9000
@@ -636,6 +695,49 @@ switch(_operation) do {
                     };
                 } forEach _classes;
 
+                // A Nimitz declares no Catapults class. Its four catapults are
+                // memory points on its reference part, C1 to C4 where the
+                // shuttle starts and C1T to C4T where the stroke ends, which
+                // is what the mod's own launch reads. Measured on the rig: each
+                // stroke about 101 m long, all four heading within five degrees
+                // of the bow, the starts at deck level.
+                //
+                // The heading is written as the dirOffset the launch already
+                // turns into a heading (the part's heading, less the offset,
+                // less 180), so the effect needs no second formula for it.
+                //
+                // The blast deflectors are animation sources named ani_JBD<n>
+                // plus a letter, on whichever deck part carries them, found in
+                // config and kept as [part, source] pairs rather than the
+                // Freedom's list of names on the catapult's own part.
+                private _ref = _ship getVariable ["nimspots", objNull];
+                if (count _found == 0 && {_ref isEqualType objNull} && {!isNull _ref}) then {
+                    for "_n" from 1 to 4 do {
+                        private _mem = format ["C%1", _n];
+                        private _a = _ref selectionPosition _mem;
+                        private _b = _ref selectionPosition (_mem + "T");
+                        if (!(_a isEqualTo [0,0,0]) && {!(_b isEqualTo [0,0,0])}) then {
+                            private _rel = ((_b select 0) - (_a select 0)) atan2 ((_b select 1) - (_a select 1));
+                            private _prefix = format ["ani_JBD%1", _n];
+                            private _anims = [];
+                            {
+                                private _cls = _x;
+                                private _srcs = configFile >> "CfgVehicles" >> _cls >> "AnimationSources";
+                                for "_i" from 0 to ((count _srcs) - 1) do {
+                                    private _s = _srcs select _i;
+                                    if (isClass _s && {((configName _s) find _prefix) == 0}) then {
+                                        private _piece = _ship getVariable [_cls, objNull];
+                                        if (_piece isEqualType objNull && {!isNull _piece}) then {
+                                            _anims pushBack [_piece, configName _s];
+                                        };
+                                    };
+                                };
+                            } forEach _classes;
+                            _found pushBack [_ref, _mem, -180 - _rel, _anims];
+                        };
+                    };
+                };
+
                 if (count _found > 0) then {
                     [_cats, _key, _found] call ALIVE_fnc_hashSet;
                     ["ALIVE_fnc_ATOSurface - %1: %2 catapult(s) offered: %3",
@@ -696,9 +798,17 @@ switch(_operation) do {
                     private _entry = _entries select (_x select 1);
                     private _mem = _entry param [1, ""];
                     private _pos = [_logic, "catapultPos", _entry] call MAINCLASS;
+                    // A Nimitz keeps a shuttle on each catapult, a Plane class
+                    // ("Cat Shuttle") attached to the deck, and records it on
+                    // the spawner as C1Shuttle to C4Shuttle. Counted as an
+                    // aircraft, every catapult was taken and nothing launched.
+                    private _shuttle = _ship getVariable [_mem + "Shuttle", objNull];
+                    if !(_shuttle isEqualType objNull) then { _shuttle = objNull };
                     private _busy = (nearestObjects [_pos, ["Plane"], CATAPULT_BUSY]) select {
                         private _cand = _x;
-                        alive _cand && {(_ignore findIf {_x isEqualTo _cand}) == -1}
+                        alive _cand
+                        && {!(_cand isEqualTo _shuttle)}
+                        && {(_ignore findIf {_x isEqualTo _cand}) == -1}
                     };
 
                     // And anything that has CLAIMED this catapult but has not
@@ -749,7 +859,7 @@ switch(_operation) do {
         ];
         _result = false;
         if (isNull _ship) then {
-            _ship = (nearestObjects [_p, ["StaticShip"], SHIP_SEARCH]) param [0, objNull];
+            _ship = ([_p, SHIP_SEARCH] call _fnc_shipsNear) param [0, objNull];
         };
         if (!isNull _ship) then {
             private _geom = [_logic, "deckGeometry", _ship] call MAINCLASS;
@@ -780,7 +890,7 @@ switch(_operation) do {
                 // Off the strip and off the taxi lanes, asked in the ship's
                 // model space where the geometry lives.
                 if (_ok) then {
-                    private _m = _ship worldToModel [_p select 0, _p select 1, _p select 2];
+                    private _m = ([_ship] call _fnc_frame) worldToModel [_p select 0, _p select 1, _p select 2];
                     private _q = [_m select 0, _m select 1, 0];
                     if (count _landA > 1 && {([_q, _landA, _landB] call _fnc_segDist) < DECK_LAND_CLEAR}) then {
                         _ok = false;
@@ -874,7 +984,7 @@ switch(_operation) do {
         // worked out and ranked for the ship, so the search is a walk down that
         // list taking the first one nothing has claimed.
         if (_surface isEqualTo "deck") exitWith {
-            private _ship = (nearestObjects [_anchor, ["StaticShip"], SHIP_SEARCH]) param [0, objNull];
+            private _ship = ([_anchor, SHIP_SEARCH] call _fnc_shipsNear) param [0, objNull];
             if (isNull _ship) then {
                 ["ALIVE_fnc_ATOSurface - a deck home was asked for at %1 and there is no ship within %2 m",
                     _anchor, SHIP_SEARCH] call ALiVE_fnc_dump;
@@ -897,6 +1007,7 @@ switch(_operation) do {
                 private _bowRel = _geom param [6, 0];
                 if !(_bowRel isEqualType 0) then { _bowRel = 0 };
                 private _handle = [_logic, "carrierHandle", _ship] call MAINCLASS;
+                private _frame = [_ship] call _fnc_frame;
 
                 // No deck level, no home. Every position below is built on
                 // that number, and writing a home at minus nine thousand
@@ -911,7 +1022,7 @@ switch(_operation) do {
                 {
                     private _spot = _x;
                     if (count _found == 0) then {
-                        private _w = _ship modelToWorld [_spot select 0, _spot select 1, 0];
+                        private _w = _frame modelToWorld [_spot select 0, _spot select 1, 0];
                         private _p = [_w select 0, _w select 1, _deckZ];
                         private _clashes = (_reserved findIf {
                             (_p distance2D (_x select 0)) < (_span + ((_x select 1) max 0))
@@ -923,7 +1034,7 @@ switch(_operation) do {
                             // first three entries of a home still works.
                             // Facing the bow, which is not the ship's getDir
                             // on every ship (see deckGeometry).
-                            _found = [_p, ((getDir _ship) + _bowRel) mod 360, "deck", _handle,
+                            _found = [_p, ((getDir _frame) + _bowRel) mod 360, "deck", _handle,
                                 [_spot select 0, _spot select 1, 0], _bowRel];
                         };
                     };
@@ -1613,13 +1724,14 @@ switch(_operation) do {
                 private _rel = _home param [5, 0];
                 if !(_off isEqualType []) then { _off = [0,0,0] };
                 if !(_rel isEqualType 0) then { _rel = 0 };
-                private _w = _ship modelToWorld [_off param [0,0], _off param [1,0], 0];
+                private _frame = [_ship] call _fnc_frame;
+                private _w = _frame modelToWorld [_off param [0,0], _off param [1,0], 0];
                 private _z = ([_logic, "deckGeometry", _ship] call MAINCLASS) param [0, -9999];
                 if (_z < -9000) then {
                     _z = ([_logic, "deckTop", [[_w select 0, _w select 1, 0], []]] call MAINCLASS) select 0;
                 };
                 if (_z < -9000) then { _z = 0 };
-                _result = [[_w select 0, _w select 1, _z], ((getDir _ship) + _rel) mod 360];
+                _result = [[_w select 0, _w select 1, _z], ((getDir _frame) + _rel) mod 360];
             };
         };
         // Terrain homes are above terrain level, and a copy, so a caller cannot

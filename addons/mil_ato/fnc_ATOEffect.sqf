@@ -1641,6 +1641,25 @@ switch(_operation) do {
                     // already stopped asking; the running thread did not care.
                     // Teleporting an aircraft out from under somebody is the
                     // thing this module exists to stop.
+                    // The blast deflector behind the catapult, up or down. A
+                    // USS Freedom's are named on the catapult's own part and
+                    // the engine's function moves them. A Nimitz's live on
+                    // other deck parts and come as [part, source] pairs, moved
+                    // the way the mod moves them, to phase one for up.
+                    private _fnc_deflectors = {
+                        params ["_up"];
+                        if (count _anims == 0) exitWith {};
+                        if ((_anims findIf { _x isEqualType [] }) > -1) then {
+                            {
+                                if (_x isEqualType [] && {!isNull (_x param [0, objNull])}) then {
+                                    (_x select 0) animate [_x select 1, [0, 1] select _up];
+                                };
+                            } forEach _anims;
+                        } else {
+                            [_part, _anims, [0, 10] select _up] call BIS_fnc_Carrier01AnimateDeflectors;
+                        };
+                    };
+
                     private _fnc_stop = {
                         if (isNull _obj) exitWith { "the hull is gone" };
                         if (!alive _obj) exitWith { "the hull is dead" };
@@ -1659,7 +1678,7 @@ switch(_operation) do {
                     // pinned inside raised geometry.
                     private _fnc_standDown = {
                         params ["_why"];
-                        [_part, _anims, 0] call BIS_fnc_Carrier01AnimateDeflectors;
+                        [false] call _fnc_deflectors;
                         if (!isNull _obj) then {
                             _obj allowDamage true;
                             _obj setVariable ["ALiVE_mil_ato_catapultUntil", nil, false];
@@ -1732,7 +1751,7 @@ switch(_operation) do {
                     // then the engine's own launch, then a kick if the
                     // engine's launch left it low, then the deflectors down
                     // and damage back on.
-                    [_part, _anims, 10] call BIS_fnc_Carrier01AnimateDeflectors;
+                    [true] call _fnc_deflectors;
 
                     _obj setFuel 1;
                     _obj engineOn true;
@@ -1889,7 +1908,7 @@ switch(_operation) do {
                         // the catapult in the same state.
                         ["the launch finished"] call _fnc_standDown;
                     } else {
-                        [_part, _anims, 0] call BIS_fnc_Carrier01AnimateDeflectors;
+                        [false] call _fnc_deflectors;
                         _obj setVariable ["ALiVE_mil_ato_catapultUntil", nil, false];
                         _obj setVariable ["ALiVE_mil_ato_catapult", nil, false];
                         ["ALIVE_fnc_ATOEffect - %1 never got established after its launch (%2 m up, %3 km/h); damage left off",
@@ -2464,6 +2483,26 @@ switch(_operation) do {
                 // made three refusals report success.
                 private _h = [_logic, "apply", ["tailhook", _obj, _home, []]] call MAINCLASS;
                 private _hook = _h param [2, ""];
+
+                // A Nimitz's wires are its own. The game's arrest, which the
+                // hook above starts or the aircraft starts for itself, only
+                // knows a USS Freedom's, so a jet flew the approach, touched
+                // down and rolled off the bow: measured three times, the wreck
+                // 190 to 217 m forward of the deck centre. The mod's own arrest
+                // is started instead, once per approach (it marks the aircraft
+                // with NimitzTailhook while it runs). It waits for the
+                // touchdown beside its arrestor, brakes the aircraft to a stop
+                // and then holds it still until the hook is raised, which
+                // releaseApproach does. The mod's arrest finds its arrestor by
+                // asking for the carrier nearest the player, so with two
+                // Nimitz in one mission it may watch the other one's wires.
+                if (!isNil "TTT_fnc_arrest"
+                    && {!isNull (_ship getVariable ["jdgNimArrestor", objNull])}
+                    && {isNil {_obj getVariable "NimitzTailhook"}}) then {
+                    [_obj, false] spawn TTT_fnc_arrest;
+                    _obj setVariable ["ALiVE_mil_ato_nimitzArrest", true, false];
+                    _hook = _hook + ", the Nimitz arrest armed";
+                };
                 _detail = format ["approach %1 m out, %2 m up, %3", round _dShip, round _up, _hook];
             };
 
@@ -2497,6 +2536,15 @@ switch(_operation) do {
                     private _up = (getArray (_cfg >> "CarrierOpsCompatability" >> "ArrestHookAnimationStates")) param [2, 1];
                     { _obj animate [_x, _up] } forEach _list;
                     _obj setVariable ["ALiVE_mil_ato_hookOut", nil, false];
+                };
+                // And a Nimitz arrest this module started is ended the mod's
+                // own way. Left running, it zeroes the aircraft's speed every
+                // twentieth of a second for as long as it lives, so the next
+                // catapult shot would go nowhere.
+                if (_obj getVariable ["ALiVE_mil_ato_nimitzArrest", false]) then {
+                    if (!isNil "TTT_fnc_tailhookUp") then { [_obj] call TTT_fnc_tailhookUp };
+                    _obj setVariable ["NimitzTailhook", nil];
+                    _obj setVariable ["ALiVE_mil_ato_nimitzArrest", nil, false];
                 };
                 // And forget that a landing was committed to, or the next
                 // approach starts already believing it is on finals.
