@@ -145,7 +145,7 @@ private _builtFor = [CLUSTERBUILD];
 //
 // Empty means no airfield, and every consumer short-circuits on that one
 // comparison. See ALiVE_fnc_buildAirsideCache for the shapes.
-ALiVE_airsideFields   = [];
+if (isServer || {isNil "ALiVE_airsideFields"}) then { ALiVE_airsideFields = [] };
 
 // Where the airfield search actually looked, and how far, recorded per place it looked
 // at rather than per airfield it found. Stride 3: x, y, radius searched.
@@ -162,7 +162,9 @@ ALiVE_airsideSurveyed = [];
 // Local classification data belongs to this mission; never broadcast object identities.
 ALiVE_airfieldRetainedSurveys = [];
 ALiVE_airsideRegisteredBounds = nil;
-ALiVE_airsideCacheReady = false;
+// a player joining mid-mission may already hold the server's broadcast copies of these two
+// (the Player FOBs plane preview reads them): only the server starts them afresh
+if (isServer || {isNil "ALiVE_airsideCacheReady"}) then { ALiVE_airsideCacheReady = false };
 ALiVE_airsideCacheBuilding = nil;
 
 // Shared clock for ALiVE systems which doesn't count time spent in pause menu

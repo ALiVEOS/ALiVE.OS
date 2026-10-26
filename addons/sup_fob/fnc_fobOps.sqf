@@ -407,10 +407,19 @@ switch (_op) do {
                 _x params ["", "_class", "_cost", "_vid", "", "_pos", "_dir"];
                 private _have = if (isNil "ALiVE_ProfileHandler") then { nil } else { [ALiVE_ProfileHandler, "getProfile", _vid] call ALIVE_fnc_profileHandler };
                 if (!isNil "_have") then { _live pushBack _x } else {
-                    private _nv = ["spawnVehicle", [_class, _pos, _dir, toLower getText (configFile >> "CfgVehicles" >> _class >> "faction")]] call ALiVE_fnc_fobOps;
+                    // an aircraft only where nothing stands now, aircraft already made again in this pass
+                    // included: two built on one pad at different times would otherwise both come back on it
+                    private _taken = false;
+                    if (_class isKindOf "Air") then {
+                        private _bb = [_class] call ALiVE_fnc_getVehicleBoundingBox;
+                        private _r = ((_bb select 0) max (_bb select 1)) * 0.55;
+                        _taken = ((nearestObjects [_pos, ["AllVehicles"], _r]) findIf { !(_x isKindOf "CAManBase") }) > -1
+                            || {(_live findIf { (_x param [0, objNull]) isEqualTo "vehicle" && {(_x select 1) isKindOf "Air"} && {(_x select 3) != ""} && {((_x select 5) distance2D _pos) < _r} }) > -1};
+                    };
+                    private _nv = if (_taken) then { [] } else { ["spawnVehicle", [_class, _pos, _dir, toLower getText (configFile >> "CfgVehicles" >> _class >> "faction")]] call ALiVE_fnc_fobOps };
                     if (_nv isNotEqualTo []) then { _live pushBack (["vehicle", _class, _cost] + _nv + [_pos, _dir]); _result = _result + 1 } else {
                         // kept with no profile id, so the watchdog leaves it and the next start makes it
-                        ["ALiVE Player FOBs - %1: couldn't make the %2 again now; kept for the next start", _id, _class] call ALiVE_fnc_dumpR;
+                        ["ALiVE Player FOBs - %1: couldn't make the %2 again now%3; kept for the next start", _id, _class, ["", " (something stands where it was)"] select _taken] call ALiVE_fnc_dumpR;
                         _live pushBack ["vehicle", _class, _cost, "", "", _pos, _dir];
                     };
                 };
@@ -476,8 +485,10 @@ switch (_op) do {
         if !(finite _dir) exitWith {};
         private _range = [_logic, "attribute", ["fob_build_range"]] call ALiVE_fnc_FOB;
         private _centre = [_entry, "pos", [0,0,0]] call ALIVE_fnc_hashGet;
-        if (_pos distance2D _centre > _range || {_caller distance2D _centre > _range}) exitWith { ["STR_ALIVE_FOB_REFUSED_RANGE", [round _range]] call _tell };
-        if (surfaceIsWater _pos) exitWith { ["STR_ALIVE_FOB_REFUSED_WATER"] call _tell };
+        // an aircraft's range and water are tested on its pad or taxiway spot further down, as the preview does
+        private _isAir = _class isKindOf "Air";
+        if ((!_isAir && {_pos distance2D _centre > _range}) || {_caller distance2D _centre > _range}) exitWith { ["STR_ALIVE_FOB_REFUSED_RANGE", [round _range]] call _tell };
+        if (!_isAir && {surfaceIsWater _pos}) exitWith { ["STR_ALIVE_FOB_REFUSED_WATER"] call _tell };
 
         private _row = (missionNamespace getVariable ["ALiVE_FOB_catalog", []]) select { (_x select 0) == _class };
         if (_row isEqualTo []) exitWith { ["STR_ALIVE_FOB_REFUSED_NOTBUILDABLE"] call _tell };
@@ -499,6 +510,19 @@ switch (_op) do {
         };
         if (_isStatic isEqualTo "refused") exitWith { ["STR_ALIVE_FOB_REFUSED_STATIC_SIDE"] call _tell };
         if ((_isStatic || _isVehicle) && {isNil "ALiVE_ProfileHandler"}) exitWith { ["STR_ALIVE_FOB_REFUSED_STATIC_PROFILES"] call _tell };
+        // An aircraft (Jman, 26 Oct): a helicopter onto the helipad nearest the spot, a plane onto airfield
+        // taxiway or parking, the spot worked out here again whatever the preview showed
+        private _airRefused = "";
+        if (_isVehicle && {_isAir}) then {
+            private _bb = [_class] call ALiVE_fnc_getVehicleBoundingBox;
+            (["airSpot", [_class, _pos, ((_bb select 0) max (_bb select 1)) * 0.55]] call ALiVE_fnc_fobPlacement) params ["_airPos", "_w"];
+            if (_w != "") exitWith { _airRefused = _w };
+            if (_airPos distance2D _centre > _range) exitWith { _airRefused = "RANGE" };
+            if (surfaceIsWater _airPos) exitWith { _airRefused = "WATER" };
+            _pos = _airPos;
+        };
+        if (_airRefused == "RANGE") exitWith { ["STR_ALIVE_FOB_REFUSED_RANGE", [round _range]] call _tell };
+        if (_airRefused != "") exitWith { ["STR_ALIVE_FOB_REFUSED_" + _airRefused] call _tell };
 
         if !(["debit", [_id, _cost, "build " + _class]] call ALiVE_fnc_fobSupply) exitWith {
             ["STR_ALIVE_FOB_REFUSED_SUPPLY", [_cost, ["balance", [_id]] call ALiVE_fnc_fobSupply]] call _tell;
@@ -575,7 +599,9 @@ switch (_op) do {
         if (isNil "_entry") exitWith { ["STR_ALIVE_FOB_REFUSED_NOTBUILT"] call _tell };
         if (_staticAt > -1) exitWith {
             if (([_entry, "side", ""] call ALIVE_fnc_hashGet) != str (side group _caller)) exitWith { ["STR_ALIVE_FOB_REFUSED_NOTOURS"] call _tell };
-            if (_caller distance _o > 8) exitWith { ["STR_ALIVE_FOB_REFUSED_RANGE", [8]] call _tell };
+            // an aircraft from anywhere alongside it: a Huron or Blackfish is out of reach of its middle
+            private _near = if (_o isKindOf "Air") then { 8 max ((sizeOf typeOf _o) / 2) } else { 8 };
+            if (_caller distance _o > _near) exitWith { ["STR_ALIVE_FOB_REFUSED_RANGE", [round _near]] call _tell };
             if !([_entry] call _mayManage) exitWith { ["STR_ALIVE_FOB_REFUSED_NOTALLOWED"] call _tell };
             private _objects = [_entry, "objects", []] call ALIVE_fnc_hashGet;
             (_objects select _staticAt) params ["", "_class", ["_cost", 0], "_vid", "_eid"];
@@ -1218,7 +1244,11 @@ switch (_op) do {
         if (isNil "ALiVE_ProfileHandler" || {!isClass (configFile >> "CfgVehicles" >> _class)}) exitWith {};
         private _cfg = configFile >> "CfgVehicles" >> _class;
         private _side = ["EAST", "WEST", "GUER"] param [getNumber (_cfg >> "side"), "WEST"];
-        private _made = [_class, _side, getText (_cfg >> "faction"), [_pos select 0, _pos select 1, 0], _dir, false] call ALIVE_fnc_createProfilesUnCrewedVehicle;
+        // an aircraft is made with the profile flag that spawns it exactly where it was left (its own pad or
+        // taxiway spot) and skips the faction swap: without it every spawn looks for a "better" spot up to
+        // 200 m away and moves a plane off the taxiway to an apron or hangar
+        private _keepSpot = _class isKindOf "Helicopter" || {_class isKindOf "Plane"};
+        private _made = [_class, _side, getText (_cfg >> "faction"), [_pos select 0, _pos select 1, 0], _dir, false, "", false, false, [], [], _keepSpot] call ALIVE_fnc_createProfilesUnCrewedVehicle;
         // it hands back the vehicle's profile and an empty group's; the vehicle's id is the one kept,
         // the group's goes with it when the vehicle is removed
         private _veh = _made select { ([_x, "type", ""] call ALIVE_fnc_hashGet) == "vehicle" };

@@ -553,7 +553,14 @@ switch (_operation) do {
                         // spot in range, use it; otherwise fall back
                         // to the profile position with the existing
                         // vehicleSpawnSettleSeconds safety window.
-                        if !(_isSPE) then {
+                        // A profile kept on its exact spot (isSPE: a Player FOB's helicopter on its pad or
+                        // plane on its taxiway) still looks for a clear spot when a vehicle or wreck now
+                        // stands where it was, rather than being made inside it.
+                        private _spotTaken = _isSPE && {
+                            private _bbT = [_vehicleClass] call ALiVE_fnc_getVehicleBoundingBox;
+                            ((nearestObjects [_position, ["AllVehicles"], ((_bbT select 0) max (_bbT select 1)) * 0.55]) findIf { !(_x isKindOf "CAManBase") }) > -1
+                        };
+                        if (!_isSPE || {_spotTaken}) then {
                             // Pass this profile's id as the registry owner token so its OWN prior
                             // reservation does not evict it on respawn (objNull ownVeh - the vehicle is
                             // not created yet on this spawn path).

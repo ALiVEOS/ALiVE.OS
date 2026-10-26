@@ -25,13 +25,15 @@ multiplied by the module's Cost Scale and rounded, never below 1. A static weapo
 from its role (machine gun 60, grenade launcher 75, mortar 100, AT and AA 125, howitzer 250),
 moved up or down by how hard its hardest round hits, 50 to 250.
 
-Vehicles: land vehicles and boats, never aircraft, priced by role and armour, 75 to 600 (see
-_vehiclePrice). Static weapons and vehicles are offered from the factions the side's AI
-Commanders field (all of its own side's when it has none), so a NATO FOB facing CSAT builds
-NATO equipment.
+Vehicles: land vehicles and boats, priced by role and armour, 75 to 600 (see _vehiclePrice);
+helicopters, 300 to 800, and planes, 350 to 1000 (see _airPrice), in the same Vehicles tab. A
+helicopter is built on a helipad within the FOB's build range, a plane on an airfield's taxiway
+or parking area (ALiVE_fnc_fobPlacement "airSpot"). No drones, no parachutes. Static weapons and
+vehicles are offered from the factions the side's AI Commanders field (all of its own side's
+when it has none), so a NATO FOB facing CSAT builds NATO equipment.
 
 Some items need a FOB of a higher tier: towers and machine guns or grenade launchers tier 2,
-mortars, AT and AA launchers, howitzers and vehicles tier 3.
+mortars, AT and AA launchers, howitzers, vehicles and aircraft tier 3.
 
 A mission or mod can change the catalog through CfgALiVEFOBBuildables, in description.ext or a
 mod's config (the mission's wins):
@@ -262,23 +264,33 @@ private _staticPrice = {
     [round ((_c max _lo) min _hi), _role]
 };
 
-// A vehicle's role and price, from its armour, chassis and the hardest-hitting round it carries:
-//   artillery 500-600, tank killers (a round hitting 250 or more) 450-600, tracked armed vehicles
-//   250-330, wheeled armed APCs 200-250, MRAPs (armoured cars) 150-200, light armed vehicles
-//   100-150, trucks 75-100 by seats, unarmed light vehicles 75; boats 150 armed, 75 not.
-// Within a band, more armour costs more. Aircraft are never offered.
-private _vehiclePrice = {
-    params ["_class", "_cfg"];
+// The hardest-hitting round a vehicle or aircraft carries, from its own magazines and every turret's
+private _maxHitOf = {
+    params ["_cfg"];
     private _maxHit = 0;
     private _turrets = [];
     private _walk = { params ["_t"]; { _turrets pushBack _x; [_x >> "Turrets"] call _walk } forEach ("true" configClasses _t) };
     [_cfg >> "Turrets"] call _walk;
     private _mags = getArray (_cfg >> "magazines");
     { _mags append (getArray (_x >> "magazines")) } forEach _turrets;
+    // an aircraft with an editable loadout carries its rockets, missiles and bombs on pylons, not in
+    // its magazines: without these a Buzzard CAS was priced as an unarmed plane
+    { _mags pushBack getText (_x >> "attachment") } forEach ("true" configClasses (_cfg >> "Components" >> "TransportPylonsComponent" >> "Pylons"));
     {
         private _a = getText (configFile >> "CfgMagazines" >> _x >> "ammo");
         _maxHit = _maxHit max (((getNumber (configFile >> "CfgAmmo" >> _a >> "hit")) max 0) min 5000);
     } forEach _mags;
+    _maxHit
+};
+
+// A vehicle's role and price, from its armour, chassis and the hardest-hitting round it carries:
+//   artillery 500-600, tank killers (a round hitting 250 or more) 450-600, tracked armed vehicles
+//   250-330, wheeled armed APCs 200-250, MRAPs (armoured cars) 150-200, light armed vehicles
+//   100-150, trucks 75-100 by seats, unarmed light vehicles 75; boats 150 armed, 75 not.
+// Within a band, more armour costs more. Aircraft have their own bands (_airPrice).
+private _vehiclePrice = {
+    params ["_class", "_cfg"];
+    private _maxHit = [_cfg] call _maxHitOf;
     private _A = ((getNumber (_cfg >> "armor")) max 0) min 5000;
     private _armed = _maxHit >= 25;
     private _seats = (getNumber (_cfg >> "transportSoldier")) max 0;
@@ -294,6 +306,29 @@ private _vehiclePrice = {
         default { 75 };
     };
     round ((_c max 75) min 600)
+};
+
+// An aircraft's price (Jman, 26 Oct), from what it carries, its armour and its seats:
+//   helicopters 300-800: attack (a round hitting 250 or more) 700-800 by armour, armed light
+//   450-550 by its hardest round, transport 300-450 by seats (MH-9 356, Ghost Hawk 412, Huron 450);
+//   planes 350-1000: armed 800-1000 by its hardest round (every vanilla jet 1000), unarmed 350-600
+//   by seats, a VTOL never under 500.
+private _airPrice = {
+    params ["_class", "_cfg"];
+    private _maxHit = [_cfg] call _maxHitOf;
+    private _A = ((getNumber (_cfg >> "armor")) max 0) min 5000;
+    private _seats = (getNumber (_cfg >> "transportSoldier")) max 0;
+    if (_class isKindOf "Helicopter") exitWith {
+        private _c = switch (true) do {
+            case (_maxHit >= 250): { 700 + 100 * ((_A / 150) min 1) };
+            case (_maxHit >= 25): { 450 + 100 * ((_maxHit / 100) min 1) };
+            default { 300 + 150 * ((_seats / 16) min 1) };
+        };
+        round ((_c max 300) min 800)
+    };
+    private _c = if (_maxHit >= 25) then { 800 + 200 * ((_maxHit / 250) min 1) } else { 350 + 250 * ((_seats / 32) min 1) };
+    if (_class isKindOf "VTOL_Base_F") then { _c = _c max 500 };
+    round ((_c max 350) min 1000)
 };
 
 private _rows = [];
@@ -319,7 +354,7 @@ private _add = {
         case "VEHICLE": {
             _side = ["EAST", "WEST", "GUER"] param [getNumber (_cfg >> "side"), ""];
             if (_side == "") exitWith { _cost = -1 };
-            if (_cost < 0) then { _cost = (round (([_class, _cfg] call _vehiclePrice) * _scale)) max 1 };
+            if (_cost < 0) then { _cost = (round (([_class, _cfg] call ([_vehiclePrice, _airPrice] select (_class isKindOf "Air"))) * _scale)) max 1 };
             _tier = 3;
         };
         default {
@@ -343,8 +378,15 @@ private _add = {
         [_class, _cfg, "STATIC"] call _add;
     };
     // Land vehicles and boats with a driver's seat, crewed by nobody until players get in; not
-    // drones, not aircraft
+    // drones (aircraft just below)
     if ((_class isKindOf "LandVehicle" || {_class isKindOf "Ship"}) && {!(_class isKindOf "StaticWeapon")} && {!(_class isKindOf "Man")}
+        && {getNumber (_cfg >> "isUav") != 1} && {getNumber (_cfg >> "hasDriver") == 1} && {getNumber (_cfg >> "side") in [0, 1, 2]}
+        && {getText (_cfg >> "model") != ""} && {!([_class, _cfg] call _isRuin)}) then {
+        [_class, _cfg, "VEHICLE"] call _add;
+    };
+    // Helicopters and planes, the same way: empty, with a pilot's seat; not drones, and not a
+    // parachute (the game counts those as helicopters) or an ejection seat
+    if ((_class isKindOf "Helicopter" || {_class isKindOf "Plane"}) && {!(_class isKindOf "ParachuteBase")} && {!("ejection" in toLower _class)}
         && {getNumber (_cfg >> "isUav") != 1} && {getNumber (_cfg >> "hasDriver") == 1} && {getNumber (_cfg >> "side") in [0, 1, 2]}
         && {getText (_cfg >> "model") != ""} && {!([_class, _cfg] call _isRuin)}) then {
         [_class, _cfg, "VEHICLE"] call _add;
@@ -371,7 +413,8 @@ private _add = {
 } forEach ("getNumber (_x >> 'scope') == 2" configClasses (configFile >> "CfgVehicles"));
 if (_arsenal && {isClass (configFile >> "CfgVehicles" >> "ALiVE_FOB_Arsenal")}) then { ["ALiVE_FOB_Arsenal", configFile >> "CfgVehicles" >> "ALiVE_FOB_Arsenal", "SUPPLY"] call _add };
 
-// Whitelisted classes the rules didn't pick, priced as fortifications
+// Whitelisted classes the rules didn't pick, priced as fortifications (an aircraft here is one the
+// rules turned down: a civilian one, a drone or one with no pilot's seat, so it stays one too)
 {
     private _cfg = configFile >> "CfgVehicles" >> _x;
     if (isClass _cfg) then { [configName _cfg, _cfg, "FORTIFICATION"] call _add } else {

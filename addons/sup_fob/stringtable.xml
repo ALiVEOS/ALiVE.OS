@@ -194,6 +194,27 @@
             <Key ID="STR_ALIVE_FOB_WHY_CAP">
                 <English>Your side already has as many FOBs as it may (%1). Take and hold more objectives, or dismantle one.</English>
             </Key>
+            <Key ID="STR_ALIVE_FOB_WHY_NOPAD">
+                <English>A helicopter goes on a helipad. Aim at a helipad inside the FOB's build range, or build one first.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_WHY_PAD_BUSY">
+                <English>That helipad isn't clear: a vehicle, a tree or a building is inside the rotor's reach.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_WHY_AIRSIDE_WAIT">
+                <English>The airfield map hasn't reached you yet. Try again in a moment.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_WHY_NO_AIRFIELD">
+                <English>This map has no airfield, so planes can't be built here.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_WHY_RUNWAY">
+                <English>Not on the runway. Move the plane onto a taxiway or parking area.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_WHY_NOT_AIRSIDE">
+                <English>A plane goes on an airfield's taxiway or parking area. Aim at one inside the FOB's build range.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_WHY_PLANE_BUSY">
+                <English>That spot isn't clear: something is parked where the plane would stand.</English>
+            </Key>
             <Key ID="STR_ALIVE_FOB_ACTION_NEXT_HQ">
                 <English>Next Headquarters: %1 (now %2 of %3)</English>
             </Key>
@@ -337,6 +358,27 @@
             </Key>
             <Key ID="STR_ALIVE_FOB_REFUSED_SPOT">
                 <English>The FOB couldn't be built here.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_REFUSED_NOPAD">
+                <English>There's no free helipad there. A helicopter is built on a helipad inside the FOB's build range.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_REFUSED_PAD_BUSY">
+                <English>That helipad isn't clear, so the helicopter wasn't built.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_REFUSED_AIRSIDE_WAIT">
+                <English>The airfield map isn't ready yet. Try again in a moment.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_REFUSED_NO_AIRFIELD">
+                <English>This map has no airfield, so planes can't be built here.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_REFUSED_RUNWAY">
+                <English>A plane can't be built on the runway. Use a taxiway or parking area.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_REFUSED_NOT_AIRSIDE">
+                <English>A plane is built on an airfield's taxiway or parking area, so it wasn't built here.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_REFUSED_PLANE_BUSY">
+                <English>Something is parked there, so the plane wasn't built.</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_REFUSED_NOTALLOWED">
                 <English>You aren't allowed to dismantle this FOB, recycle at it or rename it.</English>
@@ -585,7 +627,7 @@
                 <English>Tier 3 Cost</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_TIER_COST_COMMENT">
-                <English>Supply to upgrade a FOB to this tier. Tier 2 can hold more supply and builds towers, machine guns and grenade launchers; tier 3 holds the most, builds mortars, AT and AA launchers and vehicles, and can be a respawn point.</English>
+                <English>Supply to upgrade a FOB to this tier. Tier 2 can hold more supply and builds towers, machine guns and grenade launchers; tier 3 holds the most, builds mortars, AT and AA launchers, vehicles, helicopters (on a helipad) and planes (at an airfield), and can be a respawn point.</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_RESPAWN_OFF">
                 <English>Off</English>
@@ -679,6 +721,9 @@
             </Key>
             <Key ID="STR_ALIVE_FOB_UI_VEHICLE_ITEM">
                 <English>Vehicle, empty, for your side to crew</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_UI_AIRCRAFT_ITEM">
+                <English>Aircraft, empty, for your side to crew. A helicopter goes on a helipad, a plane on an airfield taxiway or parking area</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_GARRISON_COST">
                 <English>Garrison Cost</English>

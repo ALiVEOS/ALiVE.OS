@@ -117,7 +117,7 @@ switch (_op) do {
             player addAction [(localize "STR_ALIVE_FOB_ACTION_BUILD") call ALiVE_fnc_actionTitle, { ["open", ALiVE_FOB_buildFob] call ALiVE_fnc_buildMenu }, nil, 1.45, false, true, "",
                 "ALiVE_FOB_buildFob isNotEqualTo [] && {vehicle _this == _this} && {!(missionNamespace getVariable ['ALiVE_FOB_placing', false])}"],
             player addAction [(localize "STR_ALIVE_FOB_ACTION_RECYCLE") call ALiVE_fnc_actionTitle, { ["recycle", [cursorObject]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] }, nil, 0.6, false, true, "",
-                "vehicle _this == _this && {_this distance cursorObject < 8} && {['canRecycle', cursorObject] call ALiVE_fnc_fobActions}"],
+                "vehicle _this == _this && {_this distance cursorObject < (8 max ([0, (sizeOf typeOf cursorObject) / 2] select (cursorObject isKindOf 'Air')))} && {['canRecycle', cursorObject] call ALiVE_fnc_fobActions}"],
             player addAction [(localize "STR_ALIVE_FOB_ACTION_ARSENAL") call ALiVE_fnc_actionTitle, { ["arsenalOpen", [cursorObject, !isNil "ALiVE_FOB_gearList"]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] }, nil, 1.46, true, true, "",
                 "vehicle _this == _this && {_this distance cursorObject < 8} && {cursorObject isKindOf 'ALiVE_FOB_Arsenal'} && {missionNamespace getVariable ['ALiVE_FOB_arsenalOn', false]}"]
         ];
@@ -138,7 +138,7 @@ switch (_op) do {
         // doesn't hold still shows the action, and the server says why it can't
         private _fid = _o getVariable ["ALiVE_FOB_object", ""];
         if (_fid != "") exitWith { ALiVE_FOB_mayAt getOrDefault [_fid, true] };
-        ALiVE_FOB_buildFob isNotEqualTo [] && {_o isKindOf "StaticWeapon" || {_o isKindOf "LandVehicle"} || {_o isKindOf "Ship"}}
+        ALiVE_FOB_buildFob isNotEqualTo [] && {_o isKindOf "StaticWeapon" || {_o isKindOf "LandVehicle"} || {_o isKindOf "Ship"} || {_o isKindOf "Air"}}
             && {ALiVE_FOB_mayAt getOrDefault [ALiVE_FOB_buildFob select 0, true]}
     };
 
@@ -166,7 +166,7 @@ switch (_op) do {
         {
             private _cls = _x;
             { [_cls, 0, ["ACE_MainActions"], _x, true] call ace_interact_menu_fnc_addActionToClass } forEach [_recycle, _kit, _crate];
-        } forEach ["Static", "Thing", "StaticWeapon", "LandVehicle", "Ship"];
+        } forEach ["Static", "Thing", "StaticWeapon", "LandVehicle", "Ship", "Air"];
         // the FOB Arsenal
         ["ALiVE_FOB_Arsenal", 0, ["ACE_MainActions"], ["ALiVE_FOB_OpenArsenal", "STR_ALIVE_FOB_ACTION_ARSENAL", { ["arsenalOpen", [_target, !isNil "ALiVE_FOB_gearList"]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] }, { missionNamespace getVariable ["ALiVE_FOB_arsenalOn", false] }] call _mk, true] call ace_interact_menu_fnc_addActionToClass;
     };

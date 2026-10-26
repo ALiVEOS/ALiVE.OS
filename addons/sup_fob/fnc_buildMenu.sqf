@@ -148,7 +148,7 @@ switch (_operation) do {
         if (_row isEqualTo []) exitWith {};
         _row params ["_class", "_name", "_kind", "_cost", "_pic", ["_tierMin", 1]];
         (BW_DISPLAY displayCtrl 92809) ctrlSetText _pic;
-        private _what = switch (_kind) do { case "SUPPLY": {"STR_ALIVE_FOB_UI_SUPPLY_ITEM"}; case "STATIC": {"STR_ALIVE_FOB_UI_STATIC_ITEM"}; case "VEHICLE": {"STR_ALIVE_FOB_UI_VEHICLE_ITEM"}; default {"STR_ALIVE_FOB_UI_FORTIFICATION"} };
+        private _what = switch (_kind) do { case "SUPPLY": {"STR_ALIVE_FOB_UI_SUPPLY_ITEM"}; case "STATIC": {"STR_ALIVE_FOB_UI_STATIC_ITEM"}; case "VEHICLE": {["STR_ALIVE_FOB_UI_VEHICLE_ITEM", "STR_ALIVE_FOB_UI_AIRCRAFT_ITEM"] select (_class isKindOf "Air")}; default {"STR_ALIVE_FOB_UI_FORTIFICATION"} };
         private _lines = [[_name, _class] select (_name == ""), localize _what, format [localize "STR_ALIVE_FOB_UI_COST", _cost]];
         private _locked = _tierMin > ((call _fnc_fob) param [5, 1]);
         if (_locked) then { _lines pushBack format [localize "STR_ALIVE_FOB_UI_TIER_NEEDED", _tierMin] };

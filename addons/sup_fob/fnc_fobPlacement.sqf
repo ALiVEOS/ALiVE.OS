@@ -19,7 +19,8 @@ Parameters:
 String - "start" with [catalog row, FOB row from ALiVE_FOB_registryMirror] (for a new FOB's
 headquarters [[class, name, "DEPLOY", 0], a FOB-like row centred on the kit, kit]), or "place",
 "rotate", "cancel"; "surface" with [spot, height ASL, object to ignore] for the first surface
-straight down from that height
+straight down from that height; "airSpot" with [aircraft class, spot, reach, object to ignore]
+for where a helicopter or plane would stand there: [position ATL, why not ("" when it can)]
 
 Returns:
 Nothing
@@ -29,7 +30,7 @@ Jman
 ---------------------------------------------------------------------------- */
 
 params [["_operation", "", [""]], ["_args", []]];
-if (!hasInterface && {_operation != "surface"}) exitWith {};
+if (!hasInterface && {!(_operation in ["surface", "airSpot"])}) exitWith {};
 
 // Where the item goes and whether it may: in front of the player, at the reach the item needs,
 // turned by the player's heading plus their rotation. Worked out here for the preview and again
@@ -49,11 +50,21 @@ ALiVE_FOB_placeSpot = {
         _pos = _atl; _up = _n;
     };
     private _deploying = (_row select 2) == "DEPLOY";
+    // a helicopter goes onto the helipad aimed at, a plane onto airfield taxiway or parking (Jman, 26 Oct);
+    // the reach of its rotor or wings comes from the preview copy's own box
+    private _airWhy = "";
+    if ((_row select 0) isKindOf "Air") then {
+        (ALiVE_FOB_placeState select 5) params ["_b0", "_b1"];
+        private _airReach = (((abs ((_b1 select 0) - (_b0 select 0))) max (abs ((_b1 select 1) - (_b0 select 1)))) * 0.55);
+        (["airSpot", [_row select 0, _pos, _airReach, ALiVE_FOB_ghost]] call ALiVE_fnc_fobPlacement) params ["_airPos", "_w"];
+        _pos = _airPos; _up = [0, 0, 1]; _airWhy = _w;
+    };
     private _why = call {
         if (_pos distance2D _centre > _range) exitWith {
             if (_deploying) then { ["STR_ALIVE_FOB_WHY_KIT", [round _range]] } else { ["STR_ALIVE_FOB_WHY_RANGE", [round _range]] }
         };
         if (surfaceIsWater _pos) exitWith { ["STR_ALIVE_FOB_WHY_WATER", []] };
+        if (_airWhy != "") exitWith { ["STR_ALIVE_FOB_WHY_" + _airWhy, []] };
         if (!_deploying) exitWith { [] };
         // a headquarters: the server's own tests too
         if ((_up select 2) < 0.966) exitWith { ["STR_ALIVE_FOB_WHY_SLOPE", [round acos ((_up select 2) min 1)]] };
@@ -213,6 +224,48 @@ switch (_operation) do {
 
     case "cancel": {
         call _fnc_stop;
+    };
+
+    // Where an aircraft would stand at a spot, here for the preview and on the server for the build:
+    // [position ATL, why not]. Why not is "" when it can go, else the end of a stringtable key
+    // (STR_ALIVE_FOB_WHY_... here, STR_ALIVE_FOB_REFUSED_... on the server).
+    // A helicopter: on the helipad nearest the spot (within 10 m), any helipad, built or the map's,
+    // that no other ALiVE module has claimed, with nothing standing within its rotor's reach.
+    // A plane: on an airfield's taxiway or parking area, not within its wings' reach of a runway,
+    // with nothing standing within that reach. The airfield map (ALiVE_airsideFields) is sparse
+    // on some airfields, so paved ground within 60 m of its mapped taxiway or parking counts as well
+    // (not the whole airfield circle, which takes in the public road past it).
+    case "airSpot": {
+        _args params [["_class", "", [""]], ["_spot", [0, 0, 0], [[]]], ["_reach", 5, [0]], ["_ignore", objNull, [objNull]]];
+        private _pos = [_spot select 0, _spot select 1, 0];
+        // a vehicle or wreck within the reach; soldiers walk out of the way, and the preview copy is ours
+        private _busy = {
+            params ["_p"];
+            ((nearestObjects [_p, ["AllVehicles"], _reach]) findIf { !(_x isKindOf "CAManBase") && {_x != _ignore} }) > -1
+        };
+        if (_class isKindOf "Helicopter") exitWith {
+            private _pads = (nearestObjects [_pos, ["HeliH", "HelipadCircle_F", "HelipadSquare_F", "Land_HelipadEmpty_F", "Land_HelipadSquare_F", "Land_HelipadCircle_F"], 10])
+                select { (_x getVariable ["ALiVE_padOwner", ""]) isEqualTo "" && {!(_x getVariable ["ALiVE_atoStamped", false])} };
+            if (_pads isEqualTo []) exitWith { [_pos, "NOPAD"] };
+            private _p = getPosATL (_pads select 0);
+            _p set [2, 0];
+            if ([_p] call _busy) exitWith { [_p, "PAD_BUSY"] };
+            // and no tree or building inside the rotor's reach (a low wall or sandbags at its edge is fine)
+            if ((nearestTerrainObjects [_p, ["TREE", "BUILDING", "HOUSE", "CHURCH", "CHAPEL", "FUELSTATION", "HOSPITAL", "LIGHTHOUSE", "TRANSMITTER", "WATERTOWER", "POWERWIND"], _reach * 0.8, false, true]) isNotEqualTo []) exitWith { [_p, "PAD_BUSY"] };
+            [_p, ""]
+        };
+        if !(missionNamespace getVariable ["ALiVE_airsideCacheReady", false]) exitWith { [_pos, "AIRSIDE_WAIT"] };
+        private _fields = missionNamespace getVariable ["ALiVE_airsideFields", []];
+        if (_fields isEqualTo []) exitWith { [_pos, "NO_AIRFIELD"] };
+        if ([_pos, _reach, [1]] call ALiVE_fnc_isAirside) exitWith { [_pos, "RUNWAY"] };
+        private _paved = {
+            private _s = toLower surfaceType _pos;
+            if ((_s select [0, 1]) == "#") then { _s = _s select [1] };
+            (["asphalt", "concrete", "road", "runway", "pave", "tarmac"] findIf { _x in _s }) >= 0
+        };
+        if !(([_pos, 0, [2, 3]] call ALiVE_fnc_isAirside) || {call _paved && {!isOnRoad _pos} && {[_pos, 60, [2, 3]] call ALiVE_fnc_isAirside}}) exitWith { [_pos, "NOT_AIRSIDE"] };
+        if ([_pos] call _busy) exitWith { [_pos, "PLANE_BUSY"] };
+        [_pos, ""]
     };
 
     // The first surface straight down from a height (ASL) at a spot: [position ATL, its up]. Used
