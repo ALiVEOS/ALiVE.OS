@@ -3097,17 +3097,16 @@ switch (_operation) do {
                 _result = _overrides;
             };
 
-            private _parseFailed = isNil {
-                _entries = call compile _entries;
-                false
-            };
-
-            if (_parseFailed) exitWith {
-                _result = _overrides;
+            // text that is not a list (a bracket short) compiles to nothing and left _entries
+            // undefined, an error on screen at mission start rather than the override ignored
+            private _text = _entries;
+            _entries = call compile _text;
+            if (isNil "_entries") then {
+                ["ALiVE OPCOM: a typed override is not a list and is ignored, check its brackets: %1", _text] call ALiVE_fnc_dump;
             };
         };
 
-        if !(_entries isEqualType []) exitWith {
+        if (isNil "_entries" || {!(_entries isEqualType [])}) exitWith {
             _result = _overrides;
         };
 
@@ -3139,17 +3138,16 @@ switch (_operation) do {
                 _result = _overrides;
             };
 
-            private _parseFailed = isNil {
-                _entries = call compile _entries;
-                false
-            };
-
-            if (_parseFailed) exitWith {
-                _result = _overrides;
+            // text that is not a list (a bracket short) compiles to nothing and left _entries
+            // undefined, an error on screen at mission start rather than the override ignored
+            private _text = _entries;
+            _entries = call compile _text;
+            if (isNil "_entries") then {
+                ["ALiVE OPCOM: a typed override is not a list and is ignored, check its brackets: %1", _text] call ALiVE_fnc_dump;
             };
         };
 
-        if !(_entries isEqualType []) exitWith {
+        if (isNil "_entries" || {!(_entries isEqualType [])}) exitWith {
             _result = _overrides;
         };
 
@@ -3225,17 +3223,16 @@ switch (_operation) do {
                 _result = _overrides;
             };
 
-            private _parseFailed = isNil {
-                _entries = call compile _entries;
-                false
-            };
-
-            if (_parseFailed) exitWith {
-                _result = _overrides;
+            // text that is not a list (a bracket short) compiles to nothing and left _entries
+            // undefined, an error on screen at mission start rather than the override ignored
+            private _text = _entries;
+            _entries = call compile _text;
+            if (isNil "_entries") then {
+                ["ALiVE OPCOM: a typed override is not a list and is ignored, check its brackets: %1", _text] call ALiVE_fnc_dump;
             };
         };
 
-        if !(_entries isEqualType []) exitWith {
+        if (isNil "_entries" || {!(_entries isEqualType [])}) exitWith {
             _result = _overrides;
         };
 
