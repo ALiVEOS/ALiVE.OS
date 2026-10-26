@@ -90,6 +90,7 @@ class CfgVehicles
                                     class FP100 { name = "$STR_ALIVE_ML_FORCE_POOL_100"; value = "100"; };
                                     class FP50 { name = "$STR_ALIVE_ML_FORCE_POOL_50"; value = "50"; };
                                     class Typed { name = "$STR_ALIVE_ML_FORCE_POOL_TYPED"; value = "-2"; };
+                                    class DynamicTyped { name = "$STR_ALIVE_ML_FORCE_POOL_DYNAMIC_TYPED"; value = "-3"; };
                                 };
                         };
                         // #1083: the pool typed in, when Force Pool is set to Typed

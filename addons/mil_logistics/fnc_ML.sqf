@@ -4761,6 +4761,14 @@ switch(_operation) do {
                     [_logic, "forcePool", 1000] call MAINCLASS;
                     [_logic, "forcePoolType", "DYNAMIC"] call MAINCLASS;
                 };
+                // Dynamic, from typed (#1098): starts at the typed number and then rises and falls
+                // with objectives taken and lost, where Dynamic starts at the objectives' priority total
+                if (_forcePool == -3) then {
+                    _forcePool = (parseNumber format ["%1", _logic getVariable ["forcePoolTyped", 1000]]) max 0;
+                    [_logic, "forcePool", _forcePool] call MAINCLASS;
+                    [_logic, "forcePoolType", "DYNAMIC"] call MAINCLASS;
+                    _logic setVariable ["dynamicPoolTypedStart", true];
+                };
             };
 
             _allowInfantry = [_logic, "allowInfantryReinforcement"] call MAINCLASS;
@@ -7404,6 +7412,13 @@ switch(_operation) do {
 
                                     _forcePool = _forcePool - (_previousReinforcementAnalysisPriorityTotal - _priorityTotal);
 
+                                    // From a typed start (#1098) the pool can sit far below the held total,
+                                    // so one loss could leave it hundreds under zero and every later gain
+                                    // would go to paying that off; it stops at 0 instead
+                                    if (_logic getVariable ["dynamicPoolTypedStart", false]) then {
+                                        _forcePool = _forcePool max 0;
+                                    };
+
                                 };
 
                             };
@@ -7415,8 +7430,11 @@ switch(_operation) do {
                         //["NO PREVIOUS ANALYSIS"] call ALIVE_fnc_dump;
 
                         // set the force pool as the
-                        // current total
-                        _forcePool = _priorityTotal;
+                        // current total, unless it started from a typed number (#1098):
+                        // then it keeps that, or what persistence loaded, and only moves on change
+                        if !(_logic getVariable ["dynamicPoolTypedStart", false]) then {
+                            _forcePool = _priorityTotal;
+                        };
 
                     };
 

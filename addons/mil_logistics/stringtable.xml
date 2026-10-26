@@ -5,11 +5,14 @@
 <Key ID="STR_ALIVE_ML_FORCE_POOL_TYPED">
     <English>Typed (set below)</English>
 </Key>
+<Key ID="STR_ALIVE_ML_FORCE_POOL_DYNAMIC_TYPED">
+    <English>Dynamic, from typed (set below)</English>
+</Key>
 <Key ID="STR_ALIVE_ML_FORCE_POOL_TYPED_VALUE">
     <English>Force Pool (typed):</English>
 </Key>
 <Key ID="STR_ALIVE_ML_FORCE_POOL_TYPED_VALUE_COMMENT">
-    <English>The force pool to start with when Force Pool is set to Typed: any number, 0 or more. Ignored for the other Force Pool choices.</English>
+    <English>The force pool to start with when Force Pool is set to Typed or to Dynamic, from typed: any number, 0 or more. With Dynamic, from typed it then rises or falls as objectives are taken or lost. Ignored for the other Force Pool choices.</English>
 </Key>
 <Key ID="STR_ALIVE_ML_ON_EACH_SPAWN">
     <English>On unit spawn (SQF):</English>
@@ -124,7 +127,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ML_FORCE_POOL_COMMENT">
-    <English>Total reinforcement budget in groups, shared by every faction this module serves. Each group sent comes out of the pool, and so does each resupply convoy sent to artillery, combat support or air commander assets (1 to 10, about 2% of what is left); once it's empty, reinforcement requests are refused. Dynamic = the pool is set from the total priority of the objectives the side holds, and rises or falls as objectives are taken or lost. Infinite = effectively unlimited (100000). Fixed numeric values cap reinforcements at that group total.</English>
+    <English>Total reinforcement budget in groups, shared by every faction this module serves. Each group sent comes out of the pool, and so does each resupply convoy sent to artillery, combat support or air commander assets (1 to 10, about 2% of what is left); once it's empty, reinforcement requests are refused. Dynamic = the pool is set from the total priority of the objectives the side holds, and rises or falls as objectives are taken or lost. Dynamic, from typed = the same, but it starts at the number in Force Pool (typed). Infinite = effectively unlimited (100000). Fixed numeric values cap reinforcements at that group total.</English>
     <Chinese>以「組」為單位的增援總預算，由此模組服務的所有陣營共用。每派出一個組就從力量池中扣除，派往砲兵、戰鬥支援或空中指揮官資產的每支補給車隊也會扣除（1 到 10，約為剩餘量的 2%）；池耗盡後，增援請求將被拒絕。動態 = 力量池依己方所持目標的總優先級設定，並隨目標的奪取或失去而增減。無限 = 實際上無上限（100000）。固定數值將增援限制在該組總數。</Chinese>
     <Chinesesimp>以「组」为单位的增援总预算，由此模块服务的所有阵营共用。每派出一个组就从力量池中扣除，派往炮兵、战斗支援或空中指挥官资产的每支补给车队也会扣除（1 到 10，约为剩余量的 2%）；池耗尽后，增援请求将被拒绝。动态 = 力量池依己方所持目标的总优先级设定，并随目标的夺取或失去而增减。无限 = 实际上无上限（100000）。固定数值将增援限制在该组总数。</Chinesesimp>
     <Spanish>Presupuesto total de refuerzos en grupos, compartido por todas las facciones a las que sirve este módulo. Cada grupo enviado se descuenta del pool, y también cada convoy de reabastecimiento enviado a artillería, apoyo de combate o medios del comandante aéreo (de 1 a 10, aproximadamente el 2% de lo que queda); cuando se vacía, se rechazan las solicitudes de refuerzo. Dinámica = el pool se fija según la prioridad total de los objetivos que controla el bando, y sube o baja al tomar o perder objetivos. Infinita = prácticamente ilimitada (100000). Los valores numéricos fijos limitan los refuerzos a ese total de grupos.</Spanish>
