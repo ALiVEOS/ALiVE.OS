@@ -2558,6 +2558,15 @@ ALiVE_fnc_INS_getInstallationActionObjects = {
     _actionObjects
 };
 
+// The key a hold action is kept under for players joining later: one per object and installation, so
+// two installations sharing a piece of furniture don't replace each other's (#1097). On a dedicated
+// server every terrain building has its own netId (137 of 137 measured); in single player every key is
+// the same, which costs nothing as nobody joins later.
+ALiVE_fnc_INS_installationActionJip = {
+    params ["_object", "_disabledVar"];
+    format ["ALiVE_INS_%1_%2", netId _object, _disabledVar]
+};
+
 ALiVE_fnc_INS_addInstallationHoldActions = {
     params [
         ["_building", objNull, [objNull]],
@@ -2582,6 +2591,12 @@ ALiVE_fnc_INS_addInstallationHoldActions = {
 
             _actionObject setVariable ["ALiVE_MIL_OPCOM_INSTALLATION_BUILDING", _building, true];
             _actionObject setVariable [QGVAR(INSTALLATION_ACTIONS_ADDED), _actionKeys, true];
+
+            // kept on the building, so teardown clears it even if the furniture has gone some other way
+            private _jip = [_actionObject, _disabledVar] call ALiVE_fnc_INS_installationActionJip;
+            private _jips = _building getVariable [QGVAR(INSTALLATION_JIP_IDS), []];
+            _jips pushBackUnique _jip;
+            _building setVariable [QGVAR(INSTALLATION_JIP_IDS), _jips];
 
             [
                 _actionObject,
@@ -2613,7 +2628,9 @@ ALiVE_fnc_INS_addInstallationHoldActions = {
                 _duration
             // A dedicated server has no player to hold this, and running the game's hold-action code
             // there throws on some buildings (fn_holdAction_showIcon), so only players' machines get it.
-            ] remoteExec ["BIS_fnc_holdActionAdd", [0, -2] select isDedicated, _actionObject];
+            // Its own key for players joining later: keyed on the object alone, an HQ and a factory sharing
+            // a table left a late joiner only the one added last (#1097).
+            ] remoteExec ["BIS_fnc_holdActionAdd", [0, -2] select isDedicated, _jip];
         };
     } foreach ([_building] call ALiVE_fnc_INS_getInstallationActionObjects);
 };
@@ -3003,6 +3020,10 @@ ALIVE_fnc_INS_buildingKilledEH = {
     } forEach _installations;
 
     [ALiVE_eventLog, "addEvents", _events] call ALiVE_fnc_eventLog;
+
+    // a key that isn't the object itself outlives it, so players joining later are cleared of it here
+    { remoteExec ["", _x] } forEach (_building getVariable [QGVAR(INSTALLATION_JIP_IDS), []]);
+    _building setVariable [QGVAR(INSTALLATION_JIP_IDS), nil];
 
     {
         _x setVariable [QGVAR(INSTALLATION_ACTIONS_ADDED), [], true];
