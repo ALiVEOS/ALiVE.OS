@@ -14,7 +14,9 @@ What is offered: every arsenal-visible (scope 2, scopeArsenal 2 when set) weapon
 only; the magazines those weapons take, through magazines[] and magazine wells on every muzzle;
 attachments, uniforms, vests, headgear, night vision, binoculars and designators, medical, tools
 and other items; facewear; plain backpacks (not prefilled, not a static weapon or drone bag).
-Grenades, mines and charges only with Arsenal Grenades and Explosives on.
+Grenades, mines and charges only with Arsenal Grenades and Explosives on. A gun or magazine with no
+arsenal picture is a vehicle's or static weapon's (a tank's machine gun and belts, a mortar tube and
+its rounds, a pylon missile) and is left out, unless the module's lists name it.
 
 The Player FOBs module's lists and CfgALiVEFOBBuildables apply to gear as to the build menu: Never
 Build drops a class, Also Build adds one the rules left out, a price (cost, or Class=N in Build Only
@@ -135,8 +137,9 @@ private _acePrice = {
 
 private _wantMags = [];
 // one CfgWeapons class: a gun, binoculars or night vision, or an item
+// _named: a class the module's lists name, offered even with no arsenal picture
 private _classify = {
-    params ["_cfg"];
+    params ["_cfg", ["_named", false]];
     private _class = configName _cfg;
     private _type = getNumber (_cfg >> "type");
         switch (true) do {
@@ -149,6 +152,9 @@ private _classify = {
                 private _main = [_bcfg, true] call _magsOf;
                 // something with nothing to fire is no gun (a laser pointer or mortar barrel filed as one)
                 if (_main isEqualTo []) exitWith {};
+                // nor one with no arsenal picture: a vehicle's or static weapon's gun (a tank's PKT,
+                // an AAV's M2 and Mk19, a mortar tube, a pylon missile), never a soldier's
+                if (!_named && {getText (_bcfg >> "picture") == ""}) exitWith {};
                 // a machine gun by its own magazine: a rifle's well can take a machine gun's (the MX takes the 100-round MX SW one)
                 private _cap = getNumber (configFile >> "CfgMagazines" >> ((getArray (_bcfg >> "magazines")) param [0, ""]) >> "count");
                 // a grenade launcher or shotgun by its own magazine too: its other rounds can be flares,
@@ -244,7 +250,7 @@ private _named = [];
             // a price given for a gun's variant (arifle_MX_ACO_F=50) goes on the gun the arsenal offers
             private _base = toLower ([_c] call BIS_fnc_baseWeapon);
             if (toLower _c in _fixed && {!(_base in _fixed)}) then { _fixed set [_base, _fixed get (toLower _c)] };
-            [configFile >> "CfgWeapons" >> _c] call _classify;
+            [configFile >> "CfgWeapons" >> _c, true] call _classify;
         };
         case (isClass (configFile >> "CfgMagazines" >> _c)): { _named pushBack _c };
         case (isClass (configFile >> "CfgGlasses" >> _c)): { [_c, configFile >> "CfgGlasses" >> _c, 1, "FACEWEAR", _items] call _put };
@@ -255,11 +261,12 @@ private _named = [];
     };
 } forEach (_alsoList + _onlyList);
 
-// the magazines those weapons take
+// the magazines those weapons take, with an arsenal picture (a vehicle's belt or a mortar's rounds
+// have none)
 _wantMags = _wantMags arrayIntersect _wantMags;
 {
     private _mcfg = configFile >> "CfgMagazines" >> _x;
-    if (isClass _mcfg && {[_mcfg] call _visible}) then {
+    if (isClass _mcfg && {[_mcfg] call _visible} && {getText (_mcfg >> "picture") != ""}) then {
         private _n = (getNumber (_mcfg >> "count")) max 1;
         [configName _mcfg, _mcfg, [_x, _mcfg] call _magPrice, "MAGAZINE", _magazines, _n] call _put;
     };

@@ -140,6 +140,9 @@ private _onlySeen = [];
 _only = _only select { private _k = toLower _x; if (_k in _onlySeen) then { false } else { _onlySeen pushBack _k; true } };
 // never the kit or supply crate themselves: one built here would be a crate of supply for its build price
 _blacklist append ["alive_fob_kit", "alive_fob_supplycrate"];
+// nor a mod's stand-in that only looks like a vehicle to the config: the USS Nimitz mod's spawner (an
+// invisible ship that assembles the carrier around itself) and its catapult shuttle (a plane class)
+_blacklist append ["jdg_carrier_spawner", "jdg_shuttle"];
 // and the mission's own kit and crate objects, if it sets any
 {
     { private _p = _x splitString "= "; if (_p isNotEqualTo []) then { _blacklist pushBack toLower (_p select (count _p - 1)) } } forEach (([_logic, "attribute", [_x]] call ALiVE_fnc_FOB) splitString ",;");
