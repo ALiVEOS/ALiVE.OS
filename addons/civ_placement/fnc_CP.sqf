@@ -348,6 +348,10 @@ switch(_operation) do {
     case "artillerySectionSize": {
         _result = [_logic,_operation,_args,"4"] call ALIVE_fnc_OOsimpleOperation;
     };
+    // Artillery type: ANY, MORTAR, TOWED or SP
+    case "artilleryType": {
+        _result = [_logic,_operation,_args,"ANY"] call ALIVE_fnc_OOsimpleOperation;
+    };
 
     // Return placement setting
     case "withPlacement": {
@@ -1139,6 +1143,10 @@ switch(_operation) do {
                     };
                 };
             };
+            // Artillery type (A. Ares on Discord, 26 Oct): ANY keeps today's path; MORTAR, TOWED and SP pick
+            // groups and vehicles of that kind
+            private _artilleryType = toUpper (trim ([_logic, "artilleryType"] call MAINCLASS));
+            if !(_artilleryType in ["ANY","MORTAR","TOWED","SP"]) then { _artilleryType = "ANY" };
 
 
             // DEBUG -------------------------------------------------------------------------------------
@@ -1314,6 +1322,29 @@ switch(_operation) do {
             // rocket artillery (4-5km min range) has nothing to shoot at on small
             // terrains - defer rockets there and vehicle-compose howitzers instead
             private _smallMapForRockets = worldSize < 10240;
+            // the vehicles a battery may use, and groups of the chosen kind: up to two dozen draws, keeping those whose guns are
+            // of that kind. The draw is random, so it is a sample; a miss only means the battery is built from vehicles
+            private _artySourceFaction = if (_artilleryFaction != "") then {_artilleryFaction} else {_faction};
+            (if (_countArtillery > 0) then { [_artySourceFaction call ALIVE_fnc_configGetFactionArtilleryVehicles, _artilleryType, _smallMapForRockets] call ALIVE_fnc_selectArtilleryClasses } else { [[], ""] }) params ["_artyClasses","_artyPickNote"];
+            private _typedGroups = [];
+            if (_artilleryType != "ANY" && {_artilleryFaction == ""} && {_countArtillery > 0}) then {
+                for "_i" from 1 to 24 do {
+                    private _g = ["Artillery",_faction] call ALIVE_fnc_configGetRandomGroup;
+                    // an empty draw means the faction has none, and every further draw would warn again
+                    if (_g == "FALSE") exitWith {};
+                    if (_g != "FALSE" && {!(_g in _typedGroups)} && {([_faction, _g] call ALIVE_fnc_groupArtilleryType) == _artilleryType}) then { _typedGroups pushBack _g };
+                };
+            };
+            // nothing of that kind anywhere: say so once and run exactly as Any
+            if (_countArtillery > 0 && {_artilleryType != "ANY"} && {_artyPickNote != ""} && {count _typedGroups == 0}) then {
+                ["CP [%1] - Place Artillery: %2 has no %3 artillery groups or vehicles, placing what it has",_faction,_artySourceFaction,_artilleryType] call ALiVE_fnc_dump;
+                _artilleryType = "ANY";
+                _artyPickNote = "";
+            };
+            if (_countArtillery > 0 && _debug) then {
+                ["CP [%1] - Place Artillery: type %2, candidates from %3: %4, typed groups: %5",_faction,_artilleryType,_artySourceFaction,_artyClasses,_typedGroups] call ALiVE_fnc_dump;
+            };
+
 
             // Fallback: vehicle-compose the batteries the group pull could not
             // supply. Placed immediately via createProfilesCrewedVehicle (not via
@@ -1321,14 +1352,8 @@ switch(_operation) do {
             // based classification. Anchored on cluster centres.
             private _fnc_placeFallbackArtillery = {
                 if (_artilleryFallback > 0 && {!isNil "_clusters"} && {count _clusters > 0}) then {
-                    private _artySourceFaction = if (_artilleryFaction != "") then {_artilleryFaction} else {_faction};
-                    private _artyClasses = _artySourceFaction call ALIVE_fnc_configGetFactionArtilleryVehicles;
-                    if (_smallMapForRockets) then {
-                        private _guns = _artyClasses select { !([_x] call ALIVE_fnc_isRocketArtillery) };
-                        if (count _guns > 0) then { _artyClasses = _guns; };
-                    };
-                    private _selfPropelled = _artyClasses select { !(_x isKindOf "StaticWeapon") };
-                    if (count _selfPropelled > 0) then { _artyClasses = _selfPropelled; };
+                    // _artySourceFaction and _artyClasses are worked out above (Artillery type)
+                    if (_artyPickNote != "") then { ["CP [%1] - Place Artillery: %2 (%3), composing from what it has",_faction,_artyPickNote,_artySourceFaction] call ALiVE_fnc_dump };
                     if (count _artyClasses == 0) then {
                         ["CP [%1] - Place Artillery: %2 has no artillery groups AND no artillery vehicles - nothing to place",_faction,_artySourceFaction] call ALiVE_fnc_dump;
                     } else {
@@ -1390,7 +1415,7 @@ switch(_operation) do {
                 };
             } else {
                 for "_i" from 0 to _countArtillery -1 do {
-                    _group = ["Artillery",_faction] call ALIVE_fnc_configGetRandomGroup;
+                    _group = if (_artilleryType != "ANY") then { if (count _typedGroups > 0) then { selectRandom _typedGroups } else { "FALSE" } } else { ["Artillery",_faction] call ALIVE_fnc_configGetRandomGroup };
                     if!(_group == "FALSE") then {
                         if (_smallMapForRockets && {[_faction, _group] call ALIVE_fnc_groupIsRocketArtillery}) then {
                             _artilleryFallback = _artilleryFallback + 1;
@@ -1405,7 +1430,7 @@ switch(_operation) do {
                         _artilleryFallback = _artilleryFallback + 1;
                         if (!_artilleryWarned) then {
                             _artilleryWarned = true;
-                            ["CP [%1] - Place Artillery: the faction has no Artillery groups - composing batteries from its artillery vehicles instead",_faction] call ALiVE_fnc_dump;
+                            ["CP [%1] - Place Artillery: the faction has no %2Artillery groups - composing batteries from its artillery vehicles instead",_faction,if (_artilleryType == "ANY") then {""} else {_artilleryType + " "}] call ALiVE_fnc_dump;
                         };
                     };
                 };

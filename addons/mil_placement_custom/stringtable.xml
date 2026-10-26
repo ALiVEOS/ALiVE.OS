@@ -158,6 +158,12 @@
     <Portuguese>Número de peças por bateria quando a artilharia é composta a partir de veículos (facções cujas peças não têm um grupo de artilharia próprio, por exemplo o M252/M119 da RHS). Uma seção de morteiros ou bateria de obuses realista tem 4 peças. Seções maiores posicionam mais peças e guarnições. Facções que possuem seus próprios grupos de artilharia mantêm o tamanho do grupo.</Portuguese>
     <Russian>Количество орудий в батарее, когда артиллерия формируется из машин (фракции, чьи орудия не имеют выделенной артиллерийской группы, например M252/M119 из RHS). Реалистичный миномётный взвод или гаубичная батарея — 4 орудия. Более крупные секции размещают больше орудий и расчётов. Фракции с собственными артиллерийскими группами сохраняют размер группы.</Russian>
 </Key>
+<Key ID="STR_ALIVE_CMP_CUSTOM_ARTILLERY_TYPE">
+    <English>Artillery type:</English>
+</Key>
+<Key ID="STR_ALIVE_CMP_CUSTOM_ARTILLERY_TYPE_COMMENT">
+    <English>What kind of guns the placed artillery batteries use. Any (the default) keeps things as they are: the faction's artillery groups where it has them, otherwise batteries built from its artillery vehicles, self-propelled first. Mortars, Towed guns and Self-propelled draw each battery from the faction's (or the artillery faction's) artillery groups of that kind, and where there is no such group, build it from the faction's vehicles of that kind with crews and the section size above. Mortar and towed batteries can't move once placed. If the faction has no guns of that kind at all, the module places what it has, as Any, and says so in the RPT.</English>
+</Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CMP_GARRISON_COMPOSITIONS">
     <English>Garrison compositions:</English>

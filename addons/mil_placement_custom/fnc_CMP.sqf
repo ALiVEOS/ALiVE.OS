@@ -154,6 +154,10 @@ switch(_operation) do {
     case "customArtillerySectionSize": {
         _result = [_logic,_operation,_args,"4"] call ALIVE_fnc_OOsimpleOperation;
     };
+    // Artillery type: ANY, MORTAR, TOWED or SP
+    case "customArtilleryType": {
+        _result = [_logic,_operation,_args,"ANY"] call ALIVE_fnc_OOsimpleOperation;
+    };
 
     case "customSpecOpsCount": {
         _result = [_logic,_operation,_args,DEFAULT_NO_TEXT] call ALIVE_fnc_OOsimpleOperation;
@@ -1139,15 +1143,42 @@ switch(_operation) do {
             // range) - defer rocket groups there, howitzer batteries come from the
             // vehicle fallback below
             private _smallMapForRockets = worldSize < 10240;
+            // Artillery type (A. Ares on Discord, 26 Oct): ANY keeps today's path; MORTAR, TOWED and SP pick groups and
+            // vehicles of that kind. Groups: up to two dozen draws per pull faction, keeping [group, faction] pairs whose guns
+            // are of that kind (a sample, not the whole list; a miss means the battery is built from vehicles)
+            private _artilleryType = toUpper (trim ([_logic, "customArtilleryType"] call MAINCLASS));
+            if !(_artilleryType in ["ANY","MORTAR","TOWED","SP"]) then { _artilleryType = "ANY" };
+            private _typedGroups = [];
+            if (_artilleryType != "ANY" && {_countArtillery > 0}) then {
+                {
+                    private _f = _x;
+                    for "_i" from 1 to 24 do {
+                        private _g = ["Artillery",_f] call ALIVE_fnc_configGetRandomGroup;
+                        // an empty draw means the faction has none, and every further draw would warn again
+                        if (_g == "FALSE") exitWith {};
+                        if (_g != "FALSE" && {(_typedGroups findIf { (_x select 0) == _g && {(_x select 1) == _f} }) < 0}
+                            && {([_f, _g] call ALIVE_fnc_groupArtilleryType) == _artilleryType}) then { _typedGroups pushBack [_g,_f] };
+                    };
+                } forEach _artyPullFactions;
+                private _anyVehicle = (_artyPullFactions findIf { (([_x call ALIVE_fnc_configGetFactionArtilleryVehicles, _artilleryType, _smallMapForRockets] call ALIVE_fnc_selectArtilleryClasses) select 1) == "" }) > -1;
+                if (count _typedGroups == 0 && {!_anyVehicle}) then {
+                    ["CMP [%1] - Place Artillery: no faction has %2 artillery groups or vehicles, placing what it has",_artyPullFactions,_artilleryType] call ALiVE_fnc_dump;
+                    _artilleryType = "ANY";
+                };
+            };
             for "_i" from 0 to _countArtillery -1 do {
                 private _entry = ["FALSE",""];
-                if (_artilleryDonor != "") then {
-                    // donor groups can ride the pipeline - CMP spawns each
-                    // group with its own faction
-                    private _donorGroup = ["Artillery",_artilleryDonor] call ALIVE_fnc_configGetRandomGroup;
-                    if (_donorGroup != "FALSE") then { _entry = [_donorGroup,_artilleryDonor] };
+                if (_artilleryType != "ANY") then {
+                    if (count _typedGroups > 0) then { _entry = selectRandom _typedGroups };
                 } else {
-                    _entry = ["Artillery",_i] call _fnc_pickGroupForCategory;
+                    if (_artilleryDonor != "") then {
+                        // donor groups can ride the pipeline - CMP spawns each
+                        // group with its own faction
+                        private _donorGroup = ["Artillery",_artilleryDonor] call ALIVE_fnc_configGetRandomGroup;
+                        if (_donorGroup != "FALSE") then { _entry = [_donorGroup,_artilleryDonor] };
+                    } else {
+                        _entry = ["Artillery",_i] call _fnc_pickGroupForCategory;
+                    };
                 };
                 if!((_entry select 0) == "FALSE") then {
                     if (_smallMapForRockets && {[_entry select 1, _entry select 0] call ALIVE_fnc_groupIsRocketArtillery}) then {
@@ -1164,7 +1195,7 @@ switch(_operation) do {
                     _artilleryFallback = _artilleryFallback + 1;
                     if (!_artilleryWarned) then {
                         _artilleryWarned = true;
-                        ["CMP [%1] - no faction has Artillery groups - composing batteries from their artillery vehicles instead",_artyPullFactions] call ALiVE_fnc_dump;
+                        ["CMP [%1] - no faction has %2Artillery groups - composing batteries from their artillery vehicles instead",_artyPullFactions,if (_artilleryType == "ANY") then {""} else {_artilleryType + " "}] call ALiVE_fnc_dump;
                     };
                 };
             };
@@ -1175,29 +1206,25 @@ switch(_operation) do {
             // priority: the first faction fielding them wins; towed/static
             // pieces are used only when no faction owns anything better
             if (_artilleryFallback > 0) then {
-                private _fnc_factionGuns = {
-                    private _c = _this call ALIVE_fnc_configGetFactionArtilleryVehicles;
-                    // prefer gun artillery (howitzers) on small terrains; keep rockets
-                    // only when the faction owns nothing else
-                    if (_smallMapForRockets) then {
-                        private _guns = _c select { !([_x] call ALIVE_fnc_isRocketArtillery) };
-                        if (count _guns > 0) then { _c = _guns; };
-                    };
-                    _c
-                };
-
+                // the raw cached list; selectArtilleryClasses applies the type, the small-map rocket rule and,
+                // for Any, self-propelled first
+                private _fnc_factionGuns = { _this call ALIVE_fnc_configGetFactionArtilleryVehicles };
                 private _artyClasses = [];
                 private _artyFaction = "";
+                private _artyPickNote = "";
+                // the first faction with the chosen kind (for Any, with self-propelled guns); then anyone with anything
                 {
-                    private _sp = (_x call _fnc_factionGuns) select { !(_x isKindOf "StaticWeapon") };
-                    if (count _sp > 0) exitWith { _artyClasses = _sp; _artyFaction = _x; };
+                    ([_x call _fnc_factionGuns, _artilleryType, _smallMapForRockets] call ALIVE_fnc_selectArtilleryClasses) params ["_picked","_note"];
+                    if (count _picked > 0 && {_note == ""} && {_artilleryType != "ANY" || {(_picked findIf { !(_x isKindOf "StaticWeapon") }) > -1}}) exitWith { _artyClasses = _picked; _artyFaction = _x; };
                 } forEach _artyPullFactions;
                 if (count _artyClasses == 0) then {
                     {
-                        private _c = _x call _fnc_factionGuns;
-                        if (count _c > 0) exitWith { _artyClasses = _c; _artyFaction = _x; };
+                        ([_x call _fnc_factionGuns, _artilleryType, _smallMapForRockets] call ALIVE_fnc_selectArtilleryClasses) params ["_picked","_note"];
+                        if (count _picked > 0) exitWith { _artyClasses = _picked; _artyFaction = _x; _artyPickNote = _note; };
                     } forEach _artyPullFactions;
                 };
+                if (_artyPickNote != "") then { ["CMP [%1] - Place Artillery: %2 (%3), composing from what it has",_artyPullFactions,_artyPickNote,_artyFaction] call ALiVE_fnc_dump };
+                if (_countArtillery > 0 && _debug) then { ["CMP [%1] - Place Artillery: type %2, candidates from %3: %4",_artyPullFactions,_artilleryType,_artyFaction,_artyClasses] call ALiVE_fnc_dump };
 
                 if (count _artyClasses == 0) then {
                     ["CMP [%1] - no faction has artillery groups OR artillery vehicles - nothing to place",_artyPullFactions] call ALiVE_fnc_dump;

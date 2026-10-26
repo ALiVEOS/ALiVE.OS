@@ -287,6 +287,21 @@ class CfgVehicles {
                                     class Sz8 { name = "8"; value = "8"; };
                                 };
                         };
+                        // Artillery type (A. Ares on Discord, 26 Oct)
+                        class artilleryType : Combo
+                        {
+                                property     = "ALiVE_mil_placement_artilleryType";
+                                displayName  = "$STR_ALIVE_MP_ARTILLERY_TYPE";
+                                tooltip      = "$STR_ALIVE_MP_ARTILLERY_TYPE_COMMENT";
+                                defaultValue = """ANY""";
+                                class Values
+                                {
+                                    class Any    { name = "Any (self-propelled first)"; value = "ANY"; default = 1; };
+                                    class Mortar { name = "Mortars"; value = "MORTAR"; };
+                                    class Towed  { name = "Towed guns"; value = "TOWED"; };
+                                    class SP     { name = "Self-propelled"; value = "SP"; };
+                                };
+                        };
                         // ---- Objective Objects (#875) ---------------------------------------
                         class HDR_OBJECTIVES : ALiVE_ModuleSubTitle { property = "ALiVE_mil_placement_HDR_OBJECTIVES"; displayName = "$STR_ALIVE_OBJECTIVE_HDR"; };
                         // AA-style triplet: count Edit + behaviour Combo + picker.

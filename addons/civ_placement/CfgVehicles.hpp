@@ -194,6 +194,21 @@ class CfgVehicles {
                                     class Sz8 { name = "8"; value = "8"; };
                                 };
                         };
+                        // Artillery type (A. Ares on Discord, 26 Oct)
+                        class artilleryType : Combo
+                        {
+                                property     = "ALiVE_civ_placement_artilleryType";
+                                displayName  = "$STR_ALIVE_MP_ARTILLERY_TYPE";
+                                tooltip      = "$STR_ALIVE_MP_ARTILLERY_TYPE_COMMENT";
+                                defaultValue = """ANY""";
+                                class Values
+                                {
+                                    class Any    { name = "Any (self-propelled first)"; value = "ANY"; default = 1; };
+                                    class Mortar { name = "Mortars"; value = "MORTAR"; };
+                                    class Towed  { name = "Towed guns"; value = "TOWED"; };
+                                    class SP     { name = "Self-propelled"; value = "SP"; };
+                                };
+                        };
                         // Reserve-pool attributes - shared semantics with mil_placement.
                         // Stringtable keys are canonical in mil_placement (STR_ALIVE_MP_*)
                         // and cross-referenced here.

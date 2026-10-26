@@ -933,7 +933,7 @@ ALiVE_fnc_INS_harass = {
                 };
 
                 // the mortar: the faction's own, else the side's standard one
-                private _class = ((_faction call ALIVE_fnc_configGetFactionArtilleryVehicles) select { _x isKindOf "StaticMortar" }) param [0, ""];
+                private _class = ((_faction call ALIVE_fnc_configGetFactionArtilleryVehicles) select { _x isKindOf "StaticMortar" || {([_x] call ALIVE_fnc_getArtilleryType) == "MORTAR"} }) param [0, ""]; // StaticMortar, or a tube placement's classifier finds
                 if (_class == "") then { _class = switch (_sideText) do { case "WEST": {"B_Mortar_01_F"}; case "GUER": {"I_Mortar_01_F"}; default {"O_Mortar_01_F"} } };
                 private _group = [_profile,"group",grpNull] call ALiVE_fnc_HashGet;
                 private _units = (units _group) select { alive _x };

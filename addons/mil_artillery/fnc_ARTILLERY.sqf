@@ -533,7 +533,7 @@ switch(_operation) do {
                                             _deckASL = [_logic, "launcherDeckASL", _vp0] call MAINCLASS;
                                         };
                                     } else {
-                                    if (_class isKindOf "StaticMortar") then {
+                                    if (_class isKindOf "StaticMortar" || {([_class] call ALIVE_fnc_getArtilleryType) == "MORTAR"}) then { // StaticMortar, or a tube placement's classifier finds by name or barrel
                                         _kind = "mortar";
                                         _range = DEFAULT_RANGE_MORTAR;
                                         _minRange = DEFAULT_MINRANGE_MORTAR;

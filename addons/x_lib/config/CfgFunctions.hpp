@@ -676,6 +676,20 @@ class groupIsRocketArtillery
 	ALIVE_RECOMPILE;
 };
 
+class groupArtilleryType
+{
+	file = "\x\alive\addons\x_lib\functions\config\fnc_groupArtilleryType.sqf";
+	ext = ".sqf";
+	ALIVE_RECOMPILE;
+};
+
+class selectArtilleryClasses
+{
+	file = "\x\alive\addons\x_lib\functions\config\fnc_selectArtilleryClasses.sqf";
+	ext = ".sqf";
+	ALIVE_RECOMPILE;
+};
+
 class isMagazineOfOrdnanceType
 {
 	file = "\x\alive\addons\x_lib\functions\config\fnc_isMagazineOfOrdnanceType.sqf";
@@ -2234,6 +2248,13 @@ class isAntiAirCapable
 class isArtillery
 {
 	file = "\x\alive\addons\x_lib\functions\vehicles\fnc_isArtillery.sqf";
+	ext = ".sqf";
+	ALIVE_RECOMPILE;
+};
+
+class getArtilleryType
+{
+	file = "\x\alive\addons\x_lib\functions\vehicles\fnc_getArtilleryType.sqf";
 	ext = ".sqf";
 	ALIVE_RECOMPILE;
 };

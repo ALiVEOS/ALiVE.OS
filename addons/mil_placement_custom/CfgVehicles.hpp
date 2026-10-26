@@ -129,6 +129,21 @@ class CfgVehicles {
                                     class Sz8 { name = "8"; value = "8"; };
                                 };
                         };
+                        // Artillery type (A. Ares on Discord, 26 Oct)
+                        class customArtilleryType : Combo
+                        {
+                                property     = "ALiVE_mil_placement_custom_customArtilleryType";
+                                displayName  = "$STR_ALIVE_CMP_CUSTOM_ARTILLERY_TYPE";
+                                tooltip      = "$STR_ALIVE_CMP_CUSTOM_ARTILLERY_TYPE_COMMENT";
+                                defaultValue = """ANY""";
+                                class Values
+                                {
+                                    class Any    { name = "Any (self-propelled first)"; value = "ANY"; default = 1; };
+                                    class Mortar { name = "Mortars"; value = "MORTAR"; };
+                                    class Towed  { name = "Towed guns"; value = "TOWED"; };
+                                    class SP     { name = "Self-propelled"; value = "SP"; };
+                                };
+                        };
 
                         // ---- Anti-Air -------------------------------------------------------
                         class HDR_ANTIAIR : ALiVE_ModuleSubTitle { property = "ALiVE_mil_placement_custom_HDR_ANTIAIR"; displayName = "$STR_ALIVE_CMP_HDR_ANTIAIR"; };
