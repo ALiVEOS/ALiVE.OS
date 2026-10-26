@@ -21,7 +21,7 @@ A fortification's price grows with how tough it is and how big:
     3 + 72 x min(1, armour / 500) x sqrt(min(1, volume / 600)), 3 to 75
 with a floor for what it does (wire 10, camo net 20, tower 40, light 5). A supply object's
 price grows with how much it holds, 20 to 50; medical 35, helipads 25. Every price is then
-multiplied by the module's Cost Scale and rounded, never below 1. A static weapon's price comes
+multiplied by the module's Cost Multiplier and rounded, never below 1. A static weapon's price comes
 from its role (machine gun 60, grenade launcher 75, mortar 100, AT and AA 125, howitzer 250),
 moved up or down by how hard its hardest round hits, 50 to 250.
 

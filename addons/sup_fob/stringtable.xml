@@ -243,7 +243,7 @@
                 <English>FOB Arsenal</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_ARSENAL_COMMENT">
-                <English>Yes: players can build an Arsenal at a FOB from tier 2, for 60 supply before Cost Scale. It offers the infantry gear of every loaded mod, and whatever a player takes is charged to the FOB's supply when they close it. Gear handed back earns nothing. Build Only These, Never Build and CfgALiVEFOBBuildables can limit the gear and set its prices, as they do for the build menu. No: no Arsenal.</English>
+                <English>Yes: players can build an Arsenal at a FOB from tier 2, for 60 supply before the Cost Multiplier. It offers the infantry gear of every loaded mod, and whatever a player takes is charged to the FOB's supply when they close it. Gear handed back earns nothing. Build Only These, Never Build and CfgALiVEFOBBuildables can limit the gear and set its prices, as they do for the build menu. No: no Arsenal.</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_ARSENAL_EXPLOSIVES">
                 <English>Arsenal Grenades and Explosives</English>

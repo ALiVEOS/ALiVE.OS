@@ -21,7 +21,7 @@ Build drops a class, Also Build adds one the rules left out, a price (cost, or C
 These) is used as it is, and Build Only These naming any gear means exactly that gear, each gun
 with its magazines. Sorted into gear and build-menu classes by fnc_fobBuildScan.
 
-Prices before Cost Scale (rounded, never below 1):
+Prices before the Cost Multiplier (rounded, never below 1):
     pistol 5-12, rifle 15-40, machine gun 40-70, sniper 60-90 by the hardest round, grenade launcher 35,
     shotgun 20
     launcher: AT 60-125, AA 90-125
