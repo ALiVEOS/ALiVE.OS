@@ -1368,20 +1368,22 @@ switch (_operation) do {
 		// server at once. Left to itself the group followed him to the player's machine; handed over
 		// once, it sometimes still went there and took 9 s to come back, so it is checked until it
 		// has stayed the server's for two checks.
-		if (!isServer || {!(_arguments isEqualType objNull)}) exitWith {};
-		private _civ = _arguments;
+		// [_civ, true] is the classic Arrest: the same, but he stays detained and stood still (F540)
+		if (_arguments isEqualType objNull) then { _arguments = [_arguments] };
+		if (!isServer || {!(_arguments isEqualType [])}) exitWith {};
+		_arguments params [["_civ", objNull, [objNull]], ["_arrest", false, [false]]];
 		if (isNull _civ || {!alive _civ}) exitWith {};
 		private _oldGroup = group _civ;
 		private _group = createGroup civilian;
 		[_civ] joinSilent _group;
 		// released only once out of the player's group: cleared first, the despawn could take him there
-		_civ setVariable ["detained", false, true];
+		if (!_arrest) then { _civ setVariable ["detained", false, true] };
 		// the group Arrest made for him on the player's machine; the player's own group still has people in it
 		if (!isNull _oldGroup && {(units _oldGroup) isEqualTo []}) then { _oldGroup call ALiVE_fnc_DeleteGroupRemote };
-		if (!isMultiplayer) exitWith { _civ enableAI "PATH" };
+		if (!isMultiplayer) exitWith { if (_arrest) then { _civ disableAI "PATH" } else { _civ enableAI "PATH" } };
 		_group setGroupOwner 2;
-		[_civ, _group] spawn {
-			params ["_civ", "_group"];
+		[_civ, _group, _arrest] spawn {
+			params ["_civ", "_group", "_arrest"];
 			private _start = diag_tickTime;
 			private _held = 0;
 			waitUntil {
@@ -1399,8 +1401,8 @@ switch (_operation) do {
 				};
 				_held >= 2 || {(diag_tickTime - _start) > 30}
 			};
-			// Arrest stopped him walking on the player's machine
-			if (!isNull _civ && {alive _civ}) then { [_civ, "PATH"] remoteExec ["enableAI", _civ] };
+			// arrested he stands where he is; released he walks again (Arrest stopped him on the player's machine)
+			if (!isNull _civ && {alive _civ}) then { [_civ, "PATH"] remoteExec [["enableAI", "disableAI"] select _arrest, _civ] };
 		};
 	};
 

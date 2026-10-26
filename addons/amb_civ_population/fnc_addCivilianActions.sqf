@@ -202,7 +202,8 @@ _id = _object addAction [
 
 _text = localize "STR_ALIVE_CIV_INTERACT_ACTIONS_ARREST";
 _params = [];
-_code = {_object = _this select 0; _caller = _this select 1; _params = _this select 3; _group = if (side (group _object) == Civilian) then {group _object} else {createGroup Civilian}; [_object] joinsilent _group; _object disableAI "PATH"};
+_code = {_object = _this select 0; _caller = _this select 1; _params = _this select 3; [objNull, "ReturnToServer", [_object, true]] remoteExec ["ALiVE_fnc_civInteract", 2]};
+// on the server, as Release is: made here, his group kept him this player's (F540)
 _condition = "alive _target" + "&&" + "(_target getvariable ['detained',false])";
 
 _id = _object addAction [
