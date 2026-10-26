@@ -1342,8 +1342,10 @@ switch (_operation) do {
 		closeDialog 0;
 
 		if (!_alreadyDetained) then {
-			//-- Join caller group
+			//-- Join caller group; his old group is deleted once empty, as the classic Detain does (F541)
+			private _oldGroup = group _civ;
 			[_civ] joinSilent (group player);
+			if (!isNull _oldGroup) then { _oldGroup call ALiVE_fnc_DeleteGroupRemote };
 			_civ setVariable ["detained", true, true];
 			// Walking up to him stopped him (doStop) and walking off only gives his MOVE back, so in the
 			// group he stood where he was detained. Once he is local to the group's leader, follow.
