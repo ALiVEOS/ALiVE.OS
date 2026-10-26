@@ -1398,8 +1398,8 @@ class FSM
                          "                    case 3 : {_typeReinf = ""armour""};" \n
                          "                    case 4 : {_typeReinf = ""air""};" \n
                          "                    case 5 : {_typeReinf = ""sea""};" \n
-                         "                    case 6 : {_typeReinf = ""AAA""};" \n
-                         "                    case 7 : {_typeReinf = ""Artillery""};" \n
+                         "                    case 6 : {_typeReinf = ""Artillery""};" \n
+                         "                    case 7 : {_typeReinf = ""AAA""};" \n
                          "                };" \n
                          "            " \n
                          "                [""OPCOM - Requesting reinforcments for side %3 %1x %2 units!"",_x,_typeReinf,_side] call ALiVE_fnc_dumpR;" \n
