@@ -2556,9 +2556,26 @@ switch(_operation) do {
             _clusterCount = count _clusters;
             _groupPerCluster = floor(_groupCount / _clusterCount);
             // Groups that don't divide evenly go one each to the first objectives. Left out, they
-            // were never placed, and they're the end of the list: spec ops and air.
+            // were never placed.
             private _groupsLeftOver = _groupCount - (_groupPerCluster * _clusterCount);
             _totalCount = 0;
+
+            // Each objective takes the next run of the list, and the list is vehicles, then infantry, then air, so the first
+            // objectives got every vehicle group and the rest infantry only (A. Ares on Discord, 27 Oct). Dealt instead as
+            // cards round a table: objective 1 takes groups 1, N+1, 2N+1..., objective 2 takes 2, N+2..., the same number
+            // each as before. A group's kind goes with it, as the kind used to be read from where it sat in the list
+            private _groupKinds = [];
+            for "_i" from 0 to _groupCount - 1 do {
+                _groupKinds pushBack (if (_i < _infantryGroupStart) then { "vehicle" } else { ["air", "infantry"] select (_i < _infantryGroupEnd) });
+            };
+            if (_clusterCount > 1 && {_groupCount > _clusterCount}) then {
+                private _dealt = [];
+                for "_c" from 0 to _clusterCount - 1 do {
+                    for "_i" from _c to _groupCount - 1 step _clusterCount do { _dealt pushBack _i };
+                };
+                _groups = _dealt apply { _groups select _x };
+                _groupKinds = _dealt apply { _groupKinds select _x };
+            };
 
             if(_groupCount > 0) then {
                 // Reserve-pool placement model (v2). `Readiness` controls
@@ -2932,9 +2949,9 @@ switch(_operation) do {
 
                                 _group = _groups select _totalCount;
 
-                                private _isVehicle = (_totalCount < _infantryGroupStart);
-                                private _isInfantry = (_totalCount >= _infantryGroupStart) && (_totalCount < _infantryGroupEnd);
-                                private _isAir = (_totalCount >= _infantryGroupEnd);
+                                private _isVehicle = (_groupKinds select _totalCount) == "vehicle";
+                                private _isInfantry = (_groupKinds select _totalCount) == "infantry";
+                                private _isAir = (_groupKinds select _totalCount) == "air";
                                 // Try to extract vehicle class only when this
                                 // group is past the vehicle-active quota. If
                                 // extraction succeeds we route to vehicle
@@ -3166,9 +3183,9 @@ switch(_operation) do {
 
                             _group = _groups select _totalCount;
 
-                            private _isVehicle = (_totalCount < _infantryGroupStart);
-                            private _isInfantry = (_totalCount >= _infantryGroupStart) && (_totalCount < _infantryGroupEnd);
-                            private _isAir = (_totalCount >= _infantryGroupEnd);
+                            private _isVehicle = (_groupKinds select _totalCount) == "vehicle";
+                            private _isInfantry = (_groupKinds select _totalCount) == "infantry";
+                            private _isAir = (_groupKinds select _totalCount) == "air";
                             private _vehicleReserveClass = "";
                             // A group with a static weapon or an artillery piece anywhere in it is always placed active:
                             // parked empty, a gun is one nobody fires, and a woken reserve only brings back its first

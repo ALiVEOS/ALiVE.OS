@@ -1531,6 +1531,27 @@ switch(_operation) do {
             // Groups that don't divide evenly go one each to the first objectives. Left out, they
             // were never placed, and they're the end of the list: spec ops, then air.
             private _groupsLeftOver = if (_clusterCount > 0) then { _groupCount - (_groupPerCluster * _clusterCount) } else { 0 };
+            // Each objective takes the next run of the list, and the list is vehicles, then infantry, then the rest, so the
+            // first objectives got every vehicle group and the rest infantry only (A. Ares on Discord, 27 Oct). Dealt instead as
+            // cards round a table: objective 1 takes groups 1, N+1, 2N+1..., objective 2 takes 2, N+2..., the same number
+            // each as before. A group's kind goes with it, as the kind used to be read from where it sat in the list
+            private _groupKinds = [];
+            for "_i" from 0 to _groupCount - 1 do {
+                _groupKinds pushBack (switch (true) do {
+                    case (_i < _infantryGroupStart): { "vehicle" };
+                    case (_i < _infantryGroupEnd): { "infantry" };
+                    case (_i < _airGroupEnd): { "air" };
+                    default { "other" };
+                });
+            };
+            if (_clusterCount > 1 && {_groupCount > _clusterCount}) then {
+                private _dealt = [];
+                for "_c" from 0 to _clusterCount - 1 do {
+                    for "_i" from _c to _groupCount - 1 step _clusterCount do { _dealt pushBack _i };
+                };
+                _groups = _dealt apply { _groups select _x };
+                _groupKinds = _dealt apply { _groupKinds select _x };
+            };
             _totalCount = 0;
 
             // Reserve-pool placement model. Mirrors mil_placement semantics:
@@ -1981,16 +2002,16 @@ switch(_operation) do {
                         private _groupsHere = _groupPerCluster + ([0, 1] select (_forEachIndex < _groupsLeftOver));
                         for "_i" from 0 to _groupsHere -1 do {
                             _group = _groups select _totalCount;
-                            private _isVehicle = (_totalCount < _infantryGroupStart);
-                            private _isInfantry = (_totalCount >= _infantryGroupStart) && (_totalCount < _infantryGroupEnd);
-                            private _isAir = (_totalCount >= _infantryGroupEnd) && (_totalCount < _airGroupEnd);
+                            private _isVehicle = (_groupKinds select _totalCount) == "vehicle";
+                            private _isInfantry = (_groupKinds select _totalCount) == "infantry";
+                            private _isAir = (_groupKinds select _totalCount) == "air";
                             [_group, _isVehicle, _isInfantry, _isAir] call _fnc_placeGroupCP;
                         };
                     } else {
                         _group = _groups select _totalCount;
-                        private _isVehicle = (_totalCount < _infantryGroupStart);
-                        private _isInfantry = (_totalCount >= _infantryGroupStart) && (_totalCount < _infantryGroupEnd);
-                        private _isAir = (_totalCount >= _infantryGroupEnd) && (_totalCount < _airGroupEnd);
+                        private _isVehicle = (_groupKinds select _totalCount) == "vehicle";
+                        private _isInfantry = (_groupKinds select _totalCount) == "infantry";
+                        private _isAir = (_groupKinds select _totalCount) == "air";
                         [_group, _isVehicle, _isInfantry, _isAir] call _fnc_placeGroupCP;
                     };
                 };
