@@ -5,7 +5,7 @@ SCRIPT(hubEdenWhoSave);
 Function: fnc_hubEdenWhoSave
 
 Description:
-Eden attributeSave for the Logistics Hub's Who Can Collect (see fnc_hubEdenWhoLoad): the ticked
+Eden attributeSave for the Logistics Hub's Who Can Collect and Who Can Dismantle (see fnc_hubEdenWhoLoad): the ticked
 rows' tokens, comma separated. Nothing ticked saves "", which leaves it to admins.
 
 Parameters:

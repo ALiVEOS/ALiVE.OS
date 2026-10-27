@@ -610,9 +610,60 @@
     <English>Requisition collected at the hub</English>
 </Key>
 <Key ID="STR_ALIVE_HUB_PERMISSIONS_NONE">
-    <English>That is not a logistics hub, so who can collect is unchanged</English>
+    <English>That is not a logistics hub, so nothing changed</English>
 </Key>
 <Key ID="STR_ALIVE_HUB_PERMISSIONS_SET">
     <English>Who can collect is changed on %1 Logistics Hub module(s) until the mission restarts</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_DISMANTLE">
+    <English>Enemy Can Dismantle</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_DISMANTLE_COMMENT">
+    <English>Whether an enemy player can dismantle a hub with a hold action, when none of the hub's side is within 60 metres. While a hub is down nothing is collected there and it supplies nothing.</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_DISMANTLE_TIME">
+    <English>Dismantle Time (s)</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_DISMANTLE_TIME_COMMENT">
+    <English>How long the dismantle hold action takes, from 1 to 120 seconds. The same for the enemy and for the hub's own side.</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_REPAIR_TIME">
+    <English>Repair Time (s)</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_REPAIR_TIME_COMMENT">
+    <English>Seconds after a hub is destroyed or dismantled before it works again. 0: it stays down for the rest of the mission. A destroyed hub that can't be mended is replaced by a new object of the same kind, without anything set on the old one in Eden. A hub placed with damage off can't be destroyed, only dismantled.</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_DISMANTLE_WHO">
+    <English>Who Can Dismantle</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_DISMANTLE_WHO_COMMENT">
+    <English>Who on the hub's own side may dismantle it with a hold action. Tick any number of rows: any ticked row lets a player in. Admins always can, so with nothing ticked only admins can. The enemy's hold action is Enemy Can Dismantle, above.</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_DISMANTLE_LIST">
+    <English>Allowed Players</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_DISMANTLE_LIST_COMMENT">
+    <English>For Players on the List under Who Can Dismantle: player IDs, unit class names or the slots' variable names from Eden (P1, jtac), separated by commas.</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_ACTION_DISMANTLE">
+    <English>Dismantle the logistics hub</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_LOST">
+    <English>The logistics hub at grid %1 has been destroyed</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_DISMANTLED">
+    <English>The logistics hub at grid %1 has been dismantled by the enemy</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_DISMANTLED_OWN">
+    <English>The logistics hub at grid %1 has been dismantled by %2</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_DISMANTLED_BY_US">
+    <English>The enemy logistics hub at grid %1 has been dismantled</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_BACK">
+    <English>The logistics hub at grid %1 is working again</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_PERMISSIONS_SET_DISMANTLE">
+    <English>Who can dismantle is changed on %1 Logistics Hub module(s) until the mission restarts</English>
 </Key>
 </Container></Package></Project>

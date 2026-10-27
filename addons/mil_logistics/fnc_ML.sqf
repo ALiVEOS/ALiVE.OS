@@ -2550,14 +2550,17 @@ switch(_operation) do {
             private _bestNodePos  = [];
             private _bestNodeDist = 1e10;
             private _bestNodeIsHQ = false;
+            private _bestNodeIsHub = false;
 
             {
                 private _node     = _x;
                 private _nodePos  = _node select 0;
                 private _nodeIDs  = _node select 1;
                 private _nodeIsHQ = if (count _node > 2) then { _node select 2 } else { false };
+                // a Logistics Hub (#1091) holds no profiles: it stands while it is in the list
+                private _nodeIsHub = (_node param [3, ""]) isEqualTo "HUB";
 
-                private _nodeValid = _nodeIsHQ || {
+                private _nodeValid = _nodeIsHQ || {_nodeIsHub} || {
                     private _alive = false;
                     {
                         if (!isNil { [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler })
@@ -2572,6 +2575,7 @@ switch(_operation) do {
                         _bestNodeDist = _d;
                         _bestNodePos  = _nodePos;
                         _bestNodeIsHQ = _nodeIsHQ;
+                        _bestNodeIsHub = _nodeIsHub;
                     };
                 };
             } forEach _nodes;
@@ -2594,7 +2598,7 @@ switch(_operation) do {
                     private _nodePos3 = _nodeResult;
                     if (count _nodePos3 < 3) then { _nodePos3 = _nodePos3 + [0]; };
                     private _nodeName = [_nodePos3] call ALIVE_fnc_taskGetNearestLocationName;
-                    private _nodeKind = if (_bestNodeIsHQ) then {"the commander's own position"} else {"an earlier delivery"};
+                    private _nodeKind = if (_bestNodeIsHQ) then {"the commander's own position"} else { if (_bestNodeIsHub) then {"a logistics hub"} else {"an earlier delivery"} };
                     private _moved = if (_usedFallback) then {
                         format [", a fallback because the node at %1 is at sea with no shore in reach", _bestNodePos]
                     } else {
@@ -8487,7 +8491,7 @@ switch(_operation) do {
                                             private _nodeIDs  = _node select 1;
                                             private _nodeIsHQ = if (count _node > 2) then { _node select 2 } else { false };
                                             if (_objPos distance2D _nodePos < 500) exitWith {
-                                                if (_nodeIsHQ) then {
+                                                if (_nodeIsHQ || {(_node param [3, ""]) isEqualTo "HUB"}) then {
                                                     _inNetwork = true;
                                                 } else {
                                                     {

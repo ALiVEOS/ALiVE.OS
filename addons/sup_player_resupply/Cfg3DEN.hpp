@@ -40,5 +40,10 @@ class Cfg3DEN {
             attributeLoad = "[_this, _value, 'STR_ALIVE_HUB_COLLECT_WHO', 'SIDE'] call compile preprocessFileLineNumbers '\x\alive\addons\sup_player_resupply\fnc_hubEdenWhoLoad.sqf'";
             attributeSave = "[_this, 'SIDE'] call compile preprocessFileLineNumbers '\x\alive\addons\sup_player_resupply\fnc_hubEdenWhoSave.sqf'";
         };
+        // Who Can Dismantle a hub of its own side: the same rows, nothing ticked (admins only)
+        class ALiVE_HubDismantleChoice: ALiVE_SideChoiceMulti {
+            attributeLoad = "[_this, _value, 'STR_ALIVE_HUB_DISMANTLE_WHO', ''] call compile preprocessFileLineNumbers '\x\alive\addons\sup_player_resupply\fnc_hubEdenWhoLoad.sqf'";
+            attributeSave = "[_this, ''] call compile preprocessFileLineNumbers '\x\alive\addons\sup_player_resupply\fnc_hubEdenWhoSave.sqf'";
+        };
     };
 };

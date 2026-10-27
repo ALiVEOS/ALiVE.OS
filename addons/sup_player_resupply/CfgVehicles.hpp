@@ -201,6 +201,28 @@ class CfgVehicles {
                     class hub_never : Edit { property = "ALiVE_sup_logistics_hub_hub_never"; displayName = "$STR_ALIVE_HUB_NEVER"; tooltip = "$STR_ALIVE_HUB_NEVER_COMMENT"; typeName = "STRING"; defaultValue = """"""; };
                     class hub_also : Edit { property = "ALiVE_sup_logistics_hub_hub_also"; displayName = "$STR_ALIVE_HUB_ALSO"; tooltip = "$STR_ALIVE_HUB_ALSO_COMMENT"; typeName = "STRING"; defaultValue = """"""; };
 
+                    // losing a hub: destroyed, or dismantled by the enemy or its own side, and the repair
+                    class HDR_LOSING : ALiVE_ModuleSubTitle { property = "ALiVE_sup_logistics_hub_HDR_LOSING"; displayName = "LOSING A HUB"; };
+                    class hub_dismantle : Combo
+                    {
+                            property = "ALiVE_sup_logistics_hub_hub_dismantle";
+                            displayName = "$STR_ALIVE_HUB_DISMANTLE";
+                            tooltip = "$STR_ALIVE_HUB_DISMANTLE_COMMENT";
+                            defaultValue = """true""";
+                            typeName = "STRING";
+                            class Values
+                            {
+                                    class Yes { name = "Yes"; value = "true"; };
+                                    class No { name = "No"; value = "false"; };
+                            };
+                    };
+                    class hub_dismantle_time : Edit { property = "ALiVE_sup_logistics_hub_hub_dismantle_time"; displayName = "$STR_ALIVE_HUB_DISMANTLE_TIME"; tooltip = "$STR_ALIVE_HUB_DISMANTLE_TIME_COMMENT"; typeName = "STRING"; defaultValue = """15"""; };
+                    class hub_repair_time : Edit { property = "ALiVE_sup_logistics_hub_hub_repair_time"; displayName = "$STR_ALIVE_HUB_REPAIR_TIME"; tooltip = "$STR_ALIVE_HUB_REPAIR_TIME_COMMENT"; typeName = "STRING"; defaultValue = """0"""; };
+
+                    class HDR_DISMANTLE : ALiVE_ModuleSubTitle { property = "ALiVE_sup_logistics_hub_HDR_DISMANTLE"; displayName = "WHO CAN DISMANTLE"; };
+                    class hub_dismantle_who { property = "ALiVE_sup_logistics_hub_hub_dismantle_who"; displayName = "$STR_ALIVE_HUB_DISMANTLE_WHO"; tooltip = "$STR_ALIVE_HUB_DISMANTLE_WHO_COMMENT"; control = "ALiVE_HubDismantleChoice"; typeName = "STRING"; expression = "_this setVariable ['hub_dismantle_who', _value];"; defaultValue = """"""; };
+                    class hub_dismantle_list : Edit { property = "ALiVE_sup_logistics_hub_hub_dismantle_list"; displayName = "$STR_ALIVE_HUB_DISMANTLE_LIST"; tooltip = "$STR_ALIVE_HUB_DISMANTLE_LIST_COMMENT"; typeName = "STRING"; defaultValue = """"""; };
+
                     class HDR_GENERAL : ALiVE_ModuleSubTitle { property = "ALiVE_sup_logistics_hub_HDR_GENERAL"; displayName = "GENERAL"; };
                     class hub_debug : Combo
                     {

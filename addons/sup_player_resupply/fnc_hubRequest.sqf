@@ -6,7 +6,8 @@ Function: ALIVE_fnc_hubRequest
 
 Description:
 The only way a player's machine asks the server to change a Logistics Hub, and only for what a player
-may ask: an admin's change to who may collect. It finds who is asking from the connection, never from
+may ask: an admin's change to who may collect or dismantle, and a dismantle from the hold action
+(the server checks again who may, and how close). It finds who is asking from the connection, never from
 the request, and passes them on as the caller. Collecting a requisition goes through Military
 Logistics like any other tablet requisition.
 
@@ -35,7 +36,7 @@ if (!isServer) exitWith {};
 if !(_this isEqualType [] && {count _this == 2} && {(_this select 0) isEqualType ""} && {(_this select 1) isEqualType []}) exitWith {};
 params ["_op", "_args"];
 
-if !(_op in ["permissions"]) exitWith {
+if !(_op in ["permissions", "dismantle"]) exitWith {
     ["ALiVE Logistics Hub - refused a request for %1 from machine %2: not something a player can ask for", _op, remoteExecutedOwner] call ALiVE_fnc_dumpR;
 };
 

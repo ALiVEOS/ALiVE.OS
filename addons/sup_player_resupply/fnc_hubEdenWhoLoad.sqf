@@ -5,9 +5,10 @@ SCRIPT(hubEdenWhoLoad);
 Function: fnc_hubEdenWhoLoad
 
 Description:
-Eden attributeLoad for the Logistics Hub's Who Can Collect (ALiVE_HubCollectChoice, on
-ALiVE_SideChoiceMulti): a multi-select list of who on the hub's side may collect a requisition
-there. Any ticked row lets a player in; with none ticked only admins can.
+Eden attributeLoad for the Logistics Hub's Who Can Collect (ALiVE_HubCollectChoice) and Who Can
+Dismantle (ALiVE_HubDismantleChoice, default nothing ticked), both on ALiVE_SideChoiceMulti: a
+multi-select list of who on the hub's side may collect a requisition there, or dismantle it. Any
+ticked row lets a player in; with none ticked only admins can.
 
 Storage: one string, the ticked rows' tokens comma separated: SIDE, LEADER, ITEM, LIST.
 
