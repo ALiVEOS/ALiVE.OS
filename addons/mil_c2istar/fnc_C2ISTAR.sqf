@@ -3049,38 +3049,7 @@ if (isServer) then {
 
                 case "OPEN": {
 
-                    switch (MOD(TABLET_MODEL)) do {
-                        case "Tablet01": {
-                            createDialog "C2Tablet";
-                        };
-
-                        case "Mapbag01": {
-                            createDialog "C2Tablet";
-
-                            ([] call ALiVE_fnc_tabletBox) params ["_uiX","_uiY","_uiW","_uiH"];
-                            private _ctrlBackground = ((findDisplay 70001) displayCtrl 70002);
-                            _ctrlBackground ctrlsettext "x\alive\addons\main\data\ui\ALiVE_mapbag.paa";
-                            _ctrlBackground ctrlSetPosition [
-                                0.15 * _uiW + _uiX,
-                                -0.242 * _uiH + _uiY,
-                                0.72 * _uiW,
-                                1.372 * _uiH
-                            ];
-                            _ctrlBackground ctrlCommit 0;
-                            // the header row sits on the map bag's flap, which ends a little higher than the toughbook's screen edge
-                            {
-                                private _ctrl = (findDisplay 70001) displayCtrl _x;
-                                private _pos = ctrlPosition _ctrl;
-                                _pos set [1, (_pos select 1) - 0.0106 * _uiH];
-                                _ctrl ctrlSetPosition _pos;
-                                _ctrl ctrlCommit 0;
-                            } forEach [70003];
-                        };
-
-                        default {
-                            createDialog "C2Tablet";
-                        };
-                    };
+                    ["C2Tablet"] call ALiVE_fnc_tabletOpen;
 
                 };
 

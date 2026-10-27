@@ -319,30 +319,7 @@ if (_menuName == "C2ISTAR") then {
                 ],
                 ["Send SITREP",
                     {
-                        switch (MOD(TABLET_MODEL)) do {
-                            case "Tablet01": {
-                                createDialog "RscDisplayALIVESITREP";
-                            };
-
-                            case "Mapbag01": {
-                                createDialog "RscDisplayALIVESITREP";
-
-                                ([] call ALiVE_fnc_tabletBox) params ["_uiX","_uiY","_uiW","_uiH"];
-                                private _ctrlBackground = ((findDisplay 90001) displayCtrl 90002);
-                                _ctrlBackground ctrlsettext "x\alive\addons\main\data\ui\ALiVE_mapbag.paa";
-                                _ctrlBackground ctrlSetPosition [
-                                    0.15 * _uiW + _uiX,
-                                    -0.242 * _uiH + _uiY,
-                                    0.72 * _uiW,
-                                    1.372 * _uiH
-                                ];
-                                _ctrlBackground ctrlCommit 0;
-                            };
-
-                            default {
-                                createDialog "RscDisplayALIVESITREP";
-                            };
-                        };
+                        ["RscDisplayALIVESITREP"] call ALiVE_fnc_tabletOpen;
                     },
                     "",
                     "",
@@ -353,30 +330,7 @@ if (_menuName == "C2ISTAR") then {
                 ],
                 ["Send PATROLREP",
                     {
-                        switch (MOD(TABLET_MODEL)) do {
-                            case "Tablet01": {
-                                createDialog "RscDisplayALIVEPATROLREP";
-                            };
-
-                            case "Mapbag01": {
-                                createDialog "RscDisplayALIVEPATROLREP";
-
-                                ([] call ALiVE_fnc_tabletBox) params ["_uiX","_uiY","_uiW","_uiH"];
-                                private _ctrlBackground = ((findDisplay 90002) displayCtrl 90003);
-                                _ctrlBackground ctrlsettext "x\alive\addons\main\data\ui\ALiVE_mapbag.paa";
-                                _ctrlBackground ctrlSetPosition [
-                                    0.15 * _uiW + _uiX,
-                                    -0.242 * _uiH + _uiY,
-                                    0.72 * _uiW,
-                                    1.372 * _uiH
-                                ];
-                                _ctrlBackground ctrlCommit 0;
-                            };
-
-                            default {
-                                createDialog "RscDisplayALIVEPATROLREP";
-                            };
-                        };
+                        ["RscDisplayALIVEPATROLREP"] call ALiVE_fnc_tabletOpen;
                     },
                     "",
                     "",

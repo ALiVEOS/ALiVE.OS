@@ -184,6 +184,21 @@ class cfgFunctions {
                 file = "\x\alive\addons\main\fnc_tabletBox.sqf";
                 ALIVE_RECOMPILE;
             };
+            class tabletFrameBox {
+                description = "Returns [x,y,w,h] of the box the tablet artwork is drawn in, the 1160-wide frame or the wide Modern one";
+                file = "\x\alive\addons\main\fnc_tabletFrameBox.sqf";
+                ALIVE_RECOMPILE;
+            };
+            class tabletEra {
+                description = "Which tablet artwork this player sees: the player's Addon Options choice, the mission's, or by terrain and soldier";
+                file = "\x\alive\addons\main\fnc_tabletEra.sqf";
+                ALIVE_RECOMPILE;
+            };
+            class tabletOpen {
+                description = "Opens an ALiVE tablet dialog in the player's era: frame artwork, key fonts and the wide Modern stretch";
+                file = "\x\alive\addons\main\fnc_tabletOpen.sqf";
+                ALIVE_RECOMPILE;
+            };
             class getAirfieldGeometry {
                 description = "Returns runway and taxiway segments around a position (mil_ato attrs + ALiVE_runway tags + BI substring matches)";
                 file = "\x\alive\addons\main\fnc_getAirfieldGeometry.sqf";

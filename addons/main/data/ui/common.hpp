@@ -182,17 +182,17 @@ class MainTablet_RscButton
 {
     idc = -1;
     type = 16;
-    style = 0x00;
+    style = 0x02;
     default = 0;
-    shadow = 2;
+    shadow = 0;
     x = "safeZoneX + (safeZoneW / 5)";
     y = "safeZoneY + (safeZoneH / 1.525)";
     w = "(safeZoneW / 12.5)";
     h = "(safeZoneH / 20)";
     color[] = {0.8784, 0.8471, 0.651, 1.0};
     color2[] = {0.95, 0.95, 0.95, 1};
-    colorBackground[] = {1, 1, 1, 1};
-    colorbackground2[] = {1, 1, 1, 0.4};
+    colorBackground[] = {1,1,1,0.07};
+    colorbackground2[] = {1,1,1,0.07};
     colorDisabled[] = {1, 1, 1, 0.25};
     periodFocus = 1.2;
     periodOver = 0.8;
@@ -212,9 +212,10 @@ class MainTablet_RscButton
     };
     class TextPos
     {
-        left = "(((1 / 1.2) / 20) * 0.9) * (3/4)";
-        top = "(      (     (1 / 1.2) / 20) -     (     (     (1 / 1.2) / 20) * 0.9)) / 2";
-        right = 0.005;
+        // text centred both ways in a bar 0.7 of a grid row tall, at the tablets' one text size (Jman 27 Oct)
+        left = 0;
+        top = 0.15 * GUI_GRID_H;
+        right = 0;
         bottom = 0;
     };
     animTextureDefault = "#(argb,8,8,3)color(1,1,1,1)";
@@ -237,14 +238,14 @@ class MainTablet_RscButton
     {
         font = "PuristaMedium";
         color = "#E5E5E5";
-        align = "left";
-        shadow = "true";
+        align = "center";
+        shadow = "false";
     };
     class AttributesImage
     {
         font = "PuristaMedium";
         color = "#E5E5E5";
-        align = "left";
+        align = "center";
     };
 };
 

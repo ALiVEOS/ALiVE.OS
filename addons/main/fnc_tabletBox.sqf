@@ -4,8 +4,8 @@ SCRIPT(tabletBox);
 /* ----------------------------------------------------------------------------
 Function: ALiVE_fnc_tabletBox
 Description:
-    Returns the screen box every ALiVE tablet is drawn in, as
-    [x, y, width, height].
+    Returns the content box every ALiVE tablet's controls are laid out in, as
+    [x, y, width, height]. The tablet artwork itself uses ALiVE_fnc_tabletFrameBox.
 
     The tablet screens themselves are laid out by the GUI_GRID macros in each
     module's data/ui/common.hpp. Anything that positions artwork from script
@@ -32,28 +32,37 @@ Returns:
 Examples:
     (begin example)
     ([] call ALiVE_fnc_tabletBox) params ["_uiX","_uiY","_uiW","_uiH"];
-    _ctrlBackground ctrlSetPosition [
-        0.15 * _uiW + _uiX,
-        -0.242 * _uiH + _uiY,
-        0.72 * _uiW,
-        1.372 * _uiH
-    ];
+    _ctrl ctrlSetPosition [0.30 * _uiW + _uiX, 0.20 * _uiH + _uiY, 0.10 * _uiW, 0.028 * _uiH];
     (end)
 
 See Also:
-    addons/main/data/ui/gui_grid.hpp
+    addons/main/data/ui/gui_grid.hpp, ALiVE_fnc_tabletFrameBox
 Author:
     Jman
 Peer Reviewed:
     nil
 ---------------------------------------------------------------------------- */
 
-private _h = 1.14 * safezoneH;
-private _w = 1.2 * _h;
+// Content box (gui_grid.hpp GUI_GRID_*): the controls' fractions 0.2638..0.7463 x
+// 0.1068..0.7800 mapped onto the frame's screen window. On the wide Modern frame
+// (ALiVE_fnc_tabletOpen sets uiNamespace "ALiVE_tabletWide") it is stretched
+// sideways about the screen centre by the wide screen's extra width, 1148 / 940.
+([] call ALiVE_fnc_tabletFrameBox) params ["_fx", "_fy", "_fw", "_fh"];
+private _wide = uiNamespace getVariable ["ALiVE_tabletWide", false];
 
-[
-    safezoneX + (safezoneW - _w) / 2,
-    safezoneY + (safezoneH - _h) / 2,
-    _w,
-    _h
-]
+// the 1160-wide frame this layout is drawn for, whichever frame is showing
+private _fw43 = 0.99864 * safezoneH;
+private _fx43 = safezoneX + (safezoneW - _fw43) / 2;
+private _w = 1.679471 * _fw43;
+private _h = 1.271710 * _fh;
+private _x = _fx43 + 0.094828 * _fw43 - 0.2638 * _w;
+private _y = _fy + 0.076739 * _fh - 0.1068 * _h;
+
+if (_wide) then {
+    private _c = safezoneX + safezoneW / 2;
+    private _k = 1148 / 940;
+    _x = _c + (_x - _c) * _k;
+    _w = _w * _k;
+};
+
+[_x, _y, _w, _h]

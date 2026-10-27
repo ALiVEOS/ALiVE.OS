@@ -12,11 +12,11 @@ class NEO_resourceRadio
             class NEO_radioBackground : RscPicture
             {
                 idc = 655556;
-                x = 0.142424 * GUI_GRID_WAbs + GUI_GRID_X;
-                y = 0.0632 * GUI_GRID_HAbs + GUI_GRID_Y;
-                w = 0.73 * GUI_GRID_WAbs;
-                h = 0.84 * GUI_GRID_HAbs;
-                text = "x\alive\addons\main\data\ui\ALiVE_toughbook.paa";
+                x = TABLET_ART_X;
+                y = TABLET_ART_Y;
+                w = TABLET_ART_WAbs;
+                h = TABLET_ART_HAbs;
+                text = "\x\alive\addons\main\data\ui\ALiVE_tablet_modern43_ca.paa"; // ALiVE_fnc_tabletOpen sets the era's artwork
                 moving = 0;
                 colorBackground[] = {0,0,0,0};
             };
@@ -63,33 +63,15 @@ class NEO_resourceRadio
                 {
                         idc = 655598;
                         text = "$STR_ALIVE_CS_UI_BACK";
-                        style = 2;
-                        x = 0.519796 * GUI_GRID_WAbs + GUI_GRID_X;
-                        y = 0.7184 * GUI_GRID_HAbs + GUI_GRID_Y;
-                        w = 0.10650 * GUI_GRID_WAbs;
-                        h = 0.028 * GUI_GRID_HAbs;
-                        sizeEx = CS_BTN_SIZE;
-                        colorBackground[] = {0.384,0.439,0.341,1};
-                        colorText[] = {0.706,0.706,0.706,1};
-                        colorBackgroundFocused[] = {0.706,0.706,0.706,1};
-                        colorFocused[] = {0.706,0.706,0.706,1};
                         action = "if (isNil 'ALiVE_c2istar_fnc_backToMenu') then { closeDialog 0 } else { [] call ALiVE_c2istar_fnc_backToMenu }";
+                        TABLET_KEY(TABLET_KEY_RX,2); // the painted key R3 (gui_grid.hpp)
                 };
                 class NEO_radioAbort : NEO_RscButton
                 {
                         idc = 655561;
                         text = "$STR_ALIVE_CS_UI_CLOSE";
-                        style = 2;
-                        x = 0.629821 * GUI_GRID_WAbs + GUI_GRID_X;
-                        y = 0.7184 * GUI_GRID_HAbs + GUI_GRID_Y;
-                        w = 0.106500 * GUI_GRID_WAbs;
-                        h = 0.028 * GUI_GRID_HAbs;
-                        sizeEx = CS_BTN_SIZE;
-                        colorBackground[] = {0.376,0.196,0.204,1};
-                        colorText[] = {0.706,0.706,0.706,1};
-                        colorBackgroundFocused[] = {0.706,0.706,0.706,1};
-                        colorFocused[] = {0.706,0.706,0.706,1};
                         action = "closeDialog 0";
+                        TABLET_KEY(TABLET_KEY_RX,3); // the painted key R4 (gui_grid.hpp)
                 };
 
                 //Main Support ListBox
@@ -200,10 +182,10 @@ class NEO_resourceRadio
                         w = GUI_GRID_WAbs / 1000;
                         h = GUI_GRID_HAbs / 1000;
                         text = "$STR_ALIVE_CS_UI_CONFIRM";
-                        colorBackground[] = {0.384,0.439,0.341,1};
+                        colorBackground[] = {1,1,1,0.07};
                         sizeEx = CS_BTN_SIZE;
-                        colorBackgroundFocused[] = {0.706,0.706,0.706,1};
-                        colorFocused[] = {0.706,0.706,0.706,1};
+                        colorBackgroundFocused[] = {1,1,1,0.14};
+                        colorFocused[] = {1,1,1,0.14};
                 };
 
                 //Transport Base Button
@@ -215,9 +197,9 @@ class NEO_resourceRadio
                         w = GUI_GRID_WAbs / 1000;
                         h = GUI_GRID_HAbs / 1000;
                         text = "$STR_ALIVE_CS_UI_RTB";
-                        colorBackground[] = {0.173,0.173,0.173,1};
-                        colorBackgroundFocused[] = {0.173,0.173,0.173,1};
-                        colorFocused[] = {0.706,0.706,0.706,1};
+                        colorBackground[] = {1,1,1,0.07};
+                        colorBackgroundFocused[] = {1,1,1,0.14};
+                        colorFocused[] = {1,1,1,0.14};
                         sizeEx = CS_BTN_SIZE;
                 };
 
@@ -230,9 +212,9 @@ class NEO_resourceRadio
                         w = GUI_GRID_WAbs / 1000;
                         h = GUI_GRID_HAbs / 1000;
                         text = "$STR_ALIVE_CS_UI_CONFIRM_SMOKE";
-                        colorBackground[] = {0.431,0.494,0.596,1};
-                        colorBackgroundFocused[] = {0.431,0.494,0.596,1};
-                        colorFocused[] = {0.706,0.706,0.706,1};
+                        colorBackground[] = {1,1,1,0.07};
+                        colorBackgroundFocused[] = {1,1,1,0.14};
+                        colorFocused[] = {1,1,1,0.14};
                         sizeEx = CS_BTN_SIZE;
                 };
 
@@ -245,9 +227,9 @@ class NEO_resourceRadio
                         w = GUI_GRID_WAbs / 1000;
                         h = GUI_GRID_HAbs / 1000;
                         text = "$STR_ALIVE_CS_UI_NEW_SMOKE";
-                        colorBackground[] = {0.722,0.439,0.282,1};
-                        colorBackgroundFocused[] = {0.722,0.439,0.282,1};
-                        colorFocused[] = {0.706,0.706,0.706,1};
+                        colorBackground[] = {1,1,1,0.07};
+                        colorBackgroundFocused[] = {1,1,1,0.14};
+                        colorFocused[] = {1,1,1,0.14};
                         sizeEx = CS_BTN_SIZE;
                 };
 
@@ -421,9 +403,9 @@ class NEO_resourceRadio
                         w = GUI_GRID_WAbs / 1000;
                         h = GUI_GRID_HAbs / 1000;
                         text = "$STR_ALIVE_CS_UI_CONFIRM";
-                        colorBackground[] = {0.384,0.439,0.341,1};
-                        colorBackgroundFocused[] = {0.384,0.439,0.341,1};
-                        colorFocused[] = {0.706,0.706,0.706,1};
+                        colorBackground[] = {1,1,1,0.07};
+                        colorBackgroundFocused[] = {1,1,1,0.14};
+                        colorFocused[] = {1,1,1,0.14};
                         sizeEx = CS_BTN_SIZE;
                 };
 
@@ -436,25 +418,18 @@ class NEO_resourceRadio
                         w = GUI_GRID_WAbs / 1000;
                         h = GUI_GRID_HAbs / 1000;
                         text = "$STR_ALIVE_CS_UI_RTB";
-                        colorBackground[] = {0.173,0.173,0.173,1};
-                        colorBackgroundFocused[] = {0.173,0.173,0.173,1};
-                        colorFocused[] = {0.706,0.706,0.706,1};
+                        colorBackground[] = {1,1,1,0.07};
+                        colorBackgroundFocused[] = {1,1,1,0.14};
+                        colorFocused[] = {1,1,1,0.14};
                         sizeEx = CS_BTN_SIZE;
                 };
                 class NEO_radioSitRepButton : NEO_radioCasConfirmButton
                 {
                         idc = 655625;
                         enable = 0; // starts disabled - SITREP no-ops until a unit is selected (enabled in the unit handlers)
-                        x = 0.445231 * GUI_GRID_WAbs + GUI_GRID_X;
-                        y = 0.150015 * GUI_GRID_HAbs + GUI_GRID_Y;
-                        w = 0.0597643 * GUI_GRID_WAbs;
-                        h = 0.028 * GUI_GRID_HAbs;
                         text = "$STR_ALIVE_CS_UI_SITREP";
                         action = "[] spawn fnc_getSitrep";
-                        colorBackground[] = {0.384,0.439,0.341,1};
-                        colorBackgroundFocused[] = {0.384,0.439,0.341,1};
-                        colorFocused[] = {0.706,0.706,0.706,1};
-                        sizeEx = CS_BTN_SIZE;
+                        TABLET_KEY(TABLET_KEY_RX,0); // the painted key R1 (gui_grid.hpp)
                 };
                 // Terrain toggle - swaps the map between satellite and schematic (see NEO_fnc_radioSetTerrainMode).
                 // Sits in the top-right of the tablet frame header (mirroring the ALiVE logo top-left), well
@@ -716,9 +691,9 @@ class NEO_resourceRadio
                         w = GUI_GRID_WAbs / 1000;
                         h = GUI_GRID_HAbs / 1000;
                         text = "$STR_ALIVE_CS_UI_CONFIRM";
-                        colorBackground[] = {0.384,0.439,0.341,1};
-                        colorBackgroundFocused[] = {0.384,0.439,0.341,1};
-                        colorFocused[] = {0.706,0.706,0.706,1};
+                        colorBackground[] = {1,1,1,0.07};
+                        colorBackgroundFocused[] = {1,1,1,0.14};
+                        colorFocused[] = {1,1,1,0.14};
                         sizeEx = CS_BTN_SIZE;
                 };
                 class NEO_radioArtyBaseButton : NEO_radioArtyConfirmButton
@@ -729,7 +704,7 @@ class NEO_resourceRadio
                         w = GUI_GRID_WAbs / 1000;
                         h = GUI_GRID_HAbs / 1000;
                         text = "$STR_ALIVE_CS_UI_RTB";
-                        colorBackground[] = {0.173,0.173,0.173,1};
+                        colorBackground[] = {1,1,1,0.07};
                         sizeEx = CS_BTN_SIZE;
                 };
                 class NEO_radioArtyOrdnanceTypeText : NEO_radioArtyUnitText

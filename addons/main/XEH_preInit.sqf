@@ -67,6 +67,8 @@ LOG(MSG_INIT);
 // ALiVE's scroll-wheel actions in a colour of the player's choosing, off by default (ALiVE_fnc_actionTitle)
 ["ALiVE_prefActionColourOn", "CHECKBOX", [localize "STR_ALIVE_SETTINGS_ACTCOL_ON", localize "STR_ALIVE_SETTINGS_ACTCOL_ON_COMMENT"], [localize "STR_ALIVE_SETTINGS_CATEGORY", localize "STR_ALIVE_SETTINGS_GAME"], false] call CBA_fnc_addSetting;
 ["ALiVE_prefActionColour", "COLOR", [localize "STR_ALIVE_SETTINGS_ACTCOL", localize "STR_ALIVE_SETTINGS_ACTCOL_COMMENT"], [localize "STR_ALIVE_SETTINGS_CATEGORY", localize "STR_ALIVE_SETTINGS_GAME"], [0.788, 0.443, 0.157]] call CBA_fnc_addSetting;
+// the tablet artwork: as the mission sets (by default, picked by scenario), or one era always (ALiVE_fnc_tabletEra)
+["ALiVE_prefTabletEra", "LIST", [localize "STR_ALIVE_SETTINGS_TABLET", localize "STR_ALIVE_SETTINGS_TABLET_COMMENT"], [localize "STR_ALIVE_SETTINGS_CATEGORY", localize "STR_ALIVE_SETTINGS_GAME"], [["auto", "modern", "coldwar", "vietnam", "ww2"], [localize "STR_ALIVE_SETTINGS_MISSION", localize "STR_ALiVE_TABLET_MODERN", localize "STR_ALiVE_TABLET_COLDWAR", localize "STR_ALiVE_TABLET_VIETNAM", localize "STR_ALiVE_TABLET_WW2"], 0]] call CBA_fnc_addSetting;
 
 // Every module's own areas (TAOR, blacklist, CQB's lists, the air commander's airspace) out of sight at once, on
 // every machine with a screen, from the first module init on that machine (ALIVE_fnc_dumpModuleInit). Each module

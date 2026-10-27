@@ -50,6 +50,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 
 Peer reviewed:
 nil
@@ -77,7 +78,7 @@ if(isNil "ALiVE_mainTabletData") then {
 switch(_action) do {
 
     case "open":{
-        createDialog "MainTablet";
+        ["MainTablet"] call ALiVE_fnc_tabletOpen;
     };
 
     case "close":{

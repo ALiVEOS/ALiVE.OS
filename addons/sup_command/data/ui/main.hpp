@@ -13,11 +13,11 @@ class SCOMTablet
         class SCOMTablet_background : SCOMTablet_RscPicture
         {
             idc = 12002;
-            x = 0.142424 * GUI_GRID_WAbs + GUI_GRID_X;
-            y = 0.0632 * GUI_GRID_HAbs + GUI_GRID_Y;
-            w = 0.73 * GUI_GRID_WAbs;
-            h = 0.84 * GUI_GRID_HAbs;
-            text = "x\alive\addons\main\data\ui\ALiVE_toughbook.paa";
+            x = TABLET_ART_X;
+            y = TABLET_ART_Y;
+            w = TABLET_ART_WAbs;
+            h = TABLET_ART_HAbs;
+            text = "\x\alive\addons\main\data\ui\ALiVE_tablet_modern43_ca.paa"; // ALiVE_fnc_tabletOpen sets the era's artwork
             moving = 0;
             colorBackground[] = {0,0,0,0};
         };
@@ -51,33 +51,15 @@ class SCOMTablet
         {
             idc = 12006;
             text = "$STR_ALIVE_SCOM_UI_BACK";
-            style = 0x02;
-            x = 0.271203 * GUI_GRID_WAbs + GUI_GRID_X;
-            y = 0.7350 * GUI_GRID_HAbs + GUI_GRID_Y;
-            w = 0.2325 * GUI_GRID_WAbs;
-            h = 0.028 * GUI_GRID_HAbs;
-            sizeEx = 0.5 * GUI_GRID_H;
-            colorBackground[] = {0.376,0.196,0.204,1};
-            colorText[] = {0.706,0.706,0.706,1};
-            colorBackgroundFocused[] = {0.706,0.706,0.706,1};
-            colorFocused[] = {0.706,0.706,0.706,1};
+            TABLET_KEY(TABLET_KEY_RX,2); // the painted key R3 (gui_grid.hpp)
         };
 
         class SCOMTablet_subMenuAbortButton : SCOMTablet_RscButton
         {
             idc = 12010;
             text = "$STR_ALIVE_SCOM_UI_CLOSE";
-            style = 0x02;
-            x = 0.507 * GUI_GRID_WAbs + GUI_GRID_X;
-            y = 0.7350 * GUI_GRID_HAbs + GUI_GRID_Y;
-            w = 0.2325 * GUI_GRID_WAbs;
-            h = 0.028 * GUI_GRID_HAbs;
-            sizeEx = 0.5 * GUI_GRID_H;
-            colorBackground[] = {0.376,0.196,0.204,1};
-            colorText[] = {0.706,0.706,0.706,1};
-            colorBackgroundFocused[] = {0.706,0.706,0.706,1};
-            colorFocused[] = {0.706,0.706,0.706,1};
             action = "closeDialog 0";
+            TABLET_KEY(TABLET_KEY_RX,3); // the painted key R4 (gui_grid.hpp)
         };
 
         // #698 Terrain toggle - top-right of the header bezel (same toughbook as the other tablets),
@@ -85,18 +67,26 @@ class SCOMTablet
         class SCOMTablet_TerrainButton : SCOMTablet_RscRealButton
         {
             idc = 12050;
-            x = 0.676338 * GUI_GRID_WAbs + GUI_GRID_X;
+            x = 0.686338 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.1148 * GUI_GRID_HAbs + GUI_GRID_Y;
-            w = 0.0597643 * GUI_GRID_WAbs;
+            w = 0.0497643 * GUI_GRID_WAbs; // wide enough for TERRAIN in the typewriter faces
+            style = 0x02;
             h = 0.028 * GUI_GRID_HAbs;
             text = "$STR_ALIVE_SCOM_UI_TERRAIN";
             periodFocus = 1e10;
             periodOver = 1e10;
             period = 1e10; // #698 freeze the focus blink too (period drives the pulse while focused; periodFocus/Over alone left it flashing until focus moved away)
             action = "[!(uinamespace getVariable ['SCOMTerrainMode', true])] call ALIVE_fnc_SCOMSetTerrainMode";
-            colorBackground[] = {0.384,0.439,0.341,1};
-            colorBackgroundFocused[] = {0.384,0.439,0.341,1};
-            colorFocused[] = {0.706,0.706,0.706,1};
+            // white text straight on the screen, no backdrop in any state (Jman 27 Oct)
+            colorText[] = {1,1,1,1};
+            colorBackground[] = {0,0,0,0};
+            colorBackgroundActive[] = {1,1,1,0.08};
+            colorBackgroundFocused[] = {0,0,0,0};
+            colorFocused[] = {0,0,0,0};
+            colorBorder[] = {0,0,0,0};
+            colorShadow[] = {0,0,0,0};
+            shadow = 0;
+            borderSize = 0;
             sizeEx = 0.5 * GUI_GRID_H;
         };
 
@@ -109,9 +99,9 @@ class SCOMTablet
             h = 0.028 * GUI_GRID_HAbs;
             text = "Button1";
             sizeEx = 0.5 * GUI_GRID_H;
-            colorBackground[] = {0.384,0.439,0.341,1};
-            colorBackgroundFocused[] = {0.706,0.706,0.706,1};
-            colorFocused[] = {0.706,0.706,0.706,1};
+            colorBackground[] = {1,1,1,0.07};
+            colorBackgroundFocused[] = {1,1,1,0.14};
+            colorFocused[] = {1,1,1,1};
         };
 
         class SCOMTablet_2ButtonL : SCOMTablet_RscButton
@@ -123,9 +113,9 @@ class SCOMTablet
             h = 0.028 * GUI_GRID_HAbs;
             text = "Button2";
             sizeEx = 0.5 * GUI_GRID_H;
-            colorBackground[] = {0.384,0.439,0.341,1};
-            colorBackgroundFocused[] = {0.706,0.706,0.706,1};
-            colorFocused[] = {0.706,0.706,0.706,1};
+            colorBackground[] = {1,1,1,0.07};
+            colorBackgroundFocused[] = {1,1,1,0.14};
+            colorFocused[] = {1,1,1,1};
         };
 
         class SCOMTablet_3ButtonL : SCOMTablet_RscButton
@@ -137,9 +127,9 @@ class SCOMTablet
             h = 0.028 * GUI_GRID_HAbs;
             text = "Button3";
             sizeEx = 0.5 * GUI_GRID_H;
-            colorBackground[] = {0.384,0.439,0.341,1};
-            colorBackgroundFocused[] = {0.706,0.706,0.706,1};
-            colorFocused[] = {0.706,0.706,0.706,1};
+            colorBackground[] = {1,1,1,0.07};
+            colorBackgroundFocused[] = {1,1,1,0.14};
+            colorFocused[] = {1,1,1,1};
         };
 
         class SCOMTablet_1ButtonR : SCOMTablet_RscButton
@@ -151,9 +141,9 @@ class SCOMTablet
             h = 0.028 * GUI_GRID_HAbs;
             text = "Button1";
             sizeEx = 0.5 * GUI_GRID_H;
-            colorBackground[] = {0.384,0.439,0.341,1};
-            colorBackgroundFocused[] = {0.706,0.706,0.706,1};
-            colorFocused[] = {0.706,0.706,0.706,1};
+            colorBackground[] = {1,1,1,0.07};
+            colorBackgroundFocused[] = {1,1,1,0.14};
+            colorFocused[] = {1,1,1,1};
         };
 
         class SCOMTablet_2ButtonR : SCOMTablet_RscButton
@@ -165,9 +155,9 @@ class SCOMTablet
             h = 0.028 * GUI_GRID_HAbs;
             text = "Button2";
             sizeEx = 0.5 * GUI_GRID_H;
-            colorBackground[] = {0.384,0.439,0.341,1};
-            colorBackgroundFocused[] = {0.706,0.706,0.706,1};
-            colorFocused[] = {0.706,0.706,0.706,1};
+            colorBackground[] = {1,1,1,0.07};
+            colorBackgroundFocused[] = {1,1,1,0.14};
+            colorFocused[] = {1,1,1,1};
         };
 
         class SCOMTablet_3ButtonR : SCOMTablet_RscButton
@@ -179,9 +169,9 @@ class SCOMTablet
             h = 0.028 * GUI_GRID_HAbs;
             text = "Button3";
             sizeEx = 0.5 * GUI_GRID_H;
-            colorBackground[] = {0.384,0.439,0.341,1};
-            colorBackgroundFocused[] = {0.706,0.706,0.706,1};
-            colorFocused[] = {0.706,0.706,0.706,1};
+            colorBackground[] = {1,1,1,0.07};
+            colorBackgroundFocused[] = {1,1,1,0.14};
+            colorFocused[] = {1,1,1,1};
         };
 
         class SCOMTablet_right_map : SCOMTablet_RscMap

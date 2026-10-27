@@ -22,6 +22,7 @@ See Also:
 
 Author:
 Whigital
+Jman
 
 Peer reviewed:
 nil
@@ -32,48 +33,21 @@ params [
 ];
 
 private _dialog = "";
-private _ctrl = "";
 
 // Get dialog from report type //
 switch (toLower(_repType)) do {
     case "situation": {
         _dialog = "RscDisplayALIVESITREP";
-        _ctrl = {((findDisplay 90001) displayCtrl 90002)};
     };
 
     case "patrol": {
         _dialog = "RscDisplayALIVEPATROLREP";
-        _ctrl = {((findDisplay 90002) displayCtrl 90003)};
     };
 
     default {
         _dialog = "RscDisplayALIVESITREP";
-        _ctrl = {((findDisplay 90001) displayCtrl 90002)};
     };
 };
 
-// Display dialog based on tablet model //
-switch (MOD(TABLET_MODEL)) do {
-    case "Tablet01": {
-        createDialog _dialog;
-    };
-
-    case "Mapbag01": {
-        createDialog _dialog;
-
-        ([] call ALiVE_fnc_tabletBox) params ["_uiX","_uiY","_uiW","_uiH"];
-        private _ctrlBackground = call _ctrl;
-        _ctrlBackground ctrlsettext "x\alive\addons\main\data\ui\ALiVE_mapbag.paa";
-        _ctrlBackground ctrlSetPosition [
-            0.15 * _uiW + _uiX,
-            -0.242 * _uiH + _uiY,
-            0.72 * _uiW,
-            1.372 * _uiH
-        ];
-        _ctrlBackground ctrlCommit 0;
-    };
-
-    default {
-        createDialog _dialog;
-    };
-};
+// Open it in the player's tablet style //
+[_dialog] call ALiVE_fnc_tabletOpen;

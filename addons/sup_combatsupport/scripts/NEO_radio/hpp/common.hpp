@@ -221,9 +221,9 @@ class NEO_RscButton
 {
     idc = -1;
     type = 1;
-    style = 0x00;
+    style = 0x02;
     default = 0;
-    shadow = 2;
+    shadow = 0;
     x = "safeZoneX + (safeZoneW / 5)";
     y = "safeZoneY + (safeZoneH / 1.525)";
     w = "(safeZoneW / 12.5)";
@@ -232,8 +232,8 @@ class NEO_RscButton
   colorBackgroundDisabled[] = {0, 0, 0, 0.5};
     color[] = {0.8784, 0.8471, 0.651, 1.0};
     color2[] = {0.95, 0.95, 0.95, 1};
-    colorBackground[] = {1, 1, 1, 1};
-    colorbackground2[] = {1, 1, 1, 0.4};
+    colorBackground[] = {1,1,1,0.07};
+    colorbackground2[] = {1,1,1,0.07};
   colorText[] = {1, 1, 1, 1};
     colorDisabled[] = {1, 1, 1, 0.25};
   colorShadow[] = {0, 0, 0, 1};
@@ -266,8 +266,8 @@ class NEO_RscButton
     {
         font = "PuristaMedium";
         color = "#E5E5E5";
-        align = "left";
-        shadow = "true";
+        align = "center";
+        shadow = "false";
     };
 
 

@@ -11,11 +11,11 @@ class RscDisplayALiVESITREP
          class SITREP_Background : RscPicture
         {
                 idc = 90002;
-                x = 0.142424 * GUI_GRID_WAbs + GUI_GRID_X;
-                y = 0.0632 * GUI_GRID_HAbs + GUI_GRID_Y;
-                w = 0.73 * GUI_GRID_WAbs;
-                h = 0.84 * GUI_GRID_HAbs;
-                text = "x\alive\addons\main\data\ui\ALiVE_toughbook.paa";
+                x = TABLET_ART_X;
+                y = TABLET_ART_Y;
+                w = TABLET_ART_WAbs;
+                h = TABLET_ART_HAbs;
+                text = "\x\alive\addons\main\data\ui\ALiVE_tablet_modern43_ca.paa"; // ALiVE_fnc_tabletOpen sets the era's artwork
                 moving = 1;
                 colorBackground[] = {0,0,0,0};
         };
@@ -42,49 +42,23 @@ class RscDisplayALiVESITREP
         class SITREP_Back: SITREP_RscButton
         {
             idc = 90010;
-            style = 2;
             action = "if !(isNil 'ALIVE_SYS_sitrep_mapStartMarker') then {deleteMarkerLocal ALIVE_SYS_sitrep_mapStartMarker;}; if (isNil 'ALiVE_c2istar_fnc_backToMenu') then { closeDialog 0 } else { [] call ALiVE_c2istar_fnc_backToMenu }";
             text = "BACK"; //--- ToDo: Localize;
-            x = 0.586496 * GUI_GRID_WAbs + GUI_GRID_X;
-            y = 0.742019 * GUI_GRID_HAbs + GUI_GRID_Y;
-            w = 0.0782 * GUI_GRID_WAbs;
-            h = 0.0220017 * GUI_GRID_HAbs;
-            colorBackground[] = {0.384,0.439,0.341,1};
-            colorText[] = {0.706,0.706,0.706,1};
-            colorBackgroundFocused[] = {0.706,0.706,0.706,1};
-            colorFocused[] = {0.706,0.706,0.706,1};
-            sizeEx = 0.5 * GUI_GRID_H;
+            TABLET_KEY(TABLET_KEY_RX,2); // the painted key R3 (gui_grid.hpp)
         };
         class SITREP_Abort: SITREP_RscButton
         {
             idc = 3;
-            style = 2;
             action = "if !(isNil 'ALIVE_SYS_sitrep_mapStartMarker') then {deleteMarkerLocal ALIVE_SYS_sitrep_mapStartMarker;}; closeDialog 0";
             text = "CANCEL"; //--- ToDo: Localize;
-            x = 0.668096 * GUI_GRID_WAbs + GUI_GRID_X;
-            y = 0.742019 * GUI_GRID_HAbs + GUI_GRID_Y;
-            w = 0.0782 * GUI_GRID_WAbs;
-            h = 0.0220017 * GUI_GRID_HAbs;
-            colorBackground[] = {0.376,0.196,0.204,1};
-            colorText[] = {0.706,0.706,0.706,1};
-            colorBackgroundFocused[] = {0.706,0.706,0.706,1};
-            colorFocused[] = {0.706,0.706,0.706,1};
-            sizeEx = 0.5 * GUI_GRID_H;
+            TABLET_KEY(TABLET_KEY_RX,3); // the painted key R4 (gui_grid.hpp)
         };
         class SITREP_sendButton: SITREP_RscButton
         {
             idc = 4;
-            style = 2;
             text = "SEND SITREP"; //--- ToDo: Localize;
-            x = 0.586496 * GUI_GRID_WAbs + GUI_GRID_X;
-            y = 0.714815 * GUI_GRID_HAbs + GUI_GRID_Y;
-            w = 0.159796 * GUI_GRID_WAbs;
-            h = 0.0220017 * GUI_GRID_HAbs;
-            colorBackground[] = {0.384,0.439,0.341,1};
-            colorBackgroundFocused[] = {0.706,0.706,0.706,1};
-            colorFocused[] = {0.706,0.706,0.706,1};
-            sizeEx = 0.5 * GUI_GRID_H;
             action = "call ALiVE_fnc_sitrepButtonAction";
+            TABLET_KEY(TABLET_KEY_RX,0); // the painted key R1 (gui_grid.hpp)
         };
         // #698 Terrain toggle - top-right of the header bezel (identical toughbook to the CS tablet,
         // so the same slot), clear of the map. Swaps the map between satellite and schematic.

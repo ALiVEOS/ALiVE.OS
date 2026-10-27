@@ -684,7 +684,7 @@ if (isServer) then {
     MOD(AI_DISTRIBUTION) = ((_logic getvariable [QMOD(AI_DISTRIBUTION),"false"]) == "true");
     MOD(AI_DISTRIBUTION) spawn ALiVE_fnc_AI_Distributor;
 
-    MOD(TABLET_MODEL) = _logic getvariable [QMOD(TABLET_MODEL), "Tablet01"];
+    MOD(TABLET_MODEL) = _logic getvariable [QMOD(TABLET_MODEL), "Auto"];
     Publicvariable QMOD(TABLET_MODEL);
 
     // Event Log

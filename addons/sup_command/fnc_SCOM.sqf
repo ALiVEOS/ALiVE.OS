@@ -931,37 +931,7 @@ switch (_operation) do {
 
                     [_logic,"commandState",_commandState] call MAINCLASS;
 
-                    switch (MOD(TABLET_MODEL)) do {
-                        case "Tablet01": {
-                            createDialog "SCOMTablet";
-                        };
-
-                        case "Mapbag01": {
-                            createDialog "SCOMTablet";
-                            ([] call ALiVE_fnc_tabletBox) params ["_uiX","_uiY","_uiW","_uiH"];
-                            private _ctrlBackground = ((findDisplay 12001) displayCtrl 12002);
-                            _ctrlBackground ctrlsettext "x\alive\addons\main\data\ui\ALiVE_mapbag.paa";
-                            _ctrlBackground ctrlSetPosition [
-                                0.15 * _uiW + _uiX,
-                                -0.242 * _uiH + _uiY,
-                                0.72 * _uiW,
-                                1.372 * _uiH
-                            ];
-                            _ctrlBackground ctrlCommit 0;
-                            // the header row sits on the map bag's flap, which ends a little higher than the toughbook's screen edge
-                            {
-                                private _ctrl = (findDisplay 12001) displayCtrl _x;
-                                private _pos = ctrlPosition _ctrl;
-                                _pos set [1, (_pos select 1) - 0.0106 * _uiH];
-                                _ctrl ctrlSetPosition _pos;
-                                _ctrl ctrlCommit 0;
-                            } forEach [12050];
-                        };
-
-                        default {
-                            createDialog "SCOMTablet";
-                        };
-                    };
+                    ["SCOMTablet"] call ALiVE_fnc_tabletOpen;
 
                 };
 
@@ -975,37 +945,7 @@ switch (_operation) do {
 
                     [_logic,"commandState",_commandState] call MAINCLASS;
 
-                    switch (MOD(TABLET_MODEL)) do {
-                        case "Tablet01": {
-                            createDialog "SCOMTablet";
-                        };
-
-                        case "Mapbag01": {
-                            createDialog "SCOMTablet";
-                            ([] call ALiVE_fnc_tabletBox) params ["_uiX","_uiY","_uiW","_uiH"];
-                            private _ctrlBackground = ((findDisplay 12001) displayCtrl 12002);
-                            _ctrlBackground ctrlsettext "x\alive\addons\main\data\ui\ALiVE_mapbag.paa";
-                            _ctrlBackground ctrlSetPosition [
-                                0.15 * _uiW + _uiX,
-                                -0.242 * _uiH + _uiY,
-                                0.72 * _uiW,
-                                1.372 * _uiH
-                            ];
-                            _ctrlBackground ctrlCommit 0;
-                            // the header row sits on the map bag's flap, which ends a little higher than the toughbook's screen edge
-                            {
-                                private _ctrl = (findDisplay 12001) displayCtrl _x;
-                                private _pos = ctrlPosition _ctrl;
-                                _pos set [1, (_pos select 1) - 0.0106 * _uiH];
-                                _ctrl ctrlSetPosition _pos;
-                                _ctrl ctrlCommit 0;
-                            } forEach [12050];
-                        };
-
-                        default {
-                            createDialog "SCOMTablet";
-                        };
-                    };
+                    ["SCOMTablet"] call ALiVE_fnc_tabletOpen;
 
                 };
 
@@ -6051,7 +5991,11 @@ switch (_operation) do {
 
         // render cam image to tablet
 
-        _renderTarget ctrlSetText "#(argb,512,512,1)r2t(ALiVE_C2ISTAR_IMINT_CAM,1.0)";
+        // the camera renders at the view's real shape on screen, so the picture is not stretched
+        // whichever tablet frame, monitor shape or interface size is in use
+        (ctrlPosition _renderTarget) params ["", "", "_rtW", "_rtH"];
+        private _rtAspect = (_rtW / _rtH) * ((getResolution select 4) * safezoneH / safezoneW);
+        _renderTarget ctrlSetText format ["#(argb,512,512,1)r2t(ALiVE_C2ISTAR_IMINT_CAM,%1)", _rtAspect];
 
         // clear ui controls
 

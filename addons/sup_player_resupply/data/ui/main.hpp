@@ -13,11 +13,11 @@ class PRTablet
         class GMTablet_background : RscPicture
         {
             idc = 60000;
-            x = 0.142424 * GUI_GRID_WAbs + GUI_GRID_X;
-            y = 0.0632 * GUI_GRID_HAbs + GUI_GRID_Y;
-            w = 0.73 * GUI_GRID_WAbs;
-            h = 0.84 * GUI_GRID_HAbs;
-            text = "x\alive\addons\main\data\ui\ALiVE_toughbook.paa";
+            x = TABLET_ART_X;
+            y = TABLET_ART_Y;
+            w = TABLET_ART_WAbs;
+            h = TABLET_ART_HAbs;
+            text = "\x\alive\addons\main\data\ui\ALiVE_tablet_modern43_ca.paa"; // ALiVE_fnc_tabletOpen sets the era's artwork
             moving = 0;
             colorBackground[] = {0,0,0,0};
         };
@@ -39,30 +39,14 @@ class PRTablet
         {
             idc = 60025;
             text = "$STR_ALIVE_PR_UI_SHOW_STATUS";
-            style = 0x02;
-            x = 0.519796 * GUI_GRID_WAbs + GUI_GRID_X;
-            y = 0.7000 * GUI_GRID_HAbs + GUI_GRID_Y;
-            w = 0.216525 * GUI_GRID_WAbs;
-            h = 0.028 * GUI_GRID_HAbs;
-            colorBackground[] = {0.384,0.439,0.341,1};
-            sizeEx = 0.5 * GUI_GRID_H;
-            colorBackgroundFocused[] = {0.706,0.706,0.706,1};
-            colorFocused[] = {0.706,0.706,0.706,1};
+            TABLET_KEY(TABLET_KEY_RX,1); // the painted key R2 (gui_grid.hpp)
         };
 
         class PRTablet_request : PRTablet_RscButton
         {
             idc = 60003;
             text = "$STR_ALIVE_PR_UI_SEND_REQUEST";
-            style = 0x02;
-            x = 0.519796 * GUI_GRID_WAbs + GUI_GRID_X;
-            y = 0.6650 * GUI_GRID_HAbs + GUI_GRID_Y;
-            w = 0.216525 * GUI_GRID_WAbs;
-            h = 0.028 * GUI_GRID_HAbs;
-            colorBackground[] = {0.384,0.439,0.341,1};
-            sizeEx = 0.5 * GUI_GRID_H;
-            colorBackgroundFocused[] = {0.706,0.706,0.706,1};
-            colorFocused[] = {0.706,0.706,0.706,1};
+            TABLET_KEY(TABLET_KEY_RX,0); // the painted key R1 (gui_grid.hpp)
         };
 
         // Back, like the other C2ISTAR tablets (Jman 19 Oct): it shares Close's old slot, so nothing else moves
@@ -70,33 +54,15 @@ class PRTablet
         {
             idc = 60029;
             text = "$STR_ALIVE_PR_UI_BACK";
-            style = 0x02;
-            x = 0.519796 * GUI_GRID_WAbs + GUI_GRID_X;
-            y = 0.7350 * GUI_GRID_HAbs + GUI_GRID_Y;
-            w = 0.10650 * GUI_GRID_WAbs;
-            h = 0.028 * GUI_GRID_HAbs;
-            sizeEx = 0.5 * GUI_GRID_H;
-            colorBackground[] = {0.384,0.439,0.341,1};
-            colorText[] = {0.706,0.706,0.706,1};
-            colorBackgroundFocused[] = {0.706,0.706,0.706,1};
-            colorFocused[] = {0.706,0.706,0.706,1};
+            TABLET_KEY(TABLET_KEY_RX,2); // the painted key R3 (gui_grid.hpp)
         };
 
         class PRTablet_abort : PRTablet_RscButton
         {
             idc = 60004;
             text = "$STR_ALIVE_PR_UI_CLOSE";
-            style = 0x02;
-            x = 0.629821 * GUI_GRID_WAbs + GUI_GRID_X;
-            y = 0.7350 * GUI_GRID_HAbs + GUI_GRID_Y;
-            w = 0.106500 * GUI_GRID_WAbs;
-            h = 0.028 * GUI_GRID_HAbs;
-            sizeEx = 0.5 * GUI_GRID_H;
-            colorBackground[] = {0.376,0.196,0.204,1};
-            colorText[] = {0.706,0.706,0.706,1};
-            colorBackgroundFocused[] = {0.706,0.706,0.706,1};
-            colorFocused[] = {0.706,0.706,0.706,1};
             action = "closeDialog 0";
+            TABLET_KEY(TABLET_KEY_RX,3); // the painted key R4 (gui_grid.hpp)
         };
 
         // #698 Terrain toggle - top-right of the header bezel (same toughbook as the other tablets),
@@ -125,7 +91,7 @@ class PRTablet
             idc = 60099;
             x = 0.6462 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.6450 * GUI_GRID_HAbs + GUI_GRID_Y;
-            w = 0.159596 * GUI_GRID_WAbs;
+            w = 0.1001 * GUI_GRID_WAbs; // ends at the screen's right edge (0.7463)
             h = 0.0308 * GUI_GRID_HAbs;
             colorBackground[] = {0,0,0,0};
             class Attributes
@@ -432,9 +398,9 @@ class PRTablet
             h = 0.028 * GUI_GRID_HAbs;
             text = "$STR_ALIVE_PR_UI_DELETE";
             sizeEx = 0.5 * GUI_GRID_H;
-            colorBackground[] = {0.384,0.439,0.341,1};
-            colorBackgroundFocused[] = {0.706,0.706,0.706,1};
-            colorFocused[] = {0.706,0.706,0.706,1};
+            colorBackground[] = {1,1,1,0.07};
+            colorBackgroundFocused[] = {1,1,1,0.14};
+            colorFocused[] = {1,1,1,1};
         };
 
         class PRTablet_selectedOptionList : PRTablet_RscGUIListBox
@@ -524,9 +490,9 @@ class PRTablet
             h = 0.028 * GUI_GRID_HAbs;
             text = "Button1";
             sizeEx = 0.5 * GUI_GRID_H;
-            colorBackground[] = {0.384,0.439,0.341,1};
-            colorBackgroundFocused[] = {0.706,0.706,0.706,1};
-            colorFocused[] = {0.706,0.706,0.706,1};
+            colorBackground[] = {1,1,1,0.07};
+            colorBackgroundFocused[] = {1,1,1,0.14};
+            colorFocused[] = {1,1,1,1};
         };
 
         class PRTablet_1ButtonR : PRTablet_RscButton
@@ -538,9 +504,9 @@ class PRTablet
             h = 0.028 * GUI_GRID_HAbs;
             text = "Button1";
             sizeEx = 0.5 * GUI_GRID_H;
-            colorBackground[] = {0.384,0.439,0.341,1};
-            colorBackgroundFocused[] = {0.706,0.706,0.706,1};
-            colorFocused[] = {0.706,0.706,0.706,1};
+            colorBackground[] = {1,1,1,0.07};
+            colorBackgroundFocused[] = {1,1,1,0.14};
+            colorFocused[] = {1,1,1,1};
         };
 
         class PRTablet_status_map : PRTablet_RscMap

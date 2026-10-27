@@ -49,7 +49,7 @@ _task = switch (_lb lbData _index) do
         _slider ctrlSetPosition [0.281002 * _uiW + _uiX, 0.5504 * _uiH + _uiY, (0.0927966 * _uiW), (0.0196 * _uiH)];
         _slider ctrlCommit 0;
         _sliderText ctrlSetText format [localize "STR_ALIVE_CS_UI_TR_RADIUS", 200];
-        _sliderText ctrlSetPosition [0.225 * _uiW + _uiX, 0.52 * _uiH + _uiY, (0.19 * _uiW), (0.028 * _uiH)];
+        _sliderText ctrlSetPosition [0.280111 * _uiW + _uiX, 0.52 * _uiH + _uiY, (0.19 * _uiW), (0.028 * _uiH)]; // over its slider; 0.225 fell off the left of the tablet screen
         _sliderText ctrlCommit 0;
 
         _slider sliderSetRange [100, 300];
@@ -73,7 +73,7 @@ _task = switch (_lb lbData _index) do
         _slider ctrlSetPosition [0.281002 * _uiW + _uiX, 0.5504 * _uiH + _uiY, (0.0927966 * _uiW), (0.0196 * _uiH)];
         _slider ctrlCommit 0;
         _sliderText ctrlSetText format [localize "STR_ALIVE_CS_UI_TR_HEIGHT", 25];
-        _sliderText ctrlSetPosition [0.225 * _uiW + _uiX, 0.52 * _uiH + _uiY, (0.19 * _uiW), (0.028 * _uiH)];
+        _sliderText ctrlSetPosition [0.280111 * _uiW + _uiX, 0.52 * _uiH + _uiY, (0.19 * _uiW), (0.028 * _uiH)]; // over its slider; 0.225 fell off the left of the tablet screen
         _sliderText ctrlCommit 0;
 
         _slider sliderSetRange [2, 50];
@@ -99,7 +99,7 @@ _task = switch (_lb lbData _index) do
         _slider ctrlSetPosition [0.281002 * _uiW + _uiX, 0.5504 * _uiH + _uiY, (0.0927966 * _uiW), (0.0196 * _uiH)];
         _slider ctrlCommit 0;
         _sliderText ctrlSetText format [localize "STR_ALIVE_CS_UI_TR_DROPHEIGHT", 250];
-        _sliderText ctrlSetPosition [0.225 * _uiW + _uiX, 0.52 * _uiH + _uiY, (0.19 * _uiW), (0.028 * _uiH)];
+        _sliderText ctrlSetPosition [0.280111 * _uiW + _uiX, 0.52 * _uiH + _uiY, (0.19 * _uiW), (0.028 * _uiH)]; // over its slider; 0.225 fell off the left of the tablet screen
         _sliderText ctrlCommit 0;
 
         _slider sliderSetRange [150, 500];

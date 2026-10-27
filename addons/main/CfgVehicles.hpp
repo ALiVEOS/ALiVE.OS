@@ -2513,18 +2513,35 @@ class CfgVehicles {
                 displayName = "$STR_ALiVE_TABLET_MODEL";
                 tooltip = "$STR_ALiVE_TABLET_MODEL_COMMENT";
                 typeName = "STRING";
-                defaultValue = """Tablet01""";
+                // Automatic first: an old mission saved with Tablet01 or Mapbag01 shows it when edited.
+                // Unedited, ALiVE_fnc_tabletEra reads Tablet01 as Automatic and Mapbag01 as Vietnam.
+                defaultValue = """Auto""";
                 class Values
                 {
-                    class Tablet01
+                    class Auto
                     {
-                        name = "Tablet 1";
-                        value = "Tablet01";
+                        name = "$STR_ALiVE_TABLET_AUTO";
+                        value = "Auto";
                     };
-                    class MapBag01
+                    class Modern
                     {
-                        name = "Mapbag 1";
-                        value = "Mapbag01";
+                        name = "$STR_ALiVE_TABLET_MODERN";
+                        value = "Modern";
+                    };
+                    class ColdWar
+                    {
+                        name = "$STR_ALiVE_TABLET_COLDWAR";
+                        value = "ColdWar";
+                    };
+                    class Vietnam
+                    {
+                        name = "$STR_ALiVE_TABLET_VIETNAM";
+                        value = "Vietnam";
+                    };
+                    class WW2
+                    {
+                        name = "$STR_ALiVE_TABLET_WW2";
+                        value = "WW2";
                     };
                 };
             };

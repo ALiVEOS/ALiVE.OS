@@ -15,12 +15,12 @@ class MainTablet
 
         class MainTablet_background : RscPicture
         {
-            idc = -1;
-            x = 0.142424 * GUI_GRID_WAbs + GUI_GRID_X;
-            y = 0.0632 * GUI_GRID_HAbs + GUI_GRID_Y;
-            w = 0.73 * GUI_GRID_WAbs;
-            h = 0.84 * GUI_GRID_HAbs;
-            text = "x\alive\addons\main\data\ui\ALiVE_toughbook.paa";
+            idc = 10099;
+            x = TABLET_ART_X;
+            y = TABLET_ART_Y;
+            w = TABLET_ART_WAbs;
+            h = TABLET_ART_HAbs;
+            text = "\x\alive\addons\main\data\ui\ALiVE_tablet_modern43_ca.paa"; // ALiVE_fnc_tabletOpen sets the era's artwork
             moving = 0;
             colorBackground[] = {0,0,0,0};
         };

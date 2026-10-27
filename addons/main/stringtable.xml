@@ -113,6 +113,12 @@
 <Key ID="STR_ALIVE_SETTINGS_CREW_COMMENT">
     <English>Where ALiVE's vehicle crew list sits on your screen. If the mission turns the crew list off, it stays off.</English>
 </Key>
+<Key ID="STR_ALIVE_SETTINGS_TABLET">
+    <English>Tablet style</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_TABLET_COMMENT">
+    <English>The look of ALiVE's tablets on your screen. As the mission sets is usually Automatic, which picks by scenario: Vietnam for S.O.G. Prairie Fire, WW2 for Spearhead 1944, Cold War for CUP, Global Mobilization and CSLA terrains, Modern anywhere else. Pick one to always see that one. Modern uses a wider screen where your monitor has room for it.</English>
+</Key>
 <Key ID="STR_ALIVE_SETTINGS_MISSION">
     <English>As the mission sets</English>
 </Key>
@@ -311,14 +317,109 @@
     <Spanish>Activa la distribución dinámica de toda la IA entre los headless clients disponibles.</Spanish>
 </Key>
 <Key ID="STR_ALiVE_TABLET_MODEL">
-    <English>ALiVE Tablet Model</English>
-    <Chinesesimp>ALiVE 平板模型</Chinesesimp>
-    <Spanish>Modelo de tableta ALiVE</Spanish>
+    <English>Tablet Style</English>
+    <Chinesesimp>平板样式</Chinesesimp>
+    <Spanish>Estilo de tableta</Spanish>
 </Key>
 <Key ID="STR_ALiVE_TABLET_MODEL_COMMENT">
-    <English>Model used for the ALiVE Tablet Background.</English>
-    <Chinesesimp>用于ALiVE平板的背景。</Chinesesimp>
-    <Spanish>Modelo usado como fondo de la tableta ALiVE.</Spanish>
+    <English>The look of every ALiVE tablet in this mission. Automatic picks it by scenario: Vietnam on S.O.G. Prairie Fire terrains, WW2 on Spearhead 1944 terrains, otherwise by the player's own soldier, then Cold War on CUP, Global Mobilization and CSLA terrains, and Modern anywhere else. Each player can still choose their own in Addon Options.</English>
+    <Chinesesimp>本任务中所有ALiVE平板的外观。自动：按场景选择，S.O.G. Prairie Fire地形为越南，Spearhead 1944地形为二战，其次按玩家自己的士兵，再其次CUP、Global Mobilization和CSLA地形为冷战，其他为现代。每位玩家仍可在插件选项中自行选择。</Chinesesimp>
+    <Spanish>El aspecto de todas las tabletas ALiVE de esta misión. Automático lo elige según el escenario: Vietnam en terrenos de S.O.G. Prairie Fire, Segunda Guerra Mundial en terrenos de Spearhead 1944, si no según el soldado del propio jugador, luego Guerra Fría en terrenos CUP, Global Mobilization y CSLA, y Moderno en cualquier otro. Cada jugador puede elegir el suyo en las opciones de addons.</Spanish>
+</Key>
+<Key ID="STR_ALiVE_TABLET_AUTO">
+    <English>Automatic (by scenario)</English>
+    <Chinesesimp>自动（按场景）</Chinesesimp>
+    <Spanish>Automático (según el escenario)</Spanish>
+</Key>
+<Key ID="STR_ALiVE_TABLET_MODERN">
+    <English>Modern</English>
+    <Chinesesimp>现代</Chinesesimp>
+    <Spanish>Moderno</Spanish>
+</Key>
+<Key ID="STR_ALiVE_TABLET_COLDWAR">
+    <English>Cold War</English>
+    <Chinesesimp>冷战</Chinesesimp>
+    <Spanish>Guerra Fría</Spanish>
+</Key>
+<Key ID="STR_ALiVE_TABLET_VIETNAM">
+    <English>Vietnam</English>
+    <Chinesesimp>越南</Chinesesimp>
+    <Spanish>Vietnam</Spanish>
+</Key>
+<Key ID="STR_ALiVE_TABLET_WW2">
+    <English>WW2</English>
+    <Chinesesimp>二战</Chinesesimp>
+    <Spanish>Segunda Guerra Mundial</Spanish>
+</Key>
+<Key ID="STR_ALiVE_TABLET_KEY_BACK">
+    <English>Back</English>
+    <German>Zurück</German>
+    <French>Retour</French>
+    <Spanish>Atrás</Spanish>
+    <Portuguese>Voltar</Portuguese>
+    <Russian>Назад</Russian>
+    <Chinesesimp>返回</Chinesesimp>
+    <Chinese>返回</Chinese>
+</Key>
+<Key ID="STR_ALiVE_TABLET_KEY_CLOSE">
+    <English>Close</English>
+    <German>Schließen</German>
+    <French>Fermer</French>
+    <Spanish>Cerrar</Spanish>
+    <Portuguese>Fechar</Portuguese>
+    <Russian>Закрыть</Russian>
+    <Chinesesimp>关闭</Chinesesimp>
+    <Chinese>關閉</Chinese>
+</Key>
+<Key ID="STR_ALiVE_TABLET_KEY_CANCEL">
+    <English>Cancel</English>
+    <German>Abbrechen</German>
+    <French>Annuler</French>
+    <Spanish>Cancelar</Spanish>
+    <Portuguese>Cancelar</Portuguese>
+    <Russian>Отмена</Russian>
+    <Chinesesimp>取消</Chinesesimp>
+    <Chinese>取消</Chinese>
+</Key>
+<Key ID="STR_ALiVE_TABLET_KEY_SEND">
+    <English>Send</English>
+    <German>Senden</German>
+    <French>Envoyer</French>
+    <Spanish>Enviar</Spanish>
+    <Portuguese>Enviar</Portuguese>
+    <Russian>Отпр.</Russian>
+    <Chinesesimp>发送</Chinesesimp>
+    <Chinese>發送</Chinese>
+</Key>
+<Key ID="STR_ALiVE_TABLET_KEY_REQUEST">
+    <English>Request</English>
+    <German>Anfrage</German>
+    <French>Demande</French>
+    <Spanish>Pedir</Spanish>
+    <Portuguese>Pedir</Portuguese>
+    <Russian>Запрос</Russian>
+    <Chinesesimp>请求</Chinesesimp>
+    <Chinese>請求</Chinese>
+</Key>
+<Key ID="STR_ALiVE_TABLET_KEY_STATUS">
+    <English>Status</English>
+    <German>Status</German>
+    <French>État</French>
+    <Spanish>Estado</Spanish>
+    <Portuguese>Estado</Portuguese>
+    <Russian>Статус</Russian>
+    <Chinesesimp>状态</Chinesesimp>
+    <Chinese>狀態</Chinese>
+</Key>
+<Key ID="STR_ALiVE_TABLET_KEY_SITREP">
+    <English>SITREP</English>
+    <German>SITREP</German>
+    <French>SITREP</French>
+    <Spanish>SITREP</Spanish>
+    <Portuguese>SITREP</Portuguese>
+    <Russian>СВОДКА</Russian>
+    <Chinesesimp>态势</Chinesesimp>
+    <Chinese>態勢</Chinese>
 </Key>
 <Key ID="STR_ALIVE_REQUIRES_USAGE">
     <English>Simply place ALiVE (Required) in the editor and choose the settings as desired. Do not sync it to anything.</English>

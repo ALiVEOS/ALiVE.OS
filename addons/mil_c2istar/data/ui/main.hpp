@@ -13,11 +13,11 @@ class C2Tablet
 
         class C2Tablet_background : RscPicture {
             idc = 70002;
-            x = 0.142424 * GUI_GRID_WAbs + GUI_GRID_X;
-            y = 0.0632 * GUI_GRID_HAbs + GUI_GRID_Y;
-            w = 0.73 * GUI_GRID_WAbs;
-            h = 0.84 * GUI_GRID_HAbs;
-            text = "x\alive\addons\main\data\ui\ALiVE_toughbook.paa";
+            x = TABLET_ART_X;
+            y = TABLET_ART_Y;
+            w = TABLET_ART_WAbs;
+            h = TABLET_ART_HAbs;
+            text = "\x\alive\addons\main\data\ui\ALiVE_tablet_modern43_ca.paa"; // ALiVE_fnc_tabletOpen sets the era's artwork
             moving = 0;
         };
 
@@ -51,33 +51,15 @@ class C2Tablet
         {
             idc = 70006;
             text = "$STR_ALIVE_C2ISTAR_UI_BACK";
-            style = 0x02;
-            x = 0.519796 * GUI_GRID_WAbs + GUI_GRID_X;
-            y = 0.7000 * GUI_GRID_HAbs + GUI_GRID_Y;
-            w = 0.216525 * GUI_GRID_WAbs;
-            h = 0.028 * GUI_GRID_HAbs;
-            sizeEx = 0.5 * GUI_GRID_H;
-            colorBackground[] = {0.376,0.196,0.204,1};
-            colorText[] = {0.706,0.706,0.706,1};
-            colorBackgroundFocused[] = {0.706,0.706,0.706,1};
-            colorFocused[] = {0.706,0.706,0.706,1};
+            TABLET_KEY(TABLET_KEY_RX,2); // the painted key R3 (gui_grid.hpp)
         };
 
         class C2Tablet_subMenuAbortButton : C2Tablet_RscButton
         {
             idc = 70010;
             text = "$STR_ALIVE_C2ISTAR_UI_CLOSE";
-            style = 0x02;
-            x = 0.519796 * GUI_GRID_WAbs + GUI_GRID_X;
-            y = 0.7350 * GUI_GRID_HAbs + GUI_GRID_Y;
-            w = 0.216525 * GUI_GRID_WAbs;
-            h = 0.028 * GUI_GRID_HAbs;
-            sizeEx = 0.5 * GUI_GRID_H;
-            colorBackground[] = {0.376,0.196,0.204,1};
-            colorText[] = {0.706,0.706,0.706,1};
-            colorBackgroundFocused[] = {0.706,0.706,0.706,1};
-            colorFocused[] = {0.706,0.706,0.706,1};
             action = "closeDialog 0";
+            TABLET_KEY(TABLET_KEY_RX,3); // the painted key R4 (gui_grid.hpp)
         };
 
         // #698 Terrain toggle - top-right of the header bezel (same toughbook as the other tablets),
@@ -85,18 +67,26 @@ class C2Tablet
         class C2Tablet_TerrainButton : C2Tablet_RscRealButton
         {
             idc = 70003;
-            x = 0.676557 * GUI_GRID_WAbs + GUI_GRID_X;
+            x = 0.686557 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.1148 * GUI_GRID_HAbs + GUI_GRID_Y;
-            w = 0.0597643 * GUI_GRID_WAbs;
+            w = 0.0497643 * GUI_GRID_WAbs; // wide enough for TERRAIN in the typewriter faces
+            style = 0x02;
             h = 0.028 * GUI_GRID_HAbs;
             text = "$STR_ALIVE_C2ISTAR_UI_TERRAIN";
             periodFocus = 1e10;
             periodOver = 1e10;
             period = 1e10; // #698 freeze the focus blink too (period drives the pulse while focused; periodFocus/Over alone left it flashing until focus moved away)
             action = "[!(uinamespace getVariable ['C2TerrainMode', true])] call ALIVE_fnc_C2TabletSetTerrainMode";
-            colorBackground[] = {0.384,0.439,0.341,1};
-            colorBackgroundFocused[] = {0.384,0.439,0.341,1};
-            colorFocused[] = {0.706,0.706,0.706,1};
+            // white text straight on the screen, no backdrop in any state (Jman 27 Oct)
+            colorText[] = {1,1,1,1};
+            colorBackground[] = {0,0,0,0};
+            colorBackgroundActive[] = {1,1,1,0.08};
+            colorBackgroundFocused[] = {0,0,0,0};
+            colorFocused[] = {0,0,0,0};
+            colorBorder[] = {0,0,0,0};
+            colorShadow[] = {0,0,0,0};
+            shadow = 0;
+            borderSize = 0;
             sizeEx = 0.5 * GUI_GRID_H;
         };
 
@@ -118,41 +108,41 @@ class C2Tablet
             idc = 70016;
             x = 0.271203 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.5150 * GUI_GRID_HAbs + GUI_GRID_Y;
-            w = 0.465 * GUI_GRID_WAbs;
+            w = 0.1525 * GUI_GRID_WAbs; // side by side under the task list, a third of its width each (Jman 27 Oct)
             h = 0.028 * GUI_GRID_HAbs;
             text = "$STR_ALIVE_C2ISTAR_UI_CREATE_TASK_BTN";
             sizeEx = 0.5 * GUI_GRID_H;
-            colorBackground[] = {0.384,0.439,0.341,1};
-            colorBackgroundFocused[] = {0.706,0.706,0.706,1};
-            colorFocused[] = {0.706,0.706,0.706,1};
+            colorBackground[] = {1,1,1,0.07};
+            colorBackgroundFocused[] = {1,1,1,0.14};
+            colorFocused[] = {1,1,1,1};
         };
 
         class C2Tablet_generateTaskButton : C2Tablet_RscButton
         {
             idc = 70038;
-            x = 0.271203 * GUI_GRID_WAbs + GUI_GRID_X;
-            y = 0.5480 * GUI_GRID_HAbs + GUI_GRID_Y;
-            w = 0.465 * GUI_GRID_WAbs;
+            x = 0.427703 * GUI_GRID_WAbs + GUI_GRID_X;
+            y = 0.5150 * GUI_GRID_HAbs + GUI_GRID_Y;
+            w = 0.1525 * GUI_GRID_WAbs; // side by side under the task list, a third of its width each (Jman 27 Oct)
             h = 0.028 * GUI_GRID_HAbs;
             text = "$STR_ALIVE_C2ISTAR_UI_GENERATE_A_TASK";
             sizeEx = 0.5 * GUI_GRID_H;
-            colorBackground[] = {0.384,0.439,0.341,1};
-            colorBackgroundFocused[] = {0.706,0.706,0.706,1};
-            colorFocused[] = {0.706,0.706,0.706,1};
+            colorBackground[] = {1,1,1,0.07};
+            colorBackgroundFocused[] = {1,1,1,0.14};
+            colorFocused[] = {1,1,1,1};
         };
 
         class C2Tablet_autoGenerateTaskButton : C2Tablet_RscButton
         {
             idc = 70048;
-            x = 0.271203 * GUI_GRID_WAbs + GUI_GRID_X;
-            y = 0.5820 * GUI_GRID_HAbs + GUI_GRID_Y;
-            w = 0.465 * GUI_GRID_WAbs;
+            x = 0.584203 * GUI_GRID_WAbs + GUI_GRID_X;
+            y = 0.5150 * GUI_GRID_HAbs + GUI_GRID_Y;
+            w = 0.1525 * GUI_GRID_WAbs; // side by side under the task list, a third of its width each (Jman 27 Oct)
             h = 0.028 * GUI_GRID_HAbs;
             text = "$STR_ALIVE_C2ISTAR_UI_AUTO_ENABLE";
             sizeEx = 0.5 * GUI_GRID_H;
-            colorBackground[] = {0.384,0.439,0.341,1};
-            colorBackgroundFocused[] = {0.706,0.706,0.706,1};
-            colorFocused[] = {0.706,0.706,0.706,1};
+            colorBackground[] = {1,1,1,0.07};
+            colorBackgroundFocused[] = {1,1,1,0.14};
+            colorFocused[] = {1,1,1,1};
         };
 
         class C2Tablet_taskingCurrentTaskListEditButton : C2Tablet_RscButton
@@ -160,14 +150,14 @@ class C2Tablet
             idc = 70026;
             text = "$STR_ALIVE_C2ISTAR_UI_EDIT_TASK";
             style = 0x02;
-            x = 0.271102 * GUI_GRID_WAbs + GUI_GRID_X;
-            y = 0.6160 * GUI_GRID_HAbs + GUI_GRID_Y;
-            w = 0.465 * GUI_GRID_WAbs;
+            x = 0.271203 * GUI_GRID_WAbs + GUI_GRID_X;
+            y = 0.5480 * GUI_GRID_HAbs + GUI_GRID_Y;
+            w = 0.1525 * GUI_GRID_WAbs; // side by side under the task list, a third of its width each (Jman 27 Oct)
             h = 0.028 * GUI_GRID_HAbs;
             sizeEx = 0.5 * GUI_GRID_H;
-            colorBackground[] = {0.384,0.439,0.341,1};
-            colorBackgroundFocused[] = {0.706,0.706,0.706,1};
-            colorFocused[] = {0.706,0.706,0.706,1};
+            colorBackground[] = {1,1,1,0.07};
+            colorBackgroundFocused[] = {1,1,1,0.14};
+            colorFocused[] = {1,1,1,1};
         };
 
         class C2Tablet_taskingCurrentTaskListDeleteButton : C2Tablet_RscButton
@@ -175,15 +165,15 @@ class C2Tablet
             idc = 70027;
             text = "$STR_ALIVE_C2ISTAR_UI_DELETE_TASK";
             style = 0x02;
-            x = 0.271102 * GUI_GRID_WAbs + GUI_GRID_X;
-            y = 0.6500 * GUI_GRID_HAbs + GUI_GRID_Y;
-            w = 0.465 * GUI_GRID_WAbs;
+            x = 0.427703 * GUI_GRID_WAbs + GUI_GRID_X;
+            y = 0.5480 * GUI_GRID_HAbs + GUI_GRID_Y;
+            w = 0.1525 * GUI_GRID_WAbs; // side by side under the task list, a third of its width each (Jman 27 Oct)
             h = 0.028 * GUI_GRID_HAbs;
             sizeEx = 0.5 * GUI_GRID_H;
-            colorBackground[] = {0.376,0.196,0.204,1};
+            colorBackground[] = {1,1,1,0.07};
             colorText[] = {0.706,0.706,0.706,1};
-            colorBackgroundFocused[] = {0.706,0.706,0.706,1};
-            colorFocused[] = {0.706,0.706,0.706,1};
+            colorBackgroundFocused[] = {1,1,1,0.14};
+            colorFocused[] = {1,1,1,1};
         };
 
         class C2Tablet_taskPlayerList : C2Tablet_RscGUIListBox
@@ -208,9 +198,9 @@ class C2Tablet
             h = 0.028 * GUI_GRID_HAbs;
             text = "$STR_ALIVE_C2ISTAR_UI_SELECT_GROUP";
             sizeEx = 0.5 * GUI_GRID_H;
-            colorBackground[] = {0.384,0.439,0.341,1};
-            colorBackgroundFocused[] = {0.706,0.706,0.706,1};
-            colorFocused[] = {0.706,0.706,0.706,1};
+            colorBackground[] = {1,1,1,0.07};
+            colorBackgroundFocused[] = {1,1,1,0.14};
+            colorFocused[] = {1,1,1,1};
         };
 
         class C2Tablet_taskSelectedPlayerTitle : C2Tablet_RscText
@@ -256,9 +246,9 @@ class C2Tablet
             h = 0.028 * GUI_GRID_HAbs;
             text = "$STR_ALIVE_C2ISTAR_UI_DELETE";
             sizeEx = 0.5 * GUI_GRID_H;
-            colorBackground[] = {0.384,0.439,0.341,1};
-            colorBackgroundFocused[] = {0.706,0.706,0.706,1};
-            colorFocused[] = {0.706,0.706,0.706,1};
+            colorBackground[] = {1,1,1,0.07};
+            colorBackgroundFocused[] = {1,1,1,0.14};
+            colorFocused[] = {1,1,1,1};
         };
 
         class C2Tablet_taskSelectedPlayersClearButton : C2Tablet_RscButton
@@ -270,9 +260,9 @@ class C2Tablet
             h = 0.028 * GUI_GRID_HAbs;
             text = "$STR_ALIVE_C2ISTAR_UI_CLEAR_SELECTED";
             sizeEx = 0.5 * GUI_GRID_H;
-            colorBackground[] = {0.384,0.439,0.341,1};
-            colorBackgroundFocused[] = {0.706,0.706,0.706,1};
-            colorFocused[] = {0.706,0.706,0.706,1};
+            colorBackground[] = {1,1,1,0.07};
+            colorBackgroundFocused[] = {1,1,1,0.14};
+            colorFocused[] = {1,1,1,1};
         };
 
         class C2Tablet_taskingAddTaskTitleEditTitle : C2Tablet_RscText
@@ -389,9 +379,9 @@ class C2Tablet
             w = 0.216525 * GUI_GRID_WAbs;
             h = 0.028 * GUI_GRID_HAbs;
             sizeEx = 0.5 * GUI_GRID_H;
-            colorBackground[] = {0.384,0.439,0.341,1};
-            colorBackgroundFocused[] = {0.706,0.706,0.706,1};
-            colorFocused[] = {0.706,0.706,0.706,1};
+            colorBackground[] = {1,1,1,0.07};
+            colorBackgroundFocused[] = {1,1,1,0.14};
+            colorFocused[] = {1,1,1,1};
         };
 
         class C2Tablet_taskingEditTaskUpdateButton : C2Tablet_RscButton
@@ -404,9 +394,9 @@ class C2Tablet
             w = 0.216525 * GUI_GRID_WAbs;
             h = 0.028 * GUI_GRID_HAbs;
             sizeEx = 0.5 * GUI_GRID_H;
-            colorBackground[] = {0.384,0.439,0.341,1};
-            colorBackgroundFocused[] = {0.706,0.706,0.706,1};
-            colorFocused[] = {0.706,0.706,0.706,1};
+            colorBackground[] = {1,1,1,0.07};
+            colorBackgroundFocused[] = {1,1,1,0.14};
+            colorFocused[] = {1,1,1,1};
         };
 
         class C2Tablet_taskingEditTaskManagePlayersButton : C2Tablet_RscButton
@@ -419,9 +409,9 @@ class C2Tablet
             w = 0.216525 * GUI_GRID_WAbs;
             h = 0.028 * GUI_GRID_HAbs;
             sizeEx = 0.5 * GUI_GRID_H;
-            colorBackground[] = {0.384,0.439,0.341,1};
-            colorBackgroundFocused[] = {0.706,0.706,0.706,1};
-            colorFocused[] = {0.706,0.706,0.706,1};
+            colorBackground[] = {1,1,1,0.07};
+            colorBackgroundFocused[] = {1,1,1,0.14};
+            colorFocused[] = {1,1,1,1};
         };
 
         class C2Tablet_taskingAddTaskApplyEditTitle : C2Tablet_RscText
@@ -592,9 +582,9 @@ class C2Tablet
             w = 0.216525 * GUI_GRID_WAbs;
             h = 0.028 * GUI_GRID_HAbs;
             sizeEx = 0.5 * GUI_GRID_H;
-            colorBackground[] = {0.384,0.439,0.341,1};
-            colorBackgroundFocused[] = {0.706,0.706,0.706,1};
-            colorFocused[] = {0.706,0.706,0.706,1};
+            colorBackground[] = {1,1,1,0.07};
+            colorBackgroundFocused[] = {1,1,1,0.14};
+            colorFocused[] = {1,1,1,1};
         };
 
         class C2Tablet_taskingGenerateTaskLocationEditTitle : C2Tablet_RscText
@@ -709,9 +699,9 @@ class C2Tablet
             w = 0.105 * GUI_GRID_WAbs;
             h = 0.028 * GUI_GRID_HAbs;
             sizeEx = 0.5 * GUI_GRID_H;
-            colorBackground[] = {0.384,0.439,0.341,1};
-            colorBackgroundFocused[] = {0.706,0.706,0.706,1};
-            colorFocused[] = {0.706,0.706,0.706,1};
+            colorBackground[] = {1,1,1,0.07};
+            colorBackgroundFocused[] = {1,1,1,0.14};
+            colorFocused[] = {1,1,1,1};
         };
 
         class C2Tablet_taskingAutoGenerateTaskStrategicCreateButton : C2Tablet_RscButton
@@ -724,9 +714,9 @@ class C2Tablet
             w = 0.105 * GUI_GRID_WAbs;
             h = 0.028 * GUI_GRID_HAbs;
             sizeEx = 0.5 * GUI_GRID_H;
-            colorBackground[] = {0.384,0.439,0.341,1};
-            colorBackgroundFocused[] = {0.706,0.706,0.706,1};
-            colorFocused[] = {0.706,0.706,0.706,1};
+            colorBackground[] = {1,1,1,0.07};
+            colorBackgroundFocused[] = {1,1,1,0.14};
+            colorFocused[] = {1,1,1,1};
         };
 
         class C2Tablet_taskingGenerateApplyEditTitle : C2Tablet_RscText
