@@ -4,6 +4,8 @@
 
 if (isnil "ALiVE_PR_CUSTOM_BLACKLIST") then {ALiVE_PR_CUSTOM_BLACKLIST = []};
 if (isnil "ALiVE_PR_CUSTOM_WHITELIST") then {ALiVE_PR_CUSTOM_WHITELIST = []};
+// Classes and groups a mission adds to the tablet catalogue on top of its side or factions (#1091)
+if (isnil "ALiVE_PR_CUSTOM_ALSO") then {ALiVE_PR_CUSTOM_ALSO = []};
 
 ALiVE_PR_BLACKLIST = ALiVE_PR_CUSTOM_BLACKLIST + [
     // empty for now

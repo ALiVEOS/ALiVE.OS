@@ -7160,6 +7160,25 @@ switch(_operation) do {
                         _playerID = _eventData select 5;
                         _requestID = _eventForceMakeup select 0;
 
+                        // A requisition naming something the tablet's Never list leaves out is
+                        // refused here: the list is on every machine, but the request comes from
+                        // the player's own, which could be made to send anything
+                        private _blockedBy = "";
+                        if (!isNil "ALIVE_SUP_PLAYER_RESUPPLY" && {!isNull ALIVE_SUP_PLAYER_RESUPPLY}) then {
+                            private _prRules = ALIVE_SUP_PLAYER_RESUPPLY getVariable "pr_catalogueRules";
+                            if (!isNil "_prRules" && {_prRules isEqualType createHashMap}) then {
+                                _blockedBy = ["blocked", [_prRules, _eventForceMakeup]] call ALIVE_fnc_PRCatalogueRules;
+                            };
+                        };
+
+                        if (_blockedBy != "") then {
+
+                            ["ML - Player request %1 refused: '%2' is on the tablet's Never list", _requestID, _blockedBy] call ALiVE_fnc_dump;
+                            _logEvent = ['LOGCOM_RESPONSE', [_requestID,_playerID],"Logistics","DENIED_NOT_IN_CATALOGUE"] call ALIVE_fnc_event;
+                            [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
+
+                        } else {
+
                         // if it's a player request
                         // accept automatically
 
@@ -7174,6 +7193,8 @@ switch(_operation) do {
                         // respond to player request
                         _logEvent = ['LOGCOM_RESPONSE', [_requestID,_playerID],"Logistics","ACKNOWLEDGED"] call ALIVE_fnc_event;
                         [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
+
+                        };
 
                     };
 

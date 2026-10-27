@@ -260,45 +260,17 @@
     <Portuguese>Permite aos jogadores solicitar suprimentos via comboio</Portuguese>
     <Russian>Разрешает игрокам запрашивать припасы через конвой</Russian>
 </Key>
-<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PR_RESTRICTION_BLACKLIST">
-    <English>Item Blacklist:</English>
-    <Chinese>物品黑名單：</Chinese>
-    <Chinesesimp>物品黑名单：</Chinesesimp>
-    <Spanish>Lista negra de objetos:</Spanish>
-    <French>Liste noire des objets:</French>
-    <Portuguese>Lista negra de itens:</Portuguese>
-    <Russian>Чёрный список предметов:</Russian>
+    <English>Never Requisition</English>
 </Key>
-<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PR_RESTRICTION_BLACKLIST_COMMENT">
-    <English>Comma-separated list of config class names to exclude from the resupply catalog (e.g. Box_IND_Ammo_F,B_MRAP_01_F). Class names are case-sensitive.</English>
-    <Chinese>以逗號分隔的設定類別名稱清單,將從補給目錄中排除（例如 Box_IND_Ammo_F,B_MRAP_01_F）。類別名稱區分大小寫。</Chinese>
-    <Chinesesimp>以逗号分隔的配置类别名称清单,将从补给目录中排除（例如 Box_IND_Ammo_F,B_MRAP_01_F）。类别名称区分大小写。</Chinesesimp>
-    <Spanish>Lista separada por comas de nombres de clase del config a excluir del catálogo de reabastecimiento (p. ej. Box_IND_Ammo_F,B_MRAP_01_F). Los nombres de clase distinguen mayúsculas y minúsculas.</Spanish>
-    <French>Liste séparée par des virgules de noms de classes du config à exclure du catalogue de réapprovisionnement (ex. Box_IND_Ammo_F,B_MRAP_01_F). Les noms de classe sont sensibles à la casse.</French>
-    <Portuguese>Lista separada por vírgulas de nomes de classes do config a excluir do catálogo de reabastecimento (ex. Box_IND_Ammo_F,B_MRAP_01_F). Os nomes de classe são sensíveis a maiúsculas/minúsculas.</Portuguese>
-    <Russian>Список через запятую имён классов конфига, исключаемых из каталога снабжения (например, Box_IND_Ammo_F,B_MRAP_01_F). Имена классов чувствительны к регистру.</Russian>
+    <English>Names separated by commas that the tablet never offers, even when another list names them: vehicles, crates, soldiers and groups, as the Tablet Catalogue page shows them.</English>
 </Key>
-<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PR_RESTRICTION_WHITELIST">
-    <English>Item Whitelist:</English>
-    <Chinese>物品白名單：</Chinese>
-    <Chinesesimp>物品白名单：</Chinesesimp>
-    <Spanish>Lista blanca de objetos:</Spanish>
-    <French>Liste blanche des objets:</French>
-    <Portuguese>Lista de permissões de itens:</Portuguese>
-    <Russian>Белый список предметов:</Russian>
+    <English>Requisition Only These</English>
 </Key>
-<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PR_RESTRICTION_WHITELIST_COMMENT">
-    <English>Comma-separated list of config class names to restrict the resupply catalog to. Only these classes will appear (e.g. Box_IND_Ammo_F,B_MRAP_01_F). Class names are case-sensitive.</English>
-    <Chinese>以逗號分隔的設定類別名稱清單,用於將補給目錄限制為僅這些類別（例如 Box_IND_Ammo_F,B_MRAP_01_F）。類別名稱區分大小寫。</Chinese>
-    <Chinesesimp>以逗号分隔的配置类别名称清单,用于将补给目录限制为仅这些类别（例如 Box_IND_Ammo_F,B_MRAP_01_F）。类别名称区分大小写。</Chinesesimp>
-    <Spanish>Lista separada por comas de nombres de clase del config para restringir el catálogo de reabastecimiento únicamente a estas clases (p. ej. Box_IND_Ammo_F,B_MRAP_01_F). Solo aparecerán estas clases. Los nombres de clase distinguen mayúsculas y minúsculas.</Spanish>
-    <French>Liste séparée par des virgules de noms de classes du config pour restreindre le catalogue de réapprovisionnement à ces seules classes (ex. Box_IND_Ammo_F,B_MRAP_01_F). Seules ces classes apparaîtront. Les noms de classe sont sensibles à la casse.</French>
-    <Portuguese>Lista separada por vírgulas de nomes de classes do config para restringir o catálogo de reabastecimento apenas a estas classes (ex. Box_IND_Ammo_F,B_MRAP_01_F). Apenas estas classes aparecerão. Os nomes de classe são sensíveis a maiúsculas/minúsculas.</Portuguese>
-    <Russian>Список через запятую имён классов конфига, ограничивающий каталог снабжения только этими классами (например, Box_IND_Ammo_F,B_MRAP_01_F). Появятся только эти классы. Имена классов чувствительны к регистру.</Russian>
+    <English>Names separated by commas: vehicles, crates, soldiers and groups, as the Tablet Catalogue page shows them. When filled in, the tablet offers only these out of what your side or factions would normally get. Groups are narrowed only when this list names a group. Leave it empty for the full catalogue.</English>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PR_SENDHOME">
@@ -519,5 +491,20 @@
     <French>Supprimer</French>
     <Portuguese>Eliminar</Portuguese>
     <Russian>Удалить</Russian>
+</Key>
+<Key ID="STR_ALIVE_PR_RESTRICTION_ALSO">
+    <English>Also Requisition</English>
+</Key>
+<Key ID="STR_ALIVE_PR_RESTRICTION_ALSO_COMMENT">
+    <English>Names separated by commas that the tablet offers on top of your side or faction catalogue, for example a crate or vehicle from another faction. Also gets past Requisition Only These; Never Requisition still wins. A group must be from your side and needs its faction too, written Faction&gt;Group as the Tablet Catalogue page shows it.</English>
+</Key>
+<Key ID="STR_ALIVE_PR_CATALOGUE">
+    <English>Tablet Catalogue</English>
+</Key>
+<Key ID="STR_ALIVE_PR_CATALOGUE_COMMENT">
+    <English>Nothing to fill in here. This opens the Build and Supply Catalogue in your browser: every vehicle, crate, soldier and group the tablet can offer, with the names to put in the three lists just below.</English>
+</Key>
+<Key ID="STR_ALIVE_PR_CATALOGUE_OPEN">
+    <English>Open the catalogue (fill in below)</English>
 </Key>
 </Container></Package></Project>

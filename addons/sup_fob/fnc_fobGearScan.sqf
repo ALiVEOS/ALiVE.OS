@@ -20,8 +20,8 @@ its rounds, a pylon missile) and is left out, unless the module's lists name it.
 
 The Player FOBs module's lists and CfgALiVEFOBBuildables apply to gear as to the build menu: Never
 Build drops a class, Also Build adds one the rules left out, a price (cost, or Class=N in Build Only
-These) is used as it is, and Build Only These naming any gear means exactly that gear, each gun
-with its magazines. Sorted into gear and build-menu classes by fnc_fobBuildScan.
+These) is used as it is, and Build Only These naming any gear means that gear plus any in Also
+Build, each gun with its magazines. Sorted into gear and build-menu classes by fnc_fobBuildScan.
 
 Prices before the Cost Multiplier (rounded, never below 1):
     pistol 5-12, rifle 15-40, machine gun 40-70, sniper 60-90 by the hardest round, grenade launcher 35,
@@ -315,7 +315,7 @@ if (_explosives) then {
     };
 } forEach ("getNumber (_x >> 'isBackpack') == 1 && {getNumber (_x >> 'scope') == 2}" configClasses (configFile >> "CfgVehicles"));
 
-// Build Only These with gear in it: exactly that gear, each gun with the magazines it takes
+// Build Only These with gear in it: that gear plus Also Build's, each gun with the magazines it takes
 if (_onlyList isNotEqualTo []) then {
     private _keep = createHashMap;
     {
@@ -327,7 +327,7 @@ if (_onlyList isNotEqualTo []) then {
                 { _keep set [toLower _x, true] } forEach ([configFile >> "CfgWeapons" >> _base] call _magsOf);
             };
         };
-    } forEach _onlyList;
+    } forEach (_onlyList + _alsoList); // Also Build adds past the list
     _weapons = _weapons select { toLower _x in _keep };
     _magazines = _magazines select { toLower _x in _keep };
     _items = _items select { toLower _x in _keep };

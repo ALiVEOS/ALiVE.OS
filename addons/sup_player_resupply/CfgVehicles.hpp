@@ -2,7 +2,7 @@ class CfgVehicles {
     class Logic;
     class Module_F : Logic
     {
-        class AttributesBase { class Edit; class Combo; class ModuleDescription; };
+        class AttributesBase { class Default; class Edit; class Combo; class ModuleDescription; };
     };
     class ModuleAliveBase : Module_F
     {
@@ -146,10 +146,14 @@ class CfgVehicles {
                                 class No { name = "No"; value = false; };
                             };
                     };
-                    // ── ITEM FILTERS ──────────────────────────────────────────
-                    class HDR_FILTERS : ALiVE_ModuleSubTitle { property = "ALiVE_sup_player_resupply_HDR_FILTERS"; displayName = "ITEM FILTERS"; };
-                    class pr_restrictionBlacklist : Edit { property = "ALiVE_sup_player_resupply_pr_restrictionBlacklist"; displayName = "$STR_ALIVE_PR_RESTRICTION_BLACKLIST"; tooltip = "$STR_ALIVE_PR_RESTRICTION_BLACKLIST_COMMENT"; defaultValue = """"""; typeName = "STRING"; };
+                    // ── TABLET CATALOGUE ──────────────────────────────────────
+                    // The catalogue page's link, then the three lists it fills: Only These and Never keep
+                    // their old property names so every saved mission keeps its lists.
+                    class HDR_FILTERS : ALiVE_ModuleSubTitle { property = "ALiVE_sup_player_resupply_HDR_FILTERS"; displayName = "TABLET CATALOGUE"; };
+                    class pr_catalogue : Default { property = "ALiVE_sup_player_resupply_pr_catalogue"; displayName = "$STR_ALIVE_PR_CATALOGUE"; tooltip = "$STR_ALIVE_PR_CATALOGUE_COMMENT"; control = "ALiVE_PRCatalogueLink"; typeName = "STRING"; defaultValue = "''"; };
                     class pr_restrictionWhitelist : Edit { property = "ALiVE_sup_player_resupply_pr_restrictionWhitelist"; displayName = "$STR_ALIVE_PR_RESTRICTION_WHITELIST"; tooltip = "$STR_ALIVE_PR_RESTRICTION_WHITELIST_COMMENT"; defaultValue = """"""; typeName = "STRING"; };
+                    class pr_restrictionBlacklist : Edit { property = "ALiVE_sup_player_resupply_pr_restrictionBlacklist"; displayName = "$STR_ALIVE_PR_RESTRICTION_BLACKLIST"; tooltip = "$STR_ALIVE_PR_RESTRICTION_BLACKLIST_COMMENT"; defaultValue = """"""; typeName = "STRING"; };
+                    class pr_restrictionAlso : Edit { property = "ALiVE_sup_player_resupply_pr_restrictionAlso"; displayName = "$STR_ALIVE_PR_RESTRICTION_ALSO"; tooltip = "$STR_ALIVE_PR_RESTRICTION_ALSO_COMMENT"; defaultValue = """"""; typeName = "STRING"; };
                     class ModuleDescription : ModuleDescription {};
                 };
         };

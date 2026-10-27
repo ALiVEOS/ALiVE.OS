@@ -437,6 +437,129 @@ switch(_operation) do {
         _result = _args;
     };
 
+    case "buildCatalogue": {
+        // What the tablet offers one side: [sortedVehicles, sortedGroups]. The tablet builds it when
+        // a player joins; the catalogue page's rig run and the Logistics Hub call it too, so it reads
+        // everything off the module and the globals rather than the player.
+        // [sideText, rules (optional: the module's own), factions (optional: ALIVE_PR_FACTIONLIST)]
+        _args params [
+            ["_sideText", DEFAULT_SIDE],
+            ["_rules", _logic getVariable ["pr_catalogueRules", createHashMap]],
+            ["_factionList", missionNamespace getVariable ["ALIVE_PR_FACTIONLIST", []]]
+        ];
+        private _sideNumber = [_sideText] call ALIVE_fnc_sideTextToNumber;
+        private _restrictionType = _logic getVariable ["pr_restrictionType", DEFAULT_RESTRICTION_TYPE];
+        private _filterFriendlyFactions = missionNamespace getVariable ["ALIVE_pr_filterFriendlyFactions", DEFAULT_FILTER_FRIENDLY_FACTIONS];
+        private _merged = _logic getVariable ["pr_factionWhitelist", []];
+        if !(_merged isEqualType []) then { _merged = [] };
+        private _blacklist = _rules getOrDefault ["neverClasses", []];
+        private _whitelist = _rules getOrDefault ["onlyClasses", []];
+
+        private _sortedVehicles = [] call ALiVE_fnc_hashCreate;
+        private _sortedGroups = [] call ALiVE_fnc_hashCreate;
+
+        // Check to see if there's a faction whitelist
+        private _pr_faction_whitelist = [_logic, "factions", _logic getVariable ["pr_factionWhitelist", DEFAULT_FACTIONS]] call MAINCLASS;
+        private _civ = count _pr_faction_whitelist == 0;
+
+        // With no Factions list set and Filter Friendly Factions off, Side mode shows every
+        // faction on the player's side, as that setting's tooltip says. _factionList
+        // then holds only the player's own faction, put there for Faction mode, and narrowed
+        // the side to it. The side's factions come from their config: the side-wide sort
+        // below takes in other sides' and neutral vehicles too.
+        private _sideFactions = _factionList;
+        if (!_filterFriendlyFactions && {count _merged == 0}) then {
+            _sideFactions = (("true" configClasses (configFile >> "CfgFactionClasses")) select {getNumber (_x >> "side") == _sideNumber}) apply {configName _x};
+        };
+
+        // get sorted config data
+        if(_restrictionType == "SIDE") then {
+            // Build the full side-wide vehicle hash first, then filter each
+            // category's classname list to only vehicles whose CfgVehicles
+            // faction entry matches one of the _factionList factions.
+            // This prevents all installed mod factions appearing when only a
+            // subset of friendly OPCOM factions should be available.
+            private _allVehicles = [_sideText,_blacklist,_whitelist] call ALIVE_fnc_sortCFGVehiclesByClass;
+            {
+                private _category = _x;
+                private _classList = [_allVehicles, _category] call ALiVE_fnc_hashGet;
+                if (!isNil "_classList" && {_classList isEqualType []}) then {
+                    // Supply crates tagged Default belong to no faction, so the faction test
+                    // alone dropped every one of them: all of vanilla's and Expeditionary
+                    // Forces' only crate. Faction mode already lets them in through side 3.
+                    private _filtered = _classList select {
+                        private _vFaction = getText (configFile >> "CfgVehicles" >> _x >> "faction");
+                        _vFaction in _sideFactions || {_vFaction == "Default" && {_x isKindOf "ReammoBox_F"}}
+                        // a crate the mission names in its whitelist, whatever it's built on (AshTray on Discord)
+                        || {_x in _whitelist && {!(_x isKindOf "AllVehicles")}}
+                    };
+                    if (count _filtered > 0) then {
+                        [_sortedVehicles, _category, _filtered] call ALiVE_fnc_hashSet;
+                    };
+                };
+            } forEach (_allVehicles select 1);
+        }else{
+            {
+                private _tempVehicles = [_x,_blacklist,_whitelist, _civ] call ALIVE_fnc_sortCFGVehiclesByFactionClass;
+                private _mergeHash = {
+                    private _listOfVeh = [_sortedVehicles, _key, []] call ALiVE_fnc_hashGet;
+                    {
+                        private _item = _x;
+                        _listOfVeh pushbackUnique _item;
+                    } foreach _Value;
+                    [_sortedVehicles,_key,_listOfVeh] call ALIVE_fnc_hashSet;
+                };
+                [_tempVehicles, _mergeHash] call CBA_fnc_hashEachPair;
+            } foreach _factionList;
+        };
+
+
+        // get sorted group data
+        // When filterFriendlyFactions is active, only include CfgGroups
+        // entries for factions in _factionList (which has already
+        // been narrowed to friendly OPCOM factions). This mirrors the
+        // vehicle list filtering and prevents showing all mod factions.
+        if(_restrictionType == "SIDE") then {
+            // Build side-wide hash first, then discard keys not in _factionList
+            private _allGroups = [_sideText] call ALIVE_fnc_sortCFGGroupsBySide;
+            // The hash is keyed by CfgGroups folder, which is not always the faction's own name:
+            // S.O.G. keeps B_MACV's groups under VN_MACV, the game BLU_G_F's under Guerilla. The
+            // custom mappings name that folder, so a side's factions bring their folders in too.
+            private _groupFolders = +_sideFactions;
+            if (!isNil "ALIVE_factionCustomMappings") then {
+                {
+                    private _mapping = [ALIVE_factionCustomMappings, _x] call ALIVE_fnc_hashGet;
+                    if (!isNil "_mapping" && {_mapping isEqualType []}) then {
+                        private _folder = [_mapping, "GroupFactionName", ""] call ALIVE_fnc_hashGet;
+                        if (_folder isEqualType "" && {_folder != ""}) then { _groupFolders pushBackUnique _folder };
+                    };
+                } forEach (_sideFactions select {_x in (ALIVE_factionCustomMappings select 1)});
+            };
+            {
+                private _faction = _x;
+                if (_faction in _groupFolders) then {
+                    private _factionGroups = [_allGroups, _faction] call ALiVE_fnc_hashGet;
+                    if (!isNil "_factionGroups" && {_factionGroups isEqualType []} && {count (_factionGroups select 1) > 0}) then {
+                        [_sortedGroups, _faction, _factionGroups] call ALiVE_fnc_hashSet;
+                    };
+                };
+            } forEach (_allGroups select 1);
+        }else{
+            {
+                private _tempGroups = [_sideText, _x] call ALIVE_fnc_sortCFGGroupsByFaction;
+                private _factionGroups = [_tempGroups, _x] call ALiVE_fnc_hashGet;
+                [_sortedGroups, _x, _factionGroups] call ALiVE_fnc_hashSet;
+            } foreach _factionList;
+        };
+        if (missionNamespace getVariable ["ALiVE_sup_player_resupply_debug", false]) then {["SUP_PR - sortedGroups factions: %1", _sortedGroups select 1] call ALiVE_fnc_dump;};
+
+
+        ["addAlso", [_rules, _sortedVehicles]] call ALIVE_fnc_PRCatalogueRules;
+        ["filterGroups", [_rules, _sortedGroups, _sideText]] call ALIVE_fnc_PRCatalogueRules;
+
+        _result = [_sortedVehicles, _sortedGroups];
+    };
+
     case "init": {
 
         //Only one init per instance is allowed
@@ -486,6 +609,11 @@ switch(_operation) do {
             // The Factions list has the same gap: a mission saved before its expression was made
             // to broadcast keeps the old one, so it's sent from here, then a flag to say it's there.
             _logic setVariable ["pr_factionWhitelist", _logic getVariable ["pr_factionWhitelist", []], true];
+            // The tablet catalogue's three lists, for the same reason: each machine reads them
+            // into its own rules below
+            {
+                _logic setVariable [_x, _logic getVariable [_x, ""], true];
+            } forEach ["pr_restrictionWhitelist", "pr_restrictionBlacklist", "pr_restrictionAlso"];
             _logic setVariable ["pr_factionWhitelistSent", true, true];
         } else {
             // A player's machine waits for the server's copy, briefly: read too early, an empty
@@ -538,11 +666,16 @@ switch(_operation) do {
         private _filterFriendlyFactions = [_logic, "filterFriendlyFactions"] call MAINCLASS;
         missionNamespace setVariable ["ALIVE_pr_filterFriendlyFactions", _filterFriendlyFactions, true];
 
-        // Set final blacklist
-        ALiVE_PR_BLACKLIST = ([_logic, "blacklist", _logic getVariable ["pr_restrictionBlacklist", DEFAULT_RESTRICTION_BLACKLIST]] call MAINCLASS) + ALiVE_PR_BLACKLIST + ALiVE_PLACEMENT_VEHICLEBLACKLIST;
-
-        // Set final whitelist
-        ALiVE_PR_WHITELIST = ([_logic, "whitelist", _logic getVariable ["pr_restrictionWhitelist", DEFAULT_RESTRICTION_WHITELIST]] call MAINCLASS) + ALiVE_PR_WHITELIST;
+        // The catalogue's Only These, Never and Also lists, with the mission's own custom lists and
+        // the placement blacklist folded in. Class names go to the two lists the config sort takes,
+        // in their config spelling (so case no longer matters); group names stay in the rules and
+        // never reach them, where a list naming only groups would empty the vehicle catalogue.
+        private _rules = ["parseLogic", _logic] call ALIVE_fnc_PRCatalogueRules;
+        ALiVE_PR_BLACKLIST = _rules get "neverClasses";
+        ALiVE_PR_WHITELIST = _rules get "onlyClasses";
+        ALiVE_PR_ALSO = _rules get "alsoClasses";
+        [_logic, "blacklist", ALiVE_PR_BLACKLIST] call MAINCLASS;
+        [_logic, "whitelist", ALiVE_PR_WHITELIST] call MAINCLASS;
 
         // Get on with it
         [_logic, "start"] call MAINCLASS;
@@ -809,63 +942,9 @@ switch(_operation) do {
             // load static data
             call ALiVE_fnc_staticDataHandler;
 
-            private _sortedVehicles = [] call ALiVE_fnc_hashCreate;
-            private _sortedGroups = [] call ALiVE_fnc_hashCreate;
-
-            // Check to see if there's a faction whitelist
-            private _pr_faction_whitelist = [_logic, "factions", _logic getVariable ["pr_factionWhitelist", DEFAULT_FACTIONS]] call MAINCLASS;
-            private _civ = count _pr_faction_whitelist == 0;
-
-            // With no Factions list set and Filter Friendly Factions off, Side mode shows every
-            // faction on the player's side, as that setting's tooltip says. ALIVE_PR_FACTIONLIST
-            // then holds only the player's own faction, put there for Faction mode, and narrowed
-            // the side to it. The side's factions come from their config: the side-wide sort
-            // below takes in other sides' and neutral vehicles too.
-            private _sideFactions = ALIVE_PR_FACTIONLIST;
-            if (!_filterFriendlyFactions && {count _merged == 0}) then {
-                _sideFactions = (("true" configClasses (configFile >> "CfgFactionClasses")) select {getNumber (_x >> "side") == _sideNumber}) apply {configName _x};
-            };
-
-            // get sorted config data
-            if(_restrictionType == "SIDE") then {
-                // Build the full side-wide vehicle hash first, then filter each
-                // category's classname list to only vehicles whose CfgVehicles
-                // faction entry matches one of the ALIVE_PR_FACTIONLIST factions.
-                // This prevents all installed mod factions appearing when only a
-                // subset of friendly OPCOM factions should be available.
-                private _allVehicles = [_sideText,ALiVE_PR_BLACKLIST,ALiVE_PR_WHITELIST] call ALIVE_fnc_sortCFGVehiclesByClass;
-                {
-                    private _category = _x;
-                    private _classList = [_allVehicles, _category] call ALiVE_fnc_hashGet;
-                    if (!isNil "_classList" && {_classList isEqualType []}) then {
-                        // Supply crates tagged Default belong to no faction, so the faction test
-                        // alone dropped every one of them: all of vanilla's and Expeditionary
-                        // Forces' only crate. Faction mode already lets them in through side 3.
-                        private _filtered = _classList select {
-                            private _vFaction = getText (configFile >> "CfgVehicles" >> _x >> "faction");
-                            _vFaction in _sideFactions || {_vFaction == "Default" && {_x isKindOf "ReammoBox_F"}}
-                            // a crate the mission names in its whitelist, whatever it's built on (AshTray on Discord)
-                            || {_x in ALiVE_PR_WHITELIST && {!(_x isKindOf "AllVehicles")}}
-                        };
-                        if (count _filtered > 0) then {
-                            [_sortedVehicles, _category, _filtered] call ALiVE_fnc_hashSet;
-                        };
-                    };
-                } forEach (_allVehicles select 1);
-            }else{
-                {
-                    private _tempVehicles = [_x,ALiVE_PR_BLACKLIST,ALiVE_PR_WHITELIST, _civ] call ALIVE_fnc_sortCFGVehiclesByFactionClass;
-                    private _mergeHash = {
-                        private _listOfVeh = [_sortedVehicles, _key, []] call ALiVE_fnc_hashGet;
-                        {
-                            private _item = _x;
-                            _listOfVeh pushbackUnique _item;
-                        } foreach _Value;
-                        [_sortedVehicles,_key,_listOfVeh] call ALIVE_fnc_hashSet;
-                    };
-                    [_tempVehicles, _mergeHash] call CBA_fnc_hashEachPair;
-                } foreach ALIVE_PR_FACTIONLIST;
-            };
+            // The catalogue: vehicles, crates and soldiers by category, groups by faction and category,
+            // with the Only These, Never and Also lists applied
+            ([_logic, "buildCatalogue", [_sideText]] call MAINCLASS) params ["_sortedVehicles", "_sortedGroups"];
 
             [_logic,"sortedVehicles",_sortedVehicles] call MAINCLASS;
 
@@ -980,32 +1059,6 @@ switch(_operation) do {
                 };
             };
 
-
-            // get sorted group data
-            // When filterFriendlyFactions is active, only include CfgGroups
-            // entries for factions in ALIVE_PR_FACTIONLIST (which has already
-            // been narrowed to friendly OPCOM factions). This mirrors the
-            // vehicle list filtering and prevents showing all mod factions.
-            if(_restrictionType == "SIDE") then {
-                // Build side-wide hash first, then discard keys not in ALIVE_PR_FACTIONLIST
-                private _allGroups = [_sideText] call ALIVE_fnc_sortCFGGroupsBySide;
-                {
-                    private _faction = _x;
-                    if (_faction in _sideFactions) then {
-                        private _factionGroups = [_allGroups, _faction] call ALiVE_fnc_hashGet;
-                        if (!isNil "_factionGroups" && {_factionGroups isEqualType []} && {count (_factionGroups select 1) > 0}) then {
-                            [_sortedGroups, _faction, _factionGroups] call ALiVE_fnc_hashSet;
-                        };
-                    };
-                } forEach (_allGroups select 1);
-            }else{
-                {
-                    private _tempGroups = [_sideText, _x] call ALIVE_fnc_sortCFGGroupsByFaction;
-                    private _factionGroups = [_tempGroups, _x] call ALiVE_fnc_hashGet;
-                    [_sortedGroups, _x, _factionGroups] call ALiVE_fnc_hashSet;
-                } foreach ALIVE_PR_FACTIONLIST;
-            };
-            if (missionNamespace getVariable ["ALiVE_sup_player_resupply_debug", false]) then {["SUP_PR - sortedGroups factions: %1", _sortedGroups select 1] call ALiVE_fnc_dump;};
 
             [_logic,"sortedGroups",_sortedGroups] call MAINCLASS;
 
@@ -1456,6 +1509,27 @@ switch(_operation) do {
                     [_logic,"marker",[]] call MAINCLASS;
 
                     // set the tablet state to reset
+
+                    [_logic,"state","RESET"] call MAINCLASS;
+
+                };
+                case "DENIED_NOT_IN_CATALOGUE":{
+
+                    // LOGCOM refused it: something on it is on the tablet's Never list
+
+                    _radioMessage = "Your request for support has been denied. Something on it is not in the tablet catalogue";
+
+                    _radioBroadcast = [player,_radioMessage,"side",_sideObject,false,true,false,true,_HQ];
+
+                    [_radioBroadcast,"ALIVE_fnc_radioBroadcast",true,true] spawn BIS_fnc_MP;
+
+                    _markers = [_logic,"marker"] call MAINCLASS;
+
+                    if(count _markers > 0) then {
+                        deleteMarkerLocal (_markers select 0);
+                    };
+
+                    [_logic,"marker",[]] call MAINCLASS;
 
                     [_logic,"state","RESET"] call MAINCLASS;
 
@@ -2175,9 +2249,10 @@ switch(_operation) do {
                                                     // separate base from ReammoBox, so without it no crate counted
                                                     // and the category holding them was never offered.
                                                     // A box the mission whitelists counts too: cardboard and wooden
-                                                    // boxes are plain objects, not ammo crates (AshTray on Discord).
+                                                    // boxes are plain objects, not ammo crates (AshTray on Discord). The Also list
+                                                    // brings boxes in the same way.
                                                     if (_x isKindOf "Ammo" || {_x isKindOf "ReammoBox"} || {_x isKindOf "AmmoBox"} || {_x isKindOf "ReammoBox_F"}
-                                                        || {_x in ALiVE_PR_WHITELIST && {!(_x isKindOf "AllVehicles")}}) exitWith {
+                                                        || {(_x in ALiVE_PR_WHITELIST || {_x in (missionNamespace getVariable ["ALiVE_PR_ALSO", []])}) && {!(_x isKindOf "AllVehicles")}}) exitWith {
                                                         _hasAmmo = true;
                                                     };
                                                 } forEach _classList;
@@ -2240,7 +2315,7 @@ switch(_operation) do {
                                 if (!isNil "_vehicleClasses" && {(_selectedSupplyListParents param [0, ""]) == "Combat Supplies"}) then {
                                     _vehicleClasses = _vehicleClasses select {
                                         _x isKindOf "Ammo" || {_x isKindOf "ReammoBox"} || {_x isKindOf "AmmoBox"} || {_x isKindOf "ReammoBox_F"}
-                                        || {_x in ALiVE_PR_WHITELIST && {!(_x isKindOf "AllVehicles")}}
+                                        || {(_x in ALiVE_PR_WHITELIST || {_x in (missionNamespace getVariable ["ALiVE_PR_ALSO", []])}) && {!(_x isKindOf "AllVehicles")}}
                                     };
                                 };
 

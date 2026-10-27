@@ -41,6 +41,11 @@ class CfgFunctions {
                 file = "\x\alive\addons\sup_player_resupply\fnc_PRTabletEventToClient.sqf";
                 ALIVE_RECOMPILE;
             };
+            class PRCatalogueRules {
+                description = "The tablet catalogue's Only These, Never and Also lists (#1091)";
+                file = "\x\alive\addons\sup_player_resupply\fnc_PRCatalogueRules.sqf";
+                ALIVE_RECOMPILE;
+            };
             class PRSetTerrainMode {
                 description = "Player Resupply terrain-mode toggle (#698)";
                 file = "\x\alive\addons\sup_player_resupply\fnc_PRSetTerrainMode.sqf";

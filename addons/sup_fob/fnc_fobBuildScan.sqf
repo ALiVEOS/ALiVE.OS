@@ -40,7 +40,7 @@ mod's config (the mission's wins):
     class CfgALiVEFOBBuildables {
         blacklist[] = {"Land_Razorwire_F"};      // never offered
         whitelist[] = {"Land_Pallets_F"};        // offered, priced as a fortification
-        only[] = {"Land_BagFence_Short_F"};      // if set, the menu is exactly these
+        only[] = {"Land_BagFence_Short_F"};      // if set, the menu is these plus whitelist[]
         class Land_HBarrier_5_F { cost = 7; };   // a fixed price (1 to 100000)
     };
 A price that isn't a whole number from 1 to 100000 is refused with a warning in the RPT and
@@ -100,7 +100,7 @@ private _fixed = createHashMap;
     if (isClass _root) then {
         _blacklist append ((getArray (_root >> "blacklist")) select { _x isEqualType "" } apply { toLower _x });
         _whitelist append ((getArray (_root >> "whitelist")) select { _x isEqualType "" });
-        // only[]: the menu is exactly these; the mission's list, else the first mod's
+        // only[]: the menu is these plus whitelist[]; the mission's list, else the first mod's
         if (_only isEqualTo []) then { _only = (getArray (_root >> "only")) select { _x isEqualType "" } };
         {
             private _k = toLower configName _x;
@@ -438,7 +438,7 @@ private _typeOnly = [];
     } forEach (_x select 5);
 } forEach (missionNamespace getVariable ["ALiVE_FOB_types", []]);
 
-// only[]: exactly these, each priced by the rules (or as a fortification when the rules don't
+// only[]: these plus the whitelist, each priced by the rules (or as a fortification when the rules don't
 // pick it) unless it has a cost; the blacklist still applies
 if (_only isNotEqualTo []) then {
     private _have = _rows apply { toLower (_x select 0) };
@@ -450,7 +450,9 @@ if (_only isNotEqualTo []) then {
             ["ALiVE Player FOBs - CfgALiVEFOBBuildables: only class %1 isn't in this game", _x] call ALiVE_fnc_dumpR;
         };
     } forEach _only;
-    private _keep = _only apply { toLower _x };
+    // Also Build adds past the list, as the tablet's Also Requisition does; Never Build still wins
+    // (_add skipped those)
+    private _keep = (_only + _whitelist) apply { toLower _x };
     // the Arsenal is the setting's, not the list's: a list made before it was turned on keeps it
     if (_arsenal) then { _keep pushBack "alive_fob_arsenal" };
     // a FOB type's extras still count (Jman, 25 Oct): one the list doesn't have is that type's own,
