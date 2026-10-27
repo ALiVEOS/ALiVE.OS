@@ -59,12 +59,16 @@ class CfgVehicles {
                         class artillery_illum : Edit { property = "ALiVE_sup_artillery_artillery_illum"; displayName = "$STR_ALIVE_ARTILLERY_ILLUM"; tooltip = "$STR_ALIVE_ARTILLERY_ILLUM_DESC"; defaultValue = """30"""; };
                         class artillery_smoke : Edit { property = "ALiVE_sup_artillery_artillery_smoke"; displayName = "$STR_ALIVE_ARTILLERY_SMOKE"; tooltip = "$STR_ALIVE_ARTILLERY_SMOKE_DESC"; defaultValue = """30"""; };
                         class artillery_wp : Edit { property = "ALiVE_sup_artillery_artillery_wp"; displayName = "$STR_ALIVE_ARTILLERY_WP"; tooltip = "$STR_ALIVE_ARTILLERY_WP_DESC"; defaultValue = """30"""; };
+
+                        class HDR_SPECIAL : ALiVE_ModuleSubTitle { property = "ALiVE_sup_artillery_HDR_SPECIAL"; displayName = "SPECIAL ROUNDS"; };
                         class artillery_guided : Edit { property = "ALiVE_sup_artillery_artillery_guided"; displayName = "$STR_ALIVE_ARTILLERY_GUIDED"; tooltip = "$STR_ALIVE_ARTILLERY_GUIDED_DESC"; defaultValue = """30"""; };
                         class artillery_cluster : Edit { property = "ALiVE_sup_artillery_artillery_cluster"; displayName = "$STR_ALIVE_ARTILLERY_CLUSTER"; tooltip = "$STR_ALIVE_ARTILLERY_CLUSTER_DESC"; defaultValue = """30"""; };
                         class artillery_lg : Edit { property = "ALiVE_sup_artillery_artillery_lg"; displayName = "$STR_ALIVE_ARTILLERY_LG"; tooltip = "$STR_ALIVE_ARTILLERY_LG_DESC"; defaultValue = """30"""; };
                         class artillery_mine : Edit { property = "ALiVE_sup_artillery_artillery_mine"; displayName = "$STR_ALIVE_ARTILLERY_MINE"; tooltip = "$STR_ALIVE_ARTILLERY_MINE_DESC"; defaultValue = """30"""; };
                         class artillery_atmine : Edit { property = "ALiVE_sup_artillery_artillery_atmine"; displayName = "$STR_ALIVE_ARTILLERY_ATMINE"; tooltip = "$STR_ALIVE_ARTILLERY_ATMINE_DESC"; defaultValue = """30"""; };
                         class artillery_rockets : Edit { property = "ALiVE_sup_artillery_artillery_rockets"; displayName = "$STR_ALIVE_ARTILLERY_ROCKETS"; tooltip = "$STR_ALIVE_ARTILLERY_ROCKETS_DESC"; defaultValue = """16"""; };
+
+                        class HDR_RESPAWN : ALiVE_ModuleSubTitle { property = "ALiVE_sup_artillery_HDR_RESPAWN"; displayName = "INIT CODE AND RESPAWN"; };
                         class artillery_code : Edit { property = "ALiVE_sup_artillery_artillery_code"; displayName = "$STR_ALIVE_ARTILLERY_CODE"; tooltip = "$STR_ALIVE_ARTILLERY_CODE_DESC"; defaultValue = """"""; };
                         class artillery_respawn_time : Edit { property = "ALiVE_sup_artillery_artillery_respawn_time"; displayName = "$STR_ALIVE_CS_ASSET_RESPAWN_TIME"; tooltip = "$STR_ALIVE_CS_ASSET_RESPAWN_TIME_COMMENT"; defaultValue = """"""; };
                         class artillery_respawn_limit : Edit { property = "ALiVE_sup_artillery_artillery_respawn_limit"; displayName = "$STR_ALIVE_CS_ASSET_RESPAWN_LIMIT"; tooltip = "$STR_ALIVE_CS_ASSET_RESPAWN_LIMIT_COMMENT"; defaultValue = """"""; };

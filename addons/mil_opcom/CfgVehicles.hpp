@@ -54,6 +54,19 @@ class CfgVehicles {
                                 tooltip = "$STR_ALIVE_OPCOM_NAME_COMMENT";
                                 defaultValue = """""";
                         };
+                        class intelchance : Combo
+                        {
+                                property = "ALiVE_mil_opcom_intelchance";
+                                displayName = "$STR_ALIVE_OPCOM_INTELCHANCE";
+                                tooltip = "$STR_ALIVE_OPCOM_INTELCHANCE_COMMENT";
+                                defaultValue = """0""";
+                                class Values
+                                {
+                                    class none { name = "None"; value = 0; default = 1; };
+                                    class seldom { name = "Seldom"; value = 5; };
+                                    class often { name = "Often"; value = 10; };
+                                };
+                        };
 
                         // ---- Control Type ---------------------------------------------------
                         class HDR_CONTROL : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_HDR_CONTROL"; displayName = "CONTROL TYPE"; };
@@ -203,68 +216,6 @@ class CfgVehicles {
                                 defaultValue = """10""";
                                 typeName = "NUMBER";
                         };
-                        class frontlineMinefields : Combo
-                        {
-                                property = "ALiVE_mil_opcom_frontlineMinefields";
-                                displayName = "$STR_ALIVE_OPCOM_FRONTLINE_MINEFIELDS";
-                                tooltip = "$STR_ALIVE_OPCOM_FRONTLINE_MINEFIELDS_COMMENT";
-                                defaultValue = """none""";
-                                class Values
-                                {
-                                        class None { name = "None"; value = "none"; };
-                                        class Few  { name = "Few";  value = "few"; };
-                                        class Many { name = "Many"; value = "many"; };
-                                };
-                        };
-                        // Security Patrols mode (#1092): a second mode where patrols walk the coldest ground of the commander's territory
-                        class securityPatrolMode : Combo
-                        {
-                                property = "ALiVE_mil_opcom_securityPatrolMode";
-                                displayName = "$STR_ALIVE_OPCOM_SECURITY_PATROL_MODE";
-                                tooltip = "$STR_ALIVE_OPCOM_SECURITY_PATROL_MODE_COMMENT";
-                                defaultValue = """objectives""";
-                                class Values
-                                {
-                                        class Objectives { name = "Objectives"; value = "objectives"; };
-                                        class Coverage { name = "Coverage"; value = "coverage"; };
-                                };
-                        };
-                        // how far a patrol goes from its home objective, in either mode; the territory in Coverage reaches the same distance
-                        class securityPatrolReach : Edit
-                        {
-                                property = "ALiVE_mil_opcom_securityPatrolReach";
-                                displayName = "$STR_ALIVE_OPCOM_SECURITY_PATROL_REACH";
-                                tooltip = "$STR_ALIVE_OPCOM_SECURITY_PATROL_REACH_COMMENT";
-                                defaultValue = """3000""";
-                                typeName = "NUMBER";
-                        };
-                        class preparedDefences : Combo
-                        {
-                                property = "ALiVE_mil_opcom_preparedDefences";
-                                displayName = "$STR_ALIVE_OPCOM_PREPARED_DEFENCES";
-                                tooltip = "$STR_ALIVE_OPCOM_PREPARED_DEFENCES_COMMENT";
-                                defaultValue = """none""";
-                                class Values
-                                {
-                                        class None { name = "None"; value = "none"; };
-                                        class Few  { name = "Few";  value = "few"; };
-                                        class Many { name = "Many"; value = "many"; };
-                                };
-                        };
-                        class securityPatrols : Combo
-                        {
-                                property = "ALiVE_mil_opcom_securityPatrols";
-                                displayName = "$STR_ALIVE_OPCOM_SECURITY_PATROLS";
-                                tooltip = "$STR_ALIVE_OPCOM_SECURITY_PATROLS_COMMENT";
-                                defaultValue = """none""";
-                                class Values
-                                {
-                                        class None { name = "None"; value = "none"; };
-                                        class Few  { name = "Few";  value = "few"; };
-                                        class Some { name = "Some"; value = "some"; };
-                                        class Many { name = "Many"; value = "many"; };
-                                };
-                        };
                         class arriveTogether : Combo
                         {
                                 property = "ALiVE_mil_opcom_arriveTogether";
@@ -302,6 +253,99 @@ class CfgVehicles {
                                         class Yes { name = "Yes"; value = "true"; };
                                 };
                         };
+                        // An Occupation commander that leaves the attacking to the players and garrisons
+                        // what they clear (kawi0756 on Discord, 25 Oct)
+                        class followPlayers : Combo
+                        {
+                                property = "ALiVE_mil_opcom_followPlayers";
+                                displayName = "$STR_ALIVE_OPCOM_FOLLOW_PLAYERS";
+                                tooltip = "$STR_ALIVE_OPCOM_FOLLOW_PLAYERS_COMMENT";
+                                defaultValue = """false""";
+                                class Values
+                                {
+                                        class No  { name = "No";  value = "false"; };
+                                        class Yes { name = "Yes"; value = "true"; };
+                                };
+                        };
+                        // Groups Call For Help (A. Ares on Discord, 26 Oct): a group losing a fight asks for the nearest free group
+                        class callForHelp : Combo
+                        {
+                                property = "ALiVE_mil_opcom_callForHelp";
+                                displayName = "$STR_ALIVE_OPCOM_CALL_FOR_HELP";
+                                tooltip = "$STR_ALIVE_OPCOM_CALL_FOR_HELP_COMMENT";
+                                defaultValue = """false""";
+                                class Values
+                                {
+                                        class No  { name = "No";  value = "false"; };
+                                        class Yes { name = "Yes"; value = "true"; };
+                                };
+                        };
+
+                        class HDR_HOLD : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_HDR_HOLD"; displayName = "HOLDING GROUND"; };
+                        class preparedDefences : Combo
+                        {
+                                property = "ALiVE_mil_opcom_preparedDefences";
+                                displayName = "$STR_ALIVE_OPCOM_PREPARED_DEFENCES";
+                                tooltip = "$STR_ALIVE_OPCOM_PREPARED_DEFENCES_COMMENT";
+                                defaultValue = """none""";
+                                class Values
+                                {
+                                        class None { name = "None"; value = "none"; };
+                                        class Few  { name = "Few";  value = "few"; };
+                                        class Many { name = "Many"; value = "many"; };
+                                };
+                        };
+                        class frontlineMinefields : Combo
+                        {
+                                property = "ALiVE_mil_opcom_frontlineMinefields";
+                                displayName = "$STR_ALIVE_OPCOM_FRONTLINE_MINEFIELDS";
+                                tooltip = "$STR_ALIVE_OPCOM_FRONTLINE_MINEFIELDS_COMMENT";
+                                defaultValue = """none""";
+                                class Values
+                                {
+                                        class None { name = "None"; value = "none"; };
+                                        class Few  { name = "Few";  value = "few"; };
+                                        class Many { name = "Many"; value = "many"; };
+                                };
+                        };
+                        class securityPatrols : Combo
+                        {
+                                property = "ALiVE_mil_opcom_securityPatrols";
+                                displayName = "$STR_ALIVE_OPCOM_SECURITY_PATROLS";
+                                tooltip = "$STR_ALIVE_OPCOM_SECURITY_PATROLS_COMMENT";
+                                defaultValue = """none""";
+                                class Values
+                                {
+                                        class None { name = "None"; value = "none"; };
+                                        class Few  { name = "Few";  value = "few"; };
+                                        class Some { name = "Some"; value = "some"; };
+                                        class Many { name = "Many"; value = "many"; };
+                                };
+                        };
+                        // Security Patrols mode (#1092): a second mode where patrols walk the coldest ground of the commander's territory
+                        class securityPatrolMode : Combo
+                        {
+                                property = "ALiVE_mil_opcom_securityPatrolMode";
+                                displayName = "$STR_ALIVE_OPCOM_SECURITY_PATROL_MODE";
+                                tooltip = "$STR_ALIVE_OPCOM_SECURITY_PATROL_MODE_COMMENT";
+                                defaultValue = """objectives""";
+                                class Values
+                                {
+                                        class Objectives { name = "Objectives"; value = "objectives"; };
+                                        class Coverage { name = "Coverage"; value = "coverage"; };
+                                };
+                        };
+                        // how far a patrol goes from its home objective, in either mode; the territory in Coverage reaches the same distance
+                        class securityPatrolReach : Edit
+                        {
+                                property = "ALiVE_mil_opcom_securityPatrolReach";
+                                displayName = "$STR_ALIVE_OPCOM_SECURITY_PATROL_REACH";
+                                tooltip = "$STR_ALIVE_OPCOM_SECURITY_PATROL_REACH_COMMENT";
+                                defaultValue = """3000""";
+                                typeName = "NUMBER";
+                        };
+
+                        class HDR_PLAYER_TASKS : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_HDR_PLAYER_TASKS"; displayName = "PLAYER TASKS"; };
                         class prepTasks : Combo
                         {
                                 property = "ALiVE_mil_opcom_prepTasks";
@@ -376,33 +420,6 @@ class CfgVehicles {
                                 property = "ALiVE_mil_opcom_opTasksKnownOnly";
                                 displayName = "$STR_ALIVE_OPCOM_OP_TASKS_KNOWN";
                                 tooltip = "$STR_ALIVE_OPCOM_OP_TASKS_KNOWN_COMMENT";
-                                defaultValue = """false""";
-                                class Values
-                                {
-                                        class No  { name = "No";  value = "false"; };
-                                        class Yes { name = "Yes"; value = "true"; };
-                                };
-                        };
-                        // An Occupation commander that leaves the attacking to the players and garrisons
-                        // what they clear (kawi0756 on Discord, 25 Oct)
-                        class followPlayers : Combo
-                        {
-                                property = "ALiVE_mil_opcom_followPlayers";
-                                displayName = "$STR_ALIVE_OPCOM_FOLLOW_PLAYERS";
-                                tooltip = "$STR_ALIVE_OPCOM_FOLLOW_PLAYERS_COMMENT";
-                                defaultValue = """false""";
-                                class Values
-                                {
-                                        class No  { name = "No";  value = "false"; };
-                                        class Yes { name = "Yes"; value = "true"; };
-                                };
-                        };
-                        // Groups Call For Help (A. Ares on Discord, 26 Oct): a group losing a fight asks for the nearest free group
-                        class callForHelp : Combo
-                        {
-                                property = "ALiVE_mil_opcom_callForHelp";
-                                displayName = "$STR_ALIVE_OPCOM_CALL_FOR_HELP";
-                                tooltip = "$STR_ALIVE_OPCOM_CALL_FOR_HELP_COMMENT";
                                 defaultValue = """false""";
                                 class Values
                                 {
@@ -587,6 +604,23 @@ class CfgVehicles {
                                 expression = "_this setVariable ['asymInstallations', _value];";
                                 defaultValue = """factory,depot,recruit,ied,suicide,sabotage,ambush,roadblocks""";
                         };
+                        class asym_friendlyDisableInstallations : Combo
+                        {
+                                property = "ALiVE_mil_opcom_asym_friendlyDisableInstallations";
+                                displayName = "$STR_ALIVE_OPCOM_ASYM_FRIENDLY_DISABLE";
+                                tooltip = "$STR_ALIVE_OPCOM_ASYM_FRIENDLY_DISABLE_COMMENT";
+                                typeName = "STRING";
+                                defaultValue = """proximity""";
+                                class Values
+                                {
+                                    class off       { name = "$STR_ALIVE_OPCOM_ASYM_FRIENDLY_DISABLE_OFF";       value = "off"; };
+                                    class proximity { name = "$STR_ALIVE_OPCOM_ASYM_FRIENDLY_DISABLE_PROXIMITY"; value = "proximity"; default = 1; };
+                                    class capture   { name = "$STR_ALIVE_OPCOM_ASYM_FRIENDLY_DISABLE_CAPTURE";   value = "capture"; };
+                                    class both      { name = "$STR_ALIVE_OPCOM_ASYM_FRIENDLY_DISABLE_BOTH";      value = "both"; };
+                                };
+                        };
+
+                        class HDR_INTERIORS : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_HDR_INTERIORS"; displayName = "INSTALLATION INTERIORS"; };
                         class insPropTheme : Combo
                         {
                                 property = "ALiVE_mil_opcom_insPropTheme";
@@ -643,34 +677,8 @@ class CfgVehicles {
                                 tooltip = "$STR_ALIVE_OPCOM_INSPROPS_LAB_COMMENT";
                                 defaultValue = """""";
                         };
-                        class intelchance : Combo
-                        {
-                                property = "ALiVE_mil_opcom_intelchance";
-                                displayName = "$STR_ALIVE_OPCOM_INTELCHANCE";
-                                tooltip = "$STR_ALIVE_OPCOM_INTELCHANCE_COMMENT";
-                                defaultValue = """0""";
-                                class Values
-                                {
-                                    class none { name = "None"; value = 0; default = 1; };
-                                    class seldom { name = "Seldom"; value = 5; };
-                                    class often { name = "Often"; value = 10; };
-                                };
-                        };
-                        class asym_friendlyDisableInstallations : Combo
-                        {
-                                property = "ALiVE_mil_opcom_asym_friendlyDisableInstallations";
-                                displayName = "$STR_ALIVE_OPCOM_ASYM_FRIENDLY_DISABLE";
-                                tooltip = "$STR_ALIVE_OPCOM_ASYM_FRIENDLY_DISABLE_COMMENT";
-                                typeName = "STRING";
-                                defaultValue = """proximity""";
-                                class Values
-                                {
-                                    class off       { name = "$STR_ALIVE_OPCOM_ASYM_FRIENDLY_DISABLE_OFF";       value = "off"; };
-                                    class proximity { name = "$STR_ALIVE_OPCOM_ASYM_FRIENDLY_DISABLE_PROXIMITY"; value = "proximity"; default = 1; };
-                                    class capture   { name = "$STR_ALIVE_OPCOM_ASYM_FRIENDLY_DISABLE_CAPTURE";   value = "capture"; };
-                                    class both      { name = "$STR_ALIVE_OPCOM_ASYM_FRIENDLY_DISABLE_BOTH";      value = "both"; };
-                                };
-                        };
+
+                        class HDR_INSURGENTS : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_HDR_INSURGENTS"; displayName = "INSURGENT FORCES"; };
                         class asym_escalationIntensity : Combo
                         {
                                 property = "ALiVE_mil_opcom_asym_escalationIntensity";
@@ -693,14 +701,6 @@ class CfgVehicles {
                                 tooltip = "$STR_ALIVE_OPCOM_ASYM_EXCLUDE_KINDS_COMMENT";
                                 defaultValue = """Tank,Plane,Helicopter,Ship""";
                                 typeName = "STRING";
-                        };
-                        class minAgents : Edit
-                        {
-                                property = "ALiVE_mil_opcom_minAgents";
-                                displayName = "$STR_ALIVE_OPCOM_MINAGENTS";
-                                tooltip = "$STR_ALIVE_OPCOM_MINAGENTS_COMMENT";
-                                defaultValue = """2""";
-                                typeName = "NUMBER";
                         };
                         class asymForceLimit : Edit
                         {
@@ -728,6 +728,16 @@ class CfgVehicles {
                                 displayName = "$STR_ALIVE_OPCOM_ASYM_HARASS_CYCLE";
                                 tooltip = "$STR_ALIVE_OPCOM_ASYM_HARASS_CYCLE_COMMENT";
                                 defaultValue = """20""";
+                                typeName = "NUMBER";
+                        };
+
+                        class HDR_RECRUIT : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_HDR_RECRUIT"; displayName = "RECRUITMENT"; };
+                        class minAgents : Edit
+                        {
+                                property = "ALiVE_mil_opcom_minAgents";
+                                displayName = "$STR_ALIVE_OPCOM_MINAGENTS";
+                                tooltip = "$STR_ALIVE_OPCOM_MINAGENTS_COMMENT";
+                                defaultValue = """2""";
                                 typeName = "NUMBER";
                         };
                         class recruitCycleMin : Edit
@@ -762,14 +772,8 @@ class CfgVehicles {
                                 defaultValue = """50""";
                                 typeName = "NUMBER";
                         };
-                        class recruiterTaskChance : Edit
-                        {
-                                property = "ALiVE_mil_opcom_recruiterTaskChance";
-                                displayName = "$STR_ALIVE_OPCOM_RECRUITER_TASK_CHANCE";
-                                tooltip = "$STR_ALIVE_OPCOM_RECRUITER_TASK_CHANCE_COMMENT";
-                                defaultValue = """0""";
-                                typeName = "NUMBER";
-                        };
+
+                        class HDR_RECRUITERS : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_HDR_RECRUITERS"; displayName = "RECRUITERS"; };
                         class recruiters : Combo
                         {
                                 property = "ALiVE_mil_opcom_recruiters";
@@ -783,6 +787,14 @@ class CfgVehicles {
                                         class No { name = "No"; value = "false"; };
                                         class Yes { name = "Yes"; value = "true"; };
                                 };
+                        };
+                        class recruiterTaskChance : Edit
+                        {
+                                property = "ALiVE_mil_opcom_recruiterTaskChance";
+                                displayName = "$STR_ALIVE_OPCOM_RECRUITER_TASK_CHANCE";
+                                tooltip = "$STR_ALIVE_OPCOM_RECRUITER_TASK_CHANCE_COMMENT";
+                                defaultValue = """0""";
+                                typeName = "NUMBER";
                         };
                         class recruiterClass
                         {

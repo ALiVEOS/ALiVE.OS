@@ -176,6 +176,8 @@ class CfgVehicles {
                                         class Instant { name="Instant (0.05)"; value=0.05; };
                                 };
                         };
+
+                        class HDR_DISARM : ALiVE_ModuleSubTitle { property = "ALiVE_mil_ied_HDR_DISARM"; displayName = "DISARMING"; };
                         class IED_Engineer_Disarm_BaseTime : Edit
                         {
                                 property = "ALiVE_mil_ied_IED_Engineer_Disarm_BaseTime";
@@ -242,6 +244,8 @@ class CfgVehicles {
                                         class No   { name = "No (ignore integration)"; value = 2; };
                                 };
                         };
+
+                        class HDR_CLUTTER : ALiVE_ModuleSubTitle { property = "ALiVE_mil_ied_HDR_CLUTTER"; displayName = "CLUTTER CLASSES"; };
                         class clutterClasses : Edit { property = "ALiVE_mil_ied_clutterClasses"; displayName = "$STR_ALIVE_IED_CLUTTER_CLASSES"; tooltip = "$STR_ALIVE_IED_CLASSES_COMMENT"; defaultValue = """Land_JunkPile_F,Land_GarbageContainer_closed_F,Land_GarbageBags_F,Land_Tyres_F,Land_GarbagePallet_F,Land_Basket_F,Land_Sack_F,Land_Sacks_goods_F,Land_Sacks_heap_F,Land_BarrelTrash_F"""; };
                         class clutterClasses_additional : Edit
                         {

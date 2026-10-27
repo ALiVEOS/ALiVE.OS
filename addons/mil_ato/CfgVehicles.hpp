@@ -112,6 +112,31 @@ class CfgVehicles
                         tooltip = "$STR_ALIVE_ATO_AIRSPACE_BLACKLIST_COMMENT";
                         defaultValue = """""";
                 };
+                // Tempo controls. All blank by default and blank means "as before",
+                // so an untouched mission is byte-identical in behaviour.
+                class sortieDuration : Edit
+                {
+                        property = "ALiVE_mil_ato_sortieDuration";
+                        displayName = "$STR_ALIVE_ATO_SORTIE_DURATION";
+                        tooltip = "$STR_ALIVE_ATO_SORTIE_DURATION_COMMENT";
+                        defaultValue = """""";
+                };
+                class minAssetsForOffensive : Edit
+                {
+                        property = "ALiVE_mil_ato_minAssetsForOffensive";
+                        displayName = "$STR_ALIVE_ATO_MIN_ASSETS";
+                        tooltip = "$STR_ALIVE_ATO_MIN_ASSETS_COMMENT";
+                        defaultValue = """""";
+                };
+                class maxConcurrentSorties : Edit
+                {
+                        property = "ALiVE_mil_ato_maxConcurrentSorties";
+                        displayName = "$STR_ALIVE_ATO_MAX_CONCURRENT_SORTIES";
+                        tooltip = "$STR_ALIVE_ATO_MAX_CONCURRENT_SORTIES_COMMENT";
+                        defaultValue = """""";
+                };
+
+                class HDR_BASE : ALiVE_ModuleSubTitle { property = "ALiVE_mil_ato_HDR_BASE"; displayName = "AIR BASE"; };
                 class createHQ : Combo
                 {
                         property = "ALiVE_mil_ato_createHQ";
@@ -136,6 +161,108 @@ class CfgVehicles
                             class No { name = "No"; value = false; default = 1; };
                         };
                 };
+                // Defaults to Yes. Ground forces are reinforced through the Logistics
+                // Commander as a matter of course, so air was the only arm that could
+                // only ever shrink - every loss permanent, and a commander with nothing
+                // left refuses every request for the rest of the mission. A default that
+                // steers long campaigns toward that dead end is the wrong one.
+                class Resupply : Combo
+                {
+                        property = "ALiVE_mil_ato_Resupply";
+                        displayName = "$STR_ALIVE_ATO_RESUPPLY";
+                        tooltip = "$STR_ALIVE_ATO_RESUPPLY_COMMENT";
+                        defaultValue = """true""";
+                        class Values
+                        {
+                            class Yes { name = "Yes"; value = true; default = 1; };
+                            class No { name = "No"; value = false; };
+                        };
+                };
+                // Defaults to Yes, as it always was. No services a landed aircraft
+                // where it stands at once, with no truck driving out to it.
+                class showSupportTrucks : Combo
+                {
+                        property = "ALiVE_mil_ato_showSupportTrucks";
+                        displayName = "$STR_ALIVE_ATO_SHOW_SUPPORT_TRUCKS";
+                        tooltip = "$STR_ALIVE_ATO_SHOW_SUPPORT_TRUCKS_COMMENT";
+                        defaultValue = """true""";
+                        class Values
+                        {
+                            class Yes { name = "Yes"; value = true; default = 1; };
+                            class No { name = "No"; value = false; };
+                        };
+                };
+
+                class HDR_AIRCRAFT : ALiVE_ModuleSubTitle { property = "ALiVE_mil_ato_HDR_AIRCRAFT"; displayName = "AIRCRAFT AND DRONES"; };
+                // Which aircraft this commander may place (#953): the faction's own list often holds
+                // aircraft a mission maker doesn't want, or misses ones they do.
+                class aircraftWhitelist : Edit
+                {
+                        property     = "ALiVE_mil_ato_aircraftWhitelist";
+                        displayName  = "$STR_ALIVE_ATO_AIRCRAFT_WHITELIST";
+                        tooltip      = "$STR_ALIVE_ATO_AIRCRAFT_WHITELIST_COMMENT";
+                        typeName     = "STRING";
+                        expression   = "_this setVariable ['aircraftWhitelist', _value];";
+                        defaultValue = """""";
+                };
+                class aircraftBlacklist : Edit
+                {
+                        property     = "ALiVE_mil_ato_aircraftBlacklist";
+                        displayName  = "$STR_ALIVE_ATO_AIRCRAFT_BLACKLIST";
+                        tooltip      = "$STR_ALIVE_ATO_AIRCRAFT_BLACKLIST_COMMENT";
+                        typeName     = "STRING";
+                        expression   = "_this setVariable ['aircraftBlacklist', _value];";
+                        defaultValue = """""";
+                };
+                // Override for factions that catalogue no drones of their own, which is
+                // common regardless of what the mod itself ships. Same shape as the
+                // artillery module's custom type field.
+                class droneTypes
+                {
+                        property     = "ALiVE_mil_ato_droneTypes";
+                        displayName  = "$STR_ALIVE_ATO_DRONE_TYPES";
+                        tooltip      = "$STR_ALIVE_ATO_DRONE_TYPES_COMMENT";
+                        control      = "ALiVE_DroneChoiceMulti";
+                        typeName     = "STRING";
+                        expression   = "_this setVariable ['droneTypes', _value];";
+                        defaultValue = """""";
+                };
+                // Separate from Place Air Assets on purpose: a drone needs no aircrew,
+                // so an air component can consist of drones alone, and that should not
+                // depend on whether crewed aircraft were wanted too.
+                class placeDrones : Combo
+                {
+                        property = "ALiVE_mil_ato_placeDrones";
+                        displayName = "$STR_ALIVE_ATO_PLACE_DRONES";
+                        tooltip = "$STR_ALIVE_ATO_PLACE_DRONES_COMMENT";
+                        defaultValue = """false""";
+                        class Values
+                        {
+                            class Yes { name = "Yes"; value = true; };
+                            class No { name = "No"; value = false; default = 1; };
+                        };
+                };
+                // Defaults to Yes - the module has flown drones for years and carries
+                // dedicated handling for their lack of a crew. The setting exists so a
+                // mission maker can say no, which was not previously possible.
+                class useUAVs : Combo
+                {
+                        property = "ALiVE_mil_ato_useUAVs";
+                        displayName = "$STR_ALIVE_ATO_USE_UAVS";
+                        tooltip = "$STR_ALIVE_ATO_USE_UAVS_COMMENT";
+                        defaultValue = """true""";
+                        class Values
+                        {
+                            class Yes { name = "Yes"; value = true; default = 1; };
+                            class No { name = "No"; value = false; };
+                        };
+                };
+                // Hidden: nothing reads Pilot Ready Room since the rewrite, which builds each crew
+                // straight into its aircraft when a sortie starts. Kept, not removed, so a mission's
+                // saved value still loads.
+                class pilotbuilding { property = "ALiVE_mil_ato_pilotbuilding"; control = "ALiVE_HiddenAttribute"; defaultValue = """"""; expression = "_this setVariable ['pilotbuilding', _value, true];"; typeName = "STRING"; displayName = ""; };
+                // ---- Player interaction ------------------------------------------------
+                class HDR_PLAYERS : ALiVE_ModuleSubTitle { property = "ALiVE_mil_ato_HDR_PLAYERS"; displayName = "PLAYER INTERACTION"; };
                 class generateTasks : Combo
                 {
                         property = "ALiVE_mil_ato_generateTasks";
@@ -173,37 +300,6 @@ class CfgVehicles
                             class No { name = "No"; value = false; };
                         };
                 };
-                // Defaults to Yes. Ground forces are reinforced through the Logistics
-                // Commander as a matter of course, so air was the only arm that could
-                // only ever shrink - every loss permanent, and a commander with nothing
-                // left refuses every request for the rest of the mission. A default that
-                // steers long campaigns toward that dead end is the wrong one.
-                class Resupply : Combo
-                {
-                        property = "ALiVE_mil_ato_Resupply";
-                        displayName = "$STR_ALIVE_ATO_RESUPPLY";
-                        tooltip = "$STR_ALIVE_ATO_RESUPPLY_COMMENT";
-                        defaultValue = """true""";
-                        class Values
-                        {
-                            class Yes { name = "Yes"; value = true; default = 1; };
-                            class No { name = "No"; value = false; };
-                        };
-                };
-                // Defaults to Yes, as it always was. No services a landed aircraft
-                // where it stands at once, with no truck driving out to it.
-                class showSupportTrucks : Combo
-                {
-                        property = "ALiVE_mil_ato_showSupportTrucks";
-                        displayName = "$STR_ALIVE_ATO_SHOW_SUPPORT_TRUCKS";
-                        tooltip = "$STR_ALIVE_ATO_SHOW_SUPPORT_TRUCKS_COMMENT";
-                        defaultValue = """true""";
-                        class Values
-                        {
-                            class Yes { name = "Yes"; value = true; default = 1; };
-                            class No { name = "No"; value = false; };
-                        };
-                };
                 class broadcastOnRadio : Combo
                 {
                         property = "ALiVE_mil_ato_broadcastOnRadio";
@@ -216,98 +312,6 @@ class CfgVehicles
                             class No { name = "No"; value = false; };
                         };
                 };
-                // Override for factions that catalogue no drones of their own, which is
-                // common regardless of what the mod itself ships. Same shape as the
-                // artillery module's custom type field.
-                class droneTypes
-                {
-                        property     = "ALiVE_mil_ato_droneTypes";
-                        displayName  = "$STR_ALIVE_ATO_DRONE_TYPES";
-                        tooltip      = "$STR_ALIVE_ATO_DRONE_TYPES_COMMENT";
-                        control      = "ALiVE_DroneChoiceMulti";
-                        typeName     = "STRING";
-                        expression   = "_this setVariable ['droneTypes', _value];";
-                        defaultValue = """""";
-                };
-                // Which aircraft this commander may place (#953): the faction's own list often holds
-                // aircraft a mission maker doesn't want, or misses ones they do.
-                class aircraftWhitelist : Edit
-                {
-                        property     = "ALiVE_mil_ato_aircraftWhitelist";
-                        displayName  = "$STR_ALIVE_ATO_AIRCRAFT_WHITELIST";
-                        tooltip      = "$STR_ALIVE_ATO_AIRCRAFT_WHITELIST_COMMENT";
-                        typeName     = "STRING";
-                        expression   = "_this setVariable ['aircraftWhitelist', _value];";
-                        defaultValue = """""";
-                };
-                class aircraftBlacklist : Edit
-                {
-                        property     = "ALiVE_mil_ato_aircraftBlacklist";
-                        displayName  = "$STR_ALIVE_ATO_AIRCRAFT_BLACKLIST";
-                        tooltip      = "$STR_ALIVE_ATO_AIRCRAFT_BLACKLIST_COMMENT";
-                        typeName     = "STRING";
-                        expression   = "_this setVariable ['aircraftBlacklist', _value];";
-                        defaultValue = """""";
-                };
-                // Separate from Place Air Assets on purpose: a drone needs no aircrew,
-                // so an air component can consist of drones alone, and that should not
-                // depend on whether crewed aircraft were wanted too.
-                class placeDrones : Combo
-                {
-                        property = "ALiVE_mil_ato_placeDrones";
-                        displayName = "$STR_ALIVE_ATO_PLACE_DRONES";
-                        tooltip = "$STR_ALIVE_ATO_PLACE_DRONES_COMMENT";
-                        defaultValue = """false""";
-                        class Values
-                        {
-                            class Yes { name = "Yes"; value = true; };
-                            class No { name = "No"; value = false; default = 1; };
-                        };
-                };
-                // Defaults to Yes - the module has flown drones for years and carries
-                // dedicated handling for their lack of a crew. The setting exists so a
-                // mission maker can say no, which was not previously possible.
-                class useUAVs : Combo
-                {
-                        property = "ALiVE_mil_ato_useUAVs";
-                        displayName = "$STR_ALIVE_ATO_USE_UAVS";
-                        tooltip = "$STR_ALIVE_ATO_USE_UAVS_COMMENT";
-                        defaultValue = """true""";
-                        class Values
-                        {
-                            class Yes { name = "Yes"; value = true; default = 1; };
-                            class No { name = "No"; value = false; };
-                        };
-                };
-                // Tempo controls. All blank by default and blank means "as before",
-                // so an untouched mission is byte-identical in behaviour.
-                class sortieDuration : Edit
-                {
-                        property = "ALiVE_mil_ato_sortieDuration";
-                        displayName = "$STR_ALIVE_ATO_SORTIE_DURATION";
-                        tooltip = "$STR_ALIVE_ATO_SORTIE_DURATION_COMMENT";
-                        defaultValue = """""";
-                };
-                class minAssetsForOffensive : Edit
-                {
-                        property = "ALiVE_mil_ato_minAssetsForOffensive";
-                        displayName = "$STR_ALIVE_ATO_MIN_ASSETS";
-                        tooltip = "$STR_ALIVE_ATO_MIN_ASSETS_COMMENT";
-                        defaultValue = """""";
-                };
-                class maxConcurrentSorties : Edit
-                {
-                        property = "ALiVE_mil_ato_maxConcurrentSorties";
-                        displayName = "$STR_ALIVE_ATO_MAX_CONCURRENT_SORTIES";
-                        tooltip = "$STR_ALIVE_ATO_MAX_CONCURRENT_SORTIES_COMMENT";
-                        defaultValue = """""";
-                };
-                // Hidden: nothing reads Pilot Ready Room since the rewrite, which builds each crew
-                // straight into its aircraft when a sortie starts. Kept, not removed, so a mission's
-                // saved value still loads.
-                class pilotbuilding { property = "ALiVE_mil_ato_pilotbuilding"; control = "ALiVE_HiddenAttribute"; defaultValue = """"""; expression = "_this setVariable ['pilotbuilding', _value, true];"; typeName = "STRING"; displayName = ""; };
-                // ---- Player interaction ------------------------------------------------
-                class HDR_PLAYERS : ALiVE_ModuleSubTitle { property = "ALiVE_mil_ato_HDR_PLAYERS"; displayName = "PLAYER INTERACTION"; };
                 // Defaults to Yes, as it always was. No locks this commander's aircraft
                 // to players only: AI crews are not affected.
                 class playersCanUseAircraft : Combo

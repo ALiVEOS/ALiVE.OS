@@ -21,6 +21,8 @@ class CfgVehicles {
                 picture = "x\alive\addons\mil_placement_spe\icon_mil_SPEMP.paa";
                 class Attributes : AttributesBase
                 {
+                        class HDR_GENERAL : ALiVE_ModuleSubTitle { property = "ALiVE_mil_placement_spe_HDR_GENERAL"; displayName = "GENERAL"; };
+
                         class debug : Combo
                         {
                                 property = "ALiVE_mil_placement_spe_debug";
@@ -47,6 +49,8 @@ class CfgVehicles {
                         };
                         class priority : Edit { property = "ALiVE_mil_placement_spe_priority"; displayName = "$STR_ALIVE_SPEMP_PRIORITY"; tooltip = "$STR_ALIVE_SPEMP_PRIORITY_COMMENT"; defaultValue = """50"""; };
                         class size : Edit { property = "ALiVE_mil_placement_spe_size"; displayName = "$STR_ALIVE_SPEMP_SIZE"; tooltip = "$STR_ALIVE_SPEMP_SIZE_COMMENT"; defaultValue = """50"""; };
+
+                        class HDR_UNITS : ALiVE_ModuleSubTitle { property = "ALiVE_mil_placement_spe_HDR_UNITS"; displayName = "SPAWNED UNITS"; };
                         class speInfantryClass : Edit { property = "ALiVE_mil_placement_spe_speInfantryClass"; displayName = "$STR_ALIVE_SPEMP_CUSTOM_INFANTRY_CLASS"; tooltip = "$STR_ALIVE_SPEMP_CUSTOM_INFANTRY_CLASS_COMMENT"; defaultValue = """"""; };
                         class speInfantryBehaviour : Combo
                         {

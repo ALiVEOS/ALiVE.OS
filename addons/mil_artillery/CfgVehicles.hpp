@@ -75,7 +75,7 @@ class CfgVehicles
                 // ---- Fine Tuning ----------------------------------------------------
                 // per-parameter overrides; "Use intensity preset" leaves the master
                 // dial in charge of that parameter
-                class HDR_TUNING : ALiVE_ModuleSubTitle { property = "ALiVE_mil_artillery_HDR_TUNING"; displayName = "FINE TUNING"; };
+                class HDR_TUNING : ALiVE_ModuleSubTitle { property = "ALiVE_mil_artillery_HDR_TUNING"; displayName = "FIRE RATE AND AMMUNITION"; };
                 // How many fire missions the whole side may run at once - the real
                 // limit on how often shells land. Own dial because it has no
                 // intensity-preset dimension. SCALE ties it to the battery count.
@@ -154,6 +154,8 @@ class CfgVehicles
                             class INFINITE { name = "$STR_ALIVE_MIL_ARTILLERY_AMMO_INFINITE"; value = "INFINITE"; };
                         };
                 };
+
+                class HDR_TARGETING : ALiVE_ModuleSubTitle { property = "ALiVE_mil_artillery_HDR_TARGETING"; displayName = "TARGETING"; };
                 class selectivityLevel : Combo
                 {
                         property = "ALiVE_mil_artillery_selectivityLevel";
@@ -166,6 +168,22 @@ class CfgVehicles
                             class LOOSE { name = "$STR_ALIVE_MIL_ARTILLERY_SEL_LOOSE"; value = "LOOSE"; };
                             class STANDARD { name = "$STR_ALIVE_MIL_ARTILLERY_SEL_STANDARD"; value = "STANDARD"; };
                             class STRICT { name = "$STR_ALIVE_MIL_ARTILLERY_SEL_STRICT"; value = "STRICT"; };
+                        };
+                };
+                // call-for-fire rate: above Normal, commanders fan fire missions
+                // across several known contacts per scan (needs OPCOM + batteries).
+                // Default Normal = today's request cadence, unchanged.
+                class requestRateLevel : Combo
+                {
+                        property = "ALiVE_mil_artillery_requestRateLevel";
+                        displayName = "$STR_ALIVE_MIL_ARTILLERY_REQUESTRATE";
+                        tooltip = "$STR_ALIVE_MIL_ARTILLERY_REQUESTRATE_COMMENT";
+                        defaultValue = """NORMAL""";
+                        class Values
+                        {
+                            class Normal { name = "Normal (1 target)"; value = "NORMAL"; default = 1; };
+                            class High { name = "High (3 targets)"; value = "HIGH"; };
+                            class Surge { name = "Surge (6 targets)"; value = "SURGE"; };
                         };
                 };
                 class counterBatteryLevel : Combo
@@ -183,6 +201,8 @@ class CfgVehicles
                             class HIGH { name = "$STR_ALIVE_MIL_ARTILLERY_CB_HIGH"; value = "HIGH"; };
                         };
                 };
+
+                class HDR_FLARES : ALiVE_ModuleSubTitle { property = "ALiVE_mil_artillery_HDR_FLARES"; displayName = "FLARES AND MISSILES"; };
                 // Safety override: fire even with friendlies in the impact area.
                 // Default off; the tooltip flags the friendly-fire risk.
                 class nightIllumination : Combo
@@ -211,6 +231,8 @@ class CfgVehicles
                             class Yes { name = "Yes"; value = true; };
                         };
                 };
+
+                class HDR_SAFETY : ALiVE_ModuleSubTitle { property = "ALiVE_mil_artillery_HDR_SAFETY"; displayName = "SAFETY AND PERFORMANCE"; };
                 class dangerClose : Combo
                 {
                         property = "ALiVE_mil_artillery_dangerClose";
@@ -233,22 +255,6 @@ class CfgVehicles
                         tooltip = "$STR_ALIVE_MIL_ARTILLERY_VISUALRANGE_COMMENT";
                         defaultValue = """3000""";
                         typeName = "NUMBER";
-                };
-                // call-for-fire rate: above Normal, commanders fan fire missions
-                // across several known contacts per scan (needs OPCOM + batteries).
-                // Default Normal = today's request cadence, unchanged.
-                class requestRateLevel : Combo
-                {
-                        property = "ALiVE_mil_artillery_requestRateLevel";
-                        displayName = "$STR_ALIVE_MIL_ARTILLERY_REQUESTRATE";
-                        tooltip = "$STR_ALIVE_MIL_ARTILLERY_REQUESTRATE_COMMENT";
-                        defaultValue = """NORMAL""";
-                        class Values
-                        {
-                            class Normal { name = "Normal (1 target)"; value = "NORMAL"; default = 1; };
-                            class High { name = "High (3 targets)"; value = "HIGH"; };
-                            class Surge { name = "Surge (6 targets)"; value = "SURGE"; };
-                        };
                 };
                 class ModuleDescription : ModuleDescription {};
         };

@@ -197,6 +197,8 @@ class CfgVehicles
                     };
                 };
             };
+
+            class HDR_SAVED : ALiVE_ModuleSubTitle { property = "ALiVE_sys_playeroptions_HDR_SAVED"; displayName = "WHAT IS SAVED"; };
             class saveLoadout: Combo
             {
                 property = MVAR(saveLoadout);
@@ -297,6 +299,8 @@ class CfgVehicles
                     };
                 };
             };
+
+            class HDR_STORAGE : ALiVE_ModuleSubTitle { property = "ALiVE_sys_playeroptions_HDR_STORAGE"; displayName = "STORAGE AND AUTOSAVE"; };
             class storeToDB: Combo
             {
                 property = MVAR(storeToDB);
@@ -496,6 +500,8 @@ class CfgVehicles
                 tooltip = "$STR_ALIVE_PLAYERTAGS_TARGETS_COMMENT";
                 defaultValue = """['CAManBase', 'Car', 'Tank', 'StaticWeapon', 'Helicopter', 'Plane']""";
             };
+
+            class HDR_TAG_RANGE : ALiVE_ModuleSubTitle { property = "ALiVE_sys_playeroptions_HDR_TAG_RANGE"; displayName = "TAG RANGE AND SIZE"; };
             class playertags_distance_setting: Edit
             {
                 property = MVAR(playertags_distance_setting);
@@ -528,6 +534,8 @@ class CfgVehicles
                 defaultValue = "1.1";
                 typeName = "NUMBER";
             };
+
+            class HDR_TAG_COLOURS : ALiVE_ModuleSubTitle { property = "ALiVE_sys_playeroptions_HDR_TAG_COLOURS"; displayName = "TAG COLOURS"; };
             class playertags_namecolour_setting: Edit
             {
                 property = MVAR(playertags_namecolour_setting);

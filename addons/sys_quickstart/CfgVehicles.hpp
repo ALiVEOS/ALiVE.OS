@@ -40,7 +40,7 @@ class CfgVehicles {
                 class skillFactionsRegular : Edit { property = "ALiVE_sys_quickstart_skillFactionsRegular"; displayName = "$STR_ALIVE_AISKILL_REGULAR"; tooltip = "$STR_ALIVE_AISKILL_REGULAR_COMMENT"; defaultValue = """IND_F,IND_G_F,BLU_G_F,OPF_G_F"""; };
                 class skillFactionsVeteran : Edit { property = "ALiVE_sys_quickstart_skillFactionsVeteran"; displayName = "$STR_ALIVE_AISKILL_VETERAN"; tooltip = "$STR_ALIVE_AISKILL_VETERAN_COMMENT"; defaultValue = """BLU_F,OPF_F"""; };
                 class skillFactionsExpert : Edit { property = "ALiVE_sys_quickstart_skillFactionsExpert"; displayName = "$STR_ALIVE_AISKILL_EXPERT"; tooltip = "$STR_ALIVE_AISKILL_EXPERT_COMMENT"; defaultValue = """"""; };
-                class CIVILIANS : ALiVE_ModuleSubTitle { property = "ALiVE_sys_quickstart_CIVILIANS"; displayName = "CIVILIANS"; };
+                class CIVILIANS : ALiVE_ModuleSubTitle { property = "ALiVE_sys_quickstart_CIVILIANS"; displayName = "CIVILIAN HOSTILITY"; };
                 class hostilityWest : Combo
                 {
                         property = "ALiVE_sys_quickstart_hostilityWest"; displayName = "$STR_ALIVE_CIV_POP_HOSTILITY_WEST"; tooltip = "$STR_ALIVE_CIV_POP_HOSTILITY_WEST_COMMENT"; defaultValue = """0""";
@@ -56,6 +56,8 @@ class CfgVehicles {
                         property = "ALiVE_sys_quickstart_hostilityIndep"; displayName = "$STR_ALIVE_CIV_POP_HOSTILITY_INDEP"; tooltip = "$STR_ALIVE_CIV_POP_HOSTILITY_INDEP_COMMENT"; defaultValue = """0""";
                         class Values { class LOW{name="$STR_ALIVE_CIV_POP_HOSTILITY_INDEP_LOW";value="0";}; class MEDIUM{name="$STR_ALIVE_CIV_POP_HOSTILITY_INDEP_MEDIUM";value="1";}; class HIGH{name="$STR_ALIVE_CIV_POP_HOSTILITY_INDEP_HIGH";value="2";}; class EXTREME{name="$STR_ALIVE_CIV_POP_HOSTILITY_INDEP_EXTREME";value="3";}; };
                 };
+
+                class HDR_CIV_AREA : ALiVE_ModuleSubTitle { property = "ALiVE_sys_quickstart_HDR_CIV_AREA"; displayName = "CIVILIAN AREA"; };
                 class taor : Edit { property = "ALiVE_sys_quickstart_taor"; displayName = "$STR_ALIVE_AMBCP_TAOR"; tooltip = "$STR_ALIVE_AMBCP_TAOR_COMMENT"; defaultValue = """"""; };
                 class blacklist : Edit { property = "ALiVE_sys_quickstart_blacklist"; displayName = "$STR_ALIVE_AMBCP_BLACKLIST"; tooltip = "$STR_ALIVE_AMBCP_BLACKLIST_COMMENT"; defaultValue = """"""; };
                 class sizeFilter : Combo
@@ -68,6 +70,8 @@ class CfgVehicles {
                         property = "ALiVE_sys_quickstart_priorityFilter"; displayName = "$STR_ALIVE_AMBCP_PRIORITY_FILTER"; tooltip = "$STR_ALIVE_AMBCP_PRIORITY_FILTER_COMMENT"; defaultValue = """0""";
                         class Values { class NONE{name="$STR_ALIVE_AMBCP_PRIORITY_FILTER_NONE";value="0";}; class LOW{name="$STR_ALIVE_AMBCP_PRIORITY_FILTER_LOW";value="10";}; class MEDIUM{name="$STR_ALIVE_AMBCP_PRIORITY_FILTER_MEDIUM";value="30";}; class HIGH{name="$STR_ALIVE_AMBCP_PRIORITY_FILTER_HIGH";value="40";}; };
                 };
+
+                class HDR_CIV_POP : ALiVE_ModuleSubTitle { property = "ALiVE_sys_quickstart_HDR_CIV_POP"; displayName = "CIVILIAN POPULATION"; };
                 // Shared ALiVE_FactionChoice dropdown - see addons/main/CfgVehicles.hpp.
                 class faction
                 {

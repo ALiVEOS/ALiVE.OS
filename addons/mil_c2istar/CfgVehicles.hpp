@@ -118,23 +118,6 @@ class CfgVehicles {
                             defaultValue = """2""";
                             typeName = "NUMBER";
                     };
-                    class taskMinDistance : Edit
-                    {
-                            property = "ALiVE_MIL_C2ISTAR_taskMinDistance";
-                            displayName = "$STR_ALIVE_C2ISTAR_TASK_MIN_DISTANCE";
-                            tooltip = "$STR_ALIVE_C2ISTAR_TASK_MIN_DISTANCE_COMMENT";
-                            defaultValue = """0""";
-                            typeName = "NUMBER";
-                    };
-                    // Generated tasks no further than this from the player (TheLogatron on Discord, 23 Oct)
-                    class taskMaxDistance : Edit
-                    {
-                            property = "ALiVE_MIL_C2ISTAR_taskMaxDistance";
-                            displayName = "$STR_ALIVE_C2ISTAR_TASK_MAX_DISTANCE";
-                            tooltip = "$STR_ALIVE_C2ISTAR_TASK_MAX_DISTANCE_COMMENT";
-                            defaultValue = """0""";
-                            typeName = "NUMBER";
-                    };
                     // Tasks against enemy assets only on what the side knows (A. Ares on Discord, 23 Oct)
                     class tasksKnownOnly : Combo
                     {
@@ -165,6 +148,25 @@ class CfgVehicles {
                             defaultValue = """0""";
                             typeName = "NUMBER";
                     };
+
+                    class HDR_TASK_AREA : ALiVE_ModuleSubTitle { property = "ALiVE_mil_c2istar_HDR_TASK_AREA"; displayName = "TASK AREA"; };
+                    class taskMinDistance : Edit
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_taskMinDistance";
+                            displayName = "$STR_ALIVE_C2ISTAR_TASK_MIN_DISTANCE";
+                            tooltip = "$STR_ALIVE_C2ISTAR_TASK_MIN_DISTANCE_COMMENT";
+                            defaultValue = """0""";
+                            typeName = "NUMBER";
+                    };
+                    // Generated tasks no further than this from the player (TheLogatron on Discord, 23 Oct)
+                    class taskMaxDistance : Edit
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_taskMaxDistance";
+                            displayName = "$STR_ALIVE_C2ISTAR_TASK_MAX_DISTANCE";
+                            tooltip = "$STR_ALIVE_C2ISTAR_TASK_MAX_DISTANCE_COMMENT";
+                            defaultValue = """0""";
+                            typeName = "NUMBER";
+                    };
                     // Where hand-over tasks end (NeisAEL and A. Ares on Discord, 23 Oct)
                     class deliveryDestination : Combo
                     {
@@ -186,6 +188,16 @@ class CfgVehicles {
                             tooltip = "$STR_ALIVE_C2ISTAR_TASK_BLACKLIST_COMMENT";
                             defaultValue = """""";
                     };
+                    class taskAoRadius : Edit
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_taskAoRadius";
+                            displayName = "$STR_ALIVE_C2ISTAR_TASK_AO_RADIUS";
+                            tooltip = "$STR_ALIVE_C2ISTAR_TASK_AO_RADIUS_COMMENT";
+                            defaultValue = """0""";
+                            typeName = "NUMBER";
+                    };
+
+                    class HDR_TASK_TIMERS : ALiVE_ModuleSubTitle { property = "ALiVE_mil_c2istar_HDR_TASK_TIMERS"; displayName = "TASK TIMERS"; };
                     class aiTaskTakeover : Edit
                     {
                             property = "ALiVE_MIL_C2ISTAR_aiTaskTakeover";
@@ -210,16 +222,8 @@ class CfgVehicles {
                             defaultValue = """1800""";
                             typeName = "NUMBER";
                     };
-                    class taskAoRadius : Edit
-                    {
-                            property = "ALiVE_MIL_C2ISTAR_taskAoRadius";
-                            displayName = "$STR_ALIVE_C2ISTAR_TASK_AO_RADIUS";
-                            tooltip = "$STR_ALIVE_C2ISTAR_TASK_AO_RADIUS_COMMENT";
-                            defaultValue = """0""";
-                            typeName = "NUMBER";
-                    };
 
-                    class SPACER_AUTOTASK_DEFAULTS : ALiVE_ModuleSubTitle { property = "ALiVE_mil_c2istar_SPACER_AUTOTASK_DEFAULTS"; displayName = " "; };
+                    class SPACER_AUTOTASK_DEFAULTS : ALiVE_ModuleSubTitle { property = "ALiVE_mil_c2istar_SPACER_AUTOTASK_DEFAULTS"; displayName = "TASKS PER SIDE"; };
                     class autoPlayerTasks : Combo
                     {
                             property = "ALiVE_MIL_C2ISTAR_autoPlayerTasks";
@@ -340,6 +344,8 @@ class CfgVehicles {
                             defaultValue = """OPF_F""";
                     };
 
+                    class HDR_TASK_TYPES : ALiVE_ModuleSubTitle { property = "ALiVE_mil_c2istar_HDR_TASK_TYPES"; displayName = "TASK TYPES"; };
+
                     class customStaticDataMode : Combo
                     {
                             property = "ALiVE_MIL_C2ISTAR_customStaticDataMode";
@@ -446,7 +452,7 @@ class CfgVehicles {
                             typeName = "NUMBER";
                     };
 
-                    class SPACER_CIVIC_MISC : ALiVE_ModuleSubTitle { property = "ALiVE_mil_c2istar_SPACER_CIVIC_MISC"; displayName = " "; };
+                    class SPACER_CIVIC_MISC : ALiVE_ModuleSubTitle { property = "ALiVE_mil_c2istar_SPACER_CIVIC_MISC"; displayName = "CIVIC TASKS"; };
                     class civicCooldownMultiplier : Edit
                     {
                             property = "ALiVE_MIL_C2ISTAR_civicCooldownMultiplier";
@@ -537,7 +543,7 @@ class CfgVehicles {
                             };
                     };
 
-                    class SPACER_ROLE_OPS : ALiVE_ModuleSubTitle { property = "ALiVE_mil_c2istar_SPACER_ROLE_OPS"; displayName = " "; };
+                    class SPACER_ROLE_OPS : ALiVE_ModuleSubTitle { property = "ALiVE_mil_c2istar_SPACER_ROLE_OPS"; displayName = "OPERATIONS TABLET"; };
                     class scomOpsLimit : Combo
                     {
                             property = "ALiVE_MIL_C2ISTAR_scomOpsLimit";
@@ -587,6 +593,8 @@ class CfgVehicles {
                                     class Yes { name = "Yes"; value = "true"; };
                             };
                     };
+
+                    class HDR_PLAYER_OBJ : ALiVE_ModuleSubTitle { property = "ALiVE_mil_c2istar_HDR_PLAYER_OBJ"; displayName = "PLAYER OBJECTIVES"; };
                     class scomOpsAllowPlayerObjectives : Combo
                     {
                             property = "ALiVE_MIL_C2ISTAR_scomOpsAllowPlayerObjectives";
@@ -616,7 +624,7 @@ class CfgVehicles {
                             typeName = "NUMBER";
                     };
 
-                    class SPACER_ROLE_INTEL : ALiVE_ModuleSubTitle { property = "ALiVE_mil_c2istar_SPACER_ROLE_INTEL"; displayName = " "; };
+                    class SPACER_ROLE_INTEL : ALiVE_ModuleSubTitle { property = "ALiVE_mil_c2istar_SPACER_ROLE_INTEL"; displayName = "INTEL TABLET"; };
                     class scomIntelLimit : Combo
                     {
                             property = "ALiVE_MIL_C2ISTAR_scomIntelLimit";
@@ -652,17 +660,7 @@ class CfgVehicles {
                     // Capture blocking-line markers (FLOT rectangles + advance arrows) still
                     // render alongside COP. Set Display Map Intel = No to disable this layer
                     // entirely.
-                    class HDR_MAP_INTEL : ALiVE_ModuleSubTitle { property = "ALiVE_mil_c2istar_HDR_MAP_INTEL"; displayName = "MAP INTEL — SPOTREPS, DIARY & SECTORS"; };
-                    class opcomIntelSides
-                    {
-                            property     = "ALiVE_MIL_C2ISTAR_opcomIntelSides";
-                            displayName  = "$STR_ALIVE_C2ISTAR_OPCOM_INTEL_SIDES";
-                            tooltip      = "$STR_ALIVE_C2ISTAR_OPCOM_INTEL_SIDES_COMMENT";
-                            control      = "ALiVE_SideChoiceMulti";
-                            typeName     = "STRING";
-                            expression   = "_this setVariable ['opcomIntelSides', _value];";
-                            defaultValue = """""";
-                    };
+                    class HDR_MAP_INTEL : ALiVE_ModuleSubTitle { property = "ALiVE_mil_c2istar_HDR_MAP_INTEL"; displayName = "MAP INTEL & SPOTREPS"; };
                     class displayIntel : Combo
                     {
                             property = "ALiVE_MIL_C2ISTAR_displayIntel";
@@ -675,6 +673,82 @@ class CfgVehicles {
                                     class No  { name = "No";  value = "false"; };
                             };
                     };
+                    class opcomIntelSides
+                    {
+                            property     = "ALiVE_MIL_C2ISTAR_opcomIntelSides";
+                            displayName  = "$STR_ALIVE_C2ISTAR_OPCOM_INTEL_SIDES";
+                            tooltip      = "$STR_ALIVE_C2ISTAR_OPCOM_INTEL_SIDES_COMMENT";
+                            control      = "ALiVE_SideChoiceMulti";
+                            typeName     = "STRING";
+                            expression   = "_this setVariable ['opcomIntelSides', _value];";
+                            defaultValue = """""";
+                    };
+                    class mapIntelVisibility : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_mapIntelVisibility";
+                            displayName = "$STR_ALIVE_C2ISTAR_MAP_INTEL_VISIBILITY";
+                            tooltip = "$STR_ALIVE_C2ISTAR_MAP_INTEL_VISIBILITY_COMMENT";
+                            defaultValue = """SIDE""";
+                            class Values
+                            {
+                                    class SIDE     { name = "$STR_ALIVE_C2ISTAR_MAP_INTEL_VISIBILITY_SIDE";     value = "SIDE"; };
+                                    class FACTION  { name = "$STR_ALIVE_C2ISTAR_MAP_INTEL_VISIBILITY_FACTION";  value = "FACTION"; };
+                                    class FRIENDLY { name = "$STR_ALIVE_C2ISTAR_MAP_INTEL_VISIBILITY_FRIENDLY"; value = "FRIENDLY"; };
+                                    class ALL      { name = "$STR_ALIVE_C2ISTAR_MAP_INTEL_VISIBILITY_ALL";      value = "ALL"; };
+                            };
+                    };
+                    class mapIntelRevealInstallations : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_mapIntelRevealInstallations";
+                            displayName = "$STR_ALIVE_C2ISTAR_MAP_INTEL_REVEAL_INSTALLATIONS";
+                            tooltip = "$STR_ALIVE_C2ISTAR_MAP_INTEL_REVEAL_INSTALLATIONS_COMMENT";
+                            defaultValue = """false""";
+                            class Values
+                            {
+                                    class No  { name = "No";  value = "false"; };
+                                    class Yes { name = "Yes"; value = "true"; };
+                            };
+                    };
+                    class displayDiarySpotrep : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_displayDiarySpotrep";
+                            displayName = "$STR_ALIVE_C2ISTAR_SPOTREP_DIARY_ENTRIES";
+                            tooltip = "$STR_ALIVE_C2ISTAR_SPOTREP_DIARY_ENTRIES_COMMENT";
+                            defaultValue = """false""";
+                            class Values
+                            {
+                                    class Yes { name = "Yes"; value = "true"; };
+                                    class No  { name = "No";  value = "false"; };
+                            };
+                    };
+                    class intelChance : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_intelChance";
+                            displayName = "$STR_ALIVE_C2ISTAR_INTEL_CHANCE";
+                            tooltip = "$STR_ALIVE_C2ISTAR_INTEL_CHANCE_COMMENT";
+                            defaultValue = """1""";
+                            class Values
+                            {
+                                    class OFF       { name = "$STR_ALIVE_C2ISTAR_INTEL_CHANCE_OFF";       value = "0"; };
+                                    class LOW       { name = "$STR_ALIVE_C2ISTAR_INTEL_CHANCE_LOW";       value = "0.1"; };
+                                    class MEDIUM    { name = "$STR_ALIVE_C2ISTAR_INTEL_CHANCE_MEDIUM";    value = "0.2"; };
+                                    class HIGH      { name = "$STR_ALIVE_C2ISTAR_INTEL_CHANCE_HIGH";      value = "0.4"; };
+                                    class VERY_HIGH { name = "$STR_ALIVE_C2ISTAR_INTEL_CHANCE_VERY_HIGH"; value = "0.8"; };
+                                    class TOTAL     { name = "$STR_ALIVE_C2ISTAR_INTEL_CHANCE_TOTAL";     value = "1"; };
+                            };
+                    };
+                    class generateBriefing
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_generateBriefing";
+                            displayName = "$STR_ALIVE_C2ISTAR_GENERATE_BRIEFING";
+                            tooltip = "$STR_ALIVE_C2ISTAR_GENERATE_BRIEFING_COMMENT";
+                            control = "Checkbox";
+                            typeName = "BOOL";
+                            expression = "_this setVariable ['generateBriefing', _value, true];";
+                            defaultValue = "false";
+                    };
+
+                    class HDR_AIR_REPORTS : ALiVE_ModuleSubTitle { property = "ALiVE_mil_c2istar_HDR_AIR_REPORTS"; displayName = "AIR REPORTS"; };
                     class reportEnemyAirLoss
                     {
                             property = "ALiVE_MIL_C2ISTAR_reportEnemyAirLoss";
@@ -695,6 +769,40 @@ class CfgVehicles {
                             expression = "_this setVariable ['reportEnemyAirAttack', _value, true];";
                             defaultValue = "true";
                     };
+                    class reportAirSituation
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_reportAirSituation";
+                            displayName = "$STR_ALIVE_C2ISTAR_REPORT_AIR_SITUATION";
+                            tooltip = "$STR_ALIVE_C2ISTAR_REPORT_AIR_SITUATION_COMMENT";
+                            control = "Checkbox";
+                            typeName = "BOOL";
+                            expression = "_this setVariable ['reportAirSituation', _value, true];";
+                            defaultValue = "true";
+                    };
+                    class airSituationNeedsATO
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_airSituationNeedsATO";
+                            displayName = "$STR_ALIVE_C2ISTAR_AIR_SITUATION_NEEDS_ATO";
+                            tooltip = "$STR_ALIVE_C2ISTAR_AIR_SITUATION_NEEDS_ATO_COMMENT";
+                            control = "Checkbox";
+                            typeName = "BOOL";
+                            expression = "_this setVariable ['airSituationNeedsATO', _value, true];";
+                            defaultValue = "true";
+                    };
+                    class airSituationAircraft : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_airSituationAircraft";
+                            displayName = "$STR_ALIVE_C2ISTAR_AIR_SITUATION_AIRCRAFT";
+                            tooltip = "$STR_ALIVE_C2ISTAR_AIR_SITUATION_AIRCRAFT_COMMENT";
+                            defaultValue = """all""";
+                            class Values
+                            {
+                                    class All      { name = "$STR_ALIVE_C2ISTAR_AIR_SITUATION_ALL";      value = "all"; };
+                                    class Fighters { name = "$STR_ALIVE_C2ISTAR_AIR_SITUATION_FIGHTERS"; value = "fighters"; };
+                            };
+                    };
+
+                    class HDR_QUESTIONING : ALiVE_ModuleSubTitle { property = "ALiVE_mil_c2istar_HDR_QUESTIONING"; displayName = "QUESTIONING & INFORMANTS"; };
                     class askFriendlies
                     {
                             property = "ALiVE_MIL_C2ISTAR_askFriendlies";
@@ -772,102 +880,8 @@ class CfgVehicles {
                                     class BOTH   { name = "$STR_ALIVE_C2ISTAR_TALK_UI_BOTH";   value = "BOTH"; };
                             };
                     };
-                    class reportAirSituation
-                    {
-                            property = "ALiVE_MIL_C2ISTAR_reportAirSituation";
-                            displayName = "$STR_ALIVE_C2ISTAR_REPORT_AIR_SITUATION";
-                            tooltip = "$STR_ALIVE_C2ISTAR_REPORT_AIR_SITUATION_COMMENT";
-                            control = "Checkbox";
-                            typeName = "BOOL";
-                            expression = "_this setVariable ['reportAirSituation', _value, true];";
-                            defaultValue = "true";
-                    };
-                    class airSituationNeedsATO
-                    {
-                            property = "ALiVE_MIL_C2ISTAR_airSituationNeedsATO";
-                            displayName = "$STR_ALIVE_C2ISTAR_AIR_SITUATION_NEEDS_ATO";
-                            tooltip = "$STR_ALIVE_C2ISTAR_AIR_SITUATION_NEEDS_ATO_COMMENT";
-                            control = "Checkbox";
-                            typeName = "BOOL";
-                            expression = "_this setVariable ['airSituationNeedsATO', _value, true];";
-                            defaultValue = "true";
-                    };
-                    class airSituationAircraft : Combo
-                    {
-                            property = "ALiVE_MIL_C2ISTAR_airSituationAircraft";
-                            displayName = "$STR_ALIVE_C2ISTAR_AIR_SITUATION_AIRCRAFT";
-                            tooltip = "$STR_ALIVE_C2ISTAR_AIR_SITUATION_AIRCRAFT_COMMENT";
-                            defaultValue = """all""";
-                            class Values
-                            {
-                                    class All      { name = "$STR_ALIVE_C2ISTAR_AIR_SITUATION_ALL";      value = "all"; };
-                                    class Fighters { name = "$STR_ALIVE_C2ISTAR_AIR_SITUATION_FIGHTERS"; value = "fighters"; };
-                            };
-                    };
-                    class generateBriefing
-                    {
-                            property = "ALiVE_MIL_C2ISTAR_generateBriefing";
-                            displayName = "$STR_ALIVE_C2ISTAR_GENERATE_BRIEFING";
-                            tooltip = "$STR_ALIVE_C2ISTAR_GENERATE_BRIEFING_COMMENT";
-                            control = "Checkbox";
-                            typeName = "BOOL";
-                            expression = "_this setVariable ['generateBriefing', _value, true];";
-                            defaultValue = "false";
-                    };
-                    class mapIntelVisibility : Combo
-                    {
-                            property = "ALiVE_MIL_C2ISTAR_mapIntelVisibility";
-                            displayName = "$STR_ALIVE_C2ISTAR_MAP_INTEL_VISIBILITY";
-                            tooltip = "$STR_ALIVE_C2ISTAR_MAP_INTEL_VISIBILITY_COMMENT";
-                            defaultValue = """SIDE""";
-                            class Values
-                            {
-                                    class SIDE     { name = "$STR_ALIVE_C2ISTAR_MAP_INTEL_VISIBILITY_SIDE";     value = "SIDE"; };
-                                    class FACTION  { name = "$STR_ALIVE_C2ISTAR_MAP_INTEL_VISIBILITY_FACTION";  value = "FACTION"; };
-                                    class FRIENDLY { name = "$STR_ALIVE_C2ISTAR_MAP_INTEL_VISIBILITY_FRIENDLY"; value = "FRIENDLY"; };
-                                    class ALL      { name = "$STR_ALIVE_C2ISTAR_MAP_INTEL_VISIBILITY_ALL";      value = "ALL"; };
-                            };
-                    };
-                    class mapIntelRevealInstallations : Combo
-                    {
-                            property = "ALiVE_MIL_C2ISTAR_mapIntelRevealInstallations";
-                            displayName = "$STR_ALIVE_C2ISTAR_MAP_INTEL_REVEAL_INSTALLATIONS";
-                            tooltip = "$STR_ALIVE_C2ISTAR_MAP_INTEL_REVEAL_INSTALLATIONS_COMMENT";
-                            defaultValue = """false""";
-                            class Values
-                            {
-                                    class No  { name = "No";  value = "false"; };
-                                    class Yes { name = "Yes"; value = "true"; };
-                            };
-                    };
-                    class displayDiarySpotrep : Combo
-                    {
-                            property = "ALiVE_MIL_C2ISTAR_displayDiarySpotrep";
-                            displayName = "$STR_ALIVE_C2ISTAR_SPOTREP_DIARY_ENTRIES";
-                            tooltip = "$STR_ALIVE_C2ISTAR_SPOTREP_DIARY_ENTRIES_COMMENT";
-                            defaultValue = """false""";
-                            class Values
-                            {
-                                    class Yes { name = "Yes"; value = "true"; };
-                                    class No  { name = "No";  value = "false"; };
-                            };
-                    };
-                    class intelChance : Combo
-                    {
-                            property = "ALiVE_MIL_C2ISTAR_intelChance";
-                            displayName = "$STR_ALIVE_C2ISTAR_INTEL_CHANCE";
-                            tooltip = "$STR_ALIVE_C2ISTAR_INTEL_CHANCE_COMMENT";
-                            defaultValue = """1""";
-                            class Values
-                            {
-                                    class OFF       { name = "$STR_ALIVE_C2ISTAR_INTEL_CHANCE_OFF";       value = "0"; };
-                                    class LOW       { name = "$STR_ALIVE_C2ISTAR_INTEL_CHANCE_LOW";       value = "0.1"; };
-                                    class MEDIUM    { name = "$STR_ALIVE_C2ISTAR_INTEL_CHANCE_MEDIUM";    value = "0.2"; };
-                                    class HIGH      { name = "$STR_ALIVE_C2ISTAR_INTEL_CHANCE_HIGH";      value = "0.4"; };
-                                    class VERY_HIGH { name = "$STR_ALIVE_C2ISTAR_INTEL_CHANCE_VERY_HIGH"; value = "0.8"; };
-                                    class TOTAL     { name = "$STR_ALIVE_C2ISTAR_INTEL_CHANCE_TOTAL";     value = "1"; };
-                            };
-                    };
+
+                    class HDR_MAP_SECTORS : ALiVE_ModuleSubTitle { property = "ALiVE_mil_c2istar_HDR_MAP_SECTORS"; displayName = "FRIENDLY & SECTOR MARKERS"; };
                     class friendlyIntel : Combo
                     {
                             property = "ALiVE_MIL_C2ISTAR_friendlyIntel";
@@ -1015,18 +1029,8 @@ class CfgVehicles {
                             attributeLoad = "[_this, 'copDisplaySides', '$STR_ALIVE_C2ISTAR_COP_DISPLAY_SIDES', _value] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenSideChoiceMultiLoad.sqf'";
                             attributeSave = "[_this, 'copDisplaySides'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenSideChoiceMultiSave.sqf'";
                     };
-                    class commanderIntelAsymmetric : Combo
-                    {
-                            property = "ALiVE_MIL_C2ISTAR_commanderIntelAsymmetric";
-                            displayName = "$STR_ALIVE_C2ISTAR_COP_ASYM";
-                            tooltip = "$STR_ALIVE_C2ISTAR_COP_ASYM_COMMENT";
-                            defaultValue = """false""";
-                            class Values
-                            {
-                                    class No  { name = "$STR_ALIVE_C2ISTAR_COP_ASYM_NO";  value = "false"; };
-                                    class Yes { name = "$STR_ALIVE_C2ISTAR_COP_ASYM_YES"; value = "true"; };
-                            };
-                    };
+
+                    class HDR_COP_LAYERS : ALiVE_ModuleSubTitle { property = "ALiVE_mil_c2istar_HDR_COP_LAYERS"; displayName = "COP LAYERS"; };
                     // Auto / On / Off like the other layers. It was Yes / No with Yes the default,
                     // written before the Commander Intel Mode tier, so the tier could never turn it
                     // off. A mission saved with Yes or No reads as On or Off, unchanged.
@@ -1084,6 +1088,21 @@ class CfgVehicles {
                                     class No  { name = "$STR_ALIVE_C2ISTAR_COP_SHOW_BFT_NO";  value = "false"; };
                             };
                     };
+                    class copLayerAxisArrows : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_copLayerAxisArrows";
+                            displayName = "$STR_ALIVE_C2ISTAR_COP_LAYER_AXIS";
+                            tooltip = "$STR_ALIVE_C2ISTAR_COP_LAYER_AXIS_COMMENT";
+                            defaultValue = """auto""";
+                            typeName = "STRING";
+                            expression = "_this setVariable ['copLayerAxisArrows', _value];";
+                            class Values
+                            {
+                                    class Auto { name = "$STR_ALIVE_C2ISTAR_COP_LAYER_AUTO"; value = "auto"; default = 1; };
+                                    class On   { name = "$STR_ALIVE_C2ISTAR_COP_LAYER_ON";   value = "on"; };
+                                    class Off  { name = "$STR_ALIVE_C2ISTAR_COP_LAYER_OFF";  value = "off"; };
+                            };
+                    };
                     // Per-layer visibility overrides. Each is Auto / On / Off:
                     //   Auto = follow the COP Mode preset (default, behaviour unchanged)
                     //   On / Off = override the preset for just this one layer.
@@ -1103,19 +1122,18 @@ class CfgVehicles {
                                     class Off  { name = "$STR_ALIVE_C2ISTAR_COP_LAYER_OFF";  value = "off"; };
                             };
                     };
-                    class copLayerAxisArrows : Combo
+
+                    class HDR_COP_ASYM : ALiVE_ModuleSubTitle { property = "ALiVE_mil_c2istar_HDR_COP_ASYM"; displayName = "COP INSURGENCY LAYERS"; };
+                    class commanderIntelAsymmetric : Combo
                     {
-                            property = "ALiVE_MIL_C2ISTAR_copLayerAxisArrows";
-                            displayName = "$STR_ALIVE_C2ISTAR_COP_LAYER_AXIS";
-                            tooltip = "$STR_ALIVE_C2ISTAR_COP_LAYER_AXIS_COMMENT";
-                            defaultValue = """auto""";
-                            typeName = "STRING";
-                            expression = "_this setVariable ['copLayerAxisArrows', _value];";
+                            property = "ALiVE_MIL_C2ISTAR_commanderIntelAsymmetric";
+                            displayName = "$STR_ALIVE_C2ISTAR_COP_ASYM";
+                            tooltip = "$STR_ALIVE_C2ISTAR_COP_ASYM_COMMENT";
+                            defaultValue = """false""";
                             class Values
                             {
-                                    class Auto { name = "$STR_ALIVE_C2ISTAR_COP_LAYER_AUTO"; value = "auto"; default = 1; };
-                                    class On   { name = "$STR_ALIVE_C2ISTAR_COP_LAYER_ON";   value = "on"; };
-                                    class Off  { name = "$STR_ALIVE_C2ISTAR_COP_LAYER_OFF";  value = "off"; };
+                                    class No  { name = "$STR_ALIVE_C2ISTAR_COP_ASYM_NO";  value = "false"; };
+                                    class Yes { name = "$STR_ALIVE_C2ISTAR_COP_ASYM_YES"; value = "true"; };
                             };
                     };
                     class copLayerSentiment : Combo
@@ -1283,6 +1301,8 @@ class CfgVehicles {
                                     class Warning      { name = "Warning";         value = "warning"; };
                             };
                     };
+
+                    class HDR_OBJ_RECON : ALiVE_ModuleSubTitle { property = "ALiVE_mil_c2istar_HDR_OBJ_RECON"; displayName = "RECON & RESERVE MARKERS"; };
                     class copShowRecon : Combo
                     {
                             property = "ALiVE_MIL_C2ISTAR_copShowRecon";
@@ -1397,6 +1417,8 @@ class CfgVehicles {
                                     class Warning      { name = "Warning";         value = "warning"; };
                             };
                     };
+
+                    class HDR_OBJ_HELD : ALiVE_ModuleSubTitle { property = "ALiVE_mil_c2istar_HDR_OBJ_HELD"; displayName = "HELD MARKERS"; };
                     class copShowHeld : Combo
                     {
                             property = "ALiVE_MIL_C2ISTAR_copShowHeld";

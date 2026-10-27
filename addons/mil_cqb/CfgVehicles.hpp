@@ -158,8 +158,6 @@ class CfgVehicles {
                                 typeName     = "STRING";
                                 expression   = "_this setVariable ['CQB_FACTIONS_manual', _value];";
                         };
-                        // ---- Spacer ---------------------------------------------------------
-                        class SPACER_FACTIONS : ALiVE_ModuleSubTitle { property = "ALiVE_mil_cqb_SPACER_FACTIONS"; displayName = " "; };
                         // ---- Spawn Distances ------------------------------------------------
                         class HDR_SPAWN : ALiVE_ModuleSubTitle { property = "ALiVE_mil_cqb_HDR_SPAWN"; displayName = "SPAWN DISTANCES"; };
                         class CQB_spawndistance : Edit { property = "ALiVE_mil_cqb_CQB_spawndistance"; displayName = "$STR_ALIVE_CQB_SPAWNDISTANCE"; tooltip = "$STR_ALIVE_CQB_SPAWNDISTANCE_COMMENT"; defaultValue = """700"""; };
@@ -198,6 +196,8 @@ class CfgVehicles {
                         };
                         class CQB_patrol_chance : Edit { property = "ALiVE_mil_cqb_CQB_patrol_chance"; displayName = "$STR_ALIVE_CQB_PATROLCHANCE"; tooltip = "$STR_ALIVE_CQB_PATROLCHANCE_COMMENT"; defaultValue = """30"""; };
                         class CQB_patrol_searchchance : Edit { property = "ALiVE_mil_cqb_CQB_patrol_searchchance"; displayName = "$STR_ALIVE_CQB_PATROLSEARCHCHANCE"; tooltip = "$STR_ALIVE_CQB_PATROLSEARCHCHANCE_COMMENT"; defaultValue = """30"""; };
+
+                        class HDR_PATROL_TIMING : ALiVE_ModuleSubTitle { property = "ALiVE_mil_cqb_HDR_PATROL_TIMING"; displayName = "PATROL WAITS AND RANGE"; };
                         class CQB_patrol_minwaittime : Edit { property = "ALiVE_mil_cqb_CQB_patrol_minwaittime"; displayName = "$STR_ALIVE_CQB_MINWAITTIME"; tooltip = "$STR_ALIVE_CQB_MINWAITTIME_COMMENT"; defaultValue = """0"""; };
                         class CQB_patrol_midwaittime : Edit { property = "ALiVE_mil_cqb_CQB_patrol_midwaittime"; displayName = "$STR_ALIVE_CQB_MIDWAITTIME"; tooltip = "$STR_ALIVE_CQB_MIDWAITTIME_COMMENT"; defaultValue = """15"""; };
                         class CQB_patrol_maxwaittime : Edit { property = "ALiVE_mil_cqb_CQB_patrol_maxwaittime"; displayName = "$STR_ALIVE_CQB_MAXWAITTIME"; tooltip = "$STR_ALIVE_CQB_MAXWAITTIME_COMMENT"; defaultValue = """30"""; };

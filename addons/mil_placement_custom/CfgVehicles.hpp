@@ -49,22 +49,13 @@ class CfgVehicles {
                         };
                         class priority : Edit { property = "ALiVE_mil_placement_custom_priority"; displayName = "$STR_ALIVE_CMP_PRIORITY"; tooltip = "$STR_ALIVE_CMP_PRIORITY_COMMENT"; defaultValue = """50"""; };
                         class size : Edit { property = "ALiVE_mil_placement_custom_size"; displayName = "$STR_ALIVE_CMP_SIZE"; tooltip = "$STR_ALIVE_CMP_SIZE_COMMENT"; defaultValue = """300"""; };
-                        class readinessLevel : Edit { property = "ALiVE_mil_placement_custom_readinessLevel"; displayName = "$STR_ALIVE_CMP_READINESS_LEVEL"; tooltip = "$STR_ALIVE_CMP_READINESS_LEVEL_COMMENT"; defaultValue = """100"""; };
-                        // ambientVehicleAmount + allowPlayerTasking moved up to
-                        // bottom of GENERAL 2026-05-08 so they don't trail
-                        // the OBJECTIVE OBJECTS section without their own
-                        // header.
-                        class ambientVehicleAmount : Combo
-                        {
-                                property = "ALiVE_mil_placement_custom_ambientVehicleAmount"; displayName = "$STR_ALIVE_MP_AMBIENT_VEHICLE_AMOUNT"; tooltip = "$STR_ALIVE_MP_AMBIENT_VEHICLE_AMOUNT_COMMENT"; defaultValue = """0""";
-                                class Values { class NONE{name="$STR_ALIVE_MP_AMBIENT_VEHICLE_AMOUNT_NONE";value="0";default=1;}; class LOW{name="$STR_ALIVE_MP_AMBIENT_VEHICLE_AMOUNT_LOW";value="0.2";}; class MEDIUM{name="$STR_ALIVE_MP_AMBIENT_VEHICLE_AMOUNT_MEDIUM";value="0.6";}; class HIGH{name="$STR_ALIVE_MP_AMBIENT_VEHICLE_AMOUNT_HIGH";value="1";}; };
-                        };
                         class allowPlayerTasking : Combo { property = "ALiVE_mil_placement_custom_allowPlayerTasking"; displayName = "$STR_ALIVE_CMP_ALLOW_PLAYER_TASK"; tooltip = "$STR_ALIVE_CMP_ALLOW_PLAYER_TASK_COMMENT"; defaultValue = """true"""; class Values { class Yes{name="Yes";value=true;default=1;}; class No{name="No";value=false;}; }; };
                         // Reserve-pool attributes - shared semantics with mil_placement.
                         // Stringtable keys are canonical in mil_placement (STR_ALIVE_MP_*)
                         // and cross-referenced here; keeps a single source of truth across
                         // the four placement modules that have a Readiness attribute.
                         class HDR_RESERVE : ALiVE_ModuleSubTitle { property = "ALiVE_mil_placement_custom_HDR_RESERVE"; displayName = "$STR_ALIVE_MP_HDR_RESERVE"; };
+                        class readinessLevel : Edit { property = "ALiVE_mil_placement_custom_readinessLevel"; displayName = "$STR_ALIVE_CMP_READINESS_LEVEL"; tooltip = "$STR_ALIVE_CMP_READINESS_LEVEL_COMMENT"; defaultValue = """100"""; };
                         class activePatrolPercent : Edit { property = "ALiVE_mil_placement_custom_activePatrolPercent"; displayName = "$STR_ALIVE_MP_ACTIVE_PATROL_PERCENT"; tooltip = "$STR_ALIVE_MP_ACTIVE_PATROL_PERCENT_COMMENT"; defaultValue = """75"""; };
                         class reserveActivationThreshold : Edit { property = "ALiVE_mil_placement_custom_reserveActivationThreshold"; displayName = "$STR_ALIVE_MP_RESERVE_ACTIVATION_THRESHOLD"; tooltip = "$STR_ALIVE_MP_RESERVE_ACTIVATION_THRESHOLD_COMMENT"; defaultValue = """50"""; };
                         class reserveActivationCooldown : Edit { property = "ALiVE_mil_placement_custom_reserveActivationCooldown"; displayName = "$STR_ALIVE_MP_RESERVE_ACTIVATION_COOLDOWN"; tooltip = "$STR_ALIVE_MP_RESERVE_ACTIVATION_COOLDOWN_COMMENT"; defaultValue = """30"""; };
@@ -171,7 +162,7 @@ class CfgVehicles {
                                 defaultValue = """""";
                         };
                         // ---- Ambient Presence -----------------------------------------------
-                        class HDR_AMBIENT : ALiVE_ModuleSubTitle { property = "ALiVE_mil_placement_custom_HDR_AMBIENT"; displayName = "AMBIENT PRESENCE"; };
+                        class HDR_AMBIENT : ALiVE_ModuleSubTitle { property = "ALiVE_mil_placement_custom_HDR_AMBIENT"; displayName = "GARRISONS"; };
                         class guardProbability : Combo
                         {
                                 property = "ALiVE_mil_placement_custom_guardProbability"; displayName = "$STR_ALIVE_MP_AMBIENT_GUARD_AMOUNT"; tooltip = "$STR_ALIVE_CMP_GUARD_AMOUNT_COMMENT"; defaultValue = """0.2""";
@@ -208,6 +199,8 @@ class CfgVehicles {
                                     class Full { name = "Full (run)"; value = "FULL"; };
                                 };
                         };
+
+                        class HDR_GARRISON_BLDG : ALiVE_ModuleSubTitle { property = "ALiVE_mil_placement_custom_HDR_GARRISON_BLDG"; displayName = "GARRISON BUILDINGS"; };
                         class preferredGarrisonPositions : ALiVE_EditMultilineSQF
                         {
                                 property = "ALiVE_mil_placement_custom_preferredGarrisonPositions";
@@ -224,6 +217,8 @@ class CfgVehicles {
                         };
                         class garrisonOccupancyLimit : Edit { property = "ALiVE_mil_placement_custom_garrisonOccupancyLimit"; displayName = "$STR_ALIVE_MP_GARRISON_OCCUPANCY_LIMIT"; tooltip = "$STR_ALIVE_MP_GARRISON_OCCUPANCY_LIMIT_COMMENT"; defaultValue = """"""; };
                         class garrisonCompositions : Combo { property = "ALiVE_mil_placement_custom_garrisonCompositions"; displayName = "$STR_ALIVE_CMP_GARRISON_COMPOSITIONS"; tooltip = "$STR_ALIVE_CMP_GARRISON_COMPOSITIONS_COMMENT"; defaultValue = """true"""; class Values { class Yes{name="Yes";value="true";default=1;}; class No{name="No";value="false";}; }; };
+
+                        class HDR_ASSETS : ALiVE_ModuleSubTitle { property = "ALiVE_mil_placement_custom_HDR_ASSETS"; displayName = "HQ & PLACED ASSETS"; };
                         class composition
                         {
                                 property     = "ALiVE_mil_placement_custom_composition";
@@ -236,6 +231,15 @@ class CfgVehicles {
                         };
                         class createHQ : Combo { property = "ALiVE_mil_placement_custom_createHQ"; displayName = "$STR_ALIVE_CMP_CREATE_HQ"; tooltip = "$STR_ALIVE_CMP_CREATE_HQ_COMMENT"; defaultValue = """false"""; class Values { class Yes{name="Yes";value=true;}; class No{name="No";value=false;default=1;}; }; };
                         class createFieldHQ : Combo { property = "ALiVE_mil_placement_custom_createFieldHQ"; displayName = "$STR_ALIVE_CMP_CREATE_FIELD_HQ"; tooltip = "$STR_ALIVE_CMP_CREATE_FIELD_HQ_COMMENT"; defaultValue = """false"""; class Values { class Yes{name="Yes";value=true;}; class No{name="No";value=false;default=1;}; }; };
+                        // ambientVehicleAmount + allowPlayerTasking moved up to
+                        // bottom of GENERAL 2026-05-08 so they don't trail
+                        // the OBJECTIVE OBJECTS section without their own
+                        // header.
+                        class ambientVehicleAmount : Combo
+                        {
+                                property = "ALiVE_mil_placement_custom_ambientVehicleAmount"; displayName = "$STR_ALIVE_MP_AMBIENT_VEHICLE_AMOUNT"; tooltip = "$STR_ALIVE_MP_AMBIENT_VEHICLE_AMOUNT_COMMENT"; defaultValue = """0""";
+                                class Values { class NONE{name="$STR_ALIVE_MP_AMBIENT_VEHICLE_AMOUNT_NONE";value="0";default=1;}; class LOW{name="$STR_ALIVE_MP_AMBIENT_VEHICLE_AMOUNT_LOW";value="0.2";}; class MEDIUM{name="$STR_ALIVE_MP_AMBIENT_VEHICLE_AMOUNT_MEDIUM";value="0.6";}; class HIGH{name="$STR_ALIVE_MP_AMBIENT_VEHICLE_AMOUNT_HIGH";value="1";}; };
+                        };
                         class placeHelis : Combo { property = "ALiVE_mil_placement_custom_placeHelis"; displayName = "$STR_ALIVE_MP_PLACE_HELI"; tooltip = "$STR_ALIVE_MP_PLACE_HELI_COMMENT"; defaultValue = """true"""; class Values { class Yes{name="Yes";value=true;default=1;}; class No{name="No";value=false;}; }; };
                         class placeSupplies : Combo { property = "ALiVE_mil_placement_custom_placeSupplies"; displayName = "$STR_ALIVE_MP_PLACE_SUPPLIES"; tooltip = "$STR_ALIVE_MP_PLACE_SUPPLIES_COMMENT"; defaultValue = """true"""; class Values { class Yes{name="Yes";value=true;default=1;}; class No{name="No";value=false;}; }; };
                         // ---- Objective Objects (#875) ---------------------------------------

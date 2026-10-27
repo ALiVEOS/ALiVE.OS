@@ -47,8 +47,8 @@ class CfgVehicles {
             };
             class priority : Edit { property = "ALiVE_civ_placement_custom_priority"; displayName = "$STR_ALIVE_CPC_PRIORITY"; tooltip = "$STR_ALIVE_CPC_PRIORITY_COMMENT"; defaultValue = """50"""; };
             class objectiveSize : Edit { property = "ALiVE_civ_placement_custom_objectiveSize"; displayName = "$STR_ALIVE_CPC_OBJECTIVE_SIZE"; tooltip = "$STR_ALIVE_CPC_OBJECTIVE_SIZE_COMMENT"; defaultValue = """200"""; };
-            // ---- Force Composition ----------------------------------------------
-            class HDR_FORCE : ALiVE_ModuleSubTitle { property = "ALiVE_civ_placement_custom_HDR_FORCE"; displayName = "FORCE COMPOSITION"; };
+
+            class HDR_PLACEMENT : ALiVE_ModuleSubTitle { property = "ALiVE_civ_placement_custom_HDR_PLACEMENT"; displayName = "UNIT PLACEMENT"; };
             class withPlacement : Combo { property = "ALiVE_civ_placement_custom_withPlacement"; displayName = "$STR_ALIVE_CP_PLACEMENT"; tooltip = "$STR_ALIVE_CP_PLACEMENT_COMMENT"; defaultValue = """true"""; class Values { class Yes{name="$STR_ALIVE_CP_PLACEMENT_YES";value=true;default=1;}; class No{name="$STR_ALIVE_CP_PLACEMENT_NO";value=false;}; class Units{name="$STR_ALIVE_CP_PLACEMENT_UNITS";value="units";}; }; };
             class size : Combo
             {
@@ -60,11 +60,19 @@ class CfgVehicles {
                     property = "ALiVE_civ_placement_custom_type"; displayName = "$STR_ALIVE_CP_TYPE"; tooltip = "$STR_ALIVE_CP_TYPE_COMMENT"; defaultValue = """Random""";
                     class Values { class RANDOM{name="$STR_ALIVE_CP_TYPE_RANDOM";value="Random";default=1;}; class ARMOR{name="$STR_ALIVE_CP_TYPE_ARMOR";value="Armored";}; class MECH{name="$STR_ALIVE_CP_TYPE_MECH";value="Mechanized";}; class MOTOR{name="$STR_ALIVE_CP_TYPE_MOTOR";value="Motorized";}; class LIGHT{name="$STR_ALIVE_CP_TYPE_LIGHT";value="Infantry";}; class AIR{name="$STR_ALIVE_CP_TYPE_AIR";value="Air";}; class SPECOPS{name="$STR_ALIVE_CP_TYPE_SPECOPS";value="Specops";}; };
             };
-            class readinessLevel : Edit { property = "ALiVE_civ_placement_custom_readinessLevel"; displayName = "$STR_ALIVE_CP_READINESS_LEVEL"; tooltip = "$STR_ALIVE_CP_READINESS_LEVEL_COMMENT"; defaultValue = """100"""; };
+            // ---- Force Composition ----------------------------------------------
+            class HDR_FORCE : ALiVE_ModuleSubTitle { property = "ALiVE_civ_placement_custom_HDR_FORCE"; displayName = "FORCE COMPOSITION"; };
+            class customInfantryCount : Edit { property = "ALiVE_civ_placement_custom_customInfantryCount"; displayName = "$STR_ALIVE_CP_CUSTOM_INFANTRY_COUNT"; tooltip = "$STR_ALIVE_CP_CUSTOM_INFANTRY_COUNT_COMMENT"; defaultValue = """"""; };
+            class customMotorisedCount : Edit { property = "ALiVE_civ_placement_custom_customMotorisedCount"; displayName = "$STR_ALIVE_CP_CUSTOM_MOTORISED_COUNT"; tooltip = "$STR_ALIVE_CP_CUSTOM_MOTORISED_COUNT_COMMENT"; defaultValue = """"""; };
+            class customMechanisedCount : Edit { property = "ALiVE_civ_placement_custom_customMechanisedCount"; displayName = "$STR_ALIVE_CP_CUSTOM_MECHANISED_COUNT"; tooltip = "$STR_ALIVE_CP_CUSTOM_MECHANISED_COUNT_COMMENT"; defaultValue = """"""; };
+            class customArmourCount : Edit { property = "ALiVE_civ_placement_custom_customArmourCount"; displayName = "$STR_ALIVE_CP_CUSTOM_ARMOUR_COUNT"; tooltip = "$STR_ALIVE_CP_CUSTOM_ARMOUR_COUNT_COMMENT"; defaultValue = """"""; };
+            class customSpecOpsCount : Edit { property = "ALiVE_civ_placement_custom_customSpecOpsCount"; displayName = "$STR_ALIVE_CP_CUSTOM_SPECOPS_COUNT"; tooltip = "$STR_ALIVE_CP_CUSTOM_SPECOPS_COUNT_COMMENT"; defaultValue = """"""; };
+            class asymmetricInstallationCountOverrides : Edit { property = "ALiVE_civ_placement_custom_asymmetricInstallationCountOverrides"; displayName = "$STR_ALIVE_CP_ASYM_INSTALLATION_COUNT_OVERRIDES"; tooltip = "$STR_ALIVE_CP_ASYM_INSTALLATION_COUNT_OVERRIDES_COMMENT"; defaultValue = """"""; };
             // Reserve-pool attributes - shared semantics with mil_placement.
             // Stringtable keys are canonical in mil_placement (STR_ALIVE_MP_*)
             // and cross-referenced here.
             class HDR_RESERVE : ALiVE_ModuleSubTitle { property = "ALiVE_civ_placement_custom_HDR_RESERVE"; displayName = "$STR_ALIVE_MP_HDR_RESERVE"; };
+            class readinessLevel : Edit { property = "ALiVE_civ_placement_custom_readinessLevel"; displayName = "$STR_ALIVE_CP_READINESS_LEVEL"; tooltip = "$STR_ALIVE_CP_READINESS_LEVEL_COMMENT"; defaultValue = """100"""; };
             class activePatrolPercent : Edit { property = "ALiVE_civ_placement_custom_activePatrolPercent"; displayName = "$STR_ALIVE_MP_ACTIVE_PATROL_PERCENT"; tooltip = "$STR_ALIVE_MP_ACTIVE_PATROL_PERCENT_COMMENT"; defaultValue = """75"""; };
             class reserveActivationThreshold : Edit { property = "ALiVE_civ_placement_custom_reserveActivationThreshold"; displayName = "$STR_ALIVE_MP_RESERVE_ACTIVATION_THRESHOLD"; tooltip = "$STR_ALIVE_MP_RESERVE_ACTIVATION_THRESHOLD_COMMENT"; defaultValue = """50"""; };
             class reserveActivationCooldown : Edit { property = "ALiVE_civ_placement_custom_reserveActivationCooldown"; displayName = "$STR_ALIVE_MP_RESERVE_ACTIVATION_COOLDOWN"; tooltip = "$STR_ALIVE_MP_RESERVE_ACTIVATION_COOLDOWN_COMMENT"; defaultValue = """30"""; };
@@ -88,12 +96,6 @@ class CfgVehicles {
                     property = "ALiVE_civ_placement_custom_reserveOrphanCrewBehaviour"; displayName = "$STR_ALIVE_MP_RESERVE_ORPHAN_CREW_BEHAVIOUR"; tooltip = "$STR_ALIVE_MP_RESERVE_ORPHAN_CREW_BEHAVIOUR_COMMENT"; defaultValue = """SpawnAsInfantry""";
                     class Values { class INFANTRY{name="Spawn as infantry";value="SpawnAsInfantry";default=1;}; class DROP{name="Drop silently";value="Drop";}; };
             };
-            class customInfantryCount : Edit { property = "ALiVE_civ_placement_custom_customInfantryCount"; displayName = "$STR_ALIVE_CP_CUSTOM_INFANTRY_COUNT"; tooltip = "$STR_ALIVE_CP_CUSTOM_INFANTRY_COUNT_COMMENT"; defaultValue = """"""; };
-            class customMotorisedCount : Edit { property = "ALiVE_civ_placement_custom_customMotorisedCount"; displayName = "$STR_ALIVE_CP_CUSTOM_MOTORISED_COUNT"; tooltip = "$STR_ALIVE_CP_CUSTOM_MOTORISED_COUNT_COMMENT"; defaultValue = """"""; };
-            class customMechanisedCount : Edit { property = "ALiVE_civ_placement_custom_customMechanisedCount"; displayName = "$STR_ALIVE_CP_CUSTOM_MECHANISED_COUNT"; tooltip = "$STR_ALIVE_CP_CUSTOM_MECHANISED_COUNT_COMMENT"; defaultValue = """"""; };
-            class customArmourCount : Edit { property = "ALiVE_civ_placement_custom_customArmourCount"; displayName = "$STR_ALIVE_CP_CUSTOM_ARMOUR_COUNT"; tooltip = "$STR_ALIVE_CP_CUSTOM_ARMOUR_COUNT_COMMENT"; defaultValue = """"""; };
-            class customSpecOpsCount : Edit { property = "ALiVE_civ_placement_custom_customSpecOpsCount"; displayName = "$STR_ALIVE_CP_CUSTOM_SPECOPS_COUNT"; tooltip = "$STR_ALIVE_CP_CUSTOM_SPECOPS_COUNT_COMMENT"; defaultValue = """"""; };
-            class asymmetricInstallationCountOverrides : Edit { property = "ALiVE_civ_placement_custom_asymmetricInstallationCountOverrides"; displayName = "$STR_ALIVE_CP_ASYM_INSTALLATION_COUNT_OVERRIDES"; tooltip = "$STR_ALIVE_CP_ASYM_INSTALLATION_COUNT_OVERRIDES_COMMENT"; defaultValue = """"""; };
             // ---- AI Artillery (#949, ported from mil_placement_custom #887) ------
             // Count-based artillery at CIVILIAN objectives. Keys are canonical in
             // mil_placement_custom (STR_ALIVE_CMP_CUSTOM_ARTILLERY_*) and reused here.
@@ -180,7 +182,7 @@ class CfgVehicles {
                     defaultValue = """""";
             };
             // ---- Ambient Presence -----------------------------------------------
-            class HDR_AMBIENT : ALiVE_ModuleSubTitle { property = "ALiVE_civ_placement_custom_HDR_AMBIENT"; displayName = "AMBIENT PRESENCE"; };
+            class HDR_AMBIENT : ALiVE_ModuleSubTitle { property = "ALiVE_civ_placement_custom_HDR_AMBIENT"; displayName = "GARRISONS"; };
             class guardProbability : Combo
             {
                     property = "ALiVE_civ_placement_custom_guardProbability"; displayName = "$STR_ALIVE_CP_CUSTOM_GUARD_AMOUNT"; tooltip = "$STR_ALIVE_CPC_GUARD_AMOUNT_COMMENT"; defaultValue = """0.2""";
@@ -217,6 +219,8 @@ class CfgVehicles {
                         class Full { name = "Full (run)"; value = "FULL"; };
                     };
             };
+
+            class HDR_GARRISON_BLDG : ALiVE_ModuleSubTitle { property = "ALiVE_civ_placement_custom_HDR_GARRISON_BLDG"; displayName = "GARRISON BUILDINGS"; };
             class preferredGarrisonPositions : ALiVE_EditMultilineSQF
             {
                     property = "ALiVE_civ_placement_custom_preferredGarrisonPositions";
