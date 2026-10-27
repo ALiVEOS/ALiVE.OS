@@ -8709,6 +8709,9 @@ switch(_operation) do {
                         _motorisedGroups = _motorisedGroups - ALiVE_PLACEMENT_GROUPBLACKLIST;
                         _motorisedGroups = [_motorisedGroups, _eventFaction, ([_logic, "excludeKinds"] call MAINCLASS), "groups"] call ALIVE_fnc_MLExcludeKindsFilter;
                         _groupCount = count _motorisedGroups;
+                        // Reinforcements Match the Enemy: how many requests in a row found no group of this type for
+                        // this faction, after the blacklist and the excluded kinds; the AI Commander stops asking at 2
+                        if (_eventForceMotorised > 0) then { private _noKey = format ["ALiVE_ML_noGroups_%1_Motorized", _eventFaction]; missionNamespace setVariable [_noKey, [0, (missionNamespace getVariable [_noKey, 0]) + 1] select (_groupCount == 0)] };
                         if (_shipLaunch && {_eventForceMotorised > 0} && {_groupCount == 0}) then {
                             [format ["%1 has no motorised group to send", _eventFaction]] call _fnc_shipMotDropped;
                         };
@@ -9609,6 +9612,7 @@ switch(_operation) do {
                         _armourGroups = _armourGroups - ALiVE_PLACEMENT_GROUPBLACKLIST;
                         _armourGroups = [_armourGroups, _eventFaction, ([_logic, "excludeKinds"] call MAINCLASS), "groups"] call ALIVE_fnc_MLExcludeKindsFilter;
                         _groupCount = count _armourGroups;
+                        if (_eventForceArmour > 0) then { private _noKey = format ["ALiVE_ML_noGroups_%1_Armored", _eventFaction]; missionNamespace setVariable [_noKey, [0, (missionNamespace getVariable [_noKey, 0]) + 1] select (_groupCount == 0)] };
                         _totalCount = _totalCount + _groupCount;
 
                         // create profiles
@@ -9666,6 +9670,7 @@ switch(_operation) do {
                         _mechanisedGroups = _mechanisedGroups - ALiVE_PLACEMENT_GROUPBLACKLIST;
                         _mechanisedGroups = [_mechanisedGroups, _eventFaction, ([_logic, "excludeKinds"] call MAINCLASS), "groups"] call ALIVE_fnc_MLExcludeKindsFilter;
                         _groupCount = count _mechanisedGroups;
+                        if (_eventForceMechanised > 0) then { private _noKey = format ["ALiVE_ML_noGroups_%1_Mechanized", _eventFaction]; missionNamespace setVariable [_noKey, [0, (missionNamespace getVariable [_noKey, 0]) + 1] select (_groupCount == 0)] };
                         _totalCount = _totalCount + _groupCount;
 
                         // create profiles

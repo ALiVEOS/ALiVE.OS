@@ -1506,7 +1506,15 @@ class FSM
                          "        [""OPCOM reinforcements needed: %1"",((_currentCount / _startCount) < _reinforcementRatio)] call ALiVE_fnc_dumpR;" \n
                          "    };" \n
                          "      " \n
-                         "    if ((_currentCount / _startCount) < _reinforcementRatio) then {_reinforce = +_diff};" \n
+                         "    if ((_currentCount / _startCount) < _reinforcementRatio) then {" \n
+                         "        _reinforce = +_diff;" \n
+                         "        // Reinforcements Match the Enemy: half the request follows the enemy its units have seen; a request" \n
+                         "        // that comes back empty (nothing short of the starting strength) is not sent" \n
+                         "        if ([_OPCOM_HANDLER,""reinforceMatchEnemy"",false] call ALiVE_fnc_HashGet) then {" \n
+                         "            _reinforce = [_OPCOM_HANDLER,""matchEnemyReinforce"",[_reinforce,_startCount,_currentCount]] call ALiVE_fnc_OPCOM;" \n
+                         "            if (((_reinforce select 0) + (_reinforce select 1) + (_reinforce select 2) + (_reinforce select 3)) == 0) then {_reinforce = nil};" \n
+                         "        };" \n
+                         "    };" \n
                          "  };" \n
                          "};" \n
                          "" \n

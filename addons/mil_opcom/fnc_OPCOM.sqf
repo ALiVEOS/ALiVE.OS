@@ -242,6 +242,9 @@ switch (_operation) do {
         // a percentage typed beside the dropdown wins when filled in (19 Oct 2026); 1 or less is read as a fraction
         private _reinforcementsTyped = format ["%1", _logic getVariable ["reinforcementsTyped", ""]];
         if (_reinforcementsTyped != "") then { _reinforcements = parseNumber _reinforcementsTyped; if (_reinforcements > 1) then { _reinforcements = _reinforcements / 100 } };
+        // Reinforcements Match the Enemy (TheBigDog90 on Discord, 26 Oct): off by default, and never for an Asymmetric
+        // commander, which has no reinforcement request
+        private _reinforceMatchEnemy = ((toLower format ["%1", _logic getVariable ["reinforceMatchEnemy", "false"]]) in ["true", "1"]) && {_type != "asymmetric"};
         private _roadblocks = (parseNumber format ["%1", _logic getvariable ["roadblocks",1]]) > 0;
         // Installation Types (#1081): what an Asymmetric commander may set up, as lower-case keys
         private _insTypes = (toLower format ["%1", _logic getvariable ["asymInstallations", "factory,depot,recruit,ied,suicide,sabotage,ambush,roadblocks"]]) splitString ", ";
@@ -428,6 +431,7 @@ switch (_operation) do {
             ["persistent", _persistent],
             ["module", _logic],
             ["reinforcements", _reinforcements],
+            ["reinforceMatchEnemy", _reinforceMatchEnemy],
             ["asym_occupation", _occupation],
             ["controltype", _type],
             ["intelchance", _intelChance],
@@ -4782,10 +4786,13 @@ switch (_operation) do {
         if (_publishResult) then {
             // remembered for Tasks Only Against Known Enemy: [id, last seen position, when], so what was spotted
             // stays known for a while after it goes out of sight, whether or not C2ISTAR shows intel. The C2ISTAR
-            // module's own Tasks Only Against Known Enemy reads it too (ALIVE_fnc_taskKnownEnemy)
-            if ([_logic, "opTasksKnownOnly", false] call ALiVE_fnc_HashGet || {missionNamespace getVariable ["ALiVE_c2istar_tasksKnownOnly", false]}) then {
+            // module's own Tasks Only Against Known Enemy reads it too (ALIVE_fnc_taskKnownEnemy), and so does
+            // Reinforcements Match the Enemy
+            if ([_logic, "opTasksKnownOnly", false] call ALiVE_fnc_HashGet || {[_logic, "reinforceMatchEnemy", false] call ALiVE_fnc_HashGet} || {missionNamespace getVariable ["ALiVE_c2istar_tasksKnownOnly", false]}) then {
                 private _seen = [_logic, "knownSeen"] call ALiVE_fnc_HashGet;
                 if (isNil "_seen") then { _seen = createHashMap; [_logic, "knownSeen", _seen] call ALiVE_fnc_HashSet };
+                // every reader looks back 30 minutes, so older sightings go here too, between reinforcement requests
+                { if (time - (_y select 1) > 1800) then { _seen deleteAt _x } } forEach +_seen;
                 { _seen set [_x select 0, [_x select 1, time]] } forEach _knownEntities;
             };
             private _knownEntitiesIds = _knownEntities apply {_x select 0};
@@ -5468,6 +5475,189 @@ switch (_operation) do {
             [_logic, "prepFlag"] call ALiVE_fnc_OPCOM;
             ["OPCOM %1: the players answered %2 for %3", [_logic, "side", ""] call ALiVE_fnc_HashGet, _args, _module getVariable ["ALiVE_prep_objectiveID", ""]] call ALiVE_fnc_dump;
             _result = true;
+        };
+    };
+
+    ///////////////////////////////////////////////////
+    // Reinforcements Match the Enemy (TheBigDog90 on Discord, 26 Oct): the enemy this commander's units have seen in
+    // the last 30 minutes (knownSeen and the latest scan), as [infantry, motorised, mechanised, armour] group counts.
+    // A group counts once, as the heaviest vehicle it crews, with artillery and AA as armour since the request sends
+    // them there; a group riding in another group's vehicle is infantry, and aircraft and boat crews are left out.
+    // Not knownEnemy: its C2ISTAR intel part doesn't age out at 30 minutes
+    ///////////////////////////////////////////////////
+    case "seenEnemyMix": {
+        private _ids = [];
+        private _seen = [_logic, "knownSeen"] call ALiVE_fnc_HashGet;
+        if (!isNil "_seen") then {
+            { if (time - (_y select 1) > 1800) then { _seen deleteAt _x } else { _ids pushBack _x } } forEach +_seen;
+        };
+        {
+            if (_x isEqualType [] && {count _x > 0} && {!((_x select 0) in _ids)}) then { _ids pushBack (_x select 0) };
+        } forEach ([_logic, "knownentities", []] call ALiVE_fnc_HashGet);
+
+        private _profilesById = [ALiVE_ProfileHandler, "profilesById"] call ALiVE_fnc_hashGet;
+        private _roles = createHashMap;
+        private _mix = [0, 0, 0, 0];
+        {
+            private _profile = _profilesById get _x;
+            // a player's report also stores place keys, which resolve to no profile
+            if (!isNil "_profile" && {([_profile, "type", ""] call ALiVE_fnc_HashGet) == "entity"} && {!([_profile, "isPlayer", false] call ALiVE_fnc_HashGet)}) then {
+                private _id = _x;
+                // -2 on foot, -1 crews only aircraft or boats, 1 motorised, 2 mechanised, 3 armour
+                private _rank = -2;
+                {
+                    private _veh = _profilesById get _x;
+                    if (!isNil "_veh" && {_id in ([_veh, "entitiesInCommandOf", []] call ALiVE_fnc_HashGet)}) then {
+                        private _class = [_veh, "vehicleClass", ""] call ALiVE_fnc_HashGet;
+                        private _r = _roles get _class;
+                        if (isNil "_r") then {
+                            _r = if (([_class] call ALiVE_fnc_isArtillery) || {[_class] call ALiVE_fnc_isAA}) then { 3 } else {
+                                switch (toLower ([_veh, "objectType", ""] call ALiVE_fnc_HashGet)) do {
+                                    case "tank": { 3 };
+                                    case "armored": { 2 };
+                                    case "car": { 1 };
+                                    case "truck": { 1 };
+                                    default { -1 };
+                                }
+                            };
+                            _roles set [_class, _r];
+                        };
+                        _rank = _rank max _r;
+                    };
+                } forEach (([_profile, "vehicleAssignments", ["", [], [], nil]] call ALiVE_fnc_HashGet) select 1);
+                if (_rank == -2) then { _rank = 0 };
+                if (_rank >= 0) then { _mix set [_rank, (_mix select _rank) + 1] };
+            };
+        } forEach _ids;
+        _result = _mix;
+    };
+
+    ///////////////////////////////////////////////////
+    // Reinforcements Match the Enemy: reshapes a reinforcement request, [8 types as scanTroops counts them], so half
+    // of it replaces losses and half follows the enemy seen (seenEnemyMix). The number of groups is the losses, but
+    // never more than the commander is short of its starting strength. A type it didn't start with may be asked for
+    // when one of its factions has groups of it, Military Logistics is allowed to send it, and Logistics hasn't come
+    // back empty for it twice running
+    ///////////////////////////////////////////////////
+    case "matchEnemyReinforce": {
+        _args params [["_diff", [], [[]]], ["_startCount", 0, [0]], ["_currentCount", 0, [0]]];
+        _result = +_diff;
+        if (count _diff < 8) exitWith {};
+
+        private _side = [_logic, "side", "WEST"] call ALiVE_fnc_HashGet;
+        private _debug = [_logic, "debug", false] call ALiVE_fnc_HashGet;
+        private _factions = [_logic, "factions", []] call ALiVE_fnc_HashGet;
+
+        // the request's four ground kinds; artillery and AA go out as armour (opcom.fsm adds 3, 6 and 7)
+        private _L = [_diff select 0, _diff select 1, _diff select 2, (_diff select 3) + (_diff select 6) + (_diff select 7)];
+        private _sumL = 0;
+        { _sumL = _sumL + _x } forEach _L;
+        // The gaps are counted per type and a type above its start counts as 0, so once this setting has grown a
+        // type, adding the gaps up would ask for more than was lost, every cycle. The overall shortfall caps it
+        private _T = (_sumL min (_startCount - _currentCount)) max 0;
+
+        // which kinds the enemy half may go to; infantry always. What the factions have is looked up once, at the
+        // first request, when every faction module has finished loading
+        private _fieldable = [_logic, "reinforceFieldable"] call ALiVE_fnc_HashGet;
+        if (isNil "_fieldable") then {
+            _fieldable = [true];
+            {
+                private _kinds = _x;
+                _fieldable pushBack ((_factions findIf {
+                    private _faction = _x;
+                    (_kinds findIf { ([_x, _faction] call ALIVE_fnc_configGetRandomGroup) != "FALSE" }) >= 0
+                }) >= 0);
+            } forEach [["Motorized", "Motorized_MTP"], ["Mechanized"], ["Armored"]];
+            [_logic, "reinforceFieldable", _fieldable] call ALiVE_fnc_HashSet;
+        };
+        private _allowed = [true, true, true, true];
+        // this side's Military Logistics module, as sup_fob finds it; with more than one, the one that serves one of
+        // this commander's factions, as Logistics routes a request by faction
+        private _ml = (allMissionObjects "ALiVE_mil_logistics") select { ([_x, "side"] call ALiVE_fnc_ML) == _side };
+        if (_ml isNotEqualTo []) then {
+            // Logistics keeps its factions as [side, [factions]], one entry per commander synced to it
+            private _mine = _ml select {
+                private _mlf = [];
+                { if (_x isEqualType [] && {count _x > 1} && {(_x select 1) isEqualType []}) then { _mlf append (_x select 1) } } forEach ([[_x, "factions"] call ALiVE_fnc_ML] param [0, [], [[]]]);
+                (_factions findIf { _x in _mlf }) >= 0
+            };
+            _ml = if (_mine isNotEqualTo []) then { _mine select 0 } else { _ml select 0 };
+            { _allowed set [_forEachIndex + 1, [_ml, _x] call ALiVE_fnc_ML] } forEach ["allowMotorisedReinforcement", "allowMechanisedReinforcement", "allowArmourReinforcement"];
+        };
+        // Logistics draws its groups at random and drops any with an excluded vehicle, so two empty draws can be bad
+        // luck: a kind closed that way opens again after 3 requests, which costs at most one wasted ask
+        private _closedFor = [_logic, "reinforceClosedFor", [0, 0, 0, 0]] call ALiVE_fnc_HashGet;
+        private _open = [true];
+        {
+            private _kind = _x;
+            private _i = _forEachIndex + 1;
+            private _empty = (count _factions > 0) && {({ (missionNamespace getVariable [format ["ALiVE_ML_noGroups_%1_%2", _x, _kind], 0]) >= 2 } count _factions) == count _factions};
+            if (_empty) then {
+                _closedFor set [_i, (_closedFor select _i) + 1];
+                if ((_closedFor select _i) >= 3) then {
+                    { missionNamespace setVariable [format ["ALiVE_ML_noGroups_%1_%2", _x, _kind], 0] } forEach _factions;
+                    _closedFor set [_i, 0];
+                };
+            } else {
+                _closedFor set [_i, 0];
+            };
+            _open pushBack ((_fieldable select _i) && {_allowed select _i} && {!_empty});
+        } forEach ["Motorized", "Mechanized", "Armored"];
+        [_logic, "reinforceClosedFor", _closedFor] call ALiVE_fnc_HashSet;
+
+        // the enemy seen; a kind it can't have goes to the next lighter one it can
+        private _E = [_logic, "seenEnemyMix"] call MAINCLASS;
+        for "_i" from 3 to 1 step -1 do {
+            if !(_open select _i) then {
+                private _j = _i - 1;
+                while { !(_open select _j) } do { _j = _j - 1 };
+                _E set [_j, (_E select _j) + (_E select _i)];
+                _E set [_i, 0];
+            };
+        };
+        private _sumE = 0;
+        { _sumE = _sumE + _x } forEach _E;
+
+        // half replaces losses and half follows the enemy; with nothing seen, losses only
+        private _R = [0, 0, 0, 0];
+        if (_T > 0) then {
+            private _w = [0, 1, 2, 3] apply {
+                if (_sumE > 0) then { 0.5 * (_L select _x) / _sumL + 0.5 * (_E select _x) / _sumE } else { (_L select _x) / _sumL }
+            };
+            private _exact = _w apply { _T * _x };
+            _R = _exact apply { floor _x };
+            private _left = _T;
+            { _left = _left - _x } forEach _R;
+            // the groups left over go to the largest fractions, so the request adds up to _T
+            private _order = [0, 1, 2, 3] apply { [(_exact select _x) - (_R select _x), _x] };
+            _order sort false;
+            for "_k" from 0 to (_left min 4) - 1 do {
+                private _idx = (_order select _k) select 1;
+                _R set [_idx, (_R select _idx) + 1];
+            };
+        };
+
+        // what one request can bring: 8 infantry and 5 of each vehicle kind (opcom.fsm, then Military Logistics).
+        // What doesn't fit goes to the next lighter kind it can have; past 8 infantry it is left out, as it is today
+        // A kind it can't have gets none, so its share of the losses goes lighter too instead of being dropped by Logistics
+        private _caps = [8, 5, 5, 5];
+        for "_i" from 3 to 1 step -1 do {
+            private _over = (_R select _i) - ([0, _caps select _i] select (_open select _i));
+            if (_over > 0) then {
+                _R set [_i, (_R select _i) - _over];
+                private _j = _i - 1;
+                while { !(_open select _j) } do { _j = _j - 1 };
+                _R set [_j, (_R select _j) + _over];
+            };
+        };
+        private _dropped = ((_R select 0) - 8) max 0;
+        _R set [0, (_R select 0) min 8];
+
+        _result = [_R select 0, _R select 1, _R select 2, _R select 3, _diff select 4, _diff select 5, 0, 0];
+
+        if (_debug) then {
+            ["OPCOM %1 reinforcements match the enemy: enemy seen %2, own losses %3, short of start by %4, kinds open %5, request %6%7", _side, _E, _L, _startCount - _currentCount, _open, _R,
+                ["", format [", %1 left out over the limits", _dropped]] select (_dropped > 0)] call ALiVE_fnc_dumpR;
         };
     };
 

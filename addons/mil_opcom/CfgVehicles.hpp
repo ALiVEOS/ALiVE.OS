@@ -84,6 +84,19 @@ class CfgVehicles {
                                 };
                         };
                         class reinforcementsTyped : Edit { property = "ALiVE_mil_opcom_reinforcementsTyped"; displayName = "$STR_ALIVE_OPCOM_REINFORCEMENTS_TYPED"; tooltip = "$STR_ALIVE_OPCOM_REINFORCEMENTS_TYPED_COMMENT"; defaultValue = """"""; };
+                        // Reinforcements Match the Enemy (TheBigDog90 on Discord, 26 Oct): half of each request follows what was seen
+                        class reinforceMatchEnemy : Combo
+                        {
+                                property = "ALiVE_mil_opcom_reinforceMatchEnemy";
+                                displayName = "$STR_ALIVE_OPCOM_REINFORCE_MATCH_ENEMY";
+                                tooltip = "$STR_ALIVE_OPCOM_REINFORCE_MATCH_ENEMY_COMMENT";
+                                defaultValue = """false""";
+                                class Values
+                                {
+                                        class No  { name = "No";  value = "false"; };
+                                        class Yes { name = "Yes"; value = "true"; };
+                                };
+                        };
 
                         // ---- Factions -------------------------------------------------------
                         // Phase 4 design:

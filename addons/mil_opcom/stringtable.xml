@@ -138,6 +138,12 @@
 <Key ID="STR_ALIVE_OPCOM_REINFORCEMENTS_TYPED_COMMENT">
     <English>Requires Military Logistics Module. Type the force strength, 0 to 100, at which the AI Commander asks for reinforcements, to use instead of the setting above. Leave it empty to use the setting above. 1 or less is read as a fraction (0.8 is 80%).</English>
 </Key>
+<Key ID="STR_ALIVE_OPCOM_REINFORCE_MATCH_ENEMY">
+    <English>Reinforcements Match the Enemy</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_REINFORCE_MATCH_ENEMY_COMMENT">
+    <English>Requires Military Logistics Module. Invasion and Occupation. No (the default) replaces losses type for type: lose three tanks and it asks for three tanks. Yes shapes each request around what this commander's units have seen of the enemy in the last 30 minutes. Half still replaces its own losses and the other half follows the enemy mix, so a commander facing tanks asks for armour even if it only lost infantry. It can ask for a type it didn't start with, as long as its faction has groups of that type and Military Logistics is allowed to send them. It never asks for more groups than it has lost, nor more than it is short of its starting strength. With nothing seen it replaces losses as before. Aircraft are left to the Military Air Component Commander, and landing from a ship is not affected.</English>
+</Key>
 <Key ID="STR_ALIVE_OPCOM_FACTIONS">
     <English>Factions:</English>
     <Chinese>陣營：</Chinese>
