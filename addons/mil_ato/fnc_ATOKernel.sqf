@@ -1878,9 +1878,6 @@ switch(_operation) do {
     case "currentBase": {
         _result = [_logic, _operation, _args, []] call ALIVE_fnc_OOsimpleOperation;
     };
-    case "pilotbuilding": {
-        _result = [_logic, _operation, _args, ""] call ALIVE_fnc_OOsimpleOperation;
-    };
     case "runwaystartpos": {
         _result = [_logic, _operation, _args, ""] call ALIVE_fnc_OOsimpleOperation;
     };
@@ -2997,7 +2994,7 @@ switch(_operation) do {
             } forEach ["persistent","createHQ","placeAir","generateTasks","generateSEADTasks","holdSitesForPlayers","resupply","broadcastOnRadio",
                        "showSupportTrucks","playersCanUseAircraft","returnToATOAfter",
                        "placeDrones","useUAVs","droneTypes","aircraftWhitelist","aircraftBlacklist","sortieDuration","minAssetsForOffensive","maxConcurrentSorties",
-                       "pilotbuilding","runwaystartpos","runwayendpos","runwaywidth","objectiveObjects","objectiveObjectsCount",
+                       "runwaystartpos","runwayendpos","runwaywidth","objectiveObjects","objectiveObjectsCount",
                        "objectiveObjectsChance","objectiveObjectsBehaviour"];
 
             if (_debug) then {

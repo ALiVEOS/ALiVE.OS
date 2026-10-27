@@ -257,10 +257,6 @@ class CfgVehicles
                             class No { name = "No"; value = false; };
                         };
                 };
-                // Hidden: nothing reads Pilot Ready Room since the rewrite, which builds each crew
-                // straight into its aircraft when a sortie starts. Kept, not removed, so a mission's
-                // saved value still loads.
-                class pilotbuilding { property = "ALiVE_mil_ato_pilotbuilding"; control = "ALiVE_HiddenAttribute"; defaultValue = """"""; expression = "_this setVariable ['pilotbuilding', _value, true];"; typeName = "STRING"; displayName = ""; };
                 // ---- Player interaction ------------------------------------------------
                 class HDR_PLAYERS : ALiVE_ModuleSubTitle { property = "ALiVE_mil_ato_HDR_PLAYERS"; displayName = "PLAYER INTERACTION"; };
                 class generateTasks : Combo

@@ -253,9 +253,6 @@ switch(_operation) do {
             private _type = _logic getvariable ["CQB_TYPE","regular"];
             _logic setVariable ["type", _type];
 
-            private _locality = _logic getvariable ["CQB_locality_setting","server"];
-            _logic setVariable ["locality", _locality];
-
             // Union multi-select list + manual override field; dedup and drop empties
             private _factionsRaw    = _logic getVariable ["CQB_FACTIONS",       []];
             private _factionsManual = _logic getVariable ["CQB_FACTIONS_manual", ""];
@@ -557,7 +554,6 @@ switch(_operation) do {
                 _logic setVariable ["id",_id,true];
                 _logic setVariable ["instancetype",_type,true];
                 _logic setVariable ["UnitsBlackList",_UnitsBlackList,true];
-                _logic setVariable ["locality",_locality,true];
                 _logic setVariable ["amount",_amount,true];
                 _logic setVariable ["debugColor",_debugColor,true];
                 _logic setVariable ["debugPrefix",_type,true];

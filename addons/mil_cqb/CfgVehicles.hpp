@@ -56,9 +56,6 @@ class CfgVehicles {
                                     class No { name = "No"; value = false; default = 1; };
                                 };
                         };
-                        // Hidden: its one choice is Auto (server) and nothing reads it; where the AI runs is the AI
-                        // Distributor's call. Kept, not removed, so a mission's saved value still loads.
-                        class CQB_locality_setting { property = "ALiVE_mil_cqb_CQB_locality_setting"; control = "ALiVE_HiddenAttribute"; defaultValue = """server"""; expression = "_this setVariable ['CQB_locality_setting', _value, true];"; typeName = "STRING"; displayName = ""; };
                         // ---- Coverage & Density ---------------------------------------------
                         class HDR_PLACEMENT : ALiVE_ModuleSubTitle { property = "ALiVE_mil_cqb_HDR_PLACEMENT"; displayName = "COVERAGE & DENSITY"; };
                         class CQB_LOCATIONTYPE : Combo
