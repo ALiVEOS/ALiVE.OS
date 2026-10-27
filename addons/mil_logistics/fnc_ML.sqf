@@ -7183,7 +7183,7 @@ switch(_operation) do {
                         // request arrives, so two requests can't both spend the last of the pool. Never queued.
                         if (_eventType == "PR_COLLECT") then {
 
-                            (["validateCollect", [_eventData param [6, ""], _playerID, _eventFaction, _eventForceMakeup]] call ALIVE_fnc_hub) params ["_why", "_cPlayer", "_cHub"];
+                            (["validateCollect", [_eventData param [6, ""], _playerID, _eventFaction, _eventForceMakeup, [_event, "sender", -1] call ALIVE_fnc_hashGet]] call ALIVE_fnc_hub) params ["_why", "_cPlayer", "_cHub"];
                             private _cost = ["collectCost", [_eventForceMakeup]] call ALIVE_fnc_hub;
                             if (_why == "" && {_cost > _forcePool}) then { _why = "pool" };
 

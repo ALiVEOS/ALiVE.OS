@@ -31,8 +31,9 @@ Parameters:
     ["mayWho", [unit, rules, names]] - whether Who Can Collect style rules let the unit in
     ["mayCollect", [unit, hub]] - an admin, or let in by the hub's module
     ["sideCatalogue", [sideText]] - server: every class the tablet could list for that side, lower case
-    ["validateCollect", [hubNetId, playerID, faction, forceMakeup]] - server: "" when the requisition
-        may be collected, else why not; with the player, hub and module
+    ["validateCollect", [hubNetId, playerID, faction, forceMakeup, sender]] - server: "" when the requisition
+        may be collected, else why not; with the player, hub and module. sender is the machine the
+        request came from, as ALIVE_fnc_addEventToServer noted it (-1 when it came from the server's own machine)
     ["collectCost", [forceMakeup]] - what a collected requisition takes from the force pool
     ["permissions", [rules, names, hubNetId]] - server, through ALIVE_fnc_hubRequest: an admin's change
         to Who Can Collect, for one hub's module or (hubNetId "") for every module
@@ -288,7 +289,7 @@ switch (_op) do {
     // Everything a collect must pass before anything is made. The faction and the class lists come
     // from the player's machine, so each is checked against the hub here.
     case "validateCollect": {
-        _args params [["_netId", "", [""]], ["_playerID", "", [""]], ["_faction", "", [""]], ["_fm", [], [[]]]];
+        _args params [["_netId", "", [""]], ["_playerID", "", [""]], ["_faction", "", [""]], ["_fm", [], [[]]], ["_sender", -1, [0]]];
         _result = ["", objNull, objNull, objNull];
         private _why = call {
             if !(isServer) exitWith { "not the server" };
@@ -301,8 +302,9 @@ switch (_op) do {
             private _player = if (_i > -1) then { playableUnits select _i } else { if (!isMultiplayer && {hasInterface}) then { player } else { objNull } };
             if (isNull _player || {isMultiplayer && {_playerID == "" || {!isPlayer _player}}}) exitWith { format ["no player %1", _playerID] };
             // a request sent from one machine in another player's name: the tablet only ever sends its
-            // own player's, so the sending machine must be the player's
-            if (isRemoteExecuted && {remoteExecutedOwner > 2} && {owner _player != remoteExecutedOwner}) exitWith { format ["%1's request came from another machine", name _player] };
+            // own player's, so the machine that sent it must be the player's. A player on the server's
+            // own machine (a hosted game's host) sends straight to the event log, so has no sender.
+            if (isMultiplayer && {_sender != ([owner _player, -1] select (local _player))}) exitWith { format ["%1's request came from another machine", name _player] };
             _result set [1, _player]; _result set [2, _hub]; _result set [3, _logic];
             if ((["unitSide", [_player]] call ALIVE_fnc_hub) != _hubSide) exitWith { format ["%1 is not of side %2", name _player, _hubSide] };
             if (_faction == "" || {!isClass (configFile >> "CfgFactionClasses" >> _faction) && {isNil "ALIVE_factionCustomMappings" || {!(_faction in (ALIVE_factionCustomMappings select 1))}}}) exitWith { format ["no faction %1", _faction] };
