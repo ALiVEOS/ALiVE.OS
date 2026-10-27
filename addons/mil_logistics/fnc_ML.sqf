@@ -6852,7 +6852,7 @@ switch(_operation) do {
 
             _initComplete = true;
 
-            if(_eventType == "PR_STANDARD" || _eventType == "PR_AIRDROP" || _eventType == "PR_HELI_INSERT") then {
+            if(_eventType == "PR_STANDARD" || _eventType == "PR_AIRDROP" || _eventType == "PR_HELI_INSERT" || _eventType == "PR_COLLECT") then {
                 _initComplete = _logic getVariable "initialAnalysisComplete";
                 if!(_initComplete) then {
                     // Every logistics module gets the request, and each one still starting up answered "wait", so the
@@ -6912,7 +6912,7 @@ switch(_operation) do {
 
             // check if any other mil logistics modules can handle this event
 
-            if(_eventType == "PR_STANDARD" || _eventType == "PR_AIRDROP" || _eventType == "PR_HELI_INSERT") then {
+            if(_eventType == "PR_STANDARD" || _eventType == "PR_AIRDROP" || _eventType == "PR_HELI_INSERT" || _eventType == "PR_COLLECT") then {
 
                 // faction not handled by this mil logistics module
                 if!(_factionFound) then {
@@ -7179,6 +7179,37 @@ switch(_operation) do {
 
                         } else {
 
+                        // Collect at a Logistics Hub (#1091): checked, paid for and made here, in the frame the
+                        // request arrives, so two requests can't both spend the last of the pool. Never queued.
+                        if (_eventType == "PR_COLLECT") then {
+
+                            (["validateCollect", [_eventData param [6, ""], _playerID, _eventFaction, _eventForceMakeup]] call ALIVE_fnc_hub) params ["_why", "_cPlayer", "_cHub"];
+                            private _cost = ["collectCost", [_eventForceMakeup]] call ALIVE_fnc_hub;
+                            if (_why == "" && {_cost > _forcePool}) then { _why = "pool" };
+
+                            if (_why != "") then {
+                                if (_why == "pool") then {
+                                    _logEvent = ['LOGCOM_RESPONSE', [_requestID,_playerID],"Logistics","DENIED_FORCEPOOL"] call ALIVE_fnc_event;
+                                } else {
+                                    ["ML - Player request %1 to collect at a hub refused: %2", _requestID, _why] call ALiVE_fnc_dump;
+                                    _logEvent = ['LOGCOM_RESPONSE', [_requestID,_playerID],"Logistics","DENIED_HUB"] call ALIVE_fnc_event;
+                                };
+                                [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
+                            } else {
+                                _forcePool = _forcePool - _cost;
+                                [ALIVE_MLGlobalRegistry,"updateGlobalForcePool",[[_logic, "registryID"] call MAINCLASS,_forcePool]] call ALIVE_fnc_MLGlobalRegistry;
+                                if (_debug) then {
+                                    ["ML - Player request %1 collected at the hub %2 by %3: cost %4, pool now %5", _requestID, typeOf _cHub, name _cPlayer, _cost, _forcePool] call ALiVE_fnc_dump;
+                                };
+                                _logEvent = ['LOGCOM_RESPONSE', [_requestID,_playerID],"Logistics","ACKNOWLEDGED"] call ALIVE_fnc_event;
+                                [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
+                                [_logic, "playerCollect", [_cHub, _cPlayer, _eventFaction, _side, _eventForceMakeup, _requestID, _playerID]] spawn MAINCLASS;
+                            };
+
+                            _forceMakeupTotal = 0;
+
+                        } else {
+
                         // if it's a player request
                         // accept automatically
 
@@ -7193,6 +7224,8 @@ switch(_operation) do {
                         // respond to player request
                         _logEvent = ['LOGCOM_RESPONSE', [_requestID,_playerID],"Logistics","ACKNOWLEDGED"] call ALIVE_fnc_event;
                         [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
+
+                        };
 
                         };
 
@@ -7290,7 +7323,7 @@ switch(_operation) do {
                     _eventForceMakeup = _eventData select 3;
                     _eventType = _eventData select 4;
 
-                    if(_eventType == "PR_STANDARD" || _eventType == "PR_AIRDROP" || _eventType == "PR_HELI_INSERT") then {
+                    if(_eventType == "PR_STANDARD" || _eventType == "PR_AIRDROP" || _eventType == "PR_HELI_INSERT" || _eventType == "PR_COLLECT") then {
 
                         _playerID = _eventData select 5;
                         _requestID = _eventForceMakeup select 0;
@@ -7311,6 +7344,143 @@ switch(_operation) do {
             };
 
         };
+    };
+
+    // A requisition collected at a Logistics Hub (#1091), made beside the hub once the request has been
+    // checked and paid for in LOGCOM_REQUEST: crates, stores and empty vehicles as objects; soldiers and
+    // groups that join the player made live and handed over; ones that hold the spot or reinforce made
+    // as profiles that garrison the hub, the reinforcements left to the AI Commander as a delivery's are.
+    // Scheduled. [hub, player, faction, side, force makeup, request ID, player ID]
+    case "playerCollect": {
+        _args params ["_hub", "_player", "_faction", "_side", "_fm", "_requestID", "_playerID"];
+        // what was paid for and can't be made goes back to the pool, as a cancelled request's does
+        private _refund = {
+            params ["_n"];
+            if (_n <= 0 || {isNil "ALIVE_globalForcePool"}) exitWith {};
+            private _pool = [ALIVE_globalForcePool, _faction, 0] call ALIVE_fnc_hashGet;
+            if (_pool isEqualType "") then { _pool = parseNumber _pool };
+            [ALIVE_MLGlobalRegistry, "updateGlobalForcePool", [[_logic, "registryID"] call MAINCLASS, _pool + _n]] call ALIVE_fnc_MLGlobalRegistry;
+            ["ML - collect at a hub: %1 given back to the %2 force pool for what could not be made", _n, _faction] call ALiVE_fnc_dump;
+        };
+        if (isNull _hub || {!alive _hub}) exitWith {
+            [["collectCost", [_fm]] call ALIVE_fnc_hub] call _refund;
+            private _logEvent = ['LOGCOM_RESPONSE', [_requestID, _playerID], "Logistics", "DENIED_HUB"] call ALIVE_fnc_event;
+            [ALIVE_eventLog, "addEvent", _logEvent] call ALIVE_fnc_eventLog;
+        };
+        private _hubPos = getPosATL _hub;
+        private _debug = [_logic, "debug"] call MAINCLASS;
+        private _sideObject = [_side] call ALIVE_fnc_sideTextToObject;
+        private _spot = {
+            params ["_class", ["_radius", 40]];
+            private _found = [_class, _hubPos getPos [8 + random 12, random 360], _radius, "auto"] call ALiVE_fnc_findVehicleSpawnPosition;
+            if (count _found >= 2) then { _found } else { [[_hubPos getPos [10 + random 15, random 360]] call _fnc_snapToLand, random 360] }
+        };
+        private _made = 0;
+
+        // crates and defence stores
+        {
+            if (_x isEqualType "" && {isClass (configFile >> "CfgVehicles" >> _x)}) then {
+                ([_x, 30] call _spot) params ["_pos", "_dir"];
+                private _o = createVehicle [_x, _pos, [], 0, "NONE"];
+                _o setDir _dir;
+                _made = _made + 1;
+            };
+        } forEach (_fm param [1, []]);
+
+        // empty vehicles: a boat on the nearest water
+        {
+            private _class = _x param [0, ""];
+            if (isClass (configFile >> "CfgVehicles" >> _class)) then {
+                private _pos = []; private _dir = random 360;
+                if (_class isKindOf "Ship") then {
+                    _pos = [_hubPos, true] call ALIVE_fnc_getClosestSea;
+                } else {
+                    ([_class, 60] call _spot) params ["_p", "_d"];
+                    _pos = _p; _dir = _d;
+                };
+                private _v = createVehicle [_class, _pos, [], 0, "NONE"];
+                _v setDir _dir;
+                _made = _made + 1;
+            };
+        } forEach (_fm param [2, []]);
+
+        // soldiers: [static, join, reinforce]
+        private _holdAtHub = {
+            params ["_profiles"];
+            {
+                if ([_x] call ALIVE_fnc_isHash && {([_x, "type", ""] call ALIVE_fnc_hashGet) == "entity"}) then {
+                    [_x, "setActiveCommand", ["ALIVE_fnc_managedGarrison", "managed", [200, "false", _hubPos]]] call ALIVE_fnc_profileEntity;
+                };
+            } forEach _profiles;
+        };
+        {
+            _x params ["_index", "_orders"];
+            private _classes = ((_fm param [_index, []]) apply { _x param [0, ""] }) select { isClass (configFile >> "CfgVehicles" >> _x) };
+            if (_classes isNotEqualTo []) then {
+                private _pos = [_hubPos getPos [6 + random 8, random 360]] call _fnc_snapToLand;
+                if (_orders == "Join") then {
+                    if (isNull _player || {!alive _player}) then { [1] call _refund } else {
+                        private _g = createGroup [_sideObject, true];
+                        private _units = _classes apply { _g createUnit [_x, _pos, [], 5, "NONE"] };
+                        _units joinSilent (group _player);
+                        { _x setVariable ["ALiVE_PR_rented", true, true] } forEach _units;
+                    };
+                } else {
+                    private _profile = [_classes, _side, _faction, _pos, 0, _side, true] call ALIVE_fnc_createProfileEntity;
+                    [_profile] call _fnc_spawnHook;
+                    [[_profile]] call _holdAtHub;
+                };
+                _made = _made + 1;
+            };
+        } forEach [[3, "Static"], [4, "Join"], [5, "Reinforce"]];
+
+        // groups: [static, join, reinforce]
+        {
+            _x params ["_index", "_orders"];
+            {
+                _x params [["_group", ""], ["_info", []]];
+                private _gFaction = _info param [1, _faction];
+                private _pos = [_hubPos getPos [15 + random 20, random 360]] call _fnc_snapToLand;
+                if (_orders == "Join") then {
+                    if (isNull _player || {!alive _player}) then { [1] call _refund } else {
+                        // the group's config, under its faction or the one a custom mapping names
+                        private _folders = [_gFaction];
+                        if (!isNil "ALIVE_factionCustomMappings" && {_gFaction in (ALIVE_factionCustomMappings select 1)}) then {
+                            private _f = [[ALIVE_factionCustomMappings, _gFaction] call ALIVE_fnc_hashGet, "GroupFactionName", ""] call ALIVE_fnc_hashGet;
+                            if (_f isEqualType "" && {_f != ""}) then { _folders pushBackUnique _f };
+                        };
+                        private _sideCfg = configFile >> "CfgGroups" >> (["West", "East", "Indep"] select ((["WEST", "EAST", "GUER"] find _side) max 0));
+                        private _cfg = configNull;
+                        {
+                            private _fc = _sideCfg >> _x;
+                            { if (isClass (_x >> _group)) exitWith { _cfg = _x >> _group } } forEach ("true" configClasses _fc);
+                            if (!isNull _cfg) exitWith {};
+                        } forEach _folders;
+                        if (!isNull _cfg) then {
+                            private _g = [_pos, _sideObject, _cfg] call BIS_fnc_spawnGroup;
+                            private _units = units _g;
+                            _units joinSilent (group _player);
+                            { _x setVariable ["ALiVE_PR_rented", true, true] } forEach _units;
+                            _made = _made + 1;
+                        } else {
+                            ["ML - collect at a hub: no group %1 of faction %2, so it is left out", _group, _gFaction] call ALiVE_fnc_dumpR;
+                            [1] call _refund;
+                        };
+                    };
+                } else {
+                    private _profiles = [_group, _pos, random 360, false, _gFaction, true, false, "STEALTH"] + (call _fnc_hookArgs) call ALIVE_fnc_createProfilesFromGroupConfig;
+                    [_profiles] call _holdAtHub;
+                    _made = _made + 1;
+                };
+            } forEach (_fm param [_index, []]);
+        } forEach [[6, "Static"], [7, "Join"], [8, "Reinforce"]];
+
+        if (_debug) then {
+            ["ML - Player request %1 collected at %2: %3 things made", _requestID, mapGridPosition _hub, _made] call ALiVE_fnc_dump;
+        };
+
+        private _logEvent = ['LOGCOM_RESPONSE', [_requestID, _playerID, _hubPos, false], "Logistics", "REQUEST_DELIVERED"] call ALIVE_fnc_event;
+        [ALIVE_eventLog, "addEvent", _logEvent] call ALIVE_fnc_eventLog;
     };
 
     case "onDemandAnalysis": {

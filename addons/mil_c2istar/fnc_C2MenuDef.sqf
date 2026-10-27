@@ -84,11 +84,12 @@ if (!isNil "ALIVE_SUP_COMMAND") then {
 };
 
 if ([QMOD(SUP_PLAYER_RESUPPLY)] call ALiVE_fnc_isModuleAvailable) then {
-    _otherResult = [
+    // or standing at a Logistics Hub the player may collect at (#1091)
+    _otherResult = ([
         [MOD(SUP_PLAYER_RESUPPLY),"pr_item"] call ALIVE_fnc_PR,
         [MOD(SUP_PLAYER_RESUPPLY),"pr_item_custom"] call ALIVE_fnc_PR,
         ["ALIVE_Tablet"]
-    ] call ALIVE_fnc_playerHasAccessItems;
+    ] call ALIVE_fnc_playerHasAccessItems) || {!isNil "ALiVE_hub_list" && {["mayCollect", [player, ["nearHub", [player]] call ALIVE_fnc_hub]] call ALIVE_fnc_hub}};
 };
 
 // Tests NEO_radioLogic rather than scanning for the Combat Support module. That

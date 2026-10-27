@@ -46,6 +46,21 @@ class CfgFunctions {
                 file = "\x\alive\addons\sup_player_resupply\fnc_PRCatalogueRules.sqf";
                 ALIVE_RECOMPILE;
             };
+            class hubInit {
+                description = "The Logistics Hub module's init (#1091)";
+                file = "\x\alive\addons\sup_player_resupply\fnc_hubInit.sqf";
+                ALIVE_RECOMPILE;
+            };
+            class hub {
+                description = "The Logistics Hub: hubs, Who Can Collect and the checks on a collected requisition (#1091)";
+                file = "\x\alive\addons\sup_player_resupply\fnc_hub.sqf";
+                ALIVE_RECOMPILE;
+            };
+            class hubRequest {
+                description = "The only way a player's machine asks the server to change a Logistics Hub (#1091)";
+                file = "\x\alive\addons\sup_player_resupply\fnc_hubRequest.sqf";
+                ALIVE_RECOMPILE;
+            };
             class PRSetTerrainMode {
                 description = "Player Resupply terrain-mode toggle (#698)";
                 file = "\x\alive\addons\sup_player_resupply\fnc_PRSetTerrainMode.sqf";

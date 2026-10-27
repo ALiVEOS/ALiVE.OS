@@ -33,12 +33,13 @@ private _menu = "ALiVE_PR";
 // Condition code for PR menu items - shared access-item gate (categories + custom
 // classnames, same pool and matcher as the flexiMenu and C2ISTAR tablet entries;
 // evaluated per menu-open so attribute and inventory changes apply live) //
+// Standing at a Logistics Hub the player may collect at opens it too (#1091).
 private _prCond = {
-    ([
+    (([
         [MOD(SUP_PLAYER_RESUPPLY), "pr_item"] call ALIVE_fnc_PR,
         [MOD(SUP_PLAYER_RESUPPLY), "pr_item_custom"] call ALIVE_fnc_PR,
         ["ALIVE_Tablet"]
-    ] call ALIVE_fnc_playerHasAccessItems)
+    ] call ALIVE_fnc_playerHasAccessItems) || {!isNil "ALiVE_hub_list" && {["mayCollect", [player, ["nearHub", [player]] call ALIVE_fnc_hub]] call ALIVE_fnc_hub}})
     && {(MOD(Require) getVariable [(format ["ALIVE_MIL_LOG_AVAIL_%1", (side group player)]), false])}
 };
 

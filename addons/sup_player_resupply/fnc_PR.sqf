@@ -297,11 +297,58 @@ switch(_operation) do {
         _result = [_logic,_operation,_args,DEFAULT_SELECTED_VALUE] call ALIVE_fnc_OOsimpleOperation;
     };
 
+    // With Collect at a Hub chosen, the tablet reads the hub's copy of the catalogue (collectCatalogue)
     case "sortedVehicles": {
-        _result = [_logic,_operation,_args,DEFAULT_SORTED_VEHICLES] call ALIVE_fnc_OOsimpleOperation;
+        if (isNil "_args" || {_args isEqualTo objNull}) then {
+            if ((_logic getVariable ["selectedDeliveryListValue", ""]) == "PR_COLLECT") exitWith { _result = ([_logic, "collectCatalogue"] call MAINCLASS) select 0 };
+            _result = [_logic,_operation,_args,DEFAULT_SORTED_VEHICLES] call ALIVE_fnc_OOsimpleOperation;
+        } else {
+            _result = [_logic,_operation,_args,DEFAULT_SORTED_VEHICLES] call ALIVE_fnc_OOsimpleOperation;
+        };
     };
     case "sortedGroups": {
-        _result = [_logic,_operation,_args,DEFAULT_SORTED_GROUPS] call ALIVE_fnc_OOsimpleOperation;
+        if (isNil "_args" || {_args isEqualTo objNull}) then {
+            if ((_logic getVariable ["selectedDeliveryListValue", ""]) == "PR_COLLECT") exitWith { _result = ([_logic, "collectCatalogue"] call MAINCLASS) select 1 };
+            _result = [_logic,_operation,_args,DEFAULT_SORTED_GROUPS] call ALIVE_fnc_OOsimpleOperation;
+        } else {
+            _result = [_logic,_operation,_args,DEFAULT_SORTED_GROUPS] call ALIVE_fnc_OOsimpleOperation;
+        };
+    };
+    // The catalogue at the hub the player stands at (#1091): the tablet's own, then that hub's Only
+    // These, Never and Also lists on top, as [vehicles, groups]. Built on a copy, so Convoy and the
+    // other deliveries never see a hub's Also. Kept until the player is at another Hub module's hub.
+    case "collectCatalogue": {
+        private _vehicles = [_logic,"sortedVehicles",objNull,DEFAULT_SORTED_VEHICLES] call ALIVE_fnc_OOsimpleOperation;
+        private _groups = [_logic,"sortedGroups",objNull,DEFAULT_SORTED_GROUPS] call ALIVE_fnc_OOsimpleOperation;
+        if (isNil "_vehicles" || {!(_vehicles isEqualType [])} || {count _vehicles < 2}) then { _vehicles = [] call ALIVE_fnc_hashCreate };
+        if (isNil "_groups" || {!(_groups isEqualType [])} || {count _groups < 2}) then { _groups = [] call ALIVE_fnc_hashCreate };
+        private _hub = ["nearHub", [player]] call ALIVE_fnc_hub;
+        private _module = if (isNull _hub) then { objNull } else { (_hub getVariable ["ALiVE_hub", []]) param [3, objNull] };
+        if (isNull _module) exitWith { _result = [_vehicles, _groups] };
+        private _rules = ["catalogueRules", [_module]] call ALIVE_fnc_hub;
+        if ((values _rules) findIf { _x isNotEqualTo [] } < 0) exitWith { _result = [_vehicles, _groups] };
+        private _kept = _logic getVariable ["ALiVE_PR_collectCatalogue", []];
+        if ((_kept param [0, objNull]) isEqualTo _module) exitWith { _result = [_kept select 1, _kept select 2] };
+        _vehicles = +_vehicles;
+        _groups = +_groups;
+        {
+            private _category = _x;
+            private _list = ([_vehicles, _category] call ALIVE_fnc_hashGet) select { ["allows", [_rules, _x]] call ALIVE_fnc_PRCatalogueRules };
+            if (_list isEqualTo []) then { [_vehicles, _category] call ALIVE_fnc_hashRem } else { [_vehicles, _category, _list] call ALIVE_fnc_hashSet };
+        } forEach +(_vehicles select 1);
+        ["addAlso", [_rules, _vehicles]] call ALIVE_fnc_PRCatalogueRules;
+        ["filterGroups", [_rules, _groups, [_logic,"side"] call MAINCLASS]] call ALIVE_fnc_PRCatalogueRules;
+        // the hub's Also classes the tablet never listed get a name to show; a hub never weighs a load
+        ALiVE_PR_HUB_ALSO = _rules getOrDefault ["alsoClasses", []];
+        if (!isNil "ALIVE_PR_vehicleCache") then {
+            {
+                if !(_x in (ALIVE_PR_vehicleCache select 1)) then {
+                    [ALIVE_PR_vehicleCache, _x, [getText (configFile >> "CfgVehicles" >> _x >> "displayName"), 0]] call ALIVE_fnc_hashSet;
+                };
+            } forEach ALiVE_PR_HUB_ALSO;
+        };
+        _logic setVariable ["ALiVE_PR_collectCatalogue", [_module, _vehicles, _groups]];
+        _result = [_vehicles, _groups];
     };
     case "marker": {
         _result = [_logic,_operation,_args,DEFAULT_MARKER] call ALIVE_fnc_OOsimpleOperation;
@@ -878,6 +925,13 @@ switch(_operation) do {
                 _deliveryListValues pushback "PR_STANDARD";
             };
 
+            // Collect at a Hub (#1091): offered whenever a Logistics Hub module is synced to this one. A hub
+            // that's out of reach, or whose rules keep the player out, is turned down when they send.
+            if ((synchronizedObjects _logic) findIf { typeOf _x == "ALiVE_sup_logistics_hub" } > -1) then {
+                _deliveryListOptions pushback (localize "STR_ALIVE_HUB_OPTION");
+                _deliveryListValues pushback "PR_COLLECT";
+            };
+
             if(count _deliveryListOptions == 0) then {
                 ["There are no delivery methods allowed, enable one or more delivery methods on the Player Combat Logistics module!"] call ALIVE_fnc_dumpR;
                 _deliveryListOptions pushback ("Convoy  -  Ground vehicles deliver assets by road");
@@ -1041,7 +1095,7 @@ switch(_operation) do {
                                         if (_cachedMass < _maxWeight) then { _options pushBack _displayName; _values pushBack _x; };
                                     };
                                 } else {
-                                    if (_deliveryType == "PR_STANDARD") then { _options pushBack _displayName; _values pushBack _x; };
+                                    if (_deliveryType in ["PR_STANDARD", "PR_COLLECT"]) then { _options pushBack _displayName; _values pushBack _x; };
                                 };
                             } forEach _vehicleClasses;
                         };
@@ -1381,6 +1435,10 @@ switch(_operation) do {
                             _radioMessage = "Convoy request completed";
                             _markerLabel = "Convoy destination";
                         };
+                        case "PR_COLLECT": {
+                            _radioMessage = localize "STR_ALIVE_HUB_COLLECTED";
+                            _markerLabel = "Hub";
+                        };
                     };
 
                     if(_isWaiting) then {
@@ -1509,6 +1567,28 @@ switch(_operation) do {
                     [_logic,"marker",[]] call MAINCLASS;
 
                     // set the tablet state to reset
+
+                    [_logic,"state","RESET"] call MAINCLASS;
+
+                };
+                case "DENIED_HUB":{
+
+                    // LOGCOM refused a Collect at a Hub: the server's own checks on the hub, the player and
+                    // what was asked for (#1091)
+
+                    _radioMessage = localize "STR_ALIVE_HUB_REFUSED";
+
+                    _radioBroadcast = [player,_radioMessage,"side",_sideObject,false,true,false,true,_HQ];
+
+                    [_radioBroadcast,"ALIVE_fnc_radioBroadcast",true,true] spawn BIS_fnc_MP;
+
+                    _markers = [_logic,"marker"] call MAINCLASS;
+
+                    if(count _markers > 0) then {
+                        deleteMarkerLocal (_markers select 0);
+                    };
+
+                    [_logic,"marker",[]] call MAINCLASS;
 
                     [_logic,"state","RESET"] call MAINCLASS;
 
@@ -1678,6 +1758,9 @@ switch(_operation) do {
                             };
                             case 'PR_AIRDROP':{
                                 _typeLabel = 'Airdrop Request';
+                            };
+                            case 'PR_COLLECT':{
+                                _typeLabel = 'Hub Collection';
                             };
                         };
 
@@ -1989,6 +2072,7 @@ switch(_operation) do {
                         case "PR_HELI_INSERT": {
                             _counts = [_logic,"countsInsert"] call MAINCLASS;
                         };
+                        case "PR_COLLECT";
                         case "PR_STANDARD": {
                             _counts = [_logic,"countsConvoy"] call MAINCLASS;
                         };
@@ -2252,7 +2336,7 @@ switch(_operation) do {
                                                     // boxes are plain objects, not ammo crates (AshTray on Discord). The Also list
                                                     // brings boxes in the same way.
                                                     if (_x isKindOf "Ammo" || {_x isKindOf "ReammoBox"} || {_x isKindOf "AmmoBox"} || {_x isKindOf "ReammoBox_F"}
-                                                        || {(_x in ALiVE_PR_WHITELIST || {_x in (missionNamespace getVariable ["ALiVE_PR_ALSO", []])}) && {!(_x isKindOf "AllVehicles")}}) exitWith {
+                                                        || {(_x in ALiVE_PR_WHITELIST || {_x in (missionNamespace getVariable ["ALiVE_PR_ALSO", []])} || {_x in (missionNamespace getVariable ["ALiVE_PR_HUB_ALSO", []])}) && {!(_x isKindOf "AllVehicles")}}) exitWith {
                                                         _hasAmmo = true;
                                                     };
                                                 } forEach _classList;
@@ -2315,7 +2399,7 @@ switch(_operation) do {
                                 if (!isNil "_vehicleClasses" && {(_selectedSupplyListParents param [0, ""]) == "Combat Supplies"}) then {
                                     _vehicleClasses = _vehicleClasses select {
                                         _x isKindOf "Ammo" || {_x isKindOf "ReammoBox"} || {_x isKindOf "AmmoBox"} || {_x isKindOf "ReammoBox_F"}
-                                        || {(_x in ALiVE_PR_WHITELIST || {_x in (missionNamespace getVariable ["ALiVE_PR_ALSO", []])}) && {!(_x isKindOf "AllVehicles")}}
+                                        || {(_x in ALiVE_PR_WHITELIST || {_x in (missionNamespace getVariable ["ALiVE_PR_ALSO", []])} || {_x in (missionNamespace getVariable ["ALiVE_PR_HUB_ALSO", []])}) && {!(_x isKindOf "AllVehicles")}}
                                     };
                                 };
 
@@ -2330,6 +2414,7 @@ switch(_operation) do {
                                     case "PR_HELI_INSERT": {
                                         _counts = [_logic,"countsInsert"] call MAINCLASS;
                                     };
+                                    case "PR_COLLECT";
                                     case "PR_STANDARD": {
                                         _counts = [_logic,"countsConvoy"] call MAINCLASS;
                                     };
@@ -2362,7 +2447,7 @@ switch(_operation) do {
 
                                     } else {
 
-                                        if (_deliveryType == "PR_STANDARD") then {
+                                        if (_deliveryType in ["PR_STANDARD", "PR_COLLECT"]) then {
                                             _options pushback _displayName;
                                             _values pushback _x;
                                         };
@@ -3042,6 +3127,25 @@ switch(_operation) do {
 
                     _status = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_PayloadStatus);
 
+                    // Collect at a Hub needs no map point: the player stands at the hub, and must be let in there.
+                    // The server asks the same again before anything is made.
+                    private _collectHub = objNull;
+                    if (([_logic,"selectedDeliveryListValue"] call MAINCLASS) == "PR_COLLECT") then {
+                        _collectHub = ["nearHub", [player]] call ALIVE_fnc_hub;
+                        _markers = [];
+                        if (isNull _collectHub) exitWith {
+                            _status ctrlSetText localize "STR_ALIVE_HUB_STAND_AT";
+                            _status ctrlSetTextColor [0.729,0.216,0.235,1];
+                        };
+                        if !(["mayCollect", [player, _collectHub]] call ALIVE_fnc_hub) exitWith {
+                            _status ctrlSetText localize "STR_ALIVE_HUB_NOT_ALLOWED";
+                            _status ctrlSetTextColor [0.729,0.216,0.235,1];
+                            _collectHub = objNull;
+                        };
+                        _markers = [_collectHub];
+                        [_logic,"destination",getPosATL _collectHub] call MAINCLASS;
+                    };
+
                     if(count _markers > 0) then {
 
                         if(_payloadReady) then {
@@ -3194,7 +3298,7 @@ switch(_operation) do {
 
                             _playerID = getPlayerUID player;
 
-                            _event = ['LOGCOM_REQUEST', [_destination,_faction,_side,_forceMakeup,_deliveryType,_playerID],"PR"] call ALIVE_fnc_event;
+                            _event = ['LOGCOM_REQUEST', [_destination,_faction,_side,_forceMakeup,_deliveryType,_playerID] + ([[], [_collectHub call BIS_fnc_netId]] select (_deliveryType == "PR_COLLECT")),"PR"] call ALIVE_fnc_event;
 
                             if(isServer) then {
                                 [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
@@ -3248,8 +3352,11 @@ switch(_operation) do {
                         };
 
                     }else{
-                        _status ctrlSetText localize "STR_ALIVE_PR_UI_SELECT_DEST";
-                        _status ctrlSetTextColor [0.729,0.216,0.235,1];
+                        // a Collect turned down above has said why already
+                        if (([_logic,"selectedDeliveryListValue"] call MAINCLASS) != "PR_COLLECT") then {
+                            _status ctrlSetText localize "STR_ALIVE_PR_UI_SELECT_DEST";
+                            _status ctrlSetTextColor [0.729,0.216,0.235,1];
+                        };
                     };
 
                 };
@@ -3545,6 +3652,7 @@ switch(_operation) do {
                 case "PR_HELI_INSERT": {
                     _counts = [_logic,"countsInsert"] call MAINCLASS;
                 };
+                case "PR_COLLECT";
                 case "PR_STANDARD": {
                     _counts = [_logic,"countsConvoy"] call MAINCLASS;
                 };

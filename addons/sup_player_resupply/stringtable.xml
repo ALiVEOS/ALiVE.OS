@@ -507,4 +507,112 @@
 <Key ID="STR_ALIVE_PR_CATALOGUE_OPEN">
     <English>Open the catalogue (fill in below)</English>
 </Key>
+<Key ID="STR_ALIVE_HUB">
+    <English>Logistics Hub</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_COMMENT">
+    <English>The objects synced to this module are logistics hubs. A player of the hub's side standing at one can choose Collect at a Hub on the Player Logistics tablet: the requisition is set out beside them straight away, with no convoy and no wait, and paid from the force pool as a delivery would be. Sync the hub objects (static objects, not vehicles) and Player Combat Logistics to this module. Military Logistics must serve the hub's side, as it pays for what is collected.</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_SIDE">
+    <English>Side</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_SIDE_COMMENT">
+    <English>The side the hubs belong to. Only that side's players can collect at them, and only from that side's factions.</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_RADIUS">
+    <English>Collect Radius (m)</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_RADIUS_COMMENT">
+    <English>How close to a hub a player must stand to collect there, from 2 to 100 metres. Within it the tablet opens without an access item, if Who Can Collect lets the player in.</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_DEBUG">
+    <English>Debug</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_DEBUG_COMMENT">
+    <English>Writes what the hubs do to the RPT: the hubs found, the side's catalogue, and each requisition collected.</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_COLLECT_WHO">
+    <English>Who Can Collect</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_COLLECT_WHO_COMMENT">
+    <English>Who on the hub's side may collect a requisition at these hubs. Tick any number of rows: any ticked row lets a player in. Admins always can, so with nothing ticked only admins can.</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_WHO_SIDE">
+    <English>Anyone on the side</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_WHO_SIDE_COMMENT">
+    <English>Every player of the hub's side.</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_WHO_LEADER">
+    <English>Group leaders</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_WHO_LEADER_COMMENT">
+    <English>A player who leads a group with another player in it.</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_WHO_ITEM">
+    <English>Players carrying a Player Logistics access item</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_WHO_ITEM_COMMENT">
+    <English>A player carrying one of the items set on the Player Combat Logistics module (Trigger Item Categories and Custom Trigger Items), or an ALiVE tablet. Carried: standing at a command post does not count here.</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_WHO_LIST">
+    <English>Players on the list</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_WHO_LIST_COMMENT">
+    <English>The players named in Allowed Players, just below.</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_COLLECT_LIST">
+    <English>Allowed Players</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_COLLECT_LIST_COMMENT">
+    <English>For Players on the List: player IDs, unit class names or the slots' variable names from Eden (P1, jtac), separated by commas.</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_LIST">
+    <English>Hub Catalogue</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_LIST_COMMENT">
+    <English>Nothing to fill in here. This opens the Build and Supply Catalogue in your browser: everything the tablet can offer, with its name. Put the names you want in Only These, Never or Also, just below.</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_LIST_OPEN">
+    <English>Open the catalogue (fill in below)</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_ONLY">
+    <English>Only These</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_ONLY_COMMENT">
+    <English>Names separated by commas. When set, a hub offers only these of what the tablet would offer, plus anything in Also; Never still wins. Vehicle, crate and soldier class names and group names, as the catalogue page shows them. Empty: the tablet's whole catalogue.</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_NEVER">
+    <English>Never</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_NEVER_COMMENT">
+    <English>Names separated by commas that are never offered at these hubs, whatever the other lists say. The tablet's own Never Requisition applies here too.</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_ALSO">
+    <English>Also</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_ALSO_COMMENT">
+    <English>Names separated by commas offered at these hubs on top of the tablet's catalogue, even past Only These; Never still wins. A group must be from the hub's side and needs its faction too, written Faction&gt;Group as the catalogue page shows it.</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_OPTION">
+    <English>Collect at a hub  -  Set out beside you, no delivery</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_STAND_AT">
+    <English>Stand at one of your side's logistics hubs to collect a requisition</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_NOT_ALLOWED">
+    <English>You are not allowed to collect requisitions at this hub</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_REFUSED">
+    <English>Your requisition was refused: you are not at a hub you may collect from, something in it is not offered at this hub, or it is over a convoy's load</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_COLLECTED">
+    <English>Requisition collected at the hub</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_PERMISSIONS_NONE">
+    <English>That is not a logistics hub, so who can collect is unchanged</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_PERMISSIONS_SET">
+    <English>Who can collect is changed on %1 Logistics Hub module(s) until the mission restarts</English>
+</Key>
 </Container></Package></Project>

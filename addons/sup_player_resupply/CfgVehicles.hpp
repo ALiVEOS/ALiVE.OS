@@ -157,4 +157,70 @@ class CfgVehicles {
                     class ModuleDescription : ModuleDescription {};
                 };
         };
+        // Logistics Hub (#1091): the objects synced to it are hubs, where a player collects a
+        // tablet requisition straight away instead of having it delivered
+        class ALiVE_sup_logistics_hub : ModuleAliveBase
+        {
+                scope = 2;
+                displayName = "$STR_ALIVE_HUB";
+                function = "ALIVE_fnc_hubInit";
+                author = MODULE_AUTHOR;
+                // after Player Combat Logistics (170); it waits on Military Logistics itself
+                functionPriority = 171;
+                isGlobal = 0;
+                icon = "x\alive\addons\sup_player_resupply\icon_sup_logistics_hub.paa";
+                picture = "x\alive\addons\sup_player_resupply\icon_sup_logistics_hub.paa";
+                class Attributes : AttributesBase
+                {
+                    class HDR_HUB : ALiVE_ModuleSubTitle { property = "ALiVE_sup_logistics_hub_HDR_HUB"; displayName = "LOGISTICS HUB"; };
+                    class hub_side : Combo
+                    {
+                            property = "ALiVE_sup_logistics_hub_hub_side";
+                            displayName = "$STR_ALIVE_HUB_SIDE";
+                            tooltip = "$STR_ALIVE_HUB_SIDE_COMMENT";
+                            defaultValue = """WEST""";
+                            typeName = "STRING";
+                            class Values
+                            {
+                                    class WEST { name = "BLUFOR"; value = "WEST"; };
+                                    class EAST { name = "OPFOR"; value = "EAST"; };
+                                    class GUER { name = "Independent"; value = "GUER"; };
+                            };
+                    };
+                    class hub_radius : Edit { property = "ALiVE_sup_logistics_hub_hub_radius"; displayName = "$STR_ALIVE_HUB_RADIUS"; tooltip = "$STR_ALIVE_HUB_RADIUS_COMMENT"; typeName = "STRING"; defaultValue = """10"""; };
+
+                    class HDR_COLLECT : ALiVE_ModuleSubTitle { property = "ALiVE_sup_logistics_hub_HDR_COLLECT"; displayName = "WHO CAN COLLECT"; };
+                    class hub_collect_who { property = "ALiVE_sup_logistics_hub_hub_collect_who"; displayName = "$STR_ALIVE_HUB_COLLECT_WHO"; tooltip = "$STR_ALIVE_HUB_COLLECT_WHO_COMMENT"; control = "ALiVE_HubCollectChoice"; typeName = "STRING"; expression = "_this setVariable ['hub_collect_who', _value];"; defaultValue = """SIDE"""; };
+                    class hub_collect_list : Edit { property = "ALiVE_sup_logistics_hub_hub_collect_list"; displayName = "$STR_ALIVE_HUB_COLLECT_LIST"; tooltip = "$STR_ALIVE_HUB_COLLECT_LIST_COMMENT"; typeName = "STRING"; defaultValue = """"""; };
+
+                    // the same catalogue page and the same three lists as the tablet's own, for what is
+                    // collected at these hubs
+                    class HDR_CATALOGUE : ALiVE_ModuleSubTitle { property = "ALiVE_sup_logistics_hub_HDR_CATALOGUE"; displayName = "HUB CATALOGUE"; };
+                    class hub_catalogue : Default { property = "ALiVE_sup_logistics_hub_hub_catalogue"; displayName = "$STR_ALIVE_HUB_LIST"; tooltip = "$STR_ALIVE_HUB_LIST_COMMENT"; control = "ALiVE_HubListLink"; typeName = "STRING"; defaultValue = "''"; };
+                    class hub_only : Edit { property = "ALiVE_sup_logistics_hub_hub_only"; displayName = "$STR_ALIVE_HUB_ONLY"; tooltip = "$STR_ALIVE_HUB_ONLY_COMMENT"; typeName = "STRING"; defaultValue = """"""; };
+                    class hub_never : Edit { property = "ALiVE_sup_logistics_hub_hub_never"; displayName = "$STR_ALIVE_HUB_NEVER"; tooltip = "$STR_ALIVE_HUB_NEVER_COMMENT"; typeName = "STRING"; defaultValue = """"""; };
+                    class hub_also : Edit { property = "ALiVE_sup_logistics_hub_hub_also"; displayName = "$STR_ALIVE_HUB_ALSO"; tooltip = "$STR_ALIVE_HUB_ALSO_COMMENT"; typeName = "STRING"; defaultValue = """"""; };
+
+                    class HDR_GENERAL : ALiVE_ModuleSubTitle { property = "ALiVE_sup_logistics_hub_HDR_GENERAL"; displayName = "GENERAL"; };
+                    class hub_debug : Combo
+                    {
+                            property = "ALiVE_sup_logistics_hub_hub_debug";
+                            displayName = "$STR_ALIVE_HUB_DEBUG";
+                            tooltip = "$STR_ALIVE_HUB_DEBUG_COMMENT";
+                            defaultValue = """false""";
+                            typeName = "STRING";
+                            class Values
+                            {
+                                    class No { name = "No"; value = "false"; };
+                                    class Yes { name = "Yes"; value = "true"; };
+                            };
+                    };
+                    class ModuleDescription : ModuleDescription {};
+                };
+                class ModuleDescription
+                {
+                        description[] = {"$STR_ALIVE_HUB_COMMENT"};
+                        sync[] = {"AnyStaticObject", "ALiVE_SUP_PLAYER_RESUPPLY", "ALiVE_mil_logistics"};
+                };
+        };
 };

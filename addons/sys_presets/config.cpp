@@ -57,7 +57,7 @@ class CfgALiVEPresets {
 
     // Modules that work from objects synced to them, so a preset carries those
     // objects with them (version 4): Field HQs for Player FOBs, rally points,
-    // recruitment points, the multispawn vehicle, and objects kept out of player
+    // recruitment points, the multispawn vehicle, logistics hubs, and objects kept out of player
     // logistics. An object synced to anything else is not carried: it would
     // place and do nothing. The site tooling keeps the same list.
     objectModules[] = {
@@ -65,7 +65,8 @@ class CfgALiVEPresets {
         "ALiVE_sup_rally",
         "ALiVE_sup_recruit",
         "ALiVE_sup_multispawn",
-        "ALiVE_SYS_LOGISTICSDISABLE"
+        "ALiVE_SYS_LOGISTICSDISABLE",
+        "ALiVE_sup_logistics_hub"
     };
 
     // Settings that name an area marker. These used to be refused outright, for

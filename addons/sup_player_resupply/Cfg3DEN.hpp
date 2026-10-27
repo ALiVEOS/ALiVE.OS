@@ -24,5 +24,21 @@ class Cfg3DEN {
                 };
             };
         };
+        // The Logistics Hub's Catalogue button: the same page, for the hub's own three lists
+        class ALiVE_HubListLink: ALiVE_PRCatalogueLink {
+            class Controls: Controls {
+                class Title: Title {};
+                class Link: Link {
+                    text = "$STR_ALIVE_HUB_LIST_OPEN";
+                    tooltip = "$STR_ALIVE_HUB_LIST_COMMENT";
+                };
+            };
+        };
+        // Who Can Collect at a hub, on ALiVE's compact multi-select
+        class ALiVE_SideChoiceMulti;
+        class ALiVE_HubCollectChoice: ALiVE_SideChoiceMulti {
+            attributeLoad = "[_this, _value, 'STR_ALIVE_HUB_COLLECT_WHO', 'SIDE'] call compile preprocessFileLineNumbers '\x\alive\addons\sup_player_resupply\fnc_hubEdenWhoLoad.sqf'";
+            attributeSave = "[_this, 'SIDE'] call compile preprocessFileLineNumbers '\x\alive\addons\sup_player_resupply\fnc_hubEdenWhoSave.sqf'";
+        };
     };
 };

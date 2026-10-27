@@ -20,6 +20,8 @@ Parameters:
 0: STRING - CSV of category keys and/or item classnames
 1: STRING - CSV of additional raw classnames (custom field), "" for none
 2: ARRAY  - extra tokens always accepted (e.g. ["ALIVE_Tablet"]), [] for none
+3: OBJECT - the unit to ask about (default player); any machine can ask about any unit
+4: BOOL   - whether a command post counts (default true); false asks about carried items only
 
 Returns:
 BOOL - true when the player carries at least one matching item, or stands at a command post
@@ -34,7 +36,9 @@ _hasAccess = ["LaserDesignators,Radios", "MyMod_Tablet", ["ALIVE_Tablet"]] call 
 Author: Jman
 ---------------------------------------------------------------------------- */
 
-params [["_itemsCsv", "", [""]], ["_customCsv", "", [""]], ["_extraTokens", [], [[]]]];
+params [["_itemsCsv", "", [""]], ["_customCsv", "", [""]], ["_extraTokens", [], [[]]], ["_unit", objNull, [objNull]], ["_posts", true, [true]]];
+if (isNull _unit) then { _unit = player };
+if (isNull _unit) exitWith { false };
 
 // A command post: standing near an object the mission marked as one counts as carrying the items, so
 // commanding can be done from an HQ map board rather than a carried tablet (AshTray on Discord, 16 Oct).
@@ -45,17 +49,22 @@ params [["_itemsCsv", "", [""]], ["_customCsv", "", [""]], ["_extraTokens", [], 
 // on Discord, 17 Oct). An object's own ALiVE_accessPoint still wins, so a script can widen or switch one off.
 // The engine finds the objects of each class (and its children) within the radius, so the ACE menus, which
 // ask every frame they're open, never loop over a town's worth of objects. The player's own unit is never one.
-private _post = (player nearObjects 50) findIf {
-    private _r = _x getVariable ["ALiVE_accessPoint", false];
-    if (_r isEqualType true) then { _r = [0, 10] select _r };
-    _r isEqualType 0 && {_r > 0} && {(player distance _x) <= _r}
+// A Logistics Hub asks with _posts false: its Players Carrying an Access Item rule is about what's carried.
+private _atPost = _posts && {
+    private _post = (_unit nearObjects 50) findIf {
+        private _r = _x getVariable ["ALiVE_accessPoint", false];
+        if (_r isEqualType true) then { _r = [0, 10] select _r };
+        _r isEqualType 0 && {_r > 0} && {(_unit distance _x) <= _r}
+    };
+    _post > -1 || {
+        private _classes = missionNamespace getVariable ["ALiVE_accessPointClasses", []];
+        private _classRadius = missionNamespace getVariable ["ALiVE_accessPointRadius", 10];
+        _classes findIf {
+            ((_unit nearObjects [_x, _classRadius]) findIf { _x != _unit && {isNil {_x getVariable "ALiVE_accessPoint"}} }) > -1
+        } > -1
+    }
 };
-if (_post > -1) exitWith { true };
-private _classes = missionNamespace getVariable ["ALiVE_accessPointClasses", []];
-private _classRadius = missionNamespace getVariable ["ALiVE_accessPointRadius", 10];
-if (_classes findIf {
-    ((player nearObjects [_x, _classRadius]) findIf { _x != player && {isNil {_x getVariable "ALiVE_accessPoint"}} }) > -1
-} > -1) exitWith { true };
+if (_atPost) exitWith { true };
 
 private _tokens = _itemsCsv call ALiVE_fnc_stringListToArray;
 { _tokens pushBack _x } forEach _extraTokens;
@@ -99,7 +108,7 @@ private _expanded = [];
 
 // one pool for every entry point: assigned items (map/GPS/radio/binocular
 // slots) + uniform/vest/backpack contents + the backpack classname itself
-private _pool = ((assignedItems player) + (items player) + ([backpack player])) apply {toLower _x};
+private _pool = ((assignedItems _unit) + (items _unit) + ([backpack _unit])) apply {toLower _x};
 private _poolString = _pool joinString ",";
 
 private _result = false;

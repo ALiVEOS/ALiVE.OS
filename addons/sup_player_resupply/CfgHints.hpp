@@ -25,6 +25,17 @@ class CfgHints
             // optional parameter for not showing of image in context hint in mission (default false))
             noImage = false;
         };
+        // Logistics Hub (#1091)
+        class sup_logistics_hub
+        {
+            displayName = "Logistics - Hubs";
+            displayNameShort = "Collecting a requisition at a hub";
+            description = "A logistics hub is a depot the mission has placed: a building or a stack of crates. Standing at one of your side's hubs you can collect a tablet requisition there and then, with no convoy and no wait.%1%1%2Stand at the hub and open the Player Logistics tablet. You don't need an access item while you're there%1%2Choose %3Collect at a hub%4 as the delivery method%1%2Build the requisition and Send. It is set out beside you and paid from the force pool as a delivery would be%1%1Who may collect is the mission's choice: anyone on the side, group leaders, players carrying a Player Logistics access item, or named players. Admins always may. A hub offers the tablet's catalogue up to a convoy's load, less anything the mission maker has taken off it.";
+            tip = "If the tablet says you are not at a hub, stand closer: the mission sets how near you must be.";
+            arguments[] = {};
+            image = "x\alive\addons\ui\logo_alive_square.paa";
+            noImage = false;
+        };
     };
 };
 

@@ -254,7 +254,7 @@ private _links = [];
 // trigger, which Eden keeps as a different kind of thing and would not remake.
 private _objectModules = getArray (configFile >> "CfgALiVEPresets" >> "objectModules");
 if (count _objectModules == 0) then {
-    _objectModules = ["ALiVE_SUP_FOB", "ALiVE_sup_rally", "ALiVE_sup_recruit", "ALiVE_sup_multispawn", "ALiVE_SYS_LOGISTICSDISABLE"];
+    _objectModules = ["ALiVE_SUP_FOB", "ALiVE_sup_rally", "ALiVE_sup_recruit", "ALiVE_sup_multispawn", "ALiVE_SYS_LOGISTICSDISABLE", "ALiVE_sup_logistics_hub"];
 };
 _objectModules = _objectModules apply { toLower _x };
 private _objectRows = [];
