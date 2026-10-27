@@ -11,8 +11,8 @@ Description:
 
     Roles:
       "cas"       - armed aircraft (planes and helicopters, incl. UAVs)
-      "arty"      - artillery pieces (artilleryScanner + high-elevation gun,
-                    covers self-propelled guns, MLRS, static mortars)
+      "arty"      - artillery pieces, as ALIVE_fnc_isArtillery counts them
+                    (self-propelled guns, MLRS, towed guns and static mortars)
       "transport" - helicopters that can carry troops or slingload
 
     Results are cached per role in uiNamespace for the Eden session - the
@@ -52,17 +52,11 @@ private _fnc_isArmedAir = {
     _armed
 };
 
+// the same test placement and the artillery module use (F543): its own copy here never let a mortar through, as the
+// Mk6, M252 and 2B14 elevate to 13 in config, and it listed spotter vehicles that carry no lethal rounds
 private _fnc_isArtillery = {
     params ["_cfg", "_class"];
-    if (getNumber (_cfg >> "artilleryScanner") <= 0) exitWith { false };
-    // any turret elevating past 45 degrees counts (walk all turrets, not
-    // just MainTurret - mod artillery often mounts the gun elsewhere).
-    // 45 rather than 65 so rocket artillery's ~55-degree tubes qualify
-    private _high = false;
-    {
-        if (getNumber (_x >> "maxElev") > 45) exitWith { _high = true };
-    } forEach ("isClass _x" configClasses (_cfg >> "Turrets"));
-    _high
+    [_class] call ALIVE_fnc_isArtillery
 };
 
 private _result = [];
