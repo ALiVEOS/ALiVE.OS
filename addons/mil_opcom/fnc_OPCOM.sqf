@@ -6444,14 +6444,13 @@ switch (_operation) do {
             [format ["neither faction %1 nor its side has a transport helicopter or a boat that carries troops", _factions]] call _dropAll;
             call _fsmDone;
         };
-        if (_boats isNotEqualTo []) then {
-            ["boats carry infantry only"] call _dropMotorised;
-        } else {
-        // a vehicle goes ashore slung under a helicopter: one that can lift more than a tonne, as Military Logistics
-        // asks of its sling helicopters
-        private _lift = 0;
-        { _lift = _lift max getNumber (configFile >> "CfgVehicles" >> _x >> "slingLoadMaxCargoMass") } forEach (_heli select { _x isKindOf "Helicopter" });
-        if (_lift <= 1000) then { [format ["no helicopter of %1 or its side can lift a vehicle", _factions]] call _dropMotorised };
+        // by boat, a motorised group gets a landing craft of its own and is made on the beach as it lands (TheLogatron on
+        // Discord, 26 Oct); by helicopter, a vehicle goes ashore slung under one that can lift more than a tonne, as
+        // Military Logistics asks of its sling helicopters
+        if (_boats isEqualTo []) then {
+            private _lift = 0;
+            { _lift = _lift max getNumber (configFile >> "CfgVehicles" >> _x >> "slingLoadMaxCargoMass") } forEach (_heli select { _x isKindOf "Helicopter" });
+            if (_lift <= 1000) then { [format ["no helicopter of %1 or its side can lift a vehicle", _factions]] call _dropMotorised };
         };
 
         private _pending = call _credit;

@@ -8048,6 +8048,8 @@ switch(_operation) do {
                         // nearest the landing within 1.5 km. A wave with neither is turned down, and the commander counts it.
                         private _seaFrom = [];
                         private _seaShore = [];
+                        // vehicle groups of a boat landing: each gets a craft of its own and is made where it lands
+                        private _seaVehGroups = [];
                         if (_shipLaunch && {_eventType == "SEA_INSERT"}) then {
                             _seaShore = [_shipFrom, _shipDest] call ALIVE_fnc_findNearestShore;
                             if (_seaShore isEqualTo [0,0,0] || {(_seaShore distance2D _shipDest) > 1500}) then {
@@ -8724,6 +8726,10 @@ switch(_operation) do {
 
                             _group = _motorisedGroups select _i;
 
+                            // landing craft (TheLogatron on Discord, 26 Oct): a vehicle group isn't carried; it is made on
+                            // the beach when its craft lands (seaTransportTravel)
+                            if (_eventType == "SEA_INSERT") then { _seaVehGroups pushBack _group; continue };
+
                             if (_eventType == "HELI_INSERT") then {
                                 // Start From Ship: the vehicle is made on a helipad of the ship's deck
                                 _position = if (_shipLaunch && {_shipPads isNotEqualTo []}) then { +(_shipPads select (_i mod (count _shipPads))) } else { [_logic, "prepareHelicopterLZ", [
@@ -9300,6 +9306,23 @@ switch(_operation) do {
                             private _keptInf = [];
                             _transportProfiles = [];
                             _transportVehicleProfiles = [];
+                            // each boat its own stretch of deep water off the beach, then straight in to the water's edge;
+                            // the men go ashore just inland of the beach
+                            private _fnc_addStop = {
+                                private _stop = [_logic, "findNavigableWater", [_seaShore, 400, _stopsUsed, 30]] call MAINCLASS;
+                                if (_stop isEqualTo []) then { _stop = +_seaFrom };
+                                _stopsUsed pushBack _stop;
+                                private _run = +_stop;
+                                private _toBeach = _stop getDir _seaShore;
+                                for "_d" from 5 to ((_stop distance2D _seaShore) + 5) step 5 do {
+                                    private _p = _stop getPos [_d, _toBeach];
+                                    if !(surfaceIsWater _p) exitWith {};
+                                    _run = _p;
+                                };
+                                private _land = _seaShore getPos [15 + 6 * (count _stops), _toShore];
+                                if (surfaceIsWater _land) then { _land = +_seaShore };
+                                _stops pushBack [_stop, [_run select 0, _run select 1, 0], [_land select 0, _land select 1, 0]];
+                            };
                             {
                                 private _ids = _x;
                                 private _inf = [];
@@ -9340,31 +9363,40 @@ switch(_operation) do {
                                         _x params ["_cID", "_vID"];
                                         _transportProfiles pushBack _cID;
                                         _transportVehicleProfiles pushBack _vID;
-                                        // each boat its own stretch of deep water off the beach, then straight in to the
-                                        // water's edge; the men go ashore just inland of the beach
-                                        private _stop = [_logic, "findNavigableWater", [_seaShore, 400, _stopsUsed, 30]] call MAINCLASS;
-                                        if (_stop isEqualTo []) then { _stop = +_seaFrom };
-                                        _stopsUsed pushBack _stop;
-                                        private _run = +_stop;
-                                        private _toBeach = _stop getDir _seaShore;
-                                        for "_d" from 5 to ((_stop distance2D _seaShore) + 5) step 5 do {
-                                            private _p = _stop getPos [_d, _toBeach];
-                                            if !(surfaceIsWater _p) exitWith {};
-                                            _run = _p;
-                                        };
-                                        private _land = _seaShore getPos [15 + 6 * (count _stops), _toShore];
-                                        if (surfaceIsWater _land) then { _land = +_seaShore };
-                                        _stops pushBack [_stop, [_run select 0, _run select 1, 0], [_land select 0, _land select 1, 0]];
+                                        call _fnc_addStop;
                                     } forEach _made;
                                 };
                             } forEach _infantryProfiles;
                             _infantryProfiles = _keptInf;
                             [_eventCargoProfiles, "infantry", _infantryProfiles] call ALIVE_fnc_hashSet;
+                            // a vehicle group's craft: the biggest boat, crew only. [crew profile ID, group class] for each;
+                            // keyed by the crew, as checkEvent drops a lost boat from the transport list
+                            private _vehBoats = [];
+                            private _keptVeh = [];
+                            private _craft = _boatClasses param [count _boatClasses - 1, ""];
+                            {
+                                private _spot = if (_craft == "") then { [] } else { [_logic, "findNavigableWater", [_seaFrom, 600, _spots, 35, 15]] call MAINCLASS };
+                                if (_spot isEqualTo []) then {
+                                    ["ML - SHIP: no open water for the craft of vehicle group %1; it stays aboard", _x] call ALiVE_fnc_dump;
+                                    _groupCount = _groupCount - 1;
+                                    _totalCount = _totalCount - 1;
+                                } else {
+                                    _spots pushBack _spot;
+                                    private _boat = [_craft, _side, _eventFaction, "CAPTAIN", _spot, _seaFrom getDir _seaShore, false, _eventFaction, true, true] call ALIVE_fnc_createProfilesCrewedVehicle; [_boat] call _fnc_spawnHook;
+                                    _transportProfiles pushBack (_boat select 0 select 2 select 4);
+                                    _transportVehicleProfiles pushBack (_boat select 1 select 2 select 4);
+                                    _vehBoats pushBack [_boat select 0 select 2 select 4, _x];
+                                    _keptVeh pushBack _x;
+                                    call _fnc_addStop;
+                                };
+                            } forEach _seaVehGroups;
+                            _seaVehGroups = _keptVeh;
+                            [_event, "seaVehicleGroups", _vehBoats] call ALIVE_fnc_hashSet;
                             [_event, "seaStops", _stops] call ALIVE_fnc_hashSet;
                             _eventTransportProfiles = _eventTransportProfiles + _transportProfiles;
                             _eventTransportVehiclesProfiles = _eventTransportVehiclesProfiles + _transportVehicleProfiles;
-                            ["ML - SHIP: %1 boat(s) of %2 carry %3 infantry group(s) from the ship to the beach at %4 (%5 m from the landing)",
-                                count _transportVehicleProfiles, _boatClasses, count _infantryProfiles, mapGridPosition _seaShore, round (_seaShore distance2D _shipDest)] call ALiVE_fnc_dump;
+                            ["ML - SHIP: %1 boat(s) of %2 carry %3 infantry group(s) and %4 vehicle group(s) from the ship to the beach at %5 (%6 m from the landing)",
+                                count _transportVehicleProfiles, _boatClasses, count _infantryProfiles, count _seaVehGroups, mapGridPosition _seaShore, round (_seaShore distance2D _shipDest)] call ALiVE_fnc_dump;
                         };
 
                         if(_eventType == "HELI_PARADROP") then {
@@ -10111,7 +10143,7 @@ switch(_operation) do {
                                 private _shipToken = [_event, "shipToken", ""] call ALIVE_fnc_hashGet;
                                 {
                                     if (_x isEqualType [] && {([_x, "opcomID", ""] call ALIVE_fnc_hashGet) == _shipID}) exitWith {
-                                        ([_x, "shipSent", createHashMap] call ALIVE_fnc_hashGet) set [_shipToken, [count _infantryProfiles, count _motorisedProfiles, [_event, "shipMotDropped", false] call ALIVE_fnc_hashGet]];
+                                        ([_x, "shipSent", createHashMap] call ALIVE_fnc_hashGet) set [_shipToken, [count _infantryProfiles, (count _motorisedProfiles) + (count _seaVehGroups), [_event, "shipMotDropped", false] call ALIVE_fnc_hashGet]];
                                     };
                                 } forEach (missionNamespace getVariable ["OPCOM_instances", []]);
                             };
@@ -10237,7 +10269,8 @@ switch(_operation) do {
             // edge and let the men out; the boats then sail back out to sea and are taken away (see transportComplete)
 
             case "seaTransportStart": {
-                if (([_logic, "checkEvent", _event] call MAINCLASS) == 0) exitWith {
+                // a wave of vehicle groups only has no cargo until its craft land
+                if (([_logic, "checkEvent", _event] call MAINCLASS) == 0 && {(([_event, "seaVehicleGroups", []] call ALIVE_fnc_hashGet) findIf { (_x select 1) != "" }) < 0}) exitWith {
                     [_event, "state", "eventComplete"] call ALIVE_fnc_hashSet;
                     [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
                 };
@@ -10261,7 +10294,15 @@ switch(_operation) do {
             };
 
             case "seaTransportTravel": {
-                if (([_logic, "checkEvent", _event] call MAINCLASS) == 0) exitWith {
+                private _vehGroups = [_event, "seaVehicleGroups", []] call ALIVE_fnc_hashGet;
+                // a vehicle group's craft lost on the way (its crew gone): the group is lost with it
+                {
+                    if ((_x select 1) != "" && {isNil { [ALIVE_profileHandler, "getProfile", _x select 0] call ALIVE_fnc_profileHandler }}) then {
+                        ["ML - SHIP: the craft carrying vehicle group %1 was lost", _x select 1] call ALiVE_fnc_dump;
+                        _x set [1, ""];
+                    };
+                } forEach _vehGroups;
+                if (([_logic, "checkEvent", _event] call MAINCLASS) == 0 && {(_vehGroups findIf { (_x select 1) != "" }) < 0}) exitWith {
                     [_event, "state", "eventComplete"] call ALIVE_fnc_hashSet;
                     [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
                 };
@@ -10273,9 +10314,22 @@ switch(_operation) do {
                 private _left = 0;
                 {
                     private _crew = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
-                    private _veh = [ALIVE_profileHandler, "getProfile", _eventTransportVehiclesProfiles param [_forEachIndex, ""]] call ALIVE_fnc_profileHandler;
+                    // the boat is the one its crew commands, and its craft entry is found by the crew's ID: both lists
+                    // lose a dead profile in checkEvent, so a place in them doesn't stay put
+                    private _veh = if (isNil "_crew") then { nil } else {
+                        [ALIVE_profileHandler, "getProfile", (_crew select 2 select 8) param [0, ""]] call ALIVE_fnc_profileHandler
+                    };
+                    private _crewID = _x;
+                    private _vi = if (isNil "_crew") then { -1 } else { _vehGroups findIf { (_x select 0) == _crewID } };
+                    private _vg = if (_vi < 0) then { "" } else { (_vehGroups select _vi) select 1 };
+                    // a craft whose boat is gone though its crew lives: its group is lost with it
+                    if (_vg != "" && {isNil "_veh"}) then {
+                        ["ML - SHIP: the craft carrying vehicle group %1 was lost", _vg] call ALiVE_fnc_dump;
+                        (_vehGroups select _vi) set [1, ""];
+                        _vg = "";
+                    };
                     // a boat lost, or already empty, has nobody left to land
-                    if (isNil "_crew" || {isNil "_veh"} || {(_veh select 2 select 9) isEqualTo []}) then { continue };
+                    if (isNil "_crew" || {isNil "_veh"} || {_vg == "" && {(_veh select 2 select 9) isEqualTo []}}) then { continue };
                     private _obj = _veh select 2 select 10;
                     private _live = (_veh select 2 select 1) && {_obj isEqualType objNull} && {!isNull _obj};
                     private _pos = if (_live) then { getPosASL _obj } else { _veh select 2 select 2 };
@@ -10288,12 +10342,33 @@ switch(_operation) do {
                         if (!_arrived && {_n < 3}) then {
                             ["ML - SHIP: a boat (%1) out of time %2 m from the beach; its men are put ashore", _x, round (_pos distance2D _shore)] call ALiVE_fnc_dump;
                         };
-                        [_logic, "unloadBoat", [_event, _veh, (_stops param [_forEachIndex, []]) param [2, []]]] call MAINCLASS;
+                        if (_vg == "") then {
+                            [_logic, "unloadBoat", [_event, _veh, (_stops param [_forEachIndex, []]) param [2, []]]] call MAINCLASS;
+                        } else {
+                            // the craft has landed: its vehicle group is made on the beach, and heads for the landing
+                            private _land = (_stops param [_forEachIndex, []]) param [2, []];
+                            if (count _land < 2 || {surfaceIsWater _land}) then { _land = +_shore };
+                            private _dest = _eventData select 0;
+                            private _made = [_vg, _land, _land getDir _dest, false, _eventFaction, true, false, "STEALTH"] + (call _fnc_hookArgs) call ALIVE_fnc_createProfilesFromGroupConfig;
+                            private _ids = _made apply { _x select 2 select 4 };
+                            {
+                                if ((_x select 2 select 5) == "entity") then {
+                                    [_x, "addWaypoint", [_dest, 50, "MOVE", "LIMITED", 2, [], "LINE"] call ALIVE_fnc_createProfileWaypoint] call ALIVE_fnc_profileEntity;
+                                };
+                            } forEach _made;
+                            private _mot = [_eventCargoProfiles, "motorised", []] call ALIVE_fnc_hashGet;
+                            _mot pushBack _ids;
+                            [_eventCargoProfiles, "motorised", _mot] call ALIVE_fnc_hashSet;
+                            [_event, "cargoProfiles", _eventCargoProfiles] call ALIVE_fnc_hashSet;
+                            (_vehGroups select _vi) set [1, ""];
+                            ["ML - SHIP: a craft landed vehicle group %1 at %2 (%3 profiles)", _vg, mapGridPosition _land, count _ids] call ALiVE_fnc_dump;
+                        };
                     } else {
                         _left = _left + 1;
                     };
                 } forEach _eventTransportProfiles;
                 [_event, "seaStalls", _stalls] call ALIVE_fnc_hashSet;
+                [_event, "seaVehicleGroups", _vehGroups] call ALIVE_fnc_hashSet;
                 if (_left == 0) then {
                     _eventStateData set [0, 0];
                     [_event, "state", "transportComplete"] call ALIVE_fnc_hashSet;
