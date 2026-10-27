@@ -618,7 +618,7 @@
     <English>What a squad leader's rally point is, in place of the backpack: one class name for every side, or one per side with the side first, for example WEST=Land_TentDome_F, EAST=Land_TentA_F, GUER=Land_TentA_F (WEST is BLUFOR, EAST OPFOR, GUER Independent; a side left out uses a class given without a side, if there is one). A backpack is laid on the ground as the usual one is; any other object stands there itself. Empty (default) keeps the backpack, and a class the game doesn't have falls back to it.</English>
 </Key>
 <Key ID="STR_ALIVE_RALLY_LEADEROVERRUN_COMMENT">
-    <English>A squad's rally point is lost once enemies have been within Enemy Radius of it for this many seconds.</English>
+    <English>A squad's rally point is lost once enemies have been within Enemy Radius of it for this many seconds. 0 means it is never overrun.</English>
 </Key>
 <Key ID="STR_ALIVE_RALLY_DEPLOY">
     <English>Deploy rally point</English>

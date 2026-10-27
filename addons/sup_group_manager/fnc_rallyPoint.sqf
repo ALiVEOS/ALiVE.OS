@@ -170,11 +170,15 @@ switch (_op) do {
         [_obj, _grp, _r, ["leaderOverrun", 30] call _set] spawn {
             params ["_obj", "_grp", "_r", "_overrun"];
             private _held = 0;
-            while { alive _obj && {!isNull _grp} && {({ alive _x } count units _grp) > 0} && {_held < _overrun} } do {
+            // 0 or less: never overrun (A. Ares on Discord, 26 Oct); it used to go the moment it was put down
+            private _never = _overrun <= 0;
+            while { alive _obj && {!isNull _grp} && {({ alive _x } count units _grp) > 0} && {_never || {_held < _overrun}} } do {
                 sleep 5;
-                _held = if ([getPosATL _obj, str side _grp, _r, !isNil "ALIVE_profileHandler"] call ALIVE_fnc_isEnemyNear) then { _held + 5 } else { 0 };
+                if (!_never) then {
+                    _held = if ([getPosATL _obj, str side _grp, _r, !isNil "ALIVE_profileHandler"] call ALIVE_fnc_isEnemyNear) then { _held + 5 } else { 0 };
+                };
             };
-            if (_held >= _overrun && {!isNull _grp}) then {
+            if (!_never && {_held >= _overrun} && {!isNull _grp}) then {
                 [localize "STR_ALIVE_RALLY", localize "STR_ALIVE_RALLY_UI_OVERRUN"] remoteExecCall ["ALIVE_fnc_sendHint", units _grp select { isPlayer _x }];
             };
             // only forget the squad's rally point if it is still this one: when the leader puts a new one down the old one
