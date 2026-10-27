@@ -235,6 +235,15 @@ class CfgVehicles {
                                         class Indfor { name = "Independent"; value = "GUER"; };
                                 };
                         };
+                        // placed rally points can be overrun too (A. Ares on Discord, 27 Oct)
+                        class pointOverrun : Edit
+                        {
+                                property = "ALiVE_sup_rally_pointOverrun";
+                                displayName = "$STR_ALIVE_RALLY_POINTOVERRUN";
+                                tooltip = "$STR_ALIVE_RALLY_POINTOVERRUN_COMMENT";
+                                typeName = "NUMBER";
+                                defaultValue = "0";
+                        };
                         class HDR_TRAVEL : ALiVE_ModuleSubTitle { property = "ALiVE_sup_rally_HDR_TRAVEL"; displayName = "TRAVEL RULES"; };
                         class squadRadius : Edit
                         {

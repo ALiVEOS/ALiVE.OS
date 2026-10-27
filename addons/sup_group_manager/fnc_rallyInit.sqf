@@ -50,6 +50,40 @@ if (isServer) then {
     };
 };
 
+// Placed Rally Point Overrun Time (A. Ares on Discord, 27 Oct): a synced or class-listed rally point of one side is lost
+// once enemies have held it this long, as a squad's own is. An object's ALiVE_rallyOverrun overrides the module, and gives
+// any other kind of point (a side HQ, a script's) a time of its own. 0, the default, is never; an "ANY" point has no enemy.
+// The object is left standing: it is the mission's own.
+if (isServer && {_main}) then {
+    [_logic] spawn {
+        params ["_logic"];
+        private _base = parseNumber format ["%1", _logic getVariable ["pointOverrun", 0]];
+        private _r = (parseNumber format ["%1", _logic getVariable ["enemyRadius", 100]]) max 50;
+        while { true } do {
+            sleep 5;
+            private _lost = [];
+            {
+                _x params ["_o", "_name", "_who", "_kind"];
+                if (alive _o && {_who != "ANY"} && {_kind != "leader"}) then {
+                    private _t = parseNumber format ["%1", _o getVariable ["ALiVE_rallyOverrun", [-1, _base] select (_kind in ["synced", "class"])]];
+                    if (_t > 0) then {
+                        // kept on the object: netId is "0:0" for every object in single player
+                        private _h = if ([getPosATL _o, _who, _r, !isNil "ALIVE_profileHandler"] call ALIVE_fnc_isEnemyNear) then { (_o getVariable ["ALiVE_rallyHeld", 0]) + 5 } else { 0 };
+                        _o setVariable ["ALiVE_rallyHeld", _h];
+                        if (_h >= _t) then { _lost pushBack [_o, _name, _who] };
+                    };
+                };
+            } forEach (missionNamespace getVariable ["ALiVE_rallyPoints", []]);
+            {
+                _x params ["_o", "_name", "_who"];
+                ["remove", [_o]] call ALiVE_fnc_rallyPoint;
+                ["ALiVE Rally Points: %1 (%2) was overrun", _name, _who] call ALiVE_fnc_dump;
+                [localize "STR_ALIVE_RALLY", format [localize "STR_ALIVE_RALLY_UI_POINT_OVERRUN", _name]] remoteExecCall ["ALIVE_fnc_sendHint", allPlayers select { str side group _x == _who }];
+            } forEach _lost;
+        };
+    };
+};
+
 // Side HQs: the HQ and Field HQ buildings that placement modules (Military Placement, Custom Military
 // Placement, the air commander) pick for their faction are rally points for that faction's side. They
 // are picked during start-up, so they're looked for every 60 s.

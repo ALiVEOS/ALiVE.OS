@@ -611,6 +611,15 @@
 <Key ID="STR_ALIVE_RALLY_LEADEROVERRUN">
     <English>Leader Rally Point Overrun Time (s)</English>
 </Key>
+<Key ID="STR_ALIVE_RALLY_POINTOVERRUN">
+    <English>Placed Rally Point Overrun Time (s)</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_POINTOVERRUN_COMMENT">
+    <English>A rally point synced to this module, or of a class in Rally Point Classes, is lost once enemies have been within Enemy Radius of it for this many seconds: AI, players or ALiVE's virtual groups. It works only for a side's own points (Rally Points Side not Any side); the object stays where it is, but it is no longer a rally point and that side's players are told. 0 (the default) means placed points are never overrun. With more than one Rally Points module, the first one's time applies to all of them. One object can have its own time from its init field, this setVariable ["ALiVE_rallyOverrun", 60], and 0 there keeps that one safe.</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_UI_POINT_OVERRUN">
+    <English>Rally point %1 has been overrun.</English>
+</Key>
 <Key ID="STR_ALIVE_RALLY_LEADERCLASS">
     <English>Squad Rally Point Object:</English>
 </Key>
