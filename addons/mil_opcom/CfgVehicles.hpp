@@ -439,6 +439,23 @@ class CfgVehicles {
                                 defaultValue = """0""";
                                 typeName = "NUMBER";
                         };
+                        // wave size and gap (TheLogatron on Discord, 26 Oct)
+                        class shipWaveSize : Edit
+                        {
+                                property = "ALiVE_mil_opcom_shipWaveSize";
+                                displayName = "$STR_ALIVE_OPCOM_SHIP_WAVE_SIZE";
+                                tooltip = "$STR_ALIVE_OPCOM_SHIP_WAVE_SIZE_COMMENT";
+                                defaultValue = """2""";
+                                typeName = "NUMBER";
+                        };
+                        class shipWaveGap : Edit
+                        {
+                                property = "ALiVE_mil_opcom_shipWaveGap";
+                                displayName = "$STR_ALIVE_OPCOM_SHIP_WAVE_GAP";
+                                tooltip = "$STR_ALIVE_OPCOM_SHIP_WAVE_GAP_COMMENT";
+                                defaultValue = """200""";
+                                typeName = "NUMBER";
+                        };
                         class HDR_HVT : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_HDR_HVT"; displayName = "HIGH VALUE TARGET"; };
                         class hvt : Combo
                         {

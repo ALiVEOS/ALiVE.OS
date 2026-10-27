@@ -157,6 +157,9 @@ switch (_operation) do {
         private _shipInf = floor ((parseNumber format ["%1", _logic getVariable ["shipInfantry", 6]]) max 0);
         // motorised groups aboard too: their vehicles are flown ashore under heavy lift helicopters
         private _shipMot = floor ((parseNumber format ["%1", _logic getVariable ["shipMotorised", 0]]) max 0);
+        // groups per wave and seconds between waves (TheLogatron on Discord, 26 Oct); 2 and 200 were the fixed pacing
+        private _shipWaveSize = floor ((parseNumber format ["%1", _logic getVariable ["shipWaveSize", 2]]) max 1);
+        private _shipWaveGap = (parseNumber format ["%1", _logic getVariable ["shipWaveGap", 200]]) max 0;
         // Phase 4: faction sources, all unioned below.
         //   factions       : multi-select listbox (primary UX,
         //                    ORIGINAL property so old `factions`
@@ -455,6 +458,8 @@ switch (_operation) do {
             // the force aboard as [infantry, motorised, 0 x 6], in getForceStrength's order; checked after the handler is made
             ["shipStart", _shipStart],
             ["shipAboard", [_shipInf, _shipMot, 0, 0, 0, 0, 0, 0]],
+            ["shipWaveSize", _shipWaveSize],
+            ["shipWaveGap", _shipWaveGap],
             // waves whose vehicles no helicopter could lift: three and the motorised groups are left out
             ["shipMotRefused", 0],
             // motorised waves that came back empty with no reason given (enemy at the landing, the lift throttled):
@@ -6454,8 +6459,11 @@ switch (_operation) do {
         // groups already asked for and not yet stamped are not asked for twice
         private _askedInf = 0; private _askedMot = 0;
         { _askedInf = _askedInf + ((_x select 1) select 0); _askedMot = _askedMot + ((_x select 1) select 1) } forEach _pending;
-        private _infantry = (((_aboard select 0) - _askedInf) max 0) min 8;
-        private _motorized = (((_aboard select 1) - _askedMot) max 0) min 4;
+        private _waveSize = [_logic, "shipWaveSize", 2] call ALiVE_fnc_HashGet;
+        private _waveGap = [_logic, "shipWaveGap", 200] call ALiVE_fnc_HashGet;
+        // a cycle asks for 8 infantry and 4 motorised groups at most, or one whole wave when the waves are bigger
+        private _infantry = (((_aboard select 0) - _askedInf) max 0) min (8 max _waveSize);
+        private _motorized = (((_aboard select 1) - _askedMot) max 0) min (4 max _waveSize);
 
         // the landing: the objective nearest the ship that the commander is attacking or holding, else the nearest of all
         private _objectives = [_logic, "objectives", []] call ALiVE_fnc_HashGet;
@@ -6502,12 +6510,12 @@ switch (_operation) do {
         [_logic, "shipBeachheadID", [_beach, "objectiveID", ""] call ALiVE_fnc_HashGet] call ALiVE_fnc_HashSet;
         ["OPCOM SHIP - %1 lands %2 infantry and %3 motorised groups at %4 (%5 m from the ship)", _name, _infantry, _motorized, [_position] call ALIVE_fnc_taskGetNearestLocationName, round _best] call ALiVE_fnc_dump;
 
-        // the stock pacing, two groups a wave and 200 seconds apart: the infantry first, then the motorised groups in
-        // waves of their own, as Logistics would seat infantry in the sling helicopters of a mixed wave
+        // Groups Per Wave and Seconds Between Waves (2 and 200 by default): the infantry first, then the motorised groups
+        // in waves of their own, as Logistics would seat infantry in the sling helicopters of a mixed wave
         private _wave = 0;
         while { _infantry + _motorized > 0 } do {
-            private _inf = _infantry min 2;
-            private _mot = if (_inf > 0) then { 0 } else { _motorized min 2 };
+            private _inf = _infantry min _waveSize;
+            private _mot = if (_inf > 0) then { 0 } else { _motorized min _waveSize };
             _infantry = _infantry - _inf;
             _motorized = _motorized - _mot;
             private _from = _pads select (_wave mod (count _pads));
@@ -6525,7 +6533,7 @@ switch (_operation) do {
             _events pushBack [_event, [_inf, _mot], time, _token];
             [ALIVE_eventLog, "addEvent", _event] call ALIVE_fnc_eventLog;
             _wave = _wave + 1;
-            sleep (if (_infantry + _motorized > 0) then { 200 } else { 10 });
+            sleep (if (_infantry + _motorized > 0) then { _waveGap } else { 10 });
         };
 
         // wait for the stamps, then the next cycle raises any wave still owed

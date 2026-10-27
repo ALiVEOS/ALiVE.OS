@@ -400,13 +400,25 @@
     <English>Infantry Groups Aboard</English>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_SHIP_INF_COMMENT">
-    <English>How many infantry groups start aboard the ship with Start From Ship on. They go ashore two groups a wave, a few minutes apart, by helicopter or by boat. Mechanised and armoured groups start on land as usual.</English>
+    <English>How many infantry groups start aboard the ship with Start From Ship on. They go ashore a wave at a time (see Groups Per Wave and Seconds Between Waves), by helicopter or by boat. Mechanised and armoured groups start on land as usual.</English>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_SHIP_MOT">
     <English>Motorised Groups Aboard</English>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_SHIP_MOT_COMMENT">
-    <English>How many motorised groups start aboard the ship with Start From Ship on, 0 by default. They fly ashore after the infantry, two groups a wave, each vehicle carried under a heavy lift helicopter. The faction or its side needs a helicopter that can lift the vehicle; boats carry infantry only. If none can, or the landing stays closed to them for a long while, these groups are left out and the usual reinforcements resume.</English>
+    <English>How many motorised groups start aboard the ship with Start From Ship on, 0 by default. They fly ashore after the infantry, in waves of their own the same size, each vehicle carried under a heavy lift helicopter. The faction or its side needs a helicopter that can lift the vehicle; boats carry infantry only. If none can, or the landing stays closed to them for a long while, these groups are left out and the usual reinforcements resume.</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_SHIP_WAVE_SIZE">
+    <English>Groups Per Wave</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_SHIP_WAVE_SIZE_COMMENT">
+    <English>How many groups leave the ship in each wave with Start From Ship on, 2 by default. The infantry goes first, then the motorised groups in waves of their own. Every wave lands at the same place: the objective nearest the ship that the commander is attacking or holding. A bigger wave needs more helicopters or boats at once, and Military Logistics may take longer to send it.</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_SHIP_WAVE_GAP">
+    <English>Seconds Between Waves</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_SHIP_WAVE_GAP_COMMENT">
+    <English>How long the commander waits between asking for one wave and the next with Start From Ship on, 200 seconds by default. 0 asks for the waves together, up to 8 infantry and 4 motorised groups at a time (or one wave, if a wave is bigger); the rest follow once those have left the ship. The waves still arrive as fast as Military Logistics can fly or sail them.</English>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_HVT_RESPAWN">
     <English>Replace When Pause Ends</English>
