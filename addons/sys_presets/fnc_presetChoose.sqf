@@ -389,7 +389,18 @@ uiNamespace setVariable ["ALiVE_presetChooseSetAll", _fnc_setAll];
         private _now = _pickModules find _owner;
         if (_now >= 0) then { _objects pushBack [_class, _offset, _dir, _now] };
     } forEach (_preset param [9, []]);
+    // The template squads of the categories kept, the same way.
+    private _squads = [];
+    {
+        _x params ["_owner", "_men", ["_vehicles", []]];
+        private _now = _pickModules find _owner;
+        if (_now >= 0) then { _squads pushBack [_now, _men, _vehicles] };
+    } forEach (_preset param [10, []]);
     private _cut = switch (true) do {
+        case (count _squads > 0): {
+            ["ALIVEPRESET", 5, _meta, _modules, _links, _preset param [5, []],
+                _preset param [6, []], _keptMarkers, _carried, _objects, _squads]
+        };
         case (count _objects > 0): {
             ["ALIVEPRESET", 4, _meta, _modules, _links, _preset param [5, []],
                 _preset param [6, []], _keptMarkers, _carried, _objects]

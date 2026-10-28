@@ -51,7 +51,7 @@ Parameters:
               the view.
 
 Returns:
-    ARRAY [_placed, _settings, _links, _skipped, _areas, _renamed, _trims, _objects, _moved]
+    ARRAY [_placed, _settings, _links, _skipped, _areas, _renamed, _trims, _objects, _moved, _squads]
       _placed   - NUMBER of modules created
       _settings - NUMBER of settings applied
       _links    - NUMBER of sync lines drawn
@@ -63,6 +63,9 @@ Returns:
       _moved    - ARRAY of [STRING class, NUMBER metres], objects whose spot was in a building,
                   rock, wall, tree, water or steep ground, moved to the nearest clear spot (a
                   negative distance: none within 60 m, left where the preset put it)
+      _squads   - NUMBER of Faction Compiler template squads placed
+      _squadsLeft - NUMBER of template squads left out because their category or
+                  its Faction Compiler was not placed
 
 Examples:
     (begin example)
@@ -78,14 +81,14 @@ Author:
 
 params [["_preset", [], [[]]], ["_where", [], [[]]]];
 
-if (!is3DEN) exitWith { [0, 0, 0, [], 0, [], [], 0] };
-if (!((count _preset) in [7, 8, 9, 10])) exitWith {
+if (!is3DEN) exitWith { [0, 0, 0, [], 0, [], [], 0, [], 0, 0] };
+if (!((count _preset) in [7, 8, 9, 10, 11])) exitWith {
     // Never silent. Nine parts arrived here from a version 3 preset while this
     // read 7 or 8, and placing simply did nothing with nothing in the log to
     // say why. If a fourth part is ever added, this is the line that has to know.
-    ["ALIVE_fnc_presetPlace - a preset of %1 part(s) cannot be read; 7 to 10 expected",
+    ["ALIVE_fnc_presetPlace - a preset of %1 part(s) cannot be read; 7 to 11 expected",
         count _preset] call ALiVE_fnc_dump;
-    [0, 0, 0, [], 0, [], [], 0]
+    [0, 0, 0, [], 0, [], [], 0, [], 0, 0]
 };
 
 _preset params ["_magic", "_version", "_meta", "_modules", "_links"];
@@ -93,6 +96,7 @@ _preset params ["_magic", "_version", "_meta", "_modules", "_links"];
 // and this runs on all of them.
 private _markers = _preset param [7, []];
 private _objects = _preset param [9, []];
+private _squads = _preset param [10, []];
 
 // What the scenario already has, so nothing is doubled up.
 private _have = [];
@@ -105,6 +109,39 @@ private _have = [];
         } forEach _x;
     };
 } forEach all3DENEntities;
+// A scenario can hold more than one compiled faction, so a Faction Compiler and
+// its categories are not kept to one each like the other modules. A compiler is
+// left out only when the scenario already has one building the same faction id,
+// because the second would be refused at mission start.
+// Compared the way the compiler itself compares them: every run of anything but a
+// letter or digit becomes one underscore, an id with no letters or digits is
+// ALIVE_CUSTOM_FACTION, and case counts.
+private _fnc_factionIdKey = {
+    private _id = if (_this isEqualType "") then { _this } else { str _this };
+    private _out = [];
+    private _lastUnder = false;
+    private _any = false;
+    {
+        if ((_x >= 48 && _x <= 57) || {(_x >= 65 && _x <= 90) || (_x >= 97 && _x <= 122)}) then {
+            _out pushBack _x; _lastUnder = false; _any = true;
+        } else {
+            if (!_lastUnder) then { _out pushBack 95; _lastUnder = true };
+        };
+    } forEach (toArray _id);
+    if (_any) then { toString _out } else { "ALIVE_CUSTOM_FACTION" }
+};
+private _haveFactionIds = ((all3DENEntities param [3, []]) select { (toLower (typeOf _x)) isEqualTo "alive_sys_factioncompiler" })
+    apply { ((_x get3DENAttribute "ALiVE_sys_factioncompiler_factionId") param [0, "ALIVE_CUSTOM_FACTION"]) call _fnc_factionIdKey };
+// The preset's compilers that would build a faction id the scenario already has.
+private _compilersSkipped = [];
+{
+    _x params ["_class", "_settings"];
+    if ((toLower _class) isEqualTo "alive_sys_factioncompiler") then {
+        private _id = _settings findIf { (_x select 0) isEqualTo "ALiVE_sys_factioncompiler_factionId" };
+        private _idValue = if (_id >= 0) then { (_settings select _id) select 1 } else { "ALIVE_CUSTOM_FACTION" };
+        if ((_idValue call _fnc_factionIdKey) in _haveFactionIds) then { _compilersSkipped pushBack _forEachIndex };
+    };
+} forEach _modules;
 
 // In the middle of what the person is looking at, and ON THE MAP.
 //
@@ -151,6 +188,9 @@ private _renamed = [];
 private _trims = [];
 private _madeObjects = [];
 private _moved = [];
+private _madeUnits = [];
+private _squadsPlaced = 0;
+private _squadsSkipped = 0;
 
 // The areas go down first, because the settings that name them have to be
 // rewritten before they are applied. A name already in use is taken by the
@@ -183,7 +223,23 @@ collect3DENHistory {
 
     {
         _x params ["_class", "_settings"];
-        if ((toLower _class) in _have) then {
+        private _index = _forEachIndex;
+        private _skip = switch (toLower _class) do {
+            case "alive_sys_factioncompiler": { _index in _compilersSkipped };
+            // A category goes with its compiler: one whose compiler was left out,
+            // or that came without one, would be a module nothing reads.
+            case "alive_sys_factioncompiler_category": {
+                private _mine = [];
+                {
+                    _x params ["_a", "_b"];
+                    private _other = if (_a == _index) then { _b } else { [-1, _a] select (_b == _index) };
+                    if (_other >= 0 && {(toLower ((_modules param [_other, [""]]) select 0)) isEqualTo "alive_sys_factioncompiler"}) then { _mine pushBack _other };
+                } forEach _links;
+                _mine isEqualTo [] || {(_mine findIf { !(_x in _compilersSkipped) }) < 0}
+            };
+            default { (toLower _class) in _have };
+        };
+        if (_skip) then {
             _skipped pushBackUnique _class;
             // A place is still kept in the list, so the sync lines further down
             // still point at the module the preset meant.
@@ -318,6 +374,49 @@ collect3DENHistory {
             _made pushBack [_key, _obj];
         };
     } forEach _objects;
+
+    // The Faction Compiler's template squads. Each goes in only when its category
+    // AND the compiler that category is synced to were placed: a squad on a
+    // category no compiler reads is men standing in a field doing nothing. The
+    // leader is placed first, the rest join his group, and the leader is synced
+    // to the category, which is all the compiler needs to take the whole group.
+    {
+        _x params ["_owner", "_men"];
+        private _category = _created param [_owner, objNull];
+        private _compilerPlaced = (_links findIf {
+            _x params ["_a", "_b"];
+            private _other = if (_a == _owner) then { _b } else { [-1, _a] select (_b == _owner) };
+            _other >= 0 && {(toLower ((_modules param [_other, [""]]) select 0)) isEqualTo "alive_sys_factioncompiler"} && {!isNull (_created param [_other, objNull])}
+        }) >= 0;
+        if (isNull _category || {!_compilerPlaced}) then {
+            _squadsSkipped = _squadsSkipped + 1;
+            continue;
+        };
+        private _placed = [];
+        {
+            _x params ["_class", "_offset", "_dir", "_rank"];
+            private _pos = [
+                (((_anchor param [0, 0]) + (_offset param [0, 0])) max 1) min (worldSize - 1),
+                (((_anchor param [1, 0]) + (_offset param [1, 0])) max 1) min (worldSize - 1),
+                0
+            ];
+            private _man = create3DENEntity ["Object", _class, _pos];
+            if (!isNull _man) then {
+                _man set3DENAttribute ["rotation", [0, 0, _dir]];
+                _man set3DENAttribute ["rank", toUpper _rank];
+                _placed pushBack _man;
+            };
+        } forEach _men;
+        if (_placed isNotEqualTo []) then {
+            private _leader = _placed select 0;
+            // Joined to the leader's GROUP: pointed at the leader himself, Eden
+            // grouped nobody, one at a time or all at once (measured in Eden, 28 Oct).
+            if (count _placed > 1) then { add3DENConnection ["Group", _placed - [_leader], group _leader] };
+            add3DENConnection ["Sync", [_leader], _category];
+            _madeUnits append _placed;
+            _squadsPlaced = _squadsPlaced + 1;
+        };
+    } forEach _squads;
 };
 
 private _live = _created select { !isNull _x };
@@ -325,7 +424,7 @@ private _live = _created select { !isNull _x };
 // TAOR is never left behind at the spot its modules were dragged away from. The
 // editor takes a marker by its name here, the same way its own mission statistics
 // window selects every marker in a scenario.
-private _pick = _live + _madeObjects + _madeAreas;
+private _pick = _live + _madeObjects + _madeUnits + _madeAreas;
 if (count _pick > 0) then { set3DENSelected _pick };
 
 // Said out loud, with where they went. "Nothing happened" is the one report that
@@ -334,8 +433,12 @@ if (count _pick > 0) then { set3DENSelected _pick };
 ["ALIVE_fnc_presetPlace - placed %1 module(s), %2 setting(s), %3 link(s), %4 area(s), %10 of %11 object(s) at %5, taken from %6; already present: %7; renamed: %8; trimmed to fit the map: %9",
     count _live, _applied, _drawn, _areas, _anchor apply { round _x }, _source, _skipped, _renamed, _trims,
     count _madeObjects, count _objects] call ALiVE_fnc_dump;
+if (count _squads > 0) then {
+    ["ALIVE_fnc_presetPlace - placed %1 of %2 template squad(s) (%3 men); %4 left out because their category or its Faction Compiler was not placed",
+        _squadsPlaced, count _squads, count _madeUnits, _squadsSkipped] call ALiVE_fnc_dump;
+};
 if (_moved isNotEqualTo []) then {
     ["ALIVE_fnc_presetPlace - objects moved off a building, rock, wall, tree, water or steep ground: %1", _moved] call ALiVE_fnc_dump;
 };
 
-[count _live, _applied, _drawn, _skipped, _areas, _renamed, _trims, count _madeObjects, _moved]
+[count _live, _applied, _drawn, _skipped, _areas, _renamed, _trims, count _madeObjects, _moved, _squadsPlaced, _squadsSkipped]

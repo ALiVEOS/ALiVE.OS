@@ -57,7 +57,8 @@ if !((_trimmed select [0, 13]) isEqualTo "[""ALIVEPRESET") exitWith {
 };
 
 // Seven parts, eight once it carries areas, nine once it carries the record of
-// which mods it needs, ten once it carries objects synced to its modules. Anything
+// which mods it needs, ten once it carries objects synced to its modules, eleven once
+// it carries Faction Compiler template squads. Anything
 // else is not a preset, or is a preset that was cut short on its way here.
 private _preset = parseSimpleArray _trimmed;
 
@@ -69,7 +70,16 @@ if (isNil "_preset" || {!(_preset isEqualType [])}) exitWith {
     ["This preset is damaged. It looks like it was cut short when it was copied."] call _no
 };
 
-if (!((count _preset) in [7, 8, 9, 10])) exitWith {
+// Who it says it is and which version, read before the length: a preset from a
+// newer build may have more parts than this one knows, and should be told apart
+// from something that is not a preset at all.
+if !((_preset param [0, ""]) isEqualTo "ALIVEPRESET") exitWith {
+    ["That is not a preset. Copy the whole line, starting with [""ALIVEPRESET""."] call _no
+};
+if ((_preset param [1, 0]) isEqualType 0 && {(_preset param [1, 0]) > 5}) exitWith {
+    [format ["This preset was written for a newer ALiVE (it says version %1, this build reads 5). Update ALiVE.", _preset param [1, 0]]] call _no
+};
+if (!((count _preset) in [7, 8, 9, 10, 11])) exitWith {
     ["That is not a preset. Copy the whole line, starting with [""ALIVEPRESET""."] call _no
 };
 
@@ -81,13 +91,15 @@ private _carried = _preset param [8, []];
 // Objects synced to a module (version 4): Field HQs, rally points, recruitment
 // points, a multispawn vehicle, objects kept out of player logistics.
 private _objects = _preset param [9, []];
+// The Faction Compiler's template squads (version 5), each synced to a category.
+private _squads = _preset param [10, []];
 
 if !(_magic isEqualTo "ALIVEPRESET") exitWith {
     ["That is not a preset. Copy the whole line, starting with [""ALIVEPRESET""."] call _no
 };
 if !(_version isEqualType 0) exitWith { ["This preset does not say which version it is."] call _no };
-if (_version > 4) exitWith {
-    [format ["This preset was written for a newer ALiVE (it says version %1, this build reads 4). Update ALiVE.", _version]] call _no
+if (_version > 5) exitWith {
+    [format ["This preset was written for a newer ALiVE (it says version %1, this build reads 5). Update ALiVE.", _version]] call _no
 };
 if (!(_modules isEqualType []) || {!(_links isEqualType [])} || {!(_meta isEqualType [])}) exitWith {
     ["This preset is damaged. It may have been cut short when it was copied."] call _no
@@ -324,6 +336,62 @@ if !(_objects isEqualType []) then {
             };
         };
     } forEach _objects;
+};
+
+// The template squads. Each is the category it is synced to, by its place in the
+// list, then the men, leader first: a class this game has that is a man, where he
+// stands from the middle, which way he faces, his rank, and -1 (on foot; the slot
+// for a vehicle seat). Then the vehicles, none yet.
+private _ranks = ["PRIVATE", "CORPORAL", "SERGEANT", "LIEUTENANT", "CAPTAIN", "MAJOR", "COLONEL"];
+if !(_squads isEqualType []) then {
+    _problems pushBack "The template squads in this preset are damaged.";
+} else {
+    {
+        private _at = _forEachIndex + 1;
+        if (!(_x isEqualType []) || {count _x != 3} || {!((_x select 1) isEqualType [])} || {count (_x select 1) == 0} || {!((_x select 2) isEqualType [])}) then {
+            _problems pushBack format ["Template squad %1 in this preset is damaged.", _at];
+        } else {
+            _x params ["_owner", "_men", "_vehicles"];
+            private _ownerOk = _owner isEqualType 0 && {_owner == floor _owner} && {_owner >= 0} && {_owner < count _modules};
+            private _ownerEntry = if (_ownerOk) then { _modules select _owner } else { [] };
+            private _ownerCls = if (_ownerEntry isEqualType [] && {count _ownerEntry > 0} && {(_ownerEntry select 0) isEqualType ""}) then { _ownerEntry select 0 } else { "" };
+            switch (false) do {
+                case (_ownerOk): {
+                    _problems pushBack format ["Template squad %1 is synced to a module that is not in this preset.", _at];
+                };
+                case ((toLower _ownerCls) isEqualTo "alive_sys_factioncompiler_category"): {
+                    _problems pushBack format ["Template squad %1 is synced to %2, which is not a Faction Compiler category.", _at, _ownerCls];
+                };
+                case (count _vehicles == 0): {
+                    _problems pushBack format ["Template squad %1 has vehicles, which this build cannot place.", _at];
+                };
+                default {
+                    {
+                        if (!(_x isEqualType []) || {count _x != 5}) then {
+                            _problems pushBack format ["Template squad %1 in this preset is damaged.", _at];
+                        } else {
+                            _x params ["_class", "_offset", "_dir", "_rank", "_veh"];
+                            private _pairOk = (_offset isEqualType []) && {count _offset isEqualTo 2}
+                                && {(_offset select 0) isEqualType 0} && {(_offset select 1) isEqualType 0};
+                            switch (false) do {
+                                case (_class isEqualType "" && {!(_class isEqualTo "")} && {_pairOk} && {_dir isEqualType 0}
+                                    && {_rank isEqualType ""} && {(toUpper _rank) in _ranks} && {_veh isEqualTo -1}): {
+                                    _problems pushBack format ["Template squad %1 in this preset is damaged.", _at];
+                                };
+                                case (isClass (configFile >> "CfgVehicles" >> _class)): {
+                                    _problems pushBack format ["This game does not have the unit %1. It may come from a mod you are not running.", _class];
+                                };
+                                case (_class isKindOf "CAManBase"): {
+                                    _problems pushBack format ["%1 is not a soldier, so it cannot be in a template squad.", _class];
+                                };
+                                default {};
+                            };
+                        };
+                    } forEach _men;
+                };
+            };
+        };
+    } forEach _squads;
 };
 
 if (count _problems > 0) exitWith { [false, [], _problems] };

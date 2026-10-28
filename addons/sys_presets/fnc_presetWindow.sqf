@@ -327,7 +327,8 @@ private _fnc_show = {
         // so counting addons said a preset needed sixteen mods when it needed
         // six, which is not a rounding error but a wrong answer.
         // the objects' classes count as the modules' do
-        private _needs = [_modules + ((_preset param [9, []]) apply { [_x param [0, ""], []] }), _preset param [5, []], "mods",
+        // and the template squads' men, so a squad from a mod needs that mod
+        private _needs = [_modules + ((_preset param [9, []]) apply { [_x param [0, ""], []] }) + (((_preset param [10, []]) apply { (_x param [1, []]) apply { [_x param [0, ""], []] } }) call { private _all = []; { _all append _x } forEach _this; _all }), _preset param [5, []], "mods",
             _preset param [8, []]] call ALIVE_fnc_presetAddons;
         private _short = count (_needs select { !(_x select 2) });
         private _mods = switch (true) do {
@@ -580,7 +581,7 @@ uiNamespace setVariable ["ALiVE_presetWindowGoPlace", _fnc_goPlace];
     // Said the same way sharing says it. A setting left out is the one thing about
     // this that is not obvious from the result, so it does not go unmentioned just
     // because this path is the quick one.
-    _report params ["", "", "", ["_dropped", []], "", ["_missing", []]];
+    _report params ["", "", "", ["_dropped", []], "", ["_missing", []], ["_squads", 0], ["_squadsLeftOut", 0]];
     private _said = _why;
     if (_ok && {count _dropped > 0}) then {
         _said = _said + format [" Left out: %1.", _dropped joinString ", "];
@@ -588,6 +589,9 @@ uiNamespace setVariable ["ALiVE_presetWindowGoPlace", _fnc_goPlace];
     if (_ok && {count _missing > 0}) then {
         _said = _said + format [" These areas are not in it, so the settings naming them went too: %1.",
             _missing joinString ", "];
+    };
+    if (_ok && {_squadsLeftOut > 0}) then {
+        _said = _said + format [" %1 template squad%2 with a vehicle left out: a preset cannot carry vehicle crews yet.", _squadsLeftOut, ["s", ""] select (_squadsLeftOut == 1)];
     };
     // Said now, because nothing else would tell anybody: placed on this map
     // again, the preset goes back exactly where it is, with no click.

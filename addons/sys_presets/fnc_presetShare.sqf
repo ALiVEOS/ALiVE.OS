@@ -40,7 +40,7 @@ if (!is3DEN) exitWith { "" };
 // The window hands over two lists instead, so somebody can share part of what is
 // in front of them.
 ([_choice] call ALIVE_fnc_presetCollect) params ["_preset", "_report"];
-_report params [["_modules", 0], ["_settings", 0], ["_links", 0], ["_dropped", []], ["_mods", []], ["_missing", []]];
+_report params [["_modules", 0], ["_settings", 0], ["_links", 0], ["_dropped", []], ["_mods", []], ["_missing", []], ["_squads", 0], ["_squadsLeftOut", 0]];
 
 if (count _preset == 0) exitWith {
     ["This scenario has no ALiVE modules to share.", 1, 8] call BIS_fnc_3DENNotification;
@@ -74,6 +74,12 @@ if (count ((_preset select 2) param [6, []]) > 0) then {
     } else {
         format [" On %1 its areas go back where they are now.", worldName]
     });
+};
+if (_squads > 0) then {
+    _msg = _msg + format [" %1 template squad%2 for the Faction Compiler came with it.", _squads, ["s", ""] select (_squads == 1)];
+};
+if (_squadsLeftOut > 0) then {
+    _msg = _msg + format [" %1 template squad%2 with a vehicle left out: a preset cannot carry vehicle crews yet.", _squadsLeftOut, ["s", ""] select (_squadsLeftOut == 1)];
 };
 if (count _dropped > 0) then {
     _msg = _msg + format [" Left out: %1.", _dropped joinString ", "];
