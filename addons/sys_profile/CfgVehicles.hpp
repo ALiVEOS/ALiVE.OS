@@ -161,6 +161,8 @@ class CfgVehicles {
                     class HDR_OUTBREAK : ALiVE_ModuleSubTitle { property = "ALiVE_sys_profile_HDR_OUTBREAK"; displayName = "OUTBREAK GAME MODE"; };
                     class zombieFactions : Edit { property = "ALiVE_sys_profile_zombieFactions"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_FACTIONS"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_FACTIONS_COMMENT"; defaultValue = """"""; };
                     class zombieMeleeDamage : Edit { property = "ALiVE_sys_profile_zombieMeleeDamage"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_MELEE"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_MELEE_COMMENT"; defaultValue = """0.015"""; };
+                    class zombieHuntRange : Edit { property = "ALiVE_sys_profile_zombieHuntRange"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_HUNT_RANGE"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_HUNT_RANGE_COMMENT"; defaultValue = """100"""; };
+                    class zombieBiteDamage : Edit { property = "ALiVE_sys_profile_zombieBiteDamage"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_BITE"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_BITE_COMMENT"; defaultValue = """0.3"""; };
 
                     // ---- Pathfinding ----------------------------------------------------
                     class HDR_PATH : ALiVE_ModuleSubTitle { property = "ALiVE_sys_profile_HDR_PATH"; displayName = "PATHFINDING"; };

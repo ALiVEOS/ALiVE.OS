@@ -284,6 +284,26 @@
     <Chinesesimp>仅限爆发游戏模式。每只僵尸在每轮虚拟战斗中对步兵小组造成的伤害。0.015相当于一名步枪手；0表示僵尸在虚拟战斗中不造成伤害。僵尸无法伤害车内人员。</Chinesesimp>
     <Spanish>Solo en el modo de juego Brote. Daño que hace un zombi en cada ronda de combate virtual contra un grupo de infantería. 0.015 equivale a un fusilero; 0 significa que los zombis nunca hieren a nadie en combate virtual. Los zombis no pueden herir a nadie dentro de un vehículo.</Spanish>
 </Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_HUNT_RANGE">
+    <English>Zombie Hunt Range:</English>
+    <Chinesesimp>僵尸猎杀范围：</Chinesesimp>
+    <Spanish>Alcance de caza zombi:</Spanish>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_HUNT_RANGE_COMMENT">
+    <English>Outbreak game mode only. How far in metres a zombie group looks for civilians to attack, players in civilian slots included. The zombie mod only attacks soldiers, so ALiVE sends the zombies after civilians itself; a soldier nearby still comes first. 0 means zombies leave civilians alone.</English>
+    <Chinesesimp>仅限爆发游戏模式。僵尸小组寻找平民攻击的距离（米），包括平民位置上的玩家。僵尸模组只攻击士兵，因此由ALiVE让僵尸追击平民；附近的士兵仍然优先。0表示僵尸不攻击平民。</Chinesesimp>
+    <Spanish>Solo en el modo de juego Brote. Distancia en metros a la que un grupo zombi busca civiles para atacar, incluidos los jugadores en puestos civiles. El mod de zombis solo ataca a soldados, así que ALiVE lanza a los zombis contra los civiles; un soldado cercano sigue teniendo prioridad. 0 significa que los zombis dejan en paz a los civiles.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_BITE">
+    <English>Zombie Bite Damage:</English>
+    <Chinesesimp>僵尸咬伤伤害：</Chinesesimp>
+    <Spanish>Daño del mordisco zombi:</Spanish>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_BITE_COMMENT">
+    <English>Outbreak game mode only. Damage each bite does to a civilian, from 0 to 1. The default 0.3 kills in four bites. The zombie is named as the killer.</English>
+    <Chinesesimp>仅限爆发游戏模式。每次咬伤对平民造成的伤害，范围0到1。默认值0.3咬四次致死。僵尸被记为击杀者。</Chinesesimp>
+    <Spanish>Solo en el modo de juego Brote. Daño de cada mordisco a un civil, de 0 a 1. El valor por defecto 0.3 mata en cuatro mordiscos. El zombi figura como el que lo mató.</Spanish>
+</Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PATHFINDING">
     <English>Pathfinding:</English>
     <Chinesesimp>实验路径查找：</Chinesesimp>

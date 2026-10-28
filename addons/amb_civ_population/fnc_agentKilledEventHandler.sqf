@@ -20,6 +20,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 params ["_unit","_killer"];
@@ -30,6 +31,9 @@ private _agent = [ALIVE_agentHandler, "getAgent", _agentID] call ALIVE_fnc_agent
 [_unit,""] call ALIVE_fnc_switchMove;
 
 private _killerSide = str(side (group _killer));
+// Outbreak: a zombie's kill still counts as a casualty, but it must not turn the town against
+// whichever human faction shares the zombies' side.
+if (_killer getVariable ["ALiVE_zombie", false]) then { _killerSide = "" };
 
 if (isnil "_agent" || {!isServer}) exitwith {};
 

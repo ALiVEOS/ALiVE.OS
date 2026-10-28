@@ -26,6 +26,11 @@ class cfgFunctions {
                 file = "\x\alive\addons\sys_profile\fnc_profile.sqf";
                 ALIVE_RECOMPILE;
             };
+            class zombieHunt {
+                description = "Outbreak: drives spawned zombie groups at civilians and lands the bite (server and headless clients)";
+                file = "\x\alive\addons\sys_profile\fnc_zombieHunt.sqf";
+                ALIVE_RECOMPILE;
+            };
             class profileEntity {
                 description = "profileEntity";
                 file = "\x\alive\addons\sys_profile\fnc_profileEntity.sqf";

@@ -255,20 +255,38 @@ if(isServer) then {
         } else {
             ["ALiVE Profile System - Outbreak zombie factions: %1", ALiVE_zombieFactions] call ALiVE_fnc_dump;
         };
-        private _meleeRaw = _logic getVariable ["zombieMeleeDamage", "0.015"];
-        private _melee = [_meleeRaw, -1] call _asNumber;
-        if (_meleeRaw isEqualType "") then {
-            private _meleeText = (_meleeRaw splitString " ") joinString "";
-            if (_meleeText isEqualTo "" || {((_meleeText splitString "") - ["0","1","2","3","4","5","6","7","8","9","."]) isNotEqualTo []}) then { _melee = -1 };
+        // A number setting: plain digits and a point only, anything else falls back to the default.
+        private _zombieNumber = {
+            params ["_key", "_default", "_label"];
+            private _raw = _logic getVariable [_key, str _default];
+            private _value = [_raw, -1] call _asNumber;
+            if (_raw isEqualType "") then {
+                private _text = (_raw splitString " ") joinString "";
+                if (_text isEqualTo "" || {((_text splitString "") - ["0","1","2","3","4","5","6","7","8","9","."]) isNotEqualTo []}) then { _value = -1 };
+            };
+            if (_value < 0) then {
+                ["ALiVE Profile System - %1 reads %2, which is not a number, so it uses the default %3. Correct it on the Virtual AI module.", _label, str _raw, _default] call ALiVE_fnc_dumpR;
+                _value = _default;
+            };
+            _value
         };
-        if (_melee < 0) then {
-            ["ALiVE Profile System - Zombie melee damage reads %1, which is not a number, so it uses the default 0.015. Correct it on the Virtual AI module.", str _meleeRaw] call ALiVE_fnc_dumpR;
-            _melee = 0.015;
-        };
-        if (_melee == 0) then {
+        ALiVE_zombieMelee = ["zombieMeleeDamage", 0.015, "Zombie melee damage"] call _zombieNumber;
+        if (ALiVE_zombieMelee == 0) then {
             ["ALiVE Profile System - Zombie melee damage is 0, so zombies do no damage in virtual combat."] call ALiVE_fnc_dumpR;
         };
-        ALiVE_zombieMelee = _melee;
+        ALiVE_zombieHuntRange = ["zombieHuntRange", 100, "Zombie hunt range"] call _zombieNumber;
+        ALiVE_zombieBiteDamage = (["zombieBiteDamage", 0.3, "Zombie bite damage"] call _zombieNumber) min 1;
+        if (ALiVE_zombieHuntRange == 0) then {
+            ["ALiVE Profile System - Zombie hunt range is 0, so zombies leave civilians alone."] call ALiVE_fnc_dumpR;
+        };
+        // The zombie hunt runs on the server and on every headless client (a zombie group can be
+        // handed to one), so they all need the list and the settings. Players' machines skip it.
+        publicVariable "ALiVE_zombieFactions";
+        publicVariable "ALiVE_zombieHuntRange";
+        publicVariable "ALiVE_zombieBiteDamage";
+        if (ALiVE_zombieFactions isNotEqualTo [] && {ALiVE_zombieHuntRange > 0}) then {
+            [] remoteExecCall ["ALiVE_fnc_zombieHunt", 0, "ALiVE_zombieHunt"];
+        };
     };
     private _pathfinding = (_logic getVariable ["pathfinding", "true"]) == "true";
     // Pass the configured grid setting through RAW (no parse here). It may be an

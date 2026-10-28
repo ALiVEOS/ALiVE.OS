@@ -1551,6 +1551,15 @@ switch(_operation) do {
             };
             // --- end onEachSpawn hook ---
 
+            // Outbreak: a zombie faction's group is tagged so the zombie hunt (ALiVE_fnc_zombieHunt) drives it
+            // at civilians, on whichever machine owns it, and each zombie is marked so nothing mistakes a
+            // zombie in civilian clothes for a civilian.
+            private _spawnFaction = _logic select 2 select 29;
+            if (_spawnFaction isEqualType "" && {(toLower _spawnFaction) in (missionNamespace getVariable ["ALiVE_zombieFactions", []])}) then {
+                _group setVariable ["ALiVE_zombieHunt", true, true];
+                { _x setVariable ["ALiVE_zombie", true, true] } forEach _units;
+            };
+
             // WebKnight's zombies: a Walker or Crawler leading the group holds everyone to its shamble (about
             // 19 m in 45 s against 154 m with a Runner in front), so a faster zombie takes the lead and the
             // slow ones trail behind. The mod's own AI names each zombie's gait a moment after it is made.
