@@ -510,6 +510,14 @@ switch (_operation) do {
                 _why = "which needs an Invasion or Occupation commander";
             } else {
                 _ship = nearestObjects [_position, ["StaticShip"], 400] param [0, objNull];
+                // a ship that can sail, left where it was placed (every Naval Legends ship is one, TheLogatron on
+                // Discord, 28 Oct): a large one, 40 m or more, not a submarine and not a boat
+                if (isNull _ship) then {
+                    private _sailing = (nearestObjects [_position, ["Ship"], 400]) select {
+                        alive _x && {!(_x isKindOf "Submarine")} && {sizeOf typeOf _x >= 40}
+                    };
+                    if (_sailing isNotEqualTo []) then { _ship = _sailing select 0 };
+                };
                 if (isNull _ship) then { _why = "but no ship lies within 400 m of the module" };
                 if (_why == "" && {(allMissionObjects "ALiVE_mil_logistics") isEqualTo []}) then { _why = "but there is no Military Logistics module to fly the force ashore" };
             };
