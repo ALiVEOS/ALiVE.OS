@@ -571,7 +571,12 @@ switch (_op) do {
             private _hs = [_e select 0] call ALIVE_fnc_sideTextToObject;
             if !((["settings", [_e select 2]] call ALIVE_fnc_hub) select 7) exitWith { "the enemy can't dismantle it" };
             if !([side group _caller, _hs] call BIS_fnc_sideIsEnemy) exitWith { format ["%1 is not its enemy", name _caller] };
-            if (({alive _x && {side group _x == _hs}} count (_hub nearEntities [["CAManBase", "LandVehicle", "StaticWeapon"], 60])) > 0) exitWith { "its side is within 60 m" };
+            // its side's soldiers, spawned, or held by ALiVE as profiles not spawned (a spawned one is already counted above)
+            if (({alive _x && {side group _x == _hs}} count (_hub nearEntities [["CAManBase", "LandVehicle", "StaticWeapon"], 60])) > 0
+                || {!isNil "ALiVE_profileSystem" && {(([getPosATL _hub, 60, [_e select 0, "entity"], true] call ALIVE_fnc_getNearProfiles) findIf { !([_x, "active", false] call ALIVE_fnc_hashGet) }) >= 0}}) exitWith {
+                ["ALiVE", localize "STR_ALIVE_HUB_DISMANTLE_DEFENDED"] remoteExec ["ALIVE_fnc_sendHint", owner _caller];
+                "its side is within 60 m"
+            };
             ""
         };
         if (_why != "") exitWith {

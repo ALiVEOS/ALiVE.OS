@@ -511,7 +511,7 @@
     <English>Logistics Hub</English>
 </Key>
 <Key ID="STR_ALIVE_HUB_COMMENT">
-    <English>The objects synced to this module are logistics hubs. A player of the hub's side standing at one can choose Collect at a Hub on the Player Logistics tablet: the requisition is set out beside them straight away, with no convoy and no wait, and paid from the force pool as a delivery would be. Sync the hub objects (static objects, not vehicles) and Player Combat Logistics to this module. Military Logistics must serve the hub's side, as it pays for what is collected.</English>
+    <English>The objects synced to this module are logistics hubs. A player of the hub's side standing at one can choose Collect at a Hub on the Player Logistics tablet: the requisition is set out beside them straight away, with no convoy and no wait, and paid from the force pool as a delivery would be. Sync the hub objects (static objects, not vehicles) and Player Combat Logistics to this module. Military Logistics must serve the hub's side, as it pays for what is collected. Sync Military Logistics to this module too and the hubs become supply points: AI convoys and helicopter inserts set out from whichever is nearer, a hub or the HQ.</English>
 </Key>
 <Key ID="STR_ALIVE_HUB_SIDE">
     <English>Side</English>
@@ -659,6 +659,9 @@
 </Key>
 <Key ID="STR_ALIVE_HUB_DISMANTLED_BY_US">
     <English>The enemy logistics hub at grid %1 has been dismantled</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_DISMANTLE_DEFENDED">
+    <English>The hub's side is still close by, so it can't be dismantled yet</English>
 </Key>
 <Key ID="STR_ALIVE_HUB_BACK">
     <English>The logistics hub at grid %1 is working again</English>
