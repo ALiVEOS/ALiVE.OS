@@ -1,5 +1,5 @@
-// Generated 2026-10-27 from 171 terrain indexes in addons/main/static: every model at least two indexes list and
-// all of them categorise the same way (5540 models: 2491 categorised, 3049 blacklist only). The in-game indexer
+// Generated 2026-10-28 from 172 terrain indexes in addons/main/static: every model at least two indexes list and
+// all of them categorise the same way (5544 models: 2491 categorised, 3053 blacklist only). The in-game indexer
 // fills these in without asking when its Known Categories setting is Yes. Regenerated, not edited by hand.
 [
     ["a3\air_f_jets\plane_fighter_02\plane_fighter_02_wreck_f.p3d", ["ALIVE_Indexing_Blacklist"]],
@@ -267,6 +267,7 @@
     ["a3\structures_f\data\doorlocks\barricade_2.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\structures_f\data\doorlocks\barrier_2.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\structures_f\data\doorlocks\planks_1.p3d", ["ALIVE_Indexing_Blacklist"]],
+    ["a3\structures_f\data\doorlocks\sandbags_1.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\structures_f\dominants\amphitheater\amphitheater_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\structures_f\dominants\castle\castle_01_tower_f.p3d", ["ALIVE_civilianSettlementBuildingTypes"]],
     ["a3\structures_f\dominants\castle\castle_01_wall_06_f.p3d", ["ALIVE_Indexing_Blacklist"]],
@@ -884,9 +885,11 @@
     ["a3\structures_f_enoch\decals\horizontal\vehicletrack_01_straight_start_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\structures_f_enoch\decals\horizontal\vehicletrack_01_straight_v1_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\structures_f_enoch\decals\horizontal\vehicletrack_01_straight_v2_f.p3d", ["ALIVE_Indexing_Blacklist"]],
+    ["a3\structures_f_enoch\furniture\cases\locker\locker_closed_blue_v2.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\structures_f_enoch\furniture\cases\locker\locker_closed_v1.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\structures_f_enoch\furniture\cases\locker\locker_closed_v2.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\structures_f_enoch\furniture\cases\locker\locker_closed_v3.p3d", ["ALIVE_Indexing_Blacklist"]],
+    ["a3\structures_f_enoch\furniture\cases\locker\locker_open_v1.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\structures_f_enoch\furniture\cases\locker\locker_open_v2.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\structures_f_enoch\furniture\cases\locker\locker_open_v3.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\structures_f_enoch\furniture\decoration\carpet_big\carpet_big.p3d", ["ALIVE_Indexing_Blacklist"]],
@@ -900,6 +903,7 @@
     ["a3\structures_f_enoch\furniture\school_equipment\class_case_b_open.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\structures_f_enoch\furniture\school_equipment\flag_chernarus_pole.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\structures_f_enoch\furniture\school_equipment\lab_bench.p3d", ["ALIVE_Indexing_Blacklist"]],
+    ["a3\structures_f_enoch\furniture\school_equipment\lab_teacher_bench.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\structures_f_enoch\furniture\school_equipment\long_bench.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\structures_f_enoch\furniture\school_equipment\radiator.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\structures_f_enoch\furniture\school_equipment\school_cage.p3d", ["ALIVE_Indexing_Blacklist"]],
