@@ -630,7 +630,7 @@ if (is3DEN) then {
                 private _missing = [];
                 {
                     _x params [["_patch", ""], ["_workshop", ""], ["_name", ""], ["_required", 1]];
-                    if (_required == 1 && {!isClass (configFile >> "CfgPatches" >> _patch)}) then {
+                    if (_required == 1 && {((_patch splitString "|") findIf { isClass (configFile >> "CfgPatches" >> _x) }) < 0}) then {
                         _missing pushBack format ["%1 (Workshop %2)", _name, _workshop];
                     };
                 } forEach getArray (configFile >> "CfgALiVEGameModes" >> _mode >> "addons");

@@ -110,7 +110,7 @@ if (isServer) then {
     private _modeMissingOptional = [];
     {
         _x params ["_patch", "_workshop", "_name", ["_required", 1]];
-        if !(isClass (configFile >> "CfgPatches" >> _patch)) then {
+        if (((_patch splitString "|") findIf { isClass (configFile >> "CfgPatches" >> _x) }) < 0) then {
             [_modeMissingOptional, _modeMissing] select (_required == 1) pushBack [_patch, _workshop, _name];
         };
     } forEach getArray (configFile >> "CfgALiVEGameModes" >> _mode >> "addons");
