@@ -157,6 +157,11 @@ class CfgVehicles {
                     };
                     class virtualcombat_rangemodifier : Edit { property = "ALiVE_sys_profile_virtualcombat_rangemodifier"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_VIRTUAL_COMBAT_RANGE_MODIFIER"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_VIRTUAL_COMBAT_RANGE_MODIFIER_COMMENT"; defaultValue = """255"""; };
 
+                    // ---- Outbreak (Game Mode on the Required module) -----------------------
+                    class HDR_OUTBREAK : ALiVE_ModuleSubTitle { property = "ALiVE_sys_profile_HDR_OUTBREAK"; displayName = "OUTBREAK GAME MODE"; };
+                    class zombieFactions : Edit { property = "ALiVE_sys_profile_zombieFactions"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_FACTIONS"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_FACTIONS_COMMENT"; defaultValue = """"""; };
+                    class zombieMeleeDamage : Edit { property = "ALiVE_sys_profile_zombieMeleeDamage"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_MELEE"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_MELEE_COMMENT"; defaultValue = """0.015"""; };
+
                     // ---- Pathfinding ----------------------------------------------------
                     class HDR_PATH : ALiVE_ModuleSubTitle { property = "ALiVE_sys_profile_HDR_PATH"; displayName = "PATHFINDING"; };
                     class pathfinding : Combo { property = "ALiVE_sys_profile_pathfinding"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_PATHFINDING"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_COMMENT"; defaultValue = """true"""; class Values { class No{name="No";value=false;}; class Yes{name="Yes";value=true;default=1;}; }; };

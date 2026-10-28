@@ -351,6 +351,36 @@
     <Chinesesimp>二战</Chinesesimp>
     <Spanish>Segunda Guerra Mundial</Spanish>
 </Key>
+<Key ID="STR_ALiVE_GAMEMODE">
+    <English>Game Mode</English>
+    <Chinesesimp>游戏模式</Chinesesimp>
+    <Spanish>Modo de juego</Spanish>
+</Key>
+<Key ID="STR_ALiVE_GAMEMODE_COMMENT">
+    <English>Standard is ALiVE as it has always been. Outbreak is a zombie outbreak, and needs WebKnight's Zombies and Creatures and Improved Melee System loaded: without them the mission does not start, and says which mod is missing.</English>
+    <Chinesesimp>标准：一直以来的ALiVE。爆发：僵尸爆发模式，需要加载WebKnight's Zombies and Creatures和Improved Melee System；缺少它们时任务不会开始，并会说明缺少哪个模组。</Chinesesimp>
+    <Spanish>Estándar es ALiVE como siempre ha sido. Brote es un brote zombi y necesita cargados WebKnight's Zombies and Creatures e Improved Melee System: sin ellos la misión no empieza e indica qué mod falta.</Spanish>
+</Key>
+<Key ID="STR_ALiVE_ZOMBIESIDE">
+    <English>Zombie Side</English>
+    <Chinesesimp>僵尸阵营方</Chinesesimp>
+    <Spanish>Bando zombi</Spanish>
+</Key>
+<Key ID="STR_ALiVE_ZOMBIESIDE_COMMENT">
+    <English>Outbreak game mode only. The side the zombie factions are on. It is made hostile to every other side except civilians, so survivors can be any other side. Zombie mods leave civilian units alone, so townsfolk meant to be hunted must be soldiers dressed as civilians.</English>
+    <Chinesesimp>仅限爆发游戏模式。僵尸阵营所属的一方。它会与除平民外的所有其他方敌对，因此幸存者可以是任何其他方。僵尸模组不会攻击平民单位，所以要被追杀的镇民必须是穿着平民服装的士兵。</Chinesesimp>
+    <Spanish>Solo en el modo de juego Brote. El bando de las facciones zombi. Se vuelve hostil a todos los demás bandos salvo los civiles, así que los supervivientes pueden ser de cualquier otro bando. Los mods de zombis no atacan a unidades civiles, así que los aldeanos que deban ser perseguidos tienen que ser soldados vestidos de civil.</Spanish>
+</Key>
+<Key ID="STR_ALiVE_GAMEMODE_STANDARD">
+    <English>Standard</English>
+    <Chinesesimp>标准</Chinesesimp>
+    <Spanish>Estándar</Spanish>
+</Key>
+<Key ID="STR_ALiVE_GAMEMODE_OUTBREAK">
+    <English>Outbreak</English>
+    <Chinesesimp>爆发</Chinesesimp>
+    <Spanish>Brote</Spanish>
+</Key>
 <Key ID="STR_ALiVE_TABLET_KEY_BACK">
     <English>Back</English>
     <German>Zurück</German>

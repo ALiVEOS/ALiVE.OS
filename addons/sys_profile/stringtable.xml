@@ -264,6 +264,26 @@
     <Chinesesimp>以米为单位设置虚拟战斗的范围</Chinesesimp>
     <Spanish>Define el alcance del combate virtual en metros.</Spanish>
 </Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_FACTIONS">
+    <English>Zombie Factions:</English>
+    <Chinesesimp>僵尸阵营：</Chinesesimp>
+    <Spanish>Facciones zombi:</Spanish>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_FACTIONS_COMMENT">
+    <English>Outbreak game mode only. Faction classnames, separated by commas, whose groups are zombies: driven by the zombie mod once spawned, and fighting hand to hand in virtual combat. Any faction works, including a compiled one.</English>
+    <Chinesesimp>仅限爆发游戏模式。以逗号分隔的阵营类名，这些阵营的小组是僵尸：生成后由僵尸模组控制，在虚拟战斗中进行近战。任何阵营都可以，包括编译的阵营。</Chinesesimp>
+    <Spanish>Solo en el modo de juego Brote. Nombres de clase de facciones, separados por comas, cuyos grupos son zombis: los controla el mod de zombis al aparecer y luchan cuerpo a cuerpo en el combate virtual. Sirve cualquier facción, incluida una compilada.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_MELEE">
+    <English>Zombie Melee Damage:</English>
+    <Chinesesimp>僵尸近战伤害：</Chinesesimp>
+    <Spanish>Daño cuerpo a cuerpo zombi:</Spanish>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_MELEE_COMMENT">
+    <English>Outbreak game mode only. Damage one zombie does each round of virtual combat against an infantry group. 0.015 matches a rifleman; 0 means zombies never hurt anyone in virtual combat. Zombies can't hurt anyone inside a vehicle.</English>
+    <Chinesesimp>仅限爆发游戏模式。每只僵尸在每轮虚拟战斗中对步兵小组造成的伤害。0.015相当于一名步枪手；0表示僵尸在虚拟战斗中不造成伤害。僵尸无法伤害车内人员。</Chinesesimp>
+    <Spanish>Solo en el modo de juego Brote. Daño que hace un zombi en cada ronda de combate virtual contra un grupo de infantería. 0.015 equivale a un fusilero; 0 significa que los zombis nunca hieren a nadie en combate virtual. Los zombis no pueden herir a nadie dentro de un vehículo.</Spanish>
+</Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PATHFINDING">
     <English>Pathfinding:</English>
     <Chinesesimp>实验路径查找：</Chinesesimp>

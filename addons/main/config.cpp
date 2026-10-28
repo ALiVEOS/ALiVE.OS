@@ -33,3 +33,21 @@ class ALiVE {
         };
     };
 };
+
+// Game modes picked on the Required module, and the mods each one needs. A mode whose required
+// mod isn't loaded doesn't start: the mission ends with a message naming the mod and its Workshop
+// id, rather than quietly running as Standard. An optional mod is only noted in the log.
+// Each entry: {CfgPatches class, Workshop id, name shown to players, 1 = required / 0 = optional}
+class CfgALiVEGameModes {
+    class standard {
+        displayName = "Standard";
+        addons[] = {};
+    };
+    class outbreak {
+        displayName = "Outbreak";
+        addons[] = {
+            {"WBK_ZombieCreatures", "2789152015", "WebKnight's Zombies and Creatures", 1},
+            {"WBK_MeleeMechanics", "2291129343", "Improved Melee System", 1}
+        };
+    };
+};

@@ -89,6 +89,62 @@ _logic setVariable ["startupComplete", false];
 
 MOD(require) = _logic;
 
+// Outbreak: the zombie side (ALiVE_ZOMBIESIDE, "EAST" / "WEST" / "GUER") goes to war with every
+// other side but civilians. The server sets it straight away, before any AI Commander reads who is
+// at war with whom; every other machine sets it too once the server has published it
+private _fnc_zombieWar = {
+    private _zombies = [east, west, resistance] select ((["EAST", "WEST", "GUER"] find MOD(ZOMBIESIDE)) max 0);
+    {
+        _zombies setFriend [_x, 0];
+        _x setFriend [_zombies, 0];
+    } forEach ([west, east, resistance] - [_zombies]);
+};
+
+// Game Mode. Only the server reads it off the module and tells everyone else, so a client can
+// never act on the module's own setting after the server has refused it. A mode whose required
+// mod isn't loaded is "refused", never Standard: the mission ends below, naming what's missing.
+if (isServer) then {
+    private _mode = toLower (_logic getVariable [QMOD(GAMEMODE), "standard"]);
+    // the mods the mode needs, from CfgALiVEGameModes: {CfgPatches class, Workshop id, name, 1 required / 0 optional}
+    private _modeMissing = [];
+    private _modeMissingOptional = [];
+    {
+        _x params ["_patch", "_workshop", "_name", ["_required", 1]];
+        if !(isClass (configFile >> "CfgPatches" >> _patch)) then {
+            [_modeMissingOptional, _modeMissing] select (_required == 1) pushBack [_patch, _workshop, _name];
+        };
+    } forEach getArray (configFile >> "CfgALiVEGameModes" >> _mode >> "addons");
+    private _modeOk = _modeMissing isEqualTo [];
+    {
+        ["ALiVE Game Mode %1: optional mod %2 (Workshop %3) is not loaded", _mode, _x select 2, _x select 1] call ALiVE_fnc_dump;
+    } forEach _modeMissingOptional;
+    if (!_modeOk) then {
+        {
+            ["ALiVE cannot start the %1 game mode: %2 is not loaded (Workshop %3)", _mode, _x select 2, _x select 1] call ALiVE_fnc_dumpR;
+        } forEach _modeMissing;
+        MOD(GAMEMODE_MISSING) = _modeMissing apply { format ["%1 (Workshop %2)", _x select 2, _x select 1] };
+        publicVariable QMOD(GAMEMODE_MISSING);
+        _mode = "refused";
+    };
+    if (_mode == "outbreak") then {
+        MOD(ZOMBIESIDE) = toUpper (_logic getVariable [QMOD(ZOMBIESIDE), "EAST"]);
+        publicVariable QMOD(ZOMBIESIDE);
+        call _fnc_zombieWar;
+        ["ALiVE Outbreak: zombies are %1, at war with every other side but civilians", MOD(ZOMBIESIDE)] call ALiVE_fnc_dump;
+    };
+    MOD(GAMEMODE) = _mode;
+    publicVariable QMOD(GAMEMODE);
+};
+if (!isServer) then {
+    [_fnc_zombieWar] spawn {
+        params ["_fnc_zombieWar"];
+        waitUntil {!isNil QMOD(GAMEMODE)};
+        if (MOD(GAMEMODE) != "outbreak") exitWith {};
+        waitUntil {!isNil QMOD(ZOMBIESIDE)};
+        call _fnc_zombieWar;
+    };
+};
+
 //--------------------------------------------------------------------------------------------------------//
 // Init base systems on server and client
 
@@ -680,6 +736,18 @@ if (isServer) then {
     MOD(DISABLESAVE) = _logic getvariable [QMOD(DISABLESAVE),"true"];
     Publicvariable QMOD(DISABLESAVE);
 
+    // A refused game mode ends the mission for everyone after ten seconds, long enough to read why.
+    // The startup screen stays up meanwhile with the missing mods in red, and nothing else here
+    // starts. A player joining later is turned away by the same check in the client part below.
+    if (MOD(GAMEMODE) == "refused") exitWith {
+        [] spawn {
+            private _text = format ["This mission is set to a game mode that needs %1, and the server doesn't have it loaded. The mission will end.", (MOD(GAMEMODE_MISSING)) joinString ", "];
+            ["ALiVE", _text] remoteExec ["ALIVE_fnc_sendHint", 0];
+            sleep 10;
+            ["ALiVE_GameModeRefused", false] call BIS_fnc_endMissionServer;
+        };
+    };
+
     //Activates dynamic AI distribution to all available headless clients
     MOD(AI_DISTRIBUTION) = ((_logic getvariable [QMOD(AI_DISTRIBUTION),"false"]) == "true");
     MOD(AI_DISTRIBUTION) spawn ALiVE_fnc_AI_Distributor;
@@ -718,6 +786,18 @@ if (isServer) then {
 // Only on clients
 if (hasInterface) then {
     waituntil {!isnil QMOD(DISABLESAVE)}; // Wait for global var to be set on Server
+
+    // Joined a mission whose game mode the server refused: say why and leave. The server ends the
+    // mission for everyone already in it; this catches anyone who joins in those ten seconds.
+    waitUntil {!isNil QMOD(GAMEMODE)};
+    if (MOD(GAMEMODE) == "refused" && {!isServer}) exitWith {
+        [] spawn {
+            waitUntil {!isNil QMOD(GAMEMODE_MISSING)};
+            hint format ["This mission is set to a game mode that needs %1, and the server doesn't have it loaded. The mission will end.", (MOD(GAMEMODE_MISSING)) joinString ", "];
+            sleep 12;
+            endMission "LOSER";
+        };
+    };
 
     if (MOD(DISABLESAVE) == "true") then {enableSaving [false, false]};
 

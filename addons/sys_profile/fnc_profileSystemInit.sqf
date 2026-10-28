@@ -235,6 +235,41 @@ if(isServer) then {
     if (_virtualCombatRangeModifier == 0) then {
         ["ALiVE Profile System - Virtual Combat Range is 0, so virtual AI groups never fight each other."] call ALiVE_fnc_dumpR;
     };
+    // Outbreak game mode: which factions are zombies, and how hard one hits in virtual combat.
+    // The Required module sets the mode; this module can start first, so wait for it rather
+    // than read a missing value as Standard. Outside Outbreak both stay empty, and nothing
+    // that reads them changes.
+    ALiVE_zombieFactions = [];
+    ALiVE_zombieMelee = 0.015;
+    private _modeWait = time + 60;
+    waitUntil { sleep 0.2; !isNil "ALiVE_GAMEMODE" || {time > _modeWait} };
+    if (isNil "ALiVE_GAMEMODE") then {
+        ["ALiVE Profile System - the Required module's Game Mode never arrived; zombie factions are not set up."] call ALiVE_fnc_dumpR;
+    };
+    if ((missionNamespace getVariable ["ALiVE_GAMEMODE", ""]) == "outbreak") then {
+        private _zombieRaw = _logic getVariable ["zombieFactions", ""];
+        if !(_zombieRaw isEqualType "") then { _zombieRaw = str _zombieRaw };
+        ALiVE_zombieFactions = ((_zombieRaw splitString ",[]""' ") apply { toLower _x }) - [""];
+        if (ALiVE_zombieFactions isEqualTo []) then {
+            ["ALiVE Profile System - Outbreak: no zombie factions are listed on the Virtual AI module, so no group is treated as zombies."] call ALiVE_fnc_dumpR;
+        } else {
+            ["ALiVE Profile System - Outbreak zombie factions: %1", ALiVE_zombieFactions] call ALiVE_fnc_dump;
+        };
+        private _meleeRaw = _logic getVariable ["zombieMeleeDamage", "0.015"];
+        private _melee = [_meleeRaw, -1] call _asNumber;
+        if (_meleeRaw isEqualType "") then {
+            private _meleeText = (_meleeRaw splitString " ") joinString "";
+            if (_meleeText isEqualTo "" || {((_meleeText splitString "") - ["0","1","2","3","4","5","6","7","8","9","."]) isNotEqualTo []}) then { _melee = -1 };
+        };
+        if (_melee < 0) then {
+            ["ALiVE Profile System - Zombie melee damage reads %1, which is not a number, so it uses the default 0.015. Correct it on the Virtual AI module.", str _meleeRaw] call ALiVE_fnc_dumpR;
+            _melee = 0.015;
+        };
+        if (_melee == 0) then {
+            ["ALiVE Profile System - Zombie melee damage is 0, so zombies do no damage in virtual combat."] call ALiVE_fnc_dumpR;
+        };
+        ALiVE_zombieMelee = _melee;
+    };
     private _pathfinding = (_logic getVariable ["pathfinding", "true"]) == "true";
     // Pass the configured grid setting through RAW (no parse here). It may be an
     // auto-size token ("auto"/"high"/"med"/"low"), a stringified pair "[x,y]" from

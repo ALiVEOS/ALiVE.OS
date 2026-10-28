@@ -47,6 +47,15 @@ if ((_attacker select 2 select 5) == "entity") then {               // [_attacke
 
     private _unitCount = count (_attacker select 2 select 11);      // [_attacker,"unitClasses"] call ALiVE_fnc_hashGet
 
+    private _attackerFaction = _attacker select 2 select 29;
+    if (_attackerFaction isEqualType "" && {(toLower _attackerFaction) in (missionNamespace getVariable ["ALiVE_zombieFactions", []])}) then {
+        // Outbreak: zombies fight hand to hand. They hurt infantry at the Virtual AI module's melee
+        // setting per zombie, never land a heavy hit, and can't hurt anyone inside a vehicle
+        if ((_victim select 2 select 5) == "entity") then {
+            _hitChance = 0.75;
+            _damageOutput = (missionNamespace getVariable ["ALiVE_zombieMelee", 0.015]) * _unitCount;
+        };
+    } else {
     if ((_victim select 2 select 5) == "entity") then {             // [_victim,"type"] call ALiVE_fnc_hashGet
         // victim is infantry squad
         // figure damage of inf vs inf
@@ -112,6 +121,7 @@ if ((_attacker select 2 select 5) == "entity") then {               // [_attacke
             };
         };
 
+    };
     };
 
 } else {

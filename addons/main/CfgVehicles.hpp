@@ -2545,6 +2545,42 @@ class CfgVehicles {
                     };
                 };
             };
+            class HDR_GAMEMODE : ALiVE_ModuleSubTitle { property = "ALiVE_require_HDR_GAMEMODE"; displayName = "GAME MODE"; };
+            class ALiVE_GAMEMODE: Combo
+            {
+                property =  MVAR(ALiVE_GAMEMODE);
+                displayName = "$STR_ALiVE_GAMEMODE";
+                tooltip = "$STR_ALiVE_GAMEMODE_COMMENT";
+                typeName = "STRING";
+                defaultValue = """standard""";
+                class Values
+                {
+                    class Standard
+                    {
+                        name = "$STR_ALiVE_GAMEMODE_STANDARD";
+                        value = "standard";
+                    };
+                    class Outbreak
+                    {
+                        name = "$STR_ALiVE_GAMEMODE_OUTBREAK";
+                        value = "outbreak";
+                    };
+                };
+            };
+            class ALiVE_ZOMBIESIDE: Combo
+            {
+                property =  MVAR(ALiVE_ZOMBIESIDE);
+                displayName = "$STR_ALiVE_ZOMBIESIDE";
+                tooltip = "$STR_ALiVE_ZOMBIESIDE_COMMENT";
+                typeName = "STRING";
+                defaultValue = """EAST""";
+                class Values
+                {
+                    class EAST { name = "OPFOR"; value = "EAST"; };
+                    class WEST { name = "BLUFOR"; value = "WEST"; };
+                    class GUER { name = "Independent"; value = "GUER"; };
+                };
+            };
             class ModuleDescription: ModuleDescription{};
         };
         class ModuleDescription: ModuleDescription
