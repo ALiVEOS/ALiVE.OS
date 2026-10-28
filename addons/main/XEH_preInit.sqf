@@ -620,6 +620,36 @@ if (is3DEN) then {
         ["preview", []] call ALiVE_edenFactionValidator;
         ["preview", []] call ALiVE_edenValidateFactionCompilerSync;
         [] call ALIVE_fnc_edenArtilleryDependencyCheck;
+
+        // Game Mode: a mode whose required mods aren't loaded refuses to start, so say so before the
+        // preview ends itself. The mod list is CfgALiVEGameModes, the same one ALIVE_fnc_aliveInit checks.
+        {
+            if ((typeOf _x) == "ALiVE_require") exitWith {
+                private _mode = (_x get3DENAttribute "ALiVE_require_ALiVE_GAMEMODE") param [0, "standard"];
+                if !(_mode isEqualType "") exitWith {};
+                private _missing = [];
+                {
+                    _x params [["_patch", ""], ["_workshop", ""], ["_name", ""], ["_required", 1]];
+                    if (_required == 1 && {!isClass (configFile >> "CfgPatches" >> _patch)}) then {
+                        _missing pushBack format ["%1 (Workshop %2)", _name, _workshop];
+                    };
+                } forEach getArray (configFile >> "CfgALiVEGameModes" >> _mode >> "addons");
+                if (_missing isNotEqualTo []) then {
+                    private _modeName = getText (configFile >> "CfgALiVEGameModes" >> _mode >> "displayName");
+                    if (_modeName == "") then { _modeName = _mode };
+                    private _one = count _missing == 1;
+                    private _msg = format [
+                        "ALiVE: the %1 game mode needs %2, which %3 not loaded. The mission will end itself shortly after it starts. Load %4 here and on the server, or set Game Mode back to Standard on the Required module.",
+                        _modeName,
+                        _missing joinString " and ",
+                        ["are", "is"] select _one,
+                        ["them", "it"] select _one
+                    ];
+                    // parentheses only: the notification reads its text as XML
+                    [_msg, 1, 20] call BIS_fnc_3DENNotification;
+                };
+            };
+        } forEach ((all3DENEntities) select 3);
     }];
 
     // Index viability check uses a spawn-and-poll rather than a
