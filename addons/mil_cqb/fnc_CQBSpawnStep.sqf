@@ -595,10 +595,61 @@ switch (_phase) do {
             private _buildingPosition = getPosATL _house;
             _placement set [2, (_placement select 2) + 0.3];
             _placement = [_placement, 1.5, _placement getDir _buildingPosition] call BIS_fnc_relPos;
+            // The top of a low bank, like Khe Sanh's paddy dykes, counts as a building position, but a gun made
+            // there has no level footing: it rolls off and lands on its side (30 of 36 on dykes). On something
+            // under 3 m high whose top isn't level under the gun, it's made on the nearest clear, flat ground
+            // within 6 m instead, clear for a metre each side so it doesn't clip the bank's edge. A roof, or a
+            // low bunker with a flat top, keeps its gun.
+            // height above the terrain of whatever is straight below, 0 when it is the terrain itself
+            private _fnc_under = {
+                params ["_p", ["_ignore", objNull]];
+                private _h = lineIntersectsSurfaces [AGLToASL [_p select 0, _p select 1, 6], AGLToASL [_p select 0, _p select 1, -1], _ignore, objNull, true, 1, "GEOM", "NONE"];
+                if (_h isEqualTo []) exitWith { 0 };
+                if (isNull ((_h select 0) select 2) && {isNull ((_h select 0) select 3)}) exitWith { 0 };
+                (ASLToAGL ((_h select 0) select 0)) select 2
+            };
+            // [position, object to ignore]: the nearest clear, flat ground within 6 m, or []
+            private _fnc_clearGround = {
+                params ["_from", ["_ignore", objNull]];
+                private _spot = [];
+                {
+                    private _r = _x;
+                    {
+                        private _p = if (_r == 0) then { _from } else { _from getPos [_r, _x] };
+                        if (!surfaceIsWater _p && {((surfaceNormal _p) select 2) > 0.97} && {([_p, _ignore] call _fnc_under) == 0} && {[0, 90, 180, 270] findIf { ([_p getPos [1, _x], _ignore] call _fnc_under) != 0 } < 0}) exitWith { _spot = [_p select 0, _p select 1, 0.1] };
+                    } forEach ([[0], [0, 45, 90, 135, 180, 225, 270, 315]] select (_r > 0));
+                    if (_spot isNotEqualTo []) exitWith {};
+                } forEach [0, 2, 3, 4, 6];
+                _spot
+            };
+            private _bank = [_placement] call _fnc_under;
+            private _onBank = _bank > 0.15 && {_bank < 3} && {[0, 90, 180, 270] findIf { abs (([_placement getPos [1, _x]] call _fnc_under) - _bank) > 0.2 } >= 0};
+            if (_onBank) then {
+                private _spot = [_placement] call _fnc_clearGround;
+                if (_spot isNotEqualTo []) then { _placement = _spot };
+            };
             private _weapon = createVehicle [selectRandom (_logic getVariable ["staticWeaponsClassnames", []]), _placement, [], 0, "CAN_COLLIDE"];
             if (!isNull _weapon) then {
                 _weapon setPos _placement;
                 _weapon setDir (_buildingPosition getDir _placement);
+                // For its first 15 seconds a gun moved off a bank that tips over anyway is stood level again,
+                // facing the same way, on clear ground near where it lies (or where it lies, when there is none)
+                if (_onBank) then {
+                    [_weapon, _buildingPosition getDir _placement, _fnc_under, _fnc_clearGround] spawn {
+                        params ["_gun", "_dir", "_fnc_under", "_fnc_clearGround"];
+                        {
+                            sleep _x;
+                            if (isNull _gun || {!alive _gun}) exitWith {};
+                            if (((vectorUp _gun) select 2) < 0.94 && {local _gun}) then {
+                                private _spot = [getPosATL _gun, _gun] call _fnc_clearGround;
+                                _gun setVelocity [0, 0, 0];
+                                if (_spot isNotEqualTo []) then { _gun setPosATL _spot };
+                                _gun setVectorUp [0, 0, 1];
+                                _gun setDir _dir;
+                            };
+                        } forEach [1, 2, 3, 4, 5];
+                    };
+                };
                 _created pushBack _weapon;
                 (_context get "createdStatics") pushBack _weapon;
                 _house setVariable ["staticWeapons", _created, true];

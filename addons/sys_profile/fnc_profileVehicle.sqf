@@ -694,6 +694,42 @@ switch (_operation) do {
                 };
             };
 
+            // A static gun made on a low bank, like Khe Sanh's paddy dykes, is wrecked or rolls off it and lands
+            // on its side, even with damage switched off (26 of 36 destroyed on dykes, most of the rest tilted).
+            // One on the ground over something low (under 3 m: a bank, a wall) is made on the nearest clear,
+            // flat ground within 6 m instead, clear for a metre each side so it doesn't clip the bank's edge.
+            // A gun on a roof or a deck is left where it is.
+            // [position, object to ignore, only if on a bump] returns that spot, or [] to leave it
+            private _fnc_gunSpot = {};
+            private _isLowGun = (_vehicleClass isKindOf "StaticWeapon") && {(_position param [2, 0]) < 0.5};
+            if (_isLowGun) then {
+                _fnc_gunSpot = {
+                    params ["_from", "_ignore", "_onlyOnBump"];
+                    // height of whatever is straight below, 0 when it is the terrain itself
+                    private _fnc_under = {
+                        private _h = lineIntersectsSurfaces [AGLToASL (_this vectorAdd [0, 0, 6]), AGLToASL (_this vectorAdd [0, 0, -1]), _ignore, objNull, true, 1, "GEOM", "NONE"];
+                        if (_h isEqualTo []) exitWith { 0 };
+                        if (isNull ((_h select 0) select 2) && {isNull ((_h select 0) select 3)}) exitWith { 0 };
+                        ((ASLToAGL ((_h select 0) select 0)) select 2)
+                    };
+                    _from = [_from select 0, _from select 1, 0];
+                    private _bump = _from call _fnc_under;
+                    if (_onlyOnBump && {_bump < 0.15 || {_bump > 3}}) exitWith { [] };
+                    private _spot = [];
+                    {
+                        private _r = _x;
+                        {
+                            private _p = if (_r == 0) then { _from } else { _from getPos [_r, _x] };
+                            if (!surfaceIsWater _p && {((surfaceNormal _p) select 2) > 0.97} && {(_p call _fnc_under) == 0} && {[0, 90, 180, 270] findIf { ((_p getPos [1, _x]) call _fnc_under) != 0 } < 0}) exitWith { _spot = _p };
+                        } forEach ([[0], [0, 45, 90, 135, 180, 225, 270, 315]] select (_r > 0));
+                        if (_spot isNotEqualTo []) exitWith {};
+                    } forEach [0, 2, 3, 4, 6];
+                    _spot
+                };
+                private _spot = [_position, objNull, true] call _fnc_gunSpot;
+                if (_spot isNotEqualTo []) then { _position = _spot };
+            };
+
             _vehicle = createVehicle [_vehicleClass, _position, [], 0, _special];
 
             _vehicle allowDamage false;
@@ -748,6 +784,24 @@ switch (_operation) do {
                 };
             };
             _vehicle setDir _direction;
+            // For its first 15 seconds a low gun that tips over anyway is stood level again, facing the same way,
+            // on clear ground near where it lies (or where it lies, when there is none)
+            if (_isLowGun) then {
+                [_vehicle, _direction, _fnc_gunSpot] spawn {
+                    params ["_gun", "_dir", "_fnc_gunSpot"];
+                    {
+                        sleep _x;
+                        if (isNull _gun || {!alive _gun}) exitWith {};
+                        if (((vectorUp _gun) select 2) < 0.94 && {local _gun}) then {
+                            private _spot = [getPosATL _gun, _gun, false] call _fnc_gunSpot;
+                            _gun setVelocity [0, 0, 0];
+                            if (_spot isNotEqualTo []) then { _gun setPosATL _spot };
+                            _gun setVectorUp [0, 0, 1];
+                            _gun setDir _dir;
+                        };
+                    } forEach [1, 2, 3, 4, 5];
+                };
+            };
             _vehicle setFuel _fuel;
             _vehicle engineOn _engineOn;
 
