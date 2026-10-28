@@ -1551,6 +1551,26 @@ switch(_operation) do {
             };
             // --- end onEachSpawn hook ---
 
+            // WebKnight's zombies: a Walker or Crawler leading the group holds everyone to its shamble (about
+            // 19 m in 45 s against 154 m with a Runner in front), so a faster zombie takes the lead and the
+            // slow ones trail behind. The mod's own AI names each zombie's gait a moment after it is made.
+            if (isClass (configFile >> "CfgPatches" >> "WBK_ZombieCreatures")) then {
+                [_logic, _group] spawn {
+                    params ["_logic", "_group"];
+                    sleep 3;
+                    if (isNull _group) exitWith {};
+                    private _gait = { toLower (_this getVariable ["WBK_AI_ZombieMoveSet", ""]) };
+                    private _slow = { private _g = _this call _gait; "wbk_walker" in _g || {"wbk_crawler" in _g} };
+                    if !((leader _group) call _slow) exitWith {};
+                    private _fast = (units _group) select { alive _x && {(_x call _gait) != ""} && {!(_x call _slow)} };
+                    if (_fast isEqualTo []) exitWith {};
+                    private _angry = _fast select { "angry" in (_x call _gait) };
+                    private _new = ([_fast, _angry] select (_angry isNotEqualTo [])) select 0;
+                    if (local _group) then { _group selectLeader _new } else { [_group, _new] remoteExecCall ["selectLeader", groupOwner _group] };
+                    [_logic, "leader", _new] call ALIVE_fnc_hashSet;
+                };
+            };
+
             if(_debug) then {
                 [_logic,"debug", true] call MAINCLASS;
             };
