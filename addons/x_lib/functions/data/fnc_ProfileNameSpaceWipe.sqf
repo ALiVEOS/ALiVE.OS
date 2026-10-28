@@ -114,6 +114,10 @@ private _fnc_wipe = {
         _report pushBack (localize "STR_ALIVE_DATA_WIPE_DONE_OLDER");
     };
 
+    // Each line as its own array: given two bare strings, CBA reads the second as the first line's
+    // text size and throws a script error.
+    _report = _report apply { [_x] };
+
     // Told to whoever asked, once it's done: the admin menu runs on their machine.
     if (_owner > 0) then {
         _report remoteExec ["CBA_fnc_notify", _owner];
